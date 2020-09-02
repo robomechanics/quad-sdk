@@ -12,9 +12,6 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
-## System dependencies are found with CMake's conventions
-find_package(yaml-cpp REQUIRED)
-
 catkin_package(
     INCLUDE_DIRS include
 #  LIBRARIES spirit-component-template
@@ -31,7 +28,6 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${YAML_CPP_INCLUDE_DIR}
 )
 
 ## Declare a C++ library
@@ -49,7 +45,6 @@ add_executable(${PROJECT_NAME}_node src/spirit_component_template_node.cpp)
 target_link_libraries(${PROJECT_NAME}_node
 	${PROJECT_NAME}
 	${catkin_LIBRARIES}
-	${YAML_CPP_LIBRARIES}
 )
 
 #############
