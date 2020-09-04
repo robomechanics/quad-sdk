@@ -42,8 +42,8 @@ install:
 - source devel/setup.bash
 - ln -s $CI_SOURCE_PATH src/
 - cd $TRAVIS_BUILD_DIR
-- chmod +x setup_deps_recurse.sh
-- ./setup_deps_recurse.sh
+- chmod +x setup.sh
+- ./setup.sh
 before_script:
 - cd ~/catkin_ws
 - roscore &
