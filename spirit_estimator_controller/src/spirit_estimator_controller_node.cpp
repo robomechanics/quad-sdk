@@ -1,5 +1,6 @@
 #include <ros/ros.h>
 #include <yaml-cpp/yaml.h>
+#include <iostream>
 
 #include "spirit_estimator.h"
 #include "spirit_controller.h"
@@ -9,7 +10,7 @@ int main(int argc, char** argv) {
 	ros::NodeHandle nh;
 	SpiritEstimator spirit_estimator(nh);
 	SpiritController spirit_controller(nh);
-
+	std::cout << "Hi!" << std::endl;
 	while (true) {
 		// These will be run in parallel threads at different frequencies
 		spirit_estimator.update();
