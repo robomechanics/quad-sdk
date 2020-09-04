@@ -17,13 +17,16 @@ addons:
     - doxygen
 language: generic
 
-arch:
-  - amd64
-  - arch64
-
 matrix:
   include:
-  - name: 18.04 Melodic
+  - os: linux
+    arch: amd64
+    name: 18.04 Melodic
+    dist: bionic
+    env: ROS_DISTRO=melodic
+  - os: linux
+    arch: arm64
+    name: 18.04 Melodic
     dist: bionic
     env: ROS_DISTRO=melodic
 
