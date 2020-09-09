@@ -3,8 +3,8 @@
         <param name="robot_description" command="cat $(find spirit_visualizer)/urdf/spirit40_gaz_RML.urdf" />
         
         <!-- Launch the nodes to publish the base tf and joint positions -->
-        <node name="body_planner" pkg="body_planner" type="body_planner_node" output="screen"/>
+        <node name="global_body_planner" pkg="global_body_planner" type="body_planner_node" output="screen"/>
 
         <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
-        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find body_planner)/rviz/example.rviz"/>
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find global_body_planner)/rviz/example.rviz"/>
 </launch>

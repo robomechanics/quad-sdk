@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <unordered_map>
 #include <unordered_set>
-#include "body_planner/functions.h"
+#include "global_body_planner/functions.h"
 
 class GraphClass
 {

@@ -1,4 +1,4 @@
-#include "body_planner/rrt.h"
+#include "global_body_planner/rrt.h"
 #include <ctime>
 //constructor
 RRTClass::RRTClass(){}

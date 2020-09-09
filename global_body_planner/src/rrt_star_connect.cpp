@@ -1,4 +1,4 @@
-#include "body_planner/rrt_star_connect.h"
+#include "global_body_planner/rrt_star_connect.h"
 #include <ctime>
 //constructor
 RRTStarConnectClass::RRTStarConnectClass(){}

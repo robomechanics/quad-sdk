@@ -1,7 +1,7 @@
 #ifndef PLANNERCLASS_H
 #define PLANNERCLASS_H
 
-#include "body_planner/graph_class.h"
+#include "global_body_planner/graph_class.h"
 
 class PlannerClass : public GraphClass
 {

@@ -12,8 +12,8 @@
 #include <string>
 #include <chrono>
 
-#include "body_planner/planner_class.h"
-#include "body_planner/rrt_star_connect.h"
+#include "global_body_planner/planner_class.h"
+#include "global_body_planner/rrt_star_connect.h"
 
 #include <nav_msgs/Path.h>
 #include <geometry_msgs/PoseStamped.h>

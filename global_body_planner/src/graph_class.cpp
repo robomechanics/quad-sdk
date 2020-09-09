@@ -1,4 +1,4 @@
-#include "body_planner/graph_class.h"
+#include "global_body_planner/graph_class.h"
 
 #include <vector>
 #include <algorithm>

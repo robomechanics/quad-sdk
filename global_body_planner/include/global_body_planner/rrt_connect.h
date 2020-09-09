@@ -1,7 +1,7 @@
 #ifndef RRTCONNECT_H
 #define RRTCONNECT_H
 
-#include "body_planner/rrt.h"
+#include "global_body_planner/rrt.h"
 // #include "functions.h"
 
 #define TRAPPED 0

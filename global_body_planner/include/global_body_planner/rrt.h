@@ -1,7 +1,7 @@
 #ifndef RRT_H
 #define RRT_H
 
-#include "body_planner/planner_class.h"
+#include "global_body_planner/planner_class.h"
 #include <chrono>
 
 #define TRAPPED 0

@@ -1,4 +1,4 @@
-#include "body_planner/rrt_connect.h"
+#include "global_body_planner/rrt_connect.h"
 //constructor
 RRTConnectClass::RRTConnectClass(){}
 //destructor
