@@ -1,11 +1,10 @@
 #include <ros/ros.h>
 #include <gtest/gtest.h>
 
-#include "spirit_controller.h"
+#include "controller/controller.h"
 
-TEST(SpiritController, testTrue) {
-	ros::NodeHandle nh;
-	SpiritController spirit_controller(nh);
+TEST(Controller, testTrue) {
+	Controller controller();
 	EXPECT_EQ(1 + 1, 2);
 }
 

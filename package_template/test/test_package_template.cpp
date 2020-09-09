@@ -1,17 +1,16 @@
 #include <ros/ros.h>
 #include <gtest/gtest.h>
 
-#include "spirit_estimator.h"
+#include "package_template/package_template.h"
 
-TEST(SpiritEstimator, testTrue) {
-	ros::NodeHandle nh;
-	SpiritEstimator spirit_estimator(nh);
+TEST(PackageTemplate, testTrue) {
+	PackageTemplate package_template();
 	EXPECT_EQ(1 + 1, 2);
 }
 
 int main(int argc, char** argv) {
 	testing::InitGoogleTest(&argc, argv);
-	ros::init(argc, argv, "estimator_tester");
+	ros::init(argc, argv, "tester");
 
 	return RUN_ALL_TESTS();
 }
