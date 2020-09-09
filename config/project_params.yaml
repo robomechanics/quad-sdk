@@ -1,2 +1,5 @@
-topics:
-  
+controller:
+  update_rate: 100
+
+estimator:
+  update_rate: 250
