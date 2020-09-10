@@ -4,7 +4,8 @@
 #include "package_template/package_template.h"
 
 TEST(PackageTemplate, testTrue) {
-	PackageTemplate package_template();
+	ros::Nodehandle nh;
+	PackageTemplate package_template(nh);
 	EXPECT_EQ(1 + 1, 2);
 }
 

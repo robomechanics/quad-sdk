@@ -1,5 +1,5 @@
-controller:
+mpc_controller:
   update_rate: 100
 
-estimator:
+ekf_estimator:
   update_rate: 250
