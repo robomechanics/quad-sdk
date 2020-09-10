@@ -5,9 +5,8 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
 }
 
 void LocalFootstepPlanner::loop() {
-while (ros::ok())
-{
-  ros::spinOnce();
-}
-
+  while (ros::ok())
+  {
+    ros::spinOnce();
+  }
 }
