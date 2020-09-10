@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>spirit_estimator_controller</name>
+  <name>package_template</name>
   <version>0.0.0</version>
-  <description>The spirit_estimator_controller package</description>
+  <description>The package_template package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="nflowers@andrew.cmu.edu">Nikolai Flowers</maintainer>
+  <maintainer email="todo@andrew.cmu.edu">YOURNAMEHERE</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
@@ -51,13 +51,10 @@
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>std_msgs</build_depend>
-  <build_depend>yaml-cpp</build_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
-  <build_export_depend>yaml-cpp</build_export_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>std_msgs</exec_depend>
-  <exec_depend>yaml-cpp</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

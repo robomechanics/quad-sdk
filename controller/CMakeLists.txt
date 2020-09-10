@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(spirit_estimator_controller)
+project(controller)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -34,27 +34,20 @@ include_directories(
   ${YAML_CPP_INCLUDE_DIR}
 )
 
-## Declare a C++ library for state estimation
-add_library(spirit_estimator
-  src/spirit_estimator.cpp
-)
-add_dependencies(spirit_estimator ${spirit_estimator_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
 ## Declare a C++ library for control
-add_library(spirit_controller
-	src/spirit_controller.cpp
+add_library(controller
+	src/controller.cpp
 )
-add_dependencies(spirit_controller ${spirit_controller_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(controller ${controller_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(spirit_estimator_controller_node src/spirit_estimator_controller_node.cpp)
+add_executable(controller_node src/controller_node.cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(spirit_estimator_controller_node
-	spirit_estimator
-  spirit_controller
+target_link_libraries(controller_node
+  controller
 	${catkin_LIBRARIES}
 	${YAML_CPP_LIBRARIES}
 )
@@ -63,12 +56,8 @@ target_link_libraries(spirit_estimator_controller_node
 ## Testing ##
 #############
 
-## Google test file for spirit_estimator library
-catkin_add_gtest(spirit_estimator_test test/test_spirit_estimator.cpp)
-target_link_libraries(spirit_estimator_test ${catkin_LIBRARIES} spirit_estimator)
-
-## Google test file for spirit_controller library
-catkin_add_gtest(spirit_controller_test test/test_spirit_controller.cpp)
-target_link_libraries(spirit_controller_test ${catkin_LIBRARIES} spirit_controller)
+## Google test file for controller library
+catkin_add_gtest(controller_test test/test_controller.cpp)
+target_link_libraries(controller_test ${catkin_LIBRARIES} controller)
 
 
