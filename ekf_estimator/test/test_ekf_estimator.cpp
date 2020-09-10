@@ -1,16 +1,17 @@
 #include <ros/ros.h>
 #include <gtest/gtest.h>
 
-#include "controller/controller.h"
+#include "ekf_estimator/ekf_estimator.h"
 
-TEST(Controller, testTrue) {
-	Controller controller();
+TEST(EKFEstimator, testTrue) {
+	ros::NodeHandle nh;
+	EKFEstimator ekf_estimator(nh);
 	EXPECT_EQ(1 + 1, 2);
 }
 
 int main(int argc, char** argv) {
 	testing::InitGoogleTest(&argc, argv);
-	ros::init(argc, argv, "controller_tester");
+	ros::init(argc, argv, "ekf_estimator_tester");
 
 	return RUN_ALL_TESTS();
 }

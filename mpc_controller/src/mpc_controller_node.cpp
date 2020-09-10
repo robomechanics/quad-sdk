@@ -2,7 +2,7 @@
 #include <yaml-cpp/yaml.h>
 #include <iostream>
 
-#include "controller/controller.h"
+#include "mpc_controller/mpc_controller.h"
 
 int main(int argc, char** argv) {
 	ros::init(argc, argv, "controller_node");
@@ -10,15 +10,15 @@ int main(int argc, char** argv) {
 
 	// Pull needed parameters off rosparam server
 	double update_rate;
-	nh.param<double>("controller/update_rate", update_rate, 100); // Default to 100 hz
+	nh.param<double>("mpc_controller/update_rate", update_rate, 100); // Default to 100 hz
 
 	// Primary logic
-	Controller controller;
+	MPCController mpc_controller(nh);
 
 	// Control loop frequency
 	ros::Rate r(update_rate);
 	while (ros::ok()) {
-		controller.update();
+		ros::spinOnce();
 		r.sleep();
 	}
 	return 0;

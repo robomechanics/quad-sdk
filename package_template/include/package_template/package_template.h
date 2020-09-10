@@ -9,20 +9,18 @@
    The implementation must provide a clean and high level interface to the core algorithm
 */
 class PackageTemplate {
-  public:
+public:
 	/**
 	 * @brief Constructor for PackageTemplate Class
-	 * @param[in] nh ROS Nodehandle to publish and subscribe from
+	 * @param[in] nh ROS NodeHandle to publish and subscribe from
 	 * @return Constructed object of type PackageTemplate
 	 */
-	PackageTemplate();
+	PackageTemplate(ros::NodeHandle nh);
 
-	/**
-	 * @brief Primary work function in class, called in node file for this component
-	 */
-	void update();
+private:
 
+	/// Nodehandle to pub to and sub from
+	ros::NodeHandle nh_;
 };
-
 
 #endif // PACKAGE_TEMPLATE_H
