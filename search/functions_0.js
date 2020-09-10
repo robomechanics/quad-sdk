@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['loop',['loop',['../classSpiritComponentTemplate.html#acb8bb9e9f4121c41e406daaa568b7478',1,'SpiritComponentTemplate']]]
+  ['controller',['Controller',['../classController.html#a95c56822d667e94b031451729ce069a9',1,'Controller']]]
 ];

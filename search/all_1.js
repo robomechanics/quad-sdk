@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['loop',['loop',['../classSpiritComponentTemplate.html#acb8bb9e9f4121c41e406daaa568b7478',1,'SpiritComponentTemplate']]]
+  ['estimator',['Estimator',['../classEstimator.html',1,'Estimator'],['../classEstimator.html#a6aa21a010bd824c1d86ee9bf5700a7c8',1,'Estimator::Estimator()']]]
 ];

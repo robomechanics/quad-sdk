@@ -1,24 +1,21 @@
 var indexSectionsWithContent =
 {
-  0: "_lsu",
-  1: "s",
-  2: "lsu",
-  3: "_"
+  0: "cepu",
+  1: "cep",
+  2: "cepu"
 };
 
 var indexSectionNames =
 {
   0: "all",
   1: "classes",
-  2: "functions",
-  3: "variables"
+  2: "functions"
 };
 
 var indexSectionLabels =
 {
   0: "All",
   1: "Classes",
-  2: "Functions",
-  3: "Variables"
+  2: "Functions"
 };
 
