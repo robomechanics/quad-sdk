@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['update',['update',['../classController.html#a7d04c17913f04f99429aa29fa8505484',1,'Controller::update()'],['../classEstimator.html#ad7fbe72b0e1c8d12b77427bcd7d2eafc',1,'Estimator::update()'],['../classPackageTemplate.html#a0007884cfeaab3cea752aa3003e99fef',1,'PackageTemplate::update()']]]
+  ['packagetemplate',['PackageTemplate',['../classPackageTemplate.html',1,'PackageTemplate'],['../classPackageTemplate.html#aa99aa1c79e7f59549db4b7613fa0e2e1',1,'PackageTemplate::PackageTemplate()']]]
 ];

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Legged Controls Software: Controller Class Reference</title>
+<title>Legged Controls Software: MPCController Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -60,54 +60,65 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="classController-members.html">List of all members</a>  </div>
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classMPCController-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">Controller Class Reference</div>  </div>
+<div class="title">MPCController Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p>Implements online MPC.  
- <a href="classController.html#details">More...</a></p>
+ <a href="classMPCController.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="controller_8h_source.html">controller.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="mpc__controller_8h_source.html">mpc_controller.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a95c56822d667e94b031451729ce069a9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classController.html#a95c56822d667e94b031451729ce069a9">Controller</a> ()</td></tr>
-<tr class="memdesc:a95c56822d667e94b031451729ce069a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classController.html" title="Implements online MPC. ">Controller</a>.  <a href="#a95c56822d667e94b031451729ce069a9">More...</a><br /></td></tr>
-<tr class="separator:a95c56822d667e94b031451729ce069a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d04c17913f04f99429aa29fa8505484"><td class="memItemLeft" align="right" valign="top"><a id="a7d04c17913f04f99429aa29fa8505484"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classController.html#a7d04c17913f04f99429aa29fa8505484">update</a> ()</td></tr>
-<tr class="memdesc:a7d04c17913f04f99429aa29fa8505484"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primary work function in class, called in node file for this component. <br /></td></tr>
-<tr class="separator:a7d04c17913f04f99429aa29fa8505484"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16a87d6e746992d9479d27aae63cca16"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#a16a87d6e746992d9479d27aae63cca16">MPCController</a> (ros::NodeHandle nh)</td></tr>
+<tr class="memdesc:a16a87d6e746992d9479d27aae63cca16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classMPCController.html" title="Implements online MPC. ">MPCController</a>.  <a href="#a16a87d6e746992d9479d27aae63cca16">More...</a><br /></td></tr>
+<tr class="separator:a16a87d6e746992d9479d27aae63cca16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a25b2e113ddd845e80abaf51adbeac2a3"><td class="memItemLeft" align="right" valign="top"><a id="a25b2e113ddd845e80abaf51adbeac2a3"></a>
+ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#a25b2e113ddd845e80abaf51adbeac2a3">nh_</a></td></tr>
+<tr class="memdesc:a25b2e113ddd845e80abaf51adbeac2a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nodehandle to pub to and sub from. <br /></td></tr>
+<tr class="separator:a25b2e113ddd845e80abaf51adbeac2a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Implements online MPC. </p>
-<p><a class="el" href="classController.html" title="Implements online MPC. ">Controller</a> implements all control logic. It should expose a constructor that does any initialization required and an update method called at some frequency. </p>
+<p><a class="el" href="classMPCController.html" title="Implements online MPC. ">MPCController</a> implements all control logic. It should expose a constructor that does any initialization required and an update method called at some frequency. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a95c56822d667e94b031451729ce069a9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a95c56822d667e94b031451729ce069a9">&#9670;&nbsp;</a></span>Controller()</h2>
+<a id="a16a87d6e746992d9479d27aae63cca16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16a87d6e746992d9479d27aae63cca16">&#9670;&nbsp;</a></span>MPCController()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Controller::Controller </td>
+          <td class="memname">MPCController::MPCController </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">ros::NodeHandle&#160;</td>
+          <td class="paramname"><em>nh</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Constructor for <a class="el" href="classController.html" title="Implements online MPC. ">Controller</a>. </p>
-<dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classController.html" title="Implements online MPC. ">Controller</a> </dd></dl>
+<p>Constructor for <a class="el" href="classMPCController.html" title="Implements online MPC. ">MPCController</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">nh</td><td>ROS NodeHandle to publish and subscribe from </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classMPCController.html" title="Implements online MPC. ">MPCController</a> </dd></dl>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>controller/include/controller/<a class="el" href="controller_8h_source.html">controller.h</a></li>
-<li>controller/src/controller.cpp</li>
+<li>mpc_controller/include/mpc_controller/<a class="el" href="mpc__controller_8h_source.html">mpc_controller.h</a></li>
+<li>mpc_controller/src/mpc_controller.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

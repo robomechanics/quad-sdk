@@ -60,6 +60,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classPackageTemplate-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">PackageTemplate Class Reference</div>  </div>
@@ -73,20 +74,23 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a78235148c83605560a1aea57d776a4fd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPackageTemplate.html#a78235148c83605560a1aea57d776a4fd">PackageTemplate</a> ()</td></tr>
-<tr class="memdesc:a78235148c83605560a1aea57d776a4fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classPackageTemplate.html" title="A template class for spirit. ">PackageTemplate</a> Class.  <a href="#a78235148c83605560a1aea57d776a4fd">More...</a><br /></td></tr>
-<tr class="separator:a78235148c83605560a1aea57d776a4fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0007884cfeaab3cea752aa3003e99fef"><td class="memItemLeft" align="right" valign="top"><a id="a0007884cfeaab3cea752aa3003e99fef"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPackageTemplate.html#a0007884cfeaab3cea752aa3003e99fef">update</a> ()</td></tr>
-<tr class="memdesc:a0007884cfeaab3cea752aa3003e99fef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primary work function in class, called in node file for this component. <br /></td></tr>
-<tr class="separator:a0007884cfeaab3cea752aa3003e99fef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa99aa1c79e7f59549db4b7613fa0e2e1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPackageTemplate.html#aa99aa1c79e7f59549db4b7613fa0e2e1">PackageTemplate</a> (ros::NodeHandle nh)</td></tr>
+<tr class="memdesc:aa99aa1c79e7f59549db4b7613fa0e2e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classPackageTemplate.html" title="A template class for spirit. ">PackageTemplate</a> Class.  <a href="#aa99aa1c79e7f59549db4b7613fa0e2e1">More...</a><br /></td></tr>
+<tr class="separator:aa99aa1c79e7f59549db4b7613fa0e2e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:ad7b5a48549a633c1f99dd092856646b9"><td class="memItemLeft" align="right" valign="top"><a id="ad7b5a48549a633c1f99dd092856646b9"></a>
+ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPackageTemplate.html#ad7b5a48549a633c1f99dd092856646b9">nh_</a></td></tr>
+<tr class="memdesc:ad7b5a48549a633c1f99dd092856646b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nodehandle to pub to and sub from. <br /></td></tr>
+<tr class="separator:ad7b5a48549a633c1f99dd092856646b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A template class for spirit. </p>
 <p><a class="el" href="classPackageTemplate.html" title="A template class for spirit. ">PackageTemplate</a> is a container for all of the logic utilized in the template node. The implementation must provide a clean and high level interface to the core algorithm </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a78235148c83605560a1aea57d776a4fd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a78235148c83605560a1aea57d776a4fd">&#9670;&nbsp;</a></span>PackageTemplate()</h2>
+<a id="aa99aa1c79e7f59549db4b7613fa0e2e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa99aa1c79e7f59549db4b7613fa0e2e1">&#9670;&nbsp;</a></span>PackageTemplate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -94,7 +98,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         <tr>
           <td class="memname">PackageTemplate::PackageTemplate </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">ros::NodeHandle&#160;</td>
+          <td class="paramname"><em>nh</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -103,7 +108,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>Constructor for <a class="el" href="classPackageTemplate.html" title="A template class for spirit. ">PackageTemplate</a> Class. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">nh</td><td>ROS Nodehandle to publish and subscribe from </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nh</td><td>ROS NodeHandle to publish and subscribe from </td></tr>
   </table>
   </dd>
 </dl>

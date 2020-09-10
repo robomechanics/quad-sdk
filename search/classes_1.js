@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['estimator',['Estimator',['../classEstimator.html',1,'']]]
+  ['mpccontroller',['MPCController',['../classMPCController.html',1,'']]]
 ];

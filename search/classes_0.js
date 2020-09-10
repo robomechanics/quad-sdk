@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['controller',['Controller',['../classController.html',1,'']]]
+  ['ekfestimator',['EKFEstimator',['../classEKFEstimator.html',1,'']]]
 ];

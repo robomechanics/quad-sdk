@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Legged Controls Software: Estimator Class Reference</title>
+<title>Legged Controls Software: EKFEstimator Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -60,54 +60,65 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="classEstimator-members.html">List of all members</a>  </div>
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classEKFEstimator-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">Estimator Class Reference</div>  </div>
+<div class="title">EKFEstimator Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p>Implements online EKF based state estimation.  
- <a href="classEstimator.html#details">More...</a></p>
+ <a href="classEKFEstimator.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="estimator_8h_source.html">estimator.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="ekf__estimator_8h_source.html">ekf_estimator.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6aa21a010bd824c1d86ee9bf5700a7c8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEstimator.html#a6aa21a010bd824c1d86ee9bf5700a7c8">Estimator</a> ()</td></tr>
-<tr class="memdesc:a6aa21a010bd824c1d86ee9bf5700a7c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classEstimator.html" title="Implements online EKF based state estimation. ">Estimator</a>.  <a href="#a6aa21a010bd824c1d86ee9bf5700a7c8">More...</a><br /></td></tr>
-<tr class="separator:a6aa21a010bd824c1d86ee9bf5700a7c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad7fbe72b0e1c8d12b77427bcd7d2eafc"><td class="memItemLeft" align="right" valign="top"><a id="ad7fbe72b0e1c8d12b77427bcd7d2eafc"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEstimator.html#ad7fbe72b0e1c8d12b77427bcd7d2eafc">update</a> ()</td></tr>
-<tr class="memdesc:ad7fbe72b0e1c8d12b77427bcd7d2eafc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primary work function in class, called in node file for this component. <br /></td></tr>
-<tr class="separator:ad7fbe72b0e1c8d12b77427bcd7d2eafc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd7780ea743da4d88a1747e93df63c06"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEKFEstimator.html#acd7780ea743da4d88a1747e93df63c06">EKFEstimator</a> (ros::NodeHandle nh)</td></tr>
+<tr class="memdesc:acd7780ea743da4d88a1747e93df63c06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classEKFEstimator.html" title="Implements online EKF based state estimation. ">EKFEstimator</a>.  <a href="#acd7780ea743da4d88a1747e93df63c06">More...</a><br /></td></tr>
+<tr class="separator:acd7780ea743da4d88a1747e93df63c06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a72df2d5887b4a72ec692ec2d6da57828"><td class="memItemLeft" align="right" valign="top"><a id="a72df2d5887b4a72ec692ec2d6da57828"></a>
+ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEKFEstimator.html#a72df2d5887b4a72ec692ec2d6da57828">nh_</a></td></tr>
+<tr class="memdesc:a72df2d5887b4a72ec692ec2d6da57828"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nodehandle to pub to and sub from. <br /></td></tr>
+<tr class="separator:a72df2d5887b4a72ec692ec2d6da57828"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Implements online EKF based state estimation. </p>
-<p><a class="el" href="classEstimator.html" title="Implements online EKF based state estimation. ">Estimator</a> implements all estimator logic. It should expose a constructor that does any initialization required and an update method called at some frequency. </p>
+<p><a class="el" href="classEKFEstimator.html" title="Implements online EKF based state estimation. ">EKFEstimator</a> implements all estimator logic. It should expose a constructor that does any initialization required and an update method called at some frequency. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a6aa21a010bd824c1d86ee9bf5700a7c8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6aa21a010bd824c1d86ee9bf5700a7c8">&#9670;&nbsp;</a></span>Estimator()</h2>
+<a id="acd7780ea743da4d88a1747e93df63c06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd7780ea743da4d88a1747e93df63c06">&#9670;&nbsp;</a></span>EKFEstimator()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Estimator::Estimator </td>
+          <td class="memname">EKFEstimator::EKFEstimator </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">ros::NodeHandle&#160;</td>
+          <td class="paramname"><em>nh</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Constructor for <a class="el" href="classEstimator.html" title="Implements online EKF based state estimation. ">Estimator</a>. </p>
-<dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classEstimator.html" title="Implements online EKF based state estimation. ">Estimator</a> </dd></dl>
+<p>Constructor for <a class="el" href="classEKFEstimator.html" title="Implements online EKF based state estimation. ">EKFEstimator</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">nh</td><td>ROS NodeHandle to publish and subscribe from </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classEKFEstimator.html" title="Implements online EKF based state estimation. ">EKFEstimator</a> </dd></dl>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>estimator/include/estimator/<a class="el" href="estimator_8h_source.html">estimator.h</a></li>
-<li>estimator/src/estimator.cpp</li>
+<li>ekf_estimator/include/ekf_estimator/<a class="el" href="ekf__estimator_8h_source.html">ekf_estimator.h</a></li>
+<li>ekf_estimator/src/ekf_estimator.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

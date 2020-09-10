@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['estimator',['Estimator',['../classEstimator.html',1,'Estimator'],['../classEstimator.html#a6aa21a010bd824c1d86ee9bf5700a7c8',1,'Estimator::Estimator()']]]
+  ['mpccontroller',['MPCController',['../classMPCController.html',1,'MPCController'],['../classMPCController.html#a16a87d6e746992d9479d27aae63cca16',1,'MPCController::MPCController()']]]
 ];
