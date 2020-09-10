@@ -1,0 +1,5 @@
+<launch>
+	<rosparam command="load" file="$(find estimator)/../config/project_params.yaml"/>
+	<node name="estimator_node" pkg="estimator" type="estimator_node"/>
+	<node name="controller_node" pkg="controller" type="controller_node"/>
+</launch>
