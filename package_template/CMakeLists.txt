@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(spirit_component_template)
+project(package_template)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -32,14 +32,14 @@ include_directories(
 
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
-	src/spirit_component_template.cpp
+	src/package_template.cpp
 )
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/spirit_component_template_node.cpp)
+add_executable(${PROJECT_NAME}_node src/package_template_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_node
@@ -52,6 +52,6 @@ target_link_libraries(${PROJECT_NAME}_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-catkin_add_gtest(${PROJECT_NAME}-test test/test_spirit_component_template.cpp)
+catkin_add_gtest(${PROJECT_NAME}-test test/test_package_template.cpp)
 target_link_libraries(${PROJECT_NAME}-test ${catkin_LIBRARIES} ${PROJECT_NAME})
 
