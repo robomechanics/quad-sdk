@@ -1,3 +1,8 @@
+topics:
+  joint_encoder: /joint_encoder
+  imu: /imu
+  state_estimate: /state_estimate
+
 mpc_controller:
   update_rate: 100
 
