@@ -77,13 +77,29 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa99aa1c79e7f59549db4b7613fa0e2e1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPackageTemplate.html#aa99aa1c79e7f59549db4b7613fa0e2e1">PackageTemplate</a> (ros::NodeHandle nh)</td></tr>
 <tr class="memdesc:aa99aa1c79e7f59549db4b7613fa0e2e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classPackageTemplate.html" title="A template class for spirit. ">PackageTemplate</a> Class.  <a href="#aa99aa1c79e7f59549db4b7613fa0e2e1">More...</a><br /></td></tr>
 <tr class="separator:aa99aa1c79e7f59549db4b7613fa0e2e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7046d514879fe3032f51bac24b48ad4"><td class="memItemLeft" align="right" valign="top"><a id="aa7046d514879fe3032f51bac24b48ad4"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPackageTemplate.html#aa7046d514879fe3032f51bac24b48ad4">spin</a> ()</td></tr>
+<tr class="memdesc:aa7046d514879fe3032f51bac24b48ad4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls ros spinOnce and pubs data at set frequency. <br /></td></tr>
+<tr class="separator:aa7046d514879fe3032f51bac24b48ad4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
+<tr class="memitem:a0143905b535465298fc9722ab19885ac"><td class="memItemLeft" align="right" valign="top"><a id="a0143905b535465298fc9722ab19885ac"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPackageTemplate.html#a0143905b535465298fc9722ab19885ac">sample_sub</a></td></tr>
+<tr class="memdesc:a0143905b535465298fc9722ab19885ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber. <br /></td></tr>
+<tr class="separator:a0143905b535465298fc9722ab19885ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4ea412550f03d8d10190c1a82762c56"><td class="memItemLeft" align="right" valign="top"><a id="ac4ea412550f03d8d10190c1a82762c56"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPackageTemplate.html#ac4ea412550f03d8d10190c1a82762c56">sample_pub</a></td></tr>
+<tr class="memdesc:ac4ea412550f03d8d10190c1a82762c56"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher. <br /></td></tr>
+<tr class="separator:ac4ea412550f03d8d10190c1a82762c56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7b5a48549a633c1f99dd092856646b9"><td class="memItemLeft" align="right" valign="top"><a id="ad7b5a48549a633c1f99dd092856646b9"></a>
 ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPackageTemplate.html#ad7b5a48549a633c1f99dd092856646b9">nh_</a></td></tr>
 <tr class="memdesc:ad7b5a48549a633c1f99dd092856646b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nodehandle to pub to and sub from. <br /></td></tr>
 <tr class="separator:ad7b5a48549a633c1f99dd092856646b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa55d673905c19d093cc8c55819f1e500"><td class="memItemLeft" align="right" valign="top"><a id="aa55d673905c19d093cc8c55819f1e500"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPackageTemplate.html#aa55d673905c19d093cc8c55819f1e500">update_rate_</a></td></tr>
+<tr class="memdesc:aa55d673905c19d093cc8c55819f1e500"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update rate for sending and receiving data;. <br /></td></tr>
+<tr class="separator:aa55d673905c19d093cc8c55819f1e500"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A template class for spirit. </p>
