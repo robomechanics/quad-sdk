@@ -16,10 +16,17 @@ class MPCController {
 	 */
 	MPCController(ros::NodeHandle nh);
 
+	/**
+	 * @brief Calls ros spinOnce and pubs data at set frequency
+	 */
+	void spin();
 private:
 
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;
+
+	/// Update rate for sending and receiving data;
+	double update_rate_;
 };
 
 
