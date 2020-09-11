@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <gtest/gtest.h>
 
-#include "local_footstep_planner.h"
+#include "local_footstep_planner/local_footstep_planner.h"
 
 TEST(LocalFootstepPlannerTest, testTrue) {
 	ros::NodeHandle nh;
