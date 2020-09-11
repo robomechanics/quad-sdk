@@ -3,11 +3,12 @@
 EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
 	nh_ = nh;
 
-	// Load topic names from rosparam server
+	// Load rosparams from parameter server
 	std::string joint_encoder_topic, imu_topic, state_estimate_topic;
 	nh.param<std::string>("topics/joint_encoder", "/joint_encoder");
 	nh.param<std::string>("topics/imu", imu_topic, "/imu");
 	nh.param<std::string>("topics/state_estimate", state_estimate_topic, "/state_estimate");
+	nh.param<double>("ekf_estimator/update_rate", update_rate_, 200);
 
 	// Setup pubs and subs
 	joint_encoder_sub_ = nh_.subscribe(joint_encoder_topic,1,&EKFEstimator::jointEncoderCallback, this);
@@ -23,4 +24,10 @@ void EKFEstimator::imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
 
 }
 
-
+void EKFEstimator::spin() {
+	ros::Rate r(update_rate_);
+	while (ros::ok()) {
+		ros::spinOnce();
+		r.sleep();
+	}
+}

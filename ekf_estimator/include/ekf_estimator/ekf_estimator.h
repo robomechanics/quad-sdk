@@ -19,6 +19,11 @@ public:
 	 */
 	EKFEstimator(ros::NodeHandle nh);
 
+	/**
+	 * @brief Calls ros spinOnce and pubs data at set frequency
+	 */
+	void spin();
+
 private:
 	/**
 	 * @brief Callback function to handle new joint encoder data
@@ -43,5 +48,8 @@ private:
 
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;
+
+	/// Update rate for sending and receiving data;
+	double update_rate_;
 };
 #endif // EKF_ESTIMATOR_H
