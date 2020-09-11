@@ -2,6 +2,7 @@
 #define EKF_ESTIMATOR_H
 
 #include <ros/ros.h>
+#include <eigen3/Eigen/Eigen>
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/String.h>

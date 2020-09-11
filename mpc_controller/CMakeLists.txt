@@ -13,13 +13,12 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-find_package(yaml-cpp REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 catkin_package(
-    INCLUDE_DIRS include
-#  LIBRARIES spirit-component-template
-#  CATKIN_DEPENDS roscpp std_msgs
-#	DEPENDS
+  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
+  CATKIN_DEPENDS roscpp std_msgs
+  DEPENDS EIGEN3
 )
 
 ###########

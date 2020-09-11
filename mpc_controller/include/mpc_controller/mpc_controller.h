@@ -2,6 +2,7 @@
 #define MPC_CONTROLLER_H
 
 #include <ros/ros.h>
+#include <eigen3/Eigen/Eigen>
 
 //! Implements online MPC
 /*!

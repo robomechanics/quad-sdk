@@ -1,5 +1,4 @@
 #include <ros/ros.h>
-#include <yaml-cpp/yaml.h>
 #include <iostream>
 
 #include "ekf_estimator/ekf_estimator.h"

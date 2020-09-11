@@ -1,5 +1,4 @@
 #include <ros/ros.h>
-#include <yaml-cpp/yaml.h>
 #include <iostream>
 
 #include "mpc_controller/mpc_controller.h"
