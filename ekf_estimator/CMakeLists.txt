@@ -10,16 +10,17 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  sensor_msgs
+  spirit_msgs
 )
 
 ## System dependencies are found with CMake's conventions
-find_package(yaml-cpp REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 catkin_package(
-    INCLUDE_DIRS include
-#  LIBRARIES 
-#  CATKIN_DEPENDS roscpp std_msgs
-#	DEPENDS
+  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
+  CATKIN_DEPENDS roscpp std_msgs sensor_msgs spirit_msgs
+  DEPENDS EIGEN3
 )
 
 ###########
@@ -31,7 +32,6 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${YAML_CPP_INCLUDE_DIR}
 )
 
 ## Declare a C++ library for state estimation
@@ -49,7 +49,6 @@ add_executable(ekf_estimator_node src/ekf_estimator_node.cpp)
 target_link_libraries(ekf_estimator_node
 	ekf_estimator
 	${catkin_LIBRARIES}
-	${YAML_CPP_LIBRARIES}
 )
 
 #############
