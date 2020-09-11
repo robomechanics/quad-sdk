@@ -30,7 +30,6 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${YAML_CPP_INCLUDE_DIR}
 )
 
 ## Declare a C++ library for control
@@ -48,7 +47,6 @@ add_executable(mpc_controller_node src/mpc_controller_node.cpp)
 target_link_libraries(mpc_controller_node
   mpc_controller
 	${catkin_LIBRARIES}
-	${YAML_CPP_LIBRARIES}
 )
 
 #############

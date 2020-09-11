@@ -24,10 +24,27 @@ void EKFEstimator::imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
 
 }
 
+spirit_msgs::StateEstimate EKFEstimator::updateStep() {
+
+}
+
 void EKFEstimator::spin() {
 	ros::Rate r(update_rate_);
 	while (ros::ok()) {
-		ros::spinOnce();
+		
+		// Collect new messages on subscriber topics
+		ros::spinOnce(); 
+
+		// Compute new state estimate
+		spirit_msgs::StateEstimate new_state_est = this->updateStep();
+
+		// Publish new state estimate
+		state_estimate_pub_.publish(new_state_est);
+
+		// Store new state estimate for next iteration
+		last_state_est_ = new_state_est;
+
+		// Enforce update rate
 		r.sleep();
 	}
 }

@@ -6,6 +6,7 @@
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/String.h>
+#include <spirit_msgs/StateEstimate.h>
 
 //! Implements online EKF based state estimation 
 /*!
@@ -38,6 +39,12 @@ private:
 	 */
 	void imuCallback(const sensor_msgs::Imu::ConstPtr& msg);
 
+	/**
+	 * @brief execute EKF Update step, return state estimate
+	 * @return state estimate of custom type StateEstimate
+	 */
+	spirit_msgs::StateEstimate updateStep();
+
 	/// Subscriber for joint encoder messages
 	ros::Subscriber joint_encoder_sub_;
 
@@ -52,5 +59,8 @@ private:
 
 	/// Update rate for sending and receiving data;
 	double update_rate_;
+
+	/// Last state estimate
+	spirit_msgs::StateEstimate last_state_est_;
 };
 #endif // EKF_ESTIMATOR_H
