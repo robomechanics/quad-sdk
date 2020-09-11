@@ -25,13 +25,14 @@ void EKFEstimator::imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
 }
 
 spirit_msgs::StateEstimate EKFEstimator::updateStep() {
-
+	spirit_msgs::StateEstimate state_est;
+	return state_est;
 }
 
 void EKFEstimator::spin() {
 	ros::Rate r(update_rate_);
 	while (ros::ok()) {
-		
+
 		// Collect new messages on subscriber topics
 		ros::spinOnce(); 
 
