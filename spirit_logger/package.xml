@@ -12,5 +12,7 @@
 
   <depend>rospy</depend>
   <depend>tf</depend>
+  <depend>python-numpy</depend>
+  <depend>python-matplotlib</depend>
 
 </package>
