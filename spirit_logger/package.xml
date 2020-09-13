@@ -1,0 +1,16 @@
+<package format="2">
+  <name>bag_plot</name>
+  <version>0.1.0</version>
+  <description>bag_plot</description>
+  <maintainer email="lskwdlskwd@gmail.com">Sikang Liu</maintainer>
+
+  <license>BSD</license>
+
+  <author>Sikang Liu</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>rospy</depend>
+  <depend>tf</depend>
+
+</package>
