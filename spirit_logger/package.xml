@@ -1,8 +1,8 @@
 <package format="2">
-  <name>bag_plot</name>
+  <name>spirit_logger</name>
   <version>0.1.0</version>
-  <description>bag_plot</description>
-  <maintainer email="lskwdlskwd@gmail.com">Sikang Liu</maintainer>
+  <description>spirit_logger</description>
+  <maintainer email="atajbakh@andrew.cmu.edu">Ardalan Tajbakhsh</maintainer>
 
   <license>BSD</license>
 

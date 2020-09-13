@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(bag_plot)
+project(spirit_logger)
 
 find_package(catkin REQUIRED COMPONENTS rospy tf)
 
