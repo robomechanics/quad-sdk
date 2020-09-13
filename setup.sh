@@ -12,10 +12,14 @@ echo "########################################################"
 echo "Installing dependencies specified in package setup files"
 echo "########################################################"
 echo
+CWD=$(pwd)
 for f in $(find -name 'setup_deps.sh'); do
 	echo "Found package setup file $f";
-	chmod +x $f
-	./$f
+	BASE=$(dirname $f)
+	cd "$BASE"
+	chmod +x setup_deps.sh
+	./setup_deps.sh
+	cd "$CWD"
 done
 
 # Install all rosdeps
