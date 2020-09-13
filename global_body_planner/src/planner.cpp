@@ -224,9 +224,9 @@ int main(int argc, char *argv[])
 
 	nh.param<std::string>("map_frame",map_frame,"/map");
 
-	path_pub = nh.advertise<nav_msgs::Path>("robot_path", 10);
+	path_pub = nh.advertise<nav_msgs::Path>("/body_plan", 10);
 	discrete_states_pub = nh.advertise<visualization_msgs::Marker>("discrete_states", 10);
-	ros::Subscriber map_sub = nh.subscribe("/simple_terrain/grid_map", 10, chatterCallback);
+	ros::Subscriber map_sub = nh.subscribe("/terrain_map", 10, chatterCallback);
 
 	ros::Rate rate(publish_frequency);
 
@@ -274,7 +274,7 @@ int main(int argc, char *argv[])
 	boost::shared_ptr<grid_map_msgs::GridMap const> shared_map;
 	while(shared_map == nullptr)
 	{
-		shared_map = ros::topic::waitForMessage<grid_map_msgs::GridMap>("/simple_terrain/grid_map", nh);
+		shared_map = ros::topic::waitForMessage<grid_map_msgs::GridMap>("/terrain_map", nh);
 		ros::spinOnce();
 		rate.sleep();
 	}

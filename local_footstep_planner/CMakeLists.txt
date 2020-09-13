@@ -10,6 +10,10 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  nav_msgs
+  geometry_msgs
+  grid_map_core
+  grid_map_ros
 )
 
 catkin_package(

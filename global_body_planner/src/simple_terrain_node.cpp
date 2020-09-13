@@ -9,8 +9,8 @@ int main(int argc, char** argv)
 {
   // Initialize node and publisher.
   ros::init(argc, argv, "simple_terrain");
-  ros::NodeHandle nh("~");
-  ros::Publisher publisher = nh.advertise<grid_map_msgs::GridMap>("grid_map", 1, true);
+  ros::NodeHandle nh;
+  ros::Publisher publisher = nh.advertise<grid_map_msgs::GridMap>("terrain_map", 1, true);
 
   // Create grid map.
   GridMap map({"elevation"});

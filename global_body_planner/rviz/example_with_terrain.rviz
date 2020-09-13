@@ -4,6 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /Path1
         - /Marker1
       Splitter Ratio: 0.6114649772644043
     Tree Height: 375
@@ -184,7 +185,7 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /robot_path
+      Topic: /body_plan
       Unreliable: false
       Value: true
     - Class: rviz/Marker
@@ -238,7 +239,7 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.6097968816757202
+      Pitch: 0.6147968769073486
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
       Yaw: 3.7854175567626953

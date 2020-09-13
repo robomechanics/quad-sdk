@@ -1,8 +1,6 @@
 #include <ros/ros.h>
 #include "local_footstep_planner/local_footstep_planner.h"
 
-#include <yaml-cpp/yaml.h>
-
 int main(int argc, char** argv) {
 	ros::init(argc, argv, "local_footstep_planner_node");
 	ros::NodeHandle nh;
