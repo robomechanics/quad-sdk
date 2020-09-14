@@ -64,7 +64,7 @@ State PlannerClass::randomState(Ground &ground)
     //     q[2] = std::max(std::min(height_distribution(generator), z_max_rel), z_min_rel) + getGroundHeight(q[0], q[1], ground);
     // }
 
-    double phi = (2.0*PI)*(double)rand()/RAND_MAX;
+    double phi = (2.0*MY_PI)*(double)rand()/RAND_MAX;
     double cos_theta = 2.0*(double)rand()/RAND_MAX - 1.0;
     double theta = acos(cos_theta);
     double v = (double)rand()/RAND_MAX*V_MAX;

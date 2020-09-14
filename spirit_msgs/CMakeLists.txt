@@ -7,6 +7,7 @@ project(spirit_msgs)
 find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
+  nav_msgs
   message_generation
 )
 
@@ -19,6 +20,9 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
  	FILES
 	StateEstimate.msg
+	BodyPlan.msg
+	FootstepPlan.msg
+	Footstep.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -26,6 +30,7 @@ generate_messages(
 	DEPENDENCIES
 	sensor_msgs
 	std_msgs
+	nav_msgs
 )
 
 ###################################

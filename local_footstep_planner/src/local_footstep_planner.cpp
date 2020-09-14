@@ -71,12 +71,19 @@ void LocalFootstepPlanner::terrainMapCallback(const grid_map_msgs::GridMap::Cons
 void LocalFootstepPlanner::bodyPlanCallback(const nav_msgs::Path::ConstPtr& msg) {
   int length = msg->poses.size();
   for (int i=0; i < length; i++) {
-    State s;
+    BodyState s;
     s[0] = msg->poses[i].pose.position.x;
     s[1] = msg->poses[i].pose.position.y;
     s[2] = msg->poses[i].pose.position.z;
     body_plan_.push_back(s);
   }
+}
+
+void LocalFootstepPlanner::updatePlan() {
+  // for (int i=0; i<body_plan_.size(); i++)
+  // {
+    
+  // }
 }
 
 void LocalFootstepPlanner::spin() {

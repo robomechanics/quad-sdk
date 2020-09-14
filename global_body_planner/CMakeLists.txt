@@ -10,6 +10,7 @@ project(global_body_planner)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  spirit_msgs
   grid_map_core
   grid_map_ros
 )

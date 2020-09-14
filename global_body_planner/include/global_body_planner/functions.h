@@ -20,7 +20,7 @@
 #define P_MAX 1.0
 #define DP_MAX 5.0
 #define ANG_ACC_MAX 10.0 // 10
-#define PI 3.14159
+#define MY_PI 3.14159
 
 #define M_CONST 43 		// 43 for cheetah, 30 for anymal
 #define G_CONST 9.81

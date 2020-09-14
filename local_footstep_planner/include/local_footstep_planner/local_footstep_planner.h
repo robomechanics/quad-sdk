@@ -40,6 +40,11 @@ class LocalFootstepPlanner {
      */
     void bodyPlanCallback(const nav_msgs::Path::ConstPtr& msg);
 
+    /**
+     * @brief Update the footstep plan with the current plan
+     */
+    void updatePlan();
+
     /// Subscriber for terrain map messages
     ros::Subscriber terrain_map_sub_;
 
@@ -70,13 +75,19 @@ class LocalFootstepPlanner {
     } Terrain;
 
     /// Typedef for state array (TODO replace with utils def) 
-    typedef std::array<double, 8> State;
+    typedef std::array<double, 8> BodyState;
+
+    /// Typedef for state array (TODO replace with utils def) 
+    typedef std::array<double, 4> FootstepState;
 
     /// Struct for terrain map data
     Terrain terrain_;
 
     /// Std vector containing robot body plan
-    std::vector<State> body_plan_;
+    std::vector<BodyState> body_plan_;
+
+    /// Std vector containing robot footstep plan
+    std::vector<FootstepState> footstep_plan_;
 
 };
 
