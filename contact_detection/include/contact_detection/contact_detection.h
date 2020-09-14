@@ -1,21 +1,20 @@
-#ifndef PACKAGE_TEMPLATE_H
-#define PACKAGE_TEMPLATE_H
+#ifndef CONTACTDETECTION_H
+#define CONTACTDETECTION_H
 
 #include <ros/ros.h>
 
-//! A template class for spirit
+//! Contact detection class for spirit
 /*!
-   PackageTemplate is a container for all of the logic utilized in the template node.
-   The implementation must provide a clean and high level interface to the core algorithm
+  Contact detection module determines the probability of contact for each leg for state estimation and mpc control
 */
-class contact_detection {
+class ContactDetection {
 public:
 	/**
-	 * @brief Constructor for PackageTemplate Class
+	 * @brief Constructor for ContactDetection Class
 	 * @param[in] nh ROS NodeHandle to publish and subscribe from
-	 * @return Constructed object of type PackageTemplate
+	 * @return Constructed object of type ContactDetection
 	 */
-	contact_detection(ros::NodeHandle nh);
+	ContactDetection(ros::NodeHandle nh);
 
 	/**
 	 * @brief Calls ros spinOnce and pubs data at set frequency
@@ -36,4 +35,4 @@ private:
 	double update_rate_;
 };
 
-#endif // PACKAGE_TEMPLATE_H
+#endif // CONTACTDETECTION_H

@@ -31,19 +31,19 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(${PROJECT_NAME}
+add_library(contact_detection
 	src/contact_detection.cpp
 )
-add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies($contact_detection ${contact_detection_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/contact_detection_node.cpp)
+add_executable(contact_detection_node src/contact_detection_node.cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_node
-	${PROJECT_NAME}
+target_link_libraries(contact_detection_node
+	$contact_detection
 	${catkin_LIBRARIES}
 )
 
@@ -52,6 +52,6 @@ target_link_libraries(${PROJECT_NAME}_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-catkin_add_gtest(${PROJECT_NAME}-test test/test_contact_detection.cpp)
-target_link_libraries(${PROJECT_NAME}-test ${catkin_LIBRARIES} ${PROJECT_NAME})
+catkin_add_gtest(contact_detection_test test/test_contact_detection.cpp)
+target_link_libraries(contact_detection_test ${catkin_LIBRARIES} contact_detection)
 

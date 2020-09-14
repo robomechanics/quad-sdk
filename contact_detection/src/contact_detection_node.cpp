@@ -5,7 +5,7 @@ int main(int argc, char** argv) {
 	ros::init(argc, argv, "contact_detection_node");
 	ros::NodeHandle nh;
 
-	contact_detection cd(nh);
+	ContactDetection cd(nh);
 
 	return 0;
 }

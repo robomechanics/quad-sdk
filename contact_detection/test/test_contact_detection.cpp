@@ -1,11 +1,11 @@
 #include <ros/ros.h>
 #include <gtest/gtest.h>
 
-#include "package_template/package_template.h"
+#include "contact_detection/contact_detection.h"
 
-TEST(PackageTemplate, testTrue) {
+TEST(ContactDetection, testTrue) {
 	ros::NodeHandle nh;
-	PackageTemplate package_template(nh);
+	ContactDetection cd(nh);
 	EXPECT_EQ(1 + 1, 2);
 }
 
