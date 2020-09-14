@@ -34,7 +34,7 @@ include_directories(
 add_library(contact_detection
 	src/contact_detection.cpp
 )
-add_dependencies($contact_detection ${contact_detection_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(contact_detection ${contact_detection_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
@@ -43,7 +43,7 @@ add_executable(contact_detection_node src/contact_detection_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(contact_detection_node
-	$contact_detection
+	contact_detection
 	${catkin_LIBRARIES}
 )
 
