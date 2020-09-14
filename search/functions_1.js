@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['imucallback',['imuCallback',['../classEKFEstimator.html#aa424c7fcb65b6524184d5112ba1646ba',1,'EKFEstimator']]]
+  ['ekfestimator',['EKFEstimator',['../classEKFEstimator.html#acd7780ea743da4d88a1747e93df63c06',1,'EKFEstimator']]]
 ];

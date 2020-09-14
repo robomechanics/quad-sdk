@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['jointencodercallback',['jointEncoderCallback',['../classEKFEstimator.html#a884681643b3f3e9075f0ffab0dc5c3e0',1,'EKFEstimator']]]
+  ['imucallback',['imuCallback',['../classEKFEstimator.html#aa424c7fcb65b6524184d5112ba1646ba',1,'EKFEstimator']]]
 ];

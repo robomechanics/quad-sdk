@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ekfestimator',['EKFEstimator',['../classEKFEstimator.html#acd7780ea743da4d88a1747e93df63c06',1,'EKFEstimator']]]
+  ['contactdetection',['ContactDetection',['../classContactDetection.html#a4c33a6d499e48dd4048e04f06114ea6d',1,'ContactDetection']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['packagetemplate',['PackageTemplate',['../classPackageTemplate.html',1,'PackageTemplate'],['../classPackageTemplate.html#aa99aa1c79e7f59549db4b7613fa0e2e1',1,'PackageTemplate::PackageTemplate()']]]
+  ['nh_5f',['nh_',['../classContactDetection.html#aaf2478c35a4aa5301a395562e26267c4',1,'ContactDetection::nh_()'],['../classEKFEstimator.html#a72df2d5887b4a72ec692ec2d6da57828',1,'EKFEstimator::nh_()'],['../classMPCController.html#a25b2e113ddd845e80abaf51adbeac2a3',1,'MPCController::nh_()'],['../classPackageTemplate.html#ad7b5a48549a633c1f99dd092856646b9',1,'PackageTemplate::nh_()']]]
 ];

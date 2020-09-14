@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['joint_5fencoder_5fsub_5f',['joint_encoder_sub_',['../classEKFEstimator.html#abea00262d71be9a3d1e8d57e87101490',1,'EKFEstimator']]],
-  ['jointencodercallback',['jointEncoderCallback',['../classEKFEstimator.html#a884681643b3f3e9075f0ffab0dc5c3e0',1,'EKFEstimator']]]
+  ['imu_5fsub_5f',['imu_sub_',['../classEKFEstimator.html#a5f4c9b5730464e49c6e2d27b1c23ac2d',1,'EKFEstimator']]],
+  ['imucallback',['imuCallback',['../classEKFEstimator.html#aa424c7fcb65b6524184d5112ba1646ba',1,'EKFEstimator']]]
 ];

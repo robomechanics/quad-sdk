@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['mpccontroller',['MPCController',['../classMPCController.html#a16a87d6e746992d9479d27aae63cca16',1,'MPCController']]]
+  ['jointencodercallback',['jointEncoderCallback',['../classEKFEstimator.html#a884681643b3f3e9075f0ffab0dc5c3e0',1,'EKFEstimator']]]
 ];

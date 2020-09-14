@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['packagetemplate',['PackageTemplate',['../classPackageTemplate.html',1,'']]]
+  ['mpccontroller',['MPCController',['../classMPCController.html',1,'']]]
 ];
