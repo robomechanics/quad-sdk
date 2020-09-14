@@ -8,3 +8,6 @@ mpc_controller:
 
 ekf_estimator:
   update_rate: 250
+  
+contact_detection:
+  update_rate: 250
