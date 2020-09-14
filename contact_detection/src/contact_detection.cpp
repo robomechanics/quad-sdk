@@ -1,6 +1,6 @@
-#include "package_template/package_template.h"
+#include "contact_detection/contact_detection.h"
 
-PackageTemplate::PackageTemplate(ros::NodeHandle nh) {
+contact_detection::contact_detection(ros::NodeHandle nh) {
 	nh_ = nh;
 
 	// Load rosparams from parameter server
@@ -13,7 +13,7 @@ PackageTemplate::PackageTemplate(ros::NodeHandle nh) {
 	// sample_pub = ...
 }
 
-void PackageTemplate::spin() {
+void contact_detection::spin() {
 	ros::Rate r(update_rate_);
 	while (ros::ok()) {
 		// Collect new messages on subscriber topics

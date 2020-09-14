@@ -1,11 +1,11 @@
 #include <ros/ros.h>
-#include "package_template/package_template.h"
+#include "contact_detection/contact_detection.h"
 
 int main(int argc, char** argv) {
-	ros::init(argc, argv, "package_template_node");
+	ros::init(argc, argv, "contact_detection_node");
 	ros::NodeHandle nh;
 
-	PackageTemplate package_template(nh);
+	contact_detection cd(nh);
 
 	return 0;
 }
