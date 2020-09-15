@@ -14,4 +14,4 @@ ekf_estimator:
   update_rate: 250
 
 local_footstep_planner:
-  update_rate: 4
+  update_rate: 2

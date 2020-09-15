@@ -3,6 +3,9 @@
 
 #include <ros/ros.h>
 #include <nav_msgs/Path.h>
+#include <spirit_msgs/BodyPlan.h>
+#include <spirit_msgs/Footstep.h>
+#include <spirit_msgs/FootstepPlan.h>
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
@@ -38,12 +41,22 @@ class LocalFootstepPlanner {
      * @brief Callback function to handle new body plan data
      * @param[in] nav_msgs::Path contining map data
      */
-    void bodyPlanCallback(const nav_msgs::Path::ConstPtr& msg);
+    void bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
 
     /**
      * @brief Update the footstep plan with the current plan
      */
     void updatePlan();
+
+    /**
+     * @brief Publish the current footstep plan
+     */
+    void publishPlan();
+
+    /**
+     * @brief Publish the current footstep plan visualization
+     */
+    void publishViz();
 
     /// Subscriber for terrain map messages
     ros::Subscriber terrain_map_sub_;
@@ -54,11 +67,17 @@ class LocalFootstepPlanner {
     /// Publisher for footstep plan messages
     ros::Publisher footstep_plan_pub_;
 
+    /// Publisher for footstep plan visualization messages (TODO: move to utils)
+    ros::Publisher footstep_plan_viz_pub_;
+
     /// Nodehandle to pub to and sub from
     ros::NodeHandle nh_;
 
     /// Update rate for sending and receiving data;
     double update_rate_;
+
+    /// Handle for the map frame
+    std::string map_frame_;
 
     /// Typedef for ground struct (TODO replace with utils def)
     typedef struct
@@ -74,11 +93,11 @@ class LocalFootstepPlanner {
       int z_size;
     } Terrain;
 
-    /// Typedef for state array (TODO replace with utils def) 
-    typedef std::array<double, 8> BodyState;
+    /// Typedef for body state array (TODO replace with utils def) 
+    typedef std::array<double, 9> BodyState;
 
-    /// Typedef for state array (TODO replace with utils def) 
-    typedef std::array<double, 4> FootstepState;
+    /// Typedef for footstep state array (TODO replace with utils def)
+    typedef std::array<double, 5> FootstepState;
 
     /// Struct for terrain map data
     Terrain terrain_;
@@ -88,6 +107,9 @@ class LocalFootstepPlanner {
 
     /// Std vector containing robot footstep plan
     std::vector<FootstepState> footstep_plan_;
+
+    /// Std vector containing time data
+    std::vector<double> t_plan_;
 
 };
 

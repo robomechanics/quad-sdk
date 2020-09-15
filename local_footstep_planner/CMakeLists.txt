@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   nav_msgs
   geometry_msgs
+  spirit_msgs
   grid_map_core
   grid_map_ros
 )

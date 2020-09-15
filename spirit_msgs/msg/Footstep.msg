@@ -5,6 +5,6 @@
 # expressed as a duration from the beginning of localized time.
 
 uint32 index
-geometry_msgs/Point point
+geometry_msgs/Point position
 duration td
 duration ts
