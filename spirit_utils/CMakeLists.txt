@@ -16,8 +16,8 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 catkin_package(
-    INCLUDE_DIRS include
-#  LIBRARIES spirit-component-template
+  INCLUDE_DIRS include
+  LIBRARIES spirit_utils
 #  CATKIN_DEPENDS roscpp std_msgs
 #	DEPENDS
 )
@@ -34,27 +34,16 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(${PROJECT_NAME}
-	src/package_template.cpp
+add_library(spirit_utils
+	src/class1.cpp
 )
-add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Declare a C++ executable
-## With catkin_make all packages are built within a single CMake context
-## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/package_template_node.cpp)
-
-## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_node
-	${PROJECT_NAME}
-	${catkin_LIBRARIES}
-)
+add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 #############
 ## Testing ##
 #############
 
 ## Add gtest based cpp test target and link libraries
-catkin_add_gtest(${PROJECT_NAME}-test test/test_package_template.cpp)
+catkin_add_gtest(${PROJECT_NAME}-test test/test_class1.cpp)
 target_link_libraries(${PROJECT_NAME}-test ${catkin_LIBRARIES} ${PROJECT_NAME})
 

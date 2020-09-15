@@ -1,11 +1,10 @@
 #include <ros/ros.h>
 #include <gtest/gtest.h>
 
-#include "spirit_utils/package_template.h"
+#include "spirit_utils/class1.h"
 
-TEST(PackageTemplate, testTrue) {
-	ros::NodeHandle nh;
-	PackageTemplate package_template(nh);
+TEST(Class1, testTrue) {
+	Class1 c1;
 	EXPECT_EQ(1 + 1, 2);
 }
 
