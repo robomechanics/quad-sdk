@@ -15,3 +15,6 @@ ekf_estimator:
 
 local_footstep_planner:
   update_rate: 2
+  
+contact_detection:
+  update_rate: 250
