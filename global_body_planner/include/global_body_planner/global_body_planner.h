@@ -4,18 +4,17 @@
 #include <ros/ros.h>
 #include <nav_msgs/Path.h>
 #include <spirit_msgs/BodyPlan.h>
-#include <spirit_msgs/Footstep.h>
-#include <spirit_msgs/FootstepPlan.h>
 #include "global_body_planner/functions.h"
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
 #include <grid_map_ros/GridMapRosConverter.hpp>
 
-//! A local footstep planning class for spirit
+//! A global body planning class for spirit
 /*!
-   FootstepPlanner is a container for all of the logic utilized in the local footstep planning node.
-   The implementation must provide a clean and high level interface to the core algorithm
+   GlobalBodyPlanner is a container for all of the logic utilized in the global body planning node.
+   This algorithm requires an height map of the terrain as a GridMap message type, and will publish
+   the global body plan as a BodyPlan message over a topic. It will also publish the 
 */
 class GlobalBodyPlanner {
   public:
@@ -44,17 +43,25 @@ class GlobalBodyPlanner {
     void planner();
 
     /**
-     * @brief Update the footstep plan parameters such as start and goal states
+     * @brief Update the body plan parameters such as start and goal states
      */
     void updatePlanParams();
 
     /**
-     * @brief Update the footstep plan with the current plan
+     * @brief Update the body plan with the current plan
      */
     void updatePlan();
 
     /**
-     * @brief Publish the current footstep plan
+     * @brief Update the body plan with the current plan
+     * @param[in] Time of state in trajectory
+     * @param[in] Body state
+     * @param[in] Body plan message
+     */
+    void addBodyStateToMsg(double t, State body_state, spirit_msgs::BodyPlan& body_plan_msg);
+
+    /**
+     * @brief Publish the current body plan
      */
     void publishPlan();
 
@@ -65,7 +72,7 @@ class GlobalBodyPlanner {
     ros::Publisher body_plan_pub_;
 
     /// Publisher for discrete states in body plan messages
-    ros::Publisher discrete_states_pub_;
+    ros::Publisher discrete_body_plan_pub_;
 
     /// Nodehandle to pub to and sub from
     ros::NodeHandle nh_;
@@ -97,7 +104,7 @@ class GlobalBodyPlanner {
     /// Sequence of discrete actions in the plan
     std::vector<Action> action_sequence_;
 
-    /// Vector of cost instant in each planning call (nested STL vectors)
+    /// Vector of cost instances in each planning call (nested STL vectors)
     std::vector<std::vector<double> > cost_vectors_;
 
     /// Vector of time instances of cost data for each planning call (nested STL vectors)

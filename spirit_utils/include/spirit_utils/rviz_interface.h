@@ -28,9 +28,15 @@ public:
 private:
 	/**
      * @brief Callback function to handle new body plan data
-     * @param[in] Body plan message contining output of body planner
+     * @param[in] Body plan message contining interpolated output of body planner
      */
     void bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
+
+    /**
+     * @brief Callback function to handle new body plan discrete state data
+     * @param[in] Body plan message contining discrete output of body planner
+     */
+    void discreteBodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
 
     /**
      * @brief Callback function to handle new footstep plan data
@@ -41,11 +47,17 @@ private:
 	/// ROS subscriber for the body plan
 	ros::Subscriber body_plan_sub_;
 
+	/// ROS subscriber for the body plan
+	ros::Subscriber discrete_body_plan_sub_;
+
 	/// ROS subscriber for the footstep plan
 	ros::Subscriber footstep_plan_sub_;
 
-	/// ROS Publisher for the body plan vizualization
+	/// ROS Publisher for the interpolated body plan vizualization
 	ros::Publisher body_plan_viz_pub_;
+
+	/// ROS Publisher for the discrete body plan vizualization
+	ros::Publisher discrete_body_plan_viz_pub_;
 
 	/// ROS Publisher for the footstep plan visualization
 	ros::Publisher footstep_plan_viz_pub_;
@@ -53,8 +65,11 @@ private:
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;
 
-	/// Update rate for sending and receiving data;
+	/// Update rate for sending and receiving data, unused since pubs are called in callbacks
 	double update_rate_;
+
+	/// Handle for the map frame
+    std::string map_frame_;
 };
 
 #endif // RVIZ_INTERFACE_H

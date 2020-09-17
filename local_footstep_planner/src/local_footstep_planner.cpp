@@ -114,38 +114,52 @@ void LocalFootstepPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPt
 
 void LocalFootstepPlanner::updatePlan() {
 
+  // Clear out the old footstep plan
   footstep_plan_.clear();
 
+  // Specify the number of feet and their offsets from the COM
   double num_feet = 4;
   double x_offsets[4] = {0.3, -0.3, 0.3, -0.3};
   double y_offsets[4] = {0.2, 0.2, -0.2, -0.2};
 
-  for (int i=0; i <t_plan_.size(); i++) {
+  // For now, loop through every n states and calculate footsteps
+  for (int i=0; i <t_plan_.size(); i+=4) {
 
+    // Compute trig
     double sy = sin(body_plan_[i][8]);
     double cy = cos(body_plan_[i][8]);
 
+    // Loop through each foot
     for (int j=0; j<num_feet; j++) {
+
+      // Create a footstep to add to the plan
       FootstepState footstep;
 
+      // Load in foot index, x & y location, touchdown time, and stance time
       footstep[0] = j;
       footstep[1] = body_plan_[i][0] + x_offsets[j]*cy - y_offsets[j]*sy;
       footstep[2] = body_plan_[i][1] + x_offsets[j]*sy + y_offsets[j]*cy;
       footstep[3] = t_plan_[i];
       footstep[4] = 0.2;
 
+      // Add to the plan
       footstep_plan_.push_back(footstep);
     }
   }
 }
 
 void LocalFootstepPlanner::publishPlan() {
+
+  // Initialize FootstepPlan message
   spirit_msgs::FootstepPlan footstep_plan_msg;
   ros::Time timestamp = ros::Time::now();
   footstep_plan_msg.header.stamp = timestamp;
   footstep_plan_msg.header.frame_id = map_frame_;
 
+  // Loop through the plan
   for (int i=0;i<footstep_plan_.size(); ++i) {
+
+    // Initialize a footstep message and load the data
     spirit_msgs::Footstep footstep;
 
     footstep.index = footstep_plan_[i][0];
@@ -157,6 +171,7 @@ void LocalFootstepPlanner::publishPlan() {
     footstep_plan_msg.footsteps.push_back(footstep);
   }
 
+  // Publish the whole plan to the topic
   footstep_plan_pub_.publish(footstep_plan_msg);
 }
 
@@ -172,11 +187,14 @@ void LocalFootstepPlanner::spin() {
     r.sleep();
   }
 
-
+  // Enter spin
   while (ros::ok()) {
-    ROS_INFO("In LocalFootstepPlanner spin, updating at %4.1f Hz", update_rate_);
+    // ROS_INFO("In LocalFootstepPlanner spin, updating at %4.1f Hz", update_rate_);
+    
+    // Update the plan and publish it
     updatePlan();
     publishPlan();
+
     ros::spinOnce();
     r.sleep();
   }

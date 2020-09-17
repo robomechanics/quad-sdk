@@ -4,7 +4,6 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Path1
         - /Marker1
         - /Marker2
       Splitter Ratio: 0.6114649772644043
@@ -191,7 +190,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /discrete_states
+      Marker Topic: /visualization/discrete_body_plan
       Name: Marker
       Namespaces:
         "": true
@@ -233,25 +232,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 8.485261917114258
+      Distance: 8.198110580444336
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.007018459960818291
-        Y: 0.1135530024766922
-        Z: -0.10787200182676315
+        X: 1.4435360431671143
+        Y: -0.9866522550582886
+        Z: 0.16265909373760223
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.534796953201294
+      Pitch: 0.5547972321510315
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.775418281555176
+      Yaw: 3.9754207134246826
     Saved: ~
 Window Geometry:
   Displays:
@@ -270,4 +269,4 @@ Window Geometry:
     collapsed: true
   Width: 1095
   X: 514
-  Y: 148
+  Y: 111
