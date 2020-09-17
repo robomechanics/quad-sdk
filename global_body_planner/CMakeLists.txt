@@ -124,6 +124,7 @@ include
 
 # JN Added
 set(MY_LIB_SOURCES
+  src/global_body_planner.cpp
   src/functions.cpp
   src/graph_class.cpp
   src/planner_class.cpp
@@ -144,7 +145,7 @@ add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EX
 # Declare a C++ executable
 # With catkin_make all packages are built within a single CMake context
 # The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/planner.cpp)
+add_executable(${PROJECT_NAME}_node src/global_body_planner_node.cpp)
 
 add_executable(
   simple_terrain

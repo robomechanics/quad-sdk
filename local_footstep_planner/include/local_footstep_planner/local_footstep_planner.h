@@ -62,9 +62,6 @@ class LocalFootstepPlanner {
     /// Publisher for footstep plan messages
     ros::Publisher footstep_plan_pub_;
 
-    /// Publisher for footstep plan visualization messages (TODO: move to utils)
-    ros::Publisher footstep_plan_viz_pub_;
-
     /// Nodehandle to pub to and sub from
     ros::NodeHandle nh_;
 

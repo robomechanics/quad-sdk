@@ -56,9 +56,8 @@ target_link_libraries(rviz_interface_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-catkin_add_gtest(${PROJECT_NAME}-test  test/test_class1.cpp)
-target_link_libraries(${PROJECT_NAME}-test ${catkin_LIBRARIES} ${PROJECT_NAME})
-
-catkin_add_gtest(rviz_interface-test  test/test_rviz_interface.cpp)
-target_link_libraries(rviz_interface-test ${catkin_LIBRARIES} ${PROJECT_NAME})
+catkin_add_gtest(${PROJECT_NAME}-test 
+  test/test_class1.cpp
+  test/test_rviz_interface.cpp)
+target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME} ${catkin_LIBRARIES})
 

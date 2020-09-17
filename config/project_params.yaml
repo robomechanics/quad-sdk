@@ -13,8 +13,11 @@ mpc_controller:
 ekf_estimator:
   update_rate: 250
 
+global_body_planner:
+  update_rate: 0.5
+
 local_footstep_planner:
-  update_rate: 2
+  update_rate: 10
   
 contact_detection:
   update_rate: 250

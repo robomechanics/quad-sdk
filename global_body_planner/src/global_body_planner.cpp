@@ -1,7 +1,11 @@
 #include "global_body_planner/global_body_planner.h"
-#include <tf/tf.h>
+#include "global_body_planner/planner_class.h"
+#include "global_body_planner/rrt_star_connect.h"
 
-LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
+GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
@@ -12,11 +16,12 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
   nh.param<double>("global_body_planner/update_rate", update_rate_, 1);
 
   // Setup pubs and subs
-  terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1,&LocalFootstepPlanner::terrainMapCallback, this);
+  terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1,&GlobalBodyPlanner::terrainMapCallback, this);
   body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(body_plan_topic,1);
+  discrete_states_pub_ = nh.advertise<visualization_msgs::Marker>("discrete_states", 1);
 }
 
-void LocalFootstepPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg) {
+void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg) {
   // Get the map in its native form
   grid_map::GridMap map;
   grid_map::GridMapRosConverter::fromMessage(*msg, map);
@@ -62,7 +67,7 @@ void LocalFootstepPlanner::terrainMapCallback(const grid_map_msgs::GridMap::Cons
     }
   }
 
-  // Update the private ground member
+  // Update the private terrain member
   terrain_.x_size = x_size;
   terrain_.y_size = y_size;
   terrain_.x_data = x_data;
@@ -73,101 +78,180 @@ void LocalFootstepPlanner::terrainMapCallback(const grid_map_msgs::GridMap::Cons
   terrain_.dz_data = dz_data;
 }
 
-void LocalFootstepPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) {
-  // Loop through the message to get the state info and add to private vector
-  int length = msg->states.size();
-  for (int i=0; i < length; i++) {
+void GlobalBodyPlanner::planner() {
 
-    // Convert orientation from quaternion to rpy
-    tf::Quaternion q(
-        msg->states[i].pose.pose.orientation.x,
-        msg->states[i].pose.pose.orientation.y,
-        msg->states[i].pose.pose.orientation.z,
-        msg->states[i].pose.pose.orientation.w);
-    tf::Matrix3x3 m(q);
-    double roll, pitch, yaw;
-    m.getRPY(roll, pitch, yaw);
+  double plan_time;
+  int success;
+  int vertices_generated;
+  double time_to_first_solve;
+  double path_duration;
 
-    // Get the time associated with this data
-    ros::Duration t_plan = msg->states[i].header.stamp - msg->states[0].header.stamp;
-    t_plan_.push_back(t_plan.toSec());
+  double total_solve_time = 0;
+  double total_vertices_generated = 0;
+  double total_path_duration = 0;
+  double max_time = 0.0;
+  int N = 1;
 
-    // Get the state associated with this data
-    BodyState s;
-    s[0] = msg->states[i].pose.pose.position.x;
-    s[1] = msg->states[i].pose.pose.position.y;
-    s[2] = msg->states[i].pose.pose.position.z;
-    s[3] = msg->states[i].twist.twist.linear.x;
-    s[4] = msg->states[i].twist.twist.linear.y;
-    s[5] = msg->states[i].twist.twist.linear.z;
-    s[6] = pitch;
-    s[7] = msg->states[i].twist.twist.angular.z;
-    s[8] = yaw;
-    body_plan_.push_back(s);
+  cost_vectors_.reserve(N);
+  cost_vectors_times_.reserve(N);
+
+  // auto t_start = std::chrono::high_resolution_clock::now();
+
+  RRTClass rrt_obj;
+  RRTConnectClass rrt_connect_obj;
+  RRTStarConnectClass rrt_star_connect_obj;
+
+
+  for (int i = 0; i<N; ++i)
+  {
+    state_sequence_.clear();
+    action_sequence_.clear();
+
+    std::vector<double> cost_vector;
+    std::vector<double> cost_vector_times;
+
+    // rrt_obj.buildRRT(ground, robot_start, robot_goal,state_sequence,action_sequence);
+    // rrt_obj.getStatistics(plan_time,success, vertices_generated, time_to_first_solve, cost_vector, cost_vector_times, path_duration);
+
+    rrt_connect_obj.buildRRTConnect(terrain_, robot_start_, robot_goal_,state_sequence_,action_sequence_, max_time);
+    rrt_connect_obj.getStatistics(plan_time,success, vertices_generated, time_to_first_solve, cost_vector, cost_vector_times, path_duration);
+    
+    // rrt_star_connect_obj.buildRRTStarConnect(ground, robot_start, robot_goal,state_sequence,action_sequence, max_time);
+    // rrt_star_connect_obj.getStatistics(plan_time,success, vertices_generated, time_to_first_solve, cost_vector, cost_vector_times, path_duration);
+
+    // std::cout << "made it out" << std::endl;
+
+    cost_vectors_.push_back(cost_vector);
+    cost_vectors_times_.push_back(cost_vector_times);
+
+    total_solve_time += plan_time;
+    total_vertices_generated += vertices_generated;
+    total_path_duration += path_duration;
+
+    std::cout << "Vertices generated: " << vertices_generated << std::endl;
+    std::cout << "Solve time: " << plan_time << std::endl;
+    std::cout << "Time to first solve: " << time_to_first_solve << std::endl;
+    std::cout << "Path length: " << cost_vector.back() << std::endl;
+
+    // solve_time_info.push_back(time_to_first_solve);
+    solve_time_info_.push_back(plan_time);
+    vertices_generated_info_.push_back(vertices_generated);
+  }
+    
+  if (N > 1)
+  {
+    std::cout << "Average vertices generated: " << total_vertices_generated/N << std::endl;
+    std::cout << "Average solve time: " << total_solve_time/N << std::endl;
+    std::cout << "Average path duration: " << total_path_duration/N << std::endl;
   }
 }
 
-void LocalFootstepPlanner::updatePlan() {
-  double num_feet = 4;
-  double x_offsets[4] = {0.3, -0.3, 0.3, -0.3};
-  double y_offsets[4] = {0.2, 0.2, -0.2, -0.2};
-
-  for (int i=0; i <t_plan_.size(); i++) {
-
-    double sy = sin(body_plan_[i][8]);
-    double cy = cos(body_plan_[i][8]);
-
-    for (int j=0; j<num_feet; j++) {
-      FootstepState footstep;
-
-      footstep[0] = j;
-      footstep[1] = body_plan_[i][0] + x_offsets[j]*cy - y_offsets[j]*sy;
-      footstep[2] = body_plan_[i][1] + x_offsets[j]*sy + y_offsets[j]*cy;
-      footstep[3] = t_plan_[i];
-      footstep[4] = 0.2;
-
-      footstep_plan_.push_back(footstep);
-    }
-  }
+void GlobalBodyPlanner::updatePlanParams() {
+  robot_start_ = {0,0,0.3,0.5,0,0,0,0};
+  robot_goal_ =  {8,0.0,0.3,0,0.5,0,0,0};
 }
 
-void LocalFootstepPlanner::publishPlan() {
-  spirit_msgs::FootstepPlan footstep_plan_msg;
+void GlobalBodyPlanner::updatePlan() {
+  // Clear old solutions
+  body_plan_.clear();
+  t_plan_.clear();
+  state_sequence_.clear();
+  action_sequence_.clear();
+  solve_time_info_.clear();
+  vertices_generated_info_.clear();
+  cost_vectors_.clear();
+  cost_vectors_times_.clear();
+
+  //call the planner
+  planner(); 
+
+  // Interpolate to get full body plan
+  double dt = 0.05;
+  std::vector<int> interp_phase;
+  getInterpPath(state_sequence_, action_sequence_,dt,body_plan_, t_plan_, interp_phase);
+}
+
+void GlobalBodyPlanner::publishPlan() {
+  // construct a pose message
+  spirit_msgs::BodyPlan body_plan_msg;
+  visualization_msgs::Marker discrete_states;
+
   ros::Time timestamp = ros::Time::now();
-  footstep_plan_msg.header.stamp = timestamp;
-  footstep_plan_msg.header.frame_id = map_frame_;
+  body_plan_msg.header.stamp = timestamp;
+  body_plan_msg.header.frame_id = map_frame_;
+  discrete_states.header.stamp = timestamp;
+  discrete_states.header.frame_id = map_frame_;
+  discrete_states.id = 0;
+  discrete_states.type = visualization_msgs::Marker::POINTS;
+  
+  double scale = 0.2;
+  discrete_states.scale.x = scale;
+  discrete_states.scale.y = scale;
+  discrete_states.scale.z = scale;
+  discrete_states.color.r = 0.733f;
+  discrete_states.color.a = 1.0;
 
-  for (int i=0;i<footstep_plan_.size(); ++i) {
-    spirit_msgs::Footstep footstep;
+  for (int i=0;i<body_plan_.size(); ++i)
+  {
+    ros::Duration time_elapsed(t_plan_[i]);
+    ros::Time current_time = timestamp + time_elapsed;
 
-    footstep.index = footstep_plan_[i][0];
-    footstep.position.x = footstep_plan_[i][1];
-    footstep.position.y = footstep_plan_[i][2];
-    footstep.td = ros::Duration(footstep_plan_[i][3]);
-    footstep.ts = ros::Duration(footstep_plan_[i][4]);
+    nav_msgs::Odometry state;
+    state.header.frame_id = map_frame_;
+    state.header.stamp = current_time;
+    state.child_frame_id = "dummy";
 
-    footstep_plan_msg.footsteps.push_back(footstep);
+    tf2::Quaternion quat_tf;
+    geometry_msgs::Quaternion quat_msg;
+    quat_tf.setRPY(0,body_plan_[i][6], atan2(body_plan_[i][4],body_plan_[i][3]));
+    quat_msg = tf2::toMsg(quat_tf);
+
+    state.pose.pose.position.x = body_plan_[i][0];
+    state.pose.pose.position.y = body_plan_[i][1];
+    state.pose.pose.position.z = body_plan_[i][2];
+    state.pose.pose.orientation = quat_msg;
+
+    state.twist.twist.linear.x = body_plan_[i][3];
+    state.twist.twist.linear.y = body_plan_[i][4];
+    state.twist.twist.linear.z = body_plan_[i][5];
+    state.twist.twist.angular.x = 0;
+    state.twist.twist.angular.y = body_plan_[i][6];
+    state.twist.twist.angular.z = 0;
+
+    body_plan_msg.states.push_back(state);
   }
 
-  footstep_plan_pub_.publish(footstep_plan_msg);
+  for (int i = 0; i<state_sequence_.size(); i++)
+  {
+    geometry_msgs::Point p;
+    p.x = state_sequence_[i][0];
+    p.y = state_sequence_[i][1];
+    p.z = state_sequence_[i][2];
+    discrete_states.points.push_back(p);
+  }
+
+  body_plan_pub_.publish(body_plan_msg);
+  discrete_states_pub_.publish(discrete_states);
 }
 
-void LocalFootstepPlanner::spin() {
+void GlobalBodyPlanner::spin() {
   ros::Rate r(update_rate_);
 
-  // Spin until body plan message has been received and processed
-  boost::shared_ptr<spirit_msgs::BodyPlan const> plan_ptr;
-  while((plan_ptr == nullptr) && (ros::ok()))
+  // Spin until terrain map message has been received and processed
+  boost::shared_ptr<grid_map_msgs::GridMap const> shared_map;
+  while(shared_map == nullptr)
   {
-    plan_ptr = ros::topic::waitForMessage<spirit_msgs::BodyPlan>("/body_plan", nh_);
+    shared_map = ros::topic::waitForMessage<grid_map_msgs::GridMap>("/terrain_map", nh_);
     ros::spinOnce();
     r.sleep();
   }
 
+  updatePlanParams();
   updatePlan();
 
   while (ros::ok()) {
-    ROS_INFO("In spin, updating at %4.1f Hz", update_rate_);
+    ROS_INFO("In GlobalBodyPlanner spin, updating at %4.1f Hz", update_rate_);
+    updatePlan();
     publishPlan();
     ros::spinOnce();
     r.sleep();

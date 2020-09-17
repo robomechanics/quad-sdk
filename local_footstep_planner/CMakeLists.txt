@@ -18,7 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 catkin_package(
-    INCLUDE_DIRS include
+  INCLUDE_DIRS include
 #  LIBRARIES spirit-component-template
   CATKIN_DEPENDS roscpp std_msgs grid_map_core grid_map_ros
 #	DEPENDS
@@ -58,5 +58,5 @@ target_link_libraries(${PROJECT_NAME}_node
 
 ## Add gtest based cpp test target and link libraries
 catkin_add_gtest(${PROJECT_NAME}-test test/test_local_footstep_planner.cpp)
-target_link_libraries(${PROJECT_NAME}-test ${catkin_LIBRARIES} ${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME} ${catkin_LIBRARIES})
 

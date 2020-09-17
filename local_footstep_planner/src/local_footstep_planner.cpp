@@ -76,6 +76,9 @@ void LocalFootstepPlanner::terrainMapCallback(const grid_map_msgs::GridMap::Cons
 }
 
 void LocalFootstepPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) {
+  t_plan_.clear();
+  body_plan_.clear();
+
   // Loop through the message to get the state info and add to private vector
   int length = msg->states.size();
   for (int i=0; i < length; i++) {
@@ -110,6 +113,9 @@ void LocalFootstepPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPt
 }
 
 void LocalFootstepPlanner::updatePlan() {
+
+  footstep_plan_.clear();
+
   double num_feet = 4;
   double x_offsets[4] = {0.3, -0.3, 0.3, -0.3};
   double y_offsets[4] = {0.2, 0.2, -0.2, -0.2};
@@ -166,10 +172,10 @@ void LocalFootstepPlanner::spin() {
     r.sleep();
   }
 
-  updatePlan();
 
   while (ros::ok()) {
-    ROS_INFO("In spin, updating at %4.1f Hz", update_rate_);
+    ROS_INFO("In LocalFootstepPlanner spin, updating at %4.1f Hz", update_rate_);
+    updatePlan();
     publishPlan();
     ros::spinOnce();
     r.sleep();

@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
   ros::init(argc, argv, "global_body_planner");
   ros::NodeHandle nh;
   ros::NodeHandle nh_priv("~");
-
+asdfasdfasdf
   // configuring parameters
   std::string map_frame;
   double publish_frequency = 10;
@@ -234,47 +234,6 @@ int main(int argc, char *argv[])
   ros::Subscriber map_sub = nh.subscribe("/terrain_map", 1, chatterCallback);
 
   ros::Rate rate(publish_frequency);
-
-
-
-
-  // int x_size = 10;
-  // int y_size = 10;
-  // std::vector<double> x_data(x_size);
-  // std::iota(x_data.begin(), x_data.end(), -1);
-
-  // std::vector<double> y_data(y_size);
-  // std::iota(y_data.begin(), y_data.end(), -5);
-
-  // for(double x : x_data)
-  //  std::cout << x << std::endl;
-
-  // Ground ground;
-  // ground.x_data = x_data;
-  // ground.y_data = y_data;
-  // ground.x_size = x_size;
-  // ground.y_size = y_size;
-
-  // std::vector<std::vector<double> > z_data(x_size);
-  // std::vector<std::vector<double> > dx_data(x_size);
-  // std::vector<std::vector<double> > dy_data(x_size);
-  // std::vector<std::vector<double> > dz_data(x_size);
-
-  // for (int row=0; row < x_size; ++row)
-  // {
-  //  for (int col=0; col < y_size; ++col)
-  //  {
-  //    z_data[row].push_back(0.0);
-  //    dx_data[row].push_back(0.0);
-  //    dy_data[row].push_back(0.0);
-  //    dz_data[row].push_back(1.0);
-  //  }
-  // }
-
-  // ground.z_data = z_data;
-  // ground.dx_data = dx_data;
-  // ground.dy_data = dy_data;
-  // ground.dz_data = dz_data;
   
   boost::shared_ptr<grid_map_msgs::GridMap const> shared_map;
   while(shared_map == nullptr)
@@ -294,7 +253,6 @@ int main(int argc, char *argv[])
   std::vector<Action> action_sequence;
   std::vector<std::vector<double> > cost_vectors;
   std::vector<std::vector<double> > cost_vectors_times;
-
   std::vector<double> solve_time_info;
   std::vector<int> vertices_generated_info;
 
@@ -319,14 +277,11 @@ int main(int argc, char *argv[])
   {
     // construct a pose message
     spirit_msgs::BodyPlan body_plan;
-    nav_msgs::Path body_plan_viz;
     visualization_msgs::Marker discrete_states;
 
     ros::Time timestamp = ros::Time::now();
     body_plan.header.stamp = timestamp;
     body_plan.header.frame_id = map_frame;
-    body_plan_viz.header.stamp = timestamp;
-    body_plan_viz.header.frame_id = map_frame;
     discrete_states.header.stamp = timestamp;
     discrete_states.header.frame_id = map_frame;
     discrete_states.id = 0;
@@ -377,7 +332,6 @@ int main(int argc, char *argv[])
       pose_stamped.pose.position.z = state.pose.pose.position.z;
       pose_stamped.pose.orientation = state.pose.pose.orientation;
 
-      body_plan_viz.poses.push_back(pose_stamped);
     }
 
     for (int i = 0; i<state_sequence.size(); i++)
@@ -390,7 +344,6 @@ int main(int argc, char *argv[])
     }
 
     plan_pub.publish(body_plan);
-    // plan_pub_viz.publish(body_plan_viz);
     discrete_states_pub.publish(discrete_states);
 
     ros::spinOnce();
