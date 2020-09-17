@@ -229,7 +229,7 @@ int main(int argc, char *argv[])
   nh.param<std::string>("map_frame",map_frame,"/map");
 
   plan_pub = nh.advertise<spirit_msgs::BodyPlan>("/body_plan", 1);
-  plan_pub_viz = nh.advertise<nav_msgs::Path>("visualization/body_plan", 1);
+  // plan_pub_viz = nh.advertise<nav_msgs::Path>("visualization/body_plan", 1);
   discrete_states_pub = nh.advertise<visualization_msgs::Marker>("discrete_states", 1);
   ros::Subscriber map_sub = nh.subscribe("/terrain_map", 1, chatterCallback);
 
@@ -390,7 +390,7 @@ int main(int argc, char *argv[])
     }
 
     plan_pub.publish(body_plan);
-    plan_pub_viz.publish(body_plan_viz);
+    // plan_pub_viz.publish(body_plan_viz);
     discrete_states_pub.publish(discrete_states);
 
     ros::spinOnce();

@@ -1,21 +1,19 @@
-#include "local_footstep_planner/local_footstep_planner.h"
+#include "global_body_planner/global_body_planner.h"
 #include <tf/tf.h>
 
 LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string terrain_map_topic, body_plan_topic, footstep_plan_topic;
+  std::string terrain_map_topic, body_plan_topic;
   nh.param<std::string>("topics/terrain_map", terrain_map_topic, "/terrain_map");
   nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
-  nh.param<std::string>("topics/footstep_plan", footstep_plan_topic, "/footstep_plan");
   nh.param<std::string>("map_frame",map_frame_,"/map");
-  nh.param<double>("local_footstep_planner/update_rate", update_rate_, 1);
+  nh.param<double>("global_body_planner/update_rate", update_rate_, 1);
 
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1,&LocalFootstepPlanner::terrainMapCallback, this);
-  body_plan_sub_ = nh_.subscribe(body_plan_topic,1,&LocalFootstepPlanner::bodyPlanCallback, this);
-  footstep_plan_pub_ = nh_.advertise<spirit_msgs::FootstepPlan>(footstep_plan_topic,1);
+  body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(body_plan_topic,1);
 }
 
 void LocalFootstepPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg) {

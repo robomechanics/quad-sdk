@@ -36,14 +36,29 @@ include_directories(
 ## Declare a C++ library
 add_library(spirit_utils
 	src/class1.cpp
+  src/rviz_interface.cpp
 )
 add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+## Declare a C++ executable
+## With catkin_make all packages are built within a single CMake context
+## The recommended prefix ensures that target names across packages don't collide
+add_executable(rviz_interface_node src/rviz_interface_node.cpp)
+
+## Specify libraries to link a library or executable target against
+target_link_libraries(rviz_interface_node
+  ${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Testing ##
 #############
 
 ## Add gtest based cpp test target and link libraries
-catkin_add_gtest(${PROJECT_NAME}-test test/test_class1.cpp)
+catkin_add_gtest(${PROJECT_NAME}-test  test/test_class1.cpp)
 target_link_libraries(${PROJECT_NAME}-test ${catkin_LIBRARIES} ${PROJECT_NAME})
+
+catkin_add_gtest(rviz_interface-test  test/test_rviz_interface.cpp)
+target_link_libraries(rviz_interface-test ${catkin_LIBRARIES} ${PROJECT_NAME})
 
