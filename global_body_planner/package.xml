@@ -1,25 +1,25 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>spirit_msgs</name>
+  <name>global_body_planner</name>
   <version>0.0.0</version>
-  <description>The spirit_msgs package</description>
+  <description>The global_body_planner package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="nflowers@todo.todo">nflowers</maintainer>
+  <maintainer email="jnorby@andrew.cmu.edu">Joe</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
   <!-- Commonly used license strings: -->
   <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>TODO</license>
+  <license>MIT</license>
 
 
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/spirit_msgs</url> -->
+  <!-- <url type="website">http://wiki.ros.org/body_planner</url> -->
 
 
   <!-- Author tags are optional, multiple are allowed, one per tag -->
@@ -49,17 +49,21 @@
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>sensor_msgs</build_depend>
+  <build_depend>roscpp</build_depend>
   <build_depend>std_msgs</build_depend>
-  <build_depend>nav_msgs</build_depend>
-  <build_depend>message_generation</build_depend>
-  <build_export_depend>sensor_msgs</build_export_depend>
+  <build_depend>spirit_msgs</build_depend>
+  <build_depend>grid_map_core</build_depend>
+  <build_depend>grid_map_ros</build_depend>
+  <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
-  <build_export_depend>nav_msgs</build_export_depend>  
-  <exec_depend>sensor_msgs</exec_depend>
+  <build_export_depend>spirit_msgs</build_export_depend>
+  <build_export_depend>grid_map_core</build_export_depend>
+  <build_export_depend>grid_map_ros</build_export_depend>
+  <exec_depend>roscpp</exec_depend>
   <exec_depend>std_msgs</exec_depend>
-  <exec_depend>nav_msgs</exec_depend>
-  <exec_depend>message_runtime</exec_depend>
+  <exec_depend>spirit_msgs</exec_depend>
+  <exec_depend>grid_map_core</exec_depend>
+  <exec_depend>grid_map_ros</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

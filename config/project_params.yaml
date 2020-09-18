@@ -2,12 +2,23 @@ topics:
   joint_encoder: /joint_encoder
   imu: /imu
   state_estimate: /state_estimate
+  terrain_map: /terrain_map
+  body_plan: /body_plan
+  discrete_body_plan: /discrete_body_plan
+  footstep_plan: /footstep_plan
+
 
 mpc_controller:
   update_rate: 100
 
 ekf_estimator:
   update_rate: 250
+
+global_body_planner:
+  update_rate: 1.0
+
+local_footstep_planner:
+  update_rate: 10
   
 contact_detection:
   update_rate: 250
