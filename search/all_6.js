@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['nh_5f',['nh_',['../classContactDetection.html#aaf2478c35a4aa5301a395562e26267c4',1,'ContactDetection::nh_()'],['../classEKFEstimator.html#a72df2d5887b4a72ec692ec2d6da57828',1,'EKFEstimator::nh_()'],['../classMPCController.html#a25b2e113ddd845e80abaf51adbeac2a3',1,'MPCController::nh_()'],['../classPackageTemplate.html#ad7b5a48549a633c1f99dd092856646b9',1,'PackageTemplate::nh_()']]]
+  ['globalbodyplanner',['GlobalBodyPlanner',['../classGlobalBodyPlanner.html',1,'GlobalBodyPlanner'],['../classGlobalBodyPlanner.html#ae1cc3ec1e77b13cdf679267c4a8e55b4',1,'GlobalBodyPlanner::GlobalBodyPlanner()']]],
+  ['graphclass',['GraphClass',['../classGraphClass.html',1,'']]],
+  ['ground',['Ground',['../structGround.html',1,'']]]
 ];

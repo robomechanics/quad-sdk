@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['update_5frate_5f',['update_rate_',['../classContactDetection.html#a00883012eb46da3c3660aaabe5681566',1,'ContactDetection::update_rate_()'],['../classEKFEstimator.html#a2f1e9f71345af6334594bbb4ae04996c',1,'EKFEstimator::update_rate_()'],['../classMPCController.html#a273f2bd82c28327f28b1bb6a1f71aab9',1,'MPCController::update_rate_()'],['../classPackageTemplate.html#aa55d673905c19d093cc8c55819f1e500',1,'PackageTemplate::update_rate_()']]]
+  ['imu_5fsub_5f',['imu_sub_',['../classEKFEstimator.html#a5f4c9b5730464e49c6e2d27b1c23ac2d',1,'EKFEstimator']]]
 ];

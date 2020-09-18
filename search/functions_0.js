@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['class1',['Class1',['../classClass1.html#abda591c8c78ad1de4a10f934e99cce2f',1,'Class1']]],
-  ['contactdetection',['ContactDetection',['../classContactDetection.html#a4c33a6d499e48dd4048e04f06114ea6d',1,'ContactDetection']]]
+  ['addbodystatetomsg',['addBodyStateToMsg',['../classGlobalBodyPlanner.html#a463ae1b89a55721d81f2338eb9888df3',1,'GlobalBodyPlanner']]]
 ];

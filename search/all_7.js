@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['packagetemplate',['PackageTemplate',['../classPackageTemplate.html',1,'PackageTemplate'],['../classPackageTemplate.html#aa99aa1c79e7f59549db4b7613fa0e2e1',1,'PackageTemplate::PackageTemplate()']]]
+  ['imu_5fsub_5f',['imu_sub_',['../classEKFEstimator.html#a5f4c9b5730464e49c6e2d27b1c23ac2d',1,'EKFEstimator']]],
+  ['imucallback',['imuCallback',['../classEKFEstimator.html#aa424c7fcb65b6524184d5112ba1646ba',1,'EKFEstimator']]]
 ];

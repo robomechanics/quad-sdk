@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['nh_5f',['nh_',['../classContactDetection.html#aaf2478c35a4aa5301a395562e26267c4',1,'ContactDetection::nh_()'],['../classEKFEstimator.html#a72df2d5887b4a72ec692ec2d6da57828',1,'EKFEstimator::nh_()'],['../classMPCController.html#a25b2e113ddd845e80abaf51adbeac2a3',1,'MPCController::nh_()'],['../classPackageTemplate.html#ad7b5a48549a633c1f99dd092856646b9',1,'PackageTemplate::nh_()']]]
+  ['discrete_5fbody_5fplan_5fpub_5f',['discrete_body_plan_pub_',['../classGlobalBodyPlanner.html#a9ea26e9a8e1c02818d9e84484565e267',1,'GlobalBodyPlanner']]],
+  ['discrete_5fbody_5fplan_5fsub_5f',['discrete_body_plan_sub_',['../classRVizInterface.html#a089f421ffd1885d3cc0dffc5cd8c5101',1,'RVizInterface']]],
+  ['discrete_5fbody_5fplan_5fviz_5fpub_5f',['discrete_body_plan_viz_pub_',['../classRVizInterface.html#a3d72b1323a242092c51c9e6ff08ede68',1,'RVizInterface']]]
 ];

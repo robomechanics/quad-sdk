@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['last_5fstate_5fest_5f',['last_state_est_',['../classEKFEstimator.html#a9853bf93c64bbd66d831cb9e9f8ff182',1,'EKFEstimator']]]
+  ['cost_5fvectors_5f',['cost_vectors_',['../classGlobalBodyPlanner.html#ad6ca89bb990b3f2c6a94c34322ae24af',1,'GlobalBodyPlanner']]],
+  ['cost_5fvectors_5ftimes_5f',['cost_vectors_times_',['../classGlobalBodyPlanner.html#a121db12e5a6ba27425a468260108caf3',1,'GlobalBodyPlanner']]]
 ];

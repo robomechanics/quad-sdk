@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['imu_5fsub_5f',['imu_sub_',['../classEKFEstimator.html#a5f4c9b5730464e49c6e2d27b1c23ac2d',1,'EKFEstimator']]]
+  ['action_5fsequence_5f',['action_sequence_',['../classGlobalBodyPlanner.html#a66b5df244875b0209ceb2c634d93c050',1,'GlobalBodyPlanner']]]
 ];

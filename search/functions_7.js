@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['updatestep',['updateStep',['../classEKFEstimator.html#a2f31ab8d70f8ba90eda345810a0913b5',1,'EKFEstimator']]]
+  ['imucallback',['imuCallback',['../classEKFEstimator.html#aa424c7fcb65b6524184d5112ba1646ba',1,'EKFEstimator']]]
 ];
