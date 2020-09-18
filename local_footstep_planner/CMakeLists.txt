@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(spirit_utils)
+project(local_footstep_planner)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -13,12 +13,14 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   geometry_msgs
   spirit_msgs
+  grid_map_core
+  grid_map_ros
 )
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES spirit_utils
-#  CATKIN_DEPENDS roscpp std_msgs
+#  LIBRARIES spirit-component-template
+  CATKIN_DEPENDS roscpp std_msgs grid_map_core grid_map_ros
 #	DEPENDS
 )
 
@@ -34,21 +36,20 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(spirit_utils
-	src/class1.cpp
-  src/rviz_interface.cpp
+add_library(${PROJECT_NAME}
+	src/local_footstep_planner.cpp
 )
-add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(rviz_interface_node src/rviz_interface_node.cpp)
+add_executable(${PROJECT_NAME}_node src/local_footstep_planner_node.cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(rviz_interface_node
-  ${PROJECT_NAME}
-  ${catkin_LIBRARIES}
+target_link_libraries(${PROJECT_NAME}_node
+	${PROJECT_NAME}
+	${catkin_LIBRARIES}
 )
 
 #############
@@ -56,8 +57,6 @@ target_link_libraries(rviz_interface_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-catkin_add_gtest(${PROJECT_NAME}-test 
-  test/test_class1.cpp
-  test/test_rviz_interface.cpp)
+catkin_add_gtest(${PROJECT_NAME}-test test/test_local_footstep_planner.cpp)
 target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME} ${catkin_LIBRARIES})
 
