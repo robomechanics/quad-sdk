@@ -12,7 +12,6 @@ sudo apt install libboost-dev libboost-all-dev -y
 cd libInterpolate
 mkdir build
 cd build
-pwd
 cmake ..
 make -j4
 sudo make install

@@ -1,0 +1,11 @@
+#! /bin/bash
+
+source ${0%/*}/env
+
+cd ${ROOTDIR}
+${SCRIPTDIR}/setup
+
+cd build
+"${CMAKE}" --build .
+unitTestExe=$(find ./testBin -name libDR_CatchTests -o -name libDR_CatchTests.exe)
+$unitTestExe

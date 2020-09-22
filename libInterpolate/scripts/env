@@ -1,0 +1,12 @@
+#! /bin/bash
+
+set -e
+ROOTDIR=$(git rev-parse --show-toplevel || echo $PWD)
+SCRIPTDIR=${ROOTDIR}/scripts
+EXTDIR=${ROOTDIR}/externals
+INSTALLDIR=${EXTDIR}/install
+DOWNLOADDIR=${EXTDIR}/downloads
+
+# detect the cmake executable to use
+# check for the windows version of cmake first
+CMAKE=$(which cmake.exe || echo "cmake")
