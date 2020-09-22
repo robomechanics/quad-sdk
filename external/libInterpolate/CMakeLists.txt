@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.14 )
+cmake_minimum_required( VERSION 3.10 )
 
 if( TARGET libInterpolate )
   return()
@@ -8,7 +8,7 @@ if( ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR} )
   set(STANDALONE ON)
 endif( )
 
-option( BUILD_TESTS "Build unit tests" ON )
+option( BUILD_TESTS "Build unit tests" OFF )
 if( ${BUILD_TESTS} )
 enable_testing()
 endif()
@@ -74,13 +74,6 @@ if( STANDALONE )
 add_subdirectory( testing )
 endif()
 
-
-
-
-
-
-
-
 install( TARGETS ${LIB_NAME} EXPORT ${PROJECT_NAME}Targets
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
@@ -108,19 +101,12 @@ include(\${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}Targets.cmake)
 "
   )
 include(CMakePackageConfigHelpers)
-write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-  VERSION ${${PROJECT_NAME}_VERSION}
-  COMPATIBILITY SameMajorVersion
-  ARCH_INDEPENDENT
-  )
+
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
   DESTINATION cmake
   )
-
-
-
 
 INCLUDE(InstallRequiredSystemLibraries)
 
