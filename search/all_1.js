@@ -6,5 +6,5 @@ var searchData=
   ['body_5fplan_5fviz_5fpub_5f',['body_plan_viz_pub_',['../classRVizInterface.html#a2ba6086c6510e38ffdcda7477caac330',1,'RVizInterface']]],
   ['bodyplancallback',['bodyPlanCallback',['../classLocalFootstepPlanner.html#aed0f0743a34e829b131665cbd34259c8',1,'LocalFootstepPlanner::bodyPlanCallback()'],['../classRVizInterface.html#aaabd9d31b7d4fbbc367e8c30133de077',1,'RVizInterface::bodyPlanCallback()']]],
   ['bodystate',['BodyState',['../classLocalFootstepPlanner.html#ab54b45aa7ac1fff4f778f9722267fb35',1,'LocalFootstepPlanner']]],
-  ['body_5fplanner',['body_planner',['../index.html',1,'']]]
+  ['body_5fplanner',['body_planner',['../md_global_body_planner_README.html',1,'']]]
 ];
