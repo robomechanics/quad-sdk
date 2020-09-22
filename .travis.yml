@@ -54,6 +54,7 @@ install:
 - ln -s $CI_SOURCE_PATH ~/catkin_ws/src/
 - cd $TRAVIS_BUILD_DIR
 - chmod +x setup.sh
+- pwd
 - ./setup.sh
 - source /opt/ros/$ROS_DISTRO/setup.bash
 - cd ~/catkin_ws
