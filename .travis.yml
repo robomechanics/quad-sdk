@@ -56,15 +56,16 @@ install:
 - chmod +x setup.sh
 - ./setup.sh
 - source /opt/ros/$ROS_DISTRO/setup.bash
+- cd ~/catkin_ws
 - catkin_make
 - source devel/setup.bash
 
 before_script:
-- cd ~/catkin_ws
 - roscore &
 - sleep 5
 
 script:
+- cd ~/catkin_ws
 - catkin_make run_tests && catkin_test_results
 
 before_deploy:
