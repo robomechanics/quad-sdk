@@ -22,6 +22,8 @@ catkin_package(
 #	DEPENDS
 )
 
+find_package(libInterpolate REQUIRED)
+
 ###########
 ## Build ##
 ###########
@@ -39,6 +41,7 @@ add_library(spirit_utils
   src/rviz_interface.cpp
 )
 add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(spirit_utils libInterpolate::Interpolate)
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
