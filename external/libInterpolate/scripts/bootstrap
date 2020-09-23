@@ -1,0 +1,62 @@
+#! /bin/bash
+
+source ${0%/*}/env
+
+# the things we need
+# dependencies should be listed after any other dependencies they depend on.
+dependencies="Eigen3"
+# places to look for the things we need
+default_location_basenames="git@github.com:CD3/"
+declare -A locations
+locations[Eigen3]="https://github.com/eigenteam/eigen-git-mirror.git"
+
+# setup default locations for any dependencies that don't have an entry in the locations array.
+for dep in ${dependencies}
+do
+  if [[ -z ${locations[$dep]} ]]
+  then
+    for loc in ${default_location_basenames}
+    do
+      locations[$dep]="${locations[$dep]} ${loc}${dep}.git"
+    done
+  fi
+done
+
+# we don't want git asking for ssh passwords
+export GIT_SSH="${SCRIPTDIR}/util/ssh-nopass"
+
+cd ${EXTDIR}
+mkdir -p ${INSTALLDIR} ${DOWNLOADDIR}
+
+for dep in ${dependencies}
+do
+  echo "Installing ${dep}"
+  
+  cd ${DOWNLOADDIR}
+  downloaded=0
+  [[ -e $dep ]] && downloaded=1
+
+  if [[ $downloaded == 0 ]]
+  then
+    # try to download the dependency
+    for loc in ${locations[$dep]}
+    do
+      [[ $downloaded == 1 ]] && break
+      git clone ${loc} ${dep} && downloaded=1
+    done
+  fi
+
+  if [[ $downloaded == 1 ]]
+  then
+    dir=${dep##*/}
+    cd $dir
+    mkdir -p build
+    cd build
+    "${CMAKE}" .. -DCMAKE_INSTALL_PREFIX=${EXTDIR}/install -DBUILD_UNIT_TESTS=OFF
+    "${CMAKE}" --build . --target install
+
+  else
+    echo "Could not download $dep. Is it named correctly?"
+    echo "Tried looking at: $locations"
+  fi
+done

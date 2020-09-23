@@ -1,6 +1,8 @@
 #ifndef CLASS1_H
 #define CLASS1_H
 
+#include <libInterpolate/Interpolate.hpp>
+
 //! A template class for spirit
 /*!
    Class1 is a sample library included in spirit utils.

@@ -1,0 +1,11 @@
+#! /bin/bash
+
+source ${0%/*}/env
+
+cd ${ROOTDIR}
+${SCRIPTDIR}/bootstrap
+
+mkdir -p build
+cd build
+"${CMAKE}" -DCMAKE_PREFIX_PATH=${INSTALLDIR} ..
+
