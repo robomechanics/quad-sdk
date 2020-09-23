@@ -1,5 +1,7 @@
 #include "local_footstep_planner/local_footstep_planner.h"
+#include <libInterpolate/Interpolate.hpp>
 #include <tf/tf.h>
+#include <chrono>
 
 LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
   nh_ = nh;
@@ -117,32 +119,70 @@ void LocalFootstepPlanner::updatePlan() {
   // Clear out the old footstep plan
   footstep_plan_.clear();
 
+  // Define the gait sequence
+  double period = 0.2;
+  double t_offsets[4] = {0.0, 0.5*period, 0.5*period, 0.0};
+  double t_s[4] = {0.5*period, 0.5*period, 0.5*period, 0.5*period};
+  int num_cycles = t_plan_.back()/period;
+
   // Specify the number of feet and their offsets from the COM
   double num_feet = 4;
   double x_offsets[4] = {0.3, -0.3, 0.3, -0.3};
   double y_offsets[4] = {0.2, 0.2, -0.2, -0.2};
 
-  // For now, loop through every n states and calculate footsteps
-  for (int i=0; i <t_plan_.size(); i+=4) {
+  // Create transposed body plan for easy interpolation
+  std::vector<std::vector<double>> body_plan_transpose;
+  for (int i=0; i<9; i++) {
+    std::vector<double> v;
+    for (auto s : body_plan_) {
+      v.push_back(s[i]);
+    }
+    body_plan_transpose.push_back(v);
+  }
 
-    // Compute trig
-    double sy = sin(body_plan_[i][8]);
-    double cy = cos(body_plan_[i][8]);
+  // Define interpolators for each variable (TODO: condense this)
+  _1D::LinearInterpolator<double> interp_x;
+  _1D::LinearInterpolator<double> interp_y;
+  _1D::LinearInterpolator<double> interp_dx;
+  _1D::LinearInterpolator<double> interp_dy;
+  _1D::LinearInterpolator<double> interp_yaw;
+  interp_x.setData(t_plan_,body_plan_transpose[0]);
+  interp_y.setData(t_plan_,body_plan_transpose[1]);
+  interp_dx.setData(t_plan_,body_plan_transpose[3]);
+  interp_dy.setData(t_plan_,body_plan_transpose[4]);
+  interp_yaw.setData(t_plan_,body_plan_transpose[8]);
+
+  // Loop through each gait cycle
+  for (int i = 0; i < num_cycles; i++) {
+    
+    // Compute the initial time for this cycle
+    double t_cycle = i*period;
 
     // Loop through each foot
     for (int j=0; j<num_feet; j++) {
-
-      // Create a footstep to add to the plan
       FootstepState footstep;
 
-      // Load in foot index, x & y location, touchdown time, and stance time
-      footstep[0] = j;
-      footstep[1] = body_plan_[i][0] + x_offsets[j]*cy - y_offsets[j]*sy;
-      footstep[2] = body_plan_[i][1] + x_offsets[j]*sy + y_offsets[j]*cy;
-      footstep[3] = t_plan_[i];
-      footstep[4] = 0.2;
+      // Compute the touchdown and midstance times
+      double t_touchdown = t_cycle + t_offsets[j];
+      double t_midstance = t_cycle + t_offsets[j] + 0.5*t_s[j];
 
-      // Add to the plan
+      // Compute the body and hip positions and velocities
+      double x_body = interp_x(t_touchdown);
+      double y_body = interp_y(t_touchdown);
+      double x_hip = x_body + x_offsets[j]*cos(interp_yaw(t_touchdown)) 
+        - y_offsets[j]*sin(interp_yaw(t_touchdown));
+      double y_hip = y_body + x_offsets[j]*sin(interp_yaw(t_touchdown)) 
+        + y_offsets[j]*cos(interp_yaw(t_touchdown));
+      double dx_body = interp_x(t_midstance);
+      double dy_body = interp_x(t_midstance);
+
+      // Load the data into the footstep array and push into the plan
+      footstep[0] = j;
+      footstep[1] = x_hip + 0.5*t_s[j]*interp_dx(t_midstance);
+      footstep[2] = y_hip + 0.5*t_s[j]*interp_dy(t_midstance);
+      footstep[3] = t_touchdown;
+      footstep[4] = t_s[j];
+
       footstep_plan_.push_back(footstep);
     }
   }
