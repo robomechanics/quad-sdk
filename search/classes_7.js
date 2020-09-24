@@ -1,4 +1,7 @@
 var searchData=
 [
-  ['terrain',['Terrain',['../structLocalFootstepPlanner_1_1Terrain.html',1,'LocalFootstepPlanner']]]
+  ['rrtclass',['RRTClass',['../classRRTClass.html',1,'']]],
+  ['rrtconnectclass',['RRTConnectClass',['../classRRTConnectClass.html',1,'']]],
+  ['rrtstarconnectclass',['RRTStarConnectClass',['../classRRTStarConnectClass.html',1,'']]],
+  ['rvizinterface',['RVizInterface',['../classRVizInterface.html',1,'']]]
 ];

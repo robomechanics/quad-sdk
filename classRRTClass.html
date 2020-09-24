@@ -78,24 +78,24 @@ Inheritance diagram for RRTClass:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5a819667f9c4ed4a3fb31ac7ec22d1d1"><td class="memItemLeft" align="right" valign="top"><a id="a5a819667f9c4ed4a3fb31ac7ec22d1d1"></a>
-virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>extend</b> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, State s, <a class="el" href="structGround.html">Ground</a> &amp;ground, int direction)</td></tr>
-<tr class="separator:a5a819667f9c4ed4a3fb31ac7ec22d1d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d08928089500c78d6a434d801911982"><td class="memItemLeft" align="right" valign="top"><a id="a1d08928089500c78d6a434d801911982"></a>
+virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>extend</b> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, State s, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, int direction)</td></tr>
+<tr class="separator:a1d08928089500c78d6a434d801911982"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6af2cea28f05961830d949e7ba1603ae"><td class="memItemLeft" align="right" valign="top"><a id="a6af2cea28f05961830d949e7ba1603ae"></a>
 std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>pathFromStart</b> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, int s)</td></tr>
 <tr class="separator:a6af2cea28f05961830d949e7ba1603ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25d0142127211e5911b3a29e7dce5dfb"><td class="memItemLeft" align="right" valign="top"><a id="a25d0142127211e5911b3a29e7dce5dfb"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>printPath</b> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
 <tr class="separator:a25d0142127211e5911b3a29e7dce5dfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a867b55004d24e2f2de2e63ab1adf156e"><td class="memItemLeft" align="right" valign="top"><a id="a867b55004d24e2f2de2e63ab1adf156e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>buildRRT</b> (<a class="el" href="structGround.html">Ground</a> &amp;ground, State s_start, State s_goal, std::vector&lt; State &gt; &amp;state_sequence, std::vector&lt; Action &gt; &amp;action_sequence)</td></tr>
-<tr class="separator:a867b55004d24e2f2de2e63ab1adf156e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5292f78ed563aae40b25591655a0cb9e"><td class="memItemLeft" align="right" valign="top"><a id="a5292f78ed563aae40b25591655a0cb9e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>buildRRT</b> (<a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, State s_start, State s_goal, std::vector&lt; State &gt; &amp;state_sequence, std::vector&lt; Action &gt; &amp;action_sequence)</td></tr>
+<tr class="separator:a5292f78ed563aae40b25591655a0cb9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70f7eb63b760620faf6518d974270296"><td class="memItemLeft" align="right" valign="top"><a id="a70f7eb63b760620faf6518d974270296"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>getStatistics</b> (double &amp;plan_time, int &amp;success_var, int &amp;vertices_generated, double &amp;time_to_first_solve, std::vector&lt; double &gt; &amp;cost_vector, std::vector&lt; double &gt; &amp;cost_vector_times, double &amp;path_duration)</td></tr>
 <tr class="separator:a70f7eb63b760620faf6518d974270296"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37f4f1b2e2dc17a33b5cb603bc2ff155"><td class="memItemLeft" align="right" valign="top"><a id="a37f4f1b2e2dc17a33b5cb603bc2ff155"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>newConfig</b> (State s, State s_near, State &amp;s_new, Action &amp;a_new, <a class="el" href="structGround.html">Ground</a> &amp;ground, int direction)</td></tr>
-<tr class="separator:a37f4f1b2e2dc17a33b5cb603bc2ff155"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c5f2020764525b1ec77b3e019acfcbd"><td class="memItemLeft" align="right" valign="top"><a id="a9c5f2020764525b1ec77b3e019acfcbd"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>newConfig</b> (State s, State s_near, State &amp;s_new, Action &amp;a_new, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, int direction)</td></tr>
+<tr class="separator:a9c5f2020764525b1ec77b3e019acfcbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7da5d15380a10262f01fa1c66b5064f9"><td class="memItemLeft" align="right" valign="top"><a id="a7da5d15380a10262f01fa1c66b5064f9"></a>
 std::vector&lt; State &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getStateSequence</b> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
 <tr class="separator:a7da5d15380a10262f01fa1c66b5064f9"><td class="memSeparator" colspan="2">&#160;</td></tr>

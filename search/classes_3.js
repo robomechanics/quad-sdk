@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['localfootstepplanner',['LocalFootstepPlanner',['../classLocalFootstepPlanner.html',1,'']]]
+  ['globalbodyplanner',['GlobalBodyPlanner',['../classGlobalBodyPlanner.html',1,'']]],
+  ['graphclass',['GraphClass',['../classGraphClass.html',1,'']]]
 ];
