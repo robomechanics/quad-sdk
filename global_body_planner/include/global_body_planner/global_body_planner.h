@@ -84,7 +84,7 @@ class GlobalBodyPlanner {
     /// Handle for the map frame
     std::string map_frame_;
 
-    /// Struct for terrain map data (TODO switch this to Terrain)
+    /// Struct for terrain map data
     FastTerrainMap terrain_;
 
     /// Std vector containing the interpolated robot body plan

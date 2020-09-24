@@ -35,7 +35,7 @@ int main(int argc, char** argv)
       double y_diff = position.y() - obs_center[1];
       if (x_diff*x_diff + y_diff*y_diff <= obs_radius*obs_radius)
       {
-        map.at("elevation", *it) = 0.5;
+        map.at("elevation", *it) = 0.05;
       } else {
         map.at("elevation", *it) = 0.0;
       }

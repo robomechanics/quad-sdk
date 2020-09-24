@@ -103,7 +103,7 @@ void GlobalBodyPlanner::planner() {
 void GlobalBodyPlanner::updatePlanParams() {
   // Update any relevant planning parameters
   robot_start_ = {0,0,0.3,0.5,0,0,0,0};
-  robot_goal_ =  {8,0.0,0.3,0,0.5,0,0,0};
+  robot_goal_ =  {8,0,0.3,0.5,0,0,0,0};
 }
 
 void GlobalBodyPlanner::updatePlan() {
