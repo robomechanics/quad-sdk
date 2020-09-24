@@ -17,13 +17,13 @@ class RRTConnectClass : public RRTClass
         //destructor
         ~RRTConnectClass();
 
-        int attemptConnect(State s_existing, State s, double t_s, State &s_new, Action &a_new, Ground &ground, int direction);
-        int attemptConnect(State s_existing, State s, State &s_new, Action &a_new, Ground &ground, int direction);
-        int connect(PlannerClass &T, State s, Ground &ground, int direction);
+        int attemptConnect(State s_existing, State s, double t_s, State &s_new, Action &a_new, FastTerrainMap& terrain, int direction);
+        int attemptConnect(State s_existing, State s, State &s_new, Action &a_new, FastTerrainMap& terrain, int direction);
+        int connect(PlannerClass &T, State s, FastTerrainMap& terrain, int direction);
         std::vector<Action> getActionSequenceReverse(PlannerClass &T, std::vector<int> path);
-        void postProcessPath(std::vector<State> &state_sequence, std::vector<Action> &action_sequence, Ground& ground);
-        void runRRTConnect(PlannerClass &Ta, PlannerClass &Tb, Ground &ground);
-        void buildRRTConnect(Ground &ground, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double max_time);
+        void postProcessPath(std::vector<State> &state_sequence, std::vector<Action> &action_sequence, FastTerrainMap& terrain);
+        void runRRTConnect(PlannerClass &Ta, PlannerClass &Tb, FastTerrainMap& terrain);
+        void buildRRTConnect(FastTerrainMap& terrain, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double max_time);
 
     protected:
         double anytime_horizon;

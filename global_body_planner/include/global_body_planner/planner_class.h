@@ -12,7 +12,7 @@ class PlannerClass : public GraphClass
         //destructor
         ~PlannerClass();
 
-        State randomState(Ground &ground);
+        State randomState(FastTerrainMap& terrain);
         std::vector<int> neighborhoodN(State q, int N);
         std::vector<int> neighborhoodDist(State q, double dist);
         int getNearestNeighbor(State q);

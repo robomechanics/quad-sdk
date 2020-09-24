@@ -199,137 +199,6 @@ std::array<double,3> rotate_grf(std::array<double,3> surface_norm, std::array<do
 	return grf_spatial;
 }
 
-// double getGroundHeight(double x, double y, Ground &ground)
-// {
-// 	// ROS_INFO("In getGroundHeight. Map received with size %f x %f m (%i x %i cells).",
-// 	//     ground.getLength().x(), ground.getLength().y(),
-// 	//     ground.getSize()(0), ground.getSize()(1));
-
-// 	// ROS_INFO("checking x = %4.2f, y = %4.2f", x, y);
-
-// 	grid_map::Position position(x,y);
-// 	grid_map::Index index;
-// 	double height;
-// 	if (ground.getIndex(position, index))
-// 	{
-// 		auto t_start = std::chrono::steady_clock::now();
-// 		height = (double) ground.atPosition("elevation", position, grid_map::InterpolationMethods::INTER_LINEAR);
-
-// 		auto t_end = std::chrono::steady_clock::now();
-// 		std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t_end - t_start);
-// 		std::cout << "Ground height check took " << time_span.count() << " seconds." << std::endl;
-//     } else {
-// 		height = -999.9; // If out of range, return infeasible value
-// 	}
-
-// 	// printf("checking ground height at pos %4.2f, %4.2f\n", pos.x(), pos.y());
-// 	// double height = (double) ground.atPosition("elevation", pos, grid_map::InterpolationMethods::INTER_LINEAR);
-// 	// printf("Made it out, height = %4.2f\n", height);
-
-
-// 	return height;
-// }
-
-double getGroundHeight(double x, double y, Ground &ground)
-{
-	// auto t_start = std::chrono::steady_clock::now();
-    double x1, x2, y1, y2;
-
-    int ix=0; int iy = 0;
-    for(int i=0;i<ground.x_size;i++)
-    {
-        if(ground.x_data[i]<=x && x<ground.x_data[i+1])
-        {
-            x1 = ground.x_data[i];
-            x2 = ground.x_data[i+1];
-            ix = i;
-            break;
-        }
-    }
-
-    for(int i=0;i<ground.y_size;i++)
-    {
-        if(ground.y_data[i]<=y && y<ground.y_data[i+1])
-        {
-            y1 = ground.y_data[i];
-            y2 = ground.y_data[i+1];
-            iy = i;
-            break;
-        }
-    }
-
-    double fx1y1 = ground.z_data[ix][iy];
-    double fx1y2 = ground.z_data[ix][iy+1];
-    double fx2y1 = ground.z_data[ix+1][iy];
-    double fx2y2 = ground.z_data[ix+1][iy+1];
-
-	double height = 1.0/((x2-x1)*(y2-y1))*(fx1y1*(x2-x)*(y2-y) + fx2y1*(x-x1)*(y2-y) + fx1y2*(x2-x)*(y-y1) + fx2y2*(x-x1)*(y-y1));
-
- //    auto t_end = std::chrono::steady_clock::now();
-	// std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t_end - t_start);
-	// std::cout << "Ground height check took " << time_span.count() << " seconds." << std::endl;
-
-    return height;
-}
-
-// std::array<double, 3> getSurfaceNormal(double x, double y, Ground &ground)
-// {
-// 	std::array<double, 3> surf_norm = {0,0,1};
-// 	return surf_norm;
-// }
-
-std::array<double, 3> getSurfaceNormal(double x, double y, Ground &ground)
-{
-    std::array<double, 3> surf_norm;
-
-    double x1, x2, y1, y2;
-
-    int ix=0; int iy = 0;
-    for(int i=0;i<ground.x_size;i++)
-    {
-        if(ground.x_data[i]<=x && x<ground.x_data[i+1])
-        {
-            x1 = ground.x_data[i];
-            x2 = ground.x_data[i+1];
-            ix = i;
-            break;
-        }
-    }
-
-    for(int i=0;i<ground.y_size;i++)
-    {
-        if(ground.y_data[i]<=y && y<ground.y_data[i+1])
-        {
-            y1 = ground.y_data[i];
-            y2 = ground.y_data[i+1];
-            iy = i;
-            break;
-        }
-    }
-
-    double fx_x1y1 = ground.dx_data[ix][iy];
-    double fx_x1y2 = ground.dx_data[ix][iy+1];
-    double fx_x2y1 = ground.dx_data[ix+1][iy];
-    double fx_x2y2 = ground.dx_data[ix+1][iy+1];
-
-    surf_norm[0] = 1.0/((x2-x1)*(y2-y1))*(fx_x1y1*(x2-x)*(y2-y) + fx_x2y1*(x-x1)*(y2-y) + fx_x1y2*(x2-x)*(y-y1) + fx_x2y2*(x-x1)*(y-y1));
-
-    double fy_x1y1 = ground.dy_data[ix][iy];
-    double fy_x1y2 = ground.dy_data[ix][iy+1];
-    double fy_x2y1 = ground.dy_data[ix+1][iy];
-    double fy_x2y2 = ground.dy_data[ix+1][iy+1];
-
-    surf_norm[1] = 1.0/((x2-x1)*(y2-y1))*(fy_x1y1*(x2-x)*(y2-y) + fy_x2y1*(x-x1)*(y2-y) + fy_x1y2*(x2-x)*(y-y1) + fy_x2y2*(x-x1)*(y-y1));
-
-    double fz_x1y1 = ground.dz_data[ix][iy];
-    double fz_x1y2 = ground.dz_data[ix][iy+1];
-    double fz_x2y1 = ground.dz_data[ix+1][iy];
-    double fz_x2y2 = ground.dz_data[ix+1][iy+1];
-
-    surf_norm[2] = 1.0/((x2-x1)*(y2-y1))*(fz_x1y1*(x2-x)*(y2-y) + fz_x2y1*(x-x1)*(y2-y) + fz_x1y2*(x2-x)*(y-y1) + fz_x2y2*(x-x1)*(y-y1));
-    return surf_norm;
-}
-
 State applyStance(State s, Action a, double t)
 {
 	double a_x_td = a[0]; // Acceleration in x at touchdown
@@ -561,14 +430,14 @@ bool isValidAction(Action a)
 	return true;
 }
 
-bool isValidState(State s, Ground &ground, int phase)
+bool isValidState(State s, FastTerrainMap& terrain, int phase)
 {
-	if ((s[0] < ground.x_data.front()) || (s[0] > ground.x_data.back()) || (s[1] < ground.y_data.front()) || (s[1] > ground.y_data.back()) || (abs(s[6]) >= P_MAX) )
+	if ((s[0] < terrain.getXData().front()) || (s[0] > terrain.getXData().back()) || (s[1] < terrain.getYData().front()) || (s[1] > terrain.getYData().back()) || (abs(s[6]) >= P_MAX) )
 	    return false;
 	// grid_map::Position pos = {s[0], s[1]};
 	// grid_map::Index index;
 
-	// if (!ground.getIndex(pos, index) || (abs(s[6]) >= P_MAX)) 
+	// if (!terrain.getIndex(pos, index) || (abs(s[6]) >= P_MAX)) 
 	// 	return false;
 
 	// if (sqrt(s[3]*s[3] + s[4]*s[4] + s[5]*s[5]) > V_MAX)
@@ -601,10 +470,10 @@ bool isValidState(State s, Ground &ground, int phase)
 			double y_corner = y_leg + R_23*z_body;
 			double z_corner = z_leg + R_33*z_body;
 
-			double leg_height = z_leg - getGroundHeight(x_leg,y_leg,ground);
-			double corner_height = z_corner - getGroundHeight(x_corner,y_corner,ground);
+			double leg_height = z_leg - terrain.getGroundHeight(x_leg,y_leg);
+			double corner_height = z_corner - terrain.getGroundHeight(x_corner,y_corner);
 			// std::cout << "x,y,z = (" << x_spatial << ", " << y_spatial << ", " << z_spatial << "), height = " <<
-			//     z_spatial << " - " << getGroundHeight(x_spatial,y_spatial,ground) << " = " << height << std::endl;
+			//     z_spatial << " - " << terrain.getGroundHeight(x_spatial,y_spatial) << " = " << height << std::endl;
 
 			// Always check for collision, only check reachability in stance
 			if ((corner_height < H_MIN) || ((phase == STANCE) && (leg_height > H_MAX)))
@@ -613,7 +482,7 @@ bool isValidState(State s, Ground &ground, int phase)
 	}
 
 	// Check the center of the underside of the robot
-	double height = (s[2] + R_33*z_body) - getGroundHeight(s[0] + R_13*z_body,s[1] + R_23*z_body,ground);
+	double height = (s[2] + R_33*z_body) - terrain.getGroundHeight(s[0] + R_13*z_body,s[1] + R_23*z_body);
 	// if ((height < H_MIN) || ((phase == STANCE) && (height > H_MAX)))
 	if (height < H_MIN)
 		return false;
@@ -677,7 +546,7 @@ bool isValidState(State s, Ground &ground, int phase)
 //     // return true;
 // }
 
-bool isValidStateActionPair(State s, Action a, Ground &ground, State &s_new, double& t_new)
+bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain, State &s_new, double& t_new)
 {
 	// std::cout << "made it into checking action" << std::endl;
 	double t_s;
@@ -691,9 +560,9 @@ bool isValidStateActionPair(State s, Action a, Ground &ground, State &s_new, dou
 	for (double t = 0; t <= t_s; t += KINEMATICS_RES)
 	{
 		State s_check = applyStance(s,a,t);
-		// std::cout << ": " << isValidState(s_check, ground, STANCE) << std::endl;
+		// std::cout << ": " << isValidState(s_check, terrain, STANCE) << std::endl;
 
-		if (isValidState(s_check, ground, STANCE) == false)
+		if (isValidState(s_check, terrain, STANCE) == false)
 		{
 			s_new = applyStance(s,a,(1.0-BACKUP_RATIO)*t);
 			// s_new = applyStance(s,a,(t - BACKUP_TIME));
@@ -713,9 +582,9 @@ bool isValidStateActionPair(State s, Action a, Ground &ground, State &s_new, dou
 	{
 		State s_check = applyFlight(s_takeoff, t);
 		// printState(s_check);
-		// std::cout << ": " << isValidState(s_check, ground, FLIGHT) << std::endl;
+		// std::cout << ": " << isValidState(s_check, terrain, FLIGHT) << std::endl;
 
-		if (isValidState(s_check, ground, FLIGHT) == false)
+		if (isValidState(s_check, terrain, FLIGHT) == false)
 			return false;
 	}
 
@@ -723,7 +592,7 @@ bool isValidStateActionPair(State s, Action a, Ground &ground, State &s_new, dou
 
 	// Check the exact landing state
 	State s_land = applyFlight(s_takeoff, t_f);
-	if (isValidState(s_land, ground, STANCE) == false)
+	if (isValidState(s_land, terrain, STANCE) == false)
 	{
 		return false;
 	} else {
@@ -739,14 +608,14 @@ bool isValidStateActionPair(State s, Action a, Ground &ground, State &s_new, dou
 }
 
 
-bool isValidStateActionPair(State s, Action a, Ground &ground)
+bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain)
 {
 	State dummy_state;
 	double dummy_time;
-	return isValidStateActionPair(s, a, ground, dummy_state, dummy_time);
+	return isValidStateActionPair(s, a, terrain, dummy_state, dummy_time);
 }
 
-bool isValidStateActionPairReverse(State s, Action a, Ground &ground, State &s_new, double& t_new)
+bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain, State &s_new, double& t_new)
 {
 	double t_s;
 	double t_f;
@@ -759,9 +628,9 @@ bool isValidStateActionPairReverse(State s, Action a, Ground &ground, State &s_n
 	{
 		State s_check = applyFlight(s, -t);
 		// printStateNewline(s_check);
-		// std::cout << ": " << isValidState(s_check, ground) << std::endl;
+		// std::cout << ": " << isValidState(s_check, terrain) << std::endl;
 
-		if (isValidState(s_check, ground, FLIGHT) == false)
+		if (isValidState(s_check, terrain, FLIGHT) == false)
 			return false;
 	}
 
@@ -772,9 +641,9 @@ bool isValidStateActionPairReverse(State s, Action a, Ground &ground, State &s_n
 	{
 		State s_check = applyStanceReverse(s_takeoff,a,t);
 		// printStateNewline(s_check);
-		// std::cout << ": " << isValidState(s_check, ground) << std::endl;
+		// std::cout << ": " << isValidState(s_check, terrain) << std::endl;
 
-		if (isValidState(s_check, ground, STANCE) == false)
+		if (isValidState(s_check, terrain, STANCE) == false)
 		{
 			s_new = applyStance(s,a,t + BACKUP_RATIO*(t_s - t));
 			// s_new = applyStance(s,a,(t + BACKUP_TIME));
@@ -787,7 +656,7 @@ bool isValidStateActionPairReverse(State s, Action a, Ground &ground, State &s_n
 
 	// Check the exact starting state
 	State s_start = applyStanceReverse(s_takeoff,a);
-	if (isValidState(s_start, ground, STANCE) == false)
+	if (isValidState(s_start, terrain, STANCE) == false)
 	{
 		return false;
 	} else {
@@ -799,11 +668,11 @@ bool isValidStateActionPairReverse(State s, Action a, Ground &ground, State &s_n
 }
 
 
-bool isValidStateActionPairReverse(State s, Action a, Ground &ground)
+bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain)
 {
 	State dummy_state;
 	double dummy_time;
-	return isValidStateActionPairReverse(s, a, ground, dummy_state, dummy_time);
+	return isValidStateActionPairReverse(s, a, terrain, dummy_state, dummy_time);
 }
 
 double arcLengthFunction(State s, Action a, double t, int phase)

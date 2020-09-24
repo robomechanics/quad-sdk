@@ -5,6 +5,7 @@
 #include <nav_msgs/Path.h>
 #include <spirit_msgs/BodyPlan.h>
 #include "global_body_planner/functions.h"
+#include "spirit_utils/fast_terrain_map.h"
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
@@ -83,8 +84,8 @@ class GlobalBodyPlanner {
     /// Handle for the map frame
     std::string map_frame_;
 
-    /// Struct for terrain map data (TODO switch this to Terrain)
-    Ground terrain_;
+    /// Struct for terrain map data
+    FastTerrainMap terrain_;
 
     /// Std vector containing the interpolated robot body plan
     std::vector<State> body_plan_;
