@@ -19,12 +19,12 @@ class RRTStarConnectClass : public RRTConnectClass
         //destructor
         ~RRTStarConnectClass();
 
-        int extend(PlannerClass &T, State s, Ground& ground, int direction);
+        int extend(PlannerClass &T, State s, FastTerrainMap& terrain, int direction);
         void getStateAndActionSequences(PlannerClass &Ta, PlannerClass &Tb, 
             int shared_a_idx, int shared_b_idx, 
             std::vector<State> &state_sequence, std::vector<Action> &action_sequence);
 
-        void buildRRTStarConnect(Ground &ground, State s_start, State s_goal,
+        void buildRRTStarConnect(FastTerrainMap& terrain, State s_start, State s_goal,
             std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double max_time);
 
     protected:
