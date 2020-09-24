@@ -95,10 +95,7 @@ void RVizInterface::footstepPlanCallback(const spirit_msgs::FootstepPlan::ConstP
 
   // POINTS markers use x and y scale for width/height respectively
   points.scale.x = 0.1;
-  points.scale.y = 0.1;
-  // Points are green
-  points.color.g = 1.0f;
-  points.color.a = 1.0;
+  points.scale.y = 0.1; 
 
   // Loop through footstep plan
   int length = msg->footsteps.size();
@@ -109,7 +106,17 @@ void RVizInterface::footstepPlanCallback(const spirit_msgs::FootstepPlan::ConstP
     p = msg->footsteps[i].position;
     p.z += 0.1;
 
+    // Set the color properties of each marker (green for front feet, blue for back)
+    std_msgs::ColorRGBA color;
+    color.a = 1.0;
+    if (msg->footsteps[i].index == 0 || msg->footsteps[i].index == 2) {
+      color.g = 1.0f;
+    } else {
+      color.b = 1.0f;
+    }
+
     // Add to the Marker message
+    points.colors.push_back(color);
     points.points.push_back(p);
   }
 
@@ -120,9 +127,11 @@ void RVizInterface::footstepPlanCallback(const spirit_msgs::FootstepPlan::ConstP
 void RVizInterface::spin() {
   ros::Rate r(update_rate_);
   while (ros::ok()) {
+
     // Collect new messages on subscriber topics
     ros::spinOnce();
+    
     // Enforce update rate
-    r.sleep();
+    // r.sleep();
   }
 }
