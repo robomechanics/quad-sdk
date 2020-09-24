@@ -9,24 +9,24 @@ PlannerClass::~PlannerClass(){}
 
 typedef std::pair<double, int> Distance; 
 
-State PlannerClass::randomState(Ground &ground)
+State PlannerClass::randomState(FastTerrainMap& terrain)
 {
     // auto t_start = std::chrono::high_resolution_clock::now();
     // static int num_calls = 0;
     // num_calls++;
 
-    double x_min = ground.x_data.front();
-    double x_max = ground.x_data.back();
-    double y_min = ground.y_data.front();
-    double y_max = ground.y_data.back();
+    double x_min = terrain.getXData().front();
+    double x_max = terrain.getXData().back();
+    double y_min = terrain.getYData().front();
+    double y_max = terrain.getYData().back();
     // double x_length = x_max - x_min;
     // double y_length = y_max - y_min;
     // grid_map::Index max_idx = {0,0};
-    // grid_map::Index min_idx = {ground.getSize()(0)-1,ground.getSize()(1)-1};
+    // grid_map::Index min_idx = {terrain.getSize()(0)-1,terrain.getSize()(1)-1};
     // grid_map::Position max_pos;
-    // ground.getPosition(max_idx,max_pos);
+    // terrain.getPosition(max_idx,max_pos);
     // grid_map::Position min_pos;
-    // ground.getPosition(min_idx,min_pos);
+    // terrain.getPosition(min_idx,min_pos);
     // double x_max = max_pos[0];
     // double y_max = max_pos[1];
     // double x_min = min_pos[0];
@@ -55,13 +55,13 @@ State PlannerClass::randomState(Ground &ground)
     q[0] = (x_max - x_min)*(double)rand()/RAND_MAX + x_min;
     q[1] = (y_max - y_min)*(double)rand()/RAND_MAX + y_min;
 
-    q[2] = std::max(std::min(height_distribution(generator), z_max_rel), z_min_rel) + getGroundHeight(q[0], q[1], ground);
+    q[2] = std::max(std::min(height_distribution(generator), z_max_rel), z_min_rel) + terrain.getGroundHeight(q[0], q[1]);
 
     // while(q[2] < -2.0)
     // {
     //     q[0] = (x_max - x_min)*(double)rand()/RAND_MAX + x_min;
     //     q[1] = (y_max - y_min)*(double)rand()/RAND_MAX + y_min;
-    //     q[2] = std::max(std::min(height_distribution(generator), z_max_rel), z_min_rel) + getGroundHeight(q[0], q[1], ground);
+    //     q[2] = std::max(std::min(height_distribution(generator), z_max_rel), z_min_rel) + getGroundHeight(q[0], q[1], terrain);
     // }
 
     double phi = (2.0*MY_PI)*(double)rand()/RAND_MAX;

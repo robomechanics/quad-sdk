@@ -6,6 +6,7 @@
 #include <spirit_msgs/BodyPlan.h>
 #include <spirit_msgs/Footstep.h>
 #include <spirit_msgs/FootstepPlan.h>
+#include <spirit_utils/fast_terrain_map.h>
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
@@ -71,28 +72,14 @@ class LocalFootstepPlanner {
     /// Handle for the map frame
     std::string map_frame_;
 
-    /// Typedef for ground struct (TODO replace with utils def)
-    typedef struct
-    {
-      std::vector<double> x_data;
-      std::vector<double> y_data;
-      std::vector<std::vector<double>> z_data;
-      std::vector<std::vector<double>> dx_data;
-      std::vector<std::vector<double>> dy_data;
-      std::vector<std::vector<double>> dz_data;
-      int x_size;
-      int y_size;
-      int z_size;
-    } Terrain;
+    /// Struct for terrain map data
+    FastTerrainMap terrain_;
 
     /// Typedef for body state array (TODO replace with utils def) 
     typedef std::array<double, 9> BodyState;
 
     /// Typedef for footstep state array (TODO replace with utils def)
     typedef std::array<double, 5> FootstepState;
-
-    /// Struct for terrain map data
-    Terrain terrain_;
 
     /// Std vector containing robot body plan
     std::vector<BodyState> body_plan_;
