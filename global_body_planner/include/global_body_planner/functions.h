@@ -12,6 +12,7 @@
 #include <Eigen/Dense>
 #include <grid_map_core/grid_map_core.hpp>
 #include <ros/ros.h>
+#include <spirit_utils/fast_terrain_map.h>
 
 // Define constants
 #define H_MAX 0.6 // 0.6 for Cheetah, 0.59 for ANYmal
@@ -60,18 +61,18 @@ typedef std::pair<State, Action> StateActionPair;
 #define FORWARD 0
 #define REVERSE 1
 
-typedef struct
-{
-	std::vector<double> x_data;
-	std::vector<double> y_data;
-	std::vector<std::vector<double>> z_data;
-	std::vector<std::vector<double>> dx_data;
-	std::vector<std::vector<double>> dy_data;
-	std::vector<std::vector<double>> dz_data;
-	int x_size;
-	int y_size;
-	int z_size;
-} Ground;
+// typedef struct
+// {
+// 	std::vector<double> x_data;
+// 	std::vector<double> y_data;
+// 	std::vector<std::vector<double>> z_data;
+// 	std::vector<std::vector<double>> dx_data;
+// 	std::vector<std::vector<double>> dy_data;
+// 	std::vector<std::vector<double>> dz_data;
+// 	int x_size;
+// 	int y_size;
+// 	int z_size;
+// } Ground;
 // typedef grid_map::GridMap Ground;
 
 void vectorToArray(State vec, double * new_array);
@@ -96,8 +97,8 @@ double stateDistance(State q1, State q2);
 bool isWithinBounds(State s1, State s2);
 
 std::array<double,3> rotate_grf(std::array<double,3> surface_norm, std::array<double,3> grf);
-double getGroundHeight(double x, double y, Ground &ground);
-std::array<double, 3> getSurfaceNormal(double x, double y, Ground &ground);
+double getGroundHeight(double x, double y);
+std::array<double, 3> getSurfaceNormal(double x, double y);
 
 State applyStance(State s, Action a, double t);
 State applyStance(State s, Action a);
@@ -107,11 +108,11 @@ State applyStanceReverse(State s, Action a, double t);
 State applyStanceReverse(State s, Action a);
 Action getRandomAction(std::array<double, 3> surf_norm);
 bool isValidAction(Action a);
-bool isValidState(State s, Ground &ground, int phase);
-bool isValidStateActionPair(State s, Action a, Ground &ground, State &s_new, double& t_new);
-bool isValidStateActionPair(State s, Action a, Ground &ground);
-bool isValidStateActionPairReverse(State s, Action a, Ground &ground, State &s_new, double& t_new);
-bool isValidStateActionPairReverse(State s, Action a, Ground &ground);
+bool isValidState(State s, FastTerrainMap& terrain, int phase);
+bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain, State &s_new, double& t_new);
+bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain);
+bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain, State &s_new, double& t_new);
+bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain);
 
 std::array<double, 4> getAcceleration(State s, Action a, double t);
 bool isValidYawRate(State s, Action a, double t);

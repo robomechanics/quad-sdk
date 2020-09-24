@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   geometry_msgs
   spirit_msgs
+  grid_map_core
 )
 
 catkin_package(
@@ -41,6 +42,7 @@ include_directories(
 add_library(spirit_utils
   src/rviz_interface.cpp
   src/fast_interpolator.cpp
+  src/fast_terrain_map.cpp
 )
 add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(spirit_utils libInterpolate::Interpolate)
