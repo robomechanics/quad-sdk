@@ -21,7 +21,7 @@ int main(int argc, char** argv)
     map.getSize()(0), map.getSize()(1));
 
   // Work with grid map in a loop.
-  ros::Rate rate(10.0);
+  ros::Rate rate(1.0);
   while (nh.ok()) {
 
     double obs_center[] = {2,0};
