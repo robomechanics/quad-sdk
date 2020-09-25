@@ -17,16 +17,17 @@ EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
 }
 
 void EKFEstimator::jointEncoderCallback(const sensor_msgs::JointState::ConstPtr& msg) {
-	
+	last_joint_state_msg_ = msg;
 }
 
 void EKFEstimator::imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
-
+  last_imu_msg_ = msg;
 }
 
 spirit_msgs::StateEstimate EKFEstimator::updateStep() {
-	spirit_msgs::StateEstimate state_est;
-	return state_est;
+	spirit_msgs::StateEstimate new_state_est;
+
+	return new_state_est;
 }
 
 void EKFEstimator::spin() {
