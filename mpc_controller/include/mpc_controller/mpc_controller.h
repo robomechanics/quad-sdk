@@ -3,6 +3,7 @@
 
 #include <ros/ros.h>
 #include <eigen3/Eigen/Eigen>
+#include <qpOASES.hpp>
 
 //! Implements online MPC
 /*!

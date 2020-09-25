@@ -98,20 +98,21 @@ install(EXPORT ${PROJECT_NAME}Targets
   NAMESPACE ${PROJECT_NAME}::
   DESTINATION cmake
 )
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-"include(CMakeFindDependencyMacro)
-find_dependency(Boost)
-find_dependency(Eigen3 3.3.1 CONFIG)
-include(\${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}Targets.cmake)
-"
-  )
-include(CMakePackageConfigHelpers)
 
-install(FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-  DESTINATION cmake
-  )
+#file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+#"include(CMakeFindDependencyMacro)
+#find_dependency(Boost)
+#find_dependency(Eigen3 3.3.1 CONFIG)
+#include(\${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}Targets.cmake)
+#"
+#  )
+#include(CMakePackageConfigHelpers)
+
+#install(FILES
+#  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+#  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+#  DESTINATION cmake
+#  )
 
 INCLUDE(InstallRequiredSystemLibraries)
 

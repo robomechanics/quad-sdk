@@ -9,5 +9,14 @@ cd libInterpolate
 mkdir build
 cd build
 cmake ..
-make -j4
+make -j8
 sudo make install
+cd ../..
+
+# Setup and build for qpOases
+cd qpOASES
+mkdir build
+cd build
+cmake ..
+make -j8
+cd ../..

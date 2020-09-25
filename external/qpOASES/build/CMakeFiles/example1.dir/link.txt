@@ -1,0 +1,1 @@
+/usr/bin/c++  -D__NO_COPYRIGHT__ -Wall -pedantic -Wfloat-equal -Wshadow -DLINUX -g -O3 -finline-functions -rdynamic CMakeFiles/example1.dir/examples/example1.cpp.o -o bin/example1  -Wl,-rpath,/home/nflowers/catkin_ws/src/spirit-software/external/qpOASES/build/libs libs/libqpOASES.so.3.2 

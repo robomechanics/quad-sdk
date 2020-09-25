@@ -20,10 +20,15 @@ find_package(catkin REQUIRED COMPONENTS
 ## System dependencies are found with CMake's conventions
 find_package(Eigen3 REQUIRED)
 
+set(QPOASES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/qpOASES")
+set(QPOASES_INCLUDE_DIRS "${QPOASES_DIR}/include")
+set(QPOASES_LIBRARIES "${QPOASES_DIR}/build/libs")
+find_library(QPOASES NAMES qpOASES PATHS ${QPOASES_LIBRARIES} REQUIRED)
+
 catkin_package(
-  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
+  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS} ${QPOASES_INCLUDE_DIRS}
   CATKIN_DEPENDS roscpp std_msgs
-  DEPENDS EIGEN3
+  DEPENDS EIGEN3 QPOASES
 )
 
 ###########
@@ -32,9 +37,12 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
+message(STATUS ${catkin_INCLUDE_DIRS})
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
+  ${QPOASES_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library for control
@@ -51,7 +59,7 @@ add_executable(mpc_controller_node src/mpc_controller_node.cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(mpc_controller_node
   mpc_controller
-	${catkin_LIBRARIES}
+  ${catkin_LIBRARIES}
 )
 
 #############
