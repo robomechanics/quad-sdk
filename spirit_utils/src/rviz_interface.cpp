@@ -104,7 +104,16 @@ void RVizInterface::footstepPlanCallback(const spirit_msgs::FootstepPlan::ConstP
     // Create point message from FootstepPlan message, adjust height
     geometry_msgs::Point p;
     p = msg->footsteps[i].position;
-    p.z = 0.1;
+    p.z += 0.1;
+
+    // Set the color properties of each marker (green for front feet, blue for back)
+    std_msgs::ColorRGBA color;
+    color.a = 1.0;
+    if (msg->footsteps[i].index == 0 || msg->footsteps[i].index == 2) {
+      color.g = 1.0f;
+    } else {
+      color.b = 1.0f;
+    }
 
     // Set the color properties of each marker (green for front feet, blue for back)
     std_msgs::ColorRGBA color;
