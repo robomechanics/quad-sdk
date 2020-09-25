@@ -4,6 +4,11 @@ if( TARGET libInterpolate )
   return()
 endif( TARGET libInterpolate )
 
+## Set default cmake build type to release
+if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 if( ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR} )
   set(STANDALONE ON)
 endif( )
