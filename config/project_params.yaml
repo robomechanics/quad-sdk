@@ -30,3 +30,17 @@ terrain_map_publisher:
   resolution: 0.2
   min_height: 0.0
   max_height: 4.0
+
+grid_map_visualization:
+  grid_map_topic: /terrain_map
+  grid_map_visualizations:
+    - name: elevation_points
+      type: point_cloud
+      params:
+       layer: elevation
+    - name: elevation_grid
+      type: occupancy_grid
+      params:
+       layer: elevation
+       data_min: 0.08
+       data_max: -0.16

@@ -4,9 +4,7 @@
         <!-- Launch the node to generate simple terrain -->
         <node pkg="spirit_utils" type="terrain_map_publisher_node" name="terrain_map_publisher" output="screen" />
 
-        <!-- <rosparam command="load" file="$(find spirit_utils)/config/slope.yaml" /> -->
-
-        <!-- Load the image. -->
+        <!-- Load the image of the terrain map -->
         <node pkg="grid_map_demos" type="image_publisher.py" name="image_publisher" output="screen">
             <param name="image_path" value="$(find spirit_utils)/data/slope.png" />
             <param name="topic" value="~image" />
@@ -21,10 +19,10 @@
         <!-- Launch the node to publish the local footstep plan -->
         <node name="local_footstep_planner" pkg="local_footstep_planner" type="local_footstep_planner_node" output="screen"/>
 
- 		<!-- Launch the grid map visualizer -->
-		<node pkg="grid_map_visualization" type="grid_map_visualization" name="grid_map_visualization" output="screen">
-		  <rosparam command="load" file="$(find global_body_planner)/config/simple_terrain.yaml" />
-		</node>
+	<!-- Launch the grid map visualizer -->
+	<node pkg="grid_map_visualization" type="grid_map_visualization" name="grid_map_visualization" output="screen">
+	  <!-- <rosparam command="load" file="$(find global_body_planner)/config/simple_terrain.yaml" /> -->
+	</node>
 
         <!-- Launch the node to publish the visual topics for the plans -->
         <node name="rviz_interface" pkg="spirit_utils" type="rviz_interface_node" output="screen"/>
