@@ -11,7 +11,7 @@
 #include <math.h>
 #include <assert.h>
 
-#include "eigen_types.h"
+#include "eigen_controller_types.h"
 #include "trajectory.h"
 
 class LeggedControlsMPC{
