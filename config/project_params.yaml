@@ -6,6 +6,7 @@ topics:
   body_plan: /body_plan
   discrete_body_plan: /discrete_body_plan
   footstep_plan: /footstep_plan
+  image: /image_publisher/image
 
 
 mpc_controller:
@@ -22,3 +23,10 @@ local_footstep_planner:
   
 contact_detection:
   update_rate: 250
+
+terrain_map_publisher:
+  update_rate: 10
+  map_data_source: image
+  resolution: 0.2
+  min_height: 0.0
+  max_height: 4.0

@@ -2,15 +2,15 @@
         <rosparam command="load" file="$(find local_footstep_planner)/../config/project_params.yaml"/>
 
         <!-- Launch the node to generate simple terrain -->
-	<node pkg="global_body_planner" type="simple_terrain" name="simple_terrain" output="screen" />
+        <node pkg="spirit_utils" type="terrain_map_publisher_node" name="terrain_map_publisher" output="screen" />
 
         <!-- <rosparam command="load" file="$(find spirit_utils)/config/slope.yaml" /> -->
 
         <!-- Load the image. -->
-        <!-- <node pkg="grid_map_demos" type="image_publisher.py" name="image_publisher" output="screen">
+        <node pkg="grid_map_demos" type="image_publisher.py" name="image_publisher" output="screen">
             <param name="image_path" value="$(find spirit_utils)/data/slope.png" />
             <param name="topic" value="~image" />
-        </node> -->
+        </node>
 
         <!-- Launch the grid map image to grid map demo node. -->
         <!-- <node pkg="spirit_utils" type="image_to_gridmap_demo_custom_node" name="image_to_gridmap_demo_custom_node" output="screen" /> -->
