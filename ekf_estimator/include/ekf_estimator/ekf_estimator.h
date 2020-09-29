@@ -62,5 +62,11 @@ private:
 
 	/// Last state estimate
 	spirit_msgs::StateEstimate last_state_est_;
+
+  /// Most recent IMU callback (should be timestamped!)
+  sensor_msgs::Imu::ConstPtr last_imu_msg_;
+
+  /// Most recent encoder callback (should be timestamped!)
+  sensor_msgs::JointState::ConstPtr last_joint_state_msg_;
 };
 #endif // EKF_ESTIMATOR_H
