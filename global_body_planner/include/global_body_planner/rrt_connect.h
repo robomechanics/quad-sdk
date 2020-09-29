@@ -30,7 +30,7 @@ class RRTConnectClass : public RRTClass
         const double planning_rate_estimate = 16.0; // m/s (meters planned/computation time)
         double anytime_horizon_init;
         double horizon_expansion_factor = 1.2;
-        const int max_time_solve = 120;
+        const int max_time_solve = 20;
 
 };
 

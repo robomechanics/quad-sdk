@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   spirit_msgs
   grid_map_core
+  grid_map_ros
 )
 
 catkin_package(
@@ -41,6 +42,7 @@ add_library(spirit_utils
 	src/class1.cpp
   src/rviz_interface.cpp
   src/fast_terrain_map.cpp
+  src/ImageToGridmapDemoCustom.cpp
 )
 add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(spirit_utils libInterpolate::Interpolate)
@@ -49,9 +51,15 @@ target_link_libraries(spirit_utils libInterpolate::Interpolate)
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(rviz_interface_node src/rviz_interface_node.cpp)
+add_executable(image_to_gridmap_demo_custom_node src/image_to_gridmap_demo_custom_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(rviz_interface_node
+  ${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(image_to_gridmap_demo_custom_node
   ${PROJECT_NAME}
   ${catkin_LIBRARIES}
 )
