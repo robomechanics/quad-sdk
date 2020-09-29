@@ -21,6 +21,7 @@ class MPCController {
 	 * @brief Calls ros spinOnce and pubs data at set frequency
 	 */
 	void spin();
+  
 private:
 
 	/// Nodehandle to pub to and sub from

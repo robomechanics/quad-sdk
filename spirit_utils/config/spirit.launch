@@ -1,5 +1,7 @@
 <launch>
-	<rosparam command="load" file="$(find ekf_estimator)/../config/project_params.yaml"/>
+	<rosparam command="load" file="$(find spirit_utils)/../config/project_params.yaml"/>
+
 	<node name="ekf_estimator_node" pkg="ekf_estimator" type="ekf_estimator_node"/>
 	<node name="mpc_controller_node" pkg="mpc_controller" type="mpc_controller_node"/>
+	
 </launch>
