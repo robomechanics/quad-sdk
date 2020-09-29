@@ -1,0 +1,44 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/home/kodlab/catkin_ws/devel/include",
+                "/opt/ros/melodic/include",
+                "/home/kodlab/catkin_ws/src/apriltag_ros/apriltag_ros/include",
+                "/home/kodlab/catkin_ws/src/object_pose_detection/darknet_ros/darknet_ros/include",
+                "/home/kodlab/catkin_ws/src/kobuki/kobuki_auto_docking/include",
+                "/home/kodlab/catkin_ws/src/kobuki/kobuki_bumper2pc/include",
+                "/home/kodlab/catkin_ws/src/kobuki/kobuki_controller_tutorial/include",
+                "/home/kodlab/catkin_ws/src/kobuki_desktop/kobuki_gazebo_plugins/include",
+                "/home/kodlab/catkin_ws/src/kobuki/kobuki_keyop/include",
+                "/home/kodlab/catkin_ws/src/kobuki/kobuki_node/include",
+                "/home/kodlab/catkin_ws/src/kobuki/kobuki_random_walker/include",
+                "/home/kodlab/catkin_ws/src/kobuki/kobuki_safety_controller/include",
+                "/home/kodlab/catkin_ws/src/scan_tools/laser_ortho_projector/include",
+                "/home/kodlab/catkin_ws/src/scan_tools/laser_scan_matcher/include",
+                "/home/kodlab/catkin_ws/src/scan_tools/laser_scan_sparsifier/include",
+                "/home/kodlab/catkin_ws/src/scan_tools/laser_scan_splitter/include",
+                "/home/kodlab/catkin_ws/src/motion_capture_system/mocap_base/include",
+                "/home/kodlab/catkin_ws/src/motion_capture_system/mocap_qualisys/include",
+                "/home/kodlab/catkin_ws/src/motion_capture_system/mocap_vicon/include",
+                "/home/kodlab/catkin_ws/src/scan_tools/ncd_parser/include",
+                "/home/kodlab/catkin_ws/src/scan_tools/polar_scan_matcher/include",
+                "/home/kodlab/catkin_ws/src/scan_tools/scan_to_cloud_converter/include",
+                "/home/kodlab/catkin_ws/src/object_pose_detection/semantic_slam/include",
+                "/home/kodlab/catkin_ws/src/semnav/include",
+                "/home/kodlab/catkin_ws/src/object_pose_detection/viso_pose/include",
+                "/usr/include"
+            ],
+            "name": "Linux",
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/home/kodlab/ghost_robotics/arm_toolchain/bin/arm-none-eabi-gcc",
+            "cStandard": "gnu11",
+            "cppStandard": "gnu++14"
+        }
+    ],
+    "version": 4
+}

@@ -1,0 +1,67 @@
+# MIT License (modified)
+
+# Copyright (c) 2018 The Trustees of the University of Pennsylvania
+# Authors:
+# Vasileios Vasilopoulos <vvasilo@seas.upenn.edu>
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this **file** (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+vision60:
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 2000  
+
+  # Position Controllers ---------------------------------------
+  joint0_effort_controller:
+    type: effort_controllers/JointEffortController
+    joint: "0"
+  joint1_effort_controller:
+    type: effort_controllers/JointEffortController
+    joint: "1"
+  joint2_effort_controller:
+    type: effort_controllers/JointEffortController
+    joint: "2"
+  joint3_effort_controller:
+    type: effort_controllers/JointEffortController
+    joint: "3"
+  joint4_effort_controller:
+    type: effort_controllers/JointEffortController
+    joint: "4"
+  joint5_effort_controller:
+    type: effort_controllers/JointEffortController
+    joint: "5"
+  joint6_effort_controller:
+    type: effort_controllers/JointEffortController
+    joint: "6"
+  joint7_effort_controller:
+    type: effort_controllers/JointEffortController
+    joint: "7"
+  joint8_effort_controller:
+    type: effort_controllers/JointEffortController
+    joint: "8"
+  joint9_effort_controller:
+    type: effort_controllers/JointEffortController
+    joint: "9"
+  joint10_effort_controller:
+    type: effort_controllers/JointEffortController
+    joint: "10"
+  joint11_effort_controller:
+    type: effort_controllers/JointEffortController
+    joint: "11"
