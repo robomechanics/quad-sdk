@@ -80,6 +80,12 @@ void ContactPlugin::OnUpdate() {
   msgs::Contacts contacts;
   contacts = this->parentSensor->Contacts();
 
+  // Initialize outgoing messages with zeros (send zero contact force if no contact detected)
+  geometry_msgs::Vector3 toe0_msg; toe0_msg.x = 0.; toe0_msg.y = 0.; toe0_msg.z = 0.;
+  geometry_msgs::Vector3 toe1_msg; toe1_msg.x = 0.; toe1_msg.y = 0.; toe1_msg.z = 0.;
+  geometry_msgs::Vector3 toe2_msg; toe2_msg.x = 0.; toe2_msg.y = 0.; toe2_msg.z = 0.;
+  geometry_msgs::Vector3 toe3_msg; toe3_msg.x = 0.; toe3_msg.y = 0.; toe3_msg.z = 0.;
+
   for (unsigned int i = 0; i < contacts.contact_size(); ++i) {
     std::string str = contacts.contact(i).collision1();
     std::string toe0_string = "toe0_collision";
@@ -92,43 +98,42 @@ void ContactPlugin::OnUpdate() {
     std::size_t found_toe3 = str.find(toe3_string);
 
     if (found_toe0 != std::string::npos) {
-      geometry_msgs::Vector3 toe0_msg; toe0_msg.x = 0.; toe0_msg.y = 0.; toe0_msg.z = 0.;
+      
       for (unsigned int j = 0; j < contacts.contact(i).position_size(); ++j) {
         toe0_msg.x -= contacts.contact(i).wrench(j).body_1_wrench().force().x();
         toe0_msg.y -= contacts.contact(i).wrench(j).body_1_wrench().force().y();
         toe0_msg.z -= contacts.contact(i).wrench(j).body_1_wrench().force().z();
       }
-      this->toe0_publisher.publish(toe0_msg);
     }
 
     if (found_toe1 != std::string::npos) {
-      geometry_msgs::Vector3 toe1_msg; toe1_msg.x = 0.; toe1_msg.y = 0.; toe1_msg.z = 0.;
+      
       for (unsigned int j = 0; j < contacts.contact(i).position_size(); ++j) {
         toe1_msg.x -= contacts.contact(i).wrench(j).body_1_wrench().force().x();
         toe1_msg.y -= contacts.contact(i).wrench(j).body_1_wrench().force().y();
         toe1_msg.z -= contacts.contact(i).wrench(j).body_1_wrench().force().z();
       }
-      this->toe1_publisher.publish(toe1_msg);
     }
 
     if (found_toe2 != std::string::npos) {
-      geometry_msgs::Vector3 toe2_msg; toe2_msg.x = 0.; toe2_msg.y = 0.; toe2_msg.z = 0.;
+      
       for (unsigned int j = 0; j < contacts.contact(i).position_size(); ++j) {
         toe2_msg.x -= contacts.contact(i).wrench(j).body_1_wrench().force().x();
         toe2_msg.y -= contacts.contact(i).wrench(j).body_1_wrench().force().y();
         toe2_msg.z -= contacts.contact(i).wrench(j).body_1_wrench().force().z();
       }
-      this->toe2_publisher.publish(toe2_msg);
     }
 
     if (found_toe3 != std::string::npos) {
-      geometry_msgs::Vector3 toe3_msg; toe3_msg.x = 0.; toe3_msg.y = 0.; toe3_msg.z = 0.;
       for (unsigned int j = 0; j < contacts.contact(i).position_size(); ++j) {
         toe3_msg.x -= contacts.contact(i).wrench(j).body_1_wrench().force().x();
         toe3_msg.y -= contacts.contact(i).wrench(j).body_1_wrench().force().y();
         toe3_msg.z -= contacts.contact(i).wrench(j).body_1_wrench().force().z();
       }
-      this->toe3_publisher.publish(toe3_msg);
     }
   }
+  this->toe0_publisher.publish(toe0_msg);
+  this->toe1_publisher.publish(toe1_msg);
+  this->toe2_publisher.publish(toe2_msg);
+  this->toe3_publisher.publish(toe3_msg);
 }
