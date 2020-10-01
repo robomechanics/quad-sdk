@@ -11,7 +11,7 @@ TEST(LocalFootstepPlannerTest, testTrue) {
 
 int main(int argc, char** argv) {
 	testing::InitGoogleTest(&argc, argv);
-	ros::init(argc, argv, "tester");
+	ros::init(argc, argv, "footstep_plannertester");
 
 	return RUN_ALL_TESTS();
 }
