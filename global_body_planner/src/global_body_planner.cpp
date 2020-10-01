@@ -23,7 +23,6 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(body_plan_topic,1);
   discrete_body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(discrete_body_plan_topic,1);
 
-  waitForMap();
 }
 
 void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg) {
@@ -201,6 +200,8 @@ void GlobalBodyPlanner::waitForMap() {
 void GlobalBodyPlanner::spin() {
   ros::Rate r(update_rate_);
 
+  waitForMap();
+  
   // Update the plan
   callPlanner();
 
