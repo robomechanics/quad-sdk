@@ -4,6 +4,11 @@ project(spirit_utils)
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
 
+## Set default cmake build type to release
+if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -39,7 +44,6 @@ include_directories(
 
 ## Declare a C++ library
 add_library(spirit_utils
-	src/class1.cpp
   src/rviz_interface.cpp
   src/fast_terrain_map.cpp
   src/ImageToGridmapDemoCustom.cpp
@@ -55,7 +59,7 @@ add_executable(image_to_gridmap_demo_custom_node src/image_to_gridmap_demo_custo
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(rviz_interface_node
-  ${PROJECT_NAME}
+  spirit_utils
   ${catkin_LIBRARIES}
 )
 
@@ -70,7 +74,7 @@ target_link_libraries(image_to_gridmap_demo_custom_node
 
 ## Add gtest based cpp test target and link libraries
 catkin_add_gtest(${PROJECT_NAME}-test 
-  test/test_class1.cpp
-  test/test_rviz_interface.cpp)
+  test/test_rviz_interface.cpp
+  test/test_main.cpp)
 target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME} ${catkin_LIBRARIES})
 
