@@ -22,7 +22,6 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1,&GlobalBodyPlanner::terrainMapCallback, this);
   body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(body_plan_topic,1);
   discrete_body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(discrete_body_plan_topic,1);
-  // discrete_states_pub_ = nh.advertise<visualization_msgs::Marker>("discrete_states", 1);
 
   waitForMap();
 }
