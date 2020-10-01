@@ -4,7 +4,10 @@ project(spirit_utils)
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
 
-set(COMPILE_TIMING_EXECUTABLES false)
+## Set default cmake build type to release
+if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -41,7 +44,6 @@ include_directories(
 ## Declare a C++ library
 add_library(spirit_utils
   src/rviz_interface.cpp
-  src/fast_interpolator.cpp
   src/fast_terrain_map.cpp
 )
 add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
@@ -58,13 +60,6 @@ target_link_libraries(rviz_interface_node
   ${catkin_LIBRARIES}
 )
 
-if(COMPILE_TIMING_EXECUTABLES)
-  add_executable(fast_interpolator_timecheck src/fast_interpolator_timecheck.cpp)
-  target_link_libraries(fast_interpolator_timecheck
-    spirit_utils
-    ${catkin_LIBRARIES})
-endif()
-
 #############
 ## Testing ##
 #############
@@ -72,7 +67,6 @@ endif()
 ## Add gtest based cpp test target and link libraries
 catkin_add_gtest(${PROJECT_NAME}-test 
   test/test_rviz_interface.cpp
-  test/test_fast_interpolator.cpp
   test/test_main.cpp)
 target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME} ${catkin_LIBRARIES})
 
