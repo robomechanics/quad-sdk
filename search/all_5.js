@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['fastinterpolator',['FastInterpolator',['../classFastInterpolator.html',1,'FastInterpolator'],['../classFastInterpolator.html#adc57041067f7385c6b126512cd20e68d',1,'FastInterpolator::FastInterpolator()']]],
   ['fastterrainmap',['FastTerrainMap',['../classFastTerrainMap.html',1,'FastTerrainMap'],['../classFastTerrainMap.html#ab243ccba0680afb064c70bead54bf126',1,'FastTerrainMap::FastTerrainMap()']]],
   ['footstep_5fplan_5f',['footstep_plan_',['../classLocalFootstepPlanner.html#a46bdeff14e59b93790779bc6f01193dd',1,'LocalFootstepPlanner']]],
   ['footstep_5fplan_5fpub_5f',['footstep_plan_pub_',['../classLocalFootstepPlanner.html#a609bb89700073ad59c30f48c24f2f31f',1,'LocalFootstepPlanner']]],
