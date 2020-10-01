@@ -75,6 +75,7 @@ SOFTWARE.
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
+    
     <link name='hip2'>
       <pose frame=''>0.2263 -0.07 0 0 -0 0</pose>
       <inertial>
@@ -1139,5 +1140,14 @@ SOFTWARE.
     <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
       <robotNamespace>/spirit</robotNamespace>
     </plugin>
+    
+    <include>
+      <uri>model://imu</uri>
+      <pose>0 0 0 0 0 0 </pose>
+    </include>
+    <joint name="imu_joint" type="fixed">
+      <child>imu::link</child>
+      <parent>body</parent>
+    </joint>
   </model>
 </sdf>

@@ -64,6 +64,7 @@ SOFTWARE.
       </geometry>
     </collision>
   </link>
+  
   <gazebo reference="body">
     <material>Gazebo/Black</material>
   </gazebo>

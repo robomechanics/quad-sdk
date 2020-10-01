@@ -25,6 +25,7 @@ SOFTWARE.
 -->
 
 <launch>
+
   <!-- Launch the Spirit world with specific physics parameters -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="paused" value="true"/>
