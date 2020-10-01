@@ -4,6 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /GridMap1
         - /Marker1
         - /Marker2
       Splitter Ratio: 0.6114649772644043
@@ -46,30 +47,30 @@ Visualization Manager:
       Class: grid_map_rviz_plugin/GridMap
       Color: 200; 200; 200
       Color Layer: elevation
-      Color Transformer: GridMapLayer
-      Enabled: false
+      Color Transformer: ""
+      Enabled: true
       Height Layer: elevation
       Height Transformer: GridMapLayer
       History Length: 1
       Invert Rainbow: false
-      Max Color: 255; 255; 255
+      Max Color: 233; 185; 110
       Max Intensity: 10
-      Min Color: 0; 0; 0
+      Min Color: 65; 36; 14
       Min Intensity: 0
       Name: GridMap
       Show Grid Lines: true
-      Topic: /grid_map_simple_demo/grid_map
+      Topic: /terrain_map
       Unreliable: false
-      Use Rainbow: true
-      Value: false
+      Use Rainbow: false
+      Value: true
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /grid_map_visualization/map_region
       Name: Map Region
       Namespaces:
         {}
       Queue Size: 100
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -82,10 +83,10 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: Intensity
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 200; 126
-      Max Intensity: 0.5
+      Max Intensity: 0.05000000074505806
       Min Color: 50; 20; 20
       Min Intensity: 0
       Name: Elevation
@@ -99,7 +100,7 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: false
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: false
       Autocompute Value Bounds:
@@ -204,6 +205,27 @@ Visualization Manager:
         "": true
       Queue Size: 100
       Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Class: grid_map_rviz_plugin/GridMap
+      Color: 200; 200; 200
+      Color Layer: elevation
+      Color Transformer: GridMapLayer
+      Enabled: true
+      Height Layer: elevation
+      Height Transformer: GridMapLayer
+      History Length: 1
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 10
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: GridMap
+      Show Grid Lines: true
+      Topic: ""
+      Unreliable: false
+      Use Rainbow: true
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
@@ -247,10 +269,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5547972321510315
+      Pitch: 0.5097973346710205
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.9754207134246826
+      Yaw: 4.075424671173096
     Saved: ~
 Window Geometry:
   Displays:
@@ -269,4 +291,4 @@ Window Geometry:
     collapsed: true
   Width: 1095
   X: 514
-  Y: 111
+  Y: 74
