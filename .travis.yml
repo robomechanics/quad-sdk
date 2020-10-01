@@ -24,11 +24,11 @@ matrix:
     name: 18.04 Melodic
     dist: bionic
     env: ROS_DISTRO=melodic
-  - os: linux
-    arch: arm64
-    name: 18.04 Melodic
-    dist: bionic
-    env: ROS_DISTRO=melodic
+ # - os: linux
+ #   arch: arm64
+ #   name: 18.04 Melodic
+ #   dist: bionic
+ #   env: ROS_DISTRO=melodic
 
 env:
   global:
