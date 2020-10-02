@@ -4,7 +4,7 @@ wget https://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
 sudo apt update
 sudo apt install gazebo9 -y
 
-GAZEBO_MODEL_PATH_UPDATE='export GAZEBO_MODEL_PATH=${GAZEBO_MODEL_PATH}:~/catkin_ws/src/spirit-software/spirit_simulator/spirit_description:~/catkin_ws/src/spirit-software/spirit_simulator/other/sensor_description'
+GAZEBO_MODEL_PATH_UPDATE='export GAZEBO_MODEL_PATH=${GAZEBO_MODEL_PATH}:~/catkin_ws/src/spirit-software/spirit_simulator/spirit_description:~/catkin_ws/src/spirit-software/spirit_simulator/other/sensor_description:~/catkin_ws/src/spirit-software/spirit_simulator/other/objects_description'
 if grep "$GAZEBO_MODEL_PATH_UPDATE" ~/.bashrc > /dev/null
 then
    echo "bashrc contains gazebo model path update"
@@ -20,3 +20,5 @@ sudo apt install ros-melodic-ros-control -y
 sudo apt install ros-melodic-gazebo-ros-control -y
 sudo apt install ros-melodic-effort-controllers -y
 sudo apt install ros-melodic-robot-state-publisher -y
+sudo apt install ros-melodic-imu-tools -y
+sudo apt install ros-melodic-message-to-tf -y

@@ -41,6 +41,15 @@ SOFTWARE.
   <!-- guess -->
   <!--visual only-->
   <!--center of pod cylinder to the ab axis-->
+
+  <link name="body_dummy"/>
+  <joint name="dummy_joint" type="fixed">
+    <parent link="body_dummy"/>
+    <child link="body"/>
+    <axis xyz="0 0 0"/>
+    <origin xyz="0 0.07 0"/>
+  </joint>
+
   <!-- Body -->
   <link name="body">
     <visual>
@@ -68,6 +77,23 @@ SOFTWARE.
   <gazebo reference="body">
     <material>Gazebo/Black</material>
   </gazebo>
+
+  <link name="imu_link">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.05 0.05 0.02"/>
+      </geometry>
+      <material name="green"/>
+    </visual>
+  </link>
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="body"/>
+    <child link="imu_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
   <!-- Define our leg macro -->
   <!-- Our four legs -->
   <!-- Hip motor -->
@@ -91,9 +117,11 @@ SOFTWARE.
       <inertia ixx="0.00066963541" ixy="0" ixz="0" iyy="0.00066963541" iyz="0" izz="0.0008696875"/>
     </inertial>
   </link>
+
   <gazebo reference="hip0">
     <material>Gazebo/Grey</material>
   </gazebo>
+
   <!-- Abduction joint. Joint names are: 8 9 10 11 -->
   <joint name="8" type="revolute">
     <parent link="body"/>
@@ -875,6 +903,40 @@ SOFTWARE.
     <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
       <robotNamespace>/spirit</robotNamespace>
     </plugin>
+  </gazebo>
+  <!-- Publish ground truth odometry data -->
+  <gazebo>
+    <plugin name="p3d_base_controller" filename="libgazebo_ros_p3d.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>100.0</updateRate>
+      <bodyName>body</bodyName>
+      <topicName>/spirit/ground_truth/state</topicName>
+      <gaussianNoise>0.00</gaussianNoise>
+      <frameName>world</frameName>
+      <xyzOffsets>0 0 0</xyzOffsets>
+      <rpyOffsets>0 0 0</rpyOffsets>
+    </plugin>
+  </gazebo>
+  <!-- Add IMU plugin -->
+  <gazebo reference="imu_link">
+    <gravity>true</gravity>
+    <sensor name="imu_sensor" type="imu">
+      <always_on>true</always_on>
+      <update_rate>500</update_rate>
+      <visualize>true</visualize>
+      <topic>__default_topic__</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>/spirit/imu</topicName>
+        <bodyName>imu_link</bodyName>
+        <updateRateHZ>500.0</updateRateHZ>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>0 0 0</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>imu_link</frameName>
+        <initialOrientationAsReference>false</initialOrientationAsReference>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor>
   </gazebo>
 </robot>
 
