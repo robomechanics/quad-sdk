@@ -107,7 +107,6 @@ void GraphClass::printVertices()
 void GraphClass::printIncomingEdges(int in_vertex)
 {
     std::vector<int>::iterator itr;
-    // for (itr = edges[in_vertex].begin(); itr != edges[in_vertex].end(); itr++)
     for (int i = 0; i < edges[in_vertex].size(); i++)
     {
         int out_vertex = edges[in_vertex][i];

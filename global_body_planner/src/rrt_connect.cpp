@@ -175,9 +175,6 @@ void RRTConnectClass::postProcessPath(std::vector<State> &state_sequence, std::v
 
 	auto t_end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> processing_time = t_end - t_start;
-
-	// std::cout << "Post processing took " << processing_time.count() << std::endl;
-
 }
 
 void RRTConnectClass::runRRTConnect(PlannerClass &Ta, PlannerClass &Tb, FastTerrainMap& terrain)
@@ -257,7 +254,6 @@ void RRTConnectClass::buildRRTConnect(FastTerrainMap& terrain, State s_start, St
 	PlannerClass Tb_best;
 
 	// Initialize anytime horizon
-	// anytime_horizon = 0.3;
 	anytime_horizon = poseDistance(s_start, s_goal)/planning_rate_estimate;
 	num_vertices = 0;
 
@@ -316,9 +312,6 @@ void RRTConnectClass::buildRRTConnect(FastTerrainMap& terrain, State s_start, St
 
 				cost_vector_.push_back(cost_so_far);
 				cost_vector_times_.push_back(current_elapsed.count());
-
-				// std::cout << "New best cost: " << cost_so_far << " at " << current_elapsed.count() << "s" << std::endl;
-
 			}
 		}
 
@@ -328,33 +321,6 @@ void RRTConnectClass::buildRRTConnect(FastTerrainMap& terrain, State s_start, St
 
 	Ta = Ta_best;
 	Tb = Tb_best;
-
-	// while (goal_found == false)
-	// {
-	// 	auto t_current = std::chrono::high_resolution_clock::now();
-	// 	std::chrono::duration<double> current_elapsed = t_current - t_start;
-	// 	if(current_elapsed.count() >= max_time_solve)
-	// 	{
-	// 		std::cout << "Failed, exiting" << std::endl;
-	// 		elapsed_total = current_elapsed;
-	// 		elapsed_to_first = current_elapsed;
-	// 		success_ = 0;
-	// 		num_vertices += (Ta.getNumVertices() + Tb.getNumVertices());
-	// 		return;
-	// 	}
-
-
-	// 	Ta = PlannerClass();
-	// 	Tb = PlannerClass();
-	// 	Ta.init(s_start);
-	// 	Tb.init(s_goal);
-
-	// 	runRRTConnect(Ta, Tb, terrain);	
-
-	// 	num_vertices += (Ta.getNumVertices() + Tb.getNumVertices());
-	// }
-	
-	// std::cout << "Number of samples: " << num_vertices << std::endl;
 	
 	if (goal_found == true)
 	{
@@ -376,13 +342,7 @@ void RRTConnectClass::buildRRTConnect(FastTerrainMap& terrain, State s_start, St
 		std::cout << "Path not found" << std::endl;
 	}
 
-	// cost_vector_.push_back(path_quality_);
-	// std::cout << "Path quality = " << path_quality_ << std::endl;
-
 	postProcessPath(state_sequence, action_sequence, terrain);
-
-	// cost_vector_.push_back(path_quality_);
-	// std::cout << "Path quality = " << path_quality_ << std::endl;
 
 	auto t_end = std::chrono::high_resolution_clock::now();
 	elapsed_total = t_end - t_start;
@@ -395,8 +355,4 @@ void RRTConnectClass::buildRRTConnect(FastTerrainMap& terrain, State s_start, St
     {
     	path_duration_ += (a[6] + a[7]);
     }
-
-	// cost_vector_times_.push_back(elapsed_total.count());
-	// path_quality_ = Ta.getGValue(Ta.getNumVertices()-1) + Tb.getGValue(Tb.getNumVertices()-1);
-	
 }

@@ -44,7 +44,6 @@ int RRTStarConnectClass::extend(PlannerClass &T, State s, FastTerrainMap& terrai
 		}
 
 		T.addEdge(s_min_idx, s_new_idx);
-		// T.updateGValue(s_new_idx, computeArcLength(s_near, a_new)); // Broken so far, need reverse direction computeArcLength
 		T.updateGValue(s_new_idx, g_s_new);
 		T.addAction(s_new_idx, a_new);
 		
@@ -133,14 +132,12 @@ void RRTStarConnectClass::buildRRTStarConnect(FastTerrainMap& terrain, State s_s
 			{
 				State s_new = Ta.getVertex(Ta.getNumVertices()-1);
 
-				// if(connect(Ta, s_goal, terrain) == REACHED)
 				if(connect(Tb, s_new, terrain, REVERSE) == REACHED)
 				{
 					if (goal_found == false)
 					{
 						auto t_end = std::chrono::high_resolution_clock::now();
 						elapsed_to_first = t_end - t_start;
-						// break;
 					}
 					
 					goal_found = true;
@@ -150,7 +147,6 @@ void RRTStarConnectClass::buildRRTStarConnect(FastTerrainMap& terrain, State s_s
 			}
 		}
 
-		// State s_rand = Tb.randomState(terrain);
 		s_rand = Tb.randomState(terrain);
 
 		if (isValidState(s_rand, terrain, STANCE))
@@ -165,7 +161,6 @@ void RRTStarConnectClass::buildRRTStarConnect(FastTerrainMap& terrain, State s_s
 					{
 						auto t_end = std::chrono::high_resolution_clock::now();
 						elapsed_to_first = t_end - t_start;
-						// break;
 					}
 
 					goal_found = true;
@@ -196,27 +191,8 @@ void RRTStarConnectClass::buildRRTStarConnect(FastTerrainMap& terrain, State s_s
 
 				cost_vector_.push_back(cost_so_far);
 				cost_vector_times_.push_back(current_elapsed.count());
-
-				// // Run post processing to make cost more accurate
-				// getStateAndActionSequences(Ta, Tb, shared_a_idx, shared_b_idx, state_sequence, action_sequence);
-				// postProcessPath(state_sequence, action_sequence, terrain);
-				// auto t_current_after_process = std::chrono::high_resolution_clock::now();
-				// std::chrono::duration<double> processing_elapsed = t_current_after_process - t_current;
-				
-				// elapsed_in_processing += processing_elapsed.count();
-
-				// cost_vector_.push_back(path_quality_);
-				// cost_vector_times_.push_back(current_elapsed.count() - elapsed_in_processing);
 			}
 		}
-
-		// Exit the planner if a path isn't found in time
-		// if(current_elapsed.count() >= 61)
-		// {
-		// 	std::cout << "Ta: " << Ta.getNumVertices() << ", Tb: " << Tb.getNumVertices() << std::endl;
-		// 	return;
-		// }
-
 	}
 	
 	num_vertices = Ta.getNumVertices() + Tb.getNumVertices();
@@ -224,21 +200,6 @@ void RRTStarConnectClass::buildRRTStarConnect(FastTerrainMap& terrain, State s_s
 	if (goal_found == true)
 	{
 		getStateAndActionSequences(Ta, Tb, shared_a_idx, shared_b_idx, state_sequence, action_sequence);
-		// // Get both paths, remove the back of path_b and reverse it to align with path a
-		// std::vector<int> path_a = pathFromStart(Ta, shared_a_idx);
-		// std::vector<int> path_b = pathFromStart(Tb, shared_b_idx);
-
-		// std::reverse(path_b.begin(), path_b.end());
-		// std::vector<Action> action_sequence_b = getActionSequenceReverse(Tb, path_b);
-		// path_b.erase(path_b.begin());
-
-		// state_sequence = getStateSequence(Ta, path_a);
-		// std::vector<State> state_sequence_b = getStateSequence(Tb, path_b);
-		// state_sequence.insert(state_sequence.end(), state_sequence_b.begin(), state_sequence_b.end());
-
-		// action_sequence = getActionSequence(Ta, path_a);
-		// action_sequence.insert(action_sequence.end(), action_sequence_b.begin(), action_sequence_b.end());
-
 	} else {
 		std::cout << "Path not found" << std::endl;
 	}
@@ -251,8 +212,6 @@ void RRTStarConnectClass::buildRRTStarConnect(FastTerrainMap& terrain, State s_s
 
 	postProcessPath(state_sequence, action_sequence, terrain);
 
-	// cost_vector_.push_back(path_quality_);
-	// cost_vector_times_.push_back(elapsed_total.count());
 
 	if (elapsed_total.count() <= 5.0)
 		success_ = 1;
@@ -263,6 +222,5 @@ void RRTStarConnectClass::buildRRTStarConnect(FastTerrainMap& terrain, State s_s
     	path_duration_ += a[6] + a[7];
     }
 
-	// path_quality_ = Ta.getGValue(Ta.getNumVertices()-1) + Tb.getGValue(Tb.getNumVertices()-1);
 	std::cout << "Path quality = " << path_quality_ << std::endl;
 }

@@ -70,7 +70,6 @@ State interp(State q1, State q2, double x)
 	State q_out;
 	for(int dim = 0; dim < q1.size(); dim ++)
 	{
-		// q_out.push_back((q2[dim] - q1[dim])*x + q1[dim]);
 		q_out[dim] = (q2[dim] - q1[dim])*x + q1[dim];
 	}
 	return q_out;
@@ -91,12 +90,7 @@ double poseDistance(State q1, State q2)
 double stateDistance(State q1,State q2)
 {
 	double sum = 0;
-	// State state_weight = {1,1,1,0.1,0.1,0.1};
-	// State state_weight = {1,1,1,0.5,0.5,0.5};
-	// State state_weight = {1,1,1,1,1,1};
 	State state_weight = {1,1,1,1,1,1,1,1};
-	// State state_weight = {1,1,1,0.1,0.1,0.1,1,1};
-
 
 	for (int i = 0; i < q1.size(); i++)
 	{
@@ -334,12 +328,7 @@ State applyStanceReverse(State s, Action a)
 }
 
 Action getRandomAction(std::array<double, 3> surf_norm)
-{
-	// static int n = 0;
-	// n++;
-	// static double total_time = 0;
-	// auto t_start = std::chrono::high_resolution_clock::now();
-	
+{	
 	Action a;
 
 	// Random normal forces between 0 and F_MAX
@@ -351,8 +340,6 @@ Action getRandomAction(std::array<double, 3> surf_norm)
 	double f_x_to = 2*MU*f_z_to*(double)rand()/RAND_MAX - MU*f_z_to;
 	double f_y_td = 2*MU*f_z_td*(double)rand()/RAND_MAX - MU*f_z_td;
 	double f_y_to = 2*MU*f_z_to*(double)rand()/RAND_MAX - MU*f_z_to;
-	// double f_y_td = 0;
-	// double f_y_to = 0;
 
 	std::array<double, 3> f_td = {f_x_td, f_y_td, f_z_td};
 	std::array<double, 3> f_to = {f_x_to, f_y_to, f_z_to};
@@ -380,14 +367,6 @@ Action getRandomAction(std::array<double, 3> surf_norm)
 	std::normal_distribution<double> ang_acc_distribution(0.0,(ANG_ACC_MAX/4.0)); // std is such that the max and min are 4 std away from mean
 	a[8] = std::max(std::min(ang_acc_distribution(generator), ANG_ACC_MAX), -ANG_ACC_MAX); //0.0; // for now
 	a[9] = std::max(std::min(ang_acc_distribution(generator), ANG_ACC_MAX), -ANG_ACC_MAX); //0.0;
-
-
-	// auto t_current = std::chrono::high_resolution_clock::now();
-	// std::chrono::duration<double> current_elapsed = t_current - t_start;
-	// total_time += current_elapsed.count();
-
-	// std::cout << "Time elapsed (" << n << " runs): " << total_time << " seconds" << std::endl;
-	// std::cout << "Average time for call to rotate_grf: " << total_time/n*1e6 << " microseconds" << std::endl;
 
 	return a;
 }
@@ -436,13 +415,7 @@ bool isValidState(State s, FastTerrainMap& terrain, int phase)
 {
 	if ((s[0] < terrain.getXData().front()) || (s[0] > terrain.getXData().back()) || (s[1] < terrain.getYData().front()) || (s[1] > terrain.getYData().back()) || (abs(s[6]) >= P_MAX) )
 	    return false;
-	// grid_map::Position pos = {s[0], s[1]};
-	// grid_map::Index index;
 
-	// if (!terrain.getIndex(pos, index) || (abs(s[6]) >= P_MAX)) 
-	// 	return false;
-
-	// if (sqrt(s[3]*s[3] + s[4]*s[4] + s[5]*s[5]) > V_MAX)
 	if (sqrt(s[3]*s[3] + s[4]*s[4]) > V_MAX) // Ignore limit on vertical velocity since this is accurately bounded by gravity
 		return false;
 
@@ -457,7 +430,7 @@ bool isValidState(State s, FastTerrainMap& terrain, int phase)
 
 	std::array<double, 2> test_x = {-0.5*ROBOT_L, 0.5*ROBOT_L};
 	std::array<double, 2> test_y = {-0.5*ROBOT_W, 0.5*ROBOT_W};
-	double z_body = -0.5*ROBOT_H;
+	double z_body = -ROBOT_H;
 
 	// Check each of the four corners of the robot
 	for (double x_body : test_x)
@@ -485,7 +458,6 @@ bool isValidState(State s, FastTerrainMap& terrain, int phase)
 
 	// Check the center of the underside of the robot
 	double height = (s[2] + R_33*z_body) - terrain.getGroundHeight(s[0] + R_13*z_body,s[1] + R_23*z_body);
-	// if ((height < H_MIN) || ((phase == STANCE) && (height > H_MAX)))
 	if (height < H_MIN)
 		return false;
 
@@ -493,76 +465,17 @@ bool isValidState(State s, FastTerrainMap& terrain, int phase)
 	return true;
 }
 
-// std::array<double, 4> getAcceleration(State s, Action a, double t)
-// {
-//     std::array<double, 4> acc;
-
-//     double a_x_td = a[0]; // Acceleration in x at touchdown
-//     double a_y_td = a[1];
-//     double a_z_td = a[2];
-//     double a_x_to = a[3]; // Acceleration in x at takeoff
-//     double a_y_to = a[4];
-//     double a_z_to = a[5];
-//     double t_s = a[6];
-
-//     double a_p_td = a[8]; // Acceleration in pitch at touchdown
-//     double a_p_to = a[9];
-
-//     acc[0] = a_x_td + (a_x_to - a_x_td)*t/(t_s);
-//     acc[1] = a_y_td + (a_y_to - a_y_td)*t/(t_s);
-//     acc[2] = a_z_td + (a_z_to - a_z_td)*t/(t_s);
-//     acc[3] = a_p_td + (a_p_to - a_p_td)*t/(t_s);
-//     return acc;
-// }
-
-// bool isValidYawRate(State s, Action a, double t)
-// {
-//     std::array<double, 4> acc = getAcceleration(s, a, t);
-
-//     double dy = s[5];
-//     double dx = s[4];
-//     double ddy = acc[1];
-//     double ddx = acc[0];
-//     double d_yaw;
-
-//     if ((dx*dx + dy*dy) == 0)
-//     {
-//         d_yaw = 0;
-//         // std::cout << "Not moving, pass" << std::endl;
-//     } else
-//     {
-//         d_yaw = (dy*ddx - dx*ddy)/(dx*dx + dy*dy);
-//     }
-
-
-//     if (abs(d_yaw) > DY_MAX)
-//     {
-//         // std::cout << "Invalid yaw rate attempted" << std::endl;
-//         return false;
-//     } else
-//     {
-//         return true;
-//     }
-
-//     // return (abs(d_yaw) <= DY_MAX);
-//     // return true;
-// }
-
 bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain, State &s_new, double& t_new)
 {
-	// std::cout << "made it into checking action" << std::endl;
 	double t_s;
 	double t_f;
 
 	t_s = a[6];
 	t_f = a[7];
 
-	
-	// std::cout << "Checking stance" << std::endl;
-	for (double t = 0; t <= t_s; t += KINEMATICS_RES)
+		for (double t = 0; t <= t_s; t += KINEMATICS_RES)
 	{
 		State s_check = applyStance(s,a,t);
-		// std::cout << ": " << isValidState(s_check, terrain, STANCE) << std::endl;
 
 		if (isValidState(s_check, terrain, STANCE) == false)
 		{
@@ -577,20 +490,13 @@ bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain, State &s
 
 	State s_takeoff = applyStance(s, a);
 
-	// std::cout << "made it into flight check" << std::endl;
-
-	// std::cout << "Checking flight" << std::endl;
 	for (double t = 0; t < t_f; t += KINEMATICS_RES)
 	{
 		State s_check = applyFlight(s_takeoff, t);
-		// printState(s_check);
-		// std::cout << ": " << isValidState(s_check, terrain, FLIGHT) << std::endl;
 
 		if (isValidState(s_check, terrain, FLIGHT) == false)
 			return false;
 	}
-
-	// std::cout << "made it into just before end of flight" << std::endl;
 
 	// Check the exact landing state
 	State s_land = applyFlight(s_takeoff, t_f);
@@ -602,11 +508,8 @@ bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain, State &s
 		t_new = t_s+t_f;
 	}
 
-	// std::cout << "valid" << std::endl;
-
 	// If both stance and flight trajectories are entirely valid, return true
 	return true;
-
 }
 
 
@@ -625,12 +528,9 @@ bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain, S
 	t_s = a[6];
 	t_f = a[7];
 
-	// std::cout << "Checking flight" << std::endl;
 	for (double t = 0; t < t_f; t += KINEMATICS_RES)
 	{
 		State s_check = applyFlight(s, -t);
-		// printStateNewline(s_check);
-		// std::cout << ": " << isValidState(s_check, terrain) << std::endl;
 
 		if (isValidState(s_check, terrain, FLIGHT) == false)
 			return false;
@@ -638,17 +538,13 @@ bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain, S
 
 	State s_takeoff = applyFlight(s, -t_f);
 
-	// std::cout << "Checking stance" << std::endl;
 	for (double t = t_s; t >= 0; t -= KINEMATICS_RES)
 	{
 		State s_check = applyStanceReverse(s_takeoff,a,t);
-		// printStateNewline(s_check);
-		// std::cout << ": " << isValidState(s_check, terrain) << std::endl;
 
 		if (isValidState(s_check, terrain, STANCE) == false)
 		{
 			s_new = applyStance(s,a,t + BACKUP_RATIO*(t_s - t));
-			// s_new = applyStance(s,a,(t + BACKUP_TIME));
 			return false;
 		} else {
 			s_new = s_check;
@@ -675,46 +571,6 @@ bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain)
 	State dummy_state;
 	double dummy_time;
 	return isValidStateActionPairReverse(s, a, terrain, dummy_state, dummy_time);
-}
-
-double arcLengthFunction(State s, Action a, double t, int phase)
-{
-	State s_new;
-	if (phase == STANCE)
-	{
-		s_new = applyStance(s,a,t);
-	} else if (phase == FLIGHT)
-	{
-		s_new = applyStance(s,a);
-		s_new = applyFlight(s_new,t);
-	}
-
-	return sqrt(s_new[3]*s_new[3] + s_new[4]*s_new[4] + s_new[5]*s_new[5]);
-}
-
-double computeArcLength(State s, Action a)
-{
-	printStateNewline(s);
-	printAction(a); std::cout << std::endl;
-
-	double arc_length = 0;
-	double t_s;
-	double t_f;
-
-	t_s = a[6];
-	t_f = a[7];
-
-	double w = 0.5*t_s;
-	double t1 = (w*(-1/sqrt(3.0) + 1.0));
-	double t2 = (w*(1/sqrt(3.0) + 1.0));
-	arc_length += w*(arcLengthFunction(s,a,t1,STANCE) + arcLengthFunction(s,a,t2,STANCE));
-	
-	w = 0.5*t_f;
-	t1 = (w*(-1/sqrt(3.0) + 1.0));
-	t2 = (w*(1/sqrt(3.0) + 1.0));
-	arc_length += w*(arcLengthFunction(s,a,t1,STANCE) + arcLengthFunction(s,a,t2,STANCE));
-
-	return arc_length;
 }
 
 }
