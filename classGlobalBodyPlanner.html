@@ -86,6 +86,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae1cc3ec1e77b13cdf679267c4a8e55b4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#ae1cc3ec1e77b13cdf679267c4a8e55b4">GlobalBodyPlanner</a> (ros::NodeHandle nh)</td></tr>
 <tr class="memdesc:ae1cc3ec1e77b13cdf679267c4a8e55b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classGlobalBodyPlanner.html" title="A global body planning class for spirit. ">GlobalBodyPlanner</a> Class.  <a href="#ae1cc3ec1e77b13cdf679267c4a8e55b4">More...</a><br /></td></tr>
 <tr class="separator:ae1cc3ec1e77b13cdf679267c4a8e55b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d255bb8030cedc5b8ef166dc1e9710a"><td class="memItemLeft" align="right" valign="top"><a id="a9d255bb8030cedc5b8ef166dc1e9710a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a9d255bb8030cedc5b8ef166dc1e9710a">callPlanner</a> ()</td></tr>
+<tr class="memdesc:a9d255bb8030cedc5b8ef166dc1e9710a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call the correct planning class and compute statistics. <br /></td></tr>
+<tr class="separator:a9d255bb8030cedc5b8ef166dc1e9710a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0c9fffeaea60900b04ba017e1d1c4ec"><td class="memItemLeft" align="right" valign="top"><a id="af0c9fffeaea60900b04ba017e1d1c4ec"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#af0c9fffeaea60900b04ba017e1d1c4ec">spin</a> ()</td></tr>
 <tr class="memdesc:af0c9fffeaea60900b04ba017e1d1c4ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primary work function in class, called in node file for this component. <br /></td></tr>
@@ -96,18 +100,14 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a209eb08a4c8c9e51b88c4039a6cfbd12"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a209eb08a4c8c9e51b88c4039a6cfbd12">terrainMapCallback</a> (const grid_map_msgs::GridMap::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a209eb08a4c8c9e51b88c4039a6cfbd12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new terrain map data.  <a href="#a209eb08a4c8c9e51b88c4039a6cfbd12">More...</a><br /></td></tr>
 <tr class="separator:a209eb08a4c8c9e51b88c4039a6cfbd12"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada26fb1223523e819f985bc406ad3585"><td class="memItemLeft" align="right" valign="top"><a id="ada26fb1223523e819f985bc406ad3585"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#ada26fb1223523e819f985bc406ad3585">planner</a> ()</td></tr>
-<tr class="memdesc:ada26fb1223523e819f985bc406ad3585"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call the correct planning class. <br /></td></tr>
-<tr class="separator:ada26fb1223523e819f985bc406ad3585"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2460a22b959bd76c9d096bf5962ac076"><td class="memItemLeft" align="right" valign="top"><a id="a2460a22b959bd76c9d096bf5962ac076"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a2460a22b959bd76c9d096bf5962ac076">updatePlanParams</a> ()</td></tr>
-<tr class="memdesc:a2460a22b959bd76c9d096bf5962ac076"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the body plan parameters such as start and goal states. <br /></td></tr>
-<tr class="separator:a2460a22b959bd76c9d096bf5962ac076"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a749b7edbfdd8dab3fc8d9d02f0913e25"><td class="memItemLeft" align="right" valign="top"><a id="a749b7edbfdd8dab3fc8d9d02f0913e25"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a749b7edbfdd8dab3fc8d9d02f0913e25">updatePlan</a> ()</td></tr>
-<tr class="memdesc:a749b7edbfdd8dab3fc8d9d02f0913e25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the body plan with the current plan. <br /></td></tr>
-<tr class="separator:a749b7edbfdd8dab3fc8d9d02f0913e25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47647aac82b1cf87115d8cc4639000c5"><td class="memItemLeft" align="right" valign="top"><a id="a47647aac82b1cf87115d8cc4639000c5"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a47647aac82b1cf87115d8cc4639000c5">setStartAndGoalStates</a> ()</td></tr>
+<tr class="memdesc:a47647aac82b1cf87115d8cc4639000c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the start and goal states of the planner. <br /></td></tr>
+<tr class="separator:a47647aac82b1cf87115d8cc4639000c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2eb81f4bee8cec49686f963cd0251b51"><td class="memItemLeft" align="right" valign="top"><a id="a2eb81f4bee8cec49686f963cd0251b51"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a2eb81f4bee8cec49686f963cd0251b51">clearPlan</a> ()</td></tr>
+<tr class="memdesc:a2eb81f4bee8cec49686f963cd0251b51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the plan member variables. <br /></td></tr>
+<tr class="separator:a2eb81f4bee8cec49686f963cd0251b51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a463ae1b89a55721d81f2338eb9888df3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a463ae1b89a55721d81f2338eb9888df3">addBodyStateToMsg</a> (double t, State body_state, spirit_msgs::BodyPlan &amp;body_plan_msg)</td></tr>
 <tr class="memdesc:a463ae1b89a55721d81f2338eb9888df3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the body plan with the current plan.  <a href="#a463ae1b89a55721d81f2338eb9888df3">More...</a><br /></td></tr>
 <tr class="separator:a463ae1b89a55721d81f2338eb9888df3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,6 +115,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a7ef31af306895c311faee09a7023896b">publishPlan</a> ()</td></tr>
 <tr class="memdesc:a7ef31af306895c311faee09a7023896b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish the current body plan. <br /></td></tr>
 <tr class="separator:a7ef31af306895c311faee09a7023896b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a022a47eb17c660b2c3984def62c613a3"><td class="memItemLeft" align="right" valign="top"><a id="a022a47eb17c660b2c3984def62c613a3"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a022a47eb17c660b2c3984def62c613a3">waitForMap</a> ()</td></tr>
+<tr class="memdesc:a022a47eb17c660b2c3984def62c613a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wait until a map message has been received and processed. <br /></td></tr>
+<tr class="separator:a022a47eb17c660b2c3984def62c613a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -138,6 +142,14 @@ ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#ae58fd1f832f4d71fde0c8feb2f837d58">update_rate_</a></td></tr>
 <tr class="memdesc:ae58fd1f832f4d71fde0c8feb2f837d58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update rate for sending and receiving data;. <br /></td></tr>
 <tr class="separator:ae58fd1f832f4d71fde0c8feb2f837d58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d917ce8f4d6f43b3855dd3a48809fa7"><td class="memItemLeft" align="right" valign="top"><a id="a7d917ce8f4d6f43b3855dd3a48809fa7"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a7d917ce8f4d6f43b3855dd3a48809fa7">num_calls_</a></td></tr>
+<tr class="memdesc:a7d917ce8f4d6f43b3855dd3a48809fa7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of times to call the planner. <br /></td></tr>
+<tr class="separator:a7d917ce8f4d6f43b3855dd3a48809fa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99c27e47add60e2a0303fd51d19908e1"><td class="memItemLeft" align="right" valign="top"><a id="a99c27e47add60e2a0303fd51d19908e1"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a99c27e47add60e2a0303fd51d19908e1">replan_time_limit_</a></td></tr>
+<tr class="memdesc:a99c27e47add60e2a0303fd51d19908e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time after which replanning is halted;. <br /></td></tr>
+<tr class="separator:a99c27e47add60e2a0303fd51d19908e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b45b7415cdca9ec042f0619deee4447"><td class="memItemLeft" align="right" valign="top"><a id="a7b45b7415cdca9ec042f0619deee4447"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a7b45b7415cdca9ec042f0619deee4447">map_frame_</a></td></tr>
 <tr class="memdesc:a7b45b7415cdca9ec042f0619deee4447"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle for the map frame. <br /></td></tr>
