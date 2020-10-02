@@ -27,6 +27,11 @@ class GlobalBodyPlanner {
     GlobalBodyPlanner(ros::NodeHandle nh);
 
     /**
+     * @brief Call the correct planning class and compute statistics
+     */
+    void callPlanner();
+
+    /**
      * @brief Primary work function in class, called in node file for this component
      */
     void spin();
@@ -39,19 +44,14 @@ class GlobalBodyPlanner {
     void terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg);
 
     /**
-     * @brief Call the correct planning class
+     * @brief Set the start and goal states of the planner
      */
-    void planner();
+    void setStartAndGoalStates();
 
     /**
-     * @brief Update the body plan parameters such as start and goal states
+     * @brief Clear the plan member variables
      */
-    void updatePlanParams();
-
-    /**
-     * @brief Update the body plan with the current plan
-     */
-    void updatePlan();
+    void clearPlan();
 
     /**
      * @brief Update the body plan with the current plan
@@ -65,6 +65,11 @@ class GlobalBodyPlanner {
      * @brief Publish the current body plan
      */
     void publishPlan();
+
+    /**
+     * @brief Wait until a map message has been received and processed
+     */
+    void waitForMap();
 
     /// Subscriber for terrain map messages
     ros::Subscriber terrain_map_sub_;
@@ -80,6 +85,12 @@ class GlobalBodyPlanner {
 
     /// Update rate for sending and receiving data;
     double update_rate_;
+
+    /// Number of times to call the planner
+    int num_calls_;
+
+    /// Time after which replanning is halted;
+    double replan_time_limit_;
 
     /// Handle for the map frame
     std::string map_frame_;

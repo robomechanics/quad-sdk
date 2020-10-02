@@ -63,7 +63,7 @@ private:
     std::string map_data_source_;
 
     /// bool to flag if the map has been initialized yet
-    bool map_initialized_;
+    bool map_initialized_ = false;
 
     /// double for map resolution
     double resolution_;

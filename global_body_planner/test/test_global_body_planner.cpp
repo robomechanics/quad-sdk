@@ -16,7 +16,7 @@ TEST(GlobalBodyPlannerTest, testTrue) {
 
 int main(int argc, char** argv) {
 	testing::InitGoogleTest(&argc, argv);
-	ros::init(argc, argv, "tester");
+	ros::init(argc, argv, "global_body_planner_tester");
 
 	return RUN_ALL_TESTS();
 }
