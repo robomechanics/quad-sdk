@@ -14,6 +14,8 @@
 #include <ros/ros.h>
 #include <spirit_utils/fast_terrain_map.h>
 
+namespace planning_utils {
+
 // Define constants
 #define H_MAX 0.6 // 0.6 for Cheetah, 0.59 for ANYmal
 #define H_MIN 0.02 // 0.02
@@ -119,5 +121,7 @@ bool isValidYawRate(State s, Action a, double t);
 
 double arcLengthFunction(State s, Action a, double t, int phase);
 double computeArcLength(State s, Action a);
+
+}
 
 #endif

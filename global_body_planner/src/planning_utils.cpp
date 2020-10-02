@@ -1,4 +1,4 @@
-#include "global_body_planner/functions.h"
+#include "global_body_planner/planning_utils.h"
 
 // #include <vector>
 // #include <algorithm>
@@ -6,6 +6,8 @@
 // #include <unordered_set>
 // #include <math.h>
 // #include "rotate_grf.h"
+
+namespace planning_utils {
 
 void vectorToArray(State vec, double * new_array)
 {
@@ -713,4 +715,6 @@ double computeArcLength(State s, Action a)
 	arc_length += w*(arcLengthFunction(s,a,t1,STANCE) + arcLengthFunction(s,a,t2,STANCE));
 
 	return arc_length;
+}
+
 }

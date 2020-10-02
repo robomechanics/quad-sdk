@@ -131,7 +131,7 @@ include
 # JN Added
 set(MY_LIB_SOURCES
   src/global_body_planner.cpp
-  src/functions.cpp
+  src/planning_utils.cpp
   src/graph_class.cpp
   src/planner_class.cpp
   src/rrt.cpp

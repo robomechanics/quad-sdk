@@ -4,6 +4,8 @@ RRTConnectClass::RRTConnectClass(){}
 //destructor
 RRTConnectClass::~RRTConnectClass() {}
 
+using namespace planning_utils;
+
 int RRTConnectClass::attemptConnect(State s_existing, State s, double t_s, State &s_new, Action &a_new, FastTerrainMap& terrain, int direction)
 {
 	// Enforce stance time greater than the kinematic check resolution to ensure that the action is useful

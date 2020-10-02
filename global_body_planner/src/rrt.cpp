@@ -5,6 +5,8 @@ RRTClass::RRTClass(){}
 //destructor
 RRTClass::~RRTClass() {}
 
+using namespace planning_utils;
+
 bool RRTClass::newConfig(State s, State s_near, State &s_new, Action &a_new, FastTerrainMap& terrain, int direction)
 {
 	double best_so_far = stateDistance(s_near, s);

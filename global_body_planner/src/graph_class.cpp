@@ -6,6 +6,8 @@
 #include <unordered_set>
 #include <math.h>
 
+using namespace planning_utils;
+
 //constructor
 GraphClass::GraphClass(){}
 //destructor

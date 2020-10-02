@@ -7,6 +7,8 @@ PlannerClass::PlannerClass(){}
 //destructor
 PlannerClass::~PlannerClass(){}
 
+using namespace planning_utils;
+
 typedef std::pair<double, int> Distance; 
 
 State PlannerClass::randomState(FastTerrainMap& terrain)

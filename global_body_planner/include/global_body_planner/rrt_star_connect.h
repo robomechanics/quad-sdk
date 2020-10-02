@@ -2,11 +2,8 @@
 #define RRTSTARCONNECT_H
 
 #include "global_body_planner/rrt_connect.h"
-// #include "functions.h"
 
-// #define TRAPPED 0
-// #define ADVANCED 1
-// #define REACHED 2
+using namespace planning_utils;
 
 class RRTStarConnectClass : public RRTConnectClass
 {

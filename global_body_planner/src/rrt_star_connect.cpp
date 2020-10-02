@@ -5,6 +5,8 @@ RRTStarConnectClass::RRTStarConnectClass(){}
 //destructor
 RRTStarConnectClass::~RRTStarConnectClass() {}
 
+using namespace planning_utils;
+
 int RRTStarConnectClass::extend(PlannerClass &T, State s, FastTerrainMap& terrain, int direction)
 {
 	int s_nearest_index = T.getNearestNeighbor(s);
