@@ -15,12 +15,14 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh.param<std::string>("topics/discrete_body_plan", discrete_body_plan_topic, "/discrete_body_plan");
   nh.param<std::string>("map_frame",map_frame_,"/map");
   nh.param<double>("global_body_planner/update_rate", update_rate_, 1);
+  nh.param<int>("global_body_planner/num_calls", num_calls_, 1);
+  nh.param<double>("global_body_planner/replan_time_limit", replan_time_limit_, 0.0);
 
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1,&GlobalBodyPlanner::terrainMapCallback, this);
   body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(body_plan_topic,1);
   discrete_body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(discrete_body_plan_topic,1);
-  // discrete_states_pub_ = nh.advertise<visualization_msgs::Marker>("discrete_states", 1);
+
 }
 
 void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg) {
@@ -32,7 +34,22 @@ void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPt
   terrain_.loadDataFromGridMap(map);
 }
 
-void GlobalBodyPlanner::planner() {
+void GlobalBodyPlanner::clearPlan() {
+  // Clear old solutions
+  body_plan_.clear();
+  t_plan_.clear();
+  solve_time_info_.clear();
+  vertices_generated_info_.clear();
+  cost_vectors_.clear();
+  cost_vectors_times_.clear();
+}
+
+
+void GlobalBodyPlanner::callPlanner() {
+
+  // Get the most recent plan parameters and clear the old solutions
+  setStartAndGoalStates();
+  clearPlan();
 
   // Initialize statistics variables
   double plan_time;
@@ -43,20 +60,16 @@ void GlobalBodyPlanner::planner() {
   double total_solve_time = 0;
   double total_vertices_generated = 0;
   double total_path_duration = 0;
-  
-  // Define planning parameters
-  double max_time = 0.0;  // will timeout once a solution has been found after max_time
-  int N = 1;              // Number of times to call the planner
 
   // Set up more objects
-  cost_vectors_.reserve(N);
-  cost_vectors_times_.reserve(N);
+  cost_vectors_.reserve(num_calls_);
+  cost_vectors_times_.reserve(num_calls_);
   RRTClass rrt_obj;
   RRTConnectClass rrt_connect_obj;
   RRTStarConnectClass rrt_star_connect_obj;
 
-  // Loop through N planner calls
-  for (int i = 0; i<N; ++i)
+  // Loop through num_calls_ planner calls
+  for (int i = 0; i<num_calls_; ++i)
   {
     // Clear out previous solutions and initialize new statistics variables
     state_sequence_.clear();
@@ -68,10 +81,10 @@ void GlobalBodyPlanner::planner() {
     // rrt_obj.buildRRT(ground, robot_start, robot_goal,state_sequence,action_sequence);
     // rrt_obj.getStatistics(plan_time,success, vertices_generated, time_to_first_solve, cost_vector, cost_vector_times, path_duration);
 
-    rrt_connect_obj.buildRRTConnect(terrain_, robot_start_, robot_goal_,state_sequence_,action_sequence_, max_time);
+    rrt_connect_obj.buildRRTConnect(terrain_, robot_start_, robot_goal_,state_sequence_,action_sequence_, replan_time_limit_);
     rrt_connect_obj.getStatistics(plan_time,success, vertices_generated, time_to_first_solve, cost_vector, cost_vector_times, path_duration);
     
-    // rrt_star_connect_obj.buildRRTStarConnect(ground, robot_start, robot_goal,state_sequence,action_sequence, max_time);
+    // rrt_star_connect_obj.buildRRTStarConnect(ground, robot_start, robot_goal,state_sequence,action_sequence, replan_time_limit_);
     // rrt_star_connect_obj.getStatistics(plan_time,success, vertices_generated, time_to_first_solve, cost_vector, cost_vector_times, path_duration);
 
     // Handle the statistical data
@@ -91,43 +104,28 @@ void GlobalBodyPlanner::planner() {
     vertices_generated_info_.push_back(vertices_generated);
   }
     
-  // Report averaged statistics if N > 1
-  if (N > 1)
+  // Report averaged statistics if num_calls_ > 1
+  if (num_calls_ > 1)
   {
-    std::cout << "Average vertices generated: " << total_vertices_generated/N << std::endl;
-    std::cout << "Average solve time: " << total_solve_time/N << std::endl;
-    std::cout << "Average path duration: " << total_path_duration/N << std::endl;
+    std::cout << "Average vertices generated: " << total_vertices_generated/num_calls_ << std::endl;
+    std::cout << "Average solve time: " << total_solve_time/num_calls_ << std::endl;
+    std::cout << "Average path duration: " << total_path_duration/num_calls_ << std::endl;
   }
-}
-
-void GlobalBodyPlanner::updatePlanParams() {
-  // Update any relevant planning parameters
-  robot_start_ = {0,0,0.3,0.5,0,0,0,0};
-  robot_goal_ =  {8,0,0.3,0.5,0,0,0,0};
-}
-
-void GlobalBodyPlanner::updatePlan() {
-
-  // Get the most recent plan parameters
-  updatePlanParams();
-
-  // Clear old solutions
-  body_plan_.clear();
-  t_plan_.clear();
-  state_sequence_.clear();
-  action_sequence_.clear();
-  solve_time_info_.clear();
-  vertices_generated_info_.clear();
-  cost_vectors_.clear();
-  cost_vectors_times_.clear();
-
-  //call the planner
-  planner(); 
 
   // Interpolate to get full body plan
   double dt = 0.05;
   std::vector<int> interp_phase;
   getInterpPath(state_sequence_, action_sequence_,dt,body_plan_, t_plan_, interp_phase);
+}
+
+void GlobalBodyPlanner::setStartAndGoalStates() {
+  // Update any relevant planning parameters
+
+  robot_start_ = {0,0,0.4,0,0.1,0,0,0};
+  robot_goal_ =  {8,0,0.4,0,0,0,0,0};
+
+  robot_start_[2] += terrain_.getGroundHeight(robot_start_[0], robot_start_[1]);
+  robot_goal_[2] += terrain_.getGroundHeight(robot_goal_[0], robot_goal_[1]);
 }
 
 void GlobalBodyPlanner::addBodyStateToMsg(double t, State body_state, 
@@ -189,23 +187,25 @@ void GlobalBodyPlanner::publishPlan() {
   discrete_body_plan_pub_.publish(discrete_body_plan_msg);
 }
 
-void GlobalBodyPlanner::spin() {
-  ros::Rate r(update_rate_);
-
-  // Spin until terrain map message has been received and processed
+void GlobalBodyPlanner::waitForMap() {
+    // Spin until terrain map message has been received and processed
   boost::shared_ptr<grid_map_msgs::GridMap const> shared_map;
   while((shared_map == nullptr) && ros::ok())
   {
     shared_map = ros::topic::waitForMessage<grid_map_msgs::GridMap>("/terrain_map", nh_);
     ros::spinOnce();
-    r.sleep();
   }
+}
 
+void GlobalBodyPlanner::spin() {
+  ros::Rate r(update_rate_);
+
+  waitForMap();
+  
   // Update the plan
-  updatePlan();
+  callPlanner();
 
   while (ros::ok()) {
-    // ROS_INFO("In GlobalBodyPlanner spin, updating at %4.1f Hz", update_rate_);
     
     // If desired, get a new plan
     // updatePlan();

@@ -11,7 +11,7 @@ TEST(ContactDetection, testTrue) {
 
 int main(int argc, char** argv) {
 	testing::InitGoogleTest(&argc, argv);
-	ros::init(argc, argv, "tester");
+	ros::init(argc, argv, "contact_deetection_tester");
 
 	return RUN_ALL_TESTS();
 }

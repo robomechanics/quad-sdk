@@ -6,7 +6,7 @@
 #include <spirit_msgs/Footstep.h>
 #include <spirit_msgs/FootstepPlan.h>
 
-//! A template class for spirit
+//! A class for interfacing between RViz and spirit-software topics.
 /*!
    RVizInterface is a container for all of the logic utilized in the template node.
    The implementation must provide a clean and high level interface to the core algorithm

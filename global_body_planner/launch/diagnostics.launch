@@ -1,5 +1,5 @@
 <launch>
-        <rosparam command="load" file="$(find local_footstep_planner)/../config/project_params.yaml"/>
+        <rosparam command="load" file="$(find global_body_planner)/config/diagnostics.yaml"/>
 
         <!-- Launch the node to generate simple terrain -->
         <node pkg="spirit_utils" type="terrain_map_publisher_node" name="terrain_map_publisher" output="screen" />
@@ -9,9 +9,6 @@
             <param name="image_path" value="$(find spirit_utils)/data/slope.png" />
             <param name="topic" value="~image" />
         </node>
-
-        <!-- Launch the grid map image to grid map demo node. -->
-        <!-- <node pkg="spirit_utils" type="image_to_gridmap_demo_custom_node" name="image_to_gridmap_demo_custom_node" output="screen" /> -->
                 
         <!-- Launch the node to publish the global body plan -->
         <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen"/>
