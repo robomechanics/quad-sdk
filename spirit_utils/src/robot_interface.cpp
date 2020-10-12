@@ -23,10 +23,14 @@ void RobotInterface::controlInputCallback(const sensor_msgs::JointState::ConstPt
 
 void RobotInterface::publishJointEncoders() {
   // ROS_INFO("In publishJointEncoders");
+  sensor_msgs::JointState msg;
+  joint_encoder_pub_.publish(msg);
 }
 
 void RobotInterface::publishImu() {
   // ROS_INFO("In publishImu");
+  sensor_msgs::Imu msg;
+  imu_pub_.publish(msg);
 }
 
 void RobotInterface::spin() {
