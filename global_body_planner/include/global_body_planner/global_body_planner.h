@@ -4,12 +4,15 @@
 #include <ros/ros.h>
 #include <nav_msgs/Path.h>
 #include <spirit_msgs/BodyPlan.h>
-#include "global_body_planner/functions.h"
+#include "global_body_planner/planning_utils.h"
 #include "spirit_utils/fast_terrain_map.h"
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
 #include <grid_map_ros/GridMapRosConverter.hpp>
+
+
+using namespace planning_utils;
 
 //! A global body planning class for spirit
 /*!

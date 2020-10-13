@@ -3,6 +3,8 @@
 
 #include "global_body_planner/graph_class.h"
 
+using namespace planning_utils;
+
 class PlannerClass : public GraphClass
 {
     public:
