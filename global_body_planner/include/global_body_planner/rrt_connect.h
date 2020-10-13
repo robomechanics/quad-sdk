@@ -8,6 +8,8 @@
 #define ADVANCED 1
 #define REACHED 2
 
+using namespace planning_utils;
+
 class RRTConnectClass : public RRTClass
 {
     public:
