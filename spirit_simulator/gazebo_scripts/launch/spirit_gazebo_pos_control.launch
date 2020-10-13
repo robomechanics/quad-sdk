@@ -45,6 +45,6 @@ SOFTWARE.
   </node>
 
   <!-- Launch ros_controllers -->
-  <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
-  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/spirit" args="joint_state_controller joint0_effort_controller joint1_effort_controller joint2_effort_controller joint3_effort_controller joint4_effort_controller joint5_effort_controller joint6_effort_controller joint7_effort_controller joint8_effort_controller joint9_effort_controller joint10_effort_controller joint11_effort_controller"/>
+  <rosparam file="$(find gazebo_scripts)/config/spirit_position_control.yaml" command="load"/>
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/spirit" args="joint_state_controller joint0_position_controller joint1_position_controller joint2_position_controller joint3_position_controller joint4_position_controller joint5_position_controller joint6_position_controller joint7_position_controller joint8_position_controller joint9_position_controller joint10_position_controller joint11_position_controller"/>
 </launch>
