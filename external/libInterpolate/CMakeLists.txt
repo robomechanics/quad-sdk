@@ -100,10 +100,6 @@ include(CMakePackageConfigHelpers)
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-<<<<<<< HEAD
-  #${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-=======
->>>>>>> origin
   DESTINATION cmake
   )
 
