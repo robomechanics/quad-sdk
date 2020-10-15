@@ -4,6 +4,5 @@
 # Accurate timing information is stored in the header
 
 Header header
-float32[] pos
-float32[] vel
-float32[] torque
+
+geometry_msgs/Vector3[] grfs

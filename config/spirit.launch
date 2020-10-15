@@ -16,6 +16,9 @@
         <!-- Launch the node to publish the local footstep plan -->
         <node name="local_footstep_planner" pkg="local_footstep_planner" type="local_footstep_planner_node" output="screen"/>
 
+        <!-- Launch the node to publish the mpc controller -->
+        <node name="mpc_controller" pkg="mpc_controller" type="mpc_controller_node" output="screen"/>
+
         <!-- Launch the stand-in robot interface node -->
         <node name="robot_interface" pkg="spirit_utils" type="robot_interface_node" output="screen"/>
 
@@ -29,5 +32,6 @@
 
         <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(find global_body_planner)/rviz/example_with_terrain.rviz"/>
+
 
 </launch>

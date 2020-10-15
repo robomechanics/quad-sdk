@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
+#include <spirit_msgs/ControlInput.h>
 
 //! A class for interfacing between stand-in robot data and other spirit-software nodes and topics.
 /*!
@@ -29,7 +30,7 @@ private:
    * @brief Callback function to handle new control inputs
    * @param[in] Joint state message contining desired position, velocity, and torque for each joint
    */
-  void controlInputCallback(const sensor_msgs::JointState::ConstPtr& msg);
+  void controlInputCallback(const spirit_msgs::ControlInput::ConstPtr& msg);
 
   /**
    * @brief Function to publish joint encoder data. Likely empty.

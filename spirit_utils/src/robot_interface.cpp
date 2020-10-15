@@ -17,7 +17,7 @@ RobotInterface::RobotInterface(ros::NodeHandle nh) {
   imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic,1);
 }
 
-void RobotInterface::controlInputCallback(const sensor_msgs::JointState::ConstPtr& msg) {
+void RobotInterface::controlInputCallback(const spirit_msgs::ControlInput::ConstPtr& msg) {
   // ROS_INFO("In controlInputCallback");
 }
 
