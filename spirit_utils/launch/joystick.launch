@@ -1,0 +1,10 @@
+<launch>
+	<node name="joy_node" pkg="joy" type="joy_node">
+    </node>
+	<node name="teleop_node" pkg="teleop_twist_joy" type="teleop_node">
+        <remap from="cmd_vel" to="/mpc/twist_cmd" />
+        <param name="axis_linear" value="1"/>
+        <param name="axis_angular" value="3"/>
+        <param name="enable_button" value="5"/>
+    </node>
+</launch>
