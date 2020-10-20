@@ -16,6 +16,9 @@
         <!-- Launch the node to publish the local footstep plan -->
         <node name="local_footstep_planner" pkg="local_footstep_planner" type="local_footstep_planner_node" output="screen"/>
 
+        <!-- Launch the node the publish state estimate messages-->
+        <node name="ekf_estimator" pkg="ekf_estimator" type="ekf_estimator_node" output="screen"/>
+
         <!-- Launch the node to publish the mpc controller -->
         <node name="mpc_controller" pkg="mpc_controller" type="mpc_controller_node" output="screen"/>
 

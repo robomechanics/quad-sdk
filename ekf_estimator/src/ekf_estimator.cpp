@@ -13,7 +13,7 @@ EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
 	// Setup pubs and subs
 	joint_encoder_sub_ = nh_.subscribe(joint_encoder_topic,1,&EKFEstimator::jointEncoderCallback, this);
 	imu_sub_ = nh_.subscribe(imu_topic,1,&EKFEstimator::imuCallback, this);
-	state_estimate_pub_ = nh_.advertise<std_msgs::String>(state_estimate_topic,1);
+	state_estimate_pub_ = nh_.advertise<spirit_msgs::StateEstimate>(state_estimate_topic,1);
 }
 
 void EKFEstimator::jointEncoderCallback(const sensor_msgs::JointState::ConstPtr& msg) {
