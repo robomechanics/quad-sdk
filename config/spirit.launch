@@ -25,10 +25,10 @@
         <!-- Launch the stand-in robot interface node -->
         <node name="robot_interface" pkg="spirit_utils" type="robot_interface_node" output="screen"/>
 
-		<!-- Launch the grid map visualizer -->
-		<node pkg="grid_map_visualization" type="grid_map_visualization" name="grid_map_visualization" output="screen">
-		  <!-- <rosparam command="load" file="$(find global_body_planner)/config/simple_terrain.yaml" /> -->
-		</node>
+        <!-- Launch the grid map visualizer -->
+        <node pkg="grid_map_visualization" type="grid_map_visualization" name="grid_map_visualization" output="screen">
+          <!-- <rosparam command="load" file="$(find global_body_planner)/config/simple_terrain.yaml" /> -->
+        </node>
 
         <!-- Launch the node to publish the visual topics for the plans -->
         <node name="rviz_interface" pkg="spirit_utils" type="rviz_interface_node" output="screen"/>
