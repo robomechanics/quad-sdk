@@ -2,3 +2,4 @@ docs/
 *.pyc
 *.vscode
 external/libInterpolate/build/
+*.vscode
