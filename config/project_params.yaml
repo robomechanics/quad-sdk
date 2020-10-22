@@ -17,6 +17,7 @@ ekf_estimator:
 
 global_body_planner:
   update_rate: 5
+  num_calls: 1
 
 local_footstep_planner:
   update_rate: 10

@@ -24,7 +24,7 @@ class GlobalBodyPlanner {
   public:
     /**
      * @brief Constructor for GlobalBodyPlanner Class
-     * @param Node handle
+     * @param[in] Node handle
      * @return Constructed object of type GlobalBodyPlanner
      */
     GlobalBodyPlanner(ros::NodeHandle nh);
@@ -42,7 +42,7 @@ class GlobalBodyPlanner {
   private:
     /**
      * @brief Callback function to handle new terrain map data
-     * @param[in] grid_map_msgs::GridMap contining map data
+     * @param[in] msg the message contining map data
      */
     void terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg);
 

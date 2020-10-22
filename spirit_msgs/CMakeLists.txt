@@ -23,6 +23,7 @@ add_message_files(
 	BodyPlan.msg
 	FootstepPlan.msg
 	Footstep.msg
+	ControlInput.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
