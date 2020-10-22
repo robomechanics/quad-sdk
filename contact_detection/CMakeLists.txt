@@ -15,6 +15,7 @@ endif()
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  spirit_msgs
 )
 
 catkin_package(
@@ -59,4 +60,3 @@ target_link_libraries(contact_detection_node
 ## Add gtest based cpp test target and link libraries
 catkin_add_gtest(contact_detection_test test/test_contact_detection.cpp)
 target_link_libraries(contact_detection_test ${catkin_LIBRARIES} contact_detection)
-

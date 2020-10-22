@@ -24,6 +24,7 @@ add_message_files(
 	FootstepPlan.msg
 	Footstep.msg
 	ControlInput.msg
+  ContactDetection.msg 
 )
 
 ## Generate added messages and services with any dependencies listed here

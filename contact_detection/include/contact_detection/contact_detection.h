@@ -2,6 +2,10 @@
 #define CONTACTDETECTION_H
 
 #include <ros/ros.h>
+#include <sensor_msgs/JointState.h>
+#include <sensor_msgs/Imu.h>
+#include <std_msgs/String.h>
+#include <spirit_msgs/ContactDetection.h>
 
 //! Contact detection class for spirit
 /*!
@@ -22,11 +26,27 @@ public:
 	void spin();
 
 private:
-	/// ROS subscriber
-	ros::Subscriber sample_sub;
+	/**
+	 * @brief Callback function to handle new joint encoder data
+	 * @param[in] joint_encoder_msg sensor_msgs<JointState> containing joint pos,vel,current
+	 */
+	void jointEncoderCallback(const sensor_msgs::JointState::ConstPtr& msg);
 
-	/// ROS Publisher
-	ros::Publisher sample_pub;
+	/**
+	 * @brief Callback function to handle new imu data
+	 * @param[in] imu_msg sensors_msgs<Imu> containing new imu data
+	 */
+	void imuCallback(const sensor_msgs::Imu::ConstPtr& msg);
+
+
+	// ROS subscriber for joint encoder messages
+	ros::Subscriber joint_encoder_sub_;
+
+	// ROS subscriber for imu messages
+	ros::Subscriber imu_sub_;
+
+	// ROS Publisher for contact detection messages
+	ros::Publisher contact_detection_pub_;
 
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;
