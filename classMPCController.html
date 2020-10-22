@@ -60,6 +60,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classMPCController-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -82,8 +83,51 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:ac11fdd88987c9fcd5222f8fd08f70770"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls ros spinOnce and pubs data at set frequency. <br /></td></tr>
 <tr class="separator:ac11fdd88987c9fcd5222f8fd08f70770"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:af2a21d5c59d18636108a16375acb9379"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#af2a21d5c59d18636108a16375acb9379">stateEstimateCallback</a> (const spirit_msgs::StateEstimate::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:af2a21d5c59d18636108a16375acb9379"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new state estimates.  <a href="#af2a21d5c59d18636108a16375acb9379">More...</a><br /></td></tr>
+<tr class="separator:af2a21d5c59d18636108a16375acb9379"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5ec9a45629972dab644e72aa1fc6b89"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#ad5ec9a45629972dab644e72aa1fc6b89">footstepPlanCallback</a> (const spirit_msgs::FootstepPlan::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:ad5ec9a45629972dab644e72aa1fc6b89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new control inputs.  <a href="#ad5ec9a45629972dab644e72aa1fc6b89">More...</a><br /></td></tr>
+<tr class="separator:ad5ec9a45629972dab644e72aa1fc6b89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2271bd1d98fbdc1e4fdde018e7057c4a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#a2271bd1d98fbdc1e4fdde018e7057c4a">bodyPlanCallback</a> (const spirit_msgs::BodyPlan::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a2271bd1d98fbdc1e4fdde018e7057c4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new body plan data.  <a href="#a2271bd1d98fbdc1e4fdde018e7057c4a">More...</a><br /></td></tr>
+<tr class="separator:a2271bd1d98fbdc1e4fdde018e7057c4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20413e4dcefd6fbc63cbc14dc3f2eddf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#a20413e4dcefd6fbc63cbc14dc3f2eddf">discreteBodyPlanCallback</a> (const spirit_msgs::BodyPlan::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a20413e4dcefd6fbc63cbc14dc3f2eddf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new discrete body plan data.  <a href="#a20413e4dcefd6fbc63cbc14dc3f2eddf">More...</a><br /></td></tr>
+<tr class="separator:a20413e4dcefd6fbc63cbc14dc3f2eddf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9915855dd2a7fdadeaa7f6acc9a0ac55"><td class="memItemLeft" align="right" valign="top"><a id="a9915855dd2a7fdadeaa7f6acc9a0ac55"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#a9915855dd2a7fdadeaa7f6acc9a0ac55">publishControlInput</a> ()</td></tr>
+<tr class="memdesc:a9915855dd2a7fdadeaa7f6acc9a0ac55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to publish imu data. Likely empty. <br /></td></tr>
+<tr class="separator:a9915855dd2a7fdadeaa7f6acc9a0ac55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
+<tr class="memitem:a2512d019f703e67421ff98e0ae6ae67a"><td class="memItemLeft" align="right" valign="top"><a id="a2512d019f703e67421ff98e0ae6ae67a"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#a2512d019f703e67421ff98e0ae6ae67a">state_estimate_sub_</a></td></tr>
+<tr class="memdesc:a2512d019f703e67421ff98e0ae6ae67a"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the state estimate. <br /></td></tr>
+<tr class="separator:a2512d019f703e67421ff98e0ae6ae67a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e17b44b3b6f1e12c317b27ae78ab08a"><td class="memItemLeft" align="right" valign="top"><a id="a8e17b44b3b6f1e12c317b27ae78ab08a"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#a8e17b44b3b6f1e12c317b27ae78ab08a">footstep_plan_sub_</a></td></tr>
+<tr class="memdesc:a8e17b44b3b6f1e12c317b27ae78ab08a"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the footstep plan. <br /></td></tr>
+<tr class="separator:a8e17b44b3b6f1e12c317b27ae78ab08a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c37f68362c09f34fa08b1be52813d61"><td class="memItemLeft" align="right" valign="top"><a id="a2c37f68362c09f34fa08b1be52813d61"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#a2c37f68362c09f34fa08b1be52813d61">body_plan_sub_</a></td></tr>
+<tr class="memdesc:a2c37f68362c09f34fa08b1be52813d61"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the body plan. <br /></td></tr>
+<tr class="separator:a2c37f68362c09f34fa08b1be52813d61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7631b930055fc3fa27e5714f5457e16b"><td class="memItemLeft" align="right" valign="top"><a id="a7631b930055fc3fa27e5714f5457e16b"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#a7631b930055fc3fa27e5714f5457e16b">discrete_body_plan_sub_</a></td></tr>
+<tr class="memdesc:a7631b930055fc3fa27e5714f5457e16b"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the discrete body plan. <br /></td></tr>
+<tr class="separator:a7631b930055fc3fa27e5714f5457e16b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6081c62de59a67cce4d2eccf6cba643e"><td class="memItemLeft" align="right" valign="top"><a id="a6081c62de59a67cce4d2eccf6cba643e"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#a6081c62de59a67cce4d2eccf6cba643e">control_input_pub_</a></td></tr>
+<tr class="memdesc:a6081c62de59a67cce4d2eccf6cba643e"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS publisher for control input. <br /></td></tr>
+<tr class="separator:a6081c62de59a67cce4d2eccf6cba643e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23ffd702292a0f5af2aa7de94140127c"><td class="memItemLeft" align="right" valign="top"><a id="a23ffd702292a0f5af2aa7de94140127c"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#a23ffd702292a0f5af2aa7de94140127c">map_frame_</a></td></tr>
+<tr class="memdesc:a23ffd702292a0f5af2aa7de94140127c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define map frame. <br /></td></tr>
+<tr class="separator:a23ffd702292a0f5af2aa7de94140127c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25b2e113ddd845e80abaf51adbeac2a3"><td class="memItemLeft" align="right" valign="top"><a id="a25b2e113ddd845e80abaf51adbeac2a3"></a>
 ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#a25b2e113ddd845e80abaf51adbeac2a3">nh_</a></td></tr>
 <tr class="memdesc:a25b2e113ddd845e80abaf51adbeac2a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nodehandle to pub to and sub from. <br /></td></tr>
@@ -121,6 +165,143 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classMPCController.html" title="Implements online MPC. ">MPCController</a> </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a2271bd1d98fbdc1e4fdde018e7057c4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2271bd1d98fbdc1e4fdde018e7057c4a">&#9670;&nbsp;</a></span>bodyPlanCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MPCController::bodyPlanCallback </td>
+          <td>(</td>
+          <td class="paramtype">const spirit_msgs::BodyPlan::ConstPtr &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback function to handle new body plan data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">nav_msgs::Path</td><td>contining map data </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a20413e4dcefd6fbc63cbc14dc3f2eddf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20413e4dcefd6fbc63cbc14dc3f2eddf">&#9670;&nbsp;</a></span>discreteBodyPlanCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MPCController::discreteBodyPlanCallback </td>
+          <td>(</td>
+          <td class="paramtype">const spirit_msgs::BodyPlan::ConstPtr &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback function to handle new discrete body plan data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">nav_msgs::Path</td><td>contining map data </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ad5ec9a45629972dab644e72aa1fc6b89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5ec9a45629972dab644e72aa1fc6b89">&#9670;&nbsp;</a></span>footstepPlanCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MPCController::footstepPlanCallback </td>
+          <td>(</td>
+          <td class="paramtype">const spirit_msgs::FootstepPlan::ConstPtr &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback function to handle new control inputs. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">Joint</td><td>state message contining desired position, velocity, and torque for each joint </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="af2a21d5c59d18636108a16375acb9379"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2a21d5c59d18636108a16375acb9379">&#9670;&nbsp;</a></span>stateEstimateCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MPCController::stateEstimateCallback </td>
+          <td>(</td>
+          <td class="paramtype">const spirit_msgs::StateEstimate::ConstPtr &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback function to handle new state estimates. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">State</td><td>estimate message contining position and velocity for each joint and robot body </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
