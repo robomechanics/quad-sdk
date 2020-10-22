@@ -35,9 +35,11 @@ SOFTWARE.
   </include>
 
   <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_gazebo.urdf" />
-  <!-- Spawn URDF model -->
+  <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf/spirit.sdf" />
 
-  <node name="spawn_urdf_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model spirit -x 0.0 -y 0.0 -z 0.7 -J 1 1 -J 3 1 -J 5 1 -J 7 1 -J 0 0.7 -J 2 0.7 -J 4 0.7 -J 6 0.7" output="screen"/>
+  <!-- Spawn SDF model -->
+
+  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.7 -J 1 1 -J 3 1 -J 5 1 -J 7 1 -J 0 0.7 -J 2 0.7 -J 4 0.7 -J 6 0.7" output="screen"/>
 
   <!-- Launch robot state publisher to publish TF info from gazebo -->
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
