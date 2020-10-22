@@ -18,14 +18,12 @@ RobotInterface::RobotInterface(ros::NodeHandle nh) {
 }
 
 void RobotInterface::controlInputCallback(const spirit_msgs::ControlInput::ConstPtr& msg) {
-  // ROS_INFO("In controlInputCallback");
 }
 
 void RobotInterface::publishJointEncoders() {
-  // ROS_INFO("In publishJointEncoders");
   sensor_msgs::JointState msg;
 
-  std::vector<std::string> joint_names = {"0","1","2","3","4","5","6","7","8","9","10","11"};
+  std::vector<std::string> joint_names = {"j8", "j0", "j1", "j9","j2", "j3", "j10", "j4","j5", "j11", "j6", "j7"};
   std::vector<double> joint_pos (12,0);
   std::vector<double> joint_vel (12,0);
   std::vector<double> joint_effort (12,0);
@@ -39,7 +37,6 @@ void RobotInterface::publishJointEncoders() {
 }
 
 void RobotInterface::publishImu() {
-  // ROS_INFO("In publishImu");
   sensor_msgs::Imu msg;
   imu_pub_.publish(msg);
 }
