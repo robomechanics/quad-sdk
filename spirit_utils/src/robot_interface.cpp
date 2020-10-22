@@ -24,6 +24,17 @@ void RobotInterface::controlInputCallback(const spirit_msgs::ControlInput::Const
 void RobotInterface::publishJointEncoders() {
   // ROS_INFO("In publishJointEncoders");
   sensor_msgs::JointState msg;
+
+  std::vector<std::string> joint_names = {"0","1","2","3","4","5","6","7","8","9","10","11"};
+  std::vector<double> joint_pos (12,0);
+  std::vector<double> joint_vel (12,0);
+  std::vector<double> joint_effort (12,0);
+
+  msg.name = joint_names;
+  msg.position = joint_pos;
+  msg.velocity = joint_vel;
+  msg.effort = joint_effort;
+  msg.header.stamp = ros::Time::now();
   joint_encoder_pub_.publish(msg);
 }
 
