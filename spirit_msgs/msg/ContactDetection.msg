@@ -2,5 +2,5 @@
 # as probabilities in contactProb and binaries in contactState
 Header header
 
-float32 contactProb[];
-bool contactState[];
+float32[] contactProb;
+bool[] contactState;
