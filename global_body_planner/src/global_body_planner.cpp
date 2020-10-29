@@ -1,9 +1,4 @@
 #include "global_body_planner/global_body_planner.h"
-#include "global_body_planner/planner_class.h"
-#include "global_body_planner/rrt_star_connect.h"
-
-#include <tf2/LinearMath/Quaternion.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 using namespace planning_utils;
 
@@ -19,6 +14,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh.param<double>("global_body_planner/update_rate", update_rate_, 1);
   nh.param<int>("global_body_planner/num_calls", num_calls_, 1);
   nh.param<double>("global_body_planner/replan_time_limit", replan_time_limit_, 0.0);
+  nh.param<std::string>("global_body_planner/algorithm", algorithm_, "rrt-connect");
 
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1,&GlobalBodyPlanner::terrainMapCallback, this);
@@ -79,15 +75,16 @@ void GlobalBodyPlanner::callPlanner() {
     std::vector<double> cost_vector;
     std::vector<double> cost_vector_times;
 
-    // Call the appropriate planning method
-    // rrt_obj.buildRRT(ground, robot_start, robot_goal,state_sequence,action_sequence);
-    // rrt_obj.getStatistics(plan_time,success, vertices_generated, time_to_first_solve, cost_vector, cost_vector_times, path_duration);
-
-    rrt_connect_obj.buildRRTConnect(terrain_, robot_start_, robot_goal_,state_sequence_,action_sequence_, replan_time_limit_);
-    rrt_connect_obj.getStatistics(plan_time,success, vertices_generated, time_to_first_solve, cost_vector, cost_vector_times, path_duration);
-    
-    // rrt_star_connect_obj.buildRRTStarConnect(ground, robot_start, robot_goal,state_sequence,action_sequence, replan_time_limit_);
-    // rrt_star_connect_obj.getStatistics(plan_time,success, vertices_generated, time_to_first_solve, cost_vector, cost_vector_times, path_duration);
+    // Call the appropriate planning method (either RRT-Connect or RRT*-Connect)
+    if (algorithm_.compare("rrt-connect") == 0){
+      rrt_connect_obj.buildRRTConnect(terrain_, robot_start_, robot_goal_,state_sequence_,action_sequence_, replan_time_limit_);
+      rrt_connect_obj.getStatistics(plan_time,success, vertices_generated, time_to_first_solve, cost_vector, cost_vector_times, path_duration);
+    } else if (algorithm_.compare("rrt-star-connect") == 0){
+      rrt_star_connect_obj.buildRRTStarConnect(terrain_, robot_start_, robot_goal_,state_sequence_,action_sequence_, replan_time_limit_);
+      rrt_star_connect_obj.getStatistics(plan_time,success, vertices_generated, time_to_first_solve, cost_vector, cost_vector_times, path_duration);
+    } else {
+      throw std::runtime_error("Invalid algorithm specified");
+    }
 
     // Handle the statistical data
     cost_vectors_.push_back(cost_vector);

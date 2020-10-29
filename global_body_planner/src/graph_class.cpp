@@ -8,9 +8,7 @@
 
 using namespace planning_utils;
 
-//constructor
 GraphClass::GraphClass(){}
-//destructor
 GraphClass::~GraphClass(){}
 
 State GraphClass::getVertex(int idx)
