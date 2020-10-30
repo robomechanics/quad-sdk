@@ -1,6 +1,12 @@
 var searchData=
 [
-  ['update_5frate_5f',['update_rate_',['../classContactDetection.html#a00883012eb46da3c3660aaabe5681566',1,'ContactDetection::update_rate_()'],['../classEKFEstimator.html#a2f1e9f71345af6334594bbb4ae04996c',1,'EKFEstimator::update_rate_()'],['../classGlobalBodyPlanner.html#ae58fd1f832f4d71fde0c8feb2f837d58',1,'GlobalBodyPlanner::update_rate_()'],['../classLocalFootstepPlanner.html#ae2b08d0934e4491999a1b2a2ac39451d',1,'LocalFootstepPlanner::update_rate_()'],['../classMPCController.html#a273f2bd82c28327f28b1bb6a1f71aab9',1,'MPCController::update_rate_()'],['../classPackageTemplate.html#aa55d673905c19d093cc8c55819f1e500',1,'PackageTemplate::update_rate_()'],['../classRobotInterface.html#a6de7603ad9c8bb345fec2e60a6657bd7',1,'RobotInterface::update_rate_()'],['../classRVizInterface.html#a985879ba7abfa1e1fc6cd57e56072d9b',1,'RVizInterface::update_rate_()'],['../classTerrainMapPublisher.html#a0acbdc1ceea7069aaef82f4c18388fb2',1,'TerrainMapPublisher::update_rate_()']]],
-  ['updateplan',['updatePlan',['../classLocalFootstepPlanner.html#a72440a898d177da24ade355fec6c1f99',1,'LocalFootstepPlanner']]],
-  ['updatestep',['updateStep',['../classEKFEstimator.html#a2f31ab8d70f8ba90eda345810a0913b5',1,'EKFEstimator']]]
+  ['replan_5ftime_5flimit_5f',['replan_time_limit_',['../classGlobalBodyPlanner.html#a99c27e47add60e2a0303fd51d19908e1',1,'GlobalBodyPlanner']]],
+  ['resolution_5f',['resolution_',['../classTerrainMapPublisher.html#a01d73a9b142c5cd7457feb50045dc370',1,'TerrainMapPublisher']]],
+  ['robot_5fgoal_5f',['robot_goal_',['../classGlobalBodyPlanner.html#a9c4fa0a4981d47552500e7fbe4053bb4',1,'GlobalBodyPlanner']]],
+  ['robot_5fstart_5f',['robot_start_',['../classGlobalBodyPlanner.html#ac9494fb18caf34bde43db027b28d08e2',1,'GlobalBodyPlanner']]],
+  ['robotinterface',['RobotInterface',['../classRobotInterface.html',1,'RobotInterface'],['../classRobotInterface.html#ad41a94fbc8f9db9201d1a92ab950153a',1,'RobotInterface::RobotInterface()']]],
+  ['rrtclass',['RRTClass',['../classRRTClass.html',1,'']]],
+  ['rrtconnectclass',['RRTConnectClass',['../classRRTConnectClass.html',1,'']]],
+  ['rrtstarconnectclass',['RRTStarConnectClass',['../classRRTStarConnectClass.html',1,'']]],
+  ['rvizinterface',['RVizInterface',['../classRVizInterface.html',1,'RVizInterface'],['../classRVizInterface.html#aa28dae09fa5285f8570181ca119717d2',1,'RVizInterface::RVizInterface()']]]
 ];
