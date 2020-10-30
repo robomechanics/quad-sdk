@@ -27,6 +27,12 @@ void EKFEstimator::imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
 spirit_msgs::StateEstimate EKFEstimator::updateStep() {
   spirit_msgs::StateEstimate new_state_est;
 
+  if (last_joint_state_msg_ != NULL)
+  {
+    new_state_est.joints = *last_joint_state_msg_;
+  }
+
+  new_state_est.header.stamp = ros::Time::now();
   return new_state_est;
 }
 

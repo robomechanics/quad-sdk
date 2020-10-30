@@ -1,0 +1,493 @@
+<?xml version='1.0'?>
+
+<!-- 
+MIT License (modified)
+
+Copyright (c) 2018 The Trustees of the University of Pennsylvania
+Authors:
+Vasileios Vasilopoulos <vvasilo@seas.upenn.edu>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this **file** (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE. 
+-->
+
+<sdf version='1.6'>
+  <model name='stool'>
+    <link name='rim'>
+      <pose frame=''>0 0 0 0 -0 0</pose>
+      <inertial>
+        <mass>2</mass>
+        <inertia>
+          <ixx>0.018626</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.018626</iyy>
+          <iyz>0</iyz>
+          <izz>0.03725</izz>
+        </inertia>
+        <pose frame=''>0 0 0.0815 0 -0 0</pose>
+      </inertial>
+      <gravity>1</gravity>
+      <self_collide>0</self_collide>
+      <kinematic>0</kinematic>
+
+      <visual name='rim_visual'>
+        <pose frame=''>0 0 0.0815 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.193</radius>
+            <length>0.003</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <lighting>1</lighting>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+        <cast_shadows>1</cast_shadows>
+        <transparency>0</transparency>
+      </visual>
+      <collision name='rim_collision'>
+        <laser_retro>0</laser_retro>
+        <max_contacts>10</max_contacts>
+        <pose frame=''>0 0 0.0815 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.193</radius>
+            <length>0.003</length>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>2</mu>
+              <mu2>2</mu2>
+              <fdir1>0 0 0</fdir1>
+              <slip1>0</slip1>
+              <slip2>0</slip2>
+            </ode>
+            <torsional>
+              <coefficient>1</coefficient>
+              <patch_radius>0</patch_radius>
+              <surface_radius>0</surface_radius>
+              <use_patch_radius>1</use_patch_radius>
+              <ode>
+                <slip>0</slip>
+              </ode>
+            </torsional>
+          </friction>
+          <bounce>
+            <restitution_coefficient>0</restitution_coefficient>
+            <threshold>1e+06</threshold>
+          </bounce>
+          <contact>
+            <collide_without_contact>0</collide_without_contact>
+            <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
+            <collide_bitmask>1</collide_bitmask>
+            <ode>
+              <soft_cfm>0</soft_cfm>
+              <soft_erp>0.2</soft_erp>
+              <kp>1e+13</kp>
+              <kd>1</kd>
+              <max_vel>0.01</max_vel>
+              <min_depth>0</min_depth>
+            </ode>
+            <bullet>
+              <split_impulse>1</split_impulse>
+              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+              <soft_cfm>0</soft_cfm>
+              <soft_erp>0.2</soft_erp>
+              <kp>1e+13</kp>
+              <kd>1</kd>
+            </bullet>
+          </contact>
+        </surface>
+      </collision>
+
+      <visual name='rim_round_visual'>
+        <pose frame=''>0 0 0.0815 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://stool/meshes/rim.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <lighting>1</lighting>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+        <cast_shadows>1</cast_shadows>
+        <transparency>0</transparency>
+      </visual>
+      <collision name='rim_round_collision'>
+        <laser_retro>0</laser_retro>
+        <max_contacts>10</max_contacts>
+        <pose frame=''>0 0 0.0815 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://stool/meshes/rim.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>2</mu>
+              <mu2>2</mu2>
+              <fdir1>0 0 0</fdir1>
+              <slip1>0</slip1>
+              <slip2>0</slip2>
+            </ode>
+            <torsional>
+              <coefficient>1</coefficient>
+              <patch_radius>0</patch_radius>
+              <surface_radius>0</surface_radius>
+              <use_patch_radius>1</use_patch_radius>
+              <ode>
+                <slip>0</slip>
+              </ode>
+            </torsional>
+          </friction>
+          <bounce>
+            <restitution_coefficient>0</restitution_coefficient>
+            <threshold>1e+06</threshold>
+          </bounce>
+          <contact>
+            <collide_without_contact>0</collide_without_contact>
+            <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
+            <collide_bitmask>1</collide_bitmask>
+            <ode>
+              <soft_cfm>0</soft_cfm>
+              <soft_erp>0.2</soft_erp>
+              <kp>1e+13</kp>
+              <kd>1</kd>
+              <max_vel>0.01</max_vel>
+              <min_depth>0</min_depth>
+            </ode>
+            <bullet>
+              <split_impulse>1</split_impulse>
+              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+              <soft_cfm>0</soft_cfm>
+              <soft_erp>0.2</soft_erp>
+              <kp>1e+13</kp>
+              <kd>1</kd>
+            </bullet>
+          </contact>
+        </surface>
+      </collision>
+    </link>
+
+    <link name='base_seat'>
+      <pose frame=''>0 0 0 0 -0 0</pose>
+      <inertial>
+        <mass>2.7</mass>
+        <inertia>
+          <ixx>0.062295</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.062295</iyy>
+          <iyz>0</iyz>
+          <izz>0.01159</izz>
+        </inertia>
+        <pose frame=''>0 0 0.283 0 -0 0</pose>
+      </inertial>
+      <gravity>1</gravity>
+      <self_collide>0</self_collide>
+      <kinematic>0</kinematic>
+
+      <visual name='base_visual'>
+        <pose frame=''>0 0 0.283 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.4</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <lighting>1</lighting>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/DarkGrey</name>
+          </script>
+        </material>
+        <cast_shadows>1</cast_shadows>
+        <transparency>0</transparency>
+      </visual>
+      <collision name='base_collision'>
+        <laser_retro>0</laser_retro>
+        <max_contacts>10</max_contacts>
+        <pose frame=''>0 0 0.283 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.4</length>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>2</mu>
+              <mu2>2</mu2>
+              <fdir1>0 0 0</fdir1>
+              <slip1>0</slip1>
+              <slip2>0</slip2>
+            </ode>
+            <torsional>
+              <coefficient>1</coefficient>
+              <patch_radius>0</patch_radius>
+              <surface_radius>0</surface_radius>
+              <use_patch_radius>1</use_patch_radius>
+              <ode>
+                <slip>0</slip>
+              </ode>
+            </torsional>
+          </friction>
+          <bounce>
+            <restitution_coefficient>0</restitution_coefficient>
+            <threshold>1e+06</threshold>
+          </bounce>
+          <contact>
+            <collide_without_contact>0</collide_without_contact>
+            <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
+            <collide_bitmask>1</collide_bitmask>
+            <ode>
+              <soft_cfm>0</soft_cfm>
+              <soft_erp>0.2</soft_erp>
+              <kp>1e+13</kp>
+              <kd>1</kd>
+              <max_vel>0.01</max_vel>
+              <min_depth>0</min_depth>
+            </ode>
+            <bullet>
+              <split_impulse>1</split_impulse>
+              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+              <soft_cfm>0</soft_cfm>
+              <soft_erp>0.2</soft_erp>
+              <kp>1e+13</kp>
+              <kd>1</kd>
+            </bullet>
+          </contact>
+        </surface>
+      </collision>
+
+      <visual name='seat_visual'>
+        <pose frame=''>0 0 0.508 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.05</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <lighting>1</lighting>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Red</name>
+          </script>
+        </material>
+        <cast_shadows>1</cast_shadows>
+        <transparency>0</transparency>
+      </visual>
+      <collision name='seat_collision'>
+        <laser_retro>0</laser_retro>
+        <max_contacts>10</max_contacts>
+        <pose frame=''>0 0 0.508 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.05</length>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>2</mu>
+              <mu2>2</mu2>
+              <fdir1>0 0 0</fdir1>
+              <slip1>0</slip1>
+              <slip2>0</slip2>
+            </ode>
+            <torsional>
+              <coefficient>1</coefficient>
+              <patch_radius>0</patch_radius>
+              <surface_radius>0</surface_radius>
+              <use_patch_radius>1</use_patch_radius>
+              <ode>
+                <slip>0</slip>
+              </ode>
+            </torsional>
+          </friction>
+          <bounce>
+            <restitution_coefficient>0</restitution_coefficient>
+            <threshold>1e+06</threshold>
+          </bounce>
+          <contact>
+            <collide_without_contact>0</collide_without_contact>
+            <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
+            <collide_bitmask>1</collide_bitmask>
+            <ode>
+              <soft_cfm>0</soft_cfm>
+              <soft_erp>0.2</soft_erp>
+              <kp>1e+13</kp>
+              <kd>1</kd>
+              <max_vel>0.01</max_vel>
+              <min_depth>0</min_depth>
+            </ode>
+            <bullet>
+              <split_impulse>1</split_impulse>
+              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+              <soft_cfm>0</soft_cfm>
+              <soft_erp>0.2</soft_erp>
+              <kp>1e+13</kp>
+              <kd>1</kd>
+            </bullet>
+          </contact>
+        </surface>
+      </collision>
+    </link>
+
+    <joint name="rim_to_base_seat_joint" type="revolute">
+      <child>base_seat</child>
+      <parent>rim</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+
+    <include>
+      <name>tag_1</name>
+      <uri>model://tag36_11_00002</uri>
+      <pose>0 -0.03 0.08 0 0 -1.57</pose>
+      <static>false</static>
+    </include>
+    <joint name="tag_1_joint" type="fixed">
+      <child>tag_1::link</child>
+      <parent>rim</parent>
+    </joint>
+
+    <include>
+      <name>tag_2</name>
+      <uri>model://tag36_11_00002</uri>
+      <pose>-0.026 0.015 0.08 0 0 2.618</pose>
+      <static>false</static>
+    </include>
+    <joint name="tag_2_joint" type="fixed">
+      <child>tag_2::link</child>
+      <parent>rim</parent>
+    </joint>
+
+    <include>
+      <name>tag_3</name>
+      <uri>model://tag36_11_00002</uri>
+      <pose>0.026 0.015 0.08 0 0 0.5236</pose>
+      <static>false</static>
+    </include>
+    <joint name="tag_3_joint" type="fixed">
+      <child>tag_3::link</child>
+      <parent>rim</parent>
+    </joint>
+
+    <include>
+      <name>caster_1</name>
+      <uri>model://caster_stool</uri>
+      <pose>0.18 0 0.08 0 0 3.14</pose>
+    </include>
+    <joint name="caster_1_joint" type="revolute">
+      <child>caster_1::caster_top</child>
+      <parent>rim</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <dynamics>
+          <damping>0.002</damping>
+        </dynamics>
+      </axis>
+    </joint>
+
+    <include>
+      <name>caster_2</name>
+      <uri>model://caster_stool</uri>
+      <pose>0.0556 -0.1712 0.08 0 0 3.14</pose>
+    </include>
+    <joint name="caster_2_joint" type="revolute">
+      <child>caster_2::caster_top</child>
+      <parent>rim</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <dynamics>
+          <damping>0.002</damping>
+        </dynamics>
+      </axis>
+    </joint>
+
+    <include>
+      <name>caster_3</name>
+      <uri>model://caster_stool</uri>
+      <pose>-0.1456 -0.1058 0.08 0 0 3.14</pose>
+    </include>
+    <joint name="caster_3_joint" type="revolute">
+      <child>caster_3::caster_top</child>
+      <parent>rim</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <dynamics>
+          <damping>0.002</damping>
+        </dynamics>
+      </axis>
+    </joint>
+
+    <include>
+      <name>caster_4</name>
+      <uri>model://caster_stool</uri>
+      <pose>-0.1456 0.1058 0.08 0 0 3.14</pose>
+    </include>
+    <joint name="caster_4_joint" type="revolute">
+      <child>caster_4::caster_top</child>
+      <parent>rim</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <dynamics>
+          <damping>0.002</damping>
+        </dynamics>
+      </axis>
+    </joint>
+
+    <include>
+      <name>caster_5</name>
+      <uri>model://caster_stool</uri>
+      <pose>0.0556 0.1712 0.08 0 0 3.14</pose>
+    </include>
+    <joint name="caster_5_joint" type="revolute">
+      <child>caster_5::caster_top</child>
+      <parent>rim</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <dynamics>
+          <damping>0.002</damping>
+        </dynamics>
+      </axis>
+    </joint>
+
+    <static>0</static>
+    <allow_auto_disable>1</allow_auto_disable>
+  </model>
+</sdf>

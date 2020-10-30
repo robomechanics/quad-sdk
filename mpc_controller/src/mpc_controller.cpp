@@ -1,7 +1,8 @@
 #include "mpc_controller/mpc_controller.h"
 
 MPCController::MPCController(ros::NodeHandle nh) {
-  nh_ = nh;
+  nh.param<double>("mpc_controller/update_rate", update_rate_, 100);
+	nh_ = nh;
 
     // Load rosparams from parameter server
   std::string state_estimate_topic, control_input_topic,footstep_plan_topic,body_plan_topic, discrete_body_plan_topic;
@@ -42,9 +43,10 @@ void MPCController::discreteBodyPlanCallback(const spirit_msgs::BodyPlan::ConstP
 void MPCController::publishControlInput() {
   // ROS_INFO("In ControlInput");
   spirit_msgs::ControlInput msg;
+
+  msg.header.stamp = ros::Time::now();
   control_input_pub_.publish(msg);
 }
-
 
 void MPCController::spin() {
   ros::Rate r(update_rate_);
