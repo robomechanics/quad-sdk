@@ -7,5 +7,7 @@ int main(int argc, char** argv) {
 
 	ContactDetection cd(nh);
 
+	cd.spin();
+
 	return 0;
 }
