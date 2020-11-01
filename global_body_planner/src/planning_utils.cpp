@@ -14,6 +14,11 @@ void vectorToArray(State vec, double * new_array)
 	for (int i = 0; i < vec.size(); i++)
 		new_array[i] = vec.at(i);
 }
+void stdVectorToState(std::vector<double> v, State& s)
+{
+	for (int i = 0; i < s.size(); i++)
+		s[i] = v.at(i);
+}
 void printState(State vec)
 {
 	printf("{");

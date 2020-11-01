@@ -7,7 +7,6 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <spirit_msgs/BodyPlan.h>
-// #include "global_body_planner/fast_terrain_map.h"
 
 #include "global_body_planner/planning_utils.h"
 #include "global_body_planner/planner_class.h"
@@ -118,10 +117,10 @@ class GlobalBodyPlanner {
     std::vector<double> t_plan_;
 
     /// Robot starting state
-    State robot_start_;
+    std::vector<double> start_state_;
 
     /// Robot goal state
-    State robot_goal_;
+    std::vector<double> goal_state_;
     
     /// Sequence of discrete states in the plan
     std::vector<State> state_sequence_;
