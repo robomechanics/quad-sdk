@@ -26,6 +26,7 @@ class MPCController {
 	 * @brief Calls ros spinOnce and pubs data at set frequency
 	 */
 	void spin();
+  
 private:
 	/**
    * @brief Callback function to handle new state estimates

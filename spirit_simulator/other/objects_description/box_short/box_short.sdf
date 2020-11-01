@@ -1,0 +1,131 @@
+<?xml version='1.0'?>
+
+<!-- 
+MIT License (modified)
+
+Copyright (c) 2019 The Trustees of the University of Pennsylvania
+Authors:
+Vasileios Vasilopoulos <vvasilo@seas.upenn.edu>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this **file** (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE. 
+-->
+
+<sdf version='1.6'>
+  <model name='box_short'>
+    <link name='box'>
+      <pose frame=''>0 0 0 0 -0 0</pose>
+      <inertial>
+        <mass>1000</mass>
+        <inertia>
+          <ixx>4.78</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>6.26</iyy>
+          <iyz>0</iyz>
+          <izz>8.235</izz>
+        </inertia>
+        <pose frame=''>0 0 0.11 0 -0 0</pose>
+      </inertial>
+      <gravity>1</gravity>
+      <self_collide>0</self_collide>
+      <kinematic>0</kinematic>
+
+      <visual name='box_visual'>
+        <pose frame=''>0 0 0.11 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.72 0.72 0.22</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://box_short/materials/scripts</uri>
+            <uri>model://box_short/materials/textures</uri>
+            <name>box_short</name>
+          </script>
+        </material>
+        <cast_shadows>1</cast_shadows>
+        <transparency>0</transparency>
+      </visual>
+      <collision name='box_collision'>
+        <pose frame=''>0 0 0.11 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.72 0.72 0.22</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>100</mu>
+              <mu2>50</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+    </link>
+
+    <include>
+      <name>tag_length_front</name>
+      <uri>model://tag36_11_00004</uri>
+      <pose>0 0.362 0.0675 0 0 1.57</pose>
+      <static>false</static>
+    </include>
+    <joint name="tag_length_front_joint" type="fixed">
+      <child>tag_length_front::link</child>
+      <parent>box</parent>
+    </joint>
+
+    <include>
+      <name>tag_length_back</name>
+      <uri>model://tag36_11_00004</uri>
+      <pose>0 -0.362 0.0675 0 0 -1.57</pose>
+      <static>false</static>
+    </include>
+    <joint name="tag_length_back_joint" type="fixed">
+      <child>tag_length_back::link</child>
+      <parent>box</parent>
+    </joint>
+
+    <include>
+      <name>tag_width_right</name>
+      <uri>model://tag36_11_00004</uri>
+      <pose>0.362 0 0.0675 0 0 0</pose>
+      <static>false</static>
+    </include>
+    <joint name="tag_width_right_joint" type="fixed">
+      <child>tag_width_right::link</child>
+      <parent>box</parent>
+    </joint>
+
+    <include>
+      <name>tag_width_left</name>
+      <uri>model://tag36_11_00004</uri>
+      <pose>-0.362 0 0.0675 0 0 3.14</pose>
+      <static>false</static>
+    </include>
+    <joint name="tag_width_left_joint" type="fixed">
+      <child>tag_width_left::link</child>
+      <parent>box</parent>
+    </joint>
+
+    <static>1</static>
+    <allow_auto_disable>1</allow_auto_disable>
+  </model>
+</sdf>
