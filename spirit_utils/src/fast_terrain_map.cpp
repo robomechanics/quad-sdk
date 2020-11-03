@@ -90,6 +90,15 @@ void FastTerrainMap::loadDataFromGridMap(grid_map::GridMap map){
   dz_data_ = dz_data;
 }
 
+bool FastTerrainMap::isInRange(const double x, const double y) {
+
+  if ((x >= x_data_.front()) && (x <= x_data_.back()) && (y >= y_data_.front()) && (y <= y_data_.back())) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 double FastTerrainMap::getGroundHeight(const double x, const double y) {
   // auto t_start = std::chrono::steady_clock::now();
   double x1, x2, y1, y2;

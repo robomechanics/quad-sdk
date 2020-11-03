@@ -53,11 +53,6 @@ class GlobalBodyPlanner {
     void terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg);
 
     /**
-     * @brief Set the start and goal states of the planner
-     */
-    void setStartAndGoalStates();
-
-    /**
      * @brief Clear the plan member variables
      */
     void clearPlan();
