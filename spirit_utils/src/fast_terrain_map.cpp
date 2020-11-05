@@ -2,6 +2,7 @@
 #include <grid_map_core/grid_map_core.hpp>
 
 #include <chrono>
+#include <iostream>
 
 FastTerrainMap::FastTerrainMap(){
 
@@ -63,9 +64,18 @@ void FastTerrainMap::loadDataFromGridMap(grid_map::GridMap map){
       double height = (double) map.at("elevation", index);
       z_data[i].push_back(height);
 
-      dx_data[i].push_back(0.0);
-      dy_data[i].push_back(0.0);
-      dz_data[i].push_back(1.0);
+      if (map.exists("dx") == true) {
+        double dx = (double) map.at("dx", index);
+        double dy = (double) map.at("dy", index);
+        double dz = (double) map.at("dz", index);
+        dx_data[i].push_back(dx);
+        dy_data[i].push_back(dy);
+        dz_data[i].push_back(dz);
+      } else {
+        dx_data[i].push_back(0.0);
+        dy_data[i].push_back(0.0);
+        dz_data[i].push_back(1.0);
+      }
     }
   }
 
@@ -78,6 +88,15 @@ void FastTerrainMap::loadDataFromGridMap(grid_map::GridMap map){
   dx_data_ = dx_data;
   dy_data_ = dy_data;
   dz_data_ = dz_data;
+}
+
+bool FastTerrainMap::isInRange(const double x, const double y) {
+
+  if ((x >= x_data_.front()) && (x <= x_data_.back()) && (y >= y_data_.front()) && (y <= y_data_.back())) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 double FastTerrainMap::getGroundHeight(const double x, const double y) {
