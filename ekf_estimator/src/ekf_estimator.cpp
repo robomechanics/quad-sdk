@@ -32,11 +32,6 @@ spirit_msgs::StateEstimate EKFEstimator::updateStep() {
     new_state_est.joints = *last_joint_state_msg_;
   }
 
-  // Temporary placeholder
-  new_state_est.body.pose.pose.position.x = 0.0;
-  new_state_est.body.pose.pose.position.y = 0.0;
-  new_state_est.body.pose.pose.position.z = 0.3;
-
   new_state_est.header.stamp = ros::Time::now();
   return new_state_est;
 }
