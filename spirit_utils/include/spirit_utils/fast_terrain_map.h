@@ -43,6 +43,13 @@ class FastTerrainMap {
     void loadDataFromGridMap(grid_map::GridMap map);
 
     /**
+     * @brief Check if map data is defined at a requested location
+     * @param[in] double x location
+     * @param[in] double y location
+     * @return bool location [x,y] is or is not in range
+     */
+    bool isInRange(const double x,const double y);
+    /**
      * @brief Return the ground height at a requested location
      * @param[in] double x location
      * @param[in] double y location

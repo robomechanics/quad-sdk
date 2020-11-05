@@ -16,8 +16,12 @@ ekf_estimator:
   update_rate: 250
 
 global_body_planner:
-  update_rate: 5
-  num_calls: 1
+  update_rate: 1
+  num_calls: 1            # Number of times to call the planner
+  replan_time_limit: 1.0  # Minimum amount of time to run the planner (will replan to find better solutions until this duration is up)
+  algorithm: rrt-connect  # rrt-connect or rrt-star-connect
+  start_state: [0.0,0,0.4,0.0,0.1,0.0,0.0,0.0]
+  goal_state: [8.0,1.0,0.4,0.0,0.0,0.0,0.0,0.0]
 
 local_footstep_planner:
   update_rate: 10
@@ -27,10 +31,8 @@ contact_detection:
 
 terrain_map_publisher:
   update_rate: 10
-  map_data_source: image
-  resolution: 0.2
-  min_height: 0.0
-  max_height: 4.0
+  map_data_source: csv
+  terrain_type: slope     # slope or rough terrain
 
 grid_map_visualization:
   grid_map_topic: /terrain_map

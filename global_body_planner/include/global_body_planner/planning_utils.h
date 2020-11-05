@@ -67,6 +67,7 @@ const double MY_PI = 3.14159;
 
 // Define some useful print statements
 void vectorToArray(State vec, double * new_array);
+void stdVectorToState(std::vector<double> v, State& s);
 void printState(State vec);
 void printVectorInt(std::vector<int> vec);
 void printStateNewline(State vec);
