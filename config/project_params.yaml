@@ -1,6 +1,6 @@
 topics:
-  joint_encoder: /joint_encoder
-  imu: /imu
+  joint_encoder: /mcu/state/jointURDF
+  imu: /mcu/state/imu
   state_estimate: /state_estimate
   joint_states: /joint_states
   terrain_map: /terrain_map
@@ -14,7 +14,7 @@ mpc_controller:
   update_rate: 100
 
 ekf_estimator:
-  update_rate: 250
+  update_rate: 100
 
 global_body_planner:
   update_rate: 1

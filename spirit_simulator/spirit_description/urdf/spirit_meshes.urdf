@@ -37,7 +37,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0.03 0 0"/>
       <geometry>
-        <mesh filename="package://spirit_visualizer/meshes/Spirit40_Body_Mesh_transformed.stl" scale="1 1 1"/>
+        <mesh filename="package://spirit_description/meshes/Spirit40_Body_Mesh_transformed.stl" scale="1 1 1"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -101,7 +101,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0.0 0"/>
       <geometry>
-        <mesh filename="package://spirit_visualizer/meshes/Spirit40_Hip_Module_transformed.stl" scale="1 1 1"/>
+        <mesh filename="package://spirit_description/meshes/Spirit40_Hip_Module_transformed.stl" scale="1 1 1"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -122,7 +122,7 @@
     <material>Gazebo/Gray</material>
   </gazebo>
   <!-- Abduction joint. Joint names are: 8 9 10 11 -->
-  <joint name="j8" type="revolute">
+  <joint name="8" type="revolute">
     <parent link="body"/>
     <child link="hip0"/>
     <axis xyz="1 0 0"/>
@@ -133,7 +133,7 @@
   <!-- Transmission elements required for Gazebo -->
   <transmission name="transmission_8">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="j8">
+    <joint name="8">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor_8">
@@ -153,7 +153,7 @@
     <visual>
       <origin rpy="0 0  0" xyz="0 -0.02 0"/>
       <geometry>
-        <mesh filename="package://spirit_visualizer/meshes/Spirit40_Upper_leg_transformed.stl" scale="1 1 1"/>
+        <mesh filename="package://spirit_description/meshes/Spirit40_Upper_leg_transformed.stl" scale="1 1 1"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -172,7 +172,7 @@
     <material>Gazebo/Gray</material>
   </gazebo>
   <!-- Hip joint. (Motor to upper leg). Joint names are: 0 2 4 6 -->
-  <joint name="j0" type="revolute">
+  <joint name="0" type="revolute">
     <parent link="hip0"/>
     <child link="upper0"/>
     <axis xyz="0 -1 0"/>
@@ -184,7 +184,7 @@
   <!-- Transmission elements required for Gazebo -->
   <transmission name="transmission_0">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="j0">
+    <joint name="0">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor_0">
@@ -204,7 +204,7 @@
     <visual>
       <origin rpy="0 0  0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://spirit_visualizer/meshes/Spirit40_Lower_Leg_transformed.stl" scale="1 1 1"/>
+        <mesh filename="package://spirit_description/meshes/Spirit40_Lower_Leg_transformed.stl" scale="1 1 1"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -223,7 +223,7 @@
     <material>Gazebo/Black</material>
   </gazebo>
   <!-- Knee joint. Joint names are: 1 3 5 7 -->
-  <joint name="j1" type="revolute">
+  <joint name="1" type="revolute">
     <parent link="upper0"/>
     <child link="lower0"/>
     <axis xyz="0 1 0"/>
@@ -235,7 +235,7 @@
   <!-- Transmission elements required for Gazebo -->
   <transmission name="transmission_1">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="j1">
+    <joint name="1">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor_1">
@@ -338,7 +338,7 @@
     <visual>
       <origin rpy="0 3.14159265359 0" xyz="0.0 0.0 0"/>
       <geometry>
-        <mesh filename="package://spirit_visualizer/meshes/Spirit40_Hip_Module_transformed.stl" scale="1 1 1"/>
+        <mesh filename="package://spirit_description/meshes/Spirit40_Hip_Module_transformed.stl" scale="1 1 1"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -359,7 +359,7 @@
     <material>Gazebo/Gray</material>
   </gazebo>
   <!-- Abduction joint. Joint names are: 8 9 10 11 -->
-  <joint name="j9" type="revolute">
+  <joint name="9" type="revolute">
     <parent link="body"/>
     <child link="hip1"/>
     <axis xyz="1 0 0"/>
@@ -370,7 +370,7 @@
   <!-- Transmission elements required for Gazebo -->
   <transmission name="transmission_9">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="j9">
+    <joint name="9">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor_9">
@@ -390,7 +390,7 @@
     <visual>
       <origin rpy="0 0  0" xyz="0 -0.02 0"/>
       <geometry>
-        <mesh filename="package://spirit_visualizer/meshes/Spirit40_Upper_leg_transformed.stl" scale="1 1 1"/>
+        <mesh filename="package://spirit_description/meshes/Spirit40_Upper_leg_transformed.stl" scale="1 1 1"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -409,7 +409,7 @@
     <material>Gazebo/Gray</material>
   </gazebo>
   <!-- Hip joint. (Motor to upper leg). Joint names are: 0 2 4 6 -->
-  <joint name="j2" type="revolute">
+  <joint name="2" type="revolute">
     <parent link="hip1"/>
     <child link="upper1"/>
     <axis xyz="0 -1 0"/>
@@ -421,7 +421,7 @@
   <!-- Transmission elements required for Gazebo -->
   <transmission name="transmission_2">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="j2">
+    <joint name="2">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor_2">
@@ -441,7 +441,7 @@
     <visual>
       <origin rpy="0 0  0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://spirit_visualizer/meshes/Spirit40_Lower_Leg_transformed.stl" scale="1 1 1"/>
+        <mesh filename="package://spirit_description/meshes/Spirit40_Lower_Leg_transformed.stl" scale="1 1 1"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -460,7 +460,7 @@
     <material>Gazebo/Black</material>
   </gazebo>
   <!-- Knee joint. Joint names are: 1 3 5 7 -->
-  <joint name="j3" type="revolute">
+  <joint name="3" type="revolute">
     <parent link="upper1"/>
     <child link="lower1"/>
     <axis xyz="0 1 0"/>
@@ -472,7 +472,7 @@
   <!-- Transmission elements required for Gazebo -->
   <transmission name="transmission_3">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="j3">
+    <joint name="3">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor_3">
@@ -575,7 +575,7 @@
     <visual>
       <origin rpy="3.14159265359 0 0" xyz="0.0 0 0.0"/>
       <geometry>
-        <mesh filename="package://spirit_visualizer/meshes/Spirit40_Hip_Module_transformed.stl" scale="1 1 1"/>
+        <mesh filename="package://spirit_description/meshes/Spirit40_Hip_Module_transformed.stl" scale="1 1 1"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -596,7 +596,7 @@
     <material>Gazebo/Gray</material>
   </gazebo>
   <!-- Abduction joint. Joint names are: 8 9 10 11 -->
-  <joint name="j10" type="revolute">
+  <joint name="10" type="revolute">
     <parent link="body"/>
     <child link="hip2"/>
     <axis xyz="1 0 0"/>
@@ -607,7 +607,7 @@
   <!-- Transmission elements required for Gazebo -->
   <transmission name="transmission_10">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="j10">
+    <joint name="10">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor_10">
@@ -627,7 +627,7 @@
     <visual>
       <origin rpy="3.14159265359 0  0" xyz="0 0.02 0"/>
       <geometry>
-        <mesh filename="package://spirit_visualizer/meshes/Spirit40_Upper_leg_transformed.stl" scale="1 1 1"/>
+        <mesh filename="package://spirit_description/meshes/Spirit40_Upper_leg_transformed.stl" scale="1 1 1"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -646,7 +646,7 @@
     <material>Gazebo/Gray</material>
   </gazebo>
   <!-- Hip joint. (Motor to upper leg). Joint names are: 0 2 4 6 -->
-  <joint name="j4" type="revolute">
+  <joint name="4" type="revolute">
     <parent link="hip2"/>
     <child link="upper2"/>
     <axis xyz="0 -1 0"/>
@@ -658,7 +658,7 @@
   <!-- Transmission elements required for Gazebo -->
   <transmission name="transmission_4">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="j4">
+    <joint name="4">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor_4">
@@ -678,7 +678,7 @@
     <visual>
       <origin rpy="3.14159265359 0  0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://spirit_visualizer/meshes/Spirit40_Lower_Leg_transformed.stl" scale="1 1 1"/>
+        <mesh filename="package://spirit_description/meshes/Spirit40_Lower_Leg_transformed.stl" scale="1 1 1"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -697,7 +697,7 @@
     <material>Gazebo/Black</material>
   </gazebo>
   <!-- Knee joint. Joint names are: 1 3 5 7 -->
-  <joint name="j5" type="revolute">
+  <joint name="5" type="revolute">
     <parent link="upper2"/>
     <child link="lower2"/>
     <axis xyz="0 1 0"/>
@@ -709,7 +709,7 @@
   <!-- Transmission elements required for Gazebo -->
   <transmission name="transmission_5">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="j5">
+    <joint name="5">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor_5">
@@ -812,7 +812,7 @@
     <visual>
       <origin rpy="3.14159265359 3.14159265359 0" xyz="0.0 0.0 0.0"/>
       <geometry>
-        <mesh filename="package://spirit_visualizer/meshes/Spirit40_Hip_Module_transformed.stl" scale="1 1 1"/>
+        <mesh filename="package://spirit_description/meshes/Spirit40_Hip_Module_transformed.stl" scale="1 1 1"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -833,7 +833,7 @@
     <material>Gazebo/Gray</material>
   </gazebo>
   <!-- Abduction joint. Joint names are: 8 9 10 11 -->
-  <joint name="j11" type="revolute">
+  <joint name="11" type="revolute">
     <parent link="body"/>
     <child link="hip3"/>
     <axis xyz="1 0 0"/>
@@ -844,7 +844,7 @@
   <!-- Transmission elements required for Gazebo -->
   <transmission name="transmission_11">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="j11">
+    <joint name="11">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor_11">
@@ -864,7 +864,7 @@
     <visual>
       <origin rpy="3.14159265359 0  0" xyz="0 0.02 0"/>
       <geometry>
-        <mesh filename="package://spirit_visualizer/meshes/Spirit40_Upper_leg_transformed.stl" scale="1 1 1"/>
+        <mesh filename="package://spirit_description/meshes/Spirit40_Upper_leg_transformed.stl" scale="1 1 1"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -883,7 +883,7 @@
     <material>Gazebo/Gray</material>
   </gazebo>
   <!-- Hip joint. (Motor to upper leg). Joint names are: 0 2 4 6 -->
-  <joint name="j6" type="revolute">
+  <joint name="6" type="revolute">
     <parent link="hip3"/>
     <child link="upper3"/>
     <axis xyz="0 -1 0"/>
@@ -895,7 +895,7 @@
   <!-- Transmission elements required for Gazebo -->
   <transmission name="transmission_6">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="j6">
+    <joint name="6">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor_6">
@@ -915,7 +915,7 @@
     <visual>
       <origin rpy="3.14159265359 0  0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://spirit_visualizer/meshes/Spirit40_Lower_Leg_transformed.stl" scale="1 1 1"/>
+        <mesh filename="package://spirit_description/meshes/Spirit40_Lower_Leg_transformed.stl" scale="1 1 1"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -934,7 +934,7 @@
     <material>Gazebo/Black</material>
   </gazebo>
   <!-- Knee joint. Joint names are: 1 3 5 7 -->
-  <joint name="j7" type="revolute">
+  <joint name="7" type="revolute">
     <parent link="upper3"/>
     <child link="lower3"/>
     <axis xyz="0 1 0"/>
@@ -946,7 +946,7 @@
   <!-- Transmission elements required for Gazebo -->
   <transmission name="transmission_7">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="j7">
+    <joint name="7">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor_7">

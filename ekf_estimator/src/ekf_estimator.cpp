@@ -27,6 +27,10 @@ void EKFEstimator::imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
 spirit_msgs::StateEstimate EKFEstimator::updateStep() {
   spirit_msgs::StateEstimate new_state_est;
 
+  if (last_imu_msg_ != NULL)
+  {
+    new_state_est.body.pose.pose.orientation = (*last_imu_msg_).orientation;
+  }
   if (last_joint_state_msg_ != NULL)
   {
     new_state_est.joints = *last_joint_state_msg_;

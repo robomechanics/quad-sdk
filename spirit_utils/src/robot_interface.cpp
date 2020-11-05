@@ -23,7 +23,7 @@ void RobotInterface::controlInputCallback(const spirit_msgs::ControlInput::Const
 void RobotInterface::publishJointEncoders() {
   sensor_msgs::JointState msg;
 
-  std::vector<std::string> joint_names = {"j8", "j0", "j1", "j9","j2", "j3", "j10", "j4","j5", "j11", "j6", "j7"};
+  std::vector<std::string> joint_names = {"8", "0", "1", "9","2", "3", "10", "4","5", "11", "6", "7"};
   std::vector<double> joint_pos (12,0);
   std::vector<double> joint_vel (12,0);
   std::vector<double> joint_effort (12,0);

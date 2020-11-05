@@ -138,7 +138,6 @@ void RVizInterface::stateEstimateCallback(const spirit_msgs::StateEstimate::Cons
   transformStamped.transform.translation.y = msg->body.pose.pose.position.y;
   transformStamped.transform.translation.z = msg->body.pose.pose.position.z;
   transformStamped.transform.rotation = msg->body.pose.pose.orientation;
-  transformStamped.transform.rotation.w = 1.0;
   base_tf_br_.sendTransform(transformStamped);
 
   // Copy the joint portion of the state estimate message to a new message
