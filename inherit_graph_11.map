@@ -1,5 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classRRTClass.html" title="RRTClass" alt="" coords="5,5,88,32"/>
-<area shape="rect" id="node2" href="$classRRTConnectClass.html" title="RRTConnectClass" alt="" coords="136,5,272,32"/>
-<area shape="rect" id="node3" href="$classRRTStarConnectClass.html" title="RRTStarConnectClass" alt="" coords="320,5,483,32"/>
+<area shape="rect" id="node1" href="$classRRTClass.html" title="A class that implements RRT sampling&#45;based planning. " alt="" coords="5,5,88,32"/>
+<area shape="rect" id="node2" href="$classRRTConnectClass.html" title="A class that implements RRT&#45;Connect sampling&#45;based planning. " alt="" coords="136,5,272,32"/>
+<area shape="rect" id="node3" href="$classRRTStarConnectClass.html" title="A class that implements RRT*&#45;Connect sampling&#45;based planning. " alt="" coords="320,5,483,32"/>
 </map>

@@ -68,7 +68,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>A global body planning class for spirit.  
+<p>A global body planning class for legged robots.  
  <a href="classGlobalBodyPlanner.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="global__body__planner_8h_source.html">global_body_planner.h</a>&gt;</code></p>
@@ -84,7 +84,7 @@ Collaboration diagram for GlobalBodyPlanner:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ae1cc3ec1e77b13cdf679267c4a8e55b4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#ae1cc3ec1e77b13cdf679267c4a8e55b4">GlobalBodyPlanner</a> (ros::NodeHandle nh)</td></tr>
-<tr class="memdesc:ae1cc3ec1e77b13cdf679267c4a8e55b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classGlobalBodyPlanner.html" title="A global body planning class for spirit. ">GlobalBodyPlanner</a> Class.  <a href="#ae1cc3ec1e77b13cdf679267c4a8e55b4">More...</a><br /></td></tr>
+<tr class="memdesc:ae1cc3ec1e77b13cdf679267c4a8e55b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classGlobalBodyPlanner.html" title="A global body planning class for legged robots. ">GlobalBodyPlanner</a> Class.  <a href="#ae1cc3ec1e77b13cdf679267c4a8e55b4">More...</a><br /></td></tr>
 <tr class="separator:ae1cc3ec1e77b13cdf679267c4a8e55b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d255bb8030cedc5b8ef166dc1e9710a"><td class="memItemLeft" align="right" valign="top"><a id="a9d255bb8030cedc5b8ef166dc1e9710a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a9d255bb8030cedc5b8ef166dc1e9710a">callPlanner</a> ()</td></tr>
@@ -100,10 +100,6 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a209eb08a4c8c9e51b88c4039a6cfbd12"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a209eb08a4c8c9e51b88c4039a6cfbd12">terrainMapCallback</a> (const grid_map_msgs::GridMap::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a209eb08a4c8c9e51b88c4039a6cfbd12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new terrain map data.  <a href="#a209eb08a4c8c9e51b88c4039a6cfbd12">More...</a><br /></td></tr>
 <tr class="separator:a209eb08a4c8c9e51b88c4039a6cfbd12"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a47647aac82b1cf87115d8cc4639000c5"><td class="memItemLeft" align="right" valign="top"><a id="a47647aac82b1cf87115d8cc4639000c5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a47647aac82b1cf87115d8cc4639000c5">setStartAndGoalStates</a> ()</td></tr>
-<tr class="memdesc:a47647aac82b1cf87115d8cc4639000c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the start and goal states of the planner. <br /></td></tr>
-<tr class="separator:a47647aac82b1cf87115d8cc4639000c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2eb81f4bee8cec49686f963cd0251b51"><td class="memItemLeft" align="right" valign="top"><a id="a2eb81f4bee8cec49686f963cd0251b51"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a2eb81f4bee8cec49686f963cd0251b51">clearPlan</a> ()</td></tr>
 <tr class="memdesc:a2eb81f4bee8cec49686f963cd0251b51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the plan member variables. <br /></td></tr>
@@ -146,6 +142,10 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a7d917ce8f4d6f43b3855dd3a48809fa7">num_calls_</a></td></tr>
 <tr class="memdesc:a7d917ce8f4d6f43b3855dd3a48809fa7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of times to call the planner. <br /></td></tr>
 <tr class="separator:a7d917ce8f4d6f43b3855dd3a48809fa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60cae5753166db3a1d5600e21dc7a262"><td class="memItemLeft" align="right" valign="top"><a id="a60cae5753166db3a1d5600e21dc7a262"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a60cae5753166db3a1d5600e21dc7a262">algorithm_</a></td></tr>
+<tr class="memdesc:a60cae5753166db3a1d5600e21dc7a262"><td class="mdescLeft">&#160;</td><td class="mdescRight">Algorithm for planner to run (rrt-connect or rrt-star-connect) <br /></td></tr>
+<tr class="separator:a60cae5753166db3a1d5600e21dc7a262"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99c27e47add60e2a0303fd51d19908e1"><td class="memItemLeft" align="right" valign="top"><a id="a99c27e47add60e2a0303fd51d19908e1"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a99c27e47add60e2a0303fd51d19908e1">replan_time_limit_</a></td></tr>
 <tr class="memdesc:a99c27e47add60e2a0303fd51d19908e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time after which replanning is halted;. <br /></td></tr>
@@ -166,14 +166,14 @@ std::vector&lt; State &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a029413a439d6621407f9e7d7020b18b5">t_plan_</a></td></tr>
 <tr class="memdesc:a029413a439d6621407f9e7d7020b18b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing the interpolated time data. <br /></td></tr>
 <tr class="separator:a029413a439d6621407f9e7d7020b18b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9494fb18caf34bde43db027b28d08e2"><td class="memItemLeft" align="right" valign="top"><a id="ac9494fb18caf34bde43db027b28d08e2"></a>
-State&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#ac9494fb18caf34bde43db027b28d08e2">robot_start_</a></td></tr>
-<tr class="memdesc:ac9494fb18caf34bde43db027b28d08e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Robot starting state. <br /></td></tr>
-<tr class="separator:ac9494fb18caf34bde43db027b28d08e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c4fa0a4981d47552500e7fbe4053bb4"><td class="memItemLeft" align="right" valign="top"><a id="a9c4fa0a4981d47552500e7fbe4053bb4"></a>
-State&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a9c4fa0a4981d47552500e7fbe4053bb4">robot_goal_</a></td></tr>
-<tr class="memdesc:a9c4fa0a4981d47552500e7fbe4053bb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Robot goal state. <br /></td></tr>
-<tr class="separator:a9c4fa0a4981d47552500e7fbe4053bb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8163091678716ffd008380671cc5fa9d"><td class="memItemLeft" align="right" valign="top"><a id="a8163091678716ffd008380671cc5fa9d"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a8163091678716ffd008380671cc5fa9d">start_state_</a></td></tr>
+<tr class="memdesc:a8163091678716ffd008380671cc5fa9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Robot starting state. <br /></td></tr>
+<tr class="separator:a8163091678716ffd008380671cc5fa9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad13be2ea0f18e3f20d58b44043fa486f"><td class="memItemLeft" align="right" valign="top"><a id="ad13be2ea0f18e3f20d58b44043fa486f"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#ad13be2ea0f18e3f20d58b44043fa486f">goal_state_</a></td></tr>
+<tr class="memdesc:ad13be2ea0f18e3f20d58b44043fa486f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Robot goal state. <br /></td></tr>
+<tr class="separator:ad13be2ea0f18e3f20d58b44043fa486f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50df2ef4bdaca844a07ece58a468de64"><td class="memItemLeft" align="right" valign="top"><a id="a50df2ef4bdaca844a07ece58a468de64"></a>
 std::vector&lt; State &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a50df2ef4bdaca844a07ece58a468de64">state_sequence_</a></td></tr>
 <tr class="memdesc:a50df2ef4bdaca844a07ece58a468de64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sequence of discrete states in the plan. <br /></td></tr>
@@ -200,8 +200,8 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
 <tr class="separator:adfbd439f7eeadbf40694ba90bcd566e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A global body planning class for spirit. </p>
-<p><a class="el" href="classGlobalBodyPlanner.html" title="A global body planning class for spirit. ">GlobalBodyPlanner</a> is a container for all of the logic utilized in the global body planning node. This algorithm requires an height map of the terrain as a GridMap message type, and will publish the global body plan as a BodyPlan message over a topic. It will also publish the </p>
+<div class="textblock"><p>A global body planning class for legged robots. </p>
+<p><a class="el" href="classGlobalBodyPlanner.html" title="A global body planning class for legged robots. ">GlobalBodyPlanner</a> is a container for all of the logic utilized in the global body planning node. This algorithm requires an height map of the terrain as a GridMap message type, and will publish the global body plan as a BodyPlan message over a topic. It will also publish the discrete states used by the planner (from which the full path is interpolated). </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ae1cc3ec1e77b13cdf679267c4a8e55b4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae1cc3ec1e77b13cdf679267c4a8e55b4">&#9670;&nbsp;</a></span>GlobalBodyPlanner()</h2>
@@ -219,14 +219,14 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
       </table>
 </div><div class="memdoc">
 
-<p>Constructor for <a class="el" href="classGlobalBodyPlanner.html" title="A global body planning class for spirit. ">GlobalBodyPlanner</a> Class. </p>
+<p>Constructor for <a class="el" href="classGlobalBodyPlanner.html" title="A global body planning class for legged robots. ">GlobalBodyPlanner</a> Class. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">Node</td><td>handle </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nh</td><td>Node handle </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classGlobalBodyPlanner.html" title="A global body planning class for spirit. ">GlobalBodyPlanner</a> </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classGlobalBodyPlanner.html" title="A global body planning class for legged robots. ">GlobalBodyPlanner</a> </dd></dl>
 
 </div>
 </div>
@@ -274,9 +274,9 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
 <p>Update the body plan with the current plan. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">Time</td><td>of state in trajectory </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">Body</td><td>state </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">Body</td><td>plan message </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>Time of state in trajectory </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">body_state</td><td>Body state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">body_plan_msg</td><td>Body plan message </td></tr>
   </table>
   </dd>
 </dl>

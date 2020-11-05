@@ -66,84 +66,570 @@ $(function() {
 <div class="title">GraphClass Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>A general directed graph class.  
+ <a href="classGraphClass.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="graph__class_8h_source.html">graph_class.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for GraphClass:</div>
 <div class="dyncontent">
 <div class="center"><img src="classGraphClass__inherit__graph.png" border="0" usemap="#GraphClass_inherit__map" alt="Inheritance graph"/></div>
 <map name="GraphClass_inherit__map" id="GraphClass_inherit__map">
-<area shape="rect" id="node2" href="classPlannerClass.html" title="PlannerClass" alt="" coords="5,80,112,107"/>
+<area shape="rect" id="node2" href="classPlannerClass.html" title="A directed graph class with supplemental methods to aid in sample&#45;based planning. ..." alt="" coords="5,80,112,107"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:acee0de6e69a0f56f878c62ac986270b5"><td class="memItemLeft" align="right" valign="top"><a id="acee0de6e69a0f56f878c62ac986270b5"></a>
-State&#160;</td><td class="memItemRight" valign="bottom"><b>getVertex</b> (int index)</td></tr>
+<tr class="memitem:a39d78244b77de2351494de80b28e7dbe"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a39d78244b77de2351494de80b28e7dbe">GraphClass</a> ()</td></tr>
+<tr class="memdesc:a39d78244b77de2351494de80b28e7dbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classGraphClass.html" title="A general directed graph class. ">GraphClass</a>.  <a href="#a39d78244b77de2351494de80b28e7dbe">More...</a><br /></td></tr>
+<tr class="separator:a39d78244b77de2351494de80b28e7dbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a967bdb911867f3c1bf2fff50d4e578ac"><td class="memItemLeft" align="right" valign="top"><a id="a967bdb911867f3c1bf2fff50d4e578ac"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a967bdb911867f3c1bf2fff50d4e578ac">~GraphClass</a> ()</td></tr>
+<tr class="memdesc:a967bdb911867f3c1bf2fff50d4e578ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor for <a class="el" href="classGraphClass.html" title="A general directed graph class. ">GraphClass</a>. <br /></td></tr>
+<tr class="separator:a967bdb911867f3c1bf2fff50d4e578ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14de7afdfc42f444e9dc60f860a3c8bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a14de7afdfc42f444e9dc60f860a3c8bf">addVertex</a> (int index, State s)</td></tr>
+<tr class="memdesc:a14de7afdfc42f444e9dc60f860a3c8bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a new vertex to the graph along with its state data.  <a href="#a14de7afdfc42f444e9dc60f860a3c8bf">More...</a><br /></td></tr>
+<tr class="separator:a14de7afdfc42f444e9dc60f860a3c8bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acee0de6e69a0f56f878c62ac986270b5"><td class="memItemLeft" align="right" valign="top">State&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#acee0de6e69a0f56f878c62ac986270b5">getVertex</a> (int index)</td></tr>
+<tr class="memdesc:acee0de6e69a0f56f878c62ac986270b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the state stored at a particular index in the graph.  <a href="#acee0de6e69a0f56f878c62ac986270b5">More...</a><br /></td></tr>
 <tr class="separator:acee0de6e69a0f56f878c62ac986270b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b7b7d5f761e5b4e9ec8aec8eab82385"><td class="memItemLeft" align="right" valign="top"><a id="a4b7b7d5f761e5b4e9ec8aec8eab82385"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>getNumVertices</b> ()</td></tr>
+<tr class="memitem:a4b7b7d5f761e5b4e9ec8aec8eab82385"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a4b7b7d5f761e5b4e9ec8aec8eab82385">getNumVertices</a> ()</td></tr>
+<tr class="memdesc:a4b7b7d5f761e5b4e9ec8aec8eab82385"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the total number of vertices in the graph, computed as the size of the vertices vector.  <a href="#a4b7b7d5f761e5b4e9ec8aec8eab82385">More...</a><br /></td></tr>
 <tr class="separator:a4b7b7d5f761e5b4e9ec8aec8eab82385"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5278eb6fe20515cf4dd15cfc041c7e9e"><td class="memItemLeft" align="right" valign="top"><a id="a5278eb6fe20515cf4dd15cfc041c7e9e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>addVertex</b> (int index, State q)</td></tr>
-<tr class="separator:a5278eb6fe20515cf4dd15cfc041c7e9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9d39ec62febc8b866c596f6672f5423"><td class="memItemLeft" align="right" valign="top"><a id="ac9d39ec62febc8b866c596f6672f5423"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>addEdge</b> (int idx1, int idx2)</td></tr>
+<tr class="memitem:ac9d39ec62febc8b866c596f6672f5423"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#ac9d39ec62febc8b866c596f6672f5423">addEdge</a> (int idx1, int idx2)</td></tr>
+<tr class="memdesc:ac9d39ec62febc8b866c596f6672f5423"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a new edge to the graph.  <a href="#ac9d39ec62febc8b866c596f6672f5423">More...</a><br /></td></tr>
 <tr class="separator:ac9d39ec62febc8b866c596f6672f5423"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac6775293717a51d5c223b5f6b3a9425a"><td class="memItemLeft" align="right" valign="top"><a id="ac6775293717a51d5c223b5f6b3a9425a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>removeEdge</b> (int idx1, int idx2)</td></tr>
+<tr class="memitem:ac6775293717a51d5c223b5f6b3a9425a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#ac6775293717a51d5c223b5f6b3a9425a">removeEdge</a> (int idx1, int idx2)</td></tr>
+<tr class="memdesc:ac6775293717a51d5c223b5f6b3a9425a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove an edge of the graph.  <a href="#ac6775293717a51d5c223b5f6b3a9425a">More...</a><br /></td></tr>
 <tr class="separator:ac6775293717a51d5c223b5f6b3a9425a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89494d00972f1c5969d8950f79006cd8"><td class="memItemLeft" align="right" valign="top"><a id="a89494d00972f1c5969d8950f79006cd8"></a>
-virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>getPredecessor</b> (int idx)</td></tr>
+<tr class="memitem:a89494d00972f1c5969d8950f79006cd8"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a89494d00972f1c5969d8950f79006cd8">getPredecessor</a> (int idx)</td></tr>
+<tr class="memdesc:a89494d00972f1c5969d8950f79006cd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the parent of a vertex.  <a href="#a89494d00972f1c5969d8950f79006cd8">More...</a><br /></td></tr>
 <tr class="separator:a89494d00972f1c5969d8950f79006cd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c3ccc590257faefb72bd8f40991ab40"><td class="memItemLeft" align="right" valign="top"><a id="a7c3ccc590257faefb72bd8f40991ab40"></a>
-std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSuccessors</b> (int idx)</td></tr>
+<tr class="memitem:a7c3ccc590257faefb72bd8f40991ab40"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a7c3ccc590257faefb72bd8f40991ab40">getSuccessors</a> (int idx)</td></tr>
+<tr class="memdesc:a7c3ccc590257faefb72bd8f40991ab40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the children of a vertex.  <a href="#a7c3ccc590257faefb72bd8f40991ab40">More...</a><br /></td></tr>
 <tr class="separator:a7c3ccc590257faefb72bd8f40991ab40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aafacca2abff7f17df66e5b2f6b441c98"><td class="memItemLeft" align="right" valign="top"><a id="aafacca2abff7f17df66e5b2f6b441c98"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>addAction</b> (int idx, Action a)</td></tr>
+<tr class="memitem:aafacca2abff7f17df66e5b2f6b441c98"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#aafacca2abff7f17df66e5b2f6b441c98">addAction</a> (int idx, Action a)</td></tr>
+<tr class="memdesc:aafacca2abff7f17df66e5b2f6b441c98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add an action to a particular vertex. This is the action that lead to this particular vertex from its parent.  <a href="#aafacca2abff7f17df66e5b2f6b441c98">More...</a><br /></td></tr>
 <tr class="separator:aafacca2abff7f17df66e5b2f6b441c98"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3aba9c56f1bd8db4c0977a24af090fae"><td class="memItemLeft" align="right" valign="top"><a id="a3aba9c56f1bd8db4c0977a24af090fae"></a>
-Action&#160;</td><td class="memItemRight" valign="bottom"><b>getAction</b> (int idx)</td></tr>
+<tr class="memitem:a3aba9c56f1bd8db4c0977a24af090fae"><td class="memItemLeft" align="right" valign="top">Action&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a3aba9c56f1bd8db4c0977a24af090fae">getAction</a> (int idx)</td></tr>
+<tr class="memdesc:a3aba9c56f1bd8db4c0977a24af090fae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the action of a vertex.  <a href="#a3aba9c56f1bd8db4c0977a24af090fae">More...</a><br /></td></tr>
 <tr class="separator:a3aba9c56f1bd8db4c0977a24af090fae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6fc85a70bacd5bc07043adfeb91797fa"><td class="memItemLeft" align="right" valign="top"><a id="a6fc85a70bacd5bc07043adfeb91797fa"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>getGValue</b> (int idx)</td></tr>
-<tr class="separator:a6fc85a70bacd5bc07043adfeb91797fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae87d58394dc58f56bd4f619193423046"><td class="memItemLeft" align="right" valign="top"><a id="ae87d58394dc58f56bd4f619193423046"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>updateGValue</b> (int idx, double val)</td></tr>
+<tr class="memitem:ae87d58394dc58f56bd4f619193423046"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#ae87d58394dc58f56bd4f619193423046">updateGValue</a> (int idx, double val)</td></tr>
+<tr class="memdesc:ae87d58394dc58f56bd4f619193423046"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the g-value of a vertex and propogate to all its successors.  <a href="#ae87d58394dc58f56bd4f619193423046">More...</a><br /></td></tr>
 <tr class="separator:ae87d58394dc58f56bd4f619193423046"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ffc508510f3827053a2d450d939a291"><td class="memItemLeft" align="right" valign="top"><a id="a6ffc508510f3827053a2d450d939a291"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>printVertex</b> (State vertex)</td></tr>
-<tr class="separator:a6ffc508510f3827053a2d450d939a291"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fc85a70bacd5bc07043adfeb91797fa"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a6fc85a70bacd5bc07043adfeb91797fa">getGValue</a> (int idx)</td></tr>
+<tr class="memdesc:a6fc85a70bacd5bc07043adfeb91797fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the g-value of a vertex.  <a href="#a6fc85a70bacd5bc07043adfeb91797fa">More...</a><br /></td></tr>
+<tr class="separator:a6fc85a70bacd5bc07043adfeb91797fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab42104d73d16306f192bcbdbdee0a476"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#ab42104d73d16306f192bcbdbdee0a476">printVertex</a> (State s)</td></tr>
+<tr class="memdesc:ab42104d73d16306f192bcbdbdee0a476"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print the state information via stdout.  <a href="#ab42104d73d16306f192bcbdbdee0a476">More...</a><br /></td></tr>
+<tr class="separator:ab42104d73d16306f192bcbdbdee0a476"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15db17f1fe9b72aab16dd95cc550d618"><td class="memItemLeft" align="right" valign="top"><a id="a15db17f1fe9b72aab16dd95cc550d618"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>printVertices</b> ()</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a15db17f1fe9b72aab16dd95cc550d618">printVertices</a> ()</td></tr>
+<tr class="memdesc:a15db17f1fe9b72aab16dd95cc550d618"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print the all vertices in the graph via stdout. <br /></td></tr>
 <tr class="separator:a15db17f1fe9b72aab16dd95cc550d618"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2552a057133d45ca0e3e93ea98230737"><td class="memItemLeft" align="right" valign="top"><a id="a2552a057133d45ca0e3e93ea98230737"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>printIncomingEdges</b> (int in_vertex)</td></tr>
-<tr class="separator:a2552a057133d45ca0e3e93ea98230737"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d85a75ccf6cf96e903031945fb485a2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a5d85a75ccf6cf96e903031945fb485a2">printIncomingEdges</a> (int idx)</td></tr>
+<tr class="memdesc:a5d85a75ccf6cf96e903031945fb485a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print the edges leading to a vertex via stdout.  <a href="#a5d85a75ccf6cf96e903031945fb485a2">More...</a><br /></td></tr>
+<tr class="separator:a5d85a75ccf6cf96e903031945fb485a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48810d79a69b01ea94a03b87ed7f02fd"><td class="memItemLeft" align="right" valign="top"><a id="a48810d79a69b01ea94a03b87ed7f02fd"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>printEdges</b> ()</td></tr>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a48810d79a69b01ea94a03b87ed7f02fd">printEdges</a> ()</td></tr>
+<tr class="memdesc:a48810d79a69b01ea94a03b87ed7f02fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print the all edges in the graph via stdout. <br /></td></tr>
 <tr class="separator:a48810d79a69b01ea94a03b87ed7f02fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeca46c85a1ed0b195d439a9d20bfbfe3"><td class="memItemLeft" align="right" valign="top"><a id="aeca46c85a1ed0b195d439a9d20bfbfe3"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (State q)</td></tr>
-<tr class="separator:aeca46c85a1ed0b195d439a9d20bfbfe3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6478d431f475c2458f3aa1a803a0b1cd"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a6478d431f475c2458f3aa1a803a0b1cd">init</a> (State s)</td></tr>
+<tr class="memdesc:a6478d431f475c2458f3aa1a803a0b1cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the graph by adding the root vertex (idx = 0) and setting g(idx) = 0.  <a href="#a6478d431f475c2458f3aa1a803a0b1cd">More...</a><br /></td></tr>
+<tr class="separator:a6478d431f475c2458f3aa1a803a0b1cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a4ce5071e5d6f7f58965d0babf0c05cba"><td class="memItemLeft" align="right" valign="top"><a id="a4ce5071e5d6f7f58965d0babf0c05cba"></a>
-std::unordered_map&lt; int, State &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>vertices</b></td></tr>
+std::unordered_map&lt; int, State &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a4ce5071e5d6f7f58965d0babf0c05cba">vertices</a></td></tr>
+<tr class="memdesc:a4ce5071e5d6f7f58965d0babf0c05cba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map from vertex indices to corresponding states. <br /></td></tr>
 <tr class="separator:a4ce5071e5d6f7f58965d0babf0c05cba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af72e4666fa9283cd4c3d4acfccbcfd57"><td class="memItemLeft" align="right" valign="top"><a id="af72e4666fa9283cd4c3d4acfccbcfd57"></a>
-std::unordered_map&lt; int, Action &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>actions</b></td></tr>
+std::unordered_map&lt; int, Action &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#af72e4666fa9283cd4c3d4acfccbcfd57">actions</a></td></tr>
+<tr class="memdesc:af72e4666fa9283cd4c3d4acfccbcfd57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map from vertex indices to the actions leading to those vertices. <br /></td></tr>
 <tr class="separator:af72e4666fa9283cd4c3d4acfccbcfd57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab931f0784548afda6c934ac3b097cebd"><td class="memItemLeft" align="right" valign="top"><a id="ab931f0784548afda6c934ac3b097cebd"></a>
-std::unordered_map&lt; int, std::vector&lt; int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>edges</b></td></tr>
+std::unordered_map&lt; int, std::vector&lt; int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#ab931f0784548afda6c934ac3b097cebd">edges</a></td></tr>
+<tr class="memdesc:ab931f0784548afda6c934ac3b097cebd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map from vertex indices to their parent(s) <br /></td></tr>
 <tr class="separator:ab931f0784548afda6c934ac3b097cebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75a6a398215073b3e67b852cc136bd53"><td class="memItemLeft" align="right" valign="top"><a id="a75a6a398215073b3e67b852cc136bd53"></a>
-std::unordered_map&lt; int, double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>g_values</b></td></tr>
-<tr class="separator:a75a6a398215073b3e67b852cc136bd53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e6c5c4d16682dafe430d71b0f8678a5"><td class="memItemLeft" align="right" valign="top"><a id="a2e6c5c4d16682dafe430d71b0f8678a5"></a>
-std::unordered_map&lt; int, std::vector&lt; int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>successors</b></td></tr>
+std::unordered_map&lt; int, std::vector&lt; int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a2e6c5c4d16682dafe430d71b0f8678a5">successors</a></td></tr>
+<tr class="memdesc:a2e6c5c4d16682dafe430d71b0f8678a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map from vertex indices to their children. <br /></td></tr>
 <tr class="separator:a2e6c5c4d16682dafe430d71b0f8678a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75a6a398215073b3e67b852cc136bd53"><td class="memItemLeft" align="right" valign="top"><a id="a75a6a398215073b3e67b852cc136bd53"></a>
+std::unordered_map&lt; int, double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a75a6a398215073b3e67b852cc136bd53">g_values</a></td></tr>
+<tr class="memdesc:a75a6a398215073b3e67b852cc136bd53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map from vertex indices to their costs (g-values) <br /></td></tr>
+<tr class="separator:a75a6a398215073b3e67b852cc136bd53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A general directed graph class. </p>
+<p>This class implements a directed graph data structure with methods for adding and deleting vertices and edges, as well storing information at each vertex and providing print statements for debugging. Vertices are indexed with ints, and edges as unordered maps that map a vertex's index to the indices of its parents. If the graph is a tree there should only be one parent per vertex. Other unordered maps store information about each vertex, such as the associated state, action, or distance from the root vertex (g-value). </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a39d78244b77de2351494de80b28e7dbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39d78244b77de2351494de80b28e7dbe">&#9670;&nbsp;</a></span>GraphClass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">GraphClass::GraphClass </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor for <a class="el" href="classGraphClass.html" title="A general directed graph class. ">GraphClass</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classGraphClass.html" title="A general directed graph class. ">GraphClass</a> </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="aafacca2abff7f17df66e5b2f6b441c98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafacca2abff7f17df66e5b2f6b441c98">&#9670;&nbsp;</a></span>addAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GraphClass::addAction </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Action&#160;</td>
+          <td class="paramname"><em>a</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add an action to a particular vertex. This is the action that lead to this particular vertex from its parent. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>Index of the desired vertex </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>Action corresponding to the desired vertex </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ac9d39ec62febc8b866c596f6672f5423"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9d39ec62febc8b866c596f6672f5423">&#9670;&nbsp;</a></span>addEdge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GraphClass::addEdge </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Add a new edge to the graph. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx1</td><td>Index of the outgoing vertex of the edge </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx2</td><td>Index of the incoming vertex of the edge </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a14de7afdfc42f444e9dc60f860a3c8bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14de7afdfc42f444e9dc60f860a3c8bf">&#9670;&nbsp;</a></span>addVertex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GraphClass::addVertex </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">State&#160;</td>
+          <td class="paramname"><em>s</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a new vertex to the graph along with its state data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>Index of the new vertex </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>State information corresponding to the specified index </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a3aba9c56f1bd8db4c0977a24af090fae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3aba9c56f1bd8db4c0977a24af090fae">&#9670;&nbsp;</a></span>getAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Action GraphClass::getAction </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the action of a vertex. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>Index of the desired vertex </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Action corresponding to the desired vertex </dd></dl>
+
+</div>
+</div>
+<a id="a6fc85a70bacd5bc07043adfeb91797fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fc85a70bacd5bc07043adfeb91797fa">&#9670;&nbsp;</a></span>getGValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double GraphClass::getGValue </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the g-value of a vertex. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>Index of the desired vertex </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>G-value corresponding to the desired vertex </dd></dl>
+
+</div>
+</div>
+<a id="a4b7b7d5f761e5b4e9ec8aec8eab82385"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b7b7d5f761e5b4e9ec8aec8eab82385">&#9670;&nbsp;</a></span>getNumVertices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int GraphClass::getNumVertices </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieve the total number of vertices in the graph, computed as the size of the vertices vector. </p>
+<dl class="section return"><dt>Returns</dt><dd>Number of vertices in the graph </dd></dl>
+
+</div>
+</div>
+<a id="a89494d00972f1c5969d8950f79006cd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89494d00972f1c5969d8950f79006cd8">&#9670;&nbsp;</a></span>getPredecessor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int GraphClass::getPredecessor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the parent of a vertex. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>Index of the desired vertex </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Index of the parent of the specified vertex </dd></dl>
+
+</div>
+</div>
+<a id="a7c3ccc590257faefb72bd8f40991ab40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c3ccc590257faefb72bd8f40991ab40">&#9670;&nbsp;</a></span>getSuccessors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; int &gt; GraphClass::getSuccessors </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the children of a vertex. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>Index of the desired vertex </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Indices of the children of the specified vertex </dd></dl>
+
+</div>
+</div>
+<a id="acee0de6e69a0f56f878c62ac986270b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acee0de6e69a0f56f878c62ac986270b5">&#9670;&nbsp;</a></span>getVertex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">State GraphClass::getVertex </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieve the state stored at a particular index in the graph. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>Index of the desired vertex </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>State information corresponding to the requested index </dd></dl>
+
+</div>
+</div>
+<a id="a6478d431f475c2458f3aa1a803a0b1cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6478d431f475c2458f3aa1a803a0b1cd">&#9670;&nbsp;</a></span>init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GraphClass::init </td>
+          <td>(</td>
+          <td class="paramtype">State&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initialize the graph by adding the root vertex (idx = 0) and setting g(idx) = 0. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>State for the root vertex </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a5d85a75ccf6cf96e903031945fb485a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d85a75ccf6cf96e903031945fb485a2">&#9670;&nbsp;</a></span>printIncomingEdges()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GraphClass::printIncomingEdges </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Print the edges leading to a vertex via stdout. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>Index of the desired vertex </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ab42104d73d16306f192bcbdbdee0a476"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab42104d73d16306f192bcbdbdee0a476">&#9670;&nbsp;</a></span>printVertex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GraphClass::printVertex </td>
+          <td>(</td>
+          <td class="paramtype">State&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Print the state information via stdout. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>The state information to print </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ac6775293717a51d5c223b5f6b3a9425a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6775293717a51d5c223b5f6b3a9425a">&#9670;&nbsp;</a></span>removeEdge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GraphClass::removeEdge </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove an edge of the graph. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx1</td><td>Index of the outgoing vertex of the edge </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx2</td><td>Index of the incoming vertex of the edge </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ae87d58394dc58f56bd4f619193423046"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae87d58394dc58f56bd4f619193423046">&#9670;&nbsp;</a></span>updateGValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GraphClass::updateGValue </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>val</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update the g-value of a vertex and propogate to all its successors. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>Index of the desired vertex </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">val</td><td>New g-value corresponding to the desired vertex </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>global_body_planner/include/global_body_planner/<a class="el" href="graph__class_8h_source.html">graph_class.h</a></li>
 <li>global_body_planner/src/graph_class.cpp</li>

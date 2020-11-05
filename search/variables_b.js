@@ -1,7 +1,9 @@
 var searchData=
 [
-  ['replan_5ftime_5flimit_5f',['replan_time_limit_',['../classGlobalBodyPlanner.html#a99c27e47add60e2a0303fd51d19908e1',1,'GlobalBodyPlanner']]],
-  ['resolution_5f',['resolution_',['../classTerrainMapPublisher.html#a01d73a9b142c5cd7457feb50045dc370',1,'TerrainMapPublisher']]],
-  ['robot_5fgoal_5f',['robot_goal_',['../classGlobalBodyPlanner.html#a9c4fa0a4981d47552500e7fbe4053bb4',1,'GlobalBodyPlanner']]],
-  ['robot_5fstart_5f',['robot_start_',['../classGlobalBodyPlanner.html#ac9494fb18caf34bde43db027b28d08e2',1,'GlobalBodyPlanner']]]
+  ['map_5fdata_5fsource_5f',['map_data_source_',['../classTerrainMapPublisher.html#aac004d967077b8433018cdcf6f51c384',1,'TerrainMapPublisher']]],
+  ['map_5fframe_5f',['map_frame_',['../classGlobalBodyPlanner.html#a7b45b7415cdca9ec042f0619deee4447',1,'GlobalBodyPlanner::map_frame_()'],['../classLocalFootstepPlanner.html#aa25b6b2f38279436f5922165841da9ad',1,'LocalFootstepPlanner::map_frame_()'],['../classMPCController.html#a23ffd702292a0f5af2aa7de94140127c',1,'MPCController::map_frame_()'],['../classRVizInterface.html#a793eebfebed50f8320c95117876b31cf',1,'RVizInterface::map_frame_()'],['../classTerrainMapPublisher.html#ab72c50bd278bec6f1870d7098f1f1eed',1,'TerrainMapPublisher::map_frame_()']]],
+  ['map_5finitialized_5f',['map_initialized_',['../classTerrainMapPublisher.html#acde2f6690426b3aa1de411b260f5517b',1,'TerrainMapPublisher']]],
+  ['max_5fheight_5f',['max_height_',['../classTerrainMapPublisher.html#af6938ddec68646380135b2d22b7a2498',1,'TerrainMapPublisher']]],
+  ['max_5ftime_5fsolve',['max_time_solve',['../classRRTConnectClass.html#a001d087eeac2704c5cb25ee6355a29b6',1,'RRTConnectClass']]],
+  ['min_5fheight_5f',['min_height_',['../classTerrainMapPublisher.html#aa22f46f8003f8963e383f342387c09dc',1,'TerrainMapPublisher']]]
 ];

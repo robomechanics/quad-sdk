@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['image_5fsub_5f',['image_sub_',['../classTerrainMapPublisher.html#abb161fa5dcd81d1ef132b29e0ebe9a29',1,'TerrainMapPublisher']]],
-  ['imu_5fpub_5f',['imu_pub_',['../classRobotInterface.html#a652df3e1df781149dc2f05ec8ca11faa',1,'RobotInterface']]],
-  ['imu_5fsub_5f',['imu_sub_',['../classEKFEstimator.html#a5f4c9b5730464e49c6e2d27b1c23ac2d',1,'EKFEstimator']]]
+  ['footstep_5fplan_5f',['footstep_plan_',['../classLocalFootstepPlanner.html#a46bdeff14e59b93790779bc6f01193dd',1,'LocalFootstepPlanner']]],
+  ['footstep_5fplan_5fpub_5f',['footstep_plan_pub_',['../classLocalFootstepPlanner.html#a609bb89700073ad59c30f48c24f2f31f',1,'LocalFootstepPlanner']]],
+  ['footstep_5fplan_5fsub_5f',['footstep_plan_sub_',['../classMPCController.html#a8e17b44b3b6f1e12c317b27ae78ab08a',1,'MPCController::footstep_plan_sub_()'],['../classRVizInterface.html#a24599b92da410b23b82fb4617a815c59',1,'RVizInterface::footstep_plan_sub_()']]],
+  ['footstep_5fplan_5fviz_5fpub_5f',['footstep_plan_viz_pub_',['../classRVizInterface.html#a213b625225bec94051bfb2c6edd55e5a',1,'RVizInterface']]]
 ];

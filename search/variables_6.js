@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['joint_5fencoder_5fpub_5f',['joint_encoder_pub_',['../classRobotInterface.html#aeee70445d671b2d421f6644ec4e5b236',1,'RobotInterface']]],
-  ['joint_5fencoder_5fsub_5f',['joint_encoder_sub_',['../classEKFEstimator.html#abea00262d71be9a3d1e8d57e87101490',1,'EKFEstimator']]]
+  ['g_5fvalues',['g_values',['../classGraphClass.html#a75a6a398215073b3e67b852cc136bd53',1,'GraphClass']]],
+  ['goal_5ffound',['goal_found',['../classRRTClass.html#abd63c1f08cf738a4966010968e615e0a',1,'RRTClass']]],
+  ['goal_5fstate_5f',['goal_state_',['../classGlobalBodyPlanner.html#ad13be2ea0f18e3f20d58b44043fa486f',1,'GlobalBodyPlanner']]]
 ];

@@ -66,76 +66,527 @@ $(function() {
 <div class="title">RRTClass Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>A class that implements RRT sampling-based planning.  
+ <a href="classRRTClass.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="rrt_8h_source.html">rrt.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for RRTClass:</div>
 <div class="dyncontent">
 <div class="center"><img src="classRRTClass__inherit__graph.png" border="0" usemap="#RRTClass_inherit__map" alt="Inheritance graph"/></div>
 <map name="RRTClass_inherit__map" id="RRTClass_inherit__map">
-<area shape="rect" id="node2" href="classRRTConnectClass.html" title="RRTConnectClass" alt="" coords="19,80,155,107"/>
-<area shape="rect" id="node3" href="classRRTStarConnectClass.html" title="RRTStarConnectClass" alt="" coords="5,155,168,181"/>
+<area shape="rect" id="node2" href="classRRTConnectClass.html" title="A class that implements RRT&#45;Connect sampling&#45;based planning. " alt="" coords="19,80,155,107"/>
+<area shape="rect" id="node3" href="classRRTStarConnectClass.html" title="A class that implements RRT*&#45;Connect sampling&#45;based planning. " alt="" coords="5,155,168,181"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a1d08928089500c78d6a434d801911982"><td class="memItemLeft" align="right" valign="top"><a id="a1d08928089500c78d6a434d801911982"></a>
-virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>extend</b> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, State s, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, int direction)</td></tr>
+<tr class="memitem:a9cac25f207d3e58646e560d829d51e25"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a9cac25f207d3e58646e560d829d51e25">RRTClass</a> ()</td></tr>
+<tr class="memdesc:a9cac25f207d3e58646e560d829d51e25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classRRTClass.html" title="A class that implements RRT sampling-based planning. ">RRTClass</a>.  <a href="#a9cac25f207d3e58646e560d829d51e25">More...</a><br /></td></tr>
+<tr class="separator:a9cac25f207d3e58646e560d829d51e25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af71e054dccb03b92174cc9154f3f4eb7"><td class="memItemLeft" align="right" valign="top"><a id="af71e054dccb03b92174cc9154f3f4eb7"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#af71e054dccb03b92174cc9154f3f4eb7">~RRTClass</a> ()</td></tr>
+<tr class="memdesc:af71e054dccb03b92174cc9154f3f4eb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor for <a class="el" href="classRRTClass.html" title="A class that implements RRT sampling-based planning. ">RRTClass</a>. <br /></td></tr>
+<tr class="separator:af71e054dccb03b92174cc9154f3f4eb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d08928089500c78d6a434d801911982"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a1d08928089500c78d6a434d801911982">extend</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, State s, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, int direction)</td></tr>
 <tr class="separator:a1d08928089500c78d6a434d801911982"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6af2cea28f05961830d949e7ba1603ae"><td class="memItemLeft" align="right" valign="top"><a id="a6af2cea28f05961830d949e7ba1603ae"></a>
-std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>pathFromStart</b> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, int s)</td></tr>
-<tr class="separator:a6af2cea28f05961830d949e7ba1603ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25d0142127211e5911b3a29e7dce5dfb"><td class="memItemLeft" align="right" valign="top"><a id="a25d0142127211e5911b3a29e7dce5dfb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>printPath</b> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
+<tr class="memitem:a4acffd50e173aaeb9074248ea29032e9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a4acffd50e173aaeb9074248ea29032e9">pathFromStart</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, int idx)</td></tr>
+<tr class="memdesc:a4acffd50e173aaeb9074248ea29032e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the path from the root vertex to the specified one.  <a href="#a4acffd50e173aaeb9074248ea29032e9">More...</a><br /></td></tr>
+<tr class="separator:a4acffd50e173aaeb9074248ea29032e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25d0142127211e5911b3a29e7dce5dfb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a25d0142127211e5911b3a29e7dce5dfb">printPath</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
+<tr class="memdesc:a25d0142127211e5911b3a29e7dce5dfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print the states in the specified path via stdout.  <a href="#a25d0142127211e5911b3a29e7dce5dfb">More...</a><br /></td></tr>
 <tr class="separator:a25d0142127211e5911b3a29e7dce5dfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5292f78ed563aae40b25591655a0cb9e"><td class="memItemLeft" align="right" valign="top"><a id="a5292f78ed563aae40b25591655a0cb9e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>buildRRT</b> (<a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, State s_start, State s_goal, std::vector&lt; State &gt; &amp;state_sequence, std::vector&lt; Action &gt; &amp;action_sequence)</td></tr>
+<tr class="memitem:a5292f78ed563aae40b25591655a0cb9e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a5292f78ed563aae40b25591655a0cb9e">buildRRT</a> (<a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, State s_start, State s_goal, std::vector&lt; State &gt; &amp;state_sequence, std::vector&lt; Action &gt; &amp;action_sequence)</td></tr>
+<tr class="memdesc:a5292f78ed563aae40b25591655a0cb9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute the planner by constructing the tree until a path is found.  <a href="#a5292f78ed563aae40b25591655a0cb9e">More...</a><br /></td></tr>
 <tr class="separator:a5292f78ed563aae40b25591655a0cb9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a70f7eb63b760620faf6518d974270296"><td class="memItemLeft" align="right" valign="top"><a id="a70f7eb63b760620faf6518d974270296"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>getStatistics</b> (double &amp;plan_time, int &amp;success_var, int &amp;vertices_generated, double &amp;time_to_first_solve, std::vector&lt; double &gt; &amp;cost_vector, std::vector&lt; double &gt; &amp;cost_vector_times, double &amp;path_duration)</td></tr>
+<tr class="memitem:a70f7eb63b760620faf6518d974270296"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a70f7eb63b760620faf6518d974270296">getStatistics</a> (double &amp;plan_time, int &amp;success_var, int &amp;vertices_generated, double &amp;time_to_first_solve, std::vector&lt; double &gt; &amp;cost_vector, std::vector&lt; double &gt; &amp;cost_vector_times, double &amp;path_duration)</td></tr>
+<tr class="memdesc:a70f7eb63b760620faf6518d974270296"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the statistics for the planner solve.  <a href="#a70f7eb63b760620faf6518d974270296">More...</a><br /></td></tr>
 <tr class="separator:a70f7eb63b760620faf6518d974270296"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c5f2020764525b1ec77b3e019acfcbd"><td class="memItemLeft" align="right" valign="top"><a id="a9c5f2020764525b1ec77b3e019acfcbd"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>newConfig</b> (State s, State s_near, State &amp;s_new, Action &amp;a_new, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, int direction)</td></tr>
+<tr class="memitem:a9c5f2020764525b1ec77b3e019acfcbd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a9c5f2020764525b1ec77b3e019acfcbd">newConfig</a> (State s, State s_near, State &amp;s_new, Action &amp;a_new, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, int direction)</td></tr>
+<tr class="memdesc:a9c5f2020764525b1ec77b3e019acfcbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a new state that can be connected to the tree and is as close as possible to the specified state.  <a href="#a9c5f2020764525b1ec77b3e019acfcbd">More...</a><br /></td></tr>
 <tr class="separator:a9c5f2020764525b1ec77b3e019acfcbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7da5d15380a10262f01fa1c66b5064f9"><td class="memItemLeft" align="right" valign="top"><a id="a7da5d15380a10262f01fa1c66b5064f9"></a>
-std::vector&lt; State &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getStateSequence</b> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
+<tr class="memitem:a7da5d15380a10262f01fa1c66b5064f9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; State &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a7da5d15380a10262f01fa1c66b5064f9">getStateSequence</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
+<tr class="memdesc:a7da5d15380a10262f01fa1c66b5064f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the states along the specified path of vertex indices.  <a href="#a7da5d15380a10262f01fa1c66b5064f9">More...</a><br /></td></tr>
 <tr class="separator:a7da5d15380a10262f01fa1c66b5064f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af9ffdb926909423196f8a8f5a48f08ed"><td class="memItemLeft" align="right" valign="top"><a id="af9ffdb926909423196f8a8f5a48f08ed"></a>
-std::vector&lt; Action &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getActionSequence</b> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
+<tr class="memitem:af9ffdb926909423196f8a8f5a48f08ed"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Action &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#af9ffdb926909423196f8a8f5a48f08ed">getActionSequence</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
+<tr class="memdesc:af9ffdb926909423196f8a8f5a48f08ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the actions along the specified path of vertex indices (assumes that actions are synched with the states to which they lead)  <a href="#af9ffdb926909423196f8a8f5a48f08ed">More...</a><br /></td></tr>
 <tr class="separator:af9ffdb926909423196f8a8f5a48f08ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a3bea12d5a94669ee0713d8447c575f4b"><td class="memItemLeft" align="right" valign="top"><a id="a3bea12d5a94669ee0713d8447c575f4b"></a>
-const double&#160;</td><td class="memItemRight" valign="bottom"><b>prob_goal_thresh</b> = 0.05</td></tr>
+const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a3bea12d5a94669ee0713d8447c575f4b">prob_goal_thresh</a> = 0.05</td></tr>
+<tr class="memdesc:a3bea12d5a94669ee0713d8447c575f4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Probability with which the goal is sampled (if running vanilla RRT) <br /></td></tr>
 <tr class="separator:a3bea12d5a94669ee0713d8447c575f4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd63c1f08cf738a4966010968e615e0a"><td class="memItemLeft" align="right" valign="top"><a id="abd63c1f08cf738a4966010968e615e0a"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>goal_found</b> = false</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#abd63c1f08cf738a4966010968e615e0a">goal_found</a> = false</td></tr>
+<tr class="memdesc:abd63c1f08cf738a4966010968e615e0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean for if the goal has been reached. <br /></td></tr>
 <tr class="separator:abd63c1f08cf738a4966010968e615e0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaaf8027527034bc8fc424ff91f59acb6"><td class="memItemLeft" align="right" valign="top"><a id="aaaf8027527034bc8fc424ff91f59acb6"></a>
-std::chrono::duration&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>elapsed_total</b></td></tr>
+std::chrono::duration&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#aaaf8027527034bc8fc424ff91f59acb6">elapsed_total</a></td></tr>
+<tr class="memdesc:aaaf8027527034bc8fc424ff91f59acb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total time elapsed in this planner call. <br /></td></tr>
 <tr class="separator:aaaf8027527034bc8fc424ff91f59acb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77a273cae4203340a655c83cf63baa4f"><td class="memItemLeft" align="right" valign="top"><a id="a77a273cae4203340a655c83cf63baa4f"></a>
 std::chrono::duration&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>elapsed_to_first</b></td></tr>
 <tr class="separator:a77a273cae4203340a655c83cf63baa4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7cddb22b09f2be69b1d93eb337963d03"><td class="memItemLeft" align="right" valign="top"><a id="a7cddb22b09f2be69b1d93eb337963d03"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>success_</b> = 0</td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a7cddb22b09f2be69b1d93eb337963d03">success_</a> = 0</td></tr>
+<tr class="memdesc:a7cddb22b09f2be69b1d93eb337963d03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integer checking if a solution was computed in 5 seconds. <br /></td></tr>
 <tr class="separator:a7cddb22b09f2be69b1d93eb337963d03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6e0461555d33efc0bce6dbeb4f1e741"><td class="memItemLeft" align="right" valign="top"><a id="af6e0461555d33efc0bce6dbeb4f1e741"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>num_vertices</b></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#af6e0461555d33efc0bce6dbeb4f1e741">num_vertices</a></td></tr>
+<tr class="memdesc:af6e0461555d33efc0bce6dbeb4f1e741"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of vertices in the tree. <br /></td></tr>
 <tr class="separator:af6e0461555d33efc0bce6dbeb4f1e741"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0be1d3d077c4ea197b62a49a7c78277"><td class="memItemLeft" align="right" valign="top"><a id="af0be1d3d077c4ea197b62a49a7c78277"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>path_quality_</b></td></tr>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#af0be1d3d077c4ea197b62a49a7c78277">path_quality_</a></td></tr>
+<tr class="memdesc:af0be1d3d077c4ea197b62a49a7c78277"><td class="mdescLeft">&#160;</td><td class="mdescRight">Path quality in meters. <br /></td></tr>
 <tr class="separator:af0be1d3d077c4ea197b62a49a7c78277"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afcad861656af64f757753dd41f2fa5a9"><td class="memItemLeft" align="right" valign="top"><a id="afcad861656af64f757753dd41f2fa5a9"></a>
-std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>cost_vector_</b></td></tr>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#afcad861656af64f757753dd41f2fa5a9">cost_vector_</a></td></tr>
+<tr class="memdesc:afcad861656af64f757753dd41f2fa5a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of costs each time a better one is found. <br /></td></tr>
 <tr class="separator:afcad861656af64f757753dd41f2fa5a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acbbbd085d2648f8f39c664776163bf18"><td class="memItemLeft" align="right" valign="top"><a id="acbbbd085d2648f8f39c664776163bf18"></a>
-std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>cost_vector_times_</b></td></tr>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#acbbbd085d2648f8f39c664776163bf18">cost_vector_times_</a></td></tr>
+<tr class="memdesc:acbbbd085d2648f8f39c664776163bf18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of times at which each better cost is found. <br /></td></tr>
 <tr class="separator:acbbbd085d2648f8f39c664776163bf18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c8e83183a9d3383571eccbdde77d842"><td class="memItemLeft" align="right" valign="top"><a id="a3c8e83183a9d3383571eccbdde77d842"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>path_duration_</b></td></tr>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a3c8e83183a9d3383571eccbdde77d842">path_duration_</a></td></tr>
+<tr class="memdesc:a3c8e83183a9d3383571eccbdde77d842"><td class="mdescLeft">&#160;</td><td class="mdescRight">The duration of the path in seconds. <br /></td></tr>
 <tr class="separator:a3c8e83183a9d3383571eccbdde77d842"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A class that implements RRT sampling-based planning. </p>
+<p>This class builds an RRT using the <a class="el" href="classPlannerClass.html" title="A directed graph class with supplemental methods to aid in sample-based planning. ...">PlannerClass</a> as a data structure to maintain the tree. Methods to run the standard RRT algorithm are included, as well as utility methods to process and debug. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a9cac25f207d3e58646e560d829d51e25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cac25f207d3e58646e560d829d51e25">&#9670;&nbsp;</a></span>RRTClass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RRTClass::RRTClass </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor for <a class="el" href="classRRTClass.html" title="A class that implements RRT sampling-based planning. ">RRTClass</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classRRTClass.html" title="A class that implements RRT sampling-based planning. ">RRTClass</a> </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a5292f78ed563aae40b25591655a0cb9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5292f78ed563aae40b25591655a0cb9e">&#9670;&nbsp;</a></span>buildRRT()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RRTClass::buildRRT </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>terrain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">State&#160;</td>
+          <td class="paramname"><em>s_start</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">State&#160;</td>
+          <td class="paramname"><em>s_goal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; State &gt; &amp;&#160;</td>
+          <td class="paramname"><em>state_sequence</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; Action &gt; &amp;&#160;</td>
+          <td class="paramname"><em>action_sequence</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Execute the planner by constructing the tree until a path is found. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">terrain</td><td>Height map of the terrain </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">s_start</td><td>The start state of the planner </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">s_goal</td><td>The goal state of the planner </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">state_sequence</td><td>The sequence of states in the final path </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">action_sequence</td><td>The sequence of actions in the final path </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1d08928089500c78d6a434d801911982"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d08928089500c78d6a434d801911982">&#9670;&nbsp;</a></span>extend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int RRTClass::extend </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;&#160;</td>
+          <td class="paramname"><em>T</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">State&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>terrain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>direction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Extend the tree towards the desired state </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">T</td><td>The <a class="el" href="classPlannerClass.html" title="A directed graph class with supplemental methods to aid in sample-based planning. ...">PlannerClass</a> instance containing the tree </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>The state to extend the tree towards </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">terrain</td><td>Height map of the terrain </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">direction</td><td>The direction with which to peform the extension (FORWARD to go away from the root vertex, REVERSE to go towards it) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Reimplemented in <a class="el" href="classRRTStarConnectClass.html#a910471c2411b9be08ee4fd8955563fba">RRTStarConnectClass</a>.</p>
+
+</div>
+</div>
+<a id="af9ffdb926909423196f8a8f5a48f08ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9ffdb926909423196f8a8f5a48f08ed">&#9670;&nbsp;</a></span>getActionSequence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; Action &gt; RRTClass::getActionSequence </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;&#160;</td>
+          <td class="paramname"><em>T</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int &gt;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the actions along the specified path of vertex indices (assumes that actions are synched with the states to which they lead) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">T</td><td>The <a class="el" href="classPlannerClass.html" title="A directed graph class with supplemental methods to aid in sample-based planning. ...">PlannerClass</a> instance containing the tree </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">path</td><td>Vector of vertices in the path </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The sequence of actions in the path </dd></dl>
+
+</div>
+</div>
+<a id="a7da5d15380a10262f01fa1c66b5064f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7da5d15380a10262f01fa1c66b5064f9">&#9670;&nbsp;</a></span>getStateSequence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; State &gt; RRTClass::getStateSequence </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;&#160;</td>
+          <td class="paramname"><em>T</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int &gt;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the states along the specified path of vertex indices. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">T</td><td>The <a class="el" href="classPlannerClass.html" title="A directed graph class with supplemental methods to aid in sample-based planning. ...">PlannerClass</a> instance containing the tree </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">path</td><td>Vector of vertices in the path </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The sequence of states in the path </dd></dl>
+
+</div>
+</div>
+<a id="a70f7eb63b760620faf6518d974270296"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70f7eb63b760620faf6518d974270296">&#9670;&nbsp;</a></span>getStatistics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RRTClass::getStatistics </td>
+          <td>(</td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>plan_time</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>success_var</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>vertices_generated</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>time_to_first_solve</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>cost_vector</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>cost_vector_times</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>path_duration</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the statistics for the planner solve. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">plan_time</td><td>The total time spent in the planner </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">success_var</td><td>Number of solves under 5 seconds </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">vertices_generated</td><td>Number of vertices generated in the tree </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">time_to_first_solve</td><td>The time elapsed until the first valid path was found </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">cost_vector</td><td>Vector of costs each time a better one is found </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">cost_vector_times</td><td>Vector of times at which each better cost is found </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">path_duration</td><td>The duration of the path in seconds </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a9c5f2020764525b1ec77b3e019acfcbd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c5f2020764525b1ec77b3e019acfcbd">&#9670;&nbsp;</a></span>newConfig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool RRTClass::newConfig </td>
+          <td>(</td>
+          <td class="paramtype">State&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">State&#160;</td>
+          <td class="paramname"><em>s_near</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">State &amp;&#160;</td>
+          <td class="paramname"><em>s_new</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Action &amp;&#160;</td>
+          <td class="paramname"><em>a_new</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>terrain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>direction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generate a new state that can be connected to the tree and is as close as possible to the specified state. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>Specific state to move towards </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">s_near</td><td>Closest state in the tree to the specified state </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">s_new</td><td>New state yielded by taking an action from s_near </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">a_new</td><td>New action to take from s_near to get to s </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">terrain</td><td>Height map of the terrain </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">direction</td><td>Direction of the dynamics (either FORWARD or REVERSE) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Boolean if the new state got closer to the specified state than any other in the tree </dd></dl>
+
+</div>
+</div>
+<a id="a4acffd50e173aaeb9074248ea29032e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4acffd50e173aaeb9074248ea29032e9">&#9670;&nbsp;</a></span>pathFromStart()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; int &gt; RRTClass::pathFromStart </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;&#160;</td>
+          <td class="paramname"><em>T</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the path from the root vertex to the specified one. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">T</td><td>The <a class="el" href="classPlannerClass.html" title="A directed graph class with supplemental methods to aid in sample-based planning. ...">PlannerClass</a> instance containing the tree </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>Index of the desired vertex </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Vector of vertex indices on the path from the root of the tree to the desired </dd></dl>
+
+</div>
+</div>
+<a id="a25d0142127211e5911b3a29e7dce5dfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25d0142127211e5911b3a29e7dce5dfb">&#9670;&nbsp;</a></span>printPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RRTClass::printPath </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;&#160;</td>
+          <td class="paramname"><em>T</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int &gt;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Print the states in the specified path via stdout. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">T</td><td>The <a class="el" href="classPlannerClass.html" title="A directed graph class with supplemental methods to aid in sample-based planning. ...">PlannerClass</a> instance containing the tree </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">path</td><td>Vector of vertices in the path </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>global_body_planner/include/global_body_planner/<a class="el" href="rrt_8h_source.html">rrt.h</a></li>
 <li>global_body_planner/src/rrt.cpp</li>

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['z_5fdata_5f',['z_data_',['../classFastTerrainMap.html#a06c63f2d551b0a4b0c48c4ff01e58fdd',1,'FastTerrainMap']]]
+  ['vertices',['vertices',['../classGraphClass.html#a4ce5071e5d6f7f58965d0babf0c05cba',1,'GraphClass']]],
+  ['vertices_5fgenerated_5finfo_5f',['vertices_generated_info_',['../classGlobalBodyPlanner.html#adfbd439f7eeadbf40694ba90bcd566e4',1,'GlobalBodyPlanner']]]
 ];

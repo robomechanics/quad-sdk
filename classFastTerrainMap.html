@@ -83,6 +83,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a401cdefb0d963918d0ce29e41aeddbbb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#a401cdefb0d963918d0ce29e41aeddbbb">loadDataFromGridMap</a> (grid_map::GridMap map)</td></tr>
 <tr class="memdesc:a401cdefb0d963918d0ce29e41aeddbbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load data from a grid_map::GridMap object into a <a class="el" href="classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling. ">FastTerrainMap</a> object.  <a href="#a401cdefb0d963918d0ce29e41aeddbbb">More...</a><br /></td></tr>
 <tr class="separator:a401cdefb0d963918d0ce29e41aeddbbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a03f0a9b97c18748a776288515d9d35"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#a0a03f0a9b97c18748a776288515d9d35">isInRange</a> (const double x, const double y)</td></tr>
+<tr class="memdesc:a0a03f0a9b97c18748a776288515d9d35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if map data is defined at a requested location.  <a href="#a0a03f0a9b97c18748a776288515d9d35">More...</a><br /></td></tr>
+<tr class="separator:a0a03f0a9b97c18748a776288515d9d35"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1234e83ea4c55f1d92a0120254f120a1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#a1234e83ea4c55f1d92a0120254f120a1">getGroundHeight</a> (const double x, const double y)</td></tr>
 <tr class="memdesc:a1234e83ea4c55f1d92a0120254f120a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the ground height at a requested location.  <a href="#a1234e83ea4c55f1d92a0120254f120a1">More...</a><br /></td></tr>
 <tr class="separator:a1234e83ea4c55f1d92a0120254f120a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -269,6 +272,44 @@ std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRig
 
 <p>Return the vector of y_data of the map. </p>
 <dl class="section return"><dt>Returns</dt><dd>std::vector&lt;double&gt; of y locations in the grid </dd></dl>
+
+</div>
+</div>
+<a id="a0a03f0a9b97c18748a776288515d9d35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a03f0a9b97c18748a776288515d9d35">&#9670;&nbsp;</a></span>isInRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool FastTerrainMap::isInRange </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check if map data is defined at a requested location. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">double</td><td>x location </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">double</td><td>y location </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>bool location [x,y] is or is not in range </dd></dl>
 
 </div>
 </div>

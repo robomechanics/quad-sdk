@@ -66,13 +66,18 @@ $(function() {
 <div class="title">RRTConnectClass Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>A class that implements RRT-Connect sampling-based planning.  
+ <a href="classRRTConnectClass.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="rrt__connect_8h_source.html">rrt_connect.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for RRTConnectClass:</div>
 <div class="dyncontent">
 <div class="center"><img src="classRRTConnectClass__inherit__graph.png" border="0" usemap="#RRTConnectClass_inherit__map" alt="Inheritance graph"/></div>
 <map name="RRTConnectClass_inherit__map" id="RRTConnectClass_inherit__map">
-<area shape="rect" id="node3" href="classRRTStarConnectClass.html" title="RRTStarConnectClass" alt="" coords="5,155,168,181"/>
-<area shape="rect" id="node2" href="classRRTClass.html" title="RRTClass" alt="" coords="45,5,128,32"/>
+<area shape="rect" id="node3" href="classRRTStarConnectClass.html" title="A class that implements RRT*&#45;Connect sampling&#45;based planning. " alt="" coords="5,155,168,181"/>
+<area shape="rect" id="node2" href="classRRTClass.html" title="A class that implements RRT sampling&#45;based planning. " alt="" coords="45,5,128,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -80,108 +85,532 @@ Collaboration diagram for RRTConnectClass:</div>
 <div class="dyncontent">
 <div class="center"><img src="classRRTConnectClass__coll__graph.png" border="0" usemap="#RRTConnectClass_coll__map" alt="Collaboration graph"/></div>
 <map name="RRTConnectClass_coll__map" id="RRTConnectClass_coll__map">
-<area shape="rect" id="node2" href="classRRTClass.html" title="RRTClass" alt="" coords="32,5,115,32"/>
+<area shape="rect" id="node2" href="classRRTClass.html" title="A class that implements RRT sampling&#45;based planning. " alt="" coords="32,5,115,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a06728bcb6ac17178820b8bc7b369dec8"><td class="memItemLeft" align="right" valign="top"><a id="a06728bcb6ac17178820b8bc7b369dec8"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>attemptConnect</b> (State s_existing, State s, double t_s, State &amp;s_new, Action &amp;a_new, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, int direction)</td></tr>
+<tr class="memitem:a88d3109ab10bc529bae82194bfe92f04"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTConnectClass.html#a88d3109ab10bc529bae82194bfe92f04">RRTConnectClass</a> ()</td></tr>
+<tr class="memdesc:a88d3109ab10bc529bae82194bfe92f04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classRRTConnectClass.html" title="A class that implements RRT-Connect sampling-based planning. ">RRTConnectClass</a>.  <a href="#a88d3109ab10bc529bae82194bfe92f04">More...</a><br /></td></tr>
+<tr class="separator:a88d3109ab10bc529bae82194bfe92f04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abab597ee00c5db17b2a0bcaecb41c9e3"><td class="memItemLeft" align="right" valign="top"><a id="abab597ee00c5db17b2a0bcaecb41c9e3"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTConnectClass.html#abab597ee00c5db17b2a0bcaecb41c9e3">~RRTConnectClass</a> ()</td></tr>
+<tr class="memdesc:abab597ee00c5db17b2a0bcaecb41c9e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor for <a class="el" href="classRRTConnectClass.html" title="A class that implements RRT-Connect sampling-based planning. ">RRTConnectClass</a>. <br /></td></tr>
+<tr class="separator:abab597ee00c5db17b2a0bcaecb41c9e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06728bcb6ac17178820b8bc7b369dec8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTConnectClass.html#a06728bcb6ac17178820b8bc7b369dec8">attemptConnect</a> (State s_existing, State s, double t_s, State &amp;s_new, Action &amp;a_new, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, int direction)</td></tr>
 <tr class="separator:a06728bcb6ac17178820b8bc7b369dec8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c5fef8767dc163b90b5d0b9b834ee3c"><td class="memItemLeft" align="right" valign="top"><a id="a8c5fef8767dc163b90b5d0b9b834ee3c"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>attemptConnect</b> (State s_existing, State s, State &amp;s_new, Action &amp;a_new, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, int direction)</td></tr>
+<tr class="memitem:a8c5fef8767dc163b90b5d0b9b834ee3c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTConnectClass.html#a8c5fef8767dc163b90b5d0b9b834ee3c">attemptConnect</a> (State s_existing, State s, State &amp;s_new, Action &amp;a_new, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, int direction)</td></tr>
 <tr class="separator:a8c5fef8767dc163b90b5d0b9b834ee3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b88169d81d44652eef8cb16c1f0c7d3"><td class="memItemLeft" align="right" valign="top"><a id="a8b88169d81d44652eef8cb16c1f0c7d3"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, State s, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, int direction)</td></tr>
+<tr class="memitem:a8b88169d81d44652eef8cb16c1f0c7d3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTConnectClass.html#a8b88169d81d44652eef8cb16c1f0c7d3">connect</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, State s, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, int direction)</td></tr>
 <tr class="separator:a8b88169d81d44652eef8cb16c1f0c7d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa51d87a720f78efa8005ab48a1fcd438"><td class="memItemLeft" align="right" valign="top"><a id="aa51d87a720f78efa8005ab48a1fcd438"></a>
-std::vector&lt; Action &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getActionSequenceReverse</b> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
+<tr class="memitem:aa51d87a720f78efa8005ab48a1fcd438"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Action &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTConnectClass.html#aa51d87a720f78efa8005ab48a1fcd438">getActionSequenceReverse</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
+<tr class="memdesc:aa51d87a720f78efa8005ab48a1fcd438"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the actions along the specified path of vertex indices (assumes that actions are synched with the state at which they are executed)  <a href="#aa51d87a720f78efa8005ab48a1fcd438">More...</a><br /></td></tr>
 <tr class="separator:aa51d87a720f78efa8005ab48a1fcd438"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a121b58fa356c9f4eb4279e7a3d65334a"><td class="memItemLeft" align="right" valign="top"><a id="a121b58fa356c9f4eb4279e7a3d65334a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>postProcessPath</b> (std::vector&lt; State &gt; &amp;state_sequence, std::vector&lt; Action &gt; &amp;action_sequence, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain)</td></tr>
+<tr class="memitem:a121b58fa356c9f4eb4279e7a3d65334a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTConnectClass.html#a121b58fa356c9f4eb4279e7a3d65334a">postProcessPath</a> (std::vector&lt; State &gt; &amp;state_sequence, std::vector&lt; Action &gt; &amp;action_sequence, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain)</td></tr>
+<tr class="memdesc:a121b58fa356c9f4eb4279e7a3d65334a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Post process the path by removing extraneous states that can be bypassed.  <a href="#a121b58fa356c9f4eb4279e7a3d65334a">More...</a><br /></td></tr>
 <tr class="separator:a121b58fa356c9f4eb4279e7a3d65334a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a98e7315a326cf57f77414b9d5bbf6885"><td class="memItemLeft" align="right" valign="top"><a id="a98e7315a326cf57f77414b9d5bbf6885"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>runRRTConnect</b> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;Ta, <a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;Tb, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain)</td></tr>
+<tr class="memitem:a98e7315a326cf57f77414b9d5bbf6885"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTConnectClass.html#a98e7315a326cf57f77414b9d5bbf6885">runRRTConnect</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;Ta, <a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;Tb, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain)</td></tr>
+<tr class="memdesc:a98e7315a326cf57f77414b9d5bbf6885"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run the RRT-Connect planner once until the goal is found.  <a href="#a98e7315a326cf57f77414b9d5bbf6885">More...</a><br /></td></tr>
 <tr class="separator:a98e7315a326cf57f77414b9d5bbf6885"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c493a77256db7bc2111ab06876ca364"><td class="memItemLeft" align="right" valign="top"><a id="a3c493a77256db7bc2111ab06876ca364"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>buildRRTConnect</b> (<a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, State s_start, State s_goal, std::vector&lt; State &gt; &amp;state_sequence, std::vector&lt; Action &gt; &amp;action_sequence, double max_time)</td></tr>
+<tr class="memitem:a3c493a77256db7bc2111ab06876ca364"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTConnectClass.html#a3c493a77256db7bc2111ab06876ca364">buildRRTConnect</a> (<a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, State s_start, State s_goal, std::vector&lt; State &gt; &amp;state_sequence, std::vector&lt; Action &gt; &amp;action_sequence, double max_time)</td></tr>
+<tr class="memdesc:a3c493a77256db7bc2111ab06876ca364"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run the full RRT-Connect planner until the goal is found and time has expired, then post process and update statistics.  <a href="#a3c493a77256db7bc2111ab06876ca364">More...</a><br /></td></tr>
 <tr class="separator:a3c493a77256db7bc2111ab06876ca364"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classRRTClass"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classRRTClass')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classRRTClass.html">RRTClass</a></td></tr>
-<tr class="memitem:a1d08928089500c78d6a434d801911982 inherit pub_methods_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="a1d08928089500c78d6a434d801911982"></a>
-virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>extend</b> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, State s, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, int direction)</td></tr>
+<tr class="memitem:a9cac25f207d3e58646e560d829d51e25 inherit pub_methods_classRRTClass"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a9cac25f207d3e58646e560d829d51e25">RRTClass</a> ()</td></tr>
+<tr class="memdesc:a9cac25f207d3e58646e560d829d51e25 inherit pub_methods_classRRTClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classRRTClass.html" title="A class that implements RRT sampling-based planning. ">RRTClass</a>.  <a href="classRRTClass.html#a9cac25f207d3e58646e560d829d51e25">More...</a><br /></td></tr>
+<tr class="separator:a9cac25f207d3e58646e560d829d51e25 inherit pub_methods_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af71e054dccb03b92174cc9154f3f4eb7 inherit pub_methods_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="af71e054dccb03b92174cc9154f3f4eb7"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#af71e054dccb03b92174cc9154f3f4eb7">~RRTClass</a> ()</td></tr>
+<tr class="memdesc:af71e054dccb03b92174cc9154f3f4eb7 inherit pub_methods_classRRTClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor for <a class="el" href="classRRTClass.html" title="A class that implements RRT sampling-based planning. ">RRTClass</a>. <br /></td></tr>
+<tr class="separator:af71e054dccb03b92174cc9154f3f4eb7 inherit pub_methods_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d08928089500c78d6a434d801911982 inherit pub_methods_classRRTClass"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a1d08928089500c78d6a434d801911982">extend</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, State s, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, int direction)</td></tr>
 <tr class="separator:a1d08928089500c78d6a434d801911982 inherit pub_methods_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6af2cea28f05961830d949e7ba1603ae inherit pub_methods_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="a6af2cea28f05961830d949e7ba1603ae"></a>
-std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>pathFromStart</b> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, int s)</td></tr>
-<tr class="separator:a6af2cea28f05961830d949e7ba1603ae inherit pub_methods_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25d0142127211e5911b3a29e7dce5dfb inherit pub_methods_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="a25d0142127211e5911b3a29e7dce5dfb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>printPath</b> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
+<tr class="memitem:a4acffd50e173aaeb9074248ea29032e9 inherit pub_methods_classRRTClass"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a4acffd50e173aaeb9074248ea29032e9">pathFromStart</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, int idx)</td></tr>
+<tr class="memdesc:a4acffd50e173aaeb9074248ea29032e9 inherit pub_methods_classRRTClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the path from the root vertex to the specified one.  <a href="classRRTClass.html#a4acffd50e173aaeb9074248ea29032e9">More...</a><br /></td></tr>
+<tr class="separator:a4acffd50e173aaeb9074248ea29032e9 inherit pub_methods_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25d0142127211e5911b3a29e7dce5dfb inherit pub_methods_classRRTClass"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a25d0142127211e5911b3a29e7dce5dfb">printPath</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
+<tr class="memdesc:a25d0142127211e5911b3a29e7dce5dfb inherit pub_methods_classRRTClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print the states in the specified path via stdout.  <a href="classRRTClass.html#a25d0142127211e5911b3a29e7dce5dfb">More...</a><br /></td></tr>
 <tr class="separator:a25d0142127211e5911b3a29e7dce5dfb inherit pub_methods_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5292f78ed563aae40b25591655a0cb9e inherit pub_methods_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="a5292f78ed563aae40b25591655a0cb9e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>buildRRT</b> (<a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, State s_start, State s_goal, std::vector&lt; State &gt; &amp;state_sequence, std::vector&lt; Action &gt; &amp;action_sequence)</td></tr>
+<tr class="memitem:a5292f78ed563aae40b25591655a0cb9e inherit pub_methods_classRRTClass"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a5292f78ed563aae40b25591655a0cb9e">buildRRT</a> (<a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, State s_start, State s_goal, std::vector&lt; State &gt; &amp;state_sequence, std::vector&lt; Action &gt; &amp;action_sequence)</td></tr>
+<tr class="memdesc:a5292f78ed563aae40b25591655a0cb9e inherit pub_methods_classRRTClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute the planner by constructing the tree until a path is found.  <a href="classRRTClass.html#a5292f78ed563aae40b25591655a0cb9e">More...</a><br /></td></tr>
 <tr class="separator:a5292f78ed563aae40b25591655a0cb9e inherit pub_methods_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a70f7eb63b760620faf6518d974270296 inherit pub_methods_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="a70f7eb63b760620faf6518d974270296"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>getStatistics</b> (double &amp;plan_time, int &amp;success_var, int &amp;vertices_generated, double &amp;time_to_first_solve, std::vector&lt; double &gt; &amp;cost_vector, std::vector&lt; double &gt; &amp;cost_vector_times, double &amp;path_duration)</td></tr>
+<tr class="memitem:a70f7eb63b760620faf6518d974270296 inherit pub_methods_classRRTClass"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a70f7eb63b760620faf6518d974270296">getStatistics</a> (double &amp;plan_time, int &amp;success_var, int &amp;vertices_generated, double &amp;time_to_first_solve, std::vector&lt; double &gt; &amp;cost_vector, std::vector&lt; double &gt; &amp;cost_vector_times, double &amp;path_duration)</td></tr>
+<tr class="memdesc:a70f7eb63b760620faf6518d974270296 inherit pub_methods_classRRTClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the statistics for the planner solve.  <a href="classRRTClass.html#a70f7eb63b760620faf6518d974270296">More...</a><br /></td></tr>
 <tr class="separator:a70f7eb63b760620faf6518d974270296 inherit pub_methods_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c5f2020764525b1ec77b3e019acfcbd inherit pub_methods_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="a9c5f2020764525b1ec77b3e019acfcbd"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>newConfig</b> (State s, State s_near, State &amp;s_new, Action &amp;a_new, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, int direction)</td></tr>
+<tr class="memitem:a9c5f2020764525b1ec77b3e019acfcbd inherit pub_methods_classRRTClass"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a9c5f2020764525b1ec77b3e019acfcbd">newConfig</a> (State s, State s_near, State &amp;s_new, Action &amp;a_new, <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain, int direction)</td></tr>
+<tr class="memdesc:a9c5f2020764525b1ec77b3e019acfcbd inherit pub_methods_classRRTClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a new state that can be connected to the tree and is as close as possible to the specified state.  <a href="classRRTClass.html#a9c5f2020764525b1ec77b3e019acfcbd">More...</a><br /></td></tr>
 <tr class="separator:a9c5f2020764525b1ec77b3e019acfcbd inherit pub_methods_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7da5d15380a10262f01fa1c66b5064f9 inherit pub_methods_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="a7da5d15380a10262f01fa1c66b5064f9"></a>
-std::vector&lt; State &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getStateSequence</b> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
+<tr class="memitem:a7da5d15380a10262f01fa1c66b5064f9 inherit pub_methods_classRRTClass"><td class="memItemLeft" align="right" valign="top">std::vector&lt; State &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a7da5d15380a10262f01fa1c66b5064f9">getStateSequence</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
+<tr class="memdesc:a7da5d15380a10262f01fa1c66b5064f9 inherit pub_methods_classRRTClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the states along the specified path of vertex indices.  <a href="classRRTClass.html#a7da5d15380a10262f01fa1c66b5064f9">More...</a><br /></td></tr>
 <tr class="separator:a7da5d15380a10262f01fa1c66b5064f9 inherit pub_methods_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af9ffdb926909423196f8a8f5a48f08ed inherit pub_methods_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="af9ffdb926909423196f8a8f5a48f08ed"></a>
-std::vector&lt; Action &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getActionSequence</b> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
+<tr class="memitem:af9ffdb926909423196f8a8f5a48f08ed inherit pub_methods_classRRTClass"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Action &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#af9ffdb926909423196f8a8f5a48f08ed">getActionSequence</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
+<tr class="memdesc:af9ffdb926909423196f8a8f5a48f08ed inherit pub_methods_classRRTClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the actions along the specified path of vertex indices (assumes that actions are synched with the states to which they lead)  <a href="classRRTClass.html#af9ffdb926909423196f8a8f5a48f08ed">More...</a><br /></td></tr>
 <tr class="separator:af9ffdb926909423196f8a8f5a48f08ed inherit pub_methods_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a9a0b075d5562560dcbdde72e00c733f0"><td class="memItemLeft" align="right" valign="top"><a id="a9a0b075d5562560dcbdde72e00c733f0"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>anytime_horizon</b></td></tr>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTConnectClass.html#a9a0b075d5562560dcbdde72e00c733f0">anytime_horizon</a></td></tr>
+<tr class="memdesc:a9a0b075d5562560dcbdde72e00c733f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time horizon (in seconds) the planner is allowed to search until restarted. <br /></td></tr>
 <tr class="separator:a9a0b075d5562560dcbdde72e00c733f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade4e265ae025a586848fa5b87f452f07"><td class="memItemLeft" align="right" valign="top"><a id="ade4e265ae025a586848fa5b87f452f07"></a>
-const double&#160;</td><td class="memItemRight" valign="bottom"><b>planning_rate_estimate</b> = 16.0</td></tr>
+const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTConnectClass.html#ade4e265ae025a586848fa5b87f452f07">planning_rate_estimate</a> = 16.0</td></tr>
+<tr class="memdesc:ade4e265ae025a586848fa5b87f452f07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial guess at how quickly the planner executes (in m/s) <br /></td></tr>
 <tr class="separator:ade4e265ae025a586848fa5b87f452f07"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac6a1c1aa7f49bf73b938b70a3d897371"><td class="memItemLeft" align="right" valign="top"><a id="ac6a1c1aa7f49bf73b938b70a3d897371"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>anytime_horizon_init</b></td></tr>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTConnectClass.html#ac6a1c1aa7f49bf73b938b70a3d897371">anytime_horizon_init</a></td></tr>
+<tr class="memdesc:ac6a1c1aa7f49bf73b938b70a3d897371"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial anytime horizon (in seconds) <br /></td></tr>
 <tr class="separator:ac6a1c1aa7f49bf73b938b70a3d897371"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a789206015b64495eddfdaf0ec457151d"><td class="memItemLeft" align="right" valign="top"><a id="a789206015b64495eddfdaf0ec457151d"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>horizon_expansion_factor</b> = 1.2</td></tr>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTConnectClass.html#a789206015b64495eddfdaf0ec457151d">horizon_expansion_factor</a> = 1.2</td></tr>
+<tr class="memdesc:a789206015b64495eddfdaf0ec457151d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factor by which horizon is increased if replanning is required. <br /></td></tr>
 <tr class="separator:a789206015b64495eddfdaf0ec457151d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a001d087eeac2704c5cb25ee6355a29b6"><td class="memItemLeft" align="right" valign="top"><a id="a001d087eeac2704c5cb25ee6355a29b6"></a>
-const int&#160;</td><td class="memItemRight" valign="bottom"><b>max_time_solve</b> = 20</td></tr>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTConnectClass.html#a001d087eeac2704c5cb25ee6355a29b6">max_time_solve</a> = 20</td></tr>
+<tr class="memdesc:a001d087eeac2704c5cb25ee6355a29b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hard maximum time allowed for the planner, returns unsuccessfully if reached. <br /></td></tr>
 <tr class="separator:a001d087eeac2704c5cb25ee6355a29b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classRRTClass"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classRRTClass')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classRRTClass.html">RRTClass</a></td></tr>
 <tr class="memitem:a3bea12d5a94669ee0713d8447c575f4b inherit pro_attribs_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="a3bea12d5a94669ee0713d8447c575f4b"></a>
-const double&#160;</td><td class="memItemRight" valign="bottom"><b>prob_goal_thresh</b> = 0.05</td></tr>
+const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a3bea12d5a94669ee0713d8447c575f4b">prob_goal_thresh</a> = 0.05</td></tr>
+<tr class="memdesc:a3bea12d5a94669ee0713d8447c575f4b inherit pro_attribs_classRRTClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Probability with which the goal is sampled (if running vanilla RRT) <br /></td></tr>
 <tr class="separator:a3bea12d5a94669ee0713d8447c575f4b inherit pro_attribs_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd63c1f08cf738a4966010968e615e0a inherit pro_attribs_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="abd63c1f08cf738a4966010968e615e0a"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>goal_found</b> = false</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#abd63c1f08cf738a4966010968e615e0a">goal_found</a> = false</td></tr>
+<tr class="memdesc:abd63c1f08cf738a4966010968e615e0a inherit pro_attribs_classRRTClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean for if the goal has been reached. <br /></td></tr>
 <tr class="separator:abd63c1f08cf738a4966010968e615e0a inherit pro_attribs_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaaf8027527034bc8fc424ff91f59acb6 inherit pro_attribs_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="aaaf8027527034bc8fc424ff91f59acb6"></a>
-std::chrono::duration&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>elapsed_total</b></td></tr>
+std::chrono::duration&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#aaaf8027527034bc8fc424ff91f59acb6">elapsed_total</a></td></tr>
+<tr class="memdesc:aaaf8027527034bc8fc424ff91f59acb6 inherit pro_attribs_classRRTClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total time elapsed in this planner call. <br /></td></tr>
 <tr class="separator:aaaf8027527034bc8fc424ff91f59acb6 inherit pro_attribs_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77a273cae4203340a655c83cf63baa4f inherit pro_attribs_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="a77a273cae4203340a655c83cf63baa4f"></a>
 std::chrono::duration&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>elapsed_to_first</b></td></tr>
 <tr class="separator:a77a273cae4203340a655c83cf63baa4f inherit pro_attribs_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7cddb22b09f2be69b1d93eb337963d03 inherit pro_attribs_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="a7cddb22b09f2be69b1d93eb337963d03"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>success_</b> = 0</td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a7cddb22b09f2be69b1d93eb337963d03">success_</a> = 0</td></tr>
+<tr class="memdesc:a7cddb22b09f2be69b1d93eb337963d03 inherit pro_attribs_classRRTClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integer checking if a solution was computed in 5 seconds. <br /></td></tr>
 <tr class="separator:a7cddb22b09f2be69b1d93eb337963d03 inherit pro_attribs_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6e0461555d33efc0bce6dbeb4f1e741 inherit pro_attribs_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="af6e0461555d33efc0bce6dbeb4f1e741"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>num_vertices</b></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#af6e0461555d33efc0bce6dbeb4f1e741">num_vertices</a></td></tr>
+<tr class="memdesc:af6e0461555d33efc0bce6dbeb4f1e741 inherit pro_attribs_classRRTClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of vertices in the tree. <br /></td></tr>
 <tr class="separator:af6e0461555d33efc0bce6dbeb4f1e741 inherit pro_attribs_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0be1d3d077c4ea197b62a49a7c78277 inherit pro_attribs_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="af0be1d3d077c4ea197b62a49a7c78277"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>path_quality_</b></td></tr>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#af0be1d3d077c4ea197b62a49a7c78277">path_quality_</a></td></tr>
+<tr class="memdesc:af0be1d3d077c4ea197b62a49a7c78277 inherit pro_attribs_classRRTClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Path quality in meters. <br /></td></tr>
 <tr class="separator:af0be1d3d077c4ea197b62a49a7c78277 inherit pro_attribs_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afcad861656af64f757753dd41f2fa5a9 inherit pro_attribs_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="afcad861656af64f757753dd41f2fa5a9"></a>
-std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>cost_vector_</b></td></tr>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#afcad861656af64f757753dd41f2fa5a9">cost_vector_</a></td></tr>
+<tr class="memdesc:afcad861656af64f757753dd41f2fa5a9 inherit pro_attribs_classRRTClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of costs each time a better one is found. <br /></td></tr>
 <tr class="separator:afcad861656af64f757753dd41f2fa5a9 inherit pro_attribs_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acbbbd085d2648f8f39c664776163bf18 inherit pro_attribs_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="acbbbd085d2648f8f39c664776163bf18"></a>
-std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>cost_vector_times_</b></td></tr>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#acbbbd085d2648f8f39c664776163bf18">cost_vector_times_</a></td></tr>
+<tr class="memdesc:acbbbd085d2648f8f39c664776163bf18 inherit pro_attribs_classRRTClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of times at which each better cost is found. <br /></td></tr>
 <tr class="separator:acbbbd085d2648f8f39c664776163bf18 inherit pro_attribs_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c8e83183a9d3383571eccbdde77d842 inherit pro_attribs_classRRTClass"><td class="memItemLeft" align="right" valign="top"><a id="a3c8e83183a9d3383571eccbdde77d842"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>path_duration_</b></td></tr>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a3c8e83183a9d3383571eccbdde77d842">path_duration_</a></td></tr>
+<tr class="memdesc:a3c8e83183a9d3383571eccbdde77d842 inherit pro_attribs_classRRTClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">The duration of the path in seconds. <br /></td></tr>
 <tr class="separator:a3c8e83183a9d3383571eccbdde77d842 inherit pro_attribs_classRRTClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A class that implements RRT-Connect sampling-based planning. </p>
+<p>This class inherits the <a class="el" href="classRRTClass.html" title="A class that implements RRT sampling-based planning. ">RRTClass</a>, and adds members to connect two states exactly and post process the resulting solution. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a88d3109ab10bc529bae82194bfe92f04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88d3109ab10bc529bae82194bfe92f04">&#9670;&nbsp;</a></span>RRTConnectClass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RRTConnectClass::RRTConnectClass </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor for <a class="el" href="classRRTConnectClass.html" title="A class that implements RRT-Connect sampling-based planning. ">RRTConnectClass</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classRRTConnectClass.html" title="A class that implements RRT-Connect sampling-based planning. ">RRTConnectClass</a> </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a06728bcb6ac17178820b8bc7b369dec8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06728bcb6ac17178820b8bc7b369dec8">&#9670;&nbsp;</a></span>attemptConnect() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int RRTConnectClass::attemptConnect </td>
+          <td>(</td>
+          <td class="paramtype">State&#160;</td>
+          <td class="paramname"><em>s_existing</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">State&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>t_s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">State &amp;&#160;</td>
+          <td class="paramname"><em>s_new</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Action &amp;&#160;</td>
+          <td class="paramname"><em>a_new</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>terrain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>direction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Attempt to connect two states with specified stance time, and return a new state if the full connection is not possible </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">s_existing</td><td>The state that is already in the tree and closest to the specified state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>The state to extend the tree towards </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">t_s</td><td>The stance time for this connection </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">s_new</td><td>New state yielded by taking the resulting action </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">a_new</td><td>New action to connect the states </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">terrain</td><td>Height map of the terrain </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">direction</td><td>Direction of the dynamics (either FORWARD or REVERSE) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Int describing the result of the attempt (TRAPPED, ADVANCED, or REACHED) </dd></dl>
+
+</div>
+</div>
+<a id="a8c5fef8767dc163b90b5d0b9b834ee3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c5fef8767dc163b90b5d0b9b834ee3c">&#9670;&nbsp;</a></span>attemptConnect() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int RRTConnectClass::attemptConnect </td>
+          <td>(</td>
+          <td class="paramtype">State&#160;</td>
+          <td class="paramname"><em>s_existing</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">State&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">State &amp;&#160;</td>
+          <td class="paramname"><em>s_new</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Action &amp;&#160;</td>
+          <td class="paramname"><em>a_new</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>terrain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>direction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Attempt to connect two states, and return a new state if the full connection is not possible. Internally computes stance time </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">s_existing</td><td>The state that is already in the tree and closest to the specified state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>The state to extend the tree towards </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">s_new</td><td>New state yielded by taking the resulting action </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">a_new</td><td>New action to connect the states </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">terrain</td><td>Height map of the terrain </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">direction</td><td>Direction of the dynamics (either FORWARD or REVERSE) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Int describing the result of the attempt (TRAPPED, ADVANCED, or REACHED) </dd></dl>
+
+</div>
+</div>
+<a id="a3c493a77256db7bc2111ab06876ca364"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c493a77256db7bc2111ab06876ca364">&#9670;&nbsp;</a></span>buildRRTConnect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RRTConnectClass::buildRRTConnect </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>terrain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">State&#160;</td>
+          <td class="paramname"><em>s_start</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">State&#160;</td>
+          <td class="paramname"><em>s_goal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; State &gt; &amp;&#160;</td>
+          <td class="paramname"><em>state_sequence</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; Action &gt; &amp;&#160;</td>
+          <td class="paramname"><em>action_sequence</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>max_time</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Run the full RRT-Connect planner until the goal is found and time has expired, then post process and update statistics. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">terrain</td><td>Height map of the terrain </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">s_start</td><td>The start state of the planner </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">s_goal</td><td>The goal state of the planner </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">state_sequence</td><td>The sequence of states in the final path </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">action_sequence</td><td>The sequence of actions in the final path </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">max_time</td><td>The time after which replanning is halted </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8b88169d81d44652eef8cb16c1f0c7d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b88169d81d44652eef8cb16c1f0c7d3">&#9670;&nbsp;</a></span>connect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int RRTConnectClass::connect </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;&#160;</td>
+          <td class="paramname"><em>T</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">State&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>terrain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>direction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Connect the tree to the desired state </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">T</td><td>The <a class="el" href="classPlannerClass.html" title="A directed graph class with supplemental methods to aid in sample-based planning. ...">PlannerClass</a> instance containing the tree </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>The state to connect the tree towards </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">terrain</td><td>Height map of the terrain </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">direction</td><td>The direction with which to peform the extension (FORWARD to go away from the root vertex, REVERSE to go towards it) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa51d87a720f78efa8005ab48a1fcd438"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa51d87a720f78efa8005ab48a1fcd438">&#9670;&nbsp;</a></span>getActionSequenceReverse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; Action &gt; RRTConnectClass::getActionSequenceReverse </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;&#160;</td>
+          <td class="paramname"><em>T</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int &gt;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the actions along the specified path of vertex indices (assumes that actions are synched with the state at which they are executed) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">T</td><td>The <a class="el" href="classPlannerClass.html" title="A directed graph class with supplemental methods to aid in sample-based planning. ...">PlannerClass</a> instance containing the tree </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">path</td><td>Vector of vertices in the path </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The sequence of actions in the path </dd></dl>
+
+</div>
+</div>
+<a id="a121b58fa356c9f4eb4279e7a3d65334a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a121b58fa356c9f4eb4279e7a3d65334a">&#9670;&nbsp;</a></span>postProcessPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RRTConnectClass::postProcessPath </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; State &gt; &amp;&#160;</td>
+          <td class="paramname"><em>state_sequence</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; Action &gt; &amp;&#160;</td>
+          <td class="paramname"><em>action_sequence</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>terrain</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Post process the path by removing extraneous states that can be bypassed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">state_sequence</td><td>The sequence of states in the path </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">action_sequence</td><td>The sequence of actions in the path </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">terrain</td><td>Height map of the terrain </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a98e7315a326cf57f77414b9d5bbf6885"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98e7315a326cf57f77414b9d5bbf6885">&#9670;&nbsp;</a></span>runRRTConnect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RRTConnectClass::runRRTConnect </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;&#160;</td>
+          <td class="paramname"><em>Ta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;&#160;</td>
+          <td class="paramname"><em>Tb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>terrain</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Run the RRT-Connect planner once until the goal is found. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">Ta</td><td>Tree with root vertex at start state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">Tb</td><td>Tree with root vertex at goal state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">terrain</td><td>Height map of the terrain </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>global_body_planner/include/global_body_planner/<a class="el" href="rrt__connect_8h_source.html">rrt_connect.h</a></li>
 <li>global_body_planner/src/rrt_connect.cpp</li>

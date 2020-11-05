@@ -1,5 +1,10 @@
 var searchData=
 [
-  ['nh_5f',['nh_',['../classContactDetection.html#aaf2478c35a4aa5301a395562e26267c4',1,'ContactDetection::nh_()'],['../classEKFEstimator.html#a72df2d5887b4a72ec692ec2d6da57828',1,'EKFEstimator::nh_()'],['../classGlobalBodyPlanner.html#aed259cd32b2a44277be294e981093d36',1,'GlobalBodyPlanner::nh_()'],['../classLocalFootstepPlanner.html#a1deeef388877a4597ca4b56610e0e627',1,'LocalFootstepPlanner::nh_()'],['../classMPCController.html#a25b2e113ddd845e80abaf51adbeac2a3',1,'MPCController::nh_()'],['../classPackageTemplate.html#ad7b5a48549a633c1f99dd092856646b9',1,'PackageTemplate::nh_()'],['../classRobotInterface.html#a9a65055838f4662b177045a8a6554440',1,'RobotInterface::nh_()'],['../classRVizInterface.html#a8617e53fd181aca3ad86f7d83429436a',1,'RVizInterface::nh_()'],['../classTerrainMapPublisher.html#ae99cba5723122187783469f150268630',1,'TerrainMapPublisher::nh_()']]],
-  ['num_5fcalls_5f',['num_calls_',['../classGlobalBodyPlanner.html#a7d917ce8f4d6f43b3855dd3a48809fa7',1,'GlobalBodyPlanner']]]
+  ['map_5fdata_5fsource_5f',['map_data_source_',['../classTerrainMapPublisher.html#aac004d967077b8433018cdcf6f51c384',1,'TerrainMapPublisher']]],
+  ['map_5fframe_5f',['map_frame_',['../classGlobalBodyPlanner.html#a7b45b7415cdca9ec042f0619deee4447',1,'GlobalBodyPlanner::map_frame_()'],['../classLocalFootstepPlanner.html#aa25b6b2f38279436f5922165841da9ad',1,'LocalFootstepPlanner::map_frame_()'],['../classMPCController.html#a23ffd702292a0f5af2aa7de94140127c',1,'MPCController::map_frame_()'],['../classRVizInterface.html#a793eebfebed50f8320c95117876b31cf',1,'RVizInterface::map_frame_()'],['../classTerrainMapPublisher.html#ab72c50bd278bec6f1870d7098f1f1eed',1,'TerrainMapPublisher::map_frame_()']]],
+  ['map_5finitialized_5f',['map_initialized_',['../classTerrainMapPublisher.html#acde2f6690426b3aa1de411b260f5517b',1,'TerrainMapPublisher']]],
+  ['max_5fheight_5f',['max_height_',['../classTerrainMapPublisher.html#af6938ddec68646380135b2d22b7a2498',1,'TerrainMapPublisher']]],
+  ['max_5ftime_5fsolve',['max_time_solve',['../classRRTConnectClass.html#a001d087eeac2704c5cb25ee6355a29b6',1,'RRTConnectClass']]],
+  ['min_5fheight_5f',['min_height_',['../classTerrainMapPublisher.html#aa22f46f8003f8963e383f342387c09dc',1,'TerrainMapPublisher']]],
+  ['mpccontroller',['MPCController',['../classMPCController.html',1,'MPCController'],['../classMPCController.html#a16a87d6e746992d9479d27aae63cca16',1,'MPCController::MPCController()']]]
 ];

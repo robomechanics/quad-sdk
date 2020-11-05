@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['x_5fdata_5f',['x_data_',['../classFastTerrainMap.html#aa7ab9b4b21f4971ec64e00a936345b29',1,'FastTerrainMap']]],
-  ['x_5fsize_5f',['x_size_',['../classFastTerrainMap.html#ab0320569ffaa039ea09b3d136aef5856',1,'FastTerrainMap']]],
-  ['xacroexception',['XacroException',['../classxacro_1_1XacroException.html',1,'xacro']]]
+  ['waitformap',['waitForMap',['../classGlobalBodyPlanner.html#a022a47eb17c660b2c3984def62c613a3',1,'GlobalBodyPlanner']]]
 ];

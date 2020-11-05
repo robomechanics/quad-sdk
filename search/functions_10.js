@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['updateplan',['updatePlan',['../classLocalFootstepPlanner.html#a72440a898d177da24ade355fec6c1f99',1,'LocalFootstepPlanner']]],
-  ['updatestep',['updateStep',['../classEKFEstimator.html#a2f31ab8d70f8ba90eda345810a0913b5',1,'EKFEstimator']]]
+  ['terrainmapcallback',['terrainMapCallback',['../classGlobalBodyPlanner.html#a209eb08a4c8c9e51b88c4039a6cfbd12',1,'GlobalBodyPlanner::terrainMapCallback()'],['../classLocalFootstepPlanner.html#a29dd7f51c83c244633f4efc8c6fac1af',1,'LocalFootstepPlanner::terrainMapCallback()']]],
+  ['terrainmappublisher',['TerrainMapPublisher',['../classTerrainMapPublisher.html#a0a8d623893002835ad1efd85b2fd321b',1,'TerrainMapPublisher']]]
 ];

@@ -81,9 +81,15 @@ Public Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTerrainMapPublisher.html#a295ac03389590d98c589d2d58990b64e">createMap</a> ()</td></tr>
 <tr class="memdesc:a295ac03389590d98c589d2d58990b64e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates the map object from scratch. <br /></td></tr>
 <tr class="separator:a295ac03389590d98c589d2d58990b64e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5d8c63f68d1256f06db6159876ce2100"><td class="memItemLeft" align="right" valign="top"><a id="a5d8c63f68d1256f06db6159876ce2100"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTerrainMapPublisher.html#a5d8c63f68d1256f06db6159876ce2100">loadMapFromImage</a> (const sensor_msgs::Image &amp;msg)</td></tr>
-<tr class="memdesc:a5d8c63f68d1256f06db6159876ce2100"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads data into the map object from an image topic. <br /></td></tr>
+<tr class="memitem:ad3f41fb79f4056c0c7a145f3c0061786"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTerrainMapPublisher.html#ad3f41fb79f4056c0c7a145f3c0061786">loadCSV</a> (std::string filename)</td></tr>
+<tr class="memdesc:ad3f41fb79f4056c0c7a145f3c0061786"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads data from a specified CSV file into a nested std::vector structure.  <a href="#ad3f41fb79f4056c0c7a145f3c0061786">More...</a><br /></td></tr>
+<tr class="separator:ad3f41fb79f4056c0c7a145f3c0061786"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a633f664cc608dc2478948c829c22c97d"><td class="memItemLeft" align="right" valign="top"><a id="a633f664cc608dc2478948c829c22c97d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTerrainMapPublisher.html#a633f664cc608dc2478948c829c22c97d">loadMapFromCSV</a> ()</td></tr>
+<tr class="memdesc:a633f664cc608dc2478948c829c22c97d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads data into the map object from a CSV. <br /></td></tr>
+<tr class="separator:a633f664cc608dc2478948c829c22c97d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d8c63f68d1256f06db6159876ce2100"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTerrainMapPublisher.html#a5d8c63f68d1256f06db6159876ce2100">loadMapFromImage</a> (const sensor_msgs::Image &amp;msg)</td></tr>
+<tr class="memdesc:a5d8c63f68d1256f06db6159876ce2100"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads data into the map object from an image topic.  <a href="#a5d8c63f68d1256f06db6159876ce2100">More...</a><br /></td></tr>
 <tr class="separator:a5d8c63f68d1256f06db6159876ce2100"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa11b7631c0f0c3c33f9a118be181a102"><td class="memItemLeft" align="right" valign="top"><a id="aa11b7631c0f0c3c33f9a118be181a102"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTerrainMapPublisher.html#aa11b7631c0f0c3c33f9a118be181a102">publishMap</a> ()</td></tr>
@@ -169,6 +175,60 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classTerrainMapPublisher.html" title="A terrain map publishing class. ">TerrainMapPublisher</a> </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ad3f41fb79f4056c0c7a145f3c0061786"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3f41fb79f4056c0c7a145f3c0061786">&#9670;&nbsp;</a></span>loadCSV()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::vector&lt; double &gt; &gt; TerrainMapPublisher::loadCSV </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Loads data from a specified CSV file into a nested std::vector structure. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">filename</td><td>Path to the CSV file </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Data from the CSV in vector structure </dd></dl>
+
+</div>
+</div>
+<a id="a5d8c63f68d1256f06db6159876ce2100"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d8c63f68d1256f06db6159876ce2100">&#9670;&nbsp;</a></span>loadMapFromImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TerrainMapPublisher::loadMapFromImage </td>
+          <td>(</td>
+          <td class="paramtype">const sensor_msgs::Image &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Loads data into the map object from an image topic. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>ROS image message </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
