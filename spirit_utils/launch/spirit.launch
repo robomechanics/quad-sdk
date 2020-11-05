@@ -31,7 +31,7 @@
         </node>
 
         <!-- Point the robot description to this URDF (which has meshes attached) -->
-        <param name="robot_description" command="cat $(find spirit_visualizer)/urdf/spirit40_gaz_RML.urdf" />
+        <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit_meshes.urdf" />
 
         <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
