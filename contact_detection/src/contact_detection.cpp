@@ -4,7 +4,11 @@ ContactDetection::ContactDetection(ros::NodeHandle nh) {
 	nh_ = nh;
 
 	// Load rosparams from parameter server
+	std::string joint_encoder_topic, imu_topic, contact_detection_topic;
 	nh.param<double>("contact_detection/update_rate", update_rate_, 200); // add a param for your package instead of using the estimator one
+	nh.param<std::string>("topics/joint_encoder", joint_encoder_topic, "/joint_encoder");
+	nh.param<std::string>("topics/imu", imu_topic, "/imu");
+	nh.param<std::string>("topics/contact_detection", contact_detection_topic, "/contact_detection");
 
 	// Setup pubs and subs here
 	joint_encoder_sub_ = nh_.subscribe(joint_encoder_topic,1,&ContactDetection::jointEncoderCallback, this);
