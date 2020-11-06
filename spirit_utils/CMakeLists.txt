@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   nav_msgs
+  sensor_msgs
   geometry_msgs
   spirit_msgs
   grid_map_core

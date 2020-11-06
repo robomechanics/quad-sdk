@@ -30,11 +30,17 @@
           <!-- <rosparam command="load" file="$(find global_body_planner)/config/simple_terrain.yaml" /> -->
         </node>
 
+        <!-- Point the robot description to this URDF (which has meshes attached) -->
+        <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit_meshes.urdf" />
+
+        <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
         <!-- Launch the node to publish the visual topics for the plans -->
         <node name="rviz_interface" pkg="spirit_utils" type="rviz_interface_node" output="screen"/>
 
         <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
-        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find global_body_planner)/rviz/example_with_terrain.rviz"/>
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find spirit_utils)/rviz/example_with_terrain.rviz"/>
 
 
 </launch>
