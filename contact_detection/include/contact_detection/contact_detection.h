@@ -38,6 +38,7 @@ private:
 	 */
 	void imuCallback(const sensor_msgs::Imu::ConstPtr& msg);
 
+	spirit_msgs::ContactDetection updateStep();
 
 	// ROS subscriber for joint encoder messages
 	ros::Subscriber joint_encoder_sub_;
@@ -53,6 +54,10 @@ private:
 
 	/// Update rate for sending and receiving data;
 	double update_rate_;
+
+	/// Last state estimate
+	spirit_msgs::StateEstimate last_state_est_;
+
 };
 
 #endif // CONTACTDETECTION_H
