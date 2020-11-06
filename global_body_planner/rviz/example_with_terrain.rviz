@@ -27,7 +27,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: Elevation
+    SyncSource: ""
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -226,6 +226,115 @@ Visualization Manager:
       Unreliable: false
       Use Rainbow: true
       Value: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        body:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        dummy:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        hip0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        t265_pose_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        toe0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+      Name: RobotModel
+      Robot Description: robot_description
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
