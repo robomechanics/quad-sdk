@@ -14,6 +14,11 @@ void vectorToArray(State vec, double * new_array)
 	for (int i = 0; i < vec.size(); i++)
 		new_array[i] = vec.at(i);
 }
+void stdVectorToState(std::vector<double> v, State& s)
+{
+	for (int i = 0; i < v.size(); i++)
+		s[i] = v.at(i);
+}
 void printState(State vec)
 {
 	printf("{");
@@ -413,8 +418,13 @@ bool isValidAction(Action a)
 
 bool isValidState(State s, FastTerrainMap& terrain, int phase)
 {
-	if ((s[0] < terrain.getXData().front()) || (s[0] > terrain.getXData().back()) || (s[1] < terrain.getYData().front()) || (s[1] > terrain.getYData().back()) || (abs(s[6]) >= P_MAX) )
-	    return false;
+	// if ((s[0] < terrain.getXData().front()) || (s[0] > terrain.getXData().back()) || (s[1] < terrain.getYData().front()) || (s[1] > terrain.getYData().back()) || (abs(s[6]) >= P_MAX) )
+	//     return false;
+	if (terrain.isInRange(s[0], s[1]) == false)
+	  return false;
+
+	if (abs(s[6]) >= P_MAX)
+		return false;
 
 	if (sqrt(s[3]*s[3] + s[4]*s[4]) > V_MAX) // Ignore limit on vertical velocity since this is accurately bounded by gravity
 		return false;

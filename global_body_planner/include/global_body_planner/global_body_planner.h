@@ -3,9 +3,14 @@
 
 #include <ros/ros.h>
 #include <nav_msgs/Path.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
 #include <spirit_msgs/BodyPlan.h>
+
 #include "global_body_planner/planning_utils.h"
-#include "spirit_utils/fast_terrain_map.h"
+#include "global_body_planner/planner_class.h"
+#include "global_body_planner/rrt_star_connect.h"
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
@@ -14,17 +19,18 @@
 
 using namespace planning_utils;
 
-//! A global body planning class for spirit
+//! A global body planning class for legged robots
 /*!
    GlobalBodyPlanner is a container for all of the logic utilized in the global body planning node.
    This algorithm requires an height map of the terrain as a GridMap message type, and will publish
-   the global body plan as a BodyPlan message over a topic. It will also publish the 
+   the global body plan as a BodyPlan message over a topic. It will also publish the discrete states
+   used by the planner (from which the full path is interpolated).
 */
 class GlobalBodyPlanner {
   public:
     /**
      * @brief Constructor for GlobalBodyPlanner Class
-     * @param[in] Node handle
+     * @param[in] nh Node handle
      * @return Constructed object of type GlobalBodyPlanner
      */
     GlobalBodyPlanner(ros::NodeHandle nh);
@@ -47,20 +53,15 @@ class GlobalBodyPlanner {
     void terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg);
 
     /**
-     * @brief Set the start and goal states of the planner
-     */
-    void setStartAndGoalStates();
-
-    /**
      * @brief Clear the plan member variables
      */
     void clearPlan();
 
     /**
      * @brief Update the body plan with the current plan
-     * @param[in] Time of state in trajectory
-     * @param[in] Body state
-     * @param[in] Body plan message
+     * @param[in] t Time of state in trajectory
+     * @param[in] body_state Body state
+     * @param[in] body_plan_msg Body plan message
      */
     void addBodyStateToMsg(double t, State body_state, spirit_msgs::BodyPlan& body_plan_msg);
 
@@ -92,6 +93,9 @@ class GlobalBodyPlanner {
     /// Number of times to call the planner
     int num_calls_;
 
+    /// Algorithm for planner to run (rrt-connect or rrt-star-connect)
+    std::string algorithm_;
+
     /// Time after which replanning is halted;
     double replan_time_limit_;
 
@@ -108,10 +112,10 @@ class GlobalBodyPlanner {
     std::vector<double> t_plan_;
 
     /// Robot starting state
-    State robot_start_;
+    std::vector<double> start_state_;
 
     /// Robot goal state
-    State robot_goal_;
+    std::vector<double> goal_state_;
     
     /// Sequence of discrete states in the plan
     std::vector<State> state_sequence_;

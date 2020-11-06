@@ -1,9 +1,4 @@
 #include "global_body_planner/global_body_planner.h"
-#include "global_body_planner/planner_class.h"
-#include "global_body_planner/rrt_star_connect.h"
-
-#include <tf2/LinearMath/Quaternion.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 using namespace planning_utils;
 
@@ -12,6 +7,9 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
 
   // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, discrete_body_plan_topic;
+  std::vector<double> start_state_default = {0.0,0.0,0.4,0.0,0.1,0.0,0.0,0.0};
+  std::vector<double> goal_state_default = {8.0,0.0,0.4,0.0,0.0,0.0,0.0,0.0};
+
   nh.param<std::string>("topics/terrain_map", terrain_map_topic, "/terrain_map");
   nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
   nh.param<std::string>("topics/discrete_body_plan", discrete_body_plan_topic, "/discrete_body_plan");
@@ -19,6 +17,10 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh.param<double>("global_body_planner/update_rate", update_rate_, 1);
   nh.param<int>("global_body_planner/num_calls", num_calls_, 1);
   nh.param<double>("global_body_planner/replan_time_limit", replan_time_limit_, 0.0);
+  nh.param<std::string>("global_body_planner/algorithm", algorithm_, "rrt-connect");
+
+  nh.param<std::vector<double> >("global_body_planner/start_state", start_state_, start_state_default);
+  nh.param<std::vector<double> >("global_body_planner/goal_state", goal_state_, goal_state_default);
 
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1,&GlobalBodyPlanner::terrainMapCallback, this);
@@ -50,8 +52,29 @@ void GlobalBodyPlanner::clearPlan() {
 void GlobalBodyPlanner::callPlanner() {
 
   // Get the most recent plan parameters and clear the old solutions
-  setStartAndGoalStates();
   clearPlan();
+
+  // Copy start and goal states and adjust for ground height
+  State start_state;
+  State goal_state;
+  stdVectorToState(start_state_, start_state);
+  stdVectorToState(goal_state_, goal_state);
+  start_state[2] += terrain_.getGroundHeight(start_state[0], start_state[1]);
+  goal_state[2] += terrain_.getGroundHeight(goal_state[0], goal_state[1]);
+
+  // Make sure terminal states are valid
+  if (!isValidState(start_state, terrain_, STANCE)) {
+    ROS_WARN("Invalid start state, exiting global planner");
+    return;
+  }
+  if (!isValidState(goal_state, terrain_, STANCE)) {
+    ROS_WARN("Invalid goal state, exiting global planner");
+    return;
+  }
+  if (start_state == goal_state) {
+    ROS_WARN("Identical start and goal states, exiting global planner");
+    return;
+  }
 
   // Initialize statistics variables
   double plan_time;
@@ -79,15 +102,16 @@ void GlobalBodyPlanner::callPlanner() {
     std::vector<double> cost_vector;
     std::vector<double> cost_vector_times;
 
-    // Call the appropriate planning method
-    // rrt_obj.buildRRT(ground, robot_start, robot_goal,state_sequence,action_sequence);
-    // rrt_obj.getStatistics(plan_time,success, vertices_generated, time_to_first_solve, cost_vector, cost_vector_times, path_duration);
-
-    rrt_connect_obj.buildRRTConnect(terrain_, robot_start_, robot_goal_,state_sequence_,action_sequence_, replan_time_limit_);
-    rrt_connect_obj.getStatistics(plan_time,success, vertices_generated, time_to_first_solve, cost_vector, cost_vector_times, path_duration);
-    
-    // rrt_star_connect_obj.buildRRTStarConnect(ground, robot_start, robot_goal,state_sequence,action_sequence, replan_time_limit_);
-    // rrt_star_connect_obj.getStatistics(plan_time,success, vertices_generated, time_to_first_solve, cost_vector, cost_vector_times, path_duration);
+    // Call the appropriate planning method (either RRT-Connect or RRT*-Connect)
+    if (algorithm_.compare("rrt-connect") == 0){
+      rrt_connect_obj.buildRRTConnect(terrain_, start_state, goal_state,state_sequence_,action_sequence_, replan_time_limit_);
+      rrt_connect_obj.getStatistics(plan_time,success, vertices_generated, time_to_first_solve, cost_vector, cost_vector_times, path_duration);
+    } else if (algorithm_.compare("rrt-star-connect") == 0){
+      rrt_star_connect_obj.buildRRTStarConnect(terrain_, start_state, goal_state,state_sequence_,action_sequence_, replan_time_limit_);
+      rrt_star_connect_obj.getStatistics(plan_time,success, vertices_generated, time_to_first_solve, cost_vector, cost_vector_times, path_duration);
+    } else {
+      throw std::runtime_error("Invalid algorithm specified");
+    }
 
     // Handle the statistical data
     cost_vectors_.push_back(cost_vector);
@@ -118,16 +142,6 @@ void GlobalBodyPlanner::callPlanner() {
   double dt = 0.05;
   std::vector<int> interp_phase;
   getInterpPath(state_sequence_, action_sequence_,dt,body_plan_, t_plan_, interp_phase);
-}
-
-void GlobalBodyPlanner::setStartAndGoalStates() {
-  // Update any relevant planning parameters
-
-  robot_start_ = {0,0,0.4,0,0.1,0,0,0};
-  robot_goal_ =  {8,0,0.4,0,0,0,0,0};
-
-  robot_start_[2] += terrain_.getGroundHeight(robot_start_[0], robot_start_[1]);
-  robot_goal_[2] += terrain_.getGroundHeight(robot_goal_[0], robot_goal_[1]);
 }
 
 void GlobalBodyPlanner::addBodyStateToMsg(double t, State body_state, 
