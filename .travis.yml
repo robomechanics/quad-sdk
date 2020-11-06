@@ -9,7 +9,7 @@ notifications:
 
 branches:
   only:
-  - master
+  - main
 
 addons:
   apt:
@@ -79,4 +79,4 @@ deploy:
   keep_history: true
   local_dir: docs/
   on:
-    branch: master
+    branch: main
