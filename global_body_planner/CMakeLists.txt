@@ -2,7 +2,12 @@ cmake_minimum_required(VERSION 3.0.2)
 project(global_body_planner)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
+
+## Set default cmake build type to release
+if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -11,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   spirit_msgs
+  spirit_utils
   grid_map_core
   grid_map_ros
 )
@@ -107,7 +113,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
  INCLUDE_DIRS include
 #  LIBRARIES body_planner
- CATKIN_DEPENDS roscpp std_msgs grid_map_core grid_map_ros
+ CATKIN_DEPENDS roscpp std_msgs grid_map_core grid_map_ros spirit_utils
 #  DEPENDS system_lib
 )
 
@@ -125,7 +131,7 @@ include
 # JN Added
 set(MY_LIB_SOURCES
   src/global_body_planner.cpp
-  src/functions.cpp
+  src/planning_utils.cpp
   src/graph_class.cpp
   src/planner_class.cpp
   src/rrt.cpp
@@ -147,11 +153,6 @@ add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EX
 # The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node src/global_body_planner_node.cpp)
 
-add_executable(
-  simple_terrain
-  src/simple_terrain_node.cpp
-)
-
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -165,11 +166,6 @@ add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catk
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_node
   ${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-)
-
-target_link_libraries(
-  simple_terrain
   ${catkin_LIBRARIES}
 )
 

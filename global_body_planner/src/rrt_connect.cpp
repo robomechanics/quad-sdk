@@ -4,7 +4,9 @@ RRTConnectClass::RRTConnectClass(){}
 //destructor
 RRTConnectClass::~RRTConnectClass() {}
 
-int RRTConnectClass::attemptConnect(State s_existing, State s, double t_s, State &s_new, Action &a_new, Ground &ground, int direction)
+using namespace planning_utils;
+
+int RRTConnectClass::attemptConnect(State s_existing, State s, double t_s, State &s_new, Action &a_new, FastTerrainMap& terrain, int direction)
 {
 	// Enforce stance time greater than the kinematic check resolution to ensure that the action is useful
 	if (t_s <= KINEMATICS_RES)
@@ -52,15 +54,15 @@ int RRTConnectClass::attemptConnect(State s_existing, State s, double t_s, State
 	if (isValidAction(a_new) == true)
 	{
 		// Check if the resulting state action pair is kinematically valid
-		bool isValid = (direction == FORWARD) ? (isValidStateActionPair(s_start, a_new, ground, s_new, t_new)) :
-											   (isValidStateActionPairReverse(s_goal,a_new, ground, s_new, t_new));
+		bool isValid = (direction == FORWARD) ? (isValidStateActionPair(s_start, a_new, terrain, s_new, t_new)) :
+											   (isValidStateActionPairReverse(s_goal,a_new, terrain, s_new, t_new));
 
 		// If valid, great, return REACHED, otherwise try again to the valid state returned by isValidStateActionPair
 		if (isValid == true)
 			return REACHED;
 		else
 		{
-			if (attemptConnect(s_existing, s_new, t_new, s_new, a_new, ground, direction) == TRAPPED)
+			if (attemptConnect(s_existing, s_new, t_new, s_new, a_new, terrain, direction) == TRAPPED)
 				return TRAPPED;
 			else
 				return ADVANCED;
@@ -69,14 +71,14 @@ int RRTConnectClass::attemptConnect(State s_existing, State s, double t_s, State
 	return TRAPPED;
 }
 
-int RRTConnectClass::attemptConnect(State s_existing, State s, State &s_new, Action &a_new, Ground &ground, int direction)
+int RRTConnectClass::attemptConnect(State s_existing, State s, State &s_new, Action &a_new, FastTerrainMap& terrain, int direction)
 {
 	// select desired stance time to enforce a nominal stance velocity
 	double t_s = poseDistance(s, s_existing)/V_NOM;
-	return attemptConnect(s_existing, s, t_s, s_new, a_new, ground, direction);
+	return attemptConnect(s_existing, s, t_s, s_new, a_new, terrain, direction);
 }
 
-int RRTConnectClass::connect(PlannerClass &T, State s, Ground &ground, int direction)
+int RRTConnectClass::connect(PlannerClass &T, State s, FastTerrainMap& terrain, int direction)
 {
 	// Find nearest neighbor
 	int s_near_index = T.getNearestNeighbor(s);
@@ -85,7 +87,7 @@ int RRTConnectClass::connect(PlannerClass &T, State s, Ground &ground, int direc
 	Action a_new;
 
 	// Try to connect to nearest neighbor, add to graph if REACHED or ADVANCED
-	int result = attemptConnect(s_near, s, s_new, a_new, ground, direction);
+	int result = attemptConnect(s_near, s, s_new, a_new, terrain, direction);
 	if (result != TRAPPED)
 	{
 		int s_new_index = T.getNumVertices();
@@ -109,7 +111,7 @@ std::vector<Action> RRTConnectClass::getActionSequenceReverse(PlannerClass &T, s
 	return action_sequence;
 }
 
-void RRTConnectClass::postProcessPath(std::vector<State> &state_sequence, std::vector<Action> &action_sequence, Ground& ground)
+void RRTConnectClass::postProcessPath(std::vector<State> &state_sequence, std::vector<Action> &action_sequence, FastTerrainMap& terrain)
 {
 	auto t_start = std::chrono::high_resolution_clock::now();
 
@@ -142,7 +144,7 @@ void RRTConnectClass::postProcessPath(std::vector<State> &state_sequence, std::v
 
 		// Try to connect to the last state in the sequence
 		// if unsuccesful remove the back and try again until successful or no states left
-		while ((attemptConnect(s,s_next, dummy, a_new, ground, FORWARD) != REACHED) && (s != s_next))
+		while ((attemptConnect(s,s_next, dummy, a_new, terrain, FORWARD) != REACHED) && (s != s_next))
 		{
 			old_state = s_next;
 			old_action = a_next;
@@ -173,12 +175,9 @@ void RRTConnectClass::postProcessPath(std::vector<State> &state_sequence, std::v
 
 	auto t_end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> processing_time = t_end - t_start;
-
-	// std::cout << "Post processing took " << processing_time.count() << std::endl;
-
 }
 
-void RRTConnectClass::runRRTConnect(PlannerClass &Ta, PlannerClass &Tb, Ground &ground)
+void RRTConnectClass::runRRTConnect(PlannerClass &Ta, PlannerClass &Tb, FastTerrainMap& terrain)
 {
 	auto t_start = std::chrono::high_resolution_clock::now();
 
@@ -193,17 +192,17 @@ void RRTConnectClass::runRRTConnect(PlannerClass &Ta, PlannerClass &Tb, Ground &
 			return;
 		}
 		// Generate random s
-		State s_rand = Ta.randomState(ground);
+		State s_rand = Ta.randomState(terrain);
 
 		static int i = 0;
 
-		if (isValidState(s_rand, ground, STANCE))
+		if (isValidState(s_rand, terrain, STANCE))
 		{
-			if (extend(Ta, s_rand, ground, FORWARD) != TRAPPED)
+			if (extend(Ta, s_rand, terrain, FORWARD) != TRAPPED)
 			{
 				State s_new = Ta.getVertex(Ta.getNumVertices()-1);
 
-				if(connect(Tb, s_new, ground, REVERSE) == REACHED)
+				if(connect(Tb, s_new, terrain, REVERSE) == REACHED)
 				{
 					goal_found = true;
 
@@ -215,15 +214,15 @@ void RRTConnectClass::runRRTConnect(PlannerClass &Ta, PlannerClass &Tb, Ground &
 			}
 		}
 
-		s_rand = Tb.randomState(ground);
+		s_rand = Tb.randomState(terrain);
 
-		if (isValidState(s_rand, ground, STANCE))
+		if (isValidState(s_rand, terrain, STANCE))
 		{
-			if (extend(Tb, s_rand, ground, REVERSE) != TRAPPED)
+			if (extend(Tb, s_rand, terrain, REVERSE) != TRAPPED)
 			{
 				State s_new = Tb.getVertex(Tb.getNumVertices()-1);
 
-				if(connect(Ta, s_new, ground, FORWARD) == REACHED)
+				if(connect(Ta, s_new, terrain, FORWARD) == REACHED)
 				{
 					goal_found = true;
 
@@ -238,7 +237,7 @@ void RRTConnectClass::runRRTConnect(PlannerClass &Ta, PlannerClass &Tb, Ground &
 }
 
 
-void RRTConnectClass::buildRRTConnect(Ground &ground, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double max_time_opt)
+void RRTConnectClass::buildRRTConnect(FastTerrainMap& terrain, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double max_time_opt)
 {
 	auto t_start = std::chrono::high_resolution_clock::now();
 	success_ = 0;
@@ -255,7 +254,6 @@ void RRTConnectClass::buildRRTConnect(Ground &ground, State s_start, State s_goa
 	PlannerClass Tb_best;
 
 	// Initialize anytime horizon
-	// anytime_horizon = 0.3;
 	anytime_horizon = poseDistance(s_start, s_goal)/planning_rate_estimate;
 	num_vertices = 0;
 
@@ -268,7 +266,7 @@ void RRTConnectClass::buildRRTConnect(Ground &ground, State s_start, State s_goa
 		Tb.init(s_goal);
 
 		goal_found = false;
-		runRRTConnect(Ta, Tb, ground);	
+		runRRTConnect(Ta, Tb, terrain);	
 
 		num_vertices += (Ta.getNumVertices() + Tb.getNumVertices());
 
@@ -301,7 +299,7 @@ void RRTConnectClass::buildRRTConnect(Ground &ground, State s_start, State s_goa
 			action_sequence = getActionSequence(Ta, path_a);
 			action_sequence.insert(action_sequence.end(), action_sequence_b.begin(), action_sequence_b.end());
 
-			postProcessPath(state_sequence, action_sequence, ground);
+			postProcessPath(state_sequence, action_sequence, terrain);
 
 			if (path_quality_ < cost_so_far)
 			{
@@ -314,9 +312,6 @@ void RRTConnectClass::buildRRTConnect(Ground &ground, State s_start, State s_goa
 
 				cost_vector_.push_back(cost_so_far);
 				cost_vector_times_.push_back(current_elapsed.count());
-
-				// std::cout << "New best cost: " << cost_so_far << " at " << current_elapsed.count() << "s" << std::endl;
-
 			}
 		}
 
@@ -326,33 +321,6 @@ void RRTConnectClass::buildRRTConnect(Ground &ground, State s_start, State s_goa
 
 	Ta = Ta_best;
 	Tb = Tb_best;
-
-	// while (goal_found == false)
-	// {
-	// 	auto t_current = std::chrono::high_resolution_clock::now();
-	// 	std::chrono::duration<double> current_elapsed = t_current - t_start;
-	// 	if(current_elapsed.count() >= max_time_solve)
-	// 	{
-	// 		std::cout << "Failed, exiting" << std::endl;
-	// 		elapsed_total = current_elapsed;
-	// 		elapsed_to_first = current_elapsed;
-	// 		success_ = 0;
-	// 		num_vertices += (Ta.getNumVertices() + Tb.getNumVertices());
-	// 		return;
-	// 	}
-
-
-	// 	Ta = PlannerClass();
-	// 	Tb = PlannerClass();
-	// 	Ta.init(s_start);
-	// 	Tb.init(s_goal);
-
-	// 	runRRTConnect(Ta, Tb, ground);	
-
-	// 	num_vertices += (Ta.getNumVertices() + Tb.getNumVertices());
-	// }
-	
-	// std::cout << "Number of samples: " << num_vertices << std::endl;
 	
 	if (goal_found == true)
 	{
@@ -374,13 +342,7 @@ void RRTConnectClass::buildRRTConnect(Ground &ground, State s_start, State s_goa
 		std::cout << "Path not found" << std::endl;
 	}
 
-	// cost_vector_.push_back(path_quality_);
-	// std::cout << "Path quality = " << path_quality_ << std::endl;
-
-	postProcessPath(state_sequence, action_sequence, ground);
-
-	// cost_vector_.push_back(path_quality_);
-	// std::cout << "Path quality = " << path_quality_ << std::endl;
+	postProcessPath(state_sequence, action_sequence, terrain);
 
 	auto t_end = std::chrono::high_resolution_clock::now();
 	elapsed_total = t_end - t_start;
@@ -393,8 +355,4 @@ void RRTConnectClass::buildRRTConnect(Ground &ground, State s_start, State s_goa
     {
     	path_duration_ += (a[6] + a[7]);
     }
-
-	// cost_vector_times_.push_back(elapsed_total.count());
-	// path_quality_ = Ta.getGValue(Ta.getNumVertices()-1) + Tb.getGValue(Tb.getNumVertices()-1);
-	
 }

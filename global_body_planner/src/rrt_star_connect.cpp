@@ -5,7 +5,9 @@ RRTStarConnectClass::RRTStarConnectClass(){}
 //destructor
 RRTStarConnectClass::~RRTStarConnectClass() {}
 
-int RRTStarConnectClass::extend(PlannerClass &T, State s, Ground& ground, int direction)
+using namespace planning_utils;
+
+int RRTStarConnectClass::extend(PlannerClass &T, State s, FastTerrainMap& terrain, int direction)
 {
 	int s_nearest_index = T.getNearestNeighbor(s);
 	State s_nearest = T.getVertex(s_nearest_index);
@@ -14,7 +16,7 @@ int RRTStarConnectClass::extend(PlannerClass &T, State s, Ground& ground, int di
 	Action a_connect;
 	State dummy;
 
-	if (newConfig(s,s_nearest,s_new, a_new, ground, direction) == true)
+	if (newConfig(s,s_nearest,s_new, a_new, terrain, direction) == true)
 	{
 		int s_new_idx = T.getNumVertices();
 		T.addVertex(s_new_idx, s_new);
@@ -29,7 +31,7 @@ int RRTStarConnectClass::extend(PlannerClass &T, State s, Ground& ground, int di
 			int s_near_idx = neighbors[i];
 			State s_near = T.getVertex(s_near_idx);			
 
-			if (attemptConnect(s_near, s_new, dummy, a_connect, ground, direction) == REACHED)
+			if (attemptConnect(s_near, s_new, dummy, a_connect, terrain, direction) == REACHED)
 			{
 				double g_s_near = T.getGValue(s_near_idx) + poseDistance(s_near, s_new);
 				if (g_s_near < g_s_new)
@@ -42,7 +44,6 @@ int RRTStarConnectClass::extend(PlannerClass &T, State s, Ground& ground, int di
 		}
 
 		T.addEdge(s_min_idx, s_new_idx);
-		// T.updateGValue(s_new_idx, computeArcLength(s_near, a_new)); // Broken so far, need reverse direction computeArcLength
 		T.updateGValue(s_new_idx, g_s_new);
 		T.addAction(s_new_idx, a_new);
 		
@@ -51,7 +52,7 @@ int RRTStarConnectClass::extend(PlannerClass &T, State s, Ground& ground, int di
 			if (s_near_idx != s_min_idx)
 			{
 				State s_near = T.getVertex(s_near_idx);
-				if ((attemptConnect(s_new, s_near, dummy, a_connect, ground, direction) == REACHED) && 
+				if ((attemptConnect(s_new, s_near, dummy, a_connect, terrain, direction) == REACHED) && 
 						( T.getGValue(s_near_idx) > (T.getGValue(s_new_idx) + poseDistance(s_near, s_new)) ))
 				{
 					int s_parent = T.getPredecessor(s_near_idx);
@@ -97,7 +98,7 @@ void RRTStarConnectClass::getStateAndActionSequences(PlannerClass &Ta, PlannerCl
 	action_sequence.insert(action_sequence.end(), action_sequence_b.begin(), action_sequence_b.end());
 }
 
-void RRTStarConnectClass::buildRRTStarConnect(Ground &ground, State s_start, State s_goal,
+void RRTStarConnectClass::buildRRTStarConnect(FastTerrainMap& terrain, State s_start, State s_goal,
 	std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double max_time)
 {
 	double elapsed_in_processing = 0.0;
@@ -123,22 +124,20 @@ void RRTStarConnectClass::buildRRTStarConnect(Ground &ground, State s_start, Sta
 	while(true)
 	{
 		// Generate random s
-		State s_rand = Ta.randomState(ground);
+		State s_rand = Ta.randomState(terrain);
 
-		if (isValidState(s_rand, ground, STANCE))
+		if (isValidState(s_rand, terrain, STANCE))
 		{
-			if (extend(Ta, s_rand, ground, FORWARD) != TRAPPED)
+			if (extend(Ta, s_rand, terrain, FORWARD) != TRAPPED)
 			{
 				State s_new = Ta.getVertex(Ta.getNumVertices()-1);
 
-				// if(connect(Ta, s_goal, ground) == REACHED)
-				if(connect(Tb, s_new, ground, REVERSE) == REACHED)
+				if(connect(Tb, s_new, terrain, REVERSE) == REACHED)
 				{
 					if (goal_found == false)
 					{
 						auto t_end = std::chrono::high_resolution_clock::now();
 						elapsed_to_first = t_end - t_start;
-						// break;
 					}
 					
 					goal_found = true;
@@ -148,22 +147,20 @@ void RRTStarConnectClass::buildRRTStarConnect(Ground &ground, State s_start, Sta
 			}
 		}
 
-		// State s_rand = Tb.randomState(ground);
-		s_rand = Tb.randomState(ground);
+		s_rand = Tb.randomState(terrain);
 
-		if (isValidState(s_rand, ground, STANCE))
+		if (isValidState(s_rand, terrain, STANCE))
 		{
-			if (extend(Tb, s_rand, ground, REVERSE) != TRAPPED)
+			if (extend(Tb, s_rand, terrain, REVERSE) != TRAPPED)
 			{
 				State s_new = Tb.getVertex(Tb.getNumVertices()-1);
 
-				if(connect(Ta, s_new, ground, FORWARD) == REACHED)
+				if(connect(Ta, s_new, terrain, FORWARD) == REACHED)
 				{
 					if (goal_found == false)
 					{
 						auto t_end = std::chrono::high_resolution_clock::now();
 						elapsed_to_first = t_end - t_start;
-						// break;
 					}
 
 					goal_found = true;
@@ -194,27 +191,8 @@ void RRTStarConnectClass::buildRRTStarConnect(Ground &ground, State s_start, Sta
 
 				cost_vector_.push_back(cost_so_far);
 				cost_vector_times_.push_back(current_elapsed.count());
-
-				// // Run post processing to make cost more accurate
-				// getStateAndActionSequences(Ta, Tb, shared_a_idx, shared_b_idx, state_sequence, action_sequence);
-				// postProcessPath(state_sequence, action_sequence, ground);
-				// auto t_current_after_process = std::chrono::high_resolution_clock::now();
-				// std::chrono::duration<double> processing_elapsed = t_current_after_process - t_current;
-				
-				// elapsed_in_processing += processing_elapsed.count();
-
-				// cost_vector_.push_back(path_quality_);
-				// cost_vector_times_.push_back(current_elapsed.count() - elapsed_in_processing);
 			}
 		}
-
-		// Exit the planner if a path isn't found in time
-		// if(current_elapsed.count() >= 61)
-		// {
-		// 	std::cout << "Ta: " << Ta.getNumVertices() << ", Tb: " << Tb.getNumVertices() << std::endl;
-		// 	return;
-		// }
-
 	}
 	
 	num_vertices = Ta.getNumVertices() + Tb.getNumVertices();
@@ -222,21 +200,6 @@ void RRTStarConnectClass::buildRRTStarConnect(Ground &ground, State s_start, Sta
 	if (goal_found == true)
 	{
 		getStateAndActionSequences(Ta, Tb, shared_a_idx, shared_b_idx, state_sequence, action_sequence);
-		// // Get both paths, remove the back of path_b and reverse it to align with path a
-		// std::vector<int> path_a = pathFromStart(Ta, shared_a_idx);
-		// std::vector<int> path_b = pathFromStart(Tb, shared_b_idx);
-
-		// std::reverse(path_b.begin(), path_b.end());
-		// std::vector<Action> action_sequence_b = getActionSequenceReverse(Tb, path_b);
-		// path_b.erase(path_b.begin());
-
-		// state_sequence = getStateSequence(Ta, path_a);
-		// std::vector<State> state_sequence_b = getStateSequence(Tb, path_b);
-		// state_sequence.insert(state_sequence.end(), state_sequence_b.begin(), state_sequence_b.end());
-
-		// action_sequence = getActionSequence(Ta, path_a);
-		// action_sequence.insert(action_sequence.end(), action_sequence_b.begin(), action_sequence_b.end());
-
 	} else {
 		std::cout << "Path not found" << std::endl;
 	}
@@ -247,10 +210,8 @@ void RRTStarConnectClass::buildRRTStarConnect(Ground &ground, State s_start, Sta
 	cost_vector_.push_back(cost_so_far);
 	cost_vector_times_.push_back(elapsed_total.count());
 
-	postProcessPath(state_sequence, action_sequence, ground);
+	postProcessPath(state_sequence, action_sequence, terrain);
 
-	// cost_vector_.push_back(path_quality_);
-	// cost_vector_times_.push_back(elapsed_total.count());
 
 	if (elapsed_total.count() <= 5.0)
 		success_ = 1;
@@ -261,6 +222,5 @@ void RRTStarConnectClass::buildRRTStarConnect(Ground &ground, State s_start, Sta
     	path_duration_ += a[6] + a[7];
     }
 
-	// path_quality_ = Ta.getGValue(Ta.getNumVertices()-1) + Tb.getGValue(Tb.getNumVertices()-1);
 	std::cout << "Path quality = " << path_quality_ << std::endl;
 }

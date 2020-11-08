@@ -4,6 +4,11 @@ project(spirit_utils)
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
 
+## Set default cmake build type to release
+if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -11,8 +16,11 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   nav_msgs
+  sensor_msgs
   geometry_msgs
   spirit_msgs
+  grid_map_core
+  grid_map_ros
 )
 
 catkin_package(
@@ -28,6 +36,8 @@ find_package(libInterpolate REQUIRED)
 ## Build ##
 ###########
 
+
+
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
@@ -37,8 +47,10 @@ include_directories(
 
 ## Declare a C++ library
 add_library(spirit_utils
-	src/class1.cpp
   src/rviz_interface.cpp
+  src/fast_terrain_map.cpp
+  src/terrain_map_publisher.cpp
+  src/robot_interface.cpp
 )
 add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(spirit_utils libInterpolate::Interpolate)
@@ -47,10 +59,22 @@ target_link_libraries(spirit_utils libInterpolate::Interpolate)
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(rviz_interface_node src/rviz_interface_node.cpp)
+add_executable(terrain_map_publisher_node src/terrain_map_publisher_node.cpp)
+add_executable(robot_interface_node src/robot_interface_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(rviz_interface_node
+  spirit_utils
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(terrain_map_publisher_node
   ${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(robot_interface_node
+  spirit_utils
   ${catkin_LIBRARIES}
 )
 
@@ -60,7 +84,9 @@ target_link_libraries(rviz_interface_node
 
 ## Add gtest based cpp test target and link libraries
 catkin_add_gtest(${PROJECT_NAME}-test 
-  test/test_class1.cpp
-  test/test_rviz_interface.cpp)
+  test/test_rviz_interface.cpp
+  test/test_terrain_map_publisher.cpp
+  test/test_robot_interface.cpp
+  test/test_main.cpp)
 target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME} ${catkin_LIBRARIES})
 

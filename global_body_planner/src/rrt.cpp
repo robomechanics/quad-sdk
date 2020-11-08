@@ -5,10 +5,12 @@ RRTClass::RRTClass(){}
 //destructor
 RRTClass::~RRTClass() {}
 
-bool RRTClass::newConfig(State s, State s_near, State &s_new, Action &a_new, Ground &ground, int direction)
+using namespace planning_utils;
+
+bool RRTClass::newConfig(State s, State s_near, State &s_new, Action &a_new, FastTerrainMap& terrain, int direction)
 {
 	double best_so_far = stateDistance(s_near, s);
-	std::array<double, 3> surf_norm = getSurfaceNormal(s[0], s[1], ground);
+	std::array<double, 3> surf_norm = terrain.getSurfaceNormal(s[0], s[1]);
 
 	// std::array<double,3> 
 	for (int i = 0; i < NUM_GEN_STATES; ++i)
@@ -24,15 +26,11 @@ bool RRTClass::newConfig(State s, State s_near, State &s_new, Action &a_new, Gro
 			bool is_valid;
 			if (direction == FORWARD)
 			{
-				is_valid = isValidStateActionPair(s_near, a_test, ground, s_test, t_new);
+				is_valid = isValidStateActionPair(s_near, a_test, terrain, s_test, t_new);
 			} else if (direction == REVERSE)
 			{
-				is_valid = isValidStateActionPairReverse(s_near, a_test, ground, s_test, t_new);
+				is_valid = isValidStateActionPairReverse(s_near, a_test, terrain, s_test, t_new);
 			}
-
-			// printStateNewline(s_near);
-			// printStateNewline(s_test);
-			// printActionNewline(a_test);
 
 			if (is_valid == true)
 			{
@@ -57,7 +55,6 @@ bool RRTClass::newConfig(State s, State s_near, State &s_new, Action &a_new, Gro
 
 	if (best_so_far == stateDistance(s_near, s))
 	{
-		// std::cout << "no better state found" << std::endl;
 		return false;
 	} else
 	{
@@ -65,24 +62,21 @@ bool RRTClass::newConfig(State s, State s_near, State &s_new, Action &a_new, Gro
 	}
 }
 
-int RRTClass::extend(PlannerClass &T, State s, Ground& ground, int direction)
+int RRTClass::extend(PlannerClass &T, State s, FastTerrainMap& terrain, int direction)
 {
 	int s_near_index = T.getNearestNeighbor(s);
 	State s_near = T.getVertex(s_near_index);
 	State s_new;
 	Action a_new;
 
-	if (newConfig(s,s_near,s_new, a_new, ground, direction) == true)
+	if (newConfig(s,s_near,s_new, a_new, terrain, direction) == true)
 	{
 		int s_new_index = T.getNumVertices();
 		T.addVertex(s_new_index, s_new);
 		T.addEdge(s_near_index, s_new_index);
 		T.addAction(s_new_index, a_new);
-		// T.updateGValue(s_new_index, computeArcLength(s_near, a_new)); // Broken so far, need reverse direction computeArcLength
 		T.updateGValue(s_new_index, T.getGValue(s_near_index) + poseDistance(s_near, s_new));
 
-		// printStateNewline(s_new);
-		// printActionNewline(a_new);
 
 		// if (s_new == s)
 		if (isWithinBounds(s_new, s) == true)
@@ -95,32 +89,6 @@ int RRTClass::extend(PlannerClass &T, State s, Ground& ground, int direction)
 		return TRAPPED;
 	}
 }
-
-// int RRTClass::extendBackwards(PlannerClass &T, State s, Ground& ground)
-// {
-// 	int s_near_index = T.getNearestNeighbor(s);
-// 	State s_near = T.getVertex(s_near_index);
-// 	State s_new;
-// 	Action a_new;
-
-// 	if (newConfig(s,s_near,s_new, a_new, ground) == true)
-// 	{
-// 		int s_new_index = T.getNumVertices();
-// 		T.addVertex(s_new_index, s_new);
-// 		T.addEdge(s_near_index, s_new_index);
-// 		T.addAction(s_new_index, a_new);
-
-// 		// if (s_new == s)
-// 		if (isWithinBounds(s_new, s) == true)
-// 		{
-// 			return REACHED;
-// 		} else {
-// 			return ADVANCED;
-// 		}
-// 	} else {
-// 		return TRAPPED;
-// 	}
-// }
 
 std::vector<int> RRTClass::pathFromStart(PlannerClass &T, int s)
 {
@@ -184,7 +152,7 @@ void RRTClass::getStatistics(double &plan_time, int &success, int &vertices_gene
 }
 
 void RRTClass::buildRRT(
-		   Ground &ground,
+		   FastTerrainMap& terrain,
            State s_start,
            State s_goal,
            std::vector<State> &state_sequence,
@@ -203,7 +171,6 @@ void RRTClass::buildRRT(
 
     int s_goal_idx;
     goal_found = false;
-	// for (int i = 1; i < K; i++)
 	while(true)
 	{
 		auto t_current = std::chrono::high_resolution_clock::now();
@@ -218,11 +185,11 @@ void RRTClass::buildRRT(
 
 		// Generate new s to be either random or the goal
 		double prob_goal = (double)rand()/RAND_MAX;
-		State s = (prob_goal <= prob_goal_thresh) ? s_goal : T.randomState(ground);
+		State s = (prob_goal <= prob_goal_thresh) ? s_goal : T.randomState(terrain);
 
-		if (isValidState(s, ground, STANCE))
+		if (isValidState(s, terrain, STANCE))
 		{
-			int result = extend(T, s, ground, FORWARD);
+			int result = extend(T, s, terrain, FORWARD);
 
 			if ((isWithinBounds(s, s_goal) == true) && (result == REACHED))
 			{
@@ -241,8 +208,6 @@ void RRTClass::buildRRT(
 
 	num_vertices = T.getNumVertices();
 
-	// std::cout << "Number of samples: " << num_vertices << std::endl;
-
 	if (goal_found == true)
 	{
 		std::vector<int> path = pathFromStart(T, T.getNumVertices()-1);
@@ -251,9 +216,6 @@ void RRTClass::buildRRT(
 	} else {
 		std::cout << "Path not found" << std::endl;
 	}
-
-	// std::cout << "Exiting RRT" << std::endl;
-
 
 	auto t_end = std::chrono::high_resolution_clock::now();
     elapsed_total = t_end - t_start;
