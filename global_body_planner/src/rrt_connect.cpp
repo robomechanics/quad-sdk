@@ -229,7 +229,7 @@ void RRTConnectClass::runRRTConnect(FastTerrainMap& terrain, State s_start, Stat
 
       auto t_start_current_solve = std::chrono::steady_clock::now();
       anytime_horizon = anytime_horizon*horizon_expansion_factor;
-      std::cout << "Failed, retrying with horizon of " << anytime_horizon << "s" << std::endl;
+      // std::cout << "Failed, retrying with horizon of " << anytime_horizon << "s" << std::endl;
       Ta = PlannerClass();
       Tb = PlannerClass();
       Ta.init(s_start);

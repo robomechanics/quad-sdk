@@ -110,12 +110,6 @@ void GlobalBodyPlanner::callPlanner() {
     total_path_length += path_length;
     total_path_duration += path_duration;
 
-    std::cout << "Solve time: " << plan_time << " s" << std::endl;
-    std::cout << "Vertices generated: " << vertices_generated << std::endl;
-    std::cout << "Path length: " << path_length << " m" << std::endl;
-    std::cout << "Path duration: " << path_duration << " s" << std::endl;
-    std::cout << std::endl;
-
     solve_time_info_.push_back(plan_time);
     vertices_generated_info_.push_back(vertices_generated);
 
@@ -123,6 +117,12 @@ void GlobalBodyPlanner::callPlanner() {
       state_sequence_ = state_sequence;
       action_sequence_ = action_sequence;
       current_cost_ = path_length;
+
+      std::cout << "Solve time: " << plan_time << " s" << std::endl;
+      std::cout << "Vertices generated: " << vertices_generated << std::endl;
+      std::cout << "Path length: " << path_length << " m" << std::endl;
+      std::cout << "Path duration: " << path_duration << " s" << std::endl;
+      std::cout << std::endl;
     }
 
     if (!ros::ok()) {
