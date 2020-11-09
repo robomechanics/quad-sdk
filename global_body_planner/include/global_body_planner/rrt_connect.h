@@ -76,23 +76,25 @@ class RRTConnectClass : public RRTClass
     void postProcessPath(std::vector<State> &state_sequence, std::vector<Action> &action_sequence, FastTerrainMap& terrain);
 
     /**
-     * @brief Run the RRT-Connect planner once until the goal is found
-     * @param[in] Ta Tree with root vertex at start state
-     * @param[in] Tb Tree with root vertex at goal state
+     * @brief Post process the path by removing extraneous states that can be bypassed
+     * @param[in] Ta The planning tree originating from the start state
+     * @param[in] Tb The planning tree originating from the end state
+     * @param[out] state_sequence The sequence of states in the path
+     * @param[out] action_sequence The sequence of actions in th  e path     
      * @param[in] terrain Height map of the terrain
      */
-    void runRRTConnect(PlannerClass &Ta, PlannerClass &Tb, FastTerrainMap& terrain);
-    
+    void extractPath(PlannerClass Ta, PlannerClass Tb, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, FastTerrainMap& terrain);
+
     /**
-     * @brief Run the full RRT-Connect planner until the goal is found and time has expired, then post process and update statistics
+     * @brief Run the full RRT-Connect planner until the goal is found or time has expired, then post process and update statistics
      * @param[in] terrain Height map of the terrain
      * @param[in] s_start The start state of the planner
      * @param[in] s_goal The goal state of the planner
      * @param[out] state_sequence The sequence of states in the final path
      * @param[out] action_sequence The sequence of actions in the final path
-     * @param[in] max_time The time after which replanning is halted
+     * @param[in] max_time Maximum time allowed to find a plan
      */
-    void buildRRTConnect(FastTerrainMap& terrain, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double max_time);
+    void runRRTConnect(FastTerrainMap& terrain, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double max_time);
 
   protected:
 
@@ -109,7 +111,7 @@ class RRTConnectClass : public RRTClass
     double horizon_expansion_factor = 1.2;
 
     /// Hard maximum time allowed for the planner, returns unsuccessfully if reached
-    const int max_time_solve = 20;
+    const int max_time_solve_ = 10;
 };
 
 #endif
