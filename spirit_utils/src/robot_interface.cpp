@@ -38,6 +38,10 @@ void RobotInterface::publishJointEncoders() {
 
 void RobotInterface::publishImu() {
   sensor_msgs::Imu msg;
+  msg.orientation.x = 0;
+  msg.orientation.y = 0;
+  msg.orientation.z = 0;
+  msg.orientation.w = 1;
   imu_pub_.publish(msg);
 }
 
