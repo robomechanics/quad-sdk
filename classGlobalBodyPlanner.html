@@ -182,14 +182,18 @@ std::vector&lt; State &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 std::vector&lt; Action &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a66b5df244875b0209ceb2c634d93c050">action_sequence_</a></td></tr>
 <tr class="memdesc:a66b5df244875b0209ceb2c634d93c050"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sequence of discrete actions in the plan. <br /></td></tr>
 <tr class="separator:a66b5df244875b0209ceb2c634d93c050"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6ca89bb990b3f2c6a94c34322ae24af"><td class="memItemLeft" align="right" valign="top"><a id="ad6ca89bb990b3f2c6a94c34322ae24af"></a>
-std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#ad6ca89bb990b3f2c6a94c34322ae24af">cost_vectors_</a></td></tr>
-<tr class="memdesc:ad6ca89bb990b3f2c6a94c34322ae24af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of cost instances in each planning call (nested STL vectors) <br /></td></tr>
-<tr class="separator:ad6ca89bb990b3f2c6a94c34322ae24af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a121db12e5a6ba27425a468260108caf3"><td class="memItemLeft" align="right" valign="top"><a id="a121db12e5a6ba27425a468260108caf3"></a>
-std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a121db12e5a6ba27425a468260108caf3">cost_vectors_times_</a></td></tr>
-<tr class="memdesc:a121db12e5a6ba27425a468260108caf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of time instances of cost data for each planning call (nested STL vectors) <br /></td></tr>
-<tr class="separator:a121db12e5a6ba27425a468260108caf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af08776625ec691c5fc8ff1df56544737"><td class="memItemLeft" align="right" valign="top"><a id="af08776625ec691c5fc8ff1df56544737"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#af08776625ec691c5fc8ff1df56544737">current_cost_</a></td></tr>
+<tr class="memdesc:af08776625ec691c5fc8ff1df56544737"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cost of the current path in path length. <br /></td></tr>
+<tr class="separator:af08776625ec691c5fc8ff1df56544737"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a050614c41be6492d587fd4fd7fb66304"><td class="memItemLeft" align="right" valign="top"><a id="a050614c41be6492d587fd4fd7fb66304"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a050614c41be6492d587fd4fd7fb66304">cost_vector_</a></td></tr>
+<tr class="memdesc:a050614c41be6492d587fd4fd7fb66304"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of cost instances in each planning call. <br /></td></tr>
+<tr class="separator:a050614c41be6492d587fd4fd7fb66304"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64f38e199a18fbcc1de677fc2f2c4bc1"><td class="memItemLeft" align="right" valign="top"><a id="a64f38e199a18fbcc1de677fc2f2c4bc1"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a64f38e199a18fbcc1de677fc2f2c4bc1">cost_vector_times_</a></td></tr>
+<tr class="memdesc:a64f38e199a18fbcc1de677fc2f2c4bc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of time instances of cost data for each planning call. <br /></td></tr>
+<tr class="separator:a64f38e199a18fbcc1de677fc2f2c4bc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae431f7b02f8c58d4fa354faeed6714e9"><td class="memItemLeft" align="right" valign="top"><a id="ae431f7b02f8c58d4fa354faeed6714e9"></a>
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#ae431f7b02f8c58d4fa354faeed6714e9">solve_time_info_</a></td></tr>
 <tr class="memdesc:ae431f7b02f8c58d4fa354faeed6714e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of solve times for each planning call. <br /></td></tr>

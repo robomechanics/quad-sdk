@@ -1,4 +1,3 @@
 <map id="RRTClass" name="RRTClass">
-<area shape="rect" id="node2" href="$classRRTConnectClass.html" title="A class that implements RRT&#45;Connect sampling&#45;based planning. " alt="" coords="19,80,155,107"/>
-<area shape="rect" id="node3" href="$classRRTStarConnectClass.html" title="A class that implements RRT*&#45;Connect sampling&#45;based planning. " alt="" coords="5,155,168,181"/>
+<area shape="rect" id="node2" href="$classRRTConnectClass.html" title="A class that implements RRT&#45;Connect sampling&#45;based planning. " alt="" coords="5,80,141,107"/>
 </map>
