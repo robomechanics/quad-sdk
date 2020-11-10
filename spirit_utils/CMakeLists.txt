@@ -36,8 +36,6 @@ find_package(libInterpolate REQUIRED)
 ## Build ##
 ###########
 
-
-
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
@@ -51,6 +49,7 @@ add_library(spirit_utils
   src/fast_terrain_map.cpp
   src/terrain_map_publisher.cpp
   src/robot_interface.cpp
+  src/ros_utils.cpp
 )
 add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(spirit_utils libInterpolate::Interpolate)
