@@ -1,0 +1,10 @@
+
+<library path="lib/libcontroller">
+
+  <class name="effort_controllers/SpiritController" type="effort_controllers::SpiritController" base_class_type="controller_interface::ControllerBase">
+    <description>
+      The SpiritController tracks positions commands w/ specified feedforward torques and specified feedback gains
+    </description>
+  </class>
+
+</library>

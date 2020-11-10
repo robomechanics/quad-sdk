@@ -6,6 +6,7 @@
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/String.h>
 #include <spirit_msgs/ContactDetection.h>
+#include <spirit_msgs/StateEstimate.h>
 
 //! Contact detection class for spirit
 /*!
@@ -55,8 +56,14 @@ private:
 	/// Update rate for sending and receiving data;
 	double update_rate_;
 
-	/// Last state estimate
-	spirit_msgs::StateEstimate last_state_est_;
+	/// Last contact detection message
+	spirit_msgs::ContactDetection last_contact_est_;
+
+	/// Most recent IMU callback (should be timestamped!)
+ 	sensor_msgs::Imu::ConstPtr last_imu_msg_;
+
+	/// Most recent encoder callback (should be timestamped!)
+	sensor_msgs::JointState::ConstPtr last_joint_state_msg_;
 
 };
 

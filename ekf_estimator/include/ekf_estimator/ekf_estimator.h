@@ -7,6 +7,7 @@
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/String.h>
 #include <spirit_msgs/StateEstimate.h>
+#include <spirit_msgs/ContactDetection.h>
 
 //! Implements online EKF based state estimation 
 /*!
@@ -40,6 +41,12 @@ private:
 	void imuCallback(const sensor_msgs::Imu::ConstPtr& msg);
 
 	/**
+	 * @brief Callback function to handle new contact estimates
+	 * @param[in] imu_msg sensors_msgs<Imu> containing new imu data
+	 */
+	void contactCallback(const spirit_msgs::ContactDetection::ConstPtr& msg);
+
+	/**
 	 * @brief execute EKF Update step, return state estimate
 	 * @return state estimate of custom type StateEstimate
 	 */
@@ -50,6 +57,9 @@ private:
 
 	/// Subscriber for imu messages
 	ros::Subscriber imu_sub_;
+
+	/// Subscriber for contact detection messages
+	ros::Subscriber contact_sub_;
 
 	/// Publisher for state estimate messages
 	ros::Publisher state_estimate_pub_;
@@ -62,6 +72,9 @@ private:
 
 	/// Last state estimate
 	spirit_msgs::StateEstimate last_state_est_;
+
+	/// Last contact detection message (should be timestamped!)
+	spirit_msgs::ContactDetection::ConstPtr last_contact_msg_;
 
   /// Most recent IMU callback (should be timestamped!)
   sensor_msgs::Imu::ConstPtr last_imu_msg_;

@@ -41,36 +41,43 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 find_package(catkin REQUIRED COMPONENTS
-    geometry_msgs
-    nav_msgs
     roscpp
     rospy
+    geometry_msgs
+    nav_msgs
     std_msgs
+    spirit_msgs
     message_filters
     controller_manager
     joint_state_controller
     robot_state_publisher
     tf
+    angles
+    controller_interface
+    control_msgs
+    control_toolbox
+    forward_command_controller
+    realtime_tools
+    urdf
+    pluginlib
 )
 find_package(gazebo REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system)
 
 
-###################################
-## catkin specific configuration ##
-###################################
-## The catkin_package macro generates cmake config files for your package
-## Declare things to be passed to dependent projects
-## INCLUDE_DIRS: uncomment this if your package contains header files
-## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES minitaur_gazebo
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
-)
+  CATKIN_DEPENDS
+    spirit_msgs
+    angles
+    controller_interface
+    control_msgs
+    control_toolbox
+    forward_command_controller
+    realtime_tools
+    urdf
+  INCLUDE_DIRS include
+  LIBRARIES contact controller
+  )
 
 ###########
 ## Build ##
@@ -78,14 +85,18 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} src)
-include_directories(${catkin_INCLUDE_DIRS})
+include_directories(SYSTEM include ${Boost_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 link_directories(${GAZEBO_LIBRARY_DIRS})
 list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 
 ## Declare a C++ library
-add_library(contact SHARED src/ContactPlugin.cc)
+add_library(contact SHARED src/contact_plugin.cpp)
 
+add_library(controller SHARED src/controller_plugin.cpp)
+add_dependencies(controller ${catkin_EXPORTED_TARGETS})
+
+add_library(ground_truth_estimator SHARED src/estimator_plugin.cpp)
+add_dependencies(controller ${catkin_EXPORTED_TARGETS})
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
@@ -93,4 +104,5 @@ add_executable(odom_publisher src/odom_publisher.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(contact ${GAZEBO_LIBRARIES})
+target_link_libraries(controller ${GAZEBO_LIBRARIES})
 target_link_libraries(odom_publisher ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
