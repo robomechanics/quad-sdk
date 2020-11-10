@@ -30,6 +30,13 @@ spirit_msgs::StateEstimate EKFEstimator::updateStep() {
   if (last_imu_msg_ != NULL)
   {
     new_state_est.body.pose.pose.orientation = (*last_imu_msg_).orientation;
+  } else {
+    geometry_msgs::Quaternion quat;
+    quat.x = 0;
+    quat.y = 0;
+    quat.z = 0;
+    quat.w = 1;
+    new_state_est.body.pose.pose.orientation = quat;
   }
   if (last_joint_state_msg_ != NULL)
   {
