@@ -64,7 +64,6 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(gazebo REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system)
 
-
 catkin_package(
   CATKIN_DEPENDS
     spirit_msgs
@@ -96,7 +95,8 @@ add_library(controller SHARED src/controller_plugin.cpp)
 add_dependencies(controller ${catkin_EXPORTED_TARGETS})
 
 add_library(ground_truth_estimator SHARED src/estimator_plugin.cpp)
-add_dependencies(controller ${catkin_EXPORTED_TARGETS})
+add_dependencies(ground_truth_estimator ${catkin_EXPORTED_TARGETS})
+
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
@@ -105,4 +105,5 @@ add_executable(odom_publisher src/odom_publisher.cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(contact ${GAZEBO_LIBRARIES})
 target_link_libraries(controller ${GAZEBO_LIBRARIES})
+target_link_libraries(ground_truth_estimator ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 target_link_libraries(odom_publisher ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
