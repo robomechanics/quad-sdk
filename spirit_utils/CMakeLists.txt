@@ -68,7 +68,7 @@ target_link_libraries(rviz_interface_node
 )
 
 target_link_libraries(terrain_map_publisher_node
-  ${PROJECT_NAME}
+  spirit_utils
   ${catkin_LIBRARIES}
 )
 
@@ -82,10 +82,10 @@ target_link_libraries(robot_interface_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-catkin_add_gtest(${PROJECT_NAME}-test 
+catkin_add_gtest(spirit_utils-test 
   test/test_rviz_interface.cpp
   test/test_terrain_map_publisher.cpp
   test/test_robot_interface.cpp
   test/test_main.cpp)
-target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(spirit_utils-test spirit_utils ${catkin_LIBRARIES})
 
