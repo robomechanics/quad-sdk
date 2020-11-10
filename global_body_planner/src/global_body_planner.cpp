@@ -27,6 +27,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(body_plan_topic,1);
   discrete_body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(discrete_body_plan_topic,1);
 
+  current_cost_ = INFTY;
 }
 
 void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg) {
@@ -44,8 +45,8 @@ void GlobalBodyPlanner::clearPlan() {
   t_plan_.clear();
   solve_time_info_.clear();
   vertices_generated_info_.clear();
-  cost_vectors_.clear();
-  cost_vectors_times_.clear();
+  cost_vector_.clear();
+  cost_vector_times_.clear();
 }
 
 
@@ -78,70 +79,72 @@ void GlobalBodyPlanner::callPlanner() {
 
   // Initialize statistics variables
   double plan_time;
-  int success;
   int vertices_generated;
-  double time_to_first_solve;
+  double path_length;
   double path_duration;
   double total_solve_time = 0;
   double total_vertices_generated = 0;
+  double total_path_length = 0;
   double total_path_duration = 0;
 
   // Set up more objects
-  cost_vectors_.reserve(num_calls_);
-  cost_vectors_times_.reserve(num_calls_);
-  RRTClass rrt_obj;
   RRTConnectClass rrt_connect_obj;
-  RRTStarConnectClass rrt_star_connect_obj;
 
   // Loop through num_calls_ planner calls
   for (int i = 0; i<num_calls_; ++i)
   {
     // Clear out previous solutions and initialize new statistics variables
-    state_sequence_.clear();
-    action_sequence_.clear();
-    std::vector<double> cost_vector;
-    std::vector<double> cost_vector_times;
+    std::vector<State> state_sequence;
+    std::vector<Action> action_sequence;
 
-    // Call the appropriate planning method (either RRT-Connect or RRT*-Connect)
-    if (algorithm_.compare("rrt-connect") == 0){
-      rrt_connect_obj.buildRRTConnect(terrain_, start_state, goal_state,state_sequence_,action_sequence_, replan_time_limit_);
-      rrt_connect_obj.getStatistics(plan_time,success, vertices_generated, time_to_first_solve, cost_vector, cost_vector_times, path_duration);
-    } else if (algorithm_.compare("rrt-star-connect") == 0){
-      rrt_star_connect_obj.buildRRTStarConnect(terrain_, start_state, goal_state,state_sequence_,action_sequence_, replan_time_limit_);
-      rrt_star_connect_obj.getStatistics(plan_time,success, vertices_generated, time_to_first_solve, cost_vector, cost_vector_times, path_duration);
-    } else {
-      throw std::runtime_error("Invalid algorithm specified");
-    }
+    // Call the appropriate planning method (can do if else on algorithm_)
+    rrt_connect_obj.runRRTConnect(terrain_, start_state, goal_state,state_sequence,action_sequence, replan_time_limit_);
+    rrt_connect_obj.getStatistics(plan_time, vertices_generated, path_length, path_duration);
 
     // Handle the statistical data
-    cost_vectors_.push_back(cost_vector);
-    cost_vectors_times_.push_back(cost_vector_times);
+    cost_vector_.push_back(path_length);
+    cost_vector_times_.push_back(plan_time);
 
     total_solve_time += plan_time;
     total_vertices_generated += vertices_generated;
+    total_path_length += path_length;
     total_path_duration += path_duration;
-
-    std::cout << "Vertices generated: " << vertices_generated << std::endl;
-    std::cout << "Solve time: " << plan_time << std::endl;
-    std::cout << "Time to first solve: " << time_to_first_solve << std::endl;
-    std::cout << "Path length: " << cost_vector.back() << std::endl;
 
     solve_time_info_.push_back(plan_time);
     vertices_generated_info_.push_back(vertices_generated);
+
+    if (path_length < current_cost_) {
+      state_sequence_ = state_sequence;
+      action_sequence_ = action_sequence;
+      current_cost_ = path_length;
+
+      std::cout << "Solve time: " << plan_time << " s" << std::endl;
+      std::cout << "Vertices generated: " << vertices_generated << std::endl;
+      std::cout << "Path length: " << path_length << " m" << std::endl;
+      std::cout << "Path duration: " << path_duration << " s" << std::endl;
+      std::cout << std::endl;
+    }
+
+    if (!ros::ok()) {
+      return;
+    }
   }
     
   // Report averaged statistics if num_calls_ > 1
   if (num_calls_ > 1)
   {
-    std::cout << "Average vertices generated: " << total_vertices_generated/num_calls_ << std::endl;
-    std::cout << "Average solve time: " << total_solve_time/num_calls_ << std::endl;
-    std::cout << "Average path duration: " << total_path_duration/num_calls_ << std::endl;
+    std::cout << "Average vertices generated: " << total_vertices_generated/num_calls_ <<  std::endl;
+    std::cout << "Average solve time: " << total_solve_time/num_calls_ << " s" << std::endl;
+    std::cout << "Average path length: " << total_path_length/num_calls_ << " s" << std::endl;
+    std::cout << "Average path duration: " << total_path_duration/num_calls_ << " s" << std::endl;
+    std::cout << std::endl;
   }
 
   // Interpolate to get full body plan
   double dt = 0.05;
   std::vector<int> interp_phase;
   getInterpPath(state_sequence_, action_sequence_,dt,body_plan_, t_plan_, interp_phase);
+
 }
 
 void GlobalBodyPlanner::addBodyStateToMsg(double t, State body_state, 
@@ -217,16 +220,14 @@ void GlobalBodyPlanner::spin() {
   ros::Rate r(update_rate_);
 
   waitForMap();
-  
-  // Update the plan
   callPlanner();
 
   while (ros::ok()) {
     
-    // If desired, get a new plan
-    // updatePlan();
+    // Update the plan
+    callPlanner();
 
-    // Publish the plan and sleep
+    // Publish the current best plan and sleep
     publishPlan();
     ros::spinOnce();
     r.sleep();

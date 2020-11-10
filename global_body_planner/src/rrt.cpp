@@ -138,99 +138,10 @@ void RRTClass::printPath(PlannerClass &T, std::vector<int> path)
 	std::cout << "\b\b  " << std::endl;
 }
 
-void RRTClass::getStatistics(double &plan_time, int &success, int &vertices_generated, double &time_to_first_solve,
-		std::vector<double> &cost_vector, std::vector<double> &cost_vector_times, double& path_duration)
+void RRTClass::getStatistics(double &plan_time, int &vertices_generated, double &plan_length, double& path_duration)
 {
-	plan_time = elapsed_total.count();
-	success = success_;
-	vertices_generated = num_vertices;
-	time_to_first_solve = elapsed_to_first.count();
-	cost_vector = cost_vector_;
-	cost_vector_times = cost_vector_times_;
+	plan_time = elapsed_total_.count();
+	vertices_generated = num_vertices_;
+	plan_length = path_length_;
 	path_duration = path_duration_;
-	std::cout << "path_duration: " << path_duration << std::endl;
-}
-
-void RRTClass::buildRRT(
-		   FastTerrainMap& terrain,
-           State s_start,
-           State s_goal,
-           std::vector<State> &state_sequence,
-           std::vector<Action> &action_sequence)
-{
-	auto t_start = std::chrono::high_resolution_clock::now();
-	success_ = 0;
-
-	cost_vector_.clear();
-	cost_vector_times_.clear();
-
-	std::cout << "RRT" << std::endl;
-
-	PlannerClass T;
-    T.init(s_start);
-
-    int s_goal_idx;
-    goal_found = false;
-	while(true)
-	{
-		auto t_current = std::chrono::high_resolution_clock::now();
-    	std::chrono::duration<double> current_elapsed = t_current - t_start;
-		if(current_elapsed.count() >= 30)
-		{
-			num_vertices = T.getNumVertices();
-			auto t_end = std::chrono::high_resolution_clock::now();
-    		elapsed_total = t_end - t_start;
-			return;
-		}
-
-		// Generate new s to be either random or the goal
-		double prob_goal = (double)rand()/RAND_MAX;
-		State s = (prob_goal <= prob_goal_thresh) ? s_goal : T.randomState(terrain);
-
-		if (isValidState(s, terrain, STANCE))
-		{
-			int result = extend(T, s, terrain, FORWARD);
-
-			if ((isWithinBounds(s, s_goal) == true) && (result == REACHED))
-			{
-				std::cout << "goal found!" << std::endl;
-				goal_found = true;
-				s_goal_idx = T.getNumVertices()-1;
-
-
-				auto t_end = std::chrono::high_resolution_clock::now();
-	    		elapsed_to_first = t_end - t_start;
-				break;
-			}	
-		}
-		
-	}
-
-	num_vertices = T.getNumVertices();
-
-	if (goal_found == true)
-	{
-		std::vector<int> path = pathFromStart(T, T.getNumVertices()-1);
-		state_sequence = getStateSequence(T, path);
-		action_sequence = getActionSequence(T, path);
-	} else {
-		std::cout << "Path not found" << std::endl;
-	}
-
-	auto t_end = std::chrono::high_resolution_clock::now();
-    elapsed_total = t_end - t_start;
-
-    if (elapsed_total.count() <= 5.0)
-    	success_ = 1;
-
-    path_duration_ = 0.0;
-    for (Action a : action_sequence)
-    {
-    	path_duration_ += a[6] + a[7];
-    }
-
-    path_quality_ = T.getGValue(s_goal_idx);
-    cost_vector_.push_back(path_quality_);
-    cost_vector_times_.push_back(elapsed_total.count());
-    std::cout << "Path quality = " << path_quality_ << std::endl;
 }
