@@ -27,7 +27,6 @@ bool MbLinkConverter::sendMBlink()
   }
 
 
-
   return true;
 }
 
