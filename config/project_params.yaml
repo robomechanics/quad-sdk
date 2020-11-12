@@ -16,10 +16,10 @@ ekf_estimator:
   update_rate: 100
 
 global_body_planner:
-  update_rate: 1
+  update_rate: 10
   num_calls: 1            # Number of times to call the planner
-  replan_time_limit: 1.0  # Minimum amount of time to run the planner (will replan to find better solutions until this duration is up)
-  algorithm: rrt-connect  # rrt-connect or rrt-star-connect
+  replan_time_limit: 0.0  # Minimum amount of time to run the planner (will replan to find better solutions until this duration is up)
+  algorithm: rrt-connect  # rrt-connect
   start_state: [0.0,0,0.4,0.0,0.1,0.0,0.0,0.0]
   goal_state: [8.0,1.0,0.4,0.0,0.0,0.0,0.0,0.0]
 
