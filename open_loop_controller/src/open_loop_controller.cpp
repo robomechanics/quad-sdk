@@ -1,13 +1,13 @@
-#include "clark_trot_controller/clark_trot_controller.h"
+#include "open_loop_controller/open_loop_controller.h"
 
-ClarkTrotController::ClarkTrotController(ros::NodeHandle nh) {
+OpenLoopController::OpenLoopController(ros::NodeHandle nh) {
 	nh_ = nh;
 
   // Setup pubs and subs
 	joint_control_pub_ = nh_.advertise<spirit_msgs::MotorCommandArray>("/spirit/joint_controller/command",1);
 }
 
-void ClarkTrotController::spin() {
+void OpenLoopController::spin() {
 	double start_time = ros::Time::now().toSec();
 	update_rate_ = 10;	
 	ros::Rate r(update_rate_);
@@ -19,7 +19,7 @@ void ClarkTrotController::spin() {
 	}
 }
 
-void ClarkTrotController::sendJointPositions(double &elapsed_time)
+void OpenLoopController::sendJointPositions(double &elapsed_time)
 {
 	spirit_msgs::MotorCommandArray msg;
 	msg.motor_commands.resize(12);

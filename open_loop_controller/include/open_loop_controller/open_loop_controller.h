@@ -1,20 +1,20 @@
-#ifndef CLARK_TROT_CONTROLLER_H
-#define CLARK_TROT_CONTROLLER_H
+#ifndef OPEN_LOOP_CONTROLLER_H
+#define OPEN_LOOP_CONTROLLER_H
 
 #include <ros/ros.h>
 #include <spirit_msgs/MotorCommandArray.h>
-//! Implements open loop clark trot controller
+//! Implements open loop controller
 /*!
-   ClarkTrotController implements all control logic. It should expose a constructor that does any initialization required and an update method called at some frequency.
+   OpenLoopController implements all control logic. It should expose a constructor that does any initialization required and an update method called at some frequency.
 */
-class ClarkTrotController {
+class OpenLoopController {
   public:
 	/**
-	 * @brief Constructor for ClarkTrotController
+	 * @brief Constructor for OpenLoopController
 	 * @param[in] nh ROS NodeHandle to publish and subscribe from
-	 * @return Constructed object of type ClarkTrotController
+	 * @return Constructed object of type OpenLoopController
 	 */
-	ClarkTrotController(ros::NodeHandle nh);
+	OpenLoopController(ros::NodeHandle nh);
 
 	/**
 	 * @brief Calls ros spinOnce and pubs data at set frequency
@@ -36,4 +36,4 @@ private:
 };
 
 
-#endif // CLARK_TROT_CONTROLLER_H
+#endif // OPEN_LOOP_CONTROLLER_H
