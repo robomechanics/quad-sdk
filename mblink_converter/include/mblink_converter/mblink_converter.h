@@ -9,6 +9,13 @@
 
 using gr::MBLink;
 
+struct LimbCmd_t {
+  float pos[3];
+  float vel[3];
+  float tau[3];
+  float gains[3];
+};
+
 //! Implements online conversion from ROS type to MBLink
 /*!
    MBLinkConverter listens for joint control messages and outputs low level commands to the mainboard over mblink

@@ -26,6 +26,18 @@ bool MBLinkConverter::sendMBlink()
   {
     return false;
   }
+  
+  LimbCmd_t limbcmd[4];
+  for (int i = 0; i < 4; ++i) // For each leg
+  {
+    for (int j = 0; j < 3; ++j) // For each joint
+    {
+      
+    }
+  }
+
+  float data[58];
+  memcpy(data,limbcmd,4*sizeof(limbcmd));
 
   return true;
 }
