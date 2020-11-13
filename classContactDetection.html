@@ -60,6 +60,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classContactDetection-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -82,16 +83,29 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:a6e6a871826f05d5f43a65be58ab8dd3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls ros spinOnce and pubs data at set frequency. <br /></td></tr>
 <tr class="separator:a6e6a871826f05d5f43a65be58ab8dd3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a7d95daa52f7bc969bf539a57e69eb48a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classContactDetection.html#a7d95daa52f7bc969bf539a57e69eb48a">jointEncoderCallback</a> (const sensor_msgs::JointState::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a7d95daa52f7bc969bf539a57e69eb48a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new joint encoder data.  <a href="#a7d95daa52f7bc969bf539a57e69eb48a">More...</a><br /></td></tr>
+<tr class="separator:a7d95daa52f7bc969bf539a57e69eb48a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fe1967f11a94fd59bb691514b485166"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classContactDetection.html#a8fe1967f11a94fd59bb691514b485166">imuCallback</a> (const sensor_msgs::Imu::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a8fe1967f11a94fd59bb691514b485166"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new imu data.  <a href="#a8fe1967f11a94fd59bb691514b485166">More...</a><br /></td></tr>
+<tr class="separator:a8fe1967f11a94fd59bb691514b485166"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae36b88e95fce06dd34441febe2e841c9"><td class="memItemLeft" align="right" valign="top"><a id="ae36b88e95fce06dd34441febe2e841c9"></a>
+spirit_msgs::ContactMode&#160;</td><td class="memItemRight" valign="bottom"><b>updateStep</b> ()</td></tr>
+<tr class="separator:ae36b88e95fce06dd34441febe2e841c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a94ef03eb3e9fc07106015f46e087e76d"><td class="memItemLeft" align="right" valign="top"><a id="a94ef03eb3e9fc07106015f46e087e76d"></a>
-ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classContactDetection.html#a94ef03eb3e9fc07106015f46e087e76d">sample_sub</a></td></tr>
-<tr class="memdesc:a94ef03eb3e9fc07106015f46e087e76d"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber. <br /></td></tr>
-<tr class="separator:a94ef03eb3e9fc07106015f46e087e76d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b83008708c94e94047de41cc519a189"><td class="memItemLeft" align="right" valign="top"><a id="a6b83008708c94e94047de41cc519a189"></a>
-ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classContactDetection.html#a6b83008708c94e94047de41cc519a189">sample_pub</a></td></tr>
-<tr class="memdesc:a6b83008708c94e94047de41cc519a189"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher. <br /></td></tr>
-<tr class="separator:a6b83008708c94e94047de41cc519a189"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a831194f3f3b0165e10fd4e4cef4ac5"><td class="memItemLeft" align="right" valign="top"><a id="a4a831194f3f3b0165e10fd4e4cef4ac5"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><b>joint_encoder_sub_</b></td></tr>
+<tr class="separator:a4a831194f3f3b0165e10fd4e4cef4ac5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53ea20a3fc4d1abe4bfda62e4587a58d"><td class="memItemLeft" align="right" valign="top"><a id="a53ea20a3fc4d1abe4bfda62e4587a58d"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><b>imu_sub_</b></td></tr>
+<tr class="separator:a53ea20a3fc4d1abe4bfda62e4587a58d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a204f6dfc6e4fe19ebcf3575ef84011"><td class="memItemLeft" align="right" valign="top"><a id="a3a204f6dfc6e4fe19ebcf3575ef84011"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><b>contact_mode_pub_</b></td></tr>
+<tr class="separator:a3a204f6dfc6e4fe19ebcf3575ef84011"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf2478c35a4aa5301a395562e26267c4"><td class="memItemLeft" align="right" valign="top"><a id="aaf2478c35a4aa5301a395562e26267c4"></a>
 ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classContactDetection.html#aaf2478c35a4aa5301a395562e26267c4">nh_</a></td></tr>
 <tr class="memdesc:aaf2478c35a4aa5301a395562e26267c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nodehandle to pub to and sub from. <br /></td></tr>
@@ -100,6 +114,18 @@ ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classContactDetection.html#a00883012eb46da3c3660aaabe5681566">update_rate_</a></td></tr>
 <tr class="memdesc:a00883012eb46da3c3660aaabe5681566"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update rate for sending and receiving data;. <br /></td></tr>
 <tr class="separator:a00883012eb46da3c3660aaabe5681566"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ae3ae173cb542bdfaa51bb0a4fe18f8"><td class="memItemLeft" align="right" valign="top"><a id="a2ae3ae173cb542bdfaa51bb0a4fe18f8"></a>
+spirit_msgs::ContactMode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classContactDetection.html#a2ae3ae173cb542bdfaa51bb0a4fe18f8">last_contact_est_</a></td></tr>
+<tr class="memdesc:a2ae3ae173cb542bdfaa51bb0a4fe18f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last contact detection message. <br /></td></tr>
+<tr class="separator:a2ae3ae173cb542bdfaa51bb0a4fe18f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71bee086651ae1a5d3f8d50859971534"><td class="memItemLeft" align="right" valign="top"><a id="a71bee086651ae1a5d3f8d50859971534"></a>
+sensor_msgs::Imu::ConstPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classContactDetection.html#a71bee086651ae1a5d3f8d50859971534">last_imu_msg_</a></td></tr>
+<tr class="memdesc:a71bee086651ae1a5d3f8d50859971534"><td class="mdescLeft">&#160;</td><td class="mdescRight">Most recent IMU callback (should be timestamped!) <br /></td></tr>
+<tr class="separator:a71bee086651ae1a5d3f8d50859971534"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac563241f2064237906818def11042fa4"><td class="memItemLeft" align="right" valign="top"><a id="ac563241f2064237906818def11042fa4"></a>
+sensor_msgs::JointState::ConstPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classContactDetection.html#ac563241f2064237906818def11042fa4">last_joint_state_msg_</a></td></tr>
+<tr class="memdesc:ac563241f2064237906818def11042fa4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Most recent encoder callback (should be timestamped!) <br /></td></tr>
+<tr class="separator:ac563241f2064237906818def11042fa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contact detection class for spirit. </p>
@@ -129,6 +155,75 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classContactDetection.html" title="Contact detection class for spirit. ">ContactDetection</a> </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a8fe1967f11a94fd59bb691514b485166"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fe1967f11a94fd59bb691514b485166">&#9670;&nbsp;</a></span>imuCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ContactDetection::imuCallback </td>
+          <td>(</td>
+          <td class="paramtype">const sensor_msgs::Imu::ConstPtr &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback function to handle new imu data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">imu_msg</td><td>sensors_msgs&lt;Imu&gt; containing new imu data </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a7d95daa52f7bc969bf539a57e69eb48a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d95daa52f7bc969bf539a57e69eb48a">&#9670;&nbsp;</a></span>jointEncoderCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ContactDetection::jointEncoderCallback </td>
+          <td>(</td>
+          <td class="paramtype">const sensor_msgs::JointState::ConstPtr &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback function to handle new joint encoder data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">joint_encoder_msg</td><td>sensor_msgs&lt;JointState&gt; containing joint pos,vel,current </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
