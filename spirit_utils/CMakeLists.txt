@@ -43,7 +43,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-## Declare a C++ library
+
 add_library(spirit_utils
   src/rviz_interface.cpp
   src/fast_terrain_map.cpp
@@ -76,6 +76,8 @@ target_link_libraries(robot_interface_node
   spirit_utils
   ${catkin_LIBRARIES}
 )
+
+
 
 #############
 ## Testing ##

@@ -2,7 +2,12 @@
 #define MBLINK_CONVERTER_H
 
 #include <ros/ros.h>
-#include <spirit_msgs/MotorCommandArray>
+#include <spirit_msgs/MotorCommandArray.h>
+#include <mblink/mblink.hpp>
+#include <chrono>
+#include <thread>
+
+using gr::MBLink;
 
 //! Implements online conversion from ROS type to MBLink
 /*!
@@ -15,7 +20,7 @@ public:
    * @param[in] nh ROS NodeHandle to publish and subscribe from
    * @return Constructed object of type EKFEstimator
    */
-  MBLinkConverter(ros::NodeHandle nh);
+  MBLinkConverter(ros::NodeHandle nh, std::shared_ptr<MBLink> mblink);
 
   /**
    * @brief Calls ros spinOnce and spins at set frequency
@@ -32,7 +37,7 @@ private:
   /**
    * @brief Send most recent motor command over mblink
    */
-  void sendMBlink()
+  bool sendMBlink();
 
   /// Subscriber for motor control messages
   ros::Subscriber motor_control_sub_;
@@ -44,7 +49,11 @@ private:
   double update_rate_;
 
   /// Last motor control message (keep sending until we get a new message in or node is shutdown)
-  spirit_msgs::MotorCommandArray::ConstPtr& last_motor_command_msg_;
+  spirit_msgs::MotorCommandArray::ConstPtr last_motor_command_array_msg_;
+
+  /// Pointer to MBLink object
+  std::shared_ptr<MBLink> mblink_;
+
 };
 
 #endif
