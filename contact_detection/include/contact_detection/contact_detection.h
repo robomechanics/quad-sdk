@@ -5,7 +5,7 @@
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/String.h>
-#include <spirit_msgs/ContactDetection.h>
+#include <spirit_msgs/ContactMode.h>
 #include <spirit_msgs/StateEstimate.h>
 
 //! Contact detection class for spirit
@@ -39,7 +39,7 @@ private:
 	 */
 	void imuCallback(const sensor_msgs::Imu::ConstPtr& msg);
 
-	spirit_msgs::ContactDetection updateStep();
+	spirit_msgs::ContactMode updateStep();
 
 	// ROS subscriber for joint encoder messages
 	ros::Subscriber joint_encoder_sub_;
@@ -48,7 +48,7 @@ private:
 	ros::Subscriber imu_sub_;
 
 	// ROS Publisher for contact detection messages
-	ros::Publisher contact_detection_pub_;
+	ros::Publisher contact_mode_pub_;
 
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;
@@ -57,7 +57,7 @@ private:
 	double update_rate_;
 
 	/// Last contact detection message
-	spirit_msgs::ContactDetection last_contact_est_;
+	spirit_msgs::ContactMode last_contact_est_;
 
 	/// Most recent IMU callback (should be timestamped!)
  	sensor_msgs::Imu::ConstPtr last_imu_msg_;

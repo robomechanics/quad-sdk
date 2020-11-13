@@ -8,7 +8,7 @@ EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
   nh.param<std::string>("topics/joint_encoder", joint_encoder_topic, "/joint_encoder");
   nh.param<std::string>("topics/imu", imu_topic, "/imu");
   nh.param<std::string>("topics/state_estimate", state_estimate_topic, "/state_estimate");
-  nh.param<std::string>("topics/contact_detection", contact_topic, "/contact_detection");
+  nh.param<std::string>("topics/contact_mode", contact_topic, "/contact_mode");
   nh.param<double>("ekf_estimator/update_rate", update_rate_, 200);
 
   // Setup pubs and subs
@@ -26,7 +26,7 @@ void EKFEstimator::imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
   last_imu_msg_ = msg;
 }
 
-void EKFEstimator::contactCallback(const spirit_msgs::ContactDetection::ConstPtr& msg) {
+void EKFEstimator::contactCallback(const spirit_msgs::ContactMode::ConstPtr& msg) {
   last_contact_msg_ = msg;
 }
 
