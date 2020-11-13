@@ -26,27 +26,28 @@ SOFTWARE.
 
 <launch>
 
+  <arg name="gui" default="false"/>
+  <arg name="paused" default="true"/>
+
   <!-- Launch the Spirit world with specific physics parameters -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="paused" value="true"/>
+    <arg name="paused" value="$(arg paused)"/>
     <arg name="world_name" value="$(find gazebo_scripts)/worlds/ghost.world"/>
-    <arg name="gui" value="true"/>
+    <arg name="gui" value="$(arg gui)"/>
     <arg name="physics" value="ode"/>
   </include>
 
-  <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_gazebo.urdf" />
+  <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_meshes.urdf" />
   <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf/spirit.sdf" />
 
   <!-- Spawn SDF model -->
-
   <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.7 -J 1 1 -J 3 1 -J 5 1 -J 7 1 -J 0 0.7 -J 2 0.7 -J 4 0.7 -J 6 0.7" output="screen"/>
 
-  <!-- Launch robot state publisher to publish TF info from gazebo -->
-  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
-    <remap from="joint_states" to="/spirit/joint_states"/>
-  </node>
+  <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/spirit" args="joint_state_controller joint_controller"/>
 
-  <!-- Launch ros_controllers -->
-  <rosparam file="$(find gazebo_scripts)/config/spirit_position_control.yaml" command="load"/>
-  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/spirit" args="joint_state_controller joint0_position_controller joint1_position_controller joint2_position_controller joint3_position_controller joint4_position_controller joint5_position_controller joint6_position_controller joint7_position_controller joint8_position_controller joint9_position_controller joint10_position_controller joint11_position_controller"/>
+  <!--<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+    <remap from="joint_states" to="/mcu/state/jointURDF"/>
+  </node>-->
+  
 </launch>

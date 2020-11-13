@@ -8,9 +8,7 @@
 
 #include <spirit_msgs/BodyPlan.h>
 
-#include "global_body_planner/planning_utils.h"
-#include "global_body_planner/planner_class.h"
-#include "global_body_planner/rrt_star_connect.h"
+#include "global_body_planner/rrt_connect.h"
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
@@ -123,11 +121,14 @@ class GlobalBodyPlanner {
     /// Sequence of discrete actions in the plan
     std::vector<Action> action_sequence_;
 
-    /// Vector of cost instances in each planning call (nested STL vectors)
-    std::vector<std::vector<double> > cost_vectors_;
+    /// Cost of the current path in path length
+    double current_cost_;
 
-    /// Vector of time instances of cost data for each planning call (nested STL vectors)
-    std::vector<std::vector<double> > cost_vectors_times_;
+    /// Vector of cost instances in each planning call
+    std::vector<double> cost_vector_;
+
+    /// Vector of time instances of cost data for each planning call
+    std::vector<double> cost_vector_times_;
 
     /// Vector of solve times for each planning call
     std::vector<double> solve_time_info_;
