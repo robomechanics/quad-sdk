@@ -20,7 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
  	FILES
 	StateEstimate.msg
-	BodyPlan.msg
+  BodyPlan.msg
 	FootstepPlan.msg
 	Footstep.msg
 	ControlInput.msg
