@@ -1037,11 +1037,5 @@
     <origin xyz="0.206 0 -0.0"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
-  <!-- Add ros_control plugin -->
-  <gazebo>
-    <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
-      <robotNamespace>/spirit</robotNamespace>
-    </plugin>
-  </gazebo>
 </robot>
 

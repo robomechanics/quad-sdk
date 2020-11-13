@@ -1137,10 +1137,7 @@ SOFTWARE.
       </axis>
     </joint>
     <static>0</static>
-    <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
-      <robotNamespace>/spirit</robotNamespace>
-    </plugin>
-    
+    <!-- Publish imu sensor readings -->
     <include>
       <uri>model://imu</uri>
       <pose>0 0 0 0 0 0 </pose>
@@ -1149,5 +1146,13 @@ SOFTWARE.
       <child>imu::link</child>
       <parent>body</parent>
     </joint>
+    <!-- Setup ros control -->
+    <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
+      <robotNamespace>/spirit</robotNamespace>
+    </plugin>
+    <!-- Publish ground truth state data -->
+    <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
+      <updateRateHZ>100.0</updateRateHZ>
+    </plugin>
   </model>
 </sdf>

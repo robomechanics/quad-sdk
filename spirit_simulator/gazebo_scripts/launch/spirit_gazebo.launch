@@ -34,17 +34,19 @@ SOFTWARE.
     <arg name="physics" value="ode"/>
   </include>
 
-  <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_gazebo.urdf" />
-  <!-- Spawn URDF model -->
+  <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_meshes.urdf" />
+  <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf/spirit.sdf" />
 
-  <node name="spawn_urdf_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model spirit -x 0.0 -y 0.0 -z 0.7 -J 1 1 -J 3 1 -J 5 1 -J 7 1 -J 0 0.7 -J 2 0.7 -J 4 0.7 -J 6 0.7" output="screen"/>
+  <!-- Spawn SDF model -->
+
+  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.7 -J 1 1 -J 3 1 -J 5 1 -J 7 1 -J 0 0.7 -J 2 0.7 -J 4 0.7 -J 6 0.7" output="screen"/>
 
   <!-- Launch robot state publisher to publish TF info from gazebo -->
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
     <remap from="joint_states" to="/spirit/joint_states"/>
   </node>
 
-  <!-- Launch ros_controllers -->
   <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
-  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/spirit" args="joint_state_controller joint0_effort_controller joint1_effort_controller joint2_effort_controller joint3_effort_controller joint4_effort_controller joint5_effort_controller joint6_effort_controller joint7_effort_controller joint8_effort_controller joint9_effort_controller joint10_effort_controller joint11_effort_controller"/>
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/spirit" args="joint_state_controller joint_controller"/>
+
 </launch>

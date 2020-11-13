@@ -1,13 +1,8 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(contact_detection)
+project(open_loop_controller)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
-
-## Set default cmake build type to release
-if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
-endif()
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -20,10 +15,9 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 catkin_package(
-    INCLUDE_DIRS include
-#  LIBRARIES contact_detection
-#  CATKIN_DEPENDS roscpp std_msgs sensor_msgs spirit_msgs
-#	 DEPENDS
+  INCLUDE_DIRS include
+  CATKIN_DEPENDS roscpp std_msgs sensor_msgs spirit_msgs
+  DEPENDS 
 )
 
 ###########
@@ -37,20 +31,20 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-## Declare a C++ library
-add_library(contact_detection
-	src/contact_detection.cpp
+## Declare a C++ library for control
+add_library(open_loop_controller
+	src/open_loop_controller.cpp
 )
-add_dependencies(contact_detection ${contact_detection_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(open_loop_controller ${open_loop_controller} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(contact_detection_node src/contact_detection_node.cpp)
+add_executable(open_loop_controller_node src/open_loop_controller_node.cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(contact_detection_node
-	contact_detection
+target_link_libraries(open_loop_controller_node
+  open_loop_controller
 	${catkin_LIBRARIES}
 )
 
@@ -58,6 +52,8 @@ target_link_libraries(contact_detection_node
 ## Testing ##
 #############
 
-## Add gtest based cpp test target and link libraries
-catkin_add_gtest(contact_detection_test test/test_contact_detection.cpp)
-target_link_libraries(contact_detection_test ${catkin_LIBRARIES} contact_detection)
+## Google test file for clark_trot_controller library
+catkin_add_gtest(open_loop_controller_test test/test_open_loop_controller.cpp)
+target_link_libraries(open_loop_controller_test ${catkin_LIBRARIES} open_loop_controller)
+
+
