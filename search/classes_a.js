@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['spiritcontroller',['SpiritController',['../classeffort__controllers_1_1SpiritController.html',1,'effort_controllers']]],
-  ['spiritestimatorgroundtruth',['SpiritEstimatorGroundTruth',['../classgazebo_1_1SpiritEstimatorGroundTruth.html',1,'gazebo']]]
+  ['robotinterface',['RobotInterface',['../classRobotInterface.html',1,'']]],
+  ['rrtclass',['RRTClass',['../classRRTClass.html',1,'']]],
+  ['rrtconnectclass',['RRTConnectClass',['../classRRTConnectClass.html',1,'']]],
+  ['rvizinterface',['RVizInterface',['../classRVizInterface.html',1,'']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['mpccontroller',['MPCController',['../classMPCController.html',1,'']]]
+  ['localfootstepplanner',['LocalFootstepPlanner',['../classLocalFootstepPlanner.html',1,'']]]
 ];

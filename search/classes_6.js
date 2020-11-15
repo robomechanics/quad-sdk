@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['openloopcontroller',['OpenLoopController',['../classOpenLoopController.html',1,'']]]
+  ['mpccontroller',['MPCController',['../classMPCController.html',1,'']]]
 ];
