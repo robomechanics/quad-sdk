@@ -45,6 +45,24 @@ class LocalFootstepPlanner {
     void bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
 
     /**
+     * @brief Interpolate data from column vectors contained in a matrix (vector of row vectors) provided an input vector and query point
+     * @param[in] input_vec Input vector
+     * @param[in] output_mat Collection of row vectors such that each row corresponds to exactly one element in the input vector
+     * @param[in] input_val Query point
+     * @return Vector of interpolated values
+     */
+    std::vector<double> interpolateMat(std::vector<double> input_vec, std::vector<std::vector<double>> output_mat, double query_point);
+
+    /**
+     * @brief Interpolate data from a column vector provided an input vector and query point
+     * @param[in] input_vec Input vector
+     * @param[in] output_vec Output vector such that each element corresponds to exactly one element in the input vector
+     * @param[in] input_val Query point
+     * @return Interpolated value
+     */
+    double interpolateVec(std::vector<double> input_vec, std::vector<double> input_mat, double query_point);
+
+    /**
      * @brief Update the footstep plan with the current plan
      */
     void updatePlan();
@@ -75,11 +93,11 @@ class LocalFootstepPlanner {
     /// Struct for terrain map data
     FastTerrainMap terrain_;
 
-    /// Typedef for body state array (TODO replace with utils def) 
-    typedef std::array<double, 9> BodyState;
+    /// Define the body state data structure
+    typedef std::vector<double> BodyState;
 
-    /// Typedef for footstep state array (TODO replace with utils def)
-    typedef std::array<double, 5> FootstepState;
+    /// Define the footstep state data structure
+    typedef std::vector<double> FootstepState;
 
     /// Std vector containing robot body plan
     std::vector<BodyState> body_plan_;
