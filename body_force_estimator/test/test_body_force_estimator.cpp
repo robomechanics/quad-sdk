@@ -3,9 +3,9 @@
 
 #include "body_force_estimator/body_force_estimator.h"
 
-TEST(BodyContactEstimator, testTrue) {
+TEST(BodyForceEstimator, testTrue) {
   ros::NodeHandle nh;
-  BodyContactEstimator body_force_estimator(nh);
+  BodyForceEstimator body_force_estimator(nh);
   EXPECT_EQ(1 + 1, 2);
 }
 
