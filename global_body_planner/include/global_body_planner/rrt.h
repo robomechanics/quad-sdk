@@ -60,20 +60,16 @@ class RRTClass
      * @param[out] state_sequence The sequence of states in the final path
      * @param[out] action_sequence The sequence of actions in the final path
      */
-    void buildRRT(FastTerrainMap& terrain, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence);
+    // void buildRRT(FastTerrainMap& terrain, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence);
     
     /**
      * @brief Get the statistics for the planner solve
      * @param[out] plan_time The total time spent in the planner
-     * @param[out] success_var Number of solves under 5 seconds
      * @param[out] vertices_generated Number of vertices generated in the tree
-     * @param[out] time_to_first_solve The time elapsed until the first valid path was found
-     * @param[out] cost_vector Vector of costs each time a better one is found
-     * @param[out] cost_vector_times Vector of times at which each better cost is found
+     * @param[out] plan_length The length of the path in meters
      * @param[out] path_duration The duration of the path in seconds
      */
-    void getStatistics(double &plan_time, int &success_var, int &vertices_generated, double &time_to_first_solve, std::vector<double> &cost_vector, 
-      std::vector<double> &cost_vector_times, double& path_duration);
+    void getStatistics(double &plan_time, int &vertices_generated, double &plan_length, double& path_duration);
 
     /**
      * @brief Generate a new state that can be connected to the tree and is as close as possible to the specified state
@@ -112,25 +108,19 @@ class RRTClass
     bool goal_found = false;
 
     /// Total time elapsed in this planner call
-    std::chrono::duration<double> elapsed_total;
+    std::chrono::duration<double> elapsed_total_;
 
     // Total time elapsed until the first solve
-    std::chrono::duration<double> elapsed_to_first;
+    std::chrono::duration<double> elapsed_to_first_;
 
     /// Integer checking if a solution was computed in 5 seconds
     int success_ = 0;
 
     /// Number of vertices in the tree
-    int num_vertices;
+    int num_vertices_;
 
     /// Path quality in meters
-    double path_quality_;
-
-    /// Vector of costs each time a better one is found
-    std::vector<double> cost_vector_;
-
-    /// Vector of times at which each better cost is found
-    std::vector<double> cost_vector_times_;
+    double path_length_;
 
     /// The duration of the path in seconds
     double path_duration_;
