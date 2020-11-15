@@ -5,12 +5,4 @@
 
 Header header
 
-geometry_msgs/Wrench body_wrench
-geometry_msgs/Wrench flu_wrench
-geometry_msgs/Wrench blu_wrench
-geometry_msgs/Wrench fru_wrench
-geometry_msgs/Wrench bru_wrench
-geometry_msgs/Wrench fll_wrench
-geometry_msgs/Wrench bll_wrench
-geometry_msgs/Wrench frl_wrench
-geometry_msgs/Wrench brl_wrench
+geometry_msgs/Wrench[] body_wrenches
