@@ -59,9 +59,10 @@ class GlobalBodyPlanner {
      * @brief Update the body plan with the current plan
      * @param[in] t Time of state in trajectory
      * @param[in] body_state Body state
+     * @param[in] body_wrench Wrench applied to body
      * @param[in] body_plan_msg Body plan message
      */
-    void addBodyStateToMsg(double t, State body_state, spirit_msgs::BodyPlan& body_plan_msg);
+    void addStateWrenchToMsg(double t, State body_state, Wrench body_wrench, spirit_msgs::BodyPlan& body_plan_msg);
 
     /**
      * @brief Publish the current body plan
@@ -105,6 +106,9 @@ class GlobalBodyPlanner {
 
     /// Std vector containing the interpolated robot body plan
     std::vector<State> body_plan_;
+
+    /// Std vector containing the interpolated wrench plan
+    std::vector<Wrench> wrench_plan_;
 
     /// Std vector containing the interpolated time data
     std::vector<double> t_plan_;

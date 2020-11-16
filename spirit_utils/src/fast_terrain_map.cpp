@@ -1,7 +1,6 @@
 #include "spirit_utils/fast_terrain_map.h"
 #include <grid_map_core/grid_map_core.hpp>
 
-#include <chrono>
 #include <iostream>
 
 FastTerrainMap::FastTerrainMap(){
@@ -191,6 +190,34 @@ std::array<double, 3> FastTerrainMap::getSurfaceNormal(double x, double y)
 
     surf_norm[2] = 1.0/((x2-x1)*(y2-y1))*(fz_x1y1*(x2-x)*(y2-y) + fz_x2y1*(x-x1)*(y2-y) + fz_x1y2*(x2-x)*(y-y1) + fz_x2y2*(x-x1)*(y-y1));
     return surf_norm;
+}
+
+Eigen::Vector3d FastTerrainMap::projectToMap(Eigen::Vector3d point, Eigen::Vector3d direction) {
+
+  direction.normalize();
+  Eigen::Vector3d result = point;
+  Eigen::Vector3d new_point = point;
+  Eigen::Vector3d old_point = point;
+
+  double step_size = 0.01;
+  double clearance = 0;
+  while (clearance >=0) {
+    old_point = new_point;
+    for(int i = 0; i<3; i++) {
+      new_point[i] += direction[i]*step_size;
+    }
+    if (isInRange(new_point[0], new_point[1])) {
+      clearance = new_point[2] - getGroundHeight(new_point[0], new_point[1]);
+    } else {
+      result = {old_point[0], old_point[1], -std::numeric_limits<double>::max()};
+      return result;
+    }
+  }
+  
+  result = {old_point[0], old_point[1], getGroundHeight(old_point[0], old_point[1])};
+  // double error = old_point[2] - result[2];
+
+  return result;
 }
 
 std::vector<double> FastTerrainMap::getXData() {
