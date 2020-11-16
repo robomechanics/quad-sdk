@@ -9,7 +9,6 @@ topics:
   image: /image_publisher/image
   body_force: /body_force
 
-
 mpc_controller:
   update_rate: 100
 

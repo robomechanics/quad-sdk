@@ -87,6 +87,7 @@ catkin_add_gtest(${PROJECT_NAME}-test
   test/test_rviz_interface.cpp
   test/test_terrain_map_publisher.cpp
   test/test_robot_interface.cpp
+  test/test_fast_terrain_map.cpp
   test/test_main.cpp)
 target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME} ${catkin_LIBRARIES})
 
