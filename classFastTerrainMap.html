@@ -92,6 +92,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae560c6b4bfd86639f71efec2a320d142"><td class="memItemLeft" align="right" valign="top">std::array&lt; double, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#ae560c6b4bfd86639f71efec2a320d142">getSurfaceNormal</a> (const double x, const double y)</td></tr>
 <tr class="memdesc:ae560c6b4bfd86639f71efec2a320d142"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the surface normal at a requested location.  <a href="#ae560c6b4bfd86639f71efec2a320d142">More...</a><br /></td></tr>
 <tr class="separator:ae560c6b4bfd86639f71efec2a320d142"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1157f4492e80cc44dc2da779db3bdd93"><td class="memItemLeft" align="right" valign="top">Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#a1157f4492e80cc44dc2da779db3bdd93">projectToMap</a> (Eigen::Vector3d point, Eigen::Vector3d direction)</td></tr>
+<tr class="memdesc:a1157f4492e80cc44dc2da779db3bdd93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the (approximate) intersection of the height map and a vector. Returned point lies exactly on the map but not entirely on the vector.  <a href="#a1157f4492e80cc44dc2da779db3bdd93">More...</a><br /></td></tr>
+<tr class="separator:a1157f4492e80cc44dc2da779db3bdd93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f48ea3fc615c925917b7c89c363b252"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#a9f48ea3fc615c925917b7c89c363b252">getXData</a> ()</td></tr>
 <tr class="memdesc:a9f48ea3fc615c925917b7c89c363b252"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the vector of x_data of the map.  <a href="#a9f48ea3fc615c925917b7c89c363b252">More...</a><br /></td></tr>
 <tr class="separator:a9f48ea3fc615c925917b7c89c363b252"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -412,6 +415,43 @@ std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRig
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">grid_map::GridMap</td><td>object with map data </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1157f4492e80cc44dc2da779db3bdd93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1157f4492e80cc44dc2da779db3bdd93">&#9670;&nbsp;</a></span>projectToMap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::Vector3d FastTerrainMap::projectToMap </td>
+          <td>(</td>
+          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramname"><em>point</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramname"><em>direction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the (approximate) intersection of the height map and a vector. Returned point lies exactly on the map but not entirely on the vector. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td>The point at which the vector originates </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">direction</td><td>The direction along which to project the point </td></tr>
   </table>
   </dd>
 </dl>

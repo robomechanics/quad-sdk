@@ -104,9 +104,9 @@ Private Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a2eb81f4bee8cec49686f963cd0251b51">clearPlan</a> ()</td></tr>
 <tr class="memdesc:a2eb81f4bee8cec49686f963cd0251b51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the plan member variables. <br /></td></tr>
 <tr class="separator:a2eb81f4bee8cec49686f963cd0251b51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a463ae1b89a55721d81f2338eb9888df3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a463ae1b89a55721d81f2338eb9888df3">addBodyStateToMsg</a> (double t, State body_state, spirit_msgs::BodyPlan &amp;body_plan_msg)</td></tr>
-<tr class="memdesc:a463ae1b89a55721d81f2338eb9888df3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the body plan with the current plan.  <a href="#a463ae1b89a55721d81f2338eb9888df3">More...</a><br /></td></tr>
-<tr class="separator:a463ae1b89a55721d81f2338eb9888df3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6736b693ac5926cf1ab3c9728af57d0d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a6736b693ac5926cf1ab3c9728af57d0d">addStateWrenchToMsg</a> (double t, State body_state, Wrench body_wrench, spirit_msgs::BodyPlan &amp;body_plan_msg)</td></tr>
+<tr class="memdesc:a6736b693ac5926cf1ab3c9728af57d0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the body plan with the current plan.  <a href="#a6736b693ac5926cf1ab3c9728af57d0d">More...</a><br /></td></tr>
+<tr class="separator:a6736b693ac5926cf1ab3c9728af57d0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ef31af306895c311faee09a7023896b"><td class="memItemLeft" align="right" valign="top"><a id="a7ef31af306895c311faee09a7023896b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a7ef31af306895c311faee09a7023896b">publishPlan</a> ()</td></tr>
 <tr class="memdesc:a7ef31af306895c311faee09a7023896b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish the current body plan. <br /></td></tr>
@@ -162,6 +162,10 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 std::vector&lt; State &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#aeda69724f6100af1e961345ffbe129a8">body_plan_</a></td></tr>
 <tr class="memdesc:aeda69724f6100af1e961345ffbe129a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing the interpolated robot body plan. <br /></td></tr>
 <tr class="separator:aeda69724f6100af1e961345ffbe129a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b08db1a344d23a0543ccd01804c50b3"><td class="memItemLeft" align="right" valign="top"><a id="a2b08db1a344d23a0543ccd01804c50b3"></a>
+std::vector&lt; Wrench &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a2b08db1a344d23a0543ccd01804c50b3">wrench_plan_</a></td></tr>
+<tr class="memdesc:a2b08db1a344d23a0543ccd01804c50b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing the interpolated wrench plan. <br /></td></tr>
+<tr class="separator:a2b08db1a344d23a0543ccd01804c50b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a029413a439d6621407f9e7d7020b18b5"><td class="memItemLeft" align="right" valign="top"><a id="a029413a439d6621407f9e7d7020b18b5"></a>
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a029413a439d6621407f9e7d7020b18b5">t_plan_</a></td></tr>
 <tr class="memdesc:a029413a439d6621407f9e7d7020b18b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing the interpolated time data. <br /></td></tr>
@@ -235,8 +239,8 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a463ae1b89a55721d81f2338eb9888df3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a463ae1b89a55721d81f2338eb9888df3">&#9670;&nbsp;</a></span>addBodyStateToMsg()</h2>
+<a id="a6736b693ac5926cf1ab3c9728af57d0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6736b693ac5926cf1ab3c9728af57d0d">&#9670;&nbsp;</a></span>addStateWrenchToMsg()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -245,7 +249,7 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void GlobalBodyPlanner::addBodyStateToMsg </td>
+          <td class="memname">void GlobalBodyPlanner::addStateWrenchToMsg </td>
           <td>(</td>
           <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>t</em>, </td>
@@ -255,6 +259,12 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
           <td></td>
           <td class="paramtype">State&#160;</td>
           <td class="paramname"><em>body_state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Wrench&#160;</td>
+          <td class="paramname"><em>body_wrench</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -280,6 +290,7 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>Time of state in trajectory </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">body_state</td><td>Body state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">body_wrench</td><td>Wrench applied to body </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">body_plan_msg</td><td>Body plan message </td></tr>
   </table>
   </dd>
