@@ -83,7 +83,8 @@ namespace effort_controllers
       joint_urdfs_.push_back(joint_urdf);
     }
 
-    commands_buffer_.writeFromNonRT(BufferType(n_joints_));
+    int num_legs = 4;
+    commands_buffer_.writeFromNonRT(BufferType(num_legs));
 
     sub_command_ = n.subscribe<spirit_msgs::LegCommandArray>("command", 1, &SpiritController::commandCB, this);
     return true;
@@ -93,12 +94,21 @@ namespace effort_controllers
   {
     BufferType & commands = *commands_buffer_.readFromRT();
 
+    // Check if message is populated
+    if (commands.empty() || commands.front().motor_commands.empty())
+    {
+      return;
+    }
+
     for(unsigned int i=0; i<n_joints_; i++)
     {
 
-      std::pair<int,int> ind = leg_map_[i];
-      spirit_msgs::MotorCommand motor_command = commands.at(ind.first).motor_commands.at(ind.second);
 
+      std::pair<int,int> ind = leg_map_[i];
+      std::cout << "Command size: " << commands.size() << std::endl;
+      std::cout << ind.first << ", " << ind.second << std::endl;
+
+      spirit_msgs::MotorCommand motor_command = commands.at(ind.first).motor_commands.at(ind.second);
 
       // Collect feedforward torque 
       double torque_ff = motor_command.torque_ff;
