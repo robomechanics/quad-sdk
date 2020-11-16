@@ -2,7 +2,6 @@
 #include <pluginlib/class_list_macros.hpp>
 #include <angles/angles.h>
 
-
 namespace effort_controllers
 {
 
@@ -33,6 +32,9 @@ namespace effort_controllers
     leg_map_[9] = std::make_pair(1,0); // abd1
     leg_map_[10] = std::make_pair(2,0); // abd2
     leg_map_[11] = std::make_pair(3,0); // abd3
+
+    // Torque saturation (could change to linear model in future)
+    torque_lims_ = {21,21,32};
   }
   SpiritController::~SpiritController() {sub_command_.shutdown();}
 
@@ -102,12 +104,7 @@ namespace effort_controllers
 
     for(unsigned int i=0; i<n_joints_; i++)
     {
-
-
       std::pair<int,int> ind = leg_map_[i];
-      std::cout << "Command size: " << commands.size() << std::endl;
-      std::cout << ind.first << ", " << ind.second << std::endl;
-
       spirit_msgs::MotorCommand motor_command = commands.at(ind.first).motor_commands.at(ind.second);
 
       // Collect feedforward torque 
@@ -134,9 +131,11 @@ namespace effort_controllers
 
       // Collect feedback 
       double torque_feedback = kp * pos_error + kd * vel_error;
+      double torque_lim = torque_lims_[ind.second];
+      double torque_command = std::min(std::max(torque_feedback + torque_ff, -torque_lim),torque_lim);
 
       // Update joint torque
-      joints_.at(i).setCommand(torque_feedback + torque_ff);
+      joints_.at(i).setCommand(torque_command);
     }
   }
 

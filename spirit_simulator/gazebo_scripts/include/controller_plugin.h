@@ -47,6 +47,9 @@ private:
   /// Map gazebo/urdf joint indices to leg/joint pair
   std::map<int,std::pair<int,int>> leg_map_;
 
+  /// Torque limits for each motor
+  std::vector<double> torque_lims_;
+
   void commandCB(const spirit_msgs::LegCommandArrayConstPtr& msg);
   void enforceJointLimits(double &command, unsigned int index);
 

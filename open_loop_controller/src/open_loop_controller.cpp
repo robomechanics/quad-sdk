@@ -31,20 +31,20 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
     msg.leg_commands[i].motor_commands.resize(3);
 
 		msg.leg_commands[i].motor_commands[0].pos_setpoint = abd_angle;
-    msg.leg_commands[i].motor_commands[0].kp = 200;
-    msg.leg_commands[i].motor_commands[0].kd = 10;
+    msg.leg_commands[i].motor_commands[0].kp = 100;
+    msg.leg_commands[i].motor_commands[0].kd = 3;
     msg.leg_commands[i].motor_commands[0].vel_setpoint = 0;
     msg.leg_commands[i].motor_commands[0].torque_ff = 0;
 
     msg.leg_commands[i].motor_commands[1].pos_setpoint = hip_angle;
-    msg.leg_commands[i].motor_commands[1].kp = 200;
-    msg.leg_commands[i].motor_commands[1].kd = 10;
+    msg.leg_commands[i].motor_commands[1].kp = 100;
+    msg.leg_commands[i].motor_commands[1].kd = 3;
     msg.leg_commands[i].motor_commands[1].vel_setpoint = 0;
     msg.leg_commands[i].motor_commands[1].torque_ff = 0;
 
     msg.leg_commands[i].motor_commands[2].pos_setpoint = knee_angle;
-    msg.leg_commands[i].motor_commands[2].kp = 200;
-    msg.leg_commands[i].motor_commands[2].kd = 10;
+    msg.leg_commands[i].motor_commands[2].kp = 100;
+    msg.leg_commands[i].motor_commands[2].kd = 3;
     msg.leg_commands[i].motor_commands[2].vel_setpoint = 0;
     msg.leg_commands[i].motor_commands[2].torque_ff = 0;
 	}
