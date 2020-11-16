@@ -42,6 +42,7 @@ void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPt
 void GlobalBodyPlanner::clearPlan() {
   // Clear old solutions
   body_plan_.clear();
+  wrench_plan_.clear();
   t_plan_.clear();
   solve_time_info_.clear();
   vertices_generated_info_.clear();
@@ -143,11 +144,11 @@ void GlobalBodyPlanner::callPlanner() {
   // Interpolate to get full body plan
   double dt = 0.05;
   std::vector<int> interp_phase;
-  getInterpPath(state_sequence_, action_sequence_,dt,body_plan_, t_plan_, interp_phase);
+  getInterpPath(state_sequence_, action_sequence_,dt,body_plan_, wrench_plan_, t_plan_, interp_phase);
 
 }
 
-void GlobalBodyPlanner::addBodyStateToMsg(double t, State body_state, 
+void GlobalBodyPlanner::addStateWrenchToMsg(double t, State body_state, Wrench wrench,
     spirit_msgs::BodyPlan& msg) {
 
   // Make sure the timestamps match the trajectory timing
@@ -179,7 +180,16 @@ void GlobalBodyPlanner::addBodyStateToMsg(double t, State body_state,
   state.twist.twist.angular.y = body_state[6];
   state.twist.twist.angular.z = 0;
 
+  geometry_msgs::Wrench wrench_msg;
+  wrench_msg.force.x = wrench[0];
+  wrench_msg.force.y = wrench[1];
+  wrench_msg.force.z = wrench[2];
+  wrench_msg.torque.x = wrench[3];
+  wrench_msg.torque.y = wrench[4];
+  wrench_msg.torque.z = wrench[5];
+
   msg.states.push_back(state);
+  msg.wrenches.push_back(wrench_msg);
 }
 
 void GlobalBodyPlanner::publishPlan() {
@@ -195,12 +205,16 @@ void GlobalBodyPlanner::publishPlan() {
 
   // Loop through the interpolated body plan and add to message
   for (int i=0;i<body_plan_.size(); ++i)
-    addBodyStateToMsg(t_plan_[i], body_plan_[i], body_plan_msg);
+    addStateWrenchToMsg(t_plan_[i], body_plan_[i], wrench_plan_[i], body_plan_msg);
 
   // Loop through the discrete states and add to message
   for (int i = 0; i<state_sequence_.size(); i++)
-    addBodyStateToMsg(t_plan_[i], state_sequence_[i], discrete_body_plan_msg);
+    addStateWrenchToMsg(t_plan_[i], state_sequence_[i], wrench_plan_[i], discrete_body_plan_msg);
   
+  if (body_plan_msg.states.size() != body_plan_msg.wrenches.size()) {
+    throw std::runtime_error("Mismatch between number of states and wrenches, something is wrong");
+  }
+
   // Publish both interpolated body plan and discrete states
   body_plan_pub_.publish(body_plan_msg);
   discrete_body_plan_pub_.publish(discrete_body_plan_msg);

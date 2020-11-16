@@ -31,6 +31,7 @@ const double ROBOT_H = 0.1;         // Vertical distance between leg base and bo
 
 // Define dynamic constraint parameters
 const double M_CONST = 43;          // Robot mass, kg (43 for cheetah, 30 for anymal)
+const double J_CONST = 1.0;         // Moment of inertia about the robot's y axis (pitch)
 const double G_CONST = 9.81;        // Gravity constant, m/s^2
 const double F_MAX = 800;           // Maximum GRF, N (800 for cheetah, 500 for anymal)
 const double MU = 1.0;              // Friction coefficient (1.0 for Cheetah, 0.5 for ANYmal)
@@ -59,6 +60,7 @@ const int STATEDIM = 8;
 const int ACTIONDIM = 10;
 typedef std::array<double, STATEDIM> State;
 typedef std::array<double, ACTIONDIM> Action;
+typedef std::vector<double> Wrench;
 typedef std::pair<State, Action> StateActionPair;
 
 // Define math parameters
@@ -79,8 +81,11 @@ void printInterpStateSequence(std::vector<State> state_sequence, std::vector<dou
 void printActionSequence(std::vector<Action> action_sequence);
 
 // Define some utility functions
-void interpStateActionPair(State s, Action a,double t0,double dt, std::vector<State> &interp_path, std::vector<double> &interp_t, std::vector<int> &interp_phase);
-void getInterpPath(std::vector<State> state_sequence, std::vector<Action> action_sequence,double dt, std::vector<State> &interp_path, std::vector<double> &interp_t, std::vector<int> &interp_phase);
+Wrench getWrench(Action a,double t);
+void interpStateActionPair(State s, Action a,double t0,double dt, std::vector<State> &interp_path, 
+    std::vector<Wrench> &interp_wrench, std::vector<double> &interp_t, std::vector<int> &interp_phase);
+void getInterpPath(std::vector<State> state_sequence, std::vector<Action> action_sequence,double dt, 
+    std::vector<State> &interp_path, std::vector<Wrench> &interp_wrench, std::vector<double> &interp_t, std::vector<int> &interp_phase);
 State interp(State q1, State q2, double x);
 double poseDistance(State q1, State q2);
 double stateDistance(State q1, State q2);
