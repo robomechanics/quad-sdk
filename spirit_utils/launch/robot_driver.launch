@@ -1,0 +1,19 @@
+<launch>
+    <rosparam command="load" file="$(find spirit_utils)/../config/project_params.yaml"/>
+
+    <arg name="with_interface" default="false"/>
+    
+    <group if="$(arg with_interface)">
+        <node name="robot_interface" pkg="spirit_utils" type="robot_interface_node" output="screen"/>
+    </group>
+
+    <!-- Launch the node the publish state estimate messages-->
+    <node name="ekf_estimator" pkg="ekf_estimator" type="ekf_estimator_node" output="screen"/>
+
+    <!-- Launch the node the publish contact detection messages-->
+    <node name="contact_detection" pkg="contact_detection" type="contact_detection_node" output="screen"/>
+
+    <!-- Launch the node to publish the mpc controller -->
+    <node name="mpc_controller" pkg="mpc_controller" type="mpc_controller_node" output="screen"/>
+
+</launch>
