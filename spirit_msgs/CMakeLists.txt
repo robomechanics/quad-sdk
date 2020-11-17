@@ -23,9 +23,10 @@ add_message_files(
 	FootstepPlan.msg
 	Footstep.msg
 	ControlInput.msg
+	LegContactMode.msg
 	ContactMode.msg 
 	MotorCommand.msg
-  LegCommand.msg
+  	LegCommand.msg
 	LegCommandArray.msg
 )
 
@@ -35,6 +36,7 @@ generate_messages(
 	sensor_msgs
 	std_msgs
 	nav_msgs
+	geometry_msgs
 )
 
 ###################################

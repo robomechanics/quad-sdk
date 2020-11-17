@@ -6,23 +6,23 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, std::shared_ptr<MBLink> mbl
   mblink_ = mblink;
 
   // Load rosparams from parameter server
-  std::string motor_control_topic;
-  nh.param<std::string>("topics/motor_control", motor_control_topic, "/motor_control");
+  std::string leg_control_topic;
+  nh.param<std::string>("topics/motor_control", leg_control_topic, "/motor_control");
   nh.param<double>("mblink_converter/update_rate", update_rate_, 1000);
 
   // Setup pubs and subs
-  motor_control_sub_ = nh_.subscribe(motor_control_topic,1,&MBLinkConverter::motorControlCallback, this);
+  leg_control_sub_ = nh_.subscribe(leg_control_topic,1,&MBLinkConverter::legControlCallback, this);
 }
 
-void MBLinkConverter::motorControlCallback(const spirit_msgs::MotorCommandArray::ConstPtr& msg)
+void MBLinkConverter::legControlCallback(const spirit_msgs::LegCommandArray::ConstPtr& msg)
 {
-  last_motor_command_array_msg_ = msg;
+  last_leg_command_array_msg_ = msg;
 }
 
 bool MBLinkConverter::sendMBlink()
 {
   // If we've haven't received a motor control message, exit
-  if (last_motor_command_array_msg_ != NULL)
+  if (last_leg_command_array_msg_ != NULL)
   {
     return false;
   }
@@ -30,14 +30,20 @@ bool MBLinkConverter::sendMBlink()
   LimbCmd_t limbcmd[4];
   for (int i = 0; i < 4; ++i) // For each leg
   {
+    spirit_msgs::LegCommand leg_command = last_leg_command_array_msg_->leg_commands.at(i);
     for (int j = 0; j < 3; ++j) // For each joint
     {
-      
+      limbcmd[i].pos[j] = leg_command.motor_commands.at(j).pos_setpoint;
+      limbcmd[i].vel[j] = leg_command.motor_commands.at(j).vel_setpoint;
+      limbcmd[i].tau[j] = leg_command.motor_commands.at(j).torque_ff;
+      limbcmd[i].kp[j] = static_cast<short>(leg_command.motor_commands.at(j).kp);
+      limbcmd[i].kd[j] = leg_command.motor_commands.at(j).kd;
     }
   }
-
+  
   float data[58];
   memcpy(data,limbcmd,4*sizeof(limbcmd));
+  mblink_->sendUser(Eigen::Map<const Eigen::Matrix<float,58,1> >(data));
 
   return true;
 }
