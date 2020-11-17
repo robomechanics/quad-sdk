@@ -24,6 +24,7 @@ add_message_files(
 	Footstep.msg
 	ControlInput.msg
 	LegContactMode.msg
+	BodyForceEstimate.msg
 	ContactMode.msg 
 	MotorCommand.msg
   	LegCommand.msg

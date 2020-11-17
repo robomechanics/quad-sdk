@@ -5,6 +5,7 @@ MPCController::MPCController(ros::NodeHandle nh) {
 	nh_ = nh;
 
     // Load rosparams from parameter server
+    // extra comment
   std::string state_estimate_topic, control_input_topic,footstep_plan_topic,body_plan_topic, discrete_body_plan_topic;
   nh.param<std::string>("topics/state_estimate", state_estimate_topic, "/state_estimate");
   nh.param<std::string>("topics/control_input", control_input_topic, "/control_input");

@@ -9,7 +9,7 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh) {
 
 void OpenLoopController::spin() {
 	double start_time = ros::Time::now().toSec();
-	update_rate_ = 10;	
+	update_rate_ = 1000;	
 	ros::Rate r(update_rate_);
 	while (ros::ok()) {
   	double elapsed_time = ros::Time::now().toSec() - start_time;
