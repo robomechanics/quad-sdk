@@ -2,6 +2,7 @@
 #define RVIZ_INTERFACE_H
 
 #include <ros/ros.h>
+#include <visualization_msgs/MarkerArray.h>
 #include <spirit_msgs/BodyPlan.h>
 #include <spirit_msgs/Footstep.h>
 #include <spirit_msgs/FootstepPlan.h>
@@ -67,6 +68,9 @@ private:
 
   /// ROS Publisher for the interpolated body plan vizualization
   ros::Publisher body_plan_viz_pub_;
+
+  /// ROS Publisher for the interpolated body wrench plan vizualization
+  ros::Publisher body_wrench_plan_viz_pub_;
 
   /// ROS Publisher for the discrete body plan vizualization
   ros::Publisher discrete_body_plan_viz_pub_;
