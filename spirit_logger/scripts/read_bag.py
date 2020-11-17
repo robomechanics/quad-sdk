@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+# This is the main file being called for logging through commandline. It calls mouse interface and read bag
+# for UI operations and processing the bag files
+ 
 from __future__ import print_function
 import time
 import sys
@@ -17,6 +20,7 @@ topics_selected = []
 topics_has_read = []
 variables_selected = []
 
+# This class is responsible for extracting message types and fields within each message 
 class Example(QtWidgets.QWidget):
 
     def __init__(self):
@@ -36,6 +40,7 @@ class Example(QtWidgets.QWidget):
 
         splitter_left = QtWidgets.QSplitter(QtCore.Qt.Vertical)
 
+        # Separates the variables to different categories in order to populate the screen 
         for msg_type in has_type:
             frame_left[msg_type] = QtWidgets.QFrame(self)
             frame_left[msg_type].setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -49,7 +54,6 @@ class Example(QtWidgets.QWidget):
                   cb = QtWidgets.QCheckBox(topic, self)
                   cb.stateChanged.connect(self.addTopic)
                   vbox_left[msg_type].addWidget(cb)
-                  #cb.toggle()
 
             vbox_left[msg_type].addStretch(1)
             frame_left[msg_type].setLayout(vbox_left[msg_type])
@@ -92,8 +96,6 @@ class Example(QtWidgets.QWidget):
 
         frame_right = QtWidgets.QFrame(self)
         frame_right.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        #frame_right.setPaletteBackgroundColor(Qt::black);
-        #frame_right.setAutoFillBackground(True);
 
 
         splitter_v = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
@@ -113,12 +115,10 @@ class Example(QtWidgets.QWidget):
         self.setLayout(hbox)
         self.resize(1000, 800)
         self.center()
-        #self.setStyleSheet("background-color:black;");
-
 
         self.show()
 
-
+    # Returns a list of topics that are actually filled with values among all listed topics 
     def topics_to_read(self):
         topics_to_read = []
         for topic in topics_selected:
@@ -127,7 +127,6 @@ class Example(QtWidgets.QWidget):
                 if not topics_to_read.count(topic):
                    topics_to_read.append(topic)
         return topics_to_read
-
 
     def plot(self):
         new_data = bag_reader.read_msg(self.topics_to_read())
@@ -179,22 +178,13 @@ class Example(QtWidgets.QWidget):
             mouse_interface.shift_hold = False
 
     def center(self):
-
         qr = self.frameGeometry()
         cp = QtWidgets.QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
-#    def closeEvent(self, event):
-#        reply = QtWidgets.QMessageBox.question(self, 'Message',
-#                "Are you sure to quit?", QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-#                QtWidgets.QMessageBox.No)
-#        if reply == QtWidgets.QMessageBox.Yes:
-#            event.accept()
-#        else:
-#            event.ignore()
-
 def main():
+    # Instantiates a UI object and checks for valid user input
     app = QtWidgets.QApplication(sys.argv)
     if(len(sys.argv) < 2):
         print('Usage:',sys.argv[0],' <bag_file>')
