@@ -90,6 +90,7 @@ list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 
 ## Declare a C++ library
 add_library(contact SHARED src/contact_plugin.cpp)
+add_dependencies(contact ${catkin_EXPORTED_TARGETS})
 
 add_library(controller SHARED src/controller_plugin.cpp)
 add_dependencies(controller ${catkin_EXPORTED_TARGETS})
