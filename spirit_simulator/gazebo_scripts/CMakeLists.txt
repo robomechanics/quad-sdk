@@ -31,7 +31,7 @@ cmake_policy(SET CMP0054 NEW)
 cmake_policy(SET CMP0045 NEW)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+#add_compile_options(-std=c++17)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -90,6 +90,7 @@ list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 
 ## Declare a C++ library
 add_library(contact SHARED src/contact_plugin.cpp)
+add_dependencies(contact ${catkin_EXPORTED_TARGETS})
 
 add_library(controller SHARED src/controller_plugin.cpp)
 add_dependencies(controller ${catkin_EXPORTED_TARGETS})

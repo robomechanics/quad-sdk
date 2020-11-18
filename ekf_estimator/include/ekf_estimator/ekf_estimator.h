@@ -81,5 +81,9 @@ private:
 
   /// Most recent encoder callback (should be timestamped!)
   sensor_msgs::JointState::ConstPtr last_joint_state_msg_;
+
+  /// Maximum amount of time to still use joint state message in EKF data
+  double joint_state_msg_time_diff_max_;
+
 };
 #endif // EKF_ESTIMATOR_H

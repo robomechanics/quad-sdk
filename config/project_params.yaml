@@ -10,9 +10,10 @@ topics:
   body_force: /body_force
 
 mpc_controller:
-  update_rate: 100
+  update_rate: 200
 
 ekf_estimator:
+  joint_state_max_time: 20 # Milliseconds until we disregard last joint state message
   update_rate: 100
 
 global_body_planner:

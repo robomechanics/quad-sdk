@@ -2,7 +2,6 @@
 #include <pluginlib/class_list_macros.hpp>
 #include <angles/angles.h>
 
-
 namespace effort_controllers
 {
 
@@ -19,7 +18,24 @@ namespace effort_controllers
  * Subscribes to:
  * - \b command (std_msgs::Float64MultiArray) : The joint efforts to apply
  */
-  SpiritController::SpiritController() {}
+  SpiritController::SpiritController() {
+    // Setup joint map
+    leg_map_[0] = std::make_pair(0,1); // hip0
+    leg_map_[1] = std::make_pair(0,2); // knee0
+    leg_map_[2] = std::make_pair(1,1); // hip1
+    leg_map_[3] = std::make_pair(1,2); // knee1
+    leg_map_[4] = std::make_pair(2,1); // hip2
+    leg_map_[5] = std::make_pair(2,2); // knee2
+    leg_map_[6] = std::make_pair(3,1); // hip3
+    leg_map_[7] = std::make_pair(3,2); // knee3
+    leg_map_[8] = std::make_pair(0,0); // abd0
+    leg_map_[9] = std::make_pair(1,0); // abd1
+    leg_map_[10] = std::make_pair(2,0); // abd2
+    leg_map_[11] = std::make_pair(3,0); // abd3
+
+    // Torque saturation (could change to linear model in future)
+    torque_lims_ = {21,21,32};
+  }
   SpiritController::~SpiritController() {sub_command_.shutdown();}
 
   bool SpiritController::init(hardware_interface::EffortJointInterface* hw, ros::NodeHandle &n)
@@ -69,55 +85,63 @@ namespace effort_controllers
       joint_urdfs_.push_back(joint_urdf);
     }
 
-    commands_buffer_.writeFromNonRT(BufferType(n_joints_));
+    int num_legs = 4;
+    commands_buffer_.writeFromNonRT(BufferType(num_legs));
 
-    sub_command_ = n.subscribe<spirit_msgs::MotorCommandArray>("command", 1, &SpiritController::commandCB, this);
+    sub_command_ = n.subscribe<spirit_msgs::LegCommandArray>("command", 1, &SpiritController::commandCB, this);
     return true;
   }
 
   void SpiritController::update(const ros::Time& time, const ros::Duration& period)
   {
     BufferType & commands = *commands_buffer_.readFromRT();
+
+    // Check if message is populated
+    if (commands.empty() || commands.front().motor_commands.empty())
+    {
+      return;
+    }
+
     for(unsigned int i=0; i<n_joints_; i++)
     {
-        // Collect feedforward torque 
-        double torque_ff = commands.at(i).torque_ff;
-        
-        // Compute position error
-        double command_position = commands.at(i).pos_setpoint;
-        enforceJointLimits(command_position, i);
-        double current_position = joints_.at(i).getPosition();
-        double kp = commands.at(i).kp;
-        double pos_error;
-        angles::shortest_angular_distance_with_large_limits(
-          current_position,
-          command_position,
-          joint_urdfs_[i]->limits->lower,
-          joint_urdfs_[i]->limits->upper,
-          pos_error);
+      std::pair<int,int> ind = leg_map_[i];
+      spirit_msgs::MotorCommand motor_command = commands.at(ind.first).motor_commands.at(ind.second);
 
-        // Compute velocity error
-        double current_vel = joints_.at(i).getVelocity();
-        double command_vel = commands.at(i).vel_setpoint;
-        double vel_error = command_vel - current_vel;
-        double kd = commands.at(i).kd;
+      // Collect feedforward torque 
+      double torque_ff = motor_command.torque_ff;
+      
+      // Compute position error
+      double command_position = motor_command.pos_setpoint;
+      enforceJointLimits(command_position, i);
+      double current_position = joints_.at(i).getPosition();
+      double kp = motor_command.kp;
+      double pos_error;
+      angles::shortest_angular_distance_with_large_limits(
+        current_position,
+        command_position,
+        joint_urdfs_[i]->limits->lower,
+        joint_urdfs_[i]->limits->upper,
+        pos_error);
 
-        // Collect feedback 
-        double torque_feedback = kp * pos_error + kd * vel_error;
+      // Compute velocity error
+      double current_vel = joints_.at(i).getVelocity();
+      double command_vel = motor_command.vel_setpoint;
+      double vel_error = command_vel - current_vel;
+      double kd = motor_command.kd;
 
-        // Update joint torque
-        joints_.at(i).setCommand(torque_feedback + torque_ff);
+      // Collect feedback 
+      double torque_feedback = kp * pos_error + kd * vel_error;
+      double torque_lim = torque_lims_[ind.second];
+      double torque_command = std::min(std::max(torque_feedback + torque_ff, -torque_lim),torque_lim);
+
+      // Update joint torque
+      joints_.at(i).setCommand(torque_command);
     }
   }
 
-  void SpiritController::commandCB(const spirit_msgs::MotorCommandArrayConstPtr& msg)
+  void SpiritController::commandCB(const spirit_msgs::LegCommandArrayConstPtr& msg)
   {
-    if(msg->motor_commands.size()!=n_joints_)
-    {
-      ROS_ERROR_STREAM("Dimension of command (" << msg->motor_commands.size() << ") does not match number of joints (" << n_joints_ << ")! Not executing!");
-      return;
-    }
-    commands_buffer_.writeFromNonRT(msg->motor_commands);
+    commands_buffer_.writeFromNonRT(msg->leg_commands);
   }
 
   void SpiritController::enforceJointLimits(double &command, unsigned int index)

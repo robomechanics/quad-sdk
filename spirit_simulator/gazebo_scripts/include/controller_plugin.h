@@ -7,8 +7,9 @@
 #include <realtime_tools/realtime_buffer.h>
 #include <realtime_tools/realtime_publisher.h>
 #include <ros/node_handle.h>
-#include <spirit_msgs/MotorCommandArray.h>
 #include <spirit_msgs/MotorCommand.h>
+#include <spirit_msgs/LegCommand.h>
+#include <spirit_msgs/LegCommandArray.h>
 #include <urdf/model.h>
 
 namespace effort_controllers
@@ -21,7 +22,7 @@ namespace effort_controllers
  */
 class SpiritController : public controller_interface::Controller<hardware_interface::EffortJointInterface>
 {
-  typedef std::vector<spirit_msgs::MotorCommand> BufferType;
+  typedef std::vector<spirit_msgs::LegCommand> BufferType;
 
 public:
   SpiritController();
@@ -35,11 +36,21 @@ public:
   realtime_tools::RealtimeBuffer<BufferType> commands_buffer_;
   unsigned int n_joints_;
 
-private:
+private: 
+
+  /// Subscriber for new LegCommandArray messages
   ros::Subscriber sub_command_;
+
+  /// Store reference to gazebo joints
   std::vector<urdf::JointConstSharedPtr> joint_urdfs_;
 
-  void commandCB(const spirit_msgs::MotorCommandArrayConstPtr& msg);
+  /// Map gazebo/urdf joint indices to leg/joint pair
+  std::map<int,std::pair<int,int>> leg_map_;
+
+  /// Torque limits for each motor
+  std::vector<double> torque_lims_;
+
+  void commandCB(const spirit_msgs::LegCommandArrayConstPtr& msg);
   void enforceJointLimits(double &command, unsigned int index);
 
 }; // class

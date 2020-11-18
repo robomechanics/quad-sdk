@@ -31,6 +31,7 @@ SOFTWARE.
 
 #include <ros/ros.h>
 #include <geometry_msgs/Vector3.h>
+#include <spirit_msgs/ContactMode.h>
 
 #include <gazebo/gazebo.hh>
 #include <gazebo/sensors/sensors.hh>
@@ -45,10 +46,7 @@ namespace gazebo
 
     // \brief ROS related members
     private: std::unique_ptr<ros::NodeHandle> rosNode;
-    private: ros::Publisher toe0_publisher;
-    private: ros::Publisher toe1_publisher;
-    private: ros::Publisher toe2_publisher;
-    private: ros::Publisher toe3_publisher;
+    private: ros::Publisher contact_publisher;
 
     /// \brief Destructor.
     public: virtual ~ContactPlugin();
