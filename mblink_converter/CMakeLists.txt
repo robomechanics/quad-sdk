@@ -17,15 +17,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(MBLINK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../external/SpiritSDK/SDK/mblink)
 set(MBLINK_LIB_DIR ${MBLINK_DIR}/../lib)
 
-set(GRMBLINK _unknown_platform_error)
 message(STATUS "Using architecture ${CMAKE_SYSTEM_PROCESSOR}")
-if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-  set(GRMBLINK libgrmblink_linux.a)
-endif()
+set(GRMBLINK libgrmblink_linux.a)
 if (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
-  set(GRMBLINK libgrmblink_xavier.a)
+  return()
 endif()
-
 
 include_directories(${MBLINK_DIR}/include)
 link_directories(${MBLINK_LIB_DIR})
