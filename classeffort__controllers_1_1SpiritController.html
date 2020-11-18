@@ -122,15 +122,15 @@ unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>n_joints_</b>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-types"></a>
 Private Types</h2></td></tr>
-<tr class="memitem:a5209261296893a6d5b343505219a9efe"><td class="memItemLeft" align="right" valign="top"><a id="a5209261296893a6d5b343505219a9efe"></a>
-typedef std::vector&lt; spirit_msgs::MotorCommand &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>BufferType</b></td></tr>
-<tr class="separator:a5209261296893a6d5b343505219a9efe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdad3ed048c437c10475316df05928f5"><td class="memItemLeft" align="right" valign="top"><a id="afdad3ed048c437c10475316df05928f5"></a>
+typedef std::vector&lt; spirit_msgs::LegCommand &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>BufferType</b></td></tr>
+<tr class="separator:afdad3ed048c437c10475316df05928f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a50cf7677bc15c11297e199053792c33d"><td class="memItemLeft" align="right" valign="top"><a id="a50cf7677bc15c11297e199053792c33d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>commandCB</b> (const spirit_msgs::MotorCommandArrayConstPtr &amp;msg)</td></tr>
-<tr class="separator:a50cf7677bc15c11297e199053792c33d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae289d3e319d0f6fdfb36c57ee8254751"><td class="memItemLeft" align="right" valign="top"><a id="ae289d3e319d0f6fdfb36c57ee8254751"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>commandCB</b> (const spirit_msgs::LegCommandArrayConstPtr &amp;msg)</td></tr>
+<tr class="separator:ae289d3e319d0f6fdfb36c57ee8254751"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a24ff5e3d878d7812198436c15da84319"><td class="memItemLeft" align="right" valign="top"><a id="a24ff5e3d878d7812198436c15da84319"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>enforceJointLimits</b> (double &amp;command, unsigned int index)</td></tr>
 <tr class="separator:a24ff5e3d878d7812198436c15da84319"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -138,11 +138,21 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enforceJointLimits</b
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:a94f81d7ea734641cb8e10345ddf1cb8a"><td class="memItemLeft" align="right" valign="top"><a id="a94f81d7ea734641cb8e10345ddf1cb8a"></a>
-ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><b>sub_command_</b></td></tr>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeffort__controllers_1_1SpiritController.html#a94f81d7ea734641cb8e10345ddf1cb8a">sub_command_</a></td></tr>
+<tr class="memdesc:a94f81d7ea734641cb8e10345ddf1cb8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subscriber for new LegCommandArray messages. <br /></td></tr>
 <tr class="separator:a94f81d7ea734641cb8e10345ddf1cb8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6fe316aa79e3c5c67119b8041e8c29a"><td class="memItemLeft" align="right" valign="top"><a id="ab6fe316aa79e3c5c67119b8041e8c29a"></a>
-std::vector&lt; urdf::JointConstSharedPtr &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>joint_urdfs_</b></td></tr>
+std::vector&lt; urdf::JointConstSharedPtr &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeffort__controllers_1_1SpiritController.html#ab6fe316aa79e3c5c67119b8041e8c29a">joint_urdfs_</a></td></tr>
+<tr class="memdesc:ab6fe316aa79e3c5c67119b8041e8c29a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store reference to gazebo joints. <br /></td></tr>
 <tr class="separator:ab6fe316aa79e3c5c67119b8041e8c29a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf247652a359ff6265d1ed04631db35d"><td class="memItemLeft" align="right" valign="top"><a id="aaf247652a359ff6265d1ed04631db35d"></a>
+std::map&lt; int, std::pair&lt; int, int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeffort__controllers_1_1SpiritController.html#aaf247652a359ff6265d1ed04631db35d">leg_map_</a></td></tr>
+<tr class="memdesc:aaf247652a359ff6265d1ed04631db35d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map gazebo/urdf joint indices to leg/joint pair. <br /></td></tr>
+<tr class="separator:aaf247652a359ff6265d1ed04631db35d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1da15d2c33e320435beaa1d44be7c3d"><td class="memItemLeft" align="right" valign="top"><a id="af1da15d2c33e320435beaa1d44be7c3d"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeffort__controllers_1_1SpiritController.html#af1da15d2c33e320435beaa1d44be7c3d">torque_lims_</a></td></tr>
+<tr class="memdesc:af1da15d2c33e320435beaa1d44be7c3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Torque limits for each motor. <br /></td></tr>
+<tr class="separator:af1da15d2c33e320435beaa1d44be7c3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Forward command controller for spirit. </p>
