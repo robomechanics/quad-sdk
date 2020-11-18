@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Kill
+sudo pkill -9 python
+sudo pkill -9 Python
+
+# Run
+python3 main.py

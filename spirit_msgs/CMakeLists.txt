@@ -23,10 +23,12 @@ add_message_files(
 	FootstepPlan.msg
 	Footstep.msg
 	ControlInput.msg
+	LegContactMode.msg
 	BodyForceEstimate.msg
 	ContactMode.msg
 	MotorCommand.msg
-	MotorCommandArray.msg
+  	LegCommand.msg
+	LegCommandArray.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -35,6 +37,7 @@ generate_messages(
 	sensor_msgs
 	std_msgs
 	nav_msgs
+	geometry_msgs
 )
 
 ###################################
