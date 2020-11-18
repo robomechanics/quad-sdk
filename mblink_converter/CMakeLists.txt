@@ -16,7 +16,16 @@ find_package(catkin REQUIRED COMPONENTS
 set(CMAKE_CXX_STANDARD 17)
 set(MBLINK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../external/SpiritSDK/SDK/mblink)
 set(MBLINK_LIB_DIR ${MBLINK_DIR}/../lib)
-set(GRMBLINK libgrmblink_linux.a)
+
+set(GRMBLINK _unknown_platform_error)
+message(STATUS "Using architecture ${CMAKE_SYSTEM_PROCESSOR}")
+if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+  set(GRMBLINK libgrmblink_linux.a)
+endif()
+if (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
+  set(GRMBLINK libgrmblink_xavier.a)
+endif()
+
 
 include_directories(${MBLINK_DIR}/include)
 link_directories(${MBLINK_LIB_DIR})
