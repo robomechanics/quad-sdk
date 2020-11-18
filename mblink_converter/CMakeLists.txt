@@ -22,7 +22,7 @@ message(STATUS "Using architecture ${CMAKE_SYSTEM_PROCESSOR}")
 if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
   set(GRMBLINK libgrmblink_linux.a)
 endif()
-if (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
+if (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
   set(GRMBLINK libgrmblink_xavier.a)
 endif()
 
