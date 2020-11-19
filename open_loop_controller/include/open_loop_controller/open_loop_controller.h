@@ -2,7 +2,7 @@
 #define OPEN_LOOP_CONTROLLER_H
 
 #include <ros/ros.h>
-#include <spirit_msgs/MotorCommandArray.h>
+#include <spirit_msgs/LegCommandArray.h>
 //! Implements open loop controller
 /*!
    OpenLoopController implements all control logic. It should expose a constructor that does any initialization required and an update method called at some frequency.

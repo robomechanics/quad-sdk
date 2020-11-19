@@ -10,7 +10,8 @@ EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
   nh.param<std::string>("topics/state_estimate", state_estimate_topic, "/state_estimate");
   nh.param<std::string>("topics/contact_mode", contact_topic, "/contact_mode");
   nh.param<double>("ekf_estimator/update_rate", update_rate_, 200);
-
+  nh.param<double>("ekf_estimator/joint_state_max_time",joint_state_msg_time_diff_max_,20);
+  
   // Setup pubs and subs
   joint_encoder_sub_ = nh_.subscribe(joint_encoder_topic,1,&EKFEstimator::jointEncoderCallback, this);
   imu_sub_ = nh_.subscribe(imu_topic,1,&EKFEstimator::imuCallback, this);
@@ -19,7 +20,7 @@ EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
 }
 
 void EKFEstimator::jointEncoderCallback(const sensor_msgs::JointState::ConstPtr& msg) {
-  last_joint_state_msg_ = msg;
+	last_joint_state_msg_ = msg;
 }
 
 void EKFEstimator::imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
@@ -31,12 +32,24 @@ void EKFEstimator::contactCallback(const spirit_msgs::ContactMode::ConstPtr& msg
 }
 
 spirit_msgs::StateEstimate EKFEstimator::updateStep() {
+  // Record start time of function, used in verifying messages are not out of date
+  // and in timing function
+  ros::Time start_time = ros::Time::now();
+
+  // Create skeleton message to send out
   spirit_msgs::StateEstimate new_state_est;
 
+  // Record whether we have good imu and joint state data
+  bool good_imu = false;
+  bool good_joint_state = false;
+
+  // Collect info from last imu message
   if (last_imu_msg_ != NULL)
   {
     new_state_est.body.pose.pose.orientation = (*last_imu_msg_).orientation;
-  } else {
+    good_imu = true;
+  }
+  else {
     geometry_msgs::Quaternion quat;
     quat.x = 0;
     quat.y = 0;
@@ -44,10 +57,22 @@ spirit_msgs::StateEstimate EKFEstimator::updateStep() {
     quat.w = 1;
     new_state_est.body.pose.pose.orientation = quat;
   }
+  // Collect info from last joint state message, making sure info is not out of date
   if (last_joint_state_msg_ != NULL)
   {
     new_state_est.joints = *last_joint_state_msg_;
+    double joint_state_msg_time_diff = 0;
+    if (joint_state_msg_time_diff > joint_state_msg_time_diff_max_)
+    {
+      // Don't use this info in EKF update!
+      ROS_WARN("Haven't received a recent joint state message, skipping EKF measurement step");
+    }
+    else
+    {
+      good_joint_state = true;
+    }
   }
+  else ROS_WARN("Still waiting for first joint state message");
 
   new_state_est.header.stamp = ros::Time::now();
   return new_state_est;
