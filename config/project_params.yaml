@@ -8,6 +8,7 @@ topics:
   footstep_plan: /footstep_plan
   image: /image_publisher/image
   body_force: /body_force
+  joint_command: /spirit/joint_controller/command
 
 mpc_controller:
   update_rate: 200
@@ -51,3 +52,7 @@ grid_map_visualization:
 
 body_force_estimator:
   update_rate_: 200
+
+open_loop_controller:
+  t_cycle: 0.5
+  control_mode: 1
