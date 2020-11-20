@@ -9,7 +9,7 @@
 
     <!-- Launch the node to generate simple terrain -->
     <node pkg="spirit_utils" type="terrain_map_publisher_node" name="terrain_map_publisher" output="screen" />
-    
+
     <!-- Launch the node to publish the global body plan -->
     <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen"/>
 

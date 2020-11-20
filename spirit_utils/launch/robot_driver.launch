@@ -2,7 +2,6 @@
     <rosparam command="load" file="$(find spirit_utils)/../config/project_params.yaml"/>
 
     <arg name="with_proxy" default="false"/>
-    
     <arg name="with_mocap" default="false"/>
 
     <group if="$(arg with_proxy)">
