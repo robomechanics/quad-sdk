@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include <spirit_msgs/LegCommandArray.h>
 #include <math.h>
+#include <algorithm>
 
 //! Implements open loop controller
 /*!
@@ -26,12 +27,16 @@ class OpenLoopController {
 private:
 
 	/**
+	 * @brief Setup open loop trajectory in shoulder space
+	 */ 
+	void setupTrajectory();
+	
+	/**
 	 * @brief Compute hip and knee positions to hit x y end effector pos
-	 * @param[in] x target x position in shoulder frame
-	 * @param[in] y target y position in shoulder frame
+	 * @param[in] pt Target x y position as a pair (shoulder frame)
 	 * @return pair of hip angle and knee angle
 	 */
-	std::pair<double,double> computeIk(double x, double y);
+	std::pair<double,double> computeIk(std::pair<double,double> pt);
 
 	/**
 	 * @brief Compute and send open loop joint positions
@@ -53,6 +58,12 @@ private:
 
 	/// Robot mode (Walk or Stand)
 	int mode_;
+
+	/// Target points to hit (x,y) w/ x, y in shoulder space)
+	std::vector<std::pair<double,double>> target_pts_;
+
+	// Vector of timestamps to hit each target_pt at
+	std::vector<double> target_times_;
 };
 
 
