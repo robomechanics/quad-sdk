@@ -48,6 +48,7 @@ add_library(spirit_utils
   src/rviz_interface.cpp
   src/fast_terrain_map.cpp
   src/terrain_map_publisher.cpp
+  src/ground_truth_publisher.cpp
   src/robot_interface.cpp
   src/ros_utils.cpp
 )
@@ -59,6 +60,7 @@ target_link_libraries(spirit_utils libInterpolate::Interpolate)
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(rviz_interface_node src/rviz_interface_node.cpp)
 add_executable(terrain_map_publisher_node src/terrain_map_publisher_node.cpp)
+add_executable(ground_truth_publisher_node src/ground_truth_publisher_node.cpp)
 add_executable(robot_interface_node src/robot_interface_node.cpp)
 
 ## Specify libraries to link a library or executable target against
@@ -68,6 +70,11 @@ target_link_libraries(rviz_interface_node
 )
 
 target_link_libraries(terrain_map_publisher_node
+  spirit_utils
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(ground_truth_publisher_node
   spirit_utils
   ${catkin_LIBRARIES}
 )
@@ -87,6 +94,7 @@ target_link_libraries(robot_interface_node
 catkin_add_gtest(spirit_utils-test 
   test/test_rviz_interface.cpp
   test/test_terrain_map_publisher.cpp
+  test/test_ground_truth_publisher.cpp
   test/test_robot_interface.cpp
   test/test_fast_terrain_map.cpp
   test/test_main.cpp)
