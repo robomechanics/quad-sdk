@@ -7,6 +7,7 @@ GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
   std::string joint_encoder_topic, imu_topic, mocap_topic, ground_truth_state_topic;
   nh.param<std::string>("topics/joint_encoder", joint_encoder_topic, "/joint_encoder");
   nh.param<std::string>("topics/imu", imu_topic, "/imu");
+  nh.param<std::string>("topics/mocap", mocap_topic, "/mocap_data");
   nh.param<std::string>("topics/ground_truth_state", ground_truth_state_topic, "/ground_truth_state");
   nh.param<double>("ground_truth_publisher/update_rate", update_rate_, 200);
 
