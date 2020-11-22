@@ -36,13 +36,5 @@
     <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find spirit_utils)/rviz/example_with_terrain.rviz"/>
 
-    <group if="$(arg record)">
-        <node pkg="rosbag" type="record" name="rosbag_record"
-        args="record -O $(find spirit_logger)/bags/spirit_log_current -a" />
-
-        <node pkg="rosbag" type="record" name="rosbag_record_archive"
-        args="record -o $(find spirit_logger)/bags/archive/spirit_log -a" />
-    </group>
-
 
 </launch>

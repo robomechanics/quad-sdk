@@ -38,7 +38,7 @@ ground_truth_publisher:
 
 terrain_map_publisher:
   update_rate: 10
-  map_data_source: csv
+  map_data_source: internal
   terrain_type: slope     # slope or rough terrain
 
 grid_map_visualization:
