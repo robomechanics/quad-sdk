@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <iostream>
 
-#include "ground_truth_publisher/ground_truth_publisher.h"
+#include "spirit_utils/ground_truth_publisher.h"
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "ground_truth_publisher_node");

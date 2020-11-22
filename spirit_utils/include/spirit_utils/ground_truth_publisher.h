@@ -57,6 +57,9 @@ private:
   /// Subscriber for imu messages
   ros::Subscriber imu_sub_;
 
+  /// Subscriber for mocap messages
+  ros::Subscriber mocap_sub_;
+
   /// Publisher for ground truth state messages
   ros::Publisher ground_truth_state_pub_;
 
@@ -76,7 +79,7 @@ private:
   sensor_msgs::JointState::ConstPtr last_joint_state_msg_;
 
   /// Last mocap data
-  geometry_msgs::PoseStamped last_mocap_msg_;
+  geometry_msgs::PoseStamped::ConstPtr last_mocap_msg_;
 
 };
 

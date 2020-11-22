@@ -35,8 +35,8 @@ spirit_msgs::StateEstimate GroundTruthPublisher::updateStep() {
 
   if (last_imu_msg_ != NULL)
   {
-    new_state_est.body.pose.pose.orientation = (*last_imu_msg_).orientation;
-    new_state_est.body.twist.twist.angular = (*last_imu_msg_).angular_velocity;
+    new_state_est.body.pose.pose.orientation = last_imu_msg_->orientation;
+    new_state_est.body.twist.twist.angular = last_imu_msg_->angular_velocity;
 
   }
   if (last_joint_state_msg_ != NULL)
@@ -45,7 +45,7 @@ spirit_msgs::StateEstimate GroundTruthPublisher::updateStep() {
   }
   if (last_mocap_msg_ != NULL)
   {
-    new_state_est.body.pose.pose.position = (*last_mocap_msg_).position;
+    new_state_est.body.pose.pose.position = last_mocap_msg_->pose.position;
   }
 
   new_state_est.header.stamp = ros::Time::now();
