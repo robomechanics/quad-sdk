@@ -6,6 +6,7 @@
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/String.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <spirit_msgs/StateEstimate.h>
 
 //! Class to publish the ground truth state data
@@ -56,8 +57,8 @@ private:
   /// Subscriber for imu messages
   ros::Subscriber imu_sub_;
 
-  /// Publisher for state estimate messages
-  ros::Publisher state_estimate_pub_;
+  /// Publisher for ground truth state messages
+  ros::Publisher ground_truth_state_pub_;
 
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;

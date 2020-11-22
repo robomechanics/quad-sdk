@@ -1,4 +1,4 @@
-#include "ground_truth_publisher/ground_truth_publisher.h"
+#include "spirit_utils/ground_truth_publisher.h"
 
 GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
   nh_ = nh;
@@ -15,7 +15,7 @@ GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
   joint_encoder_sub_ = nh_.subscribe(joint_encoder_topic,1,&GroundTruthPublisher::jointEncoderCallback, this);
   imu_sub_ = nh_.subscribe(imu_topic,1,&GroundTruthPublisher::imuCallback, this);
   mocap_sub_ = nh_.subscribe(mocap_topic,1,&GroundTruthPublisher::mocapCallback, this);
-  state_pub_ = nh_.advertise<spirit_msgs::StateEstimate>(ground_truth_state_topic,1);
+  ground_truth_state_pub_ = nh_.advertise<spirit_msgs::StateEstimate>(ground_truth_state_topic,1);
 }
 
 void GroundTruthPublisher::mocapCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
@@ -63,7 +63,7 @@ void GroundTruthPublisher::spin() {
     spirit_msgs::StateEstimate new_state_est = this->updateStep();
 
     // Publish new state estimate
-    state_estimate_pub_.publish(new_state_est);
+    ground_truth_state_pub_.publish(new_state_est);
 
     // Store new state estimate for next iteration
     last_state_est_ = new_state_est;
