@@ -18,11 +18,15 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh) {
 
 void OpenLoopController::setupTrajectory()
 {
-  std::vector<double> xs = {-0.12,0,0.12}; 
+  /*std::vector<double> xs = {-0.12,0,0.12}; 
   std::vector<double> ys = {-0.24,-0.14,-0.24};
-  std::vector<double> ts = {0.2,0.2,0.2};
+  std::vector<double> ts = {0.5,0.5,0.5};*/
 
-  double dt = 0.01;
+  std::vector<double> xs = {0,0}; 
+  std::vector<double> ys = {-0.24,-0.14};
+  std::vector<double> ts = {0.2,0.2};
+
+  double dt = 0.005;
 
   // Interpolate between points with fixed dt
   double t_run = 0;
@@ -86,7 +90,7 @@ std::pair<double,double> OpenLoopController::computeIk(std::pair<double,double> 
 
 void OpenLoopController::spin() {
 	double start_time = ros::Time::now().toSec();
-	update_rate_ = 1000;	
+	update_rate_ = 100;	
 	ros::Rate r(update_rate_);
 	while (ros::ok()) {
   	double elapsed_time = ros::Time::now().toSec() - start_time;
@@ -113,19 +117,19 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
 
         msg.leg_commands[i].motor_commands[0].pos_setpoint = abd_angle;
         msg.leg_commands[i].motor_commands[0].kp = 100;
-        msg.leg_commands[i].motor_commands[0].kd = 3;
+        msg.leg_commands[i].motor_commands[0].kd = 0;
         msg.leg_commands[i].motor_commands[0].vel_setpoint = 0;
         msg.leg_commands[i].motor_commands[0].torque_ff = 0;
 
         msg.leg_commands[i].motor_commands[1].pos_setpoint = hip_angle;
         msg.leg_commands[i].motor_commands[1].kp = 100;
-        msg.leg_commands[i].motor_commands[1].kd = 3;
+        msg.leg_commands[i].motor_commands[1].kd = 0;
         msg.leg_commands[i].motor_commands[1].vel_setpoint = 0;
         msg.leg_commands[i].motor_commands[1].torque_ff = 0;
 
         msg.leg_commands[i].motor_commands[2].pos_setpoint = knee_angle;
         msg.leg_commands[i].motor_commands[2].kp = 100;
-        msg.leg_commands[i].motor_commands[2].kd = 3;
+        msg.leg_commands[i].motor_commands[2].kd = 0;
         msg.leg_commands[i].motor_commands[2].vel_setpoint = 0;
         msg.leg_commands[i].motor_commands[2].torque_ff = 0;
       }
@@ -153,20 +157,20 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
         msg.leg_commands[i].motor_commands.resize(3);
 
         msg.leg_commands[i].motor_commands[0].pos_setpoint = 0;
-        msg.leg_commands[i].motor_commands[0].kp = 100;
-        msg.leg_commands[i].motor_commands[0].kd = 3;
+        msg.leg_commands[i].motor_commands[0].kp = 60;
+        msg.leg_commands[i].motor_commands[0].kd = 0.6;
         msg.leg_commands[i].motor_commands[0].vel_setpoint = 0;
         msg.leg_commands[i].motor_commands[0].torque_ff = 0;
 
         msg.leg_commands[i].motor_commands[1].pos_setpoint = hip_knee_angs.first;
-        msg.leg_commands[i].motor_commands[1].kp = 100;
-        msg.leg_commands[i].motor_commands[1].kd = 3;
+        msg.leg_commands[i].motor_commands[1].kp = 60;
+        msg.leg_commands[i].motor_commands[1].kd = 0.6;
         msg.leg_commands[i].motor_commands[1].vel_setpoint = 0;
         msg.leg_commands[i].motor_commands[1].torque_ff = 0;
 
         msg.leg_commands[i].motor_commands[2].pos_setpoint = hip_knee_angs.second;
-        msg.leg_commands[i].motor_commands[2].kp = 100;
-        msg.leg_commands[i].motor_commands[2].kd = 3;
+        msg.leg_commands[i].motor_commands[2].kp = 60;
+        msg.leg_commands[i].motor_commands[2].kd = 0.6;
         msg.leg_commands[i].motor_commands[2].vel_setpoint = 0;
         msg.leg_commands[i].motor_commands[2].torque_ff = 0;
       }
