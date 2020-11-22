@@ -6,6 +6,7 @@
 #include <math.h>
 #include <algorithm>
 
+
 //! Implements open loop controller
 /*!
    OpenLoopController implements all control logic. It should expose a constructor that does any initialization required and an update method called at some frequency.

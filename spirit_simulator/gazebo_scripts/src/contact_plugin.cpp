@@ -94,14 +94,12 @@ void ContactPlugin::OnUpdate() {
   }
 
   // Populate messages with contact forces
+
   for (unsigned int i = 0; i < contacts.contact_size(); ++i) {
     std::string str = contacts.contact(i).collision1();
-    std::cout << "Collision name: " << str << std::endl;
     for (unsigned int j = 0; j < 4; ++j)
     {
       std::string toe_string = toe_collision_names[j];
-
-      
       std::size_t found_toe = str.find(toe_string);
       if (found_toe != std::string::npos)
       {

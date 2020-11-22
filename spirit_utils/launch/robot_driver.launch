@@ -1,10 +1,22 @@
 <launch>
     <rosparam command="load" file="$(find spirit_utils)/../config/project_params.yaml"/>
 
-    <arg name="with_interface" default="false"/>
-    
-    <group if="$(arg with_interface)">
+    <arg name="with_proxy" default="false"/>
+    <arg name="with_mocap" default="false"/>
+
+    <group if="$(arg with_proxy)">
         <node name="robot_interface" pkg="spirit_utils" type="robot_interface_node" output="screen"/>
+    </group>
+
+    <group if="$(arg with_mocap)">
+        <node name="mocap_node"
+              pkg="mocap_optitrack"
+              type="mocap_node"
+              respawn="false"
+              launch-prefix=""
+              required="true">
+            <rosparam file="$(find mocap_optitrack)/config/mocap.yaml" />
+        </node>
     </group>
 
     <!-- Launch the node the publish state estimate messages-->

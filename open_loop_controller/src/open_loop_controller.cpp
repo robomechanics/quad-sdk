@@ -174,7 +174,6 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
     }
     break;
   }
-
 	msg.header.stamp = ros::Time::now();
 	joint_control_pub_.publish(msg);
 }
