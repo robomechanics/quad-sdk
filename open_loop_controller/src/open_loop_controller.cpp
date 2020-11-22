@@ -8,6 +8,8 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh) {
   nh.getParam("topics/joint_command", leg_control_topic);
   nh.getParam("open_loop_controller/control_mode", mode_);
 
+
+  mode_ = 1;
   this->setupTrajectory();
   
   // Setup pubs and subs
@@ -17,10 +19,10 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh) {
 void OpenLoopController::setupTrajectory()
 {
   std::vector<double> xs = {-0.12,0,0.12}; 
-  std::vector<double> ys = {-0.24,-0.14,0.24};
+  std::vector<double> ys = {-0.24,-0.14,-0.24};
   std::vector<double> ts = {0.2,0.2,0.2};
 
-  double dt = 0.05;
+  double dt = 0.01;
 
   // Interpolate between points with fixed dt
   double t_run = 0;
@@ -51,28 +53,29 @@ void OpenLoopController::setupTrajectory()
     t_run += ts.at(i);
   }
 
-  /*
+  
   for (size_t i = 0; i < target_pts_.size(); ++i)
   {
-    std::cout << target_pts_.at(i).first << ", " << target_pts_.at(i).second << std::endl;
-    std::cout << target_times_.at(i) << std::endl;
+    //std::cout << target_pts_.at(i).first << ", " << target_pts_.at(i).second << std::endl;
+    //std::cout << target_times_.at(i) << std::endl;
   }
-  */
+  
 
-  t_cycle_ = ts.back();
+  t_cycle_ = target_times_.back();
 }
 
 std::pair<double,double> OpenLoopController::computeIk(std::pair<double,double> pt)
 {
   double x = pt.first;
   double y = pt.second;
+  //std::cout << x << ", " << y << std::endl;
   double l1 = 0.2075;
   double l2 = 0.2075;
   double q2 = acos((x*x + y*y - l1*l1 - l2*l2)/(2*l1*l2));
   double q1 = atan2(y,x) - atan2(l2*sin(q2),l1+l2*cos(q2));
 
   double theta_hip = q1 - M_PI;
-  double theta_knee = M_PI - M_PI;
+  double theta_knee = M_PI - q2;
 
   if (theta_hip < -M_PI) theta_hip += 2*M_PI;
   if (theta_hip > M_PI) theta_hip -= 2*M_PI;
@@ -134,11 +137,18 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
       double t_base = fmodf(elapsed_time,t_cycle_); // Offset on a leg by leg basis
       for (int i = 0; i < 4; ++i)
       {
+
         double t = t_base; // Assume all legs are on same phase for now
+
+        if (i == 1 || i == 2)
+          t = fmodf(t+t_cycle_/2,t_cycle_);
+
         auto it = std::upper_bound(target_times_.begin(), target_times_.end(),t);
         int target_idx = it - target_times_.begin();
 
         std::pair<double,double> hip_knee_angs = this->computeIk(target_pts_.at(target_idx));
+
+        //std::cout << hip_knee_angs.first << ", " << hip_knee_angs.second << std::endl;
 
         msg.leg_commands[i].motor_commands.resize(3);
 

@@ -94,8 +94,6 @@ void ContactPlugin::OnUpdate() {
   }
 
   // Populate messages with contact forces
-
-  std::cout << contacts.contact_size() << " collisions detected" << std::endl;
   for (unsigned int i = 0; i < contacts.contact_size(); ++i) {
     std::string str = contacts.contact(i).collision1();
     std::cout << "Collision name: " << str << std::endl;
