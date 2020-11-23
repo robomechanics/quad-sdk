@@ -3,13 +3,16 @@
 
 #include <ros/ros.h>
 #include <spirit_msgs/LegCommandArray.h>
+#include <spirit_utils/ros_utils.h>
 #include <math.h>
 #include <algorithm>
 
-
 //! Implements open loop controller
 /*!
-   OpenLoopController implements all control logic. It should expose a constructor that does any initialization required and an update method called at some frequency.
+   OpenLoopController implements a simple, easily configurable open loop 
+   controller. It transmits desired positions, velocities, feedforward
+   torques and gains to the low level controller. Trajectories are
+   specified via waypoints and waypoint transition durations.
 */
 class OpenLoopController {
   public:
@@ -37,7 +40,7 @@ private:
 	 * @param[in] pt Target x y position as a pair (shoulder frame)
 	 * @return pair of hip angle and knee angle
 	 */
-	std::pair<double,double> computeIk(std::pair<double,double> pt);
+	std::pair<double,double> compute2DIk(std::pair<double,double> pt);
 
 	/**
 	 * @brief Compute and send open loop joint positions
@@ -63,8 +66,26 @@ private:
 	/// Target points to hit (x,y) w/ x, y in shoulder space)
 	std::vector<std::pair<double,double>> target_pts_;
 
-	// Vector of timestamps to hit each target_pt at
+	/// Vector of timestamps to hit each target_pt at
 	std::vector<double> target_times_;
+
+	/// Joint angles in stand config
+	std::vector<double> stand_joint_angles_;
+
+	/// Stand proportional gain for each joint
+	std::vector<double> stand_kp_;
+
+	/// Stand derivative gain for each joint
+	std::vector<double> stand_kd_;
+
+	/// Walk proportional gain for each joint
+	std::vector<double> walk_kp_;
+
+	/// Walk derivative gain for each joint
+	std::vector<double> walk_kd_;
+
+	/// Gait phase info for each leg
+	std::vector<double> leg_phases_;
 };
 
 

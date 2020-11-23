@@ -7,8 +7,8 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, std::shared_ptr<MBLink> mbl
 
   // Load rosparams from parameter server
   std::string leg_control_topic;
-  nh.param<std::string>("topics/joint_command", leg_control_topic, "/motor_control");
-  nh.param<double>("mblink_converter/update_rate", update_rate_, 1000);
+  spirit_utils::loadROSParam(nh_,"topics/joint_command",leg_control_topic);
+  spirit_utils::loadROSParam(nh_,"mblink_converter/update_rate",update_rate_);
 
   // Setup pubs and subs
   leg_control_sub_ = nh_.subscribe(leg_control_topic,1,&MBLinkConverter::legControlCallback, this);

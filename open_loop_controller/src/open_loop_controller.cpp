@@ -5,11 +5,18 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh) {
 
   // Get rosparams
   std::string leg_control_topic;
-  nh.getParam("topics/joint_command", leg_control_topic);
-  nh.getParam("open_loop_controller/control_mode", mode_);
+  spirit_utils::loadROSParam(nh_,"topics/joint_command",leg_control_topic);
+  spirit_utils::loadROSParamDefault(nh_,"open_loop_controller/control_mode",mode_,0);
+  spirit_utils::loadROSParam(nh_,"open_loop_controller/update_rate",update_rate_);
+  spirit_utils::loadROSParam(nh_,"open_loop_controller/stand_angles",stand_joint_angles_);
 
+  spirit_utils::loadROSParam(nh_,"open_loop_controller/stand_kp",stand_kp_);
+  spirit_utils::loadROSParam(nh_,"open_loop_controller/stand_kd",stand_kd_);
+  spirit_utils::loadROSParam(nh_,"open_loop_controller/walk_kp",walk_kp_);
+  spirit_utils::loadROSParam(nh_,"open_loop_controller/walk_kd",walk_kd_);
+  spirit_utils::loadROSParam(nh_,"open_loop_controller/leg_phases",leg_phases_);
 
-  mode_ = 1;
+  // Interpolate between waypoints
   this->setupTrajectory();
   
   // Setup pubs and subs
@@ -18,15 +25,12 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh) {
 
 void OpenLoopController::setupTrajectory()
 {
-  /*std::vector<double> xs = {-0.12,0,0.12}; 
-  std::vector<double> ys = {-0.24,-0.14,-0.24};
-  std::vector<double> ts = {0.5,0.5,0.5};*/
-
-  std::vector<double> xs = {0,0}; 
-  std::vector<double> ys = {-0.24,-0.14};
-  std::vector<double> ts = {0.2,0.2};
-
-  double dt = 0.005;
+  std::vector<double> xs,ys,ts;
+  spirit_utils::loadROSParam(nh_,"open_loop_controller/waypoint_ts",ts);
+  spirit_utils::loadROSParam(nh_,"open_loop_controller/waypoint_xs",xs);
+  spirit_utils::loadROSParam(nh_,"open_loop_controller/waypoint_ys",ys);
+  double dt;
+  spirit_utils::loadROSParam(nh_,"open_loop_controller/interp_dt",dt);
 
   // Interpolate between points with fixed dt
   double t_run = 0;
@@ -53,26 +57,15 @@ void OpenLoopController::setupTrajectory()
       target_times_.push_back(t);
       t += dt;
     }
-
     t_run += ts.at(i);
   }
-
-  
-  for (size_t i = 0; i < target_pts_.size(); ++i)
-  {
-    //std::cout << target_pts_.at(i).first << ", " << target_pts_.at(i).second << std::endl;
-    //std::cout << target_times_.at(i) << std::endl;
-  }
-  
-
   t_cycle_ = target_times_.back();
 }
 
-std::pair<double,double> OpenLoopController::computeIk(std::pair<double,double> pt)
+std::pair<double,double> OpenLoopController::compute2DIk(std::pair<double,double> pt)
 {
   double x = pt.first;
   double y = pt.second;
-  //std::cout << x << ", " << y << std::endl;
   double l1 = 0.2075;
   double l2 = 0.2075;
   double q2 = acos((x*x + y*y - l1*l1 - l2*l2)/(2*l1*l2));
@@ -88,18 +81,6 @@ std::pair<double,double> OpenLoopController::computeIk(std::pair<double,double> 
   return std::make_pair(theta_hip,theta_knee);
 }
 
-void OpenLoopController::spin() {
-	double start_time = ros::Time::now().toSec();
-	update_rate_ = 100;	
-	ros::Rate r(update_rate_);
-	while (ros::ok()) {
-  	double elapsed_time = ros::Time::now().toSec() - start_time;
-  	this->sendJointPositions(elapsed_time);
-		ros::spinOnce();
-		r.sleep();
-	}
-}
-
 void OpenLoopController::sendJointPositions(double &elapsed_time)
 {
 	spirit_msgs::LegCommandArray msg;
@@ -108,76 +89,68 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
   switch (mode_){
     case 0: // stand
     {
-      double abd_angle = 0.0;
-      double hip_angle = 0.7;
-      double knee_angle = 1.0;
       for (int i = 0; i < 4; ++i)
       {
-        msg.leg_commands[i].motor_commands.resize(3);
-
-        msg.leg_commands[i].motor_commands[0].pos_setpoint = abd_angle;
-        msg.leg_commands[i].motor_commands[0].kp = 100;
-        msg.leg_commands[i].motor_commands[0].kd = 0;
-        msg.leg_commands[i].motor_commands[0].vel_setpoint = 0;
-        msg.leg_commands[i].motor_commands[0].torque_ff = 0;
-
-        msg.leg_commands[i].motor_commands[1].pos_setpoint = hip_angle;
-        msg.leg_commands[i].motor_commands[1].kp = 100;
-        msg.leg_commands[i].motor_commands[1].kd = 0;
-        msg.leg_commands[i].motor_commands[1].vel_setpoint = 0;
-        msg.leg_commands[i].motor_commands[1].torque_ff = 0;
-
-        msg.leg_commands[i].motor_commands[2].pos_setpoint = knee_angle;
-        msg.leg_commands[i].motor_commands[2].kp = 100;
-        msg.leg_commands[i].motor_commands[2].kd = 0;
-        msg.leg_commands[i].motor_commands[2].vel_setpoint = 0;
-        msg.leg_commands[i].motor_commands[2].torque_ff = 0;
+        msg.leg_commands.at(i).motor_commands.resize(3);
+        for (int j = 0; j < 3; ++j)
+        {
+          msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = stand_joint_angles_.at(j);
+          msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
+          msg.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
+          msg.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
+          msg.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+        }
       }
     }
     break;
 
     case 1: // walk
     {
-      double t_base = fmodf(elapsed_time,t_cycle_); // Offset on a leg by leg basis
       for (int i = 0; i < 4; ++i)
       {
+        // Get relative time through gait for this leg (inc phase info)
 
-        double t = t_base; // Assume all legs are on same phase for now
+        double t = fmodf(elapsed_time + t_cycle_*leg_phases_.at(i),t_cycle_);
 
-        if (i == 1 || i == 2)
-          t = fmodf(t+t_cycle_/2,t_cycle_);
-
+        // Find target position from precomputed trajectory
         auto it = std::upper_bound(target_times_.begin(), target_times_.end(),t);
         int target_idx = it - target_times_.begin();
+        std::pair<double,double> hip_knee_angs = this->compute2DIk(target_pts_.at(target_idx));
 
-        std::pair<double,double> hip_knee_angs = this->computeIk(target_pts_.at(target_idx));
+        msg.leg_commands.at(i).motor_commands.resize(3);
 
-        //std::cout << hip_knee_angs.first << ", " << hip_knee_angs.second << std::endl;
+        msg.leg_commands.at(i).motor_commands.at(0).pos_setpoint = 0;
+        msg.leg_commands.at(i).motor_commands.at(0).kp = walk_kp_.at(0);
+        msg.leg_commands.at(i).motor_commands.at(0).kd = walk_kd_.at(0);
+        msg.leg_commands.at(i).motor_commands.at(0).vel_setpoint = 0;
+        msg.leg_commands.at(i).motor_commands.at(0).torque_ff = 0;
 
-        msg.leg_commands[i].motor_commands.resize(3);
+        msg.leg_commands.at(i).motor_commands.at(1).pos_setpoint = hip_knee_angs.first;
+        msg.leg_commands.at(i).motor_commands.at(1).kp = walk_kp_.at(1);
+        msg.leg_commands.at(i).motor_commands.at(1).kd = walk_kd_.at(1);
+        msg.leg_commands.at(i).motor_commands.at(1).vel_setpoint = 0;
+        msg.leg_commands.at(i).motor_commands.at(1).torque_ff = 0;
 
-        msg.leg_commands[i].motor_commands[0].pos_setpoint = 0;
-        msg.leg_commands[i].motor_commands[0].kp = 60;
-        msg.leg_commands[i].motor_commands[0].kd = 0.6;
-        msg.leg_commands[i].motor_commands[0].vel_setpoint = 0;
-        msg.leg_commands[i].motor_commands[0].torque_ff = 0;
-
-        msg.leg_commands[i].motor_commands[1].pos_setpoint = hip_knee_angs.first;
-        msg.leg_commands[i].motor_commands[1].kp = 60;
-        msg.leg_commands[i].motor_commands[1].kd = 0.6;
-        msg.leg_commands[i].motor_commands[1].vel_setpoint = 0;
-        msg.leg_commands[i].motor_commands[1].torque_ff = 0;
-
-        msg.leg_commands[i].motor_commands[2].pos_setpoint = hip_knee_angs.second;
-        msg.leg_commands[i].motor_commands[2].kp = 60;
-        msg.leg_commands[i].motor_commands[2].kd = 0.6;
-        msg.leg_commands[i].motor_commands[2].vel_setpoint = 0;
-        msg.leg_commands[i].motor_commands[2].torque_ff = 0;
+        msg.leg_commands.at(i).motor_commands.at(2).pos_setpoint = hip_knee_angs.second;
+        msg.leg_commands.at(i).motor_commands.at(2).kp = walk_kp_.at(2);
+        msg.leg_commands.at(i).motor_commands.at(2).kd = walk_kd_.at(2);
+        msg.leg_commands.at(i).motor_commands.at(2).vel_setpoint = 0;
+        msg.leg_commands.at(i).motor_commands.at(2).torque_ff = 0;
       }
-
     }
     break;
   }
 	msg.header.stamp = ros::Time::now();
 	joint_control_pub_.publish(msg);
+}
+
+void OpenLoopController::spin() {
+  double start_time = ros::Time::now().toSec();
+  ros::Rate r(update_rate_);
+  while (ros::ok()) {
+    double elapsed_time = ros::Time::now().toSec() - start_time;
+    this->sendJointPositions(elapsed_time);
+    ros::spinOnce();
+    r.sleep();
+  }
 }
