@@ -1,4 +1,5 @@
 <launch>
+
     <rosparam command="load" file="$(find spirit_utils)/../config/project_params.yaml"/>
 
     <node pkg="rosbag" type="record" name="rosbag_record"
@@ -6,6 +7,5 @@
 
     <node pkg="rosbag" type="record" name="rosbag_record_archive"
     args="record -o $(find spirit_logger)/bags/archive/spirit_log -a" />
-
 
 </launch>

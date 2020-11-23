@@ -1,0 +1,13 @@
+<launch>
+    <rosparam command="load" file="$(find spirit_utils)/../config/project_params.yaml"/>
+
+    <node name="mocap_node"
+          pkg="mocap_optitrack"
+          type="mocap_node"
+          respawn="false"
+          launch-prefix=""
+          required="true">
+        <rosparam file="$(find mocap_optitrack)/config/mocap.yaml" />
+    </node>
+
+</launch>
