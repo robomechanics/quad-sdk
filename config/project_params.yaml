@@ -3,7 +3,7 @@ topics:
   imu: /mcu/state/imu
   state_estimate: /state_estimate
   ground_truth_state: /ground_truth_state
-  mocap: /mocap_optitrack/spirit/pose
+  mocap: /mocap_node/spirit/pose
   terrain_map: /terrain_map
   body_plan: /body_plan
   discrete_body_plan: /discrete_body_plan
