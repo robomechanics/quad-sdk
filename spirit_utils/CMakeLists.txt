@@ -30,8 +30,6 @@ catkin_package(
 #	DEPENDS
 )
 
-find_package(libInterpolate REQUIRED)
-
 ###########
 ## Build ##
 ###########
@@ -53,7 +51,7 @@ add_library(spirit_utils
   src/ros_utils.cpp
 )
 add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(spirit_utils libInterpolate::Interpolate)
+target_link_libraries(spirit_utils)
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
