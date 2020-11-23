@@ -39,7 +39,7 @@ namespace spirit_utils{
   {
     if(!nh.getParam(paramName, varName))
     {
-      ROS_ERROR("Can't load param from open_loop_controller/control_mode");
+      ROS_ERROR("Can't find param %s from parameter server", paramName.c_str());
       return false;
     }
     return true;

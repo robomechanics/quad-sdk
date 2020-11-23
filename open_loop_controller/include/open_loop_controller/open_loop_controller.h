@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include <spirit_msgs/LegCommandArray.h>
 #include <spirit_utils/ros_utils.h>
+#include <std_msgs/UInt8.h>
 #include <math.h>
 #include <algorithm>
 
@@ -29,6 +30,11 @@ class OpenLoopController {
 	void spin();
 
 private:
+	/**
+	 * @brief Verifies and updates new control mode
+	 * @param[in] msg New control mode
+	 */ 
+	void controlModeCallback(const std_msgs::UInt8::ConstPtr& msg);
 
 	/**
 	 * @brief Setup open loop trajectory in shoulder space
@@ -37,10 +43,11 @@ private:
 	
 	/**
 	 * @brief Compute hip and knee positions to hit x y end effector pos
-	 * @param[in] pt Target x y position as a pair (shoulder frame)
+	 * @param[in] x Target x position in shoulder frame
+	 * @param[in] y Target y position in shoulder frame
 	 * @return pair of hip angle and knee angle
 	 */
-	std::pair<double,double> compute2DIk(std::pair<double,double> pt);
+	std::pair<double,double> compute2DIk(double x, double y);
 
 	/**
 	 * @brief Compute and send open loop joint positions
@@ -51,6 +58,9 @@ private:
 	/// Publisher for desired joint positions
 	ros::Publisher joint_control_pub_;
 
+	/// Subscriber for control mode
+	ros::Subscriber control_mode_sub_;
+
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;
 
@@ -60,10 +70,13 @@ private:
 	/// Time for one step cycle
 	double t_cycle_;
 
-	/// Robot mode (Walk or Stand)
-	int mode_;
+	/// Robot mode (Sit 0, Walk 1 or Stand 2)
+	int control_mode_;
 
-	/// Target points to hit (x,y) w/ x, y in shoulder space)
+	/// Timestep to interpolate points at
+	double interp_dt_;
+
+	/// Target points to hit (hip angle, knee angle)
 	std::vector<std::pair<double,double>> target_pts_;
 
 	/// Vector of timestamps to hit each target_pt at
@@ -86,6 +99,9 @@ private:
 
 	/// Gait phase info for each leg
 	std::vector<double> leg_phases_;
+
+	/// Numerically differentiate trajectory for velocity command
+	bool use_diff_for_velocity_;
 };
 
 
