@@ -1,9 +1,13 @@
 #include "mblink_converter/mblink_converter.h"
 
-MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, std::shared_ptr<MBLink> mblink)
+MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
 {
   nh_ = nh;
-  mblink_ = mblink;
+
+    /// Ghost MBLink interface class
+  mblink_.start(argc,argv);
+  mblink_.rxstart();
+  mblink_.setRetry("UPST_ADDRESS", 5);
 
   // Load rosparams from parameter server
   std::string leg_control_topic;
@@ -43,7 +47,7 @@ bool MBLinkConverter::sendMBlink()
   
   float data[58] = {0};
   memcpy(data,limbcmd,4*sizeof(LimbCmd_t));
-  mblink_->sendUser(Eigen::Map<const Eigen::Matrix<float,58,1> >(data));
+  mblink_.sendUser(Eigen::Map<const Eigen::Matrix<float,58,1> >(data));
 
   return true;
 }
