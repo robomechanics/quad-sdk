@@ -7,7 +7,9 @@
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/String.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/Vector3.h>
 #include <spirit_msgs/StateEstimate.h>
+#include <spirit_utils/ros_utils.h>
 
 //! Class to publish the ground truth state data
 /*!
@@ -80,6 +82,12 @@ private:
 
   /// Last mocap data
   geometry_msgs::PoseStamped::ConstPtr last_mocap_msg_;
+
+  /// Best estimate of velocity from mocap diff
+  geometry_msgs::Vector3 mocap_vel_estimate_;
+
+  /// Velocity update weight on exponential decay filter
+  double alpha_;
 
 };
 

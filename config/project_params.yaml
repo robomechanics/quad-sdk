@@ -35,6 +35,7 @@ contact_detection:
 
 ground_truth_publisher:
   update_rate: 100
+  velocity_smoothing_weight: 0.5
 
 terrain_map_publisher:
   update_rate: 10

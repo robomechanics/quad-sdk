@@ -11,7 +11,7 @@ namespace spirit_utils{
    * @param[in] t_compare ROS time we wish to compare to
    * @return Age in ms (compared to t_compare)
    */
-  inline double getROSMessageAgeInMs(std_msgs::Header &header, ros::Time &t_compare)
+  inline double getROSMessageAgeInMs(std_msgs::Header header, ros::Time t_compare)
   {
     return (header.stamp - t_compare).toSec()*1000.0;
   }
@@ -21,7 +21,7 @@ namespace spirit_utils{
    * @param[in] header ROS Header that we wish to compute the age of
    * @return Age in ms (compared to ros::Time::now())
    */
-  inline double getROSMessageAgeInMs(std_msgs::Header &header)
+  inline double getROSMessageAgeInMs(std_msgs::Header header)
   {
     ros::Time t_compare = ros::Time::now();
     return spirit_utils::getROSMessageAgeInMs(header,t_compare);

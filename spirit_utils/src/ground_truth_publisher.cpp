@@ -5,11 +5,18 @@ GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
 
   // Load rosparams from parameter server
   std::string joint_encoder_topic, imu_topic, mocap_topic, ground_truth_state_topic;
-  nh.param<std::string>("topics/joint_encoder", joint_encoder_topic, "/joint_encoder");
-  nh.param<std::string>("topics/imu", imu_topic, "/imu");
-  nh.param<std::string>("topics/mocap", mocap_topic, "/mocap_data");
-  nh.param<std::string>("topics/ground_truth_state", ground_truth_state_topic, "/ground_truth_state");
-  nh.param<double>("ground_truth_publisher/update_rate", update_rate_, 200);
+
+  spirit_utils::loadROSParam(nh_,"topics/joint_encoder",joint_encoder_topic);
+  spirit_utils::loadROSParam(nh_,"topics/imu",imu_topic);
+  spirit_utils::loadROSParam(nh_,"topics/mocap",mocap_topic);
+  spirit_utils::loadROSParam(nh_,"topics/ground_truth_state",ground_truth_state_topic);
+  spirit_utils::loadROSParam(nh_,"ground_truth_publisher/velocity_smoothing_weight",alpha_);
+  spirit_utils::loadROSParam(nh_,"ground_truth_publisher/update_rate",update_rate_);
+
+  // Assume zero initial velocity
+  mocap_vel_estimate_.x = 0;
+  mocap_vel_estimate_.y = 0;
+  mocap_vel_estimate_.z = 0;
 
   // Setup pubs and subs
   joint_encoder_sub_ = nh_.subscribe(joint_encoder_topic,1,&GroundTruthPublisher::jointEncoderCallback, this);
@@ -19,6 +26,19 @@ GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
 }
 
 void GroundTruthPublisher::mocapCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
+
+  // Collect change in position, and change in time for velocity update
+  double xDiff = msg->pose.position.x - last_mocap_msg_->pose.position.x;
+  double yDiff = msg->pose.position.y - last_mocap_msg_->pose.position.y;
+  double zDiff = msg->pose.position.z - last_mocap_msg_->pose.position.z;
+  double dt = spirit_utils::getROSMessageAgeInMs(msg->header) -
+              spirit_utils::getROSMessageAgeInMs(last_mocap_msg_->header);
+
+  mocap_vel_estimate_.x = alpha_*mocap_vel_estimate_.x + (1-alpha_)*xDiff/dt;
+  mocap_vel_estimate_.y = alpha_*mocap_vel_estimate_.y + (1-alpha_)*yDiff/dt;
+  mocap_vel_estimate_.z = alpha_*mocap_vel_estimate_.z + (1-alpha_)*zDiff/dt;
+
+  // Update our cached mocap position
   last_mocap_msg_ = msg;
 }
 
@@ -46,6 +66,7 @@ spirit_msgs::StateEstimate GroundTruthPublisher::updateStep() {
   if (last_mocap_msg_ != NULL)
   {
     new_state_est.body.pose.pose.position = last_mocap_msg_->pose.position;
+    new_state_est.body.twist.twist.linear = mocap_vel_estimate_;
   }
 
   new_state_est.header.stamp = ros::Time::now();
