@@ -142,7 +142,7 @@ void GlobalBodyPlanner::callPlanner() {
   }
 
   // Interpolate to get full body plan
-  double dt = 0.05;
+  double dt = 0.1;
   std::vector<int> interp_phase;
   getInterpPath(state_sequence_, action_sequence_,dt,body_plan_, wrench_plan_, t_plan_, interp_phase);
 

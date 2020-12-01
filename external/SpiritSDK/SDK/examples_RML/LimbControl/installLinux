@@ -1,9 +1,0 @@
-# Install Python 3.6
-pip3 install --upgrade pip
-
-pip3 install matplotlib
-pip3 install scipy
-pip3 install autograd
-pip3 install pymavlink
-
-sudo apt install cmake

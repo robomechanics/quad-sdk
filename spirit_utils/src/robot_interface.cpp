@@ -4,10 +4,11 @@ RobotInterface::RobotInterface(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string control_input_topic, joint_encoder_topic, imu_topic;
+  std::string control_input_topic, joint_encoder_topic, imu_topic, mocap_topic;
   nh.param<std::string>("topics/control_input", control_input_topic, "/control_input");
   nh.param<std::string>("topics/joint_encoder", joint_encoder_topic, "/joint_encoder");
   nh.param<std::string>("topics/imu", imu_topic, "/imu");
+  nh.param<std::string>("topics/mocap", mocap_topic, "/mocap_optitrack/spirit/pose");
   nh.param<double>("robot_interface/update_rate", update_rate_, 2);
 
 
@@ -15,6 +16,7 @@ RobotInterface::RobotInterface(ros::NodeHandle nh) {
   control_input_sub_ = nh_.subscribe(control_input_topic,1,&RobotInterface::controlInputCallback, this);
   joint_encoder_pub_ = nh_.advertise<sensor_msgs::JointState>(joint_encoder_topic,1);
   imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic,1);
+  mocap_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(mocap_topic,1);
 }
 
 void RobotInterface::controlInputCallback(const spirit_msgs::ControlInput::ConstPtr& msg) {
@@ -45,6 +47,20 @@ void RobotInterface::publishImu() {
   imu_pub_.publish(msg);
 }
 
+void RobotInterface::publishMocap() {
+  geometry_msgs::PoseStamped msg;
+  msg.header.stamp = ros::Time::now();
+  msg.pose.position.x = 0;
+  msg.pose.position.y = 0;
+  msg.pose.position.z = 0.4;
+
+  msg.pose.orientation.x = 0;
+  msg.pose.orientation.y = 0;
+  msg.pose.orientation.z = 0;
+  msg.pose.orientation.w = 1;
+  mocap_pub_.publish(msg);
+}
+
 void RobotInterface::spin() {
   ros::Rate r(update_rate_);
   while (ros::ok()) {
@@ -52,6 +68,7 @@ void RobotInterface::spin() {
     // Publish sensor data
     publishJointEncoders();
     publishImu();
+    publishMocap();
     
     // Enforce update rate
     ros::spinOnce();

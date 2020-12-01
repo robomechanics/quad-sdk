@@ -31,7 +31,7 @@ public:
    * @param[in] mblink Pointer to MBLink object
    * @return Constructed object of type EKFEstimator
    */
-  MBLinkConverter(ros::NodeHandle nh, std::shared_ptr<MBLink> mblink);
+  MBLinkConverter(ros::NodeHandle nh, int argc, char** argv);
 
   /**
    * @brief Calls ros spinOnce and spins at set frequency
@@ -72,7 +72,7 @@ private:
   spirit_msgs::LegCommandArray::ConstPtr last_leg_command_array_msg_;
 
   /// Pointer to MBLink object (constructor wants argc and argv, so instantiated in main)
-  std::shared_ptr<MBLink> mblink_;
+  MBLink mblink_;
 
 };
 

@@ -337,13 +337,13 @@ Visualization Manager:
       Value: true
       Visual Enabled: true
     - Class: rviz/MarkerArray
-      Enabled: true
+      Enabled: false
       Marker Topic: /visualization/body_wrench_plan
       Name: MarkerArray
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
-      Value: true
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
@@ -372,7 +372,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 8.198110580444336
+      Distance: 6.167092800140381
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -387,10 +387,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5097973346710205
+      Pitch: 0.41979730129241943
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.075424671173096
+      Yaw: 4.355423450469971
     Saved: ~
 Window Geometry:
   Displays:
@@ -409,4 +409,4 @@ Window Geometry:
     collapsed: true
   Width: 1095
   X: 514
-  Y: 37
+  Y: 0

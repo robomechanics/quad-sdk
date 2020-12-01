@@ -1,13 +1,17 @@
 #include "mblink_converter/mblink_converter.h"
 
-MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, std::shared_ptr<MBLink> mblink)
+MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
 {
   nh_ = nh;
-  mblink_ = mblink;
+
+    /// Ghost MBLink interface class
+  mblink_.start(argc,argv);
+  mblink_.rxstart();
+  mblink_.setRetry("UPST_ADDRESS", 5);
 
   // Load rosparams from parameter server
   std::string leg_control_topic;
-  nh.param<std::string>("topics/motor_control", leg_control_topic, "/motor_control");
+  nh.param<std::string>("topics/joint_command", leg_control_topic, "/motor_control");
   nh.param<double>("mblink_converter/update_rate", update_rate_, 1000);
 
   // Setup pubs and subs
@@ -22,7 +26,7 @@ void MBLinkConverter::legControlCallback(const spirit_msgs::LegCommandArray::Con
 bool MBLinkConverter::sendMBlink()
 {
   // If we've haven't received a motor control message, exit
-  if (last_leg_command_array_msg_ != NULL)
+  if (last_leg_command_array_msg_ == NULL)
   {
     return false;
   }
@@ -41,9 +45,9 @@ bool MBLinkConverter::sendMBlink()
     }
   }
   
-  float data[58];
-  memcpy(data,limbcmd,4*sizeof(limbcmd));
-  mblink_->sendUser(Eigen::Map<const Eigen::Matrix<float,58,1> >(data));
+  float data[58] = {0};
+  memcpy(data,limbcmd,4*sizeof(LimbCmd_t));
+  mblink_.sendUser(Eigen::Map<const Eigen::Matrix<float,58,1> >(data));
 
   return true;
 }

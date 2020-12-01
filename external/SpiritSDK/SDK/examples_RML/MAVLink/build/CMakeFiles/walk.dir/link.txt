@@ -1,1 +1,0 @@
-/usr/bin/c++     CMakeFiles/walk.dir/walk.cpp.o  -o walk   -L/home/nathan/SpiritSDK/SDK/examples_RML/MAVLink/../../lib  -Wl,-rpath,/home/nathan/SpiritSDK/SDK/examples_RML/MAVLink/../../lib -Wl,-Bstatic -lgrmblink_linux -Wl,-Bdynamic -lpthread 

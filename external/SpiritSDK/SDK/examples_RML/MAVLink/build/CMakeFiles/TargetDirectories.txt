@@ -1,6 +1,0 @@
-/home/nathan/SpiritSDK/SDK/examples_RML/MAVLink/build/CMakeFiles/rebuild_cache.dir
-/home/nathan/SpiritSDK/SDK/examples_RML/MAVLink/build/CMakeFiles/read_write_host.dir
-/home/nathan/SpiritSDK/SDK/examples_RML/MAVLink/build/CMakeFiles/speed_test.dir
-/home/nathan/SpiritSDK/SDK/examples_RML/MAVLink/build/CMakeFiles/edit_cache.dir
-/home/nathan/SpiritSDK/SDK/examples_RML/MAVLink/build/CMakeFiles/stand.dir
-/home/nathan/SpiritSDK/SDK/examples_RML/MAVLink/build/CMakeFiles/walk.dir

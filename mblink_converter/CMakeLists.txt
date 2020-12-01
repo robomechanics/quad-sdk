@@ -14,17 +14,18 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Setup MBLINK and MAVLINK
 set(CMAKE_CXX_STANDARD 17)
-set(MBLINK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../external/SpiritSDK/SDK/mblink)
-set(MBLINK_LIB_DIR ${MBLINK_DIR}/../lib)
+set(MBLINK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../external/mblink)
 
 message(STATUS "Using architecture ${CMAKE_SYSTEM_PROCESSOR}")
-set(GRMBLINK libgrmblink_linux.a)
+
 if (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
-  return()
+  set(GRMBLINK libgrmblink_xavier.a)
+else()
+  set(GRMBLINK libgrmblink_linux.a)
 endif()
 
 include_directories(${MBLINK_DIR}/include)
-link_directories(${MBLINK_LIB_DIR})
+link_directories(${MBLINK_DIR}/lib)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../external/SpiritSDK/SDK/thirdparty)
 
