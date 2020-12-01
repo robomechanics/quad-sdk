@@ -72,12 +72,19 @@ $(function() {
  <a href="classMBLinkConverter.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="mblink__converter_8h_source.html">mblink_converter.h</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for MBLinkConverter:</div>
+<div class="dyncontent">
+<div class="center"><img src="classMBLinkConverter__coll__graph.png" border="0" usemap="#MBLinkConverter_coll__map" alt="Collaboration graph"/></div>
+<map name="MBLinkConverter_coll__map" id="MBLinkConverter_coll__map">
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9d8f162de7a54f0919f62ad56ab1e757"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#a9d8f162de7a54f0919f62ad56ab1e757">MBLinkConverter</a> (ros::NodeHandle nh, std::shared_ptr&lt; MBLink &gt; mblink)</td></tr>
-<tr class="memdesc:a9d8f162de7a54f0919f62ad56ab1e757"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classMBLinkConverter.html" title="Implements online conversion from ROS type to MBLink. ">MBLinkConverter</a>.  <a href="#a9d8f162de7a54f0919f62ad56ab1e757">More...</a><br /></td></tr>
-<tr class="separator:a9d8f162de7a54f0919f62ad56ab1e757"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2abfc78899ce4e8c0febae16e0c2f9a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#ae2abfc78899ce4e8c0febae16e0c2f9a">MBLinkConverter</a> (ros::NodeHandle nh, int argc, char **argv)</td></tr>
+<tr class="memdesc:ae2abfc78899ce4e8c0febae16e0c2f9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classMBLinkConverter.html" title="Implements online conversion from ROS type to MBLink. ">MBLinkConverter</a>.  <a href="#ae2abfc78899ce4e8c0febae16e0c2f9a">More...</a><br /></td></tr>
+<tr class="separator:ae2abfc78899ce4e8c0febae16e0c2f9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa176a3bee7392caac193a5fab2522c19"><td class="memItemLeft" align="right" valign="top"><a id="aa176a3bee7392caac193a5fab2522c19"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#aa176a3bee7392caac193a5fab2522c19">spin</a> ()</td></tr>
 <tr class="memdesc:aa176a3bee7392caac193a5fab2522c19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls ros spinOnce and spins at set frequency. <br /></td></tr>
@@ -113,17 +120,17 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 spirit_msgs::LegCommandArray::ConstPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#ad9050d7cc3d27c5a65d8f2ed29fee88e">last_leg_command_array_msg_</a></td></tr>
 <tr class="memdesc:ad9050d7cc3d27c5a65d8f2ed29fee88e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last motor control message (keep sending until we get a new message in or node is shutdown) <br /></td></tr>
 <tr class="separator:ad9050d7cc3d27c5a65d8f2ed29fee88e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2a129a411ee279e66e80feba2abc600e"><td class="memItemLeft" align="right" valign="top"><a id="a2a129a411ee279e66e80feba2abc600e"></a>
-std::shared_ptr&lt; MBLink &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#a2a129a411ee279e66e80feba2abc600e">mblink_</a></td></tr>
-<tr class="memdesc:a2a129a411ee279e66e80feba2abc600e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to MBLink object (constructor wants argc and argv, so instantiated in main) <br /></td></tr>
-<tr class="separator:a2a129a411ee279e66e80feba2abc600e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f3f000255a6fce878a882bccac9906c"><td class="memItemLeft" align="right" valign="top"><a id="a5f3f000255a6fce878a882bccac9906c"></a>
+MBLink&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#a5f3f000255a6fce878a882bccac9906c">mblink_</a></td></tr>
+<tr class="memdesc:a5f3f000255a6fce878a882bccac9906c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to MBLink object (constructor wants argc and argv, so instantiated in main) <br /></td></tr>
+<tr class="separator:a5f3f000255a6fce878a882bccac9906c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Implements online conversion from ROS type to MBLink. </p>
 <p><a class="el" href="classMBLinkConverter.html" title="Implements online conversion from ROS type to MBLink. ">MBLinkConverter</a> listens for joint control messages and outputs low level commands to the mainboard over mblink </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a9d8f162de7a54f0919f62ad56ab1e757"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9d8f162de7a54f0919f62ad56ab1e757">&#9670;&nbsp;</a></span>MBLinkConverter()</h2>
+<a id="ae2abfc78899ce4e8c0febae16e0c2f9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2abfc78899ce4e8c0febae16e0c2f9a">&#9670;&nbsp;</a></span>MBLinkConverter()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -137,8 +144,14 @@ std::shared_ptr&lt; MBLink &gt;&#160;</td><td class="memItemRight" valign="botto
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; MBLink &gt;&#160;</td>
-          <td class="paramname"><em>mblink</em>&#160;</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>argc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char **&#160;</td>
+          <td class="paramname"><em>argv</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -157,6 +170,7 @@ std::shared_ptr&lt; MBLink &gt;&#160;</td><td class="memItemRight" valign="botto
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classEKFEstimator.html" title="Implements online EKF based state estimation. ">EKFEstimator</a> </dd></dl>
+<p>Ghost MBLink interface class </p>
 
 </div>
 </div>

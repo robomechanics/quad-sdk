@@ -2,6 +2,7 @@ var searchData=
 [
   ['callplanner',['callPlanner',['../classGlobalBodyPlanner.html#a9d255bb8030cedc5b8ef166dc1e9710a',1,'GlobalBodyPlanner']]],
   ['clearplan',['clearPlan',['../classGlobalBodyPlanner.html#a2eb81f4bee8cec49686f963cd0251b51',1,'GlobalBodyPlanner']]],
+  ['computeik',['computeIk',['../classOpenLoopController.html#aeaa0929576230e02d0b975b148062ebb',1,'OpenLoopController']]],
   ['connect',['connect',['../classRRTConnectClass.html#a8b88169d81d44652eef8cb16c1f0c7d3',1,'RRTConnectClass']]],
   ['contactcallback',['contactCallback',['../classEKFEstimator.html#ad4982eb34df043d4fa90148740f44181',1,'EKFEstimator']]],
   ['contactdetection',['ContactDetection',['../classContactDetection.html#a4c33a6d499e48dd4048e04f06114ea6d',1,'ContactDetection']]],

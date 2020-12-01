@@ -98,6 +98,9 @@ $(function() {
 <li>clearPlan()
 : <a class="el" href="classGlobalBodyPlanner.html#a2eb81f4bee8cec49686f963cd0251b51">GlobalBodyPlanner</a>
 </li>
+<li>computeIk()
+: <a class="el" href="classOpenLoopController.html#aeaa0929576230e02d0b975b148062ebb">OpenLoopController</a>
+</li>
 <li>connect()
 : <a class="el" href="classRRTConnectClass.html#a8b88169d81d44652eef8cb16c1f0c7d3">RRTConnectClass</a>
 </li>
@@ -203,6 +206,9 @@ $(function() {
 <li>GraphClass()
 : <a class="el" href="classGraphClass.html#a39d78244b77de2351494de80b28e7dbe">GraphClass</a>
 </li>
+<li>GroundTruthPublisher()
+: <a class="el" href="classGroundTruthPublisher.html#acaf89af328187198ce1d55166bdce7c5">GroundTruthPublisher</a>
+</li>
 </ul>
 
 
@@ -210,6 +216,7 @@ $(function() {
 <li>imuCallback()
 : <a class="el" href="classContactDetection.html#a8fe1967f11a94fd59bb691514b485166">ContactDetection</a>
 , <a class="el" href="classEKFEstimator.html#aa424c7fcb65b6524184d5112ba1646ba">EKFEstimator</a>
+, <a class="el" href="classGroundTruthPublisher.html#ab965ba75fb90e93ebdf32445488cb5bb">GroundTruthPublisher</a>
 </li>
 <li>init()
 : <a class="el" href="classGraphClass.html#a6478d431f475c2458f3aa1a803a0b1cd">GraphClass</a>
@@ -230,6 +237,7 @@ $(function() {
 <li>jointEncoderCallback()
 : <a class="el" href="classContactDetection.html#a7d95daa52f7bc969bf539a57e69eb48a">ContactDetection</a>
 , <a class="el" href="classEKFEstimator.html#a884681643b3f3e9075f0ffab0dc5c3e0">EKFEstimator</a>
+, <a class="el" href="classGroundTruthPublisher.html#a16cddafefe33a2e3b7170bb4640299ed">GroundTruthPublisher</a>
 </li>
 </ul>
 
@@ -264,7 +272,10 @@ $(function() {
 
 <h3><a id="index_m"></a>- m -</h3><ul>
 <li>MBLinkConverter()
-: <a class="el" href="classMBLinkConverter.html#a9d8f162de7a54f0919f62ad56ab1e757">MBLinkConverter</a>
+: <a class="el" href="classMBLinkConverter.html#ae2abfc78899ce4e8c0febae16e0c2f9a">MBLinkConverter</a>
+</li>
+<li>mocapCallback()
+: <a class="el" href="classGroundTruthPublisher.html#ab98d2c1cf74eb0914e0c35043f4c7e88">GroundTruthPublisher</a>
 </li>
 <li>MPCController()
 : <a class="el" href="classMPCController.html#a16a87d6e746992d9479d27aae63cca16">MPCController</a>
@@ -344,6 +355,9 @@ $(function() {
 <li>publishMap()
 : <a class="el" href="classTerrainMapPublisher.html#aa11b7631c0f0c3c33f9a118be181a102">TerrainMapPublisher</a>
 </li>
+<li>publishMocap()
+: <a class="el" href="classRobotInterface.html#aa1a64bbf8c4d5b288304874ef2fd822a">RobotInterface</a>
+</li>
 <li>publishPlan()
 : <a class="el" href="classGlobalBodyPlanner.html#a7ef31af306895c311faee09a7023896b">GlobalBodyPlanner</a>
 , <a class="el" href="classLocalFootstepPlanner.html#aa0e199be9129386592065a505df5cddb">LocalFootstepPlanner</a>
@@ -377,14 +391,21 @@ $(function() {
 
 
 <h3><a id="index_s"></a>- s -</h3><ul>
+<li>sendJointPositions()
+: <a class="el" href="classOpenLoopController.html#a1788839d00073729d12f2167da6b078e">OpenLoopController</a>
+</li>
 <li>sendMBlink()
 : <a class="el" href="classMBLinkConverter.html#aa54255703453e9ae4957f387824ab56e">MBLinkConverter</a>
+</li>
+<li>setupTrajectory()
+: <a class="el" href="classOpenLoopController.html#a8a235915d65c810a18619cc0e6dbcce2">OpenLoopController</a>
 </li>
 <li>spin()
 : <a class="el" href="classBodyForceEstimator.html#af8a0398a8c996bd8bd193a833a1a3894">BodyForceEstimator</a>
 , <a class="el" href="classContactDetection.html#a6e6a871826f05d5f43a65be58ab8dd3e">ContactDetection</a>
 , <a class="el" href="classEKFEstimator.html#aafa5b8519728286540001b28613ecbbd">EKFEstimator</a>
 , <a class="el" href="classGlobalBodyPlanner.html#af0c9fffeaea60900b04ba017e1d1c4ec">GlobalBodyPlanner</a>
+, <a class="el" href="classGroundTruthPublisher.html#a1995217920570e537b490d7d93e5936e">GroundTruthPublisher</a>
 , <a class="el" href="classLocalFootstepPlanner.html#a258571671ad0caf07d1375d88a52b74e">LocalFootstepPlanner</a>
 , <a class="el" href="classMBLinkConverter.html#aa176a3bee7392caac193a5fab2522c19">MBLinkConverter</a>
 , <a class="el" href="classMPCController.html#ac11fdd88987c9fcd5222f8fd08f70770">MPCController</a>
@@ -428,6 +449,7 @@ $(function() {
 </li>
 <li>updateStep()
 : <a class="el" href="classEKFEstimator.html#a2f31ab8d70f8ba90eda345810a0913b5">EKFEstimator</a>
+, <a class="el" href="classGroundTruthPublisher.html#ac694041d110a625a68ad0a221f9d3a5f">GroundTruthPublisher</a>
 </li>
 </ul>
 

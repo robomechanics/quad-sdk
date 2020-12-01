@@ -68,7 +68,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>A class for interfacing between stand-in robot data and other spirit-software nodes and topics.  
+<p>A class for interfacing between dummy robot data and other spirit-software nodes and topics.  
  <a href="classRobotInterface.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="robot__interface_8h_source.html">robot_interface.h</a>&gt;</code></p>
@@ -76,7 +76,7 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad41a94fbc8f9db9201d1a92ab950153a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobotInterface.html#ad41a94fbc8f9db9201d1a92ab950153a">RobotInterface</a> (ros::NodeHandle nh)</td></tr>
-<tr class="memdesc:ad41a94fbc8f9db9201d1a92ab950153a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classRobotInterface.html" title="A class for interfacing between stand-in robot data and other spirit-software nodes and topics...">RobotInterface</a> Class.  <a href="#ad41a94fbc8f9db9201d1a92ab950153a">More...</a><br /></td></tr>
+<tr class="memdesc:ad41a94fbc8f9db9201d1a92ab950153a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classRobotInterface.html" title="A class for interfacing between dummy robot data and other spirit-software nodes and topics...">RobotInterface</a> Class.  <a href="#ad41a94fbc8f9db9201d1a92ab950153a">More...</a><br /></td></tr>
 <tr class="separator:ad41a94fbc8f9db9201d1a92ab950153a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab26af7534c5c650be989e07f9aede098"><td class="memItemLeft" align="right" valign="top"><a id="ab26af7534c5c650be989e07f9aede098"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobotInterface.html#ab26af7534c5c650be989e07f9aede098">spin</a> ()</td></tr>
@@ -90,12 +90,16 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:a93d87a6eaeaed02dfcfd780d1823c57d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6603ca6acb6b1f2e2a700a10382bd95f"><td class="memItemLeft" align="right" valign="top"><a id="a6603ca6acb6b1f2e2a700a10382bd95f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobotInterface.html#a6603ca6acb6b1f2e2a700a10382bd95f">publishJointEncoders</a> ()</td></tr>
-<tr class="memdesc:a6603ca6acb6b1f2e2a700a10382bd95f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to publish joint encoder data. Likely empty. <br /></td></tr>
+<tr class="memdesc:a6603ca6acb6b1f2e2a700a10382bd95f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to publish dummy joint encoder data. <br /></td></tr>
 <tr class="separator:a6603ca6acb6b1f2e2a700a10382bd95f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93920d967e0ef0c6c85c7a75b77fee0d"><td class="memItemLeft" align="right" valign="top"><a id="a93920d967e0ef0c6c85c7a75b77fee0d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobotInterface.html#a93920d967e0ef0c6c85c7a75b77fee0d">publishImu</a> ()</td></tr>
-<tr class="memdesc:a93920d967e0ef0c6c85c7a75b77fee0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to publish imu data. Likely empty. <br /></td></tr>
+<tr class="memdesc:a93920d967e0ef0c6c85c7a75b77fee0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to publish dummy imu data. <br /></td></tr>
 <tr class="separator:a93920d967e0ef0c6c85c7a75b77fee0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1a64bbf8c4d5b288304874ef2fd822a"><td class="memItemLeft" align="right" valign="top"><a id="aa1a64bbf8c4d5b288304874ef2fd822a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobotInterface.html#aa1a64bbf8c4d5b288304874ef2fd822a">publishMocap</a> ()</td></tr>
+<tr class="memdesc:aa1a64bbf8c4d5b288304874ef2fd822a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to publish dummy mocap data. <br /></td></tr>
+<tr class="separator:aa1a64bbf8c4d5b288304874ef2fd822a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -111,6 +115,10 @@ ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobotInterface.html#a652df3e1df781149dc2f05ec8ca11faa">imu_pub_</a></td></tr>
 <tr class="memdesc:a652df3e1df781149dc2f05ec8ca11faa"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS publisher for imu data. <br /></td></tr>
 <tr class="separator:a652df3e1df781149dc2f05ec8ca11faa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9edd4bba67564186a1b98b184bf5d50"><td class="memItemLeft" align="right" valign="top"><a id="ad9edd4bba67564186a1b98b184bf5d50"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobotInterface.html#ad9edd4bba67564186a1b98b184bf5d50">mocap_pub_</a></td></tr>
+<tr class="memdesc:ad9edd4bba67564186a1b98b184bf5d50"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS publisher for mocap data. <br /></td></tr>
+<tr class="separator:ad9edd4bba67564186a1b98b184bf5d50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a65055838f4662b177045a8a6554440"><td class="memItemLeft" align="right" valign="top"><a id="a9a65055838f4662b177045a8a6554440"></a>
 ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobotInterface.html#a9a65055838f4662b177045a8a6554440">nh_</a></td></tr>
 <tr class="memdesc:a9a65055838f4662b177045a8a6554440"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nodehandle to pub to and sub from. <br /></td></tr>
@@ -121,8 +129,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 <tr class="separator:a6de7603ad9c8bb345fec2e60a6657bd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A class for interfacing between stand-in robot data and other spirit-software nodes and topics. </p>
-<p><a class="el" href="classRobotInterface.html" title="A class for interfacing between stand-in robot data and other spirit-software nodes and topics...">RobotInterface</a> contains the approximation for the real spirit robot. Its purposes are purely for development. The class provides publishers for robot data (encoder and imu measurements) as well as a subscriber for control inputs. </p>
+<div class="textblock"><p>A class for interfacing between dummy robot data and other spirit-software nodes and topics. </p>
+<p><a class="el" href="classRobotInterface.html" title="A class for interfacing between dummy robot data and other spirit-software nodes and topics...">RobotInterface</a> contains the approximation for the real spirit robot. Its purposes are purely for development. The class provides publishers for dummy robot data (encoder, imu, and mocap measurements) as well as a subscriber for control inputs. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ad41a94fbc8f9db9201d1a92ab950153a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad41a94fbc8f9db9201d1a92ab950153a">&#9670;&nbsp;</a></span>RobotInterface()</h2>
@@ -140,14 +148,14 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
       </table>
 </div><div class="memdoc">
 
-<p>Constructor for <a class="el" href="classRobotInterface.html" title="A class for interfacing between stand-in robot data and other spirit-software nodes and topics...">RobotInterface</a> Class. </p>
+<p>Constructor for <a class="el" href="classRobotInterface.html" title="A class for interfacing between dummy robot data and other spirit-software nodes and topics...">RobotInterface</a> Class. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">nh</td><td>ROS NodeHandle to publish and subscribe from </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classRobotInterface.html" title="A class for interfacing between stand-in robot data and other spirit-software nodes and topics...">RobotInterface</a> </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classRobotInterface.html" title="A class for interfacing between dummy robot data and other spirit-software nodes and topics...">RobotInterface</a> </dd></dl>
 
 </div>
 </div>

@@ -21,5 +21,6 @@ var searchData=
   ['publishimu',['publishImu',['../classRobotInterface.html#a93920d967e0ef0c6c85c7a75b77fee0d',1,'RobotInterface']]],
   ['publishjointencoders',['publishJointEncoders',['../classRobotInterface.html#a6603ca6acb6b1f2e2a700a10382bd95f',1,'RobotInterface']]],
   ['publishmap',['publishMap',['../classTerrainMapPublisher.html#aa11b7631c0f0c3c33f9a118be181a102',1,'TerrainMapPublisher']]],
+  ['publishmocap',['publishMocap',['../classRobotInterface.html#aa1a64bbf8c4d5b288304874ef2fd822a',1,'RobotInterface']]],
   ['publishplan',['publishPlan',['../classGlobalBodyPlanner.html#a7ef31af306895c311faee09a7023896b',1,'GlobalBodyPlanner::publishPlan()'],['../classLocalFootstepPlanner.html#aa0e199be9129386592065a505df5cddb',1,'LocalFootstepPlanner::publishPlan()']]]
 ];

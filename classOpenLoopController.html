@@ -85,8 +85,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a1788839d00073729d12f2167da6b078e"><td class="memItemLeft" align="right" valign="top"><a id="a1788839d00073729d12f2167da6b078e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>sendJointPositions</b> (double &amp;elapsed_time)</td></tr>
+<tr class="memitem:a8a235915d65c810a18619cc0e6dbcce2"><td class="memItemLeft" align="right" valign="top"><a id="a8a235915d65c810a18619cc0e6dbcce2"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOpenLoopController.html#a8a235915d65c810a18619cc0e6dbcce2">setupTrajectory</a> ()</td></tr>
+<tr class="memdesc:a8a235915d65c810a18619cc0e6dbcce2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setup open loop trajectory in shoulder space. <br /></td></tr>
+<tr class="separator:a8a235915d65c810a18619cc0e6dbcce2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeaa0929576230e02d0b975b148062ebb"><td class="memItemLeft" align="right" valign="top">std::pair&lt; double, double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOpenLoopController.html#aeaa0929576230e02d0b975b148062ebb">computeIk</a> (std::pair&lt; double, double &gt; pt)</td></tr>
+<tr class="memdesc:aeaa0929576230e02d0b975b148062ebb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute hip and knee positions to hit x y end effector pos.  <a href="#aeaa0929576230e02d0b975b148062ebb">More...</a><br /></td></tr>
+<tr class="separator:aeaa0929576230e02d0b975b148062ebb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1788839d00073729d12f2167da6b078e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOpenLoopController.html#a1788839d00073729d12f2167da6b078e">sendJointPositions</a> (double &amp;elapsed_time)</td></tr>
+<tr class="memdesc:a1788839d00073729d12f2167da6b078e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute and send open loop joint positions.  <a href="#a1788839d00073729d12f2167da6b078e">More...</a><br /></td></tr>
 <tr class="separator:a1788839d00073729d12f2167da6b078e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
@@ -103,6 +110,21 @@ ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOpenLoopController.html#a84fc8c26dc0aa87bf0ba706e340d03c1">update_rate_</a></td></tr>
 <tr class="memdesc:a84fc8c26dc0aa87bf0ba706e340d03c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update rate for sending and receiving data;. <br /></td></tr>
 <tr class="separator:a84fc8c26dc0aa87bf0ba706e340d03c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af95521b3e515859b6fc5df2cc2c53175"><td class="memItemLeft" align="right" valign="top"><a id="af95521b3e515859b6fc5df2cc2c53175"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOpenLoopController.html#af95521b3e515859b6fc5df2cc2c53175">t_cycle_</a></td></tr>
+<tr class="memdesc:af95521b3e515859b6fc5df2cc2c53175"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time for one step cycle. <br /></td></tr>
+<tr class="separator:af95521b3e515859b6fc5df2cc2c53175"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a294190174d79041a025cfd25894d8c53"><td class="memItemLeft" align="right" valign="top"><a id="a294190174d79041a025cfd25894d8c53"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOpenLoopController.html#a294190174d79041a025cfd25894d8c53">mode_</a></td></tr>
+<tr class="memdesc:a294190174d79041a025cfd25894d8c53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Robot mode (Walk or Stand) <br /></td></tr>
+<tr class="separator:a294190174d79041a025cfd25894d8c53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12d14e1429058daef7126aa93f6478c7"><td class="memItemLeft" align="right" valign="top"><a id="a12d14e1429058daef7126aa93f6478c7"></a>
+std::vector&lt; std::pair&lt; double, double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOpenLoopController.html#a12d14e1429058daef7126aa93f6478c7">target_pts_</a></td></tr>
+<tr class="memdesc:a12d14e1429058daef7126aa93f6478c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Target points to hit (x,y) w/ x, y in shoulder space) <br /></td></tr>
+<tr class="separator:a12d14e1429058daef7126aa93f6478c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd5d6e6370d28451c9a80aef41c39be5"><td class="memItemLeft" align="right" valign="top"><a id="abd5d6e6370d28451c9a80aef41c39be5"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>target_times_</b></td></tr>
+<tr class="separator:abd5d6e6370d28451c9a80aef41c39be5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Implements open loop controller. </p>
@@ -132,6 +154,76 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classOpenLoopController.html" title="Implements open loop controller. ">OpenLoopController</a> </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="aeaa0929576230e02d0b975b148062ebb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeaa0929576230e02d0b975b148062ebb">&#9670;&nbsp;</a></span>computeIk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::pair&lt; double, double &gt; OpenLoopController::computeIk </td>
+          <td>(</td>
+          <td class="paramtype">std::pair&lt; double, double &gt;&#160;</td>
+          <td class="paramname"><em>pt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute hip and knee positions to hit x y end effector pos. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">pt</td><td>Target x y position as a pair (shoulder frame) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>pair of hip angle and knee angle </dd></dl>
+
+</div>
+</div>
+<a id="a1788839d00073729d12f2167da6b078e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1788839d00073729d12f2167da6b078e">&#9670;&nbsp;</a></span>sendJointPositions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void OpenLoopController::sendJointPositions </td>
+          <td>(</td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>elapsed_time</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute and send open loop joint positions. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">elapsed_time</td><td>Time since node began </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
