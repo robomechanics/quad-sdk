@@ -27,6 +27,7 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh) {
   control_mode_sub_ = nh_.subscribe(control_mode_topic,1,&OpenLoopController::controlModeCallback, this);
 }
 
+
 void OpenLoopController::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
   if (0 <= msg->data && msg->data <= 2)
   {
@@ -41,6 +42,8 @@ void OpenLoopController::setupTrajectory()
   spirit_utils::loadROSParam(nh_,"open_loop_controller/waypoint_xs",xs);
   spirit_utils::loadROSParam(nh_,"open_loop_controller/waypoint_ys",ys);
   spirit_utils::loadROSParam(nh_,"open_loop_controller/interp_dt",interp_dt_);
+
+  double dt = 0.005;
 
   // Interpolate between points with fixed dt
   double t_run = 0;

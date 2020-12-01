@@ -82,7 +82,7 @@ private:
 
   /// Last mocap data
   geometry_msgs::PoseStamped::ConstPtr last_mocap_msg_;
-
+  
   /// Best estimate of velocity from mocap diff
   geometry_msgs::Vector3 mocap_vel_estimate_;
 

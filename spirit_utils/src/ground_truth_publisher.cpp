@@ -27,16 +27,19 @@ GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
 
 void GroundTruthPublisher::mocapCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
 
-  // Collect change in position, and change in time for velocity update
-  double xDiff = msg->pose.position.x - last_mocap_msg_->pose.position.x;
-  double yDiff = msg->pose.position.y - last_mocap_msg_->pose.position.y;
-  double zDiff = msg->pose.position.z - last_mocap_msg_->pose.position.z;
-  double dt = spirit_utils::getROSMessageAgeInMs(msg->header) -
-              spirit_utils::getROSMessageAgeInMs(last_mocap_msg_->header);
+  if (last_mocap_msg_ != NULL)
+  {
+    // Collect change in position, and change in time for velocity update
+    double xDiff = msg->pose.position.x - last_mocap_msg_->pose.position.x;
+    double yDiff = msg->pose.position.y - last_mocap_msg_->pose.position.y;
+    double zDiff = msg->pose.position.z - last_mocap_msg_->pose.position.z;
+    double dt = spirit_utils::getROSMessageAgeInMs(msg->header) -
+                spirit_utils::getROSMessageAgeInMs(last_mocap_msg_->header);
 
-  mocap_vel_estimate_.x = alpha_*mocap_vel_estimate_.x + (1-alpha_)*xDiff/dt;
-  mocap_vel_estimate_.y = alpha_*mocap_vel_estimate_.y + (1-alpha_)*yDiff/dt;
-  mocap_vel_estimate_.z = alpha_*mocap_vel_estimate_.z + (1-alpha_)*zDiff/dt;
+    mocap_vel_estimate_.x = alpha_*mocap_vel_estimate_.x + (1-alpha_)*xDiff/dt;
+    mocap_vel_estimate_.y = alpha_*mocap_vel_estimate_.y + (1-alpha_)*yDiff/dt;
+    mocap_vel_estimate_.z = alpha_*mocap_vel_estimate_.z + (1-alpha_)*zDiff/dt;
+  }
 
   // Update our cached mocap position
   last_mocap_msg_ = msg;

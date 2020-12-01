@@ -43,8 +43,8 @@ private:
 	
 	/**
 	 * @brief Compute hip and knee positions to hit x y end effector pos
-	 * @param[in] x Target x position in shoulder frame
-	 * @param[in] y Target y position in shoulder frame
+	 * @param[in] x Target x position in shoulder space 
+	 * @param[in] y Target y position in shoulder space
 	 * @return pair of hip angle and knee angle
 	 */
 	std::pair<double,double> compute2DIk(double x, double y);
