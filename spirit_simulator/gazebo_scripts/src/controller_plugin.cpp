@@ -35,6 +35,10 @@ namespace effort_controllers
 
     // Torque saturation (could change to linear model in future)
     torque_lims_ = {21,21,32};
+
+    // Test Commit (Mike Turski) 
+    // Please delete this line of code if you are seeing this
+    int test_commit = 1;
   }
   SpiritController::~SpiritController() {sub_command_.shutdown();}
 
