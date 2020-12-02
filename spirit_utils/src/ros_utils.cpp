@@ -11,4 +11,8 @@ double spirit_utils::getROSMessageAgeInMs(std_msgs::Header &header, ros::Time &t
   return (header.stamp - t_compare).toSec()*1000.0;
 }
 
+bool spirit_utils::loadROSParam(std::string paramName, ParamType &varName)
+{
+  
+}
 

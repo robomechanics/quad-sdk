@@ -12,5 +12,4 @@
 
     <node name="ground_truth_publisher" pkg="spirit_utils" type="robot_interface_node" output="screen"/>
 
-
 </launch>

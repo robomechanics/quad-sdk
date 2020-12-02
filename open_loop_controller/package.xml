@@ -54,16 +54,19 @@
   <build_depend>sensor_msgs</build_depend>
   <build_depend>spirit_msgs</build_depend>
   <build_depend>eigen</build_depend>
+  <build_depend>spirit_utils</build_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
   <build_export_depend>sensor_msgs</build_export_depend>
   <build_export_depend>spirit_msgs</build_export_depend>
   <build_export_depend>eigen</build_export_depend>
+  <build_export_depend>spirit_utils</build_export_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>spirit_msgs</exec_depend>
   <exec_depend>eigen</exec_depend>
+  <exec_depend>spirit_utils</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

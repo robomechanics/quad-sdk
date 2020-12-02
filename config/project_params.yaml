@@ -35,6 +35,7 @@ contact_detection:
 
 ground_truth_publisher:
   update_rate: 100
+  velocity_smoothing_weight: 0.5
 
 terrain_map_publisher:
   update_rate: 10
@@ -58,6 +59,20 @@ grid_map_visualization:
 body_force_estimator:
   update_rate_: 200
 
+mblink_converter:
+  update_rate: 500
+
 open_loop_controller:
-  t_cycle: 0.5
-  control_mode: 1
+  update_rate: 500
+  leg_phases: [0,0.5,0.5,0]
+  stand_angles: [0,0.7,1]
+  waypoint_ts: [0.2,0.2,0.2]
+  waypoint_xs: [-0.12,0,0.12]
+  waypoint_ys: [-0.24,-0.14,-0.24]
+  interp_dt: 0.005
+  stand_kp: [50,50,50]
+  stand_kd: [2,2,2]
+  walk_kp: [100,100,100]
+  walk_kd: [1,1,1]
+  use_diff_for_velocity: true
+  control_mode_topic: /spirit/control_mode
