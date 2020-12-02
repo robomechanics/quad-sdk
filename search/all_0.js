@@ -7,6 +7,7 @@ var searchData=
   ['addstatewrenchtomsg',['addStateWrenchToMsg',['../classGlobalBodyPlanner.html#a6736b693ac5926cf1ab3c9728af57d0d',1,'GlobalBodyPlanner']]],
   ['addvertex',['addVertex',['../classGraphClass.html#a14de7afdfc42f444e9dc60f860a3c8bf',1,'GraphClass']]],
   ['algorithm_5f',['algorithm_',['../classGlobalBodyPlanner.html#a60cae5753166db3a1d5600e21dc7a262',1,'GlobalBodyPlanner']]],
+  ['alpha_5f',['alpha_',['../classGroundTruthPublisher.html#a8eb84af7c18c6ddfe17812999c766988',1,'GroundTruthPublisher']]],
   ['anytime_5fhorizon',['anytime_horizon',['../classRRTConnectClass.html#a9a0b075d5562560dcbdde72e00c733f0',1,'RRTConnectClass']]],
   ['anytime_5fhorizon_5finit',['anytime_horizon_init',['../classRRTConnectClass.html#ac6a1c1aa7f49bf73b938b70a3d897371',1,'RRTConnectClass']]],
   ['attemptconnect',['attemptConnect',['../classRRTConnectClass.html#a06728bcb6ac17178820b8bc7b369dec8',1,'RRTConnectClass::attemptConnect(State s_existing, State s, double t_s, State &amp;s_new, Action &amp;a_new, FastTerrainMap &amp;terrain, int direction)'],['../classRRTConnectClass.html#a8c5fef8767dc163b90b5d0b9b834ee3c',1,'RRTConnectClass::attemptConnect(State s_existing, State s, State &amp;s_new, Action &amp;a_new, FastTerrainMap &amp;terrain, int direction)']]]
