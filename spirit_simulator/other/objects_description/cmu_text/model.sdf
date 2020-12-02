@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="cmu_text">
+    <link name="text">
+      <visual name="visual">
+       <geometry>
+          <mesh>
+            <uri>model:///meshes/Spirit40_CMU_Text_transformed.stl</uri>
+         </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/RedGlow</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>0.00000000</ixx>
+          <ixy>0.00000000</ixy>
+          <ixz>0.00000000</ixz>
+          <iyy>0.00000000</iyy>
+          <iyz>0.00000000</iyz>
+          <izz>0.00000000</izz>
+        </inertia>
+      </inertial>
+    </link>
+  </model>
+</sdf>

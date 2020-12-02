@@ -54,6 +54,7 @@
   <exec_depend>roscpp</exec_depend>
 
   <depend>spirit_msgs</depend>
+  <depend>spirit_utils</depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

@@ -48,7 +48,6 @@ add_library(spirit_utils
   src/terrain_map_publisher.cpp
   src/ground_truth_publisher.cpp
   src/robot_interface.cpp
-  src/ros_utils.cpp
 )
 add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(spirit_utils)
