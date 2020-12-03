@@ -2,10 +2,10 @@
 #define MBLINK_CONVERTER_H
 
 #include <ros/ros.h>
-#include <spirit_msgs/LegCommand.h>
 #include <spirit_msgs/LegCommandArray.h>
 #include <mblink/mblink.hpp>
 #include <eigen3/Eigen/Eigen>
+#include <spirit_utils/ros_utils.h>
 #include <chrono>
 #include <thread>
 
