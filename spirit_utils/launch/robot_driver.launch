@@ -3,6 +3,8 @@
 
     <arg name="with_proxy" default="false"/>
     <arg name="with_mocap" default="false"/>
+    <arg name="record" default="false"/>
+
 
     <include file="$(find spirit_utils)/launch/control.launch" />
     <include file="$(find spirit_utils)/launch/estimation.launch" />
@@ -20,6 +22,11 @@
     <!-- Launch the mocap node if specified-->
     <group if="$(arg with_mocap)">
         <include file="$(find spirit_utils)/launch/mocap.launch" />
+    </group>
+
+        <!-- Record into bag if specified-->
+    <group if="$(arg record)">
+        <include file="$(find spirit_utils)/launch/record.launch" />
     </group>
 
 </launch>

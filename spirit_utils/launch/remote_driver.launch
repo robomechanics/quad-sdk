@@ -13,12 +13,8 @@
     <group if="$(arg with_proxy)">
         <include file="$(find spirit_utils)/launch/robot_driver.launch">
             <arg name="with_proxy" value="$(arg with_proxy)" />
+            <arg name="record" value="$(arg record)" />
         </include>
-    </group>
-
-    <!-- Record into bag if specified-->
-    <group if="$(arg record)">
-        <include file="$(find spirit_utils)/launch/record.launch" />
     </group>
 
 </launch>
