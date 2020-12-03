@@ -2,18 +2,16 @@
 
     <rosparam command="load" file="$(find spirit_utils)/../config/project_params.yaml"/>
 
-    <arg name="with_proxy" default="false"/>
-    <arg name="record" default="false"/>
+    <arg name="proxy" default="false"/>
 
     <include file="$(find spirit_utils)/launch/mapping.launch" />
     <include file="$(find spirit_utils)/launch/planning.launch" />
     <include file="$(find spirit_utils)/launch/visualization.launch" />
 
     <!-- Launch the robot_proxy if specified-->
-    <group if="$(arg with_proxy)">
+    <group if="$(arg proxy)">
         <include file="$(find spirit_utils)/launch/robot_driver.launch">
-            <arg name="with_proxy" value="$(arg with_proxy)" />
-            <arg name="record" value="$(arg record)" />
+            <arg name="proxy" value="true" />
         </include>
     </group>
 
