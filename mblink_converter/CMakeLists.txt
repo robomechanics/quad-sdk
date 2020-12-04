@@ -10,6 +10,7 @@ project(mblink_converter)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   spirit_msgs
+  spirit_utils
 )
 
 ## Setup MBLINK and MAVLINK
@@ -43,7 +44,7 @@ find_package(Eigen3 REQUIRED)
 catkin_package(
   INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
   LIBRARIES mblink_converter
-  CATKIN_DEPENDS roscpp spirit_msgs
+  CATKIN_DEPENDS roscpp spirit_msgs spirit_utils
 #  DEPENDS system_lib
 )
 

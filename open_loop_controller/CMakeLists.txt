@@ -12,11 +12,12 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   sensor_msgs
   spirit_msgs
+  spirit_utils
 )
 
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp std_msgs sensor_msgs spirit_msgs
+  CATKIN_DEPENDS roscpp std_msgs sensor_msgs spirit_msgs spirit_utils
   DEPENDS 
 )
 
