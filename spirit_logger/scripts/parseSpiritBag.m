@@ -66,7 +66,7 @@ if isempty(stateGroundTruthData)
     end
 end
 
-if ~isempty(stateEstimateData)
+if ~isempty(stateGroundTruthData)
     stateGroundTruth.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, stateGroundTruthData, 'UniformOutput', 0));
 
     stateGroundTruth.position = cell2mat(cellfun(@(m) ...
