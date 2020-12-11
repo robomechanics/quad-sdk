@@ -1,5 +1,6 @@
 docs/
 *.pyc
 *.vscode
-external/libInterpolate/build/
+external/osqp/build/
+external/osqp-eigen/build/
 *.vscode
