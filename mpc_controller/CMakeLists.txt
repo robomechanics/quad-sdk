@@ -21,6 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## System dependencies are found with CMake's conventions
 find_package(Eigen3 REQUIRED)
+find_package(mpc++ REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
@@ -43,6 +44,7 @@ include_directories(
 add_library(mpc_controller
 	src/mpc_controller.cpp
 )
+target_link_libraries(mpc_controller mpc++::mpc++)
 add_dependencies(mpc_controller ${mpc_controller_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable

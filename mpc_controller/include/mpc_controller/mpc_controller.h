@@ -3,6 +3,7 @@
 
 #include <ros/ros.h>
 #include <eigen3/Eigen/Eigen>
+#include <mpc++/linear_mpc.h>
 #include <spirit_msgs/BodyPlan.h>
 #include <spirit_msgs/Footstep.h>
 #include <spirit_msgs/FootstepPlan.h>
@@ -77,6 +78,9 @@ private:
 
 	/// Update rate for sending and receiving data;
 	double update_rate_;
+
+  /// Linear MPC object
+  std::shared_ptr<::mpcplusplus::LinearMPC> mpc;
 };
 
 
