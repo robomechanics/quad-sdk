@@ -48,6 +48,7 @@ namespace gazebo{
       ROS_ERROR("Can't find body link in sdf. Make sure the name in the plugin matches the sdf.");
       return;
     }
+
     ignition::math::Pose3d pose = body_link->WorldPose();
     ignition::math::Vector3d lin_pos = pose.Pos();
     ignition::math::Quaternion<double> ang_pos = pose.Rot();
@@ -69,6 +70,25 @@ namespace gazebo{
     state.body.twist.twist.angular.x = ang_vel.X();
     state.body.twist.twist.angular.y = ang_vel.Y();
     state.body.twist.twist.angular.z = ang_vel.Z();
+
+    physics::Joint_V joint_vec = model_->GetJoints();
+    int num_joints = 12;
+
+    for (int i = 0; i<num_joints; i++) {
+      // std::cout << joint->GetName() << std::endl;
+      // std::cout << joint->Position() << std::endl;
+      // std::cout << joint->GetVelocity(0) << std::endl;
+
+      physics::JointPtr joint = joint_vec[i];
+      physics::JointWrench wrench = joint->GetForceTorque(0);
+      double torque = wrench.body1Torque.Z(); // Note that this doesn't seem to work but at least will populate with zeros
+
+      state.joints.position.push_back(joint->Position());
+      state.joints.velocity.push_back(joint->GetVelocity(0));
+      state.joints.effort.push_back(torque);
+    }
+    // state.joints.position[0] = 
+
     state.header.stamp = ros::Time::now();
     state_estimate_pub_.publish(state);
 
