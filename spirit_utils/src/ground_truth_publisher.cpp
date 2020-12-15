@@ -11,7 +11,7 @@ GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh_,"topics/mocap",mocap_topic);
   spirit_utils::loadROSParam(nh_,"topics/ground_truth_state",ground_truth_state_topic);
   spirit_utils::loadROSParam(nh_,"ground_truth_publisher/velocity_smoothing_weight",alpha_);
-  spirit_utils::loadROSParam(nh_,"ground_truth_publisher/update_rate",update_rate_);
+  spirit_utils::loadROSParam(nh_,"ground_truth_publisher/mocap_rate",mocap_rate_);
 
   // Assume zero initial velocity
   mocap_vel_estimate_.x = 0;
@@ -29,16 +29,16 @@ void GroundTruthPublisher::mocapCallback(const geometry_msgs::PoseStamped::Const
 
   if (last_mocap_msg_ != NULL)
   {
-    // Collect change in position, and change in time for velocity update
+    // Collect change in position for velocity update
     double xDiff = msg->pose.position.x - last_mocap_msg_->pose.position.x;
     double yDiff = msg->pose.position.y - last_mocap_msg_->pose.position.y;
     double zDiff = msg->pose.position.z - last_mocap_msg_->pose.position.z;
-    double dt = spirit_utils::getROSMessageAgeInMs(msg->header) -
-                spirit_utils::getROSMessageAgeInMs(last_mocap_msg_->header);
 
-    mocap_vel_estimate_.x = alpha_*mocap_vel_estimate_.x + (1-alpha_)*xDiff/dt;
-    mocap_vel_estimate_.y = alpha_*mocap_vel_estimate_.y + (1-alpha_)*yDiff/dt;
-    mocap_vel_estimate_.z = alpha_*mocap_vel_estimate_.z + (1-alpha_)*zDiff/dt;
+    // Filtered velocity estimate assuming motion capture frame rate is constant at mocap_rate_
+    // in order to avoid variable network and ROS latency that appears in the message time stamp
+    mocap_vel_estimate_.x = alpha_*mocap_vel_estimate_.x + (1-alpha_)*xDiff*mocap_rate_;
+    mocap_vel_estimate_.y = alpha_*mocap_vel_estimate_.y + (1-alpha_)*yDiff*mocap_rate_;
+    mocap_vel_estimate_.z = alpha_*mocap_vel_estimate_.z + (1-alpha_)*zDiff*mocap_rate_;
   }
 
   // Update our cached mocap position
@@ -77,7 +77,7 @@ spirit_msgs::StateEstimate GroundTruthPublisher::updateStep() {
 }
 
 void GroundTruthPublisher::spin() {
-  ros::Rate r(update_rate_);
+  ros::Rate r(mocap_rate_);
   while (ros::ok()) {
 
     // Collect new messages on subscriber topics
