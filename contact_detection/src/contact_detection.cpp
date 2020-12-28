@@ -27,8 +27,18 @@ void ContactDetection::imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
 spirit_msgs::ContactMode ContactDetection::updateStep() {
   spirit_msgs::ContactMode new_contact_est;
 
-  new_contact_est.contact_prob = {0.8,0.2,0.2,0.8};
-  new_contact_est.contact_state = {true,false,false,true};
+  double contact_prob[4] = {0.0,0.3,0.7,0.99};
+
+  new_contact_est.leg_contacts.resize(4);
+  for (int i = 0; i < 4; ++i)
+  {
+    new_contact_est.leg_contacts.at(i).contact_prob = contact_prob[i];
+    new_contact_est.leg_contacts.at(i).contact_state = contact_prob[i] > 0.5;
+    new_contact_est.leg_contacts.at(i).contact_forces.x = 0;
+    new_contact_est.leg_contacts.at(i).contact_forces.y = 0;
+    new_contact_est.leg_contacts.at(i).contact_forces.z = 0;
+  }
+
   new_contact_est.header.stamp = ros::Time::now();
   return new_contact_est;
 }

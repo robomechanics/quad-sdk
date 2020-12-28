@@ -38,10 +38,10 @@ SOFTWARE.
   </include>
 
   <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_meshes.urdf" />
-  <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf/spirit.sdf" />
+  <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
 
   <!-- Spawn SDF model -->
-  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.7 -J 1 1 -J 3 1 -J 5 1 -J 7 1 -J 0 0.7 -J 2 0.7 -J 4 0.7 -J 6 0.7" output="screen"/>
+  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.2" output="screen"/>
 
   <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
   <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/spirit" args="joint_state_controller joint_controller"/>

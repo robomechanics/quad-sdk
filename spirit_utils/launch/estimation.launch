@@ -1,0 +1,14 @@
+<launch>
+
+    <rosparam command="load" file="$(find spirit_utils)/../config/project_params.yaml"/>
+
+    <!-- Launch the node to publish state estimate messages-->
+    <node name="ekf_estimator" pkg="ekf_estimator" type="ekf_estimator_node" output="screen"/>
+
+    <!-- Launch the node to publish contact detection messages-->
+    <node name="contact_detection" pkg="contact_detection" type="contact_detection_node" output="screen"/>
+
+    <!-- Launch the node to publish body forece estimate messages-->
+    <node name="body_force_estimator" pkg="body_force_estimator" type="body_force_estimator_node" output="screen"/>
+
+</launch>

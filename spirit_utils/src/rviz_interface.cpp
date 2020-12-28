@@ -18,7 +18,7 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   nh.param<std::string>("topics/footstep_plan", footstep_plan_topic, "/footstep_plan");
   nh.param<std::string>("topics/visualization/footstep_plan", footstep_plan_viz_topic, "/visualization/footstep_plan_viz");
   nh.param<std::string>("topics/state_estimate", state_estimate_topic, "/state_estimate");
-  nh.param<std::string>("topics/joint_states", joint_states_viz_topic, "/joint_states");
+  nh.param<std::string>("topics/joint_states_viz", joint_states_viz_topic, "/joint_states_viz");
   nh.param<std::string>("map_frame",map_frame_,"/map");
   nh.param<double>("visualization/update_rate", update_rate_, 10); // add a param for your package instead of using the estimator one
 

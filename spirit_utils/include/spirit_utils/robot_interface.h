@@ -4,12 +4,13 @@
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <spirit_msgs/ControlInput.h>
 
-//! A class for interfacing between stand-in robot data and other spirit-software nodes and topics.
+//! A class for interfacing between dummy robot data and other spirit-software nodes and topics.
 /*!
    RobotInterface contains the approximation for the real spirit robot. Its purposes are purely for development.
-   The class provides publishers for robot data (encoder and imu measurements) as well as a subscriber for control inputs.
+   The class provides publishers for dummy robot data (encoder, imu, and mocap measurements) as well as a subscriber for control inputs.
 */
 class RobotInterface {
 public:
@@ -33,14 +34,19 @@ private:
   void controlInputCallback(const spirit_msgs::ControlInput::ConstPtr& msg);
 
   /**
-   * @brief Function to publish joint encoder data. Likely empty.
+   * @brief Function to publish dummy joint encoder data
    */
   void publishJointEncoders();
 
   /**
-   * @brief Function to publish imu data. Likely empty.
+   * @brief Function to publish dummy imu data
    */
   void publishImu();
+
+  /**
+   * @brief Function to publish dummy mocap data
+   */
+  void publishMocap();
 
 	/// ROS subscriber for the control inputs
 	ros::Subscriber control_input_sub_;
@@ -48,8 +54,11 @@ private:
 	/// ROS publisher for joint encoder data
 	ros::Publisher joint_encoder_pub_;
 
-	/// ROS publisher for imu data
-	ros::Publisher imu_pub_;
+  /// ROS publisher for imu data
+  ros::Publisher imu_pub_;
+
+  /// ROS publisher for mocap data
+  ros::Publisher mocap_pub_;
 
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;

@@ -1,0 +1,31 @@
+<launch>
+    <rosparam command="load" file="$(find spirit_utils)/../config/project_params.yaml"/>
+
+    <arg name="proxy" default="false"/>
+    <arg name="mocap" default="false"/>
+    <arg name="logging" default="false"/>
+
+    <include file="$(find spirit_utils)/launch/control.launch" />
+    <include file="$(find spirit_utils)/launch/estimation.launch" />
+
+    <!-- Launch the robot_proxy if specified-->
+    <group if="$(arg proxy)">
+        <node name="robot_proxy" pkg="spirit_utils" type="robot_interface_node" output="screen"/>
+    </group>
+
+    <!-- Launch the mblink converter unless using a proxy-->
+    <group unless="$(arg proxy)">
+        <node name="mblink_converter" pkg="mblink_converter" type="mblink_converter_node" output="screen"/>
+    </group>
+
+    <!-- Launch the mocap node if specified-->
+    <group if="$(arg mocap)">
+        <include file="$(find spirit_utils)/launch/mocap.launch" />
+    </group>
+
+        <!-- Record into bag if specified-->
+    <group if="$(arg logging)">
+        <include file="$(find spirit_utils)/launch/logging.launch" />
+    </group>
+
+</launch>
