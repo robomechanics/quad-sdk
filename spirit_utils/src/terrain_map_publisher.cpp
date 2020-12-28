@@ -51,7 +51,7 @@ void TerrainMapPublisher::createMap() {
 
     if (x_diff*x_diff + y_diff*y_diff <= obs_radius*obs_radius)
     {
-      terrain_map_.at("elevation", *it) = 0.05;
+      terrain_map_.at("elevation", *it) = 0.2;
     } else {
       terrain_map_.at("elevation", *it) = 0.0;
     }

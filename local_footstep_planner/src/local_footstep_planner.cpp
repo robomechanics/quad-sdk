@@ -62,21 +62,25 @@ void LocalFootstepPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPt
     s[7] = msg->states[i].twist.twist.angular.z;
     s[8] = yaw;
     body_plan_.push_back(s);
+
+    Eigen::Vector3d force;
+    tf::vectorMsgToEigen(msg->wrenches[i].force, force);
+    body_wrench_plan_.push_back(force);
   }
 }
 
-std::vector<double> LocalFootstepPlanner::interpolateMat(std::vector<double> input_vec, std::vector<std::vector<double>> input_mat, double query_point) {
+std::vector<double> LocalFootstepPlanner::interpMat(std::vector<double> input_vec, std::vector<std::vector<double>> input_mat, double query_point) {
 
   // Check bounds, throw an error if invalid since this shouldn't ever happen
   if ((query_point < input_vec.front()) || (query_point > input_vec.back())){
-    throw std::runtime_error("Tried to interpolate out of bounds");
+    throw std::runtime_error("Tried to interp out of bounds");
   }
 
   // Declare variables for interpolating between, both for input and output data
   double t1, t2;
   std::vector<double> y1, y2, interp_data;
 
-  // Find the correct values to interpolate between
+  // Find the correct values to interp between
   int idx=0;
   for(int i=0;i<input_vec.size();i++)
   {
@@ -99,10 +103,38 @@ std::vector<double> LocalFootstepPlanner::interpolateMat(std::vector<double> inp
   return interp_data;
 }
 
-double LocalFootstepPlanner::interpolateVec(std::vector<double> input_vec, std::vector<double> input_mat, double query_point){
+Eigen::Vector3d LocalFootstepPlanner::interpVector3d(std::vector<double> input_vec, std::vector<Eigen::Vector3d> input_mat, double query_point) {
 
+  // Check bounds, throw an error if invalid since this shouldn't ever happen
+  if ((query_point < input_vec.front()) || (query_point > input_vec.back())){
+    throw std::runtime_error("Tried to interp out of bounds");
+  }
+
+  // Declare variables for interpolating between, both for input and output data
+  double t1, t2;
+  Eigen::Vector3d y1, y2, interp_data;
+
+  // Find the correct values to interp between
+  int idx=0;
+  for(int i=0;i<input_vec.size();i++)
+  {
+      if(input_vec[i]<=query_point && query_point<input_vec[i+1])
+      {
+        t1 = input_vec[i];
+        t2 = input_vec[i+1];
+        y1 = input_mat[i];
+        y2 = input_mat[i+1]; 
+        break;
+      }
+  }
+
+  // Apply linear interpolation for each element in the vector
+  for (int i = 0; i<input_mat.front().size(); i++) {
+    interp_data[i] = y1[i] + (y2[i]-y1[i])/(t2-t1)*(query_point-t1);
+  }
+  
+  return interp_data;
 }
-
 
 void LocalFootstepPlanner::updatePlan() {
 
@@ -134,22 +166,33 @@ void LocalFootstepPlanner::updatePlan() {
       double t_touchdown = t_cycle + t_offsets[j];
       double t_midstance = t_cycle + t_offsets[j] + 0.5*t_s[j];
 
-      BodyState s_touchdown = interpolateMat(t_plan_, body_plan_, t_touchdown);
-      BodyState s_midstance = interpolateMat(t_plan_, body_plan_, t_midstance);
+      BodyState s_touchdown = interpMat(t_plan_, body_plan_, t_touchdown);
+      BodyState s_midstance = interpMat(t_plan_, body_plan_, t_midstance);
+      BodyWrench grf_midstance = interpVector3d(t_plan_, body_wrench_plan_, t_midstance);
 
       // Compute the body and hip positions and velocities
       double x_body = s_touchdown[0];
       double y_body = s_touchdown[1];
+      double z_body = s_touchdown[2];
       double yaw = s_touchdown[8];
       double x_hip = x_body + x_offsets[j]*cos(yaw) - y_offsets[j]*sin(yaw);
       double y_hip = y_body + x_offsets[j]*sin(yaw) + y_offsets[j]*cos(yaw);
+      double z_hip = z_body; // TODO add in pitch here
+
       double dx_body = s_midstance[3];
       double dy_body = s_midstance[4];
+      double dz_body = s_midstance[5];
+      double x_hip_midstance = x_hip + 0.5*t_s[j]*dx_body;
+      double y_hip_midstance = y_hip + 0.5*t_s[j]*dy_body;
+      double z_hip_midstance = z_hip + 0.5*t_s[j]*dz_body;
+
+      Eigen::Vector3d hip_midstance = {x_hip_midstance, y_hip_midstance, z_hip_midstance};
+      Eigen::Vector3d footstep_nom = terrain_.projectToMap(hip_midstance, -1.0*grf_midstance);
 
       // Load the data into the footstep array and push into the plan
       footstep[0] = j;
-      footstep[1] = x_hip + 0.5*t_s[j]*dx_body;
-      footstep[2] = y_hip + 0.5*t_s[j]*dy_body;
+      footstep[1] = footstep_nom[0];
+      footstep[2] = footstep_nom[1];
       footstep[3] = t_touchdown;
       footstep[4] = t_s[j];
 

@@ -73,6 +73,7 @@
   <exec_depend>spirit_utils</exec_depend>
   <exec_depend>grid_map_core</exec_depend>
   <exec_depend>grid_map_ros</exec_depend>
+  <depend>eigen_conversions</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

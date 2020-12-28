@@ -12,6 +12,9 @@
 #include <grid_map_ros/grid_map_ros.hpp>
 #include <grid_map_ros/GridMapRosConverter.hpp>
 
+#include <Eigen/Dense>
+#include <eigen_conversions/eigen_msg.h>
+
 //! A local footstep planning class for spirit
 /*!
    FootstepPlanner is a container for all of the logic utilized in the local footstep planning node.
@@ -51,16 +54,16 @@ class LocalFootstepPlanner {
      * @param[in] input_val Query point
      * @return Vector of interpolated values
      */
-    std::vector<double> interpolateMat(std::vector<double> input_vec, std::vector<std::vector<double>> output_mat, double query_point);
+    std::vector<double> interpMat(std::vector<double> input_vec, std::vector<std::vector<double>> output_mat, double query_point);
 
     /**
-     * @brief Interpolate data from a column vector provided an input vector and query point
+     * @brief Interpolate data from column vectors contained in a matrix (vector of row vectors) provided an input vector and query point
      * @param[in] input_vec Input vector
-     * @param[in] output_vec Output vector such that each element corresponds to exactly one element in the input vector
+     * @param[in] output_mat Collection of row vectors such that each row corresponds to exactly one element in the input vector
      * @param[in] input_val Query point
-     * @return Interpolated value
+     * @return Vector of interpolated values
      */
-    double interpolateVec(std::vector<double> input_vec, std::vector<double> input_mat, double query_point);
+    Eigen::Vector3d interpVector3d(std::vector<double> input_vec, std::vector<Eigen::Vector3d> output_mat, double query_point);
 
     /**
      * @brief Update the footstep plan with the current plan
@@ -96,11 +99,17 @@ class LocalFootstepPlanner {
     /// Define the body state data structure
     typedef std::vector<double> BodyState;
 
+    /// Define the body wrench data structure
+    typedef Eigen::Vector3d BodyWrench;
+
     /// Define the footstep state data structure
     typedef std::vector<double> FootstepState;
 
     /// Std vector containing robot body plan
     std::vector<BodyState> body_plan_;
+
+    /// Std vector containing robot body wrenches
+    std::vector<BodyWrench> body_wrench_plan_;
 
     /// Std vector containing robot footstep plan
     std::vector<FootstepState> footstep_plan_;

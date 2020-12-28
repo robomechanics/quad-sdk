@@ -21,6 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
   spirit_utils
   grid_map_core
   grid_map_ros
+  eigen_conversions
 )
 
 catkin_package(
