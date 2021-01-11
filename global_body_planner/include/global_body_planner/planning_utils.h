@@ -57,8 +57,10 @@ const int REVERSE = 1;
 // Define the dimensionality and types for states, actions, and pairs
 const int POSEDIM = 4;
 const int STATEDIM = 8;
+const int FULLSTATEDIM = 12;
 const int ACTIONDIM = 10;
 typedef std::array<double, STATEDIM> State;
+typedef std::array<double, FULLSTATEDIM> FullState;
 typedef std::array<double, ACTIONDIM> Action;
 typedef std::vector<double> Wrench;
 typedef std::pair<State, Action> StateActionPair;
@@ -67,9 +69,13 @@ typedef std::pair<State, Action> StateActionPair;
 const double INFTY = std::numeric_limits<double>::max();
 const double MY_PI = 3.14159;
 
-// Define some useful print statements
+// State data structure conversions
+State fullStateToState(FullState full_state);
+FullState stateToFullState(State state, double roll, double yaw, double roll_rate, double yaw_rate);
 void vectorToArray(State vec, double * new_array);
 void stdVectorToState(std::vector<double> v, State& s);
+
+// Define some useful print statements
 void printState(State vec);
 void printVectorInt(std::vector<int> vec);
 void printStateNewline(State vec);
@@ -79,18 +85,20 @@ void printActionNewline(Action a);
 void printStateSequence(std::vector<State> state_sequence);
 void printInterpStateSequence(std::vector<State> state_sequence, std::vector<double> interp_t);
 void printActionSequence(std::vector<Action> action_sequence);
+void plotYaw(std::vector<double> interp_t, std::vector<FullState> interp_full_path);
 
 // Define some utility functions
+double poseDistance(State q1, State q2);
+double stateDistance(State q1, State q2);
+bool isWithinBounds(State s1, State s2);
+std::array<double,3> rotateGRF(std::array<double,3> surface_norm, std::array<double,3> grf);
+std::vector<double> movingAverageFilter(std::vector<double> data, int window_size);
+std::vector<double> centralDifference(std::vector<double> data, double dt);
 Wrench getWrench(Action a,double t);
 void interpStateActionPair(State s, Action a,double t0,double dt, std::vector<State> &interp_path, 
     std::vector<Wrench> &interp_wrench, std::vector<double> &interp_t, std::vector<int> &interp_phase);
 void getInterpPath(std::vector<State> state_sequence, std::vector<Action> action_sequence,double dt, 
-    std::vector<State> &interp_path, std::vector<Wrench> &interp_wrench, std::vector<double> &interp_t, std::vector<int> &interp_phase);
-State interp(State q1, State q2, double x);
-double poseDistance(State q1, State q2);
-double stateDistance(State q1, State q2);
-bool isWithinBounds(State s1, State s2);
-std::array<double,3> rotate_grf(std::array<double,3> surface_norm, std::array<double,3> grf);
+    std::vector<FullState> &interp_full_path, std::vector<Wrench> &interp_wrench, std::vector<double> &interp_t, std::vector<int> &interp_phase);
 
 // Define planning helper functions
 State applyStance(State s, Action a, double t);

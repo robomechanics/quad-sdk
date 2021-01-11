@@ -337,13 +337,13 @@ Visualization Manager:
       Value: true
       Visual Enabled: true
     - Class: rviz/MarkerArray
-      Enabled: false
+      Enabled: true
       Marker Topic: /visualization/body_wrench_plan
       Name: MarkerArray
       Namespaces:
         {}
       Queue Size: 100
-      Value: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
@@ -409,4 +409,4 @@ Window Geometry:
     collapsed: true
   Width: 1095
   X: 514
-  Y: 0
+  Y: 27

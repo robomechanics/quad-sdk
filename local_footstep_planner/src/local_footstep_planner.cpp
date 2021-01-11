@@ -31,6 +31,7 @@ void LocalFootstepPlanner::terrainMapCallback(const grid_map_msgs::GridMap::Cons
 void LocalFootstepPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) {
   t_plan_.clear();
   body_plan_.clear();
+  body_wrench_plan_.clear();
 
   // Loop through the message to get the state info and add to private vector
   int length = msg->states.size();
@@ -51,16 +52,19 @@ void LocalFootstepPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPt
     t_plan_.push_back(t_plan.toSec());
 
     // Get the state associated with this data
-    std::vector<double> s(9);
+    std::vector<double> s(12);
     s[0] = msg->states[i].pose.pose.position.x;
     s[1] = msg->states[i].pose.pose.position.y;
     s[2] = msg->states[i].pose.pose.position.z;
     s[3] = msg->states[i].twist.twist.linear.x;
     s[4] = msg->states[i].twist.twist.linear.y;
     s[5] = msg->states[i].twist.twist.linear.z;
-    s[6] = pitch;
-    s[7] = msg->states[i].twist.twist.angular.z;
+    s[6] = roll;
+    s[7] = pitch;
     s[8] = yaw;
+    s[9] = msg->states[i].twist.twist.angular.x;
+    s[10] = msg->states[i].twist.twist.angular.y;
+    s[11] = msg->states[i].twist.twist.angular.z;
     body_plan_.push_back(s);
 
     Eigen::Vector3d force;
@@ -129,7 +133,7 @@ Eigen::Vector3d LocalFootstepPlanner::interpVector3d(std::vector<double> input_v
   }
 
   // Apply linear interpolation for each element in the vector
-  for (int i = 0; i<input_mat.front().size(); i++) {
+  for (int i = 0; i<3; i++) {
     interp_data[i] = y1[i] + (y2[i]-y1[i])/(t2-t1)*(query_point-t1);
   }
   
@@ -141,8 +145,11 @@ void LocalFootstepPlanner::updatePlan() {
   // Clear out the old footstep plan
   footstep_plan_.clear();
 
+  // Define dynamic aggressiveness (0 = maximize kinematic feasibility, 1 = maximize dynamic feasibility)
+  double alpha = 0.5;
+
   // Define the gait sequence
-  double period = 0.2;
+  double period = 0.25;
   double t_offsets[4] = {0.0, 0.5*period, 0.5*period, 0.0};
   double t_s[4] = {0.5*period, 0.5*period, 0.5*period, 0.5*period};
   int num_cycles = t_plan_.back()/period;
@@ -186,8 +193,12 @@ void LocalFootstepPlanner::updatePlan() {
       double y_hip_midstance = y_hip + 0.5*t_s[j]*dy_body;
       double z_hip_midstance = z_hip + 0.5*t_s[j]*dz_body;
 
+      // Project along GRF from hips to the ground
       Eigen::Vector3d hip_midstance = {x_hip_midstance, y_hip_midstance, z_hip_midstance};
-      Eigen::Vector3d footstep_nom = terrain_.projectToMap(hip_midstance, -1.0*grf_midstance);
+      Eigen::Vector3d footstep_grf = terrain_.projectToMap(hip_midstance, -1.0*grf_midstance);
+
+      // Define the nominal footstep location to lie on a line between the hips projected vertically and along GRF (third entry is garbage)
+      Eigen::Vector3d footstep_nom = (1-alpha)*hip_midstance + alpha*footstep_grf;
 
       // Load the data into the footstep array and push into the plan
       footstep[0] = j;

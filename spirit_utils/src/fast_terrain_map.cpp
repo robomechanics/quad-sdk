@@ -210,6 +210,7 @@ Eigen::Vector3d FastTerrainMap::projectToMap(Eigen::Vector3d point, Eigen::Vecto
       clearance = new_point[2] - getGroundHeight(new_point[0], new_point[1]);
     } else {
       result = {old_point[0], old_point[1], -std::numeric_limits<double>::max()};
+      ROS_WARN("Tried to project to a point off the map.");
       return result;
     }
   }

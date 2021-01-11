@@ -2,6 +2,7 @@
 #define FAST_TERRAIN_MAP_H
 
 #include <grid_map_core/grid_map_core.hpp>
+#include <ros/ros.h>
 #include <Eigen/Dense>
 #include <chrono>
 

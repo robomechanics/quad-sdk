@@ -14,7 +14,6 @@
 #include <grid_map_ros/grid_map_ros.hpp>
 #include <grid_map_ros/GridMapRosConverter.hpp>
 
-
 using namespace planning_utils;
 
 //! A global body planning class for legged robots
@@ -62,7 +61,7 @@ class GlobalBodyPlanner {
      * @param[in] body_wrench Wrench applied to body
      * @param[in] body_plan_msg Body plan message
      */
-    void addStateWrenchToMsg(double t, State body_state, Wrench body_wrench, spirit_msgs::BodyPlan& body_plan_msg);
+    void addStateWrenchToMsg(double t, FullState body_state, Wrench body_wrench, spirit_msgs::BodyPlan& body_plan_msg);
 
     /**
      * @brief Publish the current body plan
@@ -105,7 +104,7 @@ class GlobalBodyPlanner {
     FastTerrainMap terrain_;
 
     /// Std vector containing the interpolated robot body plan
-    std::vector<State> body_plan_;
+    std::vector<FullState> body_plan_;
 
     /// Std vector containing the interpolated wrench plan
     std::vector<Wrench> wrench_plan_;

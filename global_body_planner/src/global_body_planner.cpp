@@ -2,6 +2,7 @@
 
 using namespace planning_utils;
 
+
 GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh_ = nh;
 
@@ -27,6 +28,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(body_plan_topic,1);
   discrete_body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(discrete_body_plan_topic,1);
 
+  // Initialize the current path cost to infinity to ensure the first solution is stored
   current_cost_ = INFTY;
 }
 
@@ -49,7 +51,6 @@ void GlobalBodyPlanner::clearPlan() {
   cost_vector_.clear();
   cost_vector_times_.clear();
 }
-
 
 void GlobalBodyPlanner::callPlanner() {
 
@@ -124,6 +125,13 @@ void GlobalBodyPlanner::callPlanner() {
       std::cout << "Path length: " << path_length << " m" << std::endl;
       std::cout << "Path duration: " << path_duration << " s" << std::endl;
       std::cout << std::endl;
+
+      // Interpolate to get full body plan
+      double dt = 0.1;
+      std::vector<int> interp_phase;
+      getInterpPath(state_sequence_, action_sequence_, dt, body_plan_, wrench_plan_, t_plan_, interp_phase);
+      // plotYaw(t_plan_, body_plan_);
+      publishPlan();
     }
 
     if (!ros::ok()) {
@@ -141,14 +149,9 @@ void GlobalBodyPlanner::callPlanner() {
     std::cout << std::endl;
   }
 
-  // Interpolate to get full body plan
-  double dt = 0.1;
-  std::vector<int> interp_phase;
-  getInterpPath(state_sequence_, action_sequence_,dt,body_plan_, wrench_plan_, t_plan_, interp_phase);
-
 }
 
-void GlobalBodyPlanner::addStateWrenchToMsg(double t, State body_state, Wrench wrench,
+void GlobalBodyPlanner::addStateWrenchToMsg(double t, FullState body_state, Wrench wrench,
     spirit_msgs::BodyPlan& msg) {
 
   // Make sure the timestamps match the trajectory timing
@@ -164,7 +167,7 @@ void GlobalBodyPlanner::addStateWrenchToMsg(double t, State body_state, Wrench w
   // Transform from RPY to quat msg
   tf2::Quaternion quat_tf;
   geometry_msgs::Quaternion quat_msg;
-  quat_tf.setRPY(0,body_state[6], atan2(body_state[4],body_state[3]));
+  quat_tf.setRPY(body_state[6],body_state[7],body_state[8]);
   quat_msg = tf2::toMsg(quat_tf);
 
   // Load the data into the message
@@ -176,9 +179,9 @@ void GlobalBodyPlanner::addStateWrenchToMsg(double t, State body_state, Wrench w
   state.twist.twist.linear.x = body_state[3];
   state.twist.twist.linear.y = body_state[4];
   state.twist.twist.linear.z = body_state[5];
-  state.twist.twist.angular.x = 0;
-  state.twist.twist.angular.y = body_state[6];
-  state.twist.twist.angular.z = 0;
+  state.twist.twist.angular.x = body_state[9];
+  state.twist.twist.angular.y = body_state[10];
+  state.twist.twist.angular.z = body_state[11];
 
   geometry_msgs::Wrench wrench_msg;
   wrench_msg.force.x = wrench[0];
@@ -209,7 +212,11 @@ void GlobalBodyPlanner::publishPlan() {
 
   // Loop through the discrete states and add to message
   for (int i = 0; i<state_sequence_.size(); i++)
-    addStateWrenchToMsg(t_plan_[i], state_sequence_[i], wrench_plan_[i], discrete_body_plan_msg);
+  {
+    // Discrete states don't need roll or yaw data, set to zero
+    FullState full_discrete_state = stateToFullState(state_sequence_[i],0,0,0,0);
+    addStateWrenchToMsg(t_plan_[i], full_discrete_state, wrench_plan_[i], discrete_body_plan_msg);
+  }
   
   if (body_plan_msg.states.size() != body_plan_msg.wrenches.size()) {
     throw std::runtime_error("Mismatch between number of states and wrenches, something is wrong");
@@ -242,7 +249,6 @@ void GlobalBodyPlanner::spin() {
     callPlanner();
 
     // Publish the current best plan and sleep
-    publishPlan();
     ros::spinOnce();
     r.sleep();
   }
