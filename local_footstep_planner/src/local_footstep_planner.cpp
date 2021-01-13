@@ -141,6 +141,7 @@ Eigen::Vector3d LocalFootstepPlanner::interpVector3d(std::vector<double> input_v
 }
 
 void LocalFootstepPlanner::updatePlan() {
+  // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
   // Clear out the old footstep plan
   footstep_plan_.clear();
@@ -152,7 +153,9 @@ void LocalFootstepPlanner::updatePlan() {
   double period = 0.25;
   double t_offsets[4] = {0.0, 0.5*period, 0.5*period, 0.0};
   double t_s[4] = {0.5*period, 0.5*period, 0.5*period, 0.5*period};
-  int num_cycles = t_plan_.back()/period;
+
+  double footstep_horizon = std::min(1.5, t_plan_.back());
+  int num_cycles = footstep_horizon/period;
 
   // Specify the number of feet and their offsets from the COM
   double num_feet = 4;
@@ -208,8 +211,11 @@ void LocalFootstepPlanner::updatePlan() {
       footstep[4] = t_s[j];
 
       footstep_plan_.push_back(footstep);
+
     }
   }
+
+  // timer.report();
 }
 
 void LocalFootstepPlanner::publishPlan() {

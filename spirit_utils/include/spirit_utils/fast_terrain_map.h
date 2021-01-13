@@ -5,6 +5,7 @@
 #include <ros/ros.h>
 #include <Eigen/Dense>
 #include <chrono>
+#include <spirit_utils/function_timer.h>
 
 //! A terrain map class built for fast and efficient sampling
 /*!

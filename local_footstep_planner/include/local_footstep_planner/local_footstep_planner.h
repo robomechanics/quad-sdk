@@ -7,6 +7,7 @@
 #include <spirit_msgs/Footstep.h>
 #include <spirit_msgs/FootstepPlan.h>
 #include <spirit_utils/fast_terrain_map.h>
+#include <spirit_utils/function_timer.h>
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
