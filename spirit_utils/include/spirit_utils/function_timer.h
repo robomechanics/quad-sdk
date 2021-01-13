@@ -33,6 +33,11 @@ class FunctionTimer {
       printf("Time spent in %s = %.4es\n", function_name_, current_time);
     };
 
+    void reportAndRestart() {
+      report();
+      start_time_ = std::chrono::steady_clock::now();
+    };
+
   private:
     /// The time at the start of the function call
     std::chrono::time_point<std::chrono::steady_clock> start_time_;
