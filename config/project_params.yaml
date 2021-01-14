@@ -27,6 +27,14 @@ global_body_planner:
   start_state: [0.0,0,0.4,0.0,0.1,0.0,0.0,0.0]
   goal_state: [8.0,1.0,0.4,0.0,0.0,0.0,0.0,0.0]
 
+twist_body_planner:
+  update_rate: 10
+  horizon_length: 1.5
+  last_cmd_vel_msg_time_max: 2.0
+
+teleop_twist_keyboard:
+  repeat_rate: 10
+
 local_footstep_planner:
   update_rate: 10
   
@@ -76,3 +84,5 @@ open_loop_controller:
   walk_kd: [1,1,1]
   use_diff_for_velocity: true
   control_mode_topic: /spirit/control_mode
+
+map_frame: map
