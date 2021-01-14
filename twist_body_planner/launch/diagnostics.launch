@@ -1,0 +1,27 @@
+<launch>
+        <rosparam command="load" file="$(find global_body_planner)/config/diagnostics.yaml"/>
+
+        <!-- Launch the node to generate simple terrain -->
+        <node pkg="spirit_utils" type="terrain_map_publisher_node" name="terrain_map_publisher" output="screen" />
+
+        <!-- Load the image of the terrain map -->
+        <node pkg="grid_map_demos" type="image_publisher.py" name="image_publisher" output="screen">
+            <param name="image_path" value="$(find spirit_utils)/data/slope.png" />
+            <param name="topic" value="~image" />
+        </node>
+                
+        <!-- Launch the node to publish the global body plan -->
+        <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen"/>
+
+		<!-- Launch the grid map visualizer -->
+		<node pkg="grid_map_visualization" type="grid_map_visualization" name="grid_map_visualization" output="screen">
+		  <!-- <rosparam command="load" file="$(find global_body_planner)/config/simple_terrain.yaml" /> -->
+		</node>
+
+        <!-- Launch the node to publish the visual topics for the plans -->
+        <node name="rviz_interface" pkg="spirit_utils" type="rviz_interface_node" output="screen"/>
+
+        <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find global_body_planner)/rviz/example_with_terrain.rviz"/>
+
+</launch>
