@@ -3,15 +3,22 @@
     <rosparam command="load" file="$(find spirit_utils)/../config/project_params.yaml"/>
 
     <arg name="proxy" default="false"/>
+    <arg name="controller" default="open_loop"/>
+    <arg name="body_planner" default="global"/>
 
     <include file="$(find spirit_utils)/launch/mapping.launch" />
-    <include file="$(find spirit_utils)/launch/planning.launch" />
+
+    <include file="$(find spirit_utils)/launch/planning.launch">
+        <arg name="body_planner" value="$(arg body_planner)" />
+    </include>
+
     <include file="$(find spirit_utils)/launch/visualization.launch" />
 
     <!-- Launch the robot_proxy if specified-->
     <group if="$(arg proxy)">
         <include file="$(find spirit_utils)/launch/robot_driver.launch">
             <arg name="proxy" value="true" />
+            <arg name="controller" value="$(arg controller)" />
         </include>
     </group>
 
