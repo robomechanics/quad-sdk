@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['last_5fcmd_5fvel_5fmsg_5ftime_5f',['last_cmd_vel_msg_time_',['../classTwistBodyPlanner.html#a5c940c533b47bda515f903232b133ff7',1,'TwistBodyPlanner']]],
+  ['last_5fcmd_5fvel_5fmsg_5ftime_5fmax_5f',['last_cmd_vel_msg_time_max_',['../classTwistBodyPlanner.html#aad333bd74dcd74d9b39549fe0a51b9ee',1,'TwistBodyPlanner']]],
   ['last_5fcontact_5fest_5f',['last_contact_est_',['../classContactDetection.html#a2ae3ae173cb542bdfaa51bb0a4fe18f8',1,'ContactDetection']]],
   ['last_5fcontact_5fmsg_5f',['last_contact_msg_',['../classEKFEstimator.html#a97409699f46afb7daa766699d54c7230',1,'EKFEstimator']]],
   ['last_5fimu_5fmsg_5f',['last_imu_msg_',['../classContactDetection.html#a71bee086651ae1a5d3f8d50859971534',1,'ContactDetection::last_imu_msg_()'],['../classEKFEstimator.html#a21eeece8e983b5f00ac6183571973d86',1,'EKFEstimator::last_imu_msg_()'],['../classGroundTruthPublisher.html#a1aaf78a5aed8f3afbc4055b35f0dc679',1,'GroundTruthPublisher::last_imu_msg_()']]],

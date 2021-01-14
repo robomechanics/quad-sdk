@@ -4,7 +4,7 @@ var searchData=
   ['actions',['actions',['../classGraphClass.html#af72e4666fa9283cd4c3d4acfccbcfd57',1,'GraphClass']]],
   ['addaction',['addAction',['../classGraphClass.html#aafacca2abff7f17df66e5b2f6b441c98',1,'GraphClass']]],
   ['addedge',['addEdge',['../classGraphClass.html#ac9d39ec62febc8b866c596f6672f5423',1,'GraphClass']]],
-  ['addstatewrenchtomsg',['addStateWrenchToMsg',['../classGlobalBodyPlanner.html#a6736b693ac5926cf1ab3c9728af57d0d',1,'GlobalBodyPlanner']]],
+  ['addstatewrenchtomsg',['addStateWrenchToMsg',['../classGlobalBodyPlanner.html#a6736b693ac5926cf1ab3c9728af57d0d',1,'GlobalBodyPlanner::addStateWrenchToMsg()'],['../classTwistBodyPlanner.html#a199e03ad9336d161854be7b44ae77e58',1,'TwistBodyPlanner::addStateWrenchToMsg()']]],
   ['addvertex',['addVertex',['../classGraphClass.html#a14de7afdfc42f444e9dc60f860a3c8bf',1,'GraphClass']]],
   ['algorithm_5f',['algorithm_',['../classGlobalBodyPlanner.html#a60cae5753166db3a1d5600e21dc7a262',1,'GlobalBodyPlanner']]],
   ['alpha_5f',['alpha_',['../classGroundTruthPublisher.html#a8eb84af7c18c6ddfe17812999c766988',1,'GroundTruthPublisher']]],

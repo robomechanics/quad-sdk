@@ -1,7 +1,7 @@
 var searchData=
 [
   ['t_5fcycle_5f',['t_cycle_',['../classOpenLoopController.html#af95521b3e515859b6fc5df2cc2c53175',1,'OpenLoopController']]],
-  ['t_5fplan_5f',['t_plan_',['../classGlobalBodyPlanner.html#a029413a439d6621407f9e7d7020b18b5',1,'GlobalBodyPlanner::t_plan_()'],['../classLocalFootstepPlanner.html#ab5a5e9c5c232856154d87f64c44333ac',1,'LocalFootstepPlanner::t_plan_()']]],
+  ['t_5fplan_5f',['t_plan_',['../classGlobalBodyPlanner.html#a029413a439d6621407f9e7d7020b18b5',1,'GlobalBodyPlanner::t_plan_()'],['../classLocalFootstepPlanner.html#ab5a5e9c5c232856154d87f64c44333ac',1,'LocalFootstepPlanner::t_plan_()'],['../classTwistBodyPlanner.html#a5fb49e9dea314f073abffa31a1a38e6d',1,'TwistBodyPlanner::t_plan_()']]],
   ['table',['Table',['../classxacro_1_1Table.html',1,'xacro']]],
   ['target_5fpts_5f',['target_pts_',['../classOpenLoopController.html#a12d14e1429058daef7126aa93f6478c7',1,'OpenLoopController']]],
   ['target_5ftimes_5f',['target_times_',['../classOpenLoopController.html#abd5d6e6370d28451c9a80aef41c39be5',1,'OpenLoopController']]],
@@ -11,5 +11,6 @@ var searchData=
   ['terrain_5fmap_5fsub_5f',['terrain_map_sub_',['../classGlobalBodyPlanner.html#adb8189fbb2d0372db2eb06ee6ea67d11',1,'GlobalBodyPlanner::terrain_map_sub_()'],['../classLocalFootstepPlanner.html#a9a7246a67a2f6e0084476199d5076bd4',1,'LocalFootstepPlanner::terrain_map_sub_()']]],
   ['terrainmapcallback',['terrainMapCallback',['../classGlobalBodyPlanner.html#a209eb08a4c8c9e51b88c4039a6cfbd12',1,'GlobalBodyPlanner::terrainMapCallback()'],['../classLocalFootstepPlanner.html#a29dd7f51c83c244633f4efc8c6fac1af',1,'LocalFootstepPlanner::terrainMapCallback()']]],
   ['terrainmappublisher',['TerrainMapPublisher',['../classTerrainMapPublisher.html',1,'TerrainMapPublisher'],['../classTerrainMapPublisher.html#a0a8d623893002835ad1efd85b2fd321b',1,'TerrainMapPublisher::TerrainMapPublisher()']]],
-  ['torque_5flims_5f',['torque_lims_',['../classeffort__controllers_1_1SpiritController.html#af1da15d2c33e320435beaa1d44be7c3d',1,'effort_controllers::SpiritController']]]
+  ['torque_5flims_5f',['torque_lims_',['../classeffort__controllers_1_1SpiritController.html#af1da15d2c33e320435beaa1d44be7c3d',1,'effort_controllers::SpiritController']]],
+  ['twistbodyplanner',['TwistBodyPlanner',['../classTwistBodyPlanner.html',1,'TwistBodyPlanner'],['../classTwistBodyPlanner.html#ab05c1949c1634c1dd745d01a06e73661',1,'TwistBodyPlanner::TwistBodyPlanner()']]]
 ];

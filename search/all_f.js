@@ -6,6 +6,7 @@ var searchData=
   ['path_5fduration_5f',['path_duration_',['../classRRTClass.html#a3c8e83183a9d3383571eccbdde77d842',1,'RRTClass']]],
   ['path_5flength_5f',['path_length_',['../classRRTClass.html#a21902636c6b9dcff588802d391415242',1,'RRTClass']]],
   ['pathfromstart',['pathFromStart',['../classRRTClass.html#a4acffd50e173aaeb9074248ea29032e9',1,'RRTClass']]],
+  ['plan',['plan',['../classTwistBodyPlanner.html#a422adadb98c3687878927639be7aab9b',1,'TwistBodyPlanner']]],
   ['plannerclass',['PlannerClass',['../classPlannerClass.html',1,'PlannerClass'],['../classPlannerClass.html#a763a406cc7de35136be1173d982002cc',1,'PlannerClass::PlannerClass()']]],
   ['planning_5frate_5festimate',['planning_rate_estimate',['../classRRTConnectClass.html#ade4e265ae025a586848fa5b87f452f07',1,'RRTConnectClass']]],
   ['postprocesspath',['postProcessPath',['../classRRTConnectClass.html#a121b58fa356c9f4eb4279e7a3d65334a',1,'RRTConnectClass']]],
@@ -22,5 +23,5 @@ var searchData=
   ['publishjointencoders',['publishJointEncoders',['../classRobotInterface.html#a6603ca6acb6b1f2e2a700a10382bd95f',1,'RobotInterface']]],
   ['publishmap',['publishMap',['../classTerrainMapPublisher.html#aa11b7631c0f0c3c33f9a118be181a102',1,'TerrainMapPublisher']]],
   ['publishmocap',['publishMocap',['../classRobotInterface.html#aa1a64bbf8c4d5b288304874ef2fd822a',1,'RobotInterface']]],
-  ['publishplan',['publishPlan',['../classGlobalBodyPlanner.html#a7ef31af306895c311faee09a7023896b',1,'GlobalBodyPlanner::publishPlan()'],['../classLocalFootstepPlanner.html#aa0e199be9129386592065a505df5cddb',1,'LocalFootstepPlanner::publishPlan()']]]
+  ['publishplan',['publishPlan',['../classGlobalBodyPlanner.html#a7ef31af306895c311faee09a7023896b',1,'GlobalBodyPlanner::publishPlan()'],['../classLocalFootstepPlanner.html#aa0e199be9129386592065a505df5cddb',1,'LocalFootstepPlanner::publishPlan()'],['../classTwistBodyPlanner.html#a0bf6dc6f10419df4cd4612ff9c1a71dd',1,'TwistBodyPlanner::publishPlan()']]]
 ];
