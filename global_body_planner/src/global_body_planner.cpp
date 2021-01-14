@@ -7,11 +7,13 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string terrain_map_topic, body_plan_topic, discrete_body_plan_topic;
+  std::string terrain_map_topic, state_estimate_topic, body_plan_topic, discrete_body_plan_topic;
   std::vector<double> start_state_default = {0.0,0.0,0.4,0.0,0.1,0.0,0.0,0.0};
   std::vector<double> goal_state_default = {8.0,0.0,0.4,0.0,0.0,0.0,0.0,0.0};
 
   nh.param<std::string>("topics/terrain_map", terrain_map_topic, "/terrain_map");
+  // nh.param<std::string>("topics/state_estimate", state_estimate_topic, "/state_estimate");
+  nh.param<std::string>("topics/ground_truth_state", ground_truth_state_topic, "/ground_truth_state");
   nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
   nh.param<std::string>("topics/discrete_body_plan", discrete_body_plan_topic, "/discrete_body_plan");
   nh.param<std::string>("map_frame",map_frame_,"/map");
@@ -25,6 +27,8 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
 
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1,&GlobalBodyPlanner::terrainMapCallback, this);
+  // state_estimate_sub_ = nh_.subscribe(state_estimate_topic,1,&GlobalBodyPlanner::stateEstimateCallback, this);
+  ground_truth_state_sub_ = nh_.subscribe(ground_truth_state_topic,1,&GlobalBodyPlanner::groundTruthStateCallback, this);
   body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(body_plan_topic,1);
   discrete_body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(discrete_body_plan_topic,1);
 
@@ -39,6 +43,10 @@ void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPt
 
   // Convert to FastTerrainMap structure for faster querying
   terrain_.loadDataFromGridMap(map);
+}
+
+void GlobalBodyPlanner::groundTruthStateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg) {
+
 }
 
 void GlobalBodyPlanner::clearPlan() {

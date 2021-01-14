@@ -7,6 +7,7 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <spirit_msgs/BodyPlan.h>
+#include <spirit_msgs/StateEstimate.h>
 
 #include "global_body_planner/rrt_connect.h"
 
@@ -50,6 +51,12 @@ class GlobalBodyPlanner {
     void terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg);
 
     /**
+     * @brief Callback function to handle new ground truth state data
+     * @param[in] msg the message contining ground truth state data
+     */
+    void groundTruthStateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg);
+
+    /**
      * @brief Clear the plan member variables
      */
     void clearPlan();
@@ -75,6 +82,9 @@ class GlobalBodyPlanner {
 
     /// Subscriber for terrain map messages
     ros::Subscriber terrain_map_sub_;
+
+    /// Subscriber for state estimate messages
+    ros::Subscriber state_estimate_sub_;
 
     /// Publisher for body plan messages
     ros::Publisher body_plan_pub_;
