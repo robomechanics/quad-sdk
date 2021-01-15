@@ -244,17 +244,17 @@ void addFullStates(std::vector<State> interp_reduced_path, double dt, std::vecto
     interp_t.push_back(i*dt);
   }
 
-  plt::clf();
-  plt::ion();
-  plt::named_plot("yaw", interp_t, yaw);
-  plt::named_plot("filtered yaw", interp_t, filtered_yaw);
-  plt::named_plot("yaw rate", interp_t, yaw_rate);
-  plt::named_plot("filtered yaw rate", interp_t, filtered_yaw_rate);
-  plt::xlabel("t");
-  plt::ylabel("yaw");
-  plt::legend();
-  plt::show();
-  plt::pause(0.001);
+  // plt::clf();
+  // plt::ion();
+  // plt::named_plot("yaw", interp_t, yaw);
+  // plt::named_plot("filtered yaw", interp_t, filtered_yaw);
+  // plt::named_plot("yaw rate", interp_t, yaw_rate);
+  // plt::named_plot("filtered yaw rate", interp_t, filtered_yaw_rate);
+  // plt::xlabel("t");
+  // plt::ylabel("yaw");
+  // plt::legend();
+  // plt::show();
+  // plt::pause(0.001);
 
   // Add full state data into the array
   for (int i = 0; i < interp_reduced_path.size(); i++) {
@@ -330,13 +330,14 @@ void interpStateActionPair(State s, Action a,double t0,double dt, std::vector<St
   // }
 }
 
-void getInterpPath(std::vector<State> state_sequence, std::vector<Action> action_sequence,double dt, std::vector<FullState> &interp_full_path, 
+
+
+void getInterpPath(std::vector<State> state_sequence, std::vector<Action> action_sequence,double dt, double t0, std::vector<FullState> &interp_full_path, 
     std::vector<Wrench> &interp_wrench, std::vector<double> &interp_t, std::vector<int> &interp_phase)
 {
   std::vector<State> interp_reduced_path;
 
   // Loop through state action pairs, interp each and add to the path
-  double t0 = 0;
   for (int i=0; i < action_sequence.size();i++)
   {
     interpStateActionPair(state_sequence[i], action_sequence[i], t0, dt, interp_reduced_path, interp_wrench, interp_t, interp_phase);

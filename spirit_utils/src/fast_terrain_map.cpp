@@ -91,7 +91,8 @@ void FastTerrainMap::loadDataFromGridMap(grid_map::GridMap map){
 
 bool FastTerrainMap::isInRange(const double x, const double y) {
 
-  if ((x >= x_data_.front()) && (x <= x_data_.back()) && (y >= y_data_.front()) && (y <= y_data_.back())) {
+  double epsilon = 0.5;
+  if (((x-epsilon) >= x_data_.front()) && ((x+epsilon) <= x_data_.back()) && ((y-epsilon) >= y_data_.front()) && ((y+epsilon) <= y_data_.back())) {
     return true;
   } else {
     return false;
@@ -210,7 +211,7 @@ Eigen::Vector3d FastTerrainMap::projectToMap(Eigen::Vector3d point, Eigen::Vecto
       clearance = new_point[2] - getGroundHeight(new_point[0], new_point[1]);
     } else {
       result = {old_point[0], old_point[1], -std::numeric_limits<double>::max()};
-      ROS_WARN("Tried to project to a point off the map.");
+      ROS_WARN_THROTTLE(0.5, "Tried to project to a point off the map.");
       return result;
     }
   }

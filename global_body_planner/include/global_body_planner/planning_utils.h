@@ -97,7 +97,7 @@ std::vector<double> centralDifference(std::vector<double> data, double dt);
 Wrench getWrench(Action a,double t);
 void interpStateActionPair(State s, Action a,double t0,double dt, std::vector<State> &interp_path, 
     std::vector<Wrench> &interp_wrench, std::vector<double> &interp_t, std::vector<int> &interp_phase);
-void getInterpPath(std::vector<State> state_sequence, std::vector<Action> action_sequence,double dt, 
+void getInterpPath(std::vector<State> state_sequence, std::vector<Action> action_sequence,double dt, double t0,
     std::vector<FullState> &interp_full_path, std::vector<Wrench> &interp_wrench, std::vector<double> &interp_t, std::vector<int> &interp_phase);
 
 // Define planning helper functions

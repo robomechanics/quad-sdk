@@ -6,13 +6,13 @@
 
     <!-- Launch the node to publish the global body plan -->
     <group if="$(eval arg('body_planner') == 'global')">
-        <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen"/>
+        <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen" />
     </group>
 
     <!-- Launch the node to publish the twist body plan -->
     <group if="$(eval arg('body_planner') == 'twist')">
         <node name="twist_body_planner" pkg="twist_body_planner" type="twist_body_planner_node" output="screen"/>
-        <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" output="screen"/>
+        <!-- <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" output="screen"/> -->
     </group>
 
     <!-- Launch the node to publish the local footstep plan -->

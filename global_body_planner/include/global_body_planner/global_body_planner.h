@@ -54,10 +54,15 @@ class GlobalBodyPlanner {
      * @brief Callback function to handle new ground truth state data
      * @param[in] msg the message contining ground truth state data
      */
-    void groundTruthStateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg);
+    void robotStateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg);
 
     /**
-     * @brief Clear the plan member variables
+     * @brief Initialize the planner by clearing out old plan data and setting the start state
+     */
+    void initPlanner();
+
+    /**
+     * @brief Clear all data in plan member variables
      */
     void clearPlan();
 
@@ -76,21 +81,27 @@ class GlobalBodyPlanner {
     void publishPlan();
 
     /**
-     * @brief Wait until a map message has been received and processed
+     * @brief Wait until map and state messages have been received and processed
      */
-    void waitForMap();
+    void waitForData();
 
     /// Subscriber for terrain map messages
     ros::Subscriber terrain_map_sub_;
 
-    /// Subscriber for state estimate messages
-    ros::Subscriber state_estimate_sub_;
+    /// Subscriber for robot state messages
+    ros::Subscriber robot_state_sub_;
 
     /// Publisher for body plan messages
     ros::Publisher body_plan_pub_;
 
     /// Publisher for discrete states in body plan messages
     ros::Publisher discrete_body_plan_pub_;
+
+    /// Topic name for terrain map (needed to ensure data has been received)
+    std::string terrain_map_topic_;
+
+    /// Topic name for robot state data (needed to ensure data has been received)
+    std::string robot_state_topic_;
 
     /// Nodehandle to pub to and sub from
     ros::NodeHandle nh_;
@@ -122,10 +133,22 @@ class GlobalBodyPlanner {
     /// Std vector containing the interpolated time data
     std::vector<double> t_plan_;
 
-    /// Robot starting state
+    /// Starting state for planner
     std::vector<double> start_state_;
 
-    /// Robot goal state
+    /// Starting time for planner (for replanning)
+    double start_time_;
+
+    /// Horizon to commit to (replan from the next state after this horizon)
+    double committed_horizon_;
+
+    /// Current robot state
+    std::vector<double> robot_state_;
+
+    /// Flag to determine if the planner needs to restart planning from the robot state
+    bool plan_from_robot_state_flag_;
+
+    /// Goal state for planner
     std::vector<double> goal_state_;
     
     /// Sequence of discrete states in the plan

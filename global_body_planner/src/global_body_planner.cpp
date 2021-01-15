@@ -7,16 +7,15 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string terrain_map_topic, state_estimate_topic, body_plan_topic, discrete_body_plan_topic;
+  std::string body_plan_topic, discrete_body_plan_topic;
   std::vector<double> start_state_default = {0.0,0.0,0.4,0.0,0.1,0.0,0.0,0.0};
   std::vector<double> goal_state_default = {8.0,0.0,0.4,0.0,0.0,0.0,0.0,0.0};
 
-  nh.param<std::string>("topics/terrain_map", terrain_map_topic, "/terrain_map");
-  // nh.param<std::string>("topics/state_estimate", state_estimate_topic, "/state_estimate");
-  nh.param<std::string>("topics/ground_truth_state", ground_truth_state_topic, "/ground_truth_state");
+  nh.param<std::string>("topics/terrain_map", terrain_map_topic_, "/terrain_map");
+  nh.param<std::string>("topics/ground_truth_state", robot_state_topic_, "/ground_truth_state");
   nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
   nh.param<std::string>("topics/discrete_body_plan", discrete_body_plan_topic, "/discrete_body_plan");
-  nh.param<std::string>("map_frame",map_frame_,"/map");
+  nh.param<std::string>("map_frame",map_frame_,"map");
   nh.param<double>("global_body_planner/update_rate", update_rate_, 1);
   nh.param<int>("global_body_planner/num_calls", num_calls_, 1);
   nh.param<double>("global_body_planner/replan_time_limit", replan_time_limit_, 0.0);
@@ -26,14 +25,16 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh.param<std::vector<double> >("global_body_planner/goal_state", goal_state_, goal_state_default);
 
   // Setup pubs and subs
-  terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1,&GlobalBodyPlanner::terrainMapCallback, this);
-  // state_estimate_sub_ = nh_.subscribe(state_estimate_topic,1,&GlobalBodyPlanner::stateEstimateCallback, this);
-  ground_truth_state_sub_ = nh_.subscribe(ground_truth_state_topic,1,&GlobalBodyPlanner::groundTruthStateCallback, this);
+  terrain_map_sub_ = nh_.subscribe(terrain_map_topic_,1,&GlobalBodyPlanner::terrainMapCallback, this);
+  robot_state_sub_ = nh_.subscribe(robot_state_topic_,1,&GlobalBodyPlanner::robotStateCallback, this);
   body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(body_plan_topic,1);
   discrete_body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(discrete_body_plan_topic,1);
 
   // Initialize the current path cost to infinity to ensure the first solution is stored
   current_cost_ = INFTY;
+  committed_horizon_ = 0.0;
+
+  robot_state_.resize(STATEDIM);
 }
 
 void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg) {
@@ -45,33 +46,81 @@ void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPt
   terrain_.loadDataFromGridMap(map);
 }
 
-void GlobalBodyPlanner::groundTruthStateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg) {
+void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg) {
 
+  // Get RPY from the state message
+  tf2::Quaternion q(
+        msg->body.pose.pose.orientation.x,
+        msg->body.pose.pose.orientation.y,
+        msg->body.pose.pose.orientation.z,
+        msg->body.pose.pose.orientation.w);
+  tf2::Matrix3x3 m(q);
+  double roll, pitch, yaw;
+  m.getRPY(roll, pitch, yaw);
+
+  // Only need the states that will be used in planning (ignore roll and yaw)
+  robot_state_[0] = msg->body.pose.pose.position.x;
+  robot_state_[1] = msg->body.pose.pose.position.y;
+  robot_state_[2] = msg->body.pose.pose.position.z;
+  robot_state_[3] = msg->body.twist.twist.linear.x;
+  robot_state_[4] = msg->body.twist.twist.linear.y;
+  robot_state_[5] = msg->body.twist.twist.linear.z;
+  robot_state_[6] = pitch;
+  robot_state_[7] = msg->body.twist.twist.angular.y;
 }
 
-void GlobalBodyPlanner::clearPlan() {
-  // Clear old solutions
-  body_plan_.clear();
-  wrench_plan_.clear();
-  t_plan_.clear();
+void GlobalBodyPlanner::initPlanner() {
+
+  // Clear out old statistics
   solve_time_info_.clear();
   vertices_generated_info_.clear();
   cost_vector_.clear();
   cost_vector_times_.clear();
+
+  // Either clear everything and plan from robot state or clear everything after a set duration and plan from there
+  if (plan_from_robot_state_flag_) {
+    start_state_ = robot_state_;
+    start_time_ = 0;
+    
+    t_plan_.clear();
+    body_plan_.clear();
+    wrench_plan_.clear();
+
+  } else {
+
+    // Loop through t_plan_ to find the 
+    int N = t_plan_.size();
+    for (int i = 0; i < N; i++) {
+      if (committed_horizon_ <= t_plan_[i]) {
+
+        start_state_.clear();
+        for (auto val : body_plan_[i]) {
+          start_state_.push_back(val);
+        }
+        start_time_ = t_plan_[i];
+
+        t_plan_.erase(t_plan_.begin()+i, t_plan_.end());
+        body_plan_.erase(body_plan_.begin()+i, body_plan_.end());
+        wrench_plan_.erase(wrench_plan_.begin()+i, wrench_plan_.end());
+        return;
+      }
+    }
+  }
 }
 
 void GlobalBodyPlanner::callPlanner() {
 
   // Get the most recent plan parameters and clear the old solutions
-  clearPlan();
+  initPlanner();
 
   // Copy start and goal states and adjust for ground height
   State start_state;
   State goal_state;
   stdVectorToState(start_state_, start_state);
   stdVectorToState(goal_state_, goal_state);
-  start_state[2] += terrain_.getGroundHeight(start_state[0], start_state[1]);
-  goal_state[2] += terrain_.getGroundHeight(goal_state[0], goal_state[1]);
+
+  // start_state[2] += terrain_.getGroundHeight(start_state[0], start_state[1]);
+  // goal_state[2] += terrain_.getGroundHeight(goal_state[0], goal_state[1]);
 
   // Make sure terminal states are valid
   if (!isValidState(start_state, terrain_, STANCE)) {
@@ -137,7 +186,7 @@ void GlobalBodyPlanner::callPlanner() {
       // Interpolate to get full body plan
       double dt = 0.1;
       std::vector<int> interp_phase;
-      getInterpPath(state_sequence_, action_sequence_, dt, body_plan_, wrench_plan_, t_plan_, interp_phase);
+      getInterpPath(state_sequence_, action_sequence_, dt, start_time_, body_plan_, wrench_plan_, t_plan_, interp_phase);
       // plotYaw(t_plan_, body_plan_);
       publishPlan();
     }
@@ -235,20 +284,30 @@ void GlobalBodyPlanner::publishPlan() {
   discrete_body_plan_pub_.publish(discrete_body_plan_msg);
 }
 
-void GlobalBodyPlanner::waitForMap() {
+void GlobalBodyPlanner::waitForData() {
     // Spin until terrain map message has been received and processed
   boost::shared_ptr<grid_map_msgs::GridMap const> shared_map;
   while((shared_map == nullptr) && ros::ok())
   {
-    shared_map = ros::topic::waitForMessage<grid_map_msgs::GridMap>("/terrain_map", nh_);
+    shared_map = ros::topic::waitForMessage<grid_map_msgs::GridMap>(terrain_map_topic_, nh_);
+    ros::spinOnce();
+  }
+
+  boost::shared_ptr<spirit_msgs::StateEstimate const> shared_robot_state;
+  while((shared_robot_state == nullptr) && ros::ok())
+  {
+    shared_robot_state = ros::topic::waitForMessage<spirit_msgs::StateEstimate>(robot_state_topic_, nh_);
     ros::spinOnce();
   }
 }
 
 void GlobalBodyPlanner::spin() {
+
+  plan_from_robot_state_flag_ = true;
+
   ros::Rate r(update_rate_);
 
-  waitForMap();
+  waitForData();
   callPlanner();
 
   while (ros::ok()) {

@@ -87,3 +87,6 @@ open_loop_controller:
   control_mode_topic: /spirit/control_mode
 
 map_frame: map
+
+robot_proxy:
+  update_rate: 200
