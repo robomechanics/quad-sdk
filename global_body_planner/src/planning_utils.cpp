@@ -65,6 +65,13 @@ void printAction(Action a)
     std::cout << a[i] << ", ";
   std::cout << "\b\b}"; 
 }
+void printVector(std::vector<double> vec)
+{
+  std::cout << "{";
+  for (double i= 0; i < vec.size(); i++)
+    std::cout << vec[i] << ", ";
+  std::cout << "\b\b}"; 
+}
 void printVectorInt(std::vector<int> vec)
 {
   std::cout << "{";
@@ -79,6 +86,10 @@ void printStateNewline(State vec)
 void printActionNewline(Action a)
 {
   printAction(a); std::cout << std::endl;
+}
+void printVectorNewline(std::vector<double> vec)
+{
+  printVector(vec); std::cout << std::endl;
 }
 void printStateSequence(std::vector<State> state_sequence)
 {
@@ -98,7 +109,7 @@ void printActionSequence(std::vector<Action> action_sequence)
   for (Action a : action_sequence)
     printActionNewline(a);
 }
-void printVectorInt_nl(std::vector<int> vec)
+void printVectorIntNewline(std::vector<int> vec)
 {
   printVectorInt(vec); std::cout << std::endl;
 }

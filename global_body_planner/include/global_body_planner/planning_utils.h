@@ -77,8 +77,10 @@ void stdVectorToState(std::vector<double> v, State& s);
 
 // Define some useful print statements
 void printState(State vec);
+void printVector(std::vector<double> vec);
 void printVectorInt(std::vector<int> vec);
 void printStateNewline(State vec);
+void printVectorNewline(std::vector<double> vec);
 void printVectorIntNewline(std::vector<int> vec);
 void printAction(Action a);
 void printActionNewline(Action a);

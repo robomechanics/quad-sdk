@@ -58,8 +58,9 @@ class GlobalBodyPlanner {
 
     /**
      * @brief Initialize the planner by clearing out old plan data and setting the start state
+     * @return Index of the current plan from which to being the new plan (zero if fully replanning)
      */
-    void initPlanner();
+    int initPlanner();
 
     /**
      * @brief Clear all data in plan member variables
@@ -112,11 +113,8 @@ class GlobalBodyPlanner {
     /// Number of times to call the planner
     int num_calls_;
 
-    /// Algorithm for planner to run (rrt-connect or rrt-star-connect)
-    std::string algorithm_;
-
-    /// Time after which replanning is halted;
-    double replan_time_limit_;
+    /// Max time to let the algorithm search
+    double max_time_;
 
     /// Handle for the map frame
     std::string map_frame_;
