@@ -21,11 +21,11 @@ ekf_estimator:
 
 global_body_planner:
   update_rate: 10
-  num_calls: 1            # Number of times to call the planner
-  replan_time_limit: 0.0  # Minimum amount of time to run the planner (will replan to find better solutions until this duration is up)
-  algorithm: rrt-connect  # rrt-connect
-  start_state: [0.0,0,0.4,0.0,0.1,0.0,0.0,0.0]
-  goal_state: [8.0,1.0,0.4,0.0,0.0,0.0,0.0,0.0]
+  num_calls: 5            # Number of times to call the planner
+  max_time: 1.5           # Minimum amount of time to run the planner (will replan to find better solutions until this duration is up)
+  start_state: [0.0,0,0.4,0.0,0.0,0.0,0.0,0.0]
+  goal_state: [8.0,1.0,0.4,0.0,1.0,0.0,0.0,0.0]
+  committed_horizon: 0     # Committed duration of current plan (replan starting from state in current plan this far ahead), s
 
 twist_body_planner:
   update_rate: 10
@@ -86,3 +86,9 @@ open_loop_controller:
   control_mode_topic: /spirit/control_mode
 
 map_frame: map
+
+robot_proxy:
+  update_rate: 200
+
+visualization:
+  update_rate: 10

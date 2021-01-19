@@ -85,7 +85,7 @@ void TwistBodyPlanner::plan() {
   ros::Duration time_elapsed_since_msg = ros::Time::now() - last_cmd_vel_msg_time_;
   if (time_elapsed_since_msg.toSec() > last_cmd_vel_msg_time_max_) {
     std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
-    ROS_WARN("No cmd_vel data, setting to zero in twist body planner");
+    ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting cmd_vel to zero in twist body planner");
   }
 
   // Integrate to get full body plan
@@ -96,9 +96,14 @@ void TwistBodyPlanner::plan() {
   for (double t = dt; t <= horizon_length_; t += dt) {
     State current_state;
     current_state.resize(12);
+    Twist current_cmd_vel = cmd_vel_;
+
+    double yaw = body_plan_.back()[5];
+    current_cmd_vel[0] = cmd_vel_[0]*cos(yaw) - cmd_vel_[1]*sin(yaw);
+    current_cmd_vel[1] = cmd_vel_[0]*sin(yaw) + cmd_vel_[1]*cos(yaw);
 
     for (int i = 0; i < 6; i ++) {
-      current_state[i] = body_plan_.back()[i] + cmd_vel_[i]*dt;
+      current_state[i] = body_plan_.back()[i] + current_cmd_vel[i]*dt;
       current_state[i+6] = (cmd_vel_[i]);
 
     }
@@ -112,8 +117,8 @@ void TwistBodyPlanner::addStateWrenchToMsg(double t, State body_state,
     spirit_msgs::BodyPlan& msg) {
 
   // Make sure the timestamps match the trajectory timing
-  // ros::Duration time_elapsed(t);
-  ros::Time current_time = msg.header.stamp;// + time_elapsed;
+  ros::Duration time_elapsed(t);
+  ros::Time current_time = msg.header.stamp + time_elapsed;
 
   // Represent each state as an Odometry message
   nav_msgs::Odometry state;

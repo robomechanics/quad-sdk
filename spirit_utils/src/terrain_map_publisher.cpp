@@ -40,8 +40,8 @@ void TerrainMapPublisher::createMap() {
     terrain_map_.getSize()(0), terrain_map_.getSize()(1));
 
   // Add an obstacle
-  double obs_center[] = {2,0};
-  double obs_radius = 0.5;
+  double obs_center[] = {3,0};
+  double obs_radius = 1.0;
   for (grid_map::GridMapIterator it(terrain_map_); !it.isPastEnd(); ++it) {
 
     grid_map::Position position;
@@ -51,7 +51,7 @@ void TerrainMapPublisher::createMap() {
 
     if (x_diff*x_diff + y_diff*y_diff <= obs_radius*obs_radius)
     {
-      terrain_map_.at("elevation", *it) = 0.05;
+      terrain_map_.at("elevation", *it) = 0.7;
     } else {
       terrain_map_.at("elevation", *it) = 0.0;
     }

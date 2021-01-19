@@ -6,7 +6,7 @@
 
     <!-- Launch the node to publish the global body plan -->
     <group if="$(eval arg('body_planner') == 'global')">
-        <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen"/>
+        <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen" />
     </group>
 
     <!-- Launch the node to publish the twist body plan -->
