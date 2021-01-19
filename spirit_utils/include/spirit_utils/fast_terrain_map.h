@@ -2,8 +2,10 @@
 #define FAST_TERRAIN_MAP_H
 
 #include <grid_map_core/grid_map_core.hpp>
+#include <ros/ros.h>
 #include <Eigen/Dense>
 #include <chrono>
+#include <spirit_utils/function_timer.h>
 
 //! A terrain map class built for fast and efficient sampling
 /*!

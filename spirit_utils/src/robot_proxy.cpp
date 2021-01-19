@@ -1,6 +1,6 @@
-#include "spirit_utils/robot_interface.h"
+#include "spirit_utils/robot_proxy.h"
 
-RobotInterface::RobotInterface(ros::NodeHandle nh) {
+RobotProxy::RobotProxy(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
@@ -9,20 +9,20 @@ RobotInterface::RobotInterface(ros::NodeHandle nh) {
   nh.param<std::string>("topics/joint_encoder", joint_encoder_topic, "/joint_encoder");
   nh.param<std::string>("topics/imu", imu_topic, "/imu");
   nh.param<std::string>("topics/mocap", mocap_topic, "/mocap_optitrack/spirit/pose");
-  nh.param<double>("robot_interface/update_rate", update_rate_, 2);
+  nh.param<double>("robot_proxy/update_rate", update_rate_, 2);
 
 
   // Setup pubs and subs
-  control_input_sub_ = nh_.subscribe(control_input_topic,1,&RobotInterface::controlInputCallback, this);
+  control_input_sub_ = nh_.subscribe(control_input_topic,1,&RobotProxy::controlInputCallback, this);
   joint_encoder_pub_ = nh_.advertise<sensor_msgs::JointState>(joint_encoder_topic,1);
   imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic,1);
   mocap_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(mocap_topic,1);
 }
 
-void RobotInterface::controlInputCallback(const spirit_msgs::ControlInput::ConstPtr& msg) {
+void RobotProxy::controlInputCallback(const spirit_msgs::ControlInput::ConstPtr& msg) {
 }
 
-void RobotInterface::publishJointEncoders() {
+void RobotProxy::publishJointEncoders() {
   sensor_msgs::JointState msg;
 
   std::vector<std::string> joint_names = {"8", "0", "1", "9","2", "3", "10", "4","5", "11", "6", "7"};
@@ -38,7 +38,7 @@ void RobotInterface::publishJointEncoders() {
   joint_encoder_pub_.publish(msg);
 }
 
-void RobotInterface::publishImu() {
+void RobotProxy::publishImu() {
   sensor_msgs::Imu msg;
   msg.orientation.x = 0;
   msg.orientation.y = 0;
@@ -47,12 +47,12 @@ void RobotInterface::publishImu() {
   imu_pub_.publish(msg);
 }
 
-void RobotInterface::publishMocap() {
+void RobotProxy::publishMocap() {
   geometry_msgs::PoseStamped msg;
   msg.header.stamp = ros::Time::now();
   msg.pose.position.x = 0;
   msg.pose.position.y = 0;
-  msg.pose.position.z = 0.4;
+  msg.pose.position.z = 0.3;
 
   msg.pose.orientation.x = 0;
   msg.pose.orientation.y = 0;
@@ -61,7 +61,7 @@ void RobotInterface::publishMocap() {
   mocap_pub_.publish(msg);
 }
 
-void RobotInterface::spin() {
+void RobotProxy::spin() {
   ros::Rate r(update_rate_);
   while (ros::ok()) {
 

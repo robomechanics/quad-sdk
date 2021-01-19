@@ -14,7 +14,7 @@
 
     <!-- Launch the node to publish the visual topics for the plans -->
     <node name="rviz_interface" pkg="spirit_utils" type="rviz_interface_node" output="screen">
-    	<remap unless="$(arg use_estimate)" from="state_estimate" to="ground_truth_state"/>
+    	<remap from="state_estimate" to="ground_truth_state" />
     </node>
 
     <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->

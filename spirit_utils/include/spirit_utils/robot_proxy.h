@@ -1,5 +1,5 @@
-#ifndef ROBOT_INTERFACE_H
-#define ROBOT_INTERFACE_H
+#ifndef ROBOT_PROXY_H
+#define ROBOT_PROXY_H
 
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
@@ -9,17 +9,17 @@
 
 //! A class for interfacing between dummy robot data and other spirit-software nodes and topics.
 /*!
-   RobotInterface contains the approximation for the real spirit robot. Its purposes are purely for development.
+   RobotProxy contains the approximation for the real spirit robot. Its purposes are purely for development.
    The class provides publishers for dummy robot data (encoder, imu, and mocap measurements) as well as a subscriber for control inputs.
 */
-class RobotInterface {
+class RobotProxy {
 public:
 	/**
-	 * @brief Constructor for RobotInterface Class
+	 * @brief Constructor for RobotProxy Class
 	 * @param[in] nh ROS NodeHandle to publish and subscribe from
-	 * @return Constructed object of type RobotInterface
+	 * @return Constructed object of type RobotProxy
 	 */
-	RobotInterface(ros::NodeHandle nh);
+	RobotProxy(ros::NodeHandle nh);
 
 	/**
 	 * @brief Calls ros spinOnce and pubs data at set frequency
@@ -67,4 +67,4 @@ private:
 	double update_rate_;
 };
 
-#endif // ROBOT_INTERFACE_H
+#endif // ROBOT_PROXY_H

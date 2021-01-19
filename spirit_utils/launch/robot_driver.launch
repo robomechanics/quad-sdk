@@ -13,7 +13,8 @@
 
     <!-- Launch the robot_proxy if specified-->
     <group if="$(arg proxy)">
-        <node name="robot_proxy" pkg="spirit_utils" type="robot_interface_node" output="screen"/>
+        <node name="robot_proxy" pkg="spirit_utils" type="robot_proxy_node" output="screen"/>
+        <include file="$(find spirit_utils)/launch/mocap.launch" />
     </group>
 
     <!-- Launch the mblink converter unless using a proxy-->
