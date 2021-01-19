@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['waitformap',['waitForMap',['../classGlobalBodyPlanner.html#a022a47eb17c660b2c3984def62c613a3',1,'GlobalBodyPlanner']]]
+  ['waitfordata',['waitForData',['../classGlobalBodyPlanner.html#ab67cbafc3377db814b66c61c0285a366',1,'GlobalBodyPlanner']]]
 ];

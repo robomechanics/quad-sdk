@@ -1,9 +1,18 @@
 var searchData=
 [
-  ['neighborhooddist',['neighborhoodDist',['../classPlannerClass.html#a4ca845b0227f18a294051c904cafbabf',1,'PlannerClass']]],
-  ['neighborhoodn',['neighborhoodN',['../classPlannerClass.html#a592ec6733d33b831cb554f33a4e66da0',1,'PlannerClass']]],
-  ['newconfig',['newConfig',['../classRRTClass.html#a9c5f2020764525b1ec77b3e019acfcbd',1,'RRTClass']]],
-  ['nh_5f',['nh_',['../classBodyForceEstimator.html#a300ee0e68f91f4e6da446bbdf20f3ce5',1,'BodyForceEstimator::nh_()'],['../classContactDetection.html#aaf2478c35a4aa5301a395562e26267c4',1,'ContactDetection::nh_()'],['../classEKFEstimator.html#a72df2d5887b4a72ec692ec2d6da57828',1,'EKFEstimator::nh_()'],['../classGlobalBodyPlanner.html#aed259cd32b2a44277be294e981093d36',1,'GlobalBodyPlanner::nh_()'],['../classLocalFootstepPlanner.html#a1deeef388877a4597ca4b56610e0e627',1,'LocalFootstepPlanner::nh_()'],['../classMBLinkConverter.html#ad48fc34d9e86305a63d50d2e1dd58a76',1,'MBLinkConverter::nh_()'],['../classMPCController.html#a25b2e113ddd845e80abaf51adbeac2a3',1,'MPCController::nh_()'],['../classOpenLoopController.html#a018c8334d07b803b276dfadc5fcd7e22',1,'OpenLoopController::nh_()'],['../classPackageTemplate.html#ad7b5a48549a633c1f99dd092856646b9',1,'PackageTemplate::nh_()'],['../classGroundTruthPublisher.html#ace7bac4aa299c00b14b8c20351f40a5a',1,'GroundTruthPublisher::nh_()'],['../classRobotInterface.html#a9a65055838f4662b177045a8a6554440',1,'RobotInterface::nh_()'],['../classRVizInterface.html#a8617e53fd181aca3ad86f7d83429436a',1,'RVizInterface::nh_()'],['../classTerrainMapPublisher.html#ae99cba5723122187783469f150268630',1,'TerrainMapPublisher::nh_()'],['../classTwistBodyPlanner.html#aabebee7dd134ee3bf46e2c54795ea51e',1,'TwistBodyPlanner::nh_()']]],
-  ['num_5fcalls_5f',['num_calls_',['../classGlobalBodyPlanner.html#a7d917ce8f4d6f43b3855dd3a48809fa7',1,'GlobalBodyPlanner']]],
-  ['num_5fvertices_5f',['num_vertices_',['../classRRTClass.html#a2561c1232d6af27fab25d3bea8a26d4d',1,'RRTClass']]]
+  ['map_5fdata_5fsource_5f',['map_data_source_',['../classTerrainMapPublisher.html#aac004d967077b8433018cdcf6f51c384',1,'TerrainMapPublisher']]],
+  ['map_5fframe_5f',['map_frame_',['../classGlobalBodyPlanner.html#a7b45b7415cdca9ec042f0619deee4447',1,'GlobalBodyPlanner::map_frame_()'],['../classLocalFootstepPlanner.html#aa25b6b2f38279436f5922165841da9ad',1,'LocalFootstepPlanner::map_frame_()'],['../classMPCController.html#a23ffd702292a0f5af2aa7de94140127c',1,'MPCController::map_frame_()'],['../classRVizInterface.html#a793eebfebed50f8320c95117876b31cf',1,'RVizInterface::map_frame_()'],['../classTerrainMapPublisher.html#ab72c50bd278bec6f1870d7098f1f1eed',1,'TerrainMapPublisher::map_frame_()'],['../classTwistBodyPlanner.html#a274642993fc37d8e035be87621a16ee1',1,'TwistBodyPlanner::map_frame_()']]],
+  ['map_5finitialized_5f',['map_initialized_',['../classTerrainMapPublisher.html#acde2f6690426b3aa1de411b260f5517b',1,'TerrainMapPublisher']]],
+  ['max_5fheight_5f',['max_height_',['../classTerrainMapPublisher.html#af6938ddec68646380135b2d22b7a2498',1,'TerrainMapPublisher']]],
+  ['max_5ftime_5f',['max_time_',['../classGlobalBodyPlanner.html#acf12f09dacb268d0288f9c8932850c38',1,'GlobalBodyPlanner']]],
+  ['max_5ftime_5fsolve_5f',['max_time_solve_',['../classRRTConnectClass.html#a56f12f96a70025ce7dbbb70883e27046',1,'RRTConnectClass']]],
+  ['mblink_5f',['mblink_',['../classMBLinkConverter.html#a5f3f000255a6fce878a882bccac9906c',1,'MBLinkConverter']]],
+  ['mblinkconverter',['MBLinkConverter',['../classMBLinkConverter.html',1,'MBLinkConverter'],['../classMBLinkConverter.html#ae2abfc78899ce4e8c0febae16e0c2f9a',1,'MBLinkConverter::MBLinkConverter()']]],
+  ['min_5fheight_5f',['min_height_',['../classTerrainMapPublisher.html#aa22f46f8003f8963e383f342387c09dc',1,'TerrainMapPublisher']]],
+  ['mocap_5fpub_5f',['mocap_pub_',['../classRobotProxy.html#a780c31e9143654f97bc56d7f4a7b8bc5',1,'RobotProxy']]],
+  ['mocap_5frate_5f',['mocap_rate_',['../classGroundTruthPublisher.html#a3472e787daa63a36015576b7acac936c',1,'GroundTruthPublisher']]],
+  ['mocap_5fsub_5f',['mocap_sub_',['../classGroundTruthPublisher.html#afb21773ff427ce12a00ea0364359face',1,'GroundTruthPublisher']]],
+  ['mocap_5fvel_5festimate_5f',['mocap_vel_estimate_',['../classGroundTruthPublisher.html#aa6210ad2600d38e4ae08ee128c5f02a9',1,'GroundTruthPublisher']]],
+  ['mocapcallback',['mocapCallback',['../classGroundTruthPublisher.html#ab98d2c1cf74eb0914e0c35043f4c7e88',1,'GroundTruthPublisher']]],
+  ['mpccontroller',['MPCController',['../classMPCController.html',1,'MPCController'],['../classMPCController.html#a16a87d6e746992d9479d27aae63cca16',1,'MPCController::MPCController()']]]
 ];

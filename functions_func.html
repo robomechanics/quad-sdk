@@ -68,7 +68,7 @@ $(function() {
 : <a class="el" href="classGraphClass.html#ac9d39ec62febc8b866c596f6672f5423">GraphClass</a>
 </li>
 <li>addStateWrenchToMsg()
-: <a class="el" href="classGlobalBodyPlanner.html#a6736b693ac5926cf1ab3c9728af57d0d">GlobalBodyPlanner</a>
+: <a class="el" href="classGlobalBodyPlanner.html#a8e4e9b1011a5d7ac85840aa0952ed847">GlobalBodyPlanner</a>
 , <a class="el" href="classTwistBodyPlanner.html#a199e03ad9336d161854be7b44ae77e58">TwistBodyPlanner</a>
 </li>
 <li>addVertex()
@@ -119,7 +119,7 @@ $(function() {
 : <a class="el" href="classgazebo_1_1ContactPlugin.html#a8a1b0d6d62d0480db02e9dc523cb4ab2">gazebo::ContactPlugin</a>
 </li>
 <li>controlInputCallback()
-: <a class="el" href="classRobotInterface.html#a93d87a6eaeaed02dfcfd780d1823c57d">RobotInterface</a>
+: <a class="el" href="classRobotProxy.html#a0419f4d21bcc94c4fe2a7ac33b5355af">RobotProxy</a>
 </li>
 <li>controlModeCallback()
 : <a class="el" href="classOpenLoopController.html#a3beab2a4275e702b63b445b439e88ebc">OpenLoopController</a>
@@ -232,11 +232,14 @@ $(function() {
 <li>init()
 : <a class="el" href="classGraphClass.html#a6478d431f475c2458f3aa1a803a0b1cd">GraphClass</a>
 </li>
-<li>interpolateMat()
-: <a class="el" href="classLocalFootstepPlanner.html#af4ce257fbd1502e306433d9a4f283650">LocalFootstepPlanner</a>
+<li>initPlanner()
+: <a class="el" href="classGlobalBodyPlanner.html#ab7eea2c9ab7b6e0cc56a02340ec105f7">GlobalBodyPlanner</a>
 </li>
-<li>interpolateVec()
-: <a class="el" href="classLocalFootstepPlanner.html#a027be0b1bae81a8778efac40b7dec7f1">LocalFootstepPlanner</a>
+<li>interpMat()
+: <a class="el" href="classLocalFootstepPlanner.html#a987a731b867e99fb0c0fa3d223f631b2">LocalFootstepPlanner</a>
+</li>
+<li>interpVector3d()
+: <a class="el" href="classLocalFootstepPlanner.html#ac4ace773f9a797d2eac45c5796aabbfc">LocalFootstepPlanner</a>
 </li>
 <li>isInRange()
 : <a class="el" href="classFastTerrainMap.html#a0a03f0a9b97c18748a776288515d9d35">FastTerrainMap</a>
@@ -361,16 +364,16 @@ $(function() {
 : <a class="el" href="classMPCController.html#a9915855dd2a7fdadeaa7f6acc9a0ac55">MPCController</a>
 </li>
 <li>publishImu()
-: <a class="el" href="classRobotInterface.html#a93920d967e0ef0c6c85c7a75b77fee0d">RobotInterface</a>
+: <a class="el" href="classRobotProxy.html#ae1ca4bb51deabab2da1a4f11913ad561">RobotProxy</a>
 </li>
 <li>publishJointEncoders()
-: <a class="el" href="classRobotInterface.html#a6603ca6acb6b1f2e2a700a10382bd95f">RobotInterface</a>
+: <a class="el" href="classRobotProxy.html#a52f9e95a9ca4bc62f711b5f17da2bd00">RobotProxy</a>
 </li>
 <li>publishMap()
 : <a class="el" href="classTerrainMapPublisher.html#aa11b7631c0f0c3c33f9a118be181a102">TerrainMapPublisher</a>
 </li>
 <li>publishMocap()
-: <a class="el" href="classRobotInterface.html#aa1a64bbf8c4d5b288304874ef2fd822a">RobotInterface</a>
+: <a class="el" href="classRobotProxy.html#a7c1d653ac5acadd82e8f1dfc4d913d34">RobotProxy</a>
 </li>
 <li>publishPlan()
 : <a class="el" href="classGlobalBodyPlanner.html#a7ef31af306895c311faee09a7023896b">GlobalBodyPlanner</a>
@@ -390,8 +393,11 @@ $(function() {
 <li>report()
 : <a class="el" href="classspirit__utils_1_1FunctionTimer.html#ad4bc3f5025add381913cd50877b0edf9">spirit_utils::FunctionTimer</a>
 </li>
-<li>RobotInterface()
-: <a class="el" href="classRobotInterface.html#ad41a94fbc8f9db9201d1a92ab950153a">RobotInterface</a>
+<li>RobotProxy()
+: <a class="el" href="classRobotProxy.html#a1cde5fdcf2f9b1f328034959afb567f1">RobotProxy</a>
+</li>
+<li>robotStateCallback()
+: <a class="el" href="classGlobalBodyPlanner.html#a4e5e3ae05056cc0fa7dd6db0ebab1f23">GlobalBodyPlanner</a>
 </li>
 <li>RRTClass()
 : <a class="el" href="classRRTClass.html#a9cac25f207d3e58646e560d829d51e25">RRTClass</a>
@@ -429,7 +435,7 @@ $(function() {
 , <a class="el" href="classMPCController.html#ac11fdd88987c9fcd5222f8fd08f70770">MPCController</a>
 , <a class="el" href="classOpenLoopController.html#ad846f03d155d74847fed5b6e6f687de0">OpenLoopController</a>
 , <a class="el" href="classPackageTemplate.html#aa7046d514879fe3032f51bac24b48ad4">PackageTemplate</a>
-, <a class="el" href="classRobotInterface.html#ab26af7534c5c650be989e07f9aede098">RobotInterface</a>
+, <a class="el" href="classRobotProxy.html#ace8a2fbf01f6cee352c6ac6b9fdd3c28">RobotProxy</a>
 , <a class="el" href="classRVizInterface.html#a8cd5c2922136f4f8ce79738ad6ef4b70">RVizInterface</a>
 , <a class="el" href="classTerrainMapPublisher.html#a05d219e0cf2b9684029f79e3ec8de424">TerrainMapPublisher</a>
 , <a class="el" href="classTwistBodyPlanner.html#a1dd02d43a7d43984adb0d3ae025a1745">TwistBodyPlanner</a>
@@ -478,8 +484,8 @@ $(function() {
 
 
 <h3><a id="index_w"></a>- w -</h3><ul>
-<li>waitForMap()
-: <a class="el" href="classGlobalBodyPlanner.html#a022a47eb17c660b2c3984def62c613a3">GlobalBodyPlanner</a>
+<li>waitForData()
+: <a class="el" href="classGlobalBodyPlanner.html#ab67cbafc3377db814b66c61c0285a366">GlobalBodyPlanner</a>
 </li>
 </ul>
 

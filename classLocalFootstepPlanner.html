@@ -98,6 +98,10 @@ Private Types</h2></td></tr>
 typedef std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#abc34736bcc4fde10c122e4c259588c80">BodyState</a></td></tr>
 <tr class="memdesc:abc34736bcc4fde10c122e4c259588c80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define the body state data structure. <br /></td></tr>
 <tr class="separator:abc34736bcc4fde10c122e4c259588c80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2cb6435347c0188daa4c0e5e1cadad4"><td class="memItemLeft" align="right" valign="top"><a id="ad2cb6435347c0188daa4c0e5e1cadad4"></a>
+typedef Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ad2cb6435347c0188daa4c0e5e1cadad4">BodyWrench</a></td></tr>
+<tr class="memdesc:ad2cb6435347c0188daa4c0e5e1cadad4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define the body wrench data structure. <br /></td></tr>
+<tr class="separator:ad2cb6435347c0188daa4c0e5e1cadad4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac902c37c7e1e786537e43c616b45636f"><td class="memItemLeft" align="right" valign="top"><a id="ac902c37c7e1e786537e43c616b45636f"></a>
 typedef std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ac902c37c7e1e786537e43c616b45636f">FootstepState</a></td></tr>
 <tr class="memdesc:ac902c37c7e1e786537e43c616b45636f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define the footstep state data structure. <br /></td></tr>
@@ -111,12 +115,12 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:aed0f0743a34e829b131665cbd34259c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aed0f0743a34e829b131665cbd34259c8">bodyPlanCallback</a> (const spirit_msgs::BodyPlan::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:aed0f0743a34e829b131665cbd34259c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new body plan data.  <a href="#aed0f0743a34e829b131665cbd34259c8">More...</a><br /></td></tr>
 <tr class="separator:aed0f0743a34e829b131665cbd34259c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af4ce257fbd1502e306433d9a4f283650"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#af4ce257fbd1502e306433d9a4f283650">interpolateMat</a> (std::vector&lt; double &gt; input_vec, std::vector&lt; std::vector&lt; double &gt;&gt; output_mat, double query_point)</td></tr>
-<tr class="memdesc:af4ce257fbd1502e306433d9a4f283650"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolate data from column vectors contained in a matrix (vector of row vectors) provided an input vector and query point.  <a href="#af4ce257fbd1502e306433d9a4f283650">More...</a><br /></td></tr>
-<tr class="separator:af4ce257fbd1502e306433d9a4f283650"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a027be0b1bae81a8778efac40b7dec7f1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a027be0b1bae81a8778efac40b7dec7f1">interpolateVec</a> (std::vector&lt; double &gt; input_vec, std::vector&lt; double &gt; input_mat, double query_point)</td></tr>
-<tr class="memdesc:a027be0b1bae81a8778efac40b7dec7f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolate data from a column vector provided an input vector and query point.  <a href="#a027be0b1bae81a8778efac40b7dec7f1">More...</a><br /></td></tr>
-<tr class="separator:a027be0b1bae81a8778efac40b7dec7f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a987a731b867e99fb0c0fa3d223f631b2"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a987a731b867e99fb0c0fa3d223f631b2">interpMat</a> (std::vector&lt; double &gt; input_vec, std::vector&lt; std::vector&lt; double &gt;&gt; output_mat, double query_point)</td></tr>
+<tr class="memdesc:a987a731b867e99fb0c0fa3d223f631b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolate data from column vectors contained in a matrix (vector of row vectors) provided an input vector and query point.  <a href="#a987a731b867e99fb0c0fa3d223f631b2">More...</a><br /></td></tr>
+<tr class="separator:a987a731b867e99fb0c0fa3d223f631b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4ace773f9a797d2eac45c5796aabbfc"><td class="memItemLeft" align="right" valign="top">Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ac4ace773f9a797d2eac45c5796aabbfc">interpVector3d</a> (std::vector&lt; double &gt; input_vec, std::vector&lt; Eigen::Vector3d &gt; output_mat, double query_point)</td></tr>
+<tr class="memdesc:ac4ace773f9a797d2eac45c5796aabbfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolate data from column vectors contained in a matrix (vector of row vectors) provided an input vector and query point.  <a href="#ac4ace773f9a797d2eac45c5796aabbfc">More...</a><br /></td></tr>
+<tr class="separator:ac4ace773f9a797d2eac45c5796aabbfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a72440a898d177da24ade355fec6c1f99"><td class="memItemLeft" align="right" valign="top"><a id="a72440a898d177da24ade355fec6c1f99"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a72440a898d177da24ade355fec6c1f99">updatePlan</a> ()</td></tr>
 <tr class="memdesc:a72440a898d177da24ade355fec6c1f99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the footstep plan with the current plan. <br /></td></tr>
@@ -160,6 +164,10 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 std::vector&lt; <a class="el" href="classLocalFootstepPlanner.html#abc34736bcc4fde10c122e4c259588c80">BodyState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ad5bceef6c8d9633791e7a0a0dffc7dc7">body_plan_</a></td></tr>
 <tr class="memdesc:ad5bceef6c8d9633791e7a0a0dffc7dc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing robot body plan. <br /></td></tr>
 <tr class="separator:ad5bceef6c8d9633791e7a0a0dffc7dc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa84041457fad698d33cee4562b10811e"><td class="memItemLeft" align="right" valign="top"><a id="aa84041457fad698d33cee4562b10811e"></a>
+std::vector&lt; <a class="el" href="classLocalFootstepPlanner.html#ad2cb6435347c0188daa4c0e5e1cadad4">BodyWrench</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aa84041457fad698d33cee4562b10811e">body_wrench_plan_</a></td></tr>
+<tr class="memdesc:aa84041457fad698d33cee4562b10811e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing robot body wrenches. <br /></td></tr>
+<tr class="separator:aa84041457fad698d33cee4562b10811e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46bdeff14e59b93790779bc6f01193dd"><td class="memItemLeft" align="right" valign="top"><a id="a46bdeff14e59b93790779bc6f01193dd"></a>
 std::vector&lt; <a class="el" href="classLocalFootstepPlanner.html#ac902c37c7e1e786537e43c616b45636f">FootstepState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a46bdeff14e59b93790779bc6f01193dd">footstep_plan_</a></td></tr>
 <tr class="memdesc:a46bdeff14e59b93790779bc6f01193dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing robot footstep plan. <br /></td></tr>
@@ -235,8 +243,8 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 
 </div>
 </div>
-<a id="af4ce257fbd1502e306433d9a4f283650"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af4ce257fbd1502e306433d9a4f283650">&#9670;&nbsp;</a></span>interpolateMat()</h2>
+<a id="a987a731b867e99fb0c0fa3d223f631b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a987a731b867e99fb0c0fa3d223f631b2">&#9670;&nbsp;</a></span>interpMat()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -245,7 +253,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; double &gt; LocalFootstepPlanner::interpolateMat </td>
+          <td class="memname">std::vector&lt; double &gt; LocalFootstepPlanner::interpMat </td>
           <td>(</td>
           <td class="paramtype">std::vector&lt; double &gt;&#160;</td>
           <td class="paramname"><em>input_vec</em>, </td>
@@ -288,8 +296,8 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 
 </div>
 </div>
-<a id="a027be0b1bae81a8778efac40b7dec7f1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a027be0b1bae81a8778efac40b7dec7f1">&#9670;&nbsp;</a></span>interpolateVec()</h2>
+<a id="ac4ace773f9a797d2eac45c5796aabbfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4ace773f9a797d2eac45c5796aabbfc">&#9670;&nbsp;</a></span>interpVector3d()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -298,7 +306,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double LocalFootstepPlanner::interpolateVec </td>
+          <td class="memname">Eigen::Vector3d LocalFootstepPlanner::interpVector3d </td>
           <td>(</td>
           <td class="paramtype">std::vector&lt; double &gt;&#160;</td>
           <td class="paramname"><em>input_vec</em>, </td>
@@ -306,8 +314,8 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; double &gt;&#160;</td>
-          <td class="paramname"><em>input_mat</em>, </td>
+          <td class="paramtype">std::vector&lt; Eigen::Vector3d &gt;&#160;</td>
+          <td class="paramname"><em>output_mat</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -328,16 +336,16 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </table>
 </div><div class="memdoc">
 
-<p>Interpolate data from a column vector provided an input vector and query point. </p>
+<p>Interpolate data from column vectors contained in a matrix (vector of row vectors) provided an input vector and query point. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">input_vec</td><td>Input vector </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">output_vec</td><td>Output vector such that each element corresponds to exactly one element in the input vector </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">output_mat</td><td>Collection of row vectors such that each row corresponds to exactly one element in the input vector </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">input_val</td><td>Query point </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Interpolated value </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Vector of interpolated values </dd></dl>
 
 </div>
 </div>

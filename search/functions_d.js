@@ -14,9 +14,9 @@ var searchData=
   ['projecttomap',['projectToMap',['../classFastTerrainMap.html#a1157f4492e80cc44dc2da779db3bdd93',1,'FastTerrainMap']]],
   ['publishbodyforce',['publishBodyForce',['../classBodyForceEstimator.html#a28347e575435b6d7dfd7a7fdf0d10537',1,'BodyForceEstimator']]],
   ['publishcontrolinput',['publishControlInput',['../classMPCController.html#a9915855dd2a7fdadeaa7f6acc9a0ac55',1,'MPCController']]],
-  ['publishimu',['publishImu',['../classRobotInterface.html#a93920d967e0ef0c6c85c7a75b77fee0d',1,'RobotInterface']]],
-  ['publishjointencoders',['publishJointEncoders',['../classRobotInterface.html#a6603ca6acb6b1f2e2a700a10382bd95f',1,'RobotInterface']]],
+  ['publishimu',['publishImu',['../classRobotProxy.html#ae1ca4bb51deabab2da1a4f11913ad561',1,'RobotProxy']]],
+  ['publishjointencoders',['publishJointEncoders',['../classRobotProxy.html#a52f9e95a9ca4bc62f711b5f17da2bd00',1,'RobotProxy']]],
   ['publishmap',['publishMap',['../classTerrainMapPublisher.html#aa11b7631c0f0c3c33f9a118be181a102',1,'TerrainMapPublisher']]],
-  ['publishmocap',['publishMocap',['../classRobotInterface.html#aa1a64bbf8c4d5b288304874ef2fd822a',1,'RobotInterface']]],
+  ['publishmocap',['publishMocap',['../classRobotProxy.html#a7c1d653ac5acadd82e8f1dfc4d913d34',1,'RobotProxy']]],
   ['publishplan',['publishPlan',['../classGlobalBodyPlanner.html#a7ef31af306895c311faee09a7023896b',1,'GlobalBodyPlanner::publishPlan()'],['../classLocalFootstepPlanner.html#aa0e199be9129386592065a505df5cddb',1,'LocalFootstepPlanner::publishPlan()'],['../classTwistBodyPlanner.html#a0bf6dc6f10419df4cd4612ff9c1a71dd',1,'TwistBodyPlanner::publishPlan()']]]
 ];
