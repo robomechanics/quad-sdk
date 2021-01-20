@@ -76,6 +76,11 @@ class LocalFootstepPlanner {
      */
     void publishPlan();
 
+    /**
+     * @brief Wait until map and plan messages have been received and processed
+     */
+    void waitForData();
+
     /// Subscriber for terrain map messages
     ros::Subscriber terrain_map_sub_;
 
@@ -87,6 +92,12 @@ class LocalFootstepPlanner {
 
     /// Nodehandle to pub to and sub from
     ros::NodeHandle nh_;
+
+    /// Topic name for terrain map (needed to ensure data has been received)
+    std::string terrain_map_topic_;
+
+    /// Topic name for robot state data (needed to ensure data has been received)
+    std::string body_plan_topic_;
 
     /// Update rate for sending and receiving data;
     double update_rate_;

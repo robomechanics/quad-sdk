@@ -6,16 +6,16 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string terrain_map_topic, body_plan_topic, footstep_plan_topic;
-  nh.param<std::string>("topics/terrain_map", terrain_map_topic, "/terrain_map");
-  nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
+  std::string footstep_plan_topic;
+  nh.param<std::string>("topics/terrain_map", terrain_map_topic_, "/terrain_map");
+  nh.param<std::string>("topics/body_plan", body_plan_topic_, "/body_plan");
   nh.param<std::string>("topics/footstep_plan", footstep_plan_topic, "/footstep_plan");
   nh.param<std::string>("map_frame",map_frame_,"/map");
   nh.param<double>("local_footstep_planner/update_rate", update_rate_, 1);
 
   // Setup pubs and subs
-  terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1,&LocalFootstepPlanner::terrainMapCallback, this);
-  body_plan_sub_ = nh_.subscribe(body_plan_topic,1,&LocalFootstepPlanner::bodyPlanCallback, this);
+  terrain_map_sub_ = nh_.subscribe(terrain_map_topic_,1,&LocalFootstepPlanner::terrainMapCallback, this);
+  body_plan_sub_ = nh_.subscribe(body_plan_topic_,1,&LocalFootstepPlanner::bodyPlanCallback, this);
   footstep_plan_pub_ = nh_.advertise<spirit_msgs::FootstepPlan>(footstep_plan_topic,1);
 }
 
@@ -143,6 +143,9 @@ Eigen::Vector3d LocalFootstepPlanner::interpVector3d(std::vector<double> input_v
 void LocalFootstepPlanner::updatePlan() {
   // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
+  if (body_plan_.empty())
+    return;
+
   // Clear out the old footstep plan
   footstep_plan_.clear();
 
@@ -220,6 +223,9 @@ void LocalFootstepPlanner::updatePlan() {
 
 void LocalFootstepPlanner::publishPlan() {
 
+  if (footstep_plan_.empty()){
+    ROS_WARN_THROTTLE(0.5, "Footstep plan is empty, not publishing");
+  }
   // Initialize FootstepPlan message
   spirit_msgs::FootstepPlan footstep_plan_msg;
   ros::Time timestamp = ros::Time::now();
@@ -246,17 +252,27 @@ void LocalFootstepPlanner::publishPlan() {
   footstep_plan_pub_.publish(footstep_plan_msg);
 }
 
+void LocalFootstepPlanner::waitForData() {
+    // Spin until terrain map message has been received and processed
+  boost::shared_ptr<grid_map_msgs::GridMap const> shared_map;
+  while((shared_map == nullptr) && ros::ok())
+  {
+    shared_map = ros::topic::waitForMessage<grid_map_msgs::GridMap>(terrain_map_topic_, nh_);
+    ros::spinOnce();
+  }
+
+  boost::shared_ptr<spirit_msgs::BodyPlan const> shared_body_plan;
+  while((shared_body_plan == nullptr) && ros::ok())
+  {
+    shared_body_plan = ros::topic::waitForMessage<spirit_msgs::BodyPlan>(body_plan_topic_, nh_);
+    ros::spinOnce();
+  }
+}
+
 void LocalFootstepPlanner::spin() {
   ros::Rate r(update_rate_);
 
-  // Spin until body plan message has been received and processed
-  boost::shared_ptr<spirit_msgs::BodyPlan const> plan_ptr;
-  while((plan_ptr == nullptr) && (ros::ok()))
-  {
-    plan_ptr = ros::topic::waitForMessage<spirit_msgs::BodyPlan>("/body_plan", nh_);
-    ros::spinOnce();
-    r.sleep();
-  }
+  waitForData();
 
   // Enter spin
   while (ros::ok()) {

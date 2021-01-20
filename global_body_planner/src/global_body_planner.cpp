@@ -20,6 +20,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh.param<int>("global_body_planner/num_calls", num_calls_, 1);
   nh.param<double>("global_body_planner/max_time", max_time_, 5.0);
   nh.param<double>("global_body_planner/committed_horizon", committed_horizon_, 0);
+  nh.param<double>("global_body_planner/state_error_threshold", state_error_threshold_, 0.5);
 
   nh.param<std::vector<double> >("global_body_planner/start_state", start_state_, start_state_default);
   nh.param<std::vector<double> >("global_body_planner/goal_state", goal_state_, goal_state_default);
@@ -72,27 +73,31 @@ void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::StateEstimate::Con
   }
 }
 
-int GlobalBodyPlanner::initPlanner() {
+bool GlobalBodyPlanner::replanTrigger() {
 
-  // Clear out old statistics
-  solve_time_info_.clear();
-  vertices_generated_info_.clear();
-  cost_vector_.clear();
-  cost_vector_times_.clear();
+  if (body_plan_.empty()) {
+    return true;
+  }
+
+  double state_error_threshold = 0.5;
+  std::vector<double> current_state_in_plan_ = fullStateToVector(body_plan_.front());
+  if (poseDistance(robot_state_, current_state_in_plan_) > state_error_threshold_) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+
+int GlobalBodyPlanner::initPlanner() {
 
   int start_index = 0;
 
-  // Either clear everything and plan from robot state or clear everything after a set duration and plan from there
-  if (plan_from_robot_state_flag_) {
-
-    if(!robot_state_.empty()) {
-      start_state_ = robot_state_;
-      plan_from_robot_state_flag_ = false;
-    }
+  if (replanTrigger()) {
+    start_state_ = robot_state_;
     start_time_ = 0;
-
+    current_cost_ = INFTY;
   } else {
-
     // Loop through t_plan_ to find the next state after the committed horizon, set as start state
     int N = t_plan_.size();
     for (int i = 0; i < N; i++) {
@@ -109,13 +114,18 @@ int GlobalBodyPlanner::initPlanner() {
       }
     }
   }
-
   return start_index;
 }
 
 void GlobalBodyPlanner::callPlanner() {
 
-  // Get the most recent plan parameters and clear the old solutions
+  // Clear out old statistics
+  solve_time_info_.clear();
+  vertices_generated_info_.clear();
+  cost_vector_.clear();
+  cost_vector_times_.clear();
+
+  // Get the most recent plan parameters
   int start_index = initPlanner();
 
   // Copy start and goal states and adjust for ground height
@@ -126,15 +136,19 @@ void GlobalBodyPlanner::callPlanner() {
 
   // Make sure terminal states are valid
   if (!isValidState(start_state, terrain_, STANCE)) {
-    ROS_WARN("Invalid start state, exiting global planner");
+    ROS_WARN_THROTTLE(0.5, "Invalid start state, exiting global planner");
     return;
   }
   if (!isValidState(goal_state, terrain_, STANCE)) {
-    ROS_WARN("Invalid goal state, exiting global planner");
-    return;
+    ROS_WARN_THROTTLE(0.5, "Invalid goal state, attempting to add in the ground height");
+    goal_state[2] += terrain_.getGroundHeight(goal_state_[0], goal_state_[1]);
+    if (!isValidState(goal_state, terrain_, STANCE)) {
+      ROS_WARN_THROTTLE(0.5, "Invalid goal state, exiting global planner");
+      return;
+    }
   }
   if (start_state == goal_state) {
-    ROS_WARN("Identical start and goal states, exiting global planner");
+    ROS_WARN_THROTTLE(0.5, "Identical start and goal states, exiting global planner");
     return;
   }
 
