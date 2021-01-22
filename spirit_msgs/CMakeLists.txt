@@ -21,13 +21,14 @@ add_message_files(
 	StateEstimate.msg
   BodyPlan.msg
 	FootstepPlan.msg
-	Footstep.msg
+  Footstep.msg
+  SwingLegPlan.msg
 	ControlInput.msg
 	LegContactMode.msg
 	BodyForceEstimate.msg
 	ContactMode.msg
 	MotorCommand.msg
-  	LegCommand.msg
+  LegCommand.msg
 	LegCommandArray.msg
 )
 

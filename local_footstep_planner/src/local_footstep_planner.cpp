@@ -6,10 +6,11 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string footstep_plan_topic;
+  std::string footstep_plan_topic, swing_leg_plan_topic;
   nh.param<std::string>("topics/terrain_map", terrain_map_topic_, "/terrain_map");
   nh.param<std::string>("topics/body_plan", body_plan_topic_, "/body_plan");
   nh.param<std::string>("topics/footstep_plan", footstep_plan_topic, "/footstep_plan");
+  nh.param<std::string>("topics/swing_leg_plan", swing_leg_plan_topic, "/swing_leg_plan");
   nh.param<std::string>("map_frame",map_frame_,"/map");
   nh.param<double>("local_footstep_planner/update_rate", update_rate_, 1);
 
@@ -17,6 +18,7 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic_,1,&LocalFootstepPlanner::terrainMapCallback, this);
   body_plan_sub_ = nh_.subscribe(body_plan_topic_,1,&LocalFootstepPlanner::bodyPlanCallback, this);
   footstep_plan_pub_ = nh_.advertise<spirit_msgs::FootstepPlan>(footstep_plan_topic,1);
+  swing_leg_plan_pub_ = nh_.advertise<spirit_msgs::SwingLegPlan>(swing_leg_plan_topic,1);
 }
 
 void LocalFootstepPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg) {
@@ -154,16 +156,15 @@ void LocalFootstepPlanner::updatePlan() {
 
   // Define the gait sequence
   double period = 0.25;
-  double t_offsets[4] = {0.0, 0.5*period, 0.5*period, 0.0};
-  double t_s[4] = {0.5*period, 0.5*period, 0.5*period, 0.5*period};
+  double t_offsets[num_feet_] = {0.0, 0.5*period, 0.5*period, 0.0};
+  double t_s[num_feet_] = {0.5*period, 0.5*period, 0.5*period, 0.5*period};
 
   double footstep_horizon = std::min(1.5, t_plan_.back());
   int num_cycles = footstep_horizon/period;
 
   // Specify the number of feet and their offsets from the COM
-  double num_feet = 4;
-  double x_offsets[4] = {0.3, -0.3, 0.3, -0.3};
-  double y_offsets[4] = {0.2, 0.2, -0.2, -0.2};
+  double x_offsets[num_feet_] = {0.3, -0.3, 0.3, -0.3};
+  double y_offsets[num_feet_] = {0.2, 0.2, -0.2, -0.2};
 
   // Loop through each gait cycle
   for (int i = 0; i < num_cycles; i++) {
@@ -172,7 +173,7 @@ void LocalFootstepPlanner::updatePlan() {
     double t_cycle = i*period;
 
     // Loop through each foot
-    for (int j=0; j<num_feet; j++) {
+    for (int j=0; j<num_feet_; j++) {
       FootstepState footstep(5);
 
       // Compute the touchdown and midstance times
@@ -219,6 +220,61 @@ void LocalFootstepPlanner::updatePlan() {
   }
 
   // timer.report();
+}
+
+void LocalFootstepPlanner::updateSwingLegPlan() {
+  // spirit_msgs::SwingLegPlan all_swing_leg_plan;
+
+  // const double dt = 0.1;
+
+  // for (int j=0; j<num_feet_; j++) {
+  //   nav_msgs::Path swing_leg_plan;
+
+  //   for (int i = 0; i < footstep_plan_.size()-1; i++) {
+
+  //     FootstepState footstep = footstep_plan_[j][i];
+  //     FootstepState next_footstep = footstep_plan_[j][i+1];
+
+  //     // Add current footstep state and correct time
+  //     double t_touchdown = footstep[3];
+
+  //     // Incrementally compute swing leg trajectory until time for next footstep
+  //     double t_liftoff = t_touchdown + footstep[4];
+  //     double t_next_touchdown = next_footstep[3];
+  //     double t_f = t_next_touchdown - t_liftoff;
+
+  //     for (t = 0; t < t_f; t+=dt) {
+  //       double x = a0 + a1*t + a2*t*t + a3*t*t*t;
+  //       double y = a0 + a1*t + a2*t*t + a3*t*t*t;
+  //       double z = a0 + a1*t + a2*t*t + a3*t*t*t;
+  //     }
+
+
+
+  //     geometry_msgs::PoseStamped pose;
+
+  //     double t = t_plan_[i];
+
+  //     for (int k = 0; k < footstep_plan_.size(); k ++ ) {
+  //       if ()
+  //     }
+
+  //     swing_leg_plan.push_back(pose);
+  //   }
+  //   // for (int i = 0; i < t_plan_.size(); i++) {
+  //   //   geometry_msgs::PoseStamped pose;
+
+  //   //   double t = t_plan_[i];
+
+  //   //   for (int k = 0; k < footstep_plan_.size(); k ++ ) {
+  //   //     if ()
+  //   //   }
+
+  //   //   swing_leg_plan.push_back(pose);
+  //   // }
+
+  //   all_swing_leg_plan.push_back(swing_leg_plan);
+  // }
 }
 
 void LocalFootstepPlanner::publishPlan() {

@@ -6,6 +6,7 @@
 #include <spirit_msgs/BodyPlan.h>
 #include <spirit_msgs/Footstep.h>
 #include <spirit_msgs/FootstepPlan.h>
+#include <spirit_msgs/SwingLegPlan.h>
 #include <spirit_utils/fast_terrain_map.h>
 #include <spirit_utils/function_timer.h>
 
@@ -72,6 +73,11 @@ class LocalFootstepPlanner {
     void updatePlan();
 
     /**
+     * @brief Update the swing leg plan to match the current footstep plan
+     */
+    void updateSwingLegPlan();
+
+    /**
      * @brief Publish the current footstep plan
      */
     void publishPlan();
@@ -89,6 +95,9 @@ class LocalFootstepPlanner {
 
     /// Publisher for footstep plan messages
     ros::Publisher footstep_plan_pub_;
+
+    /// Publisher for swing leg plan messages
+    ros::Publisher swing_leg_plan_pub_;
 
     /// Nodehandle to pub to and sub from
     ros::NodeHandle nh_;
@@ -128,6 +137,9 @@ class LocalFootstepPlanner {
 
     /// Std vector containing time data
     std::vector<double> t_plan_;
+
+    /// Number of feet
+    const int num_feet_ = 4;
 
 };
 
