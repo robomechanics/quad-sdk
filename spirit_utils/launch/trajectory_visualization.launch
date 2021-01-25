@@ -1,0 +1,12 @@
+<launch>
+
+    <rosparam command="load" file="$(find spirit_utils)/../config/project_params.yaml"/>
+
+    <include file="$(find spirit_utils)/launch/mapping.launch" />
+
+    <!-- Launch the node to publish body forece estimate messages-->
+    <node name="trajectory_visualization_publisher" pkg="spirit_utils" type="trajectory_visualization_publisher_node"/>
+
+    <include file="$(find spirit_utils)/launch/visualization.launch" />
+
+</launch>
