@@ -9,6 +9,7 @@
 #include <spirit_msgs/FootstepPlan.h>
 #include <spirit_msgs/ControlInput.h>
 #include <spirit_msgs/StateEstimate.h>
+
 //! Implements online MPC
 /*!
    MPCController implements all control logic. It should expose a constructor that does any initialization required and an update method called at some frequency.
@@ -79,7 +80,7 @@ private:
 	double update_rate_;
 
   /// Linear MPC object
-  std::shared_ptr<::mpcplusplus::LinearMPC> mpc;
+  std::shared_ptr<mpcplusplus::LinearMPC> mpc;
 };
 
 

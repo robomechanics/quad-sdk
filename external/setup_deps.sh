@@ -5,21 +5,21 @@ quiet_mkdir () {
 	fi
 }
 
-cd osqp
+cd mpcplusplus/ext/osqp
 quiet_mkdir build
 cd build
 cmake ..
 make -j8
 sudo make install
-cd ../..
+cd ../../../..
 
-cd osqp-eigen
+cd mpcplusplus/ext/osqp-eigen
 quiet_mkdir build
 cd build
 cmake ..
 make -j8
 sudo make install
-cd ../..
+cd ../../../..
 
 # Setup and build for qpOases
 cd qpOASES

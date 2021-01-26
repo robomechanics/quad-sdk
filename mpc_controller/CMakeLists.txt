@@ -22,6 +22,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## System dependencies are found with CMake's conventions
 find_package(Eigen3 REQUIRED)
+find_package(OsqpEigen REQUIRED)
 
 set(QPOASES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/qpOASES")
 set(QPOASES_INCLUDE_DIRS "${QPOASES_DIR}/include")
@@ -40,7 +41,7 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-message(STATUS ${catkin_INCLUDE_DIRS})
+#message(STATUS ${OSQP_INCLUDE_DIRS})
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
@@ -52,7 +53,7 @@ include_directories(
 add_library(mpc_controller
 	src/mpc_controller.cpp
 )
-target_link_libraries(mpc_controller)
+target_link_libraries(mpc_controller OsqpEigen::OsqpEigen)
 add_dependencies(mpc_controller ${mpc_controller_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable

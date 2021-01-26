@@ -16,7 +16,6 @@ MPCController::MPCController(ros::NodeHandle nh) {
 
   nh.param<double>("mpc_controller/update_rate", update_rate_, 100);
 
-
   // Setup pubs and subs
   state_estimate_sub_ = nh_.subscribe(state_estimate_topic,1,&MPCController::stateEstimateCallback, this);
   footstep_plan_sub_ = nh_.subscribe(footstep_plan_topic,1,&MPCController::footstepPlanCallback, this);

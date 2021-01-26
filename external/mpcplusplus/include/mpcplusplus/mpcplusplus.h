@@ -1,10 +1,11 @@
-#ifndef MPCPLUSPLUS_H
-#define MPCPLUSPLUS_H
+#ifndef LTI_MPCPLUSPLUS_H
+#define LTI_MPCPLUSPLUS_H
 
 #include "OsqpEigen/OsqpEigen.h"
 #include <Eigen/Core>
 #include <Eigen/Dense>
 
+namespace mpcplusplus {
 class LinearMPC {
 
 public:
@@ -14,29 +15,36 @@ public:
             const Eigen::MatrixXd &state_bounds,
             const Eigen::MatrixXd &control_bounds,
             const int N);
+
+  LinearMPC(const int N, const int Nx, const int Nu);
+
   ~LinearMPC() = default;
+
+  void update_weights(const Eigen::MatrixXd Q, 
+                      const Eigen::MatrixXd Qn,
+                      const Eigen::MatrixXd R);
+
+  void update_statespace(const Eigen::MatrixXd Ad,
+                         const Eigen::MatrixXd Bd);
 
   /**
    * @brief Constructs the quadratic cost function of the form
    * 
    * @param[in] ref_traj Reference trajectory
-   * @param[out] H Quadratic component of cost
    * @param[out] f Linear component of cost
    */
-  void get_cost_function(const Eigen::MatrixXd &ref_traj, Eigen::MatrixXd &H,
-                         Eigen::VectorXd &f);
+  void get_cost_function(const Eigen::MatrixXd &ref_traj, Eigen::VectorXd &f);
 
   /**
   * @brief Construct the linear equality constraint matrix Aeq and vector beq
   * that enforce the dynamics constraints. These constraints
   * are in the form of
   *
-  * Aeq * x = beq
+  * Aeq * x = 0
   *
   * @param[out] Aeq Linear equality constraint matrix
-  * @param[out] beq Linear equality constraint vector
   */
-  void get_dynamics_constraint(Eigen::MatrixXd &Aeq, Eigen::MatrixXd &beq);
+  void get_dynamics_constraint(Eigen::MatrixXd &Aeq);
 
   /**
    * @brief Collect stacked bounds
@@ -83,34 +91,28 @@ private:
   int m_num_decision_vars;
   int m_num_constraints;
 
-  // A matrix in discrete state space form
-  Eigen::MatrixXd m_Ad;
+  /// Quadratic cost matrix
+  Eigen::MatrixXd H_;
 
-  // B matrix in discrete state space form
-  Eigen::MatrixXd m_Bd;
+  // Precomputed matrix for linear cost vector construction
+  Eigen::MatrixXd H_f_; 
 
-  // Wieght matrix on state deviation from state 0 -> N-1
-  Eigen::MatrixXd m_Q;
+  /// Dynamics constraint matrix
+  Eigen::MatrixXd A_dyn_dense_;
 
-  // Weight matrix on state deviation at state N
-  Eigen::MatrixXd m_Qn;
+  /// Dynamics constraint vector
+  Eigen::MatrixXd b_dyn_;
 
-  // Weight matrix on control inputs
-  Eigen::MatrixXd m_R;
-
-  // Nx x 2 matrix of lower and upper bounds on state variables
+  /// Nx x 2 matrix of lower and upper bounds on state variables
   Eigen::MatrixXd m_state_bounds;
 
-  // Nu x 2 matrix of lower and upper bounds on control variables
+  /// Nu x 2 matrix of lower and upper bounds on control variables
   Eigen::MatrixXd m_control_bounds;
 
-  // MPC variables
-  Eigen::MatrixXd m_Hq;
-  Eigen::MatrixXd m_Hqn;
-  Eigen::MatrixXd m_Hu;
-
-  // OSQP solver
+  /// OSQP solver instance
   OsqpEigen::Solver solver_;
 };
+
+} // mpcplusplus
 
 #endif

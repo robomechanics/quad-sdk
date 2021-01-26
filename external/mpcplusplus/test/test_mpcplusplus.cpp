@@ -1,6 +1,5 @@
 
 #include "mpcplusplus/mpcplusplus.h"
-
 #include <Eigen/Dense>
 #include <iostream>
 #include <math.h>
@@ -65,7 +64,7 @@ TEST(TestUseCase, drone) {
   // Initial state
   Eigen::VectorXd x0 = ref_traj.col(0);
 
-  LinearMPC mpc(Ad, Bd, Qx, Qn, Ru, xbounds, ubounds,N);
+  mpcplusplus::LinearMPC mpc(Ad, Bd, Qx, Qn, Ru, xbounds, ubounds,N);
 
   // Test Cost Function
   Eigen::MatrixXd H;
@@ -154,12 +153,11 @@ TEST(TestUseCase, quadruped) {
   // Initial state
   Eigen::VectorXd x0 = ref_traj.col(0);
 
-  LinearMPC mpc(Ad, Bd, Qx, Qn, Ru, xbounds, ubounds,N);
+  mpcplusplus::LinearMPC mpc(Ad, Bd, Qx, Qn, Ru, xbounds, ubounds,N);
 
   // Test Cost Function
-  Eigen::MatrixXd H;
   Eigen::VectorXd f;
-  mpc.get_cost_function(ref_traj, H, f);
+  mpc.get_cost_function(ref_traj, f);
   // TODO eval
   // std::cout << f << std::endl;
 
