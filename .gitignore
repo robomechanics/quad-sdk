@@ -1,7 +1,5 @@
 docs/
 *.pyc
 *.vscode
-external/osqp/build/
-external/osqp-eigen/build/
 **/build/
 *.vscode
