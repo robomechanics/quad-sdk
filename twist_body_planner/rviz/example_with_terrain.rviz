@@ -7,7 +7,6 @@ Panels:
         - /GridMap1
         - /Marker1
         - /Marker2
-        - /MarkerArray1
       Splitter Ratio: 0.6114649772644043
     Tree Height: 375
   - Class: rviz/Selection
@@ -336,14 +335,6 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /visualization/body_wrench_plan
-      Name: MarkerArray
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
@@ -372,25 +363,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 6.167092800140381
+      Distance: 8.198110580444336
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 2.2820186614990234
-        Y: -1.0301897525787354
-        Z: 0.9920282363891602
+        X: 1.4435360431671143
+        Y: -0.9866522550582886
+        Z: 0.16265909373760223
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.41979730129241943
+      Pitch: 0.5097973346710205
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.355423450469971
+      Yaw: 4.075424671173096
     Saved: ~
 Window Geometry:
   Displays:
@@ -409,4 +400,4 @@ Window Geometry:
     collapsed: true
   Width: 1095
   X: 514
-  Y: 27
+  Y: 74

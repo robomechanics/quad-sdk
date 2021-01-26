@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(global_body_planner)
+project(twist_body_planner)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -17,13 +17,11 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   spirit_msgs
   spirit_utils
-  grid_map_core
-  grid_map_ros
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-find_package(PythonLibs 2.7)
+
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -113,7 +111,7 @@ find_package(PythonLibs 2.7)
 catkin_package(
  INCLUDE_DIRS include
 #  LIBRARIES body_planner
- CATKIN_DEPENDS roscpp std_msgs grid_map_core grid_map_ros spirit_utils
+ CATKIN_DEPENDS roscpp std_msgs spirit_utils
 #  DEPENDS system_lib
 )
 
@@ -126,17 +124,12 @@ catkin_package(
 include_directories(
 include
   ${catkin_INCLUDE_DIRS}
-  ${PYTHON_INCLUDE_DIRS}
 )
 
 # JN Added
 set(MY_LIB_SOURCES
-  src/global_body_planner.cpp
-  src/planning_utils.cpp
-  src/graph_class.cpp
-  src/planner_class.cpp
-  src/rrt.cpp
-  src/rrt_connect.cpp)
+  src/twist_body_planner.cpp
+)
 
 # Declare a C++ library
 add_library(${PROJECT_NAME}
@@ -151,7 +144,7 @@ add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EX
 # Declare a C++ executable
 # With catkin_make all packages are built within a single CMake context
 # The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/global_body_planner_node.cpp)
+add_executable(${PROJECT_NAME}_node src/twist_body_planner_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -168,9 +161,6 @@ target_link_libraries(${PROJECT_NAME}_node
   ${PROJECT_NAME}
   ${catkin_LIBRARIES}
 )
-
-target_include_directories(${PROJECT_NAME}_node PRIVATE ${PYTHON_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME}_node ${PYTHON_LIBRARIES})
 
 #############
 ## Install ##
@@ -219,7 +209,7 @@ target_link_libraries(${PROJECT_NAME}_node ${PYTHON_LIBRARIES})
 #############
 
 # Add gtest based cpp test target and link libraries
-catkin_add_gtest(${PROJECT_NAME}-test test/test_global_body_planner.cpp)
+catkin_add_gtest(${PROJECT_NAME}-test test/test_twist_body_planner.cpp)
 target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME} ${catkin_LIBRARIES})
 
 ## Add folders to be run by python nosetests

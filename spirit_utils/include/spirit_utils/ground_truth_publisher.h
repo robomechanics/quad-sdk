@@ -68,8 +68,8 @@ private:
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
 
-  /// Update rate for sending and receiving data;
-  double update_rate_;
+  /// Update rate of the motion capture system
+  double mocap_rate_;
 
   /// Last state estimate
   spirit_msgs::StateEstimate last_state_est_;

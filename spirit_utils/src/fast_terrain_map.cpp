@@ -91,7 +91,8 @@ void FastTerrainMap::loadDataFromGridMap(grid_map::GridMap map){
 
 bool FastTerrainMap::isInRange(const double x, const double y) {
 
-  if ((x >= x_data_.front()) && (x <= x_data_.back()) && (y >= y_data_.front()) && (y <= y_data_.back())) {
+  double epsilon = 0.5;
+  if (((x-epsilon) >= x_data_.front()) && ((x+epsilon) <= x_data_.back()) && ((y-epsilon) >= y_data_.front()) && ((y+epsilon) <= y_data_.back())) {
     return true;
   } else {
     return false;
@@ -99,7 +100,8 @@ bool FastTerrainMap::isInRange(const double x, const double y) {
 }
 
 double FastTerrainMap::getGroundHeight(const double x, const double y) {
-  // auto t_start = std::chrono::steady_clock::now();
+  // spirit_utils::FunctionTimer timer(__FUNCTION__);
+  
   double x1, x2, y1, y2;
 
   // Find the correct x values to interpolate between
@@ -134,9 +136,7 @@ double FastTerrainMap::getGroundHeight(const double x, const double y) {
   double fx2y2 = z_data_[ix+1][iy+1];
   double height = 1.0/((x2-x1)*(y2-y1))*(fx1y1*(x2-x)*(y2-y) + fx2y1*(x-x1)*(y2-y) + fx1y2*(x2-x)*(y-y1) + fx2y2*(x-x1)*(y-y1));
 
-  // auto t_end = std::chrono::steady_clock::now();
-  // std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t_end - t_start);
-  // std::cout << "Ground height check took " << time_span.count() << " seconds." << std::endl;
+  // timer.report();
   return height;
 }
 
@@ -193,6 +193,7 @@ std::array<double, 3> FastTerrainMap::getSurfaceNormal(double x, double y)
 }
 
 Eigen::Vector3d FastTerrainMap::projectToMap(Eigen::Vector3d point, Eigen::Vector3d direction) {
+  // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
   direction.normalize();
   Eigen::Vector3d result = point;
@@ -210,6 +211,7 @@ Eigen::Vector3d FastTerrainMap::projectToMap(Eigen::Vector3d point, Eigen::Vecto
       clearance = new_point[2] - getGroundHeight(new_point[0], new_point[1]);
     } else {
       result = {old_point[0], old_point[1], -std::numeric_limits<double>::max()};
+      ROS_WARN_THROTTLE(0.5, "Tried to project to a point off the map.");
       return result;
     }
   }
@@ -217,6 +219,7 @@ Eigen::Vector3d FastTerrainMap::projectToMap(Eigen::Vector3d point, Eigen::Vecto
   result = {old_point[0], old_point[1], getGroundHeight(old_point[0], old_point[1])};
   // double error = old_point[2] - result[2];
 
+  // timer.report();
   return result;
 }
 

@@ -1,6 +1,45 @@
 #include "global_body_planner/planning_utils.h"
+#include "global_body_planner/matplotlibcpp.h"
 
 namespace planning_utils {
+
+namespace plt = matplotlibcpp;
+
+State fullStateToState(FullState full_state)
+{
+  State state;
+
+  state[0] = full_state[0];
+  state[1] = full_state[1];
+  state[2] = full_state[2];
+  state[3] = full_state[3];
+  state[4] = full_state[4];
+  state[5] = full_state[5];
+  state[6] = full_state[7];
+  state[7] = full_state[10];
+
+  return state;
+}
+
+FullState stateToFullState(State state, double roll, double yaw, double roll_rate, double yaw_rate)
+{
+  FullState full_state;
+
+  full_state[0] = state[0];
+  full_state[1] = state[1];
+  full_state[2] = state[2];
+  full_state[3] = state[3];
+  full_state[4] = state[4];
+  full_state[5] = state[5];
+  full_state[6] = roll;
+  full_state[7] = state[6];
+  full_state[8] = yaw;
+  full_state[9] = roll_rate;
+  full_state[10] = state[7];
+  full_state[11] = yaw_rate;
+
+  return full_state;
+}
 
 void vectorToArray(State vec, double * new_array)
 {
@@ -26,6 +65,13 @@ void printAction(Action a)
     std::cout << a[i] << ", ";
   std::cout << "\b\b}"; 
 }
+void printVector(std::vector<double> vec)
+{
+  std::cout << "{";
+  for (double i= 0; i < vec.size(); i++)
+    std::cout << vec[i] << ", ";
+  std::cout << "\b\b}"; 
+}
 void printVectorInt(std::vector<int> vec)
 {
   std::cout << "{";
@@ -40,6 +86,10 @@ void printStateNewline(State vec)
 void printActionNewline(Action a)
 {
   printAction(a); std::cout << std::endl;
+}
+void printVectorNewline(std::vector<double> vec)
+{
+  printVector(vec); std::cout << std::endl;
 }
 void printStateSequence(std::vector<State> state_sequence)
 {
@@ -59,18 +109,30 @@ void printActionSequence(std::vector<Action> action_sequence)
   for (Action a : action_sequence)
     printActionNewline(a);
 }
-void printVectorInt_nl(std::vector<int> vec)
+void printVectorIntNewline(std::vector<int> vec)
 {
   printVectorInt(vec); std::cout << std::endl;
 }
-State interp(State q1, State q2, double x)
-{
-  State q_out;
-  for(int dim = 0; dim < q1.size(); dim ++)
-  {
-    q_out[dim] = (q2[dim] - q1[dim])*x + q1[dim];
+void plotYaw(std::vector<double> interp_t, std::vector<FullState> interp_full_path) {
+
+  std::vector<double> yaw;
+  std::vector<double> yaw_rate;
+
+  for (FullState full_state : interp_full_path) {
+    yaw.push_back(full_state[8]);
+    yaw_rate.push_back(full_state[11]);
   }
-  return q_out;
+
+  // plt::clf();
+  plt::ion();
+  plt::named_plot("yaw", interp_t, yaw);
+  plt::named_plot("yaw rate", interp_t, yaw_rate);
+  plt::xlabel("t");
+  plt::ylabel("yaw");
+  plt::legend();
+  plt::show();
+  plt::pause(0.001);
+
 }
 
 double poseDistance(State q1, State q2)
@@ -104,6 +166,116 @@ bool isWithinBounds(State s1, State s2)
   return (stateDistance(s1, s2) <= GOAL_BOUNDS);
 }
 
+std::vector<double> movingAverageFilter(std::vector<double> data, int window_size) {
+  std::vector<double> filtered_data;
+  int N = data.size();
+
+  // Check to ensure window size is an odd integer, if not add one to make it so
+  if ((window_size % 2) == 0) {
+    window_size += 1;
+    ROS_WARN("Filter window size is even, adding one to maintain symmetry");
+  }
+
+  // Make sure that the window size is acceptable
+  if (window_size>=N) {
+    ROS_ERROR("Filter window size is bigger than data");
+  }
+
+  // Loop through the data
+  for (int i = 0; i < N; i++) {
+
+    // Initialize sum and count of data samples
+    double sum = 0;
+    double count = 0;
+
+    // Shrink the window size if it would result in out of bounds data
+    int current_window_size = std::min(window_size, 2*i+1);
+    // int current_window_size = window_size;
+    
+    // Loop through the window, adding to the sum and averaging
+    for (int j = 0; j < current_window_size; j++) {
+      double index = i + (j - (current_window_size-1)/2);
+
+      // Make sure data is in bounds
+      if (index>=0 && index<N) {
+        sum += data[index];
+        count += 1;
+      } else {
+        // ROS_WARN("Filter tried to access data out of bounds, which shouldn't happen (filter window should scale automatically).");
+      }
+    }
+
+    filtered_data.push_back((float)sum/count);
+  }
+
+  return filtered_data;
+}
+
+std::vector<double> centralDifference(std::vector<double> data, double dt) {
+  std::vector<double> data_diff;
+
+  for (int i = 0; i < data.size(); i++) {
+
+    // Compute lower and upper indices, with forward/backward difference at the ends
+    int lower_index = std::max(i-1,0);
+    int upper_index = std::min(i+1,(int)data.size()-1);
+
+    double estimate = (data[upper_index] - data[lower_index])/(dt*(upper_index - lower_index));
+    data_diff.push_back(estimate);
+  }
+
+  return data_diff;
+}
+
+void addFullStates(std::vector<State> interp_reduced_path, double dt, std::vector<FullState> &interp_full_path) {
+
+  // Set roll and roll rate to zero
+  double roll = 0;
+  double roll_rate = 0;
+
+  // Declare variables for yaw
+  std::vector<double> yaw;
+  std::vector<double> filtered_yaw;
+  std::vector<double> yaw_rate;
+  std::vector<double> filtered_yaw_rate;
+
+  // Compute yaw to align with heading
+  for (State body_state : interp_reduced_path) {
+    yaw.push_back(atan2(body_state[4],body_state[3]));
+  }
+
+  // Filter yaw and compute its derivative via central difference method
+  int window_size = 7;
+  filtered_yaw = movingAverageFilter(yaw, window_size);
+  yaw_rate = centralDifference(filtered_yaw, dt);
+  filtered_yaw_rate = movingAverageFilter(yaw_rate, window_size);
+
+  std::vector<double> interp_t;
+  for (int i = 0; i < interp_reduced_path.size(); i++) {
+    interp_t.push_back(i*dt);
+  }
+
+  // plt::clf();
+  // plt::ion();
+  // plt::named_plot("yaw", interp_t, yaw);
+  // plt::named_plot("filtered yaw", interp_t, filtered_yaw);
+  // plt::named_plot("yaw rate", interp_t, yaw_rate);
+  // plt::named_plot("filtered yaw rate", interp_t, filtered_yaw_rate);
+  // plt::xlabel("t");
+  // plt::ylabel("yaw");
+  // plt::legend();
+  // plt::show();
+  // plt::pause(0.001);
+
+  // Add full state data into the array
+  for (int i = 0; i < interp_reduced_path.size(); i++) {
+    State body_state = interp_reduced_path[i];
+    FullState body_full_state = stateToFullState(body_state, roll, filtered_yaw[i], roll_rate, filtered_yaw_rate[i]);
+
+    interp_full_path.push_back(body_full_state);
+  }
+}
+
 Wrench getWrench(Action a,double t) {
 
   double m = M_CONST;
@@ -129,7 +301,7 @@ Wrench getWrench(Action a,double t) {
 
 }
 
-void interpStateActionPair(State s, Action a,double t0,double dt, std::vector<State> &interp_path, std::vector<Wrench> &interp_wrench,
+void interpStateActionPair(State s, Action a,double t0,double dt, std::vector<State> &interp_reduced_path, std::vector<Wrench> &interp_wrench,
     std::vector<double> &interp_t, std::vector<int> &interp_phase)
 {
   double t_s = a[6];
@@ -139,7 +311,7 @@ void interpStateActionPair(State s, Action a,double t0,double dt, std::vector<St
   for (double t = 0; t < t_s; t += dt)
   {
     interp_t.push_back(t0+t);
-    interp_path.push_back(applyStance(s,a,t));
+    interp_reduced_path.push_back(applyStance(s,a,t));
     interp_wrench.push_back(getWrench(a,t));
 
     if (t_f==0)
@@ -154,7 +326,7 @@ void interpStateActionPair(State s, Action a,double t0,double dt, std::vector<St
   for (double t = 0; t < t_f; t += dt)
   {
     interp_t.push_back(t0+t_s+t);
-    interp_path.push_back(applyFlight(s_takeoff, t));
+    interp_reduced_path.push_back(applyFlight(s_takeoff, t));
     interp_wrench.push_back(getWrench(a,t_s+t));
     interp_phase.push_back(FLIGHT);
   }
@@ -169,24 +341,30 @@ void interpStateActionPair(State s, Action a,double t0,double dt, std::vector<St
   // }
 }
 
-void getInterpPath(std::vector<State> state_sequence, std::vector<Action> action_sequence,double dt, std::vector<State> &interp_path, 
+
+
+void getInterpPath(std::vector<State> state_sequence, std::vector<Action> action_sequence,double dt, double t0, std::vector<FullState> &interp_full_path, 
     std::vector<Wrench> &interp_wrench, std::vector<double> &interp_t, std::vector<int> &interp_phase)
 {
+  std::vector<State> interp_reduced_path;
+
   // Loop through state action pairs, interp each and add to the path
-  double t0 = 0;
   for (int i=0; i < action_sequence.size();i++)
   {
-    interpStateActionPair(state_sequence[i], action_sequence[i], t0, dt, interp_path, interp_wrench, interp_t, interp_phase);
+    interpStateActionPair(state_sequence[i], action_sequence[i], t0, dt, interp_reduced_path, interp_wrench, interp_t, interp_phase);
     t0 += (action_sequence[i][6] + action_sequence[i][7]);
   }
 
   // Add the final state in case it was missed by interp (wrench is undefined here so just copy the last element)
   interp_t.push_back(t0);
-  interp_path.push_back(state_sequence.back());
+  interp_reduced_path.push_back(state_sequence.back());
   interp_wrench.push_back(interp_wrench.back());
+
+
+  addFullStates(interp_reduced_path, dt, interp_full_path);
 }
 
-std::array<double,3> rotate_grf(std::array<double,3> surface_norm, std::array<double,3> grf)
+std::array<double,3> rotateGRF(std::array<double,3> surface_norm, std::array<double,3> grf)
 {
   // Receive data and convert to Eigen
   Eigen::Vector3d Zs;
@@ -377,8 +555,8 @@ Action getRandomAction(std::array<double, 3> surf_norm)
   std::array<double, 3> f_td = {f_x_td, f_y_td, f_z_td};
   std::array<double, 3> f_to = {f_x_to, f_y_to, f_z_to};
 
-  f_td = rotate_grf(surf_norm, f_td);
-  f_to = rotate_grf(surf_norm, f_to);
+  f_td = rotateGRF(surf_norm, f_td);
+  f_to = rotateGRF(surf_norm, f_to);
 
   // Random stance and flight times between 0 and T_MAX
   // double t_s = (T_S_MAX - T_S_MIN)*(double)rand()/RAND_MAX + T_S_MIN;

@@ -4,13 +4,17 @@
     <arg name="proxy" default="false"/>
     <arg name="mocap" default="false"/>
     <arg name="logging" default="false"/>
+    <arg name="controller" default="open_loop"/>
 
-    <include file="$(find spirit_utils)/launch/control.launch" />
+    <include file="$(find spirit_utils)/launch/control.launch">
+        <arg name="controller" value="$(arg controller)" />
+    </include>
     <include file="$(find spirit_utils)/launch/estimation.launch" />
 
     <!-- Launch the robot_proxy if specified-->
     <group if="$(arg proxy)">
-        <node name="robot_proxy" pkg="spirit_utils" type="robot_interface_node" output="screen"/>
+        <node name="robot_proxy" pkg="spirit_utils" type="robot_proxy_node" output="screen"/>
+        <include file="$(find spirit_utils)/launch/mocap.launch" />
     </group>
 
     <!-- Launch the mblink converter unless using a proxy-->
