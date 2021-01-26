@@ -9,7 +9,7 @@
 
     <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
-        <remap from="joint_states" to="/mcu/state/jointURDF"/>
+        <remap from="joint_states" to="/joint_states_viz"/>
     </node>
 
     <!-- Launch the node to publish the visual topics for the plans -->
