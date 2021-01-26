@@ -2,6 +2,8 @@
 #define FAST_TERRAIN_MAP_H
 
 #include <grid_map_core/grid_map_core.hpp>
+#include <Eigen/Dense>
+#include <chrono>
 
 //! A terrain map class built for fast and efficient sampling
 /*!
@@ -43,6 +45,13 @@ class FastTerrainMap {
     void loadDataFromGridMap(grid_map::GridMap map);
 
     /**
+     * @brief Check if map data is defined at a requested location
+     * @param[in] double x location
+     * @param[in] double y location
+     * @return bool location [x,y] is or is not in range
+     */
+    bool isInRange(const double x,const double y);
+    /**
      * @brief Return the ground height at a requested location
      * @param[in] double x location
      * @param[in] double y location
@@ -57,6 +66,13 @@ class FastTerrainMap {
      * @return std::array<double, 3> surface normal at location [x,y]
      */
     std::array<double, 3> getSurfaceNormal(const double x,const double y);
+
+    /**
+     * @brief Return the (approximate) intersection of the height map and a vector. Returned point lies exactly on the map but not entirely on the vector.
+     * @param[in] point The point at which the vector originates
+     * @param[in] direction The direction along which to project the point
+     */
+    Eigen::Vector3d projectToMap(Eigen::Vector3d point, Eigen::Vector3d direction);
 
     /**
      * @brief Return the vector of x_data of the map

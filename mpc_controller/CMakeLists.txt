@@ -15,6 +15,9 @@ endif()
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  spirit_msgs
+  spirit_utils
+  mpcplusplus
 )
 
 ## System dependencies are found with CMake's conventions
@@ -26,9 +29,9 @@ set(QPOASES_LIBRARIES "${QPOASES_DIR}/build/libs")
 find_library(QPOASES NAMES qpOASES PATHS ${QPOASES_LIBRARIES} REQUIRED)
 
 catkin_package(
-  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS} ${QPOASES_INCLUDE_DIRS}
-  CATKIN_DEPENDS roscpp std_msgs
-  DEPENDS EIGEN3 QPOASES
+  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
+  CATKIN_DEPENDS roscpp std_msgs spirit_msgs spirit_utils
+  DEPENDS EIGEN3
 )
 
 ###########
@@ -49,6 +52,7 @@ include_directories(
 add_library(mpc_controller
 	src/mpc_controller.cpp
 )
+target_link_libraries(mpc_controller)
 add_dependencies(mpc_controller ${mpc_controller_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable

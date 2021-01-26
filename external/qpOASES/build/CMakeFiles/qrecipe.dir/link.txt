@@ -1,1 +1,0 @@
-/usr/bin/c++  -D__NO_COPYRIGHT__ -Wall -pedantic -Wfloat-equal -Wshadow -DLINUX -g -O3 -finline-functions -rdynamic CMakeFiles/qrecipe.dir/examples/qrecipe.cpp.o -o bin/qrecipe  -Wl,-rpath,/home/nflowers/catkin_ws/src/spirit-software/external/qpOASES/build/libs libs/libqpOASES.so.3.2 

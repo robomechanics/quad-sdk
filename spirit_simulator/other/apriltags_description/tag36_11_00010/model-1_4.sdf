@@ -1,0 +1,14 @@
+<?xml version="1.0" ?><sdf version="1.4">
+  <model name="tag36_11_00010">
+    <static>true</static>
+    <link name="link">
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://tag36_11_00010/meshes/tag36_11_00010.dae</uri>
+          <scale>0.17 0.17 0.17</scale></mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

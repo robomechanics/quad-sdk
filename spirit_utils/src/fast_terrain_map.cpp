@@ -1,7 +1,7 @@
 #include "spirit_utils/fast_terrain_map.h"
 #include <grid_map_core/grid_map_core.hpp>
 
-#include <chrono>
+#include <iostream>
 
 FastTerrainMap::FastTerrainMap(){
 
@@ -63,9 +63,18 @@ void FastTerrainMap::loadDataFromGridMap(grid_map::GridMap map){
       double height = (double) map.at("elevation", index);
       z_data[i].push_back(height);
 
-      dx_data[i].push_back(0.0);
-      dy_data[i].push_back(0.0);
-      dz_data[i].push_back(1.0);
+      if (map.exists("dx") == true) {
+        double dx = (double) map.at("dx", index);
+        double dy = (double) map.at("dy", index);
+        double dz = (double) map.at("dz", index);
+        dx_data[i].push_back(dx);
+        dy_data[i].push_back(dy);
+        dz_data[i].push_back(dz);
+      } else {
+        dx_data[i].push_back(0.0);
+        dy_data[i].push_back(0.0);
+        dz_data[i].push_back(1.0);
+      }
     }
   }
 
@@ -78,6 +87,15 @@ void FastTerrainMap::loadDataFromGridMap(grid_map::GridMap map){
   dx_data_ = dx_data;
   dy_data_ = dy_data;
   dz_data_ = dz_data;
+}
+
+bool FastTerrainMap::isInRange(const double x, const double y) {
+
+  if ((x >= x_data_.front()) && (x <= x_data_.back()) && (y >= y_data_.front()) && (y <= y_data_.back())) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 double FastTerrainMap::getGroundHeight(const double x, const double y) {
@@ -172,6 +190,34 @@ std::array<double, 3> FastTerrainMap::getSurfaceNormal(double x, double y)
 
     surf_norm[2] = 1.0/((x2-x1)*(y2-y1))*(fz_x1y1*(x2-x)*(y2-y) + fz_x2y1*(x-x1)*(y2-y) + fz_x1y2*(x2-x)*(y-y1) + fz_x2y2*(x-x1)*(y-y1));
     return surf_norm;
+}
+
+Eigen::Vector3d FastTerrainMap::projectToMap(Eigen::Vector3d point, Eigen::Vector3d direction) {
+
+  direction.normalize();
+  Eigen::Vector3d result = point;
+  Eigen::Vector3d new_point = point;
+  Eigen::Vector3d old_point = point;
+
+  double step_size = 0.01;
+  double clearance = 0;
+  while (clearance >=0) {
+    old_point = new_point;
+    for(int i = 0; i<3; i++) {
+      new_point[i] += direction[i]*step_size;
+    }
+    if (isInRange(new_point[0], new_point[1])) {
+      clearance = new_point[2] - getGroundHeight(new_point[0], new_point[1]);
+    } else {
+      result = {old_point[0], old_point[1], -std::numeric_limits<double>::max()};
+      return result;
+    }
+  }
+  
+  result = {old_point[0], old_point[1], getGroundHeight(old_point[0], old_point[1])};
+  // double error = old_point[2] - result[2];
+
+  return result;
 }
 
 std::vector<double> FastTerrainMap::getXData() {

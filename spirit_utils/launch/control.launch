@@ -1,0 +1,17 @@
+<launch>
+
+    <rosparam command="load" file="$(find spirit_utils)/../config/project_params.yaml"/>
+
+    <arg name="controller" default="open_loop"/>
+
+    <!-- Launch the node to publish the mpc controller -->
+    <group if="$(eval arg('controller') == 'mpc')">
+        <node name="mpc_controller" pkg="mpc_controller" type="mpc_controller_node" output="screen"/>
+    </group>
+
+    <!-- Launch the node to publish open loop control-->
+    <group if="$(eval arg('controller') == 'open_loop')">
+        <node name="open_loop_controller" pkg="open_loop_controller" type="open_loop_controller_node" output="screen"/>
+    </group>
+
+</launch>

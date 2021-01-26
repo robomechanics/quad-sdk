@@ -1,12 +1,20 @@
+quiet_mkdir () {
+	if ! [ -d $1 ]
+	then
+		mkdir $1
+	fi
+}
 
-# Install latest version of CMake (on top of CMake provided by catkin_make)
+cd osqp
+quiet_mkdir build
+cd build
+cmake ..
+make -j8
+sudo make install
+cd ../..
 
-# Setup and build for libInterpolate
-sudo apt install libeigen3-dev -y
-sudo apt install libboost-dev libboost-all-dev -y
-
-cd libInterpolate
-mkdir build
+cd osqp-eigen
+quiet_mkdir build
 cd build
 cmake ..
 make -j8
@@ -15,8 +23,9 @@ cd ../..
 
 # Setup and build for qpOases
 cd qpOASES
-mkdir build
+quiet_mkdir build
 cd build
 cmake ..
 make -j8
+sudo make install
 cd ../..

@@ -1,0 +1,28 @@
+topics:
+  image: /image_publisher/image
+
+global_body_planner:
+  update_rate: 5
+  num_calls: 100
+  max_time: 0.0
+
+terrain_map_publisher:
+  update_rate: 10
+  map_data_source: image
+  resolution: 0.2
+  min_height: -0.2
+  max_height: 4.1
+
+grid_map_visualization:
+  grid_map_topic: /terrain_map
+  grid_map_visualizations:
+    - name: elevation_points
+      type: point_cloud
+      params:
+       layer: elevation
+    - name: elevation_grid
+      type: occupancy_grid
+      params:
+       layer: elevation
+       data_min: 0.08
+       data_max: -0.16
