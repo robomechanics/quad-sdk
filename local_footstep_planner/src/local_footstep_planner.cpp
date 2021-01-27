@@ -150,6 +150,7 @@ void LocalFootstepPlanner::updatePlan() {
 
   // Clear out the old footstep plan
   footstep_plan_.clear();
+  footstep_plan_.resize(num_feet_);
 
   // Define dynamic aggressiveness (0 = maximize kinematic feasibility, 1 = maximize dynamic feasibility)
   double alpha = 0.5;
@@ -214,7 +215,7 @@ void LocalFootstepPlanner::updatePlan() {
       footstep[3] = t_touchdown;
       footstep[4] = t_s[j];
 
-      footstep_plan_.push_back(footstep);
+      footstep_plan_[j].push_back(footstep);
 
     }
   }
@@ -222,59 +223,87 @@ void LocalFootstepPlanner::updatePlan() {
   // timer.report();
 }
 
-void LocalFootstepPlanner::updateSwingLegPlan() {
-  // spirit_msgs::SwingLegPlan all_swing_leg_plan;
+void LocalFootstepPlanner::publishSwingLegPlan() {
+  // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
-  // const double dt = 0.1;
+  if (footstep_plan_.empty()){
+    ROS_WARN_THROTTLE(0.5, "Footstep plan is empty, not publishing");
+    return;
+  }
 
-  // for (int j=0; j<num_feet_; j++) {
-  //   nav_msgs::Path swing_leg_plan;
+  spirit_msgs::SwingLegPlan swing_leg_plan_all;
 
-  //   for (int i = 0; i < footstep_plan_.size()-1; i++) {
+  const double dt = 0.1;
+  const double ground_clearance = 0.05;
 
-  //     FootstepState footstep = footstep_plan_[j][i];
-  //     FootstepState next_footstep = footstep_plan_[j][i+1];
+  for (int i=0; i<num_feet_; i++) {
+    nav_msgs::Path current_swing_leg_plan;
 
-  //     // Add current footstep state and correct time
-  //     double t_touchdown = footstep[3];
+    for (int j = 0; j < footstep_plan_.size()-1; j++) {
 
-  //     // Incrementally compute swing leg trajectory until time for next footstep
-  //     double t_liftoff = t_touchdown + footstep[4];
-  //     double t_next_touchdown = next_footstep[3];
-  //     double t_f = t_next_touchdown - t_liftoff;
+      FootstepState footstep = footstep_plan_[i][j];
+      FootstepState next_footstep = footstep_plan_[i][j+1];
 
-  //     for (t = 0; t < t_f; t+=dt) {
-  //       double x = a0 + a1*t + a2*t*t + a3*t*t*t;
-  //       double y = a0 + a1*t + a2*t*t + a3*t*t*t;
-  //       double z = a0 + a1*t + a2*t*t + a3*t*t*t;
-  //     }
+      // Add current footstep state and correct time
+      double t_touchdown = footstep[3];
 
+      // Incrementally compute swing leg trajectory until time for next footstep
+      double t_liftoff = t_touchdown + footstep[4];
+      double t_next_touchdown = next_footstep[3];
+      double t_f = t_next_touchdown - t_liftoff;
 
+      // Get knot points for cubic hermite interpolation
+      double x = footstep[1];
+      double x_next = next_footstep[1];
+      double y = footstep[2];
+      double y_next = next_footstep[2];
+      double z = terrain_.getGroundHeight(x,y);
+      double z_next = terrain_.getGroundHeight(x_next,y_next);
+      double z_mid = ground_clearance + std::max(z, z_next);
 
-  //     geometry_msgs::PoseStamped pose;
+      for (double t = 0; t < t_f; t+=dt) {
+        // cubic hermite interpolation: http://www.cs.cmu.edu/afs/cs/academic/class/15462-s10/www/lec-slides/lec06.pdf
+        double t3 = t*t*t;
+        double t2 = t*t;
+        double basis_3 = 2*t3-3*t2+1;
+        double basis_2 = -2*t3+3*t2;
+       
+        double x_current = basis_3*x + basis_2*x_next;
+        double y_current = basis_3*y + basis_2*y_next;
+        double z_current;
 
-  //     double t = t_plan_[i];
+        double t_z = t;
+        if (t <0.5*t_f) {
+          z_current = basis_3*z + basis_2*z_mid;
+        } else {
+          double t_new = t - 0.5*t_f;
+          t2 = t_new*t_new;
+          t3 = t_new*t_new*t_new;
+          basis_3 = 2*t3-3*t2+1;
+          basis_2 = -2*t3+3*t2;
+          z_current = basis_3*z_mid + basis_2*z_next;
+        }
 
-  //     for (int k = 0; k < footstep_plan_.size(); k ++ ) {
-  //       if ()
-  //     }
+        geometry_msgs::PoseStamped foot_msg;
 
-  //     swing_leg_plan.push_back(pose);
-  //   }
-  //   // for (int i = 0; i < t_plan_.size(); i++) {
-  //   //   geometry_msgs::PoseStamped pose;
+        foot_msg.pose.position.x = x_current;
+        foot_msg.pose.position.y = y_current;
+        foot_msg.pose.position.z = z_current;
 
-  //   //   double t = t_plan_[i];
+        current_swing_leg_plan.poses.push_back(foot_msg);
 
-  //   //   for (int k = 0; k < footstep_plan_.size(); k ++ ) {
-  //   //     if ()
-  //   //   }
+      }
+    }
 
-  //   //   swing_leg_plan.push_back(pose);
-  //   // }
+    swing_leg_plan_all.legs.push_back(current_swing_leg_plan);
+  }
 
-  //   all_swing_leg_plan.push_back(swing_leg_plan);
-  // }
+  ros::Time timestamp = ros::Time::now();
+  swing_leg_plan_all.header.stamp = timestamp;
+  swing_leg_plan_all.header.frame_id = map_frame_;
+  swing_leg_plan_pub_.publish(swing_leg_plan_all);
+
+  // timer.report();
 }
 
 void LocalFootstepPlanner::publishPlan() {
@@ -290,18 +319,23 @@ void LocalFootstepPlanner::publishPlan() {
 
   // Loop through the plan
   for (int i=0;i<footstep_plan_.size(); ++i) {
+    spirit_msgs::SingleFootstepPlan single_footstep_plan_msg;
+    for (int j=0;j<footstep_plan_[i].size(); ++j) {
 
-    // Initialize a footstep message and load the data
-    spirit_msgs::Footstep footstep;
+      // Initialize a footstep message and load the data
+      spirit_msgs::Footstep footstep;
 
-    footstep.index = footstep_plan_[i][0];
-    footstep.position.x = footstep_plan_[i][1];
-    footstep.position.y = footstep_plan_[i][2];
-    footstep.position.z = terrain_.getGroundHeight(footstep.position.x,footstep.position.y);
-    footstep.td = ros::Duration(footstep_plan_[i][3]);
-    footstep.ts = ros::Duration(footstep_plan_[i][4]);
+      footstep.index = footstep_plan_[i][j][0];
+      footstep.position.x = footstep_plan_[i][j][1];
+      footstep.position.y = footstep_plan_[i][j][2];
+      footstep.position.z = terrain_.getGroundHeight(footstep.position.x,footstep.position.y);
+      footstep.td = ros::Duration(footstep_plan_[i][j][3]);
+      footstep.ts = ros::Duration(footstep_plan_[i][j][4]);
 
-    footstep_plan_msg.footsteps.push_back(footstep);
+      single_footstep_plan_msg.steps.push_back(footstep);
+    }
+
+    footstep_plan_msg.feet.push_back(single_footstep_plan_msg);
   }
 
   // Publish the whole plan to the topic
@@ -337,6 +371,7 @@ void LocalFootstepPlanner::spin() {
     // Update the plan and publish it
     updatePlan();
     publishPlan();
+    publishSwingLegPlan();
 
     ros::spinOnce();
     r.sleep();

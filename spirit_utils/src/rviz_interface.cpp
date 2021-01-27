@@ -8,30 +8,49 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
 
   // Load rosparams from parameter server
   std::string body_plan_topic, body_plan_viz_topic, body_wrench_plan_viz_topic, discrete_body_plan_topic, discrete_body_plan_viz_topic,
-    footstep_plan_topic, footstep_plan_viz_topic, state_estimate_topic, joint_states_viz_topic;
+    footstep_plan_topic, footstep_plan_viz_topic, swing_leg_plan_topic, 
+    state_estimate_topic, joint_states_viz_topic;
 
   nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
+  nh.param<std::string>("topics/discrete_body_plan", discrete_body_plan_topic, "/discrete_body_plan");
+  nh.param<std::string>("topics/footstep_plan", footstep_plan_topic, "/footstep_plan");
+  nh.param<std::string>("topics/swing_leg_plan", swing_leg_plan_topic, "/swing_leg_plan");
+  nh.param<std::string>("topics/state_estimate", state_estimate_topic, "/state_estimate");
+  
   nh.param<std::string>("topics/visualization/body_plan", body_plan_viz_topic, "/visualization/body_plan");
   nh.param<std::string>("topics/visualization/body_wrench_plan", body_wrench_plan_viz_topic, "/visualization/body_wrench_plan");
-  nh.param<std::string>("topics/discrete_body_plan", discrete_body_plan_topic, "/discrete_body_plan");
   nh.param<std::string>("topics/visualization/discrete_body_plan", discrete_body_plan_viz_topic, "/visualization/discrete_body_plan");
-  nh.param<std::string>("topics/footstep_plan", footstep_plan_topic, "/footstep_plan");
-  nh.param<std::string>("topics/visualization/footstep_plan", footstep_plan_viz_topic, "/visualization/footstep_plan_viz");
-  nh.param<std::string>("topics/state_estimate", state_estimate_topic, "/state_estimate");
-  nh.param<std::string>("topics/joint_states_viz", joint_states_viz_topic, "/joint_states_viz");
-  nh.param<std::string>("map_frame",map_frame_,"/map");
+  nh.param<std::string>("topics/visualization/footstep_plan", footstep_plan_viz_topic, "/visualization/footstep_plan");
+  nh.param<std::string>("topics/visualization/joint_states_viz", joint_states_viz_topic, "/visualization/joint_states");
+
+
+  nh.param<std::string>("map_frame",map_frame_,"map");
   nh.param<double>("visualization/update_rate", update_rate_, 10); // add a param for your package instead of using the estimator one
 
   // Setup pubs and subs
   body_plan_sub_ = nh_.subscribe(body_plan_topic,1,&RVizInterface::bodyPlanCallback, this);
   discrete_body_plan_sub_ = nh_.subscribe(discrete_body_plan_topic,1,&RVizInterface::discreteBodyPlanCallback, this);
   footstep_plan_sub_ = nh_.subscribe(footstep_plan_topic,1,&RVizInterface::footstepPlanCallback, this);
+  swing_leg_plan_sub_ = nh_.subscribe(swing_leg_plan_topic,1,&RVizInterface::swingLegPlanCallback, this);
   state_estimate_sub_ = nh_.subscribe(state_estimate_topic,1,&RVizInterface::stateEstimateCallback, this);
   body_plan_viz_pub_ = nh_.advertise<nav_msgs::Path>(body_plan_viz_topic,1);
   body_wrench_plan_viz_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(body_wrench_plan_viz_topic,1);
   discrete_body_plan_viz_pub_ = nh_.advertise<visualization_msgs::Marker>(discrete_body_plan_viz_topic,1);
   footstep_plan_viz_pub_ = nh_.advertise<visualization_msgs::Marker>(footstep_plan_viz_topic,1);
   joint_states_viz_pub_ = nh_.advertise<sensor_msgs::JointState>(joint_states_viz_topic,1);
+
+  std::string swing_leg_0_plan_viz_topic, swing_leg_1_plan_viz_topic, swing_leg_2_plan_viz_topic, swing_leg_3_plan_viz_topic;
+
+  nh.param<std::string>("topics/visualization/swing_leg_0_plan", swing_leg_0_plan_viz_topic, "/visualization/swing_leg_0_plan");
+  nh.param<std::string>("topics/visualization/swing_leg_1_plan", swing_leg_1_plan_viz_topic, "/visualization/swing_leg_1_plan");
+  nh.param<std::string>("topics/visualization/swing_leg_2_plan", swing_leg_2_plan_viz_topic, "/visualization/swing_leg_2_plan");
+  nh.param<std::string>("topics/visualization/swing_leg_3_plan", swing_leg_3_plan_viz_topic, "/visualization/swing_leg_3_plan");
+
+  swing_leg_0_plan_viz_pub_ = nh_.advertise<nav_msgs::Path>(swing_leg_0_plan_viz_topic,1);
+  swing_leg_1_plan_viz_pub_ = nh_.advertise<nav_msgs::Path>(swing_leg_1_plan_viz_topic,1);
+  swing_leg_2_plan_viz_pub_ = nh_.advertise<nav_msgs::Path>(swing_leg_2_plan_viz_topic,1);
+  swing_leg_3_plan_viz_pub_ = nh_.advertise<nav_msgs::Path>(swing_leg_3_plan_viz_topic,1);
+
 }
 
 void RVizInterface::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) {
@@ -148,32 +167,48 @@ void RVizInterface::footstepPlanCallback(const spirit_msgs::FootstepPlan::ConstP
 
   // POINTS markers use x and y scale for width/height respectively
   points.scale.x = 0.1;
-  points.scale.y = 0.1; 
+  points.scale.y = 0.1;
 
-  // Loop through footstep plan
-  int length = msg->footsteps.size();
-  for (int i=0;i<length; ++i) {
+  // Loop through each foot
+  int num_feet = msg->feet.size();
+  for (int i=0;i<num_feet; ++i) {
 
-    // Create point message from FootstepPlan message, adjust height
-    geometry_msgs::Point p;
-    p = msg->footsteps[i].position;
+    // Loop through footstep in the plan
+    int num_steps = msg->feet[i].steps.size();
+    for (int j=0;j<num_steps; ++j) {
 
-    // Set the color properties of each marker (green for front feet, blue for back)
-    std_msgs::ColorRGBA color;
-    color.a = 1.0;
-    if (msg->footsteps[i].index == 0 || msg->footsteps[i].index == 2) {
-      color.g = 1.0f;
-    } else {
-      color.b = 1.0f;
+      // Create point message from FootstepPlan message, adjust height
+      geometry_msgs::Point p;
+      p = msg->feet[i].steps[j].position;
+
+      // Set the color properties of each marker (green for front feet, blue for back)
+      std_msgs::ColorRGBA color;
+      color.a = 1.0;
+      if (i == 0 || i == 2) {
+        color.g = 1.0f;
+      } else {
+        color.b = 1.0f;
+      }
+
+      // Add to the Marker message
+      points.colors.push_back(color);
+      points.points.push_back(p);
     }
 
-    // Add to the Marker message
-    points.colors.push_back(color);
-    points.points.push_back(p);
+
   }
 
   // Publish the full marker array
   footstep_plan_viz_pub_.publish(points);
+}
+
+void RVizInterface::swingLegPlanCallback(const spirit_msgs::SwingLegPlan::ConstPtr& msg) {
+
+  swing_leg_0_plan_viz_pub_.publish(msg->legs[0]);
+  swing_leg_1_plan_viz_pub_.publish(msg->legs[1]);
+  swing_leg_2_plan_viz_pub_.publish(msg->legs[2]);
+  swing_leg_3_plan_viz_pub_.publish(msg->legs[3]);
+
 }
 
 void RVizInterface::stateEstimateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg) {

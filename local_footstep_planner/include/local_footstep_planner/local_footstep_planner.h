@@ -5,6 +5,7 @@
 #include <nav_msgs/Path.h>
 #include <spirit_msgs/BodyPlan.h>
 #include <spirit_msgs/Footstep.h>
+#include <spirit_msgs/SingleFootstepPlan.h>
 #include <spirit_msgs/FootstepPlan.h>
 #include <spirit_msgs/SwingLegPlan.h>
 #include <spirit_utils/fast_terrain_map.h>
@@ -73,9 +74,9 @@ class LocalFootstepPlanner {
     void updatePlan();
 
     /**
-     * @brief Update the swing leg plan to match the current footstep plan
+     * @brief Update and publish the swing leg plan to match the current footstep plan
      */
-    void updateSwingLegPlan();
+    void publishSwingLegPlan();
 
     /**
      * @brief Publish the current footstep plan
@@ -133,7 +134,7 @@ class LocalFootstepPlanner {
     std::vector<BodyWrench> body_wrench_plan_;
 
     /// Std vector containing robot footstep plan
-    std::vector<FootstepState> footstep_plan_;
+    std::vector<std::vector<FootstepState> > footstep_plan_;
 
     /// Std vector containing time data
     std::vector<double> t_plan_;
