@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['sample_5fpub',['sample_pub',['../classPackageTemplate.html#ac4ea412550f03d8d10190c1a82762c56',1,'PackageTemplate']]],
-  ['sample_5fsub',['sample_sub',['../classPackageTemplate.html#a0143905b535465298fc9722ab19885ac',1,'PackageTemplate']]],
   ['solve_5ftime_5finfo_5f',['solve_time_info_',['../classGlobalBodyPlanner.html#ae431f7b02f8c58d4fa354faeed6714e9',1,'GlobalBodyPlanner']]],
   ['stand_5fjoint_5fangles_5f',['stand_joint_angles_',['../classOpenLoopController.html#aff1f013b84c601bb1d61836b52495e3d',1,'OpenLoopController']]],
   ['stand_5fkd_5f',['stand_kd_',['../classOpenLoopController.html#a9ae5c82659b5614b182f34429327a69a',1,'OpenLoopController']]],

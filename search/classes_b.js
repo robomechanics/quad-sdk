@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['packagetemplate',['PackageTemplate',['../classPackageTemplate.html',1,'']]],
   ['plannerclass',['PlannerClass',['../classPlannerClass.html',1,'']]],
   ['plot',['Plot',['../classmatplotlibcpp_1_1Plot.html',1,'matplotlibcpp']]],
   ['plot_5fimpl',['plot_impl',['../structmatplotlibcpp_1_1detail_1_1plot__impl.html',1,'matplotlibcpp::detail']]],
