@@ -13,6 +13,8 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
   nh.param<std::string>("topics/swing_leg_plan", swing_leg_plan_topic, "/swing_leg_plan");
   nh.param<std::string>("map_frame",map_frame_,"/map");
   nh.param<double>("local_footstep_planner/update_rate", update_rate_, 1);
+  nh.param<double>("local_footstep_planner/ground_clearance", ground_clearance_, 0.1);
+  nh.param<double>("local_footstep_planner/interp_dt", interp_dt_, 0.01);
 
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic_,1,&LocalFootstepPlanner::terrainMapCallback, this);
@@ -233,13 +235,12 @@ void LocalFootstepPlanner::publishSwingLegPlan() {
 
   spirit_msgs::SwingLegPlan swing_leg_plan_all;
 
-  const double dt = 0.1;
-  const double ground_clearance = 0.05;
-
   for (int i=0; i<num_feet_; i++) {
     nav_msgs::Path current_swing_leg_plan;
+    current_swing_leg_plan.header.frame_id = map_frame_;
+    current_swing_leg_plan.header.stamp = ros::Time::now(); // This is wrong
 
-    for (int j = 0; j < footstep_plan_.size()-1; j++) {
+    for (int j = 0; j < footstep_plan_[i].size()-1; j++) {
 
       FootstepState footstep = footstep_plan_[i][j];
       FootstepState next_footstep = footstep_plan_[i][j+1];
@@ -259,28 +260,33 @@ void LocalFootstepPlanner::publishSwingLegPlan() {
       double y_next = next_footstep[2];
       double z = terrain_.getGroundHeight(x,y);
       double z_next = terrain_.getGroundHeight(x_next,y_next);
-      double z_mid = ground_clearance + std::max(z, z_next);
+      double z_mid = ground_clearance_ + std::max(z, z_next);
 
-      for (double t = 0; t < t_f; t+=dt) {
+      for (double t = 0; t < t_f; t+=interp_dt_) {
         // cubic hermite interpolation: http://www.cs.cmu.edu/afs/cs/academic/class/15462-s10/www/lec-slides/lec06.pdf
-        double t3 = t*t*t;
-        double t2 = t*t;
-        double basis_3 = 2*t3-3*t2+1;
-        double basis_2 = -2*t3+3*t2;
+        double u = t/t_f;
+        double u3 = u*u*u;
+        double u2 = u*u;
+        double basis_3 = 2*u3-3*u2+1;
+        double basis_2 = -2*u3+3*u2;
        
         double x_current = basis_3*x + basis_2*x_next;
         double y_current = basis_3*y + basis_2*y_next;
         double z_current;
 
-        double t_z = t;
         if (t <0.5*t_f) {
+          u = 2*t/t_f;
+          u3 = u*u*u;
+          u2 = u*u;
+          double basis_3 = 2*u3-3*u2+1;
+          double basis_2 = -2*u3+3*u2;
           z_current = basis_3*z + basis_2*z_mid;
         } else {
-          double t_new = t - 0.5*t_f;
-          t2 = t_new*t_new;
-          t3 = t_new*t_new*t_new;
-          basis_3 = 2*t3-3*t2+1;
-          basis_2 = -2*t3+3*t2;
+          u = 2*t/t_f - 1;
+          u3 = u*u*u;
+          u2 = u*u;
+          double basis_3 = 2*u3-3*u2+1;
+          double basis_2 = -2*u3+3*u2;
           z_current = basis_3*z_mid + basis_2*z_next;
         }
 

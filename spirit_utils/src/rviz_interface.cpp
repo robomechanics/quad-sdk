@@ -8,8 +8,7 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
 
   // Load rosparams from parameter server
   std::string body_plan_topic, body_plan_viz_topic, body_wrench_plan_viz_topic, discrete_body_plan_topic, discrete_body_plan_viz_topic,
-    footstep_plan_topic, footstep_plan_viz_topic, swing_leg_plan_topic, 
-    state_estimate_topic, joint_states_viz_topic;
+    footstep_plan_topic, footstep_plan_viz_topic, swing_leg_plan_topic, state_estimate_topic, joint_states_viz_topic;
 
   nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
   nh.param<std::string>("topics/discrete_body_plan", discrete_body_plan_topic, "/discrete_body_plan");
@@ -137,7 +136,6 @@ void RVizInterface::discreteBodyPlanCallback(const spirit_msgs::BodyPlan::ConstP
   double scale = 0.2;
   discrete_body_plan.scale.x = scale;
   discrete_body_plan.scale.y = scale;
-  discrete_body_plan.scale.z = scale;
   discrete_body_plan.color.r = 0.733f;
   discrete_body_plan.color.a = 1.0;
 
@@ -241,6 +239,6 @@ void RVizInterface::spin() {
     ros::spinOnce();
     
     // Enforce update rate
-    // r.sleep();
+    r.sleep();
   }
 }

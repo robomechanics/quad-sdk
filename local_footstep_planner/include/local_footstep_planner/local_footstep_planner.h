@@ -142,6 +142,12 @@ class LocalFootstepPlanner {
     /// Number of feet
     const int num_feet_ = 4;
 
+    /// Ground clearance
+    double ground_clearance_;
+
+    /// Interpolation timestep for swing leg
+    double interp_dt_;
+
 };
 
 
