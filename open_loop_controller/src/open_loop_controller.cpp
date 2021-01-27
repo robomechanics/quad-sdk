@@ -23,7 +23,7 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh) {
   this->setupTrajectory();
   
   // Setup pubs and subs
-	joint_control_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>("/spirit/joint_controller/command",1);
+	joint_control_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_control_topic,1);
   control_mode_sub_ = nh_.subscribe(control_mode_topic,1,&OpenLoopController::controlModeCallback, this);
 }
 
