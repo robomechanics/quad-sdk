@@ -143,6 +143,15 @@ class LocalFootstepPlanner {
     const int num_feet_ = 4;
 
     /// Ground clearance
+    double alpha_;
+
+    /// Ground clearance
+    double max_footstep_horizon_;
+
+    /// Ground clearance
+    double period_;
+
+    /// Ground clearance
     double ground_clearance_;
 
     /// Interpolation timestep for swing leg

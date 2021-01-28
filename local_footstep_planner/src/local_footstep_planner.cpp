@@ -13,8 +13,16 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
   nh.param<std::string>("topics/swing_leg_plan", swing_leg_plan_topic, "/swing_leg_plan");
   nh.param<std::string>("map_frame",map_frame_,"/map");
   nh.param<double>("local_footstep_planner/update_rate", update_rate_, 1);
+  nh.param<double>("local_footstep_planner/alpha", alpha_, 0.5);
+  nh.param<double>("local_footstep_planner/max_footstep_horizon", max_footstep_horizon_, 1.5);
+  nh.param<double>("local_footstep_planner/period", period_, 0.25);
   nh.param<double>("local_footstep_planner/ground_clearance", ground_clearance_, 0.1);
   nh.param<double>("local_footstep_planner/interp_dt", interp_dt_, 0.01);
+
+  if (alpha_>1 || alpha_<0) {
+    alpha_ = std::min(std::max(alpha_,0.0),1.0);
+    ROS_WARN("Invalid alpha in footstep planner, clamping to %4.2f", alpha_);
+  }
 
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic_,1,&LocalFootstepPlanner::terrainMapCallback, this);
@@ -154,16 +162,12 @@ void LocalFootstepPlanner::updatePlan() {
   footstep_plan_.clear();
   footstep_plan_.resize(num_feet_);
 
-  // Define dynamic aggressiveness (0 = maximize kinematic feasibility, 1 = maximize dynamic feasibility)
-  double alpha = 0.5;
+  // Define the gait sequence (trot)
+  double t_offsets[num_feet_] = {0.0, 0.5*period_, 0.5*period_, 0.0};
+  double t_s[num_feet_] = {0.5*period_, 0.5*period_, 0.5*period_, 0.5*period_};
 
-  // Define the gait sequence
-  double period = 0.25;
-  double t_offsets[num_feet_] = {0.0, 0.5*period, 0.5*period, 0.0};
-  double t_s[num_feet_] = {0.5*period, 0.5*period, 0.5*period, 0.5*period};
-
-  double footstep_horizon = std::min(1.5, t_plan_.back());
-  int num_cycles = footstep_horizon/period;
+  double footstep_horizon = std::min(max_footstep_horizon_, t_plan_.back());
+  int num_cycles = footstep_horizon/period_;
 
   // Specify the number of feet and their offsets from the COM
   double x_offsets[num_feet_] = {0.3, -0.3, 0.3, -0.3};
@@ -173,7 +177,7 @@ void LocalFootstepPlanner::updatePlan() {
   for (int i = 0; i < num_cycles; i++) {
     
     // Compute the initial time for this cycle
-    double t_cycle = i*period;
+    double t_cycle = i*period_;
 
     // Loop through each foot
     for (int j=0; j<num_feet_; j++) {
@@ -208,7 +212,7 @@ void LocalFootstepPlanner::updatePlan() {
       Eigen::Vector3d footstep_grf = terrain_.projectToMap(hip_midstance, -1.0*grf_midstance);
 
       // Define the nominal footstep location to lie on a line between the hips projected vertically and along GRF (third entry is garbage)
-      Eigen::Vector3d footstep_nom = (1-alpha)*hip_midstance + alpha*footstep_grf;
+      Eigen::Vector3d footstep_nom = (1-alpha_)*hip_midstance + alpha_*footstep_grf;
 
       // Load the data into the footstep array and push into the plan
       footstep[0] = j;
@@ -234,11 +238,14 @@ void LocalFootstepPlanner::publishSwingLegPlan() {
   }
 
   spirit_msgs::SwingLegPlan swing_leg_plan_all;
+  swing_leg_plan_all.header.frame_id = map_frame_;
+  swing_leg_plan_all.header.stamp = ros::Time::now();
 
   for (int i=0; i<num_feet_; i++) {
     nav_msgs::Path current_swing_leg_plan;
-    current_swing_leg_plan.header.frame_id = map_frame_;
-    current_swing_leg_plan.header.stamp = ros::Time::now(); // This is wrong
+
+    current_swing_leg_plan.header.frame_id = swing_leg_plan_all.header.frame_id;
+    current_swing_leg_plan.header.stamp = swing_leg_plan_all.header.stamp;
 
     for (int j = 0; j < footstep_plan_[i].size()-1; j++) {
 
@@ -262,6 +269,15 @@ void LocalFootstepPlanner::publishSwingLegPlan() {
       double z_next = terrain_.getGroundHeight(x_next,y_next);
       double z_mid = ground_clearance_ + std::max(z, z_next);
 
+      // Add the foot location at the beginning of stance with the correct time
+      geometry_msgs::PoseStamped foot_msg;
+      foot_msg.header.stamp = current_swing_leg_plan.header.stamp + ros::Duration(t_touchdown);
+      foot_msg.pose.position.x = x;
+      foot_msg.pose.position.y = y;
+      foot_msg.pose.position.z = z;
+      current_swing_leg_plan.poses.push_back(foot_msg);
+
+      // Add all the foot locations during the swing phase with the correct times
       for (double t = 0; t < t_f; t+=interp_dt_) {
         // cubic hermite interpolation: http://www.cs.cmu.edu/afs/cs/academic/class/15462-s10/www/lec-slides/lec06.pdf
         double u = t/t_f;
@@ -291,11 +307,10 @@ void LocalFootstepPlanner::publishSwingLegPlan() {
         }
 
         geometry_msgs::PoseStamped foot_msg;
-
+        foot_msg.header.stamp = current_swing_leg_plan.header.stamp + ros::Duration(t_liftoff+t);
         foot_msg.pose.position.x = x_current;
         foot_msg.pose.position.y = y_current;
         foot_msg.pose.position.z = z_current;
-
         current_swing_leg_plan.poses.push_back(foot_msg);
 
       }
@@ -304,9 +319,6 @@ void LocalFootstepPlanner::publishSwingLegPlan() {
     swing_leg_plan_all.legs.push_back(current_swing_leg_plan);
   }
 
-  ros::Time timestamp = ros::Time::now();
-  swing_leg_plan_all.header.stamp = timestamp;
-  swing_leg_plan_all.header.frame_id = map_frame_;
   swing_leg_plan_pub_.publish(swing_leg_plan_all);
 
   // timer.report();
