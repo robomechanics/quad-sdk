@@ -6,7 +6,7 @@ TwistBodyPlanner::TwistBodyPlanner(ros::NodeHandle nh) {
   // Load rosparams from parameter server
   std::string state_estimate_topic, body_plan_topic, cmd_vel_topic;
 
-  nh.param<std::string>("topics/state_estimate", state_estimate_topic, "/state_estimate");
+  nh.param<std::string>("topics/ground_truth_state", state_estimate_topic, "/state_estimate");
   nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
   nh.param<std::string>("topics/cmd_vel", cmd_vel_topic, "/cmd_vel");
   nh.param<std::string>("map_frame", map_frame_,"/map");

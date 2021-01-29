@@ -5,7 +5,9 @@
 #include <nav_msgs/Path.h>
 #include <spirit_msgs/BodyPlan.h>
 #include <spirit_msgs/Footstep.h>
+#include <spirit_msgs/SingleFootstepPlan.h>
 #include <spirit_msgs/FootstepPlan.h>
+#include <spirit_msgs/SwingLegPlan.h>
 #include <spirit_utils/fast_terrain_map.h>
 #include <spirit_utils/function_timer.h>
 
@@ -72,9 +74,19 @@ class LocalFootstepPlanner {
     void updatePlan();
 
     /**
+     * @brief Update and publish the swing leg plan to match the current footstep plan
+     */
+    void publishSwingLegPlan();
+
+    /**
      * @brief Publish the current footstep plan
      */
     void publishPlan();
+
+    /**
+     * @brief Wait until map and plan messages have been received and processed
+     */
+    void waitForData();
 
     /// Subscriber for terrain map messages
     ros::Subscriber terrain_map_sub_;
@@ -85,8 +97,17 @@ class LocalFootstepPlanner {
     /// Publisher for footstep plan messages
     ros::Publisher footstep_plan_pub_;
 
+    /// Publisher for swing leg plan messages
+    ros::Publisher swing_leg_plan_pub_;
+
     /// Nodehandle to pub to and sub from
     ros::NodeHandle nh_;
+
+    /// Topic name for terrain map (needed to ensure data has been received)
+    std::string terrain_map_topic_;
+
+    /// Topic name for robot state data (needed to ensure data has been received)
+    std::string body_plan_topic_;
 
     /// Update rate for sending and receiving data;
     double update_rate_;
@@ -113,10 +134,28 @@ class LocalFootstepPlanner {
     std::vector<BodyWrench> body_wrench_plan_;
 
     /// Std vector containing robot footstep plan
-    std::vector<FootstepState> footstep_plan_;
+    std::vector<std::vector<FootstepState> > footstep_plan_;
 
     /// Std vector containing time data
     std::vector<double> t_plan_;
+
+    /// Number of feet
+    const int num_feet_ = 4;
+
+    /// Ground clearance
+    double alpha_;
+
+    /// Ground clearance
+    double max_footstep_horizon_;
+
+    /// Ground clearance
+    double period_;
+
+    /// Ground clearance
+    double ground_clearance_;
+
+    /// Interpolation timestep for swing leg
+    double interp_dt_;
 
 };
 
