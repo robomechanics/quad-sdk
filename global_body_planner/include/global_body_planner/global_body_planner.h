@@ -57,6 +57,12 @@ class GlobalBodyPlanner {
     void robotStateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg);
 
     /**
+     * @brief Check if a replan is required
+     * @return boolean for whether to replan
+     */
+    bool replanTrigger();
+
+    /**
      * @brief Initialize the planner by clearing out old plan data and setting the start state
      * @return Index of the current plan from which to being the new plan (zero if fully replanning)
      */
@@ -139,6 +145,9 @@ class GlobalBodyPlanner {
 
     /// Horizon to commit to (replan from the next state after this horizon)
     double committed_horizon_;
+
+    /// Threshold of state error to trigger replanning
+    double state_error_threshold_;
 
     /// Current robot state
     std::vector<double> robot_state_;

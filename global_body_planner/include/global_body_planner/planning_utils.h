@@ -71,6 +71,7 @@ const double MY_PI = 3.14159;
 
 // State data structure conversions
 State fullStateToState(FullState full_state);
+std::vector<double> fullStateToVector(FullState full_state);
 FullState stateToFullState(State state, double roll, double yaw, double roll_rate, double yaw_rate);
 void vectorToArray(State vec, double * new_array);
 void stdVectorToState(std::vector<double> v, State& s);
@@ -92,6 +93,7 @@ void plotYaw(std::vector<double> interp_t, std::vector<FullState> interp_full_pa
 // Define some utility functions
 double poseDistance(State q1, State q2);
 double stateDistance(State q1, State q2);
+double poseDistance(std::vector<double> v1, std::vector<double> v2);
 bool isWithinBounds(State s1, State s2);
 std::array<double,3> rotateGRF(std::array<double,3> surface_norm, std::array<double,3> grf);
 std::vector<double> movingAverageFilter(std::vector<double> data, int window_size);

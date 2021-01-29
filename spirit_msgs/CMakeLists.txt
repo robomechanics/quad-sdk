@@ -17,18 +17,20 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate messages in the 'msg' folder
 add_message_files(
-	FILES
-	StateEstimate.msg
+  FILES
+  StateEstimate.msg
   BodyPlan.msg
-	FootstepPlan.msg
-	Footstep.msg
-	ControlInput.msg
-	LegContactMode.msg
-	BodyForceEstimate.msg
-	ContactMode.msg
-	MotorCommand.msg
-  	LegCommand.msg
-	LegCommandArray.msg
+  FootstepPlan.msg
+  SingleFootstepPlan.msg
+  Footstep.msg
+  SwingLegPlan.msg
+  ControlInput.msg
+  LegContactMode.msg
+  BodyForceEstimate.msg
+  ContactMode.msg
+  MotorCommand.msg
+  LegCommand.msg
+  LegCommandArray.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
