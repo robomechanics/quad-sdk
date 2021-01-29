@@ -7,7 +7,7 @@
 #include <spirit_msgs/Footstep.h>
 #include <spirit_msgs/FootstepPlan.h>
 #include <spirit_msgs/ControlInput.h>
-#include <spirit_msgs/StateEstimate.h>
+#include <spirit_msgs/RobotState.h>
 
 //! Implements online MPC
 /*!
@@ -32,7 +32,7 @@ private:
    * @brief Callback function to handle new state estimates
    * @param[in] State estimate message contining position and velocity for each joint and robot body
    */
-  void stateEstimateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg);
+  void stateEstimateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 	/**
    * @brief Callback function to handle new control inputs
    * @param[in] Joint state message contining desired position, velocity, and torque for each joint
