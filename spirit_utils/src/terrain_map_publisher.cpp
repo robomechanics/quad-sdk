@@ -12,7 +12,7 @@ TerrainMapPublisher::TerrainMapPublisher(ros::NodeHandle nh)
   nh.param<std::string>("map_frame",map_frame_,"/map");
   nh.param<double>("terrain_map_publisher/update_rate", update_rate_, 10);
   nh.param<std::string>("terrain_map_publisher/map_data_source", map_data_source_, "internal");
-
+  nh.param<std::string>("terrain_map_publisher/terrain_type", terrain_type_, "slope");
   // Setup pubs and subs
   terrain_map_pub_ = nh_.advertise<grid_map_msgs::GridMap>(terrain_map_topic,1);
 
@@ -106,12 +106,12 @@ void TerrainMapPublisher::loadMapFromCSV() {
 
   // Load in all terrain data
   std::string package_path = ros::package::getPath("spirit_utils");
-  std::vector<std::vector<double> > x_data = loadCSV(package_path + "/data/xdata.csv");
-  std::vector<std::vector<double> > y_data = loadCSV(package_path + "/data/ydata.csv");
-  std::vector<std::vector<double> > z_data = loadCSV(package_path + "/data/zdata.csv");
-  std::vector<std::vector<double> > dx_data = loadCSV(package_path + "/data/dxdata.csv");
-  std::vector<std::vector<double> > dy_data = loadCSV(package_path + "/data/dydata.csv");
-  std::vector<std::vector<double> > dz_data = loadCSV(package_path + "/data/dzdata.csv");
+  std::vector<std::vector<double> > x_data = loadCSV(package_path + "/data/" + terrain_type_ + "/xdata.csv");
+  std::vector<std::vector<double> > y_data = loadCSV(package_path + "/data/" + terrain_type_ + "/ydata.csv");
+  std::vector<std::vector<double> > z_data = loadCSV(package_path + "/data/" + terrain_type_ + "/zdata.csv");
+  std::vector<std::vector<double> > dx_data = loadCSV(package_path + "/data/" + terrain_type_ + "/dxdata.csv");
+  std::vector<std::vector<double> > dy_data = loadCSV(package_path + "/data/" + terrain_type_ + "/dydata.csv");
+  std::vector<std::vector<double> > dz_data = loadCSV(package_path + "/data/" + terrain_type_ + "/dzdata.csv");
 
   // Grab map length and resolution parameters, make sure resolution is square (and align grid centers with data points)
   int x_size = z_data[0].size();

@@ -102,7 +102,7 @@ void RVizInterface::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg)
     p_base = msg->states[i].pose.pose.position;
 
     /// Define the endpoint of the GRF arrow
-    double grf_length_scale = 0.001;
+    double grf_length_scale = 0.002;
     p_tip.x = p_base.x + grf_length_scale*msg->wrenches[i].force.x;
     p_tip.y = p_base.y + grf_length_scale*msg->wrenches[i].force.y;
     p_tip.z = p_base.z + grf_length_scale*msg->wrenches[i].force.z;

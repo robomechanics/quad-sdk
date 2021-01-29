@@ -193,16 +193,16 @@ void GlobalBodyPlanner::callPlanner() {
       action_sequence_ = action_sequence;
       current_cost_ = path_length;
 
+      // Clear out old plan and interpolate to get full body plan
+      t_plan_.erase(t_plan_.begin()+start_index, t_plan_.end());
+      body_plan_.erase(body_plan_.begin()+start_index, body_plan_.end());
+      wrench_plan_.erase(wrench_plan_.begin()+start_index, wrench_plan_.end());
+
       std::cout << "Solve time: " << plan_time << " s" << std::endl;
       std::cout << "Vertices generated: " << vertices_generated << std::endl;
       std::cout << "Path length: " << path_length << " m" << std::endl;
       std::cout << "Path duration: " << path_duration << " s" << std::endl;
       std::cout << std::endl;
-
-      // Clear out old plan and interpolate to get full body plan
-      t_plan_.erase(t_plan_.begin()+start_index, t_plan_.end());
-      body_plan_.erase(body_plan_.begin()+start_index, body_plan_.end());
-      wrench_plan_.erase(wrench_plan_.begin()+start_index, wrench_plan_.end());
 
       double dt = 0.1;
       std::vector<int> interp_phase;

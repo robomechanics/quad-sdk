@@ -25,8 +25,10 @@ void RobotProxy::controlInputCallback(const spirit_msgs::ControlInput::ConstPtr&
 void RobotProxy::publishJointEncoders() {
   sensor_msgs::JointState msg;
 
+  double pi = 3.14159;
+
   std::vector<std::string> joint_names = {"8", "0", "1", "9","2", "3", "10", "4","5", "11", "6", "7"};
-  std::vector<double> joint_pos (12,0);
+  std::vector<double> joint_pos = {0,0.25*pi,0.5*pi,0,0.25*pi,0.5*pi,0,0.25*pi,0.5*pi,0,0.25*pi,0.5*pi};
   std::vector<double> joint_vel (12,0);
   std::vector<double> joint_effort (12,0);
 
@@ -48,15 +50,17 @@ void RobotProxy::publishImu() {
 }
 
 void RobotProxy::publishMocap() {
+  double pi = 3.14159;
+
   geometry_msgs::PoseStamped msg;
   msg.header.stamp = ros::Time::now();
   msg.pose.position.x = 0;
   msg.pose.position.y = 0;
-  msg.pose.position.z = 0.3;
+  msg.pose.position.z = 2*(0.2*sin(0.25*pi));
 
   double secs =ros::Time::now().toSec();
   double amplitude = 1.0;
-  double period = 5;
+  double period = 8;
   msg.pose.position.y = amplitude*sin(2*3.14159*secs/period);
 
   msg.pose.orientation.x = 0;

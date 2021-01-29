@@ -41,6 +41,7 @@ void LocalFootstepPlanner::terrainMapCallback(const grid_map_msgs::GridMap::Cons
 }
 
 void LocalFootstepPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) {
+
   t_plan_.clear();
   body_plan_.clear();
   body_wrench_plan_.clear();
@@ -83,6 +84,8 @@ void LocalFootstepPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPt
     tf::vectorMsgToEigen(msg->wrenches[i].force, force);
     body_wrench_plan_.push_back(force);
   }
+
+  updatePlan();
 }
 
 std::vector<double> LocalFootstepPlanner::interpMat(std::vector<double> input_vec, std::vector<std::vector<double>> input_mat, double query_point) {
@@ -155,8 +158,10 @@ Eigen::Vector3d LocalFootstepPlanner::interpVector3d(std::vector<double> input_v
 void LocalFootstepPlanner::updatePlan() {
   // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
-  if (body_plan_.empty())
+  if (body_plan_.empty()) {
+    ROS_WARN_THROTTLE(0.5, "No body plan found in LocalFootstepPlanner, exiting");
     return;
+  }
 
   // Clear out the old footstep plan
   footstep_plan_.clear();
@@ -170,8 +175,8 @@ void LocalFootstepPlanner::updatePlan() {
   int num_cycles = footstep_horizon/period_;
 
   // Specify the number of feet and their offsets from the COM
-  double x_offsets[num_feet_] = {0.3, -0.3, 0.3, -0.3};
-  double y_offsets[num_feet_] = {0.2, 0.2, -0.2, -0.2};
+  double x_offsets[num_feet_] = {0.2, -0.2, 0.2, -0.2};
+  double y_offsets[num_feet_] = {0.1, 0.1, -0.1, -0.1};
 
   // Loop through each gait cycle
   for (int i = 0; i < num_cycles; i++) {
@@ -190,6 +195,12 @@ void LocalFootstepPlanner::updatePlan() {
       BodyState s_touchdown = interpMat(t_plan_, body_plan_, t_touchdown);
       BodyState s_midstance = interpMat(t_plan_, body_plan_, t_midstance);
       BodyWrench grf_midstance = interpVector3d(t_plan_, body_wrench_plan_, t_midstance);
+
+      // Skip if this would occur during a flight phase
+      double grf_tolerance = 1e-3;
+      if (grf_midstance.norm() < grf_tolerance) {
+        continue;
+      }
 
       // Compute the body and hip positions and velocities
       double x_body = s_touchdown[0];
@@ -226,6 +237,8 @@ void LocalFootstepPlanner::updatePlan() {
     }
   }
 
+  publishPlan();
+  publishSwingLegPlan();
   // timer.report();
 }
 
@@ -233,7 +246,7 @@ void LocalFootstepPlanner::publishSwingLegPlan() {
   // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
   if (footstep_plan_.empty()){
-    ROS_WARN_THROTTLE(0.5, "Footstep plan is empty, not publishing");
+    ROS_WARN_THROTTLE(0.5, "Footstep plan is empty, not updating or publishing swing leg plan");
     return;
   }
 
@@ -387,9 +400,6 @@ void LocalFootstepPlanner::spin() {
     // ROS_INFO("In LocalFootstepPlanner spin, updating at %4.1f Hz", update_rate_);
     
     // Update the plan and publish it
-    updatePlan();
-    publishPlan();
-    publishSwingLegPlan();
 
     ros::spinOnce();
     r.sleep();
