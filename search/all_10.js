@@ -5,6 +5,7 @@ var searchData=
   ['path_5fduration_5f',['path_duration_',['../classRRTClass.html#a3c8e83183a9d3383571eccbdde77d842',1,'RRTClass']]],
   ['path_5flength_5f',['path_length_',['../classRRTClass.html#a21902636c6b9dcff588802d391415242',1,'RRTClass']]],
   ['pathfromstart',['pathFromStart',['../classRRTClass.html#a4acffd50e173aaeb9074248ea29032e9',1,'RRTClass']]],
+  ['period_5f',['period_',['../classLocalFootstepPlanner.html#ace99291ee0cc688b90cd50df8a5b09d5',1,'LocalFootstepPlanner']]],
   ['plan',['plan',['../classTwistBodyPlanner.html#a422adadb98c3687878927639be7aab9b',1,'TwistBodyPlanner']]],
   ['plan_5ffrom_5frobot_5fstate_5fflag_5f',['plan_from_robot_state_flag_',['../classGlobalBodyPlanner.html#a692c8220178d6c12bde049d1e1b48dad',1,'GlobalBodyPlanner']]],
   ['plannerclass',['PlannerClass',['../classPlannerClass.html',1,'PlannerClass'],['../classPlannerClass.html#a763a406cc7de35136be1173d982002cc',1,'PlannerClass::PlannerClass()']]],
@@ -27,5 +28,6 @@ var searchData=
   ['publishjointencoders',['publishJointEncoders',['../classRobotProxy.html#a52f9e95a9ca4bc62f711b5f17da2bd00',1,'RobotProxy']]],
   ['publishmap',['publishMap',['../classTerrainMapPublisher.html#aa11b7631c0f0c3c33f9a118be181a102',1,'TerrainMapPublisher']]],
   ['publishmocap',['publishMocap',['../classRobotProxy.html#a7c1d653ac5acadd82e8f1dfc4d913d34',1,'RobotProxy']]],
-  ['publishplan',['publishPlan',['../classGlobalBodyPlanner.html#a7ef31af306895c311faee09a7023896b',1,'GlobalBodyPlanner::publishPlan()'],['../classLocalFootstepPlanner.html#aa0e199be9129386592065a505df5cddb',1,'LocalFootstepPlanner::publishPlan()'],['../classTwistBodyPlanner.html#a0bf6dc6f10419df4cd4612ff9c1a71dd',1,'TwistBodyPlanner::publishPlan()']]]
+  ['publishplan',['publishPlan',['../classGlobalBodyPlanner.html#a7ef31af306895c311faee09a7023896b',1,'GlobalBodyPlanner::publishPlan()'],['../classLocalFootstepPlanner.html#aa0e199be9129386592065a505df5cddb',1,'LocalFootstepPlanner::publishPlan()'],['../classTwistBodyPlanner.html#a0bf6dc6f10419df4cd4612ff9c1a71dd',1,'TwistBodyPlanner::publishPlan()']]],
+  ['publishswinglegplan',['publishSwingLegPlan',['../classLocalFootstepPlanner.html#a7ae687ec55f5b7203d9f236220eada81',1,'LocalFootstepPlanner']]]
 ];

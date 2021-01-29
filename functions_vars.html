@@ -69,6 +69,7 @@ $(function() {
 </li>
 <li>alpha_
 : <a class="el" href="classGroundTruthPublisher.html#a8eb84af7c18c6ddfe17812999c766988">GroundTruthPublisher</a>
+, <a class="el" href="classLocalFootstepPlanner.html#a46ccce5daaee16961347b4bec9c591ee">LocalFootstepPlanner</a>
 </li>
 <li>anytime_horizon
 : <a class="el" href="classRRTConnectClass.html#a9a0b075d5562560dcbdde72e00c733f0">RRTConnectClass</a>
@@ -99,6 +100,9 @@ $(function() {
 : <a class="el" href="classLocalFootstepPlanner.html#a53993412f1a1fb942d92372478d6967d">LocalFootstepPlanner</a>
 , <a class="el" href="classMPCController.html#a2c37f68362c09f34fa08b1be52813d61">MPCController</a>
 , <a class="el" href="classRVizInterface.html#a57bd96ee0a101e605f32c7fedb92a33f">RVizInterface</a>
+</li>
+<li>body_plan_topic_
+: <a class="el" href="classLocalFootstepPlanner.html#a0ba5abdf1a439baf472f2874be5f84ae">LocalFootstepPlanner</a>
 </li>
 <li>body_plan_viz_pub_
 : <a class="el" href="classRVizInterface.html#a2ba6086c6510e38ffdcda7477caac330">RVizInterface</a>
@@ -184,7 +188,7 @@ $(function() {
 
 <h3><a id="index_f"></a>- f -</h3><ul>
 <li>footstep_plan_
-: <a class="el" href="classLocalFootstepPlanner.html#a46bdeff14e59b93790779bc6f01193dd">LocalFootstepPlanner</a>
+: <a class="el" href="classLocalFootstepPlanner.html#aac4ca626cf8e85f9d1fa96a1d7f1f216">LocalFootstepPlanner</a>
 </li>
 <li>footstep_plan_pub_
 : <a class="el" href="classLocalFootstepPlanner.html#a609bb89700073ad59c30f48c24f2f31f">LocalFootstepPlanner</a>
@@ -211,6 +215,9 @@ $(function() {
 </li>
 <li>goal_state_
 : <a class="el" href="classGlobalBodyPlanner.html#ad13be2ea0f18e3f20d58b44043fa486f">GlobalBodyPlanner</a>
+</li>
+<li>ground_clearance_
+: <a class="el" href="classLocalFootstepPlanner.html#a6e5c76a8d725b57bee6f79561d4dfbcd">LocalFootstepPlanner</a>
 </li>
 <li>ground_truth_state_pub_
 : <a class="el" href="classGroundTruthPublisher.html#a398f33dfa07181dcf97197103cf3811a">GroundTruthPublisher</a>
@@ -240,7 +247,8 @@ $(function() {
 , <a class="el" href="classGroundTruthPublisher.html#a439cdd9246bb0d39dd97174609bed407">GroundTruthPublisher</a>
 </li>
 <li>interp_dt_
-: <a class="el" href="classOpenLoopController.html#a4d2050b64c73e507ac9f699c040d5252">OpenLoopController</a>
+: <a class="el" href="classLocalFootstepPlanner.html#abdb145cc2c860791c9d13a51ea04de26">LocalFootstepPlanner</a>
+, <a class="el" href="classOpenLoopController.html#a4d2050b64c73e507ac9f699c040d5252">OpenLoopController</a>
 </li>
 </ul>
 
@@ -328,6 +336,9 @@ $(function() {
 <li>map_initialized_
 : <a class="el" href="classTerrainMapPublisher.html#acde2f6690426b3aa1de411b260f5517b">TerrainMapPublisher</a>
 </li>
+<li>max_footstep_horizon_
+: <a class="el" href="classLocalFootstepPlanner.html#ad0788930657a827b39b5313ab76e78d0">LocalFootstepPlanner</a>
+</li>
 <li>max_height_
 : <a class="el" href="classTerrainMapPublisher.html#af6938ddec68646380135b2d22b7a2498">TerrainMapPublisher</a>
 </li>
@@ -377,6 +388,9 @@ $(function() {
 <li>num_calls_
 : <a class="el" href="classGlobalBodyPlanner.html#a7d917ce8f4d6f43b3855dd3a48809fa7">GlobalBodyPlanner</a>
 </li>
+<li>num_feet_
+: <a class="el" href="classLocalFootstepPlanner.html#a85ec156b75d085bdf14b2de9ed53cfbc">LocalFootstepPlanner</a>
+</li>
 <li>num_vertices_
 : <a class="el" href="classRRTClass.html#a2561c1232d6af27fab25d3bea8a26d4d">RRTClass</a>
 </li>
@@ -392,6 +406,9 @@ $(function() {
 </li>
 <li>path_length_
 : <a class="el" href="classRRTClass.html#a21902636c6b9dcff588802d391415242">RRTClass</a>
+</li>
+<li>period_
+: <a class="el" href="classLocalFootstepPlanner.html#ace99291ee0cc688b90cd50df8a5b09d5">LocalFootstepPlanner</a>
 </li>
 <li>plan_from_robot_state_flag_
 : <a class="el" href="classGlobalBodyPlanner.html#a692c8220178d6c12bde049d1e1b48dad">GlobalBodyPlanner</a>
@@ -442,6 +459,9 @@ $(function() {
 : <a class="el" href="classGlobalBodyPlanner.html#ae8529038176f49a0b2575471b7ba8b9c">GlobalBodyPlanner</a>
 , <a class="el" href="classspirit__utils_1_1FunctionTimer.html#a963b5aa76163a6bfb38269ca1359d144">spirit_utils::FunctionTimer</a>
 </li>
+<li>state_error_threshold_
+: <a class="el" href="classGlobalBodyPlanner.html#ae29c7264b2b9bba67ae9cc223952dd6b">GlobalBodyPlanner</a>
+</li>
 <li>state_estimate_pub_
 : <a class="el" href="classEKFEstimator.html#ae8c8abd3c5c7074c3fa85232a7174e91">EKFEstimator</a>
 </li>
@@ -465,6 +485,24 @@ $(function() {
 </li>
 <li>successors
 : <a class="el" href="classGraphClass.html#a2e6c5c4d16682dafe430d71b0f8678a5">GraphClass</a>
+</li>
+<li>swing_leg_0_plan_viz_pub_
+: <a class="el" href="classRVizInterface.html#a08a8963034f293c310f49083282c3bd0">RVizInterface</a>
+</li>
+<li>swing_leg_1_plan_viz_pub_
+: <a class="el" href="classRVizInterface.html#aca58a62992f1ab8d7efce461b6eae6c3">RVizInterface</a>
+</li>
+<li>swing_leg_2_plan_viz_pub_
+: <a class="el" href="classRVizInterface.html#a065bb56d0496193324ee2152516bf645">RVizInterface</a>
+</li>
+<li>swing_leg_3_plan_viz_pub_
+: <a class="el" href="classRVizInterface.html#af4bb4ee5621cbaaf2db0f358bf79716f">RVizInterface</a>
+</li>
+<li>swing_leg_plan_pub_
+: <a class="el" href="classLocalFootstepPlanner.html#a1d35416433445b7864d6aeb8a7e11c96">LocalFootstepPlanner</a>
+</li>
+<li>swing_leg_plan_sub_
+: <a class="el" href="classRVizInterface.html#adbc58c86e697f834a846d37700873246">RVizInterface</a>
 </li>
 </ul>
 
@@ -500,6 +538,7 @@ $(function() {
 </li>
 <li>terrain_map_topic_
 : <a class="el" href="classGlobalBodyPlanner.html#a2d7c05f084686214d16aeeb85839b56a">GlobalBodyPlanner</a>
+, <a class="el" href="classLocalFootstepPlanner.html#a76e26ceee124b046d5f94cabf72ec9dd">LocalFootstepPlanner</a>
 </li>
 <li>torque_lims_
 : <a class="el" href="classeffort__controllers_1_1SpiritController.html#af1da15d2c33e320435beaa1d44be7c3d">effort_controllers::SpiritController</a>

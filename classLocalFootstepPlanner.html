@@ -125,10 +125,18 @@ Private Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a72440a898d177da24ade355fec6c1f99">updatePlan</a> ()</td></tr>
 <tr class="memdesc:a72440a898d177da24ade355fec6c1f99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the footstep plan with the current plan. <br /></td></tr>
 <tr class="separator:a72440a898d177da24ade355fec6c1f99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ae687ec55f5b7203d9f236220eada81"><td class="memItemLeft" align="right" valign="top"><a id="a7ae687ec55f5b7203d9f236220eada81"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a7ae687ec55f5b7203d9f236220eada81">publishSwingLegPlan</a> ()</td></tr>
+<tr class="memdesc:a7ae687ec55f5b7203d9f236220eada81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update and publish the swing leg plan to match the current footstep plan. <br /></td></tr>
+<tr class="separator:a7ae687ec55f5b7203d9f236220eada81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0e199be9129386592065a505df5cddb"><td class="memItemLeft" align="right" valign="top"><a id="aa0e199be9129386592065a505df5cddb"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aa0e199be9129386592065a505df5cddb">publishPlan</a> ()</td></tr>
 <tr class="memdesc:aa0e199be9129386592065a505df5cddb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish the current footstep plan. <br /></td></tr>
 <tr class="separator:aa0e199be9129386592065a505df5cddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa90f4e9864bc60edb71f97d82cca1e55"><td class="memItemLeft" align="right" valign="top"><a id="aa90f4e9864bc60edb71f97d82cca1e55"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aa90f4e9864bc60edb71f97d82cca1e55">waitForData</a> ()</td></tr>
+<tr class="memdesc:aa90f4e9864bc60edb71f97d82cca1e55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wait until map and plan messages have been received and processed. <br /></td></tr>
+<tr class="separator:aa90f4e9864bc60edb71f97d82cca1e55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -144,10 +152,22 @@ ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a609bb89700073ad59c30f48c24f2f31f">footstep_plan_pub_</a></td></tr>
 <tr class="memdesc:a609bb89700073ad59c30f48c24f2f31f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publisher for footstep plan messages. <br /></td></tr>
 <tr class="separator:a609bb89700073ad59c30f48c24f2f31f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d35416433445b7864d6aeb8a7e11c96"><td class="memItemLeft" align="right" valign="top"><a id="a1d35416433445b7864d6aeb8a7e11c96"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a1d35416433445b7864d6aeb8a7e11c96">swing_leg_plan_pub_</a></td></tr>
+<tr class="memdesc:a1d35416433445b7864d6aeb8a7e11c96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publisher for swing leg plan messages. <br /></td></tr>
+<tr class="separator:a1d35416433445b7864d6aeb8a7e11c96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1deeef388877a4597ca4b56610e0e627"><td class="memItemLeft" align="right" valign="top"><a id="a1deeef388877a4597ca4b56610e0e627"></a>
 ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a1deeef388877a4597ca4b56610e0e627">nh_</a></td></tr>
 <tr class="memdesc:a1deeef388877a4597ca4b56610e0e627"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nodehandle to pub to and sub from. <br /></td></tr>
 <tr class="separator:a1deeef388877a4597ca4b56610e0e627"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76e26ceee124b046d5f94cabf72ec9dd"><td class="memItemLeft" align="right" valign="top"><a id="a76e26ceee124b046d5f94cabf72ec9dd"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a76e26ceee124b046d5f94cabf72ec9dd">terrain_map_topic_</a></td></tr>
+<tr class="memdesc:a76e26ceee124b046d5f94cabf72ec9dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Topic name for terrain map (needed to ensure data has been received) <br /></td></tr>
+<tr class="separator:a76e26ceee124b046d5f94cabf72ec9dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ba5abdf1a439baf472f2874be5f84ae"><td class="memItemLeft" align="right" valign="top"><a id="a0ba5abdf1a439baf472f2874be5f84ae"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a0ba5abdf1a439baf472f2874be5f84ae">body_plan_topic_</a></td></tr>
+<tr class="memdesc:a0ba5abdf1a439baf472f2874be5f84ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Topic name for robot state data (needed to ensure data has been received) <br /></td></tr>
+<tr class="separator:a0ba5abdf1a439baf472f2874be5f84ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2b08d0934e4491999a1b2a2ac39451d"><td class="memItemLeft" align="right" valign="top"><a id="ae2b08d0934e4491999a1b2a2ac39451d"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ae2b08d0934e4491999a1b2a2ac39451d">update_rate_</a></td></tr>
 <tr class="memdesc:ae2b08d0934e4491999a1b2a2ac39451d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update rate for sending and receiving data;. <br /></td></tr>
@@ -168,14 +188,38 @@ std::vector&lt; <a class="el" href="classLocalFootstepPlanner.html#abc34736bcc4f
 std::vector&lt; <a class="el" href="classLocalFootstepPlanner.html#ad2cb6435347c0188daa4c0e5e1cadad4">BodyWrench</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aa84041457fad698d33cee4562b10811e">body_wrench_plan_</a></td></tr>
 <tr class="memdesc:aa84041457fad698d33cee4562b10811e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing robot body wrenches. <br /></td></tr>
 <tr class="separator:aa84041457fad698d33cee4562b10811e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a46bdeff14e59b93790779bc6f01193dd"><td class="memItemLeft" align="right" valign="top"><a id="a46bdeff14e59b93790779bc6f01193dd"></a>
-std::vector&lt; <a class="el" href="classLocalFootstepPlanner.html#ac902c37c7e1e786537e43c616b45636f">FootstepState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a46bdeff14e59b93790779bc6f01193dd">footstep_plan_</a></td></tr>
-<tr class="memdesc:a46bdeff14e59b93790779bc6f01193dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing robot footstep plan. <br /></td></tr>
-<tr class="separator:a46bdeff14e59b93790779bc6f01193dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac4ca626cf8e85f9d1fa96a1d7f1f216"><td class="memItemLeft" align="right" valign="top"><a id="aac4ca626cf8e85f9d1fa96a1d7f1f216"></a>
+std::vector&lt; std::vector&lt; <a class="el" href="classLocalFootstepPlanner.html#ac902c37c7e1e786537e43c616b45636f">FootstepState</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aac4ca626cf8e85f9d1fa96a1d7f1f216">footstep_plan_</a></td></tr>
+<tr class="memdesc:aac4ca626cf8e85f9d1fa96a1d7f1f216"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing robot footstep plan. <br /></td></tr>
+<tr class="separator:aac4ca626cf8e85f9d1fa96a1d7f1f216"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab5a5e9c5c232856154d87f64c44333ac"><td class="memItemLeft" align="right" valign="top"><a id="ab5a5e9c5c232856154d87f64c44333ac"></a>
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ab5a5e9c5c232856154d87f64c44333ac">t_plan_</a></td></tr>
 <tr class="memdesc:ab5a5e9c5c232856154d87f64c44333ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing time data. <br /></td></tr>
 <tr class="separator:ab5a5e9c5c232856154d87f64c44333ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85ec156b75d085bdf14b2de9ed53cfbc"><td class="memItemLeft" align="right" valign="top"><a id="a85ec156b75d085bdf14b2de9ed53cfbc"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a85ec156b75d085bdf14b2de9ed53cfbc">num_feet_</a> = 4</td></tr>
+<tr class="memdesc:a85ec156b75d085bdf14b2de9ed53cfbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of feet. <br /></td></tr>
+<tr class="separator:a85ec156b75d085bdf14b2de9ed53cfbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46ccce5daaee16961347b4bec9c591ee"><td class="memItemLeft" align="right" valign="top"><a id="a46ccce5daaee16961347b4bec9c591ee"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a46ccce5daaee16961347b4bec9c591ee">alpha_</a></td></tr>
+<tr class="memdesc:a46ccce5daaee16961347b4bec9c591ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ground clearance. <br /></td></tr>
+<tr class="separator:a46ccce5daaee16961347b4bec9c591ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0788930657a827b39b5313ab76e78d0"><td class="memItemLeft" align="right" valign="top"><a id="ad0788930657a827b39b5313ab76e78d0"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ad0788930657a827b39b5313ab76e78d0">max_footstep_horizon_</a></td></tr>
+<tr class="memdesc:ad0788930657a827b39b5313ab76e78d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ground clearance. <br /></td></tr>
+<tr class="separator:ad0788930657a827b39b5313ab76e78d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace99291ee0cc688b90cd50df8a5b09d5"><td class="memItemLeft" align="right" valign="top"><a id="ace99291ee0cc688b90cd50df8a5b09d5"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ace99291ee0cc688b90cd50df8a5b09d5">period_</a></td></tr>
+<tr class="memdesc:ace99291ee0cc688b90cd50df8a5b09d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ground clearance. <br /></td></tr>
+<tr class="separator:ace99291ee0cc688b90cd50df8a5b09d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e5c76a8d725b57bee6f79561d4dfbcd"><td class="memItemLeft" align="right" valign="top"><a id="a6e5c76a8d725b57bee6f79561d4dfbcd"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a6e5c76a8d725b57bee6f79561d4dfbcd">ground_clearance_</a></td></tr>
+<tr class="memdesc:a6e5c76a8d725b57bee6f79561d4dfbcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ground clearance. <br /></td></tr>
+<tr class="separator:a6e5c76a8d725b57bee6f79561d4dfbcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdb145cc2c860791c9d13a51ea04de26"><td class="memItemLeft" align="right" valign="top"><a id="abdb145cc2c860791c9d13a51ea04de26"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#abdb145cc2c860791c9d13a51ea04de26">interp_dt_</a></td></tr>
+<tr class="memdesc:abdb145cc2c860791c9d13a51ea04de26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolation timestep for swing leg. <br /></td></tr>
+<tr class="separator:abdb145cc2c860791c9d13a51ea04de26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A local footstep planning class for spirit. </p>

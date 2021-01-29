@@ -103,6 +103,9 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a4e5e3ae05056cc0fa7dd6db0ebab1f23"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a4e5e3ae05056cc0fa7dd6db0ebab1f23">robotStateCallback</a> (const spirit_msgs::StateEstimate::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a4e5e3ae05056cc0fa7dd6db0ebab1f23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new ground truth state data.  <a href="#a4e5e3ae05056cc0fa7dd6db0ebab1f23">More...</a><br /></td></tr>
 <tr class="separator:a4e5e3ae05056cc0fa7dd6db0ebab1f23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77a803282b9834c6dd9bd946de2ac583"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a77a803282b9834c6dd9bd946de2ac583">replanTrigger</a> ()</td></tr>
+<tr class="memdesc:a77a803282b9834c6dd9bd946de2ac583"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if a replan is required.  <a href="#a77a803282b9834c6dd9bd946de2ac583">More...</a><br /></td></tr>
+<tr class="separator:a77a803282b9834c6dd9bd946de2ac583"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7eea2c9ab7b6e0cc56a02340ec105f7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#ab7eea2c9ab7b6e0cc56a02340ec105f7">initPlanner</a> ()</td></tr>
 <tr class="memdesc:ab7eea2c9ab7b6e0cc56a02340ec105f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the planner by clearing out old plan data and setting the start state.  <a href="#ab7eea2c9ab7b6e0cc56a02340ec105f7">More...</a><br /></td></tr>
 <tr class="separator:ab7eea2c9ab7b6e0cc56a02340ec105f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -196,6 +199,10 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a374758b62509d9be6fb6afdfadb8fa81">committed_horizon_</a></td></tr>
 <tr class="memdesc:a374758b62509d9be6fb6afdfadb8fa81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Horizon to commit to (replan from the next state after this horizon) <br /></td></tr>
 <tr class="separator:a374758b62509d9be6fb6afdfadb8fa81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae29c7264b2b9bba67ae9cc223952dd6b"><td class="memItemLeft" align="right" valign="top"><a id="ae29c7264b2b9bba67ae9cc223952dd6b"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#ae29c7264b2b9bba67ae9cc223952dd6b">state_error_threshold_</a></td></tr>
+<tr class="memdesc:ae29c7264b2b9bba67ae9cc223952dd6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Threshold of state error to trigger replanning. <br /></td></tr>
+<tr class="separator:ae29c7264b2b9bba67ae9cc223952dd6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a24e940f6401ecd8d5bac7b58c4c0ca73"><td class="memItemLeft" align="right" valign="top"><a id="a24e940f6401ecd8d5bac7b58c4c0ca73"></a>
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a24e940f6401ecd8d5bac7b58c4c0ca73">robot_state_</a></td></tr>
 <tr class="memdesc:a24e940f6401ecd8d5bac7b58c4c0ca73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current robot state. <br /></td></tr>
@@ -353,6 +360,34 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
 
 <p>Initialize the planner by clearing out old plan data and setting the start state. </p>
 <dl class="section return"><dt>Returns</dt><dd>Index of the current plan from which to being the new plan (zero if fully replanning) </dd></dl>
+
+</div>
+</div>
+<a id="a77a803282b9834c6dd9bd946de2ac583"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77a803282b9834c6dd9bd946de2ac583">&#9670;&nbsp;</a></span>replanTrigger()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool GlobalBodyPlanner::replanTrigger </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check if a replan is required. </p>
+<dl class="section return"><dt>Returns</dt><dd>boolean for whether to replan </dd></dl>
 
 </div>
 </div>

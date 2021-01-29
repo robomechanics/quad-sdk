@@ -94,6 +94,9 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a0b82f1f02393ee7a8313077e831a67fe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a0b82f1f02393ee7a8313077e831a67fe">footstepPlanCallback</a> (const spirit_msgs::FootstepPlan::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a0b82f1f02393ee7a8313077e831a67fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new footstep plan data.  <a href="#a0b82f1f02393ee7a8313077e831a67fe">More...</a><br /></td></tr>
 <tr class="separator:a0b82f1f02393ee7a8313077e831a67fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f56f091287206082e996a18dba07757"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a3f56f091287206082e996a18dba07757">swingLegPlanCallback</a> (const spirit_msgs::SwingLegPlan::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a3f56f091287206082e996a18dba07757"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new swing leg plan data.  <a href="#a3f56f091287206082e996a18dba07757">More...</a><br /></td></tr>
+<tr class="separator:a3f56f091287206082e996a18dba07757"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a638a39616995248a0ee4f3b376318e84"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a638a39616995248a0ee4f3b376318e84">stateEstimateCallback</a> (const spirit_msgs::StateEstimate::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a638a39616995248a0ee4f3b376318e84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new state estimate data.  <a href="#a638a39616995248a0ee4f3b376318e84">More...</a><br /></td></tr>
 <tr class="separator:a638a39616995248a0ee4f3b376318e84"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -112,6 +115,10 @@ ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a24599b92da410b23b82fb4617a815c59">footstep_plan_sub_</a></td></tr>
 <tr class="memdesc:a24599b92da410b23b82fb4617a815c59"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the footstep plan. <br /></td></tr>
 <tr class="separator:a24599b92da410b23b82fb4617a815c59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbc58c86e697f834a846d37700873246"><td class="memItemLeft" align="right" valign="top"><a id="adbc58c86e697f834a846d37700873246"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#adbc58c86e697f834a846d37700873246">swing_leg_plan_sub_</a></td></tr>
+<tr class="memdesc:adbc58c86e697f834a846d37700873246"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the swing leg plan. <br /></td></tr>
+<tr class="separator:adbc58c86e697f834a846d37700873246"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d2f37bf93ef7479542065c4f18d8fc1"><td class="memItemLeft" align="right" valign="top"><a id="a0d2f37bf93ef7479542065c4f18d8fc1"></a>
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a0d2f37bf93ef7479542065c4f18d8fc1">state_estimate_sub_</a></td></tr>
 <tr class="memdesc:a0d2f37bf93ef7479542065c4f18d8fc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Subscriber for the state estimate. <br /></td></tr>
@@ -132,6 +139,22 @@ ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a213b625225bec94051bfb2c6edd55e5a">footstep_plan_viz_pub_</a></td></tr>
 <tr class="memdesc:a213b625225bec94051bfb2c6edd55e5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the footstep plan visualization. <br /></td></tr>
 <tr class="separator:a213b625225bec94051bfb2c6edd55e5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08a8963034f293c310f49083282c3bd0"><td class="memItemLeft" align="right" valign="top"><a id="a08a8963034f293c310f49083282c3bd0"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a08a8963034f293c310f49083282c3bd0">swing_leg_0_plan_viz_pub_</a></td></tr>
+<tr class="memdesc:a08a8963034f293c310f49083282c3bd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the swing leg 0 visualization. <br /></td></tr>
+<tr class="separator:a08a8963034f293c310f49083282c3bd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca58a62992f1ab8d7efce461b6eae6c3"><td class="memItemLeft" align="right" valign="top"><a id="aca58a62992f1ab8d7efce461b6eae6c3"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#aca58a62992f1ab8d7efce461b6eae6c3">swing_leg_1_plan_viz_pub_</a></td></tr>
+<tr class="memdesc:aca58a62992f1ab8d7efce461b6eae6c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the swing leg 1 visualization. <br /></td></tr>
+<tr class="separator:aca58a62992f1ab8d7efce461b6eae6c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a065bb56d0496193324ee2152516bf645"><td class="memItemLeft" align="right" valign="top"><a id="a065bb56d0496193324ee2152516bf645"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a065bb56d0496193324ee2152516bf645">swing_leg_2_plan_viz_pub_</a></td></tr>
+<tr class="memdesc:a065bb56d0496193324ee2152516bf645"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the swing leg 2 visualization. <br /></td></tr>
+<tr class="separator:a065bb56d0496193324ee2152516bf645"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4bb4ee5621cbaaf2db0f358bf79716f"><td class="memItemLeft" align="right" valign="top"><a id="af4bb4ee5621cbaaf2db0f358bf79716f"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#af4bb4ee5621cbaaf2db0f358bf79716f">swing_leg_3_plan_viz_pub_</a></td></tr>
+<tr class="memdesc:af4bb4ee5621cbaaf2db0f358bf79716f"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the swing leg 3 visualization. <br /></td></tr>
+<tr class="separator:af4bb4ee5621cbaaf2db0f358bf79716f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1647764399f6e91e8956c032e27e3810"><td class="memItemLeft" align="right" valign="top"><a id="a1647764399f6e91e8956c032e27e3810"></a>
 ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a1647764399f6e91e8956c032e27e3810">joint_states_viz_pub_</a></td></tr>
 <tr class="memdesc:a1647764399f6e91e8956c032e27e3810"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the state estimate visualization. <br /></td></tr>
@@ -316,6 +339,40 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>State Estimate message containing output of the state estimator node </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a3f56f091287206082e996a18dba07757"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f56f091287206082e996a18dba07757">&#9670;&nbsp;</a></span>swingLegPlanCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RVizInterface::swingLegPlanCallback </td>
+          <td>(</td>
+          <td class="paramtype">const spirit_msgs::SwingLegPlan::ConstPtr &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback function to handle new swing leg plan data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">SwingLegPlan</td><td>message containing output of swing leg planner </td></tr>
   </table>
   </dd>
 </dl>

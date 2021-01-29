@@ -20,6 +20,7 @@ var searchData=
   ['goal_5ffound',['goal_found',['../classRRTClass.html#abd63c1f08cf738a4966010968e615e0a',1,'RRTClass']]],
   ['goal_5fstate_5f',['goal_state_',['../classGlobalBodyPlanner.html#ad13be2ea0f18e3f20d58b44043fa486f',1,'GlobalBodyPlanner']]],
   ['graphclass',['GraphClass',['../classGraphClass.html',1,'GraphClass'],['../classGraphClass.html#a39d78244b77de2351494de80b28e7dbe',1,'GraphClass::GraphClass()']]],
+  ['ground_5fclearance_5f',['ground_clearance_',['../classLocalFootstepPlanner.html#a6e5c76a8d725b57bee6f79561d4dfbcd',1,'LocalFootstepPlanner']]],
   ['ground_5ftruth_5fstate_5fpub_5f',['ground_truth_state_pub_',['../classGroundTruthPublisher.html#a398f33dfa07181dcf97197103cf3811a',1,'GroundTruthPublisher']]],
   ['groundtruthpublisher',['GroundTruthPublisher',['../classGroundTruthPublisher.html',1,'GroundTruthPublisher'],['../classGroundTruthPublisher.html#acaf89af328187198ce1d55166bdce7c5',1,'GroundTruthPublisher::GroundTruthPublisher()']]]
 ];

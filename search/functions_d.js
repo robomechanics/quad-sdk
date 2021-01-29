@@ -17,5 +17,6 @@ var searchData=
   ['publishjointencoders',['publishJointEncoders',['../classRobotProxy.html#a52f9e95a9ca4bc62f711b5f17da2bd00',1,'RobotProxy']]],
   ['publishmap',['publishMap',['../classTerrainMapPublisher.html#aa11b7631c0f0c3c33f9a118be181a102',1,'TerrainMapPublisher']]],
   ['publishmocap',['publishMocap',['../classRobotProxy.html#a7c1d653ac5acadd82e8f1dfc4d913d34',1,'RobotProxy']]],
-  ['publishplan',['publishPlan',['../classGlobalBodyPlanner.html#a7ef31af306895c311faee09a7023896b',1,'GlobalBodyPlanner::publishPlan()'],['../classLocalFootstepPlanner.html#aa0e199be9129386592065a505df5cddb',1,'LocalFootstepPlanner::publishPlan()'],['../classTwistBodyPlanner.html#a0bf6dc6f10419df4cd4612ff9c1a71dd',1,'TwistBodyPlanner::publishPlan()']]]
+  ['publishplan',['publishPlan',['../classGlobalBodyPlanner.html#a7ef31af306895c311faee09a7023896b',1,'GlobalBodyPlanner::publishPlan()'],['../classLocalFootstepPlanner.html#aa0e199be9129386592065a505df5cddb',1,'LocalFootstepPlanner::publishPlan()'],['../classTwistBodyPlanner.html#a0bf6dc6f10419df4cd4612ff9c1a71dd',1,'TwistBodyPlanner::publishPlan()']]],
+  ['publishswinglegplan',['publishSwingLegPlan',['../classLocalFootstepPlanner.html#a7ae687ec55f5b7203d9f236220eada81',1,'LocalFootstepPlanner']]]
 ];
