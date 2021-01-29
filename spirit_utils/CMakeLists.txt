@@ -48,6 +48,7 @@ add_library(spirit_utils
   src/terrain_map_publisher.cpp
   src/ground_truth_publisher.cpp
   src/robot_proxy.cpp
+  src/foot_jacobians.cpp
 )
 add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(spirit_utils)
@@ -94,6 +95,7 @@ catkin_add_gtest(spirit_utils-test
   test/test_ground_truth_publisher.cpp
   test/test_robot_proxy.cpp
   test/test_fast_terrain_map.cpp
+  test/test_foot_jacobians.cpp
   test/test_main.cpp)
 target_link_libraries(spirit_utils-test spirit_utils ${catkin_LIBRARIES})
 
