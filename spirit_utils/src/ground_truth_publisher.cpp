@@ -9,7 +9,7 @@ GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh_,"topics/joint_encoder",joint_encoder_topic);
   spirit_utils::loadROSParam(nh_,"topics/imu",imu_topic);
   spirit_utils::loadROSParam(nh_,"topics/mocap",mocap_topic);
-  spirit_utils::loadROSParam(nh_,"topics/ground_truth_state",ground_truth_state_topic);
+  spirit_utils::loadROSParam(nh_,"topics/state/ground_truth",ground_truth_state_topic);
   spirit_utils::loadROSParam(nh_,"ground_truth_publisher/velocity_smoothing_weight",alpha_);
   spirit_utils::loadROSParam(nh_,"ground_truth_publisher/mocap_rate",mocap_rate_);
 
@@ -22,7 +22,7 @@ GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
   joint_encoder_sub_ = nh_.subscribe(joint_encoder_topic,1,&GroundTruthPublisher::jointEncoderCallback, this);
   imu_sub_ = nh_.subscribe(imu_topic,1,&GroundTruthPublisher::imuCallback, this);
   mocap_sub_ = nh_.subscribe(mocap_topic,1,&GroundTruthPublisher::mocapCallback, this);
-  ground_truth_state_pub_ = nh_.advertise<spirit_msgs::StateEstimate>(ground_truth_state_topic,1);
+  ground_truth_state_pub_ = nh_.advertise<spirit_msgs::RobotState>(ground_truth_state_topic,1);
 }
 
 void GroundTruthPublisher::mocapCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
@@ -53,8 +53,8 @@ void GroundTruthPublisher::imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
   last_imu_msg_ = msg;
 }
 
-spirit_msgs::StateEstimate GroundTruthPublisher::updateStep() {
-  spirit_msgs::StateEstimate new_state_est;
+spirit_msgs::RobotState GroundTruthPublisher::updateStep() {
+  spirit_msgs::RobotState new_state_est;
 
   if (last_imu_msg_ != NULL)
   {
@@ -84,7 +84,7 @@ void GroundTruthPublisher::spin() {
     ros::spinOnce(); 
 
     // Compute new state estimate
-    spirit_msgs::StateEstimate new_state_est = this->updateStep();
+    spirit_msgs::RobotState new_state_est = this->updateStep();
 
     // Publish new state estimate
     ground_truth_state_pub_.publish(new_state_est);

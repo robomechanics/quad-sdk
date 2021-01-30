@@ -14,7 +14,7 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   nh.param<std::string>("topics/discrete_body_plan", discrete_body_plan_topic, "/discrete_body_plan");
   nh.param<std::string>("topics/footstep_plan", footstep_plan_topic, "/footstep_plan");
   nh.param<std::string>("topics/swing_leg_plan", swing_leg_plan_topic, "/swing_leg_plan");
-  nh.param<std::string>("topics/state_estimate", state_estimate_topic, "/state_estimate");
+  nh.param<std::string>("topics/state/estimate", state_estimate_topic, "/state/estimate");
   
   nh.param<std::string>("topics/visualization/body_plan", body_plan_viz_topic, "/visualization/body_plan");
   nh.param<std::string>("topics/visualization/body_wrench_plan", body_wrench_plan_viz_topic, "/visualization/body_wrench_plan");
@@ -209,7 +209,7 @@ void RVizInterface::swingLegPlanCallback(const spirit_msgs::SwingLegPlan::ConstP
 
 }
 
-void RVizInterface::stateEstimateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg) {
+void RVizInterface::stateEstimateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
 
   // Make a transform message for the body, populate with state estimate data, and publish
   geometry_msgs::TransformStamped transformStamped;

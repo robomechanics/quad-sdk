@@ -7,7 +7,7 @@
 #include <spirit_msgs/Footstep.h>
 #include <spirit_msgs/FootstepPlan.h>
 #include <spirit_msgs/SwingLegPlan.h>
-#include <spirit_msgs/StateEstimate.h>
+#include <spirit_msgs/RobotState.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>
 
@@ -57,9 +57,9 @@ private:
 
   /**
    * @brief Callback function to handle new state estimate data
-   * @param[in] msg State Estimate message containing output of the state estimator node
+   * @param[in] msg RobotState message containing output of the state estimator node
    */
-  void stateEstimateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg);
+  void stateEstimateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 
   /// ROS subscriber for the body plan
   ros::Subscriber body_plan_sub_;
