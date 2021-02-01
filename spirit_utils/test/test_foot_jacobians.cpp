@@ -14,11 +14,22 @@ TEST(FootJacobianTest, FootJacobian0) {
   double parameters[] = {0.07,0.2263,0.0,0.1010,0.206,0.206};
   
 
-    double foot_jacobian0[9];
+    Eigen::MatrixXf foot_jacobian0(3,3);
 
     // Call the foot jacobian calculation
     spirit_utils::calc_foot_jacobian0(states,parameters,foot_jacobian0);
-    std::cout<<"Foot Jacobian first index, "<<foot_jacobian0[1]<<std::endl;
+    std::cout<<"Foot Jacobian: "<<std::endl;
+    std::cout<<foot_jacobian0;
+    std::cout<<std::endl;
+    // std::cout<<"Foot Jacobian first index, "<<foot_jacobian0[0]<<std::endl;
+    // std::cout<<"Foot Jacobian second index, "<<foot_jacobian0[1]<<std::endl;
+    // std::cout<<"Foot Jacobian third index, "<<foot_jacobian0[2]<<std::endl;
+    // std::cout<<"Foot Jacobian fourth index, "<<foot_jacobian0[3]<<std::endl;
+    // std::cout<<"Foot Jacobian fifth index, "<<foot_jacobian0[4]<<std::endl;
+    // std::cout<<"Foot Jacobian sixth index, "<<foot_jacobian0[5]<<std::endl;
+    // std::cout<<"Foot Jacobian seventh index, "<<foot_jacobian0[6]<<std::endl;
+    // std::cout<<"Foot Jacobian eigth index, "<<foot_jacobian0[7]<<std::endl;
+    // std::cout<<"Foot Jacobian ninth index, "<<foot_jacobian0[8]<<std::endl;
     // ROS_INFO("Foot Jacobian first index %f",foot_jacobian0[0]);
   EXPECT_EQ(1 + 1, 2);
 }
@@ -33,7 +44,7 @@ TEST(FootJacobianTest, FootJacobian1) {
   double parameters[] = {0.07,0.2263,0.0,0.1010,0.206,0.206};
   
 
-    double foot_jacobian0[9];
+    Eigen::MatrixXf foot_jacobian0(3,3);
 
     // Call the foot jacobian calculation
     spirit_utils::calc_foot_jacobian1(states,parameters,foot_jacobian0);
@@ -50,7 +61,7 @@ TEST(FootJacobianTest, FootJacobian2) {
   double parameters[] = {0.07,0.2263,0.0,0.1010,0.206,0.206};
   
 
-    double foot_jacobian0[9];
+    Eigen::MatrixXf foot_jacobian0;
 
     // Call the foot jacobian calculation
     spirit_utils::calc_foot_jacobian2(states,parameters,foot_jacobian0);
@@ -67,7 +78,7 @@ TEST(FootJacobianTest, FootJacobian3) {
   double parameters[] = {0.07,0.2263,0.0,0.1010,0.206,0.206};
   
 
-    double foot_jacobian0[9];
+    Eigen::MatrixXf foot_jacobian0(3,3);
 
     // Call the foot jacobian calculation
     spirit_utils::calc_foot_jacobian3(states,parameters,foot_jacobian0);
