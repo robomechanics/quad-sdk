@@ -116,8 +116,8 @@ void calc_foot_jacobian0(const double in1[18], const double in2[6], Eigen::Matri
   // Map the array to the matrix
   // foot_jacobian0 = Eigen::Map<Eigen::MatrixXf>(foot_jacobian0_vector,3,3);
   foot_jacobian0 <<foot_jacobian0_vector[0], foot_jacobian0_vector[3], foot_jacobian0_vector[6],
-                  foot_jacobian0_vector[1], foot_jacobian0_vector[4], foot_jacobian0_vector[7],
-                  foot_jacobian0_vector[2],foot_jacobian0_vector[5],foot_jacobian0_vector[8];
+                  -foot_jacobian0_vector[1], -foot_jacobian0_vector[4], -foot_jacobian0_vector[7],
+                  -foot_jacobian0_vector[2],-foot_jacobian0_vector[5],-foot_jacobian0_vector[8];
 }
 
 void calc_foot_jacobian1(const double in1[18], const double in2[6], Eigen::MatrixXf& foot_jacobian1)
@@ -224,8 +224,8 @@ void calc_foot_jacobian1(const double in1[18], const double in2[6], Eigen::Matri
     // Map the array to the matrix
   // foot_jacobian1 = Eigen::Map<Eigen::MatrixXf>(foot_jacobian1_vector,3,3);
     foot_jacobian1 <<foot_jacobian1_vector[0], foot_jacobian1_vector[3], foot_jacobian1_vector[6],
-                  foot_jacobian1_vector[1], foot_jacobian1_vector[4], foot_jacobian1_vector[7],
-                  foot_jacobian1_vector[2],foot_jacobian1_vector[5],foot_jacobian1_vector[8];
+                  -foot_jacobian1_vector[1], -foot_jacobian1_vector[4], -foot_jacobian1_vector[7],
+                  -foot_jacobian1_vector[2],-foot_jacobian1_vector[5],-foot_jacobian1_vector[8];
 }
 
 void calc_foot_jacobian2(const double in1[18], const double in2[6], Eigen::MatrixXf& foot_jacobian2)
@@ -332,8 +332,8 @@ void calc_foot_jacobian2(const double in1[18], const double in2[6], Eigen::Matri
     // Map the array to the matrix
   // foot_jacobian2 = Eigen::Map<Eigen::MatrixXf>(foot_jacobian2_vector,3,3);
     foot_jacobian2 <<foot_jacobian2_vector[0], foot_jacobian2_vector[3], foot_jacobian2_vector[6],
-                  foot_jacobian2_vector[1], foot_jacobian2_vector[4], foot_jacobian2_vector[7],
-                  foot_jacobian2_vector[2],foot_jacobian2_vector[5],foot_jacobian2_vector[8];
+                  -foot_jacobian2_vector[1], -foot_jacobian2_vector[4], -foot_jacobian2_vector[7],
+                  -foot_jacobian2_vector[2],-foot_jacobian2_vector[5],-foot_jacobian2_vector[8];
 }
 
 void calc_foot_jacobian3(const double in1[18], const double in2[6], Eigen::MatrixXf& foot_jacobian3)
@@ -440,7 +440,7 @@ void calc_foot_jacobian3(const double in1[18], const double in2[6], Eigen::Matri
       // Map the array to the matrix
   // foot_jacobian3 = Eigen::Map<Eigen::MatrixXf>(foot_jacobian3_vector,3,3);
     foot_jacobian3 <<foot_jacobian3_vector[0], foot_jacobian3_vector[3], foot_jacobian3_vector[6],
-                  foot_jacobian3_vector[1], foot_jacobian3_vector[4], foot_jacobian3_vector[7],
-                  foot_jacobian3_vector[2],foot_jacobian3_vector[5],foot_jacobian3_vector[8];
+                  -foot_jacobian3_vector[1], -foot_jacobian3_vector[4], -foot_jacobian3_vector[7],
+                  -foot_jacobian3_vector[2],-foot_jacobian3_vector[5],-foot_jacobian3_vector[8];
 }
 }
