@@ -94,9 +94,9 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:ad4982eb34df043d4fa90148740f44181"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEKFEstimator.html#ad4982eb34df043d4fa90148740f44181">contactCallback</a> (const spirit_msgs::ContactMode::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:ad4982eb34df043d4fa90148740f44181"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new contact estimates.  <a href="#ad4982eb34df043d4fa90148740f44181">More...</a><br /></td></tr>
 <tr class="separator:ad4982eb34df043d4fa90148740f44181"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f31ab8d70f8ba90eda345810a0913b5"><td class="memItemLeft" align="right" valign="top">spirit_msgs::StateEstimate&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEKFEstimator.html#a2f31ab8d70f8ba90eda345810a0913b5">updateStep</a> ()</td></tr>
-<tr class="memdesc:a2f31ab8d70f8ba90eda345810a0913b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">execute EKF Update step, return state estimate  <a href="#a2f31ab8d70f8ba90eda345810a0913b5">More...</a><br /></td></tr>
-<tr class="separator:a2f31ab8d70f8ba90eda345810a0913b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2aa7c42b497574075809cf6812cc1ac6"><td class="memItemLeft" align="right" valign="top">spirit_msgs::RobotState&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEKFEstimator.html#a2aa7c42b497574075809cf6812cc1ac6">updateStep</a> ()</td></tr>
+<tr class="memdesc:a2aa7c42b497574075809cf6812cc1ac6"><td class="mdescLeft">&#160;</td><td class="mdescRight">execute EKF Update step, return state estimate  <a href="#a2aa7c42b497574075809cf6812cc1ac6">More...</a><br /></td></tr>
+<tr class="separator:a2aa7c42b497574075809cf6812cc1ac6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -124,10 +124,10 @@ ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEKFEstimator.html#a2f1e9f71345af6334594bbb4ae04996c">update_rate_</a></td></tr>
 <tr class="memdesc:a2f1e9f71345af6334594bbb4ae04996c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update rate for sending and receiving data;. <br /></td></tr>
 <tr class="separator:a2f1e9f71345af6334594bbb4ae04996c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9853bf93c64bbd66d831cb9e9f8ff182"><td class="memItemLeft" align="right" valign="top"><a id="a9853bf93c64bbd66d831cb9e9f8ff182"></a>
-spirit_msgs::StateEstimate&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEKFEstimator.html#a9853bf93c64bbd66d831cb9e9f8ff182">last_state_est_</a></td></tr>
-<tr class="memdesc:a9853bf93c64bbd66d831cb9e9f8ff182"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last state estimate. <br /></td></tr>
-<tr class="separator:a9853bf93c64bbd66d831cb9e9f8ff182"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a807368a7e2c2672615b8e3bcf6dbe807"><td class="memItemLeft" align="right" valign="top"><a id="a807368a7e2c2672615b8e3bcf6dbe807"></a>
+spirit_msgs::RobotState&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEKFEstimator.html#a807368a7e2c2672615b8e3bcf6dbe807">last_state_est_</a></td></tr>
+<tr class="memdesc:a807368a7e2c2672615b8e3bcf6dbe807"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last state estimate. <br /></td></tr>
+<tr class="separator:a807368a7e2c2672615b8e3bcf6dbe807"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a97409699f46afb7daa766699d54c7230"><td class="memItemLeft" align="right" valign="top"><a id="a97409699f46afb7daa766699d54c7230"></a>
 spirit_msgs::ContactMode::ConstPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEKFEstimator.html#a97409699f46afb7daa766699d54c7230">last_contact_msg_</a></td></tr>
 <tr class="memdesc:a97409699f46afb7daa766699d54c7230"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last contact detection message (should be timestamped!) <br /></td></tr>
@@ -279,8 +279,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 
 </div>
 </div>
-<a id="a2f31ab8d70f8ba90eda345810a0913b5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2f31ab8d70f8ba90eda345810a0913b5">&#9670;&nbsp;</a></span>updateStep()</h2>
+<a id="a2aa7c42b497574075809cf6812cc1ac6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2aa7c42b497574075809cf6812cc1ac6">&#9670;&nbsp;</a></span>updateStep()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -289,7 +289,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">spirit_msgs::StateEstimate EKFEstimator::updateStep </td>
+          <td class="memname">spirit_msgs::RobotState EKFEstimator::updateStep </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -303,7 +303,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 </div><div class="memdoc">
 
 <p>execute EKF Update step, return state estimate </p>
-<dl class="section return"><dt>Returns</dt><dd>state estimate of custom type StateEstimate </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>state estimate of custom type RobotState </dd></dl>
 
 </div>
 </div>

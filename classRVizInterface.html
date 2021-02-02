@@ -97,9 +97,12 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a3f56f091287206082e996a18dba07757"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a3f56f091287206082e996a18dba07757">swingLegPlanCallback</a> (const spirit_msgs::SwingLegPlan::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a3f56f091287206082e996a18dba07757"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new swing leg plan data.  <a href="#a3f56f091287206082e996a18dba07757">More...</a><br /></td></tr>
 <tr class="separator:a3f56f091287206082e996a18dba07757"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a638a39616995248a0ee4f3b376318e84"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a638a39616995248a0ee4f3b376318e84">stateEstimateCallback</a> (const spirit_msgs::StateEstimate::ConstPtr &amp;msg)</td></tr>
-<tr class="memdesc:a638a39616995248a0ee4f3b376318e84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new state estimate data.  <a href="#a638a39616995248a0ee4f3b376318e84">More...</a><br /></td></tr>
-<tr class="separator:a638a39616995248a0ee4f3b376318e84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d9710ecdb33bfdc0209fd9bf80c3500"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a1d9710ecdb33bfdc0209fd9bf80c3500">stateEstimateCallback</a> (const spirit_msgs::RobotState::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a1d9710ecdb33bfdc0209fd9bf80c3500"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new state estimate data.  <a href="#a1d9710ecdb33bfdc0209fd9bf80c3500">More...</a><br /></td></tr>
+<tr class="separator:a1d9710ecdb33bfdc0209fd9bf80c3500"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a755fcd0d9f4a9cf83c29c66e6549824d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a755fcd0d9f4a9cf83c29c66e6549824d">groundTruthStateCallback</a> (const spirit_msgs::RobotState::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a755fcd0d9f4a9cf83c29c66e6549824d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new state estimate data.  <a href="#a755fcd0d9f4a9cf83c29c66e6549824d">More...</a><br /></td></tr>
+<tr class="separator:a755fcd0d9f4a9cf83c29c66e6549824d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -123,6 +126,10 @@ ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a0d2f37bf93ef7479542065c4f18d8fc1">state_estimate_sub_</a></td></tr>
 <tr class="memdesc:a0d2f37bf93ef7479542065c4f18d8fc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Subscriber for the state estimate. <br /></td></tr>
 <tr class="separator:a0d2f37bf93ef7479542065c4f18d8fc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a640ac0dd4cd022f01fe23c9cc1f08227"><td class="memItemLeft" align="right" valign="top"><a id="a640ac0dd4cd022f01fe23c9cc1f08227"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a640ac0dd4cd022f01fe23c9cc1f08227">ground_truth_state_sub_</a></td></tr>
+<tr class="memdesc:a640ac0dd4cd022f01fe23c9cc1f08227"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Subscriber for the ground truth state. <br /></td></tr>
+<tr class="separator:a640ac0dd4cd022f01fe23c9cc1f08227"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ba6086c6510e38ffdcda7477caac330"><td class="memItemLeft" align="right" valign="top"><a id="a2ba6086c6510e38ffdcda7477caac330"></a>
 ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a2ba6086c6510e38ffdcda7477caac330">body_plan_viz_pub_</a></td></tr>
 <tr class="memdesc:a2ba6086c6510e38ffdcda7477caac330"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the interpolated body plan vizualization. <br /></td></tr>
@@ -159,10 +166,14 @@ ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a1647764399f6e91e8956c032e27e3810">joint_states_viz_pub_</a></td></tr>
 <tr class="memdesc:a1647764399f6e91e8956c032e27e3810"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the state estimate visualization. <br /></td></tr>
 <tr class="separator:a1647764399f6e91e8956c032e27e3810"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b8c8641846c89cec893831aa632efbb"><td class="memItemLeft" align="right" valign="top"><a id="a8b8c8641846c89cec893831aa632efbb"></a>
-tf2_ros::TransformBroadcaster&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a8b8c8641846c89cec893831aa632efbb">base_tf_br_</a></td></tr>
-<tr class="memdesc:a8b8c8641846c89cec893831aa632efbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Transform Broadcaster to publish the transform for the base link. <br /></td></tr>
-<tr class="separator:a8b8c8641846c89cec893831aa632efbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d63133ef60884854fc7ba7d4524f33f"><td class="memItemLeft" align="right" valign="top"><a id="a4d63133ef60884854fc7ba7d4524f33f"></a>
+tf2_ros::TransformBroadcaster&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a4d63133ef60884854fc7ba7d4524f33f">estimate_base_tf_br_</a></td></tr>
+<tr class="memdesc:a4d63133ef60884854fc7ba7d4524f33f"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Transform Broadcaster to publish the estimate transform for the base link. <br /></td></tr>
+<tr class="separator:a4d63133ef60884854fc7ba7d4524f33f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affc934a5a007ddcc18a6f2361df1eac4"><td class="memItemLeft" align="right" valign="top"><a id="affc934a5a007ddcc18a6f2361df1eac4"></a>
+tf2_ros::TransformBroadcaster&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#affc934a5a007ddcc18a6f2361df1eac4">ground_truth_base_tf_br_</a></td></tr>
+<tr class="memdesc:affc934a5a007ddcc18a6f2361df1eac4"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Transform Broadcaster to publish the transform for the base link. <br /></td></tr>
+<tr class="separator:affc934a5a007ddcc18a6f2361df1eac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8617e53fd181aca3ad86f7d83429436a"><td class="memItemLeft" align="right" valign="top"><a id="a8617e53fd181aca3ad86f7d83429436a"></a>
 ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a8617e53fd181aca3ad86f7d83429436a">nh_</a></td></tr>
 <tr class="memdesc:a8617e53fd181aca3ad86f7d83429436a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nodehandle to pub to and sub from. <br /></td></tr>
@@ -311,8 +322,8 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 
 </div>
 </div>
-<a id="a638a39616995248a0ee4f3b376318e84"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a638a39616995248a0ee4f3b376318e84">&#9670;&nbsp;</a></span>stateEstimateCallback()</h2>
+<a id="a755fcd0d9f4a9cf83c29c66e6549824d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a755fcd0d9f4a9cf83c29c66e6549824d">&#9670;&nbsp;</a></span>groundTruthStateCallback()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -321,9 +332,9 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void RVizInterface::stateEstimateCallback </td>
+          <td class="memname">void RVizInterface::groundTruthStateCallback </td>
           <td>(</td>
-          <td class="paramtype">const spirit_msgs::StateEstimate::ConstPtr &amp;&#160;</td>
+          <td class="paramtype">const spirit_msgs::RobotState::ConstPtr &amp;&#160;</td>
           <td class="paramname"><em>msg</em></td><td>)</td>
           <td></td>
         </tr>
@@ -338,7 +349,41 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <p>Callback function to handle new state estimate data. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>State Estimate message containing output of the state estimator node </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>RobotState message containing output of the state estimator node </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1d9710ecdb33bfdc0209fd9bf80c3500"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d9710ecdb33bfdc0209fd9bf80c3500">&#9670;&nbsp;</a></span>stateEstimateCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RVizInterface::stateEstimateCallback </td>
+          <td>(</td>
+          <td class="paramtype">const spirit_msgs::RobotState::ConstPtr &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback function to handle new state estimate data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>RobotState message containing output of the state estimator node </td></tr>
   </table>
   </dd>
 </dl>

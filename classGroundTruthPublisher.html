@@ -94,9 +94,9 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:ab965ba75fb90e93ebdf32445488cb5bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGroundTruthPublisher.html#ab965ba75fb90e93ebdf32445488cb5bb">imuCallback</a> (const sensor_msgs::Imu::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:ab965ba75fb90e93ebdf32445488cb5bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new imu data.  <a href="#ab965ba75fb90e93ebdf32445488cb5bb">More...</a><br /></td></tr>
 <tr class="separator:ab965ba75fb90e93ebdf32445488cb5bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac694041d110a625a68ad0a221f9d3a5f"><td class="memItemLeft" align="right" valign="top">spirit_msgs::StateEstimate&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGroundTruthPublisher.html#ac694041d110a625a68ad0a221f9d3a5f">updateStep</a> ()</td></tr>
-<tr class="memdesc:ac694041d110a625a68ad0a221f9d3a5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">execute EKF Update step, return state estimate  <a href="#ac694041d110a625a68ad0a221f9d3a5f">More...</a><br /></td></tr>
-<tr class="separator:ac694041d110a625a68ad0a221f9d3a5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0da4de457cabb8dfb3812ea7589b04ab"><td class="memItemLeft" align="right" valign="top">spirit_msgs::RobotState&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGroundTruthPublisher.html#a0da4de457cabb8dfb3812ea7589b04ab">updateStep</a> ()</td></tr>
+<tr class="memdesc:a0da4de457cabb8dfb3812ea7589b04ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">execute EKF Update step, return state estimate  <a href="#a0da4de457cabb8dfb3812ea7589b04ab">More...</a><br /></td></tr>
+<tr class="separator:a0da4de457cabb8dfb3812ea7589b04ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -124,10 +124,10 @@ ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGroundTruthPublisher.html#a3472e787daa63a36015576b7acac936c">mocap_rate_</a></td></tr>
 <tr class="memdesc:a3472e787daa63a36015576b7acac936c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update rate of the motion capture system. <br /></td></tr>
 <tr class="separator:a3472e787daa63a36015576b7acac936c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1d95573dcb3c5e51c3b1984d53d23ce"><td class="memItemLeft" align="right" valign="top"><a id="ac1d95573dcb3c5e51c3b1984d53d23ce"></a>
-spirit_msgs::StateEstimate&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGroundTruthPublisher.html#ac1d95573dcb3c5e51c3b1984d53d23ce">last_state_est_</a></td></tr>
-<tr class="memdesc:ac1d95573dcb3c5e51c3b1984d53d23ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last state estimate. <br /></td></tr>
-<tr class="separator:ac1d95573dcb3c5e51c3b1984d53d23ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9929cc27e8be84c8252ad1188372ba8f"><td class="memItemLeft" align="right" valign="top"><a id="a9929cc27e8be84c8252ad1188372ba8f"></a>
+spirit_msgs::RobotState&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGroundTruthPublisher.html#a9929cc27e8be84c8252ad1188372ba8f">last_state_est_</a></td></tr>
+<tr class="memdesc:a9929cc27e8be84c8252ad1188372ba8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last state estimate. <br /></td></tr>
+<tr class="separator:a9929cc27e8be84c8252ad1188372ba8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1aaf78a5aed8f3afbc4055b35f0dc679"><td class="memItemLeft" align="right" valign="top"><a id="a1aaf78a5aed8f3afbc4055b35f0dc679"></a>
 sensor_msgs::Imu::ConstPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGroundTruthPublisher.html#a1aaf78a5aed8f3afbc4055b35f0dc679">last_imu_msg_</a></td></tr>
 <tr class="memdesc:a1aaf78a5aed8f3afbc4055b35f0dc679"><td class="mdescLeft">&#160;</td><td class="mdescRight">Most recent IMU callback (should be timestamped!) <br /></td></tr>
@@ -283,8 +283,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 
 </div>
 </div>
-<a id="ac694041d110a625a68ad0a221f9d3a5f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac694041d110a625a68ad0a221f9d3a5f">&#9670;&nbsp;</a></span>updateStep()</h2>
+<a id="a0da4de457cabb8dfb3812ea7589b04ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0da4de457cabb8dfb3812ea7589b04ab">&#9670;&nbsp;</a></span>updateStep()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -293,7 +293,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">spirit_msgs::StateEstimate GroundTruthPublisher::updateStep </td>
+          <td class="memname">spirit_msgs::RobotState GroundTruthPublisher::updateStep </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -307,7 +307,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 </div><div class="memdoc">
 
 <p>execute EKF Update step, return state estimate </p>
-<dl class="section return"><dt>Returns</dt><dd>state estimate of custom type StateEstimate </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>state estimate of custom type RobotState </dd></dl>
 
 </div>
 </div>

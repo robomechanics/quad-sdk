@@ -81,9 +81,9 @@ Public Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBodyForceEstimator.html#af8a0398a8c996bd8bd193a833a1a3894">spin</a> ()</td></tr>
 <tr class="memdesc:af8a0398a8c996bd8bd193a833a1a3894"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls ros spinOnce and pubs data at set frequency. <br /></td></tr>
 <tr class="separator:af8a0398a8c996bd8bd193a833a1a3894"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a74257f5f42e05fa23aa984d914062628"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBodyForceEstimator.html#a74257f5f42e05fa23aa984d914062628">stateEstimateCallback</a> (const spirit_msgs::StateEstimate::ConstPtr &amp;msg)</td></tr>
-<tr class="memdesc:a74257f5f42e05fa23aa984d914062628"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new state estimates.  <a href="#a74257f5f42e05fa23aa984d914062628">More...</a><br /></td></tr>
-<tr class="separator:a74257f5f42e05fa23aa984d914062628"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38e299d7ec7003e7ae385501af6a6450"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBodyForceEstimator.html#a38e299d7ec7003e7ae385501af6a6450">robotStateCallback</a> (const spirit_msgs::RobotState::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a38e299d7ec7003e7ae385501af6a6450"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new state estimates.  <a href="#a38e299d7ec7003e7ae385501af6a6450">More...</a><br /></td></tr>
+<tr class="separator:a38e299d7ec7003e7ae385501af6a6450"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28347e575435b6d7dfd7a7fdf0d10537"><td class="memItemLeft" align="right" valign="top"><a id="a28347e575435b6d7dfd7a7fdf0d10537"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBodyForceEstimator.html#a28347e575435b6d7dfd7a7fdf0d10537">publishBodyForce</a> ()</td></tr>
 <tr class="memdesc:a28347e575435b6d7dfd7a7fdf0d10537"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish body force force estimates. <br /></td></tr>
@@ -91,10 +91,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a93f467e3e5cbd19d5a5e88f60d5619f3"><td class="memItemLeft" align="right" valign="top"><a id="a93f467e3e5cbd19d5a5e88f60d5619f3"></a>
-ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBodyForceEstimator.html#a93f467e3e5cbd19d5a5e88f60d5619f3">state_estimate_sub_</a></td></tr>
-<tr class="memdesc:a93f467e3e5cbd19d5a5e88f60d5619f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the state estimate. <br /></td></tr>
-<tr class="separator:a93f467e3e5cbd19d5a5e88f60d5619f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e4f6ba0afd26410269c175e3efe7840"><td class="memItemLeft" align="right" valign="top"><a id="a1e4f6ba0afd26410269c175e3efe7840"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBodyForceEstimator.html#a1e4f6ba0afd26410269c175e3efe7840">robot_state_sub_</a></td></tr>
+<tr class="memdesc:a1e4f6ba0afd26410269c175e3efe7840"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the robot state. <br /></td></tr>
+<tr class="separator:a1e4f6ba0afd26410269c175e3efe7840"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acdbe9d81de8b61cbc5c3907d4232ce18"><td class="memItemLeft" align="right" valign="top"><a id="acdbe9d81de8b61cbc5c3907d4232ce18"></a>
 ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBodyForceEstimator.html#acdbe9d81de8b61cbc5c3907d4232ce18">body_force_pub_</a></td></tr>
 <tr class="memdesc:acdbe9d81de8b61cbc5c3907d4232ce18"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS publisher for body force force estimates. <br /></td></tr>
@@ -140,16 +140,16 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a74257f5f42e05fa23aa984d914062628"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a74257f5f42e05fa23aa984d914062628">&#9670;&nbsp;</a></span>stateEstimateCallback()</h2>
+<a id="a38e299d7ec7003e7ae385501af6a6450"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38e299d7ec7003e7ae385501af6a6450">&#9670;&nbsp;</a></span>robotStateCallback()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void BodyForceEstimator::stateEstimateCallback </td>
+          <td class="memname">void BodyForceEstimator::robotStateCallback </td>
           <td>(</td>
-          <td class="paramtype">const spirit_msgs::StateEstimate::ConstPtr &amp;&#160;</td>
+          <td class="paramtype">const spirit_msgs::RobotState::ConstPtr &amp;&#160;</td>
           <td class="paramname"><em>msg</em></td><td>)</td>
           <td></td>
         </tr>
@@ -159,7 +159,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 <p>Callback function to handle new state estimates. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">State</td><td>estimate message contining position and velocity for each joint and robot body </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">Robot</td><td>state message contining position and velocity for each joint and robot body </td></tr>
   </table>
   </dd>
 </dl>

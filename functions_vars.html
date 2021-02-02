@@ -81,9 +81,6 @@ $(function() {
 
 
 <h3><a id="index_b"></a>- b -</h3><ul>
-<li>base_tf_br_
-: <a class="el" href="classRVizInterface.html#a8b8c8641846c89cec893831aa632efbb">RVizInterface</a>
-</li>
 <li>body_force_pub_
 : <a class="el" href="classBodyForceEstimator.html#acdbe9d81de8b61cbc5c3907d4232ce18">BodyForceEstimator</a>
 </li>
@@ -183,6 +180,9 @@ $(function() {
 <li>elapsed_total_
 : <a class="el" href="classRRTClass.html#a99c35415e1d65f84e87a8580ed893c65">RRTClass</a>
 </li>
+<li>estimate_base_tf_br_
+: <a class="el" href="classRVizInterface.html#a4d63133ef60884854fc7ba7d4524f33f">RVizInterface</a>
+</li>
 </ul>
 
 
@@ -219,8 +219,14 @@ $(function() {
 <li>ground_clearance_
 : <a class="el" href="classLocalFootstepPlanner.html#a6e5c76a8d725b57bee6f79561d4dfbcd">LocalFootstepPlanner</a>
 </li>
+<li>ground_truth_base_tf_br_
+: <a class="el" href="classRVizInterface.html#affc934a5a007ddcc18a6f2361df1eac4">RVizInterface</a>
+</li>
 <li>ground_truth_state_pub_
 : <a class="el" href="classGroundTruthPublisher.html#a398f33dfa07181dcf97197103cf3811a">GroundTruthPublisher</a>
+</li>
+<li>ground_truth_state_sub_
+: <a class="el" href="classRVizInterface.html#a640ac0dd4cd022f01fe23c9cc1f08227">RVizInterface</a>
 </li>
 </ul>
 
@@ -306,8 +312,8 @@ $(function() {
 : <a class="el" href="classGroundTruthPublisher.html#a34ff9f2d1e94fff3a83566b05087c7c1">GroundTruthPublisher</a>
 </li>
 <li>last_state_est_
-: <a class="el" href="classEKFEstimator.html#a9853bf93c64bbd66d831cb9e9f8ff182">EKFEstimator</a>
-, <a class="el" href="classGroundTruthPublisher.html#ac1d95573dcb3c5e51c3b1984d53d23ce">GroundTruthPublisher</a>
+: <a class="el" href="classEKFEstimator.html#a807368a7e2c2672615b8e3bcf6dbe807">EKFEstimator</a>
+, <a class="el" href="classGroundTruthPublisher.html#a9929cc27e8be84c8252ad1188372ba8f">GroundTruthPublisher</a>
 </li>
 <li>leg_control_sub_
 : <a class="el" href="classMBLinkConverter.html#ae48e9cc552f57806f5f96e6ebd89c2d3">MBLinkConverter</a>
@@ -430,7 +436,10 @@ $(function() {
 : <a class="el" href="classGlobalBodyPlanner.html#a24e940f6401ecd8d5bac7b58c4c0ca73">GlobalBodyPlanner</a>
 </li>
 <li>robot_state_sub_
-: <a class="el" href="classGlobalBodyPlanner.html#a80448be2f451be21bed0a7591df36669">GlobalBodyPlanner</a>
+: <a class="el" href="classBodyForceEstimator.html#a1e4f6ba0afd26410269c175e3efe7840">BodyForceEstimator</a>
+, <a class="el" href="classGlobalBodyPlanner.html#a80448be2f451be21bed0a7591df36669">GlobalBodyPlanner</a>
+, <a class="el" href="classMPCController.html#a579e5395fca46881024bc2a427c06e09">MPCController</a>
+, <a class="el" href="classTwistBodyPlanner.html#aad5e3027eaef9e06f327305035e66939">TwistBodyPlanner</a>
 </li>
 <li>robot_state_topic_
 : <a class="el" href="classGlobalBodyPlanner.html#a900c6a4ca90285c91fcc6032256dd451">GlobalBodyPlanner</a>
@@ -466,10 +475,7 @@ $(function() {
 : <a class="el" href="classEKFEstimator.html#ae8c8abd3c5c7074c3fa85232a7174e91">EKFEstimator</a>
 </li>
 <li>state_estimate_sub_
-: <a class="el" href="classBodyForceEstimator.html#a93f467e3e5cbd19d5a5e88f60d5619f3">BodyForceEstimator</a>
-, <a class="el" href="classMPCController.html#a2512d019f703e67421ff98e0ae6ae67a">MPCController</a>
-, <a class="el" href="classRVizInterface.html#a0d2f37bf93ef7479542065c4f18d8fc1">RVizInterface</a>
-, <a class="el" href="classTwistBodyPlanner.html#a58bf3e83d8d2bd8254d7c69dd9352e9c">TwistBodyPlanner</a>
+: <a class="el" href="classRVizInterface.html#a0d2f37bf93ef7479542065c4f18d8fc1">RVizInterface</a>
 </li>
 <li>state_sequence_
 : <a class="el" href="classGlobalBodyPlanner.html#a50df2ef4bdaca844a07ece58a468de64">GlobalBodyPlanner</a>

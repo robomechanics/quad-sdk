@@ -85,9 +85,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:af2a21d5c59d18636108a16375acb9379"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#af2a21d5c59d18636108a16375acb9379">stateEstimateCallback</a> (const spirit_msgs::StateEstimate::ConstPtr &amp;msg)</td></tr>
-<tr class="memdesc:af2a21d5c59d18636108a16375acb9379"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new state estimates.  <a href="#af2a21d5c59d18636108a16375acb9379">More...</a><br /></td></tr>
-<tr class="separator:af2a21d5c59d18636108a16375acb9379"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75f8d04ab51d1006bcd2c06f0e5ff89e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#a75f8d04ab51d1006bcd2c06f0e5ff89e">robotStateCallback</a> (const spirit_msgs::RobotState::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a75f8d04ab51d1006bcd2c06f0e5ff89e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new state estimates.  <a href="#a75f8d04ab51d1006bcd2c06f0e5ff89e">More...</a><br /></td></tr>
+<tr class="separator:a75f8d04ab51d1006bcd2c06f0e5ff89e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5ec9a45629972dab644e72aa1fc6b89"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#ad5ec9a45629972dab644e72aa1fc6b89">footstepPlanCallback</a> (const spirit_msgs::FootstepPlan::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:ad5ec9a45629972dab644e72aa1fc6b89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new control inputs.  <a href="#ad5ec9a45629972dab644e72aa1fc6b89">More...</a><br /></td></tr>
 <tr class="separator:ad5ec9a45629972dab644e72aa1fc6b89"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -104,10 +104,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a2512d019f703e67421ff98e0ae6ae67a"><td class="memItemLeft" align="right" valign="top"><a id="a2512d019f703e67421ff98e0ae6ae67a"></a>
-ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#a2512d019f703e67421ff98e0ae6ae67a">state_estimate_sub_</a></td></tr>
-<tr class="memdesc:a2512d019f703e67421ff98e0ae6ae67a"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the state estimate. <br /></td></tr>
-<tr class="separator:a2512d019f703e67421ff98e0ae6ae67a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a579e5395fca46881024bc2a427c06e09"><td class="memItemLeft" align="right" valign="top"><a id="a579e5395fca46881024bc2a427c06e09"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#a579e5395fca46881024bc2a427c06e09">robot_state_sub_</a></td></tr>
+<tr class="memdesc:a579e5395fca46881024bc2a427c06e09"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the state estimate. <br /></td></tr>
+<tr class="separator:a579e5395fca46881024bc2a427c06e09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e17b44b3b6f1e12c317b27ae78ab08a"><td class="memItemLeft" align="right" valign="top"><a id="a8e17b44b3b6f1e12c317b27ae78ab08a"></a>
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#a8e17b44b3b6f1e12c317b27ae78ab08a">footstep_plan_sub_</a></td></tr>
 <tr class="memdesc:a8e17b44b3b6f1e12c317b27ae78ab08a"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the footstep plan. <br /></td></tr>
@@ -271,8 +271,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 
 </div>
 </div>
-<a id="af2a21d5c59d18636108a16375acb9379"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af2a21d5c59d18636108a16375acb9379">&#9670;&nbsp;</a></span>stateEstimateCallback()</h2>
+<a id="a75f8d04ab51d1006bcd2c06f0e5ff89e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75f8d04ab51d1006bcd2c06f0e5ff89e">&#9670;&nbsp;</a></span>robotStateCallback()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -281,9 +281,9 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void MPCController::stateEstimateCallback </td>
+          <td class="memname">void MPCController::robotStateCallback </td>
           <td>(</td>
-          <td class="paramtype">const spirit_msgs::StateEstimate::ConstPtr &amp;&#160;</td>
+          <td class="paramtype">const spirit_msgs::RobotState::ConstPtr &amp;&#160;</td>
           <td class="paramname"><em>msg</em></td><td>)</td>
           <td></td>
         </tr>

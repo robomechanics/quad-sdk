@@ -100,9 +100,9 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a209eb08a4c8c9e51b88c4039a6cfbd12"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a209eb08a4c8c9e51b88c4039a6cfbd12">terrainMapCallback</a> (const grid_map_msgs::GridMap::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a209eb08a4c8c9e51b88c4039a6cfbd12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new terrain map data.  <a href="#a209eb08a4c8c9e51b88c4039a6cfbd12">More...</a><br /></td></tr>
 <tr class="separator:a209eb08a4c8c9e51b88c4039a6cfbd12"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e5e3ae05056cc0fa7dd6db0ebab1f23"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a4e5e3ae05056cc0fa7dd6db0ebab1f23">robotStateCallback</a> (const spirit_msgs::StateEstimate::ConstPtr &amp;msg)</td></tr>
-<tr class="memdesc:a4e5e3ae05056cc0fa7dd6db0ebab1f23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new ground truth state data.  <a href="#a4e5e3ae05056cc0fa7dd6db0ebab1f23">More...</a><br /></td></tr>
-<tr class="separator:a4e5e3ae05056cc0fa7dd6db0ebab1f23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a811dd17bb6b6f530c7e34f10c488ee4a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a811dd17bb6b6f530c7e34f10c488ee4a">robotStateCallback</a> (const spirit_msgs::RobotState::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a811dd17bb6b6f530c7e34f10c488ee4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new robot state data.  <a href="#a811dd17bb6b6f530c7e34f10c488ee4a">More...</a><br /></td></tr>
+<tr class="separator:a811dd17bb6b6f530c7e34f10c488ee4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77a803282b9834c6dd9bd946de2ac583"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a77a803282b9834c6dd9bd946de2ac583">replanTrigger</a> ()</td></tr>
 <tr class="memdesc:a77a803282b9834c6dd9bd946de2ac583"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if a replan is required.  <a href="#a77a803282b9834c6dd9bd946de2ac583">More...</a><br /></td></tr>
 <tr class="separator:a77a803282b9834c6dd9bd946de2ac583"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -391,8 +391,8 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
 
 </div>
 </div>
-<a id="a4e5e3ae05056cc0fa7dd6db0ebab1f23"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4e5e3ae05056cc0fa7dd6db0ebab1f23">&#9670;&nbsp;</a></span>robotStateCallback()</h2>
+<a id="a811dd17bb6b6f530c7e34f10c488ee4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a811dd17bb6b6f530c7e34f10c488ee4a">&#9670;&nbsp;</a></span>robotStateCallback()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -403,7 +403,7 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
         <tr>
           <td class="memname">void GlobalBodyPlanner::robotStateCallback </td>
           <td>(</td>
-          <td class="paramtype">const spirit_msgs::StateEstimate::ConstPtr &amp;&#160;</td>
+          <td class="paramtype">const spirit_msgs::RobotState::ConstPtr &amp;&#160;</td>
           <td class="paramname"><em>msg</em></td><td>)</td>
           <td></td>
         </tr>
@@ -415,10 +415,10 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
 </table>
 </div><div class="memdoc">
 
-<p>Callback function to handle new ground truth state data. </p>
+<p>Callback function to handle new robot state data. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>the message contining ground truth state data </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>the message contining robot state data </td></tr>
   </table>
   </dd>
 </dl>
