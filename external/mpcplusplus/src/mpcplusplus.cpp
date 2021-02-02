@@ -47,9 +47,9 @@ LinearMPC::LinearMPC(const int N, const int Nx, const int Nu)
   m_num_constraints = m_num_decision_vars + m_N * m_Nx;
 }
 
-void LinearMPC::update_weights(const Eigen::MatrixXd Q, 
-                               const Eigen::MatrixXd Qn,
-                               const Eigen::MatrixXd R) {
+void LinearMPC::update_weights(const Eigen::MatrixXd &Q, 
+                               const Eigen::MatrixXd &Qn,
+                               const Eigen::MatrixXd &R) {
 
   Eigen::MatrixXd Hq = math::kron(Eigen::MatrixXd::Identity(m_N, m_N), Q);
   Eigen::MatrixXd Hu = math::kron(Eigen::MatrixXd::Identity(m_N, m_N), R);
@@ -58,10 +58,26 @@ void LinearMPC::update_weights(const Eigen::MatrixXd Q,
   H_f_ = H_f_.block(0, 0, m_num_state_vars, m_num_state_vars);
 }
 
-void LinearMPC::update_statespace(const Eigen::MatrixXd Ad,
-                                  const Eigen::MatrixXd Bd) {
-  //m_Ad = Ad;
-  //m_Bd = Bd;
+void LinearMPC::update_weights_vector(const std::vector<Eigen::MatrixXd> &Q, 
+                               const std::vector<Eigen::MatrixXd> &R) {
+
+  Eigen::MatrixXd Hq(m_Nx_decision, m_Nx_decision);
+  for (int i = 0; i < m_N+1; ++i) {
+    Hq.block(i * m_Nx, i * m_Nx, m_Nx, m_Nx) = Q.at(i);
+  }
+
+  Eigen::MatrixXd Hu(m_num_control_vars, m_num_control_vars);
+  for (int i = 0; i < m_N; ++i) {
+    Hu.block(i*m_Nu,i*m_Nu,m_Nu,m_Nu) = R.at(i);
+  }
+
+  H_ = math::block_diag(Hq, Hu);
+  H_f_ = Hq;
+  updated_weights_ = true;
+}
+
+void LinearMPC::update_statespace(const Eigen::MatrixXd &Ad,
+                                  const Eigen::MatrixXd &Bd) {
 
   Eigen::MatrixXd A_padded_eye (m_Nx_vars,m_Nx_decision);
   A_padded_eye.setZero();
@@ -85,6 +101,35 @@ void LinearMPC::update_statespace(const Eigen::MatrixXd Ad,
   b_dyn_ = Eigen::MatrixXd::Zero(m_Nx_vars,1);
 }
 
+void LinearMPC::update_statespace_vector(const std::vector<Eigen::MatrixXd> &Ad,
+                                  const std::vector<Eigen::MatrixXd> &Bd) {
+  assert(Ad.size() == m_N);
+  assert(Bd.size() == m_N);
+
+  Eigen::MatrixXd A_padded_eye (m_Nx_vars,m_Nx_decision);
+  A_padded_eye.setZero();
+
+  A_padded_eye.block(0, m_Nx,m_Nx_vars, m_Nx_vars) =
+      -Eigen::MatrixXd::Identity(m_Nx_vars, m_Nx_vars);
+
+  Eigen::MatrixXd A_padded_ad(m_Nx_vars,m_Nx_decision);
+  A_padded_ad.setZero();
+
+  for (int i = 0; i < m_N; i++) {
+    A_padded_ad.block(i * m_Nx, i * m_Nx, m_Nx, m_Nx) = Ad.at(i);
+  }
+
+  A_dyn_dense_.resize(m_Nx_vars,m_Nq);
+  A_dyn_dense_.setZero();
+  A_dyn_dense_.block(0, 0, m_Nx_vars, m_Nx_decision) = A_padded_eye + A_padded_ad;
+  for (int i = 0; i < m_N; i++) {
+    A_dyn_dense_.block(i * m_Nx, m_Nx_decision + i * m_Nu, m_Nx, m_Nu) = Bd.at(i);
+  }
+
+  b_dyn_ = Eigen::MatrixXd::Zero(m_Nx_vars,1);
+  updated_statespace_ = true;
+}
+
 void LinearMPC::get_cost_function(const Eigen::MatrixXd &ref_traj,
                                   Eigen::VectorXd &f) {
 
@@ -103,29 +148,6 @@ void LinearMPC::get_cost_function(const Eigen::MatrixXd &ref_traj,
   f.setZero();
   f << -fx.transpose(), -fu;
 }
-
-/*
-void LinearMPC::get_dynamics_constraint(Eigen::MatrixXd &A_eq) {
-
-  Eigen::MatrixXd A_padded_eye (m_Nx_vars,m_Nx_decision);
-  A_padded_eye.setZero();
-
-  A_padded_eye.block(0, m_Nx,m_Nx_vars, m_Nx_vars) =
-      -Eigen::MatrixXd::Identity(m_Nx_vars, m_Nx_vars);
-
-  Eigen::MatrixXd A_padded_ad(m_Nx_vars,m_Nx_decision);
-  A_padded_ad.setZero();
-  for (int i = 0; i < m_N; i++) {
-    A_padded_ad.block(i * m_Nx, i * m_Nx, m_Nx, m_Nx) = m_Ad;
-  }
-
-  A_eq.resize(m_Nx_vars,m_Nq);
-  A_eq.setZero();
-  A_eq.block(0, 0, m_Nx_vars, m_Nx_decision) = A_padded_eye + A_padded_ad;
-  for (int i = 0; i < m_N; i++) {
-    A_eq.block(i * m_Nx, m_Nx_decision + i * m_Nu, m_Nx, m_Nu) = m_Bd;
-  }
-}*/
 
 void LinearMPC::get_state_control_bounds(const Eigen::VectorXd &initial_state,
                                          Eigen::VectorXd &lb,
@@ -220,6 +242,16 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
     solver_.initSolver();
   }
   else { // Update components of QP that change from iter to iter
+
+    if (updated_statespace_) {
+      solver_.updateLinearConstraintsMatrix(A);
+      updated_statespace_ = false;
+    }
+    if (updated_weights_) {
+      solver_.updateHessianMatrix(H);
+      updated_weights_ = false;
+    }
+
     solver_.updateBounds(l,u);
     solver_.updateGradient(f);
   }

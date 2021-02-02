@@ -4,6 +4,7 @@
 #include "OsqpEigen/OsqpEigen.h"
 #include <Eigen/Core>
 #include <Eigen/Dense>
+#include <assert.h>
 
 namespace mpcplusplus {
 class LinearMPC {
@@ -20,12 +21,18 @@ public:
 
   ~LinearMPC() = default;
 
-  void update_weights(const Eigen::MatrixXd Q, 
-                      const Eigen::MatrixXd Qn,
-                      const Eigen::MatrixXd R);
+  void update_weights(const Eigen::MatrixXd &Q, 
+                      const Eigen::MatrixXd &Qn,
+                      const Eigen::MatrixXd &R);
 
-  void update_statespace(const Eigen::MatrixXd Ad,
-                         const Eigen::MatrixXd Bd);
+  void update_weights_vector(const std::vector<Eigen::MatrixXd> &Q,
+                      const std::vector<Eigen::MatrixXd> &R);
+
+  void update_statespace(const Eigen::MatrixXd &Ad,
+                         const Eigen::MatrixXd &Bd);
+
+  void update_statespace_vector(const std::vector<Eigen::MatrixXd> &Ad,
+                                  const std::vector<Eigen::MatrixXd> &Bd);
 
   /**
    * @brief Constructs the quadratic cost function of the form
@@ -34,17 +41,6 @@ public:
    * @param[out] f Linear component of cost
    */
   void get_cost_function(const Eigen::MatrixXd &ref_traj, Eigen::VectorXd &f);
-
-  /**
-  * @brief Construct the linear equality constraint matrix Aeq and vector beq
-  * that enforce the dynamics constraints. These constraints
-  * are in the form of
-  *
-  * Aeq * x = 0
-  *
-  * @param[out] Aeq Linear equality constraint matrix
-  */
-  void get_dynamics_constraint(Eigen::MatrixXd &Aeq);
 
   /**
    * @brief Collect stacked bounds
@@ -90,6 +86,11 @@ private:
   int m_num_state_vars;
   int m_num_decision_vars;
   int m_num_constraints;
+
+
+  bool updated_weights_ = false;
+
+  bool updated_statespace_ = false;
 
   /// Quadratic cost matrix
   Eigen::MatrixXd H_;
