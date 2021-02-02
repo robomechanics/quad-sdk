@@ -4,4 +4,4 @@
 # Accurate timing information to localize the plan is stored in the header
 
 Header header
-spirit_msgs/Footstep[] footsteps
+spirit_msgs/SingleFootstepPlan[] feet

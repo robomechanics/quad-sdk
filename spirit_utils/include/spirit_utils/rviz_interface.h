@@ -6,6 +6,7 @@
 #include <spirit_msgs/BodyPlan.h>
 #include <spirit_msgs/Footstep.h>
 #include <spirit_msgs/FootstepPlan.h>
+#include <spirit_msgs/SwingLegPlan.h>
 #include <spirit_msgs/StateEstimate.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>
@@ -49,6 +50,12 @@ private:
   void footstepPlanCallback(const spirit_msgs::FootstepPlan::ConstPtr& msg);
 
   /**
+   * @brief Callback function to handle new swing leg plan data
+   * @param[in] SwingLegPlan message containing output of swing leg planner
+   */
+  void swingLegPlanCallback(const spirit_msgs::SwingLegPlan::ConstPtr& msg);
+
+  /**
    * @brief Callback function to handle new state estimate data
    * @param[in] msg State Estimate message containing output of the state estimator node
    */
@@ -62,6 +69,9 @@ private:
 
   /// ROS subscriber for the footstep plan
   ros::Subscriber footstep_plan_sub_;
+
+  /// ROS subscriber for the swing leg plan
+  ros::Subscriber swing_leg_plan_sub_;
 
   /// ROS Subscriber for the state estimate
   ros::Subscriber state_estimate_sub_;
@@ -77,6 +87,18 @@ private:
 
   /// ROS Publisher for the footstep plan visualization
   ros::Publisher footstep_plan_viz_pub_;
+
+  /// ROS Publisher for the swing leg 0 visualization
+  ros::Publisher swing_leg_0_plan_viz_pub_;
+
+  /// ROS Publisher for the swing leg 1 visualization
+  ros::Publisher swing_leg_1_plan_viz_pub_;
+
+  /// ROS Publisher for the swing leg 2 visualization
+  ros::Publisher swing_leg_2_plan_viz_pub_;
+
+  /// ROS Publisher for the swing leg 3 visualization
+  ros::Publisher swing_leg_3_plan_viz_pub_;
 
   /// ROS Publisher for the state estimate visualization
   ros::Publisher joint_states_viz_pub_;

@@ -21,6 +21,17 @@ State fullStateToState(FullState full_state)
   return state;
 }
 
+std::vector<double>  fullStateToVector(FullState full_state)
+{
+  std::vector<double> vec;
+
+  for (int i = 0; i < full_state.size(); i++) {
+    vec.push_back(full_state[i]);
+  }
+
+  return vec;
+}
+
 FullState stateToFullState(State state, double roll, double yaw, double roll_rate, double yaw_rate)
 {
   FullState full_state;
@@ -141,6 +152,23 @@ double poseDistance(State q1, State q2)
   for (int i = 0; i < POSEDIM; i++)
   {
     sum = sum + (q2[i] - q1[i])*(q2[i] - q1[i]);
+  }
+
+  double dist = sqrt(sum);
+  return dist;
+}
+
+double poseDistance(std::vector<double> v1, std::vector<double> v2)
+{
+  double sum = 0;
+
+  if (v1.size() < 3 || v2.size() < 3) {
+    throw std::runtime_error("Not enough data in vectors to compute distance");
+  }
+
+  for (int i = 0; i < 3; i++)
+  {
+    sum = sum + (v2[i] - v1[i])*(v2[i] - v1[i]);
   }
 
   double dist = sqrt(sum);
