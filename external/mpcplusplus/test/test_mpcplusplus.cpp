@@ -3,10 +3,11 @@
 #include <Eigen/Dense>
 #include <iostream>
 #include <math.h>
+#include <limits>
 
 #include <gtest/gtest.h>
 
-const double INF = 1000000;
+const double INF = std::numeric_limits<double>::max();
 
 TEST(TestUseCase, droneFixed) {
   // Linear Drone example+

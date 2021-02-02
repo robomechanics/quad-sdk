@@ -32,7 +32,11 @@ public:
                          const Eigen::MatrixXd &Bd);
 
   void update_statespace_vector(const std::vector<Eigen::MatrixXd> &Ad,
-                                  const std::vector<Eigen::MatrixXd> &Bd);
+                                const std::vector<Eigen::MatrixXd> &Bd);
+
+  void add_custom_constraint(const Eigen::MatrixXd &constraint,
+                             const Eigen::VectorXd &lb,
+                             const Eigen::VectorXd &ub);
 
   /**
    * @brief Constructs the quadratic cost function of the form
@@ -85,8 +89,6 @@ private:
   int m_num_control_vars;
   int m_num_state_vars;
   int m_num_decision_vars;
-  int m_num_constraints;
-
 
   bool updated_weights_ = false;
 

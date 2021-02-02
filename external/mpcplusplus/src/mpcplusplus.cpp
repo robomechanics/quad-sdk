@@ -29,12 +29,12 @@ LinearMPC::LinearMPC(const Eigen::MatrixXd &Ad,
   m_num_control_vars = m_N * m_Nu;
   m_num_state_vars = (m_N + 1) * m_Nx;
   m_num_decision_vars = (m_N + 1) * m_Nx + m_N * m_Nu;
-  m_num_constraints = m_num_decision_vars + m_N * m_Nx;
 
   this->update_weights(Q,Qn,R);
   this->update_statespace(Ad,Bd);
 }
 
+// need to add fixed state_bounds, fixed_control bounds and a new user added constraint matrix
 LinearMPC::LinearMPC(const int N, const int Nx, const int Nu)
   : m_N(N), m_Nx(Nx), m_Nu(Nu) {
   m_Nq = (m_N + 1) * m_Nx + m_N * m_Nu;
@@ -44,7 +44,6 @@ LinearMPC::LinearMPC(const int N, const int Nx, const int Nu)
   m_num_control_vars = m_N * m_Nu;
   m_num_state_vars = (m_N + 1) * m_Nx;
   m_num_decision_vars = (m_N + 1) * m_Nx + m_N * m_Nu;
-  m_num_constraints = m_num_decision_vars + m_N * m_Nx;
 }
 
 void LinearMPC::update_weights(const Eigen::MatrixXd &Q, 
@@ -128,6 +127,12 @@ void LinearMPC::update_statespace_vector(const std::vector<Eigen::MatrixXd> &Ad,
 
   b_dyn_ = Eigen::MatrixXd::Zero(m_Nx_vars,1);
   updated_statespace_ = true;
+}
+
+void LinearMPC::add_custom_constraint(const Eigen::MatrixXd &constraint,
+                             const Eigen::VectorXd &lb,
+                             const Eigen::VectorXd &ub) {
+  
 }
 
 void LinearMPC::get_cost_function(const Eigen::MatrixXd &ref_traj,
