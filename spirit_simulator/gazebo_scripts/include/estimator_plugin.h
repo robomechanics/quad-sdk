@@ -9,7 +9,7 @@
  #include <gazebo/common/Plugin.hh>
  #include <gazebo/common/UpdateInfo.hh>
 #include <ignition/math/Vector3.hh>
-#include <spirit_msgs/StateEstimate.h>
+#include <spirit_msgs/RobotState.h>
 
 namespace gazebo
 {
@@ -27,7 +27,7 @@ namespace gazebo
       double update_rate_;
       common::Time last_time_;
 
-      ros::Publisher state_estimate_pub_;
+      ros::Publisher ground_truth_state_pub_;
       physics::ModelPtr model_;
       event::ConnectionPtr updateConnection_;
   };

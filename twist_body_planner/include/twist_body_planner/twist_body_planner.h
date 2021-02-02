@@ -8,7 +8,7 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <spirit_msgs/BodyPlan.h>
-#include <spirit_msgs/StateEstimate.h>
+#include <spirit_msgs/RobotState.h>
 
 
 //! A twist body planning class for legged robots
@@ -48,10 +48,10 @@ class TwistBodyPlanner {
     void cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg);
 
     /**
-     * @brief Callback function to handle new state estimate data data
-     * @param[in] msg the message contining state estimate data
+     * @brief Callback function to handle new robot state data
+     * @param[in] msg the message contining robot state data
      */
-    void stateEstimateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg);
+    void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 
     /**
      * @brief Clear the plan member variables
@@ -78,8 +78,8 @@ class TwistBodyPlanner {
     /// Subscriber for commanded twist messages
     ros::Subscriber cmd_vel_sub_;
 
-    /// Subscriber for commanded twist messages
-    ros::Subscriber state_estimate_sub_;
+    /// Subscriber for robot state messages
+    ros::Subscriber robot_state_sub_;
 
     /// Publisher for body plan messages
     ros::Publisher body_plan_pub_;

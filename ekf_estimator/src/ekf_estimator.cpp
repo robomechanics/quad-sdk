@@ -7,7 +7,7 @@ EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
   std::string joint_encoder_topic, imu_topic, contact_topic, state_estimate_topic;
   nh.param<std::string>("topics/joint_encoder", joint_encoder_topic, "/joint_encoder");
   nh.param<std::string>("topics/imu", imu_topic, "/imu");
-  nh.param<std::string>("topics/state_estimate", state_estimate_topic, "/state_estimate");
+  nh.param<std::string>("topics/state/estimate", state_estimate_topic, "/state/estimate");
   nh.param<std::string>("topics/contact_mode", contact_topic, "/contact_mode");
   nh.param<double>("ekf_estimator/update_rate", update_rate_, 200);
   nh.param<double>("ekf_estimator/joint_state_max_time",joint_state_msg_time_diff_max_,20);
@@ -16,7 +16,7 @@ EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
   joint_encoder_sub_ = nh_.subscribe(joint_encoder_topic,1,&EKFEstimator::jointEncoderCallback, this);
   imu_sub_ = nh_.subscribe(imu_topic,1,&EKFEstimator::imuCallback, this);
   contact_sub_ = nh_.subscribe(contact_topic,1,&EKFEstimator::contactCallback, this);
-  state_estimate_pub_ = nh_.advertise<spirit_msgs::StateEstimate>(state_estimate_topic,1);
+  state_estimate_pub_ = nh_.advertise<spirit_msgs::RobotState>(state_estimate_topic,1);
 }
 
 void EKFEstimator::jointEncoderCallback(const sensor_msgs::JointState::ConstPtr& msg) {
@@ -31,13 +31,13 @@ void EKFEstimator::contactCallback(const spirit_msgs::ContactMode::ConstPtr& msg
   last_contact_msg_ = msg;
 }
 
-spirit_msgs::StateEstimate EKFEstimator::updateStep() {
+spirit_msgs::RobotState EKFEstimator::updateStep() {
   // Record start time of function, used in verifying messages are not out of date
   // and in timing function
   ros::Time start_time = ros::Time::now();
 
   // Create skeleton message to send out
-  spirit_msgs::StateEstimate new_state_est;
+  spirit_msgs::RobotState new_state_est;
 
   // Record whether we have good imu and joint state data
   bool good_imu = false;
@@ -86,7 +86,7 @@ void EKFEstimator::spin() {
     ros::spinOnce(); 
 
     // Compute new state estimate
-    spirit_msgs::StateEstimate new_state_est = this->updateStep();
+    spirit_msgs::RobotState new_state_est = this->updateStep();
 
     // Publish new state estimate
     state_estimate_pub_.publish(new_state_est);

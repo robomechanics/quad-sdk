@@ -2,7 +2,7 @@
 #define BODY_FORCE_ESTIMATOR_H
 
 #include <ros/ros.h>
-#include <spirit_msgs/StateEstimate.h>
+#include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/BodyForceEstimate.h>
 
 //! Estimates body contact forces
@@ -26,17 +26,17 @@ class BodyForceEstimator {
 
     /**
      * @brief Callback function to handle new state estimates
-     * @param[in] State estimate message contining position and velocity for each joint and robot body
+     * @param[in] Robot state message contining position and velocity for each joint and robot body
      */
-    void stateEstimateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg);
+    void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 
     /**
      * @brief Publish body force force estimates
      */
     void publishBodyForce();
 
-    /// ROS subscriber for the state estimate
-    ros::Subscriber state_estimate_sub_;
+    /// ROS subscriber for the robot state
+    ros::Subscriber robot_state_sub_;
 
     /// ROS publisher for body force force estimates
     ros::Publisher body_force_pub_;

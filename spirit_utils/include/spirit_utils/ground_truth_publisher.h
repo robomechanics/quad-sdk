@@ -8,7 +8,7 @@
 #include <std_msgs/String.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Vector3.h>
-#include <spirit_msgs/StateEstimate.h>
+#include <spirit_msgs/RobotState.h>
 #include <spirit_utils/ros_utils.h>
 
 //! Class to publish the ground truth state data
@@ -49,9 +49,9 @@ private:
 
   /**
    * @brief execute EKF Update step, return state estimate
-   * @return state estimate of custom type StateEstimate
+   * @return state estimate of custom type RobotState
    */
-  spirit_msgs::StateEstimate updateStep();
+  spirit_msgs::RobotState updateStep();
 
   /// Subscriber for joint encoder messages
   ros::Subscriber joint_encoder_sub_;
@@ -72,7 +72,7 @@ private:
   double mocap_rate_;
 
   /// Last state estimate
-  spirit_msgs::StateEstimate last_state_est_;
+  spirit_msgs::RobotState last_state_est_;
 
   /// Most recent IMU callback (should be timestamped!)
   sensor_msgs::Imu::ConstPtr last_imu_msg_;

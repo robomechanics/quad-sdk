@@ -27,7 +27,7 @@ namespace gazebo{
 
     // Setup state estimate publisher
     ros::NodeHandle nh;
-    state_estimate_pub_ = nh.advertise<spirit_msgs::StateEstimate>("/gazebo/ground_truth_state",1);
+    ground_truth_state_pub_ = nh.advertise<spirit_msgs::RobotState>("/state/ground_truth",1);
 
       // Listen to the update event. This event is broadcast every
       // simulation iteration.
@@ -56,7 +56,7 @@ namespace gazebo{
     ignition::math::Vector3d ang_vel = body_link->WorldAngularVel();
 
     // Update and publish state estimate message
-    spirit_msgs::StateEstimate state;
+    spirit_msgs::RobotState state;
     state.body.pose.pose.position.x = lin_pos.X();
     state.body.pose.pose.position.y = lin_pos.Y();
     state.body.pose.pose.position.z = lin_pos.Z();
@@ -90,7 +90,7 @@ namespace gazebo{
     // state.joints.position[0] = 
 
     state.header.stamp = ros::Time::now();
-    state_estimate_pub_.publish(state);
+    ground_truth_state_pub_.publish(state);
 
     last_time_ = current_time;
   }
