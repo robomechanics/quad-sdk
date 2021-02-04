@@ -6,7 +6,6 @@
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/String.h>
 #include <spirit_msgs/ContactMode.h>
-#include <spirit_msgs/StateEstimate.h>
 
 //! Contact detection class for spirit
 /*!

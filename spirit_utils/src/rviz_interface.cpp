@@ -8,19 +8,20 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
 
   // Load rosparams from parameter server
   std::string body_plan_topic, body_plan_viz_topic, body_wrench_plan_viz_topic, discrete_body_plan_topic, discrete_body_plan_viz_topic,
-    footstep_plan_topic, footstep_plan_viz_topic, swing_leg_plan_topic, state_estimate_topic, joint_states_viz_topic;
+    footstep_plan_topic, footstep_plan_viz_topic, swing_leg_plan_topic, state_estimate_topic, ground_truth_state_topic, joint_states_viz_topic;
 
   nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
   nh.param<std::string>("topics/discrete_body_plan", discrete_body_plan_topic, "/discrete_body_plan");
   nh.param<std::string>("topics/footstep_plan", footstep_plan_topic, "/footstep_plan");
   nh.param<std::string>("topics/swing_leg_plan", swing_leg_plan_topic, "/swing_leg_plan");
-  nh.param<std::string>("topics/state_estimate", state_estimate_topic, "/state_estimate");
+  nh.param<std::string>("topics/state/estimate", state_estimate_topic, "/state/estimate");
+  nh.param<std::string>("topics/state/ground_truth", ground_truth_state_topic, "/state/ground_truth");
   
   nh.param<std::string>("topics/visualization/body_plan", body_plan_viz_topic, "/visualization/body_plan");
   nh.param<std::string>("topics/visualization/body_wrench_plan", body_wrench_plan_viz_topic, "/visualization/body_wrench_plan");
   nh.param<std::string>("topics/visualization/discrete_body_plan", discrete_body_plan_viz_topic, "/visualization/discrete_body_plan");
   nh.param<std::string>("topics/visualization/footstep_plan", footstep_plan_viz_topic, "/visualization/footstep_plan");
-  nh.param<std::string>("topics/visualization/joint_states_viz", joint_states_viz_topic, "/visualization/joint_states");
+  nh.param<std::string>("topics/visualization/joint_states", joint_states_viz_topic, "/visualization/joint_states");
 
 
   nh.param<std::string>("map_frame",map_frame_,"map");
@@ -32,6 +33,7 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   footstep_plan_sub_ = nh_.subscribe(footstep_plan_topic,1,&RVizInterface::footstepPlanCallback, this);
   swing_leg_plan_sub_ = nh_.subscribe(swing_leg_plan_topic,1,&RVizInterface::swingLegPlanCallback, this);
   state_estimate_sub_ = nh_.subscribe(state_estimate_topic,1,&RVizInterface::stateEstimateCallback, this);
+  ground_truth_state_sub_ = nh_.subscribe(ground_truth_state_topic,1,&RVizInterface::groundTruthStateCallback, this);
   body_plan_viz_pub_ = nh_.advertise<nav_msgs::Path>(body_plan_viz_topic,1);
   body_wrench_plan_viz_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(body_wrench_plan_viz_topic,1);
   discrete_body_plan_viz_pub_ = nh_.advertise<visualization_msgs::Marker>(discrete_body_plan_viz_topic,1);
@@ -209,7 +211,30 @@ void RVizInterface::swingLegPlanCallback(const spirit_msgs::SwingLegPlan::ConstP
 
 }
 
-void RVizInterface::stateEstimateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg) {
+void RVizInterface::stateEstimateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
+
+  // // Make a transform message for the body, populate with state estimate data, and publish
+  // geometry_msgs::TransformStamped transformStamped;
+  // transformStamped.header = msg->header;
+  // transformStamped.header.frame_id = map_frame_;
+  // transformStamped.child_frame_id = "dummy";
+  // transformStamped.transform.translation.x = msg->body.pose.pose.position.x;
+  // transformStamped.transform.translation.y = msg->body.pose.pose.position.y;
+  // transformStamped.transform.translation.z = msg->body.pose.pose.position.z;
+  // transformStamped.transform.rotation = msg->body.pose.pose.orientation;
+  // estimate_base_tf_br_.sendTransform(transformStamped);
+
+  // // Copy the joint portion of the state estimate message to a new message
+  // sensor_msgs::JointState joint_msg;
+  // joint_msg = msg->joints;
+
+  // // Set the header to the main header of the state estimate message and publish
+  // joint_msg.header = msg->header;
+  // joint_states_viz_pub_.publish(joint_msg);
+}
+
+
+void RVizInterface::groundTruthStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
 
   // Make a transform message for the body, populate with state estimate data, and publish
   geometry_msgs::TransformStamped transformStamped;
@@ -220,7 +245,7 @@ void RVizInterface::stateEstimateCallback(const spirit_msgs::StateEstimate::Cons
   transformStamped.transform.translation.y = msg->body.pose.pose.position.y;
   transformStamped.transform.translation.z = msg->body.pose.pose.position.z;
   transformStamped.transform.rotation = msg->body.pose.pose.orientation;
-  base_tf_br_.sendTransform(transformStamped);
+  ground_truth_base_tf_br_.sendTransform(transformStamped);
 
   // Copy the joint portion of the state estimate message to a new message
   sensor_msgs::JointState joint_msg;

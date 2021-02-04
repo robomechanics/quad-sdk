@@ -6,7 +6,7 @@
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/String.h>
-#include <spirit_msgs/StateEstimate.h>
+#include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/ContactMode.h>
 
 //! Implements online EKF based state estimation 
@@ -48,9 +48,9 @@ private:
 
   /**
    * @brief execute EKF Update step, return state estimate
-   * @return state estimate of custom type StateEstimate
+   * @return state estimate of custom type RobotState
    */
-  spirit_msgs::StateEstimate updateStep();
+  spirit_msgs::RobotState updateStep();
 
   /// Subscriber for joint encoder messages
   ros::Subscriber joint_encoder_sub_;
@@ -71,7 +71,7 @@ private:
   double update_rate_;
 
   /// Last state estimate
-  spirit_msgs::StateEstimate last_state_est_;
+  spirit_msgs::RobotState last_state_est_;
 
   /// Last contact detection message (should be timestamped!)
   spirit_msgs::ContactMode::ConstPtr last_contact_msg_;
