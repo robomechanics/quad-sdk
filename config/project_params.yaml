@@ -11,6 +11,9 @@ topics:
   image: /image_publisher/image
   body_force: /body_force
   joint_command: /spirit/joint_controller/command
+  state:
+    ground_truth: /state/ground_truth
+    estimate: /state/estimate
   visualization:
     body_plan: /visualization/body_plan
     body_wrench_plan: /visualization/body_wrench_plan

@@ -12,7 +12,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   std::vector<double> goal_state_default = {8.0,0.0,0.4,0.0,0.0,0.0,0.0,0.0};
 
   nh.param<std::string>("topics/terrain_map", terrain_map_topic_, "/terrain_map");
-  nh.param<std::string>("topics/ground_truth_state", robot_state_topic_, "/ground_truth_state");
+  nh.param<std::string>("topics/state/ground_truth", robot_state_topic_, "/state/ground_truth");
   nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
   nh.param<std::string>("topics/discrete_body_plan", discrete_body_plan_topic, "/discrete_body_plan");
   nh.param<std::string>("map_frame",map_frame_,"map");
@@ -44,7 +44,7 @@ void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPt
   terrain_.loadDataFromGridMap(map);
 }
 
-void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg) {
+void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
 
   // Quick check to make sure message data has been populated
   if (msg->body.pose.pose.orientation.w != 0) {
@@ -312,10 +312,10 @@ void GlobalBodyPlanner::waitForData() {
     ros::spinOnce();
   }
 
-  boost::shared_ptr<spirit_msgs::StateEstimate const> shared_robot_state;
+  boost::shared_ptr<spirit_msgs::RobotState const> shared_robot_state;
   while((shared_robot_state == nullptr) && ros::ok())
   {
-    shared_robot_state = ros::topic::waitForMessage<spirit_msgs::StateEstimate>(robot_state_topic_, nh_);
+    shared_robot_state = ros::topic::waitForMessage<spirit_msgs::RobotState>(robot_state_topic_, nh_);
     ros::spinOnce();
   }
 }
