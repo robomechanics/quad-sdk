@@ -1,5 +1,5 @@
-#ifndef LTI_MPCPLUSPLUS_H
-#define LTI_MPCPLUSPLUS_H
+#ifndef MPCPLUSPLUS_H
+#define MPCPLUSPLUS_H
 
 #include "OsqpEigen/OsqpEigen.h"
 #include <Eigen/Core>
@@ -10,31 +10,19 @@ namespace mpcplusplus {
 class LinearMPC {
 
 public:
-  LinearMPC(const Eigen::MatrixXd &Ad,
-            const Eigen::MatrixXd &Bd, const Eigen::MatrixXd &Q,
-            const Eigen::MatrixXd &Qn, const Eigen::MatrixXd &R,
-            const Eigen::MatrixXd &state_bounds,
-            const Eigen::MatrixXd &control_bounds,
-            const int N);
 
   LinearMPC(const int N, const int Nx, const int Nu);
 
   ~LinearMPC() = default;
 
-  void update_weights(const Eigen::MatrixXd &Q, 
-                      const Eigen::MatrixXd &Qn,
-                      const Eigen::MatrixXd &R);
 
-  void update_weights_vector(const std::vector<Eigen::MatrixXd> &Q,
+  void update_weights(const std::vector<Eigen::MatrixXd> &Q,
                       const std::vector<Eigen::MatrixXd> &R);
 
-  void update_statespace(const Eigen::MatrixXd &Ad,
-                         const Eigen::MatrixXd &Bd);
-
-  void update_statespace_vector(const std::vector<Eigen::MatrixXd> &Ad,
+  void update_dynamics(const std::vector<Eigen::MatrixXd> &Ad,
                                 const std::vector<Eigen::MatrixXd> &Bd);
 
-  void add_custom_constraint(const Eigen::MatrixXd &constraint,
+  void update_contact_constraint(const Eigen::MatrixXd &constraint,
                              const Eigen::VectorXd &lb,
                              const Eigen::VectorXd &ub);
 
@@ -45,15 +33,6 @@ public:
    * @param[out] f Linear component of cost
    */
   void get_cost_function(const Eigen::MatrixXd &ref_traj, Eigen::VectorXd &f);
-
-  /**
-   * @brief Collect stacked bounds
-   * @param[in] initial_state Vector with initial state
-   * @param[out] lb Lower bound
-   * @param[out] ub Upper bound
-   */
-  void get_state_control_bounds(const Eigen::VectorXd &initial_state,
-                                Eigen::VectorXd &lb, Eigen::VectorXd &ub);
 
   /**
    * @brief Collect first control value and all states and return them.
@@ -78,21 +57,19 @@ public:
 
 private:
 
-  int m_N;
-  int m_Nx;
-  int m_Nu;
+  int N_;
+  int nx_;
+  int nu_;
 
-  int m_Nq;
-  int m_Nx_vars;
-  int m_Nx_decision;
-  int m_Nconst;
-  int m_num_control_vars;
-  int m_num_state_vars;
-  int m_num_decision_vars;
+  int num_dyn_constraints_;
+  int num_contact_constraints_;
+  int num_constraints_;
+
+  int num_state_vars_;
+  int num_control_vars_;
+  int num_decision_vars_;
 
   bool updated_weights_ = false;
-
-  bool updated_statespace_ = false;
 
   /// Quadratic cost matrix
   Eigen::MatrixXd H_;
@@ -106,11 +83,15 @@ private:
   /// Dynamics constraint vector
   Eigen::MatrixXd b_dyn_;
 
-  /// Nx x 2 matrix of lower and upper bounds on state variables
-  Eigen::MatrixXd m_state_bounds;
+  /// Friction constraint matrix
 
-  /// Nu x 2 matrix of lower and upper bounds on control variables
-  Eigen::MatrixXd m_control_bounds;
+  /// Friction constraint lower bound
+  Eigen::MatrixXd b_contact_lo_;
+
+  /// Friction constraint upper bound
+  Eigen::MatrixXd b_contact_hi_;
+
+
 
   /// OSQP solver instance
   OsqpEigen::Solver solver_;
