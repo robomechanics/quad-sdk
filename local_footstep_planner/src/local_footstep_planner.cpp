@@ -6,29 +6,33 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string footstep_plan_topic, swing_leg_plan_topic;
+  std::string foot_plan_discrete_topic, foot_plan_continuous_topic;
   nh.param<std::string>("topics/terrain_map", terrain_map_topic_, "/terrain_map");
   nh.param<std::string>("topics/body_plan", body_plan_topic_, "/body_plan");
-  nh.param<std::string>("topics/footstep_plan", footstep_plan_topic, "/footstep_plan");
-  nh.param<std::string>("topics/swing_leg_plan", swing_leg_plan_topic, "/swing_leg_plan");
+  nh.param<std::string>("topics/foot_plan_discrete", foot_plan_discrete_topic, "/foot_plan_discrete");
+  nh.param<std::string>("topics/foot_plan_continuous", foot_plan_continuous_topic, "/foot_plan_continuous");
   nh.param<std::string>("map_frame",map_frame_,"/map");
   nh.param<double>("local_footstep_planner/update_rate", update_rate_, 1);
-  nh.param<double>("local_footstep_planner/alpha", alpha_, 0.5);
+  nh.param<double>("local_footstep_planner/grf_weight", grf_weight_, 0.5);
   nh.param<double>("local_footstep_planner/max_footstep_horizon", max_footstep_horizon_, 1.5);
   nh.param<double>("local_footstep_planner/period", period_, 0.25);
   nh.param<double>("local_footstep_planner/ground_clearance", ground_clearance_, 0.1);
   nh.param<double>("local_footstep_planner/interp_dt", interp_dt_, 0.01);
 
-  if (alpha_>1 || alpha_<0) {
-    alpha_ = std::min(std::max(alpha_,0.0),1.0);
-    ROS_WARN("Invalid alpha in footstep planner, clamping to %4.2f", alpha_);
+  if (grf_weight_>1 || grf_weight_<0) {
+    grf_weight_ = std::min(std::max(grf_weight_,0.0),1.0);
+    ROS_WARN("Invalid alpha in footstep planner, clamping to %4.2f", grf_weight_);
   }
 
   // Setup pubs and subs
-  terrain_map_sub_ = nh_.subscribe(terrain_map_topic_,1,&LocalFootstepPlanner::terrainMapCallback, this);
-  body_plan_sub_ = nh_.subscribe(body_plan_topic_,1,&LocalFootstepPlanner::bodyPlanCallback, this);
-  footstep_plan_pub_ = nh_.advertise<spirit_msgs::FootstepPlan>(footstep_plan_topic,1);
-  swing_leg_plan_pub_ = nh_.advertise<spirit_msgs::SwingLegPlan>(swing_leg_plan_topic,1);
+  terrain_map_sub_ = nh_.subscribe(terrain_map_topic_,1,
+    &LocalFootstepPlanner::terrainMapCallback, this);
+  body_plan_sub_ = nh_.subscribe(body_plan_topic_,1,
+    &LocalFootstepPlanner::bodyPlanCallback, this);
+  foot_plan_discrete_pub_ = nh_.advertise<
+    spirit_msgs::MultiFootPlanDiscrete>(foot_plan_discrete_topic,1);
+  foot_plan_continuous_pub_ = nh_.advertise<
+    spirit_msgs::MultiFootPlanContinuous>(foot_plan_continuous_topic,1);
 }
 
 void LocalFootstepPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg) {
@@ -152,7 +156,7 @@ Eigen::Vector3d LocalFootstepPlanner::interpVector3d(std::vector<double> input_v
   return interp_data;
 }
 
-void LocalFootstepPlanner::updatePlan() {
+void LocalFootstepPlanner::updateDiscretePlan() {
   // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
   if (body_plan_.empty())
@@ -181,7 +185,7 @@ void LocalFootstepPlanner::updatePlan() {
 
     // Loop through each foot
     for (int j=0; j<num_feet_; j++) {
-      FootstepState footstep(5);
+      FootstepState footstep(4);
 
       // Compute the touchdown and midstance times
       double t_touchdown = t_cycle + t_offsets[j];
@@ -212,14 +216,13 @@ void LocalFootstepPlanner::updatePlan() {
       Eigen::Vector3d footstep_grf = terrain_.projectToMap(hip_midstance, -1.0*grf_midstance);
 
       // Define the nominal footstep location to lie on a line between the hips projected vertically and along GRF (third entry is garbage)
-      Eigen::Vector3d footstep_nom = (1-alpha_)*hip_midstance + alpha_*footstep_grf;
+      Eigen::Vector3d footstep_nom = (1-grf_weight_)*hip_midstance + grf_weight_*footstep_grf;
 
       // Load the data into the footstep array and push into the plan
-      footstep[0] = j;
-      footstep[1] = footstep_nom[0];
-      footstep[2] = footstep_nom[1];
-      footstep[3] = t_touchdown;
-      footstep[4] = t_s[j];
+      footstep[0] = footstep_nom[0];
+      footstep[1] = footstep_nom[1];
+      footstep[2] = t_touchdown;
+      footstep[3] = t_s[j];
 
       footstep_plan_[j].push_back(footstep);
 
@@ -229,7 +232,7 @@ void LocalFootstepPlanner::updatePlan() {
   // timer.report();
 }
 
-void LocalFootstepPlanner::publishSwingLegPlan() {
+void LocalFootstepPlanner::publishContinuousPlan() {
   // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
   if (footstep_plan_.empty()){
@@ -253,18 +256,18 @@ void LocalFootstepPlanner::publishSwingLegPlan() {
       FootstepState next_footstep = footstep_plan_[i][j+1];
 
       // Add current footstep state and correct time
-      double t_touchdown = footstep[3];
+      double t_touchdown = footstep[2];
 
       // Incrementally compute swing leg trajectory until time for next footstep
-      double t_liftoff = t_touchdown + footstep[4];
-      double t_next_touchdown = next_footstep[3];
+      double t_liftoff = t_touchdown + footstep[3];
+      double t_next_touchdown = next_footstep[2];
       double t_f = t_next_touchdown - t_liftoff;
 
       // Get knot points for cubic hermite interpolation
-      double x = footstep[1];
-      double x_next = next_footstep[1];
-      double y = footstep[2];
-      double y_next = next_footstep[2];
+      double x = footstep[0];
+      double x_next = next_footstep[0];
+      double y = footstep[1];
+      double y_next = next_footstep[1];
       double z = terrain_.getGroundHeight(x,y);
       double z_next = terrain_.getGroundHeight(x_next,y_next);
       double z_mid = ground_clearance_ + std::max(z, z_next);
