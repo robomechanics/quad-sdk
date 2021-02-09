@@ -50,6 +50,7 @@ add_library(spirit_utils
   src/robot_proxy.cpp
   src/math_utils.cpp
   src/trajectory_publisher.cpp
+  src/kinematics.cpp
 )
 add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(spirit_utils)
@@ -102,6 +103,7 @@ catkin_add_gtest(spirit_utils-test
   test/test_ground_truth_publisher.cpp
   test/test_robot_proxy.cpp
   test/test_fast_terrain_map.cpp
+  test/test_kinematics.cpp
   test/test_main.cpp)
 target_link_libraries(spirit_utils-test spirit_utils ${catkin_LIBRARIES})
 
