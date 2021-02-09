@@ -4,10 +4,11 @@
 #include <ros/ros.h>
 #include <nav_msgs/Path.h>
 #include <spirit_msgs/BodyPlan.h>
-#include <spirit_msgs/Footstep.h>
-#include <spirit_msgs/SingleFootstepPlan.h>
-#include <spirit_msgs/FootstepPlan.h>
-#include <spirit_msgs/SwingLegPlan.h>
+#include <spirit_msgs/FootState.h>
+#include <spirit_msgs/MultiFootState.h>
+#include <spirit_msgs/MultiFootPlanContinuous.h>
+#include <spirit_msgs/FootPlanDiscrete.h>
+#include <spirit_msgs/MultiFootPlanDiscrete.h>
 #include <spirit_utils/fast_terrain_map.h>
 #include <spirit_utils/function_timer.h>
 #include <spirit_utils/math_utils.h>
@@ -52,14 +53,14 @@ class LocalFootstepPlanner {
     void bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
 
     /**
-     * @brief Update the footstep plan with the current plan
+     * @brief Update the discrete footstep plan with the current plan
      */
-    void updatePlan();
+    void updateDiscretePlan();
 
     /**
-     * @brief Update and publish the swing leg plan to match the current footstep plan
+     * @brief Update and publish the continuous foot plan to match the discrete
      */
-    void publishSwingLegPlan();
+    void publishContinuousPlan();
 
     /**
      * @brief Publish the current footstep plan
@@ -77,11 +78,11 @@ class LocalFootstepPlanner {
     /// Subscriber for body plan messages
     ros::Subscriber body_plan_sub_;
 
-    /// Publisher for footstep plan messages
-    ros::Publisher footstep_plan_pub_;
+    /// Publisher for discrete foot plan messages
+    ros::Publisher foot_plan_discrete_pub_;
 
-    /// Publisher for swing leg plan messages
-    ros::Publisher swing_leg_plan_pub_;
+    /// Publisher for continuous
+    ros::Publisher foot_plan_continuous_pub_;
 
     /// Nodehandle to pub to and sub from
     ros::NodeHandle nh_;
@@ -128,10 +129,10 @@ class LocalFootstepPlanner {
     /// Number of feet
     const int num_feet_ = 4;
 
-    /// Ground clearance
-    double alpha_;
+    /// Weighting on the projection of the grf
+    double grf_weight_;
 
-    /// Ground clearance
+    /// Maximum horizon with which to plan footsteps
     double max_footstep_horizon_;
 
     /// Ground clearance
