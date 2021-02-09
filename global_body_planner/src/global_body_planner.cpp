@@ -54,6 +54,7 @@ void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstP
           msg->body.pose.pose.orientation.y,
           msg->body.pose.pose.orientation.z,
           msg->body.pose.pose.orientation.w);
+    q.normalize();
     tf2::Matrix3x3 m(q);
     double roll, pitch, yaw;
     m.getRPY(roll, pitch, yaw);
@@ -95,7 +96,7 @@ int GlobalBodyPlanner::initPlanner() {
 
   if (replanTrigger()) {
     start_state_ = robot_state_;
-    start_time_ = 0;
+    replan_start_time_ = 0;
     current_cost_ = INFTY;
   } else {
     // Loop through t_plan_ to find the next state after the committed horizon, set as start state
@@ -107,7 +108,7 @@ int GlobalBodyPlanner::initPlanner() {
         for (auto val : body_plan_[i]) {
           start_state_.push_back(val);
         }
-        start_time_ = t_plan_[i];
+        replan_start_time_ = t_plan_[i];
         start_index = i;
 
         break;
@@ -206,8 +207,11 @@ void GlobalBodyPlanner::callPlanner() {
 
       double dt = 0.1;
       std::vector<int> interp_phase;
-      getInterpPath(state_sequence_, action_sequence_, dt, start_time_, body_plan_, wrench_plan_, t_plan_, interp_phase);
-      // plotYaw(t_plan_, body_plan_);
+      getInterpPath(state_sequence_, action_sequence_, dt, replan_start_time_, body_plan_, wrench_plan_, t_plan_, interp_phase);
+      
+      if (start_index == 0) {
+        plan_timestamp_ = ros::Time::now();
+      }
     }
 
     if (!ros::ok()) {
@@ -230,14 +234,10 @@ void GlobalBodyPlanner::callPlanner() {
 void GlobalBodyPlanner::addStateWrenchToMsg(double t, FullState body_state, Wrench wrench,
     spirit_msgs::BodyPlan& msg) {
 
-  // Make sure the timestamps match the trajectory timing
-  ros::Duration time_elapsed(t);
-  ros::Time current_time = msg.header.stamp + time_elapsed;
-
   // Represent each state as an Odometry message
   nav_msgs::Odometry state;
   state.header.frame_id = map_frame_;
-  state.header.stamp = current_time;
+  state.header.stamp = msg.header.stamp + ros::Duration(t);
   state.child_frame_id = "dummy";
 
   // Transform from RPY to quat msg
@@ -272,15 +272,19 @@ void GlobalBodyPlanner::addStateWrenchToMsg(double t, FullState body_state, Wren
 }
 
 void GlobalBodyPlanner::publishPlan() {
+  if (body_plan_.empty())
+    return;
+
   // Construct BodyPlan messages
   spirit_msgs::BodyPlan body_plan_msg;
   spirit_msgs::BodyPlan discrete_body_plan_msg;
 
   // Initialize the headers and types
-  ros::Time timestamp = ros::Time::now();
-  body_plan_msg.header.stamp = timestamp;
+  body_plan_msg.header.stamp = plan_timestamp_;
   body_plan_msg.header.frame_id = map_frame_;
   discrete_body_plan_msg.header = body_plan_msg.header;
+
+  ROS_ASSERT(t_plan_.front() == 0);
 
   // Loop through the interpolated body plan and add to message
   for (int i=0;i<body_plan_.size(); ++i)

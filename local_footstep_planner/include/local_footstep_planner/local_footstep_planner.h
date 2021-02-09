@@ -10,6 +10,7 @@
 #include <spirit_msgs/SwingLegPlan.h>
 #include <spirit_utils/fast_terrain_map.h>
 #include <spirit_utils/function_timer.h>
+#include <spirit_utils/math_utils.h>
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
@@ -49,24 +50,6 @@ class LocalFootstepPlanner {
      * @param[in] nav_msgs::Path contining map data
      */
     void bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
-
-    /**
-     * @brief Interpolate data from column vectors contained in a matrix (vector of row vectors) provided an input vector and query point
-     * @param[in] input_vec Input vector
-     * @param[in] output_mat Collection of row vectors such that each row corresponds to exactly one element in the input vector
-     * @param[in] input_val Query point
-     * @return Vector of interpolated values
-     */
-    std::vector<double> interpMat(std::vector<double> input_vec, std::vector<std::vector<double>> output_mat, double query_point);
-
-    /**
-     * @brief Interpolate data from column vectors contained in a matrix (vector of row vectors) provided an input vector and query point
-     * @param[in] input_vec Input vector
-     * @param[in] output_mat Collection of row vectors such that each row corresponds to exactly one element in the input vector
-     * @param[in] input_val Query point
-     * @return Vector of interpolated values
-     */
-    Eigen::Vector3d interpVector3d(std::vector<double> input_vec, std::vector<Eigen::Vector3d> output_mat, double query_point);
 
     /**
      * @brief Update the footstep plan with the current plan
@@ -138,6 +121,9 @@ class LocalFootstepPlanner {
 
     /// Std vector containing time data
     std::vector<double> t_plan_;
+
+    /// ROS Timestamp of plan (should match body plan)
+    ros::Time plan_timestamp_;
 
     /// Number of feet
     const int num_feet_ = 4;

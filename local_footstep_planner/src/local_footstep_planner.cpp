@@ -45,6 +45,8 @@ void LocalFootstepPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPt
   body_plan_.clear();
   body_wrench_plan_.clear();
 
+  plan_timestamp_ = msg->header.stamp;
+
   // Loop through the message to get the state info and add to private vector
   int length = msg->states.size();
   for (int i=0; i < length; i++) {
@@ -85,73 +87,6 @@ void LocalFootstepPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPt
   }
 }
 
-std::vector<double> LocalFootstepPlanner::interpMat(std::vector<double> input_vec, std::vector<std::vector<double>> input_mat, double query_point) {
-
-  // Check bounds, throw an error if invalid since this shouldn't ever happen
-  if ((query_point < input_vec.front()) || (query_point > input_vec.back())){
-    throw std::runtime_error("Tried to interp out of bounds");
-  }
-
-  // Declare variables for interpolating between, both for input and output data
-  double t1, t2;
-  std::vector<double> y1, y2, interp_data;
-
-  // Find the correct values to interp between
-  int idx=0;
-  for(int i=0;i<input_vec.size();i++)
-  {
-      if(input_vec[i]<=query_point && query_point<input_vec[i+1])
-      {
-        t1 = input_vec[i];
-        t2 = input_vec[i+1];
-        y1 = input_mat[i];
-        y2 = input_mat[i+1]; 
-        break;
-      }
-  }
-
-  // Apply linear interpolation for each element in the vector
-  for (int i = 0; i<input_mat.front().size(); i++) {
-    double result = y1[i] + (y2[i]-y1[i])/(t2-t1)*(query_point-t1);
-    interp_data.push_back(result);
-  }
-  
-  return interp_data;
-}
-
-Eigen::Vector3d LocalFootstepPlanner::interpVector3d(std::vector<double> input_vec, std::vector<Eigen::Vector3d> input_mat, double query_point) {
-
-  // Check bounds, throw an error if invalid since this shouldn't ever happen
-  if ((query_point < input_vec.front()) || (query_point > input_vec.back())){
-    throw std::runtime_error("Tried to interp out of bounds");
-  }
-
-  // Declare variables for interpolating between, both for input and output data
-  double t1, t2;
-  Eigen::Vector3d y1, y2, interp_data;
-
-  // Find the correct values to interp between
-  int idx=0;
-  for(int i=0;i<input_vec.size();i++)
-  {
-      if(input_vec[i]<=query_point && query_point<input_vec[i+1])
-      {
-        t1 = input_vec[i];
-        t2 = input_vec[i+1];
-        y1 = input_mat[i];
-        y2 = input_mat[i+1]; 
-        break;
-      }
-  }
-
-  // Apply linear interpolation for each element in the vector
-  for (int i = 0; i<3; i++) {
-    interp_data[i] = y1[i] + (y2[i]-y1[i])/(t2-t1)*(query_point-t1);
-  }
-  
-  return interp_data;
-}
-
 void LocalFootstepPlanner::updatePlan() {
   // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
@@ -187,9 +122,9 @@ void LocalFootstepPlanner::updatePlan() {
       double t_touchdown = t_cycle + t_offsets[j];
       double t_midstance = t_cycle + t_offsets[j] + 0.5*t_s[j];
 
-      BodyState s_touchdown = interpMat(t_plan_, body_plan_, t_touchdown);
-      BodyState s_midstance = interpMat(t_plan_, body_plan_, t_midstance);
-      BodyWrench grf_midstance = interpVector3d(t_plan_, body_wrench_plan_, t_midstance);
+      BodyState s_touchdown = math_utils::interpMat(t_plan_, body_plan_, t_touchdown);
+      BodyState s_midstance = math_utils::interpMat(t_plan_, body_plan_, t_midstance);
+      BodyWrench grf_midstance = math_utils::interpVector3d(t_plan_, body_wrench_plan_, t_midstance);
 
       // Compute the body and hip positions and velocities
       double x_body = s_touchdown[0];
@@ -239,13 +174,12 @@ void LocalFootstepPlanner::publishSwingLegPlan() {
 
   spirit_msgs::SwingLegPlan swing_leg_plan_all;
   swing_leg_plan_all.header.frame_id = map_frame_;
-  swing_leg_plan_all.header.stamp = ros::Time::now();
+  swing_leg_plan_all.header.stamp = plan_timestamp_;
 
   for (int i=0; i<num_feet_; i++) {
     nav_msgs::Path current_swing_leg_plan;
 
-    current_swing_leg_plan.header.frame_id = swing_leg_plan_all.header.frame_id;
-    current_swing_leg_plan.header.stamp = swing_leg_plan_all.header.stamp;
+    current_swing_leg_plan.header = swing_leg_plan_all.header;
 
     for (int j = 0; j < footstep_plan_[i].size()-1; j++) {
 
@@ -328,11 +262,11 @@ void LocalFootstepPlanner::publishPlan() {
 
   if (footstep_plan_.empty()){
     ROS_WARN_THROTTLE(0.5, "Footstep plan is empty, not publishing");
+    return;
   }
   // Initialize FootstepPlan message
   spirit_msgs::FootstepPlan footstep_plan_msg;
-  ros::Time timestamp = ros::Time::now();
-  footstep_plan_msg.header.stamp = timestamp;
+  footstep_plan_msg.header.stamp = plan_timestamp_;
   footstep_plan_msg.header.frame_id = map_frame_;
 
   // Loop through the plan
