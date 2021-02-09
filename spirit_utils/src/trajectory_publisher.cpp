@@ -46,7 +46,7 @@ void TrajectoryPublisher::bodyPlanCallback(const
   int length = msg->states.size();
   for (int i=0; i < length; i++) {
 
-    // Convert orientation from quaternion to rpy
+    // Convert orientation from quaternion to rpy for interp (To do: slerp)
     tf2::Quaternion q;
     tf2::convert(msg->states[i].pose.pose.orientation,q);
     tf2::Matrix3x3 m(q);
@@ -81,15 +81,46 @@ void TrajectoryPublisher::swingLegPlanCallback(const
 
   spirit_utils::SpiritKinematics spirit;
 
-  for (j = 0; j < )
-  for (int i = 0; i < msg->legs.size(); i++) {
-    Eigen::Vector3d foot_pos;
-    foot_pos[0] = msg->legs[i].poses.pose.position.x;
-    foot_pos[1] = msg->legs[i].poses.pose.position.y;
-    foot_pos[2] = msg->legs[i].poses.pose.position.z;
+  for (int leg_index = 0; leg_index < msg->legs.size(); leg_index++) {
+
+    // Declare vectors of times and foot positions
+    std::vector<double> t_foot_pos_vec;
+    std::vector<Eigen::Vector3d> foot_pos_vec;
+
+    for (int i = 0; i < msg->legs[leg_index].poses.size(); i++) {
+      
+      ros::Duration t_foot_pos = 
+        msg->legs[leg_index].poses[i].header.stamp - 
+        msg->legs[leg_index].header.stamp;
+
+      Eigen::Vector3d foot_pos = 
+        msg->legs[leg_index].poses[i].pose.position;
+
+      t_foot_pos_vec.push_back(t_foot_pos.toSec());
+      foot_pos_vec.push_back(foot_pos);
+    }
 
 
+    for (int i = 0; i < t_body_plan_.size(); i++) {
+      Eigen::Vector3d foot_pos = math_utils::interpVector3d(
+        t_foot_pos_vec, pos_swing_leg_vec, t_body_plan_[i]);
+
+    }
   }
+
+  // for (j = 0; j < )
+  // for (int leg_index = 0; leg_index < msg->legs.size(); leg_index++) {
+  //   Eigen::Vector3d foot_pos;
+  //   Eigen::Vector3d leg_joint_state;
+  //   foot_pos[0] = msg->legs[leg_index].poses.pose.position.x;
+  //   foot_pos[1] = msg->legs[leg_index].poses.pose.position.y;
+  //   foot_pos[2] = msg->legs[leg_index].poses.pose.position.z;
+
+  //   spirit.legIK(leg_index,body_pos,body_rpy,foot_pos,leg_joint_state);
+
+  //   joint_state.push_back(leg_joint_state);
+
+  // }
 
 
 
@@ -130,7 +161,7 @@ void TrajectoryPublisher::updateTrajectory() {
     // Interpolate to get the correct body and joints state
     std::vector<double> body_state = math_utils::interpMat(t_body_plan_, 
       body_plan_, t_traj_[i]);
-    std::vector<double> joints_state = math_utils::interpMat(t_joints_plan_, 
+    std::vector<double> joint_state = math_utils::interpMat(t_joints_plan_, 
       joints_plan_, t_traj_[i]);
 
     // Fill the message with the interpolated data
@@ -152,8 +183,8 @@ void TrajectoryPublisher::updateTrajectory() {
     state.body.twist.twist.angular.z = body_state[11];
 
     state.joints.position = {0,0,0,0,0,0,0,0,0,0,0,0};
-    // state.joints.position = joints_state;
-    // state.joints.velocity = joints_state[12:end];
+    // state.joints.position = joint_state;
+    // state.joints.velocity = joint_state[12:end];
 
     traj_msg_.states.push_back(state);
   }

@@ -105,11 +105,15 @@ void LocalFootstepPlanner::updatePlan() {
   int num_cycles = footstep_horizon/period_;
 
   // Specify the number of feet and their offsets from the COM
-  double x_offsets[num_feet_] = {0.3, -0.3, 0.3, -0.3};
-  double y_offsets[num_feet_] = {0.2, 0.2, -0.2, -0.2};
+  double x_offsets[num_feet_] = {0.25, -0.25, 0.25, -0.25};
+  double y_offsets[num_feet_] = {0.15, 0.15, -0.15, -0.15};
+
+  ros::Duration t = ros::Time::now() - plan_timestamp_;
+  int start_index = t.toSec()/period_;
+  int end_index = start_index + num_cycles;
 
   // Loop through each gait cycle
-  for (int i = 0; i < num_cycles; i++) {
+  for (int i = start_index; i < end_index; i++) {
     
     // Compute the initial time for this cycle
     double t_cycle = i*period_;
