@@ -1,5 +1,10 @@
 var searchData=
 [
+  ['shoulder_5foffset_5f0_5f',['shoulder_offset_0_',['../classSpiritKinematics.html#a51220cb70560a456247f34b1d2f6cc73',1,'SpiritKinematics']]],
+  ['shoulder_5foffset_5f1_5f',['shoulder_offset_1_',['../classSpiritKinematics.html#a27f34271ad74cf0d0cf37fecf8c8fb4a',1,'SpiritKinematics']]],
+  ['shoulder_5foffset_5f2_5f',['shoulder_offset_2_',['../classSpiritKinematics.html#aefd44144f29c1c12fe2141e64c87dae0',1,'SpiritKinematics']]],
+  ['shoulder_5foffset_5f3_5f',['shoulder_offset_3_',['../classSpiritKinematics.html#a960690a6cf0c5e4c1a58ec158e2c935d',1,'SpiritKinematics']]],
+  ['shoulder_5foffsets_5f',['shoulder_offsets_',['../classSpiritKinematics.html#aba7ef2ba204864f73063d138598a4a6f',1,'SpiritKinematics']]],
   ['solve_5ftime_5finfo_5f',['solve_time_info_',['../classGlobalBodyPlanner.html#ae431f7b02f8c58d4fa354faeed6714e9',1,'GlobalBodyPlanner']]],
   ['stand_5fjoint_5fangles_5f',['stand_joint_angles_',['../classOpenLoopController.html#aff1f013b84c601bb1d61836b52495e3d',1,'OpenLoopController']]],
   ['stand_5fkd_5f',['stand_kd_',['../classOpenLoopController.html#a9ae5c82659b5614b182f34429327a69a',1,'OpenLoopController']]],

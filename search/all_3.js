@@ -21,6 +21,7 @@ var searchData=
   ['controlmodecallback',['controlModeCallback',['../classOpenLoopController.html#a3beab2a4275e702b63b445b439e88ebc',1,'OpenLoopController']]],
   ['cost_5fvector_5f',['cost_vector_',['../classGlobalBodyPlanner.html#a050614c41be6492d587fd4fd7fb66304',1,'GlobalBodyPlanner']]],
   ['cost_5fvector_5ftimes_5f',['cost_vector_times_',['../classGlobalBodyPlanner.html#a64f38e199a18fbcc1de677fc2f2c4bc1',1,'GlobalBodyPlanner']]],
+  ['createaffinematrix',['createAffineMatrix',['../classSpiritKinematics.html#af53bf14b88d44f55aa27b92df2d2e2e2',1,'SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans, Eigen::Vector3d rpy)'],['../classSpiritKinematics.html#a4468615a4d8b386afa108d8dd62b8e5c',1,'SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans, Eigen::AngleAxisd rot)']]],
   ['createmap',['createMap',['../classTerrainMapPublisher.html#a295ac03389590d98c589d2d58990b64e',1,'TerrainMapPublisher']]],
   ['current_5fcost_5f',['current_cost_',['../classGlobalBodyPlanner.html#af08776625ec691c5fc8ff1df56544737',1,'GlobalBodyPlanner']]]
 ];

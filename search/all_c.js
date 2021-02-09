@@ -1,5 +1,8 @@
 var searchData=
 [
+  ['l0_5fvec_5f',['l0_vec_',['../classSpiritKinematics.html#a24770c2c860818f5d556fbd95336e2a0',1,'SpiritKinematics']]],
+  ['l1_5f',['l1_',['../classSpiritKinematics.html#a2abd4ce4b3e7df58c39f15e6bdfe1828',1,'SpiritKinematics']]],
+  ['l2_5f',['l2_',['../classSpiritKinematics.html#a2bb482a5f478dcfc9f69ffed03cf2b65',1,'SpiritKinematics']]],
   ['last_5fcmd_5fvel_5fmsg_5ftime_5f',['last_cmd_vel_msg_time_',['../classTwistBodyPlanner.html#a5c940c533b47bda515f903232b133ff7',1,'TwistBodyPlanner']]],
   ['last_5fcmd_5fvel_5fmsg_5ftime_5fmax_5f',['last_cmd_vel_msg_time_max_',['../classTwistBodyPlanner.html#aad333bd74dcd74d9b39549fe0a51b9ee',1,'TwistBodyPlanner']]],
   ['last_5fcontact_5fest_5f',['last_contact_est_',['../classContactDetection.html#a2ae3ae173cb542bdfaa51bb0a4fe18f8',1,'ContactDetection']]],
@@ -12,7 +15,10 @@ var searchData=
   ['leg_5fcontrol_5fsub_5f',['leg_control_sub_',['../classMBLinkConverter.html#ae48e9cc552f57806f5f96e6ebd89c2d3',1,'MBLinkConverter']]],
   ['leg_5fmap_5f',['leg_map_',['../classeffort__controllers_1_1SpiritController.html#aaf247652a359ff6265d1ed04631db35d',1,'effort_controllers::SpiritController']]],
   ['leg_5fphases_5f',['leg_phases_',['../classOpenLoopController.html#a5ba744177d23b6554ea52a871887f5e0',1,'OpenLoopController']]],
+  ['legbasefk',['legBaseFK',['../classSpiritKinematics.html#a5481caa355fa2745c51a083e4d62e8a0',1,'SpiritKinematics::legBaseFK(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Matrix4d &amp;g_world_shoulder)'],['../classSpiritKinematics.html#a26e0da8070b44b669114b619c0bd5d17',1,'SpiritKinematics::legBaseFK(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Vector3d &amp;leg_base_pos_world)']]],
   ['legcontrolcallback',['legControlCallback',['../classMBLinkConverter.html#abde4dba9da7824f7dd88b19e40709550',1,'MBLinkConverter']]],
+  ['legfk',['legFK',['../classSpiritKinematics.html#ab32651e160ef32cd5c8266ae28d9e14e',1,'SpiritKinematics']]],
+  ['legik',['legIK',['../classSpiritKinematics.html#a0e5a9a8547a8c048b00967a684a89828',1,'SpiritKinematics']]],
   ['limbcmd_5ft',['LimbCmd_t',['../structLimbCmd__t.html',1,'']]],
   ['load',['Load',['../classgazebo_1_1ContactPlugin.html#a492c5a81b81a97054723ceceee6d9058',1,'gazebo::ContactPlugin']]],
   ['loadcsv',['loadCSV',['../classTerrainMapPublisher.html#ad3f41fb79f4056c0c7a145f3c0061786',1,'TerrainMapPublisher']]],

@@ -106,7 +106,7 @@ char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A lightweight class for measuring and reporting the duration of functions calls. </p>
-<p><a class="el" href="classspirit__utils_1_1FunctionTimer.html" title="A lightweight class for measuring and reporting the duration of functions calls. ">FunctionTimer</a> keeps track of the amount of time elapsed between start and stop calls, and reporting this along with the name of the function. </p>
+<p><a class="el" href="classspirit__utils_1_1FunctionTimer.html" title="A lightweight class for measuring and reporting the duration of functions calls. ">FunctionTimer</a> keeps track of the amount of time elapsed between start and stop calls, and reporting this along with the name of the function. For some reason the logic in this class takes about 1e-7 s to run so timing functions faster than that will yield inaccurate solutions compared to standard steady clock methods. For functions that take longer than 1e-6 s it should work. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a70b86bb834c306099292323492a7409e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a70b86bb834c306099292323492a7409e">&#9670;&nbsp;</a></span>FunctionTimer()</h2>
