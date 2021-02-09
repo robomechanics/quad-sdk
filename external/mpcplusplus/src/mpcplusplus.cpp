@@ -18,7 +18,7 @@ LinearMPC::LinearMPC(const int N, const int Nx, const int Nu)
   : N_(N), nx_(Nx), nu_(Nu) {
   
   num_dyn_constraints_ = N * Nx;
-  num_contact_constraints_ = Nu;
+  num_contact_constraints_ = N * Nu;
   
   num_state_vars_= (N_ + 1) * Nx;
   num_control_vars_= N * Nu;
@@ -72,11 +72,15 @@ void LinearMPC::update_dynamics(const std::vector<Eigen::MatrixXd> &Ad,
   b_dyn_ = Eigen::MatrixXd::Zero(num_dyn_constraints_,1);
 }
 
-void LinearMPC::update_contact_constraint(const Eigen::MatrixXd &constraint,
-                             const Eigen::VectorXd &lb,
-                             const Eigen::VectorXd &ub) {
-  b_contact_lo_ = lb;
-  b_contact_hi_ = ub;
+void LinearMPC::update_contact(const std::vector<bool> contact_sequence) {
+  assert(contact_sequence.size() == N_);
+
+  // Convert contact sequence to constraint matrix
+  A_con_dense_ = Eigen::MatrixXd::Zero(num_contact_constraints_, num_decision_vars_);
+
+  // Convert contact sequence to constraint vector bounds
+  b_contact_lo_ = Eigen::VectorXd::Zero(num_contact_constraints_);
+  b_contact_hi_ = Eigen::VectorXd::Zero(num_contact_constraints_);
 }
 
 void LinearMPC::get_cost_function(const Eigen::MatrixXd &ref_traj,
@@ -100,11 +104,11 @@ void LinearMPC::get_cost_function(const Eigen::MatrixXd &ref_traj,
 
 //========================================================================================
 void LinearMPC::get_output(const Eigen::MatrixXd &x_out,
-                      Eigen::MatrixXd &first_control,
+                      Eigen::VectorXd &first_control,
                       Eigen::MatrixXd &opt_traj) {
 
   // Resize and wipe output containers
-  first_control.resize(nu_,1);
+  first_control.resize(nu_);
   first_control.setZero();
   opt_traj.resize(nx_,N_+1);
   opt_traj.setZero();
@@ -136,37 +140,34 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
   // Create correctly sized linear constraint matrix to be populated with dynamics, contact info
   Eigen::MatrixXd A_dense(num_constraints_, num_decision_vars_);
 
-  #ifdef PRINT_DEBUG 
-  std::cout << "A_dyn_dense size: " << A_dyn_dense_.rows() << " x " << A_dyn_dense_.cols() << std::endl;
-  std::cout << "Nq: " << num_decision_vars_ << std::endl;
-  std::cout << "Nx_vars: " << num_dyn_constraints_ << std::endl;
-  std::cout << "Number of constraints: " << num_constraints_ << std::endl;
-  std::cout << "Nu: " << nu_ << std::endl;
-  std::cout << "Nx: " << nx_ << std::endl;
-  #endif
-
   // Add dynamics matrix to linear constraint matrix
-  //A_dense.block(0, 0, num_dyn_constraints_, num_decision_vars_) = A_dyn_dense_;
-
   A_dense.topRows(num_dyn_constraints_) = A_dyn_dense_;
 
   // Add contact matrix to linear constraint matrix
-  //A_dense.bottomRows(m_)
+  A_dense.bottomRows(num_contact_constraints_) = A_con_dense_;
 
-  // Convert hessian and linear constraint matrix 
+  // Convert hessian and linear constraint matrix to sparse (wanted by OSQP solver)
   Eigen::SparseMatrix<double> H = H_.sparseView();
+
   Eigen::SparseMatrix<double> A = A_dense.sparseView();
+
+  #ifdef PRINT_DEBUG 
+    std::cout << "Number of decision variables: " << num_decision_vars_ << std::endl;
+    std::cout << "Number of total constraints: " << num_constraints_ << std::endl;
+    std::cout << "Number of dynamics constraints: " << num_dyn_constraints_ << std::endl;
+    std::cout << "Number of contact constraints: " << num_contact_constraints_ << std::endl;
+    std::cout << "Nu: " << nu_ << std::endl;
+    std::cout << "Nx: " << nx_ << std::endl;
+  #endif
 
   // Setup lower and  upper bounds for linear constraints
   Eigen::VectorXd l(num_constraints_);
   l.setZero();
-  //l << b_dyn_, b_contact_lo_;
+  l << b_dyn_, b_contact_lo_;
 
   Eigen::VectorXd u(num_constraints_);
   u.setZero();
-  //u << b_dyn_, b_contact_hi_;
-
-   std::cout << "Here" << std::endl;
+  u << b_dyn_, b_contact_hi_; 
 
   // Init solver if not already initialized
   if (!solver_.isInitialized()) {

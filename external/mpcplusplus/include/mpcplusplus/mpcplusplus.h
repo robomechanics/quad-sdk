@@ -22,9 +22,7 @@ public:
   void update_dynamics(const std::vector<Eigen::MatrixXd> &Ad,
                                 const std::vector<Eigen::MatrixXd> &Bd);
 
-  void update_contact_constraint(const Eigen::MatrixXd &constraint,
-                             const Eigen::VectorXd &lb,
-                             const Eigen::VectorXd &ub);
+  void update_contact(const std::vector<bool> contact_sequence);
 
   /**
    * @brief Constructs the quadratic cost function of the form
@@ -41,7 +39,7 @@ public:
    * @param[out] opt_traj Optimized state trajector (Nx x (N+1))
    */
   void get_output(const Eigen::MatrixXd &x_out,
-                        Eigen::MatrixXd &first_control,
+                        Eigen::VectorXd &first_control,
                         Eigen::MatrixXd &opt_traj);
 
   /**
@@ -84,6 +82,7 @@ private:
   Eigen::MatrixXd b_dyn_;
 
   /// Friction constraint matrix
+  Eigen::MatrixXd A_con_dense_;
 
   /// Friction constraint lower bound
   Eigen::MatrixXd b_contact_lo_;
