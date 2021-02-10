@@ -58,6 +58,8 @@ void TrajectoryPublisher::bodyPlanCallback(const
       msg->states[0].header.stamp;
     t_body_plan_.push_back(t_plan.toSec());
 
+    // std::cout << "pitch = " << pitch << std::endl;
+
     // Get the state associated with this data
     std::vector<double> s(12);
     s[0] = msg->states[i].pose.pose.position.x;
@@ -217,9 +219,6 @@ void TrajectoryPublisher::publishTrajectoryState() {
 
     // Check times to see if this is the current state
     if (t >= t_state.toSec() && t < t_state_next.toSec()) {
-
-      std::cout << "index = " << i << std::endl;
-      std::cout << "t = " << t << std::endl;
 
       // Publish current state (to do: interpolate for smoother visualization)
       trajectory_state_pub_.publish(traj_msg_.states[i]);

@@ -3,7 +3,8 @@ Panels:
     Help Height: 0
     Name: Displays
     Property Tree Widget:
-      Expanded: ~
+      Expanded:
+        - /GRFs1
       Splitter Ratio: 0.6114649772644043
     Tree Height: 824
   - Class: rviz/Selection
@@ -214,7 +215,7 @@ Visualization Manager:
       Name: GRFs
       Namespaces:
         "": true
-      Queue Size: 100
+      Queue Size: 1
       Value: true
     - Alpha: 1
       Buffer Length: 1

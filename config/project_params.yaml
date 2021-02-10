@@ -37,7 +37,7 @@ global_body_planner:
   max_time: 1.5           # Minimum amount of time to run the planner (will replan to find better solutions until this duration is up)
   start_state: [0.0,0,0.3,0.0,0.0,0.0,0.0,0.0]
   goal_state: [8.0,1.0,0.3,0.0,1.0,0.0,0.0,0.0]
-  committed_horizon: 1.0     # Committed duration of current plan (replan starting from state in current plan this far ahead), s
+  committed_horizon: 4.0     # Committed duration of current plan (replan starting from state in current plan this far ahead), s
   state_error_threshold: 0.25
 
 twist_body_planner:

@@ -275,6 +275,7 @@ void RVizInterface::groundTruthStateCallback(const spirit_msgs::RobotState::Cons
   // Make a transform message for the body, populate with state estimate data, and publish
   geometry_msgs::TransformStamped transformStamped;
   transformStamped.header = msg->header;
+  transformStamped.header.stamp = ros::Time::now();
   transformStamped.header.frame_id = map_frame_;
   transformStamped.child_frame_id = "dummy";
   transformStamped.transform.translation.x = msg->body.pose.pose.position.x;
@@ -286,9 +287,10 @@ void RVizInterface::groundTruthStateCallback(const spirit_msgs::RobotState::Cons
   // Copy the joint portion of the state estimate message to a new message
   sensor_msgs::JointState joint_msg;
   joint_msg = msg->joints;
-
+  
   // Set the header to the main header of the state estimate message and publish
   joint_msg.header = msg->header;
+  joint_msg.header.stamp = ros::Time::now();
   joint_states_viz_pub_.publish(joint_msg);
 }
 
