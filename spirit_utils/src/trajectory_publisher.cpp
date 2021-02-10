@@ -4,27 +4,27 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string body_plan_topic, swing_leg_plan_topic, 
+  std::string body_plan_topic, foot_plan_continuous_topic, 
     trajectory_topic, trajectory_state_topic;
 
   nh.param<std::string>("topics/body_plan", 
     body_plan_topic, "/body_plan");
-  nh.param<std::string>("topics/swing_leg_plan", 
-    swing_leg_plan_topic, "/swing_leg_plan");
+  nh.param<std::string>("topics/foot_plan_continuous", 
+    foot_plan_continuous_topic, "/foot_plan_continuous");
   nh.param<std::string>("topics/state/trajectory", 
     trajectory_state_topic, "/state/trajectory");
   nh.param<std::string>("topics/trajectory", 
     trajectory_topic, "/trajectory");
 
   nh.param<std::string>("map_frame",map_frame_,"map");
-  nh.param<double>("trajectory_publisher/update_rate", update_rate_, 10);
+  nh.param<double>("trajectory_publisher/update_rate", update_rate_, 30);
   nh.param<double>("trajectory_publisher/interp_dt", interp_dt_, 0.05);
 
   // Setup subs and pubs
   body_plan_sub_ = nh_.subscribe(body_plan_topic,1,
     &TrajectoryPublisher::bodyPlanCallback, this);
-  swing_leg_plan_sub_ = nh_.subscribe(swing_leg_plan_topic,1,
-    &TrajectoryPublisher::swingLegPlanCallback, this);
+  foot_plan_continuous_sub_ = nh_.subscribe(foot_plan_continuous_topic,1,
+    &TrajectoryPublisher::footPlanContinuousCallback, this);
 
   trajectory_state_pub_ = nh_.advertise<spirit_msgs::RobotState>
     (trajectory_state_topic,1);
@@ -63,12 +63,12 @@ void TrajectoryPublisher::bodyPlanCallback(const
     s[0] = msg->states[i].pose.pose.position.x;
     s[1] = msg->states[i].pose.pose.position.y;
     s[2] = msg->states[i].pose.pose.position.z;
-    s[3] = msg->states[i].twist.twist.linear.x;
-    s[4] = msg->states[i].twist.twist.linear.y;
-    s[5] = msg->states[i].twist.twist.linear.z;
-    s[6] = roll;
-    s[7] = pitch;
-    s[8] = yaw;
+    s[3] = roll;
+    s[4] = pitch;
+    s[5] = yaw;
+    s[6] = msg->states[i].twist.twist.linear.x;
+    s[7] = msg->states[i].twist.twist.linear.y;
+    s[8] = msg->states[i].twist.twist.linear.z;
     s[9] = msg->states[i].twist.twist.angular.x;
     s[10] = msg->states[i].twist.twist.angular.y;
     s[11] = msg->states[i].twist.twist.angular.z;
@@ -76,54 +76,50 @@ void TrajectoryPublisher::bodyPlanCallback(const
   }
 }
 
-void TrajectoryPublisher::swingLegPlanCallback(const 
-  spirit_msgs::SwingLegPlan::ConstPtr& msg) {
+void TrajectoryPublisher::footPlanContinuousCallback(const 
+  spirit_msgs::MultiFootPlanContinuous::ConstPtr& msg) {
+
+  if (t_body_plan_.empty())
+    return;
 
   spirit_utils::SpiritKinematics spirit;
+  t_joints_plan_.clear();
+  joints_plan_.clear();
 
-  for (int leg_index = 0; leg_index < msg->legs.size(); leg_index++) {
+  for (int i = 0; i < msg->states.size(); i++) {
 
-    // Declare vectors of times and foot positions
-    std::vector<double> t_foot_pos_vec;
-    std::vector<Eigen::Vector3d> foot_pos_vec;
+    // Initialize joint state and timing
+    std::vector<double> joint_state;
+    ros::Duration t_foot_pos = msg->states[i].header.stamp - msg->header.stamp;
+    double t = t_foot_pos.toSec();
 
-    for (int i = 0; i < msg->legs[leg_index].poses.size(); i++) {
-      
-      ros::Duration t_foot_pos = 
-        msg->legs[leg_index].poses[i].header.stamp - 
-        msg->legs[leg_index].header.stamp;
+    for (int j=0; j < msg->states[i].feet.size(); j++) {
 
-      Eigen::Vector3d foot_pos = 
-        msg->legs[leg_index].poses[i].pose.position;
+      // Get foot position data
+      Eigen::Vector3d foot_pos;
+      foot_pos[0] = msg->states[i].feet[j].position.x;
+      foot_pos[1] = msg->states[i].feet[j].position.y;
+      foot_pos[2] = msg->states[i].feet[j].position.z;
 
-      t_foot_pos_vec.push_back(t_foot_pos.toSec());
-      foot_pos_vec.push_back(foot_pos);
+      // Get corresponding body plan data
+      std::vector<double> body_state = math_utils::interpMat(t_body_plan_, 
+        body_plan_, t);
+      Eigen::Vector3d body_pos = {body_state[0], body_state[1], body_state[2]};
+      Eigen::Vector3d body_rpy = {body_state[3], body_state[4], body_state[5]};
+
+      // Compute IK to get joint data
+      Eigen::Vector3d leg_joint_state;
+      spirit.legIK(j,body_pos,body_rpy,foot_pos,leg_joint_state);
+
+      // Add to the joint state vector
+      joint_state.push_back(leg_joint_state[0]);
+      joint_state.push_back(leg_joint_state[1]);
+      joint_state.push_back(leg_joint_state[2]);
     }
 
-
-    for (int i = 0; i < t_body_plan_.size(); i++) {
-      Eigen::Vector3d foot_pos = math_utils::interpVector3d(
-        t_foot_pos_vec, pos_swing_leg_vec, t_body_plan_[i]);
-
-    }
+    t_joints_plan_.push_back(t);
+    joints_plan_.push_back(joint_state);
   }
-
-  // for (j = 0; j < )
-  // for (int leg_index = 0; leg_index < msg->legs.size(); leg_index++) {
-  //   Eigen::Vector3d foot_pos;
-  //   Eigen::Vector3d leg_joint_state;
-  //   foot_pos[0] = msg->legs[leg_index].poses.pose.position.x;
-  //   foot_pos[1] = msg->legs[leg_index].poses.pose.position.y;
-  //   foot_pos[2] = msg->legs[leg_index].poses.pose.position.z;
-
-  //   spirit.legIK(leg_index,body_pos,body_rpy,foot_pos,leg_joint_state);
-
-  //   joint_state.push_back(leg_joint_state);
-
-  // }
-
-
-
 }
 
 void TrajectoryPublisher::updateTrajectory() {
@@ -144,7 +140,6 @@ void TrajectoryPublisher::updateTrajectory() {
   // Double check that the all the time vectors are synchronized
   ROS_ASSERT(t_traj_.front() == 0);
   ROS_ASSERT(t_body_plan_.front() == 0);
-  ROS_ASSERT(t_joints_plan_.front() == 0);
 
   // Declare robot state trajectory message
   traj_msg_.states.clear();
@@ -182,9 +177,15 @@ void TrajectoryPublisher::updateTrajectory() {
     state.body.twist.twist.angular.y = body_state[10];
     state.body.twist.twist.angular.z = body_state[11];
 
-    state.joints.position = {0,0,0,0,0,0,0,0,0,0,0,0};
-    // state.joints.position = joint_state;
-    // state.joints.velocity = joint_state[12:end];
+    std::vector<std::string> joint_names = {"8", "0", "1", "9","2", "3", "10",
+      "4","5", "11", "6", "7"};
+    std::vector<double> joint_vel (12,0);
+    std::vector<double> joint_effort (12,0);
+
+    state.joints.name = joint_names;
+    state.joints.position = joint_state;
+    state.joints.velocity = joint_vel;
+    state.joints.effort = joint_effort;
 
     traj_msg_.states.push_back(state);
   }
@@ -196,11 +197,14 @@ void TrajectoryPublisher::publishTrajectory() {
 
 void TrajectoryPublisher::publishTrajectoryState() {
 
+  if (traj_msg_.states.empty())
+    return;
+
   // Get the current duration since the beginning of the plan
   ros::Duration t_duration = ros::Time::now() - trajectory_timestamp_;
 
   // Mod by trajectory duration
-  double t = fmod(t_duration.toSec(), t_traj_.back());
+  double t = fmod(0.25*t_duration.toSec(), t_traj_.back());
 
   // Loop through all states in the trajectory
   for (int i = 0; i < traj_msg_.states.size()-1; i++) {
@@ -210,12 +214,15 @@ void TrajectoryPublisher::publishTrajectoryState() {
       traj_msg_.states[0].header.stamp;
     ros::Duration t_state_next = traj_msg_.states[i+1].header.stamp - 
       traj_msg_.states[0].header.stamp;
-    
+
     // Check times to see if this is the current state
     if (t >= t_state.toSec() && t < t_state_next.toSec()) {
 
+      std::cout << "index = " << i << std::endl;
+      std::cout << "t = " << t << std::endl;
+
       // Publish current state (to do: interpolate for smoother visualization)
-      trajectory_pub_.publish(traj_msg_.states[i]);
+      trajectory_state_pub_.publish(traj_msg_.states[i]);
       return;
     }
   }
@@ -226,7 +233,7 @@ void TrajectoryPublisher::spin() {
   ros::Rate r(update_rate_);
   while (ros::ok()) {
 
-    // publishTrajectory();
+    updateTrajectory();
     publishTrajectoryState();
 
     // Collect new messages on subscriber topics

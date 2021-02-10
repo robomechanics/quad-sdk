@@ -194,12 +194,16 @@ void LocalFootstepPlanner::publishContinuousPlan() {
     
     // Initialize MultiFootState message
     spirit_msgs::MultiFootState multi_foot_state_msg;
-    multi_foot_state_msg.header = multi_foot_plan_continuous_msg.header;
+    multi_foot_state_msg.header.frame_id = 
+      multi_foot_plan_continuous_msg.header.frame_id;
+    multi_foot_state_msg.header.stamp = 
+      multi_foot_plan_continuous_msg.header.stamp + ros::Duration(t);
 
     // Iterate through each foot
     for (int i=0; i<num_feet_; i++) {
 
       spirit_msgs::FootState foot_state_msg;
+      foot_state_msg.header = multi_foot_state_msg.header;
       int state_index = 0;
 
       // Get the index of the current foot location

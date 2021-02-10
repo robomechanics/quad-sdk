@@ -1,12 +1,10 @@
-#ifndef TRAJECTORY_PUBLISHER
-#define TRAJECTORY_PUBLISHER
+#ifndef TRAJECTORY_PUBLISHER_H
+#define TRAJECTORY_PUBLISHER_H
 
 #include <ros/ros.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <spirit_msgs/BodyPlan.h>
-#include <spirit_msgs/Footstep.h>
-#include <spirit_msgs/FootstepPlan.h>
-#include <spirit_msgs/SwingLegPlan.h>
+#include <spirit_msgs/MultiFootPlanContinuous.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/RobotStateTrajectory.h>
 #include "spirit_utils/math_utils.h"
@@ -18,8 +16,9 @@
 
 //! A class for interfacing between RViz and spirit-software topics.
 /*!
-   TrajectoryPublisher is a container for all of the logic utilized in the template node.
-   The implementation must provide a clean and high level interface to the core algorithm
+   TrajectoryPublisher is a container for all of the logic utilized in the 
+   template node. The implementation must provide a clean and high level 
+   interface to the core algorithm
 */
 class TrajectoryPublisher {
 public:
@@ -48,10 +47,11 @@ private:
   void bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
 
   /**
-   * @brief Callback function to handle new swing leg plan data
-   * @param[in] SwingLegPlan message containing output of swing leg planner
+   * @brief Callback function to handle new continuous foot plan data
+   * @param[in] MultiFootPlanContinuous message containing foot plan data
    */
-  void swingLegPlanCallback(const spirit_msgs::SwingLegPlan::ConstPtr& msg);
+  void footPlanContinuousCallback(
+    const spirit_msgs::MultiFootPlanContinuous::ConstPtr& msg);
 
   /**
    * @brief Update the current trajectory
@@ -72,7 +72,7 @@ private:
   ros::Subscriber body_plan_sub_;
 
   /// ROS subscriber for the swing leg plan
-  ros::Subscriber swing_leg_plan_sub_;
+  ros::Subscriber foot_plan_continuous_sub_;
 
   /// ROS Publisher for the current trajectory state
   ros::Publisher trajectory_state_pub_;
@@ -104,7 +104,7 @@ private:
   /// Vector of times corresponding to the trajectory states
   std::vector<double> t_traj_;
 
-  /// Update rate for sending and receiving data, unused since pubs are called in callbacks
+  /// Update rate for sending and receiving data
   double update_rate_;
 
   /// Timestep for trajectory interpolation
@@ -120,4 +120,4 @@ private:
   spirit_msgs::RobotStateTrajectory traj_msg_;
 };
 
-#endif // TRAJECTORY_PUBLISHER
+#endif // TRAJECTORY_PUBLISHER_H

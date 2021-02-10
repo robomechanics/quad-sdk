@@ -1,6 +1,8 @@
 #include "spirit_utils/kinematics.h"
 
-namespace spirit_utils {
+using namespace spirit_utils;
+
+Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
 SpiritKinematics::SpiritKinematics() {
   shoulder_offsets_.push_back(shoulder_offset_0_);
@@ -75,8 +77,6 @@ void SpiritKinematics::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
 void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos, 
   Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state, 
   Eigen::Vector3d &foot_pos_world) {
-
-  Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
   if (leg_index > (shoulder_offsets_.size()-1) || leg_index<0) {
     throw std::runtime_error("Leg index is outside valid range");
@@ -270,6 +270,4 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
   //   << std::endl;
   // std::cout << "Joint state out:\n" << joint_state.format(CleanFmt)
   //   << std::endl;
-}
-
 }

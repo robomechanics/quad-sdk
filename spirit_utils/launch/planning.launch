@@ -19,6 +19,6 @@
     <node name="local_footstep_planner" pkg="local_footstep_planner" type="local_footstep_planner_node" output="screen"/>
 
     <!-- Launch the node to publish the full plan -->
-    <!-- <node name="plan_publisher" pkg="spirit_utils" type="trajectory_publisher_node" output="screen"/> -->
+    <node name="plan_publisher" pkg="spirit_utils" type="trajectory_publisher_node" output="screen"/>
 
 </launch>

@@ -14,7 +14,7 @@
 
     <!-- Launch the node to publish the visual topics for the plans -->
     <node name="rviz_interface" pkg="spirit_utils" type="rviz_interface_node" output="screen">
-    	<remap from="/state/ground_truth" to="state/ground_truth" />
+    	<remap from="/state/ground_truth" to="state/trajectory" />
     </node>
 
     <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->

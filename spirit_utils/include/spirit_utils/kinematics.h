@@ -9,10 +9,8 @@
 #include <random>
 #include <math.h>
 
-Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
-
 namespace spirit_utils {
-  
+ 
 //! A lightweight library for spirit kinematic functions
 /*!
   This library includes several functions and classes to aid in spirit kinematic
@@ -20,6 +18,7 @@ namespace spirit_utils {
   complicated computations that would be a pain to write out by hand.
 */
 class SpiritKinematics {
+
   public:
   /**
    * @brief Constructor for SpiritKinematics Class

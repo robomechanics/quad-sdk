@@ -18,16 +18,16 @@
 namespace planning_utils {
 
 // Define kinematic constraint parameters
-const double H_MAX = 0.6;           // Maximum height of leg base, m
-const double H_MIN = 0.02;          // Minimum ground clearance of body corners, m
+const double H_MAX = 0.5;           // Maximum height of leg base, m
+const double H_MIN = 0.05;          // Minimum ground clearance of body corners, m
 const double V_MAX = 4.0;           // Maximum robot velocity, m/s (4.0 for cheetah, 2.5 for anymal)
 const double V_NOM = 1.5;           // Nominal velocity, m/s (used during connect function)
 const double P_MAX = 1.0;           // Maximum pitch, rad
 const double DP_MAX = 5.0;          // Maximum angular velocity in pitch, rad/s
 const double ANG_ACC_MAX = 10.0;    // Maximum angular acceleration in pitch, rad/s^2
-const double ROBOT_L = 0.6;         // Length of robot body, m (0.6 cheetah, 0.554 ANYmal)
-const double ROBOT_W = 0.256;       // Width of robot body, m (0.256 cheetah, 0.232 ANYmal)
-const double ROBOT_H = 0.1;         // Vertical distance between leg base and bottom of robot, m (0.1 cheetah, 0.04 ANYmal)
+const double ROBOT_L = 0.4;         // Length of robot body, m (0.6 cheetah, 0.554 ANYmal)
+const double ROBOT_W = 0.15;       // Width of robot body, m (0.256 cheetah, 0.232 ANYmal)
+const double ROBOT_H = 0.05;         // Vertical distance between leg base and bottom of robot, m (0.1 cheetah, 0.04 ANYmal)
 
 // Define dynamic constraint parameters
 const double M_CONST = 43;          // Robot mass, kg (43 for cheetah, 30 for anymal)
