@@ -21,10 +21,11 @@ add_message_files(
   RobotState.msg
   RobotStateTrajectory.msg
   BodyPlan.msg
-  FootstepPlan.msg
-  SingleFootstepPlan.msg
-  Footstep.msg
-  SwingLegPlan.msg
+  FootState.msg
+  MultiFootState.msg
+  MultiFootPlanContinuous.msg
+  FootPlanDiscrete.msg
+  MultiFootPlanDiscrete.msg
   ControlInput.msg
   LegContactMode.msg
   BodyForceEstimate.msg

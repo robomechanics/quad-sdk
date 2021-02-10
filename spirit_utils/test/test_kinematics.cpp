@@ -3,6 +3,8 @@
 
 #include "spirit_utils/kinematics.h"
 
+using namespace spirit_utils;
+
 const double kinematics_tol = 1e-4;
 
 TEST(KinematicsTest, testFeasibleConfigurations) {

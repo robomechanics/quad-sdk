@@ -1,5 +1,7 @@
 #include "spirit_utils/kinematics.h"
 
+namespace spirit_utils {
+
 SpiritKinematics::SpiritKinematics() {
   shoulder_offsets_.push_back(shoulder_offset_0_);
   shoulder_offsets_.push_back(shoulder_offset_1_);
@@ -268,4 +270,6 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
   //   << std::endl;
   // std::cout << "Joint state out:\n" << joint_state.format(CleanFmt)
   //   << std::endl;
+}
+
 }

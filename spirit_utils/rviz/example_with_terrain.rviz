@@ -3,11 +3,7 @@ Panels:
     Help Height: 0
     Name: Displays
     Property Tree Widget:
-      Expanded:
-        - /Discrete Body Plan1
-        - /Discrete Body Plan1/Status1
-        - /Footstep Plan1
-        - /GRFs1
+      Expanded: ~
       Splitter Ratio: 0.6114649772644043
     Tree Height: 824
   - Class: rviz/Selection
@@ -97,7 +93,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /visualization/footstep_plan
+      Marker Topic: /visualization/foot_plan_discrete
       Name: Footstep Plan
       Namespaces:
         "": true
@@ -240,7 +236,7 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /visualization/swing_leg_0_plan
+      Topic: /visualization/foot_0_plan_continuous
       Unreliable: false
       Value: true
     - Alpha: 1
@@ -263,7 +259,7 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /visualization/swing_leg_1_plan
+      Topic: /visualization/foot_1_plan_continuous
       Unreliable: false
       Value: true
     - Alpha: 1
@@ -286,7 +282,7 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /visualization/swing_leg_2_plan
+      Topic: /visualization/foot_2_plan_continuous
       Unreliable: false
       Value: true
     - Alpha: 1
@@ -309,7 +305,7 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /visualization/swing_leg_3_plan
+      Topic: /visualization/foot_3_plan_continuous
       Unreliable: false
       Value: true
   Enabled: true
@@ -340,25 +336,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 5.277319431304932
+      Distance: 4.979848861694336
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 1.9450129270553589
-        Y: -0.5418681502342224
-        Z: 0.2625672519207001
+        X: 1.7099363803863525
+        Y: -0.5065687894821167
+        Z: 0.13125203549861908
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.25539830327033997
+      Pitch: 0.5603984594345093
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.9635839462280273
+      Yaw: 4.073583602905273
     Saved: ~
 Window Geometry:
   Displays:

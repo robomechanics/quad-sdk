@@ -65,7 +65,7 @@ class LocalFootstepPlanner {
     /**
      * @brief Publish the current footstep plan
      */
-    void publishPlan();
+    void publishDiscretePlan();
 
     /**
      * @brief Wait until map and plan messages have been received and processed
@@ -134,6 +134,9 @@ class LocalFootstepPlanner {
 
     /// Maximum horizon with which to plan footsteps
     double max_footstep_horizon_;
+
+    /// Number of cycles to plan
+    int num_cycles_;
 
     /// Ground clearance
     double period_;

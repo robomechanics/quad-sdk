@@ -4,4 +4,4 @@
 # Accurate timing information is stored in the header
 
 Header header
-spirit_msgs/FootState[] states
+spirit_msgs/FootState[] footholds

@@ -11,7 +11,8 @@
 
 Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
-
+namespace spirit_utils {
+  
 //! A lightweight library for spirit kinematic functions
 /*!
   This library includes several functions and classes to aid in spirit kinematic
@@ -142,5 +143,7 @@ void legBaseFK(int leg_index, Eigen::Vector3d body_pos,
     /// Vector of the joint upper limits
     const std::vector<double> joint_max_ = {1,M_PI,M_PI};
 };
+
+}
 
 #endif // KINEMATICS_H

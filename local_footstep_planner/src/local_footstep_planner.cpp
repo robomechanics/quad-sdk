@@ -15,6 +15,7 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
   nh.param<double>("local_footstep_planner/update_rate", update_rate_, 1);
   nh.param<double>("local_footstep_planner/grf_weight", grf_weight_, 0.5);
   nh.param<double>("local_footstep_planner/max_footstep_horizon", max_footstep_horizon_, 1.5);
+  nh.param<int>("local_footstep_planner/num_cycles", num_cycles_, 3);
   nh.param<double>("local_footstep_planner/period", period_, 0.25);
   nh.param<double>("local_footstep_planner/ground_clearance", ground_clearance_, 0.1);
   nh.param<double>("local_footstep_planner/interp_dt", interp_dt_, 0.01);
@@ -105,16 +106,16 @@ void LocalFootstepPlanner::updateDiscretePlan() {
   double t_offsets[num_feet_] = {0.0, 0.5*period_, 0.5*period_, 0.0};
   double t_s[num_feet_] = {0.5*period_, 0.5*period_, 0.5*period_, 0.5*period_};
 
-  double footstep_horizon = std::min(max_footstep_horizon_, t_plan_.back());
-  int num_cycles = footstep_horizon/period_;
+  double footstep_horizon = std::min(num_cycles_*period_, t_plan_.back());
 
   // Specify the number of feet and their offsets from the COM
   double x_offsets[num_feet_] = {0.25, -0.25, 0.25, -0.25};
   double y_offsets[num_feet_] = {0.15, 0.15, -0.15, -0.15};
 
-  ros::Duration t = ros::Time::now() - plan_timestamp_;
-  int start_index = t.toSec()/period_;
-  int end_index = start_index + num_cycles;
+  // ros::Duration t = 0;ros::Time::now() - plan_timestamp_;
+  // int start_index = t.toSec()/period_;
+  int start_index = 0;
+  int end_index = start_index + num_cycles_;
 
   // Loop through each gait cycle
   for (int i = start_index; i < end_index; i++) {
@@ -174,131 +175,191 @@ void LocalFootstepPlanner::updateDiscretePlan() {
 void LocalFootstepPlanner::publishContinuousPlan() {
   // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
+  // Make sure we already have footstep data
   if (footstep_plan_.empty()){
     ROS_WARN_THROTTLE(0.5, "Footstep plan is empty, not publishing");
     return;
   }
 
-  spirit_msgs::SwingLegPlan swing_leg_plan_all;
-  swing_leg_plan_all.header.frame_id = map_frame_;
-  swing_leg_plan_all.header.stamp = plan_timestamp_;
+  // Initialize the plan message, match overall plan timestamp
+  spirit_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg;
+  multi_foot_plan_continuous_msg.header.frame_id = map_frame_;
+  multi_foot_plan_continuous_msg.header.stamp = plan_timestamp_;
 
-  for (int i=0; i<num_feet_; i++) {
-    nav_msgs::Path current_swing_leg_plan;
+  // Make sure the footstep horizon is within bounds
+  double footstep_horizon = std::min((num_cycles_-1)*period_, t_plan_.back());
 
-    current_swing_leg_plan.header = swing_leg_plan_all.header;
+  // Iterate through the footstep horizon
+  for (double t = 0; t < footstep_horizon; t+=interp_dt_) {
+    
+    // Initialize MultiFootState message
+    spirit_msgs::MultiFootState multi_foot_state_msg;
+    multi_foot_state_msg.header = multi_foot_plan_continuous_msg.header;
 
-    for (int j = 0; j < footstep_plan_[i].size()-1; j++) {
+    // Iterate through each foot
+    for (int i=0; i<num_feet_; i++) {
 
-      FootstepState footstep = footstep_plan_[i][j];
-      FootstepState next_footstep = footstep_plan_[i][j+1];
+      spirit_msgs::FootState foot_state_msg;
+      int state_index = 0;
 
-      // Add current footstep state and correct time
+      // Get the index of the current foot location
+      for (int j = 0; j < footstep_plan_[i].size()-1; j++) {
+        if (t >= footstep_plan_[i][j][2] && t < footstep_plan_[i][j+1][2]) {
+          state_index = j;
+          break;
+        }
+      }
+
+      // Get current footstep state and correct timing
+      FootstepState footstep = footstep_plan_[i][state_index];
+      FootstepState next_footstep = footstep_plan_[i][state_index+1];
+      double x = footstep[0];
+      double y = footstep[1];
+      double z = terrain_.getGroundHeight(x,y);
       double t_touchdown = footstep[2];
-
-      // Incrementally compute swing leg trajectory until time for next footstep
       double t_liftoff = t_touchdown + footstep[3];
       double t_next_touchdown = next_footstep[2];
       double t_f = t_next_touchdown - t_liftoff;
 
-      // Get knot points for cubic hermite interpolation
-      double x = footstep[0];
-      double x_next = next_footstep[0];
-      double y = footstep[1];
-      double y_next = next_footstep[1];
-      double z = terrain_.getGroundHeight(x,y);
-      double z_next = terrain_.getGroundHeight(x_next,y_next);
-      double z_mid = ground_clearance_ + std::max(z, z_next);
+      if (t < t_liftoff) {
 
-      // Add the foot location at the beginning of stance with the correct time
-      geometry_msgs::PoseStamped foot_msg;
-      foot_msg.header.stamp = current_swing_leg_plan.header.stamp + ros::Duration(t_touchdown);
-      foot_msg.pose.position.x = x;
-      foot_msg.pose.position.y = y;
-      foot_msg.pose.position.z = z;
-      current_swing_leg_plan.poses.push_back(foot_msg);
+        // If in stance, just record the correct position
+        foot_state_msg.position.x = x;
+        foot_state_msg.position.y = y;
+        foot_state_msg.position.z = z;
+        foot_state_msg.velocity.x = 0;
+        foot_state_msg.velocity.y = 0;
+        foot_state_msg.velocity.z = 0;
+        foot_state_msg.contact = true;
 
-      // Add all the foot locations during the swing phase with the correct times
-      for (double t = 0; t < t_f; t+=interp_dt_) {
-        // cubic hermite interpolation: http://www.cs.cmu.edu/afs/cs/academic/class/15462-s10/www/lec-slides/lec06.pdf
-        double u = t/t_f;
+      } else {
+
+        // If in swing, interpolate
+        double x_next = next_footstep[0];
+        double y_next = next_footstep[1];
+        double z_next = terrain_.getGroundHeight(x_next,y_next);
+        double z_mid = ground_clearance_ + std::max(z, z_next);
+        double t_swing = t - t_liftoff;
+
+        // cubic hermite interpolation: 
+        // http://www.cs.cmu.edu/afs/cs/academic/class/15462-s10/www/lec-slides/lec06.pdf
+        double u = t_swing/t_f;
         double u3 = u*u*u;
         double u2 = u*u;
-        double basis_3 = 2*u3-3*u2+1;
-        double basis_2 = -2*u3+3*u2;
-       
-        double x_current = basis_3*x + basis_2*x_next;
-        double y_current = basis_3*y + basis_2*y_next;
-        double z_current;
+        double basis_0 = 2*u3-3*u2+1;
+        double basis_1 = -2*u3+3*u2;
+        double basis_2 = 6*(u2-u);
+        double basis_3 = 6*(u-u2);
 
-        if (t <0.5*t_f) {
-          u = 2*t/t_f;
+        double x_current = basis_0*x + basis_1*x_next;
+        double y_current = basis_0*y + basis_1*y_next;
+        double dx_current = basis_2*x + basis_3*x_next;
+        double dy_current = basis_2*y + basis_3*y_next;
+
+        double z_current, dz_current;
+
+        if (t_swing <0.5*t_f) {
+          u = 2*t_swing/t_f;
           u3 = u*u*u;
           u2 = u*u;
-          double basis_3 = 2*u3-3*u2+1;
-          double basis_2 = -2*u3+3*u2;
-          z_current = basis_3*z + basis_2*z_mid;
+          double basis_0 = 2*u3-3*u2+1;
+          double basis_1 = -2*u3+3*u2;
+          double basis_2 = 6*(u2-u);
+          double basis_3 = 6*(u-u2);
+          z_current = basis_0*z + basis_1*z_mid;
+          dz_current = basis_2*z + basis_3*z_mid;
         } else {
-          u = 2*t/t_f - 1;
+          u = 2*t_swing/t_f - 1;
           u3 = u*u*u;
           u2 = u*u;
-          double basis_3 = 2*u3-3*u2+1;
-          double basis_2 = -2*u3+3*u2;
-          z_current = basis_3*z_mid + basis_2*z_next;
+          double basis_0 = 2*u3-3*u2+1;
+          double basis_1 = -2*u3+3*u2;
+          double basis_2 = 6*(u2-u);
+          double basis_3 = 6*(u-u2);
+          z_current = basis_0*z_mid + basis_1*z_next;
+          dz_current = basis_2*z_mid + basis_3*z_next;
         }
 
-        geometry_msgs::PoseStamped foot_msg;
-        foot_msg.header.stamp = current_swing_leg_plan.header.stamp + ros::Duration(t_liftoff+t);
-        foot_msg.pose.position.x = x_current;
-        foot_msg.pose.position.y = y_current;
-        foot_msg.pose.position.z = z_current;
-        current_swing_leg_plan.poses.push_back(foot_msg);
+        if (z_current > 2) {
+          std::cout << std::endl;
+          std::cout << "z is real high" << std::endl;          
+          std::cout << "t_liftoff = " << t_liftoff << std::endl;
+          std::cout << "t_next_touchdown = " << t_next_touchdown << std::endl;
+          std::cout << "t_f = " << t_f << std::endl;
+          std::cout << "t = " << t << std::endl;
+          std::cout << "t_swing = t - t_liftoff = " << t_swing << std::endl;
+
+          // FootstepState last_step = footstep_plan_[i].back()[2];
+          std::cout << "Max t = " << footstep_plan_[i].back()[2] << std::endl;
+        }
+
+        foot_state_msg.position.x = x_current;
+        foot_state_msg.position.y = y_current;
+        foot_state_msg.position.z = z_current;
+        foot_state_msg.velocity.x = dx_current;
+        foot_state_msg.velocity.y = dy_current;
+        foot_state_msg.velocity.z = dz_current;
+        foot_state_msg.contact = false;
 
       }
+
+      multi_foot_state_msg.feet.push_back(foot_state_msg);
     }
 
-    swing_leg_plan_all.legs.push_back(current_swing_leg_plan);
+    multi_foot_plan_continuous_msg.states.push_back(multi_foot_state_msg);
   }
 
-  swing_leg_plan_pub_.publish(swing_leg_plan_all);
+  foot_plan_continuous_pub_.publish(multi_foot_plan_continuous_msg);
 
   // timer.report();
 }
 
-void LocalFootstepPlanner::publishPlan() {
+void LocalFootstepPlanner::publishDiscretePlan() {
 
   if (footstep_plan_.empty()){
     ROS_WARN_THROTTLE(0.5, "Footstep plan is empty, not publishing");
     return;
   }
-  // Initialize FootstepPlan message
-  spirit_msgs::FootstepPlan footstep_plan_msg;
-  footstep_plan_msg.header.stamp = plan_timestamp_;
-  footstep_plan_msg.header.frame_id = map_frame_;
+  
+  // Initialize MultiFootPlanDiscrete message
+  spirit_msgs::MultiFootPlanDiscrete multi_foot_plan_discrete_msg;
+  multi_foot_plan_discrete_msg.header.stamp = plan_timestamp_;
+  multi_foot_plan_discrete_msg.header.frame_id = map_frame_;
 
-  // Loop through the plan
+  // Loop through each foot
   for (int i=0;i<footstep_plan_.size(); ++i) {
-    spirit_msgs::SingleFootstepPlan single_footstep_plan_msg;
+
+    // Initialize to match the MultiFootPlanDiscrete header
+    spirit_msgs::FootPlanDiscrete foot_plan_discrete_msg;
+    foot_plan_discrete_msg.header = multi_foot_plan_discrete_msg.header;
+
+    // Loop through each state for this foot
     for (int j=0;j<footstep_plan_[i].size(); ++j) {
 
       // Initialize a footstep message and load the data
-      spirit_msgs::Footstep footstep;
+      spirit_msgs::FootState foot_state_msg;
 
-      footstep.index = footstep_plan_[i][j][0];
-      footstep.position.x = footstep_plan_[i][j][1];
-      footstep.position.y = footstep_plan_[i][j][2];
-      footstep.position.z = terrain_.getGroundHeight(footstep.position.x,footstep.position.y);
-      footstep.td = ros::Duration(footstep_plan_[i][j][3]);
-      footstep.ts = ros::Duration(footstep_plan_[i][j][4]);
+      foot_state_msg.position.x = footstep_plan_[i][j][0];
+      foot_state_msg.position.y = footstep_plan_[i][j][1];
+      foot_state_msg.position.z = terrain_.getGroundHeight(foot_state_msg.position.x,foot_state_msg.position.y);
+      foot_state_msg.velocity.x = 0;
+      foot_state_msg.velocity.y = 0;
+      foot_state_msg.velocity.z = 0;
+      foot_state_msg.contact = true;
 
-      single_footstep_plan_msg.steps.push_back(footstep);
+      foot_state_msg.header.stamp = plan_timestamp_ +
+        ros::Duration(footstep_plan_[i][j][2]);
+
+      // foot_state.ts = ros::Duration(footstep_plan_[i][j][4]);
+
+      foot_plan_discrete_msg.footholds.push_back(foot_state_msg);
     }
 
-    footstep_plan_msg.feet.push_back(single_footstep_plan_msg);
+    multi_foot_plan_discrete_msg.feet.push_back(foot_plan_discrete_msg);
   }
 
   // Publish the whole plan to the topic
-  footstep_plan_pub_.publish(footstep_plan_msg);
+  foot_plan_discrete_pub_.publish(multi_foot_plan_discrete_msg);
 }
 
 void LocalFootstepPlanner::waitForData() {
@@ -328,9 +389,9 @@ void LocalFootstepPlanner::spin() {
     // ROS_INFO("In LocalFootstepPlanner spin, updating at %4.1f Hz", update_rate_);
     
     // Update the plan and publish it
-    updatePlan();
-    publishPlan();
-    publishSwingLegPlan();
+    updateDiscretePlan();
+    publishDiscretePlan();
+    publishContinuousPlan();
 
     ros::spinOnce();
     r.sleep();
