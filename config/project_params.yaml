@@ -115,4 +115,4 @@ visualization:
 trajectory_publisher:
   update_rate: 20
   interp_dt: 0.02
-  playback_speed: 0.5
+  playback_speed: 0.25

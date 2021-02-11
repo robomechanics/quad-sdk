@@ -116,22 +116,22 @@ void legBaseFK(int leg_index, Eigen::Vector3d body_pos,
     const std::vector<double> l0_vec_ = {0.1,0.1,-0.1,-0.1};
 
     /// Upper link length
-    const double l1_ = 0.2;
+    const double l1_ = 0.206;
 
     /// Lower link length
-    const double l2_ = 0.2;
+    const double l2_ = 0.206;
 
     /// Leg 0 shoulder offset
-    const Eigen::Vector3d shoulder_offset_0_ = {0.2, 0.1, 0};
+    const Eigen::Vector3d shoulder_offset_0_ = {0.2263, 0.07, 0};
 
     /// Leg 1 shoulder offset
-    const Eigen::Vector3d shoulder_offset_1_ = {-0.2, 0.1, 0};
+    const Eigen::Vector3d shoulder_offset_1_ = {-0.2263, 0.07, 0};
 
     /// Leg 2 shoulder offset
-    const Eigen::Vector3d shoulder_offset_2_ = {0.2, -0.1, 0};
+    const Eigen::Vector3d shoulder_offset_2_ = {0.2263, -0.07, 0};
 
     /// Leg 3 shoulder offset
-    const Eigen::Vector3d shoulder_offset_3_ = {-0.2, -0.1, 0};
+    const Eigen::Vector3d shoulder_offset_3_ = {-0.2263, -0.07, 0};
 
     /// Vector of shoulder offsets
     std::vector<Eigen::Vector3d> shoulder_offsets_;
