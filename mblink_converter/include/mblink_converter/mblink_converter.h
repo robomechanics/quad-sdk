@@ -12,11 +12,11 @@
 using gr::MBLink;
 
 struct LimbCmd_t {
-  float pos[3];
-  float vel[3];
-  float tau[3];
-  short kp[3];
-  float kd[3];
+  Eigen::Matrix3f pos;
+  Eigen::Matrix3f vel;
+  Eigen::Matrix3f tau;
+  float kp;
+  float kd;
 };
 
 //! Implements online conversion from ROS type to MBLink

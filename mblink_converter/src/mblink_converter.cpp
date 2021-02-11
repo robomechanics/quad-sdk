@@ -40,9 +40,10 @@ bool MBLinkConverter::sendMBlink()
       limbcmd[i].pos[j] = leg_command.motor_commands.at(j).pos_setpoint;
       limbcmd[i].vel[j] = leg_command.motor_commands.at(j).vel_setpoint;
       limbcmd[i].tau[j] = leg_command.motor_commands.at(j).torque_ff;
-      limbcmd[i].kp[j] = static_cast<short>(leg_command.motor_commands.at(j).kp);
-      limbcmd[i].kd[j] = leg_command.motor_commands.at(j).kd;
     }
+
+    limbcmd[i].kp = leg_command.motor_commands.at(j).kp;
+    limbcmd[i].kd = leg_command.motor_commands.at(j).kd;
   }
   
   float data[58] = {0};
