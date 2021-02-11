@@ -4,7 +4,7 @@
 #include <ros/ros.h>
 #include <spirit_msgs/LegCommandArray.h>
 #include <mblink/mblink.hpp>
-#include <eigen3/Eigen/Eigen>
+#include <Eigen/Dense>
 #include <spirit_utils/ros_utils.h>
 #include <chrono>
 #include <thread>
@@ -12,9 +12,9 @@
 using gr::MBLink;
 
 struct LimbCmd_t {
-  Eigen::Matrix3f pos;
-  Eigen::Matrix3f vel;
-  Eigen::Matrix3f tau;
+  Eigen::Vector3f pos;
+  Eigen::Vector3f vel;
+  Eigen::Vector3f tau;
   float kp;
   float kd;
 };
