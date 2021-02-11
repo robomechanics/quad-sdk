@@ -5,6 +5,10 @@
 #include <eigen3/Eigen/Eigen>
 #include <spirit_utils/foot_jacobians.h>
 #include <spirit_msgs/ControlInput.h>
+#include <spirit_msgs/StateEstimate.h>
+#include <spirit_msgs/MotorCommand.h>
+#include <spirit_msgs/SwingLegPlan.h>
+#include <spirit_msgs/FootstepPlan.h>
 
 
 //! Implements inverse dynamics
@@ -31,13 +35,22 @@ private:
    * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
    */
 	void controlInputCallback();
+	void stateEstimateCallback();
+	void swingLegPlanCallback();
+	void footSteplsPlanCallback();
 	void publishInverseDynamics();
 
 	/// ROS subscriber for control input
 	ros::Subscriber control_input_sub_;
 
+	/// ROS subscriber for state estimate
+	ros::Subscriber state_estimate_sub_;
+
+	/// ROS subscriber for Swing Leg Plan
+	ros::Subscriber swing_leg_plan_sub_;
+
 	/// ROS publisher for inverse dynamics
-	ros::Publisher inverse_dynamics_pub_;
+	ros::Publisher foot_step_plan_pub_;
 
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;
