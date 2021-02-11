@@ -6,7 +6,7 @@ inverseDynamics::inverseDynamics(ros::NodeHandle nh) {
 
     // Load rosparams from parameter server
     // extra comment
-  std::string  control_input_topic,state_estimate_topic,swing_leg_plan_topic motor_command_topic,foot_step_plan_topic; 
+  std::string  control_input_topic,state_estimate_topic,swing_leg_plan_topic leg_command_array_topic,foot_step_plan_topic; 
   // nh.param<std::string>("topics/control_input", control_input_topic, "/control_input");
 
 
@@ -19,7 +19,7 @@ inverseDynamics::inverseDynamics(ros::NodeHandle nh) {
   state_estimate_sub_= nh_.subscribe(state_estimate_topic,1,&inverseDynamics::stateEstimateCallback, this);
   swing_leg_plan_sub_= nh_.subscribe(swing_leg_plan_topic,1,&inverseDynamics::swingLegPlanCallback, this);
   foot_step_plan_sub_= nh_.subscribe(foot_step_plan_topic,1,&inverseDynamics::footStepPlanCallback, this);
-  motor_command_pub_ = nh_.advertise<spirit_msgs:MotorCommand:>(motor_command_topic,1);
+  leg_command_array_pub_ = nh_.advertise<spirit_msgs:LegCommandArray:>(leg_command_array_topic,1);
 }
 
 void inverseDynamics::controlInputCallback(const spirit_msgs::ControlInput::ConstPtr& msg) {
@@ -35,9 +35,11 @@ void inverseDynamics::footStepPlanCallback(const spirit_msgs::FootStepPlan::Cons
   // ROS_INFO("In footSteplsPlanCallback");
 }
 
-  void inverseDynamics::publishMotorCommand(){
+void inverseDynamics::publishLegCommandArray(){
   // ROS_INFO("In inverseDynamics");
-  spirit_msgs::MotorCommand msg;
+  spirit_msgs::LegCommandArray msg;
+  // Pack 4 LegCommands in the LegCommandArray
+  // Pack 3 MotorCommands in a LegCommand
   msg.header.stamp = ros::Time::now();
   control_input_pub_.publish(msg);
 }

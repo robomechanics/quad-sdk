@@ -7,6 +7,8 @@
 #include <spirit_msgs/ControlInput.h>
 #include <spirit_msgs/StateEstimate.h>
 #include <spirit_msgs/MotorCommand.h>
+#include <spirit_msgs/LegCommand.h>
+#include <spirit_msgs/LegCommandArray.h>
 #include <spirit_msgs/SwingLegPlan.h>
 #include <spirit_msgs/FootstepPlan.h>
 
@@ -37,8 +39,8 @@ private:
 	void controlInputCallback();
 	void stateEstimateCallback();
 	void swingLegPlanCallback();
-	void footSteplsPlanCallback();
-	void publishInverseDynamics();
+	void footStepPlanCallback();
+	void publishLegCommandArray();
 
 	/// ROS subscriber for control input
 	ros::Subscriber control_input_sub_;
@@ -49,8 +51,11 @@ private:
 	/// ROS subscriber for Swing Leg Plan
 	ros::Subscriber swing_leg_plan_sub_;
 
+	/// ROS subscriber for Swing Leg Plan
+	ros::Subscriber foot_step_plan_sub_;
+
 	/// ROS publisher for inverse dynamics
-	ros::Publisher foot_step_plan_pub_;
+	ros::Publisher leg_command_array_pub_;
 
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;
