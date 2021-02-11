@@ -8,8 +8,10 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
 
   // Load rosparams from parameter server
   std::string body_plan_topic, discrete_body_plan_topic;
-  std::vector<double> start_state_default = {0.0,0.0,0.4,0.0,0.0,0.0,0.0,0.0};
-  std::vector<double> goal_state_default = {8.0,0.0,0.4,0.0,0.0,0.0,0.0,0.0};
+  std::vector<double> start_state_default = 
+    {0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+  std::vector<double> goal_state_default = 
+    {8.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
 
   nh.param<std::string>("topics/terrain_map", terrain_map_topic_, "/terrain_map");
   nh.param<std::string>("topics/state/ground_truth", robot_state_topic_, "/state/ground_truth");
@@ -47,7 +49,7 @@ void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPt
 void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
 
   // Quick check to make sure message data has been populated
-  if (msg->body.pose.pose.orientation.w != 0) {
+  if (msg->body.pose.pose.orientation.w > 1e-4) {
     // Get RPY from the state message
     tf2::Quaternion q(
           msg->body.pose.pose.orientation.x,
@@ -64,11 +66,15 @@ void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstP
     robot_state_.push_back(msg->body.pose.pose.position.x);
     robot_state_.push_back(msg->body.pose.pose.position.y);
     robot_state_.push_back(msg->body.pose.pose.position.z);
+    robot_state_.push_back(roll);
+    robot_state_.push_back(pitch);
+    robot_state_.push_back(yaw);
     robot_state_.push_back(msg->body.twist.twist.linear.x);
     robot_state_.push_back(msg->body.twist.twist.linear.y);
     robot_state_.push_back(msg->body.twist.twist.linear.z);
-    robot_state_.push_back(pitch);
+    robot_state_.push_back(msg->body.twist.twist.angular.x);
     robot_state_.push_back(msg->body.twist.twist.angular.y);
+    robot_state_.push_back(msg->body.twist.twist.angular.z);
   } else {
     ROS_WARN_THROTTLE(0.1, "Invalid quaternion received in GlobalBodyPlanner, exiting callback");
   }
@@ -81,7 +87,7 @@ bool GlobalBodyPlanner::replanTrigger() {
   }
 
   double state_error_threshold = 0.5;
-  std::vector<double> current_state_in_plan_ = fullStateToVector(body_plan_.front());
+  std::vector<double> current_state_in_plan_ = body_plan_.front();
   if (poseDistance(robot_state_, current_state_in_plan_) > state_error_threshold_) {
     return true;
   } else {
@@ -105,9 +111,7 @@ int GlobalBodyPlanner::initPlanner() {
       if (t_plan_[i] >= committed_horizon_) {
 
         start_state_.clear();
-        for (auto val : body_plan_[i]) {
-          start_state_.push_back(val);
-        }
+        start_state_ = body_plan_[i];
         replan_start_time_ = t_plan_[i];
         start_index = i;
 
@@ -130,11 +134,9 @@ void GlobalBodyPlanner::callPlanner() {
   int start_index = initPlanner();
 
   // Copy start and goal states and adjust for ground height
-  State start_state;
-  State goal_state;
-  stdVectorToState(start_state_, start_state);
-  stdVectorToState(goal_state_, goal_state);
-
+  State start_state = fullStateToState(start_state_);
+  State goal_state = fullStateToState(goal_state_);
+  
   // Make sure terminal states are valid
   if (!isValidState(start_state, terrain_, STANCE)) {
     ROS_WARN_THROTTLE(0.5, "Invalid start state, exiting global planner");
@@ -234,6 +236,8 @@ void GlobalBodyPlanner::callPlanner() {
 void GlobalBodyPlanner::addStateWrenchToMsg(double t, FullState body_state, Wrench wrench,
     spirit_msgs::BodyPlan& msg) {
 
+  ROS_ASSERT(body_state.size()==12);
+
   // Represent each state as an Odometry message
   nav_msgs::Odometry state;
   state.header.frame_id = map_frame_;
@@ -243,8 +247,10 @@ void GlobalBodyPlanner::addStateWrenchToMsg(double t, FullState body_state, Wren
   // Transform from RPY to quat msg
   tf2::Quaternion quat_tf;
   geometry_msgs::Quaternion quat_msg;
-  quat_tf.setRPY(body_state[6],body_state[7],body_state[8]);
+  quat_tf.setRPY(body_state[3],body_state[4],body_state[5]);
   quat_msg = tf2::toMsg(quat_tf);
+
+  // std::cout << "original pitch = " << body_state[7] << std::endl;
 
   // Load the data into the message
   state.pose.pose.position.x = body_state[0];
@@ -252,9 +258,9 @@ void GlobalBodyPlanner::addStateWrenchToMsg(double t, FullState body_state, Wren
   state.pose.pose.position.z = body_state[2];
   state.pose.pose.orientation = quat_msg;
 
-  state.twist.twist.linear.x = body_state[3];
-  state.twist.twist.linear.y = body_state[4];
-  state.twist.twist.linear.z = body_state[5];
+  state.twist.twist.linear.x = body_state[6];
+  state.twist.twist.linear.y = body_state[7];
+  state.twist.twist.linear.z = body_state[8];
   state.twist.twist.angular.x = body_state[9];
   state.twist.twist.angular.y = body_state[10];
   state.twist.twist.angular.z = body_state[11];

@@ -19,6 +19,7 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
   nh.param<std::string>("map_frame",map_frame_,"map");
   nh.param<double>("trajectory_publisher/update_rate", update_rate_, 30);
   nh.param<double>("trajectory_publisher/interp_dt", interp_dt_, 0.05);
+  nh.param<double>("trajectory_publisher/playback_speed", playback_speed_, 1.0);
 
   // Setup subs and pubs
   body_plan_sub_ = nh_.subscribe(body_plan_topic,1,
@@ -42,6 +43,9 @@ void TrajectoryPublisher::bodyPlanCallback(const
 
   trajectory_timestamp_ = msg->header.stamp;
 
+  std::cout << "Recieved new trajectory, updating" << std::endl;
+  t_body_plan_.clear();
+  body_plan_.clear();
   // Loop through the message to get the state info and add to private vector
   int length = msg->states.size();
   for (int i=0; i < length; i++) {
@@ -206,7 +210,7 @@ void TrajectoryPublisher::publishTrajectoryState() {
   ros::Duration t_duration = ros::Time::now() - trajectory_timestamp_;
 
   // Mod by trajectory duration
-  double t = fmod(0.25*t_duration.toSec(), t_traj_.back());
+  double t = fmod(playback_speed_*t_duration.toSec(), t_traj_.back());
 
   // Loop through all states in the trajectory
   for (int i = 0; i < traj_msg_.states.size()-1; i++) {

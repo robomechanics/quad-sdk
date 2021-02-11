@@ -35,9 +35,9 @@ global_body_planner:
   update_rate: 10
   num_calls: 1            # Number of times to call the planner
   max_time: 1.5           # Minimum amount of time to run the planner (will replan to find better solutions until this duration is up)
-  start_state: [0.0,0,0.3,0.0,0.0,0.0,0.0,0.0]
-  goal_state: [8.0,1.0,0.3,0.0,1.0,0.0,0.0,0.0]
-  committed_horizon: 4.0     # Committed duration of current plan (replan starting from state in current plan this far ahead), s
+  start_state: [0.0,0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+  goal_state: [8.0,1.0,0.3,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+  committed_horizon: 0.5     # Committed duration of current plan (replan starting from state in current plan this far ahead), s
   state_error_threshold: 0.25
 
 twist_body_planner:
@@ -52,7 +52,7 @@ local_footstep_planner:
   update_rate: 30
   grf_weight: 0.5
   max_footstep_horizon: 1.5
-  num_cycles: 6
+  num_cycles: 30
   period: 0.25
   ground_clearance: 0.1
   interp_dt: 0.01
@@ -115,3 +115,4 @@ visualization:
 trajectory_publisher:
   update_rate: 20
   interp_dt: 0.02
+  playback_speed: 1

@@ -243,12 +243,9 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
   }
 
   // Make sure knee is within joint limits
-  if (q2 >= joint_max_[2]) {
+  if (q2 > joint_max_[2] || q2 < joint_min_[2]) {
     q2 = std::max(std::min(q2,joint_max_[2]),joint_min_[2]);
-    ROS_WARN_THROTTLE(0.5,"Knee max exceeded, clamping to %5.3f \n", q2);
-  } else if (q2 <= joint_min_[2]) {
-    q2 = joint_min_[2];
-    ROS_WARN_THROTTLE(0.5,"Knee minimum exceeded, clamping to %5.3f \n", q2);
+    ROS_WARN_THROTTLE(0.5,"Knee limit exceeded, clamping to %5.3f \n", q2);
   }
 
   // q1 is undefined if q2=0, resolve this

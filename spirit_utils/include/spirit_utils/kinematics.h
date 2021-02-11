@@ -136,11 +136,14 @@ void legBaseFK(int leg_index, Eigen::Vector3d body_pos,
     /// Vector of shoulder offsets
     std::vector<Eigen::Vector3d> shoulder_offsets_;
 
+    /// Epsilon offset for joint bounds
+    const double joint_eps = 0.1;
+
     /// Vector of the joint lower limits 
-    const std::vector<double> joint_min_ = {-1,-0.5*M_PI,0};
+    const std::vector<double> joint_min_ = {-1+joint_eps,-0.5*M_PI + joint_eps,joint_eps};
 
     /// Vector of the joint upper limits
-    const std::vector<double> joint_max_ = {1,M_PI,M_PI};
+    const std::vector<double> joint_max_ = {1-joint_eps,M_PI-joint_eps,M_PI-joint_eps};
 };
 
 }

@@ -118,6 +118,10 @@ private:
 
   /// Message for robot trajectory
   spirit_msgs::RobotStateTrajectory traj_msg_;
+
+  /// Playback speed for trajectory state publishing
+  double playback_speed_;
+
 };
 
 #endif // TRAJECTORY_PUBLISHER_H

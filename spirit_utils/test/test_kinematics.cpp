@@ -66,35 +66,6 @@ TEST(KinematicsTest, testInfeasibleConfigurations) {
   Eigen::Vector3d foot_pos_world_test;
   Eigen::Vector3d joint_state_test;
 
-  // Test foot locations too close to hip
-  for (int i = 0; i < 4; i++) {
-    int leg_index = i;
-
-    // Compute foot position for desired offset from leg base
-    Eigen::Vector3d shoulder_pos;
-    spirit.legBaseFK(leg_index, body_pos, body_rpy, shoulder_pos);
-    Eigen::Vector3d foot_offset = {0,0.5*spirit.getLinkLength(i,0),
-      0.5*spirit.getLinkLength(i,0)};
-    foot_pos_world = shoulder_pos + foot_offset;
-
-    // Compute IK, then check with FK foot position
-    spirit.legIK(leg_index,body_pos,body_rpy,foot_pos_world,joint_state_test);
-    spirit.legFK(leg_index,body_pos,body_rpy,joint_state_test,
-         foot_pos_world_test);
-
-    // Get actual closest foot position (in direction of desired foot offset but
-    // respecting the length of the abad link)
-    Eigen::Vector3d min_foot_offset = foot_offset;
-    min_foot_offset.tail<2>().normalize();
-    min_foot_offset.tail<2>() = abs(spirit.getLinkLength(i,0)) *
-      min_foot_offset.tail<2>();
-
-    // Compute the error from closest position and ensure it is zero
-    Eigen::Vector3d error = (min_foot_offset - 
-      (foot_pos_world_test - shoulder_pos));
-    EXPECT_TRUE(error.norm() <= kinematics_tol);
-  }
-
   // Define arbitrary maximum foot offset for IK testing
   double max_offset = abs(spirit.getJointLowerLimit(0)) + 
     spirit.getJointLowerLimit(1) + spirit.getJointLowerLimit(2);
