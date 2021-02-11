@@ -43,7 +43,6 @@ void TrajectoryPublisher::bodyPlanCallback(const
 
   trajectory_timestamp_ = msg->header.stamp;
 
-  std::cout << "Recieved new trajectory, updating" << std::endl;
   t_body_plan_.clear();
   body_plan_.clear();
   // Loop through the message to get the state info and add to private vector

@@ -52,7 +52,7 @@ local_footstep_planner:
   update_rate: 30
   grf_weight: 0.5
   max_footstep_horizon: 1.5
-  num_cycles: 30
+  num_cycles: 10
   period: 0.25
   ground_clearance: 0.1
   interp_dt: 0.01
@@ -115,4 +115,4 @@ visualization:
 trajectory_publisher:
   update_rate: 20
   interp_dt: 0.02
-  playback_speed: 1
+  playback_speed: 0.5
