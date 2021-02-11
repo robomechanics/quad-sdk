@@ -4,6 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /GridMap1
         - /GRFs1
       Splitter Ratio: 0.6114649772644043
     Tree Height: 824
@@ -53,7 +54,7 @@ Visualization Manager:
       Invert Rainbow: false
       Max Color: 233; 185; 110
       Max Intensity: 10
-      Min Color: 65; 36; 14
+      Min Color: 149; 111; 66
       Min Intensity: 0
       Name: GridMap
       Show Grid Lines: true
@@ -352,10 +353,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5603984594345093
+      Pitch: 0.460398405790329
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.073583602905273
+      Yaw: 4.14858341217041
     Saved: ~
 Window Geometry:
   Displays:
