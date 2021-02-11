@@ -18,6 +18,8 @@
 #include <unordered_map>
 #include <string>
 #include <atomic>
+#include <condition_variable>
+#include <mutex>
 
 namespace gr
 {
@@ -34,7 +36,7 @@ public:
 	 * @param systemId see MAVLink docs
 	 * @param componentId see MAVLink docs
 	 */
-	MBLinkProtocol(uint8_t systemId = 1, uint8_t componentId = 0) : systemId(systemId), componentId(componentId), newRxData(false) {}
+	MBLinkProtocol(uint8_t systemId = 1, uint8_t componentId = 0) : systemId(systemId), componentId(componentId), newRxData(false) { initRxData(); }
 
 	enum ControlMode
 	{
@@ -184,6 +186,8 @@ protected:
 	 * @brief Flag that is set when there is new data received (should be cleared by whoever is watching).
 	 */
 	std::atomic_bool newRxData;
+	std::mutex conditionMutex, paramMutex;
+	std::condition_variable cv, paramcv; // to notify when there is new data
 
 	// Data structures for expected messages
 	mavlink_wind_cov_t wind_cov;
@@ -228,6 +232,9 @@ protected:
 	Eigen::Vector3f pcom;
 
 	void constructStateVector();
+
+	// Initialize the data fields to zero vectors
+	void initRxData();
 };
 
 
