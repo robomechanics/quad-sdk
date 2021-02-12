@@ -1,5 +1,9 @@
 #include "spirit_utils/kinematics.h"
 
+using namespace spirit_utils;
+
+Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+
 SpiritKinematics::SpiritKinematics() {
   shoulder_offsets_.push_back(shoulder_offset_0_);
   shoulder_offsets_.push_back(shoulder_offset_1_);
@@ -73,8 +77,6 @@ void SpiritKinematics::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
 void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos, 
   Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state, 
   Eigen::Vector3d &foot_pos_world) {
-
-  Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
   if (leg_index > (shoulder_offsets_.size()-1) || leg_index<0) {
     throw std::runtime_error("Leg index is outside valid range");
@@ -241,12 +243,9 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
   }
 
   // Make sure knee is within joint limits
-  if (q2 >= joint_max_[2]) {
+  if (q2 > joint_max_[2] || q2 < joint_min_[2]) {
     q2 = std::max(std::min(q2,joint_max_[2]),joint_min_[2]);
-    ROS_WARN_THROTTLE(0.5,"Knee max exceeded, clamping to %5.3f \n", q2);
-  } else if (q2 <= joint_min_[2]) {
-    q2 = joint_min_[2];
-    ROS_WARN_THROTTLE(0.5,"Knee minimum exceeded, clamping to %5.3f \n", q2);
+    ROS_WARN_THROTTLE(0.5,"Knee limit exceeded, clamping to %5.3f \n", q2);
   }
 
   // q1 is undefined if q2=0, resolve this

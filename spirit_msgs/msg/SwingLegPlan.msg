@@ -4,8 +4,4 @@
 # Accurate timing information to localize the plans is stored in the header
 
 Header header
-# nav_msgs/Path fl
-# nav_msgs/Path bl
-# nav_msgs/Path fr
-# nav_msgs/Path br
 nav_msgs/Path[] legs

@@ -3,13 +3,20 @@
 
 #include <ros/ros.h>
 #include <visualization_msgs/MarkerArray.h>
-#include <spirit_msgs/BodyPlan.h>
-#include <spirit_msgs/Footstep.h>
-#include <spirit_msgs/FootstepPlan.h>
-#include <spirit_msgs/SwingLegPlan.h>
+#include <visualization_msgs/Marker.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <nav_msgs/Path.h>
 #include <spirit_msgs/RobotState.h>
+#include <spirit_msgs/BodyPlan.h>
+#include <spirit_msgs/FootState.h>
+#include <spirit_msgs/MultiFootState.h>
+#include <spirit_msgs/MultiFootPlanContinuous.h>
+#include <spirit_msgs/FootPlanDiscrete.h>
+#include <spirit_msgs/MultiFootPlanDiscrete.h>
+
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>
+
 
 //! A class for interfacing between RViz and spirit-software topics.
 /*!
@@ -44,16 +51,16 @@ private:
   void discreteBodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
 
   /**
-   * @brief Callback function to handle new footstep plan data
+   * @brief Callback function to handle new discrete foot plan data
    * @param[in] Footstep plan message containing output of footstep planner
    */
-  void footstepPlanCallback(const spirit_msgs::FootstepPlan::ConstPtr& msg);
+  void footPlanDiscreteCallback(const spirit_msgs::MultiFootPlanDiscrete::ConstPtr& msg);
 
   /**
-   * @brief Callback function to handle new swing leg plan data
+   * @brief Callback function to handle new continous foot plan data
    * @param[in] SwingLegPlan message containing output of swing leg planner
    */
-  void swingLegPlanCallback(const spirit_msgs::SwingLegPlan::ConstPtr& msg);
+  void footPlanContinuousCallback(const spirit_msgs::MultiFootPlanContinuous::ConstPtr& msg);
 
   /**
    * @brief Callback function to handle new state estimate data
@@ -73,11 +80,11 @@ private:
   /// ROS subscriber for the body plan
   ros::Subscriber discrete_body_plan_sub_;
 
-  /// ROS subscriber for the footstep plan
-  ros::Subscriber footstep_plan_sub_;
+  /// ROS subscriber for the discrete foot plan
+  ros::Subscriber foot_plan_discrete_sub_;
 
-  /// ROS subscriber for the swing leg plan
-  ros::Subscriber swing_leg_plan_sub_;
+  /// ROS subscriber for the continuous foot plan
+  ros::Subscriber foot_plan_continuous_sub_;
 
   /// ROS Subscriber for the state estimate
   ros::Subscriber state_estimate_sub_;
@@ -95,19 +102,19 @@ private:
   ros::Publisher discrete_body_plan_viz_pub_;
 
   /// ROS Publisher for the footstep plan visualization
-  ros::Publisher footstep_plan_viz_pub_;
+  ros::Publisher foot_plan_discrete_viz_pub_;
 
   /// ROS Publisher for the swing leg 0 visualization
-  ros::Publisher swing_leg_0_plan_viz_pub_;
+  ros::Publisher foot_0_plan_continuous_viz_pub_;
 
-  /// ROS Publisher for the swing leg 1 visualization
-  ros::Publisher swing_leg_1_plan_viz_pub_;
+  /// ROS Publisher for the foot 1 plan visualization
+  ros::Publisher foot_1_plan_continuous_viz_pub_;
 
-  /// ROS Publisher for the swing leg 2 visualization
-  ros::Publisher swing_leg_2_plan_viz_pub_;
+  /// ROS Publisher for the foot 2 plan visualization
+  ros::Publisher foot_2_plan_continuous_viz_pub_;
 
-  /// ROS Publisher for the swing leg 3 visualization
-  ros::Publisher swing_leg_3_plan_viz_pub_;
+  /// ROS Publisher for the foot 3 plan visualization
+  ros::Publisher foot_3_plan_continuous_viz_pub_;
 
   /// ROS Publisher for the state estimate visualization
   ros::Publisher joint_states_viz_pub_;
