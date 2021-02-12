@@ -295,19 +295,7 @@ void LocalFootstepPlanner::publishContinuousPlan() {
           double basis_3 = 6*(u-u2);
           z_current = basis_0*z_mid + basis_1*z_next;
           dz_current = basis_2*z_mid + basis_3*z_next;
-        }
 
-        if (z_current > 2) {
-          std::cout << std::endl;
-          std::cout << "z is real high" << std::endl;          
-          std::cout << "t_liftoff = " << t_liftoff << std::endl;
-          std::cout << "t_next_touchdown = " << t_next_touchdown << std::endl;
-          std::cout << "t_f = " << t_f << std::endl;
-          std::cout << "t = " << t << std::endl;
-          std::cout << "t_swing = t - t_liftoff = " << t_swing << std::endl;
-
-          // FootstepState last_step = footstep_plan_[i].back()[2];
-          std::cout << "Max t = " << footstep_plan_[i].back()[2] << std::endl;
         }
 
         foot_state_msg.position.x = x_current;
