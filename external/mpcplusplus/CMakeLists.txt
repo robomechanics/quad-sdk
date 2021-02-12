@@ -49,7 +49,7 @@ include_directories(
 add_library(${PROJECT_NAME}
    src/mpcplusplus.cpp
 )
-target_link_libraries(${PROJECT_NAME} OsqpEigen::OsqpEigen)
+target_link_libraries(${PROJECT_NAME} OsqpEigen::OsqpEigen )
 
 #############
 ## Install ##
@@ -75,4 +75,4 @@ install(DIRECTORY include/${PROJECT_NAME}/
 #############
 
 catkin_add_gtest(mpcplusplus_test test/test_mpcplusplus.cpp)
-target_link_libraries(mpcplusplus_test ${catkin_LIBRARIES} mpcplusplus)
+target_link_libraries(mpcplusplus_test ${catkin_LIBRARIES} mpcplusplus ${PYTHON_LIBRARIES})

@@ -19,11 +19,10 @@ LinearMPC::LinearMPC(const int N, const int Nx, const int Nu)
   
   num_dyn_constraints_ = N * Nx;
   num_contact_constraints_ = 4*5*N; // num legs * num constraints per leg * num tsteps
-  
   num_state_vars_= (N_ + 1) * Nx;
   num_control_vars_= N * Nu;
-  num_constraints_ = num_dyn_constraints_ + num_contact_constraints_;;
   num_decision_vars_ = num_state_vars_ + num_control_vars_;
+  num_constraints_ = num_dyn_constraints_ + num_contact_constraints_ + num_decision_vars_;
 
   // Setup contact matrices and size vectors
   b_contact_lo_.resize(num_contact_constraints_);
@@ -106,18 +105,11 @@ void LinearMPC::update_contact(const std::vector<std::vector<bool>> contact_sequ
 
   b_contact_lo_.setZero();
   b_contact_hi_.setZero();
-
-  std::cout << A_con_dense_.rows() << ", " << A_con_dense_.cols() << std::endl;
-  std::cout << b_contact_lo_.rows() << std::endl;
   for (int i = 0; i < N_; ++i) { // iterate over horizon
 
     for (int j = 0; j < 4; ++j) { // iterate over legs
-      //std::cout << i << ", " << j << std::endl;
       int row_start = 5*(4*i+j);
       int col_start = num_state_vars_ + 3*i+j;
-
-      std::cout << row_start << ", " << col_start << std::endl;
-
       A_con_dense_.block(row_start, col_start, 5, 3) = C; // This can be done in the constructor
       if (contact_sequence.at(i).at(j)) { // ground contact
          b_contact_lo_.segment(row_start,5) = lo_contact;
@@ -132,6 +124,18 @@ void LinearMPC::update_contact(const std::vector<std::vector<bool>> contact_sequ
   // Convert contact sequence to constraint vector bounds
   b_contact_lo_ = Eigen::VectorXd::Zero(num_contact_constraints_);
   b_contact_hi_ = Eigen::VectorXd::Zero(num_contact_constraints_);
+}
+
+void LinearMPC::update_state_bounds(const Eigen::VectorXd state_lo,
+                                    const Eigen::VectorXd state_hi) {
+  b_state_lo_ = state_lo.replicate(N_+1,1);
+  b_state_hi_ = state_hi.replicate(N_+1,1);
+}
+
+void LinearMPC::update_control_bounds(const Eigen::VectorXd control_lo,
+                                      const Eigen::VectorXd control_hi) {
+  b_control_lo_ = control_lo.replicate(N_,1);
+  b_control_hi_ = control_hi.replicate(N_,1);
 }
 
 void LinearMPC::get_cost_function(const Eigen::MatrixXd &ref_traj,
@@ -195,7 +199,10 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
   A_dense.topRows(num_dyn_constraints_) = A_dyn_dense_;
 
   // Add contact matrix to linear constraint matrix
-  A_dense.bottomRows(num_contact_constraints_) = A_con_dense_;
+  A_dense.middleRows(num_dyn_constraints_, num_contact_constraints_) = A_con_dense_;
+
+  // Add identity matrix to linear constraint matrix for state and control bounds
+  A_dense.bottomRows(num_decision_vars_) = Eigen::MatrixXd::Identity(num_decision_vars_,num_decision_vars_);
 
   // Convert hessian and linear constraint matrix to sparse (wanted by OSQP solver)
   Eigen::SparseMatrix<double> H = H_.sparseView();
@@ -211,14 +218,17 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
     std::cout << "Nx: " << nx_ << std::endl;
   #endif
 
+  std::cout << b_state_hi_.size() + b_control_hi_.size();
+  
   // Setup lower and  upper bounds for linear constraints
   Eigen::VectorXd l(num_constraints_);
   l.setZero();
-  l << b_dyn_, b_contact_lo_;
+  l << b_dyn_, b_contact_lo_,b_state_lo_,b_control_lo_;
 
   Eigen::VectorXd u(num_constraints_);
+
   u.setZero();
-  u << b_dyn_, b_contact_hi_; 
+  u << b_dyn_, b_contact_hi_,b_state_hi_,b_control_hi_; 
 
   // Init solver if not already initialized
   if (!solver_.isInitialized()) {

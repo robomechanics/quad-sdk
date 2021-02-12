@@ -25,6 +25,12 @@ public:
   void update_contact(const std::vector<std::vector<bool> > contact_sequence,
                       const double fmin, const double fmax, const double mu);
 
+  void update_state_bounds(const Eigen::VectorXd state_lo,
+                           const Eigen::VectorXd state_hi);
+
+  void update_control_bounds(const Eigen::VectorXd control_lo,
+                             const Eigen::VectorXd control_hi);
+
   /**
    * @brief Constructs the quadratic cost function of the form
    * 
@@ -90,6 +96,18 @@ private:
 
   /// Friction constraint upper bound
   Eigen::VectorXd b_contact_hi_;
+
+  /// State constraint lower bound
+  Eigen::VectorXd b_state_lo_;
+
+  /// State constraint upper bound
+  Eigen::VectorXd b_state_hi_;
+
+  /// Control constraint lower bound
+  Eigen::VectorXd b_control_lo_;
+
+  /// Control constraint upper bound
+  Eigen::VectorXd b_control_hi_;
 
   /// Highest possible double value
   const double INF_ = std::numeric_limits<double>::max();
