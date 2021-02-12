@@ -47,6 +47,17 @@ class SpiritKinematics {
       Eigen::AngleAxisd rot);
 
   /**
+   * @brief Compute forward kinematics for a specified leg from the body COM
+   * @param[in] leg_index Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
+   * @param[in] body_pos Position of center of body frame
+   * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
+   * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
+   * @param[out] foot_pos_world Position of the specified foot in world frame
+   */
+  void bodyToFootFK(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
+      Eigen::Vector3d joint_state, Eigen::Vector3d &foot_pos_body);
+
+  /**
    * @brief Compute forward kinematics for a specified leg
    * @param[in] leg_index Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
    * @param[in] body_pos Position of center of body frame

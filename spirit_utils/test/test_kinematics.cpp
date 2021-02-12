@@ -97,3 +97,50 @@ TEST(KinematicsTest, testInfeasibleConfigurations) {
 
   EXPECT_EQ(1+1,2);
 }
+
+TEST(KinematicsTest, testBodyToFootFK) {
+  ros::NodeHandle nh;
+ 
+  // Declare kinematics object
+  SpiritKinematics spirit;
+
+  // Set up problem variables
+  Eigen::Vector3d body_pos = {0,0,0};
+  Eigen::Vector3d body_rpy = {0,0,0};
+  Eigen::Vector3d joint_state = {0.7,-0.3*M_PI,0*M_PI};
+  Eigen::Vector3d foot_pos_world;
+  Eigen::Vector3d joint_state_test;
+  Eigen::Vector3d foot_pos_body_test;
+
+  // Compute the kinematics
+  int N = 10000;
+  for (int config = 0; config < N; config++) {
+    
+    // Generate valid joint configurations
+    Eigen::Vector3d joint_state =
+      { (spirit.getJointUpperLimit(0) - spirit.getJointLowerLimit(0))*
+        (double)rand()/RAND_MAX + spirit.getJointLowerLimit(0),
+        (spirit.getJointUpperLimit(1) - spirit.getJointLowerLimit(1))*
+        (double)rand()/RAND_MAX + spirit.getJointLowerLimit(1),
+        (spirit.getJointUpperLimit(2) - spirit.getJointLowerLimit(2))*
+        (double)rand()/RAND_MAX + spirit.getJointLowerLimit(2) };
+
+    for (int i = 0; i < 4; i++) {
+      int leg_index = i;
+
+      // Compute foot positions in this configuration
+      spirit.bodyToFootFK(leg_index,body_pos,body_rpy,joint_state,foot_pos_world);
+
+      // Run IK to compute corresponding joint angles, then back through FK
+      // This ensures that we are enforcing a hip-above-knee configuration if
+      // otherwise ambiguous.
+      spirit.legIK(leg_index,body_pos,body_rpy,foot_pos_world,joint_state_test);
+      spirit.bodyToFootFK(leg_index,body_pos,body_rpy,joint_state_test,
+        foot_pos_body_test);
+
+      // Check the answers
+      Eigen::Vector3d error = (foot_pos_world - foot_pos_body_test);
+      EXPECT_TRUE(error.norm() <= kinematics_tol);
+    }
+  }
+}
