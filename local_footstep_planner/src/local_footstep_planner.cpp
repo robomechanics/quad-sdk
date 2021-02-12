@@ -92,7 +92,7 @@ void LocalFootstepPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPt
     body_wrench_plan_.push_back(force);
   }
 
-  updatePlan();
+  updateDiscretePlan();
 }
 
 void LocalFootstepPlanner::updateDiscretePlan() {
@@ -180,8 +180,8 @@ void LocalFootstepPlanner::updateDiscretePlan() {
     }
   }
 
-  publishPlan();
-  publishSwingLegPlan();
+  publishDiscretePlan();
+  publishContinuousPlan();
   // timer.report();
 }
 
