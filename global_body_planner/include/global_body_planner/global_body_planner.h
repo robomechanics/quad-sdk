@@ -7,7 +7,7 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <spirit_msgs/BodyPlan.h>
-#include <spirit_msgs/StateEstimate.h>
+#include <spirit_msgs/RobotState.h>
 
 #include "global_body_planner/rrt_connect.h"
 
@@ -51,10 +51,10 @@ class GlobalBodyPlanner {
     void terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg);
 
     /**
-     * @brief Callback function to handle new ground truth state data
-     * @param[in] msg the message contining ground truth state data
+     * @brief Callback function to handle new robot  state data
+     * @param[in] msg the message contining robot state data
      */
-    void robotStateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg);
+    void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 
     /**
      * @brief Check if a replan is required

@@ -7,7 +7,7 @@
 #include <spirit_msgs/Footstep.h>
 #include <spirit_msgs/FootstepPlan.h>
 #include <spirit_msgs/SwingLegPlan.h>
-#include <spirit_msgs/StateEstimate.h>
+#include <spirit_msgs/RobotState.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>
 
@@ -57,9 +57,15 @@ private:
 
   /**
    * @brief Callback function to handle new state estimate data
-   * @param[in] msg State Estimate message containing output of the state estimator node
+   * @param[in] msg RobotState message containing output of the state estimator node
    */
-  void stateEstimateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg);
+  void stateEstimateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+
+  /**
+   * @brief Callback function to handle new state estimate data
+   * @param[in] msg RobotState message containing output of the state estimator node
+   */
+  void groundTruthStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 
   /// ROS subscriber for the body plan
   ros::Subscriber body_plan_sub_;
@@ -75,6 +81,9 @@ private:
 
   /// ROS Subscriber for the state estimate
   ros::Subscriber state_estimate_sub_;
+
+  /// ROS Subscriber for the ground truth state
+  ros::Subscriber ground_truth_state_sub_;
 
   /// ROS Publisher for the interpolated body plan vizualization
   ros::Publisher body_plan_viz_pub_;
@@ -103,8 +112,11 @@ private:
   /// ROS Publisher for the state estimate visualization
   ros::Publisher joint_states_viz_pub_;
 
+  /// ROS Transform Broadcaster to publish the estimate transform for the base link
+  tf2_ros::TransformBroadcaster estimate_base_tf_br_;
+
   /// ROS Transform Broadcaster to publish the transform for the base link
-  tf2_ros::TransformBroadcaster base_tf_br_;
+  tf2_ros::TransformBroadcaster ground_truth_base_tf_br_;
 
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
