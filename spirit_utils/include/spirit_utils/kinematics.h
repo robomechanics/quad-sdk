@@ -9,9 +9,8 @@
 #include <random>
 #include <math.h>
 
-Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
-
-
+namespace spirit_utils {
+ 
 //! A lightweight library for spirit kinematic functions
 /*!
   This library includes several functions and classes to aid in spirit kinematic
@@ -19,6 +18,7 @@ Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
   complicated computations that would be a pain to write out by hand.
 */
 class SpiritKinematics {
+
   public:
   /**
    * @brief Constructor for SpiritKinematics Class
@@ -116,31 +116,36 @@ void legBaseFK(int leg_index, Eigen::Vector3d body_pos,
     const std::vector<double> l0_vec_ = {0.1,0.1,-0.1,-0.1};
 
     /// Upper link length
-    const double l1_ = 0.2;
+    const double l1_ = 0.206;
 
     /// Lower link length
-    const double l2_ = 0.2;
+    const double l2_ = 0.206;
 
     /// Leg 0 shoulder offset
-    const Eigen::Vector3d shoulder_offset_0_ = {0.2, 0.1, 0};
+    const Eigen::Vector3d shoulder_offset_0_ = {0.2263, 0.07, 0};
 
     /// Leg 1 shoulder offset
-    const Eigen::Vector3d shoulder_offset_1_ = {-0.2, 0.1, 0};
+    const Eigen::Vector3d shoulder_offset_1_ = {-0.2263, 0.07, 0};
 
     /// Leg 2 shoulder offset
-    const Eigen::Vector3d shoulder_offset_2_ = {0.2, -0.1, 0};
+    const Eigen::Vector3d shoulder_offset_2_ = {0.2263, -0.07, 0};
 
     /// Leg 3 shoulder offset
-    const Eigen::Vector3d shoulder_offset_3_ = {-0.2, -0.1, 0};
+    const Eigen::Vector3d shoulder_offset_3_ = {-0.2263, -0.07, 0};
 
     /// Vector of shoulder offsets
     std::vector<Eigen::Vector3d> shoulder_offsets_;
 
+    /// Epsilon offset for joint bounds
+    const double joint_eps = 0.1;
+
     /// Vector of the joint lower limits 
-    const std::vector<double> joint_min_ = {-1,-0.5*M_PI,0};
+    const std::vector<double> joint_min_ = {-1+joint_eps,-0.5*M_PI + joint_eps,joint_eps};
 
     /// Vector of the joint upper limits
-    const std::vector<double> joint_max_ = {1,M_PI,M_PI};
+    const std::vector<double> joint_max_ = {1-joint_eps,M_PI-joint_eps,M_PI-joint_eps};
 };
+
+}
 
 #endif // KINEMATICS_H
