@@ -4,8 +4,7 @@
 #include <ros/ros.h>
 #include <eigen3/Eigen/Eigen>
 #include <spirit_msgs/BodyPlan.h>
-#include <spirit_msgs/Footstep.h>
-#include <spirit_msgs/FootstepPlan.h>
+#include <spirit_msgs/MultiFootPlanDiscrete.h>
 #include <spirit_msgs/ControlInput.h>
 #include <spirit_msgs/RobotState.h>
 
@@ -34,10 +33,10 @@ private:
    */
   void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 	/**
-   * @brief Callback function to handle new control inputs
-   * @param[in] Joint state message contining desired position, velocity, and torque for each joint
+   * @brief Callback function to handle new footstep plan data
+   * @param[in] MultiFootPlanDiscrete message contining foothold data for each foot
    */
-  void footstepPlanCallback(const spirit_msgs::FootstepPlan::ConstPtr& msg);
+  void footPlanDiscreteCallback(const spirit_msgs::MultiFootPlanDiscrete::ConstPtr& msg);
     /**
      * @brief Callback function to handle new body plan data
      * @param[in] nav_msgs::Path contining map data
