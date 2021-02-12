@@ -187,14 +187,22 @@ std::vector&lt; Wrench &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a029413a439d6621407f9e7d7020b18b5">t_plan_</a></td></tr>
 <tr class="memdesc:a029413a439d6621407f9e7d7020b18b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing the interpolated time data. <br /></td></tr>
 <tr class="separator:a029413a439d6621407f9e7d7020b18b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2ab110d211bbd95013b8ad2f4b9f67a"><td class="memItemLeft" align="right" valign="top"><a id="aa2ab110d211bbd95013b8ad2f4b9f67a"></a>
+ros::Time&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#aa2ab110d211bbd95013b8ad2f4b9f67a">plan_timestamp_</a></td></tr>
+<tr class="memdesc:aa2ab110d211bbd95013b8ad2f4b9f67a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time stamp for the beginning of the plan. <br /></td></tr>
+<tr class="separator:aa2ab110d211bbd95013b8ad2f4b9f67a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8163091678716ffd008380671cc5fa9d"><td class="memItemLeft" align="right" valign="top"><a id="a8163091678716ffd008380671cc5fa9d"></a>
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a8163091678716ffd008380671cc5fa9d">start_state_</a></td></tr>
-<tr class="memdesc:a8163091678716ffd008380671cc5fa9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starting state for planner. <br /></td></tr>
+<tr class="memdesc:a8163091678716ffd008380671cc5fa9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starting state for planner call. <br /></td></tr>
 <tr class="separator:a8163091678716ffd008380671cc5fa9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8529038176f49a0b2575471b7ba8b9c"><td class="memItemLeft" align="right" valign="top"><a id="ae8529038176f49a0b2575471b7ba8b9c"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#ae8529038176f49a0b2575471b7ba8b9c">start_time_</a></td></tr>
-<tr class="memdesc:ae8529038176f49a0b2575471b7ba8b9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starting time for planner (for replanning) <br /></td></tr>
-<tr class="separator:ae8529038176f49a0b2575471b7ba8b9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad13be2ea0f18e3f20d58b44043fa486f"><td class="memItemLeft" align="right" valign="top"><a id="ad13be2ea0f18e3f20d58b44043fa486f"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#ad13be2ea0f18e3f20d58b44043fa486f">goal_state_</a></td></tr>
+<tr class="memdesc:ad13be2ea0f18e3f20d58b44043fa486f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Goal state for planner. <br /></td></tr>
+<tr class="separator:ad13be2ea0f18e3f20d58b44043fa486f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e28747ebeaf79fefc55edfe43c4d53b"><td class="memItemLeft" align="right" valign="top"><a id="a5e28747ebeaf79fefc55edfe43c4d53b"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a5e28747ebeaf79fefc55edfe43c4d53b">replan_start_time_</a></td></tr>
+<tr class="memdesc:a5e28747ebeaf79fefc55edfe43c4d53b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starting time for planner call during replans relative to t_plan_[0]. <br /></td></tr>
+<tr class="separator:a5e28747ebeaf79fefc55edfe43c4d53b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a374758b62509d9be6fb6afdfadb8fa81"><td class="memItemLeft" align="right" valign="top"><a id="a374758b62509d9be6fb6afdfadb8fa81"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a374758b62509d9be6fb6afdfadb8fa81">committed_horizon_</a></td></tr>
 <tr class="memdesc:a374758b62509d9be6fb6afdfadb8fa81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Horizon to commit to (replan from the next state after this horizon) <br /></td></tr>
@@ -211,10 +219,6 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a692c8220178d6c12bde049d1e1b48dad">plan_from_robot_state_flag_</a></td></tr>
 <tr class="memdesc:a692c8220178d6c12bde049d1e1b48dad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag to determine if the planner needs to restart planning from the robot state. <br /></td></tr>
 <tr class="separator:a692c8220178d6c12bde049d1e1b48dad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad13be2ea0f18e3f20d58b44043fa486f"><td class="memItemLeft" align="right" valign="top"><a id="ad13be2ea0f18e3f20d58b44043fa486f"></a>
-std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#ad13be2ea0f18e3f20d58b44043fa486f">goal_state_</a></td></tr>
-<tr class="memdesc:ad13be2ea0f18e3f20d58b44043fa486f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Goal state for planner. <br /></td></tr>
-<tr class="separator:ad13be2ea0f18e3f20d58b44043fa486f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50df2ef4bdaca844a07ece58a468de64"><td class="memItemLeft" align="right" valign="top"><a id="a50df2ef4bdaca844a07ece58a468de64"></a>
 std::vector&lt; State &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a50df2ef4bdaca844a07ece58a468de64">state_sequence_</a></td></tr>
 <tr class="memdesc:a50df2ef4bdaca844a07ece58a468de64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sequence of discrete states in the plan. <br /></td></tr>

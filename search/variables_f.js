@@ -1,16 +1,16 @@
 var searchData=
 [
-  ['shoulder_5foffset_5f0_5f',['shoulder_offset_0_',['../classSpiritKinematics.html#a51220cb70560a456247f34b1d2f6cc73',1,'SpiritKinematics']]],
-  ['shoulder_5foffset_5f1_5f',['shoulder_offset_1_',['../classSpiritKinematics.html#a27f34271ad74cf0d0cf37fecf8c8fb4a',1,'SpiritKinematics']]],
-  ['shoulder_5foffset_5f2_5f',['shoulder_offset_2_',['../classSpiritKinematics.html#aefd44144f29c1c12fe2141e64c87dae0',1,'SpiritKinematics']]],
-  ['shoulder_5foffset_5f3_5f',['shoulder_offset_3_',['../classSpiritKinematics.html#a960690a6cf0c5e4c1a58ec158e2c935d',1,'SpiritKinematics']]],
-  ['shoulder_5foffsets_5f',['shoulder_offsets_',['../classSpiritKinematics.html#aba7ef2ba204864f73063d138598a4a6f',1,'SpiritKinematics']]],
+  ['shoulder_5foffset_5f0_5f',['shoulder_offset_0_',['../classspirit__utils_1_1SpiritKinematics.html#a527750c6110e7e9b5c52d80c5765f93f',1,'spirit_utils::SpiritKinematics']]],
+  ['shoulder_5foffset_5f1_5f',['shoulder_offset_1_',['../classspirit__utils_1_1SpiritKinematics.html#adc447954f794fe568225c4f7e09d84c0',1,'spirit_utils::SpiritKinematics']]],
+  ['shoulder_5foffset_5f2_5f',['shoulder_offset_2_',['../classspirit__utils_1_1SpiritKinematics.html#a34476d7a96bdbc5c21e109fa37be27ab',1,'spirit_utils::SpiritKinematics']]],
+  ['shoulder_5foffset_5f3_5f',['shoulder_offset_3_',['../classspirit__utils_1_1SpiritKinematics.html#a96bf7ccfdd4773ac087c9fcb1737ae2a',1,'spirit_utils::SpiritKinematics']]],
+  ['shoulder_5foffsets_5f',['shoulder_offsets_',['../classspirit__utils_1_1SpiritKinematics.html#a95a1c550ca95022ef9c0cc90157f7a46',1,'spirit_utils::SpiritKinematics']]],
   ['solve_5ftime_5finfo_5f',['solve_time_info_',['../classGlobalBodyPlanner.html#ae431f7b02f8c58d4fa354faeed6714e9',1,'GlobalBodyPlanner']]],
   ['stand_5fjoint_5fangles_5f',['stand_joint_angles_',['../classOpenLoopController.html#aff1f013b84c601bb1d61836b52495e3d',1,'OpenLoopController']]],
   ['stand_5fkd_5f',['stand_kd_',['../classOpenLoopController.html#a9ae5c82659b5614b182f34429327a69a',1,'OpenLoopController']]],
   ['stand_5fkp_5f',['stand_kp_',['../classOpenLoopController.html#a14b44cae2d25402b7e122a8b47737301',1,'OpenLoopController']]],
   ['start_5fstate_5f',['start_state_',['../classGlobalBodyPlanner.html#a8163091678716ffd008380671cc5fa9d',1,'GlobalBodyPlanner::start_state_()'],['../classTwistBodyPlanner.html#a5345027e06096577fd1941c61980c245',1,'TwistBodyPlanner::start_state_()']]],
-  ['start_5ftime_5f',['start_time_',['../classGlobalBodyPlanner.html#ae8529038176f49a0b2575471b7ba8b9c',1,'GlobalBodyPlanner::start_time_()'],['../classspirit__utils_1_1FunctionTimer.html#a963b5aa76163a6bfb38269ca1359d144',1,'spirit_utils::FunctionTimer::start_time_()']]],
+  ['start_5ftime_5f',['start_time_',['../classspirit__utils_1_1FunctionTimer.html#a963b5aa76163a6bfb38269ca1359d144',1,'spirit_utils::FunctionTimer']]],
   ['state_5ferror_5fthreshold_5f',['state_error_threshold_',['../classGlobalBodyPlanner.html#ae29c7264b2b9bba67ae9cc223952dd6b',1,'GlobalBodyPlanner']]],
   ['state_5festimate_5fpub_5f',['state_estimate_pub_',['../classEKFEstimator.html#ae8c8abd3c5c7074c3fa85232a7174e91',1,'EKFEstimator']]],
   ['state_5festimate_5fsub_5f',['state_estimate_sub_',['../classRVizInterface.html#a0d2f37bf93ef7479542065c4f18d8fc1',1,'RVizInterface']]],
@@ -18,11 +18,5 @@ var searchData=
   ['stop_5ftime_5f',['stop_time_',['../classspirit__utils_1_1FunctionTimer.html#a3507e35aa0eb1be8baa825f85ba092a8',1,'spirit_utils::FunctionTimer']]],
   ['sub_5fcommand_5f',['sub_command_',['../classeffort__controllers_1_1SpiritController.html#a94f81d7ea734641cb8e10345ddf1cb8a',1,'effort_controllers::SpiritController']]],
   ['success_5f',['success_',['../classRRTClass.html#a7cddb22b09f2be69b1d93eb337963d03',1,'RRTClass']]],
-  ['successors',['successors',['../classGraphClass.html#a2e6c5c4d16682dafe430d71b0f8678a5',1,'GraphClass']]],
-  ['swing_5fleg_5f0_5fplan_5fviz_5fpub_5f',['swing_leg_0_plan_viz_pub_',['../classRVizInterface.html#a08a8963034f293c310f49083282c3bd0',1,'RVizInterface']]],
-  ['swing_5fleg_5f1_5fplan_5fviz_5fpub_5f',['swing_leg_1_plan_viz_pub_',['../classRVizInterface.html#aca58a62992f1ab8d7efce461b6eae6c3',1,'RVizInterface']]],
-  ['swing_5fleg_5f2_5fplan_5fviz_5fpub_5f',['swing_leg_2_plan_viz_pub_',['../classRVizInterface.html#a065bb56d0496193324ee2152516bf645',1,'RVizInterface']]],
-  ['swing_5fleg_5f3_5fplan_5fviz_5fpub_5f',['swing_leg_3_plan_viz_pub_',['../classRVizInterface.html#af4bb4ee5621cbaaf2db0f358bf79716f',1,'RVizInterface']]],
-  ['swing_5fleg_5fplan_5fpub_5f',['swing_leg_plan_pub_',['../classLocalFootstepPlanner.html#a1d35416433445b7864d6aeb8a7e11c96',1,'LocalFootstepPlanner']]],
-  ['swing_5fleg_5fplan_5fsub_5f',['swing_leg_plan_sub_',['../classRVizInterface.html#adbc58c86e697f834a846d37700873246',1,'RVizInterface']]]
+  ['successors',['successors',['../classGraphClass.html#a2e6c5c4d16682dafe430d71b0f8678a5',1,'GraphClass']]]
 ];

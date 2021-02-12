@@ -115,24 +115,18 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:aed0f0743a34e829b131665cbd34259c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aed0f0743a34e829b131665cbd34259c8">bodyPlanCallback</a> (const spirit_msgs::BodyPlan::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:aed0f0743a34e829b131665cbd34259c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new body plan data.  <a href="#aed0f0743a34e829b131665cbd34259c8">More...</a><br /></td></tr>
 <tr class="separator:aed0f0743a34e829b131665cbd34259c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a987a731b867e99fb0c0fa3d223f631b2"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a987a731b867e99fb0c0fa3d223f631b2">interpMat</a> (std::vector&lt; double &gt; input_vec, std::vector&lt; std::vector&lt; double &gt;&gt; output_mat, double query_point)</td></tr>
-<tr class="memdesc:a987a731b867e99fb0c0fa3d223f631b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolate data from column vectors contained in a matrix (vector of row vectors) provided an input vector and query point.  <a href="#a987a731b867e99fb0c0fa3d223f631b2">More...</a><br /></td></tr>
-<tr class="separator:a987a731b867e99fb0c0fa3d223f631b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac4ace773f9a797d2eac45c5796aabbfc"><td class="memItemLeft" align="right" valign="top">Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ac4ace773f9a797d2eac45c5796aabbfc">interpVector3d</a> (std::vector&lt; double &gt; input_vec, std::vector&lt; Eigen::Vector3d &gt; output_mat, double query_point)</td></tr>
-<tr class="memdesc:ac4ace773f9a797d2eac45c5796aabbfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolate data from column vectors contained in a matrix (vector of row vectors) provided an input vector and query point.  <a href="#ac4ace773f9a797d2eac45c5796aabbfc">More...</a><br /></td></tr>
-<tr class="separator:ac4ace773f9a797d2eac45c5796aabbfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a72440a898d177da24ade355fec6c1f99"><td class="memItemLeft" align="right" valign="top"><a id="a72440a898d177da24ade355fec6c1f99"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a72440a898d177da24ade355fec6c1f99">updatePlan</a> ()</td></tr>
-<tr class="memdesc:a72440a898d177da24ade355fec6c1f99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the footstep plan with the current plan. <br /></td></tr>
-<tr class="separator:a72440a898d177da24ade355fec6c1f99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ae687ec55f5b7203d9f236220eada81"><td class="memItemLeft" align="right" valign="top"><a id="a7ae687ec55f5b7203d9f236220eada81"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a7ae687ec55f5b7203d9f236220eada81">publishSwingLegPlan</a> ()</td></tr>
-<tr class="memdesc:a7ae687ec55f5b7203d9f236220eada81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update and publish the swing leg plan to match the current footstep plan. <br /></td></tr>
-<tr class="separator:a7ae687ec55f5b7203d9f236220eada81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0e199be9129386592065a505df5cddb"><td class="memItemLeft" align="right" valign="top"><a id="aa0e199be9129386592065a505df5cddb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aa0e199be9129386592065a505df5cddb">publishPlan</a> ()</td></tr>
-<tr class="memdesc:aa0e199be9129386592065a505df5cddb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish the current footstep plan. <br /></td></tr>
-<tr class="separator:aa0e199be9129386592065a505df5cddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71b4ee2f4f3b385e27e21fb9cd0208a3"><td class="memItemLeft" align="right" valign="top"><a id="a71b4ee2f4f3b385e27e21fb9cd0208a3"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a71b4ee2f4f3b385e27e21fb9cd0208a3">updateDiscretePlan</a> ()</td></tr>
+<tr class="memdesc:a71b4ee2f4f3b385e27e21fb9cd0208a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the discrete footstep plan with the current plan. <br /></td></tr>
+<tr class="separator:a71b4ee2f4f3b385e27e21fb9cd0208a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2569ee9a55f6187ec7786e285a881d9f"><td class="memItemLeft" align="right" valign="top"><a id="a2569ee9a55f6187ec7786e285a881d9f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a2569ee9a55f6187ec7786e285a881d9f">publishContinuousPlan</a> ()</td></tr>
+<tr class="memdesc:a2569ee9a55f6187ec7786e285a881d9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update and publish the continuous foot plan to match the discrete. <br /></td></tr>
+<tr class="separator:a2569ee9a55f6187ec7786e285a881d9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b3eaa775a2218463a0dfb58f8505fca"><td class="memItemLeft" align="right" valign="top"><a id="a4b3eaa775a2218463a0dfb58f8505fca"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a4b3eaa775a2218463a0dfb58f8505fca">publishDiscretePlan</a> ()</td></tr>
+<tr class="memdesc:a4b3eaa775a2218463a0dfb58f8505fca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish the current footstep plan. <br /></td></tr>
+<tr class="separator:a4b3eaa775a2218463a0dfb58f8505fca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa90f4e9864bc60edb71f97d82cca1e55"><td class="memItemLeft" align="right" valign="top"><a id="aa90f4e9864bc60edb71f97d82cca1e55"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aa90f4e9864bc60edb71f97d82cca1e55">waitForData</a> ()</td></tr>
 <tr class="memdesc:aa90f4e9864bc60edb71f97d82cca1e55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wait until map and plan messages have been received and processed. <br /></td></tr>
@@ -148,14 +142,14 @@ ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a53993412f1a1fb942d92372478d6967d">body_plan_sub_</a></td></tr>
 <tr class="memdesc:a53993412f1a1fb942d92372478d6967d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subscriber for body plan messages. <br /></td></tr>
 <tr class="separator:a53993412f1a1fb942d92372478d6967d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a609bb89700073ad59c30f48c24f2f31f"><td class="memItemLeft" align="right" valign="top"><a id="a609bb89700073ad59c30f48c24f2f31f"></a>
-ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a609bb89700073ad59c30f48c24f2f31f">footstep_plan_pub_</a></td></tr>
-<tr class="memdesc:a609bb89700073ad59c30f48c24f2f31f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publisher for footstep plan messages. <br /></td></tr>
-<tr class="separator:a609bb89700073ad59c30f48c24f2f31f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d35416433445b7864d6aeb8a7e11c96"><td class="memItemLeft" align="right" valign="top"><a id="a1d35416433445b7864d6aeb8a7e11c96"></a>
-ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a1d35416433445b7864d6aeb8a7e11c96">swing_leg_plan_pub_</a></td></tr>
-<tr class="memdesc:a1d35416433445b7864d6aeb8a7e11c96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publisher for swing leg plan messages. <br /></td></tr>
-<tr class="separator:a1d35416433445b7864d6aeb8a7e11c96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36154a8581ac1636da19102c758215af"><td class="memItemLeft" align="right" valign="top"><a id="a36154a8581ac1636da19102c758215af"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a36154a8581ac1636da19102c758215af">foot_plan_discrete_pub_</a></td></tr>
+<tr class="memdesc:a36154a8581ac1636da19102c758215af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publisher for discrete foot plan messages. <br /></td></tr>
+<tr class="separator:a36154a8581ac1636da19102c758215af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c06a66af9aa74614d13439edd5be4f6"><td class="memItemLeft" align="right" valign="top"><a id="a5c06a66af9aa74614d13439edd5be4f6"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a5c06a66af9aa74614d13439edd5be4f6">foot_plan_continuous_pub_</a></td></tr>
+<tr class="memdesc:a5c06a66af9aa74614d13439edd5be4f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publisher for continuous. <br /></td></tr>
+<tr class="separator:a5c06a66af9aa74614d13439edd5be4f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1deeef388877a4597ca4b56610e0e627"><td class="memItemLeft" align="right" valign="top"><a id="a1deeef388877a4597ca4b56610e0e627"></a>
 ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a1deeef388877a4597ca4b56610e0e627">nh_</a></td></tr>
 <tr class="memdesc:a1deeef388877a4597ca4b56610e0e627"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nodehandle to pub to and sub from. <br /></td></tr>
@@ -196,18 +190,26 @@ std::vector&lt; std::vector&lt; <a class="el" href="classLocalFootstepPlanner.ht
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ab5a5e9c5c232856154d87f64c44333ac">t_plan_</a></td></tr>
 <tr class="memdesc:ab5a5e9c5c232856154d87f64c44333ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing time data. <br /></td></tr>
 <tr class="separator:ab5a5e9c5c232856154d87f64c44333ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7aa02137bd092c541c350da38f3b2a5"><td class="memItemLeft" align="right" valign="top"><a id="ab7aa02137bd092c541c350da38f3b2a5"></a>
+ros::Time&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ab7aa02137bd092c541c350da38f3b2a5">plan_timestamp_</a></td></tr>
+<tr class="memdesc:ab7aa02137bd092c541c350da38f3b2a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Timestamp of plan (should match body plan) <br /></td></tr>
+<tr class="separator:ab7aa02137bd092c541c350da38f3b2a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85ec156b75d085bdf14b2de9ed53cfbc"><td class="memItemLeft" align="right" valign="top"><a id="a85ec156b75d085bdf14b2de9ed53cfbc"></a>
 const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a85ec156b75d085bdf14b2de9ed53cfbc">num_feet_</a> = 4</td></tr>
 <tr class="memdesc:a85ec156b75d085bdf14b2de9ed53cfbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of feet. <br /></td></tr>
 <tr class="separator:a85ec156b75d085bdf14b2de9ed53cfbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a46ccce5daaee16961347b4bec9c591ee"><td class="memItemLeft" align="right" valign="top"><a id="a46ccce5daaee16961347b4bec9c591ee"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a46ccce5daaee16961347b4bec9c591ee">alpha_</a></td></tr>
-<tr class="memdesc:a46ccce5daaee16961347b4bec9c591ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ground clearance. <br /></td></tr>
-<tr class="separator:a46ccce5daaee16961347b4bec9c591ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3deb73bb001ce3174b140dcec995d35f"><td class="memItemLeft" align="right" valign="top"><a id="a3deb73bb001ce3174b140dcec995d35f"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a3deb73bb001ce3174b140dcec995d35f">grf_weight_</a></td></tr>
+<tr class="memdesc:a3deb73bb001ce3174b140dcec995d35f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Weighting on the projection of the grf. <br /></td></tr>
+<tr class="separator:a3deb73bb001ce3174b140dcec995d35f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0788930657a827b39b5313ab76e78d0"><td class="memItemLeft" align="right" valign="top"><a id="ad0788930657a827b39b5313ab76e78d0"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ad0788930657a827b39b5313ab76e78d0">max_footstep_horizon_</a></td></tr>
-<tr class="memdesc:ad0788930657a827b39b5313ab76e78d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ground clearance. <br /></td></tr>
+<tr class="memdesc:ad0788930657a827b39b5313ab76e78d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum horizon with which to plan footsteps. <br /></td></tr>
 <tr class="separator:ad0788930657a827b39b5313ab76e78d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cc4edbe957162aa66b83b6544c897c6"><td class="memItemLeft" align="right" valign="top"><a id="a3cc4edbe957162aa66b83b6544c897c6"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a3cc4edbe957162aa66b83b6544c897c6">num_cycles_</a></td></tr>
+<tr class="memdesc:a3cc4edbe957162aa66b83b6544c897c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of cycles to plan. <br /></td></tr>
+<tr class="separator:a3cc4edbe957162aa66b83b6544c897c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace99291ee0cc688b90cd50df8a5b09d5"><td class="memItemLeft" align="right" valign="top"><a id="ace99291ee0cc688b90cd50df8a5b09d5"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ace99291ee0cc688b90cd50df8a5b09d5">period_</a></td></tr>
 <tr class="memdesc:ace99291ee0cc688b90cd50df8a5b09d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ground clearance. <br /></td></tr>
@@ -284,112 +286,6 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<a id="a987a731b867e99fb0c0fa3d223f631b2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a987a731b867e99fb0c0fa3d223f631b2">&#9670;&nbsp;</a></span>interpMat()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; double &gt; LocalFootstepPlanner::interpMat </td>
-          <td>(</td>
-          <td class="paramtype">std::vector&lt; double &gt;&#160;</td>
-          <td class="paramname"><em>input_vec</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; std::vector&lt; double &gt;&gt;&#160;</td>
-          <td class="paramname"><em>output_mat</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>query_point</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Interpolate data from column vectors contained in a matrix (vector of row vectors) provided an input vector and query point. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">input_vec</td><td>Input vector </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">output_mat</td><td>Collection of row vectors such that each row corresponds to exactly one element in the input vector </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">input_val</td><td>Query point </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Vector of interpolated values </dd></dl>
-
-</div>
-</div>
-<a id="ac4ace773f9a797d2eac45c5796aabbfc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac4ace773f9a797d2eac45c5796aabbfc">&#9670;&nbsp;</a></span>interpVector3d()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">Eigen::Vector3d LocalFootstepPlanner::interpVector3d </td>
-          <td>(</td>
-          <td class="paramtype">std::vector&lt; double &gt;&#160;</td>
-          <td class="paramname"><em>input_vec</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; Eigen::Vector3d &gt;&#160;</td>
-          <td class="paramname"><em>output_mat</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>query_point</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Interpolate data from column vectors contained in a matrix (vector of row vectors) provided an input vector and query point. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">input_vec</td><td>Input vector </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">output_mat</td><td>Collection of row vectors such that each row corresponds to exactly one element in the input vector </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">input_val</td><td>Query point </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Vector of interpolated values </dd></dl>
 
 </div>
 </div>

@@ -88,9 +88,9 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a75f8d04ab51d1006bcd2c06f0e5ff89e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#a75f8d04ab51d1006bcd2c06f0e5ff89e">robotStateCallback</a> (const spirit_msgs::RobotState::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a75f8d04ab51d1006bcd2c06f0e5ff89e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new state estimates.  <a href="#a75f8d04ab51d1006bcd2c06f0e5ff89e">More...</a><br /></td></tr>
 <tr class="separator:a75f8d04ab51d1006bcd2c06f0e5ff89e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5ec9a45629972dab644e72aa1fc6b89"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#ad5ec9a45629972dab644e72aa1fc6b89">footstepPlanCallback</a> (const spirit_msgs::FootstepPlan::ConstPtr &amp;msg)</td></tr>
-<tr class="memdesc:ad5ec9a45629972dab644e72aa1fc6b89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new control inputs.  <a href="#ad5ec9a45629972dab644e72aa1fc6b89">More...</a><br /></td></tr>
-<tr class="separator:ad5ec9a45629972dab644e72aa1fc6b89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0c026d0cd39e5dd1db963b0cbe7c787"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#ab0c026d0cd39e5dd1db963b0cbe7c787">footPlanDiscreteCallback</a> (const spirit_msgs::MultiFootPlanDiscrete::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:ab0c026d0cd39e5dd1db963b0cbe7c787"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new footstep plan data.  <a href="#ab0c026d0cd39e5dd1db963b0cbe7c787">More...</a><br /></td></tr>
+<tr class="separator:ab0c026d0cd39e5dd1db963b0cbe7c787"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2271bd1d98fbdc1e4fdde018e7057c4a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPCController.html#a2271bd1d98fbdc1e4fdde018e7057c4a">bodyPlanCallback</a> (const spirit_msgs::BodyPlan::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a2271bd1d98fbdc1e4fdde018e7057c4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new body plan data.  <a href="#a2271bd1d98fbdc1e4fdde018e7057c4a">More...</a><br /></td></tr>
 <tr class="separator:a2271bd1d98fbdc1e4fdde018e7057c4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -237,8 +237,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 
 </div>
 </div>
-<a id="ad5ec9a45629972dab644e72aa1fc6b89"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad5ec9a45629972dab644e72aa1fc6b89">&#9670;&nbsp;</a></span>footstepPlanCallback()</h2>
+<a id="ab0c026d0cd39e5dd1db963b0cbe7c787"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0c026d0cd39e5dd1db963b0cbe7c787">&#9670;&nbsp;</a></span>footPlanDiscreteCallback()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -247,9 +247,9 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void MPCController::footstepPlanCallback </td>
+          <td class="memname">void MPCController::footPlanDiscreteCallback </td>
           <td>(</td>
-          <td class="paramtype">const spirit_msgs::FootstepPlan::ConstPtr &amp;&#160;</td>
+          <td class="paramtype">const spirit_msgs::MultiFootPlanDiscrete::ConstPtr &amp;&#160;</td>
           <td class="paramname"><em>msg</em></td><td>)</td>
           <td></td>
         </tr>
@@ -261,10 +261,10 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 </table>
 </div><div class="memdoc">
 
-<p>Callback function to handle new control inputs. </p>
+<p>Callback function to handle new footstep plan data. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">Joint</td><td>state message contining desired position, velocity, and torque for each joint </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">MultiFootPlanDiscrete</td><td>message contining foothold data for each foot </td></tr>
   </table>
   </dd>
 </dl>

@@ -1,7 +1,10 @@
 var searchData=
 [
+  ['t_5fbody_5fplan_5f',['t_body_plan_',['../classTrajectoryPublisher.html#afa0efcc753dbf781ac57d78c0caa0445',1,'TrajectoryPublisher']]],
   ['t_5fcycle_5f',['t_cycle_',['../classOpenLoopController.html#af95521b3e515859b6fc5df2cc2c53175',1,'OpenLoopController']]],
+  ['t_5fjoints_5fplan_5f',['t_joints_plan_',['../classTrajectoryPublisher.html#a04f33d68ebec430a88c4868842901a6f',1,'TrajectoryPublisher']]],
   ['t_5fplan_5f',['t_plan_',['../classGlobalBodyPlanner.html#a029413a439d6621407f9e7d7020b18b5',1,'GlobalBodyPlanner::t_plan_()'],['../classLocalFootstepPlanner.html#ab5a5e9c5c232856154d87f64c44333ac',1,'LocalFootstepPlanner::t_plan_()'],['../classTwistBodyPlanner.html#a5fb49e9dea314f073abffa31a1a38e6d',1,'TwistBodyPlanner::t_plan_()']]],
+  ['t_5ftraj_5f',['t_traj_',['../classTrajectoryPublisher.html#a46d90abfcb88d72f29e89f3457a3d904',1,'TrajectoryPublisher']]],
   ['table',['Table',['../classxacro_1_1Table.html',1,'xacro']]],
   ['target_5fpts_5f',['target_pts_',['../classOpenLoopController.html#a12d14e1429058daef7126aa93f6478c7',1,'OpenLoopController']]],
   ['target_5ftimes_5f',['target_times_',['../classOpenLoopController.html#abd5d6e6370d28451c9a80aef41c39be5',1,'OpenLoopController']]],
@@ -13,5 +16,10 @@ var searchData=
   ['terrainmapcallback',['terrainMapCallback',['../classGlobalBodyPlanner.html#a209eb08a4c8c9e51b88c4039a6cfbd12',1,'GlobalBodyPlanner::terrainMapCallback()'],['../classLocalFootstepPlanner.html#a29dd7f51c83c244633f4efc8c6fac1af',1,'LocalFootstepPlanner::terrainMapCallback()']]],
   ['terrainmappublisher',['TerrainMapPublisher',['../classTerrainMapPublisher.html',1,'TerrainMapPublisher'],['../classTerrainMapPublisher.html#a0a8d623893002835ad1efd85b2fd321b',1,'TerrainMapPublisher::TerrainMapPublisher()']]],
   ['torque_5flims_5f',['torque_lims_',['../classeffort__controllers_1_1SpiritController.html#af1da15d2c33e320435beaa1d44be7c3d',1,'effort_controllers::SpiritController']]],
+  ['traj_5fmsg_5f',['traj_msg_',['../classTrajectoryPublisher.html#a772f133318c9386be67a8af090fc115d',1,'TrajectoryPublisher']]],
+  ['trajectory_5fpub_5f',['trajectory_pub_',['../classTrajectoryPublisher.html#a36a2871c3e5120dc6d0f0770723372b7',1,'TrajectoryPublisher']]],
+  ['trajectory_5fstate_5fpub_5f',['trajectory_state_pub_',['../classTrajectoryPublisher.html#a287d747bdcb2476faf3e668bef6a9275',1,'TrajectoryPublisher']]],
+  ['trajectory_5ftimestamp_5f',['trajectory_timestamp_',['../classTrajectoryPublisher.html#aecb5e87702cfcf6b0d0d098926295809',1,'TrajectoryPublisher']]],
+  ['trajectorypublisher',['TrajectoryPublisher',['../classTrajectoryPublisher.html',1,'TrajectoryPublisher'],['../classTrajectoryPublisher.html#a8829068c0d4aeca30c6293872f4bcfc7',1,'TrajectoryPublisher::TrajectoryPublisher()']]],
   ['twistbodyplanner',['TwistBodyPlanner',['../classTwistBodyPlanner.html',1,'TwistBodyPlanner'],['../classTwistBodyPlanner.html#ab05c1949c1634c1dd745d01a06e73661',1,'TwistBodyPlanner::TwistBodyPlanner()']]]
 ];

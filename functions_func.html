@@ -88,6 +88,7 @@ $(function() {
 : <a class="el" href="classLocalFootstepPlanner.html#aed0f0743a34e829b131665cbd34259c8">LocalFootstepPlanner</a>
 , <a class="el" href="classMPCController.html#a2271bd1d98fbdc1e4fdde018e7057c4a">MPCController</a>
 , <a class="el" href="classRVizInterface.html#aaabd9d31b7d4fbbc367e8c30133de077">RVizInterface</a>
+, <a class="el" href="classTrajectoryPublisher.html#a0933b12439db57eb1dfe7ab03b2ca121">TrajectoryPublisher</a>
 </li>
 </ul>
 
@@ -125,7 +126,7 @@ $(function() {
 : <a class="el" href="classOpenLoopController.html#a3beab2a4275e702b63b445b439e88ebc">OpenLoopController</a>
 </li>
 <li>createAffineMatrix()
-: <a class="el" href="classSpiritKinematics.html#af53bf14b88d44f55aa27b92df2d2e2e2">SpiritKinematics</a>
+: <a class="el" href="classspirit__utils_1_1SpiritKinematics.html#af53bf14b88d44f55aa27b92df2d2e2e2">spirit_utils::SpiritKinematics</a>
 </li>
 <li>createMap()
 : <a class="el" href="classTerrainMapPublisher.html#a295ac03389590d98c589d2d58990b64e">TerrainMapPublisher</a>
@@ -158,9 +159,13 @@ $(function() {
 <li>FastTerrainMap()
 : <a class="el" href="classFastTerrainMap.html#ab243ccba0680afb064c70bead54bf126">FastTerrainMap</a>
 </li>
-<li>footstepPlanCallback()
-: <a class="el" href="classMPCController.html#ad5ec9a45629972dab644e72aa1fc6b89">MPCController</a>
-, <a class="el" href="classRVizInterface.html#a0b82f1f02393ee7a8313077e831a67fe">RVizInterface</a>
+<li>footPlanContinuousCallback()
+: <a class="el" href="classRVizInterface.html#a9f1d37c5e347d95476669160753b717d">RVizInterface</a>
+, <a class="el" href="classTrajectoryPublisher.html#a57012da902581f14746fd573158ffe9f">TrajectoryPublisher</a>
+</li>
+<li>footPlanDiscreteCallback()
+: <a class="el" href="classMPCController.html#ab0c026d0cd39e5dd1db963b0cbe7c787">MPCController</a>
+, <a class="el" href="classRVizInterface.html#a99865d7e970ea4d0669e0944d3a7aabd">RVizInterface</a>
 </li>
 <li>FunctionTimer()
 : <a class="el" href="classspirit__utils_1_1FunctionTimer.html#a70b86bb834c306099292323492a7409e">spirit_utils::FunctionTimer</a>
@@ -185,13 +190,13 @@ $(function() {
 : <a class="el" href="classGraphClass.html#a6fc85a70bacd5bc07043adfeb91797fa">GraphClass</a>
 </li>
 <li>getJointLowerLimit()
-: <a class="el" href="classSpiritKinematics.html#a44e63b5c878659c43359e53fb145ccab">SpiritKinematics</a>
+: <a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a44e63b5c878659c43359e53fb145ccab">spirit_utils::SpiritKinematics</a>
 </li>
 <li>getJointUpperLimit()
-: <a class="el" href="classSpiritKinematics.html#ac3f958e90d504a1af7ed21b1b061dc73">SpiritKinematics</a>
+: <a class="el" href="classspirit__utils_1_1SpiritKinematics.html#ac3f958e90d504a1af7ed21b1b061dc73">spirit_utils::SpiritKinematics</a>
 </li>
 <li>getLinkLength()
-: <a class="el" href="classSpiritKinematics.html#a4d9175f846baad7b866847a6941a8f22">SpiritKinematics</a>
+: <a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a4d9175f846baad7b866847a6941a8f22">spirit_utils::SpiritKinematics</a>
 </li>
 <li>getNearestNeighbor()
 : <a class="el" href="classPlannerClass.html#ae3a09a7a370a8826d313e5a8834d2058">PlannerClass</a>
@@ -239,6 +244,9 @@ $(function() {
 
 
 <h3><a id="index_i"></a>- i -</h3><ul>
+<li>importTrajectory()
+: <a class="el" href="classTrajectoryPublisher.html#a89953767a6ff017a181477982e407e51">TrajectoryPublisher</a>
+</li>
 <li>imuCallback()
 : <a class="el" href="classContactDetection.html#a8fe1967f11a94fd59bb691514b485166">ContactDetection</a>
 , <a class="el" href="classEKFEstimator.html#aa424c7fcb65b6524184d5112ba1646ba">EKFEstimator</a>
@@ -249,12 +257,6 @@ $(function() {
 </li>
 <li>initPlanner()
 : <a class="el" href="classGlobalBodyPlanner.html#ab7eea2c9ab7b6e0cc56a02340ec105f7">GlobalBodyPlanner</a>
-</li>
-<li>interpMat()
-: <a class="el" href="classLocalFootstepPlanner.html#a987a731b867e99fb0c0fa3d223f631b2">LocalFootstepPlanner</a>
-</li>
-<li>interpVector3d()
-: <a class="el" href="classLocalFootstepPlanner.html#ac4ace773f9a797d2eac45c5796aabbfc">LocalFootstepPlanner</a>
 </li>
 <li>isInRange()
 : <a class="el" href="classFastTerrainMap.html#a0a03f0a9b97c18748a776288515d9d35">FastTerrainMap</a>
@@ -273,16 +275,16 @@ $(function() {
 
 <h3><a id="index_l"></a>- l -</h3><ul>
 <li>legBaseFK()
-: <a class="el" href="classSpiritKinematics.html#a5481caa355fa2745c51a083e4d62e8a0">SpiritKinematics</a>
+: <a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a5481caa355fa2745c51a083e4d62e8a0">spirit_utils::SpiritKinematics</a>
 </li>
 <li>legControlCallback()
 : <a class="el" href="classMBLinkConverter.html#abde4dba9da7824f7dd88b19e40709550">MBLinkConverter</a>
 </li>
 <li>legFK()
-: <a class="el" href="classSpiritKinematics.html#ab32651e160ef32cd5c8266ae28d9e14e">SpiritKinematics</a>
+: <a class="el" href="classspirit__utils_1_1SpiritKinematics.html#ab32651e160ef32cd5c8266ae28d9e14e">spirit_utils::SpiritKinematics</a>
 </li>
 <li>legIK()
-: <a class="el" href="classSpiritKinematics.html#a0e5a9a8547a8c048b00967a684a89828">SpiritKinematics</a>
+: <a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a0e5a9a8547a8c048b00967a684a89828">spirit_utils::SpiritKinematics</a>
 </li>
 <li>Load()
 : <a class="el" href="classgazebo_1_1ContactPlugin.html#a492c5a81b81a97054723ceceee6d9058">gazebo::ContactPlugin</a>
@@ -381,8 +383,14 @@ $(function() {
 <li>publishBodyForce()
 : <a class="el" href="classBodyForceEstimator.html#a28347e575435b6d7dfd7a7fdf0d10537">BodyForceEstimator</a>
 </li>
+<li>publishContinuousPlan()
+: <a class="el" href="classLocalFootstepPlanner.html#a2569ee9a55f6187ec7786e285a881d9f">LocalFootstepPlanner</a>
+</li>
 <li>publishControlInput()
 : <a class="el" href="classMPCController.html#a9915855dd2a7fdadeaa7f6acc9a0ac55">MPCController</a>
+</li>
+<li>publishDiscretePlan()
+: <a class="el" href="classLocalFootstepPlanner.html#a4b3eaa775a2218463a0dfb58f8505fca">LocalFootstepPlanner</a>
 </li>
 <li>publishImu()
 : <a class="el" href="classRobotProxy.html#ae1ca4bb51deabab2da1a4f11913ad561">RobotProxy</a>
@@ -398,11 +406,13 @@ $(function() {
 </li>
 <li>publishPlan()
 : <a class="el" href="classGlobalBodyPlanner.html#a7ef31af306895c311faee09a7023896b">GlobalBodyPlanner</a>
-, <a class="el" href="classLocalFootstepPlanner.html#aa0e199be9129386592065a505df5cddb">LocalFootstepPlanner</a>
 , <a class="el" href="classTwistBodyPlanner.html#a0bf6dc6f10419df4cd4612ff9c1a71dd">TwistBodyPlanner</a>
 </li>
-<li>publishSwingLegPlan()
-: <a class="el" href="classLocalFootstepPlanner.html#a7ae687ec55f5b7203d9f236220eada81">LocalFootstepPlanner</a>
+<li>publishTrajectory()
+: <a class="el" href="classTrajectoryPublisher.html#a5f16f2b21540eb4ba67dfe7035331415">TrajectoryPublisher</a>
+</li>
+<li>publishTrajectoryState()
+: <a class="el" href="classTrajectoryPublisher.html#a28aa782df2b1a7ee0276609e052a3fd7">TrajectoryPublisher</a>
 </li>
 </ul>
 
@@ -467,6 +477,7 @@ $(function() {
 , <a class="el" href="classRobotProxy.html#ace8a2fbf01f6cee352c6ac6b9fdd3c28">RobotProxy</a>
 , <a class="el" href="classRVizInterface.html#a8cd5c2922136f4f8ce79738ad6ef4b70">RVizInterface</a>
 , <a class="el" href="classTerrainMapPublisher.html#a05d219e0cf2b9684029f79e3ec8de424">TerrainMapPublisher</a>
+, <a class="el" href="classTrajectoryPublisher.html#a327a24792e8a4d54f34f98cac7f2883d">TrajectoryPublisher</a>
 , <a class="el" href="classTwistBodyPlanner.html#a1dd02d43a7d43984adb0d3ae025a1745">TwistBodyPlanner</a>
 </li>
 <li>SpiritController()
@@ -476,13 +487,10 @@ $(function() {
 : <a class="el" href="classgazebo_1_1SpiritEstimatorGroundTruth.html#a4654d98fdd0f9719da402bae68dfb4b5">gazebo::SpiritEstimatorGroundTruth</a>
 </li>
 <li>SpiritKinematics()
-: <a class="el" href="classSpiritKinematics.html#a231ed6a775e671eee1367770668f16f5">SpiritKinematics</a>
+: <a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a231ed6a775e671eee1367770668f16f5">spirit_utils::SpiritKinematics</a>
 </li>
 <li>stateEstimateCallback()
 : <a class="el" href="classRVizInterface.html#a1d9710ecdb33bfdc0209fd9bf80c3500">RVizInterface</a>
-</li>
-<li>swingLegPlanCallback()
-: <a class="el" href="classRVizInterface.html#a3f56f091287206082e996a18dba07757">RVizInterface</a>
 </li>
 </ul>
 
@@ -495,6 +503,9 @@ $(function() {
 <li>TerrainMapPublisher()
 : <a class="el" href="classTerrainMapPublisher.html#a0a8d623893002835ad1efd85b2fd321b">TerrainMapPublisher</a>
 </li>
+<li>TrajectoryPublisher()
+: <a class="el" href="classTrajectoryPublisher.html#a8829068c0d4aeca30c6293872f4bcfc7">TrajectoryPublisher</a>
+</li>
 <li>TwistBodyPlanner()
 : <a class="el" href="classTwistBodyPlanner.html#ab05c1949c1634c1dd745d01a06e73661">TwistBodyPlanner</a>
 </li>
@@ -502,15 +513,18 @@ $(function() {
 
 
 <h3><a id="index_u"></a>- u -</h3><ul>
+<li>updateDiscretePlan()
+: <a class="el" href="classLocalFootstepPlanner.html#a71b4ee2f4f3b385e27e21fb9cd0208a3">LocalFootstepPlanner</a>
+</li>
 <li>updateGValue()
 : <a class="el" href="classGraphClass.html#ae87d58394dc58f56bd4f619193423046">GraphClass</a>
-</li>
-<li>updatePlan()
-: <a class="el" href="classLocalFootstepPlanner.html#a72440a898d177da24ade355fec6c1f99">LocalFootstepPlanner</a>
 </li>
 <li>updateStep()
 : <a class="el" href="classEKFEstimator.html#a2aa7c42b497574075809cf6812cc1ac6">EKFEstimator</a>
 , <a class="el" href="classGroundTruthPublisher.html#a0da4de457cabb8dfb3812ea7589b04ab">GroundTruthPublisher</a>
+</li>
+<li>updateTrajectory()
+: <a class="el" href="classTrajectoryPublisher.html#a8b909db4c03b058debfcd70ee02b8600">TrajectoryPublisher</a>
 </li>
 </ul>
 

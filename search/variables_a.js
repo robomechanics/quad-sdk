@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['l0_5fvec_5f',['l0_vec_',['../classSpiritKinematics.html#a24770c2c860818f5d556fbd95336e2a0',1,'SpiritKinematics']]],
-  ['l1_5f',['l1_',['../classSpiritKinematics.html#a2abd4ce4b3e7df58c39f15e6bdfe1828',1,'SpiritKinematics']]],
-  ['l2_5f',['l2_',['../classSpiritKinematics.html#a2bb482a5f478dcfc9f69ffed03cf2b65',1,'SpiritKinematics']]],
+  ['l0_5fvec_5f',['l0_vec_',['../classspirit__utils_1_1SpiritKinematics.html#aa31bb7395b56161c1d2cd44da3a1f0e3',1,'spirit_utils::SpiritKinematics']]],
+  ['l1_5f',['l1_',['../classspirit__utils_1_1SpiritKinematics.html#aade05d2dc6ff8d30cb5a1936d71762e8',1,'spirit_utils::SpiritKinematics']]],
+  ['l2_5f',['l2_',['../classspirit__utils_1_1SpiritKinematics.html#a093bbf828e49b8eaf8fb81900b1ddebb',1,'spirit_utils::SpiritKinematics']]],
   ['last_5fcmd_5fvel_5fmsg_5ftime_5f',['last_cmd_vel_msg_time_',['../classTwistBodyPlanner.html#a5c940c533b47bda515f903232b133ff7',1,'TwistBodyPlanner']]],
   ['last_5fcmd_5fvel_5fmsg_5ftime_5fmax_5f',['last_cmd_vel_msg_time_max_',['../classTwistBodyPlanner.html#aad333bd74dcd74d9b39549fe0a51b9ee',1,'TwistBodyPlanner']]],
   ['last_5fcontact_5fest_5f',['last_contact_est_',['../classContactDetection.html#a2ae3ae173cb542bdfaa51bb0a4fe18f8',1,'ContactDetection']]],

@@ -14,5 +14,5 @@ var searchData=
   ['select_5fnpy_5ftype_3c_20uint8_5ft_20_3e',['select_npy_type&lt; uint8_t &gt;',['../structmatplotlibcpp_1_1select__npy__type_3_01uint8__t_01_4.html',1,'matplotlibcpp']]],
   ['spiritcontroller',['SpiritController',['../classeffort__controllers_1_1SpiritController.html',1,'effort_controllers']]],
   ['spiritestimatorgroundtruth',['SpiritEstimatorGroundTruth',['../classgazebo_1_1SpiritEstimatorGroundTruth.html',1,'gazebo']]],
-  ['spiritkinematics',['SpiritKinematics',['../classSpiritKinematics.html',1,'']]]
+  ['spiritkinematics',['SpiritKinematics',['../classspirit__utils_1_1SpiritKinematics.html',1,'spirit_utils']]]
 ];
