@@ -20,9 +20,10 @@ public:
                       const std::vector<Eigen::MatrixXd> &R);
 
   void update_dynamics(const std::vector<Eigen::MatrixXd> &Ad,
-                                const std::vector<Eigen::MatrixXd> &Bd);
+                       const std::vector<Eigen::MatrixXd> &Bd);
 
-  void update_contact(const std::vector<bool> contact_sequence);
+  void update_contact(const std::vector<std::vector<bool> > contact_sequence,
+                      const double fmin, const double fmax, const double mu);
 
   /**
    * @brief Constructs the quadratic cost function of the form
@@ -85,12 +86,13 @@ private:
   Eigen::MatrixXd A_con_dense_;
 
   /// Friction constraint lower bound
-  Eigen::MatrixXd b_contact_lo_;
+  Eigen::VectorXd b_contact_lo_;
 
   /// Friction constraint upper bound
-  Eigen::MatrixXd b_contact_hi_;
+  Eigen::VectorXd b_contact_hi_;
 
-
+  /// Highest possible double value
+  const double INF_ = std::numeric_limits<double>::max();
 
   /// OSQP solver instance
   OsqpEigen::Solver solver_;

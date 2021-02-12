@@ -18,12 +18,19 @@ LinearMPC::LinearMPC(const int N, const int Nx, const int Nu)
   : N_(N), nx_(Nx), nu_(Nu) {
   
   num_dyn_constraints_ = N * Nx;
-  num_contact_constraints_ = N * Nu;
+  num_contact_constraints_ = 4*5*N; // num legs * num constraints per leg * num tsteps
   
   num_state_vars_= (N_ + 1) * Nx;
   num_control_vars_= N * Nu;
   num_constraints_ = num_dyn_constraints_ + num_contact_constraints_;;
   num_decision_vars_ = num_state_vars_ + num_control_vars_;
+
+  // Setup contact matrices and size vectors
+  b_contact_lo_.resize(num_contact_constraints_);
+  b_contact_lo_.setZero();
+
+  b_contact_hi_.resize(num_contact_constraints_);
+  b_contact_hi_.setZero();
 }
 
 void LinearMPC::update_weights(const std::vector<Eigen::MatrixXd> &Q, 
@@ -72,11 +79,55 @@ void LinearMPC::update_dynamics(const std::vector<Eigen::MatrixXd> &Ad,
   b_dyn_ = Eigen::MatrixXd::Zero(num_dyn_constraints_,1);
 }
 
-void LinearMPC::update_contact(const std::vector<bool> contact_sequence) {
+void LinearMPC::update_contact(const std::vector<std::vector<bool>> contact_sequence,
+                               const double fmin,
+                               const double fmax,
+                               const double mu) {
   assert(contact_sequence.size() == N_);
+  assert(contact_sequence.front().size() == 4);
+  assert(0 <= mu && mu <= 1);
+  assert(fmin <= fmax);
 
   // Convert contact sequence to constraint matrix
   A_con_dense_ = Eigen::MatrixXd::Zero(num_contact_constraints_, num_decision_vars_);
+
+  Eigen::MatrixXd C(5,3);
+  Eigen::VectorXd lo_contact(5);
+  Eigen::VectorXd hi_contact(5);
+
+  C << 1/mu, 0, 1,
+       1/mu, 0, -1,
+       0, 1/mu, 1,
+       0, 1/mu, -1,
+       0, 0, 1;
+
+  lo_contact << 0, -INF_, 0, -INF_, fmin;
+  hi_contact << 0, INF_, 0, INF_, fmax;
+
+  b_contact_lo_.setZero();
+  b_contact_hi_.setZero();
+
+  std::cout << A_con_dense_.rows() << ", " << A_con_dense_.cols() << std::endl;
+  std::cout << b_contact_lo_.rows() << std::endl;
+  for (int i = 0; i < N_; ++i) { // iterate over horizon
+
+    for (int j = 0; j < 4; ++j) { // iterate over legs
+      //std::cout << i << ", " << j << std::endl;
+      int row_start = 5*(4*i+j);
+      int col_start = num_state_vars_ + 3*i+j;
+
+      std::cout << row_start << ", " << col_start << std::endl;
+
+      A_con_dense_.block(row_start, col_start, 5, 3) = C; // This can be done in the constructor
+      if (contact_sequence.at(i).at(j)) { // ground contact
+         b_contact_lo_.segment(row_start,5) = lo_contact;
+         b_contact_hi_.segment(row_start,5) = hi_contact;
+      }
+      else { 
+        // do nothing, bounds have been zeroed out earlier in this function
+      }
+    }
+  }
 
   // Convert contact sequence to constraint vector bounds
   b_contact_lo_ = Eigen::VectorXd::Zero(num_contact_constraints_);

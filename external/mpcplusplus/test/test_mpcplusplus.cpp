@@ -51,7 +51,7 @@ TEST(TestUseCase, droneVariable) {
   std::vector<Eigen::MatrixXd> Bd_vec(N);
   std::vector<Eigen::MatrixXd> Q_vec(N+1);
   std::vector<Eigen::MatrixXd> U_vec(N);
-  std::vector<bool> contact_sequences(N);
+  std::vector<std::vector<bool>> contact_sequences(N);
   Eigen::MatrixXd ref_traj(Nx,N+1);
   Eigen::VectorXd initial_state(Nx);
 
@@ -62,22 +62,31 @@ TEST(TestUseCase, droneVariable) {
     Q_vec.at(i) = Qx;
     U_vec.at(i) = Ru;
     ref_traj.col(i) = initial_state;
-    contact_sequences.at(i) = false;
+    contact_sequences.at(i).resize(4);
+    for (int j = 0; j < 4; ++j) {
+      contact_sequences.at(i).at(j) = true;
+    }
   }
   Q_vec.back() = Qx;
   ref_traj.col(N) = initial_state;
 
+  double fmin = 5;
+  double fmax = 50;
+  double mu = 0.6;
 
   // Setup MPC class, call necessary functions
   mpcplusplus::LinearMPC mpc(N,Nx,Nu);
 
   mpc.update_weights(Q_vec,U_vec);
   mpc.update_dynamics(Ad_vec,Bd_vec);
-  mpc.update_contact(contact_sequences);
+  std::cout << "Updating contact" << std::endl;
+  mpc.update_contact(contact_sequences, fmin, fmax, mu);
+  std::cout << "Updated contact" << std::endl;
 
   // Solve, collect output and cost val
   Eigen::MatrixXd x_out;
   double f_val;
+
   mpc.solve(initial_state, ref_traj, x_out, f_val);
   mpc.solve(initial_state, ref_traj, x_out, f_val);
   
