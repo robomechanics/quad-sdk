@@ -75,7 +75,6 @@ void SpiritKinematics::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
 }
 
 void SpiritKinematics::bodyToFootFK(int leg_index, 
-  Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
   Eigen::Vector3d joint_state, Eigen::Vector3d &foot_pos_body) {
 
   if (leg_index > (shoulder_offsets_.size()-1) || leg_index<0) {

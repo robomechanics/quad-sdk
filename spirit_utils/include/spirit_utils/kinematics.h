@@ -54,8 +54,8 @@ class SpiritKinematics {
    * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
    * @param[out] foot_pos_world Position of the specified foot in world frame
    */
-  void bodyToFootFK(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
-      Eigen::Vector3d joint_state, Eigen::Vector3d &foot_pos_body);
+  void bodyToFootFK(int leg_index, Eigen::Vector3d joint_state, 
+    Eigen::Vector3d &foot_pos_body);
 
   /**
    * @brief Compute forward kinematics for a specified leg

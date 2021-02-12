@@ -129,14 +129,13 @@ TEST(KinematicsTest, testBodyToFootFK) {
       int leg_index = i;
 
       // Compute foot positions in this configuration
-      spirit.bodyToFootFK(leg_index,body_pos,body_rpy,joint_state,foot_pos_world);
+      spirit.bodyToFootFK(leg_index,joint_state,foot_pos_world);
 
       // Run IK to compute corresponding joint angles, then back through FK
       // This ensures that we are enforcing a hip-above-knee configuration if
       // otherwise ambiguous.
       spirit.legIK(leg_index,body_pos,body_rpy,foot_pos_world,joint_state_test);
-      spirit.bodyToFootFK(leg_index,body_pos,body_rpy,joint_state_test,
-        foot_pos_body_test);
+      spirit.bodyToFootFK(leg_index,joint_state_test,foot_pos_body_test);
 
       // Check the answers
       Eigen::Vector3d error = (foot_pos_world - foot_pos_body_test);
