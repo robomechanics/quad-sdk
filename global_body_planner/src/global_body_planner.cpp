@@ -35,6 +35,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
 
   // Initialize the current path cost to infinity to ensure the first solution is stored
   current_cost_ = INFTY;
+  robot_state_ = start_state_;
 }
 
 void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg) {
@@ -77,8 +78,8 @@ void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstP
     robot_state_.push_back(msg->body.twist.twist.angular.z);
   } else {
     ROS_WARN_THROTTLE(0.1, "Invalid quaternion received in GlobalBodyPlanner, "
-      "setting to start state");
-    robot_state_ = start_state_;
+      "returning");
+    
   }
 }
 
