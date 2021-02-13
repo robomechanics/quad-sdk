@@ -114,7 +114,7 @@ void LocalFootstepPlanner::updateDiscretePlan() {
   double footstep_horizon = std::min(num_cycles_*period_, t_plan_.back());
 
   // Specify the number of feet and their offsets from the COM
-  double x_offsets[num_feet_] = {0.25, -0.25, 0.25, -0.25};
+  double x_offsets[num_feet_] = {0.2263, -0.2263, 0.2263, -0.2263};
   double y_offsets[num_feet_] = {0.15, 0.15, -0.15, -0.15};
 
   // ros::Duration t = 0;ros::Time::now() - plan_timestamp_;
@@ -127,6 +127,9 @@ void LocalFootstepPlanner::updateDiscretePlan() {
     
     // Compute the initial time for this cycle
     double t_cycle = i*period_;
+    if (t_cycle >=t_plan_.back()) {
+      break;
+    }
 
     // Loop through each foot
     for (int j=0; j<num_feet_; j++) {

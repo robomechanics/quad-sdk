@@ -43,9 +43,6 @@ State PlannerClass::randomState(FastTerrainMap& terrain)
     q[4] = v*sin(theta)*sin(phi);
     q[5] = v*cos(theta);
 
-    q[6] = 2*P_MAX*(double)rand()/RAND_MAX - P_MAX;
-    q[7] = 0.0;
-
     return q;
     
 }

@@ -181,25 +181,18 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
   // Start IK, check foot pos is at least l0 away from leg base, clamp otherwise
   double temp = l0/sqrt(z*z+y*y);
   if (abs(temp) > 1) {
-    ROS_WARN_THROTTLE(0.5,"Foot too close, choosing closest alternative\n");
+    ROS_DEBUG_THROTTLE(0.5,"Foot too close, choosing closest alternative\n");
     temp = std::max(std::min(temp,1.0),-1.0);
   }
 
-  // Compute both solutions of q0, use hip-above-knee if z<0 (preferred)
-  // Store the inverted solution in case hip limits are exceeded
-  double q0_inverted;
-  if (z>0) {
-    q0 = -acos(temp) + atan2(z,y);
-    q0_inverted = acos(temp) + atan2(z,y);
-  } else {
-    q0 = acos(temp) + atan2(z,y);
-    q0_inverted = -acos(temp) + atan2(z,y);
-  }
+  // Compute hip-above-knee solution
+  q0 = acos(temp) + atan2(z,y);
+  // q0_inverted = -acos(temp) + atan2(z,y);
 
   // Make sure abad is within joint limits, clamp otherwise
   if (q0 > joint_max_[0] || q0 < joint_min_[0]) {
     q0 = std::max(std::min(q0,joint_max_[0]),joint_min_[0]);
-    ROS_WARN_THROTTLE(0.5,"Abad limits exceeded, clamping to %5.3f \n", q0);
+    ROS_DEBUG_THROTTLE(0.5,"Abad limits exceeded, clamping to %5.3f \n", q0);
   }
 
   // Rotate to ab-ad fixed frame
@@ -210,7 +203,7 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
   double acos_eps = 1.0;
   double temp2 = (l1_*l1_ + x*x + z*z - l2_*l2_)/(2*l1_*sqrt(x*x+z*z));
   if (abs(temp2) > acos_eps) {
-    ROS_WARN_THROTTLE(0.5,"Foot location too far for hip, choosing closest"
+    ROS_DEBUG_THROTTLE(0.5,"Foot location too far for hip, choosing closest"
       " alternative \n");
     temp2 = std::max(std::min(temp2,acos_eps),-acos_eps);
   }
@@ -218,7 +211,7 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
   // Check reachibility for knee
   double temp3 = (l1_*l1_ + l2_*l2_ - x*x - z*z)/(2*l1_*l2_);
   if (temp3 > acos_eps  || temp3 < -acos_eps) {
-    ROS_WARN_THROTTLE(0.5,"Foot location too far for knee, choosing closest"
+    ROS_DEBUG_THROTTLE(0.5,"Foot location too far for knee, choosing closest"
       " alternative \n");
     temp3 = std::max(std::min(temp3,acos_eps),-acos_eps);
   }
@@ -227,36 +220,27 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
   q1 = 0.5*M_PI + atan2(x,-z) - acos(temp2);
   q2 = acos(temp3);
 
-  // Make sure hip is within joint limits (try other direction if fails)
+  // Make sure hip is within joint limits
   if (q1 > joint_max_[1] || q1 < joint_min_[1]) {
-    ROS_WARN_THROTTLE(0.5,"Hip limits exceeded, using inverted config\n");
-
-    q0 = q0_inverted;
-    z = -sin(q0)*y + cos(q0)*z_body_frame;
-    q1 = 0.5*M_PI + atan2(x,-z) - acos(temp2);
-    q2 = acos(temp3);
-
-    if (q1 > joint_max_[1] || q1 < joint_min_[1]) {
-      q1 = std::max(std::min(q1,joint_max_[1]),joint_min_[1]);
-      ROS_WARN_THROTTLE(0.5,"Hip limits exceeded, clamping to %5.3f \n", q1);
-    }
+    q1 = std::max(std::min(q1,joint_max_[1]),joint_min_[1]);
+    ROS_DEBUG_THROTTLE(0.5,"Hip limits exceeded, clamping to %5.3f \n", q1);
   }
 
   // Make sure knee is within joint limits
   if (q2 > joint_max_[2] || q2 < joint_min_[2]) {
     q2 = std::max(std::min(q2,joint_max_[2]),joint_min_[2]);
-    ROS_WARN_THROTTLE(0.5,"Knee limit exceeded, clamping to %5.3f \n", q2);
+    ROS_DEBUG_THROTTLE(0.5,"Knee limit exceeded, clamping to %5.3f \n", q2);
   }
 
   // q1 is undefined if q2=0, resolve this
   if (q2==0) {
     q1 = 0;
-    ROS_WARN_THROTTLE(0.5,"Hip value undefined (in singularity), setting to"
+    ROS_DEBUG_THROTTLE(0.5,"Hip value undefined (in singularity), setting to"
       " %5.3f \n", q1);
   }
 
   if (z_body_frame - l0*sin(q0) > 0) {
-    ROS_WARN_THROTTLE(0.5,"IK solution is in hip-inverted region! Beware!\n");
+    ROS_DEBUG_THROTTLE(0.5,"IK solution is in hip-inverted region! Beware!\n");
   }
 
   joint_state = {q0,q1,q2};

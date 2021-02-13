@@ -76,7 +76,9 @@ void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstP
     robot_state_.push_back(msg->body.twist.twist.angular.y);
     robot_state_.push_back(msg->body.twist.twist.angular.z);
   } else {
-    ROS_WARN_THROTTLE(0.1, "Invalid quaternion received in GlobalBodyPlanner, exiting callback");
+    ROS_WARN_THROTTLE(0.1, "Invalid quaternion received in GlobalBodyPlanner, "
+      "setting to start state");
+    robot_state_ = start_state_;
   }
 }
 
@@ -139,19 +141,19 @@ void GlobalBodyPlanner::callPlanner() {
   
   // Make sure terminal states are valid
   if (!isValidState(start_state, terrain_, STANCE)) {
-    ROS_WARN_THROTTLE(0.5, "Invalid start state, exiting global planner");
+    ROS_WARN_THROTTLE(2, "Invalid start state, exiting global planner");
     return;
   }
   if (!isValidState(goal_state, terrain_, STANCE)) {
-    ROS_WARN_THROTTLE(0.5, "Invalid goal state, attempting to add in the ground height");
+    ROS_WARN_THROTTLE(2, "Invalid goal state, attempting to add in the ground height");
     goal_state[2] += terrain_.getGroundHeight(goal_state_[0], goal_state_[1]);
     if (!isValidState(goal_state, terrain_, STANCE)) {
-      ROS_WARN_THROTTLE(0.5, "Invalid goal state, exiting global planner");
+      ROS_WARN_THROTTLE(2, "Invalid goal state, exiting global planner");
       return;
     }
   }
   if (start_state == goal_state) {
-    ROS_WARN_THROTTLE(0.5, "Identical start and goal states, exiting global planner");
+    ROS_WARN_THROTTLE(2, "Identical start and goal states, exiting global planner");
     return;
   }
 
@@ -209,8 +211,9 @@ void GlobalBodyPlanner::callPlanner() {
 
       double dt = 0.1;
       std::vector<int> interp_phase;
-      getInterpPath(state_sequence_, action_sequence_, dt, replan_start_time_, body_plan_, wrench_plan_, t_plan_, interp_phase);
-      
+      getInterpPath(state_sequence_, action_sequence_, dt, replan_start_time_, 
+        body_plan_, wrench_plan_, t_plan_, interp_phase, terrain_);
+
       if (start_index == 0) {
         plan_timestamp_ = ros::Time::now();
       }
@@ -269,9 +272,6 @@ void GlobalBodyPlanner::addStateWrenchToMsg(double t, FullState body_state, Wren
   wrench_msg.force.x = wrench[0];
   wrench_msg.force.y = wrench[1];
   wrench_msg.force.z = wrench[2];
-  wrench_msg.torque.x = wrench[3];
-  wrench_msg.torque.y = wrench[4];
-  wrench_msg.torque.z = wrench[5];
 
   msg.states.push_back(state);
   msg.wrenches.push_back(wrench_msg);
@@ -300,7 +300,7 @@ void GlobalBodyPlanner::publishPlan() {
   for (int i = 0; i<state_sequence_.size(); i++)
   {
     // Discrete states don't need roll or yaw data, set to zero
-    FullState full_discrete_state = stateToFullState(state_sequence_[i],0,0,0,0);
+    FullState full_discrete_state = stateToFullState(state_sequence_[i],0,0,0,0,0,0);
     addStateWrenchToMsg(t_plan_[i], full_discrete_state, wrench_plan_[i], discrete_body_plan_msg);
   }
   

@@ -12,13 +12,13 @@ State fullStateToState(FullState full_state)
   double y = full_state[1];
   double z = full_state[2];
   // double roll = full_state[3];
-  double pitch = full_state[4];
+  // double pitch = full_state[4];
   // double yaw = full_state[5];
   double dx = full_state[6];
   double dy = full_state[7];
   double dz = full_state[8];
   // double roll_rate = full_state[9];
-  double pitch_rate = full_state[10];
+  // double pitch_rate = full_state[10];
   // double yaw_rate = full_state[11];
 
   state[0] = x;
@@ -27,13 +27,12 @@ State fullStateToState(FullState full_state)
   state[3] = dx;
   state[4] = dy;
   state[5] = dz;
-  state[6] = pitch;
-  state[7] = pitch_rate;
 
   return state;
 }
 
-FullState stateToFullState(State state, double roll, double yaw, double roll_rate, double yaw_rate)
+FullState stateToFullState(State state, double roll, double pitch, double yaw, 
+  double roll_rate, double pitch_rate, double yaw_rate)
 {
   FullState full_state;
   full_state.resize(FULLSTATEDIM);
@@ -42,13 +41,13 @@ FullState stateToFullState(State state, double roll, double yaw, double roll_rat
   full_state[1] = state[1];
   full_state[2] = state[2];
   full_state[3] = roll;
-  full_state[4] = state[6];
+  full_state[4] = pitch;
   full_state[5] = yaw;
   full_state[6] = state[3];
   full_state[7] = state[4];
   full_state[8] = state[5];
   full_state[9] = roll_rate;
-  full_state[10] = state[7];
+  full_state[10] = pitch_rate;
   full_state[11] = yaw_rate;
 
   return full_state;
@@ -104,7 +103,8 @@ void printStateSequence(std::vector<State> state_sequence)
   for (State s : state_sequence)
     printStateNewline(s);
 }
-void printInterpStateSequence(std::vector<State> state_sequence, std::vector<double> interp_t)
+void printInterpStateSequence(std::vector<State> state_sequence, 
+  std::vector<double> interp_t)
 {
   for (int i=0;i<state_sequence.size();i++)
   {
@@ -121,13 +121,14 @@ void printVectorIntNewline(std::vector<int> vec)
 {
   printVectorInt(vec); std::cout << std::endl;
 }
-void plotYaw(std::vector<double> interp_t, std::vector<FullState> interp_full_path) {
+void plotYaw(std::vector<double> interp_t,
+  std::vector<FullState> interp_full_path) {
 
   std::vector<double> yaw;
   std::vector<double> yaw_rate;
 
   for (FullState full_state : interp_full_path) {
-    yaw.push_back(full_state[8]);
+    yaw.push_back(full_state[5]);
     yaw_rate.push_back(full_state[11]);
   }
 
@@ -175,7 +176,7 @@ double poseDistance(std::vector<double> v1, std::vector<double> v2)
 double stateDistance(State q1,State q2)
 {
   double sum = 0;
-  State state_weight = {1,1,1,1,1,1,1,1};
+  State state_weight = {1,1,1,1,1,1};
 
   for (int i = 0; i < q1.size(); i++)
   {
@@ -191,7 +192,9 @@ bool isWithinBounds(State s1, State s2)
   return (stateDistance(s1, s2) <= GOAL_BOUNDS);
 }
 
-std::vector<double> movingAverageFilter(std::vector<double> data, int window_size) {
+std::vector<double> movingAverageFilter(std::vector<double> data,
+  int window_size) {
+
   std::vector<double> filtered_data;
   int N = data.size();
 
@@ -226,7 +229,8 @@ std::vector<double> movingAverageFilter(std::vector<double> data, int window_siz
         sum += data[index];
         count += 1;
       } else {
-        // ROS_WARN("Filter tried to access data out of bounds, which shouldn't happen (filter window should scale automatically).");
+        // ROS_WARN("Filter tried to access data out of bounds, which shouldn't 
+        // happen (filter window should scale automatically).");
       }
     }
 
@@ -252,21 +256,29 @@ std::vector<double> centralDifference(std::vector<double> data, double dt) {
   return data_diff;
 }
 
-void addFullStates(std::vector<State> interp_reduced_path, double dt, std::vector<FullState> &interp_full_path) {
+void addFullStates(std::vector<State> interp_reduced_path, double dt, 
+  std::vector<FullState> &interp_full_path, FastTerrainMap& terrain) {
+
+  int num_states = interp_reduced_path.size();
 
   // Set roll and roll rate to zero
   double roll = 0;
   double roll_rate = 0;
 
   // Declare variables for yaw
-  std::vector<double> yaw;
-  std::vector<double> filtered_yaw;
-  std::vector<double> yaw_rate;
-  std::vector<double> filtered_yaw_rate;
+  std::vector<double> pitch(num_states);
+  std::vector<double> pitch_rate(num_states);
+  std::vector<double> filtered_pitch_rate(num_states);
+  std::vector<double> yaw(num_states);
+  std::vector<double> filtered_yaw(num_states);
+  std::vector<double> yaw_rate(num_states);
+  std::vector<double> filtered_yaw_rate(num_states);
 
   // Compute yaw to align with heading
-  for (State body_state : interp_reduced_path) {
-    yaw.push_back(atan2(body_state[4],body_state[3]));
+  for (int i = 0; i < num_states; i++) {
+    State body_state = interp_reduced_path[i];
+    yaw[i] = atan2(body_state[4],body_state[3]);
+    pitch[i] = getPitch(body_state,terrain);
   }
 
   // Filter yaw and compute its derivative via central difference method
@@ -274,10 +286,13 @@ void addFullStates(std::vector<State> interp_reduced_path, double dt, std::vecto
   filtered_yaw = movingAverageFilter(yaw, window_size);
   yaw_rate = centralDifference(filtered_yaw, dt);
   filtered_yaw_rate = movingAverageFilter(yaw_rate, window_size);
+  pitch_rate = centralDifference(pitch, dt);
+  filtered_pitch_rate = movingAverageFilter(pitch_rate, window_size);
 
-  std::vector<double> interp_t;
-  for (int i = 0; i < interp_reduced_path.size(); i++) {
-    interp_t.push_back(i*dt);
+
+  std::vector<double> interp_t(num_states);
+  for (int i = 0; i < num_states; i++) {
+    interp_t[i] = i*dt;
   }
 
   // plt::clf();
@@ -293,9 +308,10 @@ void addFullStates(std::vector<State> interp_reduced_path, double dt, std::vecto
   // plt::pause(0.001);
 
   // Add full state data into the array
-  for (int i = 0; i < interp_reduced_path.size(); i++) {
+  for (int i = 0; i < num_states; i++) {
     State body_state = interp_reduced_path[i];
-    FullState body_full_state = stateToFullState(body_state, roll, filtered_yaw[i], roll_rate, filtered_yaw_rate[i]);
+    FullState body_full_state = stateToFullState(body_state, roll, pitch[i],
+      filtered_yaw[i], roll_rate, filtered_pitch_rate[i], filtered_yaw_rate[i]);
 
     interp_full_path.push_back(body_full_state);
   }
@@ -305,10 +321,9 @@ Wrench getWrench(Action a,double t) {
 
   double m = M_CONST;
   double g = G_CONST;
-  double J = J_CONST;
   double t_s = a[6];
 
-  Wrench wrench(6, 0.0);
+  Wrench wrench(3);
 
   // If in stance fill wrench with appropriate data, otherwise leave as zeros
   if (t<=t_s) {
@@ -316,18 +331,40 @@ Wrench getWrench(Action a,double t) {
     wrench[0] = m*(a[0] + (a[3]-a[0])*t/t_s);
     wrench[1] = m*(a[1] + (a[4]-a[1])*t/t_s);
     wrench[2] = m*((a[2] + (a[5]-a[2])*t/t_s) + g);
-
-    wrench[3] = 0;
-    wrench[4] = J*(a[8] + (a[9]-a[8])*t/t_s);
-    wrench[5] = 0;
   }
   
   return wrench;
 
 }
 
-void interpStateActionPair(State s, Action a,double t0,double dt, std::vector<State> &interp_reduced_path, std::vector<Wrench> &interp_wrench,
-    std::vector<double> &interp_t, std::vector<int> &interp_phase)
+double getPitch(State s, FastTerrainMap& terrain) {
+
+  std::array<double, 3> surf_norm = terrain.getSurfaceNormal(s[0], s[1]);
+
+  double denom = s[3]*s[3] + s[4]*s[4];
+
+  if (denom == 0 || surf_norm[2] <=0) {
+    double default_pitch = 0;
+    return default_pitch;
+  } else {
+
+    double v_proj = (s[3]*surf_norm[0] + s[4]*surf_norm[1])/
+      sqrt(denom);
+
+
+    // std::cout << "v_proj = " << v_proj << std::endl;
+    // std::cout << "surf_norm[2] = " << surf_norm[2] << std::endl;
+
+    double pitch = atan2(v_proj,surf_norm[2]);
+
+    // std::cout << "Pitch = " << pitch << std::endl;
+    return pitch;
+  }
+}
+
+void interpStateActionPair(State s, Action a,double t0,double dt, 
+  std::vector<State> &interp_reduced_path, std::vector<Wrench> &interp_wrench,
+  std::vector<double> &interp_t, std::vector<int> &interp_phase)
 {
   double t_s = a[6];
   double t_f = a[7];
@@ -368,28 +405,34 @@ void interpStateActionPair(State s, Action a,double t0,double dt, std::vector<St
 
 
 
-void getInterpPath(std::vector<State> state_sequence, std::vector<Action> action_sequence,double dt, double t0, std::vector<FullState> &interp_full_path, 
-    std::vector<Wrench> &interp_wrench, std::vector<double> &interp_t, std::vector<int> &interp_phase)
+void getInterpPath(std::vector<State> state_sequence,
+  std::vector<Action> action_sequence,double dt, double t0,
+  std::vector<FullState> &interp_full_path, std::vector<Wrench> &interp_wrench, 
+  std::vector<double> &interp_t, std::vector<int> &interp_phase,
+  FastTerrainMap& terrain)
 {
   std::vector<State> interp_reduced_path;
 
   // Loop through state action pairs, interp each and add to the path
   for (int i=0; i < action_sequence.size();i++)
   {
-    interpStateActionPair(state_sequence[i], action_sequence[i], t0, dt, interp_reduced_path, interp_wrench, interp_t, interp_phase);
+    interpStateActionPair(state_sequence[i], action_sequence[i], t0, dt, 
+      interp_reduced_path, interp_wrench, interp_t, interp_phase);
     t0 += (action_sequence[i][6] + action_sequence[i][7]);
   }
 
-  // Add the final state in case it was missed by interp (wrench is undefined here so just copy the last element)
+  // Add the final state in case it was missed by interp (wrench is undefined 
+  // here so just copy the last element)
   interp_t.push_back(t0);
   interp_reduced_path.push_back(state_sequence.back());
   interp_wrench.push_back(interp_wrench.back());
 
+  addFullStates(interp_reduced_path, dt, interp_full_path, terrain);
 
-  addFullStates(interp_reduced_path, dt, interp_full_path);
 }
 
-std::array<double,3> rotateGRF(std::array<double,3> surface_norm, std::array<double,3> grf)
+std::array<double,3> rotateGRF(std::array<double,3> surface_norm,
+  std::array<double,3> grf)
 {
   // Receive data and convert to Eigen
   Eigen::Vector3d Zs;
@@ -441,18 +484,12 @@ State applyStance(State s, Action a, double t)
   double a_z_to = a[5];
   double t_s = a[6];
 
-  double a_p_td = a[8]; // Acceleration in pitch at touchdown
-  double a_p_to = a[9];
-
   double x_td = s[0];
   double y_td = s[1];
   double z_td = s[2];
   double dx_td = s[3];
   double dy_td = s[4];
   double dz_td = s[5];
-
-  double p_td = s[6];
-  double dp_td = s[7];
 
   State s_new;
 
@@ -462,9 +499,6 @@ State applyStance(State s, Action a, double t)
   s_new[3] = dx_td + a_x_td*t + (a_x_to - a_x_td)*t*t/(2.0*t_s);
   s_new[4] = dy_td + a_y_td*t + (a_y_to - a_y_td)*t*t/(2.0*t_s);
   s_new[5] = dz_td + a_z_td*t + (a_z_to - a_z_td)*t*t/(2.0*t_s);
-
-  s_new[6] = p_td + dp_td*t + 0.5*a_p_td*t*t + (a_p_to - a_p_td)*(t*t*t)/(6.0*t_s);
-  s_new[7] = dp_td + a_p_td*t + (a_p_to - a_p_td)*t*t/(2.0*t_s);
 
   return s_new;
 }
@@ -484,9 +518,6 @@ State applyFlight(State s, double t_f)
   double dy_to = s[4];
   double dz_to = s[5];
 
-  double p_to = s[6];
-  double dp_to = s[7];
-
   State s_new;
   s_new[0] = x_to + dx_to*t_f;
   s_new[1] = y_to + dy_to*t_f;
@@ -494,9 +525,6 @@ State applyFlight(State s, double t_f)
   s_new[3] = dx_to;
   s_new[4] = dy_to;
   s_new[5] = dz_to - g*t_f;
-
-  s_new[6] = p_to + dp_to*t_f;
-  s_new[7] = dp_to;
 
   return s_new;
 }
@@ -524,9 +552,6 @@ State applyStanceReverse(State s, Action a, double t)
   double a_z_to = a[5];
   double t_s = a[6];
 
-  double a_p_td = a[8]; // Acceleration in pitch at touchdown
-  double a_p_to = a[9];
-
   double x_to = s[0];
   double y_to = s[1];
   double z_to = s[2];
@@ -534,16 +559,11 @@ State applyStanceReverse(State s, Action a, double t)
   double dy_to = s[4];
   double dz_to = s[5];
 
-  double p_to = s[6];
-  double dp_to = s[7];
-
   State s_new;
 
   double cx = dx_to - a_x_td*t_s - 0.5*(a_x_to - a_x_td)*t_s;
   double cy = dy_to - a_y_td*t_s - 0.5*(a_y_to - a_y_td)*t_s;
   double cz = dz_to - a_z_td*t_s - 0.5*(a_z_to - a_z_td)*t_s;
-
-  double cp = dp_to - a_p_td*t_s - 0.5*(a_p_to - a_p_td)*t_s;
 
   s_new[3] = dx_to - a_x_td*(t_s - t) - (a_x_to - a_x_td)*(t_s*t_s - t*t)/(2.0*t_s);
   s_new[4] = dy_to - a_y_td*(t_s - t) - (a_y_to - a_y_td)*(t_s*t_s - t*t)/(2.0*t_s);
@@ -551,9 +571,6 @@ State applyStanceReverse(State s, Action a, double t)
   s_new[0] = x_to - cx*(t_s - t) - 0.5*a_x_td*(t_s*t_s - t*t) - (a_x_to - a_x_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
   s_new[1] = y_to - cy*(t_s - t) - 0.5*a_y_td*(t_s*t_s - t*t) - (a_y_to - a_y_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
   s_new[2] = z_to - cz*(t_s - t) - 0.5*a_z_td*(t_s*t_s - t*t) - (a_z_to - a_z_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
-
-  s_new[7] = dp_to - a_p_td*(t_s - t) - (a_p_to - a_p_td)*(t_s*t_s - t*t)/(2.0*t_s);
-  s_new[6] = p_to - cp*(t_s - t) - 0.5*a_p_td*(t_s*t_s - t*t) - (a_p_to - a_p_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
 
   return s_new;
 }
@@ -597,13 +614,6 @@ Action getRandomAction(std::array<double, 3> surf_norm)
   a[6] = t_s;
   a[7] = t_f;
 
-  // Randomly sample angular acceleration from a normal distribution with low std
-  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-  std::default_random_engine generator(seed);
-  std::normal_distribution<double> ang_acc_distribution(0.0,(ANG_ACC_MAX/4.0)); // std is such that the max and min are 4 std away from mean
-  a[8] = std::max(std::min(ang_acc_distribution(generator), ANG_ACC_MAX), -ANG_ACC_MAX); //0.0; // for now
-  a[9] = std::max(std::min(ang_acc_distribution(generator), ANG_ACC_MAX), -ANG_ACC_MAX); //0.0;
-
   return a;
 }
 
@@ -625,20 +635,18 @@ bool isValidAction(Action a)
   double f_y_to = m*a[4];
   double f_z_to = m*(a[5] + g);
 
-  double a_p_td = a[8];
-  double a_p_to = a[9];
-
   // Check force limits
   if ((sqrt(f_x_td*f_x_td + f_y_td*f_y_td + f_z_td*f_z_td) >= F_MAX) || 
     (sqrt(f_x_to*f_x_to + f_y_to*f_y_to + f_z_to*f_z_to) >= F_MAX) ||
-    (f_z_td < 0) || (f_z_to < 0) || (a_p_td >= F_MAX) || (a_p_to >= F_MAX) )
+    (f_z_td < 0) || (f_z_to < 0) )
   {
     // std::cout << "Force limits violated" << std::endl;
     return false;
   }
 
   // Check friction cone
-  if ((sqrt(f_x_td*f_x_td + f_y_td*f_y_td) >= mu*f_z_td) || (sqrt(f_x_to*f_x_to + f_y_to*f_y_to) >= mu*f_z_to))
+  if ((sqrt(f_x_td*f_x_td + f_y_td*f_y_td) >= mu*f_z_td) || 
+    (sqrt(f_x_to*f_x_to + f_y_to*f_y_to) >= mu*f_z_to))
   {
     // std::cout << "Friction cone violated" << std::endl;
     return false;
@@ -654,15 +662,15 @@ bool isValidState(State s, FastTerrainMap& terrain, int phase)
   if (terrain.isInRange(s[0], s[1]) == false)
     return false;
 
-  if (abs(s[6]) >= P_MAX)
-    return false;
-
   if (sqrt(s[3]*s[3] + s[4]*s[4]) > V_MAX) // Ignore limit on vertical velocity since this is accurately bounded by gravity
     return false;
 
   // Find yaw, pitch, and their sines and cosines
   double yaw = atan2(s[4],s[3]); double cy = cos(yaw); double sy = sin(yaw);
-  double pitch = s[6]; double cp = cos(pitch); double sp = sin(pitch);  
+  
+  double pitch = getPitch(s,terrain);
+  // double pitch = 0;
+  double cp = cos(pitch); double sp = sin(pitch);  
 
   // Compute each element of the rotation matrix
   double R_11 = cy*cp; double R_12 = -sy; double R_13 = cy*sp;
@@ -687,18 +695,22 @@ bool isValidState(State s, FastTerrainMap& terrain, int phase)
       double z_corner = z_leg + R_33*z_body;
 
       double leg_height = z_leg - terrain.getGroundHeight(x_leg,y_leg);
-      double corner_height = z_corner - terrain.getGroundHeight(x_corner,y_corner);
+      double corner_height = z_corner - 
+        terrain.getGroundHeight(x_corner,y_corner);
       // std::cout << "x,y,z = (" << x_spatial << ", " << y_spatial << ", " << z_spatial << "), height = " <<
       //     z_spatial << " - " << terrain.getGroundHeight(x_spatial,y_spatial) << " = " << height << std::endl;
 
       // Always check for collision, only check reachability in stance
-      if ((corner_height < H_MIN) || ((phase == STANCE) && (leg_height > H_MAX)))
+      if ((corner_height < H_MIN) || ((phase == STANCE) && 
+        (leg_height > H_MAX))) {
         return false;
+      }
     }
   }
 
   // Check the center of the underside of the robot
-  double height = (s[2] + R_33*z_body) - terrain.getGroundHeight(s[0] + R_13*z_body,s[1] + R_23*z_body);
+  double height = (s[2] + R_33*z_body) - terrain.getGroundHeight(s[0] + 
+    R_13*z_body,s[1] + R_23*z_body);
   if (height < H_MIN)
     return false;
 
@@ -706,7 +718,8 @@ bool isValidState(State s, FastTerrainMap& terrain, int phase)
   return true;
 }
 
-bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain, State &s_new, double& t_new)
+bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain, 
+  State &s_new, double& t_new)
 {
   double t_s;
   double t_f;
@@ -761,7 +774,8 @@ bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain)
   return isValidStateActionPair(s, a, terrain, dummy_state, dummy_time);
 }
 
-bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain, State &s_new, double& t_new)
+bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain, 
+  State &s_new, double& t_new)
 {
   double t_s;
   double t_f;
