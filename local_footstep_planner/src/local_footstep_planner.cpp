@@ -76,12 +76,12 @@ void LocalFootstepPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPt
     s[0] = msg->states[i].pose.pose.position.x;
     s[1] = msg->states[i].pose.pose.position.y;
     s[2] = msg->states[i].pose.pose.position.z;
-    s[3] = msg->states[i].twist.twist.linear.x;
-    s[4] = msg->states[i].twist.twist.linear.y;
-    s[5] = msg->states[i].twist.twist.linear.z;
-    s[6] = roll;
-    s[7] = pitch;
-    s[8] = yaw;
+    s[3] = roll;
+    s[4] = pitch;
+    s[5] = yaw;
+    s[6] = msg->states[i].twist.twist.linear.x;
+    s[7] = msg->states[i].twist.twist.linear.y;
+    s[8] = msg->states[i].twist.twist.linear.z;
     s[9] = msg->states[i].twist.twist.angular.x;
     s[10] = msg->states[i].twist.twist.angular.y;
     s[11] = msg->states[i].twist.twist.angular.z;
@@ -91,8 +91,6 @@ void LocalFootstepPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPt
     tf::vectorMsgToEigen(msg->wrenches[i].force, force);
     body_wrench_plan_.push_back(force);
   }
-
-  updateDiscretePlan();
 }
 
 void LocalFootstepPlanner::updateDiscretePlan() {
@@ -111,8 +109,6 @@ void LocalFootstepPlanner::updateDiscretePlan() {
   double t_offsets[num_feet_] = {0.0, 0.5*period_, 0.5*period_, 0.0};
   double t_s[num_feet_] = {0.5*period_, 0.5*period_, 0.5*period_, 0.5*period_};
 
-  double footstep_horizon = std::min(num_cycles_*period_, t_plan_.back());
-
   // Specify the number of feet and their offsets from the COM
   double x_offsets[num_feet_] = {0.2263, -0.2263, 0.2263, -0.2263};
   double y_offsets[num_feet_] = {0.15, 0.15, -0.15, -0.15};
@@ -122,17 +118,20 @@ void LocalFootstepPlanner::updateDiscretePlan() {
   int start_index = 0;
   int end_index = start_index + num_cycles_;
 
-  // Loop through each gait cycle
-  for (int i = start_index; i < end_index; i++) {
-    
-    // Compute the initial time for this cycle
-    double t_cycle = i*period_;
-    if (t_cycle >=t_plan_.back()) {
-      break;
-    }
+   // Loop through each foot
+  for (int j=0; j<num_feet_; j++) {
 
-    // Loop through each foot
-    for (int j=0; j<num_feet_; j++) {
+    // Loop through each gait cycle
+    for (int i = start_index; i < end_index; i++) {
+      
+      // Compute the initial time for this cycle
+      double t_cycle = i*period_;
+      double t_cycle_end = (i+1)*period_;
+      if (t_cycle_end >=t_plan_.back()) {
+        break;
+      }
+
+ 
       FootstepState footstep(4);
 
       // Compute the touchdown and midstance times
@@ -153,7 +152,7 @@ void LocalFootstepPlanner::updateDiscretePlan() {
       double x_body = s_touchdown[0];
       double y_body = s_touchdown[1];
       double z_body = s_touchdown[2];
-      double yaw = s_touchdown[8];
+      double yaw = s_touchdown[5];
       double x_hip = x_body + x_offsets[j]*cos(yaw) - y_offsets[j]*sin(yaw);
       double y_hip = y_body + x_offsets[j]*sin(yaw) + y_offsets[j]*cos(yaw);
       double z_hip = z_body; // TODO add in pitch here
@@ -181,10 +180,28 @@ void LocalFootstepPlanner::updateDiscretePlan() {
       footstep_plan_[j].push_back(footstep);
 
     }
+
+    // Add final foot configuration
+    FootstepState footstep(4);
+
+    BodyState s_final = body_plan_.back();
+
+    double yaw = s_final[5];
+    double x_hip = s_final[0] + x_offsets[j]*cos(yaw) - y_offsets[j]*sin(yaw);
+    double y_hip = s_final[1] + x_offsets[j]*sin(yaw) + y_offsets[j]*cos(yaw);
+    double z_hip = s_final[2]; // TODO add in pitch here
+
+    // Load the data into the footstep array and push into the plan
+    footstep[0] = x_hip;
+    footstep[1] = y_hip;
+    footstep[2] = t_plan_.back() - period_ +  t_offsets[j];
+    footstep[3] = std::numeric_limits<double>::max();
+
+    footstep_plan_[j].push_back(footstep);
   }
 
-  publishDiscretePlan();
-  publishContinuousPlan();
+  // publishDiscretePlan();
+  // publishContinuousPlan();
   // timer.report();
 }
 
@@ -203,7 +220,7 @@ void LocalFootstepPlanner::publishContinuousPlan() {
   multi_foot_plan_continuous_msg.header.stamp = plan_timestamp_;
 
   // Make sure the footstep horizon is within bounds
-  double footstep_horizon = std::min((num_cycles_-1)*period_, t_plan_.back());
+  double footstep_horizon = std::min((num_cycles_)*period_, t_plan_.back());
 
   // Iterate through the footstep horizon
   for (double t = 0; t < footstep_horizon; t+=interp_dt_) {
@@ -223,9 +240,10 @@ void LocalFootstepPlanner::publishContinuousPlan() {
       int state_index = 0;
 
       // Get the index of the current foot location
-      for (int j = 0; j < footstep_plan_[i].size()-1; j++) {
-        if (t >= footstep_plan_[i][j][2] && t < footstep_plan_[i][j+1][2]) {
-          state_index = j;
+      for (int j = 0; j < (footstep_plan_[i].size()-1); j++) {
+        state_index = j;
+        if ( (t >= footstep_plan_[i][j][2] && t < footstep_plan_[i][j+1][2]) || 
+          (t < footstep_plan_[i].front()[2]) ) {
           break;
         }
       }
@@ -233,6 +251,7 @@ void LocalFootstepPlanner::publishContinuousPlan() {
       // Get current footstep state and correct timing
       FootstepState footstep = footstep_plan_[i][state_index];
       FootstepState next_footstep = footstep_plan_[i][state_index+1];
+
       double x = footstep[0];
       double y = footstep[1];
       double z = terrain_.getGroundHeight(x,y);
@@ -247,6 +266,18 @@ void LocalFootstepPlanner::publishContinuousPlan() {
         foot_state_msg.position.x = x;
         foot_state_msg.position.y = y;
         foot_state_msg.position.z = z;
+        foot_state_msg.velocity.x = 0;
+        foot_state_msg.velocity.y = 0;
+        foot_state_msg.velocity.z = 0;
+        foot_state_msg.contact = true;
+
+      } else if (t > t_next_touchdown) {
+
+        // If reached the end of the sequence, just apply the last foot stance
+        foot_state_msg.position.x = next_footstep[0];
+        foot_state_msg.position.y = next_footstep[1];
+        foot_state_msg.position.z = 
+          terrain_.getGroundHeight(next_footstep[0],next_footstep[1]);
         foot_state_msg.velocity.x = 0;
         foot_state_msg.velocity.y = 0;
         foot_state_msg.velocity.z = 0;
