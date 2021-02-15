@@ -21,10 +21,11 @@ find_package(catkin REQUIRED COMPONENTS
   spirit_msgs
   grid_map_core
   grid_map_ros
+  Eigen3
 )
 
 catkin_package(
-  INCLUDE_DIRS include
+  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
   LIBRARIES spirit_utils
 #  CATKIN_DEPENDS roscpp std_msgs
 #	DEPENDS
@@ -39,6 +40,8 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
+
 )
 
 
