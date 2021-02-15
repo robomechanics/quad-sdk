@@ -236,9 +236,16 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
     temp = std::max(std::min(temp,1.0),-1.0);
   }
 
-  // Compute hip-above-knee solution
-  q0 = acos(temp) + atan2(z,y);
-  // q0_inverted = -acos(temp) + atan2(z,y);
+  // Compute both solutions of q0, use hip-above-knee if z<0 (preferred)
+  // Store the inverted solution in case hip limits are exceeded
+  double q0_inverted;
+  if (z>0) {
+    q0 = -acos(temp) + atan2(z,y);
+    q0_inverted = acos(temp) + atan2(z,y);
+  } else {
+    q0 = acos(temp) + atan2(z,y);
+    q0_inverted = -acos(temp) + atan2(z,y);
+  }
 
   // Make sure abad is within joint limits, clamp otherwise
   if (q0 > joint_max_[0] || q0 < joint_min_[0]) {
@@ -271,10 +278,19 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
   q1 = 0.5*M_PI + atan2(x,-z) - acos(temp2);
   q2 = acos(temp3);
 
-  // Make sure hip is within joint limits
+  // Make sure hip is within joint limits (try other direction if fails)
   if (q1 > joint_max_[1] || q1 < joint_min_[1]) {
-    q1 = std::max(std::min(q1,joint_max_[1]),joint_min_[1]);
-    ROS_DEBUG_THROTTLE(0.5,"Hip limits exceeded, clamping to %5.3f \n", q1);
+    ROS_WARN_THROTTLE(0.5,"Hip limits exceeded, using inverted config\n");
+
+    q0 = q0_inverted;
+    z = -sin(q0)*y + cos(q0)*z_body_frame;
+    q1 = 0.5*M_PI + atan2(x,-z) - acos(temp2);
+    q2 = acos(temp3);
+
+    if (q1 > joint_max_[1] || q1 < joint_min_[1]) {
+      q1 = std::max(std::min(q1,joint_max_[1]),joint_min_[1]);
+      ROS_WARN_THROTTLE(0.5,"Hip limits exceeded, clamping to %5.3f \n", q1);
+    }
   }
 
   // Make sure knee is within joint limits
