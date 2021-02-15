@@ -53,10 +53,10 @@ Visualization Manager:
       Height Layer: elevation
       Height Transformer: GridMapLayer
       History Length: 1
-      Invert Rainbow: false
-      Max Color: 233; 185; 110
+      Invert Rainbow: false 
+      Max Color: 65; 36; 14
       Max Intensity: 10
-      Min Color: 65; 36; 14
+      Min Color: 233; 185; 110
       Min Intensity: 0
       Name: GridMap
       Show Grid Lines: true
