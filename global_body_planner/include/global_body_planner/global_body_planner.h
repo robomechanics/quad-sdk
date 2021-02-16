@@ -7,7 +7,7 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <spirit_msgs/BodyPlan.h>
-#include <spirit_msgs/StateEstimate.h>
+#include <spirit_msgs/RobotState.h>
 
 #include "global_body_planner/rrt_connect.h"
 
@@ -51,10 +51,10 @@ class GlobalBodyPlanner {
     void terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg);
 
     /**
-     * @brief Callback function to handle new ground truth state data
-     * @param[in] msg the message contining ground truth state data
+     * @brief Callback function to handle new robot  state data
+     * @param[in] msg the message contining robot state data
      */
-    void robotStateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg);
+    void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 
     /**
      * @brief Check if a replan is required
@@ -137,11 +137,17 @@ class GlobalBodyPlanner {
     /// Std vector containing the interpolated time data
     std::vector<double> t_plan_;
 
-    /// Starting state for planner
+    /// Time stamp for the beginning of the plan
+    ros::Time plan_timestamp_;
+
+    /// Starting state for planner call
     std::vector<double> start_state_;
 
-    /// Starting time for planner (for replanning)
-    double start_time_;
+    /// Goal state for planner
+    std::vector<double> goal_state_;
+
+    /// Starting time for planner call during replans relative to t_plan_[0]
+    double replan_start_time_;
 
     /// Horizon to commit to (replan from the next state after this horizon)
     double committed_horizon_;
@@ -154,9 +160,6 @@ class GlobalBodyPlanner {
 
     /// Flag to determine if the planner needs to restart planning from the robot state
     bool plan_from_robot_state_flag_;
-
-    /// Goal state for planner
-    std::vector<double> goal_state_;
     
     /// Sequence of discrete states in the plan
     std::vector<State> state_sequence_;

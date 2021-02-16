@@ -8,11 +8,13 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
 
   // Load rosparams from parameter server
   std::string body_plan_topic, discrete_body_plan_topic;
-  std::vector<double> start_state_default = {0.0,0.0,0.4,0.0,0.0,0.0,0.0,0.0};
-  std::vector<double> goal_state_default = {8.0,0.0,0.4,0.0,0.0,0.0,0.0,0.0};
+  std::vector<double> start_state_default = 
+    {0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+  std::vector<double> goal_state_default = 
+    {8.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
 
   nh.param<std::string>("topics/terrain_map", terrain_map_topic_, "/terrain_map");
-  nh.param<std::string>("topics/ground_truth_state", robot_state_topic_, "/ground_truth_state");
+  nh.param<std::string>("topics/state/ground_truth", robot_state_topic_, "/state/ground_truth");
   nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
   nh.param<std::string>("topics/discrete_body_plan", discrete_body_plan_topic, "/discrete_body_plan");
   nh.param<std::string>("map_frame",map_frame_,"map");
@@ -44,16 +46,17 @@ void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPt
   terrain_.loadDataFromGridMap(map);
 }
 
-void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg) {
+void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
 
   // Quick check to make sure message data has been populated
-  if (msg->body.pose.pose.orientation.w != 0) {
+  if (msg->body.pose.pose.orientation.w > 1e-4) {
     // Get RPY from the state message
     tf2::Quaternion q(
           msg->body.pose.pose.orientation.x,
           msg->body.pose.pose.orientation.y,
           msg->body.pose.pose.orientation.z,
           msg->body.pose.pose.orientation.w);
+    q.normalize();
     tf2::Matrix3x3 m(q);
     double roll, pitch, yaw;
     m.getRPY(roll, pitch, yaw);
@@ -63,11 +66,15 @@ void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::StateEstimate::Con
     robot_state_.push_back(msg->body.pose.pose.position.x);
     robot_state_.push_back(msg->body.pose.pose.position.y);
     robot_state_.push_back(msg->body.pose.pose.position.z);
+    robot_state_.push_back(roll);
+    robot_state_.push_back(pitch);
+    robot_state_.push_back(yaw);
     robot_state_.push_back(msg->body.twist.twist.linear.x);
     robot_state_.push_back(msg->body.twist.twist.linear.y);
     robot_state_.push_back(msg->body.twist.twist.linear.z);
-    robot_state_.push_back(pitch);
+    robot_state_.push_back(msg->body.twist.twist.angular.x);
     robot_state_.push_back(msg->body.twist.twist.angular.y);
+    robot_state_.push_back(msg->body.twist.twist.angular.z);
   } else {
     ROS_WARN_THROTTLE(0.1, "Invalid quaternion received in GlobalBodyPlanner, exiting callback");
   }
@@ -80,7 +87,7 @@ bool GlobalBodyPlanner::replanTrigger() {
   }
 
   double state_error_threshold = 0.5;
-  std::vector<double> current_state_in_plan_ = fullStateToVector(body_plan_.front());
+  std::vector<double> current_state_in_plan_ = body_plan_.front();
   if (poseDistance(robot_state_, current_state_in_plan_) > state_error_threshold_) {
     return true;
   } else {
@@ -95,7 +102,7 @@ int GlobalBodyPlanner::initPlanner() {
 
   if (replanTrigger()) {
     start_state_ = robot_state_;
-    start_time_ = 0;
+    replan_start_time_ = 0;
     current_cost_ = INFTY;
   } else {
     // Loop through t_plan_ to find the next state after the committed horizon, set as start state
@@ -104,10 +111,8 @@ int GlobalBodyPlanner::initPlanner() {
       if (t_plan_[i] >= committed_horizon_) {
 
         start_state_.clear();
-        for (auto val : body_plan_[i]) {
-          start_state_.push_back(val);
-        }
-        start_time_ = t_plan_[i];
+        start_state_ = body_plan_[i];
+        replan_start_time_ = t_plan_[i];
         start_index = i;
 
         break;
@@ -129,11 +134,9 @@ void GlobalBodyPlanner::callPlanner() {
   int start_index = initPlanner();
 
   // Copy start and goal states and adjust for ground height
-  State start_state;
-  State goal_state;
-  stdVectorToState(start_state_, start_state);
-  stdVectorToState(goal_state_, goal_state);
-
+  State start_state = fullStateToState(start_state_);
+  State goal_state = fullStateToState(goal_state_);
+  
   // Make sure terminal states are valid
   if (!isValidState(start_state, terrain_, STANCE)) {
     ROS_WARN_THROTTLE(0.5, "Invalid start state, exiting global planner");
@@ -206,8 +209,11 @@ void GlobalBodyPlanner::callPlanner() {
 
       double dt = 0.1;
       std::vector<int> interp_phase;
-      getInterpPath(state_sequence_, action_sequence_, dt, start_time_, body_plan_, wrench_plan_, t_plan_, interp_phase);
-      // plotYaw(t_plan_, body_plan_);
+      getInterpPath(state_sequence_, action_sequence_, dt, replan_start_time_, body_plan_, wrench_plan_, t_plan_, interp_phase);
+      
+      if (start_index == 0) {
+        plan_timestamp_ = ros::Time::now();
+      }
     }
 
     if (!ros::ok()) {
@@ -230,21 +236,21 @@ void GlobalBodyPlanner::callPlanner() {
 void GlobalBodyPlanner::addStateWrenchToMsg(double t, FullState body_state, Wrench wrench,
     spirit_msgs::BodyPlan& msg) {
 
-  // Make sure the timestamps match the trajectory timing
-  ros::Duration time_elapsed(t);
-  ros::Time current_time = msg.header.stamp + time_elapsed;
+  ROS_ASSERT(body_state.size()==12);
 
   // Represent each state as an Odometry message
   nav_msgs::Odometry state;
   state.header.frame_id = map_frame_;
-  state.header.stamp = current_time;
+  state.header.stamp = msg.header.stamp + ros::Duration(t);
   state.child_frame_id = "dummy";
 
   // Transform from RPY to quat msg
   tf2::Quaternion quat_tf;
   geometry_msgs::Quaternion quat_msg;
-  quat_tf.setRPY(body_state[6],body_state[7],body_state[8]);
+  quat_tf.setRPY(body_state[3],body_state[4],body_state[5]);
   quat_msg = tf2::toMsg(quat_tf);
+
+  // std::cout << "original pitch = " << body_state[7] << std::endl;
 
   // Load the data into the message
   state.pose.pose.position.x = body_state[0];
@@ -252,9 +258,9 @@ void GlobalBodyPlanner::addStateWrenchToMsg(double t, FullState body_state, Wren
   state.pose.pose.position.z = body_state[2];
   state.pose.pose.orientation = quat_msg;
 
-  state.twist.twist.linear.x = body_state[3];
-  state.twist.twist.linear.y = body_state[4];
-  state.twist.twist.linear.z = body_state[5];
+  state.twist.twist.linear.x = body_state[6];
+  state.twist.twist.linear.y = body_state[7];
+  state.twist.twist.linear.z = body_state[8];
   state.twist.twist.angular.x = body_state[9];
   state.twist.twist.angular.y = body_state[10];
   state.twist.twist.angular.z = body_state[11];
@@ -272,15 +278,19 @@ void GlobalBodyPlanner::addStateWrenchToMsg(double t, FullState body_state, Wren
 }
 
 void GlobalBodyPlanner::publishPlan() {
+  if (body_plan_.empty())
+    return;
+
   // Construct BodyPlan messages
   spirit_msgs::BodyPlan body_plan_msg;
   spirit_msgs::BodyPlan discrete_body_plan_msg;
 
   // Initialize the headers and types
-  ros::Time timestamp = ros::Time::now();
-  body_plan_msg.header.stamp = timestamp;
+  body_plan_msg.header.stamp = plan_timestamp_;
   body_plan_msg.header.frame_id = map_frame_;
   discrete_body_plan_msg.header = body_plan_msg.header;
+
+  ROS_ASSERT(t_plan_.front() == 0);
 
   // Loop through the interpolated body plan and add to message
   for (int i=0;i<body_plan_.size(); ++i)
@@ -312,10 +322,10 @@ void GlobalBodyPlanner::waitForData() {
     ros::spinOnce();
   }
 
-  boost::shared_ptr<spirit_msgs::StateEstimate const> shared_robot_state;
+  boost::shared_ptr<spirit_msgs::RobotState const> shared_robot_state;
   while((shared_robot_state == nullptr) && ros::ok())
   {
-    shared_robot_state = ros::topic::waitForMessage<spirit_msgs::StateEstimate>(robot_state_topic_, nh_);
+    shared_robot_state = ros::topic::waitForMessage<spirit_msgs::RobotState>(robot_state_topic_, nh_);
     ros::spinOnce();
   }
 }

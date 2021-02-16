@@ -8,8 +8,7 @@ namespace spirit_utils {
 
 //! A lightweight class for measuring and reporting the duration of functions calls
 /*!
-  FunctionTimer keeps track of the amount of time elapsed between start and stop calls,
-  and reporting this along with the name of the function.
+  FunctionTimer keeps track of the amount of time elapsed between start and stop calls, and reporting this along with the name of the function. For some reason the logic in this class takes about 1e-7 s to run so timing functions faster than that will yield inaccurate solutions compared to standard steady clock methods. For functions that take longer than 1e-6 s it should work.
 */
 class FunctionTimer {
   public:
