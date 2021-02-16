@@ -122,12 +122,12 @@ void printVectorIntNewline(std::vector<int> vec)
   printVectorInt(vec); std::cout << std::endl;
 }
 void plotYaw(std::vector<double> interp_t,
-  std::vector<FullState> interp_full_path) {
+  std::vector<FullState> interp_full_plan) {
 
   std::vector<double> yaw;
   std::vector<double> yaw_rate;
 
-  for (FullState full_state : interp_full_path) {
+  for (FullState full_state : interp_full_plan) {
     yaw.push_back(full_state[5]);
     yaw_rate.push_back(full_state[11]);
   }
@@ -192,10 +192,10 @@ bool isWithinBounds(State s1, State s2)
   return (stateDistance(s1, s2) <= GOAL_BOUNDS);
 }
 
-void addFullStates(std::vector<State> interp_reduced_path, double dt, 
-  std::vector<FullState> &interp_full_path, FastTerrainMap& terrain) {
+void addFullStates(std::vector<State> interp_reduced_plan, double dt, 
+  std::vector<FullState> &interp_full_plan, FastTerrainMap& terrain) {
 
-  int num_states = interp_reduced_path.size();
+  int num_states = interp_reduced_plan.size();
 
   // Set roll and roll rate to zero
   double roll = 0;
@@ -212,7 +212,7 @@ void addFullStates(std::vector<State> interp_reduced_path, double dt,
 
   // Compute yaw to align with heading
   for (int i = 0; i < num_states; i++) {
-    State body_state = interp_reduced_path[i];
+    State body_state = interp_reduced_plan[i];
     yaw[i] = atan2(body_state[4],body_state[3]);
     pitch[i] = getPitchFromState(body_state,terrain);
   }
@@ -245,31 +245,33 @@ void addFullStates(std::vector<State> interp_reduced_path, double dt,
 
   // Add full state data into the array
   for (int i = 0; i < num_states; i++) {
-    State body_state = interp_reduced_path[i];
+    State body_state = interp_reduced_plan[i];
     FullState body_full_state = stateToFullState(body_state, roll, pitch[i],
       filtered_yaw[i], roll_rate, filtered_pitch_rate[i], filtered_yaw_rate[i]);
 
-    interp_full_path.push_back(body_full_state);
+    interp_full_plan.push_back(body_full_state);
   }
 }
 
-Wrench getWrench(Action a,double t) {
+GRF getGRF(Action a,double t) {
 
   double m = M_CONST;
   double g = G_CONST;
   double t_s = a[6];
 
-  Wrench wrench(3);
+  GRF grf;
 
-  // If in stance fill wrench with appropriate data, otherwise leave as zeros
+  // If in stance fill grf with appropriate data, otherwise leave as zeros
   if (t<=t_s) {
     // Get corresponding forces
-    wrench[0] = m*(a[0] + (a[3]-a[0])*t/t_s);
-    wrench[1] = m*(a[1] + (a[4]-a[1])*t/t_s);
-    wrench[2] = m*((a[2] + (a[5]-a[2])*t/t_s) + g);
+    grf[0] = m*(a[0] + (a[3]-a[0])*t/t_s);
+    grf[1] = m*(a[1] + (a[4]-a[1])*t/t_s);
+    grf[2] = m*((a[2] + (a[5]-a[2])*t/t_s) + g);
+  } else {
+    grf = {0,0,0};
   }
   
-  return wrench;
+  return grf;
 
 }
 
@@ -295,13 +297,13 @@ double getPitchFromState(State s, FastTerrainMap& terrain) {
 
 double getHeightFromState(State s, FastTerrainMap& terrain) {
 
-  return (0.3+terrain.getGroundHeightFiltered(s[0], s[1]));
+  return (0.3+terrain.getGroundHeight(s[0], s[1]));
 
 }
 
 void interpStateActionPair(State s, Action a,double t0,double dt, 
-  std::vector<State> &interp_reduced_path, std::vector<Wrench> &interp_wrench,
-  std::vector<double> &interp_t, std::vector<int> &interp_phase,
+  std::vector<State> &interp_reduced_plan, std::vector<GRF> &interp_GRF,
+  std::vector<double> &interp_t, std::vector<int> &interp_primitive_id,
   FastTerrainMap& terrain)
 {
   double t_s = a[6];
@@ -311,24 +313,33 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
   for (double t = 0; t < t_s; t += dt)
   {
     interp_t.push_back(t0+t);
-    interp_reduced_path.push_back(applyStance(s,a,t,terrain));
-    interp_wrench.push_back(getWrench(a,t));
+    interp_reduced_plan.push_back(applyStance(s,a,t,terrain));
+    interp_GRF.push_back(getGRF(a,t));
 
     if (t_f==0)
-      interp_phase.push_back(CONNECT_STANCE);
+      interp_primitive_id.push_back(CONNECT_STANCE);
     else
-      interp_phase.push_back(STANCE);
+      interp_primitive_id.push_back(STANCE);
   }
 
-  // Include the exact moment of liftoff
+  // Include the exact moment of liftoff if flight phase exists
   State s_takeoff = applyStance(s, a, terrain);
+  if (t_f>0) {
+    interp_t.push_back(t0+t_s);
+    interp_reduced_plan.push_back(s_takeoff);
+    interp_GRF.push_back(getGRF(a,t_s));
+    interp_primitive_id.push_back(STANCE);
+  }
 
+  // Include the remainder of the flight phase (double count takeoff state to
+  // get discontinuous dropoff in grf when interpolating)
   for (double t = 0; t < t_f; t += dt)
   {
     interp_t.push_back(t0+t_s+t);
-    interp_reduced_path.push_back(applyFlight(s_takeoff, t));
-    interp_wrench.push_back(getWrench(a,t_s+t));
-    interp_phase.push_back(FLIGHT);
+    interp_reduced_plan.push_back(applyFlight(s_takeoff, t));
+    GRF grf = {0,0,0};
+    interp_GRF.push_back(grf);
+    interp_primitive_id.push_back(FLIGHT);
   }
 
   // // Include the exact landing state if there is a flight phase
@@ -336,36 +347,36 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
   // {
   //   interp_t.push_back(t_s+t_f+t0);
   //   interp_path.push_back(applyFlight(s_takeoff, t_f));
-  //   interp_wrench.push_back(getWrench(a,t_s+t_f));
-  //   interp_phase.push_back(STANCE);
+  //   interp_GRF.push_back(getGRF(a,t_s+t_f));
+  //   interp_primitive_id.push_back(STANCE);
   // }
 }
 
-
-
-void getInterpPath(std::vector<State> state_sequence,
+void getInterpPlan(std::vector<State> state_sequence,
   std::vector<Action> action_sequence,double dt, double t0,
-  std::vector<FullState> &interp_full_path, std::vector<Wrench> &interp_wrench, 
-  std::vector<double> &interp_t, std::vector<int> &interp_phase,
+  std::vector<FullState> &interp_full_plan, std::vector<GRF> &interp_GRF, 
+  std::vector<double> &interp_t, std::vector<int> &interp_primitive_id,
   FastTerrainMap& terrain)
 {
-  std::vector<State> interp_reduced_path;
+  std::vector<State> interp_reduced_plan;
 
   // Loop through state action pairs, interp each and add to the path
   for (int i=0; i < action_sequence.size();i++)
   {
     interpStateActionPair(state_sequence[i], action_sequence[i], t0, dt, 
-      interp_reduced_path, interp_wrench, interp_t, interp_phase, terrain);
+      interp_reduced_plan, interp_GRF, interp_t, interp_primitive_id, terrain);
     t0 += (action_sequence[i][6] + action_sequence[i][7]);
   }
 
-  // Add the final state in case it was missed by interp (wrench is undefined 
+  // Add the final state in case it was missed by interp (GRF is undefined 
   // here so just copy the last element)
   interp_t.push_back(t0);
-  interp_reduced_path.push_back(state_sequence.back());
-  interp_wrench.push_back(interp_wrench.back());
+  interp_reduced_plan.push_back(state_sequence.back());
+  interp_GRF.push_back(interp_GRF.back());
+  interp_primitive_id.push_back(STANCE);
 
-  addFullStates(interp_reduced_path, dt, interp_full_path, terrain);
+  // Lift from reduced into full body plan
+  addFullStates(interp_reduced_plan, dt, interp_full_plan, terrain);
 
 }
 
@@ -396,7 +407,7 @@ std::array<double,3> rotateGRF(std::array<double,3> surface_norm,
        -v[1], v[0], 0;
 
   Eigen::Matrix3d R; // Rotation matrix to rotate from contact frame to spatial frame
-  double eps = 0.000001;
+  double eps = 1e-6;
   if (s < eps)
   {
     R = Eigen::Matrix3d::Identity();

@@ -68,6 +68,31 @@ Eigen::Vector3d math_utils::interpVector3d(std::vector<double> input_vec, std::v
   return interp_data;
 }
 
+int math_utils::interpInt(std::vector<double> input_vec,
+  std::vector<int> output_vec, double query_point) {
+
+  // Check bounds, throw an error if invalid since this shouldn't ever happen
+  if ((query_point < input_vec.front()) || (query_point > input_vec.back())){
+    throw std::runtime_error("Tried to interp out of bounds");
+  }
+
+  // Declare variables for interpolating between, both for input and output data
+  double t1, t2;
+  Eigen::Vector3d y1, y2, interp_data;
+
+  // Find the correct values to interp between
+  int idx=0;
+  for(int i=0;i<input_vec.size();i++)
+  {
+      if(input_vec[i]<=query_point && query_point<input_vec[i+1])
+      {
+        return output_vec[i];
+      }
+  }
+
+  throw std::runtime_error("Didn't find the query point, something happened");
+}
+
 std::vector<double> math_utils::movingAverageFilter(std::vector<double> data,
   int window_size) {
 

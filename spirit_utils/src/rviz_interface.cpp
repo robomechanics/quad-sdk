@@ -4,7 +4,7 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string body_plan_topic, body_plan_viz_topic, body_wrench_plan_viz_topic,
+  std::string body_plan_topic, body_plan_viz_topic, grf_plan_viz_topic,
     discrete_body_plan_topic, discrete_body_plan_viz_topic,
     foot_plan_discrete_topic, foot_plan_discrete_viz_topic, 
     foot_plan_continuous_topic, state_estimate_topic, ground_truth_state_topic, 
@@ -24,8 +24,8 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   
   nh.param<std::string>("topics/visualization/body_plan", 
     body_plan_viz_topic, "/visualization/body_plan");
-  nh.param<std::string>("topics/visualization/body_wrench_plan", 
-    body_wrench_plan_viz_topic, "/visualization/body_wrench_plan");
+  nh.param<std::string>("topics/visualization/grf_plan", 
+    grf_plan_viz_topic, "/visualization/grf_plan");
   nh.param<std::string>("topics/visualization/discrete_body_plan", 
     discrete_body_plan_viz_topic, "/visualization/discrete_body_plan");
   nh.param<std::string>("topics/visualization/foot_plan_discrete", 
@@ -35,20 +35,31 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
 
 
   nh.param<std::string>("map_frame",map_frame_,"map");
-  nh.param<double>("visualization/update_rate", update_rate_, 10); // add a param for your package instead of using the estimator one
+  nh.param<double>("visualization/update_rate", update_rate_, 10);
 
-  // Setup pubs and subs
-  body_plan_sub_ = nh_.subscribe(body_plan_topic,1,&RVizInterface::bodyPlanCallback, this);
-  discrete_body_plan_sub_ = nh_.subscribe(discrete_body_plan_topic,1,&RVizInterface::discreteBodyPlanCallback, this);
-  foot_plan_discrete_sub_ = nh_.subscribe(foot_plan_discrete_topic,1,&RVizInterface::footPlanDiscreteCallback, this);
-  foot_plan_continuous_sub_ = nh_.subscribe(foot_plan_continuous_topic,1,&RVizInterface::footPlanContinuousCallback, this);
-  state_estimate_sub_ = nh_.subscribe(state_estimate_topic,1,&RVizInterface::stateEstimateCallback, this);
-  ground_truth_state_sub_ = nh_.subscribe(ground_truth_state_topic,1,&RVizInterface::groundTruthStateCallback, this);
+  // Setup subs and pubs
+  body_plan_sub_ = nh_.subscribe(body_plan_topic,1,
+    &RVizInterface::bodyPlanCallback, this);
+  discrete_body_plan_sub_ = nh_.subscribe(discrete_body_plan_topic,1,
+    &RVizInterface::discreteBodyPlanCallback, this);
+  foot_plan_discrete_sub_ = nh_.subscribe(foot_plan_discrete_topic,1,
+    &RVizInterface::footPlanDiscreteCallback, this);
+  foot_plan_continuous_sub_ = nh_.subscribe(foot_plan_continuous_topic,1,
+    &RVizInterface::footPlanContinuousCallback, this);
+  state_estimate_sub_ = nh_.subscribe(state_estimate_topic,1,
+    &RVizInterface::stateEstimateCallback, this);
+  ground_truth_state_sub_ = nh_.subscribe(ground_truth_state_topic,1,
+    &RVizInterface::groundTruthStateCallback, this);
+
   body_plan_viz_pub_ = nh_.advertise<nav_msgs::Path>(body_plan_viz_topic,1);
-  body_wrench_plan_viz_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(body_wrench_plan_viz_topic,1);
-  discrete_body_plan_viz_pub_ = nh_.advertise<visualization_msgs::Marker>(discrete_body_plan_viz_topic,1);
-  foot_plan_discrete_viz_pub_ = nh_.advertise<visualization_msgs::Marker>(foot_plan_discrete_viz_topic,1);
-  joint_states_viz_pub_ = nh_.advertise<sensor_msgs::JointState>(joint_states_viz_topic,1);
+  grf_plan_viz_pub_ = nh_.advertise<visualization_msgs::MarkerArray>
+    (grf_plan_viz_topic,1);
+  discrete_body_plan_viz_pub_ = nh_.advertise<visualization_msgs::Marker>
+    (discrete_body_plan_viz_topic,1);
+  foot_plan_discrete_viz_pub_ = nh_.advertise<visualization_msgs::Marker>
+    (foot_plan_discrete_viz_topic,1);
+  joint_states_viz_pub_ = nh_.advertise<sensor_msgs::JointState>
+    (joint_states_viz_topic,1);
 
   std::string foot_0_plan_continuous_viz_topic,foot_1_plan_continuous_viz_topic,
     foot_2_plan_continuous_viz_topic, foot_3_plan_continuous_viz_topic;
@@ -73,13 +84,14 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
 
 }
 
-void RVizInterface::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) {
+void RVizInterface::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg)
+{
 
   // Initialize Path message to visualize body plan
   nav_msgs::Path body_plan_viz;
   body_plan_viz.header = msg->header;
 
-  // Loop through the BodyPlan message to get the state info and add to private vector
+  // Loop through the BodyPlan message to get the state info
   int length = msg->states.size();
   for (int i=0; i < length; i++) {
 
@@ -97,7 +109,7 @@ void RVizInterface::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg)
 
 
   // Construct MarkerArray and Marker message for GRFs
-  visualization_msgs::MarkerArray wrenches_msg;
+  visualization_msgs::MarkerArray grfs_msg;
   visualization_msgs::Marker marker;
 
   // Initialize the headers and types
@@ -124,26 +136,27 @@ void RVizInterface::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg)
 
     /// Define the endpoint of the GRF arrow
     double grf_length_scale = 0.002;
-    p_tip.x = p_base.x + grf_length_scale*msg->wrenches[i].force.x;
-    p_tip.y = p_base.y + grf_length_scale*msg->wrenches[i].force.y;
-    p_tip.z = p_base.z + grf_length_scale*msg->wrenches[i].force.z;
+    p_tip.x = p_base.x + grf_length_scale*msg->grfs[i].x;
+    p_tip.y = p_base.y + grf_length_scale*msg->grfs[i].y;
+    p_tip.z = p_base.z + grf_length_scale*msg->grfs[i].z;
 
     // if GRF = 0, set alpha to zero
-    if (msg->wrenches[i].force.z < 1e-4) {
+    if (msg->grfs[i].z < 1e-4) {
       marker.color.a = 0.0;
     }
 
     // Add the points to the marker and add the marker to the array
     marker.points.push_back(p_base);
     marker.points.push_back(p_tip);
-    wrenches_msg.markers.push_back(marker);
+    grfs_msg.markers.push_back(marker);
   }
 
   // Publish grfs
-  body_wrench_plan_viz_pub_.publish(wrenches_msg);
+  grf_plan_viz_pub_.publish(grfs_msg);
 }
 
-void RVizInterface::discreteBodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) {
+void RVizInterface::discreteBodyPlanCallback(
+  const spirit_msgs::BodyPlan::ConstPtr& msg) {
 
   // Construct Marker message
   visualization_msgs::Marker discrete_body_plan;
@@ -174,7 +187,8 @@ void RVizInterface::discreteBodyPlanCallback(const spirit_msgs::BodyPlan::ConstP
   discrete_body_plan_viz_pub_.publish(discrete_body_plan);
 }
 
-void RVizInterface::footPlanDiscreteCallback(const spirit_msgs::MultiFootPlanDiscrete::ConstPtr& msg) {
+void RVizInterface::footPlanDiscreteCallback(
+  const spirit_msgs::MultiFootPlanDiscrete::ConstPtr& msg) {
 
   // Initialize Marker message to visualize footstep plan as points
   visualization_msgs::Marker points;
@@ -202,7 +216,7 @@ void RVizInterface::footPlanDiscreteCallback(const spirit_msgs::MultiFootPlanDis
       p.y = msg->feet[i].footholds[j].position.y;
       p.z = msg->feet[i].footholds[j].position.z;
 
-      // Set the color properties of each marker (green for front feet, blue for back)
+      // Set the color of each marker (green for front, blue for back)
       std_msgs::ColorRGBA color;
       color.a = 1.0;
       if (i == 0 || i == 2) {
@@ -221,7 +235,8 @@ void RVizInterface::footPlanDiscreteCallback(const spirit_msgs::MultiFootPlanDis
   foot_plan_discrete_viz_pub_.publish(points);
 }
 
-void RVizInterface::footPlanContinuousCallback(const spirit_msgs::MultiFootPlanContinuous::ConstPtr& msg) {
+void RVizInterface::footPlanContinuousCallback(
+  const spirit_msgs::MultiFootPlanContinuous::ConstPtr& msg) {
 
   std::vector<nav_msgs::Path> foot_paths;
   foot_paths.resize(4);
@@ -247,9 +262,10 @@ void RVizInterface::footPlanContinuousCallback(const spirit_msgs::MultiFootPlanC
 
 }
 
-void RVizInterface::stateEstimateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
+void RVizInterface::stateEstimateCallback(
+  const spirit_msgs::RobotState::ConstPtr& msg) {
 
-  // // Make a transform message for the body, populate with state estimate data, and publish
+  // // Make a transform message for the body, populate with state estimate data
   // geometry_msgs::TransformStamped transformStamped;
   // transformStamped.header = msg->header;
   // transformStamped.header.frame_id = map_frame_;
@@ -264,15 +280,16 @@ void RVizInterface::stateEstimateCallback(const spirit_msgs::RobotState::ConstPt
   // sensor_msgs::JointState joint_msg;
   // joint_msg = msg->joints;
 
-  // // Set the header to the main header of the state estimate message and publish
+  // // Set the header to that of the state estimate message and publish
   // joint_msg.header = msg->header;
   // joint_states_viz_pub_.publish(joint_msg);
 }
 
 
-void RVizInterface::groundTruthStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
+void RVizInterface::groundTruthStateCallback(
+  const spirit_msgs::RobotState::ConstPtr& msg) {
 
-  // Make a transform message for the body, populate with state estimate data, and publish
+  // Make a transform message for the body, populate with state estimate data
   geometry_msgs::TransformStamped transformStamped;
   transformStamped.header = msg->header;
   transformStamped.header.stamp = ros::Time::now();

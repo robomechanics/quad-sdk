@@ -90,7 +90,7 @@ Visualization Manager:
       Marker Topic: /visualization/discrete_body_plan
       Name: Discrete Body Plan
       Namespaces:
-        {}
+        "": true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -98,7 +98,7 @@ Visualization Manager:
       Marker Topic: /visualization/foot_plan_discrete
       Name: Footstep Plan
       Namespaces:
-        {}
+        "": true
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -212,10 +212,10 @@ Visualization Manager:
       Visual Enabled: true
     - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /visualization/body_wrench_plan
+      Marker Topic: /visualization/grf_plan
       Name: GRFs
       Namespaces:
-        {}
+        "": true
       Queue Size: 1
       Value: true
     - Alpha: 1

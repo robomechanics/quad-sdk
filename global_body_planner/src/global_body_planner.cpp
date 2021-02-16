@@ -146,7 +146,7 @@ void GlobalBodyPlanner::callPlanner() {
     return;
   }
   if (!isValidState(goal_state, terrain_, STANCE)) {
-    ROS_WARN_THROTTLE(2, "Invalid goal state, attempting to add in the ground height");
+    ROS_DEBUG_THROTTLE(2, "Invalid goal state, attempting to add in the ground height");
     goal_state[2] += terrain_.getGroundHeight(goal_state_[0], goal_state_[1]);
     if (!isValidState(goal_state, terrain_, STANCE)) {
       ROS_WARN_THROTTLE(2, "Invalid goal state, exiting global planner");
@@ -202,7 +202,9 @@ void GlobalBodyPlanner::callPlanner() {
       // Clear out old plan and interpolate to get full body plan
       t_plan_.erase(t_plan_.begin()+start_index, t_plan_.end());
       body_plan_.erase(body_plan_.begin()+start_index, body_plan_.end());
-      wrench_plan_.erase(wrench_plan_.begin()+start_index, wrench_plan_.end());
+      grf_plan_.erase(grf_plan_.begin()+start_index, grf_plan_.end());
+      primitive_id_plan_.erase(primitive_id_plan_.begin()+start_index, 
+        primitive_id_plan_.end());
 
       std::cout << "Solve time: " << plan_time << " s" << std::endl;
       std::cout << "Vertices generated: " << vertices_generated << std::endl;
@@ -211,9 +213,8 @@ void GlobalBodyPlanner::callPlanner() {
       std::cout << std::endl;
 
       double dt = 0.1;
-      std::vector<int> interp_phase;
-      getInterpPath(state_sequence_, action_sequence_, dt, replan_start_time_, 
-        body_plan_, wrench_plan_, t_plan_, interp_phase, terrain_);
+      getInterpPlan(state_sequence_, action_sequence_, dt, replan_start_time_, 
+        body_plan_, grf_plan_, t_plan_, primitive_id_plan_, terrain_);
 
       if (start_index == 0) {
         plan_timestamp_ = ros::Time::now();
@@ -237,8 +238,8 @@ void GlobalBodyPlanner::callPlanner() {
 
 }
 
-void GlobalBodyPlanner::addStateWrenchToMsg(double t, FullState body_state, Wrench wrench,
-    spirit_msgs::BodyPlan& msg) {
+void GlobalBodyPlanner::addStateAndGRFToMsg(double t, FullState body_state, 
+  GRF grf, int primitive_id, spirit_msgs::BodyPlan& msg) {
 
   ROS_ASSERT(body_state.size()==12);
 
@@ -269,13 +270,14 @@ void GlobalBodyPlanner::addStateWrenchToMsg(double t, FullState body_state, Wren
   state.twist.twist.angular.y = body_state[10];
   state.twist.twist.angular.z = body_state[11];
 
-  geometry_msgs::Wrench wrench_msg;
-  wrench_msg.force.x = wrench[0];
-  wrench_msg.force.y = wrench[1];
-  wrench_msg.force.z = wrench[2];
+  geometry_msgs::Vector3 grf_msg;
+  grf_msg.x = grf[0];
+  grf_msg.y = grf[1];
+  grf_msg.z = grf[2];
 
   msg.states.push_back(state);
-  msg.wrenches.push_back(wrench_msg);
+  msg.grfs.push_back(grf_msg);
+  msg.primitive_ids.push_back(primitive_id);
 }
 
 void GlobalBodyPlanner::publishPlan() {
@@ -295,17 +297,19 @@ void GlobalBodyPlanner::publishPlan() {
 
   // Loop through the interpolated body plan and add to message
   for (int i=0;i<body_plan_.size(); ++i)
-    addStateWrenchToMsg(t_plan_[i], body_plan_[i], wrench_plan_[i], body_plan_msg);
+    addStateAndGRFToMsg(t_plan_[i], body_plan_[i], grf_plan_[i],
+      primitive_id_plan_[i], body_plan_msg);
 
   // Loop through the discrete states and add to message
   for (int i = 0; i<state_sequence_.size(); i++)
   {
     // Discrete states don't need roll or yaw data, set to zero
     FullState full_discrete_state = stateToFullState(state_sequence_[i],0,0,0,0,0,0);
-    addStateWrenchToMsg(t_plan_[i], full_discrete_state, wrench_plan_[i], discrete_body_plan_msg);
+    addStateAndGRFToMsg(t_plan_[i], full_discrete_state, grf_plan_[i], 
+      primitive_id_plan_[i], discrete_body_plan_msg);
   }
   
-  if (body_plan_msg.states.size() != body_plan_msg.wrenches.size()) {
+  if (body_plan_msg.states.size() != body_plan_msg.grfs.size()) {
     throw std::runtime_error("Mismatch between number of states and wrenches, something is wrong");
   }
 

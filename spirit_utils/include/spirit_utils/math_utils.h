@@ -27,6 +27,16 @@ namespace math_utils {
   Eigen::Vector3d interpVector3d(std::vector<double> input_vec, std::vector<Eigen::Vector3d> output_mat, double query_point);
 
   /**
+   * @brief Obtain the correct int within a parameterized vector of ints
+   * @param[in] input_vec Input vector
+   * @param[in] output_vec Output vector of ints
+   * @param[in] input_val Query point
+   * @return Correct output int corresponsing to the query point
+   */
+  int interpInt(std::vector<double> input_vec,
+  std::vector<int> output_vec, double query_point);
+
+  /**
    * @brief Filter a stl vector with a moving average window.
    * @param[in] data Input vector
    * @param[in] window_size the width of the moving window. If even, function will add one to maintain symmetry
