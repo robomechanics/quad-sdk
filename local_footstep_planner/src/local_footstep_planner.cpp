@@ -11,7 +11,7 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
   nh.param<std::string>("topics/body_plan", body_plan_topic_, "/body_plan");
   nh.param<std::string>("topics/foot_plan_discrete", foot_plan_discrete_topic, "/foot_plan_discrete");
   nh.param<std::string>("topics/foot_plan_continuous", foot_plan_continuous_topic, "/foot_plan_continuous");
-  nh.param<std::string>("map_frame",map_frame_,"/map");
+  nh.param<std::string>("map_frame",map_frame_,"map");
   nh.param<double>("local_footstep_planner/update_rate", update_rate_, 1);
   nh.param<double>("local_footstep_planner/grf_weight", grf_weight_, 0.5);
   nh.param<double>("local_footstep_planner/max_footstep_horizon", max_footstep_horizon_, 1.5);

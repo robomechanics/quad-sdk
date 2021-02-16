@@ -67,19 +67,19 @@ ground_truth_publisher:
 terrain_map_publisher:
   update_rate: 5
   map_data_source: csv
-  terrain_type: slope     # slope or rough_terrain
+  terrain_type: rough_terrain     # slope or rough_terrain
 
 grid_map_visualization:
   grid_map_topic: /terrain_map
   grid_map_visualizations:
-    - name: elevation_points
+    - name: z_points
       type: point_cloud
       params:
-       layer: elevation
+       layer: z
     - name: elevation_grid
       type: occupancy_grid
       params:
-       layer: elevation
+       layer: z
        data_min: 0.08
        data_max: -0.16
 

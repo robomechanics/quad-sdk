@@ -192,70 +192,6 @@ bool isWithinBounds(State s1, State s2)
   return (stateDistance(s1, s2) <= GOAL_BOUNDS);
 }
 
-std::vector<double> movingAverageFilter(std::vector<double> data,
-  int window_size) {
-
-  std::vector<double> filtered_data;
-  int N = data.size();
-
-  // Check to ensure window size is an odd integer, if not add one to make it so
-  if ((window_size % 2) == 0) {
-    window_size += 1;
-    ROS_WARN("Filter window size is even, adding one to maintain symmetry");
-  }
-
-  // Make sure that the window size is acceptable
-  if (window_size>=N) {
-    ROS_ERROR("Filter window size is bigger than data");
-  }
-
-  // Loop through the data
-  for (int i = 0; i < N; i++) {
-
-    // Initialize sum and count of data samples
-    double sum = 0;
-    double count = 0;
-
-    // Shrink the window size if it would result in out of bounds data
-    int current_window_size = std::min(window_size, 2*i+1);
-    // int current_window_size = window_size;
-    
-    // Loop through the window, adding to the sum and averaging
-    for (int j = 0; j < current_window_size; j++) {
-      double index = i + (j - (current_window_size-1)/2);
-
-      // Make sure data is in bounds
-      if (index>=0 && index<N) {
-        sum += data[index];
-        count += 1;
-      } else {
-        // ROS_WARN("Filter tried to access data out of bounds, which shouldn't 
-        // happen (filter window should scale automatically).");
-      }
-    }
-
-    filtered_data.push_back((float)sum/count);
-  }
-
-  return filtered_data;
-}
-
-std::vector<double> centralDifference(std::vector<double> data, double dt) {
-  std::vector<double> data_diff;
-
-  for (int i = 0; i < data.size(); i++) {
-
-    // Compute lower and upper indices, with forward/backward difference at the ends
-    int lower_index = std::max(i-1,0);
-    int upper_index = std::min(i+1,(int)data.size()-1);
-
-    double estimate = (data[upper_index] - data[lower_index])/(dt*(upper_index - lower_index));
-    data_diff.push_back(estimate);
-  }
-
-  return data_diff;
-}
-
 void addFullStates(std::vector<State> interp_reduced_path, double dt, 
   std::vector<FullState> &interp_full_path, FastTerrainMap& terrain) {
 
@@ -278,16 +214,16 @@ void addFullStates(std::vector<State> interp_reduced_path, double dt,
   for (int i = 0; i < num_states; i++) {
     State body_state = interp_reduced_path[i];
     yaw[i] = atan2(body_state[4],body_state[3]);
-    pitch[i] = getPitch(body_state,terrain);
+    pitch[i] = getPitchFromState(body_state,terrain);
   }
 
   // Filter yaw and compute its derivative via central difference method
   int window_size = 7;
-  filtered_yaw = movingAverageFilter(yaw, window_size);
-  yaw_rate = centralDifference(filtered_yaw, dt);
-  filtered_yaw_rate = movingAverageFilter(yaw_rate, window_size);
-  pitch_rate = centralDifference(pitch, dt);
-  filtered_pitch_rate = movingAverageFilter(pitch_rate, window_size);
+  filtered_yaw = math_utils::movingAverageFilter(yaw, window_size);
+  yaw_rate = math_utils::centralDiff(filtered_yaw, dt);
+  filtered_yaw_rate = math_utils::movingAverageFilter(yaw_rate, window_size);
+  pitch_rate = math_utils::centralDiff(pitch, dt);
+  filtered_pitch_rate = math_utils::movingAverageFilter(pitch_rate,window_size);
 
 
   std::vector<double> interp_t(num_states);
@@ -337,13 +273,13 @@ Wrench getWrench(Action a,double t) {
 
 }
 
-double getPitch(State s, FastTerrainMap& terrain) {
+double getPitchFromState(State s, FastTerrainMap& terrain) {
 
   std::array<double, 3> surf_norm = terrain.getSurfaceNormal(s[0], s[1]);
 
   double denom = s[3]*s[3] + s[4]*s[4];
 
-  if (denom == 0 || surf_norm[2] <=0) {
+  if (denom <= 0 || surf_norm[2] <=0) {
     double default_pitch = 0;
     return default_pitch;
   } else {
@@ -351,20 +287,22 @@ double getPitch(State s, FastTerrainMap& terrain) {
     double v_proj = (s[3]*surf_norm[0] + s[4]*surf_norm[1])/
       sqrt(denom);
 
-
-    // std::cout << "v_proj = " << v_proj << std::endl;
-    // std::cout << "surf_norm[2] = " << surf_norm[2] << std::endl;
-
     double pitch = atan2(v_proj,surf_norm[2]);
 
-    // std::cout << "Pitch = " << pitch << std::endl;
     return pitch;
   }
 }
 
+double getHeightFromState(State s, FastTerrainMap& terrain) {
+
+  return (0.3+terrain.getGroundHeightFiltered(s[0], s[1]));
+
+}
+
 void interpStateActionPair(State s, Action a,double t0,double dt, 
   std::vector<State> &interp_reduced_path, std::vector<Wrench> &interp_wrench,
-  std::vector<double> &interp_t, std::vector<int> &interp_phase)
+  std::vector<double> &interp_t, std::vector<int> &interp_phase,
+  FastTerrainMap& terrain)
 {
   double t_s = a[6];
   double t_f = a[7];
@@ -373,7 +311,7 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
   for (double t = 0; t < t_s; t += dt)
   {
     interp_t.push_back(t0+t);
-    interp_reduced_path.push_back(applyStance(s,a,t));
+    interp_reduced_path.push_back(applyStance(s,a,t,terrain));
     interp_wrench.push_back(getWrench(a,t));
 
     if (t_f==0)
@@ -383,7 +321,7 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
   }
 
   // Include the exact moment of liftoff
-  State s_takeoff = applyStance(s, a);
+  State s_takeoff = applyStance(s, a, terrain);
 
   for (double t = 0; t < t_f; t += dt)
   {
@@ -417,7 +355,7 @@ void getInterpPath(std::vector<State> state_sequence,
   for (int i=0; i < action_sequence.size();i++)
   {
     interpStateActionPair(state_sequence[i], action_sequence[i], t0, dt, 
-      interp_reduced_path, interp_wrench, interp_t, interp_phase);
+      interp_reduced_path, interp_wrench, interp_t, interp_phase, terrain);
     t0 += (action_sequence[i][6] + action_sequence[i][7]);
   }
 
@@ -474,7 +412,7 @@ std::array<double,3> rotateGRF(std::array<double,3> surface_norm,
   return grf_spatial;
 }
 
-State applyStance(State s, Action a, double t)
+State applyStance(State s, Action a, double t, FastTerrainMap& terrain)
 {
   double a_x_td = a[0]; // Acceleration in x at touchdown
   double a_y_td = a[1];
@@ -500,12 +438,20 @@ State applyStance(State s, Action a, double t)
   s_new[4] = dy_td + a_y_td*t + (a_y_to - a_y_td)*t*t/(2.0*t_s);
   s_new[5] = dz_td + a_z_td*t + (a_z_to - a_z_td)*t*t/(2.0*t_s);
 
+  if (a[7] > 0) {
+    s_new[2] = z_td + dz_td*t + 0.5*a_z_td*t*t + (a_z_to - a_z_td)*(t*t*t)/(6.0*t_s);
+    s_new[5] = dz_td + a_z_td*t + (a_z_to - a_z_td)*t*t/(2.0*t_s);
+  } else {
+    s_new[2] = getHeightFromState(s_new, terrain);
+    s_new[5] = 0;//sqrt(s_new[3]*s_new[3] + s_new[4]*s_new[4])*sin();
+  }
+
   return s_new;
 }
 
-State applyStance(State s, Action a)
+State applyStance(State s, Action a, FastTerrainMap& terrain)
 {
-  return applyStance(s, a, a[6]);
+  return applyStance(s, a, a[6], terrain);
 }
 
 State applyFlight(State s, double t_f)
@@ -529,7 +475,7 @@ State applyFlight(State s, double t_f)
   return s_new;
 }
 
-State applyAction(State s, Action a)
+State applyAction(State s, Action a, FastTerrainMap& terrain)
 {
   double t_s;
   double t_f;
@@ -537,12 +483,12 @@ State applyAction(State s, Action a)
   t_s = a[6];
   t_f = a[7];
 
-  State s_to = applyStance(s, a);
+  State s_to = applyStance(s, a, terrain);
   State s_new = applyFlight(s_to, t_f);
   return s_new;
 }
 
-State applyStanceReverse(State s, Action a, double t)
+State applyStanceReverse(State s, Action a, double t, FastTerrainMap& terrain)
 {
   double a_x_td = a[0];
   double a_y_td = a[1];
@@ -572,12 +518,20 @@ State applyStanceReverse(State s, Action a, double t)
   s_new[1] = y_to - cy*(t_s - t) - 0.5*a_y_td*(t_s*t_s - t*t) - (a_y_to - a_y_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
   s_new[2] = z_to - cz*(t_s - t) - 0.5*a_z_td*(t_s*t_s - t*t) - (a_z_to - a_z_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
 
+  if (a[7] > 0) {
+    s_new[2] = z_to - cz*(t_s - t) - 0.5*a_z_td*(t_s*t_s - t*t) - (a_z_to - a_z_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
+    s_new[5] = dz_to - a_z_td*(t_s - t) - (a_z_to - a_z_td)*(t_s*t_s - t*t)/(2.0*t_s);
+  } else {
+    s_new[2] = getHeightFromState(s_new, terrain);
+    s_new[5] = 0;//sqrt(s_new[3]*s_new[3] + s_new[4]*s_new[4])*sin();
+  }
+
   return s_new;
 }
 
-State applyStanceReverse(State s, Action a)
+State applyStanceReverse(State s, Action a, FastTerrainMap& terrain)
 {
-  return applyStanceReverse(s, a, 0);
+  return applyStanceReverse(s, a, 0, terrain);
 }
 
 Action getRandomAction(std::array<double, 3> surf_norm)
@@ -668,7 +622,7 @@ bool isValidState(State s, FastTerrainMap& terrain, int phase)
   // Find yaw, pitch, and their sines and cosines
   double yaw = atan2(s[4],s[3]); double cy = cos(yaw); double sy = sin(yaw);
   
-  double pitch = getPitch(s,terrain);
+  double pitch = getPitchFromState(s,terrain);
   // double pitch = 0;
   double cp = cos(pitch); double sp = sin(pitch);  
 
@@ -729,11 +683,11 @@ bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain,
 
     for (double t = 0; t <= t_s; t += KINEMATICS_RES)
   {
-    State s_check = applyStance(s,a,t);
+    State s_check = applyStance(s,a,t,terrain);
 
     if (isValidState(s_check, terrain, STANCE) == false)
     {
-      s_new = applyStance(s,a,(1.0-BACKUP_RATIO)*t);
+      s_new = applyStance(s,a,(1.0-BACKUP_RATIO)*t,terrain);
       // s_new = applyStance(s,a,(t - BACKUP_TIME));
       return false;
     } else {
@@ -742,7 +696,7 @@ bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain,
     }
   }
 
-  State s_takeoff = applyStance(s, a);
+  State s_takeoff = applyStance(s, a,terrain);
 
   for (double t = 0; t < t_f; t += KINEMATICS_RES)
   {
@@ -795,11 +749,11 @@ bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain,
 
   for (double t = t_s; t >= 0; t -= KINEMATICS_RES)
   {
-    State s_check = applyStanceReverse(s_takeoff,a,t);
+    State s_check = applyStanceReverse(s_takeoff,a,t,terrain);
 
     if (isValidState(s_check, terrain, STANCE) == false)
     {
-      s_new = applyStance(s,a,t + BACKUP_RATIO*(t_s - t));
+      s_new = applyStance(s,a,t + BACKUP_RATIO*(t_s - t), terrain);
       return false;
     } else {
       s_new = s_check;
@@ -808,7 +762,7 @@ bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain,
   }
 
   // Check the exact starting state
-  State s_start = applyStanceReverse(s_takeoff,a);
+  State s_start = applyStanceReverse(s_takeoff,a, terrain);
   if (isValidState(s_start, terrain, STANCE) == false)
   {
     return false;

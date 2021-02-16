@@ -280,7 +280,7 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
 
   // Make sure hip is within joint limits (try other direction if fails)
   if (q1 > joint_max_[1] || q1 < joint_min_[1]) {
-    ROS_WARN_THROTTLE(0.5,"Hip limits exceeded, using inverted config\n");
+    ROS_DEBUG_THROTTLE(0.5,"Hip limits exceeded, using inverted config\n");
 
     q0 = q0_inverted;
     z = -sin(q0)*y + cos(q0)*z_body_frame;
@@ -289,7 +289,7 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
 
     if (q1 > joint_max_[1] || q1 < joint_min_[1]) {
       q1 = std::max(std::min(q1,joint_max_[1]),joint_min_[1]);
-      ROS_WARN_THROTTLE(0.5,"Hip limits exceeded, clamping to %5.3f \n", q1);
+      ROS_DEBUG_THROTTLE(0.5,"Hip limits exceeded, clamping to %5.3f \n", q1);
     }
   }
 

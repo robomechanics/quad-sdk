@@ -14,12 +14,13 @@
 #include <grid_map_core/grid_map_core.hpp>
 #include <ros/ros.h>
 #include <spirit_utils/fast_terrain_map.h>
+#include <spirit_utils/math_utils.h>
 
 namespace planning_utils {
 
 // Define kinematic constraint parameters
-const double H_MAX = 0.4;           // Maximum height of leg base, m
-const double H_MIN = 0.15;          // Minimum ground clearance of body corners, m
+const double H_MAX = 0.375;           // Maximum height of leg base, m
+const double H_MIN = 0.125;          // Minimum ground clearance of body corners, m
 const double V_MAX = 4.0;           // Maximum robot velocity, m/s (4.0 for cheetah, 2.5 for anymal)
 const double V_NOM = 1.0;           // Nominal velocity, m/s (used during connect function)
 const double ROBOT_L = 0.4;         // Length of robot body, m (0.6 cheetah, 0.554 ANYmal)
@@ -92,14 +93,16 @@ double stateDistance(State q1, State q2);
 double poseDistance(std::vector<double> v1, std::vector<double> v2);
 bool isWithinBounds(State s1, State s2);
 std::array<double,3> rotateGRF(std::array<double,3> surface_norm, std::array<double,3> grf);
-std::vector<double> movingAverageFilter(std::vector<double> data, int window_size);
-std::vector<double> centralDifference(std::vector<double> data, double dt);
+
+// Define function for obtaining full state/path information
 void addFullStates(std::vector<State> interp_reduced_path, double dt, 
   std::vector<FullState> &interp_full_path, FastTerrainMap& terrain);
 Wrench getWrench(Action a,double t);
-double getPitch(State s, FastTerrainMap& terrain);
-void interpStateActionPair(State s, Action a,double t0,double dt, std::vector<State> &interp_path, 
-    std::vector<Wrench> &interp_wrench, std::vector<double> &interp_t, std::vector<int> &interp_phase);
+double getPitchFromState(State s, FastTerrainMap& terrain);
+void interpStateActionPair(State s, Action a,double t0,double dt,
+  std::vector<State> &interp_path, std::vector<Wrench> &interp_wrench,
+  std::vector<double> &interp_t, std::vector<int> &interp_phase,
+  FastTerrainMap& terrain);
 void getInterpPath(std::vector<State> state_sequence,
   std::vector<Action> action_sequence,double dt, double t0,
   std::vector<FullState> &interp_full_path, std::vector<Wrench> &interp_wrench, 
@@ -107,12 +110,12 @@ void getInterpPath(std::vector<State> state_sequence,
   FastTerrainMap& terrain);
 
 // Define planning helper functions
-State applyStance(State s, Action a, double t);
-State applyStance(State s, Action a);
+State applyStance(State s, Action a, double t, FastTerrainMap& terrain);
+State applyStance(State s, Action a, FastTerrainMap& terrain);
 State applyFlight(State s, double t_f);
 State applyAction(State s, Action a);
-State applyStanceReverse(State s, Action a, double t);
-State applyStanceReverse(State s, Action a);
+State applyStanceReverse(State s, Action a, double t, FastTerrainMap& terrain);
+State applyStanceReverse(State s, Action a, FastTerrainMap& terrain);
 Action getRandomAction(std::array<double, 3> surf_norm);
 bool isValidAction(Action a);
 bool isValidState(State s, FastTerrainMap& terrain, int phase);
