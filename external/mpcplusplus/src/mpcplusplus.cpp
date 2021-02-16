@@ -107,8 +107,8 @@ void LinearMPC::update_contact(const std::vector<std::vector<bool>> contact_sequ
   C_body.block(12,9,4,3) = C_toe;
   C_body(16,12) = 1;
 
-  std::cout << "C_body: " << std::endl << C_body << std::endl;
-  
+  //std::cout << "C_body: " << std::endl << C_body << std::endl;
+
   lo_contact << -INF_,0,-INF_,0;
   hi_contact << 0,INF_,0,INF_;
 
@@ -134,9 +134,9 @@ void LinearMPC::update_contact(const std::vector<std::vector<bool>> contact_sequ
     b_contact_lo_(17*i+16) = 1;
     b_contact_hi_(17*i+16) = 1; 
   }
-  std::cout << "Friction vector lo: " << std::endl << b_contact_lo_ << std::endl;
-  std::cout << "Friction vector hi: " << std::endl << b_contact_hi_ << std::endl;
-  std::cout << "Friction cone matrix: " << std::endl << A_con_dense_.rightCols(num_control_vars_) << std::endl;
+  //std::cout << "Friction vector lo: " << std::endl << b_contact_lo_ << std::endl;
+  //std::cout << "Friction vector hi: " << std::endl << b_contact_hi_ << std::endl;
+  //std::cout << "Friction cone matrix: " << std::endl << A_con_dense_.rightCols(num_control_vars_) << std::endl;
 
 }
 

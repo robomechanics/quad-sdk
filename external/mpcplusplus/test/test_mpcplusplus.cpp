@@ -17,7 +17,7 @@ TEST(TestUseCase, quadVariable) {
   // Configurable parameters
   const int Nu = 13; // Appended gravity term
   const int Nx = 12; // Number of states
-  const int N = 20;   // Time horizons to consider
+  const int N = 10;   // Time horizons to consider
   const double dt = 0.1;             // Time horizon
   const double m = 10;                   // Mass of quad
   const double g = 9.81;
@@ -25,22 +25,22 @@ TEST(TestUseCase, quadVariable) {
   // Weights on state deviation and control input
   Eigen::MatrixXd Qx(Nx, Nx);
   Qx.setZero();
-  Qx.diagonal() << 0,0,1000, //x
+  Qx.diagonal() << 0,0,100000, //x
                    0,0,0, //theta
-                   0,0,10, //dx
+                   0,0,0, //dx
                    0,0,0; //dtheta
-  Eigen::MatrixXd Qn = 5*Qx;
+  Eigen::MatrixXd Qn = 1*Qx;
 
   Eigen::MatrixXd Ru(Nu, Nu);
   Ru.setZero();
-  double Rf = 0;//1e-9;
+  double Rf = 1e-3;
   Ru.diagonal() << Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,0;
 
   // State and control bounds (fixed for a given solve) 
   Eigen::VectorXd state_lo(Nx);
   state_lo << NINF,NINF,0.18,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF;
   Eigen::VectorXd state_hi(Nx);
-  state_hi << INF,INF,0.4,INF,INF,INF,INF,INF,INF,INF,INF,INF;
+  state_hi << INF,INF,0.45,INF,INF,INF,INF,INF,INF,INF,INF,INF;
 
   // Create vectors of dynamics matrices at each step,
   // weights at each step and contact sequences at each step
@@ -73,7 +73,7 @@ TEST(TestUseCase, quadVariable) {
     Q_vec.at(i) = Qx;
     U_vec.at(i) = Ru;
     ref_traj.col(i) = initial_state;
-    ref_traj(2,i) = 0.21;
+    ref_traj(2,i) = 0.2 + 0.01*i;
     contact_sequences.at(i).resize(4);
     for (int j = 0; j < 4; ++j) {
       contact_sequences.at(i).at(j) = true;
@@ -82,7 +82,7 @@ TEST(TestUseCase, quadVariable) {
 
   Q_vec.back() = Qn;
   ref_traj.col(N) = initial_state;
-  ref_traj(2,N) = 0.21;
+  ref_traj(2,N) = 0.4;
 
   double mu = 0.6;
   double fmin = 3;
@@ -120,24 +120,25 @@ TEST(TestUseCase, quadVariable) {
   std::cout << std::endl << "z traj: " << opt_traj.row(2) << std::endl;
   std::cout << std::endl << "dz traj: " << opt_traj.row(8) << std::endl;
   
-  /*
   
-  std::vector<double> first_control_stl(Nu);
-  for (int i = 0; i < Nu; ++i) {
-    first_control_stl.at(i) = first_control(i);
+  std::vector<double> zref_stl(N+1);
+  std::vector<double> z_stl(N+1);
+  for (int i = 0; i <= N; ++i) {
+    zref_stl.at(i) = ref_traj(2,i);
+    z_stl.at(i) = opt_traj(2,i);
   }
 
   std::cout << first_control << std::endl;
 
   plt::clf();
   plt::ion();
-  plt::named_plot("Z", z_ref);
-  plt::named_plot("Forces", first_control_stl);
+  plt::named_plot("Z", z_stl);
+  plt::named_plot("Zref", zref_stl);
   plt::xlabel("horizon index");
-  plt::ylabel("forces");
+  plt::ylabel("Z position");
   plt::legend();
   plt::show();
-  plt::pause(10);*/
+  plt::pause(10);
   
 }
 
