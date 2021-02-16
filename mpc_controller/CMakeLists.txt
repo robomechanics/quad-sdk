@@ -30,7 +30,7 @@ set(QPOASES_LIBRARIES "${QPOASES_DIR}/build/libs")
 find_library(QPOASES NAMES qpOASES PATHS ${QPOASES_LIBRARIES} REQUIRED)
 
 catkin_package(
-  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
+  INCLUDE_DIRS include
   CATKIN_DEPENDS roscpp std_msgs spirit_msgs spirit_utils
   DEPENDS EIGEN3
 )

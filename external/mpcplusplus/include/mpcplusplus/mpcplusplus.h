@@ -15,7 +15,6 @@ public:
 
   ~LinearMPC() = default;
 
-
   void update_weights(const std::vector<Eigen::MatrixXd> &Q,
                       const std::vector<Eigen::MatrixXd> &R);
 
@@ -23,13 +22,12 @@ public:
                        const std::vector<Eigen::MatrixXd> &Bd);
 
   void update_contact(const std::vector<std::vector<bool> > contact_sequence,
-                      const double fmin, const double fmax, const double mu);
+                      const double mu,
+                      const double fmin,
+                      const double fmax);
 
   void update_state_bounds(const Eigen::VectorXd state_lo,
                            const Eigen::VectorXd state_hi);
-
-  void update_control_bounds(const Eigen::VectorXd control_lo,
-                             const Eigen::VectorXd control_hi);
 
   /**
    * @brief Constructs the quadratic cost function of the form

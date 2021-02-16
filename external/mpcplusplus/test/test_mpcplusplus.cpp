@@ -8,8 +8,8 @@
 
 #include <gtest/gtest.h>
 
-const double INF = std::numeric_limits<double>::max();
-const double NINF = std::numeric_limits<double>::min();
+const double INF = 1000000;//std::numeric_limits<double>::max();
+const double NINF = -1000000;//std::numeric_limits<double>::min();
 namespace plt = matplotlibcpp;
 
 TEST(TestUseCase, quadVariable) {
@@ -17,32 +17,47 @@ TEST(TestUseCase, quadVariable) {
   // Configurable parameters
   const int Nu = 13; // Appended gravity term
   const int Nx = 12; // Number of states
-  const int N = 10;   // Time horizons to consider
+  const int N = 20;   // Time horizons to consider
   const double dt = 0.1;             // Time horizon
-  const int m = 10;                   // Mass of quad
+  const double m = 10;                   // Mass of quad
+  const double g = 9.81;
 
   // Weights on state deviation and control input
   Eigen::MatrixXd Qx(Nx, Nx);
   Qx.setZero();
-  Qx.diagonal() << 1,1,1,1,1,1,1,1,1,1,1,1;
-  Eigen::MatrixXd Qn = 5 * Qx;
+  Qx.diagonal() << 0,0,1000, //x
+                   0,0,0, //theta
+                   0,0,10, //dx
+                   0,0,0; //dtheta
+  Eigen::MatrixXd Qn = 5*Qx;
+
   Eigen::MatrixXd Ru(Nu, Nu);
   Ru.setZero();
-  Ru.diagonal() << 1,1,1,1,1,1,1,1,1,1,1,1,0;
+  double Rf = 0;//1e-9;
+  Ru.diagonal() << Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,0;
 
-  // State and control bounds (fixed for a given solve)
+  // State and control bounds (fixed for a given solve) 
   Eigen::VectorXd state_lo(Nx);
-  state_lo << NINF,NINF,0,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF;
+  state_lo << NINF,NINF,0.18,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF;
   Eigen::VectorXd state_hi(Nx);
   state_hi << INF,INF,0.4,INF,INF,INF,INF,INF,INF,INF,INF,INF;
 
-  Eigen::VectorXd control_lo(Nu);
-  control_lo << NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF,0.9999;
-  Eigen::VectorXd control_hi(Nu);
-  control_hi << INF,INF,INF,INF,INF,INF,INF,INF,INF,INF,INF,INF,1.0001;
-
   // Create vectors of dynamics matrices at each step,
   // weights at each step and contact sequences at each step
+  Eigen::MatrixXd Ad = Eigen::MatrixXd::Zero(Nx,Nx);
+  Ad.block(0,0,6,6) = Eigen::MatrixXd::Identity(6,6);
+  Ad.block(0,6,3,3) = Eigen::MatrixXd::Identity(3,3)*dt;
+  Ad.block(3,9,3,3) = Eigen::MatrixXd::Identity(3,3)*dt; // rotation matrix (fixed to identity for now)
+  std::cout << "Ad: " << std::endl << Ad << std::endl;
+
+  Eigen::MatrixXd Bd = Eigen::MatrixXd::Zero(Nx,Nu);
+
+  for (int i = 0; i < 4; ++i) {
+    Bd.block(6,3*i,3,3) = Eigen::MatrixXd::Identity(3,3)/m*dt;
+  }
+  Bd(8,12) = -g*dt; // gravity acts downwards here
+  std::cout << "Bd: " << std::endl << Bd << std::endl;
+
   std::vector<Eigen::MatrixXd> Ad_vec(N);
   std::vector<Eigen::MatrixXd> Bd_vec(N);
   std::vector<Eigen::MatrixXd> Q_vec(N+1);
@@ -51,33 +66,36 @@ TEST(TestUseCase, quadVariable) {
   Eigen::MatrixXd ref_traj(Nx,N+1);
   Eigen::VectorXd initial_state(Nx);
 
-  initial_state << 0,0,0.4,0,0,0,0,0,0,0,0,0;
+  initial_state << 0,0,0.37,0,0,0,0,0,0,0,0,0;
   for (int i = 0; i < N; ++i) {
-    Ad_vec.at(i) = Eigen::MatrixXd::Ones(Nx,Nx);
-    Bd_vec.at(i) = Eigen::MatrixXd::Ones(Nx,Nu);
+    Ad_vec.at(i) = Ad;
+    Bd_vec.at(i) = Bd;
     Q_vec.at(i) = Qx;
     U_vec.at(i) = Ru;
     ref_traj.col(i) = initial_state;
+    ref_traj(2,i) = 0.21;
     contact_sequences.at(i).resize(4);
     for (int j = 0; j < 4; ++j) {
       contact_sequences.at(i).at(j) = true;
     }
   }
-  Q_vec.back() = Qx;
-  ref_traj.col(N) = initial_state;
 
-  double fmin = 5;
-  double fmax = 50;
+  Q_vec.back() = Qn;
+  ref_traj.col(N) = initial_state;
+  ref_traj(2,N) = 0.21;
+
   double mu = 0.6;
+  double fmin = 3;
+  double fmax = 100;
 
   // Setup MPC class, call necessary functions
   mpcplusplus::LinearMPC mpc(N,Nx,Nu);
 
   mpc.update_weights(Q_vec,U_vec);
   mpc.update_dynamics(Ad_vec,Bd_vec);
-  mpc.update_contact(contact_sequences, fmin, fmax, mu);
+
+  mpc.update_contact(contact_sequences, mu, fmin, fmax);
   mpc.update_state_bounds(state_lo, state_hi);
-  mpc.update_control_bounds(control_lo, control_hi);
 
   // Solve, collect output and cost val
   Eigen::MatrixXd x_out;
@@ -96,20 +114,31 @@ TEST(TestUseCase, quadVariable) {
     z.at(i) = opt_traj(2,i);
   }
 
+  std::cout << std::endl << "First control: " << first_control << std::endl;
+
+  std::cout << std::endl << "z ref traj: " << ref_traj.row(2) << std::endl;
+  std::cout << std::endl << "z traj: " << opt_traj.row(2) << std::endl;
+  std::cout << std::endl << "dz traj: " << opt_traj.row(8) << std::endl;
+  
+  /*
+  
   std::vector<double> first_control_stl(Nu);
   for (int i = 0; i < Nu; ++i) {
     first_control_stl.at(i) = first_control(i);
   }
 
+  std::cout << first_control << std::endl;
+
   plt::clf();
   plt::ion();
-  //plt::named_plot("Z", z);
+  plt::named_plot("Z", z_ref);
   plt::named_plot("Forces", first_control_stl);
   plt::xlabel("horizon index");
   plt::ylabel("forces");
   plt::legend();
   plt::show();
-  plt::pause(3);
+  plt::pause(10);*/
+  
 }
 
 // Run all the tests that were declared with TEST()
