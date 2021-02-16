@@ -153,7 +153,7 @@ void LinearMPC::get_cost_function(const Eigen::MatrixXd &ref_traj,
       math::reshape(ref_traj, 1, ref_traj.cols() * ref_traj.rows());
 
 
-  std::cout << "Y size: " << y.rows() << ", " << y.cols() << std::endl;
+  //std::cout << "Y size: " << y.rows() << ", " << y.cols() << std::endl;
   Eigen::MatrixXd fx = -y * H_f_;
 
   // Construct fu vector

@@ -8,8 +8,8 @@
 
 #include <gtest/gtest.h>
 
-const double INF = 1000000;//std::numeric_limits<double>::max();
-const double NINF = -1000000;//std::numeric_limits<double>::min();
+const double INF = 1000000000;//std::numeric_limits<double>::max();
+const double NINF = -1000000000;//std::numeric_limits<double>::min();
 namespace plt = matplotlibcpp;
 
 TEST(TestUseCase, quadVariable) {
@@ -17,7 +17,7 @@ TEST(TestUseCase, quadVariable) {
   // Configurable parameters
   const int Nu = 13; // Appended gravity term
   const int Nx = 12; // Number of states
-  const int N = 20;   // Time horizons to consider
+  const int N = 40;   // Time horizons to consider
   const double dt = 0.1;             // Time horizon
   const double m = 10;                   // Mass of quad
   const double g = 9.81;
@@ -25,15 +25,15 @@ TEST(TestUseCase, quadVariable) {
   // Weights on state deviation and control input
   Eigen::MatrixXd Qx(Nx, Nx);
   Qx.setZero();
-  Qx.diagonal() << 0,0,1000, //x
-                   0,0,0, //theta
-                   0,0,0, //dx
-                   0,0,0; //dtheta
+  Qx.diagonal() << 0.1,0.1,1000, //x
+                   0.1,0.1,0.1, //theta
+                   0.1,0.1,0.1, //dx
+                   0.1,0.1,0.1; //dtheta
   Eigen::MatrixXd Qn = Qx;
 
   Eigen::MatrixXd Ru(Nu, Nu);
   Ru.setZero();
-  double Rf = 0.0;//1e-6;
+  double Rf = 1e-3;
   Ru.diagonal() << Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,0;
 
   // State and control bounds (fixed for a given solve) 
@@ -66,14 +66,14 @@ TEST(TestUseCase, quadVariable) {
   Eigen::MatrixXd ref_traj(Nx,N+1);
   Eigen::VectorXd initial_state(Nx);
 
-  initial_state << 0,0,0.18,0,0,0,0,0,0,0,0,0;
+  initial_state << 0,0,0.26,0,0,0,0,0,0,0,0,0;
   for (int i = 0; i < N; ++i) {
     Ad_vec.at(i) = Ad;
     Bd_vec.at(i) = Bd;
     Q_vec.at(i) = Qx;
     U_vec.at(i) = Ru;
     ref_traj.col(i) = initial_state;
-    ref_traj(2,i) = 0.2 + 0.01*i;
+    ref_traj(2,i) = 0.22;
     contact_sequences.at(i).resize(4);
     for (int j = 0; j < 4; ++j) {
       contact_sequences.at(i).at(j) = true;
@@ -82,11 +82,11 @@ TEST(TestUseCase, quadVariable) {
 
   Q_vec.back() = Qn;
   ref_traj.col(N) = initial_state;
-  ref_traj(2,N) = 0.3;
+  ref_traj(2,N) = 0.22;
 
   double mu = 0.6;
-  double fmin = 3;
-  double fmax = 100;
+  double fmin = 5;
+  double fmax = 50;
 
   // Setup MPC class, call necessary functions
   mpcplusplus::LinearMPC mpc(N,Nx,Nu);
@@ -120,12 +120,11 @@ TEST(TestUseCase, quadVariable) {
   std::cout << std::endl << "z traj: " << opt_traj.row(2) << std::endl;
   std::cout << std::endl << "dz traj: " << opt_traj.row(8) << std::endl;
   
-  
-  std::vector<double> zref_stl(N+1);
-  std::vector<double> z_stl(N+1);
-  for (int i = 0; i <= N; ++i) {
-    zref_stl.at(i) = ref_traj(2,i);
-    z_stl.at(i) = opt_traj(2,i);
+  std::vector<double> zref_stl(N);
+  std::vector<double> z_stl(N);
+  for (int i = 1; i <= N; ++i) {
+    zref_stl.at(i-1) = ref_traj(2,i);
+    z_stl.at(i-1) = opt_traj(2,i);
   }
 
   std::cout << first_control << std::endl;
