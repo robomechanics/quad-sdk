@@ -25,21 +25,36 @@ class inverseDynamics {
 	 * @return Constructed object of type inverseDynamics
 	 */
 	inverseDynamics(ros::NodeHandle nh);
-
 	/**
 	 * @brief Calls ros spinOnce and pubs data at set frequency
 	 */
 	void spin();
   
 private:
+	/**
+	 * @brief Callback function to handle new control input (GRF)
+	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
+	 */
+	void controlInputCallback(const spirit_msgs::ControlInput::ConstPtr& msg);
+	/**
+	 * @brief Callback function to handle new control input (GRF)
+	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
+	 */
+	void stateEstimateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg);
 		/**
-   * @brief Callback function to handle new control input (GRF)
-   * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
-   */
-	void controlInputCallback();
-	void stateEstimateCallback();
-	void swingLegPlanCallback();
-	void footStepPlanCallback();
+	 * @brief Callback function to handle new control input (GRF)
+	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
+	 */
+	void swingLegPlanCallback(const spirit_msgs::SwingLegPlan::ConstPtr& msg);
+		/**
+	 * @brief Callback function to handle new control input (GRF)
+	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
+	 */
+	void footStepPlanCallback(const spirit_msgs::FootstepPlan::ConstPtr& msg);
+		/**
+	 * @brief Function to handle new control input (GRF)
+	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
+	 */
 	void publishLegCommandArray();
 
 	/// ROS subscriber for control input
@@ -62,6 +77,19 @@ private:
 
 	/// Update rate for sending and receiving data;
 	double update_rate_;
+
+	/// Most recent control input
+	spirit_msgs::ControlInput last_control_input_msg_;
+
+	/// Most recent state estimate
+	spirit_msgs::StateEstimate last_state_estimate_msg_;
+
+	/// Most recent swing leg plan
+	spirit_msgs::SwingLegPlan last_swing_leg_plan_msg_;
+
+	/// Most recent foot step plan
+	spirit_msgs::FootstepPlan last_foot_step_plan_msg_;
+	
 };
 
 

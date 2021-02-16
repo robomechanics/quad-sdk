@@ -19,4 +19,3 @@ void calc_foot_jacobian3(const double state[18], const double parameters[6],
   Eigen::MatrixXf& foot_jacobian3);
 }
 #endif
-
