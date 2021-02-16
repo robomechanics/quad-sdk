@@ -18,7 +18,7 @@ LinearMPC::LinearMPC(const int N, const int Nx, const int Nu)
   : N_(N), nx_(Nx), nu_(Nu) {
   
   num_dyn_constraints_ = N * Nx;
-  num_contact_constraints_ = 17*N; // num legs * num constraints per leg * num tsteps
+  num_contact_constraints_ = 21*N; // num legs * num constraints per leg * num tsteps
   num_state_vars_= (N_ + 1) * Nx;
   num_control_vars_= N * Nu;
   num_decision_vars_ = num_state_vars_ + num_control_vars_;
@@ -91,27 +91,25 @@ void LinearMPC::update_contact(const std::vector<std::vector<bool>> contact_sequ
   // Convert contact sequence to constraint matrix
   A_con_dense_ = Eigen::MatrixXd::Zero(num_contact_constraints_, num_decision_vars_);
 
-  Eigen::MatrixXd C_toe(4,3);
-  Eigen::VectorXd lo_contact(4);
-  Eigen::VectorXd hi_contact(4);
+  Eigen::MatrixXd C_toe(5,3);
+  Eigen::VectorXd lo_contact(5);
+  Eigen::VectorXd hi_contact(5);
 
   C_toe << 1, 0, -mu,
        1, 0, mu,
        0, 1, -mu,
-       0, 1, mu;
+       0, 1, mu,
+       0, 0, 1;
 
-  Eigen::MatrixXd C_body = Eigen::MatrixXd::Zero(17,13);
-  C_body.block(0,0,4,3) = C_toe;
-  C_body.block(4,3,4,3) = C_toe;
-  C_body.block(8,6,4,3) = C_toe;
-  C_body.block(12,9,4,3) = C_toe;
-  C_body(16,12) = 1;
+  Eigen::MatrixXd C_body = Eigen::MatrixXd::Zero(21,13);
+  C_body.block(0,0,5,3) = C_toe;
+  C_body.block(5,3,5,3) = C_toe;
+  C_body.block(10,6,5,3) = C_toe;
+  C_body.block(15,9,5,3) = C_toe;
+  C_body(20,12) = 1;
 
-  //std::cout << "C_body: " << std::endl << C_body << std::endl;
-
-  lo_contact << -INF_,0,-INF_,0;
-  hi_contact << 0,INF_,0,INF_;
-
+  lo_contact << -INF_,0,-INF_,0,fmin;
+  hi_contact << 0,INF_,0,INF_,fmax;
 
   b_contact_lo_.resize(num_contact_constraints_);
   b_contact_lo_.setZero();
@@ -120,19 +118,19 @@ void LinearMPC::update_contact(const std::vector<std::vector<bool>> contact_sequ
   b_contact_hi_.setZero();
 
   for (int i = 0; i < N_; ++i) { // iterate over horizon
-    A_con_dense_.block(17*i,num_state_vars_+13*i,17,13) = C_body;
+    A_con_dense_.block(21*i,num_state_vars_+13*i,21,13) = C_body;
     for (int j = 0; j < 4; ++j) { // iterate over legs
-      int row_start = 17*i + 4*j;
+      int row_start = 21*i + 5*j;
       if (contact_sequence.at(i).at(j)) { // ground contact
-         b_contact_lo_.segment(row_start,4) = lo_contact;
-         b_contact_hi_.segment(row_start,4) = hi_contact;
+         b_contact_lo_.segment(row_start,5) = lo_contact;
+         b_contact_hi_.segment(row_start,5) = hi_contact;
       }
       else { 
         // do nothing, bounds have been zeroed out earlier in this function
       }
     }
-    b_contact_lo_(17*i+16) = 1;
-    b_contact_hi_(17*i+16) = 1; 
+    b_contact_lo_(21*i+20) = 1;
+    b_contact_hi_(21*i+20) = 1; 
   }
   //std::cout << "Friction vector lo: " << std::endl << b_contact_lo_ << std::endl;
   //std::cout << "Friction vector hi: " << std::endl << b_contact_hi_ << std::endl;

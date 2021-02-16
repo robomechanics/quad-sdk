@@ -17,7 +17,7 @@ TEST(TestUseCase, quadVariable) {
   // Configurable parameters
   const int Nu = 13; // Appended gravity term
   const int Nx = 12; // Number of states
-  const int N = 10;   // Time horizons to consider
+  const int N = 20;   // Time horizons to consider
   const double dt = 0.1;             // Time horizon
   const double m = 10;                   // Mass of quad
   const double g = 9.81;
@@ -25,15 +25,15 @@ TEST(TestUseCase, quadVariable) {
   // Weights on state deviation and control input
   Eigen::MatrixXd Qx(Nx, Nx);
   Qx.setZero();
-  Qx.diagonal() << 0,0,100000, //x
+  Qx.diagonal() << 0,0,1000, //x
                    0,0,0, //theta
                    0,0,0, //dx
                    0,0,0; //dtheta
-  Eigen::MatrixXd Qn = 1*Qx;
+  Eigen::MatrixXd Qn = Qx;
 
   Eigen::MatrixXd Ru(Nu, Nu);
   Ru.setZero();
-  double Rf = 1e-3;
+  double Rf = 0.0;//1e-6;
   Ru.diagonal() << Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,0;
 
   // State and control bounds (fixed for a given solve) 
@@ -66,7 +66,7 @@ TEST(TestUseCase, quadVariable) {
   Eigen::MatrixXd ref_traj(Nx,N+1);
   Eigen::VectorXd initial_state(Nx);
 
-  initial_state << 0,0,0.37,0,0,0,0,0,0,0,0,0;
+  initial_state << 0,0,0.18,0,0,0,0,0,0,0,0,0;
   for (int i = 0; i < N; ++i) {
     Ad_vec.at(i) = Ad;
     Bd_vec.at(i) = Bd;
@@ -82,7 +82,7 @@ TEST(TestUseCase, quadVariable) {
 
   Q_vec.back() = Qn;
   ref_traj.col(N) = initial_state;
-  ref_traj(2,N) = 0.4;
+  ref_traj(2,N) = 0.3;
 
   double mu = 0.6;
   double fmin = 3;
