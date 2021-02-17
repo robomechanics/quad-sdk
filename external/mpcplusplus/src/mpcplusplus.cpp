@@ -19,10 +19,10 @@ LinearMPC::LinearMPC(const int N, const int Nx, const int Nu)
   
   num_dyn_constraints_ = N * Nx;
   num_contact_constraints_ = 21*N; // num legs * num constraints per leg * num tsteps
-  num_state_vars_= (N_ + 1) * Nx;
+  num_state_vars_= (N + 1) * Nx;
   num_control_vars_= N * Nu;
   num_decision_vars_ = num_state_vars_ + num_control_vars_;
-  num_constraints_ = num_state_vars_ + num_dyn_constraints_ + 5*N; // num_contact_constraints_
+  num_constraints_ = num_decision_vars_ + num_dyn_constraints_;// + 5*N; // num_contact_constraints_
 
   // Setup contact matrices and size vectors
   b_contact_lo_.resize(num_contact_constraints_);
@@ -137,11 +137,11 @@ void LinearMPC::update_contact(const std::vector<std::vector<bool>> contact_sequ
     b_contact_hi_(21*i+20) = 1.001; 
   }
   
-  std::cout << "Friction vector lo: " << std::endl << b_contact_lo_ << std::endl;
-  std::cout << "Friction vector hi: " << std::endl << b_contact_hi_ << std::endl;
+  //std::cout << "Friction vector lo: " << std::endl << b_contact_lo_ << std::endl;
+  //std::cout << "Friction vector hi: " << std::endl << b_contact_hi_ << std::endl;
   
   //std::cout << num_control_vars_ << std::endl;
-  std::cout << "Friction cone matrix: " << std::endl << A_con_dense_.rightCols(num_control_vars_) << std::endl;
+  //std::cout << "Friction cone matrix: " << std::endl << A_con_dense_.rightCols(num_control_vars_) << std::endl;
   
 }
 
@@ -149,6 +149,12 @@ void LinearMPC::update_state_bounds(const Eigen::VectorXd state_lo,
                                     const Eigen::VectorXd state_hi) {
   b_state_lo_ = state_lo.replicate(N_,1);
   b_state_hi_ = state_hi.replicate(N_,1);
+}
+
+void LinearMPC::update_control_bounds(const Eigen::VectorXd control_lo,
+                                    const Eigen::VectorXd control_hi) {
+  b_control_lo_ = control_lo.replicate(N_,1);
+  b_control_hi_ = control_hi.replicate(N_,1);
 }
 
 void LinearMPC::get_cost_function(const Eigen::MatrixXd &ref_traj,
@@ -217,24 +223,26 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
   #endif
 
   // Update linear component of cost function to reflect new reference traj
-  Eigen::VectorXd f;
-  this->get_cost_function(ref_traj, f);
+  
+  this->get_cost_function(ref_traj, f_);
 
   // Create correctly sized linear constraint matrix to be populated with dynamics, contact info
   Eigen::MatrixXd A_dense = Eigen::MatrixXd::Zero(num_constraints_, num_decision_vars_);
 
   // Add identity matrix to linear constraint matrix for state bounds
-  A_dense.block(0,0,num_state_vars_,num_state_vars_) = Eigen::MatrixXd::Identity(num_state_vars_,num_state_vars_);
-  
+  A_dense.block(0,0,num_decision_vars_,num_decision_vars_) = Eigen::MatrixXd::Identity(num_decision_vars_,num_decision_vars_);
+    
   // Add dynamics matrix to linear constraint matrix
-  A_dense.block(num_state_vars_,0,num_dyn_constraints_,num_decision_vars_) = A_dyn_dense_;
+  A_dense.block(num_decision_vars_,0,num_dyn_constraints_,num_decision_vars_) = A_dyn_dense_;
 
   // Gravity constraint
+
+  /*
   Eigen::MatrixXd gravity_constraint = Eigen::MatrixXd::Zero(N_,num_control_vars_);
   Eigen::VectorXd gravity_lo(N_);
   Eigen::VectorXd gravity_hi(N_);
 
-  for (int i = 0; i < N_; ++i){
+ for (int i = 0; i < N_; ++i){
     gravity_constraint(i,13*i+12) = 1;
     gravity_lo(i) = 1;
     gravity_hi(i) = 1;
@@ -261,8 +269,9 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
   normal_lo(10) = -50;
 
   std::cout << "Normal constraint: " << std::endl << normal_constraint << std::endl;
-
+  
   A_dense.block(num_state_vars_+num_dyn_constraints_+N_,num_state_vars_,4*N_,num_control_vars_) = normal_constraint;
+  */
 
   // Add contact matrix to linear constraint matrix
   //A_dense.block(num_state_vars_+num_dyn_constraints_,0,num_contact_constraints_,num_decision_vars_) = A_con_dense_;
@@ -270,6 +279,8 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
   // Convert hessian and linear constraint matrix to sparse (wanted by OSQP solver)
   Eigen::SparseMatrix<double> H = H_.sparseView();
   Eigen::SparseMatrix<double> A = A_dense.sparseView();
+
+  std::cout << A << std::endl;
 
   #ifdef PRINT_DEBUG 
     std::cout << "Number of decision variables: " << num_decision_vars_ << std::endl;
@@ -282,22 +293,20 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
   
   // Setup lower and  upper bounds for linear constraints
 
+  std::cout << initial_state.size() << ", " << b_state_lo_.size() << ", " << b_control_hi_.size() << " = " << num_decision_vars_ << std::endl;
+
   Eigen::VectorXd l(num_constraints_);
-  l << initial_state,b_state_lo_,b_dyn_,gravity_lo,normal_lo;//,b_contact_lo_;//
+  l << initial_state,b_state_lo_,b_control_lo_,b_dyn_;//gravity_lo,normal_lo;//,b_contact_lo_;//
 
   Eigen::VectorXd u(num_constraints_);
-  u << initial_state,b_state_hi_,b_dyn_,gravity_hi,normal_hi;//,b_contact_hi_; //
-
-  //std::cout << l.topRows(num_contact_constraints_) << std::endl;
-  //std::cout << u.topRows(num_contact_constraints_) << std::endl;
-  //std::cout << A_dense.block(0,num_state_vars_,num_contact_constraints_,num_control_vars_) << std::endl;
+  u << initial_state,b_state_hi_,b_control_hi_,b_dyn_;//gravity_hi,normal_hi;//,b_contact_hi_; //
 
   // Init solver if not already initialized
   if (!solver_.isInitialized()) {
     solver_.data()->setNumberOfVariables(num_decision_vars_);
     solver_.data()->setNumberOfConstraints(num_constraints_);
     solver_.data()->setHessianMatrix(H);
-    solver_.data()->setGradient(f);
+    solver_.data()->setGradient(f_);
     solver_.data()->setLinearConstraintsMatrix(A);
     solver_.data()->setLowerBound(l);
     solver_.data()->setUpperBound(u);
@@ -319,7 +328,7 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
     }
 
     solver_.updateBounds(l,u);
-    solver_.updateGradient(f);
+    solver_.updateGradient(f_);
   }
 
   // Call solver

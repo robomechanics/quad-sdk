@@ -29,6 +29,9 @@ public:
   void update_state_bounds(const Eigen::VectorXd state_lo,
                            const Eigen::VectorXd state_hi);
 
+  void update_control_bounds(const Eigen::VectorXd control_lo,
+                           const Eigen::VectorXd control_hi);
+
   /**
    * @brief Constructs the quadratic cost function of the form
    * 
@@ -107,6 +110,8 @@ private:
 
   /// Control constraint upper bound
   Eigen::VectorXd b_control_hi_;
+
+  Eigen::VectorXd f_;
 
   /// Highest possible double value
   const double INF_ = OsqpEigen::INFTY;
