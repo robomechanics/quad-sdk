@@ -3,14 +3,18 @@
 
 #include <ros/ros.h>
 #include <eigen3/Eigen/Eigen>
+#include <spirit_utils/ros_utils.h>
 #include <spirit_utils/foot_jacobians.h>
 #include <spirit_msgs/ControlInput.h>
-#include <spirit_msgs/StateEstimate.h>
+#include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/MotorCommand.h>
 #include <spirit_msgs/LegCommand.h>
 #include <spirit_msgs/LegCommandArray.h>
-#include <spirit_msgs/SwingLegPlan.h>
-#include <spirit_msgs/FootstepPlan.h>
+#include <spirit_msgs/MultiFootPlanContinuous.h>
+// #include <spirit_msgs/FootstepPlan.h>
+
+#include <cmath>
+#define MATH_PI 3.141592
 
 
 //! Implements inverse dynamics
@@ -35,22 +39,22 @@ private:
 	 * @brief Callback function to handle new control input (GRF)
 	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
 	 */
-	void controlInputCallback(const spirit_msgs::ControlInput::ConstPtr& msg);
+	// void controlInputCallback(const spirit_msgs::ControlInput::ConstPtr& msg);
 	/**
 	 * @brief Callback function to handle new control input (GRF)
 	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
 	 */
-	void stateEstimateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg);
+	void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 		/**
 	 * @brief Callback function to handle new control input (GRF)
 	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
 	 */
-	void swingLegPlanCallback(const spirit_msgs::SwingLegPlan::ConstPtr& msg);
+	// void swingLegPlanCallback(const spirit_msgs::SwingLegPlan::ConstPtr& msg);
 		/**
 	 * @brief Callback function to handle new control input (GRF)
 	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
 	 */
-	void footStepPlanCallback(const spirit_msgs::FootstepPlan::ConstPtr& msg);
+	// void footStepPlanCallback(const spirit_msgs::FootstepPlan::ConstPtr& msg);
 		/**
 	 * @brief Function to handle new control input (GRF)
 	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
@@ -58,16 +62,16 @@ private:
 	void publishLegCommandArray();
 
 	/// ROS subscriber for control input
-	ros::Subscriber control_input_sub_;
+	// ros::Subscriber control_input_sub_;
 
 	/// ROS subscriber for state estimate
 	ros::Subscriber state_estimate_sub_;
 
 	/// ROS subscriber for Swing Leg Plan
-	ros::Subscriber swing_leg_plan_sub_;
+	// ros::Subscriber swing_leg_plan_sub_;
 
 	/// ROS subscriber for Swing Leg Plan
-	ros::Subscriber foot_step_plan_sub_;
+	// ros::Subscriber foot_step_plan_sub_;
 
 	/// ROS publisher for inverse dynamics
 	ros::Publisher leg_command_array_pub_;
@@ -79,16 +83,16 @@ private:
 	double update_rate_;
 
 	/// Most recent control input
-	spirit_msgs::ControlInput last_control_input_msg_;
+	// spirit_msgs::ControlInput last_control_input_msg_;
 
 	/// Most recent state estimate
-	spirit_msgs::StateEstimate last_state_estimate_msg_;
+	spirit_msgs::RobotState last_state_estimate_msg_;
 
 	/// Most recent swing leg plan
-	spirit_msgs::SwingLegPlan last_swing_leg_plan_msg_;
+	// spirit_msgs::SwingLegPlan last_swing_leg_plan_msg_;
 
 	/// Most recent foot step plan
-	spirit_msgs::FootstepPlan last_foot_step_plan_msg_;
+	// spirit_msgs::FootstepPlan last_foot_step_plan_msg_;
 	
 };
 
