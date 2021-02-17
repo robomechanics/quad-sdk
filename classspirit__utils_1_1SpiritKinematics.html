@@ -87,6 +87,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4468615a4d8b386afa108d8dd62b8e5c"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix4d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a4468615a4d8b386afa108d8dd62b8e5c">createAffineMatrix</a> (Eigen::Vector3d trans, Eigen::AngleAxisd rot)</td></tr>
 <tr class="memdesc:a4468615a4d8b386afa108d8dd62b8e5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an Eigen Eigen::Matrix4d containing a homogeneous transform from a specified translation and an AngleAxis object.  <a href="#a4468615a4d8b386afa108d8dd62b8e5c">More...</a><br /></td></tr>
 <tr class="separator:a4468615a4d8b386afa108d8dd62b8e5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16a70b64440b5d4795ab3aefc2edf5c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a16a70b64440b5d4795ab3aefc2edf5c0">bodyToFootFK</a> (int leg_index, Eigen::Vector3d joint_state, Eigen::Vector3d &amp;foot_pos_body)</td></tr>
+<tr class="memdesc:a16a70b64440b5d4795ab3aefc2edf5c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forward kinematics for a specified leg from the body COM.  <a href="#a16a70b64440b5d4795ab3aefc2edf5c0">More...</a><br /></td></tr>
+<tr class="separator:a16a70b64440b5d4795ab3aefc2edf5c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab32651e160ef32cd5c8266ae28d9e14e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#ab32651e160ef32cd5c8266ae28d9e14e">legFK</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state, Eigen::Vector3d &amp;foot_pos_world)</td></tr>
 <tr class="memdesc:ab32651e160ef32cd5c8266ae28d9e14e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forward kinematics for a specified leg.  <a href="#ab32651e160ef32cd5c8266ae28d9e14e">More...</a><br /></td></tr>
 <tr class="separator:ab32651e160ef32cd5c8266ae28d9e14e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -181,6 +184,52 @@ const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bot
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a16a70b64440b5d4795ab3aefc2edf5c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16a70b64440b5d4795ab3aefc2edf5c0">&#9670;&nbsp;</a></span>bodyToFootFK()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SpiritKinematics::bodyToFootFK </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>leg_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramname"><em>joint_state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>foot_pos_body</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute forward kinematics for a specified leg from the body COM. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">leg_index</td><td>Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">body_pos</td><td>Position of center of body frame </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">body_rpy</td><td>Orientation of body frame in roll, pitch, yaw </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">joint_state</td><td>Joint states for the specified leg (abad, hip, knee) </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">foot_pos_world</td><td>Position of the specified foot in world frame </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="af53bf14b88d44f55aa27b92df2d2e2e2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af53bf14b88d44f55aa27b92df2d2e2e2">&#9670;&nbsp;</a></span>createAffineMatrix() <span class="overload">[1/2]</span></h2>
 

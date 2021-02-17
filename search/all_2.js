@@ -11,6 +11,7 @@ var searchData=
   ['bodyforceestimator',['BodyForceEstimator',['../classBodyForceEstimator.html',1,'BodyForceEstimator'],['../classBodyForceEstimator.html#ae26e69032cf75ce7f7d1c55272ea6e87',1,'BodyForceEstimator::BodyForceEstimator()']]],
   ['bodyplancallback',['bodyPlanCallback',['../classLocalFootstepPlanner.html#aed0f0743a34e829b131665cbd34259c8',1,'LocalFootstepPlanner::bodyPlanCallback()'],['../classMPCController.html#a2271bd1d98fbdc1e4fdde018e7057c4a',1,'MPCController::bodyPlanCallback()'],['../classRVizInterface.html#aaabd9d31b7d4fbbc367e8c30133de077',1,'RVizInterface::bodyPlanCallback()'],['../classTrajectoryPublisher.html#a0933b12439db57eb1dfe7ab03b2ca121',1,'TrajectoryPublisher::bodyPlanCallback()']]],
   ['bodystate',['BodyState',['../classLocalFootstepPlanner.html#abc34736bcc4fde10c122e4c259588c80',1,'LocalFootstepPlanner']]],
+  ['bodytofootfk',['bodyToFootFK',['../classspirit__utils_1_1SpiritKinematics.html#a16a70b64440b5d4795ab3aefc2edf5c0',1,'spirit_utils::SpiritKinematics']]],
   ['bodywrench',['BodyWrench',['../classLocalFootstepPlanner.html#ad2cb6435347c0188daa4c0e5e1cadad4',1,'LocalFootstepPlanner']]],
   ['body_5fplanner',['body_planner',['../md_global_body_planner_README.html',1,'']]],
   ['body_5fplanner',['body_planner',['../md_twist_body_planner_README.html',1,'']]]
