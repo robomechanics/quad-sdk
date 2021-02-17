@@ -36,6 +36,10 @@ void inverseDynamics::robotStateCallback(const spirit_msgs::RobotState::ConstPtr
 // }
 
 void inverseDynamics::publishLegCommandArray() {
+
+  if (last_state_estimate_msg_.joints.position.size() == 0)
+    return;
+
   // ROS_INFO("In inverseDynamics");
   spirit_msgs::LegCommandArray msg;
   msg.leg_commands.resize(4);
@@ -51,6 +55,7 @@ void inverseDynamics::publishLegCommandArray() {
   // std::cout << grf << std::endl;
 
   double states[18];
+  // std::vector<double> states(18);
   static const double parameters[] = {0.07,0.2263,0.0,0.1010,0.206,0.206};
   // double states[] = {roll, pitch, yaw, x, y, z, q00, q01, q02, q10, q11, q12, q20, q21, q22, q30, q31, q32};
 
@@ -85,18 +90,22 @@ void inverseDynamics::publishLegCommandArray() {
   states[4] = last_state_estimate_msg_.body.pose.pose.position.y;
   states[5] = last_state_estimate_msg_.body.pose.pose.position.z;
 
-  // states[6] = last_state_estimate_msg_.joints.position.at(8);
-  // states[7] = last_state_estimate_msg_.joints.position.at(0);
-  // states[8] = last_state_estimate_msg_.joints.position.at(1);
-  // states[9] = last_state_estimate_msg_.joints.position.at(9);
-  // states[10] = last_state_estimate_msg_.joints.position.at(2);
-  // states[11] = last_state_estimate_msg_.joints.position.at(3);
-  // states[12] = last_state_estimate_msg_.joints.position.at(10);
-  // states[13] = last_state_estimate_msg_.joints.position.at(4);
-  // states[14] = last_state_estimate_msg_.joints.position.at(5);
-  // states[15] = last_state_estimate_msg_.joints.position.at(11);
-  // states[16] = last_state_estimate_msg_.joints.position.at(6);
-  // states[17] = last_state_estimate_msg_.joints.position.at(7);
+  printf("Made it here \n");
+  printf("Size of joint names: %d \n", last_state_estimate_msg_.joints.name.size());
+  printf("Size of joint positions: %d \n", last_state_estimate_msg_.joints.position.size());
+
+  states[6] = last_state_estimate_msg_.joints.position.at(8);
+  states[7] = last_state_estimate_msg_.joints.position.at(0);
+  states[8] = last_state_estimate_msg_.joints.position.at(1);
+  states[9] = last_state_estimate_msg_.joints.position.at(9);
+  states[10] = last_state_estimate_msg_.joints.position.at(2);
+  states[11] = last_state_estimate_msg_.joints.position.at(3);
+  states[12] = last_state_estimate_msg_.joints.position.at(10);
+  states[13] = last_state_estimate_msg_.joints.position.at(4);
+  states[14] = last_state_estimate_msg_.joints.position.at(5);
+  states[15] = last_state_estimate_msg_.joints.position.at(11);
+  states[16] = last_state_estimate_msg_.joints.position.at(6);
+  states[17] = last_state_estimate_msg_.joints.position.at(7);
 
   std::cout << "robotState: ";
   for (int i = 0; i < 18; ++i) {
@@ -105,7 +114,7 @@ void inverseDynamics::publishLegCommandArray() {
   std::cout << std::endl;
 
   Eigen::MatrixXf foot_jacobian0(3,3);
-  // spirit_utils::calc_foot_jacobian0(states,parameters,foot_jacobian0); //failed here
+  spirit_utils::calc_foot_jacobian0(states,parameters,foot_jacobian0); //failed here
 
   // std::cout<<"Foot Jacobian: "<<std::endl;
   // std::cout<<foot_jacobian0;
