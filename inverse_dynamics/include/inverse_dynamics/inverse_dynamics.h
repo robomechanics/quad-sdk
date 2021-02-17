@@ -6,6 +6,7 @@
 #include <spirit_utils/ros_utils.h>
 #include <spirit_utils/foot_jacobians.h>
 #include <spirit_msgs/ControlInput.h>
+#include <std_msgs/UInt8.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/MotorCommand.h>
 #include <spirit_msgs/LegCommand.h>
@@ -36,6 +37,11 @@ class inverseDynamics {
   
 private:
 	/**
+	 * @brief Verifies and updates new control mode
+	 * @param[in] msg New control mode
+	 */ 
+	void controlModeCallback(const std_msgs::UInt8::ConstPtr& msg);
+	/**
 	 * @brief Callback function to handle new control input (GRF)
 	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
 	 */
@@ -61,6 +67,9 @@ private:
 	 */
 	void publishLegCommandArray();
 
+	/// Subscriber for control mode
+	ros::Subscriber control_mode_sub_;
+
 	/// ROS subscriber for control input
 	// ros::Subscriber control_input_sub_;
 
@@ -81,6 +90,9 @@ private:
 
 	/// Update rate for sending and receiving data;
 	double update_rate_;
+
+	/// Robot mode (Stand 0, ID Control)
+	int control_mode_;
 
 	/// Most recent control input
 	// spirit_msgs::ControlInput last_control_input_msg_;
