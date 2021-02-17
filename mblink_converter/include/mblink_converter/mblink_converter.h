@@ -19,8 +19,8 @@ struct LimbCmd_t {
   Eigen::Vector3f pos;
   Eigen::Vector3f vel;
   Eigen::Vector3f tau;
-  float kp;
-  float kd;
+  short kp[3];
+  float kd[3];
 };
 
 typedef std::unordered_map<std::string, Eigen::VectorXf> RxData_t;
@@ -67,9 +67,8 @@ private:
 
   /**
  * @brief Get most recent data payload over mblink and process it
- * @return Boolean signaling successful mblink retrieval
  */
-  bool publishMBlink();
+  void publishMBlink();
 
   /// Subscriber for motor control messages
   ros::Subscriber leg_control_sub_;
@@ -94,6 +93,9 @@ private:
 
   /// Vector denoting joint indices
   std::vector<int> joint_indices_ = {8,0,1,9,2,3,10,4,5,11,6,7};
+
+  std::vector<double> kt_vec_ = {0.546,0.546,1.092,0.546,0.546,1.092,
+    0.546,0.546,1.092,0.546,0.546,1.092};
 
 };
 

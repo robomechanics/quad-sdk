@@ -47,10 +47,9 @@ bool MBLinkConverter::sendMBlink()
       limbcmd[i].pos[j] = leg_command.motor_commands.at(j).pos_setpoint;
       limbcmd[i].vel[j] = leg_command.motor_commands.at(j).vel_setpoint;
       limbcmd[i].tau[j] = leg_command.motor_commands.at(j).torque_ff;
+      limbcmd[i].kp[j] = static_cast<short>(leg_command.motor_commands.at(j).kp);
+      limbcmd[i].kd[j] = leg_command.motor_commands.at(j).kd;
     }
-
-    limbcmd[i].kp = leg_command.motor_commands.at(0).kp;
-    limbcmd[i].kd = leg_command.motor_commands.at(0).kd;
   }
   
   float data[58] = {0};
@@ -60,38 +59,45 @@ bool MBLinkConverter::sendMBlink()
   return true;
 }
 
-bool MBLinkConverter::publishMBlink()
+void MBLinkConverter::publishMBlink()
 {
 
-  std::vector<double> joint_positions(12);
-  std::vector<double> joint_velocities(12);
-  std::vector<double> joint_effort(12);
+  // Declare vector of joint names
   std::vector<std::string> joint_name = {"8","0","1","9","2","3","10","4","5","11","6","7"};
 
+  // Get the data and appropriate timestamp (this may be blocking)
   RxData_t data = mblink_.get();
   ros::Time timestamp = ros::Time::now();
 
+  // Declare the joint state msg and apply the timestamp
   sensor_msgs::JointState joint_state_msg;
   joint_state_msg.header.stamp = timestamp;
 
-  for (int i = 0; i < joint_positions.size(); i++)
+  // Add the data corresponding to each joint
+  for (int i = 0; i < joint_name.size(); i++)
   {
     joint_state_msg.name.push_back(joint_name[i]);
     joint_state_msg.position.push_back(data["joint_position"][joint_indices_[i]]);
     joint_state_msg.velocity.push_back(data["joint_velocity"][joint_indices_[i]]);
-    joint_state_msg.effort.push_back(data["joint_current"][joint_indices_[i]]);
+
+    // Convert from current to torque
+    joint_state_msg.effort.push_back(kt_vec_[i]*data["joint_current"][joint_indices_[i]]);
   }
 
+  // Publish the joint state message
   joint_encoder_pub_.publish(joint_state_msg);
 
+  // Declare the imu message
   sensor_msgs::Imu imu_msg;
   imu_msg.header.stamp = timestamp;
-  geometry_msgs::Quaternion orientation_msg;
 
+  // Transform from rpy to quaternion
+  geometry_msgs::Quaternion orientation_msg;
   tf2::Quaternion quat_tf;
   quat_tf.setRPY(data["imu_euler"][0],data["imu_euler"][1],data["imu_euler"][2]);
   tf2::convert(quat_tf, orientation_msg);
 
+  // Load the data into the imu message
   imu_msg.orientation = orientation_msg;
   imu_msg.angular_velocity.x = data["imu_angular_velocity"][0];
   imu_msg.angular_velocity.y = data["imu_angular_velocity"][1];
@@ -100,9 +106,8 @@ bool MBLinkConverter::publishMBlink()
   imu_msg.linear_acceleration.y = data["imu_linear_acceleration"][1];
   imu_msg.linear_acceleration.z = data["imu_linear_acceleration"][2];
 
+  // Publish the imu message
   imu_pub_.publish(imu_msg);
-
-  return true;
 }
 
 void MBLinkConverter::spin()
@@ -118,6 +123,7 @@ void MBLinkConverter::spin()
     {
       ROS_DEBUG_THROTTLE(1,"MBLinkConverter node has not received MotorCommandArray messages yet.");
     }
+    this->publishMBlink();
 
     // Enforce update rate
     r.sleep();
