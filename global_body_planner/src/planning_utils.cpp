@@ -8,15 +8,27 @@ namespace plt = matplotlibcpp;
 State fullStateToState(FullState full_state)
 {
   State state;
+  double x = full_state[0];
+  double y = full_state[1];
+  double z = full_state[2];
+  // double roll = full_state[3];
+  double pitch = full_state[4];
+  // double yaw = full_state[5];
+  double dx = full_state[6];
+  double dy = full_state[7];
+  double dz = full_state[8];
+  // double roll_rate = full_state[9];
+  double pitch_rate = full_state[10];
+  // double yaw_rate = full_state[11];
 
-  state[0] = full_state[0];
-  state[1] = full_state[1];
-  state[2] = full_state[2];
-  state[3] = full_state[3];
-  state[4] = full_state[4];
-  state[5] = full_state[5];
-  state[6] = full_state[7];
-  state[7] = full_state[10];
+  state[0] = x;
+  state[1] = y;
+  state[2] = z;
+  state[3] = dx;
+  state[4] = dy;
+  state[5] = dz;
+  state[6] = pitch;
+  state[7] = pitch_rate;
 
   return state;
 }
@@ -24,16 +36,17 @@ State fullStateToState(FullState full_state)
 FullState stateToFullState(State state, double roll, double yaw, double roll_rate, double yaw_rate)
 {
   FullState full_state;
+  full_state.resize(FULLSTATEDIM);
 
   full_state[0] = state[0];
   full_state[1] = state[1];
   full_state[2] = state[2];
-  full_state[3] = state[3];
-  full_state[4] = state[4];
-  full_state[5] = state[5];
-  full_state[6] = roll;
-  full_state[7] = state[6];
-  full_state[8] = yaw;
+  full_state[3] = roll;
+  full_state[4] = state[6];
+  full_state[5] = yaw;
+  full_state[6] = state[3];
+  full_state[7] = state[4];
+  full_state[8] = state[5];
   full_state[9] = roll_rate;
   full_state[10] = state[7];
   full_state[11] = yaw_rate;
@@ -45,11 +58,6 @@ void vectorToArray(State vec, double * new_array)
 {
   for (int i = 0; i < vec.size(); i++)
     new_array[i] = vec.at(i);
-}
-void stdVectorToState(std::vector<double> v, State& s)
-{
-  for (int i = 0; i < v.size(); i++)
-    s[i] = v.at(i);
 }
 void printState(State vec)
 {
@@ -141,6 +149,23 @@ double poseDistance(State q1, State q2)
   for (int i = 0; i < POSEDIM; i++)
   {
     sum = sum + (q2[i] - q1[i])*(q2[i] - q1[i]);
+  }
+
+  double dist = sqrt(sum);
+  return dist;
+}
+
+double poseDistance(std::vector<double> v1, std::vector<double> v2)
+{
+  double sum = 0;
+
+  if (v1.size() < 3 || v2.size() < 3) {
+    throw std::runtime_error("Not enough data in vectors to compute distance");
+  }
+
+  for (int i = 0; i < 3; i++)
+  {
+    sum = sum + (v2[i] - v1[i])*(v2[i] - v1[i]);
   }
 
   double dist = sqrt(sum);

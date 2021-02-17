@@ -18,16 +18,16 @@
 namespace planning_utils {
 
 // Define kinematic constraint parameters
-const double H_MAX = 0.6;           // Maximum height of leg base, m
-const double H_MIN = 0.02;          // Minimum ground clearance of body corners, m
+const double H_MAX = 0.4;           // Maximum height of leg base, m
+const double H_MIN = 0.1;          // Minimum ground clearance of body corners, m
 const double V_MAX = 4.0;           // Maximum robot velocity, m/s (4.0 for cheetah, 2.5 for anymal)
-const double V_NOM = 1.5;           // Nominal velocity, m/s (used during connect function)
+const double V_NOM = 1.0;           // Nominal velocity, m/s (used during connect function)
 const double P_MAX = 1.0;           // Maximum pitch, rad
 const double DP_MAX = 5.0;          // Maximum angular velocity in pitch, rad/s
 const double ANG_ACC_MAX = 10.0;    // Maximum angular acceleration in pitch, rad/s^2
-const double ROBOT_L = 0.6;         // Length of robot body, m (0.6 cheetah, 0.554 ANYmal)
-const double ROBOT_W = 0.256;       // Width of robot body, m (0.256 cheetah, 0.232 ANYmal)
-const double ROBOT_H = 0.1;         // Vertical distance between leg base and bottom of robot, m (0.1 cheetah, 0.04 ANYmal)
+const double ROBOT_L = 0.4;         // Length of robot body, m (0.6 cheetah, 0.554 ANYmal)
+const double ROBOT_W = 0.15;       // Width of robot body, m (0.256 cheetah, 0.232 ANYmal)
+const double ROBOT_H = 0.05;         // Vertical distance between leg base and bottom of robot, m (0.1 cheetah, 0.04 ANYmal)
 
 // Define dynamic constraint parameters
 const double M_CONST = 43;          // Robot mass, kg (43 for cheetah, 30 for anymal)
@@ -60,8 +60,8 @@ const int STATEDIM = 8;
 const int FULLSTATEDIM = 12;
 const int ACTIONDIM = 10;
 typedef std::array<double, STATEDIM> State;
-typedef std::array<double, FULLSTATEDIM> FullState;
 typedef std::array<double, ACTIONDIM> Action;
+typedef std::vector<double> FullState;
 typedef std::vector<double> Wrench;
 typedef std::pair<State, Action> StateActionPair;
 
@@ -73,7 +73,6 @@ const double MY_PI = 3.14159;
 State fullStateToState(FullState full_state);
 FullState stateToFullState(State state, double roll, double yaw, double roll_rate, double yaw_rate);
 void vectorToArray(State vec, double * new_array);
-void stdVectorToState(std::vector<double> v, State& s);
 
 // Define some useful print statements
 void printState(State vec);
@@ -92,6 +91,7 @@ void plotYaw(std::vector<double> interp_t, std::vector<FullState> interp_full_pa
 // Define some utility functions
 double poseDistance(State q1, State q2);
 double stateDistance(State q1, State q2);
+double poseDistance(std::vector<double> v1, std::vector<double> v2);
 bool isWithinBounds(State s1, State s2);
 std::array<double,3> rotateGRF(std::array<double,3> surface_norm, std::array<double,3> grf);
 std::vector<double> movingAverageFilter(std::vector<double> data, int window_size);

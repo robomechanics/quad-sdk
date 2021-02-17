@@ -4,10 +4,14 @@
 #include <ros/ros.h>
 #include <nav_msgs/Path.h>
 #include <spirit_msgs/BodyPlan.h>
-#include <spirit_msgs/Footstep.h>
-#include <spirit_msgs/FootstepPlan.h>
+#include <spirit_msgs/FootState.h>
+#include <spirit_msgs/MultiFootState.h>
+#include <spirit_msgs/MultiFootPlanContinuous.h>
+#include <spirit_msgs/FootPlanDiscrete.h>
+#include <spirit_msgs/MultiFootPlanDiscrete.h>
 #include <spirit_utils/fast_terrain_map.h>
 #include <spirit_utils/function_timer.h>
+#include <spirit_utils/math_utils.h>
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
@@ -49,32 +53,24 @@ class LocalFootstepPlanner {
     void bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
 
     /**
-     * @brief Interpolate data from column vectors contained in a matrix (vector of row vectors) provided an input vector and query point
-     * @param[in] input_vec Input vector
-     * @param[in] output_mat Collection of row vectors such that each row corresponds to exactly one element in the input vector
-     * @param[in] input_val Query point
-     * @return Vector of interpolated values
+     * @brief Update the discrete footstep plan with the current plan
      */
-    std::vector<double> interpMat(std::vector<double> input_vec, std::vector<std::vector<double>> output_mat, double query_point);
+    void updateDiscretePlan();
 
     /**
-     * @brief Interpolate data from column vectors contained in a matrix (vector of row vectors) provided an input vector and query point
-     * @param[in] input_vec Input vector
-     * @param[in] output_mat Collection of row vectors such that each row corresponds to exactly one element in the input vector
-     * @param[in] input_val Query point
-     * @return Vector of interpolated values
+     * @brief Update and publish the continuous foot plan to match the discrete
      */
-    Eigen::Vector3d interpVector3d(std::vector<double> input_vec, std::vector<Eigen::Vector3d> output_mat, double query_point);
-
-    /**
-     * @brief Update the footstep plan with the current plan
-     */
-    void updatePlan();
+    void publishContinuousPlan();
 
     /**
      * @brief Publish the current footstep plan
      */
-    void publishPlan();
+    void publishDiscretePlan();
+
+    /**
+     * @brief Wait until map and plan messages have been received and processed
+     */
+    void waitForData();
 
     /// Subscriber for terrain map messages
     ros::Subscriber terrain_map_sub_;
@@ -82,11 +78,20 @@ class LocalFootstepPlanner {
     /// Subscriber for body plan messages
     ros::Subscriber body_plan_sub_;
 
-    /// Publisher for footstep plan messages
-    ros::Publisher footstep_plan_pub_;
+    /// Publisher for discrete foot plan messages
+    ros::Publisher foot_plan_discrete_pub_;
+
+    /// Publisher for continuous
+    ros::Publisher foot_plan_continuous_pub_;
 
     /// Nodehandle to pub to and sub from
     ros::NodeHandle nh_;
+
+    /// Topic name for terrain map (needed to ensure data has been received)
+    std::string terrain_map_topic_;
+
+    /// Topic name for robot state data (needed to ensure data has been received)
+    std::string body_plan_topic_;
 
     /// Update rate for sending and receiving data;
     double update_rate_;
@@ -113,10 +118,34 @@ class LocalFootstepPlanner {
     std::vector<BodyWrench> body_wrench_plan_;
 
     /// Std vector containing robot footstep plan
-    std::vector<FootstepState> footstep_plan_;
+    std::vector<std::vector<FootstepState> > footstep_plan_;
 
     /// Std vector containing time data
     std::vector<double> t_plan_;
+
+    /// ROS Timestamp of plan (should match body plan)
+    ros::Time plan_timestamp_;
+
+    /// Number of feet
+    const int num_feet_ = 4;
+
+    /// Weighting on the projection of the grf
+    double grf_weight_;
+
+    /// Maximum horizon with which to plan footsteps
+    double max_footstep_horizon_;
+
+    /// Number of cycles to plan
+    int num_cycles_;
+
+    /// Ground clearance
+    double period_;
+
+    /// Ground clearance
+    double ground_clearance_;
+
+    /// Interpolation timestep for swing leg
+    double interp_dt_;
 
 };
 

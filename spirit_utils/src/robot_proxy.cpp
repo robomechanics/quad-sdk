@@ -54,6 +54,11 @@ void RobotProxy::publishMocap() {
   msg.pose.position.y = 0;
   msg.pose.position.z = 0.3;
 
+  double secs =ros::Time::now().toSec();
+  double amplitude = 1.0;
+  double period = 5;
+  // msg.pose.position.y = amplitude*sin(2*3.14159*secs/period);
+
   msg.pose.orientation.x = 0;
   msg.pose.orientation.y = 0;
   msg.pose.orientation.z = 0;

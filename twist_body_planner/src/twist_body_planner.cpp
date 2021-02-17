@@ -4,9 +4,9 @@ TwistBodyPlanner::TwistBodyPlanner(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string state_estimate_topic, body_plan_topic, cmd_vel_topic;
+  std::string robot_state_topic, body_plan_topic, cmd_vel_topic;
 
-  nh.param<std::string>("topics/state_estimate", state_estimate_topic, "/state_estimate");
+  nh.param<std::string>("topics/state/ground_truth", robot_state_topic, "/state/ground_truth");
   nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
   nh.param<std::string>("topics/cmd_vel", cmd_vel_topic, "/cmd_vel");
   nh.param<std::string>("map_frame", map_frame_,"/map");
@@ -16,7 +16,7 @@ TwistBodyPlanner::TwistBodyPlanner(ros::NodeHandle nh) {
 
   // Setup pubs and subs
   cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic,1,&TwistBodyPlanner::cmdVelCallback, this);
-  state_estimate_sub_ = nh_.subscribe(state_estimate_topic,1,&TwistBodyPlanner::stateEstimateCallback, this);
+  robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&TwistBodyPlanner::robotStateCallback, this);
   body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(body_plan_topic,1);
 
   start_state_.resize(12);
@@ -41,7 +41,7 @@ void TwistBodyPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg)
   last_cmd_vel_msg_time_ = ros::Time::now();
 }
 
-void TwistBodyPlanner::stateEstimateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg) {
+void TwistBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
 
   tf2::Quaternion q(
         msg->body.pose.pose.orientation.x,

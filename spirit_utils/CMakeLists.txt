@@ -48,6 +48,9 @@ add_library(spirit_utils
   src/terrain_map_publisher.cpp
   src/ground_truth_publisher.cpp
   src/robot_proxy.cpp
+  src/math_utils.cpp
+  src/kinematics.cpp
+  src/trajectory_publisher.cpp
 )
 add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(spirit_utils)
@@ -58,6 +61,7 @@ target_link_libraries(spirit_utils)
 add_executable(rviz_interface_node src/rviz_interface_node.cpp)
 add_executable(terrain_map_publisher_node src/terrain_map_publisher_node.cpp)
 add_executable(ground_truth_publisher_node src/ground_truth_publisher_node.cpp)
+add_executable(trajectory_publisher_node src/trajectory_publisher_node.cpp)
 add_executable(robot_proxy_node src/robot_proxy_node.cpp)
 
 ## Specify libraries to link a library or executable target against
@@ -72,6 +76,11 @@ target_link_libraries(terrain_map_publisher_node
 )
 
 target_link_libraries(ground_truth_publisher_node
+  spirit_utils
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(trajectory_publisher_node
   spirit_utils
   ${catkin_LIBRARIES}
 )
@@ -94,6 +103,7 @@ catkin_add_gtest(spirit_utils-test
   test/test_ground_truth_publisher.cpp
   test/test_robot_proxy.cpp
   test/test_fast_terrain_map.cpp
+  test/test_kinematics.cpp
   test/test_main.cpp)
 target_link_libraries(spirit_utils-test spirit_utils ${catkin_LIBRARIES})
 

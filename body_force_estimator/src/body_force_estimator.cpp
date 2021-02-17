@@ -4,18 +4,18 @@ BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string state_estimate_topic, body_force_topic;
-  nh.param<std::string>("topics/state_estimate", state_estimate_topic, "/state_estimate");
+  std::string robot_state_topic, body_force_topic;
+  nh.param<std::string>("topics/state/ground_truth", robot_state_topic, "/state/ground_truth");
   nh.param<std::string>("topics/body_force", body_force_topic, "/body_force");
   nh.param<double>("body_force_estimator/update_rate", update_rate_, 200); // add a param for your package instead of using the estimator one
 
   // Setup pubs and subs
-  state_estimate_sub_ = nh_.subscribe(state_estimate_topic,1,&BodyForceEstimator::stateEstimateCallback, this);
+  robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&BodyForceEstimator::robotStateCallback, this);
   body_force_pub_ = nh_.advertise<spirit_msgs::BodyForceEstimate>(body_force_topic,1);
 }
 
-void BodyForceEstimator::stateEstimateCallback(const spirit_msgs::StateEstimate::ConstPtr& msg) {
-  // ROS_INFO("In stateEstimateCallback");
+void BodyForceEstimator::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
+  // ROS_INFO("In robotStateCallback");
 }
 
 void BodyForceEstimator::publishBodyForce() {
