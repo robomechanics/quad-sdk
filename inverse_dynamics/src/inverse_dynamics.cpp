@@ -5,14 +5,14 @@ inverseDynamics::inverseDynamics(ros::NodeHandle nh) {
 	nh_ = nh;
 
     // Load rosparams from parameter server
-  std::string control_input_topic, state_estimate_topic, swing_leg_plan_topic, leg_command_array_topic; //foot_step_plan_topic, 
+  std::string control_input_topic, robot_state_topic, swing_leg_plan_topic, leg_command_array_topic; //foot_step_plan_topic, 
   // nh.param<std::string>("topics/control_input", control_input_topic, "/control_input");
   spirit_utils::loadROSParam(nh_,"topics/joint_command",leg_command_array_topic);
-  spirit_utils::loadROSParam(nh_,"topics/state/ground_truth",state_estimate_topic);
+  spirit_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
 
   // Setup pubs and subs
   // control_input_sub_ = nh_.subscribe(control_input_topic,1,&inverseDynamics::controlInputCallback, this);
-  state_estimate_sub_= nh_.subscribe(state_estimate_topic,1,&inverseDynamics::robotStateCallback, this);
+  robot_state_sub_= nh_.subscribe(robot_state_topic,1,&inverseDynamics::robotStateCallback, this);
   // swing_leg_plan_sub_= nh_.subscribe(swing_leg_plan_topic,1,&inverseDynamics::swingLegPlanCallback, this);
   // foot_step_plan_sub_= nh_.subscribe(foot_step_plan_topic,1,&inverseDynamics::footStepPlanCallback, this);
   leg_command_array_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_command_array_topic,1);
@@ -24,7 +24,7 @@ inverseDynamics::inverseDynamics(ros::NodeHandle nh) {
 // }
 void inverseDynamics::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
   // ROS_INFO("In robotStateCallback");
-  last_state_estimate_msg_ = *msg;
+  last_robot_state_msg_ = *msg;
 }
 // void inverseDynamics::swingLegPlanCallback(const spirit_msgs::SwingLegPlan::ConstPtr& msg) {
 //   // ROS_INFO("In swingLegPlanCallback");
@@ -54,10 +54,10 @@ void inverseDynamics::publishLegCommandArray() {
   static const double parameters[] = {0.07,0.2263,0.0,0.1010,0.206,0.206};
   // double states[] = {roll, pitch, yaw, x, y, z, q00, q01, q02, q10, q11, q12, q20, q21, q22, q30, q31, q32};
 
-  double qx = last_state_estimate_msg_.body.pose.pose.orientation.x;
-  double qy = last_state_estimate_msg_.body.pose.pose.orientation.y;
-  double qz = last_state_estimate_msg_.body.pose.pose.orientation.z;
-  double qw = last_state_estimate_msg_.body.pose.pose.orientation.w;
+  double qx = last_robot_state_msg_.body.pose.pose.orientation.x;
+  double qy = last_robot_state_msg_.body.pose.pose.orientation.y;
+  double qz = last_robot_state_msg_.body.pose.pose.orientation.z;
+  double qw = last_robot_state_msg_.body.pose.pose.orientation.w;
 
   double roll, pitch, yaw;
 
@@ -81,22 +81,22 @@ void inverseDynamics::publishLegCommandArray() {
   states[0] = roll;
   states[1] = pitch;
   states[2] = yaw;
-  states[3] = last_state_estimate_msg_.body.pose.pose.position.x;
-  states[4] = last_state_estimate_msg_.body.pose.pose.position.y;
-  states[5] = last_state_estimate_msg_.body.pose.pose.position.z;
+  states[3] = last_robot_state_msg_.body.pose.pose.position.x;
+  states[4] = last_robot_state_msg_.body.pose.pose.position.y;
+  states[5] = last_robot_state_msg_.body.pose.pose.position.z;
 
-  // states[6] = last_state_estimate_msg_.joints.position.at(8);
-  // states[7] = last_state_estimate_msg_.joints.position.at(0);
-  // states[8] = last_state_estimate_msg_.joints.position.at(1);
-  // states[9] = last_state_estimate_msg_.joints.position.at(9);
-  // states[10] = last_state_estimate_msg_.joints.position.at(2);
-  // states[11] = last_state_estimate_msg_.joints.position.at(3);
-  // states[12] = last_state_estimate_msg_.joints.position.at(10);
-  // states[13] = last_state_estimate_msg_.joints.position.at(4);
-  // states[14] = last_state_estimate_msg_.joints.position.at(5);
-  // states[15] = last_state_estimate_msg_.joints.position.at(11);
-  // states[16] = last_state_estimate_msg_.joints.position.at(6);
-  // states[17] = last_state_estimate_msg_.joints.position.at(7);
+  states[6] = last_robot_state_msg_.joints.position.at(0);
+  states[7] = last_robot_state_msg_.joints.position.at(1);
+  states[8] = last_robot_state_msg_.joints.position.at(2);
+  states[9] = last_robot_state_msg_.joints.position.at(3);
+  states[10] = last_robot_state_msg_.joints.position.at(4);
+  states[11] = last_robot_state_msg_.joints.position.at(5);
+  states[12] = last_robot_state_msg_.joints.position.at(6);
+  states[13] = last_robot_state_msg_.joints.position.at(7);
+  states[14] = last_robot_state_msg_.joints.position.at(8);
+  states[15] = last_robot_state_msg_.joints.position.at(9);
+  states[16] = last_robot_state_msg_.joints.position.at(10);
+  states[17] = last_robot_state_msg_.joints.position.at(11);
 
   std::cout << "robotState: ";
   for (int i = 0; i < 18; ++i) {

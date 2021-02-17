@@ -65,7 +65,7 @@ private:
 	// ros::Subscriber control_input_sub_;
 
 	/// ROS subscriber for state estimate
-	ros::Subscriber state_estimate_sub_;
+	ros::Subscriber robot_state_sub_;
 
 	/// ROS subscriber for Swing Leg Plan
 	// ros::Subscriber swing_leg_plan_sub_;
@@ -86,7 +86,7 @@ private:
 	// spirit_msgs::ControlInput last_control_input_msg_;
 
 	/// Most recent state estimate
-	spirit_msgs::RobotState last_state_estimate_msg_;
+	spirit_msgs::RobotState last_robot_state_msg_;
 
 	/// Most recent swing leg plan
 	// spirit_msgs::SwingLegPlan last_swing_leg_plan_msg_;
