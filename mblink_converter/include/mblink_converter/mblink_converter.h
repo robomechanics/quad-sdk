@@ -3,9 +3,13 @@
 
 #include <ros/ros.h>
 #include <spirit_msgs/LegCommandArray.h>
+#include <sensor_msgs/JointState.h>
+#include <sensor_msgs/Imu.h>
 #include <mblink/mblink.hpp>
 #include <Eigen/Dense>
 #include <spirit_utils/ros_utils.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2/LinearMath/Quaternion.h>
 #include <chrono>
 #include <thread>
 
@@ -18,6 +22,8 @@ struct LimbCmd_t {
   float kp;
   float kd;
 };
+
+typedef std::unordered_map<std::string, Eigen::VectorXf> RxData_t;
 
 //! Implements online conversion from ROS type to MBLink
 /*!
@@ -59,11 +65,23 @@ private:
    */
   bool sendMBlink();
 
+  /**
+ * @brief Get most recent data payload over mblink and process it
+ * @return Boolean signaling successful mblink retrieval
+ */
+  bool publishMBlink();
+
   /// Subscriber for motor control messages
   ros::Subscriber leg_control_sub_;
 
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
+
+  /// ROS publisher for joint encoder data
+	ros::Publisher joint_encoder_pub_;
+
+  /// ROS publisher for imu data
+  ros::Publisher imu_pub_;
 
   /// Update rate for sending and receiving data;
   double update_rate_;
@@ -72,7 +90,10 @@ private:
   spirit_msgs::LegCommandArray::ConstPtr last_leg_command_array_msg_;
 
   /// Pointer to MBLink object (constructor wants argc and argv, so instantiated in main)
-  MBLink mblink_;
+  MBLink mblink_; 
+
+  /// Vector denoting joint indices
+  std::vector<int> joint_indices_ = {8,0,1,9,2,3,10,4,5,11,6,7};
 
 };
 
