@@ -251,7 +251,7 @@ int main()
     OsqpEigen::Solver solver;
 
     // settings
-    //solver.settings()->setVerbosity(false);
+    solver.settings()->setVerbosity(false);
     solver.settings()->setWarmStart(true);
 
     // set the initial data of the QP solver
@@ -281,6 +281,8 @@ int main()
         // get the controller input
         QPSolution = solver.getSolution();
         ctr = QPSolution.block(12 * (mpcWindow + 1), 0, 4, 1);
+
+        std::cout << std::endl << ctr << std::endl;
 
         // save data into file
         auto x0Data = x0.data();

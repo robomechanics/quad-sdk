@@ -22,7 +22,7 @@ LinearMPC::LinearMPC(const int N, const int Nx, const int Nu)
   num_state_vars_= (N_ + 1) * Nx;
   num_control_vars_= N * Nu;
   num_decision_vars_ = num_state_vars_ + num_control_vars_;
-  num_constraints_ = num_contact_constraints_ + num_state_vars_ + num_dyn_constraints_;
+  num_constraints_ = num_state_vars_ + num_dyn_constraints_ + 5*N; // num_contact_constraints_
 
   // Setup contact matrices and size vectors
   b_contact_lo_.resize(num_contact_constraints_);
@@ -223,14 +223,49 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
   // Create correctly sized linear constraint matrix to be populated with dynamics, contact info
   Eigen::MatrixXd A_dense = Eigen::MatrixXd::Zero(num_constraints_, num_decision_vars_);
 
-  // Add contact matrix to linear constraint matrix
-  A_dense.block(0,0,num_contact_constraints_,num_decision_vars_) = A_con_dense_;
-
   // Add identity matrix to linear constraint matrix for state bounds
-  A_dense.block(num_contact_constraints_,0,num_state_vars_,num_state_vars_) = Eigen::MatrixXd::Identity(num_state_vars_,num_state_vars_);
+  A_dense.block(0,0,num_state_vars_,num_state_vars_) = Eigen::MatrixXd::Identity(num_state_vars_,num_state_vars_);
   
   // Add dynamics matrix to linear constraint matrix
-  A_dense.bottomRows(num_dyn_constraints_) = A_dyn_dense_;
+  A_dense.block(num_state_vars_,0,num_dyn_constraints_,num_decision_vars_) = A_dyn_dense_;
+
+  // Gravity constraint
+  Eigen::MatrixXd gravity_constraint = Eigen::MatrixXd::Zero(N_,num_control_vars_);
+  Eigen::VectorXd gravity_lo(N_);
+  Eigen::VectorXd gravity_hi(N_);
+
+  for (int i = 0; i < N_; ++i){
+    gravity_constraint(i,13*i+12) = 1;
+    gravity_lo(i) = 1;
+    gravity_hi(i) = 1;
+  }
+
+  std::cout << "Gravity constraint: " << std::endl << gravity_constraint << std::endl;
+
+  A_dense.block(num_state_vars_+num_dyn_constraints_,num_state_vars_,N_,num_control_vars_) = gravity_constraint;
+
+  // Normal force constraint
+  Eigen::MatrixXd normal_constraint = Eigen::MatrixXd::Zero(4*N_,num_control_vars_);
+  Eigen::VectorXd normal_lo(4*N_);
+  Eigen::VectorXd normal_hi(4*N_);
+
+  for (int i = 0; i < N_; ++i) {
+    for (int j = 0; j < 4; ++j) {
+      normal_lo(4*i+j) = -INF_;
+      normal_hi(4*i+j) = INF_;
+      normal_constraint(4*i+j,13*i + 3*j+2) = 1;
+    }
+  }
+
+  normal_hi(11) = 50;
+  normal_lo(10) = -50;
+
+  std::cout << "Normal constraint: " << std::endl << normal_constraint << std::endl;
+
+  A_dense.block(num_state_vars_+num_dyn_constraints_+N_,num_state_vars_,4*N_,num_control_vars_) = normal_constraint;
+
+  // Add contact matrix to linear constraint matrix
+  //A_dense.block(num_state_vars_+num_dyn_constraints_,0,num_contact_constraints_,num_decision_vars_) = A_con_dense_;
 
   // Convert hessian and linear constraint matrix to sparse (wanted by OSQP solver)
   Eigen::SparseMatrix<double> H = H_.sparseView();
@@ -246,13 +281,12 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
   #endif
   
   // Setup lower and  upper bounds for linear constraints
+
   Eigen::VectorXd l(num_constraints_);
-  l.setZero();
-  l << b_contact_lo_,initial_state,b_state_lo_,b_dyn_;//
+  l << initial_state,b_state_lo_,b_dyn_,gravity_lo,normal_lo;//,b_contact_lo_;//
 
   Eigen::VectorXd u(num_constraints_);
-  u.setZero();
-  u << b_contact_hi_,initial_state,b_state_hi_,b_dyn_; //
+  u << initial_state,b_state_hi_,b_dyn_,gravity_hi,normal_hi;//,b_contact_hi_; //
 
   //std::cout << l.topRows(num_contact_constraints_) << std::endl;
   //std::cout << u.topRows(num_contact_constraints_) << std::endl;

@@ -8,7 +8,7 @@
 
 #include <gtest/gtest.h>
 
-const double INF = std::numeric_limits<double>::infinity();
+const double INF = OsqpEigen::INFTY;
 const double NINF = -INF;
 
 namespace plt = matplotlibcpp;
@@ -18,7 +18,7 @@ TEST(TestUseCase, quadVariable) {
   // Configurable parameters
   const int Nu = 13; // Appended gravity term
   const int Nx = 12; // Number of states
-  const int N = 50;   // Time horizons to consider
+  const int N = 20;   // Time horizons to consider
   const double dt = 0.1;             // Time horizon
   const double m = 10;                   // Mass of quad
   const double g = 9.81;
@@ -28,12 +28,12 @@ TEST(TestUseCase, quadVariable) {
   Qx.setZero();
   Qx.diagonal() << 0.1,0.1,100, //x
                    0.1,0.1,0.1, //theta
-                   0.1,0.1,0.1, //dx
+                   0.1,0.1,1, //dx
                    0.1,0.1,0.1; //dtheta*/
 
   Eigen::MatrixXd Ru(Nu, Nu);
   Ru.setZero();
-  double Rf = 0.00001;
+  double Rf = 0.0001;
   Ru.diagonal() << Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,0;
 
   // State and control bounds (fixed for a given solve) 
@@ -81,9 +81,9 @@ TEST(TestUseCase, quadVariable) {
     }
   }
 
-  Q_vec.at(N) = 10*Qx;
+  Q_vec.at(N) = 1*Qx;
   ref_traj.col(N) = initial_state;
-  ref_traj(2,N) = 0.25 + 0.1*sin(N/10.0);
+  ref_traj(2,N) = 0.25 + 0.1*sin(N/3.0);
 
   double mu = 0.6;
   double fmin = -INF;

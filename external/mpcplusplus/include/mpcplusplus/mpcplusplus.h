@@ -109,7 +109,7 @@ private:
   Eigen::VectorXd b_control_hi_;
 
   /// Highest possible double value
-  const double INF_ = std::numeric_limits<double>::infinity();
+  const double INF_ = OsqpEigen::INFTY;
 
   /// OSQP solver instance
   OsqpEigen::Solver solver_;
