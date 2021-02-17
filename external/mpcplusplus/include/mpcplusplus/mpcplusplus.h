@@ -45,7 +45,8 @@ public:
    */
   void get_output(const Eigen::MatrixXd &x_out,
                         Eigen::VectorXd &first_control,
-                        Eigen::MatrixXd &opt_traj);
+                        Eigen::MatrixXd &opt_traj,
+                        Eigen::MatrixXd &control_traj);
 
   /**
    * @brief Collect matrices into specific type for solver and solve
@@ -108,7 +109,7 @@ private:
   Eigen::VectorXd b_control_hi_;
 
   /// Highest possible double value
-  const double INF_ = std::numeric_limits<double>::max();
+  const double INF_ = std::numeric_limits<double>::infinity();
 
   /// OSQP solver instance
   OsqpEigen::Solver solver_;

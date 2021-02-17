@@ -22,7 +22,7 @@ LinearMPC::LinearMPC(const int N, const int Nx, const int Nu)
   num_state_vars_= (N_ + 1) * Nx;
   num_control_vars_= N * Nu;
   num_decision_vars_ = num_state_vars_ + num_control_vars_;
-  num_constraints_ = num_dyn_constraints_ + num_contact_constraints_ + num_state_vars_;
+  num_constraints_ = num_contact_constraints_ + num_state_vars_ + num_dyn_constraints_;
 
   // Setup contact matrices and size vectors
   b_contact_lo_.resize(num_contact_constraints_);
@@ -42,6 +42,7 @@ void LinearMPC::update_weights(const std::vector<Eigen::MatrixXd> &Q,
   }
 
   Eigen::MatrixXd Hu(num_control_vars_, num_control_vars_);
+  Hu.setZero();
   for (int i = 0; i < N_; ++i) {
     Hu.block(i*nu_,i*nu_,nu_,nu_) = R.at(i);
   }
@@ -77,6 +78,8 @@ void LinearMPC::update_dynamics(const std::vector<Eigen::MatrixXd> &Ad,
     A_dyn_dense_.block(i * nx_, num_state_vars_ + i * nu_, nx_, nu_) = Bd.at(i);
   }
   
+  //std::cout << "Dynamics constraint: " << std::endl << A_dyn_dense_ << std::endl;
+
   b_dyn_ = Eigen::MatrixXd::Zero(num_dyn_constraints_,1);
 }
 
@@ -102,14 +105,15 @@ void LinearMPC::update_contact(const std::vector<std::vector<bool>> contact_sequ
        0, 0, 1;
 
   Eigen::MatrixXd C_body = Eigen::MatrixXd::Zero(21,13);
-  C_body.block(0,0,5,3) = C_toe;
-  C_body.block(5,3,5,3) = C_toe;
-  C_body.block(10,6,5,3) = C_toe;
-  C_body.block(15,9,5,3) = C_toe;
+  for (int i = 0; i < 4; ++i) {
+    C_body.block(5*i,3*i,5,3) = C_toe;
+  }
   C_body(20,12) = 1;
 
-  lo_contact << -INF_,0,-INF_,0,fmin;
-  hi_contact << 0,INF_,0,INF_,fmax;
+  //lo_contact << -INF_,0,-INF_,0,fmin;
+  //hi_contact << 0,INF_,0,INF_,fmax; //
+  lo_contact << -INF_,-INF_,-INF_,-INF_,-INF_;//INF_;
+  hi_contact << INF_,INF_,INF_,INF_,INF_;//INF_;
 
   b_contact_lo_.resize(num_contact_constraints_);
   b_contact_lo_.setZero();
@@ -129,13 +133,16 @@ void LinearMPC::update_contact(const std::vector<std::vector<bool>> contact_sequ
         // do nothing, bounds have been zeroed out earlier in this function
       }
     }
-    b_contact_lo_(21*i+20) = 1;
-    b_contact_hi_(21*i+20) = 1; 
+    b_contact_lo_(21*i+20) = 0.999;
+    b_contact_hi_(21*i+20) = 1.001; 
   }
-  //std::cout << "Friction vector lo: " << std::endl << b_contact_lo_ << std::endl;
-  //std::cout << "Friction vector hi: " << std::endl << b_contact_hi_ << std::endl;
-  //std::cout << "Friction cone matrix: " << std::endl << A_con_dense_.rightCols(num_control_vars_) << std::endl;
-
+  
+  std::cout << "Friction vector lo: " << std::endl << b_contact_lo_ << std::endl;
+  std::cout << "Friction vector hi: " << std::endl << b_contact_hi_ << std::endl;
+  
+  //std::cout << num_control_vars_ << std::endl;
+  std::cout << "Friction cone matrix: " << std::endl << A_con_dense_.rightCols(num_control_vars_) << std::endl;
+  
 }
 
 void LinearMPC::update_state_bounds(const Eigen::VectorXd state_lo,
@@ -168,7 +175,8 @@ void LinearMPC::get_cost_function(const Eigen::MatrixXd &ref_traj,
 //========================================================================================
 void LinearMPC::get_output(const Eigen::MatrixXd &x_out,
                       Eigen::VectorXd &first_control,
-                      Eigen::MatrixXd &opt_traj) {
+                      Eigen::MatrixXd &opt_traj,
+                      Eigen::MatrixXd &control_traj) {
 
 
   //std::cout << "Friction constraint vals: " << std::endl << A_con_dense_*x_out << std::endl;
@@ -178,9 +186,18 @@ void LinearMPC::get_output(const Eigen::MatrixXd &x_out,
   first_control.setZero();
   opt_traj.resize(nx_,N_+1);
   opt_traj.setZero();
+  control_traj.resize(nu_, N_);
+  control_traj.setZero();
 
   // Collect optimized control
   first_control = x_out.block((N_+1)*nx_,0,nu_,1);
+
+  // Collect control trajectory
+  for (size_t i = 0; i < N_; ++i) {
+    for (size_t j = 0; j < nu_; ++j) {
+      control_traj(j,i) = x_out((N_+1)*nx_ + i*nu_ + j,0);
+    }
+  }
 
   // Collect optimized trajectory
   for (size_t i = 0; i < N_ + 1; ++i)
@@ -204,13 +221,13 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
   this->get_cost_function(ref_traj, f);
 
   // Create correctly sized linear constraint matrix to be populated with dynamics, contact info
-  Eigen::MatrixXd A_dense(num_constraints_, num_decision_vars_);
+  Eigen::MatrixXd A_dense = Eigen::MatrixXd::Zero(num_constraints_, num_decision_vars_);
 
   // Add contact matrix to linear constraint matrix
-  A_dense.topRows(num_contact_constraints_) = A_con_dense_;
+  A_dense.block(0,0,num_contact_constraints_,num_decision_vars_) = A_con_dense_;
 
-  // Add identity matrix to linear constraint matrix for state and control bounds
-  A_dense.middleRows(num_contact_constraints_,num_state_vars_) = Eigen::MatrixXd::Identity(num_state_vars_,num_decision_vars_);
+  // Add identity matrix to linear constraint matrix for state bounds
+  A_dense.block(num_contact_constraints_,0,num_state_vars_,num_state_vars_) = Eigen::MatrixXd::Identity(num_state_vars_,num_state_vars_);
   
   // Add dynamics matrix to linear constraint matrix
   A_dense.bottomRows(num_dyn_constraints_) = A_dyn_dense_;
@@ -231,11 +248,15 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
   // Setup lower and  upper bounds for linear constraints
   Eigen::VectorXd l(num_constraints_);
   l.setZero();
-  l << b_contact_lo_,initial_state,b_state_lo_,b_dyn_;
+  l << b_contact_lo_,initial_state,b_state_lo_,b_dyn_;//
 
   Eigen::VectorXd u(num_constraints_);
   u.setZero();
-  u << b_contact_hi_,initial_state,b_state_hi_,b_dyn_; 
+  u << b_contact_hi_,initial_state,b_state_hi_,b_dyn_; //
+
+  //std::cout << l.topRows(num_contact_constraints_) << std::endl;
+  //std::cout << u.topRows(num_contact_constraints_) << std::endl;
+  //std::cout << A_dense.block(0,num_state_vars_,num_contact_constraints_,num_control_vars_) << std::endl;
 
   // Init solver if not already initialized
   if (!solver_.isInitialized()) {
@@ -270,6 +291,13 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
   // Call solver
   solver_.solve();
   x_out = solver_.getSolution();
+
+  Eigen::MatrixXd p(num_constraints_,3);
+  p.col(0) = l;
+  p.col(1) = A_dense*x_out;
+  p.col(2) = u;
+
+  std::cout << "Constraint vals: " << std::endl << p << std::endl;
 
   #ifdef PRINT_TIMING
     steady_clock::time_point t2 = steady_clock::now();

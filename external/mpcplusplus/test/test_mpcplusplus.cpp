@@ -8,8 +8,9 @@
 
 #include <gtest/gtest.h>
 
-const double INF = 1000000000;//std::numeric_limits<double>::max();
-const double NINF = -1000000000;//std::numeric_limits<double>::min();
+const double INF = std::numeric_limits<double>::infinity();
+const double NINF = -INF;
+
 namespace plt = matplotlibcpp;
 
 TEST(TestUseCase, quadVariable) {
@@ -17,7 +18,7 @@ TEST(TestUseCase, quadVariable) {
   // Configurable parameters
   const int Nu = 13; // Appended gravity term
   const int Nx = 12; // Number of states
-  const int N = 40;   // Time horizons to consider
+  const int N = 50;   // Time horizons to consider
   const double dt = 0.1;             // Time horizon
   const double m = 10;                   // Mass of quad
   const double g = 9.81;
@@ -25,27 +26,27 @@ TEST(TestUseCase, quadVariable) {
   // Weights on state deviation and control input
   Eigen::MatrixXd Qx(Nx, Nx);
   Qx.setZero();
-  Qx.diagonal() << 0.1,0.1,1000, //x
+  Qx.diagonal() << 0.1,0.1,100, //x
                    0.1,0.1,0.1, //theta
                    0.1,0.1,0.1, //dx
-                   0.1,0.1,0.1; //dtheta
-  Eigen::MatrixXd Qn = Qx;
+                   0.1,0.1,0.1; //dtheta*/
 
   Eigen::MatrixXd Ru(Nu, Nu);
   Ru.setZero();
-  double Rf = 1e-3;
+  double Rf = 0.00001;
   Ru.diagonal() << Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,0;
 
   // State and control bounds (fixed for a given solve) 
   Eigen::VectorXd state_lo(Nx);
-  state_lo << NINF,NINF,0.18,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF;
+  state_lo << NINF,NINF,0.2,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF;
   Eigen::VectorXd state_hi(Nx);
-  state_hi << INF,INF,0.45,INF,INF,INF,INF,INF,INF,INF,INF,INF;
+  state_hi << INF,INF,0.4,INF,INF,INF,INF,INF,INF,INF,INF,INF;
 
   // Create vectors of dynamics matrices at each step,
   // weights at each step and contact sequences at each step
   Eigen::MatrixXd Ad = Eigen::MatrixXd::Zero(Nx,Nx);
   Ad.block(0,0,6,6) = Eigen::MatrixXd::Identity(6,6);
+  Ad.block(6,6,6,6) = Eigen::MatrixXd::Identity(6,6);
   Ad.block(0,6,3,3) = Eigen::MatrixXd::Identity(3,3)*dt;
   Ad.block(3,9,3,3) = Eigen::MatrixXd::Identity(3,3)*dt; // rotation matrix (fixed to identity for now)
   std::cout << "Ad: " << std::endl << Ad << std::endl;
@@ -66,27 +67,27 @@ TEST(TestUseCase, quadVariable) {
   Eigen::MatrixXd ref_traj(Nx,N+1);
   Eigen::VectorXd initial_state(Nx);
 
-  initial_state << 0,0,0.26,0,0,0,0,0,0,0,0,0;
+  initial_state << 0,0,0.31,0,0,0,0,0,0,0,0,0;
   for (int i = 0; i < N; ++i) {
     Ad_vec.at(i) = Ad;
     Bd_vec.at(i) = Bd;
     Q_vec.at(i) = Qx;
     U_vec.at(i) = Ru;
     ref_traj.col(i) = initial_state;
-    ref_traj(2,i) = 0.22;
+    ref_traj(2,i) = 0.25 + 0.1*sin(i/3.0);
     contact_sequences.at(i).resize(4);
     for (int j = 0; j < 4; ++j) {
       contact_sequences.at(i).at(j) = true;
     }
   }
 
-  Q_vec.back() = Qn;
+  Q_vec.at(N) = 10*Qx;
   ref_traj.col(N) = initial_state;
-  ref_traj(2,N) = 0.22;
+  ref_traj(2,N) = 0.25 + 0.1*sin(N/10.0);
 
   double mu = 0.6;
-  double fmin = 5;
-  double fmax = 50;
+  double fmin = -INF;
+  double fmax = INF;
 
   // Setup MPC class, call necessary functions
   mpcplusplus::LinearMPC mpc(N,Nx,Nu);
@@ -102,42 +103,38 @@ TEST(TestUseCase, quadVariable) {
   double f_val;
 
   mpc.solve(initial_state, ref_traj, x_out, f_val);
-  mpc.solve(initial_state, ref_traj, x_out, f_val);
+  //mpc.solve(initial_state, ref_traj, x_out, f_val);
   
-  Eigen::MatrixXd opt_traj;
-  Eigen::VectorXd first_control;
-  mpc.get_output(x_out, first_control, opt_traj);
+  //std::cout << "xout: " << std::endl << x_out << std::endl;
 
-  // Plot output
+  Eigen::MatrixXd opt_traj,control_traj;
+  Eigen::VectorXd first_control;
+  mpc.get_output(x_out, first_control, opt_traj, control_traj);
+
+  //std::cout << std::endl << "First control: " << first_control << std::endl;
+
+  //std::cout << std::endl << "z ref traj: " << ref_traj.row(2) << std::endl;
+  //std::cout << std::endl << "z traj: " << opt_traj.row(2) << std::endl;
+  //std::cout << std::endl << "dz traj: " << opt_traj.row(8) << std::endl;
+  
+  std::vector<double> zref(N+1);
   std::vector<double> z(N+1);
   for (int i = 0; i < N+1; ++i) {
+    zref.at(i) = ref_traj(2,i);
     z.at(i) = opt_traj(2,i);
   }
 
-  std::cout << std::endl << "First control: " << first_control << std::endl;
-
-  std::cout << std::endl << "z ref traj: " << ref_traj.row(2) << std::endl;
-  std::cout << std::endl << "z traj: " << opt_traj.row(2) << std::endl;
-  std::cout << std::endl << "dz traj: " << opt_traj.row(8) << std::endl;
-  
-  std::vector<double> zref_stl(N);
-  std::vector<double> z_stl(N);
-  for (int i = 1; i <= N; ++i) {
-    zref_stl.at(i-1) = ref_traj(2,i);
-    z_stl.at(i-1) = opt_traj(2,i);
-  }
-
-  std::cout << first_control << std::endl;
+  std::cout << control_traj << std::endl;
 
   plt::clf();
   plt::ion();
-  plt::named_plot("Z", z_stl);
-  plt::named_plot("Zref", zref_stl);
+  plt::named_plot("Z", z);
+  plt::named_plot("Zref", zref);
   plt::xlabel("horizon index");
   plt::ylabel("Z position");
   plt::legend();
   plt::show();
-  plt::pause(10);
+  plt::pause(1000);
   
 }
 
