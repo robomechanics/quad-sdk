@@ -62,9 +62,6 @@ bool MBLinkConverter::sendMBlink()
 void MBLinkConverter::publishMBlink()
 {
 
-  // Declare vector of joint names
-  std::vector<std::string> joint_name = {"8","0","1","9","2","3","10","4","5","11","6","7"};
-
   // Get the data and appropriate timestamp (this may be blocking)
   RxData_t data = mblink_.get();
   ros::Time timestamp = ros::Time::now();
@@ -74,9 +71,9 @@ void MBLinkConverter::publishMBlink()
   joint_state_msg.header.stamp = timestamp;
 
   // Add the data corresponding to each joint
-  for (int i = 0; i < joint_name.size(); i++)
+  for (int i = 0; i < joint_names_.size(); i++)
   {
-    joint_state_msg.name.push_back(joint_name[i]);
+    joint_state_msg.name.push_back(joint_names_[i]);
     joint_state_msg.position.push_back(data["joint_position"][joint_indices_[i]]);
     joint_state_msg.velocity.push_back(data["joint_velocity"][joint_indices_[i]]);
 

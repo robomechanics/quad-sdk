@@ -91,9 +91,13 @@ private:
   /// Pointer to MBLink object (constructor wants argc and argv, so instantiated in main)
   MBLink mblink_; 
 
+  /// Vector of joint names
+  std::vector<std::string> joint_names_ = {"8","0","1","9","2","3","10","4","5","11","6","7"};
+
   /// Vector denoting joint indices
   std::vector<int> joint_indices_ = {8,0,1,9,2,3,10,4,5,11,6,7};
 
+  /// Vector of kt values for each joint
   std::vector<double> kt_vec_ = {0.546,0.546,1.092,0.546,0.546,1.092,
     0.546,0.546,1.092,0.546,0.546,1.092};
 
