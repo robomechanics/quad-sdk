@@ -19,36 +19,38 @@ TEST(TestUseCase, quadVariable) {
   // Configurable parameters
   const int Nu = 13; // Appended gravity term
   const int Nx = 12; // Number of states
-  const int N = 20;   // Time horizons to consider
-  const double dt = 0.1;             // Time horizon
+  const int N = 30;   // Time horizons to consider
+  const double dt = 0.05;             // Time horizon
   const double m = 10;                   // Mass of quad
   const double g = 9.81;
 
   // Weights on state deviation and control input
   Eigen::MatrixXd Qx(Nx, Nx);
   Qx.setZero();
-  Qx.diagonal() << 0.1,0.1,1000000000000000000000.0, //x
-                   0.1,0.1,0.1, //theta
-                   0.1,0.1,1, //dx
-                   0.1,0.1,0.1; //dtheta*/
+  Qx.diagonal() << 0,0,100, //x
+                   0,0,0, //theta
+                   0,0,0, //dx
+                   0,0,0; //dtheta*/
 
   Eigen::MatrixXd Ru(Nu, Nu);
   Ru.setZero();
-  double Rf = 0.0001;
+  double Rf = 0.00000000001;
   Ru.diagonal() << Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,0;
 
   // State and control bounds (fixed for a given solve) 
   Eigen::VectorXd state_lo(Nx);
-  state_lo << NINF,NINF,0.2,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF;
+  state_lo << NINF,NINF,0.1,NINF,NINF,NINF,NINF,NINF,-1,NINF,NINF,NINF;
   Eigen::VectorXd state_hi(Nx);
-  state_hi << INF,INF,0.4,INF,INF,INF,INF,INF,INF,INF,INF,INF;
+  state_hi << INF,INF,0.4,INF,INF,INF,INF,INF,1,INF,INF,INF;
 
   Eigen::VectorXd control_lo(Nu);
-  control_lo << NINF,NINF,0,NINF,NINF,0,NINF,NINF,0,NINF,NINF,0,1;
-  
-  Eigen::VectorXd control_hi(Nu);
-  control_hi << INF,INF,50,INF,INF,50,INF,INF,50,INF,INF,50,1;
 
+  double fzmin = 0;
+  control_lo << NINF,NINF,fzmin,NINF,NINF,fzmin,NINF,NINF,fzmin,NINF,NINF,fzmin,1;
+  
+  double fzmax = 100;
+  Eigen::VectorXd control_hi(Nu);
+  control_hi << INF,INF,fzmax,INF,INF,fzmax,INF,INF,fzmax,INF,INF,fzmax,1;
 
   // Create vectors of dynamics matrices at each step,
   // weights at each step and contact sequences at each step
@@ -128,18 +130,21 @@ TEST(TestUseCase, quadVariable) {
   
   std::vector<double> zref(N+1);
   std::vector<double> z(N+1);
+
+  std::vector<double> dz(N+1);
   for (int i = 0; i < N+1; ++i) {
     zref.at(i) = ref_traj(2,i);
     z.at(i) = opt_traj(2,i);
+    dz.at(i) = opt_traj(8,i);
   }
 
-  //std::cout << control_traj << std::endl;
+  std::cout << control_traj << std::endl;
 
-  
   plt::clf();
   plt::ion();
   plt::named_plot("Z", z);
   plt::named_plot("Zref", zref);
+  //plt::named_plot("dz", dz);
   plt::xlabel("horizon index");
   plt::ylabel("Z position");
   plt::legend();
@@ -149,7 +154,7 @@ TEST(TestUseCase, quadVariable) {
   
   
 }
-
+/*
 TEST(TestUseCase, monoVariable) {
 
   // Configurable parameters
@@ -163,7 +168,7 @@ TEST(TestUseCase, monoVariable) {
   // Weights on state deviation and control input
   Eigen::MatrixXd Qx(Nx, Nx);
   Qx.setZero();
-  Qx.diagonal() << 1000000,0.000001; //dtheta*/
+  Qx.diagonal() << 1000000,0.000001; //dtheta
 
   Eigen::MatrixXd Ru(Nu, Nu);
   Ru.setZero();
@@ -272,7 +277,7 @@ TEST(TestUseCase, monoVariable) {
   plt::show();
   plt::pause(1000);
   
-}
+}*/
 
 // Run all the tests that were declared with TEST()
 int main(int argc, char **argv) {
