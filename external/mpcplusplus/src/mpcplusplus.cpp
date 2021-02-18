@@ -5,10 +5,10 @@
 #include <chrono>
 
 // Comment to remove OSQP printing
-//#define PRINT_DEBUG 
+#define PRINT_DEBUG 
 
 // Comment to remove timing prints
-//#define PRINT_TIMING
+#define PRINT_TIMING
 
 using namespace std::chrono;
 using namespace mpcplusplus;
@@ -22,7 +22,7 @@ LinearMPC::LinearMPC(const int N, const int Nx, const int Nu)
   num_state_vars_= (N + 1) * Nx;
   num_control_vars_= N * Nu;
   num_decision_vars_ = num_state_vars_ + num_control_vars_;
-  num_constraints_ = num_decision_vars_ + num_dyn_constraints_;// + 5*N; // num_contact_constraints_
+  num_constraints_ = num_state_vars_ + num_dyn_constraints_ + num_contact_constraints_;// + 5*N; // num_contact_constraints_
 
   // Setup fixed matrices and vectors
   b_contact_lo_ = Eigen::VectorXd::Zero(num_contact_constraints_);
@@ -39,7 +39,7 @@ void LinearMPC::update_weights(const std::vector<Eigen::MatrixXd> &Q,
     Hq.block(i * nx_, i * nx_, nx_, nx_) = Q.at(i);
   }
 
-  std::cout << "Hq: " << std::endl << Hq << std::endl;
+  //std::cout << "Hq: " << std::endl << Hq << std::endl;
 
   Eigen::MatrixXd Hu(num_control_vars_, num_control_vars_);
   Hu.setZero();
@@ -92,10 +92,10 @@ void LinearMPC::update_contact(const std::vector<std::vector<bool>> contact_sequ
   }
   C_body(20,12) = 1;
 
-  //lo_contact << -INF_,0,-INF_,0,fmin;
-  //hi_contact << 0,INF_,0,INF_,fmax; //
-  lo_contact << -INF_,-INF_,-INF_,-INF_,-INF_;//INF_;
-  hi_contact << INF_,INF_,INF_,INF_,INF_;//INF_;
+  lo_contact << -INF_,-INF_,-INF_,-INF_,fmin;
+  hi_contact << INF_,INF_,INF_,INF_,fmax; //
+  //lo_contact << -INF_,-INF_,-INF_,-INF_,-INF_;//INF_;
+  //hi_contact << INF_,INF_,INF_,INF_,INF_;//INF_;
 
   b_contact_lo_.resize(num_contact_constraints_);
   b_contact_lo_.setZero();
@@ -210,14 +210,14 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
   // Create correctly sized linear constraint matrix to be populated with dynamics, contact info
   Eigen::MatrixXd A_dense = Eigen::MatrixXd::Zero(num_constraints_, num_decision_vars_);
 
-  // Add identity matrix to linear constraint matrix for state bounds
-  A_dense.block(0,0,num_decision_vars_,num_decision_vars_) = Eigen::MatrixXd::Identity(num_decision_vars_,num_decision_vars_);
+  // Add identity matrix to linear constraint matrix for state and control bounds
+  A_dense.block(0,0,num_state_vars_,num_state_vars_) = Eigen::MatrixXd::Identity(num_state_vars_,num_state_vars_);
     
   // Add dynamics matrix to linear constraint matrix
-  A_dense.block(num_decision_vars_,0,num_dyn_constraints_,num_decision_vars_) = A_dyn_dense_;
+  A_dense.block(num_state_vars_,0,num_dyn_constraints_,num_decision_vars_) = A_dyn_dense_;
 
   // Add contact matrix to linear constraint matrix
-  //A_dense.block(num_state_vars_+num_dyn_constraints_,0,num_contact_constraints_,num_decision_vars_) = A_con_dense_;
+  A_dense.block(num_state_vars_+num_dyn_constraints_,0,num_contact_constraints_,num_decision_vars_) = A_con_dense_;
 
   // Convert hessian and linear constraint matrix to sparse (wanted by OSQP solver)
   Eigen::SparseMatrix<double> H = H_.sparseView();
@@ -225,24 +225,24 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
 
   //std::cout << A << std::endl;
 
-  #ifdef PRINT_DEBUG 
+  /*#ifdef PRINT_DEBUG 
     std::cout << "Number of decision variables: " << num_decision_vars_ << std::endl;
     std::cout << "Number of total constraints: " << num_constraints_ << std::endl;
     std::cout << "Number of dynamics constraints: " << num_dyn_constraints_ << std::endl;
     std::cout << "Number of contact constraints: " << num_contact_constraints_ << std::endl;
     std::cout << "Nu: " << nu_ << std::endl;
     std::cout << "Nx: " << nx_ << std::endl;
-  #endif
+  #endif*/
   
   // Setup lower and  upper bounds for linear constraints
 
  // std::cout << initial_state.size() << ", " << b_state_lo_.size() << ", " << b_control_hi_.size() << " = " << num_decision_vars_ << std::endl;
 
   Eigen::VectorXd l(num_constraints_);
-  l << initial_state,b_state_lo_,b_control_lo_,b_dyn_;//gravity_lo,normal_lo;//,b_contact_lo_;//
+  l << initial_state,b_state_lo_,b_dyn_,b_contact_lo_;//gravity_lo,normal_lo;//,b_contact_lo_;//
 
   Eigen::VectorXd u(num_constraints_);
-  u << initial_state,b_state_hi_,b_control_hi_,b_dyn_;//gravity_hi,normal_hi;//,b_contact_hi_; //
+  u << initial_state,b_state_hi_,b_dyn_,b_contact_hi_;//gravity_hi,normal_hi;//,b_contact_hi_; //
 
   // Init solver if not already initialized
   if (!solver_.isInitialized()) {
@@ -278,13 +278,13 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
   solver_.solve();
   x_out = solver_.getSolution();
 
-  Eigen::MatrixXd p(num_constraints_,3);
-  p.col(0) = l;
-  p.col(1) = A_dense*x_out;
-  p.col(2) = u;
+  //Eigen::MatrixXd p(num_constraints_,3);
+  //p.col(0) = l;
+  //p.col(1) = A_dense*x_out;
+  //p.col(2) = u;
 
   //std::cout << u << std::endl;
-  std::cout << "Constraint vals: " << std::endl << p << std::endl << std::endl;
+  //std::cout << "Constraint vals: " << std::endl << p << std::endl << std::endl;
 
   #ifdef PRINT_TIMING
     steady_clock::time_point t2 = steady_clock::now();
