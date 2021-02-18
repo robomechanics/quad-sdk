@@ -1,5 +1,9 @@
 #include "spirit_utils/kinematics.h"
 
+using namespace spirit_utils;
+
+Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+
 SpiritKinematics::SpiritKinematics() {
   shoulder_offsets_.push_back(shoulder_offset_0_);
   shoulder_offsets_.push_back(shoulder_offset_1_);
@@ -47,34 +51,83 @@ double SpiritKinematics::getLinkLength(int leg_index,int link_index) {
 }
 
 void SpiritKinematics::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
-  Eigen::Vector3d body_rpy, Eigen::Matrix4d &g_world_shoulder) {
+  Eigen::Vector3d body_rpy, Eigen::Matrix4d &g_world_legbase) {
 
   // Calculate offset
   Eigen::Vector3d shoulder_offset = shoulder_offsets_[leg_index];
 
   // Compute transforms
   Eigen::Matrix4d g_world_base = createAffineMatrix(body_pos, body_rpy);
-  Eigen::Matrix4d g_base_shoulder = createAffineMatrix(shoulder_offset, 
+  Eigen::Matrix4d g_body_legbase = createAffineMatrix(shoulder_offset, 
     Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()));
 
   // Compute transform for leg base relative to the world frame
-  g_world_shoulder = g_world_base*g_base_shoulder;
+  g_world_legbase = g_world_base*g_body_legbase;
 }
 
 void SpiritKinematics::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
   Eigen::Vector3d body_rpy, Eigen::Vector3d &leg_base_pos_world) {
 
-  Eigen::Matrix4d g_world_shoulder;
-  legBaseFK(leg_index, body_pos, body_rpy, g_world_shoulder);
+  Eigen::Matrix4d g_world_legbase;
+  legBaseFK(leg_index, body_pos, body_rpy, g_world_legbase);
 
-  leg_base_pos_world = g_world_shoulder.block<3,1>(0,3);
+  leg_base_pos_world = g_world_legbase.block<3,1>(0,3);
+}
+
+void SpiritKinematics::bodyToFootFK(int leg_index, 
+  Eigen::Vector3d joint_state, Eigen::Vector3d &foot_pos_body) {
+
+  if (leg_index > (shoulder_offsets_.size()-1) || leg_index<0) {
+    throw std::runtime_error("Leg index is outside valid range");
+  }
+
+  // Define trig identities
+  double s0 = sin(joint_state[0]);
+  double s1 = sin(joint_state[1]);
+  double s2 = sin(joint_state[2]);
+  double c0 = cos(joint_state[0]);
+  double c1 = cos(joint_state[1]);
+  double c2 = cos(joint_state[2]);
+  double l0 = l0_vec_[leg_index];
+
+  // Calculate offsets
+  Eigen::Vector3d shoulder_offset = shoulder_offsets_[leg_index];
+  Eigen::Vector3d abad_offset = {0,l0*c0,l0*s0};
+  Eigen::Vector3d upper_offset = {-l1_*c1,0,-l1_*s1};
+  Eigen::Vector3d lower_offset = {l2_*c2,0,-l2_*s2};
+
+  // Initialize transforms
+  Eigen::Matrix4d g_body_legbase;
+  Eigen::Matrix4d g_legbase_abad;
+  Eigen::Matrix4d g_abad_upper;
+  Eigen::Matrix4d g_upper_lower;
+  Eigen::Matrix4d g_body_foot;
+
+  // Compute transforms
+  g_body_legbase = createAffineMatrix(shoulder_offset, 
+    Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()));
+
+  g_legbase_abad = createAffineMatrix(abad_offset,
+    Eigen::AngleAxisd(joint_state[0], Eigen::Vector3d::UnitX()));
+
+  g_abad_upper = createAffineMatrix(upper_offset,
+    Eigen::AngleAxisd(joint_state[1], -Eigen::Vector3d::UnitY()));
+
+  g_upper_lower = createAffineMatrix(lower_offset,
+    Eigen::AngleAxisd(joint_state[2], Eigen::Vector3d::UnitY()));
+
+  // Get foot transform in world frame
+  g_body_foot = g_body_legbase*g_legbase_abad*
+      g_abad_upper*g_upper_lower;
+
+  // Extract cartesian position of foot
+  foot_pos_body = g_body_foot.block<3,1>(0,3);
+
 }
 
 void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos, 
   Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state, 
   Eigen::Vector3d &foot_pos_world) {
-
-  Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
   if (leg_index > (shoulder_offsets_.size()-1) || leg_index<0) {
     throw std::runtime_error("Leg index is outside valid range");
@@ -97,17 +150,17 @@ void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos,
 
   // Initialize transforms
   Eigen::Matrix4d g_world_base;
-  Eigen::Matrix4d g_base_shoulder;
-  Eigen::Matrix4d g_shoulder_abad;
+  Eigen::Matrix4d g_body_legbase;
+  Eigen::Matrix4d g_legbase_abad;
   Eigen::Matrix4d g_abad_upper;
   Eigen::Matrix4d g_upper_lower;
   Eigen::Matrix4d g_world_foot;
 
   // Compute transforms
-  Eigen::Matrix4d g_world_shoulder;
-  legBaseFK(leg_index, body_pos, body_rpy, g_world_shoulder);
+  Eigen::Matrix4d g_world_legbase;
+  legBaseFK(leg_index, body_pos, body_rpy, g_world_legbase);
 
-  g_shoulder_abad = createAffineMatrix(abad_offset,
+  g_legbase_abad = createAffineMatrix(abad_offset,
     Eigen::AngleAxisd(joint_state[0], Eigen::Vector3d::UnitX()));
 
   g_abad_upper = createAffineMatrix(upper_offset,
@@ -117,15 +170,15 @@ void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos,
     Eigen::AngleAxisd(joint_state[2], Eigen::Vector3d::UnitY()));
 
   // Get foot transform in world frame
-  g_world_foot = g_world_shoulder*g_shoulder_abad*
+  g_world_foot = g_world_legbase*g_legbase_abad*
       g_abad_upper*g_upper_lower;
 
   // Extract cartesian position of foot
   foot_pos_world = g_world_foot.block<3,1>(0,3);
 
-  // std::cout << "World to shoulder\n" << g_world_shoulder.format(CleanFmt)
+  // std::cout << "World to shoulder\n" << g_world_legbase.format(CleanFmt)
   //   << std::endl;
-  // std::cout << "shoulder to abad\n" << g_shoulder_abad.format(CleanFmt)
+  // std::cout << "shoulder to abad\n" << g_legbase_abad.format(CleanFmt)
   //   << std::endl;
   // std::cout << "Abad to upper\n" << g_abad_upper.format(CleanFmt)
   //   << std::endl;
@@ -153,19 +206,19 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
   double l0 = l0_vec_[leg_index];
 
   // Initialize transforms
-  Eigen::Matrix4d g_world_shoulder;
+  Eigen::Matrix4d g_world_legbase;
   Eigen::Matrix4d g_world_foot;
   Eigen::Matrix4d g_shoulder_foot;
   Eigen::Vector3d foot_pos_rel;
 
   // Compute transforms
-  legBaseFK(leg_index, body_pos, body_rpy, g_world_shoulder);
+  legBaseFK(leg_index, body_pos, body_rpy, g_world_legbase);
 
   g_world_foot = createAffineMatrix(foot_pos_world, Eigen::AngleAxisd(
       0, Eigen::Vector3d::UnitY()));
 
   // Compute foot position relative to the leg base in cartesian coordinates
-  g_shoulder_foot = g_world_shoulder.inverse()*g_world_foot;
+  g_shoulder_foot = g_world_legbase.inverse()*g_world_foot;
   foot_pos_rel = g_shoulder_foot.block<3,1>(0,3);
 
   // Extract coordinates and declare joint variables
@@ -241,12 +294,9 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
   }
 
   // Make sure knee is within joint limits
-  if (q2 >= joint_max_[2]) {
+  if (q2 > joint_max_[2] || q2 < joint_min_[2]) {
     q2 = std::max(std::min(q2,joint_max_[2]),joint_min_[2]);
-    ROS_WARN_THROTTLE(0.5,"Knee max exceeded, clamping to %5.3f \n", q2);
-  } else if (q2 <= joint_min_[2]) {
-    q2 = joint_min_[2];
-    ROS_WARN_THROTTLE(0.5,"Knee minimum exceeded, clamping to %5.3f \n", q2);
+    ROS_WARN_THROTTLE(0.5,"Knee limit exceeded, clamping to %5.3f \n", q2);
   }
 
   // q1 is undefined if q2=0, resolve this
