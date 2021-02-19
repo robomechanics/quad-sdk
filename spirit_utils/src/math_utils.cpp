@@ -250,6 +250,9 @@ spirit_msgs::RobotState math_utils::interpRobotState(spirit_msgs::RobotState sta
       state_2.feet[i].velocity.z, t_interp);
 
     // spirit_msgs::FootState temp_state = interp_state.feet[i];
+    //std::cout << interp_state.feet[i].header.stamp << std::endl;
+    //std::cout << temp_state.header.stamp << std::endl;
+
     // interp_state.feet[i] = temp_state;
   }
 
