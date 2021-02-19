@@ -53,7 +53,7 @@ local_footstep_planner:
   grf_weight: 0.5
   max_footstep_horizon: 1.5
   num_cycles: 10
-  period: 0.25
+  period: 0.33
   ground_clearance: 0.1
   interp_dt: 0.01
   

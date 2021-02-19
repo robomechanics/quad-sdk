@@ -8,6 +8,7 @@
 #include <spirit_msgs/MultiFootPlanDiscrete.h>
 #include <spirit_msgs/ControlInput.h>
 #include <spirit_msgs/RobotState.h>
+#include <spirit_msgs/RobotStateTrajectory.h>
 
 //! Implements online MPC
 /*!
@@ -32,7 +33,7 @@ private:
    * @brief Callback function to handle new state estimates
    * @param[in] State estimate message contining position and velocity for each joint and robot body
    */
-  void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+  void robotPlanCallback(const spirit_msgs::RobotStateTrajectory::ConstPtr& msg);
 	/**
    * @brief Callback function to handle new footstep plan data
    * @param[in] MultiFootPlanDiscrete message contining foothold data for each foot
@@ -55,7 +56,7 @@ private:
   void publishControlInput();
 
 	/// ROS subscriber for the state estimate
-	ros::Subscriber robot_state_sub_;
+	ros::Subscriber robot_state_traj_sub_;
 
 	/// ROS subscriber for the footstep plan
 	ros::Subscriber footstep_plan_sub_;
@@ -80,6 +81,10 @@ private:
 
   /// Linear MPC object
   std::shared_ptr<mpcplusplus::LinearMPC> mpc;
+
+	/// Most recent robot plan
+	spirit_msgs::RobotStateTrajectory last_plan_msg_;
+
 };
 
 

@@ -5,6 +5,7 @@
 #include <visualization_msgs/MarkerArray.h>
 #include <spirit_msgs/BodyPlan.h>
 #include <spirit_msgs/MultiFootPlanContinuous.h>
+#include <spirit_msgs/FootState.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/RobotStateTrajectory.h>
 #include "spirit_utils/math_utils.h"
@@ -50,7 +51,7 @@ private:
    * @brief Callback function to handle new continuous foot plan data
    * @param[in] MultiFootPlanContinuous message containing foot plan data
    */
-  void footPlanContinuousCallback(
+  void multiFootPlanContinuousCallback(
     const spirit_msgs::MultiFootPlanContinuous::ConstPtr& msg);
 
   /**
@@ -72,7 +73,7 @@ private:
   ros::Subscriber body_plan_sub_;
 
   /// ROS subscriber for the swing leg plan
-  ros::Subscriber foot_plan_continuous_sub_;
+  ros::Subscriber multi_foot_plan_continuous_sub_;
 
   /// ROS Publisher for the current trajectory state
   ros::Publisher trajectory_state_pub_;
@@ -89,8 +90,8 @@ private:
   /// Vector of joint states to store the joint plan
   std::vector<std::vector<double> > joints_plan_;
 
-  //   /// Vector of joint states to store the foot plan
-  // std::vector<std::vector<Eigen::Vector3d> > > foot_plan_;
+  /// Vector of joint states to store the foot plan
+  std::vector<std::vector<Eigen::Vector3d> > multi_foot_plan_;
 
   /// Vector of times corresponding to the body plan states
   std::vector<double> t_body_plan_;
@@ -98,8 +99,8 @@ private:
   /// Vector of times corresponding to the joint plan states
   std::vector<double> t_joints_plan_;
 
-  //   /// Vector of times corresponding to the foot plan states
-  // std::vector<double> t_foot_plan_;
+  /// Vector of times corresponding to the foot plan states
+  std::vector<double> t_multi_foot_plan_;
 
   /// Vector of times corresponding to the trajectory states
   std::vector<double> t_traj_;
