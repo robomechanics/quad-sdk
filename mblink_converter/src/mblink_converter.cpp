@@ -8,6 +8,7 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
   mblink_.start(argc,argv);
   mblink_.rxstart();
   mblink_.setRetry("UPST_ADDRESS", 5);
+  mblink_.setRetry("UPST_LOOP_DELAY", 5);
 
   // Load rosparams from parameter server
   std::string leg_control_topic, joint_encoder_topic, imu_topic;
@@ -64,6 +65,12 @@ void MBLinkConverter::publishMBlink()
 
   // Get the data and appropriate timestamp (this may be blocking)
   RxData_t data = mblink_.get();
+
+  if (data.empty()) {
+    ROS_WARN_THROTTLE(0.5, "No data received from mblink");
+    return;
+  }
+
   ros::Time timestamp = ros::Time::now();
 
   // Declare the joint state msg and apply the timestamp
