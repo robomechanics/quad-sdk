@@ -19,7 +19,7 @@ TEST(TestUseCase, quadVariable) {
   // Configurable parameters
   const int Nu = 13; // Appended gravity term
   const int Nx = 12; // Number of states
-  const int N = 20;   // Time horizons to consider
+  const int N = 10;   // Time horizons to consider
   const double dt = 0.1;             // Time horizon
   const double m = 10;                   // Mass of quad
   const double g = 9.81;
@@ -27,28 +27,27 @@ TEST(TestUseCase, quadVariable) {
   // Weights on state deviation and control input
   Eigen::MatrixXd Qx(Nx, Nx);
   Qx.setZero();
-  Qx.diagonal() << 0.1,0.1,1000000000000000000000.0, //x
-                   0.1,0.1,0.1, //theta
-                   0.1,0.1,1, //dx
-                   0.1,0.1,0.1; //dtheta*/
+  Qx.diagonal() << 0,0,10000, //x
+                   0,0,0, //theta
+                   0,0,0, //dx
+                   0,0,0; //dtheta*/
 
   Eigen::MatrixXd Ru(Nu, Nu);
   Ru.setZero();
-  double Rf = 0.0001;
+  double Rf = 0.00001;
   Ru.diagonal() << Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,0;
 
   // State and control bounds (fixed for a given solve) 
   Eigen::VectorXd state_lo(Nx);
-  state_lo << NINF,NINF,0.2,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF;
+  state_lo << NINF,NINF,0.1,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF;
   Eigen::VectorXd state_hi(Nx);
   state_hi << INF,INF,0.4,INF,INF,INF,INF,INF,INF,INF,INF,INF;
 
   Eigen::VectorXd control_lo(Nu);
-  control_lo << NINF,NINF,0,NINF,NINF,0,NINF,NINF,0,NINF,NINF,0,1;
+  control_lo << NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF,NINF,1;
   
   Eigen::VectorXd control_hi(Nu);
-  control_hi << INF,INF,50,INF,INF,50,INF,INF,50,INF,INF,50,1;
-
+  control_hi << INF,INF,INF,INF,INF,INF,INF,INF,INF,INF,INF,INF,1;
 
   // Create vectors of dynamics matrices at each step,
   // weights at each step and contact sequences at each step
@@ -79,14 +78,11 @@ TEST(TestUseCase, quadVariable) {
   for (int i = 0; i < N; ++i) {
     Ad_vec.at(i) = Ad;
     Bd_vec.at(i) = Bd;
-    Q_vec.at(i) = Qx;
+    Q_vec.at(i) = 1*Qx;
     U_vec.at(i) = Ru;
     ref_traj.col(i) = initial_state;
     ref_traj(2,i) = 0.25 + 0.1*sin(i/3.0);
-    contact_sequences.at(i).resize(4);
-    for (int j = 0; j < 4; ++j) {
-      contact_sequences.at(i).at(j) = true;
-    }
+    contact_sequences.at(i) = {true,true,true,true};;
   }
 
   Q_vec.at(N) = 1*Qx;
@@ -105,14 +101,14 @@ TEST(TestUseCase, quadVariable) {
 
   mpc.update_contact(contact_sequences, mu, fmin, fmax);
   mpc.update_state_bounds(state_lo, state_hi);
-  mpc.update_control_bounds(control_lo, control_hi);
+  //mpc.update_control_bounds(control_lo, control_hi);
 
   // Solve, collect output and cost val
   Eigen::MatrixXd x_out;
   double f_val;
 
   mpc.solve(initial_state, ref_traj, x_out, f_val);
-  //mpc.solve(initial_state, ref_traj, x_out, f_val);
+  mpc.solve(initial_state, ref_traj, x_out, f_val);
   
   //std::cout << "xout: " << std::endl << x_out << std::endl;
 
@@ -128,18 +124,21 @@ TEST(TestUseCase, quadVariable) {
   
   std::vector<double> zref(N+1);
   std::vector<double> z(N+1);
+
+  std::vector<double> dz(N+1);
   for (int i = 0; i < N+1; ++i) {
     zref.at(i) = ref_traj(2,i);
     z.at(i) = opt_traj(2,i);
+    dz.at(i) = opt_traj(8,i);
   }
 
-  //std::cout << control_traj << std::endl;
+  std::cout << control_traj << std::endl;
 
-  
   plt::clf();
   plt::ion();
   plt::named_plot("Z", z);
   plt::named_plot("Zref", zref);
+  //plt::named_plot("dz", dz);
   plt::xlabel("horizon index");
   plt::ylabel("Z position");
   plt::legend();
@@ -149,7 +148,7 @@ TEST(TestUseCase, quadVariable) {
   
   
 }
-
+/*
 TEST(TestUseCase, monoVariable) {
 
   // Configurable parameters
@@ -163,7 +162,7 @@ TEST(TestUseCase, monoVariable) {
   // Weights on state deviation and control input
   Eigen::MatrixXd Qx(Nx, Nx);
   Qx.setZero();
-  Qx.diagonal() << 1000000,0.000001; //dtheta*/
+  Qx.diagonal() << 1000000,0.000001; //dtheta
 
   Eigen::MatrixXd Ru(Nu, Nu);
   Ru.setZero();
@@ -272,7 +271,7 @@ TEST(TestUseCase, monoVariable) {
   plt::show();
   plt::pause(1000);
   
-}
+}*/
 
 // Run all the tests that were declared with TEST()
 int main(int argc, char **argv) {
