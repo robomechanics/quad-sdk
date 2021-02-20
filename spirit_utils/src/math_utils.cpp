@@ -103,11 +103,12 @@ std::vector<Eigen::Vector3d> math_utils::interpMatVector3d(std::vector<double> i
   return interp_data;
 }
 
-std_msgs::Header math_utils::interpHeader(std_msgs::Header header_1,std_msgs::Header header_2,
-  double t_interp) {
+void math_utils::interpHeader(std_msgs::Header header_1,std_msgs::Header header_2,
+  double t_interp, std_msgs::Header &interp_header) {
   
   // Copy everything from the first header
-  std_msgs::Header interp_header = header_1;
+  interp_header.frame_id = header_1.frame_id;
+  interp_header.seq = header_1.seq;
 
   // Compute the correct ros::Time corresponding to t_interp
   t_interp = std::min(std::max(t_interp,1.0),0.0);
@@ -116,11 +117,10 @@ std_msgs::Header math_utils::interpHeader(std_msgs::Header header_1,std_msgs::He
   interp_header.stamp = header_1.stamp + ros::Duration(interp_duration);
 }
 
-spirit_msgs::FootState math_utils::interpFootState(spirit_msgs::FootState state_1,
-  spirit_msgs::FootState state_2, double t_interp) {
+void math_utils::interpFootState(spirit_msgs::FootState state_1,
+  spirit_msgs::FootState state_2, double t_interp, spirit_msgs::FootState &interp_state) {
 
-  spirit_msgs::FootState interp_state;// = state_1;
-  interp_state.header = interpHeader(state_1.header, state_2.header,t_interp);
+  interpHeader(state_1.header, state_2.header,t_interp,interp_state.header);
 
   // Interp foot position
   interp_state.position.x = lerp(state_1.position.x, state_2.position.x, t_interp);
@@ -135,17 +135,13 @@ spirit_msgs::FootState math_utils::interpFootState(spirit_msgs::FootState state_
   // Set contact state to the first state
   interp_state.contact = state_1.contact;
 
-  return interp_state;
 }
 
-spirit_msgs::RobotState math_utils::interpRobotState(spirit_msgs::RobotState state_1,
-  spirit_msgs::RobotState state_2, double t_interp) {
-
-  // Set interp_state to copy state_1 (won't change map frame or contact mode)
-  spirit_msgs::RobotState interp_state = state_1;
+void math_utils::interpRobotState(spirit_msgs::RobotState state_1,
+  spirit_msgs::RobotState state_2, double t_interp, spirit_msgs::RobotState &interp_state) {
 
   // Interp header
-  interp_state.header = interpHeader(state_1.header, state_2.header,t_interp);
+  interpHeader(state_1.header, state_2.header, t_interp, interp_state.header);
 
   // Interp body position
   interp_state.body.pose.pose.position.x = 
@@ -178,11 +174,13 @@ spirit_msgs::RobotState math_utils::interpRobotState(spirit_msgs::RobotState sta
     lerp(state_1.body.twist.twist.angular.z, state_2.body.twist.twist.angular.z, t_interp);
 
   // Interp joints
-  // interp_state.joints.name.resize(state_1.joints.position.size());
-  // interp_state.joints.position.resize(state_1.joints.position.size());
-  // interp_state.joints.velocity.resize(state_1.joints.position.size());
-  // interp_state.joints.effort.resize(state_1.joints.position.size());
+  interp_state.joints.header = interp_state.header;
+  interp_state.joints.name.resize(state_1.joints.position.size());
+  interp_state.joints.position.resize(state_1.joints.position.size());
+  interp_state.joints.velocity.resize(state_1.joints.position.size());
+  interp_state.joints.effort.resize(state_1.joints.position.size());
   for (int i = 0; i < state_1.joints.position.size(); i++) {
+    interp_state.joints.name[i] = state_1.joints.name[i];
     interp_state.joints.position[i] = lerp(state_1.joints.position[i], 
       state_2.joints.position[i], t_interp);
     interp_state.joints.velocity[i] = lerp(state_1.joints.velocity[i], 
@@ -191,69 +189,12 @@ spirit_msgs::RobotState math_utils::interpRobotState(spirit_msgs::RobotState sta
       state_2.joints.effort[i], t_interp);
   }
 
-  // // Interp feet
-  // for (int i = 0; i < 4; i++) {
-  //   printf("Iteration: %d \n", i);
-  //   spirit_msgs::FootState interp_foot_state = interpFootState(state_1.feet[i], state_2.feet[i], t_interp) ;
-  //   printf("interpFootStateDone \n");
-  //   interp_state.feet[i] = interp_foot_state;
-  //   printf("FootState added to vector \n");
-  // }
-  
   // Interp feet
-  // for (int i = 0; i < state_1.feet.size(); i++) {
-  //   printf("iteration = %d", i);
-
-  //   spirit_msgs::FootState interp_foot_state = state_1.feet[i];
-
-  //   // interp_foot_state.header.stamp = interp_state.header.stamp;
-
-  //   // interp_foot_state.position.x = lerp(state_1.feet[i].position.x, 
-  //   //   state_2.feet[i].position.x, t_interp);
-  //   // interp_foot_state.position.y = lerp(state_1.feet[i].position.y, 
-  //   //   state_2.feet[i].position.y, t_interp);
-  //   // interp_foot_state.position.z = lerp(state_1.feet[i].position.z, 
-  //   //   state_2.feet[i].position.z, t_interp);
-
-  //   // interp_foot_state.velocity.x = lerp(state_1.feet[i].velocity.x, 
-  //   //   state_2.feet[i].velocity.x, t_interp);
-  //   // interp_foot_state.velocity.y = lerp(state_1.feet[i].velocity.y, 
-  //   //   state_2.feet[i].velocity.y, t_interp);
-  //   // interp_foot_state.velocity.z = lerp(state_1.feet[i].velocity.z, 
-  //   //   state_2.feet[i].velocity.z, t_interp);
-
-  //     interp_state.feet[i] = interp_foot_state;
-  // }
-  
-  // Interp feet
-  printf("interp_state.feet.size() = %d", interp_state.feet.size());
-  interp_state.feet.clear();
   interp_state.feet.resize(4);
-  printf("interp_state.feet.size() = %d", interp_state.feet.size());
-  for (int i = 0; i < state_1.feet.size(); i++) {
-    printf("iteration = %d", i);
-
-    interp_state.feet[i].header.stamp = interp_state.header.stamp;
-
-    interp_state.feet[i].position.x = lerp(state_1.feet[i].position.x, 
-      state_2.feet[i].position.x, t_interp);
-    interp_state.feet[i].position.y = lerp(state_1.feet[i].position.y, 
-      state_2.feet[i].position.y, t_interp);
-    interp_state.feet[i].position.z = lerp(state_1.feet[i].position.z, 
-      state_2.feet[i].position.z, t_interp);
-
-    interp_state.feet[i].velocity.x = lerp(state_1.feet[i].velocity.x, 
-      state_2.feet[i].velocity.x, t_interp);
-    interp_state.feet[i].velocity.y = lerp(state_1.feet[i].velocity.y, 
-      state_2.feet[i].velocity.y, t_interp);
-    interp_state.feet[i].velocity.z = lerp(state_1.feet[i].velocity.z, 
-      state_2.feet[i].velocity.z, t_interp);
-
-    // spirit_msgs::FootState temp_state = interp_state.feet[i];
-    // interp_state.feet[i] = temp_state;
+  for (int i = 0; i < 4; i++) {
+    interpFootState(state_1.feet[i], state_2.feet[i], t_interp, interp_state.feet[i]) ;
   }
 
-  return interp_state;
 }
 
 spirit_msgs::RobotState math_utils::interpRobotStateTraj(spirit_msgs::RobotStateTrajectory
@@ -295,7 +236,7 @@ spirit_msgs::RobotState math_utils::interpRobotStateTraj(spirit_msgs::RobotState
   }
 
   double t_interp = (t - t1)/(t2-t1);
-  interp_state = interpRobotState(state_1, state_2, t_interp);
+  interpRobotState(state_1, state_2, t_interp, interp_state);
 
   return interp_state;
 }

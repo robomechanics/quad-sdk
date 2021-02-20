@@ -235,12 +235,8 @@ void TrajectoryPublisher::publishTrajectoryState() {
 
   // Mod by trajectory duration
   double t = fmod(playback_speed_*t_duration.toSec(), t_traj_.back());
-  std::cout << "Made it here" << std::endl;
-  spirit_msgs::RobotState current_state = math_utils::interpRobotStateTraj(traj_msg_,t);
-  printf("current_state.feet.size(): %d \n", current_state.feet.size());
-  std::cout << "Made it out" << std::endl;
-  trajectory_state_pub_.publish(current_state);
-  std::cout << "Made it out again" << std::endl;
+  spirit_msgs::RobotState interp_state = math_utils::interpRobotStateTraj(traj_msg_,t);
+  trajectory_state_pub_.publish(interp_state);
 }
 
 

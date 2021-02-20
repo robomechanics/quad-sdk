@@ -59,8 +59,8 @@ namespace math_utils {
    * @param[in] t_interp Fraction of time between the messages [0,1]
    * @return Interpolated header
    */
-  std_msgs::Header interpHeader(std_msgs::Header header_1,
-    std_msgs::Header header_2,double t_interp);
+  void interpHeader(std_msgs::Header header_1,std_msgs::Header header_2, double t_interp,
+    std_msgs::Header &interp_header);
 
     /**
    * @brief Interpolate data between two FootState messages.
@@ -69,8 +69,8 @@ namespace math_utils {
    * @param[in] t_interp Fraction of time between the messages [0,1]
    * @return Interpolated FootState message
    */
-  spirit_msgs::FootState interpFootState(spirit_msgs::FootState state_1,
-    spirit_msgs::FootState state_2, double t_interp);
+  void interpFootState(spirit_msgs::FootState state_1, spirit_msgs::FootState state_2,
+    double t_interp, spirit_msgs::FootState &interp_state);
 
   /**
    * @brief Interpolate data between two RobotState messages.
@@ -79,8 +79,8 @@ namespace math_utils {
    * @param[in] t_interp Fraction of time between the messages [0,1]
    * @return Interpolated RobotState message
    */
-  spirit_msgs::RobotState interpRobotState(spirit_msgs::RobotState state_1,
-    spirit_msgs::RobotState state_2, double t_interp);
+  void interpRobotState(spirit_msgs::RobotState state_1, spirit_msgs::RobotState state_2, 
+    double t_interp, spirit_msgs::RobotState &interp_state) ;
 
   /**
    * @brief Interpolate data from a robot state trajectory message.
