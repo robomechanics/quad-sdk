@@ -22,7 +22,6 @@ public:
                        const std::vector<Eigen::MatrixXd> &Bd);
 
   void update_contact(const std::vector<std::vector<bool> > contact_sequence,
-                      const double mu,
                       const double fmin,
                       const double fmax);
 
@@ -31,6 +30,8 @@ public:
 
   void update_control_bounds(const Eigen::VectorXd control_lo,
                            const Eigen::VectorXd control_hi);
+
+  void update_friction(const double mu);
 
   /**
    * @brief Constructs the quadratic cost function of the form
@@ -71,6 +72,8 @@ private:
   int num_dyn_constraints_;
   int num_contact_constraints_;
   int num_constraints_;
+  int num_contact_constraints_per_step_;
+  int num_constraints_per_leg_;
 
   int num_state_vars_;
   int num_control_vars_;
@@ -90,13 +93,13 @@ private:
   /// Dynamics constraint vector
   Eigen::MatrixXd b_dyn_;
 
-  /// Friction constraint matrix
+  /// Friction and normal force constraint matrix
   Eigen::MatrixXd A_con_dense_;
 
-  /// Friction constraint lower bound
+  /// Friction and normal force constraint lower bound
   Eigen::VectorXd b_contact_lo_;
 
-  /// Friction constraint upper bound
+  /// Friction and normal force constraint upper bound
   Eigen::VectorXd b_contact_hi_;
 
   /// State constraint lower bound
@@ -104,12 +107,6 @@ private:
 
   /// State constraint upper bound
   Eigen::VectorXd b_state_hi_;
-
-  /// Control constraint lower bound
-  Eigen::VectorXd b_control_lo_;
-
-  /// Control constraint upper bound
-  Eigen::VectorXd b_control_hi_;
 
   Eigen::VectorXd f_;
 
