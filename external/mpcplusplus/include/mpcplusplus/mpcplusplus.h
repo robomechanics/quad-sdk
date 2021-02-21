@@ -44,24 +44,24 @@ public:
   /**
    * @brief Collect first control value and all states and return them.
    * @param[in] x_out optimized decision variable
-   * @param[out] first_control First control input to apply (Nu x 1)
-   * @param[out] opt_traj Optimized state trajector (Nx x (N+1))
+   * @param[out] opt_traj Optimized state trajectory (Nx x (N+1))
+   * @param[out] control_traj Optimized control trajectory (Nu x N)
+   * @param[out] f_val Cost function value
    */
   void get_output(const Eigen::MatrixXd &x_out,
-                        Eigen::VectorXd &first_control,
                         Eigen::MatrixXd &opt_traj,
-                        Eigen::MatrixXd &control_traj);
+                        Eigen::MatrixXd &control_traj,
+                        double &f_val);
 
   /**
    * @brief Collect matrices into specific type for solver and solve
    * @param[in] initial_state Vector with initial state
    * @param[in] ref_traj Matrix holding desired reference trajectory
    * @param[out] x_out Optimized output
-   * @param[out] f_val Cost function value
    */
   void solve(const Eigen::VectorXd &initial_state,
-             const Eigen::MatrixXd &ref_traj, Eigen::MatrixXd &x_out,
-             double &f_val);
+             const Eigen::MatrixXd &ref_traj, Eigen::MatrixXd &x_out
+             );
 
 private:
 

@@ -158,32 +158,24 @@ void LinearMPC::get_cost_function(const Eigen::MatrixXd &ref_traj,
 
 //========================================================================================
 void LinearMPC::get_output(const Eigen::MatrixXd &x_out,
-                      Eigen::VectorXd &first_control,
                       Eigen::MatrixXd &opt_traj,
-                      Eigen::MatrixXd &control_traj) {
-
-
-  //std::cout << "Friction constraint vals: " << std::endl << A_con_dense_*x_out << std::endl;
+                      Eigen::MatrixXd &control_traj,
+                      double &f_val) {
 
   // Resize and wipe output containers
-  first_control.resize(nu_);
-  first_control.setZero();
   opt_traj.resize(nx_,N_+1);
   opt_traj.setZero();
   control_traj.resize(nu_, N_);
   control_traj.setZero();
 
-  // Collect optimized control
-  first_control = x_out.block(num_state_vars_,0,nu_,1);
-
-  // Collect control trajectory
+  // Collect optimized control trajectory
   for (size_t i = 0; i < N_; ++i) {
     for (size_t j = 0; j < nu_; ++j) {
       control_traj(j,i) = x_out(num_state_vars_ + i*nu_ + j,0);
     }
   }
 
-  // Collect optimized trajectory
+  // Collect optimized state trajectory
   for (size_t i = 0; i < N_ + 1; ++i)
   {
     for (size_t j = 0; j < nx_; ++j)
@@ -191,17 +183,18 @@ void LinearMPC::get_output(const Eigen::MatrixXd &x_out,
       opt_traj(j,i) = x_out(i*nx_+j,0);
     }
   }
+  
+  // Get final cost
+  f_val = (0.5*x_out.transpose()*H_*x_out)(0,0) + (f_.transpose() * x_out)(0,0);
 }
 
 void LinearMPC::solve(const Eigen::VectorXd &initial_state,
-                      const Eigen::MatrixXd &ref_traj, Eigen::MatrixXd &x_out,
-                      double &f_val) {
+                      const Eigen::MatrixXd &ref_traj, Eigen::MatrixXd &x_out) {
   #ifdef PRINT_TIMING
     steady_clock::time_point t1 = steady_clock::now();
   #endif
 
   // Update linear component of cost function to reflect new reference traj
-  
   this->get_cost_function(ref_traj, f_);
 
   Eigen::MatrixXd A = Eigen::MatrixXd::Zero(num_constraints_,num_decision_vars_);
@@ -256,16 +249,6 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
   // Call solver
   solver_.solve();
   x_out = solver_.getSolution();
-
-  //Eigen::MatrixXd p(num_constraints_,3);
-  //p.col(0) = lower_bound;
-  //p.col(1) = A*x_out;
-  //p.col(2) = upper_bound;
-
-  //std::cout << "A: " << A_sparse << std::endl;
-
-  //std::cout << u << std::endl;
-  //std::cout << "Constraint vals: " << std::endl << p << std::endl << std::endl;
 
   #ifdef PRINT_TIMING
     steady_clock::time_point t2 = steady_clock::now();

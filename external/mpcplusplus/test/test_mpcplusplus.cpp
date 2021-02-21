@@ -21,15 +21,15 @@ TEST(TestUseCase, quadVariable) {
   const double dt = 0.1;  // Time horizon
   const double m = 12;    // Mass of quad
   const double g = 9.81;  // gravitational constamnt
-  const double Ixx = 0.1; // approximately SDF values, but will need refining
-  const double Iyy = 0.2; // approximately SDF values, but will need refining
-  const double Izz = 0.2; // approximately SDF values, but will need refining
+  const double Ixx = 0.5; // approximately SDF values, but will need refining
+  const double Iyy = 1; // approximately SDF values, but will need refining
+  const double Izz = 1; // approximately SDF values, but will need refining
 
   // Weights on state deviation and control input
   Eigen::MatrixXd Qx(Nx, Nx);
   Qx.setZero();
   double e = 1e-1;
-  Qx.diagonal() << 1000000,1000000,50000000,e,e,e,e,e,e,e,e,e;
+  Qx.diagonal() << 1e6,1e6,5e7,1e5,1e5,1e5,e,e,e,e,e,1e2;
 
   Eigen::MatrixXd Ru(Nu, Nu);
   Ru.setZero();
@@ -45,6 +45,17 @@ TEST(TestUseCase, quadVariable) {
   // Robot body inertia matrix
   Eigen::Matrix3d Ib = Eigen::Matrix3d::Zero();
   Ib.diagonal() << Ixx,Iyy,Izz;
+
+  // Foot positions in body frame
+  const double body_l = 0.6;
+  const double body_w = 0.3;
+  Eigen::MatrixXd foot_positions(4,3);
+  foot_positions.row(0) << -body_w/2,body_l/2,0; // Front left
+  foot_positions.row(1) << -body_w/2,-body_l/2,0; // Back left
+  foot_positions.row(2) << body_w/2,body_l/2,0; // Front right
+  foot_positions.row(3) << body_w/2,-body_l/2,0; // Back right
+
+  std::cout << foot_positions << std::endl;
 
   // Create vectors of dynamics matrices at each step,
   // weights at each step and contact sequences at each step
@@ -76,10 +87,10 @@ TEST(TestUseCase, quadVariable) {
   for (int i = 0; i < N+1; ++i) {
     Q_vec.at(i) = Qx;
     ref_traj.col(i) = initial_state;
-    ref_traj(0,i) = 0.1*i; // x ramp
-    ref_traj(1,i) = i > N/2 ? 0.5 : 0; // y step
-    ref_traj(2,i) = 0.25 + 0.1*sin(i/3.0); // z sine
-    ref_traj(5,i) = 0.2*sin(i/3.0);
+    //ref_traj(0,i) = 0.1*i; // x ramp
+    //ref_traj(1,i) = i > N/2 ? 0.5 : 0; // y step
+    ref_traj(2,i) = 0.4;//0.25 + 0.1*sin(i/3.0); // z sine
+    ref_traj(5,i) = 0.5*sin(i/3.0);
   }
 
   for (int i = 0; i < N; ++i) {
@@ -102,7 +113,12 @@ TEST(TestUseCase, quadVariable) {
 
     // Add inertia term linearized about reference trajectory yaw
     for (int i = 0; i < 4; ++i) {
-      Bd.block(9,3*i,3,3) = Eigen::Matrix3d::Zero();
+      Eigen::Vector3d foot_pos = foot_positions.row(i);
+      Eigen::Matrix3d foot_pos_hat;
+      foot_pos_hat << 0, -foot_pos(2),foot_pos(1),
+                      foot_pos(2), 0, -foot_pos(0),
+                      -foot_pos(1), foot_pos(0), 0;
+      Bd.block(9,3*i,3,3) = Iw_inv * foot_pos_hat;//Eigen::Matrix3d::Zero();
     }
     
     U_vec.at(i) = Ru;
@@ -123,27 +139,19 @@ TEST(TestUseCase, quadVariable) {
 
   // Solve, collect output and cost val
   Eigen::MatrixXd x_out;
+  mpc.solve(initial_state, ref_traj, x_out);
+  mpc.solve(initial_state, ref_traj, x_out);
+
   double f_val;
-
-  mpc.solve(initial_state, ref_traj, x_out, f_val);
-  //mpc.solve(initial_state, ref_traj, x_out, f_val);
-
   Eigen::MatrixXd opt_traj,control_traj;
-  Eigen::VectorXd first_control;
-  mpc.get_output(x_out, first_control, opt_traj, control_traj);
+  mpc.get_output(x_out, opt_traj, control_traj, f_val);
+  std::cout << "Final cost: " << f_val << std::endl;
 
-  std::vector<double> zref(N+1);
-  std::vector<double> z(N+1);
+  std::cout << control_traj << std::endl;
 
-  std::vector<double> xref(N+1);
-  std::vector<double> x(N+1);
-
-  std::vector<double> yref(N+1);
-  std::vector<double> y(N+1);
-
+  // Accumulate states in stl form for plotting
   std::vector<std::vector<double>> state_ref(Nx);
   std::vector<std::vector<double>> state_opt(Nx);
-
   for (int i = 0; i < Nx; ++i) {
     state_ref.at(i).resize(N+1);
     state_opt.at(i).resize(N+1);
@@ -151,9 +159,18 @@ TEST(TestUseCase, quadVariable) {
       state_ref.at(i).at(j) = ref_traj(i,j);
       state_opt.at(i).at(j) = opt_traj(i,j);
     }
-  }
+  } 
 
-  //std::cout << control_traj << std::endl;
+  // Accumulate states in stl form for plotting
+  std::vector<std::vector<double>> control_opt(Nu);
+  for (int i = 0; i < Nu; ++i) {
+    control_opt.at(i).resize(N-1);
+    for (int j = 0; j < N-1; ++j) {
+      control_opt.at(i).at(j) = control_traj(i,j);
+    }
+  } 
+
+  // Plot everything
 
   plt::figure();
   plt::suptitle("Position Tracking");
@@ -176,11 +193,23 @@ TEST(TestUseCase, quadVariable) {
     plt::title(vel_names[i]);
   }
 
+  plt::figure();
+  plt::suptitle("Control Efforts");
+  const char* control_names[3] = {"fx","fy","fz"};
+  for (int i = 0; i < 3;++i) {
+    plt::subplot(1,3,i+1);
+    plt::named_plot("FL",control_opt.at(i+0));
+    plt::named_plot("BL",control_opt.at(i+3));
+    plt::named_plot("FR",control_opt.at(i+6));
+    plt::named_plot("BR",control_opt.at(i+9));
+    plt::legend();
+    plt::title(control_names[i]);
+  }
+
+
   plt::show();
   plt::pause(1000);
 
-  
-  
 }
 /*
 TEST(TestUseCase, monoVariable) {
