@@ -26,8 +26,8 @@ topics:
     foot_3_plan_continuous: /visualization/foot_3_plan_continuous
     
 mpc_controller:
-  update_rate: 200
-
+  update_rate: 50
+  
 ekf_estimator:
   joint_state_max_time: 20 # Milliseconds until we disregard last joint state message
   update_rate: 100
