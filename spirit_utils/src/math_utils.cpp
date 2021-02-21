@@ -117,6 +117,63 @@ void math_utils::interpHeader(std_msgs::Header header_1,std_msgs::Header header_
   interp_header.stamp = header_1.stamp + ros::Duration(interp_duration);
 }
 
+void math_utils::interpOdometry(nav_msgs::Odometry state_1, nav_msgs::Odometry state_2, 
+    double t_interp, nav_msgs::Odometry &interp_state) {
+
+  interpHeader(state_1.header, state_2.header,t_interp,interp_state.header);
+
+  // Interp body position
+  interp_state.pose.pose.position.x = 
+    lerp(state_1.pose.pose.position.x, state_2.pose.pose.position.x, t_interp);
+  interp_state.pose.pose.position.y = 
+    lerp(state_1.pose.pose.position.y, state_2.pose.pose.position.y, t_interp);
+  interp_state.pose.pose.position.z = 
+    lerp(state_1.pose.pose.position.z, state_2.pose.pose.position.z, t_interp);
+  
+  // Interp body orientation with slerp
+  tf2::Quaternion q_1, q_2, q_interp;
+  tf2::convert(state_1.pose.pose.orientation,q_1);
+  tf2::convert(state_2.pose.pose.orientation,q_2);
+  q_interp = q_1.slerp(q_2, t_interp);
+  interp_state.pose.pose.orientation = tf2::toMsg(q_interp);
+
+  // Interp twist
+  interp_state.twist.twist.linear.x = 
+    lerp(state_1.twist.twist.linear.x, state_2.twist.twist.linear.x, t_interp);
+  interp_state.twist.twist.linear.y = 
+    lerp(state_1.twist.twist.linear.y, state_2.twist.twist.linear.y, t_interp);
+  interp_state.twist.twist.linear.z = 
+    lerp(state_1.twist.twist.linear.z, state_2.twist.twist.linear.z, t_interp);
+
+  interp_state.twist.twist.angular.x = 
+    lerp(state_1.twist.twist.angular.x, state_2.twist.twist.angular.x, t_interp);
+  interp_state.twist.twist.angular.y = 
+    lerp(state_1.twist.twist.angular.y, state_2.twist.twist.angular.y, t_interp);
+  interp_state.twist.twist.angular.z = 
+    lerp(state_1.twist.twist.angular.z, state_2.twist.twist.angular.z, t_interp);
+}
+
+void math_utils::interpJointState(sensor_msgs::JointState state_1,
+  sensor_msgs::JointState state_2, double t_interp, sensor_msgs::JointState &interp_state) {
+
+  interpHeader(state_1.header, state_2.header,t_interp,interp_state.header);
+
+  // Interp joints
+  interp_state.name.resize(state_1.position.size());
+  interp_state.position.resize(state_1.position.size());
+  interp_state.velocity.resize(state_1.position.size());
+  interp_state.effort.resize(state_1.position.size());
+  for (int i = 0; i < state_1.position.size(); i++) {
+    interp_state.name[i] = state_1.name[i];
+    interp_state.position[i] = lerp(state_1.position[i], 
+      state_2.position[i], t_interp);
+    interp_state.velocity[i] = lerp(state_1.velocity[i], 
+      state_2.velocity[i], t_interp);
+    interp_state.effort[i] = lerp(state_1.effort[i], 
+      state_2.effort[i], t_interp);
+  }
+}
+
 void math_utils::interpFootState(spirit_msgs::FootState state_1,
   spirit_msgs::FootState state_2, double t_interp, spirit_msgs::FootState &interp_state) {
 
@@ -140,60 +197,69 @@ void math_utils::interpFootState(spirit_msgs::FootState state_1,
 void math_utils::interpRobotState(spirit_msgs::RobotState state_1,
   spirit_msgs::RobotState state_2, double t_interp, spirit_msgs::RobotState &interp_state) {
 
-  // Interp header
+  // Interp individual elements
   interpHeader(state_1.header, state_2.header, t_interp, interp_state.header);
-
-  // Interp body position
-  interp_state.body.pose.pose.position.x = 
-    lerp(state_1.body.pose.pose.position.x, state_2.body.pose.pose.position.x, t_interp);
-  interp_state.body.pose.pose.position.y = 
-    lerp(state_1.body.pose.pose.position.y, state_2.body.pose.pose.position.y, t_interp);
-  interp_state.body.pose.pose.position.z = 
-    lerp(state_1.body.pose.pose.position.z, state_2.body.pose.pose.position.z, t_interp);
-  
-  // Interp body orientation with slerp
-  tf2::Quaternion q_1, q_2, q_interp;
-  tf2::convert(state_1.body.pose.pose.orientation,q_1);
-  tf2::convert(state_2.body.pose.pose.orientation,q_2);
-  q_interp = q_1.slerp(q_2, t_interp);
-  interp_state.body.pose.pose.orientation = tf2::toMsg(q_interp);
-
-  // Interp twist
-  interp_state.body.twist.twist.linear.x = 
-    lerp(state_1.body.twist.twist.linear.x, state_2.body.twist.twist.linear.x, t_interp);
-  interp_state.body.twist.twist.linear.y = 
-    lerp(state_1.body.twist.twist.linear.y, state_2.body.twist.twist.linear.y, t_interp);
-  interp_state.body.twist.twist.linear.z = 
-    lerp(state_1.body.twist.twist.linear.z, state_2.body.twist.twist.linear.z, t_interp);
-
-  interp_state.body.twist.twist.angular.x = 
-    lerp(state_1.body.twist.twist.angular.x, state_2.body.twist.twist.angular.x, t_interp);
-  interp_state.body.twist.twist.angular.y = 
-    lerp(state_1.body.twist.twist.angular.y, state_2.body.twist.twist.angular.y, t_interp);
-  interp_state.body.twist.twist.angular.z = 
-    lerp(state_1.body.twist.twist.angular.z, state_2.body.twist.twist.angular.z, t_interp);
-
-  // Interp joints
-  interp_state.joints.header = interp_state.header;
-  interp_state.joints.name.resize(state_1.joints.position.size());
-  interp_state.joints.position.resize(state_1.joints.position.size());
-  interp_state.joints.velocity.resize(state_1.joints.position.size());
-  interp_state.joints.effort.resize(state_1.joints.position.size());
-  for (int i = 0; i < state_1.joints.position.size(); i++) {
-    interp_state.joints.name[i] = state_1.joints.name[i];
-    interp_state.joints.position[i] = lerp(state_1.joints.position[i], 
-      state_2.joints.position[i], t_interp);
-    interp_state.joints.velocity[i] = lerp(state_1.joints.velocity[i], 
-      state_2.joints.velocity[i], t_interp);
-    interp_state.joints.effort[i] = lerp(state_1.joints.effort[i], 
-      state_2.joints.effort[i], t_interp);
-  }
-
+  interpOdometry(state_1.body, state_2.body, t_interp, interp_state.body);
+  interpJointState(state_1.joints, state_2.joints, t_interp,interp_state.joints);
   // Interp feet
   interp_state.feet.resize(4);
   for (int i = 0; i < 4; i++) {
     interpFootState(state_1.feet[i], state_2.feet[i], t_interp, interp_state.feet[i]) ;
   }
+
+}
+
+nav_msgs::Odometry math_utils::interpBodyPlan(spirit_msgs::BodyPlan msg, double t) {    
+
+  double t0 = 0;
+  ros::Time t0_ros = msg.states.front().header.stamp;
+  ros::Duration traj_duration = msg.states.back().header.stamp - t0_ros;
+  double tf = traj_duration.toSec();
+
+  // Check bounds, return boundary state if outside
+  if (t <= t0) {
+    return msg.states.front();
+  } else if (t >= tf) {
+    return msg.states.back();
+  }
+
+  int num_states = msg.states.size();
+
+  // Declare variables for interpolating between, both for input and output data
+  double t1, t2;
+  nav_msgs::Odometry state_1, state_2, interp_state;
+  int primitive_id_1, primitive_id_2, interp_primitive_id;
+  geometry_msgs::Vector3 grf_1, grf_2, interp_grf;
+
+  // Find the correct values to interp between
+  for(int i=0;i<num_states-1;i++)
+  {
+    ros::Duration t1_ros = msg.states[i].header.stamp - t0_ros;
+    t1 = t1_ros.toSec();
+
+    ros::Duration t2_ros = msg.states[i+1].header.stamp - t0_ros;
+    t2 = t2_ros.toSec();
+
+    if(t1<=t && t<t2)
+    {
+      state_1 = msg.states[i];
+      state_2 = msg.states[i+1]; 
+      primitive_id_1 = msg.primitive_ids[i];
+      // primitive_id_2 = msg.primitive_ids[i+1]; 
+      grf_1 = msg.grfs[i];
+      grf_2 = msg.grfs[i+1]; 
+      break;
+    }
+  }
+
+  double t_interp = (t - t1)/(t2-t1);
+  interpOdometry(state_1, state_2, t_interp, interp_state);
+  interp_primitive_id = primitive_id_1;
+  interp_grf.x = lerp(grf_1.x, grf_2.x, t_interp);
+  interp_grf.y = lerp(grf_1.y, grf_2.y, t_interp);
+  interp_grf.z = lerp(grf_1.z, grf_2.z, t_interp);
+
+  return interp_state;
 
 }
 

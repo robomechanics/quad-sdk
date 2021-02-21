@@ -87,6 +87,12 @@ private:
   /// Vector of body states to store the body plan
   std::vector<std::vector<double> > body_plan_;
 
+  /// Vector of body states to store the body plan
+  spirit_msgs::BodyPlan body_plan_msg_;
+
+  /// Vector of body states to store the body plan
+  spirit_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
+
   /// Vector of joint states to store the joint plan
   std::vector<std::vector<double> > joints_plan_;
 

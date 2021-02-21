@@ -4,9 +4,12 @@
 // Just include ros to access a bunch of other functions, fuck good code
 #include <ros/ros.h>
 #include <Eigen/Dense>
+#include <nav_msgs/Odometry.h>
+#include <sensor_msgs/JointState.h>
 #include <spirit_msgs/MultiFootState.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/RobotStateTrajectory.h>
+#include <spirit_msgs/BodyPlan.h>
 #include <cmath>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
@@ -62,6 +65,26 @@ namespace math_utils {
   void interpHeader(std_msgs::Header header_1,std_msgs::Header header_2, double t_interp,
     std_msgs::Header &interp_header);
 
+  /**
+   * @brief Interpolate data between two Odometry messages.
+   * @param[in] state_1 First Odometry message
+   * @param[in] state_2 Second Odometry message
+   * @param[in] t_interp Fraction of time between the messages [0,1]
+   * @return Interpolated Odometry message
+   */
+  void interpOdometry(nav_msgs::Odometry state_1, nav_msgs::Odometry state_2, 
+    double t_interp, nav_msgs::Odometry &interp_state);
+
+  /**
+   * @brief Interpolate data between two JointState messages.
+   * @param[in] state_1 First JointState message
+   * @param[in] state_2 Second JointState message
+   * @param[in] t_interp Fraction of time between the messages [0,1]
+   * @return Interpolated JointState message
+   */
+  void interpJointState(sensor_msgs::JointState state_1, sensor_msgs::JointState state_2, 
+    double t_interp, sensor_msgs::JointState &interp_state);
+
     /**
    * @brief Interpolate data between two FootState messages.
    * @param[in] state_1 First FootState message
@@ -81,6 +104,14 @@ namespace math_utils {
    */
   void interpRobotState(spirit_msgs::RobotState state_1, spirit_msgs::RobotState state_2, 
     double t_interp, spirit_msgs::RobotState &interp_state) ;
+
+  /**
+   * @brief Interpolate data from a BodyPlan message.
+   * @param[in] msg BodyPlan message
+   * @param[in] t Time since beginning of trajectory (will return last state if too large)
+   * @return nav_msgs::Odometry message
+   */
+  nav_msgs::Odometry interpBodyPlan(spirit_msgs::BodyPlan msg, double t);
 
   /**
    * @brief Interpolate data from a robot state trajectory message.
