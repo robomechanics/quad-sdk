@@ -7,6 +7,7 @@
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/JointState.h>
 #include <spirit_msgs/MultiFootState.h>
+#include <spirit_msgs/MultiFootPlanContinuous.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/RobotStateTrajectory.h>
 #include <spirit_msgs/BodyPlan.h>
@@ -14,6 +15,7 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include "spirit_utils/function_timer.h"
+#include "spirit_utils/kinematics.h"
 
 namespace math_utils {
 
@@ -60,7 +62,7 @@ namespace math_utils {
    * @param[in] header_1 First header message
    * @param[in] header_2 Second header message
    * @param[in] t_interp Fraction of time between the messages [0,1]
-   * @return Interpolated header
+   * @param[out] interp_state Interpolated header
    */
   void interpHeader(std_msgs::Header header_1,std_msgs::Header header_2, double t_interp,
     std_msgs::Header &interp_header);
@@ -70,7 +72,7 @@ namespace math_utils {
    * @param[in] state_1 First Odometry message
    * @param[in] state_2 Second Odometry message
    * @param[in] t_interp Fraction of time between the messages [0,1]
-   * @return Interpolated Odometry message
+   * @param[out] interp_state Interpolated Odometry message
    */
   void interpOdometry(nav_msgs::Odometry state_1, nav_msgs::Odometry state_2, 
     double t_interp, nav_msgs::Odometry &interp_state);
@@ -80,7 +82,7 @@ namespace math_utils {
    * @param[in] state_1 First JointState message
    * @param[in] state_2 Second JointState message
    * @param[in] t_interp Fraction of time between the messages [0,1]
-   * @return Interpolated JointState message
+   * @param[out] interp_state Interpolated JointState message
    */
   void interpJointState(sensor_msgs::JointState state_1, sensor_msgs::JointState state_2, 
     double t_interp, sensor_msgs::JointState &interp_state);
@@ -90,20 +92,28 @@ namespace math_utils {
    * @param[in] state_1 First FootState message
    * @param[in] state_2 Second FootState message
    * @param[in] t_interp Fraction of time between the messages [0,1]
-   * @return Interpolated FootState message
+   * @param[out] interp_state Interpolated FootState message
    */
-  void interpFootState(spirit_msgs::FootState state_1, spirit_msgs::FootState state_2,
-    double t_interp, spirit_msgs::FootState &interp_state);
+  void interpMultiFootState(spirit_msgs::MultiFootState state_1,spirit_msgs::MultiFootState state_2,
+    double t_interp, spirit_msgs::MultiFootState &interp_state);
 
   /**
    * @brief Interpolate data between two RobotState messages.
    * @param[in] state_1 First RobotState message
    * @param[in] state_2 Second RobotState message
    * @param[in] t_interp Fraction of time between the messages [0,1]
-   * @return Interpolated RobotState message
+   * @param[out] interp_state Interpolated RobotState message
    */
   void interpRobotState(spirit_msgs::RobotState state_1, spirit_msgs::RobotState state_2, 
     double t_interp, spirit_msgs::RobotState &interp_state) ;
+
+  // /**
+  //  * @brief Get the correct index corresponding to a particular time in a vector of headers
+  //  * @param[in] headers Vector of headers
+  //  * @param[in] t_ros Time at which to retrieve the correct header
+  //  * @return Index corresponding to t_ros
+  //  */
+  // int getIndexFromHeaders(const std::vector<std_msgs::Header> &headers, ros::Time t_ros);
 
   /**
    * @brief Interpolate data from a BodyPlan message.
@@ -114,12 +124,30 @@ namespace math_utils {
   nav_msgs::Odometry interpBodyPlan(spirit_msgs::BodyPlan msg, double t);
 
   /**
+   * @brief Interpolate data from a MultiFootPlanContinuous message.
+   * @param[in] msg MultiFootPlanContinuous message
+   * @param[in] t Time since beginning of trajectory (will return last state if too large)
+   * @return MultiFootState message
+   */
+  spirit_msgs::MultiFootState interpMultiFootPlanContinuous(
+    spirit_msgs::MultiFootPlanContinuous msg, double t);
+
+  /**
    * @brief Interpolate data from a robot state trajectory message.
    * @param[in] msg robot state trajectory message
    * @param[in] t Time since beginning of trajectory (will return last state if too large)
    * @return Robot state message
    */
   spirit_msgs::RobotState interpRobotStateTraj(spirit_msgs::RobotStateTrajectory msg, double t);
+
+  /**
+   * @brief Perform IK to compute a joint state message corresponding to body and foot messages
+   * @param[in] body_state message of body state
+   * @param[in] multi_foot_state message of state of each foot
+   * @param[out] joint_state message of the corresponding joint state
+   */
+  void convertBodyAndFootToJoint(nav_msgs::Odometry body_state,
+    spirit_msgs::MultiFootState multi_foot_state, sensor_msgs::JointState &joint_state);
 
   /**
    * @brief Obtain the correct int within a parameterized vector of ints

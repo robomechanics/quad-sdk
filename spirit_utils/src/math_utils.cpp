@@ -174,24 +174,34 @@ void math_utils::interpJointState(sensor_msgs::JointState state_1,
   }
 }
 
-void math_utils::interpFootState(spirit_msgs::FootState state_1,
-  spirit_msgs::FootState state_2, double t_interp, spirit_msgs::FootState &interp_state) {
+void math_utils::interpMultiFootState(spirit_msgs::MultiFootState state_1,
+  spirit_msgs::MultiFootState state_2, double t_interp, spirit_msgs::MultiFootState &interp_state) {
 
   interpHeader(state_1.header, state_2.header,t_interp,interp_state.header);
 
-  // Interp foot position
-  interp_state.position.x = lerp(state_1.position.x, state_2.position.x, t_interp);
-  interp_state.position.y = lerp(state_1.position.y, state_2.position.y, t_interp);
-  interp_state.position.z = lerp(state_1.position.z, state_2.position.z, t_interp);
+  // Interp foot state
+  interp_state.feet.resize(state_1.feet.size());
+  for (int i = 0; i < interp_state.feet.size(); i++) {
+    interp_state.feet[i].header = interp_state.header;
 
-  // Interp foot velocity
-  interp_state.velocity.x = lerp(state_1.velocity.x, state_2.velocity.x, t_interp);
-  interp_state.velocity.y = lerp(state_1.velocity.y, state_2.velocity.y, t_interp);
-  interp_state.velocity.z = lerp(state_1.velocity.z, state_2.velocity.z, t_interp);
+    interp_state.feet[i].position.x = lerp(state_1.feet[i].position.x, 
+      state_2.feet[i].position.x, t_interp);
+    interp_state.feet[i].position.y = lerp(state_1.feet[i].position.y, 
+      state_2.feet[i].position.y, t_interp);
+    interp_state.feet[i].position.z = lerp(state_1.feet[i].position.z, 
+      state_2.feet[i].position.z, t_interp);
 
-  // Set contact state to the first state
-  interp_state.contact = state_1.contact;
+    // Interp foot velocity
+    interp_state.feet[i].velocity.x = lerp(state_1.feet[i].velocity.x, 
+      state_2.feet[i].velocity.x, t_interp);
+    interp_state.feet[i].velocity.y = lerp(state_1.feet[i].velocity.y, 
+      state_2.feet[i].velocity.y, t_interp);
+    interp_state.feet[i].velocity.z = lerp(state_1.feet[i].velocity.z, 
+      state_2.feet[i].velocity.z, t_interp);
 
+    // Set contact state to the first state
+    interp_state.feet[i].contact = state_1.feet[i].contact;
+  }
 }
 
 void math_utils::interpRobotState(spirit_msgs::RobotState state_1,
@@ -200,59 +210,50 @@ void math_utils::interpRobotState(spirit_msgs::RobotState state_1,
   // Interp individual elements
   interpHeader(state_1.header, state_2.header, t_interp, interp_state.header);
   interpOdometry(state_1.body, state_2.body, t_interp, interp_state.body);
-  interpJointState(state_1.joints, state_2.joints, t_interp,interp_state.joints);
-  // Interp feet
-  interp_state.feet.resize(4);
-  for (int i = 0; i < 4; i++) {
-    interpFootState(state_1.feet[i], state_2.feet[i], t_interp, interp_state.feet[i]) ;
-  }
-
+  interpJointState(state_1.joints, state_2.joints, t_interp, interp_state.joints);
+  interpMultiFootState(state_1.feet, state_2.feet, t_interp, interp_state.feet);
 }
 
 nav_msgs::Odometry math_utils::interpBodyPlan(spirit_msgs::BodyPlan msg, double t) {    
 
-  double t0 = 0;
+  // Define some useful timing parameters
   ros::Time t0_ros = msg.states.front().header.stamp;
-  ros::Duration traj_duration = msg.states.back().header.stamp - t0_ros;
-  double tf = traj_duration.toSec();
-
-  // Check bounds, return boundary state if outside
-  if (t <= t0) {
-    return msg.states.front();
-  } else if (t >= tf) {
-    return msg.states.back();
-  }
-
-  int num_states = msg.states.size();
+  ros::Time t_ros = t0_ros + ros::Duration(t);
 
   // Declare variables for interpolating between, both for input and output data
-  double t1, t2;
   nav_msgs::Odometry state_1, state_2, interp_state;
   int primitive_id_1, primitive_id_2, interp_primitive_id;
   geometry_msgs::Vector3 grf_1, grf_2, interp_grf;
 
-  // Find the correct values to interp between
-  for(int i=0;i<num_states-1;i++)
-  {
-    ros::Duration t1_ros = msg.states[i].header.stamp - t0_ros;
-    t1 = t1_ros.toSec();
-
-    ros::Duration t2_ros = msg.states[i+1].header.stamp - t0_ros;
-    t2 = t2_ros.toSec();
-
-    if(t1<=t && t<t2)
+  // Find the correct index for interp (return the first index if t < 0)
+  int index = 0;
+  if (t>=0) {
+    for(int i=0;i<msg.states.size()-1;i++)
     {
-      state_1 = msg.states[i];
-      state_2 = msg.states[i+1]; 
-      primitive_id_1 = msg.primitive_ids[i];
-      // primitive_id_2 = msg.primitive_ids[i+1]; 
-      grf_1 = msg.grfs[i];
-      grf_2 = msg.grfs[i+1]; 
-      break;
+      index = i;
+      if( msg.states[i].header.stamp<=t_ros && t_ros<msg.states[i+1].header.stamp)
+      {
+        break;
+      }
     }
   }
 
+  // Extract correct states
+  state_1 = msg.states[index];
+  state_2 = msg.states[index+1];
+  primitive_id_1 = msg.primitive_ids[index];
+  grf_1 = msg.grfs[index];
+  grf_2 = msg.grfs[index+1];
+
+  // Compute t_interp = [0,1]
+  double t1, t2;
+  ros::Duration t1_ros = state_1.header.stamp - t0_ros;
+  t1 = t1_ros.toSec();
+  ros::Duration t2_ros = state_2.header.stamp - t0_ros;
+  t2 = t2_ros.toSec();
   double t_interp = (t - t1)/(t2-t1);
+
+  // Compute interpolation
   interpOdometry(state_1, state_2, t_interp, interp_state);
   interp_primitive_id = primitive_id_1;
   interp_grf.x = lerp(grf_1.x, grf_2.x, t_interp);
@@ -263,50 +264,143 @@ nav_msgs::Odometry math_utils::interpBodyPlan(spirit_msgs::BodyPlan msg, double 
 
 }
 
-spirit_msgs::RobotState math_utils::interpRobotStateTraj(spirit_msgs::RobotStateTrajectory
-  msg, double t) {    
+spirit_msgs::MultiFootState math_utils::interpMultiFootPlanContinuous(
+  spirit_msgs::MultiFootPlanContinuous msg, double t) {
 
-  double t0 = 0;
+  // Define some useful timing parameters
   ros::Time t0_ros = msg.states.front().header.stamp;
-  ros::Duration traj_duration = msg.states.back().header.stamp - t0_ros;
-  double tf = traj_duration.toSec();
-
-  // Check bounds, return boundary state if outside
-  if (t <= t0) {
-    return msg.states.front();
-  } else if (t >= tf) {
-    return msg.states.back();
-  }
-
-  int num_states = msg.states.size();
+  ros::Time t_ros = t0_ros + ros::Duration(t);
 
   // Declare variables for interpolating between, both for input and output data
-  double t1, t2;
-  spirit_msgs::RobotState state_1, state_2, interp_state;
+  spirit_msgs::MultiFootState state_1, state_2, interp_state;
 
-  // Find the correct values to interp between
-  for(int i=0;i<num_states-1;i++)
-  {
-    ros::Duration t1_ros = msg.states[i].header.stamp - t0_ros;
-    t1 = t1_ros.toSec();
-
-    ros::Duration t2_ros = msg.states[i+1].header.stamp - t0_ros;
-    t2 = t2_ros.toSec();
-
-    if(t1<=t && t<t2)
+  // Find the correct index for interp (return the first index if t < 0)
+  int index = 0;
+  if (t>=0) {
+    for(int i=0;i<msg.states.size()-1;i++)
     {
-      state_1 = msg.states[i];
-      state_2 = msg.states[i+1]; 
-      break;
+      index = i;
+      if( msg.states[i].header.stamp<=t_ros && t_ros<msg.states[i+1].header.stamp)
+      {
+        break;
+      }
     }
   }
 
+  // Extract correct states
+  state_1 = msg.states[index];
+  state_2 = msg.states[index+1];
+
+  // Compute t_interp = [0,1]
+  double t1, t2;
+  ros::Duration t1_ros = state_1.header.stamp - t0_ros;
+  t1 = t1_ros.toSec();
+  ros::Duration t2_ros = state_2.header.stamp - t0_ros;
+  t2 = t2_ros.toSec();
   double t_interp = (t - t1)/(t2-t1);
+
+  // Compute interpolation
+  interpMultiFootState(state_1, state_2, t_interp, interp_state);
+  
+  return interp_state;
+}
+
+spirit_msgs::RobotState math_utils::interpRobotStateTraj(spirit_msgs::RobotStateTrajectory
+  msg, double t) {    
+
+  // Define some useful timing parameters
+  ros::Time t0_ros = msg.states.front().header.stamp;
+  ros::Time t_ros = t0_ros + ros::Duration(t);
+
+  // Declare variables for interpolating between, both for input and output data
+  spirit_msgs::RobotState state_1, state_2, interp_state;
+
+  // Find the correct index for interp (return the first index if t < 0)
+  int index = 0;
+  if (t>=0) {
+    for(int i=0;i<msg.states.size()-1;i++)
+    {
+      index = i;
+      if( msg.states[i].header.stamp<=t_ros && t_ros<msg.states[i+1].header.stamp)
+      {
+        break;
+      }
+    }
+  }
+
+  // Extract correct states
+  state_1 = msg.states[index];
+  state_2 = msg.states[index+1];
+
+  // Compute t_interp = [0,1]
+  double t1, t2;
+  ros::Duration t1_ros = state_1.header.stamp - t0_ros;
+  t1 = t1_ros.toSec();
+  ros::Duration t2_ros = state_2.header.stamp - t0_ros;
+  t2 = t2_ros.toSec();
+  double t_interp = (t - t1)/(t2-t1);
+
+  // Compute interpolation
   interpRobotState(state_1, state_2, t_interp, interp_state);
 
   return interp_state;
 
 }
+
+void math_utils::convertBodyAndFootToJoint(nav_msgs::Odometry body_state,
+  spirit_msgs::MultiFootState multi_foot_state, sensor_msgs::JointState &joint_state) {
+
+  joint_state.header = multi_foot_state.header;
+  // If this message is empty set the joint names
+  if (joint_state.name.empty()) {
+    joint_state.name = {"8", "0", "1", "9","2", "3", "10", "4","5", "11", "6", "7"};
+  }
+  joint_state.position.clear();
+  joint_state.velocity.clear();
+  joint_state.effort.clear();
+
+  spirit_utils::SpiritKinematics spirit;
+
+  for (int i=0; i < multi_foot_state.feet.size(); i++) {
+
+    // Get foot position data
+    Eigen::Vector3d foot_pos;
+    foot_pos[0] = multi_foot_state.feet[i].position.x;
+    foot_pos[1] = multi_foot_state.feet[i].position.y;
+    foot_pos[2] = multi_foot_state.feet[i].position.z;      
+
+    // Get corresponding body plan data
+    Eigen::Vector3d body_pos = {body_state.pose.pose.position.x,
+      body_state.pose.pose.position.y,body_state.pose.pose.position.z};
+
+    tf2::Quaternion q;
+    tf2::convert(body_state.pose.pose.orientation,q);
+    tf2::Matrix3x3 m(q);
+    double roll, pitch, yaw;
+    m.getRPY(roll, pitch, yaw);
+    Eigen::Vector3d body_rpy = {roll,pitch,yaw};
+
+    // Compute IK to get joint data
+    Eigen::Vector3d leg_joint_state;
+    spirit.legIK(i,body_pos,body_rpy,foot_pos,leg_joint_state);
+
+    // Add to the joint state vector
+    joint_state.position.push_back(leg_joint_state[0]);
+    joint_state.position.push_back(leg_joint_state[1]);
+    joint_state.position.push_back(leg_joint_state[2]);
+
+    // Fill in the other elements with zeros for now
+    joint_state.velocity.push_back(0.0);
+    joint_state.velocity.push_back(0.0);
+    joint_state.velocity.push_back(0.0);
+
+    joint_state.effort.push_back(0.0);
+    joint_state.effort.push_back(0.0);
+    joint_state.effort.push_back(0.0);
+  }
+
+}
+
 
 int math_utils::interpInt(std::vector<double> input_vec,
   std::vector<int> output_vec, double query_point) {

@@ -10,6 +10,7 @@
 #include <spirit_msgs/RobotStateTrajectory.h>
 #include "spirit_utils/math_utils.h"
 #include "spirit_utils/kinematics.h"
+#include "spirit_utils/function_timer.h"
 
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
@@ -85,28 +86,10 @@ private:
   ros::NodeHandle nh_;
 
   /// Vector of body states to store the body plan
-  std::vector<std::vector<double> > body_plan_;
-
-  /// Vector of body states to store the body plan
   spirit_msgs::BodyPlan body_plan_msg_;
 
   /// Vector of body states to store the body plan
   spirit_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
-
-  /// Vector of joint states to store the joint plan
-  std::vector<std::vector<double> > joints_plan_;
-
-  /// Vector of joint states to store the foot plan
-  std::vector<std::vector<Eigen::Vector3d> > multi_foot_plan_;
-
-  /// Vector of times corresponding to the body plan states
-  std::vector<double> t_body_plan_;
-
-  /// Vector of times corresponding to the joint plan states
-  std::vector<double> t_joints_plan_;
-
-  /// Vector of times corresponding to the foot plan states
-  std::vector<double> t_multi_foot_plan_;
 
   /// Vector of times corresponding to the trajectory states
   std::vector<double> t_traj_;
@@ -119,9 +102,6 @@ private:
 
   /// Handle for the map frame
   std::string map_frame_;
-
-  /// Timestamp for the beginning of the trajectory
-  ros::Time trajectory_timestamp_;
 
   /// Message for robot trajectory
   spirit_msgs::RobotStateTrajectory traj_msg_;
