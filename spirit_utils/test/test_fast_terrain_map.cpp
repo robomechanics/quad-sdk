@@ -27,7 +27,8 @@ TEST(FastTerrainMapTest, testProjection) {
   std::vector<std::vector<double> > dz_data = {dz_data_vec,dz_data_vec};
 
 
-  fast_terrain_map.loadData(x_size, y_size, x_data, y_data, z_data, dx_data, dy_data, dz_data);
+  fast_terrain_map.loadData(x_size, y_size, x_data, y_data, z_data, dx_data, dy_data, dz_data,
+    z_data, dx_data, dy_data, dz_data);
 
   // Eigen::Vector3d point = {0,0.5,1};
   // Eigen::Vector3d direction = {0.1,0.1,-1};
