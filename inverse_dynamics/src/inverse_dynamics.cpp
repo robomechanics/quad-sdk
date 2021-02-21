@@ -63,7 +63,7 @@ void inverseDynamics::publishLegCommandArray() {
   static const std::vector<double> stand_kd_{2,2,2};
 
   Eigen::Vector3f grf, tau0, tau1, tau2, tau3;
-  grf << 0, 0, 60;
+  grf << 0, 0, 30;
   // std::cout << grf << std::endl;
 
   double states[18];
@@ -115,11 +115,11 @@ void inverseDynamics::publishLegCommandArray() {
   states[16] = last_robot_state_msg_.joints.position.at(10);
   states[17] = last_robot_state_msg_.joints.position.at(11);
 
-  // std::cout << "robotState: ";
-  // for (int i = 0; i < 18; ++i) {
-  //   std::cout << states[i] << " ";
-  // }
-  // std::cout << std::endl;
+  std::cout << "robotState: ";
+  for (int i = 0; i < 18; ++i) {
+    std::cout << states[i] << " ";
+  }
+  std::cout << std::endl;
 
   Eigen::MatrixXf foot_jacobian0(3,3);
   spirit_utils::calc_foot_jacobian0(states,parameters,foot_jacobian0);
@@ -138,9 +138,35 @@ void inverseDynamics::publishLegCommandArray() {
   tau2 = foot_jacobian2.transpose() * grf;
   tau3 = foot_jacobian3.transpose() * grf;
 
-  // std::cout<<"Joint Torques: "<<std::endl;
-  // std::cout<<tau0;
-  // std::cout<<std::endl;
+  std::cout<<"Joint Torques 1: "<<std::endl;
+  std::cout<<tau0;
+  std::cout<<std::endl;
+
+  std::cout<<"Joint Torques 2: "<<std::endl;
+  std::cout<<tau1;
+  std::cout<<std::endl;
+
+  std::cout<<"Joint Torques 3: "<<std::endl;
+  std::cout<<tau2;
+  std::cout<<std::endl;
+
+  std::cout<<"Joint Torques 4: "<<std::endl;
+  std::cout<<tau3;
+  std::cout<<std::endl;
+
+  std::cout << "Joint 0: -0.564266 hip0" << std::endl;
+  std::cout << "Joint 1: 4.31081 knee0" << std::endl;
+  std::cout << "Joint 2: -1.4508 hip1" << std::endl;
+  std::cout << "Joint 3: 6.19081 knee1" << std::endl;
+  std::cout << "Joint 4: -0.565951 hip2" << std::endl;
+  std::cout << "Joint 5: 4.31106 knee2" << std::endl;
+  std::cout << "Joint 6: -1.44933 hip3" << std::endl;
+  std::cout << "Joint 7: 6.19092 knee3" << std::endl;
+  std::cout << "Joint 8: 0.228222 abd0" << std::endl;
+  std::cout << "Joint 9: -0.0306263 abd1" << std::endl;
+  std::cout << "Joint 10: -0.228603 abd2" << std::endl;
+  std::cout << "Joint 11: 0.0310759 abd3" << std::endl;
+
 
   switch (control_mode_) {
     case 0: //standing
