@@ -18,29 +18,32 @@ TEST(TestUseCase, quadVariable) {
   const int Nu = 13;      // Appended gravity term
   const int Nx = 12;      // Number of states
   const int N = 20;       // Time horizons to consider
-  const double dt = 0.1;  // Time horizon
+  const double dt = 0.05;  // Time horizon
   const double m = 12;    // Mass of quad
-  const double g = 9.81;  // gravitational constamnt
-  const double Ixx = 0.5; // approximately SDF values, but will need refining
-  const double Iyy = 1; // approximately SDF values, but will need refining
-  const double Izz = 1; // approximately SDF values, but will need refining
+  const double g = 9.81;  // gravitational constant
+  const double Ixx = 0.1; // approximately SDF values, but will need refining
+  const double Iyy = 0.2; // approximately SDF values, but will need refining
+  const double Izz = 0.2; // approximately SDF values, but will need refining
 
   // Weights on state deviation and control input
   Eigen::MatrixXd Qx(Nx, Nx);
   Qx.setZero();
   double e = 1e-1;
-  Qx.diagonal() << 1e6,1e6,5e7,1e5,1e5,1e5,e,e,e,e,e,1e2;
+  Qx.diagonal() << 1e5,1e5,5e7,1e5,1e5,1e6,e,e,e,e,e,1e2;
 
   Eigen::MatrixXd Ru(Nu, Nu);
   Ru.setZero();
-  double Rf = 1;
-  Ru.diagonal() << Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,Rf,0;
+
+  double Rfx = 1;
+  double Rfy = 1;
+  double Rfz = 1;
+  Ru.diagonal() << Rfx,Rfy,Rfz,Rfx,Rfy,Rfz,Rfx,Rfy,Rfz,Rfx,Rfy,Rfz,0;
 
   // State bounds (fixed for a given solve) 
   Eigen::VectorXd state_lo(Nx);
-  state_lo << -INF,-INF,0.1,-INF,-INF,-INF,-INF,-INF,-INF,-INF,-INF,-INF;
+  state_lo << -100,-100,0.1,-M_PI/4,-M_PI/4,-4*M_PI,-5,-5,-2,-M_PI,-M_PI,-M_PI/4;
   Eigen::VectorXd state_hi(Nx);
-  state_hi << INF,INF,0.4,INF,INF,INF,INF,INF,INF,INF,INF,INF;
+  state_hi << 100,100,0.4,M_PI/4,M_PI/4,4*M_PI,5,5,2,M_PI,M_PI,M_PI/4;
 
   // Robot body inertia matrix
   Eigen::Matrix3d Ib = Eigen::Matrix3d::Zero();
@@ -55,24 +58,18 @@ TEST(TestUseCase, quadVariable) {
   foot_positions.row(2) << body_w/2,body_l/2,0; // Front right
   foot_positions.row(3) << body_w/2,-body_l/2,0; // Back right
 
-  std::cout << foot_positions << std::endl;
-
   // Create vectors of dynamics matrices at each step,
   // weights at each step and contact sequences at each step
   Eigen::MatrixXd Ad = Eigen::MatrixXd::Zero(Nx,Nx);
   Ad.block(0,0,6,6) = Eigen::MatrixXd::Identity(6,6);
   Ad.block(6,6,6,6) = Eigen::MatrixXd::Identity(6,6);
   Ad.block(0,6,3,3) = Eigen::MatrixXd::Identity(3,3)*dt;
-  //Ad.block(3,9,3,3) = Eigen::MatrixXd::Identity(3,3)*dt; // rotation matrix (fixed to identity for now)
-  std::cout << "Ad: " << std::endl << Ad << std::endl;
 
   Eigen::MatrixXd Bd = Eigen::MatrixXd::Zero(Nx,Nu);
-
   for (int i = 0; i < 4; ++i) {
     Bd.block(6,3*i,3,3) = Eigen::MatrixXd::Identity(3,3)/m*dt;
   }
   Bd(8,12) = -g*dt; // gravity acts downwards here
-  std::cout << "Bd: " << std::endl << Bd << std::endl;
 
   std::vector<Eigen::MatrixXd> Ad_vec(N);
   std::vector<Eigen::MatrixXd> Bd_vec(N);
@@ -82,15 +79,17 @@ TEST(TestUseCase, quadVariable) {
   Eigen::MatrixXd ref_traj(Nx,N+1);
   Eigen::VectorXd initial_state(Nx);
 
-  initial_state << 0,0,0.31,0,0,0,0,0,0,0,0,0;
+  initial_state << 0,0,0.3,0,0,0,0,0,0,0,0,0;
 
   for (int i = 0; i < N+1; ++i) {
     Q_vec.at(i) = Qx;
     ref_traj.col(i) = initial_state;
-    //ref_traj(0,i) = 0.1*i; // x ramp
+    //ref_traj(0,i) = 0.2*i; // x ramp
     //ref_traj(1,i) = i > N/2 ? 0.5 : 0; // y step
-    ref_traj(2,i) = 0.4;//0.25 + 0.1*sin(i/3.0); // z sine
-    ref_traj(5,i) = 0.5*sin(i/3.0);
+    ref_traj(2,i) = 0.3;//0.25 + 0.1*sin(i/3.0); // z sine
+    //ref_traj(5,i) = 1*sin(i/3.0);
+    ref_traj(4,i) = 0.3;
+    //ref_traj(5,i) = 0.5;
   }
 
   for (int i = 0; i < N; ++i) {
@@ -118,7 +117,7 @@ TEST(TestUseCase, quadVariable) {
       foot_pos_hat << 0, -foot_pos(2),foot_pos(1),
                       foot_pos(2), 0, -foot_pos(0),
                       -foot_pos(1), foot_pos(0), 0;
-      Bd.block(9,3*i,3,3) = Iw_inv * foot_pos_hat;//Eigen::Matrix3d::Zero();
+      Bd.block(9,3*i,3,3) = Iw_inv * foot_pos_hat * dt;//Eigen::Matrix3d::Zero();
     }
     
     U_vec.at(i) = Ru;
@@ -171,7 +170,6 @@ TEST(TestUseCase, quadVariable) {
   } 
 
   // Plot everything
-
   plt::figure();
   plt::suptitle("Position Tracking");
   const char* pos_names[6] = {"x","y","z","roll","pitch","yaw"};

@@ -33,7 +33,6 @@ LinearMPC::LinearMPC(const int N, const int Nx, const int Nu)
 }
 
 void LinearMPC::update_friction(const double mu) {
-  std::cout << "Updating friction " << std::endl;
   assert(0 <= mu && mu <= 1);
 
   A_con_dense_ = Eigen::MatrixXd::Zero(num_contact_constraints_, num_control_vars_);
@@ -56,7 +55,6 @@ void LinearMPC::update_friction(const double mu) {
   for (int i = 0; i < N_; ++i) { // iterate over horizon
     A_con_dense_.block(num_contact_constraints_per_step_*i,nu_*i,num_contact_constraints_per_step_,nu_) = C_step;
   }
-  std::cout << "Friction updated." << std::endl;
 }
 
 void LinearMPC::update_weights(const std::vector<Eigen::MatrixXd> &Q, 
@@ -99,11 +97,11 @@ void LinearMPC::update_contact(const std::vector<std::vector<bool>> contact_sequ
   assert(contact_sequence.front().size() == 4);
 
   Eigen::VectorXd lo_contact(num_constraints_per_leg_);
-  //lo_contact << -INF_,0,-INF_,0,fmin;
   lo_contact << -100,0,-100,0,fmin;
+  //lo_contact << -100,-100,-100,-100,fmin;
   Eigen::VectorXd hi_contact(num_constraints_per_leg_);
   hi_contact << 0,100,0,100,fmax;
-  //hi_contact << 0,INF_,0,INF_,fmax;
+  //hi_contact << 100,100,100,100,fmax;
 
   b_contact_lo_.setZero();
   b_contact_hi_.setZero();
@@ -183,7 +181,7 @@ void LinearMPC::get_output(const Eigen::MatrixXd &x_out,
       opt_traj(j,i) = x_out(i*nx_+j,0);
     }
   }
-  
+
   // Get final cost
   f_val = (0.5*x_out.transpose()*H_*x_out)(0,0) + (f_.transpose() * x_out)(0,0);
 }
@@ -230,6 +228,7 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
     #endif
     solver_.settings()->setWarmStart(true);
     solver_.settings()->setCheckTermination(10);
+    solver_.settings()->setScaling(false);
     solver_.initSolver();
 
   }
