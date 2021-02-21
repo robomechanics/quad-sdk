@@ -3,10 +3,10 @@ topics:
   imu: /mcu/state/imu
   mocap: /mocap_node/spirit/pose
   terrain_map: /terrain_map
-  body_plan: /body_plan
-  discrete_body_plan: /discrete_body_plan
-  foot_plan_discrete: /foot_plan_discrete
+  body_plan: /body_plan_continuous
+  discrete_body_plan: /body_plan_discrete
   foot_plan_continuous: /foot_plan_continuous
+  foot_plan_discrete: /foot_plan_discrete
   image: /image_publisher/image
   body_force: /body_force
   joint_command: /spirit/joint_controller/command
@@ -15,7 +15,7 @@ topics:
     estimate: /state/estimate
   visualization:
     body_plan: /visualization/body_plan
-    body_wrench_plan: /visualization/body_wrench_plan
+    grf_plan: /visualization/grf_plan
     discrete_body_plan: /visualization/discrete_body_plan
     footstep_plan: /visualization/foot_plan_discrete
     joint_states: /visualization/joint_states
@@ -35,14 +35,14 @@ global_body_planner:
   update_rate: 10
   num_calls: 1            # Number of times to call the planner
   max_time: 1.5           # Minimum amount of time to run the planner (will replan to find better solutions until this duration is up)
-  start_state: [0.0,0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+  start_state: [0.0,0.0,0.3,0.0,0.0,0.0,0.5,0.0,0.0,0.0,0.0,0.0]
   goal_state: [8.0,1.0,0.3,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
-  committed_horizon: 0.5     # Committed duration of current plan (replan starting from state in current plan this far ahead), s
+  committed_horizon: 0     # Committed duration of current plan (replan starting from state in current plan this far ahead), s
   state_error_threshold: 0.25
 
 twist_body_planner:
   update_rate: 10
-  horizon_length: 1.5
+  horizon_length: 5
   last_cmd_vel_msg_time_max: 2.0
 
 teleop_twist_keyboard:
@@ -50,10 +50,10 @@ teleop_twist_keyboard:
 
 local_footstep_planner:
   update_rate: 30
-  grf_weight: 0.5
+  grf_weight: 0.0
   max_footstep_horizon: 1.5
-  num_cycles: 10
-  period: 0.33
+  num_cycles: 250
+  period: 0.35
   ground_clearance: 0.1
   interp_dt: 0.01
   
@@ -67,19 +67,19 @@ ground_truth_publisher:
 terrain_map_publisher:
   update_rate: 5
   map_data_source: internal
-  terrain_type: slope     # slope or rough terrain
+  terrain_type: rough_terrain     # slope or rough_terrain
 
 grid_map_visualization:
   grid_map_topic: /terrain_map
   grid_map_visualizations:
-    - name: elevation_points
+    - name: z_points
       type: point_cloud
       params:
-       layer: elevation
+       layer: z
     - name: elevation_grid
       type: occupancy_grid
       params:
-       layer: elevation
+       layer: z
        data_min: 0.08
        data_max: -0.16
 
@@ -115,4 +115,4 @@ visualization:
 trajectory_publisher:
   update_rate: 20
   interp_dt: 0.02
-  playback_speed: 0.25
+  playback_speed: 0.5

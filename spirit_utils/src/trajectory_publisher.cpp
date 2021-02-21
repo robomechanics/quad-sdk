@@ -79,6 +79,7 @@ void TrajectoryPublisher::bodyPlanCallback(const
     s[11] = msg->states[i].twist.twist.angular.z;
     body_plan_.push_back(s);
   }
+
 }
 
 void TrajectoryPublisher::multiFootPlanContinuousCallback(const 
@@ -86,6 +87,13 @@ void TrajectoryPublisher::multiFootPlanContinuousCallback(const
 
   if (t_body_plan_.empty())
     return;
+
+  ros::Duration t_joints_end_duration = msg->states.back().header.stamp - msg->header.stamp;
+  double t_joints_end = t_joints_end_duration.toSec();
+
+  if (t_joints_end > t_body_plan_.back()) {
+    return;
+  }
 
   spirit_utils::SpiritKinematics spirit;
   t_joints_plan_.clear();
@@ -107,12 +115,7 @@ void TrajectoryPublisher::multiFootPlanContinuousCallback(const
       Eigen::Vector3d foot_pos;
       foot_pos[0] = msg->states[i].feet[j].position.x;
       foot_pos[1] = msg->states[i].feet[j].position.y;
-      foot_pos[2] = msg->states[i].feet[j].position.z;
-      
-      // Eigen::Vector3d foot_vel;
-      // foot_vel[0] = msg->states[i].feet[j].velocity.x;
-      // foot_vel[1] = msg->states[i].feet[j].velocity.y;
-      // foot_vel[2] = msg->states[i].feet[j].velocity.z;
+      foot_pos[2] = msg->states[i].feet[j].position.z;      
 
       // Get corresponding body plan data
       std::vector<double> body_state = math_utils::interpMat(t_body_plan_, 
@@ -123,6 +126,7 @@ void TrajectoryPublisher::multiFootPlanContinuousCallback(const
       // Compute IK to get joint data
       Eigen::Vector3d leg_joint_state;
       spirit.legIK(j,body_pos,body_rpy,foot_pos,leg_joint_state);
+
 
       // Add to the joint state vector
       joint_state.push_back(leg_joint_state[0]);
@@ -141,12 +145,17 @@ void TrajectoryPublisher::multiFootPlanContinuousCallback(const
     t_multi_foot_plan_.push_back(t);
     multi_foot_plan_.push_back(multi_foot_state);
   }
+
 }
 
 void TrajectoryPublisher::updateTrajectory() {
 
   if (t_body_plan_.empty() || t_joints_plan_.empty() || t_multi_foot_plan_.empty())
     return;
+
+  if (t_body_plan_.back() < t_joints_plan_.back()) {
+    return;
+  }
 
   t_traj_.clear();
 
@@ -218,6 +227,7 @@ void TrajectoryPublisher::updateTrajectory() {
     }
 
     traj_msg_.states.push_back(state);
+
   }
 }
 
