@@ -7,6 +7,7 @@ topics:
   discrete_body_plan: /body_plan_discrete
   foot_plan_continuous: /foot_plan_continuous
   foot_plan_discrete: /foot_plan_discrete
+  trajectory: /robot_plan
   image: /image_publisher/image
   body_force: /body_force
   joint_command: /spirit/joint_controller/command
