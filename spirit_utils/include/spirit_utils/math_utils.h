@@ -107,14 +107,6 @@ namespace math_utils {
   void interpRobotState(spirit_msgs::RobotState state_1, spirit_msgs::RobotState state_2, 
     double t_interp, spirit_msgs::RobotState &interp_state) ;
 
-  // /**
-  //  * @brief Get the correct index corresponding to a particular time in a vector of headers
-  //  * @param[in] headers Vector of headers
-  //  * @param[in] t_ros Time at which to retrieve the correct header
-  //  * @return Index corresponding to t_ros
-  //  */
-  // int getIndexFromHeaders(const std::vector<std_msgs::Header> &headers, ros::Time t_ros);
-
   /**
    * @brief Interpolate data from a BodyPlan message.
    * @param[in] msg BodyPlan message
