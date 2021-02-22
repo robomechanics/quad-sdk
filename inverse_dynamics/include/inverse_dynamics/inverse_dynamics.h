@@ -55,7 +55,7 @@ private:
 	 * @brief Callback function to handle new control input (GRF)
 	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
 	 */
-	void footPlanContinuousCallback(const spirit_msgs::MultiFootPlanContinuous::ConstPtr& msg) {
+	void footPlanContinuousCallback(const spirit_msgs::MultiFootPlanContinuous::ConstPtr& msg);
 		/**
 	 * @brief Callback function to handle new control input (GRF)
 	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
