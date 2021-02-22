@@ -1,5 +1,5 @@
-#include "mpcplusplus/mpcplusplus.h"
-#include "mpcplusplus/matrix_algebra.h"
+#include "mpc_controller/quadruped_mpc.h"
+#include "spirit_utils/matrix_utils.h"
 
 #include <iostream>
 #include <chrono>
@@ -11,9 +11,7 @@
 #define PRINT_TIMING
 
 using namespace std::chrono;
-using namespace mpcplusplus;
 
-// Nc refers only to additional constraints BEYOND dynamics and simple state bounds
 QuadrupedMPC::QuadrupedMPC(const int N, const int Nx, const int Nu)
   : N_(N), nx_(Nx), nu_(Nu) {
   

@@ -6,7 +6,12 @@
 #include <Eigen/Dense>
 #include <assert.h>
 
-namespace mpcplusplus {
+//! Implements online MPC for quadrupedal MPC
+/*!
+   MPCController implements a convex QP approach to legged robot control.
+   The robot is treated as a floating body in 3D space and our control authority
+   is modeled as a series of ground reaction forces at all four toes. 
+*/  
 class QuadrupedMPC {
 
 public:
@@ -198,6 +203,5 @@ private:
   OsqpEigen::Solver solver_;
 };
 
-} // mpcplusplus
 
 #endif
