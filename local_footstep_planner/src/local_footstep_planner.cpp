@@ -99,7 +99,7 @@ void LocalFootstepPlanner::bodyPlanCallback(
     body_plan_.push_back(s);
 
     Eigen::Vector3d force;
-    tf::vectorMsgToEigen(msg->grfs[i], force);
+    tf::vectorMsgToEigen(msg->grfs[i].vectors.front(), force);
     grf_plan_.push_back(force);
 
     primitive_id_plan_.push_back(msg->primitive_ids[i]);

@@ -87,7 +87,7 @@ namespace math_utils {
   void interpJointState(sensor_msgs::JointState state_1, sensor_msgs::JointState state_2, 
     double t_interp, sensor_msgs::JointState &interp_state);
 
-    /**
+  /**
    * @brief Interpolate data between two FootState messages.
    * @param[in] state_1 First FootState message
    * @param[in] state_2 Second FootState message
@@ -96,6 +96,16 @@ namespace math_utils {
    */
   void interpMultiFootState(spirit_msgs::MultiFootState state_1,spirit_msgs::MultiFootState state_2,
     double t_interp, spirit_msgs::MultiFootState &interp_state);
+
+  /**
+   * @brief Interpolate data between two GRFArray messages.
+   * @param[in] state_1 First GRFArray message
+   * @param[in] state_2 Second GRFArray message
+   * @param[in] t_interp Fraction of time between the messages [0,1]
+   * @param[out] interp_state Interpolated GRFArray message
+   */
+  void interpGRFArray(spirit_msgs::GRFArray state_1,spirit_msgs::GRFArray state_2,
+    double t_interp, spirit_msgs::GRFArray &interp_state);
 
   /**
    * @brief Interpolate data between two RobotState messages.
@@ -138,7 +148,7 @@ namespace math_utils {
    * @param[in] multi_foot_state message of state of each foot
    * @param[out] joint_state message of the corresponding joint state
    */
-  void convertBodyAndFootToJoint(nav_msgs::Odometry body_state,
+  void convertBodyAndFeetToJoints(nav_msgs::Odometry body_state,
     spirit_msgs::MultiFootState multi_foot_state, sensor_msgs::JointState &joint_state);
 
   /**

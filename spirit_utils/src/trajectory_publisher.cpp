@@ -11,12 +11,14 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
     body_plan_topic, "/body_plan");
   nh.param<std::string>("topics/foot_plan_continuous", 
     foot_plan_continuous_topic, "/foot_plan_continuous");
+
   nh.param<std::string>("topics/state/trajectory", 
     trajectory_state_topic, "/state/trajectory");
   nh.param<std::string>("topics/trajectory", 
     trajectory_topic, "/trajectory");
 
   nh.param<std::string>("map_frame",map_frame_,"map");
+  nh.param<std::string>("trajectory_publisher/traj_source", traj_source_, "topic");
   nh.param<double>("trajectory_publisher/update_rate", update_rate_, 30);
   nh.param<double>("trajectory_publisher/interp_dt", interp_dt_, 0.05);
   nh.param<double>("trajectory_publisher/playback_speed", playback_speed_, 1.0);
@@ -37,6 +39,13 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
 
 void TrajectoryPublisher::importTrajectory() {
   // For Mike
+
+  // Clear current trajectory message
+  traj_msg_.states.clear();
+  traj_msg_.header.frame_id = map_frame_;
+  traj_msg_.header.stamp = ros::Time::now();
+
+  // Load the desired balues into traj_msg;
 
 }
 
@@ -106,7 +115,7 @@ void TrajectoryPublisher::updateTrajectory() {
       multi_foot_plan_continuous_msg_,t_traj_[i]);
 
     // Compute joint data with IK
-    math_utils::convertBodyAndFootToJoint(state.body, state.feet, state.joints);
+    math_utils::convertBodyAndFeetToJoints(state.body, state.feet, state.joints);
 
     // Add this state to the message
     traj_msg_.states.push_back(state);
@@ -125,7 +134,7 @@ void TrajectoryPublisher::publishTrajectoryState() {
   // Wait until we actually have data
   if (traj_msg_.states.empty())
     return;
-
+    
   // Get the current duration since the beginning of the plan
   ros::Duration t_duration = ros::Time::now() - body_plan_msg_.header.stamp;
 
@@ -143,7 +152,9 @@ void TrajectoryPublisher::spin() {
   while (ros::ok()) {
 
     // Update the trajectory and publish
-    if (update_flag_){
+    if (traj_source_.compare("import")==0) {
+      importTrajectory();
+    } else if (update_flag_) {
       updateTrajectory();
       update_flag_ = false;
     }

@@ -204,6 +204,36 @@ void math_utils::interpMultiFootState(spirit_msgs::MultiFootState state_1,
   }
 }
 
+void math_utils::interpGRFArray(spirit_msgs::GRFArray state_1,
+  spirit_msgs::GRFArray state_2, double t_interp, spirit_msgs::GRFArray &interp_state) {
+
+  interpHeader(state_1.header, state_2.header,t_interp,interp_state.header);
+
+  // Interp grf state
+  interp_state.vectors.resize(state_1.vectors.size());
+  interp_state.points.resize(state_1.points.size());
+  interp_state.contact_states.resize(state_1.contact_states.size());
+  for (int i = 0; i < interp_state.vectors.size(); i++) {
+
+    interp_state.vectors[i].x = lerp(state_1.vectors[i].x, 
+      state_2.vectors[i].x, t_interp);
+    interp_state.vectors[i].y = lerp(state_1.vectors[i].y, 
+      state_2.vectors[i].y, t_interp);
+    interp_state.vectors[i].z = lerp(state_1.vectors[i].z, 
+      state_2.vectors[i].z, t_interp);
+
+    interp_state.points[i].x = lerp(state_1.points[i].x, 
+      state_2.points[i].x, t_interp);
+    interp_state.points[i].y = lerp(state_1.points[i].y, 
+      state_2.points[i].y, t_interp);
+    interp_state.points[i].z = lerp(state_1.points[i].z, 
+      state_2.points[i].z, t_interp);
+
+    // Set contact state to the first state
+    interp_state.contact_states[i] = state_1.contact_states[i];
+  }
+}
+
 void math_utils::interpRobotState(spirit_msgs::RobotState state_1,
   spirit_msgs::RobotState state_2, double t_interp, spirit_msgs::RobotState &interp_state) {
 
@@ -223,7 +253,7 @@ nav_msgs::Odometry math_utils::interpBodyPlan(spirit_msgs::BodyPlan msg, double 
   // Declare variables for interpolating between, both for input and output data
   nav_msgs::Odometry state_1, state_2, interp_state;
   int primitive_id_1, primitive_id_2, interp_primitive_id;
-  geometry_msgs::Vector3 grf_1, grf_2, interp_grf;
+  spirit_msgs::GRFArray grf_1, grf_2, interp_grf;
 
   // Find the correct index for interp (return the first index if t < 0)
   int index = 0;
@@ -256,9 +286,7 @@ nav_msgs::Odometry math_utils::interpBodyPlan(spirit_msgs::BodyPlan msg, double 
   // Compute interpolation
   interpOdometry(state_1, state_2, t_interp, interp_state);
   interp_primitive_id = primitive_id_1;
-  interp_grf.x = lerp(grf_1.x, grf_2.x, t_interp);
-  interp_grf.y = lerp(grf_1.y, grf_2.y, t_interp);
-  interp_grf.z = lerp(grf_1.z, grf_2.z, t_interp);
+  interpGRFArray(grf_1, grf_2, t_interp, interp_grf);
 
   return interp_state;
 
@@ -347,7 +375,7 @@ spirit_msgs::RobotState math_utils::interpRobotStateTraj(spirit_msgs::RobotState
 
 }
 
-void math_utils::convertBodyAndFootToJoint(nav_msgs::Odometry body_state,
+void math_utils::convertBodyAndFeetToJoints(nav_msgs::Odometry body_state,
   spirit_msgs::MultiFootState multi_foot_state, sensor_msgs::JointState &joint_state) {
 
   joint_state.header = multi_foot_state.header;

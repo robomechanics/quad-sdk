@@ -147,14 +147,22 @@ void TwistBodyPlanner::addStateWrenchToMsg(double t, State body_state,
 
   double m = 12;
   double g = 9.81;
-  geometry_msgs::Vector3 grf_msg;
-  grf_msg.x = 0;
-  grf_msg.y = 0;
-  grf_msg.z = m*g;
+  spirit_msgs::GRFArray grf_array_msg;
+  geometry_msgs::Vector3 vector_msg;
+  vector_msg.x = 0;
+  vector_msg.y = 0;
+  vector_msg.z = m*g;
+  geometry_msgs::Point point_msg;
+  point_msg.x = body_state[0];
+  point_msg.y = body_state[1];
+  point_msg.z = body_state[2];
 
+  grf_array_msg.vectors.push_back(vector_msg);
+  grf_array_msg.points.push_back(point_msg);
+  grf_array_msg.contact_states.push_back(true);
 
   msg.states.push_back(state);
-  msg.grfs.push_back(grf_msg);
+  msg.grfs.push_back(grf_array_msg);
 }
 
 void TwistBodyPlanner::publishPlan() {

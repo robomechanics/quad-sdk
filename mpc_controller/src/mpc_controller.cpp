@@ -5,9 +5,9 @@ MPCController::MPCController(ros::NodeHandle nh) {
 	nh_ = nh;
 
     // Load rosparams from parameter server
-  std::string robot_state_traj_topic, control_input_topic,foot_plan_discrete_topic,body_plan_topic, discrete_body_plan_topic;
+  std::string robot_state_traj_topic, grf_array_topic,foot_plan_discrete_topic,body_plan_topic, discrete_body_plan_topic;
   nh.param<std::string>("topics/trajectory", robot_state_traj_topic, "/trajectory");
-  nh.param<std::string>("topics/control_input", control_input_topic, "/control_input");
+  nh.param<std::string>("topics/control/grfs", grf_array_topic, "/control/grfs");
   nh.param<std::string>("topics/foot_plan_discrete", foot_plan_discrete_topic, "/foot_plan_discrete");
   nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
   nh.param<std::string>("topics/discrete_body_plan", discrete_body_plan_topic, "/discrete_body_plan");
@@ -20,7 +20,7 @@ MPCController::MPCController(ros::NodeHandle nh) {
   footstep_plan_sub_ = nh_.subscribe(foot_plan_discrete_topic,1,&MPCController::footPlanDiscreteCallback, this);
   body_plan_sub_ = nh_.subscribe(body_plan_topic,1,&MPCController::bodyPlanCallback, this);
   discrete_body_plan_sub_ = nh_.subscribe(discrete_body_plan_topic,1,&MPCController::discreteBodyPlanCallback, this);
-  control_input_pub_ = nh_.advertise<spirit_msgs::ControlInput>(control_input_topic,1);
+  grf_array_pub_ = nh_.advertise<spirit_msgs::GRFArray>(grf_array_topic,1);
 }
 
 void MPCController::robotPlanCallback(
@@ -41,19 +41,19 @@ void MPCController::discreteBodyPlanCallback(const spirit_msgs::BodyPlan::ConstP
   // ROS_INFO("In discreteBodyPlanCallback");
 }
 
-void MPCController::publishControlInput() {
+void MPCController::publishGRFArray() {
   // ROS_INFO("In ControlInput");
-  spirit_msgs::ControlInput msg;
+  spirit_msgs::GRFArray msg;
 
   msg.header.stamp = ros::Time::now();
-  control_input_pub_.publish(msg);
+  grf_array_pub_.publish(msg);
 }
 
 void MPCController::spin() {
   ros::Rate r(update_rate_);
   while (ros::ok()) {
     // Publish control input data
-    publishControlInput();
+    publishGRFArray();
     ros::spinOnce();
     r.sleep();
   }

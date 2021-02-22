@@ -7,13 +7,15 @@ topics:
   discrete_body_plan: /body_plan_discrete
   foot_plan_continuous: /foot_plan_continuous
   foot_plan_discrete: /foot_plan_discrete
-  trajectory: /robot_plan
-  image: /image_publisher/image
   body_force: /body_force
   joint_command: /spirit/joint_controller/command
-  state:
+  trajectory: /trajectory
+  state: # These should not change for the remapping to work in some launch files
     ground_truth: /state/ground_truth
     estimate: /state/estimate
+    trajectory: /state/trajectory
+  control:
+    grfs: /control/grfs
   visualization:
     body_plan: /visualization/body_plan
     grf_plan: /visualization/grf_plan
@@ -117,3 +119,4 @@ trajectory_publisher:
   update_rate: 40
   interp_dt: 0.05
   playback_speed: 0.5
+  traj_source: topic
