@@ -17,7 +17,7 @@ TEST(TestUseCase, quadVariable) {
   // Configurable (system) parameters
   const int Nu = 13;      // Appended gravity term
   const int Nx = 12;      // Number of states
-  const int N = 20;       // Time horizons to consider
+  const int N = 16;       // Time horizons to consider
   const double dt = 0.05;  // Time horizon
   const double m = 12;    // Mass of quad
   const double g = 9.81;  // gravitational constant
@@ -41,9 +41,9 @@ TEST(TestUseCase, quadVariable) {
 
   // State bounds (fixed for a given solve) 
   Eigen::VectorXd state_lo(Nx);
-  state_lo << -100,-100,0.1,-M_PI/4,-M_PI/4,-4*M_PI,-5,-5,-2,-M_PI,-M_PI,-M_PI/4;
+  state_lo << -100,-100,0.15,-M_PI/4,-M_PI/4,-4*M_PI,-5,-5,-2,-M_PI,-M_PI,-M_PI;
   Eigen::VectorXd state_hi(Nx);
-  state_hi << 100,100,0.4,M_PI/4,M_PI/4,4*M_PI,5,5,2,M_PI,M_PI,M_PI/4;
+  state_hi << 100,100,0.4,M_PI/4,M_PI/4,4*M_PI,5,5,2,M_PI,M_PI,M_PI;
 
   // Robot body inertia matrix
   Eigen::Matrix3d Ib = Eigen::Matrix3d::Zero();
@@ -53,10 +53,10 @@ TEST(TestUseCase, quadVariable) {
   const double body_l = 0.6;
   const double body_w = 0.3;
   Eigen::MatrixXd foot_positions(4,3);
-  foot_positions.row(0) << -body_w/2,body_l/2,0; // Front left
-  foot_positions.row(1) << -body_w/2,-body_l/2,0; // Back left
-  foot_positions.row(2) << body_w/2,body_l/2,0; // Front right
-  foot_positions.row(3) << body_w/2,-body_l/2,0; // Back right
+  foot_positions.row(0) << -body_w/2,body_l/2,-0.25; // Front left
+  foot_positions.row(1) << -body_w/2,-body_l/2,-0.25; // Back left
+  foot_positions.row(2) << body_w/2,body_l/2,-0.25; // Front right
+  foot_positions.row(3) << body_w/2,-body_l/2,-0.25; // Back right
 
   // Create vectors of dynamics matrices at each step,
   // weights at each step and contact sequences at each step
@@ -87,9 +87,8 @@ TEST(TestUseCase, quadVariable) {
     //ref_traj(0,i) = 0.2*i; // x ramp
     //ref_traj(1,i) = i > N/2 ? 0.5 : 0; // y step
     ref_traj(2,i) = 0.3;//0.25 + 0.1*sin(i/3.0); // z sine
-    //ref_traj(5,i) = 1*sin(i/3.0);
-    ref_traj(4,i) = 0.3;
-    //ref_traj(5,i) = 0.5;
+    ref_traj(4,i) = 0.3*cos(i/3.0);
+    ref_traj(5,i) = 0.5*sin(i/3.0);
   }
 
   for (int i = 0; i < N; ++i) {
@@ -111,13 +110,13 @@ TEST(TestUseCase, quadVariable) {
     Bd_vec.at(i) = Bd;
 
     // Add inertia term linearized about reference trajectory yaw
-    for (int i = 0; i < 4; ++i) {
-      Eigen::Vector3d foot_pos = foot_positions.row(i);
+    for (int j = 0; j < 4; ++j) {
+      Eigen::Vector3d foot_pos = foot_positions.row(j);
       Eigen::Matrix3d foot_pos_hat;
       foot_pos_hat << 0, -foot_pos(2),foot_pos(1),
                       foot_pos(2), 0, -foot_pos(0),
                       -foot_pos(1), foot_pos(0), 0;
-      Bd.block(9,3*i,3,3) = Iw_inv * foot_pos_hat * dt;//Eigen::Matrix3d::Zero();
+      Bd_vec.at(i).block(9,3*j,3,3) = Iw_inv * foot_pos_hat * dt;//Eigen::Matrix3d::Zero();
     }
     
     U_vec.at(i) = Ru;
