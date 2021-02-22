@@ -36,6 +36,14 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
 
   nh.param<std::string>("map_frame",map_frame_,"map");
   nh.param<double>("visualization/update_rate", update_rate_, 10);
+  nh.param<std::vector<int> >("visualization/colors/front_feet",
+    front_foot_color_, {0,255,0});
+  nh.param<std::vector<int> >("visualization/colors/back_feet",
+    back_foot_color_, {0,0,255});
+  nh.param<std::vector<int> >("visualization/colors/net_grf",
+    net_grf_color_, {255,0,0});
+  nh.param<std::vector<int> >("visualization/colors/individual_grf",
+    individual_grf_color_, {255,0,0});
 
   // Setup subs and pubs
   body_plan_sub_ = nh_.subscribe(body_plan_topic,1,
@@ -119,18 +127,27 @@ void RVizInterface::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg)
   // Define the shape of the discrete states
   double arrow_diameter = 0.01;
   marker.scale.x = arrow_diameter;
-  marker.scale.y = 2*arrow_diameter;
+  marker.scale.y = 4*arrow_diameter;
   marker.color.g = 0.733f;
   marker.pose.orientation.w = 1.0;
 
   for (int i=0; i < length; i++) {
-    
-    // Reset the marker message
-    marker.points.clear();
-    marker.color.a = 1.0;
-    marker.id = i;
-
     for (int j = 0; j < msg->grfs[i].vectors.size(); j++) {
+
+      // Reset the marker message
+      marker.points.clear();
+      marker.color.a = 1.0;
+      marker.id = i*msg->grfs[i].vectors.size() + j;
+
+      if (msg->grfs[i].vectors.size() > 1) {
+        marker.color.r = (float) individual_grf_color_[0]/255.0;
+        marker.color.g = (float) individual_grf_color_[1]/255.0;
+        marker.color.b = (float) individual_grf_color_[2]/255.0;
+      } else {
+        marker.color.r = (float) net_grf_color_[0]/255.0;
+        marker.color.g = (float) net_grf_color_[1]/255.0;
+        marker.color.b = (float) net_grf_color_[2]/255.0;
+      }
 
       // Define point messages for the base and tip of each GRF arrow
       geometry_msgs::Point p_base, p_tip;
@@ -223,9 +240,13 @@ void RVizInterface::footPlanDiscreteCallback(
       std_msgs::ColorRGBA color;
       color.a = 1.0;
       if (i == 0 || i == 2) {
-        color.g = 1.0f;
+        color.r = (float) front_foot_color_[0]/255.0;
+        color.g = (float) front_foot_color_[1]/255.0;
+        color.b = (float) front_foot_color_[2]/255.0;
       } else {
-        color.b = 1.0f;
+        color.r = (float) back_foot_color_[0]/255.0;
+        color.g = (float) back_foot_color_[1]/255.0;
+        color.b = (float) back_foot_color_[2]/255.0;
       }
 
       // Add to the Marker message
