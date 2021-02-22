@@ -6,7 +6,7 @@
 #include <mpcplusplus/mpcplusplus.h>
 #include <spirit_msgs/BodyPlan.h>
 #include <spirit_msgs/MultiFootPlanDiscrete.h>
-#include <spirit_msgs/ControlInput.h>
+#include <spirit_msgs/GRFArray.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/RobotStateTrajectory.h>
 
@@ -51,9 +51,9 @@ private:
   void discreteBodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
 
   /**
-   * @brief Function to publish imu data. Likely empty.
+   * @brief Function to publish commanded grfs
    */
-  void publishControlInput();
+  void publishGRFArray();
 
 	/// ROS subscriber for the state estimate
 	ros::Subscriber robot_state_traj_sub_;
@@ -68,7 +68,7 @@ private:
 	ros::Subscriber discrete_body_plan_sub_;
 
 	/// ROS publisher for control input
-	ros::Publisher control_input_pub_;
+	ros::Publisher grf_array_pub_;
 
 	/// Define map frame
 	std::string map_frame_;

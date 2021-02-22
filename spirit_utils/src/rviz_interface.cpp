@@ -109,7 +109,7 @@ void RVizInterface::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg)
 
 
   // Construct MarkerArray and Marker message for GRFs
-  visualization_msgs::MarkerArray grfs_msg;
+  visualization_msgs::MarkerArray grfs_viz_msg;
   visualization_msgs::Marker marker;
 
   // Initialize the headers and types
@@ -130,29 +130,32 @@ void RVizInterface::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg)
     marker.color.a = 1.0;
     marker.id = i;
 
-    // Define point messages for the base and tip of each GRF arrow
-    geometry_msgs::Point p_base, p_tip;
-    p_base = msg->states[i].pose.pose.position;
+    for (int j = 0; j < msg->grfs[i].vectors.size(); j++) {
 
-    /// Define the endpoint of the GRF arrow
-    double grf_length_scale = 0.002;
-    p_tip.x = p_base.x + grf_length_scale*msg->grfs[i].x;
-    p_tip.y = p_base.y + grf_length_scale*msg->grfs[i].y;
-    p_tip.z = p_base.z + grf_length_scale*msg->grfs[i].z;
+      // Define point messages for the base and tip of each GRF arrow
+      geometry_msgs::Point p_base, p_tip;
+      p_base = msg->grfs[i].points[j];
 
-    // if GRF = 0, set alpha to zero
-    if (msg->grfs[i].z < 1e-4) {
-      marker.color.a = 0.0;
+      /// Define the endpoint of the GRF arrow
+      double grf_length_scale = 0.002;
+      p_tip.x = p_base.x + grf_length_scale*msg->grfs[i].vectors[j].x;
+      p_tip.y = p_base.y + grf_length_scale*msg->grfs[i].vectors[j].y;
+      p_tip.z = p_base.z + grf_length_scale*msg->grfs[i].vectors[j].z;
+
+      // if GRF = 0, set alpha to zero
+      if (msg->grfs[i].contact_states[j] == false) {
+        marker.color.a = 0.0;
+      }
+
+      // Add the points to the marker and add the marker to the array
+      marker.points.push_back(p_base);
+      marker.points.push_back(p_tip);
+      grfs_viz_msg.markers.push_back(marker);
     }
-
-    // Add the points to the marker and add the marker to the array
-    marker.points.push_back(p_base);
-    marker.points.push_back(p_tip);
-    grfs_msg.markers.push_back(marker);
   }
 
   // Publish grfs
-  grf_plan_viz_pub_.publish(grfs_msg);
+  grf_plan_viz_pub_.publish(grfs_viz_msg);
 }
 
 void RVizInterface::discreteBodyPlanCallback(
