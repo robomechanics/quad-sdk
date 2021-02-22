@@ -17,12 +17,12 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   spirit_msgs
   spirit_utils
-  mpcplusplus
 )
 
 ## System dependencies are found with CMake's conventions
 find_package(Eigen3 REQUIRED)
 find_package(OsqpEigen REQUIRED)
+find_package(PythonLibs 2.7)
 
 set(QPOASES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/qpOASES")
 set(QPOASES_INCLUDE_DIRS "${QPOASES_DIR}/include")
@@ -47,13 +47,19 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
   ${QPOASES_INCLUDE_DIRS}
+  ${PYTHON_INCLUDE_DIRS}
 )
+
+add_library(quadruped_mpc
+   src/quadruped_mpc.cpp
+)
+target_link_libraries(quadruped_mpc OsqpEigen::OsqpEigen )
 
 ## Declare a C++ library for control
 add_library(mpc_controller
 	src/mpc_controller.cpp
 )
-target_link_libraries(mpc_controller OsqpEigen::OsqpEigen)
+target_link_libraries(mpc_controller quadruped_mpc)
 add_dependencies(mpc_controller ${mpc_controller_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
@@ -72,6 +78,9 @@ target_link_libraries(mpc_controller_node
 #############
 
 ## Google test file for mpc_controller library
+catkin_add_gtest(quadruped_mpc_test test/test_quadruped_mpc.cpp)
+target_link_libraries(quadruped_mpc_test ${catkin_LIBRARIES} ${PYTHON_LIBRARIES} quadruped_mpc)
+
 catkin_add_gtest(mpc_controller_test test/test_mpc_controller.cpp)
 target_link_libraries(mpc_controller_test ${catkin_LIBRARIES} mpc_controller)
 

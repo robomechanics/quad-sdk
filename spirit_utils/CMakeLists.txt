@@ -41,7 +41,6 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-
 add_library(spirit_utils
   src/rviz_interface.cpp
   src/fast_terrain_map.cpp

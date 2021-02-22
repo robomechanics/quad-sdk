@@ -3,16 +3,16 @@
 
 #include <ros/ros.h>
 #include <eigen3/Eigen/Eigen>
-#include <mpcplusplus/mpcplusplus.h>
 #include <spirit_msgs/BodyPlan.h>
 #include <spirit_msgs/MultiFootPlanDiscrete.h>
 #include <spirit_msgs/GRFArray.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/RobotStateTrajectory.h>
+#include <mpc_controller/quadruped_mpc.h>
 
-//! Implements online MPC
+//! MPC controller ROS node
 /*!
-   MPCController implements all control logic. It should expose a constructor that does any initialization required and an update method called at some frequency.
+   Wrapper around Quadrupedal MPC that interfaces with our ROS architecture
 */
 class MPCController {
   public:
@@ -80,7 +80,7 @@ private:
 	double update_rate_;
 
   /// Linear MPC object
-  std::shared_ptr<mpcplusplus::LinearMPC> mpc;
+  std::shared_ptr<QuadrupedMPC> mpc;
 
 	/// Most recent robot plan
 	spirit_msgs::RobotStateTrajectory last_plan_msg_;
