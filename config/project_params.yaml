@@ -55,7 +55,7 @@ local_footstep_planner:
   max_footstep_horizon: 1.5
   num_cycles: 50
   period: 0.35
-  ground_clearance: 0.25
+  ground_clearance: 0.1
   interp_dt: 0.05
   
 contact_detection:
@@ -116,4 +116,4 @@ visualization:
 trajectory_publisher:
   update_rate: 40
   interp_dt: 0.05
-  playback_speed: 0.5
+  playback_speed: 0.25
