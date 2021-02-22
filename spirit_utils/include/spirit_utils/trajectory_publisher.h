@@ -97,6 +97,9 @@ private:
   /// Update rate for sending and receiving data
   double update_rate_;
 
+  /// Flag to update the trajectory
+  bool update_flag_;
+
   /// Timestep for trajectory interpolation
   double interp_dt_;
 

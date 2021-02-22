@@ -31,6 +31,8 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
     (trajectory_state_topic,1);
   trajectory_pub_ = nh_.advertise<spirit_msgs::RobotStateTrajectory>
     (trajectory_topic,1);
+
+  update_flag_ = false;
 }
 
 void TrajectoryPublisher::importTrajectory() {
@@ -47,8 +49,12 @@ void TrajectoryPublisher::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr
 void TrajectoryPublisher::multiFootPlanContinuousCallback(const 
   spirit_msgs::MultiFootPlanContinuous::ConstPtr& msg) {
 
-  // Save te most recent foot plan
-  multi_foot_plan_continuous_msg_ = (*msg);
+  if (msg->header.stamp != multi_foot_plan_continuous_msg_.header.stamp) {
+    // Save te most recent foot plan
+    multi_foot_plan_continuous_msg_ = (*msg);
+    update_flag_ = true;
+  } 
+
 }
 
 void TrajectoryPublisher::updateTrajectory() {
@@ -137,7 +143,12 @@ void TrajectoryPublisher::spin() {
   while (ros::ok()) {
 
     // Update the trajectory and publish
-    updateTrajectory();
+    if (update_flag_){
+      updateTrajectory();
+      update_flag_ = false;
+    }
+    
+    publishTrajectory();
     publishTrajectoryState();
 
     // Collect new messages on subscriber topics
