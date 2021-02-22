@@ -47,9 +47,6 @@ int RRTConnectClass::attemptConnect(State s_existing, State s, double t_s, State
   a_new[6] = t_s;
   a_new[7] = t_f;
 
-  a_new[8] = -(2.0*(3.0*p_td - 3.0*p_to + 2.0*dp_td*t_s + dp_to*t_s))/(t_s*t_s);
-  a_new[9] = (2.0*(3.0*p_td - 3.0*p_to + dp_td*t_s + 2.0*dp_to*t_s))/(t_s*t_s);
-
   // If the connection results in an infeasible action, abort and return trapped
   if (isValidAction(a_new) == true)
   {
@@ -200,6 +197,7 @@ void RRTConnectClass::extractPath(PlannerClass Ta, PlannerClass Tb, std::vector<
 
 void RRTConnectClass::runRRTConnect(FastTerrainMap& terrain, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double max_time)
 {
+
   auto t_start_total_solve = std::chrono::steady_clock::now();
   auto t_start_current_solve = std::chrono::steady_clock::now();
 

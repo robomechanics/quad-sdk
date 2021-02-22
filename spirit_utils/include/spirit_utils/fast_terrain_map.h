@@ -36,9 +36,13 @@ class FastTerrainMap {
       std::vector<double> x_data,
       std::vector<double> y_data,
       std::vector<std::vector<double>> z_data,
-      std::vector<std::vector<double>> dx_data,
-      std::vector<std::vector<double>> dy_data,
-      std::vector<std::vector<double>> dz_data);
+      std::vector<std::vector<double>> nx_data,
+      std::vector<std::vector<double>> ny_data,
+      std::vector<std::vector<double>> nz_data,
+      std::vector<std::vector<double>> z_data_filt,
+      std::vector<std::vector<double>> nx_data_filt,
+      std::vector<std::vector<double>> ny_data_filt,
+      std::vector<std::vector<double>> nz_data_filt);
 
     /**
      * @brief Load data from a grid_map::GridMap object into a FastTerrainMap object
@@ -53,6 +57,7 @@ class FastTerrainMap {
      * @return bool location [x,y] is or is not in range
      */
     bool isInRange(const double x,const double y);
+    
     /**
      * @brief Return the ground height at a requested location
      * @param[in] double x location
@@ -68,6 +73,22 @@ class FastTerrainMap {
      * @return std::array<double, 3> surface normal at location [x,y]
      */
     std::array<double, 3> getSurfaceNormal(const double x,const double y);
+
+    /**
+     * @brief Return the filtered ground height at a requested location
+     * @param[in] double x location
+     * @param[in] double y location
+     * @return double ground height at location [x,y]
+     */
+    double getGroundHeightFiltered(const double x,const double y);
+
+    /**
+     * @brief Return the filtered surface normal at a requested location
+     * @param[in] double x location
+     * @param[in] double y location
+     * @return std::array<double, 3> surface normal at location [x,y]
+     */
+    std::array<double, 3> getSurfaceNormalFiltered(const double x,const double y);
 
     /**
      * @brief Return the (approximate) intersection of the height map and a vector. Returned point lies exactly on the map but not entirely on the vector.
@@ -106,13 +127,25 @@ class FastTerrainMap {
     std::vector<std::vector<double>> z_data_;
 
     /// The nested vector of the x component of the gradient at each [x,y] location
-    std::vector<std::vector<double>> dx_data_;
+    std::vector<std::vector<double>> nx_data_;
 
     /// The nested vector of the y component of the gradient at each [x,y] location
-    std::vector<std::vector<double>> dy_data_;
+    std::vector<std::vector<double>> ny_data_;
 
     /// The nested vector of the z component of the gradient at each [x,y] location
-    std::vector<std::vector<double>> dz_data_;
+    std::vector<std::vector<double>> nz_data_;
+
+    /// The nested vector of filtered z data at each [x,y] location
+    std::vector<std::vector<double>> z_data_filt_;
+
+    /// The nested vector of the x component of the filtered gradient at each [x,y] location
+    std::vector<std::vector<double>> nx_data_filt_;
+
+    /// The nested vector of the y component of the filtered gradient at each [x,y] location
+    std::vector<std::vector<double>> ny_data_filt_;
+
+    /// The nested vector of the z component of the filtered gradient at each [x,y] location
+    std::vector<std::vector<double>> nz_data_filt_;
 
 };
 

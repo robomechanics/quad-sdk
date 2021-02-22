@@ -53,6 +53,13 @@ class LocalFootstepPlanner {
     void bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
 
     /**
+     * @brief Compute the amount of time until the next flight phase
+     * @param[in] t Current time
+     * @return Time until flight
+     */
+    double computeTimeUntilNextFlight(double t);
+
+    /**
      * @brief Update the discrete footstep plan with the current plan
      */
     void updateDiscretePlan();
@@ -105,17 +112,17 @@ class LocalFootstepPlanner {
     /// Define the body state data structure
     typedef std::vector<double> BodyState;
 
-    /// Define the body wrench data structure
-    typedef Eigen::Vector3d BodyWrench;
-
     /// Define the footstep state data structure
     typedef std::vector<double> FootstepState;
 
     /// Std vector containing robot body plan
     std::vector<BodyState> body_plan_;
 
-    /// Std vector containing robot body wrenches
-    std::vector<BodyWrench> body_wrench_plan_;
+    /// Std vector containing robot GRFs
+    std::vector<Eigen::Vector3d> grf_plan_;
+
+    /// Std vector containing primitive ids for the plan
+    std::vector<int> primitive_id_plan_;
 
     /// Std vector containing robot footstep plan
     std::vector<std::vector<FootstepState> > footstep_plan_;
@@ -146,6 +153,15 @@ class LocalFootstepPlanner {
 
     /// Interpolation timestep for swing leg
     double interp_dt_;
+
+    /// Primitive ids - FLIGHT
+    const int FLIGHT = 0;
+
+    /// Primitive ids - STANCE
+    const int STANCE = 1;
+
+    /// Primitive ids - CONNECT_STANCE
+    const int CONNECT_STANCE = 2;
 
 };
 

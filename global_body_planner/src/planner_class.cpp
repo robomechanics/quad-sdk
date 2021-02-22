@@ -28,7 +28,6 @@ State PlannerClass::randomState(FastTerrainMap& terrain)
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generator(seed);
     std::normal_distribution<double> height_distribution(0.5*(z_max_rel + z_min_rel),(z_max_rel - z_min_rel)*(1.0/(2*3.0))); // std is such that the max and min are 3 std away from mean
-    std::normal_distribution<double> ang_vel_distribution(0.0,(P_MAX/3.0)); // std is such that the max and min are 3 std away from mean
 
     q[0] = (x_max - x_min)*(double)rand()/RAND_MAX + x_min;
     q[1] = (y_max - y_min)*(double)rand()/RAND_MAX + y_min;
@@ -42,9 +41,6 @@ State PlannerClass::randomState(FastTerrainMap& terrain)
     q[3] = v*sin(theta)*cos(phi);
     q[4] = v*sin(theta)*sin(phi);
     q[5] = v*cos(theta);
-
-    q[6] = 2*P_MAX*(double)rand()/RAND_MAX - P_MAX;
-    q[7] = 0.0;
 
     return q;
     

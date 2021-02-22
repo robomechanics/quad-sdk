@@ -12,13 +12,13 @@ State fullStateToState(FullState full_state)
   double y = full_state[1];
   double z = full_state[2];
   // double roll = full_state[3];
-  double pitch = full_state[4];
+  // double pitch = full_state[4];
   // double yaw = full_state[5];
   double dx = full_state[6];
   double dy = full_state[7];
   double dz = full_state[8];
   // double roll_rate = full_state[9];
-  double pitch_rate = full_state[10];
+  // double pitch_rate = full_state[10];
   // double yaw_rate = full_state[11];
 
   state[0] = x;
@@ -27,13 +27,12 @@ State fullStateToState(FullState full_state)
   state[3] = dx;
   state[4] = dy;
   state[5] = dz;
-  state[6] = pitch;
-  state[7] = pitch_rate;
 
   return state;
 }
 
-FullState stateToFullState(State state, double roll, double yaw, double roll_rate, double yaw_rate)
+FullState stateToFullState(State state, double roll, double pitch, double yaw, 
+  double roll_rate, double pitch_rate, double yaw_rate)
 {
   FullState full_state;
   full_state.resize(FULLSTATEDIM);
@@ -42,13 +41,13 @@ FullState stateToFullState(State state, double roll, double yaw, double roll_rat
   full_state[1] = state[1];
   full_state[2] = state[2];
   full_state[3] = roll;
-  full_state[4] = state[6];
+  full_state[4] = pitch;
   full_state[5] = yaw;
   full_state[6] = state[3];
   full_state[7] = state[4];
   full_state[8] = state[5];
   full_state[9] = roll_rate;
-  full_state[10] = state[7];
+  full_state[10] = pitch_rate;
   full_state[11] = yaw_rate;
 
   return full_state;
@@ -104,7 +103,8 @@ void printStateSequence(std::vector<State> state_sequence)
   for (State s : state_sequence)
     printStateNewline(s);
 }
-void printInterpStateSequence(std::vector<State> state_sequence, std::vector<double> interp_t)
+void printInterpStateSequence(std::vector<State> state_sequence, 
+  std::vector<double> interp_t)
 {
   for (int i=0;i<state_sequence.size();i++)
   {
@@ -121,13 +121,14 @@ void printVectorIntNewline(std::vector<int> vec)
 {
   printVectorInt(vec); std::cout << std::endl;
 }
-void plotYaw(std::vector<double> interp_t, std::vector<FullState> interp_full_path) {
+void plotYaw(std::vector<double> interp_t,
+  std::vector<FullState> interp_full_plan) {
 
   std::vector<double> yaw;
   std::vector<double> yaw_rate;
 
-  for (FullState full_state : interp_full_path) {
-    yaw.push_back(full_state[8]);
+  for (FullState full_state : interp_full_plan) {
+    yaw.push_back(full_state[5]);
     yaw_rate.push_back(full_state[11]);
   }
 
@@ -175,7 +176,7 @@ double poseDistance(std::vector<double> v1, std::vector<double> v2)
 double stateDistance(State q1,State q2)
 {
   double sum = 0;
-  State state_weight = {1,1,1,1,1,1,1,1};
+  State state_weight = {1,1,1,1,1,1};
 
   for (int i = 0; i < q1.size(); i++)
   {
@@ -191,93 +192,43 @@ bool isWithinBounds(State s1, State s2)
   return (stateDistance(s1, s2) <= GOAL_BOUNDS);
 }
 
-std::vector<double> movingAverageFilter(std::vector<double> data, int window_size) {
-  std::vector<double> filtered_data;
-  int N = data.size();
+void addFullStates(std::vector<State> interp_reduced_plan, double dt, 
+  std::vector<FullState> &interp_full_plan, FastTerrainMap& terrain) {
 
-  // Check to ensure window size is an odd integer, if not add one to make it so
-  if ((window_size % 2) == 0) {
-    window_size += 1;
-    ROS_WARN("Filter window size is even, adding one to maintain symmetry");
-  }
-
-  // Make sure that the window size is acceptable
-  if (window_size>=N) {
-    ROS_ERROR("Filter window size is bigger than data");
-  }
-
-  // Loop through the data
-  for (int i = 0; i < N; i++) {
-
-    // Initialize sum and count of data samples
-    double sum = 0;
-    double count = 0;
-
-    // Shrink the window size if it would result in out of bounds data
-    int current_window_size = std::min(window_size, 2*i+1);
-    // int current_window_size = window_size;
-    
-    // Loop through the window, adding to the sum and averaging
-    for (int j = 0; j < current_window_size; j++) {
-      double index = i + (j - (current_window_size-1)/2);
-
-      // Make sure data is in bounds
-      if (index>=0 && index<N) {
-        sum += data[index];
-        count += 1;
-      } else {
-        // ROS_WARN("Filter tried to access data out of bounds, which shouldn't happen (filter window should scale automatically).");
-      }
-    }
-
-    filtered_data.push_back((float)sum/count);
-  }
-
-  return filtered_data;
-}
-
-std::vector<double> centralDifference(std::vector<double> data, double dt) {
-  std::vector<double> data_diff;
-
-  for (int i = 0; i < data.size(); i++) {
-
-    // Compute lower and upper indices, with forward/backward difference at the ends
-    int lower_index = std::max(i-1,0);
-    int upper_index = std::min(i+1,(int)data.size()-1);
-
-    double estimate = (data[upper_index] - data[lower_index])/(dt*(upper_index - lower_index));
-    data_diff.push_back(estimate);
-  }
-
-  return data_diff;
-}
-
-void addFullStates(std::vector<State> interp_reduced_path, double dt, std::vector<FullState> &interp_full_path) {
+  int num_states = interp_reduced_plan.size();
 
   // Set roll and roll rate to zero
   double roll = 0;
   double roll_rate = 0;
 
   // Declare variables for yaw
-  std::vector<double> yaw;
-  std::vector<double> filtered_yaw;
-  std::vector<double> yaw_rate;
-  std::vector<double> filtered_yaw_rate;
+  std::vector<double> pitch(num_states);
+  std::vector<double> pitch_rate(num_states);
+  std::vector<double> filtered_pitch_rate(num_states);
+  std::vector<double> yaw(num_states);
+  std::vector<double> filtered_yaw(num_states);
+  std::vector<double> yaw_rate(num_states);
+  std::vector<double> filtered_yaw_rate(num_states);
 
   // Compute yaw to align with heading
-  for (State body_state : interp_reduced_path) {
-    yaw.push_back(atan2(body_state[4],body_state[3]));
+  for (int i = 0; i < num_states; i++) {
+    State body_state = interp_reduced_plan[i];
+    yaw[i] = atan2(body_state[4],body_state[3]);
+    pitch[i] = getPitchFromState(body_state,terrain);
   }
 
   // Filter yaw and compute its derivative via central difference method
   int window_size = 7;
-  filtered_yaw = movingAverageFilter(yaw, window_size);
-  yaw_rate = centralDifference(filtered_yaw, dt);
-  filtered_yaw_rate = movingAverageFilter(yaw_rate, window_size);
+  filtered_yaw = math_utils::movingAverageFilter(yaw, window_size);
+  yaw_rate = math_utils::centralDiff(filtered_yaw, dt);
+  filtered_yaw_rate = math_utils::movingAverageFilter(yaw_rate, window_size);
+  pitch_rate = math_utils::centralDiff(pitch, dt);
+  filtered_pitch_rate = math_utils::movingAverageFilter(pitch_rate,window_size);
 
-  std::vector<double> interp_t;
-  for (int i = 0; i < interp_reduced_path.size(); i++) {
-    interp_t.push_back(i*dt);
+
+  std::vector<double> interp_t(num_states);
+  for (int i = 0; i < num_states; i++) {
+    interp_t[i] = i*dt;
   }
 
   // plt::clf();
@@ -293,41 +244,67 @@ void addFullStates(std::vector<State> interp_reduced_path, double dt, std::vecto
   // plt::pause(0.001);
 
   // Add full state data into the array
-  for (int i = 0; i < interp_reduced_path.size(); i++) {
-    State body_state = interp_reduced_path[i];
-    FullState body_full_state = stateToFullState(body_state, roll, filtered_yaw[i], roll_rate, filtered_yaw_rate[i]);
+  for (int i = 0; i < num_states; i++) {
+    State body_state = interp_reduced_plan[i];
+    FullState body_full_state = stateToFullState(body_state, roll, pitch[i],
+      filtered_yaw[i], roll_rate, filtered_pitch_rate[i], filtered_yaw_rate[i]);
 
-    interp_full_path.push_back(body_full_state);
+    interp_full_plan.push_back(body_full_state);
   }
 }
 
-Wrench getWrench(Action a,double t) {
+GRF getGRF(Action a,double t) {
 
   double m = M_CONST;
   double g = G_CONST;
-  double J = J_CONST;
   double t_s = a[6];
 
-  Wrench wrench(6, 0.0);
+  GRF grf;
 
-  // If in stance fill wrench with appropriate data, otherwise leave as zeros
+  // If in stance fill grf with appropriate data, otherwise leave as zeros
   if (t<=t_s) {
     // Get corresponding forces
-    wrench[0] = m*(a[0] + (a[3]-a[0])*t/t_s);
-    wrench[1] = m*(a[1] + (a[4]-a[1])*t/t_s);
-    wrench[2] = m*((a[2] + (a[5]-a[2])*t/t_s) + g);
-
-    wrench[3] = 0;
-    wrench[4] = J*(a[8] + (a[9]-a[8])*t/t_s);
-    wrench[5] = 0;
+    grf[0] = m*(a[0] + (a[3]-a[0])*t/t_s);
+    grf[1] = m*(a[1] + (a[4]-a[1])*t/t_s);
+    grf[2] = m*((a[2] + (a[5]-a[2])*t/t_s) + g);
+  } else {
+    grf = {0,0,0};
   }
   
-  return wrench;
+  return grf;
 
 }
 
-void interpStateActionPair(State s, Action a,double t0,double dt, std::vector<State> &interp_reduced_path, std::vector<Wrench> &interp_wrench,
-    std::vector<double> &interp_t, std::vector<int> &interp_phase)
+double getPitchFromState(State s, FastTerrainMap& terrain) {
+
+  std::array<double, 3> surf_norm = terrain.getSurfaceNormal(s[0], s[1]);
+
+  double denom = s[3]*s[3] + s[4]*s[4];
+
+  if (denom <= 0 || surf_norm[2] <=0) {
+    double default_pitch = 0;
+    return default_pitch;
+  } else {
+
+    double v_proj = (s[3]*surf_norm[0] + s[4]*surf_norm[1])/
+      sqrt(denom);
+
+    double pitch = atan2(v_proj,surf_norm[2]);
+
+    return pitch;
+  }
+}
+
+double getHeightFromState(State s, FastTerrainMap& terrain) {
+
+  return (0.3+terrain.getGroundHeight(s[0], s[1]));
+
+}
+
+void interpStateActionPair(State s, Action a,double t0,double dt, 
+  std::vector<State> &interp_reduced_plan, std::vector<GRF> &interp_GRF,
+  std::vector<double> &interp_t, std::vector<int> &interp_primitive_id,
+  FastTerrainMap& terrain)
 {
   double t_s = a[6];
   double t_f = a[7];
@@ -336,24 +313,33 @@ void interpStateActionPair(State s, Action a,double t0,double dt, std::vector<St
   for (double t = 0; t < t_s; t += dt)
   {
     interp_t.push_back(t0+t);
-    interp_reduced_path.push_back(applyStance(s,a,t));
-    interp_wrench.push_back(getWrench(a,t));
+    interp_reduced_plan.push_back(applyStance(s,a,t,terrain));
+    interp_GRF.push_back(getGRF(a,t));
 
     if (t_f==0)
-      interp_phase.push_back(CONNECT_STANCE);
+      interp_primitive_id.push_back(CONNECT_STANCE);
     else
-      interp_phase.push_back(STANCE);
+      interp_primitive_id.push_back(STANCE);
   }
 
-  // Include the exact moment of liftoff
-  State s_takeoff = applyStance(s, a);
+  // Include the exact moment of liftoff if flight phase exists
+  State s_takeoff = applyStance(s, a, terrain);
+  if (t_f>0) {
+    interp_t.push_back(t0+t_s);
+    interp_reduced_plan.push_back(s_takeoff);
+    interp_GRF.push_back(getGRF(a,t_s));
+    interp_primitive_id.push_back(STANCE);
+  }
 
+  // Include the remainder of the flight phase (double count takeoff state to
+  // get discontinuous dropoff in grf when interpolating)
   for (double t = 0; t < t_f; t += dt)
   {
     interp_t.push_back(t0+t_s+t);
-    interp_reduced_path.push_back(applyFlight(s_takeoff, t));
-    interp_wrench.push_back(getWrench(a,t_s+t));
-    interp_phase.push_back(FLIGHT);
+    interp_reduced_plan.push_back(applyFlight(s_takeoff, t));
+    GRF grf = {0,0,0};
+    interp_GRF.push_back(grf);
+    interp_primitive_id.push_back(FLIGHT);
   }
 
   // // Include the exact landing state if there is a flight phase
@@ -361,35 +347,41 @@ void interpStateActionPair(State s, Action a,double t0,double dt, std::vector<St
   // {
   //   interp_t.push_back(t_s+t_f+t0);
   //   interp_path.push_back(applyFlight(s_takeoff, t_f));
-  //   interp_wrench.push_back(getWrench(a,t_s+t_f));
-  //   interp_phase.push_back(STANCE);
+  //   interp_GRF.push_back(getGRF(a,t_s+t_f));
+  //   interp_primitive_id.push_back(STANCE);
   // }
 }
 
-
-
-void getInterpPath(std::vector<State> state_sequence, std::vector<Action> action_sequence,double dt, double t0, std::vector<FullState> &interp_full_path, 
-    std::vector<Wrench> &interp_wrench, std::vector<double> &interp_t, std::vector<int> &interp_phase)
+void getInterpPlan(std::vector<State> state_sequence,
+  std::vector<Action> action_sequence,double dt, double t0,
+  std::vector<FullState> &interp_full_plan, std::vector<GRF> &interp_GRF, 
+  std::vector<double> &interp_t, std::vector<int> &interp_primitive_id,
+  FastTerrainMap& terrain)
 {
-  std::vector<State> interp_reduced_path;
+  std::vector<State> interp_reduced_plan;
 
   // Loop through state action pairs, interp each and add to the path
   for (int i=0; i < action_sequence.size();i++)
   {
-    interpStateActionPair(state_sequence[i], action_sequence[i], t0, dt, interp_reduced_path, interp_wrench, interp_t, interp_phase);
+    interpStateActionPair(state_sequence[i], action_sequence[i], t0, dt, 
+      interp_reduced_plan, interp_GRF, interp_t, interp_primitive_id, terrain);
     t0 += (action_sequence[i][6] + action_sequence[i][7]);
   }
 
-  // Add the final state in case it was missed by interp (wrench is undefined here so just copy the last element)
+  // Add the final state in case it was missed by interp (GRF is undefined 
+  // here so just copy the last element)
   interp_t.push_back(t0);
-  interp_reduced_path.push_back(state_sequence.back());
-  interp_wrench.push_back(interp_wrench.back());
+  interp_reduced_plan.push_back(state_sequence.back());
+  interp_GRF.push_back(interp_GRF.back());
+  interp_primitive_id.push_back(STANCE);
 
+  // Lift from reduced into full body plan
+  addFullStates(interp_reduced_plan, dt, interp_full_plan, terrain);
 
-  addFullStates(interp_reduced_path, dt, interp_full_path);
 }
 
-std::array<double,3> rotateGRF(std::array<double,3> surface_norm, std::array<double,3> grf)
+std::array<double,3> rotateGRF(std::array<double,3> surface_norm,
+  std::array<double,3> grf)
 {
   // Receive data and convert to Eigen
   Eigen::Vector3d Zs;
@@ -415,7 +407,7 @@ std::array<double,3> rotateGRF(std::array<double,3> surface_norm, std::array<dou
        -v[1], v[0], 0;
 
   Eigen::Matrix3d R; // Rotation matrix to rotate from contact frame to spatial frame
-  double eps = 0.000001;
+  double eps = 1e-6;
   if (s < eps)
   {
     R = Eigen::Matrix3d::Identity();
@@ -431,7 +423,7 @@ std::array<double,3> rotateGRF(std::array<double,3> surface_norm, std::array<dou
   return grf_spatial;
 }
 
-State applyStance(State s, Action a, double t)
+State applyStance(State s, Action a, double t, FastTerrainMap& terrain)
 {
   double a_x_td = a[0]; // Acceleration in x at touchdown
   double a_y_td = a[1];
@@ -441,18 +433,12 @@ State applyStance(State s, Action a, double t)
   double a_z_to = a[5];
   double t_s = a[6];
 
-  double a_p_td = a[8]; // Acceleration in pitch at touchdown
-  double a_p_to = a[9];
-
   double x_td = s[0];
   double y_td = s[1];
   double z_td = s[2];
   double dx_td = s[3];
   double dy_td = s[4];
   double dz_td = s[5];
-
-  double p_td = s[6];
-  double dp_td = s[7];
 
   State s_new;
 
@@ -463,15 +449,20 @@ State applyStance(State s, Action a, double t)
   s_new[4] = dy_td + a_y_td*t + (a_y_to - a_y_td)*t*t/(2.0*t_s);
   s_new[5] = dz_td + a_z_td*t + (a_z_to - a_z_td)*t*t/(2.0*t_s);
 
-  s_new[6] = p_td + dp_td*t + 0.5*a_p_td*t*t + (a_p_to - a_p_td)*(t*t*t)/(6.0*t_s);
-  s_new[7] = dp_td + a_p_td*t + (a_p_to - a_p_td)*t*t/(2.0*t_s);
+  if (a[7] > 0) {
+    s_new[2] = z_td + dz_td*t + 0.5*a_z_td*t*t + (a_z_to - a_z_td)*(t*t*t)/(6.0*t_s);
+    s_new[5] = dz_td + a_z_td*t + (a_z_to - a_z_td)*t*t/(2.0*t_s);
+  } else {
+    s_new[2] = getHeightFromState(s_new, terrain);
+    s_new[5] = 0;//sqrt(s_new[3]*s_new[3] + s_new[4]*s_new[4])*sin();
+  }
 
   return s_new;
 }
 
-State applyStance(State s, Action a)
+State applyStance(State s, Action a, FastTerrainMap& terrain)
 {
-  return applyStance(s, a, a[6]);
+  return applyStance(s, a, a[6], terrain);
 }
 
 State applyFlight(State s, double t_f)
@@ -484,9 +475,6 @@ State applyFlight(State s, double t_f)
   double dy_to = s[4];
   double dz_to = s[5];
 
-  double p_to = s[6];
-  double dp_to = s[7];
-
   State s_new;
   s_new[0] = x_to + dx_to*t_f;
   s_new[1] = y_to + dy_to*t_f;
@@ -495,13 +483,10 @@ State applyFlight(State s, double t_f)
   s_new[4] = dy_to;
   s_new[5] = dz_to - g*t_f;
 
-  s_new[6] = p_to + dp_to*t_f;
-  s_new[7] = dp_to;
-
   return s_new;
 }
 
-State applyAction(State s, Action a)
+State applyAction(State s, Action a, FastTerrainMap& terrain)
 {
   double t_s;
   double t_f;
@@ -509,12 +494,12 @@ State applyAction(State s, Action a)
   t_s = a[6];
   t_f = a[7];
 
-  State s_to = applyStance(s, a);
+  State s_to = applyStance(s, a, terrain);
   State s_new = applyFlight(s_to, t_f);
   return s_new;
 }
 
-State applyStanceReverse(State s, Action a, double t)
+State applyStanceReverse(State s, Action a, double t, FastTerrainMap& terrain)
 {
   double a_x_td = a[0];
   double a_y_td = a[1];
@@ -524,9 +509,6 @@ State applyStanceReverse(State s, Action a, double t)
   double a_z_to = a[5];
   double t_s = a[6];
 
-  double a_p_td = a[8]; // Acceleration in pitch at touchdown
-  double a_p_to = a[9];
-
   double x_to = s[0];
   double y_to = s[1];
   double z_to = s[2];
@@ -534,16 +516,11 @@ State applyStanceReverse(State s, Action a, double t)
   double dy_to = s[4];
   double dz_to = s[5];
 
-  double p_to = s[6];
-  double dp_to = s[7];
-
   State s_new;
 
   double cx = dx_to - a_x_td*t_s - 0.5*(a_x_to - a_x_td)*t_s;
   double cy = dy_to - a_y_td*t_s - 0.5*(a_y_to - a_y_td)*t_s;
   double cz = dz_to - a_z_td*t_s - 0.5*(a_z_to - a_z_td)*t_s;
-
-  double cp = dp_to - a_p_td*t_s - 0.5*(a_p_to - a_p_td)*t_s;
 
   s_new[3] = dx_to - a_x_td*(t_s - t) - (a_x_to - a_x_td)*(t_s*t_s - t*t)/(2.0*t_s);
   s_new[4] = dy_to - a_y_td*(t_s - t) - (a_y_to - a_y_td)*(t_s*t_s - t*t)/(2.0*t_s);
@@ -552,15 +529,20 @@ State applyStanceReverse(State s, Action a, double t)
   s_new[1] = y_to - cy*(t_s - t) - 0.5*a_y_td*(t_s*t_s - t*t) - (a_y_to - a_y_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
   s_new[2] = z_to - cz*(t_s - t) - 0.5*a_z_td*(t_s*t_s - t*t) - (a_z_to - a_z_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
 
-  s_new[7] = dp_to - a_p_td*(t_s - t) - (a_p_to - a_p_td)*(t_s*t_s - t*t)/(2.0*t_s);
-  s_new[6] = p_to - cp*(t_s - t) - 0.5*a_p_td*(t_s*t_s - t*t) - (a_p_to - a_p_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
+  if (a[7] > 0) {
+    s_new[2] = z_to - cz*(t_s - t) - 0.5*a_z_td*(t_s*t_s - t*t) - (a_z_to - a_z_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
+    s_new[5] = dz_to - a_z_td*(t_s - t) - (a_z_to - a_z_td)*(t_s*t_s - t*t)/(2.0*t_s);
+  } else {
+    s_new[2] = getHeightFromState(s_new, terrain);
+    s_new[5] = 0;//sqrt(s_new[3]*s_new[3] + s_new[4]*s_new[4])*sin();
+  }
 
   return s_new;
 }
 
-State applyStanceReverse(State s, Action a)
+State applyStanceReverse(State s, Action a, FastTerrainMap& terrain)
 {
-  return applyStanceReverse(s, a, 0);
+  return applyStanceReverse(s, a, 0, terrain);
 }
 
 Action getRandomAction(std::array<double, 3> surf_norm)
@@ -597,13 +579,6 @@ Action getRandomAction(std::array<double, 3> surf_norm)
   a[6] = t_s;
   a[7] = t_f;
 
-  // Randomly sample angular acceleration from a normal distribution with low std
-  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-  std::default_random_engine generator(seed);
-  std::normal_distribution<double> ang_acc_distribution(0.0,(ANG_ACC_MAX/4.0)); // std is such that the max and min are 4 std away from mean
-  a[8] = std::max(std::min(ang_acc_distribution(generator), ANG_ACC_MAX), -ANG_ACC_MAX); //0.0; // for now
-  a[9] = std::max(std::min(ang_acc_distribution(generator), ANG_ACC_MAX), -ANG_ACC_MAX); //0.0;
-
   return a;
 }
 
@@ -625,20 +600,18 @@ bool isValidAction(Action a)
   double f_y_to = m*a[4];
   double f_z_to = m*(a[5] + g);
 
-  double a_p_td = a[8];
-  double a_p_to = a[9];
-
   // Check force limits
   if ((sqrt(f_x_td*f_x_td + f_y_td*f_y_td + f_z_td*f_z_td) >= F_MAX) || 
     (sqrt(f_x_to*f_x_to + f_y_to*f_y_to + f_z_to*f_z_to) >= F_MAX) ||
-    (f_z_td < 0) || (f_z_to < 0) || (a_p_td >= F_MAX) || (a_p_to >= F_MAX) )
+    (f_z_td < 0) || (f_z_to < 0) )
   {
     // std::cout << "Force limits violated" << std::endl;
     return false;
   }
 
   // Check friction cone
-  if ((sqrt(f_x_td*f_x_td + f_y_td*f_y_td) >= mu*f_z_td) || (sqrt(f_x_to*f_x_to + f_y_to*f_y_to) >= mu*f_z_to))
+  if ((sqrt(f_x_td*f_x_td + f_y_td*f_y_td) >= mu*f_z_td) || 
+    (sqrt(f_x_to*f_x_to + f_y_to*f_y_to) >= mu*f_z_to))
   {
     // std::cout << "Friction cone violated" << std::endl;
     return false;
@@ -654,15 +627,15 @@ bool isValidState(State s, FastTerrainMap& terrain, int phase)
   if (terrain.isInRange(s[0], s[1]) == false)
     return false;
 
-  if (abs(s[6]) >= P_MAX)
-    return false;
-
   if (sqrt(s[3]*s[3] + s[4]*s[4]) > V_MAX) // Ignore limit on vertical velocity since this is accurately bounded by gravity
     return false;
 
   // Find yaw, pitch, and their sines and cosines
   double yaw = atan2(s[4],s[3]); double cy = cos(yaw); double sy = sin(yaw);
-  double pitch = s[6]; double cp = cos(pitch); double sp = sin(pitch);  
+  
+  double pitch = getPitchFromState(s,terrain);
+  // double pitch = 0;
+  double cp = cos(pitch); double sp = sin(pitch);  
 
   // Compute each element of the rotation matrix
   double R_11 = cy*cp; double R_12 = -sy; double R_13 = cy*sp;
@@ -687,18 +660,22 @@ bool isValidState(State s, FastTerrainMap& terrain, int phase)
       double z_corner = z_leg + R_33*z_body;
 
       double leg_height = z_leg - terrain.getGroundHeight(x_leg,y_leg);
-      double corner_height = z_corner - terrain.getGroundHeight(x_corner,y_corner);
+      double corner_height = z_corner - 
+        terrain.getGroundHeight(x_corner,y_corner);
       // std::cout << "x,y,z = (" << x_spatial << ", " << y_spatial << ", " << z_spatial << "), height = " <<
       //     z_spatial << " - " << terrain.getGroundHeight(x_spatial,y_spatial) << " = " << height << std::endl;
 
       // Always check for collision, only check reachability in stance
-      if ((corner_height < H_MIN) || ((phase == STANCE) && (leg_height > H_MAX)))
+      if ((corner_height < H_MIN) || ((phase == STANCE) && 
+        (leg_height > H_MAX))) {
         return false;
+      }
     }
   }
 
   // Check the center of the underside of the robot
-  double height = (s[2] + R_33*z_body) - terrain.getGroundHeight(s[0] + R_13*z_body,s[1] + R_23*z_body);
+  double height = (s[2] + R_33*z_body) - terrain.getGroundHeight(s[0] + 
+    R_13*z_body,s[1] + R_23*z_body);
   if (height < H_MIN)
     return false;
 
@@ -706,7 +683,8 @@ bool isValidState(State s, FastTerrainMap& terrain, int phase)
   return true;
 }
 
-bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain, State &s_new, double& t_new)
+bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain, 
+  State &s_new, double& t_new)
 {
   double t_s;
   double t_f;
@@ -716,11 +694,11 @@ bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain, State &s
 
     for (double t = 0; t <= t_s; t += KINEMATICS_RES)
   {
-    State s_check = applyStance(s,a,t);
+    State s_check = applyStance(s,a,t,terrain);
 
     if (isValidState(s_check, terrain, STANCE) == false)
     {
-      s_new = applyStance(s,a,(1.0-BACKUP_RATIO)*t);
+      s_new = applyStance(s,a,(1.0-BACKUP_RATIO)*t,terrain);
       // s_new = applyStance(s,a,(t - BACKUP_TIME));
       return false;
     } else {
@@ -729,7 +707,7 @@ bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain, State &s
     }
   }
 
-  State s_takeoff = applyStance(s, a);
+  State s_takeoff = applyStance(s, a,terrain);
 
   for (double t = 0; t < t_f; t += KINEMATICS_RES)
   {
@@ -761,7 +739,8 @@ bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain)
   return isValidStateActionPair(s, a, terrain, dummy_state, dummy_time);
 }
 
-bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain, State &s_new, double& t_new)
+bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain, 
+  State &s_new, double& t_new)
 {
   double t_s;
   double t_f;
@@ -781,11 +760,11 @@ bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain, S
 
   for (double t = t_s; t >= 0; t -= KINEMATICS_RES)
   {
-    State s_check = applyStanceReverse(s_takeoff,a,t);
+    State s_check = applyStanceReverse(s_takeoff,a,t,terrain);
 
     if (isValidState(s_check, terrain, STANCE) == false)
     {
-      s_new = applyStance(s,a,t + BACKUP_RATIO*(t_s - t));
+      s_new = applyStance(s,a,t + BACKUP_RATIO*(t_s - t), terrain);
       return false;
     } else {
       s_new = s_check;
@@ -794,7 +773,7 @@ bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain, S
   }
 
   // Check the exact starting state
-  State s_start = applyStanceReverse(s_takeoff,a);
+  State s_start = applyStanceReverse(s_takeoff,a, terrain);
   if (isValidState(s_start, terrain, STANCE) == false)
   {
     return false;

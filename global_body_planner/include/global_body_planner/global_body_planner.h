@@ -77,10 +77,11 @@ class GlobalBodyPlanner {
      * @brief Update the body plan with the current plan
      * @param[in] t Time of state in trajectory
      * @param[in] body_state Body state
-     * @param[in] body_wrench Wrench applied to body
+     * @param[in] grf GRF applied to body
      * @param[in] body_plan_msg Body plan message
      */
-    void addStateWrenchToMsg(double t, FullState body_state, Wrench body_wrench, spirit_msgs::BodyPlan& body_plan_msg);
+    void addStateAndGRFToMsg(double t, FullState body_state, GRF grf,
+      int primitive_id, spirit_msgs::BodyPlan& body_plan_msg);
 
     /**
      * @brief Publish the current body plan
@@ -128,14 +129,17 @@ class GlobalBodyPlanner {
     /// Struct for terrain map data
     FastTerrainMap terrain_;
 
+    /// Std vector containing the interpolated time data
+    std::vector<double> t_plan_;
+
     /// Std vector containing the interpolated robot body plan
     std::vector<FullState> body_plan_;
 
     /// Std vector containing the interpolated wrench plan
-    std::vector<Wrench> wrench_plan_;
+    std::vector<GRF> grf_plan_;
 
     /// Std vector containing the interpolated time data
-    std::vector<double> t_plan_;
+    std::vector<int> primitive_id_plan_;
 
     /// Time stamp for the beginning of the plan
     ros::Time plan_timestamp_;

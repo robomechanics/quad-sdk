@@ -95,8 +95,8 @@ private:
   /// ROS Publisher for the interpolated body plan vizualization
   ros::Publisher body_plan_viz_pub_;
 
-  /// ROS Publisher for the interpolated body wrench plan vizualization
-  ros::Publisher body_wrench_plan_viz_pub_;
+  /// ROS Publisher for the interpolated grf plan vizualization
+  ros::Publisher grf_plan_viz_pub_;
 
   /// ROS Publisher for the discrete body plan vizualization
   ros::Publisher discrete_body_plan_viz_pub_;

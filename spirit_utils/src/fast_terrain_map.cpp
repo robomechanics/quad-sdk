@@ -12,19 +12,29 @@ void FastTerrainMap::loadData(int x_size,
   std::vector<double> x_data,
   std::vector<double> y_data,
   std::vector<std::vector<double>> z_data,
-  std::vector<std::vector<double>> dx_data,
-  std::vector<std::vector<double>> dy_data,
-  std::vector<std::vector<double>> dz_data){
+  std::vector<std::vector<double>> nx_data,
+  std::vector<std::vector<double>> ny_data,
+  std::vector<std::vector<double>> nz_data,
+  std::vector<std::vector<double>> z_data_filt,
+  std::vector<std::vector<double>> nx_data_filt,
+  std::vector<std::vector<double>> ny_data_filt,
+  std::vector<std::vector<double>> nz_data_filt){
 
   // Load the data into the object's private variables
   x_size_ = x_size;
   y_size_ = y_size;
   x_data_ = x_data;
   y_data_ = y_data;
+
   z_data_ = z_data;
-  dx_data_ = dx_data;
-  dy_data_ = dy_data;
-  dz_data_ = dz_data;
+  nx_data_ = nx_data;
+  ny_data_ = ny_data;
+  nz_data_ = nz_data;
+
+  z_data_filt_ = z_data_filt;
+  nx_data_filt_ = nx_data_filt;
+  ny_data_filt_ = ny_data_filt;
+  nz_data_filt_ = nz_data_filt;
 }
 
 void FastTerrainMap::loadDataFromGridMap(grid_map::GridMap map){
@@ -34,9 +44,13 @@ void FastTerrainMap::loadDataFromGridMap(grid_map::GridMap map){
   std::vector<double> x_data(x_size);
   std::vector<double> y_data(y_size);
   std::vector<std::vector<double> > z_data(x_size);
-  std::vector<std::vector<double> > dx_data(x_size);
-  std::vector<std::vector<double> > dy_data(x_size);
-  std::vector<std::vector<double> > dz_data(x_size);
+  std::vector<std::vector<double> > nx_data(x_size);
+  std::vector<std::vector<double> > ny_data(x_size);
+  std::vector<std::vector<double> > nz_data(x_size);
+  std::vector<std::vector<double> > z_data_filt(x_size);
+  std::vector<std::vector<double> > nx_data_filt(x_size);
+  std::vector<std::vector<double> > ny_data_filt(x_size);
+  std::vector<std::vector<double> > nz_data_filt(x_size);
 
   // Load the x and y data coordinates
   for (int i=0; i<x_size; i++)
@@ -60,20 +74,36 @@ void FastTerrainMap::loadDataFromGridMap(grid_map::GridMap map){
     for (int j=0; j<y_size; j++)
     {
       grid_map::Index index = {(x_size-1)-i, (y_size-1)-j};
-      double height = (double) map.at("elevation", index);
+      double height = (double) map.at("z", index);
       z_data[i].push_back(height);
 
-      if (map.exists("dx") == true) {
-        double dx = (double) map.at("dx", index);
-        double dy = (double) map.at("dy", index);
-        double dz = (double) map.at("dz", index);
-        dx_data[i].push_back(dx);
-        dy_data[i].push_back(dy);
-        dz_data[i].push_back(dz);
+      if (map.exists("nx") == true) {
+        double nx = (double) map.at("nx", index);
+        double ny = (double) map.at("ny", index);
+        double nz = (double) map.at("nz", index);
+        nx_data[i].push_back(nx);
+        ny_data[i].push_back(ny);
+        nz_data[i].push_back(nz);
       } else {
-        dx_data[i].push_back(0.0);
-        dy_data[i].push_back(0.0);
-        dz_data[i].push_back(1.0);
+        nx_data[i].push_back(0.0);
+        ny_data[i].push_back(0.0);
+        nz_data[i].push_back(1.0);
+      }
+
+      if (map.exists("z_filt") == true) {
+        double z_filt = (double) map.at("z_filt", index);
+        double nx_filt = (double) map.at("nx_filt", index);
+        double ny_filt = (double) map.at("ny_filt", index);
+        double nz_filt = (double) map.at("nz_filt", index);
+        z_data_filt[i].push_back(z_filt);
+        nx_data_filt[i].push_back(nx_filt);
+        ny_data_filt[i].push_back(ny_filt);
+        nz_data_filt[i].push_back(nz_filt);
+      } else {
+        z_data_filt[i].push_back(height);
+        nx_data_filt[i].push_back(0.0);
+        ny_data_filt[i].push_back(0.0);
+        nz_data_filt[i].push_back(1.0);
       }
     }
   }
@@ -83,10 +113,16 @@ void FastTerrainMap::loadDataFromGridMap(grid_map::GridMap map){
   y_size_ = y_size;
   x_data_ = x_data;
   y_data_ = y_data;
+
   z_data_ = z_data;
-  dx_data_ = dx_data;
-  dy_data_ = dy_data;
-  dz_data_ = dz_data;
+  nx_data_ = nx_data;
+  ny_data_ = ny_data;
+  nz_data_ = nz_data;
+
+  z_data_filt_ = z_data_filt;
+  nx_data_filt_ = nx_data_filt;
+  ny_data_filt_ = ny_data_filt;
+  nz_data_filt_ = nz_data_filt;
 }
 
 bool FastTerrainMap::isInRange(const double x, const double y) {
@@ -140,6 +176,47 @@ double FastTerrainMap::getGroundHeight(const double x, const double y) {
   return height;
 }
 
+double FastTerrainMap::getGroundHeightFiltered(const double x, const double y) {
+  // spirit_utils::FunctionTimer timer(__FUNCTION__);
+  
+  double x1, x2, y1, y2;
+
+  // Find the correct x values to interpolate between
+  int ix=0; int iy = 0;
+  for(int i=0;i<x_size_;i++)
+  {
+      if(x_data_[i]<=x && x<x_data_[i+1])
+      {
+          x1 = x_data_[i];
+          x2 = x_data_[i+1];
+          ix = i;
+          break;
+      }
+  }
+
+  // Find the correct y values to interpolate between
+  for(int i=0;i<y_size_;i++)
+  {
+      if(y_data_[i]<=y && y<y_data_[i+1])
+      {
+          y1 = y_data_[i];
+          y2 = y_data_[i+1];
+          iy = i;
+          break;
+      }
+  }
+
+  // Perform bilinear interpolation
+  double fx1y1 = z_data_filt_[ix][iy];
+  double fx1y2 = z_data_filt_[ix][iy+1];
+  double fx2y1 = z_data_filt_[ix+1][iy];
+  double fx2y2 = z_data_filt_[ix+1][iy+1];
+  double height = 1.0/((x2-x1)*(y2-y1))*(fx1y1*(x2-x)*(y2-y) + fx2y1*(x-x1)*(y2-y) + fx1y2*(x2-x)*(y-y1) + fx2y2*(x-x1)*(y-y1));
+
+  // timer.report();
+  return height;
+}
+
 std::array<double, 3> FastTerrainMap::getSurfaceNormal(double x, double y)
 {
     std::array<double, 3> surf_norm;
@@ -169,24 +246,76 @@ std::array<double, 3> FastTerrainMap::getSurfaceNormal(double x, double y)
         }
     }
 
-    double fx_x1y1 = dx_data_[ix][iy];
-    double fx_x1y2 = dx_data_[ix][iy+1];
-    double fx_x2y1 = dx_data_[ix+1][iy];
-    double fx_x2y2 = dx_data_[ix+1][iy+1];
+    double fx_x1y1 = nx_data_[ix][iy];
+    double fx_x1y2 = nx_data_[ix][iy+1];
+    double fx_x2y1 = nx_data_[ix+1][iy];
+    double fx_x2y2 = nx_data_[ix+1][iy+1];
 
     surf_norm[0] = 1.0/((x2-x1)*(y2-y1))*(fx_x1y1*(x2-x)*(y2-y) + fx_x2y1*(x-x1)*(y2-y) + fx_x1y2*(x2-x)*(y-y1) + fx_x2y2*(x-x1)*(y-y1));
 
-    double fy_x1y1 = dy_data_[ix][iy];
-    double fy_x1y2 = dy_data_[ix][iy+1];
-    double fy_x2y1 = dy_data_[ix+1][iy];
-    double fy_x2y2 = dy_data_[ix+1][iy+1];
+    double fy_x1y1 = ny_data_[ix][iy];
+    double fy_x1y2 = ny_data_[ix][iy+1];
+    double fy_x2y1 = ny_data_[ix+1][iy];
+    double fy_x2y2 = ny_data_[ix+1][iy+1];
 
     surf_norm[1] = 1.0/((x2-x1)*(y2-y1))*(fy_x1y1*(x2-x)*(y2-y) + fy_x2y1*(x-x1)*(y2-y) + fy_x1y2*(x2-x)*(y-y1) + fy_x2y2*(x-x1)*(y-y1));
 
-    double fz_x1y1 = dz_data_[ix][iy];
-    double fz_x1y2 = dz_data_[ix][iy+1];
-    double fz_x2y1 = dz_data_[ix+1][iy];
-    double fz_x2y2 = dz_data_[ix+1][iy+1];
+    double fz_x1y1 = nz_data_[ix][iy];
+    double fz_x1y2 = nz_data_[ix][iy+1];
+    double fz_x2y1 = nz_data_[ix+1][iy];
+    double fz_x2y2 = nz_data_[ix+1][iy+1];
+
+    surf_norm[2] = 1.0/((x2-x1)*(y2-y1))*(fz_x1y1*(x2-x)*(y2-y) + fz_x2y1*(x-x1)*(y2-y) + fz_x1y2*(x2-x)*(y-y1) + fz_x2y2*(x-x1)*(y-y1));
+    return surf_norm;
+}
+
+std::array<double, 3> FastTerrainMap::getSurfaceNormalFiltered(double x, double y)
+{
+    std::array<double, 3> surf_norm;
+
+    double x1, x2, y1, y2;
+
+    int ix=0; int iy = 0;
+    for(int i=0;i<x_size_;i++)
+    {
+        if(x_data_[i]<=x && x<x_data_[i+1])
+        {
+            x1 = x_data_[i];
+            x2 = x_data_[i+1];
+            ix = i;
+            break;
+        }
+    }
+
+    for(int i=0;i<y_size_;i++)
+    {
+        if(y_data_[i]<=y && y<y_data_[i+1])
+        {
+            y1 = y_data_[i];
+            y2 = y_data_[i+1];
+            iy = i;
+            break;
+        }
+    }
+
+    double fx_x1y1 = nx_data_filt_[ix][iy];
+    double fx_x1y2 = nx_data_filt_[ix][iy+1];
+    double fx_x2y1 = nx_data_filt_[ix+1][iy];
+    double fx_x2y2 = nx_data_filt_[ix+1][iy+1];
+
+    surf_norm[0] = 1.0/((x2-x1)*(y2-y1))*(fx_x1y1*(x2-x)*(y2-y) + fx_x2y1*(x-x1)*(y2-y) + fx_x1y2*(x2-x)*(y-y1) + fx_x2y2*(x-x1)*(y-y1));
+
+    double fy_x1y1 = ny_data_filt_[ix][iy];
+    double fy_x1y2 = ny_data_filt_[ix][iy+1];
+    double fy_x2y1 = ny_data_filt_[ix+1][iy];
+    double fy_x2y2 = ny_data_filt_[ix+1][iy+1];
+
+    surf_norm[1] = 1.0/((x2-x1)*(y2-y1))*(fy_x1y1*(x2-x)*(y2-y) + fy_x2y1*(x-x1)*(y2-y) + fy_x1y2*(x2-x)*(y-y1) + fy_x2y2*(x-x1)*(y-y1));
+
+    double fz_x1y1 = nz_data_filt_[ix][iy];
+    double fz_x1y2 = nz_data_filt_[ix][iy+1];
+    double fz_x2y1 = nz_data_filt_[ix+1][iy];
+    double fz_x2y2 = nz_data_filt_[ix+1][iy+1];
 
     surf_norm[2] = 1.0/((x2-x1)*(y2-y1))*(fz_x1y1*(x2-x)*(y2-y) + fz_x2y1*(x-x1)*(y2-y) + fz_x1y2*(x2-x)*(y-y1) + fz_x2y2*(x-x1)*(y-y1));
     return surf_norm;

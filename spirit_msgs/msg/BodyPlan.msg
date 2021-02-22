@@ -5,5 +5,6 @@
 # This should match the first state in the states vector.
 
 Header header
+uint32[] primitive_ids
 nav_msgs/Odometry[] states
-geometry_msgs/Wrench[] wrenches
+geometry_msgs/Vector3[] grfs
