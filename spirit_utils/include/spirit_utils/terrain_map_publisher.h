@@ -79,6 +79,9 @@ private:
   /// grid_map::GridMap object for terrain data
   grid_map::GridMap terrain_map_;
 
+  /// String for the terrain file name
+  std::string terrain_type_;
+
   /// string of the source of the terrain map data
   std::string map_data_source_;
 

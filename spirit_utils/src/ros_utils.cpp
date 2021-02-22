@@ -15,4 +15,3 @@ bool spirit_utils::loadROSParam(std::string paramName, ParamType &varName)
 {
   
 }
-

@@ -17,13 +17,20 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   spirit_msgs
   spirit_utils
+  mpcplusplus
 )
 
 ## System dependencies are found with CMake's conventions
 find_package(Eigen3 REQUIRED)
+find_package(OsqpEigen REQUIRED)
+
+set(QPOASES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/qpOASES")
+set(QPOASES_INCLUDE_DIRS "${QPOASES_DIR}/include")
+set(QPOASES_LIBRARIES "${QPOASES_DIR}/build/libs")
+find_library(QPOASES NAMES qpOASES PATHS ${QPOASES_LIBRARIES} REQUIRED)
 
 catkin_package(
-  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
+  INCLUDE_DIRS include
   CATKIN_DEPENDS roscpp std_msgs spirit_msgs spirit_utils
   DEPENDS EIGEN3
 )
@@ -34,15 +41,19 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
+#message(STATUS ${OSQP_INCLUDE_DIRS})
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
+  ${QPOASES_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library for control
 add_library(mpc_controller
 	src/mpc_controller.cpp
 )
+target_link_libraries(mpc_controller OsqpEigen::OsqpEigen)
 add_dependencies(mpc_controller ${mpc_controller_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
@@ -53,7 +64,7 @@ add_executable(mpc_controller_node src/mpc_controller_node.cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(mpc_controller_node
   mpc_controller
-	${catkin_LIBRARIES}
+  ${catkin_LIBRARIES}
 )
 
 #############

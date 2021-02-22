@@ -95,8 +95,6 @@ target_link_libraries(robot_proxy_node
   ${catkin_LIBRARIES}
 )
 
-
-
 #############
 ## Testing ##
 #############

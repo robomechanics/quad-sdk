@@ -7,22 +7,29 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
 
   // Load rosparams from parameter server
   std::string foot_plan_discrete_topic, foot_plan_continuous_topic;
-  nh.param<std::string>("topics/terrain_map", terrain_map_topic_, "/terrain_map");
+
+  nh.param<std::string>("topics/terrain_map", 
+    terrain_map_topic_, "/terrain_map");
   nh.param<std::string>("topics/body_plan", body_plan_topic_, "/body_plan");
-  nh.param<std::string>("topics/foot_plan_discrete", foot_plan_discrete_topic, "/foot_plan_discrete");
-  nh.param<std::string>("topics/foot_plan_continuous", foot_plan_continuous_topic, "/foot_plan_continuous");
-  nh.param<std::string>("map_frame",map_frame_,"/map");
+  nh.param<std::string>("topics/foot_plan_discrete", 
+    foot_plan_discrete_topic, "/foot_plan_discrete");
+  nh.param<std::string>("topics/foot_plan_continuous", 
+    foot_plan_continuous_topic, "/foot_plan_continuous");
+  nh.param<std::string>("map_frame",map_frame_,"map");
+
   nh.param<double>("local_footstep_planner/update_rate", update_rate_, 1);
   nh.param<double>("local_footstep_planner/grf_weight", grf_weight_, 0.5);
-  nh.param<double>("local_footstep_planner/max_footstep_horizon", max_footstep_horizon_, 1.5);
+  nh.param<double>("local_footstep_planner/max_footstep_horizon", 
+    max_footstep_horizon_, 1.5);
   nh.param<int>("local_footstep_planner/num_cycles", num_cycles_, 3);
   nh.param<double>("local_footstep_planner/period", period_, 0.25);
-  nh.param<double>("local_footstep_planner/ground_clearance", ground_clearance_, 0.1);
+  nh.param<double>("local_footstep_planner/ground_clearance", 
+    ground_clearance_, 0.1);
   nh.param<double>("local_footstep_planner/interp_dt", interp_dt_, 0.01);
 
   if (grf_weight_>1 || grf_weight_<0) {
     grf_weight_ = std::min(std::max(grf_weight_,0.0),1.0);
-    ROS_WARN("Invalid alpha in footstep planner, clamping to %4.2f", grf_weight_);
+    ROS_WARN("Invalid grf weight, clamping to %4.2f", grf_weight_);
   }
 
   // Setup pubs and subs
@@ -36,7 +43,8 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
     spirit_msgs::MultiFootPlanContinuous>(foot_plan_continuous_topic,1);
 }
 
-void LocalFootstepPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg) {
+void LocalFootstepPlanner::terrainMapCallback(
+  const grid_map_msgs::GridMap::ConstPtr& msg) {
   // Get the map in its native form
   grid_map::GridMap map;
   grid_map::GridMapRosConverter::fromMessage(*msg, map);
@@ -45,10 +53,13 @@ void LocalFootstepPlanner::terrainMapCallback(const grid_map_msgs::GridMap::Cons
   terrain_.loadDataFromGridMap(map);
 }
 
-void LocalFootstepPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) {
+void LocalFootstepPlanner::bodyPlanCallback(
+  const spirit_msgs::BodyPlan::ConstPtr& msg) {
+
   t_plan_.clear();
   body_plan_.clear();
-  body_wrench_plan_.clear();
+  grf_plan_.clear();
+  primitive_id_plan_.clear();
 
   plan_timestamp_ = msg->header.stamp;
 
@@ -67,7 +78,8 @@ void LocalFootstepPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPt
     m.getRPY(roll, pitch, yaw);
 
     // Get the time associated with this data
-    ros::Duration t_plan = msg->states[i].header.stamp - msg->states[0].header.stamp;
+    ros::Duration t_plan = msg->states[i].header.stamp - 
+      msg->states[0].header.stamp;
     t_plan_.push_back(t_plan.toSec());
 
     // Get the state associated with this data
@@ -75,41 +87,62 @@ void LocalFootstepPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPt
     s[0] = msg->states[i].pose.pose.position.x;
     s[1] = msg->states[i].pose.pose.position.y;
     s[2] = msg->states[i].pose.pose.position.z;
-    s[3] = msg->states[i].twist.twist.linear.x;
-    s[4] = msg->states[i].twist.twist.linear.y;
-    s[5] = msg->states[i].twist.twist.linear.z;
-    s[6] = roll;
-    s[7] = pitch;
-    s[8] = yaw;
+    s[3] = roll;
+    s[4] = pitch;
+    s[5] = yaw;
+    s[6] = msg->states[i].twist.twist.linear.x;
+    s[7] = msg->states[i].twist.twist.linear.y;
+    s[8] = msg->states[i].twist.twist.linear.z;
     s[9] = msg->states[i].twist.twist.angular.x;
     s[10] = msg->states[i].twist.twist.angular.y;
     s[11] = msg->states[i].twist.twist.angular.z;
     body_plan_.push_back(s);
 
     Eigen::Vector3d force;
-    tf::vectorMsgToEigen(msg->wrenches[i].force, force);
-    body_wrench_plan_.push_back(force);
+    tf::vectorMsgToEigen(msg->grfs[i], force);
+    grf_plan_.push_back(force);
+
+    primitive_id_plan_.push_back(msg->primitive_ids[i]);
   }
+}
+
+double LocalFootstepPlanner::computeTimeUntilNextFlight(double t) {
+  double t_remaining = std::numeric_limits<double>::max();
+  for (int i = 1; i < t_plan_.size(); i++) {
+    if (t_plan_[i] > t && primitive_id_plan_[i] == FLIGHT) {
+
+      if (primitive_id_plan_[i-1] == FLIGHT) {
+        t_remaining = 0;
+      } else {
+        t_remaining = t_plan_[i] - t;
+
+      }
+      break;
+    }
+  }
+
+  return t_remaining;
 }
 
 void LocalFootstepPlanner::updateDiscretePlan() {
   // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
-  if (body_plan_.empty())
+  if (body_plan_.empty()) {
+    ROS_WARN_THROTTLE(0.5, "No body plan in LocalFootstepPlanner, exiting");
     return;
+  }
 
   // Clear out the old footstep plan
   footstep_plan_.clear();
   footstep_plan_.resize(num_feet_);
 
   // Define the gait sequence (trot)
-  double t_offsets[num_feet_] = {0.0, 0.5*period_, 0.5*period_, 0.0};
+  double t_offsets_trot[num_feet_] = {0.0, 0.5*period_, 0.5*period_, 0.0};
+  double t_offsets_bound[num_feet_] = {0.0, 0.0, 0.5*period_, 0.5*period_};
   double t_s[num_feet_] = {0.5*period_, 0.5*period_, 0.5*period_, 0.5*period_};
 
-  double footstep_horizon = std::min(num_cycles_*period_, t_plan_.back());
-
   // Specify the number of feet and their offsets from the COM
-  double x_offsets[num_feet_] = {0.25, -0.25, 0.25, -0.25};
+  double x_offsets[num_feet_] = {0.2263, -0.2263, 0.2263, -0.2263};
   double y_offsets[num_feet_] = {0.15, 0.15, -0.15, -0.15};
 
   // ros::Duration t = 0;ros::Time::now() - plan_timestamp_;
@@ -117,29 +150,45 @@ void LocalFootstepPlanner::updateDiscretePlan() {
   int start_index = 0;
   int end_index = start_index + num_cycles_;
 
-  // Loop through each gait cycle
-  for (int i = start_index; i < end_index; i++) {
-    
-    // Compute the initial time for this cycle
-    double t_cycle = i*period_;
+   // Loop through each foot
+  for (int j=0; j<num_feet_; j++) {
 
-    // Loop through each foot
-    for (int j=0; j<num_feet_; j++) {
+    // Loop through each gait cycle
+    for (int i = start_index; i < end_index; i++) {
+      
+      // Compute the initial time for this cycle
+      double t_cycle = i*period_;
+      double t_cycle_end = (i+1)*period_;
+      if (t_cycle_end >=t_plan_.back()) {
+        break;
+      }
+ 
       FootstepState footstep(4);
 
       // Compute the touchdown and midstance times
-      double t_touchdown = t_cycle + t_offsets[j];
-      double t_midstance = t_cycle + t_offsets[j] + 0.5*t_s[j];
+      double t_touchdown = t_cycle + t_offsets_trot[j];
+      double t_midstance = t_cycle + t_offsets_trot[j] + 0.5*t_s[j];
 
-      BodyState s_touchdown = math_utils::interpMat(t_plan_, body_plan_, t_touchdown);
-      BodyState s_midstance = math_utils::interpMat(t_plan_, body_plan_, t_midstance);
-      BodyWrench grf_midstance = math_utils::interpVector3d(t_plan_, body_wrench_plan_, t_midstance);
+      int primitive_id = math_utils::interpInt(t_plan_, 
+        primitive_id_plan_, t_midstance);
+
+      // Skip if this would occur during a flight phase
+      if (primitive_id == FLIGHT) {
+        continue;
+      }
+
+      BodyState s_touchdown = math_utils::interpMat(t_plan_, body_plan_, 
+        t_touchdown);
+      BodyState s_midstance = math_utils::interpMat(t_plan_, body_plan_, 
+        t_midstance);
+      Eigen::Vector3d grf_midstance = math_utils::interpVector3d(t_plan_, 
+        grf_plan_, t_midstance);
 
       // Compute the body and hip positions and velocities
       double x_body = s_touchdown[0];
       double y_body = s_touchdown[1];
       double z_body = s_touchdown[2];
-      double yaw = s_touchdown[8];
+      double yaw = s_touchdown[5];
       double x_hip = x_body + x_offsets[j]*cos(yaw) - y_offsets[j]*sin(yaw);
       double y_hip = y_body + x_offsets[j]*sin(yaw) + y_offsets[j]*cos(yaw);
       double z_hip = z_body; // TODO add in pitch here
@@ -152,11 +201,15 @@ void LocalFootstepPlanner::updateDiscretePlan() {
       double z_hip_midstance = z_hip + 0.5*t_s[j]*dz_body;
 
       // Project along GRF from hips to the ground
-      Eigen::Vector3d hip_midstance = {x_hip_midstance, y_hip_midstance, z_hip_midstance};
-      Eigen::Vector3d footstep_grf = terrain_.projectToMap(hip_midstance, -1.0*grf_midstance);
+      Eigen::Vector3d hip_midstance = {x_hip_midstance, y_hip_midstance, 
+        z_hip_midstance};
+      Eigen::Vector3d footstep_grf = terrain_.projectToMap(hip_midstance, 
+        -1.0*grf_midstance);
 
-      // Define the nominal footstep location to lie on a line between the hips projected vertically and along GRF (third entry is garbage)
-      Eigen::Vector3d footstep_nom = (1-grf_weight_)*hip_midstance + grf_weight_*footstep_grf;
+      // Define the nominal footstep location to lie on a line between the hips 
+      // projected vertically and along GRF (third entry is garbage)
+      Eigen::Vector3d footstep_nom = (1-grf_weight_)*hip_midstance + 
+      grf_weight_*footstep_grf;
 
       // Load the data into the footstep array and push into the plan
       footstep[0] = footstep_nom[0];
@@ -167,8 +220,28 @@ void LocalFootstepPlanner::updateDiscretePlan() {
       footstep_plan_[j].push_back(footstep);
 
     }
+
+    // Add final foot configuration
+    FootstepState footstep(4);
+
+    BodyState s_final = body_plan_.back();
+
+    double yaw = s_final[5];
+    double x_hip = s_final[0] + x_offsets[j]*cos(yaw) - y_offsets[j]*sin(yaw);
+    double y_hip = s_final[1] + x_offsets[j]*sin(yaw) + y_offsets[j]*cos(yaw);
+    double z_hip = s_final[2]; // TODO add in pitch here
+
+    // Load the data into the footstep array and push into the plan
+    footstep[0] = x_hip;
+    footstep[1] = y_hip;
+    footstep[2] = t_plan_.back() - period_ +  t_offsets_trot[j];
+    footstep[3] = std::numeric_limits<double>::max();
+
+    footstep_plan_[j].push_back(footstep);
   }
 
+  // publishDiscretePlan();
+  // publishContinuousPlan();
   // timer.report();
 }
 
@@ -177,7 +250,8 @@ void LocalFootstepPlanner::publishContinuousPlan() {
 
   // Make sure we already have footstep data
   if (footstep_plan_.empty()){
-    ROS_WARN_THROTTLE(0.5, "Footstep plan is empty, not publishing");
+    ROS_WARN_THROTTLE(0.5, "Footstep plan is empty, not updating or publishing"
+      " swing leg plan");
     return;
   }
 
@@ -187,7 +261,7 @@ void LocalFootstepPlanner::publishContinuousPlan() {
   multi_foot_plan_continuous_msg.header.stamp = plan_timestamp_;
 
   // Make sure the footstep horizon is within bounds
-  double footstep_horizon = std::min((num_cycles_-1)*period_, t_plan_.back());
+  double footstep_horizon = std::min((num_cycles_)*period_, t_plan_.back());
 
   // Iterate through the footstep horizon
   for (double t = 0; t < footstep_horizon; t+=interp_dt_) {
@@ -207,9 +281,10 @@ void LocalFootstepPlanner::publishContinuousPlan() {
       int state_index = 0;
 
       // Get the index of the current foot location
-      for (int j = 0; j < footstep_plan_[i].size()-1; j++) {
-        if (t >= footstep_plan_[i][j][2] && t < footstep_plan_[i][j+1][2]) {
-          state_index = j;
+      for (int j = 0; j < (footstep_plan_[i].size()-1); j++) {
+        state_index = j;
+        if ( (t >= footstep_plan_[i][j][2] && t < footstep_plan_[i][j+1][2]) || 
+          (t < footstep_plan_[i].front()[2]) ) {
           break;
         }
       }
@@ -217,6 +292,7 @@ void LocalFootstepPlanner::publishContinuousPlan() {
       // Get current footstep state and correct timing
       FootstepState footstep = footstep_plan_[i][state_index];
       FootstepState next_footstep = footstep_plan_[i][state_index+1];
+
       double x = footstep[0];
       double y = footstep[1];
       double z = terrain_.getGroundHeight(x,y);
@@ -231,6 +307,18 @@ void LocalFootstepPlanner::publishContinuousPlan() {
         foot_state_msg.position.x = x;
         foot_state_msg.position.y = y;
         foot_state_msg.position.z = z;
+        foot_state_msg.velocity.x = 0;
+        foot_state_msg.velocity.y = 0;
+        foot_state_msg.velocity.z = 0;
+        foot_state_msg.contact = true;
+
+      } else if (t > t_next_touchdown) {
+
+        // If reached the end of the sequence, just apply the last foot stance
+        foot_state_msg.position.x = next_footstep[0];
+        foot_state_msg.position.y = next_footstep[1];
+        foot_state_msg.position.z = 
+          terrain_.getGroundHeight(next_footstep[0],next_footstep[1]);
         foot_state_msg.velocity.x = 0;
         foot_state_msg.velocity.y = 0;
         foot_state_msg.velocity.z = 0;
@@ -282,19 +370,7 @@ void LocalFootstepPlanner::publishContinuousPlan() {
           double basis_3 = 6*(u-u2);
           z_current = basis_0*z_mid + basis_1*z_next;
           dz_current = basis_2*z_mid + basis_3*z_next;
-        }
 
-        if (z_current > 2) {
-          std::cout << std::endl;
-          std::cout << "z is real high" << std::endl;          
-          std::cout << "t_liftoff = " << t_liftoff << std::endl;
-          std::cout << "t_next_touchdown = " << t_next_touchdown << std::endl;
-          std::cout << "t_f = " << t_f << std::endl;
-          std::cout << "t = " << t << std::endl;
-          std::cout << "t_swing = t - t_liftoff = " << t_swing << std::endl;
-
-          // FootstepState last_step = footstep_plan_[i].back()[2];
-          std::cout << "Max t = " << footstep_plan_[i].back()[2] << std::endl;
         }
 
         foot_state_msg.position.x = x_current;
@@ -345,7 +421,8 @@ void LocalFootstepPlanner::publishDiscretePlan() {
 
       foot_state_msg.position.x = footstep_plan_[i][j][0];
       foot_state_msg.position.y = footstep_plan_[i][j][1];
-      foot_state_msg.position.z = terrain_.getGroundHeight(foot_state_msg.position.x,foot_state_msg.position.y);
+      foot_state_msg.position.z = terrain_.getGroundHeight(
+        foot_state_msg.position.x,foot_state_msg.position.y);
       foot_state_msg.velocity.x = 0;
       foot_state_msg.velocity.y = 0;
       foot_state_msg.velocity.z = 0;
@@ -371,14 +448,16 @@ void LocalFootstepPlanner::waitForData() {
   boost::shared_ptr<grid_map_msgs::GridMap const> shared_map;
   while((shared_map == nullptr) && ros::ok())
   {
-    shared_map = ros::topic::waitForMessage<grid_map_msgs::GridMap>(terrain_map_topic_, nh_);
+    shared_map = ros::topic::waitForMessage<grid_map_msgs::GridMap>(
+      terrain_map_topic_, nh_);
     ros::spinOnce();
   }
 
   boost::shared_ptr<spirit_msgs::BodyPlan const> shared_body_plan;
   while((shared_body_plan == nullptr) && ros::ok())
   {
-    shared_body_plan = ros::topic::waitForMessage<spirit_msgs::BodyPlan>(body_plan_topic_, nh_);
+    shared_body_plan = ros::topic::waitForMessage<spirit_msgs::BodyPlan>(
+      body_plan_topic_, nh_);
     ros::spinOnce();
   }
 }
@@ -390,7 +469,6 @@ void LocalFootstepPlanner::spin() {
 
   // Enter spin
   while (ros::ok()) {
-    // ROS_INFO("In LocalFootstepPlanner spin, updating at %4.1f Hz", update_rate_);
     
     // Update the plan and publish it
     updateDiscretePlan();
