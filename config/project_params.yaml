@@ -55,8 +55,8 @@ local_footstep_planner:
   max_footstep_horizon: 1.5
   num_cycles: 50
   period: 0.35
-  ground_clearance: 0.25
-  interp_dt: 0.05
+  ground_clearance: 0.1
+  interp_dt: 0.02
   
 contact_detection:
   update_rate: 250

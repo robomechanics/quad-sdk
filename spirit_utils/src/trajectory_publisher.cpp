@@ -104,6 +104,7 @@ void TrajectoryPublisher::updateTrajectory() {
 
     // Add this state to the message
     traj_msg_.states.push_back(state);
+
   }
 
   // timer.report();
