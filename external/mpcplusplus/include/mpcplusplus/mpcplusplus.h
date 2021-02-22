@@ -7,30 +7,72 @@
 #include <assert.h>
 
 namespace mpcplusplus {
-class LinearMPC {
+class QuadrupedMPC {
 
 public:
 
-  LinearMPC(const int N, const int Nx, const int Nu);
+  /**
+   * @brief Construct an MPC object
+   * @param[in] N Number of steps in horizon, not inclusive of current state
+   * @param[in] Nx Number of states in one step
+   * @param[in] Nu Number of controls in one step
+   */
+  QuadrupedMPC(const int N, const int Nx, const int Nu);
 
-  ~LinearMPC() = default;
+  ~QuadrupedMPC() = default;
 
+  /**
+   * @brief Update the mass properties of the robot
+   * @param[in] m Robot mass in kg
+   * @param[in] Ib Robot body inertia in kg m^2
+   */
+  void setMassProperties(const double m, const Eigen::Matrix3d Ib);
+
+  /**
+   * @brief Update our MPC timestep
+   * @param[in] dt Timestep in seconds
+   */
+  void setTimestep(const double dt);
+
+  /**
+   * @brief Update our MPC weights on state deviation error and control error
+   * @param[in] Q vector of matrices of state costs at each step in the horizon
+   * @param[in] R vector of matrices of control costs at each step in the horizon
+   */
   void update_weights(const std::vector<Eigen::MatrixXd> &Q,
                       const std::vector<Eigen::MatrixXd> &R);
 
-  void update_dynamics(const std::vector<Eigen::MatrixXd> &Ad,
-                       const std::vector<Eigen::MatrixXd> &Bd);
+  /**
+   * @brief Update our dynamics (linearized about reference yaw and footsteps)
+   * @param[in] ref_traj Matrix holding desired reference trajectory (nx x N+1)
+   * @param[in] foot_positions Vector foot positions (fx1 fy1 fz1 fx2 ...) at each tstep
+   */
+  void update_dynamics(const Eigen::MatrixXd &ref_traj,
+                       const std::vector<std::vector<double> > &foot_positions);
 
+   /**
+   * @brief Update the footstep contact sequence and normal force bounds
+   * @param[in] contact_sequence Vector(N) of vectors(4) holding 
+                boolean contact status for each foot at each timesteo
+   * @param[in] fmin Minimum allowable normal force in contact phase
+   * @param[in] fmax Maximum allowable normal force in contact phase
+   */
   void update_contact(const std::vector<std::vector<bool> > contact_sequence,
                       const double fmin,
                       const double fmax);
 
+  /**
+   * @brief Update hard constraints on state bounds
+   * @param[in] state_lo Vector of minimum allowable values for each state
+   * @param[in] state_hi Vector of maximum allowable values for each state
+   */
   void update_state_bounds(const Eigen::VectorXd state_lo,
                            const Eigen::VectorXd state_hi);
 
-  void update_control_bounds(const Eigen::VectorXd control_lo,
-                           const Eigen::VectorXd control_hi);
-
+  /**
+   * @brief Update our friction coeffiecient
+   * @param[in] mu Friction coefficient used in linear friction cone
+   */
   void update_friction(const double mu);
 
   /**
@@ -60,26 +102,65 @@ public:
    * @param[out] x_out Optimized output
    */
   void solve(const Eigen::VectorXd &initial_state,
-             const Eigen::MatrixXd &ref_traj, Eigen::MatrixXd &x_out
+             const Eigen::MatrixXd &ref_traj,
+             Eigen::MatrixXd &x_out
              );
 
 private:
 
+  /// Number of timesteps in horizon
   int N_;
+
+  /// Number of states per step
   int nx_;
+
+  /// Number of controls per step
   int nu_;
 
+  /// Number of dynamics constraints
   int num_dyn_constraints_;
-  int num_contact_constraints_;
-  int num_constraints_;
+
+  /// Number of contact constraint per step
   int num_contact_constraints_per_step_;
+
+  /// Number of contact constraints per leg, per step
   int num_constraints_per_leg_;
 
+  /// Number of constraints on allowable forces
+  int num_contact_constraints_;
+
+  /// Total number of constraints
+  int num_constraints_;
+
+  /// Total number of state variables in qp
   int num_state_vars_;
+
+  /// Total number of control variables in qp
   int num_control_vars_;
+
+  /// Total number of decision variables in qp
   int num_decision_vars_;
 
+  /// Flag signaling that we've updated our weights since the last iteration
   bool updated_weights_ = false;
+
+  /// Robot body mass
+  double m_;
+
+  /// Robot inertia matrix in body frame
+  Eigen::Matrix3d Ib_;
+
+  /// Flag signaling that mass properties have been set
+  bool mass_properties_set_ = false;
+
+  /// Acceleration due to gravity in world -Z
+  const double g_ = 9.81;
+
+  /// MPC timestep
+  double dt_;
+
+  /// Flag signaling timestep set
+  bool dt_set_ = false;
 
   /// Quadratic cost matrix
   Eigen::MatrixXd H_;

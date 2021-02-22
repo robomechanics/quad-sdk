@@ -14,7 +14,7 @@ using namespace std::chrono;
 using namespace mpcplusplus;
 
 // Nc refers only to additional constraints BEYOND dynamics and simple state bounds
-LinearMPC::LinearMPC(const int N, const int Nx, const int Nu)
+QuadrupedMPC::QuadrupedMPC(const int N, const int Nx, const int Nu)
   : N_(N), nx_(Nx), nu_(Nu) {
   
   num_dyn_constraints_ = N * Nx;
@@ -32,7 +32,18 @@ LinearMPC::LinearMPC(const int N, const int Nx, const int Nu)
   b_dyn_ = Eigen::VectorXd::Zero(num_dyn_constraints_); 
 }
 
-void LinearMPC::update_friction(const double mu) {
+void QuadrupedMPC::setMassProperties(const double m, const Eigen::Matrix3d Ib) {
+  m_ = m;
+  Ib_ = Ib;
+  mass_properties_set_ = true;
+}
+
+void QuadrupedMPC::setTimestep(const double dt) {
+  dt_ = dt;
+  dt_set_ = true;
+}
+
+void QuadrupedMPC::update_friction(const double mu) {
   assert(0 <= mu && mu <= 1);
 
   A_con_dense_ = Eigen::MatrixXd::Zero(num_contact_constraints_, num_control_vars_);
@@ -57,7 +68,7 @@ void LinearMPC::update_friction(const double mu) {
   }
 }
 
-void LinearMPC::update_weights(const std::vector<Eigen::MatrixXd> &Q, 
+void QuadrupedMPC::update_weights(const std::vector<Eigen::MatrixXd> &Q, 
                                const std::vector<Eigen::MatrixXd> &R) {
 
   Eigen::MatrixXd Hq(num_state_vars_, num_state_vars_);
@@ -77,20 +88,66 @@ void LinearMPC::update_weights(const std::vector<Eigen::MatrixXd> &Q,
   updated_weights_ = true;
 }
 
-void LinearMPC::update_dynamics(const std::vector<Eigen::MatrixXd> &Ad,
-                                  const std::vector<Eigen::MatrixXd> &Bd) {
-  assert(Ad.size() == N_);
-  assert(Bd.size() == N_);
+void QuadrupedMPC::update_dynamics(const Eigen::MatrixXd &ref_traj,
+                                const std::vector<std::vector<double> > &foot_positions) {
+  assert(dt_set_);
+  assert(mass_properties_set_);
+  assert(foot_positions.size() == N_);
+  assert(foot_positions.front().size() == 12);
 
+  // Create fixed components of dynamics matrices
+  Eigen::MatrixXd Ad = Eigen::MatrixXd::Zero(nx_,nx_);
+  Ad.block(0,0,6,6) = Eigen::MatrixXd::Identity(6,6);
+  Ad.block(6,6,6,6) = Eigen::MatrixXd::Identity(6,6);
+  Ad.block(0,6,3,3) = Eigen::MatrixXd::Identity(3,3)*dt_;
+
+  Eigen::MatrixXd Bd = Eigen::MatrixXd::Zero(nx_,nu_);
+  for (int i = 0; i < 4; ++i) {
+    Bd.block(6,3*i,3,3) = Eigen::MatrixXd::Identity(3,3)/m_*dt_;
+  }
+  Bd(8,12) = -g_*dt_; // gravity acts downwards here
+
+  std::cout << "Ad: \n" << Ad << std::endl;
+  std::cout << "Bd: \n" << Bd << std::endl;
+
+  // Reset dynamics matrix (not strictly necessary but good practice)
   A_dyn_dense_ = Eigen::MatrixXd::Zero(num_dyn_constraints_,num_decision_vars_);
+
+  // Placeholder matrices for dynamics
+  Eigen::MatrixXd Adi(nx_,nx_);
+  Eigen::MatrixXd Bdi(nx_,nu_);
+  Eigen::Matrix3d foot_pos_hat;
+
   for (int i = 0; i < N_; ++i) {
-    A_dyn_dense_.block(nx_*i,nx_*i,nx_,nx_) = Ad.at(i);
+    double yaw_ref = (ref_traj(5,i) + ref_traj(5,i+1))/2.0;
+    Eigen::AngleAxisd yaw_aa(yaw_ref,Eigen::Vector3d::UnitZ());
+    Eigen::Matrix3d Rz = yaw_aa.toRotationMatrix();
+    Eigen::Matrix3d Rzt = Rz.transpose();
+    Eigen::Matrix3d Iw = Rz*Ib_*Rzt;
+    Eigen::Matrix3d Iw_inv = Iw.inverse();
+
+    // Reset our temporary dynamics matrices
+    Adi = Ad;
+    Bdi = Bd;
+
+    // Update our linearized angular velocity integration
+    Adi.block(3,9,3,3) = Rzt*dt_;
+
+    // Update our foot positions
+    for (int j = 0; j < 4; ++j) {
+      foot_pos_hat << 0, -foot_positions.at(i).at(3*j+2),foot_positions.at(i).at(3*j+1),
+                      foot_positions.at(i).at(3*j+2), 0, -foot_positions.at(i).at(3*j+0),
+                      -foot_positions.at(i).at(3*j+1), foot_positions.at(i).at(3*j+0), 0;
+      Bdi.block(9,3*j,3,3) = Iw_inv * foot_pos_hat * dt_;//Eigen::Matrix3d::Zero();
+    }
+
+    A_dyn_dense_.block(nx_*i,nx_*i,nx_,nx_) = Adi;
     A_dyn_dense_.block(nx_*i,nx_*(i+1),nx_,nx_) = -Eigen::MatrixXd::Identity(nx_,nx_);
-    A_dyn_dense_.block(nx_*i,num_state_vars_+nu_*i,nx_,nu_) = Bd.at(i);
+    A_dyn_dense_.block(nx_*i,num_state_vars_+nu_*i,nx_,nu_) = Bdi;
   }
 }
 
-void LinearMPC::update_contact(const std::vector<std::vector<bool>> contact_sequence,
+void QuadrupedMPC::update_contact(const std::vector<std::vector<bool>> contact_sequence,
                                const double fmin,
                                const double fmax) {
   assert(contact_sequence.size() == N_);
@@ -122,19 +179,13 @@ void LinearMPC::update_contact(const std::vector<std::vector<bool>> contact_sequ
   }
 }
 
-void LinearMPC::update_state_bounds(const Eigen::VectorXd state_lo,
+void QuadrupedMPC::update_state_bounds(const Eigen::VectorXd state_lo,
                                     const Eigen::VectorXd state_hi) {
   b_state_lo_ = state_lo.replicate(N_,1);
   b_state_hi_ = state_hi.replicate(N_,1);
 }
 
-/*void LinearMPC::update_control_bounds(const Eigen::VectorXd control_lo,
-                                    const Eigen::VectorXd control_hi) {
-  b_control_lo_ = control_lo.replicate(N_,1);
-  b_control_hi_ = control_hi.replicate(N_,1);
-}*/
-
-void LinearMPC::get_cost_function(const Eigen::MatrixXd &ref_traj,
+void QuadrupedMPC::get_cost_function(const Eigen::MatrixXd &ref_traj,
                                   Eigen::VectorXd &f) {
 
   // Construct fx vector
@@ -155,7 +206,7 @@ void LinearMPC::get_cost_function(const Eigen::MatrixXd &ref_traj,
 }
 
 //========================================================================================
-void LinearMPC::get_output(const Eigen::MatrixXd &x_out,
+void QuadrupedMPC::get_output(const Eigen::MatrixXd &x_out,
                       Eigen::MatrixXd &opt_traj,
                       Eigen::MatrixXd &control_traj,
                       double &f_val) {
@@ -186,8 +237,9 @@ void LinearMPC::get_output(const Eigen::MatrixXd &x_out,
   f_val = (0.5*x_out.transpose()*H_*x_out)(0,0) + (f_.transpose() * x_out)(0,0);
 }
 
-void LinearMPC::solve(const Eigen::VectorXd &initial_state,
-                      const Eigen::MatrixXd &ref_traj, Eigen::MatrixXd &x_out) {
+void QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
+                         const Eigen::MatrixXd &ref_traj,
+                         Eigen::MatrixXd &x_out) {
   #ifdef PRINT_TIMING
     steady_clock::time_point t1 = steady_clock::now();
   #endif
@@ -252,7 +304,7 @@ void LinearMPC::solve(const Eigen::VectorXd &initial_state,
   #ifdef PRINT_TIMING
     steady_clock::time_point t2 = steady_clock::now();
     duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
-    std::cout << "LinearMPC::solve completed in "
+    std::cout << "QuadrupedMPC::solve completed in "
               << time_span.count()*1000.0 << " milliseconds"
               << std::endl;
   #endif

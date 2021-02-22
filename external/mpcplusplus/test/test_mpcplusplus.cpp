@@ -17,8 +17,8 @@ TEST(TestUseCase, quadVariable) {
   // Configurable (system) parameters
   const int Nu = 13;      // Appended gravity term
   const int Nx = 12;      // Number of states
-  const int N = 16;       // Time horizons to consider
-  const double dt = 0.05;  // Time horizon
+  const int N = 20;       // Time horizons to consider
+  const double dt = 0.1;  // Time horizon
   const double m = 12;    // Mass of quad
   const double g = 9.81;  // gravitational constant
   const double Ixx = 0.1; // approximately SDF values, but will need refining
@@ -29,7 +29,7 @@ TEST(TestUseCase, quadVariable) {
   Eigen::MatrixXd Qx(Nx, Nx);
   Qx.setZero();
   double e = 1e-1;
-  Qx.diagonal() << 1e5,1e5,5e7,1e5,1e5,1e6,e,e,e,e,e,1e2;
+  Qx.diagonal() << 1e6,1e6,5e7,1e5,1e5,1e4,e,e,e,e,e,1e2;
 
   Eigen::MatrixXd Ru(Nu, Nu);
   Ru.setZero();
@@ -52,27 +52,13 @@ TEST(TestUseCase, quadVariable) {
   // Foot positions in body frame
   const double body_l = 0.6;
   const double body_w = 0.3;
-  Eigen::MatrixXd foot_positions(4,3);
-  foot_positions.row(0) << -body_w/2,body_l/2,-0.25; // Front left
-  foot_positions.row(1) << -body_w/2,-body_l/2,-0.25; // Back left
-  foot_positions.row(2) << body_w/2,body_l/2,-0.25; // Front right
-  foot_positions.row(3) << body_w/2,-body_l/2,-0.25; // Back right
 
-  // Create vectors of dynamics matrices at each step,
-  // weights at each step and contact sequences at each step
-  Eigen::MatrixXd Ad = Eigen::MatrixXd::Zero(Nx,Nx);
-  Ad.block(0,0,6,6) = Eigen::MatrixXd::Identity(6,6);
-  Ad.block(6,6,6,6) = Eigen::MatrixXd::Identity(6,6);
-  Ad.block(0,6,3,3) = Eigen::MatrixXd::Identity(3,3)*dt;
+  // x1 y1 z1, x2 y2, z2 ... 
+  std::vector<double> foot_position = {-body_w/2,body_l/2,-0.25,
+                                        -body_w/2,-body_l/2,-0.25,
+                                        body_w/2,body_l/2,-0.25,
+                                        body_w/2,-body_l/2,-0.25};
 
-  Eigen::MatrixXd Bd = Eigen::MatrixXd::Zero(Nx,Nu);
-  for (int i = 0; i < 4; ++i) {
-    Bd.block(6,3*i,3,3) = Eigen::MatrixXd::Identity(3,3)/m*dt;
-  }
-  Bd(8,12) = -g*dt; // gravity acts downwards here
-
-  std::vector<Eigen::MatrixXd> Ad_vec(N);
-  std::vector<Eigen::MatrixXd> Bd_vec(N);
   std::vector<Eigen::MatrixXd> Q_vec(N+1);
   std::vector<Eigen::MatrixXd> U_vec(N);
   std::vector<std::vector<bool>> contact_sequences(N);
@@ -84,43 +70,18 @@ TEST(TestUseCase, quadVariable) {
   for (int i = 0; i < N+1; ++i) {
     Q_vec.at(i) = Qx;
     ref_traj.col(i) = initial_state;
-    //ref_traj(0,i) = 0.2*i; // x ramp
-    //ref_traj(1,i) = i > N/2 ? 0.5 : 0; // y step
-    ref_traj(2,i) = 0.3;//0.25 + 0.1*sin(i/3.0); // z sine
+    //ref_traj(0,i) = 0.03*i; // x ramp
+    ref_traj(1,i) = i > N/2 ? 0.2 : 0; // y step
+    ref_traj(2,i) = 0.25 + 0.1*sin(i/2.0); // z sine
     ref_traj(4,i) = 0.3*cos(i/3.0);
-    ref_traj(5,i) = 0.5*sin(i/3.0);
+    ref_traj(5,i) = 0.2*sin(i/3.0);
   }
 
+  std::vector<std::vector<double>> foot_positions(N);
   for (int i = 0; i < N; ++i) {
-    // Compute wb and bw rotation matrices for current reference heading
-    double yaw_ref = (ref_traj(5,i) + ref_traj(5,i+1))/2.0;
-    Eigen::AngleAxisd yaw_aa(yaw_ref,Eigen::Vector3d::UnitZ());
-    Eigen::Matrix3d Rz = yaw_aa.toRotationMatrix();
-    Eigen::Matrix3d Rzt = Rz.transpose();
-    Eigen::Matrix3d Iw = Rz*Ib*Rzt;
-    Eigen::Matrix3d Iw_inv = Iw.inverse();
-
-    // Set state update matrix
-    Ad_vec.at(i) = Ad;
-
-    // Add fixed rotation from body to world for angular velocity integration
-    Ad_vec.at(i).block(3,9,3,3) = Rzt*dt;
-
-    // Set control authority matrix
-    Bd_vec.at(i) = Bd;
-
-    // Add inertia term linearized about reference trajectory yaw
-    for (int j = 0; j < 4; ++j) {
-      Eigen::Vector3d foot_pos = foot_positions.row(j);
-      Eigen::Matrix3d foot_pos_hat;
-      foot_pos_hat << 0, -foot_pos(2),foot_pos(1),
-                      foot_pos(2), 0, -foot_pos(0),
-                      -foot_pos(1), foot_pos(0), 0;
-      Bd_vec.at(i).block(9,3*j,3,3) = Iw_inv * foot_pos_hat * dt;//Eigen::Matrix3d::Zero();
-    }
-    
     U_vec.at(i) = Ru;
-    contact_sequences.at(i) = {true,true,true,true};;
+    contact_sequences.at(i) = {true,true,true,true};
+    foot_positions.at(i) = foot_position;
   }
 
   double mu = 0.6;
@@ -128,9 +89,11 @@ TEST(TestUseCase, quadVariable) {
   double fmax = 50;
 
   // Setup MPC class, call necessary functions
-  mpcplusplus::LinearMPC mpc(N,Nx,Nu);
+  mpcplusplus::QuadrupedMPC mpc(N,Nx,Nu);
+  mpc.setTimestep(dt);
+  mpc.setMassProperties(m,Ib);
   mpc.update_weights(Q_vec,U_vec);
-  mpc.update_dynamics(Ad_vec,Bd_vec);
+  mpc.update_dynamics(ref_traj,foot_positions);
   mpc.update_friction(mu);
   mpc.update_contact(contact_sequences, fmin, fmax);
   mpc.update_state_bounds(state_lo, state_hi);

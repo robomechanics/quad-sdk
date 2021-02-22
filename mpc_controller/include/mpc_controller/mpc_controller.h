@@ -80,7 +80,7 @@ private:
 	double update_rate_;
 
   /// Linear MPC object
-  std::shared_ptr<mpcplusplus::LinearMPC> mpc;
+  std::shared_ptr<mpcplusplus::QuadrupedMPC> mpc;
 
 	/// Most recent robot plan
 	spirit_msgs::RobotStateTrajectory last_plan_msg_;
