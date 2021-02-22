@@ -45,10 +45,10 @@ Visualization Manager:
       Autocompute Intensity Bounds: true
       Class: grid_map_rviz_plugin/GridMap
       Color: 200; 200; 200
-      Color Layer: elevation
+      Color Layer: z
       Color Transformer: ""
       Enabled: true
-      Height Layer: elevation
+      Height Layer: z
       Height Transformer: GridMapLayer
       History Length: 1
       Invert Rainbow: false
@@ -212,7 +212,7 @@ Visualization Manager:
       Visual Enabled: true
     - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /visualization/body_wrench_plan
+      Marker Topic: /visualization/grf_plan
       Name: GRFs
       Namespaces:
         "": true

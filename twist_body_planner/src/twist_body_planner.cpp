@@ -147,16 +147,14 @@ void TwistBodyPlanner::addStateWrenchToMsg(double t, State body_state,
 
   double m = 12;
   double g = 9.81;
-  geometry_msgs::Wrench wrench_msg;
-  wrench_msg.force.x = 0;
-  wrench_msg.force.y = 0;
-  wrench_msg.force.z = m*g;
-  wrench_msg.torque.x = 0;
-  wrench_msg.torque.y = 0;
-  wrench_msg.torque.z = 0;
+  geometry_msgs::Vector3 grf_msg;
+  grf_msg.x = 0;
+  grf_msg.y = 0;
+  grf_msg.z = m*g;
+
 
   msg.states.push_back(state);
-  msg.wrenches.push_back(wrench_msg);
+  msg.grfs.push_back(grf_msg);
 }
 
 void TwistBodyPlanner::publishPlan() {
@@ -172,7 +170,7 @@ void TwistBodyPlanner::publishPlan() {
   for (int i=0;i<body_plan_.size(); ++i)
     addStateWrenchToMsg(t_plan_[i], body_plan_[i], body_plan_msg);
   
-  if (body_plan_msg.states.size() != body_plan_msg.wrenches.size()) {
+  if (body_plan_msg.states.size() != body_plan_msg.grfs.size()) {
     throw std::runtime_error("Mismatch between number of states and wrenches, something is wrong");
   }
 
