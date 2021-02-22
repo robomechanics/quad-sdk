@@ -5,21 +5,21 @@ inverseDynamics::inverseDynamics(ros::NodeHandle nh) {
 	nh_ = nh;
 
     // Load rosparams from parameter server
-  std::string control_input_topic, robot_state_topic, swing_leg_plan_topic, leg_command_array_topic, control_mode_topic; //foot_step_plan_topic, 
+  std::string control_input_topic, robot_state_topic, foot_plan_continuous_topic, leg_command_array_topic, control_mode_topic; //foot_step_plan_topic, 
   // nh.param<std::string>("topics/control_input", control_input_topic, "/control_input");
   spirit_utils::loadROSParam(nh_,"topics/joint_command",leg_command_array_topic);
   spirit_utils::loadROSParam(nh_,"open_loop_controller/control_mode_topic",control_mode_topic);
   spirit_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
+  spirit_utils::loadROSParam(nh_,"topics/foot_plan_continuous",foot_plan_continuous_topic);
 
   // Setup pubs and subs
   // control_input_sub_ = nh_.subscribe(control_input_topic,1,&inverseDynamics::controlInputCallback, this);
   robot_state_sub_= nh_.subscribe(robot_state_topic,1,&inverseDynamics::robotStateCallback, this);
-  // swing_leg_plan_sub_= nh_.subscribe(swing_leg_plan_topic,1,&inverseDynamics::swingLegPlanCallback, this);
-  // foot_step_plan_sub_= nh_.subscribe(foot_step_plan_topic,1,&inverseDynamics::footStepPlanCallback, this);
+  foot_plan_continuous_sub_ = nh_.subscribe(foot_plan_continuous_topic,1,&inverseDynamics::footPlanContinuousCallback, this);
   control_mode_sub_ = nh_.subscribe(control_mode_topic,1,&inverseDynamics::controlModeCallback, this);
   leg_command_array_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_command_array_topic,1);
 
-  // Start sitting
+  // Start standing
   control_mode_ = 0;
 }
 
@@ -34,18 +34,16 @@ void inverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) 
 //   // ROS_INFO("In controlInputCallback");
 //   last_control_input_msg_ = *msg;
 // }
+
 void inverseDynamics::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
   // ROS_INFO("In robotStateCallback");
   last_robot_state_msg_ = *msg;
 }
-// void inverseDynamics::swingLegPlanCallback(const spirit_msgs::SwingLegPlan::ConstPtr& msg) {
-//   // ROS_INFO("In swingLegPlanCallback");
-//   last_swing_leg_plan_msg_ = *msg;
-// }
-// void inverseDynamics::footStepPlanCallback(const spirit_msgs::FootStepPlan::ConstPtr& msg) {
-//   // ROS_INFO("In footSteplsPlanCallback");
-//   last_foot_step_plan_msg_ = *msg;
-// }
+
+void inverseDynamics::footPlanContinuousCallback(const spirit_msgs::MultiFootPlanContinuous::ConstPtr& msg) {
+  // ROS_INFO("In footPlanContinuousCallback");
+  last_foot_plan_continuous_msg_ = *msg;
+}
 
 void inverseDynamics::publishLegCommandArray() {
 
@@ -115,11 +113,11 @@ void inverseDynamics::publishLegCommandArray() {
   states[16] = last_robot_state_msg_.joints.position.at(10);
   states[17] = last_robot_state_msg_.joints.position.at(11);
 
-  std::cout << "robotState: ";
-  for (int i = 0; i < 18; ++i) {
-    std::cout << states[i] << " ";
-  }
-  std::cout << std::endl;
+  // std::cout << "robotState: ";
+  // for (int i = 0; i < 18; ++i) {
+  //   std::cout << states[i] << " ";
+  // }
+  // std::cout << std::endl;
 
   Eigen::MatrixXf foot_jacobian0(3,3);
   spirit_utils::calc_foot_jacobian0(states,parameters,foot_jacobian0);
@@ -138,34 +136,34 @@ void inverseDynamics::publishLegCommandArray() {
   tau2 = foot_jacobian2.transpose() * grf;
   tau3 = foot_jacobian3.transpose() * grf;
 
-  std::cout<<"Joint Torques 1: "<<std::endl;
-  std::cout<<tau0;
-  std::cout<<std::endl;
+  // std::cout<<"Joint Torques 1: "<<std::endl;
+  // std::cout<<tau0;
+  // std::cout<<std::endl;
 
-  std::cout<<"Joint Torques 2: "<<std::endl;
-  std::cout<<tau1;
-  std::cout<<std::endl;
+  // std::cout<<"Joint Torques 2: "<<std::endl;
+  // std::cout<<tau1;
+  // std::cout<<std::endl;
 
-  std::cout<<"Joint Torques 3: "<<std::endl;
-  std::cout<<tau2;
-  std::cout<<std::endl;
+  // std::cout<<"Joint Torques 3: "<<std::endl;
+  // std::cout<<tau2;
+  // std::cout<<std::endl;
 
-  std::cout<<"Joint Torques 4: "<<std::endl;
-  std::cout<<tau3;
-  std::cout<<std::endl;
+  // std::cout<<"Joint Torques 4: "<<std::endl;
+  // std::cout<<tau3;
+  // std::cout<<std::endl;
 
-  std::cout << "Joint 0: -0.564266 hip0" << std::endl;
-  std::cout << "Joint 1: 4.31081 knee0" << std::endl;
-  std::cout << "Joint 2: -1.4508 hip1" << std::endl;
-  std::cout << "Joint 3: 6.19081 knee1" << std::endl;
-  std::cout << "Joint 4: -0.565951 hip2" << std::endl;
-  std::cout << "Joint 5: 4.31106 knee2" << std::endl;
-  std::cout << "Joint 6: -1.44933 hip3" << std::endl;
-  std::cout << "Joint 7: 6.19092 knee3" << std::endl;
-  std::cout << "Joint 8: 0.228222 abd0" << std::endl;
-  std::cout << "Joint 9: -0.0306263 abd1" << std::endl;
-  std::cout << "Joint 10: -0.228603 abd2" << std::endl;
-  std::cout << "Joint 11: 0.0310759 abd3" << std::endl;
+  // std::cout << "Joint 0: -0.564266 hip0" << std::endl;
+  // std::cout << "Joint 1: 4.31081 knee0" << std::endl;
+  // std::cout << "Joint 2: -1.4508 hip1" << std::endl;
+  // std::cout << "Joint 3: 6.19081 knee1" << std::endl;
+  // std::cout << "Joint 4: -0.565951 hip2" << std::endl;
+  // std::cout << "Joint 5: 4.31106 knee2" << std::endl;
+  // std::cout << "Joint 6: -1.44933 hip3" << std::endl;
+  // std::cout << "Joint 7: 6.19092 knee3" << std::endl;
+  // std::cout << "Joint 8: 0.228222 abd0" << std::endl;
+  // std::cout << "Joint 9: -0.0306263 abd1" << std::endl;
+  // std::cout << "Joint 10: -0.228603 abd2" << std::endl;
+  // std::cout << "Joint 11: 0.0310759 abd3" << std::endl;
 
 
   switch (control_mode_) {

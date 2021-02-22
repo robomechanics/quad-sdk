@@ -134,8 +134,6 @@ namespace effort_controllers
       double torque_lim = torque_lims_[ind.second];
       double torque_command = std::min(std::max(torque_feedback + torque_ff, -torque_lim),torque_lim);
 
-      std::cout << "Joint " << i << ": " << torque_command << std::endl;
-
       // Update joint torque
       joints_.at(i).setCommand(torque_command);
     }
