@@ -25,6 +25,7 @@ var searchData=
   ['spiritcontroller',['SpiritController',['../classeffort__controllers_1_1SpiritController.html',1,'effort_controllers::SpiritController'],['../classeffort__controllers_1_1SpiritController.html#a958d18101c96feeb51adc88c9c9736b4',1,'effort_controllers::SpiritController::SpiritController()']]],
   ['spiritestimatorgroundtruth',['SpiritEstimatorGroundTruth',['../classgazebo_1_1SpiritEstimatorGroundTruth.html',1,'gazebo::SpiritEstimatorGroundTruth'],['../classgazebo_1_1SpiritEstimatorGroundTruth.html#a4654d98fdd0f9719da402bae68dfb4b5',1,'gazebo::SpiritEstimatorGroundTruth::SpiritEstimatorGroundTruth()']]],
   ['spiritkinematics',['SpiritKinematics',['../classspirit__utils_1_1SpiritKinematics.html',1,'spirit_utils::SpiritKinematics'],['../classspirit__utils_1_1SpiritKinematics.html#a231ed6a775e671eee1367770668f16f5',1,'spirit_utils::SpiritKinematics::SpiritKinematics()']]],
+  ['stance',['STANCE',['../classLocalFootstepPlanner.html#a65d7ce39eeecb63432af83dc9184677a',1,'LocalFootstepPlanner']]],
   ['stand_5fjoint_5fangles_5f',['stand_joint_angles_',['../classOpenLoopController.html#aff1f013b84c601bb1d61836b52495e3d',1,'OpenLoopController']]],
   ['stand_5fkd_5f',['stand_kd_',['../classOpenLoopController.html#a9ae5c82659b5614b182f34429327a69a',1,'OpenLoopController']]],
   ['stand_5fkp_5f',['stand_kp_',['../classOpenLoopController.html#a14b44cae2d25402b7e122a8b47737301',1,'OpenLoopController']]],

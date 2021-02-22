@@ -77,9 +77,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab243ccba0680afb064c70bead54bf126"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#ab243ccba0680afb064c70bead54bf126">FastTerrainMap</a> ()</td></tr>
 <tr class="memdesc:ab243ccba0680afb064c70bead54bf126"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling. ">FastTerrainMap</a> Class.  <a href="#ab243ccba0680afb064c70bead54bf126">More...</a><br /></td></tr>
 <tr class="separator:ab243ccba0680afb064c70bead54bf126"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45eff1e523336373471a12c2a8ec12e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#a45eff1e523336373471a12c2a8ec12e6">loadData</a> (int x_size, int y_size, std::vector&lt; double &gt; x_data, std::vector&lt; double &gt; y_data, std::vector&lt; std::vector&lt; double &gt;&gt; z_data, std::vector&lt; std::vector&lt; double &gt;&gt; dx_data, std::vector&lt; std::vector&lt; double &gt;&gt; dy_data, std::vector&lt; std::vector&lt; double &gt;&gt; dz_data)</td></tr>
-<tr class="memdesc:a45eff1e523336373471a12c2a8ec12e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load data from a grid_map::GridMap object into a <a class="el" href="classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling. ">FastTerrainMap</a> object.  <a href="#a45eff1e523336373471a12c2a8ec12e6">More...</a><br /></td></tr>
-<tr class="separator:a45eff1e523336373471a12c2a8ec12e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13a752085ac5c617661f0c19d81bef09"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#a13a752085ac5c617661f0c19d81bef09">loadData</a> (int x_size, int y_size, std::vector&lt; double &gt; x_data, std::vector&lt; double &gt; y_data, std::vector&lt; std::vector&lt; double &gt;&gt; z_data, std::vector&lt; std::vector&lt; double &gt;&gt; nx_data, std::vector&lt; std::vector&lt; double &gt;&gt; ny_data, std::vector&lt; std::vector&lt; double &gt;&gt; nz_data, std::vector&lt; std::vector&lt; double &gt;&gt; z_data_filt, std::vector&lt; std::vector&lt; double &gt;&gt; nx_data_filt, std::vector&lt; std::vector&lt; double &gt;&gt; ny_data_filt, std::vector&lt; std::vector&lt; double &gt;&gt; nz_data_filt)</td></tr>
+<tr class="memdesc:a13a752085ac5c617661f0c19d81bef09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load data from a grid_map::GridMap object into a <a class="el" href="classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling. ">FastTerrainMap</a> object.  <a href="#a13a752085ac5c617661f0c19d81bef09">More...</a><br /></td></tr>
+<tr class="separator:a13a752085ac5c617661f0c19d81bef09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a401cdefb0d963918d0ce29e41aeddbbb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#a401cdefb0d963918d0ce29e41aeddbbb">loadDataFromGridMap</a> (grid_map::GridMap map)</td></tr>
 <tr class="memdesc:a401cdefb0d963918d0ce29e41aeddbbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load data from a grid_map::GridMap object into a <a class="el" href="classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling. ">FastTerrainMap</a> object.  <a href="#a401cdefb0d963918d0ce29e41aeddbbb">More...</a><br /></td></tr>
 <tr class="separator:a401cdefb0d963918d0ce29e41aeddbbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -92,6 +92,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae560c6b4bfd86639f71efec2a320d142"><td class="memItemLeft" align="right" valign="top">std::array&lt; double, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#ae560c6b4bfd86639f71efec2a320d142">getSurfaceNormal</a> (const double x, const double y)</td></tr>
 <tr class="memdesc:ae560c6b4bfd86639f71efec2a320d142"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the surface normal at a requested location.  <a href="#ae560c6b4bfd86639f71efec2a320d142">More...</a><br /></td></tr>
 <tr class="separator:ae560c6b4bfd86639f71efec2a320d142"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdea0679d7c050b2a96cf3daec2aad3b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#acdea0679d7c050b2a96cf3daec2aad3b">getGroundHeightFiltered</a> (const double x, const double y)</td></tr>
+<tr class="memdesc:acdea0679d7c050b2a96cf3daec2aad3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the filtered ground height at a requested location.  <a href="#acdea0679d7c050b2a96cf3daec2aad3b">More...</a><br /></td></tr>
+<tr class="separator:acdea0679d7c050b2a96cf3daec2aad3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e503f3653c17f52fe091da8b294234f"><td class="memItemLeft" align="right" valign="top">std::array&lt; double, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#a4e503f3653c17f52fe091da8b294234f">getSurfaceNormalFiltered</a> (const double x, const double y)</td></tr>
+<tr class="memdesc:a4e503f3653c17f52fe091da8b294234f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the filtered surface normal at a requested location.  <a href="#a4e503f3653c17f52fe091da8b294234f">More...</a><br /></td></tr>
+<tr class="separator:a4e503f3653c17f52fe091da8b294234f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1157f4492e80cc44dc2da779db3bdd93"><td class="memItemLeft" align="right" valign="top">Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#a1157f4492e80cc44dc2da779db3bdd93">projectToMap</a> (Eigen::Vector3d point, Eigen::Vector3d direction)</td></tr>
 <tr class="memdesc:a1157f4492e80cc44dc2da779db3bdd93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the (approximate) intersection of the height map and a vector. Returned point lies exactly on the map but not entirely on the vector.  <a href="#a1157f4492e80cc44dc2da779db3bdd93">More...</a><br /></td></tr>
 <tr class="separator:a1157f4492e80cc44dc2da779db3bdd93"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -124,18 +130,34 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#a06c63f2d551b0a4b0c48c4ff01e58fdd">z_data_</a></td></tr>
 <tr class="memdesc:a06c63f2d551b0a4b0c48c4ff01e58fdd"><td class="mdescLeft">&#160;</td><td class="mdescRight">The nested vector of z data at each [x,y] location. <br /></td></tr>
 <tr class="separator:a06c63f2d551b0a4b0c48c4ff01e58fdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a87bd4042b7028930d468b5e9236a5bc6"><td class="memItemLeft" align="right" valign="top"><a id="a87bd4042b7028930d468b5e9236a5bc6"></a>
-std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#a87bd4042b7028930d468b5e9236a5bc6">dx_data_</a></td></tr>
-<tr class="memdesc:a87bd4042b7028930d468b5e9236a5bc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">The nested vector of the x component of the gradient at each [x,y] location. <br /></td></tr>
-<tr class="separator:a87bd4042b7028930d468b5e9236a5bc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad21822cd028feaf8241cec969b9c43be"><td class="memItemLeft" align="right" valign="top"><a id="ad21822cd028feaf8241cec969b9c43be"></a>
-std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#ad21822cd028feaf8241cec969b9c43be">dy_data_</a></td></tr>
-<tr class="memdesc:ad21822cd028feaf8241cec969b9c43be"><td class="mdescLeft">&#160;</td><td class="mdescRight">The nested vector of the y component of the gradient at each [x,y] location. <br /></td></tr>
-<tr class="separator:ad21822cd028feaf8241cec969b9c43be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a70ba95777d116fcbd2b44a66dfcfc5a2"><td class="memItemLeft" align="right" valign="top"><a id="a70ba95777d116fcbd2b44a66dfcfc5a2"></a>
-std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#a70ba95777d116fcbd2b44a66dfcfc5a2">dz_data_</a></td></tr>
-<tr class="memdesc:a70ba95777d116fcbd2b44a66dfcfc5a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">The nested vector of the z component of the gradient at each [x,y] location. <br /></td></tr>
-<tr class="separator:a70ba95777d116fcbd2b44a66dfcfc5a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4a4a8f622be1c6f5c7b026e52de4f39"><td class="memItemLeft" align="right" valign="top"><a id="ac4a4a8f622be1c6f5c7b026e52de4f39"></a>
+std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#ac4a4a8f622be1c6f5c7b026e52de4f39">nx_data_</a></td></tr>
+<tr class="memdesc:ac4a4a8f622be1c6f5c7b026e52de4f39"><td class="mdescLeft">&#160;</td><td class="mdescRight">The nested vector of the x component of the gradient at each [x,y] location. <br /></td></tr>
+<tr class="separator:ac4a4a8f622be1c6f5c7b026e52de4f39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2ee6da5b6907bcecaa53f1c2920fa67"><td class="memItemLeft" align="right" valign="top"><a id="aa2ee6da5b6907bcecaa53f1c2920fa67"></a>
+std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#aa2ee6da5b6907bcecaa53f1c2920fa67">ny_data_</a></td></tr>
+<tr class="memdesc:aa2ee6da5b6907bcecaa53f1c2920fa67"><td class="mdescLeft">&#160;</td><td class="mdescRight">The nested vector of the y component of the gradient at each [x,y] location. <br /></td></tr>
+<tr class="separator:aa2ee6da5b6907bcecaa53f1c2920fa67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a466f36d0e03e3146124f41c2c8269c66"><td class="memItemLeft" align="right" valign="top"><a id="a466f36d0e03e3146124f41c2c8269c66"></a>
+std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#a466f36d0e03e3146124f41c2c8269c66">nz_data_</a></td></tr>
+<tr class="memdesc:a466f36d0e03e3146124f41c2c8269c66"><td class="mdescLeft">&#160;</td><td class="mdescRight">The nested vector of the z component of the gradient at each [x,y] location. <br /></td></tr>
+<tr class="separator:a466f36d0e03e3146124f41c2c8269c66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8d930650a9ffa19f849a9daf4679b72"><td class="memItemLeft" align="right" valign="top"><a id="ac8d930650a9ffa19f849a9daf4679b72"></a>
+std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#ac8d930650a9ffa19f849a9daf4679b72">z_data_filt_</a></td></tr>
+<tr class="memdesc:ac8d930650a9ffa19f849a9daf4679b72"><td class="mdescLeft">&#160;</td><td class="mdescRight">The nested vector of filtered z data at each [x,y] location. <br /></td></tr>
+<tr class="separator:ac8d930650a9ffa19f849a9daf4679b72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58841367566b553da745b93d3c0fa4f4"><td class="memItemLeft" align="right" valign="top"><a id="a58841367566b553da745b93d3c0fa4f4"></a>
+std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#a58841367566b553da745b93d3c0fa4f4">nx_data_filt_</a></td></tr>
+<tr class="memdesc:a58841367566b553da745b93d3c0fa4f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">The nested vector of the x component of the filtered gradient at each [x,y] location. <br /></td></tr>
+<tr class="separator:a58841367566b553da745b93d3c0fa4f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2fc71121d51bc73031a6141f3d84461"><td class="memItemLeft" align="right" valign="top"><a id="ad2fc71121d51bc73031a6141f3d84461"></a>
+std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#ad2fc71121d51bc73031a6141f3d84461">ny_data_filt_</a></td></tr>
+<tr class="memdesc:ad2fc71121d51bc73031a6141f3d84461"><td class="mdescLeft">&#160;</td><td class="mdescRight">The nested vector of the y component of the filtered gradient at each [x,y] location. <br /></td></tr>
+<tr class="separator:ad2fc71121d51bc73031a6141f3d84461"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af05d8667f7631ee77d47049beba1b7d0"><td class="memItemLeft" align="right" valign="top"><a id="af05d8667f7631ee77d47049beba1b7d0"></a>
+std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#af05d8667f7631ee77d47049beba1b7d0">nz_data_filt_</a></td></tr>
+<tr class="memdesc:af05d8667f7631ee77d47049beba1b7d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">The nested vector of the z component of the filtered gradient at each [x,y] location. <br /></td></tr>
+<tr class="separator:af05d8667f7631ee77d47049beba1b7d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A terrain map class built for fast and efficient sampling. </p>
@@ -200,6 +222,44 @@ std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRig
 
 </div>
 </div>
+<a id="acdea0679d7c050b2a96cf3daec2aad3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdea0679d7c050b2a96cf3daec2aad3b">&#9670;&nbsp;</a></span>getGroundHeightFiltered()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double FastTerrainMap::getGroundHeightFiltered </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the filtered ground height at a requested location. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">double</td><td>x location </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">double</td><td>y location </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>double ground height at location [x,y] </dd></dl>
+
+</div>
+</div>
 <a id="ae560c6b4bfd86639f71efec2a320d142"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae560c6b4bfd86639f71efec2a320d142">&#9670;&nbsp;</a></span>getSurfaceNormal()</h2>
 
@@ -227,6 +287,44 @@ std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRig
 </div><div class="memdoc">
 
 <p>Return the surface normal at a requested location. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">double</td><td>x location </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">double</td><td>y location </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::array&lt;double, 3&gt; surface normal at location [x,y] </dd></dl>
+
+</div>
+</div>
+<a id="a4e503f3653c17f52fe091da8b294234f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e503f3653c17f52fe091da8b294234f">&#9670;&nbsp;</a></span>getSurfaceNormalFiltered()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt; double, 3 &gt; FastTerrainMap::getSurfaceNormalFiltered </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the filtered surface normal at a requested location. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">double</td><td>x location </td></tr>
@@ -316,8 +414,8 @@ std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRig
 
 </div>
 </div>
-<a id="a45eff1e523336373471a12c2a8ec12e6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a45eff1e523336373471a12c2a8ec12e6">&#9670;&nbsp;</a></span>loadData()</h2>
+<a id="a13a752085ac5c617661f0c19d81bef09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13a752085ac5c617661f0c19d81bef09">&#9670;&nbsp;</a></span>loadData()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -356,19 +454,43 @@ std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRig
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::vector&lt; std::vector&lt; double &gt;&gt;&#160;</td>
-          <td class="paramname"><em>dx_data</em>, </td>
+          <td class="paramname"><em>nx_data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::vector&lt; std::vector&lt; double &gt;&gt;&#160;</td>
-          <td class="paramname"><em>dy_data</em>, </td>
+          <td class="paramname"><em>ny_data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::vector&lt; std::vector&lt; double &gt;&gt;&#160;</td>
-          <td class="paramname"><em>dz_data</em>&#160;</td>
+          <td class="paramname"><em>nz_data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::vector&lt; double &gt;&gt;&#160;</td>
+          <td class="paramname"><em>z_data_filt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::vector&lt; double &gt;&gt;&#160;</td>
+          <td class="paramname"><em>nx_data_filt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::vector&lt; double &gt;&gt;&#160;</td>
+          <td class="paramname"><em>ny_data_filt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::vector&lt; double &gt;&gt;&#160;</td>
+          <td class="paramname"><em>nz_data_filt</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

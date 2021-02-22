@@ -113,9 +113,9 @@ Private Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a2eb81f4bee8cec49686f963cd0251b51">clearPlan</a> ()</td></tr>
 <tr class="memdesc:a2eb81f4bee8cec49686f963cd0251b51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear all data in plan member variables. <br /></td></tr>
 <tr class="separator:a2eb81f4bee8cec49686f963cd0251b51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e4e9b1011a5d7ac85840aa0952ed847"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a8e4e9b1011a5d7ac85840aa0952ed847">addStateWrenchToMsg</a> (double t, FullState body_state, Wrench body_wrench, spirit_msgs::BodyPlan &amp;body_plan_msg)</td></tr>
-<tr class="memdesc:a8e4e9b1011a5d7ac85840aa0952ed847"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the body plan with the current plan.  <a href="#a8e4e9b1011a5d7ac85840aa0952ed847">More...</a><br /></td></tr>
-<tr class="separator:a8e4e9b1011a5d7ac85840aa0952ed847"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1be746cd4722d5c8370283baf929cf55"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a1be746cd4722d5c8370283baf929cf55">addStateAndGRFToMsg</a> (double t, FullState body_state, GRF grf, int primitive_id, spirit_msgs::BodyPlan &amp;body_plan_msg)</td></tr>
+<tr class="memdesc:a1be746cd4722d5c8370283baf929cf55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the body plan with the current plan.  <a href="#a1be746cd4722d5c8370283baf929cf55">More...</a><br /></td></tr>
+<tr class="separator:a1be746cd4722d5c8370283baf929cf55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ef31af306895c311faee09a7023896b"><td class="memItemLeft" align="right" valign="top"><a id="a7ef31af306895c311faee09a7023896b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a7ef31af306895c311faee09a7023896b">publishPlan</a> ()</td></tr>
 <tr class="memdesc:a7ef31af306895c311faee09a7023896b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish the current body plan. <br /></td></tr>
@@ -175,18 +175,22 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a4ce8a926b03bb78083a6a20e0851a05a">terrain_</a></td></tr>
 <tr class="memdesc:a4ce8a926b03bb78083a6a20e0851a05a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Struct for terrain map data. <br /></td></tr>
 <tr class="separator:a4ce8a926b03bb78083a6a20e0851a05a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abbdec16bfc605adeab6905a4846ce0fd"><td class="memItemLeft" align="right" valign="top"><a id="abbdec16bfc605adeab6905a4846ce0fd"></a>
-std::vector&lt; FullState &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#abbdec16bfc605adeab6905a4846ce0fd">body_plan_</a></td></tr>
-<tr class="memdesc:abbdec16bfc605adeab6905a4846ce0fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing the interpolated robot body plan. <br /></td></tr>
-<tr class="separator:abbdec16bfc605adeab6905a4846ce0fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b08db1a344d23a0543ccd01804c50b3"><td class="memItemLeft" align="right" valign="top"><a id="a2b08db1a344d23a0543ccd01804c50b3"></a>
-std::vector&lt; Wrench &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a2b08db1a344d23a0543ccd01804c50b3">wrench_plan_</a></td></tr>
-<tr class="memdesc:a2b08db1a344d23a0543ccd01804c50b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing the interpolated wrench plan. <br /></td></tr>
-<tr class="separator:a2b08db1a344d23a0543ccd01804c50b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a029413a439d6621407f9e7d7020b18b5"><td class="memItemLeft" align="right" valign="top"><a id="a029413a439d6621407f9e7d7020b18b5"></a>
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a029413a439d6621407f9e7d7020b18b5">t_plan_</a></td></tr>
 <tr class="memdesc:a029413a439d6621407f9e7d7020b18b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing the interpolated time data. <br /></td></tr>
 <tr class="separator:a029413a439d6621407f9e7d7020b18b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbdec16bfc605adeab6905a4846ce0fd"><td class="memItemLeft" align="right" valign="top"><a id="abbdec16bfc605adeab6905a4846ce0fd"></a>
+std::vector&lt; FullState &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#abbdec16bfc605adeab6905a4846ce0fd">body_plan_</a></td></tr>
+<tr class="memdesc:abbdec16bfc605adeab6905a4846ce0fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing the interpolated robot body plan. <br /></td></tr>
+<tr class="separator:abbdec16bfc605adeab6905a4846ce0fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92cbadef12f7e8f5e69d97eac255cafa"><td class="memItemLeft" align="right" valign="top"><a id="a92cbadef12f7e8f5e69d97eac255cafa"></a>
+std::vector&lt; GRF &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a92cbadef12f7e8f5e69d97eac255cafa">grf_plan_</a></td></tr>
+<tr class="memdesc:a92cbadef12f7e8f5e69d97eac255cafa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing the interpolated wrench plan. <br /></td></tr>
+<tr class="separator:a92cbadef12f7e8f5e69d97eac255cafa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a600a8cf3f81aad7d9a11be7ad3012cc1"><td class="memItemLeft" align="right" valign="top"><a id="a600a8cf3f81aad7d9a11be7ad3012cc1"></a>
+std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a600a8cf3f81aad7d9a11be7ad3012cc1">primitive_id_plan_</a></td></tr>
+<tr class="memdesc:a600a8cf3f81aad7d9a11be7ad3012cc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing the interpolated time data. <br /></td></tr>
+<tr class="separator:a600a8cf3f81aad7d9a11be7ad3012cc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa2ab110d211bbd95013b8ad2f4b9f67a"><td class="memItemLeft" align="right" valign="top"><a id="aa2ab110d211bbd95013b8ad2f4b9f67a"></a>
 ros::Time&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#aa2ab110d211bbd95013b8ad2f4b9f67a">plan_timestamp_</a></td></tr>
 <tr class="memdesc:aa2ab110d211bbd95013b8ad2f4b9f67a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time stamp for the beginning of the plan. <br /></td></tr>
@@ -280,8 +284,8 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a8e4e9b1011a5d7ac85840aa0952ed847"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8e4e9b1011a5d7ac85840aa0952ed847">&#9670;&nbsp;</a></span>addStateWrenchToMsg()</h2>
+<a id="a1be746cd4722d5c8370283baf929cf55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1be746cd4722d5c8370283baf929cf55">&#9670;&nbsp;</a></span>addStateAndGRFToMsg()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -290,7 +294,7 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void GlobalBodyPlanner::addStateWrenchToMsg </td>
+          <td class="memname">void GlobalBodyPlanner::addStateAndGRFToMsg </td>
           <td>(</td>
           <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>t</em>, </td>
@@ -304,8 +308,14 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Wrench&#160;</td>
-          <td class="paramname"><em>body_wrench</em>, </td>
+          <td class="paramtype">GRF&#160;</td>
+          <td class="paramname"><em>grf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>primitive_id</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -331,7 +341,7 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>Time of state in trajectory </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">body_state</td><td>Body state </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">body_wrench</td><td>Wrench applied to body </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">grf</td><td>GRF applied to body </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">body_plan_msg</td><td>Body plan message </td></tr>
   </table>
   </dd>

@@ -98,10 +98,6 @@ Private Types</h2></td></tr>
 typedef std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#abc34736bcc4fde10c122e4c259588c80">BodyState</a></td></tr>
 <tr class="memdesc:abc34736bcc4fde10c122e4c259588c80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define the body state data structure. <br /></td></tr>
 <tr class="separator:abc34736bcc4fde10c122e4c259588c80"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2cb6435347c0188daa4c0e5e1cadad4"><td class="memItemLeft" align="right" valign="top"><a id="ad2cb6435347c0188daa4c0e5e1cadad4"></a>
-typedef Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ad2cb6435347c0188daa4c0e5e1cadad4">BodyWrench</a></td></tr>
-<tr class="memdesc:ad2cb6435347c0188daa4c0e5e1cadad4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define the body wrench data structure. <br /></td></tr>
-<tr class="separator:ad2cb6435347c0188daa4c0e5e1cadad4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac902c37c7e1e786537e43c616b45636f"><td class="memItemLeft" align="right" valign="top"><a id="ac902c37c7e1e786537e43c616b45636f"></a>
 typedef std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ac902c37c7e1e786537e43c616b45636f">FootstepState</a></td></tr>
 <tr class="memdesc:ac902c37c7e1e786537e43c616b45636f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define the footstep state data structure. <br /></td></tr>
@@ -115,6 +111,9 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:aed0f0743a34e829b131665cbd34259c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aed0f0743a34e829b131665cbd34259c8">bodyPlanCallback</a> (const spirit_msgs::BodyPlan::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:aed0f0743a34e829b131665cbd34259c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new body plan data.  <a href="#aed0f0743a34e829b131665cbd34259c8">More...</a><br /></td></tr>
 <tr class="separator:aed0f0743a34e829b131665cbd34259c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7ce250a618f7efeffa89b8df13ec348"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ab7ce250a618f7efeffa89b8df13ec348">computeTimeUntilNextFlight</a> (double t)</td></tr>
+<tr class="memdesc:ab7ce250a618f7efeffa89b8df13ec348"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the amount of time until the next flight phase.  <a href="#ab7ce250a618f7efeffa89b8df13ec348">More...</a><br /></td></tr>
+<tr class="separator:ab7ce250a618f7efeffa89b8df13ec348"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71b4ee2f4f3b385e27e21fb9cd0208a3"><td class="memItemLeft" align="right" valign="top"><a id="a71b4ee2f4f3b385e27e21fb9cd0208a3"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a71b4ee2f4f3b385e27e21fb9cd0208a3">updateDiscretePlan</a> ()</td></tr>
 <tr class="memdesc:a71b4ee2f4f3b385e27e21fb9cd0208a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the discrete footstep plan with the current plan. <br /></td></tr>
@@ -178,10 +177,14 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 std::vector&lt; <a class="el" href="classLocalFootstepPlanner.html#abc34736bcc4fde10c122e4c259588c80">BodyState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ad5bceef6c8d9633791e7a0a0dffc7dc7">body_plan_</a></td></tr>
 <tr class="memdesc:ad5bceef6c8d9633791e7a0a0dffc7dc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing robot body plan. <br /></td></tr>
 <tr class="separator:ad5bceef6c8d9633791e7a0a0dffc7dc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa84041457fad698d33cee4562b10811e"><td class="memItemLeft" align="right" valign="top"><a id="aa84041457fad698d33cee4562b10811e"></a>
-std::vector&lt; <a class="el" href="classLocalFootstepPlanner.html#ad2cb6435347c0188daa4c0e5e1cadad4">BodyWrench</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aa84041457fad698d33cee4562b10811e">body_wrench_plan_</a></td></tr>
-<tr class="memdesc:aa84041457fad698d33cee4562b10811e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing robot body wrenches. <br /></td></tr>
-<tr class="separator:aa84041457fad698d33cee4562b10811e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55efefb704de89741acda37d2f8b5d82"><td class="memItemLeft" align="right" valign="top"><a id="a55efefb704de89741acda37d2f8b5d82"></a>
+std::vector&lt; Eigen::Vector3d &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a55efefb704de89741acda37d2f8b5d82">grf_plan_</a></td></tr>
+<tr class="memdesc:a55efefb704de89741acda37d2f8b5d82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing robot GRFs. <br /></td></tr>
+<tr class="separator:a55efefb704de89741acda37d2f8b5d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab93bf514fbd6707804081ea571c16ef6"><td class="memItemLeft" align="right" valign="top"><a id="ab93bf514fbd6707804081ea571c16ef6"></a>
+std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ab93bf514fbd6707804081ea571c16ef6">primitive_id_plan_</a></td></tr>
+<tr class="memdesc:ab93bf514fbd6707804081ea571c16ef6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing primitive ids for the plan. <br /></td></tr>
+<tr class="separator:ab93bf514fbd6707804081ea571c16ef6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac4ca626cf8e85f9d1fa96a1d7f1f216"><td class="memItemLeft" align="right" valign="top"><a id="aac4ca626cf8e85f9d1fa96a1d7f1f216"></a>
 std::vector&lt; std::vector&lt; <a class="el" href="classLocalFootstepPlanner.html#ac902c37c7e1e786537e43c616b45636f">FootstepState</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aac4ca626cf8e85f9d1fa96a1d7f1f216">footstep_plan_</a></td></tr>
 <tr class="memdesc:aac4ca626cf8e85f9d1fa96a1d7f1f216"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing robot footstep plan. <br /></td></tr>
@@ -222,6 +225,18 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#abdb145cc2c860791c9d13a51ea04de26">interp_dt_</a></td></tr>
 <tr class="memdesc:abdb145cc2c860791c9d13a51ea04de26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolation timestep for swing leg. <br /></td></tr>
 <tr class="separator:abdb145cc2c860791c9d13a51ea04de26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d80952c1299bc54c08fafbe4b695b1b"><td class="memItemLeft" align="right" valign="top"><a id="a4d80952c1299bc54c08fafbe4b695b1b"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a4d80952c1299bc54c08fafbe4b695b1b">FLIGHT</a> = 0</td></tr>
+<tr class="memdesc:a4d80952c1299bc54c08fafbe4b695b1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primitive ids - FLIGHT. <br /></td></tr>
+<tr class="separator:a4d80952c1299bc54c08fafbe4b695b1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65d7ce39eeecb63432af83dc9184677a"><td class="memItemLeft" align="right" valign="top"><a id="a65d7ce39eeecb63432af83dc9184677a"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a65d7ce39eeecb63432af83dc9184677a">STANCE</a> = 1</td></tr>
+<tr class="memdesc:a65d7ce39eeecb63432af83dc9184677a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primitive ids - STANCE. <br /></td></tr>
+<tr class="separator:a65d7ce39eeecb63432af83dc9184677a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa09d542cb363662eb771cc1a8942b97"><td class="memItemLeft" align="right" valign="top"><a id="afa09d542cb363662eb771cc1a8942b97"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#afa09d542cb363662eb771cc1a8942b97">CONNECT_STANCE</a> = 2</td></tr>
+<tr class="memdesc:afa09d542cb363662eb771cc1a8942b97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primitive ids - CONNECT_STANCE. <br /></td></tr>
+<tr class="separator:afa09d542cb363662eb771cc1a8942b97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A local footstep planning class for spirit. </p>
@@ -286,6 +301,41 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="ab7ce250a618f7efeffa89b8df13ec348"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7ce250a618f7efeffa89b8df13ec348">&#9670;&nbsp;</a></span>computeTimeUntilNextFlight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double LocalFootstepPlanner::computeTimeUntilNextFlight </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the amount of time until the next flight phase. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>Current time </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Time until flight </dd></dl>
 
 </div>
 </div>

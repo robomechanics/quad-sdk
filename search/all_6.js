@@ -2,6 +2,7 @@ var searchData=
 [
   ['fallback',['Fallback',['../structmatplotlibcpp_1_1detail_1_1is__callable__impl_3_01true_00_01T_01_4_1_1Fallback.html',1,'matplotlibcpp::detail::is_callable_impl&lt; true, T &gt;']]],
   ['fastterrainmap',['FastTerrainMap',['../classFastTerrainMap.html',1,'FastTerrainMap'],['../classFastTerrainMap.html#ab243ccba0680afb064c70bead54bf126',1,'FastTerrainMap::FastTerrainMap()']]],
+  ['flight',['FLIGHT',['../classLocalFootstepPlanner.html#a4d80952c1299bc54c08fafbe4b695b1b',1,'LocalFootstepPlanner']]],
   ['foot_5f0_5fplan_5fcontinuous_5fviz_5fpub_5f',['foot_0_plan_continuous_viz_pub_',['../classRVizInterface.html#a5ad1dda3fcbc4271a72db281cacc3988',1,'RVizInterface']]],
   ['foot_5f1_5fplan_5fcontinuous_5fviz_5fpub_5f',['foot_1_plan_continuous_viz_pub_',['../classRVizInterface.html#a037da82ad6bd10cdc11b8e481ee3b2bf',1,'RVizInterface']]],
   ['foot_5f2_5fplan_5fcontinuous_5fviz_5fpub_5f',['foot_2_plan_continuous_viz_pub_',['../classRVizInterface.html#ad8eb09194e5c7940617312447dfe0915',1,'RVizInterface']]],

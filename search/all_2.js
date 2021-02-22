@@ -6,13 +6,10 @@ var searchData=
   ['body_5fplan_5fsub_5f',['body_plan_sub_',['../classLocalFootstepPlanner.html#a53993412f1a1fb942d92372478d6967d',1,'LocalFootstepPlanner::body_plan_sub_()'],['../classMPCController.html#a2c37f68362c09f34fa08b1be52813d61',1,'MPCController::body_plan_sub_()'],['../classRVizInterface.html#a57bd96ee0a101e605f32c7fedb92a33f',1,'RVizInterface::body_plan_sub_()'],['../classTrajectoryPublisher.html#a2fe6e1edaff1bf56fd943f7340640d94',1,'TrajectoryPublisher::body_plan_sub_()']]],
   ['body_5fplan_5ftopic_5f',['body_plan_topic_',['../classLocalFootstepPlanner.html#a0ba5abdf1a439baf472f2874be5f84ae',1,'LocalFootstepPlanner']]],
   ['body_5fplan_5fviz_5fpub_5f',['body_plan_viz_pub_',['../classRVizInterface.html#a2ba6086c6510e38ffdcda7477caac330',1,'RVizInterface']]],
-  ['body_5fwrench_5fplan_5f',['body_wrench_plan_',['../classLocalFootstepPlanner.html#aa84041457fad698d33cee4562b10811e',1,'LocalFootstepPlanner']]],
-  ['body_5fwrench_5fplan_5fviz_5fpub_5f',['body_wrench_plan_viz_pub_',['../classRVizInterface.html#afda7dc6c0a3e4aeb4a3a5bb1b3948df8',1,'RVizInterface']]],
   ['bodyforceestimator',['BodyForceEstimator',['../classBodyForceEstimator.html',1,'BodyForceEstimator'],['../classBodyForceEstimator.html#ae26e69032cf75ce7f7d1c55272ea6e87',1,'BodyForceEstimator::BodyForceEstimator()']]],
   ['bodyplancallback',['bodyPlanCallback',['../classLocalFootstepPlanner.html#aed0f0743a34e829b131665cbd34259c8',1,'LocalFootstepPlanner::bodyPlanCallback()'],['../classMPCController.html#a2271bd1d98fbdc1e4fdde018e7057c4a',1,'MPCController::bodyPlanCallback()'],['../classRVizInterface.html#aaabd9d31b7d4fbbc367e8c30133de077',1,'RVizInterface::bodyPlanCallback()'],['../classTrajectoryPublisher.html#a0933b12439db57eb1dfe7ab03b2ca121',1,'TrajectoryPublisher::bodyPlanCallback()']]],
   ['bodystate',['BodyState',['../classLocalFootstepPlanner.html#abc34736bcc4fde10c122e4c259588c80',1,'LocalFootstepPlanner']]],
   ['bodytofootfk',['bodyToFootFK',['../classspirit__utils_1_1SpiritKinematics.html#a16a70b64440b5d4795ab3aefc2edf5c0',1,'spirit_utils::SpiritKinematics']]],
-  ['bodywrench',['BodyWrench',['../classLocalFootstepPlanner.html#ad2cb6435347c0188daa4c0e5e1cadad4',1,'LocalFootstepPlanner']]],
   ['body_5fplanner',['body_planner',['../md_global_body_planner_README.html',1,'']]],
   ['body_5fplanner',['body_planner',['../md_twist_body_planner_README.html',1,'']]]
 ];

@@ -13,6 +13,7 @@ var searchData=
   ['terrain_5fmap_5fpub_5f',['terrain_map_pub_',['../classTerrainMapPublisher.html#a0a60e93d610ec49cff3ddac21e0c164b',1,'TerrainMapPublisher']]],
   ['terrain_5fmap_5fsub_5f',['terrain_map_sub_',['../classGlobalBodyPlanner.html#adb8189fbb2d0372db2eb06ee6ea67d11',1,'GlobalBodyPlanner::terrain_map_sub_()'],['../classLocalFootstepPlanner.html#a9a7246a67a2f6e0084476199d5076bd4',1,'LocalFootstepPlanner::terrain_map_sub_()']]],
   ['terrain_5fmap_5ftopic_5f',['terrain_map_topic_',['../classGlobalBodyPlanner.html#a2d7c05f084686214d16aeeb85839b56a',1,'GlobalBodyPlanner::terrain_map_topic_()'],['../classLocalFootstepPlanner.html#a76e26ceee124b046d5f94cabf72ec9dd',1,'LocalFootstepPlanner::terrain_map_topic_()']]],
+  ['terrain_5ftype_5f',['terrain_type_',['../classTerrainMapPublisher.html#a86d3497f911cbec8d7d250cfce4d403a',1,'TerrainMapPublisher']]],
   ['terrainmapcallback',['terrainMapCallback',['../classGlobalBodyPlanner.html#a209eb08a4c8c9e51b88c4039a6cfbd12',1,'GlobalBodyPlanner::terrainMapCallback()'],['../classLocalFootstepPlanner.html#a29dd7f51c83c244633f4efc8c6fac1af',1,'LocalFootstepPlanner::terrainMapCallback()']]],
   ['terrainmappublisher',['TerrainMapPublisher',['../classTerrainMapPublisher.html',1,'TerrainMapPublisher'],['../classTerrainMapPublisher.html#a0a8d623893002835ad1efd85b2fd321b',1,'TerrainMapPublisher::TerrainMapPublisher()']]],
   ['torque_5flims_5f',['torque_lims_',['../classeffort__controllers_1_1SpiritController.html#af1da15d2c33e320435beaa1d44be7c3d',1,'effort_controllers::SpiritController']]],

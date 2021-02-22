@@ -8,5 +8,6 @@ var searchData=
   ['plan_5ftimestamp_5f',['plan_timestamp_',['../classGlobalBodyPlanner.html#aa2ab110d211bbd95013b8ad2f4b9f67a',1,'GlobalBodyPlanner::plan_timestamp_()'],['../classLocalFootstepPlanner.html#ab7aa02137bd092c541c350da38f3b2a5',1,'LocalFootstepPlanner::plan_timestamp_()']]],
   ['planning_5frate_5festimate',['planning_rate_estimate',['../classRRTConnectClass.html#ade4e265ae025a586848fa5b87f452f07',1,'RRTConnectClass']]],
   ['playback_5fspeed_5f',['playback_speed_',['../classTrajectoryPublisher.html#aacd58fb9578246fa3bf4b37a6590e0fa',1,'TrajectoryPublisher']]],
+  ['primitive_5fid_5fplan_5f',['primitive_id_plan_',['../classGlobalBodyPlanner.html#a600a8cf3f81aad7d9a11be7ad3012cc1',1,'GlobalBodyPlanner::primitive_id_plan_()'],['../classLocalFootstepPlanner.html#ab93bf514fbd6707804081ea571c16ef6',1,'LocalFootstepPlanner::primitive_id_plan_()']]],
   ['prob_5fgoal_5fthresh',['prob_goal_thresh',['../classRRTClass.html#a3bea12d5a94669ee0713d8447c575f4b',1,'RRTClass']]]
 ];

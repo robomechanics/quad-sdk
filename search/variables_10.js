@@ -12,6 +12,7 @@ var searchData=
   ['terrain_5fmap_5fpub_5f',['terrain_map_pub_',['../classTerrainMapPublisher.html#a0a60e93d610ec49cff3ddac21e0c164b',1,'TerrainMapPublisher']]],
   ['terrain_5fmap_5fsub_5f',['terrain_map_sub_',['../classGlobalBodyPlanner.html#adb8189fbb2d0372db2eb06ee6ea67d11',1,'GlobalBodyPlanner::terrain_map_sub_()'],['../classLocalFootstepPlanner.html#a9a7246a67a2f6e0084476199d5076bd4',1,'LocalFootstepPlanner::terrain_map_sub_()']]],
   ['terrain_5fmap_5ftopic_5f',['terrain_map_topic_',['../classGlobalBodyPlanner.html#a2d7c05f084686214d16aeeb85839b56a',1,'GlobalBodyPlanner::terrain_map_topic_()'],['../classLocalFootstepPlanner.html#a76e26ceee124b046d5f94cabf72ec9dd',1,'LocalFootstepPlanner::terrain_map_topic_()']]],
+  ['terrain_5ftype_5f',['terrain_type_',['../classTerrainMapPublisher.html#a86d3497f911cbec8d7d250cfce4d403a',1,'TerrainMapPublisher']]],
   ['torque_5flims_5f',['torque_lims_',['../classeffort__controllers_1_1SpiritController.html#af1da15d2c33e320435beaa1d44be7c3d',1,'effort_controllers::SpiritController']]],
   ['traj_5fmsg_5f',['traj_msg_',['../classTrajectoryPublisher.html#a772f133318c9386be67a8af090fc115d',1,'TrajectoryPublisher']]],
   ['trajectory_5fpub_5f',['trajectory_pub_',['../classTrajectoryPublisher.html#a36a2871c3e5120dc6d0f0770723372b7',1,'TrajectoryPublisher']]],
