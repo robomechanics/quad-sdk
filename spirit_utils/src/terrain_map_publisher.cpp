@@ -53,8 +53,8 @@ void TerrainMapPublisher::createMap() {
 
     if (x_diff*x_diff + y_diff*y_diff <= obs_radius*obs_radius)
     {
-      terrain_map_.at("z", *it) = 0.7;
-      terrain_map_.at("z_filt", *it) = 0.7;
+      terrain_map_.at("z", *it) = 0.0;//0.7;
+      terrain_map_.at("z_filt", *it) = 0.0;//0.7;
     } else {
       terrain_map_.at("z", *it) = 0.0;
       terrain_map_.at("z_filt", *it) = 0.0;
