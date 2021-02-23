@@ -42,9 +42,9 @@ axis tight
 set(angularStateFig, 'Position', [100 100 800 600])
 
 % Specify indices for leg joints
-abIndex = [9:12];
-hipIndex = [1:2:7];
-kneeIndex = [2:2:8];
+abIndex = [1:3:12];
+hipIndex = [2:3:12];
+kneeIndex = [3:3:12];
 
 % Plot joint positions
 jointPositionFig = figure;

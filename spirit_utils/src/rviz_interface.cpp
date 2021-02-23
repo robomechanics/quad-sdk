@@ -69,6 +69,9 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   joint_states_viz_pub_ = nh_.advertise<sensor_msgs::JointState>
     (joint_states_viz_topic,1);
 
+  // ground_truth_state_sub_ = nh_.subscribe(ground_truth_state_topic,1,
+  //   boost::bind( &RVizInterface::groundTruthStateCallback, this, _1, bool));
+
   std::string foot_0_plan_continuous_viz_topic,foot_1_plan_continuous_viz_topic,
     foot_2_plan_continuous_viz_topic, foot_3_plan_continuous_viz_topic;
 

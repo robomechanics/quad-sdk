@@ -111,7 +111,7 @@ void math_utils::interpHeader(std_msgs::Header header_1,std_msgs::Header header_
   interp_header.seq = header_1.seq;
 
   // Compute the correct ros::Time corresponding to t_interp
-  t_interp = std::min(std::max(t_interp,1.0),0.0);
+  t_interp = std::max(std::min(t_interp,1.0),0.0);
   ros::Duration state_duration = header_2.stamp - header_1.stamp;
   ros::Duration interp_duration = ros::Duration(t_interp*state_duration.toSec());
   interp_header.stamp = header_1.stamp + ros::Duration(interp_duration);
@@ -338,6 +338,10 @@ spirit_msgs::RobotState math_utils::interpRobotStateTraj(spirit_msgs::RobotState
 
   // Define some useful timing parameters
   ros::Time t0_ros = msg.states.front().header.stamp;
+  ros::Time tf_ros = msg.states.back().header.stamp;
+  ros::Duration traj_duration = tf_ros - t0_ros;
+  
+  t = std::max(std::min(t,traj_duration.toSec()),0.0);
   ros::Time t_ros = t0_ros + ros::Duration(t);
 
   // Declare variables for interpolating between, both for input and output data
@@ -367,15 +371,26 @@ spirit_msgs::RobotState math_utils::interpRobotStateTraj(spirit_msgs::RobotState
   ros::Duration t2_ros = state_2.header.stamp - t0_ros;
   t2 = t2_ros.toSec();
   double t_interp = (t - t1)/(t2-t1);
+  // printf("t_1 = %5.3f \n", t1);
+  // printf("t_2 = %5.3f \n", t2);
+  // printf("t_interp = %5.3f \n", t_interp);
 
   // Compute interpolation
   interpRobotState(state_1, state_2, t_interp, interp_state);
+
+  // printf("state_1.header.stamp = %15f \n", state_1.header.stamp.toSec());
+  // printf("state_2.header.stamp = %15f \n", state_2.header.stamp.toSec());
+  // printf("interp_state.header.stamp = %15f \n", interp_state.header.stamp.toSec());
+
+  // printf("state_1.body.pose.pose.position.x = %5.3f \n", state_1.body.pose.pose.position.x);
+  // printf("state_2.body.pose.pose.position.x = %5.3f \n", state_2.body.pose.pose.position.x);
+  // printf("interp_state.body.pose.pose.position.x = %5.3f \n", interp_state.body.pose.pose.position.x);
 
   return interp_state;
 
 }
 
-void math_utils::convertBodyAndFeetToJoints(nav_msgs::Odometry body_state,
+void math_utils::ikRobotState(nav_msgs::Odometry body_state,
   spirit_msgs::MultiFootState multi_foot_state, sensor_msgs::JointState &joint_state) {
 
   joint_state.header = multi_foot_state.header;
@@ -428,6 +443,14 @@ void math_utils::convertBodyAndFeetToJoints(nav_msgs::Odometry body_state,
   }
 
 }
+
+void math_utils::ikRobotState(spirit_msgs::RobotState &state) {
+  ikRobotState(state.body, state.feet, state.joints);
+}
+
+// void math_utils::fkRobotState(spirit_msgs::RobotState &state) {
+//   fkRobotState(state.body, state.joints, state.feet);
+// }
 
 
 int math_utils::interpInt(std::vector<double> input_vec,

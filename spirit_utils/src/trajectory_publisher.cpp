@@ -86,7 +86,8 @@ void TrajectoryPublisher::updateTrajectory() {
   double t_foot_plan = t_foot_plan_ros.toSec();
 
   if (t_body_plan < t_foot_plan) {
-    ROS_DEBUG_THROTTLE(1, "Foot plan duration is longer than body plan, traj prublisher will wait");
+    ROS_DEBUG_THROTTLE(1, "Foot plan duration is longer than body plan, traj prublisher "
+      "will wait");
     return;
   }
 
@@ -118,7 +119,7 @@ void TrajectoryPublisher::updateTrajectory() {
       multi_foot_plan_continuous_msg_,t_traj_[i]);
 
     // Compute joint data with IK
-    math_utils::convertBodyAndFeetToJoints(state.body, state.feet, state.joints);
+    math_utils::ikRobotState(state.body, state.feet, state.joints);
 
     // Add this state to the message
     traj_msg_.states.push_back(state);
@@ -142,7 +143,9 @@ void TrajectoryPublisher::publishTrajectoryState() {
   ros::Duration t_duration = ros::Time::now() - body_plan_msg_.header.stamp;
 
   // Mod by trajectory duration
-  double t = fmod(playback_speed_*t_duration.toSec(), t_traj_.back());
+  double t = t_duration.toSec();
+  // double t_mod = fmod(playback_speed_*t, t_traj_.back());
+  // printf("t = %5.3f\n", t);
 
   // Interpolate to get the correct state and publish it
   spirit_msgs::RobotState interp_state = math_utils::interpRobotStateTraj(traj_msg_,t);

@@ -148,8 +148,14 @@ namespace math_utils {
    * @param[in] multi_foot_state message of state of each foot
    * @param[out] joint_state message of the corresponding joint state
    */
-  void convertBodyAndFeetToJoints(nav_msgs::Odometry body_state,
+  void ikRobotState(nav_msgs::Odometry body_state,
     spirit_msgs::MultiFootState multi_foot_state, sensor_msgs::JointState &joint_state);
+
+  /**
+   * @brief Perform IK and save to the state.joint field
+   * @param[out] state RobotState message to which to add joint data
+   */
+  void ikRobotState(spirit_msgs::RobotState &state);
 
   /**
    * @brief Obtain the correct int within a parameterized vector of ints
