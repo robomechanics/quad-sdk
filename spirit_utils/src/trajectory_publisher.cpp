@@ -34,7 +34,6 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
   trajectory_pub_ = nh_.advertise<spirit_msgs::RobotStateTrajectory>
     (trajectory_topic,1);
 
-  update_flag_ = false;
 }
 
 void TrajectoryPublisher::importTrajectory() {
@@ -57,6 +56,10 @@ void TrajectoryPublisher::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr
 
 void TrajectoryPublisher::multiFootPlanContinuousCallback(const 
   spirit_msgs::MultiFootPlanContinuous::ConstPtr& msg) {
+
+    // std::cout << msg->header.stamp << std::endl;
+    // std::cout << multi_foot_plan_continuous_msg_.header.stamp << std::endl;
+    // printf("\n");
 
   if (msg->header.stamp != multi_foot_plan_continuous_msg_.header.stamp) {
     // Save te most recent foot plan

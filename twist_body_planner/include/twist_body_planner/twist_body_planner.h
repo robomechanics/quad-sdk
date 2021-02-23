@@ -111,6 +111,9 @@ class TwistBodyPlanner {
     /// Threshold for waiting for cmd_vel data
     double last_cmd_vel_msg_time_max_;
 
+    /// Plan timestamp
+    ros::Time plan_timestamp_;
+
 };
 
 #endif // TWIST_BODY_PLANNER_H
