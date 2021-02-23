@@ -10,9 +10,9 @@ if nargin>0
     bSave = true;
 else
     % Specify the trial name and settings
-    trialName = 'spirit_framework_test_2021-2-22';
+    trialName = 'spirit_log_current';
     bAnimate = false;
-    bSave = true;
+    bSave = false;
 end
 
 % Check that this is the right current directory otherwise paths won't work

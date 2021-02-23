@@ -33,7 +33,6 @@ void TwistBodyPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg)
     
     plan_timestamp_ = ros::Time::now();
   }
-  std::cout << plan_timestamp_ << std::endl;
   // Ignore non-planar components of desired twist
   cmd_vel_[0] = msg->linear.x;
   cmd_vel_[1] = msg->linear.y;
@@ -58,11 +57,9 @@ void TwistBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPt
   double roll, pitch, yaw;
   m.getRPY(roll, pitch, yaw);
 
-  double z_desired = 0.3;
-
   start_state_[0] = msg->body.pose.pose.position.x;
   start_state_[1] = msg->body.pose.pose.position.y;
-  start_state_[2] = z_desired;
+  start_state_[2] = z_des;
   start_state_[3] = 0;
   start_state_[4] = 0;
   start_state_[5] = yaw;
@@ -82,7 +79,11 @@ void TwistBodyPlanner::clearPlan() {
 }
 
 
-void TwistBodyPlanner::plan() {
+void TwistBodyPlanner::updatePlan() {
+
+  if (start_state_[2] != z_des) {
+    return;
+  }
 
   // Get the most recent plan parameters and clear the old solutions
   clearPlan();
@@ -173,6 +174,11 @@ void TwistBodyPlanner::addStateWrenchToMsg(double t, State body_state,
 }
 
 void TwistBodyPlanner::publishPlan() {
+
+  if (body_plan_.empty()) {
+    return;
+  }
+
   // Construct BodyPlan messages
   spirit_msgs::BodyPlan body_plan_msg;
 
@@ -201,7 +207,7 @@ void TwistBodyPlanner::spin() {
   while (ros::ok()) {
     
     // Update the plan
-    plan();
+    updatePlan();
 
     // Publish the current best plan and sleep
     publishPlan();

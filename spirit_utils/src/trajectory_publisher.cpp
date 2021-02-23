@@ -144,9 +144,8 @@ void TrajectoryPublisher::publishTrajectoryState() {
 
   // Mod by trajectory duration
   double t = t_duration.toSec();
-  // double t_mod = fmod(playback_speed_*t, t_traj_.back());
-  // printf("t = %5.3f\n", t);
-
+  double t_mod = fmod(playback_speed_*t, t_traj_.back());
+  
   // Interpolate to get the correct state and publish it
   spirit_msgs::RobotState interp_state = math_utils::interpRobotStateTraj(traj_msg_,t);
   trajectory_state_pub_.publish(interp_state);
