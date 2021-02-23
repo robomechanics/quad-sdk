@@ -28,7 +28,7 @@ const double ROBOT_W = 0.3;       // Width of robot body, m (0.256 cheetah, 0.23
 const double ROBOT_H = 0.05;         // Vertical distance between leg base and bottom of robot, m (0.1 cheetah, 0.04 ANYmal)
 
 // Define dynamic constraint parameters
-const double M_CONST = 12;          // Robot mass, kg (43 for cheetah, 30 for anymal)
+const double M_CONST = 12;          // Robot mass, kg (12 for spirit, 43 for cheetah, 30 for anymal)
 const double J_CONST = 1.0;         // Moment of inertia about the robot's y axis (pitch)
 const double G_CONST = 9.81;        // Gravity constant, m/s^2
 const double F_MAX = 300;           // Maximum GRF, N (800 for cheetah, 500 for anymal)

@@ -23,8 +23,10 @@ find_package(catkin REQUIRED COMPONENTS
   grid_map_ros
 )
 
+find_package(PythonLibs 2.7)
+
 catkin_package(
-  INCLUDE_DIRS include
+  INCLUDE_DIRS include ${PYTHON_INCLUDE_DIRS}
   LIBRARIES spirit_utils
 #  CATKIN_DEPENDS roscpp std_msgs
 #	DEPENDS
@@ -39,6 +41,7 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  # ${PYTHON_INCLUDE_DIRS}
 )
 
 add_library(spirit_utils

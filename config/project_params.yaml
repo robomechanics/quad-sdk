@@ -123,5 +123,5 @@ visualization:
 trajectory_publisher:
   update_rate: 40
   interp_dt: 0.05
-  playback_speed: 0.05
+  playback_speed: 1
   traj_source: topic

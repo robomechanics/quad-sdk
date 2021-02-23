@@ -417,7 +417,7 @@ void math_utils::convertBodyAndFeetToJoints(nav_msgs::Odometry body_state,
     joint_state.position.push_back(leg_joint_state[1]);
     joint_state.position.push_back(leg_joint_state[2]);
 
-    // Fill in the other elements with zeros for now
+    // Fill in the other elements with zeros for now (Mike to do)
     joint_state.velocity.push_back(0.0);
     joint_state.velocity.push_back(0.0);
     joint_state.velocity.push_back(0.0);
