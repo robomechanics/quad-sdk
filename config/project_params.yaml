@@ -9,7 +9,7 @@ topics:
   foot_plan_discrete: /foot_plan_discrete
   body_force: /body_force
   joint_command: /spirit/joint_controller/command
-  trajectory: /trajectory
+  trajectory: /robot_plan
   state: # These should not change for the remapping to work in some launch files
     ground_truth: /state/ground_truth
     estimate: /state/estimate

@@ -21,19 +21,19 @@ if ~endsWith(pwd, 'spirit-software/spirit_logger/scripts')
 end
 
 % Import URDF
-figure
 spirit40 = importrobot('../../spirit_simulator/spirit_description/urdf/spirit.urdf');
+%figure
 % homeConfig = homeConfiguration(spirit40);
 % show(spirit40,homeConfig);
 
 % Load the data
 [data, trialName] = parseSpiritBag(trialName);
-state_estimate = data.state_estimate;
-state_ground_truth = data.state_ground_truth;
-state_trajectory = data.state_trajectory;
+stateEstimate = data.stateEstimate;
+stateGroundTruth = data.stateGroundTruth;
+stateTrajectory = data.stateTrajectory;
 
 % Plot the state
-[COMTrajFig, linearStateFig, angularStateFig, jointPositionFig, jointVelocityFig, jointEffortFig] = plotState(state_trajectory);
+[COMTrajFig, linearStateFig, angularStateFig, jointPositionFig, jointVelocityFig, jointEffortFig] = plotState(stateTrajectory);
 % plotState(stateEstimate);
 
 % Compute and plot the toe forces - in progress
@@ -49,5 +49,5 @@ end
 % Animate and save if desired
 if bAnimate
     videosDir = fullfile(logDir,'videos/');
-    animateData(spirit40,state_trajectory, fullfile(videosDir, trialName), bSave);
+    animateData(spirit40,stateTrajectory, fullfile(videosDir, trialName), bSave);
 end
