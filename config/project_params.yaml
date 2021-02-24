@@ -14,10 +14,8 @@ topics:
     ground_truth: /state/ground_truth
     estimate: /state/estimate
     trajectory: /state/trajectory
-
   control:
     grfs: /control/grfs
-
   visualization:
     body_plan: /visualization/body_plan
     grf_plan: /visualization/grf_plan
