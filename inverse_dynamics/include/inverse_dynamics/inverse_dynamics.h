@@ -55,7 +55,7 @@ private:
 	 * @brief Callback function to handle new control input (GRF)
 	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
 	 */
-	void footPlanContinuousCallback(const spirit_msgs::MultiFootPlanContinuous::ConstPtr& msg);
+	void trajectoryCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 		/**
 	 * @brief Callback function to handle new control input (GRF)
 	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
@@ -71,8 +71,8 @@ private:
 	/// ROS subscriber for state estimate
 	ros::Subscriber robot_state_sub_;
 
-	/// ROS subscriber for foot plan
-	ros::Subscriber foot_plan_continuous_sub_;
+	/// ROS subscriber for trajectory
+	ros::Subscriber trajectory_sub_;
 
 	/// ROS publisher for inverse dynamics
 	ros::Publisher leg_command_array_pub_;
@@ -92,8 +92,8 @@ private:
 	/// Most recent state estimate
 	spirit_msgs::RobotState last_robot_state_msg_;
 
-	/// Most recent swing leg plan
-	spirit_msgs::MultiFootPlanContinuous last_foot_plan_continuous_msg_;
+	/// Most recent trajectory state
+	spirit_msgs::RobotState last_trajectory_msg_;
 	
 };
 
