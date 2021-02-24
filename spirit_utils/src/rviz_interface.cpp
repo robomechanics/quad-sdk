@@ -8,8 +8,10 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
     discrete_body_plan_topic, discrete_body_plan_viz_topic,
     foot_plan_discrete_topic, foot_plan_discrete_viz_topic, 
     foot_plan_continuous_topic, state_estimate_topic, ground_truth_state_topic, 
-    joint_states_viz_topic;
+    trajectory_state_topic, estimate_joint_states_viz_topic, 
+    ground_truth_joint_states_viz_topic, trajectory_joint_states_viz_topic;
 
+  // Load topic names from parameter server
   nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
   nh.param<std::string>("topics/discrete_body_plan", 
     discrete_body_plan_topic, "/discrete_body_plan");
@@ -21,6 +23,8 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
     state_estimate_topic, "/state/estimate");
   nh.param<std::string>("topics/state/ground_truth", 
     ground_truth_state_topic, "/state/ground_truth");
+  nh.param<std::string>("topics/state/trajectory", 
+    trajectory_state_topic, "/state/trajectory");
   
   nh.param<std::string>("topics/visualization/body_plan", 
     body_plan_viz_topic, "/visualization/body_plan");
@@ -30,10 +34,14 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
     discrete_body_plan_viz_topic, "/visualization/discrete_body_plan");
   nh.param<std::string>("topics/visualization/foot_plan_discrete", 
     foot_plan_discrete_viz_topic, "/visualization/foot_plan_discrete");
-  nh.param<std::string>("topics/visualization/joint_states", 
-    joint_states_viz_topic, "/visualization/joint_states");
+  nh.param<std::string>("topics/visualization/joint_states/estimate", 
+    estimate_joint_states_viz_topic, "/visualization/joint_states/estimate");
+  nh.param<std::string>("topics/visualization/joint_states/ground_truth", 
+    ground_truth_joint_states_viz_topic, "/visualization/joint_states/ground_truth");
+  nh.param<std::string>("topics/visualization/joint_states/trajectory", 
+    trajectory_joint_states_viz_topic, "/visualization/joint_states/trajectory");
 
-
+  // Setup rviz_interface parameters
   nh.param<std::string>("map_frame",map_frame_,"map");
   nh.param<double>("visualization/update_rate", update_rate_, 10);
   nh.param<std::vector<int> >("visualization/colors/front_feet",
@@ -45,7 +53,7 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   nh.param<std::vector<int> >("visualization/colors/individual_grf",
     individual_grf_color_, {255,0,0});
 
-  // Setup subs and pubs
+  // Setup plan subs
   body_plan_sub_ = nh_.subscribe(body_plan_topic,1,
     &RVizInterface::bodyPlanCallback, this);
   discrete_body_plan_sub_ = nh_.subscribe(discrete_body_plan_topic,1,
@@ -54,11 +62,8 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
     &RVizInterface::footPlanDiscreteCallback, this);
   foot_plan_continuous_sub_ = nh_.subscribe(foot_plan_continuous_topic,1,
     &RVizInterface::footPlanContinuousCallback, this);
-  state_estimate_sub_ = nh_.subscribe(state_estimate_topic,1,
-    &RVizInterface::stateEstimateCallback, this);
-  ground_truth_state_sub_ = nh_.subscribe(ground_truth_state_topic,1,
-    &RVizInterface::groundTruthStateCallback, this);
 
+  // Setup plan visual pubs
   body_plan_viz_pub_ = nh_.advertise<nav_msgs::Path>(body_plan_viz_topic,1);
   grf_plan_viz_pub_ = nh_.advertise<visualization_msgs::MarkerArray>
     (grf_plan_viz_topic,1);
@@ -66,11 +71,22 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
     (discrete_body_plan_viz_topic,1);
   foot_plan_discrete_viz_pub_ = nh_.advertise<visualization_msgs::Marker>
     (foot_plan_discrete_viz_topic,1);
-  joint_states_viz_pub_ = nh_.advertise<sensor_msgs::JointState>
-    (joint_states_viz_topic,1);
 
-  // ground_truth_state_sub_ = nh_.subscribe(ground_truth_state_topic,1,
-  //   boost::bind( &RVizInterface::groundTruthStateCallback, this, _1, bool));
+  // Setup state subs to call the same callback but with pub ID included
+  state_estimate_sub_ = nh_.subscribe<spirit_msgs::RobotState>(state_estimate_topic,1,
+    boost::bind( &RVizInterface::robotStateCallback, this, _1, ESTIMATE));
+  ground_truth_state_sub_ = nh_.subscribe<spirit_msgs::RobotState>(ground_truth_state_topic,1,
+    boost::bind( &RVizInterface::robotStateCallback, this, _1, GROUND_TRUTH));
+  trajectory_state_sub_ = nh_.subscribe<spirit_msgs::RobotState>(trajectory_state_topic,1,
+    boost::bind( &RVizInterface::robotStateCallback, this, _1, TRAJECTORY));
+  
+  // Setup state visual pubs
+  estimate_joint_states_viz_pub_ = nh_.advertise<sensor_msgs::JointState>
+    (estimate_joint_states_viz_topic,1);
+  ground_truth_joint_states_viz_pub_ = nh_.advertise<sensor_msgs::JointState>
+    (ground_truth_joint_states_viz_topic,1);
+  trajectory_joint_states_viz_pub_ = nh_.advertise<sensor_msgs::JointState>
+    (trajectory_joint_states_viz_topic,1);
 
   std::string foot_0_plan_continuous_viz_topic,foot_1_plan_continuous_viz_topic,
     foot_2_plan_continuous_viz_topic, foot_3_plan_continuous_viz_topic;
@@ -289,44 +305,20 @@ void RVizInterface::footPlanContinuousCallback(
 
 }
 
-void RVizInterface::stateEstimateCallback(
-  const spirit_msgs::RobotState::ConstPtr& msg) {
-
-  // // Make a transform message for the body, populate with state estimate data
-  // geometry_msgs::TransformStamped transformStamped;
-  // transformStamped.header = msg->header;
-  // transformStamped.header.frame_id = map_frame_;
-  // transformStamped.child_frame_id = "dummy";
-  // transformStamped.transform.translation.x = msg->body.pose.pose.position.x;
-  // transformStamped.transform.translation.y = msg->body.pose.pose.position.y;
-  // transformStamped.transform.translation.z = msg->body.pose.pose.position.z;
-  // transformStamped.transform.rotation = msg->body.pose.pose.orientation;
-  // estimate_base_tf_br_.sendTransform(transformStamped);
-
-  // // Copy the joint portion of the state estimate message to a new message
-  // sensor_msgs::JointState joint_msg;
-  // joint_msg = msg->joints;
-
-  // // Set the header to that of the state estimate message and publish
-  // joint_msg.header = msg->header;
-  // joint_states_viz_pub_.publish(joint_msg);
-}
 
 
-void RVizInterface::groundTruthStateCallback(
-  const spirit_msgs::RobotState::ConstPtr& msg) {
+void RVizInterface::robotStateCallback(
+  const spirit_msgs::RobotState::ConstPtr& msg, const int pub_id) {
 
   // Make a transform message for the body, populate with state estimate data
   geometry_msgs::TransformStamped transformStamped;
   transformStamped.header = msg->header;
   transformStamped.header.stamp = ros::Time::now();
   transformStamped.header.frame_id = map_frame_;
-  transformStamped.child_frame_id = "dummy";
   transformStamped.transform.translation.x = msg->body.pose.pose.position.x;
   transformStamped.transform.translation.y = msg->body.pose.pose.position.y;
   transformStamped.transform.translation.z = msg->body.pose.pose.position.z;
   transformStamped.transform.rotation = msg->body.pose.pose.orientation;
-  ground_truth_base_tf_br_.sendTransform(transformStamped);
 
   // Copy the joint portion of the state estimate message to a new message
   sensor_msgs::JointState joint_msg;
@@ -335,7 +327,23 @@ void RVizInterface::groundTruthStateCallback(
   // Set the header to the main header of the state estimate message and publish
   joint_msg.header = msg->header;
   joint_msg.header.stamp = ros::Time::now();
-  joint_states_viz_pub_.publish(joint_msg);
+
+  if (pub_id == ESTIMATE) {
+    transformStamped.child_frame_id = "/estimate/dummy";
+    estimate_base_tf_br_.sendTransform(transformStamped);
+    estimate_joint_states_viz_pub_.publish(joint_msg);
+  } else if (pub_id == GROUND_TRUTH) {
+    transformStamped.child_frame_id = "/ground_truth/dummy";
+    ground_truth_base_tf_br_.sendTransform(transformStamped);
+    ground_truth_joint_states_viz_pub_.publish(joint_msg);
+  } else if (pub_id == TRAJECTORY) {
+    transformStamped.child_frame_id = "/trajectory/dummy";
+    trajectory_base_tf_br_.sendTransform(transformStamped);
+    trajectory_joint_states_viz_pub_.publish(joint_msg);
+  } else {
+    ROS_WARN_THROTTLE(0.5, "Invalid publisher id, not publishing robot state to rviz");
+  }
+  
 }
 
 void RVizInterface::spin() {

@@ -10,8 +10,8 @@ if nargin>0
     bSave = true;
 else
     % Specify the trial name and settings
-    trialName = 'spirit_log_current';
-    bAnimate = false;
+    trialName = 'PD_Control_GBP_Straight_Walk_2021-02-24';
+    bAnimate = true;
     bSave = false;
 end
 

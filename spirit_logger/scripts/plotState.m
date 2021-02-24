@@ -1,7 +1,9 @@
 function varargout = plotState(state_traj)
 
-footColorVector = {[0,45,114]/255;[120,159,144]/255;[0,45,114]/255;[120,159,144]/255};
-footStyleVector = {'-','-',':',':'};
+footColorVector = {[242,169,0]/255, [0,132,61]/255, [166,25,46]/255, [0,45,114]/255};
+footStyleVector = {'-','-','--','--'};
+jointColorVector = footColorVector;
+jointStyleVector = footStyleVector;
 
 %% Plot spatial trajectory
 COMTrajFig = figure;
@@ -59,20 +61,29 @@ kneeIndex = [3:3:12];
 
 % Plot joint positions
 jointPositionFig = figure;
-subplot(3,1,1)
-plot(state_traj.time, state_traj.jointPosition(:,abIndex));
+subplot(3,1,1); hold on;
+for i = 1:4
+   plot(state_traj.time, state_traj.jointPosition(:,abIndex(i)), ...
+       'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', jointStyleVector{i});
+end
 ylabel('Ab/Ad (rad)')
 title('Joint Angles')
 axis([min(state_traj.time), max(state_traj.time), -1, 1])
 
-subplot(3,1,2)
-plot(state_traj.time, state_traj.jointPosition(:,hipIndex));
+subplot(3,1,2); hold on;
+for i = 1:4
+   plot(state_traj.time, state_traj.jointPosition(:,hipIndex(i)), ...
+       'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', jointStyleVector{i});
+end
 ylabel('Hip (rad)')
 legend('FL','BL','FR','BR','location','best')
 axis([min(state_traj.time), max(state_traj.time), -pi/2, pi])
 
-subplot(3,1,3)
-plot(state_traj.time, state_traj.jointPosition(:,kneeIndex));
+subplot(3,1,3); hold on;
+for i = 1:4
+   plot(state_traj.time, state_traj.jointPosition(:,kneeIndex(i)), ...
+       'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', jointStyleVector{i});
+end
 ylabel('Knee (rad)')
 xlabel('Time (s)')
 axis([min(state_traj.time), max(state_traj.time), 0, pi])
@@ -80,20 +91,29 @@ set(jointPositionFig, 'Position', [100 100 800 600])
 
 %% Plot joint velocities
 jointVelocityFig = figure;
-subplot(3,1,1)
-plot(state_traj.time, state_traj.jointVelocity(:,abIndex));
+subplot(3,1,1); hold on;
+for i = 1:4
+   plot(state_traj.time, state_traj.jointVelocity(:,abIndex(i)), ...
+       'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', jointStyleVector{i});
+end
 ylabel('Ab/Ad (rad/s)')
 title('Joint Velocities')
 axis([min(state_traj.time), max(state_traj.time), -38, 38])
 
-subplot(3,1,2)
-plot(state_traj.time, state_traj.jointVelocity(:,hipIndex));
+subplot(3,1,2); hold on;
+for i = 1:4
+   plot(state_traj.time, state_traj.jointVelocity(:,hipIndex(i)), ...
+       'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', jointStyleVector{i});
+end
 ylabel('Hip (rad/s)')
 legend('FL','BL','FR','BR','location','best')
 axis([min(state_traj.time), max(state_traj.time), -38, 38])
 
-subplot(3,1,3)
-plot(state_traj.time, state_traj.jointVelocity(:,kneeIndex));
+subplot(3,1,3); hold on;
+for i = 1:4
+   plot(state_traj.time, state_traj.jointVelocity(:,kneeIndex(i)), ...
+       'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', jointStyleVector{i});
+end
 ylabel('Knee (rad/s)')
 xlabel('Time (s)')
 axis([min(state_traj.time), max(state_traj.time), -25, 25])
@@ -101,20 +121,29 @@ set(jointVelocityFig, 'Position', [100 100 800 600])
 
 %% Plot estimate joint effort
 jointEffortFig = figure;
-subplot(3,1,1)
-plot(state_traj.time, state_traj.jointEffort(:,abIndex));
+subplot(3,1,1); hold on;
+for i = 1:4
+   plot(state_traj.time, state_traj.jointEffort(:,abIndex(i)), ...
+       'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', jointStyleVector{i});
+end
 ylabel('Ab/Ad (A)')
 title('Joint Effort')
 axis([min(state_traj.time), max(state_traj.time), -21, 21])
 
-subplot(3,1,2)
-plot(state_traj.time, state_traj.jointEffort(:,hipIndex));
+subplot(3,1,2); hold on;
+for i = 1:4
+   plot(state_traj.time, state_traj.jointEffort(:,hipIndex(i)), ...
+       'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', jointStyleVector{i});
+end
 ylabel('Hip (A)')
 legend('FL','BL','FR','BR','location','best')
 axis([min(state_traj.time), max(state_traj.time), -21, 21])
 
-subplot(3,1,3)
-plot(state_traj.time, state_traj.jointEffort(:,kneeIndex));
+subplot(3,1,3); hold on;
+for i = 1:4
+   plot(state_traj.time, state_traj.jointEffort(:,kneeIndex(i)), ...
+       'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', jointStyleVector{i});
+end
 ylabel('Knee (A)')
 xlabel('Time (s)')
 axis([min(state_traj.time), max(state_traj.time), -32, 32])

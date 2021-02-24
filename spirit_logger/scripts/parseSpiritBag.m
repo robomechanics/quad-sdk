@@ -117,14 +117,15 @@ else
 end
 
 % Localize time to the first message
-startTime = min([stateGroundTruth.time(1), stateEstimate.time(1), stateTrajectory.time(1)]);
-stateEstimate.time = stateEstimate.time - startTime;
+% startTime = min([stateGroundTruth.time(1), stateEstimate.time(1), stateTrajectory.time(1)]);
+startTime = stateTrajectory.time(1);
+% stateEstimate.time = stateEstimate.time - startTime;
 stateGroundTruth.time = stateGroundTruth.time - startTime;
 stateTrajectory.time = stateTrajectory.time - startTime;
 
 % Pack data into a struct for namespace purposes
 data = struct;
-data.stateEstimate = stateEstimate;
+data.stateEstimate = [];% stateEstimate;
 data.stateGroundTruth = stateGroundTruth;
 data.stateTrajectory = stateTrajectory;
 
