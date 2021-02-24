@@ -94,6 +94,9 @@ private:
   /// Vector of times corresponding to the trajectory states
   std::vector<double> t_traj_;
 
+  /// Message for robot trajectory
+  spirit_msgs::RobotStateTrajectory traj_msg_;
+
   /// Update rate for sending and receiving data
   double update_rate_;
 
@@ -106,11 +109,11 @@ private:
   /// Handle for the map frame
   std::string map_frame_;
 
-  /// Message for robot trajectory
-  spirit_msgs::RobotStateTrajectory traj_msg_;
-
   /// Playback speed for trajectory state publishing
   double playback_speed_;
+
+  /// The source of the current trajectory (import or otherwise)
+  std::string traj_source_;
 
 };
 

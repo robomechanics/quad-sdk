@@ -94,6 +94,36 @@ private:
 
 	/// Most recent trajectory state
 	spirit_msgs::RobotState last_trajectory_msg_;
+
+	std::vector<double> f0x;
+	std::vector<double> f1x;
+	std::vector<double> f2x;
+	std::vector<double> f3x;
+	std::vector<double> f0y;
+	std::vector<double> f1y;
+	std::vector<double> f2y;
+	std::vector<double> f3y;
+	std::vector<double> f0z;
+	std::vector<double> f1z;
+	std::vector<double> f2z;
+	std::vector<double> f3z;
+
+	std::vector<double> f0xJ;
+	std::vector<double> f1xJ;
+	std::vector<double> f2xJ;
+	std::vector<double> f3xJ;
+	std::vector<double> f0yJ;
+	std::vector<double> f1yJ;
+	std::vector<double> f2yJ;
+	std::vector<double> f3yJ;
+	std::vector<double> f0zJ;
+	std::vector<double> f1zJ;
+	std::vector<double> f2zJ;
+	std::vector<double> f3zJ;
+	
+	std::vector<double> counterVec;
+
+	double step_number;
 	
 };
 

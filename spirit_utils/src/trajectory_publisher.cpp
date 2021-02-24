@@ -11,12 +11,14 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
     body_plan_topic, "/body_plan");
   nh.param<std::string>("topics/foot_plan_continuous", 
     foot_plan_continuous_topic, "/foot_plan_continuous");
+
   nh.param<std::string>("topics/state/trajectory", 
     trajectory_state_topic, "/state/trajectory");
   nh.param<std::string>("topics/trajectory", 
     trajectory_topic, "/trajectory");
 
   nh.param<std::string>("map_frame",map_frame_,"map");
+  nh.param<std::string>("trajectory_publisher/traj_source", traj_source_, "topic");
   nh.param<double>("trajectory_publisher/update_rate", update_rate_, 30);
   nh.param<double>("trajectory_publisher/interp_dt", interp_dt_, 0.05);
   nh.param<double>("trajectory_publisher/playback_speed", playback_speed_, 1.0);
@@ -32,11 +34,17 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
   trajectory_pub_ = nh_.advertise<spirit_msgs::RobotStateTrajectory>
     (trajectory_topic,1);
 
-  update_flag_ = false;
 }
 
 void TrajectoryPublisher::importTrajectory() {
   // For Mike
+
+  // Clear current trajectory message
+  traj_msg_.states.clear();
+  traj_msg_.header.frame_id = map_frame_;
+  traj_msg_.header.stamp = ros::Time::now();
+
+  // Load the desired balues into traj_msg;
 
 }
 
@@ -48,6 +56,10 @@ void TrajectoryPublisher::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr
 
 void TrajectoryPublisher::multiFootPlanContinuousCallback(const 
   spirit_msgs::MultiFootPlanContinuous::ConstPtr& msg) {
+
+    // std::cout << msg->header.stamp << std::endl;
+    // std::cout << multi_foot_plan_continuous_msg_.header.stamp << std::endl;
+    // printf("\n");
 
   if (msg->header.stamp != multi_foot_plan_continuous_msg_.header.stamp) {
     // Save te most recent foot plan
@@ -74,7 +86,8 @@ void TrajectoryPublisher::updateTrajectory() {
   double t_foot_plan = t_foot_plan_ros.toSec();
 
   if (t_body_plan < t_foot_plan) {
-    ROS_DEBUG_THROTTLE(1, "Foot plan duration is longer than body plan, traj prublisher will wait");
+    ROS_DEBUG_THROTTLE(1, "Foot plan duration is longer than body plan, traj prublisher "
+      "will wait");
     return;
   }
 
@@ -106,7 +119,7 @@ void TrajectoryPublisher::updateTrajectory() {
       multi_foot_plan_continuous_msg_,t_traj_[i]);
 
     // Compute joint data with IK
-    math_utils::convertBodyAndFootToJoint(state.body, state.feet, state.joints);
+    math_utils::ikRobotState(state.body, state.feet, state.joints);
 
     // Add this state to the message
     traj_msg_.states.push_back(state);
@@ -125,13 +138,14 @@ void TrajectoryPublisher::publishTrajectoryState() {
   // Wait until we actually have data
   if (traj_msg_.states.empty())
     return;
-
+    
   // Get the current duration since the beginning of the plan
   ros::Duration t_duration = ros::Time::now() - body_plan_msg_.header.stamp;
 
   // Mod by trajectory duration
-  double t = fmod(playback_speed_*t_duration.toSec(), t_traj_.back());
-
+  double t = t_duration.toSec();
+  double t_mod = fmod(playback_speed_*t, t_traj_.back());
+  
   // Interpolate to get the correct state and publish it
   spirit_msgs::RobotState interp_state = math_utils::interpRobotStateTraj(traj_msg_,t);
   trajectory_state_pub_.publish(interp_state);
@@ -143,7 +157,9 @@ void TrajectoryPublisher::spin() {
   while (ros::ok()) {
 
     // Update the trajectory and publish
-    if (update_flag_){
+    if (traj_source_.compare("import")==0) {
+      importTrajectory();
+    } else if (update_flag_) {
       updateTrajectory();
       update_flag_ = false;
     }

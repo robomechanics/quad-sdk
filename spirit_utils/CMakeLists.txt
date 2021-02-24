@@ -24,8 +24,11 @@ find_package(catkin REQUIRED COMPONENTS
   Eigen3
 )
 
+find_package(PythonLibs 2.7)
+
 catkin_package(
   INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
+  INCLUDE_DIRS include ${PYTHON_INCLUDE_DIRS}
   LIBRARIES spirit_utils
   CATKIN_DEPENDS roscpp std_msgs nav_msgs sensor_msgs geometry_msgs spirit_msgs 
   grid_map_core grid_map_ros
@@ -41,10 +44,12 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+
   ${EIGEN3_INCLUDE_DIRS}
 
-)
+  # ${PYTHON_INCLUDE_DIRS}
 
+)
 
 add_library(spirit_utils
   src/rviz_interface.cpp

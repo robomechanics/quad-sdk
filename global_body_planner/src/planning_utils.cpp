@@ -1,5 +1,5 @@
 #include "global_body_planner/planning_utils.h"
-#include "global_body_planner/matplotlibcpp.h"
+#include "spirit_utils/matplotlibcpp.h"
 
 namespace planning_utils {
 

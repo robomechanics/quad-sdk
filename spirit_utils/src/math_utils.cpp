@@ -111,7 +111,7 @@ void math_utils::interpHeader(std_msgs::Header header_1,std_msgs::Header header_
   interp_header.seq = header_1.seq;
 
   // Compute the correct ros::Time corresponding to t_interp
-  t_interp = std::min(std::max(t_interp,1.0),0.0);
+  t_interp = std::max(std::min(t_interp,1.0),0.0);
   ros::Duration state_duration = header_2.stamp - header_1.stamp;
   ros::Duration interp_duration = ros::Duration(t_interp*state_duration.toSec());
   interp_header.stamp = header_1.stamp + ros::Duration(interp_duration);
@@ -204,6 +204,36 @@ void math_utils::interpMultiFootState(spirit_msgs::MultiFootState state_1,
   }
 }
 
+void math_utils::interpGRFArray(spirit_msgs::GRFArray state_1,
+  spirit_msgs::GRFArray state_2, double t_interp, spirit_msgs::GRFArray &interp_state) {
+
+  interpHeader(state_1.header, state_2.header,t_interp,interp_state.header);
+
+  // Interp grf state
+  interp_state.vectors.resize(state_1.vectors.size());
+  interp_state.points.resize(state_1.points.size());
+  interp_state.contact_states.resize(state_1.contact_states.size());
+  for (int i = 0; i < interp_state.vectors.size(); i++) {
+
+    interp_state.vectors[i].x = lerp(state_1.vectors[i].x, 
+      state_2.vectors[i].x, t_interp);
+    interp_state.vectors[i].y = lerp(state_1.vectors[i].y, 
+      state_2.vectors[i].y, t_interp);
+    interp_state.vectors[i].z = lerp(state_1.vectors[i].z, 
+      state_2.vectors[i].z, t_interp);
+
+    interp_state.points[i].x = lerp(state_1.points[i].x, 
+      state_2.points[i].x, t_interp);
+    interp_state.points[i].y = lerp(state_1.points[i].y, 
+      state_2.points[i].y, t_interp);
+    interp_state.points[i].z = lerp(state_1.points[i].z, 
+      state_2.points[i].z, t_interp);
+
+    // Set contact state to the first state
+    interp_state.contact_states[i] = state_1.contact_states[i];
+  }
+}
+
 void math_utils::interpRobotState(spirit_msgs::RobotState state_1,
   spirit_msgs::RobotState state_2, double t_interp, spirit_msgs::RobotState &interp_state) {
 
@@ -223,7 +253,7 @@ nav_msgs::Odometry math_utils::interpBodyPlan(spirit_msgs::BodyPlan msg, double 
   // Declare variables for interpolating between, both for input and output data
   nav_msgs::Odometry state_1, state_2, interp_state;
   int primitive_id_1, primitive_id_2, interp_primitive_id;
-  geometry_msgs::Vector3 grf_1, grf_2, interp_grf;
+  spirit_msgs::GRFArray grf_1, grf_2, interp_grf;
 
   // Find the correct index for interp (return the first index if t < 0)
   int index = 0;
@@ -256,9 +286,7 @@ nav_msgs::Odometry math_utils::interpBodyPlan(spirit_msgs::BodyPlan msg, double 
   // Compute interpolation
   interpOdometry(state_1, state_2, t_interp, interp_state);
   interp_primitive_id = primitive_id_1;
-  interp_grf.x = lerp(grf_1.x, grf_2.x, t_interp);
-  interp_grf.y = lerp(grf_1.y, grf_2.y, t_interp);
-  interp_grf.z = lerp(grf_1.z, grf_2.z, t_interp);
+  interpGRFArray(grf_1, grf_2, t_interp, interp_grf);
 
   return interp_state;
 
@@ -310,6 +338,10 @@ spirit_msgs::RobotState math_utils::interpRobotStateTraj(spirit_msgs::RobotState
 
   // Define some useful timing parameters
   ros::Time t0_ros = msg.states.front().header.stamp;
+  ros::Time tf_ros = msg.states.back().header.stamp;
+  ros::Duration traj_duration = tf_ros - t0_ros;
+  
+  t = std::max(std::min(t,traj_duration.toSec()),0.0);
   ros::Time t_ros = t0_ros + ros::Duration(t);
 
   // Declare variables for interpolating between, both for input and output data
@@ -339,15 +371,26 @@ spirit_msgs::RobotState math_utils::interpRobotStateTraj(spirit_msgs::RobotState
   ros::Duration t2_ros = state_2.header.stamp - t0_ros;
   t2 = t2_ros.toSec();
   double t_interp = (t - t1)/(t2-t1);
+  // printf("t_1 = %5.3f \n", t1);
+  // printf("t_2 = %5.3f \n", t2);
+  // printf("t_interp = %5.3f \n", t_interp);
 
   // Compute interpolation
   interpRobotState(state_1, state_2, t_interp, interp_state);
+
+  // printf("state_1.header.stamp = %15f \n", state_1.header.stamp.toSec());
+  // printf("state_2.header.stamp = %15f \n", state_2.header.stamp.toSec());
+  // printf("interp_state.header.stamp = %15f \n", interp_state.header.stamp.toSec());
+
+  // printf("state_1.body.pose.pose.position.x = %5.3f \n", state_1.body.pose.pose.position.x);
+  // printf("state_2.body.pose.pose.position.x = %5.3f \n", state_2.body.pose.pose.position.x);
+  // printf("interp_state.body.pose.pose.position.x = %5.3f \n", interp_state.body.pose.pose.position.x);
 
   return interp_state;
 
 }
 
-void math_utils::convertBodyAndFootToJoint(nav_msgs::Odometry body_state,
+void math_utils::ikRobotState(nav_msgs::Odometry body_state,
   spirit_msgs::MultiFootState multi_foot_state, sensor_msgs::JointState &joint_state) {
 
   joint_state.header = multi_foot_state.header;
@@ -389,7 +432,7 @@ void math_utils::convertBodyAndFootToJoint(nav_msgs::Odometry body_state,
     joint_state.position.push_back(leg_joint_state[1]);
     joint_state.position.push_back(leg_joint_state[2]);
 
-    // Fill in the other elements with zeros for now
+    // Fill in the other elements with zeros for now (Mike to do)
     joint_state.velocity.push_back(0.0);
     joint_state.velocity.push_back(0.0);
     joint_state.velocity.push_back(0.0);
@@ -400,6 +443,14 @@ void math_utils::convertBodyAndFootToJoint(nav_msgs::Odometry body_state,
   }
 
 }
+
+void math_utils::ikRobotState(spirit_msgs::RobotState &state) {
+  ikRobotState(state.body, state.feet, state.joints);
+}
+
+// void math_utils::fkRobotState(spirit_msgs::RobotState &state) {
+//   fkRobotState(state.body, state.joints, state.feet);
+// }
 
 
 int math_utils::interpInt(std::vector<double> input_vec,

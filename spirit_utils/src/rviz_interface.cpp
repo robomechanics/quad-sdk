@@ -36,6 +36,14 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
 
   nh.param<std::string>("map_frame",map_frame_,"map");
   nh.param<double>("visualization/update_rate", update_rate_, 10);
+  nh.param<std::vector<int> >("visualization/colors/front_feet",
+    front_foot_color_, {0,255,0});
+  nh.param<std::vector<int> >("visualization/colors/back_feet",
+    back_foot_color_, {0,0,255});
+  nh.param<std::vector<int> >("visualization/colors/net_grf",
+    net_grf_color_, {255,0,0});
+  nh.param<std::vector<int> >("visualization/colors/individual_grf",
+    individual_grf_color_, {255,0,0});
 
   // Setup subs and pubs
   body_plan_sub_ = nh_.subscribe(body_plan_topic,1,
@@ -60,6 +68,9 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
     (foot_plan_discrete_viz_topic,1);
   joint_states_viz_pub_ = nh_.advertise<sensor_msgs::JointState>
     (joint_states_viz_topic,1);
+
+  // ground_truth_state_sub_ = nh_.subscribe(ground_truth_state_topic,1,
+  //   boost::bind( &RVizInterface::groundTruthStateCallback, this, _1, bool));
 
   std::string foot_0_plan_continuous_viz_topic,foot_1_plan_continuous_viz_topic,
     foot_2_plan_continuous_viz_topic, foot_3_plan_continuous_viz_topic;
@@ -109,7 +120,7 @@ void RVizInterface::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg)
 
 
   // Construct MarkerArray and Marker message for GRFs
-  visualization_msgs::MarkerArray grfs_msg;
+  visualization_msgs::MarkerArray grfs_viz_msg;
   visualization_msgs::Marker marker;
 
   // Initialize the headers and types
@@ -119,40 +130,52 @@ void RVizInterface::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg)
   // Define the shape of the discrete states
   double arrow_diameter = 0.01;
   marker.scale.x = arrow_diameter;
-  marker.scale.y = 2*arrow_diameter;
+  marker.scale.y = 4*arrow_diameter;
   marker.color.g = 0.733f;
   marker.pose.orientation.w = 1.0;
 
   for (int i=0; i < length; i++) {
-    
-    // Reset the marker message
-    marker.points.clear();
-    marker.color.a = 1.0;
-    marker.id = i;
+    for (int j = 0; j < msg->grfs[i].vectors.size(); j++) {
 
-    // Define point messages for the base and tip of each GRF arrow
-    geometry_msgs::Point p_base, p_tip;
-    p_base = msg->states[i].pose.pose.position;
+      // Reset the marker message
+      marker.points.clear();
+      marker.color.a = 1.0;
+      marker.id = i*msg->grfs[i].vectors.size() + j;
 
-    /// Define the endpoint of the GRF arrow
-    double grf_length_scale = 0.002;
-    p_tip.x = p_base.x + grf_length_scale*msg->grfs[i].x;
-    p_tip.y = p_base.y + grf_length_scale*msg->grfs[i].y;
-    p_tip.z = p_base.z + grf_length_scale*msg->grfs[i].z;
+      if (msg->grfs[i].vectors.size() > 1) {
+        marker.color.r = (float) individual_grf_color_[0]/255.0;
+        marker.color.g = (float) individual_grf_color_[1]/255.0;
+        marker.color.b = (float) individual_grf_color_[2]/255.0;
+      } else {
+        marker.color.r = (float) net_grf_color_[0]/255.0;
+        marker.color.g = (float) net_grf_color_[1]/255.0;
+        marker.color.b = (float) net_grf_color_[2]/255.0;
+      }
 
-    // if GRF = 0, set alpha to zero
-    if (msg->grfs[i].z < 1e-4) {
-      marker.color.a = 0.0;
+      // Define point messages for the base and tip of each GRF arrow
+      geometry_msgs::Point p_base, p_tip;
+      p_base = msg->grfs[i].points[j];
+
+      /// Define the endpoint of the GRF arrow
+      double grf_length_scale = 0.002;
+      p_tip.x = p_base.x + grf_length_scale*msg->grfs[i].vectors[j].x;
+      p_tip.y = p_base.y + grf_length_scale*msg->grfs[i].vectors[j].y;
+      p_tip.z = p_base.z + grf_length_scale*msg->grfs[i].vectors[j].z;
+
+      // if GRF = 0, set alpha to zero
+      if (msg->grfs[i].contact_states[j] == false) {
+        marker.color.a = 0.0;
+      }
+
+      // Add the points to the marker and add the marker to the array
+      marker.points.push_back(p_base);
+      marker.points.push_back(p_tip);
+      grfs_viz_msg.markers.push_back(marker);
     }
-
-    // Add the points to the marker and add the marker to the array
-    marker.points.push_back(p_base);
-    marker.points.push_back(p_tip);
-    grfs_msg.markers.push_back(marker);
   }
 
   // Publish grfs
-  grf_plan_viz_pub_.publish(grfs_msg);
+  grf_plan_viz_pub_.publish(grfs_viz_msg);
 }
 
 void RVizInterface::discreteBodyPlanCallback(
@@ -220,9 +243,13 @@ void RVizInterface::footPlanDiscreteCallback(
       std_msgs::ColorRGBA color;
       color.a = 1.0;
       if (i == 0 || i == 2) {
-        color.g = 1.0f;
+        color.r = (float) front_foot_color_[0]/255.0;
+        color.g = (float) front_foot_color_[1]/255.0;
+        color.b = (float) front_foot_color_[2]/255.0;
       } else {
-        color.b = 1.0f;
+        color.r = (float) back_foot_color_[0]/255.0;
+        color.g = (float) back_foot_color_[1]/255.0;
+        color.b = (float) back_foot_color_[2]/255.0;
       }
 
       // Add to the Marker message

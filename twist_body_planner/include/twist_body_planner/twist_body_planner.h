@@ -29,7 +29,7 @@ class TwistBodyPlanner {
     /**
      * @brief Get the interpolated body trajectory and store in private member
      */
-    void plan();
+    void updatePlan();
 
     /**
      * @brief Primary work function in class, called in node file for this component
@@ -111,6 +111,11 @@ class TwistBodyPlanner {
     /// Threshold for waiting for cmd_vel data
     double last_cmd_vel_msg_time_max_;
 
+    /// Plan timestamp
+    ros::Time plan_timestamp_;
+    
+    /// Nominal robot height
+    const double z_des = 0.3;
 };
 
 #endif // TWIST_BODY_PLANNER_H

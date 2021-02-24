@@ -3,16 +3,16 @@
 
 #include <ros/ros.h>
 #include <eigen3/Eigen/Eigen>
-#include <mpcplusplus/mpcplusplus.h>
 #include <spirit_msgs/BodyPlan.h>
 #include <spirit_msgs/MultiFootPlanDiscrete.h>
-#include <spirit_msgs/ControlInput.h>
+#include <spirit_msgs/GRFArray.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/RobotStateTrajectory.h>
+#include <mpc_controller/quadruped_mpc.h>
 
-//! Implements online MPC
+//! MPC controller ROS node
 /*!
-   MPCController implements all control logic. It should expose a constructor that does any initialization required and an update method called at some frequency.
+   Wrapper around Quadrupedal MPC that interfaces with our ROS architecture
 */
 class MPCController {
   public:
@@ -51,9 +51,9 @@ private:
   void discreteBodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
 
   /**
-   * @brief Function to publish imu data. Likely empty.
+   * @brief Function to publish commanded grfs
    */
-  void publishControlInput();
+  void publishGRFArray();
 
 	/// ROS subscriber for the state estimate
 	ros::Subscriber robot_state_traj_sub_;
@@ -68,7 +68,7 @@ private:
 	ros::Subscriber discrete_body_plan_sub_;
 
 	/// ROS publisher for control input
-	ros::Publisher control_input_pub_;
+	ros::Publisher grf_array_pub_;
 
 	/// Define map frame
 	std::string map_frame_;
@@ -80,7 +80,7 @@ private:
 	double update_rate_;
 
   /// Linear MPC object
-  std::shared_ptr<mpcplusplus::LinearMPC> mpc;
+  std::shared_ptr<QuadrupedMPC> mpc;
 
 	/// Most recent robot plan
 	spirit_msgs::RobotStateTrajectory last_plan_msg_;
