@@ -10,8 +10,8 @@ if nargin>0
     bSave = true;
 else
     % Specify the trial name and settings
-    trialName = 'PD_Control_GBP_Straight_Walk_2021-02-24';
-    bAnimate = true;
+    trialName = 'spirit_log_current';
+    bAnimate = false;
     bSave = false;
 end
 
@@ -33,7 +33,7 @@ stateGroundTruth = data.stateGroundTruth;
 stateTrajectory = data.stateTrajectory;
 
 % Plot the state
-[COMTrajFig, linearStateFig, angularStateFig, jointPositionFig, jointVelocityFig, jointEffortFig] = plotState(stateTrajectory);
+[COMTrajFig, linearStateFig, angularStateFig, jointPositionFig, jointVelocityFig, jointEffortFig] = plotState(stateGroundTruth);
 % plotState(stateEstimate);
 
 % Compute and plot the toe forces - in progress
