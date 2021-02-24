@@ -194,58 +194,58 @@ void inverseDynamics::publishLegCommandArray() {
   // std::cout<<tau3;
   // std::cout<<std::endl;
 
-  std::cout<<"Joint Velocities 1: "<<std::endl;
-  std::cout<<df0;
-  std::cout<<std::endl;
+  // std::cout<<"Joint Velocities 1: "<<std::endl;
+  // std::cout<<df0;
+  // std::cout<<std::endl;
 
-  std::cout<<"Joint Velocities 2: "<<std::endl;
-  std::cout<<df1;
-  std::cout<<std::endl;
+  // std::cout<<"Joint Velocities 2: "<<std::endl;
+  // std::cout<<df1;
+  // std::cout<<std::endl;
 
-  std::cout<<"Joint Velocities 3: "<<std::endl;
-  std::cout<<df2;
-  std::cout<<std::endl;
+  // std::cout<<"Joint Velocities 3: "<<std::endl;
+  // std::cout<<df2;
+  // std::cout<<std::endl;
 
-  std::cout<<"Joint Velocities 4: "<<std::endl;
-  std::cout<<df3;
-  std::cout<<std::endl;
+  // std::cout<<"Joint Velocities 4: "<<std::endl;
+  // std::cout<<df3;
+  // std::cout<<std::endl;
 
-  std::cout<<"------------------------"<<std::endl;
-  for (int i = 0; i < 4; i++) {
-    std::cout<<"Joint Velocities "<<i<<": "<<std::endl;
-    std::cout<<last_robot_state_msg_.feet.feet[i].velocity.x<<std::endl;
-    std::cout<<last_robot_state_msg_.feet.feet[i].velocity.y<<std::endl;
-    std::cout<<last_robot_state_msg_.feet.feet[i].velocity.z<<std::endl;
-  }
+  // std::cout<<"------------------------"<<std::endl;
+  // for (int i = 0; i < 4; i++) {
+  //   std::cout<<"Joint Velocities "<<i<<": "<<std::endl;
+  //   std::cout<<last_robot_state_msg_.feet.feet[i].velocity.x<<std::endl;
+  //   std::cout<<last_robot_state_msg_.feet.feet[i].velocity.y<<std::endl;
+  //   std::cout<<last_robot_state_msg_.feet.feet[i].velocity.z<<std::endl;
+  // }
 
-  f0x.push_back(last_robot_state_msg_.feet.feet[0].velocity.x);
-  f1x.push_back(last_robot_state_msg_.feet.feet[1].velocity.x);
-  f2x.push_back(last_robot_state_msg_.feet.feet[2].velocity.x);
-  f3x.push_back(last_robot_state_msg_.feet.feet[3].velocity.x);
-  f0y.push_back(last_robot_state_msg_.feet.feet[0].velocity.y);
-  f1y.push_back(last_robot_state_msg_.feet.feet[1].velocity.y);
-  f2y.push_back(last_robot_state_msg_.feet.feet[2].velocity.y);
-  f3y.push_back(last_robot_state_msg_.feet.feet[3].velocity.y);
-  f0z.push_back(last_robot_state_msg_.feet.feet[0].velocity.z);
-  f1z.push_back(last_robot_state_msg_.feet.feet[1].velocity.z);
-  f2z.push_back(last_robot_state_msg_.feet.feet[2].velocity.z);
-  f3z.push_back(last_robot_state_msg_.feet.feet[3].velocity.z);
+  // f0x.push_back(last_robot_state_msg_.feet.feet[0].velocity.x);
+  // f1x.push_back(last_robot_state_msg_.feet.feet[1].velocity.x);
+  // f2x.push_back(last_robot_state_msg_.feet.feet[2].velocity.x);
+  // f3x.push_back(last_robot_state_msg_.feet.feet[3].velocity.x);
+  // f0y.push_back(last_robot_state_msg_.feet.feet[0].velocity.y);
+  // f1y.push_back(last_robot_state_msg_.feet.feet[1].velocity.y);
+  // f2y.push_back(last_robot_state_msg_.feet.feet[2].velocity.y);
+  // f3y.push_back(last_robot_state_msg_.feet.feet[3].velocity.y);
+  // f0z.push_back(last_robot_state_msg_.feet.feet[0].velocity.z);
+  // f1z.push_back(last_robot_state_msg_.feet.feet[1].velocity.z);
+  // f2z.push_back(last_robot_state_msg_.feet.feet[2].velocity.z);
+  // f3z.push_back(last_robot_state_msg_.feet.feet[3].velocity.z);
 
-  f0xJ.push_back(df0(0,0));
-  f1xJ.push_back(df1(0,0));
-  f2xJ.push_back(df2(0,0));
-  f3xJ.push_back(df3(0,0));
-  f0yJ.push_back(df0(1,0));
-  f1yJ.push_back(df1(1,0));
-  f2yJ.push_back(df2(1,0));
-  f3yJ.push_back(df3(1,0));
-  f0zJ.push_back(df0(2,0));
-  f1zJ.push_back(df1(2,0));
-  f2zJ.push_back(df2(2,0));
-  f3zJ.push_back(df3(2,0));
+  // f0xJ.push_back(df0(0,0));
+  // f1xJ.push_back(df1(0,0));
+  // f2xJ.push_back(df2(0,0));
+  // f3xJ.push_back(df3(0,0));
+  // f0yJ.push_back(df0(1,0));
+  // f1yJ.push_back(df1(1,0));
+  // f2yJ.push_back(df2(1,0));
+  // f3yJ.push_back(df3(1,0));
+  // f0zJ.push_back(df0(2,0));
+  // f1zJ.push_back(df1(2,0));
+  // f2zJ.push_back(df2(2,0));
+  // f3zJ.push_back(df3(2,0));
 
-  counterVec.push_back(step_number);
-  step_number++;
+  // counterVec.push_back(step_number);
+  // step_number++;
 
   // plt::clf();
   // plt::ion();
