@@ -9,12 +9,12 @@
 
     <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
-        <remap from="joint_states" to="/mcu/state/jointURDF"/>
+        <remap from="joint_states" to="/visualization/joint_states"/>
     </node>
 
     <!-- Launch the node to publish the visual topics for the plans -->
     <node name="rviz_interface" pkg="spirit_utils" type="rviz_interface_node" output="screen">
-    	<remap unless="$(arg use_estimate)" from="state_estimate" to="ground_truth_state"/>
+    	<remap from="/state/ground_truth" to="state/trajectory" />
     </node>
 
     <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->

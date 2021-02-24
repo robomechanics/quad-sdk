@@ -1,17 +1,29 @@
 topics:
   joint_encoder: /mcu/state/jointURDF
   imu: /mcu/state/imu
-  state_estimate: /state_estimate
-  ground_truth_state: /ground_truth_state
   mocap: /mocap_node/spirit/pose
   terrain_map: /terrain_map
-  body_plan: /body_plan
-  discrete_body_plan: /discrete_body_plan
-  footstep_plan: /footstep_plan
+  body_plan: /body_plan_continuous
+  discrete_body_plan: /body_plan_discrete
+  foot_plan_continuous: /foot_plan_continuous
+  foot_plan_discrete: /foot_plan_discrete
   image: /image_publisher/image
   body_force: /body_force
   joint_command: /spirit/joint_controller/command
-
+  state:
+    ground_truth: /state/ground_truth
+    estimate: /state/estimate
+  visualization:
+    body_plan: /visualization/body_plan
+    grf_plan: /visualization/grf_plan
+    discrete_body_plan: /visualization/discrete_body_plan
+    footstep_plan: /visualization/foot_plan_discrete
+    joint_states: /visualization/joint_states
+    foot_0_plan_continuous: /visualization/foot_0_plan_continuous
+    foot_1_plan_continuous: /visualization/foot_1_plan_continuous
+    foot_2_plan_continuous: /visualization/foot_2_plan_continuous
+    foot_3_plan_continuous: /visualization/foot_3_plan_continuous
+    
 mpc_controller:
   update_rate: 200
 
@@ -22,13 +34,28 @@ ekf_estimator:
 global_body_planner:
   update_rate: 10
   num_calls: 1            # Number of times to call the planner
-  replan_time_limit: 0.0  # Minimum amount of time to run the planner (will replan to find better solutions until this duration is up)
-  algorithm: rrt-connect  # rrt-connect
-  start_state: [0.0,0,0.4,0.0,0.1,0.0,0.0,0.0]
-  goal_state: [8.0,1.0,0.4,0.0,0.0,0.0,0.0,0.0]
+  max_time: 1.5           # Minimum amount of time to run the planner (will replan to find better solutions until this duration is up)
+  start_state: [0.0,0.0,0.3,0.0,0.0,0.0,0.5,0.0,0.0,0.0,0.0,0.0]
+  goal_state: [8.0,1.0,0.3,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+  committed_horizon: 0     # Committed duration of current plan (replan starting from state in current plan this far ahead), s
+  state_error_threshold: 0.25
+
+twist_body_planner:
+  update_rate: 10
+  horizon_length: 5
+  last_cmd_vel_msg_time_max: 2.0
+
+teleop_twist_keyboard:
+  repeat_rate: 30
 
 local_footstep_planner:
-  update_rate: 10
+  update_rate: 30
+  grf_weight: 0.0
+  max_footstep_horizon: 1.5
+  num_cycles: 250
+  period: 0.3
+  ground_clearance: 0.1
+  interp_dt: 0.01
   
 contact_detection:
   update_rate: 250
@@ -38,21 +65,21 @@ ground_truth_publisher:
   velocity_smoothing_weight: 0.5
 
 terrain_map_publisher:
-  update_rate: 10
-  map_data_source: internal
-  terrain_type: slope     # slope or rough terrain
+  update_rate: 5
+  map_data_source: csv
+  terrain_type: rough_terrain     # slope or rough_terrain
 
 grid_map_visualization:
   grid_map_topic: /terrain_map
   grid_map_visualizations:
-    - name: elevation_points
+    - name: z_points
       type: point_cloud
       params:
-       layer: elevation
+       layer: z
     - name: elevation_grid
       type: occupancy_grid
       params:
-       layer: elevation
+       layer: z
        data_min: 0.08
        data_max: -0.16
 
@@ -76,3 +103,16 @@ open_loop_controller:
   walk_kd: [1,1,1]
   use_diff_for_velocity: true
   control_mode_topic: /spirit/control_mode
+
+map_frame: map
+
+robot_proxy:
+  update_rate: 100
+
+visualization:
+  update_rate: 20
+
+trajectory_publisher:
+  update_rate: 20
+  interp_dt: 0.02
+  playback_speed: 0.55
