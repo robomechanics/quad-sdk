@@ -64,7 +64,7 @@ local_footstep_planner:
   period: 0.5
   ground_clearance: 0.1
   interp_dt: 0.03
-  
+
 contact_detection:
   update_rate: 250
 
@@ -128,5 +128,5 @@ visualization:
 trajectory_publisher:
   update_rate: 40
   interp_dt: 0.02
-  playback_speed: 0.01
+  playback_speed: 1
   traj_source: topic
