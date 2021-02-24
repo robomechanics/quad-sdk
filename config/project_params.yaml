@@ -23,7 +23,10 @@ topics:
     grf_plan: /visualization/grf_plan
     discrete_body_plan: /visualization/discrete_body_plan
     footstep_plan: /visualization/foot_plan_discrete
-    joint_states: /visualization/joint_states
+    joint_states:
+      estimate: /visualization/joint_states/estimate
+      ground_truth: /visualization/joint_states/ground_truth
+      trajectory: /visualization/joint_states/trajectory
     foot_0_plan_continuous: /visualization/foot_0_plan_continuous
     foot_1_plan_continuous: /visualization/foot_1_plan_continuous
     foot_2_plan_continuous: /visualization/foot_2_plan_continuous
@@ -60,7 +63,7 @@ local_footstep_planner:
   num_cycles: 50
   period: 0.5
   ground_clearance: 0.1
-  interp_dt: 0.02
+  interp_dt: 0.03
   
 contact_detection:
   update_rate: 250
@@ -124,6 +127,6 @@ visualization:
 
 trajectory_publisher:
   update_rate: 40
-  interp_dt: 0.025
-  playback_speed: 1
+  interp_dt: 0.02
+  playback_speed: 0.01
   traj_source: topic

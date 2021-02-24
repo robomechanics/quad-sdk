@@ -69,10 +69,11 @@ private:
   void stateEstimateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 
   /**
-   * @brief Callback function to handle new state estimate data
+   * @brief Callback function to handle new robot state data
    * @param[in] msg RobotState message containing output of the state estimator node
+   * @param[in] pub_id Identifier of which publisher to use to handle this data
    */
-  void groundTruthStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+  void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg, const int pub_id);
 
   /// ROS subscriber for the body plan
   ros::Subscriber body_plan_sub_;
@@ -85,12 +86,6 @@ private:
 
   /// ROS subscriber for the continuous foot plan
   ros::Subscriber foot_plan_continuous_sub_;
-
-  /// ROS Subscriber for the state estimate
-  ros::Subscriber state_estimate_sub_;
-
-  /// ROS Subscriber for the ground truth state
-  ros::Subscriber ground_truth_state_sub_;
 
   /// ROS Publisher for the interpolated body plan vizualization
   ros::Publisher body_plan_viz_pub_;
@@ -116,14 +111,32 @@ private:
   /// ROS Publisher for the foot 3 plan visualization
   ros::Publisher foot_3_plan_continuous_viz_pub_;
 
-  /// ROS Publisher for the state estimate visualization
-  ros::Publisher joint_states_viz_pub_;
+  /// ROS Publisher for the estimated joint states visualization
+  ros::Publisher estimate_joint_states_viz_pub_;
+
+  /// ROS Publisher for the ground truth joint states visualization
+  ros::Publisher ground_truth_joint_states_viz_pub_;
+
+  /// ROS Publisher for the trajectory joint states visualization
+  ros::Publisher trajectory_joint_states_viz_pub_;
+
+  /// ROS Subscriber for the state estimate
+  ros::Subscriber state_estimate_sub_;
+
+  /// ROS Subscriber for the ground truth state
+  ros::Subscriber ground_truth_state_sub_;
+
+  /// ROS Subscriber for the ground truth state
+  ros::Subscriber trajectory_state_sub_;
 
   /// ROS Transform Broadcaster to publish the estimate transform for the base link
   tf2_ros::TransformBroadcaster estimate_base_tf_br_;
 
-  /// ROS Transform Broadcaster to publish the transform for the base link
+  /// ROS Transform Broadcaster to publish the ground truth transform for the base link
   tf2_ros::TransformBroadcaster ground_truth_base_tf_br_;
+
+  /// ROS Transform Broadcaster to publish the trajectory transform for the base link
+  tf2_ros::TransformBroadcaster trajectory_base_tf_br_;
 
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
@@ -139,6 +152,11 @@ private:
   std::vector<int> back_foot_color_;
   std::vector<int> net_grf_color_;
   std::vector<int> individual_grf_color_;
+
+  /// Publisher IDs
+  const int ESTIMATE = 0;
+  const int GROUND_TRUTH = 1;
+  const int TRAJECTORY = 2;
 };
 
 #endif // RVIZ_INTERFACE_H

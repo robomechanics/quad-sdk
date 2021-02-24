@@ -33,7 +33,7 @@ stateGroundTruth = data.stateGroundTruth;
 stateTrajectory = data.stateTrajectory;
 
 % Plot the state
-[COMTrajFig, linearStateFig, angularStateFig, jointPositionFig, jointVelocityFig, jointEffortFig] = plotState(stateTrajectory);
+[COMTrajFig, linearStateFig, angularStateFig, jointPositionFig, jointVelocityFig, jointEffortFig] = plotState(stateGroundTruth);
 % plotState(stateEstimate);
 
 % Compute and plot the toe forces - in progress

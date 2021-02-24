@@ -78,6 +78,14 @@ else
     stateGroundTruth.jointPosition = cell2mat(cellfun(@(m) m.Joints.Position.', stateGroundTruthData, 'UniformOutput', 0));
     stateGroundTruth.jointVelocity = cell2mat(cellfun(@(m) m.Joints.Velocity.', stateGroundTruthData, 'UniformOutput', 0));
     stateGroundTruth.jointEffort = cell2mat(cellfun(@(m) m.Joints.Effort.', stateGroundTruthData, 'UniformOutput', 0));
+    
+    num_feet = size(stateGroundTruthData{1}.Feet.Feet, 2);
+    for i = 1:num_feet
+        stateGroundTruth.footPosition{i} = cell2mat(cellfun(@(m) ...
+            [m.Feet.Feet(i).Position.X, m.Feet.Feet(i).Position.Y, m.Feet.Feet(i).Position.Z], stateGroundTruthData, 'UniformOutput', 0));
+        stateGroundTruth.footVelocity{i} = cell2mat(cellfun(@(m) ...
+            [m.Feet.Feet(i).Velocity.X, m.Feet.Feet(i).Velocity.Y, m.Feet.Feet(i).Velocity.Z], stateGroundTruthData, 'UniformOutput', 0));
+    end
 end
 
 % Read the ground truth data
@@ -117,14 +125,15 @@ else
 end
 
 % Localize time to the first message
-startTime = min([stateGroundTruth.time(1), stateEstimate.time(1), stateTrajectory.time(1)]);
-stateEstimate.time = stateEstimate.time - startTime;
+% startTime = min([stateGroundTruth.time(1), stateEstimate.time(1), stateTrajectory.time(1)]);
+startTime = stateTrajectory.time(1);
+% stateEstimate.time = stateEstimate.time - startTime;
 stateGroundTruth.time = stateGroundTruth.time - startTime;
 stateTrajectory.time = stateTrajectory.time - startTime;
 
 % Pack data into a struct for namespace purposes
 data = struct;
-data.stateEstimate = stateEstimate;
+data.stateEstimate = [];% stateEstimate;
 data.stateGroundTruth = stateGroundTruth;
 data.stateTrajectory = stateTrajectory;
 
