@@ -77,9 +77,26 @@ void inverseDynamics::publishLegCommandArray() {
   static const std::vector<double> walk_kp_{100,100,100};
   static const std::vector<double> walk_kd_{2,2,2};
 
-  Eigen::Vector3f grf, tau0, tau1, tau2, tau3, dq0, dq1, dq2, dq3, df0, df1, df2, df3;
-  grf << 0, 0, 30;
-  // std::cout << grf << std::endl;
+  Eigen::Vector3d grf, grf_des, kp_grf, kd_grf;
+  Eigen::Vector3d body_pos, body_vel, body_pos_des, body_vel_des, body_pos_error, body_vel_error;
+  Eigen::Vector3f tau0, tau1, tau2, tau3, dq0, dq1, dq2, dq3, df0, df1, df2, df3;
+  grf_des << 0, 0, 1100000.5*9.81;
+  kp_grf << 1000000.0, 1000000.0, 1000000.0;
+  kd_grf << 10.0, 10.0, 100.0;
+
+  tf::pointMsgToEigen(last_robot_state_msg_.body.pose.pose.position, body_pos);
+  tf::vectorMsgToEigen(last_robot_state_msg_.body.twist.twist.linear, body_vel);
+  tf::pointMsgToEigen(last_trajectory_msg_.body.pose.pose.position, body_pos_des);
+  tf::vectorMsgToEigen(last_trajectory_msg_.body.twist.twist.linear, body_vel_des);
+
+  body_pos_error = body_pos_des.array() - body_pos.array();
+  body_vel_error = body_vel_des.array() - body_vel.array();
+
+  grf = grf_des.array() + kp_grf.array()*body_pos_error.array() + 
+    kd_grf.array()*body_vel_error.array();
+
+  
+  // std::cout << grf_des << std::endl;
 
   double velocities[12];
 
@@ -168,10 +185,10 @@ void inverseDynamics::publishLegCommandArray() {
   Eigen::MatrixXf foot_jacobian3(3,3);
   spirit_utils::calc_foot_jacobian3(states,foot_jacobian3);
 
-  tau0 = -foot_jacobian0.transpose() * grf;
-  tau1 = -foot_jacobian1.transpose() * grf;
-  tau2 = -foot_jacobian2.transpose() * grf;
-  tau3 = -foot_jacobian3.transpose() * grf;
+  tau0 = -foot_jacobian0.transpose() * grf.cast<float>();
+  tau1 = -foot_jacobian1.transpose() * grf.cast<float>();
+  tau2 = -foot_jacobian2.transpose() * grf.cast<float>();
+  tau3 = -foot_jacobian3.transpose() * grf.cast<float>();
 
   df0 = foot_jacobian0 * dq0;
   df1 = foot_jacobian1 * dq1;
