@@ -14,10 +14,8 @@ topics:
     ground_truth: /state/ground_truth
     estimate: /state/estimate
     trajectory: /state/trajectory
-
   control:
     grfs: /control/grfs
-
   visualization:
     body_plan: /visualization/body_plan
     grf_plan: /visualization/grf_plan
@@ -120,10 +118,12 @@ robot_proxy:
 visualization:
   update_rate: 30
   colors: # Specify as RGB triplets [0,255]
-    front_feet: [0,45,114]      # Blue Thread
-    back_feet: [120,159,144]    # Palladian Green
-    net_grf: [0,132,61]         # Green Thread
-    individual_grf: [0,132,61]  # Green Thread
+    front_left: [166,25,46]     # Red
+    back_left: [0,45,114]       # Blue
+    front_right: [0,132,61]     # Green
+    back_right: [242,169,0]     # Yellow
+    net_grf: [55,51,58]         # Black
+    individual_grf: [45,31,38]  # Black
 
 trajectory_publisher:
   update_rate: 40

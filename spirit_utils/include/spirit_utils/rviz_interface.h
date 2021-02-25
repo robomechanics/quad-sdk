@@ -148,8 +148,10 @@ private:
   std::string map_frame_;
 
   /// Colors
-  std::vector<int> front_foot_color_;
-  std::vector<int> back_foot_color_;
+  std::vector<int> front_left_color_;
+  std::vector<int> back_left_color_;
+  std::vector<int> front_right_color_;
+  std::vector<int> back_right_color_;
   std::vector<int> net_grf_color_;
   std::vector<int> individual_grf_color_;
 

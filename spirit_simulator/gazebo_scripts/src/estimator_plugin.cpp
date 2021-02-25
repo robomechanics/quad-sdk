@@ -98,6 +98,8 @@ namespace gazebo{
     physics::Joint_V joint_vec = model_->GetJoints();
     int num_joints = 12;
 
+    state.joints.name = {"8", "0", "1", "9","2","3","10","4","5","11","6","7"};
+
     for (int i = 0; i<num_joints; i++) {
       // std::cout << joint->GetName() << std::endl;
       // std::cout << joint->Position() << std::endl;

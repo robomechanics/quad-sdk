@@ -5,14 +5,13 @@
 #include <eigen3/Eigen/Eigen>
 #include <spirit_utils/ros_utils.h>
 #include <spirit_utils/foot_jacobians.h>
-// #include <spirit_msgs/GRFArray.h>
+#include <spirit_msgs/GRFArray.h>
 #include <std_msgs/UInt8.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/MotorCommand.h>
 #include <spirit_msgs/LegCommand.h>
 #include <spirit_msgs/LegCommandArray.h>
 #include <spirit_msgs/MultiFootPlanContinuous.h>
-// #include <spirit_msgs/FootstepPlan.h>
 
 #include <cmath>
 #define MATH_PI 3.141592
