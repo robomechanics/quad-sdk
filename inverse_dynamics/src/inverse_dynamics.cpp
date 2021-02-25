@@ -80,8 +80,8 @@ void inverseDynamics::publishLegCommandArray() {
   Eigen::Vector3d grf, grf_des, kp_grf, kd_grf;
   Eigen::Vector3d body_pos, body_vel, body_pos_des, body_vel_des, body_pos_error, body_vel_error;
   Eigen::Vector3f tau0, tau1, tau2, tau3, dq0, dq1, dq2, dq3, df0, df1, df2, df3;
-  grf_des << 0, 0, 1100000.5*9.81;
-  kp_grf << 1000000.0, 1000000.0, 1000000.0;
+  grf_des << 0, 0, 11.5*9.81;
+  kp_grf << 100.0, 100.0, 100.0;
   kd_grf << 10.0, 10.0, 100.0;
 
   tf::pointMsgToEigen(last_robot_state_msg_.body.pose.pose.position, body_pos);
