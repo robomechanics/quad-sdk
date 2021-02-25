@@ -44,10 +44,14 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   // Setup rviz_interface parameters
   nh.param<std::string>("map_frame",map_frame_,"map");
   nh.param<double>("visualization/update_rate", update_rate_, 10);
-  nh.param<std::vector<int> >("visualization/colors/front_feet",
-    front_foot_color_, {0,255,0});
-  nh.param<std::vector<int> >("visualization/colors/back_feet",
-    back_foot_color_, {0,0,255});
+  nh.param<std::vector<int> >("visualization/colors/front_left",
+    front_left_color_, {0,255,0});
+  nh.param<std::vector<int> >("visualization/colors/back_left",
+    back_left_color_, {0,0,255});
+  nh.param<std::vector<int> >("visualization/colors/front_right",
+    front_right_color_, {0,255,0});
+  nh.param<std::vector<int> >("visualization/colors/back_right",
+    back_right_color_, {0,0,255});
   nh.param<std::vector<int> >("visualization/colors/net_grf",
     net_grf_color_, {255,0,0});
   nh.param<std::vector<int> >("visualization/colors/individual_grf",
@@ -258,14 +262,22 @@ void RVizInterface::footPlanDiscreteCallback(
       // Set the color of each marker (green for front, blue for back)
       std_msgs::ColorRGBA color;
       color.a = 1.0;
-      if (i == 0 || i == 2) {
-        color.r = (float) front_foot_color_[0]/255.0;
-        color.g = (float) front_foot_color_[1]/255.0;
-        color.b = (float) front_foot_color_[2]/255.0;
-      } else {
-        color.r = (float) back_foot_color_[0]/255.0;
-        color.g = (float) back_foot_color_[1]/255.0;
-        color.b = (float) back_foot_color_[2]/255.0;
+      if (i == 0) {
+        color.r = (float) front_left_color_[0]/255.0;
+        color.g = (float) front_left_color_[1]/255.0;
+        color.b = (float) front_left_color_[2]/255.0;
+      } else if (i == 1) {
+        color.r = (float) back_left_color_[0]/255.0;
+        color.g = (float) back_left_color_[1]/255.0;
+        color.b = (float) back_left_color_[2]/255.0;
+      } else if (i == 2) {
+        color.r = (float) front_right_color_[0]/255.0;
+        color.g = (float) front_right_color_[1]/255.0;
+        color.b = (float) front_right_color_[2]/255.0;
+      } else if (i == 3) {
+        color.r = (float) back_right_color_[0]/255.0;
+        color.g = (float) back_right_color_[1]/255.0;
+        color.b = (float) back_right_color_[2]/255.0;
       }
 
       // Add to the Marker message
@@ -329,15 +341,15 @@ void RVizInterface::robotStateCallback(
   joint_msg.header.stamp = ros::Time::now();
 
   if (pub_id == ESTIMATE) {
-    transformStamped.child_frame_id = "/estimate/dummy";
+    transformStamped.child_frame_id = "/estimate/body";
     estimate_base_tf_br_.sendTransform(transformStamped);
     estimate_joint_states_viz_pub_.publish(joint_msg);
   } else if (pub_id == GROUND_TRUTH) {
-    transformStamped.child_frame_id = "/ground_truth/dummy";
+    transformStamped.child_frame_id = "/ground_truth/body";
     ground_truth_base_tf_br_.sendTransform(transformStamped);
     ground_truth_joint_states_viz_pub_.publish(joint_msg);
   } else if (pub_id == TRAJECTORY) {
-    transformStamped.child_frame_id = "/trajectory/dummy";
+    transformStamped.child_frame_id = "/trajectory/body";
     trajectory_base_tf_br_.sendTransform(transformStamped);
     trajectory_joint_states_viz_pub_.publish(joint_msg);
   } else {

@@ -333,7 +333,7 @@ SOFTWARE.
       <geometry>
         <cylinder length="0.08" radius="0.055"/>
       </geometry>
-      <material name="red"/>
+      <material name="darkgray"/>
     </visual>
     <collision>
       <origin rpy="1.5707963268 0 0" xyz="0 -0.028 0"/>

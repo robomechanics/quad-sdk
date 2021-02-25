@@ -345,13 +345,13 @@ void LocalFootstepPlanner::publishContinuousPlan() {
 
         double x_current = basis_0*x + basis_1*x_next;
         double y_current = basis_0*y + basis_1*y_next;
-        double dx_current = basis_2*x + basis_3*x_next;
-        double dy_current = basis_2*y + basis_3*y_next;
+        double dx_current = (basis_2*x + basis_3*x_next)/t_f;
+        double dy_current = (basis_2*y + basis_3*y_next)/t_f;
 
         double z_current, dz_current;
 
         if (t_swing <0.5*t_f) {
-          u = 2*t_swing/t_f;
+          u = t_swing/(0.5*t_f);
           u3 = u*u*u;
           u2 = u*u;
           double basis_0 = 2*u3-3*u2+1;
@@ -359,9 +359,9 @@ void LocalFootstepPlanner::publishContinuousPlan() {
           double basis_2 = 6*(u2-u);
           double basis_3 = 6*(u-u2);
           z_current = basis_0*z + basis_1*z_mid;
-          dz_current = basis_2*z + basis_3*z_mid;
+          dz_current = (basis_2*z + basis_3*z_mid)/(0.5*t_f);
         } else {
-          u = 2*t_swing/t_f - 1;
+          u = t_swing/(0.5*t_f) - 1;
           u3 = u*u*u;
           u2 = u*u;
           double basis_0 = 2*u3-3*u2+1;
@@ -369,7 +369,7 @@ void LocalFootstepPlanner::publishContinuousPlan() {
           double basis_2 = 6*(u2-u);
           double basis_3 = 6*(u-u2);
           z_current = basis_0*z_mid + basis_1*z_next;
-          dz_current = basis_2*z_mid + basis_3*z_next;
+          dz_current = (basis_2*z_mid + basis_3*z_next)/(0.5*t_f);
 
         }
 
