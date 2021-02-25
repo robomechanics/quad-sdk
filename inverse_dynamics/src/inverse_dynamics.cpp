@@ -168,6 +168,9 @@ void inverseDynamics::publishLegCommandArray() {
   Eigen::MatrixXf foot_jacobian3(3,3);
   spirit_utils::calc_foot_jacobian3(states,foot_jacobian3);
 
+  Eigen::MatrixXf jacobian(12,18);
+  spirit_utils::calc_jacobian(states,jacobian);
+
   tau0 = -foot_jacobian0.transpose() * grf;
   tau1 = -foot_jacobian1.transpose() * grf;
   tau2 = -foot_jacobian2.transpose() * grf;
