@@ -61,6 +61,10 @@ void inverseDynamics::publishLegCommandArray() {
     hasTrajectory = false;
   }
 
+  // if (hasTrajectory) {
+  //   math_utils::ikRobotState(last_robot_state_msg_.body, last_trajectory_msg_.feet, last_trajectory_msg_.joints);
+  // }
+
   // ROS_INFO("In inverseDynamics");
   spirit_msgs::LegCommandArray msg;
   msg.leg_commands.resize(4);
@@ -77,7 +81,7 @@ void inverseDynamics::publishLegCommandArray() {
   static const std::vector<double> walk_kp_{100,100,100};
   static const std::vector<double> walk_kd_{2,2,2};
 
-  Eigen::Vector3f grf, tau0, tau1, tau2, tau3, dq0, dq1, dq2, dq3, df0, df1, df2, df3;
+  Eigen::Vector3f grf, tau0, tau1, tau2, tau3;
   grf << 0, 0, 30;
   // std::cout << grf << std::endl;
 
@@ -95,11 +99,6 @@ void inverseDynamics::publishLegCommandArray() {
   velocities[9] = last_robot_state_msg_.joints.velocity.at(9);
   velocities[10] = last_robot_state_msg_.joints.velocity.at(10);
   velocities[11] = last_robot_state_msg_.joints.velocity.at(11);
-
-  dq0 << velocities[0], velocities[1], velocities[2];
-  dq1 << velocities[3], velocities[4], velocities[5];
-  dq2 << velocities[6], velocities[7], velocities[8];
-  dq3 << velocities[9], velocities[10], velocities[11];
 
   double states[18];
   // std::vector<double> states(18);
@@ -171,124 +170,89 @@ void inverseDynamics::publishLegCommandArray() {
   Eigen::MatrixXf jacobian(12,18);
   spirit_utils::calc_jacobian(states,jacobian);
 
+  Eigen::MatrixXf stateVelocity(18,1);
+  Eigen::MatrixXf footVelocity(12,1);
+  stateVelocity << velocities[0], velocities[1], velocities[2], velocities[3], velocities[4], velocities[5],
+                   velocities[6], velocities[7], velocities[8], velocities[9], velocities[10], velocities[11],
+                   last_robot_state_msg_.body.twist.twist.linear.x, last_robot_state_msg_.body.twist.twist.linear.y,
+                   last_robot_state_msg_.body.twist.twist.linear.z, last_robot_state_msg_.body.twist.twist.angular.x,
+                   last_robot_state_msg_.body.twist.twist.angular.y, last_robot_state_msg_.body.twist.twist.angular.z; 
+
   tau0 = -foot_jacobian0.transpose() * grf;
   tau1 = -foot_jacobian1.transpose() * grf;
   tau2 = -foot_jacobian2.transpose() * grf;
   tau3 = -foot_jacobian3.transpose() * grf;
 
-  df0 = foot_jacobian0 * dq0;
-  df1 = foot_jacobian1 * dq1;
-  df2 = foot_jacobian2 * dq2;
-  df3 = foot_jacobian3 * dq3;
+  footVelocity = jacobian*stateVelocity;
 
-  // std::cout<<"Joint Torques 1: "<<std::endl;
-  // std::cout<<tau0;
-  // std::cout<<std::endl;
+  f0x.push_back(last_robot_state_msg_.feet.feet[0].velocity.x);
+  f1x.push_back(last_robot_state_msg_.feet.feet[1].velocity.x);
+  f2x.push_back(last_robot_state_msg_.feet.feet[2].velocity.x);
+  f3x.push_back(last_robot_state_msg_.feet.feet[3].velocity.x);
+  f0y.push_back(last_robot_state_msg_.feet.feet[0].velocity.y);
+  f1y.push_back(last_robot_state_msg_.feet.feet[1].velocity.y);
+  f2y.push_back(last_robot_state_msg_.feet.feet[2].velocity.y);
+  f3y.push_back(last_robot_state_msg_.feet.feet[3].velocity.y);
+  f0z.push_back(last_robot_state_msg_.feet.feet[0].velocity.z);
+  f1z.push_back(last_robot_state_msg_.feet.feet[1].velocity.z);
+  f2z.push_back(last_robot_state_msg_.feet.feet[2].velocity.z);
+  f3z.push_back(last_robot_state_msg_.feet.feet[3].velocity.z);
 
-  // std::cout<<"Joint Torques 2: "<<std::endl;
-  // std::cout<<tau1;
-  // std::cout<<std::endl;
+  f0xJ.push_back(footVelocity(0,0));
+  f1xJ.push_back(footVelocity(3,0));
+  f2xJ.push_back(footVelocity(6,0));
+  f3xJ.push_back(footVelocity(9,0));
+  f0yJ.push_back(footVelocity(1,0));
+  f1yJ.push_back(footVelocity(4,0));
+  f2yJ.push_back(footVelocity(7,0));
+  f3yJ.push_back(footVelocity(10,0));
+  f0zJ.push_back(footVelocity(2,0));
+  f1zJ.push_back(footVelocity(5,0));
+  f2zJ.push_back(footVelocity(8,0));
+  f3zJ.push_back(footVelocity(11,0));
 
-  // std::cout<<"Joint Torques 3: "<<std::endl;
-  // std::cout<<tau2;
-  // std::cout<<std::endl;
-
-  // std::cout<<"Joint Torques 4: "<<std::endl;
-  // std::cout<<tau3;
-  // std::cout<<std::endl;
-
-  // std::cout<<"Joint Velocities 1: "<<std::endl;
-  // std::cout<<df0;
-  // std::cout<<std::endl;
-
-  // std::cout<<"Joint Velocities 2: "<<std::endl;
-  // std::cout<<df1;
-  // std::cout<<std::endl;
-
-  // std::cout<<"Joint Velocities 3: "<<std::endl;
-  // std::cout<<df2;
-  // std::cout<<std::endl;
-
-  // std::cout<<"Joint Velocities 4: "<<std::endl;
-  // std::cout<<df3;
-  // std::cout<<std::endl;
-
-  // std::cout<<"------------------------"<<std::endl;
-  // for (int i = 0; i < 4; i++) {
-  //   std::cout<<"Joint Velocities "<<i<<": "<<std::endl;
-  //   std::cout<<last_robot_state_msg_.feet.feet[i].velocity.x<<std::endl;
-  //   std::cout<<last_robot_state_msg_.feet.feet[i].velocity.y<<std::endl;
-  //   std::cout<<last_robot_state_msg_.feet.feet[i].velocity.z<<std::endl;
-  // }
-
-  // f0x.push_back(last_robot_state_msg_.feet.feet[0].velocity.x);
-  // f1x.push_back(last_robot_state_msg_.feet.feet[1].velocity.x);
-  // f2x.push_back(last_robot_state_msg_.feet.feet[2].velocity.x);
-  // f3x.push_back(last_robot_state_msg_.feet.feet[3].velocity.x);
-  // f0y.push_back(last_robot_state_msg_.feet.feet[0].velocity.y);
-  // f1y.push_back(last_robot_state_msg_.feet.feet[1].velocity.y);
-  // f2y.push_back(last_robot_state_msg_.feet.feet[2].velocity.y);
-  // f3y.push_back(last_robot_state_msg_.feet.feet[3].velocity.y);
-  // f0z.push_back(last_robot_state_msg_.feet.feet[0].velocity.z);
-  // f1z.push_back(last_robot_state_msg_.feet.feet[1].velocity.z);
-  // f2z.push_back(last_robot_state_msg_.feet.feet[2].velocity.z);
-  // f3z.push_back(last_robot_state_msg_.feet.feet[3].velocity.z);
-
-  // f0xJ.push_back(df0(0,0));
-  // f1xJ.push_back(df1(0,0));
-  // f2xJ.push_back(df2(0,0));
-  // f3xJ.push_back(df3(0,0));
-  // f0yJ.push_back(df0(1,0));
-  // f1yJ.push_back(df1(1,0));
-  // f2yJ.push_back(df2(1,0));
-  // f3yJ.push_back(df3(1,0));
-  // f0zJ.push_back(df0(2,0));
-  // f1zJ.push_back(df1(2,0));
-  // f2zJ.push_back(df2(2,0));
-  // f3zJ.push_back(df3(2,0));
-
-  // counterVec.push_back(step_number);
-  // step_number++;
+  counterVec.push_back(step_number);
+  step_number++;
 
   // plt::clf();
   // plt::ion();
-  // plt::subplot(1,3,1);
+  // // plt::subplot(1,3,1);
   // plt::named_plot("F1x_G", counterVec, f0x, "k-");
   // // plt::named_plot("F2x_G", counterVec, f1x, "r-");
   // // plt::named_plot("F3x_G", counterVec, f2x, "b-");
   // // plt::named_plot("F4x_G", counterVec, f3x, "g-");
-  // plt::named_plot("F1x_J", counterVec, f0xJ, "ko--");
-  // // plt::named_plot("F2x_J", counterVec, f1xJ, "ro--");
-  // // plt::named_plot("F3x_J", counterVec, f2xJ, "bo--");
-  // // plt::named_plot("F4x_J", counterVec, f3xJ, "go--");
+  // plt::named_plot("F1x_J", counterVec, f0xJ, "k--");
+  // // plt::named_plot("F2x_J", counterVec, f1xJ, "r--");
+  // // plt::named_plot("F3x_J", counterVec, f2xJ, "b--");
+  // // plt::named_plot("F4x_J", counterVec, f3xJ, "g--");
   // plt::xlabel("Time (steps)");
   // plt::ylabel("Velocity (m/s)");
   // plt::title("X Velocities");
   // plt::legend();
 
-  // plt::subplot(1,3,2);
+  // // plt::subplot(1,3,2);
   // plt::named_plot("F1y_G", counterVec, f0y, "k-");
   // // plt::named_plot("F2y_G", counterVec, f1y, "r-");
   // // plt::named_plot("F3y_G", counterVec, f2y, "b-");
   // // plt::named_plot("F4y_G", counterVec, f3y, "g-");
-  // plt::named_plot("F1y_J", counterVec, f0yJ, "ko--");
-  // // plt::named_plot("F2y_J", counterVec, f1yJ, "ro--");
-  // // plt::named_plot("F3y_J", counterVec, f2yJ, "bo--");
-  // // plt::named_plot("F4y_J", counterVec, f3yJ, "go--");
+  // plt::named_plot("F1y_J", counterVec, f0yJ, "k--");
+  // // plt::named_plot("F2y_J", counterVec, f1yJ, "r--");
+  // // plt::named_plot("F3y_J", counterVec, f2yJ, "b--");
+  // // plt::named_plot("F4y_J", counterVec, f3yJ, "g--");
   // plt::xlabel("Time (steps)");
   // plt::ylabel("Velocity (m/s)");
   // plt::title("Y Velocities");
   // plt::legend();
 
-  // plt::subplot(1,3,3);
+  // // plt::subplot(1,3,3);
   // plt::named_plot("F1z_G", counterVec, f0z, "k-");
   // // plt::named_plot("F2z_G", counterVec, f1z, "r-");
   // // plt::named_plot("F3z_G", counterVec, f2z, "b-");
   // // plt::named_plot("F4z_G", counterVec, f3z, "g-");
-  // plt::named_plot("F1z_J", counterVec, f0zJ, "ko--");
-  // // plt::named_plot("F2z_J", counterVec, f1zJ, "ro--");
-  // // plt::named_plot("F3z_J", counterVec, f2zJ, "bo--");
-  // // plt::named_plot("F4z_J", counterVec, f3zJ, "go--");
+  // plt::named_plot("F1z_J", counterVec, f0zJ, "k--");
+  // // plt::named_plot("F2z_J", counterVec, f1zJ, "r--");
+  // // plt::named_plot("F3z_J", counterVec, f2zJ, "b--");
+  // // plt::named_plot("F4z_J", counterVec, f3zJ, "g--");
   // plt::xlabel("Time (steps)");
   // plt::ylabel("Velocity (m/s)");
   // plt::title("Z Velocities");
