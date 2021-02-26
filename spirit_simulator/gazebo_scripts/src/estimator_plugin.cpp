@@ -43,6 +43,14 @@ namespace gazebo{
 
     // Extract all relevant information from simulator
     physics::LinkPtr body_link = model_->GetChildLink("body");
+
+    ignition::math::Vector3d toe_offset(0.206, 0, 0);
+
+    physics::LinkPtr lower0 = model_->GetChildLink("lower0");
+    physics::LinkPtr lower1 = model_->GetChildLink("lower1");
+    physics::LinkPtr lower2 = model_->GetChildLink("lower2");
+    physics::LinkPtr lower3 = model_->GetChildLink("lower3");
+
     if (!body_link)
     {
       ROS_ERROR("Can't find body link in sdf. Make sure the name in the plugin matches the sdf.");
@@ -54,6 +62,22 @@ namespace gazebo{
     ignition::math::Quaternion<double> ang_pos = pose.Rot();
     ignition::math::Vector3d lin_vel = body_link->WorldLinearVel();
     ignition::math::Vector3d ang_vel = body_link->WorldAngularVel();
+
+    // ignition::math::Pose3d toe0_pose = toe0->WorldPose();
+    // ignition::math::Vector3d toe0_pos = toe0_pose.Pos();
+    ignition::math::Vector3d toe0_vel = lower0->WorldLinearVel(toe_offset);
+
+    // ignition::math::Pose3d toe1_pose = toe1->WorldPose();
+    // ignition::math::Vector3d toe1_pos = toe1_pose.Pos();
+    ignition::math::Vector3d toe1_vel = lower1->WorldLinearVel(toe_offset);
+
+    // ignition::math::Pose3d toe2_pose = toe2->WorldPose();
+    // ignition::math::Vector3d toe2_pos = toe2_pose.Pos();
+    ignition::math::Vector3d toe2_vel = lower2->WorldLinearVel(toe_offset);
+
+    // ignition::math::Pose3d toe3_pose = toe3->WorldPose();
+    // ignition::math::Vector3d toe3_pos = toe3_pose.Pos();
+    ignition::math::Vector3d toe3_vel = lower3->WorldLinearVel(toe_offset);
 
     // Update and publish state estimate message
     spirit_msgs::RobotState state;
@@ -74,6 +98,8 @@ namespace gazebo{
     physics::Joint_V joint_vec = model_->GetJoints();
     int num_joints = 12;
 
+    state.joints.name = {"8", "0", "1", "9","2","3","10","4","5","11","6","7"};
+
     for (int i = 0; i<num_joints; i++) {
       // std::cout << joint->GetName() << std::endl;
       // std::cout << joint->Position() << std::endl;
@@ -87,7 +113,53 @@ namespace gazebo{
       state.joints.velocity.push_back(joint->GetVelocity(0));
       state.joints.effort.push_back(torque);
     }
-    // state.joints.position[0] = 
+
+    int num_feet = 4;
+    state.feet.feet.resize(num_feet);
+
+    for (int i = 0; i<num_feet; i++) {
+      switch (i) {
+        case 0:
+          // state.feet.feet[i].position.x = toe0_pos.X();
+          // state.feet.feet[i].position.y = toe0_pos.Y();
+          // state.feet.feet[i].position.z = toe0_pos.Z();
+
+          state.feet.feet[i].velocity.x = toe0_vel.X();
+          state.feet.feet[i].velocity.y = toe0_vel.Y();
+          state.feet.feet[i].velocity.z = toe0_vel.Z();
+          break;
+
+        case 1:
+          // state.feet.feet[i].position.x = toe1_pos.X();
+          // state.feet.feet[i].position.y = toe1_pos.Y();
+          // state.feet.feet[i].position.z = toe1_pos.Z();
+
+          state.feet.feet[i].velocity.x = toe1_vel.X();
+          state.feet.feet[i].velocity.y = toe1_vel.Y();
+          state.feet.feet[i].velocity.z = toe1_vel.Z();
+          break;
+
+        case 2:
+          // state.feet.feet[i].position.x = toe2_pos.X();
+          // state.feet.feet[i].position.y = toe2_pos.Y();
+          // state.feet.feet[i].position.z = toe2_pos.Z();
+
+          state.feet.feet[i].velocity.x = toe2_vel.X();
+          state.feet.feet[i].velocity.y = toe2_vel.Y();
+          state.feet.feet[i].velocity.z = toe2_vel.Z();
+          break;
+
+        case 3:
+          // state.feet.feet[i].position.x = toe3_pos.X();
+          // state.feet.feet[i].position.y = toe3_pos.Y();
+          // state.feet.feet[i].position.z = toe3_pos.Z();
+
+          state.feet.feet[i].velocity.x = toe3_vel.X();
+          state.feet.feet[i].velocity.y = toe3_vel.Y();
+          state.feet.feet[i].velocity.z = toe3_vel.Z();
+          break;
+      }
+    }
 
     state.header.stamp = ros::Time::now();
     ground_truth_state_pub_.publish(state);

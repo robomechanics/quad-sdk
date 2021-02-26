@@ -7,26 +7,32 @@ topics:
   discrete_body_plan: /body_plan_discrete
   foot_plan_continuous: /foot_plan_continuous
   foot_plan_discrete: /foot_plan_discrete
-  image: /image_publisher/image
   body_force: /body_force
   joint_command: /spirit/joint_controller/command
-  state:
+  trajectory: /robot_plan
+  state: # These should not change for the remapping to work in some launch files
     ground_truth: /state/ground_truth
     estimate: /state/estimate
+    trajectory: /state/trajectory
+  control:
+    grfs: /control/grfs
   visualization:
     body_plan: /visualization/body_plan
     grf_plan: /visualization/grf_plan
     discrete_body_plan: /visualization/discrete_body_plan
     footstep_plan: /visualization/foot_plan_discrete
-    joint_states: /visualization/joint_states
+    joint_states:
+      estimate: /visualization/joint_states/estimate
+      ground_truth: /visualization/joint_states/ground_truth
+      trajectory: /visualization/joint_states/trajectory
     foot_0_plan_continuous: /visualization/foot_0_plan_continuous
     foot_1_plan_continuous: /visualization/foot_1_plan_continuous
     foot_2_plan_continuous: /visualization/foot_2_plan_continuous
     foot_3_plan_continuous: /visualization/foot_3_plan_continuous
     
 mpc_controller:
-  update_rate: 200
-
+  update_rate: 50
+  
 ekf_estimator:
   joint_state_max_time: 20 # Milliseconds until we disregard last joint state message
   update_rate: 100
@@ -35,10 +41,10 @@ global_body_planner:
   update_rate: 10
   num_calls: 1            # Number of times to call the planner
   max_time: 1.5           # Minimum amount of time to run the planner (will replan to find better solutions until this duration is up)
-  start_state: [0.0,0.0,0.3,0.0,0.0,0.0,0.5,0.0,0.0,0.0,0.0,0.0]
-  goal_state: [8.0,1.0,0.3,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+  start_state: [0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+  goal_state: [2.0,0.0,0.3,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
   committed_horizon: 0     # Committed duration of current plan (replan starting from state in current plan this far ahead), s
-  state_error_threshold: 0.25
+  state_error_threshold: 10 #0.25
 
 twist_body_planner:
   update_rate: 10
@@ -52,11 +58,11 @@ local_footstep_planner:
   update_rate: 30
   grf_weight: 0.0
   max_footstep_horizon: 1.5
-  num_cycles: 250
-  period: 0.3
+  num_cycles: 50
+  period: 0.5
   ground_clearance: 0.1
-  interp_dt: 0.01
-  
+  interp_dt: 0.03
+
 contact_detection:
   update_rate: 250
 
@@ -66,7 +72,7 @@ ground_truth_publisher:
 
 terrain_map_publisher:
   update_rate: 5
-  map_data_source: csv
+  map_data_source: internal
   terrain_type: rough_terrain     # slope or rough_terrain
 
 grid_map_visualization:
@@ -110,9 +116,17 @@ robot_proxy:
   update_rate: 100
 
 visualization:
-  update_rate: 20
+  update_rate: 30
+  colors: # Specify as RGB triplets [0,255]
+    front_left: [166,25,46]     # Red
+    back_left: [0,45,114]       # Blue
+    front_right: [0,132,61]     # Green
+    back_right: [242,169,0]     # Yellow
+    net_grf: [55,51,58]         # Black
+    individual_grf: [45,31,38]  # Black
 
 trajectory_publisher:
-  update_rate: 20
+  update_rate: 40
   interp_dt: 0.02
-  playback_speed: 0.55
+  playback_speed: 1
+  traj_source: topic

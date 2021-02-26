@@ -8,8 +8,10 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
     discrete_body_plan_topic, discrete_body_plan_viz_topic,
     foot_plan_discrete_topic, foot_plan_discrete_viz_topic, 
     foot_plan_continuous_topic, state_estimate_topic, ground_truth_state_topic, 
-    joint_states_viz_topic;
+    trajectory_state_topic, estimate_joint_states_viz_topic, 
+    ground_truth_joint_states_viz_topic, trajectory_joint_states_viz_topic;
 
+  // Load topic names from parameter server
   nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
   nh.param<std::string>("topics/discrete_body_plan", 
     discrete_body_plan_topic, "/discrete_body_plan");
@@ -21,6 +23,8 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
     state_estimate_topic, "/state/estimate");
   nh.param<std::string>("topics/state/ground_truth", 
     ground_truth_state_topic, "/state/ground_truth");
+  nh.param<std::string>("topics/state/trajectory", 
+    trajectory_state_topic, "/state/trajectory");
   
   nh.param<std::string>("topics/visualization/body_plan", 
     body_plan_viz_topic, "/visualization/body_plan");
@@ -30,14 +34,30 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
     discrete_body_plan_viz_topic, "/visualization/discrete_body_plan");
   nh.param<std::string>("topics/visualization/foot_plan_discrete", 
     foot_plan_discrete_viz_topic, "/visualization/foot_plan_discrete");
-  nh.param<std::string>("topics/visualization/joint_states", 
-    joint_states_viz_topic, "/visualization/joint_states");
+  nh.param<std::string>("topics/visualization/joint_states/estimate", 
+    estimate_joint_states_viz_topic, "/visualization/joint_states/estimate");
+  nh.param<std::string>("topics/visualization/joint_states/ground_truth", 
+    ground_truth_joint_states_viz_topic, "/visualization/joint_states/ground_truth");
+  nh.param<std::string>("topics/visualization/joint_states/trajectory", 
+    trajectory_joint_states_viz_topic, "/visualization/joint_states/trajectory");
 
-
+  // Setup rviz_interface parameters
   nh.param<std::string>("map_frame",map_frame_,"map");
   nh.param<double>("visualization/update_rate", update_rate_, 10);
+  nh.param<std::vector<int> >("visualization/colors/front_left",
+    front_left_color_, {0,255,0});
+  nh.param<std::vector<int> >("visualization/colors/back_left",
+    back_left_color_, {0,0,255});
+  nh.param<std::vector<int> >("visualization/colors/front_right",
+    front_right_color_, {0,255,0});
+  nh.param<std::vector<int> >("visualization/colors/back_right",
+    back_right_color_, {0,0,255});
+  nh.param<std::vector<int> >("visualization/colors/net_grf",
+    net_grf_color_, {255,0,0});
+  nh.param<std::vector<int> >("visualization/colors/individual_grf",
+    individual_grf_color_, {255,0,0});
 
-  // Setup subs and pubs
+  // Setup plan subs
   body_plan_sub_ = nh_.subscribe(body_plan_topic,1,
     &RVizInterface::bodyPlanCallback, this);
   discrete_body_plan_sub_ = nh_.subscribe(discrete_body_plan_topic,1,
@@ -46,11 +66,8 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
     &RVizInterface::footPlanDiscreteCallback, this);
   foot_plan_continuous_sub_ = nh_.subscribe(foot_plan_continuous_topic,1,
     &RVizInterface::footPlanContinuousCallback, this);
-  state_estimate_sub_ = nh_.subscribe(state_estimate_topic,1,
-    &RVizInterface::stateEstimateCallback, this);
-  ground_truth_state_sub_ = nh_.subscribe(ground_truth_state_topic,1,
-    &RVizInterface::groundTruthStateCallback, this);
 
+  // Setup plan visual pubs
   body_plan_viz_pub_ = nh_.advertise<nav_msgs::Path>(body_plan_viz_topic,1);
   grf_plan_viz_pub_ = nh_.advertise<visualization_msgs::MarkerArray>
     (grf_plan_viz_topic,1);
@@ -58,8 +75,22 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
     (discrete_body_plan_viz_topic,1);
   foot_plan_discrete_viz_pub_ = nh_.advertise<visualization_msgs::Marker>
     (foot_plan_discrete_viz_topic,1);
-  joint_states_viz_pub_ = nh_.advertise<sensor_msgs::JointState>
-    (joint_states_viz_topic,1);
+
+  // Setup state subs to call the same callback but with pub ID included
+  state_estimate_sub_ = nh_.subscribe<spirit_msgs::RobotState>(state_estimate_topic,1,
+    boost::bind( &RVizInterface::robotStateCallback, this, _1, ESTIMATE));
+  ground_truth_state_sub_ = nh_.subscribe<spirit_msgs::RobotState>(ground_truth_state_topic,1,
+    boost::bind( &RVizInterface::robotStateCallback, this, _1, GROUND_TRUTH));
+  trajectory_state_sub_ = nh_.subscribe<spirit_msgs::RobotState>(trajectory_state_topic,1,
+    boost::bind( &RVizInterface::robotStateCallback, this, _1, TRAJECTORY));
+  
+  // Setup state visual pubs
+  estimate_joint_states_viz_pub_ = nh_.advertise<sensor_msgs::JointState>
+    (estimate_joint_states_viz_topic,1);
+  ground_truth_joint_states_viz_pub_ = nh_.advertise<sensor_msgs::JointState>
+    (ground_truth_joint_states_viz_topic,1);
+  trajectory_joint_states_viz_pub_ = nh_.advertise<sensor_msgs::JointState>
+    (trajectory_joint_states_viz_topic,1);
 
   std::string foot_0_plan_continuous_viz_topic,foot_1_plan_continuous_viz_topic,
     foot_2_plan_continuous_viz_topic, foot_3_plan_continuous_viz_topic;
@@ -109,7 +140,7 @@ void RVizInterface::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg)
 
 
   // Construct MarkerArray and Marker message for GRFs
-  visualization_msgs::MarkerArray grfs_msg;
+  visualization_msgs::MarkerArray grfs_viz_msg;
   visualization_msgs::Marker marker;
 
   // Initialize the headers and types
@@ -119,40 +150,52 @@ void RVizInterface::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg)
   // Define the shape of the discrete states
   double arrow_diameter = 0.01;
   marker.scale.x = arrow_diameter;
-  marker.scale.y = 2*arrow_diameter;
+  marker.scale.y = 4*arrow_diameter;
   marker.color.g = 0.733f;
   marker.pose.orientation.w = 1.0;
 
   for (int i=0; i < length; i++) {
-    
-    // Reset the marker message
-    marker.points.clear();
-    marker.color.a = 1.0;
-    marker.id = i;
+    for (int j = 0; j < msg->grfs[i].vectors.size(); j++) {
 
-    // Define point messages for the base and tip of each GRF arrow
-    geometry_msgs::Point p_base, p_tip;
-    p_base = msg->states[i].pose.pose.position;
+      // Reset the marker message
+      marker.points.clear();
+      marker.color.a = 1.0;
+      marker.id = i*msg->grfs[i].vectors.size() + j;
 
-    /// Define the endpoint of the GRF arrow
-    double grf_length_scale = 0.002;
-    p_tip.x = p_base.x + grf_length_scale*msg->grfs[i].x;
-    p_tip.y = p_base.y + grf_length_scale*msg->grfs[i].y;
-    p_tip.z = p_base.z + grf_length_scale*msg->grfs[i].z;
+      if (msg->grfs[i].vectors.size() > 1) {
+        marker.color.r = (float) individual_grf_color_[0]/255.0;
+        marker.color.g = (float) individual_grf_color_[1]/255.0;
+        marker.color.b = (float) individual_grf_color_[2]/255.0;
+      } else {
+        marker.color.r = (float) net_grf_color_[0]/255.0;
+        marker.color.g = (float) net_grf_color_[1]/255.0;
+        marker.color.b = (float) net_grf_color_[2]/255.0;
+      }
 
-    // if GRF = 0, set alpha to zero
-    if (msg->grfs[i].z < 1e-4) {
-      marker.color.a = 0.0;
+      // Define point messages for the base and tip of each GRF arrow
+      geometry_msgs::Point p_base, p_tip;
+      p_base = msg->grfs[i].points[j];
+
+      /// Define the endpoint of the GRF arrow
+      double grf_length_scale = 0.002;
+      p_tip.x = p_base.x + grf_length_scale*msg->grfs[i].vectors[j].x;
+      p_tip.y = p_base.y + grf_length_scale*msg->grfs[i].vectors[j].y;
+      p_tip.z = p_base.z + grf_length_scale*msg->grfs[i].vectors[j].z;
+
+      // if GRF = 0, set alpha to zero
+      if (msg->grfs[i].contact_states[j] == false) {
+        marker.color.a = 0.0;
+      }
+
+      // Add the points to the marker and add the marker to the array
+      marker.points.push_back(p_base);
+      marker.points.push_back(p_tip);
+      grfs_viz_msg.markers.push_back(marker);
     }
-
-    // Add the points to the marker and add the marker to the array
-    marker.points.push_back(p_base);
-    marker.points.push_back(p_tip);
-    grfs_msg.markers.push_back(marker);
   }
 
   // Publish grfs
-  grf_plan_viz_pub_.publish(grfs_msg);
+  grf_plan_viz_pub_.publish(grfs_viz_msg);
 }
 
 void RVizInterface::discreteBodyPlanCallback(
@@ -219,10 +262,22 @@ void RVizInterface::footPlanDiscreteCallback(
       // Set the color of each marker (green for front, blue for back)
       std_msgs::ColorRGBA color;
       color.a = 1.0;
-      if (i == 0 || i == 2) {
-        color.g = 1.0f;
-      } else {
-        color.b = 1.0f;
+      if (i == 0) {
+        color.r = (float) front_left_color_[0]/255.0;
+        color.g = (float) front_left_color_[1]/255.0;
+        color.b = (float) front_left_color_[2]/255.0;
+      } else if (i == 1) {
+        color.r = (float) back_left_color_[0]/255.0;
+        color.g = (float) back_left_color_[1]/255.0;
+        color.b = (float) back_left_color_[2]/255.0;
+      } else if (i == 2) {
+        color.r = (float) front_right_color_[0]/255.0;
+        color.g = (float) front_right_color_[1]/255.0;
+        color.b = (float) front_right_color_[2]/255.0;
+      } else if (i == 3) {
+        color.r = (float) back_right_color_[0]/255.0;
+        color.g = (float) back_right_color_[1]/255.0;
+        color.b = (float) back_right_color_[2]/255.0;
       }
 
       // Add to the Marker message
@@ -262,44 +317,20 @@ void RVizInterface::footPlanContinuousCallback(
 
 }
 
-void RVizInterface::stateEstimateCallback(
-  const spirit_msgs::RobotState::ConstPtr& msg) {
-
-  // // Make a transform message for the body, populate with state estimate data
-  // geometry_msgs::TransformStamped transformStamped;
-  // transformStamped.header = msg->header;
-  // transformStamped.header.frame_id = map_frame_;
-  // transformStamped.child_frame_id = "dummy";
-  // transformStamped.transform.translation.x = msg->body.pose.pose.position.x;
-  // transformStamped.transform.translation.y = msg->body.pose.pose.position.y;
-  // transformStamped.transform.translation.z = msg->body.pose.pose.position.z;
-  // transformStamped.transform.rotation = msg->body.pose.pose.orientation;
-  // estimate_base_tf_br_.sendTransform(transformStamped);
-
-  // // Copy the joint portion of the state estimate message to a new message
-  // sensor_msgs::JointState joint_msg;
-  // joint_msg = msg->joints;
-
-  // // Set the header to that of the state estimate message and publish
-  // joint_msg.header = msg->header;
-  // joint_states_viz_pub_.publish(joint_msg);
-}
 
 
-void RVizInterface::groundTruthStateCallback(
-  const spirit_msgs::RobotState::ConstPtr& msg) {
+void RVizInterface::robotStateCallback(
+  const spirit_msgs::RobotState::ConstPtr& msg, const int pub_id) {
 
   // Make a transform message for the body, populate with state estimate data
   geometry_msgs::TransformStamped transformStamped;
   transformStamped.header = msg->header;
   transformStamped.header.stamp = ros::Time::now();
   transformStamped.header.frame_id = map_frame_;
-  transformStamped.child_frame_id = "dummy";
   transformStamped.transform.translation.x = msg->body.pose.pose.position.x;
   transformStamped.transform.translation.y = msg->body.pose.pose.position.y;
   transformStamped.transform.translation.z = msg->body.pose.pose.position.z;
   transformStamped.transform.rotation = msg->body.pose.pose.orientation;
-  ground_truth_base_tf_br_.sendTransform(transformStamped);
 
   // Copy the joint portion of the state estimate message to a new message
   sensor_msgs::JointState joint_msg;
@@ -308,7 +339,23 @@ void RVizInterface::groundTruthStateCallback(
   // Set the header to the main header of the state estimate message and publish
   joint_msg.header = msg->header;
   joint_msg.header.stamp = ros::Time::now();
-  joint_states_viz_pub_.publish(joint_msg);
+
+  if (pub_id == ESTIMATE) {
+    transformStamped.child_frame_id = "/estimate/body";
+    estimate_base_tf_br_.sendTransform(transformStamped);
+    estimate_joint_states_viz_pub_.publish(joint_msg);
+  } else if (pub_id == GROUND_TRUTH) {
+    transformStamped.child_frame_id = "/ground_truth/body";
+    ground_truth_base_tf_br_.sendTransform(transformStamped);
+    ground_truth_joint_states_viz_pub_.publish(joint_msg);
+  } else if (pub_id == TRAJECTORY) {
+    transformStamped.child_frame_id = "/trajectory/body";
+    trajectory_base_tf_br_.sendTransform(transformStamped);
+    trajectory_joint_states_viz_pub_.publish(joint_msg);
+  } else {
+    ROS_WARN_THROTTLE(0.5, "Invalid publisher id, not publishing robot state to rviz");
+  }
+  
 }
 
 void RVizInterface::spin() {

@@ -1,4 +1,4 @@
-function logDir = saveLog(trialName,COMTrajFig, linearStateFig, angularStateFig, jointPositionFig, jointVelocityFig, jointEffortFig)
+function logDir = saveLog(trialName,figArray)
 
 % If they don't already exist, make the log directories for this trial
 logDir = fullfile('../logs/',trialName);
@@ -13,6 +13,15 @@ videosDir = fullfile(logDir,'videos/');
 if ~exist(videosDir, 'dir')
     mkdir(videosDir);
 end
+
+COMTrajFig = figArray(1);
+linearStateFig = figArray(2);
+angularStateFig = figArray(3);
+jointPositionFig = figArray(4);
+jointVelocityFig = figArray(5);
+jointEffortFig = figArray(6);
+footPositionFig = figArray(7);
+footVelocityFig = figArray(8);
 
 % Only save if requested
 % Copy the bag
@@ -37,3 +46,9 @@ saveas(jointVelocityFig, [figuresDir, trialName, '_joint_velocities'], 'png');
 saveas(jointEffortFig, [figuresDir, trialName, '_joint_efforts'], 'fig');
 saveas(jointEffortFig, [figuresDir, trialName, '_joint_efforts'], 'pdf');
 saveas(jointEffortFig, [figuresDir, trialName, '_joint_efforts'], 'png');
+saveas(footPositionFig, [figuresDir, trialName, '_foot_positions'], 'fig');
+saveas(footPositionFig, [figuresDir, trialName, '_foot_positions'], 'pdf');
+saveas(footPositionFig, [figuresDir, trialName, '_foot_positions'], 'png');
+saveas(footVelocityFig, [figuresDir, trialName, '_foot_velocities'], 'fig');
+saveas(footVelocityFig, [figuresDir, trialName, '_foot_velocities'], 'pdf');
+saveas(footVelocityFig, [figuresDir, trialName, '_foot_velocities'], 'png');

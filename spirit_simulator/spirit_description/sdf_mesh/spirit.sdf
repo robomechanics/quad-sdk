@@ -59,7 +59,7 @@ SOFTWARE.
         </surface>
       </collision>
       <visual name='body_visual'>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose frame=''>0.03 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
 	       	  <uri>model:///meshes/Spirit40_Body_Mesh_transformed.stl</uri>
