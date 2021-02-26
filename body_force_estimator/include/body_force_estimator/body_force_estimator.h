@@ -31,6 +31,11 @@ class BodyForceEstimator {
     void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 
     /**
+     * @brief Compute the momentum observer external force estimation update.
+     */
+    void update();
+
+    /**
      * @brief Publish body force force estimates
      */
     void publishBodyForce();
@@ -46,6 +51,14 @@ class BodyForceEstimator {
 
     /// Update rate for sending and receiving data;
     double update_rate_;
+
+private:
+    // External torque estimate
+    double r[12];
+
+    // Robot state estimate
+    spirit_msgs::RobotState::ConstPtr last_state_msg_;
+    //sensor_msgs::JointState::ConstPtr last_state_msg_;
 };
 
 #endif // BODY_FORCE_ESTIMATOR_H
