@@ -9,6 +9,7 @@
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/RobotStateTrajectory.h>
 #include <mpc_controller/quadruped_mpc.h>
+#include <spirit_utils/ros_utils.h>
 
 //! MPC controller ROS node
 /*!
@@ -79,8 +80,8 @@ private:
 	/// Update rate for sending and receiving data;
 	double update_rate_;
 
-  /// Linear MPC object
-  std::shared_ptr<QuadrupedMPC> mpc;
+  /// Quadruped MPC object
+  std::shared_ptr<QuadrupedMPC> quad_mpc_;
 
 	/// Most recent robot plan
 	spirit_msgs::RobotStateTrajectory last_plan_msg_;

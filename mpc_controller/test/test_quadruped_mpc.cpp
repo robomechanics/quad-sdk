@@ -70,7 +70,7 @@ TEST(TestUseCase, quadVariable) {
   for (int i = 0; i < N+1; ++i) {
     Q_vec.at(i) = Qx;
     ref_traj.col(i) = initial_state;
-    //ref_traj(0,i) = 0.03*i; // x ramp
+    ref_traj(0,i) = 0.03*i; // x ramp
     ref_traj(1,i) = i > N/2 ? 0.2 : 0; // y step
     ref_traj(2,i) = 0.25 + 0.1*sin(i/2.0); // z sine
     ref_traj(4,i) = 0.3*cos(i/3.0);
@@ -132,7 +132,7 @@ TEST(TestUseCase, quadVariable) {
   } 
 
   // Plot everything
-  /*
+  
   plt::figure();
   plt::suptitle("Position Tracking");
   const char* pos_names[6] = {"x","y","z","roll","pitch","yaw"};
@@ -142,7 +142,7 @@ TEST(TestUseCase, quadVariable) {
     plt::plot(state_ref.at(i));
     plt::title(pos_names[i]);
   }
-  //plt::save("/home/nflowers/Desktop/cartesian_mpc.png");
+  plt::save("/home/nflowers/Desktop/position_mpc.png");
 
   plt::figure();
   plt::suptitle("Velocity Tracking");
@@ -153,6 +153,7 @@ TEST(TestUseCase, quadVariable) {
     plt::plot(state_ref.at(i+6));
     plt::title(vel_names[i]);
   }
+  plt::save("/home/nflowers/Desktop/velocity_mpc.png");
 
   plt::figure();
   plt::suptitle("Control Efforts");
@@ -166,11 +167,12 @@ TEST(TestUseCase, quadVariable) {
     plt::legend();
     plt::title(control_names[i]);
   }
+  plt::save("/home/nflowers/Desktop/control_mpc.png");
 
 
   plt::show();
   plt::pause(1000);
-  */
+  
 
 }
 

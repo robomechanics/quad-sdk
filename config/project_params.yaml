@@ -32,6 +32,16 @@ topics:
     
 mpc_controller:
   update_rate: 50
+  body_mass: 11.5
+  body_ixx: 0.1
+  body_iyy: 0.2
+  body_izz: 0.2
+  horizon_length: 10
+  timestep: 0.05
+  state_weights: [ 1000000.0,1000000.0,50000000.0,100000.0,100000.0,10000.0,1.0,1.0,1.0,1.0,1.0,100.0 ]
+  control_weights: [1.0, 1.0, 1.0] #fx,fy,fz
+  state_lower_bound: [-100,-100, 0.1,-0.785,-0.785,-10,-5,-5,-2,-3.14,-3.14,-3.14]
+  state_upper_bound: [ 100, 100, 0.4, 0.785, 0.785, 10, 5, 5, 2, 3.14, 3.14, 3.14]
   
 ekf_estimator:
   joint_state_max_time: 20 # Milliseconds until we disregard last joint state message
