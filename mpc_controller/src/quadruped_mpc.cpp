@@ -87,11 +87,11 @@ void QuadrupedMPC::update_weights(const std::vector<Eigen::MatrixXd> &Q,
 }
 
 void QuadrupedMPC::update_dynamics(const Eigen::MatrixXd &ref_traj,
-                                const std::vector<std::vector<double> > &foot_positions) {
+                                const Eigen::MatrixXd &foot_positions) { // N x 12
   assert(dt_set_);
   assert(mass_properties_set_);
-  assert(foot_positions.size() == N_);
-  assert(foot_positions.front().size() == 12);
+  assert(foot_positions.rows() == N_);
+  assert(foot_positions.cols() == 12);
 
   // Create fixed components of dynamics matrices
   Eigen::MatrixXd Ad = Eigen::MatrixXd::Zero(nx_,nx_);
@@ -133,9 +133,9 @@ void QuadrupedMPC::update_dynamics(const Eigen::MatrixXd &ref_traj,
 
     // Update our foot positions
     for (int j = 0; j < 4; ++j) {
-      foot_pos_hat << 0, -foot_positions.at(i).at(3*j+2),foot_positions.at(i).at(3*j+1),
-                      foot_positions.at(i).at(3*j+2), 0, -foot_positions.at(i).at(3*j+0),
-                      -foot_positions.at(i).at(3*j+1), foot_positions.at(i).at(3*j+0), 0;
+      foot_pos_hat << 0, -foot_positions(i,3*j+2),foot_positions(i,3*j+1),
+                      foot_positions(i,3*j+2), 0, -foot_positions(i,3*j+0),
+                      -foot_positions(i,3*j+1), foot_positions(i,3*j+0), 0;
       Bdi.block(9,3*j,3,3) = Iw_inv * foot_pos_hat * dt_;//Eigen::Matrix3d::Zero();
     }
 

@@ -40,8 +40,11 @@ mpc_controller:
   timestep: 0.05
   state_weights: [ 1000000.0,1000000.0,50000000.0,100000.0,100000.0,10000.0,1.0,1.0,1.0,1.0,1.0,100.0 ]
   control_weights: [1.0, 1.0, 1.0] #fx,fy,fz
-  state_lower_bound: [-100,-100, 0.1,-0.785,-0.785,-10,-5,-5,-2,-3.14,-3.14,-3.14]
-  state_upper_bound: [ 100, 100, 0.4, 0.785, 0.785, 10, 5, 5, 2, 3.14, 3.14, 3.14]
+  state_lower_bound: [-100,-100, 0.15,-0.785,-0.785,-10,-5,-5,-2,-3.14,-3.14,-3.14]
+  state_upper_bound: [ 100, 100, 0.38, 0.785, 0.785, 10, 5, 5, 2, 3.14, 3.14, 3.14]
+  friction_mu: 0.6
+  normal_lo: 3
+  normal_hi: 70
   
 ekf_estimator:
   joint_state_max_time: 20 # Milliseconds until we disregard last joint state message
@@ -137,6 +140,6 @@ visualization:
 
 trajectory_publisher:
   update_rate: 40
-  interp_dt: 0.02
+  interp_dt: 0.05 # has to be same as mpc controller
   playback_speed: 1
   traj_source: topic

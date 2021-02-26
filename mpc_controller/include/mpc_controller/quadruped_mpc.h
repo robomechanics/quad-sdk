@@ -53,7 +53,7 @@ public:
    * @param[in] foot_positions Vector foot positions (fx1 fy1 fz1 fx2 ...) at each tstep
    */
   void update_dynamics(const Eigen::MatrixXd &ref_traj,
-                       const std::vector<std::vector<double> > &foot_positions);
+                       const Eigen::MatrixXd &foot_positions);
 
    /**
    * @brief Update the footstep contact sequence and normal force bounds

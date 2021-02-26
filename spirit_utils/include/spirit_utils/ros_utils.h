@@ -13,7 +13,7 @@ namespace spirit_utils{
    */
   inline double getROSMessageAgeInMs(std_msgs::Header header, ros::Time t_compare)
   {
-    return (header.stamp - t_compare).toSec()*1000.0;
+    return (t_compare - header.stamp).toSec()*1000.0;
   }
 
   /**

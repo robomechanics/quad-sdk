@@ -54,10 +54,11 @@ TEST(TestUseCase, quadVariable) {
   const double body_w = 0.3;
 
   // x1 y1 z1, x2 y2, z2 ... 
-  std::vector<double> foot_position = {-body_w/2,body_l/2,-0.25,
-                                        -body_w/2,-body_l/2,-0.25,
-                                        body_w/2,body_l/2,-0.25,
-                                        body_w/2,-body_l/2,-0.25};
+  Eigen::VectorXd foot_position(12);
+  foot_position << -body_w/2,body_l/2,-0.25,
+                   -body_w/2,-body_l/2,-0.25,
+                    body_w/2,body_l/2,-0.25,
+                    body_w/2,-body_l/2,-0.25;
 
   std::vector<Eigen::MatrixXd> Q_vec(N+1);
   std::vector<Eigen::MatrixXd> U_vec(N);
@@ -77,11 +78,11 @@ TEST(TestUseCase, quadVariable) {
     ref_traj(5,i) = 0.2*sin(i/3.0);
   }
 
-  std::vector<std::vector<double>> foot_positions(N);
+  Eigen::MatrixXd foot_positions(N,12);
   for (int i = 0; i < N; ++i) {
     U_vec.at(i) = Ru;
     contact_sequences.at(i) = {true,true,true,true};
-    foot_positions.at(i) = foot_position;
+    foot_positions.row(i) = foot_position;
   }
 
   double mu = 0.6;
