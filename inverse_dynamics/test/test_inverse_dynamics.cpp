@@ -3,7 +3,7 @@
 
 #include "inverse_dynamics/inverse_dynamics.h"
 
-TEST(InverseDynamicsTest, testTrue) {
+TEST(InverseDynamics, testTrue) {
   ros::NodeHandle nh;
   InverseDynamics inverse_dynamics(nh);
   EXPECT_EQ(1 + 1, 2);

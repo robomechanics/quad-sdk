@@ -3,7 +3,7 @@
 
 namespace plt = matplotlibcpp;
 
-inverseDynamics::inverseDynamics(ros::NodeHandle nh) {
+InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   nh.param<double>("mpc_controller/update_rate", update_rate_, 100);
 	nh_ = nh;
 
@@ -16,10 +16,10 @@ inverseDynamics::inverseDynamics(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh_,"topics/state/trajectory",trajectory_topic);
 
   // Setup pubs and subs
-  // control_input_sub_ = nh_.subscribe(control_input_topic,1,&inverseDynamics::controlInputCallback, this);
-  robot_state_sub_= nh_.subscribe(robot_state_topic,1,&inverseDynamics::robotStateCallback, this);
-  trajectory_sub_ = nh_.subscribe(trajectory_topic,1,&inverseDynamics::trajectoryCallback, this);
-  control_mode_sub_ = nh_.subscribe(control_mode_topic,1,&inverseDynamics::controlModeCallback, this);
+  // control_input_sub_ = nh_.subscribe(control_input_topic,1,&InverseDynamics::controlInputCallback, this);
+  robot_state_sub_= nh_.subscribe(robot_state_topic,1,&InverseDynamics::robotStateCallback, this);
+  trajectory_sub_ = nh_.subscribe(trajectory_topic,1,&InverseDynamics::trajectoryCallback, this);
+  control_mode_sub_ = nh_.subscribe(control_mode_topic,1,&InverseDynamics::controlModeCallback, this);
   leg_command_array_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_command_array_topic,1);
 
   // Start standing
@@ -28,29 +28,29 @@ inverseDynamics::inverseDynamics(ros::NodeHandle nh) {
   step_number = 0;
 }
 
-void inverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
+void InverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
   if (0 <= msg->data && msg->data <= 2)
   {
     control_mode_ = msg->data;
   }
 }
 
-// void inverseDynamics::controlInputCallback(const spirit_msgs::ControlInput::ConstPtr& msg) {
+// void InverseDynamics::controlInputCallback(const spirit_msgs::ControlInput::ConstPtr& msg) {
 //   // ROS_INFO("In controlInputCallback");
 //   last_control_input_msg_ = *msg;
 // }
 
-void inverseDynamics::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
+void InverseDynamics::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
   // ROS_INFO("In robotStateCallback");
   last_robot_state_msg_ = *msg;
 }
 
-void inverseDynamics::trajectoryCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
+void InverseDynamics::trajectoryCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
   // ROS_INFO("In footPlanContinuousCallback");
   last_trajectory_msg_ = *msg;
 }
 
-void inverseDynamics::publishLegCommandArray() {
+void InverseDynamics::publishLegCommandArray() {
 
   if (last_robot_state_msg_.joints.position.size() == 0)
     return;
@@ -65,7 +65,7 @@ void inverseDynamics::publishLegCommandArray() {
   //   math_utils::ikRobotState(last_robot_state_msg_.body, last_trajectory_msg_.feet, last_trajectory_msg_.joints);
   // }
 
-  // ROS_INFO("In inverseDynamics");
+  // ROS_INFO("In InverseDynamics");
   spirit_msgs::LegCommandArray msg;
   msg.leg_commands.resize(4);
 
@@ -352,7 +352,7 @@ void inverseDynamics::publishLegCommandArray() {
   msg.header.stamp = ros::Time::now();
   leg_command_array_pub_.publish(msg);
 }
-void inverseDynamics::spin() {
+void InverseDynamics::spin() {
   ros::Rate r(update_rate_);
   while (ros::ok()) {
 

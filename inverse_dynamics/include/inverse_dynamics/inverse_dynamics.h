@@ -22,16 +22,16 @@
 
 //! Implements inverse dynamics
 /*!
-   inverseDynamics implements inverse dynamics logic. It should expose a constructor that does any initialization required and an update method called at some frequency.
+   InverseDynamics implements inverse dynamics logic. It should expose a constructor that does any initialization required and an update method called at some frequency.
 */
-class inverseDynamics {
+class InverseDynamics {
   public:
 	/**
-	 * @brief Constructor for inverseDynamics
+	 * @brief Constructor for InverseDynamics
 	 * @param[in] nh ROS NodeHandle to publish and subscribe from
-	 * @return Constructed object of type inverseDynamics
+	 * @return Constructed object of type InverseDynamics
 	 */
-	inverseDynamics(ros::NodeHandle nh);
+	InverseDynamics(ros::NodeHandle nh);
 	/**
 	 * @brief Calls ros spinOnce and pubs data at set frequency
 	 */

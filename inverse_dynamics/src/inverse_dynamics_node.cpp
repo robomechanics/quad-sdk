@@ -7,7 +7,7 @@ int main(int argc, char** argv) {
   ros::init(argc, argv, "inverse_dynamics_node");
   ros::NodeHandle nh;
 
-  inverseDynamics inverse_dynamics(nh);
+  InverseDynamics inverse_dynamics(nh);
   inverse_dynamics.spin();
 
   return 0;
