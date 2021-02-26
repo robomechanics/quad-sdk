@@ -65,6 +65,7 @@
   <exec_depend>eigen</exec_depend>
   <exec_depend>spirit_msgs</exec_depend>
   <exec_depend>spirit_utils</exec_depend>
+  <depend>eigen_conversions</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

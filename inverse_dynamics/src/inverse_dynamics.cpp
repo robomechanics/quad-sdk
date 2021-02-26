@@ -71,7 +71,7 @@ void inverseDynamics::publishLegCommandArray() {
 
   static const int testingValue = 0;
 
-  static const std::vector<double> stand_joint_angles_{0,0.7,1.2};
+  static const std::vector<double> stand_joint_angles_{0,0.76,2*0.76};
   static const std::vector<double> stand_kp_{50,50,50};
   static const std::vector<double> stand_kd_{2,2,2};
 
@@ -81,9 +81,25 @@ void inverseDynamics::publishLegCommandArray() {
   static const std::vector<double> walk_kp_{100,100,100};
   static const std::vector<double> walk_kd_{2,2,2};
 
-  Eigen::Vector3f grf, tau0, tau1, tau2, tau3;
-  grf << 0, 0, 30;
-  // std::cout << grf << std::endl;
+  Eigen::Vector3d grf, grf_des, kp_grf, kd_grf;
+  Eigen::Vector3d body_pos, body_vel, body_pos_des, body_vel_des, body_pos_error, body_vel_error;
+  Eigen::Vector3f tau0, tau1, tau2, tau3, dq0, dq1, dq2, dq3, df0, df1, df2, df3;
+  grf_des << 0, 0, 0.5*11.5*9.81;
+  kp_grf << 400.0, 300.0, 200.0;
+  kd_grf << 20.0, 10.0, 10.0;
+
+  tf::pointMsgToEigen(last_robot_state_msg_.body.pose.pose.position, body_pos);
+  tf::vectorMsgToEigen(last_robot_state_msg_.body.twist.twist.linear, body_vel);
+  tf::pointMsgToEigen(last_trajectory_msg_.body.pose.pose.position, body_pos_des);
+  tf::vectorMsgToEigen(last_trajectory_msg_.body.twist.twist.linear, body_vel_des);
+
+  body_pos_error = body_pos_des.array() - body_pos.array();
+  body_vel_error = body_vel_des.array() - body_vel.array();
+
+  grf = grf_des.array() + kp_grf.array()*body_pos_error.array() + 
+    kd_grf.array()*body_vel_error.array();
+  
+  // std::cout << grf_des << std::endl;
 
   double velocities[12];
 
@@ -178,10 +194,10 @@ void inverseDynamics::publishLegCommandArray() {
                    last_robot_state_msg_.body.twist.twist.linear.z, last_robot_state_msg_.body.twist.twist.angular.x,
                    last_robot_state_msg_.body.twist.twist.angular.y, last_robot_state_msg_.body.twist.twist.angular.z; 
 
-  tau0 = -foot_jacobian0.transpose() * grf;
-  tau1 = -foot_jacobian1.transpose() * grf;
-  tau2 = -foot_jacobian2.transpose() * grf;
-  tau3 = -foot_jacobian3.transpose() * grf;
+  tau0 = -foot_jacobian0.transpose() * grf.cast<float>();
+  tau1 = -foot_jacobian1.transpose() * grf.cast<float>();
+  tau2 = -foot_jacobian2.transpose() * grf.cast<float>();
+  tau3 = -foot_jacobian3.transpose() * grf.cast<float>();
 
   footVelocity = jacobian*stateVelocity;
 
@@ -276,14 +292,27 @@ void inverseDynamics::publishLegCommandArray() {
             msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
             msg.leg_commands.at(i).motor_commands.at(j).kp = walk_kp_.at(j);
             msg.leg_commands.at(i).motor_commands.at(j).kd = walk_kd_.at(j);
+            switch (i) {
+              case 0:
+                msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tau0[j];
+                break;
+              case 1:
+                msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tau1[j];
+                break;
+              case 2:
+                msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tau2[j];
+                break;
+              case 3:
+                msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tau3[j];
+                break;
+            }
           } else {
             msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = stand_joint_angles_.at(j);
             msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
             msg.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
             msg.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
+            msg.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
           }
-
-          msg.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
         }
       }
       break;

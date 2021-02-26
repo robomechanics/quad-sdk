@@ -10,9 +10,9 @@ if nargin>0
     bSave = true;
 else
     % Specify the trial name and settings
-    trialName = 'PD_Control_GBP_Straight_Walk_2021-02-24';
-    bAnimate = false;
-    bSave = false;
+    trialName = 'GBP_ID_ffGRF_2021-02-26';
+    bAnimate = true;
+    bSave = true;
 end
 
 % Check that this is the right current directory otherwise paths won't work
