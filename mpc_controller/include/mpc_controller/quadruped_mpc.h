@@ -152,6 +152,9 @@ private:
   /// Robot body mass
   double m_;
 
+  /// Robot toe friction coefficient
+  double mu_;
+
   /// Robot inertia matrix in body frame
   Eigen::Matrix3d Ib_;
 

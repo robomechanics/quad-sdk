@@ -123,7 +123,7 @@ TEST(TestUseCase, quadVariable) {
     }
   } 
 
-  // Accumulate states in stl form for plotting
+  // Accumulate controls in stl form for plotting
   std::vector<std::vector<double>> control_opt(Nu);
   for (int i = 0; i < Nu; ++i) {
     control_opt.at(i).resize(N-1);

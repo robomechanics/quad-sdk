@@ -12,6 +12,8 @@
 #include <mpc_controller/quadruped_mpc.h>
 #include <spirit_utils/ros_utils.h>
 #include <spirit_utils/kinematics.h>
+#include "spirit_utils/matplotlibcpp.h"
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 //! MPC controller ROS node
 /*!
@@ -33,10 +35,16 @@ class MPCController {
   
 private:
 	/**
+   * @brief Callback function to handle new plans
+   * @param[in] msg Robot state trajectory message
+   */
+  void robotPlanCallback(const spirit_msgs::RobotStateTrajectory::ConstPtr& msg);
+
+  /**
    * @brief Callback function to handle new state estimates
    * @param[in] State estimate message contining position and velocity for each joint and robot body
    */
-  void robotPlanCallback(const spirit_msgs::RobotStateTrajectory::ConstPtr& msg);
+  void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 
   Eigen::VectorXd state_to_eigen(spirit_msgs::RobotState robot_state);
 
@@ -57,8 +65,11 @@ private:
    */
   void publishGRFArray();
 
-	/// ROS subscriber for the state estimate
+	/// ROS subscriber for incoming plans
 	ros::Subscriber robot_state_traj_sub_;
+
+  /// ROS Subscriber for incoming states
+  ros::Subscriber robot_state_sub_;
 
 	/// ROS publisher for control input
 	ros::Publisher grf_array_pub_;
@@ -79,7 +90,7 @@ private:
 	spirit_msgs::RobotStateTrajectory::ConstPtr last_plan_msg_;
 
   /// Current state (ground truth or estimate)
-  spirit_msgs::RobotState cur_state_;
+  Eigen::VectorXd cur_state_;
 
   /// Minimum normal force in contact phase
   double normal_lo_;
@@ -98,6 +109,12 @@ private:
 
   /// Number of controls
   const int Nu_ = 13;
+
+  /// Number of legs
+  const int num_legs_ = 4;
+
+  /// Number of joints per leg
+  const int num_joints_per_leg_ = 3;
 
   /// Spirit Kinematics class
   std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;

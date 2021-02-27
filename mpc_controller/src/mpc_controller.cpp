@@ -1,19 +1,21 @@
 #include "mpc_controller/mpc_controller.h"
 
+namespace plt = matplotlibcpp;
+
 MPCController::MPCController(ros::NodeHandle nh) {
   nh.param<double>("mpc_controller/update_rate", update_rate_, 100);
 	nh_ = nh;
 
     // Load rosparams from parameter server
-  std::string robot_state_traj_topic, grf_array_topic,foot_plan_discrete_topic,body_plan_topic, discrete_body_plan_topic;
+  std::string robot_state_traj_topic,robot_state_topic,grf_array_topic;
   spirit_utils::loadROSParam(nh, "topics/trajectory", robot_state_traj_topic);
+  spirit_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
   spirit_utils::loadROSParam(nh, "topics/control/grfs", grf_array_topic);
   spirit_utils::loadROSParam(nh, "map_frame", map_frame_);
 
-  spirit_utils::loadROSParamDefault(nh, "mpc_controller/update_rate", update_rate_, 50.0);
-
   // Load MPC/system parameters
   spirit_utils::loadROSParam(nh, "mpc_controller/horizon_length",N_);
+  spirit_utils::loadROSParam(nh, "mpc_controller/update_rate", update_rate_);
   
   double m,Ixx,Iyy,Izz,mu;
   spirit_utils::loadROSParam(nh, "trajectory_publisher/interp_dt",dt_);
@@ -76,6 +78,7 @@ MPCController::MPCController(ros::NodeHandle nh) {
 
   // Setup pubs and subs
   robot_state_traj_sub_ = nh_.subscribe(robot_state_traj_topic,1,&MPCController::robotPlanCallback, this);
+  robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&MPCController::robotStateCallback,this);
   grf_array_pub_ = nh_.advertise<spirit_msgs::GRFArray>(grf_array_topic,1);
   ROS_INFO("MPC Controller setup, waiting for callbacks");
 }
@@ -84,8 +87,39 @@ void MPCController::robotPlanCallback(const spirit_msgs::RobotStateTrajectory::C
   last_plan_msg_ = msg;
 }
 
-Eigen::VectorXd MPCController::state_to_eigen(spirit_msgs::RobotState robot_state) {
+void MPCController::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
+  cur_state_ = this->state_to_eigen(*msg);
+}
 
+Eigen::VectorXd MPCController::state_to_eigen(spirit_msgs::RobotState robot_state) {
+  Eigen::VectorXd state(Nx_);
+
+  // Position
+  state(0) = robot_state.body.pose.pose.position.x;
+  state(1) = robot_state.body.pose.pose.position.y;
+  state(2) = robot_state.body.pose.pose.position.z;
+
+  // Orientation
+  tf2::Quaternion quat;
+  tf2::convert(robot_state.body.pose.pose.orientation, quat);
+  double r,p,y;
+  tf2::Matrix3x3 m(quat);
+  m.getRPY(r,p,y);
+  state(3) = r;
+  state(4) = p;
+  state(5) = y;
+
+  // Linear Velocity
+  state(6) = robot_state.body.twist.twist.linear.x;
+  state(7) = robot_state.body.twist.twist.linear.y;
+  state(8) = robot_state.body.twist.twist.linear.z;
+
+  // Angular Velocity
+  state(9) = robot_state.body.twist.twist.angular.x;
+  state(10) = robot_state.body.twist.twist.angular.y;
+  state(11) = robot_state.body.twist.twist.angular.z;
+
+  return state;
 }
 
 void MPCController::extractMPCTrajectory(int start_idx,
@@ -93,40 +127,44 @@ void MPCController::extractMPCTrajectory(int start_idx,
                                          Eigen::MatrixXd &foot_positions, 
                                          Eigen::MatrixXd &ref_traj) {
   int plan_length = last_plan_msg_->states.size();
-
   contact_sequences.resize(N_);
-  foot_positions = Eigen::MatrixXd::Zero(N_,12);
-  ref_traj = Eigen::MatrixXd::Zero(N_+1,Nx_);
 
-  ref_traj.row(0) = this->state_to_eigen(cur_state_);
+  foot_positions = Eigen::MatrixXd::Zero(N_,12);
+  ref_traj = Eigen::MatrixXd::Zero(Nx_,N_+1);
+
+  ref_traj.col(0) = cur_state_;
 
   spirit_msgs::RobotState robot_state;
   Eigen::Vector3d foot_pos_body;
   sensor_msgs::JointState joint_state;
-  
-  for (int i = 0; i <= N_; ++i) {
+
+  for (int i = 0; i < N_; ++i) {
     if (start_idx + i >= plan_length) break;
 
     // Collect state at correct index
     robot_state = last_plan_msg_->states.at(start_idx+i);
 
     // Load contact sequence and foot positions
-    contact_sequences.at(i).resize(4);
+    contact_sequences.at(i).resize(num_legs_);
     std::vector<double> joint_states = robot_state.joints.position;
-    for (int leg_idx = 0; leg_idx < 4; ++leg_idx) {
+
+    for (int leg_idx = 0; leg_idx < num_legs_; ++leg_idx) {
       contact_sequences.at(i).at(leg_idx) = robot_state.feet.feet.at(leg_idx).contact;
 
       Eigen::Vector3d joint_pos;
-      for (int joint_idx = 0; joint_idx < 3; ++joint_idx){
-        joint_pos(joint_idx) = joint_states.at(leg_idx*4+joint_idx);
+      for (int joint_idx = 0; joint_idx < num_joints_per_leg_; ++joint_idx){
+        joint_pos(joint_idx) = joint_states.at(leg_idx*num_joints_per_leg_+joint_idx);
       }
+
       kinematics_->bodyToFootFK(leg_idx, joint_pos, foot_pos_body);
-      foot_positions.block(i,leg_idx*4,1,3) = foot_pos_body;
-
+      
+      // This should be replaced with a block operation but for now it'll do
+      foot_positions(i,leg_idx*num_joints_per_leg_+0) = foot_pos_body(0);
+      foot_positions(i,leg_idx*num_joints_per_leg_+1) = foot_pos_body(1); 
+      foot_positions(i,leg_idx*num_joints_per_leg_+2) = foot_pos_body(2); 
     }
-
     // Load state into reference trajectory
-    ref_traj.row(i+1) = this->state_to_eigen(robot_state); 
+    ref_traj.col(i+1) = this->state_to_eigen(robot_state);
   }
 
   // If we ran off the end of the plan, hold last position, zero out last velocity
@@ -143,6 +181,12 @@ void MPCController::publishGRFArray() {
     ROS_WARN_THROTTLE(0.5, "No robot trajectory plan in MPCController, exiting");
     return;
   }
+
+  if (last_plan_msg_->states.size() == 0) {
+    ROS_WARN_THROTTLE(0.5, "Received robot trajectory with no states in MPCController, exiting");
+    return;
+  }
+
   double last_plan_age_seconds = spirit_utils::getROSMessageAgeInMs(last_plan_msg_->header)/1000.0;
 
   //ROS_INFO("Last plan age (s): %f    Dt: %f", last_plan_age_seconds, dt_);
@@ -154,8 +198,39 @@ void MPCController::publishGRFArray() {
   Eigen::MatrixXd ref_traj;
   this->extractMPCTrajectory(start_idx, contact_sequences, foot_positions, ref_traj);
 
-  spirit_msgs::GRFArray msg;
+  // Pass inputs into solver and solve
+  quad_mpc_->update_contact(contact_sequences, normal_lo_, normal_hi_);
+  quad_mpc_->update_dynamics(ref_traj,foot_positions);
 
+  Eigen::MatrixXd x_out;
+  quad_mpc_->solve(cur_state_, ref_traj, x_out);
+
+  double f_val; // currently not getting populated
+  Eigen::MatrixXd opt_traj, control_traj;
+  quad_mpc_->get_output(x_out, opt_traj, control_traj, f_val);
+
+  /////////////////////////////////////////////
+  /*std::cout << "Reference trajectory: " << std::endl << ref_traj << std::endl;
+  std::cout << "Foot Placements in body frame: " << std::endl << foot_positions << std::endl;
+  //std::cout << "Contact Sequences: " << contact_sequences << std::endl;
+
+  std::cout << "Optimized trajectory: " << std::endl << opt_traj << std::endl;
+  std::cout << "Control trajectory: " << std::endl << control_traj << std::endl;*/
+
+  // Copy normal forces into GRFArray
+  spirit_msgs::GRFArray msg; // control traj nu x n
+  msg.points.resize(num_legs_);
+  msg.vectors.resize(num_legs_);
+  for (int i = 0; i < num_legs_; ++i) {
+    msg.points[i].x = foot_positions(0,num_joints_per_leg_*i);
+    msg.points[i].y = foot_positions(0,num_joints_per_leg_*i+1);
+    msg.points[i].z = foot_positions(0,num_joints_per_leg_*i+2);
+
+    msg.vectors[i].x = control_traj(num_joints_per_leg_*i,0);
+    msg.vectors[i].y = control_traj(num_joints_per_leg_*i+1,0);
+    msg.vectors[i].z = control_traj(num_joints_per_leg_*i+2,0);
+  }
+  
   msg.header.stamp = ros::Time::now();
   grf_array_pub_.publish(msg);
 }

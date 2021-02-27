@@ -5,10 +5,10 @@
 #include <chrono>
 
 // Comment to remove OSQP printing
-#define PRINT_DEBUG 
+//#define PRINT_DEBUG 
 
 // Comment to remove timing prints
-#define PRINT_TIMING
+//#define PRINT_TIMING
 
 using namespace std::chrono;
 
@@ -43,7 +43,8 @@ void QuadrupedMPC::setTimestep(const double dt) {
 
 void QuadrupedMPC::update_friction(const double mu) {
   assert(0 <= mu && mu <= 1);
-
+  mu_ = mu;
+  
   A_con_dense_ = Eigen::MatrixXd::Zero(num_contact_constraints_, num_control_vars_);
 
   // Friction cone for one leg
@@ -105,8 +106,8 @@ void QuadrupedMPC::update_dynamics(const Eigen::MatrixXd &ref_traj,
   }
   Bd(8,12) = -g_*dt_; // gravity acts downwards here
 
-  std::cout << "Ad: \n" << Ad << std::endl;
-  std::cout << "Bd: \n" << Bd << std::endl;
+  //std::cout << "Ad: \n" << Ad << std::endl;
+  //std::cout << "Bd: \n" << Bd << std::endl;
 
   // Reset dynamics matrix (not strictly necessary but good practice)
   A_dyn_dense_ = Eigen::MatrixXd::Zero(num_dyn_constraints_,num_decision_vars_);
@@ -152,11 +153,9 @@ void QuadrupedMPC::update_contact(const std::vector<std::vector<bool>> contact_s
   assert(contact_sequence.front().size() == 4);
 
   Eigen::VectorXd lo_contact(num_constraints_per_leg_);
-  lo_contact << -100,0,-100,0,fmin;
-  //lo_contact << -100,-100,-100,-100,fmin;
+  lo_contact << -2*mu_*fmax,0,-2*mu_*fmax,0,fmin;
   Eigen::VectorXd hi_contact(num_constraints_per_leg_);
-  hi_contact << 0,100,0,100,fmax;
-  //hi_contact << 100,100,100,100,fmax;
+  hi_contact << 0,2*mu_*fmax,0,2*mu_*fmax,fmax;
 
   b_contact_lo_.setZero();
   b_contact_hi_.setZero();
