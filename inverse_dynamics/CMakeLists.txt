@@ -63,6 +63,6 @@ target_link_libraries(inverse_dynamics_node
 
 ## Google test file for inverse_dynamics library
 catkin_add_gtest(inverse_dynamics_test test/test_inverse_dynamics.cpp)
-target_link_libraries(inverse_dynamics_test ${catkin_LIBRARIES} inverse_dynamics)
+target_link_libraries(inverse_dynamics_test inverse_dynamics ${catkin_LIBRARIES})
 
 

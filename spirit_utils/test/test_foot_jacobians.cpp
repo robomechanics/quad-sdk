@@ -49,7 +49,7 @@ TEST(FootJacobianTest, FootJacobian2) {
   double roll =0,pitch =0,yaw =0,x =0,y =-1,z =0;
     double states[] = {q00, q01, q02, q10, q11, q12, q20, q21, q22, q30, q31, q32, x, y, z, roll, pitch, yaw};
 
-    Eigen::MatrixXf foot_jacobian0;
+    Eigen::MatrixXf foot_jacobian0(3,3);
 
     // Call the foot jacobian calculation
     spirit_utils::calc_foot_jacobian2(states,foot_jacobian0);

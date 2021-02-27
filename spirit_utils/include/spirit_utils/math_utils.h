@@ -158,6 +158,21 @@ namespace math_utils {
   void ikRobotState(spirit_msgs::RobotState &state);
 
   /**
+   * @brief Perform FK to compute a foot state message corresponding to body and joint messages
+   * @param[in] body_state message of body state
+   * @param[in] joint_state message of the corresponding joint state
+   * @param[out] multi_foot_state message of state of each foot
+   */
+  void fkRobotState(nav_msgs::Odometry body_state,
+    sensor_msgs::JointState joint_state, spirit_msgs::MultiFootState &multi_foot_state);
+
+  /**
+   * @brief Perform FK and save to the state.feet field
+   * @param[out] state RobotState message to which to add joint data
+   */
+  void fkRobotState(spirit_msgs::RobotState &state);
+
+  /**
    * @brief Obtain the correct int within a parameterized vector of ints
    * @param[in] input_vec Input vector
    * @param[in] output_vec Output vector of ints
