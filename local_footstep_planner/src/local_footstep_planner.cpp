@@ -186,10 +186,8 @@ void LocalFootstepPlanner::updateDiscretePlan() {
         footstep[3] = period_;
       }
 
-      // printf("%5.3f, %5.3f, %5.3f, %5.3f \n", footstep[0],footstep[1], footstep[2], footstep[3]);
-
-      footstep_plan_[j].push_back(footstep);
-      start_index = 1;
+      // footstep_plan_[j].push_back(footstep);
+      // start_index = 1;
     }
 
     // Loop through each gait cycle
