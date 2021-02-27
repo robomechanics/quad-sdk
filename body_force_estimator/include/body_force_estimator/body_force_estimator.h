@@ -5,6 +5,9 @@
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/BodyForceEstimate.h>
 
+// Temporary
+#define USE_SIM 1 // 0 = intended, 1 = Gazebo hack, 2 = old bagfile hack
+
 //! Estimates body contact forces
 /*!
    BodyForceEstimator is a container for all logic used in estimating force from contacts distrbuted across all links of the robot.
@@ -28,7 +31,11 @@ class BodyForceEstimator {
      * @brief Callback function to handle new state estimates
      * @param[in] Robot state message contining position and velocity for each joint and robot body
      */
+    #if USE_SIM > 0
+    void robotStateCallback(const sensor_msgs::JointState::ConstPtr& msg);
+    #else
     void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+    #endif
 
     /**
      * @brief Compute the momentum observer external force estimation update.
@@ -52,13 +59,21 @@ class BodyForceEstimator {
     /// Update rate for sending and receiving data;
     double update_rate_;
 
+    /// Momentum observer gain
+    double K_O_;
+
 private:
     // External torque estimate
-    double r[12];
+    double r_mom[12];
+    // Momentum estimate
+    double p_hat[12];
 
     // Robot state estimate
+    #ifdef USE_SIM
+    sensor_msgs::JointState::ConstPtr last_state_msg_;
+    #else
     spirit_msgs::RobotState::ConstPtr last_state_msg_;
-    //sensor_msgs::JointState::ConstPtr last_state_msg_;
+    #endif
 };
 
 #endif // BODY_FORCE_ESTIMATOR_H
