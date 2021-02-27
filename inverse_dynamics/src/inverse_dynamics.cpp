@@ -1,5 +1,4 @@
 #include "inverse_dynamics/inverse_dynamics.h"
-#include "spirit_utils/matplotlibcpp.h"
 
 namespace plt = matplotlibcpp;
 

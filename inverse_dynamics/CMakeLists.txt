@@ -24,13 +24,13 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(Eigen3 REQUIRED)
 
 catkin_package(
-  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
+  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS}
   CATKIN_DEPENDS roscpp std_msgs spirit_msgs spirit_utils eigen_conversions
   DEPENDS EIGEN3
 )
 
 ###########
-## Build ##
+##  Build ##
 ###########
 
 ## Specify additional locations of header files
