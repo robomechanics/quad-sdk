@@ -1,6 +1,5 @@
 // Include Files
 #include "spirit_utils/foot_jacobians.h"
-#include <cmath>
 
 // Function Definitions
 //
@@ -11,8 +10,8 @@
 //                double foot_jacobian0[9]
 // Return Type  : void
 //
-namespace spirit_utils {
-void calc_foot_jacobian0(const double in1[18], Eigen::MatrixXf& foot_jacobian0)
+
+void spirit_utils::calc_foot_jacobian0(const double in1[18], Eigen::MatrixXf& foot_jacobian0)
 {
   double J0[9];
   double t2;
@@ -104,7 +103,7 @@ void calc_foot_jacobian0(const double in1[18], Eigen::MatrixXf& foot_jacobian0)
                    J0[2], J0[5], J0[8];
 }
 
-void calc_foot_jacobian1(const double in1[18], Eigen::MatrixXf& foot_jacobian1)
+void spirit_utils::calc_foot_jacobian1(const double in1[18], Eigen::MatrixXf& foot_jacobian1)
 {
   double J1[9];
   double t2;
@@ -196,7 +195,7 @@ void calc_foot_jacobian1(const double in1[18], Eigen::MatrixXf& foot_jacobian1)
                      J1[2], J1[5], J1[8];
 }
 
-void calc_foot_jacobian2(const double in1[18], Eigen::MatrixXf& foot_jacobian2)
+void spirit_utils::calc_foot_jacobian2(const double in1[18], Eigen::MatrixXf& foot_jacobian2)
 {
   double J2[9];
   double t2;
@@ -288,7 +287,7 @@ void calc_foot_jacobian2(const double in1[18], Eigen::MatrixXf& foot_jacobian2)
                      J2[2], J2[5], J2[8];
 }
 
-void calc_foot_jacobian3(const double in1[18], Eigen::MatrixXf& foot_jacobian3)
+void spirit_utils::calc_foot_jacobian3(const double in1[18], Eigen::MatrixXf& foot_jacobian3)
 {
   double J3[9];
   double t2;
@@ -380,7 +379,7 @@ void calc_foot_jacobian3(const double in1[18], Eigen::MatrixXf& foot_jacobian3)
                      J3[2], J3[5], J3[8];
 }
 
-void calc_jacobian(const double in1[18], Eigen::MatrixXf& jacobian)
+void spirit_utils::calc_jacobian(const double in1[18], Eigen::MatrixXf& jacobian)
 {
   double A[216];
   double t2;
@@ -720,6 +719,4 @@ void calc_jacobian(const double in1[18], Eigen::MatrixXf& jacobian)
              A[10], A[22], A[34], A[46], A[58], A[70], A[82], A[94], A[106], A[118], A[130], A[142], A[154], A[166], A[178], A[190], A[202], A[214],
              A[11], A[23], A[35], A[47], A[59], A[71], A[83], A[95], A[107], A[119], A[131], A[143], A[155], A[167], A[179], A[191], A[203], A[215];
              
-}
-
 }

@@ -2,8 +2,8 @@
 #define INVERSE_DYNAMICS_H
 
 #include <ros/ros.h>
-// #include <eigen3/Eigen/Eigen>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Eigen>
+// #include <Eigen/Dense>
 #include <spirit_utils/ros_utils.h>
 #include <spirit_utils/foot_jacobians.h>
 #include <spirit_utils/math_utils.h>
@@ -15,6 +15,8 @@
 #include <spirit_msgs/LegCommandArray.h>
 #include <spirit_msgs/MultiFootPlanContinuous.h>
 #include <eigen_conversions/eigen_msg.h>
+#include "spirit_utils/matplotlibcpp.h"
+
 
 #include <cmath>
 #define MATH_PI 3.141592
