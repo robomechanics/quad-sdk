@@ -494,6 +494,8 @@ void math_utils::fkRobotState(nav_msgs::Odometry body_state,
     multi_foot_state.feet[i].velocity.x = 0;
     multi_foot_state.feet[i].velocity.y = 0;
     multi_foot_state.feet[i].velocity.z = 0;
+
+    multi_foot_state.feet[i].header = multi_foot_state.header;
   }
 }
 
