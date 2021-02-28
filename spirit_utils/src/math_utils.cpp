@@ -455,27 +455,19 @@ void math_utils::fkRobotState(nav_msgs::Odometry body_state,
   // If this message is empty set the joint names
 
   int num_feet = 4;
-  if multi_foot_state.feet
-
-  if (joint_state.name.empty()) {
-    joint_state.name = {"8", "0", "1", "9","2", "3", "10", "4","5", "11", "6", "7"};
-  }
-  joint_state.position.clear();
-  joint_state.velocity.clear();
-  joint_state.effort.clear();
+  multi_foot_state.feet.resize(num_feet);
 
   spirit_utils::SpiritKinematics spirit;
 
-  for (int i=0; i < joint_state.feet.size(); i++) {
+  int joint_index = -1;
+  for (int i=0; i < multi_foot_state.feet.size(); i++) {
+    joint_index++;
 
     // Get joint data for indexed leg leg
-    Eigen::Vector3d joint_data
-
-    // Get foot position data
-    Eigen::Vector3d foot_pos;
-    foot_pos[0] = multi_foot_state.feet[i].position.x;
-    foot_pos[1] = multi_foot_state.feet[i].position.y;
-    foot_pos[2] = multi_foot_state.feet[i].position.z;      
+    Eigen::Vector3d leg_joint_state;
+    for (int j=0; j < 3; j++) {
+      leg_joint_state[j] = joint_state.position.at(joint_index);
+    }    
 
     // Get corresponding body plan data
     Eigen::Vector3d body_pos = {body_state.pose.pose.position.x,
@@ -489,24 +481,19 @@ void math_utils::fkRobotState(nav_msgs::Odometry body_state,
     Eigen::Vector3d body_rpy = {roll,pitch,yaw};
 
     // Compute IK to get joint data
-    Eigen::Vector3d leg_joint_state;
-    spirit.legIK(i,body_pos,body_rpy,foot_pos,leg_joint_state);
+    Eigen::Vector3d foot_pos;
+    spirit.legFK(i,body_pos,body_rpy,leg_joint_state,foot_pos);
 
-    // Add to the joint state vector
-    joint_state.position.push_back(leg_joint_state[0]);
-    joint_state.position.push_back(leg_joint_state[1]);
-    joint_state.position.push_back(leg_joint_state[2]);
+    // Add to the foot position vector
+    multi_foot_state.feet[i].position.x = foot_pos[0];
+    multi_foot_state.feet[i].position.y = foot_pos[1];
+    multi_foot_state.feet[i].position.z = foot_pos[2];
 
     // Fill in the other elements with zeros for now (Mike to do)
-    joint_state.velocity.push_back(0.0);
-    joint_state.velocity.push_back(0.0);
-    joint_state.velocity.push_back(0.0);
-
-    joint_state.effort.push_back(0.0);
-    joint_state.effort.push_back(0.0);
-    joint_state.effort.push_back(0.0);
+    multi_foot_state.feet[i].velocity.x = 0;
+    multi_foot_state.feet[i].velocity.y = 0;
+    multi_foot_state.feet[i].velocity.z = 0;
   }
-
 }
 
 void math_utils::fkRobotState(spirit_msgs::RobotState &state) {
