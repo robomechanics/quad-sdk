@@ -87,9 +87,21 @@ private:
 	/// Update rate for sending and receiving data;
 	double update_rate_;
 
-	/// Robot mode (Stand 0, ID Control)
+	/// Robot mode
 	int control_mode_;
 
+	/// Define ids for control modes: Sit
+	const int SIT = 0;
+
+	/// Define ids for control modes: Stand
+	const int STAND = 1;
+
+	/// Define ids for control modes: Sit to stand
+	const int SIT_TO_STAND = 2;
+
+	/// Define ids for control modes: Stand to sit
+	const int STAND_TO_SIT = 3;
+	
 	/// Most recent control input
 	// spirit_msgs::ControlInput last_control_input_msg_;
 
@@ -98,6 +110,12 @@ private:
 
 	/// Most recent trajectory state
 	spirit_msgs::RobotState last_trajectory_msg_;
+
+	/// Duration for sit to stand behavior
+	const double transition_duration_ = 2.0;
+	
+	/// Time at which to start transition
+	ros::Time transition_timestamp_;
 
 	std::vector<double> f0x;
 	std::vector<double> f1x;
