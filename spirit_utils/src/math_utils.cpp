@@ -461,11 +461,12 @@ void math_utils::fkRobotState(nav_msgs::Odometry body_state,
 
   int joint_index = -1;
   for (int i=0; i < multi_foot_state.feet.size(); i++) {
-    joint_index++;
 
     // Get joint data for indexed leg leg
     Eigen::Vector3d leg_joint_state;
+    
     for (int j=0; j < 3; j++) {
+      joint_index++;
       leg_joint_state[j] = joint_state.position.at(joint_index);
     }    
 
