@@ -92,13 +92,13 @@ void InverseDynamics::publishLegCommandArray() {
   static const std::vector<double> stand_joint_angles_{0,0.76,2*0.76};
   static const std::vector<double> sit_joint_angles_{0.0,0.0,0.0};
   static const std::vector<double> stand_kp_{50,50,50};
-  static const std::vector<double> stand_kd_{2,2,2};
+  static const std::vector<double> stand_kd_{1,1,1};
 
   static const std::vector<double> ID_kp_{10,10,10};
   static const std::vector<double> ID_kd_{0.2,0.2,0.2};
 
-  static const std::vector<double> walk_kp_{100,100,100};
-  static const std::vector<double> walk_kd_{2,2,2};
+  static const std::vector<double> walk_kp_{50,50,50};
+  static const std::vector<double> walk_kd_{1,1,1};
 
   Eigen::Vector3d grf, grf_des, kp_grf, kd_grf;
   Eigen::Vector3d body_pos, body_vel, body_pos_des, body_vel_des, body_pos_error, body_vel_error;
