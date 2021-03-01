@@ -46,7 +46,8 @@ private:
    */
   void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 
-  Eigen::VectorXd state_to_eigen(spirit_msgs::RobotState robot_state);
+  
+  Eigen::VectorXd state_to_eigen(spirit_msgs::RobotState robot_state, bool zero_vel=false);
 
   /**
    * @brief Internal function to convert robot state trajectory into MPC useful

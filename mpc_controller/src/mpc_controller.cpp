@@ -91,8 +91,8 @@ void MPCController::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& 
   cur_state_ = this->state_to_eigen(*msg);
 }
 
-Eigen::VectorXd MPCController::state_to_eigen(spirit_msgs::RobotState robot_state) {
-  Eigen::VectorXd state(Nx_);
+Eigen::VectorXd MPCController::state_to_eigen(spirit_msgs::RobotState robot_state, bool zero_vel) {
+  Eigen::VectorXd state = Eigen::VectorXd::Zero(Nx_);
 
   // Position
   state(0) = robot_state.body.pose.pose.position.x;
@@ -109,15 +109,17 @@ Eigen::VectorXd MPCController::state_to_eigen(spirit_msgs::RobotState robot_stat
   state(4) = p;
   state(5) = y;
 
-  // Linear Velocity
-  state(6) = robot_state.body.twist.twist.linear.x;
-  state(7) = robot_state.body.twist.twist.linear.y;
-  state(8) = robot_state.body.twist.twist.linear.z;
+  if (!zero_vel) {
+    // Linear Velocity
+    state(6) = robot_state.body.twist.twist.linear.x;
+    state(7) = robot_state.body.twist.twist.linear.y;
+    state(8) = robot_state.body.twist.twist.linear.z;
 
-  // Angular Velocity
-  state(9) = robot_state.body.twist.twist.angular.x;
-  state(10) = robot_state.body.twist.twist.angular.y;
-  state(11) = robot_state.body.twist.twist.angular.z;
+    // Angular Velocity
+    state(9) = robot_state.body.twist.twist.angular.x;
+    state(10) = robot_state.body.twist.twist.angular.y;
+    state(11) = robot_state.body.twist.twist.angular.z;
+  }
 
   return state;
 }
@@ -138,12 +140,18 @@ void MPCController::extractMPCTrajectory(int start_idx,
   sensor_msgs::JointState joint_state;
 
   int plan_index;
+  bool zero_vel = false;
   for (int i = 0; i < N_; ++i) {
 
-    // Saturate at last state in plane
-    plan_index = std::min(start_idx+i, plan_length-1);
+    // Saturate at last state in plane and zero velocity
+    if (start_idx+i < plan_length) {
+      plan_index = start_idx+i;
+    }
+    else {
+      plan_index = plan_length-1;
+      zero_vel = true;
+    }
 
-    //std::cout << "Plan index: " << plan_index << std::endl;
     // Collect state at correct index
     robot_state = last_plan_msg_->states.at(plan_index);
 
@@ -166,8 +174,8 @@ void MPCController::extractMPCTrajectory(int start_idx,
       foot_positions(i,leg_idx*num_joints_per_leg_+1) = foot_pos_body(1); 
       foot_positions(i,leg_idx*num_joints_per_leg_+2) = foot_pos_body(2); 
     }
-    // Load state into reference trajectory
-    ref_traj.col(i+1) = this->state_to_eigen(robot_state);
+    // Load state into reference trajectory (w/ zero velocity if we're at end of plan)
+    ref_traj.col(i+1) = this->state_to_eigen(robot_state, zero_vel);
   }
 }
 
