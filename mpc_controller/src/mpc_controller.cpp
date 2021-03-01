@@ -131,18 +131,21 @@ void MPCController::extractMPCTrajectory(int start_idx,
 
   foot_positions = Eigen::MatrixXd::Zero(N_,12);
   ref_traj = Eigen::MatrixXd::Zero(Nx_,N_+1);
-
   ref_traj.col(0) = cur_state_;
 
   spirit_msgs::RobotState robot_state;
   Eigen::Vector3d foot_pos_body;
   sensor_msgs::JointState joint_state;
 
+  int plan_index;
   for (int i = 0; i < N_; ++i) {
-    if (start_idx + i >= plan_length) break;
 
+    // Saturate at last state in plane
+    plan_index = std::min(start_idx+i, plan_length-1);
+
+    //std::cout << "Plan index: " << plan_index << std::endl;
     // Collect state at correct index
-    robot_state = last_plan_msg_->states.at(start_idx+i);
+    robot_state = last_plan_msg_->states.at(plan_index);
 
     // Load contact sequence and foot positions
     contact_sequences.at(i).resize(num_legs_);
@@ -166,14 +169,6 @@ void MPCController::extractMPCTrajectory(int start_idx,
     // Load state into reference trajectory
     ref_traj.col(i+1) = this->state_to_eigen(robot_state);
   }
-
-  // If we ran off the end of the plan, hold last position, zero out last velocity
-  //if end_idx - start_idx < N_ {
-    // do what I said to do above
-  //}
-
-  //bodyToFootFK(int leg_index, Eigen::Vector3d joint_state, 
-  //Eigen::Vector3d &foot_pos_body);
 }
 
 void MPCController::publishGRFArray() {
