@@ -241,6 +241,7 @@ void MPCController::publishGRFArray() {
 void MPCController::spin() {
   ros::Rate r(update_rate_);
   while (ros::ok()) {
+    ROS_DEBUG_THROTTLE(1, "MPC solving");
     // Publish control input data
     publishGRFArray();
     ros::spinOnce();
