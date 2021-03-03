@@ -83,6 +83,8 @@ void BodyForceEstimator::update() {
       tau[j] = joint_dirs[j]*last_state_msg_->joints.effort[ind];
       #endif
 
+      tau[j] += (qd[j] > 0 ? 1 : -1) * MO_fric[j] + qd[j] * MO_damp[j];
+
       // read this leg's estimates
       re[j] = r_mom[3*i+j];
       pe[j] = p_hat[3*i+j];

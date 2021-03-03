@@ -8,6 +8,9 @@
 namespace force_estimation_dynamics {
 void f_M(Eigen::Vector3d q, int RL, Eigen::Matrix3d &F);
 void f_beta(Eigen::Vector3d q, Eigen::Vector3d qd, int RL, Eigen::Vector3d &F);
+
+extern double MO_fric[3];
+extern double MO_damp[3];
 }
 
 #endif // FORCE_ESTIMATOR_DYNAMICS_H

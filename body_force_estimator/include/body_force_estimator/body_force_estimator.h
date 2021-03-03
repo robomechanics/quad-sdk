@@ -6,7 +6,7 @@
 #include <spirit_msgs/BodyForceEstimate.h>
 
 // Temporary
-#define USE_SIM 1 // 0 = intended, 1 = Gazebo hack, 2 = old bagfile hack
+#define USE_SIM 2 // 0 = intended, 1 = Gazebo hack, 2 = old bagfile hack
 
 //! Estimates body contact forces
 /*!
@@ -69,7 +69,7 @@ private:
     double p_hat[12];
 
     // Robot state estimate
-    #ifdef USE_SIM
+    #if USE_SIM > 0
     sensor_msgs::JointState::ConstPtr last_state_msg_;
     #else
     spirit_msgs::RobotState::ConstPtr last_state_msg_;
