@@ -75,12 +75,12 @@ void BodyForceEstimator::update() {
       int ind = joint_inds[3*i+j];
       q[j] = joint_dirs[j]*last_state_msg_->position[ind];
       qd[j] = joint_dirs[j]*last_state_msg_->velocity[ind];
-      tau[j] = joint_dirs[j]*last_state_msg_->effort[ind];
+      tau[j] = MO_ktau[j]*joint_dirs[j]*last_state_msg_->effort[ind];
       #else
       int ind = 3*i+j;
       q[j] = joint_dirs[j]*last_state_msg_->joints.position[ind];
       qd[j] = joint_dirs[j]*last_state_msg_->joints.velocity[ind];
-      tau[j] = joint_dirs[j]*last_state_msg_->joints.effort[ind];
+      tau[j] = MO_ktau[j]*joint_dirs[j]*last_state_msg_->joints.effort[ind];
       #endif
 
       tau[j] += (qd[j] > 0 ? 1 : -1) * MO_fric[j] + qd[j] * MO_damp[j];
