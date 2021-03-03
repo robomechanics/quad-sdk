@@ -205,6 +205,9 @@ void MPCController::publishGRFArray() {
   quad_mpc_->update_contact(contact_sequences, normal_lo_, normal_hi_);
   quad_mpc_->update_dynamics(ref_traj,foot_positions);
 
+  //std::cout << "Reference trajectory: " << std::endl << ref_traj << std::endl;
+  //std::cout << "Foot Placements in body frame: " << std::endl << foot_positions << std::endl;
+
   Eigen::MatrixXd x_out;
   quad_mpc_->solve(cur_state_, ref_traj, x_out);
 
@@ -241,10 +244,13 @@ void MPCController::publishGRFArray() {
 void MPCController::spin() {
   ros::Rate r(update_rate_);
   while (ros::ok()) {
-    ROS_DEBUG_THROTTLE(1, "MPC solving");
+    //ROS_WARN_THROTTLE(1, "MPC node operational");
+
+    ros::spinOnce();
+    
     // Publish control input data
     publishGRFArray();
-    ros::spinOnce();
+    
     r.sleep();
   }
 }
