@@ -4,11 +4,16 @@
     <arg name="proxy" default="false"/>
     <arg name="mocap" default="false"/>
     <arg name="logging" default="false"/>
-    <arg name="controller" default="open_loop"/>
+    <arg name="controller" default="inverse_dynamics"/>
 
     <include file="$(find spirit_utils)/launch/control.launch">
         <arg name="controller" value="$(arg controller)" />
     </include>
+
+    <include file="$(find spirit_utils)/launch/control.launch">
+        <arg name="controller" value="mpc" />
+    </include>
+
     <include file="$(find spirit_utils)/launch/estimation.launch" />
 
     <!-- Launch the robot_proxy if specified-->

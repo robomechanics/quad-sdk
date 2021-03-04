@@ -5,7 +5,7 @@
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <geometry_msgs/PoseStamped.h>
-#include <spirit_msgs/ControlInput.h>
+#include <spirit_msgs/GRFArray.h>
 
 //! A class for interfacing between dummy robot data and other spirit-software nodes and topics.
 /*!
@@ -31,7 +31,7 @@ private:
    * @brief Callback function to handle new control inputs
    * @param[in] Joint state message contining desired position, velocity, and torque for each joint
    */
-  void controlInputCallback(const spirit_msgs::ControlInput::ConstPtr& msg);
+  void grfArrayCallback(const spirit_msgs::GRFArray::ConstPtr& msg);
 
   /**
    * @brief Function to publish dummy joint encoder data
