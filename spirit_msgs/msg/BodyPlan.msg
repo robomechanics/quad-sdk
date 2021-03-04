@@ -7,4 +7,4 @@
 Header header
 uint32[] primitive_ids
 nav_msgs/Odometry[] states
-geometry_msgs/Vector3[] grfs
+spirit_msgs/GRFArray[] grfs

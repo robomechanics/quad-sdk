@@ -47,6 +47,7 @@ find_package(catkin REQUIRED COMPONENTS
     nav_msgs
     std_msgs
     spirit_msgs
+    spirit_utils
     message_filters
     controller_manager
     joint_state_controller

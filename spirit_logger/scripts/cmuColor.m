@@ -35,4 +35,11 @@ switch printType
         colorOutput = 1/255*[0 136 85];
     case 'dark-green'
         colorOutput = 1/255*[34 68 51];
+    case 'colororder'
+        colorOutput = [1/255*[187 0 0];
+                       1/255*[34 68 119];
+                       1/255*[0 136 85];
+                       1/255*[170 102 0];
+                       1/255*[0 102 119];
+                       1/255*[34 68 51];];
 end

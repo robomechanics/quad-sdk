@@ -53,6 +53,7 @@ install:
 - mkdir -p ~/catkin_ws/src
 - ln -s $CI_SOURCE_PATH ~/catkin_ws/src/
 - cd $TRAVIS_BUILD_DIR
+- git submodule update --init
 - chmod +x setup.sh
 - ./setup.sh
 - source /opt/ros/$ROS_DISTRO/setup.bash

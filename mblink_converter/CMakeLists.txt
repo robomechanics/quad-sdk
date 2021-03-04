@@ -20,7 +20,7 @@ set(MBLINK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../external/mblink)
 message(STATUS "Using architecture ${CMAKE_SYSTEM_PROCESSOR}")
 
 if (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
-  set(GRMBLINK libgrmblink_xavier.a)
+  set(GRMBLINK libgrmblink_tx2.a)
 else()
   set(GRMBLINK libgrmblink_linux.a)
 endif()

@@ -1,0 +1,112 @@
+/*
+ *	This file is part of qpOASES.
+ *
+ *	qpOASES -- An Implementation of the Online Active Set Strategy.
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Christian Kirches et al. All rights reserved.
+ *
+ *	qpOASES is free software; you can redistribute it and/or
+ *	modify it under the terms of the GNU Lesser General Public
+ *	License as published by the Free Software Foundation; either
+ *	version 2.1 of the License, or (at your option) any later version.
+ *
+ *	qpOASES is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *	See the GNU Lesser General Public License for more details.
+ *
+ *	You should have received a copy of the GNU Lesser General Public
+ *	License along with qpOASES; if not, write to the Free Software
+ *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ */
+
+
+/**
+ *	\file testing/cpp/test_example1b.cpp
+ *	\author Hans Joachim Ferreau
+ *	\version 3.2
+ *	\date 2007-2017
+ *
+ *	Very simple example for testing qpOASES using the QProblemB class.
+ */
+
+
+#include <qpOASES.hpp>
+#include <qpOASES/UnitTesting.hpp>
+
+
+/** Example for qpOASES main function using the QProblemB class. */
+int main( )
+{
+	USING_NAMESPACE_QPOASES
+
+	/* Setup data of first QP. */
+	real_t H[2*2] = { 1.0, 0.0, 0.0, 0.5 };
+	real_t g[2] = { 1.5, 1.0 };
+	real_t lb[2] = { 0.5, -2.0 };
+	real_t ub[2] = { 5.0, 2.0 };
+
+	/* Setup data of second QP. */
+	real_t g_new[2] = { 1.0, 1.5 };
+	real_t lb_new[2] = { 0.0, -1.0 };
+	real_t ub_new[2] = { 5.0, -0.5 };
+
+
+	/* Setting up QProblemB object. */
+	QProblemB example( 2 );
+
+	Options options;
+	//options.enableFlippingBounds = BT_FALSE;
+	options.initialStatusBounds = ST_INACTIVE;
+	options.numRefinementSteps = 1;
+	options.enableCholeskyRefactorisation = 1;
+	example.setOptions( options );
+
+	/* Solve first QP. */
+	int_t nWSR = 10;
+	example.init( H,g,lb,ub, nWSR,0 );
+// 	printf( "\nnWSR = %d\n\n", nWSR );
+
+	real_t xOpt[2];
+	real_t yOpt[2];
+	example.getPrimalSolution( xOpt );
+	example.getDualSolution( yOpt );
+
+	/* Compute KKT tolerances */
+	real_t stat, feas, cmpl;
+	SolutionAnalysis analyzer;
+
+	analyzer.getKktViolation( &example, &stat,&feas,&cmpl );
+	printf( "stat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
+
+	QPOASES_TEST_FOR_TOL( stat,1e-15 );
+	QPOASES_TEST_FOR_TOL( feas,1e-15 );
+	QPOASES_TEST_FOR_TOL( cmpl,1e-15 );
+
+	
+	/* Solve second QP. */
+	nWSR = 10;
+	example.hotstart( g_new,lb_new,ub_new, nWSR,0 );
+// 	printf( "\nnWSR = %d\n\n", nWSR );
+
+	/* Get and print solution of second QP. */
+	example.getPrimalSolution( xOpt );
+	example.getDualSolution( yOpt );
+	printf( "\nxOpt = [ %e, %e ];  objVal = %e\n\n", xOpt[0],xOpt[1],example.getObjVal() );
+
+	/* Compute KKT tolerances */
+	analyzer.getKktViolation( &example, &stat,&feas,&cmpl );
+	printf( "stat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
+
+	QPOASES_TEST_FOR_TOL( stat,1e-15 );
+	QPOASES_TEST_FOR_TOL( feas,1e-15 );
+	QPOASES_TEST_FOR_TOL( cmpl,1e-15 );
+
+	return TEST_PASSED;
+}
+
+
+/*
+ *	end of file
+ */

@@ -14,4 +14,9 @@
         <node name="open_loop_controller" pkg="open_loop_controller" type="open_loop_controller_node" output="screen"/>
     </group>
 
+    <!-- Launch the node to publish inverse dynamics control-->
+    <group if="$(eval arg('controller') == 'inverse_dynamics')">
+        <node name="inverse_dynamics" pkg="inverse_dynamics" type="inverse_dynamics_node" output="screen"/>
+    </group>
+
 </launch>

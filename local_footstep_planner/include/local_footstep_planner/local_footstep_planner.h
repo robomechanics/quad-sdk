@@ -53,6 +53,12 @@ class LocalFootstepPlanner {
     void bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
 
     /**
+     * @brief Callback function to handle new robot state data
+     * @param[in] msg the message contining robot state data
+     */
+    void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+
+    /**
      * @brief Compute the amount of time until the next flight phase
      * @param[in] t Current time
      * @return Time until flight
@@ -85,6 +91,9 @@ class LocalFootstepPlanner {
     /// Subscriber for body plan messages
     ros::Subscriber body_plan_sub_;
 
+    /// Subscriber for body plan messages
+    ros::Subscriber robot_state_sub_;
+
     /// Publisher for discrete foot plan messages
     ros::Publisher foot_plan_discrete_pub_;
 
@@ -114,7 +123,7 @@ class LocalFootstepPlanner {
 
     /// Define the footstep state data structure
     typedef std::vector<double> FootstepState;
-
+    
     /// Std vector containing robot body plan
     std::vector<BodyState> body_plan_;
 
@@ -132,6 +141,9 @@ class LocalFootstepPlanner {
 
     /// ROS Timestamp of plan (should match body plan)
     ros::Time plan_timestamp_;
+
+    /// Current robot state
+    spirit_msgs::RobotState robot_state_msg_;
 
     /// Number of feet
     const int num_feet_ = 4;

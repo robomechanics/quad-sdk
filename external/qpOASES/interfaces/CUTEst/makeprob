@@ -1,0 +1,28 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+    echo Usage: $0 problemname
+    exit
+fi
+
+PROBLEMPATH="./prob"
+mkdir -p $PROBLEMPATH
+cd $PROBLEMPATH
+
+# Call sifdecoder (additional parameter for problem size can be passed)
+if [ -z "$2" ]; then
+    sifdecoder $MASTSIF/$1
+else
+    sifdecoder -param N=$2 $MASTSIF/$1
+fi
+
+# Compile objects
+gfortran -c RANGE.f -fPIC -o RANGE.o
+gfortran -c ELFUN.f -fPIC -o ELFUN.o
+gfortran -c GROUP.f -fPIC -o GROUP.o
+
+# Build shared library
+gfortran -shared -o libprob.so RANGE.o ELFUN.o GROUP.o
+
+cd ../
+

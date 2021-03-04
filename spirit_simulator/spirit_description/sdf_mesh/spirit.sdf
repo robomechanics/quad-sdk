@@ -59,11 +59,11 @@ SOFTWARE.
         </surface>
       </collision>
       <visual name='body_visual'>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose frame=''>0.03 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-	       	  <uri>model:///meshes/Spirit40_Body_Mesh_transformed.stl</uri>
-	       </mesh>
+            <uri>model:///meshes/Spirit40_Body_Mesh_transformed.stl</uri>
+         </mesh>
         </geometry>
         <material>
           <script>
@@ -124,6 +124,7 @@ SOFTWARE.
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
+
     <joint name='8' type='revolute'>
       <child>hip0</child>
       <parent>body</parent>
@@ -144,6 +145,7 @@ SOFTWARE.
         <use_parent_model_frame>1</use_parent_model_frame>
       </axis>
     </joint>
+
     <link name='upper0'>
       <pose frame=''>0.2263 0.17098 0 0 -0 0</pose>
       <inertial>
@@ -191,6 +193,7 @@ SOFTWARE.
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
+
     <joint name='0' type='revolute'>
       <child>upper0</child>
       <parent>hip0</parent>
@@ -211,6 +214,7 @@ SOFTWARE.
         <use_parent_model_frame>1</use_parent_model_frame>
       </axis>
     </joint>
+
     <link name='lower0'>
       <pose frame=''>0.0203 0.17098 0 0 -0 0</pose>
       <inertial>
@@ -319,6 +323,7 @@ SOFTWARE.
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
+
     <joint name='1' type='revolute'>
       <child>lower0</child>
       <parent>upper0</parent>
@@ -339,6 +344,7 @@ SOFTWARE.
         <use_parent_model_frame>1</use_parent_model_frame>
       </axis>
     </joint>
+
     <link name='hip1'>
       <pose frame=''>-0.2263 0.07 0 0 -0 0</pose>
       <inertial>
@@ -387,6 +393,7 @@ SOFTWARE.
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
+
     <joint name='9' type='revolute'>
       <child>hip1</child>
       <parent>body</parent>
@@ -407,6 +414,7 @@ SOFTWARE.
         <use_parent_model_frame>1</use_parent_model_frame>
       </axis>
     </joint>
+
     <link name='upper1'>
       <pose frame=''>-0.2263 0.17098 0 0 -0 0</pose>
       <inertial>
@@ -454,6 +462,7 @@ SOFTWARE.
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
+
     <joint name='2' type='revolute'>
       <child>upper1</child>
       <parent>hip1</parent>
@@ -474,6 +483,7 @@ SOFTWARE.
         <use_parent_model_frame>1</use_parent_model_frame>
       </axis>
     </joint>
+
     <link name='lower1'>
       <pose frame=''>-0.4323 0.17098 0 0 -0 0</pose>
       <inertial>
@@ -582,6 +592,7 @@ SOFTWARE.
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
+
     <joint name='3' type='revolute'>
       <child>lower1</child>
       <parent>upper1</parent>
@@ -652,6 +663,7 @@ SOFTWARE.
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
+
     <joint name='10' type='revolute'>
       <child>hip2</child>
       <parent>body</parent>
@@ -672,6 +684,7 @@ SOFTWARE.
         <use_parent_model_frame>1</use_parent_model_frame>
       </axis>
     </joint>
+
     <link name='upper2'>
       <pose frame=''>0.2263 -0.17098 0 0 -0 0</pose>
       <inertial>
@@ -719,6 +732,7 @@ SOFTWARE.
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
+
     <joint name='4' type='revolute'>
       <child>upper2</child>
       <parent>hip2</parent>
@@ -739,6 +753,7 @@ SOFTWARE.
         <use_parent_model_frame>1</use_parent_model_frame>
       </axis>
     </joint>
+
     <link name='lower2'>
       <pose frame=''>0.0203 -0.17098 0 0 -0 0</pose>
       <inertial>
@@ -847,6 +862,7 @@ SOFTWARE.
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
+
     <joint name='5' type='revolute'>
       <child>lower2</child>
       <parent>upper2</parent>
@@ -867,6 +883,7 @@ SOFTWARE.
         <use_parent_model_frame>1</use_parent_model_frame>
       </axis>
     </joint>
+
     <link name='hip3'>
       <pose frame=''>-0.2263 -0.07 0 0 -0 0</pose>
       <inertial>
@@ -915,6 +932,7 @@ SOFTWARE.
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
+
     <joint name='11' type='revolute'>
       <child>hip3</child>
       <parent>body</parent>
@@ -935,6 +953,7 @@ SOFTWARE.
         <use_parent_model_frame>1</use_parent_model_frame>
       </axis>
     </joint>
+
     <link name='upper3'>
       <pose frame=''>-0.2263 -0.17098 0 0 -0 0</pose>
       <inertial>
@@ -982,6 +1001,7 @@ SOFTWARE.
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
+
     <joint name='6' type='revolute'>
       <child>upper3</child>
       <parent>hip3</parent>
@@ -1002,6 +1022,7 @@ SOFTWARE.
         <use_parent_model_frame>1</use_parent_model_frame>
       </axis>
     </joint>
+
     <link name='lower3'>
       <pose frame=''>-0.4323 -0.17098 0 0 -0 0</pose>
       <inertial>
@@ -1110,6 +1131,7 @@ SOFTWARE.
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
+    
     <joint name='7' type='revolute'>
       <child>lower3</child>
       <parent>upper3</parent>

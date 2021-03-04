@@ -5,10 +5,12 @@
 #include <visualization_msgs/MarkerArray.h>
 #include <spirit_msgs/BodyPlan.h>
 #include <spirit_msgs/MultiFootPlanContinuous.h>
+#include <spirit_msgs/FootState.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/RobotStateTrajectory.h>
 #include "spirit_utils/math_utils.h"
 #include "spirit_utils/kinematics.h"
+#include "spirit_utils/function_timer.h"
 
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
@@ -50,7 +52,7 @@ private:
    * @brief Callback function to handle new continuous foot plan data
    * @param[in] MultiFootPlanContinuous message containing foot plan data
    */
-  void footPlanContinuousCallback(
+  void multiFootPlanContinuousCallback(
     const spirit_msgs::MultiFootPlanContinuous::ConstPtr& msg);
 
   /**
@@ -72,7 +74,7 @@ private:
   ros::Subscriber body_plan_sub_;
 
   /// ROS subscriber for the swing leg plan
-  ros::Subscriber foot_plan_continuous_sub_;
+  ros::Subscriber multi_foot_plan_continuous_sub_;
 
   /// ROS Publisher for the current trajectory state
   ros::Publisher trajectory_state_pub_;
@@ -84,28 +86,22 @@ private:
   ros::NodeHandle nh_;
 
   /// Vector of body states to store the body plan
-  std::vector<std::vector<double> > body_plan_;
+  spirit_msgs::BodyPlan body_plan_msg_;
 
-  /// Vector of joint states to store the joint plan
-  std::vector<std::vector<double> > joints_plan_;
-
-  //   /// Vector of joint states to store the foot plan
-  // std::vector<std::vector<Eigen::Vector3d> > > foot_plan_;
-
-  /// Vector of times corresponding to the body plan states
-  std::vector<double> t_body_plan_;
-
-  /// Vector of times corresponding to the joint plan states
-  std::vector<double> t_joints_plan_;
-
-  //   /// Vector of times corresponding to the foot plan states
-  // std::vector<double> t_foot_plan_;
+  /// Vector of body states to store the body plan
+  spirit_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
 
   /// Vector of times corresponding to the trajectory states
   std::vector<double> t_traj_;
 
+  /// Message for robot trajectory
+  spirit_msgs::RobotStateTrajectory traj_msg_;
+
   /// Update rate for sending and receiving data
   double update_rate_;
+
+  /// Flag to update the trajectory
+  bool update_flag_;
 
   /// Timestep for trajectory interpolation
   double interp_dt_;
@@ -113,14 +109,11 @@ private:
   /// Handle for the map frame
   std::string map_frame_;
 
-  /// Timestamp for the beginning of the trajectory
-  ros::Time trajectory_timestamp_;
-
-  /// Message for robot trajectory
-  spirit_msgs::RobotStateTrajectory traj_msg_;
-
   /// Playback speed for trajectory state publishing
   double playback_speed_;
+
+  /// The source of the current trajectory (import or otherwise)
+  std::string traj_source_;
 
 };
 

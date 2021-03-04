@@ -8,17 +8,23 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
   mblink_.start(argc,argv);
   mblink_.rxstart();
   mblink_.setRetry("UPST_ADDRESS", 5);
+  mblink_.setRetry("UPST_LOOP_DELAY", 5);
 
   // Load rosparams from parameter server
-  std::string leg_control_topic;
+  std::string leg_control_topic, joint_encoder_topic, imu_topic;
   spirit_utils::loadROSParam(nh_,"topics/joint_command",leg_control_topic);
+  spirit_utils::loadROSParam(nh_,"topics/joint_encoder",joint_encoder_topic);
+  spirit_utils::loadROSParam(nh_,"topics/imu",imu_topic);
   spirit_utils::loadROSParam(nh_,"mblink_converter/update_rate",update_rate_);
 
   // Setup pubs and subs
   leg_control_sub_ = nh_.subscribe(leg_control_topic,1,&MBLinkConverter::legControlCallback, this);
+  joint_encoder_pub_ = nh_.advertise<sensor_msgs::JointState>(joint_encoder_topic,1);
+  imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic,1);
 }
 
-void MBLinkConverter::legControlCallback(const spirit_msgs::LegCommandArray::ConstPtr& msg)
+void MBLinkConverter::legControlCallback(
+  const spirit_msgs::LegCommandArray::ConstPtr& msg)
 {
   last_leg_command_array_msg_ = msg;
 }
@@ -34,7 +40,9 @@ bool MBLinkConverter::sendMBlink()
   LimbCmd_t limbcmd[4];
   for (int i = 0; i < 4; ++i) // For each leg
   {
-    spirit_msgs::LegCommand leg_command = last_leg_command_array_msg_->leg_commands.at(i);
+    spirit_msgs::LegCommand leg_command = 
+      last_leg_command_array_msg_->leg_commands.at(i);
+
     for (int j = 0; j < 3; ++j) // For each joint
     {
       limbcmd[i].pos[j] = leg_command.motor_commands.at(j).pos_setpoint;
@@ -52,6 +60,60 @@ bool MBLinkConverter::sendMBlink()
   return true;
 }
 
+void MBLinkConverter::publishMBlink()
+{
+
+  // Get the data and appropriate timestamp (this may be blocking)
+  RxData_t data = mblink_.get();
+
+  if (data.empty()) {
+    ROS_WARN_THROTTLE(0.5, "No data received from mblink");
+    return;
+  }
+
+  ros::Time timestamp = ros::Time::now();
+
+  // Declare the joint state msg and apply the timestamp
+  sensor_msgs::JointState joint_state_msg;
+  joint_state_msg.header.stamp = timestamp;
+
+  // Add the data corresponding to each joint
+  for (int i = 0; i < joint_names_.size(); i++)
+  {
+    joint_state_msg.name.push_back(joint_names_[i]);
+    joint_state_msg.position.push_back(data["joint_position"][joint_indices_[i]]);
+    joint_state_msg.velocity.push_back(data["joint_velocity"][joint_indices_[i]]);
+
+    // Convert from current to torque
+    joint_state_msg.effort.push_back(kt_vec_[i]*data["joint_current"][joint_indices_[i]]);
+  }
+
+  // Publish the joint state message
+  joint_encoder_pub_.publish(joint_state_msg);
+
+  // Declare the imu message
+  sensor_msgs::Imu imu_msg;
+  imu_msg.header.stamp = timestamp;
+
+  // Transform from rpy to quaternion
+  geometry_msgs::Quaternion orientation_msg;
+  tf2::Quaternion quat_tf;
+  quat_tf.setRPY(data["imu_euler"][0],data["imu_euler"][1],data["imu_euler"][2]);
+  tf2::convert(quat_tf, orientation_msg);
+
+  // Load the data into the imu message
+  imu_msg.orientation = orientation_msg;
+  imu_msg.angular_velocity.x = data["imu_angular_velocity"][0];
+  imu_msg.angular_velocity.y = data["imu_angular_velocity"][1];
+  imu_msg.angular_velocity.z = data["imu_angular_velocity"][2];
+  imu_msg.linear_acceleration.x = data["imu_linear_acceleration"][0];
+  imu_msg.linear_acceleration.y = data["imu_linear_acceleration"][1];
+  imu_msg.linear_acceleration.z = data["imu_linear_acceleration"][2];
+
+  // Publish the imu message
+  imu_pub_.publish(imu_msg);
+}
+
 void MBLinkConverter::spin()
 {
   ros::Rate r(update_rate_);
@@ -65,6 +127,7 @@ void MBLinkConverter::spin()
     {
       ROS_DEBUG_THROTTLE(1,"MBLinkConverter node has not received MotorCommandArray messages yet.");
     }
+    this->publishMBlink();
 
     // Enforce update rate
     r.sleep();

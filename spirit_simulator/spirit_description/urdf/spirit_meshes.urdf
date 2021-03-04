@@ -24,8 +24,6 @@
     <color rgba="0.8 0.0 0.2 1.0"/>
   </material>
   <!-- Body -->
-  <link name="dummy">
-   </link>
   <link name="body">
     <!--		<visual>-->
     <!--			<origin rpy="0 0 0" xyz="0 0 0"/>-->
@@ -55,21 +53,6 @@
       </geometry>
     </collision>
   </link>
-  <joint name="dummy_joint" type="fixed">
-     <parent link="dummy"/>
-     <child link="body"/>
-   </joint>
-  <gazebo reference="body">
-    <material>Gazebo/Gray</material>
-  </gazebo>
-  <!-- this way planner can run unchanged-->
-  <link name="t265_pose_frame"/>
-  <joint name="body_to_t265" type="fixed">
-    <parent link="body"/>
-    <child link="t265_pose_frame"/>
-    <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
-    <axis xyz="1 0 0"/>
-  </joint>
   <gazebo reference="body">
     <gravity>true</gravity>
     <sensor name="imu_sensor" type="imu">

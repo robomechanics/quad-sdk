@@ -13,13 +13,13 @@ RobotProxy::RobotProxy(ros::NodeHandle nh) {
 
 
   // Setup pubs and subs
-  control_input_sub_ = nh_.subscribe(control_input_topic,1,&RobotProxy::controlInputCallback, this);
+  control_input_sub_ = nh_.subscribe(control_input_topic,1,&RobotProxy::grfArrayCallback, this);
   joint_encoder_pub_ = nh_.advertise<sensor_msgs::JointState>(joint_encoder_topic,1);
   imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic,1);
   mocap_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(mocap_topic,1);
 }
 
-void RobotProxy::controlInputCallback(const spirit_msgs::ControlInput::ConstPtr& msg) {
+void RobotProxy::grfArrayCallback(const spirit_msgs::GRFArray::ConstPtr& msg) {
 }
 
 void RobotProxy::publishJointEncoders() {

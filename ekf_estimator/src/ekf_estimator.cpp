@@ -72,7 +72,15 @@ spirit_msgs::RobotState EKFEstimator::updateStep() {
       good_joint_state = true;
     }
   }
-  else ROS_WARN("Still waiting for first joint state message");
+  else {
+    ROS_WARN_THROTTLE(0.5,"Still waiting for first joint state message");
+    new_state_est.joints.header.stamp = ros::Time::now();
+    new_state_est.joints.name = {"8", "0", "1", "9","2", "3", "10", "4","5", 
+      "11", "6", "7"};
+      new_state_est.joints.position = {0,0,0,0,0,0,0,0,0,0,0,0};
+      new_state_est.joints.velocity = {0,0,0,0,0,0,0,0,0,0,0,0};
+      new_state_est.joints.effort = {0,0,0,0,0,0,0,0,0,0,0,0};
+  }
 
   new_state_est.header.stamp = ros::Time::now();
   return new_state_est;

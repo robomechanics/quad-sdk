@@ -20,13 +20,13 @@ add_message_files(
   FILES
   RobotState.msg
   RobotStateTrajectory.msg
+  GRFArray.msg
   BodyPlan.msg
   FootState.msg
   MultiFootState.msg
   MultiFootPlanContinuous.msg
   FootPlanDiscrete.msg
   MultiFootPlanDiscrete.msg
-  ControlInput.msg
   LegContactMode.msg
   BodyForceEstimate.msg
   ContactMode.msg

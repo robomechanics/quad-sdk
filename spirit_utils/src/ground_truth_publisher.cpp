@@ -65,6 +65,10 @@ spirit_msgs::RobotState GroundTruthPublisher::updateStep() {
   if (last_joint_state_msg_ != NULL)
   {
     new_state_est.joints = *last_joint_state_msg_;
+    if (last_imu_msg_ != NULL)
+    {
+      math_utils::fkRobotState(new_state_est.body,new_state_est.joints, new_state_est.feet);
+    }
   }
   if (last_mocap_msg_ != NULL)
   {
@@ -78,6 +82,7 @@ spirit_msgs::RobotState GroundTruthPublisher::updateStep() {
 
 void GroundTruthPublisher::spin() {
   ros::Rate r(mocap_rate_);
+
   while (ros::ok()) {
 
     // Collect new messages on subscriber topics
