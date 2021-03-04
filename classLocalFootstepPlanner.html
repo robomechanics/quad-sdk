@@ -111,6 +111,9 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:aed0f0743a34e829b131665cbd34259c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aed0f0743a34e829b131665cbd34259c8">bodyPlanCallback</a> (const spirit_msgs::BodyPlan::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:aed0f0743a34e829b131665cbd34259c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new body plan data.  <a href="#aed0f0743a34e829b131665cbd34259c8">More...</a><br /></td></tr>
 <tr class="separator:aed0f0743a34e829b131665cbd34259c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e29c59f1a203538756911660012cbb7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a3e29c59f1a203538756911660012cbb7">robotStateCallback</a> (const spirit_msgs::RobotState::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a3e29c59f1a203538756911660012cbb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new robot state data.  <a href="#a3e29c59f1a203538756911660012cbb7">More...</a><br /></td></tr>
+<tr class="separator:a3e29c59f1a203538756911660012cbb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7ce250a618f7efeffa89b8df13ec348"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ab7ce250a618f7efeffa89b8df13ec348">computeTimeUntilNextFlight</a> (double t)</td></tr>
 <tr class="memdesc:ab7ce250a618f7efeffa89b8df13ec348"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the amount of time until the next flight phase.  <a href="#ab7ce250a618f7efeffa89b8df13ec348">More...</a><br /></td></tr>
 <tr class="separator:ab7ce250a618f7efeffa89b8df13ec348"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -141,6 +144,10 @@ ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a53993412f1a1fb942d92372478d6967d">body_plan_sub_</a></td></tr>
 <tr class="memdesc:a53993412f1a1fb942d92372478d6967d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subscriber for body plan messages. <br /></td></tr>
 <tr class="separator:a53993412f1a1fb942d92372478d6967d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae3d0fb05f68390de6ec43ab737fd904"><td class="memItemLeft" align="right" valign="top"><a id="aae3d0fb05f68390de6ec43ab737fd904"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aae3d0fb05f68390de6ec43ab737fd904">robot_state_sub_</a></td></tr>
+<tr class="memdesc:aae3d0fb05f68390de6ec43ab737fd904"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subscriber for body plan messages. <br /></td></tr>
+<tr class="separator:aae3d0fb05f68390de6ec43ab737fd904"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36154a8581ac1636da19102c758215af"><td class="memItemLeft" align="right" valign="top"><a id="a36154a8581ac1636da19102c758215af"></a>
 ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a36154a8581ac1636da19102c758215af">foot_plan_discrete_pub_</a></td></tr>
 <tr class="memdesc:a36154a8581ac1636da19102c758215af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publisher for discrete foot plan messages. <br /></td></tr>
@@ -197,6 +204,10 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 ros::Time&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ab7aa02137bd092c541c350da38f3b2a5">plan_timestamp_</a></td></tr>
 <tr class="memdesc:ab7aa02137bd092c541c350da38f3b2a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Timestamp of plan (should match body plan) <br /></td></tr>
 <tr class="separator:ab7aa02137bd092c541c350da38f3b2a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b38d110f40bbf2769604ac7f1999ae9"><td class="memItemLeft" align="right" valign="top"><a id="a1b38d110f40bbf2769604ac7f1999ae9"></a>
+spirit_msgs::RobotState&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a1b38d110f40bbf2769604ac7f1999ae9">robot_state_msg_</a></td></tr>
+<tr class="memdesc:a1b38d110f40bbf2769604ac7f1999ae9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current robot state. <br /></td></tr>
+<tr class="separator:a1b38d110f40bbf2769604ac7f1999ae9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85ec156b75d085bdf14b2de9ed53cfbc"><td class="memItemLeft" align="right" valign="top"><a id="a85ec156b75d085bdf14b2de9ed53cfbc"></a>
 const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a85ec156b75d085bdf14b2de9ed53cfbc">num_feet_</a> = 4</td></tr>
 <tr class="memdesc:a85ec156b75d085bdf14b2de9ed53cfbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of feet. <br /></td></tr>
@@ -336,6 +347,40 @@ const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href=
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Time until flight </dd></dl>
+
+</div>
+</div>
+<a id="a3e29c59f1a203538756911660012cbb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e29c59f1a203538756911660012cbb7">&#9670;&nbsp;</a></span>robotStateCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LocalFootstepPlanner::robotStateCallback </td>
+          <td>(</td>
+          <td class="paramtype">const spirit_msgs::RobotState::ConstPtr &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback function to handle new robot state data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>the message contining robot state data </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

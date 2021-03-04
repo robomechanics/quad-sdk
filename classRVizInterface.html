@@ -100,9 +100,9 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a1d9710ecdb33bfdc0209fd9bf80c3500"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a1d9710ecdb33bfdc0209fd9bf80c3500">stateEstimateCallback</a> (const spirit_msgs::RobotState::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a1d9710ecdb33bfdc0209fd9bf80c3500"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new state estimate data.  <a href="#a1d9710ecdb33bfdc0209fd9bf80c3500">More...</a><br /></td></tr>
 <tr class="separator:a1d9710ecdb33bfdc0209fd9bf80c3500"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a755fcd0d9f4a9cf83c29c66e6549824d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a755fcd0d9f4a9cf83c29c66e6549824d">groundTruthStateCallback</a> (const spirit_msgs::RobotState::ConstPtr &amp;msg)</td></tr>
-<tr class="memdesc:a755fcd0d9f4a9cf83c29c66e6549824d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new state estimate data.  <a href="#a755fcd0d9f4a9cf83c29c66e6549824d">More...</a><br /></td></tr>
-<tr class="separator:a755fcd0d9f4a9cf83c29c66e6549824d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae879e479f5c019ccd13aaf8e5d51022e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#ae879e479f5c019ccd13aaf8e5d51022e">robotStateCallback</a> (const spirit_msgs::RobotState::ConstPtr &amp;msg, const int pub_id)</td></tr>
+<tr class="memdesc:ae879e479f5c019ccd13aaf8e5d51022e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new robot state data.  <a href="#ae879e479f5c019ccd13aaf8e5d51022e">More...</a><br /></td></tr>
+<tr class="separator:ae879e479f5c019ccd13aaf8e5d51022e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -122,14 +122,6 @@ ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a7f4168959e2c26888cd227436a196127">foot_plan_continuous_sub_</a></td></tr>
 <tr class="memdesc:a7f4168959e2c26888cd227436a196127"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the continuous foot plan. <br /></td></tr>
 <tr class="separator:a7f4168959e2c26888cd227436a196127"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d2f37bf93ef7479542065c4f18d8fc1"><td class="memItemLeft" align="right" valign="top"><a id="a0d2f37bf93ef7479542065c4f18d8fc1"></a>
-ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a0d2f37bf93ef7479542065c4f18d8fc1">state_estimate_sub_</a></td></tr>
-<tr class="memdesc:a0d2f37bf93ef7479542065c4f18d8fc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Subscriber for the state estimate. <br /></td></tr>
-<tr class="separator:a0d2f37bf93ef7479542065c4f18d8fc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a640ac0dd4cd022f01fe23c9cc1f08227"><td class="memItemLeft" align="right" valign="top"><a id="a640ac0dd4cd022f01fe23c9cc1f08227"></a>
-ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a640ac0dd4cd022f01fe23c9cc1f08227">ground_truth_state_sub_</a></td></tr>
-<tr class="memdesc:a640ac0dd4cd022f01fe23c9cc1f08227"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Subscriber for the ground truth state. <br /></td></tr>
-<tr class="separator:a640ac0dd4cd022f01fe23c9cc1f08227"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ba6086c6510e38ffdcda7477caac330"><td class="memItemLeft" align="right" valign="top"><a id="a2ba6086c6510e38ffdcda7477caac330"></a>
 ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a2ba6086c6510e38ffdcda7477caac330">body_plan_viz_pub_</a></td></tr>
 <tr class="memdesc:a2ba6086c6510e38ffdcda7477caac330"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the interpolated body plan vizualization. <br /></td></tr>
@@ -162,18 +154,42 @@ ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#ae3fc4878b2ac9d609dc7184adbbf9953">foot_3_plan_continuous_viz_pub_</a></td></tr>
 <tr class="memdesc:ae3fc4878b2ac9d609dc7184adbbf9953"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the foot 3 plan visualization. <br /></td></tr>
 <tr class="separator:ae3fc4878b2ac9d609dc7184adbbf9953"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1647764399f6e91e8956c032e27e3810"><td class="memItemLeft" align="right" valign="top"><a id="a1647764399f6e91e8956c032e27e3810"></a>
-ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a1647764399f6e91e8956c032e27e3810">joint_states_viz_pub_</a></td></tr>
-<tr class="memdesc:a1647764399f6e91e8956c032e27e3810"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the state estimate visualization. <br /></td></tr>
-<tr class="separator:a1647764399f6e91e8956c032e27e3810"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81204196af5c568247d22175d6824085"><td class="memItemLeft" align="right" valign="top"><a id="a81204196af5c568247d22175d6824085"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a81204196af5c568247d22175d6824085">estimate_joint_states_viz_pub_</a></td></tr>
+<tr class="memdesc:a81204196af5c568247d22175d6824085"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the estimated joint states visualization. <br /></td></tr>
+<tr class="separator:a81204196af5c568247d22175d6824085"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a3923f44e4e5569f2afeed6dbcfc3bf"><td class="memItemLeft" align="right" valign="top"><a id="a0a3923f44e4e5569f2afeed6dbcfc3bf"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a0a3923f44e4e5569f2afeed6dbcfc3bf">ground_truth_joint_states_viz_pub_</a></td></tr>
+<tr class="memdesc:a0a3923f44e4e5569f2afeed6dbcfc3bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the ground truth joint states visualization. <br /></td></tr>
+<tr class="separator:a0a3923f44e4e5569f2afeed6dbcfc3bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5091aac276d612ada955db8f289c6802"><td class="memItemLeft" align="right" valign="top"><a id="a5091aac276d612ada955db8f289c6802"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a5091aac276d612ada955db8f289c6802">trajectory_joint_states_viz_pub_</a></td></tr>
+<tr class="memdesc:a5091aac276d612ada955db8f289c6802"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the trajectory joint states visualization. <br /></td></tr>
+<tr class="separator:a5091aac276d612ada955db8f289c6802"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d2f37bf93ef7479542065c4f18d8fc1"><td class="memItemLeft" align="right" valign="top"><a id="a0d2f37bf93ef7479542065c4f18d8fc1"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a0d2f37bf93ef7479542065c4f18d8fc1">state_estimate_sub_</a></td></tr>
+<tr class="memdesc:a0d2f37bf93ef7479542065c4f18d8fc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Subscriber for the state estimate. <br /></td></tr>
+<tr class="separator:a0d2f37bf93ef7479542065c4f18d8fc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a640ac0dd4cd022f01fe23c9cc1f08227"><td class="memItemLeft" align="right" valign="top"><a id="a640ac0dd4cd022f01fe23c9cc1f08227"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a640ac0dd4cd022f01fe23c9cc1f08227">ground_truth_state_sub_</a></td></tr>
+<tr class="memdesc:a640ac0dd4cd022f01fe23c9cc1f08227"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Subscriber for the ground truth state. <br /></td></tr>
+<tr class="separator:a640ac0dd4cd022f01fe23c9cc1f08227"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14ea2ea9d773f3b1914db0bfe45ad826"><td class="memItemLeft" align="right" valign="top"><a id="a14ea2ea9d773f3b1914db0bfe45ad826"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a14ea2ea9d773f3b1914db0bfe45ad826">trajectory_state_sub_</a></td></tr>
+<tr class="memdesc:a14ea2ea9d773f3b1914db0bfe45ad826"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Subscriber for the ground truth state. <br /></td></tr>
+<tr class="separator:a14ea2ea9d773f3b1914db0bfe45ad826"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d63133ef60884854fc7ba7d4524f33f"><td class="memItemLeft" align="right" valign="top"><a id="a4d63133ef60884854fc7ba7d4524f33f"></a>
 tf2_ros::TransformBroadcaster&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a4d63133ef60884854fc7ba7d4524f33f">estimate_base_tf_br_</a></td></tr>
 <tr class="memdesc:a4d63133ef60884854fc7ba7d4524f33f"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Transform Broadcaster to publish the estimate transform for the base link. <br /></td></tr>
 <tr class="separator:a4d63133ef60884854fc7ba7d4524f33f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:affc934a5a007ddcc18a6f2361df1eac4"><td class="memItemLeft" align="right" valign="top"><a id="affc934a5a007ddcc18a6f2361df1eac4"></a>
 tf2_ros::TransformBroadcaster&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#affc934a5a007ddcc18a6f2361df1eac4">ground_truth_base_tf_br_</a></td></tr>
-<tr class="memdesc:affc934a5a007ddcc18a6f2361df1eac4"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Transform Broadcaster to publish the transform for the base link. <br /></td></tr>
+<tr class="memdesc:affc934a5a007ddcc18a6f2361df1eac4"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Transform Broadcaster to publish the ground truth transform for the base link. <br /></td></tr>
 <tr class="separator:affc934a5a007ddcc18a6f2361df1eac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a329e8c9e5b61a5cc795b124ad636dc1b"><td class="memItemLeft" align="right" valign="top"><a id="a329e8c9e5b61a5cc795b124ad636dc1b"></a>
+tf2_ros::TransformBroadcaster&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a329e8c9e5b61a5cc795b124ad636dc1b">trajectory_base_tf_br_</a></td></tr>
+<tr class="memdesc:a329e8c9e5b61a5cc795b124ad636dc1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Transform Broadcaster to publish the trajectory transform for the base link. <br /></td></tr>
+<tr class="separator:a329e8c9e5b61a5cc795b124ad636dc1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8617e53fd181aca3ad86f7d83429436a"><td class="memItemLeft" align="right" valign="top"><a id="a8617e53fd181aca3ad86f7d83429436a"></a>
 ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a8617e53fd181aca3ad86f7d83429436a">nh_</a></td></tr>
 <tr class="memdesc:a8617e53fd181aca3ad86f7d83429436a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nodehandle to pub to and sub from. <br /></td></tr>
@@ -186,6 +202,35 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a793eebfebed50f8320c95117876b31cf">map_frame_</a></td></tr>
 <tr class="memdesc:a793eebfebed50f8320c95117876b31cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle for the map frame. <br /></td></tr>
 <tr class="separator:a793eebfebed50f8320c95117876b31cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82079c15a1930f8207761083ce06b00f"><td class="memItemLeft" align="right" valign="top"><a id="a82079c15a1930f8207761083ce06b00f"></a>
+std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a82079c15a1930f8207761083ce06b00f">front_left_color_</a></td></tr>
+<tr class="memdesc:a82079c15a1930f8207761083ce06b00f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Colors. <br /></td></tr>
+<tr class="separator:a82079c15a1930f8207761083ce06b00f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bd7e9db77471b9cfc7146dc8f58f157"><td class="memItemLeft" align="right" valign="top"><a id="a8bd7e9db77471b9cfc7146dc8f58f157"></a>
+std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>back_left_color_</b></td></tr>
+<tr class="separator:a8bd7e9db77471b9cfc7146dc8f58f157"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab677ce03dab4820c0047a57595d926f5"><td class="memItemLeft" align="right" valign="top"><a id="ab677ce03dab4820c0047a57595d926f5"></a>
+std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>front_right_color_</b></td></tr>
+<tr class="separator:ab677ce03dab4820c0047a57595d926f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac18b85a7f187714b9cb8204e05d7d1a8"><td class="memItemLeft" align="right" valign="top"><a id="ac18b85a7f187714b9cb8204e05d7d1a8"></a>
+std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>back_right_color_</b></td></tr>
+<tr class="separator:ac18b85a7f187714b9cb8204e05d7d1a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa35b928a483288a40caad5c104ed1d0b"><td class="memItemLeft" align="right" valign="top"><a id="aa35b928a483288a40caad5c104ed1d0b"></a>
+std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>net_grf_color_</b></td></tr>
+<tr class="separator:aa35b928a483288a40caad5c104ed1d0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac53cc67ca6fbdd218fc2c7ce017f5659"><td class="memItemLeft" align="right" valign="top"><a id="ac53cc67ca6fbdd218fc2c7ce017f5659"></a>
+std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>individual_grf_color_</b></td></tr>
+<tr class="separator:ac53cc67ca6fbdd218fc2c7ce017f5659"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a516b8c7675b132c0a3eb867f88f0d3e8"><td class="memItemLeft" align="right" valign="top"><a id="a516b8c7675b132c0a3eb867f88f0d3e8"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a516b8c7675b132c0a3eb867f88f0d3e8">ESTIMATE</a> = 0</td></tr>
+<tr class="memdesc:a516b8c7675b132c0a3eb867f88f0d3e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publisher IDs. <br /></td></tr>
+<tr class="separator:a516b8c7675b132c0a3eb867f88f0d3e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca663caeb24358e25ae3849c3b3a648e"><td class="memItemLeft" align="right" valign="top"><a id="aca663caeb24358e25ae3849c3b3a648e"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><b>GROUND_TRUTH</b> = 1</td></tr>
+<tr class="separator:aca663caeb24358e25ae3849c3b3a648e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ba3e9bdf554eac83b8b4d2c58c8f42d"><td class="memItemLeft" align="right" valign="top"><a id="a1ba3e9bdf554eac83b8b4d2c58c8f42d"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><b>TRAJECTORY</b> = 2</td></tr>
+<tr class="separator:a1ba3e9bdf554eac83b8b4d2c58c8f42d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class for interfacing between RViz and spirit-software topics. </p>
@@ -356,8 +401,8 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 
 </div>
 </div>
-<a id="a755fcd0d9f4a9cf83c29c66e6549824d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a755fcd0d9f4a9cf83c29c66e6549824d">&#9670;&nbsp;</a></span>groundTruthStateCallback()</h2>
+<a id="ae879e479f5c019ccd13aaf8e5d51022e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae879e479f5c019ccd13aaf8e5d51022e">&#9670;&nbsp;</a></span>robotStateCallback()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -366,11 +411,21 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void RVizInterface::groundTruthStateCallback </td>
+          <td class="memname">void RVizInterface::robotStateCallback </td>
           <td>(</td>
           <td class="paramtype">const spirit_msgs::RobotState::ConstPtr &amp;&#160;</td>
-          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td class="paramname"><em>msg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>pub_id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -380,10 +435,11 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Callback function to handle new state estimate data. </p>
+<p>Callback function to handle new robot state data. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>RobotState message containing output of the state estimator node </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pub_id</td><td>Identifier of which publisher to use to handle this data </td></tr>
   </table>
   </dd>
 </dl>

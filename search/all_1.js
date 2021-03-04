@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['a_5fcon_5fdense_5f',['A_con_dense_',['../classQuadrupedMPC.html#adb2f3356b3378fa984933966937f39cc',1,'QuadrupedMPC']]],
+  ['a_5fdyn_5fdense_5f',['A_dyn_dense_',['../classQuadrupedMPC.html#a8a8d6878ca4d0c3b174c8ecf03c029fb',1,'QuadrupedMPC']]],
   ['action_5fsequence_5f',['action_sequence_',['../classGlobalBodyPlanner.html#a66b5df244875b0209ceb2c634d93c050',1,'GlobalBodyPlanner']]],
   ['actions',['actions',['../classGraphClass.html#af72e4666fa9283cd4c3d4acfccbcfd57',1,'GraphClass']]],
   ['addaction',['addAction',['../classGraphClass.html#aafacca2abff7f17df66e5b2f6b441c98',1,'GraphClass']]],

@@ -1,21 +1,10 @@
 var searchData=
 [
-  ['t_5fbody_5fplan_5f',['t_body_plan_',['../classTrajectoryPublisher.html#afa0efcc753dbf781ac57d78c0caa0445',1,'TrajectoryPublisher']]],
-  ['t_5fcycle_5f',['t_cycle_',['../classOpenLoopController.html#af95521b3e515859b6fc5df2cc2c53175',1,'OpenLoopController']]],
-  ['t_5fjoints_5fplan_5f',['t_joints_plan_',['../classTrajectoryPublisher.html#a04f33d68ebec430a88c4868842901a6f',1,'TrajectoryPublisher']]],
-  ['t_5fplan_5f',['t_plan_',['../classGlobalBodyPlanner.html#a029413a439d6621407f9e7d7020b18b5',1,'GlobalBodyPlanner::t_plan_()'],['../classLocalFootstepPlanner.html#ab5a5e9c5c232856154d87f64c44333ac',1,'LocalFootstepPlanner::t_plan_()'],['../classTwistBodyPlanner.html#a5fb49e9dea314f073abffa31a1a38e6d',1,'TwistBodyPlanner::t_plan_()']]],
-  ['t_5ftraj_5f',['t_traj_',['../classTrajectoryPublisher.html#a46d90abfcb88d72f29e89f3457a3d904',1,'TrajectoryPublisher']]],
-  ['target_5fpts_5f',['target_pts_',['../classOpenLoopController.html#a12d14e1429058daef7126aa93f6478c7',1,'OpenLoopController']]],
-  ['target_5ftimes_5f',['target_times_',['../classOpenLoopController.html#abd5d6e6370d28451c9a80aef41c39be5',1,'OpenLoopController']]],
-  ['terrain_5f',['terrain_',['../classGlobalBodyPlanner.html#a4ce8a926b03bb78083a6a20e0851a05a',1,'GlobalBodyPlanner::terrain_()'],['../classLocalFootstepPlanner.html#a52b5418ea40c08a0808bdac219aaf035',1,'LocalFootstepPlanner::terrain_()']]],
-  ['terrain_5fmap_5f',['terrain_map_',['../classTerrainMapPublisher.html#a87ef6e36fae57a1e151014937ee3d02f',1,'TerrainMapPublisher']]],
-  ['terrain_5fmap_5fpub_5f',['terrain_map_pub_',['../classTerrainMapPublisher.html#a0a60e93d610ec49cff3ddac21e0c164b',1,'TerrainMapPublisher']]],
-  ['terrain_5fmap_5fsub_5f',['terrain_map_sub_',['../classGlobalBodyPlanner.html#adb8189fbb2d0372db2eb06ee6ea67d11',1,'GlobalBodyPlanner::terrain_map_sub_()'],['../classLocalFootstepPlanner.html#a9a7246a67a2f6e0084476199d5076bd4',1,'LocalFootstepPlanner::terrain_map_sub_()']]],
-  ['terrain_5fmap_5ftopic_5f',['terrain_map_topic_',['../classGlobalBodyPlanner.html#a2d7c05f084686214d16aeeb85839b56a',1,'GlobalBodyPlanner::terrain_map_topic_()'],['../classLocalFootstepPlanner.html#a76e26ceee124b046d5f94cabf72ec9dd',1,'LocalFootstepPlanner::terrain_map_topic_()']]],
-  ['terrain_5ftype_5f',['terrain_type_',['../classTerrainMapPublisher.html#a86d3497f911cbec8d7d250cfce4d403a',1,'TerrainMapPublisher']]],
-  ['torque_5flims_5f',['torque_lims_',['../classeffort__controllers_1_1SpiritController.html#af1da15d2c33e320435beaa1d44be7c3d',1,'effort_controllers::SpiritController']]],
-  ['traj_5fmsg_5f',['traj_msg_',['../classTrajectoryPublisher.html#a772f133318c9386be67a8af090fc115d',1,'TrajectoryPublisher']]],
-  ['trajectory_5fpub_5f',['trajectory_pub_',['../classTrajectoryPublisher.html#a36a2871c3e5120dc6d0f0770723372b7',1,'TrajectoryPublisher']]],
-  ['trajectory_5fstate_5fpub_5f',['trajectory_state_pub_',['../classTrajectoryPublisher.html#a287d747bdcb2476faf3e668bef6a9275',1,'TrajectoryPublisher']]],
-  ['trajectory_5ftimestamp_5f',['trajectory_timestamp_',['../classTrajectoryPublisher.html#aecb5e87702cfcf6b0d0d098926295809',1,'TrajectoryPublisher']]]
+  ['replan_5fstart_5ftime_5f',['replan_start_time_',['../classGlobalBodyPlanner.html#a5e28747ebeaf79fefc55edfe43c4d53b',1,'GlobalBodyPlanner']]],
+  ['resolution_5f',['resolution_',['../classTerrainMapPublisher.html#a01d73a9b142c5cd7457feb50045dc370',1,'TerrainMapPublisher']]],
+  ['robot_5fstate_5f',['robot_state_',['../classGlobalBodyPlanner.html#a24e940f6401ecd8d5bac7b58c4c0ca73',1,'GlobalBodyPlanner']]],
+  ['robot_5fstate_5fmsg_5f',['robot_state_msg_',['../classLocalFootstepPlanner.html#a1b38d110f40bbf2769604ac7f1999ae9',1,'LocalFootstepPlanner']]],
+  ['robot_5fstate_5fsub_5f',['robot_state_sub_',['../classBodyForceEstimator.html#a1e4f6ba0afd26410269c175e3efe7840',1,'BodyForceEstimator::robot_state_sub_()'],['../classGlobalBodyPlanner.html#a80448be2f451be21bed0a7591df36669',1,'GlobalBodyPlanner::robot_state_sub_()'],['../classInverseDynamics.html#aaca98d2eefee63c20cf359b12d4041ce',1,'InverseDynamics::robot_state_sub_()'],['../classLocalFootstepPlanner.html#aae3d0fb05f68390de6ec43ab737fd904',1,'LocalFootstepPlanner::robot_state_sub_()'],['../classMPCController.html#a579e5395fca46881024bc2a427c06e09',1,'MPCController::robot_state_sub_()'],['../classTwistBodyPlanner.html#aad5e3027eaef9e06f327305035e66939',1,'TwistBodyPlanner::robot_state_sub_()']]],
+  ['robot_5fstate_5ftopic_5f',['robot_state_topic_',['../classGlobalBodyPlanner.html#a900c6a4ca90285c91fcc6032256dd451',1,'GlobalBodyPlanner']]],
+  ['robot_5fstate_5ftraj_5fsub_5f',['robot_state_traj_sub_',['../classMPCController.html#ad6fc3aca9c2193182d7dd1286d2c0db9',1,'MPCController']]]
 ];

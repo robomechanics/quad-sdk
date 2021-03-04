@@ -101,6 +101,10 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:aa54255703453e9ae4957f387824ab56e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#aa54255703453e9ae4957f387824ab56e">sendMBlink</a> ()</td></tr>
 <tr class="memdesc:aa54255703453e9ae4957f387824ab56e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send most recent motor command over mblink.  <a href="#aa54255703453e9ae4957f387824ab56e">More...</a><br /></td></tr>
 <tr class="separator:aa54255703453e9ae4957f387824ab56e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a915f32cb08f7e1278d4ec98b730ec7cc"><td class="memItemLeft" align="right" valign="top"><a id="a915f32cb08f7e1278d4ec98b730ec7cc"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#a915f32cb08f7e1278d4ec98b730ec7cc">publishMBlink</a> ()</td></tr>
+<tr class="memdesc:a915f32cb08f7e1278d4ec98b730ec7cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get most recent data payload over mblink and process it. <br /></td></tr>
+<tr class="separator:a915f32cb08f7e1278d4ec98b730ec7cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -112,6 +116,14 @@ ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#ad48fc34d9e86305a63d50d2e1dd58a76">nh_</a></td></tr>
 <tr class="memdesc:ad48fc34d9e86305a63d50d2e1dd58a76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nodehandle to pub to and sub from. <br /></td></tr>
 <tr class="separator:ad48fc34d9e86305a63d50d2e1dd58a76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbbe172e7eef31255f3014f765cf53b9"><td class="memItemLeft" align="right" valign="top"><a id="abbbe172e7eef31255f3014f765cf53b9"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#abbbe172e7eef31255f3014f765cf53b9">joint_encoder_pub_</a></td></tr>
+<tr class="memdesc:abbbe172e7eef31255f3014f765cf53b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS publisher for joint encoder data. <br /></td></tr>
+<tr class="separator:abbbe172e7eef31255f3014f765cf53b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a031c63d644e385472db08eaec6170f"><td class="memItemLeft" align="right" valign="top"><a id="a9a031c63d644e385472db08eaec6170f"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#a9a031c63d644e385472db08eaec6170f">imu_pub_</a></td></tr>
+<tr class="memdesc:a9a031c63d644e385472db08eaec6170f"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS publisher for imu data. <br /></td></tr>
+<tr class="separator:a9a031c63d644e385472db08eaec6170f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a194b7387f74d6f833038d76854a1fc83"><td class="memItemLeft" align="right" valign="top"><a id="a194b7387f74d6f833038d76854a1fc83"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#a194b7387f74d6f833038d76854a1fc83">update_rate_</a></td></tr>
 <tr class="memdesc:a194b7387f74d6f833038d76854a1fc83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update rate for sending and receiving data;. <br /></td></tr>
@@ -124,6 +136,17 @@ spirit_msgs::LegCommandArray::ConstPtr&#160;</td><td class="memItemRight" valign
 MBLink&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#a5f3f000255a6fce878a882bccac9906c">mblink_</a></td></tr>
 <tr class="memdesc:a5f3f000255a6fce878a882bccac9906c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to MBLink object (constructor wants argc and argv, so instantiated in main) <br /></td></tr>
 <tr class="separator:a5f3f000255a6fce878a882bccac9906c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba592a4e42922af47933d01413825b39"><td class="memItemLeft" align="right" valign="top"><a id="aba592a4e42922af47933d01413825b39"></a>
+std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#aba592a4e42922af47933d01413825b39">joint_names_</a> = {&quot;8&quot;,&quot;0&quot;,&quot;1&quot;,&quot;9&quot;,&quot;2&quot;,&quot;3&quot;,&quot;10&quot;,&quot;4&quot;,&quot;5&quot;,&quot;11&quot;,&quot;6&quot;,&quot;7&quot;}</td></tr>
+<tr class="memdesc:aba592a4e42922af47933d01413825b39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of joint names. <br /></td></tr>
+<tr class="separator:aba592a4e42922af47933d01413825b39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2eb5b25968826f1ec50d04409affe31"><td class="memItemLeft" align="right" valign="top"><a id="ac2eb5b25968826f1ec50d04409affe31"></a>
+std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#ac2eb5b25968826f1ec50d04409affe31">joint_indices_</a> = {8,0,1,9,2,3,10,4,5,11,6,7}</td></tr>
+<tr class="memdesc:ac2eb5b25968826f1ec50d04409affe31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector denoting joint indices. <br /></td></tr>
+<tr class="separator:ac2eb5b25968826f1ec50d04409affe31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af64470cd9740e8cf22361d1662fcbc65"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#af64470cd9740e8cf22361d1662fcbc65">kt_vec_</a></td></tr>
+<tr class="memdesc:af64470cd9740e8cf22361d1662fcbc65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of kt values for each joint.  <a href="#af64470cd9740e8cf22361d1662fcbc65">More...</a><br /></td></tr>
+<tr class="separator:af64470cd9740e8cf22361d1662fcbc65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Implements online conversion from ROS type to MBLink. </p>
@@ -280,6 +303,31 @@ MBLink&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 
 <p>Send most recent motor command over mblink. </p>
 <dl class="section return"><dt>Returns</dt><dd>Boolean signaling successful mblink send </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="af64470cd9740e8cf22361d1662fcbc65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af64470cd9740e8cf22361d1662fcbc65">&#9670;&nbsp;</a></span>kt_vec_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; MBLinkConverter::kt_vec_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= {0.546,0.546,1.092,0.546,0.546,1.092,</div><div class="line">    0.546,0.546,1.092,0.546,0.546,1.092}</div></div><!-- fragment -->
+<p>Vector of kt values for each joint. </p>
 
 </div>
 </div>

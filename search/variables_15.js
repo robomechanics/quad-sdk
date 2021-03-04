@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['y_5fdata_5f',['y_data_',['../classFastTerrainMap.html#ac086bccc817fb0dd61074e151372f62d',1,'FastTerrainMap']]],
-  ['y_5fsize_5f',['y_size_',['../classFastTerrainMap.html#a48326c0351927a0fe4d7c78699ea9188',1,'FastTerrainMap']]]
+  ['walk_5fkd_5f',['walk_kd_',['../classOpenLoopController.html#a8ac4dee7d882b817f29bdba6c38538ee',1,'OpenLoopController']]],
+  ['walk_5fkp_5f',['walk_kp_',['../classOpenLoopController.html#a258cc55af4aede5b1a94a17df3160243',1,'OpenLoopController']]]
 ];

@@ -92,9 +92,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a0933b12439db57eb1dfe7ab03b2ca121"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a0933b12439db57eb1dfe7ab03b2ca121">bodyPlanCallback</a> (const spirit_msgs::BodyPlan::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a0933b12439db57eb1dfe7ab03b2ca121"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new body plan data.  <a href="#a0933b12439db57eb1dfe7ab03b2ca121">More...</a><br /></td></tr>
 <tr class="separator:a0933b12439db57eb1dfe7ab03b2ca121"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57012da902581f14746fd573158ffe9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a57012da902581f14746fd573158ffe9f">footPlanContinuousCallback</a> (const spirit_msgs::MultiFootPlanContinuous::ConstPtr &amp;msg)</td></tr>
-<tr class="memdesc:a57012da902581f14746fd573158ffe9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new continuous foot plan data.  <a href="#a57012da902581f14746fd573158ffe9f">More...</a><br /></td></tr>
-<tr class="separator:a57012da902581f14746fd573158ffe9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38dfab90943b74fbd2438409e2f64a63"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a38dfab90943b74fbd2438409e2f64a63">multiFootPlanContinuousCallback</a> (const spirit_msgs::MultiFootPlanContinuous::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a38dfab90943b74fbd2438409e2f64a63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new continuous foot plan data.  <a href="#a38dfab90943b74fbd2438409e2f64a63">More...</a><br /></td></tr>
+<tr class="separator:a38dfab90943b74fbd2438409e2f64a63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b909db4c03b058debfcd70ee02b8600"><td class="memItemLeft" align="right" valign="top"><a id="a8b909db4c03b058debfcd70ee02b8600"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a8b909db4c03b058debfcd70ee02b8600">updateTrajectory</a> ()</td></tr>
 <tr class="memdesc:a8b909db4c03b058debfcd70ee02b8600"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the current trajectory. <br /></td></tr>
@@ -114,10 +114,10 @@ Private Attributes</h2></td></tr>
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a2fe6e1edaff1bf56fd943f7340640d94">body_plan_sub_</a></td></tr>
 <tr class="memdesc:a2fe6e1edaff1bf56fd943f7340640d94"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Subscriber for the body plan. <br /></td></tr>
 <tr class="separator:a2fe6e1edaff1bf56fd943f7340640d94"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8490f3a72b8e7116e97a6369141295d"><td class="memItemLeft" align="right" valign="top"><a id="aa8490f3a72b8e7116e97a6369141295d"></a>
-ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#aa8490f3a72b8e7116e97a6369141295d">foot_plan_continuous_sub_</a></td></tr>
-<tr class="memdesc:aa8490f3a72b8e7116e97a6369141295d"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the swing leg plan. <br /></td></tr>
-<tr class="separator:aa8490f3a72b8e7116e97a6369141295d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00eb794de33208528d7883f82282ff4a"><td class="memItemLeft" align="right" valign="top"><a id="a00eb794de33208528d7883f82282ff4a"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a00eb794de33208528d7883f82282ff4a">multi_foot_plan_continuous_sub_</a></td></tr>
+<tr class="memdesc:a00eb794de33208528d7883f82282ff4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the swing leg plan. <br /></td></tr>
+<tr class="separator:a00eb794de33208528d7883f82282ff4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a287d747bdcb2476faf3e668bef6a9275"><td class="memItemLeft" align="right" valign="top"><a id="a287d747bdcb2476faf3e668bef6a9275"></a>
 ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a287d747bdcb2476faf3e668bef6a9275">trajectory_state_pub_</a></td></tr>
 <tr class="memdesc:a287d747bdcb2476faf3e668bef6a9275"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the current trajectory state. <br /></td></tr>
@@ -130,30 +130,30 @@ ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a2915005e5641ef52162c5172e45753de">nh_</a></td></tr>
 <tr class="memdesc:a2915005e5641ef52162c5172e45753de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nodehandle to pub to and sub from. <br /></td></tr>
 <tr class="separator:a2915005e5641ef52162c5172e45753de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5db661d337a6103baed146bbab4f3b42"><td class="memItemLeft" align="right" valign="top"><a id="a5db661d337a6103baed146bbab4f3b42"></a>
-std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a5db661d337a6103baed146bbab4f3b42">body_plan_</a></td></tr>
-<tr class="memdesc:a5db661d337a6103baed146bbab4f3b42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of body states to store the body plan. <br /></td></tr>
-<tr class="separator:a5db661d337a6103baed146bbab4f3b42"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1d5384700c80e39737dfe462f33dc11"><td class="memItemLeft" align="right" valign="top"><a id="ab1d5384700c80e39737dfe462f33dc11"></a>
-std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#ab1d5384700c80e39737dfe462f33dc11">joints_plan_</a></td></tr>
-<tr class="memdesc:ab1d5384700c80e39737dfe462f33dc11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of joint states to store the joint plan. <br /></td></tr>
-<tr class="separator:ab1d5384700c80e39737dfe462f33dc11"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa0efcc753dbf781ac57d78c0caa0445"><td class="memItemLeft" align="right" valign="top"><a id="afa0efcc753dbf781ac57d78c0caa0445"></a>
-std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#afa0efcc753dbf781ac57d78c0caa0445">t_body_plan_</a></td></tr>
-<tr class="memdesc:afa0efcc753dbf781ac57d78c0caa0445"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of times corresponding to the body plan states. <br /></td></tr>
-<tr class="separator:afa0efcc753dbf781ac57d78c0caa0445"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04f33d68ebec430a88c4868842901a6f"><td class="memItemLeft" align="right" valign="top"><a id="a04f33d68ebec430a88c4868842901a6f"></a>
-std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a04f33d68ebec430a88c4868842901a6f">t_joints_plan_</a></td></tr>
-<tr class="memdesc:a04f33d68ebec430a88c4868842901a6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of times corresponding to the joint plan states. <br /></td></tr>
-<tr class="separator:a04f33d68ebec430a88c4868842901a6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b0f75526ed4a26fe3c2f7f7d0563459"><td class="memItemLeft" align="right" valign="top"><a id="a2b0f75526ed4a26fe3c2f7f7d0563459"></a>
+spirit_msgs::BodyPlan&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a2b0f75526ed4a26fe3c2f7f7d0563459">body_plan_msg_</a></td></tr>
+<tr class="memdesc:a2b0f75526ed4a26fe3c2f7f7d0563459"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of body states to store the body plan. <br /></td></tr>
+<tr class="separator:a2b0f75526ed4a26fe3c2f7f7d0563459"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff7c132d04462685f936db900ed4771e"><td class="memItemLeft" align="right" valign="top"><a id="aff7c132d04462685f936db900ed4771e"></a>
+spirit_msgs::MultiFootPlanContinuous&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#aff7c132d04462685f936db900ed4771e">multi_foot_plan_continuous_msg_</a></td></tr>
+<tr class="memdesc:aff7c132d04462685f936db900ed4771e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of body states to store the body plan. <br /></td></tr>
+<tr class="separator:aff7c132d04462685f936db900ed4771e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46d90abfcb88d72f29e89f3457a3d904"><td class="memItemLeft" align="right" valign="top"><a id="a46d90abfcb88d72f29e89f3457a3d904"></a>
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a46d90abfcb88d72f29e89f3457a3d904">t_traj_</a></td></tr>
 <tr class="memdesc:a46d90abfcb88d72f29e89f3457a3d904"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of times corresponding to the trajectory states. <br /></td></tr>
 <tr class="separator:a46d90abfcb88d72f29e89f3457a3d904"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a772f133318c9386be67a8af090fc115d"><td class="memItemLeft" align="right" valign="top"><a id="a772f133318c9386be67a8af090fc115d"></a>
+spirit_msgs::RobotStateTrajectory&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a772f133318c9386be67a8af090fc115d">traj_msg_</a></td></tr>
+<tr class="memdesc:a772f133318c9386be67a8af090fc115d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message for robot trajectory. <br /></td></tr>
+<tr class="separator:a772f133318c9386be67a8af090fc115d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63bd47dcec85327c6ed5db27e2b21639"><td class="memItemLeft" align="right" valign="top"><a id="a63bd47dcec85327c6ed5db27e2b21639"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a63bd47dcec85327c6ed5db27e2b21639">update_rate_</a></td></tr>
 <tr class="memdesc:a63bd47dcec85327c6ed5db27e2b21639"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update rate for sending and receiving data. <br /></td></tr>
 <tr class="separator:a63bd47dcec85327c6ed5db27e2b21639"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f11a53652c81ad8f6f07a8411602886"><td class="memItemLeft" align="right" valign="top"><a id="a6f11a53652c81ad8f6f07a8411602886"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a6f11a53652c81ad8f6f07a8411602886">update_flag_</a></td></tr>
+<tr class="memdesc:a6f11a53652c81ad8f6f07a8411602886"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag to update the trajectory. <br /></td></tr>
+<tr class="separator:a6f11a53652c81ad8f6f07a8411602886"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba146cd3628256c951b6719c6aade7ea"><td class="memItemLeft" align="right" valign="top"><a id="aba146cd3628256c951b6719c6aade7ea"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#aba146cd3628256c951b6719c6aade7ea">interp_dt_</a></td></tr>
 <tr class="memdesc:aba146cd3628256c951b6719c6aade7ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timestep for trajectory interpolation. <br /></td></tr>
@@ -162,18 +162,14 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a6029bda99f1a18f5b69a040ed8b41682">map_frame_</a></td></tr>
 <tr class="memdesc:a6029bda99f1a18f5b69a040ed8b41682"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle for the map frame. <br /></td></tr>
 <tr class="separator:a6029bda99f1a18f5b69a040ed8b41682"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aecb5e87702cfcf6b0d0d098926295809"><td class="memItemLeft" align="right" valign="top"><a id="aecb5e87702cfcf6b0d0d098926295809"></a>
-ros::Time&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#aecb5e87702cfcf6b0d0d098926295809">trajectory_timestamp_</a></td></tr>
-<tr class="memdesc:aecb5e87702cfcf6b0d0d098926295809"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timestamp for the beginning of the trajectory. <br /></td></tr>
-<tr class="separator:aecb5e87702cfcf6b0d0d098926295809"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a772f133318c9386be67a8af090fc115d"><td class="memItemLeft" align="right" valign="top"><a id="a772f133318c9386be67a8af090fc115d"></a>
-spirit_msgs::RobotStateTrajectory&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a772f133318c9386be67a8af090fc115d">traj_msg_</a></td></tr>
-<tr class="memdesc:a772f133318c9386be67a8af090fc115d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message for robot trajectory. <br /></td></tr>
-<tr class="separator:a772f133318c9386be67a8af090fc115d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aacd58fb9578246fa3bf4b37a6590e0fa"><td class="memItemLeft" align="right" valign="top"><a id="aacd58fb9578246fa3bf4b37a6590e0fa"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#aacd58fb9578246fa3bf4b37a6590e0fa">playback_speed_</a></td></tr>
 <tr class="memdesc:aacd58fb9578246fa3bf4b37a6590e0fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Playback speed for trajectory state publishing. <br /></td></tr>
 <tr class="separator:aacd58fb9578246fa3bf4b37a6590e0fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4830dc9fc82a1e6769159801126e6128"><td class="memItemLeft" align="right" valign="top"><a id="a4830dc9fc82a1e6769159801126e6128"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a4830dc9fc82a1e6769159801126e6128">traj_source_</a></td></tr>
+<tr class="memdesc:a4830dc9fc82a1e6769159801126e6128"><td class="mdescLeft">&#160;</td><td class="mdescRight">The source of the current trajectory (import or otherwise) <br /></td></tr>
+<tr class="separator:a4830dc9fc82a1e6769159801126e6128"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class for interfacing between RViz and spirit-software topics. </p>
@@ -241,8 +237,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 
 </div>
 </div>
-<a id="a57012da902581f14746fd573158ffe9f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a57012da902581f14746fd573158ffe9f">&#9670;&nbsp;</a></span>footPlanContinuousCallback()</h2>
+<a id="a38dfab90943b74fbd2438409e2f64a63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38dfab90943b74fbd2438409e2f64a63">&#9670;&nbsp;</a></span>multiFootPlanContinuousCallback()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -251,7 +247,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void TrajectoryPublisher::footPlanContinuousCallback </td>
+          <td class="memname">void TrajectoryPublisher::multiFootPlanContinuousCallback </td>
           <td>(</td>
           <td class="paramtype">const spirit_msgs::MultiFootPlanContinuous::ConstPtr &amp;&#160;</td>
           <td class="paramname"><em>msg</em></td><td>)</td>

@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['get_5fcost_5ffunction',['get_cost_function',['../classQuadrupedMPC.html#a2171dd5a1a680faa66573b4dc705c574',1,'QuadrupedMPC']]],
+  ['get_5foutput',['get_output',['../classQuadrupedMPC.html#ad284769c4decca29eaa2343554f5f1f7',1,'QuadrupedMPC']]],
   ['getaction',['getAction',['../classGraphClass.html#a3aba9c56f1bd8db4c0977a24af090fae',1,'GraphClass']]],
   ['getactionsequence',['getActionSequence',['../classRRTClass.html#af9ffdb926909423196f8a8f5a48f08ed',1,'RRTClass']]],
   ['getactionsequencereverse',['getActionSequenceReverse',['../classRRTConnectClass.html#aa51d87a720f78efa8005ab48a1fcd438',1,'RRTConnectClass']]],
@@ -22,6 +24,7 @@ var searchData=
   ['getydata',['getYData',['../classFastTerrainMap.html#a21322eeb034be71b4f99637e317e9e7e',1,'FastTerrainMap']]],
   ['globalbodyplanner',['GlobalBodyPlanner',['../classGlobalBodyPlanner.html#ae1cc3ec1e77b13cdf679267c4a8e55b4',1,'GlobalBodyPlanner']]],
   ['graphclass',['GraphClass',['../classGraphClass.html#a39d78244b77de2351494de80b28e7dbe',1,'GraphClass']]],
-  ['groundtruthpublisher',['GroundTruthPublisher',['../classGroundTruthPublisher.html#acaf89af328187198ce1d55166bdce7c5',1,'GroundTruthPublisher']]],
-  ['groundtruthstatecallback',['groundTruthStateCallback',['../classRVizInterface.html#a755fcd0d9f4a9cf83c29c66e6549824d',1,'RVizInterface']]]
+  ['grfarraycallback',['grfArrayCallback',['../classRobotProxy.html#a6c3d5d26f7a310a74ab2e990d430d0f5',1,'RobotProxy']]],
+  ['grfinputcallback',['grfInputCallback',['../classInverseDynamics.html#a5e6e4b3f712e3eec0d0dccd7c2e68758',1,'InverseDynamics']]],
+  ['groundtruthpublisher',['GroundTruthPublisher',['../classGroundTruthPublisher.html#acaf89af328187198ce1d55166bdce7c5',1,'GroundTruthPublisher']]]
 ];

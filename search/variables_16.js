@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['z_5fdata_5f',['z_data_',['../classFastTerrainMap.html#a06c63f2d551b0a4b0c48c4ff01e58fdd',1,'FastTerrainMap']]],
-  ['z_5fdata_5ffilt_5f',['z_data_filt_',['../classFastTerrainMap.html#ac8d930650a9ffa19f849a9daf4679b72',1,'FastTerrainMap']]]
+  ['x_5fdata_5f',['x_data_',['../classFastTerrainMap.html#aa7ab9b4b21f4971ec64e00a936345b29',1,'FastTerrainMap']]],
+  ['x_5fsize_5f',['x_size_',['../classFastTerrainMap.html#ab0320569ffaa039ea09b3d136aef5856',1,'FastTerrainMap']]]
 ];

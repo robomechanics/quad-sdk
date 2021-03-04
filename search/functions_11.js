@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['updatediscreteplan',['updateDiscretePlan',['../classLocalFootstepPlanner.html#a71b4ee2f4f3b385e27e21fb9cd0208a3',1,'LocalFootstepPlanner']]],
-  ['updategvalue',['updateGValue',['../classGraphClass.html#ae87d58394dc58f56bd4f619193423046',1,'GraphClass']]],
-  ['updatestep',['updateStep',['../classEKFEstimator.html#a2aa7c42b497574075809cf6812cc1ac6',1,'EKFEstimator::updateStep()'],['../classGroundTruthPublisher.html#a0da4de457cabb8dfb3812ea7589b04ab',1,'GroundTruthPublisher::updateStep()']]],
-  ['updatetrajectory',['updateTrajectory',['../classTrajectoryPublisher.html#a8b909db4c03b058debfcd70ee02b8600',1,'TrajectoryPublisher']]]
+  ['terrainmapcallback',['terrainMapCallback',['../classGlobalBodyPlanner.html#a209eb08a4c8c9e51b88c4039a6cfbd12',1,'GlobalBodyPlanner::terrainMapCallback()'],['../classLocalFootstepPlanner.html#a29dd7f51c83c244633f4efc8c6fac1af',1,'LocalFootstepPlanner::terrainMapCallback()']]],
+  ['terrainmappublisher',['TerrainMapPublisher',['../classTerrainMapPublisher.html#a0a8d623893002835ad1efd85b2fd321b',1,'TerrainMapPublisher']]],
+  ['trajectorycallback',['trajectoryCallback',['../classInverseDynamics.html#aab3375e51999781aabbac72fba82b024',1,'InverseDynamics']]],
+  ['trajectorypublisher',['TrajectoryPublisher',['../classTrajectoryPublisher.html#a8829068c0d4aeca30c6293872f4bcfc7',1,'TrajectoryPublisher']]],
+  ['twistbodyplanner',['TwistBodyPlanner',['../classTwistBodyPlanner.html#ab05c1949c1634c1dd745d01a06e73661',1,'TwistBodyPlanner']]]
 ];
