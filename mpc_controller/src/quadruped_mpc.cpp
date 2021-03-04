@@ -5,10 +5,10 @@
 #include <chrono>
 
 // Comment to remove OSQP printing
-#define PRINT_DEBUG 
+//#define PRINT_DEBUG 
 
 // Comment to remove timing prints
-#define PRINT_TIMING
+//#define PRINT_TIMING
 
 using namespace std::chrono;
 
@@ -27,7 +27,7 @@ QuadrupedMPC::QuadrupedMPC(const int N, const int Nx, const int Nu)
   // Initialize vectors
   b_contact_lo_ = Eigen::VectorXd::Zero(num_contact_constraints_);
   b_contact_hi_ = Eigen::VectorXd::Zero(num_contact_constraints_);
-  b_dyn_ = Eigen::VectorXd::Zero(num_dyn_constraints_); 
+  b_dyn_ = Eigen::VectorXd::Zero(num_dyn_constraints_);
 }
 
 void QuadrupedMPC::setMassProperties(const double m, const Eigen::Matrix3d Ib) {
@@ -43,7 +43,8 @@ void QuadrupedMPC::setTimestep(const double dt) {
 
 void QuadrupedMPC::update_friction(const double mu) {
   assert(0 <= mu && mu <= 1);
-
+  mu_ = mu;
+  
   A_con_dense_ = Eigen::MatrixXd::Zero(num_contact_constraints_, num_control_vars_);
 
   // Friction cone for one leg
@@ -87,11 +88,11 @@ void QuadrupedMPC::update_weights(const std::vector<Eigen::MatrixXd> &Q,
 }
 
 void QuadrupedMPC::update_dynamics(const Eigen::MatrixXd &ref_traj,
-                                const std::vector<std::vector<double> > &foot_positions) {
+                                const Eigen::MatrixXd &foot_positions) { // N x 12
   assert(dt_set_);
   assert(mass_properties_set_);
-  assert(foot_positions.size() == N_);
-  assert(foot_positions.front().size() == 12);
+  assert(foot_positions.rows() == N_);
+  assert(foot_positions.cols() == 12);
 
   // Create fixed components of dynamics matrices
   Eigen::MatrixXd Ad = Eigen::MatrixXd::Zero(nx_,nx_);
@@ -105,20 +106,17 @@ void QuadrupedMPC::update_dynamics(const Eigen::MatrixXd &ref_traj,
   }
   Bd(8,12) = -g_*dt_; // gravity acts downwards here
 
-  std::cout << "Ad: \n" << Ad << std::endl;
-  std::cout << "Bd: \n" << Bd << std::endl;
-
   // Reset dynamics matrix (not strictly necessary but good practice)
   A_dyn_dense_ = Eigen::MatrixXd::Zero(num_dyn_constraints_,num_decision_vars_);
 
   // Placeholder matrices for dynamics
   Eigen::MatrixXd Adi(nx_,nx_);
   Eigen::MatrixXd Bdi(nx_,nu_);
-  Eigen::Matrix3d foot_pos_hat;
-
+  
+  
+  Eigen::VectorXd yaws = ref_traj.row(5);
   for (int i = 0; i < N_; ++i) {
-    double yaw_ref = (ref_traj(5,i) + ref_traj(5,i+1))/2.0;
-    Eigen::AngleAxisd yaw_aa(yaw_ref,Eigen::Vector3d::UnitZ());
+    Eigen::AngleAxisd yaw_aa(yaws(i),Eigen::Vector3d::UnitZ());
     Eigen::Matrix3d Rz = yaw_aa.toRotationMatrix();
     Eigen::Matrix3d Rzt = Rz.transpose();
     Eigen::Matrix3d Iw = Rz*Ib_*Rzt;
@@ -130,14 +128,18 @@ void QuadrupedMPC::update_dynamics(const Eigen::MatrixXd &ref_traj,
 
     // Update our linearized angular velocity integration
     Adi.block(3,9,3,3) = Rzt*dt_;
+    //std::cout << "Rzt: " << std::endl << Rzt << std::endl;
 
     // Update our foot positions
     for (int j = 0; j < 4; ++j) {
-      foot_pos_hat << 0, -foot_positions.at(i).at(3*j+2),foot_positions.at(i).at(3*j+1),
-                      foot_positions.at(i).at(3*j+2), 0, -foot_positions.at(i).at(3*j+0),
-                      -foot_positions.at(i).at(3*j+1), foot_positions.at(i).at(3*j+0), 0;
+      Eigen::Matrix3d foot_pos_hat;
+      foot_pos_hat << 0, -foot_positions(i,3*j+2),foot_positions(i,3*j+1),
+                      foot_positions(i,3*j+2), 0, -foot_positions(i,3*j+0),
+                      -foot_positions(i,3*j+1), foot_positions(i,3*j+0), 0;
       Bdi.block(9,3*j,3,3) = Iw_inv * foot_pos_hat * dt_;//Eigen::Matrix3d::Zero();
     }
+
+
 
     A_dyn_dense_.block(nx_*i,nx_*i,nx_,nx_) = Adi;
     A_dyn_dense_.block(nx_*i,nx_*(i+1),nx_,nx_) = -Eigen::MatrixXd::Identity(nx_,nx_);
@@ -152,11 +154,9 @@ void QuadrupedMPC::update_contact(const std::vector<std::vector<bool>> contact_s
   assert(contact_sequence.front().size() == 4);
 
   Eigen::VectorXd lo_contact(num_constraints_per_leg_);
-  lo_contact << -100,0,-100,0,fmin;
-  //lo_contact << -100,-100,-100,-100,fmin;
+  lo_contact << -2*mu_*fmax,0,-2*mu_*fmax,0,fmin;
   Eigen::VectorXd hi_contact(num_constraints_per_leg_);
-  hi_contact << 0,100,0,100,fmax;
-  //hi_contact << 100,100,100,100,fmax;
+  hi_contact << 0,2*mu_*fmax,0,2*mu_*fmax,fmax;
 
   b_contact_lo_.setZero();
   b_contact_hi_.setZero();
@@ -278,13 +278,14 @@ void QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
     #endif
     solver_.settings()->setWarmStart(true);
     solver_.settings()->setCheckTermination(10);
-    solver_.settings()->setScaling(false);
+    solver_.settings()->setScaling(true);
     solver_.initSolver();
 
   }
   else { // Update components of QP that change from iter to iter
 
-    solver_.updateLinearConstraintsMatrix(A_sparse);
+    solver_.data()->clearLinearConstraintsMatrix();
+    solver_.data()->setLinearConstraintsMatrix(A_sparse);
     if (updated_weights_) {
       Eigen::SparseMatrix<double> hessian_sparse = H_.sparseView();
       solver_.updateHessianMatrix(hessian_sparse);
