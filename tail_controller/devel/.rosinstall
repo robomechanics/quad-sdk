@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/spirit/catkin_ws/src/spirit-software/tail_controller/devel/setup.sh

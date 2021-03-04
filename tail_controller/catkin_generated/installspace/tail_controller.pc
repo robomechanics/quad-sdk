@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: tail_controller
+Description: Description of tail_controller
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: roscpp std_msgs sensor_msgs spirit_msgs spirit_utils

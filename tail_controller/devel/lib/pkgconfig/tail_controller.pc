@@ -1,0 +1,8 @@
+prefix=/home/spirit/catkin_ws/src/spirit-software/tail_controller/devel
+
+Name: tail_controller
+Description: Description of tail_controller
+Version: 0.0.0
+Cflags: -I/home/spirit/catkin_ws/src/spirit-software/tail_controller/include
+Libs: -L${prefix}/lib 
+Requires: roscpp std_msgs sensor_msgs spirit_msgs spirit_utils

@@ -18,7 +18,10 @@ void TailController::imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
 }
 
 void TailController::sendTailCommands(const std_msgs::UInt8::ConstPtr& msg) {
+  x_av = last_imu_msg_.angular_velocity.x;
+  y_av = last_imu_msg_.angular_velocity.y; 
 
+  print(x_av)
 }
 
 void TailController::spin() {
