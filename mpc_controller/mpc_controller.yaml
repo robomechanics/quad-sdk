@@ -10,6 +10,6 @@ mpc_controller:
   control_weights: [1.0, 1.0, 1.0] #fx,fy,fz
   state_lower_bound: [-100,-100, 0.15,-0.785,-0.785,-10,-5,-5,-2,-3.14,-3.14,-3.14]
   state_upper_bound: [ 100, 100, 0.38, 0.785, 0.785, 10, 5, 5, 2, 3.14, 3.14, 3.14]
-  friction_mu: 0.6
+  friction_mu: 0.4
   normal_lo: 3
   normal_hi: 70
