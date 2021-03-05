@@ -1,0 +1,6 @@
+terrain_map_publisher:
+  update_rate: 5
+  map_data_source: internal
+  terrain_type: rough_terrain     # slope or rough_terrain
+
+map_frame: map

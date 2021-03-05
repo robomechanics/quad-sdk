@@ -10,6 +10,7 @@
 #include <spirit_msgs/MotorCommand.h>
 #include <spirit_msgs/LegCommand.h>
 #include <spirit_msgs/LegCommandArray.h>
+#include <spirit_utils/ros_utils.h>
 #include <urdf/model.h>
 
 namespace effort_controllers

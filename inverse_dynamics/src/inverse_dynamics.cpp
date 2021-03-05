@@ -8,11 +8,11 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
 
     // Load rosparams from parameter server
   std::string grf_input_topic, robot_state_topic, trajectory_topic, leg_command_array_topic, control_mode_topic; 
-  spirit_utils::loadROSParam(nh_,"topics/control/grfs",grf_input_topic);
   spirit_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
   spirit_utils::loadROSParam(nh_,"topics/state/trajectory",trajectory_topic);
-  spirit_utils::loadROSParam(nh_,"topics/joint_command",leg_command_array_topic);
-  spirit_utils::loadROSParam(nh_,"open_loop_controller/control_mode_topic",control_mode_topic);
+  spirit_utils::loadROSParam(nh_,"topics/control/grfs",grf_input_topic);
+  spirit_utils::loadROSParam(nh_,"topics/control/joint_command",leg_command_array_topic);
+  spirit_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
   
   // Setup pubs and subs
   grf_input_sub_ = nh_.subscribe(grf_input_topic,1,&InverseDynamics::grfInputCallback, this);
@@ -29,8 +29,6 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
 
 void InverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
   
-  printf("Data: %d\n", msg->data);
-  printf("control_mode_: %d\n", control_mode_);
   if ((control_mode_ == SIT_TO_STAND) || (control_mode_ == STAND_TO_SIT))
     return;
 
@@ -48,9 +46,6 @@ void InverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) 
     
     control_mode_ = msg->data;
   }
-
-  printf("Data: %d \n", msg->data);
-  printf("control_mode_: %d \n", control_mode_);
 }
 
 void InverseDynamics::grfInputCallback(const spirit_msgs::GRFArray::ConstPtr& msg) {
