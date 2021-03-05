@@ -12,7 +12,7 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
 
   // Load rosparams from parameter server
   std::string leg_control_topic, joint_encoder_topic, imu_topic;
-  spirit_utils::loadROSParam(nh_,"topics/joint_command",leg_control_topic);
+  spirit_utils::loadROSParam(nh_,"topics/control/joint_command",leg_control_topic);
   spirit_utils::loadROSParam(nh_,"topics/joint_encoder",joint_encoder_topic);
   spirit_utils::loadROSParam(nh_,"topics/imu",imu_topic);
   spirit_utils::loadROSParam(nh_,"mblink_converter/update_rate",update_rate_);

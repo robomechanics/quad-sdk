@@ -1,0 +1,5 @@
+trajectory_publisher:
+  update_rate: 40
+  interp_dt: 0.05 # has to be same as mpc controller
+  playback_speed: 1
+  traj_source: topic

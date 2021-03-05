@@ -1,7 +1,7 @@
 <launch>
 
-    <rosparam command="load" file="$(find spirit_utils)/../config/project_params.yaml"/>
-
+    <include file="$(find spirit_utils)/launch/load_params.launch" />
+    
     <node pkg="rosbag" type="record" name="rosbag_record"
     args="record -O $(find spirit_logger)/bags/spirit_log_current /state/trajectory /state/ground_truth /state/estimate /control/grfs" />
 

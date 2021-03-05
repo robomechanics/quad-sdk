@@ -1,0 +1,3 @@
+ekf_estimator:
+  joint_state_max_time: 20 # Milliseconds until we disregard last joint state message
+  update_rate: 100
