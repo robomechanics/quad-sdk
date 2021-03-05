@@ -67,7 +67,7 @@ before_script:
 
 script:
 - cd ~/catkin_ws
-- rosparam load src/spirit-software/config/project_params.yaml 
+- roslaunch spirit_utils load_params.launch
 - sleep 2
 - catkin_make run_tests && catkin_test_results
 
