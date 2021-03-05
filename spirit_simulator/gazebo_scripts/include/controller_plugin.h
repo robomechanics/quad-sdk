@@ -23,6 +23,7 @@ namespace effort_controllers
 class SpiritController : public controller_interface::Controller<hardware_interface::EffortJointInterface>
 {
   typedef std::vector<spirit_msgs::LegCommand> BufferType;
+  typedef std::vector<spirit_msgs::MotorCommand> TailBufferType;
 
 public:
   SpiritController();
@@ -34,12 +35,14 @@ public:
   std::vector< std::string > joint_names_;
   std::vector< hardware_interface::JointHandle > joints_;
   realtime_tools::RealtimeBuffer<BufferType> commands_buffer_;
+  realtime_tools::RealtimeBuffer<TailBufferType> tail_commands_buffer_;
   unsigned int n_joints_;
 
 private: 
 
   /// Subscriber for new LegCommandArray messages
   ros::Subscriber sub_command_;
+  ros::Subscriber tail_sub_command_;
 
   /// Store reference to gazebo joints
   std::vector<urdf::JointConstSharedPtr> joint_urdfs_;
@@ -51,6 +54,7 @@ private:
   std::vector<double> torque_lims_;
 
   void commandCB(const spirit_msgs::LegCommandArrayConstPtr& msg);
+  void tailCommandCB(const spirit_msgs::LegCommandConstPtr& msg);
   void enforceJointLimits(double &command, unsigned int index);
 
 }; // class
