@@ -88,7 +88,10 @@ namespace effort_controllers
     int num_legs = 4;
     commands_buffer_.writeFromNonRT(BufferType(num_legs));
 
-    sub_command_ = n.subscribe<spirit_msgs::LegCommandArray>("command", 1, &SpiritController::commandCB, this);
+    std::string joint_command_topic;
+    spirit_utils::loadROSParam(n, "/topics/control/joint_command",joint_command_topic);
+
+    sub_command_ = n.subscribe<spirit_msgs::LegCommandArray>(joint_command_topic, 1, &SpiritController::commandCB, this);
     return true;
   }
 

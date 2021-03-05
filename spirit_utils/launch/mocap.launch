@@ -1,5 +1,5 @@
 <launch>
-    <rosparam command="load" file="$(find spirit_utils)/../config/project_params.yaml"/>
+    <include file="$(find spirit_utils)/launch/load_params.launch" />
 
     <node name="mocap_node"
           pkg="mocap_optitrack"
