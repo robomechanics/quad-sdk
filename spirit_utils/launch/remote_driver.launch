@@ -15,6 +15,10 @@
 
     <include file="$(find spirit_utils)/launch/visualization.launch" />
 
+    <group if="$(arg logging)">
+        <include file="$(find spirit_utils)/launch/logging.launch" />
+    </group>
+
     <!-- Launch the robot_proxy if specified-->
     <group if="$(arg proxy)">
         <include file="$(find spirit_utils)/launch/robot_driver.launch">

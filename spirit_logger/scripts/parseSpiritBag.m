@@ -92,7 +92,7 @@ end
 stateTrajectoryData = readMessages(select(bag,'Topic','/state/trajectory'),'DataFormat','struct');
 stateTrajectory = struct;
 if isempty(stateTrajectoryData)
-    warning('Warning, no data on ground truth state topic');
+    warning('Warning, no data on trajectory topic');
 else
     
     stateTrajectory.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, stateTrajectoryData, 'UniformOutput', 0));

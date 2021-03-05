@@ -107,8 +107,8 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
         {
           msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 0;
           msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-          msg.leg_commands.at(i).motor_commands.at(j).kp = 20;
-          msg.leg_commands.at(i).motor_commands.at(j).kd = 0.3;
+          msg.leg_commands.at(i).motor_commands.at(j).kp = 5;
+          msg.leg_commands.at(i).motor_commands.at(j).kd = 0.1;
           msg.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
         }
       }

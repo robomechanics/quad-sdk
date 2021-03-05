@@ -17,19 +17,20 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   spirit_msgs
   spirit_utils
+  eigen_conversions
 )
 
 ## System dependencies are found with CMake's conventions
 find_package(Eigen3 REQUIRED)
 
 catkin_package(
-  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
-  CATKIN_DEPENDS roscpp std_msgs spirit_msgs spirit_utils
+  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS}
+  CATKIN_DEPENDS roscpp std_msgs spirit_msgs spirit_utils eigen_conversions
   DEPENDS EIGEN3
 )
 
 ###########
-## Build ##
+##  Build ##
 ###########
 
 ## Specify additional locations of header files
@@ -62,6 +63,6 @@ target_link_libraries(inverse_dynamics_node
 
 ## Google test file for inverse_dynamics library
 catkin_add_gtest(inverse_dynamics_test test/test_inverse_dynamics.cpp)
-target_link_libraries(inverse_dynamics_test ${catkin_LIBRARIES} inverse_dynamics)
+target_link_libraries(inverse_dynamics_test inverse_dynamics ${catkin_LIBRARIES})
 
 

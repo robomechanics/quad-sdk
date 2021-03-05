@@ -6,7 +6,7 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string foot_plan_discrete_topic, foot_plan_continuous_topic;
+  std::string foot_plan_discrete_topic, foot_plan_continuous_topic, robot_state_topic;
 
   nh.param<std::string>("topics/terrain_map", 
     terrain_map_topic_, "/terrain_map");
@@ -15,6 +15,8 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
     foot_plan_discrete_topic, "/foot_plan_discrete");
   nh.param<std::string>("topics/foot_plan_continuous", 
     foot_plan_continuous_topic, "/foot_plan_continuous");
+  nh.param<std::string>("topics/state/ground_truth", 
+    robot_state_topic, "/state/ground_truth");
   nh.param<std::string>("map_frame",map_frame_,"map");
 
   nh.param<double>("local_footstep_planner/update_rate", update_rate_, 1);
@@ -37,6 +39,8 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
     &LocalFootstepPlanner::terrainMapCallback, this);
   body_plan_sub_ = nh_.subscribe(body_plan_topic_,1,
     &LocalFootstepPlanner::bodyPlanCallback, this);
+  robot_state_sub_ = nh_.subscribe(robot_state_topic,1,
+    &LocalFootstepPlanner::robotStateCallback, this);
   foot_plan_discrete_pub_ = nh_.advertise<
     spirit_msgs::MultiFootPlanDiscrete>(foot_plan_discrete_topic,1);
   foot_plan_continuous_pub_ = nh_.advertise<
@@ -106,6 +110,21 @@ void LocalFootstepPlanner::bodyPlanCallback(
   }
 }
 
+void LocalFootstepPlanner::robotStateCallback(
+  const spirit_msgs::RobotState::ConstPtr& msg) {
+
+  if (msg->feet.feet.empty())
+    return;
+
+  if (body_plan_.empty())
+    return;
+
+  if (robot_state_msg_.feet.feet.empty()) {
+    robot_state_msg_ = (*msg);
+  }
+
+}
+
 double LocalFootstepPlanner::computeTimeUntilNextFlight(double t) {
   double t_remaining = std::numeric_limits<double>::max();
   for (int i = 1; i < t_plan_.size(); i++) {
@@ -153,8 +172,30 @@ void LocalFootstepPlanner::updateDiscretePlan() {
    // Loop through each foot
   for (int j=0; j<num_feet_; j++) {
 
+    FootstepState footstep(4);
+
+    // If we have robot state data, apply the current foot position for the first cycle
+    if (robot_state_msg_.feet.feet.empty() == false) {
+      // Load the data into the footstep array and push into the plan
+      footstep[0] = robot_state_msg_.feet.feet[j].position.x;
+      footstep[1] = robot_state_msg_.feet.feet[j].position.y;
+      footstep[2] = 0.0;
+      if (t_offsets_trot[j] < 0.5*period_) {
+        footstep[3] = t_s[j];
+      } else {
+        footstep[3] = period_;
+      }
+
+      // footstep_plan_[j].push_back(footstep);
+      // start_index = 1;
+    }
+
     // Loop through each gait cycle
     for (int i = start_index; i < end_index; i++) {
+
+      // Emptry prior footsteps
+      footstep.clear();
+      footstep.resize(4);
       
       // Compute the initial time for this cycle
       double t_cycle = i*period_;
@@ -163,8 +204,6 @@ void LocalFootstepPlanner::updateDiscretePlan() {
         break;
       }
  
-      FootstepState footstep(4);
-
       // Compute the touchdown and midstance times
       double t_touchdown = t_cycle + t_offsets_trot[j];
       double t_midstance = t_cycle + t_offsets_trot[j] + 0.5*t_s[j];
@@ -209,7 +248,7 @@ void LocalFootstepPlanner::updateDiscretePlan() {
       // Define the nominal footstep location to lie on a line between the hips 
       // projected vertically and along GRF (third entry is garbage)
       Eigen::Vector3d footstep_nom = (1-grf_weight_)*hip_midstance + 
-      grf_weight_*footstep_grf;
+        grf_weight_*footstep_grf;
 
       // Load the data into the footstep array and push into the plan
       footstep[0] = footstep_nom[0];
@@ -222,8 +261,8 @@ void LocalFootstepPlanner::updateDiscretePlan() {
     }
 
     // Add final foot configuration
-    FootstepState footstep(4);
-
+    footstep.clear();
+    footstep.resize(4);
     BodyState s_final = body_plan_.back();
 
     double yaw = s_final[5];
@@ -421,6 +460,7 @@ void LocalFootstepPlanner::publishDiscretePlan() {
 
       foot_state_msg.position.x = footstep_plan_[i][j][0];
       foot_state_msg.position.y = footstep_plan_[i][j][1];
+
       foot_state_msg.position.z = terrain_.getGroundHeight(
         foot_state_msg.position.x,foot_state_msg.position.y);
       foot_state_msg.velocity.x = 0;

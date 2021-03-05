@@ -3,11 +3,15 @@
     <rosparam command="load" file="$(find spirit_utils)/../config/project_params.yaml"/>
 
     <node pkg="rosbag" type="record" name="rosbag_record"
-    args="record -O $(find spirit_logger)/bags/spirit_log_current /state/trajectory
-        /state/ground_truth /state/estimate /control/grfs" />
+    args="record -O $(find spirit_logger)/bags/spirit_log_current /state/trajectory /state/ground_truth /state/estimate /control/grfs" />
 
     <node pkg="rosbag" type="record" name="rosbag_record_archive"
-    args="record -o $(find spirit_logger)/bags/archive/spirit_log /state/trajectory
-        /state/ground_truth /state/estimate /control/grfs" />
+    args="record -o $(find spirit_logger)/bags/archive/spirit_log /state/trajectory /state/ground_truth /state/estimate /control/grfs" />
+
+    <!-- <node pkg="rosbag" type="record" name="rosbag_record"
+    args="record -O $(find spirit_logger)/bags/spirit_log_current -a" />
+
+    <node pkg="rosbag" type="record" name="rosbag_record_archive"
+    args="record -o $(find spirit_logger)/bags/archive/spirit_log -a" /> -->
 
 </launch>
