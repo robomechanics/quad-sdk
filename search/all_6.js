@@ -7,6 +7,7 @@ var searchData=
   ['foot_5f1_5fplan_5fcontinuous_5fviz_5fpub_5f',['foot_1_plan_continuous_viz_pub_',['../classRVizInterface.html#a037da82ad6bd10cdc11b8e481ee3b2bf',1,'RVizInterface']]],
   ['foot_5f2_5fplan_5fcontinuous_5fviz_5fpub_5f',['foot_2_plan_continuous_viz_pub_',['../classRVizInterface.html#ad8eb09194e5c7940617312447dfe0915',1,'RVizInterface']]],
   ['foot_5f3_5fplan_5fcontinuous_5fviz_5fpub_5f',['foot_3_plan_continuous_viz_pub_',['../classRVizInterface.html#ae3fc4878b2ac9d609dc7184adbbf9953',1,'RVizInterface']]],
+  ['foot_5foffset_5f',['foot_offset_',['../classspirit__utils_1_1SpiritKinematics.html#a633adbb2af7f4fd2f07cfd54835c44e4',1,'spirit_utils::SpiritKinematics']]],
   ['foot_5fplan_5fcontinuous_5fpub_5f',['foot_plan_continuous_pub_',['../classLocalFootstepPlanner.html#a5c06a66af9aa74614d13439edd5be4f6',1,'LocalFootstepPlanner']]],
   ['foot_5fplan_5fcontinuous_5fsub_5f',['foot_plan_continuous_sub_',['../classRVizInterface.html#a7f4168959e2c26888cd227436a196127',1,'RVizInterface']]],
   ['foot_5fplan_5fdiscrete_5fpub_5f',['foot_plan_discrete_pub_',['../classLocalFootstepPlanner.html#a36154a8581ac1636da19102c758215af',1,'LocalFootstepPlanner']]],

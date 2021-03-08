@@ -1,6 +1,7 @@
 var searchData=
 [
   ['g_5f',['g_',['../classQuadrupedMPC.html#a7853026cfba08c63417f7dba00059997',1,'QuadrupedMPC']]],
+  ['g_5fbody_5flegbases_5f',['g_body_legbases_',['../classspirit__utils_1_1SpiritKinematics.html#a9c70cc4e16c98800d1e5fa43d0d8431d',1,'spirit_utils::SpiritKinematics']]],
   ['g_5fvalues',['g_values',['../classGraphClass.html#a75a6a398215073b3e67b852cc136bd53',1,'GraphClass']]],
   ['get_5fcost_5ffunction',['get_cost_function',['../classQuadrupedMPC.html#a2171dd5a1a680faa66573b4dc705c574',1,'QuadrupedMPC']]],
   ['get_5foutput',['get_output',['../classQuadrupedMPC.html#ad284769c4decca29eaa2343554f5f1f7',1,'QuadrupedMPC']]],

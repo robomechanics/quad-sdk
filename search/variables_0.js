@@ -2,6 +2,7 @@ var searchData=
 [
   ['a_5fcon_5fdense_5f',['A_con_dense_',['../classQuadrupedMPC.html#adb2f3356b3378fa984933966937f39cc',1,'QuadrupedMPC']]],
   ['a_5fdyn_5fdense_5f',['A_dyn_dense_',['../classQuadrupedMPC.html#a8a8d6878ca4d0c3b174c8ecf03c029fb',1,'QuadrupedMPC']]],
+  ['abad_5foffset_5f',['abad_offset_',['../classspirit__utils_1_1SpiritKinematics.html#ada049b2bac9cd96a8094c259bea19dc2',1,'spirit_utils::SpiritKinematics']]],
   ['action_5fsequence_5f',['action_sequence_',['../classGlobalBodyPlanner.html#a66b5df244875b0209ceb2c634d93c050',1,'GlobalBodyPlanner']]],
   ['actions',['actions',['../classGraphClass.html#af72e4666fa9283cd4c3d4acfccbcfd57',1,'GraphClass']]],
   ['alpha_5f',['alpha_',['../classGroundTruthPublisher.html#a8eb84af7c18c6ddfe17812999c766988',1,'GroundTruthPublisher']]],

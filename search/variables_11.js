@@ -1,10 +1,5 @@
 var searchData=
 [
-  ['shoulder_5foffset_5f0_5f',['shoulder_offset_0_',['../classspirit__utils_1_1SpiritKinematics.html#a527750c6110e7e9b5c52d80c5765f93f',1,'spirit_utils::SpiritKinematics']]],
-  ['shoulder_5foffset_5f1_5f',['shoulder_offset_1_',['../classspirit__utils_1_1SpiritKinematics.html#adc447954f794fe568225c4f7e09d84c0',1,'spirit_utils::SpiritKinematics']]],
-  ['shoulder_5foffset_5f2_5f',['shoulder_offset_2_',['../classspirit__utils_1_1SpiritKinematics.html#a34476d7a96bdbc5c21e109fa37be27ab',1,'spirit_utils::SpiritKinematics']]],
-  ['shoulder_5foffset_5f3_5f',['shoulder_offset_3_',['../classspirit__utils_1_1SpiritKinematics.html#a96bf7ccfdd4773ac087c9fcb1737ae2a',1,'spirit_utils::SpiritKinematics']]],
-  ['shoulder_5foffsets_5f',['shoulder_offsets_',['../classspirit__utils_1_1SpiritKinematics.html#a95a1c550ca95022ef9c0cc90157f7a46',1,'spirit_utils::SpiritKinematics']]],
   ['sit',['SIT',['../classInverseDynamics.html#a68fafd2c4caf1f3402f7710341d5b714',1,'InverseDynamics']]],
   ['sit_5fto_5fstand',['SIT_TO_STAND',['../classInverseDynamics.html#ad0e8aa9588f3a79d0b9c428e909bd8ec',1,'InverseDynamics']]],
   ['solve_5ftime_5finfo_5f',['solve_time_info_',['../classGlobalBodyPlanner.html#ae431f7b02f8c58d4fa354faeed6714e9',1,'GlobalBodyPlanner']]],

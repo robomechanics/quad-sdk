@@ -4,5 +4,7 @@ var searchData=
   ['terrainmappublisher',['TerrainMapPublisher',['../classTerrainMapPublisher.html#a0a8d623893002835ad1efd85b2fd321b',1,'TerrainMapPublisher']]],
   ['trajectorycallback',['trajectoryCallback',['../classInverseDynamics.html#aab3375e51999781aabbac72fba82b024',1,'InverseDynamics']]],
   ['trajectorypublisher',['TrajectoryPublisher',['../classTrajectoryPublisher.html#a8829068c0d4aeca30c6293872f4bcfc7',1,'TrajectoryPublisher']]],
+  ['transformbodytoworld',['transformBodyToWorld',['../classspirit__utils_1_1SpiritKinematics.html#a6778ef122633158ace46f515c444a0ec',1,'spirit_utils::SpiritKinematics']]],
+  ['transformworldtobody',['transformWorldToBody',['../classspirit__utils_1_1SpiritKinematics.html#a00cac98b7e68d0efab0c46cfb5c598d8',1,'spirit_utils::SpiritKinematics']]],
   ['twistbodyplanner',['TwistBodyPlanner',['../classTwistBodyPlanner.html#ab05c1949c1634c1dd745d01a06e73661',1,'TwistBodyPlanner']]]
 ];

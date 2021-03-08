@@ -25,6 +25,8 @@ var searchData=
   ['trajectory_5fsub_5f',['trajectory_sub_',['../classInverseDynamics.html#a1307bcabcda04c88c3236bb17f4c773a',1,'InverseDynamics']]],
   ['trajectorycallback',['trajectoryCallback',['../classInverseDynamics.html#aab3375e51999781aabbac72fba82b024',1,'InverseDynamics']]],
   ['trajectorypublisher',['TrajectoryPublisher',['../classTrajectoryPublisher.html',1,'TrajectoryPublisher'],['../classTrajectoryPublisher.html#a8829068c0d4aeca30c6293872f4bcfc7',1,'TrajectoryPublisher::TrajectoryPublisher()']]],
+  ['transformbodytoworld',['transformBodyToWorld',['../classspirit__utils_1_1SpiritKinematics.html#a6778ef122633158ace46f515c444a0ec',1,'spirit_utils::SpiritKinematics']]],
+  ['transformworldtobody',['transformWorldToBody',['../classspirit__utils_1_1SpiritKinematics.html#a00cac98b7e68d0efab0c46cfb5c598d8',1,'spirit_utils::SpiritKinematics']]],
   ['transition_5fduration_5f',['transition_duration_',['../classInverseDynamics.html#a00c02fb1f368a7bab0706c82a2b237ad',1,'InverseDynamics']]],
   ['transition_5ftimestamp_5f',['transition_timestamp_',['../classInverseDynamics.html#a48cad9a840f22e0116a633ad4f5b1818',1,'InverseDynamics']]],
   ['twistbodyplanner',['TwistBodyPlanner',['../classTwistBodyPlanner.html',1,'TwistBodyPlanner'],['../classTwistBodyPlanner.html#ab05c1949c1634c1dd745d01a06e73661',1,'TwistBodyPlanner::TwistBodyPlanner()']]]

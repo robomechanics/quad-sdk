@@ -19,5 +19,10 @@ var searchData=
   ['leg_5fcommand_5farray_5fpub_5f',['leg_command_array_pub_',['../classInverseDynamics.html#a307c284efedcd89bdce87e3a75c2b160',1,'InverseDynamics']]],
   ['leg_5fcontrol_5fsub_5f',['leg_control_sub_',['../classMBLinkConverter.html#ae48e9cc552f57806f5f96e6ebd89c2d3',1,'MBLinkConverter']]],
   ['leg_5fmap_5f',['leg_map_',['../classeffort__controllers_1_1SpiritController.html#aaf247652a359ff6265d1ed04631db35d',1,'effort_controllers::SpiritController']]],
-  ['leg_5fphases_5f',['leg_phases_',['../classOpenLoopController.html#a5ba744177d23b6554ea52a871887f5e0',1,'OpenLoopController']]]
+  ['leg_5fphases_5f',['leg_phases_',['../classOpenLoopController.html#a5ba744177d23b6554ea52a871887f5e0',1,'OpenLoopController']]],
+  ['legbase_5foffset_5f0_5f',['legbase_offset_0_',['../classspirit__utils_1_1SpiritKinematics.html#a2f8dbcc070af104f64f10d066d1a3f17',1,'spirit_utils::SpiritKinematics']]],
+  ['legbase_5foffset_5f1_5f',['legbase_offset_1_',['../classspirit__utils_1_1SpiritKinematics.html#a5b2b1d12992f7a9989d17c3bc31c939f',1,'spirit_utils::SpiritKinematics']]],
+  ['legbase_5foffset_5f2_5f',['legbase_offset_2_',['../classspirit__utils_1_1SpiritKinematics.html#aabb0150a6d1ac10cac9deb87f6358ed6',1,'spirit_utils::SpiritKinematics']]],
+  ['legbase_5foffset_5f3_5f',['legbase_offset_3_',['../classspirit__utils_1_1SpiritKinematics.html#a0ed1b6f81a1dc99def9503fcf23f3b42',1,'spirit_utils::SpiritKinematics']]],
+  ['legbase_5foffsets_5f',['legbase_offsets_',['../classspirit__utils_1_1SpiritKinematics.html#aee7b36d6a90383d11c03207237dd2c02',1,'spirit_utils::SpiritKinematics']]]
 ];

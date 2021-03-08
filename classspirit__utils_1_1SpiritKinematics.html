@@ -87,9 +87,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4468615a4d8b386afa108d8dd62b8e5c"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix4d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a4468615a4d8b386afa108d8dd62b8e5c">createAffineMatrix</a> (Eigen::Vector3d trans, Eigen::AngleAxisd rot)</td></tr>
 <tr class="memdesc:a4468615a4d8b386afa108d8dd62b8e5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an Eigen Eigen::Matrix4d containing a homogeneous transform from a specified translation and an AngleAxis object.  <a href="#a4468615a4d8b386afa108d8dd62b8e5c">More...</a><br /></td></tr>
 <tr class="separator:a4468615a4d8b386afa108d8dd62b8e5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6778ef122633158ace46f515c444a0ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a6778ef122633158ace46f515c444a0ec">transformBodyToWorld</a> (Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Matrix4d transform_body, Eigen::Matrix4d &amp;transform_world)</td></tr>
+<tr class="memdesc:a6778ef122633158ace46f515c444a0ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tranform a transformation matrix from the body frame to the world frame.  <a href="#a6778ef122633158ace46f515c444a0ec">More...</a><br /></td></tr>
+<tr class="separator:a6778ef122633158ace46f515c444a0ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00cac98b7e68d0efab0c46cfb5c598d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a00cac98b7e68d0efab0c46cfb5c598d8">transformWorldToBody</a> (Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Matrix4d transform_world, Eigen::Matrix4d &amp;transform_body)</td></tr>
+<tr class="memdesc:a00cac98b7e68d0efab0c46cfb5c598d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tranform a transformation matrix from the world frame to the body frame.  <a href="#a00cac98b7e68d0efab0c46cfb5c598d8">More...</a><br /></td></tr>
+<tr class="separator:a00cac98b7e68d0efab0c46cfb5c598d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2381ca579713668c4de2cb7369329f4b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a2381ca579713668c4de2cb7369329f4b">bodyToFootFK</a> (int leg_index, Eigen::Vector3d joint_state, Eigen::Matrix4d &amp;g_body_foot)</td></tr>
+<tr class="memdesc:a2381ca579713668c4de2cb7369329f4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forward kinematics for a specified leg from the body COM.  <a href="#a2381ca579713668c4de2cb7369329f4b">More...</a><br /></td></tr>
+<tr class="separator:a2381ca579713668c4de2cb7369329f4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16a70b64440b5d4795ab3aefc2edf5c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a16a70b64440b5d4795ab3aefc2edf5c0">bodyToFootFK</a> (int leg_index, Eigen::Vector3d joint_state, Eigen::Vector3d &amp;foot_pos_body)</td></tr>
 <tr class="memdesc:a16a70b64440b5d4795ab3aefc2edf5c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forward kinematics for a specified leg from the body COM.  <a href="#a16a70b64440b5d4795ab3aefc2edf5c0">More...</a><br /></td></tr>
 <tr class="separator:a16a70b64440b5d4795ab3aefc2edf5c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dde52350386f7e9c2ac779c2a7acfd0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a1dde52350386f7e9c2ac779c2a7acfd0">legFK</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state, Eigen::Matrix4d &amp;g_world_foot)</td></tr>
+<tr class="memdesc:a1dde52350386f7e9c2ac779c2a7acfd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forward kinematics for a specified leg.  <a href="#a1dde52350386f7e9c2ac779c2a7acfd0">More...</a><br /></td></tr>
+<tr class="separator:a1dde52350386f7e9c2ac779c2a7acfd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab32651e160ef32cd5c8266ae28d9e14e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#ab32651e160ef32cd5c8266ae28d9e14e">legFK</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state, Eigen::Vector3d &amp;foot_pos_world)</td></tr>
 <tr class="memdesc:ab32651e160ef32cd5c8266ae28d9e14e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forward kinematics for a specified leg.  <a href="#ab32651e160ef32cd5c8266ae28d9e14e">More...</a><br /></td></tr>
 <tr class="separator:ab32651e160ef32cd5c8266ae28d9e14e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -105,9 +117,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4d9175f846baad7b866847a6941a8f22"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a4d9175f846baad7b866847a6941a8f22">getLinkLength</a> (int leg_index, int link_index)</td></tr>
 <tr class="memdesc:a4d9175f846baad7b866847a6941a8f22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the upper joint limit of a particular joint.  <a href="#a4d9175f846baad7b866847a6941a8f22">More...</a><br /></td></tr>
 <tr class="separator:a4d9175f846baad7b866847a6941a8f22"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5481caa355fa2745c51a083e4d62e8a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a5481caa355fa2745c51a083e4d62e8a0">legBaseFK</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Matrix4d &amp;g_world_shoulder)</td></tr>
-<tr class="memdesc:a5481caa355fa2745c51a083e4d62e8a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the transform from the world frame to the leg base.  <a href="#a5481caa355fa2745c51a083e4d62e8a0">More...</a><br /></td></tr>
-<tr class="separator:a5481caa355fa2745c51a083e4d62e8a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09a6ddc540d73d044ebaa57935203dda"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a09a6ddc540d73d044ebaa57935203dda">legBaseFK</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Matrix4d &amp;g_world_legbase)</td></tr>
+<tr class="memdesc:a09a6ddc540d73d044ebaa57935203dda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the transform from the world frame to the leg base.  <a href="#a09a6ddc540d73d044ebaa57935203dda">More...</a><br /></td></tr>
+<tr class="separator:a09a6ddc540d73d044ebaa57935203dda"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26e0da8070b44b669114b619c0bd5d17"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a26e0da8070b44b669114b619c0bd5d17">legBaseFK</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Vector3d &amp;leg_base_pos_world)</td></tr>
 <tr class="memdesc:a26e0da8070b44b669114b619c0bd5d17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the position of the leg base frame origin in the world frame.  <a href="#a26e0da8070b44b669114b619c0bd5d17">More...</a><br /></td></tr>
 <tr class="separator:a26e0da8070b44b669114b619c0bd5d17"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -126,26 +138,42 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a093bbf828e49b8eaf8fb81900b1ddebb">l2_</a> = 0.206</td></tr>
 <tr class="memdesc:a093bbf828e49b8eaf8fb81900b1ddebb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lower link length. <br /></td></tr>
 <tr class="separator:a093bbf828e49b8eaf8fb81900b1ddebb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a527750c6110e7e9b5c52d80c5765f93f"><td class="memItemLeft" align="right" valign="top"><a id="a527750c6110e7e9b5c52d80c5765f93f"></a>
-const Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a527750c6110e7e9b5c52d80c5765f93f">shoulder_offset_0_</a> = {0.2263, 0.07, 0}</td></tr>
-<tr class="memdesc:a527750c6110e7e9b5c52d80c5765f93f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Leg 0 shoulder offset. <br /></td></tr>
-<tr class="separator:a527750c6110e7e9b5c52d80c5765f93f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc447954f794fe568225c4f7e09d84c0"><td class="memItemLeft" align="right" valign="top"><a id="adc447954f794fe568225c4f7e09d84c0"></a>
-const Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#adc447954f794fe568225c4f7e09d84c0">shoulder_offset_1_</a> = {-0.2263, 0.07, 0}</td></tr>
-<tr class="memdesc:adc447954f794fe568225c4f7e09d84c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Leg 1 shoulder offset. <br /></td></tr>
-<tr class="separator:adc447954f794fe568225c4f7e09d84c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a34476d7a96bdbc5c21e109fa37be27ab"><td class="memItemLeft" align="right" valign="top"><a id="a34476d7a96bdbc5c21e109fa37be27ab"></a>
-const Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a34476d7a96bdbc5c21e109fa37be27ab">shoulder_offset_2_</a> = {0.2263, -0.07, 0}</td></tr>
-<tr class="memdesc:a34476d7a96bdbc5c21e109fa37be27ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Leg 2 shoulder offset. <br /></td></tr>
-<tr class="separator:a34476d7a96bdbc5c21e109fa37be27ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96bf7ccfdd4773ac087c9fcb1737ae2a"><td class="memItemLeft" align="right" valign="top"><a id="a96bf7ccfdd4773ac087c9fcb1737ae2a"></a>
-const Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a96bf7ccfdd4773ac087c9fcb1737ae2a">shoulder_offset_3_</a> = {-0.2263, -0.07, 0}</td></tr>
-<tr class="memdesc:a96bf7ccfdd4773ac087c9fcb1737ae2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Leg 3 shoulder offset. <br /></td></tr>
-<tr class="separator:a96bf7ccfdd4773ac087c9fcb1737ae2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a95a1c550ca95022ef9c0cc90157f7a46"><td class="memItemLeft" align="right" valign="top"><a id="a95a1c550ca95022ef9c0cc90157f7a46"></a>
-std::vector&lt; Eigen::Vector3d &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a95a1c550ca95022ef9c0cc90157f7a46">shoulder_offsets_</a></td></tr>
-<tr class="memdesc:a95a1c550ca95022ef9c0cc90157f7a46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of shoulder offsets. <br /></td></tr>
-<tr class="separator:a95a1c550ca95022ef9c0cc90157f7a46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada049b2bac9cd96a8094c259bea19dc2"><td class="memItemLeft" align="right" valign="top"><a id="ada049b2bac9cd96a8094c259bea19dc2"></a>
+Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#ada049b2bac9cd96a8094c259bea19dc2">abad_offset_</a> = {0,0,0}</td></tr>
+<tr class="memdesc:ada049b2bac9cd96a8094c259bea19dc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abad offset from legbase. <br /></td></tr>
+<tr class="separator:ada049b2bac9cd96a8094c259bea19dc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35381c9d4127f363d0043e63b5483201"><td class="memItemLeft" align="right" valign="top"><a id="a35381c9d4127f363d0043e63b5483201"></a>
+Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a35381c9d4127f363d0043e63b5483201">knee_offset_</a> = {-<a class="el" href="classspirit__utils_1_1SpiritKinematics.html#aade05d2dc6ff8d30cb5a1936d71762e8">l1_</a>,0,0}</td></tr>
+<tr class="memdesc:a35381c9d4127f363d0043e63b5483201"><td class="mdescLeft">&#160;</td><td class="mdescRight">Knee offset from hip. <br /></td></tr>
+<tr class="separator:a35381c9d4127f363d0043e63b5483201"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a633adbb2af7f4fd2f07cfd54835c44e4"><td class="memItemLeft" align="right" valign="top"><a id="a633adbb2af7f4fd2f07cfd54835c44e4"></a>
+Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a633adbb2af7f4fd2f07cfd54835c44e4">foot_offset_</a> = {<a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a093bbf828e49b8eaf8fb81900b1ddebb">l2_</a>,0,0}</td></tr>
+<tr class="memdesc:a633adbb2af7f4fd2f07cfd54835c44e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Foot offset from knee. <br /></td></tr>
+<tr class="separator:a633adbb2af7f4fd2f07cfd54835c44e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f8dbcc070af104f64f10d066d1a3f17"><td class="memItemLeft" align="right" valign="top"><a id="a2f8dbcc070af104f64f10d066d1a3f17"></a>
+const Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a2f8dbcc070af104f64f10d066d1a3f17">legbase_offset_0_</a> = {0.2263, 0.07, 0}</td></tr>
+<tr class="memdesc:a2f8dbcc070af104f64f10d066d1a3f17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Leg 0 legbase offset. <br /></td></tr>
+<tr class="separator:a2f8dbcc070af104f64f10d066d1a3f17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b2b1d12992f7a9989d17c3bc31c939f"><td class="memItemLeft" align="right" valign="top"><a id="a5b2b1d12992f7a9989d17c3bc31c939f"></a>
+const Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a5b2b1d12992f7a9989d17c3bc31c939f">legbase_offset_1_</a> = {-0.2263, 0.07, 0}</td></tr>
+<tr class="memdesc:a5b2b1d12992f7a9989d17c3bc31c939f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Leg 1 legbase offset. <br /></td></tr>
+<tr class="separator:a5b2b1d12992f7a9989d17c3bc31c939f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabb0150a6d1ac10cac9deb87f6358ed6"><td class="memItemLeft" align="right" valign="top"><a id="aabb0150a6d1ac10cac9deb87f6358ed6"></a>
+const Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#aabb0150a6d1ac10cac9deb87f6358ed6">legbase_offset_2_</a> = {0.2263, -0.07, 0}</td></tr>
+<tr class="memdesc:aabb0150a6d1ac10cac9deb87f6358ed6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Leg 2 legbase offset. <br /></td></tr>
+<tr class="separator:aabb0150a6d1ac10cac9deb87f6358ed6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ed1b6f81a1dc99def9503fcf23f3b42"><td class="memItemLeft" align="right" valign="top"><a id="a0ed1b6f81a1dc99def9503fcf23f3b42"></a>
+const Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a0ed1b6f81a1dc99def9503fcf23f3b42">legbase_offset_3_</a> = {-0.2263, -0.07, 0}</td></tr>
+<tr class="memdesc:a0ed1b6f81a1dc99def9503fcf23f3b42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Leg 3 legbase offset. <br /></td></tr>
+<tr class="separator:a0ed1b6f81a1dc99def9503fcf23f3b42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee7b36d6a90383d11c03207237dd2c02"><td class="memItemLeft" align="right" valign="top"><a id="aee7b36d6a90383d11c03207237dd2c02"></a>
+std::vector&lt; Eigen::Vector3d &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#aee7b36d6a90383d11c03207237dd2c02">legbase_offsets_</a></td></tr>
+<tr class="memdesc:aee7b36d6a90383d11c03207237dd2c02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of legbase offsets. <br /></td></tr>
+<tr class="separator:aee7b36d6a90383d11c03207237dd2c02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c70cc4e16c98800d1e5fa43d0d8431d"><td class="memItemLeft" align="right" valign="top"><a id="a9c70cc4e16c98800d1e5fa43d0d8431d"></a>
+std::vector&lt; Eigen::Matrix4d &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a9c70cc4e16c98800d1e5fa43d0d8431d">g_body_legbases_</a></td></tr>
+<tr class="memdesc:a9c70cc4e16c98800d1e5fa43d0d8431d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of legbase offsets. <br /></td></tr>
+<tr class="separator:a9c70cc4e16c98800d1e5fa43d0d8431d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ddab2a65cea03eea9ef1d248232d58c"><td class="memItemLeft" align="right" valign="top"><a id="a4ddab2a65cea03eea9ef1d248232d58c"></a>
 const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a4ddab2a65cea03eea9ef1d248232d58c">joint_eps</a> = 0.1</td></tr>
 <tr class="memdesc:a4ddab2a65cea03eea9ef1d248232d58c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Epsilon offset for joint bounds. <br /></td></tr>
@@ -184,8 +212,52 @@ const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bot
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a2381ca579713668c4de2cb7369329f4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2381ca579713668c4de2cb7369329f4b">&#9670;&nbsp;</a></span>bodyToFootFK() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SpiritKinematics::bodyToFootFK </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>leg_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramname"><em>joint_state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Matrix4d &amp;&#160;</td>
+          <td class="paramname"><em>g_body_foot</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute forward kinematics for a specified leg from the body COM. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">leg_index</td><td>Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">joint_state</td><td>Joint states for the specified leg (abad, hip, knee) </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">g_body_foot</td><td>Transform of the specified foot in world frame </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a16a70b64440b5d4795ab3aefc2edf5c0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a16a70b64440b5d4795ab3aefc2edf5c0">&#9670;&nbsp;</a></span>bodyToFootFK()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a16a70b64440b5d4795ab3aefc2edf5c0">&#9670;&nbsp;</a></span>bodyToFootFK() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -220,8 +292,6 @@ const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bot
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">leg_index</td><td>Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR) </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">body_pos</td><td>Position of center of body frame </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">body_rpy</td><td>Orientation of body frame in roll, pitch, yaw </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">joint_state</td><td>Joint states for the specified leg (abad, hip, knee) </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">foot_pos_world</td><td>Position of the specified foot in world frame </td></tr>
   </table>
@@ -398,8 +468,8 @@ const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bot
 
 </div>
 </div>
-<a id="a5481caa355fa2745c51a083e4d62e8a0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5481caa355fa2745c51a083e4d62e8a0">&#9670;&nbsp;</a></span>legBaseFK() <span class="overload">[1/2]</span></h2>
+<a id="a09a6ddc540d73d044ebaa57935203dda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09a6ddc540d73d044ebaa57935203dda">&#9670;&nbsp;</a></span>legBaseFK() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -426,7 +496,7 @@ const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bot
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">Eigen::Matrix4d &amp;&#160;</td>
-          <td class="paramname"><em>g_world_shoulder</em>&#160;</td>
+          <td class="paramname"><em>g_world_legbase</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -442,7 +512,7 @@ const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bot
     <tr><td class="paramdir">[in]</td><td class="paramname">leg_index</td><td>Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">body_pos</td><td>Position of center of body frame </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">body_rpy</td><td>Orientation of body frame in roll, pitch, yaw </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">g_world_shoulder</td><td>Transformation matrix of world to leg base </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">g_world_legbase</td><td>Transformation matrix of world to leg base </td></tr>
   </table>
   </dd>
 </dl>
@@ -500,8 +570,66 @@ const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bot
 
 </div>
 </div>
+<a id="a1dde52350386f7e9c2ac779c2a7acfd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dde52350386f7e9c2ac779c2a7acfd0">&#9670;&nbsp;</a></span>legFK() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SpiritKinematics::legFK </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>leg_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramname"><em>body_pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramname"><em>body_rpy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramname"><em>joint_state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Matrix4d &amp;&#160;</td>
+          <td class="paramname"><em>g_world_foot</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute forward kinematics for a specified leg. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">leg_index</td><td>Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">body_pos</td><td>Position of center of body frame </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">body_rpy</td><td>Orientation of body frame in roll, pitch, yaw </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">joint_state</td><td>Joint states for the specified leg (abad, hip, knee) </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">g_world_foot</td><td>Transform of the specified foot in world frame </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ab32651e160ef32cd5c8266ae28d9e14e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab32651e160ef32cd5c8266ae28d9e14e">&#9670;&nbsp;</a></span>legFK()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ab32651e160ef32cd5c8266ae28d9e14e">&#9670;&nbsp;</a></span>legFK() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -610,6 +738,106 @@ const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bot
     <tr><td class="paramdir">[in]</td><td class="paramname">body_rpy</td><td>Orientation of body frame in roll, pitch, yaw </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">foot_pos_world</td><td>Position of the specified foot in world frame </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">joint_state</td><td>Joint states for the specified leg (abad, hip, knee) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a6778ef122633158ace46f515c444a0ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6778ef122633158ace46f515c444a0ec">&#9670;&nbsp;</a></span>transformBodyToWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SpiritKinematics::transformBodyToWorld </td>
+          <td>(</td>
+          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramname"><em>body_pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramname"><em>body_rpy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Matrix4d&#160;</td>
+          <td class="paramname"><em>transform_body</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Matrix4d &amp;&#160;</td>
+          <td class="paramname"><em>transform_world</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tranform a transformation matrix from the body frame to the world frame. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">body_pos</td><td>Position of center of body frame </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">body_rpy</td><td>Orientation of body frame in roll, pitch, yaw </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">transform</td><td>Sprcified transform in the world frame </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a00cac98b7e68d0efab0c46cfb5c598d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00cac98b7e68d0efab0c46cfb5c598d8">&#9670;&nbsp;</a></span>transformWorldToBody()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SpiritKinematics::transformWorldToBody </td>
+          <td>(</td>
+          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramname"><em>body_pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramname"><em>body_rpy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Matrix4d&#160;</td>
+          <td class="paramname"><em>transform_world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Matrix4d &amp;&#160;</td>
+          <td class="paramname"><em>transform_body</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tranform a transformation matrix from the world frame to the body frame. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">body_pos</td><td>Position of center of body frame </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">body_rpy</td><td>Orientation of body frame in roll, pitch, yaw </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">transform</td><td>Sprcified transform in the body frame </td></tr>
   </table>
   </dd>
 </dl>
