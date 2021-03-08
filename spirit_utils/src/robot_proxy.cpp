@@ -13,13 +13,13 @@ RobotProxy::RobotProxy(ros::NodeHandle nh) {
 
 
   // Setup pubs and subs
-  control_input_sub_ = nh_.subscribe(control_input_topic,1,&RobotProxy::controlInputCallback, this);
+  control_input_sub_ = nh_.subscribe(control_input_topic,1,&RobotProxy::grfArrayCallback, this);
   joint_encoder_pub_ = nh_.advertise<sensor_msgs::JointState>(joint_encoder_topic,1);
   imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic,1);
   mocap_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(mocap_topic,1);
 }
 
-void RobotProxy::controlInputCallback(const spirit_msgs::ControlInput::ConstPtr& msg) {
+void RobotProxy::grfArrayCallback(const spirit_msgs::GRFArray::ConstPtr& msg) {
 }
 
 void RobotProxy::publishJointEncoders() {
@@ -58,10 +58,10 @@ void RobotProxy::publishMocap() {
   msg.pose.position.y = 0;
   msg.pose.position.z = 2*(0.2*sin(0.25*pi));
 
-  double secs =ros::Time::now().toSec();
-  double amplitude = 1.0;
-  double period = 5;
-  // msg.pose.position.y = amplitude*sin(2*3.14159*secs/period);
+  double t_now =ros::Time::now().toSec();
+  double amplitude = -0.5;
+  double period = 10;
+  // msg.pose.position.x = amplitude*sin(2*3.14159*(t_now - t_init_)/period);
 
   msg.pose.orientation.x = 0;
   msg.pose.orientation.y = 0;
@@ -72,6 +72,7 @@ void RobotProxy::publishMocap() {
 
 void RobotProxy::spin() {
   ros::Rate r(update_rate_);
+  t_init_ = ros::Time::now().toSec();
   while (ros::ok()) {
 
     // Publish sensor data

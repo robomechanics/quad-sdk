@@ -88,7 +88,10 @@ namespace effort_controllers
     int num_legs = 4;
     commands_buffer_.writeFromNonRT(BufferType(num_legs));
 
-    sub_command_ = n.subscribe<spirit_msgs::LegCommandArray>("command", 1, &SpiritController::commandCB, this);
+    std::string joint_command_topic;
+    spirit_utils::loadROSParam(n, "/topics/control/joint_command",joint_command_topic);
+
+    sub_command_ = n.subscribe<spirit_msgs::LegCommandArray>(joint_command_topic, 1, &SpiritController::commandCB, this);
     return true;
   }
 
@@ -133,6 +136,8 @@ namespace effort_controllers
       double torque_feedback = kp * pos_error + kd * vel_error;
       double torque_lim = torque_lims_[ind.second];
       double torque_command = std::min(std::max(torque_feedback + torque_ff, -torque_lim),torque_lim);
+
+      // std::cout << "Joint " << i << ": " << "FF Torque: " << torque_ff << " FF Torque %: " << torque_ff/torque_command << " FB Torque: " << torque_feedback << " FB Torque %: " << torque_feedback/torque_command << " Total Torque: " << torque_command << std::endl;
 
       // Update joint torque
       joints_.at(i).setCommand(torque_command);

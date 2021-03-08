@@ -21,12 +21,17 @@ find_package(catkin REQUIRED COMPONENTS
   spirit_msgs
   grid_map_core
   grid_map_ros
+  Eigen3
 )
 
+find_package(PythonLibs 2.7)
+
 catkin_package(
-  INCLUDE_DIRS include
+  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
+  INCLUDE_DIRS include ${PYTHON_INCLUDE_DIRS}
   LIBRARIES spirit_utils
-#  CATKIN_DEPENDS roscpp std_msgs
+  CATKIN_DEPENDS roscpp std_msgs nav_msgs sensor_msgs geometry_msgs spirit_msgs 
+  grid_map_core grid_map_ros
 #	DEPENDS
 )
 
@@ -39,8 +44,12 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-)
 
+  ${EIGEN3_INCLUDE_DIRS}
+
+  # ${PYTHON_INCLUDE_DIRS}
+
+)
 
 add_library(spirit_utils
   src/rviz_interface.cpp
@@ -48,6 +57,7 @@ add_library(spirit_utils
   src/terrain_map_publisher.cpp
   src/ground_truth_publisher.cpp
   src/robot_proxy.cpp
+  src/foot_jacobians.cpp
   src/math_utils.cpp
   src/kinematics.cpp
   src/trajectory_publisher.cpp
@@ -90,8 +100,6 @@ target_link_libraries(robot_proxy_node
   ${catkin_LIBRARIES}
 )
 
-
-
 #############
 ## Testing ##
 #############
@@ -103,6 +111,7 @@ catkin_add_gtest(spirit_utils-test
   test/test_ground_truth_publisher.cpp
   test/test_robot_proxy.cpp
   test/test_fast_terrain_map.cpp
+  test/test_foot_jacobians.cpp
   test/test_kinematics.cpp
   test/test_main.cpp)
 target_link_libraries(spirit_utils-test spirit_utils ${catkin_LIBRARIES})

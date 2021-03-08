@@ -1,0 +1,22 @@
+<launch>
+
+    <rosparam command="load" file="$(find spirit_utils)/config/topics.yaml"/>
+    <rosparam command="load" file="$(find spirit_utils)/config/teleop_twist_keyboard.yaml"/>
+    <rosparam command="load" file="$(find spirit_utils)/config/ground_truth_publisher.yaml"/>
+    <rosparam command="load" file="$(find spirit_utils)/config/terrain_map_publisher.yaml"/>
+    <rosparam command="load" file="$(find spirit_utils)/config/grid_map_visualization.yaml"/>
+    <rosparam command="load" file="$(find spirit_utils)/config/robot_proxy.yaml"/>
+    <rosparam command="load" file="$(find spirit_utils)/config/rviz_interface.yaml"/>
+    <rosparam command="load" file="$(find spirit_utils)/config/trajectory_publisher.yaml"/>
+
+    <rosparam command="load" file="$(find mpc_controller)/mpc_controller.yaml"/>
+    <rosparam command="load" file="$(find ekf_estimator)/ekf_estimator.yaml"/>
+    <rosparam command="load" file="$(find global_body_planner)/global_body_planner.yaml"/>
+    <rosparam command="load" file="$(find twist_body_planner)/twist_body_planner.yaml"/>
+    <rosparam command="load" file="$(find local_footstep_planner)/local_footstep_planner.yaml"/>
+    <rosparam command="load" file="$(find contact_detection)/contact_detection.yaml"/>
+    <rosparam command="load" file="$(find body_force_estimator)/body_force_estimator.yaml"/>
+    <rosparam command="load" file="$(find mblink_converter)/mblink_converter.yaml"/>
+    <rosparam command="load" file="$(find open_loop_controller)/open_loop_controller.yaml"/>
+
+</launch>

@@ -1,0 +1,3 @@
+ground_truth_publisher:
+  mocap_rate: 100.0 # This must match the mocap frame rate or velocity estimates will be mis-scaled
+  velocity_smoothing_weight: 0.5

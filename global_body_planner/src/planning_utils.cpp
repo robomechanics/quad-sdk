@@ -1,5 +1,5 @@
 #include "global_body_planner/planning_utils.h"
-#include "global_body_planner/matplotlibcpp.h"
+#include "spirit_utils/matplotlibcpp.h"
 
 namespace planning_utils {
 
@@ -192,7 +192,7 @@ bool isWithinBounds(State s1, State s2)
   return (stateDistance(s1, s2) <= GOAL_BOUNDS);
 }
 
-void addFullStates(std::vector<State> interp_reduced_plan, double dt, 
+void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan, double dt, 
   std::vector<FullState> &interp_full_plan, FastTerrainMap& terrain) {
 
   int num_states = interp_reduced_plan.size();
@@ -210,15 +210,21 @@ void addFullStates(std::vector<State> interp_reduced_plan, double dt,
   std::vector<double> yaw_rate(num_states);
   std::vector<double> filtered_yaw_rate(num_states);
 
-  // Compute yaw to align with heading
-  for (int i = 0; i < num_states; i++) {
+  // Enforce that yaw and pitch match current state, let the filter smooth things out
+  pitch[0] = start_state[4];
+  yaw[0] = start_state[5];
+  double gamma = 0.9;
+
+  // Compute yaw to align with heading, pitch to align with the terrain
+  for (int i = 1; i < num_states; i++) {
+    double weight = pow(gamma,i);
     State body_state = interp_reduced_plan[i];
-    yaw[i] = atan2(body_state[4],body_state[3]);
-    pitch[i] = getPitchFromState(body_state,terrain);
+    pitch[i] = weight*pitch[0] + (1-weight)*getPitchFromState(body_state,terrain);
+    yaw[i] = weight*yaw[0] + (1-weight)*atan2(body_state[4],body_state[3]);
   }
 
   // Filter yaw and compute its derivative via central difference method
-  int window_size = 7;
+  int window_size = 15;
   filtered_yaw = math_utils::movingAverageFilter(yaw, window_size);
   yaw_rate = math_utils::centralDiff(filtered_yaw, dt);
   filtered_yaw_rate = math_utils::movingAverageFilter(yaw_rate, window_size);
@@ -231,17 +237,17 @@ void addFullStates(std::vector<State> interp_reduced_plan, double dt,
     interp_t[i] = i*dt;
   }
 
-  // plt::clf();
-  // plt::ion();
-  // plt::named_plot("yaw", interp_t, yaw);
-  // plt::named_plot("filtered yaw", interp_t, filtered_yaw);
-  // plt::named_plot("yaw rate", interp_t, yaw_rate);
-  // plt::named_plot("filtered yaw rate", interp_t, filtered_yaw_rate);
-  // plt::xlabel("t");
-  // plt::ylabel("yaw");
-  // plt::legend();
-  // plt::show();
-  // plt::pause(0.001);
+  plt::clf();
+  plt::ion();
+  plt::named_plot("yaw", interp_t, yaw);
+  plt::named_plot("filtered yaw", interp_t, filtered_yaw);
+  plt::named_plot("yaw rate", interp_t, yaw_rate);
+  plt::named_plot("filtered yaw rate", interp_t, filtered_yaw_rate);
+  plt::xlabel("t");
+  plt::ylabel("yaw");
+  plt::legend();
+  plt::show();
+  plt::pause(0.001);
 
   // Add full state data into the array
   for (int i = 0; i < num_states; i++) {
@@ -352,7 +358,7 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
   // }
 }
 
-void getInterpPlan(std::vector<State> state_sequence,
+void getInterpPlan(FullState start_state, std::vector<State> state_sequence,
   std::vector<Action> action_sequence,double dt, double t0,
   std::vector<FullState> &interp_full_plan, std::vector<GRF> &interp_GRF, 
   std::vector<double> &interp_t, std::vector<int> &interp_primitive_id,
@@ -376,7 +382,7 @@ void getInterpPlan(std::vector<State> state_sequence,
   interp_primitive_id.push_back(STANCE);
 
   // Lift from reduced into full body plan
-  addFullStates(interp_reduced_plan, dt, interp_full_plan, terrain);
+  addFullStates(start_state, interp_reduced_plan, dt, interp_full_plan, terrain);
 
 }
 

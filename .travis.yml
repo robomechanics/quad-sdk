@@ -53,6 +53,7 @@ install:
 - mkdir -p ~/catkin_ws/src
 - ln -s $CI_SOURCE_PATH ~/catkin_ws/src/
 - cd $TRAVIS_BUILD_DIR
+- git submodule update --init
 - chmod +x setup.sh
 - ./setup.sh
 - source /opt/ros/$ROS_DISTRO/setup.bash
@@ -66,7 +67,7 @@ before_script:
 
 script:
 - cd ~/catkin_ws
-- rosparam load src/spirit-software/config/project_params.yaml 
+- roslaunch spirit_utils load_params.launch
 - sleep 2
 - catkin_make run_tests && catkin_test_results
 

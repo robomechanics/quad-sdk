@@ -213,7 +213,7 @@ void GlobalBodyPlanner::callPlanner() {
       std::cout << std::endl;
 
       double dt = 0.1;
-      getInterpPlan(state_sequence_, action_sequence_, dt, replan_start_time_, 
+      getInterpPlan(start_state_, state_sequence_, action_sequence_, dt, replan_start_time_, 
         body_plan_, grf_plan_, t_plan_, primitive_id_plan_, terrain_);
 
       if (start_index == 0) {
@@ -270,10 +270,24 @@ void GlobalBodyPlanner::addStateAndGRFToMsg(double t, FullState body_state,
   state.twist.twist.angular.y = body_state[10];
   state.twist.twist.angular.z = body_state[11];
 
-  geometry_msgs::Vector3 grf_msg;
-  grf_msg.x = grf[0];
-  grf_msg.y = grf[1];
-  grf_msg.z = grf[2];
+  spirit_msgs::GRFArray grf_msg;
+  geometry_msgs::Vector3 vector_msg;
+  vector_msg.x = grf[0];
+  vector_msg.y = grf[1];
+  vector_msg.z = grf[2];
+  geometry_msgs::Point point_msg;
+  point_msg.x = body_state[0];
+  point_msg.y = body_state[1];
+  point_msg.z = body_state[2];
+
+  grf_msg.header.frame_id = map_frame_;
+  grf_msg.header.stamp = msg.header.stamp + ros::Duration(t);
+  grf_msg.vectors.push_back(vector_msg);
+  grf_msg.points.push_back(point_msg);
+
+  bool contact_state = (primitive_id != FLIGHT);
+  grf_msg.contact_states.push_back(contact_state);
+
 
   msg.states.push_back(state);
   msg.grfs.push_back(grf_msg);

@@ -22,13 +22,13 @@ namespace planning_utils {
 const double H_MAX = 0.375;           // Maximum height of leg base, m
 const double H_MIN = 0.125;          // Minimum ground clearance of body corners, m
 const double V_MAX = 4.0;           // Maximum robot velocity, m/s (4.0 for cheetah, 2.5 for anymal)
-const double V_NOM = 1.0;           // Nominal velocity, m/s (used during connect function)
+const double V_NOM = 0.25;           // Nominal velocity, m/s (used during connect function)
 const double ROBOT_L = 0.4;         // Length of robot body, m (0.6 cheetah, 0.554 ANYmal)
 const double ROBOT_W = 0.3;       // Width of robot body, m (0.256 cheetah, 0.232 ANYmal)
 const double ROBOT_H = 0.05;         // Vertical distance between leg base and bottom of robot, m (0.1 cheetah, 0.04 ANYmal)
 
 // Define dynamic constraint parameters
-const double M_CONST = 12;          // Robot mass, kg (43 for cheetah, 30 for anymal)
+const double M_CONST = 12;          // Robot mass, kg (12 for spirit, 43 for cheetah, 30 for anymal)
 const double J_CONST = 1.0;         // Moment of inertia about the robot's y axis (pitch)
 const double G_CONST = 9.81;        // Gravity constant, m/s^2
 const double F_MAX = 300;           // Maximum GRF, N (800 for cheetah, 500 for anymal)
@@ -95,7 +95,7 @@ bool isWithinBounds(State s1, State s2);
 std::array<double,3> rotateGRF(std::array<double,3> surface_norm, std::array<double,3> grf);
 
 // Define function for obtaining full state/path information
-void addFullStates(std::vector<State> interp_reduced_path, double dt, 
+void addFullStates(FullState start_state, std::vector<State> interp_reduced_path, double dt, 
   std::vector<FullState> &interp_full_path, FastTerrainMap& terrain);
 GRF getGRF(Action a,double t);
 double getPitchFromState(State s, FastTerrainMap& terrain);
@@ -103,7 +103,7 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
   std::vector<State> &interp_plan, std::vector<GRF> &interp_GRF,
   std::vector<double> &interp_t, std::vector<int> &interp_primitive_id,
   FastTerrainMap& terrain);
-void getInterpPlan(std::vector<State> state_sequence,
+void getInterpPlan(FullState start_state, std::vector<State> state_sequence,
   std::vector<Action> action_sequence,double dt, double t0,
   std::vector<FullState> &interp_full_plan, std::vector<GRF> &interp_GRF, 
   std::vector<double> &interp_t, std::vector<int> &interp_primitive_id,

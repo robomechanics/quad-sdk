@@ -1,9 +1,10 @@
 <launch>
 
-    <rosparam command="load" file="$(find spirit_utils)/../config/project_params.yaml"/>
+    <include file="$(find spirit_utils)/launch/load_params.launch" />
 
     <arg name="proxy" default="false"/>
-    <arg name="controller" default="open_loop"/>
+    <arg name="controller" default="inverse_dynamics"/>
+    <arg name="logging" default="false"/>
     <arg name="body_planner" default="global"/>
 
     <include file="$(find spirit_utils)/launch/mapping.launch" />
@@ -13,6 +14,10 @@
     </include>
 
     <include file="$(find spirit_utils)/launch/visualization.launch" />
+
+    <group if="$(arg logging)">
+        <include file="$(find spirit_utils)/launch/logging.launch" />
+    </group>
 
     <!-- Launch the robot_proxy if specified-->
     <group if="$(arg proxy)">

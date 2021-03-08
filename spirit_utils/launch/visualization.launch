@@ -1,21 +1,34 @@
 <launch>
   
-    <rosparam command="load" file="$(find spirit_utils)/../config/project_params.yaml"/>
+    <include file="$(find spirit_utils)/launch/load_params.launch" />
 
     <arg name="use_estimate" default="false"/>
+    <!-- <arg name="state_type" default="/trajectory"/> -->
 
-    <!-- Point the robot description to this URDF (which has meshes attached) -->
-    <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit_meshes.urdf" />
+    <group ns="/trajectory">
+        <!-- Point the robot description to this URDF (which has meshes attached) -->
+        <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
 
-    <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
-        <remap from="joint_states" to="/visualization/joint_states"/>
-    </node>
+        <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+            <remap from="joint_states" to="/visualization/joint_states/trajectory"/>
+            <param name="tf_prefix" value="/trajectory"/>
+        </node>
+    </group>
+
+    <group ns="/ground_truth">
+        <!-- Point the robot description to this URDF (which has meshes attached) -->
+        <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit_meshes.urdf" />
+
+        <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+            <remap from="joint_states" to="/visualization/joint_states/ground_truth"/>
+            <param name="tf_prefix" value="/ground_truth"/>
+        </node>
+    </group>
 
     <!-- Launch the node to publish the visual topics for the plans -->
-    <node name="rviz_interface" pkg="spirit_utils" type="rviz_interface_node" output="screen">
-    	<remap from="/state/ground_truth" to="state/trajectory" />
-    </node>
+    <node name="rviz_interface" pkg="spirit_utils" type="rviz_interface_node" output="screen"/>
 
     <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find spirit_utils)/rviz/example_with_terrain.rviz"/>

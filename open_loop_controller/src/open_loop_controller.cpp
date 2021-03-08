@@ -5,8 +5,8 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh) {
 
   // Get rosparams
   std::string leg_control_topic,control_mode_topic;
-  spirit_utils::loadROSParam(nh_,"topics/joint_command",leg_control_topic);
-  spirit_utils::loadROSParam(nh_,"open_loop_controller/control_mode_topic",control_mode_topic);
+  spirit_utils::loadROSParam(nh_,"topics/control/joint_command",leg_control_topic);
+  spirit_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
   spirit_utils::loadROSParam(nh_,"open_loop_controller/update_rate",update_rate_);
   spirit_utils::loadROSParam(nh_,"open_loop_controller/stand_angles",stand_joint_angles_);
   spirit_utils::loadROSParam(nh_,"open_loop_controller/stand_kp",stand_kp_);
@@ -107,8 +107,8 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
         {
           msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 0;
           msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-          msg.leg_commands.at(i).motor_commands.at(j).kp = 20;
-          msg.leg_commands.at(i).motor_commands.at(j).kd = 0.3;
+          msg.leg_commands.at(i).motor_commands.at(j).kp = 5;
+          msg.leg_commands.at(i).motor_commands.at(j).kd = 0.1;
           msg.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
         }
       }
