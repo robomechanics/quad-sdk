@@ -202,6 +202,10 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
   double roll_rate = 0;
 
   // Declare variables for yaw
+  std::vector<double> z(num_states);
+  std::vector<double> filtered_z(num_states);
+  std::vector<double> z_rate(num_states);
+  std::vector<double> filtered_z_rate(num_states);
   std::vector<double> pitch(num_states);
   std::vector<double> pitch_rate(num_states);
   std::vector<double> filtered_pitch_rate(num_states);
@@ -211,14 +215,16 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
   std::vector<double> filtered_yaw_rate(num_states);
 
   // Enforce that yaw and pitch match current state, let the filter smooth things out
+  z[0] = start_state[2];
   pitch[0] = start_state[4];
   yaw[0] = start_state[5];
   double gamma = 0.9;
 
-  // Compute yaw to align with heading, pitch to align with the terrain
+  // Compute yaw to align with heading, pitch and height to align with the terrain
   for (int i = 1; i < num_states; i++) {
     double weight = pow(gamma,i);
     State body_state = interp_reduced_plan[i];
+    z[i] = weight*z[0] + (1-weight)*getHeightFromState(body_state,terrain);
     pitch[i] = weight*pitch[0] + (1-weight)*getPitchFromState(body_state,terrain);
     yaw[i] = weight*yaw[0] + (1-weight)*atan2(body_state[4],body_state[3]);
   }
@@ -231,6 +237,11 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
   pitch_rate = math_utils::centralDiff(pitch, dt);
   filtered_pitch_rate = math_utils::movingAverageFilter(pitch_rate,window_size);
 
+  // Filter z with a much tighter window
+  int z_window_size = 5;
+  filtered_z = math_utils::movingAverageFilter(z, z_window_size);
+  z_rate = math_utils::centralDiff(filtered_z, dt);
+  filtered_z_rate = math_utils::movingAverageFilter(z_rate,z_window_size);
 
   std::vector<double> interp_t(num_states);
   for (int i = 0; i < num_states; i++) {
@@ -252,6 +263,8 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
   // Add full state data into the array
   for (int i = 0; i < num_states; i++) {
     State body_state = interp_reduced_plan[i];
+    body_state[2] = filtered_z[i];
+    body_state[8] = filtered_z_rate[i];
     FullState body_full_state = stateToFullState(body_state, roll, pitch[i],
       filtered_yaw[i], roll_rate, filtered_pitch_rate[i], filtered_yaw_rate[i]);
 

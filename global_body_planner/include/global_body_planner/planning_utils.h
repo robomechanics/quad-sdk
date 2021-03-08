@@ -98,6 +98,7 @@ std::array<double,3> rotateGRF(std::array<double,3> surface_norm, std::array<dou
 void addFullStates(FullState start_state, std::vector<State> interp_reduced_path, double dt, 
   std::vector<FullState> &interp_full_path, FastTerrainMap& terrain);
 GRF getGRF(Action a,double t);
+double getHeightFromState(State s, FastTerrainMap& terrain);
 double getPitchFromState(State s, FastTerrainMap& terrain);
 void interpStateActionPair(State s, Action a,double t0,double dt,
   std::vector<State> &interp_plan, std::vector<GRF> &interp_GRF,
