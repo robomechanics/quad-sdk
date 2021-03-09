@@ -246,7 +246,7 @@ SOFTWARE.
           </friction>
         </surface>
       </collision>
-      <collision name='toe0_collision'>
+<!--       <collision name='toe0_collision'>
         <pose frame=''>0.206 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -290,7 +290,7 @@ SOFTWARE.
         <contact>
           <collision>toe0_collision</collision>
         </contact>
-      </sensor>
+      </sensor> -->
       <visual name='lower0_visual'>
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
@@ -305,7 +305,7 @@ SOFTWARE.
           </script>
         </material>
       </visual>
-      <visual name='lower0_fixed_joint_lump__toe0_visual_1'>
+<!--       <visual name='lower0_fixed_joint_lump__toe0_visual_1'>
         <pose frame=''>0.206 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -318,7 +318,7 @@ SOFTWARE.
             <uri>file://media/materials/scripts/gazebo.material</uri>
           </script>
         </material>
-      </visual>
+      </visual> -->
       <velocity_decay/>
       <gravity>1</gravity>
       <velocity_decay/>
@@ -515,7 +515,7 @@ SOFTWARE.
           </friction>
         </surface>
       </collision>
-      <collision name='toe1_collision'>
+<!--       <collision name='toe1_collision'>
         <pose frame=''>0.206 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -559,7 +559,7 @@ SOFTWARE.
         <contact>
           <collision>toe1_collision</collision>
         </contact>
-      </sensor>
+      </sensor> -->
       <visual name='lower1_visual'>
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
@@ -574,7 +574,7 @@ SOFTWARE.
           </script>
         </material>
       </visual>
-      <visual name='lower1_fixed_joint_lump__toe1_visual_1'>
+<!--       <visual name='lower1_fixed_joint_lump__toe1_visual_1'>
         <pose frame=''>0.206 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -587,7 +587,7 @@ SOFTWARE.
             <uri>file://media/materials/scripts/gazebo.material</uri>
           </script>
         </material>
-      </visual>
+      </visual> -->
       <velocity_decay/>
       <gravity>1</gravity>
       <velocity_decay/>
@@ -785,7 +785,7 @@ SOFTWARE.
           </friction>
         </surface>
       </collision>
-      <collision name='toe2_collision'>
+<!--       <collision name='toe2_collision'>
         <pose frame=''>0.206 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -829,7 +829,7 @@ SOFTWARE.
         <contact>
           <collision>toe2_collision</collision>
         </contact>
-      </sensor>
+      </sensor> -->
       <visual name='lower2_visual'>
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
@@ -844,7 +844,7 @@ SOFTWARE.
           </script>
         </material>
       </visual>
-      <visual name='lower2_fixed_joint_lump__toe2_visual_1'>
+<!--       <visual name='lower2_fixed_joint_lump__toe2_visual_1'>
         <pose frame=''>0.206 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -857,7 +857,7 @@ SOFTWARE.
             <uri>file://media/materials/scripts/gazebo.material</uri>
           </script>
         </material>
-      </visual>
+      </visual> -->
       <velocity_decay/>
       <gravity>1</gravity>
       <velocity_decay/>
@@ -1054,7 +1054,7 @@ SOFTWARE.
           </friction>
         </surface>
       </collision>
-      <collision name='toe3_collision'>
+<!--       <collision name='toe3_collision'>
         <pose frame=''>0.206 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -1098,7 +1098,7 @@ SOFTWARE.
         <contact>
           <collision>toe3_collision</collision>
         </contact>
-      </sensor>
+      </sensor> -->
       <visual name='lower3_visual'>
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
@@ -1113,7 +1113,7 @@ SOFTWARE.
           </script>
         </material>
       </visual>
-      <visual name='lower3_fixed_joint_lump__toe3_visual_1'>
+<!--       <visual name='lower3_fixed_joint_lump__toe3_visual_1'>
         <pose frame=''>0.206 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -1126,7 +1126,7 @@ SOFTWARE.
             <uri>file://media/materials/scripts/gazebo.material</uri>
           </script>
         </material>
-      </visual>
+      </visual> -->
       <velocity_decay/>
       <gravity>1</gravity>
       <velocity_decay/>
@@ -1151,6 +1151,330 @@ SOFTWARE.
         </dynamics>
         <use_parent_model_frame>1</use_parent_model_frame>
       </axis>
+    </joint>
+
+    <link name='toe0'>
+      <pose frame=''>0.2263 0.17098 0 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <mass>0.015</mass>
+        <inertia>
+          <ixx>0.000025</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000025</iyy>
+          <iyz>0</iyz>
+          <izz>0.000025</izz>
+        </inertia>
+      </inertial>
+      <collision name='toe0_collision'>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.02</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <bounce>
+            <restitution_coefficient>0</restitution_coefficient>
+            <threshold>1e+06</threshold>
+          </bounce>
+          <friction>
+            <torsional>
+              <coefficient>0.3</coefficient>
+            </torsional>
+            <ode>
+              <mu>100</mu>
+              <mu2>50</mu2>
+            </ode>
+            <bullet>
+              <rolling_friction>0.3</rolling_friction>
+              <friction2>50</friction2>
+            </bullet>
+          </friction>
+          <contact>
+            <bullet>
+              <kp>30000</kp>
+              <kd>1000</kd>
+              <split_impulse>1</split_impulse>
+              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+            </bullet>
+            <ode>
+              <kp>30000</kp>
+              <kd>1000</kd>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+      <sensor name="toe0_contact" type="contact">
+        <plugin name="toe0_plugin" filename="libcontact.so"/>
+        <contact>
+          <collision>toe0_collision</collision>
+        </contact>
+      </sensor>
+      <visual name='toe0_visual'>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.02</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Black</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay/>
+    </link>
+    <joint name='jtoe0' type='fixed'>
+      <child>toe0</child>
+      <parent>lower0</parent>
+    </joint>
+
+    <link name='toe1'>
+      <pose frame=''>-0.2263 0.17098 0 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <mass>0.015</mass>
+        <inertia>
+          <ixx>0.000025</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000025</iyy>
+          <iyz>0</iyz>
+          <izz>0.000025</izz>
+        </inertia>
+      </inertial>
+      <collision name='toe1_collision'>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.02</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <bounce>
+            <restitution_coefficient>0</restitution_coefficient>
+            <threshold>1e+06</threshold>
+          </bounce>
+          <friction>
+            <torsional>
+              <coefficient>0.3</coefficient>
+            </torsional>
+            <ode>
+              <mu>100</mu>
+              <mu2>50</mu2>
+            </ode>
+            <bullet>
+              <rolling_friction>0.3</rolling_friction>
+              <friction2>50</friction2>
+            </bullet>
+          </friction>
+          <contact>
+            <bullet>
+              <kp>30000</kp>
+              <kd>1000</kd>
+              <split_impulse>1</split_impulse>
+              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+            </bullet>
+            <ode>
+              <kp>30000</kp>
+              <kd>1000</kd>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+      <sensor name="toe1_contact" type="contact">
+        <plugin name="toe1_plugin" filename="libcontact.so"/>
+        <contact>
+          <collision>toe1_collision</collision>
+        </contact>
+      </sensor>
+      <visual name='toe1_visual'>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.02</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Black</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay/>
+    </link>
+    <joint name='jtoe1' type='fixed'>
+      <child>toe1</child>
+      <parent>lower1</parent>
+    </joint>
+
+    <link name='toe2'>
+      <pose frame=''>0.2263 -0.17098 0 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <mass>0.015</mass>
+        <inertia>
+          <ixx>0.000025</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000025</iyy>
+          <iyz>0</iyz>
+          <izz>0.000025</izz>
+        </inertia>
+      </inertial>
+      <collision name='toe2_collision'>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.02</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <bounce>
+            <restitution_coefficient>0</restitution_coefficient>
+            <threshold>1e+06</threshold>
+          </bounce>
+          <friction>
+            <torsional>
+              <coefficient>0.3</coefficient>
+            </torsional>
+            <ode>
+              <mu>100</mu>
+              <mu2>50</mu2>
+            </ode>
+            <bullet>
+              <rolling_friction>0.3</rolling_friction>
+              <friction2>50</friction2>
+            </bullet>
+          </friction>
+          <contact>
+            <bullet>
+              <kp>30000</kp>
+              <kd>1000</kd>
+              <split_impulse>1</split_impulse>
+              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+            </bullet>
+            <ode>
+              <kp>30000</kp>
+              <kd>1000</kd>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+      <sensor name="toe2_contact" type="contact">
+        <plugin name="toe2_plugin" filename="libcontact.so"/>
+        <contact>
+          <collision>toe2_collision</collision>
+        </contact>
+      </sensor>
+      <visual name='toe2_visual'>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.02</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Black</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay/>
+    </link>
+    <joint name='jtoe2' type='fixed'>
+      <child>toe2</child>
+      <parent>lower2</parent>
+    </joint>
+
+    <link name='toe3'>
+      <pose frame=''>-0.2263 -0.17098 0 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <mass>0.015</mass>
+        <inertia>
+          <ixx>0.000025</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000025</iyy>
+          <iyz>0</iyz>
+          <izz>0.000025</izz>
+        </inertia>
+      </inertial>
+      <collision name='toe3_collision'>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.02</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <bounce>
+            <restitution_coefficient>0</restitution_coefficient>
+            <threshold>1e+06</threshold>
+          </bounce>
+          <friction>
+            <torsional>
+              <coefficient>0.3</coefficient>
+            </torsional>
+            <ode>
+              <mu>100</mu>
+              <mu2>50</mu2>
+            </ode>
+            <bullet>
+              <rolling_friction>0.3</rolling_friction>
+              <friction2>50</friction2>
+            </bullet>
+          </friction>
+          <contact>
+            <bullet>
+              <kp>30000</kp>
+              <kd>1000</kd>
+              <split_impulse>1</split_impulse>
+              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+            </bullet>
+            <ode>
+              <kp>30000</kp>
+              <kd>1000</kd>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+      <sensor name="toe3_contact" type="contact">
+        <plugin name="toe3_plugin" filename="libcontact.so"/>
+        <contact>
+          <collision>toe3_collision</collision>
+        </contact>
+      </sensor>
+      <visual name='toe3_visual'>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.02</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Black</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay/>
+    </link>
+    <joint name='jtoe3' type='fixed'>
+      <child>toe3</child>
+      <parent>lower3</parent>
     </joint>
 
     <include>
