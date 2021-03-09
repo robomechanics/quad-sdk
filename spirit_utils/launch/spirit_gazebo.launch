@@ -28,6 +28,11 @@ SOFTWARE.
 
   <arg name="gui" default="false"/>
   <arg name="paused" default="true"/>
+  <arg name="robot_driver" default="true"/>
+
+  <group if="$(arg robot_driver)">
+      <include file="$(find spirit_utils)/launch/robot_driver.launch"/>
+  </group>
 
   <!-- Launch the Spirit world with specific physics parameters -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">

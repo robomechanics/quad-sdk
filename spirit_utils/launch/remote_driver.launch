@@ -5,19 +5,10 @@
     <arg name="proxy" default="false"/>
     <arg name="controller" default="inverse_dynamics"/>
     <arg name="logging" default="false"/>
-    <arg name="body_planner" default="global"/>
 
+    <!-- Launch the mapping and visualization nodes -->
     <include file="$(find spirit_utils)/launch/mapping.launch" />
-
-    <include file="$(find spirit_utils)/launch/planning.launch">
-        <arg name="body_planner" value="$(arg body_planner)" />
-    </include>
-
     <include file="$(find spirit_utils)/launch/visualization.launch" />
-
-    <group if="$(arg logging)">
-        <include file="$(find spirit_utils)/launch/logging.launch" />
-    </group>
 
     <!-- Launch the robot_proxy if specified-->
     <group if="$(arg proxy)">
@@ -25,6 +16,11 @@
             <arg name="proxy" value="true" />
             <arg name="controller" value="$(arg controller)" />
         </include>
+    </group>
+
+    <!-- Launch the mblink converter unless using a proxy-->
+    <group unless="$(arg proxy)">
+        <node name="mblink_converter" pkg="mblink_converter" type="mblink_converter_node" output="screen"/>
     </group>
 
 </launch>

@@ -147,8 +147,8 @@ void TrajectoryPublisher::publishTrajectoryState() {
   double t_mod = fmod(playback_speed_*t, t_traj_.back());
   
   // Interpolate to get the correct state and publish it
-  // spirit_msgs::RobotState interp_state = math_utils::interpRobotStateTraj(traj_msg_,t);
-  spirit_msgs::RobotState interp_state = math_utils::interpRobotStateTraj(traj_msg_,t_mod);
+  spirit_msgs::RobotState interp_state = math_utils::interpRobotStateTraj(traj_msg_,t);
+  // spirit_msgs::RobotState interp_state = math_utils::interpRobotStateTraj(traj_msg_,t_mod);
   trajectory_state_pub_.publish(interp_state);
 }
 

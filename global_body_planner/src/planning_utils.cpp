@@ -248,17 +248,17 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
     interp_t[i] = i*dt;
   }
 
-  plt::clf();
-  plt::ion();
-  plt::named_plot("yaw", interp_t, yaw);
-  plt::named_plot("filtered yaw", interp_t, filtered_yaw);
-  plt::named_plot("yaw rate", interp_t, yaw_rate);
-  plt::named_plot("filtered yaw rate", interp_t, filtered_yaw_rate);
-  plt::xlabel("t");
-  plt::ylabel("yaw");
-  plt::legend();
-  plt::show();
-  plt::pause(0.001);
+  // plt::clf();
+  // plt::ion();
+  // plt::named_plot("yaw", interp_t, yaw);
+  // plt::named_plot("filtered yaw", interp_t, filtered_yaw);
+  // plt::named_plot("yaw rate", interp_t, yaw_rate);
+  // plt::named_plot("filtered yaw rate", interp_t, filtered_yaw_rate);
+  // plt::xlabel("t");
+  // plt::ylabel("yaw");
+  // plt::legend();
+  // plt::show();
+  // plt::pause(0.001);
 
   // Add full state data into the array
   for (int i = 0; i < num_states; i++) {
