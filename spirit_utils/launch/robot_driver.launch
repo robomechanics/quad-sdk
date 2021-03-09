@@ -10,10 +10,6 @@
         <arg name="controller" value="$(arg controller)" />
     </include>
 
-    <include file="$(find spirit_utils)/launch/control.launch">
-        <arg name="controller" value="mpc" />
-    </include>
-
     <include file="$(find spirit_utils)/launch/estimation.launch" />
 
     <!-- Launch the robot_proxy if specified-->
@@ -22,17 +18,12 @@
         <include file="$(find spirit_utils)/launch/mocap.launch" />
     </group>
 
-    <!-- Launch the mblink converter unless using a proxy-->
-    <group unless="$(arg proxy)">
-        <node name="mblink_converter" pkg="mblink_converter" type="mblink_converter_node" output="screen"/>
-    </group>
-
     <!-- Launch the mocap node if specified-->
     <group if="$(arg mocap)">
         <include file="$(find spirit_utils)/launch/mocap.launch" />
     </group>
 
-        <!-- Record into bag if specified-->
+    <!-- Record into bag if specified-->
     <group if="$(arg logging)">
         <include file="$(find spirit_utils)/launch/logging.launch" />
     </group>
