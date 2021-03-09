@@ -213,7 +213,7 @@ void GlobalBodyPlanner::callPlanner() {
       std::cout << std::endl;
 
       double dt = 0.1;
-      getInterpPlan(state_sequence_, action_sequence_, dt, replan_start_time_, 
+      getInterpPlan(start_state_, state_sequence_, action_sequence_, dt, replan_start_time_, 
         body_plan_, grf_plan_, t_plan_, primitive_id_plan_, terrain_);
 
       if (start_index == 0) {
