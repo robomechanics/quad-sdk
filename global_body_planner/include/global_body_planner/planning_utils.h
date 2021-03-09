@@ -95,15 +95,16 @@ bool isWithinBounds(State s1, State s2);
 std::array<double,3> rotateGRF(std::array<double,3> surface_norm, std::array<double,3> grf);
 
 // Define function for obtaining full state/path information
-void addFullStates(std::vector<State> interp_reduced_path, double dt, 
+void addFullStates(FullState start_state, std::vector<State> interp_reduced_path, double dt, 
   std::vector<FullState> &interp_full_path, FastTerrainMap& terrain);
 GRF getGRF(Action a,double t);
+double getHeightFromState(State s, FastTerrainMap& terrain);
 double getPitchFromState(State s, FastTerrainMap& terrain);
 void interpStateActionPair(State s, Action a,double t0,double dt,
   std::vector<State> &interp_plan, std::vector<GRF> &interp_GRF,
   std::vector<double> &interp_t, std::vector<int> &interp_primitive_id,
   FastTerrainMap& terrain);
-void getInterpPlan(std::vector<State> state_sequence,
+void getInterpPlan(FullState start_state, std::vector<State> state_sequence,
   std::vector<Action> action_sequence,double dt, double t0,
   std::vector<FullState> &interp_full_plan, std::vector<GRF> &interp_GRF, 
   std::vector<double> &interp_t, std::vector<int> &interp_primitive_id,
