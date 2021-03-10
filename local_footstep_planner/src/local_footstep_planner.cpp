@@ -60,54 +60,8 @@ void LocalFootstepPlanner::terrainMapCallback(
 void LocalFootstepPlanner::bodyPlanCallback(
   const spirit_msgs::BodyPlan::ConstPtr& msg) {
 
-  t_plan_.clear();
-  body_plan_.clear();
-  grf_plan_.clear();
-  primitive_id_plan_.clear();
-
+  body_plan_msg_ = msg;
   plan_timestamp_ = msg->header.stamp;
-
-  // Loop through the message to get the state info and add to private vector
-  int length = msg->states.size();
-  for (int i=0; i < length; i++) {
-
-    // Convert orientation from quaternion to rpy
-    tf::Quaternion q(
-        msg->states[i].pose.pose.orientation.x,
-        msg->states[i].pose.pose.orientation.y,
-        msg->states[i].pose.pose.orientation.z,
-        msg->states[i].pose.pose.orientation.w);
-    tf::Matrix3x3 m(q);
-    double roll, pitch, yaw;
-    m.getRPY(roll, pitch, yaw);
-
-    // Get the time associated with this data
-    ros::Duration t_plan = msg->states[i].header.stamp - 
-      msg->states[0].header.stamp;
-    t_plan_.push_back(t_plan.toSec());
-
-    // Get the state associated with this data
-    std::vector<double> s(12);
-    s[0] = msg->states[i].pose.pose.position.x;
-    s[1] = msg->states[i].pose.pose.position.y;
-    s[2] = msg->states[i].pose.pose.position.z;
-    s[3] = roll;
-    s[4] = pitch;
-    s[5] = yaw;
-    s[6] = msg->states[i].twist.twist.linear.x;
-    s[7] = msg->states[i].twist.twist.linear.y;
-    s[8] = msg->states[i].twist.twist.linear.z;
-    s[9] = msg->states[i].twist.twist.angular.x;
-    s[10] = msg->states[i].twist.twist.angular.y;
-    s[11] = msg->states[i].twist.twist.angular.z;
-    body_plan_.push_back(s);
-
-    Eigen::Vector3d force;
-    tf::vectorMsgToEigen(msg->grfs[i].vectors.front(), force);
-    grf_plan_.push_back(force);
-
-    primitive_id_plan_.push_back(msg->primitive_ids[i]);
-  }
 }
 
 void LocalFootstepPlanner::robotStateCallback(
@@ -116,11 +70,11 @@ void LocalFootstepPlanner::robotStateCallback(
   if (msg->feet.feet.empty())
     return;
 
-  if (body_plan_.empty())
+  if (body_plan_msg_ == NULL)
     return;
 
-  if (robot_state_msg_.feet.feet.empty()) {
-    robot_state_msg_ = (*msg);
+  if (robot_state_msg_ == NULL) {
+    robot_state_msg_ = msg;
   }
 
 }
@@ -146,10 +100,22 @@ double LocalFootstepPlanner::computeTimeUntilNextFlight(double t) {
 void LocalFootstepPlanner::updateDiscretePlan() {
   // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
-  if (body_plan_.empty()) {
+  if (body_plan_msg_ == NULL) {
     ROS_WARN_THROTTLE(0.5, "No body plan in LocalFootstepPlanner, exiting");
     return;
   }
+
+  // Get the time associated with this data
+  t_plan_.clear();
+  primitive_id_plan_.clear();
+  for (int i = 0; i < body_plan_msg_->states.size(); i++) {
+    ros::Duration t_plan = body_plan_msg_->states[i].header.stamp - 
+      body_plan_msg_->states[0].header.stamp;
+    t_plan_.push_back(t_plan.toSec());
+    primitive_id_plan_.push_back(body_plan_msg_->primitive_ids[i]);
+  }
+
+  spirit_utils::SpiritKinematics spirit;
 
   // Clear out the old footstep plan
   footstep_plan_.clear();
@@ -175,10 +141,10 @@ void LocalFootstepPlanner::updateDiscretePlan() {
     FootstepState footstep(4);
 
     // If we have robot state data, apply the current foot position for the first cycle
-    if (robot_state_msg_.feet.feet.empty() == false) {
+    if (robot_state_msg_ != NULL) {
       // Load the data into the footstep array and push into the plan
-      footstep[0] = robot_state_msg_.feet.feet[j].position.x;
-      footstep[1] = robot_state_msg_.feet.feet[j].position.y;
+      footstep[0] = robot_state_msg_->feet.feet[j].position.x;
+      footstep[1] = robot_state_msg_->feet.feet[j].position.y;
       footstep[2] = 0.0;
       if (t_offsets_trot[j] < 0.5*period_) {
         footstep[3] = t_s[j];
@@ -208,47 +174,56 @@ void LocalFootstepPlanner::updateDiscretePlan() {
       double t_touchdown = t_cycle + t_offsets_trot[j];
       double t_midstance = t_cycle + t_offsets_trot[j] + 0.5*t_s[j];
 
-      int primitive_id = math_utils::interpInt(t_plan_, 
-        primitive_id_plan_, t_midstance);
+      nav_msgs::Odometry body_touchdown, body_midstance;
+      int primitive_id_touchdown, primitive_id_midstance;
+      spirit_msgs::GRFArray grf_array_touchdown, grf_array_midstance;
+
+      math_utils::interpBodyPlan((*body_plan_msg_), t_touchdown, body_touchdown,
+        primitive_id_touchdown, grf_array_touchdown);
+      math_utils::interpBodyPlan((*body_plan_msg_), t_midstance, body_midstance,
+        primitive_id_midstance, grf_array_midstance);
 
       // Skip if this would occur during a flight phase
-      if (primitive_id == FLIGHT) {
+      if (primitive_id_midstance == FLIGHT) {
         continue;
       }
 
-      BodyState s_touchdown = math_utils::interpMat(t_plan_, body_plan_, 
-        t_touchdown);
-      BodyState s_midstance = math_utils::interpMat(t_plan_, body_plan_, 
-        t_midstance);
-      Eigen::Vector3d grf_midstance = math_utils::interpVector3d(t_plan_, 
-        grf_plan_, t_midstance);
-
       // Compute the body and hip positions and velocities
-      double x_body = s_touchdown[0];
-      double y_body = s_touchdown[1];
-      double z_body = s_touchdown[2];
-      double yaw = s_touchdown[5];
-      double x_hip = x_body + x_offsets[j]*cos(yaw) - y_offsets[j]*sin(yaw);
-      double y_hip = y_body + x_offsets[j]*sin(yaw) + y_offsets[j]*cos(yaw);
-      double z_hip = z_body; // TODO add in pitch here
+      Eigen::Vector3d body_pos_touchdown = {body_touchdown.pose.pose.position.x,
+        body_touchdown.pose.pose.position.y,
+        body_touchdown.pose.pose.position.z};
 
-      double dx_body = s_midstance[3];
-      double dy_body = s_midstance[4];
-      double dz_body = s_midstance[5];
-      double x_hip_midstance = x_hip + 0.5*t_s[j]*dx_body;
-      double y_hip_midstance = y_hip + 0.5*t_s[j]*dy_body;
-      double z_hip_midstance = z_hip + 0.5*t_s[j]*dz_body;
+      Eigen::Vector3d body_vel_midstance = {body_midstance.twist.twist.linear.x,
+        body_midstance.twist.twist.linear.y,
+        body_midstance.twist.twist.linear.z};
+
+      // Convert orientation from quaternion to rpy
+      tf2::Quaternion q;
+      tf2::convert(body_touchdown.pose.pose.orientation,q);
+      tf2::Matrix3x3 m(q);
+      double roll, pitch, yaw;
+      m.getRPY(roll, pitch, yaw);
+      Eigen::Vector3d body_rpy_touchdown = {roll,pitch,yaw};
+
+      Eigen::Vector3d nominal_footstep_pos_touchdown;
+      spirit.nominalFootstepFK(j, body_pos_touchdown, body_rpy_touchdown, nominal_footstep_pos_touchdown);
+
+      Eigen::Vector3d grf_midstance = {grf_array_midstance.vectors[j].x,
+        grf_array_midstance.vectors[j].y,
+        grf_array_midstance.vectors[j].z,};
 
       // Project along GRF from hips to the ground
-      Eigen::Vector3d hip_midstance = {x_hip_midstance, y_hip_midstance, 
-        z_hip_midstance};
-      Eigen::Vector3d footstep_grf = terrain_.projectToMap(hip_midstance, 
-        -1.0*grf_midstance);
+      // Eigen::Vector3d hip_midstance = {x_hip_midstance, y_hip_midstance, 
+      //   z_hip_midstance};
+      Eigen::Vector3d nominal_footstep_pos_midstance = nominal_footstep_pos_touchdown + 0.5*t_s[j]*body_vel_midstance;
+      // Eigen::Vector3d footstep_grf = terrain_.projectToMap(legbase_pos_midstance, 
+      //   -1.0*grf_midstance);
 
       // Define the nominal footstep location to lie on a line between the hips 
       // projected vertically and along GRF (third entry is garbage)
-      Eigen::Vector3d footstep_nom = (1-grf_weight_)*hip_midstance + 
-        grf_weight_*footstep_grf;
+      // Eigen::Vector3d footstep_nom = (1-grf_weight_)*nominal_footstep_pos_midstance + 
+      //   grf_weight_*footstep_grf;
+      Eigen::Vector3d footstep_nom = nominal_footstep_pos_midstance;
 
       // Load the data into the footstep array and push into the plan
       footstep[0] = footstep_nom[0];
@@ -259,24 +234,52 @@ void LocalFootstepPlanner::updateDiscretePlan() {
       footstep_plan_[j].push_back(footstep);
 
     }
+    
 
     // Add final foot configuration
+    nav_msgs::Odometry body_final = body_plan_msg_->states.back();
+
+    Eigen::Vector3d body_pos_final = {body_final.pose.pose.position.x,
+        body_final.pose.pose.position.y,
+        body_final.pose.pose.position.z};
+    
+    tf2::Quaternion q;
+    tf2::convert(body_final.pose.pose.orientation,q);
+    tf2::Matrix3x3 m(q);
+    double roll, pitch, yaw;
+    m.getRPY(roll, pitch, yaw);
+    Eigen::Vector3d body_rpy_final = {roll,pitch,yaw};
+
+    Eigen::Vector3d nominal_footstep_pos_final;
+      spirit.nominalFootstepFK(j, body_pos_final, body_rpy_final, nominal_footstep_pos_final);
+
     footstep.clear();
     footstep.resize(4);
-    BodyState s_final = body_plan_.back();
-
-    double yaw = s_final[5];
-    double x_hip = s_final[0] + x_offsets[j]*cos(yaw) - y_offsets[j]*sin(yaw);
-    double y_hip = s_final[1] + x_offsets[j]*sin(yaw) + y_offsets[j]*cos(yaw);
-    double z_hip = s_final[2]; // TODO add in pitch here
 
     // Load the data into the footstep array and push into the plan
-    footstep[0] = x_hip;
-    footstep[1] = y_hip;
+    footstep[0] = nominal_footstep_pos_final[0];
+    footstep[1] = nominal_footstep_pos_final[1];
     footstep[2] = t_plan_.back() - period_ +  t_offsets_trot[j];
     footstep[3] = std::numeric_limits<double>::max();
 
     footstep_plan_[j].push_back(footstep);
+
+    // footstep.clear();
+    // footstep.resize(4);
+    // BodyState s_final = body_plan_.back();
+
+    // double yaw = s_final[5];
+    // double x_hip = s_final[0] + x_offsets[j]*cos(yaw) - y_offsets[j]*sin(yaw);
+    // double y_hip = s_final[1] + x_offsets[j]*sin(yaw) + y_offsets[j]*cos(yaw);
+    // double z_hip = s_final[2]; // TODO add in pitch here
+
+    // // Load the data into the footstep array and push into the plan
+    // footstep[0] = x_hip;
+    // footstep[1] = y_hip;
+    // footstep[2] = t_plan_.back() - period_ +  t_offsets_trot[j];
+    // footstep[3] = std::numeric_limits<double>::max();
+
+    // footstep_plan_[j].push_back(footstep);
   }
 
   // publishDiscretePlan();

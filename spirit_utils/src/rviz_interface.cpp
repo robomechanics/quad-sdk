@@ -43,18 +43,18 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
 
   // Setup rviz_interface parameters
   nh.param<std::string>("map_frame",map_frame_,"map");
-  nh.param<double>("visualization/update_rate", update_rate_, 10);
-  nh.param<std::vector<int> >("visualization/colors/front_left",
+  nh.param<double>("rviz_interface/update_rate", update_rate_, 10);
+  nh.param<std::vector<int> >("rviz_interface/colors/front_left",
     front_left_color_, {0,255,0});
-  nh.param<std::vector<int> >("visualization/colors/back_left",
+  nh.param<std::vector<int> >("rviz_interface/colors/back_left",
     back_left_color_, {0,0,255});
-  nh.param<std::vector<int> >("visualization/colors/front_right",
+  nh.param<std::vector<int> >("rviz_interface/colors/front_right",
     front_right_color_, {0,255,0});
-  nh.param<std::vector<int> >("visualization/colors/back_right",
+  nh.param<std::vector<int> >("rviz_interface/colors/back_right",
     back_right_color_, {0,0,255});
-  nh.param<std::vector<int> >("visualization/colors/net_grf",
+  nh.param<std::vector<int> >("rviz_interface/colors/net_grf",
     net_grf_color_, {255,0,0});
-  nh.param<std::vector<int> >("visualization/colors/individual_grf",
+  nh.param<std::vector<int> >("rviz_interface/colors/individual_grf",
     individual_grf_color_, {255,0,0});
 
   // Setup plan subs

@@ -12,6 +12,7 @@
 #include <spirit_utils/fast_terrain_map.h>
 #include <spirit_utils/function_timer.h>
 #include <spirit_utils/math_utils.h>
+#include <spirit_utils/kinematics.h>
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
@@ -142,8 +143,11 @@ class LocalFootstepPlanner {
     /// ROS Timestamp of plan (should match body plan)
     ros::Time plan_timestamp_;
 
+    /// Current body plan
+    spirit_msgs::BodyPlan::ConstPtr body_plan_msg_;
+
     /// Current robot state
-    spirit_msgs::RobotState robot_state_msg_;
+    spirit_msgs::RobotState::ConstPtr robot_state_msg_;
 
     /// Number of feet
     const int num_feet_ = 4;
