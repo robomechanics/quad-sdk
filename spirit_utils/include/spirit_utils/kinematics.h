@@ -144,8 +144,8 @@ class SpiritKinematics {
    * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
    * @param[out] g_world_legbase Transformation matrix of world to leg base
    */
-void legBaseFK(int leg_index, Eigen::Vector3d body_pos,
-  Eigen::Vector3d body_rpy, Eigen::Matrix4d &g_world_legbase);
+  void legBaseFK(int leg_index, Eigen::Vector3d body_pos,
+    Eigen::Vector3d body_rpy, Eigen::Matrix4d &g_world_legbase);
 
   /**
    * @brief Get the position of the leg base frame origin in the world frame
@@ -154,8 +154,18 @@ void legBaseFK(int leg_index, Eigen::Vector3d body_pos,
    * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
    * @param[out] leg_base_pos_world Origin of leg base frame in world frame
    */
-void legBaseFK(int leg_index, Eigen::Vector3d body_pos,
-  Eigen::Vector3d body_rpy, Eigen::Vector3d &leg_base_pos_world);
+  void legBaseFK(int leg_index, Eigen::Vector3d body_pos,
+    Eigen::Vector3d body_rpy, Eigen::Vector3d &leg_base_pos_world);
+
+  /**
+   * @brief Get the position of the nominal footstep in the world frame
+   * @param[in] leg_index Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
+   * @param[in] body_pos Position of center of body frame
+   * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
+   * @param[out] nominal_footstep_pos_world Location of nominal footstep in world frame
+   */
+  void nominalFootstepFK(int leg_index, Eigen::Vector3d body_pos,
+    Eigen::Vector3d body_rpy, Eigen::Vector3d &nominal_footstep_pos_world);
 
   private:
 
