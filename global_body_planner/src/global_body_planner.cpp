@@ -36,6 +36,29 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   // Initialize the current path cost to infinity to ensure the first solution is stored
   current_cost_ = INFTY;
   robot_state_ = start_state_;
+
+  spirit_utils::loadROSParam(nh,"global_body_planner/H_MAX", planner_config_.H_MAX);
+  spirit_utils::loadROSParam(nh,"global_body_planner/H_MIN", planner_config_.H_MIN);
+  spirit_utils::loadROSParam(nh,"global_body_planner/V_MAX", planner_config_.V_MAX);
+  spirit_utils::loadROSParam(nh,"global_body_planner/V_NOM", planner_config_.V_NOM);
+  spirit_utils::loadROSParam(nh,"global_body_planner/ROBOT_L", planner_config_.ROBOT_L);
+  spirit_utils::loadROSParam(nh,"global_body_planner/ROBOT_W", planner_config_.ROBOT_W);
+  spirit_utils::loadROSParam(nh,"global_body_planner/ROBOT_W", planner_config_.ROBOT_W);
+  spirit_utils::loadROSParam(nh,"global_body_planner/M_CONST", planner_config_.M_CONST);
+  spirit_utils::loadROSParam(nh,"global_body_planner/J_CONST", planner_config_.J_CONST);
+  spirit_utils::loadROSParam(nh,"global_body_planner/G_CONST", planner_config_.G_CONST);
+  spirit_utils::loadROSParam(nh,"global_body_planner/F_MAX", planner_config_.F_MAX);
+  spirit_utils::loadROSParam(nh,"global_body_planner/MU", planner_config_.MU);
+  spirit_utils::loadROSParam(nh,"global_body_planner/T_S_MIN", planner_config_.T_S_MIN);
+  spirit_utils::loadROSParam(nh,"global_body_planner/T_S_MAX", planner_config_.T_S_MAX);
+  spirit_utils::loadROSParam(nh,"global_body_planner/T_F_MIN", planner_config_.T_F_MIN);
+  spirit_utils::loadROSParam(nh,"global_body_planner/T_F_MAX", planner_config_.T_F_MAX);
+  spirit_utils::loadROSParam(nh,"global_body_planner/KINEMATICS_RES", planner_config_.KINEMATICS_RES);
+  spirit_utils::loadROSParam(nh,"global_body_planner/BACKUP_TIME", planner_config_.BACKUP_TIME);
+  spirit_utils::loadROSParam(nh,"global_body_planner/BACKUP_RATIO", planner_config_.BACKUP_RATIO);
+  spirit_utils::loadROSParam(nh,"global_body_planner/NUM_GEN_STATES", planner_config_.NUM_GEN_STATES);
+  spirit_utils::loadROSParam(nh,"global_body_planner/GOAL_BOUNDS", planner_config_.GOAL_BOUNDS);
+
 }
 
 void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg) {
@@ -44,7 +67,7 @@ void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPt
   grid_map::GridMapRosConverter::fromMessage(*msg, map);
 
   // Convert to FastTerrainMap structure for faster querying
-  terrain_.loadDataFromGridMap(map);
+  planner_config_.terrain.loadDataFromGridMap(map);
 }
 
 void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
@@ -141,14 +164,14 @@ void GlobalBodyPlanner::callPlanner() {
   State goal_state = fullStateToState(goal_state_);
   
   // Make sure terminal states are valid
-  if (!isValidState(start_state, terrain_, STANCE)) {
+  if (!isValidState(start_state, planner_config_, STANCE)) {
     ROS_WARN_THROTTLE(2, "Invalid start state, exiting global planner");
     return;
   }
-  if (!isValidState(goal_state, terrain_, STANCE)) {
+  if (!isValidState(goal_state, planner_config_, STANCE)) {
     ROS_DEBUG_THROTTLE(2, "Invalid goal state, attempting to add in the ground height");
-    goal_state[2] += terrain_.getGroundHeight(goal_state_[0], goal_state_[1]);
-    if (!isValidState(goal_state, terrain_, STANCE)) {
+    goal_state[2] += planner_config_.terrain.getGroundHeight(goal_state_[0], goal_state_[1]);
+    if (!isValidState(goal_state, planner_config_, STANCE)) {
       ROS_WARN_THROTTLE(2, "Invalid goal state, exiting global planner");
       return;
     }
@@ -179,7 +202,7 @@ void GlobalBodyPlanner::callPlanner() {
     std::vector<Action> action_sequence;
 
     // Call the appropriate planning method (can do if else on algorithm_)
-    rrt_connect_obj.runRRTConnect(terrain_, start_state, goal_state,state_sequence,action_sequence, max_time_);
+    rrt_connect_obj.runRRTConnect(planner_config_, start_state, goal_state,state_sequence,action_sequence, max_time_);
     rrt_connect_obj.getStatistics(plan_time, vertices_generated, path_length, path_duration);
 
     // Handle the statistical data
@@ -214,11 +237,14 @@ void GlobalBodyPlanner::callPlanner() {
 
       double dt = 0.1;
       getInterpPlan(start_state_, state_sequence_, action_sequence_, dt, replan_start_time_, 
-        body_plan_, grf_plan_, t_plan_, primitive_id_plan_, terrain_);
+        body_plan_, grf_plan_, t_plan_, primitive_id_plan_, planner_config_);
 
       if (start_index == 0) {
         plan_timestamp_ = ros::Time::now();
       }
+
+      // Only publish the plan if we found a better solution
+      publishPlan();
     }
 
     if (!ros::ok()) {
@@ -362,8 +388,7 @@ void GlobalBodyPlanner::spin() {
     // Update the plan
     callPlanner();
 
-    // Publish the current best plan and sleep
-    publishPlan();
+    // Sleep
     ros::spinOnce();
     r.sleep();
   }

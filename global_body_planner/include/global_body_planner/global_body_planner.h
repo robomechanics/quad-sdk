@@ -8,6 +8,7 @@
 
 #include <spirit_msgs/BodyPlan.h>
 #include <spirit_msgs/RobotState.h>
+#include <spirit_utils/ros_utils.h>
 
 #include "global_body_planner/rrt_connect.h"
 
@@ -126,9 +127,6 @@ class GlobalBodyPlanner {
     /// Handle for the map frame
     std::string map_frame_;
 
-    /// Struct for terrain map data
-    FastTerrainMap terrain_;
-
     /// Std vector containing the interpolated time data
     std::vector<double> t_plan_;
 
@@ -185,6 +183,9 @@ class GlobalBodyPlanner {
 
     /// Vector of number of vertices for each planning call
     std::vector<int> vertices_generated_info_;
+
+    /// Planner config
+    PlannerConfig planner_config_;
 
 };
 
