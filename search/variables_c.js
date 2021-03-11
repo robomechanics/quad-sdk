@@ -16,6 +16,6 @@ var searchData=
   ['mocap_5fsub_5f',['mocap_sub_',['../classGroundTruthPublisher.html#afb21773ff427ce12a00ea0364359face',1,'GroundTruthPublisher']]],
   ['mocap_5fvel_5festimate_5f',['mocap_vel_estimate_',['../classGroundTruthPublisher.html#aa6210ad2600d38e4ae08ee128c5f02a9',1,'GroundTruthPublisher']]],
   ['mu_5f',['mu_',['../classQuadrupedMPC.html#ab5f6645e26464dc1d4f382b42dc429a9',1,'QuadrupedMPC']]],
-  ['multi_5ffoot_5fplan_5fcontinuous_5fmsg_5f',['multi_foot_plan_continuous_msg_',['../classTrajectoryPublisher.html#aff7c132d04462685f936db900ed4771e',1,'TrajectoryPublisher']]],
+  ['multi_5ffoot_5fplan_5fcontinuous_5fmsg_5f',['multi_foot_plan_continuous_msg_',['../classLocalFootstepPlanner.html#a90177b90bc09f1abd2b6f0fbbf9f08e0',1,'LocalFootstepPlanner::multi_foot_plan_continuous_msg_()'],['../classTrajectoryPublisher.html#aff7c132d04462685f936db900ed4771e',1,'TrajectoryPublisher::multi_foot_plan_continuous_msg_()']]],
   ['multi_5ffoot_5fplan_5fcontinuous_5fsub_5f',['multi_foot_plan_continuous_sub_',['../classTrajectoryPublisher.html#a00eb794de33208528d7883f82282ff4a',1,'TrajectoryPublisher']]]
 ];

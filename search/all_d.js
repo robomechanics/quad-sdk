@@ -19,7 +19,7 @@ var searchData=
   ['mocapcallback',['mocapCallback',['../classGroundTruthPublisher.html#ab98d2c1cf74eb0914e0c35043f4c7e88',1,'GroundTruthPublisher']]],
   ['mpccontroller',['MPCController',['../classMPCController.html',1,'MPCController'],['../classMPCController.html#a16a87d6e746992d9479d27aae63cca16',1,'MPCController::MPCController()']]],
   ['mu_5f',['mu_',['../classQuadrupedMPC.html#ab5f6645e26464dc1d4f382b42dc429a9',1,'QuadrupedMPC']]],
-  ['multi_5ffoot_5fplan_5fcontinuous_5fmsg_5f',['multi_foot_plan_continuous_msg_',['../classTrajectoryPublisher.html#aff7c132d04462685f936db900ed4771e',1,'TrajectoryPublisher']]],
+  ['multi_5ffoot_5fplan_5fcontinuous_5fmsg_5f',['multi_foot_plan_continuous_msg_',['../classLocalFootstepPlanner.html#a90177b90bc09f1abd2b6f0fbbf9f08e0',1,'LocalFootstepPlanner::multi_foot_plan_continuous_msg_()'],['../classTrajectoryPublisher.html#aff7c132d04462685f936db900ed4771e',1,'TrajectoryPublisher::multi_foot_plan_continuous_msg_()']]],
   ['multi_5ffoot_5fplan_5fcontinuous_5fsub_5f',['multi_foot_plan_continuous_sub_',['../classTrajectoryPublisher.html#a00eb794de33208528d7883f82282ff4a',1,'TrajectoryPublisher']]],
   ['multifootplancontinuouscallback',['multiFootPlanContinuousCallback',['../classTrajectoryPublisher.html#a38dfab90943b74fbd2438409e2f64a63',1,'TrajectoryPublisher']]]
 ];

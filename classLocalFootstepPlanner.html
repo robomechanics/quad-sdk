@@ -121,14 +121,18 @@ Private Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a71b4ee2f4f3b385e27e21fb9cd0208a3">updateDiscretePlan</a> ()</td></tr>
 <tr class="memdesc:a71b4ee2f4f3b385e27e21fb9cd0208a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the discrete footstep plan with the current plan. <br /></td></tr>
 <tr class="separator:a71b4ee2f4f3b385e27e21fb9cd0208a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2569ee9a55f6187ec7786e285a881d9f"><td class="memItemLeft" align="right" valign="top"><a id="a2569ee9a55f6187ec7786e285a881d9f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a2569ee9a55f6187ec7786e285a881d9f">publishContinuousPlan</a> ()</td></tr>
-<tr class="memdesc:a2569ee9a55f6187ec7786e285a881d9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update and publish the continuous foot plan to match the discrete. <br /></td></tr>
-<tr class="separator:a2569ee9a55f6187ec7786e285a881d9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba0d461220650f7f0ebbd484359df2e4"><td class="memItemLeft" align="right" valign="top"><a id="aba0d461220650f7f0ebbd484359df2e4"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aba0d461220650f7f0ebbd484359df2e4">updateContinuousPlan</a> ()</td></tr>
+<tr class="memdesc:aba0d461220650f7f0ebbd484359df2e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the continuous foot plan to match the discrete. <br /></td></tr>
+<tr class="separator:aba0d461220650f7f0ebbd484359df2e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4b3eaa775a2218463a0dfb58f8505fca"><td class="memItemLeft" align="right" valign="top"><a id="a4b3eaa775a2218463a0dfb58f8505fca"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a4b3eaa775a2218463a0dfb58f8505fca">publishDiscretePlan</a> ()</td></tr>
 <tr class="memdesc:a4b3eaa775a2218463a0dfb58f8505fca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish the current footstep plan. <br /></td></tr>
 <tr class="separator:a4b3eaa775a2218463a0dfb58f8505fca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2569ee9a55f6187ec7786e285a881d9f"><td class="memItemLeft" align="right" valign="top"><a id="a2569ee9a55f6187ec7786e285a881d9f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a2569ee9a55f6187ec7786e285a881d9f">publishContinuousPlan</a> ()</td></tr>
+<tr class="memdesc:a2569ee9a55f6187ec7786e285a881d9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish the continuous foot plan to match the discrete. <br /></td></tr>
+<tr class="separator:a2569ee9a55f6187ec7786e285a881d9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa90f4e9864bc60edb71f97d82cca1e55"><td class="memItemLeft" align="right" valign="top"><a id="aa90f4e9864bc60edb71f97d82cca1e55"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aa90f4e9864bc60edb71f97d82cca1e55">waitForData</a> ()</td></tr>
 <tr class="memdesc:aa90f4e9864bc60edb71f97d82cca1e55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wait until map and plan messages have been received and processed. <br /></td></tr>
@@ -204,10 +208,22 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 ros::Time&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ab7aa02137bd092c541c350da38f3b2a5">plan_timestamp_</a></td></tr>
 <tr class="memdesc:ab7aa02137bd092c541c350da38f3b2a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Timestamp of plan (should match body plan) <br /></td></tr>
 <tr class="separator:ab7aa02137bd092c541c350da38f3b2a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b38d110f40bbf2769604ac7f1999ae9"><td class="memItemLeft" align="right" valign="top"><a id="a1b38d110f40bbf2769604ac7f1999ae9"></a>
-spirit_msgs::RobotState&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a1b38d110f40bbf2769604ac7f1999ae9">robot_state_msg_</a></td></tr>
-<tr class="memdesc:a1b38d110f40bbf2769604ac7f1999ae9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current robot state. <br /></td></tr>
-<tr class="separator:a1b38d110f40bbf2769604ac7f1999ae9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af57abaf9bb3f7bceea607bf5e5ccdbcd"><td class="memItemLeft" align="right" valign="top"><a id="af57abaf9bb3f7bceea607bf5e5ccdbcd"></a>
+spirit_msgs::BodyPlan::ConstPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#af57abaf9bb3f7bceea607bf5e5ccdbcd">body_plan_msg_</a></td></tr>
+<tr class="memdesc:af57abaf9bb3f7bceea607bf5e5ccdbcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current body plan. <br /></td></tr>
+<tr class="separator:af57abaf9bb3f7bceea607bf5e5ccdbcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a582684047fb031cd5fc33c4573d26a48"><td class="memItemLeft" align="right" valign="top"><a id="a582684047fb031cd5fc33c4573d26a48"></a>
+spirit_msgs::RobotState::ConstPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a582684047fb031cd5fc33c4573d26a48">robot_state_msg_</a></td></tr>
+<tr class="memdesc:a582684047fb031cd5fc33c4573d26a48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current robot state. <br /></td></tr>
+<tr class="separator:a582684047fb031cd5fc33c4573d26a48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90177b90bc09f1abd2b6f0fbbf9f08e0"><td class="memItemLeft" align="right" valign="top"><a id="a90177b90bc09f1abd2b6f0fbbf9f08e0"></a>
+spirit_msgs::MultiFootPlanContinuous&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a90177b90bc09f1abd2b6f0fbbf9f08e0">multi_foot_plan_continuous_msg_</a></td></tr>
+<tr class="memdesc:a90177b90bc09f1abd2b6f0fbbf9f08e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current continuous footstep plan. <br /></td></tr>
+<tr class="separator:a90177b90bc09f1abd2b6f0fbbf9f08e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7765fed670ac32733b32256f548c2ac"><td class="memItemLeft" align="right" valign="top"><a id="ac7765fed670ac32733b32256f548c2ac"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ac7765fed670ac32733b32256f548c2ac">update_flag_</a></td></tr>
+<tr class="memdesc:ac7765fed670ac32733b32256f548c2ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean for whether or not to replan to accomodate an updated body plan. <br /></td></tr>
+<tr class="separator:ac7765fed670ac32733b32256f548c2ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85ec156b75d085bdf14b2de9ed53cfbc"><td class="memItemLeft" align="right" valign="top"><a id="a85ec156b75d085bdf14b2de9ed53cfbc"></a>
 const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a85ec156b75d085bdf14b2de9ed53cfbc">num_feet_</a> = 4</td></tr>
 <tr class="memdesc:a85ec156b75d085bdf14b2de9ed53cfbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of feet. <br /></td></tr>

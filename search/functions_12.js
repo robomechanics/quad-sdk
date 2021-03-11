@@ -5,6 +5,7 @@ var searchData=
   ['update_5ffriction',['update_friction',['../classQuadrupedMPC.html#a330fd254d76e10582f7d0e923d3dc266',1,'QuadrupedMPC']]],
   ['update_5fstate_5fbounds',['update_state_bounds',['../classQuadrupedMPC.html#ad9fca2477d01a697b2eb0743657bcc62',1,'QuadrupedMPC']]],
   ['update_5fweights',['update_weights',['../classQuadrupedMPC.html#a02e46039daa6314e0a7a95f8ac65548e',1,'QuadrupedMPC']]],
+  ['updatecontinuousplan',['updateContinuousPlan',['../classLocalFootstepPlanner.html#aba0d461220650f7f0ebbd484359df2e4',1,'LocalFootstepPlanner']]],
   ['updatediscreteplan',['updateDiscretePlan',['../classLocalFootstepPlanner.html#a71b4ee2f4f3b385e27e21fb9cd0208a3',1,'LocalFootstepPlanner']]],
   ['updategvalue',['updateGValue',['../classGraphClass.html#ae87d58394dc58f56bd4f619193423046',1,'GraphClass']]],
   ['updateplan',['updatePlan',['../classTwistBodyPlanner.html#aa23b33f17af0cf11c8e0115e1be07db3',1,'TwistBodyPlanner']]],

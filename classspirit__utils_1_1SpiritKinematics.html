@@ -123,6 +123,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a26e0da8070b44b669114b619c0bd5d17"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a26e0da8070b44b669114b619c0bd5d17">legBaseFK</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Vector3d &amp;leg_base_pos_world)</td></tr>
 <tr class="memdesc:a26e0da8070b44b669114b619c0bd5d17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the position of the leg base frame origin in the world frame.  <a href="#a26e0da8070b44b669114b619c0bd5d17">More...</a><br /></td></tr>
 <tr class="separator:a26e0da8070b44b669114b619c0bd5d17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c9756c7a0bc5051c91dc4b63d642764"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a7c9756c7a0bc5051c91dc4b63d642764">nominalFootstepFK</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Vector3d &amp;nominal_footstep_pos_world)</td></tr>
+<tr class="memdesc:a7c9756c7a0bc5051c91dc4b63d642764"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the position of the nominal footstep in the world frame.  <a href="#a7c9756c7a0bc5051c91dc4b63d642764">More...</a><br /></td></tr>
+<tr class="separator:a7c9756c7a0bc5051c91dc4b63d642764"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -738,6 +741,57 @@ const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bot
     <tr><td class="paramdir">[in]</td><td class="paramname">body_rpy</td><td>Orientation of body frame in roll, pitch, yaw </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">foot_pos_world</td><td>Position of the specified foot in world frame </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">joint_state</td><td>Joint states for the specified leg (abad, hip, knee) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a7c9756c7a0bc5051c91dc4b63d642764"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c9756c7a0bc5051c91dc4b63d642764">&#9670;&nbsp;</a></span>nominalFootstepFK()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SpiritKinematics::nominalFootstepFK </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>leg_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramname"><em>body_pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramname"><em>body_rpy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>nominal_footstep_pos_world</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the position of the nominal footstep in the world frame. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">leg_index</td><td>Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">body_pos</td><td>Position of center of body frame </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">body_rpy</td><td>Orientation of body frame in roll, pitch, yaw </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">nominal_footstep_pos_world</td><td>Location of nominal footstep in world frame </td></tr>
   </table>
   </dd>
 </dl>
