@@ -3,7 +3,8 @@ Panels:
     Help Height: 0
     Name: Displays
     Property Tree Widget:
-      Expanded: ~
+      Expanded:
+        - /GridMap1
       Splitter Ratio: 0.6114649772644043
     Tree Height: 1164
   - Class: rviz/Selection
@@ -50,9 +51,9 @@ Visualization Manager:
       Height Transformer: GridMapLayer
       History Length: 1
       Invert Rainbow: false
-      Max Color: 146; 140; 124
+      Max Color: 255; 248; 220
       Max Intensity: 10
-      Min Color: 187; 188; 188
+      Min Color: 222; 184; 135
       Min Intensity: 0
       Name: GridMap
       Show Grid Lines: true
@@ -298,7 +299,7 @@ Visualization Manager:
       Marker Topic: /visualization/foot_plan_discrete
       Name: Discrete Foot Plan
       Namespaces:
-        {}
+        "": true
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -444,10 +445,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.4003981053829193
+      Pitch: 0.4803980886936188
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.208581924438477
+      Yaw: 4.173580646514893
     Saved: ~
 Window Geometry:
   Displays:

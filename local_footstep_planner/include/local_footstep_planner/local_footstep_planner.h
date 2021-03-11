@@ -72,14 +72,19 @@ class LocalFootstepPlanner {
     void updateDiscretePlan();
 
     /**
-     * @brief Update and publish the continuous foot plan to match the discrete
+     * @brief Update the continuous foot plan to match the discrete
      */
-    void publishContinuousPlan();
+    void updateContinuousPlan();
 
     /**
      * @brief Publish the current footstep plan
      */
     void publishDiscretePlan();
+
+    /**
+     * @brief Publish the continuous foot plan to match the discrete
+     */
+    void publishContinuousPlan();
 
     /**
      * @brief Wait until map and plan messages have been received and processed
@@ -148,6 +153,12 @@ class LocalFootstepPlanner {
 
     /// Current robot state
     spirit_msgs::RobotState::ConstPtr robot_state_msg_;
+
+    /// Current continuous footstep plan
+    spirit_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
+
+    /// Boolean for whether or not to replan to accomodate an updated body plan
+    bool update_flag_;
 
     /// Number of feet
     const int num_feet_ = 4;

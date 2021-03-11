@@ -160,10 +160,10 @@ void TrajectoryPublisher::spin() {
       importTrajectory();
     } else if (update_flag_) {
       updateTrajectory();
+      publishTrajectory();
       update_flag_ = false;
     }
-    
-    publishTrajectory();
+
     publishTrajectoryState();
 
     // Collect new messages on subscriber topics

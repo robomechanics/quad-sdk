@@ -2,31 +2,18 @@
 
     <include file="$(find spirit_utils)/launch/load_params.launch" />
     
-    <!-- <node pkg="rosbag" type="record" name="rosbag_record"
-    args="record -O $(find spirit_logger)/bags/spirit_log_current /state/trajectory /state/ground_truth /state/estimate /control/grfs" />
-
-    <node pkg="rosbag" type="record" name="rosbag_record_archive"
-    args="record -o $(find spirit_logger)/bags/archive/spirit_log /state/trajectory /state/ground_truth /state/estimate /control/grfs" /> -->
-
     <node pkg="rosbag" type="record" name="rosbag_record"
-    args="record -O $(find spirit_logger)/bags/spirit_log_current /state/trajectory /state/ground_truth /state/estimate 
+    args="record -O $(find spirit_logger)/bags/spirit_log_current 
+        /state/trajectory /state/ground_truth /state/estimate 
         /control/grfs /control/joint_command /control/mode 
-        /robot_plan /body_plan_continuous /body_plan_discrete /foot_plan_continuous /foot_plan_discrete" />
+        /robot_plan /body_plan_continuous /body_plan_discrete 
+        /foot_plan_continuous /foot_plan_discrete" />
 
     <node pkg="rosbag" type="record" name="rosbag_record_archive"
-    args="record -o $(find spirit_logger)/bags/archive/spirit_log /state/trajectory /state/ground_truth /state/estimate 
+    args="record -o $(find spirit_logger)/bags/archive/spirit_log 
+        /state/trajectory /state/ground_truth /state/estimate 
         /control/grfs /control/joint_command /control/mode 
-        /body_plan_continuous /body_plan_discrete /foot_plan_continuous /foot_plan_discrete" />
-
-    <node pkg="rosbag" type="record" name="rosbag_record_archive_small"
-    args="record -o $(find spirit_logger)/bags/archive/spirit_log_small /state/trajectory /state/ground_truth /state/estimate 
-        /control/grfs /control/joint_command /control/mode 
-        /body_plan_continuous /body_plan_discrete /foot_plan_discrete" />
-
-    <!-- <node pkg="rosbag" type="record" name="rosbag_record"
-    args="record -O $(find spirit_logger)/bags/spirit_log_current -a" />
-
-    <node pkg="rosbag" type="record" name="rosbag_record_archive"
-    args="record -o $(find spirit_logger)/bags/archive/spirit_log -a" /> -->
+        /robot_plan /body_plan_continuous /body_plan_discrete 
+        /foot_plan_continuous /foot_plan_discrete" />
 
 </launch>

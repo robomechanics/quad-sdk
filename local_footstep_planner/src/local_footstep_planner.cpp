@@ -45,6 +45,7 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
     spirit_msgs::MultiFootPlanDiscrete>(foot_plan_discrete_topic,1);
   foot_plan_continuous_pub_ = nh_.advertise<
     spirit_msgs::MultiFootPlanContinuous>(foot_plan_continuous_topic,1);
+
 }
 
 void LocalFootstepPlanner::terrainMapCallback(
@@ -60,8 +61,17 @@ void LocalFootstepPlanner::terrainMapCallback(
 void LocalFootstepPlanner::bodyPlanCallback(
   const spirit_msgs::BodyPlan::ConstPtr& msg) {
 
+  // Only update if the new plan is different
+  if (body_plan_msg_ != NULL) {
+    if (msg->states.back().header.stamp == body_plan_msg_->states.back().header.stamp) {
+      return;
+    }
+  }
+  
+  update_flag_ = true;
   body_plan_msg_ = msg;
   plan_timestamp_ = msg->header.stamp;
+
 }
 
 void LocalFootstepPlanner::robotStateCallback(
@@ -208,22 +218,22 @@ void LocalFootstepPlanner::updateDiscretePlan() {
       Eigen::Vector3d nominal_footstep_pos_touchdown;
       spirit.nominalFootstepFK(j, body_pos_touchdown, body_rpy_touchdown, nominal_footstep_pos_touchdown);
 
-      Eigen::Vector3d grf_midstance = {grf_array_midstance.vectors[j].x,
-        grf_array_midstance.vectors[j].y,
-        grf_array_midstance.vectors[j].z,};
+      Eigen::Vector3d grf_midstance = {grf_array_midstance.vectors[0].x,
+        grf_array_midstance.vectors[0].y,
+        grf_array_midstance.vectors[0].z,};
 
       // Project along GRF from hips to the ground
       // Eigen::Vector3d hip_midstance = {x_hip_midstance, y_hip_midstance, 
       //   z_hip_midstance};
       Eigen::Vector3d nominal_footstep_pos_midstance = nominal_footstep_pos_touchdown + 0.5*t_s[j]*body_vel_midstance;
-      // Eigen::Vector3d footstep_grf = terrain_.projectToMap(legbase_pos_midstance, 
-      //   -1.0*grf_midstance);
+      Eigen::Vector3d footstep_grf = terrain_.projectToMap(nominal_footstep_pos_midstance, 
+        -1.0*grf_midstance);
 
       // Define the nominal footstep location to lie on a line between the hips 
       // projected vertically and along GRF (third entry is garbage)
-      // Eigen::Vector3d footstep_nom = (1-grf_weight_)*nominal_footstep_pos_midstance + 
-      //   grf_weight_*footstep_grf;
-      Eigen::Vector3d footstep_nom = nominal_footstep_pos_midstance;
+      Eigen::Vector3d footstep_nom = (1-grf_weight_)*nominal_footstep_pos_midstance + 
+        grf_weight_*footstep_grf;
+      // Eigen::Vector3d footstep_nom = nominal_footstep_pos_midstance;
 
       // Load the data into the footstep array and push into the plan
       footstep[0] = footstep_nom[0];
@@ -263,23 +273,6 @@ void LocalFootstepPlanner::updateDiscretePlan() {
     footstep[3] = std::numeric_limits<double>::max();
 
     footstep_plan_[j].push_back(footstep);
-
-    // footstep.clear();
-    // footstep.resize(4);
-    // BodyState s_final = body_plan_.back();
-
-    // double yaw = s_final[5];
-    // double x_hip = s_final[0] + x_offsets[j]*cos(yaw) - y_offsets[j]*sin(yaw);
-    // double y_hip = s_final[1] + x_offsets[j]*sin(yaw) + y_offsets[j]*cos(yaw);
-    // double z_hip = s_final[2]; // TODO add in pitch here
-
-    // // Load the data into the footstep array and push into the plan
-    // footstep[0] = x_hip;
-    // footstep[1] = y_hip;
-    // footstep[2] = t_plan_.back() - period_ +  t_offsets_trot[j];
-    // footstep[3] = std::numeric_limits<double>::max();
-
-    // footstep_plan_[j].push_back(footstep);
   }
 
   // publishDiscretePlan();
@@ -287,7 +280,7 @@ void LocalFootstepPlanner::updateDiscretePlan() {
   // timer.report();
 }
 
-void LocalFootstepPlanner::publishContinuousPlan() {
+void LocalFootstepPlanner::updateContinuousPlan() {
   // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
   // Make sure we already have footstep data
@@ -298,9 +291,9 @@ void LocalFootstepPlanner::publishContinuousPlan() {
   }
 
   // Initialize the plan message, match overall plan timestamp
-  spirit_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg;
-  multi_foot_plan_continuous_msg.header.frame_id = map_frame_;
-  multi_foot_plan_continuous_msg.header.stamp = plan_timestamp_;
+  multi_foot_plan_continuous_msg_.header.frame_id = map_frame_;
+  multi_foot_plan_continuous_msg_.header.stamp = plan_timestamp_;
+  multi_foot_plan_continuous_msg_.states.clear();
 
   // Make sure the footstep horizon is within bounds
   double footstep_horizon = std::min((num_cycles_)*period_, t_plan_.back());
@@ -311,9 +304,9 @@ void LocalFootstepPlanner::publishContinuousPlan() {
     // Initialize MultiFootState message
     spirit_msgs::MultiFootState multi_foot_state_msg;
     multi_foot_state_msg.header.frame_id = 
-      multi_foot_plan_continuous_msg.header.frame_id;
+      multi_foot_plan_continuous_msg_.header.frame_id;
     multi_foot_state_msg.header.stamp = 
-      multi_foot_plan_continuous_msg.header.stamp + ros::Duration(t);
+      multi_foot_plan_continuous_msg_.header.stamp + ros::Duration(t);
 
     // Iterate through each foot
     for (int i=0; i<num_feet_; i++) {
@@ -428,10 +421,8 @@ void LocalFootstepPlanner::publishContinuousPlan() {
       multi_foot_state_msg.feet.push_back(foot_state_msg);
     }
 
-    multi_foot_plan_continuous_msg.states.push_back(multi_foot_state_msg);
+    multi_foot_plan_continuous_msg_.states.push_back(multi_foot_state_msg);
   }
-
-  foot_plan_continuous_pub_.publish(multi_foot_plan_continuous_msg);
 
   // timer.report();
 }
@@ -486,6 +477,10 @@ void LocalFootstepPlanner::publishDiscretePlan() {
   foot_plan_discrete_pub_.publish(multi_foot_plan_discrete_msg);
 }
 
+void LocalFootstepPlanner::publishContinuousPlan() {
+  foot_plan_continuous_pub_.publish(multi_foot_plan_continuous_msg_);
+}
+
 void LocalFootstepPlanner::waitForData() {
     // Spin until terrain map message has been received and processed
   boost::shared_ptr<grid_map_msgs::GridMap const> shared_map;
@@ -514,9 +509,13 @@ void LocalFootstepPlanner::spin() {
   while (ros::ok()) {
     
     // Update the plan and publish it
-    updateDiscretePlan();
-    publishDiscretePlan();
-    publishContinuousPlan();
+    if (update_flag_ == true) {
+      updateDiscretePlan();
+      updateContinuousPlan();
+      publishDiscretePlan();
+      publishContinuousPlan();
+      update_flag_ = false;
+    }    
 
     ros::spinOnce();
     r.sleep();
