@@ -13,6 +13,18 @@
 #include <iostream> // cout
 #include <fstream> // ifstream
 
+struct Obstacle {
+  double x;
+  double y;
+  double height;
+  double radius;
+};
+
+struct Step {
+  double x;
+  double height;
+};
+
 //! A terrain map publishing class
 /*!
    TerrainMapPublisher is a class for publishing terrain maps from a variety of sources, including from scratch.
@@ -96,6 +108,13 @@ private:
 
   /// double for map resolution
   double max_height_;
+
+  /// Obstacle object
+  Obstacle obstacle_;
+
+  /// Step object
+  Step step_;
+
 };
 
 #endif // TERRAIN_MAP_PUBLISHER_H
