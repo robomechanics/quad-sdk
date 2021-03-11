@@ -57,12 +57,8 @@ void TrajectoryPublisher::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr
 void TrajectoryPublisher::multiFootPlanContinuousCallback(const 
   spirit_msgs::MultiFootPlanContinuous::ConstPtr& msg) {
 
-    // std::cout << msg->header.stamp << std::endl;
-    // std::cout << multi_foot_plan_continuous_msg_.header.stamp << std::endl;
-    // printf("\n");
-
   if (msg->header.stamp != multi_foot_plan_continuous_msg_.header.stamp) {
-    // Save te most recent foot plan
+    // Save the most recent foot plan
     multi_foot_plan_continuous_msg_ = (*msg);
     update_flag_ = true;
   } 
@@ -114,7 +110,9 @@ void TrajectoryPublisher::updateTrajectory() {
     state.header.stamp = traj_msg_.header.stamp + ros::Duration(t_traj_[i]);
 
     // Interpolate body and foot plan
-    state.body = math_utils::interpBodyPlan(body_plan_msg_,t_traj_[i]);
+    int primitive_id;
+    spirit_msgs::GRFArray grf_array;
+    math_utils::interpBodyPlan(body_plan_msg_,t_traj_[i], state.body,primitive_id, grf_array);
     state.feet = math_utils::interpMultiFootPlanContinuous(
       multi_foot_plan_continuous_msg_,t_traj_[i]);
 
@@ -162,10 +160,10 @@ void TrajectoryPublisher::spin() {
       importTrajectory();
     } else if (update_flag_) {
       updateTrajectory();
+      publishTrajectory();
       update_flag_ = false;
     }
-    
-    publishTrajectory();
+
     publishTrajectoryState();
 
     // Collect new messages on subscriber topics
