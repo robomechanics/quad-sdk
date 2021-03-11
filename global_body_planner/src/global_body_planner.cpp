@@ -219,6 +219,9 @@ void GlobalBodyPlanner::callPlanner() {
       if (start_index == 0) {
         plan_timestamp_ = ros::Time::now();
       }
+
+      // Only publish the plan if we found a better solution
+      publishPlan();
     }
 
     if (!ros::ok()) {
@@ -362,8 +365,7 @@ void GlobalBodyPlanner::spin() {
     // Update the plan
     callPlanner();
 
-    // Publish the current best plan and sleep
-    publishPlan();
+    // Sleep
     ros::spinOnce();
     r.sleep();
   }

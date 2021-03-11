@@ -121,9 +121,12 @@ namespace math_utils {
    * @brief Interpolate data from a BodyPlan message.
    * @param[in] msg BodyPlan message
    * @param[in] t Time since beginning of trajectory (will return last state if too large)
-   * @return nav_msgs::Odometry message
+   * @param[out] interp_state Interpolated Odometry message
+   * @param[out] interp_primitive_id Interpolated primitive id
+   * @param[out] interp_grf Interpolated GRF array
    */
-  nav_msgs::Odometry interpBodyPlan(spirit_msgs::BodyPlan msg, double t);
+void interpBodyPlan(spirit_msgs::BodyPlan msg, double t,
+  nav_msgs::Odometry &interp_state, int &interp_primitive_id, spirit_msgs::GRFArray &interp_grf);
 
   /**
    * @brief Interpolate data from a MultiFootPlanContinuous message.

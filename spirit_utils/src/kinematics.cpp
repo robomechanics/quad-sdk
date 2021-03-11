@@ -99,6 +99,21 @@ void SpiritKinematics::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
   leg_base_pos_world = g_world_legbase.block<3,1>(0,3);
 }
 
+void SpiritKinematics::nominalFootstepFK(int leg_index, Eigen::Vector3d body_pos,
+  Eigen::Vector3d body_rpy, Eigen::Vector3d &nominal_footstep_pos_world) {
+
+  // Compute transforms
+  Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
+
+  Eigen::Matrix4d g_body_nominal_footstep = g_body_legbases_[leg_index];
+  g_body_nominal_footstep(1,3) += l0_vec_[leg_index];
+
+  // Compute transform for leg base relative to the world frame
+  Eigen::Matrix4d g_world_nominal_footstep = g_world_body*g_body_nominal_footstep;
+
+  nominal_footstep_pos_world = g_world_nominal_footstep.block<3,1>(0,3);
+}
+
 void SpiritKinematics::bodyToFootFK(int leg_index, 
   Eigen::Vector3d joint_state, Eigen::Matrix4d &g_body_foot) {
 
