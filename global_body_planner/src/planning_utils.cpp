@@ -224,7 +224,7 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
   for (int i = 1; i < num_states; i++) {
     double weight = pow(gamma,i);
     State body_state = interp_reduced_plan[i];
-    z[i] = weight*z[0] + (1-weight)*getHeightFromState(body_state,planner_config);
+    z[i] = weight*z[0] + (1-weight)*body_state[2];
     pitch[i] = weight*pitch[0] + (1-weight)*getPitchFromState(body_state,planner_config);
     yaw[i] = weight*yaw[0] + (1-weight)*atan2(body_state[4],body_state[3]);
   }
@@ -250,12 +250,12 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
 
   // plt::clf();
   // plt::ion();
-  // plt::named_plot("yaw", interp_t, yaw);
-  // plt::named_plot("filtered yaw", interp_t, filtered_yaw);
-  // plt::named_plot("yaw rate", interp_t, yaw_rate);
-  // plt::named_plot("filtered yaw rate", interp_t, filtered_yaw_rate);
+  // plt::named_plot("z", interp_t, z);
+  // plt::named_plot("filtered z", interp_t, filtered_z);
+  // plt::named_plot("z rate", interp_t, z_rate);
+  // plt::named_plot("filtered z rate", interp_t, filtered_z_rate);
   // plt::xlabel("t");
-  // plt::ylabel("yaw");
+  // plt::ylabel("z");
   // plt::legend();
   // plt::show();
   // plt::pause(0.001);
@@ -316,7 +316,7 @@ double getPitchFromState(State s, const PlannerConfig &planner_config) {
 
 double getHeightFromState(State s, const PlannerConfig &planner_config) {
 
-  return (0.3+planner_config.terrain.getGroundHeight(s[0], s[1]));
+  return (planner_config.terrain.getGroundHeight(s[0], s[1]));
 
 }
 
@@ -341,14 +341,14 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
       interp_primitive_id.push_back(STANCE);
   }
 
-  // Include the exact moment of liftoff if flight phase exists
   State s_takeoff = applyStance(s, a, planner_config);
-  if (t_f>0) {
-    interp_t.push_back(t0+t_s);
-    interp_reduced_plan.push_back(s_takeoff);
-    interp_GRF.push_back(getGRF(a,t_s,planner_config));
-    interp_primitive_id.push_back(STANCE);
-  }
+  // // Include the exact moment of liftoff if flight phase exists
+  // if (t_f>0) {
+  //   interp_t.push_back(t0+t_s);
+  //   interp_reduced_plan.push_back(s_takeoff);
+  //   interp_GRF.push_back(getGRF(a,t_s,planner_config));
+  //   interp_primitive_id.push_back(STANCE);
+  // }
 
   // Include the remainder of the flight phase (double count takeoff state to
   // get discontinuous dropoff in grf when interpolating)
@@ -468,11 +468,9 @@ State applyStance(State s, Action a, double t, const PlannerConfig &planner_conf
   s_new[4] = dy_td + a_y_td*t + (a_y_to - a_y_td)*t*t/(2.0*t_s);
   s_new[5] = dz_td + a_z_td*t + (a_z_to - a_z_td)*t*t/(2.0*t_s);
 
-  if (a[7] > 0) {
-    s_new[2] = z_td + dz_td*t + 0.5*a_z_td*t*t + (a_z_to - a_z_td)*(t*t*t)/(6.0*t_s);
-    s_new[5] = dz_td + a_z_td*t + (a_z_to - a_z_td)*t*t/(2.0*t_s);
-  } else {
-    s_new[2] = getHeightFromState(s_new, planner_config);
+  if (a[7] == 0) {
+    s_new[2] = a_z_td + (a_z_to - a_z_td)*(t/t_s) + getHeightFromState(s_new, planner_config);
+    // s_new[2] = getHeightFromState(s_new, planner_config);
     s_new[5] = 0;//sqrt(s_new[3]*s_new[3] + s_new[4]*s_new[4])*sin();
   }
 
@@ -548,11 +546,9 @@ State applyStanceReverse(State s, Action a, double t, const PlannerConfig &plann
   s_new[1] = y_to - cy*(t_s - t) - 0.5*a_y_td*(t_s*t_s - t*t) - (a_y_to - a_y_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
   s_new[2] = z_to - cz*(t_s - t) - 0.5*a_z_td*(t_s*t_s - t*t) - (a_z_to - a_z_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
 
-  if (a[7] > 0) {
-    s_new[2] = z_to - cz*(t_s - t) - 0.5*a_z_td*(t_s*t_s - t*t) - (a_z_to - a_z_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
-    s_new[5] = dz_to - a_z_td*(t_s - t) - (a_z_to - a_z_td)*(t_s*t_s - t*t)/(2.0*t_s);
-  } else {
-    s_new[2] = getHeightFromState(s_new, planner_config);
+  if (a[7] == 0) {
+    s_new[2] = a_z_to + (a_z_td - a_z_to)*(t/t_s) + getHeightFromState(s_new, planner_config);
+    // s_new[2] = getHeightFromState(s_new, planner_config);
     s_new[5] = 0;//sqrt(s_new[3]*s_new[3] + s_new[4]*s_new[4])*sin();
   }
 
@@ -711,7 +707,7 @@ bool isValidStateActionPair(State s, Action a, const PlannerConfig &planner_conf
   t_s = a[6];
   t_f = a[7];
 
-    for (double t = 0; t <= t_s; t += planner_config.KINEMATICS_RES)
+  for (double t = 0; t <= t_s; t += planner_config.KINEMATICS_RES)
   {
     State s_check = applyStance(s,a,t,planner_config);
 

@@ -47,6 +47,15 @@ int RRTConnectClass::attemptConnect(State s_existing, State s, double t_s, State
   a_new[6] = t_s;
   a_new[7] = t_f;
 
+  a_new[0] = -(2.0*(3.0*x_td - 3.0*x_to + 2.0*dx_td*t_s + dx_to*t_s))/(t_s*t_s);
+  a_new[1] = -(2.0*(3.0*y_td - 3.0*y_to + 2.0*dy_td*t_s + dy_to*t_s))/(t_s*t_s);
+  a_new[2] = z_td - planner_config.terrain.getGroundHeight(x_td,y_td);
+  a_new[3] = (2.0*(3.0*x_td - 3.0*x_to + dx_td*t_s + 2.0*dx_to*t_s))/(t_s*t_s);
+  a_new[4] = (2.0*(3.0*y_td - 3.0*y_to + dy_td*t_s + 2.0*dy_to*t_s))/(t_s*t_s);
+  a_new[5] = z_to - planner_config.terrain.getGroundHeight(x_to,y_to);;
+  a_new[6] = t_s;
+  a_new[7] = t_f;
+
   // If the connection results in an infeasible action, abort and return trapped
   if (isValidAction(a_new,planner_config) == true)
   {

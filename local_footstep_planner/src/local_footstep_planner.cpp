@@ -162,9 +162,12 @@ void LocalFootstepPlanner::updateDiscretePlan() {
         footstep[3] = period_;
       }
 
-      // footstep_plan_[j].push_back(footstep);
-      // start_index = 1;
+      footstep_plan_[j].push_back(footstep);
+      start_index = 1;
     }
+
+    double t_cycle;
+    double t_cycle_end;
 
     // Loop through each gait cycle
     for (int i = start_index; i < end_index; i++) {
@@ -174,8 +177,8 @@ void LocalFootstepPlanner::updateDiscretePlan() {
       footstep.resize(4);
       
       // Compute the initial time for this cycle
-      double t_cycle = i*period_;
-      double t_cycle_end = (i+1)*period_;
+      t_cycle = i*period_;
+      t_cycle_end = (i+1)*period_;
       if (t_cycle_end >=t_plan_.back()) {
         break;
       }
@@ -245,34 +248,35 @@ void LocalFootstepPlanner::updateDiscretePlan() {
 
     }
     
+    if (t_cycle_end >=t_plan_.back()) {
+      // Add final foot configuration
+      nav_msgs::Odometry body_final = body_plan_msg_->states.back();
 
-    // Add final foot configuration
-    nav_msgs::Odometry body_final = body_plan_msg_->states.back();
+      Eigen::Vector3d body_pos_final = {body_final.pose.pose.position.x,
+          body_final.pose.pose.position.y,
+          body_final.pose.pose.position.z};
+      
+      tf2::Quaternion q;
+      tf2::convert(body_final.pose.pose.orientation,q);
+      tf2::Matrix3x3 m(q);
+      double roll, pitch, yaw;
+      m.getRPY(roll, pitch, yaw);
+      Eigen::Vector3d body_rpy_final = {roll,pitch,yaw};
 
-    Eigen::Vector3d body_pos_final = {body_final.pose.pose.position.x,
-        body_final.pose.pose.position.y,
-        body_final.pose.pose.position.z};
-    
-    tf2::Quaternion q;
-    tf2::convert(body_final.pose.pose.orientation,q);
-    tf2::Matrix3x3 m(q);
-    double roll, pitch, yaw;
-    m.getRPY(roll, pitch, yaw);
-    Eigen::Vector3d body_rpy_final = {roll,pitch,yaw};
+      Eigen::Vector3d nominal_footstep_pos_final;
+        spirit.nominalFootstepFK(j, body_pos_final, body_rpy_final, nominal_footstep_pos_final);
 
-    Eigen::Vector3d nominal_footstep_pos_final;
-      spirit.nominalFootstepFK(j, body_pos_final, body_rpy_final, nominal_footstep_pos_final);
+      footstep.clear();
+      footstep.resize(4);
 
-    footstep.clear();
-    footstep.resize(4);
+      // Load the data into the footstep array and push into the plan
+      footstep[0] = nominal_footstep_pos_final[0];
+      footstep[1] = nominal_footstep_pos_final[1];
+      footstep[2] = t_plan_.back() - period_ +  t_offsets_trot[j];
+      footstep[3] = std::numeric_limits<double>::max();
 
-    // Load the data into the footstep array and push into the plan
-    footstep[0] = nominal_footstep_pos_final[0];
-    footstep[1] = nominal_footstep_pos_final[1];
-    footstep[2] = t_plan_.back() - period_ +  t_offsets_trot[j];
-    footstep[3] = std::numeric_limits<double>::max();
-
-    footstep_plan_[j].push_back(footstep);
+      footstep_plan_[j].push_back(footstep);
+    }
   }
 
   // publishDiscretePlan();

@@ -39,6 +39,15 @@ TerrainMapPublisher::TerrainMapPublisher(ros::NodeHandle nh)
 
 }
 
+void TerrainMapPublisher::updateParams() {
+  nh_.param<double>("terrain_map_publisher/obstacle_x", obstacle_.x, 2.0);
+  nh_.param<double>("terrain_map_publisher/obstacle_y", obstacle_.y, 0.0);
+  nh_.param<double>("terrain_map_publisher/obstacle_height", obstacle_.height, 0.5);
+  nh_.param<double>("terrain_map_publisher/obstacle_radius", obstacle_.radius, 1.0);
+  nh_.param<double>("terrain_map_publisher/step_x", step_.x, 4.0);
+  nh_.param<double>("terrain_map_publisher/step_height", step_.height, 0.3);
+}
+
 void TerrainMapPublisher::createMap() {
 
   // Set initial map parameters and geometry
@@ -48,6 +57,9 @@ void TerrainMapPublisher::createMap() {
     terrain_map_.getLength().x(), terrain_map_.getLength().y(),
     terrain_map_.getSize()(0), terrain_map_.getSize()(1));
 
+}
+
+void TerrainMapPublisher::updateMap() {
   // Add terrain info
   for (grid_map::GridMapIterator it(terrain_map_); !it.isPastEnd(); ++it) {
 
@@ -239,6 +251,13 @@ void TerrainMapPublisher::spin() {
 
   // Continue publishing the map at the update rate
   while (ros::ok()) {
+
+    updateParams();
+
+    if (map_data_source_.compare("internal")==0) {
+      updateMap();
+    }
+    
     publishMap();
     ros::spinOnce();
     r.sleep();

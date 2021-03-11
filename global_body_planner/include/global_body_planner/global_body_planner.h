@@ -52,16 +52,21 @@ class GlobalBodyPlanner {
     void terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg);
 
     /**
-     * @brief Callback function to handle new robot  state data
+     * @brief Callback function to handle new robot state data
      * @param[in] msg the message contining robot state data
      */
     void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 
     /**
-     * @brief Check if a replan is required
-     * @return boolean for whether to replan
+     * @brief Callback function to handle new goal state
+     * @param[in] msg the message contining the goal state
      */
-    bool replanTrigger();
+    void goalStateCallback(const geometry_msgs::PointStamped::ConstPtr& msg);
+
+    /**
+     * @brief Check if a restart is required
+     */
+    void updateRestartFlag();
 
     /**
      * @brief Initialize the planner by clearing out old plan data and setting the start state
@@ -99,6 +104,9 @@ class GlobalBodyPlanner {
 
     /// Subscriber for robot state messages
     ros::Subscriber robot_state_sub_;
+
+    /// Subscriber for goal state messages
+    ros::Subscriber goal_state_sub_;
 
     /// Publisher for body plan messages
     ros::Publisher body_plan_pub_;
@@ -148,6 +156,9 @@ class GlobalBodyPlanner {
     /// Goal state for planner
     std::vector<double> goal_state_;
 
+    /// goal_state_msg_
+    geometry_msgs::PointStamped::ConstPtr goal_state_msg_;
+
     /// Starting time for planner call during replans relative to t_plan_[0]
     double replan_start_time_;
 
@@ -161,7 +172,7 @@ class GlobalBodyPlanner {
     std::vector<double> robot_state_;
 
     /// Flag to determine if the planner needs to restart planning from the robot state
-    bool plan_from_robot_state_flag_;
+    bool restart_flag_;
     
     /// Sequence of discrete states in the plan
     std::vector<State> state_sequence_;
@@ -186,6 +197,9 @@ class GlobalBodyPlanner {
 
     /// Planner config
     PlannerConfig planner_config_;
+
+    /// Delay after node startup before planning and publishing
+    double startup_delay_;
 
 };
 

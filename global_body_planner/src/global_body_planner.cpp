@@ -7,7 +7,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string body_plan_topic, discrete_body_plan_topic;
+  std::string body_plan_topic, discrete_body_plan_topic, goal_state_topic;
   std::vector<double> start_state_default = 
     {0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
   std::vector<double> goal_state_default = 
@@ -17,12 +17,14 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh.param<std::string>("topics/state/ground_truth", robot_state_topic_, "/state/ground_truth");
   nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
   nh.param<std::string>("topics/discrete_body_plan", discrete_body_plan_topic, "/discrete_body_plan");
+  nh.param<std::string>("topics/goal_state", goal_state_topic, "/clicked_point");
   nh.param<std::string>("map_frame",map_frame_,"map");
   nh.param<double>("global_body_planner/update_rate", update_rate_, 1);
   nh.param<int>("global_body_planner/num_calls", num_calls_, 1);
   nh.param<double>("global_body_planner/max_time", max_time_, 5.0);
   nh.param<double>("global_body_planner/committed_horizon", committed_horizon_, 0);
   nh.param<double>("global_body_planner/state_error_threshold", state_error_threshold_, 0.5);
+  nh.param<double>("global_body_planner/startup_delay", startup_delay_, 0.0);
 
   nh.param<std::vector<double> >("global_body_planner/start_state", start_state_, start_state_default);
   nh.param<std::vector<double> >("global_body_planner/goal_state", goal_state_, goal_state_default);
@@ -30,6 +32,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic_,1,&GlobalBodyPlanner::terrainMapCallback, this);
   robot_state_sub_ = nh_.subscribe(robot_state_topic_,1,&GlobalBodyPlanner::robotStateCallback, this);
+  goal_state_sub_ = nh_.subscribe(goal_state_topic,1,&GlobalBodyPlanner::goalStateCallback, this);
   body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(body_plan_topic,1);
   discrete_body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(discrete_body_plan_topic,1);
 
@@ -106,18 +109,38 @@ void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstP
   }
 }
 
-bool GlobalBodyPlanner::replanTrigger() {
+void GlobalBodyPlanner::goalStateCallback(const geometry_msgs::PointStamped::ConstPtr& msg) {
+
+  if (goal_state_msg_ != NULL) {
+    if (goal_state_msg_->header.stamp == msg->header.stamp) {
+      return;
+    }
+  }
+
+  goal_state_msg_ = msg;
+
+  goal_state_.resize(12);
+  std::fill(goal_state_.begin(), goal_state_.end(), 0);
+
+  goal_state_[0] = goal_state_msg_->point.x;
+  goal_state_[1] = goal_state_msg_->point.y;
+  goal_state_[2] = 0.3 + planner_config_.terrain.getGroundHeight(
+    goal_state_msg_->point.x, goal_state_msg_->point.y);
+
+  restart_flag_ = true;
+}
+
+void GlobalBodyPlanner::updateRestartFlag() {
 
   if (body_plan_.empty()) {
-    return true;
+    restart_flag_ = true;
+    return;
   }
 
   double state_error_threshold = 0.5;
   std::vector<double> current_state_in_plan_ = body_plan_.front();
   if (poseDistance(robot_state_, current_state_in_plan_) > state_error_threshold_) {
-    return true;
-  } else {
-    return false;
+    restart_flag_ = true;
   }
 }
 
@@ -126,10 +149,14 @@ int GlobalBodyPlanner::initPlanner() {
 
   int start_index = 0;
 
-  if (replanTrigger()) {
+  updateRestartFlag();
+
+  if (restart_flag_) {
     start_state_ = robot_state_;
     replan_start_time_ = 0;
     current_cost_ = INFTY;
+    restart_flag_ = false;
+    ROS_INFO("GBP starting from current robot state");
   } else {
     // Loop through t_plan_ to find the next state after the committed horizon, set as start state
     int N = t_plan_.size();
@@ -244,7 +271,6 @@ void GlobalBodyPlanner::callPlanner() {
       }
 
       // Only publish the plan if we found a better solution
-      publishPlan();
     }
 
     if (!ros::ok()) {
@@ -377,16 +403,19 @@ void GlobalBodyPlanner::waitForData() {
 
 void GlobalBodyPlanner::spin() {
 
-  plan_from_robot_state_flag_ = true;
-
   ros::Rate r(update_rate_);
-
   waitForData();
 
+  ros::Time start_time = ros::Time::now();
   while (ros::ok()) {
-    
-    // Update the plan
-    callPlanner();
+
+    if ((ros::Time::now() - start_time) >= ros::Duration(startup_delay_)) {
+      // Update the plan
+      callPlanner();
+      publishPlan();
+    } else {
+      ROS_INFO_THROTTLE(1/startup_delay_, "Waiting to start GBP...");
+    }
 
     // Sleep
     ros::spinOnce();

@@ -39,9 +39,19 @@ public:
   TerrainMapPublisher(ros::NodeHandle nh);
 
   /**
+   * @brief Updates the terrain_map_publisher parameters
+   */
+  void updateParams();
+
+  /**
    * @brief Creates the map object from scratch
    */
   void createMap();
+
+  /**
+   * @brief Updates the map object with params
+   */
+  void updateMap();
 
   /**
    * @brief Loads data from a specified CSV file into a nested std::vector structure
