@@ -12,7 +12,10 @@ var searchData=
   ['updated_5fweights_5f',['updated_weights_',['../classQuadrupedMPC.html#a1e93594bd4b983376cf12b6638d1f989',1,'QuadrupedMPC']]],
   ['updatediscreteplan',['updateDiscretePlan',['../classLocalFootstepPlanner.html#a71b4ee2f4f3b385e27e21fb9cd0208a3',1,'LocalFootstepPlanner']]],
   ['updategvalue',['updateGValue',['../classGraphClass.html#ae87d58394dc58f56bd4f619193423046',1,'GraphClass']]],
+  ['updatemap',['updateMap',['../classTerrainMapPublisher.html#a23ff09b7adb01ba0a256c4ae5eb5865f',1,'TerrainMapPublisher']]],
+  ['updateparams',['updateParams',['../classTerrainMapPublisher.html#ac0e9d8d230df9fe17208038f7edc3677',1,'TerrainMapPublisher']]],
   ['updateplan',['updatePlan',['../classTwistBodyPlanner.html#aa23b33f17af0cf11c8e0115e1be07db3',1,'TwistBodyPlanner']]],
+  ['updaterestartflag',['updateRestartFlag',['../classGlobalBodyPlanner.html#a122abcda63f8b7aacd6335b974e678b4',1,'GlobalBodyPlanner']]],
   ['updatestep',['updateStep',['../classEKFEstimator.html#a2aa7c42b497574075809cf6812cc1ac6',1,'EKFEstimator::updateStep()'],['../classGroundTruthPublisher.html#a0da4de457cabb8dfb3812ea7589b04ab',1,'GroundTruthPublisher::updateStep()']]],
   ['updatetrajectory',['updateTrajectory',['../classTrajectoryPublisher.html#a8b909db4c03b058debfcd70ee02b8600',1,'TrajectoryPublisher']]],
   ['use_5fdiff_5ffor_5fvelocity_5f',['use_diff_for_velocity_',['../classOpenLoopController.html#a4dcfecd5aaf9622e6cde1a455620e7b7',1,'OpenLoopController']]]

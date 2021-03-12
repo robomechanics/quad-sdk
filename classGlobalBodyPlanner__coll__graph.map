@@ -1,3 +1,4 @@
 <map id="GlobalBodyPlanner" name="GlobalBodyPlanner">
-<area shape="rect" id="node2" href="$classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling. " alt="" coords="17,5,140,32"/>
+<area shape="rect" id="node2" href="$structplanning__utils_1_1PlannerConfig.html" title="planning_utils::PlannerConfig" alt="" coords="5,95,217,121"/>
+<area shape="rect" id="node3" href="$classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling. " alt="" coords="50,5,173,32"/>
 </map>

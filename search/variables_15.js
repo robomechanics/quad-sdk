@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['walk_5fkd_5f',['walk_kd_',['../classOpenLoopController.html#a8ac4dee7d882b817f29bdba6c38538ee',1,'OpenLoopController']]],
-  ['walk_5fkp_5f',['walk_kp_',['../classOpenLoopController.html#a258cc55af4aede5b1a94a17df3160243',1,'OpenLoopController']]]
+  ['vertices',['vertices',['../classGraphClass.html#a4ce5071e5d6f7f58965d0babf0c05cba',1,'GraphClass']]],
+  ['vertices_5fgenerated_5finfo_5f',['vertices_generated_info_',['../classGlobalBodyPlanner.html#adfbd439f7eeadbf40694ba90bcd566e4',1,'GlobalBodyPlanner']]]
 ];

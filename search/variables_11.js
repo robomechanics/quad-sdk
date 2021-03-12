@@ -1,23 +1,11 @@
 var searchData=
 [
-  ['sit',['SIT',['../classInverseDynamics.html#a68fafd2c4caf1f3402f7710341d5b714',1,'InverseDynamics']]],
-  ['sit_5fto_5fstand',['SIT_TO_STAND',['../classInverseDynamics.html#ad0e8aa9588f3a79d0b9c428e909bd8ec',1,'InverseDynamics']]],
-  ['solve_5ftime_5finfo_5f',['solve_time_info_',['../classGlobalBodyPlanner.html#ae431f7b02f8c58d4fa354faeed6714e9',1,'GlobalBodyPlanner']]],
-  ['solver_5f',['solver_',['../classQuadrupedMPC.html#aa7f90acd39202da28a3726c9e0a44bea',1,'QuadrupedMPC']]],
-  ['stance',['STANCE',['../classLocalFootstepPlanner.html#a65d7ce39eeecb63432af83dc9184677a',1,'LocalFootstepPlanner']]],
-  ['stand',['STAND',['../classInverseDynamics.html#ab36f632a4e282e646bad94d42ac3f08e',1,'InverseDynamics']]],
-  ['stand_5fjoint_5fangles_5f',['stand_joint_angles_',['../classOpenLoopController.html#aff1f013b84c601bb1d61836b52495e3d',1,'OpenLoopController']]],
-  ['stand_5fkd_5f',['stand_kd_',['../classOpenLoopController.html#a9ae5c82659b5614b182f34429327a69a',1,'OpenLoopController']]],
-  ['stand_5fkp_5f',['stand_kp_',['../classOpenLoopController.html#a14b44cae2d25402b7e122a8b47737301',1,'OpenLoopController']]],
-  ['stand_5fto_5fsit',['STAND_TO_SIT',['../classInverseDynamics.html#a1affbbcf967c9b07f76765c063690aff',1,'InverseDynamics']]],
-  ['start_5fstate_5f',['start_state_',['../classGlobalBodyPlanner.html#a8163091678716ffd008380671cc5fa9d',1,'GlobalBodyPlanner::start_state_()'],['../classTwistBodyPlanner.html#a5345027e06096577fd1941c61980c245',1,'TwistBodyPlanner::start_state_()']]],
-  ['start_5ftime_5f',['start_time_',['../classspirit__utils_1_1FunctionTimer.html#a963b5aa76163a6bfb38269ca1359d144',1,'spirit_utils::FunctionTimer']]],
-  ['state_5ferror_5fthreshold_5f',['state_error_threshold_',['../classGlobalBodyPlanner.html#ae29c7264b2b9bba67ae9cc223952dd6b',1,'GlobalBodyPlanner']]],
-  ['state_5festimate_5fpub_5f',['state_estimate_pub_',['../classEKFEstimator.html#ae8c8abd3c5c7074c3fa85232a7174e91',1,'EKFEstimator']]],
-  ['state_5festimate_5fsub_5f',['state_estimate_sub_',['../classRVizInterface.html#a0d2f37bf93ef7479542065c4f18d8fc1',1,'RVizInterface']]],
-  ['state_5fsequence_5f',['state_sequence_',['../classGlobalBodyPlanner.html#a50df2ef4bdaca844a07ece58a468de64',1,'GlobalBodyPlanner']]],
-  ['stop_5ftime_5f',['stop_time_',['../classspirit__utils_1_1FunctionTimer.html#a3507e35aa0eb1be8baa825f85ba092a8',1,'spirit_utils::FunctionTimer']]],
-  ['sub_5fcommand_5f',['sub_command_',['../classeffort__controllers_1_1SpiritController.html#a94f81d7ea734641cb8e10345ddf1cb8a',1,'effort_controllers::SpiritController']]],
-  ['success_5f',['success_',['../classRRTClass.html#a7cddb22b09f2be69b1d93eb337963d03',1,'RRTClass']]],
-  ['successors',['successors',['../classGraphClass.html#a2e6c5c4d16682dafe430d71b0f8678a5',1,'GraphClass']]]
+  ['replan_5fstart_5ftime_5f',['replan_start_time_',['../classGlobalBodyPlanner.html#a5e28747ebeaf79fefc55edfe43c4d53b',1,'GlobalBodyPlanner']]],
+  ['resolution_5f',['resolution_',['../classTerrainMapPublisher.html#a01d73a9b142c5cd7457feb50045dc370',1,'TerrainMapPublisher']]],
+  ['restart_5fflag_5f',['restart_flag_',['../classGlobalBodyPlanner.html#a820945098694648a2523219e44e938d6',1,'GlobalBodyPlanner']]],
+  ['robot_5fstate_5f',['robot_state_',['../classGlobalBodyPlanner.html#a24e940f6401ecd8d5bac7b58c4c0ca73',1,'GlobalBodyPlanner']]],
+  ['robot_5fstate_5fmsg_5f',['robot_state_msg_',['../classLocalFootstepPlanner.html#a582684047fb031cd5fc33c4573d26a48',1,'LocalFootstepPlanner::robot_state_msg_()'],['../classTrajectoryPublisher.html#a7805d89564e77dca3328967dbc8c422a',1,'TrajectoryPublisher::robot_state_msg_()']]],
+  ['robot_5fstate_5fsub_5f',['robot_state_sub_',['../classBodyForceEstimator.html#a1e4f6ba0afd26410269c175e3efe7840',1,'BodyForceEstimator::robot_state_sub_()'],['../classGlobalBodyPlanner.html#a80448be2f451be21bed0a7591df36669',1,'GlobalBodyPlanner::robot_state_sub_()'],['../classInverseDynamics.html#aaca98d2eefee63c20cf359b12d4041ce',1,'InverseDynamics::robot_state_sub_()'],['../classLocalFootstepPlanner.html#aae3d0fb05f68390de6ec43ab737fd904',1,'LocalFootstepPlanner::robot_state_sub_()'],['../classMPCController.html#a579e5395fca46881024bc2a427c06e09',1,'MPCController::robot_state_sub_()'],['../classTwistBodyPlanner.html#aad5e3027eaef9e06f327305035e66939',1,'TwistBodyPlanner::robot_state_sub_()']]],
+  ['robot_5fstate_5ftopic_5f',['robot_state_topic_',['../classGlobalBodyPlanner.html#a900c6a4ca90285c91fcc6032256dd451',1,'GlobalBodyPlanner']]],
+  ['robot_5fstate_5ftraj_5fsub_5f',['robot_state_traj_sub_',['../classMPCController.html#ad6fc3aca9c2193182d7dd1286d2c0db9',1,'MPCController']]]
 ];

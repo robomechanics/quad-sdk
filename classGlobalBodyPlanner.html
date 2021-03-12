@@ -77,7 +77,8 @@ Collaboration diagram for GlobalBodyPlanner:</div>
 <div class="dyncontent">
 <div class="center"><img src="classGlobalBodyPlanner__coll__graph.png" border="0" usemap="#GlobalBodyPlanner_coll__map" alt="Collaboration graph"/></div>
 <map name="GlobalBodyPlanner_coll__map" id="GlobalBodyPlanner_coll__map">
-<area shape="rect" id="node2" href="classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling. " alt="" coords="17,5,140,32"/>
+<area shape="rect" id="node2" href="structplanning__utils_1_1PlannerConfig.html" title="planning_utils::PlannerConfig" alt="" coords="5,95,217,121"/>
+<area shape="rect" id="node3" href="classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling. " alt="" coords="50,5,173,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -103,9 +104,13 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a811dd17bb6b6f530c7e34f10c488ee4a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a811dd17bb6b6f530c7e34f10c488ee4a">robotStateCallback</a> (const spirit_msgs::RobotState::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a811dd17bb6b6f530c7e34f10c488ee4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new robot state data.  <a href="#a811dd17bb6b6f530c7e34f10c488ee4a">More...</a><br /></td></tr>
 <tr class="separator:a811dd17bb6b6f530c7e34f10c488ee4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77a803282b9834c6dd9bd946de2ac583"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a77a803282b9834c6dd9bd946de2ac583">replanTrigger</a> ()</td></tr>
-<tr class="memdesc:a77a803282b9834c6dd9bd946de2ac583"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if a replan is required.  <a href="#a77a803282b9834c6dd9bd946de2ac583">More...</a><br /></td></tr>
-<tr class="separator:a77a803282b9834c6dd9bd946de2ac583"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bbaa65b67ce5e11537494288fcbcc9b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a9bbaa65b67ce5e11537494288fcbcc9b">goalStateCallback</a> (const geometry_msgs::PointStamped::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a9bbaa65b67ce5e11537494288fcbcc9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new goal state.  <a href="#a9bbaa65b67ce5e11537494288fcbcc9b">More...</a><br /></td></tr>
+<tr class="separator:a9bbaa65b67ce5e11537494288fcbcc9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a122abcda63f8b7aacd6335b974e678b4"><td class="memItemLeft" align="right" valign="top"><a id="a122abcda63f8b7aacd6335b974e678b4"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a122abcda63f8b7aacd6335b974e678b4">updateRestartFlag</a> ()</td></tr>
+<tr class="memdesc:a122abcda63f8b7aacd6335b974e678b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if a restart is required. <br /></td></tr>
+<tr class="separator:a122abcda63f8b7aacd6335b974e678b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7eea2c9ab7b6e0cc56a02340ec105f7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#ab7eea2c9ab7b6e0cc56a02340ec105f7">initPlanner</a> ()</td></tr>
 <tr class="memdesc:ab7eea2c9ab7b6e0cc56a02340ec105f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the planner by clearing out old plan data and setting the start state.  <a href="#ab7eea2c9ab7b6e0cc56a02340ec105f7">More...</a><br /></td></tr>
 <tr class="separator:ab7eea2c9ab7b6e0cc56a02340ec105f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -135,6 +140,10 @@ ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a80448be2f451be21bed0a7591df36669">robot_state_sub_</a></td></tr>
 <tr class="memdesc:a80448be2f451be21bed0a7591df36669"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subscriber for robot state messages. <br /></td></tr>
 <tr class="separator:a80448be2f451be21bed0a7591df36669"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47269cab56f643fb5db6ec48909a5bcc"><td class="memItemLeft" align="right" valign="top"><a id="a47269cab56f643fb5db6ec48909a5bcc"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a47269cab56f643fb5db6ec48909a5bcc">goal_state_sub_</a></td></tr>
+<tr class="memdesc:a47269cab56f643fb5db6ec48909a5bcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subscriber for goal state messages. <br /></td></tr>
+<tr class="separator:a47269cab56f643fb5db6ec48909a5bcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b7373f6e544a844dc1d09f296d92e1c"><td class="memItemLeft" align="right" valign="top"><a id="a5b7373f6e544a844dc1d09f296d92e1c"></a>
 ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a5b7373f6e544a844dc1d09f296d92e1c">body_plan_pub_</a></td></tr>
 <tr class="memdesc:a5b7373f6e544a844dc1d09f296d92e1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publisher for body plan messages. <br /></td></tr>
@@ -171,10 +180,6 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a7b45b7415cdca9ec042f0619deee4447">map_frame_</a></td></tr>
 <tr class="memdesc:a7b45b7415cdca9ec042f0619deee4447"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle for the map frame. <br /></td></tr>
 <tr class="separator:a7b45b7415cdca9ec042f0619deee4447"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ce8a926b03bb78083a6a20e0851a05a"><td class="memItemLeft" align="right" valign="top"><a id="a4ce8a926b03bb78083a6a20e0851a05a"></a>
-<a class="el" href="classFastTerrainMap.html">FastTerrainMap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a4ce8a926b03bb78083a6a20e0851a05a">terrain_</a></td></tr>
-<tr class="memdesc:a4ce8a926b03bb78083a6a20e0851a05a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Struct for terrain map data. <br /></td></tr>
-<tr class="separator:a4ce8a926b03bb78083a6a20e0851a05a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a029413a439d6621407f9e7d7020b18b5"><td class="memItemLeft" align="right" valign="top"><a id="a029413a439d6621407f9e7d7020b18b5"></a>
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a029413a439d6621407f9e7d7020b18b5">t_plan_</a></td></tr>
 <tr class="memdesc:a029413a439d6621407f9e7d7020b18b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing the interpolated time data. <br /></td></tr>
@@ -203,6 +208,10 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#ad13be2ea0f18e3f20d58b44043fa486f">goal_state_</a></td></tr>
 <tr class="memdesc:ad13be2ea0f18e3f20d58b44043fa486f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Goal state for planner. <br /></td></tr>
 <tr class="separator:ad13be2ea0f18e3f20d58b44043fa486f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1c0845b59c7f16afaf13d27e4f48659"><td class="memItemLeft" align="right" valign="top"><a id="aa1c0845b59c7f16afaf13d27e4f48659"></a>
+geometry_msgs::PointStamped::ConstPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#aa1c0845b59c7f16afaf13d27e4f48659">goal_state_msg_</a></td></tr>
+<tr class="memdesc:aa1c0845b59c7f16afaf13d27e4f48659"><td class="mdescLeft">&#160;</td><td class="mdescRight">goal_state_msg_ <br /></td></tr>
+<tr class="separator:aa1c0845b59c7f16afaf13d27e4f48659"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e28747ebeaf79fefc55edfe43c4d53b"><td class="memItemLeft" align="right" valign="top"><a id="a5e28747ebeaf79fefc55edfe43c4d53b"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a5e28747ebeaf79fefc55edfe43c4d53b">replan_start_time_</a></td></tr>
 <tr class="memdesc:a5e28747ebeaf79fefc55edfe43c4d53b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starting time for planner call during replans relative to t_plan_[0]. <br /></td></tr>
@@ -219,10 +228,10 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a24e940f6401ecd8d5bac7b58c4c0ca73">robot_state_</a></td></tr>
 <tr class="memdesc:a24e940f6401ecd8d5bac7b58c4c0ca73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current robot state. <br /></td></tr>
 <tr class="separator:a24e940f6401ecd8d5bac7b58c4c0ca73"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a692c8220178d6c12bde049d1e1b48dad"><td class="memItemLeft" align="right" valign="top"><a id="a692c8220178d6c12bde049d1e1b48dad"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a692c8220178d6c12bde049d1e1b48dad">plan_from_robot_state_flag_</a></td></tr>
-<tr class="memdesc:a692c8220178d6c12bde049d1e1b48dad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag to determine if the planner needs to restart planning from the robot state. <br /></td></tr>
-<tr class="separator:a692c8220178d6c12bde049d1e1b48dad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a820945098694648a2523219e44e938d6"><td class="memItemLeft" align="right" valign="top"><a id="a820945098694648a2523219e44e938d6"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a820945098694648a2523219e44e938d6">restart_flag_</a></td></tr>
+<tr class="memdesc:a820945098694648a2523219e44e938d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag to determine if the planner needs to restart planning from the robot state. <br /></td></tr>
+<tr class="separator:a820945098694648a2523219e44e938d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50df2ef4bdaca844a07ece58a468de64"><td class="memItemLeft" align="right" valign="top"><a id="a50df2ef4bdaca844a07ece58a468de64"></a>
 std::vector&lt; State &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a50df2ef4bdaca844a07ece58a468de64">state_sequence_</a></td></tr>
 <tr class="memdesc:a50df2ef4bdaca844a07ece58a468de64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sequence of discrete states in the plan. <br /></td></tr>
@@ -251,6 +260,14 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#adfbd439f7eeadbf40694ba90bcd566e4">vertices_generated_info_</a></td></tr>
 <tr class="memdesc:adfbd439f7eeadbf40694ba90bcd566e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of number of vertices for each planning call. <br /></td></tr>
 <tr class="separator:adfbd439f7eeadbf40694ba90bcd566e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89be1902bf79ea01e37e211ba1b05449"><td class="memItemLeft" align="right" valign="top"><a id="a89be1902bf79ea01e37e211ba1b05449"></a>
+<a class="el" href="structplanning__utils_1_1PlannerConfig.html">PlannerConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a89be1902bf79ea01e37e211ba1b05449">planner_config_</a></td></tr>
+<tr class="memdesc:a89be1902bf79ea01e37e211ba1b05449"><td class="mdescLeft">&#160;</td><td class="mdescRight">Planner config. <br /></td></tr>
+<tr class="separator:a89be1902bf79ea01e37e211ba1b05449"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03d8d8ee1fbd19e5372c5292f99dced8"><td class="memItemLeft" align="right" valign="top"><a id="a03d8d8ee1fbd19e5372c5292f99dced8"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a03d8d8ee1fbd19e5372c5292f99dced8">startup_delay_</a></td></tr>
+<tr class="memdesc:a03d8d8ee1fbd19e5372c5292f99dced8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delay after node startup before planning and publishing. <br /></td></tr>
+<tr class="separator:a03d8d8ee1fbd19e5372c5292f99dced8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A global body planning class for legged robots. </p>
@@ -349,6 +366,40 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
 
 </div>
 </div>
+<a id="a9bbaa65b67ce5e11537494288fcbcc9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bbaa65b67ce5e11537494288fcbcc9b">&#9670;&nbsp;</a></span>goalStateCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GlobalBodyPlanner::goalStateCallback </td>
+          <td>(</td>
+          <td class="paramtype">const geometry_msgs::PointStamped::ConstPtr &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback function to handle new goal state. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>the message contining the goal state </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ab7eea2c9ab7b6e0cc56a02340ec105f7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab7eea2c9ab7b6e0cc56a02340ec105f7">&#9670;&nbsp;</a></span>initPlanner()</h2>
 
@@ -374,34 +425,6 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
 
 <p>Initialize the planner by clearing out old plan data and setting the start state. </p>
 <dl class="section return"><dt>Returns</dt><dd>Index of the current plan from which to being the new plan (zero if fully replanning) </dd></dl>
-
-</div>
-</div>
-<a id="a77a803282b9834c6dd9bd946de2ac583"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a77a803282b9834c6dd9bd946de2ac583">&#9670;&nbsp;</a></span>replanTrigger()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool GlobalBodyPlanner::replanTrigger </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Check if a replan is required. </p>
-<dl class="section return"><dt>Returns</dt><dd>boolean for whether to replan </dd></dl>
 
 </div>
 </div>

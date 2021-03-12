@@ -122,6 +122,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6fc85a70bacd5bc07043adfeb91797fa"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a6fc85a70bacd5bc07043adfeb91797fa">getGValue</a> (int idx)</td></tr>
 <tr class="memdesc:a6fc85a70bacd5bc07043adfeb91797fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the g-value of a vertex.  <a href="#a6fc85a70bacd5bc07043adfeb91797fa">More...</a><br /></td></tr>
 <tr class="separator:a6fc85a70bacd5bc07043adfeb91797fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a9aed65a29957ba414ade41ac46e73c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a1a9aed65a29957ba414ade41ac46e73c">computeEdgeCost</a> (int idx1, int idx2)</td></tr>
+<tr class="memdesc:a1a9aed65a29957ba414ade41ac46e73c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the cost of an edge between two vertices.  <a href="#a1a9aed65a29957ba414ade41ac46e73c">More...</a><br /></td></tr>
+<tr class="separator:a1a9aed65a29957ba414ade41ac46e73c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab42104d73d16306f192bcbdbdee0a476"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#ab42104d73d16306f192bcbdbdee0a476">printVertex</a> (State s)</td></tr>
 <tr class="memdesc:ab42104d73d16306f192bcbdbdee0a476"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print the state information via stdout.  <a href="#ab42104d73d16306f192bcbdbdee0a476">More...</a><br /></td></tr>
 <tr class="separator:ab42104d73d16306f192bcbdbdee0a476"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -304,6 +307,44 @@ std::unordered_map&lt; int, double &gt;&#160;</td><td class="memItemRight" valig
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a1a9aed65a29957ba414ade41ac46e73c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a9aed65a29957ba414ade41ac46e73c">&#9670;&nbsp;</a></span>computeEdgeCost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double GraphClass::computeEdgeCost </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the cost of an edge between two vertices. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx1</td><td>Index of vertex 1 </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx2</td><td>Index of vertex 2 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Cost of the edge between idx1 and idx2 </dd></dl>
 
 </div>
 </div>

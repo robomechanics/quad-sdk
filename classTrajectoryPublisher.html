@@ -92,6 +92,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a0933b12439db57eb1dfe7ab03b2ca121"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a0933b12439db57eb1dfe7ab03b2ca121">bodyPlanCallback</a> (const spirit_msgs::BodyPlan::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a0933b12439db57eb1dfe7ab03b2ca121"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new body plan data.  <a href="#a0933b12439db57eb1dfe7ab03b2ca121">More...</a><br /></td></tr>
 <tr class="separator:a0933b12439db57eb1dfe7ab03b2ca121"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07c90762ea0e3b870bd7a0107a50e64e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a07c90762ea0e3b870bd7a0107a50e64e">robotStateCallback</a> (const spirit_msgs::RobotState::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a07c90762ea0e3b870bd7a0107a50e64e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new robot state data.  <a href="#a07c90762ea0e3b870bd7a0107a50e64e">More...</a><br /></td></tr>
+<tr class="separator:a07c90762ea0e3b870bd7a0107a50e64e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38dfab90943b74fbd2438409e2f64a63"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a38dfab90943b74fbd2438409e2f64a63">multiFootPlanContinuousCallback</a> (const spirit_msgs::MultiFootPlanContinuous::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a38dfab90943b74fbd2438409e2f64a63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new continuous foot plan data.  <a href="#a38dfab90943b74fbd2438409e2f64a63">More...</a><br /></td></tr>
 <tr class="separator:a38dfab90943b74fbd2438409e2f64a63"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -118,6 +121,10 @@ ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a00eb794de33208528d7883f82282ff4a">multi_foot_plan_continuous_sub_</a></td></tr>
 <tr class="memdesc:a00eb794de33208528d7883f82282ff4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the swing leg plan. <br /></td></tr>
 <tr class="separator:a00eb794de33208528d7883f82282ff4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a3b8d16d9e904287641b53e7bbcd206"><td class="memItemLeft" align="right" valign="top"><a id="a1a3b8d16d9e904287641b53e7bbcd206"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a1a3b8d16d9e904287641b53e7bbcd206">ground_truth_state_sub_</a></td></tr>
+<tr class="memdesc:a1a3b8d16d9e904287641b53e7bbcd206"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the robot state data. <br /></td></tr>
+<tr class="separator:a1a3b8d16d9e904287641b53e7bbcd206"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a287d747bdcb2476faf3e668bef6a9275"><td class="memItemLeft" align="right" valign="top"><a id="a287d747bdcb2476faf3e668bef6a9275"></a>
 ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a287d747bdcb2476faf3e668bef6a9275">trajectory_state_pub_</a></td></tr>
 <tr class="memdesc:a287d747bdcb2476faf3e668bef6a9275"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the current trajectory state. <br /></td></tr>
@@ -146,6 +153,10 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 spirit_msgs::RobotStateTrajectory&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a772f133318c9386be67a8af090fc115d">traj_msg_</a></td></tr>
 <tr class="memdesc:a772f133318c9386be67a8af090fc115d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message for robot trajectory. <br /></td></tr>
 <tr class="separator:a772f133318c9386be67a8af090fc115d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7805d89564e77dca3328967dbc8c422a"><td class="memItemLeft" align="right" valign="top"><a id="a7805d89564e77dca3328967dbc8c422a"></a>
+spirit_msgs::RobotState::ConstPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a7805d89564e77dca3328967dbc8c422a">robot_state_msg_</a></td></tr>
+<tr class="memdesc:a7805d89564e77dca3328967dbc8c422a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Robot state message. <br /></td></tr>
+<tr class="separator:a7805d89564e77dca3328967dbc8c422a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63bd47dcec85327c6ed5db27e2b21639"><td class="memItemLeft" align="right" valign="top"><a id="a63bd47dcec85327c6ed5db27e2b21639"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a63bd47dcec85327c6ed5db27e2b21639">update_rate_</a></td></tr>
 <tr class="memdesc:a63bd47dcec85327c6ed5db27e2b21639"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update rate for sending and receiving data. <br /></td></tr>
@@ -265,6 +276,40 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">MultiFootPlanContinuous</td><td>message containing foot plan data </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a07c90762ea0e3b870bd7a0107a50e64e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07c90762ea0e3b870bd7a0107a50e64e">&#9670;&nbsp;</a></span>robotStateCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TrajectoryPublisher::robotStateCallback </td>
+          <td>(</td>
+          <td class="paramtype">const spirit_msgs::RobotState::ConstPtr &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback function to handle new robot state data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>message contining robot state information </td></tr>
   </table>
   </dd>
 </dl>

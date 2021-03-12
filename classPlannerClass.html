@@ -96,9 +96,9 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlannerClass.html#ab21f5561a5a1f1e7c730defd9020bdd1">~PlannerClass</a> ()</td></tr>
 <tr class="memdesc:ab21f5561a5a1f1e7c730defd9020bdd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor for <a class="el" href="classPlannerClass.html" title="A directed graph class with supplemental methods to aid in sample-based planning. ...">PlannerClass</a>. <br /></td></tr>
 <tr class="separator:ab21f5561a5a1f1e7c730defd9020bdd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab3318cad627515b8d53ffc00b59a0868"><td class="memItemLeft" align="right" valign="top">State&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlannerClass.html#ab3318cad627515b8d53ffc00b59a0868">randomState</a> (<a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;terrain)</td></tr>
-<tr class="memdesc:ab3318cad627515b8d53ffc00b59a0868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a random state by sampling from within the bounds of the terrain.  <a href="#ab3318cad627515b8d53ffc00b59a0868">More...</a><br /></td></tr>
-<tr class="separator:ab3318cad627515b8d53ffc00b59a0868"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfa162a71189a47726e424ee08923502"><td class="memItemLeft" align="right" valign="top">State&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlannerClass.html#adfa162a71189a47726e424ee08923502">randomState</a> (const <a class="el" href="structplanning__utils_1_1PlannerConfig.html">PlannerConfig</a> &amp;planner_config)</td></tr>
+<tr class="memdesc:adfa162a71189a47726e424ee08923502"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a random state by sampling from within the bounds of the terrain.  <a href="#adfa162a71189a47726e424ee08923502">More...</a><br /></td></tr>
+<tr class="separator:adfa162a71189a47726e424ee08923502"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a592ec6733d33b831cb554f33a4e66da0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlannerClass.html#a592ec6733d33b831cb554f33a4e66da0">neighborhoodN</a> (State s, int N)</td></tr>
 <tr class="memdesc:a592ec6733d33b831cb554f33a4e66da0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the closest N vertices to the specified state by Euclidean distance.  <a href="#a592ec6733d33b831cb554f33a4e66da0">More...</a><br /></td></tr>
 <tr class="separator:a592ec6733d33b831cb554f33a4e66da0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -149,6 +149,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6fc85a70bacd5bc07043adfeb91797fa inherit pub_methods_classGraphClass"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a6fc85a70bacd5bc07043adfeb91797fa">getGValue</a> (int idx)</td></tr>
 <tr class="memdesc:a6fc85a70bacd5bc07043adfeb91797fa inherit pub_methods_classGraphClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the g-value of a vertex.  <a href="classGraphClass.html#a6fc85a70bacd5bc07043adfeb91797fa">More...</a><br /></td></tr>
 <tr class="separator:a6fc85a70bacd5bc07043adfeb91797fa inherit pub_methods_classGraphClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a9aed65a29957ba414ade41ac46e73c inherit pub_methods_classGraphClass"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#a1a9aed65a29957ba414ade41ac46e73c">computeEdgeCost</a> (int idx1, int idx2)</td></tr>
+<tr class="memdesc:a1a9aed65a29957ba414ade41ac46e73c inherit pub_methods_classGraphClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the cost of an edge between two vertices.  <a href="classGraphClass.html#a1a9aed65a29957ba414ade41ac46e73c">More...</a><br /></td></tr>
+<tr class="separator:a1a9aed65a29957ba414ade41ac46e73c inherit pub_methods_classGraphClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab42104d73d16306f192bcbdbdee0a476 inherit pub_methods_classGraphClass"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#ab42104d73d16306f192bcbdbdee0a476">printVertex</a> (State s)</td></tr>
 <tr class="memdesc:ab42104d73d16306f192bcbdbdee0a476 inherit pub_methods_classGraphClass"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print the state information via stdout.  <a href="classGraphClass.html#ab42104d73d16306f192bcbdbdee0a476">More...</a><br /></td></tr>
 <tr class="separator:ab42104d73d16306f192bcbdbdee0a476 inherit pub_methods_classGraphClass"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -319,8 +322,8 @@ std::unordered_map&lt; int, double &gt;&#160;</td><td class="memItemRight" valig
 
 </div>
 </div>
-<a id="ab3318cad627515b8d53ffc00b59a0868"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab3318cad627515b8d53ffc00b59a0868">&#9670;&nbsp;</a></span>randomState()</h2>
+<a id="adfa162a71189a47726e424ee08923502"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfa162a71189a47726e424ee08923502">&#9670;&nbsp;</a></span>randomState()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -328,8 +331,8 @@ std::unordered_map&lt; int, double &gt;&#160;</td><td class="memItemRight" valig
         <tr>
           <td class="memname">State PlannerClass::randomState </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFastTerrainMap.html">FastTerrainMap</a> &amp;&#160;</td>
-          <td class="paramname"><em>terrain</em></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="structplanning__utils_1_1PlannerConfig.html">PlannerConfig</a> &amp;&#160;</td>
+          <td class="paramname"><em>planner_config</em></td><td>)</td>
           <td></td>
         </tr>
       </table>

@@ -71,16 +71,33 @@ $(function() {
  <a href="classTerrainMapPublisher.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="terrain__map__publisher_8h_source.html">terrain_map_publisher.h</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for TerrainMapPublisher:</div>
+<div class="dyncontent">
+<div class="center"><img src="classTerrainMapPublisher__coll__graph.png" border="0" usemap="#TerrainMapPublisher_coll__map" alt="Collaboration graph"/></div>
+<map name="TerrainMapPublisher_coll__map" id="TerrainMapPublisher_coll__map">
+<area shape="rect" id="node2" href="structStep.html" title="Step" alt="" coords="13,5,64,32"/>
+<area shape="rect" id="node3" href="structObstacle.html" title="Obstacle" alt="" coords="89,5,167,32"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a0a8d623893002835ad1efd85b2fd321b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTerrainMapPublisher.html#a0a8d623893002835ad1efd85b2fd321b">TerrainMapPublisher</a> (ros::NodeHandle nh)</td></tr>
 <tr class="memdesc:a0a8d623893002835ad1efd85b2fd321b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classTerrainMapPublisher.html" title="A terrain map publishing class. ">TerrainMapPublisher</a> Class.  <a href="#a0a8d623893002835ad1efd85b2fd321b">More...</a><br /></td></tr>
 <tr class="separator:a0a8d623893002835ad1efd85b2fd321b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0e9d8d230df9fe17208038f7edc3677"><td class="memItemLeft" align="right" valign="top"><a id="ac0e9d8d230df9fe17208038f7edc3677"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTerrainMapPublisher.html#ac0e9d8d230df9fe17208038f7edc3677">updateParams</a> ()</td></tr>
+<tr class="memdesc:ac0e9d8d230df9fe17208038f7edc3677"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the terrain_map_publisher parameters. <br /></td></tr>
+<tr class="separator:ac0e9d8d230df9fe17208038f7edc3677"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a295ac03389590d98c589d2d58990b64e"><td class="memItemLeft" align="right" valign="top"><a id="a295ac03389590d98c589d2d58990b64e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTerrainMapPublisher.html#a295ac03389590d98c589d2d58990b64e">createMap</a> ()</td></tr>
 <tr class="memdesc:a295ac03389590d98c589d2d58990b64e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates the map object from scratch. <br /></td></tr>
 <tr class="separator:a295ac03389590d98c589d2d58990b64e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23ff09b7adb01ba0a256c4ae5eb5865f"><td class="memItemLeft" align="right" valign="top"><a id="a23ff09b7adb01ba0a256c4ae5eb5865f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTerrainMapPublisher.html#a23ff09b7adb01ba0a256c4ae5eb5865f">updateMap</a> ()</td></tr>
+<tr class="memdesc:a23ff09b7adb01ba0a256c4ae5eb5865f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the map object with params. <br /></td></tr>
+<tr class="separator:a23ff09b7adb01ba0a256c4ae5eb5865f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad3f41fb79f4056c0c7a145f3c0061786"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTerrainMapPublisher.html#ad3f41fb79f4056c0c7a145f3c0061786">loadCSV</a> (std::string filename)</td></tr>
 <tr class="memdesc:ad3f41fb79f4056c0c7a145f3c0061786"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads data from a specified CSV file into a nested std::vector structure.  <a href="#ad3f41fb79f4056c0c7a145f3c0061786">More...</a><br /></td></tr>
 <tr class="separator:ad3f41fb79f4056c0c7a145f3c0061786"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -150,6 +167,14 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTerrainMapPublisher.html#af6938ddec68646380135b2d22b7a2498">max_height_</a></td></tr>
 <tr class="memdesc:af6938ddec68646380135b2d22b7a2498"><td class="mdescLeft">&#160;</td><td class="mdescRight">double for map resolution <br /></td></tr>
 <tr class="separator:af6938ddec68646380135b2d22b7a2498"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7f3dcded9062590d3bebd53325b9459"><td class="memItemLeft" align="right" valign="top"><a id="ad7f3dcded9062590d3bebd53325b9459"></a>
+<a class="el" href="structObstacle.html">Obstacle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTerrainMapPublisher.html#ad7f3dcded9062590d3bebd53325b9459">obstacle_</a></td></tr>
+<tr class="memdesc:ad7f3dcded9062590d3bebd53325b9459"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structObstacle.html">Obstacle</a> object. <br /></td></tr>
+<tr class="separator:ad7f3dcded9062590d3bebd53325b9459"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa627691cbeb0027ef55507005f921008"><td class="memItemLeft" align="right" valign="top"><a id="aa627691cbeb0027ef55507005f921008"></a>
+<a class="el" href="structStep.html">Step</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTerrainMapPublisher.html#aa627691cbeb0027ef55507005f921008">step_</a></td></tr>
+<tr class="memdesc:aa627691cbeb0027ef55507005f921008"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structStep.html">Step</a> object. <br /></td></tr>
+<tr class="separator:aa627691cbeb0027ef55507005f921008"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A terrain map publishing class. </p>
