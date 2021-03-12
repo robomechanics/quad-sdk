@@ -187,13 +187,13 @@ double stateDistance(State q1,State q2)
   return dist;
 }
 
-bool isWithinBounds(State s1, State s2)
+bool isWithinBounds(State s1, State s2, const PlannerConfig &planner_config)
 {
-  return (stateDistance(s1, s2) <= GOAL_BOUNDS);
+  return (stateDistance(s1, s2) <= planner_config.GOAL_BOUNDS);
 }
 
 void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan, double dt, 
-  std::vector<FullState> &interp_full_plan, FastTerrainMap& terrain) {
+  std::vector<FullState> &interp_full_plan, const PlannerConfig &planner_config) {
 
   int num_states = interp_reduced_plan.size();
 
@@ -224,8 +224,8 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
   for (int i = 1; i < num_states; i++) {
     double weight = pow(gamma,i);
     State body_state = interp_reduced_plan[i];
-    z[i] = weight*z[0] + (1-weight)*getHeightFromState(body_state,terrain);
-    pitch[i] = weight*pitch[0] + (1-weight)*getPitchFromState(body_state,terrain);
+    z[i] = weight*z[0] + (1-weight)*body_state[2];
+    pitch[i] = weight*pitch[0] + (1-weight)*getPitchFromState(body_state,planner_config);
     yaw[i] = weight*yaw[0] + (1-weight)*atan2(body_state[4],body_state[3]);
   }
 
@@ -250,12 +250,12 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
 
   // plt::clf();
   // plt::ion();
-  // plt::named_plot("yaw", interp_t, yaw);
-  // plt::named_plot("filtered yaw", interp_t, filtered_yaw);
-  // plt::named_plot("yaw rate", interp_t, yaw_rate);
-  // plt::named_plot("filtered yaw rate", interp_t, filtered_yaw_rate);
+  // plt::named_plot("z", interp_t, z);
+  // plt::named_plot("filtered z", interp_t, filtered_z);
+  // plt::named_plot("z rate", interp_t, z_rate);
+  // plt::named_plot("filtered z rate", interp_t, filtered_z_rate);
   // plt::xlabel("t");
-  // plt::ylabel("yaw");
+  // plt::ylabel("z");
   // plt::legend();
   // plt::show();
   // plt::pause(0.001);
@@ -272,10 +272,10 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
   }
 }
 
-GRF getGRF(Action a,double t) {
+GRF getGRF(Action a,double t, const PlannerConfig &planner_config) {
 
-  double m = M_CONST;
-  double g = G_CONST;
+  double m = planner_config.M_CONST;
+  double g = planner_config.G_CONST;
   double t_s = a[6];
 
   GRF grf;
@@ -294,9 +294,9 @@ GRF getGRF(Action a,double t) {
 
 }
 
-double getPitchFromState(State s, FastTerrainMap& terrain) {
+double getPitchFromState(State s, const PlannerConfig &planner_config) {
 
-  std::array<double, 3> surf_norm = terrain.getSurfaceNormal(s[0], s[1]);
+  std::array<double, 3> surf_norm = planner_config.terrain.getSurfaceNormal(s[0], s[1]);
 
   double denom = s[3]*s[3] + s[4]*s[4];
 
@@ -314,16 +314,16 @@ double getPitchFromState(State s, FastTerrainMap& terrain) {
   }
 }
 
-double getHeightFromState(State s, FastTerrainMap& terrain) {
+double getHeightFromState(State s, const PlannerConfig &planner_config) {
 
-  return (0.3+terrain.getGroundHeight(s[0], s[1]));
+  return (planner_config.terrain.getGroundHeight(s[0], s[1]));
 
 }
 
 void interpStateActionPair(State s, Action a,double t0,double dt, 
   std::vector<State> &interp_reduced_plan, std::vector<GRF> &interp_GRF,
   std::vector<double> &interp_t, std::vector<int> &interp_primitive_id,
-  FastTerrainMap& terrain)
+  const PlannerConfig &planner_config)
 {
   double t_s = a[6];
   double t_f = a[7];
@@ -332,8 +332,8 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
   for (double t = 0; t < t_s; t += dt)
   {
     interp_t.push_back(t0+t);
-    interp_reduced_plan.push_back(applyStance(s,a,t,terrain));
-    interp_GRF.push_back(getGRF(a,t));
+    interp_reduced_plan.push_back(applyStance(s,a,t,planner_config));
+    interp_GRF.push_back(getGRF(a,t, planner_config));
 
     if (t_f==0)
       interp_primitive_id.push_back(CONNECT_STANCE);
@@ -341,14 +341,14 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
       interp_primitive_id.push_back(STANCE);
   }
 
-  // Include the exact moment of liftoff if flight phase exists
-  State s_takeoff = applyStance(s, a, terrain);
-  if (t_f>0) {
-    interp_t.push_back(t0+t_s);
-    interp_reduced_plan.push_back(s_takeoff);
-    interp_GRF.push_back(getGRF(a,t_s));
-    interp_primitive_id.push_back(STANCE);
-  }
+  State s_takeoff = applyStance(s, a, planner_config);
+  // // Include the exact moment of liftoff if flight phase exists
+  // if (t_f>0) {
+  //   interp_t.push_back(t0+t_s);
+  //   interp_reduced_plan.push_back(s_takeoff);
+  //   interp_GRF.push_back(getGRF(a,t_s,planner_config));
+  //   interp_primitive_id.push_back(STANCE);
+  // }
 
   // Include the remainder of the flight phase (double count takeoff state to
   // get discontinuous dropoff in grf when interpolating)
@@ -375,7 +375,7 @@ void getInterpPlan(FullState start_state, std::vector<State> state_sequence,
   std::vector<Action> action_sequence,double dt, double t0,
   std::vector<FullState> &interp_full_plan, std::vector<GRF> &interp_GRF, 
   std::vector<double> &interp_t, std::vector<int> &interp_primitive_id,
-  FastTerrainMap& terrain)
+  const PlannerConfig &planner_config)
 {
   std::vector<State> interp_reduced_plan;
 
@@ -383,7 +383,7 @@ void getInterpPlan(FullState start_state, std::vector<State> state_sequence,
   for (int i=0; i < action_sequence.size();i++)
   {
     interpStateActionPair(state_sequence[i], action_sequence[i], t0, dt, 
-      interp_reduced_plan, interp_GRF, interp_t, interp_primitive_id, terrain);
+      interp_reduced_plan, interp_GRF, interp_t, interp_primitive_id, planner_config);
     t0 += (action_sequence[i][6] + action_sequence[i][7]);
   }
 
@@ -395,7 +395,7 @@ void getInterpPlan(FullState start_state, std::vector<State> state_sequence,
   interp_primitive_id.push_back(STANCE);
 
   // Lift from reduced into full body plan
-  addFullStates(start_state, interp_reduced_plan, dt, interp_full_plan, terrain);
+  addFullStates(start_state, interp_reduced_plan, dt, interp_full_plan, planner_config);
 
 }
 
@@ -442,7 +442,7 @@ std::array<double,3> rotateGRF(std::array<double,3> surface_norm,
   return grf_spatial;
 }
 
-State applyStance(State s, Action a, double t, FastTerrainMap& terrain)
+State applyStance(State s, Action a, double t, const PlannerConfig &planner_config)
 {
   double a_x_td = a[0]; // Acceleration in x at touchdown
   double a_y_td = a[1];
@@ -468,20 +468,18 @@ State applyStance(State s, Action a, double t, FastTerrainMap& terrain)
   s_new[4] = dy_td + a_y_td*t + (a_y_to - a_y_td)*t*t/(2.0*t_s);
   s_new[5] = dz_td + a_z_td*t + (a_z_to - a_z_td)*t*t/(2.0*t_s);
 
-  if (a[7] > 0) {
-    s_new[2] = z_td + dz_td*t + 0.5*a_z_td*t*t + (a_z_to - a_z_td)*(t*t*t)/(6.0*t_s);
-    s_new[5] = dz_td + a_z_td*t + (a_z_to - a_z_td)*t*t/(2.0*t_s);
-  } else {
-    s_new[2] = getHeightFromState(s_new, terrain);
+  if (a[7] == 0) {
+    s_new[2] = a_z_td + (a_z_to - a_z_td)*(t/t_s) + getHeightFromState(s_new, planner_config);
+    // s_new[2] = getHeightFromState(s_new, planner_config);
     s_new[5] = 0;//sqrt(s_new[3]*s_new[3] + s_new[4]*s_new[4])*sin();
   }
 
   return s_new;
 }
 
-State applyStance(State s, Action a, FastTerrainMap& terrain)
+State applyStance(State s, Action a, const PlannerConfig &planner_config)
 {
-  return applyStance(s, a, a[6], terrain);
+  return applyStance(s, a, a[6], planner_config);
 }
 
 State applyFlight(State s, double t_f)
@@ -505,7 +503,7 @@ State applyFlight(State s, double t_f)
   return s_new;
 }
 
-State applyAction(State s, Action a, FastTerrainMap& terrain)
+State applyAction(State s, Action a, const PlannerConfig &planner_config)
 {
   double t_s;
   double t_f;
@@ -513,12 +511,12 @@ State applyAction(State s, Action a, FastTerrainMap& terrain)
   t_s = a[6];
   t_f = a[7];
 
-  State s_to = applyStance(s, a, terrain);
+  State s_to = applyStance(s, a, planner_config);
   State s_new = applyFlight(s_to, t_f);
   return s_new;
 }
 
-State applyStanceReverse(State s, Action a, double t, FastTerrainMap& terrain)
+State applyStanceReverse(State s, Action a, double t, const PlannerConfig &planner_config)
 {
   double a_x_td = a[0];
   double a_y_td = a[1];
@@ -548,35 +546,33 @@ State applyStanceReverse(State s, Action a, double t, FastTerrainMap& terrain)
   s_new[1] = y_to - cy*(t_s - t) - 0.5*a_y_td*(t_s*t_s - t*t) - (a_y_to - a_y_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
   s_new[2] = z_to - cz*(t_s - t) - 0.5*a_z_td*(t_s*t_s - t*t) - (a_z_to - a_z_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
 
-  if (a[7] > 0) {
-    s_new[2] = z_to - cz*(t_s - t) - 0.5*a_z_td*(t_s*t_s - t*t) - (a_z_to - a_z_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
-    s_new[5] = dz_to - a_z_td*(t_s - t) - (a_z_to - a_z_td)*(t_s*t_s - t*t)/(2.0*t_s);
-  } else {
-    s_new[2] = getHeightFromState(s_new, terrain);
+  if (a[7] == 0) {
+    s_new[2] = a_z_to + (a_z_td - a_z_to)*(t/t_s) + getHeightFromState(s_new, planner_config);
+    // s_new[2] = getHeightFromState(s_new, planner_config);
     s_new[5] = 0;//sqrt(s_new[3]*s_new[3] + s_new[4]*s_new[4])*sin();
   }
 
   return s_new;
 }
 
-State applyStanceReverse(State s, Action a, FastTerrainMap& terrain)
+State applyStanceReverse(State s, Action a, const PlannerConfig &planner_config)
 {
-  return applyStanceReverse(s, a, 0, terrain);
+  return applyStanceReverse(s, a, 0, planner_config);
 }
 
-Action getRandomAction(std::array<double, 3> surf_norm)
+Action getRandomAction(std::array<double, 3> surf_norm, const PlannerConfig &planner_config)
 { 
   Action a;
 
-  // Random normal forces between 0 and F_MAX
-  double f_z_td = F_MAX*(double)rand()/RAND_MAX;
-  double f_z_to = F_MAX*(double)rand()/RAND_MAX;
+  // Random normal forces between 0 and planner_config.F_MAX
+  double f_z_td = planner_config.F_MAX*(double)rand()/RAND_MAX;
+  double f_z_to = planner_config.F_MAX*(double)rand()/RAND_MAX;
 
   // Random tangential forces between -mu*f_z and mu*f_z
-  double f_x_td = 2*MU*f_z_td*(double)rand()/RAND_MAX - MU*f_z_td;
-  double f_x_to = 2*MU*f_z_to*(double)rand()/RAND_MAX - MU*f_z_to;
-  double f_y_td = 2*MU*f_z_td*(double)rand()/RAND_MAX - MU*f_z_td;
-  double f_y_to = 2*MU*f_z_to*(double)rand()/RAND_MAX - MU*f_z_to;
+  double f_x_td = 2*planner_config.MU*f_z_td*(double)rand()/RAND_MAX - planner_config.MU*f_z_td;
+  double f_x_to = 2*planner_config.MU*f_z_to*(double)rand()/RAND_MAX - planner_config.MU*f_z_to;
+  double f_y_td = 2*planner_config.MU*f_z_td*(double)rand()/RAND_MAX - planner_config.MU*f_z_td;
+  double f_y_to = 2*planner_config.MU*f_z_to*(double)rand()/RAND_MAX - planner_config.MU*f_z_to;
 
   std::array<double, 3> f_td = {f_x_td, f_y_td, f_z_td};
   std::array<double, 3> f_to = {f_x_to, f_y_to, f_z_to};
@@ -585,31 +581,31 @@ Action getRandomAction(std::array<double, 3> surf_norm)
   f_to = rotateGRF(surf_norm, f_to);
 
   // Random stance and flight times between 0 and T_MAX
-  // double t_s = (T_S_MAX - T_S_MIN)*(double)rand()/RAND_MAX + T_S_MIN;
+  // double t_s = (planner_config.T_S_MAX - planner_config.T_S_MIN)*(double)rand()/RAND_MAX + planner_config.T_S_MIN;
   double t_s = 0.3;
-  double t_f = (T_F_MAX - T_F_MIN)*(double)rand()/RAND_MAX + T_F_MIN;
+  double t_f = (planner_config.T_F_MAX - planner_config.T_F_MIN)*(double)rand()/RAND_MAX + planner_config.T_F_MIN;
 
-  a[0] = f_td[0]/M_CONST;
-  a[1] = f_td[1]/M_CONST;
-  a[2] = f_td[2]/M_CONST - G_CONST;
-  a[3] = f_to[0]/M_CONST;
-  a[4] = f_to[1]/M_CONST;
-  a[5] = f_to[2]/M_CONST - G_CONST;
+  a[0] = f_td[0]/planner_config.M_CONST;
+  a[1] = f_td[1]/planner_config.M_CONST;
+  a[2] = f_td[2]/planner_config.M_CONST - planner_config.G_CONST;
+  a[3] = f_to[0]/planner_config.M_CONST;
+  a[4] = f_to[1]/planner_config.M_CONST;
+  a[5] = f_to[2]/planner_config.M_CONST - planner_config.G_CONST;
   a[6] = t_s;
   a[7] = t_f;
 
   return a;
 }
 
-bool isValidAction(Action a)
+bool isValidAction(Action a, const PlannerConfig &planner_config)
 {
    
   if ((a[6] <= 0) || (a[7] < 0))
     return false;
 
-  double m = M_CONST;
-  double g = G_CONST;
-  double mu = MU;
+  double m = planner_config.M_CONST;
+  double g = planner_config.G_CONST;
+  double mu = planner_config.MU;
 
   // Get corresponding forces
   double f_x_td = m*a[0];
@@ -620,8 +616,8 @@ bool isValidAction(Action a)
   double f_z_to = m*(a[5] + g);
 
   // Check force limits
-  if ((sqrt(f_x_td*f_x_td + f_y_td*f_y_td + f_z_td*f_z_td) >= F_MAX) || 
-    (sqrt(f_x_to*f_x_to + f_y_to*f_y_to + f_z_to*f_z_to) >= F_MAX) ||
+  if ((sqrt(f_x_td*f_x_td + f_y_td*f_y_td + f_z_td*f_z_td) >= planner_config.F_MAX) || 
+    (sqrt(f_x_to*f_x_to + f_y_to*f_y_to + f_z_to*f_z_to) >= planner_config.F_MAX) ||
     (f_z_td < 0) || (f_z_to < 0) )
   {
     // std::cout << "Force limits violated" << std::endl;
@@ -639,20 +635,20 @@ bool isValidAction(Action a)
   return true;
 }
 
-bool isValidState(State s, FastTerrainMap& terrain, int phase)
+bool isValidState(State s, const PlannerConfig &planner_config, int phase)
 {
-  // if ((s[0] < terrain.getXData().front()) || (s[0] > terrain.getXData().back()) || (s[1] < terrain.getYData().front()) || (s[1] > terrain.getYData().back()) || (abs(s[6]) >= P_MAX) )
+  // if ((s[0] < planner_config.terrain.getXData().front()) || (s[0] > planner_config.terrain.getXData().back()) || (s[1] < planner_config.terrain.getYData().front()) || (s[1] > planner_config.terrain.getYData().back()) || (abs(s[6]) >= P_MAX) )
   //     return false;
-  if (terrain.isInRange(s[0], s[1]) == false)
+  if (planner_config.terrain.isInRange(s[0], s[1]) == false)
     return false;
 
-  if (sqrt(s[3]*s[3] + s[4]*s[4]) > V_MAX) // Ignore limit on vertical velocity since this is accurately bounded by gravity
+  if (sqrt(s[3]*s[3] + s[4]*s[4]) > planner_config.V_MAX) // Ignore limit on vertical velocity since this is accurately bounded by gravity
     return false;
 
   // Find yaw, pitch, and their sines and cosines
   double yaw = atan2(s[4],s[3]); double cy = cos(yaw); double sy = sin(yaw);
   
-  double pitch = getPitchFromState(s,terrain);
+  double pitch = getPitchFromState(s,planner_config);
   // double pitch = 0;
   double cp = cos(pitch); double sp = sin(pitch);  
 
@@ -661,9 +657,9 @@ bool isValidState(State s, FastTerrainMap& terrain, int phase)
   double R_21 = sy*cp; double R_22 = cy;  double R_23 = sy*sp;
   double R_31 = -sp;   double R_32 = 0;   double R_33 = cp; 
 
-  std::array<double, 2> test_x = {-0.5*ROBOT_L, 0.5*ROBOT_L};
-  std::array<double, 2> test_y = {-0.5*ROBOT_W, 0.5*ROBOT_W};
-  double z_body = -ROBOT_H;
+  std::array<double, 2> test_x = {-0.5*planner_config.ROBOT_L, 0.5*planner_config.ROBOT_L};
+  std::array<double, 2> test_y = {-0.5*planner_config.ROBOT_W, 0.5*planner_config.ROBOT_W};
+  double z_body = -planner_config.ROBOT_H;
 
   // Check each of the four corners of the robot
   for (double x_body : test_x)
@@ -678,31 +674,31 @@ bool isValidState(State s, FastTerrainMap& terrain, int phase)
       double y_corner = y_leg + R_23*z_body;
       double z_corner = z_leg + R_33*z_body;
 
-      double leg_height = z_leg - terrain.getGroundHeight(x_leg,y_leg);
+      double leg_height = z_leg - planner_config.terrain.getGroundHeight(x_leg,y_leg);
       double corner_height = z_corner - 
-        terrain.getGroundHeight(x_corner,y_corner);
+        planner_config.terrain.getGroundHeight(x_corner,y_corner);
       // std::cout << "x,y,z = (" << x_spatial << ", " << y_spatial << ", " << z_spatial << "), height = " <<
-      //     z_spatial << " - " << terrain.getGroundHeight(x_spatial,y_spatial) << " = " << height << std::endl;
+      //     z_spatial << " - " << planner_config.terrain.getGroundHeight(x_spatial,y_spatial) << " = " << height << std::endl;
 
       // Always check for collision, only check reachability in stance
-      if ((corner_height < H_MIN) || ((phase == STANCE) && 
-        (leg_height > H_MAX))) {
+      if ((corner_height < planner_config.H_MIN) || ((phase == STANCE) && 
+        (leg_height > planner_config.H_MAX))) {
         return false;
       }
     }
   }
 
   // Check the center of the underside of the robot
-  double height = (s[2] + R_33*z_body) - terrain.getGroundHeight(s[0] + 
+  double height = (s[2] + R_33*z_body) - planner_config.terrain.getGroundHeight(s[0] + 
     R_13*z_body,s[1] + R_23*z_body);
-  if (height < H_MIN)
+  if (height < planner_config.H_MIN)
     return false;
 
 
   return true;
 }
 
-bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain, 
+bool isValidStateActionPair(State s, Action a, const PlannerConfig &planner_config, 
   State &s_new, double& t_new)
 {
   double t_s;
@@ -711,14 +707,14 @@ bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain,
   t_s = a[6];
   t_f = a[7];
 
-    for (double t = 0; t <= t_s; t += KINEMATICS_RES)
+  for (double t = 0; t <= t_s; t += planner_config.KINEMATICS_RES)
   {
-    State s_check = applyStance(s,a,t,terrain);
+    State s_check = applyStance(s,a,t,planner_config);
 
-    if (isValidState(s_check, terrain, STANCE) == false)
+    if (isValidState(s_check, planner_config, STANCE) == false)
     {
-      s_new = applyStance(s,a,(1.0-BACKUP_RATIO)*t,terrain);
-      // s_new = applyStance(s,a,(t - BACKUP_TIME));
+      s_new = applyStance(s,a,(1.0-planner_config.BACKUP_RATIO)*t,planner_config);
+      // s_new = applyStance(s,a,(t - planner_config.BACKUP_TIME));
       return false;
     } else {
       s_new = s_check;
@@ -726,19 +722,19 @@ bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain,
     }
   }
 
-  State s_takeoff = applyStance(s, a,terrain);
+  State s_takeoff = applyStance(s, a,planner_config);
 
-  for (double t = 0; t < t_f; t += KINEMATICS_RES)
+  for (double t = 0; t < t_f; t += planner_config.KINEMATICS_RES)
   {
     State s_check = applyFlight(s_takeoff, t);
 
-    if (isValidState(s_check, terrain, FLIGHT) == false)
+    if (isValidState(s_check, planner_config, FLIGHT) == false)
       return false;
   }
 
   // Check the exact landing state
   State s_land = applyFlight(s_takeoff, t_f);
-  if (isValidState(s_land, terrain, STANCE) == false)
+  if (isValidState(s_land, planner_config, STANCE) == false)
   {
     return false;
   } else {
@@ -751,14 +747,14 @@ bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain,
 }
 
 
-bool isValidStateActionPair(State s, Action a, FastTerrainMap& terrain)
+bool isValidStateActionPair(State s, Action a, const PlannerConfig &planner_config)
 {
   State dummy_state;
   double dummy_time;
-  return isValidStateActionPair(s, a, terrain, dummy_state, dummy_time);
+  return isValidStateActionPair(s, a, planner_config, dummy_state, dummy_time);
 }
 
-bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain, 
+bool isValidStateActionPairReverse(State s, Action a, const PlannerConfig &planner_config, 
   State &s_new, double& t_new)
 {
   double t_s;
@@ -767,23 +763,23 @@ bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain,
   t_s = a[6];
   t_f = a[7];
 
-  for (double t = 0; t < t_f; t += KINEMATICS_RES)
+  for (double t = 0; t < t_f; t += planner_config.KINEMATICS_RES)
   {
     State s_check = applyFlight(s, -t);
 
-    if (isValidState(s_check, terrain, FLIGHT) == false)
+    if (isValidState(s_check, planner_config, FLIGHT) == false)
       return false;
   }
 
   State s_takeoff = applyFlight(s, -t_f);
 
-  for (double t = t_s; t >= 0; t -= KINEMATICS_RES)
+  for (double t = t_s; t >= 0; t -= planner_config.KINEMATICS_RES)
   {
-    State s_check = applyStanceReverse(s_takeoff,a,t,terrain);
+    State s_check = applyStanceReverse(s_takeoff,a,t,planner_config);
 
-    if (isValidState(s_check, terrain, STANCE) == false)
+    if (isValidState(s_check, planner_config, STANCE) == false)
     {
-      s_new = applyStance(s,a,t + BACKUP_RATIO*(t_s - t), terrain);
+      s_new = applyStance(s,a,t + planner_config.BACKUP_RATIO*(t_s - t), planner_config);
       return false;
     } else {
       s_new = s_check;
@@ -792,8 +788,8 @@ bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain,
   }
 
   // Check the exact starting state
-  State s_start = applyStanceReverse(s_takeoff,a, terrain);
-  if (isValidState(s_start, terrain, STANCE) == false)
+  State s_start = applyStanceReverse(s_takeoff,a, planner_config);
+  if (isValidState(s_start, planner_config, STANCE) == false)
   {
     return false;
   } else {
@@ -805,11 +801,11 @@ bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain,
 }
 
 
-bool isValidStateActionPairReverse(State s, Action a, FastTerrainMap& terrain)
+bool isValidStateActionPairReverse(State s, Action a, const PlannerConfig &planner_config)
 {
   State dummy_state;
   double dummy_time;
-  return isValidStateActionPairReverse(s, a, terrain, dummy_state, dummy_time);
+  return isValidStateActionPairReverse(s, a, planner_config, dummy_state, dummy_time);
 }
 
 }
