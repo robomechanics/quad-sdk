@@ -1,1 +1,0 @@
-set(ORDERED_PATHS "/home/spirit/catkin_ws/devel/lib;/opt/ros/melodic/lib")

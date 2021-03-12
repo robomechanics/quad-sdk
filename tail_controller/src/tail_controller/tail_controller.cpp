@@ -7,7 +7,7 @@ TailController::TailController(ros::NodeHandle nh) {
   std::string leg_control_topic = "/spirit/joint_controller/tail_command";
   // spirit_utils::loadROSParam(nh_,"topics/joint_command",leg_control_topic);
   // spirit_utils::loadROSParam(nh_,"open_loop_controller/control_mode_topic",control_mode_topic);
-  spirit_utils::loadROSParam(nh_,"open_loop_controller/update_rate",update_rate_);
+  nh.param<double>("open_loop_controller/update_rate",update_rate_, 50);
   // spirit_utils::loadROSParam(nh_,"open_loop_controller/stand_angles",stand_joint_angles_);
   // spirit_utils::loadROSParam(nh_,"open_loop_controller/stand_kp",stand_kp_);
   // spirit_utils::loadROSParam(nh_,"open_loop_controller/stand_kd",stand_kd_);

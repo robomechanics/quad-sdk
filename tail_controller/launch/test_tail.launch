@@ -1,0 +1,8 @@
+<launch>
+    <!-- Launch the node to publish tail control-->
+    <node name="tail_controller" pkg="tail_controller" type="tail_controller_node" output="screen"/>
+
+    <!-- Launch the odrive converter-->
+    <node name="odrive_converter" pkg="tail_controller" type="odrive_converter.py" output="screen"/>
+    
+</launch>
