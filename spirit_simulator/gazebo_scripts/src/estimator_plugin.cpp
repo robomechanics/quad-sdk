@@ -96,7 +96,7 @@ namespace gazebo{
     state.body.twist.twist.angular.z = ang_vel.Z();
 
     physics::Joint_V joint_vec = model_->GetJoints();
-    int num_joints = 12;
+    int num_joints = 14;
 
     state.joints.name = {"8", "0", "1", "9","2","3","10","4","5","11","6","7"};
 

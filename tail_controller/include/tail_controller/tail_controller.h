@@ -1,5 +1,5 @@
-#ifndef OPEN_LOOP_CONTROLLER_H
-#define OPEN_LOOP_CONTROLLER_H
+#ifndef TAIL_CONTROLLER_H
+#define TAIL_CONTROLLER_H
 
 #include <ros/ros.h>
 #include <spirit_msgs/LegCommandArray.h>
@@ -15,14 +15,14 @@
    torques and gains to the low level controller. Trajectories are
    specified via waypoints and waypoint transition durations.
 */
-class OpenLoopController {
+class TailController {
   public:
 	/**
 	 * @brief Constructor for OpenLoopController
 	 * @param[in] nh ROS NodeHandle to publish and subscribe from
 	 * @return Constructed object of type OpenLoopController
 	 */
-	OpenLoopController(ros::NodeHandle nh);
+	TailController(ros::NodeHandle nh);
 
 	/**
 	 * @brief Calls ros spinOnce and pubs data at set frequency
@@ -34,7 +34,7 @@ private:
 	 * @brief Verifies and updates new control mode
 	 * @param[in] msg New control mode
 	 */ 
-	void controlModeCallback(const std_msgs::UInt8::ConstPtr& msg);
+	// void controlModeCallback(const std_msgs::UInt8::ConstPtr& msg);
 
 	/**
 	 * @brief Setup open loop trajectory in shoulder space
@@ -47,7 +47,7 @@ private:
 	 * @param[in] y Target y position in shoulder space
 	 * @return pair of hip angle and knee angle
 	 */
-	std::pair<double,double> compute2DIk(double x, double y);
+	// std::pair<double,double> compute2DIk(double x, double y);
 
 	/**
 	 * @brief Compute and send open loop joint positions
@@ -105,4 +105,4 @@ private:
 };
 
 
-#endif // OPEN_LOOP_CONTROLLER_H
+#endif // TAIL_CONTROLLER_H
