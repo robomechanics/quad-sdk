@@ -12,6 +12,14 @@ TerrainMapPublisher::TerrainMapPublisher(ros::NodeHandle nh)
   nh.param<std::string>("topics/terrain_map", terrain_map_topic, "/terrain_map");
   nh.param<std::string>("map_frame",map_frame_,"map");
   nh.param<double>("terrain_map_publisher/update_rate", update_rate_, 10);
+  nh.param<double>("terrain_map_publisher/obstacle_x", obstacle_.x, 2.0);
+  nh.param<double>("terrain_map_publisher/obstacle_y", obstacle_.y, 0.0);
+  nh.param<double>("terrain_map_publisher/obstacle_height", obstacle_.height, 0.5);
+  nh.param<double>("terrain_map_publisher/obstacle_radius", obstacle_.radius, 1.0);
+  nh.param<double>("terrain_map_publisher/step_x", step_.x, 4.0);
+  nh.param<double>("terrain_map_publisher/step_height", step_.height, 0.3);
+  nh.param<double>("terrain_map_publisher/resolution", resolution_, 0.2);
+  nh.param<double>("terrain_map_publisher/update_rate", update_rate_, 10);
   nh.param<std::string>("terrain_map_publisher/map_data_source", map_data_source_, "internal");
   nh.param<std::string>("terrain_map_publisher/terrain_type", terrain_type_, "slope");
   // Setup pubs and subs
@@ -20,7 +28,6 @@ TerrainMapPublisher::TerrainMapPublisher(ros::NodeHandle nh)
   // Add image subscriber if data source requests an image
   if (map_data_source_.compare("image")==0) {
     nh_.param<std::string>("topics/image", image_topic, "/image_publisher/image");
-    nh_.param<double>("terrain_map_publisher/resolution", resolution_, 0.2);
     nh_.param<double>("terrain_map_publisher/min_height", min_height_, 0.0);
     nh_.param<double>("terrain_map_publisher/max_height", max_height_, 1.0);
     image_sub_ = nh_.subscribe(image_topic, 1, &TerrainMapPublisher::loadMapFromImage, this);
@@ -32,32 +39,47 @@ TerrainMapPublisher::TerrainMapPublisher(ros::NodeHandle nh)
 
 }
 
+void TerrainMapPublisher::updateParams() {
+  nh_.param<double>("terrain_map_publisher/obstacle_x", obstacle_.x, 2.0);
+  nh_.param<double>("terrain_map_publisher/obstacle_y", obstacle_.y, 0.0);
+  nh_.param<double>("terrain_map_publisher/obstacle_height", obstacle_.height, 0.5);
+  nh_.param<double>("terrain_map_publisher/obstacle_radius", obstacle_.radius, 1.0);
+  nh_.param<double>("terrain_map_publisher/step_x", step_.x, 4.0);
+  nh_.param<double>("terrain_map_publisher/step_height", step_.height, 0.3);
+}
+
 void TerrainMapPublisher::createMap() {
 
   // Set initial map parameters and geometry
   terrain_map_.setFrameId(map_frame_);
-  terrain_map_.setGeometry(grid_map::Length(12.0, 5.0), 0.2, grid_map::Position(4.0, 0.0));
+  terrain_map_.setGeometry(grid_map::Length(12.0, 5.0), resolution_, grid_map::Position(4.0, 0.0));
   ROS_INFO("Created map with size %f x %f m (%i x %i cells).",
     terrain_map_.getLength().x(), terrain_map_.getLength().y(),
     terrain_map_.getSize()(0), terrain_map_.getSize()(1));
 
-  // Add an obstacle
-  double obs_center[] = {3,0};
-  double obs_radius = 1.0;
+}
+
+void TerrainMapPublisher::updateMap() {
+  // Add terrain info
   for (grid_map::GridMapIterator it(terrain_map_); !it.isPastEnd(); ++it) {
 
     grid_map::Position position;
     terrain_map_.getPosition(*it, position);
-    double x_diff = position.x() - obs_center[0];
-    double y_diff = position.y() - obs_center[1];
+    double x_diff = position.x() - obstacle_.x;
+    double y_diff = position.y() - obstacle_.y;
 
-    if (x_diff*x_diff + y_diff*y_diff <= obs_radius*obs_radius)
+    if (x_diff*x_diff + y_diff*y_diff <= obstacle_.radius*obstacle_.radius)
     {
-      terrain_map_.at("z", *it) = 0.0;//0.7;
-      terrain_map_.at("z_filt", *it) = 0.0;//0.7;
+      terrain_map_.at("z", *it) = obstacle_.height;//0.7;
+      terrain_map_.at("z_filt", *it) = obstacle_.height;//0.7;
     } else {
       terrain_map_.at("z", *it) = 0.0;
       terrain_map_.at("z_filt", *it) = 0.0;
+    }
+
+    if (position.x() >= step_.x) {
+      terrain_map_.at("z", *it) += step_.height;//0.7;
+      terrain_map_.at("z_filt", *it) += step_.height;//0.7;
     }
 
     terrain_map_.at("nx", *it) = 0.0;
@@ -229,6 +251,13 @@ void TerrainMapPublisher::spin() {
 
   // Continue publishing the map at the update rate
   while (ros::ok()) {
+
+    updateParams();
+
+    if (map_data_source_.compare("internal")==0) {
+      updateMap();
+    }
+    
     publishMap();
     ros::spinOnce();
     r.sleep();

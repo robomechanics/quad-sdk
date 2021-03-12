@@ -13,6 +13,18 @@
 #include <iostream> // cout
 #include <fstream> // ifstream
 
+struct Obstacle {
+  double x;
+  double y;
+  double height;
+  double radius;
+};
+
+struct Step {
+  double x;
+  double height;
+};
+
 //! A terrain map publishing class
 /*!
    TerrainMapPublisher is a class for publishing terrain maps from a variety of sources, including from scratch.
@@ -27,9 +39,19 @@ public:
   TerrainMapPublisher(ros::NodeHandle nh);
 
   /**
+   * @brief Updates the terrain_map_publisher parameters
+   */
+  void updateParams();
+
+  /**
    * @brief Creates the map object from scratch
    */
   void createMap();
+
+  /**
+   * @brief Updates the map object with params
+   */
+  void updateMap();
 
   /**
    * @brief Loads data from a specified CSV file into a nested std::vector structure
@@ -96,6 +118,13 @@ private:
 
   /// double for map resolution
   double max_height_;
+
+  /// Obstacle object
+  Obstacle obstacle_;
+
+  /// Step object
+  Step step_;
+
 };
 
 #endif // TERRAIN_MAP_PUBLISHER_H

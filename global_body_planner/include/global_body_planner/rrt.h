@@ -35,7 +35,7 @@ class RRTClass
      * @param[in] terrain Height map of the terrain
      * @param[in] direction The direction with which to peform the extension (FORWARD to go away from the root vertex, REVERSE to go towards it)
      */
-    virtual int extend(PlannerClass &T, State s, FastTerrainMap& terrain, int direction);
+    virtual int extend(PlannerClass &T, State s, const PlannerConfig &planner_config, int direction);
 
     /**
      * @brief Get the path from the root vertex to the specified one
@@ -60,7 +60,7 @@ class RRTClass
      * @param[out] state_sequence The sequence of states in the final path
      * @param[out] action_sequence The sequence of actions in the final path
      */
-    // void buildRRT(FastTerrainMap& terrain, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence);
+    // void buildRRT(const PlannerConfig &planner_config, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence);
     
     /**
      * @brief Get the statistics for the planner solve
@@ -81,7 +81,7 @@ class RRTClass
      * @param[in] direction Direction of the dynamics (either FORWARD or REVERSE)
      * @return Boolean if the new state got closer to the specified state than any other in the tree
      */
-    bool newConfig(State s, State s_near, State &s_new, Action &a_new, FastTerrainMap& terrain, int direction);
+    bool newConfig(State s, State s_near, State &s_new, Action &a_new, const PlannerConfig &planner_config, int direction);
 
     /**
      * @brief Get the states along the specified path of vertex indices

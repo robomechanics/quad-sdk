@@ -49,6 +49,12 @@ private:
   void bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
 
   /**
+   * @brief Callback function to handle new robot state data
+   * @param[in] msg message contining robot state information
+   */
+  void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+
+  /**
    * @brief Callback function to handle new continuous foot plan data
    * @param[in] MultiFootPlanContinuous message containing foot plan data
    */
@@ -76,6 +82,9 @@ private:
   /// ROS subscriber for the swing leg plan
   ros::Subscriber multi_foot_plan_continuous_sub_;
 
+  /// ROS subscriber for the robot state data
+  ros::Subscriber ground_truth_state_sub_;
+
   /// ROS Publisher for the current trajectory state
   ros::Publisher trajectory_state_pub_;
 
@@ -96,6 +105,9 @@ private:
 
   /// Message for robot trajectory
   spirit_msgs::RobotStateTrajectory traj_msg_;
+
+  /// Robot state message
+  spirit_msgs::RobotState::ConstPtr robot_state_msg_;
 
   /// Update rate for sending and receiving data
   double update_rate_;

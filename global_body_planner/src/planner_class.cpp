@@ -11,16 +11,16 @@ using namespace planning_utils;
 
 typedef std::pair<double, int> Distance; 
 
-State PlannerClass::randomState(FastTerrainMap& terrain)
+State PlannerClass::randomState(const PlannerConfig &planner_config)
 {
 
-    double x_min = terrain.getXData().front();
-    double x_max = terrain.getXData().back();
-    double y_min = terrain.getYData().front();
-    double y_max = terrain.getYData().back();
+    double x_min = planner_config.terrain.getXData().front();
+    double x_max = planner_config.terrain.getXData().back();
+    double y_min = planner_config.terrain.getYData().front();
+    double y_max = planner_config.terrain.getYData().back();
 
-    double z_min_rel = H_MIN + ROBOT_H;
-    double z_max_rel = H_MAX + ROBOT_H;
+    double z_min_rel = planner_config.H_MIN + planner_config.ROBOT_H;
+    double z_max_rel = planner_config.H_MAX + planner_config.ROBOT_H;
 
     State q;
 
@@ -31,13 +31,13 @@ State PlannerClass::randomState(FastTerrainMap& terrain)
 
     q[0] = (x_max - x_min)*(double)rand()/RAND_MAX + x_min;
     q[1] = (y_max - y_min)*(double)rand()/RAND_MAX + y_min;
-    q[2] = std::max(std::min(height_distribution(generator), z_max_rel), z_min_rel) + terrain.getGroundHeight(q[0], q[1]);
+    q[2] = std::max(std::min(height_distribution(generator), z_max_rel), z_min_rel) + planner_config.terrain.getGroundHeight(q[0], q[1]);
 
 
     double phi = (2.0*MY_PI)*(double)rand()/RAND_MAX;
     double cos_theta = 2.0*(double)rand()/RAND_MAX - 1.0;
     double theta = acos(cos_theta);
-    double v = (double)rand()/RAND_MAX*V_MAX;
+    double v = (double)rand()/RAND_MAX*planner_config.V_MAX;
     q[3] = v*sin(theta)*cos(phi);
     q[4] = v*sin(theta)*sin(phi);
     q[5] = v*cos(theta);

@@ -37,7 +37,7 @@ void FastTerrainMap::loadData(int x_size,
   nz_data_filt_ = nz_data_filt;
 }
 
-void FastTerrainMap::loadDataFromGridMap(grid_map::GridMap map){
+void FastTerrainMap::loadDataFromGridMap(const grid_map::GridMap map){
   // Initialize the data structures for the map
   int x_size = map.getSize()(0);
   int y_size = map.getSize()(1);
@@ -125,7 +125,7 @@ void FastTerrainMap::loadDataFromGridMap(grid_map::GridMap map){
   nz_data_filt_ = nz_data_filt;
 }
 
-bool FastTerrainMap::isInRange(const double x, const double y) {
+bool FastTerrainMap::isInRange(const double x, const double y) const {
 
   double epsilon = 0.5;
   if (((x-epsilon) >= x_data_.front()) && ((x+epsilon) <= x_data_.back()) && ((y-epsilon) >= y_data_.front()) && ((y+epsilon) <= y_data_.back())) {
@@ -135,7 +135,7 @@ bool FastTerrainMap::isInRange(const double x, const double y) {
   }
 }
 
-double FastTerrainMap::getGroundHeight(const double x, const double y) {
+double FastTerrainMap::getGroundHeight(const double x, const double y) const {
   // spirit_utils::FunctionTimer timer(__FUNCTION__);
   
   double x1, x2, y1, y2;
@@ -176,7 +176,7 @@ double FastTerrainMap::getGroundHeight(const double x, const double y) {
   return height;
 }
 
-double FastTerrainMap::getGroundHeightFiltered(const double x, const double y) {
+double FastTerrainMap::getGroundHeightFiltered(const double x, const double y) const {
   // spirit_utils::FunctionTimer timer(__FUNCTION__);
   
   double x1, x2, y1, y2;
@@ -217,7 +217,7 @@ double FastTerrainMap::getGroundHeightFiltered(const double x, const double y) {
   return height;
 }
 
-std::array<double, 3> FastTerrainMap::getSurfaceNormal(double x, double y)
+std::array<double, 3> FastTerrainMap::getSurfaceNormal(const double x, const double y) const
 {
     std::array<double, 3> surf_norm;
 
@@ -269,7 +269,7 @@ std::array<double, 3> FastTerrainMap::getSurfaceNormal(double x, double y)
     return surf_norm;
 }
 
-std::array<double, 3> FastTerrainMap::getSurfaceNormalFiltered(double x, double y)
+std::array<double, 3> FastTerrainMap::getSurfaceNormalFiltered(const double x, const double y)
 {
     std::array<double, 3> surf_norm;
 
@@ -321,10 +321,11 @@ std::array<double, 3> FastTerrainMap::getSurfaceNormalFiltered(double x, double 
     return surf_norm;
 }
 
-Eigen::Vector3d FastTerrainMap::projectToMap(Eigen::Vector3d point, Eigen::Vector3d direction) {
+Eigen::Vector3d FastTerrainMap::projectToMap(const Eigen::Vector3d point, const Eigen::Vector3d direction) {
   // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
-  direction.normalize();
+  Eigen::Vector3d direction_norm = direction;
+  direction_norm.normalize();
   Eigen::Vector3d result = point;
   Eigen::Vector3d new_point = point;
   Eigen::Vector3d old_point = point;
@@ -334,7 +335,7 @@ Eigen::Vector3d FastTerrainMap::projectToMap(Eigen::Vector3d point, Eigen::Vecto
   while (clearance >=0) {
     old_point = new_point;
     for(int i = 0; i<3; i++) {
-      new_point[i] += direction[i]*step_size;
+      new_point[i] += direction_norm[i]*step_size;
     }
     if (isInRange(new_point[0], new_point[1])) {
       clearance = new_point[2] - getGroundHeight(new_point[0], new_point[1]);
@@ -352,10 +353,10 @@ Eigen::Vector3d FastTerrainMap::projectToMap(Eigen::Vector3d point, Eigen::Vecto
   return result;
 }
 
-std::vector<double> FastTerrainMap::getXData() {
+std::vector<double> FastTerrainMap::getXData() const {
   return x_data_;
 }
 
-std::vector<double> FastTerrainMap::getYData() {
+std::vector<double> FastTerrainMap::getYData() const {
   return y_data_;
 }
