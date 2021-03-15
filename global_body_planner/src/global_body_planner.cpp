@@ -422,19 +422,25 @@ void GlobalBodyPlanner::getInitialPlan() {
 void GlobalBodyPlanner::spin() {
 
   ros::Rate r(update_rate_);
+
+  // Once we get map and state data, start planning until startup delay is up
   waitForData();
   getInitialPlan();
+
+  // Set the timestamp for the initial plan to now and publish
+  plan_timestamp_ = ros::Time::now();
   publishPlan();
   
+  // Enter main spin
   while (ros::ok()) {
 
+    // IF allowed, continue updating and publishing the plan
     if (replanning_allowed_) {
-      // Continue updating and publishing the plan
       callPlanner();
       publishPlan();
     }
 
-    // Sleep
+    // Process callbacks and sleep
     ros::spinOnce();
     r.sleep();
   }
