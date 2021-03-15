@@ -65,6 +65,10 @@ private:
 
 	/// Update rate for sending and receiving data
 	double update_rate_;
+
+  /// Time of initialization
+  double t_init_;
+  
 };
 
 #endif // ROBOT_PROXY_H

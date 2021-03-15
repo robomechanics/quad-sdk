@@ -244,16 +244,17 @@ void math_utils::interpRobotState(spirit_msgs::RobotState state_1,
   interpMultiFootState(state_1.feet, state_2.feet, t_interp, interp_state.feet);
 }
 
-nav_msgs::Odometry math_utils::interpBodyPlan(spirit_msgs::BodyPlan msg, double t) {    
+void math_utils::interpBodyPlan(spirit_msgs::BodyPlan msg, double t,
+  nav_msgs::Odometry &interp_state, int &interp_primitive_id, spirit_msgs::GRFArray &interp_grf) {    
 
   // Define some useful timing parameters
   ros::Time t0_ros = msg.states.front().header.stamp;
   ros::Time t_ros = t0_ros + ros::Duration(t);
 
   // Declare variables for interpolating between, both for input and output data
-  nav_msgs::Odometry state_1, state_2, interp_state;
-  int primitive_id_1, primitive_id_2, interp_primitive_id;
-  spirit_msgs::GRFArray grf_1, grf_2, interp_grf;
+  nav_msgs::Odometry state_1, state_2;
+  int primitive_id_1, primitive_id_2;
+  spirit_msgs::GRFArray grf_1, grf_2;
 
   // Find the correct index for interp (return the first index if t < 0)
   int index = 0;
@@ -287,8 +288,6 @@ nav_msgs::Odometry math_utils::interpBodyPlan(spirit_msgs::BodyPlan msg, double 
   interpOdometry(state_1, state_2, t_interp, interp_state);
   interp_primitive_id = primitive_id_1;
   interpGRFArray(grf_1, grf_2, t_interp, interp_grf);
-
-  return interp_state;
 
 }
 
@@ -448,70 +447,60 @@ void math_utils::ikRobotState(spirit_msgs::RobotState &state) {
   ikRobotState(state.body, state.feet, state.joints);
 }
 
-// void math_utils::fkRobotState(nav_msgs::Odometry body_state,
-//   sensor_msgs::JointState joint_state, spirit_msgs::MultiFootState &multi_foot_state) {
+void math_utils::fkRobotState(nav_msgs::Odometry body_state,
+  sensor_msgs::JointState joint_state, spirit_msgs::MultiFootState &multi_foot_state) {
 
-//   multi_foot_state.header = joint_state.header;
-//   // If this message is empty set the joint names
+  multi_foot_state.header = joint_state.header;
+  // If this message is empty set the joint names
 
-//   int num_feet = 4;
-//   if multi_foot_state.feet
+  int num_feet = 4;
+  multi_foot_state.feet.resize(num_feet);
 
-//   if (joint_state.name.empty()) {
-//     joint_state.name = {"8", "0", "1", "9","2", "3", "10", "4","5", "11", "6", "7"};
-//   }
-//   joint_state.position.clear();
-//   joint_state.velocity.clear();
-//   joint_state.effort.clear();
+  spirit_utils::SpiritKinematics spirit;
 
-//   spirit_utils::SpiritKinematics spirit;
+  int joint_index = -1;
+  for (int i=0; i < multi_foot_state.feet.size(); i++) {
 
-//   for (int i=0; i < joint_state.feet.size(); i++) {
+    // Get joint data for indexed leg leg
+    Eigen::Vector3d leg_joint_state;
+    
+    for (int j=0; j < 3; j++) {
+      joint_index++;
+      leg_joint_state[j] = joint_state.position.at(joint_index);
+    }    
 
-//     // Get joint data for indexed leg leg
-//     Eigen::Vector3d joint_data
+    // Get corresponding body plan data
+    Eigen::Vector3d body_pos = {body_state.pose.pose.position.x,
+      body_state.pose.pose.position.y,body_state.pose.pose.position.z};
 
-//     // Get foot position data
-//     Eigen::Vector3d foot_pos;
-//     foot_pos[0] = multi_foot_state.feet[i].position.x;
-//     foot_pos[1] = multi_foot_state.feet[i].position.y;
-//     foot_pos[2] = multi_foot_state.feet[i].position.z;      
+    tf2::Quaternion q;
+    tf2::convert(body_state.pose.pose.orientation,q);
+    tf2::Matrix3x3 m(q);
+    double roll, pitch, yaw;
+    m.getRPY(roll, pitch, yaw);
+    Eigen::Vector3d body_rpy = {roll,pitch,yaw};
 
-//     // Get corresponding body plan data
-//     Eigen::Vector3d body_pos = {body_state.pose.pose.position.x,
-//       body_state.pose.pose.position.y,body_state.pose.pose.position.z};
+    // Compute IK to get joint data
+    Eigen::Vector3d foot_pos;
+    spirit.legFK(i,body_pos,body_rpy,leg_joint_state,foot_pos);
 
-//     tf2::Quaternion q;
-//     tf2::convert(body_state.pose.pose.orientation,q);
-//     tf2::Matrix3x3 m(q);
-//     double roll, pitch, yaw;
-//     m.getRPY(roll, pitch, yaw);
-//     Eigen::Vector3d body_rpy = {roll,pitch,yaw};
+    // Add to the foot position vector
+    multi_foot_state.feet[i].position.x = foot_pos[0];
+    multi_foot_state.feet[i].position.y = foot_pos[1];
+    multi_foot_state.feet[i].position.z = foot_pos[2];
 
-//     // Compute IK to get joint data
-//     Eigen::Vector3d leg_joint_state;
-//     spirit.legIK(i,body_pos,body_rpy,foot_pos,leg_joint_state);
+    // Fill in the other elements with zeros for now (Mike to do)
+    multi_foot_state.feet[i].velocity.x = 0;
+    multi_foot_state.feet[i].velocity.y = 0;
+    multi_foot_state.feet[i].velocity.z = 0;
 
-//     // Add to the joint state vector
-//     joint_state.position.push_back(leg_joint_state[0]);
-//     joint_state.position.push_back(leg_joint_state[1]);
-//     joint_state.position.push_back(leg_joint_state[2]);
+    multi_foot_state.feet[i].header = multi_foot_state.header;
+  }
+}
 
-//     // Fill in the other elements with zeros for now (Mike to do)
-//     joint_state.velocity.push_back(0.0);
-//     joint_state.velocity.push_back(0.0);
-//     joint_state.velocity.push_back(0.0);
-
-//     joint_state.effort.push_back(0.0);
-//     joint_state.effort.push_back(0.0);
-//     joint_state.effort.push_back(0.0);
-//   }
-
-// }
-
-// void math_utils::fkRobotState(spirit_msgs::RobotState &state) {
-//   fkRobotState(state.body, state.joints, state.feet);
-// }
+void math_utils::fkRobotState(spirit_msgs::RobotState &state) {
+  fkRobotState(state.body, state.joints, state.feet);
+}
 
 
 int math_utils::interpInt(std::vector<double> input_vec,

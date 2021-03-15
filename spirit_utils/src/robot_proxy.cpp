@@ -58,10 +58,10 @@ void RobotProxy::publishMocap() {
   msg.pose.position.y = 0;
   msg.pose.position.z = 2*(0.2*sin(0.25*pi));
 
-  double secs =ros::Time::now().toSec();
-  double amplitude = 1.0;
-  double period = 5;
-  // msg.pose.position.y = amplitude*sin(2*3.14159*secs/period);
+  double t_now =ros::Time::now().toSec();
+  double amplitude = -0.5;
+  double period = 10;
+  // msg.pose.position.x = amplitude*sin(2*3.14159*(t_now - t_init_)/period);
 
   msg.pose.orientation.x = 0;
   msg.pose.orientation.y = 0;
@@ -72,6 +72,7 @@ void RobotProxy::publishMocap() {
 
 void RobotProxy::spin() {
   ros::Rate r(update_rate_);
+  t_init_ = ros::Time::now().toSec();
   while (ros::ok()) {
 
     // Publish sensor data

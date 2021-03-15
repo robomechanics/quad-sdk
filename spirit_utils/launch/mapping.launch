@@ -1,6 +1,6 @@
 <launch>
   
-    <rosparam command="load" file="$(find spirit_utils)/../config/project_params.yaml"/>
+    <include file="$(find spirit_utils)/launch/load_params.launch" />
 
     <arg name="with_gazebo" default="false"/>
 

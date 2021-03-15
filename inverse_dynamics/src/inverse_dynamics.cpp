@@ -7,15 +7,15 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
 	nh_ = nh;
 
     // Load rosparams from parameter server
-  std::string control_input_topic, robot_state_topic, trajectory_topic, leg_command_array_topic, control_mode_topic; 
-  // nh.param<std::string>("topics/control_input", control_input_topic, "/control_input");
-  spirit_utils::loadROSParam(nh_,"topics/joint_command",leg_command_array_topic);
-  spirit_utils::loadROSParam(nh_,"open_loop_controller/control_mode_topic",control_mode_topic);
+  std::string grf_input_topic, robot_state_topic, trajectory_topic, leg_command_array_topic, control_mode_topic; 
   spirit_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
   spirit_utils::loadROSParam(nh_,"topics/state/trajectory",trajectory_topic);
-
+  spirit_utils::loadROSParam(nh_,"topics/control/grfs",grf_input_topic);
+  spirit_utils::loadROSParam(nh_,"topics/control/joint_command",leg_command_array_topic);
+  spirit_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
+  
   // Setup pubs and subs
-  // control_input_sub_ = nh_.subscribe(control_input_topic,1,&InverseDynamics::controlInputCallback, this);
+  grf_input_sub_ = nh_.subscribe(grf_input_topic,1,&InverseDynamics::grfInputCallback, this);
   robot_state_sub_= nh_.subscribe(robot_state_topic,1,&InverseDynamics::robotStateCallback, this);
   trajectory_sub_ = nh_.subscribe(trajectory_topic,1,&InverseDynamics::trajectoryCallback, this);
   control_mode_sub_ = nh_.subscribe(control_mode_topic,1,&InverseDynamics::controlModeCallback, this);
@@ -29,8 +29,6 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
 
 void InverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
   
-  printf("Data: %d\n", msg->data);
-  printf("control_mode_: %d\n", control_mode_);
   if ((control_mode_ == SIT_TO_STAND) || (control_mode_ == STAND_TO_SIT))
     return;
 
@@ -48,15 +46,12 @@ void InverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) 
     
     control_mode_ = msg->data;
   }
-
-  printf("Data: %d \n", msg->data);
-  printf("control_mode_: %d \n", control_mode_);
 }
 
-// void InverseDynamics::controlInputCallback(const spirit_msgs::ControlInput::ConstPtr& msg) {
-//   // ROS_INFO("In controlInputCallback");
-//   last_control_input_msg_ = *msg;
-// }
+void InverseDynamics::grfInputCallback(const spirit_msgs::GRFArray::ConstPtr& msg) {
+  // ROS_INFO("In controlInputCallback");
+  last_grf_input_msg_ = *msg;
+}
 
 void InverseDynamics::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
   // ROS_INFO("In robotStateCallback");
@@ -79,6 +74,10 @@ void InverseDynamics::publishLegCommandArray() {
     hasTrajectory = false;
   }
 
+  if (last_grf_input_msg_.vectors.size() == 0) {
+    hasTrajectory = false;
+  }
+
   // if (hasTrajectory) {
   //   math_utils::ikRobotState(last_robot_state_msg_.body, last_trajectory_msg_.feet, last_trajectory_msg_.joints);
   // }
@@ -92,17 +91,17 @@ void InverseDynamics::publishLegCommandArray() {
   static const std::vector<double> stand_joint_angles_{0,0.76,2*0.76};
   static const std::vector<double> sit_joint_angles_{0.0,0.0,0.0};
   static const std::vector<double> stand_kp_{50,50,50};
-  static const std::vector<double> stand_kd_{2,2,2};
+  static const std::vector<double> stand_kd_{1,1,1};
 
   static const std::vector<double> ID_kp_{10,10,10};
   static const std::vector<double> ID_kd_{0.2,0.2,0.2};
 
-  static const std::vector<double> walk_kp_{100,100,100};
-  static const std::vector<double> walk_kd_{2,2,2};
+  static const std::vector<double> walk_kp_{50,50,50};
+  static const std::vector<double> walk_kd_{1,1,1};
 
-  Eigen::Vector3d grf, grf_des, kp_grf, kd_grf;
+  Eigen::Vector3d grf, grf_des, kp_grf, kd_grf, grfMPC0, grfMPC1, grfMPC2, grfMPC3;
   Eigen::Vector3d body_pos, body_vel, body_pos_des, body_vel_des, body_pos_error, body_vel_error;
-  Eigen::Vector3f tau0, tau1, tau2, tau3, dq0, dq1, dq2, dq3, df0, df1, df2, df3;
+  Eigen::Vector3f tau0, tau1, tau2, tau3, dq0, dq1, dq2, dq3, df0, df1, df2, df3, tauMPC0, tauMPC1, tauMPC2, tauMPC3;
   grf_des << 0, 0, 0.5*11.5*9.81;
   kp_grf << 600.0, 400.0, 200.0;
   kd_grf << 20.0, 10.0, 10.0;
@@ -118,40 +117,39 @@ void InverseDynamics::publishLegCommandArray() {
   grf = grf_des.array() + kp_grf.array()*body_pos_error.array() + 
     kd_grf.array()*body_vel_error.array();
   
+  // std::cout << "Got here" << std::endl;
+
+  // std::cout << last_grf_input_msg_.vectors.size() << std::endl;
+  // std::cout << hasTrajectory << std::endl;
+
+  if (hasTrajectory) {
+    grfMPC0 << last_grf_input_msg_.vectors.at(0).x, last_grf_input_msg_.vectors.at(0).y, last_grf_input_msg_.vectors.at(0).z;
+    grfMPC1 << last_grf_input_msg_.vectors.at(1).x, last_grf_input_msg_.vectors.at(1).y, last_grf_input_msg_.vectors.at(1).z;
+    grfMPC2 << last_grf_input_msg_.vectors.at(2).x, last_grf_input_msg_.vectors.at(2).y, last_grf_input_msg_.vectors.at(2).z;
+    grfMPC3 << last_grf_input_msg_.vectors.at(3).x, last_grf_input_msg_.vectors.at(3).y, last_grf_input_msg_.vectors.at(3).z;
+  }
+
+  // std::cout << "Set grfs done" << std::endl;
+
   // std::cout << grf_des << std::endl;
+  // std::cout << "Foot 0: " << std::endl;
+  // std::cout << grfMPC0 << std::endl;
+  // std::cout << "Foot 1: " << std::endl;
+  // std::cout << grfMPC1 << std::endl;
+  // std::cout << "Foot 2: " << std::endl;
+  // std::cout << grfMPC2 << std::endl;
+  // std::cout << "Foot 3: " << std::endl;
+  // std::cout << grfMPC3 << std::endl;
 
   double velocities[12];
-
-  velocities[0] = last_robot_state_msg_.joints.velocity.at(0);
-  velocities[1] = last_robot_state_msg_.joints.velocity.at(1);
-  velocities[2] = last_robot_state_msg_.joints.velocity.at(2);
-  velocities[3] = last_robot_state_msg_.joints.velocity.at(3);
-  velocities[4] = last_robot_state_msg_.joints.velocity.at(4);
-  velocities[5] = last_robot_state_msg_.joints.velocity.at(5);
-  velocities[6] = last_robot_state_msg_.joints.velocity.at(6);
-  velocities[7] = last_robot_state_msg_.joints.velocity.at(7);
-  velocities[8] = last_robot_state_msg_.joints.velocity.at(8);
-  velocities[9] = last_robot_state_msg_.joints.velocity.at(9);
-  velocities[10] = last_robot_state_msg_.joints.velocity.at(10);
-  velocities[11] = last_robot_state_msg_.joints.velocity.at(11);
+  for (int i = 0; i < 12; i++) {
+    velocities[i] = last_robot_state_msg_.joints.velocity.at(i);
+  }
 
   double states[18];
-  // std::vector<double> states(18);
-  static const double parameters[] = {0.07,0.2263,0.0,0.1010,0.206,0.206};
-  // double states[] = {q00, q01, q02, q10, q11, q12, q20, q21, q22, q30, q31, q32, x, y, z, roll, pitch, yaw};
-
-  states[0] = last_robot_state_msg_.joints.position.at(0);
-  states[1] = last_robot_state_msg_.joints.position.at(1);
-  states[2] = last_robot_state_msg_.joints.position.at(2);
-  states[3] = last_robot_state_msg_.joints.position.at(3);
-  states[4] = last_robot_state_msg_.joints.position.at(4);
-  states[5] = last_robot_state_msg_.joints.position.at(5);
-  states[6] = last_robot_state_msg_.joints.position.at(6);
-  states[7] = last_robot_state_msg_.joints.position.at(7);
-  states[8] = last_robot_state_msg_.joints.position.at(8);
-  states[9] = last_robot_state_msg_.joints.position.at(9);
-  states[10] = last_robot_state_msg_.joints.position.at(10);
-  states[11] = last_robot_state_msg_.joints.position.at(11);
+  for (int i = 0; i < 12; i++) {
+    states[i] = last_robot_state_msg_.joints.position.at(i);
+  }
 
   double qx = last_robot_state_msg_.body.pose.pose.orientation.x;
   double qy = last_robot_state_msg_.body.pose.pose.orientation.y;
@@ -217,6 +215,20 @@ void InverseDynamics::publishLegCommandArray() {
   tau1 = -foot_jacobian1.transpose() * grf.cast<float>();
   tau2 = -foot_jacobian2.transpose() * grf.cast<float>();
   tau3 = -foot_jacobian3.transpose() * grf.cast<float>();
+
+  tauMPC0 = -foot_jacobian0.transpose() * grfMPC0.cast<float>();
+  tauMPC1 = -foot_jacobian1.transpose() * grfMPC1.cast<float>();
+  tauMPC2 = -foot_jacobian2.transpose() * grfMPC2.cast<float>();
+  tauMPC3 = -foot_jacobian3.transpose() * grfMPC3.cast<float>();
+
+  // std::cout << "Foot 0: " << std::endl;
+  // std::cout << tauMPC0 << std::endl;
+  // std::cout << "Foot 1: " << std::endl;
+  // std::cout << tauMPC1 << std::endl;
+  // std::cout << "Foot 2: " << std::endl;
+  // std::cout << tauMPC2 << std::endl;
+  // std::cout << "Foot 3: " << std::endl;
+  // std::cout << tauMPC3 << std::endl;
 
   footVelocity = jacobian*stateVelocity;
 
@@ -325,17 +337,30 @@ void InverseDynamics::publishLegCommandArray() {
           msg.leg_commands.at(i).motor_commands.at(j).kd = walk_kd_.at(j);
           switch (i) {
             case 0:
-              msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tau0[j];
+              msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tauMPC0[j];
               break;
             case 1:
-              msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tau1[j];
+              msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tauMPC1[j];
               break;
             case 2:
-              msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tau2[j];
+              msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tauMPC2[j];
               break;
             case 3:
-              msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tau3[j];
+              msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tauMPC3[j];
               break;
+              
+            // case 0:
+            //   msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tau0[j];
+            //   break;
+            // case 1:
+            //   msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tau1[j];
+            //   break;
+            // case 2:
+            //   msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tau2[j];
+            //   break;
+            // case 3:
+            //   msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tau3[j];
+            //   break;
           }
         } else {
           msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = stand_joint_angles_.at(j);

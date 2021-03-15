@@ -117,6 +117,8 @@ namespace gazebo{
     int num_feet = 4;
     state.feet.feet.resize(num_feet);
 
+    math_utils::fkRobotState(state);
+
     for (int i = 0; i<num_feet; i++) {
       switch (i) {
         case 0:

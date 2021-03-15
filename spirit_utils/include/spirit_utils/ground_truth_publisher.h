@@ -10,6 +10,7 @@
 #include <geometry_msgs/Vector3.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_utils/ros_utils.h>
+#include <spirit_utils/math_utils.h>
 
 //! Class to publish the ground truth state data
 /*!

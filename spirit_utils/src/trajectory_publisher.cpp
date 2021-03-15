@@ -5,7 +5,7 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
 
   // Load rosparams from parameter server
   std::string body_plan_topic, foot_plan_continuous_topic, 
-    trajectory_topic, trajectory_state_topic;
+    trajectory_topic, trajectory_state_topic, ground_truth_state_topic;
 
   nh.param<std::string>("topics/body_plan", 
     body_plan_topic, "/body_plan");
@@ -16,6 +16,8 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
     trajectory_state_topic, "/state/trajectory");
   nh.param<std::string>("topics/trajectory", 
     trajectory_topic, "/trajectory");
+    nh.param<std::string>("topics/state/ground_truth", 
+    ground_truth_state_topic, "/state/ground_truth");
 
   nh.param<std::string>("map_frame",map_frame_,"map");
   nh.param<std::string>("trajectory_publisher/traj_source", traj_source_, "topic");
@@ -28,6 +30,8 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
     &TrajectoryPublisher::bodyPlanCallback, this);
   multi_foot_plan_continuous_sub_ = nh_.subscribe(foot_plan_continuous_topic,1,
     &TrajectoryPublisher::multiFootPlanContinuousCallback, this);
+  ground_truth_state_sub_ = nh_.subscribe(ground_truth_state_topic,1,
+    &TrajectoryPublisher::robotStateCallback, this);
 
   trajectory_state_pub_ = nh_.advertise<spirit_msgs::RobotState>
     (trajectory_state_topic,1);
@@ -54,15 +58,17 @@ void TrajectoryPublisher::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr
   body_plan_msg_ = (*msg);
 }
 
+void TrajectoryPublisher::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
+
+  // Save the most recent robot state
+  robot_state_msg_ = msg;
+}
+
 void TrajectoryPublisher::multiFootPlanContinuousCallback(const 
   spirit_msgs::MultiFootPlanContinuous::ConstPtr& msg) {
 
-    // std::cout << msg->header.stamp << std::endl;
-    // std::cout << multi_foot_plan_continuous_msg_.header.stamp << std::endl;
-    // printf("\n");
-
   if (msg->header.stamp != multi_foot_plan_continuous_msg_.header.stamp) {
-    // Save te most recent foot plan
+    // Save the most recent foot plan
     multi_foot_plan_continuous_msg_ = (*msg);
     update_flag_ = true;
   } 
@@ -114,7 +120,9 @@ void TrajectoryPublisher::updateTrajectory() {
     state.header.stamp = traj_msg_.header.stamp + ros::Duration(t_traj_[i]);
 
     // Interpolate body and foot plan
-    state.body = math_utils::interpBodyPlan(body_plan_msg_,t_traj_[i]);
+    int primitive_id;
+    spirit_msgs::GRFArray grf_array;
+    math_utils::interpBodyPlan(body_plan_msg_,t_traj_[i], state.body,primitive_id, grf_array);
     state.feet = math_utils::interpMultiFootPlanContinuous(
       multi_foot_plan_continuous_msg_,t_traj_[i]);
 
@@ -136,18 +144,23 @@ void TrajectoryPublisher::publishTrajectory() {
 void TrajectoryPublisher::publishTrajectoryState() {
 
   // Wait until we actually have data
-  if (traj_msg_.states.empty())
+  if (traj_msg_.states.empty()) {
+    if (robot_state_msg_ != NULL) {
+      trajectory_state_pub_.publish(*robot_state_msg_);
+    }
     return;
+  }
     
   // Get the current duration since the beginning of the plan
   ros::Duration t_duration = ros::Time::now() - body_plan_msg_.header.stamp;
 
   // Mod by trajectory duration
-  double t = t_duration.toSec();
-  double t_mod = fmod(playback_speed_*t, t_traj_.back());
+  double t = playback_speed_*t_duration.toSec();
+  double t_mod = fmod(t, t_traj_.back());
   
   // Interpolate to get the correct state and publish it
   spirit_msgs::RobotState interp_state = math_utils::interpRobotStateTraj(traj_msg_,t);
+  // spirit_msgs::RobotState interp_state = math_utils::interpRobotStateTraj(traj_msg_,t_mod);
   trajectory_state_pub_.publish(interp_state);
 }
 
@@ -161,10 +174,10 @@ void TrajectoryPublisher::spin() {
       importTrajectory();
     } else if (update_flag_) {
       updateTrajectory();
+      publishTrajectory();
       update_flag_ = false;
     }
-    
-    publishTrajectory();
+
     publishTrajectoryState();
 
     // Collect new messages on subscriber topics
