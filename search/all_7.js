@@ -11,6 +11,7 @@ var searchData=
   ['getgroundheight',['getGroundHeight',['../classFastTerrainMap.html#a8bdc092d573f3888568b9c53b84df854',1,'FastTerrainMap']]],
   ['getgroundheightfiltered',['getGroundHeightFiltered',['../classFastTerrainMap.html#a23b81cf62d3946ecd6d87c5bef3868a9',1,'FastTerrainMap']]],
   ['getgvalue',['getGValue',['../classGraphClass.html#a6fc85a70bacd5bc07043adfeb91797fa',1,'GraphClass']]],
+  ['getinitialplan',['getInitialPlan',['../classGlobalBodyPlanner.html#ad0ebc54c99176a7a8a5a715052194d31',1,'GlobalBodyPlanner']]],
   ['getjointlowerlimit',['getJointLowerLimit',['../classspirit__utils_1_1SpiritKinematics.html#a44e63b5c878659c43359e53fb145ccab',1,'spirit_utils::SpiritKinematics']]],
   ['getjointupperlimit',['getJointUpperLimit',['../classspirit__utils_1_1SpiritKinematics.html#ac3f958e90d504a1af7ed21b1b061dc73',1,'spirit_utils::SpiritKinematics']]],
   ['getlinklength',['getLinkLength',['../classspirit__utils_1_1SpiritKinematics.html#a4d9175f846baad7b866847a6941a8f22',1,'spirit_utils::SpiritKinematics']]],

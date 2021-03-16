@@ -1,6 +1,7 @@
 var searchData=
 [
   ['replan_5fstart_5ftime_5f',['replan_start_time_',['../classGlobalBodyPlanner.html#a5e28747ebeaf79fefc55edfe43c4d53b',1,'GlobalBodyPlanner']]],
+  ['replanning_5fallowed_5f',['replanning_allowed_',['../classGlobalBodyPlanner.html#a445678558fb843a3c43bdd667fc98a72',1,'GlobalBodyPlanner']]],
   ['resolution_5f',['resolution_',['../classTerrainMapPublisher.html#a01d73a9b142c5cd7457feb50045dc370',1,'TerrainMapPublisher']]],
   ['restart_5fflag_5f',['restart_flag_',['../classGlobalBodyPlanner.html#a820945098694648a2523219e44e938d6',1,'GlobalBodyPlanner']]],
   ['robot_5fstate_5f',['robot_state_',['../classGlobalBodyPlanner.html#a24e940f6401ecd8d5bac7b58c4c0ca73',1,'GlobalBodyPlanner']]],

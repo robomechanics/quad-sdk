@@ -3,6 +3,7 @@ var searchData=
   ['randomstate',['randomState',['../classPlannerClass.html#adfa162a71189a47726e424ee08923502',1,'PlannerClass']]],
   ['removeedge',['removeEdge',['../classGraphClass.html#ac6775293717a51d5c223b5f6b3a9425a',1,'GraphClass']]],
   ['replan_5fstart_5ftime_5f',['replan_start_time_',['../classGlobalBodyPlanner.html#a5e28747ebeaf79fefc55edfe43c4d53b',1,'GlobalBodyPlanner']]],
+  ['replanning_5fallowed_5f',['replanning_allowed_',['../classGlobalBodyPlanner.html#a445678558fb843a3c43bdd667fc98a72',1,'GlobalBodyPlanner']]],
   ['report',['report',['../classspirit__utils_1_1FunctionTimer.html#ad4bc3f5025add381913cd50877b0edf9',1,'spirit_utils::FunctionTimer']]],
   ['resolution_5f',['resolution_',['../classTerrainMapPublisher.html#a01d73a9b142c5cd7457feb50045dc370',1,'TerrainMapPublisher']]],
   ['restart_5fflag_5f',['restart_flag_',['../classGlobalBodyPlanner.html#a820945098694648a2523219e44e938d6',1,'GlobalBodyPlanner']]],
