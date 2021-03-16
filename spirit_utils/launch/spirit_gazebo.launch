@@ -29,6 +29,7 @@ SOFTWARE.
   <arg name="gui" default="false"/>
   <arg name="paused" default="true"/>
   <arg name="robot_driver" default="true"/>
+  <arg name="tail" default="false"/>
 
   <group if="$(arg robot_driver)">
       <include file="$(find spirit_utils)/launch/robot_driver.launch"/>
@@ -42,13 +43,23 @@ SOFTWARE.
     <arg name="physics" value="ode"/>
   </include>
 
-  <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_meshes.urdf" />
-  <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
+  <group if="$(arg tail)">
+    <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_meshes_tail.urdf" />
+    <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit_tail.sdf" />
+    <rosparam file="$(find gazebo_scripts)/config/spirit_control_tail.yaml" command="load"/>
+    <rosparam file="$(find gazebo_scripts)/config/spirit_estimate_tail.yaml" command="load"/>
+  </group>
+
+  <group unless="$(arg tail)">
+    <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_meshes.urdf" />
+    <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
+    <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
+    <rosparam file="$(find gazebo_scripts)/config/spirit_estimate.yaml" command="load"/>
+  </group>
 
   <!-- Spawn SDF model -->
   <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.3 -J 1 1.632 -J 3 1.632 -J 5 1.632 -J 7 1.632 -J 0 0.816 -J 2 0.816 -J 4 0.816 -J 6 0.816" output="screen"/>
 
-  <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
   <include file="$(find spirit_utils)/launch/load_params.launch" />
   
   <node name="controller_spawner"

@@ -4,10 +4,9 @@ TailController::TailController(ros::NodeHandle nh) {
 	nh_ = nh;
 
   // Get rosparams
-  std::string leg_control_topic = "/spirit/joint_controller/tail_command";
-  // spirit_utils::loadROSParam(nh_,"topics/joint_command",leg_control_topic);
-  // spirit_utils::loadROSParam(nh_,"open_loop_controller/control_mode_topic",control_mode_topic);
-  nh.param<double>("open_loop_controller/update_rate",update_rate_, 50);
+  std::string leg_control_topic;
+  spirit_utils::loadROSParam(nh_,"/topics/control/tail_command",leg_control_topic);
+  spirit_utils::loadROSParam(nh_,"tail_controller/update_rate",update_rate_);
   // spirit_utils::loadROSParam(nh_,"open_loop_controller/stand_angles",stand_joint_angles_);
   // spirit_utils::loadROSParam(nh_,"open_loop_controller/stand_kp",stand_kp_);
   // spirit_utils::loadROSParam(nh_,"open_loop_controller/stand_kd",stand_kd_);
@@ -36,9 +35,13 @@ TailController::TailController(ros::NodeHandle nh) {
 
 void TailController::setupTrajectory()
 {
+  // std::vector<double> ts = {0.075, 0.075, 0.075, 0.075, 0.075, 0.075, 0.075, 0.075}; 
+  // std::vector<double> xs = {0, 3.14159/8, 3.14159/4, 3.14159/8, 0, -3.14159/8, -3.14159/4, -3.14159/8}; 
+  // std::vector<double> ys = {0, 3.14159/4, 0, -3.14159/4, 0, 3.14159/4, 0, -3.14159/4}; 
+
   std::vector<double> ts = {0.075, 0.075, 0.075, 0.075, 0.075, 0.075, 0.075, 0.075}; 
-  std::vector<double> xs = {0, 3.14159/8, 3.14159/4, 3.14159/8, 0, -3.14159/8, -3.14159/4, -3.14159/8}; 
-  std::vector<double> ys = {0, 3.14159/4, 0, -3.14159/4, 0, 3.14159/4, 0, -3.14159/4}; 
+  std::vector<double> xs = {0, 0, 0, 0, 0, 0, 0, 0}; 
+  std::vector<double> ys = {0, 0, 0, 0, 0, 0, 0, 0}; 
 
   interp_dt_ = 0.005;
 
@@ -98,14 +101,14 @@ void TailController::sendJointPositions(double &elapsed_time)
   msg.motor_commands.resize(2);
 
   msg.motor_commands.at(0).pos_setpoint = hip_knee_angs.first;
-  msg.motor_commands.at(0).kp = 50;
-  msg.motor_commands.at(0).kd = 5;
+  msg.motor_commands.at(0).kp = 10;
+  msg.motor_commands.at(0).kd = 1;
   msg.motor_commands.at(0).vel_setpoint = hip_vel;
   msg.motor_commands.at(0).torque_ff = 0;
 
   msg.motor_commands.at(1).pos_setpoint = hip_knee_angs.second;
-  msg.motor_commands.at(1).kp = 50;
-  msg.motor_commands.at(1).kd = 5;
+  msg.motor_commands.at(1).kp = 10;
+  msg.motor_commands.at(1).kd = 1;
   msg.motor_commands.at(1).vel_setpoint = knee_vel;
   msg.motor_commands.at(1).torque_ff = 0;
 

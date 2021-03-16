@@ -24,6 +24,8 @@ namespace gazebo
       void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
       void OnUpdate();
 
+      std::vector< std::string > joint_names_;
+
     private:
       double update_rate_;
       common::Time last_time_;

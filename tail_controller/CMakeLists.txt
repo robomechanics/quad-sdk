@@ -124,7 +124,7 @@ include_directories(
 
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
-	src/${PROJECT_NAME}/tail_controller.cpp
+	src/tail_controller.cpp
 	)
 
 ## Add cmake target dependencies of the library

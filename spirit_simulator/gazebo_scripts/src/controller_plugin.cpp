@@ -95,10 +95,14 @@ namespace effort_controllers
     spirit_utils::loadROSParam(n, "/topics/control/joint_command",joint_command_topic);
 
     sub_command_ = n.subscribe<spirit_msgs::LegCommandArray>(joint_command_topic, 1, &SpiritController::commandCB, this);
+
     int num_tail_motors = 2;
     tail_commands_buffer_.writeFromNonRT(TailBufferType(num_tail_motors));
 
-    tail_sub_command_ = n.subscribe<spirit_msgs::LegCommand>("tail_command", 1, &SpiritController::tailCommandCB, this);
+    std::string tail_command_topic;
+    spirit_utils::loadROSParam(n, "/topics/control/tail_command",tail_command_topic);
+
+    tail_sub_command_ = n.subscribe<spirit_msgs::LegCommand>(tail_command_topic, 1, &SpiritController::tailCommandCB, this);
     return true;
   }
 
@@ -115,6 +119,7 @@ namespace effort_controllers
 
     for(unsigned int i=0; i<n_joints_; i++)
     {
+      // Tail control
       if (i>11)
       {  
         spirit_msgs::MotorCommand motor_command = tail_commands.at(i-12);
@@ -151,6 +156,7 @@ namespace effort_controllers
       // Update joint torque
         joints_.at(i).setCommand(torque_command);
       }
+      // Leg control
       else
       {
         std::pair<int,int> ind = leg_map_[i];

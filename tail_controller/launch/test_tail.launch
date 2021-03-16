@@ -1,4 +1,6 @@
 <launch>
+	<include file="$(find spirit_utils)/launch/load_params.launch" />
+
     <!-- Launch the node to publish tail control-->
     <node name="tail_controller" pkg="tail_controller" type="tail_controller_node" output="screen"/>
 

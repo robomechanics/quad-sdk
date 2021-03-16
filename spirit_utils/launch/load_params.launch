@@ -18,5 +18,6 @@
     <rosparam command="load" file="$(find body_force_estimator)/body_force_estimator.yaml"/>
     <rosparam command="load" file="$(find mblink_converter)/mblink_converter.yaml"/>
     <rosparam command="load" file="$(find open_loop_controller)/open_loop_controller.yaml"/>
+    <rosparam command="load" file="$(find tail_controller)/tail_controller.yaml"/>
 
 </launch>

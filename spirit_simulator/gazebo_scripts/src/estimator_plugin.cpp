@@ -29,6 +29,13 @@ namespace gazebo{
     ros::NodeHandle nh;
     ground_truth_state_pub_ = nh.advertise<spirit_msgs::RobotState>("/state/ground_truth",1);
 
+    std::string param_name = "/spirit/joint_estimator/joints";
+    if(!nh.getParam(param_name, joint_names_))
+    {
+      ROS_ERROR_STREAM("Failed to getParam '" << param_name << "' (namespace: " << nh.getNamespace() << ").");
+      return;
+    }
+
       // Listen to the update event. This event is broadcast every
       // simulation iteration.
     updateConnection_= event::Events::ConnectWorldUpdateBegin(
@@ -96,16 +103,34 @@ namespace gazebo{
     state.body.twist.twist.angular.z = ang_vel.Z();
 
     physics::Joint_V joint_vec = model_->GetJoints();
-    int num_joints = 14;
+    std::vector<std::string> model_joint_name;
 
-    state.joints.name = {"8", "0", "1", "9","2","3","10","4","5","11","6","7"};
+    // Record all joint names
+    for (int i = 0; i<joint_vec.size(); i++) {
+      physics::JointPtr joint = joint_vec[i];
+      model_joint_name.push_back(joint->GetName());
+    }
+
+    int num_joints = joint_names_.size();
+
+    state.joints.name = joint_names_;
 
     for (int i = 0; i<num_joints; i++) {
       // std::cout << joint->GetName() << std::endl;
       // std::cout << joint->Position() << std::endl;
       // std::cout << joint->GetVelocity(0) << std::endl;
 
-      physics::JointPtr joint = joint_vec[i];
+      // Get expected joint index by name
+      int idx;
+      auto it = find(model_joint_name.begin(), model_joint_name.end(), joint_names_[i]);
+      if (it != model_joint_name.end()) {
+          idx = it - model_joint_name.begin();
+      }
+      else {
+          ROS_ERROR_STREAM("Cannot find joint '" << joint_names_[i] << "'.");
+      }
+
+      physics::JointPtr joint = joint_vec[idx];
       physics::JointWrench wrench = joint->GetForceTorque(0);
       double torque = wrench.body1Torque.Z(); // Note that this doesn't seem to work but at least will populate with zeros
 

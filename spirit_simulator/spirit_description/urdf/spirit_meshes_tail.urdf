@@ -1020,5 +1020,118 @@
     <origin xyz="0.206 0 -0.0"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
-</robot>
 
+  <!-- Tail link -->
+  <link name="tail_link_0">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.02"/>
+      </geometry>
+      <material name="gray"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.02"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1e-03"/>
+      <inertia ixx="1e-04" ixy="0" ixz="0" iyy="1e-04" iyz="0" izz="1e-04"/>
+    </inertial>
+  </link>
+  <gazebo reference="tail_link_0">
+    <material>Gazebo/Gray</material>
+  </gazebo>
+  <link name="tail_link_1">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0.5"/>
+      <geometry>
+        <cylinder length="1" radius="0.02"/>
+      </geometry>
+      <material name="gray"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0.5"/>
+      <geometry>
+        <cylinder length="1" radius="0.02"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.025"/>
+      <inertia ixx="0.00364583" ixy="0" ixz="0" iyy="0.00364583" iyz="0" izz="0.003125"/>
+    </inertial>
+  </link>
+  <gazebo reference="tail_link_1">
+    <material>Gazebo/Gray</material>
+  </gazebo>
+  <link name="tail_mass">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.04"/>
+      </geometry>
+      <material name="gray"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.04"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.25"/>
+      <inertia ixx="0.025" ixy="0" ixz="0" iyy="0.025" iyz="0" izz="0.025"/>
+    </inertial>
+  </link>
+  <gazebo reference="tail_mass">
+    <material>Gazebo/Gray</material>
+  </gazebo>
+
+  <!-- Tail joint -->
+  <joint name="body_tail_joint_0" type="revolute">
+    <parent link="body"/>
+    <child link="tail_link_0"/>
+    <axis xyz="1 0 0"/>
+    <origin xyz="-0.1675 0 0.052"/>
+    <limit effort="40" lower="-1.79769e+308" upper="1.79769e+308" velocity="30"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+  <!-- Transmission elements required for Gazebo -->
+  <transmission name="transmission_body_tail_joint_0">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="body_tail_joint_0">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_body_tail_joint_0">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <joint name="body_tail_joint_1" type="revolute">
+    <parent link="tail_link_0"/>
+    <child link="tail_link_1"/>
+    <axis xyz="0 1 0"/>
+    <origin xyz="0 0 0"/>
+    <limit effort="40" lower="-3.14159" upper="1.57080" velocity="30"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+  <!-- Transmission elements required for Gazebo -->
+  <transmission name="transmission_body_tail_joint_1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="body_tail_joint_1">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_body_tail_joint_1">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <joint name="tail_link_mass_joint" type="fixed">
+    <parent link="tail_link_1"/>
+    <child link="tail_mass"/>
+    <origin xyz="0 0 1"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+</robot>

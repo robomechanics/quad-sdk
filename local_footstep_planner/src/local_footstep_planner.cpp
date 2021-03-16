@@ -89,21 +89,6 @@ void LocalFootstepPlanner::robotStateCallback(
 
 }
 
-void LocalFootstepPlanner::robotStateCallback(
-  const spirit_msgs::RobotState::ConstPtr& msg) {
-
-  if (msg->feet.feet.empty())
-    return;
-
-  if (body_plan_.empty())
-    return;
-
-  if (robot_state_msg_.feet.feet.empty()) {
-    robot_state_msg_ = (*msg);
-  }
-
-}
-
 double LocalFootstepPlanner::computeTimeUntilNextFlight(double t) {
   double t_remaining = std::numeric_limits<double>::max();
   for (int i = 1; i < t_plan_.size(); i++) {

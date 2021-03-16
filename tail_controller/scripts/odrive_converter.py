@@ -14,7 +14,7 @@ def listener():
     # name for our 'listener' node so that multiple listeners can
     # run simultaneously.
     rospy.init_node('listener', anonymous=True)
-    tail_topic = "/spirit/joint_controller/tail_command"
+    tail_topic = "/control/tail_command"
     rospy.Subscriber(tail_topic, LegCommand, callback)
 
     # spin() simply keeps python from exiting until this node is stopped

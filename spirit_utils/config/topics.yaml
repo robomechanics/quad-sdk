@@ -17,6 +17,7 @@ topics:
   control:
     grfs: /control/grfs
     joint_command: /control/joint_command
+    tail_command: /control/tail_command
     mode: /control/mode
   visualization:
     body_plan: /visualization/body_plan
