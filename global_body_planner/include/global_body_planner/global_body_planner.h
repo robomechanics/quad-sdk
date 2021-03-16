@@ -99,6 +99,11 @@ class GlobalBodyPlanner {
      */
     void waitForData();
 
+    /**
+     * @brief Call the planner repeatedly until startup_delay has been reached then return
+     */
+    void getInitialPlan();
+
     /// Subscriber for terrain map messages
     ros::Subscriber terrain_map_sub_;
 
@@ -200,6 +205,9 @@ class GlobalBodyPlanner {
 
     /// Delay after node startup before planning and publishing
     double startup_delay_;
+
+    /// Boolean for whether replanning is allowed
+    bool replanning_allowed_;
 
 };
 
