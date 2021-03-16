@@ -25,6 +25,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh.param<double>("global_body_planner/committed_horizon", committed_horizon_, 0);
   nh.param<double>("global_body_planner/state_error_threshold", state_error_threshold_, 0.5);
   nh.param<double>("global_body_planner/startup_delay", startup_delay_, 0.0);
+  nh.param<bool>("global_body_planner/replanning", replanning_allowed_, true);
 
   nh.param<std::vector<double> >("global_body_planner/start_state", start_state_, start_state_default);
   nh.param<std::vector<double> >("global_body_planner/goal_state", goal_state_, goal_state_default);
@@ -61,6 +62,12 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh,"global_body_planner/BACKUP_RATIO", planner_config_.BACKUP_RATIO);
   spirit_utils::loadROSParam(nh,"global_body_planner/NUM_GEN_STATES", planner_config_.NUM_GEN_STATES);
   spirit_utils::loadROSParam(nh,"global_body_planner/GOAL_BOUNDS", planner_config_.GOAL_BOUNDS);
+
+  // If replanning is prohibited, set committed horizon to zero ()
+  if (replanning_allowed_ == false && committed_horizon_ > 0) {
+    committed_horizon_ = 0;
+    ROS_INFO("Replanning is prohibited, setting committed horizon to zero");
+  }
 
 }
 
@@ -137,7 +144,6 @@ void GlobalBodyPlanner::updateRestartFlag() {
     return;
   }
 
-  double state_error_threshold = 0.5;
   std::vector<double> current_state_in_plan_ = body_plan_.front();
   if (poseDistance(robot_state_, current_state_in_plan_) > state_error_threshold_) {
     restart_flag_ = true;
@@ -382,6 +388,7 @@ void GlobalBodyPlanner::publishPlan() {
   // Publish both interpolated body plan and discrete states
   body_plan_pub_.publish(body_plan_msg);
   discrete_body_plan_pub_.publish(discrete_body_plan_msg);
+
 }
 
 void GlobalBodyPlanner::waitForData() {
@@ -401,23 +408,39 @@ void GlobalBodyPlanner::waitForData() {
   }
 }
 
+void GlobalBodyPlanner::getInitialPlan() {
+
+  // Keep track of when the planner started
+  ros::Time start_time = ros::Time::now();
+
+  // Repeatedly call the planner until the startup delay has elapsed
+  while (ros::ok() && ((ros::Time::now() - start_time) < ros::Duration(startup_delay_))) {
+    callPlanner();
+  }  
+}
+
 void GlobalBodyPlanner::spin() {
 
   ros::Rate r(update_rate_);
-  waitForData();
 
-  ros::Time start_time = ros::Time::now();
+  // Once we get map and state data, start planning until startup delay is up
+  waitForData();
+  getInitialPlan();
+
+  // Set the timestamp for the initial plan to now and publish
+  plan_timestamp_ = ros::Time::now();
+  publishPlan();
+  
+  // Enter main spin
   while (ros::ok()) {
 
-    if ((ros::Time::now() - start_time) >= ros::Duration(startup_delay_)) {
-      // Update the plan
+    // IF allowed, continue updating and publishing the plan
+    if (replanning_allowed_) {
       callPlanner();
       publishPlan();
-    } else {
-      ROS_INFO_THROTTLE(1/startup_delay_, "Waiting to start GBP...");
     }
 
-    // Sleep
+    // Process callbacks and sleep
     ros::spinOnce();
     r.sleep();
   }

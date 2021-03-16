@@ -7,6 +7,7 @@ global_body_planner:
   committed_horizon: 0     # Committed duration of current plan (replan starting from state in current plan this far ahead), s
   state_error_threshold: 10 #0.25
   startup_delay: 1.0   # Time to delay after starting node before planning
+  replanning: true    # Boolean to determine if replanning is allowed
   H_MAX: 0.375         # Maximum height of leg base, m
   H_MIN: 0.125         # Minimum ground clearance of body corners, m
   V_MAX: 3.0           # Maximum robot velocity, m/s (4.0 for cheetah, 2.5 for anymal)
