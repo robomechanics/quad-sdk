@@ -109,6 +109,14 @@ class GraphClass
     double getGValue(int idx);
 
     /**
+     * @brief Compute the cost of an edge between two vertices
+     * @param[in] idx1 Index of vertex 1
+     * @param[in] idx2 Index of vertex 2
+     * @return Cost of the edge between idx1 and idx2
+     */
+    double computeEdgeCost(int idx1, int idx2);
+
+    /**
      * @brief Print the state information via stdout
      * @param[in] s The state information to print
      */
