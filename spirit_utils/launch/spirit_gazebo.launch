@@ -28,6 +28,11 @@ SOFTWARE.
 
   <arg name="gui" default="false"/>
   <arg name="paused" default="true"/>
+  <arg name="robot_driver" default="true"/>
+
+  <group if="$(arg robot_driver)">
+      <include file="$(find spirit_utils)/launch/robot_driver.launch"/>
+  </group>
 
   <!-- Launch the Spirit world with specific physics parameters -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -41,13 +46,22 @@ SOFTWARE.
   <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
 
   <!-- Spawn SDF model -->
-  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.2" output="screen"/>
+  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.3 -J 1 1.632 -J 3 1.632 -J 5 1.632 -J 7 1.632 -J 0 0.816 -J 2 0.816 -J 4 0.816 -J 6 0.816" output="screen"/>
 
   <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
-  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/spirit" args="joint_state_controller joint_controller"/>
+  <include file="$(find spirit_utils)/launch/load_params.launch" />
+  
+  <node name="controller_spawner"
+        pkg="controller_manager"
+        type="spawner"
+        respawn="false"
+        output="screen"
+        ns="/spirit"
+        args="joint_controller joint_state_controller">
+  </node>
 
-  <!--<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
-    <remap from="joint_states" to="/mcu/state/jointURDF"/>
-  </node>-->
+  <!-- <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+    <remap from="/spirit/joint_states" to="/mcu/state/jointURDF"/>
+  </node> -->
   
 </launch>

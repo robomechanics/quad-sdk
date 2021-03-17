@@ -121,9 +121,12 @@ namespace math_utils {
    * @brief Interpolate data from a BodyPlan message.
    * @param[in] msg BodyPlan message
    * @param[in] t Time since beginning of trajectory (will return last state if too large)
-   * @return nav_msgs::Odometry message
+   * @param[out] interp_state Interpolated Odometry message
+   * @param[out] interp_primitive_id Interpolated primitive id
+   * @param[out] interp_grf Interpolated GRF array
    */
-  nav_msgs::Odometry interpBodyPlan(spirit_msgs::BodyPlan msg, double t);
+void interpBodyPlan(spirit_msgs::BodyPlan msg, double t,
+  nav_msgs::Odometry &interp_state, int &interp_primitive_id, spirit_msgs::GRFArray &interp_grf);
 
   /**
    * @brief Interpolate data from a MultiFootPlanContinuous message.
@@ -156,6 +159,21 @@ namespace math_utils {
    * @param[out] state RobotState message to which to add joint data
    */
   void ikRobotState(spirit_msgs::RobotState &state);
+
+  /**
+   * @brief Perform FK to compute a foot state message corresponding to body and joint messages
+   * @param[in] body_state message of body state
+   * @param[in] joint_state message of the corresponding joint state
+   * @param[out] multi_foot_state message of state of each foot
+   */
+  void fkRobotState(nav_msgs::Odometry body_state,
+    sensor_msgs::JointState joint_state, spirit_msgs::MultiFootState &multi_foot_state);
+
+  /**
+   * @brief Perform FK and save to the state.feet field
+   * @param[out] state RobotState message to which to add joint data
+   */
+  void fkRobotState(spirit_msgs::RobotState &state);
 
   /**
    * @brief Obtain the correct int within a parameterized vector of ints

@@ -2,10 +2,11 @@
 #define INVERSE_DYNAMICS_H
 
 #include <ros/ros.h>
-// #include <eigen3/Eigen/Eigen>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Eigen>
+// #include <Eigen/Dense>
 #include <spirit_utils/ros_utils.h>
 #include <spirit_utils/foot_jacobians.h>
+#include <spirit_utils/math_utils.h>
 #include <spirit_msgs/GRFArray.h>
 #include <std_msgs/UInt8.h>
 #include <spirit_msgs/RobotState.h>
@@ -13,8 +14,9 @@
 #include <spirit_msgs/LegCommand.h>
 #include <spirit_msgs/LegCommandArray.h>
 #include <spirit_msgs/MultiFootPlanContinuous.h>
-// #include <spirit_msgs/FootstepPlan.h>
 #include <eigen_conversions/eigen_msg.h>
+#include "spirit_utils/matplotlibcpp.h"
+
 
 #include <cmath>
 #define MATH_PI 3.141592
@@ -22,16 +24,16 @@
 
 //! Implements inverse dynamics
 /*!
-   inverseDynamics implements inverse dynamics logic. It should expose a constructor that does any initialization required and an update method called at some frequency.
+   InverseDynamics implements inverse dynamics logic. It should expose a constructor that does any initialization required and an update method called at some frequency.
 */
-class inverseDynamics {
+class InverseDynamics {
   public:
 	/**
-	 * @brief Constructor for inverseDynamics
+	 * @brief Constructor for InverseDynamics
 	 * @param[in] nh ROS NodeHandle to publish and subscribe from
-	 * @return Constructed object of type inverseDynamics
+	 * @return Constructed object of type InverseDynamics
 	 */
-	inverseDynamics(ros::NodeHandle nh);
+	InverseDynamics(ros::NodeHandle nh);
 	/**
 	 * @brief Calls ros spinOnce and pubs data at set frequency
 	 */
@@ -47,7 +49,7 @@ private:
 	 * @brief Callback function to handle new control input (GRF)
 	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
 	 */
-	// void controlInputCallback(const spirit_msgs::ControlInput::ConstPtr& msg);
+	void grfInputCallback(const spirit_msgs::GRFArray::ConstPtr& msg);
 	/**
 	 * @brief Callback function to handle new control input (GRF)
 	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
@@ -68,7 +70,7 @@ private:
 	ros::Subscriber control_mode_sub_;
 
 	/// ROS subscriber for control input
-	// ros::Subscriber control_input_sub_;
+	ros::Subscriber grf_input_sub_;
 
 	/// ROS subscriber for state estimate
 	ros::Subscriber robot_state_sub_;
@@ -85,17 +87,35 @@ private:
 	/// Update rate for sending and receiving data;
 	double update_rate_;
 
-	/// Robot mode (Stand 0, ID Control)
+	/// Robot mode
 	int control_mode_;
 
+	/// Define ids for control modes: Sit
+	const int SIT = 0;
+
+	/// Define ids for control modes: Stand
+	const int STAND = 1;
+
+	/// Define ids for control modes: Sit to stand
+	const int SIT_TO_STAND = 2;
+
+	/// Define ids for control modes: Stand to sit
+	const int STAND_TO_SIT = 3;
+	
 	/// Most recent control input
-	// spirit_msgs::ControlInput last_control_input_msg_;
+	spirit_msgs::GRFArray last_grf_input_msg_;
 
 	/// Most recent state estimate
 	spirit_msgs::RobotState last_robot_state_msg_;
 
 	/// Most recent trajectory state
 	spirit_msgs::RobotState last_trajectory_msg_;
+
+	/// Duration for sit to stand behavior
+	const double transition_duration_ = 2.0;
+	
+	/// Time at which to start transition
+	ros::Time transition_timestamp_;
 
 	std::vector<double> f0x;
 	std::vector<double> f1x;

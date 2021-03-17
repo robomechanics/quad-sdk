@@ -79,9 +79,9 @@ target_link_libraries(mpc_controller_node
 
 ## Google test file for mpc_controller library
 catkin_add_gtest(quadruped_mpc_test test/test_quadruped_mpc.cpp)
-target_link_libraries(quadruped_mpc_test ${catkin_LIBRARIES} ${PYTHON_LIBRARIES} quadruped_mpc)
+target_link_libraries(quadruped_mpc_test quadruped_mpc ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
 
 catkin_add_gtest(mpc_controller_test test/test_mpc_controller.cpp)
-target_link_libraries(mpc_controller_test ${catkin_LIBRARIES} mpc_controller)
+target_link_libraries(mpc_controller_test mpc_controller ${catkin_LIBRARIES})
 
 

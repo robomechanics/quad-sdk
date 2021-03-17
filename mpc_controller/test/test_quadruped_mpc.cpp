@@ -54,10 +54,11 @@ TEST(TestUseCase, quadVariable) {
   const double body_w = 0.3;
 
   // x1 y1 z1, x2 y2, z2 ... 
-  std::vector<double> foot_position = {-body_w/2,body_l/2,-0.25,
-                                        -body_w/2,-body_l/2,-0.25,
-                                        body_w/2,body_l/2,-0.25,
-                                        body_w/2,-body_l/2,-0.25};
+  Eigen::VectorXd foot_position(12);
+  foot_position << -body_w/2,body_l/2,-0.25,
+                   -body_w/2,-body_l/2,-0.25,
+                    body_w/2,body_l/2,-0.25,
+                    body_w/2,-body_l/2,-0.25;
 
   std::vector<Eigen::MatrixXd> Q_vec(N+1);
   std::vector<Eigen::MatrixXd> U_vec(N);
@@ -70,18 +71,18 @@ TEST(TestUseCase, quadVariable) {
   for (int i = 0; i < N+1; ++i) {
     Q_vec.at(i) = Qx;
     ref_traj.col(i) = initial_state;
-    //ref_traj(0,i) = 0.03*i; // x ramp
+    ref_traj(0,i) = 0.03*i; // x ramp
     ref_traj(1,i) = i > N/2 ? 0.2 : 0; // y step
     ref_traj(2,i) = 0.25 + 0.1*sin(i/2.0); // z sine
     ref_traj(4,i) = 0.3*cos(i/3.0);
     ref_traj(5,i) = 0.2*sin(i/3.0);
   }
 
-  std::vector<std::vector<double>> foot_positions(N);
+  Eigen::MatrixXd foot_positions(N,12);
   for (int i = 0; i < N; ++i) {
     U_vec.at(i) = Ru;
     contact_sequences.at(i) = {true,true,true,true};
-    foot_positions.at(i) = foot_position;
+    foot_positions.row(i) = foot_position;
   }
 
   double mu = 0.6;
@@ -122,55 +123,14 @@ TEST(TestUseCase, quadVariable) {
     }
   } 
 
-  // Accumulate states in stl form for plotting
+  // Accumulate controls in stl form for plotting
   std::vector<std::vector<double>> control_opt(Nu);
   for (int i = 0; i < Nu; ++i) {
     control_opt.at(i).resize(N-1);
     for (int j = 0; j < N-1; ++j) {
       control_opt.at(i).at(j) = control_traj(i,j);
     }
-  } 
-
-  // Plot everything
-  /*
-  plt::figure();
-  plt::suptitle("Position Tracking");
-  const char* pos_names[6] = {"x","y","z","roll","pitch","yaw"};
-  for (int i = 0; i < 6;++i) {
-    plt::subplot(2,3,i+1);
-    plt::plot(state_opt.at(i));
-    plt::plot(state_ref.at(i));
-    plt::title(pos_names[i]);
-  }
-  //plt::save("/home/nflowers/Desktop/cartesian_mpc.png");
-
-  plt::figure();
-  plt::suptitle("Velocity Tracking");
-  const char* vel_names[6] = {"vx","vy","vz","wx","wy","wz"};
-  for (int i = 0; i < 6;++i) {
-    plt::subplot(2,3,i+1);
-    plt::plot(state_opt.at(i+6));
-    plt::plot(state_ref.at(i+6));
-    plt::title(vel_names[i]);
-  }
-
-  plt::figure();
-  plt::suptitle("Control Efforts");
-  const char* control_names[3] = {"fx","fy","fz"};
-  for (int i = 0; i < 3;++i) {
-    plt::subplot(1,3,i+1);
-    plt::named_plot("FL",control_opt.at(i+0));
-    plt::named_plot("BL",control_opt.at(i+3));
-    plt::named_plot("FR",control_opt.at(i+6));
-    plt::named_plot("BR",control_opt.at(i+9));
-    plt::legend();
-    plt::title(control_names[i]);
-  }
-
-
-  plt::show();
-  plt::pause(1000);
-  */
+  }  
 
 }
 

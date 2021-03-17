@@ -7,29 +7,29 @@ RRTClass::~RRTClass() {}
 
 using namespace planning_utils;
 
-bool RRTClass::newConfig(State s, State s_near, State &s_new, Action &a_new, FastTerrainMap& terrain, int direction)
+bool RRTClass::newConfig(State s, State s_near, State &s_new, Action &a_new, const PlannerConfig &planner_config, int direction)
 {
 	double best_so_far = stateDistance(s_near, s);
-	std::array<double, 3> surf_norm = terrain.getSurfaceNormal(s[0], s[1]);
+	std::array<double, 3> surf_norm = planner_config.terrain.getSurfaceNormal(s[0], s[1]);
 
 	// std::array<double,3> 
-	for (int i = 0; i < NUM_GEN_STATES; ++i)
+	for (int i = 0; i < planner_config.NUM_GEN_STATES; ++i)
 	{
 		bool valid_state_found = false;
 		State s_test;
 		double t_new;
 
 
-		Action a_test = getRandomAction(surf_norm);
-		for (int j = 0; j < NUM_GEN_STATES; ++j)
+		Action a_test = getRandomAction(surf_norm,planner_config);
+		for (int j = 0; j < planner_config.NUM_GEN_STATES; ++j)
 		{
 			bool is_valid;
 			if (direction == FORWARD)
 			{
-				is_valid = isValidStateActionPair(s_near, a_test, terrain, s_test, t_new);
+				is_valid = isValidStateActionPair(s_near, a_test, planner_config, s_test, t_new);
 			} else if (direction == REVERSE)
 			{
-				is_valid = isValidStateActionPairReverse(s_near, a_test, terrain, s_test, t_new);
+				is_valid = isValidStateActionPairReverse(s_near, a_test, planner_config, s_test, t_new);
 			}
 
 			if (is_valid == true)
@@ -37,7 +37,7 @@ bool RRTClass::newConfig(State s, State s_near, State &s_new, Action &a_new, Fas
 				valid_state_found = true;
 				break;
 			} else {
-				a_test = getRandomAction(surf_norm);
+				a_test = getRandomAction(surf_norm,planner_config);
 			}
 		}			
 
@@ -62,14 +62,14 @@ bool RRTClass::newConfig(State s, State s_near, State &s_new, Action &a_new, Fas
 	}
 }
 
-int RRTClass::extend(PlannerClass &T, State s, FastTerrainMap& terrain, int direction)
+int RRTClass::extend(PlannerClass &T, State s, const PlannerConfig &planner_config, int direction)
 {
 	int s_near_index = T.getNearestNeighbor(s);
 	State s_near = T.getVertex(s_near_index);
 	State s_new;
 	Action a_new;
 
-	if (newConfig(s,s_near,s_new, a_new, terrain, direction) == true)
+	if (newConfig(s,s_near,s_new, a_new, planner_config, direction) == true)
 	{
 		int s_new_index = T.getNumVertices();
 		T.addVertex(s_new_index, s_new);
@@ -79,7 +79,7 @@ int RRTClass::extend(PlannerClass &T, State s, FastTerrainMap& terrain, int dire
 
 
 		// if (s_new == s)
-		if (isWithinBounds(s_new, s) == true)
+		if (isWithinBounds(s_new, s,planner_config) == true)
 		{
 			return REACHED;
 		} else {
