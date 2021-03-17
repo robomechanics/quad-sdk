@@ -10,6 +10,9 @@ int joint_inds [12] = {10, 0, 1, 11, 4, 5, 2, 6, 7, 3, 8, 9};
 int joint_inds [12] = {8, 0, 1, 9, 2, 3, 10, 4, 5, 11, 6, 7};
 #endif
 
+// Effective toe force estimate
+double f_toe_MO[12];
+
 BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
   nh_ = nh;
 
@@ -47,12 +50,14 @@ void BodyForceEstimator::robotStateCallback(const spirit_msgs::RobotState::Const
 void BodyForceEstimator::update() {
   Eigen::Matrix3d M;
   Eigen::Vector3d beta;
+  Eigen::Matrix3d J_MO; // Jacobian
 
   Eigen::Vector3d q; // joint positions
   Eigen::Vector3d qd; // joint velocities
   Eigen::Vector3d tau; // joint actuator torques
   Eigen::Vector3d re; // momentum observer external torque estimates
   Eigen::Vector3d pe; // momentum observer momentum estimate
+  Eigen::Vector3d fe_toe; // effective toe forces
 
   // Momentum observer gain (todo: this should be precomputed once)
   Eigen::Matrix3d K_O;
@@ -93,6 +98,7 @@ void BodyForceEstimator::update() {
     int RL = i < 2 ? -1 : 1;
     f_M(q, RL, M);
     f_beta(q, qd, RL, beta);
+    f_J_MO(q, RL, J_MO);
 
     // Momentum observer update
     Eigen::Vector3d p = M*qd;
@@ -101,9 +107,13 @@ void BodyForceEstimator::update() {
     re = K_O*p;
     pe = pe + pd_hat/update_rate_;
 
+    // Effective toe forces
+    fe_toe = J_MO.transpose().colPivHouseholderQr().solve(re);
+
     for (int j = 0; j < 3; j++) {
       r_mom[3*i+j] = re[j];
       p_hat[3*i+j] = pe[j];
+      f_toe_MO[3*i+j] = fe_toe[j];
     }
   }
 }
@@ -112,13 +122,16 @@ void BodyForceEstimator::publishBodyForce() {
   // ROS_INFO("In BodyForce");
   spirit_msgs::BodyForceEstimate msg;
 
-  // Todo: add header
-
   for (int i = 0; i < 4; i++) {
     geometry_msgs::Wrench w;
     w.torque.x = r_mom[3*i+0];
     w.torque.y = r_mom[3*i+1];
     w.torque.z = r_mom[3*i+2];
+
+    w.force.x = f_toe_MO[3*i+0];
+    w.force.y = f_toe_MO[3*i+1];
+    w.force.z = f_toe_MO[3*i+2];
+    /*
     #if USE_SIM > 0
     if (last_state_msg_ != NULL) {
       w.force.x = last_state_msg_->position[joint_inds[3*i+0]];
@@ -126,8 +139,11 @@ void BodyForceEstimator::publishBodyForce() {
       w.force.z = last_state_msg_->position[joint_inds[3*i+2]];
     }
     #endif
+    */
     msg.body_wrenches.push_back(w);
   }
+
+  msg.header.stamp = ros::Time::now();
 
   body_force_pub_.publish(msg);
 }
