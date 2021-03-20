@@ -104,9 +104,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad284769c4decca29eaa2343554f5f1f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#ad284769c4decca29eaa2343554f5f1f7">get_output</a> (const Eigen::MatrixXd &amp;x_out, Eigen::MatrixXd &amp;opt_traj, Eigen::MatrixXd &amp;control_traj, double &amp;f_val)</td></tr>
 <tr class="memdesc:ad284769c4decca29eaa2343554f5f1f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collect first control value and all states and return them.  <a href="#ad284769c4decca29eaa2343554f5f1f7">More...</a><br /></td></tr>
 <tr class="separator:ad284769c4decca29eaa2343554f5f1f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68299c11a14cfd9f48d42a731495f9d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a68299c11a14cfd9f48d42a731495f9d8">solve</a> (const Eigen::VectorXd &amp;initial_state, const Eigen::MatrixXd &amp;ref_traj, Eigen::MatrixXd &amp;x_out)</td></tr>
-<tr class="memdesc:a68299c11a14cfd9f48d42a731495f9d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collect matrices into specific type for solver and solve.  <a href="#a68299c11a14cfd9f48d42a731495f9d8">More...</a><br /></td></tr>
-<tr class="separator:a68299c11a14cfd9f48d42a731495f9d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af54cb1a211190b57956d4168f49f1730"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#af54cb1a211190b57956d4168f49f1730">solve</a> (const Eigen::VectorXd &amp;initial_state, const Eigen::MatrixXd &amp;ref_traj, Eigen::MatrixXd &amp;x_out)</td></tr>
+<tr class="memdesc:af54cb1a211190b57956d4168f49f1730"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collect matrices into specific type for solver and solve.  <a href="#af54cb1a211190b57956d4168f49f1730">More...</a><br /></td></tr>
+<tr class="separator:af54cb1a211190b57956d4168f49f1730"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -433,14 +433,14 @@ OsqpEigen::Solver&#160;</td><td class="memItemRight" valign="bottom"><a class="e
 
 </div>
 </div>
-<a id="a68299c11a14cfd9f48d42a731495f9d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a68299c11a14cfd9f48d42a731495f9d8">&#9670;&nbsp;</a></span>solve()</h2>
+<a id="af54cb1a211190b57956d4168f49f1730"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af54cb1a211190b57956d4168f49f1730">&#9670;&nbsp;</a></span>solve()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void QuadrupedMPC::solve </td>
+          <td class="memname">bool QuadrupedMPC::solve </td>
           <td>(</td>
           <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
           <td class="paramname"><em>initial_state</em>, </td>
@@ -474,6 +474,7 @@ OsqpEigen::Solver&#160;</td><td class="memItemRight" valign="bottom"><a class="e
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>good_solve </dd></dl>
 
 </div>
 </div>
