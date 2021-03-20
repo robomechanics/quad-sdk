@@ -105,8 +105,9 @@ public:
    * @param[in] initial_state Vector with initial state
    * @param[in] ref_traj Matrix holding desired reference trajectory
    * @param[out] x_out Optimized output
+   * @return good_solve
    */
-  void solve(const Eigen::VectorXd &initial_state,
+  bool solve(const Eigen::VectorXd &initial_state,
              const Eigen::MatrixXd &ref_traj,
              Eigen::MatrixXd &x_out
              );

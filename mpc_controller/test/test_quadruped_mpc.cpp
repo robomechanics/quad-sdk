@@ -130,7 +130,50 @@ TEST(TestUseCase, quadVariable) {
     for (int j = 0; j < N-1; ++j) {
       control_opt.at(i).at(j) = control_traj(i,j);
     }
-  }  
+  } 
+
+  // // Plot everything
+  
+  // plt::figure();
+  // plt::suptitle("Position Tracking");
+  // const char* pos_names[6] = {"x","y","z","roll","pitch","yaw"};
+  // for (int i = 0; i < 6;++i) {
+  //   plt::subplot(2,3,i+1);
+  //   plt::plot(state_opt.at(i));
+  //   plt::plot(state_ref.at(i));
+  //   plt::title(pos_names[i]);
+  // }
+  // plt::save("/home/nflowers/Desktop/position_mpc.png");
+
+  // plt::figure();
+  // plt::suptitle("Velocity Tracking");
+  // const char* vel_names[6] = {"vx","vy","vz","wx","wy","wz"};
+  // for (int i = 0; i < 6;++i) {
+  //   plt::subplot(2,3,i+1);
+  //   plt::plot(state_opt.at(i+6));
+  //   plt::plot(state_ref.at(i+6));
+  //   plt::title(vel_names[i]);
+  // }
+  // plt::save("/home/nflowers/Desktop/velocity_mpc.png");
+
+  // plt::figure();
+  // plt::suptitle("Control Efforts");
+  // const char* control_names[3] = {"fx","fy","fz"};
+  // for (int i = 0; i < 3;++i) {
+  //   plt::subplot(1,3,i+1);
+  //   plt::named_plot("FL",control_opt.at(i+0));
+  //   plt::named_plot("BL",control_opt.at(i+3));
+  //   plt::named_plot("FR",control_opt.at(i+6));
+  //   plt::named_plot("BR",control_opt.at(i+9));
+  //   plt::legend();
+  //   plt::title(control_names[i]);
+  // }
+  // plt::save("/home/nflowers/Desktop/control_mpc.png");
+
+
+  // plt::show();
+  // plt::pause(1000);
+  
 
 }
 

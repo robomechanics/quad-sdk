@@ -152,7 +152,7 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
         std::pair<double,double> prev_hip_knee_angs = target_pts_.at(prev_idx);
         std::pair<double,double> next_hip_knee_angs = target_pts_.at(next_idx);
         double hip_vel = (next_hip_knee_angs.first - prev_hip_knee_angs.first)/(2*interp_dt_);
-        double knee_vel = (next_hip_knee_angs.first - prev_hip_knee_angs.first)/(2*interp_dt_);
+        double knee_vel = (next_hip_knee_angs.second - prev_hip_knee_angs.second)/(2*interp_dt_);
 
         // Fill out motor command
         msg.leg_commands.at(i).motor_commands.resize(3);
