@@ -235,7 +235,7 @@ void QuadrupedMPC::get_output(const Eigen::MatrixXd &x_out,
   f_val = (0.5*x_out.transpose()*H_*x_out)(0,0) + (f_.transpose() * x_out)(0,0);
 }
 
-void QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
+bool QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
                          const Eigen::MatrixXd &ref_traj,
                          Eigen::MatrixXd &x_out) {
   #ifdef PRINT_TIMING
@@ -278,7 +278,7 @@ void QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
     #endif
     solver_.settings()->setWarmStart(true);
     solver_.settings()->setCheckTermination(10);
-    solver_.settings()->setScaling(true);
+    solver_.settings()->setScaling(false);
     solver_.initSolver();
 
   }
@@ -297,9 +297,10 @@ void QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
   }
 
   // Call solver
-  solver_.solve();
+  bool good_solve = solver_.solve();
   x_out = solver_.getSolution();
 
+  return good_solve;
   #ifdef PRINT_TIMING
     steady_clock::time_point t2 = steady_clock::now();
     duration<double> time_span = duration_cast<duration<double>>(t2 - t1);

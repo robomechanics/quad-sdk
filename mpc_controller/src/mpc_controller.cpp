@@ -2,6 +2,8 @@
 
 namespace plt = matplotlibcpp;
 
+Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+
 MPCController::MPCController(ros::NodeHandle nh) {
   nh.param<double>("mpc_controller/update_rate", update_rate_, 100);
 	nh_ = nh;
@@ -209,19 +211,18 @@ void MPCController::publishGRFArray() {
   //std::cout << "Foot Placements in body frame: " << std::endl << foot_positions << std::endl;
 
   Eigen::MatrixXd x_out;
-  quad_mpc_->solve(cur_state_, ref_traj, x_out);
+  if (!quad_mpc_->solve(cur_state_, ref_traj, x_out)) {
+    std::cout << "Failed solve: " << std::endl;
+    std::cout << "Current state: " << std::endl << cur_state_.format(CleanFmt) << std::endl;
+    std::cout << "Reference trajectory: " << std::endl << ref_traj.format(CleanFmt) << std::endl;
+    std::cout << "Foot Placements in body frame: " << std::endl << foot_positions.format(CleanFmt) << std::endl;
+    throw 10;
+  }
 
   double f_val; // currently not getting populated
   Eigen::MatrixXd opt_traj, control_traj;
   quad_mpc_->get_output(x_out, opt_traj, control_traj, f_val);
 
-  /////////////////////////////////////////////
-  /*std::cout << "Reference trajectory: " << std::endl << ref_traj << std::endl;
-  std::cout << "Foot Placements in body frame: " << std::endl << foot_positions << std::endl;
-  //std::cout << "Contact Sequences: " << contact_sequences << std::endl;
-
-  std::cout << "Optimized trajectory: " << std::endl << opt_traj << std::endl;
-  std::cout << "Control trajectory: " << std::endl << control_traj << std::endl;*/
 
   // Copy normal forces into GRFArray
   spirit_msgs::GRFArray msg; // control traj nu x n
