@@ -423,7 +423,7 @@ void InverseDynamics::publishLegCommandArray() {
       return;
   }
 
-  ROS_INFO_THROTTLE(0.5, " ID control mode: %d", control_mode_);
+  //ROS_INFO_THROTTLE(0.5, " ID control mode: %d", control_mode_);
 
   // Pack 4 LegCommands in the LegCommandArray
   // Pack 3 MotorCommands in a LegCommand
