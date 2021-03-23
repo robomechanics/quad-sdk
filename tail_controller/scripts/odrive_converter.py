@@ -4,7 +4,7 @@ from std_msgs.msg import String
 from spirit_msgs.msg import LegCommand
 import odrive
 from odrive.enums import *
-
+import time
 
 print("finding an odrive...")
 od = odrive.find_any()
@@ -13,9 +13,14 @@ print("found an odrive")
 
 def callback(msg):
     #rospy.loginfo(rospy.get_caller_id() + "I heard %s", msg.motor_commands[1].pos_setpoint)
-
+    
+    currentpos0 = od.axis0.encoder.pos_estimate
+    currentpos1 = od.axis1.encoder.pos_estimate
     pos0 =  msg.motor_commands[0].pos_setpoint
     pos1 =  msg.motor_commands[1].pos_setpoint
+
+    rospy.loginfo("Motor 0 is at: " + str(currentpos0) + " should be " + str( pos0))
+
     od.axis0.controller.pos_setpoint = pos0
     od.axis1.controller.pos_setpoint = pos1
     
@@ -26,7 +31,7 @@ def listener():
     # anonymous=True flag means that rospy will choose a unique
     # name for our 'listener' node so that multiple listeners can
     # run simultaneously.
-    calibrate = True
+    calibrate = False
     #Calibrate the motors (needed when running for the first time after being off or having an error)
 
 
