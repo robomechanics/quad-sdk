@@ -8,10 +8,11 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) {
 	nh_ = nh;
 
     // Load rosparams from parameter server
-  std::string global_plan_topic,robot_state_topic,local_plan_topic;
+  std::string global_plan_topic,robot_state_topic,local_plan_topic, foot_plan_discrete_topic;
   spirit_utils::loadROSParam(nh, "topics/plan/global", global_plan_topic);
   spirit_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
   spirit_utils::loadROSParam(nh, "topics/plan/local", local_plan_topic);
+  spirit_utils::loadROSParam(nh, "topics/plan/footsteps", foot_plan_discrete_topic);
   spirit_utils::loadROSParam(nh, "map_frame", map_frame_);
 
   // Load system parameters
@@ -24,68 +25,55 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) {
   global_plan_sub_ = nh_.subscribe(global_plan_topic,1,&LocalPlanner::globalPlanCallback, this);
   robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&LocalPlanner::robotStateCallback,this);
   local_plan_pub_ = nh_.advertise<spirit_msgs::LocalPlan>(local_plan_topic,1);
+  foot_plan_discrete_pub_ = nh_.advertise<spirit_msgs::MultiFootPlanDiscrete>(foot_plan_discrete_topic,1);
 
-  multi_foot_plan_discrete_hip_projected_ = stuff;
+  // Initialize nominal footstep positions projected down from the hips
+  Eigen::Vector3d nominal_joint_state;
+  nominal_joint_state << 0, 0.78, 1.57; // Default stand angles
 
-  ROS_INFO("Local Planner setup complete, waiting for callbacks");
+  for (int i = 0; i < N_; ++i) {
+    for (int j = 0; j < num_legs_; ++j) {
+      Eigen::Vector3d toe_body_pos;
+      kinematics_->bodyToFootFK(j, nominal_joint_state, toe_body_pos);
+      hip_projected_foot_positions_.block<1,3>(i,j*3) = toe_body_pos;
+    }
+  }
+
+  ROS_INFO("LocalPlanner setup complete, waiting for callbacks");
 }
 
 void LocalPlanner::globalPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) {
-  last_global_plan_msg_ = msg;
+  global_plan_msg_ = msg;
 }
 
 void LocalPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
-  current_state_ = this->state_msg_to_eigen(*msg);
-}
-
-Eigen::VectorXd LocalPlanner::state_msg_to_eigen(spirit_msgs::RobotState robot_state, bool zero_vel) {
-  Eigen::VectorXd state = Eigen::VectorXd::Zero(Nx_);
-
-  // Position
-  state(0) = robot_state.pose.pose.position.x;
-  state(1) = robot_state.pose.pose.position.y;
-  state(2) = robot_state.pose.pose.position.z;
-
-  // Orientation
-  tf2::Quaternion quat;
-  tf2::convert(robot_state.pose.pose.orientation, quat);
-  double r,p,y;
-  tf2::Matrix3x3 m(quat);
-  m.getRPY(r,p,y);
-  state(3) = r;
-  state(4) = p;
-  state(5) = y;
-
-  if (!zero_vel) {
-    // Linear Velocity
-    state(6) = robot_state.twist.twist.linear.x;
-    state(7) = robot_state.twist.twist.linear.y;
-    state(8) = robot_state.twist.twist.linear.z;
-
-    // Angular Velocity
-    state(9) = robot_state.twist.twist.angular.x;
-    state(10) = robot_state.twist.twist.angular.y;
-    state(11) = robot_state.twist.twist.angular.z;
-  }
-
-  return state;
+  current_state_ = spirit_utils::stateMsgToEigen(*msg);
 }
 
 void LocalPlanner::computeLocalPlan() {
 
-  multi_foot_plan_discrete_ = multi_foot_plan_discrete_hip_projected_;
+  // Initialize continuous foot plan with hip projected locations (constant)
+  foot_positions_ = hip_projected_foot_positions_;
 
   // Iteratively generate body and footstep plans (non-parallelizable)
   for (int i = 0; i < iterations_; i++) {
-    local_body_planner_.computePlan(current_state_, multi_foot_plan_discrete_,
-      body_plan_, grf_plan_);
-    local_footstep_planner_.computeDiscretePlan(body_plan_, grf_plan_,
-      multi_foot_plan_discrete_);
+    
+    // Compute body plan with MPC
+    local_body_planner_.computePlan(current_state_, global_plan_msg_, foot_positions_,
+      contact_sequences_, body_plan_, grf_plan_);
+    
+    // Compute the new footholds to match that body plan
+    local_footstep_planner_.computeDiscretePlan(body_plan_, grf_plan_, foot_plan_discrete_msg_);
+
+    // Convert the footholds to a FootTraj representation for body planning
+    local_footstep_planner_.convertDiscretePlanToEigen(foot_plan_discrete_msg_, foot_positions_,
+      contact_sequences_);
+    
   }
 
-  // Compute continuous foot plan from final footstep plan
-  local_footstep_planner_.computeContinuousPlan(body_plan_, multi_foot_plan_discrete_,
-    multi_foot_plan_continuous_msg_);
+  // Compute the continuous-time foot plan msg for publishing
+  local_footstep_planner_.computeContinuousPlan(body_plan_, foot_plan_discrete_msg_,
+    foot_plan_continuous_msg_); 
 
 }
 
@@ -105,15 +93,15 @@ void LocalPlanner::publishLocalPlan() {
     robot_state_msg.header.stamp = timestamp;
     robot_state_msg.header.frame = map_frame_;
 
-    robot_state_msg.body = eigenToStateMsg(body_plan_[i]);
-    robot_state_msg.feet = multi_foot_plan_continuous_msg_[i];
+    robot_state_msg.body = eigenToOdomMsg(body_plan_.row(i));
+    robot_state_msg.feet = foot_plan_continuous_msg_[i];
     math_utils::ikRobotState(robot_state_msg);
 
     spirit_msgs::GRFArray grf_array_msg;
     grf_array_msg.header.stamp = timestamp;
     grf_array_msg.header.frame = map_frame_;
 
-    grf_array_msg = eigenToGRFMsg(grf_plan_[i], multi_foot_plan_continuous_msg_[i]);
+    grf_array_msg = eigenToGRFArrayMsg(grf_plan_.row(i), foot_plan_continuous_msg_[i]);
     
 
     local_plan_msg.states.push_back(robot_state_msg);
@@ -122,6 +110,7 @@ void LocalPlanner::publishLocalPlan() {
 
   // Publish
   local_plan_pub_.publish(local_plan_msg);
+  foot_plan_discrete_pub_.publish(foot_plan_discrete_msg_);
 }
 
 void LocalPlanner::spin() {

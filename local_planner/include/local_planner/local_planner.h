@@ -81,7 +81,7 @@ private:
   std::shared_ptr<LocalFootstepPlanner> local_footstep_planner_;
 
 	/// Most recent robot plan
-	spirit_msgs::BodyPlan::ConstPtr last_global_plan_msg_;
+	spirit_msgs::BodyPlan::ConstPtr global_plan_msg_;
 
   /// Current state (ground truth or estimate)
   Eigen::VectorXd current_state_;
@@ -112,6 +112,21 @@ private:
 
   /// Number of joints per leg
   const int num_joints_per_leg_ = 3;
+
+  /// Matrix of body states (N x Nx: rows correspond to individual states in the horizon)
+  quadruped_mpc::StateTraj body_plan_;
+
+  /// Matrix of grfs (N x Nu: rows correspond to individual arrays of GRFs in the horizon)
+  quadruped_mpc::ControlTraj grf_plan_; 
+
+  /// Matrix of continuous foot positions (N x Nu: rows correspond to foot states in the horizon)
+  quadruped_mpc::FootTraj foot_positions_;
+  
+  /// Matrix of continuous foot positions projected underneath the hips
+  quadruped_mpc::FootTraj hip_projected_foot_positions_;
+
+  /// Matrix of foot contact locations (number of contacts x num_legs_)
+  Eigen::MatrixXd foot_plan_discrete_;
 
   /// Spirit Kinematics class
   std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
