@@ -56,6 +56,8 @@ void GroundTruthPublisher::imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
 spirit_msgs::RobotState GroundTruthPublisher::updateStep() {
   spirit_msgs::RobotState new_state_est;
 
+  spirit_utils::SpiritKinematics kinematics;
+
   if (last_imu_msg_ != NULL)
   {
     new_state_est.body.pose.pose.orientation = last_imu_msg_->orientation;
@@ -67,7 +69,7 @@ spirit_msgs::RobotState GroundTruthPublisher::updateStep() {
     new_state_est.joints = *last_joint_state_msg_;
     if (last_imu_msg_ != NULL)
     {
-      math_utils::fkRobotState(new_state_est.body,new_state_est.joints, new_state_est.feet);
+      spirit_utils::fkRobotState(kinematics, new_state_est.body,new_state_est.joints, new_state_est.feet);
     }
   }
   if (last_mocap_msg_ != NULL)

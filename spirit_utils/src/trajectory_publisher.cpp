@@ -111,6 +111,8 @@ void TrajectoryPublisher::updateTrajectory() {
   traj_msg_.header.frame_id = map_frame_;
   traj_msg_.header.stamp = body_plan_msg_.header.stamp;
 
+  spirit_utils::SpiritKinematics kinematics;
+
   // Add states to the traj message
   for (int i = 0; i < t_traj_.size(); i++) {
 
@@ -122,12 +124,12 @@ void TrajectoryPublisher::updateTrajectory() {
     // Interpolate body and foot plan
     int primitive_id;
     spirit_msgs::GRFArray grf_array;
-    math_utils::interpBodyPlan(body_plan_msg_,t_traj_[i], state.body,primitive_id, grf_array);
-    state.feet = math_utils::interpMultiFootPlanContinuous(
+    spirit_utils::interpBodyPlan(body_plan_msg_,t_traj_[i], state.body,primitive_id, grf_array);
+    state.feet = spirit_utils::interpMultiFootPlanContinuous(
       multi_foot_plan_continuous_msg_,t_traj_[i]);
 
     // Compute joint data with IK
-    math_utils::ikRobotState(state.body, state.feet, state.joints);
+    spirit_utils::ikRobotState(kinematics, state.body, state.feet, state.joints);
 
     // Add this state to the message
     traj_msg_.states.push_back(state);
@@ -159,8 +161,8 @@ void TrajectoryPublisher::publishTrajectoryState() {
   double t_mod = fmod(t, t_traj_.back());
   
   // Interpolate to get the correct state and publish it
-  spirit_msgs::RobotState interp_state = math_utils::interpRobotStateTraj(traj_msg_,t);
-  // spirit_msgs::RobotState interp_state = math_utils::interpRobotStateTraj(traj_msg_,t_mod);
+  spirit_msgs::RobotState interp_state = spirit_utils::interpRobotStateTraj(traj_msg_,t);
+  // spirit_msgs::RobotState interp_state = spirit_utils::interpRobotStateTraj(traj_msg_,t_mod);
   trajectory_state_pub_.publish(interp_state);
 }
 

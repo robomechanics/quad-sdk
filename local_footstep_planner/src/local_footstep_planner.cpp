@@ -125,8 +125,8 @@ void LocalFootstepPlanner::updateDiscretePlan() {
     primitive_id_plan_.push_back(body_plan_msg_->primitive_ids[i]);
   }
 
-  spirit_utils::SpiritKinematics spirit;
-
+  spirit_utils::SpiritKinematics kinematics;
+  
   // Clear out the old footstep plan
   footstep_plan_.clear();
   footstep_plan_.resize(num_feet_);
@@ -191,9 +191,9 @@ void LocalFootstepPlanner::updateDiscretePlan() {
       int primitive_id_touchdown, primitive_id_midstance;
       spirit_msgs::GRFArray grf_array_touchdown, grf_array_midstance;
 
-      math_utils::interpBodyPlan((*body_plan_msg_), t_touchdown, body_touchdown,
+      spirit_utils::interpBodyPlan((*body_plan_msg_), t_touchdown, body_touchdown,
         primitive_id_touchdown, grf_array_touchdown);
-      math_utils::interpBodyPlan((*body_plan_msg_), t_midstance, body_midstance,
+      spirit_utils::interpBodyPlan((*body_plan_msg_), t_midstance, body_midstance,
         primitive_id_midstance, grf_array_midstance);
 
       // Skip if this would occur during a flight phase
@@ -219,7 +219,7 @@ void LocalFootstepPlanner::updateDiscretePlan() {
       Eigen::Vector3d body_rpy_touchdown = {roll,pitch,yaw};
 
       Eigen::Vector3d nominal_footstep_pos_touchdown;
-      spirit.nominalFootstepFK(j, body_pos_touchdown, body_rpy_touchdown, nominal_footstep_pos_touchdown);
+      kinematics.nominalFootstepFK(j, body_pos_touchdown, body_rpy_touchdown, nominal_footstep_pos_touchdown);
 
       Eigen::Vector3d grf_midstance = {grf_array_midstance.vectors[0].x,
         grf_array_midstance.vectors[0].y,
@@ -264,7 +264,7 @@ void LocalFootstepPlanner::updateDiscretePlan() {
       Eigen::Vector3d body_rpy_final = {roll,pitch,yaw};
 
       Eigen::Vector3d nominal_footstep_pos_final;
-        spirit.nominalFootstepFK(j, body_pos_final, body_rpy_final, nominal_footstep_pos_final);
+        kinematics.nominalFootstepFK(j, body_pos_final, body_rpy_final, nominal_footstep_pos_final);
 
       footstep.clear();
       footstep.resize(4);
