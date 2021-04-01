@@ -17,13 +17,14 @@ BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string robot_state_topic, body_force_topic;
+  std::string robot_state_topic, body_force_topic, toe_force_topic;
   #if USE_SIM == 2
   nh.param<std::string>("topics/joint_encoder", robot_state_topic, "/joint_encoder");
   #else
   nh.param<std::string>("topics/state/ground_truth", robot_state_topic, "/state/ground_truth");
   #endif
-  nh.param<std::string>("topics/body_force", body_force_topic, "/body_force");
+  nh.param<std::string>("topics/body_force/joint_torques", body_force_topic, "/body_force/joint_torques");
+  nh.param<std::string>("topics/body_force/toe_forces", toe_force_topic, "/body_force/toe_forces");
   nh.param<double>("body_force_estimator/update_rate", update_rate_, 100); // add a param for your package instead of using the estimator one
   nh.param<double>("body_force_estimator/K_O", K_O_, 20);
 
@@ -36,6 +37,7 @@ BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
   robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&BodyForceEstimator::robotStateCallback, this);
   #endif
   body_force_pub_ = nh_.advertise<spirit_msgs::BodyForceEstimate>(body_force_topic,1);
+  toe_force_pub_ = nh_.advertise<spirit_msgs::GRFArray>(toe_force_topic,1);
 }
 
 #if USE_SIM > 0
@@ -121,16 +123,19 @@ void BodyForceEstimator::update() {
 void BodyForceEstimator::publishBodyForce() {
   // ROS_INFO("In BodyForce");
   spirit_msgs::BodyForceEstimate msg;
+  spirit_msgs::GRFArray msg_toe;
 
   for (int i = 0; i < 4; i++) {
     geometry_msgs::Wrench w;
+    geometry_msgs::Vector3 ft;
+
     w.torque.x = r_mom[3*i+0];
     w.torque.y = r_mom[3*i+1];
     w.torque.z = r_mom[3*i+2];
 
-    w.force.x = f_toe_MO[3*i+0];
-    w.force.y = f_toe_MO[3*i+1];
-    w.force.z = f_toe_MO[3*i+2];
+    ft.x = f_toe_MO[3*i+0];
+    ft.y = f_toe_MO[3*i+1];
+    ft.z = f_toe_MO[3*i+2];
     /*
     #if USE_SIM > 0
     if (last_state_msg_ != NULL) {
@@ -141,11 +146,14 @@ void BodyForceEstimator::publishBodyForce() {
     #endif
     */
     msg.body_wrenches.push_back(w);
+    msg_toe.vectors.push_back(ft);
   }
 
   msg.header.stamp = ros::Time::now();
+  msg_toe.header.stamp = ros::Time::now();
 
   body_force_pub_.publish(msg);
+  toe_force_pub_.publish(msg_toe);
 }
 
 void BodyForceEstimator::spin() {
