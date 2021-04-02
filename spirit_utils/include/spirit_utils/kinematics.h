@@ -34,7 +34,7 @@ class SpiritKinematics {
    * @return Homogenous transformation matrix
    */
   Eigen::Matrix4d createAffineMatrix(Eigen::Vector3d trans, 
-      Eigen::Vector3d rpy);
+      Eigen::Vector3d rpy) const;
 
   /**
    * @brief Create an Eigen Eigen::Matrix4d containing a homogeneous transform 
@@ -44,7 +44,7 @@ class SpiritKinematics {
    * @return Homogenous transformation matrix
    */
   Eigen::Matrix4d createAffineMatrix(Eigen::Vector3d trans, 
-      Eigen::AngleAxisd rot);
+      Eigen::AngleAxisd rot) const;
 
   /**
    * @brief Tranform a transformation matrix from the body frame to the world frame
@@ -53,7 +53,7 @@ class SpiritKinematics {
    * @param[out] transform Sprcified transform in the world frame
    */
   void transformBodyToWorld(Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, 
-    Eigen::Matrix4d transform_body, Eigen::Matrix4d &transform_world);
+    Eigen::Matrix4d transform_body, Eigen::Matrix4d &transform_world) const;
 
   /**
    * @brief Tranform a transformation matrix from the world frame to the body frame
@@ -62,7 +62,7 @@ class SpiritKinematics {
    * @param[out] transform Sprcified transform in the body frame
    */
   void transformWorldToBody(Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, 
-    Eigen::Matrix4d transform_world, Eigen::Matrix4d &transform_body);
+    Eigen::Matrix4d transform_world, Eigen::Matrix4d &transform_body) const;
 
   /**
    * @brief Compute forward kinematics for a specified leg from the body COM
@@ -71,7 +71,7 @@ class SpiritKinematics {
    * @param[out] g_body_foot Transform of the specified foot in world frame
    */
   void bodyToFootFK(int leg_index, Eigen::Vector3d joint_state, 
-    Eigen::Matrix4d &g_body_foot);
+    Eigen::Matrix4d &g_body_foot) const;
 
   /**
    * @brief Compute forward kinematics for a specified leg from the body COM
@@ -80,7 +80,7 @@ class SpiritKinematics {
    * @param[out] foot_pos_world Position of the specified foot in world frame
    */
   void bodyToFootFK(int leg_index, Eigen::Vector3d joint_state, 
-    Eigen::Vector3d &foot_pos_body);
+    Eigen::Vector3d &foot_pos_body) const;
 
   /**
    * @brief Compute forward kinematics for a specified leg
@@ -91,7 +91,7 @@ class SpiritKinematics {
    * @param[out] g_world_foot Transform of the specified foot in world frame
    */
   void legFK(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
-      Eigen::Vector3d joint_state, Eigen::Matrix4d &g_world_foot);
+      Eigen::Vector3d joint_state, Eigen::Matrix4d &g_world_foot) const;
 
   /**
    * @brief Compute forward kinematics for a specified leg
@@ -102,7 +102,7 @@ class SpiritKinematics {
    * @param[out] foot_pos_world Position of the specified foot in world frame
    */
   void legFK(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
-      Eigen::Vector3d joint_state, Eigen::Vector3d &foot_pos_world);
+      Eigen::Vector3d joint_state, Eigen::Vector3d &foot_pos_world) const;
 
   /**
    * @brief Compute inverse kinematics for a specified leg
@@ -113,21 +113,21 @@ class SpiritKinematics {
    * @param[out] joint_state Joint states for the specified leg (abad, hip, knee)
    */
   void legIK(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
-      Eigen::Vector3d foot_pos_world, Eigen::Vector3d &joint_state);
+      Eigen::Vector3d foot_pos_world, Eigen::Vector3d &joint_state) const;
 
   /**
    * @brief Get the lower joint limit of a particular joint
    * @param[in] joint_index Index for joint (0 = abad, 1 = hip, 2 = knee)
    * @return Requested joint limit
    */
-  double getJointLowerLimit(int joint_index);
+  double getJointLowerLimit(int joint_index) const;
 
    /**
    * @brief Get the upper joint limit of a particular joint
    * @param[in] joint_index Index for joint (0 = abad, 1 = hip, 2 = knee)
    * @return Requested joint limit
    */
-  double getJointUpperLimit(int joint_index);
+  double getJointUpperLimit(int joint_index) const;
 
   /**
    * @brief Get the upper joint limit of a particular joint
@@ -135,7 +135,7 @@ class SpiritKinematics {
    * @param[in] link_index Index for link (0 = abad, 1 = upper, 2 = lower)
    * @return Requested link length
    */
-  double getLinkLength(int leg_index, int link_index);
+  double getLinkLength(int leg_index, int link_index) const;
 
   /**
    * @brief Get the transform from the world frame to the leg base
@@ -145,7 +145,7 @@ class SpiritKinematics {
    * @param[out] g_world_legbase Transformation matrix of world to leg base
    */
   void legBaseFK(int leg_index, Eigen::Vector3d body_pos,
-    Eigen::Vector3d body_rpy, Eigen::Matrix4d &g_world_legbase);
+    Eigen::Vector3d body_rpy, Eigen::Matrix4d &g_world_legbase) const;
 
   /**
    * @brief Get the position of the leg base frame origin in the world frame
@@ -155,7 +155,7 @@ class SpiritKinematics {
    * @param[out] leg_base_pos_world Origin of leg base frame in world frame
    */
   void legBaseFK(int leg_index, Eigen::Vector3d body_pos,
-    Eigen::Vector3d body_rpy, Eigen::Vector3d &leg_base_pos_world);
+    Eigen::Vector3d body_rpy, Eigen::Vector3d &leg_base_pos_world) const;
 
   /**
    * @brief Get the position of the nominal footstep in the world frame
@@ -165,7 +165,7 @@ class SpiritKinematics {
    * @param[out] nominal_footstep_pos_world Location of nominal footstep in world frame
    */
   void nominalFootstepFK(int leg_index, Eigen::Vector3d body_pos,
-    Eigen::Vector3d body_rpy, Eigen::Vector3d &nominal_footstep_pos_world);
+    Eigen::Vector3d body_rpy, Eigen::Vector3d &nominal_footstep_pos_world) const;
 
   private:
 

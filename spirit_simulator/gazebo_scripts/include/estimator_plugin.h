@@ -11,6 +11,7 @@
 #include <ignition/math/Vector3.hh>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_utils/math_utils.h>
+#include <spirit_utils/ros_utils.h>
 
 namespace gazebo
 {

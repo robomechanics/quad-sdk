@@ -59,6 +59,7 @@ add_library(spirit_utils
   src/robot_proxy.cpp
   src/foot_jacobians.cpp
   src/math_utils.cpp
+  src/ros_utils.cpp
   src/kinematics.cpp
   src/trajectory_publisher.cpp
 )
