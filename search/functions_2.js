@@ -11,6 +11,6 @@ var searchData=
   ['contactdetection',['ContactDetection',['../classContactDetection.html#a4c33a6d499e48dd4048e04f06114ea6d',1,'ContactDetection']]],
   ['contactplugin',['ContactPlugin',['../classgazebo_1_1ContactPlugin.html#a8a1b0d6d62d0480db02e9dc523cb4ab2',1,'gazebo::ContactPlugin']]],
   ['controlmodecallback',['controlModeCallback',['../classInverseDynamics.html#aefb6ec3cc8a85f4cc547e96906d5a91c',1,'InverseDynamics::controlModeCallback()'],['../classOpenLoopController.html#a3beab2a4275e702b63b445b439e88ebc',1,'OpenLoopController::controlModeCallback()']]],
-  ['createaffinematrix',['createAffineMatrix',['../classspirit__utils_1_1SpiritKinematics.html#af53bf14b88d44f55aa27b92df2d2e2e2',1,'spirit_utils::SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans, Eigen::Vector3d rpy)'],['../classspirit__utils_1_1SpiritKinematics.html#a4468615a4d8b386afa108d8dd62b8e5c',1,'spirit_utils::SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans, Eigen::AngleAxisd rot)']]],
+  ['createaffinematrix',['createAffineMatrix',['../classspirit__utils_1_1SpiritKinematics.html#aca0d22b864f1ce48d66748a7c7cc04e7',1,'spirit_utils::SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans, Eigen::Vector3d rpy) const'],['../classspirit__utils_1_1SpiritKinematics.html#a1eae1815e29d884770cc979e18cf2360',1,'spirit_utils::SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans, Eigen::AngleAxisd rot) const']]],
   ['createmap',['createMap',['../classTerrainMapPublisher.html#a295ac03389590d98c589d2d58990b64e',1,'TerrainMapPublisher']]]
 ];
