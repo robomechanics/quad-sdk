@@ -12,6 +12,7 @@
 #include <spirit_utils/fast_terrain_map.h>
 #include <spirit_utils/function_timer.h>
 #include <spirit_utils/math_utils.h>
+#include <spirit_utils/ros_utils.h>
 #include <spirit_utils/kinematics.h>
 
 #include <grid_map_core/grid_map_core.hpp>
