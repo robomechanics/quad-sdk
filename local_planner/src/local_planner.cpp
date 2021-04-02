@@ -4,7 +4,9 @@ namespace plt = matplotlibcpp;
 
 Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
-LocalPlanner::LocalPlanner(ros::NodeHandle nh) {
+LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
+  local_body_planner_(nh), local_footstep_planner_(nh) {
+
 	nh_ = nh;
 
     // Load rosparams from parameter server
@@ -17,7 +19,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) {
 
   // Load system parameters
   spirit_utils::loadROSParam(nh, "local_planner/update_rate", update_rate_);
-  spirit_utils::loadROSParam(nh, "local_planner/horizon_length",N_);
   spirit_utils::loadROSParam(nh, "local_planner/timestep",dt_);
   spirit_utils::loadROSParam(nh, "local_planner/iterations",iterations_);
 
@@ -39,8 +40,20 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) {
     }
   }
 
+  initLocalBodyPlanner();
+  initLocalFootstepPlanner();
+
   ROS_INFO("LocalPlanner setup complete, waiting for callbacks");
 }
+
+void LocalPlanner::initLocalBodyPlanner() {
+
+}
+
+void LocalPlanner::initLocalFootstepPlanner() {
+  
+}
+
 
 void LocalPlanner::globalPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) {
   global_plan_msg_ = msg;

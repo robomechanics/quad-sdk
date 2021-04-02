@@ -122,37 +122,37 @@ public:
 private:
 
   /// Number of timesteps in horizon
-  int N_;
+  const int N_ = 10;
 
   /// Number of states per step
-  int nx_;
+  const int nx_ = 12;
 
   /// Number of controls per step
-  int nu_;
-
-  /// Number of dynamics constraints
-  int num_dyn_constraints_;
-
-  /// Number of contact constraint per step
-  int num_contact_constraints_per_step_;
-
-  /// Number of contact constraints per leg, per step
-  int num_constraints_per_leg_;
-
-  /// Number of constraints on allowable forces
-  int num_contact_constraints_;
-
-  /// Total number of constraints
-  int num_constraints_;
+  const int nu_ = 13;
 
   /// Total number of state variables in qp
-  int num_state_vars_;
+  const int num_state_vars_= (N_ + 1) * Nx_;
 
   /// Total number of control variables in qp
-  int num_control_vars_;
+  const int num_control_vars_ = N * Nu_;
 
   /// Total number of decision variables in qp
-  int num_decision_vars_;
+  const int num_decision_vars_ = num_state_vars_ + num_control_vars_;
+
+  /// Number of dynamics constraints
+  const int num_dyn_constraints_ = N_ * Nx_;
+
+  // Number of contact constraints per leg, per step
+  const int num_constraints_per_leg_ = 5;
+
+  /// Number of contact constraint per step
+  const int num_contact_constraints_per_step_ = (num_constraints_per_leg_*num_legs_ + 1);
+
+  /// Number of constraints on allowable forces
+  const int num_contact_constraints_ = num_contact_constraints_per_step_*N_;
+
+  /// Total number of constraints
+  const int num_constraints_ = num_contact_constraints_per_step_*N_;
 
   /// Flag signaling that we've updated our weights since the last iteration
   bool updated_weights_ = false;
@@ -178,20 +178,42 @@ private:
   /// Flag signaling timestep set
   bool dt_set_ = false;
 
+  /// Typedef for state trajectory
+  typedef Eigen::Matrix<double,N_,Nx_> StateTraj;
+
+  /// Typedef for control trajectory
+  typedef Eigen::Matrix<double,N_,Nu_> ControlTraj;
+
+  /// Typedef for state matrix
+  typedef Eigen::Matrix<double,Nx_,Nx_> StateMatrix;
+
+  /// Typedef for control matrix
+  typedef Eigen::Matrix<double,Nu_,Nu_> ControlMatrix;
+
+  /// Typedef for state Hessian
+  typedef Eigen::Matrix<double,num_state_vars_,num_state_vars_> StateHessian;
+
+  /// Typedef for control Hessian
+  typedef Eigen::Matrix<double,num_control_vars_,num_control_vars_> ControlHessian;
+
+  /// Typedef for state and control Hessian
+  typedef Eigen::Matrix<double,num_state_vars_+num_control_vars_,
+    num_state_vars_+num_control_vars_> StateControlHessian;
+
   /// Quadratic cost matrix
-  Eigen::MatrixXd H_;
+  StateControlHessian H_;
 
   // Precomputed matrix for linear cost vector construction
-  Eigen::MatrixXd H_f_; 
+  StateControlHessian H_f_; 
 
   /// Dynamics constraint matrix
-  Eigen::MatrixXd A_dyn_dense_;
+  Eigen::Matrix<double,num_dyn_constraints_,num_decision_vars_> A_dyn_dense_;
 
   /// Dynamics constraint vector
-  Eigen::MatrixXd b_dyn_;
+  Eigen::Vector<double, num_dyn_constraints_> b_dyn_;
 
   /// Friction and normal force constraint matrix
-  Eigen::MatrixXd A_con_dense_;
+  Eigen::Matrix<num_contact_constraints_, num_control_vars_> A_con_dense_;
 
   /// Friction and normal force constraint lower bound
   Eigen::VectorXd b_contact_lo_;
