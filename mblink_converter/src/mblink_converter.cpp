@@ -7,7 +7,7 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
     /// Ghost MBLink interface class
   mblink_.start(argc,argv);
   mblink_.rxstart();
-  mblink_.setRetry("UPST_ADDRESS", 5);
+  mblink_.setRetry("UPST_ADDRESS", 255);
   mblink_.setRetry("UPST_LOOP_DELAY", 5);
 
   // Load rosparams from parameter server
@@ -16,11 +16,14 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
   spirit_utils::loadROSParam(nh_,"topics/joint_encoder",joint_encoder_topic);
   spirit_utils::loadROSParam(nh_,"topics/imu",imu_topic);
   spirit_utils::loadROSParam(nh_,"mblink_converter/update_rate",update_rate_);
+  //spirit_utils::loadROSParam(nh_,"topics/body_force/toe_forces",grf_topic);
 
   // Setup pubs and subs
   leg_control_sub_ = nh_.subscribe(leg_control_topic,1,&MBLinkConverter::legControlCallback, this);
   joint_encoder_pub_ = nh_.advertise<sensor_msgs::JointState>(joint_encoder_topic,1);
   imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic,1);
+  grf_pub_ = nh_.advertise<spirit_msgs::GRFArray>("/body_force/toe_forces",1);//(grf_topic,1);
+
 }
 
 void MBLinkConverter::legControlCallback(
@@ -112,6 +115,19 @@ void MBLinkConverter::publishMBlink()
 
   // Publish the imu message
   imu_pub_.publish(imu_msg);
+
+// Toe Forces
+  spirit_msgs::GRFArray grf_msg;
+  geometry_msgs::Vector3 ft;
+  for (int i = 0; i < 4; i++) {
+    ft.x = data["joint_residual"][2*i+1];
+    ft.y = 0;
+    ft.z = data["joint_residual"][2*i];
+    grf_msg.vectors.push_back(ft);
+  }
+
+  // Publish toe force message
+  grf_pub_.publish(grf_msg);
 }
 
 void MBLinkConverter::spin()

@@ -5,6 +5,7 @@
 #include <spirit_msgs/LegCommandArray.h>
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
+#include <spirit_msgs/GRFArray.h>
 #include <mblink/mblink.hpp>
 #include <Eigen/Dense>
 #include <spirit_utils/ros_utils.h>
@@ -81,6 +82,9 @@ private:
 
   /// ROS publisher for imu data
   ros::Publisher imu_pub_;
+
+  /// ROS publisher for mainboard joint residual data
+  ros::Publisher grf_pub_;
 
   /// Update rate for sending and receiving data;
   double update_rate_;
