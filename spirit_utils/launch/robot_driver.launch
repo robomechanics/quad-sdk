@@ -28,4 +28,6 @@
         <include file="$(find spirit_utils)/launch/logging.launch" />
     </group>
 
+    <node name="mblink_converter" pkg="mblink_converter" type="mblink_converter_node" output="screen"/>
+
 </launch>
