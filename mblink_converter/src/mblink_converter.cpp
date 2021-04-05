@@ -7,7 +7,7 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
     /// Ghost MBLink interface class
   mblink_.start(argc,argv);
   mblink_.rxstart();
-  mblink_.setRetry("UPST_ADDRESS", 255);
+  mblink_.setRetry("UPST_ADDRESS", 5);
   mblink_.setRetry("UPST_LOOP_DELAY", 5);
 
   // Load rosparams from parameter server
@@ -116,8 +116,9 @@ void MBLinkConverter::publishMBlink()
   // Publish the imu message
   imu_pub_.publish(imu_msg);
 
-// Toe Forces
+  // Toe Forces
   spirit_msgs::GRFArray grf_msg;
+  grf_msg.header.stamp = timestamp;
   geometry_msgs::Vector3 ft;
   for (int i = 0; i < 4; i++) {
     ft.x = data["joint_residual"][2*i+1];
