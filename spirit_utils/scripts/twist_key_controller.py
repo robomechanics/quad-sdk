@@ -59,7 +59,7 @@ def run():
             if shift_pressed:
                 twist_cmd.linear.y = lin_vel*twist_vel[1]
             else:
-                twist_cmd.angular.z = ang_vel*twist_vel[1]
+                twist_cmd.angular.z = -ang_vel*twist_vel[1]
 
             twist_pub.publish(twist_cmd)
 
