@@ -22,7 +22,7 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
   leg_control_sub_ = nh_.subscribe(leg_control_topic,1,&MBLinkConverter::legControlCallback, this);
   joint_encoder_pub_ = nh_.advertise<sensor_msgs::JointState>(joint_encoder_topic,1);
   imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic,1);
-  grf_pub_ = nh_.advertise<spirit_msgs::GRFArray>("/body_force/toe_forces",1);//(grf_topic,1);
+  grf_pub_ = nh_.advertise<spirit_msgs::GRFArray>("/body_force/toe_forces2",1);//(grf_topic,1);
 
 }
 

@@ -7,7 +7,7 @@ using namespace force_estimation_dynamics;
 #if USE_SIM == 1
 int joint_inds [12] = {10, 0, 1, 11, 4, 5, 2, 6, 7, 3, 8, 9};
 #elif USE_SIM == 2
-int joint_inds [12] = {8, 0, 1, 9, 2, 3, 10, 4, 5, 11, 6, 7};
+int joint_inds [12] = {0,1,2,3,4,5,6,7,8,9,10,11};//{8, 0, 1, 9, 2, 3, 10, 4, 5, 11, 6, 7};
 #endif
 
 // Effective toe force estimate

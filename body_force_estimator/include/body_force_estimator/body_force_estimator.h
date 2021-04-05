@@ -7,7 +7,7 @@
 #include <spirit_msgs/GRFArray.h>
 
 // Temporary
-#define USE_SIM 1 // 0 = intended, 1 = Gazebo hack, 2 = old bagfile hack
+#define USE_SIM 2 // 0 = intended, 1 = Gazebo hack, 2 = old bagfile hack
 
 //! Estimates body contact forces
 /*!
