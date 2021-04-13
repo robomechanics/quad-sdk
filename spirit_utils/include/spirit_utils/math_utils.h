@@ -3,7 +3,7 @@
 
 // Just include ros to access a bunch of other functions, fuck good code
 #include <ros/ros.h>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Eigen>
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/JointState.h>
 #include <spirit_msgs/MultiFootState.h>

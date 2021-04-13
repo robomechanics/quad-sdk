@@ -1,7 +1,7 @@
 
 #include "mpc_controller/quadruped_mpc.h"
 #include "spirit_utils/matplotlibcpp.h"
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Eigen>
 #include <iostream>
 #include <math.h>
 #include <limits>

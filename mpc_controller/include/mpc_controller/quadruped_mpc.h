@@ -2,8 +2,7 @@
 #define MPCPLUSPLUS_H
 
 #include "OsqpEigen/OsqpEigen.h"
-#include <Eigen/Core>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Eigen>
 #include <spirit_utils/kinematics.h>
 #include <assert.h>
 
