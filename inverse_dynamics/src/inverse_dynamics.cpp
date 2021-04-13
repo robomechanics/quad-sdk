@@ -21,7 +21,7 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   control_mode_sub_ = nh_.subscribe(control_mode_topic,1,&InverseDynamics::controlModeCallback, this);
   leg_command_array_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_command_array_topic,1);
 
-  // Start standing
+  // Start sitting
   control_mode_ = SIT;
 
   step_number = 0;
