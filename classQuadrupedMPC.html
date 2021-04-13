@@ -89,6 +89,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a297f13d55d07cf7a1699697360d551f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a297f13d55d07cf7a1699697360d551f6">update_dynamics</a> (const Eigen::MatrixXd &amp;ref_traj, const Eigen::MatrixXd &amp;foot_positions)</td></tr>
 <tr class="memdesc:a297f13d55d07cf7a1699697360d551f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update our dynamics (linearized about reference yaw and footsteps)  <a href="#a297f13d55d07cf7a1699697360d551f6">More...</a><br /></td></tr>
 <tr class="separator:a297f13d55d07cf7a1699697360d551f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa48870ef295e0ffe20696f1c7c61a0bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#aa48870ef295e0ffe20696f1c7c61a0bf">update_dynamics_hip_projected_feet</a> (const Eigen::MatrixXd &amp;ref_traj)</td></tr>
+<tr class="memdesc:aa48870ef295e0ffe20696f1c7c61a0bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update our dynamics (linearized about reference yaw and footsteps projected underneath hip)  <a href="#aa48870ef295e0ffe20696f1c7c61a0bf">More...</a><br /></td></tr>
+<tr class="separator:aa48870ef295e0ffe20696f1c7c61a0bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad35c5cdc969b222941e3a58c9d727d81"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#ad35c5cdc969b222941e3a58c9d727d81">update_contact</a> (const std::vector&lt; std::vector&lt; bool &gt; &gt; contact_sequence, const double fmin, const double fmax)</td></tr>
 <tr class="memdesc:ad35c5cdc969b222941e3a58c9d727d81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the footstep contact sequence and normal force bounds.  <a href="#ad35c5cdc969b222941e3a58c9d727d81">More...</a><br /></td></tr>
 <tr class="separator:ad35c5cdc969b222941e3a58c9d727d81"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -232,6 +235,10 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 OsqpEigen::Solver&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#aa7f90acd39202da28a3726c9e0a44bea">solver_</a></td></tr>
 <tr class="memdesc:aa7f90acd39202da28a3726c9e0a44bea"><td class="mdescLeft">&#160;</td><td class="mdescRight">OSQP solver instance. <br /></td></tr>
 <tr class="separator:aa7f90acd39202da28a3726c9e0a44bea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3e463e5b114d9a762bfa26ae5b9e669"><td class="memItemLeft" align="right" valign="top"><a id="ab3e463e5b114d9a762bfa26ae5b9e669"></a>
+std::shared_ptr&lt; <a class="el" href="classspirit__utils_1_1SpiritKinematics.html">spirit_utils::SpiritKinematics</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#ab3e463e5b114d9a762bfa26ae5b9e669">kinematics_</a></td></tr>
+<tr class="memdesc:ab3e463e5b114d9a762bfa26ae5b9e669"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spirit Kinematics class. <br /></td></tr>
+<tr class="separator:ab3e463e5b114d9a762bfa26ae5b9e669"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Implements online MPC for quadrupedal MPC. </p>
@@ -553,6 +560,32 @@ OsqpEigen::Solver&#160;</td><td class="memItemRight" valign="bottom"><a class="e
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">ref_traj</td><td>Matrix holding desired reference trajectory (nx x N+1) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">foot_positions</td><td>Vector foot positions (fx1 fy1 fz1 fx2 ...) at each tstep </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa48870ef295e0ffe20696f1c7c61a0bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa48870ef295e0ffe20696f1c7c61a0bf">&#9670;&nbsp;</a></span>update_dynamics_hip_projected_feet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void QuadrupedMPC::update_dynamics_hip_projected_feet </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>ref_traj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update our dynamics (linearized about reference yaw and footsteps projected underneath hip) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">ref_traj</td><td>Matrix holding desired reference trajectory (nx x N+1) </td></tr>
   </table>
   </dd>
 </dl>

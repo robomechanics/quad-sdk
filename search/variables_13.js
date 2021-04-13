@@ -14,6 +14,7 @@ var searchData=
   ['terrain_5ftype_5f',['terrain_type_',['../classTerrainMapPublisher.html#a86d3497f911cbec8d7d250cfce4d403a',1,'TerrainMapPublisher']]],
   ['torque_5flims_5f',['torque_lims_',['../classeffort__controllers_1_1SpiritController.html#af1da15d2c33e320435beaa1d44be7c3d',1,'effort_controllers::SpiritController']]],
   ['traj_5fmsg_5f',['traj_msg_',['../classTrajectoryPublisher.html#a772f133318c9386be67a8af090fc115d',1,'TrajectoryPublisher']]],
+  ['traj_5fpub_5f',['traj_pub_',['../classMPCController.html#aea985a2737670055a5289e1a1c43eb29',1,'MPCController']]],
   ['traj_5fsource_5f',['traj_source_',['../classTrajectoryPublisher.html#a4830dc9fc82a1e6769159801126e6128',1,'TrajectoryPublisher']]],
   ['trajectory_5fbase_5ftf_5fbr_5f',['trajectory_base_tf_br_',['../classRVizInterface.html#a329e8c9e5b61a5cc795b124ad636dc1b',1,'RVizInterface']]],
   ['trajectory_5fjoint_5fstates_5fviz_5fpub_5f',['trajectory_joint_states_viz_pub_',['../classRVizInterface.html#a5091aac276d612ada955db8f289c6802',1,'RVizInterface']]],
