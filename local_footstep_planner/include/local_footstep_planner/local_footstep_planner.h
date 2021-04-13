@@ -19,7 +19,7 @@
 #include <grid_map_ros/grid_map_ros.hpp>
 #include <grid_map_ros/GridMapRosConverter.hpp>
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Eigen>
 #include <eigen_conversions/eigen_msg.h>
 
 //! A local footstep planning class for spirit

@@ -3,7 +3,7 @@
 
 #include "OsqpEigen/OsqpEigen.h"
 #include <Eigen/Core>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Eigen>
 #include <assert.h>
 
 //! Implements online MPC for quadrupedal MPC

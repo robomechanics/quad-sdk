@@ -6,7 +6,7 @@
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <mblink/mblink.hpp>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Eigen>
 #include <spirit_utils/ros_utils.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2/LinearMath/Quaternion.h>
