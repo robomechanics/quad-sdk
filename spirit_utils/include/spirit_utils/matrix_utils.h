@@ -1,7 +1,7 @@
 #ifndef MATRIX_ALGEBRA_H
 #define MATRIX_ALGEBRA_H
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Eigen>
 
 
 namespace math {

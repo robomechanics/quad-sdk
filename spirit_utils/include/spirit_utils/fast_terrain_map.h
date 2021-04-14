@@ -3,7 +3,7 @@
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <ros/ros.h>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Eigen>
 #include <chrono>
 #include <spirit_utils/function_timer.h>
 

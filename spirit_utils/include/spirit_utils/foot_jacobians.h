@@ -6,7 +6,7 @@
 #include <cstddef>
 #include <cstdlib>
 // #include <Eigen/Core>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Eigen>
 
 namespace spirit_utils {
 // Function Declarations
