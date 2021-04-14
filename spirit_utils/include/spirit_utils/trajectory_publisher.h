@@ -15,7 +15,7 @@
 
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Eigen>
 
 //! A class for interfacing between RViz and spirit-software topics.
 /*!
