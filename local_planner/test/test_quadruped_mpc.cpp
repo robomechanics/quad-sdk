@@ -1,5 +1,5 @@
 
-#include "mpc_controller/quadruped_mpc.h"
+#include "local_planner/quadruped_mpc.h"
 #include "spirit_utils/matplotlibcpp.h"
 #include <Eigen/Dense>
 #include <iostream>

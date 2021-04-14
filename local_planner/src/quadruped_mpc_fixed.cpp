@@ -1,4 +1,4 @@
-#include "local_planner/quadruped_mpc.h"
+#include "mpc_controller/quadruped_mpc.h"
 #include "spirit_utils/matrix_utils.h"
 
 #include <iostream>
@@ -14,23 +14,19 @@ using namespace std::chrono;
 
 QuadrupedMPC::QuadrupedMPC() {
   
-  int N = N_;
-  int Nx = nx_;
-  int Nu = nu_;
-
-  num_dyn_constraints_ = N * Nx;
-  num_constraints_per_leg_ = 5;
-  num_contact_constraints_per_step_ = (num_constraints_per_leg_*4 + 1);
-  num_contact_constraints_ = num_contact_constraints_per_step_*N;
-  num_state_vars_= (N + 1) * Nx;
-  num_control_vars_= N * Nu;
-  num_decision_vars_ = num_state_vars_ + num_control_vars_;
-  num_constraints_ = num_state_vars_ + num_dyn_constraints_ + num_contact_constraints_;// + num_control_vars_;
+  // num_dyn_constraints_ = N_ * Nx_;
+  // num_constraints_per_leg_ = 5;
+  // num_contact_constraints_per_step_ = (num_constraints_per_leg_*4 + 1);
+  // num_contact_constraints_ = num_contact_constraints_per_step_*N_;
+  // num_state_vars_= (N_ + 1) * Nx_;
+  // num_control_vars_= N * Nu_;
+  // num_decision_vars_ = num_state_vars_ + num_control_vars_;
+  // num_constraints_ = num_state_vars_ + num_dyn_constraints_ + num_contact_constraints_;// + num_control_vars_;
 
   // Initialize vectors
-  b_contact_lo_ = Eigen::VectorXd::Zero(num_contact_constraints_);
-  b_contact_hi_ = Eigen::VectorXd::Zero(num_contact_constraints_);
-  b_dyn_ = Eigen::VectorXd::Zero(num_dyn_constraints_);
+  // b_contact_lo_ = Eigen::VectorXd::Zero(num_contact_constraints_);
+  // b_contact_hi_ = Eigen::VectorXd::Zero(num_contact_constraints_);
+  // b_dyn_ = Eigen::VectorXd::Zero(num_dyn_constraints_);
 
   kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
 }
@@ -50,10 +46,10 @@ void QuadrupedMPC::update_friction(const double mu) {
   assert(0 <= mu && mu <= 1);
   mu_ = mu;
   
-  A_con_dense_ = Eigen::MatrixXd::Zero(num_contact_constraints_, num_control_vars_);
+  // A_con_dense_ = Eigen::MatrixXd::Zero(num_contact_constraints_, num_control_vars_);
 
   // Friction cone for one leg
-  Eigen::MatrixXd C_leg(num_constraints_per_leg_,3);
+  Eigen::Matrix<double, num_constraints_per_leg_, 3> C_leg;
   C_leg << 1, 0, -mu,
        1, 0, mu,
        0, 1, -mu,
@@ -61,30 +57,30 @@ void QuadrupedMPC::update_friction(const double mu) {
        0, 0, 1;
 
   // Full friciton cone for one tstep
-  Eigen::MatrixXd C_step = Eigen::MatrixXd::Zero(num_contact_constraints_per_step_,nu_);
+  Eigen::Matrix<double, num_contact_constraints_per_step_, nu_> C_step;
   for (int i = 0; i < 4; ++i) {
-    C_step.block(num_constraints_per_leg_*i,3*i,num_constraints_per_leg_,3) = C_leg;
+    C_step.block<num_constraints_per_leg_,3>(num_constraints_per_leg_*i,3*i) = C_leg;
   }
-  C_step(num_contact_constraints_per_step_-1,nu_-1) = 1;
+  C_step(num_contact_constraints_per_step_-1,Nu_-1) = 1;
 
   for (int i = 0; i < N_; ++i) { // iterate over horizon
-    A_con_dense_.block(num_contact_constraints_per_step_*i,nu_*i,num_contact_constraints_per_step_,nu_) = C_step;
+    A_con_dense_.block<num_contact_constraints_per_step_,nu_>(num_contact_constraints_per_step_*i,nu_*i) = C_step;
   }
 }
 
-void QuadrupedMPC::update_weights(const std::vector<Eigen::MatrixXd> &Q, 
-                               const std::vector<Eigen::MatrixXd> &R) {
+void QuadrupedMPC::update_weights(const std::vector<StateMatrix> &Q, 
+                               const std::vector<Eigen::Matrix<double,nu_,nu_>> &R) {
 
-  Eigen::MatrixXd Hq(num_state_vars_, num_state_vars_);
+  StateHessian Hq;
   Hq.setZero();
   for (int i = 0; i < N_+1; ++i) {
-    Hq.block(i * nx_, i * nx_, nx_, nx_) = Q.at(i);
+    Hq.block<nx_, nx_>(i * nx_, i * nx_) = Q.at(i);
   }
 
-  Eigen::MatrixXd Hu(num_control_vars_, num_control_vars_);
+  ControlHessian Hu;
   Hu.setZero();
   for (int i = 0; i < N_; ++i) {
-    Hu.block(i*nu_,i*nu_,nu_,nu_) = R.at(i);
+    Hu.block<nu_,nu_>(i*nu_,i*nu_) = R.at(i);
   }
   H_ = math::block_diag(Hq, Hu);
   H_f_ = Hq;
@@ -92,8 +88,8 @@ void QuadrupedMPC::update_weights(const std::vector<Eigen::MatrixXd> &Q,
   updated_weights_ = true;
 }
 
-void QuadrupedMPC::update_dynamics_hip_projected_feet(const Eigen::MatrixXd &ref_traj) {
-  Eigen::MatrixXd foot_positions = Eigen::MatrixXd::Zero(N_,12);
+void QuadrupedMPC::update_dynamics_hip_projected_feet(const StateTraj &ref_traj) {
+  Eigen::Matrix<double, N_,12> foot_positions;
 
   Eigen::Vector3d nominal_joint_state;
   nominal_joint_state << 0, 0.78, 1.57; // Default stand angles
@@ -102,41 +98,41 @@ void QuadrupedMPC::update_dynamics_hip_projected_feet(const Eigen::MatrixXd &ref
     for (int j = 0; j < 4; ++j) {
     Eigen::Vector3d toe_body_pos;
     this->kinematics_->bodyToFootFK(j, nominal_joint_state, toe_body_pos);
-    foot_positions.block(i,j*3,1,3) = toe_body_pos;
+    foot_positions.block<1,3>(i,j*3) = toe_body_pos;
     }
   }
 
   this->update_dynamics(ref_traj, foot_positions);
 }
 
-void QuadrupedMPC::update_dynamics(const Eigen::MatrixXd &ref_traj,
-                                const Eigen::MatrixXd &foot_positions) { // N x 12
+void QuadrupedMPC::update_dynamics(const StateTraj &ref_traj,
+                                const Eigen::Matrix<double, N_,12> &foot_positions) { // N x 12
   assert(dt_set_);
   assert(mass_properties_set_);
   assert(foot_positions.rows() == N_);
   assert(foot_positions.cols() == 12);
 
   // Create fixed components of dynamics matrices
-  Eigen::MatrixXd Ad = Eigen::MatrixXd::Zero(nx_,nx_);
-  Ad.block(0,0,6,6) = Eigen::MatrixXd::Identity(6,6);
-  Ad.block(6,6,6,6) = Eigen::MatrixXd::Identity(6,6);
-  Ad.block(0,6,3,3) = Eigen::MatrixXd::Identity(3,3)*dt_;
+  StateMatrix Ad;
+  Ad.block<6,6>(0,0) = Eigen::Matrix<double,6,6>::Identity();
+  Ad.block<6,6>(6,6) = Eigen::Matrix<double,6,6>::Identity();
+  Ad.block<3,3>(0,6) = Eigen::Matrix<double,3,3>::Identity()*dt_;
 
-  Eigen::MatrixXd Bd = Eigen::MatrixXd::Zero(nx_,nu_);
+  ControlMatrix Bd;
   for (int i = 0; i < 4; ++i) {
-    Bd.block(6,3*i,3,3) = Eigen::MatrixXd::Identity(3,3)/m_*dt_;
+    Bd.block<3,3>(6,3*i) = Eigen::Matrix<double,3,3>::Identity()/m_*dt_;
   }
   Bd(8,12) = -g_*dt_; // gravity acts downwards here
 
   // Reset dynamics matrix (not strictly necessary but good practice)
-  A_dyn_dense_ = Eigen::MatrixXd::Zero(num_dyn_constraints_,num_decision_vars_);
+  A_dyn_dense_.setZero;
 
   // Placeholder matrices for dynamics
-  Eigen::MatrixXd Adi(nx_,nx_);
-  Eigen::MatrixXd Bdi(nx_,nu_);
+  StateMatrix Adi(nx_,nx_);
+  ControlMatrix Bdi(nx_,nu_);
   
   
-  Eigen::VectorXd yaws = ref_traj.row(5);
+  Eigen::Vector<double, N_> yaws = ref_traj.row(5); // JN - SHOULD THIS BE ref_traj.col(5)???
   for (int i = 0; i < N_; ++i) {
     Eigen::AngleAxisd yaw_aa(yaws(i),Eigen::Vector3d::UnitZ());
     Eigen::Matrix3d Rz = yaw_aa.toRotationMatrix();
@@ -149,7 +145,7 @@ void QuadrupedMPC::update_dynamics(const Eigen::MatrixXd &ref_traj,
     Bdi = Bd;
 
     // Update our linearized angular velocity integration
-    Adi.block(3,9,3,3) = Rzt*dt_;
+    Adi.block<3,3>(3,9) = Rzt*dt_;
     //std::cout << "Rzt: " << std::endl << Rzt << std::endl;
 
     // Update our foot positions
@@ -158,11 +154,11 @@ void QuadrupedMPC::update_dynamics(const Eigen::MatrixXd &ref_traj,
       foot_pos_hat << 0, -foot_positions(i,3*j+2),foot_positions(i,3*j+1),
                       foot_positions(i,3*j+2), 0, -foot_positions(i,3*j+0),
                       -foot_positions(i,3*j+1), foot_positions(i,3*j+0), 0;
-      Bdi.block(9,3*j,3,3) = Iw_inv * foot_pos_hat * dt_;//Eigen::Matrix3d::Zero();
+      Bdi.block<3,3>(9,3*j) = Iw_inv * foot_pos_hat * dt_;//Eigen::Matrix3d::Zero();
     }
 
     A_dyn_dense_.block(nx_*i,nx_*i,nx_,nx_) = Adi;
-    A_dyn_dense_.block(nx_*i,nx_*(i+1),nx_,nx_) = -Eigen::MatrixXd::Identity(nx_,nx_);
+    A_dyn_dense_.block(nx_*i,nx_*(i+1),nx_,nx_) = -StateMatrix::Identity();
     A_dyn_dense_.block(nx_*i,num_state_vars_+nu_*i,nx_,nu_) = Bdi;
   }
 }
@@ -173,9 +169,9 @@ void QuadrupedMPC::update_contact(const std::vector<std::vector<bool>> contact_s
   assert(contact_sequence.size() == N_);
   assert(contact_sequence.front().size() == 4);
 
-  Eigen::VectorXd lo_contact(num_constraints_per_leg_);
+  Eigen::Vector<double, num_contact_constraints_> lo_contact;
   lo_contact << -2*mu_*fmax,0,-2*mu_*fmax,0,fmin;
-  Eigen::VectorXd hi_contact(num_constraints_per_leg_);
+  Eigen::Vector<double, num_contact_constraints_> hi_contact;
   hi_contact << 0,2*mu_*fmax,0,2*mu_*fmax,fmax;
 
   b_contact_lo_.setZero();
@@ -197,24 +193,21 @@ void QuadrupedMPC::update_contact(const std::vector<std::vector<bool>> contact_s
   }
 }
 
-void QuadrupedMPC::update_state_bounds(const Eigen::VectorXd state_lo,
-                                    const Eigen::VectorXd state_hi) {
+void QuadrupedMPC::update_state_bounds(const StateVec state_lo,
+                                    const StateVec state_hi) {
   b_state_lo_ = state_lo.replicate(N_,1);
   b_state_hi_ = state_hi.replicate(N_,1);
 }
 
-void QuadrupedMPC::update_control_bounds(const double f_min, const double f_max) {
-  f_min_ = f_min;
-  f_max_ = f_max;
-}
-
-void QuadrupedMPC::get_cost_function(const Eigen::MatrixXd &ref_traj,
-                                  Eigen::VectorXd &f) {
+void QuadrupedMPC::get_cost_function(const StateTraj &ref_traj,
+                                  Eigen::Vector<double, num_decision_vars_> &f) {
 
   // Construct fx vector
-  Eigen::MatrixXd y(1,num_state_vars_);
-  y.block(0, 0, 1, num_state_vars_) =
-      math::reshape(ref_traj, 1, ref_traj.cols() * ref_traj.rows());
+  // Eigen::MatrixXd y(1,num_state_vars_);
+  // y.block(0, 0, 1, num_state_vars_) =
+  //     math::reshape(ref_traj, 1, ref_traj.cols() * ref_traj.rows());
+  Eigen::Vector<double, num_state_vars_> y;
+  y = math::reshape(ref_traj, 1, ref_traj.cols() * ref_traj.rows());
 
   //std::cout << "Y size: " << y.rows() << ", " << y.cols() << std::endl;
   Eigen::MatrixXd fx = -y * H_f_;
@@ -261,8 +254,8 @@ void QuadrupedMPC::get_output(const Eigen::MatrixXd &x_out,
 }
 
 bool QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
-                         const Eigen::MatrixXd &ref_traj,
-                         Eigen::MatrixXd &x_out) {
+                         const StateTraj &ref_traj,
+                         Eigen::MatrixXd &-) {
   #ifdef PRINT_TIMING
     steady_clock::time_point t1 = steady_clock::now();
   #endif

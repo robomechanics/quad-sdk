@@ -3,14 +3,12 @@
 
 #include <ros/ros.h>
 #include <math.h>
-#include <eigen3/Eigen/Eigen>
 #include <spirit_msgs/BodyPlan.h>
 #include <spirit_msgs/MultiFootPlanDiscrete.h>
 #include <spirit_msgs/GRFArray.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/RobotStateTrajectory.h>
 #include <local_planner/quadruped_mpc.h>
-#include <local_planner/local_body_planner.h>
 #include <local_planner/local_footstep_planner.h>
 #include <spirit_utils/ros_utils.h>
 #include <spirit_utils/kinematics.h>
@@ -31,6 +29,12 @@ class LocalPlanner {
 	LocalPlanner(ros::NodeHandle nh);
   
 private:
+  /**
+   * @brief Callback function to handle new terrain map data
+   * @param[in] grid_map_msgs::GridMap contining map data
+   */
+  void terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg);
+
 	/**
    * @brief Callback function to handle new plans
    * @param[in] msg Robot state trajectory message
@@ -42,9 +46,6 @@ private:
    * @param[in] State estimate message contining position and velocity for each joint and robot body
    */
   void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
-  
-  Eigen::VectorXd state_msg_to_eigen(spirit_msgs::RobotState robot_state, bool zero_vel=false);
-
 
   /**
    * @brief Function to compute the local plan
@@ -71,11 +72,14 @@ private:
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;
 
+  /// Struct for terrain map data
+  FastTerrainMap terrain_;
+
 	/// Update rate for sending and receiving data;
 	double update_rate_;
 
   /// Local Body Planner object
-  std::shared_ptr<LocalBodyPlanner> local_body_planner_;
+  std::shared_ptr<QuadrupedMPC> local_body_planner_;
 
   /// Local Footstep Planner object
   std::shared_ptr<LocalFootstepPlanner> local_footstep_planner_;
@@ -114,16 +118,16 @@ private:
   const int num_joints_per_leg_ = 3;
 
   /// Matrix of body states (N x Nx: rows correspond to individual states in the horizon)
-  quadruped_mpc::StateTraj body_plan_;
+  Eigen::MatrixXd body_plan_;
 
   /// Matrix of grfs (N x Nu: rows correspond to individual arrays of GRFs in the horizon)
-  quadruped_mpc::ControlTraj grf_plan_; 
+  Eigen::MatrixXd grf_plan_; 
 
   /// Matrix of continuous foot positions (N x Nu: rows correspond to foot states in the horizon)
-  quadruped_mpc::FootTraj foot_positions_;
+  Eigen::MatrixXd foot_positions_;
   
   /// Matrix of continuous foot positions projected underneath the hips
-  quadruped_mpc::FootTraj hip_projected_foot_positions_;
+  Eigen::MatrixXd hip_projected_foot_positions_;
 
   /// Matrix of foot contact locations (number of contacts x num_legs_)
   Eigen::MatrixXd foot_plan_discrete_;

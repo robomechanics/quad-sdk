@@ -83,9 +83,6 @@ target_link_libraries(local_planner_node
 catkin_add_gtest(quadruped_mpc_test test/test_quadruped_mpc.cpp)
 target_link_libraries(quadruped_mpc_test quadruped_mpc ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
 
-catkin_add_gtest(local_body_planner_test test/test_local_body_planner.cpp)
-target_link_libraries(local_body_planner_test local_planner ${catkin_LIBRARIES})
-
 catkin_add_gtest(local_footstep_planner_test test/test_local_footstep_planner.cpp)
 target_link_libraries(local_footstep_planner_test local_planner ${catkin_LIBRARIES})
 
