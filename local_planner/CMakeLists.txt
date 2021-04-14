@@ -17,6 +17,9 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   spirit_msgs
   spirit_utils
+  grid_map_core
+  grid_map_ros
+  eigen_conversions
 )
 
 ## System dependencies are found with CMake's conventions
@@ -31,7 +34,7 @@ find_library(QPOASES NAMES qpOASES PATHS ${QPOASES_LIBRARIES} REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp std_msgs spirit_msgs spirit_utils
+  CATKIN_DEPENDS roscpp std_msgs spirit_msgs spirit_utils grid_map_core grid_map_ros eigen_conversions
   DEPENDS EIGEN3
 )
 
@@ -58,7 +61,6 @@ target_link_libraries(quadruped_mpc OsqpEigen::OsqpEigen )
 ## Declare a C++ library for control
 add_library(local_planner
   src/local_planner.cpp
-  src/local_body_planner.cpp
   src/local_footstep_planner.cpp
 )
 target_link_libraries(local_planner quadruped_mpc)

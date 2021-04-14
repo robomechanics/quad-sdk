@@ -50,7 +50,8 @@
   <!--   <test_depend>gtest</test_depend> -->
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
-  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>eigen</build_depend>
@@ -65,7 +66,37 @@
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>eigen</exec_depend>
   <exec_depend>spirit_msgs</exec_depend>
+  <exec_depend>spirit_utils</exec_depend> -->
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>spirit_msgs</build_depend>
+  <build_depend>spirit_utils</build_depend>
+  <build_depend>grid_map_core</build_depend>
+  <build_depend>grid_map_ros</build_depend>
+  <build_depend>eigen</build_depend>
+  <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+  <build_export_depend>nav_msgs</build_export_depend>
+  <build_export_depend>geometry_msgs</build_export_depend>
+  <build_export_depend>spirit_msgs</build_export_depend>
+  <build_export_depend>spirit_utils</build_export_depend>
+  <build_export_depend>grid_map_core</build_export_depend>
+  <build_export_depend>grid_map_ros</build_export_depend>
+  <build_export_depend>eigen</build_export_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>spirit_msgs</exec_depend>
   <exec_depend>spirit_utils</exec_depend>
+  <exec_depend>grid_map_core</exec_depend>
+  <exec_depend>grid_map_ros</exec_depend>
+  <exec_depend>eigen</exec_depend>
+  <depend>eigen_conversions</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
