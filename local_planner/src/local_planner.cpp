@@ -126,13 +126,12 @@ void LocalPlanner::initLocalBodyPlanner() {
 void LocalPlanner::initLocalFootstepPlanner() {
 
   // Load parameters from server
-  double grf_weight, max_footstep_horizon, period, ground_clearance;
-  int num_cycles;
+  double grf_weight, ground_clearance;
+  int period, horizon_length;
   spirit_utils::loadROSParam(nh_, "local_footstep_planner/grf_weight", grf_weight);
-  spirit_utils::loadROSParam(nh_, "local_footstep_planner/max_footstep_horizon", max_footstep_horizon);
-  spirit_utils::loadROSParam(nh_, "local_footstep_planner/num_cycles", num_cycles);
-  spirit_utils::loadROSParam(nh_, "local_footstep_planner/period", period);
   spirit_utils::loadROSParam(nh_, "local_footstep_planner/ground_clearance", ground_clearance);
+  spirit_utils::loadROSParam(nh_, "local_footstep_planner/horizon_length", horizon_length);
+  spirit_utils::loadROSParam(nh_, "local_footstep_planner/period", period);
 
   // Confirm grf weight is valid
   if (grf_weight>1 || grf_weight<0) {
@@ -140,9 +139,9 @@ void LocalPlanner::initLocalFootstepPlanner() {
     ROS_WARN("Invalid grf weight, clamping to %4.2f", grf_weight);
   }
 
-  // Create footstep class
+  // Create footstep class, make sure we use the same dt as the local planner
   local_footstep_planner_ = std::make_shared<LocalFootstepPlanner>();
-  local_footstep_planner_->setTemporalParams(period, num_cycles, max_footstep_horizon);
+  local_footstep_planner_->setTemporalParams(dt_, period, horizon_length);
   local_footstep_planner_->setSpatialParams(ground_clearance, grf_weight);
 }
 
@@ -173,31 +172,32 @@ void LocalPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& m
 
 void LocalPlanner::computeLocalPlan() {
 
-  // if (terrain_.isEmpty() || body_plan_msg_ == NULL || current_state_.size() == 0)
-  //   return;
+  if (terrain_.isEmpty() || body_plan_msg_ == NULL || current_state_.size() == 0)
+    return;
 
-  // // Initialize continuous foot plan with hip projected locations (constant)
-  // foot_positions_ = hip_projected_foot_positions_;
+  // Initialize continuous foot plan with hip projected locations (constant)
+  foot_positions_ = hip_projected_foot_positions_;
+  double current_time = (current_state_.header.stamp - body_plan_msg_.header.stamp).toSec();
 
-  // // Iteratively generate body and footstep plans (non-parallelizable)
-  // for (int i = 0; i < iterations_; i++) {
+  // Iteratively generate body and footstep plans (non-parallelizable)
+  for (int i = 0; i < iterations_; i++) {
     
-  //   // Compute body plan with MPC
-  //   local_body_planner_.computePlan(current_state_, body_plan_msg_, foot_positions_,
-  //     contact_sequences_, body_plan_, grf_plan_);
+    // Compute body plan with MPC
+    local_body_planner_.computePlan(current_state_, body_plan_msg_, foot_positions_,
+      contact_sequences_, body_plan_, grf_plan_);
     
-  //   // Compute the new footholds to match that body plan
-  //   local_footstep_planner_.updateDiscretePlan(body_plan_, grf_plan_);
+    // Compute the new footholds to match that body plan
+    local_footstep_planner_.updateDiscretePlan(current_state_, current_time, body_plan_, grf_plan_);
 
-  //   // Convert the footholds to a FootTraj representation for body planning
-  //   local_footstep_planner_.convertDiscretePlanToEigen(foot_plan_discrete_msg_, foot_positions_,
-  //     contact_sequences_);
+    // Convert the footholds to a FootTraj representation for body planning
+    local_footstep_planner_.convertDiscretePlanToEigen(foot_plan_discrete_msg_, foot_positions_,
+      contact_sequences_);
     
-  // }
+  }
 
-  // // Compute the continuous-time foot plan msg for publishing
-  // local_footstep_planner_.computeContinuousPlan(body_plan_, foot_plan_discrete_msg_,
-  //   foot_plan_continuous_msg_); 
+  // Compute the continuous-time foot plan msg for publishing
+  local_footstep_planner_.computeContinuousPlan(body_plan_, foot_plan_discrete_msg_,
+    foot_plan_continuous_msg_); 
 
 }
 

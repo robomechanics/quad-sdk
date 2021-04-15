@@ -22,12 +22,11 @@ double LocalFootstepPlanner::computeTimeUntilNextFlight(double t) {
   return t_remaining;
 }
 
-void LocalFootstepPlanner::setTemporalParams(double period, int num_cycles,
-  double max_footstep_horizon) {
+void LocalFootstepPlanner::setTemporalParams(double interp_dt, int period, int horizon_length) {
   
+  interp_dt_ = interp_dt;
   period_ = period;
-  num_cycles_ = num_cycles;
-  max_footstep_horizon_ = max_footstep_horizon;
+  horizon_length_ = horizon_length;
 }
 
 
@@ -37,57 +36,97 @@ void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double grf_
   grf_weight_ = grf_weight;
 }
 
-// void LocalFootstepPlanner::updateContactSchedule() {
+void LocalFootstepPlanner::initContactSchedule() {
 
-//   t_cycle_previous = ;
-  
+  nominal_contact_schedule_.clear();
+  nominal_contact_schedule_.resize(horizon_length_);
 
-//   contact_schedule_discrete_ = ;
-//   contact_schedule_contrinuous_ = ;
-
-// }
-
-// void LocalFootstepPlanner::updateDiscretePlan(Eigen::MatrixXd body_plan,
-//   Eigen::MatrixXd grf_plan) {
-
-//   // Define the gait sequence (trot)
-//   double t_offsets_trot[num_feet_] = {0.0, 0.5*period_, 0.5*period_, 0.0};
-//   double t_offsets_bound[num_feet_] = {0.0, 0.0, 0.5*period_, 0.5*period_};
-//   double t_s[num_feet_] = {0.5*period_, 0.5*period_, 0.5*period_, 0.5*period_};
-
-//   // Specify the number of feet and their offsets from the COM
-//   double x_offsets[num_feet_] = {0.2263, -0.2263, 0.2263, -0.2263};
-//   double y_offsets[num_feet_] = {0.15, 0.15, -0.15, -0.15};
-
-//   // ros::Duration t = 0;ros::Time::now() - plan_timestamp_;
-//   // int start_index = t.toSec()/period_;
-//   int start_index = 0;
-//   int end_index = start_index + num_cycles_;
-
-//    // Loop through each foot
-//   for (int j=0; j<num_feet_; j++) {
-
-//     Eigen::Vector3d footstep_pos;
-//     double footstep_touchdown;
-//     double footstep_stance;
-
-//     double t_cycle;
-//     double t_cycle_end;
-
-
-
-
-//     // Loop through each gait cycle
-//     for (int i = start_index; i < end_index; i++) {
+  for (int i = 0; i < horizon_length_; i++) { // For each finite element
       
-//       // Compute the initial time for this cycle
-//       t_cycle = i*period_;
-//       t_cycle_end = (i+1)*period_;
-//       if (t_cycle_end >=t_plan_.back()) {
-//         break;
-//       }
+    nominal_contact_schedule_.at(i).resize(num_feet_);
 
-// }
+    for (int leg_idx = 0; leg_idx < num_feet_; leg_idx++) { // For each leg
+
+      // If this index in the horizon is between touchdown and liftoff, set contact to true
+      if ((i % period_) >= period_*phase_offsets_[leg_idx] && 
+        (i % period_) < period_*(phase_offsets_[leg_idx] + duty_cycles_[leg_idx])) {
+
+        nominal_contact_schedule_.at(i).at(leg_idx) = true;
+      } else {
+        nominal_contact_schedule_.at(i).at(leg_idx) = false;
+      }
+    }
+  }
+}
+
+void LocalFootstepPlanner::updateContactSchedule(int phase) {
+  contact_schedule_ = nominal_contact_schedule;
+
+  std::rotate(contact_schedule_.begin(), contact_schedule_.begin()+phase, contact_schedule_.end());
+}
+
+void LocalFootstepPlanner::updateContactSchedule(double phase) {
+  int phase_int = phase*period_;
+  updateContactSchedule(phase_int);
+}
+
+void LocalFootstepPlanner::updateDiscretePlan(spirit_msgs::RobotState state, double t,
+  Eigen::MatrixXd body_plan, Eigen::MatrixXd grf_plan) {
+
+  int phase = t/(period_*interp_dt_);
+  updateContactSchedule(phase);
+
+   // Loop through each foot
+  for (int j=0; j<num_feet_; j++) {
+
+    // Compute the number of timesteps corresponding to half the stance phase
+    int half_duty_cycle = (period_*duty_cycles_[j])/2;
+
+    // Initialize with the current foot position to avoid chattering
+    // Note: this should get ignored for a foot in flight
+    foot_positions_.block<1,3>(0,3*j) = pointMsgToEigen(state.feet[j].position);
+
+    // Loop through the horizon to identify instances of touchdown
+    for (int i = 1; i < contact_schedule.size(); i++) {
+      if (!contact_schedule[i-1][j] && contact_schedule[i][j]) {
+        
+        // Declare position vectors
+        Eigen::Vector3d foot_position;
+        Eigen::Vector3d foot_position_grf;
+        Eigen::Vector3d foot_position_nominal;
+
+        // Extract body and grf information
+        Eigen::Vector3d body_pos_midstance = body_plan.block<1,3>(i + half_duty_cycle,0);
+        Eigen::Vector3d body_rpy_midstance = body_plan.block<1,3>(i + half_duty_cycle,3);
+        Eigen::Vector3d grf_midstance = grf_plan.block<1,3>(i + half_duty_cycle,3*j);
+
+        // Compute nominal foot positions for kinematic and grf-projection measures
+        Eigen::Vector3d hip_position_touchdown;
+        kinematics_->nominalFootstepFK(j, body_pos_midstance, body_rpy_midstance, 
+          hip_position_midstance);
+        foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
+
+        // Combine these measures to get the nominal foot position
+        foot_position_nominal = grf_weight*foot_position_grf +
+          (1-grf_weight)*hip_position_midstance;
+        foot_position_nominal.z() = terrain_.getGroundHeight(foot_position_nominal.x(),
+          foot_position_nominal.y())
+
+        // (Optional) Optimize the foothold location to get the final position
+        // foot_position = map_search::optimizeFoothold(foot_position_nominal, stuff); ADAM
+        foot_position = foot_position_nominal;
+
+        // Store foot position in the Eigen matrix
+        foot_positions_.block<1,3>(i,3*j) = foot_position;
+
+      } else {
+        // If this isn't a new contact just hold the previous position
+        // Note: this should get ignored for a foot in flight
+        foot_positions_.block<1,3>(i,3*j) = foot_positions_.block<1,3>(i-1,3*j);
+      }
+    }
+  }
+}
 
 void LocalFootstepPlanner::updateDiscretePlan() {
   // spirit_utils::FunctionTimer timer(__FUNCTION__);
@@ -117,10 +156,6 @@ void LocalFootstepPlanner::updateDiscretePlan() {
   double t_offsets_trot[num_feet_] = {0.0, 0.5*period_, 0.5*period_, 0.0};
   double t_offsets_bound[num_feet_] = {0.0, 0.0, 0.5*period_, 0.5*period_};
   double t_s[num_feet_] = {0.5*period_, 0.5*period_, 0.5*period_, 0.5*period_};
-
-  // Specify the number of feet and their offsets from the COM
-  double x_offsets[num_feet_] = {0.2263, -0.2263, 0.2263, -0.2263};
-  double y_offsets[num_feet_] = {0.15, 0.15, -0.15, -0.15};
 
   // ros::Duration t = 0;ros::Time::now() - plan_timestamp_;
   // int start_index = t.toSec()/period_;

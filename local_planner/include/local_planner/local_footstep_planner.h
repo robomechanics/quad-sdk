@@ -37,11 +37,11 @@ class LocalFootstepPlanner {
 
     /**
      * @brief Set the temporal parameters of this object
-     * @param[in] period The period of a gait cycle in seconds
-     * @param[in] num_cycles The number of gait cycles 
-     * @param[in] max_footstep_horizon The period of a gait cycle in seconds
+     * @param[in] interp_dt The duration of one timestep in the plan
+     * @param[in] period The period of a gait cycle in number of timesteps
+     * @param[in] horizon_length The length of the planning horizon in number of timesteps
      */
-    void setTemporalParams(double period, int num_cycles, double max_footstep_horizon);
+    void setTemporalParams(double interp_dt, int period, int horizon_length);
 
     /**
      * @brief Set the spatial parameters of this object
@@ -63,6 +63,23 @@ class LocalFootstepPlanner {
      * @return Time until flight
      */
     double computeTimeUntilNextFlight(double t);
+
+    /**
+     * @brief Initialize the contact schedule based on gait parameters
+     */
+    void initContactSchedule();
+
+    /**
+     * @brief Update the contact schedule based on the current phase
+     * @param[in] phase current phase as fraction
+     */
+    void updateContactSchedule(int phase);
+
+    /**
+     * @brief Update the contact schedule based on the current phase
+     * @param[in] phase current phase as index 
+     */
+    void updateContactSchedule(double phase);
 
     /**
      * @brief Update the discrete footstep plan with the current plan
@@ -161,23 +178,29 @@ class LocalFootstepPlanner {
     /// Number of feet
     const int num_feet_ = 4;
 
-    /// Weighting on the projection of the grf
-    double grf_weight_;
-
-    /// Maximum horizon with which to plan footsteps
-    double max_footstep_horizon_;
-
     /// Number of cycles to plan
     int num_cycles_;
 
-    /// Ground clearance
-    double period_;
+    /// Interpolation timestep
+    double interp_dt_;
 
+    /// Gait period in timesteps
+    int period_;
+
+    /// Horizon length in timesteps
+    int horizon_length_;
+
+    /// Phase offsets for the touchdown of each foot
+    std::vector<double> phase_offsets_ = {0,0.5,0.5,0};
+
+    /// Duty cycles for the stance duration of each foot
+    std::vector<double> duty_cycles_ = {0.5,0.5,0.5,0.5};
+    
     /// Ground clearance
     double ground_clearance_;
 
-    /// Interpolation timestep for swing leg
-    double interp_dt_;
+    /// Weighting on the projection of the grf
+    double grf_weight_;
 
     /// Primitive ids - FLIGHT
     const int FLIGHT = 0;
