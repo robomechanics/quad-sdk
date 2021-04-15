@@ -168,6 +168,7 @@ void LocalPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& m
     return;
 
   current_state_ = spirit_utils::odomMsgToEigen(msg->body);
+  current_time_ = (msg->header.stamp - body_plan_msg_->header.stamp).toSec();
 }
 
 void LocalPlanner::computeLocalPlan() {
@@ -177,7 +178,6 @@ void LocalPlanner::computeLocalPlan() {
 
   // Initialize continuous foot plan with hip projected locations (constant)
   foot_positions_ = hip_projected_foot_positions_;
-  double current_time = (current_state_.header.stamp - body_plan_msg_.header.stamp).toSec();
 
   // Iteratively generate body and footstep plans (non-parallelizable)
   for (int i = 0; i < iterations_; i++) {
@@ -187,7 +187,7 @@ void LocalPlanner::computeLocalPlan() {
       contact_sequences_, body_plan_, grf_plan_);
     
     // Compute the new footholds to match that body plan
-    local_footstep_planner_.updateDiscretePlan(current_state_, current_time, body_plan_, grf_plan_);
+    local_footstep_planner_.updateDiscretePlan(current_state_, current_time_, body_plan_, grf_plan_);
 
     // Convert the footholds to a FootTraj representation for body planning
     local_footstep_planner_.convertDiscretePlanToEigen(foot_plan_discrete_msg_, foot_positions_,

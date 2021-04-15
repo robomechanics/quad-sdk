@@ -115,6 +115,9 @@ private:
   /// Current state (ground truth or estimate)
   Eigen::VectorXd current_state_;
 
+  /// Current time in the global plan
+  double current_time_;
+
   /// Minimum normal force in contact phase
   double normal_lo_;
 
