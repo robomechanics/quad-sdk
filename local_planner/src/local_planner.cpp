@@ -51,6 +51,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   // Convert kinematics
   kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
 
+  // Initialize body and footstep planners
   initLocalBodyPlanner();
   initLocalFootstepPlanner();
 
@@ -127,11 +128,11 @@ void LocalPlanner::initLocalFootstepPlanner() {
   // Load parameters from server
   double grf_weight, max_footstep_horizon, period, ground_clearance;
   int num_cycles;
-  spirit_utils::loadROSParam("local_footstep_planner/grf_weight", grf_weight);
-  spirit_utils::loadROSParam("local_footstep_planner/max_footstep_horizon", max_footstep_horizon);
-  spirit_utils::loadROSParam("local_footstep_planner/num_cycles", num_cycles);
-  spirit_utils::loadROSParam("local_footstep_planner/period", period);
-  spirit_utils::loadROSParam("local_footstep_planner/ground_clearance", ground_clearance);
+  spirit_utils::loadROSParam(nh_, "local_footstep_planner/grf_weight", grf_weight);
+  spirit_utils::loadROSParam(nh_, "local_footstep_planner/max_footstep_horizon", max_footstep_horizon);
+  spirit_utils::loadROSParam(nh_, "local_footstep_planner/num_cycles", num_cycles);
+  spirit_utils::loadROSParam(nh_, "local_footstep_planner/period", period);
+  spirit_utils::loadROSParam(nh_, "local_footstep_planner/ground_clearance", ground_clearance);
 
   // Confirm grf weight is valid
   if (grf_weight>1 || grf_weight<0) {
@@ -141,8 +142,8 @@ void LocalPlanner::initLocalFootstepPlanner() {
 
   // Create footstep class
   local_footstep_planner_ = std::make_shared<LocalFootstepPlanner>();
-  local_footstep_planner->setTemporalParams(period, num_cycles, max_footstep_horizon);
-  local_footstep_planner->setSpatialParams(ground_clearance, grf_weight);
+  local_footstep_planner_->setTemporalParams(period, num_cycles, max_footstep_horizon);
+  local_footstep_planner_->setSpatialParams(ground_clearance, grf_weight);
 }
 
 void LocalPlanner::terrainMapCallback(
@@ -155,8 +156,8 @@ void LocalPlanner::terrainMapCallback(
   terrain_.loadDataFromGridMap(map);
 }
 
-void LocalPlanner::globalPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) {
-  global_plan_msg_ = msg;
+void LocalPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) {
+  body_plan_msg_ = msg;
 }
 
 void LocalPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
@@ -167,10 +168,13 @@ void LocalPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& m
   if (body_plan_msg_ == NULL)
     return;
 
-  current_state_ = spirit_utils::stateMsgToEigen(*msg);
+  current_state_ = spirit_utils::odomMsgToEigen(msg->body);
 }
 
 void LocalPlanner::computeLocalPlan() {
+
+  // if (terrain_.isEmpty() || body_plan_msg_ == NULL || current_state_.size() == 0)
+  //   return;
 
   // // Initialize continuous foot plan with hip projected locations (constant)
   // foot_positions_ = hip_projected_foot_positions_;
@@ -179,11 +183,11 @@ void LocalPlanner::computeLocalPlan() {
   // for (int i = 0; i < iterations_; i++) {
     
   //   // Compute body plan with MPC
-  //   local_body_planner_.computePlan(current_state_, global_plan_msg_, foot_positions_,
+  //   local_body_planner_.computePlan(current_state_, body_plan_msg_, foot_positions_,
   //     contact_sequences_, body_plan_, grf_plan_);
     
   //   // Compute the new footholds to match that body plan
-  //   local_footstep_planner_.computeDiscretePlan(body_plan_, grf_plan_, foot_plan_discrete_msg_);
+  //   local_footstep_planner_.updateDiscretePlan(body_plan_, grf_plan_);
 
   //   // Convert the footholds to a FootTraj representation for body planning
   //   local_footstep_planner_.convertDiscretePlanToEigen(foot_plan_discrete_msg_, foot_positions_,
@@ -198,6 +202,9 @@ void LocalPlanner::computeLocalPlan() {
 }
 
 void LocalPlanner::publishLocalPlan() {
+
+  // if (foot_plan_continuous_msg_.states.size() == 0)
+  //   return;
 
   // // Initialize local plan message, set timestamp to now
   // spirit_msgs::LocalPlan local_plan_msg;
@@ -235,7 +242,7 @@ void LocalPlanner::publishLocalPlan() {
 
 void LocalPlanner::spin() {
 
-  ros::Rate r(compute_rate_);
+  ros::Rate r(update_rate_);
 
   while (ros::ok()) {
 

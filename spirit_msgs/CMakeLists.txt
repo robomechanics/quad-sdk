@@ -22,6 +22,7 @@ add_message_files(
   RobotStateTrajectory.msg
   GRFArray.msg
   BodyPlan.msg
+  LocalPlan.msg
   FootState.msg
   MultiFootState.msg
   MultiFootPlanContinuous.msg

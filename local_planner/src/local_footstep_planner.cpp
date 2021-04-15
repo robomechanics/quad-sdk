@@ -22,6 +22,73 @@ double LocalFootstepPlanner::computeTimeUntilNextFlight(double t) {
   return t_remaining;
 }
 
+void LocalFootstepPlanner::setTemporalParams(double period, int num_cycles,
+  double max_footstep_horizon) {
+  
+  period_ = period;
+  num_cycles_ = num_cycles;
+  max_footstep_horizon_ = max_footstep_horizon;
+}
+
+
+void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double grf_weight) {
+
+  ground_clearance_ = ground_clearance;
+  grf_weight_ = grf_weight;
+}
+
+// void LocalFootstepPlanner::updateContactSchedule() {
+
+//   t_cycle_previous = ;
+  
+
+//   contact_schedule_discrete_ = ;
+//   contact_schedule_contrinuous_ = ;
+
+// }
+
+// void LocalFootstepPlanner::updateDiscretePlan(Eigen::MatrixXd body_plan,
+//   Eigen::MatrixXd grf_plan) {
+
+//   // Define the gait sequence (trot)
+//   double t_offsets_trot[num_feet_] = {0.0, 0.5*period_, 0.5*period_, 0.0};
+//   double t_offsets_bound[num_feet_] = {0.0, 0.0, 0.5*period_, 0.5*period_};
+//   double t_s[num_feet_] = {0.5*period_, 0.5*period_, 0.5*period_, 0.5*period_};
+
+//   // Specify the number of feet and their offsets from the COM
+//   double x_offsets[num_feet_] = {0.2263, -0.2263, 0.2263, -0.2263};
+//   double y_offsets[num_feet_] = {0.15, 0.15, -0.15, -0.15};
+
+//   // ros::Duration t = 0;ros::Time::now() - plan_timestamp_;
+//   // int start_index = t.toSec()/period_;
+//   int start_index = 0;
+//   int end_index = start_index + num_cycles_;
+
+//    // Loop through each foot
+//   for (int j=0; j<num_feet_; j++) {
+
+//     Eigen::Vector3d footstep_pos;
+//     double footstep_touchdown;
+//     double footstep_stance;
+
+//     double t_cycle;
+//     double t_cycle_end;
+
+
+
+
+//     // Loop through each gait cycle
+//     for (int i = start_index; i < end_index; i++) {
+      
+//       // Compute the initial time for this cycle
+//       t_cycle = i*period_;
+//       t_cycle_end = (i+1)*period_;
+//       if (t_cycle_end >=t_plan_.back()) {
+//         break;
+//       }
+
+// }
+
 void LocalFootstepPlanner::updateDiscretePlan() {
   // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
@@ -194,9 +261,9 @@ void LocalFootstepPlanner::updateDiscretePlan() {
     }
   }
 
-  // publishDiscretePlan();
-  // publishContinuousPlan();
-  // timer.report();
+//   // publishDiscretePlan();
+//   // publishContinuousPlan();
+//   // timer.report();
 }
 
 void LocalFootstepPlanner::updateContinuousPlan() {

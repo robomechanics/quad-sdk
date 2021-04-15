@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include <math.h>
 #include <spirit_msgs/BodyPlan.h>
+#include <spirit_msgs/LocalPlan.h>
 #include <spirit_msgs/MultiFootPlanDiscrete.h>
 #include <spirit_msgs/GRFArray.h>
 #include <spirit_msgs/RobotState.h>
@@ -27,8 +28,23 @@ class LocalPlanner {
 	 * @return Constructed object of type LocalPlanner
 	 */
 	LocalPlanner(ros::NodeHandle nh);
+
+  /**
+   * @brief Primary work function in class, called in node file for this component
+   */
+  void spin();  
   
 private:
+  /**
+   * @brief Initialize the local body planner
+   */
+  void initLocalBodyPlanner();
+
+  /**
+   * @brief Initialize the local footstep planner
+   */
+  void initLocalFootstepPlanner();
+  
   /**
    * @brief Callback function to handle new terrain map data
    * @param[in] grid_map_msgs::GridMap contining map data
@@ -39,7 +55,7 @@ private:
    * @brief Callback function to handle new plans
    * @param[in] msg Robot state trajectory message
    */
-  void globalPlanCallback(const spirit_msgs::RobotStateTrajectory::ConstPtr& msg);
+  void bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
 
   /**
    * @brief Callback function to handle new state estimates
@@ -57,14 +73,23 @@ private:
    */
   void publishLocalPlan();
 
-	/// ROS subscriber for incoming global plans
-	ros::Subscriber global_plan_sub_;
+	/// ROS subscriber for incoming terrain_map
+	ros::Subscriber terrain_map_sub_;
+  
+  /// ROS subscriber for incoming body plans
+	ros::Subscriber body_plan_sub_;
 
   /// ROS Subscriber for incoming states
   ros::Subscriber robot_state_sub_;
 
 	/// ROS publisher for local plan output
 	ros::Publisher local_plan_pub_;
+
+  /// ROS publisher for discrete foot plan
+	ros::Publisher foot_plan_discrete_pub_;
+
+  /// ROS publisher for continuous foot plan
+	ros::Publisher foot_plan_continuous_pub_;
 
 	/// Define map frame
 	std::string map_frame_;
@@ -85,7 +110,7 @@ private:
   std::shared_ptr<LocalFootstepPlanner> local_footstep_planner_;
 
 	/// Most recent robot plan
-	spirit_msgs::BodyPlan::ConstPtr global_plan_msg_;
+	spirit_msgs::BodyPlan::ConstPtr body_plan_msg_;
 
   /// Current state (ground truth or estimate)
   Eigen::VectorXd current_state_;
@@ -97,7 +122,7 @@ private:
   double normal_hi_;
 
   /// Number of iterations between body and footstep planners
-  int iterations_
+  int iterations_;
 
   /// MPC and trajectory publisher timestep (seconds)
   double dt_;
