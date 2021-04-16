@@ -480,4 +480,16 @@ namespace spirit_utils {
 
   }
 
+  Eigen::VectorXd footStateMsgToEigen(const spirit_msgs::MultiFootState &multi_foot_state_msg) {
+  
+    Eigen::VectorXd foot_positions;
+    for (int i = 0; i < multi_foot_state_msg.feet.size(); i++) {
+
+      foot_positions[3*i] = multi_foot_state_msg.feet[i].position.x;
+      foot_positions[3*i+1] = multi_foot_state_msg.feet[i].position.y;
+      foot_positions[3*i+2] = multi_foot_state_msg.feet[i].position.z;
+
+    }
+    return foot_positions;
+  }
 }

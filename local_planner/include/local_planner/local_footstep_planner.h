@@ -38,101 +38,62 @@ class LocalFootstepPlanner {
 
     /**
      * @brief Set the temporal parameters of this object
-     * @param[in] interp_dt The duration of one timestep in the plan
+     * @param[in] dt The duration of one timestep in the plan
      * @param[in] period The period of a gait cycle in number of timesteps
      * @param[in] horizon_length The length of the planning horizon in number of timesteps
      */
-    void setTemporalParams(double interp_dt, int period, int horizon_length);
+    void setTemporalParams(double dt, int period, int horizon_length);
 
     /**
      * @brief Set the spatial parameters of this object
      * @param[in] ground_clearance The foot clearance over adjacent footholds in cm
      * @param[in] grf_weight Weight on GRF projection (0 to 1)
+     * @param[in] kinematics Kinematics class for computations
      */
-    void setSpatialParams(double ground_clearance, double grf_weight);
+    void setSpatialParams(double ground_clearance, double grf_weight,
+      std::shared_ptr<spirit_utils::SpiritKinematics> kinematics);
+    
+    /**
+     * @brief Compute the contact schedule based on the current phase
+     * @param[in] phase current phase as index
+     */
+    void computeContactSchedule(int phase, std::vector<std::vector<bool>> &contact_schedule);
 
     /**
-     * @brief Primary work function in class, called in node file for this component
+     * @brief Compute the contact schedule based on the current phase
+     * @param[in] t Current time in trajectory
      */
-    void spin();
-
-  private:
-
-    /**
-     * @brief Compute the amount of time until the next flight phase
-     * @param[in] t Current time
-     * @return Time until flight
-     */
-    double computeTimeUntilNextFlight(double t);
-
-    /**
-     * @brief Initialize the contact schedule based on gait parameters
-     */
-    void initContactSchedule();
-
-    /**
-     * @brief Update the contact schedule based on the current phase
-     * @param[in] phase current phase as fraction
-     */
-    void updateContactSchedule(int phase);
-
-    /**
-     * @brief Update the contact schedule based on the current phase
-     * @param[in] phase current phase as index 
-     */
-    void updateContactSchedule(double phase);
+    void computeContactSchedule(double t, std::vector<std::vector<bool>> &contact_schedule);
 
     /**
      * @brief Update the discrete footstep plan with the current plan
+     * @param[in] state Current robot state
+     * @param[in] body_plan Current body plan
+     * @param[in] grf_plan Current grf plan
+     * @param[in] contact_schedule Current contact schedule
+     * @param[out] foot_positions Foot positions over the horizon
      */
-    void updateDiscretePlan();
+    void computeFootPositions(const Eigen::MatrixXd &body_plan, const Eigen::MatrixXd &grf_plan,
+      const std::vector<std::vector<bool>> &contact_schedule, Eigen::MatrixXd &foot_positions);
+
+    /**
+     * @brief Convert the foot positions and contact schedule into ros messages for the foot plan
+     * @param[in] contact_schedule Current contact schedule
+     * @param[in] foot_positions Foot positions over the horizon
+     * @param[out] multi_foot_plan_discrete_msg Message for discrete footholds
+     * @param[out] multi_foot_plan_continuous_msg Message for continuous foot trajectories
+     */
+    void computeFootPlanMsgs(
+      const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions
+      spirit_msgs::MultiFootPlanDiscrete &multi_foot_plan_discrete_msg,
+      spirit_msgs::MultiFootPlanContinuous &multi_foot_plan_continuous_msg);
+
+  private:
 
     /**
      * @brief Update the continuous foot plan to match the discrete
      */
     void updateContinuousPlan();
-
-    /**
-     * @brief Publish the current footstep plan
-     */
-    void publishDiscretePlan();
-
-    /**
-     * @brief Publish the continuous foot plan to match the discrete
-     */
-    void publishContinuousPlan();
-
-    /**
-     * @brief Wait until map and plan messages have been received and processed
-     */
-    void waitForData();
-
-    /// Subscriber for terrain map messages
-    ros::Subscriber terrain_map_sub_;
-
-    /// Subscriber for body plan messages
-    ros::Subscriber body_plan_sub_;
-
-    /// Subscriber for body plan messages
-    ros::Subscriber robot_state_sub_;
-
-    /// Publisher for discrete foot plan messages
-    ros::Publisher foot_plan_discrete_pub_;
-
-    /// Publisher for continuous
-    ros::Publisher foot_plan_continuous_pub_;
-
-    /// Nodehandle to pub to and sub from
-    ros::NodeHandle nh_;
-
-    /// Topic name for terrain map (needed to ensure data has been received)
-    std::string terrain_map_topic_;
-
-    /// Topic name for robot state data (needed to ensure data has been received)
-    std::string body_plan_topic_;
-
-    /// Update rate for sending and receiving data;
-    double update_rate_;
 
     /// Handle for the map frame
     std::string map_frame_;
@@ -140,41 +101,8 @@ class LocalFootstepPlanner {
     /// Struct for terrain map data
     FastTerrainMap terrain_;
 
-    /// Define the body state data structure
-    typedef std::vector<double> BodyState;
-
-    /// Define the footstep state data structure
-    typedef std::vector<double> FootstepState;
-    
-    /// Std vector containing robot body plan
-    std::vector<BodyState> body_plan_;
-
-    /// Std vector containing robot GRFs
-    std::vector<Eigen::Vector3d> grf_plan_;
-
-    /// Std vector containing primitive ids for the plan
-    std::vector<int> primitive_id_plan_;
-
-    /// Std vector containing robot footstep plan
-    std::vector<std::vector<FootstepState> > footstep_plan_;
-
-    /// Std vector containing time data
-    std::vector<double> t_plan_;
-
-    /// ROS Timestamp of plan (should match body plan)
-    ros::Time plan_timestamp_;
-
-    /// Current body plan
-    spirit_msgs::BodyPlan::ConstPtr body_plan_msg_;
-
-    /// Current robot state
-    spirit_msgs::RobotState::ConstPtr robot_state_msg_;
-
     /// Current continuous footstep plan
     spirit_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
-
-    /// Boolean for whether or not to replan to accomodate an updated body plan
-    bool update_flag_;
 
     /// Number of feet
     const int num_feet_ = 4;
@@ -182,8 +110,8 @@ class LocalFootstepPlanner {
     /// Number of cycles to plan
     int num_cycles_;
 
-    /// Interpolation timestep
-    double interp_dt_;
+    /// Timestep for one finite element
+    double dt_;
 
     /// Gait period in timesteps
     int period_;
@@ -196,6 +124,9 @@ class LocalFootstepPlanner {
 
     /// Duty cycles for the stance duration of each foot
     std::vector<double> duty_cycles_ = {0.5,0.5,0.5,0.5};
+
+    /// Nominal contact schedule
+    std::vector<std::vector<bool>> nominal_contact_schedule_;
 
     /// Ground clearance
     double ground_clearance_;
@@ -211,6 +142,9 @@ class LocalFootstepPlanner {
 
     /// Primitive ids - CONNECT_STANCE
     const int CONNECT_STANCE = 2;
+
+    /// Spirit Kinematics class
+    std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
 
 };
 

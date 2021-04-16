@@ -215,6 +215,13 @@ void interpBodyPlan(spirit_msgs::BodyPlan msg, double t,
   spirit_msgs::GRFArray eigenToGRFArrayMsg(Eigen::VectorXd grf_array,
     spirit_msgs::MultiFootState multi_foot_state_msg);
 
+  /**
+   * @brief Convert robot foot state message to Eigen
+   * @param[in] multi_foot_state_msg MultiFootState msg containing foot position information
+   * @return Eigen vector with foot state data
+   */
+  Eigen::VectorXd footStateMsgToEigen(const spirit_msgs::MultiFootState &multi_foot_state_msg);
+
 }
 
 #endif

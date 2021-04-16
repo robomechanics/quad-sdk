@@ -1,8 +1,7 @@
 #include "local_planner/local_planner.h"
 
-namespace plt = matplotlibcpp;
-
-Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+// namespace plt = matplotlibcpp;
+// Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
 LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   local_body_planner_(), local_footstep_planner_() {
@@ -142,7 +141,7 @@ void LocalPlanner::initLocalFootstepPlanner() {
   // Create footstep class, make sure we use the same dt as the local planner
   local_footstep_planner_ = std::make_shared<LocalFootstepPlanner>();
   local_footstep_planner_->setTemporalParams(dt_, period, horizon_length);
-  local_footstep_planner_->setSpatialParams(ground_clearance, grf_weight);
+  local_footstep_planner_->setSpatialParams(ground_clearance, grf_weight, kinematics_);
 }
 
 void LocalPlanner::terrainMapCallback(
@@ -161,47 +160,69 @@ void LocalPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) 
 
 void LocalPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
 
-  if (msg->feet.feet.empty())
+  // Make sure the data is actually populated
+  if (msg->feet.feet.empty() || msg->joints.position.empty())
     return;
 
+  robot_state_msg_ = msg;
+}
+
+void LocalPlanner::processRobotStateMsg() {
+
+  // Make sure body plan data is populated so current_time_ is accurate
   if (body_plan_msg_ == NULL)
     return;
 
-  current_state_ = spirit_utils::odomMsgToEigen(msg->body);
-  current_time_ = (msg->header.stamp - body_plan_msg_->header.stamp).toSec();
+  current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
+  current_foot_positions_ = spirit_utils::footStateMsgToEigen(robot_state_msg_->feet);
+  current_time_ = (robot_state_msg_->header.stamp - body_plan_msg_->header.stamp).toSec();
 }
 
 void LocalPlanner::computeLocalPlan() {
 
-  if (terrain_.isEmpty() || body_plan_msg_ == NULL || current_state_.size() == 0)
+  if (terrain_.isEmpty() || body_plan_msg_ == NULL || robot_state_msg_ == NULL)
     return;
 
-  // Initialize continuous foot plan with hip projected locations (constant)
+  // Initialize foot positions and contact schedule
   foot_positions_ = hip_projected_foot_positions_;
+  foot_positions_.row(0) = current_foot_positions_;
+  local_footstep_planner_->computeContactSchedule(current_time_, contact_schedule_);
 
   // Iteratively generate body and footstep plans (non-parallelizable)
   for (int i = 0; i < iterations_; i++) {
     
     // Compute body plan with MPC
     local_body_planner_.computePlan(current_state_, body_plan_msg_, foot_positions_,
-      contact_sequences_, body_plan_, grf_plan_);
+      contact_schedule_, body_plan_, grf_plan_);
     
     // Compute the new footholds to match that body plan
-    local_footstep_planner_.updateDiscretePlan(current_state_, current_time_, body_plan_, grf_plan_);
-
-    // Convert the footholds to a FootTraj representation for body planning
-    local_footstep_planner_.convertDiscretePlanToEigen(foot_plan_discrete_msg_, foot_positions_,
-      contact_sequences_);
-    
+    local_footstep_planner_->computeFootPositions(body_plan_, grf_plan_,
+      contact_schedule_, foot_positions_);
   }
-
-  // Compute the continuous-time foot plan msg for publishing
-  local_footstep_planner_.computeContinuousPlan(body_plan_, foot_plan_discrete_msg_,
-    foot_plan_continuous_msg_); 
-
 }
 
 void LocalPlanner::publishLocalPlan() {
+
+  // Create messages to publish
+  spirit_msgs::LocalPlan local_plan_msg;
+  spirit_msgs::MultiFootPlanDiscrete multi_foot_plan_discrete_msg;
+  spirit_msgs::MultiFootPlanDiscrete multi_foot_plan_continuous_msg;
+
+  // Update the headers of all messages
+  ros::Time timestamp = ros::Time::now();
+  local_plan_msg.header.stamp = timestamp;
+  local_plan_msg.header.frame_id = map_frame_;
+  multi_foot_plan_discrete_msg.header = local_plan_msg.header;
+  multi_foot_plan_continuous_msg.header = local_plan_msg.header;
+
+
+
+  local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_,
+    multi_foot_plan_discrete_msg, multi_foot_plan_continuous_msg);
+
+  // // Compute the continuous-time foot plan msg for publishing
+  // local_footstep_planner_.computeContinuousPlan(contact_schedule_, foot_positions_,
+  //   foot_plan_discrete_msg_, foot_plan_continuous_msg_); 
 
   // if (foot_plan_continuous_msg_.states.size() == 0)
   //   return;
@@ -249,6 +270,7 @@ void LocalPlanner::spin() {
     ros::spinOnce();
     
     // Publish local plan data (state reference traj and desired GRF array)
+    processRobotStateMsg();
     computeLocalPlan();
     publishLocalPlan();
     

@@ -64,6 +64,11 @@ private:
   void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 
   /**
+   * @brief Function to process the robot state message into Eigen data structures
+   */
+  void processRobotStateMsg();
+
+  /**
    * @brief Function to compute the local plan
    */
   void computeLocalPlan();
@@ -112,8 +117,14 @@ private:
 	/// Most recent robot plan
 	spirit_msgs::BodyPlan::ConstPtr body_plan_msg_;
 
+  /// Most recent robot state
+	spirit_msgs::RobotState::ConstPtr robot_state_msg_;
+
   /// Current state (ground truth or estimate)
   Eigen::VectorXd current_state_;
+
+  // Current positions of each foot
+  Eigen::VectorXd current_foot_positions_;
 
   /// Current time in the global plan
   double current_time_;
@@ -150,6 +161,9 @@ private:
 
   /// Matrix of grfs (N x Nu: rows correspond to individual arrays of GRFs in the horizon)
   Eigen::MatrixXd grf_plan_; 
+
+  /// Contact schedule
+  std::vector<std::vector<bool>> contact_schedule_;
 
   /// Matrix of continuous foot positions (N x Nu: rows correspond to foot states in the horizon)
   Eigen::MatrixXd foot_positions_;
