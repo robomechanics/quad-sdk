@@ -18,6 +18,7 @@ topics:
     trajectory: /state/trajectory
   control:
     grfs: /control/grfs
+    trajectory: /control/trajectory
     joint_command: /control/joint_command
     mode: /control/mode
     leg_override: /control/leg_override

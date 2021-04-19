@@ -3,10 +3,11 @@
 
 #include <ros/ros.h>
 #include <eigen3/Eigen/Eigen>
-// #include <Eigen/Dense>
+// #include <eigen3/Eigen/Eigen>
 #include <spirit_utils/ros_utils.h>
 #include <spirit_utils/foot_jacobians.h>
 #include <spirit_utils/math_utils.h>
+#include <spirit_utils/ros_utils.h>
 #include <spirit_msgs/GRFArray.h>
 #include <std_msgs/UInt8.h>
 #include <spirit_msgs/RobotState.h>

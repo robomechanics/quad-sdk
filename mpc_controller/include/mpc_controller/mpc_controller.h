@@ -72,8 +72,11 @@ private:
   /// ROS Subscriber for incoming states
   ros::Subscriber robot_state_sub_;
 
-	/// ROS publisher for control input
+	/// ROS publisher for grf output
 	ros::Publisher grf_array_pub_;
+
+  /// ROS publisher for trajectory output
+  ros::Publisher traj_pub_;
 
 	/// Define map frame
 	std::string map_frame_;
@@ -119,7 +122,6 @@ private:
 
   /// Spirit Kinematics class
   std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
-
 
 };
 

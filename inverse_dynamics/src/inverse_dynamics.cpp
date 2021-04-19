@@ -23,7 +23,7 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   leg_override_sub_ = nh_.subscribe(leg_override_topic,1,&InverseDynamics::legOverrideCallback, this);
   leg_command_array_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_command_array_topic,1);
 
-  // Start standing
+  // Start sitting
   control_mode_ = SIT;
 
   step_number = 0;
@@ -445,7 +445,7 @@ void InverseDynamics::publishLegCommandArray() {
       return;
   }
 
-  ROS_INFO_THROTTLE(0.5, " ID control mode: %d", control_mode_);
+  //ROS_INFO_THROTTLE(0.5, " ID control mode: %d", control_mode_);
 
   // Pack 4 LegCommands in the LegCommandArray
   // Pack 3 MotorCommands in a LegCommand
