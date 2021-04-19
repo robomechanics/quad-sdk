@@ -7,7 +7,7 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
     /// Ghost MBLink interface class
   mblink_.start(argc,argv);
   mblink_.rxstart();
-  mblink_.setRetry("UPST_ADDRESS", 255);
+  mblink_.setRetry("_UPST_ADDRESS", 255);
   mblink_.setRetry("UPST_LOOP_DELAY", 5);
 
   // Load rosparams from parameter server
