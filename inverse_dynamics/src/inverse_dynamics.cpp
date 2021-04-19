@@ -12,7 +12,7 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh_,"topics/state/trajectory",trajectory_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/grfs",grf_input_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/joint_command",leg_command_array_topic);
-  spirit_utils::loadROSParam(nh_,"topics/body_force/leg_override",leg_override_topic);
+  spirit_utils::loadROSParam(nh_,"topics/control/leg_override",leg_override_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
   
   // Setup pubs and subs

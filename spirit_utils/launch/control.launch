@@ -15,6 +15,6 @@
     </group>
 
     <!-- Launch the leg override-->
-    <node name="leg_overrider" pkg="body_force_estimator" type="leg_overrider_node" output="screen"/>
+    <node name="leg_overrider" pkg="inverse_dynamics" type="leg_overrider_node" output="screen"/>
 
 </launch>

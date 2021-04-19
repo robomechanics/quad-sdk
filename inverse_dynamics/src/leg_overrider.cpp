@@ -1,4 +1,4 @@
-#include "body_force_estimator/leg_overrider.h"
+#include "inverse_dynamics/leg_overrider.h"
 
 LegOverrider::LegOverrider(ros::NodeHandle nh) {
   nh_ = nh;
@@ -6,7 +6,7 @@ LegOverrider::LegOverrider(ros::NodeHandle nh) {
   // Load rosparams from parameter server
   std::string body_force_topic, leg_override_topic;
   nh.param<std::string>("topics/body_force/joint_torques", body_force_topic, "/body_force/joint_torques");
-  nh.param<std::string>("topics/body_force/leg_override", leg_override_topic, "/body_force/leg_override");
+  nh.param<std::string>("topics/control/leg_override", leg_override_topic, "/control/leg_override");
   nh.param<double>("body_force_estimator/update_rate", update_rate_, 100); // add a param for your package instead of using the estimator one
 
   // Setup pubs and subs here

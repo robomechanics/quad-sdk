@@ -10,7 +10,6 @@ topics:
   body_force:
     joint_torques: /body_force/joint_torques
     toe_forces: /body_force/toe_forces
-    leg_override: /body_force/leg_override
   # joint_command: /spirit/joint_controller/command
   trajectory: /robot_plan
   state: # These should not change for the remapping to work in some launch files
@@ -21,6 +20,7 @@ topics:
     grfs: /control/grfs
     joint_command: /control/joint_command
     mode: /control/mode
+    leg_override: /control/leg_override
   visualization:
     body_plan: /visualization/body_plan
     grf_plan: /visualization/grf_plan

@@ -130,7 +130,6 @@ include_directories(
 add_library(${PROJECT_NAME}
   src/body_force_estimator.cpp
   src/body_force_estimator_dynamics.cpp
-  src/leg_overrider.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -142,7 +141,6 @@ add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EX
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node src/body_force_estimator_node.cpp)
-add_executable(leg_overrider_node src/leg_overrider_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -156,10 +154,6 @@ add_executable(leg_overrider_node src/leg_overrider_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(body_force_estimator_node
-  body_force_estimator
-  ${catkin_LIBRARIES}
-)
-target_link_libraries(leg_overrider_node
   body_force_estimator
   ${catkin_LIBRARIES}
 )
