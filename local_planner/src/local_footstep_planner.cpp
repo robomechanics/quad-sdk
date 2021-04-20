@@ -52,7 +52,8 @@ void LocalFootstepPlanner::computeContactSchedule(int phase,
 void LocalFootstepPlanner::computeContactSchedule(double t,
   std::vector<std::vector<bool>> &contact_schedule) {
 
-  int phase = std::ceil(t/(period_*dt_));
+  int traj_index = std::round(t/dt_);
+  int phase = traj_index % period_;
   computeContactSchedule(phase, contact_schedule);
 }
 
@@ -88,14 +89,14 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
           hip_position_midstance);
         foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
 
-        // Combine these measures to get the nominal foot position
+        // Combine these measures to get the nominal foot position and grab correct height
         foot_position_nominal = grf_weight_*foot_position_grf +
           (1-grf_weight_)*hip_position_midstance;
         foot_position_nominal.z() = terrain_.getGroundHeight(foot_position_nominal.x(),
           foot_position_nominal.y());
 
         // (Optional) Optimize the foothold location to get the final position
-        // foot_position = map_search::optimizeFoothold(foot_position_nominal, stuff); ADAM
+        // foot_position = map_search::optimizeFoothold(foot_position_nominal, stuff); // ADAM
         foot_position = foot_position_nominal;
 
         // Store foot position in the Eigen matrix
@@ -111,7 +112,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
 }
 
 void LocalFootstepPlanner::computeFootPlanMsgs(
-  const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions
+  const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
   spirit_msgs::MultiFootPlanDiscrete &multi_foot_plan_discrete_msg,
   spirit_msgs::MultiFootPlanContinuous &multi_foot_plan_continuous_msg) {
 
@@ -123,21 +124,33 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
 
       // Create the foot state message
       spirit_msgs::FootState foot_state_msg;
-      foot_state_msg.header = multi_foot_plan_discrete_msg.header;
-      foot_state_msg.header.stamp = multi_foot_plan_discrete_msg.header.stamp + 
+      foot_state_msg.header = multi_foot_plan_continuous_msg.header;
+      foot_state_msg.header.stamp = multi_foot_plan_continuous_msg.header.stamp + 
         ros::Duration(i*dt_);
 
+      // Add to the continuous message
       if (contact_schedule.at(i).at(j)) { // In contact
 
-        foot_state_msg.position = eigenToFootStateMsg(foot_positions)
+        Eigen::VectorXd foot_position = foot_positions.block<1,3>(i,3*j);
+        Eigen::VectorXd foot_velocity = Eigen::VectorXd::Zero(3);
+        spirit_utils::eigenToFootStateMsg(foot_position, foot_velocity, foot_state_msg);
+        foot_state_msg.contact = true;
 
       } else { // In swing
 
+        Eigen::VectorXd foot_position;
+        Eigen::VectorXd foot_velocity;
+        spirit_utils::eigenToFootStateMsg(foot_position, foot_velocity, foot_state_msg);
+        foot_state_msg.contact = false;
+
       }
 
-      if (!contact_schedule[i-1][j] && contact_schedule[i][j]) {
-
+      // If this is a touchdown event, add to the discrete message
+      if (!contact_schedule.at(i-1).at(j) && contact_schedule.at(i).at(j)) {
+        multi_foot_plan_discrete_msg.feet[j].footholds.push_back(foot_state_msg);
       }
+
+      multi_foot_plan_continuous_msg.states[i].feet.push_back(foot_state_msg);
 
     }
   }

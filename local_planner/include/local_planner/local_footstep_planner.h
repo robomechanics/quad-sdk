@@ -7,8 +7,8 @@
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/FootState.h>
 #include <spirit_msgs/MultiFootState.h>
-#include <spirit_msgs/MultiFootPlanContinuous.h>
 #include <spirit_msgs/FootPlanDiscrete.h>
+#include <spirit_msgs/MultiFootPlanContinuous.h>
 #include <spirit_msgs/MultiFootPlanDiscrete.h>
 #include <spirit_utils/fast_terrain_map.h>
 #include <spirit_utils/function_timer.h>
@@ -84,7 +84,7 @@ class LocalFootstepPlanner {
      * @param[out] multi_foot_plan_continuous_msg Message for continuous foot trajectories
      */
     void computeFootPlanMsgs(
-      const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions
+      const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
       spirit_msgs::MultiFootPlanDiscrete &multi_foot_plan_discrete_msg,
       spirit_msgs::MultiFootPlanContinuous &multi_foot_plan_continuous_msg);
 

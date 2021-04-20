@@ -174,7 +174,7 @@ void LocalPlanner::processRobotStateMsg() {
     return;
 
   current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
-  current_foot_positions_ = spirit_utils::footStateMsgToEigen(robot_state_msg_->feet);
+  spirit_utils::footStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_);
   current_time_ = (robot_state_msg_->header.stamp - body_plan_msg_->header.stamp).toSec();
 }
 
@@ -206,7 +206,7 @@ void LocalPlanner::publishLocalPlan() {
   // Create messages to publish
   spirit_msgs::LocalPlan local_plan_msg;
   spirit_msgs::MultiFootPlanDiscrete multi_foot_plan_discrete_msg;
-  spirit_msgs::MultiFootPlanDiscrete multi_foot_plan_continuous_msg;
+  spirit_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg;
 
   // Update the headers of all messages
   ros::Time timestamp = ros::Time::now();
@@ -214,8 +214,6 @@ void LocalPlanner::publishLocalPlan() {
   local_plan_msg.header.frame_id = map_frame_;
   multi_foot_plan_discrete_msg.header = local_plan_msg.header;
   multi_foot_plan_continuous_msg.header = local_plan_msg.header;
-
-
 
   local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_,
     multi_foot_plan_discrete_msg, multi_foot_plan_continuous_msg);
