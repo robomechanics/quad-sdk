@@ -129,8 +129,8 @@ private:
   // Current positions of each foot
   Eigen::VectorXd current_foot_positions_;
 
-  /// Current time in the global plan
-  double current_time_;
+  /// Current index in the global plan
+  int current_plan_index_;
 
   /// Minimum normal force in contact phase
   double normal_lo_;
@@ -143,9 +143,6 @@ private:
 
   /// local planner timestep (seconds)
   double dt_;
-
-  /// Current index in the global plan
-  int current_plan_index_;
 
   /// MPC Horizon length
   int N_;

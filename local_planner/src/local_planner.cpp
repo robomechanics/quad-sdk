@@ -189,15 +189,14 @@ void LocalPlanner::processRobotStateMsg() {
 
   current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
   spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_);
-  current_time_ = (robot_state_msg_->header.stamp - body_plan_msg_->header.stamp).toSec();
 }
 
 void LocalPlanner::computeLocalPlan() {
 
-  current_plan_index_ = std::round(current_time_/dt_);
-
   if (terrain_.isEmpty() || body_plan_msg_ == NULL || robot_state_msg_ == NULL)
     return;
+
+  current_plan_index_ = std::round((ros::Time::now() - body_plan_msg_->header.stamp).toSec()/dt_);
 
   // Initialize foot positions and contact schedule
   foot_positions_ = hip_projected_foot_positions_;
