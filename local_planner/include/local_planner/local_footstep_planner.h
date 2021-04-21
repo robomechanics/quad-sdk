@@ -55,15 +55,9 @@ class LocalFootstepPlanner {
     
     /**
      * @brief Compute the contact schedule based on the current phase
-     * @param[in] phase current phase as index
+     * @param[in] current_plan_index_ current index in the plan
      */
-    void computeContactSchedule(int phase, std::vector<std::vector<bool>> &contact_schedule);
-
-    /**
-     * @brief Compute the contact schedule based on the current phase
-     * @param[in] t Current time in trajectory
-     */
-    void computeContactSchedule(double t, std::vector<std::vector<bool>> &contact_schedule);
+    void computeContactSchedule(int current_plan_index_, std::vector<std::vector<bool>> &contact_schedule);
 
     /**
      * @brief Update the discrete footstep plan with the current plan
@@ -80,13 +74,16 @@ class LocalFootstepPlanner {
      * @brief Convert the foot positions and contact schedule into ros messages for the foot plan
      * @param[in] contact_schedule Current contact schedule
      * @param[in] foot_positions Foot positions over the horizon
-     * @param[out] multi_foot_plan_discrete_msg Message for discrete footholds
-     * @param[out] multi_foot_plan_continuous_msg Message for continuous foot trajectories
+     * @param[in] current_plan_index Current index in the global plan
+     * @param[out] past_footholds_msg Message for previous footholds
+     * @param[out] future_footholds_msg Message for future (planned) footholds
+     * @param[out] foot_plan_continuous_msg Message for continuous foot trajectories
      */
     void computeFootPlanMsgs(
       const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
-      spirit_msgs::MultiFootPlanDiscrete &multi_foot_plan_discrete_msg,
-      spirit_msgs::MultiFootPlanContinuous &multi_foot_plan_continuous_msg);
+      int current_plan_index, spirit_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+      spirit_msgs::MultiFootPlanDiscrete &future_footholds_msg,
+      spirit_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
 
   private:
 
@@ -94,6 +91,80 @@ class LocalFootstepPlanner {
      * @brief Update the continuous foot plan to match the discrete
      */
     void updateContinuousPlan();
+
+    /**
+     * @brief Compute the foot state for a swing foot as a function of the previous and next steps
+     * @param[in] foot_position_prev Previous foothold
+     * @param[in] foot_position_next Next foothold
+     * @param[in] swing_phase Phase variable for swing phase (as a fraction)
+     * @param[in] swing_duration Duration of swing (in timesteps)
+     * @param[out] foot_position Position of swing foot
+     * @param[out] foot_velocity Velocity of swing foot
+     */
+    void computeSwingFootState(const Eigen::Vector3d &foot_position_prev,
+      const Eigen::Vector3d &foot_position_next, double swing_phase, int swing_duration,
+      Eigen::Vector3d &foot_position, Eigen::Vector3d &foot_velocity);
+
+    /**
+     * @brief Extract foot data from the matrix
+     */
+    inline Eigen::Vector3d getFootData(const Eigen::MatrixXd &foot_state_vars,
+      int horizon_index, int foot_index) {
+
+      return foot_state_vars.block<1,3>(horizon_index,3*foot_index);
+    }
+
+    /**
+     * @brief Check if a foot is in contact at a given index
+     */
+    inline bool isContact(const std::vector<std::vector<bool>> &contact_schedule,
+      int horizon_index, int foot_index) {
+
+      return (contact_schedule.at(horizon_index).at(foot_index));
+    }
+
+    /**
+     * @brief Check if a foot is newly in contact at a given index
+     */
+    inline bool isNewContact(const std::vector<std::vector<bool>> &contact_schedule,
+      int horizon_index, int foot_index) {
+      
+      if (horizon_index == 0)
+        return false;
+
+      return (!isContact(contact_schedule, horizon_index-1, foot_index) && 
+        isContact(contact_schedule, horizon_index, foot_index));
+    }
+
+    /**
+     * @brief Check if a foot is newly in swing at a given index
+     */
+    inline bool isNewLiftoff(const std::vector<std::vector<bool>> &contact_schedule,
+      int horizon_index, int foot_index) {
+
+      if (horizon_index == 0)
+        return false;
+
+      return (isContact(contact_schedule, horizon_index-1, foot_index) && 
+        !isContact(contact_schedule, horizon_index, foot_index));
+    }
+
+    /**
+     * @brief Compute the index of the next contact for a foot. If none exist return the last.
+     */
+    inline int getNextContactIndex(const std::vector<std::vector<bool>> &contact_schedule,
+      int horizon_index, int foot_index) {
+
+      // Loop through the rest of this contact schedule, if a new contact is found return its index
+      for (int i_touchdown = horizon_index; i_touchdown < horizon_length_; i_touchdown++) {
+        if (isNewContact(contact_schedule, i_touchdown, foot_index)) {
+          return i_touchdown;
+        }
+      }
+
+      // If no contact is found, return the last index in the horizon
+      return (horizon_length_-1);
+    }
 
     /// Handle for the map frame
     std::string map_frame_;

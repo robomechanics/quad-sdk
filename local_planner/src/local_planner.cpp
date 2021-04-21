@@ -40,7 +40,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   nominal_joint_state << 0, 0.78, 1.57; // Default stand angles
 
   for (int i = 0; i < N_; ++i) {
-    for (int j = 0; j < num_legs_; ++j) {
+    for (int j = 0; j < num_feet_; ++j) {
       Eigen::Vector3d toe_body_pos;
       kinematics_->bodyToFootFK(j, nominal_joint_state, toe_body_pos);
       hip_projected_foot_positions_.block<1,3>(i,j*3) = toe_body_pos;
@@ -142,6 +142,8 @@ void LocalPlanner::initLocalFootstepPlanner() {
   local_footstep_planner_ = std::make_shared<LocalFootstepPlanner>();
   local_footstep_planner_->setTemporalParams(dt_, period, horizon_length);
   local_footstep_planner_->setSpatialParams(ground_clearance, grf_weight, kinematics_);
+
+  past_footholds_msg_.feet.resize(num_feet_);
 }
 
 void LocalPlanner::terrainMapCallback(
@@ -155,6 +157,18 @@ void LocalPlanner::terrainMapCallback(
 }
 
 void LocalPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) {
+
+  // If this is the first plan, initialize the message of past footholds with current foot positions
+  if (body_plan_msg_ == NULL && robot_state_msg_ != NULL) {
+    past_footholds_msg_.header = msg->header;
+    for (int i = 0; i < num_feet_; i++) {
+      past_footholds_msg_.feet[i].footholds.clear();
+      past_footholds_msg_.feet[i].footholds.push_back(robot_state_msg_->feet.feet[i]);
+      past_footholds_msg_.feet[i].footholds.front().header = past_footholds_msg_.header;
+      past_footholds_msg_.feet[i].footholds.front().traj_index = 0;
+    }
+  }
+
   body_plan_msg_ = msg;
 }
 
@@ -174,11 +188,13 @@ void LocalPlanner::processRobotStateMsg() {
     return;
 
   current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
-  spirit_utils::footStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_);
+  spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_);
   current_time_ = (robot_state_msg_->header.stamp - body_plan_msg_->header.stamp).toSec();
 }
 
 void LocalPlanner::computeLocalPlan() {
+
+  current_plan_index_ = std::round(current_time_/dt_);
 
   if (terrain_.isEmpty() || body_plan_msg_ == NULL || robot_state_msg_ == NULL)
     return;
@@ -186,7 +202,7 @@ void LocalPlanner::computeLocalPlan() {
   // Initialize foot positions and contact schedule
   foot_positions_ = hip_projected_foot_positions_;
   foot_positions_.row(0) = current_foot_positions_;
-  local_footstep_planner_->computeContactSchedule(current_time_, contact_schedule_);
+  local_footstep_planner_->computeContactSchedule(current_plan_index_, contact_schedule_);
 
   // Iteratively generate body and footstep plans (non-parallelizable)
   for (int i = 0; i < iterations_; i++) {
@@ -205,58 +221,46 @@ void LocalPlanner::publishLocalPlan() {
 
   // Create messages to publish
   spirit_msgs::LocalPlan local_plan_msg;
-  spirit_msgs::MultiFootPlanDiscrete multi_foot_plan_discrete_msg;
-  spirit_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg;
+  spirit_msgs::MultiFootPlanDiscrete future_footholds_msg;
+  spirit_msgs::MultiFootPlanContinuous foot_plan_msg;
 
   // Update the headers of all messages
   ros::Time timestamp = ros::Time::now();
   local_plan_msg.header.stamp = timestamp;
   local_plan_msg.header.frame_id = map_frame_;
-  multi_foot_plan_discrete_msg.header = local_plan_msg.header;
-  multi_foot_plan_continuous_msg.header = local_plan_msg.header;
+  future_footholds_msg.header = local_plan_msg.header;
+  foot_plan_msg.header = local_plan_msg.header;
 
   local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_,
-    multi_foot_plan_discrete_msg, multi_foot_plan_continuous_msg);
+    current_plan_index_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
 
-  // // Compute the continuous-time foot plan msg for publishing
-  // local_footstep_planner_.computeContinuousPlan(contact_schedule_, foot_positions_,
-  //   foot_plan_discrete_msg_, foot_plan_continuous_msg_); 
 
-  // if (foot_plan_continuous_msg_.states.size() == 0)
-  //   return;
+  // Add body, foot, joint, and grf data to the local plan message
+  for (int i = 0; i < N_; i++) {
 
-  // // Initialize local plan message, set timestamp to now
-  // spirit_msgs::LocalPlan local_plan_msg;
-  // local_plan_msg.header.stamp = ros::Time::now();
-  // local_plan_msg.header.frame = map_frame_;
+    ros::Time timestamp = local_plan_msg.header.stamp + ros::Duration(i*dt_);
 
-  // // Add body, foot, joint, and grf data to the local plan message
-  // for (int i = 0; i < body_plan_; i++) {
+    spirit_msgs::RobotState robot_state_msg;
+    robot_state_msg.header.stamp = timestamp;
+    robot_state_msg.header.frame_id = map_frame_;
+    robot_state_msg.body = spirit_utils::eigenToOdomMsg(body_plan_.row(i));
+    robot_state_msg.feet = foot_plan_msg.states[i];
+    spirit_utils::ikRobotState(*kinematics_, robot_state_msg);
 
-  //   ros::Time timestamp = local_plan_msg.header.stamp + ros::Duration(i*dt_);
-
-  //   spirit_msgs::RobotState robot_state_msg;
-  //   robot_state_msg.header.stamp = timestamp;
-  //   robot_state_msg.header.frame = map_frame_;
-
-  //   robot_state_msg.body = eigenToOdomMsg(body_plan_.row(i));
-  //   robot_state_msg.feet = foot_plan_continuous_msg_[i];
-  //   math_utils::ikRobotState(robot_state_msg);
-
-  //   spirit_msgs::GRFArray grf_array_msg;
-  //   grf_array_msg.header.stamp = timestamp;
-  //   grf_array_msg.header.frame = map_frame_;
-
-  //   grf_array_msg = eigenToGRFArrayMsg(grf_plan_.row(i), foot_plan_continuous_msg_[i]);
+    spirit_msgs::GRFArray grf_array_msg;
+    grf_array_msg.header.stamp = timestamp;
+    grf_array_msg.header.frame_id = map_frame_;
+    grf_array_msg = spirit_utils::eigenToGRFArrayMsg(grf_plan_.row(i), foot_plan_msg.states[i]);
     
+    local_plan_msg.states.push_back(robot_state_msg);
+    local_plan_msg.grfs.push_back(grf_array_msg);
+    local_plan_msg.plan_indices.push_back(current_plan_index_ + i);
+  }
 
-  //   local_plan_msg.states.push_back(robot_state_msg);
-  //   local_plan_msg.grfs.push_back(grf_array_msg);
-  // }
-
-  // // Publish
-  // local_plan_pub_.publish(local_plan_msg);
-  // foot_plan_discrete_pub_.publish(foot_plan_discrete_msg_);
+  // Publish
+  local_plan_pub_.publish(local_plan_msg);
+  foot_plan_discrete_pub_.publish(future_footholds_msg);
+  foot_plan_continuous_pub_.publish(foot_plan_msg);
 }
 
 void LocalPlanner::spin() {

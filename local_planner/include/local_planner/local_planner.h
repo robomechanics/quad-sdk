@@ -120,6 +120,9 @@ private:
   /// Most recent robot state
 	spirit_msgs::RobotState::ConstPtr robot_state_msg_;
 
+  /// Past foothold locations
+	spirit_msgs::MultiFootPlanDiscrete past_footholds_msg_;
+
   /// Current state (ground truth or estimate)
   Eigen::VectorXd current_state_;
 
@@ -138,8 +141,11 @@ private:
   /// Number of iterations between body and footstep planners
   int iterations_;
 
-  /// MPC and trajectory publisher timestep (seconds)
+  /// local planner timestep (seconds)
   double dt_;
+
+  /// Current index in the global plan
+  int current_plan_index_;
 
   /// MPC Horizon length
   int N_;
@@ -151,7 +157,7 @@ private:
   const int Nu_ = 13;
 
   /// Number of legs
-  const int num_legs_ = 4;
+  const int num_feet_ = 4;
 
   /// Number of joints per leg
   const int num_joints_per_leg_ = 3;

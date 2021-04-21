@@ -217,10 +217,18 @@ void interpBodyPlan(spirit_msgs::BodyPlan msg, double t,
 
   /**
    * @brief Convert robot foot state message to Eigen
+   * @param[in] foot_state_msg MultiFootState msg containing foot position information
+   * @param[out] foot_position Eigen vector with foot position
+   */
+  void footStateMsgToEigen(const spirit_msgs::FootState &foot_state_msg, 
+    Eigen::Vector3d &foot_position);
+
+  /**
+   * @brief Convert robot multi foot state message to Eigen
    * @param[in] multi_foot_state_msg MultiFootState msg containing foot position information
    * @param[out] foot_positions Eigen vector with foot state data
    */
-  void footStateMsgToEigen(const spirit_msgs::MultiFootState &multi_foot_state_msg, 
+  void multiFootStateMsgToEigen(const spirit_msgs::MultiFootState &multi_foot_state_msg, 
     Eigen::VectorXd &foot_positions);
 
   /**
