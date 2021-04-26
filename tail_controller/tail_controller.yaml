@@ -1,2 +1,3 @@
 tail_controller:
-  update_rate: 500
+  update_rate: 1000
+  track_traj: false

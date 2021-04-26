@@ -79,6 +79,8 @@ private:
 	/// Target points to hit (hip angle, knee angle)
 	std::vector<std::pair<double,double>> target_pts_;
 
+	std::vector<std::pair<double,double>> target_torque_;
+
 	/// Vector of timestamps to hit each target_pt at
 	std::vector<double> target_times_;
 
@@ -102,6 +104,8 @@ private:
 
 	/// Numerically differentiate trajectory for velocity command
 	bool use_diff_for_velocity_;
+
+	bool track_traj_;
 };
 
 
