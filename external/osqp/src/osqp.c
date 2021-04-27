@@ -36,7 +36,7 @@ void osqp_set_default_settings(OSQPSettings *settings) {
 # endif /* ifdef PROFILING */
 #endif  /* if EMBEDDED != 1 */
 
-  settings->max_iter      = MAX_ITER;                /* maximum iterations to
+  settings->max_iter      =  OSQP_MAX_ITER;                /* maximum iterations to
                                                         take */
   settings->eps_abs       = (c_float)EPS_ABS;        /* absolute convergence
                                                         tolerance */
