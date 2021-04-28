@@ -61,6 +61,7 @@ $(function() {
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classBodyForceEstimator-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">BodyForceEstimator Class Reference</div>  </div>
@@ -81,9 +82,13 @@ Public Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBodyForceEstimator.html#af8a0398a8c996bd8bd193a833a1a3894">spin</a> ()</td></tr>
 <tr class="memdesc:af8a0398a8c996bd8bd193a833a1a3894"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls ros spinOnce and pubs data at set frequency. <br /></td></tr>
 <tr class="separator:af8a0398a8c996bd8bd193a833a1a3894"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38e299d7ec7003e7ae385501af6a6450"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBodyForceEstimator.html#a38e299d7ec7003e7ae385501af6a6450">robotStateCallback</a> (const spirit_msgs::RobotState::ConstPtr &amp;msg)</td></tr>
-<tr class="memdesc:a38e299d7ec7003e7ae385501af6a6450"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new state estimates.  <a href="#a38e299d7ec7003e7ae385501af6a6450">More...</a><br /></td></tr>
-<tr class="separator:a38e299d7ec7003e7ae385501af6a6450"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a327ddbe972ac16930d41b1d6b77196df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBodyForceEstimator.html#a327ddbe972ac16930d41b1d6b77196df">robotStateCallback</a> (const sensor_msgs::JointState::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a327ddbe972ac16930d41b1d6b77196df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new state estimates.  <a href="#a327ddbe972ac16930d41b1d6b77196df">More...</a><br /></td></tr>
+<tr class="separator:a327ddbe972ac16930d41b1d6b77196df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad58160e251444612477211477d0f8a02"><td class="memItemLeft" align="right" valign="top"><a id="ad58160e251444612477211477d0f8a02"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBodyForceEstimator.html#ad58160e251444612477211477d0f8a02">update</a> ()</td></tr>
+<tr class="memdesc:ad58160e251444612477211477d0f8a02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the momentum observer external force estimation update. <br /></td></tr>
+<tr class="separator:ad58160e251444612477211477d0f8a02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28347e575435b6d7dfd7a7fdf0d10537"><td class="memItemLeft" align="right" valign="top"><a id="a28347e575435b6d7dfd7a7fdf0d10537"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBodyForceEstimator.html#a28347e575435b6d7dfd7a7fdf0d10537">publishBodyForce</a> ()</td></tr>
 <tr class="memdesc:a28347e575435b6d7dfd7a7fdf0d10537"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish body force force estimates. <br /></td></tr>
@@ -99,6 +104,10 @@ ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBodyForceEstimator.html#acdbe9d81de8b61cbc5c3907d4232ce18">body_force_pub_</a></td></tr>
 <tr class="memdesc:acdbe9d81de8b61cbc5c3907d4232ce18"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS publisher for body force force estimates. <br /></td></tr>
 <tr class="separator:acdbe9d81de8b61cbc5c3907d4232ce18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fe737490b30b8335af85b98e6cea732"><td class="memItemLeft" align="right" valign="top"><a id="a4fe737490b30b8335af85b98e6cea732"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBodyForceEstimator.html#a4fe737490b30b8335af85b98e6cea732">toe_force_pub_</a></td></tr>
+<tr class="memdesc:a4fe737490b30b8335af85b98e6cea732"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS publisher for toe force estimates. <br /></td></tr>
+<tr class="separator:a4fe737490b30b8335af85b98e6cea732"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a300ee0e68f91f4e6da446bbdf20f3ce5"><td class="memItemLeft" align="right" valign="top"><a id="a300ee0e68f91f4e6da446bbdf20f3ce5"></a>
 ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBodyForceEstimator.html#a300ee0e68f91f4e6da446bbdf20f3ce5">nh_</a></td></tr>
 <tr class="memdesc:a300ee0e68f91f4e6da446bbdf20f3ce5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nodehandle to pub to and sub from. <br /></td></tr>
@@ -107,6 +116,22 @@ ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBodyForceEstimator.html#add0bcbaca979d4b257f512df968ee7a4">update_rate_</a></td></tr>
 <tr class="memdesc:add0bcbaca979d4b257f512df968ee7a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update rate for sending and receiving data;. <br /></td></tr>
 <tr class="separator:add0bcbaca979d4b257f512df968ee7a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafdac0d14262a06689d05a1d60370305"><td class="memItemLeft" align="right" valign="top"><a id="aafdac0d14262a06689d05a1d60370305"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBodyForceEstimator.html#aafdac0d14262a06689d05a1d60370305">K_O_</a></td></tr>
+<tr class="memdesc:aafdac0d14262a06689d05a1d60370305"><td class="mdescLeft">&#160;</td><td class="mdescRight">Momentum observer gain. <br /></td></tr>
+<tr class="separator:aafdac0d14262a06689d05a1d60370305"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a87b962d1b85943e1678fca857d98d743"><td class="memItemLeft" align="right" valign="top"><a id="a87b962d1b85943e1678fca857d98d743"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>r_mom</b> [12]</td></tr>
+<tr class="separator:a87b962d1b85943e1678fca857d98d743"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa405db61c4fb99edc9b24283c96447ad"><td class="memItemLeft" align="right" valign="top"><a id="aa405db61c4fb99edc9b24283c96447ad"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>p_hat</b> [12]</td></tr>
+<tr class="separator:aa405db61c4fb99edc9b24283c96447ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a546bf4180aa5b843e447e8271b858a39"><td class="memItemLeft" align="right" valign="top"><a id="a546bf4180aa5b843e447e8271b858a39"></a>
+sensor_msgs::JointState::ConstPtr&#160;</td><td class="memItemRight" valign="bottom"><b>last_state_msg_</b></td></tr>
+<tr class="separator:a546bf4180aa5b843e447e8271b858a39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Estimates body contact forces. </p>
@@ -140,8 +165,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a38e299d7ec7003e7ae385501af6a6450"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a38e299d7ec7003e7ae385501af6a6450">&#9670;&nbsp;</a></span>robotStateCallback()</h2>
+<a id="a327ddbe972ac16930d41b1d6b77196df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a327ddbe972ac16930d41b1d6b77196df">&#9670;&nbsp;</a></span>robotStateCallback()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -149,7 +174,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
         <tr>
           <td class="memname">void BodyForceEstimator::robotStateCallback </td>
           <td>(</td>
-          <td class="paramtype">const spirit_msgs::RobotState::ConstPtr &amp;&#160;</td>
+          <td class="paramtype">const sensor_msgs::JointState::ConstPtr &amp;&#160;</td>
           <td class="paramname"><em>msg</em></td><td>)</td>
           <td></td>
         </tr>

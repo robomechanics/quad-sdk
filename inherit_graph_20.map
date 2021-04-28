@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structmatplotlibcpp_1_1detail_1_1plot__impl.html" title="matplotlibcpp::detail\l::plot_impl\&lt; IsYDataCallable \&gt;" alt="" coords="5,5,229,47"/>
+<area shape="rect" id="node1" href="$structmatplotlibcpp_1_1detail_1_1is__callable__impl_3_01true_00_01T_01_4_1_1Fallback.html" title="matplotlibcpp::detail\l::is_callable_impl\&lt; true,\l T \&gt;::Fallback" alt="" coords="5,5,185,61"/>
+<area shape="rect" id="node2" href="$structmatplotlibcpp_1_1detail_1_1is__callable__impl_3_01true_00_01T_01_4_1_1Derived.html" title="matplotlibcpp::detail\l::is_callable_impl\&lt; true,\l T \&gt;::Derived" alt="" coords="233,39,413,95"/>
 </map>

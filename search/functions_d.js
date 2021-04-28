@@ -17,6 +17,7 @@ var searchData=
   ['publishimu',['publishImu',['../classRobotProxy.html#ae1ca4bb51deabab2da1a4f11913ad561',1,'RobotProxy']]],
   ['publishjointencoders',['publishJointEncoders',['../classRobotProxy.html#a52f9e95a9ca4bc62f711b5f17da2bd00',1,'RobotProxy']]],
   ['publishlegcommandarray',['publishLegCommandArray',['../classInverseDynamics.html#a85468b1d8e8c7744d57a99ede6cb8b80',1,'InverseDynamics']]],
+  ['publishlegoverride',['publishLegOverride',['../classLegOverrider.html#a3b37678c7445c4ab02636ff4719bec55',1,'LegOverrider']]],
   ['publishmap',['publishMap',['../classTerrainMapPublisher.html#aa11b7631c0f0c3c33f9a118be181a102',1,'TerrainMapPublisher']]],
   ['publishmblink',['publishMBlink',['../classMBLinkConverter.html#a915f32cb08f7e1278d4ec98b730ec7cc',1,'MBLinkConverter']]],
   ['publishmocap',['publishMocap',['../classRobotProxy.html#a7c1d653ac5acadd82e8f1dfc4d913d34',1,'RobotProxy']]],

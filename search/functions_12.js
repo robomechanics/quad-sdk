@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['update',['update',['../classBodyForceEstimator.html#ad58160e251444612477211477d0f8a02',1,'BodyForceEstimator']]],
   ['update_5fcontact',['update_contact',['../classQuadrupedMPC.html#ad35c5cdc969b222941e3a58c9d727d81',1,'QuadrupedMPC']]],
   ['update_5fdynamics',['update_dynamics',['../classQuadrupedMPC.html#a297f13d55d07cf7a1699697360d551f6',1,'QuadrupedMPC']]],
   ['update_5fdynamics_5fhip_5fprojected_5ffeet',['update_dynamics_hip_projected_feet',['../classQuadrupedMPC.html#aa48870ef295e0ffe20696f1c7c61a0bf',1,'QuadrupedMPC']]],
