@@ -1,10 +1,10 @@
 local_planner:
   update_rate: 50
   horizon_length: 10
-  timestep: 0.05
+  timestep: 0.02
   iterations: 1
 
-mpc_controller:
+local_body_planner:
   body_mass: 11.5
   body_ixx: 0.1
   body_iyy: 0.2
@@ -16,3 +16,8 @@ mpc_controller:
   friction_mu: 0.4
   normal_lo: 3
   normal_hi: 70
+
+local_footstep_planner:
+  grf_weight: 0.0
+  period: 0.5
+  ground_clearance: 0.1

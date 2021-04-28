@@ -11,6 +11,8 @@
 #include <spirit_msgs/GRFArray.h>
 #include <std_msgs/UInt8.h>
 #include <spirit_msgs/RobotState.h>
+#include <spirit_msgs/BodyPlan.h>
+#include <spirit_msgs/LocalPlan.h>
 #include <spirit_msgs/MotorCommand.h>
 #include <spirit_msgs/LegCommand.h>
 #include <spirit_msgs/LegCommandArray.h>
@@ -46,22 +48,32 @@ private:
 	 * @param[in] msg New control mode
 	 */ 
 	void controlModeCallback(const std_msgs::UInt8::ConstPtr& msg);
+	
 	/**
-	 * @brief Callback function to handle new control input (GRF)
-	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
+	 * @brief Callback function to handle new body plan
+	 * @param[in] msg input message contining the body plan
 	 */
-	void grfInputCallback(const spirit_msgs::GRFArray::ConstPtr& msg);
+	void bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
+	
+	/**
+	 * @brief Callback function to handle new local plan (states and GRFs)
+	 * @param[in] msg input message contining the local plan
+	 */
+	void localPlanCallback(const spirit_msgs::LocalPlan::ConstPtr& msg);
+	
 	/**
 	 * @brief Callback function to handle new control input (GRF)
 	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
 	 */
 	void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
-		/**
+	
+	/**
 	 * @brief Callback function to handle new control input (GRF)
 	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
 	 */
 	void trajectoryCallback(const spirit_msgs::RobotState::ConstPtr& msg);
-		/**
+	
+	/**
 	 * @brief Callback function to handle new control input (GRF)
 	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
 	 */
@@ -70,14 +82,14 @@ private:
 	/// Subscriber for control mode
 	ros::Subscriber control_mode_sub_;
 
-	/// ROS subscriber for control input
-	ros::Subscriber grf_input_sub_;
+	/// ROS subscriber for body plan
+	ros::Subscriber body_plan_sub_;
+
+		/// ROS subscriber for local plan
+	ros::Subscriber local_plan_sub_;
 
 	/// ROS subscriber for state estimate
 	ros::Subscriber robot_state_sub_;
-
-	/// ROS subscriber for trajectory
-	ros::Subscriber trajectory_sub_;
 
 	/// ROS publisher for inverse dynamics
 	ros::Publisher leg_command_array_pub_;
@@ -87,6 +99,9 @@ private:
 
 	/// Update rate for sending and receiving data;
 	double update_rate_;
+
+	/// Timestep of local plan
+	double dt_;
 
 	/// Robot mode
 	int control_mode_;
@@ -103,14 +118,14 @@ private:
 	/// Define ids for control modes: Stand to sit
 	const int STAND_TO_SIT = 3;
 	
-	/// Most recent control input
-	spirit_msgs::GRFArray last_grf_input_msg_;
+	/// Most recent body plan
+	spirit_msgs::BodyPlan::ConstPtr last_body_plan_msg_;
+	
+		/// Most recent local plan
+	spirit_msgs::LocalPlan::ConstPtr last_local_plan_msg_;
 
 	/// Most recent state estimate
-	spirit_msgs::RobotState last_robot_state_msg_;
-
-	/// Most recent trajectory state
-	spirit_msgs::RobotState last_trajectory_msg_;
+	spirit_msgs::RobotState::ConstPtr last_robot_state_msg_;
 
 	/// Duration for sit to stand behavior
 	const double transition_duration_ = 2.0;

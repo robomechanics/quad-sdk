@@ -7,6 +7,8 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   local_body_planner_(), local_footstep_planner_() {
 
 	nh_ = nh;
+  
+  printf("In constructor\n");
 
     // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic, local_plan_topic,
@@ -35,9 +37,14 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   spirit_utils::loadROSParam(nh_, "local_planner/timestep",dt_);
   spirit_utils::loadROSParam(nh_, "local_planner/iterations",iterations_);
 
+  // Convert kinematics
+  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
+
   // Initialize nominal footstep positions projected down from the hips
   Eigen::Vector3d nominal_joint_state;
   nominal_joint_state << 0, 0.78, 1.57; // Default stand angles
+  hip_projected_foot_positions_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
+  current_foot_positions_ = Eigen::VectorXd::Zero(num_feet_*3);
 
   for (int i = 0; i < N_; ++i) {
     for (int j = 0; j < num_feet_; ++j) {
@@ -46,15 +53,13 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
       hip_projected_foot_positions_.block<1,3>(i,j*3) = toe_body_pos;
     }
   }
-
-  // Convert kinematics
-  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
-
+  
   // Initialize body and footstep planners
   initLocalBodyPlanner();
   initLocalFootstepPlanner();
 
   ROS_INFO("LocalPlanner setup complete, waiting for callbacks");
+
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -117,9 +122,6 @@ void LocalPlanner::initLocalBodyPlanner() {
   local_body_planner_->update_control_bounds(normal_lo, normal_hi);
   local_body_planner_->update_friction(mu);
 
-  // Setup pubs and subs
-  ROS_INFO("Local Body Planner setup, waiting for callbacks");
-
 }
 
 void LocalPlanner::initLocalFootstepPlanner() {
@@ -129,7 +131,6 @@ void LocalPlanner::initLocalFootstepPlanner() {
   int period, horizon_length;
   spirit_utils::loadROSParam(nh_, "local_footstep_planner/grf_weight", grf_weight);
   spirit_utils::loadROSParam(nh_, "local_footstep_planner/ground_clearance", ground_clearance);
-  spirit_utils::loadROSParam(nh_, "local_footstep_planner/horizon_length", horizon_length);
   spirit_utils::loadROSParam(nh_, "local_footstep_planner/period", period);
 
   // Confirm grf weight is valid
@@ -140,7 +141,7 @@ void LocalPlanner::initLocalFootstepPlanner() {
 
   // Create footstep class, make sure we use the same dt as the local planner
   local_footstep_planner_ = std::make_shared<LocalFootstepPlanner>();
-  local_footstep_planner_->setTemporalParams(dt_, period, horizon_length);
+  local_footstep_planner_->setTemporalParams(dt_, period, N_);
   local_footstep_planner_->setSpatialParams(ground_clearance, grf_weight, kinematics_);
 
   past_footholds_msg_.feet.resize(num_feet_);
@@ -181,14 +182,22 @@ void LocalPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& m
   robot_state_msg_ = msg;
 }
 
-void LocalPlanner::processRobotStateMsg() {
+void LocalPlanner::preProcessPlanAndState() {
 
-  // Make sure body plan data is populated so current_time_ is accurate
-  if (body_plan_msg_ == NULL)
+  // Make sure body plan and robot state data is populated
+  if (body_plan_msg_ == NULL || robot_state_msg_ == NULL)
     return;
+
+  current_plan_index_ = spirit_utils::getPlanIndex(body_plan_msg_->header.stamp,dt_);
+
+  ref_body_plan_ = Eigen::MatrixXd::Zero(N_, Nx_);
+  for (int i = 0; i < N_; i++) {
+    ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states[i+current_plan_index_]);
+  }
 
   current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
   spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_);
+
 }
 
 void LocalPlanner::computeLocalPlan() {
@@ -196,23 +205,28 @@ void LocalPlanner::computeLocalPlan() {
   if (terrain_.isEmpty() || body_plan_msg_ == NULL || robot_state_msg_ == NULL)
     return;
 
-  current_plan_index_ = std::round((ros::Time::now() - body_plan_msg_->header.stamp).toSec()/dt_);
-
   // Initialize foot positions and contact schedule
   foot_positions_ = hip_projected_foot_positions_;
   foot_positions_.row(0) = current_foot_positions_;
+
   local_footstep_planner_->computeContactSchedule(current_plan_index_, contact_schedule_);
 
   // Iteratively generate body and footstep plans (non-parallelizable)
   for (int i = 0; i < iterations_; i++) {
     
+    printf("In local_body_planner_->computePlan\n");
     // Compute body plan with MPC
-    local_body_planner_.computePlan(current_state_, body_plan_msg_, foot_positions_,
+    local_body_planner_->computePlan(current_state_, ref_body_plan_, foot_positions_,
       contact_schedule_, body_plan_, grf_plan_);
+
+    printf("In local_footstep_planner_->computeFootPositions\n");
+
     
     // Compute the new footholds to match that body plan
     local_footstep_planner_->computeFootPositions(body_plan_, grf_plan_,
       contact_schedule_, foot_positions_);
+
+    printf("Out of local_footstep_planner_->computeFootPositions\n");
   }
 }
 
@@ -269,11 +283,18 @@ void LocalPlanner::spin() {
   while (ros::ok()) {
 
     ros::spinOnce();
+
+    if (terrain_.isEmpty() || body_plan_msg_ == NULL || robot_state_msg_ == NULL)
+      continue;
     
     // Publish local plan data (state reference traj and desired GRF array)
-    processRobotStateMsg();
+    printf("In preProcessPlanAndState\n");
+    preProcessPlanAndState();
+    printf("In computeLocalPlan\n");
     computeLocalPlan();
+    printf("In publishLocalPlan\n");
     publishLocalPlan();
+    printf("Out of publishLocalPlan\n");
     
     r.sleep();
   }

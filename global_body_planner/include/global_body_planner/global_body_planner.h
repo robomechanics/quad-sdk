@@ -86,7 +86,7 @@ class GlobalBodyPlanner {
      * @param[in] grf GRF applied to body
      * @param[in] body_plan_msg Body plan message
      */
-    void addStateAndGRFToMsg(double t, FullState body_state, GRF grf,
+    void addStateAndGRFToMsg(double t, int plan_index, FullState body_state, GRF grf,
       int primitive_id, spirit_msgs::BodyPlan& body_plan_msg);
 
     /**
@@ -208,6 +208,9 @@ class GlobalBodyPlanner {
 
     /// Boolean for whether replanning is allowed
     bool replanning_allowed_;
+
+    /// Timestep for interpolation
+    double dt_;
 
 };
 

@@ -29,6 +29,27 @@ namespace spirit_utils {
   }
 
   /**
+   * @brief Gets the relative time (in s) since the beginning of the plan
+   * @param[in] plan_start ROS Time to to compare to
+   * @return Time in plan (compared to ros::Time::now())
+   */
+  inline double getDurationSinceTime(ros::Time plan_start)
+  {
+    return (ros::Time::now() - plan_start).toSec();
+  }
+
+  /**
+   * @brief Gets the index associated with a given time
+   * @param[in] plan_start ROS Time to to compare to
+   * @param[in] dt Timestep used to discretize the plan
+   * @return Index in plan (compared to ros::Time::now())
+   */
+  inline int getPlanIndex(ros::Time plan_start, double dt)
+  {
+    return std::round(getDurationSinceTime(plan_start)/dt);
+  }
+
+  /**
    * @brief Load ros parameter into class variable
    * @param[in] nh ROS nodehandle
    * @param[in] paramName string storing key of param in rosparam server

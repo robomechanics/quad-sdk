@@ -122,6 +122,21 @@ public:
              Eigen::MatrixXd &x_out
              );
 
+  /**
+   * @brief Update the contact and dynamic matrices, solve, and return the output
+   * @param[in] initial_state Vector with initial state
+   * @param[in] ref_traj Matrix holding desired reference trajectory
+   * @param[in] foot_positions Matrix holding foot positions
+   * @param[in] contact_schedule Matrix holding the contact schedule
+   * @param[out] state_traj Optimized state trajectory output
+   * @param[out] control_traj Optimized control trajectory output
+   * @return good_solve
+   */
+  bool computePlan(const Eigen::VectorXd &initial_state, 
+    const Eigen::MatrixXd &ref_traj, const Eigen::MatrixXd &foot_positions,
+    const std::vector<std::vector<bool>> &contact_schedule,
+    Eigen::MatrixXd &state_traj, Eigen::MatrixXd control_traj);
+
 private:
 
   /// Number of timesteps in horizon

@@ -4,6 +4,8 @@
 #include <iostream>
 #include <chrono>
 
+Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+
 // Comment to remove OSQP printing
 //#define PRINT_DEBUG 
 
@@ -333,4 +335,26 @@ bool QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
               << time_span.count()*1000.0 << " milliseconds"
               << std::endl;
   #endif
+}
+
+bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state, 
+  const Eigen::MatrixXd &ref_traj, const Eigen::MatrixXd &foot_positions,
+  const std::vector<std::vector<bool>> &contact_schedule,
+  Eigen::MatrixXd &state_traj, Eigen::MatrixXd control_traj){
+
+  // Pass inputs into solver and solve
+  update_contact(contact_schedule, f_min_, f_max_);
+  update_dynamics(ref_traj,foot_positions);
+  
+  Eigen::MatrixXd x_out;
+  if (!solve(initial_state, ref_traj, x_out)) {
+    std::cout << "Failed solve: " << std::endl;
+    std::cout << "Current state: " << std::endl << initial_state.format(CleanFmt) << std::endl;
+    std::cout << "Reference trajectory: " << std::endl << ref_traj.format(CleanFmt) << std::endl;
+    std::cout << "Foot Placements in body frame: " << std::endl << foot_positions.format(CleanFmt) << std::endl;
+    throw 10;
+  }
+
+  double f_val;
+  get_output(x_out, state_traj, control_traj, f_val);
 }

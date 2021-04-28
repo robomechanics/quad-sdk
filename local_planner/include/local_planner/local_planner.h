@@ -64,9 +64,9 @@ private:
   void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 
   /**
-   * @brief Function to process the robot state message into Eigen data structures
+   * @brief Function to pre-process the body plan and robot state messages into Eigen arrays
    */
-  void processRobotStateMsg();
+  void preProcessPlanAndState();
 
   /**
    * @brief Function to compute the local plan
@@ -145,7 +145,7 @@ private:
   double dt_;
 
   /// MPC Horizon length
-  int N_;
+  const int N_ = 10;
 
   /// Number of states
   const int Nx_ = 12;
@@ -161,6 +161,9 @@ private:
 
   /// Matrix of body states (N x Nx: rows correspond to individual states in the horizon)
   Eigen::MatrixXd body_plan_;
+
+  /// Matrix of body states (N x Nx: rows correspond to individual states in the horizon)
+  Eigen::MatrixXd ref_body_plan_;
 
   /// Matrix of grfs (N x Nu: rows correspond to individual arrays of GRFs in the horizon)
   Eigen::MatrixXd grf_plan_; 

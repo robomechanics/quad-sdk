@@ -26,6 +26,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh.param<double>("global_body_planner/state_error_threshold", state_error_threshold_, 0.5);
   nh.param<double>("global_body_planner/startup_delay", startup_delay_, 0.0);
   nh.param<bool>("global_body_planner/replanning", replanning_allowed_, true);
+  spirit_utils::loadROSParam(nh, "local_planner/timestep", dt_);
 
   nh.param<std::vector<double> >("global_body_planner/start_state", start_state_, start_state_default);
   nh.param<std::vector<double> >("global_body_planner/goal_state", goal_state_, goal_state_default);
@@ -268,8 +269,7 @@ void GlobalBodyPlanner::callPlanner() {
       std::cout << "Path duration: " << path_duration << " s" << std::endl;
       std::cout << std::endl;
 
-      double dt = 0.1;
-      getInterpPlan(start_state_, state_sequence_, action_sequence_, dt, replan_start_time_, 
+      getInterpPlan(start_state_, state_sequence_, action_sequence_, dt_, replan_start_time_, 
         body_plan_, grf_plan_, t_plan_, primitive_id_plan_, planner_config_);
 
       if (start_index == 0) {
@@ -296,7 +296,7 @@ void GlobalBodyPlanner::callPlanner() {
 
 }
 
-void GlobalBodyPlanner::addStateAndGRFToMsg(double t, FullState body_state, 
+void GlobalBodyPlanner::addStateAndGRFToMsg(double t, int plan_index, FullState body_state, 
   GRF grf, int primitive_id, spirit_msgs::BodyPlan& msg) {
 
   ROS_ASSERT(body_state.size()==12);
@@ -350,6 +350,7 @@ void GlobalBodyPlanner::addStateAndGRFToMsg(double t, FullState body_state,
   msg.states.push_back(state);
   msg.grfs.push_back(grf_msg);
   msg.primitive_ids.push_back(primitive_id);
+  msg.plan_indices.push_back(plan_index);
 }
 
 void GlobalBodyPlanner::publishPlan() {
@@ -368,16 +369,17 @@ void GlobalBodyPlanner::publishPlan() {
   ROS_ASSERT(t_plan_.front() == 0);
 
   // Loop through the interpolated body plan and add to message
-  for (int i=0;i<body_plan_.size(); ++i)
-    addStateAndGRFToMsg(t_plan_[i], body_plan_[i], grf_plan_[i],
+  for (int i=0;i<body_plan_.size(); ++i) {
+    addStateAndGRFToMsg(t_plan_[i], i, body_plan_[i], grf_plan_[i],
       primitive_id_plan_[i], body_plan_msg);
+  }
 
   // Loop through the discrete states and add to message
   for (int i = 0; i<state_sequence_.size(); i++)
   {
-    // Discrete states don't need roll or yaw data, set to zero
+    // Discrete states don't need roll, yaw, or timing data, set to zero
     FullState full_discrete_state = stateToFullState(state_sequence_[i],0,0,0,0,0,0);
-    addStateAndGRFToMsg(t_plan_[i], full_discrete_state, grf_plan_[i], 
+    addStateAndGRFToMsg(0.0, 0, full_discrete_state, grf_plan_[i], 
       primitive_id_plan_[i], discrete_body_plan_msg);
   }
   
