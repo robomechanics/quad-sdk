@@ -1,7 +1,7 @@
 #include "local_planner/local_planner.h"
 
 // namespace plt = matplotlibcpp;
-// Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
 LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   local_body_planner_(), local_footstep_planner_() {
@@ -128,7 +128,7 @@ void LocalPlanner::initLocalFootstepPlanner() {
 
   // Load parameters from server
   double grf_weight, ground_clearance;
-  int period, horizon_length;
+  int period;
   spirit_utils::loadROSParam(nh_, "local_footstep_planner/grf_weight", grf_weight);
   spirit_utils::loadROSParam(nh_, "local_footstep_planner/ground_clearance", ground_clearance);
   spirit_utils::loadROSParam(nh_, "local_footstep_planner/period", period);
@@ -209,6 +209,13 @@ void LocalPlanner::computeLocalPlan() {
   foot_positions_ = hip_projected_foot_positions_;
   foot_positions_.row(0) = current_foot_positions_;
 
+  printf("current_plan_index = %d\n", current_plan_index_);
+  printf("Initial state\n");
+  std::cout << current_state_.format(CleanFmt) << std::endl;
+  printf("Initial foot positions\n");
+  std::cout << current_foot_positions_.format(CleanFmt) << std::endl;
+
+
   local_footstep_planner_->computeContactSchedule(current_plan_index_, contact_schedule_);
 
   // Iteratively generate body and footstep plans (non-parallelizable)
@@ -231,6 +238,9 @@ void LocalPlanner::computeLocalPlan() {
 }
 
 void LocalPlanner::publishLocalPlan() {
+
+  std::cout << body_plan_.format(CleanFmt) << std::endl;
+  std::cout << foot_positions_.format(CleanFmt) << std::endl;
 
   // Create messages to publish
   spirit_msgs::LocalPlan local_plan_msg;

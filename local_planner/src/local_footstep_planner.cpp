@@ -4,6 +4,14 @@
 
 LocalFootstepPlanner::LocalFootstepPlanner() {
 
+}
+
+void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_length) {
+  
+  dt_ = dt;
+  period_ = period;
+  horizon_length_ = horizon_length;
+
   nominal_contact_schedule_.resize(horizon_length_);
 
   for (int i = 0; i < horizon_length_; i++) { // For each finite element
@@ -22,13 +30,6 @@ LocalFootstepPlanner::LocalFootstepPlanner() {
       }
     }
   }
-}
-
-void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_length) {
-  
-  dt_ = dt;
-  period_ = period;
-  horizon_length_ = horizon_length;
 }
 
 

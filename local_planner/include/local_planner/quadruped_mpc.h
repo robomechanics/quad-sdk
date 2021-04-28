@@ -135,7 +135,7 @@ public:
   bool computePlan(const Eigen::VectorXd &initial_state, 
     const Eigen::MatrixXd &ref_traj, const Eigen::MatrixXd &foot_positions,
     const std::vector<std::vector<bool>> &contact_schedule,
-    Eigen::MatrixXd &state_traj, Eigen::MatrixXd control_traj);
+    Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj);
 
 private:
 

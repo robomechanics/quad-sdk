@@ -169,11 +169,11 @@ void QuadrupedMPC::update_dynamics(const Eigen::MatrixXd &ref_traj,
   }
 }
 
-void QuadrupedMPC::update_contact(const std::vector<std::vector<bool>> contact_sequence,
+void QuadrupedMPC::update_contact(const std::vector<std::vector<bool>> contact_schedule,
                                const double fmin,
                                const double fmax) {
-  assert(contact_sequence.size() == N_);
-  assert(contact_sequence.front().size() == 4);
+  assert(contact_schedule.size() == N_);
+  assert(contact_schedule.front().size() == 4);
 
   Eigen::VectorXd lo_contact(num_constraints_per_leg_);
   lo_contact << -2*mu_*fmax,0,-2*mu_*fmax,0,fmin;
@@ -186,7 +186,7 @@ void QuadrupedMPC::update_contact(const std::vector<std::vector<bool>> contact_s
   for (int i = 0; i < N_; ++i) { // iterate over horizon
     for (int j = 0; j < 4; ++j) { // iterate over legs
       int row_start = num_contact_constraints_per_step_*i + num_constraints_per_leg_*j;
-      if (contact_sequence.at(i).at(j)) { // ground contact
+      if (contact_schedule.at(i).at(j)) { // ground contact
          b_contact_lo_.segment(row_start,num_constraints_per_leg_) = lo_contact;
          b_contact_hi_.segment(row_start,num_constraints_per_leg_) = hi_contact;
       }
@@ -340,12 +340,12 @@ bool QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
 bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state, 
   const Eigen::MatrixXd &ref_traj, const Eigen::MatrixXd &foot_positions,
   const std::vector<std::vector<bool>> &contact_schedule,
-  Eigen::MatrixXd &state_traj, Eigen::MatrixXd control_traj){
+  Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj){
 
   // Pass inputs into solver and solve
   update_contact(contact_schedule, f_min_, f_max_);
   update_dynamics(ref_traj,foot_positions);
-  
+
   Eigen::MatrixXd x_out;
   if (!solve(initial_state, ref_traj, x_out)) {
     std::cout << "Failed solve: " << std::endl;
