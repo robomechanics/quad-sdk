@@ -129,6 +129,7 @@ include_directories(
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
   src/body_force_estimator.cpp
+  src/body_force_estimator_dynamics.cpp
 )
 
 ## Add cmake target dependencies of the library

@@ -43,6 +43,7 @@ include_directories(
 ## Declare a C++ library for control
 add_library(inverse_dynamics
 	src/inverse_dynamics.cpp
+  src/leg_overrider.cpp
 )
 add_dependencies(inverse_dynamics ${inverse_dynamics_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
@@ -50,11 +51,16 @@ add_dependencies(inverse_dynamics ${inverse_dynamics_EXPORTED_TARGETS} ${catkin_
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(inverse_dynamics_node src/inverse_dynamics_node.cpp)
+add_executable(leg_overrider_node src/leg_overrider_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(inverse_dynamics_node
   inverse_dynamics
 	${catkin_LIBRARIES}
+)
+target_link_libraries(leg_overrider_node
+  inverse_dynamics
+  ${catkin_LIBRARIES}
 )
 
 #############
