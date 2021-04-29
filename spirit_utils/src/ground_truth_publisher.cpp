@@ -64,6 +64,11 @@ spirit_msgs::RobotState GroundTruthPublisher::updateStep() {
     new_state_est.body.twist.twist.angular = last_imu_msg_->angular_velocity;
 
   }
+  if (last_mocap_msg_ != NULL)
+  {
+    new_state_est.body.pose.pose.position = last_mocap_msg_->pose.position;
+    new_state_est.body.twist.twist.linear = mocap_vel_estimate_;
+  }
   if (last_joint_state_msg_ != NULL)
   {
     new_state_est.joints = *last_joint_state_msg_;
@@ -71,11 +76,6 @@ spirit_msgs::RobotState GroundTruthPublisher::updateStep() {
     {
       spirit_utils::fkRobotState(kinematics, new_state_est.body,new_state_est.joints, new_state_est.feet);
     }
-  }
-  if (last_mocap_msg_ != NULL)
-  {
-    new_state_est.body.pose.pose.position = last_mocap_msg_->pose.position;
-    new_state_est.body.twist.twist.linear = mocap_vel_estimate_;
   }
 
   new_state_est.header.stamp = ros::Time::now();
