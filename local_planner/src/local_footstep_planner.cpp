@@ -41,6 +41,32 @@ void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double grf_
   kinematics_ = kinematics;
 }
 
+void LocalFootstepPlanner::updateMap(const FastTerrainMap &terrain) {
+  terrain_ = terrain;
+}
+
+void LocalFootstepPlanner::getFootPositionsBodyFrame(const Eigen::VectorXd &body_plan,
+  const Eigen::VectorXd &foot_positions_world, Eigen::VectorXd &foot_positions_body) {
+
+  foot_positions_body = foot_positions_world;
+  for (int i = 0; i < num_feet_; i++) {
+    foot_positions_body.segment<3>(3*i) = foot_positions_world.segment<3>(3*i) - 
+      body_plan.segment<3>(0);
+  }
+}
+
+void LocalFootstepPlanner::getFootPositionsBodyFrame(const Eigen::MatrixXd &body_plan,
+  const Eigen::MatrixXd &foot_positions_world, Eigen::MatrixXd &foot_positions_body) {
+
+  foot_positions_body = foot_positions_world;
+  for (int i = 0; i < foot_positions_world.size(); i++) {
+    Eigen::VectorXd foot_pos;
+    getFootPositionsBodyFrame(body_plan.row(i), foot_positions_world.row(i),
+      foot_pos);
+    foot_positions_body.row(i) = foot_pos;
+  }
+}
+
 void LocalFootstepPlanner::computeContactSchedule(int current_plan_index,
   std::vector<std::vector<bool>> &contact_schedule) {
 
@@ -94,8 +120,6 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
   const Eigen::MatrixXd &grf_plan, const std::vector<std::vector<bool>> &contact_schedule,
   Eigen::MatrixXd &foot_positions) {
 
-  foot_positions.setZero();
-
   // Loop through each foot
   for (int j=0; j<num_feet_; j++) {
 
@@ -104,6 +128,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
 
     // Loop through the horizon to identify instances of touchdown
     for (int i = 1; i < contact_schedule.size(); i++) {
+
       if (isNewContact(contact_schedule, i, j)) {
         
         // Declare position vectors
@@ -133,7 +158,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         foot_position = foot_position_nominal;
 
         // Store foot position in the Eigen matrix
-        getFootData(foot_positions, i, j) = foot_position;
+        foot_positions.block<1,3>(i,3*j) = foot_position;    
 
       } else {
         // If this isn't a new contact just hold the previous position
@@ -151,6 +176,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
   spirit_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg) {
 
   foot_plan_continuous_msg.states.resize(contact_schedule.size());
+  future_footholds_msg.feet.resize(num_feet_);
 
   // Loop through each foot to construct the continuous foot plan message
   for (int j=0; j<num_feet_; j++) {
@@ -160,6 +186,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
     // Declare variables for computing initial swing foot state
     // Identify index for the liftoff and touchdown events
     spirit_msgs::FootState most_recent_foothold_msg = past_footholds_msg.feet[j].footholds.back();
+    
     int i_liftoff = most_recent_foothold_msg.traj_index - current_plan_index;
     int i_touchdown = getNextContactIndex(contact_schedule, 0, j);
     int swing_duration = i_touchdown - i_liftoff;
@@ -223,7 +250,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
       }
 
       // If this is the end of a contact, add to the past footholds message
-      if (i = 1 && isNewLiftoff(contact_schedule, i, j)) {
+      if (i == 1 && isNewLiftoff(contact_schedule, i, j)) {
         past_footholds_msg.feet[j].footholds.push_back(foot_state_msg);
       }
     }

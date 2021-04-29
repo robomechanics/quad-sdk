@@ -19,5 +19,5 @@ local_body_planner:
 
 local_footstep_planner:
   grf_weight: 0.0
-  period: 0.5
+  period: 0.4
   ground_clearance: 0.1

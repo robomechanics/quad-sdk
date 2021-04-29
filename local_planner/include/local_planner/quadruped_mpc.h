@@ -140,13 +140,16 @@ public:
 private:
 
   /// Number of timesteps in horizon
-  const int N_ = 10;
+  const int N_ = 20;
 
   /// Number of states per step
   const int nx_ = 12;
 
   /// Number of controls per step
   const int nu_ = 13;
+
+  /// Number of feet
+  const int num_feet_ = 4;
 
   /// Number of dynamics constraints
   int num_dyn_constraints_;

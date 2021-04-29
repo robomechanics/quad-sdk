@@ -6,9 +6,11 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
 	nh_ = nh;
 
     // Load rosparams from parameter server
-  std::string body_plan_topic, local_plan_topic, leg_command_array_topic, control_mode_topic; 
+  std::string body_plan_topic, local_plan_topic, leg_command_array_topic, 
+    control_mode_topic, leg_override_topic; 
   spirit_utils::loadROSParam(nh_,"topics/local_plan",local_plan_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/joint_command",leg_command_array_topic);
+  spirit_utils::loadROSParam(nh_,"topics/control/leg_override",leg_override_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
   spirit_utils::loadROSParam(nh_,"inverse_dynamics/update_rate", update_rate_);
   spirit_utils::loadROSParam(nh_,"local_planner/timestep", dt_);
@@ -17,6 +19,7 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   body_plan_sub_ = nh_.subscribe(body_plan_topic,1,&InverseDynamics::bodyPlanCallback, this);
   local_plan_sub_ = nh_.subscribe(local_plan_topic,1,&InverseDynamics::localPlanCallback, this);
   control_mode_sub_ = nh_.subscribe(control_mode_topic,1,&InverseDynamics::controlModeCallback, this);
+  leg_override_sub_ = nh_.subscribe(leg_override_topic,1,&InverseDynamics::legOverrideCallback, this);
   leg_command_array_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_command_array_topic,1);
 
   // Start sitting
@@ -59,6 +62,10 @@ void InverseDynamics::localPlanCallback(const spirit_msgs::LocalPlan::ConstPtr& 
 void InverseDynamics::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
   // ROS_INFO("In robotStateCallback");
   last_robot_state_msg_ = msg;
+}
+
+void InverseDynamics::legOverrideCallback(const spirit_msgs::LegOverride::ConstPtr& msg) {
+  last_leg_override_msg_ = *msg;
 }
 
 void InverseDynamics::publishLegCommandArray() {
@@ -376,6 +383,22 @@ void InverseDynamics::publishLegCommandArray() {
           msg.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
           msg.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
           msg.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+        }
+      }
+    }
+    int n_override = last_leg_override_msg_.leg_index.size();
+    int leg_ind;
+    spirit_msgs::MotorCommand motor_command;
+    if (n_override > 0){
+      for (int i = 0; i < n_override; i++) {
+        leg_ind = last_leg_override_msg_.leg_index.at(i);
+        for (int j = 0; j < 3; j++) {
+          motor_command = last_leg_override_msg_.leg_commands.at(i).motor_commands.at(j);
+          msg.leg_commands.at(leg_ind).motor_commands.at(j).pos_setpoint = motor_command.pos_setpoint;
+          msg.leg_commands.at(leg_ind).motor_commands.at(j).vel_setpoint = motor_command.vel_setpoint;
+          msg.leg_commands.at(leg_ind).motor_commands.at(j).kp = motor_command.kp;
+          msg.leg_commands.at(leg_ind).motor_commands.at(j).kd = motor_command.kd;
+          msg.leg_commands.at(leg_ind).motor_commands.at(j).torque_ff = motor_command.torque_ff;
         }
       }
     }

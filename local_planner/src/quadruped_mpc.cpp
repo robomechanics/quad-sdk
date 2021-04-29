@@ -237,15 +237,15 @@ void QuadrupedMPC::get_output(const Eigen::MatrixXd &x_out,
                       double &f_val) {
 
   // Resize and wipe output containers
-  opt_traj.resize(nx_,N_+1);
+  opt_traj.resize(N_+1,nx_);
   opt_traj.setZero();
-  control_traj.resize(nu_, N_);
+  control_traj.resize(N_,nu_);
   control_traj.setZero();
 
   // Collect optimized control trajectory
   for (size_t i = 0; i < N_; ++i) {
     for (size_t j = 0; j < nu_; ++j) {
-      control_traj(j,i) = x_out(num_state_vars_ + i*nu_ + j,0);
+      control_traj(i,j) = x_out(num_state_vars_ + i*nu_ + j,0);
     }
   }
 
@@ -254,7 +254,7 @@ void QuadrupedMPC::get_output(const Eigen::MatrixXd &x_out,
   {
     for (size_t j = 0; j < nx_; ++j)
     {
-      opt_traj(j,i) = x_out(i*nx_+j,0);
+      opt_traj(i,j) = x_out(i*nx_+j,0);
     }
   }
 
@@ -346,6 +346,7 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
   update_contact(contact_schedule, f_min_, f_max_);
   update_dynamics(ref_traj,foot_positions);
 
+  // Perform the solve
   Eigen::MatrixXd x_out;
   if (!solve(initial_state, ref_traj, x_out)) {
     std::cout << "Failed solve: " << std::endl;
@@ -355,6 +356,8 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
     throw 10;
   }
 
+  // Get output, remove gravity control
   double f_val;
   get_output(x_out, state_traj, control_traj, f_val);
+  control_traj = control_traj.block(0,0,control_traj.rows(), control_traj.cols()-1);
 }

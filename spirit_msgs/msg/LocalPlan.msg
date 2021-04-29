@@ -8,3 +8,4 @@ Header header
 spirit_msgs/RobotState[] states
 spirit_msgs/GRFArray[] grfs
 uint32[] plan_indices
+time global_plan_timestamp

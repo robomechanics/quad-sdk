@@ -127,7 +127,10 @@ private:
   Eigen::VectorXd current_state_;
 
   // Current positions of each foot
-  Eigen::VectorXd current_foot_positions_;
+  Eigen::VectorXd current_foot_positions_world_;
+
+  // Current positions of each foot
+  Eigen::VectorXd current_foot_positions_body_;
 
   /// Current index in the global plan
   int current_plan_index_;
@@ -145,7 +148,7 @@ private:
   double dt_;
 
   /// MPC Horizon length
-  const int N_ = 10;
+  const int N_ = 20;
 
   /// Number of states
   const int Nx_ = 12;
@@ -171,8 +174,11 @@ private:
   /// Contact schedule
   std::vector<std::vector<bool>> contact_schedule_;
 
-  /// Matrix of continuous foot positions (N x Nu: rows correspond to foot states in the horizon)
-  Eigen::MatrixXd foot_positions_;
+  /// Matrix of continuous foot positions in world frame
+  Eigen::MatrixXd foot_positions_world_;
+
+  /// Matrix of continuous foot positions in body frame
+  Eigen::MatrixXd foot_positions_body_;
   
   /// Matrix of continuous foot positions projected underneath the hips
   Eigen::MatrixXd hip_projected_foot_positions_;

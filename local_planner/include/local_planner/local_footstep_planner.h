@@ -52,6 +52,30 @@ class LocalFootstepPlanner {
      */
     void setSpatialParams(double ground_clearance, double grf_weight,
       std::shared_ptr<spirit_utils::SpiritKinematics> kinematics);
+
+    /**
+     * @brief Transform a vector of foot positions from the world to the body frame
+     * @param[in] body_plan Current body plan
+     * @param[in] foot_positions_world Foot positions in the world frame
+     * @param[out] foot_positions_body Foot positions in the body frame
+     */
+    void getFootPositionsBodyFrame(const Eigen::VectorXd &body_plan,
+      const Eigen::VectorXd &foot_positions_world, Eigen::VectorXd &foot_positions_body);
+
+    /**
+     * @brief Transform the entire foot plan from the world to the body frame
+     * @param[in] body_plan Current body plan
+     * @param[in] foot_positions_world Foot positions in the world frame
+     * @param[out] foot_positions_body Foot positions in the body frame
+     */
+    void getFootPositionsBodyFrame(const Eigen::MatrixXd &body_plan,
+      const Eigen::MatrixXd &foot_positions_world, Eigen::MatrixXd &foot_positions_body);
+
+    /**
+     * @brief Update the map of this object
+     * @param[in] terrain The map of the terrain
+     */
+    void updateMap(const FastTerrainMap &terrain);
     
     /**
      * @brief Compute the contact schedule based on the current phase
