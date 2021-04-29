@@ -48,19 +48,19 @@ void LocalFootstepPlanner::updateMap(const FastTerrainMap &terrain) {
 void LocalFootstepPlanner::getFootPositionsBodyFrame(const Eigen::VectorXd &body_plan,
   const Eigen::VectorXd &foot_positions_world, Eigen::VectorXd &foot_positions_body) {
 
-  foot_positions_body = foot_positions_world;
   for (int i = 0; i < num_feet_; i++) {
     foot_positions_body.segment<3>(3*i) = foot_positions_world.segment<3>(3*i) - 
       body_plan.segment<3>(0);
   }
+
 }
 
 void LocalFootstepPlanner::getFootPositionsBodyFrame(const Eigen::MatrixXd &body_plan,
   const Eigen::MatrixXd &foot_positions_world, Eigen::MatrixXd &foot_positions_body) {
 
-  foot_positions_body = foot_positions_world;
-  for (int i = 0; i < foot_positions_world.size(); i++) {
-    Eigen::VectorXd foot_pos;
+  Eigen::VectorXd foot_pos = Eigen::VectorXd::Zero(3*num_feet_);
+  for (int i = 0; i < horizon_length_; i++) {
+    foot_pos.setZero();
     getFootPositionsBodyFrame(body_plan.row(i), foot_positions_world.row(i),
       foot_pos);
     foot_positions_body.row(i) = foot_pos;
@@ -130,19 +130,20 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
     for (int i = 1; i < contact_schedule.size(); i++) {
 
       if (isNewContact(contact_schedule, i, j)) {
-        
-        // Declare position vectors
-        Eigen::Vector3d foot_position;
-        Eigen::Vector3d foot_position_grf;
-        Eigen::Vector3d foot_position_nominal;
+      
+        // Declare foot position vectors
+        Eigen::Vector3d foot_position, foot_position_grf, foot_position_nominal, hip_position_midstance;
+
+        // Declare body and grf vectors
+        Eigen::Vector3d body_pos_midstance, body_rpy_midstance, grf_midstance;
 
         // Extract body and grf information
-        Eigen::Vector3d body_pos_midstance = body_plan.block<1,3>(i + half_duty_cycle,0);
-        Eigen::Vector3d body_rpy_midstance = body_plan.block<1,3>(i + half_duty_cycle,3);
-        Eigen::Vector3d grf_midstance = grf_plan.block<1,3>(i + half_duty_cycle,3*j);
+        int midstance = std::min(i + half_duty_cycle, horizon_length_);
+        body_pos_midstance = body_plan.block<1,3>(midstance,0);
+        body_rpy_midstance = body_plan.block<1,3>(midstance,3);
+        grf_midstance = grf_plan.block<1,3>(midstance,3*j);
 
         // Compute nominal foot positions for kinematic and grf-projection measures
-        Eigen::Vector3d hip_position_midstance;
         kinematics_->nominalFootstepFK(j, body_pos_midstance, body_rpy_midstance, 
           hip_position_midstance);
         foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);

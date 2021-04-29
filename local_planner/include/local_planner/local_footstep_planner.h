@@ -109,6 +109,20 @@ class LocalFootstepPlanner {
       spirit_msgs::MultiFootPlanDiscrete &future_footholds_msg,
       spirit_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
 
+    inline void printContactSchedule(const std::vector<std::vector<bool>> &contact_schedule) {
+      
+      for (int i = 0; i < contact_schedule.size(); i++) {
+        for (int j = 0; j < contact_schedule.at(i).size(); j++) {
+          if (contact_schedule[i][j]) {
+            printf("1 ");
+          } else {
+            printf("0 ");
+          } 
+        }
+        printf("\n");
+      }
+    }
+
   private:
 
     /**
