@@ -196,13 +196,16 @@ void LocalPlanner::preProcessPlanAndState() {
   if (body_plan_msg_ == NULL || robot_state_msg_ == NULL)
     return;
 
+  // Get index within the global plan
   current_plan_index_ = spirit_utils::getPlanIndex(body_plan_msg_->header.stamp,dt_);
 
+  // Grab the appropriate states from the body plan and convert to an Eigen matrix
   ref_body_plan_.setZero();
   for (int i = 0; i < N_; i++) {
     ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states[i+current_plan_index_]);
   }
 
+  // Get the current body and foot positions into Eigen
   current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
   spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
   local_footstep_planner_->getFootPositionsBodyFrame(current_state_, current_foot_positions_world_,
@@ -220,9 +223,10 @@ void LocalPlanner::computeLocalPlan() {
   if (terrain_.isEmpty() || body_plan_msg_ == NULL || robot_state_msg_ == NULL)
     return;
 
-  std::chrono::time_point<std::chrono::steady_clock> start_time, stop_time;
-  start_time = std::chrono::steady_clock::now();
+  // If desired, start the timer
+  spirit_utils::FunctionTimer timer(__FUNCTION__);
 
+  // Determine the contact schedule
   local_footstep_planner_->computeContactSchedule(current_plan_index_, contact_schedule_);
 
   // Iteratively generate body and footstep plans (non-parallelizable)
@@ -240,17 +244,8 @@ void LocalPlanner::computeLocalPlan() {
       foot_positions_body_);
   }
 
-  stop_time = std::chrono::steady_clock::now();
-  std::chrono::duration<double> elapsed = std::chrono::duration_cast<std::chrono::duration<double>>(stop_time - start_time);
-  double current_time = 1000.0*elapsed.count();
-  printf("Time spent in %s = %4.2f ms\n", "computeLocalPlan", current_time);
-
-  // std::cout << "body_plan_:" << std::endl;
-  // std::cout << body_plan_.format(CleanFmt) << std::endl;
-  // std::cout << "grf_plan_:" << std::endl;
-  // std::cout << grf_plan_.format(CleanFmt) << std::endl;
-  // std::cout << "foot_positions_world_:" << std::endl;
-  // std::cout << foot_positions_world_.format(CleanFmt) << std::endl;
+  // If desired, report the function time
+  timer.report();
 
 }
 
@@ -269,6 +264,7 @@ void LocalPlanner::publishLocalPlan() {
   future_footholds_msg.header = local_plan_msg.header;
   foot_plan_msg.header = local_plan_msg.header;
 
+  // Compute the discrete and continuous foot plan messages
   local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_world_,
     current_plan_index_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
 
