@@ -3,7 +3,7 @@
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <ros/ros.h>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Eigen>
 #include <chrono>
 #include <spirit_utils/function_timer.h>
 
@@ -48,7 +48,7 @@ class FastTerrainMap {
      * @brief Load data from a grid_map::GridMap object into a FastTerrainMap object
      * @param[in] grid_map::GridMap object with map data
      */
-    void loadDataFromGridMap(grid_map::GridMap map);
+    void loadDataFromGridMap(const grid_map::GridMap map);
 
     /**
      * @brief Check if map data is defined at a requested location
@@ -56,7 +56,7 @@ class FastTerrainMap {
      * @param[in] double y location
      * @return bool location [x,y] is or is not in range
      */
-    bool isInRange(const double x,const double y);
+    bool isInRange(const double x,const double y) const;
     
     /**
      * @brief Return the ground height at a requested location
@@ -64,7 +64,7 @@ class FastTerrainMap {
      * @param[in] double y location
      * @return double ground height at location [x,y]
      */
-    double getGroundHeight(const double x,const double y);
+    double getGroundHeight(const double x,const double y) const;
 
     /**
      * @brief Return the surface normal at a requested location
@@ -72,7 +72,7 @@ class FastTerrainMap {
      * @param[in] double y location
      * @return std::array<double, 3> surface normal at location [x,y]
      */
-    std::array<double, 3> getSurfaceNormal(const double x,const double y);
+    std::array<double, 3> getSurfaceNormal(const double x,const double y)  const;
 
     /**
      * @brief Return the filtered ground height at a requested location
@@ -80,7 +80,7 @@ class FastTerrainMap {
      * @param[in] double y location
      * @return double ground height at location [x,y]
      */
-    double getGroundHeightFiltered(const double x,const double y);
+    double getGroundHeightFiltered(const double x,const double y) const;
 
     /**
      * @brief Return the filtered surface normal at a requested location
@@ -95,19 +95,19 @@ class FastTerrainMap {
      * @param[in] point The point at which the vector originates
      * @param[in] direction The direction along which to project the point
      */
-    Eigen::Vector3d projectToMap(Eigen::Vector3d point, Eigen::Vector3d direction);
+    Eigen::Vector3d projectToMap(const Eigen::Vector3d point, const Eigen::Vector3d direction);
 
     /**
      * @brief Return the vector of x_data of the map
      * @return std::vector<double> of x locations in the grid
      */
-    std::vector<double> getXData();
+    std::vector<double> getXData() const;
 
     /**
      * @brief Return the vector of y_data of the map
      * @return std::vector<double> of y locations in the grid
      */
-    std::vector<double> getYData();
+    std::vector<double> getYData() const;
 
   private:
 

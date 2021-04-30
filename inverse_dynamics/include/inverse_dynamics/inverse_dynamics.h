@@ -3,16 +3,18 @@
 
 #include <ros/ros.h>
 #include <eigen3/Eigen/Eigen>
-// #include <Eigen/Dense>
+// #include <eigen3/Eigen/Eigen>
 #include <spirit_utils/ros_utils.h>
 #include <spirit_utils/foot_jacobians.h>
 #include <spirit_utils/math_utils.h>
+#include <spirit_utils/ros_utils.h>
 #include <spirit_msgs/GRFArray.h>
 #include <std_msgs/UInt8.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/MotorCommand.h>
 #include <spirit_msgs/LegCommand.h>
 #include <spirit_msgs/LegCommandArray.h>
+#include <spirit_msgs/LegOverride.h>
 #include <spirit_msgs/MultiFootPlanContinuous.h>
 #include <eigen_conversions/eigen_msg.h>
 #include "spirit_utils/matplotlibcpp.h"
@@ -61,8 +63,13 @@ private:
 	 */
 	void trajectoryCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 	/**
-	 * @brief Function to publish leg command array to low level PD controller
-	 * @param[out] Leg command array with PD setpoints and gains, as well as feed forward torques
+	 * @brief Callback to handle new leg override commands
+	 @ param[in] Leg override commands
+	 */
+	void legOverrideCallback(const spirit_msgs::LegOverride::ConstPtr& msg);
+	/**
+	 * @brief Callback function to handle new control input (GRF)
+	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
 	 */
 	void publishLegCommandArray();
 
@@ -77,6 +84,9 @@ private:
 
 	/// ROS subscriber for trajectory
 	ros::Subscriber trajectory_sub_;
+
+	/// ROS subscriber for leg override commands
+	ros::Subscriber leg_override_sub_;
 
 	/// ROS publisher for inverse dynamics
 	ros::Publisher leg_command_array_pub_;
@@ -110,6 +120,9 @@ private:
 
 	/// Most recent trajectory state
 	spirit_msgs::RobotState last_trajectory_msg_;
+
+	/// Most recent leg override
+	spirit_msgs::LegOverride last_leg_override_msg_;
 
 	/// Duration for sit to stand behavior
 	const double transition_duration_ = 2.0;

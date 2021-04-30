@@ -22,7 +22,7 @@ SpiritKinematics::SpiritKinematics() {
 }
 
 Eigen::Matrix4d SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans, 
-    Eigen::Vector3d rpy) {
+    Eigen::Vector3d rpy) const{
 
   Eigen::Transform<double, 3, Eigen::Affine> t;
   t = Eigen::Translation<double, 3>(trans);
@@ -34,7 +34,7 @@ Eigen::Matrix4d SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans,
 }
 
 Eigen::Matrix4d SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans, 
-    Eigen::AngleAxisd rot) {
+    Eigen::AngleAxisd rot) const{
 
   Eigen::Transform<double, 3, Eigen::Affine> t;
   t = Eigen::Translation<double, 3>(trans);
@@ -43,15 +43,15 @@ Eigen::Matrix4d SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans,
   return t.matrix();
 }
 
-double SpiritKinematics::getJointLowerLimit(int joint_index) {
+double SpiritKinematics::getJointLowerLimit(int joint_index) const{
   return joint_min_[joint_index];
 }
 
-double SpiritKinematics::getJointUpperLimit(int joint_index) {
+double SpiritKinematics::getJointUpperLimit(int joint_index) const {
   return joint_max_[joint_index]; 
 }
 
-double SpiritKinematics::getLinkLength(int leg_index,int link_index) {
+double SpiritKinematics::getLinkLength(int leg_index,int link_index) const{
   switch(link_index) {
     case 0: return l0_vec_[leg_index];
     case 1: return l1_;
@@ -61,7 +61,7 @@ double SpiritKinematics::getLinkLength(int leg_index,int link_index) {
 }
 
 void SpiritKinematics::transformBodyToWorld(Eigen::Vector3d body_pos,
-  Eigen::Vector3d body_rpy, Eigen::Matrix4d transform_body, Eigen::Matrix4d &transform_world) {
+  Eigen::Vector3d body_rpy, Eigen::Matrix4d transform_body, Eigen::Matrix4d &transform_world) const{
 
   // Compute transform from world to body frame
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
@@ -71,7 +71,7 @@ void SpiritKinematics::transformBodyToWorld(Eigen::Vector3d body_pos,
 }
 
 void SpiritKinematics::transformWorldToBody(Eigen::Vector3d body_pos,
-  Eigen::Vector3d body_rpy, Eigen::Matrix4d transform_world, Eigen::Matrix4d &transform_body) {
+  Eigen::Vector3d body_rpy, Eigen::Matrix4d transform_world, Eigen::Matrix4d &transform_body) const{
 
   // Compute transform from world to body frame
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
@@ -81,7 +81,7 @@ void SpiritKinematics::transformWorldToBody(Eigen::Vector3d body_pos,
 }
 
 void SpiritKinematics::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
-  Eigen::Vector3d body_rpy, Eigen::Matrix4d &g_world_legbase) {
+  Eigen::Vector3d body_rpy, Eigen::Matrix4d &g_world_legbase) const {
 
   // Compute transforms
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
@@ -91,7 +91,7 @@ void SpiritKinematics::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
 }
 
 void SpiritKinematics::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
-  Eigen::Vector3d body_rpy, Eigen::Vector3d &leg_base_pos_world) {
+  Eigen::Vector3d body_rpy, Eigen::Vector3d &leg_base_pos_world) const {
 
   Eigen::Matrix4d g_world_legbase;
   legBaseFK(leg_index, body_pos, body_rpy, g_world_legbase);
@@ -99,8 +99,23 @@ void SpiritKinematics::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
   leg_base_pos_world = g_world_legbase.block<3,1>(0,3);
 }
 
+void SpiritKinematics::nominalFootstepFK(int leg_index, Eigen::Vector3d body_pos,
+  Eigen::Vector3d body_rpy, Eigen::Vector3d &nominal_footstep_pos_world) const {
+
+  // Compute transforms
+  Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
+
+  Eigen::Matrix4d g_body_nominal_footstep = g_body_legbases_[leg_index];
+  g_body_nominal_footstep(1,3) += l0_vec_[leg_index];
+
+  // Compute transform for leg base relative to the world frame
+  Eigen::Matrix4d g_world_nominal_footstep = g_world_body*g_body_nominal_footstep;
+
+  nominal_footstep_pos_world = g_world_nominal_footstep.block<3,1>(0,3);
+}
+
 void SpiritKinematics::bodyToFootFK(int leg_index, 
-  Eigen::Vector3d joint_state, Eigen::Matrix4d &g_body_foot) {
+  Eigen::Vector3d joint_state, Eigen::Matrix4d &g_body_foot) const {
 
   if (leg_index > (legbase_offsets_.size()-1) || leg_index<0) {
     throw std::runtime_error("Leg index is outside valid range");
@@ -134,7 +149,7 @@ void SpiritKinematics::bodyToFootFK(int leg_index,
 }
 
 void SpiritKinematics::bodyToFootFK(int leg_index, 
-  Eigen::Vector3d joint_state, Eigen::Vector3d &foot_pos_body) {
+  Eigen::Vector3d joint_state, Eigen::Vector3d &foot_pos_body) const {
 
   Eigen::Matrix4d g_body_foot;
   SpiritKinematics::bodyToFootFK(leg_index, joint_state, g_body_foot);
@@ -145,7 +160,7 @@ void SpiritKinematics::bodyToFootFK(int leg_index,
 
 void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos, 
   Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state, 
-  Eigen::Matrix4d &g_world_foot) {
+  Eigen::Matrix4d &g_world_foot) const {
 
   if (leg_index > (legbase_offsets_.size()-1) || leg_index<0) {
     throw std::runtime_error("Leg index is outside valid range");
@@ -185,7 +200,7 @@ void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos,
 
 void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos, 
   Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state, 
-  Eigen::Vector3d &foot_pos_world) {
+  Eigen::Vector3d &foot_pos_world) const {
 
   Eigen::Matrix4d g_world_foot;
   legFK(leg_index, body_pos, body_rpy, joint_state, g_world_foot);
@@ -211,7 +226,7 @@ void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos,
 
 void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos, 
   Eigen::Vector3d body_rpy, Eigen::Vector3d foot_pos_world,
-  Eigen::Vector3d &joint_state) {
+  Eigen::Vector3d &joint_state) const {
 
   if (leg_index > (legbase_offsets_.size()-1) || leg_index<0) {
     throw std::runtime_error("Leg index is outside valid range");

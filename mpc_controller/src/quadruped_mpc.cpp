@@ -28,6 +28,8 @@ QuadrupedMPC::QuadrupedMPC(const int N, const int Nx, const int Nu)
   b_contact_lo_ = Eigen::VectorXd::Zero(num_contact_constraints_);
   b_contact_hi_ = Eigen::VectorXd::Zero(num_contact_constraints_);
   b_dyn_ = Eigen::VectorXd::Zero(num_dyn_constraints_);
+
+  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
 }
 
 void QuadrupedMPC::setMassProperties(const double m, const Eigen::Matrix3d Ib) {
@@ -55,7 +57,7 @@ void QuadrupedMPC::update_friction(const double mu) {
        0, 1, mu,
        0, 0, 1;
 
-  // Full friciton cone for one tsteo
+  // Full friciton cone for one tstep
   Eigen::MatrixXd C_step = Eigen::MatrixXd::Zero(num_contact_constraints_per_step_,nu_);
   for (int i = 0; i < 4; ++i) {
     C_step.block(num_constraints_per_leg_*i,3*i,num_constraints_per_leg_,3) = C_leg;
@@ -85,6 +87,23 @@ void QuadrupedMPC::update_weights(const std::vector<Eigen::MatrixXd> &Q,
   H_f_ = Hq;
 
   updated_weights_ = true;
+}
+
+void QuadrupedMPC::update_dynamics_hip_projected_feet(const Eigen::MatrixXd &ref_traj) {
+  Eigen::MatrixXd foot_positions = Eigen::MatrixXd::Zero(N_,12);
+
+  Eigen::Vector3d nominal_joint_state;
+  nominal_joint_state << 0, 0.78, 1.57; // Default stand angles
+
+  for (int i = 0; i < N_; ++i) {
+    for (int j = 0; j < 4; ++j) {
+    Eigen::Vector3d toe_body_pos;
+    this->kinematics_->bodyToFootFK(j, nominal_joint_state, toe_body_pos);
+    foot_positions.block(i,j*3,1,3) = toe_body_pos;
+    }
+  }
+
+  this->update_dynamics(ref_traj, foot_positions);
 }
 
 void QuadrupedMPC::update_dynamics(const Eigen::MatrixXd &ref_traj,
@@ -138,8 +157,6 @@ void QuadrupedMPC::update_dynamics(const Eigen::MatrixXd &ref_traj,
                       -foot_positions(i,3*j+1), foot_positions(i,3*j+0), 0;
       Bdi.block(9,3*j,3,3) = Iw_inv * foot_pos_hat * dt_;//Eigen::Matrix3d::Zero();
     }
-
-
 
     A_dyn_dense_.block(nx_*i,nx_*i,nx_,nx_) = Adi;
     A_dyn_dense_.block(nx_*i,nx_*(i+1),nx_,nx_) = -Eigen::MatrixXd::Identity(nx_,nx_);
@@ -235,7 +252,7 @@ void QuadrupedMPC::get_output(const Eigen::MatrixXd &x_out,
   f_val = (0.5*x_out.transpose()*H_*x_out)(0,0) + (f_.transpose() * x_out)(0,0);
 }
 
-void QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
+bool QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
                          const Eigen::MatrixXd &ref_traj,
                          Eigen::MatrixXd &x_out) {
   #ifdef PRINT_TIMING
@@ -278,7 +295,7 @@ void QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
     #endif
     solver_.settings()->setWarmStart(true);
     solver_.settings()->setCheckTermination(10);
-    solver_.settings()->setScaling(true);
+    solver_.settings()->setScaling(false);
     solver_.initSolver();
 
   }
@@ -297,9 +314,10 @@ void QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
   }
 
   // Call solver
-  solver_.solve();
+  bool good_solve = solver_.solve();
   x_out = solver_.getSolution();
 
+  return good_solve;
   #ifdef PRINT_TIMING
     steady_clock::time_point t2 = steady_clock::now();
     duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
