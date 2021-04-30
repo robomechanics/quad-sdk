@@ -1,5 +1,6 @@
 // Include Files
 #include "spirit_utils/foot_jacobians.h"
+#include <iostream>
 
 // Function Definitions
 //
@@ -96,11 +97,23 @@ void spirit_utils::calc_foot_jacobian0(const double in1[18], Eigen::MatrixXf& fo
   J0[6] = (-(t8 * t55) + t10 * t35) - t23 * t56;
   J0[7] = (t35 * t51 + t53 * t56) + t20 * t55;
   J0[8] = (t35 * t54 + t52 * t56) - t22 * t55;
+
+  Eigen::MatrixXd foot_jacobian0TEST(3,3);
+
+
   // Map the array to the matrix
   // foot_jacobian0 = Eigen::Map<Eigen::MatrixXf>(J0,3,3);
+  foot_jacobian0TEST = Eigen::Map<Eigen::Matrix<double,3,3>>(J0);
+
   foot_jacobian0 <<J0[0], J0[3], J0[6],
                    J0[1], J0[4], J0[7],
                    J0[2], J0[5], J0[8];
+
+  std::cout << "Testing" << std::endl;
+  std::cout << foot_jacobian0TEST << std::endl;
+  std::cout << "Original" << std::endl;
+  std::cout << foot_jacobian0 << std::endl;
+
 }
 
 void spirit_utils::calc_foot_jacobian1(const double in1[18], Eigen::MatrixXf& foot_jacobian1)

@@ -47,22 +47,22 @@ private:
 	void controlModeCallback(const std_msgs::UInt8::ConstPtr& msg);
 	/**
 	 * @brief Callback function to handle new control input (GRF)
-	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
+	 * @param[in] Control input message containing ground reaction forces and maybe nominal leg positions
 	 */
 	void grfInputCallback(const spirit_msgs::GRFArray::ConstPtr& msg);
 	/**
-	 * @brief Callback function to handle new control input (GRF)
-	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
+	 * @brief Callback function to handle new robot state
+	 * @param[in] Control input message containing body, leg, and foot information
 	 */
 	void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
-		/**
-	 * @brief Callback function to handle new control input (GRF)
-	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
+	/**
+	 * @brief Callback function to handle new desired trajectory state
+	 * @param[in] Control input message containing desired body, leg, and foot information
 	 */
 	void trajectoryCallback(const spirit_msgs::RobotState::ConstPtr& msg);
-		/**
-	 * @brief Callback function to handle new control input (GRF)
-	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
+	/**
+	 * @brief Function to publish leg command array to low level PD controller
+	 * @param[out] Leg command array with PD setpoints and gains, as well as feed forward torques
 	 */
 	void publishLegCommandArray();
 
