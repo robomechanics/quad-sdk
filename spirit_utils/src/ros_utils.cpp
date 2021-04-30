@@ -2,6 +2,27 @@
 
 namespace spirit_utils {
 
+  void updateStateHeaders(spirit_msgs::RobotState &msg, ros::Time stamp,
+    std::string frame, int traj_index) {
+
+    // Fill in the data across the messages
+    msg.header.stamp = stamp;
+    msg.header.frame_id = frame;
+    msg.header.seq = traj_index;
+    msg.body.header = msg.header;
+    msg.feet.header = msg.header;
+    for (int i = 0; i < msg.feet.feet.size(); i++) {
+      msg.feet.feet[i].header = msg.header;
+    }
+    msg.joints.header = msg.header;
+
+    msg.traj_index = traj_index;
+    msg.feet.traj_index = traj_index;
+    for (int i = 0; i < msg.feet.feet.size(); i++) {
+      msg.feet.feet[i].traj_index = traj_index;
+    }
+  }
+
   void interpHeader(std_msgs::Header header_1,std_msgs::Header header_2,
     double t_interp, std_msgs::Header &interp_header) {
     
@@ -480,6 +501,21 @@ namespace spirit_utils {
 
   }
 
+  Eigen::VectorXd grfArrayMsgToEigen(const spirit_msgs::GRFArray &grf_array_msg_) {
+  
+    Eigen::VectorXd grf_array(3*grf_array_msg_.vectors.size());
+
+    for (int i = 0; i < grf_array_msg_.vectors.size(); i++) {
+
+      grf_array(3*i) = grf_array_msg_.vectors[i].x;
+      grf_array(3*i+1) = grf_array_msg_.vectors[i].y;
+      grf_array(3*i+2) = grf_array_msg_.vectors[i].z;
+    }
+
+    return grf_array;
+
+  }
+
   void footStateMsgToEigen(const spirit_msgs::FootState &foot_state_msg, 
     Eigen::Vector3d &foot_position) {
   
@@ -501,6 +537,22 @@ namespace spirit_utils {
     }
   }
 
+  void multiFootStateMsgToEigen(const spirit_msgs::MultiFootState &multi_foot_state_msg, 
+    Eigen::VectorXd &foot_positions, Eigen::VectorXd &foot_velocities) {
+  
+    for (int i = 0; i < multi_foot_state_msg.feet.size(); i++) {
+
+      foot_positions[3*i] = multi_foot_state_msg.feet[i].position.x;
+      foot_positions[3*i+1] = multi_foot_state_msg.feet[i].position.y;
+      foot_positions[3*i+2] = multi_foot_state_msg.feet[i].position.z;
+
+      foot_velocities[3*i] = multi_foot_state_msg.feet[i].velocity.x;
+      foot_velocities[3*i+1] = multi_foot_state_msg.feet[i].velocity.y;
+      foot_velocities[3*i+2] = multi_foot_state_msg.feet[i].velocity.z;
+
+    }
+  }
+
   void eigenToFootStateMsg(Eigen::VectorXd foot_positions, 
     Eigen::VectorXd foot_velocities, spirit_msgs::FootState &foot_state_msg) {
 
@@ -512,5 +564,19 @@ namespace spirit_utils {
       foot_state_msg.velocity.y = foot_velocities[1];
       foot_state_msg.velocity.z = foot_velocities[2];
 
+  }
+
+  void eigenToVector(const Eigen::VectorXd &eigen_vec, std::vector<double> &vec) {
+    vec.resize(eigen_vec.size());
+    for (int i = 0; i < eigen_vec.size(); i++) {
+      vec[i] = eigen_vec(i);
+    }
+  }
+
+  void vectorToEigen(const std::vector<double> &vec, Eigen::VectorXd &eigen_vec) {
+    eigen_vec.resize(vec.size());
+    for (int i = 0; i < vec.size(); i++) {
+      eigen_vec(i) = vec[i];
+    }
   }
 }

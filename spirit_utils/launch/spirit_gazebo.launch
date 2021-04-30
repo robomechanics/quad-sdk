@@ -35,7 +35,7 @@ SOFTWARE.
     <include file="$(find spirit_utils)/launch/mapping.launch" />
     <include file="$(find spirit_utils)/launch/visualization.launch" />
     <include file="$(find spirit_utils)/launch/robot_driver.launch"/>
-    <include file="$(find spirit_utils)/launch/planning.launch">
+    <!-- <include file="$(find spirit_utils)/launch/planning.launch">
       <arg name="body_planner" value="$(arg body_planner)"/>
     </include>
 
@@ -46,7 +46,7 @@ SOFTWARE.
         respawn="false"
         output="screen">
       </node>
-    </group>
+    </group> -->
   </group>
 
   <!-- Launch the Spirit world with specific physics parameters -->

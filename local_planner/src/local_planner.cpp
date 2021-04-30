@@ -274,8 +274,6 @@ void LocalPlanner::publishLocalPlan() {
     ros::Time timestamp = local_plan_msg.header.stamp + ros::Duration(i*dt_);
 
     spirit_msgs::RobotState robot_state_msg;
-    robot_state_msg.header.stamp = timestamp;
-    robot_state_msg.header.frame_id = map_frame_;
     robot_state_msg.body = spirit_utils::eigenToOdomMsg(body_plan_.row(i));
     robot_state_msg.feet = foot_plan_msg.states[i];
     spirit_utils::ikRobotState(*kinematics_, robot_state_msg);
@@ -285,6 +283,11 @@ void LocalPlanner::publishLocalPlan() {
     grf_array_msg.header.frame_id = map_frame_;
     grf_array_msg = spirit_utils::eigenToGRFArrayMsg(grf_plan_.row(i), foot_plan_msg.states[i]);
     
+    // Update the headers and plan indices of the messages
+    spirit_utils::updateStateHeaders(robot_state_msg, timestamp, map_frame_, current_plan_index_+i);
+    grf_array_msg.header = robot_state_msg.header;
+    grf_array_msg.traj_index = robot_state_msg.traj_index;
+
     local_plan_msg.states.push_back(robot_state_msg);
     local_plan_msg.grfs.push_back(grf_array_msg);
     local_plan_msg.plan_indices.push_back(current_plan_index_ + i);

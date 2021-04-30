@@ -87,6 +87,24 @@ namespace spirit_utils {
     return true;
   }
 
+  // /**
+  //  * @brief Interpolate two headers
+  //  * @param[out] msg State message to popluate
+  //  * @param[in] stamp Timestamp for the state message
+  //  * @param[in] frame Frame_id for the state message
+  //  */
+  // void updateStateHeaders(spirit_msgs::RobotState &msg, ros::Time stamp, std::string frame);
+
+  /**
+   * @brief Interpolate two headers
+   * @param[out] msg State message to popluate
+   * @param[in] stamp Timestamp for the state message
+   * @param[in] frame Frame_id for the state message
+   * @param[in] traj_index Trajectory index of this state message
+   */
+  void updateStateHeaders(spirit_msgs::RobotState &msg, ros::Time stamp, std::string frame,
+    int traj_index);
+
   /**
    * @brief Interpolate two headers
    * @param[in] header_1 First header message
@@ -228,13 +246,20 @@ void interpBodyPlan(spirit_msgs::BodyPlan msg, double t,
   Eigen::VectorXd odomMsgToEigen(const nav_msgs::Odometry &body);
 
   /**
-   * @brief Convert eigen vector of GRFs to GRFArray msg
+   * @brief Convert Eigen vector of GRFs to GRFArray msg
    * @param[in] grf_array Eigen vector with grf data in leg order
    * @param[in] multi_foot_state_msg MultiFootState msg containing foot position information
    * @return GRFArray msg with grf data
    */
   spirit_msgs::GRFArray eigenToGRFArrayMsg(Eigen::VectorXd grf_array,
     spirit_msgs::MultiFootState multi_foot_state_msg);
+
+  /**
+   * @brief Convert GRFArray msg to Eigen vector of GRFs
+   * @param[in] grf_array_msg_ GRFArray msg with grf data
+   * @return grf_array Eigen vector with grf data in leg order
+   */
+  Eigen::VectorXd grfArrayMsgToEigen(const spirit_msgs::GRFArray &grf_array_msg_);
 
   /**
    * @brief Convert robot foot state message to Eigen
@@ -253,6 +278,15 @@ void interpBodyPlan(spirit_msgs::BodyPlan msg, double t,
     Eigen::VectorXd &foot_positions);
 
   /**
+   * @brief Convert robot multi foot state message to Eigen
+   * @param[in] multi_foot_state_msg MultiFootState msg containing foot position information
+   * @param[out] foot_positions Eigen vector with foot position data
+   * @param[out] foot_velocities Eigen vector with foot velocity data
+   */
+  void multiFootStateMsgToEigen(const spirit_msgs::MultiFootState &multi_foot_state_msg, 
+    Eigen::VectorXd &foot_positions, Eigen::VectorXd &foot_velocities);
+
+  /**
    * @brief Convert eigen vectors to foot state messages
    * @param[in] foot_position Eigen vector with foot position data
    * @param[in] foot_velocity Eigen vector with foot velocity data
@@ -260,7 +294,20 @@ void interpBodyPlan(spirit_msgs::BodyPlan msg, double t,
    */
   void eigenToFootStateMsg(Eigen::VectorXd foot_position, 
     Eigen::VectorXd foot_velocity, spirit_msgs::FootState &foot_state_msg);
+  
+  /**
+   * @brief Convert eigen vector to stl vector
+   * @param[in] eigen_vec Eigen vector with data
+   * @param[out] vec stl vector
+   */
+  void eigenToVector(const Eigen::VectorXd &eigen_vec, std::vector<double> &vec);
 
+  /**
+   * @brief Convert eigen vector to stl vector
+   * @param[in] vec stl vector
+   * @param[out] eigen_vec Eigen vector with data
+   */
+  void vectorToEigen(const std::vector<double> &vec, Eigen::VectorXd &eigen_vec);
 }
 
 #endif

@@ -349,11 +349,12 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
   // Perform the solve
   Eigen::MatrixXd x_out;
   if (!solve(initial_state, ref_traj, x_out)) {
-    std::cout << "Failed solve: " << std::endl;
-    std::cout << "Current state: " << std::endl << initial_state.format(CleanFmt) << std::endl;
-    std::cout << "Reference trajectory: " << std::endl << ref_traj.format(CleanFmt) << std::endl;
-    std::cout << "Foot Placements in body frame: " << std::endl << foot_positions.format(CleanFmt) << std::endl;
-    throw 10;
+    // std::cout << "Failed solve: " << std::endl;
+    // std::cout << "Current state: " << std::endl << initial_state.format(CleanFmt) << std::endl;
+    // std::cout << "Reference trajectory: " << std::endl << ref_traj.format(CleanFmt) << std::endl;
+    // std::cout << "Foot Placements in body frame: " << std::endl << foot_positions.format(CleanFmt) << std::endl;
+    ROS_WARN_THROTTLE(0.1, "Failed OSQP solve!");
+    throw std::runtime_error("Failed OSQP solve!");
   }
 
   // Get output, remove gravity control

@@ -51,12 +51,6 @@ private:
 	void controlModeCallback(const std_msgs::UInt8::ConstPtr& msg);
 	
 	/**
-	 * @brief Callback function to handle new body plan
-	 * @param[in] msg input message contining the body plan
-	 */
-	void bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
-	
-	/**
 	 * @brief Callback function to handle new local plan (states and GRFs)
 	 * @param[in] msg input message contining the local plan
 	 */
@@ -111,6 +105,9 @@ private:
 	/// Timestep of local plan
 	double dt_;
 
+	/// Number of feet
+	const int num_feet_ = 4;
+
 	/// Robot mode
 	int control_mode_;
 
@@ -126,10 +123,7 @@ private:
 	/// Define ids for control modes: Stand to sit
 	const int STAND_TO_SIT = 3;
 	
-	/// Most recent body plan
-	spirit_msgs::BodyPlan::ConstPtr last_body_plan_msg_;
-	
-		/// Most recent local plan
+	/// Most recent local plan
 	spirit_msgs::LocalPlan::ConstPtr last_local_plan_msg_;
 
 	/// Most recent state estimate
