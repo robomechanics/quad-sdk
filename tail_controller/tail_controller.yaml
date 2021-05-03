@@ -1,3 +1,4 @@
 tail_controller:
   update_rate: 1000
   track_traj: false
+  use_mpc: false
