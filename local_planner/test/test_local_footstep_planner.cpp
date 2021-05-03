@@ -4,8 +4,7 @@
 #include "local_planner/local_footstep_planner.h"
 
 TEST(LocalFootstepPlannerTest, testTrue) {
-  ros::NodeHandle nh;
-  LocalFootstepPlanner local_footstep_planner(nh);
+  LocalFootstepPlanner local_footstep_planner();
   EXPECT_EQ(1 + 1, 2);
 }
 

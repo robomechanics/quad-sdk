@@ -18,7 +18,7 @@ TEST(TestUseCase, quadVariable) {
   const int Nu = 13;      // Appended gravity term
   const int Nx = 12;      // Number of states
   const int N = 20;       // Time horizons to consider
-  const double dt = 0.1;  // Time horizon
+  const double dt = 0.02; // Time horizon
   const double m = 12;    // Mass of quad
   const double g = 9.81;  // gravitational constant
   const double Ixx = 0.1; // approximately SDF values, but will need refining
@@ -90,7 +90,7 @@ TEST(TestUseCase, quadVariable) {
   double fmax = 50;
 
   // Setup MPC class, call necessary functions
-  QuadrupedMPC mpc(N,Nx,Nu);
+  QuadrupedMPC mpc;
   mpc.setTimestep(dt);
   mpc.setMassProperties(m,Ib);
   mpc.update_weights(Q_vec,U_vec);
@@ -98,10 +98,10 @@ TEST(TestUseCase, quadVariable) {
   mpc.update_friction(mu);
   mpc.update_contact(contact_sequences, fmin, fmax);
   mpc.update_state_bounds(state_lo, state_hi);
+  mpc.update_control_bounds(fmin, fmax);
 
   // Solve, collect output and cost val
   Eigen::MatrixXd x_out;
-  mpc.solve(initial_state, ref_traj, x_out);
   mpc.solve(initial_state, ref_traj, x_out);
 
   double f_val;
@@ -132,47 +132,47 @@ TEST(TestUseCase, quadVariable) {
     }
   } 
 
-  // // Plot everything
+  // Plot everything
   
-  // plt::figure();
-  // plt::suptitle("Position Tracking");
-  // const char* pos_names[6] = {"x","y","z","roll","pitch","yaw"};
-  // for (int i = 0; i < 6;++i) {
-  //   plt::subplot(2,3,i+1);
-  //   plt::plot(state_opt.at(i));
-  //   plt::plot(state_ref.at(i));
-  //   plt::title(pos_names[i]);
-  // }
-  // plt::save("/home/nflowers/Desktop/position_mpc.png");
+  plt::figure();
+  plt::suptitle("Position Tracking");
+  const char* pos_names[6] = {"x","y","z","roll","pitch","yaw"};
+  for (int i = 0; i < 6;++i) {
+    plt::subplot(2,3,i+1);
+    plt::plot(state_opt.at(i));
+    plt::plot(state_ref.at(i));
+    plt::title(pos_names[i]);
+  }
+  plt::save("/home/joe/Desktop/position_mpc.png");
 
-  // plt::figure();
-  // plt::suptitle("Velocity Tracking");
-  // const char* vel_names[6] = {"vx","vy","vz","wx","wy","wz"};
-  // for (int i = 0; i < 6;++i) {
-  //   plt::subplot(2,3,i+1);
-  //   plt::plot(state_opt.at(i+6));
-  //   plt::plot(state_ref.at(i+6));
-  //   plt::title(vel_names[i]);
-  // }
-  // plt::save("/home/nflowers/Desktop/velocity_mpc.png");
+  plt::figure();
+  plt::suptitle("Velocity Tracking");
+  const char* vel_names[6] = {"vx","vy","vz","wx","wy","wz"};
+  for (int i = 0; i < 6;++i) {
+    plt::subplot(2,3,i+1);
+    plt::plot(state_opt.at(i+6));
+    plt::plot(state_ref.at(i+6));
+    plt::title(vel_names[i]);
+  }
+  plt::save("/home/joe/Desktop/velocity_mpc.png");
 
-  // plt::figure();
-  // plt::suptitle("Control Efforts");
-  // const char* control_names[3] = {"fx","fy","fz"};
-  // for (int i = 0; i < 3;++i) {
-  //   plt::subplot(1,3,i+1);
-  //   plt::named_plot("FL",control_opt.at(i+0));
-  //   plt::named_plot("BL",control_opt.at(i+3));
-  //   plt::named_plot("FR",control_opt.at(i+6));
-  //   plt::named_plot("BR",control_opt.at(i+9));
-  //   plt::legend();
-  //   plt::title(control_names[i]);
-  // }
-  // plt::save("/home/nflowers/Desktop/control_mpc.png");
+  plt::figure();
+  plt::suptitle("Control Efforts");
+  const char* control_names[3] = {"fx","fy","fz"};
+  for (int i = 0; i < 3;++i) {
+    plt::subplot(1,3,i+1);
+    plt::named_plot("FL",control_opt.at(i+0));
+    plt::named_plot("BL",control_opt.at(i+3));
+    plt::named_plot("FR",control_opt.at(i+6));
+    plt::named_plot("BR",control_opt.at(i+9));
+    plt::legend();
+    plt::title(control_names[i]);
+  }
+  plt::save("/home/joe/Desktop/control_mpc.png");
 
 
-  // plt::show();
-  // plt::pause(1000);
+  plt::show();
+  plt::pause(1000);
   
 
 }

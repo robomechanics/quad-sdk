@@ -6,13 +6,14 @@ TwistBodyPlanner::TwistBodyPlanner(ros::NodeHandle nh) {
   // Load rosparams from parameter server
   std::string robot_state_topic, body_plan_topic, cmd_vel_topic;
 
-  nh.param<std::string>("topics/state/ground_truth", robot_state_topic, "/state/ground_truth");
-  nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
-  nh.param<std::string>("topics/cmd_vel", cmd_vel_topic, "/cmd_vel");
-  nh.param<std::string>("map_frame", map_frame_,"map");
-  nh.param<double>("twist_body_planner/update_rate", update_rate_, 5);
-  nh.param<double>("twist_body_planner/horizon_length", horizon_length_, 1.5);
-  nh.param<double>("twist_body_planner/last_cmd_vel_msg_time_max",last_cmd_vel_msg_time_max_,1.0);
+  nh_.param<std::string>("topics/state/ground_truth", robot_state_topic, "/state/ground_truth");
+  nh_.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
+  nh_.param<std::string>("topics/cmd_vel", cmd_vel_topic, "/cmd_vel");
+  nh_.param<std::string>("map_frame", map_frame_,"map");
+  nh_.param<double>("twist_body_planner/update_rate", update_rate_, 5);
+  nh_.param<double>("twist_body_planner/horizon_length", horizon_length_, 1.5);
+  nh_.param<double>("twist_body_planner/last_cmd_vel_msg_time_max",last_cmd_vel_msg_time_max_,1.0);
+  spirit_utils::loadROSParam(nh_, "local_planner/timestep",dt_);
 
   // Setup pubs and subs
   cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic,1,&TwistBodyPlanner::cmdVelCallback, this);
@@ -96,11 +97,9 @@ void TwistBodyPlanner::updatePlan() {
   }
 
   // Integrate to get full body plan
-  double dt = 0.1;
-
   body_plan_.push_back(start_state_);
   t_plan_.push_back(0);
-  for (double t = dt; t <= horizon_length_; t += dt) {
+  for (double t = dt_; t <= horizon_length_; t += dt_) {
     State current_state;
     current_state.resize(12);
     Twist current_cmd_vel = cmd_vel_;
@@ -110,7 +109,7 @@ void TwistBodyPlanner::updatePlan() {
     current_cmd_vel[1] = cmd_vel_[0]*sin(yaw) + cmd_vel_[1]*cos(yaw);
 
     for (int i = 0; i < 6; i ++) {
-      current_state[i] = body_plan_.back()[i] + current_cmd_vel[i]*dt;
+      current_state[i] = body_plan_.back()[i] + current_cmd_vel[i]*dt_;
       current_state[i+6] = (cmd_vel_[i]);
     }
 
@@ -119,7 +118,7 @@ void TwistBodyPlanner::updatePlan() {
   }
 }
 
-void TwistBodyPlanner::addStateWrenchToMsg(double t, State body_state,
+void TwistBodyPlanner::addStateWrenchToMsg(double t, int plan_index, State body_state,
     spirit_msgs::BodyPlan& msg) {
 
   // Make sure the timestamps match the trajectory timing
@@ -171,6 +170,7 @@ void TwistBodyPlanner::addStateWrenchToMsg(double t, State body_state,
   msg.states.push_back(state);
   msg.grfs.push_back(grf_array_msg);
   msg.primitive_ids.push_back(primitive_id);
+  msg.plan_indices.push_back(plan_index);
 }
 
 void TwistBodyPlanner::publishPlan() {
@@ -188,7 +188,7 @@ void TwistBodyPlanner::publishPlan() {
 
   // Loop through the interpolated body plan and add to message
   for (int i=0;i<body_plan_.size(); ++i)
-    addStateWrenchToMsg(t_plan_[i], body_plan_[i], body_plan_msg);
+    addStateWrenchToMsg(t_plan_[i], i, body_plan_[i], body_plan_msg);
   
   if (body_plan_msg.states.size() != body_plan_msg.grfs.size()) {
     throw std::runtime_error("Mismatch between number of states and wrenches, something is wrong");

@@ -9,6 +9,7 @@
 
 #include <spirit_msgs/BodyPlan.h>
 #include <spirit_msgs/RobotState.h>
+#include <spirit_utils/ros_utils.h>
 
 
 //! A twist body planning class for legged robots
@@ -61,11 +62,13 @@ class TwistBodyPlanner {
     /**
      * @brief Update the body plan with the current plan
      * @param[in] t Time of state in trajectory
+     * @param[in] plan_index Index of state in trajectory
      * @param[in] body_state Body state
      * @param[in] body_wrench Wrench applied to body
      * @param[in] body_plan_msg Body plan message
      */
-    void addStateWrenchToMsg(double t, State body_state, spirit_msgs::BodyPlan& body_plan_msg);
+    void addStateWrenchToMsg(double t, int plan_index, State body_state,
+      spirit_msgs::BodyPlan& body_plan_msg);
 
     /**
      * @brief Publish the current body plan
@@ -116,6 +119,9 @@ class TwistBodyPlanner {
     
     /// Nominal robot height
     const double z_des = 0.3;
+
+    /// Local planner timestep
+    double dt_;
 };
 
 #endif // TWIST_BODY_PLANNER_H

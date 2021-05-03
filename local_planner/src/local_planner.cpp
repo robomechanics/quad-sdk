@@ -166,7 +166,7 @@ void LocalPlanner::terrainMapCallback(
 }
 
 void LocalPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) {
-
+  printf("Entering body plan callback\n");
   // If this is the first plan, initialize the message of past footholds with current foot positions
   if (body_plan_msg_ == NULL && robot_state_msg_ != NULL) {
     past_footholds_msg_.header = msg->header;
@@ -179,6 +179,8 @@ void LocalPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) 
   }
 
   body_plan_msg_ = msg;
+
+  printf("Leaving body plan callback\n");
 }
 
 void LocalPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
@@ -221,7 +223,7 @@ void LocalPlanner::preProcessPlanAndState() {
 void LocalPlanner::computeLocalPlan() {
 
   if (terrain_.isEmpty() || body_plan_msg_ == NULL || robot_state_msg_ == NULL)
-    return;
+    return;  
 
   // If desired, start the timer
   spirit_utils::FunctionTimer timer(__FUNCTION__);
@@ -243,6 +245,11 @@ void LocalPlanner::computeLocalPlan() {
     local_footstep_planner_->getFootPositionsBodyFrame(body_plan_, foot_positions_world_,
       foot_positions_body_);
   }
+
+  std::cout << ref_body_plan_ << std::endl;
+  std::cout << body_plan_ << std::endl;
+  std::cout << foot_positions_world_ << std::endl;
+  throw std::runtime_error("STOP");
 
   // If desired, report the function time
   // timer.report();
