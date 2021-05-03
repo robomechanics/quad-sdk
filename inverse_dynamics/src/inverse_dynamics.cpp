@@ -98,12 +98,16 @@ void InverseDynamics::publishLegCommandArray() {
   Eigen::MatrixXd tau_array;
 
   if (hasTrajectory) {
-    double current_time = spirit_utils::getDurationSinceTime(last_local_plan_msg_->header.stamp);
-    int current_plan_index = spirit_utils::getPlanIndex(last_local_plan_msg_->header.stamp, dt_);
+    double current_time = spirit_utils::getDurationSinceTime(last_local_plan_msg_->global_plan_timestamp);
+    int current_plan_index = spirit_utils::getPlanIndex(last_local_plan_msg_->global_plan_timestamp, dt_);
     double t_interp = std::fmod(current_time,dt_)/dt_;
 
-    printf("Current time = %6.4f, current index = %d, t_interp = %5.4f\n", current_time,
-      current_plan_index, t_interp);
+    if ((current_plan_index < last_local_plan_msg_->plan_indices.front()) || 
+        (current_plan_index > last_local_plan_msg_->plan_indices.back()) ) {
+      ROS_ERROR("ID node couldn't find the correct ref state!");
+    }
+    // printf("Current time = %6.4f, current index = %d, t_interp = %5.4f\n", current_time,
+    //   current_plan_index, t_interp);
 
     for (int i = 0; i < last_local_plan_msg_->states.size()-1; i++) {
       if ((current_plan_index >= last_local_plan_msg_->plan_indices[i]) && 
@@ -129,6 +133,12 @@ void InverseDynamics::publishLegCommandArray() {
     spirit_utils::multiFootStateMsgToEigen(
       ref_state_msg.feet, ref_foot_positions, ref_foot_velocities);
     grf_array = spirit_utils::grfArrayMsgToEigen(grf_array_msg);
+
+    // std::cout << ref_state_msg.header << std::endl;
+    // std::cout << grf_array_msg.header << std::endl;
+    // std::cout << "Current index = " << current_plan_index << std::endl;
+    // std::cout << "Last index in plan = " << last_local_plan_msg_->plan_indices.back() << std::endl;
+    // throw std::runtime_error("stop here");
 
     // Define vectors for joint positions and velocities
     Eigen::VectorXd joint_positions(3*num_feet_), joint_velocities(3*num_feet_);
@@ -173,7 +183,7 @@ void InverseDynamics::publishLegCommandArray() {
           msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0; // Just need kinematics::legIKVel to do this
           msg.leg_commands.at(i).motor_commands.at(j).kp = walk_kp_.at(j);
           msg.leg_commands.at(i).motor_commands.at(j).kd = walk_kd_.at(j);
-          msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tau_array(joint_idx);
+          msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tau_array(6+joint_idx);
         } else {
           msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = stand_joint_angles_.at(j);
           msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;

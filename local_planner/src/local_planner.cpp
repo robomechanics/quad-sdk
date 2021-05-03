@@ -245,7 +245,7 @@ void LocalPlanner::computeLocalPlan() {
   }
 
   // If desired, report the function time
-  timer.report();
+  // timer.report();
 
 }
 
@@ -282,6 +282,9 @@ void LocalPlanner::publishLocalPlan() {
     grf_array_msg.header.stamp = timestamp;
     grf_array_msg.header.frame_id = map_frame_;
     grf_array_msg = spirit_utils::eigenToGRFArrayMsg(grf_plan_.row(i), foot_plan_msg.states[i]);
+    for (int j = 0; j < num_feet_; j++) {
+      grf_array_msg.contact_states.push_back(contact_schedule_[i][j]);
+    }
     
     // Update the headers and plan indices of the messages
     spirit_utils::updateStateHeaders(robot_state_msg, timestamp, map_frame_, current_plan_index_+i);
