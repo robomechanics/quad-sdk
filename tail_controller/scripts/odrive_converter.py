@@ -11,6 +11,73 @@ print("finding an odrive...")
 od = odrive.find_any()
 print("found an odrive")
 
+
+def flick(angular_velocity):
+    threshold = 5
+    amplitude = 20000
+    #rospy.loginfo("IMU angular velocity  x: [%f],  y: [%f],  z: [%f]" , data.angular_velocity.x, data.angular_velocity.y, data.angular_velocity.z)
+    velx = angular_velocity[0]
+    vely = angular_velocity[1]
+    
+    #if speed is over the threshold filck the tail 
+    if abs(vely) > threshold:
+        od.axis0.controller.config.control_mode = 1
+        #A = get_amp(vely)od.axis0.controller.config.control_mode = 2
+        if vely > 0:
+            V = 5
+            od.axis0.controller.pos_setpoint = amplitude
+        else
+            V = -5
+            od.axis0.controller.pos_setpoint = amplitude * -1
+
+'''
+        od.axis0.controller.vel_setpoint = V
+        while abs(od.axis0.encoder.pos_estimate) < amplitude:
+            od.axis0.controller.vel_setpoint = V
+        od.axis0.controller.vel = 0
+'''
+    # return to near 0 position 
+    elif (abs(od.axis0.encoder.pos_estimate)>65):
+        od.axis0.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL 
+        od.axis0.controller.pos_setpoint = 0
+        
+    else:
+        od.axis0.controller.config.control_mode = CTRL_MODE_CURRENT_CONTROL
+        od.axis0.controller.current_setpoint = 0 
+    #out of range / saftey stop
+    if(abs(od.axis0.encoder.pos_estimate) > 35000):
+        od.axis0.controller.config.control_mode = CTRL_MODE_CURRENT_CONTROL
+        od.axis0.controller.current_setpoint = 0
+        print('out of range 0')
+
+    if abs(velx) > threshold:
+        od.axis1.controller.config.control_mode = 2
+        if vely > 0:
+            V = 5
+            od.axis1.controller.pos_setpoint = amplitude
+        else
+            V = -5
+            od.axis1.controller.pos_setpoint = amplitude * -1
+        '''
+        od.axis0.controller.vel_setpoint = V
+        while abs(od.axis0.encoder.pos_estimate) < amplitude:
+            od.axis0.controller.vel_setpoint = V
+        od.axis0.controller.vel = 0'''
+
+    # return to near 0 position 
+    elif (abs(od.axis1.encoder.pos_estimate)>65+abs(start1)):
+        print("is at " + str(od.axis1.encoder.pos_estimate))
+        od.axis1.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL 
+        od.axis1.controller.pos_setpoint = start1
+        rospy.loginfo("go to start")
+        print("start is" + str(start1))
+    else:
+        od.axis1.controller.config.control_mode = CTRL_MODE_CURRENT_CONTROL
+        od.axis1.controller.current_setpoint = 0 
+    if(abs(od.axis1.encoder.pos_estimate) > 35000):
+        od.axis1.controller.config.control_mode = CTRL_MODE_CURRENT_CONTROL
+        od.axis1.controller.current_setpoint = 0
+        print('out of range 0')
 def feedback_callback(msg):
     position = msg.body.pose.pose.position
     position = np.array([position.x, position.y, position.z])
@@ -27,6 +94,8 @@ def feedback_callback(msg):
     angular_velocity = msg.body.twist.twist.angular
     angular_velocity = np.array([angular_velocity.x, angular_velocity.y, angular_velocity.z])
     print("angular_velocity:", angular_velocity)
+
+
 
 def mpc_callback(msg):
     #rospy.loginfo(rospy.get_caller_id() + "I heard %s", msg.motor_commands[1].pos_setpoint)
