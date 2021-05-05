@@ -74,6 +74,34 @@ void InverseDynamics::publishLegCommandArray() {
   if (last_robot_state_msg_.joints.position.size() == 0)
     return;
 
+  if (last_trajectory_msg_.full_trajectory == true) {
+
+    spirit_msgs::LegCommandArray msg;
+    msg.leg_commands.resize(4);
+
+    static const std::vector<double> walk_kp_{50,50,50};
+    static const std::vector<double> walk_kd_{5,5,5};
+
+    int count = -1;
+    for (int i = 0; i < 4; ++i) {
+      msg.leg_commands.at(i).motor_commands.resize(3);
+      for (int j = 0; j < 3; ++j) {
+        count++;
+
+          msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = last_trajectory_msg_.joints.position.at(count);
+          msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = last_trajectory_msg_.joints.velocity.at(count);
+          msg.leg_commands.at(i).motor_commands.at(j).kp = walk_kp_.at(j);
+          msg.leg_commands.at(i).motor_commands.at(j).kd = walk_kd_.at(j);
+          msg.leg_commands.at(i).motor_commands.at(j).torque_ff = last_trajectory_msg_.joints.effort.at(count);
+      }
+    }
+
+    msg.header.stamp = ros::Time::now();
+    leg_command_array_pub_.publish(msg);
+
+    return;
+  }
+
   bool hasTrajectory = true;
 
   if (last_trajectory_msg_.joints.position.size() == 0) {

@@ -35,10 +35,11 @@ SOFTWARE.
     <include file="$(find spirit_utils)/launch/mapping.launch" />
     <include file="$(find spirit_utils)/launch/visualization.launch" />
     <include file="$(find spirit_utils)/launch/robot_driver.launch"/>
-    <include file="$(find spirit_utils)/launch/planning.launch">
+    <!-- <include file="$(find spirit_utils)/launch/planning_tracking.launch"/> -->
+    <!-- <include file="$(find spirit_utils)/launch/planning.launch">
       <arg name="body_planner" value="$(arg body_planner)"/>
     </include>
-
+ -->
     <group if="$(eval body_planner == 'twist')">
       <node name="twist_key_controller"
         pkg="spirit_utils"
@@ -61,7 +62,7 @@ SOFTWARE.
   <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
 
   <!-- Spawn SDF model -->
-  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.3 -J 1 1.632 -J 3 1.632 -J 5 1.632 -J 7 1.632 -J 0 0.816 -J 2 0.816 -J 4 0.816 -J 6 0.816" output="screen"/>
+  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.05 -J 1 0.0 -J 3 0.0 -J 5 0.0 -J 7 0.0 -J 0 0.0 -J 2 0.0 -J 4 0.0 -J 6 0.0" output="screen"/>
 
   <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
   <include file="$(find spirit_utils)/launch/load_params.launch" />

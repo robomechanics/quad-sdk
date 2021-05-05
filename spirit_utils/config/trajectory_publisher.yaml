@@ -2,4 +2,5 @@ trajectory_publisher:
   update_rate: 40
   interp_dt: 0.05 # has to be same as mpc controller
   playback_speed: 1.0
-  traj_source: topic
+  traj_source: import # topic import
+  traj_name_list_: ['SpinStepBackFlyingTrot'] # Spirit2mCrawl FixedJumpSpin180 Squat SpinStepBackFlyingTrot SlowSpin SlowSpinBack

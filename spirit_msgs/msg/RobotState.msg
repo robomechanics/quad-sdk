@@ -7,3 +7,4 @@ Header header
 nav_msgs/Odometry body
 sensor_msgs/JointState joints
 spirit_msgs/MultiFootState feet
+bool full_trajectory

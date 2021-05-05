@@ -17,6 +17,14 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <eigen3/Eigen/Eigen>
 
+#include <ros/package.h>
+
+#include <string>
+#include <vector>
+#include <sstream> //istringstream
+#include <iostream> // cout
+#include <fstream> // ifstream
+
 //! A class for interfacing between RViz and spirit-software topics.
 /*!
    TrajectoryPublisher is a container for all of the logic utilized in the 
@@ -77,6 +85,13 @@ private:
    */
   void publishTrajectoryState();
 
+  /**
+   * @brief Loads data from a specified CSV file into a nested std::vector structure
+   * @param[in] filename Path to the CSV file
+   * @return Data from the CSV in vector structure
+   */
+  std::vector<std::vector<double> > loadCSV(std::string filename);
+
   /// ROS Subscriber for the body plan
   ros::Subscriber body_plan_sub_;
 
@@ -127,6 +142,16 @@ private:
 
   /// The source of the current trajectory (import or otherwise)
   std::string traj_source_;
+
+  /// The names of csv files to use for importing trajectories
+  std::vector<std::string> traj_name_list_;
+
+  /// Flag to import trajectory
+  bool import_traj_;
+
+  /// Flag for beginning of publishing trajectory messages
+
+  ros::Time start_time_;
 
 };
 

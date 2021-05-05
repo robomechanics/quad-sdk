@@ -21,6 +21,7 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
 
   nh.param<std::string>("map_frame",map_frame_,"map");
   nh.param<std::string>("trajectory_publisher/traj_source", traj_source_, "topic");
+  nh.getParam("trajectory_publisher/traj_name_list_", traj_name_list_);
   nh.param<double>("trajectory_publisher/update_rate", update_rate_, 30);
   nh.param<double>("trajectory_publisher/interp_dt", interp_dt_, 0.05);
   nh.param<double>("trajectory_publisher/playback_speed", playback_speed_, 1.0);
@@ -38,17 +39,132 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
   trajectory_pub_ = nh_.advertise<spirit_msgs::RobotStateTrajectory>
     (trajectory_topic,1);
 
+  import_traj_ = false;
+  update_flag_ = true;
+
+  start_time_ = ros::Time::now();
+}
+
+std::vector<std::vector<double> > TrajectoryPublisher::loadCSV(std::string filename) {
+  
+  std::vector<std::vector<double> > data;
+  std::ifstream inputFile(filename);
+  int l = 0;
+
+  while (inputFile) {
+      l++;
+      std::string s;
+      if (!getline(inputFile, s)) break;
+      if (s[0] != '#') {
+          std::istringstream ss(s);
+          std::vector<double> record;
+
+          while (ss) {
+              std::string line;
+              if (!getline(ss, line, ','))
+                  break;
+              try {
+                  record.push_back(stod(line));
+              }
+              catch (const std::invalid_argument e) {
+                  std::cout << "NaN found in file " << filename << " line " << l
+                       << std::endl;
+                  e.what();
+              }
+          }
+
+          data.push_back(record);
+      }
+  }
+
+  if (!inputFile.eof()) {
+      std::cerr << "Could not read file " << filename << "\n";
+      std::__throw_invalid_argument("File not found.");
+  }
+
+  return data;
 }
 
 void TrajectoryPublisher::importTrajectory() {
-  // For Mike
 
   // Clear current trajectory message
   traj_msg_.states.clear();
   traj_msg_.header.frame_id = map_frame_;
   traj_msg_.header.stamp = ros::Time::now();
 
-  // Load the desired balues into traj_msg;
+  // Load the desired values into traj_msg;
+  std::string package_path = ros::package::getPath("spirit_utils");
+  std::vector<std::vector<double> > trajectory_data_;
+  std::vector<std::vector<double> > temp_trajectory_data_;
+
+  for (int i = 0; i < traj_name_list_.size(); i++) {
+
+    std::cout << traj_name_list_.at(i) << std::endl;
+
+    if (i == 0) {
+      trajectory_data_ = loadCSV(package_path + "/data/" + traj_name_list_.at(i) + ".csv");
+    } else {
+
+      temp_trajectory_data_ = loadCSV(package_path + "/data/" + traj_name_list_.at(i) + ".csv");
+
+      for (int j = 0; j < trajectory_data_.size(); j++) {
+        if (j == 1) {
+          for (int k = 0; k < trajectory_data_.at(1).size(); k++) {
+            temp_trajectory_data_.at(1).at(k) = temp_trajectory_data_.at(1).at(k) + trajectory_data_.at(1).back();
+          }
+        } 
+        trajectory_data_.at(j).insert(trajectory_data_.at(j).end(), temp_trajectory_data_.at(j).begin(), temp_trajectory_data_.at(j).end());
+      }
+    }
+
+  }
+
+  t_traj_ = trajectory_data_.at(1);
+
+  // Add states to the traj message
+  for (int i = 0; i < t_traj_.size(); i++) {
+
+    // Declare new state message and set timestamp localized to first message
+    spirit_msgs::RobotState state;
+    state.header.frame_id = map_frame_;
+    state.header.stamp = traj_msg_.header.stamp + ros::Duration(t_traj_[i]);
+
+    state.full_trajectory = true;
+
+    tf2::Quaternion q2;
+    q2.setRPY(trajectory_data_.at(18).at(i), trajectory_data_.at(19).at(i), trajectory_data_.at(20).at(i));
+    q2.normalize();
+
+    state.body.pose.pose.position.x = trajectory_data_.at(15).at(i);
+    state.body.pose.pose.position.y = trajectory_data_.at(16).at(i);
+    state.body.pose.pose.position.z = trajectory_data_.at(17).at(i);
+    state.body.pose.pose.orientation.w = q2.w();
+    state.body.pose.pose.orientation.x = q2.x();
+    state.body.pose.pose.orientation.y = q2.y();
+    state.body.pose.pose.orientation.z = q2.z();
+    state.body.twist.twist.linear.x = trajectory_data_.at(33).at(i);
+    state.body.twist.twist.linear.y = trajectory_data_.at(34).at(i);
+    state.body.twist.twist.linear.z = trajectory_data_.at(35).at(i);
+    state.body.twist.twist.angular.x = trajectory_data_.at(36).at(i);
+    state.body.twist.twist.angular.y = trajectory_data_.at(37).at(i);
+    state.body.twist.twist.angular.z = trajectory_data_.at(38).at(i);
+
+    state.joints.name = {"8", "0", "1", "9","2","3","10","4","5","11","6","7"};
+
+    int num_joints = 12;
+    for (int j = 0; j<num_joints; j++) {
+      state.joints.position.push_back(trajectory_data_.at(3 + j).at(i));
+      state.joints.velocity.push_back(trajectory_data_.at(21 + j).at(i));
+      state.joints.effort.push_back(trajectory_data_.at(57 + j).at(i));
+    }
+
+    // Add this state to the message
+    traj_msg_.states.push_back(state);
+
+  }
+
+  import_traj_ = true;
+  update_flag_ = true;
 
 }
 
@@ -154,15 +270,23 @@ void TrajectoryPublisher::publishTrajectoryState() {
   }
     
   // Get the current duration since the beginning of the plan
-  ros::Duration t_duration = ros::Time::now() - body_plan_msg_.header.stamp;
+  // ros::Duration t_duration = ros::Time::now() - body_plan_msg_.header.stamp;
+
+  ros::Duration t_duration = ros::Time::now() - start_time_;
 
   // Mod by trajectory duration
   double t = playback_speed_*t_duration.toSec();
-  double t_mod = fmod(t, t_traj_.back());
+  double t_mod = fmod(t, t_traj_.back()); 
   
   // Interpolate to get the correct state and publish it
   spirit_msgs::RobotState interp_state = spirit_utils::interpRobotStateTraj(traj_msg_,t);
   // spirit_msgs::RobotState interp_state = spirit_utils::interpRobotStateTraj(traj_msg_,t_mod);
+
+  // If importing trajectory, need to set flag
+  if (traj_source_.compare("import")==0) {
+    interp_state.full_trajectory = true;
+  }
+
   trajectory_state_pub_.publish(interp_state);
 }
 
@@ -171,9 +295,15 @@ void TrajectoryPublisher::spin() {
   ros::Rate r(update_rate_);
   while (ros::ok()) {
 
+    if (ros::Time::now().toSec() < 1e-9) 
+      continue;
+
     // Update the trajectory and publish
-    if (traj_source_.compare("import")==0) {
-      importTrajectory();
+    if (import_traj_ == false) { 
+      if (traj_source_.compare("import")==0) {
+        importTrajectory();
+      }
+      start_time_ = ros::Time::now();
     } else if (update_flag_) {
       updateTrajectory();
       publishTrajectory();

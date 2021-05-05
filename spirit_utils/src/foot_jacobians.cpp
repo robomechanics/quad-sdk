@@ -109,10 +109,10 @@ void spirit_utils::calc_foot_jacobian0(const double in1[18], Eigen::MatrixXf& fo
                    J0[1], J0[4], J0[7],
                    J0[2], J0[5], J0[8];
 
-  std::cout << "Testing" << std::endl;
-  std::cout << foot_jacobian0TEST << std::endl;
-  std::cout << "Original" << std::endl;
-  std::cout << foot_jacobian0 << std::endl;
+  // std::cout << "Testing" << std::endl;
+  // std::cout << foot_jacobian0TEST << std::endl;
+  // std::cout << "Original" << std::endl;
+  // std::cout << foot_jacobian0 << std::endl;
 
 }
 
