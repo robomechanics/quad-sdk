@@ -1,5 +1,5 @@
 <launch>
-
+	<include file="$(find spirit_utils)/launch/load_params.launch" />
     <!-- Launch the odrive converter-->
     <node name="odrive_converter" pkg="tail_controller" type="odrive_converter.py" output="screen"/>
     
