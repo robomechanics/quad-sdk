@@ -22,6 +22,7 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
   nh.param<std::string>("map_frame",map_frame_,"map");
   nh.param<std::string>("trajectory_publisher/traj_source", traj_source_, "topic");
   nh.getParam("trajectory_publisher/traj_name_list_", traj_name_list_);
+  nh.param<double>("trajectory_publisher/pause_delay", pause_delay_, 1.0);
   nh.param<double>("trajectory_publisher/update_rate", update_rate_, 30);
   nh.param<double>("trajectory_publisher/interp_dt", interp_dt_, 0.05);
   nh.param<double>("trajectory_publisher/playback_speed", playback_speed_, 1.0);
@@ -100,19 +101,29 @@ void TrajectoryPublisher::importTrajectory() {
   for (int i = 0; i < traj_name_list_.size(); i++) {
 
     std::cout << traj_name_list_.at(i) << std::endl;
-
+// x = m.M[15]
+// y = m.M[16]
+// z = m.M[17]
+// X = m.M[18]
+// Y = m.M[19]
+// Z = m.M[20]
     if (i == 0) {
-      trajectory_data_ = loadCSV(package_path + "/data/" + traj_name_list_.at(i) + ".csv");
+      trajectory_data_ = loadCSV(package_path + "/data/TrajectoryData/" + traj_name_list_.at(i) + ".csv");
     } else {
 
-      temp_trajectory_data_ = loadCSV(package_path + "/data/" + traj_name_list_.at(i) + ".csv");
+      temp_trajectory_data_ = loadCSV(package_path + "/data/TrajectoryData/" + traj_name_list_.at(i) + ".csv");
 
       for (int j = 0; j < trajectory_data_.size(); j++) {
+
         if (j == 1) {
-          for (int k = 0; k < trajectory_data_.at(1).size(); k++) {
-            temp_trajectory_data_.at(1).at(k) = temp_trajectory_data_.at(1).at(k) + trajectory_data_.at(1).back();
+          for (int k = 0; k < temp_trajectory_data_.at(1).size(); k++) {
+            temp_trajectory_data_.at(j).at(k) = temp_trajectory_data_.at(j).at(k) + trajectory_data_.at(j).back() + pause_delay_;
           }
-        } 
+        } else if (j == 15 || j == 16 || j == 20) {
+          for (int k = 0; k < temp_trajectory_data_.at(1).size(); k++) {
+            temp_trajectory_data_.at(j).at(k) = temp_trajectory_data_.at(j).at(k) + trajectory_data_.at(j).back();
+          }
+        }
         trajectory_data_.at(j).insert(trajectory_data_.at(j).end(), temp_trajectory_data_.at(j).begin(), temp_trajectory_data_.at(j).end());
       }
     }
@@ -284,7 +295,10 @@ void TrajectoryPublisher::publishTrajectoryState() {
 
   // If importing trajectory, need to set flag
   if (traj_source_.compare("import")==0) {
-    interp_state.full_trajectory = true;
+    if (t_duration.toSec() <= t_traj_.back()) {
+      interp_state.full_trajectory = true;
+    }
+    // interp_state.full_trajectory = true;
   }
 
   trajectory_state_pub_.publish(interp_state);

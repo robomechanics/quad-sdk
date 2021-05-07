@@ -146,6 +146,9 @@ private:
   /// The names of csv files to use for importing trajectories
   std::vector<std::string> traj_name_list_;
 
+  /// Time in-between trajectories
+  double pause_delay_;
+
   /// Flag to import trajectory
   bool import_traj_;
 

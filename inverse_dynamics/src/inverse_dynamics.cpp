@@ -80,7 +80,7 @@ void InverseDynamics::publishLegCommandArray() {
     msg.leg_commands.resize(4);
 
     static const std::vector<double> walk_kp_{50,50,50};
-    static const std::vector<double> walk_kd_{5,5,5};
+    static const std::vector<double> walk_kd_{2,2,2};
 
     int count = -1;
     for (int i = 0; i < 4; ++i) {
@@ -481,7 +481,8 @@ void InverseDynamics::publishLegCommandArray() {
   leg_command_array_pub_.publish(msg);
 }
 void InverseDynamics::spin() {
-  ros::Rate r(update_rate_);
+  // ros::Rate r(update_rate_);
+  ros::Rate r(200);
   while (ros::ok()) {
 
     // Collect new messages on subscriber topics

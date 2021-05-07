@@ -3,4 +3,5 @@ trajectory_publisher:
   interp_dt: 0.05 # has to be same as mpc controller
   playback_speed: 1.0
   traj_source: import # topic import
-  traj_name_list_: ['SpinStepBackFlyingTrot'] # Spirit2mCrawl FixedJumpSpin180 Squat SpinStepBackFlyingTrot SlowSpin SlowSpinBack
+  pause_delay: 1.0 # time between import trajectories
+  traj_name_list_: ['JumpLeft', 'JumpReset', 'JumpLeft', 'JumpReset'] # JumpReset JumpLeft SpinJumpLeft 0_5mTrot 0_5mJump 0_5mCrawl Spirit2mCrawl FixedJumpSpin180 Squat SpinStepBackFlyingTrot SlowSpin SlowSpinBack
