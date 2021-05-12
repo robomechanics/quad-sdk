@@ -53,7 +53,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
     }
   }
 
-  ref_body_plan_ = Eigen::MatrixXd::Zero(N_, Nx_);
+  ref_body_plan_ = Eigen::MatrixXd::Zero(N_+1, Nx_);
   foot_positions_world_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
   foot_positions_body_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
   current_foot_positions_body_ = Eigen::VectorXd::Zero(num_feet_*3);
@@ -99,15 +99,20 @@ void LocalPlanner::initLocalBodyPlanner() {
   Eigen::MatrixXd Ru = Eigen::MatrixXd::Zero(Nu_,Nu_);
   for (int i = 0; i < 3; ++i) { // for each dimension
     for (int j = 0; j < 4; ++j) { //for each leg
-      Ru(4*i + j,4*i+j) = control_weights.at(i);
+      Ru(3*j + i,3*j + i) = control_weights.at(i);
     }
   }
-  Ru(Nu_-1,Nu_-1) = 1e-6; //gravity weight term
+  // Ru(Nu_-1,Nu_-1) = 1e-6; //gravity weight term
 
   std::vector<Eigen::MatrixXd> Q_vec(N_+1);
   std::vector<Eigen::MatrixXd> U_vec(N_);
   for (int i = 0; i < N_+1; ++i) {
     Q_vec.at(i) = Qx;
+    if (i == N_) {
+      Q_vec.at(i) = 1e3*Qx;
+    } else {
+      Q_vec.at(i) = Qx;
+    }
   }
 
   for (int i = 0; i < N_; ++i) {
@@ -166,7 +171,6 @@ void LocalPlanner::terrainMapCallback(
 }
 
 void LocalPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) {
-  printf("Entering body plan callback\n");
   // If this is the first plan, initialize the message of past footholds with current foot positions
   if (body_plan_msg_ == NULL && robot_state_msg_ != NULL) {
     past_footholds_msg_.header = msg->header;
@@ -179,8 +183,6 @@ void LocalPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) 
   }
 
   body_plan_msg_ = msg;
-
-  printf("Leaving body plan callback\n");
 }
 
 void LocalPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
@@ -201,17 +203,20 @@ void LocalPlanner::preProcessPlanAndState() {
   // Get index within the global plan
   current_plan_index_ = spirit_utils::getPlanIndex(body_plan_msg_->header.stamp,dt_);
 
-  // Grab the appropriate states from the body plan and convert to an Eigen matrix
-  ref_body_plan_.setZero();
-  for (int i = 0; i < N_; i++) {
-    ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states[i+current_plan_index_]);
-  }
-
   // Get the current body and foot positions into Eigen
   current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
   spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
   local_footstep_planner_->getFootPositionsBodyFrame(current_state_, current_foot_positions_world_,
       current_foot_positions_body_);
+
+  // Grab the appropriate states from the body plan and convert to an Eigen matrix
+  ref_body_plan_.setZero();
+  for (int i = 0; i < N_+1; i++) {
+    // ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states[i+current_plan_index_]);
+    ref_body_plan_.row(i) << 0,0,0.3,0,0,0,0,0,0,0,0,0;
+  }
+
+  current_state_ = ref_body_plan_.row(0);
 
   // Initialize foot positions and contact schedule
   foot_positions_body_ = hip_projected_foot_positions_;
@@ -226,7 +231,7 @@ void LocalPlanner::computeLocalPlan() {
     return;  
 
   // If desired, start the timer
-  spirit_utils::FunctionTimer timer(__FUNCTION__);
+  // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
   // Determine the contact schedule
   local_footstep_planner_->computeContactSchedule(current_plan_index_, contact_schedule_);
@@ -246,17 +251,17 @@ void LocalPlanner::computeLocalPlan() {
       foot_positions_body_);
   }
 
-  std::cout << ref_body_plan_ << std::endl;
-  std::cout << body_plan_ << std::endl;
-  std::cout << foot_positions_world_ << std::endl;
-  throw std::runtime_error("STOP");
-
   // If desired, report the function time
   // timer.report();
 
 }
 
 void LocalPlanner::publishLocalPlan() {
+
+  // std::cout << "body_plan_" << std::endl << body_plan_<< std::endl << std::endl;
+  // std::cout << "grf_plan_" << std::endl << grf_plan_<< std::endl << std::endl;
+  // std::cout << "foot_positions_world_" << std::endl << foot_positions_world_<< std::endl << std::endl;
+  // throw std::runtime_error("STOP AND CHECK");
 
   // Create messages to publish
   spirit_msgs::LocalPlan local_plan_msg;

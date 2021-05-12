@@ -148,7 +148,7 @@ private:
   double dt_;
 
   /// MPC Horizon length
-  const int N_ = 20;
+  const int N_ = 24;
 
   /// Number of states
   const int Nx_ = 12;

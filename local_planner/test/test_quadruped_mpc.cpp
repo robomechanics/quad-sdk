@@ -1,7 +1,8 @@
 
 #include "local_planner/quadruped_mpc.h"
+
 #include "spirit_utils/matplotlibcpp.h"
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Eigen>
 #include <iostream>
 #include <math.h>
 #include <limits>
@@ -17,10 +18,9 @@ TEST(TestUseCase, quadVariable) {
   // Configurable (system) parameters
   const int Nu = 13;      // Appended gravity term
   const int Nx = 12;      // Number of states
-  const int N = 20;       // Time horizons to consider
-  const double dt = 0.02; // Time horizon
-  const double m = 12;    // Mass of quad
-  const double g = 9.81;  // gravitational constant
+  const int N = 24;       // Time horizons to consider
+  const double dt = 0.03; // Time horizon
+  const double m = 11.5;    // Mass of quad
   const double Ixx = 0.1; // approximately SDF values, but will need refining
   const double Iyy = 0.2; // approximately SDF values, but will need refining
   const double Izz = 0.2; // approximately SDF values, but will need refining
@@ -29,14 +29,14 @@ TEST(TestUseCase, quadVariable) {
   Eigen::MatrixXd Qx(Nx, Nx);
   Qx.setZero();
   double e = 1e-1;
-  Qx.diagonal() << 1e6,1e6,5e7,1e5,1e5,1e4,e,e,e,e,e,1e2;
+  Qx.diagonal() << 1e3,1e3,1e4,1e2,1e2,1e2,e,e,1e2,e,e,e;
 
   Eigen::MatrixXd Ru(Nu, Nu);
   Ru.setZero();
 
   double Rfx = 1;
   double Rfy = 1;
-  double Rfz = 1;
+  double Rfz = 1e-3;
   Ru.diagonal() << Rfx,Rfy,Rfz,Rfx,Rfy,Rfz,Rfx,Rfy,Rfz,Rfx,Rfy,Rfz,0;
 
   // State bounds (fixed for a given solve) 
@@ -50,32 +50,38 @@ TEST(TestUseCase, quadVariable) {
   Ib.diagonal() << Ixx,Iyy,Izz;
 
   // Foot positions in body frame
-  const double body_l = 0.6;
-  const double body_w = 0.3;
+  const double body_l = 0.44;
+  const double body_w = 0.34;
 
   // x1 y1 z1, x2 y2, z2 ... 
   Eigen::VectorXd foot_position(12);
-  foot_position << -body_w/2,body_l/2,-0.25,
-                   -body_w/2,-body_l/2,-0.25,
-                    body_w/2,body_l/2,-0.25,
-                    body_w/2,-body_l/2,-0.25;
+  foot_position << body_l/2,body_w/2,-0.29,
+                   -body_l/2,body_w/2,-0.29,
+                   body_l/2,-body_w/2,-0.29,
+                   -body_l/2,-body_w/2,-0.29;
 
   std::vector<Eigen::MatrixXd> Q_vec(N+1);
   std::vector<Eigen::MatrixXd> U_vec(N);
   std::vector<std::vector<bool>> contact_sequences(N);
-  Eigen::MatrixXd ref_traj(Nx,N+1);
+  Eigen::MatrixXd ref_traj(N+1,Nx);
   Eigen::VectorXd initial_state(Nx);
 
   initial_state << 0,0,0.3,0,0,0,0,0,0,0,0,0;
 
   for (int i = 0; i < N+1; ++i) {
     Q_vec.at(i) = Qx;
-    ref_traj.col(i) = initial_state;
-    ref_traj(0,i) = 0.03*i; // x ramp
-    ref_traj(1,i) = i > N/2 ? 0.2 : 0; // y step
-    ref_traj(2,i) = 0.25 + 0.1*sin(i/2.0); // z sine
-    ref_traj(4,i) = 0.3*cos(i/3.0);
-    ref_traj(5,i) = 0.2*sin(i/3.0);
+    if (i == N) {
+      Q_vec.at(i) = 1e3*Qx;
+    } else {
+      Q_vec.at(i) = Qx;
+    }
+    
+    ref_traj.row(i) = initial_state;
+    // ref_traj(i,0) = 0.03*i*(dt/0.1); // x ramp
+    // ref_traj(i,1) = i > N/2 ? 0.2*(dt/0.1) : 0; // y step
+    // ref_traj(i,2) = 0.3 + 0.02*sin(i/10.0*(dt/0.1)); // z sine
+    // ref_traj(i,3) = 0.3*cos(i/3.0*(dt/0.1));
+    // ref_traj(i,4) = 0.2*sin(i/3.0*(dt/0.1));
   }
 
   Eigen::MatrixXd foot_positions(N,12);
@@ -98,10 +104,10 @@ TEST(TestUseCase, quadVariable) {
   mpc.update_friction(mu);
   mpc.update_contact(contact_sequences, fmin, fmax);
   mpc.update_state_bounds(state_lo, state_hi);
-  mpc.update_control_bounds(fmin, fmax);
 
   // Solve, collect output and cost val
   Eigen::MatrixXd x_out;
+  mpc.solve(initial_state, ref_traj, x_out);
   mpc.solve(initial_state, ref_traj, x_out);
 
   double f_val;
@@ -109,6 +115,7 @@ TEST(TestUseCase, quadVariable) {
   mpc.get_output(x_out, opt_traj, control_traj, f_val);
   std::cout << "Final cost: " << f_val << std::endl;
 
+  std::cout << opt_traj << std::endl << std::endl;
   std::cout << control_traj << std::endl;
 
   // Accumulate states in stl form for plotting
@@ -118,8 +125,8 @@ TEST(TestUseCase, quadVariable) {
     state_ref.at(i).resize(N+1);
     state_opt.at(i).resize(N+1);
     for (int j = 0; j < N+1; ++j) {
-      state_ref.at(i).at(j) = ref_traj(i,j);
-      state_opt.at(i).at(j) = opt_traj(i,j);
+      state_ref.at(i).at(j) = ref_traj(j,i);
+      state_opt.at(i).at(j) = opt_traj(j,i);
     }
   } 
 
@@ -128,7 +135,7 @@ TEST(TestUseCase, quadVariable) {
   for (int i = 0; i < Nu; ++i) {
     control_opt.at(i).resize(N-1);
     for (int j = 0; j < N-1; ++j) {
-      control_opt.at(i).at(j) = control_traj(i,j);
+      control_opt.at(i).at(j) = control_traj(j,i);
     }
   } 
 

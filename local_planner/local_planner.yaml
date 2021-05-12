@@ -1,7 +1,7 @@
 local_planner:
   update_rate: 50
-  horizon_length: 10
-  timestep: 0.02
+  horizon_length: 24
+  timestep: 0.03
   iterations: 1
 
 local_body_planner:
@@ -9,13 +9,13 @@ local_body_planner:
   body_ixx: 0.1
   body_iyy: 0.2
   body_izz: 0.2
-  state_weights: [ 10000000.0,1000000.0,50000000.0,100000.0,100000.0,10000.0,1.0,1.0,1.0,1.0,1.0,100.0 ]
-  control_weights: [1.0, 1.0, 1.0] #fx,fy,fz
+  state_weights: [ 1000.0,1000.0,10000.0,100.0,100.0,100.0,0.1,0.1,100.0,0.1,0.1,0.1 ]
+  control_weights: [1.0, 1.0, 0.001] #fx,fy,fz
   state_lower_bound: [-100,-100, 0.15,-0.785,-0.785,-10,-5,-5,-2,-3.14,-3.14,-3.14]
-  state_upper_bound: [ 100, 100, 0.38, 0.785, 0.785, 10, 5, 5, 2, 3.14, 3.14, 3.14]
-  friction_mu: 0.4
-  normal_lo: 3
-  normal_hi: 70
+  state_upper_bound: [ 100, 100, 0.4, 0.785, 0.785, 10, 5, 5, 2, 3.14, 3.14, 3.14]
+  friction_mu: 0.6
+  normal_lo: 5
+  normal_hi: 50
 
 local_footstep_planner:
   grf_weight: 0.0

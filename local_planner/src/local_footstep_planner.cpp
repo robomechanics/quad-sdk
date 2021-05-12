@@ -26,7 +26,8 @@ void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_
 
         nominal_contact_schedule_.at(i).at(leg_idx) = true;
       } else {
-        nominal_contact_schedule_.at(i).at(leg_idx) = false;
+        nominal_contact_schedule_.at(i).at(leg_idx) = true;
+        ROS_WARN("Contact mode is fixed in full stance for testing purposes!");
       }
     }
   }
