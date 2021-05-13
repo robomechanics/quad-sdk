@@ -118,6 +118,9 @@ void InverseDynamics::publishLegCommandArray() {
 
         spirit_utils::interpGRFArray(last_local_plan_msg_->grfs[i],
           last_local_plan_msg_->grfs[i+1], t_interp, grf_array_msg);
+
+        // std::cout << "current_plan_index = " << current_plan_index << std::endl;
+        // std::cout << "i = " << i << std::endl;
         break;
       }
     }
@@ -153,7 +156,12 @@ void InverseDynamics::publishLegCommandArray() {
     // Compute joint torques
     Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(3*num_feet_, state_velocities.size());
     spirit_utils::getJacobian(state_positions,jacobian);
-    tau_array = jacobian.transpose()*grf_array;
+    tau_array = -jacobian.transpose().block<12,12>(0,0)*grf_array;
+
+    // std::cout << "grf_array" << std::endl << grf_array << std::endl << std::endl;
+    // std::cout << "tau_array" << std::endl << tau_array << std::endl << std::endl;
+    // throw std::runtime_error("STOP AND CHECK");
+
   }
 
   // Enter state machine for filling motor command message
@@ -183,7 +191,7 @@ void InverseDynamics::publishLegCommandArray() {
           msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0; // Just need kinematics::legIKVel to do this
           msg.leg_commands.at(i).motor_commands.at(j).kp = walk_kp_.at(j);
           msg.leg_commands.at(i).motor_commands.at(j).kd = walk_kd_.at(j);
-          msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tau_array(6+joint_idx);
+          msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tau_array(joint_idx);
         } else {
           msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = stand_joint_angles_.at(j);
           msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;

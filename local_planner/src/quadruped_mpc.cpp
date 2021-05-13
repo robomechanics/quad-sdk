@@ -365,16 +365,16 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
   Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj){
 
   // Pass inputs into solver and solve
-  update_contact(contact_schedule, f_min_, f_max_);
   update_dynamics(ref_traj,foot_positions);
+  update_contact(contact_schedule, f_min_, f_max_);
 
-  // printf("\n initial_state\n");
-  // std::cout << initial_state << std::endl;
-  // printf("\n ref_traj\n");
-  // std::cout << ref_traj << std::endl;
-  // printf("\n foot_positions\n");
-  // std::cout << foot_positions << std::endl;
+  // std::cout << "initial_state" << std::endl << initial_state << std::endl << std::endl;
+  // std::cout << "ref_traj" << std::endl << ref_traj << std::endl << std::endl;
+  // std::cout << "ref_traj.rows(): " << ref_traj.rows() << std::endl << std::endl;
+  // std::cout << "foot_positions" << std::endl << foot_positions << std::endl << std::endl;
+  // std::cout << "foot_positions.rows(): " << foot_positions.rows() << std::endl << std::endl;
 
+  // std::cout << "contact_schedule" << std::endl;
   // for (int i = 0; i < contact_schedule.size(); i++) {
   //   for (int j = 0; j < contact_schedule[i].size(); j++) {
   //     if (contact_schedule[i][j])
@@ -394,10 +394,17 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
     // std::cout << "Foot Placements in body frame: " << std::endl << foot_positions.format(CleanFmt) << std::endl;
     ROS_WARN_THROTTLE(0.1, "Failed OSQP solve!");
     // throw std::runtime_error("Failed OSQP solve!");
-  }
+  } else {
+    solve(initial_state, ref_traj, x_out);
+  } 
 
   // Get output, remove gravity control
   double f_val;
   get_output(x_out, state_traj, control_traj, f_val);
+
+  // std::cout << "state_traj" << std::endl << state_traj << std::endl << std::endl;
+  // std::cout << "control_traj" << std::endl << control_traj << std::endl << std::endl;
+  // throw std::runtime_error("STOP AND CHECK");
+
   control_traj = control_traj.block(0,0,control_traj.rows(), control_traj.cols()-1);
 }

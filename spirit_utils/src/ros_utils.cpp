@@ -472,14 +472,16 @@ namespace spirit_utils {
     return state;
   }
 
-  spirit_msgs::GRFArray eigenToGRFArrayMsg(Eigen::VectorXd grf_array,
-    spirit_msgs::MultiFootState multi_foot_state_msg) {
-  
-    spirit_msgs::GRFArray grf_msg;
+  void eigenToGRFArrayMsg(Eigen::VectorXd grf_array, spirit_msgs::MultiFootState multi_foot_state_msg,
+    spirit_msgs::GRFArray &grf_msg) {
 
+    grf_msg.vectors.clear();
+    grf_msg.points.clear();
+    grf_msg.contact_states.clear();
+  
     for (int i = 0; i < multi_foot_state_msg.feet.size(); i++) {
 
-      Eigen::Vector3d grf = grf_array.block<1,3>(0,3*i);
+      Eigen::Vector3d grf = grf_array.segment<3>(3*i);
 
       geometry_msgs::Vector3 vector_msg;
       vector_msg.x = grf[0];
@@ -496,8 +498,6 @@ namespace spirit_utils {
       bool contact_state = (grf.norm() >= 1e-6);
       grf_msg.contact_states.push_back(contact_state);
     }
-
-    return grf_msg;
 
   }
 

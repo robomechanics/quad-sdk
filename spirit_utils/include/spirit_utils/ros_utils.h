@@ -249,10 +249,10 @@ void interpBodyPlan(spirit_msgs::BodyPlan msg, double t,
    * @brief Convert Eigen vector of GRFs to GRFArray msg
    * @param[in] grf_array Eigen vector with grf data in leg order
    * @param[in] multi_foot_state_msg MultiFootState msg containing foot position information
-   * @return GRFArray msg with grf data
+   * @param[out] grf_msg GRFArray msg containing GRF data
    */
-  spirit_msgs::GRFArray eigenToGRFArrayMsg(Eigen::VectorXd grf_array,
-    spirit_msgs::MultiFootState multi_foot_state_msg);
+  void eigenToGRFArrayMsg(Eigen::VectorXd grf_array, spirit_msgs::MultiFootState multi_foot_state_msg,
+    spirit_msgs::GRFArray &grf_msg);
 
   /**
    * @brief Convert GRFArray msg to Eigen vector of GRFs

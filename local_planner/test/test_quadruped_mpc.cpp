@@ -100,20 +100,25 @@ TEST(TestUseCase, quadVariable) {
   mpc.setTimestep(dt);
   mpc.setMassProperties(m,Ib);
   mpc.update_weights(Q_vec,U_vec);
+  mpc.update_control_bounds(fmin, fmax);
+  mpc.update_state_bounds(state_lo, state_hi);
   mpc.update_dynamics(ref_traj,foot_positions);
   mpc.update_friction(mu);
   mpc.update_contact(contact_sequences, fmin, fmax);
-  mpc.update_state_bounds(state_lo, state_hi);
 
-  // Solve, collect output and cost val
-  Eigen::MatrixXd x_out;
-  mpc.solve(initial_state, ref_traj, x_out);
-  mpc.solve(initial_state, ref_traj, x_out);
+  // // Solve, collect output and cost val
+  // Eigen::MatrixXd x_out;
+  // mpc.solve(initial_state, ref_traj, x_out);
+  // mpc.solve(initial_state, ref_traj, x_out);
 
-  double f_val;
+  // double f_val;
+  // Eigen::MatrixXd opt_traj,control_traj;
+  // mpc.get_output(x_out, opt_traj, control_traj, f_val);
+  // std::cout << "Final cost: " << f_val << std::endl;
+
   Eigen::MatrixXd opt_traj,control_traj;
-  mpc.get_output(x_out, opt_traj, control_traj, f_val);
-  std::cout << "Final cost: " << f_val << std::endl;
+  mpc.computePlan(initial_state, ref_traj, foot_positions,
+      contact_sequences, opt_traj, control_traj);
 
   std::cout << opt_traj << std::endl << std::endl;
   std::cout << control_traj << std::endl;

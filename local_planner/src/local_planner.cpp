@@ -53,6 +53,22 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
     }
   }
 
+  // // Foot positions in body frame
+  // const double body_l = 0.44;
+  // const double body_w = 0.34;
+
+  // // x1 y1 z1, x2 y2, z2 ... 
+  // Eigen::VectorXd foot_position(12);
+  // foot_position << body_l/2,body_w/2,-0.29,
+  //                  -body_l/2,body_w/2,-0.29,
+  //                  body_l/2,-body_w/2,-0.29,
+  //                  -body_l/2,-body_w/2,-0.29;
+  // hip_projected_foot_positions_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
+
+  // for (int i = 0; i < N_; i++) {
+  //   hip_projected_foot_positions_.row(i) = foot_position;
+  // }
+
   ref_body_plan_ = Eigen::MatrixXd::Zero(N_+1, Nx_);
   foot_positions_world_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
   foot_positions_body_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
@@ -216,7 +232,7 @@ void LocalPlanner::preProcessPlanAndState() {
     ref_body_plan_.row(i) << 0,0,0.3,0,0,0,0,0,0,0,0,0;
   }
 
-  current_state_ = ref_body_plan_.row(0);
+  // current_state_ = ref_body_plan_.row(0);
 
   // Initialize foot positions and contact schedule
   foot_positions_body_ = hip_projected_foot_positions_;
@@ -231,7 +247,7 @@ void LocalPlanner::computeLocalPlan() {
     return;  
 
   // If desired, start the timer
-  // spirit_utils::FunctionTimer timer(__FUNCTION__);
+  spirit_utils::FunctionTimer timer(__FUNCTION__);
 
   // Determine the contact schedule
   local_footstep_planner_->computeContactSchedule(current_plan_index_, contact_schedule_);
@@ -252,7 +268,7 @@ void LocalPlanner::computeLocalPlan() {
   }
 
   // If desired, report the function time
-  // timer.report();
+  timer.report();
 
 }
 
@@ -293,9 +309,10 @@ void LocalPlanner::publishLocalPlan() {
     spirit_msgs::GRFArray grf_array_msg;
     grf_array_msg.header.stamp = timestamp;
     grf_array_msg.header.frame_id = map_frame_;
-    grf_array_msg = spirit_utils::eigenToGRFArrayMsg(grf_plan_.row(i), foot_plan_msg.states[i]);
+    spirit_utils::eigenToGRFArrayMsg(grf_plan_.row(i), foot_plan_msg.states[i], grf_array_msg);
+    grf_array_msg.contact_states.resize(num_feet_);
     for (int j = 0; j < num_feet_; j++) {
-      grf_array_msg.contact_states.push_back(contact_schedule_[i][j]);
+      grf_array_msg.contact_states[i] = contact_schedule_[i][j];
     }
     
     // Update the headers and plan indices of the messages
