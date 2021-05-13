@@ -228,8 +228,12 @@ void LocalPlanner::preProcessPlanAndState() {
   // Grab the appropriate states from the body plan and convert to an Eigen matrix
   ref_body_plan_.setZero();
   for (int i = 0; i < N_+1; i++) {
-    // ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states[i+current_plan_index_]);
-    ref_body_plan_.row(i) << 0,0,0.3,0,0,0,0,0,0,0,0,0;
+    if (i+current_plan_index_ > body_plan_msg_->plan_indices.back()) {
+      ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states.back());
+    } else {
+      ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states[i+current_plan_index_]);
+    }
+    // ref_body_plan_.row(i) << 0,0,0.3,0,0,0,0,0,0,0,0,0;
   }
 
   // current_state_ = ref_body_plan_.row(0);

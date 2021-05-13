@@ -98,7 +98,7 @@ void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_pos
 
   // Update z to clear both footholds by the specified height
   double swing_apex = ground_clearance_ + std::max(foot_position_prev.z(), foot_position_next.z());
-  double phi_z = fmod(phi, 0.5);
+  double phi_z = 2*fmod(phi, 0.5);
   phi3 = phi_z*phi_z*phi_z;
   phi2 = phi_z*phi_z;
   basis_0 = 2*phi3-3*phi2+1;
