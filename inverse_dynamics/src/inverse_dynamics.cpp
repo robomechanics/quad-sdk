@@ -50,7 +50,7 @@ void InverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) 
   }
 }
 
-void InverseDynamics::localPlanCallback(const spirit_msgs::LocalPlan::ConstPtr& msg) {
+void InverseDynamics::localPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg) {
   last_local_plan_msg_ = msg;
 }
 

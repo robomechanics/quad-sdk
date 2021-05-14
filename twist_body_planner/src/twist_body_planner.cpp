@@ -7,7 +7,7 @@ TwistBodyPlanner::TwistBodyPlanner(ros::NodeHandle nh) {
   std::string robot_state_topic, body_plan_topic, cmd_vel_topic;
 
   nh_.param<std::string>("topics/state/ground_truth", robot_state_topic, "/state/ground_truth");
-  nh_.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
+  nh_.param<std::string>("topics/global_plan", body_plan_topic, "/body_plan");
   nh_.param<std::string>("topics/cmd_vel", cmd_vel_topic, "/cmd_vel");
   nh_.param<std::string>("map_frame", map_frame_,"map");
   nh_.param<double>("twist_body_planner/cmd_vel_scale_", cmd_vel_scale_, 1);
@@ -19,7 +19,7 @@ TwistBodyPlanner::TwistBodyPlanner(ros::NodeHandle nh) {
   // Setup pubs and subs
   cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic,1,&TwistBodyPlanner::cmdVelCallback, this);
   robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&TwistBodyPlanner::robotStateCallback, this);
-  body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(body_plan_topic,1);
+  body_plan_pub_ = nh_.advertise<spirit_msgs::RobotPlan>(body_plan_topic,1);
 
   start_state_.resize(12);
   cmd_vel_.resize(6);
@@ -120,35 +120,34 @@ void TwistBodyPlanner::updatePlan() {
 }
 
 void TwistBodyPlanner::addStateWrenchToMsg(double t, int plan_index, State body_state,
-    spirit_msgs::BodyPlan& msg) {
+    spirit_msgs::RobotPlan& msg) {
 
   // Make sure the timestamps match the trajectory timing
   ros::Time current_time = msg.header.stamp + ros::Duration(t);
 
   // Represent each state as an Odometry message
-  nav_msgs::Odometry state;
-  state.header.frame_id = map_frame_;
-  state.header.stamp = current_time;
-  state.child_frame_id = "dummy";
+  spirit_msgs::RobotState state;
+  spirit_utils::updateStateHeaders(state, msg.header.stamp+ros::Duration(t), map_frame_,plan_index);
+  state.body.child_frame_id = "dummy";
 
   // Transform from RPY to quat msg
   tf2::Quaternion quat_tf;
   geometry_msgs::Quaternion quat_msg;
-  quat_tf.setRPY(body_state[3], body_state[4], body_state[5]);
+  quat_tf.setRPY(body_state[3],body_state[4],body_state[5]);
   quat_msg = tf2::toMsg(quat_tf);
 
   // Load the data into the message
-  state.pose.pose.position.x = body_state[0];
-  state.pose.pose.position.y = body_state[1];
-  state.pose.pose.position.z = body_state[2];
-  state.pose.pose.orientation = quat_msg;
+  state.body.pose.pose.position.x = body_state[0];
+  state.body.pose.pose.position.y = body_state[1];
+  state.body.pose.pose.position.z = body_state[2];
+  state.body.pose.pose.orientation = quat_msg;
 
-  state.twist.twist.linear.x = body_state[6];
-  state.twist.twist.linear.y = body_state[7];
-  state.twist.twist.linear.z = body_state[9];
-  state.twist.twist.angular.x = body_state[9];
-  state.twist.twist.angular.y = body_state[10];
-  state.twist.twist.angular.z = body_state[11];
+  state.body.twist.twist.linear.x = body_state[6];
+  state.body.twist.twist.linear.y = body_state[7];
+  state.body.twist.twist.linear.z = body_state[8];
+  state.body.twist.twist.angular.x = body_state[9];
+  state.body.twist.twist.angular.y = body_state[10];
+  state.body.twist.twist.angular.z = body_state[11];
 
   double m = 11.5;
   double g = 9.81;
@@ -162,16 +161,18 @@ void TwistBodyPlanner::addStateWrenchToMsg(double t, int plan_index, State body_
   point_msg.y = body_state[1];
   point_msg.z = body_state[2];
 
-  grf_array_msg.header.stamp = current_time;
-  grf_array_msg.vectors.push_back(vector_msg);
-  grf_array_msg.points.push_back(point_msg);
+  spirit_msgs::GRFArray grf_msg;
+  grf_msg.header = state.header;
+  grf_msg.vectors.push_back(vector_msg);
+  grf_msg.points.push_back(point_msg);
   grf_array_msg.contact_states.push_back(true);
 
   int primitive_id = 2; // Corresponds to a walking primitive
   msg.states.push_back(state);
-  msg.grfs.push_back(grf_array_msg);
-  msg.primitive_ids.push_back(primitive_id);
+  msg.grfs.push_back(grf_msg);
   msg.plan_indices.push_back(plan_index);
+  msg.primitive_ids.push_back(primitive_id);
+
 }
 
 void TwistBodyPlanner::publishPlan() {
@@ -181,22 +182,23 @@ void TwistBodyPlanner::publishPlan() {
   }
 
   // Construct BodyPlan messages
-  spirit_msgs::BodyPlan body_plan_msg;
+  spirit_msgs::RobotPlan robot_plan_msg;
 
   // Initialize the headers and types
-  body_plan_msg.header.stamp = plan_timestamp_;
-  body_plan_msg.header.frame_id = map_frame_;
+  robot_plan_msg.header.stamp = plan_timestamp_;
+  robot_plan_msg.header.frame_id = map_frame_;
+  robot_plan_msg.global_plan_timestamp = plan_timestamp_;
 
   // Loop through the interpolated body plan and add to message
   for (int i=0;i<body_plan_.size(); ++i)
-    addStateWrenchToMsg(t_plan_[i], i, body_plan_[i], body_plan_msg);
+    addStateWrenchToMsg(t_plan_[i], i, body_plan_[i], robot_plan_msg);
   
-  if (body_plan_msg.states.size() != body_plan_msg.grfs.size()) {
+  if (robot_plan_msg.states.size() != robot_plan_msg.grfs.size()) {
     throw std::runtime_error("Mismatch between number of states and wrenches, something is wrong");
   }
 
   // Publish  interpolated body plan
-  body_plan_pub_.publish(body_plan_msg);
+  body_plan_pub_.publish(robot_plan_msg);
 
 }
 

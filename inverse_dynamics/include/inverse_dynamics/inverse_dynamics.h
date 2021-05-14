@@ -11,8 +11,8 @@
 #include <spirit_msgs/GRFArray.h>
 #include <std_msgs/UInt8.h>
 #include <spirit_msgs/RobotState.h>
-#include <spirit_msgs/BodyPlan.h>
-#include <spirit_msgs/LocalPlan.h>
+#include <spirit_msgs/RobotPlan.h>
+#include <spirit_msgs/RobotPlan.h>
 #include <spirit_msgs/MotorCommand.h>
 #include <spirit_msgs/LegCommand.h>
 #include <spirit_msgs/LegCommandArray.h>
@@ -54,7 +54,7 @@ private:
 	 * @brief Callback function to handle new local plan (states and GRFs)
 	 * @param[in] msg input message contining the local plan
 	 */
-	void localPlanCallback(const spirit_msgs::LocalPlan::ConstPtr& msg);
+	void localPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg);
 	
 	/**
 	 * @brief Callback function to handle new control input (GRF)
@@ -124,7 +124,7 @@ private:
 	const int STAND_TO_SIT = 3;
 	
 	/// Most recent local plan
-	spirit_msgs::LocalPlan::ConstPtr last_local_plan_msg_;
+	spirit_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
 	/// Most recent state estimate
 	spirit_msgs::RobotState::ConstPtr last_robot_state_msg_;
@@ -133,7 +133,7 @@ private:
 	spirit_msgs::LegOverride last_leg_override_msg_;
 
 	/// Duration for sit to stand behavior
-	const double transition_duration_ = 2.0;
+	const double transition_duration_ = 1.0;
 	
 	/// Time at which to start transition
 	ros::Time transition_timestamp_;

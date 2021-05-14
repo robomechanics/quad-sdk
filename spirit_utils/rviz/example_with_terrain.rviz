@@ -3,8 +3,7 @@ Panels:
     Help Height: 0
     Name: Displays
     Property Tree Widget:
-      Expanded:
-        - /GridMap1
+      Expanded: ~
       Splitter Ratio: 0.6114649772644043
     Tree Height: 1164
   - Class: rviz/Selection
@@ -64,103 +63,18 @@ Visualization Manager:
     - Alpha: 0.30000001192092896
       Class: rviz/RobotModel
       Collision Enabled: false
-      Enabled: true
+      Enabled: false
       Links:
         All Links Enabled: true
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        body:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        hip0:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        hip1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        hip2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        hip3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower0:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        toe0:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        toe1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        toe2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        toe3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        upper0:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        upper1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        upper2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        upper3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
       Name: Trajectory State
       Robot Description: /trajectory/robot_description
       TF Prefix: /trajectory
       Update Interval: 0
-      Value: true
+      Value: false
       Visual Enabled: true
     - Alpha: 1
       Class: rviz/RobotModel
@@ -265,10 +179,10 @@ Visualization Manager:
       Visual Enabled: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /visualization/discrete_body_plan
+      Marker Topic: /visualization/global_plan_discrete
       Name: Discrete Body Plan
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -281,7 +195,7 @@ Visualization Manager:
       Length: 0.30000001192092896
       Line Style: Billboards
       Line Width: 0.05000000074505806
-      Name: Body Plan
+      Name: Global Plan
       Offset:
         X: 0
         Y: 0
@@ -291,25 +205,56 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /visualization/body_plan
+      Topic: /visualization/global_plan
       Unreliable: false
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /visualization/grf_plan
+      Name: Global Plan GRFs
+      Namespaces:
+        {}
+      Queue Size: 1
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 25; 255; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Lines
+      Line Width: 0.029999999329447746
+      Name: Local Plan
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /visualization/local_plan
+      Unreliable: false
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /visualization/local_plan_grf
+      Name: Local Plan GRFs
+      Namespaces:
+        {}
+      Queue Size: 100
       Value: true
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /visualization/foot_plan_discrete
       Name: Discrete Foot Plan
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
-    - Class: rviz/MarkerArray
-      Enabled: false
-      Marker Topic: /visualization/grf_plan
-      Name: GRFs
-      Namespaces:
-        {}
-      Queue Size: 1
-      Value: false
     - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
@@ -430,25 +375,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 4.446293354034424
+      Distance: 4.41447639465332
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 1.3487138748168945
-        Y: -0.4716632068157196
-        Z: 0.22660082578659058
+        X: 1.3530219793319702
+        Y: -0.2580118775367737
+        Z: 0.2995302081108093
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.4803980886936188
+      Pitch: 0.3603981137275696
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.173580646514893
+      Yaw: 4.168581008911133
     Saved: ~
 Window Geometry:
   Displays:

@@ -7,7 +7,7 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
   std::string body_plan_topic, foot_plan_continuous_topic, 
     trajectory_topic, trajectory_state_topic, ground_truth_state_topic;
 
-  nh.param<std::string>("topics/body_plan", 
+  nh.param<std::string>("topics/global_plan", 
     body_plan_topic, "/body_plan");
   nh.param<std::string>("topics/foot_plan_continuous", 
     foot_plan_continuous_topic, "/foot_plan_continuous");
@@ -27,7 +27,7 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
 
   // Setup subs and pubs
   body_plan_sub_ = nh_.subscribe(body_plan_topic,1,
-    &TrajectoryPublisher::bodyPlanCallback, this);
+    &TrajectoryPublisher::robotPlanCallback, this);
   multi_foot_plan_continuous_sub_ = nh_.subscribe(foot_plan_continuous_topic,1,
     &TrajectoryPublisher::multiFootPlanContinuousCallback, this);
   ground_truth_state_sub_ = nh_.subscribe(ground_truth_state_topic,1,
@@ -52,7 +52,7 @@ void TrajectoryPublisher::importTrajectory() {
 
 }
 
-void TrajectoryPublisher::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) {
+void TrajectoryPublisher::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg) {
 
   // Save the most recent body plan
   body_plan_msg_ = (*msg);
@@ -124,7 +124,7 @@ void TrajectoryPublisher::updateTrajectory() {
     // Interpolate body and foot plan
     int primitive_id;
     spirit_msgs::GRFArray grf_array;
-    spirit_utils::interpBodyPlan(body_plan_msg_,t_traj_[i], state.body,primitive_id, grf_array);
+    spirit_utils::interpRobotPlan(body_plan_msg_,t_traj_[i], state,primitive_id, grf_array);
     state.feet = spirit_utils::interpMultiFootPlanContinuous(
       multi_foot_plan_continuous_msg_,t_traj_[i]);
 

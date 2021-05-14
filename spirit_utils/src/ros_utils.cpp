@@ -164,15 +164,16 @@ namespace spirit_utils {
     interpMultiFootState(state_1.feet, state_2.feet, t_interp, interp_state.feet);
   }
 
-  void interpBodyPlan(spirit_msgs::BodyPlan msg, double t,
-    nav_msgs::Odometry &interp_state, int &interp_primitive_id, spirit_msgs::GRFArray &interp_grf) {    
+  void interpRobotPlan(spirit_msgs::RobotPlan msg, double t,
+    spirit_msgs::RobotState &interp_state, int &interp_primitive_id,
+    spirit_msgs::GRFArray &interp_grf) {    
 
     // Define some useful timing parameters
     ros::Time t0_ros = msg.states.front().header.stamp;
     ros::Time t_ros = t0_ros + ros::Duration(t);
 
     // Declare variables for interpolating between, both for input and output data
-    nav_msgs::Odometry state_1, state_2;
+    spirit_msgs::RobotState state_1, state_2;
     int primitive_id_1, primitive_id_2;
     spirit_msgs::GRFArray grf_1, grf_2;
 
@@ -205,7 +206,7 @@ namespace spirit_utils {
     double t_interp = (t - t1)/(t2-t1);
 
     // Compute interpolation
-    interpOdometry(state_1, state_2, t_interp, interp_state);
+    interpRobotState(state_1, state_2, t_interp, interp_state);
     interp_primitive_id = primitive_id_1;
     interpGRFArray(grf_1, grf_2, t_interp, interp_grf);
 

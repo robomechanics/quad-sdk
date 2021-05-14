@@ -15,8 +15,8 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
 
   nh.param<std::string>("topics/terrain_map", terrain_map_topic_, "/terrain_map");
   nh.param<std::string>("topics/state/ground_truth", robot_state_topic_, "/state/ground_truth");
-  nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
-  nh.param<std::string>("topics/discrete_body_plan", discrete_body_plan_topic, "/discrete_body_plan");
+  nh.param<std::string>("topics/global_plan", body_plan_topic, "/body_plan");
+  nh.param<std::string>("topics/global_plan_discrete", discrete_body_plan_topic, "/discrete_body_plan");
   nh.param<std::string>("topics/goal_state", goal_state_topic, "/clicked_point");
   nh.param<std::string>("map_frame",map_frame_,"map");
   nh.param<double>("global_body_planner/update_rate", update_rate_, 1);
@@ -35,8 +35,8 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic_,1,&GlobalBodyPlanner::terrainMapCallback, this);
   robot_state_sub_ = nh_.subscribe(robot_state_topic_,1,&GlobalBodyPlanner::robotStateCallback, this);
   goal_state_sub_ = nh_.subscribe(goal_state_topic,1,&GlobalBodyPlanner::goalStateCallback, this);
-  body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(body_plan_topic,1);
-  discrete_body_plan_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(discrete_body_plan_topic,1);
+  body_plan_pub_ = nh_.advertise<spirit_msgs::RobotPlan>(body_plan_topic,1);
+  discrete_body_plan_pub_ = nh_.advertise<spirit_msgs::RobotPlan>(discrete_body_plan_topic,1);
 
   // Initialize the current path cost to infinity to ensure the first solution is stored
   current_cost_ = INFTY;
@@ -297,15 +297,14 @@ void GlobalBodyPlanner::callPlanner() {
 }
 
 void GlobalBodyPlanner::addStateAndGRFToMsg(double t, int plan_index, FullState body_state, 
-  GRF grf, int primitive_id, spirit_msgs::BodyPlan& msg) {
+  GRF grf, int primitive_id, spirit_msgs::RobotPlan& msg) {
 
   ROS_ASSERT(body_state.size()==12);
 
   // Represent each state as an Odometry message
-  nav_msgs::Odometry state;
-  state.header.frame_id = map_frame_;
-  state.header.stamp = msg.header.stamp + ros::Duration(t);
-  state.child_frame_id = "dummy";
+  spirit_msgs::RobotState state;
+  spirit_utils::updateStateHeaders(state, msg.header.stamp+ros::Duration(t), map_frame_,plan_index);
+  state.body.child_frame_id = "dummy";
 
   // Transform from RPY to quat msg
   tf2::Quaternion quat_tf;
@@ -313,20 +312,18 @@ void GlobalBodyPlanner::addStateAndGRFToMsg(double t, int plan_index, FullState 
   quat_tf.setRPY(body_state[3],body_state[4],body_state[5]);
   quat_msg = tf2::toMsg(quat_tf);
 
-  // std::cout << "original pitch = " << body_state[7] << std::endl;
-
   // Load the data into the message
-  state.pose.pose.position.x = body_state[0];
-  state.pose.pose.position.y = body_state[1];
-  state.pose.pose.position.z = body_state[2];
-  state.pose.pose.orientation = quat_msg;
+  state.body.pose.pose.position.x = body_state[0];
+  state.body.pose.pose.position.y = body_state[1];
+  state.body.pose.pose.position.z = body_state[2];
+  state.body.pose.pose.orientation = quat_msg;
 
-  state.twist.twist.linear.x = body_state[6];
-  state.twist.twist.linear.y = body_state[7];
-  state.twist.twist.linear.z = body_state[8];
-  state.twist.twist.angular.x = body_state[9];
-  state.twist.twist.angular.y = body_state[10];
-  state.twist.twist.angular.z = body_state[11];
+  state.body.twist.twist.linear.x = body_state[6];
+  state.body.twist.twist.linear.y = body_state[7];
+  state.body.twist.twist.linear.z = body_state[8];
+  state.body.twist.twist.angular.x = body_state[9];
+  state.body.twist.twist.angular.y = body_state[10];
+  state.body.twist.twist.angular.z = body_state[11];
 
   spirit_msgs::GRFArray grf_msg;
   geometry_msgs::Vector3 vector_msg;
@@ -338,19 +335,17 @@ void GlobalBodyPlanner::addStateAndGRFToMsg(double t, int plan_index, FullState 
   point_msg.y = body_state[1];
   point_msg.z = body_state[2];
 
-  grf_msg.header.frame_id = map_frame_;
-  grf_msg.header.stamp = msg.header.stamp + ros::Duration(t);
+  grf_msg.header = state.header;
   grf_msg.vectors.push_back(vector_msg);
   grf_msg.points.push_back(point_msg);
 
   bool contact_state = (primitive_id != FLIGHT);
   grf_msg.contact_states.push_back(contact_state);
 
-
   msg.states.push_back(state);
   msg.grfs.push_back(grf_msg);
-  msg.primitive_ids.push_back(primitive_id);
   msg.plan_indices.push_back(plan_index);
+  msg.primitive_ids.push_back(primitive_id);
 }
 
 void GlobalBodyPlanner::publishPlan() {
@@ -358,20 +353,22 @@ void GlobalBodyPlanner::publishPlan() {
     return;
 
   // Construct BodyPlan messages
-  spirit_msgs::BodyPlan body_plan_msg;
-  spirit_msgs::BodyPlan discrete_body_plan_msg;
+  spirit_msgs::RobotPlan robot_plan_msg;
+  spirit_msgs::RobotPlan discrete_robot_plan_msg;
 
   // Initialize the headers and types
-  body_plan_msg.header.stamp = plan_timestamp_;
-  body_plan_msg.header.frame_id = map_frame_;
-  discrete_body_plan_msg.header = body_plan_msg.header;
+  robot_plan_msg.header.stamp = plan_timestamp_;
+  robot_plan_msg.header.frame_id = map_frame_;
+  discrete_robot_plan_msg.header = robot_plan_msg.header;
+  robot_plan_msg.global_plan_timestamp = plan_timestamp_;
+  discrete_robot_plan_msg.global_plan_timestamp = plan_timestamp_;
 
   ROS_ASSERT(t_plan_.front() == 0);
 
   // Loop through the interpolated body plan and add to message
   for (int i=0;i<body_plan_.size(); ++i) {
     addStateAndGRFToMsg(t_plan_[i], i, body_plan_[i], grf_plan_[i],
-      primitive_id_plan_[i], body_plan_msg);
+      primitive_id_plan_[i], robot_plan_msg);
   }
 
   // Loop through the discrete states and add to message
@@ -380,16 +377,16 @@ void GlobalBodyPlanner::publishPlan() {
     // Discrete states don't need roll, yaw, or timing data, set to zero
     FullState full_discrete_state = stateToFullState(state_sequence_[i],0,0,0,0,0,0);
     addStateAndGRFToMsg(0.0, 0, full_discrete_state, grf_plan_[i], 
-      primitive_id_plan_[i], discrete_body_plan_msg);
+      primitive_id_plan_[i], discrete_robot_plan_msg);
   }
   
-  if (body_plan_msg.states.size() != body_plan_msg.grfs.size()) {
+  if (robot_plan_msg.states.size() != robot_plan_msg.grfs.size()) {
     throw std::runtime_error("Mismatch between number of states and wrenches, something is wrong");
   }
 
   // Publish both interpolated body plan and discrete states
-  body_plan_pub_.publish(body_plan_msg);
-  discrete_body_plan_pub_.publish(discrete_body_plan_msg);
+  body_plan_pub_.publish(robot_plan_msg);
+  discrete_body_plan_pub_.publish(discrete_robot_plan_msg);
 
 }
 

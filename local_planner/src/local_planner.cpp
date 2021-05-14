@@ -14,7 +14,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   std::string terrain_map_topic, body_plan_topic, robot_state_topic, local_plan_topic,
     foot_plan_discrete_topic, foot_plan_continuous_topic;
   spirit_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
-  spirit_utils::loadROSParam(nh_, "topics/body_plan", body_plan_topic);
+  spirit_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   spirit_utils::loadROSParam(nh_, "topics/state/ground_truth",robot_state_topic);
   spirit_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
   spirit_utils::loadROSParam(nh_, "topics/foot_plan_discrete", foot_plan_discrete_topic);
@@ -23,9 +23,9 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
 
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1, &LocalPlanner::terrainMapCallback, this);
-  body_plan_sub_ = nh_.subscribe(body_plan_topic,1, &LocalPlanner::bodyPlanCallback, this);
+  body_plan_sub_ = nh_.subscribe(body_plan_topic,1, &LocalPlanner::robotPlanCallback, this);
   robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&LocalPlanner::robotStateCallback,this);
-  local_plan_pub_ = nh_.advertise<spirit_msgs::LocalPlan>(local_plan_topic,1);
+  local_plan_pub_ = nh_.advertise<spirit_msgs::RobotPlan>(local_plan_topic,1);
   foot_plan_discrete_pub_ = nh_.advertise<
     spirit_msgs::MultiFootPlanDiscrete>(foot_plan_discrete_topic,1);
   foot_plan_continuous_pub_ = nh_.advertise<
@@ -172,7 +172,7 @@ void LocalPlanner::terrainMapCallback(
   local_footstep_planner_->updateMap(terrain_);
 }
 
-void LocalPlanner::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg) {
+void LocalPlanner::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg) {
   // If this is the first plan, initialize the message of past footholds with current foot positions
   if (body_plan_msg_ == NULL && robot_state_msg_ != NULL) {
     past_footholds_msg_.header = msg->header;
@@ -203,7 +203,7 @@ void LocalPlanner::preProcessPlanAndState() {
     return;
 
   // Get index within the global plan
-  current_plan_index_ = spirit_utils::getPlanIndex(body_plan_msg_->header.stamp,dt_);
+  current_plan_index_ = spirit_utils::getPlanIndex(body_plan_msg_->global_plan_timestamp,dt_);
 
   // Get the current body and foot positions into Eigen
   current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
@@ -217,9 +217,9 @@ void LocalPlanner::preProcessPlanAndState() {
 
     // If the horizon extends past the reference trajectory, just hold the last state
     if (i+current_plan_index_ > body_plan_msg_->plan_indices.back()) {
-      ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states.back());
+      ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states.back().body);
     } else {
-      ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states[i+current_plan_index_]);
+      ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states[i+current_plan_index_].body);
     }
   }
 
@@ -272,7 +272,7 @@ bool LocalPlanner::computeLocalPlan() {
 void LocalPlanner::publishLocalPlan() {
 
   // Create messages to publish
-  spirit_msgs::LocalPlan local_plan_msg;
+  spirit_msgs::RobotPlan local_plan_msg;
   spirit_msgs::MultiFootPlanDiscrete future_footholds_msg;
   spirit_msgs::MultiFootPlanContinuous foot_plan_msg;
 
@@ -280,7 +280,7 @@ void LocalPlanner::publishLocalPlan() {
   ros::Time timestamp = ros::Time::now();
   local_plan_msg.header.stamp = timestamp;
   local_plan_msg.header.frame_id = map_frame_;
-  local_plan_msg.global_plan_timestamp = body_plan_msg_->header.stamp;
+  local_plan_msg.global_plan_timestamp = body_plan_msg_->global_plan_timestamp;
   future_footholds_msg.header = local_plan_msg.header;
   foot_plan_msg.header = local_plan_msg.header;
 

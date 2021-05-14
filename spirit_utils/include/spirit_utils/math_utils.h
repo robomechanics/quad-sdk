@@ -10,7 +10,7 @@
 #include <spirit_msgs/MultiFootPlanContinuous.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/RobotStateTrajectory.h>
-#include <spirit_msgs/BodyPlan.h>
+#include <spirit_msgs/RobotPlan.h>
 #include <cmath>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>

@@ -4,7 +4,7 @@
 #include <ros/ros.h>
 #include <math.h>
 #include <eigen3/Eigen/Eigen>
-#include <spirit_msgs/BodyPlan.h>
+#include <spirit_msgs/RobotPlan.h>
 #include <spirit_msgs/MultiFootPlanDiscrete.h>
 #include <spirit_msgs/GRFArray.h>
 #include <spirit_msgs/RobotState.h>

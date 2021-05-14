@@ -10,7 +10,7 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
 
   nh.param<std::string>("topics/terrain_map", 
     terrain_map_topic_, "/terrain_map");
-  nh.param<std::string>("topics/body_plan", body_plan_topic_, "/body_plan");
+  nh.param<std::string>("topics/global_plan", body_plan_topic_, "/body_plan");
   nh.param<std::string>("topics/foot_plan_discrete", 
     foot_plan_discrete_topic, "/foot_plan_discrete");
   nh.param<std::string>("topics/foot_plan_continuous", 
@@ -38,7 +38,7 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic_,1,
     &LocalFootstepPlanner::terrainMapCallback, this);
   body_plan_sub_ = nh_.subscribe(body_plan_topic_,1,
-    &LocalFootstepPlanner::bodyPlanCallback, this);
+    &LocalFootstepPlanner::robotPlanCallback, this);
   robot_state_sub_ = nh_.subscribe(robot_state_topic,1,
     &LocalFootstepPlanner::robotStateCallback, this);
   foot_plan_discrete_pub_ = nh_.advertise<
@@ -58,8 +58,8 @@ void LocalFootstepPlanner::terrainMapCallback(
   terrain_.loadDataFromGridMap(map);
 }
 
-void LocalFootstepPlanner::bodyPlanCallback(
-  const spirit_msgs::BodyPlan::ConstPtr& msg) {
+void LocalFootstepPlanner::robotPlanCallback(
+  const spirit_msgs::RobotPlan::ConstPtr& msg) {
 
   // Only update if the new plan is different
   if (body_plan_msg_ != NULL) {
@@ -191,9 +191,9 @@ void LocalFootstepPlanner::updateDiscretePlan() {
       int primitive_id_touchdown, primitive_id_midstance;
       spirit_msgs::GRFArray grf_array_touchdown, grf_array_midstance;
 
-      spirit_utils::interpBodyPlan((*body_plan_msg_), t_touchdown, body_touchdown,
+      spirit_utils::interpRobotPlan((*body_plan_msg_), t_touchdown, body_touchdown,
         primitive_id_touchdown, grf_array_touchdown);
-      spirit_utils::interpBodyPlan((*body_plan_msg_), t_midstance, body_midstance,
+      spirit_utils::interpRobotPlan((*body_plan_msg_), t_midstance, body_midstance,
         primitive_id_midstance, grf_array_midstance);
 
       // Skip if this would occur during a flight phase
@@ -495,10 +495,10 @@ void LocalFootstepPlanner::waitForData() {
     ros::spinOnce();
   }
 
-  boost::shared_ptr<spirit_msgs::BodyPlan const> shared_body_plan;
+  boost::shared_ptr<spirit_msgs::RobotPlan const> shared_body_plan;
   while((shared_body_plan == nullptr) && ros::ok())
   {
-    shared_body_plan = ros::topic::waitForMessage<spirit_msgs::BodyPlan>(
+    shared_body_plan = ros::topic::waitForMessage<spirit_msgs::RobotPlan>(
       body_plan_topic_, nh_);
     ros::spinOnce();
   }

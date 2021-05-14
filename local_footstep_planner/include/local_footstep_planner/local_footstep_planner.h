@@ -3,7 +3,7 @@
 
 #include <ros/ros.h>
 #include <nav_msgs/Path.h>
-#include <spirit_msgs/BodyPlan.h>
+#include <spirit_msgs/RobotPlan.h>
 #include <spirit_msgs/FootState.h>
 #include <spirit_msgs/MultiFootState.h>
 #include <spirit_msgs/MultiFootPlanContinuous.h>
@@ -52,7 +52,7 @@ class LocalFootstepPlanner {
      * @brief Callback function to handle new body plan data
      * @param[in] nav_msgs::Path contining map data
      */
-    void bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
+    void robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg);
 
     /**
      * @brief Callback function to handle new robot state data
@@ -150,7 +150,7 @@ class LocalFootstepPlanner {
     ros::Time plan_timestamp_;
 
     /// Current body plan
-    spirit_msgs::BodyPlan::ConstPtr body_plan_msg_;
+    spirit_msgs::RobotPlan::ConstPtr body_plan_msg_;
 
     /// Current robot state
     spirit_msgs::RobotState::ConstPtr robot_state_msg_;

@@ -7,7 +7,7 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-#include <spirit_msgs/BodyPlan.h>
+#include <spirit_msgs/RobotPlan.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_utils/ros_utils.h>
 
@@ -68,7 +68,7 @@ class TwistBodyPlanner {
      * @param[in] body_plan_msg Body plan message
      */
     void addStateWrenchToMsg(double t, int plan_index, State body_state,
-      spirit_msgs::BodyPlan& body_plan_msg);
+      spirit_msgs::RobotPlan& body_plan_msg);
 
     /**
      * @brief Publish the current body plan

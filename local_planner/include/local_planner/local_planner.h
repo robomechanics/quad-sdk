@@ -3,8 +3,8 @@
 
 #include <ros/ros.h>
 #include <math.h>
-#include <spirit_msgs/BodyPlan.h>
-#include <spirit_msgs/LocalPlan.h>
+#include <spirit_msgs/RobotPlan.h>
+#include <spirit_msgs/RobotPlan.h>
 #include <spirit_msgs/MultiFootPlanDiscrete.h>
 #include <spirit_msgs/GRFArray.h>
 #include <spirit_msgs/RobotState.h>
@@ -55,7 +55,7 @@ private:
    * @brief Callback function to handle new plans
    * @param[in] msg Robot state trajectory message
    */
-  void bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
+  void robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg);
 
   /**
    * @brief Callback function to handle new state estimates
@@ -116,7 +116,7 @@ private:
   std::shared_ptr<LocalFootstepPlanner> local_footstep_planner_;
 
 	/// Most recent robot plan
-	spirit_msgs::BodyPlan::ConstPtr body_plan_msg_;
+	spirit_msgs::RobotPlan::ConstPtr body_plan_msg_;
 
   /// Most recent robot state
 	spirit_msgs::RobotState::ConstPtr robot_state_msg_;

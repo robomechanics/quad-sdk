@@ -3,7 +3,7 @@
 
 #include <ros/ros.h>
 #include <nav_msgs/Path.h>
-#include <spirit_msgs/BodyPlan.h>
+#include <spirit_msgs/RobotPlan.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/FootState.h>
 #include <spirit_msgs/MultiFootState.h>

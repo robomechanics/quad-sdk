@@ -83,7 +83,7 @@ MPCController::MPCController(ros::NodeHandle nh) {
   robot_state_traj_sub_ = nh_.subscribe(robot_state_traj_topic,1,&MPCController::robotPlanCallback, this);
   robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&MPCController::robotStateCallback,this);
   grf_array_pub_ = nh_.advertise<spirit_msgs::GRFArray>(grf_array_topic,1);
-  traj_pub_ = nh_.advertise<spirit_msgs::BodyPlan>(control_traj_topic,1);
+  traj_pub_ = nh_.advertise<spirit_msgs::RobotPlan>(control_traj_topic,1);
   ROS_INFO("MPC Controller setup, waiting for callbacks");
 }
 
