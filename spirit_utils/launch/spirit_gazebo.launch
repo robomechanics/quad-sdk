@@ -35,18 +35,6 @@ SOFTWARE.
     <include file="$(find spirit_utils)/launch/mapping.launch" />
     <include file="$(find spirit_utils)/launch/visualization.launch" />
     <include file="$(find spirit_utils)/launch/robot_driver.launch"/>
-    <include file="$(find spirit_utils)/launch/planning.launch">
-      <arg name="body_planner" value="$(arg body_planner)"/>
-    </include>
-
-    <group if="$(eval body_planner == 'twist')">
-      <node name="twist_key_controller"
-        pkg="spirit_utils"
-        type="twist_key_controller.py"
-        respawn="false"
-        output="screen">
-      </node>
-    </group>
   </group>
 
   <!-- Launch the Spirit world with specific physics parameters -->

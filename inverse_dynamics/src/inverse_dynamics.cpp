@@ -3,7 +3,7 @@
 namespace plt = matplotlibcpp;
 
 InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
-  nh.param<double>("mpc_controller/update_rate", update_rate_, 100);
+  nh.param<double>("inverse_dynamics/update_rate", update_rate_, 100);
 	nh_ = nh;
 
     // Load rosparams from parameter server
@@ -14,6 +14,11 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh_,"topics/control/joint_command",leg_command_array_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/leg_override",leg_override_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
+
+  spirit_utils::loadROSParam(nh_, "inverse_dynamics/walk_kp_", walk_kp_);
+  spirit_utils::loadROSParam(nh_, "inverse_dynamics/walk_kd_", walk_kd_);
+  spirit_utils::loadROSParam(nh_, "inverse_dynamics/aerial_kp_", aerial_kp_);
+  spirit_utils::loadROSParam(nh_, "inverse_dynamics/aerial_kd_", aerial_kd_);
   
   // Setup pubs and subs
   grf_input_sub_ = nh_.subscribe(grf_input_topic,1,&InverseDynamics::grfInputCallback, this);
@@ -102,8 +107,8 @@ void InverseDynamics::publishLegCommandArray() {
   static const std::vector<double> ID_kp_{10,10,10};
   static const std::vector<double> ID_kd_{0.2,0.2,0.2};
 
-  static const std::vector<double> walk_kp_{50,50,50};
-  static const std::vector<double> walk_kd_{1,1,1};
+  // static const std::vector<double> walk_kp_{50,50,50};
+  // static const std::vector<double> walk_kd_{1,1,1};
 
   Eigen::Vector3d grf, grf_des, kp_grf, kd_grf, grfMPC0, grfMPC1, grfMPC2, grfMPC3;
   Eigen::Vector3d body_pos, body_vel, body_pos_des, body_vel_des, body_pos_error, body_vel_error;
@@ -267,6 +272,49 @@ void InverseDynamics::publishLegCommandArray() {
   counterVec.push_back(step_number);
   step_number++;
 
+  Eigen::VectorXf ref_foot_velocities(12), joint_velocity(12);
+  spirit_utils::SpiritKinematics kinematics;
+  sensor_msgs::JointState joint_state_traj, joint_state_currrent;
+
+  if (hasTrajectory) 
+  {
+    ref_foot_velocities << last_trajectory_msg_.feet.feet.at(0).velocity.x, last_trajectory_msg_.feet.feet.at(0).velocity.y, last_trajectory_msg_.feet.feet.at(0).velocity.z,
+    last_trajectory_msg_.feet.feet.at(1).velocity.x, last_trajectory_msg_.feet.feet.at(1).velocity.y, last_trajectory_msg_.feet.feet.at(1).velocity.z,
+    last_trajectory_msg_.feet.feet.at(2).velocity.x, last_trajectory_msg_.feet.feet.at(2).velocity.y, last_trajectory_msg_.feet.feet.at(2).velocity.z,
+    last_trajectory_msg_.feet.feet.at(3).velocity.x, last_trajectory_msg_.feet.feet.at(3).velocity.y, last_trajectory_msg_.feet.feet.at(3).velocity.z;
+
+    joint_velocity = jacobian.leftCols(12).colPivHouseholderQr().solve(
+      ref_foot_velocities - jacobian.rightCols(6)*stateVelocity.bottomRows(6));
+
+    spirit_utils::ikRobotState(kinematics, last_trajectory_msg_.body, last_trajectory_msg_.feet, joint_state_traj);
+    spirit_utils::ikRobotState(kinematics, last_robot_state_msg_.body, last_trajectory_msg_.feet, joint_state_currrent);
+
+    // test IK
+    // Eigen::Map<Eigen::VectorXd> joint_state_traj_(joint_state_traj.position.data(), 12);
+    // Eigen::Map<Eigen::VectorXd> joint_state_currrent_(joint_state_currrent.position.data(), 12);
+    // std::cout<<"------------------------------joint_state_traj--------------------------------"<<std::endl;
+    // std::cout<<joint_state_traj_<<std::endl;
+    // std::cout<<"------------------------------joint_state_currrent--------------------------------"<<std::endl;
+    // std::cout<<joint_state_currrent_<<std::endl;
+
+    // Eigen::VectorXf body_traj(3), body_current(3);
+    // body_current << last_robot_state_msg_.body.pose.pose.position.x, last_robot_state_msg_.body.pose.pose.position.y, last_robot_state_msg_.body.pose.pose.position.z;
+    // body_traj << last_trajectory_msg_.body.pose.pose.position.x, last_trajectory_msg_.body.pose.pose.position.y, last_trajectory_msg_.body.pose.pose.position.z;
+    // std::cout<<"------------------------------body_current--------------------------------"<<std::endl;
+    // std::cout<<body_current<<std::endl;
+    // std::cout<<"------------------------------body_traj--------------------------------"<<std::endl;
+    // std::cout<<body_traj<<std::endl;
+
+    // Eigen::VectorXf test_joint_velocity(12);
+    // test_joint_velocity = jacobian.leftCols(12).colPivHouseholderQr().solve(
+    //   footVelocity - jacobian.rightCols(6)*stateVelocity.bottomRows(6));
+    // std::cout<<"------------------------------true--------------------------------"<<std::endl;
+    // std::cout<<stateVelocity<<std::endl;
+    // std::cout<<"------------------------------IK--------------------------------"<<std::endl;
+    // std::cout<<test_joint_velocity<<std::endl;
+    // test IK
+  }
+
   // plt::clf();
   // plt::ion();
   // // plt::subplot(1,3,1);
@@ -336,11 +384,31 @@ void InverseDynamics::publishLegCommandArray() {
         count++;
 
         if (hasTrajectory) {
-          msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = last_trajectory_msg_.joints.position.at(count);
+          // msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = joint_state_currrent.position.at(count);
           // msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = stand_joint_angles_.at(j);
-          msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-          msg.leg_commands.at(i).motor_commands.at(j).kp = walk_kp_.at(j);
-          msg.leg_commands.at(i).motor_commands.at(j).kd = walk_kd_.at(j);
+          
+          msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = joint_velocity(count, 0);
+
+          // msg.leg_commands.at(i).motor_commands.at(j).kp = walk_kp_.at(j);
+          // msg.leg_commands.at(i).motor_commands.at(j).kd = walk_kd_.at(j);
+
+          // std::cout<<"leg "<<i<<"contact: "<<bool(last_trajectory_msg_.feet.feet.at(i).contact)<<" , like: "<<true<<" or "<<false<<std::endl;
+
+          if (bool(last_trajectory_msg_.feet.feet.at(i).contact))
+          {
+            msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = joint_state_traj.position.at(count);
+
+            msg.leg_commands.at(i).motor_commands.at(j).kp = walk_kp_.at(j);
+            msg.leg_commands.at(i).motor_commands.at(j).kd = walk_kd_.at(j);
+          }
+          else
+          {
+            msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = joint_state_traj.position.at(count);
+
+            msg.leg_commands.at(i).motor_commands.at(j).kp = aerial_kp_.at(j);
+            msg.leg_commands.at(i).motor_commands.at(j).kd = aerial_kd_.at(j);
+          }
+
           switch (i) {
             case 0:
               msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tauMPC0[j];
