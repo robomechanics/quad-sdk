@@ -10,6 +10,7 @@ TwistBodyPlanner::TwistBodyPlanner(ros::NodeHandle nh) {
   nh_.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
   nh_.param<std::string>("topics/cmd_vel", cmd_vel_topic, "/cmd_vel");
   nh_.param<std::string>("map_frame", map_frame_,"map");
+  nh_.param<double>("twist_body_planner/cmd_vel_scale_", cmd_vel_scale_, 1);
   nh_.param<double>("twist_body_planner/update_rate", update_rate_, 5);
   nh_.param<double>("twist_body_planner/horizon_length", horizon_length_, 1.5);
   nh_.param<double>("twist_body_planner/last_cmd_vel_msg_time_max",last_cmd_vel_msg_time_max_,1.0);
@@ -35,12 +36,12 @@ void TwistBodyPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg)
     plan_timestamp_ = ros::Time::now();
   }
   // Ignore non-planar components of desired twist
-  cmd_vel_[0] = msg->linear.x;
-  cmd_vel_[1] = msg->linear.y;
+  cmd_vel_[0] = cmd_vel_scale_*msg->linear.x;
+  cmd_vel_[1] = cmd_vel_scale_*msg->linear.y;
   cmd_vel_[2] = 0;
   cmd_vel_[3] = 0;
   cmd_vel_[4] = 0;
-  cmd_vel_[5] = msg->angular.z;
+  cmd_vel_[5] = cmd_vel_scale_*msg->angular.z;
 
   // Record when this was last reached for safety
   last_cmd_vel_msg_time_ = ros::Time::now();
@@ -60,7 +61,7 @@ void TwistBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPt
 
   start_state_[0] = msg->body.pose.pose.position.x;
   start_state_[1] = msg->body.pose.pose.position.y;
-  start_state_[2] = z_des;
+  start_state_[2] = z_des_;
   start_state_[3] = 0;
   start_state_[4] = 0;
   start_state_[5] = yaw;
@@ -82,7 +83,7 @@ void TwistBodyPlanner::clearPlan() {
 
 void TwistBodyPlanner::updatePlan() {
 
-  if (start_state_[2] != z_des) {
+  if (start_state_[2] != z_des_) {
     return;
   }
 

@@ -1,4 +1,5 @@
 twist_body_planner:
+  cmd_vel_scale: 0.5
   update_rate: 10
   horizon_length: 5
   last_cmd_vel_msg_time_max: 2.0

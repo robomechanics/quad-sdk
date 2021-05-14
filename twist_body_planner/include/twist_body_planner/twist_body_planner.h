@@ -118,10 +118,13 @@ class TwistBodyPlanner {
     ros::Time plan_timestamp_;
     
     /// Nominal robot height
-    const double z_des = 0.3;
+    const double z_des_ = 0.3;
 
     /// Local planner timestep
     double dt_;
+
+    /// Scale fr cmd_val
+    double cmd_vel_scale_;
 };
 
 #endif // TWIST_BODY_PLANNER_H
