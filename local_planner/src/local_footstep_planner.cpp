@@ -35,9 +35,10 @@ void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_
 
 
 void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double grf_weight, 
-  std::shared_ptr<spirit_utils::SpiritKinematics> kinematics) {
+  double standing_error_threshold, std::shared_ptr<spirit_utils::SpiritKinematics> kinematics) {
 
   ground_clearance_ = ground_clearance;
+  standing_error_threshold_ = standing_error_threshold;
   grf_weight_ = grf_weight;
   kinematics_ = kinematics;
 }
@@ -68,12 +69,25 @@ void LocalFootstepPlanner::getFootPositionsBodyFrame(const Eigen::MatrixXd &body
   }
 }
 
+void LocalFootstepPlanner::computeStanceContactSchedule(int current_plan_index,
+  std::vector<std::vector<bool>> &contact_schedule) {
+
+  for (int i = 0; i < horizon_length_; i++) { // For each finite element
+    contact_schedule.at(i).resize(num_feet_);
+    for (int leg_idx = 0; leg_idx < num_feet_; leg_idx++) { // For each leg
+        nominal_contact_schedule_.at(i).at(leg_idx) = true;
+    }
+  }
+}
+
 void LocalFootstepPlanner::computeContactSchedule(int current_plan_index,
+  Eigen::VectorXd current_state, Eigen::MatrixXd ref_body_plan,
   std::vector<std::vector<bool>> &contact_schedule) {
 
   int phase = current_plan_index % period_;
   contact_schedule = nominal_contact_schedule_;
   std::rotate(contact_schedule.begin(), contact_schedule.begin()+phase, contact_schedule.end());
+
 }
 
 void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_position_prev,

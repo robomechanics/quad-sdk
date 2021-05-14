@@ -23,6 +23,17 @@ class FunctionTimer {
 
     /**
      * @brief Stop the timer and report the statistics
+     * @return Time in seconds
+     */
+    double reportSilent() {
+      stop_time_ = std::chrono::steady_clock::now();
+      std::chrono::duration<double> elapsed = std::chrono::duration_cast<std::chrono::duration<double>>(stop_time_ - start_time_);
+      double current_time = elapsed.count();
+      return current_time;
+    };
+
+    /**
+     * @brief Stop the timer and report the statistics
      */
     void report() {
       stop_time_ = std::chrono::steady_clock::now();

@@ -47,10 +47,11 @@ class LocalFootstepPlanner {
     /**
      * @brief Set the spatial parameters of this object
      * @param[in] ground_clearance The foot clearance over adjacent footholds in cm
+     * @param[in] standing_error_threshold Threshold of body error from desired goal to start stepping
      * @param[in] grf_weight Weight on GRF projection (0 to 1)
      * @param[in] kinematics Kinematics class for computations
      */
-    void setSpatialParams(double ground_clearance, double grf_weight,
+    void setSpatialParams(double ground_clearance, double grf_weight,double standing_error_threshold,
       std::shared_ptr<spirit_utils::SpiritKinematics> kinematics);
 
     /**
@@ -80,8 +81,21 @@ class LocalFootstepPlanner {
     /**
      * @brief Compute the contact schedule based on the current phase
      * @param[in] current_plan_index_ current index in the plan
+     * @param[out] contact_schedule 2D array of contact states
      */
-    void computeContactSchedule(int current_plan_index_, std::vector<std::vector<bool>> &contact_schedule);
+    void computeStanceContactSchedule(int current_plan_index_, 
+      std::vector<std::vector<bool>> &contact_schedule);
+
+    /**
+     * @brief Compute the contact schedule based on the current phase
+     * @param[in] current_plan_index_ Current index in the plan
+     * @param[in] current_state Current robot state
+     * @param[in] ref_body_plan Reference bode plan
+     * @param[out] contact_schedule 2D array of contact states
+     */
+    void computeContactSchedule(int current_plan_index,
+      Eigen::VectorXd current_state, Eigen::MatrixXd ref_body_plan,
+      std::vector<std::vector<bool>> &contact_schedule) ;
 
     /**
      * @brief Update the discrete footstep plan with the current plan
@@ -254,6 +268,9 @@ class LocalFootstepPlanner {
 
     /// Spirit Kinematics class
     std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
+
+    /// Threshold of body error from desired goal to start stepping
+    double standing_error_threshold_ = 0;
 
 };
 

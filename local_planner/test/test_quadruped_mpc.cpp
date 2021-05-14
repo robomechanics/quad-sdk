@@ -28,15 +28,15 @@ TEST(TestUseCase, quadVariable) {
   // Weights on state deviation and control input
   Eigen::MatrixXd Qx(Nx, Nx);
   Qx.setZero();
-  double e = 1e-1;
-  Qx.diagonal() << 1e3,1e3,1e4,1e2,1e2,1e2,e,e,1e2,e,e,e;
+  double e = 1e-2;
+  Qx.diagonal() << 1e3,1e3,1e3,1e3,1e3,1e3,e,e,e,e,e,e;
 
   Eigen::MatrixXd Ru(Nu, Nu);
   Ru.setZero();
 
-  double Rfx = 1;
-  double Rfy = 1;
-  double Rfz = 1e-3;
+  double Rfx = 1e-4;
+  double Rfy = 1e-4;
+  double Rfz = 1e-4;
   Ru.diagonal() << Rfx,Rfy,Rfz,Rfx,Rfy,Rfz,Rfx,Rfy,Rfz,Rfx,Rfy,Rfz,0;
 
   // State bounds (fixed for a given solve) 
@@ -65,18 +65,18 @@ TEST(TestUseCase, quadVariable) {
   std::vector<std::vector<bool>> contact_sequences(N);
   Eigen::MatrixXd ref_traj(N+1,Nx);
   Eigen::VectorXd initial_state(Nx);
+  Eigen::VectorXd goal_state(Nx);
 
-  initial_state << 0,0,0.3,0,0,0,0,0,0,0,0,0;
+  initial_state << 0.05,0.05,0.35,0,0,0,0,0,0,0,0,0;
+  goal_state << 0,0,0.3,0,0,0,0,0,0,0,0,0;
 
   for (int i = 0; i < N+1; ++i) {
     Q_vec.at(i) = Qx;
-    if (i == N) {
-      Q_vec.at(i) = 1e3*Qx;
-    } else {
-      Q_vec.at(i) = Qx;
-    }
+    // if (i == N) {
+    //   Q_vec.at(i) = 1e3*Qx;
+    // }
     
-    ref_traj.row(i) = initial_state;
+    ref_traj.row(i) = goal_state;
     // ref_traj(i,0) = 0.03*i*(dt/0.1); // x ramp
     // ref_traj(i,1) = i > N/2 ? 0.2*(dt/0.1) : 0; // y step
     // ref_traj(i,2) = 0.3 + 0.02*sin(i/10.0*(dt/0.1)); // z sine
@@ -93,7 +93,7 @@ TEST(TestUseCase, quadVariable) {
 
   double mu = 0.6;
   double fmin = 5;
-  double fmax = 50;
+  double fmax = 100;
 
   // Setup MPC class, call necessary functions
   QuadrupedMPC mpc;
@@ -120,8 +120,8 @@ TEST(TestUseCase, quadVariable) {
   mpc.computePlan(initial_state, ref_traj, foot_positions,
       contact_sequences, opt_traj, control_traj);
 
-  std::cout << opt_traj << std::endl << std::endl;
-  std::cout << control_traj << std::endl;
+  std::cout << "opt_traj" << std::endl << opt_traj << std::endl << std::endl;
+  std::cout << "control_traj" << std::endl << control_traj << std::endl << std::endl;;
 
   // Accumulate states in stl form for plotting
   std::vector<std::vector<double>> state_ref(Nx);

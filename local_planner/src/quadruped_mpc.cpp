@@ -91,14 +91,6 @@ void QuadrupedMPC::update_weights(const std::vector<Eigen::MatrixXd> &Q,
   H_ = math::block_diag(Hq, Hu);
   H_f_ = Hq;
 
-  // std::cout << "Q.front()" << std::endl << Q.front() << std::endl << std::endl;
-  // std::cout << "Q.back()" << std::endl << Q.back() << std::endl << std::endl;
-  // std::cout << "Q.size()" << std::endl << Q.size() << std::endl << std::endl;
-
-  // std::cout << "R.front()" << std::endl << R.front() << std::endl << std::endl;
-  // std::cout << "R.back()" << std::endl << R.back() << std::endl << std::endl;
-  // std::cout << "R.size()" << std::endl << R.size() << std::endl << std::endl;
-
   updated_weights_ = true;
 }
 
@@ -171,9 +163,6 @@ void QuadrupedMPC::update_dynamics(const Eigen::MatrixXd &ref_traj,
       Bdi.block(9,3*j,3,3) = Iw_inv * foot_pos_hat * dt_;//Eigen::Matrix3d::Zero();
     }
 
-    // std::cout << "Adi" << std::endl << Adi << std::endl << std::endl;
-    // std::cout << "Bdi" << std::endl << Bdi << std::endl << std::endl;
-
     A_dyn_dense_.block(nx_*i,nx_*i,nx_,nx_) = Adi;
     A_dyn_dense_.block(nx_*i,nx_*(i+1),nx_,nx_) = -Eigen::MatrixXd::Identity(nx_,nx_);
     A_dyn_dense_.block(nx_*i,num_state_vars_+nu_*i,nx_,nu_) = Bdi;
@@ -208,10 +197,6 @@ void QuadrupedMPC::update_contact(const std::vector<std::vector<bool>> contact_s
     b_contact_lo_(num_contact_constraints_per_step_*i+num_contact_constraints_per_step_-1) = 1.0;
     b_contact_hi_(num_contact_constraints_per_step_*i+num_contact_constraints_per_step_-1) = 1.0; 
   }
-
-  // std::cout << "b_contact_lo_" << std::endl << b_contact_lo_ << std::endl << std::endl;
-  // std::cout << "b_contact_hi_" << std::endl << b_contact_hi_ << std::endl << std::endl;
-
 }
 
 void QuadrupedMPC::update_state_bounds(const Eigen::VectorXd state_lo,
@@ -299,13 +284,8 @@ bool QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
   Eigen::VectorXd upper_bound(num_constraints_);
   upper_bound << b_dyn_, initial_state, b_state_hi_, b_contact_hi_;
 
-  // std::cout << "lower_bound" << std::endl << lower_bound << std::endl << std::endl;
-  // std::cout << "upper_bound" << std::endl << upper_bound << std::endl << std::endl;
-
   // Setup OsqpEigen solver
   Eigen::SparseMatrix<double> A_sparse = A.sparseView();
-
-  // std::cout << "f_" << std::endl << f_ << std::endl << std::endl;
 
   // Init solver if not already initialized
   if (!solver_.isInitialized()) {
@@ -326,8 +306,8 @@ bool QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
     solver_.settings()->setWarmStart(true);
     solver_.settings()->setCheckTermination(10);
     solver_.settings()->setScaling(false);
-    solver_.settings()->setAbsoluteTolerance(1e-3);
-    solver_.settings()->setRelativeTolerance(1e-4);
+    solver_.settings()->setAbsoluteTolerance(1e-2); //1e-2
+    solver_.settings()->setRelativeTolerance(1e-4); //1e-4
     solver_.initSolver();
 
   }
@@ -368,43 +348,24 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
   update_dynamics(ref_traj,foot_positions);
   update_contact(contact_schedule, f_min_, f_max_);
 
-  // std::cout << "initial_state" << std::endl << initial_state << std::endl << std::endl;
-  // std::cout << "ref_traj" << std::endl << ref_traj << std::endl << std::endl;
-  // std::cout << "ref_traj.rows(): " << ref_traj.rows() << std::endl << std::endl;
-  // std::cout << "foot_positions" << std::endl << foot_positions << std::endl << std::endl;
-  // std::cout << "foot_positions.rows(): " << foot_positions.rows() << std::endl << std::endl;
-
-  // std::cout << "contact_schedule" << std::endl;
-  // for (int i = 0; i < contact_schedule.size(); i++) {
-  //   for (int j = 0; j < contact_schedule[i].size(); j++) {
-  //     if (contact_schedule[i][j])
-  //       printf(" 1 ");
-  //     else
-  //       printf(" 0 ");
-  //   }
-  //   printf("\n");
-  // }
-
   // Perform the solve
   Eigen::MatrixXd x_out;
   if (!solve(initial_state, ref_traj, x_out)) {
-    // std::cout << "Failed solve: " << std::endl;
-    // std::cout << "Current state: " << std::endl << initial_state.format(CleanFmt) << std::endl;
-    // std::cout << "Reference trajectory: " << std::endl << ref_traj.format(CleanFmt) << std::endl;
-    // std::cout << "Foot Placements in body frame: " << std::endl << foot_positions.format(CleanFmt) << std::endl;
     ROS_WARN_THROTTLE(0.1, "Failed OSQP solve!");
-    // throw std::runtime_error("Failed OSQP solve!");
-  } else {
-    solve(initial_state, ref_traj, x_out);
-  } 
+    return false;
+  }
 
   // Get output, remove gravity control
   double f_val;
   get_output(x_out, state_traj, control_traj, f_val);
 
+  // std::cout << "initial_state" << std::endl << initial_state << std::endl << std::endl;
+  // std::cout << "ref_traj" << std::endl << ref_traj << std::endl << std::endl;
+  // std::cout << "foot_positions" << std::endl << foot_positions << std::endl << std::endl;
   // std::cout << "state_traj" << std::endl << state_traj << std::endl << std::endl;
   // std::cout << "control_traj" << std::endl << control_traj << std::endl << std::endl;
   // throw std::runtime_error("STOP AND CHECK");
 
   control_traj = control_traj.block(0,0,control_traj.rows(), control_traj.cols()-1);
+  return true;
 }

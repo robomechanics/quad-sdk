@@ -89,8 +89,8 @@ void InverseDynamics::publishLegCommandArray() {
   static const std::vector<double> ID_kp_{10,10,10};
   static const std::vector<double> ID_kd_{0.2,0.2,0.2};
 
-  static const std::vector<double> walk_kp_{50,50,50};
-  static const std::vector<double> walk_kd_{1,1,1};
+  static const std::vector<double> walk_kp_{25,25,25};  // 50
+  static const std::vector<double> walk_kd_{0.5,0.5,0.5};     // 1
 
   // Initialize for plan interpolation
   spirit_msgs::RobotState ref_state_msg;
@@ -106,9 +106,8 @@ void InverseDynamics::publishLegCommandArray() {
         (current_plan_index > last_local_plan_msg_->plan_indices.back()) ) {
       ROS_ERROR("ID node couldn't find the correct ref state!");
     }
-    // printf("Current time = %6.4f, current index = %d, t_interp = %5.4f\n", current_time,
-    //   current_plan_index, t_interp);
 
+    // Interpolate the local plan to get the reference state and ff GRF
     for (int i = 0; i < last_local_plan_msg_->states.size()-1; i++) {
       if ((current_plan_index >= last_local_plan_msg_->plan_indices[i]) && 
           (current_plan_index <  last_local_plan_msg_->plan_indices[i+1])) {
@@ -119,8 +118,6 @@ void InverseDynamics::publishLegCommandArray() {
         spirit_utils::interpGRFArray(last_local_plan_msg_->grfs[i],
           last_local_plan_msg_->grfs[i+1], t_interp, grf_array_msg);
 
-        // std::cout << "current_plan_index = " << current_plan_index << std::endl;
-        // std::cout << "i = " << i << std::endl;
         break;
       }
     }
@@ -129,19 +126,12 @@ void InverseDynamics::publishLegCommandArray() {
     Eigen::VectorXd ref_body_state(12), body_state(12), grf_array(3*num_feet_),
       ref_foot_positions(3*num_feet_), ref_foot_velocities(3*num_feet_);
 
-
     // Load plan and state data from messages
     body_state = spirit_utils::odomMsgToEigen(last_robot_state_msg_->body);
     ref_body_state = spirit_utils::odomMsgToEigen(ref_state_msg.body);
     spirit_utils::multiFootStateMsgToEigen(
       ref_state_msg.feet, ref_foot_positions, ref_foot_velocities);
     grf_array = spirit_utils::grfArrayMsgToEigen(grf_array_msg);
-
-    // std::cout << ref_state_msg.header << std::endl;
-    // std::cout << grf_array_msg.header << std::endl;
-    // std::cout << "Current index = " << current_plan_index << std::endl;
-    // std::cout << "Last index in plan = " << last_local_plan_msg_->plan_indices.back() << std::endl;
-    // throw std::runtime_error("stop here");
 
     // Define vectors for joint positions and velocities
     Eigen::VectorXd joint_positions(3*num_feet_), joint_velocities(3*num_feet_);
@@ -157,11 +147,6 @@ void InverseDynamics::publishLegCommandArray() {
     Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(3*num_feet_, state_velocities.size());
     spirit_utils::getJacobian(state_positions,jacobian);
     tau_array = -jacobian.transpose().block<12,12>(0,0)*grf_array;
-
-    // std::cout << "grf_array" << std::endl << grf_array << std::endl << std::endl;
-    // std::cout << "tau_array" << std::endl << tau_array << std::endl << std::endl;
-    // throw std::runtime_error("STOP AND CHECK");
-
   }
 
   // Enter state machine for filling motor command message

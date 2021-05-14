@@ -70,8 +70,9 @@ private:
 
   /**
    * @brief Function to compute the local plan
+   * @return Boolean if local plan was found successfully
    */
-  void computeLocalPlan();
+  bool computeLocalPlan();
 
   /**
    * @brief Function to publish the local plan
