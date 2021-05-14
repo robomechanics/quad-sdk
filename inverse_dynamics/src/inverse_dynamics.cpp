@@ -272,27 +272,10 @@ void InverseDynamics::publishLegCommandArray() {
   counterVec.push_back(step_number);
   step_number++;
 
-  Eigen::VectorXf ref_foot_velocity(12), joint_velocity(12), ref_body_velocity(6);
   spirit_utils::SpiritKinematics kinematics;
-  sensor_msgs::JointState joint_state_traj, joint_state_currrent;
-
+  sensor_msgs::JointState joint_state_currrent;
   if (hasTrajectory) 
   {
-    ref_foot_velocity << last_trajectory_msg_.feet.feet.at(0).velocity.x, last_trajectory_msg_.feet.feet.at(0).velocity.y, last_trajectory_msg_.feet.feet.at(0).velocity.z,
-    last_trajectory_msg_.feet.feet.at(1).velocity.x, last_trajectory_msg_.feet.feet.at(1).velocity.y, last_trajectory_msg_.feet.feet.at(1).velocity.z,
-    last_trajectory_msg_.feet.feet.at(2).velocity.x, last_trajectory_msg_.feet.feet.at(2).velocity.y, last_trajectory_msg_.feet.feet.at(2).velocity.z,
-    last_trajectory_msg_.feet.feet.at(3).velocity.x, last_trajectory_msg_.feet.feet.at(3).velocity.y, last_trajectory_msg_.feet.feet.at(3).velocity.z;
-
-    ref_body_velocity << last_trajectory_msg_.body.twist.twist.linear.x, last_trajectory_msg_.body.twist.twist.linear.y,
-    last_trajectory_msg_.body.twist.twist.linear.z, last_trajectory_msg_.body.twist.twist.angular.x,
-    last_trajectory_msg_.body.twist.twist.angular.y, last_trajectory_msg_.body.twist.twist.angular.z; 
-
-    // joint_velocity = jacobian.leftCols(12).colPivHouseholderQr().solve(
-    //   ref_foot_velocity - jacobian.rightCols(6)*stateVelocity.bottomRows(6));
-    joint_velocity = jacobian.leftCols(12).colPivHouseholderQr().solve(
-      ref_foot_velocity - jacobian.rightCols(6)*ref_body_velocity);
-
-    spirit_utils::ikRobotState(kinematics, last_trajectory_msg_.body, last_trajectory_msg_.feet, joint_state_traj);
     spirit_utils::ikRobotState(kinematics, last_robot_state_msg_.body, last_trajectory_msg_.feet, joint_state_currrent);
 
     // test IK
@@ -394,27 +377,18 @@ void InverseDynamics::publishLegCommandArray() {
         count++;
 
         if (hasTrajectory) {
-          // msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = joint_state_currrent.position.at(count);
-          // msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = stand_joint_angles_.at(j);
-          
-          msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = last_trajectory_msg_.joints.velocity.at(count);
-
-          // msg.leg_commands.at(i).motor_commands.at(j).kp = walk_kp_.at(j);
-          // msg.leg_commands.at(i).motor_commands.at(j).kd = walk_kd_.at(j);
-
-          // std::cout<<"leg "<<i<<"contact: "<<bool(last_trajectory_msg_.feet.feet.at(i).contact)<<" , like: "<<true<<" or "<<false<<std::endl;
-
           if (bool(last_trajectory_msg_.feet.feet.at(i).contact))
           {
-            msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = joint_state_traj.position.at(count);
+            msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = last_trajectory_msg_.joints.position.at(count);
+            msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = last_trajectory_msg_.joints.velocity.at(count);
 
             msg.leg_commands.at(i).motor_commands.at(j).kp = walk_kp_.at(j);
             msg.leg_commands.at(i).motor_commands.at(j).kd = walk_kd_.at(j);
           }
           else
           {
-            msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = joint_state_traj.position.at(count);
-            // msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = joint_state_currrent.position.at(count);
+            msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = last_trajectory_msg_.joints.position.at(count);
+            msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = last_trajectory_msg_.joints.velocity.at(count);
 
             msg.leg_commands.at(i).motor_commands.at(j).kp = aerial_kp_.at(j);
             msg.leg_commands.at(i).motor_commands.at(j).kd = aerial_kd_.at(j);

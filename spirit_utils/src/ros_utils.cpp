@@ -318,17 +318,12 @@ namespace spirit_utils {
       joint_state.position.push_back(leg_joint_state[1]);
       joint_state.position.push_back(leg_joint_state[2]);
 
-      // Fill in the other elements with zeros for now (Mike to do)
-      // ROS_WARN_THROTTLE(0.5, "Joint velocity not computed in ikRobotState");
-      // joint_state.velocity.push_back(0.0);
-      // joint_state.velocity.push_back(0.0);
-      // joint_state.velocity.push_back(0.0);
-
       joint_state.effort.push_back(0.0);
       joint_state.effort.push_back(0.0);
       joint_state.effort.push_back(0.0);
     }
 
+    // Compute differential IK to get joint velocity
     double states[18];
     for (int i = 0; i < 12; i++) {
       states[i] = joint_state.position.at(i);
