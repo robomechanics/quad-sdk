@@ -319,16 +319,55 @@ namespace spirit_utils {
       joint_state.position.push_back(leg_joint_state[2]);
 
       // Fill in the other elements with zeros for now (Mike to do)
-      ROS_WARN_THROTTLE(0.5, "Joint velocity not computed in ikRobotState");
-      joint_state.velocity.push_back(0.0);
-      joint_state.velocity.push_back(0.0);
-      joint_state.velocity.push_back(0.0);
+      // ROS_WARN_THROTTLE(0.5, "Joint velocity not computed in ikRobotState");
+      // joint_state.velocity.push_back(0.0);
+      // joint_state.velocity.push_back(0.0);
+      // joint_state.velocity.push_back(0.0);
 
       joint_state.effort.push_back(0.0);
       joint_state.effort.push_back(0.0);
       joint_state.effort.push_back(0.0);
     }
 
+    double states[18];
+    for (int i = 0; i < 12; i++) {
+      states[i] = joint_state.position.at(i);
+    }
+
+    tf2::Quaternion q;
+    tf2::convert(body_state.pose.pose.orientation,q);
+    tf2::Matrix3x3 m(q);
+    double roll, pitch, yaw;
+    m.getRPY(roll, pitch, yaw);
+
+    states[12] = body_state.pose.pose.position.x;
+    states[13] = body_state.pose.pose.position.y;
+    states[14] = body_state.pose.pose.position.z;
+    states[15] = roll;
+    states[16] = pitch;
+    states[17] = yaw;
+
+    Eigen::MatrixXf jacobian(12,18);
+    spirit_utils::calc_jacobian(states,jacobian);
+
+    Eigen::VectorXf ref_foot_velocity(12), joint_velocity(12), ref_body_velocity(6);
+
+    ref_foot_velocity << multi_foot_state.feet.at(0).velocity.x, multi_foot_state.feet.at(0).velocity.y, multi_foot_state.feet.at(0).velocity.z,
+    multi_foot_state.feet.at(1).velocity.x, multi_foot_state.feet.at(1).velocity.y, multi_foot_state.feet.at(1).velocity.z,
+    multi_foot_state.feet.at(2).velocity.x, multi_foot_state.feet.at(2).velocity.y, multi_foot_state.feet.at(2).velocity.z,
+    multi_foot_state.feet.at(3).velocity.x, multi_foot_state.feet.at(3).velocity.y, multi_foot_state.feet.at(3).velocity.z;
+
+    ref_body_velocity << body_state.twist.twist.linear.x, body_state.twist.twist.linear.y,
+    body_state.twist.twist.linear.z, body_state.twist.twist.angular.x,
+    body_state.twist.twist.angular.y, body_state.twist.twist.angular.z; 
+
+    joint_velocity = jacobian.leftCols(12).colPivHouseholderQr().solve(
+      ref_foot_velocity - jacobian.rightCols(6)*ref_body_velocity);
+    
+    for (int i = 0; i < 12; ++i)
+    {
+      joint_state.velocity.push_back(joint_velocity(i));
+    }
   }
 
   void ikRobotState(const spirit_utils::SpiritKinematics &kinematics,
