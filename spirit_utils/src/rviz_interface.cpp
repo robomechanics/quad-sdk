@@ -191,6 +191,7 @@ void RVizInterface::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& ms
       // if GRF = 0, set alpha to zero
       if (msg->grfs[i].contact_states[j] == false) {
         marker.color.a = 0.0;
+        continue;
       }
 
       // Add the points to the marker and add the marker to the array

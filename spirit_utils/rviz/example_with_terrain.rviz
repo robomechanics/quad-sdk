@@ -3,7 +3,8 @@ Panels:
     Help Height: 0
     Name: Displays
     Property Tree Widget:
-      Expanded: ~
+      Expanded:
+        - /Local Plan1
       Splitter Ratio: 0.6114649772644043
     Tree Height: 1164
   - Class: rviz/Selection
@@ -182,7 +183,7 @@ Visualization Manager:
       Marker Topic: /visualization/global_plan_discrete
       Name: Discrete Body Plan
       Namespaces:
-        {}
+        "": true
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -224,7 +225,7 @@ Visualization Manager:
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
       Length: 0.30000001192092896
-      Line Style: Lines
+      Line Style: Billboards
       Line Width: 0.029999999329447746
       Name: Local Plan
       Offset:
@@ -244,7 +245,7 @@ Visualization Manager:
       Marker Topic: /visualization/local_plan_grf
       Name: Local Plan GRFs
       Namespaces:
-        {}
+        "": true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -252,7 +253,7 @@ Visualization Manager:
       Marker Topic: /visualization/foot_plan_discrete
       Name: Discrete Foot Plan
       Namespaces:
-        {}
+        "": true
       Queue Size: 100
       Value: true
     - Alpha: 1

@@ -302,7 +302,7 @@ void LocalPlanner::publishLocalPlan() {
     spirit_utils::eigenToGRFArrayMsg(grf_plan_.row(i), foot_plan_msg.states[i], grf_array_msg);
     grf_array_msg.contact_states.resize(num_feet_);
     for (int j = 0; j < num_feet_; j++) {
-      grf_array_msg.contact_states[i] = contact_schedule_[i][j];
+      grf_array_msg.contact_states[j] = contact_schedule_[i][j];
     }
     
     // Update the headers and plan indices of the messages
