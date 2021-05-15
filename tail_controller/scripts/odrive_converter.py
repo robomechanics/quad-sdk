@@ -12,7 +12,10 @@ print("finding an odrive...")
 od = odrive.find_any()
 print("found an odrive")
 
-# dump_errors(od, True)
+while od.axis0.current_state != AXIS_STATE_IDLE or od.axis1.current_state != AXIS_STATE_IDLE:
+    time.sleep(0.1)
+
+dump_errors(od, True)
 
 start0 = od.axis0.encoder.pos_estimate
 start1 = od.axis1.encoder.pos_estimate
@@ -80,8 +83,8 @@ start1 = od.axis1.encoder.pos_estimate
 
 def balance_controller(orientation, angular_velocity):
     # Should be replaced by encoder pos
-    od.axis1.controller.pos_setpoint = start1 + 50*4000/2/np.pi*orientation[0]*0.25
-    od.axis0.controller.pos_setpoint = start0 + 50*4000/2/np.pi*orientation[1]*0.25
+    od.axis1.controller.input_pos = start1 + 50/(2*np.pi)*orientation[0]*0.25
+    od.axis0.controller.input_pos = start0 + 50/(2*np.pi)*orientation[0]*0.25
 
     # Should be replaced by encoder vel
     # od.axis0.controller.vel_setpoint = angular_velocity[0]*0.5
@@ -130,30 +133,30 @@ def mpc_callback(msg):
     
 def listener():
     # Calibrate the motors (needed when running for the first time after being off or having an error)
-    calibrate = True
+    # calibrate = True
 
-    if calibrate:
-        print("starting calibration...")
-        od.axis0.requested_state = AXIS_STATE_FULL_CALIBRATION_SEQUENCE
-        od.axis1.requested_state = AXIS_STATE_FULL_CALIBRATION_SEQUENCE
-        while od.axis0.current_state != AXIS_STATE_IDLE or od.axis1.current_state != AXIS_STATE_IDLE:
-             time.sleep(0.1)
+    # if calibrate:
+    #     print("starting calibration...")
+    #     od.axis0.requested_state = AXIS_STATE_FULL_CALIBRATION_SEQUENCE
+    #     od.axis1.requested_state = AXIS_STATE_FULL_CALIBRATION_SEQUENCE
+    #     while od.axis0.current_state != AXIS_STATE_IDLE or od.axis1.current_state != AXIS_STATE_IDLE:
+    #          time.sleep(0.1)
 
     # Set up the motors! 
     od.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
     od.axis1.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
 
-    od.axis0.controller.config.control_mode = CONTROL_MODE_POSITION_CONTROL
-    od.axis0.trap_traj.config.vel_limit = 700000
-    od.axis0.trap_traj.config.accel_limit = 800000
-    od.axis0.trap_traj.config.decel_limit = 800000
-    od.axis0.controller.config.vel_limit  = 720000
+    # od.axis0.controller.config.control_mode = CONTROL_MODE_POSITION_CONTROL
+    # od.axis0.trap_traj.config.vel_limit = 700000
+    # od.axis0.trap_traj.config.accel_limit = 800000
+    # od.axis0.trap_traj.config.decel_limit = 800000
+    # od.axis0.controller.config.vel_limit  = 720000
 
-    od.axis1.controller.config.control_mode = CONTROL_MODE_POSITION_CONTROL
-    od.axis1.trap_traj.config.vel_limit = 700000
-    od.axis1.trap_traj.config.accel_limit = 800000
-    od.axis1.trap_traj.config.decel_limit = 800000
-    od.axis1.controller.config.vel_limit  = 720000
+    # od.axis1.controller.config.control_mode = CONTROL_MODE_POSITION_CONTROL
+    # od.axis1.trap_traj.config.vel_limit = 700000
+    # od.axis1.trap_traj.config.accel_limit = 800000
+    # od.axis1.trap_traj.config.decel_limit = 800000
+    # od.axis1.controller.config.vel_limit  = 720000
 
     use_mpc = rospy.get_param("/tail_controller/use_mpc")
     rospy.init_node('listener', anonymous=True)
