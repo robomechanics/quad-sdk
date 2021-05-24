@@ -20,6 +20,7 @@
         <include file="$(find spirit_utils)/launch/robot_driver.launch">
             <arg name="proxy" value="true" />
             <arg name="controller" value="$(arg controller)" />
+            <arg name="logging" value="$(arg logging)" />
         </include>
     </group>
 

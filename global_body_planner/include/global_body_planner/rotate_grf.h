@@ -2,7 +2,7 @@
 #define ROTATEGRF_H
 
 #include <array>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Eigen>
 
 std::array<double,3> rotate_grf(std::array<double,3> surface_norm, std::array<double,3> grf)
 {

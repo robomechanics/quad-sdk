@@ -2,8 +2,8 @@
 #define MPCPLUSPLUS_H
 
 #include "OsqpEigen/OsqpEigen.h"
-#include <Eigen/Core>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Eigen>
+#include <spirit_utils/kinematics.h>
 #include <assert.h>
 
 //! Implements online MPC for quadrupedal MPC
@@ -55,6 +55,12 @@ public:
   void update_dynamics(const Eigen::MatrixXd &ref_traj,
                        const Eigen::MatrixXd &foot_positions);
 
+  /**
+   * @brief Update our dynamics (linearized about reference yaw and footsteps projected underneath hip)
+   * @param[in] ref_traj Matrix holding desired reference trajectory (nx x N+1)
+   */
+  void update_dynamics_hip_projected_feet(const Eigen::MatrixXd &ref_traj);
+
    /**
    * @brief Update the footstep contact sequence and normal force bounds
    * @param[in] contact_sequence Vector(N) of vectors(4) holding 
@@ -105,8 +111,9 @@ public:
    * @param[in] initial_state Vector with initial state
    * @param[in] ref_traj Matrix holding desired reference trajectory
    * @param[out] x_out Optimized output
+   * @return good_solve
    */
-  void solve(const Eigen::VectorXd &initial_state,
+  bool solve(const Eigen::VectorXd &initial_state,
              const Eigen::MatrixXd &ref_traj,
              Eigen::MatrixXd &x_out
              );
@@ -204,6 +211,9 @@ private:
 
   /// OSQP solver instance
   OsqpEigen::Solver solver_;
+
+  /// Spirit Kinematics class
+  std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
 };
 
 

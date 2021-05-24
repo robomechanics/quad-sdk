@@ -7,7 +7,9 @@ topics:
   discrete_body_plan: /body_plan_discrete
   foot_plan_continuous: /foot_plan_continuous
   foot_plan_discrete: /foot_plan_discrete
-  body_force: /body_force
+  body_force:
+    joint_torques: /body_force/joint_torques
+    toe_forces: /body_force/toe_forces
   # joint_command: /spirit/joint_controller/command
   trajectory: /robot_plan
   state: # These should not change for the remapping to work in some launch files
@@ -16,9 +18,11 @@ topics:
     trajectory: /state/trajectory
   control:
     grfs: /control/grfs
+    trajectory: /control/trajectory
     joint_command: /control/joint_command
     tail_command: /control/tail_command
     mode: /control/mode
+    leg_override: /control/leg_override
   visualization:
     body_plan: /visualization/body_plan
     grf_plan: /visualization/grf_plan

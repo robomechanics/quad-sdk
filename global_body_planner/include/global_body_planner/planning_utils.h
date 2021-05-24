@@ -10,7 +10,7 @@
 #include <limits>
 #include <chrono>
 #include <random>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Eigen>
 #include <grid_map_core/grid_map_core.hpp>
 #include <ros/ros.h>
 #include <spirit_utils/fast_terrain_map.h>

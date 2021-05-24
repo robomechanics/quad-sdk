@@ -9,12 +9,13 @@
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/RobotStateTrajectory.h>
 #include "spirit_utils/math_utils.h"
+#include "spirit_utils/ros_utils.h"
 #include "spirit_utils/kinematics.h"
 #include "spirit_utils/function_timer.h"
 
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Eigen>
 
 //! A class for interfacing between RViz and spirit-software topics.
 /*!
