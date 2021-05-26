@@ -340,17 +340,44 @@ namespace spirit_utils {
       joint_state.position.push_back(leg_joint_state[1]);
       joint_state.position.push_back(leg_joint_state[2]);
 
-      // Fill in the other elements with zeros for now (Mike to do)
-      ROS_WARN_THROTTLE(0.5, "Joint velocity not computed in ikRobotState");
-      joint_state.velocity.push_back(0.0);
-      joint_state.velocity.push_back(0.0);
-      joint_state.velocity.push_back(0.0);
-
       joint_state.effort.push_back(0.0);
       joint_state.effort.push_back(0.0);
       joint_state.effort.push_back(0.0);
     }
 
+    // Declare state data as Eigen vectors
+    Eigen::VectorXd ref_body_state(12), ref_foot_positions(12), ref_foot_velocities(12);
+
+    // Load state data
+    ref_body_state = spirit_utils::odomMsgToEigen(body_state);
+    spirit_utils::multiFootStateMsgToEigen(
+      multi_foot_state, ref_foot_positions, ref_foot_velocities);
+
+    // Define vectors for joint positions and velocities
+    Eigen::VectorXd joint_positions(12), joint_velocities(12);
+
+    // Load joint positions
+    spirit_utils::vectorToEigen(joint_state.position, joint_positions);
+
+    // Define vectors for state positions
+    Eigen::VectorXd state_positions(18);
+
+    // Load state positions
+    state_positions << joint_positions, ref_body_state.head(6);
+
+    // Compute jacobian
+    Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
+    spirit_utils::getJacobian(state_positions, jacobian);
+
+    // Compute joint velocities
+    joint_velocities = jacobian.leftCols(12).colPivHouseholderQr().solve(
+      ref_foot_velocities - jacobian.rightCols(6)*ref_body_state.tail(6));
+    
+    // Populate joint velocities message
+    for (int i = 0; i < 12; ++i)
+    {
+      joint_state.velocity.push_back(joint_velocities(i));
+    }
   }
 
   void ikRobotState(const spirit_utils::SpiritKinematics &kinematics,
