@@ -3,7 +3,8 @@ sudo: required
 notifications:
   email:
     recipients:
-    - nflowers@andrew.cmu.edu
+    - robomechanicslab@gmail.com
+    - jnorby@andrew.cmu.edu
     on_success: always
     on_failure: always
 
