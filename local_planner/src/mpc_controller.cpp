@@ -225,10 +225,6 @@ void MPCController::publishGRFArray() {
   Eigen::MatrixXd opt_traj, control_traj;
   quad_mpc_->get_output(x_out, opt_traj, control_traj, f_val);
 
-  std::cout << "opt_traj\n" << opt_traj << std::endl << std::endl;
-  std::cout << "control_traj\n" << control_traj << std::endl << std::endl;
-  throw std::runtime_error("Stop");
-
   // Copy normal forces into GRFArray
   spirit_msgs::GRFArray msg; // control traj nu x n
   msg.points.resize(num_legs_);
