@@ -6,10 +6,12 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
 	nh_ = nh;
 
     // Load rosparams from parameter server
-  std::string robot_state_topic, local_plan_topic, leg_command_array_topic, 
-    control_mode_topic, leg_override_topic; 
+  std::string grf_input_topic, trajectory_state_topic, robot_state_topic, local_plan_topic,
+    leg_command_array_topic, control_mode_topic, leg_override_topic; 
   spirit_utils::loadROSParam(nh_,"topics/local_plan",local_plan_topic);
   spirit_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
+  spirit_utils::loadROSParam(nh_,"topics/state/trajectory",trajectory_state_topic);
+  spirit_utils::loadROSParam(nh_,"topics/control/grfs",grf_input_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/joint_command",leg_command_array_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/leg_override",leg_override_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
@@ -19,6 +21,8 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   // Setup pubs and subs
   local_plan_sub_ = nh_.subscribe(local_plan_topic,1,&InverseDynamics::localPlanCallback, this);
   robot_state_sub_= nh_.subscribe(robot_state_topic,1,&InverseDynamics::robotStateCallback, this);
+  grf_input_sub_ = nh_.subscribe(grf_input_topic,1,&InverseDynamics::grfInputCallback, this);
+  trajectory_state_sub_ = nh_.subscribe(trajectory_state_topic,1,&InverseDynamics::trajectoryStateCallback, this);
   control_mode_sub_ = nh_.subscribe(control_mode_topic,1,&InverseDynamics::controlModeCallback, this);
   leg_override_sub_ = nh_.subscribe(leg_override_topic,1,&InverseDynamics::legOverrideCallback, this);
   leg_command_array_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_command_array_topic,1);
@@ -59,6 +63,16 @@ void InverseDynamics::robotStateCallback(const spirit_msgs::RobotState::ConstPtr
   last_robot_state_msg_ = msg;
 }
 
+void InverseDynamics::grfInputCallback(const spirit_msgs::GRFArray::ConstPtr& msg) {
+  // ROS_INFO("In controlInputCallback");
+  last_grf_array_msg_ = msg;
+}
+
+void InverseDynamics::trajectoryStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
+  // ROS_INFO("In footPlanContinuousCallback");
+  last_trajectory_state_msg_ = msg;
+}
+
 void InverseDynamics::legOverrideCallback(const spirit_msgs::LegOverride::ConstPtr& msg) {
   last_leg_override_msg_ = *msg;
 }
@@ -68,12 +82,14 @@ void InverseDynamics::publishLegCommandArray() {
   if (last_robot_state_msg_ == NULL)
     return;
 
-  bool hasTrajectory;
-
-  if (last_local_plan_msg_ == NULL) {
-    hasTrajectory = false;
+  // Set the input handling based on what data we've recieved, prioritizing local plan over grf
+  int input_type;
+  if (last_local_plan_msg_ != NULL) {
+    input_type = LOCAL_PLAN;
+  } else if (last_grf_array_msg_ != NULL){
+    input_type = GRFS;
   } else {
-    hasTrajectory = true;
+    input_type = NONE;
   }
 
   spirit_msgs::LegCommandArray msg;
@@ -95,9 +111,8 @@ void InverseDynamics::publishLegCommandArray() {
   // Initialize for plan interpolation
   spirit_msgs::RobotState ref_state_msg;
   spirit_msgs::GRFArray grf_array_msg;
-  Eigen::MatrixXd tau_array;
 
-  if (hasTrajectory) {
+  if (input_type == LOCAL_PLAN) {
     double current_time = spirit_utils::getDurationSinceTime(last_local_plan_msg_->global_plan_timestamp);
     int current_plan_index = spirit_utils::getPlanIndex(last_local_plan_msg_->global_plan_timestamp, dt_);
     double t_interp = std::fmod(current_time,dt_)/dt_;
@@ -121,6 +136,16 @@ void InverseDynamics::publishLegCommandArray() {
         break;
       }
     }
+  } else if (input_type == GRFS) {
+    ref_state_msg = *(last_trajectory_state_msg_);
+    grf_array_msg = *(last_grf_array_msg_);
+
+    Eigen::VectorXd grf_array(3*num_feet_);
+    grf_array = spirit_utils::grfArrayMsgToEigen(grf_array_msg);
+  }
+
+  Eigen::MatrixXd tau_array;
+  if (input_type != NONE) {
 
     // Declare plan and state data as Eigen vectors
     Eigen::VectorXd ref_body_state(12), body_state(12), grf_array(3*num_feet_),
@@ -171,7 +196,7 @@ void InverseDynamics::publishLegCommandArray() {
 
         int joint_idx = 3*i+j;
 
-        if (hasTrajectory) {
+        if (input_type != NONE) {
           msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = ref_state_msg.joints.position.at(joint_idx);
           msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0; // Just need kinematics::legIKVel to do this
           msg.leg_commands.at(i).motor_commands.at(j).kp = walk_kp_.at(j);

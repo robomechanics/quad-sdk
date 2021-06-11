@@ -57,16 +57,22 @@ private:
 	void localPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg);
 	
 	/**
-	 * @brief Callback function to handle new control input (GRF)
-	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
+	 * @brief Callback function to handle current robot state
+	 * @param[in] msg input message contining current robot state
 	 */
 	void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
-	
+
 	/**
 	 * @brief Callback function to handle new control input (GRF)
-	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
+	 * @param[in] msg input message contining ground reaction forces
 	 */
-	void trajectoryCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+	void grfInputCallback(const spirit_msgs::GRFArray::ConstPtr& msg);
+	
+	/**
+	 * @brief Callback function to handle reference trajectory state
+	 * @param[in] msg input message contining reference trajectory state
+	 */
+	void trajectoryStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 	/**
 	 * @brief Callback to handle new leg override commands
 	 @ param[in] Leg override commands
@@ -89,6 +95,12 @@ private:
 
 	/// ROS subscriber for state estimate
 	ros::Subscriber robot_state_sub_;
+
+	/// ROS subscriber for control input
+	ros::Subscriber grf_input_sub_;
+
+	/// ROS subscriber for trajectory
+	ros::Subscriber trajectory_state_sub_;
 
 	/// ROS subscriber for leg override commands
 	ros::Subscriber leg_override_sub_;
@@ -122,12 +134,27 @@ private:
 
 	/// Define ids for control modes: Stand to sit
 	const int STAND_TO_SIT = 3;
+
+	/// Define ids for input types: none
+	const int NONE = 0;
+
+	/// Define ids for input types: local plan
+	const int LOCAL_PLAN = 1;
+
+	/// Define ids for input types: grf array
+	const int GRFS = 2;
 	
 	/// Most recent local plan
 	spirit_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
 	/// Most recent state estimate
 	spirit_msgs::RobotState::ConstPtr last_robot_state_msg_;
+
+	/// Most recent local plan
+	spirit_msgs::GRFArray::ConstPtr last_grf_array_msg_;
+
+	/// Most recent state estimate
+	spirit_msgs::RobotState::ConstPtr last_trajectory_state_msg_;
 
 	/// Most recent leg override
 	spirit_msgs::LegOverride last_leg_override_msg_;

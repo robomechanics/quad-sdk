@@ -58,6 +58,12 @@ add_library(quadruped_mpc
 )
 target_link_libraries(quadruped_mpc OsqpEigen::OsqpEigen )
 
+add_library(mpc_controller
+	src/mpc_controller.cpp
+)
+target_link_libraries(mpc_controller quadruped_mpc)
+add_dependencies(mpc_controller ${mpc_controller_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 ## Declare a C++ library for control
 add_library(local_planner
   src/local_planner.cpp
@@ -66,14 +72,21 @@ add_library(local_planner
 target_link_libraries(local_planner quadruped_mpc)
 add_dependencies(local_planner ${local_planner_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
+
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(local_planner_node src/local_planner_node.cpp)
+add_executable(mpc_controller_node src/mpc_controller_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(local_planner_node
   local_planner
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(mpc_controller_node
+  mpc_controller
   ${catkin_LIBRARIES}
 )
 
@@ -90,5 +103,8 @@ target_link_libraries(local_footstep_planner_test local_planner ${catkin_LIBRARI
 
 catkin_add_gtest(local_planner_test test/test_local_planner.cpp)
 target_link_libraries(local_planner_test local_planner ${catkin_LIBRARIES})
+
+catkin_add_gtest(mpc_controller_test test/test_mpc_controller.cpp)
+target_link_libraries(mpc_controller_test mpc_controller ${catkin_LIBRARIES})
 
 

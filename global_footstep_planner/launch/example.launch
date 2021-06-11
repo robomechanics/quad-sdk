@@ -1,5 +1,5 @@
 <launch>
-        <rosparam command="load" file="$(find local_footstep_planner)/../config/project_params.yaml"/>
+        <rosparam command="load" file="$(find global_footstep_planner)/../config/project_params.yaml"/>
 
         <!-- Launch the node to generate simple terrain -->
         <node pkg="spirit_utils" type="terrain_map_publisher_node" name="terrain_map_publisher" output="screen" />
@@ -16,8 +16,8 @@
         <!-- Launch the node to publish the global body plan -->
         <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen"/>
 
-        <!-- Launch the node to publish the local footstep plan -->
-        <node name="local_footstep_planner" pkg="local_footstep_planner" type="local_footstep_planner_node" output="screen"/>
+        <!-- Launch the node to publish the global footstep plan -->
+        <node name="global_footstep_planner" pkg="global_footstep_planner" type="global_footstep_planner_node" output="screen"/>
 
         <!-- Launch the grid map visualizer -->
         <node pkg="grid_map_visualization" type="grid_map_visualization" name="grid_map_visualization" output="screen">

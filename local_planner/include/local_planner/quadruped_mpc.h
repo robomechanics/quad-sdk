@@ -140,7 +140,7 @@ public:
 private:
 
   /// Number of timesteps in horizon
-  const int N_ = 24;
+  const int N_ = 10;
 
   /// Number of states per step
   const int nx_ = 12;

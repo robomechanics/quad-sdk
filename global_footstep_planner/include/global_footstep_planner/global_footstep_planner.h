@@ -1,5 +1,5 @@
-#ifndef LOCAL_FOOTSTEP_PLANNER_H
-#define LOCAL_FOOTSTEP_PLANNER_H
+#ifndef GLOBAL_FOOTSTEP_PLANNER_H
+#define GLOBAL_FOOTSTEP_PLANNER_H
 
 #include <ros/ros.h>
 #include <nav_msgs/Path.h>
@@ -22,19 +22,19 @@
 #include <eigen3/Eigen/Eigen>
 #include <eigen_conversions/eigen_msg.h>
 
-//! A local footstep planning class for spirit
+//! A global footstep planning class for spirit
 /*!
-   FootstepPlanner is a container for all of the logic utilized in the local footstep planning node.
+   FootstepPlanner is a container for all of the logic utilized in the global footstep planning node.
    The implementation must provide a clean and high level interface to the core algorithm
 */
-class LocalFootstepPlanner {
+class GlobalFootstepPlanner {
   public:
     /**
-     * @brief Constructor for LocalFootstepPlanner Class
+     * @brief Constructor for GlobalFootstepPlanner Class
      * @param Node handle
-     * @return Constructed object of type LocalFootstepPlanner
+     * @return Constructed object of type GlobalFootstepPlanner
      */
-    LocalFootstepPlanner(ros::NodeHandle nh);
+    GlobalFootstepPlanner(ros::NodeHandle nh);
 
     /**
      * @brief Primary work function in class, called in node file for this component
@@ -194,4 +194,4 @@ class LocalFootstepPlanner {
 };
 
 
-#endif // LOCAL_FOOTSTEP_PLANNER_H
+#endif // GLOBAL_FOOTSTEP_PLANNER_H

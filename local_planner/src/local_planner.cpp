@@ -255,7 +255,7 @@ bool LocalPlanner::computeLocalPlan() {
       contact_schedule_, foot_positions_world_);
 
     // Transform the new foot positions into the body frame for recomputing (if needed)
-    if ((i+1) < iterations_) {
+    if (i < iterations_-1) {
       local_footstep_planner_->getFootPositionsBodyFrame(body_plan_, foot_positions_world_,
         foot_positions_body_);
     }

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>local_footstep_planner</name>
+  <name>global_footstep_planner</name>
   <version>0.0.0</version>
-  <description>The local_footstep_planner package</description>
+  <description>The global_footstep_planner package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->

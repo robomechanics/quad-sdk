@@ -1,8 +1,8 @@
-#include "local_footstep_planner/local_footstep_planner.h"
+#include "global_footstep_planner/global_footstep_planner.h"
 #include <tf/tf.h>
 #include <chrono>
 
-LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
+GlobalFootstepPlanner::GlobalFootstepPlanner(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
@@ -19,15 +19,15 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
     robot_state_topic, "/state/ground_truth");
   nh.param<std::string>("map_frame",map_frame_,"map");
 
-  nh.param<double>("local_footstep_planner/update_rate", update_rate_, 1);
-  nh.param<double>("local_footstep_planner/grf_weight", grf_weight_, 0.5);
-  nh.param<double>("local_footstep_planner/max_footstep_horizon", 
+  nh.param<double>("global_footstep_planner/update_rate", update_rate_, 1);
+  nh.param<double>("global_footstep_planner/grf_weight", grf_weight_, 0.5);
+  nh.param<double>("global_footstep_planner/max_footstep_horizon", 
     max_footstep_horizon_, 1.5);
-  nh.param<int>("local_footstep_planner/num_cycles", num_cycles_, 3);
-  nh.param<double>("local_footstep_planner/period", period_, 0.25);
-  nh.param<double>("local_footstep_planner/ground_clearance", 
+  nh.param<int>("global_footstep_planner/num_cycles", num_cycles_, 3);
+  nh.param<double>("global_footstep_planner/period", period_, 0.25);
+  nh.param<double>("global_footstep_planner/ground_clearance", 
     ground_clearance_, 0.1);
-  nh.param<double>("local_footstep_planner/interp_dt", interp_dt_, 0.01);
+  nh.param<double>("global_footstep_planner/interp_dt", interp_dt_, 0.01);
 
   if (grf_weight_>1 || grf_weight_<0) {
     grf_weight_ = std::min(std::max(grf_weight_,0.0),1.0);
@@ -36,11 +36,11 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
 
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic_,1,
-    &LocalFootstepPlanner::terrainMapCallback, this);
+    &GlobalFootstepPlanner::terrainMapCallback, this);
   body_plan_sub_ = nh_.subscribe(body_plan_topic_,1,
-    &LocalFootstepPlanner::robotPlanCallback, this);
+    &GlobalFootstepPlanner::robotPlanCallback, this);
   robot_state_sub_ = nh_.subscribe(robot_state_topic,1,
-    &LocalFootstepPlanner::robotStateCallback, this);
+    &GlobalFootstepPlanner::robotStateCallback, this);
   foot_plan_discrete_pub_ = nh_.advertise<
     spirit_msgs::MultiFootPlanDiscrete>(foot_plan_discrete_topic,1);
   foot_plan_continuous_pub_ = nh_.advertise<
@@ -48,7 +48,7 @@ LocalFootstepPlanner::LocalFootstepPlanner(ros::NodeHandle nh) {
 
 }
 
-void LocalFootstepPlanner::terrainMapCallback(
+void GlobalFootstepPlanner::terrainMapCallback(
   const grid_map_msgs::GridMap::ConstPtr& msg) {
   // Get the map in its native form
   grid_map::GridMap map;
@@ -58,7 +58,7 @@ void LocalFootstepPlanner::terrainMapCallback(
   terrain_.loadDataFromGridMap(map);
 }
 
-void LocalFootstepPlanner::robotPlanCallback(
+void GlobalFootstepPlanner::robotPlanCallback(
   const spirit_msgs::RobotPlan::ConstPtr& msg) {
 
   // Only update if the new plan is different
@@ -74,7 +74,7 @@ void LocalFootstepPlanner::robotPlanCallback(
 
 }
 
-void LocalFootstepPlanner::robotStateCallback(
+void GlobalFootstepPlanner::robotStateCallback(
   const spirit_msgs::RobotState::ConstPtr& msg) {
 
   if (msg->feet.feet.empty())
@@ -89,7 +89,7 @@ void LocalFootstepPlanner::robotStateCallback(
 
 }
 
-double LocalFootstepPlanner::computeTimeUntilNextFlight(double t) {
+double GlobalFootstepPlanner::computeTimeUntilNextFlight(double t) {
   double t_remaining = std::numeric_limits<double>::max();
   for (int i = 1; i < t_plan_.size(); i++) {
     if (t_plan_[i] > t && primitive_id_plan_[i] == FLIGHT) {
@@ -107,11 +107,11 @@ double LocalFootstepPlanner::computeTimeUntilNextFlight(double t) {
   return t_remaining;
 }
 
-void LocalFootstepPlanner::updateDiscretePlan() {
+void GlobalFootstepPlanner::updateDiscretePlan() {
   // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
   if (body_plan_msg_ == NULL) {
-    ROS_WARN_THROTTLE(0.5, "No body plan in LocalFootstepPlanner, exiting");
+    ROS_WARN_THROTTLE(0.5, "No body plan in GlobalFootstepPlanner, exiting");
     return;
   }
 
@@ -187,13 +187,13 @@ void LocalFootstepPlanner::updateDiscretePlan() {
       double t_touchdown = t_cycle + t_offsets_trot[j];
       double t_midstance = t_cycle + t_offsets_trot[j] + 0.5*t_s[j];
 
-      nav_msgs::Odometry body_touchdown, body_midstance;
+      spirit_msgs::RobotState state_touchdown, state_midstance;
       int primitive_id_touchdown, primitive_id_midstance;
       spirit_msgs::GRFArray grf_array_touchdown, grf_array_midstance;
 
-      spirit_utils::interpRobotPlan((*body_plan_msg_), t_touchdown, body_touchdown,
+      spirit_utils::interpRobotPlan((*body_plan_msg_), t_touchdown, state_touchdown,
         primitive_id_touchdown, grf_array_touchdown);
-      spirit_utils::interpRobotPlan((*body_plan_msg_), t_midstance, body_midstance,
+      spirit_utils::interpRobotPlan((*body_plan_msg_), t_midstance, state_midstance,
         primitive_id_midstance, grf_array_midstance);
 
       // Skip if this would occur during a flight phase
@@ -202,17 +202,17 @@ void LocalFootstepPlanner::updateDiscretePlan() {
       }
 
       // Compute the body and hip positions and velocities
-      Eigen::Vector3d body_pos_touchdown = {body_touchdown.pose.pose.position.x,
-        body_touchdown.pose.pose.position.y,
-        body_touchdown.pose.pose.position.z};
+      Eigen::Vector3d body_pos_touchdown = {state_touchdown.body.pose.pose.position.x,
+        state_touchdown.body.pose.pose.position.y,
+        state_touchdown.body.pose.pose.position.z};
 
-      Eigen::Vector3d body_vel_midstance = {body_midstance.twist.twist.linear.x,
-        body_midstance.twist.twist.linear.y,
-        body_midstance.twist.twist.linear.z};
+      Eigen::Vector3d body_vel_midstance = {state_midstance.body.twist.twist.linear.x,
+        state_midstance.body.twist.twist.linear.y,
+        state_midstance.body.twist.twist.linear.z};
 
       // Convert orientation from quaternion to rpy
       tf2::Quaternion q;
-      tf2::convert(body_touchdown.pose.pose.orientation,q);
+      tf2::convert(state_touchdown.body.pose.pose.orientation,q);
       tf2::Matrix3x3 m(q);
       double roll, pitch, yaw;
       m.getRPY(roll, pitch, yaw);
@@ -250,14 +250,14 @@ void LocalFootstepPlanner::updateDiscretePlan() {
     
     if (t_cycle_end >=t_plan_.back()) {
       // Add final foot configuration
-      nav_msgs::Odometry body_final = body_plan_msg_->states.back();
+      spirit_msgs::RobotState state_final = body_plan_msg_->states.back();
 
-      Eigen::Vector3d body_pos_final = {body_final.pose.pose.position.x,
-          body_final.pose.pose.position.y,
-          body_final.pose.pose.position.z};
+      Eigen::Vector3d body_pos_final = {state_final.body.pose.pose.position.x,
+          state_final.body.pose.pose.position.y,
+          state_final.body.pose.pose.position.z};
       
       tf2::Quaternion q;
-      tf2::convert(body_final.pose.pose.orientation,q);
+      tf2::convert(state_final.body.pose.pose.orientation,q);
       tf2::Matrix3x3 m(q);
       double roll, pitch, yaw;
       m.getRPY(roll, pitch, yaw);
@@ -284,7 +284,7 @@ void LocalFootstepPlanner::updateDiscretePlan() {
   // timer.report();
 }
 
-void LocalFootstepPlanner::updateContinuousPlan() {
+void GlobalFootstepPlanner::updateContinuousPlan() {
   // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
   // Make sure we already have footstep data
@@ -431,7 +431,7 @@ void LocalFootstepPlanner::updateContinuousPlan() {
   // timer.report();
 }
 
-void LocalFootstepPlanner::publishDiscretePlan() {
+void GlobalFootstepPlanner::publishDiscretePlan() {
 
   if (footstep_plan_.empty()){
     ROS_WARN_THROTTLE(0.5, "Footstep plan is empty, not publishing");
@@ -481,11 +481,11 @@ void LocalFootstepPlanner::publishDiscretePlan() {
   foot_plan_discrete_pub_.publish(multi_foot_plan_discrete_msg);
 }
 
-void LocalFootstepPlanner::publishContinuousPlan() {
+void GlobalFootstepPlanner::publishContinuousPlan() {
   foot_plan_continuous_pub_.publish(multi_foot_plan_continuous_msg_);
 }
 
-void LocalFootstepPlanner::waitForData() {
+void GlobalFootstepPlanner::waitForData() {
     // Spin until terrain map message has been received and processed
   boost::shared_ptr<grid_map_msgs::GridMap const> shared_map;
   while((shared_map == nullptr) && ros::ok())
@@ -504,7 +504,7 @@ void LocalFootstepPlanner::waitForData() {
   }
 }
 
-void LocalFootstepPlanner::spin() {
+void GlobalFootstepPlanner::spin() {
   ros::Rate r(update_rate_);
 
   waitForData();
