@@ -16,7 +16,7 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
     trajectory_state_topic, "/state/trajectory");
   nh.param<std::string>("topics/trajectory", 
     trajectory_topic, "/trajectory");
-    nh.param<std::string>("topics/state/ground_truth", 
+  nh.param<std::string>("topics/state/ground_truth", 
     ground_truth_state_topic, "/state/ground_truth");
 
   nh.param<std::string>("map_frame",map_frame_,"map");
@@ -82,6 +82,8 @@ void TrajectoryPublisher::updateTrajectory() {
   if (body_plan_msg_.states.empty() || multi_foot_plan_continuous_msg_.states.empty())
     return;
 
+  // std::cout << "Past updateTrajectory checks" << std::endl;
+
   // Make sure the foot plan is no longer than the body plan
   ros::Duration t_body_plan_ros = body_plan_msg_.states.back().header.stamp - 
     body_plan_msg_.states.front().header.stamp;
@@ -98,7 +100,8 @@ void TrajectoryPublisher::updateTrajectory() {
   }
 
   // Create t_traj vector with specified dt
-  double traj_duration = std::min(t_body_plan, t_foot_plan);
+  // double traj_duration = std::min(t_body_plan, t_foot_plan);
+  double traj_duration = t_body_plan;
   double t = 0;
   t_traj_.clear();
   while (t < traj_duration) {
@@ -125,11 +128,21 @@ void TrajectoryPublisher::updateTrajectory() {
     int primitive_id;
     spirit_msgs::GRFArray grf_array;
     spirit_utils::interpRobotPlan(body_plan_msg_,t_traj_[i], state,primitive_id, grf_array);
-    state.feet = spirit_utils::interpMultiFootPlanContinuous(
+
+    // If we have foot data then load that, otherwise just set joints to zero
+    if (t_traj_[i] < t_foot_plan) {
+      state.feet = spirit_utils::interpMultiFootPlanContinuous(
       multi_foot_plan_continuous_msg_,t_traj_[i]);
 
-    // Compute joint data with IK
-    spirit_utils::ikRobotState(kinematics, state.body, state.feet, state.joints);
+      // Compute joint data with IK
+      spirit_utils::ikRobotState(kinematics, state.body, state.feet, state.joints);
+    } else {
+      state.joints.name = {"8","0","1","9","2","3","10","4","5","11","6","7"};
+      state.joints.position = {0,0,0,0,0,0,0,0,0,0,0,0};
+      state.joints.velocity = {0,0,0,0,0,0,0,0,0,0,0,0};
+      state.joints.effort = {0,0,0,0,0,0,0,0,0,0,0,0};
+      spirit_utils::fkRobotState(kinematics, state.body, state.joints, state.feet);
+    }
 
     // Add this state to the message
     traj_msg_.states.push_back(state);
@@ -148,7 +161,7 @@ void TrajectoryPublisher::publishTrajectoryState() {
   // Wait until we actually have data
   if (traj_msg_.states.empty()) {
     if (robot_state_msg_ != NULL) {
-      trajectory_state_pub_.publish(*robot_state_msg_);
+      // trajectory_state_pub_.publish(*robot_state_msg_);
     }
     return;
   }
@@ -159,11 +172,13 @@ void TrajectoryPublisher::publishTrajectoryState() {
   // Mod by trajectory duration
   double t = playback_speed_*t_duration.toSec();
   double t_mod = fmod(t, t_traj_.back());
-  
+
   // Interpolate to get the correct state and publish it
+  // std::cout << traj_msg_ << std::endl;
   spirit_msgs::RobotState interp_state = spirit_utils::interpRobotStateTraj(traj_msg_,t);
   // spirit_msgs::RobotState interp_state = spirit_utils::interpRobotStateTraj(traj_msg_,t_mod);
   trajectory_state_pub_.publish(interp_state);
+
 }
 
 
@@ -177,7 +192,6 @@ void TrajectoryPublisher::spin() {
     } else if (update_flag_) {
       updateTrajectory();
       publishTrajectory();
-      update_flag_ = false;
     }
 
     publishTrajectoryState();

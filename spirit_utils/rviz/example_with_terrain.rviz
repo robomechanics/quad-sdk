@@ -64,18 +64,103 @@ Visualization Manager:
     - Alpha: 0.30000001192092896
       Class: rviz/RobotModel
       Collision Enabled: false
-      Enabled: false
+      Enabled: true
       Links:
         All Links Enabled: true
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        body:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
       Name: Trajectory State
       Robot Description: /trajectory/robot_description
       TF Prefix: /trajectory
       Update Interval: 0
-      Value: false
+      Value: true
       Visual Enabled: true
     - Alpha: 1
       Class: rviz/RobotModel
@@ -183,7 +268,7 @@ Visualization Manager:
       Marker Topic: /visualization/global_plan_discrete
       Name: Discrete Body Plan
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -245,7 +330,7 @@ Visualization Manager:
       Marker Topic: /visualization/local_plan_grf
       Name: Local Plan GRFs
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -253,7 +338,7 @@ Visualization Manager:
       Marker Topic: /visualization/foot_plan_discrete
       Name: Discrete Foot Plan
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Alpha: 1
