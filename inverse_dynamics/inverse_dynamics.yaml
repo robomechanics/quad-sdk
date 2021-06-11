@@ -1,2 +1,6 @@
 inverse_dynamics:
   update_rate: 200
+  walk_kp: [25, 25, 25]
+  walk_kd: [5, 5, 5]
+  aerial_kp: [25, 25, 25]
+  aerial_kd: [1, 1, 1]

@@ -165,6 +165,14 @@ private:
 	/// Time at which to start transition
 	ros::Time transition_timestamp_;
 
+	/// PD gain when standing on the ground
+	std::vector<double> walk_kp_;
+	std::vector<double> walk_kd_;
+
+	/// PD gain when feet in the air
+	std::vector<double> aerial_kp_;
+	std::vector<double> aerial_kd_;
+
 	std::vector<double> f0x;
 	std::vector<double> f1x;
 	std::vector<double> f2x;

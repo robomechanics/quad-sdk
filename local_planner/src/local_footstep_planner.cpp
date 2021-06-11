@@ -117,8 +117,8 @@ void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_pos
   phi2 = phi_z*phi_z;
   basis_0 = 2*phi3-3*phi2+1;
   basis_1 = -2*phi3+3*phi2;
-  basis_2 = 6*(phi2-phi);
-  basis_3 = 6*(phi-phi2);
+  basis_2 = 6*(phi2-phi_z);
+  basis_3 = 6*(phi_z-phi2);
 
   if (phi<0.5) {
     foot_position.z() = basis_0*foot_position_prev.z() + basis_1*swing_apex;

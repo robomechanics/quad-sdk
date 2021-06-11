@@ -18,6 +18,11 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh_,"inverse_dynamics/update_rate", update_rate_);
   spirit_utils::loadROSParam(nh_,"local_planner/timestep", dt_);
 
+  spirit_utils::loadROSParam(nh_, "inverse_dynamics/walk_kp", walk_kp_);
+  spirit_utils::loadROSParam(nh_, "inverse_dynamics/walk_kd", walk_kd_);
+  spirit_utils::loadROSParam(nh_, "inverse_dynamics/aerial_kp", aerial_kp_);
+  spirit_utils::loadROSParam(nh_, "inverse_dynamics/aerial_kd", aerial_kd_);
+
   // Setup pubs and subs
   local_plan_sub_ = nh_.subscribe(local_plan_topic,1,&InverseDynamics::localPlanCallback, this);
   robot_state_sub_= nh_.subscribe(robot_state_topic,1,&InverseDynamics::robotStateCallback, this);
@@ -104,9 +109,6 @@ void InverseDynamics::publishLegCommandArray() {
 
   static const std::vector<double> ID_kp_{10,10,10};
   static const std::vector<double> ID_kd_{0.2,0.2,0.2};
-
-  static const std::vector<double> walk_kp_{25,25,25};  // 50
-  static const std::vector<double> walk_kd_{0.5,0.5,0.5};     // 1
 
   // Initialize for plan interpolation
   spirit_msgs::RobotState ref_state_msg;
@@ -198,9 +200,20 @@ void InverseDynamics::publishLegCommandArray() {
 
         if (input_type != NONE) {
           msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = ref_state_msg.joints.position.at(joint_idx);
-          msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0; // Just need kinematics::legIKVel to do this
-          msg.leg_commands.at(i).motor_commands.at(j).kp = walk_kp_.at(j);
-          msg.leg_commands.at(i).motor_commands.at(j).kd = walk_kd_.at(j);
+          msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = ref_state_msg.joints.velocity.at(joint_idx);
+
+          // Contact should be boolean, but it seems to need to be converted
+          if (bool(ref_state_msg.feet.feet.at(i).contact))
+          {
+            msg.leg_commands.at(i).motor_commands.at(j).kp = walk_kp_.at(j);
+            msg.leg_commands.at(i).motor_commands.at(j).kd = walk_kd_.at(j);
+          }
+          else
+          {
+            msg.leg_commands.at(i).motor_commands.at(j).kp = aerial_kp_.at(j);
+            msg.leg_commands.at(i).motor_commands.at(j).kd = aerial_kd_.at(j);
+          }
+
           msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tau_array(joint_idx);
         } else {
           msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = stand_joint_angles_.at(j);
