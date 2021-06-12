@@ -84,8 +84,36 @@ void InverseDynamics::legOverrideCallback(const spirit_msgs::LegOverride::ConstP
 
 void InverseDynamics::publishLegCommandArray() {
 
+  // Wait until we have state messages
   if (last_robot_state_msg_ == NULL)
     return;
+
+  // Define static position setpoints and gains
+  static const std::vector<double> stand_joint_angles_{0,0.76,2*0.76};
+  static const std::vector<double> sit_joint_angles_{0.0,0.0,0.0};
+  static const std::vector<double> stand_kp_{50,50,50};
+  static const std::vector<double> stand_kd_{1,1,1};
+
+  // Define vectors for joint positions and velocities
+  Eigen::VectorXd joint_positions(3*num_feet_), joint_velocities(3*num_feet_), body_state(12);
+  spirit_utils::vectorToEigen(last_robot_state_msg_->joints.position, joint_positions);
+  spirit_utils::vectorToEigen(last_robot_state_msg_->joints.velocity, joint_velocities);
+  body_state = spirit_utils::odomMsgToEigen(last_robot_state_msg_->body);
+
+  // Define vectors for state positions and velocities 
+  Eigen::VectorXd state_positions(3*num_feet_+6), state_velocities(3*num_feet_+6);
+  state_positions << joint_positions, body_state.head(6);
+  state_velocities << joint_velocities, body_state.tail(6);
+
+  // Compute jacobians
+  Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(3*num_feet_, state_velocities.size());
+  spirit_utils::getJacobian(state_positions,jacobian);
+
+  // Initialize variables for ff and fb
+  spirit_msgs::RobotState ref_state_msg;
+  spirit_msgs::GRFArray grf_array_msg;
+  Eigen::VectorXd tau_array(3*num_feet_);
+  leg_command_array_msg_.leg_commands.resize(num_feet_);
 
   // Set the input handling based on what data we've recieved, prioritizing local plan over grf
   int input_type;
@@ -97,23 +125,7 @@ void InverseDynamics::publishLegCommandArray() {
     input_type = NONE;
   }
 
-  spirit_msgs::LegCommandArray msg;
-  msg.leg_commands.resize(num_feet_);
-
-  static const int testingValue = 0;
-
-  static const std::vector<double> stand_joint_angles_{0,0.76,2*0.76};
-  static const std::vector<double> sit_joint_angles_{0.0,0.0,0.0};
-  static const std::vector<double> stand_kp_{50,50,50};
-  static const std::vector<double> stand_kd_{1,1,1};
-
-  static const std::vector<double> ID_kp_{10,10,10};
-  static const std::vector<double> ID_kd_{0.2,0.2,0.2};
-
-  // Initialize for plan interpolation
-  spirit_msgs::RobotState ref_state_msg;
-  spirit_msgs::GRFArray grf_array_msg;
-
+  // Get reference state and grf from local plan or traj + grf messages
   if (input_type == LOCAL_PLAN) {
     double current_time = spirit_utils::getDurationSinceTime(last_local_plan_msg_->global_plan_timestamp);
     int current_plan_index = spirit_utils::getPlanIndex(last_local_plan_msg_->global_plan_timestamp, dt_);
@@ -146,81 +158,68 @@ void InverseDynamics::publishLegCommandArray() {
     grf_array = spirit_utils::grfArrayMsgToEigen(grf_array_msg);
   }
 
-  Eigen::MatrixXd tau_array;
+  // Load feedforward torques if provided
   if (input_type != NONE) {
 
     // Declare plan and state data as Eigen vectors
-    Eigen::VectorXd ref_body_state(12), body_state(12), grf_array(3*num_feet_),
+    Eigen::VectorXd ref_body_state(12), grf_array(3*num_feet_),
       ref_foot_positions(3*num_feet_), ref_foot_velocities(3*num_feet_);
 
     // Load plan and state data from messages
-    body_state = spirit_utils::odomMsgToEigen(last_robot_state_msg_->body);
     ref_body_state = spirit_utils::odomMsgToEigen(ref_state_msg.body);
     spirit_utils::multiFootStateMsgToEigen(
       ref_state_msg.feet, ref_foot_positions, ref_foot_velocities);
     grf_array = spirit_utils::grfArrayMsgToEigen(grf_array_msg);
 
-    // Define vectors for joint positions and velocities
-    Eigen::VectorXd joint_positions(3*num_feet_), joint_velocities(3*num_feet_);
-    spirit_utils::vectorToEigen(last_robot_state_msg_->joints.position, joint_positions);
-    spirit_utils::vectorToEigen(last_robot_state_msg_->joints.velocity, joint_velocities);
-
-    // Define vectors for state positions and velocities 
-    Eigen::VectorXd state_positions(3*num_feet_+6), state_velocities(3*num_feet_+6);
-    state_positions << joint_positions, body_state.head(6);
-    state_velocities << joint_velocities, body_state.tail(6);
-
-    // Compute joint torques
-    Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(3*num_feet_, state_velocities.size());
-    spirit_utils::getJacobian(state_positions,jacobian);
     tau_array = -jacobian.transpose().block<12,12>(0,0)*grf_array;
-  }
+  } 
 
   // Enter state machine for filling motor command message
   if (control_mode_ == SIT)
   { 
     for (int i = 0; i < num_feet_; ++i) {
-      msg.leg_commands.at(i).motor_commands.resize(3);
+      leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
       for (int j = 0; j < 3; ++j) {
-        msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = sit_joint_angles_.at(j);
-        msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-        msg.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
-        msg.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
-        msg.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+        int joint_idx = 3*i+j;
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = sit_joint_angles_.at(j);
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
       }
     }
   } 
   else if (control_mode_ == STAND)
   {
     for (int i = 0; i < num_feet_; ++i) {
-      msg.leg_commands.at(i).motor_commands.resize(3);
+      leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
       for (int j = 0; j < 3; ++j) {
 
         int joint_idx = 3*i+j;
 
         if (input_type != NONE) {
-          msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = ref_state_msg.joints.position.at(joint_idx);
-          msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = ref_state_msg.joints.velocity.at(joint_idx);
+          leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = ref_state_msg.joints.position.at(joint_idx);
+          leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = ref_state_msg.joints.velocity.at(joint_idx);
 
           // Contact should be boolean, but it seems to need to be converted
           if (bool(ref_state_msg.feet.feet.at(i).contact))
           {
-            msg.leg_commands.at(i).motor_commands.at(j).kp = walk_kp_.at(j);
-            msg.leg_commands.at(i).motor_commands.at(j).kd = walk_kd_.at(j);
+            leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kp = walk_kp_.at(j);
+            leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = walk_kd_.at(j);
           }
           else
           {
-            msg.leg_commands.at(i).motor_commands.at(j).kp = aerial_kp_.at(j);
-            msg.leg_commands.at(i).motor_commands.at(j).kd = aerial_kd_.at(j);
+            leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kp = aerial_kp_.at(j);
+            leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = aerial_kd_.at(j);
           }
 
-          msg.leg_commands.at(i).motor_commands.at(j).torque_ff = tau_array(joint_idx);
+          leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = tau_array(joint_idx);
         } else {
-          msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = stand_joint_angles_.at(j);
-          msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-          msg.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
-          msg.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
-          msg.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+          leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = stand_joint_angles_.at(j);
+          leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
+          leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
+          leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
+          leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
         }
       }
     }
@@ -232,11 +231,11 @@ void InverseDynamics::publishLegCommandArray() {
         leg_ind = last_leg_override_msg_.leg_index.at(i);
         for (int j = 0; j < 3; j++) {
           motor_command = last_leg_override_msg_.leg_commands.at(i).motor_commands.at(j);
-          msg.leg_commands.at(leg_ind).motor_commands.at(j).pos_setpoint = motor_command.pos_setpoint;
-          msg.leg_commands.at(leg_ind).motor_commands.at(j).vel_setpoint = motor_command.vel_setpoint;
-          msg.leg_commands.at(leg_ind).motor_commands.at(j).kp = motor_command.kp;
-          msg.leg_commands.at(leg_ind).motor_commands.at(j).kd = motor_command.kd;
-          msg.leg_commands.at(leg_ind).motor_commands.at(j).torque_ff = motor_command.torque_ff;
+          leg_command_array_msg_.leg_commands.at(leg_ind).motor_commands.at(j).pos_setpoint = motor_command.pos_setpoint;
+          leg_command_array_msg_.leg_commands.at(leg_ind).motor_commands.at(j).vel_setpoint = motor_command.vel_setpoint;
+          leg_command_array_msg_.leg_commands.at(leg_ind).motor_commands.at(j).kp = motor_command.kp;
+          leg_command_array_msg_.leg_commands.at(leg_ind).motor_commands.at(j).kd = motor_command.kd;
+          leg_command_array_msg_.leg_commands.at(leg_ind).motor_commands.at(j).torque_ff = motor_command.torque_ff;
         }
       }
     }
@@ -252,15 +251,15 @@ void InverseDynamics::publishLegCommandArray() {
     }
 
     for (int i = 0; i < num_feet_; ++i) {
-      msg.leg_commands.at(i).motor_commands.resize(3);
+      leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
       for (int j = 0; j < 3; ++j) {
-        msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 
           (stand_joint_angles_.at(j) - sit_joint_angles_.at(j))*t_interp + 
           sit_joint_angles_.at(j);
-        msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-        msg.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
-        msg.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
-        msg.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
       }
     }
   }
@@ -275,15 +274,15 @@ void InverseDynamics::publishLegCommandArray() {
     }
 
     for (int i = 0; i < num_feet_; ++i) {
-      msg.leg_commands.at(i).motor_commands.resize(3);
+      leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
       for (int j = 0; j < 3; ++j) {
-        msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 
           (sit_joint_angles_.at(j) - stand_joint_angles_.at(j))*t_interp + 
           stand_joint_angles_.at(j);
-        msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-        msg.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
-        msg.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
-        msg.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
       }
     }
   } else {
@@ -292,13 +291,29 @@ void InverseDynamics::publishLegCommandArray() {
       return;
   }
 
-  //ROS_INFO_THROTTLE(0.5, " ID control mode: %d", control_mode_);
+  for (int i = 0; i < num_feet_; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      int joint_idx = 3*i+j;
+      spirit_msgs::MotorCommand cmd = leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j);
+      double pos_component = cmd.kp*(cmd.pos_setpoint - joint_positions[joint_idx]);
+      double vel_component = cmd.kd*(cmd.vel_setpoint - joint_velocities[joint_idx]);
+      double fb_component = pos_component + vel_component;
+      double effort = fb_component + cmd.torque_ff;
+      double fb_ratio = abs(fb_component)/(abs(fb_component) + abs(cmd.torque_ff));
 
-  // Pack 4 LegCommands in the LegCommandArray
-  // Pack 3 MotorCommands in a LegCommand
-  msg.header.stamp = ros::Time::now();
-  leg_command_array_pub_.publish(msg);
+      leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).pos_component = pos_component;
+      leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).vel_component = vel_component;
+      leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).fb_component = fb_component;
+      leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).effort = effort;
+      leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).fb_ratio = fb_ratio;
+    }
+  }
+
+  // Stamp and send the message
+  leg_command_array_msg_.header.stamp = ros::Time::now();
+  leg_command_array_pub_.publish(leg_command_array_msg_);
 }
+
 void InverseDynamics::spin() {
   ros::Rate r(update_rate_);
   while (ros::ok()) {

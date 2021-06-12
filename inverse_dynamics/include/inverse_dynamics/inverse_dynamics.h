@@ -73,14 +73,15 @@ private:
 	 * @param[in] msg input message contining reference trajectory state
 	 */
 	void trajectoryStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
-	/**
+	
+  /**
 	 * @brief Callback to handle new leg override commands
 	 @ param[in] Leg override commands
 	 */
 	void legOverrideCallback(const spirit_msgs::LegOverride::ConstPtr& msg);
-		/**
-	 * @brief Callback function to handle new control input (GRF)
-	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
+	
+  /**
+	 * @brief Function to compute and publish leg command array message
 	 */
 	void publishLegCommandArray();
 
@@ -107,6 +108,9 @@ private:
 
 	/// ROS publisher for inverse dynamics
 	ros::Publisher leg_command_array_pub_;
+
+  /// ROS publisher for inverse dynamics
+	ros::Publisher leg_command_diagnostics_pub_;
 
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;
@@ -161,7 +165,10 @@ private:
 
 	/// Duration for sit to stand behavior
 	const double transition_duration_ = 1.0;
-	
+
+	/// Message for leg command array
+	spirit_msgs::LegCommandArray leg_command_array_msg_;
+
 	/// Time at which to start transition
 	ros::Time transition_timestamp_;
 
