@@ -315,12 +315,6 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
 // void SpiritKinematics::legIKVel(int leg_index, Eigen::Vector3d body_state, 
 //   Eigen::Vector3d foot_vel_world, Eigen::Vector3d &joint_vel) const {
 
-  
-
-//   Eigen::MatrixXd jacobian;
-//   Eigen::VectorXd state_positions;
-  
-//   spirit_utils::getFootJacobian(leg_index, state_positions,jacobian);
-//   joint_vel = jacobian.transpose()*foot_vel_world;
+//   // Compute IKVel here
 
 // }
