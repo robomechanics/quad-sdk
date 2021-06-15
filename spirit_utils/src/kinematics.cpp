@@ -343,13 +343,6 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
   }
 
   joint_state = {q0,q1,q2};
-
-  // std::cout << "Foot pos in:\n" << foot_pos_world.format(CleanFmt)
-  //   << std::endl;
-  // std::cout << "Foot pos in (rel):\n" << foot_pos_rel.format(CleanFmt)
-  //   << std::endl;
-  // std::cout << "Joint state out:\n" << joint_state.format(CleanFmt)
-  //   << std::endl;
 }
 
 // void SpiritKinematics::legIKVel(int leg_index, Eigen::Vector3d body_state, 
