@@ -427,12 +427,46 @@ namespace spirit_utils {
       multi_foot_state.feet[i].position.y = foot_pos[1];
       multi_foot_state.feet[i].position.z = foot_pos[2];
 
-      // Fill in the other elements with zeros for now (Mike to do)
-      multi_foot_state.feet[i].velocity.x = 0;
-      multi_foot_state.feet[i].velocity.y = 0;
-      multi_foot_state.feet[i].velocity.z = 0;
-
       multi_foot_state.feet[i].header = multi_foot_state.header;
+    }
+
+    // Declare state data as Eigen vectors
+    Eigen::VectorXd ref_body_state(12), foot_velocities(12);
+
+    // Load state data
+    ref_body_state = spirit_utils::odomMsgToEigen(body_state);
+
+    // Define vectors for joint positions and velocities
+    Eigen::VectorXd joint_positions(12), joint_velocities(12);
+
+    // Load joint positions
+    spirit_utils::vectorToEigen(joint_state.position, joint_positions);
+
+    // Load joint velocities
+    spirit_utils::vectorToEigen(joint_state.velocity, joint_velocities);
+
+    // Define vectors for state positions
+    Eigen::VectorXd state_positions(18), state_velocities(18);
+
+    // Load state positions
+    state_positions << joint_positions, ref_body_state.head(6);
+
+    // Load state velocities
+    state_velocities << joint_velocities, ref_body_state.tail(6);
+
+    // Compute jacobian
+    Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
+    spirit_utils::getJacobian(state_positions, jacobian);
+
+    // Compute foot velocities
+    foot_velocities = jacobian * state_velocities;
+
+    // Populate foot velocities message
+    for (int i = 0; i < multi_foot_state.feet.size(); ++i)
+    {
+      multi_foot_state.feet[i].velocity.x = foot_velocities(i * 3 + 0);
+      multi_foot_state.feet[i].velocity.y = foot_velocities(i * 3 + 1);
+      multi_foot_state.feet[i].velocity.z = foot_velocities(i * 3 + 2);
     }
   }
 
