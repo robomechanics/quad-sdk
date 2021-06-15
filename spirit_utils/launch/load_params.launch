@@ -20,4 +20,6 @@
     <rosparam command="load" file="$(find mblink_converter)/mblink_converter.yaml"/>
     <rosparam command="load" file="$(find open_loop_controller)/open_loop_controller.yaml"/>
 
+    <param name="enable_statistics" type="bool" value="true" />
+
 </launch>
