@@ -2,6 +2,27 @@
 
 namespace spirit_utils {
 
+  void updateStateHeaders(spirit_msgs::RobotState &msg, ros::Time stamp,
+    std::string frame, int traj_index) {
+
+    // Fill in the data across the messages
+    msg.header.stamp = stamp;
+    msg.header.frame_id = frame;
+    msg.header.seq = traj_index;
+    msg.body.header = msg.header;
+    msg.feet.header = msg.header;
+    for (int i = 0; i < msg.feet.feet.size(); i++) {
+      msg.feet.feet[i].header = msg.header;
+    }
+    msg.joints.header = msg.header;
+
+    msg.traj_index = traj_index;
+    msg.feet.traj_index = traj_index;
+    for (int i = 0; i < msg.feet.feet.size(); i++) {
+      msg.feet.feet[i].traj_index = traj_index;
+    }
+  }
+
   void interpHeader(std_msgs::Header header_1,std_msgs::Header header_2,
     double t_interp, std_msgs::Header &interp_header) {
     
@@ -143,15 +164,16 @@ namespace spirit_utils {
     interpMultiFootState(state_1.feet, state_2.feet, t_interp, interp_state.feet);
   }
 
-  void interpBodyPlan(spirit_msgs::BodyPlan msg, double t,
-    nav_msgs::Odometry &interp_state, int &interp_primitive_id, spirit_msgs::GRFArray &interp_grf) {    
+  void interpRobotPlan(spirit_msgs::RobotPlan msg, double t,
+    spirit_msgs::RobotState &interp_state, int &interp_primitive_id,
+    spirit_msgs::GRFArray &interp_grf) {    
 
     // Define some useful timing parameters
     ros::Time t0_ros = msg.states.front().header.stamp;
     ros::Time t_ros = t0_ros + ros::Duration(t);
 
     // Declare variables for interpolating between, both for input and output data
-    nav_msgs::Odometry state_1, state_2;
+    spirit_msgs::RobotState state_1, state_2;
     int primitive_id_1, primitive_id_2;
     spirit_msgs::GRFArray grf_1, grf_2;
 
@@ -184,7 +206,7 @@ namespace spirit_utils {
     double t_interp = (t - t1)/(t2-t1);
 
     // Compute interpolation
-    interpOdometry(state_1, state_2, t_interp, interp_state);
+    interpRobotState(state_1, state_2, t_interp, interp_state);
     interp_primitive_id = primitive_id_1;
     interpGRFArray(grf_1, grf_2, t_interp, interp_grf);
 
@@ -318,17 +340,44 @@ namespace spirit_utils {
       joint_state.position.push_back(leg_joint_state[1]);
       joint_state.position.push_back(leg_joint_state[2]);
 
-      // Fill in the other elements with zeros for now (Mike to do)
-      ROS_WARN_THROTTLE(0.5, "Joint velocity not computed in ikRobotState");
-      joint_state.velocity.push_back(0.0);
-      joint_state.velocity.push_back(0.0);
-      joint_state.velocity.push_back(0.0);
-
       joint_state.effort.push_back(0.0);
       joint_state.effort.push_back(0.0);
       joint_state.effort.push_back(0.0);
     }
 
+    // Declare state data as Eigen vectors
+    Eigen::VectorXd ref_body_state(12), ref_foot_positions(12), ref_foot_velocities(12);
+
+    // Load state data
+    ref_body_state = spirit_utils::odomMsgToEigen(body_state);
+    spirit_utils::multiFootStateMsgToEigen(
+      multi_foot_state, ref_foot_positions, ref_foot_velocities);
+
+    // Define vectors for joint positions and velocities
+    Eigen::VectorXd joint_positions(12), joint_velocities(12);
+
+    // Load joint positions
+    spirit_utils::vectorToEigen(joint_state.position, joint_positions);
+
+    // Define vectors for state positions
+    Eigen::VectorXd state_positions(18);
+
+    // Load state positions
+    state_positions << joint_positions, ref_body_state.head(6);
+
+    // Compute jacobian
+    Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
+    spirit_utils::getJacobian(state_positions, jacobian);
+
+    // Compute joint velocities
+    joint_velocities = jacobian.leftCols(12).colPivHouseholderQr().solve(
+      ref_foot_velocities - jacobian.rightCols(6)*ref_body_state.tail(6));
+    
+    // Populate joint velocities message
+    for (int i = 0; i < 12; ++i)
+    {
+      joint_state.velocity.push_back(joint_velocities(i));
+    }
   }
 
   void ikRobotState(const spirit_utils::SpiritKinematics &kinematics,
@@ -378,12 +427,46 @@ namespace spirit_utils {
       multi_foot_state.feet[i].position.y = foot_pos[1];
       multi_foot_state.feet[i].position.z = foot_pos[2];
 
-      // Fill in the other elements with zeros for now (Mike to do)
-      multi_foot_state.feet[i].velocity.x = 0;
-      multi_foot_state.feet[i].velocity.y = 0;
-      multi_foot_state.feet[i].velocity.z = 0;
-
       multi_foot_state.feet[i].header = multi_foot_state.header;
+    }
+
+    // Declare state data as Eigen vectors
+    Eigen::VectorXd ref_body_state(12), foot_velocities(12);
+
+    // Load state data
+    ref_body_state = spirit_utils::odomMsgToEigen(body_state);
+
+    // Define vectors for joint positions and velocities
+    Eigen::VectorXd joint_positions(12), joint_velocities(12);
+
+    // Load joint positions
+    spirit_utils::vectorToEigen(joint_state.position, joint_positions);
+
+    // Load joint velocities
+    spirit_utils::vectorToEigen(joint_state.velocity, joint_velocities);
+
+    // Define vectors for state positions
+    Eigen::VectorXd state_positions(18), state_velocities(18);
+
+    // Load state positions
+    state_positions << joint_positions, ref_body_state.head(6);
+
+    // Load state velocities
+    state_velocities << joint_velocities, ref_body_state.tail(6);
+
+    // Compute jacobian
+    Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
+    spirit_utils::getJacobian(state_positions, jacobian);
+
+    // Compute foot velocities
+    foot_velocities = jacobian * state_velocities;
+
+    // Populate foot velocities message
+    for (int i = 0; i < multi_foot_state.feet.size(); ++i)
+    {
+      multi_foot_state.feet[i].velocity.x = foot_velocities(i * 3 + 0);
+      multi_foot_state.feet[i].velocity.y = foot_velocities(i * 3 + 1);
+      multi_foot_state.feet[i].velocity.z = foot_velocities(i * 3 + 2);
     }
   }
 
@@ -451,14 +534,16 @@ namespace spirit_utils {
     return state;
   }
 
-  spirit_msgs::GRFArray eigenToGRFArrayMsg(Eigen::VectorXd grf_array,
-    spirit_msgs::MultiFootState multi_foot_state_msg) {
-  
-    spirit_msgs::GRFArray grf_msg;
+  void eigenToGRFArrayMsg(Eigen::VectorXd grf_array, spirit_msgs::MultiFootState multi_foot_state_msg,
+    spirit_msgs::GRFArray &grf_msg) {
 
+    grf_msg.vectors.clear();
+    grf_msg.points.clear();
+    grf_msg.contact_states.clear();
+  
     for (int i = 0; i < multi_foot_state_msg.feet.size(); i++) {
 
-      Eigen::Vector3d grf = grf_array.block<1,3>(0,3*i);
+      Eigen::Vector3d grf = grf_array.segment<3>(3*i);
 
       geometry_msgs::Vector3 vector_msg;
       vector_msg.x = grf[0];
@@ -476,8 +561,84 @@ namespace spirit_utils {
       grf_msg.contact_states.push_back(contact_state);
     }
 
-    return grf_msg;
+  }
+
+  Eigen::VectorXd grfArrayMsgToEigen(const spirit_msgs::GRFArray &grf_array_msg_) {
+  
+    Eigen::VectorXd grf_array(3*grf_array_msg_.vectors.size());
+
+    for (int i = 0; i < grf_array_msg_.vectors.size(); i++) {
+
+      grf_array(3*i) = grf_array_msg_.vectors[i].x;
+      grf_array(3*i+1) = grf_array_msg_.vectors[i].y;
+      grf_array(3*i+2) = grf_array_msg_.vectors[i].z;
+    }
+
+    return grf_array;
 
   }
 
+  void footStateMsgToEigen(const spirit_msgs::FootState &foot_state_msg, 
+    Eigen::Vector3d &foot_position) {
+  
+    foot_position[0] = foot_state_msg.position.x;
+    foot_position[1] = foot_state_msg.position.y;
+    foot_position[2] = foot_state_msg.position.z;
+
+  }
+
+  void multiFootStateMsgToEigen(const spirit_msgs::MultiFootState &multi_foot_state_msg, 
+    Eigen::VectorXd &foot_positions) {
+  
+    for (int i = 0; i < multi_foot_state_msg.feet.size(); i++) {
+
+      foot_positions[3*i] = multi_foot_state_msg.feet[i].position.x;
+      foot_positions[3*i+1] = multi_foot_state_msg.feet[i].position.y;
+      foot_positions[3*i+2] = multi_foot_state_msg.feet[i].position.z;
+
+    }
+  }
+
+  void multiFootStateMsgToEigen(const spirit_msgs::MultiFootState &multi_foot_state_msg, 
+    Eigen::VectorXd &foot_positions, Eigen::VectorXd &foot_velocities) {
+  
+    for (int i = 0; i < multi_foot_state_msg.feet.size(); i++) {
+
+      foot_positions[3*i] = multi_foot_state_msg.feet[i].position.x;
+      foot_positions[3*i+1] = multi_foot_state_msg.feet[i].position.y;
+      foot_positions[3*i+2] = multi_foot_state_msg.feet[i].position.z;
+
+      foot_velocities[3*i] = multi_foot_state_msg.feet[i].velocity.x;
+      foot_velocities[3*i+1] = multi_foot_state_msg.feet[i].velocity.y;
+      foot_velocities[3*i+2] = multi_foot_state_msg.feet[i].velocity.z;
+
+    }
+  }
+
+  void eigenToFootStateMsg(Eigen::VectorXd foot_positions, 
+    Eigen::VectorXd foot_velocities, spirit_msgs::FootState &foot_state_msg) {
+
+      foot_state_msg.position.x = foot_positions[0];
+      foot_state_msg.position.y = foot_positions[1];
+      foot_state_msg.position.z = foot_positions[2];
+
+      foot_state_msg.velocity.x = foot_velocities[0];
+      foot_state_msg.velocity.y = foot_velocities[1];
+      foot_state_msg.velocity.z = foot_velocities[2];
+
+  }
+
+  void eigenToVector(const Eigen::VectorXd &eigen_vec, std::vector<double> &vec) {
+    vec.resize(eigen_vec.size());
+    for (int i = 0; i < eigen_vec.size(); i++) {
+      vec[i] = eigen_vec(i);
+    }
+  }
+
+  void vectorToEigen(const std::vector<double> &vec, Eigen::VectorXd &eigen_vec) {
+    eigen_vec.resize(vec.size());
+    for (int i = 0; i < vec.size(); i++) {
+      eigen_vec(i) = vec[i];
+    }
+  }
 }

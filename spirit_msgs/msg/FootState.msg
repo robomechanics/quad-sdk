@@ -4,6 +4,7 @@
 # Accurate timing information is stored in the header
 
 Header header
+uint32 traj_index
 geometry_msgs/Vector3 position
 geometry_msgs/Vector3 velocity
 bool contact

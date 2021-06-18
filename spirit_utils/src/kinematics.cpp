@@ -105,10 +105,11 @@ void SpiritKinematics::nominalFootstepFK(int leg_index, Eigen::Vector3d body_pos
   // Compute transforms
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
 
+  // Compute transform from body to legbase but offset by l0
   Eigen::Matrix4d g_body_nominal_footstep = g_body_legbases_[leg_index];
   g_body_nominal_footstep(1,3) += l0_vec_[leg_index];
 
-  // Compute transform for leg base relative to the world frame
+  // Compute transform for offset leg base relative to the world frame
   Eigen::Matrix4d g_world_nominal_footstep = g_world_body*g_body_nominal_footstep;
 
   nominal_footstep_pos_world = g_world_nominal_footstep.block<3,1>(0,3);
@@ -342,11 +343,11 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
   }
 
   joint_state = {q0,q1,q2};
-
-  // std::cout << "Foot pos in:\n" << foot_pos_world.format(CleanFmt)
-  //   << std::endl;
-  // std::cout << "Foot pos in (rel):\n" << foot_pos_rel.format(CleanFmt)
-  //   << std::endl;
-  // std::cout << "Joint state out:\n" << joint_state.format(CleanFmt)
-  //   << std::endl;
 }
+
+// void SpiritKinematics::legIKVel(int leg_index, Eigen::Vector3d body_state, 
+//   Eigen::Vector3d foot_vel_world, Eigen::Vector3d &joint_vel) const {
+
+//   // Compute IKVel here
+
+// }

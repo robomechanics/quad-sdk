@@ -10,7 +10,7 @@ if nargin>0
     bSave = true;
 else
     % Specify the trial name and settings
-    trialName = 'GBP_ID_ffGRF_2021-02-26';
+    trialName = 'spirit_log_current';
     bAnimate = true;
     bSave = true;
 end

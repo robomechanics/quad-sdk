@@ -6,10 +6,13 @@
     <arg name="controller" default="inverse_dynamics"/>
     <arg name="logging" default="false"/>
     <arg name="plan" default="false"/>
+    <arg name="live_plot" default="false"/>
 
     <!-- Launch the mapping and visualization nodes -->
     <include file="$(find spirit_utils)/launch/mapping.launch" />
-    <include file="$(find spirit_utils)/launch/visualization.launch" />
+    <include file="$(find spirit_utils)/launch/visualization.launch">
+      <arg name="live_plot" value="$(arg live_plot)"/>
+    </include>
 
     <!-- Launch the robot_proxy if specified-->
     <group if="$(arg proxy)">

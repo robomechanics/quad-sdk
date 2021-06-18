@@ -4,6 +4,7 @@
 # Accurate timing information is stored in the header
 
 Header header
+uint32 traj_index
 nav_msgs/Odometry body
 sensor_msgs/JointState joints
 spirit_msgs/MultiFootState feet
