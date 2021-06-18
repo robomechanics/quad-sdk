@@ -12,5 +12,7 @@ var searchData=
   ['loaddatafromgridmap',['loadDataFromGridMap',['../classFastTerrainMap.html#afcf382e84d1fb5cb94529df98101979a',1,'FastTerrainMap']]],
   ['loadmapfromcsv',['loadMapFromCSV',['../classTerrainMapPublisher.html#a633f664cc608dc2478948c829c22c97d',1,'TerrainMapPublisher']]],
   ['loadmapfromimage',['loadMapFromImage',['../classTerrainMapPublisher.html#a5d8c63f68d1256f06db6159876ce2100',1,'TerrainMapPublisher']]],
-  ['localfootstepplanner',['LocalFootstepPlanner',['../classLocalFootstepPlanner.html#a698993bc1a0560311cb32bfb4affdc33',1,'LocalFootstepPlanner']]]
+  ['localfootstepplanner',['LocalFootstepPlanner',['../classLocalFootstepPlanner.html#a22d834ccd2d0a87303c58dbee0b788ab',1,'LocalFootstepPlanner']]],
+  ['localplancallback',['localPlanCallback',['../classInverseDynamics.html#a73b05325b32ee857d3d7b07fe3a1a244',1,'InverseDynamics']]],
+  ['localplanner',['LocalPlanner',['../classLocalPlanner.html#a50f903442aa6ed440b040a2b6c810c05',1,'LocalPlanner']]]
 ];

@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classGroundTruthPublisher.html" title="Class to publish the ground truth state data. " alt="" coords="5,5,168,32"/>
+<area shape="rect" id="node1" href="$classGraphClass.html" title="A general directed graph class. " alt="" coords="5,5,101,32"/>
+<area shape="rect" id="node2" href="$classPlannerClass.html" title="A directed graph class with supplemental methods to aid in sample&#45;based planning. ..." alt="" coords="149,5,256,32"/>
 </map>

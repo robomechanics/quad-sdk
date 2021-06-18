@@ -1,9 +1,11 @@
 var searchData=
 [
   ['cmd_5fvel_5f',['cmd_vel_',['../classTwistBodyPlanner.html#a6b7dbe4f18a900a4cbdbbaaa66e976d5',1,'TwistBodyPlanner']]],
+  ['cmd_5fvel_5fscale_5f',['cmd_vel_scale_',['../classTwistBodyPlanner.html#a4e2bf4654846db912573b3212042fb09',1,'TwistBodyPlanner']]],
   ['cmd_5fvel_5fsub_5f',['cmd_vel_sub_',['../classTwistBodyPlanner.html#a13a77d06bef51add939a0dbb8b75b43c',1,'TwistBodyPlanner']]],
   ['committed_5fhorizon_5f',['committed_horizon_',['../classGlobalBodyPlanner.html#a374758b62509d9be6fb6afdfadb8fa81',1,'GlobalBodyPlanner']]],
-  ['connect_5fstance',['CONNECT_STANCE',['../classLocalFootstepPlanner.html#afa09d542cb363662eb771cc1a8942b97',1,'LocalFootstepPlanner']]],
+  ['connect_5fstance',['CONNECT_STANCE',['../classGlobalFootstepPlanner.html#ab9b74ccfdbe46328420bf7a071881c6c',1,'GlobalFootstepPlanner::CONNECT_STANCE()'],['../classLocalFootstepPlanner.html#afa09d542cb363662eb771cc1a8942b97',1,'LocalFootstepPlanner::CONNECT_STANCE()']]],
+  ['contact_5fschedule_5f',['contact_schedule_',['../classLocalPlanner.html#aaaed9e387826f9dda4086f9df721831a',1,'LocalPlanner']]],
   ['contact_5fsub_5f',['contact_sub_',['../classEKFEstimator.html#aaac33edc41f9e699982587871418091a',1,'EKFEstimator']]],
   ['control_5finput_5fsub_5f',['control_input_sub_',['../classRobotProxy.html#ab00ea5a01b6881aabf092f838cf44d81',1,'RobotProxy']]],
   ['control_5fmode_5f',['control_mode_',['../classInverseDynamics.html#ab8cbede8e670b09e40e46b1127582b2e',1,'InverseDynamics::control_mode_()'],['../classOpenLoopController.html#a1110b57f0740a014f3cdb80bebd2a985',1,'OpenLoopController::control_mode_()']]],
@@ -11,5 +13,7 @@ var searchData=
   ['cost_5fvector_5f',['cost_vector_',['../classGlobalBodyPlanner.html#a050614c41be6492d587fd4fd7fb66304',1,'GlobalBodyPlanner']]],
   ['cost_5fvector_5ftimes_5f',['cost_vector_times_',['../classGlobalBodyPlanner.html#a64f38e199a18fbcc1de677fc2f2c4bc1',1,'GlobalBodyPlanner']]],
   ['cur_5fstate_5f',['cur_state_',['../classMPCController.html#add1840590c07adf3ebe08daf71f7758c',1,'MPCController']]],
-  ['current_5fcost_5f',['current_cost_',['../classGlobalBodyPlanner.html#af08776625ec691c5fc8ff1df56544737',1,'GlobalBodyPlanner']]]
+  ['current_5fcost_5f',['current_cost_',['../classGlobalBodyPlanner.html#af08776625ec691c5fc8ff1df56544737',1,'GlobalBodyPlanner']]],
+  ['current_5fplan_5findex_5f',['current_plan_index_',['../classLocalPlanner.html#aa443def11dac297395fdc590cad1eaed',1,'LocalPlanner']]],
+  ['current_5fstate_5f',['current_state_',['../classLocalPlanner.html#a494809df7870eebd433aec7ff6a4f4c1',1,'LocalPlanner']]]
 ];

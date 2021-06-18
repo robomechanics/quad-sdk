@@ -109,7 +109,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a60270a1914d9c02306a19ee73cb50f89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute inverse kinematics for a specified leg.  <a href="#a60270a1914d9c02306a19ee73cb50f89">More...</a><br /></td></tr>
 <tr class="separator:a60270a1914d9c02306a19ee73cb50f89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3e58a748106f8289873d19c36cf9ee2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#ab3e58a748106f8289873d19c36cf9ee2">getJointLowerLimit</a> (int joint_index) const</td></tr>
-<tr class="memdesc:ab3e58a748106f8289873d19c36cf9ee2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the lower joint limit of a particular joint.  <a href="#ab3e58a748106f8289873d19c36cf9ee2">More...</a><br /></td></tr>
+<tr class="memdesc:ab3e58a748106f8289873d19c36cf9ee2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute inverse kinematics for a specified leg.  <a href="#ab3e58a748106f8289873d19c36cf9ee2">More...</a><br /></td></tr>
 <tr class="separator:ab3e58a748106f8289873d19c36cf9ee2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a223b45ecbd4c059498a9dda8249a4e79"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a223b45ecbd4c059498a9dda8249a4e79">getJointUpperLimit</a> (int joint_index) const</td></tr>
 <tr class="memdesc:a223b45ecbd4c059498a9dda8249a4e79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the upper joint limit of a particular joint.  <a href="#a223b45ecbd4c059498a9dda8249a4e79">More...</a><br /></td></tr>
@@ -395,9 +395,13 @@ const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bot
       </table>
 </div><div class="memdoc">
 
-<p>Get the lower joint limit of a particular joint. </p>
+<p>Compute inverse kinematics for a specified leg. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">leg_index</td><td>Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">body_state</td><td>Pose and twist of center of body frame </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">foot_vel_world</td><td>Position of the specified foot in world frame </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">joint_vel</td><td>Joint velocities for the specified leg (abad, hip, knee) Get the lower joint limit of a particular joint </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">joint_index</td><td>Index for joint (0 = abad, 1 = hip, 2 = knee) </td></tr>
   </table>
   </dd>

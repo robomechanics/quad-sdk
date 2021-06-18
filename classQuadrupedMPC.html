@@ -60,6 +60,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-types">Private Types</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classQuadrupedMPC-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -74,6 +75,49 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:aa393c7a498c07ff96f19ad28708d490b"><td class="memItemLeft" align="right" valign="top"><a id="aa393c7a498c07ff96f19ad28708d490b"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#aa393c7a498c07ff96f19ad28708d490b">QuadrupedMPC</a> ()</td></tr>
+<tr class="memdesc:aa393c7a498c07ff96f19ad28708d490b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an MPC object. <br /></td></tr>
+<tr class="separator:aa393c7a498c07ff96f19ad28708d490b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a491762ff0acd098625287f77bb3051ab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a491762ff0acd098625287f77bb3051ab">setMassProperties</a> (const double m, const Eigen::Matrix3d Ib)</td></tr>
+<tr class="memdesc:a491762ff0acd098625287f77bb3051ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the mass properties of the robot.  <a href="#a491762ff0acd098625287f77bb3051ab">More...</a><br /></td></tr>
+<tr class="separator:a491762ff0acd098625287f77bb3051ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08077436fdfcf3dc1a65eca282fe7773"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a08077436fdfcf3dc1a65eca282fe7773">setTimestep</a> (const double dt)</td></tr>
+<tr class="memdesc:a08077436fdfcf3dc1a65eca282fe7773"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update our MPC timestep.  <a href="#a08077436fdfcf3dc1a65eca282fe7773">More...</a><br /></td></tr>
+<tr class="separator:a08077436fdfcf3dc1a65eca282fe7773"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02e46039daa6314e0a7a95f8ac65548e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a02e46039daa6314e0a7a95f8ac65548e">update_weights</a> (const std::vector&lt; Eigen::MatrixXd &gt; &amp;Q, const std::vector&lt; Eigen::MatrixXd &gt; &amp;R)</td></tr>
+<tr class="memdesc:a02e46039daa6314e0a7a95f8ac65548e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update our MPC weights on state deviation error and control error.  <a href="#a02e46039daa6314e0a7a95f8ac65548e">More...</a><br /></td></tr>
+<tr class="separator:a02e46039daa6314e0a7a95f8ac65548e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a297f13d55d07cf7a1699697360d551f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a297f13d55d07cf7a1699697360d551f6">update_dynamics</a> (const Eigen::MatrixXd &amp;ref_traj, const Eigen::MatrixXd &amp;foot_positions)</td></tr>
+<tr class="memdesc:a297f13d55d07cf7a1699697360d551f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update our dynamics (linearized about reference yaw and footsteps)  <a href="#a297f13d55d07cf7a1699697360d551f6">More...</a><br /></td></tr>
+<tr class="separator:a297f13d55d07cf7a1699697360d551f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa48870ef295e0ffe20696f1c7c61a0bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#aa48870ef295e0ffe20696f1c7c61a0bf">update_dynamics_hip_projected_feet</a> (const Eigen::MatrixXd &amp;ref_traj)</td></tr>
+<tr class="memdesc:aa48870ef295e0ffe20696f1c7c61a0bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update our dynamics (linearized about reference yaw and footsteps projected underneath hip)  <a href="#aa48870ef295e0ffe20696f1c7c61a0bf">More...</a><br /></td></tr>
+<tr class="separator:aa48870ef295e0ffe20696f1c7c61a0bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad35c5cdc969b222941e3a58c9d727d81"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#ad35c5cdc969b222941e3a58c9d727d81">update_contact</a> (const std::vector&lt; std::vector&lt; bool &gt; &gt; contact_sequence, const double fmin, const double fmax)</td></tr>
+<tr class="memdesc:ad35c5cdc969b222941e3a58c9d727d81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the footstep contact sequence and normal force bounds.  <a href="#ad35c5cdc969b222941e3a58c9d727d81">More...</a><br /></td></tr>
+<tr class="separator:ad35c5cdc969b222941e3a58c9d727d81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9fca2477d01a697b2eb0743657bcc62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#ad9fca2477d01a697b2eb0743657bcc62">update_state_bounds</a> (const Eigen::VectorXd state_lo, const Eigen::VectorXd state_hi)</td></tr>
+<tr class="memdesc:ad9fca2477d01a697b2eb0743657bcc62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update hard constraints on state bounds.  <a href="#ad9fca2477d01a697b2eb0743657bcc62">More...</a><br /></td></tr>
+<tr class="separator:ad9fca2477d01a697b2eb0743657bcc62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd2d949ebce4260e8481c1799e326a39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#abd2d949ebce4260e8481c1799e326a39">update_control_bounds</a> (const double f_min, const double f_max)</td></tr>
+<tr class="memdesc:abd2d949ebce4260e8481c1799e326a39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update hard constraints on control bounds.  <a href="#abd2d949ebce4260e8481c1799e326a39">More...</a><br /></td></tr>
+<tr class="separator:abd2d949ebce4260e8481c1799e326a39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a330fd254d76e10582f7d0e923d3dc266"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a330fd254d76e10582f7d0e923d3dc266">update_friction</a> (const double mu)</td></tr>
+<tr class="memdesc:a330fd254d76e10582f7d0e923d3dc266"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update our friction coeffiecient.  <a href="#a330fd254d76e10582f7d0e923d3dc266">More...</a><br /></td></tr>
+<tr class="separator:a330fd254d76e10582f7d0e923d3dc266"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2171dd5a1a680faa66573b4dc705c574"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a2171dd5a1a680faa66573b4dc705c574">get_cost_function</a> (const Eigen::MatrixXd &amp;ref_traj, Eigen::VectorXd &amp;f)</td></tr>
+<tr class="memdesc:a2171dd5a1a680faa66573b4dc705c574"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the quadratic cost function of the form.  <a href="#a2171dd5a1a680faa66573b4dc705c574">More...</a><br /></td></tr>
+<tr class="separator:a2171dd5a1a680faa66573b4dc705c574"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad284769c4decca29eaa2343554f5f1f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#ad284769c4decca29eaa2343554f5f1f7">get_output</a> (const Eigen::MatrixXd &amp;x_out, Eigen::MatrixXd &amp;opt_traj, Eigen::MatrixXd &amp;control_traj, double &amp;f_val)</td></tr>
+<tr class="memdesc:ad284769c4decca29eaa2343554f5f1f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collect first control value and all states and return them.  <a href="#ad284769c4decca29eaa2343554f5f1f7">More...</a><br /></td></tr>
+<tr class="separator:ad284769c4decca29eaa2343554f5f1f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af54cb1a211190b57956d4168f49f1730"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#af54cb1a211190b57956d4168f49f1730">solve</a> (const Eigen::VectorXd &amp;initial_state, const Eigen::MatrixXd &amp;ref_traj, Eigen::MatrixXd &amp;x_out)</td></tr>
+<tr class="memdesc:af54cb1a211190b57956d4168f49f1730"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collect matrices into specific type for solver and solve.  <a href="#af54cb1a211190b57956d4168f49f1730">More...</a><br /></td></tr>
+<tr class="separator:af54cb1a211190b57956d4168f49f1730"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00ee9c3ad9d81fc2234a4ff709729c2b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a00ee9c3ad9d81fc2234a4ff709729c2b">computePlan</a> (const Eigen::VectorXd &amp;initial_state, const Eigen::MatrixXd &amp;ref_traj, const Eigen::MatrixXd &amp;foot_positions, const std::vector&lt; std::vector&lt; bool &gt;&gt; &amp;contact_schedule, Eigen::MatrixXd &amp;state_traj, Eigen::MatrixXd &amp;control_traj)</td></tr>
+<tr class="memdesc:a00ee9c3ad9d81fc2234a4ff709729c2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the contact and dynamic matrices, solve, and return the output.  <a href="#a00ee9c3ad9d81fc2234a4ff709729c2b">More...</a><br /></td></tr>
+<tr class="separator:a00ee9c3ad9d81fc2234a4ff709729c2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:affd4a816c7d8e8dd5840f0ed51f4ac5d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#affd4a816c7d8e8dd5840f0ed51f4ac5d">QuadrupedMPC</a> (const int N, const int Nx, const int Nu)</td></tr>
 <tr class="memdesc:affd4a816c7d8e8dd5840f0ed51f4ac5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an MPC object.  <a href="#affd4a816c7d8e8dd5840f0ed51f4ac5d">More...</a><br /></td></tr>
 <tr class="separator:affd4a816c7d8e8dd5840f0ed51f4ac5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -111,20 +155,63 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:af54cb1a211190b57956d4168f49f1730"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collect matrices into specific type for solver and solve.  <a href="#af54cb1a211190b57956d4168f49f1730">More...</a><br /></td></tr>
 <tr class="separator:af54cb1a211190b57956d4168f49f1730"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-types"></a>
+Private Types</h2></td></tr>
+<tr class="memitem:a104ffe44ded98188f51ada93ddbe0432"><td class="memItemLeft" align="right" valign="top"><a id="a104ffe44ded98188f51ada93ddbe0432"></a>
+typedef Eigen::Vector&lt; double, <a class="el" href="classQuadrupedMPC.html#a1615db8146185a91d033d86b919e8b7e">nx_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a104ffe44ded98188f51ada93ddbe0432">StateVec</a></td></tr>
+<tr class="memdesc:a104ffe44ded98188f51ada93ddbe0432"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typedef for state vector. <br /></td></tr>
+<tr class="separator:a104ffe44ded98188f51ada93ddbe0432"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a421cbd3c4924917cfc0d5f07bf59b6e5"><td class="memItemLeft" align="right" valign="top"><a id="a421cbd3c4924917cfc0d5f07bf59b6e5"></a>
+typedef Eigen::Vector&lt; double, <a class="el" href="classQuadrupedMPC.html#a13c1e60bf8c4d48ce384fd64f9fc9319">nu_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a421cbd3c4924917cfc0d5f07bf59b6e5">ControlVec</a></td></tr>
+<tr class="memdesc:a421cbd3c4924917cfc0d5f07bf59b6e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typedef for control vector. <br /></td></tr>
+<tr class="separator:a421cbd3c4924917cfc0d5f07bf59b6e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6284339a9b06d4f68193c6f6112634e"><td class="memItemLeft" align="right" valign="top"><a id="ad6284339a9b06d4f68193c6f6112634e"></a>
+typedef Eigen::Matrix&lt; double, <a class="el" href="classQuadrupedMPC.html#a1615db8146185a91d033d86b919e8b7e">nx_</a>, <a class="el" href="classQuadrupedMPC.html#a1615db8146185a91d033d86b919e8b7e">nx_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#ad6284339a9b06d4f68193c6f6112634e">StateMatrix</a></td></tr>
+<tr class="memdesc:ad6284339a9b06d4f68193c6f6112634e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typedef for state matrix. <br /></td></tr>
+<tr class="separator:ad6284339a9b06d4f68193c6f6112634e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a458624267347ffdc5a2999a1d81d6298"><td class="memItemLeft" align="right" valign="top"><a id="a458624267347ffdc5a2999a1d81d6298"></a>
+typedef Eigen::Matrix&lt; double, <a class="el" href="classQuadrupedMPC.html#a1615db8146185a91d033d86b919e8b7e">nx_</a>, <a class="el" href="classQuadrupedMPC.html#a13c1e60bf8c4d48ce384fd64f9fc9319">nu_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a458624267347ffdc5a2999a1d81d6298">ControlMatrix</a></td></tr>
+<tr class="memdesc:a458624267347ffdc5a2999a1d81d6298"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typedef for control matrix. <br /></td></tr>
+<tr class="separator:a458624267347ffdc5a2999a1d81d6298"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a621750ef2394c860e6e74a2eb28d7cf9"><td class="memItemLeft" align="right" valign="top"><a id="a621750ef2394c860e6e74a2eb28d7cf9"></a>
+typedef Eigen::Matrix&lt; double, <a class="el" href="classQuadrupedMPC.html#a044cf0ab50584d8e3d2f6ef2990d70c9">N_</a>+1, <a class="el" href="classQuadrupedMPC.html#a1615db8146185a91d033d86b919e8b7e">nx_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a621750ef2394c860e6e74a2eb28d7cf9">StateTraj</a></td></tr>
+<tr class="memdesc:a621750ef2394c860e6e74a2eb28d7cf9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typedef for state trajectory. <br /></td></tr>
+<tr class="separator:a621750ef2394c860e6e74a2eb28d7cf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88f9f5cda0d7a7f7c2696da9adf30bd0"><td class="memItemLeft" align="right" valign="top"><a id="a88f9f5cda0d7a7f7c2696da9adf30bd0"></a>
+typedef Eigen::Matrix&lt; double, <a class="el" href="classQuadrupedMPC.html#a044cf0ab50584d8e3d2f6ef2990d70c9">N_</a>, <a class="el" href="classQuadrupedMPC.html#a13c1e60bf8c4d48ce384fd64f9fc9319">nu_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a88f9f5cda0d7a7f7c2696da9adf30bd0">ControlTraj</a></td></tr>
+<tr class="memdesc:a88f9f5cda0d7a7f7c2696da9adf30bd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typedef for control trajectory. <br /></td></tr>
+<tr class="separator:a88f9f5cda0d7a7f7c2696da9adf30bd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a814295a45b18e2fb36c91600ca6aed47"><td class="memItemLeft" align="right" valign="top"><a id="a814295a45b18e2fb36c91600ca6aed47"></a>
+typedef Eigen::Matrix&lt; double, <a class="el" href="classQuadrupedMPC.html#a16fa7f50d0bdb4989b0ccf896fa33d6f">num_state_vars_</a>, <a class="el" href="classQuadrupedMPC.html#a16fa7f50d0bdb4989b0ccf896fa33d6f">num_state_vars_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a814295a45b18e2fb36c91600ca6aed47">StateHessian</a></td></tr>
+<tr class="memdesc:a814295a45b18e2fb36c91600ca6aed47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typedef for state Hessian. <br /></td></tr>
+<tr class="separator:a814295a45b18e2fb36c91600ca6aed47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a245479f3b61e8faba7561a558a2ba06d"><td class="memItemLeft" align="right" valign="top"><a id="a245479f3b61e8faba7561a558a2ba06d"></a>
+typedef Eigen::Matrix&lt; double, <a class="el" href="classQuadrupedMPC.html#a2b77da5fd77b918c4aaca821878f3ca5">num_control_vars_</a>, <a class="el" href="classQuadrupedMPC.html#a2b77da5fd77b918c4aaca821878f3ca5">num_control_vars_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a245479f3b61e8faba7561a558a2ba06d">ControlHessian</a></td></tr>
+<tr class="memdesc:a245479f3b61e8faba7561a558a2ba06d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typedef for control Hessian. <br /></td></tr>
+<tr class="separator:a245479f3b61e8faba7561a558a2ba06d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a994b196a31783aeac707c7695c559911"><td class="memItemLeft" align="right" valign="top"><a id="a994b196a31783aeac707c7695c559911"></a>
+typedef Eigen::Matrix&lt; double, <a class="el" href="classQuadrupedMPC.html#a16fa7f50d0bdb4989b0ccf896fa33d6f">num_state_vars_</a>+<a class="el" href="classQuadrupedMPC.html#a2b77da5fd77b918c4aaca821878f3ca5">num_control_vars_</a>, <a class="el" href="classQuadrupedMPC.html#a16fa7f50d0bdb4989b0ccf896fa33d6f">num_state_vars_</a>+<a class="el" href="classQuadrupedMPC.html#a2b77da5fd77b918c4aaca821878f3ca5">num_control_vars_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a994b196a31783aeac707c7695c559911">StateControlHessian</a></td></tr>
+<tr class="memdesc:a994b196a31783aeac707c7695c559911"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typedef for state and control Hessian. <br /></td></tr>
+<tr class="separator:a994b196a31783aeac707c7695c559911"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:ac530b58e266e9424c7ea095f77af881c"><td class="memItemLeft" align="right" valign="top"><a id="ac530b58e266e9424c7ea095f77af881c"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#ac530b58e266e9424c7ea095f77af881c">N_</a></td></tr>
-<tr class="memdesc:ac530b58e266e9424c7ea095f77af881c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of timesteps in horizon. <br /></td></tr>
-<tr class="separator:ac530b58e266e9424c7ea095f77af881c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73cced55f713836b03ac7f0f5b420ef7"><td class="memItemLeft" align="right" valign="top"><a id="a73cced55f713836b03ac7f0f5b420ef7"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a73cced55f713836b03ac7f0f5b420ef7">nx_</a></td></tr>
-<tr class="memdesc:a73cced55f713836b03ac7f0f5b420ef7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of states per step. <br /></td></tr>
-<tr class="separator:a73cced55f713836b03ac7f0f5b420ef7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af24289386adac49e2b65e9e8bc54f8c9"><td class="memItemLeft" align="right" valign="top"><a id="af24289386adac49e2b65e9e8bc54f8c9"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#af24289386adac49e2b65e9e8bc54f8c9">nu_</a></td></tr>
-<tr class="memdesc:af24289386adac49e2b65e9e8bc54f8c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of controls per step. <br /></td></tr>
-<tr class="separator:af24289386adac49e2b65e9e8bc54f8c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a044cf0ab50584d8e3d2f6ef2990d70c9"><td class="memItemLeft" align="right" valign="top"><a id="a044cf0ab50584d8e3d2f6ef2990d70c9"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a044cf0ab50584d8e3d2f6ef2990d70c9">N_</a> = 24</td></tr>
+<tr class="memdesc:a044cf0ab50584d8e3d2f6ef2990d70c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of timesteps in horizon. <br /></td></tr>
+<tr class="separator:a044cf0ab50584d8e3d2f6ef2990d70c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1615db8146185a91d033d86b919e8b7e"><td class="memItemLeft" align="right" valign="top"><a id="a1615db8146185a91d033d86b919e8b7e"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a1615db8146185a91d033d86b919e8b7e">nx_</a> = 12</td></tr>
+<tr class="memdesc:a1615db8146185a91d033d86b919e8b7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of states per step. <br /></td></tr>
+<tr class="separator:a1615db8146185a91d033d86b919e8b7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13c1e60bf8c4d48ce384fd64f9fc9319"><td class="memItemLeft" align="right" valign="top"><a id="a13c1e60bf8c4d48ce384fd64f9fc9319"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a13c1e60bf8c4d48ce384fd64f9fc9319">nu_</a> = 13</td></tr>
+<tr class="memdesc:a13c1e60bf8c4d48ce384fd64f9fc9319"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of controls per step. <br /></td></tr>
+<tr class="separator:a13c1e60bf8c4d48ce384fd64f9fc9319"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3e3136c5123a8ddc0ca7cbebf839770"><td class="memItemLeft" align="right" valign="top"><a id="ab3e3136c5123a8ddc0ca7cbebf839770"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#ab3e3136c5123a8ddc0ca7cbebf839770">num_feet_</a> = 4</td></tr>
+<tr class="memdesc:ab3e3136c5123a8ddc0ca7cbebf839770"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of feet. <br /></td></tr>
+<tr class="separator:ab3e3136c5123a8ddc0ca7cbebf839770"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7511a65d0b5fccd805e0b167a0df58d"><td class="memItemLeft" align="right" valign="top"><a id="aa7511a65d0b5fccd805e0b167a0df58d"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#aa7511a65d0b5fccd805e0b167a0df58d">num_dyn_constraints_</a></td></tr>
 <tr class="memdesc:aa7511a65d0b5fccd805e0b167a0df58d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of dynamics constraints. <br /></td></tr>
@@ -224,6 +311,14 @@ Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a4d6b2d4c3b8ea31cb19646aa17da8554">b_state_hi_</a></td></tr>
 <tr class="memdesc:a4d6b2d4c3b8ea31cb19646aa17da8554"><td class="mdescLeft">&#160;</td><td class="mdescRight">State constraint upper bound. <br /></td></tr>
 <tr class="separator:a4d6b2d4c3b8ea31cb19646aa17da8554"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63f018115ed5cf20622c4686c59f824f"><td class="memItemLeft" align="right" valign="top"><a id="a63f018115ed5cf20622c4686c59f824f"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a63f018115ed5cf20622c4686c59f824f">f_min_</a></td></tr>
+<tr class="memdesc:a63f018115ed5cf20622c4686c59f824f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normal force lower bound. <br /></td></tr>
+<tr class="separator:a63f018115ed5cf20622c4686c59f824f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b0f485176d89ce69f72fa1096f10533"><td class="memItemLeft" align="right" valign="top"><a id="a1b0f485176d89ce69f72fa1096f10533"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a1b0f485176d89ce69f72fa1096f10533">f_max_</a></td></tr>
+<tr class="memdesc:a1b0f485176d89ce69f72fa1096f10533"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normal force upper bound. <br /></td></tr>
+<tr class="separator:a1b0f485176d89ce69f72fa1096f10533"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52f0a441eb1ecfefd50b156105c81b63"><td class="memItemLeft" align="right" valign="top"><a id="a52f0a441eb1ecfefd50b156105c81b63"></a>
 Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>f_</b></td></tr>
 <tr class="separator:a52f0a441eb1ecfefd50b156105c81b63"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -235,10 +330,79 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 OsqpEigen::Solver&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#aa7f90acd39202da28a3726c9e0a44bea">solver_</a></td></tr>
 <tr class="memdesc:aa7f90acd39202da28a3726c9e0a44bea"><td class="mdescLeft">&#160;</td><td class="mdescRight">OSQP solver instance. <br /></td></tr>
 <tr class="separator:aa7f90acd39202da28a3726c9e0a44bea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab3e463e5b114d9a762bfa26ae5b9e669"><td class="memItemLeft" align="right" valign="top"><a id="ab3e463e5b114d9a762bfa26ae5b9e669"></a>
-std::shared_ptr&lt; <a class="el" href="classspirit__utils_1_1SpiritKinematics.html">spirit_utils::SpiritKinematics</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#ab3e463e5b114d9a762bfa26ae5b9e669">kinematics_</a></td></tr>
-<tr class="memdesc:ab3e463e5b114d9a762bfa26ae5b9e669"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spirit Kinematics class. <br /></td></tr>
-<tr class="separator:ab3e463e5b114d9a762bfa26ae5b9e669"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a653f12110a4c95cbf164174ad2708be0"><td class="memItemLeft" align="right" valign="top"><a id="a653f12110a4c95cbf164174ad2708be0"></a>
+std::shared_ptr&lt; <a class="el" href="classspirit__utils_1_1SpiritKinematics.html">spirit_utils::SpiritKinematics</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a653f12110a4c95cbf164174ad2708be0">kinematics_</a></td></tr>
+<tr class="memdesc:a653f12110a4c95cbf164174ad2708be0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spirit Kinematics class. <br /></td></tr>
+<tr class="separator:a653f12110a4c95cbf164174ad2708be0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84a42f2f5bba552899a1db5db33f1e91"><td class="memItemLeft" align="right" valign="top"><a id="a84a42f2f5bba552899a1db5db33f1e91"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a84a42f2f5bba552899a1db5db33f1e91">num_state_vars_</a> = (<a class="el" href="classQuadrupedMPC.html#a044cf0ab50584d8e3d2f6ef2990d70c9">N_</a> + 1) * <a class="el" href="classQuadrupedMPC.html#a1615db8146185a91d033d86b919e8b7e">nx_</a></td></tr>
+<tr class="memdesc:a84a42f2f5bba552899a1db5db33f1e91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of state variables in qp. <br /></td></tr>
+<tr class="separator:a84a42f2f5bba552899a1db5db33f1e91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf9cceb82a6a6b80d71f79323bc3727a"><td class="memItemLeft" align="right" valign="top"><a id="acf9cceb82a6a6b80d71f79323bc3727a"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#acf9cceb82a6a6b80d71f79323bc3727a">num_control_vars_</a> = N * <a class="el" href="classQuadrupedMPC.html#a13c1e60bf8c4d48ce384fd64f9fc9319">nu_</a></td></tr>
+<tr class="memdesc:acf9cceb82a6a6b80d71f79323bc3727a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of control variables in qp. <br /></td></tr>
+<tr class="separator:acf9cceb82a6a6b80d71f79323bc3727a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb68242e878f4ab30f721a8d6da580df"><td class="memItemLeft" align="right" valign="top"><a id="adb68242e878f4ab30f721a8d6da580df"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#adb68242e878f4ab30f721a8d6da580df">num_decision_vars_</a> = <a class="el" href="classQuadrupedMPC.html#a16fa7f50d0bdb4989b0ccf896fa33d6f">num_state_vars_</a> + <a class="el" href="classQuadrupedMPC.html#a2b77da5fd77b918c4aaca821878f3ca5">num_control_vars_</a></td></tr>
+<tr class="memdesc:adb68242e878f4ab30f721a8d6da580df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of decision variables in qp. <br /></td></tr>
+<tr class="separator:adb68242e878f4ab30f721a8d6da580df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a270dcddefa6480774274ecf5641de32c"><td class="memItemLeft" align="right" valign="top"><a id="a270dcddefa6480774274ecf5641de32c"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a270dcddefa6480774274ecf5641de32c">num_dyn_constraints_</a> = <a class="el" href="classQuadrupedMPC.html#a044cf0ab50584d8e3d2f6ef2990d70c9">N_</a> * <a class="el" href="classQuadrupedMPC.html#a1615db8146185a91d033d86b919e8b7e">nx_</a></td></tr>
+<tr class="memdesc:a270dcddefa6480774274ecf5641de32c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of dynamics constraints. <br /></td></tr>
+<tr class="separator:a270dcddefa6480774274ecf5641de32c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bb5756ddef3682291542a3d85918eff"><td class="memItemLeft" align="right" valign="top"><a id="a1bb5756ddef3682291542a3d85918eff"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><b>num_constraints_per_leg_</b> = 5</td></tr>
+<tr class="separator:a1bb5756ddef3682291542a3d85918eff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbc2373a0554cc3866b43b0e8cc79e27"><td class="memItemLeft" align="right" valign="top"><a id="afbc2373a0554cc3866b43b0e8cc79e27"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#afbc2373a0554cc3866b43b0e8cc79e27">num_contact_constraints_per_step_</a> = (<a class="el" href="classQuadrupedMPC.html#a2ab071c5e174519c42e3842be11a6013">num_constraints_per_leg_</a>*num_legs_ + 1)</td></tr>
+<tr class="memdesc:afbc2373a0554cc3866b43b0e8cc79e27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of contact constraint per step. <br /></td></tr>
+<tr class="separator:afbc2373a0554cc3866b43b0e8cc79e27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54d4e8c94065e898e122beecd489d2e1"><td class="memItemLeft" align="right" valign="top"><a id="a54d4e8c94065e898e122beecd489d2e1"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a54d4e8c94065e898e122beecd489d2e1">num_contact_constraints_</a> = <a class="el" href="classQuadrupedMPC.html#a6326739fd3fc372d92d56f6ea2da94bd">num_contact_constraints_per_step_</a>*<a class="el" href="classQuadrupedMPC.html#a044cf0ab50584d8e3d2f6ef2990d70c9">N_</a></td></tr>
+<tr class="memdesc:a54d4e8c94065e898e122beecd489d2e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of constraints on allowable forces. <br /></td></tr>
+<tr class="separator:a54d4e8c94065e898e122beecd489d2e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5063ddde96d57989707634be7d31ae9"><td class="memItemLeft" align="right" valign="top"><a id="aa5063ddde96d57989707634be7d31ae9"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#aa5063ddde96d57989707634be7d31ae9">num_constraints_</a> = <a class="el" href="classQuadrupedMPC.html#a6326739fd3fc372d92d56f6ea2da94bd">num_contact_constraints_per_step_</a>*<a class="el" href="classQuadrupedMPC.html#a044cf0ab50584d8e3d2f6ef2990d70c9">N_</a></td></tr>
+<tr class="memdesc:aa5063ddde96d57989707634be7d31ae9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of constraints. <br /></td></tr>
+<tr class="separator:aa5063ddde96d57989707634be7d31ae9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64d5a07861405bb5239b36174edff13f"><td class="memItemLeft" align="right" valign="top"><a id="a64d5a07861405bb5239b36174edff13f"></a>
+<a class="el" href="classQuadrupedMPC.html#a994b196a31783aeac707c7695c559911">StateControlHessian</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a64d5a07861405bb5239b36174edff13f">H_</a></td></tr>
+<tr class="memdesc:a64d5a07861405bb5239b36174edff13f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Quadratic cost matrix. <br /></td></tr>
+<tr class="separator:a64d5a07861405bb5239b36174edff13f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68b9fc890ea832f7a3fc9c210633565e"><td class="memItemLeft" align="right" valign="top"><a id="a68b9fc890ea832f7a3fc9c210633565e"></a>
+<a class="el" href="classQuadrupedMPC.html#a814295a45b18e2fb36c91600ca6aed47">StateHessian</a>&#160;</td><td class="memItemRight" valign="bottom"><b>H_f_</b></td></tr>
+<tr class="separator:a68b9fc890ea832f7a3fc9c210633565e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a263ab0e6982d314282b918937cc05324"><td class="memItemLeft" align="right" valign="top"><a id="a263ab0e6982d314282b918937cc05324"></a>
+Eigen::Matrix&lt; double, <a class="el" href="classQuadrupedMPC.html#aa7511a65d0b5fccd805e0b167a0df58d">num_dyn_constraints_</a>, <a class="el" href="classQuadrupedMPC.html#a270dedfe707d16919231a834d86fadc8">num_decision_vars_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a263ab0e6982d314282b918937cc05324">A_dyn_dense_</a></td></tr>
+<tr class="memdesc:a263ab0e6982d314282b918937cc05324"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dynamics constraint matrix. <br /></td></tr>
+<tr class="separator:a263ab0e6982d314282b918937cc05324"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f055b350557cdc63ac6516d76d82d05"><td class="memItemLeft" align="right" valign="top"><a id="a0f055b350557cdc63ac6516d76d82d05"></a>
+Eigen::Vector&lt; double, <a class="el" href="classQuadrupedMPC.html#aa7511a65d0b5fccd805e0b167a0df58d">num_dyn_constraints_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a0f055b350557cdc63ac6516d76d82d05">b_dyn_</a></td></tr>
+<tr class="memdesc:a0f055b350557cdc63ac6516d76d82d05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dynamics constraint vector. <br /></td></tr>
+<tr class="separator:a0f055b350557cdc63ac6516d76d82d05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38d583b7b01f5b786ccc6505fd17c20b"><td class="memItemLeft" align="right" valign="top"><a id="a38d583b7b01f5b786ccc6505fd17c20b"></a>
+Eigen::Matrix&lt; double, <a class="el" href="classQuadrupedMPC.html#a92260f160bd0be949173b4312f86c5d0">num_contact_constraints_</a>, <a class="el" href="classQuadrupedMPC.html#a2b77da5fd77b918c4aaca821878f3ca5">num_control_vars_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a38d583b7b01f5b786ccc6505fd17c20b">A_con_dense_</a></td></tr>
+<tr class="memdesc:a38d583b7b01f5b786ccc6505fd17c20b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Friction and normal force constraint matrix. <br /></td></tr>
+<tr class="separator:a38d583b7b01f5b786ccc6505fd17c20b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4660b072b4d3738ee912dd19284323d"><td class="memItemLeft" align="right" valign="top"><a id="ac4660b072b4d3738ee912dd19284323d"></a>
+Eigen::Vector&lt; double, <a class="el" href="classQuadrupedMPC.html#a92260f160bd0be949173b4312f86c5d0">num_contact_constraints_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#ac4660b072b4d3738ee912dd19284323d">b_contact_lo_</a></td></tr>
+<tr class="memdesc:ac4660b072b4d3738ee912dd19284323d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Friction and normal force constraint lower bound. <br /></td></tr>
+<tr class="separator:ac4660b072b4d3738ee912dd19284323d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaadcf824a3cbe00537719f8a3f2baaae"><td class="memItemLeft" align="right" valign="top"><a id="aaadcf824a3cbe00537719f8a3f2baaae"></a>
+Eigen::Vector&lt; double, <a class="el" href="classQuadrupedMPC.html#a92260f160bd0be949173b4312f86c5d0">num_contact_constraints_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#aaadcf824a3cbe00537719f8a3f2baaae">b_contact_hi_</a></td></tr>
+<tr class="memdesc:aaadcf824a3cbe00537719f8a3f2baaae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Friction and normal force constraint upper bound. <br /></td></tr>
+<tr class="separator:aaadcf824a3cbe00537719f8a3f2baaae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef835124dbf30757e303057331597763"><td class="memItemLeft" align="right" valign="top"><a id="aef835124dbf30757e303057331597763"></a>
+<a class="el" href="classQuadrupedMPC.html#a104ffe44ded98188f51ada93ddbe0432">StateVec</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#aef835124dbf30757e303057331597763">b_state_lo_</a></td></tr>
+<tr class="memdesc:aef835124dbf30757e303057331597763"><td class="mdescLeft">&#160;</td><td class="mdescRight">State constraint lower bound. <br /></td></tr>
+<tr class="separator:aef835124dbf30757e303057331597763"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a211d9848caabb527a19fd17dbe5d2a62"><td class="memItemLeft" align="right" valign="top"><a id="a211d9848caabb527a19fd17dbe5d2a62"></a>
+<a class="el" href="classQuadrupedMPC.html#a104ffe44ded98188f51ada93ddbe0432">StateVec</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQuadrupedMPC.html#a211d9848caabb527a19fd17dbe5d2a62">b_state_hi_</a></td></tr>
+<tr class="memdesc:a211d9848caabb527a19fd17dbe5d2a62"><td class="mdescLeft">&#160;</td><td class="mdescRight">State constraint upper bound. <br /></td></tr>
+<tr class="separator:a211d9848caabb527a19fd17dbe5d2a62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7264aef9e679cb4a26eaa5b4b6d7adab"><td class="memItemLeft" align="right" valign="top"><a id="a7264aef9e679cb4a26eaa5b4b6d7adab"></a>
+Eigen::Vector&lt; double, <a class="el" href="classQuadrupedMPC.html#a270dedfe707d16919231a834d86fadc8">num_decision_vars_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>f_</b></td></tr>
+<tr class="separator:a7264aef9e679cb4a26eaa5b4b6d7adab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Implements online MPC for quadrupedal MPC. </p>
@@ -289,8 +453,111 @@ std::shared_ptr&lt; <a class="el" href="classspirit__utils_1_1SpiritKinematics.h
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a00ee9c3ad9d81fc2234a4ff709729c2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00ee9c3ad9d81fc2234a4ff709729c2b">&#9670;&nbsp;</a></span>computePlan()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool QuadrupedMPC::computePlan </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>initial_state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>ref_traj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>foot_positions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::vector&lt; bool &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>contact_schedule</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>state_traj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>control_traj</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update the contact and dynamic matrices, solve, and return the output. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">initial_state</td><td>Vector with initial state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ref_traj</td><td>Matrix holding desired reference trajectory </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">foot_positions</td><td>Matrix holding foot positions </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">contact_schedule</td><td>Matrix holding the contact schedule </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">state_traj</td><td>Optimized state trajectory output </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">control_traj</td><td>Optimized control trajectory output </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>good_solve </dd></dl>
+
+</div>
+</div>
 <a id="a2171dd5a1a680faa66573b4dc705c574"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2171dd5a1a680faa66573b4dc705c574">&#9670;&nbsp;</a></span>get_cost_function()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a2171dd5a1a680faa66573b4dc705c574">&#9670;&nbsp;</a></span>get_cost_function() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void QuadrupedMPC::get_cost_function </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>ref_traj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>f</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructs the quadratic cost function of the form. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">ref_traj</td><td>Reference trajectory </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">f</td><td>Linear component of cost </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a2171dd5a1a680faa66573b4dc705c574"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2171dd5a1a680faa66573b4dc705c574">&#9670;&nbsp;</a></span>get_cost_function() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -327,7 +594,58 @@ std::shared_ptr&lt; <a class="el" href="classspirit__utils_1_1SpiritKinematics.h
 </div>
 </div>
 <a id="ad284769c4decca29eaa2343554f5f1f7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad284769c4decca29eaa2343554f5f1f7">&#9670;&nbsp;</a></span>get_output()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ad284769c4decca29eaa2343554f5f1f7">&#9670;&nbsp;</a></span>get_output() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void QuadrupedMPC::get_output </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>x_out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>opt_traj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>control_traj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>f_val</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Collect first control value and all states and return them. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">x_out</td><td>optimized decision variable </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">opt_traj</td><td>Optimized state trajectory (Nx x (N+1)) </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">control_traj</td><td>Optimized control trajectory (Nu x N) </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">f_val</td><td>Cost function value </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ad284769c4decca29eaa2343554f5f1f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad284769c4decca29eaa2343554f5f1f7">&#9670;&nbsp;</a></span>get_output() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -378,7 +696,44 @@ std::shared_ptr&lt; <a class="el" href="classspirit__utils_1_1SpiritKinematics.h
 </div>
 </div>
 <a id="a491762ff0acd098625287f77bb3051ab"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a491762ff0acd098625287f77bb3051ab">&#9670;&nbsp;</a></span>setMassProperties()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a491762ff0acd098625287f77bb3051ab">&#9670;&nbsp;</a></span>setMassProperties() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void QuadrupedMPC::setMassProperties </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Matrix3d&#160;</td>
+          <td class="paramname"><em>Ib</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update the mass properties of the robot. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">m</td><td>Robot mass in kg </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">Ib</td><td>Robot body inertia in kg m^2 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a491762ff0acd098625287f77bb3051ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a491762ff0acd098625287f77bb3051ab">&#9670;&nbsp;</a></span>setMassProperties() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -415,7 +770,33 @@ std::shared_ptr&lt; <a class="el" href="classspirit__utils_1_1SpiritKinematics.h
 </div>
 </div>
 <a id="a08077436fdfcf3dc1a65eca282fe7773"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a08077436fdfcf3dc1a65eca282fe7773">&#9670;&nbsp;</a></span>setTimestep()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a08077436fdfcf3dc1a65eca282fe7773">&#9670;&nbsp;</a></span>setTimestep() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void QuadrupedMPC::setTimestep </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update our MPC timestep. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">dt</td><td>Timestep in seconds </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a08077436fdfcf3dc1a65eca282fe7773"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08077436fdfcf3dc1a65eca282fe7773">&#9670;&nbsp;</a></span>setTimestep() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -441,7 +822,52 @@ std::shared_ptr&lt; <a class="el" href="classspirit__utils_1_1SpiritKinematics.h
 </div>
 </div>
 <a id="af54cb1a211190b57956d4168f49f1730"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af54cb1a211190b57956d4168f49f1730">&#9670;&nbsp;</a></span>solve()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#af54cb1a211190b57956d4168f49f1730">&#9670;&nbsp;</a></span>solve() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool QuadrupedMPC::solve </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>initial_state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>ref_traj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>x_out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Collect matrices into specific type for solver and solve. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">initial_state</td><td>Vector with initial state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ref_traj</td><td>Matrix holding desired reference trajectory </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">x_out</td><td>Optimized output </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>good_solve </dd></dl>
+
+</div>
+</div>
+<a id="af54cb1a211190b57956d4168f49f1730"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af54cb1a211190b57956d4168f49f1730">&#9670;&nbsp;</a></span>solve() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -486,7 +912,7 @@ std::shared_ptr&lt; <a class="el" href="classspirit__utils_1_1SpiritKinematics.h
 </div>
 </div>
 <a id="ad35c5cdc969b222941e3a58c9d727d81"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad35c5cdc969b222941e3a58c9d727d81">&#9670;&nbsp;</a></span>update_contact()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ad35c5cdc969b222941e3a58c9d727d81">&#9670;&nbsp;</a></span>update_contact() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -529,8 +955,126 @@ std::shared_ptr&lt; <a class="el" href="classspirit__utils_1_1SpiritKinematics.h
 
 </div>
 </div>
+<a id="ad35c5cdc969b222941e3a58c9d727d81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad35c5cdc969b222941e3a58c9d727d81">&#9670;&nbsp;</a></span>update_contact() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void QuadrupedMPC::update_contact </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::vector&lt; bool &gt; &gt;&#160;</td>
+          <td class="paramname"><em>contact_sequence</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>fmin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>fmax</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update the footstep contact sequence and normal force bounds. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">contact_sequence</td><td>Vector(N) of vectors(4) holding boolean contact status for each foot at each timesteo </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fmin</td><td>Minimum allowable normal force in contact phase </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fmax</td><td>Maximum allowable normal force in contact phase </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="abd2d949ebce4260e8481c1799e326a39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd2d949ebce4260e8481c1799e326a39">&#9670;&nbsp;</a></span>update_control_bounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void QuadrupedMPC::update_control_bounds </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>f_min</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>f_max</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update hard constraints on control bounds. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">f_min</td><td>Minimum allowable values for normal force </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">f_max</td><td>Maximum allowable values for normal force </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a297f13d55d07cf7a1699697360d551f6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a297f13d55d07cf7a1699697360d551f6">&#9670;&nbsp;</a></span>update_dynamics()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a297f13d55d07cf7a1699697360d551f6">&#9670;&nbsp;</a></span>update_dynamics() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void QuadrupedMPC::update_dynamics </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>ref_traj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>foot_positions</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update our dynamics (linearized about reference yaw and footsteps) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">ref_traj</td><td>Matrix holding desired reference trajectory (nx x N+1) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">foot_positions</td><td>Vector foot positions (fx1 fy1 fz1 fx2 ...) at each tstep </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a297f13d55d07cf7a1699697360d551f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a297f13d55d07cf7a1699697360d551f6">&#9670;&nbsp;</a></span>update_dynamics() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -567,7 +1111,33 @@ std::shared_ptr&lt; <a class="el" href="classspirit__utils_1_1SpiritKinematics.h
 </div>
 </div>
 <a id="aa48870ef295e0ffe20696f1c7c61a0bf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa48870ef295e0ffe20696f1c7c61a0bf">&#9670;&nbsp;</a></span>update_dynamics_hip_projected_feet()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aa48870ef295e0ffe20696f1c7c61a0bf">&#9670;&nbsp;</a></span>update_dynamics_hip_projected_feet() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void QuadrupedMPC::update_dynamics_hip_projected_feet </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>ref_traj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update our dynamics (linearized about reference yaw and footsteps projected underneath hip) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">ref_traj</td><td>Matrix holding desired reference trajectory (nx x N+1) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa48870ef295e0ffe20696f1c7c61a0bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa48870ef295e0ffe20696f1c7c61a0bf">&#9670;&nbsp;</a></span>update_dynamics_hip_projected_feet() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -593,7 +1163,33 @@ std::shared_ptr&lt; <a class="el" href="classspirit__utils_1_1SpiritKinematics.h
 </div>
 </div>
 <a id="a330fd254d76e10582f7d0e923d3dc266"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a330fd254d76e10582f7d0e923d3dc266">&#9670;&nbsp;</a></span>update_friction()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a330fd254d76e10582f7d0e923d3dc266">&#9670;&nbsp;</a></span>update_friction() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void QuadrupedMPC::update_friction </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>mu</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update our friction coeffiecient. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">mu</td><td>Friction coefficient used in linear friction cone </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a330fd254d76e10582f7d0e923d3dc266"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a330fd254d76e10582f7d0e923d3dc266">&#9670;&nbsp;</a></span>update_friction() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -619,7 +1215,44 @@ std::shared_ptr&lt; <a class="el" href="classspirit__utils_1_1SpiritKinematics.h
 </div>
 </div>
 <a id="ad9fca2477d01a697b2eb0743657bcc62"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad9fca2477d01a697b2eb0743657bcc62">&#9670;&nbsp;</a></span>update_state_bounds()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9fca2477d01a697b2eb0743657bcc62">&#9670;&nbsp;</a></span>update_state_bounds() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void QuadrupedMPC::update_state_bounds </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd&#160;</td>
+          <td class="paramname"><em>state_lo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd&#160;</td>
+          <td class="paramname"><em>state_hi</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update hard constraints on state bounds. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">state_lo</td><td>Vector of minimum allowable values for each state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">state_hi</td><td>Vector of maximum allowable values for each state </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ad9fca2477d01a697b2eb0743657bcc62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9fca2477d01a697b2eb0743657bcc62">&#9670;&nbsp;</a></span>update_state_bounds() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -656,7 +1289,44 @@ std::shared_ptr&lt; <a class="el" href="classspirit__utils_1_1SpiritKinematics.h
 </div>
 </div>
 <a id="a02e46039daa6314e0a7a95f8ac65548e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a02e46039daa6314e0a7a95f8ac65548e">&#9670;&nbsp;</a></span>update_weights()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a02e46039daa6314e0a7a95f8ac65548e">&#9670;&nbsp;</a></span>update_weights() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void QuadrupedMPC::update_weights </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; Eigen::MatrixXd &gt; &amp;&#160;</td>
+          <td class="paramname"><em>Q</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; Eigen::MatrixXd &gt; &amp;&#160;</td>
+          <td class="paramname"><em>R</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update our MPC weights on state deviation error and control error. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">Q</td><td>vector of matrices of state costs at each step in the horizon </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">R</td><td>vector of matrices of control costs at each step in the horizon </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a02e46039daa6314e0a7a95f8ac65548e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02e46039daa6314e0a7a95f8ac65548e">&#9670;&nbsp;</a></span>update_weights() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -693,8 +1363,10 @@ std::shared_ptr&lt; <a class="el" href="classspirit__utils_1_1SpiritKinematics.h
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>mpc_controller/include/mpc_controller/<a class="el" href="quadruped__mpc_8h_source.html">quadruped_mpc.h</a></li>
-<li>mpc_controller/src/quadruped_mpc.cpp</li>
+<li>local_planner/include/local_planner/<a class="el" href="quadruped__mpc_8h_source.html">quadruped_mpc.h</a></li>
+<li>local_planner/include/local_planner/<a class="el" href="quadruped__mpc__fixed_8h_source.html">quadruped_mpc_fixed.h</a></li>
+<li>local_planner/src/quadruped_mpc.cpp</li>
+<li>local_planner/src/quadruped_mpc_fixed.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

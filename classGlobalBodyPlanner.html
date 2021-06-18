@@ -118,9 +118,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a2eb81f4bee8cec49686f963cd0251b51">clearPlan</a> ()</td></tr>
 <tr class="memdesc:a2eb81f4bee8cec49686f963cd0251b51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear all data in plan member variables. <br /></td></tr>
 <tr class="separator:a2eb81f4bee8cec49686f963cd0251b51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1be746cd4722d5c8370283baf929cf55"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a1be746cd4722d5c8370283baf929cf55">addStateAndGRFToMsg</a> (double t, FullState body_state, GRF grf, int primitive_id, spirit_msgs::BodyPlan &amp;body_plan_msg)</td></tr>
-<tr class="memdesc:a1be746cd4722d5c8370283baf929cf55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the body plan with the current plan.  <a href="#a1be746cd4722d5c8370283baf929cf55">More...</a><br /></td></tr>
-<tr class="separator:a1be746cd4722d5c8370283baf929cf55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab79e6d155130ac48c5542a576be8f64a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#ab79e6d155130ac48c5542a576be8f64a">addStateAndGRFToMsg</a> (double t, int plan_index, FullState body_state, GRF grf, int primitive_id, spirit_msgs::RobotPlan &amp;body_plan_msg)</td></tr>
+<tr class="memdesc:ab79e6d155130ac48c5542a576be8f64a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the body plan with the current plan.  <a href="#ab79e6d155130ac48c5542a576be8f64a">More...</a><br /></td></tr>
+<tr class="separator:ab79e6d155130ac48c5542a576be8f64a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ef31af306895c311faee09a7023896b"><td class="memItemLeft" align="right" valign="top"><a id="a7ef31af306895c311faee09a7023896b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a7ef31af306895c311faee09a7023896b">publishPlan</a> ()</td></tr>
 <tr class="memdesc:a7ef31af306895c311faee09a7023896b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish the current body plan. <br /></td></tr>
@@ -276,6 +276,10 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a445678558fb843a3c43bdd667fc98a72">replanning_allowed_</a></td></tr>
 <tr class="memdesc:a445678558fb843a3c43bdd667fc98a72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean for whether replanning is allowed. <br /></td></tr>
 <tr class="separator:a445678558fb843a3c43bdd667fc98a72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac85cd31171ed85023194ca018f256c3"><td class="memItemLeft" align="right" valign="top"><a id="aac85cd31171ed85023194ca018f256c3"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#aac85cd31171ed85023194ca018f256c3">dt_</a></td></tr>
+<tr class="memdesc:aac85cd31171ed85023194ca018f256c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timestep for interpolation. <br /></td></tr>
+<tr class="separator:aac85cd31171ed85023194ca018f256c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A global body planning class for legged robots. </p>
@@ -309,8 +313,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a1be746cd4722d5c8370283baf929cf55"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1be746cd4722d5c8370283baf929cf55">&#9670;&nbsp;</a></span>addStateAndGRFToMsg()</h2>
+<a id="ab79e6d155130ac48c5542a576be8f64a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab79e6d155130ac48c5542a576be8f64a">&#9670;&nbsp;</a></span>addStateAndGRFToMsg()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -323,6 +327,12 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
           <td>(</td>
           <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>plan_index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -345,7 +355,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">spirit_msgs::BodyPlan &amp;&#160;</td>
+          <td class="paramtype">spirit_msgs::RobotPlan &amp;&#160;</td>
           <td class="paramname"><em>body_plan_msg</em>&#160;</td>
         </tr>
         <tr>

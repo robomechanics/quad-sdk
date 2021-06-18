@@ -85,12 +85,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:aaabd9d31b7d4fbbc367e8c30133de077"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#aaabd9d31b7d4fbbc367e8c30133de077">bodyPlanCallback</a> (const spirit_msgs::BodyPlan::ConstPtr &amp;msg)</td></tr>
-<tr class="memdesc:aaabd9d31b7d4fbbc367e8c30133de077"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new body plan data.  <a href="#aaabd9d31b7d4fbbc367e8c30133de077">More...</a><br /></td></tr>
-<tr class="separator:aaabd9d31b7d4fbbc367e8c30133de077"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade895b1e5fb6f1c51edb0dc0413cc3fe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#ade895b1e5fb6f1c51edb0dc0413cc3fe">discreteBodyPlanCallback</a> (const spirit_msgs::BodyPlan::ConstPtr &amp;msg)</td></tr>
-<tr class="memdesc:ade895b1e5fb6f1c51edb0dc0413cc3fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new body plan discrete state data.  <a href="#ade895b1e5fb6f1c51edb0dc0413cc3fe">More...</a><br /></td></tr>
-<tr class="separator:ade895b1e5fb6f1c51edb0dc0413cc3fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaab20c4a719e82a31215b435be87676d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#aaab20c4a719e82a31215b435be87676d">robotPlanCallback</a> (const spirit_msgs::RobotPlan::ConstPtr &amp;msg, const int pub_id)</td></tr>
+<tr class="memdesc:aaab20c4a719e82a31215b435be87676d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new body plan data.  <a href="#aaab20c4a719e82a31215b435be87676d">More...</a><br /></td></tr>
+<tr class="separator:aaab20c4a719e82a31215b435be87676d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75caed0d4cb0419865704d05cc3af389"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a75caed0d4cb0419865704d05cc3af389">discreteBodyPlanCallback</a> (const spirit_msgs::RobotPlan::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a75caed0d4cb0419865704d05cc3af389"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new body plan discrete state data.  <a href="#a75caed0d4cb0419865704d05cc3af389">More...</a><br /></td></tr>
+<tr class="separator:a75caed0d4cb0419865704d05cc3af389"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99865d7e970ea4d0669e0944d3a7aabd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a99865d7e970ea4d0669e0944d3a7aabd">footPlanDiscreteCallback</a> (const spirit_msgs::MultiFootPlanDiscrete::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a99865d7e970ea4d0669e0944d3a7aabd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new discrete foot plan data.  <a href="#a99865d7e970ea4d0669e0944d3a7aabd">More...</a><br /></td></tr>
 <tr class="separator:a99865d7e970ea4d0669e0944d3a7aabd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -106,10 +106,14 @@ Private Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a57bd96ee0a101e605f32c7fedb92a33f"><td class="memItemLeft" align="right" valign="top"><a id="a57bd96ee0a101e605f32c7fedb92a33f"></a>
-ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a57bd96ee0a101e605f32c7fedb92a33f">body_plan_sub_</a></td></tr>
-<tr class="memdesc:a57bd96ee0a101e605f32c7fedb92a33f"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the body plan. <br /></td></tr>
-<tr class="separator:a57bd96ee0a101e605f32c7fedb92a33f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2faa30455511775c70013b5240d29f4"><td class="memItemLeft" align="right" valign="top"><a id="ab2faa30455511775c70013b5240d29f4"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#ab2faa30455511775c70013b5240d29f4">global_plan_sub_</a></td></tr>
+<tr class="memdesc:ab2faa30455511775c70013b5240d29f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the global plan. <br /></td></tr>
+<tr class="separator:ab2faa30455511775c70013b5240d29f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3893b17125b2f679144331f245b3bde2"><td class="memItemLeft" align="right" valign="top"><a id="a3893b17125b2f679144331f245b3bde2"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a3893b17125b2f679144331f245b3bde2">local_plan_sub_</a></td></tr>
+<tr class="memdesc:a3893b17125b2f679144331f245b3bde2"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the local plan. <br /></td></tr>
+<tr class="separator:a3893b17125b2f679144331f245b3bde2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a089f421ffd1885d3cc0dffc5cd8c5101"><td class="memItemLeft" align="right" valign="top"><a id="a089f421ffd1885d3cc0dffc5cd8c5101"></a>
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a089f421ffd1885d3cc0dffc5cd8c5101">discrete_body_plan_sub_</a></td></tr>
 <tr class="memdesc:a089f421ffd1885d3cc0dffc5cd8c5101"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the body plan. <br /></td></tr>
@@ -122,14 +126,22 @@ ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a7f4168959e2c26888cd227436a196127">foot_plan_continuous_sub_</a></td></tr>
 <tr class="memdesc:a7f4168959e2c26888cd227436a196127"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for the continuous foot plan. <br /></td></tr>
 <tr class="separator:a7f4168959e2c26888cd227436a196127"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ba6086c6510e38ffdcda7477caac330"><td class="memItemLeft" align="right" valign="top"><a id="a2ba6086c6510e38ffdcda7477caac330"></a>
-ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a2ba6086c6510e38ffdcda7477caac330">body_plan_viz_pub_</a></td></tr>
-<tr class="memdesc:a2ba6086c6510e38ffdcda7477caac330"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the interpolated body plan vizualization. <br /></td></tr>
-<tr class="separator:a2ba6086c6510e38ffdcda7477caac330"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9451d0a5bbb0227ae8ac56c044f34fab"><td class="memItemLeft" align="right" valign="top"><a id="a9451d0a5bbb0227ae8ac56c044f34fab"></a>
-ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a9451d0a5bbb0227ae8ac56c044f34fab">grf_plan_viz_pub_</a></td></tr>
-<tr class="memdesc:a9451d0a5bbb0227ae8ac56c044f34fab"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the interpolated grf plan vizualization. <br /></td></tr>
-<tr class="separator:a9451d0a5bbb0227ae8ac56c044f34fab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a208c1bc32da232999a15e3f8768c0523"><td class="memItemLeft" align="right" valign="top"><a id="a208c1bc32da232999a15e3f8768c0523"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a208c1bc32da232999a15e3f8768c0523">global_plan_viz_pub_</a></td></tr>
+<tr class="memdesc:a208c1bc32da232999a15e3f8768c0523"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the interpolated global plan vizualization. <br /></td></tr>
+<tr class="separator:a208c1bc32da232999a15e3f8768c0523"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a53f4bc4778fbe68e9e429ddb9408d8"><td class="memItemLeft" align="right" valign="top"><a id="a8a53f4bc4778fbe68e9e429ddb9408d8"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a8a53f4bc4778fbe68e9e429ddb9408d8">local_plan_viz_pub_</a></td></tr>
+<tr class="memdesc:a8a53f4bc4778fbe68e9e429ddb9408d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the interpolated local plan vizualization. <br /></td></tr>
+<tr class="separator:a8a53f4bc4778fbe68e9e429ddb9408d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0e993b530cceca0ba91d1e0a0322f3d"><td class="memItemLeft" align="right" valign="top"><a id="ac0e993b530cceca0ba91d1e0a0322f3d"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#ac0e993b530cceca0ba91d1e0a0322f3d">global_plan_grf_viz_pub_</a></td></tr>
+<tr class="memdesc:ac0e993b530cceca0ba91d1e0a0322f3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the interpolated global plan grf vizualization. <br /></td></tr>
+<tr class="separator:ac0e993b530cceca0ba91d1e0a0322f3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab93dd0dcf6376fb6312a9646104b0bff"><td class="memItemLeft" align="right" valign="top"><a id="ab93dd0dcf6376fb6312a9646104b0bff"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#ab93dd0dcf6376fb6312a9646104b0bff">local_plan_grf_viz_pub_</a></td></tr>
+<tr class="memdesc:ab93dd0dcf6376fb6312a9646104b0bff"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the interpolated local plan grf vizualization. <br /></td></tr>
+<tr class="separator:ab93dd0dcf6376fb6312a9646104b0bff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d72b1323a242092c51c9e6ff08ede68"><td class="memItemLeft" align="right" valign="top"><a id="a3d72b1323a242092c51c9e6ff08ede68"></a>
 ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRVizInterface.html#a3d72b1323a242092c51c9e6ff08ede68">discrete_body_plan_viz_pub_</a></td></tr>
 <tr class="memdesc:a3d72b1323a242092c51c9e6ff08ede68"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Publisher for the discrete body plan vizualization. <br /></td></tr>
@@ -231,6 +243,12 @@ const int&#160;</td><td class="memItemRight" valign="bottom"><b>GROUND_TRUTH</b>
 <tr class="memitem:a1ba3e9bdf554eac83b8b4d2c58c8f42d"><td class="memItemLeft" align="right" valign="top"><a id="a1ba3e9bdf554eac83b8b4d2c58c8f42d"></a>
 const int&#160;</td><td class="memItemRight" valign="bottom"><b>TRAJECTORY</b> = 2</td></tr>
 <tr class="separator:a1ba3e9bdf554eac83b8b4d2c58c8f42d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08a056bb44b0c2b0ed7a0d7a1b7c3a9b"><td class="memItemLeft" align="right" valign="top"><a id="a08a056bb44b0c2b0ed7a0d7a1b7c3a9b"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><b>GLOBAL</b> = 0</td></tr>
+<tr class="separator:a08a056bb44b0c2b0ed7a0d7a1b7c3a9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fb4b80a02d7f04791cbc8818bf6962e"><td class="memItemLeft" align="right" valign="top"><a id="a1fb4b80a02d7f04791cbc8818bf6962e"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><b>LOCAL</b> = 1</td></tr>
+<tr class="separator:a1fb4b80a02d7f04791cbc8818bf6962e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class for interfacing between RViz and spirit-software topics. </p>
@@ -264,43 +282,8 @@ const int&#160;</td><td class="memItemRight" valign="bottom"><b>TRAJECTORY</b> =
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="aaabd9d31b7d4fbbc367e8c30133de077"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaabd9d31b7d4fbbc367e8c30133de077">&#9670;&nbsp;</a></span>bodyPlanCallback()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void RVizInterface::bodyPlanCallback </td>
-          <td>(</td>
-          <td class="paramtype">const spirit_msgs::BodyPlan::ConstPtr &amp;&#160;</td>
-          <td class="paramname"><em>msg</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Callback function to handle new body plan data. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">Body</td><td>plan message contining interpolated output of body planner </td></tr>
-  </table>
-  </dd>
-</dl>
-<p>Define the endpoint of the GRF arrow </p>
-
-</div>
-</div>
-<a id="ade895b1e5fb6f1c51edb0dc0413cc3fe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ade895b1e5fb6f1c51edb0dc0413cc3fe">&#9670;&nbsp;</a></span>discreteBodyPlanCallback()</h2>
+<a id="a75caed0d4cb0419865704d05cc3af389"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75caed0d4cb0419865704d05cc3af389">&#9670;&nbsp;</a></span>discreteBodyPlanCallback()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -311,7 +294,7 @@ const int&#160;</td><td class="memItemRight" valign="bottom"><b>TRAJECTORY</b> =
         <tr>
           <td class="memname">void RVizInterface::discreteBodyPlanCallback </td>
           <td>(</td>
-          <td class="paramtype">const spirit_msgs::BodyPlan::ConstPtr &amp;&#160;</td>
+          <td class="paramtype">const spirit_msgs::RobotPlan::ConstPtr &amp;&#160;</td>
           <td class="paramname"><em>msg</em></td><td>)</td>
           <td></td>
         </tr>
@@ -398,6 +381,51 @@ const int&#160;</td><td class="memItemRight" valign="bottom"><b>TRAJECTORY</b> =
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="aaab20c4a719e82a31215b435be87676d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaab20c4a719e82a31215b435be87676d">&#9670;&nbsp;</a></span>robotPlanCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RVizInterface::robotPlanCallback </td>
+          <td>(</td>
+          <td class="paramtype">const spirit_msgs::RobotPlan::ConstPtr &amp;&#160;</td>
+          <td class="paramname"><em>msg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>pub_id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback function to handle new body plan data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">Body</td><td>plan message contining interpolated output of body planner </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Define the endpoint of the GRF arrow </p>
 
 </div>
 </div>

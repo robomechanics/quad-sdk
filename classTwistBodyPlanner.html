@@ -109,9 +109,9 @@ Private Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTwistBodyPlanner.html#a2928c35efe267dc29d37f99d2dd3ae38">clearPlan</a> ()</td></tr>
 <tr class="memdesc:a2928c35efe267dc29d37f99d2dd3ae38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the plan member variables. <br /></td></tr>
 <tr class="separator:a2928c35efe267dc29d37f99d2dd3ae38"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a199e03ad9336d161854be7b44ae77e58"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTwistBodyPlanner.html#a199e03ad9336d161854be7b44ae77e58">addStateWrenchToMsg</a> (double t, State body_state, spirit_msgs::BodyPlan &amp;body_plan_msg)</td></tr>
-<tr class="memdesc:a199e03ad9336d161854be7b44ae77e58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the body plan with the current plan.  <a href="#a199e03ad9336d161854be7b44ae77e58">More...</a><br /></td></tr>
-<tr class="separator:a199e03ad9336d161854be7b44ae77e58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a813e39bffd92342ccf6a95c3a4b6a78c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTwistBodyPlanner.html#a813e39bffd92342ccf6a95c3a4b6a78c">addStateWrenchToMsg</a> (double t, int plan_index, State body_state, spirit_msgs::RobotPlan &amp;body_plan_msg)</td></tr>
+<tr class="memdesc:a813e39bffd92342ccf6a95c3a4b6a78c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the body plan with the current plan.  <a href="#a813e39bffd92342ccf6a95c3a4b6a78c">More...</a><br /></td></tr>
+<tr class="separator:a813e39bffd92342ccf6a95c3a4b6a78c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0bf6dc6f10419df4cd4612ff9c1a71dd"><td class="memItemLeft" align="right" valign="top"><a id="a0bf6dc6f10419df4cd4612ff9c1a71dd"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTwistBodyPlanner.html#a0bf6dc6f10419df4cd4612ff9c1a71dd">publishPlan</a> ()</td></tr>
 <tr class="memdesc:a0bf6dc6f10419df4cd4612ff9c1a71dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish the current body plan. <br /></td></tr>
@@ -175,10 +175,18 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 ros::Time&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTwistBodyPlanner.html#ace782abbe368e7f08d0cb8f3dd8888e9">plan_timestamp_</a></td></tr>
 <tr class="memdesc:ace782abbe368e7f08d0cb8f3dd8888e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan timestamp. <br /></td></tr>
 <tr class="separator:ace782abbe368e7f08d0cb8f3dd8888e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a384babe08472ff1e5af28d5170e3a9e9"><td class="memItemLeft" align="right" valign="top"><a id="a384babe08472ff1e5af28d5170e3a9e9"></a>
-const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTwistBodyPlanner.html#a384babe08472ff1e5af28d5170e3a9e9">z_des</a> = 0.3</td></tr>
-<tr class="memdesc:a384babe08472ff1e5af28d5170e3a9e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nominal robot height. <br /></td></tr>
-<tr class="separator:a384babe08472ff1e5af28d5170e3a9e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81949e5750eb5d34492d5f1ae0b86366"><td class="memItemLeft" align="right" valign="top"><a id="a81949e5750eb5d34492d5f1ae0b86366"></a>
+const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTwistBodyPlanner.html#a81949e5750eb5d34492d5f1ae0b86366">z_des_</a> = 0.3</td></tr>
+<tr class="memdesc:a81949e5750eb5d34492d5f1ae0b86366"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nominal robot height. <br /></td></tr>
+<tr class="separator:a81949e5750eb5d34492d5f1ae0b86366"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa92998215c45c665e93739763994686f"><td class="memItemLeft" align="right" valign="top"><a id="aa92998215c45c665e93739763994686f"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTwistBodyPlanner.html#aa92998215c45c665e93739763994686f">dt_</a></td></tr>
+<tr class="memdesc:aa92998215c45c665e93739763994686f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local planner timestep. <br /></td></tr>
+<tr class="separator:aa92998215c45c665e93739763994686f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e2bf4654846db912573b3212042fb09"><td class="memItemLeft" align="right" valign="top"><a id="a4e2bf4654846db912573b3212042fb09"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTwistBodyPlanner.html#a4e2bf4654846db912573b3212042fb09">cmd_vel_scale_</a></td></tr>
+<tr class="memdesc:a4e2bf4654846db912573b3212042fb09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scale fr cmd_val. <br /></td></tr>
+<tr class="separator:a4e2bf4654846db912573b3212042fb09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A twist body planning class for legged robots. </p>
@@ -212,8 +220,8 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a199e03ad9336d161854be7b44ae77e58"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a199e03ad9336d161854be7b44ae77e58">&#9670;&nbsp;</a></span>addStateWrenchToMsg()</h2>
+<a id="a813e39bffd92342ccf6a95c3a4b6a78c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a813e39bffd92342ccf6a95c3a4b6a78c">&#9670;&nbsp;</a></span>addStateWrenchToMsg()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -230,13 +238,19 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>plan_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">State&#160;</td>
           <td class="paramname"><em>body_state</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">spirit_msgs::BodyPlan &amp;&#160;</td>
+          <td class="paramtype">spirit_msgs::RobotPlan &amp;&#160;</td>
           <td class="paramname"><em>body_plan_msg</em>&#160;</td>
         </tr>
         <tr>
@@ -256,6 +270,7 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>Time of state in trajectory </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">plan_index</td><td>Index of state in trajectory </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">body_state</td><td>Body state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">body_wrench</td><td>Wrench applied to body </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">body_plan_msg</td><td>Body plan message </td></tr>

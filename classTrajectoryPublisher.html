@@ -89,9 +89,9 @@ Private Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a89953767a6ff017a181477982e407e51">importTrajectory</a> ()</td></tr>
 <tr class="memdesc:a89953767a6ff017a181477982e407e51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Import trajectory from external source. <br /></td></tr>
 <tr class="separator:a89953767a6ff017a181477982e407e51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0933b12439db57eb1dfe7ab03b2ca121"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a0933b12439db57eb1dfe7ab03b2ca121">bodyPlanCallback</a> (const spirit_msgs::BodyPlan::ConstPtr &amp;msg)</td></tr>
-<tr class="memdesc:a0933b12439db57eb1dfe7ab03b2ca121"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new body plan data.  <a href="#a0933b12439db57eb1dfe7ab03b2ca121">More...</a><br /></td></tr>
-<tr class="separator:a0933b12439db57eb1dfe7ab03b2ca121"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc757f757350209d910166bb50c781ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#acc757f757350209d910166bb50c781ca">robotPlanCallback</a> (const spirit_msgs::RobotPlan::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:acc757f757350209d910166bb50c781ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new body plan data.  <a href="#acc757f757350209d910166bb50c781ca">More...</a><br /></td></tr>
+<tr class="separator:acc757f757350209d910166bb50c781ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a07c90762ea0e3b870bd7a0107a50e64e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a07c90762ea0e3b870bd7a0107a50e64e">robotStateCallback</a> (const spirit_msgs::RobotState::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a07c90762ea0e3b870bd7a0107a50e64e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new robot state data.  <a href="#a07c90762ea0e3b870bd7a0107a50e64e">More...</a><br /></td></tr>
 <tr class="separator:a07c90762ea0e3b870bd7a0107a50e64e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -137,10 +137,10 @@ ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a2915005e5641ef52162c5172e45753de">nh_</a></td></tr>
 <tr class="memdesc:a2915005e5641ef52162c5172e45753de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nodehandle to pub to and sub from. <br /></td></tr>
 <tr class="separator:a2915005e5641ef52162c5172e45753de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b0f75526ed4a26fe3c2f7f7d0563459"><td class="memItemLeft" align="right" valign="top"><a id="a2b0f75526ed4a26fe3c2f7f7d0563459"></a>
-spirit_msgs::BodyPlan&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#a2b0f75526ed4a26fe3c2f7f7d0563459">body_plan_msg_</a></td></tr>
-<tr class="memdesc:a2b0f75526ed4a26fe3c2f7f7d0563459"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of body states to store the body plan. <br /></td></tr>
-<tr class="separator:a2b0f75526ed4a26fe3c2f7f7d0563459"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3ce281b428b24470d1023d0a15b3e70"><td class="memItemLeft" align="right" valign="top"><a id="aa3ce281b428b24470d1023d0a15b3e70"></a>
+spirit_msgs::RobotPlan&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#aa3ce281b428b24470d1023d0a15b3e70">body_plan_msg_</a></td></tr>
+<tr class="memdesc:aa3ce281b428b24470d1023d0a15b3e70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of body states to store the body plan. <br /></td></tr>
+<tr class="separator:aa3ce281b428b24470d1023d0a15b3e70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff7c132d04462685f936db900ed4771e"><td class="memItemLeft" align="right" valign="top"><a id="aff7c132d04462685f936db900ed4771e"></a>
 spirit_msgs::MultiFootPlanContinuous&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajectoryPublisher.html#aff7c132d04462685f936db900ed4771e">multi_foot_plan_continuous_msg_</a></td></tr>
 <tr class="memdesc:aff7c132d04462685f936db900ed4771e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of body states to store the body plan. <br /></td></tr>
@@ -214,40 +214,6 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a0933b12439db57eb1dfe7ab03b2ca121"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0933b12439db57eb1dfe7ab03b2ca121">&#9670;&nbsp;</a></span>bodyPlanCallback()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void TrajectoryPublisher::bodyPlanCallback </td>
-          <td>(</td>
-          <td class="paramtype">const spirit_msgs::BodyPlan::ConstPtr &amp;&#160;</td>
-          <td class="paramname"><em>msg</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Callback function to handle new body plan data. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">Body</td><td>plan message contining interpolated output of body planner </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="a38dfab90943b74fbd2438409e2f64a63"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a38dfab90943b74fbd2438409e2f64a63">&#9670;&nbsp;</a></span>multiFootPlanContinuousCallback()</h2>
 
@@ -276,6 +242,40 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">MultiFootPlanContinuous</td><td>message containing foot plan data </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="acc757f757350209d910166bb50c781ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc757f757350209d910166bb50c781ca">&#9670;&nbsp;</a></span>robotPlanCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TrajectoryPublisher::robotPlanCallback </td>
+          <td>(</td>
+          <td class="paramtype">const spirit_msgs::RobotPlan::ConstPtr &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback function to handle new body plan data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">Body</td><td>plan message contining interpolated output of body planner </td></tr>
   </table>
   </dd>
 </dl>

@@ -107,15 +107,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac4c8cc0922bc01e3687ca121106a018d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#ac4c8cc0922bc01e3687ca121106a018d">getYData</a> () const</td></tr>
 <tr class="memdesc:ac4c8cc0922bc01e3687ca121106a018d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the vector of y_data of the map.  <a href="#ac4c8cc0922bc01e3687ca121106a018d">More...</a><br /></td></tr>
 <tr class="separator:ac4c8cc0922bc01e3687ca121106a018d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a193e8d7b427e02e18c2780ee9aa34b5f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#a193e8d7b427e02e18c2780ee9aa34b5f">isEmpty</a> () const</td></tr>
+<tr class="memdesc:a193e8d7b427e02e18c2780ee9aa34b5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if the map is empty.  <a href="#a193e8d7b427e02e18c2780ee9aa34b5f">More...</a><br /></td></tr>
+<tr class="separator:a193e8d7b427e02e18c2780ee9aa34b5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:ab0320569ffaa039ea09b3d136aef5856"><td class="memItemLeft" align="right" valign="top"><a id="ab0320569ffaa039ea09b3d136aef5856"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#ab0320569ffaa039ea09b3d136aef5856">x_size_</a></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#ab0320569ffaa039ea09b3d136aef5856">x_size_</a> = 0</td></tr>
 <tr class="memdesc:ab0320569ffaa039ea09b3d136aef5856"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of elements in the x direction. <br /></td></tr>
 <tr class="separator:ab0320569ffaa039ea09b3d136aef5856"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48326c0351927a0fe4d7c78699ea9188"><td class="memItemLeft" align="right" valign="top"><a id="a48326c0351927a0fe4d7c78699ea9188"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#a48326c0351927a0fe4d7c78699ea9188">y_size_</a></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFastTerrainMap.html#a48326c0351927a0fe4d7c78699ea9188">y_size_</a> = 0</td></tr>
 <tr class="memdesc:a48326c0351927a0fe4d7c78699ea9188"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of elements in the y direction. <br /></td></tr>
 <tr class="separator:a48326c0351927a0fe4d7c78699ea9188"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7ab9b4b21f4971ec64e00a936345b29"><td class="memItemLeft" align="right" valign="top"><a id="aa7ab9b4b21f4971ec64e00a936345b29"></a>
@@ -373,6 +376,26 @@ std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRig
 
 <p>Return the vector of y_data of the map. </p>
 <dl class="section return"><dt>Returns</dt><dd>std::vector&lt;double&gt; of y locations in the grid </dd></dl>
+
+</div>
+</div>
+<a id="a193e8d7b427e02e18c2780ee9aa34b5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a193e8d7b427e02e18c2780ee9aa34b5f">&#9670;&nbsp;</a></span>isEmpty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool FastTerrainMap::isEmpty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determine if the map is empty. </p>
+<dl class="section return"><dt>Returns</dt><dd>boolean for map emptiness (true = empty) </dd></dl>
 
 </div>
 </div>
