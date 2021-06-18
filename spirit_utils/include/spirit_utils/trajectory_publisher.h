@@ -3,7 +3,7 @@
 
 #include <ros/ros.h>
 #include <visualization_msgs/MarkerArray.h>
-#include <spirit_msgs/BodyPlan.h>
+#include <spirit_msgs/RobotPlan.h>
 #include <spirit_msgs/MultiFootPlanContinuous.h>
 #include <spirit_msgs/FootState.h>
 #include <spirit_msgs/RobotState.h>
@@ -47,7 +47,7 @@ private:
    * @brief Callback function to handle new body plan data
    * @param[in] Body plan message contining interpolated output of body planner
    */
-  void bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
+  void robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg);
 
   /**
    * @brief Callback function to handle new robot state data
@@ -96,7 +96,7 @@ private:
   ros::NodeHandle nh_;
 
   /// Vector of body states to store the body plan
-  spirit_msgs::BodyPlan body_plan_msg_;
+  spirit_msgs::RobotPlan body_plan_msg_;
 
   /// Vector of body states to store the body plan
   spirit_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;

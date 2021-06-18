@@ -7,18 +7,22 @@
 #include <cstdlib>
 // #include <Eigen/Core>
 #include <eigen3/Eigen/Eigen>
+#include <spirit_utils/ros_utils.h>
 
 namespace spirit_utils {
 // Function Declarations
-void calc_foot_jacobian0(const double state[18], Eigen::MatrixXf& foot_jacobian0);
+void getFootJacobian(int leg_idx, const Eigen::VectorXd &state, Eigen::MatrixXd& jacobian);
 
-void calc_foot_jacobian1(const double state[18], Eigen::MatrixXf& foot_jacobian1);
+void getFootJacobian0(const Eigen::VectorXd &state, Eigen::MatrixXd& foot_jacobian0);
 
-void calc_foot_jacobian2(const double state[18], Eigen::MatrixXf& foot_jacobian2);
+void getFootJacobian1(const Eigen::VectorXd &state, Eigen::MatrixXd& foot_jacobian1);
 
-void calc_foot_jacobian3(const double state[18], Eigen::MatrixXf& foot_jacobian3);
+void getFootJacobian2(const Eigen::VectorXd &state, Eigen::MatrixXd& foot_jacobian2);
 
-void calc_jacobian(const double state[18], Eigen::MatrixXf& jacobian);
+void getFootJacobian3(const Eigen::VectorXd &state, Eigen::MatrixXd& foot_jacobian3);
+
+void getJacobian(const Eigen::VectorXd &state, Eigen::MatrixXd& jacobian);
+
 
 }
 #endif

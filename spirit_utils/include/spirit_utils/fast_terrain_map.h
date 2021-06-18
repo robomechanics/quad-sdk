@@ -109,13 +109,19 @@ class FastTerrainMap {
      */
     std::vector<double> getYData() const;
 
+    /**
+     * @brief Determine if the map is empty
+     * @return boolean for map emptiness (true = empty)
+     */
+    bool isEmpty() const;
+
   private:
 
     /// The number of elements in the x direction
-    int x_size_;
+    int x_size_ = 0;
 
     /// The number of elements in the y direction
-    int y_size_;
+    int y_size_ = 0;
 
     /// The vector of x data
     std::vector<double> x_data_;

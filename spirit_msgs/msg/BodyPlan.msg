@@ -5,6 +5,7 @@
 # This should match the first state in the states vector.
 
 Header header
+uint32[] plan_indices
 uint32[] primitive_ids
 nav_msgs/Odometry[] states
 spirit_msgs/GRFArray[] grfs

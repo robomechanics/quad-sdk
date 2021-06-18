@@ -7,12 +7,13 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Path.h>
 #include <spirit_msgs/RobotState.h>
-#include <spirit_msgs/BodyPlan.h>
+#include <spirit_msgs/RobotPlan.h>
 #include <spirit_msgs/FootState.h>
 #include <spirit_msgs/MultiFootState.h>
 #include <spirit_msgs/MultiFootPlanContinuous.h>
 #include <spirit_msgs/FootPlanDiscrete.h>
 #include <spirit_msgs/MultiFootPlanDiscrete.h>
+#include <spirit_utils/ros_utils.h>
 
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>
@@ -42,13 +43,14 @@ private:
    * @brief Callback function to handle new body plan data
    * @param[in] Body plan message contining interpolated output of body planner
    */
-  void bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
+  void robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg,
+    const int pub_id);
 
   /**
    * @brief Callback function to handle new body plan discrete state data
    * @param[in] Body plan message contining discrete output of body planner
    */
-  void discreteBodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg);
+  void discreteBodyPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg);
 
   /**
    * @brief Callback function to handle new discrete foot plan data
@@ -75,8 +77,11 @@ private:
    */
   void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg, const int pub_id);
 
-  /// ROS subscriber for the body plan
-  ros::Subscriber body_plan_sub_;
+  /// ROS subscriber for the global plan
+  ros::Subscriber global_plan_sub_;
+
+  /// ROS subscriber for the local plan
+  ros::Subscriber local_plan_sub_;
 
   /// ROS subscriber for the body plan
   ros::Subscriber discrete_body_plan_sub_;
@@ -87,11 +92,17 @@ private:
   /// ROS subscriber for the continuous foot plan
   ros::Subscriber foot_plan_continuous_sub_;
 
-  /// ROS Publisher for the interpolated body plan vizualization
-  ros::Publisher body_plan_viz_pub_;
+  /// ROS Publisher for the interpolated global plan vizualization
+  ros::Publisher global_plan_viz_pub_;
 
-  /// ROS Publisher for the interpolated grf plan vizualization
-  ros::Publisher grf_plan_viz_pub_;
+  /// ROS Publisher for the interpolated local plan vizualization
+  ros::Publisher local_plan_viz_pub_;
+
+  /// ROS Publisher for the interpolated global plan grf vizualization
+  ros::Publisher global_plan_grf_viz_pub_;
+
+  /// ROS Publisher for the interpolated local plan grf vizualization
+  ros::Publisher local_plan_grf_viz_pub_;
 
   /// ROS Publisher for the discrete body plan vizualization
   ros::Publisher discrete_body_plan_viz_pub_;
@@ -159,6 +170,9 @@ private:
   const int ESTIMATE = 0;
   const int GROUND_TRUTH = 1;
   const int TRAJECTORY = 2;
+
+  const int GLOBAL = 0;
+  const int LOCAL = 1;
 };
 
 #endif // RVIZ_INTERFACE_H

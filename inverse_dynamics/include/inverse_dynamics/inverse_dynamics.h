@@ -11,6 +11,8 @@
 #include <spirit_msgs/GRFArray.h>
 #include <std_msgs/UInt8.h>
 #include <spirit_msgs/RobotState.h>
+#include <spirit_msgs/RobotPlan.h>
+#include <spirit_msgs/RobotPlan.h>
 #include <spirit_msgs/MotorCommand.h>
 #include <spirit_msgs/LegCommand.h>
 #include <spirit_msgs/LegCommandArray.h>
@@ -47,43 +49,59 @@ private:
 	 * @param[in] msg New control mode
 	 */ 
 	void controlModeCallback(const std_msgs::UInt8::ConstPtr& msg);
+	
 	/**
-	 * @brief Callback function to handle new control input (GRF)
-	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
+	 * @brief Callback function to handle new local plan (states and GRFs)
+	 * @param[in] msg input message contining the local plan
 	 */
-	void grfInputCallback(const spirit_msgs::GRFArray::ConstPtr& msg);
+	void localPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg);
+	
 	/**
-	 * @brief Callback function to handle new control input (GRF)
-	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
+	 * @brief Callback function to handle current robot state
+	 * @param[in] msg input message contining current robot state
 	 */
 	void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
-		/**
-	 * @brief Callback function to handle new control input (GRF)
-	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
-	 */
-	void trajectoryCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+
 	/**
+	 * @brief Callback function to handle new control input (GRF)
+	 * @param[in] msg input message contining ground reaction forces
+	 */
+	void grfInputCallback(const spirit_msgs::GRFArray::ConstPtr& msg);
+	
+	/**
+	 * @brief Callback function to handle reference trajectory state
+	 * @param[in] msg input message contining reference trajectory state
+	 */
+	void trajectoryStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+	
+  /**
 	 * @brief Callback to handle new leg override commands
 	 @ param[in] Leg override commands
 	 */
 	void legOverrideCallback(const spirit_msgs::LegOverride::ConstPtr& msg);
-		/**
-	 * @brief Callback function to handle new control input (GRF)
-	 * @param[in] Control input message contining ground reaction forces and maybe nominal leg positions
+	
+  /**
+	 * @brief Function to compute and publish leg command array message
 	 */
 	void publishLegCommandArray();
 
 	/// Subscriber for control mode
 	ros::Subscriber control_mode_sub_;
 
-	/// ROS subscriber for control input
-	ros::Subscriber grf_input_sub_;
+	/// ROS subscriber for body plan
+	ros::Subscriber body_plan_sub_;
+
+		/// ROS subscriber for local plan
+	ros::Subscriber local_plan_sub_;
 
 	/// ROS subscriber for state estimate
 	ros::Subscriber robot_state_sub_;
 
+	/// ROS subscriber for control input
+	ros::Subscriber grf_input_sub_;
+
 	/// ROS subscriber for trajectory
-	ros::Subscriber trajectory_sub_;
+	ros::Subscriber trajectory_state_sub_;
 
 	/// ROS subscriber for leg override commands
 	ros::Subscriber leg_override_sub_;
@@ -91,11 +109,20 @@ private:
 	/// ROS publisher for inverse dynamics
 	ros::Publisher leg_command_array_pub_;
 
+  /// ROS publisher for inverse dynamics
+	ros::Publisher leg_command_diagnostics_pub_;
+
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;
 
 	/// Update rate for sending and receiving data;
 	double update_rate_;
+
+	/// Timestep of local plan
+	double dt_;
+
+	/// Number of feet
+	const int num_feet_ = 4;
 
 	/// Robot mode
 	int control_mode_;
@@ -111,24 +138,47 @@ private:
 
 	/// Define ids for control modes: Stand to sit
 	const int STAND_TO_SIT = 3;
+
+	/// Define ids for input types: none
+	const int NONE = 0;
+
+	/// Define ids for input types: local plan
+	const int LOCAL_PLAN = 1;
+
+	/// Define ids for input types: grf array
+	const int GRFS = 2;
 	
-	/// Most recent control input
-	spirit_msgs::GRFArray last_grf_input_msg_;
+	/// Most recent local plan
+	spirit_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
 	/// Most recent state estimate
-	spirit_msgs::RobotState last_robot_state_msg_;
+	spirit_msgs::RobotState::ConstPtr last_robot_state_msg_;
 
-	/// Most recent trajectory state
-	spirit_msgs::RobotState last_trajectory_msg_;
+	/// Most recent local plan
+	spirit_msgs::GRFArray::ConstPtr last_grf_array_msg_;
+
+	/// Most recent state estimate
+	spirit_msgs::RobotState::ConstPtr last_trajectory_state_msg_;
 
 	/// Most recent leg override
 	spirit_msgs::LegOverride last_leg_override_msg_;
 
 	/// Duration for sit to stand behavior
-	const double transition_duration_ = 2.0;
-	
+	const double transition_duration_ = 1.0;
+
+	/// Message for leg command array
+	spirit_msgs::LegCommandArray leg_command_array_msg_;
+
 	/// Time at which to start transition
 	ros::Time transition_timestamp_;
+
+	/// PD gain when standing on the ground
+	std::vector<double> walk_kp_;
+	std::vector<double> walk_kd_;
+
+	/// PD gain when feet in the air
+	std::vector<double> aerial_kp_;
+	std::vector<double> aerial_kd_;
 
 	std::vector<double> f0x;
 	std::vector<double> f1x;

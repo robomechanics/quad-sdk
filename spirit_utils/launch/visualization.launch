@@ -2,6 +2,8 @@
   
     <include file="$(find spirit_utils)/launch/load_params.launch" />
 
+    <arg name="live_plot" default="false"/>
+
     <group ns="/trajectory">
         <!-- Point the robot description to this URDF -->
         <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
@@ -30,5 +32,10 @@
 
     <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find spirit_utils)/rviz/example_with_terrain.rviz"/>
+
+    <group if="$(arg live_plot)">
+        <node name="plotjuggler" pkg="plotjuggler" type="plotjuggler" 
+            args="--layout $(find spirit_utils)/config/plotjuggler_config.xml" />
+    </group>
 
 </launch>

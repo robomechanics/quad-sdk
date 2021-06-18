@@ -4,45 +4,42 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string body_plan_topic, body_plan_viz_topic, grf_plan_viz_topic,
-    discrete_body_plan_topic, discrete_body_plan_viz_topic,
-    foot_plan_discrete_topic, foot_plan_discrete_viz_topic, 
-    foot_plan_continuous_topic, state_estimate_topic, ground_truth_state_topic, 
-    trajectory_state_topic, estimate_joint_states_viz_topic, 
-    ground_truth_joint_states_viz_topic, trajectory_joint_states_viz_topic;
+  std::string global_plan_topic, local_plan_topic, discrete_global_plan_topic,
+    foot_plan_discrete_topic, foot_plan_continuous_topic, state_estimate_topic,
+    ground_truth_state_topic, trajectory_state_topic;
 
   // Load topic names from parameter server
-  nh.param<std::string>("topics/body_plan", body_plan_topic, "/body_plan");
-  nh.param<std::string>("topics/discrete_body_plan", 
-    discrete_body_plan_topic, "/discrete_body_plan");
-  nh.param<std::string>("topics/foot_plan_discrete", 
-    foot_plan_discrete_topic, "/foot_plan_discrete");
-  nh.param<std::string>("topics/foot_plan_continuous", 
-    foot_plan_continuous_topic, "/foot_plan_continuous");
-  nh.param<std::string>("topics/state/estimate", 
-    state_estimate_topic, "/state/estimate");
-  nh.param<std::string>("topics/state/ground_truth", 
-    ground_truth_state_topic, "/state/ground_truth");
-  nh.param<std::string>("topics/state/trajectory", 
-    trajectory_state_topic, "/state/trajectory");
+  spirit_utils::loadROSParam(nh_,"topics/global_plan", global_plan_topic);
+  spirit_utils::loadROSParam(nh_,"topics/local_plan", local_plan_topic);
+  spirit_utils::loadROSParam(nh_,"topics/global_plan_discrete", discrete_global_plan_topic);
+  spirit_utils::loadROSParam(nh_,"topics/foot_plan_discrete", foot_plan_discrete_topic);
+  spirit_utils::loadROSParam(nh_,"topics/foot_plan_continuous", foot_plan_continuous_topic);
+  spirit_utils::loadROSParam(nh_,"topics/state/estimate", state_estimate_topic);
+  spirit_utils::loadROSParam(nh_,"topics/state/ground_truth", ground_truth_state_topic);
+  spirit_utils::loadROSParam(nh_,"topics/state/trajectory", trajectory_state_topic);
   
-  nh.param<std::string>("topics/visualization/body_plan", 
-    body_plan_viz_topic, "/visualization/body_plan");
-  nh.param<std::string>("topics/visualization/grf_plan", 
-    grf_plan_viz_topic, "/visualization/grf_plan");
-  nh.param<std::string>("topics/visualization/discrete_body_plan", 
-    discrete_body_plan_viz_topic, "/visualization/discrete_body_plan");
-  nh.param<std::string>("topics/visualization/foot_plan_discrete", 
-    foot_plan_discrete_viz_topic, "/visualization/foot_plan_discrete");
-  nh.param<std::string>("topics/visualization/joint_states/estimate", 
-    estimate_joint_states_viz_topic, "/visualization/joint_states/estimate");
-  nh.param<std::string>("topics/visualization/joint_states/ground_truth", 
-    ground_truth_joint_states_viz_topic, "/visualization/joint_states/ground_truth");
-  nh.param<std::string>("topics/visualization/joint_states/trajectory", 
-    trajectory_joint_states_viz_topic, "/visualization/joint_states/trajectory");
+  std::string global_plan_viz_topic, local_plan_viz_topic,
+    global_plan_grf_viz_topic, local_plan_grf_viz_topic, discrete_body_plan_viz_topic,
+    foot_plan_discrete_viz_topic, estimate_joint_states_viz_topic, 
+    ground_truth_joint_states_viz_topic, trajectory_joint_states_viz_topic;
+
+  spirit_utils::loadROSParam(nh_,"topics/visualization/global_plan", global_plan_viz_topic);
+  spirit_utils::loadROSParam(nh_,"topics/visualization/local_plan", local_plan_viz_topic);
+  spirit_utils::loadROSParam(nh_,"topics/visualization/global_plan_grf", global_plan_grf_viz_topic);
+  spirit_utils::loadROSParam(nh_,"topics/visualization/local_plan_grf", local_plan_grf_viz_topic);
+  spirit_utils::loadROSParam(nh_,"topics/visualization/global_plan_discrete", 
+    discrete_body_plan_viz_topic);
+  spirit_utils::loadROSParam(nh_,"topics/visualization/foot_plan_discrete", 
+    foot_plan_discrete_viz_topic);
+  spirit_utils::loadROSParam(nh_,"topics/visualization/joint_states/estimate", 
+    estimate_joint_states_viz_topic);
+  spirit_utils::loadROSParam(nh_,"topics/visualization/joint_states/ground_truth", 
+    ground_truth_joint_states_viz_topic);
+  spirit_utils::loadROSParam(nh_,"topics/visualization/joint_states/trajectory", 
+    trajectory_joint_states_viz_topic);
 
   // Setup rviz_interface parameters
-  nh.param<std::string>("map_frame",map_frame_,"map");
+  spirit_utils::loadROSParam(nh_,"map_frame",map_frame_);
   nh.param<double>("rviz_interface/update_rate", update_rate_, 10);
   nh.param<std::vector<int> >("rviz_interface/colors/front_left",
     front_left_color_, {0,255,0});
@@ -58,9 +55,11 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
     individual_grf_color_, {255,0,0});
 
   // Setup plan subs
-  body_plan_sub_ = nh_.subscribe(body_plan_topic,1,
-    &RVizInterface::bodyPlanCallback, this);
-  discrete_body_plan_sub_ = nh_.subscribe(discrete_body_plan_topic,1,
+  global_plan_sub_ = nh_.subscribe<spirit_msgs::RobotPlan>(global_plan_topic,1,
+    boost::bind( &RVizInterface::robotPlanCallback, this, _1, GLOBAL));
+  local_plan_sub_ = nh_.subscribe<spirit_msgs::RobotPlan>(local_plan_topic,1,
+    boost::bind( &RVizInterface::robotPlanCallback, this, _1, LOCAL));
+  discrete_body_plan_sub_ = nh_.subscribe(discrete_global_plan_topic,1,
     &RVizInterface::discreteBodyPlanCallback, this);
   foot_plan_discrete_sub_ = nh_.subscribe(foot_plan_discrete_topic,1,
     &RVizInterface::footPlanDiscreteCallback, this);
@@ -68,9 +67,12 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
     &RVizInterface::footPlanContinuousCallback, this);
 
   // Setup plan visual pubs
-  body_plan_viz_pub_ = nh_.advertise<nav_msgs::Path>(body_plan_viz_topic,1);
-  grf_plan_viz_pub_ = nh_.advertise<visualization_msgs::MarkerArray>
-    (grf_plan_viz_topic,1);
+  global_plan_viz_pub_ = nh_.advertise<nav_msgs::Path>(global_plan_viz_topic,1);
+  local_plan_viz_pub_ = nh_.advertise<nav_msgs::Path>(local_plan_viz_topic,1);
+  global_plan_grf_viz_pub_ = nh_.advertise<visualization_msgs::MarkerArray>
+    (global_plan_grf_viz_topic,1);
+  local_plan_grf_viz_pub_ = nh_.advertise<visualization_msgs::MarkerArray>
+    (local_plan_grf_viz_topic,1);
   discrete_body_plan_viz_pub_ = nh_.advertise<visualization_msgs::Marker>
     (discrete_body_plan_viz_topic,1);
   foot_plan_discrete_viz_pub_ = nh_.advertise<visualization_msgs::Marker>
@@ -95,14 +97,14 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   std::string foot_0_plan_continuous_viz_topic,foot_1_plan_continuous_viz_topic,
     foot_2_plan_continuous_viz_topic, foot_3_plan_continuous_viz_topic;
 
-  nh.param<std::string>("topics/visualization/foot_0_plan_continuous", 
-    foot_0_plan_continuous_viz_topic, "/visualization/foot_0_plan_continuous");
-  nh.param<std::string>("topics/visualization/foot_1_plan_continuous", 
-    foot_1_plan_continuous_viz_topic, "/visualization/foot_1_plan_continuous");
-  nh.param<std::string>("topics/visualization/foot_2_plan_continuous", 
-    foot_2_plan_continuous_viz_topic, "/visualization/foot_2_plan_continuous");
-  nh.param<std::string>("topics/visualization/foot_3_plan_continuous", 
-    foot_3_plan_continuous_viz_topic, "/visualization/foot_3_plan_continuous");
+  spirit_utils::loadROSParam(nh_,"topics/visualization/foot_0_plan_continuous", 
+    foot_0_plan_continuous_viz_topic);
+  spirit_utils::loadROSParam(nh_,"topics/visualization/foot_1_plan_continuous", 
+    foot_1_plan_continuous_viz_topic);
+  spirit_utils::loadROSParam(nh_,"topics/visualization/foot_2_plan_continuous", 
+    foot_2_plan_continuous_viz_topic);
+  spirit_utils::loadROSParam(nh_,"topics/visualization/foot_3_plan_continuous", 
+    foot_3_plan_continuous_viz_topic);
 
   foot_0_plan_continuous_viz_pub_ = nh_.advertise<nav_msgs::Path>
     (foot_0_plan_continuous_viz_topic,1);
@@ -115,7 +117,8 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
 
 }
 
-void RVizInterface::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg)
+void RVizInterface::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg,
+  const int pub_id)
 {
 
   // Initialize Path message to visualize body plan
@@ -129,15 +132,18 @@ void RVizInterface::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg)
     // Load in the pose data directly from the Odometry message
     geometry_msgs::PoseStamped pose_stamped;
     pose_stamped.header = msg->states[i].header;
-    pose_stamped.pose = msg->states[i].pose.pose;
+    pose_stamped.pose = msg->states[i].body.pose.pose;
 
     // Add to the path message
     body_plan_viz.poses.push_back(pose_stamped);
   }
 
   // Publish the full path
-  body_plan_viz_pub_.publish(body_plan_viz);
-
+  if (pub_id == GLOBAL) {
+    global_plan_viz_pub_.publish(body_plan_viz);
+  } else if (pub_id == LOCAL) {
+    local_plan_viz_pub_.publish(body_plan_viz);
+  }
 
   // Construct MarkerArray and Marker message for GRFs
   visualization_msgs::MarkerArray grfs_viz_msg;
@@ -185,6 +191,7 @@ void RVizInterface::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg)
       // if GRF = 0, set alpha to zero
       if (msg->grfs[i].contact_states[j] == false) {
         marker.color.a = 0.0;
+        continue;
       }
 
       // Add the points to the marker and add the marker to the array
@@ -195,11 +202,15 @@ void RVizInterface::bodyPlanCallback(const spirit_msgs::BodyPlan::ConstPtr& msg)
   }
 
   // Publish grfs
-  grf_plan_viz_pub_.publish(grfs_viz_msg);
+  if (pub_id == GLOBAL) {
+    global_plan_grf_viz_pub_.publish(grfs_viz_msg);
+  } else if (pub_id == LOCAL) {
+    local_plan_grf_viz_pub_.publish(grfs_viz_msg);
+  }
 }
 
 void RVizInterface::discreteBodyPlanCallback(
-  const spirit_msgs::BodyPlan::ConstPtr& msg) {
+  const spirit_msgs::RobotPlan::ConstPtr& msg) {
 
   // Construct Marker message
   visualization_msgs::Marker discrete_body_plan;
@@ -220,9 +231,9 @@ void RVizInterface::discreteBodyPlanCallback(
   int length = msg->states.size();
   for (int i=0; i < length; i++) {
     geometry_msgs::Point p;
-    p.x = msg->states[i].pose.pose.position.x;
-    p.y = msg->states[i].pose.pose.position.y;
-    p.z = msg->states[i].pose.pose.position.z;
+    p.x = msg->states[i].body.pose.pose.position.x;
+    p.y = msg->states[i].body.pose.pose.position.y;
+    p.z = msg->states[i].body.pose.pose.position.z;
     discrete_body_plan.points.push_back(p);
   }
 

@@ -56,7 +56,7 @@ void RobotProxy::publishMocap() {
   msg.header.stamp = ros::Time::now();
   msg.pose.position.x = 0;
   msg.pose.position.y = 0;
-  msg.pose.position.z = 2*(0.2*sin(0.25*pi));
+  msg.pose.position.z = 2*(0.206*sin(0.25*pi));
 
   double t_now =ros::Time::now().toSec();
   double amplitude = -0.5;

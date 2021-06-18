@@ -93,6 +93,17 @@ stateTrajectoryData = readMessages(select(bag,'Topic','/state/trajectory'),'Data
 stateTrajectory = struct;
 if isempty(stateTrajectoryData)
     warning('Warning, no data on trajectory topic');
+    stateTrajectory.time = [];
+    stateTrajectory.position = [];
+    stateTrajectory.velocity = [];
+    stateTrajectory.orientationRPY = [];
+    stateTrajectory.orientationQuat = [];
+    stateTrajectory.angularVelocity = [];
+    stateTrajectory.jointPosition = [];
+    stateTrajectory.jointVelocity = [];
+    stateTrajectory.jointEffort = [];
+    stateTrajectory.footPosition = [];
+    stateTrajectory.footVelocity = [];
 else
     
     stateTrajectory.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, stateTrajectoryData, 'UniformOutput', 0));
@@ -126,7 +137,7 @@ end
 
 % Localize time to the first message
 % startTime = min([stateGroundTruth.time(1), stateEstimate.time(1), stateTrajectory.time(1)]);
-startTime = stateTrajectory.time(1);
+startTime = stateGroundTruth.time(1);
 % stateEstimate.time = stateEstimate.time - startTime;
 stateGroundTruth.time = stateGroundTruth.time - startTime;
 stateTrajectory.time = stateTrajectory.time - startTime;

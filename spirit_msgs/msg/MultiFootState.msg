@@ -5,4 +5,5 @@
 # Accurate timing information is stored in the header
 
 Header header
+uint32 traj_index
 spirit_msgs/FootState[] feet

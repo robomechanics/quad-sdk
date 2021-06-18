@@ -18,5 +18,5 @@ TEST(EigenTest, testMap) {
 
   data_eigen = Eigen::Map<Eigen::Matrix<double,1,N>>(data_c);
 
-  std::cout << data_eigen.format(CleanFmt) << std::endl;
+  // std::cout << data_eigen.format(CleanFmt) << std::endl;
 }

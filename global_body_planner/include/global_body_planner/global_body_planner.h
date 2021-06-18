@@ -6,7 +6,7 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-#include <spirit_msgs/BodyPlan.h>
+#include <spirit_msgs/RobotPlan.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_utils/ros_utils.h>
 
@@ -86,8 +86,8 @@ class GlobalBodyPlanner {
      * @param[in] grf GRF applied to body
      * @param[in] body_plan_msg Body plan message
      */
-    void addStateAndGRFToMsg(double t, FullState body_state, GRF grf,
-      int primitive_id, spirit_msgs::BodyPlan& body_plan_msg);
+    void addStateAndGRFToMsg(double t, int plan_index, FullState body_state, GRF grf,
+      int primitive_id, spirit_msgs::RobotPlan& body_plan_msg);
 
     /**
      * @brief Publish the current body plan
@@ -208,6 +208,9 @@ class GlobalBodyPlanner {
 
     /// Boolean for whether replanning is allowed
     bool replanning_allowed_;
+
+    /// Timestep for interpolation
+    double dt_;
 
 };
 

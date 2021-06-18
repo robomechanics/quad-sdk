@@ -107,7 +107,6 @@ catkin_add_gtest(spirit_utils-test
   test/test_ground_truth_publisher.cpp
   test/test_robot_proxy.cpp
   test/test_fast_terrain_map.cpp
-  test/test_foot_jacobians.cpp
   test/test_kinematics.cpp
   test/test_eigen.cpp
   test/test_main.cpp)
