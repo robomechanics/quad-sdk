@@ -218,7 +218,7 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
   z[0] = start_state[2];
   pitch[0] = start_state[4];
   yaw[0] = start_state[5];
-  double gamma = 0.9;
+  double gamma = 0.95;
 
   // Compute yaw to align with heading, pitch and height to align with the terrain
   for (int i = 1; i < num_states; i++) {

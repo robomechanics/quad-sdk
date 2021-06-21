@@ -3,7 +3,7 @@ global_body_planner:
   num_calls: 1            # Number of times to call the planner
   max_time: 1.5           # Minimum amount of time to run the planner (will replan to find better solutions until this duration is up)
   start_state: [0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
-  goal_state: [2.0,0.0,0.3,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+  goal_state: [3.0,0.0,0.3,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
   committed_horizon: 0     # Committed duration of current plan (replan starting from state in current plan this far ahead), s
   state_error_threshold: 10 #0.25
   startup_delay: 1.0   # Time to delay after starting node before planning
@@ -11,7 +11,7 @@ global_body_planner:
   H_MAX: 0.375         # Maximum height of leg base, m
   H_MIN: 0.125         # Minimum ground clearance of body corners, m
   V_MAX: 3.0           # Maximum robot velocity, m/s (4.0 for cheetah, 2.5 for anymal)
-  V_NOM: 1.0          # Nominal velocity, m/s (used during connect function)
+  V_NOM: 0.5          # Nominal velocity, m/s (used during connect function)
   ROBOT_L: 0.4         # Length of robot body, m (0.6 cheetah, 0.554 ANYmal)
   ROBOT_W: 0.3         # Width of robot body, m (0.256 cheetah, 0.232 ANYmal)
   ROBOT_H: 0.05        # Vertical distance between leg base and bottom of robot, m (0.1 cheetah, 0.04 ANYmal)
