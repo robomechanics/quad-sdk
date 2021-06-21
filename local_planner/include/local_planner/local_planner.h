@@ -148,6 +148,9 @@ private:
   /// local planner timestep (seconds)
   double dt_;
 
+  /// Computation time in computeLocalPlan
+  double compute_time_;
+
   /// MPC Horizon length
   const int N_ = 24;
 

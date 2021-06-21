@@ -47,7 +47,7 @@ namespace spirit_utils {
    */
   inline int getPlanIndex(ros::Time plan_start, double dt)
   {
-    return std::round(getDurationSinceTime(plan_start)/dt);
+    return std::floor(getDurationSinceTime(plan_start)/dt);
   }
 
   /**
