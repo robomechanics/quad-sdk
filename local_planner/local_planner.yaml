@@ -2,7 +2,7 @@ local_planner:
   update_rate: 33 # Hz
   timestep: 0.03 # s
   horizon_length: 24 # timesteps
-  iterations: 2
+  iterations: 1
 
 local_body_planner:
   body_mass: 11.5
@@ -13,14 +13,14 @@ local_body_planner:
   terminal_weight_scaling: 1.0
   control_weights: [0.0001, 0.0001, 0.0001] #fx,fy,fz
   state_lower_bound: [-100,-100, 0.15,-0.785,-0.785,-10,-5,-5,-2,-3.14,-3.14,-3.14]
-  state_upper_bound: [ 100, 100, 0.4, 0.785, 0.785, 10, 5, 5, 2, 3.14, 3.14, 3.14]
+  state_upper_bound: [ 100, 100, 0.35, 0.785, 0.785, 10, 5, 5, 2, 3.14, 3.14, 3.14]
   friction_mu: 0.4
   normal_lo: 5
   normal_hi: 100
 
 local_footstep_planner:
   grf_weight: 0.5
-  period: 0.36 # s
+  period: 0.3 # s
   ground_clearance: 0.1
   standing_error_threshold: 0.03 # m
 

@@ -1,5 +1,5 @@
 inverse_dynamics:
-  update_rate: 200
+  update_rate: 400
   walk_kp: [25, 25, 25]
   walk_kd: [5, 5, 5]
   aerial_kp: [25, 25, 25]
