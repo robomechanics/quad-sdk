@@ -4,3 +4,4 @@ inverse_dynamics:
   walk_kd: [5, 5, 5]
   aerial_kp: [25, 25, 25]
   aerial_kd: [1, 1, 1]
+  input_msg_timeout: 0.1

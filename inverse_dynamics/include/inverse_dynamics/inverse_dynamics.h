@@ -166,6 +166,9 @@ private:
 	/// Duration for sit to stand behavior
 	const double transition_duration_ = 1.0;
 
+	/// Timeout (in s) for receiving new input reference messages
+	double input_msg_timeout_;
+
 	/// Message for leg command array
 	spirit_msgs::LegCommandArray leg_command_array_msg_;
 

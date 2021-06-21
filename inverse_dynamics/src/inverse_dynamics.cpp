@@ -16,6 +16,7 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh_,"topics/control/leg_override",leg_override_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
   spirit_utils::loadROSParam(nh_,"inverse_dynamics/update_rate", update_rate_);
+  spirit_utils::loadROSParam(nh_,"inverse_dynamics/input_msg_timeout", input_msg_timeout_);
   spirit_utils::loadROSParam(nh_,"local_planner/timestep", dt_);
 
   spirit_utils::loadROSParam(nh_, "inverse_dynamics/walk_kp", walk_kp_);
@@ -117,7 +118,9 @@ void InverseDynamics::publishLegCommandArray() {
 
   // Set the input handling based on what data we've recieved, prioritizing local plan over grf
   int input_type;
-  if (last_local_plan_msg_ != NULL) {
+  if (last_local_plan_msg_ != NULL && 
+    (ros::Time::now() - last_local_plan_msg_->header.stamp).toSec() < input_msg_timeout_) {
+    
     input_type = LOCAL_PLAN;
   } else if (last_grf_array_msg_ != NULL){
     input_type = GRFS;
