@@ -262,8 +262,10 @@ bool LocalPlanner::computeLocalPlan() {
   }
 
   // Report the function time
-  if (timer.reportSilent() >= 1.0/update_rate_) {
-    ROS_WARN_THROTTLE(0.1, "LocalPlanner::computeLocalPlan exceeded allowed duration");
+  compute_time_ = 1000*timer.reportSilent();
+  if (compute_time_ >= 1000.0/update_rate_) {
+    ROS_WARN_THROTTLE(0.1, "LocalPlanner took %5.3fms, exceeding %5.3fms allowed",
+      compute_time_, 1000.0/update_rate_);
   };
   
   return true;
@@ -281,6 +283,7 @@ void LocalPlanner::publishLocalPlan() {
   local_plan_msg.header.stamp = timestamp;
   local_plan_msg.header.frame_id = map_frame_;
   local_plan_msg.global_plan_timestamp = body_plan_msg_->global_plan_timestamp;
+  local_plan_msg.compute_time = compute_time_;
   future_footholds_msg.header = local_plan_msg.header;
   foot_plan_msg.header = local_plan_msg.header;
 
