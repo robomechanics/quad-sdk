@@ -17,6 +17,7 @@ topics:
     ground_truth: /state/ground_truth
     estimate: /state/estimate
     trajectory: /state/trajectory
+    remote_heartbeat: /state/remote_heartbeat
   control:
     grfs: /control/grfs
     trajectory: /control/trajectory

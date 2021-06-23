@@ -28,4 +28,9 @@
         <include file="$(find spirit_utils)/launch/logging.launch" />
     </group>
 
+    <!-- Launch the mblink converter unless using a proxy-->
+    <group unless="$(arg proxy)">
+        <node name="mblink_converter" pkg="mblink_converter" type="mblink_converter_node" output="screen"/>
+    </group>
+
 </launch>

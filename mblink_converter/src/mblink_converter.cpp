@@ -11,16 +11,22 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
   mblink_.setRetry("UPST_LOOP_DELAY", 5);
 
   // Load rosparams from parameter server
-  std::string leg_control_topic, joint_encoder_topic, imu_topic;
+  std::string leg_control_topic, joint_encoder_topic, imu_topic, remote_heartbeat_topic;
   spirit_utils::loadROSParam(nh_,"topics/control/joint_command",leg_control_topic);
+  spirit_utils::loadROSParam(nh_,"topics/state/remote_heartbeat",remote_heartbeat_topic);
   spirit_utils::loadROSParam(nh_,"topics/joint_encoder",joint_encoder_topic);
   spirit_utils::loadROSParam(nh_,"topics/imu",imu_topic);
   spirit_utils::loadROSParam(nh_,"mblink_converter/update_rate",update_rate_);
+  spirit_utils::loadROSParam(nh_,"mblink_converter/timeout_threshold",timeout_threshold_);
 
   // Setup pubs and subs
   leg_control_sub_ = nh_.subscribe(leg_control_topic,1,&MBLinkConverter::legControlCallback, this);
+  remote_heartbeat_sub_ = nh_.subscribe(remote_heartbeat_topic,1,&MBLinkConverter::remoteHeartbeatCallback, this);
   joint_encoder_pub_ = nh_.advertise<sensor_msgs::JointState>(joint_encoder_topic,1);
   imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic,1);
+
+  last_heartbeat_time_ = std::numeric_limits<double>::max();
+  
 }
 
 void MBLinkConverter::legControlCallback(
@@ -29,11 +35,25 @@ void MBLinkConverter::legControlCallback(
   last_leg_command_array_msg_ = msg;
 }
 
+void MBLinkConverter::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg) {
+  last_heartbeat_time_ = msg->stamp.toSec();
+}
+
 bool MBLinkConverter::sendMBlink()
 {
   // If we've haven't received a motor control message, exit
   if (last_leg_command_array_msg_ == NULL)
   {
+    ROS_DEBUG_THROTTLE(1,"MBLinkConverter node has not received MotorCommandArray messages yet.");
+    return false;
+  }
+
+  int remote_heartbeat = 1;
+
+  if ((ros::Time::now().toSec() - last_heartbeat_time_) >= timeout_threshold_)
+  {
+    remote_heartbeat = 0;
+    ROS_WARN_THROTTLE(1,"Remote heartbeat lost, sending zeros");
     return false;
   }
   
@@ -45,11 +65,11 @@ bool MBLinkConverter::sendMBlink()
 
     for (int j = 0; j < 3; ++j) // For each joint
     {
-      limbcmd[i].pos[j] = leg_command.motor_commands.at(j).pos_setpoint;
-      limbcmd[i].vel[j] = leg_command.motor_commands.at(j).vel_setpoint;
-      limbcmd[i].tau[j] = leg_command.motor_commands.at(j).torque_ff;
-      limbcmd[i].kp[j] = static_cast<short>(leg_command.motor_commands.at(j).kp);
-      limbcmd[i].kd[j] = leg_command.motor_commands.at(j).kd;
+      limbcmd[i].pos[j] = remote_heartbeat*leg_command.motor_commands.at(j).pos_setpoint;
+      limbcmd[i].vel[j] = remote_heartbeat*leg_command.motor_commands.at(j).vel_setpoint;
+      limbcmd[i].tau[j] = remote_heartbeat*leg_command.motor_commands.at(j).torque_ff;
+      limbcmd[i].kp[j] = static_cast<short>(remote_heartbeat*leg_command.motor_commands.at(j).kp);
+      limbcmd[i].kd[j] = remote_heartbeat*leg_command.motor_commands.at(j).kd;
     }
   }
   
@@ -125,9 +145,8 @@ void MBLinkConverter::spin()
     // Send out the most recent one over mblink
     if (!this->sendMBlink())
     {
-      ROS_DEBUG_THROTTLE(1,"MBLinkConverter node has not received MotorCommandArray messages yet.");
+      this->publishMBlink();
     }
-    this->publishMBlink();
 
     // Enforce update rate
     r.sleep();

@@ -57,6 +57,7 @@ add_library(spirit_utils
   src/ros_utils.cpp
   src/kinematics.cpp
   src/trajectory_publisher.cpp
+  src/remote_heartbeat.cpp
 )
 add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(spirit_utils)
@@ -69,6 +70,7 @@ add_executable(terrain_map_publisher_node src/terrain_map_publisher_node.cpp)
 add_executable(ground_truth_publisher_node src/ground_truth_publisher_node.cpp)
 add_executable(trajectory_publisher_node src/trajectory_publisher_node.cpp)
 add_executable(robot_proxy_node src/robot_proxy_node.cpp)
+add_executable(remote_heartbeat_node src/remote_heartbeat_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(rviz_interface_node
@@ -92,6 +94,11 @@ target_link_libraries(trajectory_publisher_node
 )
 
 target_link_libraries(robot_proxy_node
+  spirit_utils
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(remote_heartbeat_node
   spirit_utils
   ${catkin_LIBRARIES}
 )

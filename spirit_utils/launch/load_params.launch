@@ -8,6 +8,7 @@
     <rosparam command="load" file="$(find spirit_utils)/config/robot_proxy.yaml"/>
     <rosparam command="load" file="$(find spirit_utils)/config/rviz_interface.yaml"/>
     <rosparam command="load" file="$(find spirit_utils)/config/trajectory_publisher.yaml"/>
+    <rosparam command="load" file="$(find spirit_utils)/config/remote_heartbeat.yaml"/>
 
     <rosparam command="load" file="$(find ekf_estimator)/ekf_estimator.yaml"/>
     <rosparam command="load" file="$(find global_body_planner)/global_body_planner.yaml"/>

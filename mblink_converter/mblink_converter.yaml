@@ -1,2 +1,3 @@
 mblink_converter:
   update_rate: 500
+  timeout_threshold: 0.2

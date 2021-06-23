@@ -7,10 +7,11 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
 
     // Load rosparams from parameter server
   std::string grf_input_topic, trajectory_state_topic, robot_state_topic, local_plan_topic,
-    leg_command_array_topic, control_mode_topic, leg_override_topic; 
+    leg_command_array_topic, control_mode_topic, leg_override_topic, remote_heartbeat_topic; 
   spirit_utils::loadROSParam(nh_,"topics/local_plan",local_plan_topic);
   spirit_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
   spirit_utils::loadROSParam(nh_,"topics/state/trajectory",trajectory_state_topic);
+  spirit_utils::loadROSParam(nh_,"topics/state/remote_heartbeat",remote_heartbeat_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/grfs",grf_input_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/joint_command",leg_command_array_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/leg_override",leg_override_topic);
@@ -31,6 +32,7 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   trajectory_state_sub_ = nh_.subscribe(trajectory_state_topic,1,&InverseDynamics::trajectoryStateCallback, this);
   control_mode_sub_ = nh_.subscribe(control_mode_topic,1,&InverseDynamics::controlModeCallback, this);
   leg_override_sub_ = nh_.subscribe(leg_override_topic,1,&InverseDynamics::legOverrideCallback, this);
+  remote_heartbeat_sub_ = nh_.subscribe(remote_heartbeat_topic,1,&InverseDynamics::remoteHeartbeatCallback, this);
   leg_command_array_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_command_array_topic,1);
 
   // Start sitting
@@ -81,6 +83,10 @@ void InverseDynamics::trajectoryStateCallback(const spirit_msgs::RobotState::Con
 
 void InverseDynamics::legOverrideCallback(const spirit_msgs::LegOverride::ConstPtr& msg) {
   last_leg_override_msg_ = *msg;
+}
+
+void InverseDynamics::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg) {
+  last_remote_heartbeat_msg_ = msg;
 }
 
 void InverseDynamics::publishLegCommandArray() {
