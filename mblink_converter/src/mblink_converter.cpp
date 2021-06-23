@@ -145,7 +145,7 @@ void MBLinkConverter::spin()
     // Send out the most recent one over mblink
     if (!this->sendMBlink())
     {
-      this->publishMBlink();
+      // this->publishMBlink();
     }
 
     // Enforce update rate
