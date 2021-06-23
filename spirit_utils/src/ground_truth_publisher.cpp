@@ -23,6 +23,9 @@ GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
   imu_sub_ = nh_.subscribe(imu_topic,1,&GroundTruthPublisher::imuCallback, this);
   mocap_sub_ = nh_.subscribe(mocap_topic,1,&GroundTruthPublisher::mocapCallback, this);
   ground_truth_state_pub_ = nh_.advertise<spirit_msgs::RobotState>(ground_truth_state_topic,1);
+
+  // Convert kinematics
+  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
 }
 
 void GroundTruthPublisher::mocapCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
@@ -53,33 +56,40 @@ void GroundTruthPublisher::imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
   last_imu_msg_ = msg;
 }
 
-spirit_msgs::RobotState GroundTruthPublisher::updateStep() {
-  spirit_msgs::RobotState new_state_est;
+bool GroundTruthPublisher::updateStep(spirit_msgs::RobotState &new_state_est) {
 
-  spirit_utils::SpiritKinematics kinematics;
+  bool fully_populated = true;
 
   if (last_imu_msg_ != NULL)
   {
     new_state_est.body.pose.pose.orientation = last_imu_msg_->orientation;
     new_state_est.body.twist.twist.angular = last_imu_msg_->angular_velocity;
-
+  } else {
+    fully_populated = false;
+    ROS_WARN_THROTTLE(1, "No imu in /state/ground_truth");
   }
   if (last_mocap_msg_ != NULL)
   {
     new_state_est.body.pose.pose.position = last_mocap_msg_->pose.position;
     new_state_est.body.twist.twist.linear = mocap_vel_estimate_;
+  } else {
+    fully_populated = false;
+    ROS_WARN_THROTTLE(1, "No body pose (mocap) in /state/ground_truth");
   }
   if (last_joint_state_msg_ != NULL)
   {
     new_state_est.joints = *last_joint_state_msg_;
     if (last_imu_msg_ != NULL)
     {
-      spirit_utils::fkRobotState(kinematics, new_state_est.body,new_state_est.joints, new_state_est.feet);
+      spirit_utils::fkRobotState(*kinematics_, new_state_est.body,new_state_est.joints, new_state_est.feet);
     }
+  } else {
+    fully_populated = false;
+    ROS_WARN_THROTTLE(1, "No joints or feet in /state/ground_truth");
   }
 
   new_state_est.header.stamp = ros::Time::now();
-  return new_state_est;
+  return fully_populated;
 }
 
 void GroundTruthPublisher::spin() {
@@ -91,11 +101,13 @@ void GroundTruthPublisher::spin() {
     ros::spinOnce(); 
 
     // Compute new state estimate
-    spirit_msgs::RobotState new_state_est = this->updateStep();
+    spirit_msgs::RobotState new_state_est;
+    bool fully_populated = this->updateStep(new_state_est);
 
-    // Publish new state estimate
-    ground_truth_state_pub_.publish(new_state_est);
-
+    // Publish new state estimate if fully populated
+    if (fully_populated) {
+      ground_truth_state_pub_.publish(new_state_est);
+    }
     // Store new state estimate for next iteration
     last_state_est_ = new_state_est;
 

@@ -76,9 +76,14 @@ private:
 	
   /**
 	 * @brief Callback to handle new leg override commands
-	 @ param[in] Leg override commands
+	 * @param[in] msg Leg override commands
 	 */
 	void legOverrideCallback(const spirit_msgs::LegOverride::ConstPtr& msg);
+
+	/**
+	 * @brief Callback to handle new remote heartbeat messages
+	 */
+	void remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg);
 	
   /**
 	 * @brief Function to compute and publish leg command array message
@@ -105,6 +110,9 @@ private:
 
 	/// ROS subscriber for leg override commands
 	ros::Subscriber leg_override_sub_;
+
+	/// ROS subscriber for remote heartbeat
+	ros::Subscriber remote_heartbeat_sub_;
 
 	/// ROS publisher for inverse dynamics
 	ros::Publisher leg_command_array_pub_;
@@ -162,6 +170,9 @@ private:
 
 	/// Most recent leg override
 	spirit_msgs::LegOverride last_leg_override_msg_;
+
+	/// Most recent remote 
+	std_msgs::Header::ConstPtr last_remote_heartbeat_msg_;
 
 	/// Duration for sit to stand behavior
 	const double transition_duration_ = 1.0;

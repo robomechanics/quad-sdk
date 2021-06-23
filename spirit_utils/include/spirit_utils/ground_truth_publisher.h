@@ -50,9 +50,10 @@ private:
 
   /**
    * @brief execute EKF Update step, return state estimate
-   * @return state estimate of custom type RobotState
+   * @param[in] new_state_est state estimate of custom type RobotState
+   * @return bool for whether the message is fully populated
    */
-  spirit_msgs::RobotState updateStep();
+  bool updateStep(spirit_msgs::RobotState &new_state_est);
 
   /// Subscriber for joint encoder messages
   ros::Subscriber joint_encoder_sub_;
@@ -86,6 +87,9 @@ private:
   
   /// Best estimate of velocity from mocap diff
   geometry_msgs::Vector3 mocap_vel_estimate_;
+
+  /// Kinematics object
+  std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
 
   /// Velocity update weight on exponential decay filter
   double alpha_;

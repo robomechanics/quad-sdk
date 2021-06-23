@@ -23,15 +23,13 @@
         </include>
     </group>
 
-    <!-- Launch the mblink converter unless using a proxy-->
-    <group unless="$(arg proxy)">
-        <node name="mblink_converter" pkg="mblink_converter" type="mblink_converter_node" output="screen"/>
-    </group>
-
     <group if="$(arg plan)">
         <include file="$(find spirit_utils)/launch/execute_plan.launch">
             <arg name="logging" value="$(arg logging)"/>
         </include>
     </group>
+
+    <!-- Start the heartbeat node -->
+    <node name="remote_heartbeat" pkg="spirit_utils" type="remote_heartbeat_node"/>
 
 </launch>
