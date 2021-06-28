@@ -31,13 +31,16 @@ SOFTWARE.
   <arg name="software" default="true"/>
   <arg name="body_planner" default="global"/>
   <arg name="live_plot" default="false"/>
+  <arg name="mblink" default="false"/>
 
   <group if="$(arg software)">
     <include file="$(find spirit_utils)/launch/mapping.launch" />
     <include file="$(find spirit_utils)/launch/visualization.launch">
       <arg name="live_plot" value="$(arg live_plot)"/>
     </include>
-    <include file="$(find spirit_utils)/launch/robot_driver.launch"/>
+    <include file="$(find spirit_utils)/launch/robot_driver.launch">
+      <arg name="mblink" value="$(arg mblink)"/>
+    </include>
     <!-- <include file="$(find spirit_utils)/launch/planning.launch">
       <arg name="body_planner" value="$(arg body_planner)"/>
     </include>

@@ -1,6 +1,7 @@
 <launch>
     <include file="$(find spirit_utils)/launch/load_params.launch" />
 
+    <arg name="mblink" default="true"/>
     <arg name="proxy" default="false"/>
     <arg name="mocap" default="false"/>
     <arg name="logging" default="false"/>
@@ -29,7 +30,7 @@
     </group>
 
     <!-- Launch the mblink converter unless using a proxy-->
-    <group unless="$(arg proxy)">
+    <group if="$(arg mblink)">
         <node name="mblink_converter" pkg="mblink_converter" type="mblink_converter_node" output="screen"/>
     </group>
 

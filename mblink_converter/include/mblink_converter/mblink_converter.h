@@ -97,13 +97,19 @@ private:
   spirit_msgs::LegCommandArray::ConstPtr last_leg_command_array_msg_;
 
   /// Most recent remote heartbeat
-	std_msgs::Header::ConstPtr last_remote_heartbeat_msg_;
+	// std_msgs::Header::ConstPtr last_remote_heartbeat_msg_;
 
   /// Remote heartbeat timeout threshold in seconds
 	double last_heartbeat_time_;
+
+  /// Remote heartbeat timeout threshold in seconds
+	double last_leg_command_time_;
   
   /// Remote heartbeat timeout threshold in seconds
-	double timeout_threshold_;
+	double remote_heartbeat_timeout_;
+
+  /// Leg command timeout threshold in seconds
+	double leg_command_timeout_;
 
   /// Pointer to MBLink object (constructor wants argc and argv, so instantiated in main)
   MBLink mblink_; 

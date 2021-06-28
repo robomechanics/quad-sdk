@@ -82,8 +82,14 @@ private:
 
 	/**
 	 * @brief Callback to handle new remote heartbeat messages
+	 * @param[in] msg Remote heartbeat message
 	 */
 	void remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg);
+
+	/**
+	 * @brief Check to make sure the remote heartbeat is fresh
+	 */
+	void checkHeartbeat();
 	
   /**
 	 * @brief Function to compute and publish leg command array message
@@ -147,6 +153,9 @@ private:
 	/// Define ids for control modes: Stand to sit
 	const int STAND_TO_SIT = 3;
 
+	/// Define ids for control modes: Safety
+	const int SAFETY = 4;
+
 	/// Define ids for input types: none
 	const int NONE = 0;
 
@@ -174,11 +183,17 @@ private:
 	/// Most recent remote 
 	std_msgs::Header::ConstPtr last_remote_heartbeat_msg_;
 
+	// Remote heartbeat timeout threshold in seconds
+	double last_heartbeat_time_;
+
 	/// Duration for sit to stand behavior
 	const double transition_duration_ = 1.0;
 
 	/// Timeout (in s) for receiving new input reference messages
-	double input_msg_timeout_;
+	double input_timeout_;
+
+	/// Timeout (in s) for receiving new heartbeat messages
+	double heartbeat_timeout_;
 
 	/// Message for leg command array
 	spirit_msgs::LegCommandArray leg_command_array_msg_;
@@ -186,13 +201,25 @@ private:
 	/// Time at which to start transition
 	ros::Time transition_timestamp_;
 
-	/// PD gain when standing on the ground
-	std::vector<double> walk_kp_;
-	std::vector<double> walk_kd_;
+	/// PD gain when in safety mode
+	std::vector<double> safety_kp_;
+	std::vector<double> safety_kd_;
 
-	/// PD gain when feet in the air
-	std::vector<double> aerial_kp_;
-	std::vector<double> aerial_kd_;
+	/// PD gain when in sit mode
+	std::vector<double> sit_kp_;
+	std::vector<double> sit_kd_;
+
+	/// PD gain when in standing mode
+	std::vector<double> stand_kp_;
+	std::vector<double> stand_kd_;
+
+	/// PD gain when foot is in stance
+	std::vector<double> stance_kp_;
+	std::vector<double> stance_kd_;
+
+	/// PD gain when foot is in swing
+	std::vector<double> swing_kp_;
+	std::vector<double> swing_kd_;
 
 	std::vector<double> f0x;
 	std::vector<double> f1x;
