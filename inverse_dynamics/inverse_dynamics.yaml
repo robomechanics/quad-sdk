@@ -1,7 +1,14 @@
 inverse_dynamics:
   update_rate: 200
-  walk_kp: [25, 25, 25]
-  walk_kd: [5, 5, 5]
-  aerial_kp: [25, 25, 25]
-  aerial_kd: [1, 1, 1]
-  input_msg_timeout: 0.1
+  sit_kp: [5, 5, 5]
+  sit_kd: [1, 1, 1]
+  stand_kp: [25, 25, 25]
+  stand_kd: [5, 5, 5]
+  stance_kp: [25, 25, 25]
+  stance_kd: [5, 5, 5]
+  swing_kp: [25, 25, 25]
+  swing_kd: [1, 1, 1]
+  safety_kp: [0, 0, 0]
+  safety_kd: [2, 2, 2]
+  input_timeout: 0.1
+  heartbeat_timeout: 0.2

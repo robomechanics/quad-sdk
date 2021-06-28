@@ -1,3 +1,4 @@
 mblink_converter:
-  update_rate: 500
-  timeout_threshold: 0.2
+  update_rate: 200
+  remote_heartbeat_timeout: 0.2 # Not yet applied
+  leg_command_timeout: 0.2

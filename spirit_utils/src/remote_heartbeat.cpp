@@ -5,7 +5,7 @@ RemoteHeartbeat::RemoteHeartbeat(ros::NodeHandle nh) {
 
   // Load rosparam from parameter server
   std::string heartbeat_topic;
-  spirit_utils::loadROSParam(nh_, "topics/state/remote_heartbeat", heartbeat_topic);
+  spirit_utils::loadROSParam(nh_, "topics/remote_heartbeat", heartbeat_topic);
   spirit_utils::loadROSParam(nh_, "remote_heartbeat/update_rate", update_rate_);
 
   // Setup pub
