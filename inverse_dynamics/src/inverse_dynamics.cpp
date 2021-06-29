@@ -51,6 +51,7 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   // Start sitting
   control_mode_ = SIT;
   last_heartbeat_time_ = std::numeric_limits<double>::max();
+  last_state_time_ = std::numeric_limits<double>::max();
 
   step_number = 0;
   
@@ -85,6 +86,7 @@ void InverseDynamics::localPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& 
 void InverseDynamics::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
   // ROS_INFO("In robotStateCallback");
   last_robot_state_msg_ = msg;
+  last_state_time_ = msg->header.stamp.toSec();
 }
 
 void InverseDynamics::grfInputCallback(const spirit_msgs::GRFArray::ConstPtr& msg) {
@@ -116,12 +118,13 @@ void InverseDynamics::checkMessages() {
     ROS_WARN_THROTTLE(1,"Remote heartbeat lost in ID node, entering safety mode");
   }
 
-  if ((ros::Time::now() - last_robot_state_msg_->header.stamp).toSec() >= state_timeout_)
+  if ((ros::Time::now().toSec() - last_state_time_) >= state_timeout_)
   {
     control_mode_ = SAFETY;
     transition_timestamp_ = ros::Time::now();
     ROS_WARN_THROTTLE(1,"State messages lost in ID node, entering safety mode");
   }
+
 
 }
 
