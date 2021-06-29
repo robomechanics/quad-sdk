@@ -153,7 +153,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         Eigen::Vector3d body_pos_midstance, body_rpy_midstance, grf_midstance;
 
         // Extract body and grf information
-        int midstance = std::min(i + half_duty_cycle, horizon_length_);
+        int midstance = std::min(i + half_duty_cycle, horizon_length_-1);
         body_pos_midstance = body_plan.block<1,3>(midstance,0);
         body_rpy_midstance = body_plan.block<1,3>(midstance,3);
         grf_midstance = grf_plan.block<1,3>(midstance,3*j);
