@@ -306,8 +306,8 @@ bool QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
     solver_.settings()->setWarmStart(true);
     solver_.settings()->setCheckTermination(10);
     solver_.settings()->setScaling(false);
-    // solver_.settings()->setAbsoluteTolerance(1e-2); //1e-2
-    // solver_.settings()->setRelativeTolerance(1e-4); //1e-4
+    solver_.settings()->setAbsoluteTolerance(1e-2); //1e-2
+    solver_.settings()->setRelativeTolerance(1e-4); //1e-4
     solver_.initSolver();
 
   }
