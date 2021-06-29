@@ -2,7 +2,7 @@ local_planner:
   update_rate: 33 # Hz
   timestep: 0.03 # s
   horizon_length: 24 # timesteps
-  iterations: 1
+  iterations: 2
 
 local_body_planner:
   body_mass: 11.5
@@ -19,7 +19,7 @@ local_body_planner:
   normal_hi: 100
 
 local_footstep_planner:
-  grf_weight: 0.0
+  grf_weight: 0.5
   period: 0.36 # s
   ground_clearance: 0.1
   standing_error_threshold: 0.03 # m
