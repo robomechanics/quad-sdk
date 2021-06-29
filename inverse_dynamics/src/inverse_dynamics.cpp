@@ -125,14 +125,9 @@ void InverseDynamics::checkMessages() {
     ROS_WARN_THROTTLE(1,"State messages lost in ID node, entering safety mode");
   }
 
-
 }
 
 void InverseDynamics::publishLegCommandArray() {
-
-  // Wait until we have state messages
-  if (last_robot_state_msg_ == NULL)
-    return;
 
   // Define static position setpoints and gains
   static const std::vector<double> stand_joint_angles_{0,0.76,2*0.76};
@@ -397,11 +392,15 @@ void InverseDynamics::spin() {
     // Collect new messages on subscriber topics
     ros::spinOnce();
 
-    // Confirm that connection to remote is still active
-    checkMessages();
+    // Wait until we have our first state messages
+    if (last_robot_state_msg_ != NULL)
+    {
+      // Check that messages are still fresh
+      checkMessages();
 
-    // Publish control input data
-    publishLegCommandArray();
+      // Compute and publish control input data
+      publishLegCommandArray();
+    }  
 
     // Enforce update rate
     r.sleep();
