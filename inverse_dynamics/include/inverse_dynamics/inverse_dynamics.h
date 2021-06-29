@@ -183,6 +183,9 @@ private:
 	/// Most recent remote 
 	std_msgs::Header::ConstPtr last_remote_heartbeat_msg_;
 
+	// State timeout threshold in seconds
+	double last_state_time_;
+	
 	// Remote heartbeat timeout threshold in seconds
 	double last_heartbeat_time_;
 
