@@ -63,8 +63,8 @@ bool GroundTruthPublisher::updateStep(spirit_msgs::RobotState &new_state_est) {
   if (last_imu_msg_ != NULL)
   {
     // new_state_est.body.pose.pose.orientation = last_imu_msg_->orientation;
-    new_state_est.body.twist.twist.angular.z = -last_imu_msg_->angular_velocity.x;
-    new_state_est.body.twist.twist.angular.y = -last_imu_msg_->angular_velocity.y;
+    new_state_est.body.twist.twist.angular.y = last_imu_msg_->angular_velocity.x;
+    new_state_est.body.twist.twist.angular.z = last_imu_msg_->angular_velocity.y;
     new_state_est.body.twist.twist.angular.z = -last_imu_msg_->angular_velocity.z;
   } else {
     fully_populated = false;
