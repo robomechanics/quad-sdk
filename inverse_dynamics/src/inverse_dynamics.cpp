@@ -19,6 +19,7 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
 
   spirit_utils::loadROSParam(nh_,"inverse_dynamics/update_rate", update_rate_);
   spirit_utils::loadROSParam(nh_,"inverse_dynamics/input_timeout", input_timeout_);
+  spirit_utils::loadROSParam(nh_,"inverse_dynamics/state_timeout", state_timeout_);
   spirit_utils::loadROSParam(nh_,"inverse_dynamics/heartbeat_timeout", heartbeat_timeout_);
   spirit_utils::loadROSParam(nh_, "inverse_dynamics/sit_kp", sit_kp_);
   spirit_utils::loadROSParam(nh_, "inverse_dynamics/sit_kd", sit_kd_);
@@ -71,7 +72,7 @@ void InverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) 
     control_mode_ = STAND_TO_SIT;
     transition_timestamp_ = ros::Time::now();
 
-  } else if (msg->data == SIT && (control_mode_ == SAFETY)) { // Sit if previously in safety
+  } else if (msg->data == SIT || (control_mode_ == SAFETY)) { // Allow sit or safety modes
     
     control_mode_ = msg->data;
   }
@@ -104,7 +105,7 @@ void InverseDynamics::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& 
   last_heartbeat_time_ = msg->stamp.toSec();
 }
 
-void InverseDynamics::checkHeartbeat() {
+void InverseDynamics::checkMessages() {
 
   if (control_mode_ == SAFETY)
     return;
@@ -112,8 +113,14 @@ void InverseDynamics::checkHeartbeat() {
   if ((ros::Time::now().toSec() - last_heartbeat_time_) >= heartbeat_timeout_)
   {
     control_mode_ = SAFETY;
-    transition_timestamp_ = ros::Time::now();
     ROS_WARN_THROTTLE(1,"Remote heartbeat lost in ID node, entering safety mode");
+  }
+
+  if ((ros::Time::now() - last_robot_state_msg_->header.stamp).toSec() >= state_timeout_)
+  {
+    control_mode_ = SAFETY;
+    transition_timestamp_ = ros::Time::now();
+    ROS_WARN_THROTTLE(1,"State messages lost in ID node, entering safety mode");
   }
 
 }
@@ -169,10 +176,10 @@ void InverseDynamics::publishLegCommandArray() {
       last_local_plan_msg_->global_plan_timestamp, dt_);
     double t_interp = std::fmod(current_time,dt_)/dt_;
 
-    // printf("current_time = %5.3f\n", current_time);
-    // printf("current_plan_index = %d\n", current_plan_index);
-    // printf("t_interp = %5.3f\n", t_interp);
-    // printf("\n");
+    printf("current_time = %5.3f\n", current_time);
+    printf("current_plan_index = %d\n", current_plan_index);
+    printf("t_interp = %5.3f\n", t_interp);
+    printf("\n");
     
     if ((current_plan_index < last_local_plan_msg_->plan_indices.front()) || 
         (current_plan_index > last_local_plan_msg_->plan_indices.back()) ) {
@@ -388,7 +395,7 @@ void InverseDynamics::spin() {
     ros::spinOnce();
 
     // Confirm that connection to remote is still active
-    checkHeartbeat();
+    checkMessages();
 
     // Publish control input data
     publishLegCommandArray();

@@ -87,9 +87,9 @@ private:
 	void remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg);
 
 	/**
-	 * @brief Check to make sure the remote heartbeat is fresh
+	 * @brief Check to make sure required messages are fresh
 	 */
-	void checkHeartbeat();
+	void checkMessages();
 	
   /**
 	 * @brief Function to compute and publish leg command array message
@@ -191,6 +191,9 @@ private:
 
 	/// Timeout (in s) for receiving new input reference messages
 	double input_timeout_;
+
+	/// Timeout (in s) for receiving new state messages
+	double state_timeout_;
 
 	/// Timeout (in s) for receiving new heartbeat messages
 	double heartbeat_timeout_;
