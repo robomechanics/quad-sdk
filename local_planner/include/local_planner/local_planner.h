@@ -15,6 +15,7 @@
 #include <spirit_utils/kinematics.h>
 #include "spirit_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <nmpc_controller/nmpc_controller.h>
 
 //! Local Body Planner library
 /*!
@@ -110,7 +111,8 @@ private:
 	double update_rate_;
 
   /// Local Body Planner object
-  std::shared_ptr<QuadrupedMPC> local_body_planner_;
+  // std::shared_ptr<QuadrupedMPC> local_body_planner_;
+  std::shared_ptr<NMPCController> local_body_planner_;
 
   /// Local Footstep Planner object
   std::shared_ptr<LocalFootstepPlanner> local_footstep_planner_;
