@@ -123,13 +123,14 @@ void LocalPlanner::initLocalBodyPlanner() {
   Ib.diagonal() << Ixx,Iyy,Izz;
 
   // Create convex mpc wrapper class
-  local_body_planner_ = std::make_shared<QuadrupedMPC>();
-  local_body_planner_->setTimestep(dt_);
-  local_body_planner_->setMassProperties(m,Ib);
-  local_body_planner_->update_weights(Q_vec,U_vec);
-  local_body_planner_->update_state_bounds(state_lo, state_hi);
-  local_body_planner_->update_control_bounds(normal_lo, normal_hi);
-  local_body_planner_->update_friction(mu);
+  // local_body_planner_ = std::make_shared<QuadrupedMPC>();
+  // local_body_planner_->setTimestep(dt_);
+  // local_body_planner_->setMassProperties(m,Ib);
+  // local_body_planner_->update_weights(Q_vec,U_vec);
+  // local_body_planner_->update_state_bounds(state_lo, state_hi);
+  // local_body_planner_->update_control_bounds(normal_lo, normal_hi);
+  // local_body_planner_->update_friction(mu);
+  local_body_planner_ = std::make_shared<NMPCController>(false);
 
 }
 
@@ -246,8 +247,20 @@ bool LocalPlanner::computeLocalPlan() {
   for (int i = 0; i < iterations_; i++) {
 
     // Compute body plan with MPC, return if solve fails
-    if (!local_body_planner_->computePlan(current_state_, ref_body_plan_, foot_positions_body_,
-      contact_schedule_, body_plan_, grf_plan_))
+    // if (!local_body_planner_->computePlan(current_state_, ref_body_plan_, foot_positions_body_,
+    //   contact_schedule_, body_plan_, grf_plan_))
+    //   return false;
+    bool new_step;
+    if (i == 0)
+    {
+      new_step = true;
+    }
+    else
+    {
+      new_step = false;
+    }
+    if (!local_body_planner_->computePlan(new_step, current_state_, ref_body_plan_, foot_positions_body_,
+                                          contact_schedule_, body_plan_, grf_plan_))
       return false;
 
     // Compute the new footholds to match that body plan
