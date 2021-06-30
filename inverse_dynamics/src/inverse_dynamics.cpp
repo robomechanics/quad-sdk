@@ -112,10 +112,11 @@ void InverseDynamics::checkMessages() {
   if (control_mode_ == SAFETY)
     return;
 
+
   if ((ros::Time::now().toSec() - last_heartbeat_time_) >= heartbeat_timeout_)
   {
     control_mode_ = SAFETY;
-    ROS_WARN_THROTTLE(1,"Remote heartbeat lost in ID node, entering safety mode");
+    ROS_WARN_THROTTLE(1,"Remote heartbeat lost or late to ID node, entering safety mode");
   }
 
   if ((ros::Time::now().toSec() - last_state_time_) >= state_timeout_)
