@@ -7,6 +7,7 @@ from odrive.enums import *
 from odrive.utils import *
 import time
 from sensor_msgs.msg import Imu
+from geometry_msgs.msg import TwistStamped
 
 print("finding an odrive...")
 odrv0 = odrive.find_any()
@@ -46,7 +47,10 @@ def balance_controller(orientation, angular_velocity):
     #     odrv0.axis1.controller.input_vel = 0
     #     odrv0.axis0.controller.input_torque = 0
     #     odrv0.axis1.controller.input_torque = 0
-    if emergency_stop or abs(orientation[0]) > np.pi/4 or abs(orientation[1]) > np.pi/4 or abs(odrv0.axis0.encoder.pos_estimate-start0)*np.pi*2/50 > np.pi/4 or abs(odrv0.axis1.encoder.pos_estimate-start1)*np.pi*2/50 > np.pi/4:
+    if emergency_stop or \
+            np.abs(orientation[0]+(odrv0.axis1.encoder.pos_estimate-start1)*np.pi*2/50) > np.pi*0.45 or \
+            np.abs(orientation[1]+(odrv0.axis0.encoder.pos_estimate-start0)*np.pi*2/50) > np.pi*0.45:
+
         odrv0.axis0.controller.input_pos = 0
         odrv0.axis1.controller.input_pos = 0
 
@@ -62,7 +66,7 @@ def balance_controller(orientation, angular_velocity):
         emergency_stop = True
 
     else:
-        kp, kd = 5, 1
+        kp, kd = 0, 0
 
         # gear ratio is 50
         # Position counts in turns
@@ -107,8 +111,8 @@ def feedback_callback(msg):
     # print("----------------orientation----------------")
     # print(orientation)
 
-    angular_velocity = [msg.angular_velocity.x,
-                        msg.angular_velocity.y, msg.angular_velocity.z]
+    angular_velocity = [msg.twist.angular.x,
+                        msg.twist.angular.y, msg.twist.angular.z]
     # print("----------------angular_velocity----------------")
     # print(angular_velocity)
 
@@ -144,8 +148,11 @@ def listener():
         rospy.Subscriber(tail_topic, LegCommand, mpc_callback, queue_size=1)
     else:
         # Feedback control
-        state_topic = "/mcu/state/imu"
-        rospy.Subscriber(state_topic, Imu, feedback_callback, queue_size=1)
+        state_topic = "/mcu/state/vel"
+        rospy.Subscriber(state_topic, TwistStamped,
+                         feedback_callback, queue_size=1)
+        # state_topic = "/mcu/state/imu"
+        # rospy.Subscriber(state_topic, Imu, feedback_callback, queue_size=1)
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
