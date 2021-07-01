@@ -1,6 +1,7 @@
 topics:
   joint_encoder: /mcu/state/jointURDF
   imu: /mcu/state/imu
+  vel: /mcu/state/vel
   mocap: /mocap_node/spirit/pose
   terrain_map: /terrain_map
   global_plan: /global_plan
