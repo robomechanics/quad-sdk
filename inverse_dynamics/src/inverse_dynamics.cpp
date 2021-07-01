@@ -175,10 +175,10 @@ void InverseDynamics::publishLegCommandArray() {
       last_local_plan_msg_->global_plan_timestamp, dt_);
     double t_interp = std::fmod(current_time,dt_)/dt_;
 
-    printf("current_time = %5.3f\n", current_time);
-    printf("current_plan_index = %d\n", current_plan_index);
-    printf("t_interp = %5.3f\n", t_interp);
-    printf("\n");
+    // printf("current_time = %5.3f\n", current_time);
+    // printf("current_plan_index = %d\n", current_plan_index);
+    // printf("t_interp = %5.3f\n", t_interp);
+    // printf("\n");
     
     if ((current_plan_index < last_local_plan_msg_->plan_indices.front()) || 
         (current_plan_index > last_local_plan_msg_->plan_indices.back()) ) {

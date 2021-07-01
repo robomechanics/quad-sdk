@@ -147,25 +147,32 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
       if (isNewContact(contact_schedule, i, j)) {
       
         // Declare foot position vectors
-        Eigen::Vector3d foot_position, foot_position_grf, foot_position_nominal, hip_position_midstance;
+        Eigen::Vector3d foot_position, foot_position_grf,
+          foot_position_nominal, hip_position_midstance, centrifugal;
 
         // Declare body and grf vectors
-        Eigen::Vector3d body_pos_midstance, body_rpy_midstance, grf_midstance;
+        Eigen::Vector3d body_pos_midstance, body_rpy_midstance, 
+          body_vel_touchdown, body_ang_vel_touchdown, grf_midstance;
 
         // Extract body and grf information
         int midstance = std::min(i + half_duty_cycle, horizon_length_-1);
         body_pos_midstance = body_plan.block<1,3>(midstance,0);
         body_rpy_midstance = body_plan.block<1,3>(midstance,3);
+        body_vel_touchdown = body_plan.block<1,3>(i,6);
+        body_ang_vel_touchdown = body_plan.block<1,3>(i,9);
         grf_midstance = grf_plan.block<1,3>(midstance,3*j);
 
         // Compute nominal foot positions for kinematic and grf-projection measures
-        kinematics_->nominalFootstepFK(j, body_pos_midstance, body_rpy_midstance, 
+        kinematics_->nominalHipFK(j, body_pos_midstance, body_rpy_midstance, 
           hip_position_midstance);
+        double hip_height = hip_position_midstance.z() - 
+          terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());
+        centrifugal = sqrt(hip_height/9.81)*body_vel_touchdown.cross(body_ang_vel_touchdown);
         foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
 
         // Combine these measures to get the nominal foot position and grab correct height
         foot_position_nominal = grf_weight_*foot_position_grf +
-          (1-grf_weight_)*hip_position_midstance;
+          (1-grf_weight_)*(hip_position_midstance + centrifugal);
         foot_position_nominal.z() = terrain_.getGroundHeight(foot_position_nominal.x(),
           foot_position_nominal.y());
 
