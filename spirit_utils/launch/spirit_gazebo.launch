@@ -34,7 +34,9 @@ SOFTWARE.
 
   <group if="$(arg software)">
     <include file="$(find spirit_utils)/launch/mapping.launch" />
-    <include file="$(find spirit_utils)/launch/visualization.launch" />
+    <include file="$(find spirit_utils)/launch/visualization.launch">
+      <arg name="tail" value="$(arg tail)"/>
+    </include>
     <include file="$(find spirit_utils)/launch/robot_driver.launch"/>
   </group>
 

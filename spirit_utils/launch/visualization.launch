@@ -1,5 +1,7 @@
 <launch>
   
+    <arg name="tail" default="false"/>
+
     <include file="$(find spirit_utils)/launch/load_params.launch" />
 
     <group ns="/trajectory">
@@ -16,7 +18,14 @@
     <group ns="/ground_truth">
         <!-- Point the robot description to this URDF (which has meshes attached) -->
         <!-- <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit_meshes.urdf" /> -->
-        <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
+
+        <group if="$(arg tail)">
+            <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit_tail.urdf" />
+        </group>
+
+        <group unless="$(arg tail)">
+            <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
+        </group>
 
         <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
