@@ -68,6 +68,9 @@ private:
   /// Subscriber for imu messages
   ros::Subscriber imu_sub_;
 
+  /// Subscriber for vel messages
+  ros::Subscriber vel_sub_;
+
   /// Subscriber for mocap messages
   ros::Subscriber mocap_sub_;
 
