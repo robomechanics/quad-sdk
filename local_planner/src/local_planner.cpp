@@ -268,7 +268,7 @@ bool LocalPlanner::computeLocalPlan() {
       compute_time_, 1000.0/update_rate_);
   };
 
-  // ROS_INFO("LocalPlanner took %5.3f ms", compute_time_);
+  ROS_INFO("LocalPlanner took %5.3f ms", compute_time_);
   
   return true;
 }
