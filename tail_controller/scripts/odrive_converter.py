@@ -27,26 +27,40 @@ emergency_stop = False
 
 
 def balance_controller(orientation, angular_velocity):
-    if emergency_stop:
-        if abs(odrv0.axis0.encoder.vel_estimate)*50/(2*np.pi) < np.deg2rad(0.1) and \
-                abs(odrv0.axis1.encoder.vel_estimate)*50/(2*np.pi) < np.deg2rad(0.1):
-            odrv0.axis0.requested_state = AXIS_STATE_IDLE
-            odrv0.axis1.requested_state = AXIS_STATE_IDLE
+    # if emergency_stop:
+    #     if abs(odrv0.axis0.encoder.vel_estimate)*50/(2*np.pi) < np.deg2rad(0.1) and \
+    #             abs(odrv0.axis1.encoder.vel_estimate)*50/(2*np.pi) < np.deg2rad(0.1):
+    #         odrv0.axis0.requested_state = AXIS_STATE_IDLE
+    #         odrv0.axis1.requested_state = AXIS_STATE_IDLE
 
-    elif abs(orientation[0]) > np.pi/4 or \
-            abs(orientation[1]) > np.pi/4 or \
-    abs(odrv0.axis0.encoder.pos_estimate-start0)*np.pi*2/50 > np.pi/4 or \
-            abs(odrv0.axis1.encoder.pos_estimate-start1)*np.pi*2/50 > np.pi/4:
-        emergency_stop = True
-        odrv0.axis0.controller.config.control_mode = CONTROL_MODE_VELOCITY_CONTROL
-        odrv0.axis1.controller.config.control_mode = CONTROL_MODE_VELOCITY_CONTROL
-        odrv0.axis1.controller.input_pos = 0
+    # elif abs(orientation[0]) > np.pi/4 or \
+    #         abs(orientation[1]) > np.pi/4 or \
+    # abs(odrv0.axis0.encoder.pos_estimate-start0)*np.pi*2/50 > np.pi/4 or \
+    #         abs(odrv0.axis1.encoder.pos_estimate-start1)*np.pi*2/50 > np.pi/4:
+    #     emergency_stop = True
+    #     odrv0.axis0.controller.config.control_mode = CONTROL_MODE_VELOCITY_CONTROL
+    #     odrv0.axis1.controller.config.control_mode = CONTROL_MODE_VELOCITY_CONTROL
+    #     odrv0.axis1.controller.input_pos = 0
+    #     odrv0.axis0.controller.input_pos = 0
+    #     odrv0.axis0.controller.input_vel = 0
+    #     odrv0.axis1.controller.input_vel = 0
+    #     odrv0.axis0.controller.input_torque = 0
+    #     odrv0.axis1.controller.input_torque = 0
+    if emergency_stop or abs(orientation[0]) > np.pi/4 or abs(orientation[1]) > np.pi/4 or abs(odrv0.axis0.encoder.pos_estimate-start0)*np.pi*2/50 > np.pi/4 or abs(odrv0.axis1.encoder.pos_estimate-start1)*np.pi*2/50 > np.pi/4:
         odrv0.axis0.controller.input_pos = 0
+        odrv0.axis1.controller.input_pos = 0
+
         odrv0.axis0.controller.input_vel = 0
         odrv0.axis1.controller.input_vel = 0
+
         odrv0.axis0.controller.input_torque = 0
         odrv0.axis1.controller.input_torque = 0
-        
+
+        odrv0.axis0.requested_state = AXIS_STATE_IDLE
+        odrv0.axis1.requested_state = AXIS_STATE_IDLE
+
+        emergency_stop = True
+
     else:
         kp, kd = 5, 1
 
