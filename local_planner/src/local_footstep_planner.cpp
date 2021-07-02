@@ -167,7 +167,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
           hip_position_midstance);
         double hip_height = hip_position_midstance.z() - 
           terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());
-        centrifugal = sqrt(hip_height/9.81)*body_vel_touchdown.cross(body_ang_vel_touchdown);
+        centrifugal = 0.5*sqrt(hip_height/9.81)*body_vel_touchdown.cross(body_ang_vel_touchdown);
         foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
 
         // Combine these measures to get the nominal foot position and grab correct height

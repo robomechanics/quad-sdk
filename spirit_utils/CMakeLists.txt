@@ -43,7 +43,7 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
-  # ${PYTHON_INCLUDE_DIRS}
+  ${PYTHON_INCLUDE_DIRS}
 )
 
 add_library(spirit_utils
@@ -116,6 +116,6 @@ catkin_add_gtest(spirit_utils-test
   test/test_fast_terrain_map.cpp
   test/test_kinematics.cpp
   test/test_eigen.cpp
+  test/test_math_utils.cpp
   test/test_main.cpp)
-target_link_libraries(spirit_utils-test spirit_utils ${catkin_LIBRARIES})
-
+target_link_libraries(spirit_utils-test spirit_utils ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
