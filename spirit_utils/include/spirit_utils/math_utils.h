@@ -29,6 +29,43 @@ namespace math_utils {
     inline double lerp(double a, double b, double t) {
       return (a+t*(b-a));
     }
+
+  /**
+   * @brief Wrap to [0,2*pi)
+   * @param[in] val value to wrap
+   * @return Wrapped value
+   */
+    inline double wrapTo2Pi(double val) {
+      return fmod(2*M_PI + fmod(val, 2*M_PI), 2*M_PI);
+    }
+
+    /**
+   * @brief Wrap to [-pi,pi)
+   * @param[in] val value to wrap
+   * @return Wrapped value
+   */
+    inline double wrapToPi(double val) {
+      return -M_PI + wrapTo2Pi(val + M_PI);
+      // double new_val = fmod(val + M_PI, 2*M_PI);
+      // while (new_val < 0) {
+      //   new_val += 2*M_PI;
+      // }
+      // return new_val-M_PI;
+
+    }
+
+    /**
+   * @brief Wrap data to [-pi,pi)
+   * @param[in] data data to wrap
+   * @return Wrapped data
+   */
+    inline std::vector<double> wrapToPi(std::vector<double> data) {
+      std::vector<double> data_wrapped = data;
+      for (int i = 0; i < data.size(); i++) {
+        data_wrapped[i] = wrapToPi(data[i]);
+      }
+      return data_wrapped;
+    }
   
 
   /**
@@ -85,6 +122,13 @@ namespace math_utils {
    * @return Vector of differentiated signal
    */
   std::vector<double> centralDiff(std::vector<double> data, double dt);
+
+  /**
+   * @brief Unwrap a phase variable by filtering out differences > pi
+   * @param[in] data Input vector containing a wrapped signal
+   * @return Vector of unwrapped signal
+   */
+  std::vector<double> unwrap(std::vector<double> data);
 
 }
 

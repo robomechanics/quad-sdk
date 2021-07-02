@@ -46,6 +46,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh,"global_body_planner/H_MIN", planner_config_.H_MIN);
   spirit_utils::loadROSParam(nh,"global_body_planner/V_MAX", planner_config_.V_MAX);
   spirit_utils::loadROSParam(nh,"global_body_planner/V_NOM", planner_config_.V_NOM);
+  spirit_utils::loadROSParam(nh,"global_body_planner/DY_MAX", planner_config_.DY_MAX);
   spirit_utils::loadROSParam(nh,"global_body_planner/ROBOT_L", planner_config_.ROBOT_L);
   spirit_utils::loadROSParam(nh,"global_body_planner/ROBOT_W", planner_config_.ROBOT_W);
   spirit_utils::loadROSParam(nh,"global_body_planner/ROBOT_W", planner_config_.ROBOT_W);
@@ -110,11 +111,17 @@ void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstP
     robot_state_.push_back(msg->body.twist.twist.angular.x);
     robot_state_.push_back(msg->body.twist.twist.angular.y);
     robot_state_.push_back(msg->body.twist.twist.angular.z);
+
+    // double min_vel_threshold = 0.01;
+    // if (sqrt(robot_state_[6]*robot_state_[6] + robot_state_[7]*robot_state_[7]) <= min_vel_threshold) {
+    //   robot_state_
+    // }
   } else {
     ROS_WARN_THROTTLE(0.1, "Invalid quaternion received in GlobalBodyPlanner, "
       "returning");
     
   }
+  
 }
 
 void GlobalBodyPlanner::goalStateCallback(const geometry_msgs::PointStamped::ConstPtr& msg) {
@@ -124,6 +131,11 @@ void GlobalBodyPlanner::goalStateCallback(const geometry_msgs::PointStamped::Con
       return;
     }
   }
+
+  // if (sqrt(robot_state_[6]*robot_state_[6] + robot_state_[7]*robot_state_[7]) >=0.2) {
+  //   ROS_WARN("Robot moving too fast for replanning, wait until motion is finished");
+  //   return;
+  // }
 
   goal_state_msg_ = msg;
 
@@ -268,6 +280,34 @@ void GlobalBodyPlanner::callPlanner() {
       std::cout << "Path length: " << path_length << " m" << std::endl;
       std::cout << "Path duration: " << path_duration << " s" << std::endl;
       std::cout << std::endl;
+
+
+      // // If this is a new plan, add a heading alignment phase before the rest of the plan
+      // State yaw_state = applyStance(state_sequence_[0],action_sequence_[0],dt_,planner_config_);
+      // double initial_yaw = atan2(yaw_state[4], yaw_state[3]);
+      // double max_init_yaw_error = 1.0;
+      // double heading_alignment_yaw_rate = 1.0;
+      // double current_yaw_error = initial_yaw-start_state_[5];
+      // double t_reorient = current_yaw_error/heading_alignment_yaw_rate;
+      // if (start_index == 0 && abs(current_yaw_error) > max_init_yaw_error) {
+      //   for (double t = 0; t < t_reorient; t+=dt_) {
+
+      //     ROS_INFO("Adding reorientation to global plan");
+      //     FullState reorientation_state = start_state_;
+      //     for (int i = 6; i < 12; i++) {
+      //       start_state_[i] = 0.0; // zero out velocities during this motion
+      //     }
+      //     reorientation_state[5] = start_state_[5] + (current_yaw_error)*t/t_reorient;
+      //     replan_start_time_+= dt_;
+      //     GRF grf;
+      //     grf << 0,0,planner_config_.M_CONST*planner_config_.G_CONST; 
+
+      //     t_plan_.push_back(t);
+      //     body_plan_.push_back(reorientation_state);
+      //     grf_plan_.push_back(grf);
+      //     primitive_id_plan_.push_back(CONNECT_STANCE);
+      //   }
+      // }
 
       getInterpPlan(start_state_, state_sequence_, action_sequence_, dt_, replan_start_time_, 
         body_plan_, grf_plan_, t_plan_, primitive_id_plan_, planner_config_);

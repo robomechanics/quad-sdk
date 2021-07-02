@@ -209,7 +209,8 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
   std::vector<double> pitch(num_states);
   std::vector<double> pitch_rate(num_states);
   std::vector<double> filtered_pitch_rate(num_states);
-  std::vector<double> yaw(num_states);
+  std::vector<double> wrapped_yaw(num_states);
+  std::vector<double> unwrapped_yaw(num_states);
   std::vector<double> filtered_yaw(num_states);
   std::vector<double> yaw_rate(num_states);
   std::vector<double> filtered_yaw_rate(num_states);
@@ -217,21 +218,33 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
   // Enforce that yaw and pitch match current state, let the filter smooth things out
   z[0] = start_state[2];
   pitch[0] = start_state[4];
-  yaw[0] = start_state[5];
-  double gamma = 0.95;
+  wrapped_yaw[0] = start_state[5];
 
-  // Compute yaw to align with heading, pitch and height to align with the terrain
+  // Compute wrapped yaw first to align with heading
+  for (int i = 1; i < num_states; i++) {
+    State body_state = interp_reduced_plan[i];
+    wrapped_yaw[i] = atan2(body_state[4],body_state[3]);
+  }
+
+  // Unwrap yaw for filtering
+  unwrapped_yaw = math_utils::unwrap(wrapped_yaw);
+  
+  // Compute pitch and height to align with the terrain, add first order filter on init state
+  double gamma = 0.98;
   for (int i = 1; i < num_states; i++) {
     double weight = pow(gamma,i);
     State body_state = interp_reduced_plan[i];
     z[i] = weight*z[0] + (1-weight)*body_state[2];
     pitch[i] = weight*pitch[0] + (1-weight)*getPitchFromState(body_state,planner_config);
-    yaw[i] = weight*yaw[0] + (1-weight)*atan2(body_state[4],body_state[3]);
+    unwrapped_yaw[i] = weight*unwrapped_yaw[0] + (1-weight)*unwrapped_yaw[i];
   }
 
+  // Hold penultimate yaw value which will likely be more accurate
+  unwrapped_yaw[num_states-1] = unwrapped_yaw[num_states-2];
+
   // Filter yaw and compute its derivative via central difference method
-  int window_size = 15;
-  filtered_yaw = math_utils::movingAverageFilter(yaw, window_size);
+  int window_size = 25;
+  filtered_yaw = math_utils::movingAverageFilter(unwrapped_yaw, window_size);
   yaw_rate = math_utils::centralDiff(filtered_yaw, dt);
   filtered_yaw_rate = math_utils::movingAverageFilter(yaw_rate, window_size);
   pitch_rate = math_utils::centralDiff(pitch, dt);
@@ -248,6 +261,10 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
     interp_t[i] = i*dt;
   }
 
+  // wrap yaw again
+  wrapped_yaw = math_utils::wrapToPi(unwrapped_yaw);
+  filtered_yaw = math_utils::wrapToPi(filtered_yaw);
+
   // plt::clf();
   // plt::ion();
   // plt::named_plot("z", interp_t, z);
@@ -259,6 +276,19 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
   // plt::legend();
   // plt::show();
   // plt::pause(0.001);
+
+  plt::clf();
+  plt::ion();
+  plt::named_plot("unwrapped yaw", interp_t, unwrapped_yaw);
+  plt::named_plot("wrapped yaw", interp_t, wrapped_yaw);
+  plt::named_plot("filtered yaw", interp_t, filtered_yaw);
+  plt::named_plot("yaw rate", interp_t, yaw_rate);
+  plt::named_plot("filtered yaw rate", interp_t, filtered_yaw_rate);
+  plt::xlabel("t");
+  plt::ylabel("z");
+  plt::legend();
+  plt::show();
+  plt::pause(0.001);
 
   // Add full state data into the array
   for (int i = 0; i < num_states; i++) {
@@ -292,6 +322,65 @@ GRF getGRF(Action a,double t, const PlannerConfig &planner_config) {
   
   return grf;
 
+}
+
+Eigen::Vector3d getAcceleration(State s, Action a, double t)
+{
+    Eigen::Vector3d acc;
+
+    double a_x_td = a[0]; // Acceleration in x at touchdown
+    double a_y_td = a[1];
+    double a_z_td = a[2];
+    double a_x_to = a[3]; // Acceleration in x at takeoff
+    double a_y_to = a[4];
+    double a_z_to = a[5];
+    double t_s = a[6];
+
+    acc(0) = a_x_td + (a_x_to - a_x_td)*t/(t_s);
+    acc(1) = a_y_td + (a_y_to - a_y_td)*t/(t_s);
+    acc(2) = a_z_td + (a_z_to - a_z_td)*t/(t_s);
+    return acc;
+}
+
+bool isValidYawRate(State s, Action a, double t, const PlannerConfig &planner_config)
+{
+  Eigen::Vector3d acc = getAcceleration(s, a, t);
+  State s_check = applyStance(s,a,t,planner_config);
+
+  double dy = s_check[4];
+  double dx = s_check[3];
+  double ddy = acc.y();
+  double ddx = acc.x();
+  double d_yaw;
+
+  // Don't limit if moving slowly
+  if ((dx*dx + dy*dy) <= 0.25)
+  {
+      d_yaw = 0;
+      // std::cout << "Not moving, pass" << std::endl;
+  } else {
+      d_yaw = (dy*ddx - dx*ddy)/(dx*dx + dy*dy);
+  }
+
+  
+
+  // std::cout << "dx: " << dx << std::endl;
+  // std::cout << "dy: " << dy << std::endl;
+  // std::cout << "ddx: " << ddx << std::endl;
+  // std::cout << "ddy: " << ddy << std::endl;
+  // std::cout << "d_yaw: " << d_yaw << std::endl << std::endl;
+
+  // throw std::runtime_error("Stop");
+
+
+  if (abs(d_yaw) > planner_config.DY_MAX)
+  {
+      return false;
+  } else {
+      return true;
+  }
+  // return (abs(d_yaw) <= DY_MAX);
+  // return true;
 }
 
 double getPitchFromState(State s, const PlannerConfig &planner_config) {
@@ -334,6 +423,13 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
     interp_t.push_back(t0+t);
     interp_reduced_plan.push_back(applyStance(s,a,t,planner_config));
     interp_GRF.push_back(getGRF(a,t, planner_config));
+
+    if (!isValidYawRate(s,a,t,planner_config)) {
+      printStateNewline(s);
+      printActionNewline(a);
+      std::cout << "t = " << t<< std::endl;
+      std::cout << "t_f = " << t_f<< std::endl;
+    }
 
     if (t_f==0)
       interp_primitive_id.push_back(CONNECT_STANCE);
@@ -711,7 +807,7 @@ bool isValidStateActionPair(State s, Action a, const PlannerConfig &planner_conf
   {
     State s_check = applyStance(s,a,t,planner_config);
 
-    if (isValidState(s_check, planner_config, STANCE) == false)
+    if (isValidState(s_check, planner_config, STANCE) == false || (!isValidYawRate(s,a,t,planner_config)))
     {
       s_new = applyStance(s,a,(1.0-planner_config.BACKUP_RATIO)*t,planner_config);
       // s_new = applyStance(s,a,(t - planner_config.BACKUP_TIME));
@@ -777,7 +873,7 @@ bool isValidStateActionPairReverse(State s, Action a, const PlannerConfig &plann
   {
     State s_check = applyStanceReverse(s_takeoff,a,t,planner_config);
 
-    if (isValidState(s_check, planner_config, STANCE) == false)
+    if (isValidState(s_check, planner_config, STANCE) == false || (!isValidYawRate(s,a,t,planner_config)))
     {
       s_new = applyStance(s,a,t + planner_config.BACKUP_RATIO*(t_s - t), planner_config);
       return false;
