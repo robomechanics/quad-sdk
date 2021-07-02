@@ -8,6 +8,7 @@
 #include <std_msgs/String.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Vector3.h>
+#include <geometry_msgs/TwistStamped.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_utils/ros_utils.h>
 #include <spirit_utils/math_utils.h>
@@ -49,6 +50,12 @@ private:
   void imuCallback(const sensor_msgs::Imu::ConstPtr& msg);
 
   /**
+   * @brief Callback function to handle new vel data
+   * @param[in] vel_msg geometry_msgs<TwistStamped> containing new vel data
+   */
+  void velCallback(const geometry_msgs::TwistStamped::ConstPtr& msg);
+
+  /**
    * @brief execute EKF Update step, return state estimate
    * @param[in] new_state_est state estimate of custom type RobotState
    * @return bool for whether the message is fully populated
@@ -60,6 +67,9 @@ private:
 
   /// Subscriber for imu messages
   ros::Subscriber imu_sub_;
+
+  /// Subscriber for vel messages
+  ros::Subscriber vel_sub_;
 
   /// Subscriber for mocap messages
   ros::Subscriber mocap_sub_;
@@ -78,6 +88,9 @@ private:
 
   /// Most recent IMU callback (should be timestamped!)
   sensor_msgs::Imu::ConstPtr last_imu_msg_;
+
+  /// Most recent vel callback (should be timestamped!)
+  geometry_msgs::TwistStamped::ConstPtr last_vel_msg_;
 
   /// Most recent encoder callback (should be timestamped!)
   sensor_msgs::JointState::ConstPtr last_joint_state_msg_;
