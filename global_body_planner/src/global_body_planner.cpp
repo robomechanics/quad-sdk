@@ -445,6 +445,7 @@ void GlobalBodyPlanner::waitForData() {
     shared_robot_state = ros::topic::waitForMessage<spirit_msgs::RobotState>(robot_state_topic_, nh_);
     ros::spinOnce();
   }
+  ROS_INFO("GBP Has state and map information");
 }
 
 void GlobalBodyPlanner::getInitialPlan() {
