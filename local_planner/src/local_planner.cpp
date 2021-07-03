@@ -8,8 +8,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
 
 	nh_ = nh;
   
-  printf("In constructor\n");
-
     // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic, local_plan_topic,
     foot_plan_discrete_topic, foot_plan_continuous_topic;
@@ -62,8 +60,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   // Initialize body and footstep planners
   initLocalBodyPlanner();
   initLocalFootstepPlanner();
-
-  ROS_INFO("LocalPlanner setup complete, waiting for callbacks");
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
