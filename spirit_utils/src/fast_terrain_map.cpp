@@ -360,3 +360,11 @@ std::vector<double> FastTerrainMap::getXData() const {
 std::vector<double> FastTerrainMap::getYData() const {
   return y_data_;
 }
+
+bool FastTerrainMap::isEmpty() const {
+  if (x_size_ == 0 || y_size_ == 0) {
+    return true;
+  } else {
+    return false;
+  }
+}

@@ -1,0 +1,41 @@
+local_planner:
+  update_rate: 33 # Hz
+  timestep: 0.03 # s
+  horizon_length: 24 # timesteps
+  iterations: 2
+
+local_body_planner:
+  body_mass: 11.5
+  body_ixx: 0.1
+  body_iyy: 0.2
+  body_izz: 0.2
+  state_weights: [ 1000.0,1000.0,1000.0,1000.0,1000.0,1000.0,0.01,0.01,0.01,0.01,0.01,0.01 ]
+  terminal_weight_scaling: 1.0
+  control_weights: [0.0001, 0.0001, 0.0001] #fx,fy,fz
+  state_lower_bound: [-100,-100, 0.15,-0.785,-0.785,-10,-5,-5,-2,-3.14,-3.14,-3.14]
+  state_upper_bound: [ 100, 100, 0.4, 0.785, 0.785, 10, 5, 5, 2, 3.14, 3.14, 3.14]
+  friction_mu: 0.4
+  normal_lo: 5
+  normal_hi: 100
+
+local_footstep_planner:
+  grf_weight: 0.5
+  period: 0.36 # s
+  ground_clearance: 0.1
+  standing_error_threshold: 0.03 # m
+
+mpc_controller:
+  update_rate: 50
+  body_mass: 11.5
+  body_ixx: 0.1
+  body_iyy: 0.2
+  body_izz: 0.2
+  horizon_length: 24 # timesteps
+  timestep: 0.05
+  state_weights: [ 10000000.0,1000000.0,50000000.0,100000.0,100000.0,10000.0,1.0,1.0,1.0,1.0,1.0,100.0 ]
+  control_weights: [1.0, 1.0, 1.0] #fx,fy,fz
+  state_lower_bound: [-100,-100, 0.15,-0.785,-0.785,-10,-5,-5,-2,-3.14,-3.14,-3.14]
+  state_upper_bound: [ 100, 100, 0.38, 0.785, 0.785, 10, 5, 5, 2, 3.14, 3.14, 3.14]
+  friction_mu: 0.4
+  normal_lo: 3
+  normal_hi: 70

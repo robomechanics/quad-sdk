@@ -115,6 +115,16 @@ class SpiritKinematics {
   void legIK(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
       Eigen::Vector3d foot_pos_world, Eigen::Vector3d &joint_state) const;
 
+  // /**
+  //  * @brief Compute inverse kinematics for a specified leg
+  //  * @param[in] leg_index Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
+  //  * @param[in] body_state Pose and twist of center of body frame
+  //  * @param[in] foot_vel_world Position of the specified foot in world frame
+  //  * @param[out] joint_vel Joint velocities for the specified leg (abad, hip, knee)
+  //  */
+  // void legIKVel(int leg_index, Eigen::Vector3d body_state,
+  //     Eigen::Vector3d foot_vel_world, Eigen::Vector3d &joint_vel) const;
+
   /**
    * @brief Get the lower joint limit of a particular joint
    * @param[in] joint_index Index for joint (0 = abad, 1 = hip, 2 = knee)
