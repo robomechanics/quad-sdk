@@ -800,27 +800,32 @@ void spiritNLP::update_solver(
    // Update reference trajectory
    // Local planner has row as N and col as states
    // TODO: they may have different N?
-   // TODO: it should specify with tail or not
-   x_reference_ = ref_traj.transpose();
+   if (with_tail_)
+   {
+      // With tail
+      x_reference_.block(0, 0, 6, N_) = ref_traj.transpose().topRows(6);
+      x_reference_.block(6, 0, 2, N_) = Eigen::MatrixXd::Zero(2, N_);
+      x_reference_.block(8, 0, 6, N_) = ref_traj.transpose().bottomRows(6);
+      x_reference_.block(14, 0, 2, N_) = Eigen::MatrixXd::Zero(2, N_);
+   }
+   else
+   {
+      // Only leg
+      x_reference_ = ref_traj.transpose();
+   }
 
    if (refresh_)
    {
-      // w0_.fill(0);
-      // z_L0_.fill(0);
-      // z_U0_.fill(0);
-      // lambda0_.fill(0);
-
-      // for (int i = 0; i < N_; ++i)
-      // {
-      //    w0_(2 + i * (n_ + m_), 0) = 29;
-      //    w0_(5 + i * (n_ + m_), 0) = 29;
-      //    w0_(8 + i * (n_ + m_), 0) = 29;
-      //    w0_(11 + i * (n_ + m_), 0) = 29;
-      // }
-
       for (int i = 0; i < N_ + 1; ++i)
       {
-         w0_.block(i * 24 + 12, 0, 12, 1) = ref_traj.row(i).transpose();
+         if (with_tail_)
+         { // With tail
+            w0_.block(i * (n_ + m_) + m_, 0, n_ - 2, 1) = ref_traj.row(i).transpose();
+         }
+         else
+         { // Only leg
+            w0_.block(i * (n_ + m_) + m_, 0, n_, 1) = ref_traj.row(i).transpose();
+         }
       }
 
       refresh_ = false;

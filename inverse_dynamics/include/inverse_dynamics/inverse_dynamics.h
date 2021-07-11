@@ -209,12 +209,6 @@ private:
 	std::vector<double> counterVec;
 
 	double step_number;
-	
-	std::vector<double> walk_kp_;
-	std::vector<double> walk_kd_;
-
-	std::vector<double> aerial_kp_;
-	std::vector<double> aerial_kd_;
 };
 
 

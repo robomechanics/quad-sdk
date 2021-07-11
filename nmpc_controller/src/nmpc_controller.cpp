@@ -8,9 +8,12 @@ NMPCController::NMPCController(bool with_tail)
 NMPCController::NMPCController(ros::NodeHandle nh)
 {
   nh_ = nh;
-  init(false);
 
-  std::string robot_state_traj_topic, robot_state_topic, grf_array_topic, control_traj_topic;
+  bool with_tail;
+  ros::param::get("/nmpc_controller/with_tail", with_tail);
+  init(with_tail);
+
+  std::string robot_state_traj_topic, robot_state_topic, grf_array_topic, control_traj_topic, tail_control_topic;
   ros::param::get("topics/trajectory", robot_state_traj_topic);
   ros::param::get("topics/state/ground_truth", robot_state_topic);
   ros::param::get("topics/control/grfs", grf_array_topic);
@@ -21,7 +24,14 @@ NMPCController::NMPCController(ros::NodeHandle nh)
   robot_state_sub_ = nh_.subscribe(robot_state_topic, 1, &NMPCController::robotStateCallback, this);
   grf_array_pub_ = nh_.advertise<spirit_msgs::GRFArray>(grf_array_topic, 1);
   traj_pub_ = nh_.advertise<spirit_msgs::RobotPlan>(control_traj_topic, 1);
-  ROS_INFO("MPC Controller setup, waiting for callbacks");
+
+  if (with_tail)
+  {
+    spirit_utils::loadROSParam(nh_, "/topics/control/tail_command", tail_control_topic);
+    tail_control_pub_ = nh_.advertise<spirit_msgs::LegCommand>(tail_control_topic, 1);
+  }
+
+  ROS_INFO("NMPC Controller setup, waiting for callbacks");
 }
 
 void NMPCController::init(bool with_tail)
@@ -109,7 +119,20 @@ void NMPCController::robotPlanCallback(const spirit_msgs::RobotStateTrajectory::
 
 void NMPCController::robotStateCallback(const spirit_msgs::RobotState::ConstPtr &msg)
 {
-  cur_state_ = spirit_utils::odomMsgToEigen(msg->body);
+  if (mynlp_->with_tail_)
+  {
+    cur_state_ = Eigen::VectorXd::Zero(16);
+    cur_state_.segment(0, 6) = spirit_utils::odomMsgToEigen(msg->body).head(6);
+    cur_state_(6) = msg->tail_joints.position.at(0);
+    cur_state_(7) = msg->tail_joints.position.at(1);
+    cur_state_.segment(8, 6) = spirit_utils::odomMsgToEigen(msg->body).tail(6);
+    cur_state_(14) = msg->tail_joints.velocity.at(0);
+    cur_state_(15) = msg->tail_joints.velocity.at(1);
+  }
+  else
+  {
+    cur_state_ = spirit_utils::odomMsgToEigen(msg->body);
+  }
 }
 
 void NMPCController::extractMPCTrajectory(int start_idx,
@@ -204,8 +227,6 @@ void NMPCController::publishGRFArray()
       state_traj,
       control_traj);
 
-  std::cout<<cur_state_<<std::endl;
-
   // Copy normal forces into GRFArray
   spirit_msgs::GRFArray msg; // control traj nu x n
   msg.points.resize(num_legs_);
@@ -216,13 +237,34 @@ void NMPCController::publishGRFArray()
     msg.points[i].y = foot_positions(0, 3 * i + 1);
     msg.points[i].z = foot_positions(0, 3 * i + 2);
 
-    msg.vectors[i].x = control_traj(0, 3 * i);
-    msg.vectors[i].y = control_traj(0, 3 * i + 1);
-    msg.vectors[i].z = control_traj(0, 3 * i + 2);
+    msg.vectors[i].x = control_traj(0, mynlp_->leg_input_start_idx_ + 3 * i);
+    msg.vectors[i].y = control_traj(0, mynlp_->leg_input_start_idx_ + 3 * i + 1);
+    msg.vectors[i].z = control_traj(0, mynlp_->leg_input_start_idx_ + 3 * i + 2);
   }
 
   msg.header.stamp = ros::Time::now();
   grf_array_pub_.publish(msg);
+
+  spirit_msgs::LegCommand tail_msg;
+  tail_msg.motor_commands.resize(2);
+
+  if (mynlp_->with_tail_)
+  {
+    tail_msg.motor_commands.at(0).pos_setpoint = state_traj(0, 6);
+    tail_msg.motor_commands.at(0).vel_setpoint = state_traj(0, 14);
+    tail_msg.motor_commands.at(0).kp = 10;
+    tail_msg.motor_commands.at(0).kd = 1;
+    tail_msg.motor_commands.at(0).torque_ff = control_traj(0, 0);
+
+    tail_msg.motor_commands.at(1).pos_setpoint = state_traj(0, 7);
+    tail_msg.motor_commands.at(1).vel_setpoint = state_traj(0, 15);
+    tail_msg.motor_commands.at(1).kp = 10;
+    tail_msg.motor_commands.at(1).kd = 1;
+    tail_msg.motor_commands.at(1).torque_ff = control_traj(0, 1);
+
+    tail_msg.header.stamp = ros::Time::now();
+    tail_control_pub_.publish(tail_msg);
+  }
 }
 
 bool NMPCController::computePlan(const bool &new_step,

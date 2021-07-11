@@ -8,7 +8,13 @@
 
     <group ns="/trajectory">
         <!-- Point the robot description to this URDF -->
-        <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
+        <group if="$(arg tail)">
+            <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit_tail.urdf" />
+        </group>
+
+        <group unless="$(arg tail)">
+            <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
+        </group>
 
         <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">

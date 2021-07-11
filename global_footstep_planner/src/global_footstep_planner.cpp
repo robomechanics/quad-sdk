@@ -150,21 +150,21 @@ void GlobalFootstepPlanner::updateDiscretePlan() {
 
     FootstepState footstep(4);
 
-    // If we have robot state data, apply the current foot position for the first cycle
-    if (robot_state_msg_ != NULL) {
-      // Load the data into the footstep array and push into the plan
-      footstep[0] = robot_state_msg_->feet.feet[j].position.x;
-      footstep[1] = robot_state_msg_->feet.feet[j].position.y;
-      footstep[2] = 0.0;
-      if (t_offsets_trot[j] < 0.5*period_) {
-        footstep[3] = t_s[j];
-      } else {
-        footstep[3] = period_;
-      }
+    // // If we have robot state data, apply the current foot position for the first cycle
+    // if (robot_state_msg_ != NULL) {
+    //   // Load the data into the footstep array and push into the plan
+    //   footstep[0] = robot_state_msg_->feet.feet[j].position.x;
+    //   footstep[1] = robot_state_msg_->feet.feet[j].position.y;
+    //   footstep[2] = 0.0;
+    //   if (t_offsets_trot[j] < 0.5*period_) {
+    //     footstep[3] = t_s[j];
+    //   } else {
+    //     footstep[3] = period_;
+    //   }
 
-      footstep_plan_[j].push_back(footstep);
-      start_index = 1;
-    }
+    //   footstep_plan_[j].push_back(footstep);
+    //   start_index = 1;
+    // }
 
     double t_cycle;
     double t_cycle_end;

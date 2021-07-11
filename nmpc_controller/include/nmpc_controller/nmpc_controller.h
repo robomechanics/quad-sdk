@@ -14,6 +14,7 @@
 #include <spirit_utils/kinematics.h>
 #include "spirit_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <spirit_msgs/LegCommand.h>
 
 #include "nmpc_controller/spirit_nlp.h"
 #include "IpIpoptApplication.hpp"
@@ -110,6 +111,9 @@ private:
 
   /// ROS publisher for trajectory output
   ros::Publisher traj_pub_;
+
+  /// ROS publisher for trajectory output
+  ros::Publisher tail_control_pub_;
 
   /// Define map frame
   std::string map_frame_;

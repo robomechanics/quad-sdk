@@ -345,8 +345,19 @@ void RVizInterface::robotStateCallback(
 
   // Copy the joint portion of the state estimate message to a new message
   sensor_msgs::JointState joint_msg;
-  joint_msg = msg->joints;
-  
+  joint_msg.name.reserve(msg->joints.name.size() + msg->tail_joints.name.size());
+  joint_msg.name.insert(joint_msg.name.end(), msg->joints.name.begin(), msg->joints.name.end());
+  joint_msg.name.insert(joint_msg.name.end(), msg->tail_joints.name.begin(), msg->tail_joints.name.end());
+  joint_msg.position.reserve(msg->joints.position.size() + msg->tail_joints.position.size());
+  joint_msg.position.insert(joint_msg.position.end(), msg->joints.position.begin(), msg->joints.position.end());
+  joint_msg.position.insert(joint_msg.position.end(), msg->tail_joints.position.begin(), msg->tail_joints.position.end());
+  joint_msg.velocity.reserve(msg->joints.velocity.size() + msg->tail_joints.velocity.size());
+  joint_msg.velocity.insert(joint_msg.velocity.end(), msg->joints.velocity.begin(), msg->joints.velocity.end());
+  joint_msg.velocity.insert(joint_msg.velocity.end(), msg->tail_joints.velocity.begin(), msg->tail_joints.velocity.end());
+  joint_msg.effort.reserve(msg->joints.effort.size() + msg->tail_joints.effort.size());
+  joint_msg.effort.insert(joint_msg.effort.end(), msg->joints.effort.begin(), msg->joints.effort.end());
+  joint_msg.effort.insert(joint_msg.effort.end(), msg->tail_joints.effort.begin(), msg->tail_joints.effort.end());
+
   // Set the header to the main header of the state estimate message and publish
   joint_msg.header = msg->header;
   joint_msg.header.stamp = ros::Time::now();

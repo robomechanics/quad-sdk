@@ -103,6 +103,25 @@ namespace effort_controllers
     spirit_utils::loadROSParam(n, "/topics/control/tail_command",tail_command_topic);
 
     tail_sub_command_ = n.subscribe<spirit_msgs::LegCommand>(tail_command_topic, 1, &SpiritController::tailCommandCB, this);
+
+    spirit_msgs::LegCommand tail_msg;
+    tail_msg.motor_commands.resize(2);
+
+    tail_msg.motor_commands.at(0).pos_setpoint = 0;
+    tail_msg.motor_commands.at(0).vel_setpoint = 0;
+    tail_msg.motor_commands.at(0).kp = 10;
+    tail_msg.motor_commands.at(0).kd = 1;
+    tail_msg.motor_commands.at(0).torque_ff = 0;
+
+    tail_msg.motor_commands.at(1).pos_setpoint = 0;
+    tail_msg.motor_commands.at(1).vel_setpoint = 0;
+    tail_msg.motor_commands.at(1).kp = 10;
+    tail_msg.motor_commands.at(1).kd = 1;
+    tail_msg.motor_commands.at(1).torque_ff = 0;
+
+    tail_msg.header.stamp = ros::Time::now();
+    tail_commands_buffer_.writeFromNonRT(tail_msg.motor_commands);
+
     return true;
   }
 
@@ -150,6 +169,7 @@ namespace effort_controllers
         double torque_feedback = kp * pos_error + kd * vel_error;
         // double torque_lim = torque_lims_[ind.second];
         double torque_command = torque_feedback + torque_ff;
+        torque_command = std::max(std::min(torque_command, joint_urdfs_[i]->limits->effort), -joint_urdfs_[i]->limits->effort);
 
       // std::cout << "Joint " << i << ": " << "FF Torque: " << torque_ff << " FF Torque %: " << torque_ff/torque_command << " FB Torque: " << torque_feedback << " FB Torque %: " << torque_feedback/torque_command << " Total Torque: " << torque_command << std::endl;
 

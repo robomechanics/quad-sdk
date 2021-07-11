@@ -18,6 +18,6 @@
     <node name="leg_overrider" pkg="inverse_dynamics" type="leg_overrider_node" output="screen"/>
 
     <!-- Launch the node to publish tail control-->
-    <node name="tail_controller" pkg="tail_controller" type="tail_controller_node" output="screen"/>
+    <!-- <node name="tail_controller" pkg="tail_controller" type="tail_controller_node" output="screen"/> -->
 
 </launch>
