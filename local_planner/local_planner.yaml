@@ -9,19 +9,19 @@ local_body_planner:
   body_ixx: 0.1
   body_iyy: 0.2
   body_izz: 0.2
-  state_weights: [ 10.0,10.0,50.0,1.0,1.0,50.0,1.0,1.0,1.0,1.0,1.0,1.0 ] # state_weights: [ 1000.0,1000.0,1000.0,1000.0,1000.0,1000.0,0.01,0.01,0.01,0.01,0.01,0.01 ]
+  state_weights: [ 10.0,10.0,50.0,10.0,10.0,10.0,1.0,1.0,1.0,1.0,1.0,1.0 ] # state_weights: [ 1000.0,1000.0,1000.0,1000.0,1000.0,1000.0,0.01,0.01,0.01,0.01,0.01,0.01 ]
   terminal_weight_scaling: 1.0
   control_weights: [0.000001, 0.000001, 0.000001] #fx,fy,fz # control_weights: [0.0001, 0.0001, 0.0001] #fx,fy,fz
-  state_lower_bound: [-100,-100, 0.15,-0.4,-0.785,-10,-5,-5,-2,-3.14,-3.14,-3.14]
-  state_upper_bound: [ 100, 100, 0.35, 0.4, 0.785, 10, 5, 5, 2, 3.14, 3.14, 3.14]
+  state_lower_bound: [-100,-100, 0.15,-0.785,-0.785,-10,-5,-5,-2,-3.14,-3.14,-3.14]
+  state_upper_bound: [ 100, 100, 0.35, 0.785, 0.785, 10, 5, 5, 2, 3.14, 3.14, 3.14]
   friction_mu: 0.4
   normal_lo: 5
-  normal_hi: 100
+  normal_hi: 150
 
 local_footstep_planner:
   grf_weight: 0.0
   period: 0.36 # s
-  ground_clearance: 0.1
+  ground_clearance: 0.12
   standing_error_threshold: 0.03 # m
 
 mpc_controller:
