@@ -5,9 +5,9 @@ terrain_map_publisher:
   resolution: 0.2
   obstacle_x: 2.0
   obstacle_y: 0.0
-  obstacle_radius: 0.5
+  obstacle_radius: 1.0
   obstacle_height: 0.0
-  step_x: 4.0
+  step_x: 2.0
   step_height: 0.0
 
 map_frame: map
