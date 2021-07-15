@@ -306,7 +306,7 @@ bool QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
     solver_.settings()->setWarmStart(true);
     solver_.settings()->setCheckTermination(10);
     solver_.settings()->setScaling(false);
-    solver_.settings()->setAbsoluteTolerance(1e-2); //1e-2
+    solver_.settings()->setAbsoluteTolerance(1e-3); //1e-2
     solver_.settings()->setRelativeTolerance(1e-4); //1e-4
     solver_.initSolver();
 
@@ -345,7 +345,7 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
   Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj){
 
   // Pass inputs into solver and solve
-  update_dynamics(ref_traj,foot_positions);
+  update_dynamics(state_traj,foot_positions);
   update_contact(contact_schedule, f_min_, f_max_);
 
   // Perform the solve
@@ -366,6 +366,7 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
   // std::cout << "control_traj" << std::endl << control_traj << std::endl << std::endl;
   // throw std::runtime_error("STOP AND CHECK");
 
-  control_traj = control_traj.block(0,0,control_traj.rows(), control_traj.cols()-1);
+  // control_traj = control_traj.block(0,0,control_traj.rows(), control_traj.cols()-1);
+  control_traj = control_traj.leftCols(control_traj.cols()-1);
   return true;
 }

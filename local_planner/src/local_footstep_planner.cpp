@@ -133,7 +133,7 @@ void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_pos
 
 void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan,
   const Eigen::MatrixXd &grf_plan, const std::vector<std::vector<bool>> &contact_schedule,
-  Eigen::MatrixXd &foot_positions) {
+  const Eigen::MatrixXd &ref_body_plan, Eigen::MatrixXd &foot_positions) {
 
   // Loop through each foot
   for (int j=0; j<num_feet_; j++) {
@@ -148,17 +148,18 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
       
         // Declare foot position vectors
         Eigen::Vector3d foot_position, foot_position_grf,
-          foot_position_nominal, hip_position_midstance, centrifugal;
+          foot_position_nominal, hip_position_midstance, centrifugal, vel_tracking;
 
         // Declare body and grf vectors
         Eigen::Vector3d body_pos_midstance, body_rpy_midstance, 
-          body_vel_touchdown, body_ang_vel_touchdown, grf_midstance;
+          body_vel_touchdown, ref_body_vel_touchdown, body_ang_vel_touchdown, grf_midstance;
 
         // Extract body and grf information
         int midstance = std::min(i + half_duty_cycle, horizon_length_-1);
         body_pos_midstance = body_plan.block<1,3>(midstance,0);
         body_rpy_midstance = body_plan.block<1,3>(midstance,3);
         body_vel_touchdown = body_plan.block<1,3>(i,6);
+        ref_body_vel_touchdown = ref_body_plan.block<1,3>(i,6);
         body_ang_vel_touchdown = body_plan.block<1,3>(i,9);
         grf_midstance = grf_plan.block<1,3>(midstance,3*j);
 
@@ -168,11 +169,13 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         double hip_height = hip_position_midstance.z() - 
           terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());
         centrifugal = 0.5*sqrt(hip_height/9.81)*body_vel_touchdown.cross(body_ang_vel_touchdown);
-        foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
+        vel_tracking = 0.03*(body_vel_touchdown - ref_body_vel_touchdown);
+        // foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
 
         // Combine these measures to get the nominal foot position and grab correct height
-        foot_position_nominal = grf_weight_*foot_position_grf +
-          (1-grf_weight_)*(hip_position_midstance + centrifugal);
+        // foot_position_nominal = grf_weight_*foot_position_grf +
+        //   (1-grf_weight_)*(hip_position_midstance + centrifugal);
+        foot_position_nominal = hip_position_midstance + centrifugal + vel_tracking;
         foot_position_nominal.z() = terrain_.getGroundHeight(foot_position_nominal.x(),
           foot_position_nominal.y());
 
