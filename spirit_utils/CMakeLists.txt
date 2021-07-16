@@ -21,6 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
   spirit_msgs
   grid_map_core
   grid_map_ros
+  grid_map_pcl
 )
 
 find_package(PythonLibs 2.7)
@@ -29,7 +30,7 @@ find_package(Eigen3 REQUIRED)
 catkin_package(
   INCLUDE_DIRS include ${PYTHON_INCLUDE_DIRS}
   LIBRARIES spirit_utils
-  CATKIN_DEPENDS roscpp std_msgs nav_msgs sensor_msgs geometry_msgs spirit_msgs grid_map_core grid_map_ros
+  CATKIN_DEPENDS roscpp std_msgs nav_msgs sensor_msgs geometry_msgs spirit_msgs grid_map_core grid_map_ros grid_map_pcl
 	DEPENDS EIGEN3
 )
 
@@ -43,13 +44,14 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
-  # ${PYTHON_INCLUDE_DIRS}
+  ${PYTHON_INCLUDE_DIRS}
 )
 
 add_library(spirit_utils
   src/rviz_interface.cpp
   src/fast_terrain_map.cpp
   src/terrain_map_publisher.cpp
+  src/mesh_to_grid_map_converter.cpp
   src/ground_truth_publisher.cpp
   src/robot_proxy.cpp
   src/foot_jacobians.cpp
@@ -57,6 +59,7 @@ add_library(spirit_utils
   src/ros_utils.cpp
   src/kinematics.cpp
   src/trajectory_publisher.cpp
+  src/remote_heartbeat.cpp
 )
 add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(spirit_utils)
@@ -66,9 +69,11 @@ target_link_libraries(spirit_utils)
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(rviz_interface_node src/rviz_interface_node.cpp)
 add_executable(terrain_map_publisher_node src/terrain_map_publisher_node.cpp)
+add_executable(mesh_to_grid_map_node src/mesh_to_grid_map_node.cpp)
 add_executable(ground_truth_publisher_node src/ground_truth_publisher_node.cpp)
 add_executable(trajectory_publisher_node src/trajectory_publisher_node.cpp)
 add_executable(robot_proxy_node src/robot_proxy_node.cpp)
+add_executable(remote_heartbeat_node src/remote_heartbeat_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(rviz_interface_node
@@ -77,6 +82,11 @@ target_link_libraries(rviz_interface_node
 )
 
 target_link_libraries(terrain_map_publisher_node
+  spirit_utils
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(mesh_to_grid_map_node
   spirit_utils
   ${catkin_LIBRARIES}
 )
@@ -96,6 +106,11 @@ target_link_libraries(robot_proxy_node
   ${catkin_LIBRARIES}
 )
 
+target_link_libraries(remote_heartbeat_node
+  spirit_utils
+  ${catkin_LIBRARIES}
+)
+
 #############
 ## Testing ##
 #############
@@ -109,6 +124,6 @@ catkin_add_gtest(spirit_utils-test
   test/test_fast_terrain_map.cpp
   test/test_kinematics.cpp
   test/test_eigen.cpp
+  test/test_math_utils.cpp
   test/test_main.cpp)
-target_link_libraries(spirit_utils-test spirit_utils ${catkin_LIBRARIES})
-
+target_link_libraries(spirit_utils-test spirit_utils ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})

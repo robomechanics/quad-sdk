@@ -57,6 +57,7 @@
   <build_depend>spirit_msgs</build_depend>
   <build_depend>grid_map_core</build_depend>
   <build_depend>grid_map_ros</build_depend>
+  <build_depend>grid_map_pcl</build_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
   <build_export_depend>nav_msgs</build_export_depend>
@@ -65,6 +66,7 @@
   <build_export_depend>spirit_msgs</build_export_depend>
   <build_export_depend>grid_map_core</build_export_depend>
   <build_export_depend>grid_map_ros</build_export_depend>
+  <build_export_depend>grid_map_pcl</build_export_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>nav_msgs</exec_depend>
@@ -73,6 +75,7 @@
   <exec_depend>spirit_msgs</exec_depend>
   <exec_depend>grid_map_core</exec_depend>
   <exec_depend>grid_map_ros</exec_depend>
+  <exec_depend>grid_map_pcl</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

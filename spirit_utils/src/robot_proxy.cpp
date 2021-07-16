@@ -4,10 +4,12 @@ RobotProxy::RobotProxy(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string control_input_topic, joint_encoder_topic, imu_topic, mocap_topic;
+  std::string control_input_topic, joint_encoder_topic, imu_topic,
+    twist_topic, mocap_topic;
   nh.param<std::string>("topics/control_input", control_input_topic, "/control_input");
   nh.param<std::string>("topics/joint_encoder", joint_encoder_topic, "/joint_encoder");
   nh.param<std::string>("topics/imu", imu_topic, "/imu");
+  nh.param<std::string>("topics/vel", twist_topic, "/vel");
   nh.param<std::string>("topics/mocap", mocap_topic, "/mocap_optitrack/spirit/pose");
   nh.param<double>("robot_proxy/update_rate", update_rate_, 2);
 
@@ -16,6 +18,7 @@ RobotProxy::RobotProxy(ros::NodeHandle nh) {
   control_input_sub_ = nh_.subscribe(control_input_topic,1,&RobotProxy::grfArrayCallback, this);
   joint_encoder_pub_ = nh_.advertise<sensor_msgs::JointState>(joint_encoder_topic,1);
   imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic,1);
+  twist_pub_ = nh_.advertise<geometry_msgs::TwistStamped>(twist_topic,1);
   mocap_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(mocap_topic,1);
 }
 
@@ -47,6 +50,13 @@ void RobotProxy::publishImu() {
   msg.orientation.z = 0;
   msg.orientation.w = 1;
   imu_pub_.publish(msg);
+
+  geometry_msgs::TwistStamped twist_msg;
+  twist_msg.header.stamp = ros::Time::now();
+  twist_msg.twist.angular.x = 0;
+  twist_msg.twist.angular.y = 0;
+  twist_msg.twist.angular.z = 0;
+  twist_pub_.publish(twist_msg);
 }
 
 void RobotProxy::publishMocap() {

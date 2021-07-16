@@ -1,6 +1,7 @@
 topics:
   joint_encoder: /mcu/state/jointURDF
   imu: /mcu/state/imu
+  vel: /mcu/state/vel
   mocap: /mocap_node/spirit/pose
   terrain_map: /terrain_map
   global_plan: /global_plan
@@ -11,8 +12,8 @@ topics:
   body_force:
     joint_torques: /body_force/joint_torques
     toe_forces: /body_force/toe_forces
-  # joint_command: /spirit/joint_controller/command
   trajectory: /robot_plan
+  remote_heartbeat: /remote_heartbeat
   state: # These should not change for the remapping to work in some launch files
     ground_truth: /state/ground_truth
     estimate: /state/estimate
