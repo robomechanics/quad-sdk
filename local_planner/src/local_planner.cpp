@@ -8,8 +8,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
 
 	nh_ = nh;
   
-  printf("In constructor\n");
-
     // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic, local_plan_topic,
     foot_plan_discrete_topic, foot_plan_continuous_topic;
@@ -62,8 +60,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   // Initialize body and footstep planners
   initLocalBodyPlanner();
   initLocalFootstepPlanner();
-
-  ROS_INFO("LocalPlanner setup complete, waiting for callbacks");
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -224,9 +220,24 @@ void LocalPlanner::preProcessPlanAndState() {
     }
   }
 
-  // Initialize foot positions and contact schedule
-  foot_positions_body_ = hip_projected_foot_positions_;
-  foot_positions_world_.setZero();
+  // Update the body plan to use for linearization
+  if (body_plan_.rows() < N_+1) {
+    // Cold start with reference  plan
+    body_plan_ = ref_body_plan_;
+
+    foot_positions_body_ = hip_projected_foot_positions_;
+    foot_positions_world_.setZero();
+  } else {
+    // Warm start with old solution indexed by one
+    body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
+    body_plan_.row(N_+1) = ref_body_plan_.row(N_+1);
+
+    // No reference for feet so last two elements will be the same
+    foot_positions_body_.topRows(N_-1) = foot_positions_body_.bottomRows(N_-1);
+    foot_positions_world_.topRows(N_-1) = foot_positions_world_.bottomRows(N_-1);
+  }
+
+  // Initialize with current foot and body positions
   foot_positions_body_.row(0) = current_foot_positions_body_;
   foot_positions_world_.row(0) = current_foot_positions_world_;
 }
@@ -265,18 +276,20 @@ bool LocalPlanner::computeLocalPlan() {
 
     // Compute the new footholds to match that body plan
     local_footstep_planner_->computeFootPositions(body_plan_, grf_plan_,
-      contact_schedule_, foot_positions_world_);
+      contact_schedule_, ref_body_plan_, foot_positions_world_);
 
     // Transform the new foot positions into the body frame for recomputing (if needed)
-    if (i < iterations_-1) {
       local_footstep_planner_->getFootPositionsBodyFrame(body_plan_, foot_positions_world_,
         foot_positions_body_);
-    }
   }
 
   // Report the function time
-  if (timer.reportSilent() >= 1.0/update_rate_) {
-    ROS_WARN_THROTTLE(0.1, "LocalPlanner::computeLocalPlan exceeded allowed duration");
+  compute_time_ = 1000*timer.reportSilent();
+  if (compute_time_ >= 1000.0/update_rate_) {
+    ROS_WARN_THROTTLE(0.1, "LocalPlanner took %5.3fms, exceeding %5.3fms allowed",
+      compute_time_, 1000.0/update_rate_);
+  } else {
+    ROS_INFO("LocalPlanner took %5.3f ms", compute_time_);
   };
   
   return true;
@@ -294,6 +307,7 @@ void LocalPlanner::publishLocalPlan() {
   local_plan_msg.header.stamp = timestamp;
   local_plan_msg.header.frame_id = map_frame_;
   local_plan_msg.global_plan_timestamp = body_plan_msg_->global_plan_timestamp;
+  local_plan_msg.compute_time = compute_time_;
   future_footholds_msg.header = local_plan_msg.header;
   foot_plan_msg.header = local_plan_msg.header;
 

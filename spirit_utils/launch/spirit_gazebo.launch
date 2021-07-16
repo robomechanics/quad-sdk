@@ -26,23 +26,30 @@ SOFTWARE.
 
 <launch>
 
-  <arg name="gui" default="false"/>
-  <arg name="paused" default="false"/>
-  <arg name="software" default="true"/>
-  <arg name="body_planner" default="global"/>
-  <arg name="live_plot" default="false"/>
+  <arg name="gui"             default="false"/>
+  <arg name="paused"          default="false"/>
+  <arg name="software"        default="true"/>
+  <arg name="global_planner"  default="fgmp"/>
+  <arg name="live_plot"       default="false"/>
+  <arg name="mblink"          default="false"/>
+  <arg name="world"           default="flat"/>
 
   <group if="$(arg software)">
-    <include file="$(find spirit_utils)/launch/mapping.launch" />
+    <include file="$(find spirit_utils)/launch/mapping.launch" >
+      <arg name="input_type" value="mesh"/>
+      <arg name="world" value="$(arg world)"/>
+    </include>
     <include file="$(find spirit_utils)/launch/visualization.launch">
       <arg name="live_plot" value="$(arg live_plot)"/>
     </include>
-    <include file="$(find spirit_utils)/launch/robot_driver.launch"/>
+    <include file="$(find spirit_utils)/launch/robot_driver.launch">
+      <arg name="mblink" value="$(arg mblink)"/>
+    </include>
     <!-- <include file="$(find spirit_utils)/launch/planning.launch">
-      <arg name="body_planner" value="$(arg body_planner)"/>
+      <arg name="global_planner" value="$(arg global_planner)"/>
     </include>
 
-    <group if="$(eval body_planner == 'twist')">
+    <group if="$(eval global_planner == 'twist')">
       <node name="twist_key_controller"
         pkg="spirit_utils"
         type="twist_key_controller.py"
@@ -55,7 +62,7 @@ SOFTWARE.
   <!-- Launch the Spirit world with specific physics parameters -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="paused" value="$(arg paused)"/>
-    <arg name="world_name" value="$(find gazebo_scripts)/worlds/ghost.world"/>
+    <arg name="world_name" value="$(find gazebo_scripts)/worlds/$(arg world)/$(arg world).world"/>
     <arg name="gui" value="$(arg gui)"/>
     <arg name="physics" value="ode"/>
   </include>
@@ -64,7 +71,7 @@ SOFTWARE.
   <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
 
   <!-- Spawn SDF model -->
-  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.3 -J 1 1.632 -J 3 1.632 -J 5 1.632 -J 7 1.632 -J 0 0.816 -J 2 0.816 -J 4 0.816 -J 6 0.816" output="screen"/>
+  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.4 -J 1 1.632 -J 3 1.632 -J 5 1.632 -J 7 1.632 -J 0 0.816 -J 2 0.816 -J 4 0.816 -J 6 0.816" output="screen"/>
 
   <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
   <include file="$(find spirit_utils)/launch/load_params.launch" />

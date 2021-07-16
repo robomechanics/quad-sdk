@@ -5,6 +5,7 @@
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/TwistStamped.h>
 #include <spirit_msgs/GRFArray.h>
 
 //! A class for interfacing between dummy robot data and other spirit-software nodes and topics.
@@ -56,6 +57,9 @@ private:
 
   /// ROS publisher for imu data
   ros::Publisher imu_pub_;
+
+  /// ROS publisher for twist data
+  ros::Publisher twist_pub_;
 
   /// ROS publisher for mocap data
   ros::Publisher mocap_pub_;

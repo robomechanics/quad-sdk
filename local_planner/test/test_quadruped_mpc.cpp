@@ -18,7 +18,7 @@ TEST(TestUseCase, quadVariable) {
   // Configurable (system) parameters
   const int Nu = 13;      // Appended gravity term
   const int Nx = 12;      // Number of states
-  const int N = 24;       // Time horizons to consider
+  const int N = 36;       // Time horizons to consider
   const double dt = 0.03; // Time horizon
   const double m = 11.5;    // Mass of quad
   const double Ixx = 0.1; // approximately SDF values, but will need refining
@@ -28,15 +28,15 @@ TEST(TestUseCase, quadVariable) {
   // Weights on state deviation and control input
   Eigen::MatrixXd Qx(Nx, Nx);
   Qx.setZero();
-  double e = 1e-2;
-  Qx.diagonal() << 1e3,1e3,1e3,1e3,1e3,1e3,e,e,e,e,e,e;
+  double e = 1.0;
+  Qx.diagonal() << 10,10,50.0,10,10,e,e,e,e,e,e,e;
 
   Eigen::MatrixXd Ru(Nu, Nu);
   Ru.setZero();
 
-  double Rfx = 1e-4;
-  double Rfy = 1e-4;
-  double Rfz = 1e-4;
+  double Rfx = 1e-6;
+  double Rfy = 1e-6;
+  double Rfz = 1e-6;
   Ru.diagonal() << Rfx,Rfy,Rfz,Rfx,Rfy,Rfz,Rfx,Rfy,Rfz,Rfx,Rfy,Rfz,0;
 
   // State bounds (fixed for a given solve) 
