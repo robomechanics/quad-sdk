@@ -81,17 +81,6 @@ spiritNLP::spiritNLP(
    lambda0_ = Eigen::MatrixXd(g_ * N_, 1);
    lambda0_.fill(0);
 
-   for (int i = 0; i < N_; ++i)
-   {
-      w0_(2 + i * (n_ + m_), 0) = 29;
-      w0_(5 + i * (n_ + m_), 0) = 29;
-      w0_(8 + i * (n_ + m_), 0) = 29;
-      w0_(11 + i * (n_ + m_), 0) = 29;
-   }
-
-   // We will use the reference input as initial guess if solver fails
-   refresh_ = true;
-
    x_reference_ = Eigen::MatrixXd(n_, N_);
    x_reference_.fill(0);
 
@@ -746,11 +735,6 @@ void spiritNLP::finalize_solution(
 
    Eigen::Map<const Eigen::MatrixXd> lambda_matrix(lambda, m, 1);
    lambda0_ = lambda_matrix;
-
-   if (status != SUCCESS)
-   {
-      refresh_ = true;
-   }
 }
 
 void spiritNLP::shift_initial_guess()
@@ -802,27 +786,4 @@ void spiritNLP::update_solver(
    // TODO: they may have different N?
    // TODO: it should specify with tail or not
    x_reference_ = ref_traj.transpose();
-
-   if (refresh_)
-   {
-      // w0_.fill(0);
-      // z_L0_.fill(0);
-      // z_U0_.fill(0);
-      // lambda0_.fill(0);
-
-      // for (int i = 0; i < N_; ++i)
-      // {
-      //    w0_(2 + i * (n_ + m_), 0) = 29;
-      //    w0_(5 + i * (n_ + m_), 0) = 29;
-      //    w0_(8 + i * (n_ + m_), 0) = 29;
-      //    w0_(11 + i * (n_ + m_), 0) = 29;
-      // }
-
-      for (int i = 0; i < N_ + 1; ++i)
-      {
-         w0_.block(i * 24 + 12, 0, 12, 1) = ref_traj.row(i).transpose();
-      }
-
-      refresh_ = false;
-   }
 }
