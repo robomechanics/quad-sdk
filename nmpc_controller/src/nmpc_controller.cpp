@@ -76,19 +76,15 @@ void NMPCController::init(bool with_tail)
   app_ = IpoptApplicationFactory();
 
   // app_->Options()->SetIntegerValue("max_iter", 100);
-  // app_->Options()->SetIntegerValue("print_level", 3);
   // app_->Options()->SetStringValue("print_timing_statistics", "yes");
+  // app_->Options()->SetStringValue("linear_solver", "ma57");
+  // app_->Options()->SetStringValue("nlp_scaling_method", "none");
+  app_->Options()->SetIntegerValue("print_level", 0);
   app_->Options()->SetStringValue("mu_strategy", "adaptive");
   app_->Options()->SetStringValue("mehrotra_algorithm", "yes");
-  app_->Options()->SetNumericValue("max_wall_time", 4 * dt);
-  app_->Options()->SetNumericValue("warm_start_bound_push", 1e-9);
-  app_->Options()->SetNumericValue("warm_start_bound_frac", 1e-9);
-  app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-9);
-  app_->Options()->SetNumericValue("warm_start_slack_bound_frac", 1e-9);
-  app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-9);
-  app_->Options()->SetNumericValue("warm_start_mult_init_max", 1e-9);
-  // app_->Options()->SetStringValue("linear_solver", "ma57");
+
   app_->Options()->SetNumericValue("tol", 1e-3);
+  app_->Options()->SetNumericValue("max_wall_time", 4 * mynlp_->dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();
@@ -99,6 +95,8 @@ void NMPCController::init(bool with_tail)
               << "*** Error during NMPC initialization!" << std::endl;
     return;
   }
+
+  // Optimize once for structure preparation
   status = app_->OptimizeTNLP(mynlp_);
 }
 
@@ -204,8 +202,6 @@ void NMPCController::publishGRFArray()
       state_traj,
       control_traj);
 
-  std::cout<<cur_state_<<std::endl;
-
   // Copy normal forces into GRFArray
   spirit_msgs::GRFArray msg; // control traj nu x n
   msg.points.resize(num_legs_);
@@ -233,6 +229,9 @@ bool NMPCController::computePlan(const bool &new_step,
                                  Eigen::MatrixXd &state_traj,
                                  Eigen::MatrixXd &control_traj)
 {
+  // Start a timer
+  spirit_utils::FunctionTimer timer(__FUNCTION__);
+
   if (new_step)
   {
     mynlp_->shift_initial_guess();
@@ -245,7 +244,7 @@ bool NMPCController::computePlan(const bool &new_step,
       contact_schedule);
 
   ApplicationReturnStatus status;
-  status = app_->ReOptimizeTNLP(mynlp_);
+  status = app_->OptimizeTNLP(mynlp_);
 
   Eigen::MatrixXd x(mynlp_->n_, mynlp_->N_);
   Eigen::MatrixXd u(mynlp_->m_, mynlp_->N_);
@@ -259,16 +258,35 @@ bool NMPCController::computePlan(const bool &new_step,
   state_traj = x.transpose();
   control_traj = u.transpose();
 
-  if (status != Solve_Succeeded)
+  if (status == Solve_Succeeded)
   {
-    app_->Options()->SetStringValue("warm_start_init_point", "no");
-    return false;
+    // Activate warm start
+    app_->Options()->SetStringValue("warm_start_init_point", "yes");
+    app_->Options()->SetNumericValue("warm_start_bound_push", 1e-15);
+    app_->Options()->SetNumericValue("warm_start_bound_frac", 1e-15);
+    app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-15);
+    app_->Options()->SetNumericValue("warm_start_slack_bound_frac", 1e-15);
+    app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-15);
+    app_->Options()->SetNumericValue("warm_start_mult_init_max", 1e-15);
+    app_->Options()->SetNumericValue("max_wall_time", mynlp_->dt_);
   }
   else
   {
-    app_->Options()->SetStringValue("warm_start_init_point", "yes");
-    return true;
+    // Disable warm start
+    app_->Options()->SetStringValue("warm_start_init_point", "no");
+    app_->Options()->SetNumericValue("warm_start_bound_push", 1e-3);
+    app_->Options()->SetNumericValue("warm_start_bound_frac", 1e-3);
+    app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-3);
+    app_->Options()->SetNumericValue("warm_start_slack_bound_frac", 1e-3);
+    app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-3);
+    app_->Options()->SetNumericValue("warm_start_mult_init_max", 1e6);
+    app_->Options()->SetNumericValue("max_wall_time", 4 * mynlp_->dt_);
   }
+
+  double compute_time = 1000 * timer.reportSilent();
+  ROS_INFO_STREAM("IPOPT solve time: " << compute_time << " ms");
+
+  return (status == Solve_Succeeded) && (compute_time <= 1000 * mynlp_->dt_);
 }
 
 void NMPCController::spin()

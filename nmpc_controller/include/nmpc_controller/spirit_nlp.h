@@ -46,8 +46,6 @@ public:
     // Initial guess
     Eigen::MatrixXd w0_, z_L0_, z_U0_, lambda0_;
 
-    bool refresh_;
-
     // State reference for computing cost
     Eigen::MatrixXd x_reference_;
 
