@@ -151,6 +151,7 @@ namespace spirit_utils {
 
       // Set contact state to the first state
       interp_state.contact_states[i] = state_1.contact_states[i];
+
     }
   }
 
@@ -209,7 +210,6 @@ namespace spirit_utils {
     interpRobotState(state_1, state_2, t_interp, interp_state);
     interp_primitive_id = primitive_id_1;
     interpGRFArray(grf_1, grf_2, t_interp, interp_grf);
-
   }
 
   spirit_msgs::MultiFootState interpMultiFootPlanContinuous(

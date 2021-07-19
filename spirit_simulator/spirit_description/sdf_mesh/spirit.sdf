@@ -290,6 +290,7 @@ SOFTWARE.
         <contact>
           <collision>toe0_collision</collision>
         </contact>
+        <update_rate>500</update_rate>
       </sensor> -->
       <visual name='lower0_visual'>
         <pose frame=''>0 0 0 0 0 0</pose>
@@ -559,6 +560,7 @@ SOFTWARE.
         <contact>
           <collision>toe1_collision</collision>
         </contact>
+        <update_rate>500</update_rate>
       </sensor> -->
       <visual name='lower1_visual'>
         <pose frame=''>0 0 0 0 0 0</pose>
@@ -829,6 +831,7 @@ SOFTWARE.
         <contact>
           <collision>toe2_collision</collision>
         </contact>
+        <update_rate>500</update_rate>
       </sensor> -->
       <visual name='lower2_visual'>
         <pose frame=''>0 0 0 0 0 0</pose>
@@ -1098,6 +1101,7 @@ SOFTWARE.
         <contact>
           <collision>toe3_collision</collision>
         </contact>
+        <update_rate>500</update_rate>
       </sensor> -->
       <visual name='lower3_visual'>
         <pose frame=''>0 0 0 0 0 0</pose>
@@ -1207,10 +1211,16 @@ SOFTWARE.
         </surface>
       </collision>
       <sensor name="toe0_contact" type="contact">
-        <plugin name="toe0_plugin" filename="libcontact.so"/>
+        <plugin name="toe0_plugin" filename="libgazebo_ros_bumper.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>500</updateRate>
+          <bumperTopicName>gazebo/toe0_contact_state</bumperTopicName>
+          <frameName>world</frameName>
+        </plugin>
         <contact>
           <collision>toe0_collision</collision>
         </contact>
+        <update_rate>500</update_rate>
       </sensor>
       <visual name='toe0_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -1288,10 +1298,16 @@ SOFTWARE.
         </surface>
       </collision>
       <sensor name="toe1_contact" type="contact">
-        <plugin name="toe1_plugin" filename="libcontact.so"/>
+        <plugin name="toe1_plugin" filename="libgazebo_ros_bumper.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>500</updateRate>
+          <bumperTopicName>gazebo/toe1_contact_state</bumperTopicName>
+          <frameName>world</frameName>
+        </plugin>
         <contact>
           <collision>toe1_collision</collision>
         </contact>
+        <update_rate>500</update_rate>
       </sensor>
       <visual name='toe1_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -1369,10 +1385,16 @@ SOFTWARE.
         </surface>
       </collision>
       <sensor name="toe2_contact" type="contact">
-        <plugin name="toe2_plugin" filename="libcontact.so"/>
+        <plugin name="toe2_plugin" filename="libgazebo_ros_bumper.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>500</updateRate>
+          <bumperTopicName>gazebo/toe2_contact_state</bumperTopicName>
+          <frameName>world</frameName>
+        </plugin>
         <contact>
           <collision>toe2_collision</collision>
         </contact>
+        <update_rate>500</update_rate>
       </sensor>
       <visual name='toe2_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -1450,10 +1472,16 @@ SOFTWARE.
         </surface>
       </collision>
       <sensor name="toe3_contact" type="contact">
-        <plugin name="toe3_plugin" filename="libcontact.so"/>
+        <plugin name="toe3_plugin" filename="libgazebo_ros_bumper.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>500</updateRate>
+          <bumperTopicName>gazebo/toe3_contact_state</bumperTopicName>
+          <frameName>world</frameName>
+        </plugin>
         <contact>
           <collision>toe3_collision</collision>
         </contact>
+        <update_rate>500</update_rate>
       </sensor>
       <visual name='toe3_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
