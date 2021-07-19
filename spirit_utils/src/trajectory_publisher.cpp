@@ -67,7 +67,8 @@ void TrajectoryPublisher::robotStateCallback(const spirit_msgs::RobotState::Cons
 void TrajectoryPublisher::multiFootPlanContinuousCallback(const 
   spirit_msgs::MultiFootPlanContinuous::ConstPtr& msg) {
 
-  if (msg->header.stamp != multi_foot_plan_continuous_msg_.header.stamp) {
+  if (msg->header.stamp != multi_foot_plan_continuous_msg_.header.stamp && 
+    (msg->states.front().traj_index == 0) ) {
     // Save the most recent foot plan
     multi_foot_plan_continuous_msg_ = (*msg);
     update_flag_ = true;
@@ -92,14 +93,14 @@ void TrajectoryPublisher::updateTrajectory() {
   double t_foot_plan = t_foot_plan_ros.toSec();
 
   if (t_body_plan < t_foot_plan) {
-    ROS_INFO_THROTTLE(1, "Foot plan duration is longer than body plan, traj prublisher "
+    ROS_DEBUG_THROTTLE(1, "Foot plan duration is longer than body plan, traj prublisher "
       "will wait");
     return;
   }
 
   // Create t_traj vector with specified dt
-  double traj_duration = std::min(t_body_plan, t_foot_plan);
-  // double traj_duration = t_body_plan;
+  // double traj_duration = std::min(t_body_plan, t_foot_plan);
+  double traj_duration = t_body_plan;
   double t = 0;
   t_traj_.clear();
   while (t < traj_duration) {

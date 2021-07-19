@@ -305,17 +305,16 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
     z_vec.push_back(body_state[2]);
   }
 
-  plt::clf();
-  plt::ion();
-  // plt::named_plot("unwrapped yaw", interp_t, unwrapped_yaw);
-  plt::named_plot("x", interp_t, x_vec);
-  plt::named_plot("y", interp_t, y_vec);
-  plt::named_plot("z", interp_t, z_vec);
-  plt::xlabel("t");
-  plt::ylabel("data");
-  plt::legend();
-  plt::show();
-  plt::pause(0.001);
+  // plt::clf();
+  // plt::ion();
+  // plt::named_plot("x", interp_t, x_vec);
+  // plt::named_plot("y", interp_t, y_vec);
+  // plt::named_plot("z", interp_t, z_vec);
+  // plt::xlabel("t");
+  // plt::ylabel("data");
+  // plt::legend();
+  // plt::show();
+  // plt::pause(0.001);
 }
 
 GRF getGRF(Action a,double t, const PlannerConfig &planner_config) {
