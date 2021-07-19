@@ -366,7 +366,8 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
   // std::cout << "control_traj" << std::endl << control_traj << std::endl << std::endl;
   // throw std::runtime_error("STOP AND CHECK");
 
-  // control_traj = control_traj.block(0,0,control_traj.rows(), control_traj.cols()-1);
-  control_traj = control_traj.leftCols(control_traj.cols()-1);
+  unsigned int numRows = control_traj.rows();
+  unsigned int numCols = control_traj.cols()-1;
+  control_traj.conservativeResize(numRows,numCols);
   return true;
 }

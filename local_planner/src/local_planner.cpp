@@ -292,6 +292,9 @@ void LocalPlanner::publishLocalPlan() {
   //   std::cout << "contact_schedule_\n" << std::endl;
   //   local_footstep_planner_->printContactSchedule(contact_schedule_);
   // }
+
+  std::cout << grf_plan_ << std::endl;
+  
   // Create messages to publish
   spirit_msgs::RobotPlan local_plan_msg;
   spirit_msgs::MultiFootPlanDiscrete future_footholds_msg;
