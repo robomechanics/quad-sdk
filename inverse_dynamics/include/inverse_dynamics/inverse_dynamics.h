@@ -109,7 +109,7 @@ private:
 	ros::Subscriber robot_state_sub_;
 
 	/// ROS subscriber for control input
-	ros::Subscriber grf_input_sub_;
+	ros::Subscriber grf_sub_;
 
 	/// ROS subscriber for trajectory
 	ros::Subscriber trajectory_state_sub_;
@@ -123,8 +123,8 @@ private:
 	/// ROS publisher for inverse dynamics
 	ros::Publisher leg_command_array_pub_;
 
-  /// ROS publisher for inverse dynamics
-	ros::Publisher leg_command_diagnostics_pub_;
+	/// ROS publisher for desired GRF
+	ros::Publisher grf_pub_;
 
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;

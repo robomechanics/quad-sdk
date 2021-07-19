@@ -82,8 +82,6 @@ void TrajectoryPublisher::updateTrajectory() {
   if (body_plan_msg_.states.empty() || multi_foot_plan_continuous_msg_.states.empty())
     return;
 
-  // std::cout << "Past updateTrajectory checks" << std::endl;
-
   // Make sure the foot plan is no longer than the body plan
   ros::Duration t_body_plan_ros = body_plan_msg_.states.back().header.stamp - 
     body_plan_msg_.states.front().header.stamp;
@@ -94,14 +92,14 @@ void TrajectoryPublisher::updateTrajectory() {
   double t_foot_plan = t_foot_plan_ros.toSec();
 
   if (t_body_plan < t_foot_plan) {
-    ROS_DEBUG_THROTTLE(1, "Foot plan duration is longer than body plan, traj prublisher "
+    ROS_INFO_THROTTLE(1, "Foot plan duration is longer than body plan, traj prublisher "
       "will wait");
     return;
   }
 
   // Create t_traj vector with specified dt
-  // double traj_duration = std::min(t_body_plan, t_foot_plan);
-  double traj_duration = t_body_plan;
+  double traj_duration = std::min(t_body_plan, t_foot_plan);
+  // double traj_duration = t_body_plan;
   double t = 0;
   t_traj_.clear();
   while (t < traj_duration) {
@@ -115,6 +113,7 @@ void TrajectoryPublisher::updateTrajectory() {
   traj_msg_.header.stamp = body_plan_msg_.header.stamp;
 
   spirit_utils::SpiritKinematics kinematics;
+  
 
   // Add states to the traj message
   for (int i = 0; i < t_traj_.size(); i++) {
@@ -132,7 +131,7 @@ void TrajectoryPublisher::updateTrajectory() {
     // If we have foot data then load that, otherwise just set joints to zero
     if (t_traj_[i] < t_foot_plan) {
       state.feet = spirit_utils::interpMultiFootPlanContinuous(
-      multi_foot_plan_continuous_msg_,t_traj_[i]);
+        multi_foot_plan_continuous_msg_,t_traj_[i]);
 
       // Compute joint data with IK
       spirit_utils::ikRobotState(kinematics, state.body, state.feet, state.joints);
@@ -148,6 +147,7 @@ void TrajectoryPublisher::updateTrajectory() {
     traj_msg_.states.push_back(state);
 
   }
+  
 
   // timer.report();
 }

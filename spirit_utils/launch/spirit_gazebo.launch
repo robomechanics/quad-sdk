@@ -75,7 +75,10 @@ SOFTWARE.
 
   <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
   <include file="$(find spirit_utils)/launch/load_params.launch" />
-  
+
+  <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
+
+
   <node name="controller_spawner"
         pkg="controller_manager"
         type="spawner"

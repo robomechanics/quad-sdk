@@ -51,6 +51,7 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>spirit_msgs</depend>
+  <depend>gazebo_msgs</depend>
   <depend>angles</depend>
   <depend>controller_interface</depend>
   <depend>control_msgs</depend>

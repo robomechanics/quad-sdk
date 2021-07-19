@@ -192,7 +192,7 @@ void LocalPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& m
   robot_state_msg_ = msg;
 }
 
-void LocalPlanner::preProcessPlanAndState() {
+void LocalPlanner::getStateAndReferencePlan() {
 
   // Make sure body plan and robot state data is populated
   if (body_plan_msg_ == NULL || robot_state_msg_ == NULL)
@@ -284,6 +284,14 @@ bool LocalPlanner::computeLocalPlan() {
 
 void LocalPlanner::publishLocalPlan() {
 
+  // if (current_plan_index_ == 0) {
+  //   std::cout << "current_state_\n" << current_state_ << std::endl << std::endl;
+  //   std::cout << "ref_body_plan_\n" << ref_body_plan_ << std::endl << std::endl;
+  //   std::cout << "body_plan_\n" << body_plan_ << std::endl << std::endl;
+  //   std::cout << "foot_positions_world_\n" << foot_positions_world_ << std::endl << std::endl;
+  //   std::cout << "contact_schedule_\n" << std::endl;
+  //   local_footstep_planner_->printContactSchedule(contact_schedule_);
+  // }
   // Create messages to publish
   spirit_msgs::RobotPlan local_plan_msg;
   spirit_msgs::MultiFootPlanDiscrete future_footholds_msg;
@@ -328,12 +336,15 @@ void LocalPlanner::publishLocalPlan() {
     local_plan_msg.states.push_back(robot_state_msg);
     local_plan_msg.grfs.push_back(grf_array_msg);
     local_plan_msg.plan_indices.push_back(current_plan_index_ + i);
+    local_plan_msg.primitive_ids.push_back(2);
   }
 
   // Publish
   local_plan_pub_.publish(local_plan_msg);
   foot_plan_discrete_pub_.publish(future_footholds_msg);
   foot_plan_continuous_pub_.publish(foot_plan_msg);
+
+  // std::cout << foot_plan_msg << std::endl;
 }
 
 void LocalPlanner::spin() {
@@ -349,7 +360,7 @@ void LocalPlanner::spin() {
       continue;
 
     // Get the reference plan and robot state into the desired data structures
-    preProcessPlanAndState();
+    getStateAndReferencePlan();
 
     // Compute the local plan and publish if it solved successfully, otherwise just sleep
     if (computeLocalPlan())
