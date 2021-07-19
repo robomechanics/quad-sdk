@@ -177,7 +177,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         // Combine these measures to get the nominal foot position and grab correct height
         // foot_position_nominal = grf_weight_*foot_position_grf +
         //   (1-grf_weight_)*(hip_position_midstance + vel_tracking);
-        foot_position_nominal = hip_position_midstance + centrifugal + vel_tracking;
+        foot_position_nominal = hip_position_midstance;// + centrifugal + vel_tracking;
         foot_position_nominal.z() = terrain_.getGroundHeight(foot_position_nominal.x(),
           foot_position_nominal.y());
 
