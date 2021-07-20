@@ -64,7 +64,6 @@ add_library(spirit_utils
   src/mesh_to_grid_map_converter.cpp
   src/ground_truth_publisher.cpp
   src/robot_proxy.cpp
-  src/foot_jacobians.cpp
   src/math_utils.cpp
   src/ros_utils.cpp
   src/kinematics.cpp

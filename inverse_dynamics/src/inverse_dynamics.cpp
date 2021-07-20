@@ -53,6 +53,8 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   control_mode_ = SIT;
   last_heartbeat_time_ = std::numeric_limits<double>::max();
   last_state_time_ = std::numeric_limits<double>::max();  
+
+  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
 }
 
 void InverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
@@ -145,7 +147,7 @@ void InverseDynamics::publishLegCommandArray() {
 
   // Compute jacobians
   Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(3*num_feet_, state_velocities.size());
-  spirit_utils::getJacobian(state_positions,jacobian);
+  kinematics_->getJacobianBodyAngVel(state_positions,jacobian);
 
   // Initialize variables for ff and fb
   spirit_msgs::RobotState ref_state_msg;
