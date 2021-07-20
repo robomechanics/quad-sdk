@@ -1,0 +1,24 @@
+Author:
+  Matthew Millard
+
+Date:
+  July 2016
+
+Notice: these files 
+
+  -Function.h
+  -SegmentedQuinticBezierToolkit.h
+  -SegmentedQuinticBezierToolkit.cc
+  -SmoothSegmentedFunction.h
+  -SmoothSegmentedFunction.cc
+  -tests/numericalTestFunctions.h
+  -tests/numericalTestFunctions.cc
+  -tests/testSmoothSegmentedFunction.cc
+
+were originally part of OpenSim and have been ported 
+over to RBDL with some modification. These files are licenced under the 
+APACHE 2.0 license which, like the zlib license, is quite liberal. The 
+full licence can be found in this folder in the file "LICENSE_APACHE-2.0.txt"
+and online here:
+
+http://www.apache.org/licenses/LICENSE-2.0.txt
