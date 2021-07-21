@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="71.252083"
+   height="27.437622"
+   id="svg3289"
+   version="1.1"
+   inkscape:version="0.48.0 r9654"
+   sodipodi:docname="rbdl_logo.svg"
+   inkscape:export-filename="/home/mfelis/projects/rigidbodydynamics/doc/logo/rbdl_logo_64x64.png"
+   inkscape:export-xdpi="80.839996"
+   inkscape:export-ydpi="80.839996">
+  <defs
+     id="defs3291" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="5.6"
+     inkscape:cx="64.424062"
+     inkscape:cy="35.577913"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="893"
+     inkscape:window-height="762"
+     inkscape:window-x="1926"
+     inkscape:window-y="48"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata3294">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-95.80253,-355.78623)">
+    <g
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:-6.43000174px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="text3005-9-4"
+       transform="translate(-382.78204,298.49306)">
+      <path
+         style="font-variant:normal;font-weight:500;font-stretch:normal;font-family:WenQuanYi Zen Hei Sharp;-inkscape-font-specification:WenQuanYi Zen Hei Sharp Medium"
+         d="m 478.58457,57.293287 0,27.4375 3.4375,0 c 9e-4,-8.24834 1.1e-4,-17.91431 0,-24.5 l 6.84375,0 c 0.41665,0 0.82811,0.0417 1.21875,0.0937 3.02082,0.33857 4.53123,1.85939 4.53125,4.59375 -2e-5,0.57293 -0.0938,1.09377 -0.25,1.5625 -0.57294,2.3698 -2.51565,3.55359 -5.875,3.5625 l -4.91543,0.013 c 1.91496,1.53688 3.37037,1.90987 5.11252,3.88168 1.74215,1.97181 6.05291,10.79275 6.05291,10.79275 l 3.59375,0 -6.38839,-12.52679 c 0.93748,-0.2604 2.75816,-0.90549 3.51339,-1.50446 1.71873,-1.45832 2.59373,-3.38019 2.59375,-5.75 -10e-5,-0.36456 -0.005,-0.68748 -0.0312,-1 -0.18231,-1.40622 -0.65106,-2.60414 -1.40625,-3.59375 -1.64064,-2.03122 -4.2344,-3.06247 -7.75,-3.0625 z"
+         id="path3234"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccccscccsczcccccccsc" />
+    </g>
+    <g
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:-6.43000174px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="text3005-9-8-5"
+       transform="translate(-281.35347,222.06884)">
+      <path
+         d="m 415.33063,153.57689 c -3e-5,2.5 -0.88544,4.44011 -2.65625,5.82031 -1.40627,1.11979 -3.35939,1.70573 -5.85938,1.75781 l -0.89844,0 -10.3125,0 0,-27.42187 10.35157,0 c 2.21352,3e-5 3.89321,0.29951 5.03906,0.89844 0.18227,0.10419 0.39061,0.22138 0.625,0.35156 1.87498,1.27607 2.8255,3.08596 2.85156,5.42969 -2e-5,2.39585 -0.93752,4.1797 -2.8125,5.35156 l -1.25,0.54687 c -0.23439,0.10419 -0.49481,0.18231 -0.78125,0.23438 l 0,0.0781 c 2.29165,0.49481 3.93227,1.74481 4.92188,3.75 0.52081,0.96356 0.78122,2.03126 0.78125,3.20313 m -4.25782,-12.73438 c -1e-5,-2.52601 -1.41928,-3.95831 -4.25781,-4.29687 -0.36459,-0.026 -0.7422,-0.039 -1.13281,-0.0391 l -6.64063,0 0,8.98437 5.70313,0 c 4.21873,2e-5 6.32811,-1.54946 6.32812,-4.64844 m 0.82032,12.57813 c -2e-5,-1.66666 -0.59898,-3.03384 -1.79688,-4.10156 -0.0521,-0.0521 -0.1172,-0.10416 -0.19531,-0.15625 -0.91148,-0.70312 -2.35679,-1.05468 -4.33594,-1.05469 l -6.52344,0 0,10.11719 6.71875,0 c 3.46353,0 5.46874,-1.1849 6.01563,-3.55469 0.0781,-0.36458 0.11717,-0.78124 0.11719,-1.25"
+         style="font-variant:normal;font-weight:500;font-stretch:normal;font-family:WenQuanYi Zen Hei Sharp;-inkscape-font-specification:WenQuanYi Zen Hei Sharp Medium"
+         id="path3237"
+         inkscape:connector-curvature="0" />
+    </g>
+    <g
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:-6.43000174px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="text3005-9-82-6"
+       transform="translate(-281.35347,222.06884)">
+      <path
+         d="m 448.40808,161.15501 -16.21094,0 0,-27.42187 3.4375,0 0,24.375 12.77344,0 0,3.04687"
+         style="font-variant:normal;font-weight:500;font-stretch:normal;font-family:WenQuanYi Zen Hei Sharp;-inkscape-font-specification:WenQuanYi Zen Hei Sharp Medium"
+         id="path3240"
+         inkscape:connector-curvature="0" />
+    </g>
+    <g
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:-6.43000174px;word-spacing:0px;fill:#ff2a2a;fill-opacity:1;stroke:none;font-family:Sans"
+       id="text3005-9-7-7"
+       transform="translate(-281.35347,222.06884)">
+      <path
+         d="m 435.63998,147.36595 c -2e-5,4.14064 -1.11981,7.52605 -3.35937,10.15625 -2.1094,2.42188 -4.86981,3.63281 -8.28125,3.63281 l -9.80469,0 0,-27.42187 8.67188,0 c 3.33331,3e-5 5.97654,0.78128 7.92968,2.34375 0.52082,0.41669 1.02863,0.9245 1.52344,1.52344 2.21352,2.57814 3.32029,5.83335 3.32031,9.76562 m -3.47656,0 c -2e-5,-3.22915 -0.84637,-5.8854 -2.53906,-7.96875 -1.3021,-1.6406 -3.09897,-2.56508 -5.39063,-2.77344 l -1.5625,-0.0391 -5.03906,0 0,21.64063 5.03906,0 c 3.04686,0 5.31249,-0.84635 6.79688,-2.53907 0.23436,-0.28645 0.46873,-0.59895 0.70312,-0.9375 1.32811,-2.03124 1.99217,-4.49217 1.99219,-7.38281"
+         style="fill:#ff2a2a;-inkscape-font-specification:WenQuanYi Zen Hei Sharp Medium"
+         id="path3243"
+         inkscape:connector-curvature="0" />
+    </g>
+  </g>
+</svg>
