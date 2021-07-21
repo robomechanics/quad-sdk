@@ -54,7 +54,33 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   last_state_time_ = std::numeric_limits<double>::max();
 
   step_number = 0;
-  
+
+  std::string robot_description_string;
+  spirit_utils::loadROSParam(nh_, "trajectory/robot_description", robot_description_string);
+
+  rbdl_model_ = new RigidBodyDynamics::Model();
+
+  if (!RigidBodyDynamics::Addons::URDFReadFromString(robot_description_string.c_str(), rbdl_model_, true))
+  {
+    std::cerr << "Error loading model " << std::endl;
+    abort();
+  }
+
+  std::vector<std::string> body_name_list = {"toe0", "toe1", "toe2", "toe3"};
+  body_id_list_.resize(4);
+
+  for (size_t i = 0; i < body_name_list.size(); i++)
+  {
+    body_id_list_.at(i) = rbdl_model_->GetBodyId(body_name_list.at(i).c_str());
+  }
+
+  leg_idx_list_.resize(N);
+  std::iota(leg_idx_list_.begin(), leg_idx_list_.end(), 0); //Initializing
+  std::sort(leg_idx_list_.begin(), leg_idx_list_.end(), [&](int i, int j)
+            { return body_id_list_.at(i) < body_id_list_.at(j); });
+
+  inertia_tensor_ = Eigen::VectorXd(6);
+  inertia_tensor_ << 11.51, 11.51, 11.51, 0.0782, 0.3950, 0.4232;
 }
 
 void InverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
@@ -211,17 +237,81 @@ void InverseDynamics::publishLegCommandArray() {
   if (input_type != NONE) {
 
     // Declare plan and state data as Eigen vectors
-    Eigen::VectorXd ref_body_state(12), grf_array(3*num_feet_),
-      ref_foot_positions(3*num_feet_), ref_foot_velocities(3*num_feet_);
+    Eigen::VectorXd ref_body_state(12), grf_array(3 * num_feet_),
+        ref_foot_positions(3 * num_feet_), ref_foot_velocities(3 * num_feet_), ref_foot_acceleration(3 * num_feet_);
 
     // Load plan and state data from messages
     ref_body_state = spirit_utils::odomMsgToEigen(ref_state_msg.body);
     spirit_utils::multiFootStateMsgToEigen(
-      ref_state_msg.feet, ref_foot_positions, ref_foot_velocities);
+        ref_state_msg.feet, ref_foot_positions, ref_foot_velocities, ref_foot_acceleration);
     grf_array = spirit_utils::grfArrayMsgToEigen(grf_array_msg);
 
-    tau_array = -jacobian.transpose().block<12,12>(0,0)*grf_array;
-  } 
+    tau_array = -jacobian.transpose().block<12, 12>(0, 0) * grf_array;
+
+    // Prepare generalized coordinates states
+    Eigen::VectorXd q_rbdl = Eigen::VectorXd::Zero(rbdl_model_->q_size);
+    Eigen::VectorXd q_dot_rbdl = Eigen::VectorXd::Zero(rbdl_model_->qdot_size);
+    Eigen::VectorXd q_ddot_rbdl = Eigen::VectorXd::Zero(rbdl_model_->qdot_size);
+
+    // Fill in states
+    q_rbdl.segment(0, 3) = ref_body_state.head(3);
+    q_rbdl(3) = ref_state_msg.body.pose.pose.orientation.x;
+    q_rbdl(4) = ref_state_msg.body.pose.pose.orientation.y;
+    q_rbdl(5) = ref_state_msg.body.pose.pose.orientation.z;
+    q_rbdl(6) = ref_state_msg.body.pose.pose.orientation.w;
+    for (size_t i = 0; i < 4; i++)
+    {
+      q_rbdl.segment(7 + 3 * i, 3) = ref_state_msg.joints.position.at(leg_idx_list_.at(i));
+    }
+
+    // Fill in velocities
+    q_dot_rbdl.segment(0, 3) = ref_body_state.segment(6, 3);
+    q_dot_rbdl.segment(3, 3) = RigidBodyDynamics::CalcBaseToBodyCoordinates(rbdl_model_, q_rbdl, rbdl_model_->GetBodyId("body"), ref_body_state.tail(3));
+    for (size_t i = 0; i < 4; i++)
+    {
+      q_dot_rbdl.segment(6 + 3 * i, 3) = ref_state_msg.joints.velocity.at(leg_idx_list_.at(i));
+    }
+
+    // Compute body acceleration
+    Eigen::VectorXd leg_wrench_inertia_frame(6) = Eigen::VectorXd::Zero(6);
+    leg_wrench_inertia_frame(3) = -9.81 * inertia_tensor_(1);
+
+    for (size_t i = 0; i < num_feet_; i++)
+    {
+      leg_wrench_inertia_frame.head(3) = leg_wrench_inertia_frame.head(3) +
+                                         grf_array.segment(3 * i, 3);
+      leg_wrench_inertia_frame.tail(3) = leg_wrench_inertia_frame.tail(3) +
+                                         cross(ref_foot_positions(3 * i, 3) - ref_body_state.head(3), grf_array.segment(3 * i, 3));
+    }
+
+    Eigen::VectorXd leg_wrench_body_frame(6) = Eigen::VectorXd::Zero(6);
+    leg_wrench_body_frame.head(3) = RigidBodyDynamics::CalcBaseToBodyCoordinates(rbdl_model_, q_rbdl, rbdl_model_->GetBodyId("body"), leg_wrench_inertia_frame.head(3));
+    leg_wrench_body_frame.tail(3) = RigidBodyDynamics::CalcBaseToBodyCoordinates(rbdl_model_, q_rbdl, rbdl_model_->GetBodyId("body"), leg_wrench_inertia_frame.tail(3));
+
+    Eigen::VectorXd body_acc_body_frame = Eigen::VectorXd::Zero(6);
+    body_acc_body_frame = inertia_tensor_.asDiagonal().inverse() * leg_wrench_body_frame;
+
+    // Fill in body acceleration
+    q_ddot_rbdl.segment(0, 6) = body_acc_body_frame;
+
+    // Fill desired in leg joints acceleration
+    Eigen::VectorXd foot_acc_fixed_base(12);
+    Eigen::MatrixXd jac_fixed_base(12, 12);
+    for (size_t i = 0; i < num_feet_; i++)
+    {
+      foot_acc_fixed_base.segment(3 * i, 3) = ref_foot_acceleration.segment(3 * leg_idx_list_.at(i), 3) -
+                                              CalcPointAcceleration(rbdl_model_, q_rbdl, q_dot_rbdl, q_ddot_rbdl, body_id_list.at(leg_idx_list_.at(i)), Eigen::Vector3d::Zero());
+
+      jac_seg.setZero();
+      CalcPointJacobian(rbdl_model_, q_rbdl, body_id_list.at(leg_idx_list_.at(i)), Eigen::Vector3d::Zero(), jac_seg);
+      jac_fixed_base.block(3 * i, 0, 3, 12) = jac_seg.rightCols(12);
+    }
+
+    q_ddot_rbdl.segment(6, 12) = jac_fixed_base.colPivHouseholderQr().solve(foot_acc_fixed_base);
+
+    Eigen::VectorXd tau_rbdl(12);
+    InverseDynamics(rbdl_model_fixed_, q_rbdl.tail(12), q_dot_rbdl.tail(12), q_ddot_rbdl.tail(12), tau);
+  }
 
   // Enter state machine for filling motor command message
   if (control_mode_ == SAFETY)

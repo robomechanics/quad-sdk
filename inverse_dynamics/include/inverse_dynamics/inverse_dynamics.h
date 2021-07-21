@@ -256,7 +256,14 @@ private:
 	std::vector<double> counterVec;
 
 	double step_number;
-	
+
+	Eigen::VectorXd inertia_tensor_;
+
+	std::vector<unsigned int> body_id_list_;
+
+	std::vector<int> leg_idx_list_;
+
+	RigidBodyDynamics::Model *rbdl_model_;
 };
 
 
