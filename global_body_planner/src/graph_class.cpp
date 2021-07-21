@@ -35,6 +35,14 @@ void GraphClass::addEdge(int idx1, int idx2)
     return;
 }
 
+void GraphClass::addEdge(int idx1, int idx2, double edge_cost)
+{
+    edges[idx2].push_back(idx1);
+    successors[idx1].push_back(idx2);
+    g_values[idx2] = g_values[idx1] + edge_cost;
+    return;
+}
+
 void GraphClass::removeEdge(int idx1, int idx2)
 {
     std::vector<int>::iterator itr;
@@ -140,11 +148,11 @@ double GraphClass::computeEdgeCost(int idx1, int idx2) {
 
 void GraphClass::updateGValue(int idx, double val)
 {
-    g_values[idx] = val;
-    for (int successor : getSuccessors(idx))
-    {
-        updateGValue(successor, g_values[idx] + computeEdgeCost(idx, successor));
-    }
+    // g_values[idx] = val;
+    // for (int successor : getSuccessors(idx))
+    // {
+    //     updateGValue(successor, g_values[idx] + computeEdgeCost(idx, successor));
+    // }
 }
 
 void GraphClass::init(State q)

@@ -10,7 +10,7 @@ TwistBodyPlanner::TwistBodyPlanner(ros::NodeHandle nh) {
   nh_.param<std::string>("topics/global_plan", body_plan_topic, "/body_plan");
   nh_.param<std::string>("topics/cmd_vel", cmd_vel_topic, "/cmd_vel");
   nh_.param<std::string>("map_frame", map_frame_,"map");
-  nh_.param<double>("twist_body_planner/cmd_vel_scale_", cmd_vel_scale_, 1);
+  nh_.param<double>("twist_body_planner/cmd_vel_scale", cmd_vel_scale_, 1);
   nh_.param<double>("twist_body_planner/update_rate", update_rate_, 5);
   nh_.param<double>("twist_body_planner/horizon_length", horizon_length_, 1.5);
   nh_.param<double>("twist_body_planner/last_cmd_vel_msg_time_max",last_cmd_vel_msg_time_max_,1.0);
@@ -26,6 +26,7 @@ TwistBodyPlanner::TwistBodyPlanner(ros::NodeHandle nh) {
 
   // Zero the velocity to start
   std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
+  plan_timestamp_ = ros::Time::now();
 }
 
 void TwistBodyPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg) {
@@ -45,7 +46,7 @@ void TwistBodyPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg)
 
   // Record when this was last reached for safety
   last_cmd_vel_msg_time_ = ros::Time::now();
-  
+
 }
 
 void TwistBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
@@ -111,7 +112,7 @@ void TwistBodyPlanner::updatePlan() {
 
     for (int i = 0; i < 6; i ++) {
       current_state[i] = body_plan_.back()[i] + current_cmd_vel[i]*dt_;
-      current_state[i+6] = (cmd_vel_[i]);
+      current_state[i+6] = (current_cmd_vel[i]);
     }
 
     t_plan_.push_back(t);
@@ -151,7 +152,7 @@ void TwistBodyPlanner::addStateWrenchToMsg(double t, int plan_index, State body_
 
   double m = 11.5;
   double g = 9.81;
-  spirit_msgs::GRFArray grf_array_msg;
+  spirit_msgs::GRFArray grf_msg;
   geometry_msgs::Vector3 vector_msg;
   vector_msg.x = 0;
   vector_msg.y = 0;
@@ -161,11 +162,11 @@ void TwistBodyPlanner::addStateWrenchToMsg(double t, int plan_index, State body_
   point_msg.y = body_state[1];
   point_msg.z = body_state[2];
 
-  spirit_msgs::GRFArray grf_msg;
   grf_msg.header = state.header;
   grf_msg.vectors.push_back(vector_msg);
   grf_msg.points.push_back(point_msg);
-  grf_array_msg.contact_states.push_back(true);
+  bool contact_state = true;
+  grf_msg.contact_states.push_back(contact_state);
 
   int primitive_id = 2; // Corresponds to a walking primitive
   msg.states.push_back(state);
@@ -184,6 +185,8 @@ void TwistBodyPlanner::publishPlan() {
   // Construct BodyPlan messages
   spirit_msgs::RobotPlan robot_plan_msg;
 
+  // plan_timestamp_ = ros::Time::now();
+
   // Initialize the headers and types
   robot_plan_msg.header.stamp = plan_timestamp_;
   robot_plan_msg.header.frame_id = map_frame_;
@@ -191,7 +194,10 @@ void TwistBodyPlanner::publishPlan() {
 
   // Loop through the interpolated body plan and add to message
   for (int i=0;i<body_plan_.size(); ++i)
+  {
     addStateWrenchToMsg(t_plan_[i], i, body_plan_[i], robot_plan_msg);
+    // printf("x = %5.3f, dx = %5.3f\n", body_plan_[i][0], body_plan_[i][6]);
+  }
   
   if (robot_plan_msg.states.size() != robot_plan_msg.grfs.size()) {
     throw std::runtime_error("Mismatch between number of states and wrenches, something is wrong");

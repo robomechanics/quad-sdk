@@ -32,24 +32,24 @@ class RRTConnectClass : public RRTClass
      * @param[in] s_existing The state that is already in the tree and closest to the specified state
      * @param[in] s The state to extend the tree towards
      * @param[in] t_s The stance time for this connection
-     * @param[out] s_new New state yielded by taking the resulting action
-     * @param[out] a_new New action to connect the states
+     * @param[out] result Result of the newConfig operation
      * @param[in] terrain Height map of the terrain
      * @param[in] direction Direction of the dynamics (either FORWARD or REVERSE)
      * @return Int describing the result of the attempt (TRAPPED, ADVANCED, or REACHED)
      */
-    int attemptConnect(State s_existing, State s, double t_s, State &s_new, Action &a_new, const PlannerConfig &planner_config, int direction);
+    int attemptConnect(State s_existing, State s, double t_s, StateActionResult &result,
+      const PlannerConfig &planner_config, int direction);
 
     /** Attempt to connect two states, and return a new state if the full connection is not possible. Internally computes stance time
      * @param[in] s_existing The state that is already in the tree and closest to the specified state
      * @param[in] s The state to extend the tree towards
-     * @param[out] s_new New state yielded by taking the resulting action
-     * @param[out] a_new New action to connect the states
+     * @param[out] result Result of the newConfig operation
      * @param[in] terrain Height map of the terrain
      * @param[in] direction Direction of the dynamics (either FORWARD or REVERSE)
      * @return Int describing the result of the attempt (TRAPPED, ADVANCED, or REACHED)
      */
-    int attemptConnect(State s_existing, State s, State &s_new, Action &a_new, const PlannerConfig &planner_config, int direction);
+    int attemptConnect(State s_existing, State s, StateActionResult &result,
+      const PlannerConfig &planner_config, int direction);
 
     /** Connect the tree to the desired state
      * @param[in] T The PlannerClass instance containing the tree
@@ -92,9 +92,9 @@ class RRTConnectClass : public RRTClass
      * @param[in] s_goal The goal state of the planner
      * @param[out] state_sequence The sequence of states in the final path
      * @param[out] action_sequence The sequence of actions in the final path
-     * @param[in] max_time Maximum time allowed to find a plan
+     * @param[in] max_planning_time Maximum time allowed to find a plan
      */
-    void runRRTConnect(const PlannerConfig &planner_config, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double max_time);
+    void runRRTConnect(const PlannerConfig &planner_config, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double max_planning_time);
 
   protected:
 
@@ -109,9 +109,6 @@ class RRTConnectClass : public RRTClass
 
     /// Factor by which horizon is increased if replanning is required
     double horizon_expansion_factor = 1.2;
-
-    /// Hard maximum time allowed for the planner, returns unsuccessfully if reached
-    const int max_time_solve_ = 10;
 };
 
 #endif

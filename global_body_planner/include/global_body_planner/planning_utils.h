@@ -68,6 +68,13 @@ typedef std::vector<double> FullState;
 typedef Eigen::Vector3d GRF;
 typedef std::pair<State, Action> StateActionPair;
 
+struct StateActionResult {
+  State s_new;
+  Action a_new;
+  double t_new = 0;
+  double length = 0;
+};
+
 // Define math parameters
 const double INFTY = std::numeric_limits<double>::max();
 const double MY_PI = 3.14159;
@@ -109,12 +116,12 @@ double getPitchFromState(State s, const PlannerConfig &planner_config);
 void interpStateActionPair(State s, Action a,double t0,double dt,
   std::vector<State> &interp_plan, std::vector<GRF> &interp_GRF,
   std::vector<double> &interp_t, std::vector<int> &interp_primitive_id,
-  const PlannerConfig &planner_config);
+  std::vector<double> &interp_length, const PlannerConfig &planner_config);
 void getInterpPlan(FullState start_state, std::vector<State> state_sequence,
   std::vector<Action> action_sequence,double dt, double t0,
   std::vector<FullState> &interp_full_plan, std::vector<GRF> &interp_GRF, 
   std::vector<double> &interp_t, std::vector<int> &interp_primitive_id,
-  const PlannerConfig &planner_config);
+  std::vector<double> &interp_length, const PlannerConfig &planner_config);
 
 // Define planning helper functions
 State applyStance(State s, Action a, double t, const PlannerConfig &planner_config);
@@ -127,10 +134,12 @@ Action getRandomAction(std::array<double, 3> surf_norm, const PlannerConfig &pla
 bool isValidAction(Action a, const PlannerConfig &planner_config);
 bool isValidYawRate(State s, Action a, double t, const PlannerConfig &planner_config);
 bool isValidState(State s, const PlannerConfig &planner_config, int phase);
-bool isValidStateActionPair(State s, Action a, const PlannerConfig &planner_config, State &s_new, double& t_new);
-bool isValidStateActionPair(State s, Action a, const PlannerConfig &planner_config);
-bool isValidStateActionPairReverse(State s, Action a, const PlannerConfig &planner_config, State &s_new, double& t_new);
-bool isValidStateActionPairReverse(State s, Action a, const PlannerConfig &planner_config);
+// bool isValidStateActionPair(State s, Action a, const PlannerConfig &planner_config, State &s_new, double& t_new);
+bool isValidStateActionPair(State s, Action a, StateActionResult &result, 
+  const PlannerConfig &planner_config);
+// bool isValidStateActionPairReverse(State s, Action a, const PlannerConfig &planner_config, State &s_new, double& t_new);
+bool isValidStateActionPairReverse(State s, Action a, StateActionResult &result, 
+  const PlannerConfig &planner_config);
 }
 
 #endif

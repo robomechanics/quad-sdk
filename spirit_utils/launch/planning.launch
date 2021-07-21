@@ -22,7 +22,7 @@
         <node name="local_planner" pkg="local_planner" type="local_planner_node" output="screen"/>
     </group>
 
-    <!-- Launch the noded to publish the global footstep plan and the local mpc controller -->
+    <!-- Launch the node to publish the global footstep plan and the local mpc controller -->
     <group if="$(eval arg('local_planner') == 'body')">
         <node name="global_footstep_planner" pkg="global_footstep_planner" type="global_footstep_planner_node" output="screen" />
         <node name="mpc_controller" pkg="local_planner" type="mpc_controller_node" output="screen"/>

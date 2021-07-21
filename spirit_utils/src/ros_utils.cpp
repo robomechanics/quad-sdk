@@ -159,6 +159,7 @@ namespace spirit_utils {
 
       // Set contact state to the first state
       interp_state.contact_states[i] = state_1.contact_states[i];
+
     }
   }
 
@@ -217,7 +218,6 @@ namespace spirit_utils {
     interpRobotState(state_1, state_2, t_interp, interp_state);
     interp_primitive_id = primitive_id_1;
     interpGRFArray(grf_1, grf_2, t_interp, interp_grf);
-
   }
 
   spirit_msgs::MultiFootState interpMultiFootPlanContinuous(
@@ -375,7 +375,7 @@ namespace spirit_utils {
 
     // Compute jacobian
     Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
-    spirit_utils::getJacobian(state_positions, jacobian);
+    kinematics.getJacobianBodyAngVel(state_positions, jacobian);
 
     // Compute joint velocities
     joint_velocities = jacobian.leftCols(12).colPivHouseholderQr().solve(
@@ -464,7 +464,7 @@ namespace spirit_utils {
 
     // Compute jacobian
     Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
-    spirit_utils::getJacobian(state_positions, jacobian);
+    kinematics.getJacobianBodyAngVel(state_positions, jacobian);
 
     // Compute foot velocities
     foot_velocities = jacobian * state_velocities;

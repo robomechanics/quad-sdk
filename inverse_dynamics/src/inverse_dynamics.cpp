@@ -6,13 +6,13 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
 	nh_ = nh;
 
     // Load rosparams from parameter server
-  std::string grf_input_topic, trajectory_state_topic, robot_state_topic, local_plan_topic,
+  std::string grf_topic, trajectory_state_topic, robot_state_topic, local_plan_topic,
     leg_command_array_topic, control_mode_topic, leg_override_topic, remote_heartbeat_topic; 
   spirit_utils::loadROSParam(nh_,"topics/local_plan",local_plan_topic);
   spirit_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
   spirit_utils::loadROSParam(nh_,"topics/state/trajectory",trajectory_state_topic);
   spirit_utils::loadROSParam(nh_,"topics/remote_heartbeat",remote_heartbeat_topic);
-  spirit_utils::loadROSParam(nh_,"topics/control/grfs",grf_input_topic);
+  spirit_utils::loadROSParam(nh_,"topics/control/grfs",grf_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/joint_command",leg_command_array_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/leg_override",leg_override_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
@@ -37,7 +37,7 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   // Setup pubs and subs
   local_plan_sub_ = nh_.subscribe(local_plan_topic,1,&InverseDynamics::localPlanCallback, this);
   robot_state_sub_= nh_.subscribe(robot_state_topic,1,&InverseDynamics::robotStateCallback, this);
-  grf_input_sub_ = nh_.subscribe(grf_input_topic,1,&InverseDynamics::grfInputCallback, this);
+  grf_sub_ = nh_.subscribe(grf_topic,1,&InverseDynamics::grfInputCallback, this);
   trajectory_state_sub_ = nh_.subscribe(
     trajectory_state_topic,1,&InverseDynamics::trajectoryStateCallback, this);
   control_mode_sub_ = nh_.subscribe(
@@ -47,12 +47,14 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   remote_heartbeat_sub_ = nh_.subscribe(
     remote_heartbeat_topic,1,&InverseDynamics::remoteHeartbeatCallback, this);
   leg_command_array_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_command_array_topic,1);
+  grf_pub_ = nh_.advertise<spirit_msgs::GRFArray>(grf_topic,1);
 
   // Start sitting
   control_mode_ = SIT;
   last_heartbeat_time_ = std::numeric_limits<double>::max();
-  last_state_time_ = std::numeric_limits<double>::max();
+  last_state_time_ = std::numeric_limits<double>::max();  
 
+  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
   step_number = 0;
 
   std::string robot_description_string;
@@ -173,7 +175,7 @@ void InverseDynamics::publishLegCommandArray() {
 
   // Compute jacobians
   Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(3*num_feet_, state_velocities.size());
-  spirit_utils::getJacobian(state_positions,jacobian);
+  kinematics_->getJacobianBodyAngVel(state_positions,jacobian);
 
   // Initialize variables for ff and fb
   spirit_msgs::RobotState ref_state_msg;
@@ -182,13 +184,12 @@ void InverseDynamics::publishLegCommandArray() {
   leg_command_array_msg_.leg_commands.resize(num_feet_);
 
   // Set the input handling based on what data we've recieved, prioritizing local plan over grf
+  // JN - removed GRFS option, mpc_controller would need updating to publish local plans now
   int input_type;
   if (last_local_plan_msg_ != NULL && 
     (ros::Time::now() - last_local_plan_msg_->header.stamp).toSec() < input_timeout_) {
     
     input_type = LOCAL_PLAN;
-  } else if (last_grf_array_msg_ != NULL){
-    input_type = GRFS;
   } else {
     input_type = NONE;
   }
@@ -246,6 +247,12 @@ void InverseDynamics::publishLegCommandArray() {
         ref_state_msg.feet, ref_foot_positions, ref_foot_velocities, ref_foot_acceleration);
     grf_array = spirit_utils::grfArrayMsgToEigen(grf_array_msg);
 
+    tau_array = -jacobian.transpose().block<12,12>(0,0)*grf_array;
+  } else {
+    grf_array_msg.header.stamp = ros::Time::now();
+    grf_array_msg.points.resize(num_feet_);
+    grf_array_msg.vectors.resize(num_feet_);
+  }
     tau_array = -jacobian.transpose().block<12, 12>(0, 0) * grf_array;
 
     // Prepare generalized coordinates states
@@ -474,6 +481,7 @@ void InverseDynamics::publishLegCommandArray() {
   // Stamp and send the message
   leg_command_array_msg_.header.stamp = ros::Time::now();
   leg_command_array_pub_.publish(leg_command_array_msg_);
+  grf_pub_.publish(grf_array_msg);
 }
 
 void InverseDynamics::spin() {

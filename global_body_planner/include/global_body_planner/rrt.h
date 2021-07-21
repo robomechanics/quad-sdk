@@ -75,13 +75,13 @@ class RRTClass
      * @brief Generate a new state that can be connected to the tree and is as close as possible to the specified state
      * @param[in] s Specific state to move towards
      * @param[in] s_near Closest state in the tree to the specified state
-     * @param[out] s_new New state yielded by taking an action from s_near
-     * @param[out] a_new New action to take from s_near to get to s
-     * @param[in] terrain Height map of the terrain
+     * @param[out] result Result of the newConfig operation
+     * @param[in] planner_config Planner configuration parameters
      * @param[in] direction Direction of the dynamics (either FORWARD or REVERSE)
      * @return Boolean if the new state got closer to the specified state than any other in the tree
      */
-    bool newConfig(State s, State s_near, State &s_new, Action &a_new, const PlannerConfig &planner_config, int direction);
+    bool newConfig(State s, State s_near, StateActionResult &result,
+      const PlannerConfig &planner_config, int direction);
 
     /**
      * @brief Get the states along the specified path of vertex indices
