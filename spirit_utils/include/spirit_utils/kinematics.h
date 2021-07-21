@@ -186,7 +186,7 @@ class SpiritKinematics {
    * @param[in] state Joint and body states
    * @param[out] jacobian Jacobian for generalized coordinates
    */
-  void getJacobianGeneralizedCoordinates(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const;
+  void getJacobianGenCoord(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const;
 
   /**
    * @brief Compute Jacobian for angular velocity in body frame

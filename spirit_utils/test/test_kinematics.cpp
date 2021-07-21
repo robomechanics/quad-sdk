@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "spirit_utils/kinematics.h"
+#include "spirit_utils/ros_utils.h"
 
 using namespace spirit_utils;
 
@@ -75,6 +76,9 @@ TEST(KinematicsTest, testDifferentialFKIK)
 
 TEST(KinematicsTest, testFootForces) {
 
+  // Declare kinematics object
+  SpiritKinematics kinematics;
+
   // Length parameters from URDF
   // TODO: load these from parameters rather than hard-coding
   Eigen::MatrixXd ls(4,3);
@@ -122,7 +126,7 @@ TEST(KinematicsTest, testFootForces) {
     -2.0 * (ls(0,1) + ls(1,1));
 
   // Compute joint torques
-  spirit_utils::getJacobian(state_positions, jacobian);
+  kinematics.getJacobianGenCoord(state_positions, jacobian);
   torques = jacobian.transpose() * forces;
 
   // Check the answers
@@ -167,7 +171,7 @@ TEST(KinematicsTest, testFootForces) {
     -3.0 * ls(0,0);
 
   // Compute joint torques
-  spirit_utils::getJacobian(state_positions, jacobian);
+  kinematics.getJacobianGenCoord(state_positions, jacobian);
   torques = jacobian.transpose() * forces;
 
   // Check the answers
@@ -208,7 +212,7 @@ TEST(KinematicsTest, testFootForces) {
     -ls(0,0);
 
   // Compute joint torques
-  spirit_utils::getJacobian(state_positions, jacobian);
+  kinematics.getJacobianGenCoord(state_positions, jacobian);
   torques = jacobian.transpose() * forces;
 
   // Check the answers
