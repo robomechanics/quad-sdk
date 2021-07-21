@@ -6,7 +6,8 @@ RRTConnectClass::~RRTConnectClass() {}
 
 using namespace planning_utils;
 
-int RRTConnectClass::attemptConnect(State s_existing, State s, double t_s, State &s_new, Action &a_new, const PlannerConfig &planner_config, int direction)
+int RRTConnectClass::attemptConnect(State s_existing, State s, double t_s, StateActionResult &result,
+  const PlannerConfig &planner_config, int direction)
 {
   // Enforce stance time greater than the kinematic check resolution to ensure that the action is useful
   if (t_s <= planner_config.KINEMATICS_RES)
@@ -15,7 +16,6 @@ int RRTConnectClass::attemptConnect(State s_existing, State s, double t_s, State
   // Initialize the start and goal states depending on the direction, as well as the stance and flight times
   State s_start = (direction == FORWARD) ? s_existing : s;
   State s_goal = (direction == FORWARD) ? s : s_existing;
-  double t_new;
   double t_f = 0;
   
   // Calculate the action to connect the desired states
@@ -38,37 +38,37 @@ int RRTConnectClass::attemptConnect(State s_existing, State s, double t_s, State
   double p_to = s_goal[6];
   double dp_to = s_goal[7];
 
-  a_new[0] = -(2.0*(3.0*x_td - 3.0*x_to + 2.0*dx_td*t_s + dx_to*t_s))/(t_s*t_s);
-  a_new[1] = -(2.0*(3.0*y_td - 3.0*y_to + 2.0*dy_td*t_s + dy_to*t_s))/(t_s*t_s);
-  a_new[2] = -(2.0*(3.0*z_td - 3.0*z_to + 2.0*dz_td*t_s + dz_to*t_s))/(t_s*t_s);
-  a_new[3] = (2.0*(3.0*x_td - 3.0*x_to + dx_td*t_s + 2.0*dx_to*t_s))/(t_s*t_s);
-  a_new[4] = (2.0*(3.0*y_td - 3.0*y_to + dy_td*t_s + 2.0*dy_to*t_s))/(t_s*t_s);
-  a_new[5] = (2.0*(3.0*z_td - 3.0*z_to + dz_td*t_s + 2.0*dz_to*t_s))/(t_s*t_s);
-  a_new[6] = t_s;
-  a_new[7] = t_f;
+  // result.a_new[0] = -(2.0*(3.0*x_td - 3.0*x_to + 2.0*dx_td*t_s + dx_to*t_s))/(t_s*t_s);
+  // result.a_new[1] = -(2.0*(3.0*y_td - 3.0*y_to + 2.0*dy_td*t_s + dy_to*t_s))/(t_s*t_s);
+  // result.a_new[2] = -(2.0*(3.0*z_td - 3.0*z_to + 2.0*dz_td*t_s + dz_to*t_s))/(t_s*t_s);
+  // result.a_new[3] = (2.0*(3.0*x_td - 3.0*x_to + dx_td*t_s + 2.0*dx_to*t_s))/(t_s*t_s);
+  // result.a_new[4] = (2.0*(3.0*y_td - 3.0*y_to + dy_td*t_s + 2.0*dy_to*t_s))/(t_s*t_s);
+  // result.a_new[5] = (2.0*(3.0*z_td - 3.0*z_to + dz_td*t_s + 2.0*dz_to*t_s))/(t_s*t_s);
+  // result.a_new[6] = t_s;
+  // result.a_new[7] = t_f;
 
-  a_new[0] = -(2.0*(3.0*x_td - 3.0*x_to + 2.0*dx_td*t_s + dx_to*t_s))/(t_s*t_s);
-  a_new[1] = -(2.0*(3.0*y_td - 3.0*y_to + 2.0*dy_td*t_s + dy_to*t_s))/(t_s*t_s);
-  a_new[2] = z_td - planner_config.terrain.getGroundHeight(x_td,y_td);
-  a_new[3] = (2.0*(3.0*x_td - 3.0*x_to + dx_td*t_s + 2.0*dx_to*t_s))/(t_s*t_s);
-  a_new[4] = (2.0*(3.0*y_td - 3.0*y_to + dy_td*t_s + 2.0*dy_to*t_s))/(t_s*t_s);
-  a_new[5] = z_to - planner_config.terrain.getGroundHeight(x_to,y_to);;
-  a_new[6] = t_s;
-  a_new[7] = t_f;
+  result.a_new[0] = -(2.0*(3.0*x_td - 3.0*x_to + 2.0*dx_td*t_s + dx_to*t_s))/(t_s*t_s);
+  result.a_new[1] = -(2.0*(3.0*y_td - 3.0*y_to + 2.0*dy_td*t_s + dy_to*t_s))/(t_s*t_s);
+  result.a_new[2] = z_td - planner_config.terrain.getGroundHeight(x_td,y_td);
+  result.a_new[3] = (2.0*(3.0*x_td - 3.0*x_to + dx_td*t_s + 2.0*dx_to*t_s))/(t_s*t_s);
+  result.a_new[4] = (2.0*(3.0*y_td - 3.0*y_to + dy_td*t_s + 2.0*dy_to*t_s))/(t_s*t_s);
+  result.a_new[5] = z_to - planner_config.terrain.getGroundHeight(x_to,y_to);;
+  result.a_new[6] = t_s;
+  result.a_new[7] = t_f;
 
   // If the connection results in an infeasible action, abort and return trapped
-  if (isValidAction(a_new,planner_config) == true)
+  if (isValidAction(result.a_new,planner_config) == true)
   {
     // Check if the resulting state action pair is kinematically valid
-    bool isValid = (direction == FORWARD) ? (isValidStateActionPair(s_start, a_new, planner_config, s_new, t_new)) :
-                         (isValidStateActionPairReverse(s_goal,a_new, planner_config, s_new, t_new));
+    bool isValid = (direction == FORWARD) ? (isValidStateActionPair(s_start, result.a_new, result, 
+      planner_config)) : (isValidStateActionPairReverse(s_goal,result.a_new, result, planner_config));
 
     // If valid, great, return REACHED, otherwise try again to the valid state returned by isValidStateActionPair
     if (isValid == true)
       return REACHED;
     else
     {
-      if (attemptConnect(s_existing, s_new, t_new, s_new, a_new, planner_config, direction) == TRAPPED)
+      if (attemptConnect(s_existing, result.s_new, result.t_new, result, planner_config, direction) == TRAPPED)
         return TRAPPED;
       else
         return ADVANCED;
@@ -77,11 +77,12 @@ int RRTConnectClass::attemptConnect(State s_existing, State s, double t_s, State
   return TRAPPED;
 }
 
-int RRTConnectClass::attemptConnect(State s_existing, State s, State &s_new, Action &a_new, const PlannerConfig &planner_config, int direction)
+int RRTConnectClass::attemptConnect(State s_existing, State s, StateActionResult &result,
+  const PlannerConfig &planner_config, int direction)
 {
   // select desired stance time to enforce a nominal stance velocity
   double t_s = poseDistance(s, s_existing)/planner_config.V_NOM;
-  return attemptConnect(s_existing, s, t_s, s_new, a_new, planner_config, direction);
+  return attemptConnect(s_existing, s, t_s, result, planner_config, direction);
 }
 
 int RRTConnectClass::connect(PlannerClass &T, State s, const PlannerConfig &planner_config, int direction)
@@ -89,21 +90,20 @@ int RRTConnectClass::connect(PlannerClass &T, State s, const PlannerConfig &plan
   // Find nearest neighbor
   int s_near_index = T.getNearestNeighbor(s);
   State s_near = T.getVertex(s_near_index);
-  State s_new;
-  Action a_new;
+  StateActionResult result;
 
   // Try to connect to nearest neighbor, add to graph if REACHED or ADVANCED
-  int result = attemptConnect(s_near, s, s_new, a_new, planner_config, direction);
-  if (result != TRAPPED)
+  int connect_result = attemptConnect(s_near, s, result, planner_config, direction);
+  if (connect_result != TRAPPED)
   {
     int s_new_index = T.getNumVertices();
-    T.addVertex(s_new_index, s_new);
-    T.addEdge(s_near_index, s_new_index);
-    T.addAction(s_new_index, a_new);
-    T.updateGValue(s_new_index, T.getGValue(s_near_index) + poseDistance(s_near, s_new));
+    T.addVertex(s_new_index, result.s_new);
+    T.addEdge(s_near_index, s_new_index, result.length);
+    T.addAction(s_new_index, result.a_new);
+    // T.updateGValue(s_new_index, T.getGValue(s_near_index) + result.length);
   }
 
-  return result;
+  return connect_result;
 }
 
 std::vector<Action> RRTConnectClass::getActionSequenceReverse(PlannerClass &T, std::vector<int> path)
@@ -147,10 +147,11 @@ void RRTConnectClass::postProcessPath(std::vector<State> &state_sequence, std::v
     a_next = action_sequence_copy.back();
     State old_state;
     Action old_action;
+    StateActionResult result;
 
     // Try to connect to the last state in the sequence
     // if unsuccesful remove the back and try again until successful or no states left
-    while ((attemptConnect(s,s_next, dummy, a_new, planner_config, FORWARD) != REACHED) && (s != s_next))
+    while ((attemptConnect(s,s_next, result, planner_config, FORWARD) != REACHED) && (s != s_next))
     {
       old_state = s_next;
       old_action = a_next;
@@ -164,13 +165,16 @@ void RRTConnectClass::postProcessPath(std::vector<State> &state_sequence, std::v
     if (s != s_next)
     {
       new_state_sequence.push_back(s_next);
-      new_action_sequence.push_back(a_new);
-      path_length_ += poseDistance(s,s_next);
+      new_action_sequence.push_back(result.a_new);
+      path_length_ += result.length;
       s = s_next;
     } else {
       new_state_sequence.push_back(old_state);
       new_action_sequence.push_back(old_action);
-      path_length_ += poseDistance(s,old_state);
+
+      // Recompute path length
+      isValidStateActionPairReverse(old_state,old_action,result,planner_config);
+      path_length_ += result.length;
       s = old_state;
     }
   }
@@ -204,7 +208,7 @@ void RRTConnectClass::extractPath(PlannerClass Ta, PlannerClass Tb, std::vector<
   postProcessPath(state_sequence, action_sequence, planner_config);
 }
 
-void RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double max_time)
+void RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double max_planning_time)
 {
 
   auto t_start_total_solve = std::chrono::steady_clock::now();
@@ -225,7 +229,7 @@ void RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
     
     if(current_elapsed.count() >= anytime_horizon)
     {
-      if(total_elapsed.count() >= max_time_solve_)
+      if(total_elapsed.count() >= max_planning_time)
       {
         std::cout << "Failed, exiting" << std::endl;
         elapsed_to_first_ = total_elapsed;

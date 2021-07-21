@@ -34,11 +34,12 @@ SOFTWARE.
   <arg name="mblink"          default="false"/>
   <arg name="world"           default="flat"/>
 
+  <include file="$(find spirit_utils)/launch/mapping.launch" >
+    <arg name="input_type" value="mesh"/>
+    <arg name="world" value="$(arg world)"/>
+  </include>
+
   <group if="$(arg software)">
-    <include file="$(find spirit_utils)/launch/mapping.launch" >
-      <arg name="input_type" value="mesh"/>
-      <arg name="world" value="$(arg world)"/>
-    </include>
     <include file="$(find spirit_utils)/launch/visualization.launch">
       <arg name="live_plot" value="$(arg live_plot)"/>
     </include>
@@ -71,11 +72,14 @@ SOFTWARE.
   <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
 
   <!-- Spawn SDF model -->
-  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.4 -J 1 1.632 -J 3 1.632 -J 5 1.632 -J 7 1.632 -J 0 0.816 -J 2 0.816 -J 4 0.816 -J 6 0.816" output="screen"/>
+  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 2.0 -y -1.0 -z 0.4 -Y 3.0 -J 1 1.632 -J 3 1.632 -J 5 1.632 -J 7 1.632 -J 0 0.816 -J 2 0.816 -J 4 0.816 -J 6 0.816" output="screen"/>
 
   <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
   <include file="$(find spirit_utils)/launch/load_params.launch" />
-  
+
+  <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
+
+
   <node name="controller_spawner"
         pkg="controller_manager"
         type="spawner"

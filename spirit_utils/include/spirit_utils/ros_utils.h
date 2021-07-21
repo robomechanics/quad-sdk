@@ -4,7 +4,6 @@
 #include <ros/ros.h>
 #include <std_msgs/Header.h>
 #include <spirit_utils/math_utils.h>
-#include <spirit_utils/foot_jacobians.h>
 
 namespace spirit_utils {
   /**

@@ -103,10 +103,12 @@ class LocalFootstepPlanner {
      * @param[in] body_plan Current body plan
      * @param[in] grf_plan Current grf plan
      * @param[in] contact_schedule Current contact schedule
+     * @param[in] current_state Current state of the robot body
      * @param[out] foot_positions Foot positions over the horizon
      */
     void computeFootPositions(const Eigen::MatrixXd &body_plan, const Eigen::MatrixXd &grf_plan,
-      const std::vector<std::vector<bool>> &contact_schedule, Eigen::MatrixXd &foot_positions);
+      const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &ref_body_plan,
+      Eigen::MatrixXd &foot_positions);
 
     /**
      * @brief Convert the foot positions and contact schedule into ros messages for the foot plan

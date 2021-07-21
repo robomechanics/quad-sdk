@@ -135,7 +135,7 @@ class GlobalBodyPlanner {
     int num_calls_;
 
     /// Max time to let the algorithm search
-    double max_time_;
+    double max_planning_time_;
 
     /// Handle for the map frame
     std::string map_frame_;
@@ -151,6 +151,9 @@ class GlobalBodyPlanner {
 
     /// Std vector containing the interpolated time data
     std::vector<int> primitive_id_plan_;
+
+    /// Std vector containing the interpolated time data
+    std::vector<double> length_plan_;
 
     /// Time stamp for the beginning of the plan
     ros::Time plan_timestamp_;

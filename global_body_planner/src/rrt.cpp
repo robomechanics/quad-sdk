@@ -7,18 +7,16 @@ RRTClass::~RRTClass() {}
 
 using namespace planning_utils;
 
-bool RRTClass::newConfig(State s, State s_near, State &s_new, Action &a_new, const PlannerConfig &planner_config, int direction)
+bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
+	const PlannerConfig &planner_config, int direction)
 {
 	double best_so_far = stateDistance(s_near, s);
 	std::array<double, 3> surf_norm = planner_config.terrain.getSurfaceNormal(s[0], s[1]);
 
-	// std::array<double,3> 
 	for (int i = 0; i < planner_config.NUM_GEN_STATES; ++i)
 	{
 		bool valid_state_found = false;
-		State s_test;
-		double t_new;
-
+		StateActionResult current_result;
 
 		Action a_test = getRandomAction(surf_norm,planner_config);
 		for (int j = 0; j < planner_config.NUM_GEN_STATES; ++j)
@@ -26,10 +24,10 @@ bool RRTClass::newConfig(State s, State s_near, State &s_new, Action &a_new, con
 			bool is_valid;
 			if (direction == FORWARD)
 			{
-				is_valid = isValidStateActionPair(s_near, a_test, planner_config, s_test, t_new);
+				is_valid = isValidStateActionPair(s_near, a_test, current_result, planner_config);
 			} else if (direction == REVERSE)
 			{
-				is_valid = isValidStateActionPairReverse(s_near, a_test, planner_config, s_test, t_new);
+				is_valid = isValidStateActionPairReverse(s_near, a_test, current_result, planner_config);
 			}
 
 			if (is_valid == true)
@@ -43,12 +41,13 @@ bool RRTClass::newConfig(State s, State s_near, State &s_new, Action &a_new, con
 
 		if (valid_state_found == true)
 		{
-			double current_dist = stateDistance(s_test, s);
+			double current_dist = stateDistance(current_result.s_new, s);
 			if (current_dist < best_so_far)
 			{
 				best_so_far = current_dist;
-				s_new = s_test;
-				a_new = a_test;
+				result.s_new = current_result.s_new;
+				result.a_new = a_test;
+				result.length = current_result.length;
 			}
 		}
 	}
@@ -66,20 +65,18 @@ int RRTClass::extend(PlannerClass &T, State s, const PlannerConfig &planner_conf
 {
 	int s_near_index = T.getNearestNeighbor(s);
 	State s_near = T.getVertex(s_near_index);
-	State s_new;
-	Action a_new;
+	StateActionResult result;
 
-	if (newConfig(s,s_near,s_new, a_new, planner_config, direction) == true)
+	if (newConfig(s,s_near,result, planner_config, direction) == true)
 	{
 		int s_new_index = T.getNumVertices();
-		T.addVertex(s_new_index, s_new);
-		T.addEdge(s_near_index, s_new_index);
-		T.addAction(s_new_index, a_new);
-		T.updateGValue(s_new_index, T.getGValue(s_near_index) + poseDistance(s_near, s_new));
-
+		T.addVertex(s_new_index, result.s_new);
+		T.addEdge(s_near_index, s_new_index, result.length);
+		T.addAction(s_new_index, result.a_new);
+		// T.updateGValue(s_new_index, T.getGValue(s_near_index) + result.length);
 
 		// if (s_new == s)
-		if (isWithinBounds(s_new, s,planner_config) == true)
+		if (isWithinBounds(result.s_new, s,planner_config) == true)
 		{
 			return REACHED;
 		} else {

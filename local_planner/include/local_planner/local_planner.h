@@ -66,7 +66,7 @@ private:
   /**
    * @brief Function to pre-process the body plan and robot state messages into Eigen arrays
    */
-  void preProcessPlanAndState();
+  void getStateAndReferencePlan();
 
   /**
    * @brief Function to compute the local plan

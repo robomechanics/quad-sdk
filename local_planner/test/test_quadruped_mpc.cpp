@@ -14,6 +14,7 @@ const double INF = OsqpEigen::INFTY;
 namespace plt = matplotlibcpp;
 
 TEST(TestUseCase, quadVariable) {
+  ros::NodeHandle nh;
 
   // Configurable (system) parameters
   const int Nu = 13;      // Appended gravity term
@@ -116,7 +117,7 @@ TEST(TestUseCase, quadVariable) {
   // mpc.get_output(x_out, opt_traj, control_traj, f_val);
   // std::cout << "Final cost: " << f_val << std::endl;
 
-  Eigen::MatrixXd opt_traj,control_traj;
+  Eigen::MatrixXd opt_traj(N+1,Nx),control_traj(N,Nu);
   mpc.computePlan(initial_state, ref_traj, foot_positions,
       contact_sequences, opt_traj, control_traj);
 
@@ -192,5 +193,7 @@ TEST(TestUseCase, quadVariable) {
 // Run all the tests that were declared with TEST()
 int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);
+  ros::init(argc, argv, "quadruped_mpc_test");
+
   return RUN_ALL_TESTS();
 }

@@ -19,6 +19,19 @@ SpiritKinematics::SpiritKinematics() {
     g_body_legbases_[leg_index] = createAffineMatrix(legbase_offsets_[leg_index], 
       Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()));
   }
+
+  std::string robot_description_string;
+  ros::param::get("robot_description", robot_description_string);
+
+  model_ = new RigidBodyDynamics::Model();
+
+  if (!RigidBodyDynamics::Addons::URDFReadFromString(robot_description_string.c_str(), model_, true))
+  {
+    std::cerr << "Error loading model " << std::endl;
+    abort();
+  }
+
+  body_name_list_ = {"toe0", "toe1", "toe2", "toe3"};
 }
 
 Eigen::Matrix4d SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans, 
@@ -351,3 +364,81 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
 //   // Compute IKVel here
 
 // }
+
+void SpiritKinematics::getJacobianGenCoord(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const
+{
+  this->getJacobianBodyAngVel(state, jacobian);
+
+  // RBDL uses Jacobian w.r.t. floating base angular velocity in body frame, which is multiplied by Jacobian to map it to Euler angle change rate here
+  for (size_t i = 0; i < 4; i++)
+  {
+    Eigen::MatrixXd transform_jac(3, 3);
+    transform_jac << 1, 0, -sin(state(16)),
+        0, cos(state(15)), cos(state(16)) * sin(state(15)),
+        0, -sin(state(15)), cos(state(15)) * cos(state(16));
+    jacobian.block(3 * i, 15, 3, 3) = jacobian.block(3 * i, 15, 3, 3) * transform_jac;
+  }
+}
+
+void SpiritKinematics::getJacobianBodyAngVel(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian)const
+{
+  assert(state.size() == 18);
+
+  // RBDL state vector has the floating base state in the front and the joint state in the back
+  // When reading from URDF, the order of the legs is 2301, which should be corrected by sorting the bodyID
+  Eigen::VectorXd q(19);
+  q.setZero();
+
+  q.head(3) = state.segment(12, 3);
+
+  tf2::Quaternion quat_tf;
+  quat_tf.setRPY(state(15), state(16), state(17));
+  q(3) = quat_tf.getX();
+  q(4) = quat_tf.getY();
+  q(5) = quat_tf.getZ();
+
+  // RBDL uses quaternion for floating base direction, but w is placed at the end of the state vector
+  q(18) = quat_tf.getW();
+
+  q.segment(6, 3) = state.segment(6, 3);
+  q.segment(9, 3) = state.segment(9, 3);
+  q.segment(12, 3) = state.segment(0, 3);
+  q.segment(15, 3) = state.segment(3, 3);
+
+  jacobian.setZero();
+
+  for (size_t i = 0; i < body_name_list_.size(); i++)
+  {
+    unsigned int body_id = model_->GetBodyId(body_name_list_.at(i).c_str());
+
+    Eigen::MatrixXd jac_block(3, 18);
+    jac_block.setZero();
+    RigidBodyDynamics::CalcPointJacobian(*model_, q, body_id, Eigen::Vector3d::Zero(), jac_block);
+
+    jacobian.block(3 * i, 0, 3, 3) = jac_block.block(0, 12, 3, 3);
+    jacobian.block(3 * i, 3, 3, 3) = jac_block.block(0, 15, 3, 3);
+    jacobian.block(3 * i, 6, 3, 3) = jac_block.block(0, 6, 3, 3);
+    jacobian.block(3 * i, 9, 3, 3) = jac_block.block(0, 9, 3, 3);
+    jacobian.block(3 * i, 12, 3, 6) = jac_block.block(0, 0, 3, 6);
+  }
+}
+
+void SpiritKinematics::getJacobianWorldAngVel(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const
+{
+  this->getJacobianBodyAngVel(state, jacobian);
+
+  // RBDL uses Jacobian w.r.t. floating base angular velocity in body frame, which is multiplied by rotation matrix to map it to angular velocity in world frame here
+  for (size_t i = 0; i < 4; i++)
+  {
+    Eigen::Matrix3d rot;
+    this->getRotationMatrix(state.segment(15, 3), rot);
+    jacobian.block(3 * i, 15, 3, 3) = jacobian.block(3 * i, 15, 3, 3) * rot;
+  }
+}
+
+void SpiritKinematics::getRotationMatrix(const Eigen::VectorXd &rpy, Eigen::Matrix3d &rot) const
+{
+  rot = Eigen::AngleAxisd(rpy(2), Eigen::Vector3d::UnitZ()) *
+        Eigen::AngleAxisd(rpy(1), Eigen::Vector3d::UnitY()) *
+        Eigen::AngleAxisd(rpy(0), Eigen::Vector3d::UnitX());
+}
