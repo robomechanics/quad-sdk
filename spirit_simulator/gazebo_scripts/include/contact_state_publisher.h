@@ -6,7 +6,8 @@
 #include <spirit_msgs/GRFArray.h>
 #include <gazebo_msgs/ContactsState.h>
 #include <spirit_utils/ros_utils.h>
-
+#include <tf2_ros/transform_listener.h>
+#include <geometry_msgs/TransformStamped.h>
 
 #include <cmath>
 #define MATH_PI 3.141592
@@ -53,6 +54,12 @@ private:
 	/// Subscriber for toe 3
 	ros::Subscriber toe3_contact_state_sub;
 
+	/// Tf2 buffer
+	tf2_ros::Buffer buffer_;
+
+	/// TF transform listener
+	tf2_ros::TransformListener listener_;
+
 	/// ROS publisher for desired GRF
 	ros::Publisher grf_pub_;
 
@@ -64,6 +71,9 @@ private:
 
 	/// Number of feet
 	const int num_feet_ = 4;
+
+	/// Vector of toe frame transforms
+	std::vector<geometry_msgs::TransformStamped> transformsStamped_;
 
 	/// Most recent local plan
 	spirit_msgs::GRFArray grf_array_msg_;
