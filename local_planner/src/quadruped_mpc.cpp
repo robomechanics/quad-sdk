@@ -362,7 +362,7 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
 
   initial_state_angvel_body.segment(9, 3) = angvel_world;
 
-  for (size_t i = 0; i < N_; i++)
+  for (size_t i = 0; i < ref_traj.rows(); i++)
   {
     rpy = ref_traj.block(i, 3, 1, 3).transpose();
     angvel_body = ref_traj.block(i, 9, 1, 3).transpose();
@@ -392,7 +392,7 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
   // throw std::runtime_error("STOP AND CHECK");
 
   // Map angular velocity from world frame to body frame
-  for (size_t i = 0; i < N_; i++)
+  for (size_t i = 0; i < ref_traj.rows(); i++)
   {
     rpy = state_traj.block(i, 3, 1, 3).transpose();
     angvel_world = state_traj.block(i, 9, 1, 3).transpose();
