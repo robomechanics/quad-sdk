@@ -1,7 +1,8 @@
 #include "contact_state_publisher.h"
 
-ContactStatePublisher::ContactStatePublisher(ros::NodeHandle nh) {
-	nh_ = nh;
+ContactStatePublisher::ContactStatePublisher(ros::NodeHandle nh) : listener_(buffer_) {
+	
+  nh_ = nh;
 
     // Load rosparams from parameter server
   std::string grf_topic, toe0_contact_state_topic, toe1_contact_state_topic,
@@ -29,6 +30,7 @@ ContactStatePublisher::ContactStatePublisher(ros::NodeHandle nh) {
   grf_array_msg_.vectors.resize(num_feet_);
   grf_array_msg_.points.resize(num_feet_);
   grf_array_msg_.contact_states.resize(num_feet_);
+  transformsStamped_.resize(num_feet_);
 }
 
 void ContactStatePublisher::contactStateCallback(const gazebo_msgs::ContactsState::ConstPtr& msg, const int toe_idx) {
@@ -51,24 +53,26 @@ void ContactStatePublisher::contactStateCallback(const gazebo_msgs::ContactsStat
     std::size_t found_terrain = str_terrain.find(terrain_name);
     
     if ((found_toe != std::string::npos) && (found_terrain != std::string::npos)) {
-      grf_array_msg_.vectors[toe_idx].x += msg->states[0].total_wrench.force.x/msg->states.size();
-      grf_array_msg_.vectors[toe_idx].y += msg->states[0].total_wrench.force.y/msg->states.size();
-      grf_array_msg_.vectors[toe_idx].z += msg->states[0].total_wrench.force.z/msg->states.size();
+      grf_array_msg_.vectors[toe_idx].x += msg->states[i].wrenches[0].force.x/msg->states.size();
+      grf_array_msg_.vectors[toe_idx].y += msg->states[i].wrenches[0].force.y/msg->states.size();
+      grf_array_msg_.vectors[toe_idx].z += msg->states[i].wrenches[0].force.z/msg->states.size();
 
-      grf_array_msg_.points[toe_idx].x += msg->states[0].contact_positions[0].x/msg->states.size();
-      grf_array_msg_.points[toe_idx].y += msg->states[0].contact_positions[0].y/msg->states.size();
-      grf_array_msg_.points[toe_idx].z += msg->states[0].contact_positions[0].z/msg->states.size();
+      grf_array_msg_.points[toe_idx].x += msg->states[i].contact_positions[0].x/msg->states.size();
+      grf_array_msg_.points[toe_idx].y += msg->states[i].contact_positions[0].y/msg->states.size();
+      grf_array_msg_.points[toe_idx].z += msg->states[i].contact_positions[0].z/msg->states.size();
 
       grf_array_msg_.contact_states[toe_idx] = true;
       count++;
     }
   }
 
+  // Rotate into the world frame
+  tf2::doTransform(grf_array_msg_.vectors[toe_idx], grf_array_msg_.vectors[toe_idx],
+    transformsStamped_[toe_idx]);
+
   if (count != msg->states.size()) {
     ROS_WARN("Contacts with objects other than terrain detected, force readings inaccurate!");
   }
-
-  // std::cout << "count = " << count << ", msg->states.size() = " << msg->states.size() << std::endl;
 }
 
 void ContactStatePublisher::publishContactState() {
@@ -84,6 +88,19 @@ void ContactStatePublisher::spin() {
     // Collect new messages on subscriber topics
     ros::spinOnce();
 
+    // Get the new toe frame transforms
+    try {
+      transformsStamped_[0] = buffer_.lookupTransform("map", "ground_truth/toe0", ros::Time(0));
+      transformsStamped_[1] = buffer_.lookupTransform("map", "ground_truth/toe1", ros::Time(0));
+      transformsStamped_[2] = buffer_.lookupTransform("map", "ground_truth/toe2", ros::Time(0));
+      transformsStamped_[3] = buffer_.lookupTransform("map", "ground_truth/toe3", ros::Time(0));
+    }
+    catch (tf2::TransformException &ex) {
+      ROS_WARN_THROTTLE(1,"%s",ex.what());
+      continue;
+    }
+
+    // Publish the contact state
     publishContactState();
 
     // Enforce update rate
