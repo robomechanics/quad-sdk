@@ -5,7 +5,6 @@
 #include <eigen3/Eigen/Eigen>
 // #include <eigen3/Eigen/Eigen>
 #include <spirit_utils/ros_utils.h>
-#include <spirit_utils/foot_jacobians.h>
 #include <spirit_utils/math_utils.h>
 #include <spirit_utils/ros_utils.h>
 #include <spirit_msgs/GRFArray.h>
@@ -256,7 +255,9 @@ private:
 	std::vector<double> counterVec;
 
 	double step_number;
-	
+
+	/// Spirit Kinematics class
+	std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
 };
 
 
