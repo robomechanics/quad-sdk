@@ -21,7 +21,7 @@ SpiritKinematics::SpiritKinematics() {
   }
 
   std::string robot_description_string;
-  ros::param::get("trajectory/robot_description", robot_description_string);
+  ros::param::get("robot_description", robot_description_string);
 
   model_ = new RigidBodyDynamics::Model();
 
@@ -365,7 +365,7 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
 
 // }
 
-void SpiritKinematics::getJacobianGeneralizedCoordinates(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const
+void SpiritKinematics::getJacobianGenCoord(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const
 {
   this->getJacobianBodyAngVel(state, jacobian);
 
