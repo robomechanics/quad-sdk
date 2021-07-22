@@ -18,6 +18,7 @@ topics:
     ground_truth: /state/ground_truth
     estimate: /state/estimate
     trajectory: /state/trajectory
+    grfs: /state/grfs
   control:
     grfs: /control/grfs
     trajectory: /control/trajectory
@@ -27,6 +28,7 @@ topics:
   visualization:
     global_plan: /visualization/global_plan
     local_plan: /visualization/local_plan
+    local_plan_ori: /visualization/local_plan_ori
     global_plan_grf: /visualization/global_plan_grf
     local_plan_grf: /visualization/local_plan_grf
     global_plan_discrete: /visualization/global_plan_discrete
@@ -39,3 +41,8 @@ topics:
     foot_1_plan_continuous: /visualization/foot_1_plan_continuous
     foot_2_plan_continuous: /visualization/foot_2_plan_continuous
     foot_3_plan_continuous: /visualization/foot_3_plan_continuous
+  gazebo:
+    toe0_contact_state: /gazebo/toe0_contact_state
+    toe1_contact_state: /gazebo/toe1_contact_state
+    toe2_contact_state: /gazebo/toe2_contact_state
+    toe3_contact_state: /gazebo/toe3_contact_state

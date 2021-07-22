@@ -306,7 +306,7 @@ bool QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
     solver_.settings()->setWarmStart(true);
     solver_.settings()->setCheckTermination(10);
     solver_.settings()->setScaling(false);
-    solver_.settings()->setAbsoluteTolerance(1e-3); //1e-2
+    solver_.settings()->setAbsoluteTolerance(1e-2); //1e-2
     solver_.settings()->setRelativeTolerance(1e-4); //1e-4
     solver_.initSolver();
 
@@ -345,8 +345,33 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
   Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj){
 
   // Pass inputs into solver and solve
-  update_dynamics(state_traj,foot_positions);
+  update_dynamics(state_traj, foot_positions);
   update_contact(contact_schedule, f_min_, f_max_);
+
+  // Map angular velocity from body frame to world frame
+  Eigen::Matrix3d rot;
+  Eigen::VectorXd initial_state_angvel_body = initial_state;
+  Eigen::MatrixXd ref_traj_angvel_body = ref_traj;
+  Eigen::Vector3d rpy, angvel_world, angvel_body;
+
+  rpy = initial_state.segment(3, 3);
+  angvel_body = initial_state.segment(9, 3);
+
+  kinematics_->getRotationMatrix(rpy, rot);
+  angvel_world = rot * angvel_body;
+
+  initial_state_angvel_body.segment(9, 3) = angvel_world;
+
+  for (size_t i = 0; i < ref_traj.rows(); i++)
+  {
+    rpy = ref_traj.block(i, 3, 1, 3).transpose();
+    angvel_body = ref_traj.block(i, 9, 1, 3).transpose();
+
+    kinematics_->getRotationMatrix(rpy, rot);
+    angvel_world = rot * angvel_body;
+
+    ref_traj_angvel_body.block(i, 9, 1, 3) = angvel_world.transpose();
+  }
 
   // Perform the solve
   Eigen::MatrixXd x_out;
@@ -366,7 +391,20 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
   // std::cout << "control_traj" << std::endl << control_traj << std::endl << std::endl;
   // throw std::runtime_error("STOP AND CHECK");
 
-  // control_traj = control_traj.block(0,0,control_traj.rows(), control_traj.cols()-1);
-  control_traj = control_traj.leftCols(control_traj.cols()-1);
+  // Map angular velocity from world frame to body frame
+  for (size_t i = 0; i < ref_traj.rows(); i++)
+  {
+    rpy = state_traj.block(i, 3, 1, 3).transpose();
+    angvel_world = state_traj.block(i, 9, 1, 3).transpose();
+
+    kinematics_->getRotationMatrix(rpy, rot);
+    angvel_body = rot.transpose() * angvel_world;
+
+    state_traj.block(i, 9, 1, 3) = angvel_body.transpose();
+  }
+
+  unsigned int numRows = control_traj.rows();
+  unsigned int numCols = control_traj.cols()-1;
+  control_traj.conservativeResize(numRows,numCols);
   return true;
 }
