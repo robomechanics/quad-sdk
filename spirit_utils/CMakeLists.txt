@@ -27,6 +27,13 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(PythonLibs 2.7)
 find_package(Eigen3 REQUIRED)
 
+# We need to add the project source path to the CMake module path so that
+# the FindRBDL.cmake script can be found.
+LIST( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR} )
+
+# Search for the RBDL include directory and library
+FIND_PACKAGE (RBDL COMPONENTS URDFREADER REQUIRED)
+
 catkin_package(
   INCLUDE_DIRS include ${PYTHON_INCLUDE_DIRS}
   LIBRARIES spirit_utils
@@ -47,6 +54,9 @@ include_directories(
   ${PYTHON_INCLUDE_DIRS}
 )
 
+# Add the include directory to the include paths
+INCLUDE_DIRECTORIES ( ${RBDL_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIR})
+
 add_library(spirit_utils
   src/rviz_interface.cpp
   src/fast_terrain_map.cpp
@@ -54,7 +64,6 @@ add_library(spirit_utils
   src/mesh_to_grid_map_converter.cpp
   src/ground_truth_publisher.cpp
   src/robot_proxy.cpp
-  src/foot_jacobians.cpp
   src/math_utils.cpp
   src/ros_utils.cpp
   src/kinematics.cpp
@@ -63,6 +72,12 @@ add_library(spirit_utils
 )
 add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(spirit_utils)
+
+# And link the library against the executable
+TARGET_LINK_LIBRARIES ( spirit_utils
+	${RBDL_LIBRARY}
+	${RBDL_URDFREADER_LIBRARY}
+	)
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context

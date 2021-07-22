@@ -14,6 +14,7 @@ const double INF = OsqpEigen::INFTY;
 namespace plt = matplotlibcpp;
 
 TEST(TestUseCase, quadVariable) {
+  ros::NodeHandle nh;
 
   // Configurable (system) parameters
   const int Nu = 13;      // Appended gravity term
@@ -93,7 +94,7 @@ TEST(TestUseCase, quadVariable) {
 
   double mu = 0.6;
   double fmin = 5;
-  double fmax = 100;
+  double fmax = 200;
 
   // Setup MPC class, call necessary functions
   QuadrupedMPC mpc;
@@ -102,26 +103,20 @@ TEST(TestUseCase, quadVariable) {
   mpc.update_weights(Q_vec,U_vec);
   mpc.update_control_bounds(fmin, fmax);
   mpc.update_state_bounds(state_lo, state_hi);
-  mpc.update_dynamics(ref_traj,foot_positions);
   mpc.update_friction(mu);
-  mpc.update_contact(contact_sequences, fmin, fmax);
 
-  // // Solve, collect output and cost val
-  // Eigen::MatrixXd x_out;
-  // mpc.solve(initial_state, ref_traj, x_out);
-  // mpc.solve(initial_state, ref_traj, x_out);
-
-  // double f_val;
-  // Eigen::MatrixXd opt_traj,control_traj;
-  // mpc.get_output(x_out, opt_traj, control_traj, f_val);
-  // std::cout << "Final cost: " << f_val << std::endl;
-
+  // Eigen::MatrixXd opt_traj(N+1,Nx),control_traj(N,Nu);
   Eigen::MatrixXd opt_traj,control_traj;
-  mpc.computePlan(initial_state, ref_traj, foot_positions,
+  opt_traj = ref_traj;
+  bool check_good_solve = mpc.computePlan(initial_state, ref_traj, foot_positions,
       contact_sequences, opt_traj, control_traj);
+  bool check_nan = true;
 
-  std::cout << "opt_traj" << std::endl << opt_traj << std::endl << std::endl;
-  std::cout << "control_traj" << std::endl << control_traj << std::endl << std::endl;;
+  // std::cout << "opt_traj" << std::endl << opt_traj << std::endl << std::endl;
+  // std::cout << "control_traj" << std::endl << control_traj << std::endl << std::endl;;
+  // std::cout << "initial_state" << std::endl << initial_state << std::endl << std::endl;;
+  // std::cout << "ref_traj" << std::endl << ref_traj << std::endl << std::endl;;
+  // std::cout << "foot_positions" << std::endl << foot_positions << std::endl << std::endl;;
 
   // Accumulate states in stl form for plotting
   std::vector<std::vector<double>> state_ref(Nx);
@@ -144,8 +139,31 @@ TEST(TestUseCase, quadVariable) {
     }
   } 
 
-  // Plot everything
-  
+  // Check for nans in opt_traj
+  for (int i = 0; i < opt_traj.rows(); i++) {
+    for (int j = 0; j < opt_traj.cols(); j++) {
+      if (std::isnan(abs(opt_traj(i,j)))) {
+        check_nan = false;
+        break;
+      }
+    }
+  }
+
+  // Check for nans in control_traj
+  for (int i = 0; i < control_traj.rows(); i++) {
+    for (int j = 0; j < control_traj.cols(); j++) {
+      if (std::isnan(abs(control_traj(i,j)))) {
+        check_nan = false;
+        break;
+      }
+    }
+  }
+
+  // Expect good solve with no nans
+  EXPECT_TRUE(check_good_solve);
+  EXPECT_TRUE(check_nan);
+
+  // // Plot everything
   // plt::figure();
   // plt::suptitle("Position Tracking");
   // const char* pos_names[6] = {"x","y","z","roll","pitch","yaw"};
@@ -155,7 +173,7 @@ TEST(TestUseCase, quadVariable) {
   //   plt::plot(state_ref.at(i));
   //   plt::title(pos_names[i]);
   // }
-  // plt::save("/home/joe/Desktop/position_mpc.png");
+  // // plt::save("/home/joe/Desktop/position_mpc.png");
 
   // plt::figure();
   // plt::suptitle("Velocity Tracking");
@@ -166,7 +184,7 @@ TEST(TestUseCase, quadVariable) {
   //   plt::plot(state_ref.at(i+6));
   //   plt::title(vel_names[i]);
   // }
-  // plt::save("/home/joe/Desktop/velocity_mpc.png");
+  // // plt::save("/home/joe/Desktop/velocity_mpc.png");
 
   // plt::figure();
   // plt::suptitle("Control Efforts");
@@ -180,8 +198,7 @@ TEST(TestUseCase, quadVariable) {
   //   plt::legend();
   //   plt::title(control_names[i]);
   // }
-  // plt::save("/home/joe/Desktop/control_mpc.png");
-
+  // // plt::save("/home/joe/Desktop/control_mpc.png");
 
   // plt::show();
   // plt::pause(1000);
@@ -192,5 +209,7 @@ TEST(TestUseCase, quadVariable) {
 // Run all the tests that were declared with TEST()
 int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);
+  ros::init(argc, argv, "quadruped_mpc_test");
+
   return RUN_ALL_TESTS();
 }

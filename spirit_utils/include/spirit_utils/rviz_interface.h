@@ -5,6 +5,7 @@
 #include <visualization_msgs/MarkerArray.h>
 #include <visualization_msgs/Marker.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/PoseArray.h>
 #include <nav_msgs/Path.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/RobotPlan.h>
@@ -98,6 +99,9 @@ private:
   /// ROS Publisher for the interpolated local plan vizualization
   ros::Publisher local_plan_viz_pub_;
 
+  /// ROS Publisher for local plan orientation vizualization
+  ros::Publisher local_plan_ori_viz_pub_;
+
   /// ROS Publisher for the interpolated global plan grf vizualization
   ros::Publisher global_plan_grf_viz_pub_;
 
@@ -154,6 +158,9 @@ private:
 
   /// Update rate for sending and receiving data, unused since pubs are called in callbacks
   double update_rate_;
+
+  /// Update rate for showing orientation of plan
+  int orientation_subsample_;
 
   /// Handle for the map frame
   std::string map_frame_;

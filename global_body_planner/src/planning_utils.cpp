@@ -46,9 +46,20 @@ FullState stateToFullState(State state, double roll, double pitch, double yaw,
   full_state[6] = state[3];
   full_state[7] = state[4];
   full_state[8] = state[5];
-  full_state[9] = roll_rate;
-  full_state[10] = pitch_rate;
-  full_state[11] = yaw_rate;
+
+  Eigen::Vector3d d_rpy,ang_vel;
+  d_rpy << roll_rate, pitch_rate, yaw_rate;
+
+  Eigen::Matrix3d d_rpy_to_ang_vel;
+  d_rpy_to_ang_vel << cos(pitch)*cos(yaw), -sin(yaw), 0, 
+                      cos(pitch)*sin(yaw),  cos(yaw), 0,
+                              -sin(pitch),         0, 1;
+  
+  ang_vel = d_rpy_to_ang_vel*d_rpy;
+
+  full_state[9] = ang_vel[0];
+  full_state[10] = ang_vel[1];
+  full_state[11] = ang_vel[2];
 
   return full_state;
 }
@@ -305,17 +316,16 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
     z_vec.push_back(body_state[2]);
   }
 
-  plt::clf();
-  plt::ion();
-  // plt::named_plot("unwrapped yaw", interp_t, unwrapped_yaw);
-  plt::named_plot("x", interp_t, x_vec);
-  plt::named_plot("y", interp_t, y_vec);
-  plt::named_plot("z", interp_t, z_vec);
-  plt::xlabel("t");
-  plt::ylabel("data");
-  plt::legend();
-  plt::show();
-  plt::pause(0.001);
+  // plt::clf();
+  // plt::ion();
+  // plt::named_plot("x", interp_t, x_vec);
+  // plt::named_plot("y", interp_t, y_vec);
+  // plt::named_plot("z", interp_t, z_vec);
+  // plt::xlabel("t");
+  // plt::ylabel("data");
+  // plt::legend();
+  // plt::show();
+  // plt::pause(0.001);
 }
 
 GRF getGRF(Action a,double t, const PlannerConfig &planner_config) {

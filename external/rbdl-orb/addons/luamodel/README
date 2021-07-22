@@ -1,0 +1,51 @@
+rbdl_luamodel - load RBDL models from Lua files
+Copyright (c) 2012-2018 Martin Felis <martin@fysx.org>
+
+DESCRIPTION
+
+rbdl_luamodel allows to load models that are specified as Lua scripts. Lua
+is an open-source light-weight scripting language (http://www.lua.org).
+
+This addon comes with a standalone utility that can show various
+information of a lua model such as degree of freedom overview or model
+hierarchy. It is located in addons/luamodel/rbdl_luamodel_test. Use the -h
+switch to see available options.
+
+Note: this addon is not even remotely as thoroughly tested as the RBDL
+itself so please use it with some suspicion.
+
+DOCUMENTATION
+
+The documentation for this addon is built with the RBDL documentation. You
+can find it in Modules -> Addon: rbdl_luamodel.
+
+LICENSING
+
+This code is published under the zlib license, however some parts of the
+CMake scripts are taken from other projects and are licensed under
+different terms.
+
+Full license text:
+
+-------
+rbdl_luamodel - load RBDL models from Lua files
+Copyright (c) 2011-2018 Martin Felis <martin@fysx.org>
+
+This software is provided 'as-is', without any express or implied
+warranty. In no event will the authors be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+   1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
+
+   2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
+
+   3. This notice may not be removed or altered from any source
+   distribution.
