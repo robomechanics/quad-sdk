@@ -237,38 +237,9 @@ bool NMPCController::computePlan(const bool &new_step,
     mynlp_->shift_initial_guess();
   }
 
-  Eigen::VectorXd istate;
-  istate = initial_state;
-  Eigen::MatrixXd refstate;
-  refstate = ref_traj;
-  Eigen::Vector3d angvel, cur_angvel, rpy, rpy_dot;
-  rpy = initial_state.segment(3, 3);
-  rpy_dot = initial_state.segment(9, 3);
-  cur_angvel(0) = rpy_dot(0) * cos(rpy(1)) * cos(rpy(2)) - rpy_dot(2) * sin(rpy(1)) + rpy_dot(1) * cos(rpy(1)) * sin(rpy(2));
-  cur_angvel(1) = rpy_dot(1) * (cos(rpy(0)) * cos(rpy(2)) + sin(rpy(0)) * sin(rpy(1)) * sin(rpy(2))) - rpy_dot(0) * (cos(rpy(0)) * sin(rpy(2)) - cos(rpy(2)) * sin(rpy(0)) * sin(rpy(1))) + rpy_dot(2) * cos(rpy(1)) * sin(rpy(0));
-  cur_angvel(2) = rpy_dot(0) * (sin(rpy(0)) * sin(rpy(2)) + cos(rpy(0)) * cos(rpy(2)) * sin(rpy(1))) - rpy_dot(1) * (cos(rpy(2)) * sin(rpy(0)) - cos(rpy(0)) * sin(rpy(1)) * sin(rpy(2))) + rpy_dot(2) * cos(rpy(0)) * cos(rpy(1));
-  istate.segment(9, 3) = cur_angvel;
-
-  for (size_t i = 0; i < mynlp_->N_; i++)
-  {
-    rpy = ref_traj.block(i, 3, 1, 3).transpose();
-    rpy_dot = ref_traj.block(i, 9, 1, 3).transpose();
-    angvel(0) = rpy_dot(0) - rpy_dot(2) * sin(rpy(1));
-    angvel(1) = rpy_dot(1) * cos(rpy(0)) + rpy_dot(2) * cos(rpy(1)) * sin(rpy(0));
-    angvel(2) = rpy_dot(2) * cos(rpy(0)) * cos(rpy(1)) - rpy_dot(1) * sin(rpy(0));
-    refstate.block(i, 9, 1, 3) = angvel.transpose();
-  }
-  // std::cout << "initial_state" << std::endl;
-  // std::cout << initial_state << std::endl;
-  std::cout << "istate" << std::endl;
-  std::cout << istate << std::endl;
-  std::cout << "refstate" << std::endl;
-  std::cout << refstate << std::endl;
-  // std::cout << "-----------" << std::endl;
-
   mynlp_->update_solver(
-      istate,
-      refstate,
+      initial_state,
+      ref_traj,
       foot_positions,
       contact_schedule);
 
@@ -286,10 +257,6 @@ bool NMPCController::computePlan(const bool &new_step,
 
   state_traj = x.transpose();
   control_traj = u.transpose();
-
-  std::cout << "state_traj" << std::endl;
-  std::cout << state_traj << std::endl;
-  std::cout << "-----------" << std::endl;
 
   if (status == Solve_Succeeded)
   {
