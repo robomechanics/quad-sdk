@@ -260,6 +260,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         // Log current foot position and zero velocity
         foot_position = getFootData(foot_positions, i, j);
         foot_velocity = Eigen::VectorXd::Zero(3);
+        foot_acceleration = Eigen::VectorXd::Zero(3);
         foot_state_msg.contact = true;
 
       } else { // In swing
