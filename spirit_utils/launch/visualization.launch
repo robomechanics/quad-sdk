@@ -5,9 +5,6 @@
     <arg name="live_plot" default="false"/>
 
     <group ns="/trajectory">
-        <!-- Point the robot description to this URDF -->
-        <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
-
         <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
             <remap from="joint_states" to="/visualization/joint_states/trajectory"/>
@@ -16,14 +13,10 @@
     </group>
 
     <group ns="/ground_truth">
-        <!-- Point the robot description to this URDF (which has meshes attached) -->
-        <!-- <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit_meshes.urdf" /> -->
-        <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
-
         <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
             <remap from="joint_states" to="/visualization/joint_states/ground_truth"/>
-            <param name="tf_prefix" value="/ground_truth"/>
+            <param name="tf_prefix" value="ground_truth"/>
         </node>
     </group>
 

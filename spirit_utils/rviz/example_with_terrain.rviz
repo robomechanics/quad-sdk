@@ -3,8 +3,7 @@ Panels:
     Help Height: 0
     Name: Displays
     Property Tree Widget:
-      Expanded:
-        - /Local Plan1
+      Expanded: ~
       Splitter Ratio: 0.6114649772644043
     Tree Height: 831
   - Class: rviz/Selection
@@ -157,7 +156,7 @@ Visualization Manager:
           Show Trail: false
           Value: true
       Name: Trajectory State
-      Robot Description: /trajectory/robot_description
+      Robot Description: robot_description
       TF Prefix: /trajectory
       Update Interval: 0
       Value: true
@@ -258,7 +257,7 @@ Visualization Manager:
           Show Trail: false
           Value: true
       Name: Ground Truth State
-      Robot Description: /ground_truth/robot_description
+      Robot Description: robot_description
       TF Prefix: /ground_truth
       Update Interval: 0
       Value: true
@@ -312,7 +311,7 @@ Visualization Manager:
       Length: 0.30000001192092896
       Line Style: Billboards
       Line Width: 0.029999999329447746
-      Name: Local Plan
+      Name: Local Plan Position
       Offset:
         X: 0
         Y: 0
@@ -323,6 +322,22 @@ Visualization Manager:
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
       Topic: /visualization/local_plan
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Arrow Length: 0.30000001192092896
+      Axes Length: 0.30000001192092896
+      Axes Radius: 0.009999999776482582
+      Class: rviz/PoseArray
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.07000000029802322
+      Head Radius: 0.029999999329447746
+      Name: Local Plan Orientation
+      Shaft Length: 0.23000000417232513
+      Shaft Radius: 0.009999999776482582
+      Shape: Axes
+      Topic: /visualization/local_plan_ori
       Unreliable: false
       Value: true
     - Class: rviz/MarkerArray
@@ -433,22 +448,6 @@ Visualization Manager:
       Topic: /visualization/foot_3_plan_continuous
       Unreliable: false
       Value: true
-    - Alpha: 1
-      Arrow Length: 0.30000001192092896
-      Axes Length: 0.30000001192092896
-      Axes Radius: 0.009999999776482582
-      Class: rviz/PoseArray
-      Color: 255; 25; 0
-      Enabled: true
-      Head Length: 0.07000000029802322
-      Head Radius: 0.029999999329447746
-      Name: PoseArray
-      Shaft Length: 0.23000000417232513
-      Shaft Radius: 0.009999999776482582
-      Shape: Axes
-      Topic: /visualization/local_plan_ori
-      Unreliable: false
-      Value: true
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
@@ -513,5 +512,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1440
-  X: 2008
-  Y: 0
+  X: 1854
+  Y: 27
