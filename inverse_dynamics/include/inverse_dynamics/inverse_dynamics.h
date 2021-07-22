@@ -254,18 +254,8 @@ private:
 	
 	std::vector<double> counterVec;
 
-	double step_number;
-
 	/// Spirit Kinematics class
 	std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
-
-	Eigen::VectorXd inertia_tensor_;
-
-	std::vector<unsigned int> body_id_list_;
-
-	std::vector<int> leg_idx_list_;
-
-	RigidBodyDynamics::Model *rbdl_model_;
 };
 
 
