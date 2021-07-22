@@ -278,7 +278,7 @@ void InverseDynamics::publishLegCommandArray() {
             leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = stance_kd_.at(j);
 
             leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff =
-                tau_swing_leg_array(joint_idx);
+                tau_array(joint_idx);
           }
           else
           {
@@ -286,7 +286,7 @@ void InverseDynamics::publishLegCommandArray() {
             leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = swing_kd_.at(j);
 
             leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff =
-                tau_array(joint_idx);
+                tau_swing_leg_array(joint_idx);
           }
         } else {
           leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 

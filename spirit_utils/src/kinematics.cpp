@@ -463,7 +463,7 @@ void SpiritKinematics::getJacobianBodyAngVel(const Eigen::VectorXd &state, Eigen
 
     for (size_t j = 0; j < 4; j++)
     {
-      jacobian.block(3 * leg_idx_list_.at(j), 3, 3, 3) = jac_block.block(0, 6 + 3 * j, 3, 3);
+      jacobian.block(3 * i, 3 * leg_idx_list_.at(j), 3, 3) = jac_block.block(0, 6 + 3 * j, 3, 3);
     }
     jacobian.block(3 * i, 12, 3, 6) = jac_block.block(0, 0, 3, 6);
   }
