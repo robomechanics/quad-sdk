@@ -381,6 +381,14 @@ void InverseDynamics::publishLegCommandArray() {
       double effort = fb_component + cmd.torque_ff;
       double fb_ratio = abs(fb_component)/(abs(fb_component) + abs(cmd.torque_ff));
 
+      double effort_threshold = 30.0;
+      if (abs(cmd.torque_ff) >= effort_threshold) {
+        ROS_WARN("Leg %d motor %d: ff effort = %5.3f Nm exceeds threshold of %5.3f Nm", i,j,cmd.torque_ff, effort_threshold);
+      }      
+      if (abs(effort) >= effort_threshold) {
+        ROS_WARN("Leg %d motor %d: total effort = %5.3f Nm exceeds threshold of %5.3f Nm", i,j,effort, effort_threshold);
+      }
+
       leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).pos_component = pos_component;
       leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).vel_component = vel_component;
       leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).fb_component = fb_component;
