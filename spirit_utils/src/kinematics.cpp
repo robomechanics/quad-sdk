@@ -543,7 +543,7 @@ void SpiritKinematics::compInvDyn(const Eigen::VectorXd &state_pos,
 
   // Compute q_ddot caused by grf
   Eigen::VectorXd q_ddot_grf(18);
-  q_ddot_grf = M.inverse() * (tau_grf - N);
+  q_ddot_grf = M.colPivHouseholderQr().solve(tau_grf - N);
 
   // Compute toe acceleration caused by grf
   Eigen::VectorXd foot_acc_grf(12);
@@ -554,7 +554,7 @@ void SpiritKinematics::compInvDyn(const Eigen::VectorXd &state_pos,
 
   // Compute the toe acceleration difference
   Eigen::VectorXd foot_acc_delta = foot_acc - foot_acc_grf;
-  Eigen::VectorXd q_ddot_delta = jacobian.block(0, 6, 12, 12).transpose() * foot_acc_delta;
+  Eigen::VectorXd q_ddot_delta = jacobian.block(0, 6, 12, 12).colPivHouseholderQr().solve(foot_acc_delta);
 
   // Perform inverse dynamics
   Eigen::VectorXd tau_rbdl(12);
