@@ -239,7 +239,7 @@ bool NMPCController::computePlan(const bool &new_step,
 
   mynlp_->update_solver(
       initial_state,
-      ref_traj,
+      ref_traj.bottomRows(mynlp_->N_),
       foot_positions,
       contact_schedule);
 

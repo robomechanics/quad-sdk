@@ -1,6 +1,6 @@
 nmpc_controller:
   update_rate: 33
-  horizon_length: 36
+  horizon_length: 24
   state_dimension: 12
   control_dimension: 12
   step_length: 0.03
