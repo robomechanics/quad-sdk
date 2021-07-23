@@ -222,21 +222,6 @@ void InverseDynamics::publishLegCommandArray() {
     tau_array = -jacobian.transpose().block<12,12>(0,0)*grf_array;
 
     kinematics_->compInvDyn(state_positions, state_velocities, ref_foot_acceleration, grf_array, tau_swing_leg_array);
-
-    // if (tau_swing_leg_array.cwiseAbs().maxCoeff() > 30)
-    // {
-    //   std::cout << "state_positions" << std::endl;
-    //   std::cout << state_positions << std::endl;
-    //   std::cout << "state_velocities" << std::endl;
-    //   std::cout << state_velocities << std::endl;
-    //   std::cout << "ref_foot_acceleration" << std::endl;
-    //   std::cout << ref_foot_acceleration << std::endl;
-    //   std::cout << "grf_array" << std::endl;
-    //   std::cout << grf_array << std::endl;
-    //   std::cout << "tau_swing_leg_array" << std::endl;
-    //   std::cout << tau_swing_leg_array << std::endl;
-    //   std::cout << "------------------------" << std::endl;
-    // }
   } else {
     grf_array_msg.header.stamp = ros::Time::now();
     grf_array_msg.points.resize(num_feet_);
