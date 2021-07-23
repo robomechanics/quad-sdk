@@ -209,6 +209,16 @@ class SpiritKinematics {
    */
   void getRotationMatrix(const Eigen::VectorXd &rpy, Eigen::Matrix3d &rot) const;
 
+  /**
+   * @brief Compute inverse dynamics for swing leg
+   * @param[in] state_pos Position states
+   * @param[in] state_vel Velocity states
+   * @param[in] foot_acc Foot absolute acceleration in world frame
+   * @param[in] grf Ground reaction force
+   * @param[out] tau Joint torques
+   */
+  void compInvDyn(const Eigen::VectorXd &state_pos,const Eigen::VectorXd &state_vel,const Eigen::VectorXd &foot_acc,const Eigen::VectorXd &grf,Eigen::VectorXd &tau) const;
+
   private:
 
     /// Vector of the abad link lengths 
@@ -259,6 +269,10 @@ class SpiritKinematics {
     RigidBodyDynamics::Model *model_;
 
     std::vector<std::string> body_name_list_;
+
+    std::vector<unsigned int> body_id_list_;
+
+    std::vector<int> leg_idx_list_;
 };
 
 }
