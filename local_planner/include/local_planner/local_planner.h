@@ -15,6 +15,7 @@
 #include <spirit_utils/kinematics.h>
 #include "spirit_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <nmpc_controller/nmpc_controller.h>
 
 //! Local Body Planner library
 /*!
@@ -110,7 +111,8 @@ private:
 	double update_rate_;
 
   /// Local Body Planner object
-  std::shared_ptr<QuadrupedMPC> local_body_planner_;
+  std::shared_ptr<QuadrupedMPC> local_body_planner_convex_;
+  std::shared_ptr<NMPCController> local_body_planner_nonlinear_;
 
   /// Local Footstep Planner object
   std::shared_ptr<LocalFootstepPlanner> local_footstep_planner_;
@@ -152,7 +154,7 @@ private:
   double compute_time_;
 
   /// MPC Horizon length
-  const int N_ = 36;
+  const int N_ = 24;
 
   /// Number of states
   const int Nx_ = 12;
@@ -193,6 +195,7 @@ private:
   /// Spirit Kinematics class
   std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
 
+  bool use_nmpc_;
 };
 
 
