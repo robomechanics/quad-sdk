@@ -565,4 +565,10 @@ void SpiritKinematics::compInvDyn(const Eigen::VectorXd &state_pos,
   {
     tau.segment(3 * leg_idx_list_.at(i), 3) = tau_rbdl.segment(3 * i, 3);
   }
+
+  // Check inf or nan
+  if (!(tau.array() == tau.array()).all() || !((tau - tau).array() == (tau - tau).array()).all())
+  {
+    tau.setZero();
+  }
 }
