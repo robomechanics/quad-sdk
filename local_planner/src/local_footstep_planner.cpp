@@ -92,7 +92,7 @@ void LocalFootstepPlanner::computeContactSchedule(int current_plan_index,
 
 void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_position_prev,
   const Eigen::Vector3d &foot_position_next, double swing_phase, int swing_duration,
-  Eigen::Vector3d &foot_position, Eigen::Vector3d &foot_velocity) {
+  Eigen::Vector3d &foot_position, Eigen::Vector3d &foot_velocity, Eigen::Vector3d &foot_acceleration) {
 
   assert((swing_phase >= 0) && (swing_phase <= 1));
 
@@ -104,11 +104,15 @@ void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_pos
   double basis_1 = -2*phi3+3*phi2;
   double basis_2 = 6*(phi2-phi);
   double basis_3 = 6*(phi-phi2);
+  double basis_4 = 12*phi-6;
+  double basis_5 = 6-12*phi;
 
   // Perform cubic hermite interpolation
   foot_position = basis_0*foot_position_prev.array() + basis_1*foot_position_next.array();
   foot_velocity = (basis_2*foot_position_prev.array() +
     basis_3*foot_position_next.array())/(swing_duration*dt_);
+  foot_acceleration = (basis_4*foot_position_prev.array() +
+    basis_5*foot_position_next.array())/pow(swing_duration*dt_, 2);
 
   // Update z to clear both footholds by the specified height
   double swing_apex = ground_clearance_ + std::max(foot_position_prev.z(), foot_position_next.z());
@@ -119,15 +123,21 @@ void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_pos
   basis_1 = -2*phi3+3*phi2;
   basis_2 = 6*(phi2-phi_z);
   basis_3 = 6*(phi_z-phi2);
+  basis_4 = 12*phi_z-6;
+  basis_5 = 6-12*phi_z;
 
   if (phi<0.5) {
     foot_position.z() = basis_0*foot_position_prev.z() + basis_1*swing_apex;
     foot_velocity.z() = (basis_2*foot_position_prev.z() + basis_3*swing_apex)/
       (0.5*swing_duration*dt_);
+    foot_acceleration.z() = (basis_4*foot_position_prev.z() + basis_5*swing_apex)/
+      pow(swing_duration*dt_, 2);
   } else {
     foot_position.z() = basis_0*swing_apex + basis_1*foot_position_next.z();
     foot_velocity.z() = (basis_2*swing_apex + basis_3*foot_position_next.z())/
       (0.5*swing_duration*dt_);
+    foot_acceleration.z() = (basis_4*swing_apex + basis_5*foot_position_next.z())/
+      pow(swing_duration*dt_, 2);
   }  
 }
 
@@ -242,6 +252,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
 
       Eigen::Vector3d foot_position;
       Eigen::Vector3d foot_velocity;
+      Eigen::Vector3d foot_acceleration;
 
       // Determine the foot state at this index
       if (isContact(contact_schedule, i, j)) { // In contact
@@ -249,6 +260,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         // Log current foot position and zero velocity
         foot_position = getFootData(foot_positions, i, j);
         foot_velocity = Eigen::VectorXd::Zero(3);
+        foot_acceleration = Eigen::VectorXd::Zero(3);
         foot_state_msg.contact = true;
 
       } else { // In swing
@@ -269,13 +281,13 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         // Compute the current position and velocity from the swing phase variables
         double swing_phase = (i - i_liftoff)/(double)swing_duration;
         computeSwingFootState(foot_position_prev, foot_position_next, swing_phase, swing_duration,
-          foot_position, foot_velocity);
+          foot_position, foot_velocity, foot_acceleration);
         foot_state_msg.contact = false;
 
       }
 
       // Load state data into the message
-      spirit_utils::eigenToFootStateMsg(foot_position, foot_velocity, foot_state_msg);
+      spirit_utils::eigenToFootStateMsg(foot_position, foot_velocity, foot_acceleration, foot_state_msg);
       foot_plan_continuous_msg.states[i].feet.push_back(foot_state_msg);
 
       // If this is a touchdown event, add to the future footholds message

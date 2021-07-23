@@ -254,8 +254,6 @@ private:
 	
 	std::vector<double> counterVec;
 
-	double step_number;
-
 	/// Spirit Kinematics class
 	std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
 };
