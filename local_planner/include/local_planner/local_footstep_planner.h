@@ -157,7 +157,7 @@ class LocalFootstepPlanner {
      */
     void computeSwingFootState(const Eigen::Vector3d &foot_position_prev,
       const Eigen::Vector3d &foot_position_next, double swing_phase, int swing_duration,
-      Eigen::Vector3d &foot_position, Eigen::Vector3d &foot_velocity);
+      Eigen::Vector3d &foot_position, Eigen::Vector3d &foot_velocity, Eigen::Vector3d &foot_acceleration);
 
     /**
      * @brief Extract foot data from the matrix
