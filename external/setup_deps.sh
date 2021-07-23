@@ -40,7 +40,7 @@ fi
 git clone https://www.github.com/coin-or/coinbrew
 cd coinbrew
 chmod u+x coinbrew
-./coinbrew fetch Ipopt --no-prompt
+./coinbrew fetch Ipopt@3.14 --no-prompt
 cd ..
 if [ -d "./coinhsl" ] 
 then
