@@ -57,7 +57,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   current_foot_positions_body_ = Eigen::VectorXd::Zero(num_feet_*3);
   current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_*3);
   
-  spirit_utils::loadROSParam(nh_, "local_planner/use_nmpc", use_nmpc_);
+  nh.param<bool>("local_planner/use_nmpc", use_nmpc_, false);
 
   // Initialize body and footstep planners
   initLocalBodyPlanner();
