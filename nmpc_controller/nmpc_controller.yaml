@@ -4,7 +4,7 @@ nmpc_controller:
   state_dimension: 12
   control_dimension: 12
   step_length: 0.03
-  state_weights: [5, 5, 50, 0.25, 0.25, 10, 0.25, 0.25, 0.1, 0, 0, 0.3]
+  state_weights: [2, 2, 50, 10, 10, 10, 0.2, 0.2, 0.1, 0.3, 0.3, 0.3]
   control_weights: [!!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6]
   state_lower_bound: [!!float -2e19, !!float -2e19, 0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
   state_upper_bound: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]

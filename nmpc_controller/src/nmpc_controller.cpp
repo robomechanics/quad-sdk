@@ -83,8 +83,14 @@ void NMPCController::init(bool with_tail)
   app_->Options()->SetStringValue("mu_strategy", "adaptive");
   app_->Options()->SetStringValue("mehrotra_algorithm", "yes");
 
+  app_->Options()->SetStringValue("warm_start_init_point", "yes");
+  app_->Options()->SetNumericValue("warm_start_bound_push", 1e-4);
+  app_->Options()->SetNumericValue("warm_start_bound_frac", 1e-4);
+  app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-4);
+  app_->Options()->SetNumericValue("warm_start_slack_bound_frac", 1e-4);
+  app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-4);
   app_->Options()->SetNumericValue("tol", 1e-3);
-  app_->Options()->SetNumericValue("max_wall_time", 4 * mynlp_->dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 10 * mynlp_->dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();
@@ -261,32 +267,32 @@ bool NMPCController::computePlan(const bool &new_step,
   if (status == Solve_Succeeded)
   {
     // Activate warm start
-    app_->Options()->SetStringValue("warm_start_init_point", "yes");
-    app_->Options()->SetNumericValue("warm_start_bound_push", 1e-15);
-    app_->Options()->SetNumericValue("warm_start_bound_frac", 1e-15);
-    app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-15);
-    app_->Options()->SetNumericValue("warm_start_slack_bound_frac", 1e-15);
-    app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-15);
-    app_->Options()->SetNumericValue("warm_start_mult_init_max", 1e-15);
+    // app_->Options()->SetStringValue("warm_start_init_point", "yes");
+    // app_->Options()->SetNumericValue("warm_start_bound_push", 1e-6);
+    // app_->Options()->SetNumericValue("warm_start_bound_frac", 1e-6);
+    // app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
+    // app_->Options()->SetNumericValue("warm_start_slack_bound_frac", 1e-6);
+    // app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
+    // app_->Options()->SetNumericValue("warm_start_mult_init_max", 1e-15);
     app_->Options()->SetNumericValue("max_wall_time", mynlp_->dt_);
   }
   else
   {
     // Disable warm start
-    app_->Options()->SetStringValue("warm_start_init_point", "no");
-    app_->Options()->SetNumericValue("warm_start_bound_push", 1e-3);
-    app_->Options()->SetNumericValue("warm_start_bound_frac", 1e-3);
-    app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-3);
-    app_->Options()->SetNumericValue("warm_start_slack_bound_frac", 1e-3);
-    app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-3);
-    app_->Options()->SetNumericValue("warm_start_mult_init_max", 1e6);
+    // app_->Options()->SetStringValue("warm_start_init_point", "no");
+    // app_->Options()->SetNumericValue("warm_start_bound_push", 1e-3);
+    // app_->Options()->SetNumericValue("warm_start_bound_frac", 1e-3);
+    // app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-3);
+    // app_->Options()->SetNumericValue("warm_start_slack_bound_frac", 1e-3);
+    // app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-3);
+    // app_->Options()->SetNumericValue("warm_start_mult_init_max", 1e6);
     app_->Options()->SetNumericValue("max_wall_time", 10 * mynlp_->dt_);
   }
 
   double compute_time = 1000 * timer.reportSilent();
   ROS_INFO_STREAM("IPOPT solve time: " << compute_time << " ms");
 
-  return (status == Solve_Succeeded) && (compute_time <= 1000 * mynlp_->dt_);
+  return true;
 }
 
 void NMPCController::spin()
