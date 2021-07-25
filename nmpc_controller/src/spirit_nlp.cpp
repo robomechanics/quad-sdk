@@ -779,7 +779,7 @@ void spiritNLP::update_solver(
    }
 
    // Update initial states
-   x_current_.col(0) = initial_state;
+   x_current_ = initial_state;
 
    // Update reference trajectory
    // Local planner has row as N and col as states
