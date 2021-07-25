@@ -78,19 +78,19 @@ void NMPCController::init(bool with_tail)
   // app_->Options()->SetIntegerValue("max_iter", 100);
   // app_->Options()->SetStringValue("print_timing_statistics", "yes");
   // app_->Options()->SetStringValue("linear_solver", "ma57");
-  // app_->Options()->SetStringValue("nlp_scaling_method", "none");
   app_->Options()->SetIntegerValue("print_level", 0);
   app_->Options()->SetStringValue("mu_strategy", "adaptive");
+  // app_->Options()->SetStringValue("mu_oracle", "probing");
   app_->Options()->SetStringValue("mehrotra_algorithm", "yes");
+  // app_->Options()->SetStringValue("adaptive_mu_globalization", "never-monotone-mode");
+  // app_->Options()->SetStringValue("accept_every_trial_step", "yes");
+  // app_->Options()->SetStringValue("nlp_scaling_method", "none");
 
   app_->Options()->SetStringValue("warm_start_init_point", "yes");
-  app_->Options()->SetNumericValue("warm_start_bound_push", 1e-4);
-  app_->Options()->SetNumericValue("warm_start_bound_frac", 1e-4);
-  app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-4);
-  app_->Options()->SetNumericValue("warm_start_slack_bound_frac", 1e-4);
-  app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-4);
+
   app_->Options()->SetNumericValue("tol", 1e-3);
-  app_->Options()->SetNumericValue("max_wall_time", 10 * mynlp_->dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 0.9 * mynlp_->dt_);
+  app_->Options()->SetNumericValue("max_cpu_time", 0.9 * mynlp_->dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();
@@ -104,6 +104,20 @@ void NMPCController::init(bool with_tail)
 
   // Optimize once for structure preparation
   status = app_->OptimizeTNLP(mynlp_);
+
+  Eigen::MatrixXd x(mynlp_->n_, mynlp_->N_);
+  Eigen::MatrixXd u(mynlp_->m_, mynlp_->N_);
+
+  for (int i = 0; i < mynlp_->N_; ++i)
+  {
+    u.block(0, i, mynlp_->m_, 1) = mynlp_->w0_.block(i * (mynlp_->n_ + mynlp_->m_), 0, mynlp_->m_, 1);
+    x.block(0, i, mynlp_->n_, 1) = mynlp_->w0_.block(i * (mynlp_->n_ + mynlp_->m_) + mynlp_->m_, 0, mynlp_->n_, 1);
+  }
+
+  last_state_traj_ = x.transpose();
+  last_control_traj_ = u.transpose();
+
+  app_->Options()->SetStringValue("warm_start_same_structure", "yes");
 }
 
 void NMPCController::robotPlanCallback(const spirit_msgs::RobotStateTrajectory::ConstPtr &msg)
@@ -236,7 +250,7 @@ bool NMPCController::computePlan(const bool &new_step,
                                  Eigen::MatrixXd &control_traj)
 {
   // Start a timer
-  spirit_utils::FunctionTimer timer(__FUNCTION__);
+  // spirit_utils::FunctionTimer timer(__FUNCTION__);
 
   if (new_step)
   {
@@ -250,7 +264,7 @@ bool NMPCController::computePlan(const bool &new_step,
       contact_schedule);
 
   ApplicationReturnStatus status;
-  status = app_->OptimizeTNLP(mynlp_);
+  status = app_->ReOptimizeTNLP(mynlp_);
 
   Eigen::MatrixXd x(mynlp_->n_, mynlp_->N_);
   Eigen::MatrixXd u(mynlp_->m_, mynlp_->N_);
@@ -261,36 +275,58 @@ bool NMPCController::computePlan(const bool &new_step,
     x.block(0, i, mynlp_->n_, 1) = mynlp_->w0_.block(i * (mynlp_->n_ + mynlp_->m_) + mynlp_->m_, 0, mynlp_->n_, 1);
   }
 
-  state_traj = x.transpose();
-  control_traj = u.transpose();
-
   if (status == Solve_Succeeded)
   {
     // Activate warm start
-    // app_->Options()->SetStringValue("warm_start_init_point", "yes");
-    // app_->Options()->SetNumericValue("warm_start_bound_push", 1e-6);
-    // app_->Options()->SetNumericValue("warm_start_bound_frac", 1e-6);
-    // app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
-    // app_->Options()->SetNumericValue("warm_start_slack_bound_frac", 1e-6);
-    // app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
-    // app_->Options()->SetNumericValue("warm_start_mult_init_max", 1e-15);
-    app_->Options()->SetNumericValue("max_wall_time", mynlp_->dt_);
+    // app_->Options()->SetNumericValue("warm_start_bound_push", 1e-9);
+    // app_->Options()->SetNumericValue("warm_start_bound_frac", 1e-9);
+    // app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-9);
+    // app_->Options()->SetNumericValue("warm_start_slack_bound_frac", 1e-9);
+    // app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-9);
+
+    last_state_traj_ = x.transpose();
+    last_control_traj_ = u.transpose();
+
+    state_traj = x.transpose();
+    control_traj = u.transpose();
   }
   else
   {
     // Disable warm start
-    // app_->Options()->SetStringValue("warm_start_init_point", "no");
-    // app_->Options()->SetNumericValue("warm_start_bound_push", 1e-3);
-    // app_->Options()->SetNumericValue("warm_start_bound_frac", 1e-3);
-    // app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-3);
-    // app_->Options()->SetNumericValue("warm_start_slack_bound_frac", 1e-3);
-    // app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-3);
-    // app_->Options()->SetNumericValue("warm_start_mult_init_max", 1e6);
-    app_->Options()->SetNumericValue("max_wall_time", 10 * mynlp_->dt_);
+    // app_->Options()->SetNumericValue("warm_start_bound_push", 1e-2);
+    // app_->Options()->SetNumericValue("warm_start_bound_frac", 1e-2);
+    // app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-2);
+    // app_->Options()->SetNumericValue("warm_start_slack_bound_frac", 1e-2);
+    // app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-2);
+
+    last_state_traj_.topRows(mynlp_->N_ - 1) = last_state_traj_.bottomRows(mynlp_->N_ - 1);
+    last_control_traj_.topRows(mynlp_->N_ - 1) = last_control_traj_.bottomRows(mynlp_->N_ - 1);
+
+    if (contact_schedule.rbegin()[0] != contact_schedule.rbegin()[1])
+    {
+      for (size_t i = 2; i < mynlp_->N_; i++)
+      {
+        // std::cout << "change contact to idx: " << i << std::endl;
+        if (contact_schedule.rbegin()[0] == contact_schedule.rbegin()[i])
+        {
+          last_control_traj_.bottomRows(1) = last_control_traj_.row(mynlp_->N_ - (i + 1));
+          break;
+        }
+      }
+    }
+
+    // last_state_traj_.bottomRows(1) = x.rightCols(mynlp_->N_).transpose();
+    // last_control_traj_.bottomRows(1) = u.rightCols(mynlp_->N_).transpose();
+
+    state_traj = last_state_traj_;
+    control_traj = last_control_traj_;
   }
 
-  double compute_time = 1000 * timer.reportSilent();
-  ROS_INFO_STREAM("IPOPT solve time: " << compute_time << " ms");
+  // std::cout << last_state_traj_ << std::endl;
+  // std::cout << last_control_traj_ << std::endl;
+
+  // double compute_time = 1000 * timer.reportSilent();
+  // ROS_INFO_STREAM("IPOPT solve time: " << compute_time << " ms");
 
   return true;
 }
