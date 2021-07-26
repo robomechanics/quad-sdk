@@ -431,7 +431,8 @@ double getPitchFromState(State s, const PlannerConfig &planner_config) {
 
 double getHeightFromState(State s, const PlannerConfig &planner_config) {
 
-  return (planner_config.terrain.getGroundHeight(s[0], s[1]));
+  // return (planner_config.terrain.getGroundHeight(s[0], s[1]));
+  return (planner_config.terrain.getGroundHeightFiltered(s[0], s[1]));
 
 }
 

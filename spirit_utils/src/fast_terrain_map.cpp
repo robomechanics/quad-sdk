@@ -77,10 +77,10 @@ void FastTerrainMap::loadDataFromGridMap(const grid_map::GridMap map){
       double height = (double) map.at("z", index);
       z_data[i].push_back(height);
 
-      if (map.exists("nx") == true) {
-        double nx = (double) map.at("nx", index);
-        double ny = (double) map.at("ny", index);
-        double nz = (double) map.at("nz", index);
+      if (map.exists("normal_vectors_x") == true) {
+        double nx = (double) map.at("normal_vectors_x", index);
+        double ny = (double) map.at("normal_vectors_y", index);
+        double nz = (double) map.at("normal_vectors_z", index);
         nx_data[i].push_back(nx);
         ny_data[i].push_back(ny);
         nz_data[i].push_back(nz);
@@ -90,11 +90,11 @@ void FastTerrainMap::loadDataFromGridMap(const grid_map::GridMap map){
         nz_data[i].push_back(1.0);
       }
 
-      if (map.exists("z_filt") == true) {
-        double z_filt = (double) map.at("z_filt", index);
-        double nx_filt = (double) map.at("nx_filt", index);
-        double ny_filt = (double) map.at("ny_filt", index);
-        double nz_filt = (double) map.at("nz_filt", index);
+      if (map.exists("z_smooth") == true) {
+        double z_filt = (double) map.at("z_smooth", index);
+        double nx_filt = (double) map.at("smooth_normal_vectors_x", index);
+        double ny_filt = (double) map.at("smooth_normal_vectors_y", index);
+        double nz_filt = (double) map.at("smooth_normal_vectors_z", index);
         z_data_filt[i].push_back(z_filt);
         nx_data_filt[i].push_back(nx_filt);
         ny_data_filt[i].push_back(ny_filt);

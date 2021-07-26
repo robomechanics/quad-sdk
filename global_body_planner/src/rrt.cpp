@@ -52,6 +52,19 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 		}
 	}
 
+  // Try connecting directly
+  StateActionResult current_result;
+	if (attemptConnect(s_near, s, current_result, planner_config, direction) != TRAPPED) {
+		double current_dist = stateDistance(current_result.s_new, s);
+    if (current_dist < best_so_far)
+    {
+      best_so_far = current_dist;
+      result.s_new = current_result.s_new;
+      result.a_new = current_result.a_new;
+      result.length = current_result.length;
+    }
+	}
+
 	if (best_so_far == stateDistance(s_near, s))
 	{
 		return false;
@@ -59,6 +72,85 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 	{
 		return true;
 	}
+}
+
+int RRTClass::attemptConnect(State s_existing, State s, double t_s, StateActionResult &result,
+  const PlannerConfig &planner_config, int direction)
+{
+  // Enforce stance time greater than the kinematic check resolution to ensure that the action is useful
+  if (t_s <= planner_config.KINEMATICS_RES)
+    return TRAPPED;
+
+  // Initialize the start and goal states depending on the direction, as well as the stance and flight times
+  State s_start = (direction == FORWARD) ? s_existing : s;
+  State s_goal = (direction == FORWARD) ? s : s_existing;
+  double t_f = 0;
+  
+  // Calculate the action to connect the desired states
+  double x_td = s_start[0];
+  double y_td = s_start[1];
+  double z_td = s_start[2];
+  double dx_td = s_start[3];
+  double dy_td = s_start[4];
+  double dz_td = s_start[5];
+
+  double x_to = s_goal[0];
+  double y_to = s_goal[1];
+  double z_to = s_goal[2];
+  double dx_to = s_goal[3];
+  double dy_to = s_goal[4];
+  double dz_to = s_goal[5];
+
+  double p_td = s_start[6];
+  double dp_td = s_start[7];
+  double p_to = s_goal[6];
+  double dp_to = s_goal[7];
+
+  // result.a_new[0] = -(2.0*(3.0*x_td - 3.0*x_to + 2.0*dx_td*t_s + dx_to*t_s))/(t_s*t_s);
+  // result.a_new[1] = -(2.0*(3.0*y_td - 3.0*y_to + 2.0*dy_td*t_s + dy_to*t_s))/(t_s*t_s);
+  // result.a_new[2] = -(2.0*(3.0*z_td - 3.0*z_to + 2.0*dz_td*t_s + dz_to*t_s))/(t_s*t_s);
+  // result.a_new[3] = (2.0*(3.0*x_td - 3.0*x_to + dx_td*t_s + 2.0*dx_to*t_s))/(t_s*t_s);
+  // result.a_new[4] = (2.0*(3.0*y_td - 3.0*y_to + dy_td*t_s + 2.0*dy_to*t_s))/(t_s*t_s);
+  // result.a_new[5] = (2.0*(3.0*z_td - 3.0*z_to + dz_td*t_s + 2.0*dz_to*t_s))/(t_s*t_s);
+  // result.a_new[6] = t_s;
+  // result.a_new[7] = t_f;
+
+  result.a_new[0] = -(2.0*(3.0*x_td - 3.0*x_to + 2.0*dx_td*t_s + dx_to*t_s))/(t_s*t_s);
+  result.a_new[1] = -(2.0*(3.0*y_td - 3.0*y_to + 2.0*dy_td*t_s + dy_to*t_s))/(t_s*t_s);
+  result.a_new[2] = z_td - planner_config.terrain.getGroundHeight(x_td,y_td);
+  result.a_new[3] = (2.0*(3.0*x_td - 3.0*x_to + dx_td*t_s + 2.0*dx_to*t_s))/(t_s*t_s);
+  result.a_new[4] = (2.0*(3.0*y_td - 3.0*y_to + dy_td*t_s + 2.0*dy_to*t_s))/(t_s*t_s);
+  result.a_new[5] = z_to - planner_config.terrain.getGroundHeight(x_to,y_to);;
+  result.a_new[6] = t_s;
+  result.a_new[7] = t_f;
+
+  // If the connection results in an infeasible action, abort and return trapped
+  if (isValidAction(result.a_new,planner_config) == true)
+  {
+    // Check if the resulting state action pair is kinematically valid
+    bool isValid = (direction == FORWARD) ? (isValidStateActionPair(s_start, result.a_new, result, 
+      planner_config)) : (isValidStateActionPairReverse(s_goal,result.a_new, result, planner_config));
+
+    // If valid, great, return REACHED, otherwise try again to the valid state returned by isValidStateActionPair
+    if (isValid == true)
+      return REACHED;
+    else
+    {
+      if (attemptConnect(s_existing, result.s_new, result.t_new, result, planner_config, direction) == TRAPPED)
+        return TRAPPED;
+      else
+        return ADVANCED;
+    }
+  }
+  return TRAPPED;
+}
+
+int RRTClass::attemptConnect(State s_existing, State s, StateActionResult &result,
+  const PlannerConfig &planner_config, int direction)
+{
+  // select desired stance time to enforce a nominal stance velocity
+  double t_s = poseDistance(s, s_existing)/planner_config.V_NOM;
+  return attemptConnect(s_existing, s, t_s, result, planner_config, direction);
 }
 
 int RRTClass::extend(PlannerClass &T, State s, const PlannerConfig &planner_config, int direction)

@@ -29,6 +29,28 @@ class RRTClass
      */
     ~RRTClass();
 
+    /** Attempt to connect two states with specified stance time, and return a new state if the full connection is not possible
+     * @param[in] s_existing The state that is already in the tree and closest to the specified state
+     * @param[in] s The state to extend the tree towards
+     * @param[in] t_s The stance time for this connection
+     * @param[out] result Result of the newConfig operation
+     * @param[in] terrain Height map of the terrain
+     * @param[in] direction Direction of the dynamics (either FORWARD or REVERSE)
+     * @return Int describing the result of the attempt (TRAPPED, ADVANCED, or REACHED)
+     */
+    int attemptConnect(State s_existing, State s, double t_s, StateActionResult &result,
+      const PlannerConfig &planner_config, int direction);
+
+    /** Attempt to connect two states, and return a new state if the full connection is not possible. Internally computes stance time
+     * @param[in] s The state to extend the tree towards
+     * @param[out] result Result of the newConfig operation
+     * @param[in] terrain Height map of the terrain
+     * @param[in] direction Direction of the dynamics (either FORWARD or REVERSE)
+     * @return Int describing the result of the attempt (TRAPPED, ADVANCED, or REACHED)
+     */
+    int attemptConnect(State s_existing, State s, StateActionResult &result,
+      const PlannerConfig &planner_config, int direction);
+
     /** Extend the tree towards the desired state
      * @param[in] T The PlannerClass instance containing the tree
      * @param[in] s The state to extend the tree towards

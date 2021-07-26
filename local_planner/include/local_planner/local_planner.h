@@ -106,6 +106,9 @@ private:
   /// Struct for terrain map data
   FastTerrainMap terrain_;
 
+  /// GridMap for terrain map data
+  grid_map::GridMap terrain_grid_;
+
 	/// Update rate for sending and receiving data;
 	double update_rate_;
 

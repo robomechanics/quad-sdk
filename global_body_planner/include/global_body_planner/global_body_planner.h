@@ -152,7 +152,7 @@ class GlobalBodyPlanner {
     /// Std vector containing the interpolated time data
     std::vector<int> primitive_id_plan_;
 
-    /// Std vector containing the interpolated time data
+    /// Std vector containing the cumulative path length at each index of the plan
     std::vector<double> length_plan_;
 
     /// Time stamp for the beginning of the plan

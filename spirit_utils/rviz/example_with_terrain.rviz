@@ -267,7 +267,7 @@ Visualization Manager:
       Marker Topic: /visualization/global_plan_discrete
       Name: Discrete Body Plan
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -345,7 +345,7 @@ Visualization Manager:
       Marker Topic: /visualization/local_plan_grf
       Name: Local Plan GRFs
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -353,7 +353,7 @@ Visualization Manager:
       Marker Topic: /visualization/foot_plan_discrete
       Name: Discrete Foot Plan
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -447,6 +447,14 @@ Visualization Manager:
       Shaft Length: 0.10000000149011612
       Topic: /visualization/foot_3_plan_continuous
       Unreliable: false
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /grid_map_visualization/surface_normals
+      Name: Marker
+      Namespaces:
+        {}
+      Queue Size: 100
       Value: true
   Enabled: true
   Global Options:
