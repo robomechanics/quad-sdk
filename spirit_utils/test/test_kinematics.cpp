@@ -106,21 +106,11 @@ TEST(KinematicsTest, testFootForces) {
   forces(3) = 2.0; // back left toe X
 
   // Known solution
-  torques_solution << 3.0 * ls(1,1),
-    0.0,
-    3.0 * -ls(3,0),
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    2.0,
-    0.0,
-    3.0,
+  torques_solution << 3.0 * ls(1,1), 0.0, 3.0 * -ls(3,0),
+    0.0, 0.0, 0.0, // leg 2
+    0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0,
+    2.0, 0.0, 3.0, // net forces
     3.0 * (ls(0,1) + ls(1,1)),
     3.0 * -ls(0,0),
     -2.0 * (ls(0,1) + ls(1,1));
@@ -133,8 +123,7 @@ TEST(KinematicsTest, testFootForces) {
   Eigen::VectorXd error = torques - torques_solution;
   Eigen::MatrixXd toPrint(18,2);
   toPrint << torques, torques_solution;
-  std::cout << "Test 1:\n" << toPrint << std::endl
-  << torques_solution.transpose() << std::endl;
+  //std::cout << "Test 1:\n" << toPrint << std::endl;
   EXPECT_TRUE(error.norm() <= kinematics_tol);
 
   // Set up known solution problem 2 ----------------------------------
@@ -151,21 +140,11 @@ TEST(KinematicsTest, testFootForces) {
   forces(8) = 5.0; // front right toe Z
 
   // Known solution
-  torques_solution << 0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    -5.0 * ls(1,1) - 3.0 * (-ls(2,0)*sin(pi/4) + ls(3,0)*sin(pi/4)),
-    0.0,
-    5.0 * -ls(3,0)*cos(pi/4),
-    0.0,
-    0.0,
-    0.0,
-    3.0,
-    0.0,
-    5.0,
+  torques_solution << 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, // leg 2
+    -5.0 * ls(1,1) - 3.0 * (-ls(2,0)*sin(pi/4) + ls(3,0)*sin(pi/4)), 0.0, 5.0 * -ls(3,0)*cos(pi/4),
+    0.0, 0.0, 0.0,
+    3.0, 0.0, 5.0, // net forces
     -5.0 * (ls(0,1) + ls(1,1)) - 3.0 * (-ls(2,0)*sin(pi/4) + ls(3,0)*sin(pi/4)),
     -5.0 * ls(0,0),
     -3.0 * ls(0,0);
@@ -177,7 +156,7 @@ TEST(KinematicsTest, testFootForces) {
   // Check the answers
   error = torques - torques_solution;
   toPrint << torques, torques_solution;
-  std::cout << "Test 2:\n" << toPrint << std::endl;
+  //std::cout << "Test 2:\n" << toPrint << std::endl;
   EXPECT_TRUE(error.norm() <= kinematics_tol);
 
   // Set up known solution problem 3 ----------------------------------
@@ -192,21 +171,11 @@ TEST(KinematicsTest, testFootForces) {
   forces(0) = 1.0; // front left toe X
 
   // Known solution
-  torques_solution << ls(1,1),
-    0.0,
-    -ls(3,0),
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    1.0,
-    0.0,
-    0.0,
+  torques_solution << ls(1,1), 0.0, -ls(3,0),
+    0.0, 0.0, 0.0, // leg 2
+    0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0,
+    1.0, 0.0, 0.0, // net forces
     ls(0,1) + ls(1,1),
     0.0,
     -ls(0,0);
@@ -218,9 +187,46 @@ TEST(KinematicsTest, testFootForces) {
   // Check the answers
   error = torques - torques_solution;
   toPrint << torques, torques_solution;
-  std::cout << "Test 2:\n" << toPrint << std::endl;
+  //std::cout << "Test 3:\n" << toPrint << std::endl;
   EXPECT_TRUE(error.norm() <= kinematics_tol);
 
+  // Set up known solution problem 4 ----------------------------------
+  state_positions = Eigen::VectorXd::Zero(18);
+  for (int i=0; i<3; i++){
+    // move the CG around randomly -- it should not matter
+    state_positions(12+i) = (double)rand()/RAND_MAX - 0.5;
+  }
+  state_positions(16) = pi/4; // pitch 45 deg down
+  state_positions(17) = pi; // yaw 180 deg
+  state_positions(1) = pi/4; // front left hip 60 deg down
+  state_positions(4) = -pi/4; // back left hip 45 deg up
+  state_positions(7) = -pi/4; // front right hip 45 deg up
+  state_positions(10) = pi/4; // back right hip 60 deg down
+  forces = Eigen::VectorXd::Zero(12);
+  forces << -1.0, 2.0, 1.0,
+    -1.0, 2.0, 1.0,
+    -1.0, -2.0, 1.0,
+    -1.0, -2.0, 1.0;
+
+  // Known solution
+  torques_solution << sqrt(2)*ls(1,1), 0.0, -ls(3,0),
+    sqrt(2)*ls(1,1), 0.0, -ls(3,0), // leg 2
+    -sqrt(2)*ls(1,1), 0.0, -ls(3,0),
+    -sqrt(2)*ls(1,1), 0.0, -ls(3,0),
+    -4.0, 0.0, 4.0, // net forces
+    0.0,
+    0.0,
+    0.0;
+
+  // Compute joint torques
+  kinematics.getJacobianGenCoord(state_positions, jacobian);
+  torques = jacobian.transpose() * forces;
+
+  // Check the answers
+  error = torques - torques_solution;
+  toPrint << torques, torques_solution;
+  //std::cout << "Test 4:\n" << toPrint << std::endl;
+  EXPECT_TRUE(error.norm() <= kinematics_tol);
 
 }
 

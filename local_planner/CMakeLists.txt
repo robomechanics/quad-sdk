@@ -20,6 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
   grid_map_core
   grid_map_ros
   eigen_conversions
+  nmpc_controller
 )
 
 ## System dependencies are found with CMake's conventions
@@ -34,7 +35,7 @@ find_library(QPOASES NAMES qpOASES PATHS ${QPOASES_LIBRARIES} REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp std_msgs spirit_msgs spirit_utils grid_map_core grid_map_ros eigen_conversions
+  CATKIN_DEPENDS roscpp std_msgs spirit_msgs spirit_utils grid_map_core grid_map_ros eigen_conversions nmpc_controller
   DEPENDS EIGEN3
 )
 
@@ -51,7 +52,9 @@ include_directories(
   ${EIGEN3_INCLUDE_DIRS}
   ${QPOASES_INCLUDE_DIRS}
   ${PYTHON_INCLUDE_DIRS}
+  /usr/local/include/coin-or
 )
+link_directories(/usr/local/lib)
 
 add_library(quadruped_mpc
    src/quadruped_mpc.cpp

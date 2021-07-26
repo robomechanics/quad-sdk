@@ -1,7 +1,7 @@
 local_planner:
   update_rate: 33 # Hz
   timestep: 0.03 # s
-  horizon_length: 36 # timesteps
+  horizon_length: 24 # timesteps
   iterations: 1
 
 local_body_planner:

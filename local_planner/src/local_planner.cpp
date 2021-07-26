@@ -4,7 +4,7 @@
 Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
 LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
-  local_body_planner_(), local_footstep_planner_() {
+  local_body_planner_convex_(), local_body_planner_nonlinear_(), local_footstep_planner_() {
 
 	nh_ = nh;
   
@@ -57,6 +57,8 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   current_foot_positions_body_ = Eigen::VectorXd::Zero(num_feet_*3);
   current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_*3);
   
+  nh.param<bool>("local_planner/use_nmpc", use_nmpc_, false);
+
   // Initialize body and footstep planners
   initLocalBodyPlanner();
   initLocalFootstepPlanner();
@@ -118,15 +120,21 @@ void LocalPlanner::initLocalBodyPlanner() {
   Eigen::Matrix3d Ib = Eigen::Matrix3d::Zero();
   Ib.diagonal() << Ixx,Iyy,Izz;
 
-  // Create convex mpc wrapper class
-  local_body_planner_ = std::make_shared<QuadrupedMPC>();
-  local_body_planner_->setTimestep(dt_);
-  local_body_planner_->setMassProperties(m,Ib);
-  local_body_planner_->update_weights(Q_vec,U_vec);
-  local_body_planner_->update_state_bounds(state_lo, state_hi);
-  local_body_planner_->update_control_bounds(normal_lo, normal_hi);
-  local_body_planner_->update_friction(mu);
-
+  // Create mpc wrapper class
+  if (use_nmpc_)
+  {
+    local_body_planner_nonlinear_ = std::make_shared<NMPCController>(false);
+  }
+  else
+  {
+    local_body_planner_convex_ = std::make_shared<QuadrupedMPC>();
+    local_body_planner_convex_->setTimestep(dt_);
+    local_body_planner_convex_->setMassProperties(m, Ib);
+    local_body_planner_convex_->update_weights(Q_vec, U_vec);
+    local_body_planner_convex_->update_state_bounds(state_lo, state_hi);
+    local_body_planner_convex_->update_control_bounds(normal_lo, normal_hi);
+    local_body_planner_convex_->update_friction(mu);
+  }
 }
 
 void LocalPlanner::initLocalFootstepPlanner() {
@@ -258,9 +266,27 @@ bool LocalPlanner::computeLocalPlan() {
   for (int i = 0; i < iterations_; i++) {
 
     // Compute body plan with MPC, return if solve fails
-    if (!local_body_planner_->computePlan(current_state_, ref_body_plan_, foot_positions_body_,
-      contact_schedule_, body_plan_, grf_plan_))
-      return false;
+    if (use_nmpc_)
+    {
+      bool new_step;
+      if (i == 0)
+      {
+        new_step = true;
+      }
+      else
+      {
+        new_step = false;
+      }
+      if (!local_body_planner_nonlinear_->computePlan(new_step, current_state_, ref_body_plan_, foot_positions_body_,
+                                            contact_schedule_, body_plan_, grf_plan_))
+        return false;
+    }
+    else
+    {
+      if (!local_body_planner_convex_->computePlan(current_state_, ref_body_plan_, foot_positions_body_,
+                                            contact_schedule_, body_plan_, grf_plan_))
+        return false;
+    }
 
     // Compute the new footholds to match that body plan
     local_footstep_planner_->computeFootPositions(body_plan_, grf_plan_,
