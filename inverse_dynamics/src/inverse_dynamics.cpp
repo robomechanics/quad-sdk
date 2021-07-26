@@ -152,7 +152,7 @@ void InverseDynamics::publishLegCommandArray() {
   // Initialize variables for ff and fb
   spirit_msgs::RobotState ref_state_msg;
   spirit_msgs::GRFArray grf_array_msg;
-  Eigen::VectorXd tau_array(3*num_feet_);
+  Eigen::VectorXd tau_array(3*num_feet_), tau_swing_leg_array(3*num_feet_);
   leg_command_array_msg_.leg_commands.resize(num_feet_);
 
   // Set the input handling based on what data we've recieved, prioritizing local plan over grf
@@ -210,16 +210,18 @@ void InverseDynamics::publishLegCommandArray() {
   if (input_type != NONE) {
 
     // Declare plan and state data as Eigen vectors
-    Eigen::VectorXd ref_body_state(12), grf_array(3*num_feet_),
-      ref_foot_positions(3*num_feet_), ref_foot_velocities(3*num_feet_);
+    Eigen::VectorXd ref_body_state(12), grf_array(3 * num_feet_),
+        ref_foot_positions(3 * num_feet_), ref_foot_velocities(3 * num_feet_), ref_foot_acceleration(3 * num_feet_);
 
     // Load plan and state data from messages
     ref_body_state = spirit_utils::odomMsgToEigen(ref_state_msg.body);
     spirit_utils::multiFootStateMsgToEigen(
-      ref_state_msg.feet, ref_foot_positions, ref_foot_velocities);
+        ref_state_msg.feet, ref_foot_positions, ref_foot_velocities, ref_foot_acceleration);
     grf_array = spirit_utils::grfArrayMsgToEigen(grf_array_msg);
 
     tau_array = -jacobian.transpose().block<12,12>(0,0)*grf_array;
+
+    kinematics_->compInvDyn(state_positions, state_velocities, ref_foot_acceleration, grf_array, tau_swing_leg_array);
   } else {
     grf_array_msg.header.stamp = ros::Time::now();
     grf_array_msg.points.resize(num_feet_);
@@ -274,15 +276,18 @@ void InverseDynamics::publishLegCommandArray() {
           {
             leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kp = stance_kp_.at(j);
             leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = stance_kd_.at(j);
+
+            leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff =
+                tau_array(joint_idx);
           }
           else
           {
             leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kp = swing_kp_.at(j);
             leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = swing_kd_.at(j);
-          }
 
-          leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 
-            tau_array(joint_idx);
+            leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff =
+                tau_swing_leg_array(joint_idx);
+          }
         } else {
           leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 
             stand_joint_angles_.at(j);

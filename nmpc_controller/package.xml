@@ -1,14 +1,12 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>local_planner</name>
+  <name>nmpc_controller</name>
   <version>0.0.0</version>
-  <description>The local_planner package</description>
+  <description>The nmpc_controller package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="nflowers@andrew.cmu.edu">Nikolai Flowers</maintainer>
-  <maintainer email="jnorby@andrew.cmu.edu">Joe Norby</maintainer>
   <maintainer email="yanhaoy@andrew.cmu.edu">Yanhao Yang</maintainer>
 
 
@@ -78,7 +76,6 @@
   <build_depend>grid_map_core</build_depend>
   <build_depend>grid_map_ros</build_depend>
   <build_depend>eigen</build_depend>
-  <build_depend>nmpc_controller</build_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
   <build_export_depend>nav_msgs</build_export_depend>
@@ -88,7 +85,6 @@
   <build_export_depend>grid_map_core</build_export_depend>
   <build_export_depend>grid_map_ros</build_export_depend>
   <build_export_depend>eigen</build_export_depend>
-  <build_export_depend>nmpc_controller</build_export_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>nav_msgs</exec_depend>
@@ -98,7 +94,6 @@
   <exec_depend>grid_map_core</exec_depend>
   <exec_depend>grid_map_ros</exec_depend>
   <exec_depend>eigen</exec_depend>
-  <exec_depend>nmpc_controller</exec_depend>
   <depend>eigen_conversions</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
