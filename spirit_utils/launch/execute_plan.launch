@@ -3,7 +3,7 @@
     <include file="$(find spirit_utils)/launch/load_params.launch" />
 
     <arg name="global_planner" default="fgmp"/>
-    <arg name="local_planner" default="full"/>
+    <arg name="local_planner" default="body"/>
     <arg name="logging" default="false"/>
 
     <include file="$(find spirit_utils)/launch/planning.launch">

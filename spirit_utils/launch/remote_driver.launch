@@ -2,6 +2,7 @@
 
     <include file="$(find spirit_utils)/launch/load_params.launch" />
 
+
     <arg name="proxy"           default="false"/>
     <arg name="controller"      default="inverse_dynamics"/>
     <arg name="logging"         default="false"/>
@@ -26,6 +27,7 @@
             <arg name="proxy" value="true" />
             <arg name="controller" value="$(arg controller)" />
             <arg name="logging" value="$(arg logging)" />
+            <arg name="mblink" value="false" />
         </include>
     </group>
 

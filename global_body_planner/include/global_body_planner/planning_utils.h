@@ -127,7 +127,7 @@ void getInterpPlan(FullState start_state, std::vector<State> state_sequence,
 State applyStance(State s, Action a, double t, const PlannerConfig &planner_config);
 State applyStance(State s, Action a, const PlannerConfig &planner_config);
 State applyFlight(State s, double t_f);
-State applyAction(State s, Action a);
+State applyAction(State s, Action a, const PlannerConfig &planner_config);
 State applyStanceReverse(State s, Action a, double t, const PlannerConfig &planner_config);
 State applyStanceReverse(State s, Action a, const PlannerConfig &planner_config);
 Action getRandomAction(std::array<double, 3> surf_norm, const PlannerConfig &planner_config);

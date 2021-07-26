@@ -9,7 +9,7 @@ TerrainMapPublisher::TerrainMapPublisher(ros::NodeHandle nh)
   // Load rosparams from parameter server
   std::string terrain_map_topic, image_topic;
 
-  nh.param<std::string>("topics/terrain_map", terrain_map_topic, "/terrain_map");
+  nh.param<std::string>("topics/terrain_map_raw", terrain_map_topic, "/terrain_map_raw");
   nh.param<std::string>("map_frame",map_frame_,"map");
   nh.param<double>("terrain_map_publisher/update_rate", update_rate_, 10);
   nh.param<double>("terrain_map_publisher/obstacle_x", obstacle_.x, 2.0);

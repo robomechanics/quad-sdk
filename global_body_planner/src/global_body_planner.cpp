@@ -219,13 +219,18 @@ void GlobalBodyPlanner::callPlanner() {
     ROS_WARN_THROTTLE(2, "Invalid start state, exiting global planner");
     return;
   }
+  // if (!isValidState(goal_state, planner_config_, STANCE)) {
+  //   ROS_DEBUG_THROTTLE(2, "Invalid goal state, attempting to add in the ground height");
+  //   goal_state[2] += planner_config_.terrain.getGroundHeight(goal_state_[0], goal_state_[1]);
+  //   if (!isValidState(goal_state, planner_config_, STANCE)) {
+  //     ROS_WARN_THROTTLE(2, "Invalid goal state, exiting global planner");
+  //     return;
+  //   }
+  // }
+  goal_state[2] += planner_config_.terrain.getGroundHeight(goal_state_[0], goal_state_[1]);
   if (!isValidState(goal_state, planner_config_, STANCE)) {
-    ROS_DEBUG_THROTTLE(2, "Invalid goal state, attempting to add in the ground height");
-    goal_state[2] += planner_config_.terrain.getGroundHeight(goal_state_[0], goal_state_[1]);
-    if (!isValidState(goal_state, planner_config_, STANCE)) {
-      ROS_WARN_THROTTLE(2, "Invalid goal state, exiting global planner");
-      return;
-    }
+    ROS_WARN_THROTTLE(2, "Invalid goal state, exiting global planner");
+    return;
   }
   if (start_state == goal_state) {
     ROS_WARN_THROTTLE(2, "Identical start and goal states, exiting global planner");
