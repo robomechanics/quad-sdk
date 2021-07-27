@@ -11,15 +11,9 @@ State fullStateToState(FullState full_state)
   double x = full_state[0];
   double y = full_state[1];
   double z = full_state[2];
-  // double roll = full_state[3];
-  // double pitch = full_state[4];
-  // double yaw = full_state[5];
   double dx = full_state[6];
   double dy = full_state[7];
   double dz = full_state[8];
-  // double roll_rate = full_state[9];
-  // double pitch_rate = full_state[10];
-  // double yaw_rate = full_state[11];
 
   state[0] = x;
   state[1] = y;
@@ -47,6 +41,7 @@ FullState stateToFullState(State state, double roll, double pitch, double yaw,
   full_state[7] = state[4];
   full_state[8] = state[5];
 
+  // Convert euler rates to body angular velocity
   Eigen::Vector3d d_rpy,ang_vel;
   d_rpy << roll_rate, pitch_rate, yaw_rate;
 
@@ -388,25 +383,12 @@ bool isValidYawRate(State s, Action a, double t, const PlannerConfig &planner_co
       d_yaw = (dy*ddx - dx*ddy)/(dx*dx + dy*dy);
   }
 
-  
-
-  // std::cout << "dx: " << dx << std::endl;
-  // std::cout << "dy: " << dy << std::endl;
-  // std::cout << "ddx: " << ddx << std::endl;
-  // std::cout << "ddy: " << ddy << std::endl;
-  // std::cout << "d_yaw: " << d_yaw << std::endl << std::endl;
-
-  // throw std::runtime_error("Stop");
-
-
   if (abs(d_yaw) > planner_config.DY_MAX)
   {
       return false;
   } else {
       return true;
   }
-  // return (abs(d_yaw) <= DY_MAX);
-  // return true;
 }
 
 double getPitchFromState(State s, const PlannerConfig &planner_config) {
@@ -768,8 +750,6 @@ bool isValidAction(Action a, const PlannerConfig &planner_config)
 
 bool isValidState(State s, const PlannerConfig &planner_config, int phase)
 {
-  // if ((s[0] < planner_config.terrain.getXData().front()) || (s[0] > planner_config.terrain.getXData().back()) || (s[1] < planner_config.terrain.getYData().front()) || (s[1] > planner_config.terrain.getYData().back()) || (abs(s[6]) >= P_MAX) )
-  //     return false;
   if (planner_config.terrain.isInRange(s[0], s[1]) == false)
     return false;
 
@@ -780,7 +760,6 @@ bool isValidState(State s, const PlannerConfig &planner_config, int phase)
   double yaw = atan2(s[4],s[3]); double cy = cos(yaw); double sy = sin(yaw);
   
   double pitch = getPitchFromState(s,planner_config);
-  // double pitch = 0;
   double cp = cos(pitch); double sp = sin(pitch);  
 
   // Compute each element of the rotation matrix
@@ -808,8 +787,6 @@ bool isValidState(State s, const PlannerConfig &planner_config, int phase)
       double leg_height = z_leg - planner_config.terrain.getGroundHeight(x_leg,y_leg);
       double corner_height = z_corner - 
         planner_config.terrain.getGroundHeight(x_corner,y_corner);
-      // std::cout << "x,y,z = (" << x_spatial << ", " << y_spatial << ", " << z_spatial << "), height = " <<
-      //     z_spatial << " - " << planner_config.terrain.getGroundHeight(x_spatial,y_spatial) << " = " << height << std::endl;
 
       // Always check for collision, only check reachability in stance
       if ((corner_height < planner_config.H_MIN) || ((phase == STANCE) && 
@@ -887,15 +864,6 @@ bool isValidStateActionPair(State s, Action a, StateActionResult &result,
   return true;
 }
 
-
-// bool isValidStateActionPair(State s, Action a, StateActionResult &result,
-//   const PlannerConfig &planner_config)
-// {
-//   State dummy_state;
-//   double dummy_time;
-//   return isValidStateActionPair(s, a, result, planner_config);
-// }
-
 bool isValidStateActionPairReverse(State s, Action a, StateActionResult &result,
   const PlannerConfig &planner_config)
 {
@@ -950,13 +918,5 @@ bool isValidStateActionPairReverse(State s, Action a, StateActionResult &result,
   // If both stance and flight trajectories are entirely valid, return true
   return true;
 }
-
-
-// bool isValidStateActionPairReverse(State s, Action a, const PlannerConfig &planner_config)
-// {
-//   State dummy_state;
-//   double dummy_time;
-//   return isValidStateActionPairReverse(s, a, planner_config, dummy_state, dummy_time);
-// }
 
 }

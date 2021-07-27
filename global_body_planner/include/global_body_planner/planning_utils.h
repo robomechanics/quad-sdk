@@ -68,6 +68,11 @@ typedef std::vector<double> FullState;
 typedef Eigen::Vector3d GRF;
 typedef std::pair<State, Action> StateActionPair;
 
+struct StateEigen {
+  Eigen::Vector3d pos;
+  Eigen::Vector3d vel;
+};
+
 struct StateActionResult {
   State s_new;
   Action a_new;
