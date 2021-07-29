@@ -180,6 +180,10 @@ private:
 
   const int GLOBAL = 0;
   const int LOCAL = 1;
+
+  const int FLIGHT = 0;
+  const int STANCE = 1;
+  const int CONNECT_STANCE = 2;
 };
 
 #endif // RVIZ_INTERFACE_H

@@ -267,31 +267,16 @@ Visualization Manager:
       Marker Topic: /visualization/global_plan_discrete
       Name: Discrete Body Plan
       Namespaces:
-        {}
+        "": true
       Queue Size: 100
       Value: true
-    - Alpha: 1
-      Buffer Length: 1
-      Class: rviz/Path
-      Color: 166; 25; 46
+    - Class: rviz/Marker
       Enabled: true
-      Head Diameter: 0.30000001192092896
-      Head Length: 0.20000000298023224
-      Length: 0.30000001192092896
-      Line Style: Billboards
-      Line Width: 0.05000000074505806
+      Marker Topic: /visualization/global_plan
       Name: Global Plan
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Pose Color: 255; 85; 255
-      Pose Style: None
-      Radius: 0.029999999329447746
-      Shaft Diameter: 0.10000000149011612
-      Shaft Length: 0.10000000149011612
-      Topic: /visualization/global_plan
-      Unreliable: false
+      Namespaces:
+        "": true
+      Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
       Enabled: true
@@ -301,28 +286,13 @@ Visualization Manager:
         {}
       Queue Size: 1
       Value: true
-    - Alpha: 1
-      Buffer Length: 1
-      Class: rviz/Path
-      Color: 25; 255; 0
+    - Class: rviz/Marker
       Enabled: true
-      Head Diameter: 0.30000001192092896
-      Head Length: 0.20000000298023224
-      Length: 0.30000001192092896
-      Line Style: Billboards
-      Line Width: 0.029999999329447746
+      Marker Topic: /visualization/local_plan
       Name: Local Plan Position
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Pose Color: 255; 85; 255
-      Pose Style: None
-      Radius: 0.029999999329447746
-      Shaft Diameter: 0.10000000149011612
-      Shaft Length: 0.10000000149011612
-      Topic: /visualization/local_plan
-      Unreliable: false
+      Namespaces:
+        {}
+      Queue Size: 100
       Value: true
     - Alpha: 1
       Arrow Length: 0.30000001192092896
@@ -353,7 +323,7 @@ Visualization Manager:
       Marker Topic: /visualization/foot_plan_discrete
       Name: Discrete Foot Plan
       Namespaces:
-        {}
+        "": true
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -449,13 +419,13 @@ Visualization Manager:
       Unreliable: false
       Value: true
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /grid_map_visualization/surface_normals
-      Name: Marker
+      Name: Surface Normals
       Namespaces:
         {}
       Queue Size: 100
-      Value: true
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
