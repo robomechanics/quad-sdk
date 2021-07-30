@@ -426,6 +426,14 @@ Visualization Manager:
         {}
       Queue Size: 100
       Value: false
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /global_plan_tree
+      Name: Global Plan Tree
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
@@ -454,25 +462,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 4.41447639465332
+      Distance: 6.927473068237305
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 1.3530219793319702
-        Y: -0.2580118775367737
-        Z: 0.2995302081108093
+        X: 2.9548280239105225
+        Y: 0.7063034772872925
+        Z: -0.07468847185373306
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.3603981137275696
+      Pitch: 0.39979663491249084
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.168581008911133
+      Yaw: 3.833580493927002
     Saved: ~
 Window Geometry:
   Displays:

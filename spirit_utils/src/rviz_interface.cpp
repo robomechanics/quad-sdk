@@ -184,9 +184,7 @@ void RVizInterface::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& ms
 
   // Publish the full path
   if (pub_id == GLOBAL) {
-    std::cout << "Publishing " << body_plan_viz <<std::endl;
     global_plan_viz_pub_.publish(body_plan_viz);
-    std::cout << "Done" << std::endl;
   } else if (pub_id == LOCAL) {
     local_plan_viz_pub_.publish(body_plan_viz);
     local_plan_ori_viz_pub_.publish(body_plan_ori_viz);

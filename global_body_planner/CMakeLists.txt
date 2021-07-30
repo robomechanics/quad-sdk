@@ -52,9 +52,9 @@ include_directories(
 set(MY_LIB_SOURCES
   src/global_body_planner.cpp
   src/planning_utils.cpp
-  src/action.cpp
-  src/walk_action.cpp
-  src/leap_action.cpp
+  # src/action.cpp
+  # src/walk_action.cpp
+  # src/leap_action.cpp
   src/graph_class.cpp
   src/planner_class.cpp
   src/rrt.cpp
@@ -91,8 +91,8 @@ target_link_libraries(${PROJECT_NAME}_node
 
 # Add gtest based cpp test target and link libraries
 catkin_add_gtest(${PROJECT_NAME}-test
-  test/test_global_body_planner.cpp
-  test/test_states_actions.cpp)
+  test/test_global_body_planner.cpp)
+  # test/test_states_actions.cpp)
 target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME} ${catkin_LIBRARIES})
 
 ## Add folders to be run by python nosetests

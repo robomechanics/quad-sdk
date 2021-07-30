@@ -7,28 +7,24 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string body_plan_topic, discrete_body_plan_topic, goal_state_topic;
-  std::vector<double> start_state_default = 
-    {0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-  std::vector<double> goal_state_default = 
-    {8.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+  std::string body_plan_topic, discrete_body_plan_topic, body_plan_tree_topic, goal_state_topic;
 
-  nh.param<std::string>("topics/terrain_map", terrain_map_topic_, "/terrain_map");
-  nh.param<std::string>("topics/state/ground_truth", robot_state_topic_, "/state/ground_truth");
-  nh.param<std::string>("topics/global_plan", body_plan_topic, "/body_plan");
-  nh.param<std::string>("topics/global_plan_discrete", discrete_body_plan_topic, "/discrete_body_plan");
-  nh.param<std::string>("topics/goal_state", goal_state_topic, "/clicked_point");
-  nh.param<std::string>("map_frame",map_frame_,"map");
-  nh.param<double>("global_body_planner/update_rate", update_rate_, 1);
-  nh.param<int>("global_body_planner/num_calls", num_calls_, 1);
-  nh.param<double>("global_body_planner/max_planning_time", max_planning_time_, 5.0);
-  nh.param<double>("global_body_planner/state_error_threshold", state_error_threshold_, 0.5);
-  nh.param<double>("global_body_planner/startup_delay", startup_delay_, 0.0);
-  nh.param<bool>("global_body_planner/replanning", replanning_allowed_, true);
-  spirit_utils::loadROSParam(nh, "local_planner/timestep", dt_);
-
-  nh.param<std::vector<double> >("global_body_planner/start_state", start_state_, start_state_default);
-  nh.param<std::vector<double> >("global_body_planner/goal_state", goal_state_, goal_state_default);
+  spirit_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic_);
+  spirit_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic_);
+  spirit_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
+  spirit_utils::loadROSParam(nh_, "topics/global_plan_discrete", discrete_body_plan_topic);
+  spirit_utils::loadROSParam(nh_, "topics/global_plan_tree", body_plan_tree_topic);
+  spirit_utils::loadROSParam(nh_, "topics/goal_state", goal_state_topic);
+  spirit_utils::loadROSParam(nh_, "map_frame",map_frame_);
+  spirit_utils::loadROSParam(nh_, "global_body_planner/update_rate", update_rate_);
+  spirit_utils::loadROSParam(nh_, "global_body_planner/num_calls", num_calls_);
+  spirit_utils::loadROSParam(nh_, "global_body_planner/max_planning_time", max_planning_time_);
+  spirit_utils::loadROSParam(nh_, "global_body_planner/state_error_threshold", state_error_threshold_);
+  spirit_utils::loadROSParam(nh_, "global_body_planner/startup_delay", startup_delay_);
+  spirit_utils::loadROSParam(nh_, "global_body_planner/replanning", replanning_allowed_);
+  spirit_utils::loadROSParam(nh_, "local_planner/timestep", dt_);
+  spirit_utils::loadROSParam(nh_, "global_body_planner/start_state", start_state_);
+  spirit_utils::loadROSParam(nh_, "global_body_planner/goal_state", goal_state_);
 
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic_,1,&GlobalBodyPlanner::terrainMapCallback, this);
@@ -36,6 +32,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   goal_state_sub_ = nh_.subscribe(goal_state_topic,1,&GlobalBodyPlanner::goalStateCallback, this);
   body_plan_pub_ = nh_.advertise<spirit_msgs::RobotPlan>(body_plan_topic,1);
   discrete_body_plan_pub_ = nh_.advertise<spirit_msgs::RobotPlan>(discrete_body_plan_topic,1);
+  tree_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(body_plan_tree_topic,1);
 
   // Initialize the current path cost to infinity to ensure the first solution is stored
   current_cost_ = INFTY;
@@ -52,6 +49,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh,"global_body_planner/M_CONST", planner_config_.M_CONST);
   spirit_utils::loadROSParam(nh,"global_body_planner/J_CONST", planner_config_.J_CONST);
   spirit_utils::loadROSParam(nh,"global_body_planner/G_CONST", planner_config_.G_CONST);
+  spirit_utils::loadROSParam(nh,"global_body_planner/F_MIN", planner_config_.F_MIN);
   spirit_utils::loadROSParam(nh,"global_body_planner/F_MAX", planner_config_.F_MAX);
   spirit_utils::loadROSParam(nh,"global_body_planner/MU", planner_config_.MU);
   spirit_utils::loadROSParam(nh,"global_body_planner/T_S_MIN", planner_config_.T_S_MIN);
@@ -65,10 +63,10 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh,"global_body_planner/GOAL_BOUNDS", planner_config_.GOAL_BOUNDS);
 
   // If replanning is prohibited, set committed horizon to zero ()
-  if (replanning_allowed_ == false && max_planning_time_ > 0) {
-    max_planning_time_ = 0;
-    ROS_INFO("Replanning is prohibited, setting committed horizon to zero");
-  }
+  // if (replanning_allowed_ == false && max_planning_time_ > 0) {
+  //   max_planning_time_ = 0;
+  //   ROS_INFO("Replanning is prohibited, setting committed horizon to zero");
+  // }
 
 }
 
@@ -173,7 +171,7 @@ int GlobalBodyPlanner::initPlanner() {
     length_plan_.clear();
     length_plan_.push_back(0.0);
     restart_flag_ = false;
-    ROS_INFO("GBP restarting from current robot state");
+    ROS_INFO_THROTTLE(1,"GBP restarting from current robot state");
   } else {
     // Loop through t_plan_ to find the next state after the committed horizon, set as start state
     double current_time = (ros::Time::now() - plan_timestamp_).toSec();
@@ -197,7 +195,7 @@ int GlobalBodyPlanner::initPlanner() {
   return start_index;
 }
 
-void GlobalBodyPlanner::callPlanner() {
+bool GlobalBodyPlanner::callPlanner() {
 
   // Clear out old statistics
   solve_time_info_.clear();
@@ -208,7 +206,7 @@ void GlobalBodyPlanner::callPlanner() {
   // Get the most recent plan parameters
   int start_index = initPlanner();
   if (start_index < 0)
-    return;
+    return false;
 
   // Copy start and goal states and adjust for ground height
   State start_state = fullStateToState(start_state_);
@@ -217,24 +215,16 @@ void GlobalBodyPlanner::callPlanner() {
   // Make sure terminal states are valid
   if (!isValidState(start_state, planner_config_, STANCE)) {
     ROS_WARN_THROTTLE(2, "Invalid start state, exiting global planner");
-    return;
+    return false;
   }
-  // if (!isValidState(goal_state, planner_config_, STANCE)) {
-  //   ROS_DEBUG_THROTTLE(2, "Invalid goal state, attempting to add in the ground height");
-  //   goal_state[2] += planner_config_.terrain.getGroundHeight(goal_state_[0], goal_state_[1]);
-  //   if (!isValidState(goal_state, planner_config_, STANCE)) {
-  //     ROS_WARN_THROTTLE(2, "Invalid goal state, exiting global planner");
-  //     return;
-  //   }
-  // }
   goal_state[2] += planner_config_.terrain.getGroundHeight(goal_state_[0], goal_state_[1]);
   if (!isValidState(goal_state, planner_config_, STANCE)) {
     ROS_WARN_THROTTLE(2, "Invalid goal state, exiting global planner");
-    return;
+    return false;
   }
   if (start_state == goal_state) {
     ROS_WARN_THROTTLE(2, "Identical start and goal states, exiting global planner");
-    return;
+    return false;
   }
 
   // Initialize statistics variables
@@ -253,12 +243,25 @@ void GlobalBodyPlanner::callPlanner() {
   // Loop through num_calls_ planner calls
   for (int i = 0; i<num_calls_; ++i)
   {
+    // Exit if ros is down
+    if (!ros::ok()) {
+      return false;
+    }
+
     // Clear out previous solutions and initialize new statistics variables
     std::vector<State> state_sequence;
     std::vector<Action> action_sequence;
 
     // Call the appropriate planning method (can do if else on algorithm_)
-    rrt_connect_obj.runRRTConnect(planner_config_, start_state, goal_state,state_sequence,action_sequence, max_planning_time_);
+    bool success = rrt_connect_obj.runRRTConnect(planner_config_, start_state, goal_state,
+      state_sequence,action_sequence, max_planning_time_, tree_pub_);
+    if (!success) {
+      if (num_calls_ > 1) {
+        continue;
+      } else {
+        return false;
+      }
+    }
     rrt_connect_obj.getStatistics(plan_time, vertices_generated, path_length, path_duration);
 
     // Add the existing path length to the new
@@ -305,10 +308,6 @@ void GlobalBodyPlanner::callPlanner() {
       if (start_index == 0) {
         plan_timestamp_ = ros::Time::now();
       }
-    }
-
-    if (!ros::ok()) {
-      return;
     }
   }
     
@@ -441,9 +440,12 @@ void GlobalBodyPlanner::getInitialPlan() {
   // Keep track of when the planner started
   ros::Time start_time = ros::Time::now();
 
+  bool success = false;
+
   // Repeatedly call the planner until the startup delay has elapsed
   while (ros::ok() && ((ros::Time::now() - start_time) < ros::Duration(startup_delay_))) {
-    callPlanner();
+
+    success = callPlanner();
   }  
 }
 
@@ -465,7 +467,9 @@ void GlobalBodyPlanner::spin() {
     // IF allowed, continue updating and publishing the plan
     if (replanning_allowed_) {
       callPlanner();
-      publishPlan();
+
+      if (current_cost_ < INFTY)
+        publishPlan();
     }
 
     // Process callbacks and sleep
