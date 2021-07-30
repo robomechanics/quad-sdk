@@ -350,8 +350,8 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
 
   // Map angular velocity from body frame to world frame
   Eigen::Matrix3d rot;
-  Eigen::VectorXd initial_state_angvel_body = initial_state;
-  Eigen::MatrixXd ref_traj_angvel_body = ref_traj;
+  Eigen::VectorXd initial_state_angvel_world = initial_state;
+  Eigen::MatrixXd ref_traj_angvel_world = ref_traj;
   Eigen::Vector3d rpy, angvel_world, angvel_body;
 
   rpy = initial_state.segment(3, 3);
@@ -360,7 +360,7 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
   kinematics_->getRotationMatrix(rpy, rot);
   angvel_world = rot * angvel_body;
 
-  initial_state_angvel_body.segment(9, 3) = angvel_world;
+  initial_state_angvel_world.segment(9, 3) = angvel_world;
 
   for (size_t i = 0; i < ref_traj.rows(); i++)
   {
@@ -370,12 +370,12 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
     kinematics_->getRotationMatrix(rpy, rot);
     angvel_world = rot * angvel_body;
 
-    ref_traj_angvel_body.block(i, 9, 1, 3) = angvel_world.transpose();
+    ref_traj_angvel_world.block(i, 9, 1, 3) = angvel_world.transpose();
   }
 
   // Perform the solve
   Eigen::MatrixXd x_out;
-  if (!solve(initial_state, ref_traj, x_out)) {
+  if (!solve(initial_state_angvel_world, ref_traj_angvel_world, x_out)) {
     ROS_WARN_THROTTLE(0.1, "Failed OSQP solve!");
     return false;
   }
