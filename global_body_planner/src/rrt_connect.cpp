@@ -85,7 +85,8 @@ using namespace planning_utils;
 //   return attemptConnect(s_existing, s, t_s, result, planner_config, direction);
 // }
 
-int RRTConnectClass::connect(PlannerClass &T, State s, const PlannerConfig &planner_config, int direction)
+int RRTConnectClass::connect(PlannerClass &T, State s, const PlannerConfig &planner_config,
+  int direction, ros::Publisher &tree_pub)
 {
   // Find nearest neighbor
   int s_near_index = T.getNearestNeighbor(s);
@@ -100,6 +101,16 @@ int RRTConnectClass::connect(PlannerClass &T, State s, const PlannerConfig &plan
     T.addVertex(s_new_index, result.s_new);
     T.addEdge(s_near_index, s_new_index, result.length);
     T.addAction(s_new_index, result.a_new);
+
+    #ifdef VISUALIZE_TREE
+      if (direction == FORWARD) {
+        std::cout << "Connected from A" << std::endl;
+        publishStateActionPair(s_near,result.a_new, s,planner_config, tree_viz_msg_, tree_pub);
+      } else if (direction == REVERSE) {
+        std::cout << "Connected from B" << std::endl;
+        publishStateActionPair(result.s_new,result.a_new, s,planner_config, tree_viz_msg_, tree_pub);
+      }
+    #endif
     // T.updateGValue(s_new_index, T.getGValue(s_near_index) + result.length);
   }
 
@@ -218,20 +229,27 @@ void RRTConnectClass::extractPath(PlannerClass Ta, PlannerClass Tb, std::vector<
   // action_sequence.push_back(a);
 }
 
-void RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double max_planning_time)
+bool RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_start,
+  State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence,
+    double max_planning_time, ros::Publisher &tree_pub)
 {
 
   auto t_start_total_solve = std::chrono::steady_clock::now();
   auto t_start_current_solve = std::chrono::steady_clock::now();
+  bool success = false;
 
   PlannerClass Ta;
   PlannerClass Tb;
   Ta.init(s_start);
   Tb.init(s_goal);
+  #ifdef VISUALIZE_TREE
+    tree_viz_msg_.markers.clear();
+    tree_viz_msg_.markers.resize(1);
+  #endif
 
   anytime_horizon = poseDistance(s_start, s_goal)/planning_rate_estimate;
 
-  while(true)
+  while(true && ros::ok())
   {
     auto t_current = std::chrono::steady_clock::now();
     std::chrono::duration<double> total_elapsed = t_current - t_start_total_solve;
@@ -245,31 +263,41 @@ void RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
         elapsed_to_first_ = total_elapsed;
         success_ = 0;
         num_vertices_ = (Ta.getNumVertices() + Tb.getNumVertices());
-        return;
+        return success;
       }
 
-      auto t_start_current_solve = std::chrono::steady_clock::now();
-      anytime_horizon = anytime_horizon*horizon_expansion_factor;
-      // std::cout << "Failed, retrying with horizon of " << anytime_horizon << "s" << std::endl;
-      Ta = PlannerClass();
-      Tb = PlannerClass();
-      Ta.init(s_start);
-      Tb.init(s_goal);
-      continue;
+      #ifndef VISUALIZE_TREE
+        auto t_start_current_solve = std::chrono::steady_clock::now();
+        anytime_horizon = anytime_horizon*horizon_expansion_factor;
+        std::cout << "Failed, retrying with horizon of " << anytime_horizon << "s" << std::endl;
+        Ta = PlannerClass();
+        Tb = PlannerClass();
+        tree_viz_msg_.markers.clear();
+        Ta.init(s_start);
+        Tb.init(s_goal);
+        continue;
+      #endif
     }
 
     // Generate random s
     State s_rand = Ta.randomState(planner_config);
 
-    static int i = 0;
+    // static int i = 0;
 
     if (isValidState(s_rand, planner_config, STANCE))
     {
-      if (extend(Ta, s_rand, planner_config, FORWARD) != TRAPPED)
+      if (extend(Ta, s_rand, planner_config, FORWARD, tree_pub) != TRAPPED)
       {
         State s_new = Ta.getVertex(Ta.getNumVertices()-1);
 
-        if(connect(Tb, s_new, planner_config, REVERSE) == REACHED)
+        #ifdef VISUALIZE_TREE
+          std::cout << "Extended from A" << std::endl;
+          Action a_new = Ta.getAction(Ta.getNumVertices()-1);
+          State s_parent = Ta.getVertex(Ta.getPredecessor(Ta.getNumVertices()-1));
+          publishStateActionPair(s_parent,a_new, s_rand, planner_config, tree_viz_msg_, tree_pub);
+        #endif
+
+        if(connect(Tb, s_new, planner_config, REVERSE, tree_pub) == REACHED)
         {
           goal_found = true;
 
@@ -285,11 +313,17 @@ void RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
 
     if (isValidState(s_rand, planner_config, STANCE))
     {
-      if (extend(Tb, s_rand, planner_config, REVERSE) != TRAPPED)
+      if (extend(Tb, s_rand, planner_config, REVERSE, tree_pub) != TRAPPED)
       {
         State s_new = Tb.getVertex(Tb.getNumVertices()-1);
 
-        if(connect(Ta, s_new, planner_config, FORWARD) == REACHED)
+        #ifdef VISUALIZE_TREE
+          std::cout << "Extended from B" << std::endl;
+          Action a_new = Tb.getAction(Tb.getNumVertices()-1);
+          publishStateActionPair(s_new,a_new, s_rand, planner_config, tree_viz_msg_, tree_pub);
+        #endif
+
+        if(connect(Ta, s_new, planner_config, FORWARD, tree_pub) == REACHED)
         {
           goal_found = true;
 
@@ -307,6 +341,7 @@ void RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
   if (goal_found == true)
   {
     extractPath(Ta, Tb, state_sequence, action_sequence, planner_config);
+    success = true;
   } else {
     std::cout << "Path not found" << std::endl;
   }
@@ -319,4 +354,6 @@ void RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
   {
     path_duration_ += (a[6] + a[7]);
   }
+
+  return success;
 }

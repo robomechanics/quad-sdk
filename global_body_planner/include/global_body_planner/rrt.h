@@ -57,7 +57,8 @@ class RRTClass
      * @param[in] terrain Height map of the terrain
      * @param[in] direction The direction with which to peform the extension (FORWARD to go away from the root vertex, REVERSE to go towards it)
      */
-    virtual int extend(PlannerClass &T, State s, const PlannerConfig &planner_config, int direction);
+    virtual int extend(PlannerClass &T, State s, const PlannerConfig &planner_config, int direction,
+      ros::Publisher &tree_pub);
 
     /**
      * @brief Get the path from the root vertex to the specified one
@@ -103,7 +104,7 @@ class RRTClass
      * @return Boolean if the new state got closer to the specified state than any other in the tree
      */
     bool newConfig(State s, State s_near, StateActionResult &result,
-      const PlannerConfig &planner_config, int direction);
+      const PlannerConfig &planner_config, int direction, ros::Publisher &tree_pub);
 
     /**
      * @brief Get the states along the specified path of vertex indices
@@ -147,6 +148,8 @@ class RRTClass
     /// The duration of the path in seconds
     double path_duration_;
 
+    /// Message for tree visualization
+    visualization_msgs::MarkerArray tree_viz_msg_;
         
         
 };

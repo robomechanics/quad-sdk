@@ -8,11 +8,14 @@ RRTClass::~RRTClass() {}
 using namespace planning_utils;
 
 bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
-	const PlannerConfig &planner_config, int direction)
+	const PlannerConfig &planner_config, int direction, ros::Publisher &tree_pub)
 {
 	double best_so_far = stateDistance(s_near, s);
 	std::array<double, 3> surf_norm = planner_config.terrain.getSurfaceNormal(s[0], s[1]);
 
+  int tree_size = tree_viz_msg_.markers.size();
+
+  bool any_valid_actions = false;
 	for (int i = 0; i < planner_config.NUM_GEN_STATES; ++i)
 	{
 		bool valid_state_found = false;
@@ -30,9 +33,21 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 				is_valid = isValidStateActionPairReverse(s_near, a_test, current_result, planner_config);
 			}
 
+      #ifdef VISUALIZE_ALL_CANDIDATE_ACTIONS
+        if (direction == FORWARD) {
+          publishStateActionPair(s_near,a_test, s,planner_config, tree_viz_msg_, tree_pub);
+        } else if (direction == REVERSE) {
+          State s_reverse = applyActionReverse(s_near,a_test,planner_config);
+          publishStateActionPair(s_reverse, a_test, s,planner_config, tree_viz_msg_,
+            tree_pub);
+        }
+      #endif
+
 			if (is_valid == true)
 			{
 				valid_state_found = true;
+        // std::cout << "GRF 0 = " << getGRF(a_test,0,planner_config) << std::endl;
+        // std::cout << "GRF 1 = " << getGRF(a_test,a_test[6],planner_config) << std::endl;
 				break;
 			} else {
 				a_test = getRandomAction(surf_norm,planner_config);
@@ -44,6 +59,7 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 			double current_dist = stateDistance(current_result.s_new, s);
 			if (current_dist < best_so_far)
 			{
+        any_valid_actions = true;
 				best_so_far = current_dist;
 				result.s_new = current_result.s_new;
 				result.a_new = a_test;
@@ -52,18 +68,26 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 		}
 	}
 
-  // Try connecting directly
-  StateActionResult current_result;
-	if (attemptConnect(s_near, s, current_result, planner_config, direction) != TRAPPED) {
-		double current_dist = stateDistance(current_result.s_new, s);
-    if (current_dist < best_so_far)
-    {
-      best_so_far = current_dist;
-      result.s_new = current_result.s_new;
-      result.a_new = current_result.a_new;
-      result.length = current_result.length;
-    }
-	}
+  std::cout << "Reverse = " << direction << ", valid action found = " << any_valid_actions << std::endl;
+
+  // // Try connecting directly
+  // StateActionResult current_result;
+	// if (attemptConnect(s_near, s, current_result, planner_config, direction) != TRAPPED) {
+	// 	double current_dist = stateDistance(current_result.s_new, s);
+
+  //   if (current_dist < best_so_far)
+  //   {
+  //     best_so_far = current_dist;
+  //     result.s_new = current_result.s_new;
+  //     result.a_new = current_result.a_new;
+  //     result.length = current_result.length;
+  //   }
+	// }
+
+
+  #ifdef VISUALIZE_ALL_CANDIDATE_ACTIONS
+    tree_viz_msg_.markers.resize(tree_size);
+  #endif
 
 	if (best_so_far == stateDistance(s_near, s))
 	{
@@ -123,6 +147,7 @@ int RRTClass::attemptConnect(State s_existing, State s, double t_s, StateActionR
   result.a_new[5] = z_to - planner_config.terrain.getGroundHeight(x_to,y_to);;
   result.a_new[6] = t_s;
   result.a_new[7] = t_f;
+  
 
   // If the connection results in an infeasible action, abort and return trapped
   if (isValidAction(result.a_new,planner_config) == true)
@@ -153,13 +178,14 @@ int RRTClass::attemptConnect(State s_existing, State s, StateActionResult &resul
   return attemptConnect(s_existing, s, t_s, result, planner_config, direction);
 }
 
-int RRTClass::extend(PlannerClass &T, State s, const PlannerConfig &planner_config, int direction)
+int RRTClass::extend(PlannerClass &T, State s, const PlannerConfig &planner_config, int direction,
+	ros::Publisher &tree_pub)
 {
 	int s_near_index = T.getNearestNeighbor(s);
 	State s_near = T.getVertex(s_near_index);
 	StateActionResult result;
 
-	if (newConfig(s,s_near,result, planner_config, direction) == true)
+	if (newConfig(s,s_near,result, planner_config, direction, tree_pub) == true)
 	{
 		int s_new_index = T.getNumVertices();
 		T.addVertex(s_new_index, result.s_new);

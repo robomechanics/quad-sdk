@@ -3,6 +3,7 @@
 
 #include <ros/ros.h>
 #include <nav_msgs/Path.h>
+#include <visualization_msgs/MarkerArray.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
@@ -36,8 +37,9 @@ class GlobalBodyPlanner {
 
     /**
      * @brief Call the correct planning class and compute statistics
+     * @return Boolean for success of the planner
      */
-    void callPlanner();
+    bool callPlanner();
 
     /**
      * @brief Primary work function in class, called in node file for this component
@@ -118,6 +120,9 @@ class GlobalBodyPlanner {
 
     /// Publisher for discrete states in body plan messages
     ros::Publisher discrete_body_plan_pub_;
+
+    /// Publisher for the planning tree
+    ros::Publisher tree_pub_;
 
     /// Topic name for terrain map (needed to ensure data has been received)
     std::string terrain_map_topic_;

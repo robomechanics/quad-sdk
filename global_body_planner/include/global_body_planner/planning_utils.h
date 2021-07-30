@@ -13,8 +13,14 @@
 #include <eigen3/Eigen/Eigen>
 #include <grid_map_core/grid_map_core.hpp>
 #include <ros/ros.h>
+#include <visualization_msgs/MarkerArray.h>
 #include <spirit_utils/fast_terrain_map.h>
 #include <spirit_utils/math_utils.h>
+#include <unistd.h>
+
+// Uncomment to add visualization features
+#define VISUALIZE_TREE
+// #define VISUALIZE_ALL_CANDIDATE_ACTIONS
 
 namespace planning_utils {
 
@@ -35,6 +41,7 @@ struct PlannerConfig {
   double M_CONST = 12;          // Robot mass, kg (12 for spirit, 43 for cheetah, 30 for anymal)
   double J_CONST = 1.0;         // Moment of inertia about the robot's y axis (pitch)
   double G_CONST = 9.81;        // Gravity constant, m/s^2
+  double F_MIN = 100;           // Minimum GRF
   double F_MAX = 300;           // Maximum GRF, N (800 for cheetah, 500 for anymal)
   double MU = 1.0;              // Friction coefficient (1.0 for Cheetah, 0.5 for ANYmal)
   double T_S_MIN = 0.3;         // Minimum stance time, s
@@ -133,6 +140,7 @@ State applyStance(State s, Action a, double t, const PlannerConfig &planner_conf
 State applyStance(State s, Action a, const PlannerConfig &planner_config);
 State applyFlight(State s, double t_f);
 State applyAction(State s, Action a, const PlannerConfig &planner_config);
+State applyActionReverse(State s, Action a, const PlannerConfig &planner_config);
 State applyStanceReverse(State s, Action a, double t, const PlannerConfig &planner_config);
 State applyStanceReverse(State s, Action a, const PlannerConfig &planner_config);
 Action getRandomAction(std::array<double, 3> surf_norm, const PlannerConfig &planner_config);
@@ -145,6 +153,11 @@ bool isValidStateActionPair(State s, Action a, StateActionResult &result,
 // bool isValidStateActionPairReverse(State s, Action a, const PlannerConfig &planner_config, State &s_new, double& t_new);
 bool isValidStateActionPairReverse(State s, Action a, StateActionResult &result, 
   const PlannerConfig &planner_config);
+
+// Define visualization functions
+void publishStateActionPair(const State &s, const Action &a, const State &s_goal,
+  const PlannerConfig &planner_config, visualization_msgs::MarkerArray &tree_viz_msg,
+  ros::Publisher &tree_pub);
 }
 
 #endif

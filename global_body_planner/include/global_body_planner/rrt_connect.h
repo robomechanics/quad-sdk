@@ -2,7 +2,6 @@
 #define RRTCONNECT_H
 
 #include "global_body_planner/rrt.h"
-// #include "functions.h"
 
 #define TRAPPED 0
 #define ADVANCED 1
@@ -33,8 +32,10 @@ class RRTConnectClass : public RRTClass
      * @param[in] s The state to connect the tree towards
      * @param[in] terrain Height map of the terrain
      * @param[in] direction The direction with which to peform the extension (FORWARD to go away from the root vertex, REVERSE to go towards it)
+     * @param[in] tree_pub Publisher for broadcasting the tree visual
      */
-    int connect(PlannerClass &T, State s, const PlannerConfig &planner_config, int direction);
+    int connect(PlannerClass &T, State s, const PlannerConfig &planner_config, int direction,
+      ros::Publisher &tree_pub);
 
     /**
      * @brief Get the actions along the specified path of vertex indices (assumes that actions are synched with the state at which they are executed)
@@ -70,8 +71,11 @@ class RRTConnectClass : public RRTClass
      * @param[out] state_sequence The sequence of states in the final path
      * @param[out] action_sequence The sequence of actions in the final path
      * @param[in] max_planning_time Maximum time allowed to find a plan
+     * @return Boolean for success of the planner
      */
-    void runRRTConnect(const PlannerConfig &planner_config, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double max_planning_time);
+    bool runRRTConnect(const PlannerConfig &planner_config, State s_start, State s_goal,
+      std::vector<State> &state_sequence, std::vector<Action> &action_sequence,
+      double max_planning_time, ros::Publisher &tree_pub);
 
   protected:
 
@@ -86,6 +90,7 @@ class RRTConnectClass : public RRTClass
 
     /// Factor by which horizon is increased if replanning is required
     double horizon_expansion_factor = 1.2;
+
 };
 
 #endif

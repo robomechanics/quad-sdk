@@ -182,7 +182,7 @@ double poseDistance(std::vector<double> v1, std::vector<double> v2)
 double stateDistance(State q1,State q2)
 {
   double sum = 0;
-  State state_weight = {1,1,1,1,1,1};
+  State state_weight = {1,1,1,0.1,0.1,0.1};
 
   for (int i = 0; i < q1.size(); i++)
   {
@@ -437,13 +437,15 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
     interp_reduced_plan.push_back(s_next);
     interp_GRF.push_back(getGRF(a,t, planner_config));
 
-    if (!isValidYawRate(s,a,t,planner_config)) {
-      std::cout << "Invalid yaw detected!" << std::endl;
-      printStateNewline(s);
-      printActionNewline(a);
-      std::cout << "t = " << t<< std::endl;
-      std::cout << "t_f = " << t_f<< std::endl;
-    }
+    // #ifdef VISUALIZE_TREE
+    //   if (!isValidYawRate(s,a,t,planner_config)) {
+    //     std::cout << "Invalid yaw detected!" << std::endl;
+    //     printStateNewline(s);
+    //     printActionNewline(a);
+    //     std::cout << "t = " << t<< std::endl;
+    //     std::cout << "t_f = " << t_f<< std::endl;
+    //   }
+    // #endif
 
     if (t_f==0)
       interp_primitive_id.push_back(CONNECT_STANCE);
@@ -629,6 +631,19 @@ State applyAction(State s, Action a, const PlannerConfig &planner_config)
   return s_new;
 }
 
+State applyActionReverse(State s, Action a, const PlannerConfig &planner_config)
+{
+  double t_s;
+  double t_f;
+
+  t_s = a[6];
+  t_f = a[7];
+
+  State s_to = applyFlight(s, -t_f);
+  State s_new = applyStanceReverse(s_to, a, planner_config);
+  return s_new;
+}
+
 State applyStanceReverse(State s, Action a, double t, const PlannerConfig &planner_config)
 {
   double a_x_td = a[0];
@@ -678,8 +693,10 @@ Action getRandomAction(std::array<double, 3> surf_norm, const PlannerConfig &pla
   Action a;
 
   // Random normal forces between 0 and planner_config.F_MAX
-  double f_z_td = planner_config.F_MAX*(double)rand()/RAND_MAX;
-  double f_z_to = planner_config.F_MAX*(double)rand()/RAND_MAX;
+  double f_z_td = (planner_config.F_MAX-planner_config.F_MIN)*(double)rand()/RAND_MAX
+    + planner_config.F_MIN;
+  double f_z_to = (planner_config.F_MAX-planner_config.F_MIN)*(double)rand()/RAND_MAX
+    + planner_config.F_MIN;
 
   // Random tangential forces between -mu*f_z and mu*f_z
   double f_x_td = 2*planner_config.MU*f_z_td*(double)rand()/RAND_MAX - planner_config.MU*f_z_td;
@@ -788,15 +805,24 @@ bool isValidState(State s, const PlannerConfig &planner_config, int phase)
       double corner_height = z_corner - 
         planner_config.terrain.getGroundHeight(x_corner,y_corner);
 
-      // Always check for collision, only check reachability in stance
-      if ((corner_height < planner_config.H_MIN) || ((phase == STANCE) && 
-        (leg_height > planner_config.H_MAX))) {
+      // Check for collision
+      if (corner_height < planner_config.H_MIN)
         return false;
+      
+      // Check for reachability
+      if (phase == CONNECT_STANCE) {
+        if (leg_height > planner_config.H_MAX) {
+          return false;
+        }
+      } else if (phase == STANCE) {
+        if (leg_height > planner_config.H_MAX) {
+          return false;
+        }
       }
     }
   }
 
-  // Check the center of the underside of the robot
+  // Check the center of the underside of the robot for penetration
   double height = (s[2] + R_33*z_body) - planner_config.terrain.getGroundHeight(s[0] + 
     R_13*z_body,s[1] + R_23*z_body);
   if (height < planner_config.H_MIN)
@@ -818,12 +844,19 @@ bool isValidStateActionPair(State s, Action a, StateActionResult &result,
   State s_next;
   result.length = 0;
 
+  int phase;
+  if (t_f == 0) {
+    phase = CONNECT_STANCE;
+  } else {
+    phase = STANCE;
+  }
+
   for (double t = 0; t <= t_s; t += planner_config.KINEMATICS_RES)
   {
     // Compute state to check
     State s_next = applyStance(s,a,t,planner_config);
 
-    if (isValidState(s_next, planner_config, STANCE) == false || (!isValidYawRate(s,a,t,planner_config)))
+    if (isValidState(s_next, planner_config, phase) == false || (!isValidYawRate(s,a,t,planner_config)))
     {
       result.t_new = (1.0-planner_config.BACKUP_RATIO)*t;
       result.s_new = applyStance(s,a,result.t_new,planner_config);
@@ -851,7 +884,7 @@ bool isValidStateActionPair(State s, Action a, StateActionResult &result,
 
   // Check the exact landing state
   State s_land = applyFlight(s_takeoff, t_f);
-  if (isValidState(s_land, planner_config, STANCE) == false)
+  if (isValidState(s_land, planner_config, phase) == false)
   {
     return false;
   } else {
@@ -875,6 +908,12 @@ bool isValidStateActionPairReverse(State s, Action a, StateActionResult &result,
   State s_prev = s;
   State s_next;
   result.length = 0;
+  int phase;
+  if (t_f == 0) {
+    phase = CONNECT_STANCE;
+  } else {
+    phase = STANCE;
+  }
 
   for (double t = 0; t < t_f; t += planner_config.KINEMATICS_RES)
   {
@@ -882,20 +921,26 @@ bool isValidStateActionPairReverse(State s, Action a, StateActionResult &result,
     result.length += poseDistance(s_next, s_prev);
     s_prev = s_next;
 
-    if (isValidState(s_next, planner_config, FLIGHT) == false)
+    if (isValidState(s_next, planner_config, FLIGHT) == false) {
       return false;
+    }
+      
   }
 
   State s_takeoff = applyFlight(s, -t_f);
 
   for (double t = t_s; t >= 0; t -= planner_config.KINEMATICS_RES)
   {
+
     State s_next = applyStanceReverse(s_takeoff,a,t,planner_config);
 
-    if (isValidState(s_next, planner_config, STANCE) == false || (!isValidYawRate(s,a,t,planner_config)))
+
+    if (isValidState(s_next, planner_config, phase) == false || (!isValidYawRate(s,a,t,planner_config)))
     {
-      result.t_new = t + planner_config.BACKUP_RATIO*(t_s - t);
-      result.s_new = applyStance(s,a,result.t_new, planner_config);
+      result.t_new = planner_config.BACKUP_RATIO*(t_s - t);
+      a[6] = result.t_new;
+      result.s_new = applyStanceReverse(s_takeoff,a,result.t_new, planner_config);
+      // result.s_new = applyStance(s,a,result.t_new, planner_config);
       return false;
     } else {
       result.t_new = t_s - t;
@@ -907,7 +952,7 @@ bool isValidStateActionPairReverse(State s, Action a, StateActionResult &result,
 
   // Check the exact starting state
   State s_start = applyStanceReverse(s_takeoff,a, planner_config);
-  if (isValidState(s_start, planner_config, STANCE) == false)
+  if (isValidState(s_start, planner_config, phase) == false)
   {
     return false;
   } else {
@@ -919,4 +964,116 @@ bool isValidStateActionPairReverse(State s, Action a, StateActionResult &result,
   return true;
 }
 
+void publishStateActionPair(const State &s, const Action &a, const State &s_goal,
+  const PlannerConfig &planner_config, visualization_msgs::MarkerArray &tree_viz_msg,
+  ros::Publisher &tree_pub) {
+
+  // Confirm ros is ok
+  if (!ros::ok())
+    return;
+
+  // Create the marker object for the new state action pair
+  visualization_msgs::Marker state_action_line;
+  state_action_line.header.stamp = ros::Time::now();
+  state_action_line.header.frame_id = "map";
+  state_action_line.action = visualization_msgs::Marker::ADD;
+  state_action_line.pose.orientation.w = 1;
+  state_action_line.id = tree_viz_msg.markers.size();
+  state_action_line.type = visualization_msgs::Marker::LINE_STRIP;
+  state_action_line.scale.x = 0.06;
+
+  // Interpolate the state action pair
+  double t0 = 0;
+  double dt = 0.03;
+  std::vector<State> interp_state_action;
+  std::vector<GRF> interp_grf;
+  std::vector<double> interp_t;
+  std::vector<int> interp_primitive_id;
+  std::vector<double> interp_length;
+  interp_length.push_back(0.0);
+  interpStateActionPair(s,a,t0,dt,interp_state_action,interp_grf,interp_t,interp_primitive_id,
+    interp_length,planner_config);
+
+  // Add the exact last state so the visualization is continuous
+  interp_state_action.push_back(applyAction(s,a,planner_config));
+  interp_primitive_id.push_back(interp_primitive_id.back());
+
+  // Loop through the interpolated state action pair and add points to the line strip
+  int length = interp_state_action.size();
+  for (int i=0; i < length; i++) {
+
+    // Load in the pose data from the interpolated path
+    geometry_msgs::Point point;
+    point.x = interp_state_action.at(i)[0];
+    point.y = interp_state_action.at(i)[1];
+    point.z = interp_state_action.at(i)[2];
+
+    // Set the color of the line strip according to the motion primitive
+    std_msgs::ColorRGBA color;
+    color.a = 1;
+    if (interp_primitive_id[i] == FLIGHT) {
+      color.r = 0/255.0;
+      color.g = 45.0/255.0;
+      color.b = 144.0/255.0;
+    } else if (interp_primitive_id[i] == STANCE) {
+      color.r = 0/255.0;
+      color.g = 132.0/255.0;
+      color.b = 61.0/255.0;
+    } else if (interp_primitive_id[i] == CONNECT_STANCE) {
+      color.r = 166.0/255.0;
+      color.g = 25.0/255.0;
+      color.b = 46.0/255.0;
+    } else {
+      ROS_WARN_THROTTLE(1, "Invalid primitive ID received in planning utils");
+    }
+
+    // Add the point and the color
+    state_action_line.points.push_back(point);
+    state_action_line.colors.push_back(color);  
+  }
+
+  // Add the marker to the array
+  tree_viz_msg.markers.push_back(state_action_line);
+
+  // Create the marker object for the goal marker of this particular action
+  visualization_msgs::Marker goal_marker;
+  goal_marker.header.stamp = ros::Time::now();
+  goal_marker.header.frame_id = "map";
+  goal_marker.action = visualization_msgs::Marker::ADD;
+  goal_marker.id = 0;
+  goal_marker.type = visualization_msgs::Marker::ARROW;
+
+  // Define the point for the arrow base
+  geometry_msgs::Point goal_marker_base;
+  goal_marker_base.x = s_goal[0];
+  goal_marker_base.y = s_goal[1];
+  goal_marker_base.z = s_goal[2];
+
+  // Define the point for the arrow tip and set the scaling accordingly
+  geometry_msgs::Point goal_marker_tip;
+  double scale = 0.5;
+  double vel_magnitude = sqrt(s_goal[3]*s_goal[3] + s_goal[4]*s_goal[4] + s_goal[5]*s_goal[5]);
+  goal_marker.scale.x = 0.05*scale*vel_magnitude;
+  goal_marker.scale.y = 0.1*scale*vel_magnitude;
+  goal_marker_tip.x = s_goal[0] + scale*s_goal[3];
+  goal_marker_tip.y = s_goal[1] + scale*s_goal[4];
+  goal_marker_tip.z = s_goal[2] + scale*s_goal[5];
+
+  // Add the points to the goal marker and set the color
+  goal_marker.points.push_back(goal_marker_base);
+  goal_marker.points.push_back(goal_marker_tip);
+  goal_marker.color.a = 1.0;
+  goal_marker.color.g = 1.0;
+
+  // Add the goal marker to the front of the marker array
+  tree_viz_msg.markers.front() = goal_marker;
+
+  // Publish the tree and wait so that RViz has time to process it
+  tree_pub.publish(tree_viz_msg);
+  double freq = 15.0; // Hz
+  usleep(1000000.0/freq);
+
 }
+
+}
+
