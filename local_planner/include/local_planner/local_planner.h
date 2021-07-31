@@ -67,7 +67,7 @@ private:
   /**
    * @brief Function to pre-process the body plan and robot state messages into Eigen arrays
    */
-  void preProcessPlanAndState();
+  void getStateAndReferencePlan();
 
   /**
    * @brief Function to compute the local plan
@@ -111,8 +111,8 @@ private:
 	double update_rate_;
 
   /// Local Body Planner object
-  // std::shared_ptr<QuadrupedMPC> local_body_planner_;
-  std::shared_ptr<NMPCController> local_body_planner_;
+  std::shared_ptr<QuadrupedMPC> local_body_planner_convex_;
+  std::shared_ptr<NMPCController> local_body_planner_nonlinear_;
 
   /// Local Footstep Planner object
   std::shared_ptr<LocalFootstepPlanner> local_footstep_planner_;
@@ -149,6 +149,9 @@ private:
 
   /// local planner timestep (seconds)
   double dt_;
+
+  /// Computation time in computeLocalPlan
+  double compute_time_;
 
   /// MPC Horizon length
   const int N_ = 24;
@@ -192,6 +195,7 @@ private:
   /// Spirit Kinematics class
   std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
 
+  bool use_nmpc_;
 };
 
 

@@ -1,0 +1,193 @@
+2.6.0 -> 3.0.0 (24. September 2019)
+
+- Replaced aborting behaviour with actual error handling by providing an error
+  base class and some more specific error types derived from it 
+  (contributed by Felix Richter) 
+- Removed SimpleMath library to reduce code complexety
+  (contributed by Felix Richter) 
+- Refactored the constraint system to be polymorphic
+  (contributed by Matthew J. Millard) 
+- Python Wrapper has been updated to support python3 and python2 and the
+  api has been extended to include the muscle addons functionality
+
+2.5.0 -> 2.6.0
+
+- Added support for closed-loop models by replacing Contacts API by a new
+  Constraints API. Loop constraints can be stabilized using Baumgarte
+  stabilization. Special thanks to Davide Corradi for this contribution!
+- New constraint type CustomConstraint: a versatile interface to define
+  more general types of constraints (e.g. time dependent), contributed by
+  Matthew J. Millard.
+- New joint type JointTypeHelical that can be used for screwing motions
+  (translations and simultaneous rotations), contributed by Stuart Anderson.
+- Added support to specify external forces on bodies on constrained forward
+  dynamics and NonlinearEffects() (contributed by Matthew J. Millard)
+- Changed Quaternion multiplication behaviour for a more standard
+  convention: multiplying q1 (1,0,0,0) with q2 (0,1,0,0) results now in
+  (0,0,1,0) instead of the previous (0,0,-1,0).
+- Removed Model::SetFloatingBaseBody(). Use JointTypeFloatingBase instead.
+- LuaModel: extended specification to support ConstraintSets.
+
+2.4.1 -> 2.5.0 
+- Added an experimental Cython based Python wrapper of RBDL. The API is
+  very close to the C++ API. For a brief glimpse of the API see the file
+  python/test_wrapper.py.
+- Matthew Millard added CustomJoints which allow to create different joint
+  types completely by user code. They are implemented as proxy joints for
+  which their behaviour is specified using virtual functions.
+- Added CalcMInvTimesTau() that evaluates multiplication of the inverse of
+  the joint space inertia matrix with a vector in O(n) time.
+- Added JointTypeFloatingBase which uses TX,TY,TZ and a spherical joint for
+  the floating base joint.
+- Loading of floating base URDF models must now be specified as a third
+  parameter to URDFReadFromFile() and URDFReadFromString()
+- Added the URDF code from Bullet3 which gets used when ROS is not found.
+  Otherwise use the URDF libraries found via Catkin.
+- Added CalcPointVelocity6D, CalcPointAcceleration6D, and CalcPointJacobian6D
+  that compute both linear and angular quantities
+- Removed Model::SetFloatingBase (body). Use a 6-DoF joint or
+  JointTypeFloatingBase instead.
+- Fixed building issues when building DLL with MSVC++.
+
+2.4.0 -> 2.4.1 (20 April 2016)
+This is a bugfix release that maintains binary compatibility and only fixes
+erroneous behaviour.
+- critical: fixed termination criterion for InverseKinematics. The termination
+  criterion would be evaluated too early and thus report convergence too
+  early. This was reported independently by Kevin Stein, Yun Fei, and Davide
+  Corradi. Thanks for the reports!
+- critical: fixed CompositeRigidBodyAlgorithm when using spherical joints
+  (thanks to Sébastien Barthélémy for reporting!)
+
+2.3.3 -> 2.4.0 (23 February 2015)
+- Added sparse range-space method ForwardDynamicsContactsRangeSpaceSparse()
+  and ComputeContactImpulsesRangeSpaceSparse() 
+- Added null-space method ForwardDynamicsContactsNullSpace()
+  and ComputeContactImpulsesNullSpace() 
+- Renamed ForwardDynamicsContactsLagrangian() to
+  ForwardDynamicsContactsDirect() and
+  ComputeContactImpulsesLagrangian() to ComputeContactImpulsesDirect()
+- Renamed ForwardDynamicsContacts() to ForwardDynamicsContactsKokkevis()
+- Removed/Fixed CalcAngularMomentum(). The function produced wrong values. The
+  functionality has been integrated into CalcCenterOfMass().
+- CalcPointJacobian() does not clear the argument of the result anymore.
+  Caller has to ensure that the matrix was set to zero before using this
+  function.
+- Added optional workspace parameters for ForwardDynamicsLagrangian() to
+  optionally reduce memory allocations
+- Added JointTypeTranslationXYZ, JointTypeEulerXYZ, and JointTypeEulerYXZ
+  which are equivalent to the emulated multidof joints but faster.
+- Added optional parameter to CalcCenterOfMass to compute angular momentum.
+- Added CalcBodySpatialJacobian()
+- Added CalcContactJacobian()
+- Added NonlinearEffects()
+- Added solving of linear systems using standard Householder QR
+- LuaModel: Added LuaModelReadFromLuaState()
+- URDFReader: Fixed various issues and using faster joints for floating
+  base models
+- Various performance improvements
+
+2.3.2 -> 2.3.3 (21 October 2014)
+- critical: fixed ForwardDynamicsContacts with constraints on a body
+  hat is attached with a fixed joint. Previous versions simply crashed.
+  Thanks to Yue Hu for reporting!
+- rbdl_print_version() now properly prints whether URDFReader was enabled
+  at build time
+- build system: fixed roblems especially building of the URDFreader
+- build system: all CMake variables for RBDL are now prefixed with RBDL_ 
+- FindRBDL.cmake now can use components to search for the LuaModel or
+  URDFReader addon
+
+2.3.1 -> 2.3.2 (29 August 2014)
+- critical: fixed ForwardDynamicsLagrangian which used uninitialized values for the joint space inertia matrix
+- critical: fixed ForwardDynamicsContacts when using 3-dof joints
+- critical: fixed CalcBodyWorldOrientation for fixed joints (thanks to Hilaro Tome!)
+- critical: fixed CompositeRigidBodyDynamics when using 3-dof joints (thanks to Henning Koch!)
+
+2.3.0 -> 2.3.1 (13 July 2014)
+- critical: fixed angular momentum computation. Version 2.3.0 produced wrong
+  results. Thanks to Hilario Tome and Benjamin Michaud for reporting!
+- critical: fixed JointTypeEulerZYX. Previous versions produce wrong
+  results!
+- fixed library version number for the LuaModel addon. It now uses version
+  2.3 instead of the wrong 2.2.
+
+2.2.2 -> 2.3.0 (14 March 2014) 
+- disabled clearing of joint space inertia matrix in CRBA.
+  It is expected that the matrix is cleared by the user when neccessary.
+- Added experimental joint type JointTypeEulerZYX. It does not emulate
+  multiple degrees of freedom using virtual bodies instead it uses a 3 DoF
+  motion subspace. Performance is better for the
+  CompositeRigidBodyAlgorithm but worse for other algorithms.
+- Using Eigen3's default column-major ordering for matrices when using
+  Eigen3. This should have no effect for the user unless matrix elements
+  are accessed using the .data()[i] operator of Eigen3's matrix class. However
+  if .data()[i] is used the access indices have to be adjusted.
+- added functions to compute kinetic and potential energy and the
+  computation of the center of mass and its linear velocity:
+    RigidBodyDynamics::Utils::CalcCenterOfMass
+    RigidBodyDynamics::Utils::CalcPotentialEnergy
+    RigidBodyDynamics::Utils::CalcKineticEnergy
+    RigidBodyDynamics::Utils::CalcAngularMomentum
+
+2.2.1 -> 2.2.2 (06 November 2013)
+- adjusted default constructor for Body. It now has the identity matrix as
+  inertia, instead of a zero matrix.
+- LuaModel: made sure that the Body value is optional and uses the default
+  Body constructor if not defined.
+
+2.2.0 -> 2.2.1 04 (November 2013)
+- properly exporting LuaTables++ functions when using LuaModel addon
+  Fixes linking 
+- fixed exported library version (now at 2.2 as expected)
+
+2.1.0 -> 2.2.0 (28 October 2013)
+- added spherical joints that do not suffer from singularities:
+  Use joint type JointTypeSpherical
+- added Model::q_size, and Model::qdot_size that report the sizes including
+  all 4 Quaternion parameters when spherical joints are used.
+  User is advised to use Model::q_size and Model::qdot_size instead of
+  Model::dof_count.
+- removed "constraint_" prefix from constraint impulses, forces and
+  accelerations from the ConstraintSets:
+  renaming required if values are queried  
+- Contact impulses: specification of a contact velocity after a collision:
+  added ConstraintSet::v_plus which can be set for the desired constraint
+  velocity after a collision. Previously it used the values stored in 
+  ConstraintSet::constraint_acceleration.
+  User has to store desired exit velocities manually in CS::v_plus
+
+2.0.1 -> 2.1.0 (29 September 2013)
+- made codebase compatible to Debian
+  Binary symbol export was changed. No change in user code required,
+  however everything needs to be recompiled and linked.
+- Removed Lua 5.2 source
+  When building the addon LuaModel, one hast to have it installed on the
+  system already.
+- Removed UnitTest++ sources
+  When building tests one has to have it installed on the system already.
+
+2.0.0 -> 2.0.1 (05 September 2013)
+- fixed compiler errors on some older compilers
+  No change required when using RBDL version 2.0.0.
+- fixed CMake configurations for examples
+  No change required when using RBDL version 2.0.0.
+
+1.X.Y -> 2.0.0 (18 July 2013)
+- removed Model::Init():
+  All initialization is now done in the default constructor in Model(). To
+  be compatible with the new API simply remove any calls to Model::Init().
+- removed Eigen3 sources:
+  Eigen3 is no more included in RBDL instead it uses the Eigen3 library
+  that is installed on the system. If you want to use RBDL with Eigen3
+  you have to install it on your system yourself.
+- inverted sign of contact forces/impulses:
+  ConstraintSet::constraint_force and ConstraintSet::constraint_impulse are
+  now the forces or impulses that are acting on the constrained body by the
+  constraint.
+
+1.0.0 -> 1.1.0 (20 February 2013)
+- removed constructor Body (mass, com, length, gyration_radii)
+  This constructor did some erroneous calculations to compute the real
+  radii of gyration. It was removed as the two remaining constructors are
+  properly tested and are more general.

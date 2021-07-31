@@ -7,26 +7,40 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
     /// Ghost MBLink interface class
   mblink_.start(argc,argv);
   mblink_.rxstart();
-  mblink_.setRetry("_UPST_ADDRESS", 5);
+  mblink_.setRetry("_UPST_ADDRESS", 255);
   mblink_.setRetry("UPST_LOOP_DELAY", 5);
 
   // Load rosparams from parameter server
-  std::string leg_control_topic, joint_encoder_topic, imu_topic;
+  std::string leg_control_topic, joint_encoder_topic, imu_topic, remote_heartbeat_topic;
   spirit_utils::loadROSParam(nh_,"topics/control/joint_command",leg_control_topic);
+  spirit_utils::loadROSParam(nh_,"topics/remote_heartbeat",remote_heartbeat_topic);
   spirit_utils::loadROSParam(nh_,"topics/joint_encoder",joint_encoder_topic);
   spirit_utils::loadROSParam(nh_,"topics/imu",imu_topic);
   spirit_utils::loadROSParam(nh_,"mblink_converter/update_rate",update_rate_);
+  spirit_utils::loadROSParam(nh_,"mblink_converter/remote_heartbeat_timeout",
+    remote_heartbeat_timeout_);
+  spirit_utils::loadROSParam(nh_,"mblink_converter/leg_command_timeout",leg_command_timeout_);
 
   // Setup pubs and subs
   leg_control_sub_ = nh_.subscribe(leg_control_topic,1,&MBLinkConverter::legControlCallback, this);
-  joint_encoder_pub_ = nh_.advertise<sensor_msgs::JointState>(joint_encoder_topic,1);
-  imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic,1);
+  remote_heartbeat_sub_ = nh_.subscribe(remote_heartbeat_topic,1,&MBLinkConverter::remoteHeartbeatCallback, this);
+  // joint_encoder_pub_ = nh_.advertise<sensor_msgs::JointState>(joint_encoder_topic,1);
+  // imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic,1);
+
+  last_heartbeat_time_ = std::numeric_limits<double>::max();
+  last_leg_command_time_ = std::numeric_limits<double>::max();
+  
 }
 
 void MBLinkConverter::legControlCallback(
   const spirit_msgs::LegCommandArray::ConstPtr& msg)
 {
   last_leg_command_array_msg_ = msg;
+  last_leg_command_time_ = msg->header.stamp.toSec();
+}
+
+void MBLinkConverter::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg) {
+  last_heartbeat_time_ = msg->stamp.toSec();
 }
 
 bool MBLinkConverter::sendMBlink()
@@ -34,7 +48,16 @@ bool MBLinkConverter::sendMBlink()
   // If we've haven't received a motor control message, exit
   if (last_leg_command_array_msg_ == NULL)
   {
+    ROS_DEBUG_THROTTLE(1,"MBLinkConverter node has not received MotorCommandArray messages yet.");
     return false;
+  }
+
+  int leg_command_heartbeat = 1;
+
+  if ((ros::Time::now().toSec() - last_leg_command_time_) >= leg_command_timeout_)
+  {
+    leg_command_heartbeat = 0;
+    ROS_WARN_THROTTLE(1,"Leg command heartbeat lost in MBLinkConverter, sending zeros");
   }
   
   LimbCmd_t limbcmd[4];
@@ -45,11 +68,11 @@ bool MBLinkConverter::sendMBlink()
 
     for (int j = 0; j < 3; ++j) // For each joint
     {
-      limbcmd[i].pos[j] = leg_command.motor_commands.at(j).pos_setpoint;
-      limbcmd[i].vel[j] = leg_command.motor_commands.at(j).vel_setpoint;
-      limbcmd[i].tau[j] = leg_command.motor_commands.at(j).torque_ff;
-      limbcmd[i].kp[j] = static_cast<short>(leg_command.motor_commands.at(j).kp);
-      limbcmd[i].kd[j] = leg_command.motor_commands.at(j).kd;
+      limbcmd[i].pos[j] = leg_command_heartbeat*leg_command.motor_commands.at(j).pos_setpoint;
+      limbcmd[i].vel[j] = leg_command_heartbeat*leg_command.motor_commands.at(j).vel_setpoint;
+      limbcmd[i].tau[j] = leg_command_heartbeat*leg_command.motor_commands.at(j).torque_ff;
+      limbcmd[i].kp[j] = static_cast<short>(leg_command_heartbeat*leg_command.motor_commands.at(j).kp);
+      limbcmd[i].kd[j] = leg_command_heartbeat*leg_command.motor_commands.at(j).kd;
     }
   }
   
@@ -89,7 +112,7 @@ void MBLinkConverter::publishMBlink()
   }
 
   // Publish the joint state message
-  joint_encoder_pub_.publish(joint_state_msg);
+  // joint_encoder_pub_.publish(joint_state_msg);
 
   // Declare the imu message
   sensor_msgs::Imu imu_msg;
@@ -111,7 +134,7 @@ void MBLinkConverter::publishMBlink()
   imu_msg.linear_acceleration.z = data["imu_linear_acceleration"][2];
 
   // Publish the imu message
-  imu_pub_.publish(imu_msg);
+  // imu_pub_.publish(imu_msg);
 }
 
 void MBLinkConverter::spin()
@@ -123,10 +146,7 @@ void MBLinkConverter::spin()
     ros::spinOnce(); 
 
     // Send out the most recent one over mblink
-    if (!this->sendMBlink())
-    {
-      ROS_DEBUG_THROTTLE(1,"MBLinkConverter node has not received MotorCommandArray messages yet.");
-    }
+    this->sendMBlink();
     this->publishMBlink();
 
     // Enforce update rate

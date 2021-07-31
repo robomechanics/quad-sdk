@@ -46,9 +46,20 @@ FullState stateToFullState(State state, double roll, double pitch, double yaw,
   full_state[6] = state[3];
   full_state[7] = state[4];
   full_state[8] = state[5];
-  full_state[9] = roll_rate;
-  full_state[10] = pitch_rate;
-  full_state[11] = yaw_rate;
+
+  Eigen::Vector3d d_rpy,ang_vel;
+  d_rpy << roll_rate, pitch_rate, yaw_rate;
+
+  Eigen::Matrix3d d_rpy_to_ang_vel;
+  d_rpy_to_ang_vel << cos(pitch)*cos(yaw), -sin(yaw), 0, 
+                      cos(pitch)*sin(yaw),  cos(yaw), 0,
+                              -sin(pitch),         0, 1;
+  
+  ang_vel = d_rpy_to_ang_vel*d_rpy;
+
+  full_state[9] = ang_vel[0];
+  full_state[10] = ang_vel[1];
+  full_state[11] = ang_vel[2];
 
   return full_state;
 }
@@ -209,7 +220,8 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
   std::vector<double> pitch(num_states);
   std::vector<double> pitch_rate(num_states);
   std::vector<double> filtered_pitch_rate(num_states);
-  std::vector<double> yaw(num_states);
+  std::vector<double> wrapped_yaw(num_states);
+  std::vector<double> unwrapped_yaw(num_states);
   std::vector<double> filtered_yaw(num_states);
   std::vector<double> yaw_rate(num_states);
   std::vector<double> filtered_yaw_rate(num_states);
@@ -217,21 +229,33 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
   // Enforce that yaw and pitch match current state, let the filter smooth things out
   z[0] = start_state[2];
   pitch[0] = start_state[4];
-  yaw[0] = start_state[5];
-  double gamma = 0.9;
+  wrapped_yaw[0] = start_state[5];
 
-  // Compute yaw to align with heading, pitch and height to align with the terrain
+  // Compute wrapped yaw first to align with heading
+  for (int i = 1; i < num_states; i++) {
+    State body_state = interp_reduced_plan[i];
+    wrapped_yaw[i] = atan2(body_state[4],body_state[3]);
+  }
+
+  // Unwrap yaw for filtering
+  unwrapped_yaw = math_utils::unwrap(wrapped_yaw);
+  
+  // Compute pitch and height to align with the terrain, add first order filter on init state
+  double gamma = 0.98;
   for (int i = 1; i < num_states; i++) {
     double weight = pow(gamma,i);
     State body_state = interp_reduced_plan[i];
     z[i] = weight*z[0] + (1-weight)*body_state[2];
     pitch[i] = weight*pitch[0] + (1-weight)*getPitchFromState(body_state,planner_config);
-    yaw[i] = weight*yaw[0] + (1-weight)*atan2(body_state[4],body_state[3]);
+    unwrapped_yaw[i] = weight*unwrapped_yaw[0] + (1-weight)*unwrapped_yaw[i];
   }
 
+  // Hold penultimate yaw value which will likely be more accurate
+  unwrapped_yaw[num_states-1] = unwrapped_yaw[num_states-2];
+
   // Filter yaw and compute its derivative via central difference method
-  int window_size = 15;
-  filtered_yaw = math_utils::movingAverageFilter(yaw, window_size);
+  int window_size = 25;
+  filtered_yaw = math_utils::movingAverageFilter(unwrapped_yaw, window_size);
   yaw_rate = math_utils::centralDiff(filtered_yaw, dt);
   filtered_yaw_rate = math_utils::movingAverageFilter(yaw_rate, window_size);
   pitch_rate = math_utils::centralDiff(pitch, dt);
@@ -248,6 +272,10 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
     interp_t[i] = i*dt;
   }
 
+  // wrap yaw again
+  wrapped_yaw = math_utils::wrapToPi(unwrapped_yaw);
+  filtered_yaw = math_utils::wrapToPi(filtered_yaw);
+
   // plt::clf();
   // plt::ion();
   // plt::named_plot("z", interp_t, z);
@@ -260,7 +288,21 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
   // plt::show();
   // plt::pause(0.001);
 
+  // plt::clf();
+  // plt::ion();
+  // // plt::named_plot("unwrapped yaw", interp_t, unwrapped_yaw);
+  // plt::named_plot("wrapped yaw", interp_t, wrapped_yaw);
+  // plt::named_plot("filtered yaw", interp_t, filtered_yaw);
+  // plt::named_plot("yaw rate", interp_t, yaw_rate);
+  // plt::named_plot("filtered yaw rate", interp_t, filtered_yaw_rate);
+  // plt::xlabel("t");
+  // plt::ylabel("z");
+  // plt::legend();
+  // plt::show();
+  // plt::pause(0.001);
+
   // Add full state data into the array
+  std::vector<double> x_vec, y_vec, z_vec;
   for (int i = 0; i < num_states; i++) {
     State body_state = interp_reduced_plan[i];
     body_state[2] = filtered_z[i];
@@ -269,7 +311,21 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
       filtered_yaw[i], roll_rate, filtered_pitch_rate[i], filtered_yaw_rate[i]);
 
     interp_full_plan.push_back(body_full_state);
+    x_vec.push_back(body_state[0]);
+    y_vec.push_back(body_state[1]);
+    z_vec.push_back(body_state[2]);
   }
+
+  // plt::clf();
+  // plt::ion();
+  // plt::named_plot("x", interp_t, x_vec);
+  // plt::named_plot("y", interp_t, y_vec);
+  // plt::named_plot("z", interp_t, z_vec);
+  // plt::xlabel("t");
+  // plt::ylabel("data");
+  // plt::legend();
+  // plt::show();
+  // plt::pause(0.001);
 }
 
 GRF getGRF(Action a,double t, const PlannerConfig &planner_config) {
@@ -292,6 +348,65 @@ GRF getGRF(Action a,double t, const PlannerConfig &planner_config) {
   
   return grf;
 
+}
+
+Eigen::Vector3d getAcceleration(State s, Action a, double t)
+{
+    Eigen::Vector3d acc;
+
+    double a_x_td = a[0]; // Acceleration in x at touchdown
+    double a_y_td = a[1];
+    double a_z_td = a[2];
+    double a_x_to = a[3]; // Acceleration in x at takeoff
+    double a_y_to = a[4];
+    double a_z_to = a[5];
+    double t_s = a[6];
+
+    acc(0) = a_x_td + (a_x_to - a_x_td)*t/(t_s);
+    acc(1) = a_y_td + (a_y_to - a_y_td)*t/(t_s);
+    acc(2) = a_z_td + (a_z_to - a_z_td)*t/(t_s);
+    return acc;
+}
+
+bool isValidYawRate(State s, Action a, double t, const PlannerConfig &planner_config)
+{
+  Eigen::Vector3d acc = getAcceleration(s, a, t);
+  State s_next = applyStance(s,a,t,planner_config);
+
+  double dy = s_next[4];
+  double dx = s_next[3];
+  double ddy = acc.y();
+  double ddx = acc.x();
+  double d_yaw;
+
+  // Don't limit if moving slowly
+  if ((dx*dx + dy*dy) <= 0.25)
+  {
+      d_yaw = 0;
+      // std::cout << "Not moving, pass" << std::endl;
+  } else {
+      d_yaw = (dy*ddx - dx*ddy)/(dx*dx + dy*dy);
+  }
+
+  
+
+  // std::cout << "dx: " << dx << std::endl;
+  // std::cout << "dy: " << dy << std::endl;
+  // std::cout << "ddx: " << ddx << std::endl;
+  // std::cout << "ddy: " << ddy << std::endl;
+  // std::cout << "d_yaw: " << d_yaw << std::endl << std::endl;
+
+  // throw std::runtime_error("Stop");
+
+
+  if (abs(d_yaw) > planner_config.DY_MAX)
+  {
+      return false;
+  } else {
+      return true;
+  }
+  // return (abs(d_yaw) <= DY_MAX);
+  // return true;
 }
 
 double getPitchFromState(State s, const PlannerConfig &planner_config) {
@@ -323,7 +438,7 @@ double getHeightFromState(State s, const PlannerConfig &planner_config) {
 void interpStateActionPair(State s, Action a,double t0,double dt, 
   std::vector<State> &interp_reduced_plan, std::vector<GRF> &interp_GRF,
   std::vector<double> &interp_t, std::vector<int> &interp_primitive_id,
-  const PlannerConfig &planner_config)
+  std::vector<double> &interp_length, const PlannerConfig &planner_config)
 {
   double t_s = a[6];
   double t_f = a[7];
@@ -332,8 +447,20 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
   for (double t = 0; t < t_s; t += dt)
   {
     interp_t.push_back(t0+t);
-    interp_reduced_plan.push_back(applyStance(s,a,t,planner_config));
+    State s_next = applyStance(s,a,t,planner_config);
+    if (!interp_reduced_plan.empty()) {
+      interp_length.push_back(interp_length.back() + poseDistance(s_next, interp_reduced_plan.back()));
+    }
+    interp_reduced_plan.push_back(s_next);
     interp_GRF.push_back(getGRF(a,t, planner_config));
+
+    if (!isValidYawRate(s,a,t,planner_config)) {
+      std::cout << "Invalid yaw detected!" << std::endl;
+      printStateNewline(s);
+      printActionNewline(a);
+      std::cout << "t = " << t<< std::endl;
+      std::cout << "t_f = " << t_f<< std::endl;
+    }
 
     if (t_f==0)
       interp_primitive_id.push_back(CONNECT_STANCE);
@@ -355,7 +482,9 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
   for (double t = 0; t < t_f; t += dt)
   {
     interp_t.push_back(t0+t_s+t);
-    interp_reduced_plan.push_back(applyFlight(s_takeoff, t));
+    State s_next = applyFlight(s_takeoff, t);
+    interp_length.push_back(interp_length.back() + poseDistance(s_next, interp_reduced_plan.back()));
+    interp_reduced_plan.push_back(s_next);
     GRF grf = {0,0,0};
     interp_GRF.push_back(grf);
     interp_primitive_id.push_back(FLIGHT);
@@ -375,21 +504,22 @@ void getInterpPlan(FullState start_state, std::vector<State> state_sequence,
   std::vector<Action> action_sequence,double dt, double t0,
   std::vector<FullState> &interp_full_plan, std::vector<GRF> &interp_GRF, 
   std::vector<double> &interp_t, std::vector<int> &interp_primitive_id,
-  const PlannerConfig &planner_config)
+  std::vector<double> &interp_length, const PlannerConfig &planner_config)
 {
   std::vector<State> interp_reduced_plan;
 
   // Loop through state action pairs, interp each and add to the path
   for (int i=0; i < action_sequence.size();i++)
   {
-    interpStateActionPair(state_sequence[i], action_sequence[i], t0, dt, 
-      interp_reduced_plan, interp_GRF, interp_t, interp_primitive_id, planner_config);
+    interpStateActionPair(state_sequence[i], action_sequence[i], t0, dt, interp_reduced_plan,
+      interp_GRF, interp_t, interp_primitive_id, interp_length, planner_config);
     t0 += (action_sequence[i][6] + action_sequence[i][7]);
   }
 
   // Add the final state in case it was missed by interp (GRF is undefined 
   // here so just copy the last element)
   interp_t.push_back(t0);
+  interp_length.push_back(interp_length.back() + poseDistance(state_sequence.back(), interp_reduced_plan.back()));
   interp_reduced_plan.push_back(state_sequence.back());
   interp_GRF.push_back(interp_GRF.back());
   interp_primitive_id.push_back(STANCE);
@@ -698,27 +828,34 @@ bool isValidState(State s, const PlannerConfig &planner_config, int phase)
   return true;
 }
 
-bool isValidStateActionPair(State s, Action a, const PlannerConfig &planner_config, 
-  State &s_new, double& t_new)
+bool isValidStateActionPair(State s, Action a, StateActionResult &result,
+  const PlannerConfig &planner_config)
 {
-  double t_s;
-  double t_f;
+  // Declare stance and flight times
+  double t_s = a[6];
+  double t_f = a[7];
 
-  t_s = a[6];
-  t_f = a[7];
+  // Declare states and lengths for upcoming validity and distance checks
+  State s_prev = s;
+  State s_next;
+  result.length = 0;
 
   for (double t = 0; t <= t_s; t += planner_config.KINEMATICS_RES)
   {
-    State s_check = applyStance(s,a,t,planner_config);
+    // Compute state to check
+    State s_next = applyStance(s,a,t,planner_config);
 
-    if (isValidState(s_check, planner_config, STANCE) == false)
+    if (isValidState(s_next, planner_config, STANCE) == false || (!isValidYawRate(s,a,t,planner_config)))
     {
-      s_new = applyStance(s,a,(1.0-planner_config.BACKUP_RATIO)*t,planner_config);
+      result.t_new = (1.0-planner_config.BACKUP_RATIO)*t;
+      result.s_new = applyStance(s,a,result.t_new,planner_config);
       // s_new = applyStance(s,a,(t - planner_config.BACKUP_TIME));
       return false;
     } else {
-      s_new = s_check;
-      t_new = t;
+      result.t_new = t;
+      result.s_new = s_next;
+      result.length += poseDistance(s_next, s_prev);
+      s_prev = s_next;
     }
   }
 
@@ -726,9 +863,11 @@ bool isValidStateActionPair(State s, Action a, const PlannerConfig &planner_conf
 
   for (double t = 0; t < t_f; t += planner_config.KINEMATICS_RES)
   {
-    State s_check = applyFlight(s_takeoff, t);
+    State s_next = applyFlight(s_takeoff, t);
+    result.length += poseDistance(s_next, s_prev);
+    s_prev = s_next;
 
-    if (isValidState(s_check, planner_config, FLIGHT) == false)
+    if (isValidState(s_next, planner_config, FLIGHT) == false)
       return false;
   }
 
@@ -738,8 +877,9 @@ bool isValidStateActionPair(State s, Action a, const PlannerConfig &planner_conf
   {
     return false;
   } else {
-    s_new = s_land;
-    t_new = t_s+t_f;
+    result.t_new = t_s+t_f;
+    result.s_new = s_land;
+    result.length += poseDistance(s_land, s_prev);
   }
 
   // If both stance and flight trajectories are entirely valid, return true
@@ -747,27 +887,33 @@ bool isValidStateActionPair(State s, Action a, const PlannerConfig &planner_conf
 }
 
 
-bool isValidStateActionPair(State s, Action a, const PlannerConfig &planner_config)
-{
-  State dummy_state;
-  double dummy_time;
-  return isValidStateActionPair(s, a, planner_config, dummy_state, dummy_time);
-}
+// bool isValidStateActionPair(State s, Action a, StateActionResult &result,
+//   const PlannerConfig &planner_config)
+// {
+//   State dummy_state;
+//   double dummy_time;
+//   return isValidStateActionPair(s, a, result, planner_config);
+// }
 
-bool isValidStateActionPairReverse(State s, Action a, const PlannerConfig &planner_config, 
-  State &s_new, double& t_new)
+bool isValidStateActionPairReverse(State s, Action a, StateActionResult &result,
+  const PlannerConfig &planner_config)
 {
-  double t_s;
-  double t_f;
+  // Declare stance and flight times
+  double t_s = a[6];
+  double t_f = a[7];
 
-  t_s = a[6];
-  t_f = a[7];
+  // Declare states and lengths for upcoming validity and distance checks
+  State s_prev = s;
+  State s_next;
+  result.length = 0;
 
   for (double t = 0; t < t_f; t += planner_config.KINEMATICS_RES)
   {
-    State s_check = applyFlight(s, -t);
+    State s_next = applyFlight(s, -t);
+    result.length += poseDistance(s_next, s_prev);
+    s_prev = s_next;
 
-    if (isValidState(s_check, planner_config, FLIGHT) == false)
+    if (isValidState(s_next, planner_config, FLIGHT) == false)
       return false;
   }
 
@@ -775,15 +921,18 @@ bool isValidStateActionPairReverse(State s, Action a, const PlannerConfig &plann
 
   for (double t = t_s; t >= 0; t -= planner_config.KINEMATICS_RES)
   {
-    State s_check = applyStanceReverse(s_takeoff,a,t,planner_config);
+    State s_next = applyStanceReverse(s_takeoff,a,t,planner_config);
 
-    if (isValidState(s_check, planner_config, STANCE) == false)
+    if (isValidState(s_next, planner_config, STANCE) == false || (!isValidYawRate(s,a,t,planner_config)))
     {
-      s_new = applyStance(s,a,t + planner_config.BACKUP_RATIO*(t_s - t), planner_config);
+      result.t_new = t + planner_config.BACKUP_RATIO*(t_s - t);
+      result.s_new = applyStance(s,a,result.t_new, planner_config);
       return false;
     } else {
-      s_new = s_check;
-      t_new = t_s - t;
+      result.t_new = t_s - t;
+      result.s_new = s_next;
+      result.length += poseDistance(s_next, s_prev);
+      s_prev = s_next;
     }
   }
 
@@ -793,19 +942,20 @@ bool isValidStateActionPairReverse(State s, Action a, const PlannerConfig &plann
   {
     return false;
   } else {
-    s_new = s_start;
-    t_new = t_s;
+    result.t_new = t_s;
+    result.s_new = s_start;
+    result.length += poseDistance(s_start, s_prev);
   }
   // If both stance and flight trajectories are entirely valid, return true
   return true;
 }
 
 
-bool isValidStateActionPairReverse(State s, Action a, const PlannerConfig &planner_config)
-{
-  State dummy_state;
-  double dummy_time;
-  return isValidStateActionPairReverse(s, a, planner_config, dummy_state, dummy_time);
-}
+// bool isValidStateActionPairReverse(State s, Action a, const PlannerConfig &planner_config)
+// {
+//   State dummy_state;
+//   double dummy_time;
+//   return isValidStateActionPairReverse(s, a, planner_config, dummy_state, dummy_time);
+// }
 
 }

@@ -40,7 +40,7 @@ fi
 git clone https://www.github.com/coin-or/coinbrew
 cd coinbrew
 chmod u+x coinbrew
-./coinbrew fetch Ipopt --no-prompt
+./coinbrew fetch Ipopt@3.14 --no-prompt
 cd ..
 if [ -d "./coinhsl" ] 
 then
@@ -51,4 +51,13 @@ else
 fi
 cd coinbrew
 sudo ./coinbrew build Ipopt --prefix=/usr/local --no-prompt --parallel-jobs=8
+cd ../..
+
+# Setup and build for rbdl
+cd rbdl-orb
+quiet_mkdir build
+cd build
+cmake -D CMAKE_BUILD_TYPE=Release -D RBDL_BUILD_ADDON_URDFREADER=ON ..
+make -j8
+sudo make install
 cd ../..

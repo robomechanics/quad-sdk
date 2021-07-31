@@ -2,16 +2,22 @@
 
     <include file="$(find spirit_utils)/launch/load_params.launch" />
 
-    <arg name="proxy" default="false"/>
-    <arg name="controller" default="inverse_dynamics"/>
-    <arg name="logging" default="false"/>
-    <arg name="plan" default="false"/>
-    <arg name="live_plot" default="false"/>
+    <arg name="proxy"           default="false"/>
+    <arg name="controller"      default="inverse_dynamics"/>
+    <arg name="logging"         default="false"/>
+    <arg name="plan"            default="false"/>
+    <arg name="live_plot"       default="false"/>
+    <arg name="map_input_type"  default="grid"/>
+    <arg name="world"           default="flat"/>
 
     <!-- Launch the mapping and visualization nodes -->
-    <include file="$(find spirit_utils)/launch/mapping.launch" />
+    <include file="$(find spirit_utils)/launch/mapping.launch" >
+        <arg name="input_type" value="$(arg map_input_type)" />
+        <arg name="world" value="$(arg world)" />
+    </include>
+
     <include file="$(find spirit_utils)/launch/visualization.launch">
-      <arg name="live_plot" value="$(arg live_plot)"/>
+        <arg name="live_plot" value="$(arg live_plot)"/>
     </include>
 
     <group if="$(arg logging)">
@@ -27,15 +33,13 @@
         </include>
     </group>
 
-    <!-- Launch the mblink converter unless using a proxy-->
-    <group unless="$(arg proxy)">
-        <node name="mblink_converter" pkg="mblink_converter" type="mblink_converter_node" output="screen"/>
-    </group>
-
     <group if="$(arg plan)">
         <include file="$(find spirit_utils)/launch/execute_plan.launch">
             <arg name="logging" value="$(arg logging)"/>
         </include>
     </group>
+
+    <!-- Start the heartbeat node -->
+    <node name="remote_heartbeat" pkg="spirit_utils" type="remote_heartbeat_node"/>
 
 </launch>

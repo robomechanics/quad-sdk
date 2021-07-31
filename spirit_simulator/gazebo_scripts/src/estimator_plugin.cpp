@@ -73,7 +73,8 @@ namespace gazebo{
     ignition::math::Vector3d lin_pos = pose.Pos();
     ignition::math::Quaternion<double> ang_pos = pose.Rot();
     ignition::math::Vector3d lin_vel = body_link->WorldLinearVel();
-    ignition::math::Vector3d ang_vel = body_link->WorldAngularVel();
+    // ignition::math::Vector3d ang_vel = body_link->WorldAngularVel();
+    ignition::math::Vector3d ang_vel = body_link->RelativeAngularVel();
 
     ignition::math::Pose3d toe0_pose = toe0->WorldPose();
     ignition::math::Vector3d toe0_pos = toe0_pose.Pos();

@@ -81,17 +81,6 @@ spiritNLP::spiritNLP(
    lambda0_ = Eigen::MatrixXd(g_ * N_, 1);
    lambda0_.fill(0);
 
-   for (int i = 0; i < N_; ++i)
-   {
-      w0_(2 + i * (n_ + m_), 0) = 29;
-      w0_(5 + i * (n_ + m_), 0) = 29;
-      w0_(8 + i * (n_ + m_), 0) = 29;
-      w0_(11 + i * (n_ + m_), 0) = 29;
-   }
-
-   // We will use the reference input as initial guess if solver fails
-   refresh_ = true;
-
    x_reference_ = Eigen::MatrixXd(n_, N_);
    x_reference_.fill(0);
 
@@ -746,11 +735,6 @@ void spiritNLP::finalize_solution(
 
    Eigen::Map<const Eigen::MatrixXd> lambda_matrix(lambda, m, 1);
    lambda0_ = lambda_matrix;
-
-   if (status != SUCCESS)
-   {
-      refresh_ = true;
-   }
 }
 
 void spiritNLP::shift_initial_guess()
@@ -795,39 +779,11 @@ void spiritNLP::update_solver(
    }
 
    // Update initial states
-   x_current_.col(0) = initial_state;
+   x_current_ = initial_state;
 
    // Update reference trajectory
    // Local planner has row as N and col as states
    // TODO: they may have different N?
-   if (with_tail_)
-   {
-      // With tail
-      x_reference_.block(0, 0, 6, N_) = ref_traj.transpose().topRows(6);
-      x_reference_.block(6, 0, 2, N_) = Eigen::MatrixXd::Zero(2, N_);
-      x_reference_.block(8, 0, 6, N_) = ref_traj.transpose().bottomRows(6);
-      x_reference_.block(14, 0, 2, N_) = Eigen::MatrixXd::Zero(2, N_);
-   }
-   else
-   {
-      // Only leg
-      x_reference_ = ref_traj.transpose();
-   }
-
-   if (refresh_)
-   {
-      for (int i = 0; i < N_ + 1; ++i)
-      {
-         if (with_tail_)
-         { // With tail
-            w0_.block(i * (n_ + m_) + m_, 0, n_ - 2, 1) = ref_traj.row(i).transpose();
-         }
-         else
-         { // Only leg
-            w0_.block(i * (n_ + m_) + m_, 0, n_, 1) = ref_traj.row(i).transpose();
-         }
-      }
-
-      refresh_ = false;
-   }
+   // TODO: it should specify with tail or not
+   x_reference_ = ref_traj.transpose();
 }

@@ -4,10 +4,11 @@ GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string joint_encoder_topic, imu_topic, mocap_topic, ground_truth_state_topic;
+  std::string joint_encoder_topic, imu_topic, vel_topic, mocap_topic, ground_truth_state_topic;
 
   spirit_utils::loadROSParam(nh_,"topics/joint_encoder",joint_encoder_topic);
   spirit_utils::loadROSParam(nh_,"topics/imu",imu_topic);
+  spirit_utils::loadROSParam(nh_,"topics/vel",vel_topic);
   spirit_utils::loadROSParam(nh_,"topics/mocap",mocap_topic);
   spirit_utils::loadROSParam(nh_,"topics/state/ground_truth",ground_truth_state_topic);
   spirit_utils::loadROSParam(nh_,"ground_truth_publisher/velocity_smoothing_weight",alpha_);
@@ -21,8 +22,12 @@ GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
   // Setup pubs and subs
   joint_encoder_sub_ = nh_.subscribe(joint_encoder_topic,1,&GroundTruthPublisher::jointEncoderCallback, this);
   imu_sub_ = nh_.subscribe(imu_topic,1,&GroundTruthPublisher::imuCallback, this);
+  vel_sub_ = nh_.subscribe(vel_topic,1,&GroundTruthPublisher::velCallback, this);
   mocap_sub_ = nh_.subscribe(mocap_topic,1,&GroundTruthPublisher::mocapCallback, this);
   ground_truth_state_pub_ = nh_.advertise<spirit_msgs::RobotState>(ground_truth_state_topic,1);
+
+  // Convert kinematics
+  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
 }
 
 void GroundTruthPublisher::mocapCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
@@ -53,33 +58,47 @@ void GroundTruthPublisher::imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
   last_imu_msg_ = msg;
 }
 
-spirit_msgs::RobotState GroundTruthPublisher::updateStep() {
-  spirit_msgs::RobotState new_state_est;
+void GroundTruthPublisher::velCallback(const geometry_msgs::TwistStamped::ConstPtr& msg) {
+  last_vel_msg_ = msg;
+}
 
-  spirit_utils::SpiritKinematics kinematics;
+bool GroundTruthPublisher::updateStep(spirit_msgs::RobotState &new_state_est) {
 
-  if (last_imu_msg_ != NULL)
+  bool fully_populated = true;
+
+  if (last_vel_msg_ != NULL)
   {
-    new_state_est.body.pose.pose.orientation = last_imu_msg_->orientation;
-    new_state_est.body.twist.twist.angular = last_imu_msg_->angular_velocity;
-
+    // new_state_est.body.pose.pose.orientation = last_imu_msg_->orientation;
+    new_state_est.body.twist.twist.angular.y = last_vel_msg_->twist.angular.x;
+    new_state_est.body.twist.twist.angular.x = last_vel_msg_->twist.angular.y;
+    new_state_est.body.twist.twist.angular.z = last_vel_msg_->twist.angular.z;
+  } else {
+    fully_populated = false;
+    ROS_WARN_THROTTLE(1, "No imu in /state/ground_truth");
   }
   if (last_mocap_msg_ != NULL)
   {
+    new_state_est.body.pose.pose.orientation = last_mocap_msg_->pose.orientation;
     new_state_est.body.pose.pose.position = last_mocap_msg_->pose.position;
     new_state_est.body.twist.twist.linear = mocap_vel_estimate_;
+  } else {
+    fully_populated = false;
+    ROS_WARN_THROTTLE(1, "No body pose (mocap) in /state/ground_truth");
   }
   if (last_joint_state_msg_ != NULL)
   {
     new_state_est.joints = *last_joint_state_msg_;
-    if (last_imu_msg_ != NULL)
+    if (last_vel_msg_ != NULL)
     {
-      spirit_utils::fkRobotState(kinematics, new_state_est.body,new_state_est.joints, new_state_est.feet);
+      spirit_utils::fkRobotState(*kinematics_, new_state_est.body,new_state_est.joints, new_state_est.feet);
     }
+  } else {
+    fully_populated = false;
+    ROS_WARN_THROTTLE(1, "No joints or feet in /state/ground_truth");
   }
 
   new_state_est.header.stamp = ros::Time::now();
-  return new_state_est;
+  return fully_populated;
 }
 
 void GroundTruthPublisher::spin() {
@@ -91,11 +110,13 @@ void GroundTruthPublisher::spin() {
     ros::spinOnce(); 
 
     // Compute new state estimate
-    spirit_msgs::RobotState new_state_est = this->updateStep();
+    spirit_msgs::RobotState new_state_est;
+    bool fully_populated = this->updateStep(new_state_est);
 
-    // Publish new state estimate
-    ground_truth_state_pub_.publish(new_state_est);
-
+    // Publish new state estimate if fully populated
+    if (fully_populated) {
+      ground_truth_state_pub_.publish(new_state_est);
+    }
     // Store new state estimate for next iteration
     last_state_est_ = new_state_est;
 

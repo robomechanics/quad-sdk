@@ -4,8 +4,8 @@ using namespace spirit_utils;
 
 Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
-SpiritKinematics::SpiritKinematics() {
-  
+SpiritKinematics::SpiritKinematics()
+{
   legbase_offsets_.resize(4);
   legbase_offsets_[0] = legbase_offset_0_;
   legbase_offsets_[1] = legbase_offset_1_;
@@ -13,16 +13,44 @@ SpiritKinematics::SpiritKinematics() {
   legbase_offsets_[3] = legbase_offset_3_;
 
   g_body_legbases_.resize(4);
-  for (int leg_index = 0; leg_index < 4; leg_index++) {
-
-      // Compute transforms
-    g_body_legbases_[leg_index] = createAffineMatrix(legbase_offsets_[leg_index], 
-      Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()));
+  for (int leg_index = 0; leg_index < 4; leg_index++)
+  {
+    // Compute transforms
+    g_body_legbases_[leg_index] = createAffineMatrix(legbase_offsets_[leg_index],
+                                                     Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()));
   }
+
+  std::string robot_description_string;
+  if (!ros::param::get("robot_description", robot_description_string))
+  {
+    std::cerr << "Error loading robot_description " << std::endl;
+    abort();
+  }
+
+  model_ = new RigidBodyDynamics::Model();
+  if (!RigidBodyDynamics::Addons::URDFReadFromString(robot_description_string.c_str(), model_, true))
+  {
+    std::cerr << "Error loading model " << std::endl;
+    abort();
+  }
+
+  body_name_list_ = {"toe0", "toe1", "toe2", "toe3"};
+
+  body_id_list_.resize(4);
+  for (size_t i = 0; i < body_name_list_.size(); i++)
+  {
+    body_id_list_.at(i) = model_->GetBodyId(body_name_list_.at(i).c_str());
+  }
+
+  leg_idx_list_.resize(4);
+  std::iota(leg_idx_list_.begin(), leg_idx_list_.end(), 0);
+  std::sort(leg_idx_list_.begin(), leg_idx_list_.end(), [&](int i, int j)
+            { return body_id_list_.at(i) < body_id_list_.at(j); });
 }
 
-Eigen::Matrix4d SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans, 
-    Eigen::Vector3d rpy) const{
+Eigen::Matrix4d SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans,
+                                                     Eigen::Vector3d rpy) const
+{
 
   Eigen::Transform<double, 3, Eigen::Affine> t;
   t = Eigen::Translation<double, 3>(trans);
@@ -33,8 +61,9 @@ Eigen::Matrix4d SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans,
   return t.matrix();
 }
 
-Eigen::Matrix4d SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans, 
-    Eigen::AngleAxisd rot) const{
+Eigen::Matrix4d SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans,
+                                                     Eigen::AngleAxisd rot) const
+{
 
   Eigen::Transform<double, 3, Eigen::Affine> t;
   t = Eigen::Translation<double, 3>(trans);
@@ -43,87 +72,102 @@ Eigen::Matrix4d SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans,
   return t.matrix();
 }
 
-double SpiritKinematics::getJointLowerLimit(int joint_index) const{
+double SpiritKinematics::getJointLowerLimit(int joint_index) const
+{
   return joint_min_[joint_index];
 }
 
-double SpiritKinematics::getJointUpperLimit(int joint_index) const {
-  return joint_max_[joint_index]; 
+double SpiritKinematics::getJointUpperLimit(int joint_index) const
+{
+  return joint_max_[joint_index];
 }
 
-double SpiritKinematics::getLinkLength(int leg_index,int link_index) const{
-  switch(link_index) {
-    case 0: return l0_vec_[leg_index];
-    case 1: return l1_;
-    case 2: return l2_;
-    default: throw std::runtime_error("Invalid link index");
+double SpiritKinematics::getLinkLength(int leg_index, int link_index) const
+{
+  switch (link_index)
+  {
+  case 0:
+    return l0_vec_[leg_index];
+  case 1:
+    return l1_;
+  case 2:
+    return l2_;
+  default:
+    throw std::runtime_error("Invalid link index");
   }
 }
 
 void SpiritKinematics::transformBodyToWorld(Eigen::Vector3d body_pos,
-  Eigen::Vector3d body_rpy, Eigen::Matrix4d transform_body, Eigen::Matrix4d &transform_world) const{
+                                            Eigen::Vector3d body_rpy, Eigen::Matrix4d transform_body, Eigen::Matrix4d &transform_world) const
+{
 
   // Compute transform from world to body frame
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
 
   // Get the desired transform in the world frame
-  transform_world = g_world_body*transform_body;
+  transform_world = g_world_body * transform_body;
 }
 
 void SpiritKinematics::transformWorldToBody(Eigen::Vector3d body_pos,
-  Eigen::Vector3d body_rpy, Eigen::Matrix4d transform_world, Eigen::Matrix4d &transform_body) const{
+                                            Eigen::Vector3d body_rpy, Eigen::Matrix4d transform_world, Eigen::Matrix4d &transform_body) const
+{
 
   // Compute transform from world to body frame
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
 
   // Compute the desired transform in the body frame
-  transform_body = g_world_body.inverse()*transform_world;
+  transform_body = g_world_body.inverse() * transform_world;
 }
 
 void SpiritKinematics::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
-  Eigen::Vector3d body_rpy, Eigen::Matrix4d &g_world_legbase) const {
+                                 Eigen::Vector3d body_rpy, Eigen::Matrix4d &g_world_legbase) const
+{
 
   // Compute transforms
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
 
   // Compute transform for leg base relative to the world frame
-  g_world_legbase = g_world_body*g_body_legbases_[leg_index];
+  g_world_legbase = g_world_body * g_body_legbases_[leg_index];
 }
 
 void SpiritKinematics::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
-  Eigen::Vector3d body_rpy, Eigen::Vector3d &leg_base_pos_world) const {
+                                 Eigen::Vector3d body_rpy, Eigen::Vector3d &leg_base_pos_world) const
+{
 
   Eigen::Matrix4d g_world_legbase;
   legBaseFK(leg_index, body_pos, body_rpy, g_world_legbase);
 
-  leg_base_pos_world = g_world_legbase.block<3,1>(0,3);
+  leg_base_pos_world = g_world_legbase.block<3, 1>(0, 3);
 }
 
-void SpiritKinematics::nominalFootstepFK(int leg_index, Eigen::Vector3d body_pos,
-  Eigen::Vector3d body_rpy, Eigen::Vector3d &nominal_footstep_pos_world) const {
+void SpiritKinematics::nominalHipFK(int leg_index, Eigen::Vector3d body_pos,
+                                    Eigen::Vector3d body_rpy, Eigen::Vector3d &nominal_footstep_pos_world) const
+{
 
   // Compute transforms
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
 
   // Compute transform from body to legbase but offset by l0
-  Eigen::Matrix4d g_body_nominal_footstep = g_body_legbases_[leg_index];
-  g_body_nominal_footstep(1,3) += l0_vec_[leg_index];
+  Eigen::Matrix4d g_body_nominal_hip = g_body_legbases_[leg_index];
+  g_body_nominal_hip(1, 3) += l0_vec_[leg_index];
 
   // Compute transform for offset leg base relative to the world frame
-  Eigen::Matrix4d g_world_nominal_footstep = g_world_body*g_body_nominal_footstep;
+  Eigen::Matrix4d g_world_nominal_footstep = g_world_body * g_body_nominal_hip;
 
-  nominal_footstep_pos_world = g_world_nominal_footstep.block<3,1>(0,3);
+  nominal_footstep_pos_world = g_world_nominal_footstep.block<3, 1>(0, 3);
 }
 
-void SpiritKinematics::bodyToFootFK(int leg_index, 
-  Eigen::Vector3d joint_state, Eigen::Matrix4d &g_body_foot) const {
+void SpiritKinematics::bodyToFootFK(int leg_index,
+                                    Eigen::Vector3d joint_state, Eigen::Matrix4d &g_body_foot) const
+{
 
-  if (leg_index > (legbase_offsets_.size()-1) || leg_index<0) {
+  if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0)
+  {
     throw std::runtime_error("Leg index is outside valid range");
   }
 
   // Define hip offset
-  Eigen::Vector3d hip_offset = {0,l0_vec_[leg_index],0};
+  Eigen::Vector3d hip_offset = {0, l0_vec_[leg_index], 0};
 
   // Initialize transforms
   Eigen::Matrix4d g_legbase_abad;
@@ -132,43 +176,45 @@ void SpiritKinematics::bodyToFootFK(int leg_index,
   Eigen::Matrix4d g_knee_foot;
 
   g_legbase_abad = createAffineMatrix(abad_offset_,
-    Eigen::AngleAxisd(joint_state[0], Eigen::Vector3d::UnitX()));
+                                      Eigen::AngleAxisd(joint_state[0], Eigen::Vector3d::UnitX()));
 
   g_abad_hip = createAffineMatrix(hip_offset,
-    Eigen::AngleAxisd(joint_state[1], -Eigen::Vector3d::UnitY()));
+                                  Eigen::AngleAxisd(joint_state[1], -Eigen::Vector3d::UnitY()));
 
   g_hip_knee = createAffineMatrix(knee_offset_,
-    Eigen::AngleAxisd(joint_state[2], Eigen::Vector3d::UnitY()));
+                                  Eigen::AngleAxisd(joint_state[2], Eigen::Vector3d::UnitY()));
 
   g_knee_foot = createAffineMatrix(foot_offset_,
-    Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()));
+                                   Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()));
 
   // Get foot transform in world frame
-  g_body_foot = g_body_legbases_[leg_index]*g_legbase_abad*
-      g_abad_hip*g_hip_knee*g_knee_foot;
-
+  g_body_foot = g_body_legbases_[leg_index] * g_legbase_abad *
+                g_abad_hip * g_hip_knee * g_knee_foot;
 }
 
-void SpiritKinematics::bodyToFootFK(int leg_index, 
-  Eigen::Vector3d joint_state, Eigen::Vector3d &foot_pos_body) const {
+void SpiritKinematics::bodyToFootFK(int leg_index,
+                                    Eigen::Vector3d joint_state, Eigen::Vector3d &foot_pos_body) const
+{
 
   Eigen::Matrix4d g_body_foot;
   SpiritKinematics::bodyToFootFK(leg_index, joint_state, g_body_foot);
 
   // Extract cartesian position of foot
-  foot_pos_body = g_body_foot.block<3,1>(0,3);
+  foot_pos_body = g_body_foot.block<3, 1>(0, 3);
 }
 
-void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos, 
-  Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state, 
-  Eigen::Matrix4d &g_world_foot) const {
+void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos,
+                             Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state,
+                             Eigen::Matrix4d &g_world_foot) const
+{
 
-  if (leg_index > (legbase_offsets_.size()-1) || leg_index<0) {
+  if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0)
+  {
     throw std::runtime_error("Leg index is outside valid range");
   }
 
   // Define hip offset
-  Eigen::Vector3d hip_offset = {0,l0_vec_[leg_index],0};
+  Eigen::Vector3d hip_offset = {0, l0_vec_[leg_index], 0};
 
   // Initialize transforms
   Eigen::Matrix4d g_body_legbase;
@@ -177,37 +223,37 @@ void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos,
   Eigen::Matrix4d g_hip_knee;
   Eigen::Matrix4d g_knee_foot;
 
-    // Compute transforms
+  // Compute transforms
   Eigen::Matrix4d g_world_legbase;
   legBaseFK(leg_index, body_pos, body_rpy, g_world_legbase);
 
   g_legbase_abad = createAffineMatrix(abad_offset_,
-    Eigen::AngleAxisd(joint_state[0], Eigen::Vector3d::UnitX()));
+                                      Eigen::AngleAxisd(joint_state[0], Eigen::Vector3d::UnitX()));
 
   g_abad_hip = createAffineMatrix(hip_offset,
-    Eigen::AngleAxisd(joint_state[1], -Eigen::Vector3d::UnitY()));
+                                  Eigen::AngleAxisd(joint_state[1], -Eigen::Vector3d::UnitY()));
 
   g_hip_knee = createAffineMatrix(knee_offset_,
-    Eigen::AngleAxisd(joint_state[2], Eigen::Vector3d::UnitY()));
+                                  Eigen::AngleAxisd(joint_state[2], Eigen::Vector3d::UnitY()));
 
   g_knee_foot = createAffineMatrix(foot_offset_,
-    Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()));
+                                   Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()));
 
   // Get foot transform in world frame
-  g_world_foot = g_world_legbase*g_legbase_abad*
-      g_abad_hip*g_hip_knee*g_knee_foot;
-
+  g_world_foot = g_world_legbase * g_legbase_abad *
+                 g_abad_hip * g_hip_knee * g_knee_foot;
 }
 
-void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos, 
-  Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state, 
-  Eigen::Vector3d &foot_pos_world) const {
+void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos,
+                             Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state,
+                             Eigen::Vector3d &foot_pos_world) const
+{
 
   Eigen::Matrix4d g_world_foot;
   legFK(leg_index, body_pos, body_rpy, joint_state, g_world_foot);
 
   // Extract cartesian position of foot
-  foot_pos_world = g_world_foot.block<3,1>(0,3);
+  foot_pos_world = g_world_foot.block<3, 1>(0, 3);
 
   // std::cout << "World to legbase\n" << g_world_legbase.format(CleanFmt)
   //   << std::endl;
@@ -225,11 +271,13 @@ void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos,
   //   << std::endl;
 }
 
-void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos, 
-  Eigen::Vector3d body_rpy, Eigen::Vector3d foot_pos_world,
-  Eigen::Vector3d &joint_state) const {
+void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
+                             Eigen::Vector3d body_rpy, Eigen::Vector3d foot_pos_world,
+                             Eigen::Vector3d &joint_state) const
+{
 
-  if (leg_index > (legbase_offsets_.size()-1) || leg_index<0) {
+  if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0)
+  {
     throw std::runtime_error("Leg index is outside valid range");
   }
 
@@ -247,11 +295,11 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
   legBaseFK(leg_index, body_pos, body_rpy, g_world_legbase);
 
   g_world_foot = createAffineMatrix(foot_pos_world, Eigen::AngleAxisd(
-      0, Eigen::Vector3d::UnitY()));
+                                                        0, Eigen::Vector3d::UnitY()));
 
   // Compute foot position relative to the leg base in cartesian coordinates
-  g_legbase_foot = g_world_legbase.inverse()*g_world_foot;
-  foot_pos_rel = g_legbase_foot.block<3,1>(0,3);
+  g_legbase_foot = g_world_legbase.inverse() * g_world_foot;
+  foot_pos_rel = g_legbase_foot.block<3, 1>(0, 3);
 
   // Extract coordinates and declare joint variables
   double x = foot_pos_rel[0];
@@ -261,133 +309,270 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
   double q1;
   double q2;
 
-  // IK closed-form solution based on Anthropomorphic Arm
-  double tmp_q2 = ((l0*l0 + l1_*l1_ + l2_*l2_) - (x*x + y*y + z*z))/(2*l1_*l2_);
-  tmp_q2 = std::max(std::min(tmp_q2, 1.), -1.);
-
-  // Two possible solutions, acos(tmp_q2) and -acos(tmp_q2), but q2 should be always greater or equal to 0, std::acos returns [0, pi]
-  q2 = std::acos(tmp_q2); 
-
-  double tmp_q1 = y*y + z*z - l0*l0;
-  tmp_q1 = std::max(tmp_q1, 0.);
-
-  // Two possible solutions since square root could be positive or negative
-  double s11 = std::sqrt(tmp_q1)*(l1_ - l2_*std::cos(q2)) + x*l2_*std::sin(q2);
-  double c11 = std::sqrt(tmp_q1)*l2_*std::sin(q2) - x*(l1_ - l2_*std::cos(q2));
-  double s12 = -std::sqrt(tmp_q1)*(l1_ - l2_*std::cos(q2)) + x*l2_*std::sin(q2);
-  double c12 = -std::sqrt(tmp_q1)*l2_*std::sin(q2) - x*(l1_ - l2_*std::cos(q2));
-
-  double q11 = std::atan2(s11, c11);
-  double q12 = std::atan2(s12, c12);
-
-  // We take the smaller one
-  if (std::abs(q11) < std::abs(q12))
+  // Start IK, check foot pos is at least l0 away from leg base, clamp otherwise
+  double temp = l0 / sqrt(z * z + y * y);
+  if (abs(temp) > 1)
   {
-    q1 = q11;
+    ROS_DEBUG_THROTTLE(0.5, "Foot too close, choosing closest alternative\n");
+    temp = std::max(std::min(temp, 1.0), -1.0);
+  }
+
+  // Compute both solutions of q0, use hip-above-knee if z<0 (preferred)
+  // Store the inverted solution in case hip limits are exceeded
+  double q0_inverted;
+  if (z > 0)
+  {
+    q0 = -acos(temp) + atan2(z, y);
+    q0_inverted = acos(temp) + atan2(z, y);
+  }
+  else
+  {
+    q0 = acos(temp) + atan2(z, y);
+    q0_inverted = -acos(temp) + atan2(z, y);
+  }
+
+  // Make sure abad is within joint limits, clamp otherwise
+  if (q0 > joint_max_[0] || q0 < joint_min_[0])
+  {
+    q0 = std::max(std::min(q0, joint_max_[0]), joint_min_[0]);
+    ROS_DEBUG_THROTTLE(0.5, "Abad limits exceeded, clamping to %5.3f \n", q0);
+  }
+
+  // Rotate to ab-ad fixed frame
+  double z_body_frame = z;
+  z = -sin(q0) * y + cos(q0) * z_body_frame;
+
+  // Check reachibility for hip
+  double acos_eps = 1.0;
+  double temp2 = (l1_ * l1_ + x * x + z * z - l2_ * l2_) / (2 * l1_ * sqrt(x * x + z * z));
+  if (abs(temp2) > acos_eps)
+  {
+    ROS_DEBUG_THROTTLE(0.5, "Foot location too far for hip, choosing closest"
+                            " alternative \n");
+    temp2 = std::max(std::min(temp2, acos_eps), -acos_eps);
+  }
+
+  // Check reachibility for knee
+  double temp3 = (l1_ * l1_ + l2_ * l2_ - x * x - z * z) / (2 * l1_ * l2_);
+  if (temp3 > acos_eps || temp3 < -acos_eps)
+  {
+    ROS_DEBUG_THROTTLE(0.5, "Foot location too far for knee, choosing closest"
+                            " alternative \n");
+    temp3 = std::max(std::min(temp3, acos_eps), -acos_eps);
   }
   else
   {
     q1 = q12;
   }
 
-  double tmp_q0 = l1_*std::sin(q1) - l2_*std::sin(q1 - q2);
-  double s0 = y*tmp_q0 + z*l0;
-  double c0 = y*l0 - z*tmp_q0;
+  // Compute joint angles
+  q1 = 0.5 * M_PI + atan2(x, -z) - acos(temp2);
+  q2 = acos(temp3);
 
-  q0 = std::atan2(s0, c0);
+  // Make sure hip is within joint limits (try other direction if fails)
+  if (q1 > joint_max_[1] || q1 < joint_min_[1])
+  {
+    ROS_DEBUG_THROTTLE(0.5, "Hip limits exceeded, using inverted config\n");
 
-  // Clamp the results
-  q0 = std::max(std::min(q0,joint_max_[0]),joint_min_[0]);
-  q1 = std::max(std::min(q1,joint_max_[1]),joint_min_[1]);
-  q2 = std::max(std::min(q2,joint_max_[2]),joint_min_[2]);
+    q0 = q0_inverted;
+    z = -sin(q0) * y + cos(q0) * z_body_frame;
+    q1 = 0.5 * M_PI + atan2(x, -z) - acos(temp2);
+    q2 = acos(temp3);
 
-  // // Start IK, check foot pos is at least l0 away from leg base, clamp otherwise
-  // double temp = l0/sqrt(z*z+y*y);
-  // if (abs(temp) > 1) {
-  //   ROS_DEBUG_THROTTLE(0.5,"Foot too close, choosing closest alternative\n");
-  //   temp = std::max(std::min(temp,1.0),-1.0);
-  // }
+    if (q1 > joint_max_[1] || q1 < joint_min_[1])
+    {
+      q1 = std::max(std::min(q1, joint_max_[1]), joint_min_[1]);
+      ROS_DEBUG_THROTTLE(0.5, "Hip limits exceeded, clamping to %5.3f \n", q1);
+    }
+  }
 
-  // // Compute both solutions of q0, use hip-above-knee if z<0 (preferred)
-  // // Store the inverted solution in case hip limits are exceeded
-  // double q0_inverted;
-  // if (z>0) {
-  //   q0 = -acos(temp) + atan2(z,y);
-  //   q0_inverted = acos(temp) + atan2(z,y);
-  // } else {
-  //   q0 = acos(temp) + atan2(z,y);
-  //   q0_inverted = -acos(temp) + atan2(z,y);
-  // }
+  // Make sure knee is within joint limits
+  if (q2 > joint_max_[2] || q2 < joint_min_[2])
+  {
+    q2 = std::max(std::min(q2, joint_max_[2]), joint_min_[2]);
+    ROS_DEBUG_THROTTLE(0.5, "Knee limit exceeded, clamping to %5.3f \n", q2);
+  }
 
-  // // Make sure abad is within joint limits, clamp otherwise
-  // if (q0 > joint_max_[0] || q0 < joint_min_[0]) {
-  //   q0 = std::max(std::min(q0,joint_max_[0]),joint_min_[0]);
-  //   ROS_DEBUG_THROTTLE(0.5,"Abad limits exceeded, clamping to %5.3f \n", q0);
-  // }
+  // q1 is undefined if q2=0, resolve this
+  if (q2 == 0)
+  {
+    q1 = 0;
+    ROS_DEBUG_THROTTLE(0.5, "Hip value undefined (in singularity), setting to"
+                            " %5.3f \n",
+                       q1);
+  }
 
-  // // Rotate to ab-ad fixed frame
-  // double z_body_frame = z;
-  // z = -sin(q0)*y + cos(q0)*z_body_frame;
+  if (z_body_frame - l0 * sin(q0) > 0)
+  {
+    ROS_DEBUG_THROTTLE(0.5, "IK solution is in hip-inverted region! Beware!\n");
+  }
 
-  // // Check reachibility for hip
-  // double acos_eps = 1.0;
-  // double temp2 = (l1_*l1_ + x*x + z*z - l2_*l2_)/(2*l1_*sqrt(x*x+z*z));
-  // if (abs(temp2) > acos_eps) {
-  //   ROS_DEBUG_THROTTLE(0.5,"Foot location too far for hip, choosing closest"
-  //     " alternative \n");
-  //   temp2 = std::max(std::min(temp2,acos_eps),-acos_eps);
-  // }
-
-  // // Check reachibility for knee
-  // double temp3 = (l1_*l1_ + l2_*l2_ - x*x - z*z)/(2*l1_*l2_);
-  // if (temp3 > acos_eps  || temp3 < -acos_eps) {
-  //   ROS_DEBUG_THROTTLE(0.5,"Foot location too far for knee, choosing closest"
-  //     " alternative \n");
-  //   temp3 = std::max(std::min(temp3,acos_eps),-acos_eps);
-  // }
-
-  // // Compute joint angles
-  // q1 = 0.5*M_PI + atan2(x,-z) - acos(temp2);
-  // q2 = acos(temp3);
-
-  // // Make sure hip is within joint limits (try other direction if fails)
-  // if (q1 > joint_max_[1] || q1 < joint_min_[1]) {
-  //   ROS_DEBUG_THROTTLE(0.5,"Hip limits exceeded, using inverted config\n");
-
-  //   q0 = q0_inverted;
-  //   z = -sin(q0)*y + cos(q0)*z_body_frame;
-  //   q1 = 0.5*M_PI + atan2(x,-z) - acos(temp2);
-  //   q2 = acos(temp3);
-
-  //   if (q1 > joint_max_[1] || q1 < joint_min_[1]) {
-  //     q1 = std::max(std::min(q1,joint_max_[1]),joint_min_[1]);
-  //     ROS_DEBUG_THROTTLE(0.5,"Hip limits exceeded, clamping to %5.3f \n", q1);
-  //   }
-  // }
-
-  // // Make sure knee is within joint limits
-  // if (q2 > joint_max_[2] || q2 < joint_min_[2]) {
-  //   q2 = std::max(std::min(q2,joint_max_[2]),joint_min_[2]);
-  //   ROS_DEBUG_THROTTLE(0.5,"Knee limit exceeded, clamping to %5.3f \n", q2);
-  // }
-
-  // // q1 is undefined if q2=0, resolve this
-  // if (q2==0) {
-  //   q1 = 0;
-  //   ROS_DEBUG_THROTTLE(0.5,"Hip value undefined (in singularity), setting to"
-  //     " %5.3f \n", q1);
-  // }
-
-  // if (z_body_frame - l0*sin(q0) > 0) {
-  //   ROS_DEBUG_THROTTLE(0.5,"IK solution is in hip-inverted region! Beware!\n");
-  // }
-
-  joint_state = {q0,q1,q2};
+  joint_state = {q0, q1, q2};
 }
 
-// void SpiritKinematics::legIKVel(int leg_index, Eigen::Vector3d body_state, 
+// void SpiritKinematics::legIKVel(int leg_index, Eigen::Vector3d body_state,
 //   Eigen::Vector3d foot_vel_world, Eigen::Vector3d &joint_vel) const {
 
 //   // Compute IKVel here
 
 // }
+
+void SpiritKinematics::getJacobianGenCoord(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const
+{
+  this->getJacobianBodyAngVel(state, jacobian);
+
+  // RBDL uses Jacobian w.r.t. floating base angular velocity in body frame, which is multiplied by Jacobian to map it to Euler angle change rate here
+  for (size_t i = 0; i < 4; i++)
+  {
+    Eigen::MatrixXd transform_jac(3, 3);
+    transform_jac << 1, 0, -sin(state(16)),
+        0, cos(state(15)), cos(state(16)) * sin(state(15)),
+        0, -sin(state(15)), cos(state(15)) * cos(state(16));
+    jacobian.block(3 * i, 15, 3, 3) = jacobian.block(3 * i, 15, 3, 3) * transform_jac;
+  }
+}
+
+void SpiritKinematics::getJacobianBodyAngVel(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const
+{
+  assert(state.size() == 18);
+
+  // RBDL state vector has the floating base state in the front and the joint state in the back
+  // When reading from URDF, the order of the legs is 2301, which should be corrected by sorting the bodyID
+  Eigen::VectorXd q(19);
+  q.setZero();
+
+  q.head(3) = state.segment(12, 3);
+
+  tf2::Quaternion quat_tf;
+  quat_tf.setRPY(state(15), state(16), state(17));
+  q(3) = quat_tf.getX();
+  q(4) = quat_tf.getY();
+  q(5) = quat_tf.getZ();
+
+  // RBDL uses quaternion for floating base direction, but w is placed at the end of the state vector
+  q(18) = quat_tf.getW();
+
+  for (size_t i = 0; i < leg_idx_list_.size(); i++)
+  {
+    q.segment(6 + 3 * i, 3) = state.segment(3 * leg_idx_list_.at(i), 3);
+  }
+
+  jacobian.setZero();
+
+  for (size_t i = 0; i < body_id_list_.size(); i++)
+  {
+    Eigen::MatrixXd jac_block(3, 18);
+    jac_block.setZero();
+    RigidBodyDynamics::CalcPointJacobian(*model_, q, body_id_list_.at(i), Eigen::Vector3d::Zero(), jac_block);
+
+    for (size_t j = 0; j < 4; j++)
+    {
+      jacobian.block(3 * i, 3 * leg_idx_list_.at(j), 3, 3) = jac_block.block(0, 6 + 3 * j, 3, 3);
+    }
+    jacobian.block(3 * i, 12, 3, 6) = jac_block.block(0, 0, 3, 6);
+  }
+}
+
+void SpiritKinematics::getJacobianWorldAngVel(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const
+{
+  this->getJacobianBodyAngVel(state, jacobian);
+
+  // RBDL uses Jacobian w.r.t. floating base angular velocity in body frame, which is multiplied by rotation matrix to map it to angular velocity in world frame here
+  for (size_t i = 0; i < 4; i++)
+  {
+    Eigen::Matrix3d rot;
+    this->getRotationMatrix(state.segment(15, 3), rot);
+    jacobian.block(3 * i, 15, 3, 3) = jacobian.block(3 * i, 15, 3, 3) * rot;
+  }
+}
+
+void SpiritKinematics::getRotationMatrix(const Eigen::VectorXd &rpy, Eigen::Matrix3d &rot) const
+{
+  rot = Eigen::AngleAxisd(rpy(2), Eigen::Vector3d::UnitZ()) *
+        Eigen::AngleAxisd(rpy(1), Eigen::Vector3d::UnitY()) *
+        Eigen::AngleAxisd(rpy(0), Eigen::Vector3d::UnitX());
+}
+
+void SpiritKinematics::compInvDyn(const Eigen::VectorXd &state_pos,
+                                  const Eigen::VectorXd &state_vel,
+                                  const Eigen::VectorXd &foot_acc,
+                                  const Eigen::VectorXd &grf,
+                                  Eigen::VectorXd &tau) const
+{
+  // Convert q, q_dot into RBDL order
+  Eigen::VectorXd q(19), q_dot(18);
+  q.setZero();
+  q_dot.setZero();
+
+  q.head(3) = state_pos.segment(12, 3);
+  q_dot.head(3) = state_vel.segment(12, 3);
+
+  tf2::Quaternion quat_tf;
+  quat_tf.setRPY(state_pos(15), state_pos(16), state_pos(17));
+  q(3) = quat_tf.getX();
+  q(4) = quat_tf.getY();
+  q(5) = quat_tf.getZ();
+
+  // RBDL uses quaternion for floating base direction, but w is placed at the end of the state vector
+  q(18) = quat_tf.getW();
+
+  q_dot.segment(3, 3) = state_vel.segment(15, 3);
+
+  for (size_t i = 0; i < leg_idx_list_.size(); i++)
+  {
+    q.segment(6 + 3 * i, 3) = state_pos.segment(3 * leg_idx_list_.at(i), 3);
+    q_dot.segment(6 + 3 * i, 3) = state_vel.segment(3 * leg_idx_list_.at(i), 3);
+  }
+
+  // Compute jacobians
+  Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
+  jacobian.setZero();
+  for (size_t i = 0; i < body_id_list_.size(); i++)
+  {
+    Eigen::MatrixXd jac_block(3, 18);
+    jac_block.setZero();
+    RigidBodyDynamics::CalcPointJacobian(*model_, q, body_id_list_.at(i), Eigen::Vector3d::Zero(), jac_block);
+    jacobian.block(3 * i, 0, 3, 18) = jac_block;
+  }
+
+  // Compute the equivalent force in generalized coordinates
+  Eigen::VectorXd tau_grf = jacobian.transpose() * grf;
+
+  // Compute EOM
+  Eigen::MatrixXd M(18, 18);
+  M.setZero();
+  Eigen::VectorXd N(18);
+  RigidBodyDynamics::CompositeRigidBodyAlgorithm(*model_, q, M);
+  RigidBodyDynamics::NonlinearEffects(*model_, q, q_dot, N);
+
+  // Compute q_ddot caused by grf
+  Eigen::VectorXd q_ddot_grf(18);
+  q_ddot_grf = M.colPivHouseholderQr().solve(tau_grf - N);
+
+  // Compute toe acceleration caused by grf
+  Eigen::VectorXd foot_acc_grf(12);
+  for (size_t i = 0; i < 4; i++)
+  {
+    foot_acc_grf.segment(3 * i, 3) = RigidBodyDynamics::CalcPointAcceleration(*model_, q, q_dot, q_ddot_grf, body_id_list_.at(i), Eigen::Vector3d::Zero());
+  }
+
+  // Compute the toe acceleration difference
+  Eigen::VectorXd foot_acc_delta = foot_acc - foot_acc_grf;
+  Eigen::VectorXd q_ddot_delta = jacobian.block(0, 6, 12, 12).colPivHouseholderQr().solve(foot_acc_delta);
+
+  // Perform inverse dynamics
+  Eigen::VectorXd tau_rbdl(12);
+  tau_rbdl = M.block(6, 6, 12, 12) * q_ddot_delta + N.tail(12);
+
+  // Convert the order back
+  for (size_t i = 0; i < 4; i++)
+  {
+    tau.segment(3 * leg_idx_list_.at(i), 3) = tau_rbdl.segment(3 * i, 3);
+  }
+
+  // Check inf or nan
+  if (!(tau.array() == tau.array()).all() || !((tau - tau).array() == (tau - tau).array()).all())
+  {
+    tau.setZero();
+  }
+}

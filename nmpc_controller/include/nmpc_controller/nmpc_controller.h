@@ -163,6 +163,10 @@ private:
   SmartPtr<spiritNLP> mynlp_;
 
   SmartPtr<IpoptApplication> app_;
+
+  Eigen::MatrixXd last_state_traj_;
+
+  Eigen::MatrixXd last_control_traj_;
 };
 
 #endif // MPC_CONTROLLER_H

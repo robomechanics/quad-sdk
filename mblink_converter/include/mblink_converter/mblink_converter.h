@@ -52,6 +52,11 @@ private:
   void legControlCallback(const spirit_msgs::LegCommandArray::ConstPtr& msg);
 
   /**
+	 * @brief Callback to handle new remote heartbeat messages
+	 */
+	void remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg);
+
+  /**
    * @brief Compress two floats into one
    * @param[in] in1 First float to be packed
    * @param[out] in2 Second float to be packed
@@ -73,6 +78,9 @@ private:
   /// Subscriber for motor control messages
   ros::Subscriber leg_control_sub_;
 
+	/// ROS subscriber for remote heartbeat
+	ros::Subscriber remote_heartbeat_sub_;
+
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
 
@@ -87,6 +95,21 @@ private:
 
   /// Last motor control message (keep sending until we get a new message in or node is shutdown)
   spirit_msgs::LegCommandArray::ConstPtr last_leg_command_array_msg_;
+
+  /// Most recent remote heartbeat
+	// std_msgs::Header::ConstPtr last_remote_heartbeat_msg_;
+
+  /// Remote heartbeat timeout threshold in seconds
+	double last_heartbeat_time_;
+
+  /// Remote heartbeat timeout threshold in seconds
+	double last_leg_command_time_;
+  
+  /// Remote heartbeat timeout threshold in seconds
+	double remote_heartbeat_timeout_;
+
+  /// Leg command timeout threshold in seconds
+	double leg_command_timeout_;
 
   /// Pointer to MBLink object (constructor wants argc and argv, so instantiated in main)
   MBLink mblink_; 

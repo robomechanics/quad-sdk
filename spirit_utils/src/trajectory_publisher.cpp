@@ -67,7 +67,8 @@ void TrajectoryPublisher::robotStateCallback(const spirit_msgs::RobotState::Cons
 void TrajectoryPublisher::multiFootPlanContinuousCallback(const 
   spirit_msgs::MultiFootPlanContinuous::ConstPtr& msg) {
 
-  if (msg->header.stamp != multi_foot_plan_continuous_msg_.header.stamp) {
+  if (msg->header.stamp != multi_foot_plan_continuous_msg_.header.stamp && 
+    (msg->states.front().traj_index == 0) ) {
     // Save the most recent foot plan
     multi_foot_plan_continuous_msg_ = (*msg);
     update_flag_ = true;
@@ -81,8 +82,6 @@ void TrajectoryPublisher::updateTrajectory() {
   // Make sure we have data for both the body and the foot plan
   if (body_plan_msg_.states.empty() || multi_foot_plan_continuous_msg_.states.empty())
     return;
-
-  // std::cout << "Past updateTrajectory checks" << std::endl;
 
   // Make sure the foot plan is no longer than the body plan
   ros::Duration t_body_plan_ros = body_plan_msg_.states.back().header.stamp - 
@@ -115,6 +114,7 @@ void TrajectoryPublisher::updateTrajectory() {
   traj_msg_.header.stamp = body_plan_msg_.header.stamp;
 
   spirit_utils::SpiritKinematics kinematics;
+  
 
   // Add states to the traj message
   for (int i = 0; i < t_traj_.size(); i++) {
@@ -132,7 +132,7 @@ void TrajectoryPublisher::updateTrajectory() {
     // If we have foot data then load that, otherwise just set joints to zero
     if (t_traj_[i] < t_foot_plan) {
       state.feet = spirit_utils::interpMultiFootPlanContinuous(
-      multi_foot_plan_continuous_msg_,t_traj_[i]);
+        multi_foot_plan_continuous_msg_,t_traj_[i]);
 
       // Compute joint data with IK
       spirit_utils::ikRobotState(kinematics, state.body, state.feet, state.joints);
@@ -148,6 +148,7 @@ void TrajectoryPublisher::updateTrajectory() {
     traj_msg_.states.push_back(state);
 
   }
+  
 
   // timer.report();
 }
