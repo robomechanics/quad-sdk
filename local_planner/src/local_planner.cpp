@@ -232,12 +232,19 @@ void LocalPlanner::getStateAndReferencePlan() {
     // Cold start with reference  plan
     body_plan_ = ref_body_plan_;
 
-    foot_positions_body_ = hip_projected_foot_positions_;
-    foot_positions_world_.setZero();
+    // foot_positions_body_ = hip_projected_foot_positions_;
+    // foot_positions_world_.setZero();
+
+    // Initialize with the current foot positions
+    for (int i = 0; i < N_; i++) {
+      foot_positions_body_.row(i) = current_foot_positions_body_;
+      foot_positions_world_.row(i) = current_foot_positions_world_;
+    }
   } else {
     // Warm start with old solution indexed by one
     body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
     body_plan_.row(N_+1) = ref_body_plan_.row(N_+1);
+    // body_plan_.bottomRows(1) = ref_body_plan_.bottomRows(1);
 
     // No reference for feet so last two elements will be the same
     foot_positions_body_.topRows(N_-1) = foot_positions_body_.bottomRows(N_-1);
@@ -245,6 +252,7 @@ void LocalPlanner::getStateAndReferencePlan() {
   }
 
   // Initialize with current foot and body positions
+  body_plan_.row(0) = current_state_;
   foot_positions_body_.row(0) = current_foot_positions_body_;
   foot_positions_world_.row(0) = current_foot_positions_world_;
 }
@@ -263,6 +271,16 @@ bool LocalPlanner::computeLocalPlan() {
 
   // Iteratively generate body and footstep plans (non-parallelizable)
   for (int i = 0; i < iterations_; i++) {
+
+    if (grf_plan_.rows() == N_) {
+      // Compute the new footholds
+      local_footstep_planner_->computeFootPositions(body_plan_, grf_plan_,
+        contact_schedule_, ref_body_plan_, foot_positions_world_);
+
+      // Transform the new foot positions into the body frame for body planning
+      local_footstep_planner_->getFootPositionsBodyFrame(body_plan_, foot_positions_world_,
+        foot_positions_body_);
+    }
 
     // Compute body plan with MPC, return if solve fails
     if (use_nmpc_)
@@ -286,14 +304,6 @@ bool LocalPlanner::computeLocalPlan() {
                                             contact_schedule_, body_plan_, grf_plan_))
         return false;
     }
-
-    // Compute the new footholds to match that body plan
-    local_footstep_planner_->computeFootPositions(body_plan_, grf_plan_,
-      contact_schedule_, ref_body_plan_, foot_positions_world_);
-
-    // Transform the new foot positions into the body frame for recomputing (if needed)
-      local_footstep_planner_->getFootPositionsBodyFrame(body_plan_, foot_positions_world_,
-        foot_positions_body_);
   }
 
   // Report the function time
