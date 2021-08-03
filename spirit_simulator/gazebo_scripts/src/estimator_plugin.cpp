@@ -36,6 +36,8 @@ namespace gazebo{
       return;
     }
 
+    nh.param<int>("/tail_controller/tail_type", tail_type_, 0);
+
       // Listen to the update event. This event is broadcast every
       // simulation iteration.
     updateConnection_= event::Events::ConnectWorldUpdateBegin(
@@ -119,7 +121,7 @@ namespace gazebo{
 
     int num_joints = joint_names_.size();
 
-    if (num_joints > 12)
+    if (tail_type_ != NONE)
     {
       // With tail
       for (size_t i = 12; i < 14; i++)

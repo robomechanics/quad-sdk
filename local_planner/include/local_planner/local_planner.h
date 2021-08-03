@@ -4,7 +4,7 @@
 #include <ros/ros.h>
 #include <math.h>
 #include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/RobotPlan.h>
+#include <spirit_msgs/LegCommandArray.h>
 #include <spirit_msgs/MultiFootPlanDiscrete.h>
 #include <spirit_msgs/GRFArray.h>
 #include <spirit_msgs/RobotState.h>
@@ -16,6 +16,7 @@
 #include "spirit_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <nmpc_controller/nmpc_controller.h>
+#include <spirit_utils/tail_type.h>
 
 //! Local Body Planner library
 /*!
@@ -196,6 +197,18 @@ private:
   std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
 
   bool use_nmpc_;
+
+  int tail_type_;
+
+  Eigen::VectorXd tail_current_state_;
+
+  Eigen::MatrixXd ref_tail_plan_;
+
+  Eigen::MatrixXd tail_plan_;
+
+  Eigen::MatrixXd tail_torque_plan_;
+
+  ros::Publisher tail_plan_pub_;
 };
 
 

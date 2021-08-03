@@ -15,6 +15,7 @@
 #include <spirit_msgs/FootPlanDiscrete.h>
 #include <spirit_msgs/MultiFootPlanDiscrete.h>
 #include <spirit_utils/ros_utils.h>
+#include <spirit_utils/tail_type.h>
 
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>
@@ -180,6 +181,8 @@ private:
 
   const int GLOBAL = 0;
   const int LOCAL = 1;
+
+  int tail_type_;
 };
 
 #endif // RVIZ_INTERFACE_H

@@ -12,6 +12,7 @@
 #include <spirit_msgs/RobotState.h>
 #include <spirit_utils/math_utils.h>
 #include <spirit_utils/ros_utils.h>
+#include <spirit_utils/tail_type.h>
 
 namespace gazebo
 {
@@ -34,6 +35,8 @@ namespace gazebo
       ros::Publisher ground_truth_state_pub_;
       physics::ModelPtr model_;
       event::ConnectionPtr updateConnection_;
+
+      int tail_type_;
   };
   GZ_REGISTER_MODEL_PLUGIN(SpiritEstimatorGroundTruth)
 }

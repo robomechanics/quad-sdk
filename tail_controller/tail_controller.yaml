@@ -1,4 +1,8 @@
 tail_controller:
-  update_rate: 1000
-  track_traj: false
-  use_mpc: false
+  controller_update_rate: 200
+  planner_update_rate: 33
+  tail_type: 2 # 0: none, 1: centralized, 2: distributed, 3: decentralized
+  roll_kp: 10
+  roll_kd: 1
+  pitch_kp: 10
+  pitch_kd: 1

@@ -12,6 +12,7 @@
 #include <spirit_msgs/LegCommandArray.h>
 #include <spirit_utils/ros_utils.h>
 #include <urdf/model.h>
+#include <spirit_utils/tail_type.h>
 
 namespace effort_controllers
 {
@@ -53,6 +54,8 @@ private:
 
   /// Torque limits for each motor
   std::vector<double> torque_lims_;
+
+  int tail_type_;
 
   void commandCB(const spirit_msgs::LegCommandArrayConstPtr& msg);
   void tailCommandCB(const spirit_msgs::LegCommandConstPtr& msg);

@@ -11,11 +11,11 @@ using namespace Ipopt;
 
 // Class constructor
 spiritNLP::spiritNLP(
+    int type,
     int N,
     int n,
     int m,
     double dt,
-    bool with_tail,
     Eigen::MatrixXd Q,
     Eigen::MatrixXd R,
     Eigen::MatrixXd x_min,
@@ -30,20 +30,68 @@ spiritNLP::spiritNLP(
 // R: input cost weights
 // dt: time step length
 {
+   type_ = type;
+
    N_ = N;
    n_ = n;
    m_ = m;
    g_ = n_ + 16; // states dynamics plus linear friciton cone
 
-   with_tail_ = with_tail;
-
-   if (with_tail_)
+   if (type_ == NONE)
    {
-      leg_input_start_idx_ = 2;
+      // Leg controller
+      leg_input_start_idx_ = 0;
+
+      eval_g_work_ = eval_g_leg_work;
+      eval_g_incref_ = eval_g_leg_incref;
+      eval_g_checkout_ = eval_g_leg_checkout;
+      eval_g_ = eval_g_leg;
+      eval_g_release_ = eval_g_leg_release;
+      eval_g_decref_ = eval_g_leg_decref;
+
+      eval_hess_g_work_ = eval_hess_g_leg_work;
+      eval_hess_g_incref_ = eval_hess_g_leg_incref;
+      eval_hess_g_checkout_ = eval_hess_g_leg_checkout;
+      eval_hess_g_ = eval_hess_g_leg;
+      eval_hess_g_release_ = eval_hess_g_leg_release;
+      eval_hess_g_decref_ = eval_hess_g_leg_decref;
+      eval_hess_g_sparsity_out_ = eval_hess_g_leg_sparsity_out;
+
+      eval_jac_g_work_ = eval_jac_g_leg_work;
+      eval_jac_g_incref_ = eval_jac_g_leg_incref;
+      eval_jac_g_checkout_ = eval_jac_g_leg_checkout;
+      eval_jac_g_ = eval_jac_g_leg;
+      eval_jac_g_release_ = eval_jac_g_leg_release;
+      eval_jac_g_decref_ = eval_jac_g_leg_decref;
+      eval_jac_g_sparsity_out_ = eval_jac_g_leg_sparsity_out;
    }
    else
    {
-      leg_input_start_idx_ = 0;
+      // Tail controller
+      leg_input_start_idx_ = 2;
+
+      eval_g_work_ = eval_g_tail_work;
+      eval_g_incref_ = eval_g_tail_incref;
+      eval_g_checkout_ = eval_g_tail_checkout;
+      eval_g_ = eval_g_tail;
+      eval_g_release_ = eval_g_tail_release;
+      eval_g_decref_ = eval_g_tail_decref;
+
+      eval_hess_g_work_ = eval_hess_g_tail_work;
+      eval_hess_g_incref_ = eval_hess_g_tail_incref;
+      eval_hess_g_checkout_ = eval_hess_g_tail_checkout;
+      eval_hess_g_ = eval_hess_g_tail;
+      eval_hess_g_release_ = eval_hess_g_tail_release;
+      eval_hess_g_decref_ = eval_hess_g_tail_decref;
+      eval_hess_g_sparsity_out_ = eval_hess_g_tail_sparsity_out;
+
+      eval_jac_g_work_ = eval_jac_g_tail_work;
+      eval_jac_g_incref_ = eval_jac_g_tail_incref;
+      eval_jac_g_checkout_ = eval_jac_g_tail_checkout;
+      eval_jac_g_ = eval_jac_g_tail;
+      eval_jac_g_release_ = eval_jac_g_tail_release;
+      eval_jac_g_decref_ = eval_jac_g_tail_decref;
+      eval_jac_g_sparsity_out_ = eval_jac_g_tail_sparsity_out;
    }
 
    Q_ = Q;
@@ -81,6 +129,14 @@ spiritNLP::spiritNLP(
    lambda0_ = Eigen::MatrixXd(g_ * N_, 1);
    lambda0_.fill(0);
 
+   for (int i = 0; i < N_; ++i)
+   {
+      w0_(leg_input_start_idx_ + 2 + i * (n_ + m_), 0) = 29;
+      w0_(leg_input_start_idx_ + 5 + i * (n_ + m_), 0) = 29;
+      w0_(leg_input_start_idx_ + 8 + i * (n_ + m_), 0) = 29;
+      w0_(leg_input_start_idx_ + 11 + i * (n_ + m_), 0) = 29;
+   }
+
    x_reference_ = Eigen::MatrixXd(n_, N_);
    x_reference_.fill(0);
 
@@ -90,55 +146,23 @@ spiritNLP::spiritNLP(
    contact_sequence_ = Eigen::MatrixXi(4, N_);
    contact_sequence_.fill(1);
 
-   if (with_tail_)
+   if (type_ == DISTRIBUTED)
    {
-      eval_g_work_ = eval_g_tail_work;
-      eval_g_incref_ = eval_g_tail_incref;
-      eval_g_checkout_ = eval_g_tail_checkout;
-      eval_g_ = eval_g_tail;
-      eval_g_release_ = eval_g_tail_release;
-      eval_g_decref_ = eval_g_tail_decref;
+      known_leg_input_ = true;
 
-      eval_hess_g_work_ = eval_hess_g_tail_work;
-      eval_hess_g_incref_ = eval_hess_g_tail_incref;
-      eval_hess_g_checkout_ = eval_hess_g_tail_checkout;
-      eval_hess_g_ = eval_hess_g_tail;
-      eval_hess_g_release_ = eval_hess_g_tail_release;
-      eval_hess_g_decref_ = eval_hess_g_tail_decref;
-      eval_hess_g_sparsity_out_ = eval_hess_g_tail_sparsity_out;
-
-      eval_jac_g_work_ = eval_jac_g_tail_work;
-      eval_jac_g_incref_ = eval_jac_g_tail_incref;
-      eval_jac_g_checkout_ = eval_jac_g_tail_checkout;
-      eval_jac_g_ = eval_jac_g_tail;
-      eval_jac_g_release_ = eval_jac_g_tail_release;
-      eval_jac_g_decref_ = eval_jac_g_tail_decref;
-      eval_jac_g_sparsity_out_ = eval_jac_g_tail_sparsity_out;
+      leg_input_ = Eigen::MatrixXd(m_ - leg_input_start_idx_, N_);
+      leg_input_.setZero();
+      for (int i = 0; i < N_; ++i)
+      {
+         leg_input_(2, i) = 29;
+         leg_input_(5, i) = 29;
+         leg_input_(8, i) = 29;
+         leg_input_(11, i) = 29;
+      }
    }
    else
    {
-      eval_g_work_ = eval_g_leg_work;
-      eval_g_incref_ = eval_g_leg_incref;
-      eval_g_checkout_ = eval_g_leg_checkout;
-      eval_g_ = eval_g_leg;
-      eval_g_release_ = eval_g_leg_release;
-      eval_g_decref_ = eval_g_leg_decref;
-
-      eval_hess_g_work_ = eval_hess_g_leg_work;
-      eval_hess_g_incref_ = eval_hess_g_leg_incref;
-      eval_hess_g_checkout_ = eval_hess_g_leg_checkout;
-      eval_hess_g_ = eval_hess_g_leg;
-      eval_hess_g_release_ = eval_hess_g_leg_release;
-      eval_hess_g_decref_ = eval_hess_g_leg_decref;
-      eval_hess_g_sparsity_out_ = eval_hess_g_leg_sparsity_out;
-
-      eval_jac_g_work_ = eval_jac_g_leg_work;
-      eval_jac_g_incref_ = eval_jac_g_leg_incref;
-      eval_jac_g_checkout_ = eval_jac_g_leg_checkout;
-      eval_jac_g_ = eval_jac_g_leg;
-      eval_jac_g_release_ = eval_jac_g_leg_release;
-      eval_jac_g_decref_ = eval_jac_g_leg_decref;
-      eval_jac_g_sparsity_out_ = eval_jac_g_leg_sparsity_out;
+      known_leg_input_ = false;
    }
 
    compute_nnz_jac_g();
@@ -196,14 +220,21 @@ bool spiritNLP::get_bounds_info(
       // Inputs bound
       x_l_matrix.block(i * (n_ + m_), 0, m_, 1) = u_min_;
       x_u_matrix.block(i * (n_ + m_), 0, m_, 1) = u_max_;
-
-      // Contact sequence
-      for (int j = 0; j < 4; ++j)
+      if (known_leg_input_)
       {
-         x_l_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1) =
-             (x_l_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1).array() * contact_sequence_(j, i)).matrix();
-         x_u_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1) =
-             (x_u_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1).array() * contact_sequence_(j, i)).matrix();
+         x_l_matrix.block(i * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1) = leg_input_.block(0, i, m_ - leg_input_start_idx_, 1);
+         x_u_matrix.block(i * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1) = leg_input_.block(0, i, m_ - leg_input_start_idx_, 1);
+      }
+      else
+      {
+         // Contact sequence
+         for (int j = 0; j < 4; ++j)
+         {
+            x_l_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1) =
+               (x_l_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1).array() * contact_sequence_(j, i)).matrix();
+            x_u_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1) =
+               (x_u_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1).array() * contact_sequence_(j, i)).matrix();
+         }
       }
 
       // States bound
@@ -786,4 +817,30 @@ void spiritNLP::update_solver(
    // TODO: they may have different N?
    // TODO: it should specify with tail or not
    x_reference_ = ref_traj.transpose();
+}
+
+void spiritNLP::update_solver(
+    const Eigen::VectorXd &initial_state,
+    const Eigen::MatrixXd &ref_traj,
+    const Eigen::MatrixXd &foot_positions,
+    const std::vector<std::vector<bool>> &contact_schedule,
+    const Eigen::MatrixXd &state_traj,
+    const Eigen::MatrixXd &control_traj)
+{
+   this->update_solver(
+       initial_state,
+       ref_traj,
+       foot_positions,
+       contact_schedule);
+
+   for (size_t i = 0; i < N_ - 1; i++)
+   {
+      w0_.block(i * (n_ + m_) + leg_input_start_idx_, 0, 12, 1) = control_traj.row(i).transpose();
+      w0_.block(i * (n_ + m_) + m_, 0, 6, 1) = state_traj.block(i, 0, 1, 6).transpose();
+      w0_.block(i * (n_ + m_) + m_ + 8, 0, 6, 1) = state_traj.block(i, 6, 1, 6).transpose();
+   }
+
+   leg_input_ = control_traj.transpose();
+
+   known_leg_input_ = true;
 }

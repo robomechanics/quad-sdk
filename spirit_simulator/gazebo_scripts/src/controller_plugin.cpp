@@ -104,23 +104,7 @@ namespace effort_controllers
 
     tail_sub_command_ = n.subscribe<spirit_msgs::LegCommand>(tail_command_topic, 1, &SpiritController::tailCommandCB, this);
 
-    spirit_msgs::LegCommand tail_msg;
-    tail_msg.motor_commands.resize(2);
-
-    tail_msg.motor_commands.at(0).pos_setpoint = 0;
-    tail_msg.motor_commands.at(0).vel_setpoint = 0;
-    tail_msg.motor_commands.at(0).kp = 10;
-    tail_msg.motor_commands.at(0).kd = 1;
-    tail_msg.motor_commands.at(0).torque_ff = 0;
-
-    tail_msg.motor_commands.at(1).pos_setpoint = 0;
-    tail_msg.motor_commands.at(1).vel_setpoint = 0;
-    tail_msg.motor_commands.at(1).kp = 10;
-    tail_msg.motor_commands.at(1).kd = 1;
-    tail_msg.motor_commands.at(1).torque_ff = 0;
-
-    tail_msg.header.stamp = ros::Time::now();
-    tail_commands_buffer_.writeFromNonRT(tail_msg.motor_commands);
+    n.param<int>("/tail_controller/tail_type", tail_type_, 0);
 
     return true;
   }
@@ -136,62 +120,58 @@ namespace effort_controllers
       return;
     }
 
-    for(unsigned int i=0; i<n_joints_; i++)
+    if (tail_type_ != NONE)
     {
-      // Tail control
-      if (i>11)
-      {  
-        spirit_msgs::MotorCommand motor_command = tail_commands.at(i-12);
+      for (unsigned int i = 12; i < 14; i++)
+      {
+        // Tail control
+        spirit_msgs::MotorCommand motor_command = tail_commands.at(i - 12);
 
-      // Collect feedforward torque 
+        // Collect feedforward torque
         double torque_ff = motor_command.torque_ff;
-        
-      // Compute position error
+
+        // Compute position error
         double command_position = motor_command.pos_setpoint;
         enforceJointLimits(command_position, i);
         double current_position = joints_.at(i).getPosition();
         double kp = motor_command.kp;
         double pos_error = command_position - current_position;
-        // angles::shortest_angular_distance_with_large_limits(
-        //   current_position,
-        //   command_position,
-        //   joint_urdfs_[i]->limits->lower,
-        //   joint_urdfs_[i]->limits->upper,
-        //   pos_error);
 
-      // Compute velocity error
+        // Compute velocity error
         double current_vel = joints_.at(i).getVelocity();
         double command_vel = motor_command.vel_setpoint;
         double vel_error = command_vel - current_vel;
         double kd = motor_command.kd;
 
-      // Collect feedback 
+        // Collect feedback
         double torque_feedback = kp * pos_error + kd * vel_error;
         // double torque_lim = torque_lims_[ind.second];
         double torque_command = torque_feedback + torque_ff;
         torque_command = std::max(std::min(torque_command, joint_urdfs_[i]->limits->effort), -joint_urdfs_[i]->limits->effort);
 
-      // std::cout << "Joint " << i << ": " << "FF Torque: " << torque_ff << " FF Torque %: " << torque_ff/torque_command << " FB Torque: " << torque_feedback << " FB Torque %: " << torque_feedback/torque_command << " Total Torque: " << torque_command << std::endl;
+        // std::cout << "Joint " << i << ": " << "FF Torque: " << torque_ff << " FF Torque %: " << torque_ff/torque_command << " FB Torque: " << torque_feedback << " FB Torque %: " << torque_feedback/torque_command << " Total Torque: " << torque_command << std::endl;
 
-      // Update joint torque
+        // Update joint torque
         joints_.at(i).setCommand(torque_command);
       }
-      // Leg control
-      else
-      {
-        std::pair<int,int> ind = leg_map_[i];
-        spirit_msgs::MotorCommand motor_command = commands.at(ind.first).motor_commands.at(ind.second);
+    }
 
-      // Collect feedforward torque 
-        double torque_ff = motor_command.torque_ff;
+    for (unsigned int i = 0; i < 12; i++)
+    {
+      // Leg control
+      std::pair<int, int> ind = leg_map_[i];
+      spirit_msgs::MotorCommand motor_command = commands.at(ind.first).motor_commands.at(ind.second);
+
+      // Collect feedforward torque
+      double torque_ff = motor_command.torque_ff;
 
       // Compute position error
-        double command_position = motor_command.pos_setpoint;
-        enforceJointLimits(command_position, i);
-        double current_position = joints_.at(i).getPosition();
-        double kp = motor_command.kp;
-        double pos_error;
-        angles::shortest_angular_distance_with_large_limits(
+      double command_position = motor_command.pos_setpoint;
+      enforceJointLimits(command_position, i);
+      double current_position = joints_.at(i).getPosition();
+      double kp = motor_command.kp;
+      double pos_error;
+      angles::shortest_angular_distance_with_large_limits(
           current_position,
           command_position,
           joint_urdfs_[i]->limits->lower,
@@ -199,21 +179,20 @@ namespace effort_controllers
           pos_error);
 
       // Compute velocity error
-        double current_vel = joints_.at(i).getVelocity();
-        double command_vel = motor_command.vel_setpoint;
-        double vel_error = command_vel - current_vel;
-        double kd = motor_command.kd;
+      double current_vel = joints_.at(i).getVelocity();
+      double command_vel = motor_command.vel_setpoint;
+      double vel_error = command_vel - current_vel;
+      double kd = motor_command.kd;
 
-      // Collect feedback 
-        double torque_feedback = kp * pos_error + kd * vel_error;
-        double torque_lim = torque_lims_[ind.second];
-        double torque_command = std::min(std::max(torque_feedback + torque_ff, -torque_lim),torque_lim);
+      // Collect feedback
+      double torque_feedback = kp * pos_error + kd * vel_error;
+      double torque_lim = torque_lims_[ind.second];
+      double torque_command = std::min(std::max(torque_feedback + torque_ff, -torque_lim), torque_lim);
 
       // std::cout << "Joint " << i << ": " << "FF Torque: " << torque_ff << " FF Torque %: " << torque_ff/torque_command << " FB Torque: " << torque_feedback << " FB Torque %: " << torque_feedback/torque_command << " Total Torque: " << torque_command << std::endl;
 
       // Update joint torque
-        joints_.at(i).setCommand(torque_command);
-      }
+      joints_.at(i).setCommand(torque_command);
     }
   }
 

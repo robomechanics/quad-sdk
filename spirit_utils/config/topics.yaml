@@ -22,6 +22,7 @@ topics:
   control:
     grfs: /control/grfs
     trajectory: /control/trajectory
+    tail_plan: /control/tail_plan
     joint_command: /control/joint_command
     tail_command: /control/tail_command
     mode: /control/mode

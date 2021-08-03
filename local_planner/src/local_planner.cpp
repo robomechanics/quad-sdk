@@ -10,13 +10,14 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   
     // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic, local_plan_topic,
-    foot_plan_discrete_topic, foot_plan_continuous_topic;
+    foot_plan_discrete_topic, foot_plan_continuous_topic, tail_plan_topic;
   spirit_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
   spirit_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   spirit_utils::loadROSParam(nh_, "topics/state/ground_truth",robot_state_topic);
   spirit_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
   spirit_utils::loadROSParam(nh_, "topics/foot_plan_discrete", foot_plan_discrete_topic);
   spirit_utils::loadROSParam(nh_, "topics/foot_plan_continuous", foot_plan_continuous_topic);
+  spirit_utils::loadROSParam(nh_, "/topics/control/tail_plan", tail_plan_topic);
   spirit_utils::loadROSParam(nh_, "map_frame", map_frame_);
 
   // Setup pubs and subs
@@ -28,7 +29,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
     spirit_msgs::MultiFootPlanDiscrete>(foot_plan_discrete_topic,1);
   foot_plan_continuous_pub_ = nh_.advertise<
     spirit_msgs::MultiFootPlanContinuous>(foot_plan_continuous_topic,1);
-
+  tail_plan_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(tail_plan_topic, 1);
 
   // Load system parameters
   spirit_utils::loadROSParam(nh_, "local_planner/update_rate", update_rate_);
@@ -58,6 +59,11 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_*3);
   
   nh.param<bool>("local_planner/use_nmpc", use_nmpc_, false);
+
+  nh.param<int>("/tail_controller/tail_type", tail_type_, 0);
+
+  tail_plan_ = Eigen::MatrixXd::Zero(N_, 4);
+  tail_torque_plan_ = Eigen::MatrixXd::Zero(N_, 2);
 
   // Initialize body and footstep planners
   initLocalBodyPlanner();
@@ -121,9 +127,13 @@ void LocalPlanner::initLocalBodyPlanner() {
   Ib.diagonal() << Ixx,Iyy,Izz;
 
   // Create mpc wrapper class
-  if (use_nmpc_)
+  if (tail_type_ == CENTRALIZED)
   {
-    local_body_planner_nonlinear_ = std::make_shared<NMPCController>(false);
+    local_body_planner_nonlinear_ = std::make_shared<NMPCController>(tail_type_);
+  }
+  else if (use_nmpc_)
+  {
+    local_body_planner_nonlinear_ = std::make_shared<NMPCController>(NONE);
   }
   else
   {
@@ -227,6 +237,12 @@ void LocalPlanner::getStateAndReferencePlan() {
     }
   }
 
+  if (tail_type_ == CENTRALIZED)
+  {
+    tail_current_state_ = spirit_utils::odomMsgToEigenForTail(*robot_state_msg_);
+    ref_tail_plan_ = Eigen::MatrixXd::Zero(N_, 4);
+  }
+
   // Update the body plan to use for linearization
   if (body_plan_.rows() < N_+1) {
     // Cold start with reference  plan
@@ -283,25 +299,30 @@ bool LocalPlanner::computeLocalPlan() {
     }
 
     // Compute body plan with MPC, return if solve fails
-    if (use_nmpc_)
+    if (tail_type_ == CENTRALIZED)
     {
-      bool new_step;
-      if (i == 0)
-      {
-        new_step = true;
-      }
-      else
-      {
-        new_step = false;
-      }
-      if (!local_body_planner_nonlinear_->computePlan(new_step, current_state_, ref_body_plan_, foot_positions_body_,
-                                            contact_schedule_, body_plan_, grf_plan_))
+      if (!local_body_planner_nonlinear_->computeCentralizedTailPlan(current_state_,
+                                                                     ref_body_plan_,
+                                                                     foot_positions_body_,
+                                                                     contact_schedule_,
+                                                                     tail_current_state_,
+                                                                     ref_tail_plan_,
+                                                                     body_plan_,
+                                                                     grf_plan_,
+                                                                     tail_plan_,
+                                                                     tail_torque_plan_))
+        return false;
+    }
+    else if (use_nmpc_)
+    {
+      if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_, foot_positions_body_,
+                                                         contact_schedule_, body_plan_, grf_plan_))
         return false;
     }
     else
     {
       if (!local_body_planner_convex_->computePlan(current_state_, ref_body_plan_, foot_positions_body_,
-                                            contact_schedule_, body_plan_, grf_plan_))
+                                                   contact_schedule_, body_plan_, grf_plan_))
         return false;
     }
   }
@@ -324,6 +345,7 @@ void LocalPlanner::publishLocalPlan() {
   spirit_msgs::RobotPlan local_plan_msg;
   spirit_msgs::MultiFootPlanDiscrete future_footholds_msg;
   spirit_msgs::MultiFootPlanContinuous foot_plan_msg;
+  spirit_msgs::LegCommandArray tail_plan_msg;
 
   // Update the headers of all messages
   ros::Time timestamp = ros::Time::now();
@@ -333,6 +355,11 @@ void LocalPlanner::publishLocalPlan() {
   local_plan_msg.compute_time = compute_time_;
   future_footholds_msg.header = local_plan_msg.header;
   foot_plan_msg.header = local_plan_msg.header;
+
+  if (tail_type_ == CENTRALIZED)
+  {
+    tail_plan_msg.header = local_plan_msg.header;
+  }
 
   // Compute the discrete and continuous foot plan messages
   local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_world_,
@@ -365,12 +392,33 @@ void LocalPlanner::publishLocalPlan() {
     local_plan_msg.grfs.push_back(grf_array_msg);
     local_plan_msg.plan_indices.push_back(current_plan_index_ + i);
     local_plan_msg.primitive_ids.push_back(2);
+
+    if (tail_type_ == CENTRALIZED)
+    {
+      spirit_msgs::LegCommand tail_msg;
+      tail_msg.motor_commands.resize(2);
+
+      tail_msg.motor_commands.at(0).pos_setpoint = tail_plan_(i, 0);
+      tail_msg.motor_commands.at(0).vel_setpoint = tail_plan_(i, 2);
+      tail_msg.motor_commands.at(0).torque_ff = tail_torque_plan_(i, 0);
+
+      tail_msg.motor_commands.at(1).pos_setpoint = tail_plan_(i, 1);
+      tail_msg.motor_commands.at(1).vel_setpoint = tail_plan_(i, 3);
+      tail_msg.motor_commands.at(1).torque_ff = tail_torque_plan_(i, 1);
+
+      tail_plan_msg.leg_commands.push_back(tail_msg);
+    }
   }
 
   // Publish
   local_plan_pub_.publish(local_plan_msg);
   foot_plan_discrete_pub_.publish(future_footholds_msg);
   foot_plan_continuous_pub_.publish(foot_plan_msg);
+
+  if (tail_type_ == CENTRALIZED)
+  {
+    tail_plan_pub_.publish(tail_plan_msg);
+  }
 
   // std::cout << foot_plan_msg << std::endl;
 }

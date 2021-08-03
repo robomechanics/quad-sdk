@@ -246,6 +246,8 @@ void interpRobotPlan(spirit_msgs::RobotPlan msg, double t,
    */
   Eigen::VectorXd odomMsgToEigen(const nav_msgs::Odometry &body);
 
+  Eigen::VectorXd odomMsgToEigenForTail(const spirit_msgs::RobotState &msg);
+
   /**
    * @brief Convert Eigen vector of GRFs to GRFArray msg
    * @param[in] grf_array Eigen vector with grf data in leg order

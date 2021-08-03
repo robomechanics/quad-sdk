@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
 	spirit_msgs
 	spirit_utils
 	std_msgs
+	nmpc_controller
 	)
 
 ## System dependencies are found with CMake's conventions
@@ -107,7 +108,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 	INCLUDE_DIRS include
 	LIBRARIES tail_controller
-	CATKIN_DEPENDS roscpp sensor_msgs spirit_msgs spirit_utils std_msgs
+	CATKIN_DEPENDS roscpp sensor_msgs spirit_msgs spirit_utils std_msgs nmpc_controller
 	DEPENDS
 	)
 
@@ -120,22 +121,32 @@ catkin_package(
 include_directories(
 	include
 	${catkin_INCLUDE_DIRS}
+	/usr/local/include/coin-or
 	)
+link_directories(/usr/local/lib)
 
 ## Declare a C++ library
-add_library(${PROJECT_NAME}
+add_library(tail_controller
 	src/tail_controller.cpp
+	)
+
+add_library(tail_planner
+	src/tail_planner.cpp
 	)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(tail_controller ${tail_controller_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+add_dependencies(tail_planner ${tail_planner_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/tail_controller_node.cpp)
+add_executable(tail_controller_node src/tail_controller_node.cpp)
+
+add_executable(tail_planner_node src/tail_planner_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -148,8 +159,13 @@ add_executable(${PROJECT_NAME}_node src/tail_controller_node.cpp)
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_node
-	${PROJECT_NAME}
+target_link_libraries(tail_controller_node
+	tail_controller
+	${catkin_LIBRARIES}
+	)
+
+target_link_libraries(tail_planner_node
+	tail_planner
 	${catkin_LIBRARIES}
 	)
 
@@ -169,6 +185,7 @@ target_link_libraries(${PROJECT_NAME}_node
 catkin_install_python(PROGRAMS scripts/odrive_converter.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
 # install(TARGETS ${PROJECT_NAME}_node

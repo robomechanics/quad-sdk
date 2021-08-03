@@ -21,7 +21,7 @@ SpiritKinematics::SpiritKinematics()
   }
 
   std::string robot_description_string;
-  if (!ros::param::get("robot_description", robot_description_string))
+  if (!ros::param::get("robot_description_body", robot_description_string))
   {
     std::cerr << "Error loading robot_description " << std::endl;
     abort();
@@ -359,10 +359,6 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
     ROS_DEBUG_THROTTLE(0.5, "Foot location too far for knee, choosing closest"
                             " alternative \n");
     temp3 = std::max(std::min(temp3, acos_eps), -acos_eps);
-  }
-  else
-  {
-    q1 = q12;
   }
 
   // Compute joint angles
