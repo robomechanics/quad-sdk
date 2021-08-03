@@ -37,7 +37,8 @@ State PlannerClass::randomState(const PlannerConfig &planner_config)
     double phi = (2.0*MY_PI)*(double)rand()/RAND_MAX;
     double cos_theta = 2.0*(double)rand()/RAND_MAX - 1.0;
     double theta = acos(cos_theta);
-    double v = (double)rand()/RAND_MAX*planner_config.V_MAX;
+    // double v = (double)rand()/RAND_MAX*planner_config.V_MAX;
+    double v = planner_config.V_NOM;
     q[3] = v*sin(theta)*cos(phi);
     q[4] = v*sin(theta)*sin(phi);
     q[5] = v*cos(theta);
