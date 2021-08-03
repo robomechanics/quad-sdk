@@ -245,7 +245,7 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
     unwrapped_yaw[i] = weight*unwrapped_yaw[0] + (1-weight)*unwrapped_yaw[i];
   }
 
-  // Hold penultimate yaw value which will likely be more accurate
+  // Hold penultimate yaw value to avoid singularity issues at terminal state (often zero velocity)
   unwrapped_yaw[num_states-1] = unwrapped_yaw[num_states-2];
 
   // Filter yaw and compute its derivative via central difference method
@@ -267,34 +267,9 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
     interp_t[i] = i*dt;
   }
 
-  // wrap yaw again
+  // Wrap yaw again
   wrapped_yaw = math_utils::wrapToPi(unwrapped_yaw);
   filtered_yaw = math_utils::wrapToPi(filtered_yaw);
-
-  // plt::clf();
-  // plt::ion();
-  // plt::named_plot("z", interp_t, z);
-  // plt::named_plot("filtered z", interp_t, filtered_z);
-  // plt::named_plot("z rate", interp_t, z_rate);
-  // plt::named_plot("filtered z rate", interp_t, filtered_z_rate);
-  // plt::xlabel("t");
-  // plt::ylabel("z");
-  // plt::legend();
-  // plt::show();
-  // plt::pause(0.001);
-
-  // plt::clf();
-  // plt::ion();
-  // // plt::named_plot("unwrapped yaw", interp_t, unwrapped_yaw);
-  // plt::named_plot("wrapped yaw", interp_t, wrapped_yaw);
-  // plt::named_plot("filtered yaw", interp_t, filtered_yaw);
-  // plt::named_plot("yaw rate", interp_t, yaw_rate);
-  // plt::named_plot("filtered yaw rate", interp_t, filtered_yaw_rate);
-  // plt::xlabel("t");
-  // plt::ylabel("z");
-  // plt::legend();
-  // plt::show();
-  // plt::pause(0.001);
 
   // Add full state data into the array
   std::vector<double> x_vec, y_vec, z_vec;
@@ -311,16 +286,43 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
     z_vec.push_back(body_state[2]);
   }
 
-  // plt::clf();
-  // plt::ion();
-  // plt::named_plot("x", interp_t, x_vec);
-  // plt::named_plot("y", interp_t, y_vec);
-  // plt::named_plot("z", interp_t, z_vec);
-  // plt::xlabel("t");
-  // plt::ylabel("data");
-  // plt::legend();
-  // plt::show();
-  // plt::pause(0.001);
+  // Plot the trajectories for debugging
+  #ifdef PLOT_TRAJECTORIES
+    plt::clf();
+    plt::ion();
+    plt::named_plot("z", interp_t, z);
+    plt::named_plot("filtered z", interp_t, filtered_z);
+    plt::named_plot("z rate", interp_t, z_rate);
+    plt::named_plot("filtered z rate", interp_t, filtered_z_rate);
+    plt::xlabel("t");
+    plt::ylabel("z");
+    plt::legend();
+    plt::show();
+    plt::pause(0.001);
+
+    plt::clf();
+    plt::ion();
+    // plt::named_plot("unwrapped yaw", interp_t, unwrapped_yaw);
+    plt::named_plot("wrapped yaw", interp_t, wrapped_yaw);
+    plt::named_plot("filtered yaw", interp_t, filtered_yaw);
+    plt::named_plot("yaw rate", interp_t, yaw_rate);
+    plt::named_plot("filtered yaw rate", interp_t, filtered_yaw_rate);
+    plt::xlabel("t");
+    plt::ylabel("z");
+    plt::legend();
+    plt::show();
+    
+    plt::clf();
+    plt::ion();
+    plt::named_plot("x", interp_t, x_vec);
+    plt::named_plot("y", interp_t, y_vec);
+    plt::named_plot("z", interp_t, z_vec);
+    plt::xlabel("t");
+    plt::ylabel("data");
+    plt::legend();
+    plt::show();
+    plt::pause(0.001);
+  #endif
 }
 
 GRF getGRF(Action a,double t, const PlannerConfig &planner_config) {
@@ -436,16 +438,6 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
     }
     interp_reduced_plan.push_back(s_next);
     interp_GRF.push_back(getGRF(a,t, planner_config));
-
-    // #ifdef VISUALIZE_TREE
-    //   if (!isValidYawRate(s,a,t,planner_config)) {
-    //     std::cout << "Invalid yaw detected!" << std::endl;
-    //     printStateNewline(s);
-    //     printActionNewline(a);
-    //     std::cout << "t = " << t<< std::endl;
-    //     std::cout << "t_f = " << t_f<< std::endl;
-    //   }
-    // #endif
 
     if (t_f==0)
       interp_primitive_id.push_back(CONNECT_STANCE);

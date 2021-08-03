@@ -179,6 +179,7 @@ void RRTConnectClass::postProcessPath(std::vector<State> &state_sequence, std::v
       new_action_sequence.push_back(result.a_new);
       path_length_ += result.length;
       s = s_next;
+
     } else {
       new_state_sequence.push_back(old_state);
       new_action_sequence.push_back(old_action);
