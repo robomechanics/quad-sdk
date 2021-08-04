@@ -196,6 +196,9 @@ private:
   /// MPC timestep
   double dt_;
 
+  /// Vector of MPC timesteps
+  Eigen::Vector<double, N_> dt_vec_;
+
   /// Flag signaling timestep set
   bool dt_set_ = false;
 

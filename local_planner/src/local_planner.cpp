@@ -306,8 +306,11 @@ bool LocalPlanner::computeLocalPlan() {
     }
   }
 
-  // Report the function time
-  compute_time_ = 1000*timer.reportSilent();
+  // Record computation time and update exponential filter
+  compute_time_ = 1000.0*timer.reportSilent();
+  mean_compute_time_ = (filter_smoothing_constant_)*mean_compute_time_ +
+    (1-filter_smoothing_constant_)*compute_time_;
+
   if (compute_time_ >= 1000.0/update_rate_) {
     ROS_WARN_THROTTLE(0.1, "LocalPlanner took %5.3fms, exceeding %5.3fms allowed",
       compute_time_, 1000.0/update_rate_);
