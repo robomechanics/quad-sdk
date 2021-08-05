@@ -1,5 +1,6 @@
 topics:
   joint_encoder: /mcu/state/jointURDF
+  odrive_encoder: /mcu/state/joint_odrive
   imu: /mcu/state/imu
   vel: /mcu/state/vel
   mocap: /mocap_node/spirit/pose

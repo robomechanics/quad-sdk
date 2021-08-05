@@ -1,166 +1,208 @@
 #!/usr/bin/env python
 import rospy
-from spirit_msgs.msg import LegCommand, RobotState
+from spirit_msgs.msg import LegCommand
 import numpy as np
 import odrive
 from odrive.enums import *
 from odrive.utils import *
 import time
-from sensor_msgs.msg import Imu
+from sensor_msgs.msg import Imu, JointState
 from geometry_msgs.msg import TwistStamped
 
+
 print("finding an odrive...")
-odrv0 = odrive.find_any()
+odrv0_ = odrive.find_any()
 print("found an odrive")
-
-while odrv0.axis0.current_state != AXIS_STATE_IDLE or \
-        odrv0.axis1.current_state != AXIS_STATE_IDLE:
+while odrv0_.axis0.current_state != AXIS_STATE_IDLE or \
+        odrv0_.axis1.current_state != AXIS_STATE_IDLE:
     time.sleep(0.1)
+dump_errors(odrv0_, True)
 
-dump_errors(odrv0, True)
+# Set up the motors!
+odrv0_.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
+odrv0_.axis1.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
 
-# Pitch start point
-start0 = odrv0.axis0.encoder.pos_estimate
-# Roll start point
-start1 = odrv0.axis1.encoder.pos_estimate
+# Pitch and roll start point
+start_pitch_ = odrv0_.axis0.encoder.pos_estimate
+start_roll_ = odrv0_.axis1.encoder.pos_estimate
 
-emergency_stop = False
+emergency_stop_ = False
+
+update_rate_ = rospy.get_param("/tail_controller/odrive_update_rate")
+gear_ratio_ = rospy.get_param("/tail_controller/gear_ratio")
+
+tail_control_topic_ = rospy.get_param("/topics/control/tail_command")
+odrive_encoder_topic_ = rospy.get_param("/topics/odrive_encoder")
+
+vel_topic_ = rospy.get_param("/topics/vel")
+imu_topic_ = rospy.get_param("/topics/imu")
+
+tail_control_sub_ = rospy.Subscriber(
+    tail_control_topic_, LegCommand, tailControlCallback, queue_size=1)
+odrive_encoder_pub_ = rospy.Publisher(
+    odrive_encoder_topic_, JointState, queue_size=1)
+
+vel_sub_ = rospy.Subscriber(
+    vel_topic_, TwistStamped, velCallback, queue_size=1)
+imu_sub_ = rospy.Subscriber(
+    imu_topic_, Imu, imuCallback, queue_size=1)
+
+tail_control_msg_ = None
+
+vel_msg_ = None
+imu_msg_ = None
 
 
-def balance_controller(orientation, angular_velocity):
-    # if emergency_stop:
-    #     if abs(odrv0.axis0.encoder.vel_estimate)*50/(2*np.pi) < np.deg2rad(0.1) and \
-    #             abs(odrv0.axis1.encoder.vel_estimate)*50/(2*np.pi) < np.deg2rad(0.1):
-    #         odrv0.axis0.requested_state = AXIS_STATE_IDLE
-    #         odrv0.axis1.requested_state = AXIS_STATE_IDLE
+def tailControlCallback(msg):
+    global tail_control_msg_
+    tail_control_msg_ = msg
 
-    # elif abs(orientation[0]) > np.pi/4 or \
-    #         abs(orientation[1]) > np.pi/4 or \
-    # abs(odrv0.axis0.encoder.pos_estimate-start0)*np.pi*2/50 > np.pi/4 or \
-    #         abs(odrv0.axis1.encoder.pos_estimate-start1)*np.pi*2/50 > np.pi/4:
-    #     emergency_stop = True
-    #     odrv0.axis0.controller.config.control_mode = CONTROL_MODE_VELOCITY_CONTROL
-    #     odrv0.axis1.controller.config.control_mode = CONTROL_MODE_VELOCITY_CONTROL
-    #     odrv0.axis1.controller.input_pos = 0
-    #     odrv0.axis0.controller.input_pos = 0
-    #     odrv0.axis0.controller.input_vel = 0
-    #     odrv0.axis1.controller.input_vel = 0
-    #     odrv0.axis0.controller.input_torque = 0
-    #     odrv0.axis1.controller.input_torque = 0
-    if emergency_stop or \
-            np.abs(orientation[0]+(odrv0.axis1.encoder.pos_estimate-start1)*np.pi*2/50) > np.pi*0.45 or \
-            np.abs(orientation[1]+(odrv0.axis0.encoder.pos_estimate-start0)*np.pi*2/50) > np.pi*0.45:
 
-        odrv0.axis0.controller.input_pos = 0
-        odrv0.axis1.controller.input_pos = 0
+def publish_encoder():
+    pos_roll = (odrv0_.axis1.encoder.pos_estimate -
+                start_roll_)*np.pi*2/gear_ratio_
+    pos_pitch = (odrv0_.axis0.encoder.pos_estimate -
+                 start_pitch_)*np.pi*2/gear_ratio_
+    vel_roll = (odrv0_.axis1.encoder.vel_estimate)*np.pi*2/gear_ratio_
+    vel_pitch = (odrv0_.axis0.encoder.vel_estimate)*np.pi*2/gear_ratio_
 
-        odrv0.axis0.controller.input_vel = 0
-        odrv0.axis1.controller.input_vel = 0
+    msg = JointState()
+    msg.header.stamp = rospy.Time.now()
+    msg.position.append(pos_roll)
+    msg.position.append(pos_pitch)
+    msg.velocity.append(vel_roll)
+    msg.velocity.append(vel_pitch)
+    msg.effort.append(0)
+    msg.effort.append(0)
+    odrive_encoder_pub_.publish(msg)
 
-        odrv0.axis0.controller.input_torque = 0
-        odrv0.axis1.controller.input_torque = 0
 
-        odrv0.axis0.requested_state = AXIS_STATE_IDLE
-        odrv0.axis1.requested_state = AXIS_STATE_IDLE
+def motor_control():
+    pos_roll = (odrv0_.axis1.encoder.pos_estimate -
+                start_roll_)*np.pi*2/gear_ratio_
+    pos_pitch = (odrv0_.axis0.encoder.pos_estimate -
+                 start_pitch_)*np.pi*2/gear_ratio_
+    vel_roll = (odrv0_.axis1.encoder.vel_estimate)*np.pi*2/gear_ratio_
+    vel_pitch = (odrv0_.axis0.encoder.vel_estimate)*np.pi*2/gear_ratio_
 
-        emergency_stop = True
+    if emergency_stop_ or \
+            np.abs(pos_roll) > np.pi*0.5 or \
+            np.abs(pos_pitch) > np.pi*0.5:
+        odrv0_.axis0.controller.input_pos = 0
+        odrv0_.axis1.controller.input_pos = 0
+
+        odrv0_.axis0.controller.input_vel = 0
+        odrv0_.axis1.controller.input_vel = 0
+
+        odrv0_.axis0.controller.input_torque = 0
+        odrv0_.axis1.controller.input_torque = 0
+
+        odrv0_.axis0.requested_state = AXIS_STATE_IDLE
+        odrv0_.axis1.requested_state = AXIS_STATE_IDLE
+
+        emergency_stop_ = True
 
     else:
-        kp, kd = 0, 0
+        if (not imu_msg_) or (not vel_msg_):
+            odrv0_.axis0.controller.input_pos = 0
+            odrv0_.axis1.controller.input_pos = 0
 
-        # gear ratio is 50
-        # Position counts in turns
-        odrv0.axis1.controller.input_pos = start1 + \
-            50/(2*np.pi)*orientation[0]*kp
-        odrv0.axis0.controller.input_pos = start0 + \
-            50/(2*np.pi)*orientation[0]*kp
+            odrv0_.axis0.controller.input_vel = 0
+            odrv0_.axis1.controller.input_vel = 0
 
-        # Velocity counts in turns/sec
-        odrv0.axis0.controller.input_vel = angular_velocity[0]*50/(2*np.pi)*kd
-        odrv0.axis1.controller.input_vel = angular_velocity[1]*50/(2*np.pi)*kd
+            odrv0_.axis0.controller.input_torque = 0
+            odrv0_.axis1.controller.input_torque = 0
+        else:
+            # roll
+            sinr_cosp = 2 * (imu_msg_.orientation.w * imu_msg_.orientation.x +
+                             imu_msg_.orientation.y * imu_msg_.orientation.z)
+            cosr_cosp = 1 - 2 * (imu_msg_.orientation.x * imu_msg_.orientation.x +
+                                 imu_msg_.orientation.y * imu_msg_.orientation.y)
+            roll = np.arctan2(sinr_cosp, cosr_cosp)
 
-        # Torque counts in Nm
-        # odrv0.axis0.controller.input_torque = torque_ff[0]/50
-        # odrv0.axis1.controller.input_torque = torque_ff[1]/50
+            # pitch
+            sinp = 2 * (imu_msg_.orientation.w * imu_msg_.orientation.y -
+                        imu_msg_.orientation.z * imu_msg_.orientation.x)
+            if np.abs(sinp) >= 1:
+                pitch = np.sign(sinp)*np.pi/2
+            else:
+                pitch = np.arcsin(sinp)
+
+            # yaw
+            siny_cosp = 2 * (imu_msg_.orientation.w * imu_msg_.orientation.z +
+                             imu_msg_.orientation.x * imu_msg_.orientation.y)
+            cosy_cosp = 1 - 2 * (imu_msg_.orientation.y * imu_msg_.orientation.y +
+                                 imu_msg_.orientation.z * imu_msg_.orientation.z)
+            yaw = np.arctan2(siny_cosp, cosy_cosp)
+
+            wx = vel_msg_.twist.angular.x
+            wy = vel_msg_.twist.angular.y
+            wz = vel_msg_.twist.angular.z
+
+            odrv0_.axis1.controller.input_pos = start_roll_ + \
+                gear_ratio_ / (2*np.pi)*roll
+            odrv0_.axis1.controller.input_vel = gear_ratio_ / (2*np.pi)*wx
+            odrv0_.axis1.controller.input_torque = 0
+
+            odrv0_.axis0.controller.input_pos = start_pitch_ + \
+                gear_ratio_ / (2*np.pi)*pitch
+            odrv0_.axis0.controller.input_vel = gear_ratio_ / (2*np.pi)*wy
+            odrv0_.axis0.controller.input_torque = 0
+
+        # if not tail_control_msg_:
+        #     odrv0_.axis0.controller.input_pos = 0
+        #     odrv0_.axis1.controller.input_pos = 0
+
+        #     odrv0_.axis0.controller.input_vel = 0
+        #     odrv0_.axis1.controller.input_vel = 0
+
+        #     odrv0_.axis0.controller.input_torque = 0
+        #     odrv0_.axis1.controller.input_torque = 0
+        # else:
+        #     odrv0_.axis1.controller.config.pos_gain = tail_control_msg_.motor_commands[0].kp
+        #     odrv0_.axis1.controller.config.vel_gain = tail_control_msg_.motor_commands[0].kd
+        #     odrv0_.axis1.controller.input_pos = start_roll_ + gear_ratio_ / \
+        #         (2*np.pi)*tail_control_msg_.motor_commands[0].pos_setpoint
+        #     odrv0_.axis1.controller.input_vel = gear_ratio_ / \
+        #         (2*np.pi)*tail_control_msg_.motor_commands[0].vel_setpoint
+        #     odrv0_.axis1.controller.input_torque = tail_control_msg_.motor_commands[
+        #         0].torque_ff/gear_ratio_
+
+        #     odrv0_.axis0.controller.config.pos_gain = tail_control_msg_.motor_commands[1].kp
+        #     odrv0_.axis0.controller.config.vel_gain = tail_control_msg_.motor_commands[1].kd
+        #     odrv0_.axis0.controller.input_pos = start_pitch_ + gear_ratio_ / \
+        #         (2*np.pi)*tail_control_msg_.motor_commands[1].pos_setpoint
+        #     odrv0_.axis0.controller.input_vel = gear_ratio_ / \
+        #         (2*np.pi)*tail_control_msg_.motor_commands[1].vel_setpoint
+        #     odrv0_.axis0.controller.input_torque = tail_control_msg_.motor_commands[
+        #         1].torque_ff/gear_ratio_
 
 
-def feedback_callback(msg):
-    # roll
-    sinr_cosp = 2 * (msg.orientation.w * msg.orientation.x +
-                     msg.orientation.y * msg.orientation.z)
-    cosr_cosp = 1 - 2 * (msg.orientation.x * msg.orientation.x +
-                         msg.orientation.y * msg.orientation.y)
-    roll = np.arctan2(sinr_cosp, cosr_cosp)
-
-    # pitch
-    sinp = 2 * (msg.orientation.w * msg.orientation.y -
-                msg.orientation.z * msg.orientation.x)
-    if np.abs(sinp) >= 1:
-        pitch = np.sign(sinp)*np.pi/2
-    else:
-        pitch = np.arcsin(sinp)
-
-    # yaw
-    siny_cosp = 2 * (msg.orientation.w * msg.orientation.z +
-                     msg.orientation.x * msg.orientation.y)
-    cosy_cosp = 1 - 2 * (msg.orientation.y * msg.orientation.y +
-                         msg.orientation.z * msg.orientation.z)
-    yaw = np.arctan2(siny_cosp, cosy_cosp)
-
-    orientation = [roll, pitch, yaw]
-    # print("----------------orientation----------------")
-    # print(orientation)
-
-    angular_velocity = [msg.twist.angular.x,
-                        msg.twist.angular.y, msg.twist.angular.z]
-    # print("----------------angular_velocity----------------")
-    # print(angular_velocity)
-
-    balance_controller(orientation, angular_velocity)
+def imuCallback(msg):
+    global imu_msg_
+    imu_msg_ = msg
 
 
-def mpc_callback(msg):
-    #rospy.loginfo(rospy.get_caller_id() + "I heard %s", msg.motor_commands[1].pos_setpoint)
-
-    currentpos0 = odrv0.axis0.encoder.pos_estimate
-    currentpos1 = odrv0.axis1.encoder.pos_estimate
-    pos0 = msg.motor_commands[0].pos_setpoint
-    pos1 = msg.motor_commands[1].pos_setpoint
-
-    rospy.loginfo("Motor 0 is at: " + str(currentpos0) +
-                  " should be " + str(pos0))
-
-    odrv0.axis0.controller.pos_setpoint = pos0
-    odrv0.axis1.controller.pos_setpoint = pos1
+def velCallback(msg):
+    global vel_msg_
+    vel_msg_ = msg
 
 
-def listener():
-    # Set up the motors!
-    odrv0.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
-    odrv0.axis1.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
+def spin():
+    global odrv0_
 
-    use_mpc = rospy.get_param("/tail_controller/use_mpc")
-    rospy.init_node('listener', anonymous=True)
+    rospy.init_node('odrive_converter', anonymous=True)
 
-    if(use_mpc):
-        # Track mpc trajectory
-        tail_topic = "/control/tail_command"
-        rospy.Subscriber(tail_topic, LegCommand, mpc_callback, queue_size=1)
-    else:
-        # Feedback control
-        state_topic = "/mcu/state/vel"
-        rospy.Subscriber(state_topic, TwistStamped,
-                         feedback_callback, queue_size=1)
-        # state_topic = "/mcu/state/imu"
-        # rospy.Subscriber(state_topic, Imu, feedback_callback, queue_size=1)
-
-    # spin() simply keeps python from exiting until this node is stopped
-    rospy.spin()
+    r = rospy.Rate(update_rate_)
+    while not rospy.is_shutdown():
+        publish_encoder()
+        motor_control()
+        r.sleep()
 
     # put motors into idle when program is killed
-    odrv0.axis0.requested_state = AXIS_STATE_IDLE
-    odrv0.axis1.requested_state = AXIS_STATE_IDLE
+    odrv0_.axis0.requested_state = AXIS_STATE_IDLE
+    odrv0_.axis1.requested_state = AXIS_STATE_IDLE
 
 
 if __name__ == '__main__':
-    listener()
+    spin()
