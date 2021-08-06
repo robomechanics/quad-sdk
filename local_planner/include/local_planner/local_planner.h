@@ -153,6 +153,12 @@ private:
   /// Computation time in computeLocalPlan
   double compute_time_;
 
+  /// Average computation time in computeLocalPlan
+  double mean_compute_time_;
+
+  /// Exponential filter smoothing constant (higher updates slower)
+  const double filter_smoothing_constant_ = 0.5;
+
   /// MPC Horizon length
   const int N_ = 24;
 
@@ -195,6 +201,7 @@ private:
   /// Spirit Kinematics class
   std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
 
+  /// Boolean for using nonlinear MPC
   bool use_nmpc_;
 };
 
