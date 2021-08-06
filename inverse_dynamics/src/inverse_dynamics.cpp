@@ -168,32 +168,32 @@ void InverseDynamics::publishLegCommandArray() {
 
   // Get reference state and grf from local plan or traj + grf messages
   if (input_type == LOCAL_PLAN) {
-    double current_time = spirit_utils::getDurationSinceTime(
-      last_local_plan_msg_->global_plan_timestamp);
-    int current_plan_index = spirit_utils::getPlanIndex(
-      last_local_plan_msg_->global_plan_timestamp, dt_);
-    double t_interp = std::fmod(current_time,dt_)/dt_;
 
-    // printf("current_time = %5.3f\n", current_time);
-    // printf("current_plan_index = %d\n", current_plan_index);
-    // printf("t_interp = %5.3f\n", t_interp);
-    // printf("\n");
+    double t_now = ros::Time::now().toSec();
     
-    if ((current_plan_index < last_local_plan_msg_->plan_indices.front()) || 
-        (current_plan_index > last_local_plan_msg_->plan_indices.back()) ) {
+    if ( (t_now < last_local_plan_msg_->states.front().header.stamp.toSec()) || 
+         (t_now > last_local_plan_msg_->states.back().header.stamp.toSec()) ) {
       ROS_ERROR("ID node couldn't find the correct ref state!");
-    }
+    }    
 
     // Interpolate the local plan to get the reference state and ff GRF
     for (int i = 0; i < last_local_plan_msg_->states.size()-1; i++) {
-      if ((current_plan_index >= last_local_plan_msg_->plan_indices[i]) && 
-          (current_plan_index <  last_local_plan_msg_->plan_indices[i+1])) {
+      
+      if ( (t_now >= last_local_plan_msg_->states[i].header.stamp.toSec()) && 
+          ( t_now <  last_local_plan_msg_->states[i+1].header.stamp.toSec() )) {
+
+        double t_interp = (t_now - last_local_plan_msg_->states[i].header.stamp.toSec())/
+          (last_local_plan_msg_->states[i+1].header.stamp.toSec() - 
+           last_local_plan_msg_->states[i].header.stamp.toSec());
         
         spirit_utils::interpRobotState(last_local_plan_msg_->states[i],
           last_local_plan_msg_->states[i+1], t_interp, ref_state_msg);
 
-        spirit_utils::interpGRFArray(last_local_plan_msg_->grfs[i],
-          last_local_plan_msg_->grfs[i+1], t_interp, grf_array_msg);
+        // spirit_utils::interpGRFArray(last_local_plan_msg_->grfs[i],
+        //   last_local_plan_msg_->grfs[i+1], t_interp, grf_array_msg);
+
+        // ref_state_msg = last_local_plan_msg_->states[i];
+        grf_array_msg = last_local_plan_msg_->grfs[i];
 
         break;
       }

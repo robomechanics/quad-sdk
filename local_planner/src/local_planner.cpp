@@ -288,8 +288,8 @@ void LocalPlanner::getStateAndReferencePlan() {
 
   // Initialize with current foot and body positions
   body_plan_.row(0) = current_state_;
-  foot_positions_body_.row(0) = current_foot_positions_body_;
-  foot_positions_world_.row(0) = current_foot_positions_world_;
+  // foot_positions_body_.row(0) = current_foot_positions_body_;
+  // foot_positions_world_.row(0) = current_foot_positions_world_;
 }
 
 void LocalPlanner::getStateAndTwistInput() {
@@ -432,8 +432,11 @@ bool LocalPlanner::computeLocalPlan() {
     }
   }
 
-  // Report the function time
-  compute_time_ = 1000*timer.reportSilent();
+  // Record computation time and update exponential filter
+  compute_time_ = 1000.0*timer.reportSilent();
+  mean_compute_time_ = (filter_smoothing_constant_)*mean_compute_time_ +
+    (1-filter_smoothing_constant_)*compute_time_;
+
   if (compute_time_ >= 1000.0/update_rate_) {
     ROS_WARN_THROTTLE(0.1, "LocalPlanner took %5.3fms, exceeding %5.3fms allowed",
       compute_time_, 1000.0/update_rate_);
@@ -445,6 +448,16 @@ bool LocalPlanner::computeLocalPlan() {
 }
 
 void LocalPlanner::publishLocalPlan() {
+
+  // if (current_plan_index_ >= 50) {
+  //   std::cout << "current_state_\n" << current_state_ << std::endl;
+  //   std::cout << "ref_body_plan_\n" << ref_body_plan_ << std::endl;
+  //   std::cout << "body_plan_\n" << body_plan_ << std::endl;
+  //   std::cout << "grf_plan_\n" << grf_plan_ << std::endl;
+  //   std::cout << "foot_positions_world_\n" << foot_positions_world_ << std::endl;
+  //   std::cout << "foot_positions_body_\n" << foot_positions_body_ << std::endl;
+  //   throw std::runtime_error("Stop");
+  // }
   
   // Create messages to publish
   spirit_msgs::RobotPlan local_plan_msg;
