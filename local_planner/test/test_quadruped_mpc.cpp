@@ -19,7 +19,7 @@ TEST(TestUseCase, quadVariable) {
   // Configurable (system) parameters
   const int Nu = 13;      // Appended gravity term
   const int Nx = 12;      // Number of states
-  const int N = 36;       // Time horizons to consider
+  const int N = 24;       // Time horizons to consider
   const double dt = 0.03; // Time horizon
   const double m = 11.5;    // Mass of quad
   const double Ixx = 0.1; // approximately SDF values, but will need refining
