@@ -232,8 +232,8 @@ private:
   /// Threshold for waiting for twist cmd_vel data
   double last_cmd_vel_msg_time_max_;
 
-  /// Plan timestamp
-  ros::Time plan_timestamp_;
+  /// Initial timestamp for contact cycling
+  ros::Time initial_timestamp_;
 
   /// Foot initialization flag when using twist input without a global body plan
   bool first_plan_;

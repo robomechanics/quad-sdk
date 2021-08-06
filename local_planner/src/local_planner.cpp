@@ -75,7 +75,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   // Zero the velocity to start
   std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
 
-  plan_timestamp_ = ros::Time::now();
+  initial_timestamp_ = ros::Time::now();
   first_plan_ = true;
 }
 
@@ -220,7 +220,7 @@ void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg) {
   if ((cmd_vel_[0] != msg->linear.x) || (cmd_vel_[1] != msg->linear.y) || 
     (cmd_vel_[5] != msg->angular.z)) {
     
-    //plan_timestamp_ = ros::Time::now();
+    //initial_timestamp_ = ros::Time::now();
   }
   // Ignore non-planar components of desired twist
   cmd_vel_[0] = cmd_vel_scale_*msg->linear.x;
@@ -298,7 +298,7 @@ void LocalPlanner::getStateAndTwistInput() {
     return;
 
   // Get index
-  current_plan_index_ = spirit_utils::getPlanIndex(plan_timestamp_,dt_);
+  current_plan_index_ = spirit_utils::getPlanIndex(initial_timestamp_,dt_);
 
   if (first_plan_) {
     first_plan_ = false;
@@ -471,7 +471,7 @@ void LocalPlanner::publishLocalPlan() {
   if (!use_twist_input_) {
     local_plan_msg.global_plan_timestamp = body_plan_msg_->global_plan_timestamp;
   } else {
-    local_plan_msg.global_plan_timestamp = plan_timestamp_;
+    local_plan_msg.global_plan_timestamp = initial_timestamp_;
   }
   local_plan_msg.compute_time = compute_time_;
   future_footholds_msg.header = local_plan_msg.header;
