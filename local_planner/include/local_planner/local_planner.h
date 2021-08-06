@@ -36,6 +36,7 @@ class LocalPlanner {
   void spin();  
   
 private:
+
   /**
    * @brief Initialize the local body planner
    */
@@ -65,9 +66,20 @@ private:
   void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 
   /**
+   * @brief Callback function to handle new desired twist data when using twist input
+   * @param[in] msg the message contining twist data
+   */
+  void cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg);
+
+  /**
    * @brief Function to pre-process the body plan and robot state messages into Eigen arrays
    */
   void getStateAndReferencePlan();
+
+  /**
+   * @brief Function to read robot state and twist command messages into Eigen arrays
+   */
+  void getStateAndTwistInput();
 
   /**
    * @brief Function to compute the local plan
@@ -88,6 +100,9 @@ private:
 
   /// ROS Subscriber for incoming states
   ros::Subscriber robot_state_sub_;
+
+  /// Subscriber for twist input messages
+  ros::Subscriber cmd_vel_sub_;
 
 	/// ROS publisher for local plan output
 	ros::Publisher local_plan_pub_;
@@ -194,6 +209,29 @@ private:
 
   /// Spirit Kinematics class
   std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
+
+  /// Twist command
+  typedef std::vector<double> Twist;
+  Twist cmd_vel_;
+
+  /// Scale for twist cmd_val
+  double cmd_vel_scale_;
+
+  /// Nominal robot height
+  const double z_des_ = 0.3;
+
+  /// Time of the most recent cmd_vel data
+  ros::Time last_cmd_vel_msg_time_;
+
+  /// Threshold for waiting for twist cmd_vel data
+  double last_cmd_vel_msg_time_max_;
+
+  /// Plan timestamp
+  ros::Time plan_timestamp_;
+
+  bool first_plan_;
+
+  bool use_twist_input_;
 
   bool use_nmpc_;
 };
