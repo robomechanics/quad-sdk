@@ -195,8 +195,11 @@ void InverseDynamics::publishLegCommandArray() {
         spirit_utils::interpRobotState(last_local_plan_msg_->states[i],
           last_local_plan_msg_->states[i+1], t_interp, ref_state_msg);
 
-        spirit_utils::interpGRFArray(last_local_plan_msg_->grfs[i],
-          last_local_plan_msg_->grfs[i+1], t_interp, grf_array_msg);
+        // spirit_utils::interpGRFArray(last_local_plan_msg_->grfs[i],
+        //   last_local_plan_msg_->grfs[i+1], t_interp, grf_array_msg);
+
+        // ref_state_msg = last_local_plan_msg_->states[i];
+        grf_array_msg = last_local_plan_msg_->grfs[i];
 
         break;
       }
