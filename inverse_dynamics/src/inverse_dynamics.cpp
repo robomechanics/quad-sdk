@@ -169,12 +169,6 @@ void InverseDynamics::publishLegCommandArray() {
   // Get reference state and grf from local plan or traj + grf messages
   if (input_type == LOCAL_PLAN) {
 
-    double current_time = spirit_utils::getDurationSinceTime(
-      last_local_plan_msg_->global_plan_timestamp);
-    int current_plan_index = spirit_utils::getPlanIndex(
-      last_local_plan_msg_->global_plan_timestamp, dt_);
-    double t_interp = std::fmod(current_time,dt_)/dt_;
-
     double t_now = ros::Time::now().toSec();
     
     if ( (t_now < last_local_plan_msg_->states.front().header.stamp.toSec()) || 

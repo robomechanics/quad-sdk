@@ -9,9 +9,9 @@ local_body_planner:
   body_ixx: 0.1
   body_iyy: 0.2
   body_izz: 0.2
-  state_weights: [ 10.0,10.0,50.0,10.0,10.0,10.0,1.0,1.0,1.0,1.0,1.0,1.0 ] # state_weights: [ 1000.0,1000.0,1000.0,1000.0,1000.0,1000.0,0.01,0.01,0.01,0.01,0.01,0.01 ]
+  state_weights: [ 10.0,10.0,50.0,10.0,10.0,10.0,10.0,10.0,10.0,1.0,1.0,1.0 ]
   terminal_weight_scaling: 1.0
-  control_weights: [0.000001, 0.000001, 0.000001] #fx,fy,fz # control_weights: [0.0001, 0.0001, 0.0001] #fx,fy,fz
+  control_weights: [0.000001, 0.000001, 0.000001] #fx,fy,fz 
   state_lower_bound: [-100,-100, 0.15,-0.785,-0.785,-10,-5,-5,-2,-10,-10,-10]
   state_upper_bound: [ 100, 100, 0.35, 0.785, 0.785, 10, 5, 5, 2, 10, 10, 10]
   friction_mu: 0.5
