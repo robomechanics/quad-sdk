@@ -279,7 +279,17 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         }
 
         // Compute the current position and velocity from the swing phase variables
-        double swing_phase = (i - i_liftoff)/(double)swing_duration;
+        double swing_phase;
+        if (swing_duration == 0)
+        {
+          // Avoid division by zero when liftoff is the terminal state
+          swing_phase = 0;
+          swing_duration = 1;
+        }
+        else
+        {
+          swing_phase = (i - i_liftoff)/(double)swing_duration;
+        }
         computeSwingFootState(foot_position_prev, foot_position_next, swing_phase, swing_duration,
           foot_position, foot_velocity, foot_acceleration);
         foot_state_msg.contact = false;
