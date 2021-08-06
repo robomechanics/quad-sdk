@@ -11,10 +11,9 @@
         <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen" />
     </group>
 
-    <!-- Launch the node to publish the twist body plan -->
+    <!-- Use twist input to local plan and no global plan -->
     <group if="$(eval arg('global_planner') == 'twist')">
-        <node name="twist_body_planner" pkg="twist_body_planner" type="twist_body_planner_node" output="screen"/>
-        <!--<node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" output="log"/>-->
+        <param name="local_planner/use_twist_input" value="true"/>
     </group>
 
 
