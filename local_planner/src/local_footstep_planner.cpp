@@ -194,9 +194,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         // Combine these measures to get the nominal foot position and grab correct height
         // foot_position_nominal = grf_weight_*foot_position_grf +
         //   (1-grf_weight_)*(hip_position_midstance + vel_tracking);
-        foot_position_nominal = hip_position_midstance;// + centrifugal + vel_tracking;
-        // foot_position_nominal.z() = terrain_.getGroundHeight(foot_position_nominal.x(),
-        //   foot_position_nominal.y());
+        foot_position_nominal = hip_position_midstance + centrifugal + vel_tracking;
         grid_map::Position foot_position_grid_map = {foot_position_nominal.x(), foot_position_nominal.y()};
         foot_position_nominal.z() = terrain_grid_.atPosition("z", foot_position_grid_map,
           grid_map::InterpolationMethods::INTER_NEAREST);
@@ -289,7 +287,17 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         }
 
         // Compute the current position and velocity from the swing phase variables
-        double swing_phase = (i - i_liftoff)/(double)swing_duration;
+        double swing_phase;
+        if (swing_duration == 0)
+        {
+          // Avoid division by zero when liftoff is the terminal state
+          swing_phase = 0;
+          swing_duration = 1;
+        }
+        else
+        {
+          swing_phase = (i - i_liftoff)/(double)swing_duration;
+        }
         computeSwingFootState(foot_position_prev, foot_position_next, swing_phase, swing_duration,
           foot_position, foot_velocity, foot_acceleration);
         foot_state_msg.contact = false;
