@@ -10,6 +10,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   
     // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic, local_plan_topic,
+    foot_plan_discrete_topic, foot_plan_continuous_topic, cmd_vel_topic;
     foot_plan_discrete_topic, foot_plan_continuous_topic, tail_plan_topic;
   spirit_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
   spirit_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
@@ -19,6 +20,8 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   spirit_utils::loadROSParam(nh_, "topics/foot_plan_continuous", foot_plan_continuous_topic);
   spirit_utils::loadROSParam(nh_, "/topics/control/tail_plan", tail_plan_topic);
   spirit_utils::loadROSParam(nh_, "map_frame", map_frame_);
+
+  nh_.param<std::string>("topics/cmd_vel", cmd_vel_topic, "/cmd_vel");
 
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1, &LocalPlanner::terrainMapCallback, this);
@@ -31,10 +34,15 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
     spirit_msgs::MultiFootPlanContinuous>(foot_plan_continuous_topic,1);
   tail_plan_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(tail_plan_topic, 1);
 
+  cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic,1,&LocalPlanner::cmdVelCallback, this);
+
   // Load system parameters
   spirit_utils::loadROSParam(nh_, "local_planner/update_rate", update_rate_);
   spirit_utils::loadROSParam(nh_, "local_planner/timestep",dt_);
   spirit_utils::loadROSParam(nh_, "local_planner/iterations",iterations_);
+
+  nh_.param<double>("twist_body_planner/cmd_vel_scale", cmd_vel_scale_, 1);
+  nh_.param<double>("twist_body_planner/last_cmd_vel_msg_time_max",last_cmd_vel_msg_time_max_,1.0);
 
   // Convert kinematics
   kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
@@ -59,6 +67,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_*3);
   
   nh.param<bool>("local_planner/use_nmpc", use_nmpc_, false);
+  nh.param<bool>("local_planner/use_twist_input", use_twist_input_, false);
 
   nh.param<int>("/tail_controller/tail_type", tail_type_, 0);
 
@@ -68,6 +77,14 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   // Initialize body and footstep planners
   initLocalBodyPlanner();
   initLocalFootstepPlanner();
+
+  // Initialize twist input
+  cmd_vel_.resize(6);
+  // Zero the velocity to start
+  std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
+
+  initial_timestamp_ = ros::Time::now();
+  first_plan_ = true;
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -210,6 +227,26 @@ void LocalPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& m
   robot_state_msg_ = msg;
 }
 
+void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg) {
+
+  if ((cmd_vel_[0] != msg->linear.x) || (cmd_vel_[1] != msg->linear.y) || 
+    (cmd_vel_[5] != msg->angular.z)) {
+    
+    //initial_timestamp_ = ros::Time::now();
+  }
+  // Ignore non-planar components of desired twist
+  cmd_vel_[0] = cmd_vel_scale_*msg->linear.x;
+  cmd_vel_[1] = cmd_vel_scale_*msg->linear.y;
+  cmd_vel_[2] = 0;
+  cmd_vel_[3] = 0;
+  cmd_vel_[4] = 0;
+  cmd_vel_[5] = cmd_vel_scale_*msg->angular.z;
+
+  // Record when this was last reached for safety
+  last_cmd_vel_msg_time_ = ros::Time::now();
+
+}
+
 void LocalPlanner::getStateAndReferencePlan() {
 
   // Make sure body plan and robot state data is populated
@@ -269,13 +306,104 @@ void LocalPlanner::getStateAndReferencePlan() {
 
   // Initialize with current foot and body positions
   body_plan_.row(0) = current_state_;
+  // foot_positions_body_.row(0) = current_foot_positions_body_;
+  // foot_positions_world_.row(0) = current_foot_positions_world_;
+}
+
+void LocalPlanner::getStateAndTwistInput() {
+  //*
+  if (robot_state_msg_ == NULL)
+    return;
+
+  // Get index
+  current_plan_index_ = spirit_utils::getPlanIndex(initial_timestamp_,dt_);
+
+  if (first_plan_) {
+    first_plan_ = false;
+    past_footholds_msg_.header = robot_state_msg_->header;
+    for (int i = 0; i < num_feet_; i++) {
+      past_footholds_msg_.feet[i].footholds.clear();
+      past_footholds_msg_.feet[i].footholds.push_back(robot_state_msg_->feet.feet[i]);
+      past_footholds_msg_.feet[i].footholds.front().header = past_footholds_msg_.header;
+      past_footholds_msg_.feet[i].footholds.front().traj_index = 0;
+    }
+  }
+
+  // Get the current body and foot positions into Eigen
+  current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
+  spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
+  local_footstep_planner_->getFootPositionsBodyFrame(current_state_, current_foot_positions_world_,
+      current_foot_positions_body_);
+
+  ref_body_plan_.setZero();
+
+  // Check that we have recent twist data, otherwise set cmd_vel to zero
+  ros::Duration time_elapsed_since_msg = ros::Time::now() - last_cmd_vel_msg_time_;
+  if (time_elapsed_since_msg.toSec() > last_cmd_vel_msg_time_max_) {
+    std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
+    ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
+  }
+
+  // Integrate to get full body plan
+  ref_body_plan_(0,0) = current_state_[0];
+  ref_body_plan_(0,1) = current_state_[1];
+  ref_body_plan_(0,2) = z_des_;
+  ref_body_plan_(0,3) = 0;
+  ref_body_plan_(0,4) = 0;
+  ref_body_plan_(0,5) = current_state_[5];
+  ref_body_plan_(0,6) = cmd_vel_[0];
+  ref_body_plan_(0,7) = cmd_vel_[1];
+  ref_body_plan_(0,8) = cmd_vel_[2];
+  ref_body_plan_(0,9) = cmd_vel_[3];
+  ref_body_plan_(0,10) = cmd_vel_[4];
+  ref_body_plan_(0,11) = cmd_vel_[5];
+  for (int i = 1; i < N_+1; i++) {
+    Twist current_cmd_vel = cmd_vel_;
+
+    double yaw = ref_body_plan_(i-1,5);
+    current_cmd_vel[0] = cmd_vel_[0]*cos(yaw) - cmd_vel_[1]*sin(yaw);
+    current_cmd_vel[1] = cmd_vel_[0]*sin(yaw) + cmd_vel_[1]*cos(yaw);
+
+    for (int j = 0; j < 6; j ++) {
+      ref_body_plan_(i,j) = ref_body_plan_(i-1,j) + current_cmd_vel[j]*dt_;
+      ref_body_plan_(i,j+6) = (current_cmd_vel[j]);
+    }
+  }
+
+  // Update the body plan to use for linearization
+  if (body_plan_.rows() < N_+1) {
+    // Cold start with reference  plan
+    body_plan_ = ref_body_plan_;
+
+    // foot_positions_body_ = hip_projected_foot_positions_;
+    // foot_positions_world_.setZero();
+
+    // Initialize with the current foot positions
+    for (int i = 0; i < N_; i++) {
+      foot_positions_body_.row(i) = current_foot_positions_body_;
+      foot_positions_world_.row(i) = current_foot_positions_world_;
+    }
+  } else {
+    // Warm start with old solution indexed by one
+    body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
+    body_plan_.row(N_+1) = ref_body_plan_.row(N_+1);
+    // body_plan_.bottomRows(1) = ref_body_plan_.bottomRows(1);
+
+    // No reference for feet so last two elements will be the same
+    foot_positions_body_.topRows(N_-1) = foot_positions_body_.bottomRows(N_-1);
+    foot_positions_world_.topRows(N_-1) = foot_positions_world_.bottomRows(N_-1);
+  }
+
+  // Initialize with current foot and body positions
+  body_plan_.row(0) = current_state_;
   foot_positions_body_.row(0) = current_foot_positions_body_;
   foot_positions_world_.row(0) = current_foot_positions_world_;
+  //*/
 }
 
 bool LocalPlanner::computeLocalPlan() {
 
-  if (terrain_.isEmpty() || body_plan_msg_ == NULL || robot_state_msg_ == NULL)
+  if (terrain_.isEmpty() || body_plan_msg_ == NULL && !use_twist_input_ || robot_state_msg_ == NULL)
     return false;  
 
   // If desired, start the timer
@@ -327,8 +455,11 @@ bool LocalPlanner::computeLocalPlan() {
     }
   }
 
-  // Report the function time
-  compute_time_ = 1000*timer.reportSilent();
+  // Record computation time and update exponential filter
+  compute_time_ = 1000.0*timer.reportSilent();
+  mean_compute_time_ = (filter_smoothing_constant_)*mean_compute_time_ +
+    (1-filter_smoothing_constant_)*compute_time_;
+
   if (compute_time_ >= 1000.0/update_rate_) {
     ROS_WARN_THROTTLE(0.1, "LocalPlanner took %5.3fms, exceeding %5.3fms allowed",
       compute_time_, 1000.0/update_rate_);
@@ -340,6 +471,16 @@ bool LocalPlanner::computeLocalPlan() {
 }
 
 void LocalPlanner::publishLocalPlan() {
+
+  // if (current_plan_index_ >= 50) {
+  //   std::cout << "current_state_\n" << current_state_ << std::endl;
+  //   std::cout << "ref_body_plan_\n" << ref_body_plan_ << std::endl;
+  //   std::cout << "body_plan_\n" << body_plan_ << std::endl;
+  //   std::cout << "grf_plan_\n" << grf_plan_ << std::endl;
+  //   std::cout << "foot_positions_world_\n" << foot_positions_world_ << std::endl;
+  //   std::cout << "foot_positions_body_\n" << foot_positions_body_ << std::endl;
+  //   throw std::runtime_error("Stop");
+  // }
   
   // Create messages to publish
   spirit_msgs::RobotPlan local_plan_msg;
@@ -351,7 +492,11 @@ void LocalPlanner::publishLocalPlan() {
   ros::Time timestamp = ros::Time::now();
   local_plan_msg.header.stamp = timestamp;
   local_plan_msg.header.frame_id = map_frame_;
-  local_plan_msg.global_plan_timestamp = body_plan_msg_->global_plan_timestamp;
+  if (!use_twist_input_) {
+    local_plan_msg.global_plan_timestamp = body_plan_msg_->global_plan_timestamp;
+  } else {
+    local_plan_msg.global_plan_timestamp = initial_timestamp_;
+  }
   local_plan_msg.compute_time = compute_time_;
   future_footholds_msg.header = local_plan_msg.header;
   foot_plan_msg.header = local_plan_msg.header;
@@ -432,11 +577,17 @@ void LocalPlanner::spin() {
     ros::spinOnce();
 
     // Wait until all required data has been received
-    if (terrain_.isEmpty() || body_plan_msg_ == NULL || robot_state_msg_ == NULL)
+    if (terrain_.isEmpty() || body_plan_msg_ == NULL && !use_twist_input_ || robot_state_msg_ == NULL)
       continue;
 
-    // Get the reference plan and robot state into the desired data structures
-    getStateAndReferencePlan();
+    
+    if (use_twist_input_) {
+      // Get twist commands
+      getStateAndTwistInput();
+    } else {
+      // Get the reference plan and robot state into the desired data structures
+      getStateAndReferencePlan();
+    }
 
     // Compute the local plan and publish if it solved successfully, otherwise just sleep
     if (computeLocalPlan())

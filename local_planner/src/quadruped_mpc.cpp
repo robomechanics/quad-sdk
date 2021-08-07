@@ -19,6 +19,8 @@ QuadrupedMPC::QuadrupedMPC() {
   int Nx = nx_;
   int Nu = nu_;
 
+  dt_vec_ = Eigen::VectorXd::Zero(N_);
+
   num_dyn_constraints_ = N * Nx;
   num_constraints_per_leg_ = 5;
   num_contact_constraints_per_step_ = (num_constraints_per_leg_*4 + 1);
@@ -44,6 +46,7 @@ void QuadrupedMPC::setMassProperties(const double m, const Eigen::Matrix3d Ib) {
 
 void QuadrupedMPC::setTimestep(const double dt) {
   dt_ = dt;
+  dt_vec_.setConstant(dt);
   dt_set_ = true;
 }
 
@@ -120,15 +123,9 @@ void QuadrupedMPC::update_dynamics(const Eigen::MatrixXd &ref_traj,
 
   // Create fixed components of dynamics matrices
   Eigen::MatrixXd Ad = Eigen::MatrixXd::Zero(nx_,nx_);
+  Eigen::MatrixXd Bd = Eigen::MatrixXd::Zero(nx_,nu_);
   Ad.block(0,0,6,6) = Eigen::MatrixXd::Identity(6,6);
   Ad.block(6,6,6,6) = Eigen::MatrixXd::Identity(6,6);
-  Ad.block(0,6,3,3) = Eigen::MatrixXd::Identity(3,3)*dt_;
-
-  Eigen::MatrixXd Bd = Eigen::MatrixXd::Zero(nx_,nu_);
-  for (int i = 0; i < num_feet_; ++i) {
-    Bd.block(6,3*i,3,3) = Eigen::MatrixXd::Identity(3,3)/m_*dt_;
-  }
-  Bd(8,12) = -g_*dt_; // gravity acts downwards here
 
   // Reset dynamics matrix (not strictly necessary but good practice)
   A_dyn_dense_ = Eigen::MatrixXd::Zero(num_dyn_constraints_,num_decision_vars_);
@@ -136,7 +133,6 @@ void QuadrupedMPC::update_dynamics(const Eigen::MatrixXd &ref_traj,
   // Placeholder matrices for dynamics
   Eigen::MatrixXd Adi(nx_,nx_);
   Eigen::MatrixXd Bdi(nx_,nu_);
-  
   
   Eigen::VectorXd yaws = ref_traj.col(5);
   for (int i = 0; i < N_; ++i) {
@@ -150,22 +146,33 @@ void QuadrupedMPC::update_dynamics(const Eigen::MatrixXd &ref_traj,
     Adi = Ad;
     Bdi = Bd;
 
+    // Update our linear velocity integration
+    Adi.block(0,6,3,3) = Eigen::MatrixXd::Identity(3,3)*dt_vec_[i];
+    
     // Update our linearized angular velocity integration
-    Adi.block(3,9,3,3) = Rzt*dt_;
-    //std::cout << "Rzt: " << std::endl << Rzt << std::endl;
+    Adi.block(3,9,3,3) = Rzt*dt_vec_[i];
 
-    // Update our foot positions
+    // Update our net linear acceleration from foot forces
+    for (int i = 0; i < num_feet_; ++i) {
+      Bdi.block(6,3*i,3,3) = Eigen::MatrixXd::Identity(3,3)/m_*dt_vec_[i];
+    }
+
+    // Update our net moment due to foot positions
     for (int j = 0; j < num_feet_; ++j) {
       Eigen::Matrix3d foot_pos_hat;
       foot_pos_hat << 0, -foot_positions(i,3*j+2),foot_positions(i,3*j+1),
                       foot_positions(i,3*j+2), 0, -foot_positions(i,3*j+0),
                       -foot_positions(i,3*j+1), foot_positions(i,3*j+0), 0;
-      Bdi.block(9,3*j,3,3) = Iw_inv * foot_pos_hat * dt_;//Eigen::Matrix3d::Zero();
+      Bdi.block(9,3*j,3,3) = Iw_inv * foot_pos_hat * dt_vec_[i];//Eigen::Matrix3d::Zero();
     }
+
+    Bdi(8,12) = -g_*dt_vec_[i]; // gravity acts downwards here
 
     A_dyn_dense_.block(nx_*i,nx_*i,nx_,nx_) = Adi;
     A_dyn_dense_.block(nx_*i,nx_*(i+1),nx_,nx_) = -Eigen::MatrixXd::Identity(nx_,nx_);
     A_dyn_dense_.block(nx_*i,num_state_vars_+nu_*i,nx_,nu_) = Bdi;
+    // A_dyn_dense_.block(nx_*i,num_state_vars_+nu_*i,nx_,nu_) = 0.5*Bdi;
+    // A_dyn_dense_.block(nx_*i,num_state_vars_+nu_*(i+1),nx_,nu_) = 0.5*Bdi;
   }
 }
 
@@ -306,8 +313,9 @@ bool QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
     solver_.settings()->setWarmStart(true);
     solver_.settings()->setCheckTermination(10);
     solver_.settings()->setScaling(false);
-    solver_.settings()->setAbsoluteTolerance(1e-2); //1e-2
+    solver_.settings()->setAbsoluteTolerance(1e-3); //1e-2
     solver_.settings()->setRelativeTolerance(1e-4); //1e-4
+    // solver_.settings()->setTimeLimit(0.01); //1e-4
     solver_.initSolver();
 
   }
@@ -338,6 +346,14 @@ bool QuadrupedMPC::solve(const Eigen::VectorXd &initial_state,
               << std::endl;
   #endif
 }
+
+// void QuadrupedMPC::forwardIntegration(const Eigen::VectorXd &initial_state, 
+//   const Eigen::MatrixXd &ref_traj, const Eigen::MatrixXd &foot_positions,
+//   const std::vector<std::vector<bool>> &contact_schedule,
+//   Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj) {
+
+// }
+
 
 bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state, 
   const Eigen::MatrixXd &ref_traj, const Eigen::MatrixXd &foot_positions,
