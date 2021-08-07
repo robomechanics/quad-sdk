@@ -117,6 +117,11 @@ NMPCController::NMPCController(int type)
   last_control_traj_ = u.transpose();
 
   app_->Options()->SetStringValue("warm_start_same_structure", "yes");
+
+  mynlp_->w0_.setZero();
+  mynlp_->z_L0_.setZero();
+  mynlp_->z_U0_.setZero();
+  mynlp_->lambda0_.setZero();
 }
 
 bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,

@@ -225,16 +225,14 @@ bool spiritNLP::get_bounds_info(
          x_l_matrix.block(i * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1) = leg_input_.block(0, i, m_ - leg_input_start_idx_, 1);
          x_u_matrix.block(i * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1) = leg_input_.block(0, i, m_ - leg_input_start_idx_, 1);
       }
-      else
+      
+      // Contact sequence
+      for (int j = 0; j < 4; ++j)
       {
-         // Contact sequence
-         for (int j = 0; j < 4; ++j)
-         {
-            x_l_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1) =
-               (x_l_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1).array() * contact_sequence_(j, i)).matrix();
-            x_u_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1) =
-               (x_u_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1).array() * contact_sequence_(j, i)).matrix();
-         }
+         x_l_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1) =
+             (x_l_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1).array() * contact_sequence_(j, i)).matrix();
+         x_u_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1) =
+             (x_u_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1).array() * contact_sequence_(j, i)).matrix();
       }
 
       // States bound

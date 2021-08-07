@@ -10,8 +10,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   
     // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic, local_plan_topic,
-    foot_plan_discrete_topic, foot_plan_continuous_topic, cmd_vel_topic;
-    foot_plan_discrete_topic, foot_plan_continuous_topic, tail_plan_topic;
+    foot_plan_discrete_topic, foot_plan_continuous_topic, cmd_vel_topic, tail_plan_topic;
   spirit_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
   spirit_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   spirit_utils::loadROSParam(nh_, "topics/state/ground_truth",robot_state_topic);
