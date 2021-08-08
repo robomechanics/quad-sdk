@@ -14,13 +14,6 @@
     <!-- Use twist input to local plan and no global plan -->
     <group if="$(eval arg('global_planner') == 'twist')">
         <param name="local_planner/use_twist_input" value="true"/>
-
-        <node name="twist_key_controller"
-            pkg="spirit_utils"
-            type="twist_key_controller.py"
-            respawn="false"
-            output="screen">
-        </node>
     </group>
 
 
