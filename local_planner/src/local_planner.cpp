@@ -138,7 +138,7 @@ void LocalPlanner::initLocalBodyPlanner() {
   // Create mpc wrapper class
   if (use_nmpc_)
   {
-    local_body_planner_nonlinear_ = std::make_shared<NMPCController>(false);
+    local_body_planner_nonlinear_ = std::make_shared<NMPCController>(0);
   }
   else
   {
@@ -411,16 +411,7 @@ bool LocalPlanner::computeLocalPlan() {
     // Compute body plan with MPC, return if solve fails
     if (use_nmpc_)
     {
-      bool new_step;
-      if (i == 0)
-      {
-        new_step = true;
-      }
-      else
-      {
-        new_step = false;
-      }
-      if (!local_body_planner_nonlinear_->computePlan(new_step, current_state_, ref_body_plan_, foot_positions_body_,
+      if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_, foot_positions_body_,
                                             contact_schedule_, body_plan_, grf_plan_))
         return false;
     }
