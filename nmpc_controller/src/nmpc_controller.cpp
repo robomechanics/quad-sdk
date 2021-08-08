@@ -134,7 +134,7 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
   mynlp_->shift_initial_guess();
   mynlp_->update_solver(
       initial_state,
-      ref_traj.bottomRows(N_),
+      ref_traj,
       foot_positions,
       contact_schedule);
 
@@ -159,16 +159,16 @@ bool NMPCController::computeCentralizedTailPlan(const Eigen::VectorXd &initial_s
                                                 Eigen::MatrixXd &tail_state_traj,
                                                 Eigen::MatrixXd &tail_control_traj)
 {
-  Eigen::MatrixXd ref_traj_with_tail(N_, 16),
-      state_traj_with_tail(N_, 16),
+  Eigen::MatrixXd ref_traj_with_tail(N_ + 1, 16),
+      state_traj_with_tail(N_ + 1, 16),
       control_traj_with_tail(N_, 14);
   Eigen::VectorXd initial_state_with_tail(16);
 
   ref_traj_with_tail.setZero();
-  ref_traj_with_tail.leftCols(6) = ref_traj.bottomRows(N_).leftCols(6);
-  ref_traj_with_tail.block(0, 6, N_, 2) = tail_ref_traj.leftCols(2);
-  ref_traj_with_tail.block(0, 8, N_, 6) = ref_traj.bottomRows(N_).rightCols(6);
-  ref_traj_with_tail.block(0, 14, N_, 2) = tail_ref_traj.rightCols(2);
+  ref_traj_with_tail.leftCols(6) = ref_traj.leftCols(6);
+  ref_traj_with_tail.block(0, 6, N_ + 1, 2) = tail_ref_traj.leftCols(2);
+  ref_traj_with_tail.block(0, 8, N_ + 1, 6) = ref_traj.rightCols(6);
+  ref_traj_with_tail.block(0, 14, N_ + 1, 2) = tail_ref_traj.rightCols(2);
 
   initial_state_with_tail.setZero();
   initial_state_with_tail.head(6) = initial_state.head(6);
@@ -192,17 +192,16 @@ bool NMPCController::computeCentralizedTailPlan(const Eigen::VectorXd &initial_s
 
   state_traj = Eigen::MatrixXd::Zero(N_ + 1, 12);
   control_traj = Eigen::MatrixXd::Zero(N_, 12);
-  tail_state_traj = Eigen::MatrixXd::Zero(N_, 4);
+  tail_state_traj = Eigen::MatrixXd::Zero(N_ + 1, 4);
   tail_control_traj = Eigen::MatrixXd::Zero(N_, 2);
 
-  state_traj.topRows(1) = initial_state.transpose();
-  state_traj.block(1, 0, N_, 6) = state_traj_with_tail.leftCols(6);
-  state_traj.block(1, 6, N_, 6) = state_traj_with_tail.block(0, 8, N_, 6);
+  state_traj.leftCols(6) = state_traj_with_tail.leftCols(6);
+  state_traj.rightCols(6) = state_traj_with_tail.block(0, 8, N_ + 1, 6);
 
   control_traj = control_traj_with_tail.rightCols(12);
 
-  tail_state_traj.leftCols(2) = state_traj_with_tail.block(0, 6, N_, 2);
-  tail_state_traj.rightCols(2) = state_traj_with_tail.block(0, 14, N_, 2);
+  tail_state_traj.leftCols(2) = state_traj_with_tail.block(0, 6, N_ + 1, 2);
+  tail_state_traj.rightCols(2) = state_traj_with_tail.block(0, 14, N_ + 1, 2);
 
   tail_control_traj = control_traj_with_tail.leftCols(2);
 
@@ -220,16 +219,16 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
                                                 Eigen::MatrixXd &tail_state_traj,
                                                 Eigen::MatrixXd &tail_control_traj)
 {
-  Eigen::MatrixXd ref_traj_with_tail(N_, 16),
+  Eigen::MatrixXd ref_traj_with_tail(N_ + 1, 16),
       state_traj_with_tail(N_, 16),
       control_traj_with_tail(N_, 14);
   Eigen::VectorXd initial_state_with_tail(16);
 
   ref_traj_with_tail.setZero();
-  ref_traj_with_tail.leftCols(6) = ref_traj.bottomRows(N_).leftCols(6);
-  ref_traj_with_tail.block(0, 6, N_, 2) = tail_ref_traj.leftCols(2);
-  ref_traj_with_tail.block(0, 8, N_, 6) = ref_traj.bottomRows(N_).rightCols(6);
-  ref_traj_with_tail.block(0, 14, N_, 2) = tail_ref_traj.rightCols(2);
+  ref_traj_with_tail.leftCols(6) = ref_traj.leftCols(6);
+  ref_traj_with_tail.block(0, 6, N_ + 1, 2) = tail_ref_traj.leftCols(2);
+  ref_traj_with_tail.block(0, 8, N_ + 1, 6) = ref_traj.rightCols(6);
+  ref_traj_with_tail.block(0, 14, N_ + 1, 2) = tail_ref_traj.rightCols(2);
 
   initial_state_with_tail.setZero();
   initial_state_with_tail.head(6) = initial_state.head(6);
@@ -253,8 +252,8 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
                     state_traj_with_tail,
                     control_traj_with_tail);
 
-  tail_state_traj.leftCols(2) = state_traj_with_tail.block(0, 6, N_, 2);
-  tail_state_traj.rightCols(2) = state_traj_with_tail.block(0, 14, N_, 2);
+  tail_state_traj.leftCols(2) = state_traj_with_tail.block(0, 6, N_ + 1, 2);
+  tail_state_traj.rightCols(2) = state_traj_with_tail.block(0, 14, N_ + 1, 2);
 
   tail_control_traj = control_traj_with_tail.leftCols(2);
 
@@ -280,12 +279,16 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     x.block(0, i, n_, 1) = mynlp_->w0_.block(i * (n_ + m_) + m_, 0, n_, 1);
   }
 
+  state_traj = Eigen::MatrixXd::Zero(N_ + 1, n_);
+  state_traj.topRows(1) = initial_state.transpose();
+  control_traj = Eigen::MatrixXd::Zero(N_, m_);
+
   if (status == Solve_Succeeded)
   {
     last_state_traj_ = x.transpose();
     last_control_traj_ = u.transpose();
 
-    state_traj = x.transpose();
+    state_traj.bottomRows(N_) = x.transpose();
     control_traj = u.transpose();
 
     ROS_INFO_STREAM(param_ns_ << " solving success");
@@ -308,7 +311,7 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
       }
     }
 
-    state_traj = last_state_traj_;
+    state_traj.bottomRows(N_) = last_state_traj_;
     control_traj = last_control_traj_;
 
     ROS_INFO_STREAM(param_ns_ << " solving fail");

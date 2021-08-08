@@ -785,13 +785,11 @@ void spiritNLP::update_solver(
     const std::vector<std::vector<bool>> &contact_schedule)
 {
    // Update foot positions
-   // Local planner has row as N and col as positions
-   // TODO: they may have different N?
+   // Local planner has row as N horizon and col as position
    feet_location_ = -foot_positions.transpose();
 
    // Update contact sequence
    // Local planner has outer as N and inner as boolean contact
-   // TODO: they may have different N?
    for (size_t i = 0; i < contact_schedule.size(); i++)
    {
       for (size_t j = 0; j < contact_schedule.front().size(); j++)
@@ -811,10 +809,8 @@ void spiritNLP::update_solver(
    x_current_ = initial_state;
 
    // Update reference trajectory
-   // Local planner has row as N and col as states
-   // TODO: they may have different N?
-   // TODO: it should specify with tail or not
-   x_reference_ = ref_traj.transpose();
+   // Local planner has row as N+1 horizon and col as states
+   x_reference_ = ref_traj.bottomRows(N_).transpose();
 }
 
 void spiritNLP::update_solver(
