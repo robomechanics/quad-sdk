@@ -37,6 +37,9 @@ void MBLinkConverter::legControlCallback(
 {
   last_leg_command_array_msg_ = msg;
   last_leg_command_time_ = msg->header.stamp.toSec();
+
+  double t_now = ros::Time::now().toSec();
+  ROS_INFO("Current time = %6.4f, msg time = %6.4f, diff = %6.4fs", t_now, last_leg_command_time_, t_now - last_leg_command_time_);
 }
 
 void MBLinkConverter::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg) {

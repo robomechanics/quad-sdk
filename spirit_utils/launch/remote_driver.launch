@@ -36,6 +36,6 @@
     </group>
 
     <!-- Start the heartbeat node -->
-    <node name="remote_heartbeat" pkg="spirit_utils" type="remote_heartbeat_node"/>
+    <node name="remote_heartbeat" pkg="spirit_utils" type="remote_heartbeat_node" output="screen"/>
 
 </launch>
