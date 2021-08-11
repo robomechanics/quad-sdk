@@ -225,7 +225,7 @@ bool spiritNLP::get_bounds_info(
          x_l_matrix.block(i * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1) = leg_input_.block(0, i, m_ - leg_input_start_idx_, 1);
          x_u_matrix.block(i * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1) = leg_input_.block(0, i, m_ - leg_input_start_idx_, 1);
       }
-      
+
       // Contact sequence
       for (int j = 0; j < 4; ++j)
       {
@@ -827,11 +827,9 @@ void spiritNLP::update_solver(
        foot_positions,
        contact_schedule);
 
-   for (size_t i = 0; i < N_ - 1; i++)
+   for (size_t i = 0; i < N_; i++)
    {
       w0_.block(i * (n_ + m_) + leg_input_start_idx_, 0, 12, 1) = control_traj.row(i).transpose();
-      w0_.block(i * (n_ + m_) + m_, 0, 6, 1) = state_traj.block(i, 0, 1, 6).transpose();
-      w0_.block(i * (n_ + m_) + m_ + 8, 0, 6, 1) = state_traj.block(i, 6, 1, 6).transpose();
    }
 
    leg_input_ = control_traj.transpose();

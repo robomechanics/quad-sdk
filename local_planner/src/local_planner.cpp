@@ -84,6 +84,9 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
 
   initial_timestamp_ = ros::Time::now();
   first_plan_ = true;
+
+  // Assume we know the step height
+  z_des_ = 0.5;
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -276,7 +279,7 @@ void LocalPlanner::getStateAndReferencePlan() {
   if (tail_type_ == CENTRALIZED)
   {
     tail_current_state_ = spirit_utils::odomMsgToEigenForTail(*robot_state_msg_);
-    ref_tail_plan_ = Eigen::MatrixXd::Zero(N_, 4);
+    ref_tail_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 4);
   }
 
   // Update the body plan to use for linearization
@@ -343,6 +346,15 @@ void LocalPlanner::getStateAndTwistInput() {
     ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
   }
 
+  // Adaptive body height, assume we know step height
+  if (abs(current_foot_positions_world_(2) - current_state_(2)) >= 0.4 ||
+  abs(current_foot_positions_world_(5) - current_state_(2)) >= 0.4 || 
+  abs(current_foot_positions_world_(8) - current_state_(2)) >= 0.4 || 
+  abs(current_foot_positions_world_(11) - current_state_(2)) >= 0.4)
+  {
+    z_des_ = 0.3;
+  }
+
   // Integrate to get full body plan
   ref_body_plan_(0,0) = current_state_[0];
   ref_body_plan_(0,1) = current_state_[1];
@@ -367,6 +379,12 @@ void LocalPlanner::getStateAndTwistInput() {
       ref_body_plan_(i,j) = ref_body_plan_(i-1,j) + current_cmd_vel[j]*dt_;
       ref_body_plan_(i,j+6) = (current_cmd_vel[j]);
     }
+  }
+
+  if (tail_type_ == CENTRALIZED)
+  {
+    tail_current_state_ = spirit_utils::odomMsgToEigenForTail(*robot_state_msg_);
+    ref_tail_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 4);
   }
 
   // Update the body plan to use for linearization

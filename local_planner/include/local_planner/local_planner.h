@@ -225,7 +225,7 @@ private:
   double cmd_vel_scale_;
 
   /// Nominal robot height
-  const double z_des_ = 0.3;
+  double z_des_;
 
   /// Time of the most recent cmd_vel data
   ros::Time last_cmd_vel_msg_time_;

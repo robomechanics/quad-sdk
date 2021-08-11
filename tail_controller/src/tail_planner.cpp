@@ -5,20 +5,26 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
   nh_ = nh;
 
   // Get rosparams
-  std::string body_plan_topic, robot_state_topic, local_plan_topic, tail_plan_topic;
+  std::string body_plan_topic, robot_state_topic, local_plan_topic, tail_plan_topic, cmd_vel_topic;
   spirit_utils::loadROSParam(nh_, "/topics/control/tail_plan", tail_plan_topic);
   spirit_utils::loadROSParam(nh_, "/topics/global_plan", body_plan_topic);
   spirit_utils::loadROSParam(nh_, "/topics/state/ground_truth", robot_state_topic);
   spirit_utils::loadROSParam(nh_, "/topics/local_plan", local_plan_topic);
   spirit_utils::loadROSParam(nh_, "/tail_controller/planner_update_rate", update_rate_);
+  nh_.param<std::string>("/topics/cmd_vel", cmd_vel_topic, "/cmd_vel");
 
   // Setup pubs and subs
   tail_plan_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(tail_plan_topic, 1);
   body_plan_sub_ = nh_.subscribe(body_plan_topic, 1, &TailPlanner::robotPlanCallback, this);
   robot_state_sub_ = nh_.subscribe(robot_state_topic, 1, &TailPlanner::robotStateCallback, this);
   local_plan_sub_ = nh_.subscribe(local_plan_topic, 1, &TailPlanner::localPlanCallback, this);
+  cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic, 1, &TailPlanner::cmdVelCallback, this);
 
   nh.param<int>("/tail_controller/tail_type", tail_type_, 0);
+  nh.param<bool>("/local_planner/use_twist_input", use_twist_input_, false);
+
+  nh_.param<double>("/twist_body_planner/cmd_vel_scale", cmd_vel_scale_, 1);
+  nh_.param<double>("/twist_body_planner/last_cmd_vel_msg_time_max", last_cmd_vel_msg_time_max_, 1.0);
 
   tail_planner_ = std::make_shared<NMPCController>(tail_type_);
 
@@ -47,6 +53,7 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
   }
 
   ros::param::get("/nmpc_controller/" + param_ns + "/horizon_length", N_);
+  ros::param::get("/nmpc_controller/" + param_ns + "/step_length", dt_);
 
   contact_schedule_.resize(N_);
   for (size_t i = 0; i < N_; i++)
@@ -54,7 +61,7 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
     contact_schedule_[i].resize(4);
   }
 
-  ref_body_plan_ = Eigen::MatrixXd::Zero(N_, 12);
+  ref_body_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 12);
 
   foot_positions_body_ = Eigen::MatrixXd::Zero(N_, 12);
 
@@ -65,6 +72,12 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
   tail_plan_ = Eigen::MatrixXd::Zero(N_, 4);
 
   tail_torque_plan_ = Eigen::MatrixXd::Zero(N_, 2);
+
+  // Initialize twist input
+  cmd_vel_.resize(6);
+
+  // Zero the velocity to start
+  std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
 }
 
 void TailPlanner::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr &msg)
@@ -86,29 +99,98 @@ void TailPlanner::localPlanCallback(const spirit_msgs::RobotPlan::ConstPtr &msg)
   last_local_plan_msg_ = msg;
 }
 
+void TailPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg)
+{
+  if ((cmd_vel_[0] != msg->linear.x) || (cmd_vel_[1] != msg->linear.y) ||
+      (cmd_vel_[5] != msg->angular.z))
+  {
+
+    //initial_timestamp_ = ros::Time::now();
+  }
+  // Ignore non-planar components of desired twist
+  cmd_vel_[0] = cmd_vel_scale_ * msg->linear.x;
+  cmd_vel_[1] = cmd_vel_scale_ * msg->linear.y;
+  cmd_vel_[2] = 0;
+  cmd_vel_[3] = 0;
+  cmd_vel_[4] = 0;
+  cmd_vel_[5] = cmd_vel_scale_ * msg->angular.z;
+
+  // Record when this was last reached for safety
+  last_cmd_vel_msg_time_ = ros::Time::now();
+}
+
 void TailPlanner::computeTailPlan()
 {
-  if (last_local_plan_msg_ == NULL || body_plan_msg_ == NULL || robot_state_msg_ == NULL)
+  if (last_local_plan_msg_ == NULL || (body_plan_msg_ == NULL && !use_twist_input_) || robot_state_msg_ == NULL)
     return;
 
-  current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
+  // current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
 
   tail_current_state_ = spirit_utils::odomMsgToEigenForTail(*robot_state_msg_);
-  ref_tail_plan_ = Eigen::MatrixXd::Zero(N_, 4);
+  ref_tail_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 4);
 
   int current_plan_index = last_local_plan_msg_->plan_indices[0];
 
-  for (size_t i = 0; i < N_; i++)
+  current_state_ = spirit_utils::odomMsgToEigen(last_local_plan_msg_->states[0].body).transpose();
+
+  if (use_twist_input_)
   {
-    if (i + current_plan_index > body_plan_msg_->plan_indices.back())
+    ref_body_plan_.setZero();
+
+    // Check that we have recent twist data, otherwise set cmd_vel to zero
+    ros::Duration time_elapsed_since_msg = ros::Time::now() - last_cmd_vel_msg_time_;
+    if (time_elapsed_since_msg.toSec() > last_cmd_vel_msg_time_max_)
     {
-      ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states.back().body);
-    }
-    else
-    {
-      ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states[i + current_plan_index].body);
+      std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
+      ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
     }
 
+    // Integrate to get full body plan
+    ref_body_plan_(0, 0) = current_state_[0];
+    ref_body_plan_(0, 1) = current_state_[1];
+    ref_body_plan_(0, 2) = z_des_;
+    ref_body_plan_(0, 3) = 0;
+    ref_body_plan_(0, 4) = 0;
+    ref_body_plan_(0, 5) = current_state_[5];
+    ref_body_plan_(0, 6) = cmd_vel_[0];
+    ref_body_plan_(0, 7) = cmd_vel_[1];
+    ref_body_plan_(0, 8) = cmd_vel_[2];
+    ref_body_plan_(0, 9) = cmd_vel_[3];
+    ref_body_plan_(0, 10) = cmd_vel_[4];
+    ref_body_plan_(0, 11) = cmd_vel_[5];
+
+    for (size_t i = 1; i < N_ + 1; i++)
+    {
+      std::vector<double> current_cmd_vel = cmd_vel_;
+
+      double yaw = ref_body_plan_(i - 1, 5);
+      current_cmd_vel[0] = cmd_vel_[0] * cos(yaw) - cmd_vel_[1] * sin(yaw);
+      current_cmd_vel[1] = cmd_vel_[0] * sin(yaw) + cmd_vel_[1] * cos(yaw);
+
+      for (int j = 0; j < 6; j++)
+      {
+        ref_body_plan_(i, j) = ref_body_plan_(i - 1, j) + current_cmd_vel[j] * dt_;
+        ref_body_plan_(i, j + 6) = (current_cmd_vel[j]);
+      }
+    }
+  }
+  else
+  {
+    for (size_t i = 0; i < N_ + 1; i++)
+    {
+      if (i + current_plan_index > body_plan_msg_->plan_indices.back())
+      {
+        ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states.back().body);
+      }
+      else
+      {
+        ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states[i + current_plan_index].body);
+      }
+    }
+  }
+
+  for (size_t i = 0; i < N_; i++)
+  {
     body_plan_.row(i) = spirit_utils::odomMsgToEigen(last_local_plan_msg_->states[i].body).transpose();
     grf_plan_.row(i) = spirit_utils::grfArrayMsgToEigen(last_local_plan_msg_->grfs[i]).transpose();
 

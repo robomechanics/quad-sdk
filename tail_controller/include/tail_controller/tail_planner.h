@@ -40,6 +40,8 @@ private:
 
 	void localPlanCallback(const spirit_msgs::RobotPlan::ConstPtr &msg);
 
+	void cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg);
+
 	void computeTailPlan();
 
 	ros::NodeHandle nh_;
@@ -53,6 +55,8 @@ private:
 	ros::Subscriber robot_state_sub_;
 
 	ros::Subscriber local_plan_sub_;
+
+	ros::Subscriber cmd_vel_sub_;
 
 	std::shared_ptr<NMPCController> tail_planner_;
 
@@ -85,6 +89,25 @@ private:
 	Eigen::MatrixXd tail_torque_plan_;
 
 	int N_;
+
+	double dt_;
+
+	std::vector<double> cmd_vel_;
+
+	/// Scale for twist cmd_val
+	double cmd_vel_scale_;
+
+	/// Nominal robot height
+	const double z_des_ = 0.3;
+
+	/// Time of the most recent cmd_vel data
+	ros::Time last_cmd_vel_msg_time_;
+
+	/// Threshold for waiting for twist cmd_vel data
+	double last_cmd_vel_msg_time_max_;
+
+	/// Boolean for using twist input instead of a global body plan
+	bool use_twist_input_;
 };
 
 #endif // TAIL_CONTROLLER_H

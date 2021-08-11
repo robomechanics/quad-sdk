@@ -245,12 +245,29 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
       state_traj.bottomRows(N_),
       control_traj);
 
+  // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+  // std::cout << "mynlp_->x_current_.transpose().format(CleanFmt)" << std::endl;
+  // std::cout << mynlp_->x_current_.transpose().format(CleanFmt) << std::endl;
+  // std::cout << "mynlp_->x_reference_.transpose().format(CleanFmt)" << std::endl;
+  // std::cout << mynlp_->x_reference_.transpose().format(CleanFmt) << std::endl;
+  // std::cout << "mynlp_->feet_location_.transpose().format(CleanFmt)" << std::endl;
+  // std::cout << mynlp_->feet_location_.transpose().format(CleanFmt) << std::endl;
+  // std::cout << "mynlp_->contact_sequence_.transpose().format(CleanFmt)" << std::endl;
+  // std::cout << mynlp_->contact_sequence_.transpose().format(CleanFmt) << std::endl;
+  // std::cout << "mynlp_->leg_input_.transpose().format(CleanFmt)" << std::endl;
+  // std::cout << mynlp_->leg_input_.transpose().format(CleanFmt) << std::endl;
+  // std::cout << "mynlp_->w0_.transpose().format(CleanFmt)" << std::endl;
+  // std::cout << mynlp_->w0_.transpose().format(CleanFmt) << std::endl;
+
   this->computePlan(initial_state_with_tail,
                     ref_traj_with_tail,
                     foot_positions,
                     contact_schedule,
                     state_traj_with_tail,
                     control_traj_with_tail);
+
+  // std::cout << "mynlp_->w0_.transpose().format(CleanFmt)" << std::endl;
+  // std::cout << mynlp_->w0_.transpose().format(CleanFmt) << std::endl;
 
   tail_state_traj.leftCols(2) = state_traj_with_tail.block(0, 6, N_ + 1, 2);
   tail_state_traj.rightCols(2) = state_traj_with_tail.block(0, 14, N_ + 1, 2);
@@ -315,7 +332,12 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     control_traj = last_control_traj_;
 
     ROS_INFO_STREAM(param_ns_ << " solving fail");
-  }
 
+    // The tail mpc will fail if keep using the previous solution
+    if (type_ != NONE)
+    {
+      return false;
+    }
+  }
   return true;
 }
