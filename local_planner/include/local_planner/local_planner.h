@@ -15,6 +15,7 @@
 #include <spirit_utils/kinematics.h>
 #include "spirit_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <nmpc_controller/nmpc_controller.h>
 
 //! Local Body Planner library
 /*!
@@ -35,6 +36,7 @@ class LocalPlanner {
   void spin();  
   
 private:
+
   /**
    * @brief Initialize the local body planner
    */
@@ -64,9 +66,20 @@ private:
   void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 
   /**
+   * @brief Callback function to handle new desired twist data when using twist input
+   * @param[in] msg the message contining twist data
+   */
+  void cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg);
+
+  /**
    * @brief Function to pre-process the body plan and robot state messages into Eigen arrays
    */
-  void preProcessPlanAndState();
+  void getStateAndReferencePlan();
+
+  /**
+   * @brief Function to read robot state and twist command messages into Eigen arrays
+   */
+  void getStateAndTwistInput();
 
   /**
    * @brief Function to compute the local plan
@@ -87,6 +100,9 @@ private:
 
   /// ROS Subscriber for incoming states
   ros::Subscriber robot_state_sub_;
+
+  /// Subscriber for twist input messages
+  ros::Subscriber cmd_vel_sub_;
 
 	/// ROS publisher for local plan output
 	ros::Publisher local_plan_pub_;
@@ -110,7 +126,8 @@ private:
 	double update_rate_;
 
   /// Local Body Planner object
-  std::shared_ptr<QuadrupedMPC> local_body_planner_;
+  std::shared_ptr<QuadrupedMPC> local_body_planner_convex_;
+  std::shared_ptr<NMPCController> local_body_planner_nonlinear_;
 
   /// Local Footstep Planner object
   std::shared_ptr<LocalFootstepPlanner> local_footstep_planner_;
@@ -151,8 +168,14 @@ private:
   /// Computation time in computeLocalPlan
   double compute_time_;
 
+  /// Average computation time in computeLocalPlan
+  double mean_compute_time_;
+
+  /// Exponential filter smoothing constant (higher updates slower)
+  const double filter_smoothing_constant_ = 0.5;
+
   /// MPC Horizon length
-  const int N_ = 36;
+  const int N_ = 24;
 
   /// Number of states
   const int Nx_ = 12;
@@ -193,6 +216,33 @@ private:
   /// Spirit Kinematics class
   std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
 
+  /// Twist input
+  typedef std::vector<double> Twist;
+  Twist cmd_vel_;
+
+  /// Scale for twist cmd_val
+  double cmd_vel_scale_;
+
+  /// Nominal robot height
+  const double z_des_ = 0.3;
+
+  /// Time of the most recent cmd_vel data
+  ros::Time last_cmd_vel_msg_time_;
+
+  /// Threshold for waiting for twist cmd_vel data
+  double last_cmd_vel_msg_time_max_;
+
+  /// Initial timestamp for contact cycling
+  ros::Time initial_timestamp_;
+
+  /// Foot initialization flag when using twist input without a global body plan
+  bool first_plan_;
+
+  /// Boolean for using twist input instead of a global body plan
+  bool use_twist_input_;
+
+  /// Boolean for using nonlinear MPC
+  bool use_nmpc_;
 };
 
 

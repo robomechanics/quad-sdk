@@ -2,7 +2,9 @@
 #define MPCPLUSPLUS_H
 
 #include "OsqpEigen/OsqpEigen.h"
-#include <eigen3/Eigen/Eigen>
+// #include <eigen3/Eigen/Eigen>
+#include <Eigen/Core>
+#include <Eigen/Dense>
 #include <spirit_utils/kinematics.h>
 #include <assert.h>
 
@@ -140,7 +142,7 @@ public:
 private:
 
   /// Number of timesteps in horizon
-  const int N_ = 36;
+  const int N_ = 24;
 
   /// Number of states per step
   const int nx_ = 12;
@@ -195,6 +197,9 @@ private:
 
   /// MPC timestep
   double dt_;
+
+  /// Vector of MPC timesteps
+  Eigen::VectorXd dt_vec_;
 
   /// Flag signaling timestep set
   bool dt_set_ = false;

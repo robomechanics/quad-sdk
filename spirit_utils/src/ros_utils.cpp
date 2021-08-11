@@ -119,6 +119,14 @@ namespace spirit_utils {
       interp_state.feet[i].velocity.z = math_utils::lerp(state_1.feet[i].velocity.z, 
         state_2.feet[i].velocity.z, t_interp);
 
+      // Interp foot acceleration
+      interp_state.feet[i].acceleration.x = math_utils::lerp(state_1.feet[i].acceleration.x, 
+        state_2.feet[i].acceleration.x, t_interp);
+      interp_state.feet[i].acceleration.y = math_utils::lerp(state_1.feet[i].acceleration.y, 
+        state_2.feet[i].acceleration.y, t_interp);
+      interp_state.feet[i].acceleration.z = math_utils::lerp(state_1.feet[i].acceleration.z, 
+        state_2.feet[i].acceleration.z, t_interp);
+
       // Set contact state to the first state
       interp_state.feet[i].contact = state_1.feet[i].contact;
     }
@@ -151,6 +159,7 @@ namespace spirit_utils {
 
       // Set contact state to the first state
       interp_state.contact_states[i] = state_1.contact_states[i];
+
     }
   }
 
@@ -209,7 +218,6 @@ namespace spirit_utils {
     interpRobotState(state_1, state_2, t_interp, interp_state);
     interp_primitive_id = primitive_id_1;
     interpGRFArray(grf_1, grf_2, t_interp, interp_grf);
-
   }
 
   spirit_msgs::MultiFootState interpMultiFootPlanContinuous(
@@ -367,7 +375,7 @@ namespace spirit_utils {
 
     // Compute jacobian
     Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
-    spirit_utils::getJacobian(state_positions, jacobian);
+    kinematics.getJacobianBodyAngVel(state_positions, jacobian);
 
     // Compute joint velocities
     joint_velocities = jacobian.leftCols(12).colPivHouseholderQr().solve(
@@ -456,7 +464,7 @@ namespace spirit_utils {
 
     // Compute jacobian
     Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
-    spirit_utils::getJacobian(state_positions, jacobian);
+    kinematics.getJacobianBodyAngVel(state_positions, jacobian);
 
     // Compute foot velocities
     foot_velocities = jacobian * state_velocities;
@@ -599,6 +607,19 @@ namespace spirit_utils {
     }
   }
 
+  void multiFootStateMsgToEigen(const spirit_msgs::MultiFootState &multi_foot_state_msg, Eigen::VectorXd &foot_positions,
+                                Eigen::VectorXd &foot_velocities, Eigen::VectorXd &foot_acceleration)
+  {
+    multiFootStateMsgToEigen(multi_foot_state_msg, foot_positions, foot_velocities);
+
+    for (int i = 0; i < multi_foot_state_msg.feet.size(); i++)
+    {
+      foot_acceleration[3 * i] = multi_foot_state_msg.feet[i].acceleration.x;
+      foot_acceleration[3 * i + 1] = multi_foot_state_msg.feet[i].acceleration.y;
+      foot_acceleration[3 * i + 2] = multi_foot_state_msg.feet[i].acceleration.z;
+    }
+  }
+
   void multiFootStateMsgToEigen(const spirit_msgs::MultiFootState &multi_foot_state_msg, 
     Eigen::VectorXd &foot_positions, Eigen::VectorXd &foot_velocities) {
   
@@ -613,6 +634,16 @@ namespace spirit_utils {
       foot_velocities[3*i+2] = multi_foot_state_msg.feet[i].velocity.z;
 
     }
+  }
+
+  void eigenToFootStateMsg(Eigen::VectorXd foot_positions, Eigen::VectorXd foot_velocities,
+                           Eigen::VectorXd foot_acceleration, spirit_msgs::FootState &foot_state_msg)
+  {
+    eigenToFootStateMsg(foot_positions, foot_velocities, foot_state_msg);
+
+    foot_state_msg.acceleration.x = foot_acceleration[0];
+    foot_state_msg.acceleration.y = foot_acceleration[1];
+    foot_state_msg.acceleration.z = foot_acceleration[2];
   }
 
   void eigenToFootStateMsg(Eigen::VectorXd foot_positions, 

@@ -4,7 +4,6 @@
 #include <ros/ros.h>
 #include <std_msgs/Header.h>
 #include <spirit_utils/math_utils.h>
-#include <spirit_utils/foot_jacobians.h>
 
 namespace spirit_utils {
   /**
@@ -289,6 +288,16 @@ void interpRobotPlan(spirit_msgs::RobotPlan msg, double t,
     Eigen::VectorXd &foot_positions, Eigen::VectorXd &foot_velocities);
 
   /**
+   * @brief Convert robot multi foot state message to Eigen
+   * @param[in] multi_foot_state_msg MultiFootState msg containing foot position information
+   * @param[out] foot_positions Eigen vector with foot position data
+   * @param[out] foot_velocities Eigen vector with foot velocity data
+   * @param[out] foot_acceleration Eigen vector with foot acceleration data
+   */
+  void multiFootStateMsgToEigen(const spirit_msgs::MultiFootState &multi_foot_state_msg, 
+    Eigen::VectorXd &foot_positions, Eigen::VectorXd &foot_velocities, Eigen::VectorXd &foot_acceleration);
+
+  /**
    * @brief Convert eigen vectors to foot state messages
    * @param[in] foot_position Eigen vector with foot position data
    * @param[in] foot_velocity Eigen vector with foot velocity data
@@ -296,6 +305,16 @@ void interpRobotPlan(spirit_msgs::RobotPlan msg, double t,
    */
   void eigenToFootStateMsg(Eigen::VectorXd foot_position, 
     Eigen::VectorXd foot_velocity, spirit_msgs::FootState &foot_state_msg);
+
+  /**
+   * @brief Convert eigen vectors to foot state messages
+   * @param[in] foot_position Eigen vector with foot position data
+   * @param[in] foot_velocity Eigen vector with foot velocity data
+   * @param[in] foot_acceleration Eigen vector with foot acceleration data
+   * @param[out] foot_state_msg FootState msg containing foot position and velocity data
+   */
+  void eigenToFootStateMsg(Eigen::VectorXd foot_position, 
+    Eigen::VectorXd foot_velocity, Eigen::VectorXd foot_acceleration, spirit_msgs::FootState &foot_state_msg);
   
   /**
    * @brief Convert eigen vector to stl vector
