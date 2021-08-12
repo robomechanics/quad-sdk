@@ -490,8 +490,8 @@ void LocalPlanner::publishLocalPlan() {
     }
     
     // Update the headers and plan indices of the messages
-    ros::Time timestamp = local_plan_msg.header.stamp + ros::Duration(i*dt_);
-    spirit_utils::updateStateHeaders(robot_state_msg, timestamp, map_frame_, current_plan_index_+i);
+    ros::Time state_timestamp = local_plan_msg.header.stamp + ros::Duration(i*dt_);
+    spirit_utils::updateStateHeaders(robot_state_msg, state_timestamp, map_frame_, current_plan_index_+i);
     grf_array_msg.header = robot_state_msg.header;
     grf_array_msg.traj_index = robot_state_msg.traj_index;
 
