@@ -137,14 +137,14 @@ void InverseDynamics::checkMessages() {
 
   // Check the remote heartbeat for timeout
   // (this adds extra safety if no heartbeat messages are arriving)
-  if ((ros::Time::now().toSec() - last_remote_heartbeat_time_) >= heartbeat_timeout_)
+  if (abs(ros::Time::now().toSec() - last_remote_heartbeat_time_) >= heartbeat_timeout_)
   {
     control_mode_ = SAFETY;
     ROS_WARN_THROTTLE(1,"Remote heartbeat lost or late to ID node, entering safety mode");
   }
 
   // Check the state message latency
-  if ((ros::Time::now().toSec() - last_state_time_) >= state_timeout_)
+  if (abs(ros::Time::now().toSec() - last_state_time_) >= state_timeout_)
   {
     control_mode_ = SAFETY;
     transition_timestamp_ = ros::Time::now();
