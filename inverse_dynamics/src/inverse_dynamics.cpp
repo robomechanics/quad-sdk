@@ -7,11 +7,13 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
 
     // Load rosparams from parameter server
   std::string grf_topic, trajectory_state_topic, robot_state_topic, local_plan_topic,
-    leg_command_array_topic, control_mode_topic, leg_override_topic, remote_heartbeat_topic; 
+    leg_command_array_topic, control_mode_topic, leg_override_topic,
+    remote_heartbeat_topic, robot_heartbeat_topic;
   spirit_utils::loadROSParam(nh_,"topics/local_plan",local_plan_topic);
   spirit_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
   spirit_utils::loadROSParam(nh_,"topics/state/trajectory",trajectory_state_topic);
-  spirit_utils::loadROSParam(nh_,"topics/remote_heartbeat",remote_heartbeat_topic);
+  spirit_utils::loadROSParam(nh_,"topics/heartbeat/remote",remote_heartbeat_topic);
+  spirit_utils::loadROSParam(nh_,"topics/heartbeat/robot",robot_heartbeat_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/grfs",grf_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/joint_command",leg_command_array_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/leg_override",leg_override_topic);
@@ -52,6 +54,7 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
     remote_heartbeat_topic,1,&InverseDynamics::remoteHeartbeatCallback, this);
   leg_command_array_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_command_array_topic,1);
   grf_pub_ = nh_.advertise<spirit_msgs::GRFArray>(grf_topic,1);
+  robot_heartbeat_pub_ = nh_.advertise<std_msgs::Header>(robot_heartbeat_topic,1);
 
   // Start sitting
   control_mode_ = SIT;
@@ -428,6 +431,11 @@ void InverseDynamics::spin() {
   ros::Rate r(update_rate_);
   while (ros::ok()) {
 
+    // Publish hearbeat
+    std_msgs::Header msg;
+    msg.stamp = ros::Time::now();
+    robot_heartbeat_pub_.publish(msg);
+
     // Collect new messages on subscriber topics
     ros::spinOnce();
 
@@ -439,7 +447,7 @@ void InverseDynamics::spin() {
 
       // Compute and publish control input data
       publishLegCommandArray();
-    }  
+    }
 
     // Enforce update rate
     r.sleep();

@@ -26,19 +26,19 @@ public:
 private:
 
 	/**
-	* @brief Callback function to handle new leg command data
-	* @param[in] msg spirit_msgs<LegCommandArray> containing pos, vel and torque setpoints and gains
+	* @brief Callback function to handle new robot heartbeat
+	* @param[in] msg header containing robot heartbeat
 	*/
-	void legControlCallback(const spirit_msgs::LegCommandArray::ConstPtr& msg);
+	void robotHeartbeatCallback(const std_msgs::Header::ConstPtr& msg);
 
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;
 
-	/// Subscriber for motor control messages
-  	ros::Subscriber leg_control_sub_;
+	/// Subscriber for robot heartbeat messages
+  	ros::Subscriber robot_heartbeat_sub_;
 
-	/// ROS publisher for mocap data
-	ros::Publisher heartbeat_pub_;
+	/// ROS publisher for remote heartbeat messages
+	ros::Publisher remote_heartbeat_pub_;
 
 	/// Update rate for sending and receiving data
 	double update_rate_;

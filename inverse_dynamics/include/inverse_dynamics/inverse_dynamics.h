@@ -119,6 +119,9 @@ private:
 	/// ROS subscriber for remote heartbeat
 	ros::Subscriber remote_heartbeat_sub_;
 
+	/// ROS publisher for robot heartbeat
+	ros::Publisher robot_heartbeat_pub_;
+
 	/// ROS publisher for inverse dynamics
 	ros::Publisher leg_command_array_pub_;
 
