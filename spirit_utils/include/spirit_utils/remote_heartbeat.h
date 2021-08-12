@@ -43,11 +43,11 @@ private:
 	/// Update rate for sending and receiving data
 	double update_rate_;
 
-	/// Update rate for sending and receiving data
-	double latency_threshold_warn_;
+	/// Latency threshold on robot messages for warnings (s) 
+	double robot_latency_threshold_warn_;
 
-	/// Update rate for sending and receiving data
-	double latency_threshold_error_;
+	/// Latency threshold on robot messages for error (s) 
+	double robot_latency_threshold_error_;
   
 };
 

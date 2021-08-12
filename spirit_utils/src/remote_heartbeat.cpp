@@ -8,10 +8,10 @@ RemoteHeartbeat::RemoteHeartbeat(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh_, "topics/remote_heartbeat", heartbeat_topic);
   spirit_utils::loadROSParam(nh_, "topics/control/joint_command",leg_control_topic);
   spirit_utils::loadROSParam(nh_, "remote_heartbeat/update_rate", update_rate_);
-  spirit_utils::loadROSParam(nh_, "remote_heartbeat/latency_threshold_warn",
-    latency_threshold_warn_);
-  spirit_utils::loadROSParam(nh_, "remote_heartbeat/latency_threshold_error",
-    latency_threshold_error_);
+  spirit_utils::loadROSParam(nh_, "remote_heartbeat/robot_latency_threshold_warn",
+    robot_latency_threshold_warn_);
+  spirit_utils::loadROSParam(nh_, "remote_heartbeat/robot_latency_threshold_error",
+    robot_latency_threshold_error_);
 
   // Setup pub
   heartbeat_pub_ = nh_.advertise<std_msgs::Header>(heartbeat_topic,1);
@@ -26,14 +26,14 @@ void RemoteHeartbeat::legControlCallback(
   double t_now = ros::Time::now().toSec();
   double t_latency = t_now - last_leg_command_time;
 
-  if (abs(t_latency) >= latency_threshold_warn_) {
-    ROS_WARN_THROTTLE(1.0,"Latency = %6.4fs which exceeds the warning threshold of %6.4fs\n",
-      t_latency, latency_threshold_warn_);
+  if (abs(t_latency) >= robot_latency_threshold_warn_) {
+    ROS_WARN_THROTTLE(1.0,"Robot latency = %6.4fs which exceeds the warning threshold of %6.4fs\n",
+      t_latency, robot_latency_threshold_warn_);
   }
 
-  if (abs(t_latency) >= latency_threshold_error_) {
-    ROS_ERROR("Latency = %6.4fs which exceeds the maximum threshold of %6.4fs, "
-      "killing remote heartbeat\n", t_latency, latency_threshold_error_);
+  if (abs(t_latency) >= robot_latency_threshold_error_) {
+    ROS_ERROR("Robot latency = %6.4fs which exceeds the maximum threshold of %6.4fs, "
+      "killing remote heartbeat\n", t_latency, robot_latency_threshold_error_);
   }
   
 }

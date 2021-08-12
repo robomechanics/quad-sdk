@@ -200,6 +200,12 @@ private:
 	/// Timeout (in s) for receiving new heartbeat messages
 	double heartbeat_timeout_;
 
+	/// Latency threshold on robot messages for warnings (s) 
+	double remote_latency_threshold_warn_;
+
+	/// Latency threshold on robot messages for error (s) 
+	double remote_latency_threshold_error_;
+
 	/// Message for leg command array
 	spirit_msgs::LegCommandArray leg_command_array_msg_;
 

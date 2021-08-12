@@ -31,6 +31,10 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh_, "inverse_dynamics/swing_kd", swing_kd_);
   spirit_utils::loadROSParam(nh_, "inverse_dynamics/safety_kp", safety_kp_);
   spirit_utils::loadROSParam(nh_, "inverse_dynamics/safety_kd", safety_kd_);
+  spirit_utils::loadROSParam(nh_, "inverse_dynamics/remote_latency_threshold_warn",
+    remote_latency_threshold_warn_);
+  spirit_utils::loadROSParam(nh_, "inverse_dynamics/remote_latency_threshold_error",
+    remote_latency_threshold_error_);
 
   spirit_utils::loadROSParam(nh_,"local_planner/timestep", dt_);
 
@@ -104,21 +108,38 @@ void InverseDynamics::legOverrideCallback(const spirit_msgs::LegOverride::ConstP
 }
 
 void InverseDynamics::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg) {
+
+  // Get the current time and compare to the message time
   last_heartbeat_time_ = msg->stamp.toSec();
+  double t_now = ros::Time::now().toSec();
+  double t_latency = t_now - last_heartbeat_time_;
+
+  if (abs(t_latency) >= remote_latency_threshold_warn_) {
+    ROS_WARN_THROTTLE(1.0,"Remote latency = %6.4fs which exceeds the warning threshold of %6.4fs\n",
+      t_latency, remote_latency_threshold_warn_);
+  }
+
+  if (abs(t_latency) >= remote_latency_threshold_error_) {
+    ROS_WARN_THROTTLE(1.0,"Remote latency = %6.4fs which exceeds the maximum threshold of %6.4fs, "
+      "entering safety mode\n", t_latency, remote_latency_threshold_error_);
+    control_mode_ = SAFETY;
+  }
 }
 
 void InverseDynamics::checkMessages() {
 
+  // Do nothing if already in safety mode
   if (control_mode_ == SAFETY)
     return;
 
-
+  // Check the remote heartbeat latency (this may be redundant with the check in the callback)
   if ((ros::Time::now().toSec() - last_heartbeat_time_) >= heartbeat_timeout_)
   {
     control_mode_ = SAFETY;
     ROS_WARN_THROTTLE(1,"Remote heartbeat lost or late to ID node, entering safety mode");
   }
 
+  // Check the state message latency
   if ((ros::Time::now().toSec() - last_state_time_) >= state_timeout_)
   {
     control_mode_ = SAFETY;

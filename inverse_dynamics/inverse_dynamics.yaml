@@ -15,3 +15,5 @@ inverse_dynamics:
   input_timeout: 0.1
   state_timeout: 0.1
   heartbeat_timeout: 0.2
+  remote_latency_threshold_warn: 0.02 # s
+  remote_latency_threshold_error: 0.1 # s
