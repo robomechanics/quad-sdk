@@ -189,7 +189,7 @@ private:
 	double last_state_time_;
 	
 	// Remote heartbeat timeout threshold in seconds
-	double last_heartbeat_time_;
+	double last_remote_heartbeat_time_;
 
 	/// Duration for sit to stand behavior
 	const double transition_duration_ = 1.0;

@@ -58,7 +58,7 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
 
   // Start sitting
   control_mode_ = SIT;
-  last_heartbeat_time_ = std::numeric_limits<double>::max();
+  last_remote_heartbeat_time_ = std::numeric_limits<double>::max();
   last_state_time_ = std::numeric_limits<double>::max();  
 
   kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
@@ -113,9 +113,9 @@ void InverseDynamics::legOverrideCallback(const spirit_msgs::LegOverride::ConstP
 void InverseDynamics::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg) {
 
   // Get the current time and compare to the message time
-  last_heartbeat_time_ = msg->stamp.toSec();
+  last_remote_heartbeat_time_ = msg->stamp.toSec();
   double t_now = ros::Time::now().toSec();
-  double t_latency = t_now - last_heartbeat_time_;
+  double t_latency = t_now - last_remote_heartbeat_time_;
 
   if (abs(t_latency) >= remote_latency_threshold_warn_) {
     ROS_WARN_THROTTLE(1.0,"Remote latency = %6.4fs which exceeds the warning threshold of %6.4fs\n",
@@ -135,8 +135,9 @@ void InverseDynamics::checkMessages() {
   if (control_mode_ == SAFETY)
     return;
 
-  // Check the remote heartbeat latency (this may be redundant with the check in the callback)
-  if ((ros::Time::now().toSec() - last_heartbeat_time_) >= heartbeat_timeout_)
+  // Check the remote heartbeat for timeout
+  // (this adds extra safety if no heartbeat messages are arriving)
+  if ((ros::Time::now().toSec() - last_remote_heartbeat_time_) >= heartbeat_timeout_)
   {
     control_mode_ = SAFETY;
     ROS_WARN_THROTTLE(1,"Remote heartbeat lost or late to ID node, entering safety mode");
