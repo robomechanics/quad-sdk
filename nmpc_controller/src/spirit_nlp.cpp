@@ -827,11 +827,6 @@ void spiritNLP::update_solver(
        foot_positions,
        contact_schedule);
 
-   for (size_t i = 0; i < N_; i++)
-   {
-      w0_.block(i * (n_ + m_) + leg_input_start_idx_, 0, 12, 1) = control_traj.row(i).transpose();
-   }
-
    leg_input_ = control_traj.transpose();
 
    known_leg_input_ = true;

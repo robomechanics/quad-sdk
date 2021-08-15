@@ -78,6 +78,9 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
 
   // Zero the velocity to start
   std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
+
+  // Assume we know the step height
+  z_des_ = 0.5;
 }
 
 void TailPlanner::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr &msg)
@@ -124,14 +127,14 @@ void TailPlanner::computeTailPlan()
   if (last_local_plan_msg_ == NULL || (body_plan_msg_ == NULL && !use_twist_input_) || robot_state_msg_ == NULL)
     return;
 
-  // current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
+  current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
 
   tail_current_state_ = spirit_utils::odomMsgToEigenForTail(*robot_state_msg_);
   ref_tail_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 4);
 
   int current_plan_index = last_local_plan_msg_->plan_indices[0];
 
-  current_state_ = spirit_utils::odomMsgToEigen(last_local_plan_msg_->states[0].body).transpose();
+  // current_state_ = spirit_utils::odomMsgToEigen(last_local_plan_msg_->states[0].body).transpose();
 
   if (use_twist_input_)
   {
@@ -143,6 +146,15 @@ void TailPlanner::computeTailPlan()
     {
       std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
       ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
+    }
+
+    // Adaptive body height, assume we know step height
+    if (abs(current_foot_positions_world_(2) - current_state_(2)) >= 0.4 ||
+    abs(current_foot_positions_world_(5) - current_state_(2)) >= 0.4 || 
+    abs(current_foot_positions_world_(8) - current_state_(2)) >= 0.4 || 
+    abs(current_foot_positions_world_(11) - current_state_(2)) >= 0.4)
+    {
+      z_des_ = 0.3;
     }
 
     // Integrate to get full body plan

@@ -256,8 +256,10 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
   // std::cout << mynlp_->contact_sequence_.transpose().format(CleanFmt) << std::endl;
   // std::cout << "mynlp_->leg_input_.transpose().format(CleanFmt)" << std::endl;
   // std::cout << mynlp_->leg_input_.transpose().format(CleanFmt) << std::endl;
-  // std::cout << "mynlp_->w0_.transpose().format(CleanFmt)" << std::endl;
-  // std::cout << mynlp_->w0_.transpose().format(CleanFmt) << std::endl;
+
+  // Eigen::Map<Eigen::MatrixXd> w0_start(mynlp_->w0_.data(), n_ + m_, N_);
+  // std::cout << "w0_start.transpose().format(CleanFmt)" << std::endl;
+  // std::cout << w0_start.transpose().format(CleanFmt) << std::endl;
 
   this->computePlan(initial_state_with_tail,
                     ref_traj_with_tail,
@@ -266,8 +268,19 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
                     state_traj_with_tail,
                     control_traj_with_tail);
 
-  // std::cout << "mynlp_->w0_.transpose().format(CleanFmt)" << std::endl;
-  // std::cout << mynlp_->w0_.transpose().format(CleanFmt) << std::endl;
+  // Eigen::Map<Eigen::MatrixXd> w0_end(mynlp_->w0_.data(), n_ + m_, N_);
+  // std::cout << "w0_end.transpose().format(CleanFmt)" << std::endl;
+  // std::cout << w0_end.transpose().format(CleanFmt) << std::endl;
+
+  // Eigen::Map<Eigen::MatrixXd> z_L_matrix(mynlp_->z_L0_.data(), n_ + m_, N_);
+  // Eigen::Map<Eigen::MatrixXd> z_U_matrix(mynlp_->z_U0_.data(), n_ + m_, N_);
+  // Eigen::Map<Eigen::MatrixXd> lambda_matrix(mynlp_->lambda0_.data(), n_ + 16, N_);
+  // std::cout << "z_L_matrix.transpose().format(CleanFmt)" << std::endl;
+  // std::cout << z_L_matrix.transpose().format(CleanFmt) << std::endl;
+  // std::cout << "z_U_matrix.transpose().format(CleanFmt)" << std::endl;
+  // std::cout << z_U_matrix.transpose().format(CleanFmt) << std::endl;
+  // std::cout << "lambda_matrix.transpose().format(CleanFmt)" << std::endl;
+  // std::cout << lambda_matrix.transpose().format(CleanFmt) << std::endl;
 
   tail_state_traj.leftCols(2) = state_traj_with_tail.block(0, 6, N_ + 1, 2);
   tail_state_traj.rightCols(2) = state_traj_with_tail.block(0, 14, N_ + 1, 2);
@@ -327,6 +340,11 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
         }
       }
     }
+
+    mynlp_->w0_.setZero();
+    mynlp_->z_L0_.setZero();
+    mynlp_->z_U0_.setZero();
+    mynlp_->lambda0_.setZero();
 
     state_traj.bottomRows(N_) = last_state_traj_;
     control_traj = last_control_traj_;
