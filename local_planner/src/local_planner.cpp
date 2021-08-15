@@ -313,6 +313,7 @@ void LocalPlanner::getStateAndTwistInput() {
 
   // Get the current body and foot positions into Eigen
   current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
+  current_state_timestamp_ = robot_state_msg_->header.stamp;
   spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
   local_footstep_planner_->getFootPositionsBodyFrame(current_state_, current_foot_positions_world_,
       current_foot_positions_body_);
@@ -502,6 +503,7 @@ void LocalPlanner::publishLocalPlan() {
   }
 
   // Publish
+  local_plan_msg.state_timestamp = current_state_timestamp_;
   local_plan_pub_.publish(local_plan_msg);
   foot_plan_discrete_pub_.publish(future_footholds_msg);
   foot_plan_continuous_pub_.publish(foot_plan_msg);
