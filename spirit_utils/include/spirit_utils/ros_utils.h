@@ -122,8 +122,8 @@ namespace spirit_utils {
    * @param[in] t_interp Fraction of time between the messages [0,1]
    * @param[out] interp_state Interpolated Odometry message
    */
-  void interpOdometry(nav_msgs::Odometry state_1, nav_msgs::Odometry state_2, 
-    double t_interp, nav_msgs::Odometry &interp_state);
+  void interpOdometry(spirit_msgs::BodyState state_1, spirit_msgs::BodyState state_2, 
+    double t_interp, spirit_msgs::BodyState &interp_state);
 
   /**
    * @brief Interpolate data between two JointState messages.
@@ -202,7 +202,7 @@ void interpRobotPlan(spirit_msgs::RobotPlan msg, double t,
    * @param[out] joint_state message of the corresponding joint state
    */
   void ikRobotState(const spirit_utils::SpiritKinematics &kinematics,
-    nav_msgs::Odometry body_state, spirit_msgs::MultiFootState multi_foot_state,
+    spirit_msgs::BodyState body_state, spirit_msgs::MultiFootState multi_foot_state,
     sensor_msgs::JointState &joint_state);
 
   /**
@@ -221,7 +221,7 @@ void interpRobotPlan(spirit_msgs::RobotPlan msg, double t,
    * @param[out] multi_foot_state message of state of each foot
    */
   void fkRobotState(const spirit_utils::SpiritKinematics &kinematics,
-    nav_msgs::Odometry body_state, sensor_msgs::JointState joint_state,
+    spirit_msgs::BodyState body_state, sensor_msgs::JointState joint_state,
     spirit_msgs::MultiFootState &multi_foot_state);
 
   /**
@@ -237,14 +237,14 @@ void interpRobotPlan(spirit_msgs::RobotPlan msg, double t,
    * @param[in] state Eigen vector with body state data
    * @return Odometry msg with body state data
    */
-  nav_msgs::Odometry eigenToOdomMsg(const Eigen::VectorXd &state);
+  spirit_msgs::BodyState eigenToBodyStateMsg(const Eigen::VectorXd &state);
 
   /**
    * @brief Convert robot state message to Eigen
    * @param[in] body Odometry msg with body state data
    * @return Eigen vector with body state data
    */
-  Eigen::VectorXd odomMsgToEigen(const nav_msgs::Odometry &body);
+  Eigen::VectorXd bodyStateMsgToEigen(const spirit_msgs::BodyState &body);
 
   /**
    * @brief Convert Eigen vector of GRFs to GRFArray msg

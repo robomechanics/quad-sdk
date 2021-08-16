@@ -68,19 +68,19 @@ bool GroundTruthPublisher::updateStep(spirit_msgs::RobotState &new_state_est) {
 
   if (last_vel_msg_ != NULL)
   {
-    // new_state_est.body.pose.pose.orientation = last_imu_msg_->orientation;
-    new_state_est.body.twist.twist.angular.y = last_vel_msg_->twist.angular.x;
-    new_state_est.body.twist.twist.angular.x = last_vel_msg_->twist.angular.y;
-    new_state_est.body.twist.twist.angular.z = last_vel_msg_->twist.angular.z;
+    // new_state_est.body.pose.orientation = last_imu_msg_->orientation;
+    new_state_est.body.twist.angular.y = last_vel_msg_->twist.angular.x;
+    new_state_est.body.twist.angular.x = last_vel_msg_->twist.angular.y;
+    new_state_est.body.twist.angular.z = last_vel_msg_->twist.angular.z;
   } else {
     fully_populated = false;
     ROS_WARN_THROTTLE(1, "No imu in /state/ground_truth");
   }
   if (last_mocap_msg_ != NULL)
   {
-    new_state_est.body.pose.pose.orientation = last_mocap_msg_->pose.orientation;
-    new_state_est.body.pose.pose.position = last_mocap_msg_->pose.position;
-    new_state_est.body.twist.twist.linear = mocap_vel_estimate_;
+    new_state_est.body.pose.orientation = last_mocap_msg_->pose.orientation;
+    new_state_est.body.pose.position = last_mocap_msg_->pose.position;
+    new_state_est.body.twist.linear = mocap_vel_estimate_;
   } else {
     fully_populated = false;
     ROS_WARN_THROTTLE(1, "No body pose (mocap) in /state/ground_truth");

@@ -245,7 +245,7 @@ void LocalPlanner::getStateAndReferencePlan() {
   current_plan_index_ = spirit_utils::getPlanIndex(body_plan_msg_->global_plan_timestamp,dt_);
 
   // Get the current body and foot positions into Eigen
-  current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
+  current_state_ = spirit_utils::bodyStateMsgToEigen(robot_state_msg_->body);
   spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
   local_footstep_planner_->getFootPositionsBodyFrame(current_state_, current_foot_positions_world_,
       current_foot_positions_body_);
@@ -256,9 +256,9 @@ void LocalPlanner::getStateAndReferencePlan() {
 
     // If the horizon extends past the reference trajectory, just hold the last state
     if (i+current_plan_index_ > body_plan_msg_->plan_indices.back()) {
-      ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states.back().body);
+      ref_body_plan_.row(i) = spirit_utils::bodyStateMsgToEigen(body_plan_msg_->states.back().body);
     } else {
-      ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states[i+current_plan_index_].body);
+      ref_body_plan_.row(i) = spirit_utils::bodyStateMsgToEigen(body_plan_msg_->states[i+current_plan_index_].body);
     }
   }
 
@@ -312,7 +312,7 @@ void LocalPlanner::getStateAndTwistInput() {
   }
 
   // Get the current body and foot positions into Eigen
-  current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
+  current_state_ = spirit_utils::bodyStateMsgToEigen(robot_state_msg_->body);
   spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
   local_footstep_planner_->getFootPositionsBodyFrame(current_state_, current_foot_positions_world_,
       current_foot_positions_body_);
@@ -486,7 +486,7 @@ void LocalPlanner::publishLocalPlan() {
 
     // Add the state information
     spirit_msgs::RobotState robot_state_msg;
-    robot_state_msg.body = spirit_utils::eigenToOdomMsg(body_plan_.row(i));
+    robot_state_msg.body = spirit_utils::eigenToBodyStateMsg(body_plan_.row(i));
     robot_state_msg.feet = foot_plan_msg.states[i];
     spirit_utils::ikRobotState(*kinematics_, robot_state_msg);
 

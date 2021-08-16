@@ -127,7 +127,7 @@ void NMPCController::robotPlanCallback(const spirit_msgs::RobotStateTrajectory::
 
 void NMPCController::robotStateCallback(const spirit_msgs::RobotState::ConstPtr &msg)
 {
-  cur_state_ = spirit_utils::odomMsgToEigen(msg->body);
+  cur_state_ = spirit_utils::bodyStateMsgToEigen(msg->body);
 }
 
 void NMPCController::extractMPCTrajectory(int start_idx,
@@ -185,7 +185,7 @@ void NMPCController::extractMPCTrajectory(int start_idx,
     }
 
     // Load state into reference trajectory (w/ zero velocity if we're at end of plan)
-    ref_traj.row(i) = spirit_utils::odomMsgToEigen(robot_state.body);
+    ref_traj.row(i) = spirit_utils::bodyStateMsgToEigen(robot_state.body);
   }
 }
 

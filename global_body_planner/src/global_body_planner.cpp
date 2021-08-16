@@ -84,13 +84,13 @@ void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPt
 void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
 
   // Quick check to make sure message data has been populated
-  if (msg->body.pose.pose.orientation.w > 1e-4) {
+  if (msg->body.pose.orientation.w > 1e-4) {
     // Get RPY from the state message
     tf2::Quaternion q(
-          msg->body.pose.pose.orientation.x,
-          msg->body.pose.pose.orientation.y,
-          msg->body.pose.pose.orientation.z,
-          msg->body.pose.pose.orientation.w);
+          msg->body.pose.orientation.x,
+          msg->body.pose.orientation.y,
+          msg->body.pose.orientation.z,
+          msg->body.pose.orientation.w);
     q.normalize();
     tf2::Matrix3x3 m(q);
     double roll, pitch, yaw;
@@ -98,18 +98,18 @@ void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstP
 
     // Only need the states that will be used in planning (ignore roll and yaw)
     robot_state_.clear();
-    robot_state_.push_back(msg->body.pose.pose.position.x);
-    robot_state_.push_back(msg->body.pose.pose.position.y);
-    robot_state_.push_back(msg->body.pose.pose.position.z);
+    robot_state_.push_back(msg->body.pose.position.x);
+    robot_state_.push_back(msg->body.pose.position.y);
+    robot_state_.push_back(msg->body.pose.position.z);
     robot_state_.push_back(roll);
     robot_state_.push_back(pitch);
     robot_state_.push_back(yaw);
-    robot_state_.push_back(msg->body.twist.twist.linear.x);
-    robot_state_.push_back(msg->body.twist.twist.linear.y);
-    robot_state_.push_back(msg->body.twist.twist.linear.z);
-    robot_state_.push_back(msg->body.twist.twist.angular.x);
-    robot_state_.push_back(msg->body.twist.twist.angular.y);
-    robot_state_.push_back(msg->body.twist.twist.angular.z);
+    robot_state_.push_back(msg->body.twist.linear.x);
+    robot_state_.push_back(msg->body.twist.linear.y);
+    robot_state_.push_back(msg->body.twist.linear.z);
+    robot_state_.push_back(msg->body.twist.angular.x);
+    robot_state_.push_back(msg->body.twist.angular.y);
+    robot_state_.push_back(msg->body.twist.angular.z);
 
   } else {
     ROS_WARN_THROTTLE(0.1, "Invalid quaternion received in GlobalBodyPlanner, "
@@ -327,7 +327,6 @@ void GlobalBodyPlanner::addStateAndGRFToMsg(double t, int plan_index, FullState 
   // Represent each state as an Odometry message
   spirit_msgs::RobotState state;
   spirit_utils::updateStateHeaders(state, msg.header.stamp+ros::Duration(t), map_frame_,plan_index);
-  state.body.child_frame_id = "dummy";
 
   // Transform from RPY to quat msg
   tf2::Quaternion quat_tf;
@@ -336,17 +335,17 @@ void GlobalBodyPlanner::addStateAndGRFToMsg(double t, int plan_index, FullState 
   quat_msg = tf2::toMsg(quat_tf);
 
   // Load the data into the message
-  state.body.pose.pose.position.x = body_state[0];
-  state.body.pose.pose.position.y = body_state[1];
-  state.body.pose.pose.position.z = body_state[2];
-  state.body.pose.pose.orientation = quat_msg;
+  state.body.pose.position.x = body_state[0];
+  state.body.pose.position.y = body_state[1];
+  state.body.pose.position.z = body_state[2];
+  state.body.pose.orientation = quat_msg;
 
-  state.body.twist.twist.linear.x = body_state[6];
-  state.body.twist.twist.linear.y = body_state[7];
-  state.body.twist.twist.linear.z = body_state[8];
-  state.body.twist.twist.angular.x = body_state[9];
-  state.body.twist.twist.angular.y = body_state[10];
-  state.body.twist.twist.angular.z = body_state[11];
+  state.body.twist.linear.x = body_state[6];
+  state.body.twist.linear.y = body_state[7];
+  state.body.twist.linear.z = body_state[8];
+  state.body.twist.angular.x = body_state[9];
+  state.body.twist.angular.y = body_state[10];
+  state.body.twist.angular.z = body_state[11];
 
   spirit_msgs::GRFArray grf_msg;
   geometry_msgs::Vector3 vector_msg;
