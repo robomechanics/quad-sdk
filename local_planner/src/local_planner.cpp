@@ -138,7 +138,7 @@ void LocalPlanner::initLocalBodyPlanner() {
   // Create mpc wrapper class
   if (use_nmpc_)
   {
-    local_body_planner_nonlinear_ = std::make_shared<NMPCController>(false);
+    local_body_planner_nonlinear_ = std::make_shared<NMPCController>(0);
   }
   else
   {
@@ -313,6 +313,7 @@ void LocalPlanner::getStateAndTwistInput() {
 
   // Get the current body and foot positions into Eigen
   current_state_ = spirit_utils::bodyStateMsgToEigen(robot_state_msg_->body);
+  current_state_timestamp_ = robot_state_msg_->header.stamp;
   spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
   local_footstep_planner_->getFootPositionsBodyFrame(current_state_, current_foot_positions_world_,
       current_foot_positions_body_);
@@ -411,16 +412,7 @@ bool LocalPlanner::computeLocalPlan() {
     // Compute body plan with MPC, return if solve fails
     if (use_nmpc_)
     {
-      bool new_step;
-      if (i == 0)
-      {
-        new_step = true;
-      }
-      else
-      {
-        new_step = false;
-      }
-      if (!local_body_planner_nonlinear_->computePlan(new_step, current_state_, ref_body_plan_, foot_positions_body_,
+      if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_, foot_positions_body_,
                                             contact_schedule_, body_plan_, grf_plan_))
         return false;
     }
@@ -499,8 +491,8 @@ void LocalPlanner::publishLocalPlan() {
     }
     
     // Update the headers and plan indices of the messages
-    ros::Time timestamp = local_plan_msg.header.stamp + ros::Duration(i*dt_);
-    spirit_utils::updateStateHeaders(robot_state_msg, timestamp, map_frame_, current_plan_index_+i);
+    ros::Time state_timestamp = local_plan_msg.header.stamp + ros::Duration(i*dt_);
+    spirit_utils::updateStateHeaders(robot_state_msg, state_timestamp, map_frame_, current_plan_index_+i);
     grf_array_msg.header = robot_state_msg.header;
     grf_array_msg.traj_index = robot_state_msg.traj_index;
 
@@ -511,6 +503,7 @@ void LocalPlanner::publishLocalPlan() {
   }
 
   // Publish
+  local_plan_msg.state_timestamp = current_state_timestamp_;
   local_plan_pub_.publish(local_plan_msg);
   foot_plan_discrete_pub_.publish(future_footholds_msg);
   foot_plan_continuous_pub_.publish(foot_plan_msg);

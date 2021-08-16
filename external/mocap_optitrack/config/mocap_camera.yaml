@@ -1,0 +1,17 @@
+#
+# Definition of all trackable objects
+# Identifier corresponds to Trackable ID set in Tracking Tools
+#
+rigid_bodies:
+    '1':
+        pose: t265_pose_frame_pose
+        pose2d: t265_pose_frame_ground_pose
+        odom: t265/odom/sample
+        tf: tf
+        child_frame_id: t265_pose_frame
+        parent_frame_id: t265_odom_frame
+optitrack_config:
+        multicast_address: 224.0.0.1
+        command_port: 1510
+        data_port: 1511
+        version: [3,0,0,0]

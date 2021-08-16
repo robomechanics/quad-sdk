@@ -28,6 +28,8 @@ GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
 
   // Convert kinematics
   kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
+
+  joints_order_ = {8, 0, 1, 9, 2, 3, 10, 4, 5, 11, 6, 7};
 }
 
 void GroundTruthPublisher::mocapCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
@@ -68,10 +70,8 @@ bool GroundTruthPublisher::updateStep(spirit_msgs::RobotState &new_state_est) {
 
   if (last_vel_msg_ != NULL)
   {
-    // new_state_est.body.pose.orientation = last_imu_msg_->orientation;
-    new_state_est.body.twist.angular.y = last_vel_msg_->twist.angular.x;
-    new_state_est.body.twist.angular.x = last_vel_msg_->twist.angular.y;
-    new_state_est.body.twist.angular.z = last_vel_msg_->twist.angular.z;
+    // new_state_est.body.pose.pose.orientation = last_imu_msg_->orientation;
+    new_state_est.body.twist.angular = last_vel_msg_->twist.angular;
   } else {
     fully_populated = false;
     ROS_WARN_THROTTLE(1, "No imu in /state/ground_truth");
@@ -87,7 +87,20 @@ bool GroundTruthPublisher::updateStep(spirit_msgs::RobotState &new_state_est) {
   }
   if (last_joint_state_msg_ != NULL)
   {
-    new_state_est.joints = *last_joint_state_msg_;
+
+    new_state_est.joints.name.resize(joints_order_.size());
+    new_state_est.joints.position.resize(joints_order_.size());
+    new_state_est.joints.velocity.resize(joints_order_.size());
+    new_state_est.joints.effort.resize(joints_order_.size());
+
+    for (size_t i = 0; i < joints_order_.size(); i++)
+    {
+      new_state_est.joints.name.at(i) = last_joint_state_msg_->name.at(joints_order_.at(i));
+      new_state_est.joints.position.at(i) = last_joint_state_msg_->position.at(joints_order_.at(i));
+      new_state_est.joints.velocity.at(i) = last_joint_state_msg_->velocity.at(joints_order_.at(i));
+      new_state_est.joints.effort.at(i) = last_joint_state_msg_->effort.at(joints_order_.at(i));
+    }
+
     if (last_vel_msg_ != NULL)
     {
       spirit_utils::fkRobotState(*kinematics_, new_state_est.body,new_state_est.joints, new_state_est.feet);
@@ -97,7 +110,7 @@ bool GroundTruthPublisher::updateStep(spirit_msgs::RobotState &new_state_est) {
     ROS_WARN_THROTTLE(1, "No joints or feet in /state/ground_truth");
   }
 
-  new_state_est.header.stamp = ros::Time::now();
+  spirit_utils::updateStateHeaders(new_state_est, ros::Time::now(), "map", 0);
   return fully_populated;
 }
 

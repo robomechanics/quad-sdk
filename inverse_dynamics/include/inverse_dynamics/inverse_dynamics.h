@@ -119,6 +119,9 @@ private:
 	/// ROS subscriber for remote heartbeat
 	ros::Subscriber remote_heartbeat_sub_;
 
+	/// ROS publisher for robot heartbeat
+	ros::Publisher robot_heartbeat_pub_;
+
 	/// ROS publisher for inverse dynamics
 	ros::Publisher leg_command_array_pub_;
 
@@ -186,7 +189,7 @@ private:
 	double last_state_time_;
 	
 	// Remote heartbeat timeout threshold in seconds
-	double last_heartbeat_time_;
+	double last_remote_heartbeat_time_;
 
 	/// Duration for sit to stand behavior
 	const double transition_duration_ = 1.0;
@@ -199,6 +202,12 @@ private:
 
 	/// Timeout (in s) for receiving new heartbeat messages
 	double heartbeat_timeout_;
+
+	/// Latency threshold on robot messages for warnings (s) 
+	double remote_latency_threshold_warn_;
+
+	/// Latency threshold on robot messages for error (s) 
+	double remote_latency_threshold_error_;
 
 	/// Message for leg command array
 	spirit_msgs::LegCommandArray leg_command_array_msg_;
