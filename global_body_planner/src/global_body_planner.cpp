@@ -51,6 +51,8 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh,"global_body_planner/G_CONST", planner_config_.G_CONST);
   spirit_utils::loadROSParam(nh,"global_body_planner/F_MIN", planner_config_.F_MIN);
   spirit_utils::loadROSParam(nh,"global_body_planner/F_MAX", planner_config_.F_MAX);
+  spirit_utils::loadROSParam(nh,"global_body_planner/PEAK_GRF_MIN", planner_config_.PEAK_GRF_MIN);
+  spirit_utils::loadROSParam(nh,"global_body_planner/PEAK_GRF_MAX", planner_config_.PEAK_GRF_MAX);
   spirit_utils::loadROSParam(nh,"global_body_planner/MU", planner_config_.MU);
   spirit_utils::loadROSParam(nh,"global_body_planner/T_S_MIN", planner_config_.T_S_MIN);
   spirit_utils::loadROSParam(nh,"global_body_planner/T_S_MAX", planner_config_.T_S_MAX);

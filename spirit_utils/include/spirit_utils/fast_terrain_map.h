@@ -45,6 +45,11 @@ class FastTerrainMap {
       std::vector<std::vector<double>> nz_data_filt);
 
     /**
+     * @brief Load in a default terrain map 10x10m, four corners with flat terrain
+     */
+    void loadDefault();
+
+    /**
      * @brief Load data from a grid_map::GridMap object into a FastTerrainMap object
      * @param[in] grid_map::GridMap object with map data
      */

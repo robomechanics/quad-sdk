@@ -579,6 +579,28 @@ State applyStance(State s, Action a, double t, const PlannerConfig &planner_conf
     s_new[2] = a_z_td + (a_z_to - a_z_td)*(t/t_s) + getHeightFromState(s_new, planner_config);
     // s_new[2] = getHeightFromState(s_new, planner_config);
     s_new[5] = 0;//sqrt(s_new[3]*s_new[3] + s_new[4]*s_new[4])*sin();
+  } else {
+    double g = planner_config.G_CONST;
+    double peak_grf_x = a[0];
+    double peak_grf_y = a[1];
+    double peak_grf_z = a[2];
+    double x0 = s[0];
+    double y0 = s[1];
+    double z0 = s[2];
+    double dx0 = s[3];
+    double dy0 = s[4];
+    double dz0 = a[3];
+
+    s_new[0] = x0 + dx0*t - ((g*peak_grf_x*pow(t,4))/3.0 - 
+      (2*g*peak_grf_x*t_s*pow(t,3))/3.0)/pow(t_s,2);
+    s_new[1] = y0 + dy0*t - ((g*peak_grf_y*pow(t,4))/3.0 - 
+      (2*g*peak_grf_y*t_s*pow(t,3))/3.0)/pow(t_s,2);
+    s_new[2] = z0 - ((g*peak_grf_z*pow(t,4))/3.0 - (2*g*peak_grf_z*t_s*pow(t,3))/3.0)/pow(t_s,2) + 
+      (t*(6*dz0 - 3*g*t))/6.0;
+    s_new[3] = dx0 - (2*g*peak_grf_x*pow(t,2)*(2*t - 3*t_s))/(3.0*pow(t_s,2));
+    s_new[4] = dy0 - (2*g*peak_grf_y*pow(t,2)*(2*t - 3*t_s))/(3.0*pow(t_s,2));
+    s_new[5] = dz0 - (g*t*(4.0*peak_grf_z*pow(t,2) - 6.0*peak_grf_z*t*t_s + 3.0*pow(t_s,2)))/
+      (3.0*pow(t_s,2));
   }
 
   return s_new;
@@ -670,6 +692,30 @@ State applyStanceReverse(State s, Action a, double t, const PlannerConfig &plann
     s_new[2] = a_z_to + (a_z_td - a_z_to)*(t/t_s) + getHeightFromState(s_new, planner_config);
     // s_new[2] = getHeightFromState(s_new, planner_config);
     s_new[5] = 0;//sqrt(s_new[3]*s_new[3] + s_new[4]*s_new[4])*sin();
+  } else {
+    double g = planner_config.G_CONST;
+    double peak_grf_x = a[0];
+    double peak_grf_y = a[1];
+    double peak_grf_z = a[2];
+    double x0 = s[0];
+    double y0 = s[1];
+    double z0 = s[2];
+    double dx0 = s[3];
+    double dy0 = s[4];
+    double dz0 = s[5];
+    
+    s_new[0] = -(g*peak_grf_x*pow(t,4))/(3*pow(t_s,2)) + 
+      (2*g*peak_grf_x*pow(t,3))/(3*t_s) + (dx0 - (2*g*peak_grf_x*t_s)/3.0)*t + 
+      x0 - t_s*(dx0 - (2*g*peak_grf_x*t_s)/3.0) - (g*peak_grf_x*pow(t_s,2))/3.0;
+    s_new[1] = -(g*peak_grf_y*pow(t,4))/(3*pow(t_s,2)) + 
+      (2*g*peak_grf_y*pow(t,3))/(3*t_s) + (dy0 - (2*g*peak_grf_y*t_s)/3.0)*t + 
+      y0 - t_s*(dy0 - (2*g*peak_grf_y*t_s)/3.0) - (g*peak_grf_y*pow(t_s,2))/3.0;
+    s_new[2] = z0 - ((g*peak_grf_z*pow(t,4))/3.0 - (2*g*peak_grf_z*t_s*pow(t,3))/3.0)/pow(t_s,2) + 
+      (t*(6*dz0 - 3*g*t))/6.0 - (t_s*(6*dz0 - 3*g*t_s))/6.0 - (pow(t_s,2)*(6*g - 4*g*peak_grf_z))/6.0 - 
+      (g*peak_grf_z*pow(t_s,2))/3.0 + (t*t_s*(6*g - 4*g*peak_grf_z))/6.0;
+    s_new[3] = dx0 - (2*g*peak_grf_x*t_s)/3.0 - (2*g*peak_grf_x*pow(t,2)*(2*t - 3*t_s))/(3*pow(t_s,2));
+    s_new[4] = dy0 - (2*g*peak_grf_y*t_s)/3.0 - (2*g*peak_grf_y*pow(t,2)*(2*t - 3*t_s))/(3*pow(t_s,2));
+    s_new[5] = dz0 - (g*(2*peak_grf_z*pow(t_s,2) - 3*pow(t_s,2)))/(3*t_s) - (g*t*(4*peak_grf_z*pow(t,2) - 6*peak_grf_z*t*t_s + 3*pow(t_s,2)))/(3*pow(t_s,2));
   }
 
   return s_new;
@@ -713,6 +759,58 @@ Action getRandomAction(std::array<double, 3> surf_norm, const PlannerConfig &pla
   a[3] = f_to[0]/planner_config.M_CONST;
   a[4] = f_to[1]/planner_config.M_CONST;
   a[5] = f_to[2]/planner_config.M_CONST - planner_config.G_CONST;
+  a[6] = t_s;
+  a[7] = t_f;
+
+  return a;
+}
+
+Action getRandomLeapAction(const State &s, std::array<double, 3> surf_norm,
+  const PlannerConfig &planner_config)
+{ 
+  Action a;
+
+  // Random normal forces between 0 and planner_config.F_MAX
+  double peak_grf_z = (planner_config.PEAK_GRF_MAX-planner_config.PEAK_GRF_MIN)*(double)rand()/
+    RAND_MAX + planner_config.PEAK_GRF_MIN;
+  double dz0 = (double)rand()/RAND_MAX - 1.0;
+  double dzf = (double)rand()/RAND_MAX - 1.0;
+
+  // dz0 = -0.5;
+  // peak_grf_z = 4.0;
+
+  // Random tangential forces between -mu*f_z and mu*f_z
+  double peak_grf_x = 2*planner_config.MU*peak_grf_z*(double)rand()/RAND_MAX -
+    planner_config.MU*peak_grf_z;
+  double peak_grf_y = 2*planner_config.MU*peak_grf_z*(double)rand()/RAND_MAX -
+    planner_config.MU*peak_grf_z;
+
+  // std::array<double, 3> f_td = {f_x_td, f_y_td, f_z_td};
+  // std::array<double, 3> f_to = {f_x_to, f_y_to, f_z_to};
+
+  // f_td = rotateGRF(surf_norm, f_td);
+  // f_to = rotateGRF(surf_norm, f_to);
+
+  // Random stance and flight times between 0 and T_MAX
+  // double t_s = (planner_config.T_S_MAX - planner_config.T_S_MIN)*(double)rand()/RAND_MAX + planner_config.T_S_MIN;
+  double z0 = s[2];
+  double z_max = getHeightFromState(s, planner_config) + planner_config.H_MAX - 0.025;
+  double g = planner_config.G_CONST;
+
+  double t_s = (3.0*(dz0 - sqrt(pow(dz0,2) + 2*g*z0 - 2*g*z_max - (4*g*peak_grf_z*z0)/3.0 +
+    (4*g*peak_grf_z*z_max)/3.0)))/(3*g - 2*g*peak_grf_z);
+
+  double t_f = 1.0;
+
+  // t_s = 0.2;
+  t_f = 1.0;
+
+  a[0] = peak_grf_x;
+  a[1] = peak_grf_y;
+  a[2] = peak_grf_z;
+  a[3] = dz0;
+  a[4] = dzf;
+  a[5] = 0;
   a[6] = t_s;
   a[7] = t_f;
 
@@ -827,14 +925,16 @@ bool isValidState(State s, const PlannerConfig &planner_config, int phase)
 bool isValidStateActionPair(State s, Action a, StateActionResult &result,
   const PlannerConfig &planner_config)
 {
+  
   // Declare stance and flight times
   double t_s = a[6];
   double t_f = a[7];
 
-  // Declare states and lengths for upcoming validity and distance checks
+  // Declare states, actions, and lengths for upcoming validity and distance checks
   State s_prev = s;
   State s_next;
   result.length = 0;
+  result.a_new = a;
 
   int phase;
   if (t_f == 0) {
@@ -864,34 +964,59 @@ bool isValidStateActionPair(State s, Action a, StateActionResult &result,
 
   State s_takeoff = applyStance(s, a,planner_config);
 
-  for (double t = 0; t < t_f; t += planner_config.KINEMATICS_RES)
+  if (!isValidState(s_takeoff, planner_config, STANCE)) {
+    result.t_new = (1.0-planner_config.BACKUP_RATIO)*t_s;
+    result.s_new = applyStance(s,a,result.t_new,planner_config);
+    return false;
+  }
+
+  double landing_height = 0.25;
+  for (double t = planner_config.KINEMATICS_RES; t < t_f; t += planner_config.KINEMATICS_RES)
   {
     State s_next = applyFlight(s_takeoff, t);
     result.length += poseDistance(s_next, s_prev);
     s_prev = s_next;
+    result.t_new = t_s+t;
+    result.a_new[7] = t;
+    result.a_new[4] = s_next[5];
+    result.s_new = s_next;
 
-    if (isValidState(s_next, planner_config, FLIGHT) == false)
+    if (!isValidState(s_next, planner_config, FLIGHT)) {
       return false;
+    }
+      
+    if (s_next[2] - getHeightFromState(s_next, planner_config) <= landing_height && s_next[5] <= 0){
+      return isValidState(s_next, planner_config, STANCE);
+    }
   }
 
-  // Check the exact landing state
-  State s_land = applyFlight(s_takeoff, t_f);
-  if (isValidState(s_land, planner_config, phase) == false)
-  {
-    return false;
+  if (t_f == 0) {
+    std::cout << "t_f = 0 and valid, exiting " << std::endl;
+    return true;
   } else {
-    result.t_new = t_s+t_f;
-    result.s_new = s_land;
-    result.length += poseDistance(s_land, s_prev);
+    std::cout << "Did not find landing state, exiting " << std::endl;
+    return false;
   }
+
+  // // Check the exact landing state
+  // State s_land = applyFlight(s_takeoff, t_f);
+  // if (isValidState(s_land, planner_config, phase) == false)
+  // {
+  //   return false;
+  // } else {
+  //   result.t_new = t_s+t_f;
+  //   result.s_new = s_land;
+  //   result.length += poseDistance(s_land, s_prev);
+  // }
 
   // If both stance and flight trajectories are entirely valid, return true
-  return true;
+  // return true;
 }
 
 bool isValidStateActionPairReverse(State s, Action a, StateActionResult &result,
   const PlannerConfig &planner_config)
 {
+
   // Declare stance and flight times
   double t_s = a[6];
   double t_f = a[7];
@@ -905,8 +1030,10 @@ bool isValidStateActionPairReverse(State s, Action a, StateActionResult &result,
     phase = CONNECT_STANCE;
   } else {
     phase = STANCE;
+    s[5] = a[4]; // Apply the reverse impulse to this initial state
   }
 
+  double takeoff_height = 0.35;
   for (double t = 0; t < t_f; t += planner_config.KINEMATICS_RES)
   {
     State s_next = applyFlight(s, -t);
@@ -916,10 +1043,36 @@ bool isValidStateActionPairReverse(State s, Action a, StateActionResult &result,
     if (isValidState(s_next, planner_config, FLIGHT) == false) {
       return false;
     }
+
+
+
+
+    result.length += poseDistance(s_next, s_prev);
+    s_prev = s_next;
+    result.a_new[7] = t;
+    result.s_new = s_next;
+
+    if (!isValidState(s_next, planner_config, FLIGHT)) {
+      return false;
+    }
+      
+    if (s_next[2] - getHeightFromState(s_next, planner_config) <= takeoff_height && s_next[5] > 0){
+      return isValidState(s_next, planner_config, STANCE);
+    }
       
   }
 
   State s_takeoff = applyFlight(s, -t_f);
+
+  double dzf = s_takeoff[5];
+  double zf = s_takeoff[2];
+  double z0_ref = 0.3;
+  double peak_grf = a[2];
+  double g = planner_config.G_CONST;
+  t_s = -(3*(dzf + sqrt(pow(dzf,2) - 2*g*z0_ref + 2*g*zf + (4*g*peak_grf*z0_ref)/3.0 -
+    (4*g*peak_grf*zf)/3)))/(3*g - 2*g*peak_grf);
+
+  JN Test this
 
   for (double t = t_s; t >= 0; t -= planner_config.KINEMATICS_RES)
   {
@@ -1062,7 +1215,7 @@ void publishStateActionPair(const State &s, const Action &a, const State &s_goal
 
   // Publish the tree and wait so that RViz has time to process it
   tree_pub.publish(tree_viz_msg);
-  double freq = 15.0; // Hz
+  double freq = 10.0; // Hz
   usleep(1000000.0/freq);
 
 }

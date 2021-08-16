@@ -37,6 +37,27 @@ void FastTerrainMap::loadData(int x_size,
   nz_data_filt_ = nz_data_filt;
 }
 
+void FastTerrainMap::loadDefault(){
+
+  int x_size = 2;
+  int y_size = 2;
+  std::vector<double> x_data = {-5, 5};
+  std::vector<double> y_data = {-5, 5};
+  std::vector<double> z_data_vec = {0, 0};
+  std::vector<double> nz_data_vec = {1, 1};
+  std::vector<std::vector<double>> z_data = {z_data_vec, z_data_vec};
+  std::vector<std::vector<double>> nx_data = z_data;
+  std::vector<std::vector<double>> ny_data = z_data;
+  std::vector<std::vector<double>> nz_data = {nz_data_vec, nz_data_vec};
+  std::vector<std::vector<double>> z_data_filt = z_data;
+  std::vector<std::vector<double>> nx_data_filt = z_data;
+  std::vector<std::vector<double>> ny_data_filt = z_data;
+  std::vector<std::vector<double>> nz_data_filt = nz_data;
+
+  this->loadData(x_size, y_size, x_data, y_data, z_data, nx_data, ny_data, nz_data,
+    z_data_filt, nx_data_filt, ny_data_filt, nz_data_filt);
+}
+
 void FastTerrainMap::loadDataFromGridMap(const grid_map::GridMap map){
   // Initialize the data structures for the map
   int x_size = map.getSize()(0);
