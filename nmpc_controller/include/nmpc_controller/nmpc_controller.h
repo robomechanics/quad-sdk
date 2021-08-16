@@ -79,6 +79,7 @@ public:
                                   const Eigen::MatrixXd &tail_ref_traj,
                                   const Eigen::MatrixXd &state_traj,
                                   const Eigen::MatrixXd &control_traj,
+                                  const double dt_first_step,
                                   Eigen::MatrixXd &tail_state_traj,
                                   Eigen::MatrixXd &tail_control_traj);
 

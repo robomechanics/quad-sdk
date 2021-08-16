@@ -70,42 +70,60 @@ void TailController::publishTailCommand()
     msg.motor_commands.at(1).torque_ff = 0;
     msg.motor_commands.at(1).kp = pitch_kp_;
     msg.motor_commands.at(1).kd = pitch_kd_;
-
-    msg.header.stamp = ros::Time::now();
-    tail_control_pub_.publish(msg);
   }
   else
   {
     double current_time = spirit_utils::getDurationSinceTime(last_tail_plan_msg_->header.stamp);
-    int current_plan_index = spirit_utils::getPlanIndex(last_tail_plan_msg_->header.stamp, dt_);
-    double t_interp = std::fmod(current_time, dt_) / dt_;
-
+    // int current_plan_index = spirit_utils::getPlanIndex(last_tail_plan_msg_->header.stamp, dt_);
+    // double t_interp = std::fmod(current_time, dt_) / dt_;
+    int current_plan_index = std::floor((current_time - last_tail_plan_msg_->dt_first_step) / dt_) + 1;
+    double t_interp;
     if (current_plan_index == 0)
     {
-      msg.motor_commands.at(0).pos_setpoint = math_utils::lerp(last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[0].pos_setpoint,
-                                                               last_tail_plan_msg_->leg_commands[current_plan_index + 1].motor_commands[0].pos_setpoint,
-                                                               t_interp);
-      msg.motor_commands.at(0).vel_setpoint = math_utils::lerp(last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[0].vel_setpoint,
-                                                               last_tail_plan_msg_->leg_commands[current_plan_index + 1].motor_commands[0].vel_setpoint,
-                                                               t_interp);
-      msg.motor_commands.at(0).torque_ff = last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[0].torque_ff;
-      msg.motor_commands.at(0).kp = roll_kp_;
-      msg.motor_commands.at(0).kd = roll_kd_;
-
-      msg.motor_commands.at(1).pos_setpoint = math_utils::lerp(last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[1].pos_setpoint,
-                                                               last_tail_plan_msg_->leg_commands[current_plan_index + 1].motor_commands[1].pos_setpoint,
-                                                               t_interp);
-      msg.motor_commands.at(1).vel_setpoint = math_utils::lerp(last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[1].vel_setpoint,
-                                                               last_tail_plan_msg_->leg_commands[current_plan_index + 1].motor_commands[1].vel_setpoint,
-                                                               t_interp);
-      msg.motor_commands.at(1).torque_ff = last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[1].torque_ff;
-      msg.motor_commands.at(1).kp = pitch_kp_;
-      msg.motor_commands.at(1).kd = pitch_kd_;
-
-      msg.header.stamp = ros::Time::now();
-      tail_control_pub_.publish(msg);
+      t_interp = current_time / last_tail_plan_msg_->dt_first_step;
     }
+    else
+    {
+      t_interp = std::fmod((current_time - last_tail_plan_msg_->dt_first_step), dt_) / dt_;
+    }
+
+    msg.motor_commands.at(0).pos_setpoint = math_utils::lerp(last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[0].pos_setpoint,
+                                                             last_tail_plan_msg_->leg_commands[current_plan_index + 1].motor_commands[0].pos_setpoint,
+                                                             t_interp);
+    msg.motor_commands.at(0).vel_setpoint = math_utils::lerp(last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[0].vel_setpoint,
+                                                             last_tail_plan_msg_->leg_commands[current_plan_index + 1].motor_commands[0].vel_setpoint,
+                                                             t_interp);
+    msg.motor_commands.at(0).torque_ff = last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[0].torque_ff;
+    msg.motor_commands.at(0).kp = roll_kp_;
+    msg.motor_commands.at(0).kd = roll_kd_;
+
+    msg.motor_commands.at(1).pos_setpoint = math_utils::lerp(last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[1].pos_setpoint,
+                                                             last_tail_plan_msg_->leg_commands[current_plan_index + 1].motor_commands[1].pos_setpoint,
+                                                             t_interp);
+    msg.motor_commands.at(1).vel_setpoint = math_utils::lerp(last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[1].vel_setpoint,
+                                                             last_tail_plan_msg_->leg_commands[current_plan_index + 1].motor_commands[1].vel_setpoint,
+                                                             t_interp);
+    msg.motor_commands.at(1).torque_ff = last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[1].torque_ff;
+    msg.motor_commands.at(1).kp = pitch_kp_;
+    msg.motor_commands.at(1).kd = pitch_kd_;
   }
+
+  // if (abs(msg.motor_commands.at(0).pos_setpoint) > 1.4)
+  // {
+  //   msg.motor_commands.at(0).pos_setpoint = std::min(std::max(-1.4, msg.motor_commands.at(0).pos_setpoint), 1.4);
+  //   msg.motor_commands.at(0).vel_setpoint = 0;
+  //   msg.motor_commands.at(0).torque_ff = 0;
+  // }
+
+  // if (abs(msg.motor_commands.at(1).pos_setpoint) > 1.4)
+  // {
+  //   msg.motor_commands.at(1).pos_setpoint = std::min(std::max(-1.4, msg.motor_commands.at(1).pos_setpoint), 1.4);
+  //   msg.motor_commands.at(1).vel_setpoint = 0;
+  //   msg.motor_commands.at(1).torque_ff = 0;
+  // }
+
+  msg.header.stamp = ros::Time::now();
+  tail_control_pub_.publish(msg);
 }
 
 void TailController::spin()

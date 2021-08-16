@@ -317,6 +317,17 @@ void LocalPlanner::getStateAndTwistInput() {
   if (robot_state_msg_ == NULL)
     return;
 
+  // Ignore non-planar components of desired twist
+  cmd_vel_[0] = cmd_vel_scale_*0;
+  cmd_vel_[1] = cmd_vel_scale_*0.5;
+  cmd_vel_[2] = 0;
+  cmd_vel_[3] = 0;
+  cmd_vel_[4] = 0;
+  cmd_vel_[5] = cmd_vel_scale_*0;
+
+  // Record when this was last reached for safety
+  last_cmd_vel_msg_time_ = ros::Time::now();
+
   // Get index
   current_plan_index_ = spirit_utils::getPlanIndex(initial_timestamp_,dt_);
 
@@ -521,6 +532,7 @@ void LocalPlanner::publishLocalPlan() {
   if (tail_type_ == CENTRALIZED)
   {
     tail_plan_msg.header = local_plan_msg.header;
+      tail_plan_msg.dt_first_step = dt_;
   }
 
   // Compute the discrete and continuous foot plan messages

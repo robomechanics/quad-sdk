@@ -73,6 +73,12 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
 
   tail_torque_plan_ = Eigen::MatrixXd::Zero(N_, 2);
 
+  current_state_ = Eigen::VectorXd::Zero(12);
+
+  current_foot_positions_world_ = Eigen::VectorXd::Zero(12);
+
+  current_plan_index_ = 0;
+
   // Initialize twist input
   cmd_vel_.resize(6);
 
@@ -127,14 +133,36 @@ void TailPlanner::computeTailPlan()
   if (last_local_plan_msg_ == NULL || (body_plan_msg_ == NULL && !use_twist_input_) || robot_state_msg_ == NULL)
     return;
 
-  current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
-
   tail_current_state_ = spirit_utils::odomMsgToEigenForTail(*robot_state_msg_);
   ref_tail_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 4);
 
-  int current_plan_index = last_local_plan_msg_->plan_indices[0];
-
+  // current_plan_index_ = last_local_plan_msg_->plan_indices[0];
   // current_state_ = spirit_utils::odomMsgToEigen(last_local_plan_msg_->states[0].body).transpose();
+  // spirit_utils::multiFootStateMsgToEigen(last_local_plan_msg_->states[0]->feet, current_foot_positions_world_);
+
+  current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
+  spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
+
+  double t_now = ros::Time::now().toSec();
+  double dt_first_step;
+
+  if ((t_now < last_local_plan_msg_->states.front().header.stamp.toSec()) ||
+      (t_now > last_local_plan_msg_->states.back().header.stamp.toSec()))
+  {
+    ROS_ERROR("ID node couldn't find the correct ref state!");
+  }
+
+  for (int i = 0; i < last_local_plan_msg_->states.size() - 1; i++)
+  {
+    if ((t_now >= last_local_plan_msg_->states[i].header.stamp.toSec()) &&
+        (t_now < last_local_plan_msg_->states[i + 1].header.stamp.toSec()))
+    {
+      dt_first_step = last_local_plan_msg_->states[i + 1].header.stamp.toSec() - t_now;
+      current_plan_index_ = i + last_local_plan_msg_->plan_indices[0];
+
+      break;
+    }
+  }
 
   if (use_twist_input_)
   {
@@ -150,9 +178,9 @@ void TailPlanner::computeTailPlan()
 
     // Adaptive body height, assume we know step height
     if (abs(current_foot_positions_world_(2) - current_state_(2)) >= 0.4 ||
-    abs(current_foot_positions_world_(5) - current_state_(2)) >= 0.4 || 
-    abs(current_foot_positions_world_(8) - current_state_(2)) >= 0.4 || 
-    abs(current_foot_positions_world_(11) - current_state_(2)) >= 0.4)
+        abs(current_foot_positions_world_(5) - current_state_(2)) >= 0.4 ||
+        abs(current_foot_positions_world_(8) - current_state_(2)) >= 0.4 ||
+        abs(current_foot_positions_world_(11) - current_state_(2)) >= 0.4)
     {
       z_des_ = 0.3;
     }
@@ -190,27 +218,34 @@ void TailPlanner::computeTailPlan()
   {
     for (size_t i = 0; i < N_ + 1; i++)
     {
-      if (i + current_plan_index > body_plan_msg_->plan_indices.back())
+      if (i + current_plan_index_ > body_plan_msg_->plan_indices.back())
       {
         ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states.back().body);
       }
       else
       {
-        ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states[i + current_plan_index].body);
+        ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states[i + current_plan_index_].body);
       }
     }
   }
 
   for (size_t i = 0; i < N_; i++)
   {
-    body_plan_.row(i) = spirit_utils::odomMsgToEigen(last_local_plan_msg_->states[i].body).transpose();
-    grf_plan_.row(i) = spirit_utils::grfArrayMsgToEigen(last_local_plan_msg_->grfs[i]).transpose();
+    int idx = current_plan_index_ - last_local_plan_msg_->plan_indices[0] + i;
+
+    if (idx > N_ - 1)
+    {
+      idx = N_ - 1;
+    }
+
+    body_plan_.row(i) = spirit_utils::odomMsgToEigen(last_local_plan_msg_->states[idx].body).transpose();
+    grf_plan_.row(i) = spirit_utils::grfArrayMsgToEigen(last_local_plan_msg_->grfs[idx]).transpose();
 
     Eigen::VectorXd foot_positions(12);
-    spirit_utils::multiFootStateMsgToEigen(last_local_plan_msg_->states[i].feet, foot_positions);
+    spirit_utils::multiFootStateMsgToEigen(last_local_plan_msg_->states[idx].feet, foot_positions);
     for (size_t j = 0; j < 4; j++)
     {
-      contact_schedule_[i][j] = last_local_plan_msg_->grfs[i].contact_states[j];
+      contact_schedule_[i][j] = last_local_plan_msg_->grfs[idx].contact_states[j];
 
       foot_positions_body_.block(i, j * 3, 1, 3) = foot_positions.segment(j * 3, 3).transpose() -
                                                    body_plan_.block(i, 0, 1, 3);
@@ -225,6 +260,7 @@ void TailPlanner::computeTailPlan()
                                                  ref_tail_plan_,
                                                  body_plan_,
                                                  grf_plan_,
+                                                 dt_first_step,
                                                  tail_plan_,
                                                  tail_torque_plan_))
     return;
@@ -232,6 +268,7 @@ void TailPlanner::computeTailPlan()
   spirit_msgs::LegCommandArray tail_plan_msg;
   ros::Time timestamp = ros::Time::now();
   tail_plan_msg.header.stamp = timestamp;
+  tail_plan_msg.dt_first_step = dt_first_step;
 
   for (size_t i = 0; i < N_; i++)
   {

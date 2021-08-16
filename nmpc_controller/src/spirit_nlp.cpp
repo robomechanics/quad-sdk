@@ -105,6 +105,9 @@ spiritNLP::spiritNLP(
    }
 
    dt_ = dt;
+   dt_first_step_ = dt;
+
+   terminal_scale_factor_ = 1.0;
 
    x_min_ = x_min;
    x_max_ = x_max;
@@ -300,7 +303,18 @@ bool spiritNLP::eval_f(
 
       xk = (xk.array() - x_reference_.block(0, i, n_, 1).array()).matrix();
 
-      obj_value += (xk.transpose() * Q_.asDiagonal() * xk / 2 + uk.transpose() * R_.asDiagonal() * uk / 2)(0, 0);
+      if (i == 0)
+      {
+         obj_value += (xk.transpose() * Q_.asDiagonal() * xk / 2 + uk.transpose() * R_.asDiagonal() * uk / 2)(0, 0) * (dt_first_step_ / dt_);
+      }
+      else if (i == N_ - 1)
+      {
+         obj_value += (xk.transpose() * Q_.asDiagonal() * xk / 2 + uk.transpose() * R_.asDiagonal() * uk / 2)(0, 0) * terminal_scale_factor_;
+      }
+      else
+      {
+         obj_value += (xk.transpose() * Q_.asDiagonal() * xk / 2 + uk.transpose() * R_.asDiagonal() * uk / 2)(0, 0);
+      }
    }
 
    return true;
@@ -324,8 +338,21 @@ bool spiritNLP::eval_grad_f(
 
       xk = (xk.array() - x_reference_.block(0, i, n_, 1).array()).matrix();
 
-      grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_.asDiagonal() * uk;
-      grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_.asDiagonal() * xk;
+      if (i == 0)
+      {
+         grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_.asDiagonal() * uk * (dt_first_step_ / dt_);
+         grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_.asDiagonal() * xk * (dt_first_step_ / dt_);
+      }
+      else if (i == N_ - 1)
+      {
+         grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_.asDiagonal() * uk * terminal_scale_factor_;
+         grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_.asDiagonal() * xk * terminal_scale_factor_;
+      }
+      else
+      {
+         grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_.asDiagonal() * uk;
+         grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_.asDiagonal() * xk;
+      }
    }
 
    return true;
@@ -346,7 +373,14 @@ bool spiritNLP::eval_g(
    for (int i = 0; i < N_; ++i)
    {
       Eigen::MatrixXd pk(13, 1);
-      pk(0, 0) = dt_;
+      if (i == 0)
+      {
+         pk(0, 0) = dt_first_step_;
+      }
+      else
+      {
+         pk(0, 0) = dt_;
+      }
       pk.block(1, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
 
       casadi_int sz_arg;
@@ -416,7 +450,14 @@ bool spiritNLP::eval_jac_g(
       for (int i = 0; i < N_; ++i)
       {
          Eigen::MatrixXd pk(13, 1);
-         pk(0, 0) = dt_;
+         if (i == 0)
+         {
+            pk(0, 0) = dt_first_step_;
+         }
+         else
+         {
+            pk(0, 0) = dt_;
+         }
          pk.block(1, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
 
          casadi_int sz_arg;
@@ -566,7 +607,14 @@ bool spiritNLP::eval_h(
       for (int i = 0; i < N_; ++i)
       {
          Eigen::MatrixXd pk(13, 1);
-         pk(0, 0) = dt_;
+         if (i == 0)
+         {
+            pk(0, 0) = dt_first_step_;
+         }
+         else
+         {
+            pk(0, 0) = dt_;
+         }
          pk.block(1, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
 
          casadi_int sz_arg;
@@ -619,8 +667,21 @@ bool spiritNLP::eval_h(
          eval_hess_g_release_(mem);
          eval_hess_g_decref_();
 
-         values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_.array()).matrix();
-         values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * Q_.array()).matrix();
+         if (i == 0)
+         {
+            values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * (dt_first_step_ / dt_) * R_.array()).matrix();
+            values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * (dt_first_step_ / dt_) * Q_.array()).matrix();
+         }
+         else if (i == N_ - 1)
+         {
+            values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * terminal_scale_factor_ * R_.array()).matrix();
+            values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * terminal_scale_factor_ * Q_.array()).matrix();
+         }
+         else
+         {
+            values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_.array()).matrix();
+            values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * Q_.array()).matrix();
+         }
       }
 
       std::vector<Eigen::Triplet<double>> tripletList;

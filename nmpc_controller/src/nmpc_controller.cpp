@@ -216,6 +216,7 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
                                                 const Eigen::MatrixXd &tail_ref_traj,
                                                 const Eigen::MatrixXd &state_traj,
                                                 const Eigen::MatrixXd &control_traj,
+                                                const double dt_first_step,
                                                 Eigen::MatrixXd &tail_state_traj,
                                                 Eigen::MatrixXd &tail_control_traj)
 {
@@ -244,6 +245,7 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
       contact_schedule,
       state_traj.bottomRows(N_),
       control_traj);
+  mynlp_->dt_first_step_ = dt_first_step;
 
   // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
   // std::cout << "mynlp_->x_current_.transpose().format(CleanFmt)" << std::endl;

@@ -78,6 +78,10 @@ private:
 
 	Eigen::VectorXd tail_current_state_;
 
+	Eigen::VectorXd current_foot_positions_world_;
+
+	int current_plan_index_;
+
 	Eigen::MatrixXd ref_tail_plan_;
 
 	Eigen::MatrixXd body_plan_;

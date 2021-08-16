@@ -45,6 +45,10 @@ public:
     // Step length
     double dt_;
 
+    double dt_first_step_;
+
+    double terminal_scale_factor_;
+
     // State bounds, input bounds, constraint bounds
     Eigen::MatrixXd x_min_, x_max_, u_min_, u_max_, g_min_, g_max_;
 
