@@ -19,7 +19,7 @@
 #include <unistd.h>
 
 // Uncomment to add visualization features
-// #define VISUALIZE_TREE
+#define VISUALIZE_TREE
 // #define VISUALIZE_ALL_CANDIDATE_ACTIONS
 // #define PLOT_TRAJECTORIES
 
@@ -44,7 +44,9 @@ struct PlannerConfig {
   double G_CONST = 9.81;        // Gravity constant, m/s^2
   double F_MIN = 100;           // Minimum GRF
   double F_MAX = 300;           // Maximum GRF, N (800 for cheetah, 500 for anymal)
-  double MU = 1.0;              // Friction coefficient (1.0 for Cheetah, 0.5 for ANYmal)
+  double PEAK_GRF_MIN = 3.0;    // Minimum GRF in units of body weight
+  double PEAK_GRF_MAX = 3.0;    // Maximum GRF in units of body weight
+  double MU = 0.5;              // Friction coefficient (1.0 for Cheetah, 0.5 for ANYmal)
   double T_S_MIN = 0.3;         // Minimum stance time, s
   double T_S_MAX = 0.3;         // Maximum stance time, s
   double T_F_MIN = 0.0;         // Minimum flight time, s
@@ -145,6 +147,8 @@ State applyActionReverse(State s, Action a, const PlannerConfig &planner_config)
 State applyStanceReverse(State s, Action a, double t, const PlannerConfig &planner_config);
 State applyStanceReverse(State s, Action a, const PlannerConfig &planner_config);
 Action getRandomAction(std::array<double, 3> surf_norm, const PlannerConfig &planner_config);
+Action getRandomLeapAction(const State &s, std::array<double, 3> surf_norm,
+  const PlannerConfig &planner_config);
 bool isValidAction(Action a, const PlannerConfig &planner_config);
 bool isValidYawRate(State s, Action a, double t, const PlannerConfig &planner_config);
 bool isValidState(State s, const PlannerConfig &planner_config, int phase);

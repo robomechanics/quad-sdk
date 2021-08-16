@@ -21,7 +21,8 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 		bool valid_state_found = false;
 		StateActionResult current_result;
 
-		Action a_test = getRandomAction(surf_norm,planner_config);
+		// Action a_test = getRandomAction(surf_norm,planner_config);
+		Action a_test = getRandomLeapAction(s_near,surf_norm,planner_config);
 		for (int j = 0; j < planner_config.NUM_GEN_STATES; ++j)
 		{
 			bool is_valid;
@@ -35,7 +36,7 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 
       #ifdef VISUALIZE_ALL_CANDIDATE_ACTIONS
         if (direction == FORWARD) {
-          publishStateActionPair(s_near,a_test, s,planner_config, tree_viz_msg_, tree_pub);
+          publishStateActionPair(s_near,current_result.a_new, s,planner_config, tree_viz_msg_, tree_pub);
         } else if (direction == REVERSE) {
           State s_reverse = applyActionReverse(s_near,a_test,planner_config);
           publishStateActionPair(s_reverse, a_test, s,planner_config, tree_viz_msg_,
@@ -50,7 +51,8 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
         // std::cout << "GRF 1 = " << getGRF(a_test,a_test[6],planner_config) << std::endl;
 				break;
 			} else {
-				a_test = getRandomAction(surf_norm,planner_config);
+				// a_test = getRandomAction(surf_norm,planner_config);
+				a_test = getRandomLeapAction(s_near,surf_norm,planner_config);
 			}
 		}			
 
@@ -62,7 +64,7 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
         any_valid_actions = true;
 				best_so_far = current_dist;
 				result.s_new = current_result.s_new;
-				result.a_new = a_test;
+				result.a_new = current_result.a_new;
 				result.length = current_result.length;
 			}
 		}
@@ -70,19 +72,19 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 
   std::cout << "Reverse = " << direction << ", valid action found = " << any_valid_actions << std::endl;
 
-  // Try connecting directly
-  StateActionResult current_result;
-	if (attemptConnect(s_near, s, current_result, planner_config, direction) != TRAPPED) {
-		double current_dist = stateDistance(current_result.s_new, s);
+  // // Try connecting directly
+  // StateActionResult current_result;
+	// if (attemptConnect(s_near, s, current_result, planner_config, direction) != TRAPPED) {
+	// 	double current_dist = stateDistance(current_result.s_new, s);
 
-    if (current_dist < best_so_far)
-    {
-      best_so_far = current_dist;
-      result.s_new = current_result.s_new;
-      result.a_new = current_result.a_new;
-      result.length = current_result.length;
-    }
-	}
+  //   if (current_dist < best_so_far)
+  //   {
+  //     best_so_far = current_dist;
+  //     result.s_new = current_result.s_new;
+  //     result.a_new = current_result.a_new;
+  //     result.length = current_result.length;
+  //   }
+	// }
 
 
   #ifdef VISUALIZE_ALL_CANDIDATE_ACTIONS
