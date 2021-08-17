@@ -80,7 +80,7 @@ void InverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) 
     control_mode_ = STAND_TO_SIT;
     transition_timestamp_ = ros::Time::now();
 
-  } else if (msg->data == SIT || (control_mode_ == SAFETY)) { // Allow sit or safety modes
+  } else if (msg->data == SIT || (msg->data == SAFETY)) { // Allow sit or safety modes
     
     control_mode_ = msg->data;
   }
@@ -88,6 +88,12 @@ void InverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) 
 
 void InverseDynamics::localPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg) {
   last_local_plan_msg_ = msg;
+
+  double round_trip_time_diff = (ros::Time::now() - last_local_plan_msg_->state_timestamp).toSec();
+  ROS_INFO_STREAM("round trip time difference: " << round_trip_time_diff);
+
+  double local_plan_time_diff = (ros::Time::now() - last_local_plan_msg_->header.stamp).toSec();
+  ROS_INFO_STREAM("local plan time difference: " << local_plan_time_diff);
 }
 
 void InverseDynamics::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
