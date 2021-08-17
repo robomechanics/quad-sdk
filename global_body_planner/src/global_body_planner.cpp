@@ -83,14 +83,11 @@ void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPt
 
 void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
 
-  // Quick check to make sure message data has been populated
-  if (msg->body.pose.orientation.w > 1e-4) {
+  // Quick check to make sure message data has been populated and is valid
+  geometry_msgs::Quaternion quat = msg->body.pose.orientation;
+  if (abs(sqrt(pow(quat.w,2) + pow(quat.x,2) + pow(quat.y,2) + pow(quat.z,2)) - 1.0) < 1e-3) {
     // Get RPY from the state message
-    tf2::Quaternion q(
-          msg->body.pose.orientation.x,
-          msg->body.pose.orientation.y,
-          msg->body.pose.orientation.z,
-          msg->body.pose.orientation.w);
+    tf2::Quaternion q(quat.x, quat.y, quat.z, quat.w);
     q.normalize();
     tf2::Matrix3x3 m(q);
     double roll, pitch, yaw;
@@ -112,9 +109,8 @@ void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstP
     robot_state_.push_back(msg->body.twist.angular.z);
 
   } else {
-    ROS_WARN_THROTTLE(0.1, "Invalid quaternion received in GlobalBodyPlanner, "
+    ROS_WARN_THROTTLE(1.0, "Invalid quaternion received in GlobalBodyPlanner, "
       "returning");
-    
   }
   
 }
