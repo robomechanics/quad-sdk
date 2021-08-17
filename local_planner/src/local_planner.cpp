@@ -246,6 +246,7 @@ void LocalPlanner::getStateAndReferencePlan() {
 
   // Get the current body and foot positions into Eigen
   current_state_ = spirit_utils::bodyStateMsgToEigen(robot_state_msg_->body);
+  current_state_timestamp_ = robot_state_msg_->header.stamp;
   spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
   local_footstep_planner_->getFootPositionsBodyFrame(current_state_, current_foot_positions_world_,
       current_foot_positions_body_);
