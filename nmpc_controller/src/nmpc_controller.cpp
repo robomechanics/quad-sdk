@@ -81,6 +81,7 @@ NMPCController::NMPCController(int type)
   app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("mu_oracle", "probing");
   app_->Options()->SetStringValue("mehrotra_algorithm", "yes");
+  app_->Options()->SetStringValue("bound_mult_init_method", "mu-based");
   // app_->Options()->SetStringValue("adaptive_mu_globalization", "never-monotone-mode");
   // app_->Options()->SetStringValue("accept_every_trial_step", "yes");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");

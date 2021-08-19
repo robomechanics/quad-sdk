@@ -175,11 +175,27 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         ref_body_ang_vel_touchdown = ref_body_plan.block<1,3>(i,9);
         grf_midstance = grf_plan.block<1,3>(midstance,3*j);
 
+        Eigen::Vector3d current_body_pos = body_plan.block<1,3>(0,0);
+
         // Compute nominal foot positions for kinematic and grf-projection measures
         kinematics_->nominalHipFK(j, body_pos_midstance, body_rpy_midstance, 
           hip_position_midstance);
-        double hip_height = hip_position_midstance.z() - 
-          terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());
+
+        // double hip_height = hip_position_midstance.z() - 
+        //   terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());
+
+        // Assume flat plane
+        double hip_height;
+        hip_height = current_body_pos.z();
+        // if (body_pos_midstance.z() < 0.4)
+        // {
+        //   hip_height = hip_position_midstance.z() - 0.0;
+        // }
+        // else
+        // {
+        //   hip_height = hip_position_midstance.z() - 0.2;
+        // }
+
         centrifugal = (hip_height/9.81)*body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
         vel_tracking = 0.03*(body_vel_touchdown - ref_body_vel_touchdown);
         // foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
@@ -188,8 +204,20 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         // foot_position_nominal = grf_weight_*foot_position_grf +
         //   (1-grf_weight_)*(hip_position_midstance + vel_tracking);
         foot_position_nominal = hip_position_midstance + centrifugal + vel_tracking;
-        foot_position_nominal.z() = terrain_.getGroundHeight(foot_position_nominal.x(),
-          foot_position_nominal.y());
+
+        // foot_position_nominal.z() = terrain_.getGroundHeight(foot_position_nominal.x(),
+        //   foot_position_nominal.y());
+
+        // Assume flat plane
+        foot_position_nominal.z() = current_body_pos.z() - 0.3;
+        // if (body_pos_midstance.z() < 0.4)
+        // {
+        //   foot_position_nominal.z() = 0.0;
+        // }
+        // else
+        // {
+        //   foot_position_nominal.z() = 0.2;
+        // }
 
         // (Optional) Optimize the foothold location to get the final position
         // foot_position = map_search::optimizeFoothold(foot_position_nominal, stuff); // ADAM

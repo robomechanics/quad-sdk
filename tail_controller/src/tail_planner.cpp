@@ -86,7 +86,7 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
   std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
 
   // Assume we know the step height
-  z_des_ = 0.5;
+  z_des_ = 0.4;
 }
 
 void TailPlanner::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr &msg)
@@ -133,23 +133,27 @@ void TailPlanner::computeTailPlan()
   if (last_local_plan_msg_ == NULL || (body_plan_msg_ == NULL && !use_twist_input_) || robot_state_msg_ == NULL)
     return;
 
-  tail_current_state_ = spirit_utils::odomMsgToEigenForTail(*robot_state_msg_);
   ref_tail_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 4);
+  double dt_first_step;
 
-  // current_plan_index_ = last_local_plan_msg_->plan_indices[0];
-  // current_state_ = spirit_utils::odomMsgToEigen(last_local_plan_msg_->states[0].body).transpose();
-  // spirit_utils::multiFootStateMsgToEigen(last_local_plan_msg_->states[0]->feet, current_foot_positions_world_);
+  // //  Start at the same point as local planner, but we need a tail state at the local planner start time
+  //   tail_current_state_ = spirit_utils::odomMsgToEigenForTail(*robot_state_msg_); // This is wrong, we should have a queue and search back.
+  //   current_plan_index_ = last_local_plan_msg_->plan_indices[0];
+  //   current_state_ = spirit_utils::odomMsgToEigen(last_local_plan_msg_->states[0].body).transpose();
+  //   spirit_utils::multiFootStateMsgToEigen(last_local_plan_msg_->states[0].feet, current_foot_positions_world_);
+  //   dt_first_step = dt_;
 
+  // Start from current time and change the first time interval the align local planner
+  tail_current_state_ = spirit_utils::odomMsgToEigenForTail(*robot_state_msg_);
   current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
   spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
 
   double t_now = ros::Time::now().toSec();
-  double dt_first_step;
 
   if ((t_now < last_local_plan_msg_->states.front().header.stamp.toSec()) ||
       (t_now > last_local_plan_msg_->states.back().header.stamp.toSec()))
   {
-    ROS_ERROR("ID node couldn't find the correct ref state!");
+    ROS_ERROR("Tail planner node couldn't find the correct ref state!");
   }
 
   for (int i = 0; i < last_local_plan_msg_->states.size() - 1; i++)
@@ -177,10 +181,10 @@ void TailPlanner::computeTailPlan()
     }
 
     // Adaptive body height, assume we know step height
-    if (abs(current_foot_positions_world_(2) - current_state_(2)) >= 0.4 ||
-        abs(current_foot_positions_world_(5) - current_state_(2)) >= 0.4 ||
-        abs(current_foot_positions_world_(8) - current_state_(2)) >= 0.4 ||
-        abs(current_foot_positions_world_(11) - current_state_(2)) >= 0.4)
+    if (abs(current_foot_positions_world_(2) - current_state_(2)) >= 0.35 ||
+        abs(current_foot_positions_world_(5) - current_state_(2)) >= 0.35 ||
+        abs(current_foot_positions_world_(8) - current_state_(2)) >= 0.35 ||
+        abs(current_foot_positions_world_(11) - current_state_(2)) >= 0.35)
     {
       z_des_ = 0.3;
     }
@@ -282,6 +286,9 @@ void TailPlanner::computeTailPlan()
     tail_msg.motor_commands.at(1).pos_setpoint = tail_plan_(i, 1);
     tail_msg.motor_commands.at(1).vel_setpoint = tail_plan_(i, 3);
     tail_msg.motor_commands.at(1).torque_ff = tail_torque_plan_(i, 1);
+
+    // The local planner time stamp that matches tail plan, it is only used when tail plan start at the same point as local plan
+    tail_msg.header.stamp = last_local_plan_msg_->states[i].header.stamp;
 
     tail_plan_msg.leg_commands.push_back(tail_msg);
   }

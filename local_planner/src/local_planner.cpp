@@ -86,7 +86,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   first_plan_ = true;
 
   // Assume we know the step height
-  z_des_ = 0.5;
+  z_des_ = 0.4;
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -317,16 +317,16 @@ void LocalPlanner::getStateAndTwistInput() {
   if (robot_state_msg_ == NULL)
     return;
 
-  // Ignore non-planar components of desired twist
-  cmd_vel_[0] = cmd_vel_scale_*0;
-  cmd_vel_[1] = cmd_vel_scale_*0.5;
-  cmd_vel_[2] = 0;
-  cmd_vel_[3] = 0;
-  cmd_vel_[4] = 0;
-  cmd_vel_[5] = cmd_vel_scale_*0;
+  // // Ignore non-planar components of desired twist
+  // cmd_vel_[0] = cmd_vel_scale_*0;
+  // cmd_vel_[1] = cmd_vel_scale_*0.5;
+  // cmd_vel_[2] = 0;
+  // cmd_vel_[3] = 0;
+  // cmd_vel_[4] = 0;
+  // cmd_vel_[5] = cmd_vel_scale_*0;
 
-  // Record when this was last reached for safety
-  last_cmd_vel_msg_time_ = ros::Time::now();
+  // // Record when this was last reached for safety
+  // last_cmd_vel_msg_time_ = ros::Time::now();
 
   // Get index
   current_plan_index_ = spirit_utils::getPlanIndex(initial_timestamp_,dt_);
@@ -358,10 +358,10 @@ void LocalPlanner::getStateAndTwistInput() {
   }
 
   // Adaptive body height, assume we know step height
-  if (abs(current_foot_positions_world_(2) - current_state_(2)) >= 0.4 ||
-  abs(current_foot_positions_world_(5) - current_state_(2)) >= 0.4 || 
-  abs(current_foot_positions_world_(8) - current_state_(2)) >= 0.4 || 
-  abs(current_foot_positions_world_(11) - current_state_(2)) >= 0.4)
+  if (abs(current_foot_positions_world_(2) - current_state_(2)) >= 0.35 ||
+  abs(current_foot_positions_world_(5) - current_state_(2)) >= 0.35 || 
+  abs(current_foot_positions_world_(8) - current_state_(2)) >= 0.35 || 
+  abs(current_foot_positions_world_(11) - current_state_(2)) >= 0.35)
   {
     z_des_ = 0.3;
   }

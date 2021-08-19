@@ -1,7 +1,7 @@
 terrain_map_publisher:
   update_rate: 5
   map_data_source: internal
-  terrain_type: step     # slope, rough_terrain, or step
+  terrain_type: rough_terrain     # slope, rough_terrain, or step
   resolution: 0.2
   obstacle_x: 2.0
   obstacle_y: 0.0

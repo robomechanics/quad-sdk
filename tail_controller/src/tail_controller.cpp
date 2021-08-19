@@ -73,11 +73,13 @@ void TailController::publishTailCommand()
   }
   else
   {
-    double current_time = spirit_utils::getDurationSinceTime(last_tail_plan_msg_->header.stamp);
-    // int current_plan_index = spirit_utils::getPlanIndex(last_tail_plan_msg_->header.stamp, dt_);
-    // double t_interp = std::fmod(current_time, dt_) / dt_;
-    int current_plan_index = std::floor((current_time - last_tail_plan_msg_->dt_first_step) / dt_) + 1;
     double t_interp;
+    int current_plan_index;
+    double t_now = ros::Time::now().toSec();
+
+    //  Tail plan starts now
+    double current_time = t_now - last_tail_plan_msg_->header.stamp.toSec();
+    current_plan_index = std::floor((current_time - last_tail_plan_msg_->dt_first_step) / dt_) + 1;
     if (current_plan_index == 0)
     {
       t_interp = current_time / last_tail_plan_msg_->dt_first_step;
@@ -86,6 +88,29 @@ void TailController::publishTailCommand()
     {
       t_interp = std::fmod((current_time - last_tail_plan_msg_->dt_first_step), dt_) / dt_;
     }
+
+    // //  Tail plan starts at the same point as local plan
+    // if ((t_now < last_tail_plan_msg_->leg_commands.front().header.stamp.toSec()) ||
+    //     (t_now > last_tail_plan_msg_->leg_commands.back().header.stamp.toSec()))
+    // {
+    //   ROS_ERROR("Tail controller node couldn't find the correct ref state!");
+    // }
+
+    // // Interpolate the local plan to get the reference state and ff GRF
+    // for (size_t i = 0; i < last_tail_plan_msg_->leg_commands.size() - 1; i++)
+    // {
+    //   if ((t_now >= last_tail_plan_msg_->leg_commands[i].header.stamp.toSec()) &&
+    //       (t_now < last_tail_plan_msg_->leg_commands[i + 1].header.stamp.toSec()))
+    //   {
+    //     t_interp = (t_now - last_tail_plan_msg_->leg_commands[i].header.stamp.toSec()) /
+    //                (last_tail_plan_msg_->leg_commands[i + 1].header.stamp.toSec() -
+    //                 last_tail_plan_msg_->leg_commands[i].header.stamp.toSec());
+
+    //     current_plan_index = i;
+
+    //     break;
+    //   }
+    // }
 
     msg.motor_commands.at(0).pos_setpoint = math_utils::lerp(last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[0].pos_setpoint,
                                                              last_tail_plan_msg_->leg_commands[current_plan_index + 1].motor_commands[0].pos_setpoint,
@@ -106,6 +131,8 @@ void TailController::publishTailCommand()
     msg.motor_commands.at(1).torque_ff = last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[1].torque_ff;
     msg.motor_commands.at(1).kp = pitch_kp_;
     msg.motor_commands.at(1).kd = pitch_kd_;
+
+    // ROS_INFO_STREAM_THROTTLE(0.1, "current_plan_index: " << current_plan_index << "pos: " << msg.motor_commands.at(0).pos_setpoint << ", " << msg.motor_commands.at(1).pos_setpoint);
   }
 
   // if (abs(msg.motor_commands.at(0).pos_setpoint) > 1.4)
