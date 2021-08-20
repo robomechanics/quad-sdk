@@ -359,9 +359,6 @@ void LocalPlanner::getStateAndTwistInput() {
     // Cold start with reference  plan
     body_plan_ = ref_body_plan_;
 
-    // foot_positions_body_ = hip_projected_foot_positions_;
-    // foot_positions_world_.setZero();
-
     // Initialize with the current foot positions
     for (int i = 0; i < N_; i++) {
       foot_positions_body_.row(i) = current_foot_positions_body_;
@@ -442,16 +439,6 @@ bool LocalPlanner::computeLocalPlan() {
 
 void LocalPlanner::publishLocalPlan() {
 
-  // if (current_plan_index_ >= 50) {
-  //   std::cout << "current_state_\n" << current_state_ << std::endl;
-  //   std::cout << "ref_body_plan_\n" << ref_body_plan_ << std::endl;
-  //   std::cout << "body_plan_\n" << body_plan_ << std::endl;
-  //   std::cout << "grf_plan_\n" << grf_plan_ << std::endl;
-  //   std::cout << "foot_positions_world_\n" << foot_positions_world_ << std::endl;
-  //   std::cout << "foot_positions_body_\n" << foot_positions_body_ << std::endl;
-  //   throw std::runtime_error("Stop");
-  // }
-  
   // Create messages to publish
   spirit_msgs::RobotPlan local_plan_msg;
   spirit_msgs::MultiFootPlanDiscrete future_footholds_msg;
@@ -508,8 +495,6 @@ void LocalPlanner::publishLocalPlan() {
   local_plan_pub_.publish(local_plan_msg);
   foot_plan_discrete_pub_.publish(future_footholds_msg);
   foot_plan_continuous_pub_.publish(foot_plan_msg);
-
-  // std::cout << foot_plan_msg << std::endl;
 }
 
 void LocalPlanner::spin() {

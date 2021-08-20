@@ -123,6 +123,8 @@ void InverseDynamics::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& 
   double t_now = ros::Time::now().toSec();
   double t_latency = t_now - last_remote_heartbeat_time_;
 
+  ROS_INFO_THROTTLE(1.0,"Remote latency = %6.4fs", t_latency);
+
   if (abs(t_latency) >= remote_latency_threshold_warn_) {
     ROS_WARN_THROTTLE(1.0,"Remote latency = %6.4fs which exceeds the warning threshold of %6.4fs\n",
       t_latency, remote_latency_threshold_warn_);
