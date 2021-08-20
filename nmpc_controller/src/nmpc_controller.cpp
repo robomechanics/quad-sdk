@@ -292,6 +292,7 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     control_traj = u.transpose();
 
     ROS_INFO_STREAM(param_ns_ << " solving success");
+    return true;
   }
   else
   {
@@ -315,7 +316,6 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     control_traj = last_control_traj_;
 
     ROS_INFO_STREAM(param_ns_ << " solving fail");
+    return false;
   }
-
-  return true;
 }

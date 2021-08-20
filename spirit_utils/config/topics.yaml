@@ -24,6 +24,7 @@ topics:
     joint_command: /control/joint_command
     mode: /control/mode
     leg_override: /control/leg_override
+  cmd_vel: /cmd_vel
   heartbeat:
     remote: /heartbeat/remote
     robot: /heartbeat/robot
