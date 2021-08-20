@@ -40,6 +40,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
 
   spirit_utils::loadROSParam(nh,"global_body_planner/H_MAX", planner_config_.H_MAX);
   spirit_utils::loadROSParam(nh,"global_body_planner/H_MIN", planner_config_.H_MIN);
+  spirit_utils::loadROSParam(nh,"global_body_planner/H_NOM", planner_config_.H_NOM);
   spirit_utils::loadROSParam(nh,"global_body_planner/V_MAX", planner_config_.V_MAX);
   spirit_utils::loadROSParam(nh,"global_body_planner/V_NOM", planner_config_.V_NOM);
   spirit_utils::loadROSParam(nh,"global_body_planner/DY_MAX", planner_config_.DY_MAX);

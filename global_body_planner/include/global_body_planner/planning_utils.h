@@ -20,7 +20,7 @@
 
 // Uncomment to add visualization features
 #define VISUALIZE_TREE
-// #define VISUALIZE_ALL_CANDIDATE_ACTIONS
+#define VISUALIZE_ALL_CANDIDATE_ACTIONS
 // #define PLOT_TRAJECTORIES
 
 namespace planning_utils {
@@ -31,6 +31,7 @@ struct PlannerConfig {
   // Define kinematic constraint parameters
   double H_MAX = 0.375;         // Maximum height of leg base, m
   double H_MIN = 0.125;         // Minimum ground clearance of body corners, m
+  double H_NOM = 0.3;           // Nominal ground clearance of body, m
   double V_MAX = 4.0;           // Maximum robot velocity, m/s (4.0 for cheetah, 2.5 for anymal)
   double V_NOM = 0.25;          // Nominal velocity, m/s (used during connect function)
   double DY_MAX = 0;            // Maximum yaw velocity
@@ -120,6 +121,10 @@ double stateDistance(State q1, State q2);
 double poseDistance(std::vector<double> v1, std::vector<double> v2);
 bool isWithinBounds(State s1, State s2, const PlannerConfig &planner_config);
 std::array<double,3> rotateGRF(std::array<double,3> surface_norm, std::array<double,3> grf);
+
+inline double getSpeed(const State &s) {
+  return sqrt(pow(s[3], 2) + pow(s[4], 2) + pow(s[5], 2));
+}
 
 // Define function for obtaining full state/path information
 void addFullStates(FullState start_state, std::vector<State> interp_reduced_path, double dt, 
