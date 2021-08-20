@@ -169,7 +169,7 @@ void InverseDynamics::publishLegCommandArray() {
   Eigen::VectorXd joint_positions(3*num_feet_), joint_velocities(3*num_feet_), body_state(12);
   spirit_utils::vectorToEigen(last_robot_state_msg_->joints.position, joint_positions);
   spirit_utils::vectorToEigen(last_robot_state_msg_->joints.velocity, joint_velocities);
-  body_state = spirit_utils::odomMsgToEigen(last_robot_state_msg_->body);
+  body_state = spirit_utils::bodyStateMsgToEigen(last_robot_state_msg_->body);
 
   // Define vectors for state positions and velocities 
   Eigen::VectorXd state_positions(3*num_feet_+6), state_velocities(3*num_feet_+6);
@@ -245,7 +245,7 @@ void InverseDynamics::publishLegCommandArray() {
         ref_foot_positions(3 * num_feet_), ref_foot_velocities(3 * num_feet_), ref_foot_acceleration(3 * num_feet_);
 
     // Load plan and state data from messages
-    ref_body_state = spirit_utils::odomMsgToEigen(ref_state_msg.body);
+    ref_body_state = spirit_utils::bodyStateMsgToEigen(ref_state_msg.body);
     spirit_utils::multiFootStateMsgToEigen(
         ref_state_msg.feet, ref_foot_positions, ref_foot_velocities, ref_foot_acceleration);
     grf_array = spirit_utils::grfArrayMsgToEigen(grf_array_msg);

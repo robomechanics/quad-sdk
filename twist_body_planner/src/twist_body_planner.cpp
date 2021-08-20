@@ -52,16 +52,16 @@ void TwistBodyPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg)
 void TwistBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
 
   tf2::Quaternion q(
-        msg->body.pose.pose.orientation.x,
-        msg->body.pose.pose.orientation.y,
-        msg->body.pose.pose.orientation.z,
-        msg->body.pose.pose.orientation.w);
+        msg->body.pose.orientation.x,
+        msg->body.pose.orientation.y,
+        msg->body.pose.orientation.z,
+        msg->body.pose.orientation.w);
   tf2::Matrix3x3 m(q);
   double roll, pitch, yaw;
   m.getRPY(roll, pitch, yaw);
 
-  start_state_[0] = msg->body.pose.pose.position.x;
-  start_state_[1] = msg->body.pose.pose.position.y;
+  start_state_[0] = msg->body.pose.position.x;
+  start_state_[1] = msg->body.pose.position.y;
   start_state_[2] = z_des_;
   start_state_[3] = 0;
   start_state_[4] = 0;
@@ -129,7 +129,6 @@ void TwistBodyPlanner::addStateWrenchToMsg(double t, int plan_index, State body_
   // Represent each state as an Odometry message
   spirit_msgs::RobotState state;
   spirit_utils::updateStateHeaders(state, msg.header.stamp+ros::Duration(t), map_frame_,plan_index);
-  state.body.child_frame_id = "dummy";
 
   // Transform from RPY to quat msg
   tf2::Quaternion quat_tf;
@@ -138,17 +137,17 @@ void TwistBodyPlanner::addStateWrenchToMsg(double t, int plan_index, State body_
   quat_msg = tf2::toMsg(quat_tf);
 
   // Load the data into the message
-  state.body.pose.pose.position.x = body_state[0];
-  state.body.pose.pose.position.y = body_state[1];
-  state.body.pose.pose.position.z = body_state[2];
-  state.body.pose.pose.orientation = quat_msg;
+  state.body.pose.position.x = body_state[0];
+  state.body.pose.position.y = body_state[1];
+  state.body.pose.position.z = body_state[2];
+  state.body.pose.orientation = quat_msg;
 
-  state.body.twist.twist.linear.x = body_state[6];
-  state.body.twist.twist.linear.y = body_state[7];
-  state.body.twist.twist.linear.z = body_state[8];
-  state.body.twist.twist.angular.x = body_state[9];
-  state.body.twist.twist.angular.y = body_state[10];
-  state.body.twist.twist.angular.z = body_state[11];
+  state.body.twist.linear.x = body_state[6];
+  state.body.twist.linear.y = body_state[7];
+  state.body.twist.linear.z = body_state[8];
+  state.body.twist.angular.x = body_state[9];
+  state.body.twist.angular.y = body_state[10];
+  state.body.twist.angular.z = body_state[11];
 
   double m = 11.5;
   double g = 9.81;
