@@ -5,7 +5,6 @@
 #include <eigen3/Eigen/Eigen>
 // #include <eigen3/Eigen/Eigen>
 #include <spirit_utils/ros_utils.h>
-#include <spirit_utils/foot_jacobians.h>
 #include <spirit_utils/math_utils.h>
 #include <spirit_utils/ros_utils.h>
 #include <spirit_msgs/GRFArray.h>
@@ -76,9 +75,20 @@ private:
 	
   /**
 	 * @brief Callback to handle new leg override commands
-	 @ param[in] Leg override commands
+	 * @param[in] msg Leg override commands
 	 */
 	void legOverrideCallback(const spirit_msgs::LegOverride::ConstPtr& msg);
+
+	/**
+	 * @brief Callback to handle new remote heartbeat messages
+	 * @param[in] msg Remote heartbeat message
+	 */
+	void remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg);
+
+	/**
+	 * @brief Check to make sure required messages are fresh
+	 */
+	void checkMessages();
 	
   /**
 	 * @brief Function to compute and publish leg command array message
@@ -98,7 +108,7 @@ private:
 	ros::Subscriber robot_state_sub_;
 
 	/// ROS subscriber for control input
-	ros::Subscriber grf_input_sub_;
+	ros::Subscriber grf_sub_;
 
 	/// ROS subscriber for trajectory
 	ros::Subscriber trajectory_state_sub_;
@@ -106,11 +116,17 @@ private:
 	/// ROS subscriber for leg override commands
 	ros::Subscriber leg_override_sub_;
 
+	/// ROS subscriber for remote heartbeat
+	ros::Subscriber remote_heartbeat_sub_;
+
+	/// ROS publisher for robot heartbeat
+	ros::Publisher robot_heartbeat_pub_;
+
 	/// ROS publisher for inverse dynamics
 	ros::Publisher leg_command_array_pub_;
 
-  /// ROS publisher for inverse dynamics
-	ros::Publisher leg_command_diagnostics_pub_;
+	/// ROS publisher for desired GRF
+	ros::Publisher grf_pub_;
 
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;
@@ -139,6 +155,9 @@ private:
 	/// Define ids for control modes: Stand to sit
 	const int STAND_TO_SIT = 3;
 
+	/// Define ids for control modes: Safety
+	const int SAFETY = 4;
+
 	/// Define ids for input types: none
 	const int NONE = 0;
 
@@ -163,8 +182,32 @@ private:
 	/// Most recent leg override
 	spirit_msgs::LegOverride last_leg_override_msg_;
 
+	/// Most recent remote 
+	std_msgs::Header::ConstPtr last_remote_heartbeat_msg_;
+
+	// State timeout threshold in seconds
+	double last_state_time_;
+	
+	// Remote heartbeat timeout threshold in seconds
+	double last_remote_heartbeat_time_;
+
 	/// Duration for sit to stand behavior
 	const double transition_duration_ = 1.0;
+
+	/// Timeout (in s) for receiving new input reference messages
+	double input_timeout_;
+
+	/// Timeout (in s) for receiving new state messages
+	double state_timeout_;
+
+	/// Timeout (in s) for receiving new heartbeat messages
+	double heartbeat_timeout_;
+
+	/// Latency threshold on robot messages for warnings (s) 
+	double remote_latency_threshold_warn_;
+
+	/// Latency threshold on robot messages for error (s) 
+	double remote_latency_threshold_error_;
 
 	/// Message for leg command array
 	spirit_msgs::LegCommandArray leg_command_array_msg_;
@@ -172,13 +215,25 @@ private:
 	/// Time at which to start transition
 	ros::Time transition_timestamp_;
 
-	/// PD gain when standing on the ground
-	std::vector<double> walk_kp_;
-	std::vector<double> walk_kd_;
+	/// PD gain when in safety mode
+	std::vector<double> safety_kp_;
+	std::vector<double> safety_kd_;
 
-	/// PD gain when feet in the air
-	std::vector<double> aerial_kp_;
-	std::vector<double> aerial_kd_;
+	/// PD gain when in sit mode
+	std::vector<double> sit_kp_;
+	std::vector<double> sit_kd_;
+
+	/// PD gain when in standing mode
+	std::vector<double> stand_kp_;
+	std::vector<double> stand_kd_;
+
+	/// PD gain when foot is in stance
+	std::vector<double> stance_kp_;
+	std::vector<double> stance_kd_;
+
+	/// PD gain when foot is in swing
+	std::vector<double> swing_kp_;
+	std::vector<double> swing_kd_;
 
 	std::vector<double> f0x;
 	std::vector<double> f1x;
@@ -208,8 +263,8 @@ private:
 	
 	std::vector<double> counterVec;
 
-	double step_number;
-	
+	/// Spirit Kinematics class
+	std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
 };
 
 

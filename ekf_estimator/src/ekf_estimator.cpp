@@ -46,7 +46,7 @@ spirit_msgs::RobotState EKFEstimator::updateStep() {
   // Collect info from last imu message
   if (last_imu_msg_ != NULL)
   {
-    new_state_est.body.pose.pose.orientation = (*last_imu_msg_).orientation;
+    new_state_est.body.pose.orientation = (*last_imu_msg_).orientation;
     good_imu = true;
   }
   else {
@@ -55,7 +55,7 @@ spirit_msgs::RobotState EKFEstimator::updateStep() {
     quat.y = 0;
     quat.z = 0;
     quat.w = 1;
-    new_state_est.body.pose.pose.orientation = quat;
+    new_state_est.body.pose.orientation = quat;
   }
   // Collect info from last joint state message, making sure info is not out of date
   if (last_joint_state_msg_ != NULL)
@@ -73,7 +73,7 @@ spirit_msgs::RobotState EKFEstimator::updateStep() {
     }
   }
   else {
-    ROS_WARN_THROTTLE(0.5,"Still waiting for first joint state message");
+    ROS_DEBUG_THROTTLE(0.5,"Still waiting for first joint state message");
     new_state_est.joints.header.stamp = ros::Time::now();
     new_state_est.joints.name = {"8", "0", "1", "9","2", "3", "10", "4","5", 
       "11", "6", "7"};

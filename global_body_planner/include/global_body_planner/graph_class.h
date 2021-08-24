@@ -58,6 +58,14 @@ class GraphClass
      * @param[in] idx2 Index of the incoming vertex of the edge
      */
     virtual void addEdge(int idx1, int idx2);
+
+    /**
+     * @brief Add a new edge to the graph
+     * @param[in] idx1 Index of the outgoing vertex of the edge
+     * @param[in] idx2 Index of the incoming vertex of the edge
+     * @param[in] edge_code Cost of the new edge
+     */
+    virtual void addEdge(int idx1, int idx2, double edge_cost);
     
     /**
      * @brief Remove an edge of the graph
