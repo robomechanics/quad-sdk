@@ -4,7 +4,6 @@
 #include <ros/ros.h>
 #include <std_msgs/Header.h>
 #include <spirit_utils/math_utils.h>
-#include <spirit_utils/foot_jacobians.h>
 
 namespace spirit_utils {
   /**
@@ -47,7 +46,7 @@ namespace spirit_utils {
    */
   inline int getPlanIndex(ros::Time plan_start, double dt)
   {
-    return std::round(getDurationSinceTime(plan_start)/dt);
+    return std::floor(getDurationSinceTime(plan_start)/dt);
   }
 
   /**
@@ -123,8 +122,8 @@ namespace spirit_utils {
    * @param[in] t_interp Fraction of time between the messages [0,1]
    * @param[out] interp_state Interpolated Odometry message
    */
-  void interpOdometry(nav_msgs::Odometry state_1, nav_msgs::Odometry state_2, 
-    double t_interp, nav_msgs::Odometry &interp_state);
+  void interpOdometry(spirit_msgs::BodyState state_1, spirit_msgs::BodyState state_2, 
+    double t_interp, spirit_msgs::BodyState &interp_state);
 
   /**
    * @brief Interpolate data between two JointState messages.
@@ -203,7 +202,7 @@ void interpRobotPlan(spirit_msgs::RobotPlan msg, double t,
    * @param[out] joint_state message of the corresponding joint state
    */
   void ikRobotState(const spirit_utils::SpiritKinematics &kinematics,
-    nav_msgs::Odometry body_state, spirit_msgs::MultiFootState multi_foot_state,
+    spirit_msgs::BodyState body_state, spirit_msgs::MultiFootState multi_foot_state,
     sensor_msgs::JointState &joint_state);
 
   /**
@@ -222,7 +221,7 @@ void interpRobotPlan(spirit_msgs::RobotPlan msg, double t,
    * @param[out] multi_foot_state message of state of each foot
    */
   void fkRobotState(const spirit_utils::SpiritKinematics &kinematics,
-    nav_msgs::Odometry body_state, sensor_msgs::JointState joint_state,
+    spirit_msgs::BodyState body_state, sensor_msgs::JointState joint_state,
     spirit_msgs::MultiFootState &multi_foot_state);
 
   /**
@@ -238,14 +237,14 @@ void interpRobotPlan(spirit_msgs::RobotPlan msg, double t,
    * @param[in] state Eigen vector with body state data
    * @return Odometry msg with body state data
    */
-  nav_msgs::Odometry eigenToOdomMsg(const Eigen::VectorXd &state);
+  spirit_msgs::BodyState eigenToBodyStateMsg(const Eigen::VectorXd &state);
 
   /**
    * @brief Convert robot state message to Eigen
    * @param[in] body Odometry msg with body state data
    * @return Eigen vector with body state data
    */
-  Eigen::VectorXd odomMsgToEigen(const nav_msgs::Odometry &body);
+  Eigen::VectorXd bodyStateMsgToEigen(const spirit_msgs::BodyState &body);
 
   /**
    * @brief Convert Eigen vector of GRFs to GRFArray msg
@@ -289,6 +288,16 @@ void interpRobotPlan(spirit_msgs::RobotPlan msg, double t,
     Eigen::VectorXd &foot_positions, Eigen::VectorXd &foot_velocities);
 
   /**
+   * @brief Convert robot multi foot state message to Eigen
+   * @param[in] multi_foot_state_msg MultiFootState msg containing foot position information
+   * @param[out] foot_positions Eigen vector with foot position data
+   * @param[out] foot_velocities Eigen vector with foot velocity data
+   * @param[out] foot_acceleration Eigen vector with foot acceleration data
+   */
+  void multiFootStateMsgToEigen(const spirit_msgs::MultiFootState &multi_foot_state_msg, 
+    Eigen::VectorXd &foot_positions, Eigen::VectorXd &foot_velocities, Eigen::VectorXd &foot_acceleration);
+
+  /**
    * @brief Convert eigen vectors to foot state messages
    * @param[in] foot_position Eigen vector with foot position data
    * @param[in] foot_velocity Eigen vector with foot velocity data
@@ -296,6 +305,16 @@ void interpRobotPlan(spirit_msgs::RobotPlan msg, double t,
    */
   void eigenToFootStateMsg(Eigen::VectorXd foot_position, 
     Eigen::VectorXd foot_velocity, spirit_msgs::FootState &foot_state_msg);
+
+  /**
+   * @brief Convert eigen vectors to foot state messages
+   * @param[in] foot_position Eigen vector with foot position data
+   * @param[in] foot_velocity Eigen vector with foot velocity data
+   * @param[in] foot_acceleration Eigen vector with foot acceleration data
+   * @param[out] foot_state_msg FootState msg containing foot position and velocity data
+   */
+  void eigenToFootStateMsg(Eigen::VectorXd foot_position, 
+    Eigen::VectorXd foot_velocity, Eigen::VectorXd foot_acceleration, spirit_msgs::FootState &foot_state_msg);
   
   /**
    * @brief Convert eigen vector to stl vector

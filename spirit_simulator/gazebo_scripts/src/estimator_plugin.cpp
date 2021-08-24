@@ -66,7 +66,8 @@ namespace gazebo{
     ignition::math::Vector3d lin_pos = pose.Pos();
     ignition::math::Quaternion<double> ang_pos = pose.Rot();
     ignition::math::Vector3d lin_vel = body_link->WorldLinearVel();
-    ignition::math::Vector3d ang_vel = body_link->WorldAngularVel();
+    // ignition::math::Vector3d ang_vel = body_link->WorldAngularVel();
+    ignition::math::Vector3d ang_vel = body_link->RelativeAngularVel();
 
     ignition::math::Pose3d toe0_pose = toe0->WorldPose();
     ignition::math::Vector3d toe0_pos = toe0_pose.Pos();
@@ -86,19 +87,19 @@ namespace gazebo{
 
     // Update and publish state estimate message
     spirit_msgs::RobotState state;
-    state.body.pose.pose.position.x = lin_pos.X();
-    state.body.pose.pose.position.y = lin_pos.Y();
-    state.body.pose.pose.position.z = lin_pos.Z();
-    state.body.pose.pose.orientation.w = ang_pos.W();
-    state.body.pose.pose.orientation.x = ang_pos.X();
-    state.body.pose.pose.orientation.y = ang_pos.Y();
-    state.body.pose.pose.orientation.z = ang_pos.Z();
-    state.body.twist.twist.linear.x = lin_vel.X();
-    state.body.twist.twist.linear.y = lin_vel.Y();
-    state.body.twist.twist.linear.z = lin_vel.Z();
-    state.body.twist.twist.angular.x = ang_vel.X();
-    state.body.twist.twist.angular.y = ang_vel.Y();
-    state.body.twist.twist.angular.z = ang_vel.Z();
+    state.body.pose.position.x = lin_pos.X();
+    state.body.pose.position.y = lin_pos.Y();
+    state.body.pose.position.z = lin_pos.Z();
+    state.body.pose.orientation.w = ang_pos.W();
+    state.body.pose.orientation.x = ang_pos.X();
+    state.body.pose.orientation.y = ang_pos.Y();
+    state.body.pose.orientation.z = ang_pos.Z();
+    state.body.twist.linear.x = lin_vel.X();
+    state.body.twist.linear.y = lin_vel.Y();
+    state.body.twist.linear.z = lin_vel.Z();
+    state.body.twist.angular.x = ang_vel.X();
+    state.body.twist.angular.y = ang_vel.Y();
+    state.body.twist.angular.z = ang_vel.Z();
 
     physics::Joint_V joint_vec = model_->GetJoints();
     int num_joints = 12;

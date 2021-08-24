@@ -92,7 +92,7 @@ void LocalFootstepPlanner::computeContactSchedule(int current_plan_index,
 
 void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_position_prev,
   const Eigen::Vector3d &foot_position_next, double swing_phase, int swing_duration,
-  Eigen::Vector3d &foot_position, Eigen::Vector3d &foot_velocity) {
+  Eigen::Vector3d &foot_position, Eigen::Vector3d &foot_velocity, Eigen::Vector3d &foot_acceleration) {
 
   assert((swing_phase >= 0) && (swing_phase <= 1));
 
@@ -104,11 +104,15 @@ void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_pos
   double basis_1 = -2*phi3+3*phi2;
   double basis_2 = 6*(phi2-phi);
   double basis_3 = 6*(phi-phi2);
+  double basis_4 = 12*phi-6;
+  double basis_5 = 6-12*phi;
 
   // Perform cubic hermite interpolation
   foot_position = basis_0*foot_position_prev.array() + basis_1*foot_position_next.array();
   foot_velocity = (basis_2*foot_position_prev.array() +
     basis_3*foot_position_next.array())/(swing_duration*dt_);
+  foot_acceleration = (basis_4*foot_position_prev.array() +
+    basis_5*foot_position_next.array())/pow(swing_duration*dt_, 2);
 
   // Update z to clear both footholds by the specified height
   double swing_apex = ground_clearance_ + std::max(foot_position_prev.z(), foot_position_next.z());
@@ -119,21 +123,27 @@ void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_pos
   basis_1 = -2*phi3+3*phi2;
   basis_2 = 6*(phi2-phi_z);
   basis_3 = 6*(phi_z-phi2);
+  basis_4 = 12*phi_z-6;
+  basis_5 = 6-12*phi_z;
 
   if (phi<0.5) {
     foot_position.z() = basis_0*foot_position_prev.z() + basis_1*swing_apex;
     foot_velocity.z() = (basis_2*foot_position_prev.z() + basis_3*swing_apex)/
       (0.5*swing_duration*dt_);
+    foot_acceleration.z() = (basis_4*foot_position_prev.z() + basis_5*swing_apex)/
+      pow(swing_duration*dt_, 2);
   } else {
     foot_position.z() = basis_0*swing_apex + basis_1*foot_position_next.z();
     foot_velocity.z() = (basis_2*swing_apex + basis_3*foot_position_next.z())/
       (0.5*swing_duration*dt_);
+    foot_acceleration.z() = (basis_4*swing_apex + basis_5*foot_position_next.z())/
+      pow(swing_duration*dt_, 2);
   }  
 }
 
 void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan,
   const Eigen::MatrixXd &grf_plan, const std::vector<std::vector<bool>> &contact_schedule,
-  Eigen::MatrixXd &foot_positions) {
+  const Eigen::MatrixXd &ref_body_plan, Eigen::MatrixXd &foot_positions) {
 
   // Loop through each foot
   for (int j=0; j<num_feet_; j++) {
@@ -147,25 +157,37 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
       if (isNewContact(contact_schedule, i, j)) {
       
         // Declare foot position vectors
-        Eigen::Vector3d foot_position, foot_position_grf, foot_position_nominal, hip_position_midstance;
+        Eigen::Vector3d foot_position, foot_position_grf,
+          foot_position_nominal, hip_position_midstance, centrifugal, vel_tracking;
 
         // Declare body and grf vectors
-        Eigen::Vector3d body_pos_midstance, body_rpy_midstance, grf_midstance;
+        Eigen::Vector3d body_pos_midstance, body_rpy_midstance, 
+          body_vel_touchdown, ref_body_vel_touchdown, body_ang_vel_touchdown, 
+          ref_body_ang_vel_touchdown, grf_midstance;
 
         // Extract body and grf information
-        int midstance = std::min(i + half_duty_cycle, horizon_length_);
+        int midstance = std::min(i + half_duty_cycle, horizon_length_-1);
         body_pos_midstance = body_plan.block<1,3>(midstance,0);
         body_rpy_midstance = body_plan.block<1,3>(midstance,3);
+        body_vel_touchdown = body_plan.block<1,3>(i,6);
+        ref_body_vel_touchdown = ref_body_plan.block<1,3>(i,6);
+        body_ang_vel_touchdown = body_plan.block<1,3>(i,9);
+        ref_body_ang_vel_touchdown = ref_body_plan.block<1,3>(i,9);
         grf_midstance = grf_plan.block<1,3>(midstance,3*j);
 
         // Compute nominal foot positions for kinematic and grf-projection measures
-        kinematics_->nominalFootstepFK(j, body_pos_midstance, body_rpy_midstance, 
+        kinematics_->nominalHipFK(j, body_pos_midstance, body_rpy_midstance, 
           hip_position_midstance);
-        foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
+        double hip_height = hip_position_midstance.z() - 
+          terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());
+        centrifugal = (hip_height/9.81)*body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
+        vel_tracking = 0.03*(body_vel_touchdown - ref_body_vel_touchdown);
+        // foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
 
         // Combine these measures to get the nominal foot position and grab correct height
-        foot_position_nominal = grf_weight_*foot_position_grf +
-          (1-grf_weight_)*hip_position_midstance;
+        // foot_position_nominal = grf_weight_*foot_position_grf +
+        //   (1-grf_weight_)*(hip_position_midstance + vel_tracking);
+        foot_position_nominal = hip_position_midstance + centrifugal + vel_tracking;
         foot_position_nominal.z() = terrain_.getGroundHeight(foot_position_nominal.x(),
           foot_position_nominal.y());
 
@@ -215,15 +237,22 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
     // Loop through the horizon
     for (int i = 0; i < contact_schedule.size(); i++) {
 
+      // Update header for multi foot state if first time through
+      if (j == 0) {
+        foot_plan_continuous_msg.states[i].header = foot_plan_continuous_msg.header;
+        foot_plan_continuous_msg.states[i].header.stamp = foot_plan_continuous_msg.header.stamp + 
+          ros::Duration(i*dt_);
+        foot_plan_continuous_msg.states[i].traj_index = current_plan_index + i;
+      }
+
       // Create the foot state message
       spirit_msgs::FootState foot_state_msg;
       foot_state_msg.header = foot_plan_continuous_msg.header;
-      foot_state_msg.header.stamp = foot_plan_continuous_msg.header.stamp + 
-        ros::Duration(i*dt_);
-      foot_state_msg.traj_index = current_plan_index + i;
+      foot_state_msg.traj_index = foot_plan_continuous_msg.states[i].traj_index;
 
       Eigen::Vector3d foot_position;
       Eigen::Vector3d foot_velocity;
+      Eigen::Vector3d foot_acceleration;
 
       // Determine the foot state at this index
       if (isContact(contact_schedule, i, j)) { // In contact
@@ -231,6 +260,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         // Log current foot position and zero velocity
         foot_position = getFootData(foot_positions, i, j);
         foot_velocity = Eigen::VectorXd::Zero(3);
+        foot_acceleration = Eigen::VectorXd::Zero(3);
         foot_state_msg.contact = true;
 
       } else { // In swing
@@ -249,15 +279,25 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         }
 
         // Compute the current position and velocity from the swing phase variables
-        double swing_phase = (i - i_liftoff)/(double)swing_duration;
+        double swing_phase;
+        if (swing_duration == 0)
+        {
+          // Avoid division by zero when liftoff is the terminal state
+          swing_phase = 0;
+          swing_duration = 1;
+        }
+        else
+        {
+          swing_phase = (i - i_liftoff)/(double)swing_duration;
+        }
         computeSwingFootState(foot_position_prev, foot_position_next, swing_phase, swing_duration,
-          foot_position, foot_velocity);
+          foot_position, foot_velocity, foot_acceleration);
         foot_state_msg.contact = false;
 
       }
 
       // Load state data into the message
-      spirit_utils::eigenToFootStateMsg(foot_position, foot_velocity, foot_state_msg);
+      spirit_utils::eigenToFootStateMsg(foot_position, foot_velocity, foot_acceleration, foot_state_msg);
       foot_plan_continuous_msg.states[i].feet.push_back(foot_state_msg);
 
       // If this is a touchdown event, add to the future footholds message

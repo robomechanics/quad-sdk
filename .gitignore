@@ -3,3 +3,5 @@ docs/
 *.vscode
 **/build/
 *.vscode
+external/ipopt/*
+!external/ipopt/.gitkeep

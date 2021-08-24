@@ -1,5 +1,6 @@
 rviz_interface:
-  update_rate: 30
+  update_rate: 100
+  orientation_subsample: 10
   colors: # Specify as RGB triplets [0,255]
     front_left: [166,25,46]     # Red, a6192e
     back_left: [0,45,114]       # Blue, 002e72

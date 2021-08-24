@@ -8,6 +8,7 @@
     <rosparam command="load" file="$(find spirit_utils)/config/robot_proxy.yaml"/>
     <rosparam command="load" file="$(find spirit_utils)/config/rviz_interface.yaml"/>
     <rosparam command="load" file="$(find spirit_utils)/config/trajectory_publisher.yaml"/>
+    <rosparam command="load" file="$(find spirit_utils)/config/remote_heartbeat.yaml"/>
 
     <rosparam command="load" file="$(find ekf_estimator)/ekf_estimator.yaml"/>
     <rosparam command="load" file="$(find global_body_planner)/global_body_planner.yaml"/>
@@ -19,7 +20,10 @@
     <rosparam command="load" file="$(find body_force_estimator)/body_force_estimator.yaml"/>
     <rosparam command="load" file="$(find mblink_converter)/mblink_converter.yaml"/>
     <rosparam command="load" file="$(find open_loop_controller)/open_loop_controller.yaml"/>
+    <rosparam command="load" file="$(find nmpc_controller)/nmpc_controller.yaml"/>
 
     <param name="enable_statistics" type="bool" value="true" />
+
+    <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
 
 </launch>

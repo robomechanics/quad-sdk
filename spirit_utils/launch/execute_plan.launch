@@ -2,11 +2,13 @@
 
     <include file="$(find spirit_utils)/launch/load_params.launch" />
 
-    <arg name="body_planner" default="global"/>
+    <arg name="global_planner" default="fgmp"/>
+    <arg name="local_planner" default="full"/>
     <arg name="logging" default="false"/>
 
     <include file="$(find spirit_utils)/launch/planning.launch">
-        <arg name="body_planner" value="$(arg body_planner)" />
+        <arg name="global_planner" value="$(arg global_planner)" />
+        <arg name="local_planner" value="$(arg local_planner)" />
     </include>
 
     <group if="$(arg logging)">

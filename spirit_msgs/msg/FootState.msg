@@ -7,4 +7,5 @@ Header header
 uint32 traj_index
 geometry_msgs/Vector3 position
 geometry_msgs/Vector3 velocity
+geometry_msgs/Vector3 acceleration
 bool contact

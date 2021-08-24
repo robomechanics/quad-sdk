@@ -18,13 +18,14 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh_,"topics/state/ground_truth", ground_truth_state_topic);
   spirit_utils::loadROSParam(nh_,"topics/state/trajectory", trajectory_state_topic);
   
-  std::string global_plan_viz_topic, local_plan_viz_topic,
+  std::string global_plan_viz_topic, local_plan_viz_topic, local_plan_ori_viz_topic,
     global_plan_grf_viz_topic, local_plan_grf_viz_topic, discrete_body_plan_viz_topic,
     foot_plan_discrete_viz_topic, estimate_joint_states_viz_topic, 
     ground_truth_joint_states_viz_topic, trajectory_joint_states_viz_topic;
 
   spirit_utils::loadROSParam(nh_,"topics/visualization/global_plan", global_plan_viz_topic);
   spirit_utils::loadROSParam(nh_,"topics/visualization/local_plan", local_plan_viz_topic);
+  spirit_utils::loadROSParam(nh_,"topics/visualization/local_plan_ori", local_plan_ori_viz_topic);
   spirit_utils::loadROSParam(nh_,"topics/visualization/global_plan_grf", global_plan_grf_viz_topic);
   spirit_utils::loadROSParam(nh_,"topics/visualization/local_plan_grf", local_plan_grf_viz_topic);
   spirit_utils::loadROSParam(nh_,"topics/visualization/global_plan_discrete", 
@@ -41,6 +42,7 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   // Setup rviz_interface parameters
   spirit_utils::loadROSParam(nh_,"map_frame",map_frame_);
   nh.param<double>("rviz_interface/update_rate", update_rate_, 10);
+  nh.param<int>("rviz_interface/orientation_subsample", orientation_subsample_,10);
   nh.param<std::vector<int> >("rviz_interface/colors/front_left",
     front_left_color_, {0,255,0});
   nh.param<std::vector<int> >("rviz_interface/colors/back_left",
@@ -77,6 +79,8 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
     (discrete_body_plan_viz_topic,1);
   foot_plan_discrete_viz_pub_ = nh_.advertise<visualization_msgs::Marker>
     (foot_plan_discrete_viz_topic,1);
+  local_plan_ori_viz_pub_ = nh_.advertise<geometry_msgs::PoseArray>
+    (local_plan_ori_viz_topic,1);
 
   // Setup state subs to call the same callback but with pub ID included
   state_estimate_sub_ = nh_.subscribe<spirit_msgs::RobotState>(state_estimate_topic,1,
@@ -125,6 +129,10 @@ void RVizInterface::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& ms
   nav_msgs::Path body_plan_viz;
   body_plan_viz.header = msg->header;
 
+  // Construct MarkerArray for body plan orientation
+  geometry_msgs::PoseArray body_plan_ori_viz;
+  body_plan_ori_viz.header = msg->header;
+
   // Loop through the BodyPlan message to get the state info
   int length = msg->states.size();
   for (int i=0; i < length; i++) {
@@ -132,10 +140,15 @@ void RVizInterface::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& ms
     // Load in the pose data directly from the Odometry message
     geometry_msgs::PoseStamped pose_stamped;
     pose_stamped.header = msg->states[i].header;
-    pose_stamped.pose = msg->states[i].body.pose.pose;
+    pose_stamped.pose = msg->states[i].body.pose;
 
     // Add to the path message
     body_plan_viz.poses.push_back(pose_stamped);
+
+    // Add poses to the orientation message
+    if ((i%orientation_subsample_) == ((length-1)%orientation_subsample_)) {
+      body_plan_ori_viz.poses.push_back(pose_stamped.pose);
+    }
   }
 
   // Publish the full path
@@ -143,6 +156,7 @@ void RVizInterface::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& ms
     global_plan_viz_pub_.publish(body_plan_viz);
   } else if (pub_id == LOCAL) {
     local_plan_viz_pub_.publish(body_plan_viz);
+    local_plan_ori_viz_pub_.publish(body_plan_ori_viz);
   }
 
   // Construct MarkerArray and Marker message for GRFs
@@ -231,9 +245,9 @@ void RVizInterface::discreteBodyPlanCallback(
   int length = msg->states.size();
   for (int i=0; i < length; i++) {
     geometry_msgs::Point p;
-    p.x = msg->states[i].body.pose.pose.position.x;
-    p.y = msg->states[i].body.pose.pose.position.y;
-    p.z = msg->states[i].body.pose.pose.position.z;
+    p.x = msg->states[i].body.pose.position.x;
+    p.y = msg->states[i].body.pose.position.y;
+    p.z = msg->states[i].body.pose.position.z;
     discrete_body_plan.points.push_back(p);
   }
 
@@ -338,10 +352,10 @@ void RVizInterface::robotStateCallback(
   transformStamped.header = msg->header;
   transformStamped.header.stamp = ros::Time::now();
   transformStamped.header.frame_id = map_frame_;
-  transformStamped.transform.translation.x = msg->body.pose.pose.position.x;
-  transformStamped.transform.translation.y = msg->body.pose.pose.position.y;
-  transformStamped.transform.translation.z = msg->body.pose.pose.position.z;
-  transformStamped.transform.rotation = msg->body.pose.pose.orientation;
+  transformStamped.transform.translation.x = msg->body.pose.position.x;
+  transformStamped.transform.translation.y = msg->body.pose.position.y;
+  transformStamped.transform.translation.z = msg->body.pose.position.z;
+  transformStamped.transform.rotation = msg->body.pose.orientation;
 
   // Copy the joint portion of the state estimate message to a new message
   sensor_msgs::JointState joint_msg;

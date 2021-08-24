@@ -21,8 +21,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh.param<std::string>("map_frame",map_frame_,"map");
   nh.param<double>("global_body_planner/update_rate", update_rate_, 1);
   nh.param<int>("global_body_planner/num_calls", num_calls_, 1);
-  nh.param<double>("global_body_planner/max_time", max_time_, 5.0);
-  nh.param<double>("global_body_planner/committed_horizon", committed_horizon_, 0);
+  nh.param<double>("global_body_planner/max_planning_time", max_planning_time_, 5.0);
   nh.param<double>("global_body_planner/state_error_threshold", state_error_threshold_, 0.5);
   nh.param<double>("global_body_planner/startup_delay", startup_delay_, 0.0);
   nh.param<bool>("global_body_planner/replanning", replanning_allowed_, true);
@@ -46,6 +45,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh,"global_body_planner/H_MIN", planner_config_.H_MIN);
   spirit_utils::loadROSParam(nh,"global_body_planner/V_MAX", planner_config_.V_MAX);
   spirit_utils::loadROSParam(nh,"global_body_planner/V_NOM", planner_config_.V_NOM);
+  spirit_utils::loadROSParam(nh,"global_body_planner/DY_MAX", planner_config_.DY_MAX);
   spirit_utils::loadROSParam(nh,"global_body_planner/ROBOT_L", planner_config_.ROBOT_L);
   spirit_utils::loadROSParam(nh,"global_body_planner/ROBOT_W", planner_config_.ROBOT_W);
   spirit_utils::loadROSParam(nh,"global_body_planner/ROBOT_W", planner_config_.ROBOT_W);
@@ -65,8 +65,8 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh,"global_body_planner/GOAL_BOUNDS", planner_config_.GOAL_BOUNDS);
 
   // If replanning is prohibited, set committed horizon to zero ()
-  if (replanning_allowed_ == false && committed_horizon_ > 0) {
-    committed_horizon_ = 0;
+  if (replanning_allowed_ == false && max_planning_time_ > 0) {
+    max_planning_time_ = 0;
     ROS_INFO("Replanning is prohibited, setting committed horizon to zero");
   }
 
@@ -83,14 +83,11 @@ void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPt
 
 void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
 
-  // Quick check to make sure message data has been populated
-  if (msg->body.pose.pose.orientation.w > 1e-4) {
+  // Quick check to make sure message data has been populated and is valid
+  geometry_msgs::Quaternion quat = msg->body.pose.orientation;
+  if (abs(sqrt(pow(quat.w,2) + pow(quat.x,2) + pow(quat.y,2) + pow(quat.z,2)) - 1.0) < 1e-3) {
     // Get RPY from the state message
-    tf2::Quaternion q(
-          msg->body.pose.pose.orientation.x,
-          msg->body.pose.pose.orientation.y,
-          msg->body.pose.pose.orientation.z,
-          msg->body.pose.pose.orientation.w);
+    tf2::Quaternion q(quat.x, quat.y, quat.z, quat.w);
     q.normalize();
     tf2::Matrix3x3 m(q);
     double roll, pitch, yaw;
@@ -98,23 +95,24 @@ void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstP
 
     // Only need the states that will be used in planning (ignore roll and yaw)
     robot_state_.clear();
-    robot_state_.push_back(msg->body.pose.pose.position.x);
-    robot_state_.push_back(msg->body.pose.pose.position.y);
-    robot_state_.push_back(msg->body.pose.pose.position.z);
+    robot_state_.push_back(msg->body.pose.position.x);
+    robot_state_.push_back(msg->body.pose.position.y);
+    robot_state_.push_back(msg->body.pose.position.z);
     robot_state_.push_back(roll);
     robot_state_.push_back(pitch);
     robot_state_.push_back(yaw);
-    robot_state_.push_back(msg->body.twist.twist.linear.x);
-    robot_state_.push_back(msg->body.twist.twist.linear.y);
-    robot_state_.push_back(msg->body.twist.twist.linear.z);
-    robot_state_.push_back(msg->body.twist.twist.angular.x);
-    robot_state_.push_back(msg->body.twist.twist.angular.y);
-    robot_state_.push_back(msg->body.twist.twist.angular.z);
+    robot_state_.push_back(msg->body.twist.linear.x);
+    robot_state_.push_back(msg->body.twist.linear.y);
+    robot_state_.push_back(msg->body.twist.linear.z);
+    robot_state_.push_back(msg->body.twist.angular.x);
+    robot_state_.push_back(msg->body.twist.angular.y);
+    robot_state_.push_back(msg->body.twist.angular.z);
+
   } else {
-    ROS_WARN_THROTTLE(0.1, "Invalid quaternion received in GlobalBodyPlanner, "
+    ROS_WARN_THROTTLE(1.0, "Invalid quaternion received in GlobalBodyPlanner, "
       "returning");
-    
   }
+  
 }
 
 void GlobalBodyPlanner::goalStateCallback(const geometry_msgs::PointStamped::ConstPtr& msg) {
@@ -135,7 +133,13 @@ void GlobalBodyPlanner::goalStateCallback(const geometry_msgs::PointStamped::Con
   goal_state_[2] = 0.3 + planner_config_.terrain.getGroundHeight(
     goal_state_msg_->point.x, goal_state_msg_->point.y);
 
-  restart_flag_ = true;
+  // Reset cost so the next amended plan will be accepted
+  current_cost_ = INFTY;
+
+  // If the old plan has been executed, allow full replanning
+  if (t_plan_.back() <= (ros::Time::now() - plan_timestamp_).toSec()) {
+    restart_flag_ = true;
+  }
 }
 
 void GlobalBodyPlanner::updateRestartFlag() {
@@ -162,13 +166,20 @@ int GlobalBodyPlanner::initPlanner() {
     start_state_ = robot_state_;
     replan_start_time_ = 0;
     current_cost_ = INFTY;
+    length_plan_.clear();
+    length_plan_.push_back(0.0);
     restart_flag_ = false;
-    ROS_INFO("GBP starting from current robot state");
+    ROS_INFO("GBP restarting from current robot state");
   } else {
     // Loop through t_plan_ to find the next state after the committed horizon, set as start state
+    double current_time = (ros::Time::now() - plan_timestamp_).toSec();
     int N = t_plan_.size();
     for (int i = 0; i < N; i++) {
-      if (t_plan_[i] >= committed_horizon_) {
+      if (t_plan_.back() <= (current_time + max_planning_time_)) {
+        int STOP = -1;
+        return STOP;
+      }
+      if (t_plan_[i] >= (current_time + max_planning_time_)) {
 
         start_state_.clear();
         start_state_ = body_plan_[i];
@@ -192,6 +203,8 @@ void GlobalBodyPlanner::callPlanner() {
 
   // Get the most recent plan parameters
   int start_index = initPlanner();
+  if (start_index < 0)
+    return;
 
   // Copy start and goal states and adjust for ground height
   State start_state = fullStateToState(start_state_);
@@ -236,8 +249,11 @@ void GlobalBodyPlanner::callPlanner() {
     std::vector<Action> action_sequence;
 
     // Call the appropriate planning method (can do if else on algorithm_)
-    rrt_connect_obj.runRRTConnect(planner_config_, start_state, goal_state,state_sequence,action_sequence, max_time_);
+    rrt_connect_obj.runRRTConnect(planner_config_, start_state, goal_state,state_sequence,action_sequence, max_planning_time_);
     rrt_connect_obj.getStatistics(plan_time, vertices_generated, path_length, path_duration);
+
+    // Add the existing path length to the new
+    path_length += length_plan_.at(start_index);
 
     // Handle the statistical data
     cost_vector_.push_back(path_length);
@@ -262,6 +278,7 @@ void GlobalBodyPlanner::callPlanner() {
       grf_plan_.erase(grf_plan_.begin()+start_index, grf_plan_.end());
       primitive_id_plan_.erase(primitive_id_plan_.begin()+start_index, 
         primitive_id_plan_.end());
+      length_plan_.erase(length_plan_.begin()+start_index+1, length_plan_.end());
 
       std::cout << "Solve time: " << plan_time << " s" << std::endl;
       std::cout << "Vertices generated: " << vertices_generated << std::endl;
@@ -270,13 +287,15 @@ void GlobalBodyPlanner::callPlanner() {
       std::cout << std::endl;
 
       getInterpPlan(start_state_, state_sequence_, action_sequence_, dt_, replan_start_time_, 
-        body_plan_, grf_plan_, t_plan_, primitive_id_plan_, planner_config_);
+        body_plan_, grf_plan_, t_plan_, primitive_id_plan_, length_plan_, planner_config_);
+
+      if (body_plan_.size() != length_plan_.size()) {
+        ROS_WARN("Mismatched body plan and length");
+      }
 
       if (start_index == 0) {
         plan_timestamp_ = ros::Time::now();
       }
-
-      // Only publish the plan if we found a better solution
     }
 
     if (!ros::ok()) {
@@ -304,7 +323,6 @@ void GlobalBodyPlanner::addStateAndGRFToMsg(double t, int plan_index, FullState 
   // Represent each state as an Odometry message
   spirit_msgs::RobotState state;
   spirit_utils::updateStateHeaders(state, msg.header.stamp+ros::Duration(t), map_frame_,plan_index);
-  state.body.child_frame_id = "dummy";
 
   // Transform from RPY to quat msg
   tf2::Quaternion quat_tf;
@@ -313,17 +331,17 @@ void GlobalBodyPlanner::addStateAndGRFToMsg(double t, int plan_index, FullState 
   quat_msg = tf2::toMsg(quat_tf);
 
   // Load the data into the message
-  state.body.pose.pose.position.x = body_state[0];
-  state.body.pose.pose.position.y = body_state[1];
-  state.body.pose.pose.position.z = body_state[2];
-  state.body.pose.pose.orientation = quat_msg;
+  state.body.pose.position.x = body_state[0];
+  state.body.pose.position.y = body_state[1];
+  state.body.pose.position.z = body_state[2];
+  state.body.pose.orientation = quat_msg;
 
-  state.body.twist.twist.linear.x = body_state[6];
-  state.body.twist.twist.linear.y = body_state[7];
-  state.body.twist.twist.linear.z = body_state[8];
-  state.body.twist.twist.angular.x = body_state[9];
-  state.body.twist.twist.angular.y = body_state[10];
-  state.body.twist.twist.angular.z = body_state[11];
+  state.body.twist.linear.x = body_state[6];
+  state.body.twist.linear.y = body_state[7];
+  state.body.twist.linear.z = body_state[8];
+  state.body.twist.angular.x = body_state[9];
+  state.body.twist.angular.y = body_state[10];
+  state.body.twist.angular.z = body_state[11];
 
   spirit_msgs::GRFArray grf_msg;
   geometry_msgs::Vector3 vector_msg;
@@ -405,6 +423,7 @@ void GlobalBodyPlanner::waitForData() {
     shared_robot_state = ros::topic::waitForMessage<spirit_msgs::RobotState>(robot_state_topic_, nh_);
     ros::spinOnce();
   }
+  ROS_INFO("GBP Has state and map information");
 }
 
 void GlobalBodyPlanner::getInitialPlan() {

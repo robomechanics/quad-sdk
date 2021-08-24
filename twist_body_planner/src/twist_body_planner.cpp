@@ -10,7 +10,7 @@ TwistBodyPlanner::TwistBodyPlanner(ros::NodeHandle nh) {
   nh_.param<std::string>("topics/global_plan", body_plan_topic, "/body_plan");
   nh_.param<std::string>("topics/cmd_vel", cmd_vel_topic, "/cmd_vel");
   nh_.param<std::string>("map_frame", map_frame_,"map");
-  nh_.param<double>("twist_body_planner/cmd_vel_scale_", cmd_vel_scale_, 1);
+  nh_.param<double>("twist_body_planner/cmd_vel_scale", cmd_vel_scale_, 1);
   nh_.param<double>("twist_body_planner/update_rate", update_rate_, 5);
   nh_.param<double>("twist_body_planner/horizon_length", horizon_length_, 1.5);
   nh_.param<double>("twist_body_planner/last_cmd_vel_msg_time_max",last_cmd_vel_msg_time_max_,1.0);
@@ -26,6 +26,7 @@ TwistBodyPlanner::TwistBodyPlanner(ros::NodeHandle nh) {
 
   // Zero the velocity to start
   std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
+  plan_timestamp_ = ros::Time::now();
 }
 
 void TwistBodyPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg) {
@@ -45,22 +46,22 @@ void TwistBodyPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg)
 
   // Record when this was last reached for safety
   last_cmd_vel_msg_time_ = ros::Time::now();
-  
+
 }
 
 void TwistBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
 
   tf2::Quaternion q(
-        msg->body.pose.pose.orientation.x,
-        msg->body.pose.pose.orientation.y,
-        msg->body.pose.pose.orientation.z,
-        msg->body.pose.pose.orientation.w);
+        msg->body.pose.orientation.x,
+        msg->body.pose.orientation.y,
+        msg->body.pose.orientation.z,
+        msg->body.pose.orientation.w);
   tf2::Matrix3x3 m(q);
   double roll, pitch, yaw;
   m.getRPY(roll, pitch, yaw);
 
-  start_state_[0] = msg->body.pose.pose.position.x;
-  start_state_[1] = msg->body.pose.pose.position.y;
+  start_state_[0] = msg->body.pose.position.x;
+  start_state_[1] = msg->body.pose.position.y;
   start_state_[2] = z_des_;
   start_state_[3] = 0;
   start_state_[4] = 0;
@@ -111,7 +112,7 @@ void TwistBodyPlanner::updatePlan() {
 
     for (int i = 0; i < 6; i ++) {
       current_state[i] = body_plan_.back()[i] + current_cmd_vel[i]*dt_;
-      current_state[i+6] = (cmd_vel_[i]);
+      current_state[i+6] = (current_cmd_vel[i]);
     }
 
     t_plan_.push_back(t);
@@ -128,7 +129,6 @@ void TwistBodyPlanner::addStateWrenchToMsg(double t, int plan_index, State body_
   // Represent each state as an Odometry message
   spirit_msgs::RobotState state;
   spirit_utils::updateStateHeaders(state, msg.header.stamp+ros::Duration(t), map_frame_,plan_index);
-  state.body.child_frame_id = "dummy";
 
   // Transform from RPY to quat msg
   tf2::Quaternion quat_tf;
@@ -137,21 +137,21 @@ void TwistBodyPlanner::addStateWrenchToMsg(double t, int plan_index, State body_
   quat_msg = tf2::toMsg(quat_tf);
 
   // Load the data into the message
-  state.body.pose.pose.position.x = body_state[0];
-  state.body.pose.pose.position.y = body_state[1];
-  state.body.pose.pose.position.z = body_state[2];
-  state.body.pose.pose.orientation = quat_msg;
+  state.body.pose.position.x = body_state[0];
+  state.body.pose.position.y = body_state[1];
+  state.body.pose.position.z = body_state[2];
+  state.body.pose.orientation = quat_msg;
 
-  state.body.twist.twist.linear.x = body_state[6];
-  state.body.twist.twist.linear.y = body_state[7];
-  state.body.twist.twist.linear.z = body_state[8];
-  state.body.twist.twist.angular.x = body_state[9];
-  state.body.twist.twist.angular.y = body_state[10];
-  state.body.twist.twist.angular.z = body_state[11];
+  state.body.twist.linear.x = body_state[6];
+  state.body.twist.linear.y = body_state[7];
+  state.body.twist.linear.z = body_state[8];
+  state.body.twist.angular.x = body_state[9];
+  state.body.twist.angular.y = body_state[10];
+  state.body.twist.angular.z = body_state[11];
 
   double m = 11.5;
   double g = 9.81;
-  spirit_msgs::GRFArray grf_array_msg;
+  spirit_msgs::GRFArray grf_msg;
   geometry_msgs::Vector3 vector_msg;
   vector_msg.x = 0;
   vector_msg.y = 0;
@@ -161,11 +161,11 @@ void TwistBodyPlanner::addStateWrenchToMsg(double t, int plan_index, State body_
   point_msg.y = body_state[1];
   point_msg.z = body_state[2];
 
-  spirit_msgs::GRFArray grf_msg;
   grf_msg.header = state.header;
   grf_msg.vectors.push_back(vector_msg);
   grf_msg.points.push_back(point_msg);
-  grf_array_msg.contact_states.push_back(true);
+  bool contact_state = true;
+  grf_msg.contact_states.push_back(contact_state);
 
   int primitive_id = 2; // Corresponds to a walking primitive
   msg.states.push_back(state);
@@ -184,6 +184,8 @@ void TwistBodyPlanner::publishPlan() {
   // Construct BodyPlan messages
   spirit_msgs::RobotPlan robot_plan_msg;
 
+  // plan_timestamp_ = ros::Time::now();
+
   // Initialize the headers and types
   robot_plan_msg.header.stamp = plan_timestamp_;
   robot_plan_msg.header.frame_id = map_frame_;
@@ -191,7 +193,10 @@ void TwistBodyPlanner::publishPlan() {
 
   // Loop through the interpolated body plan and add to message
   for (int i=0;i<body_plan_.size(); ++i)
+  {
     addStateWrenchToMsg(t_plan_[i], i, body_plan_[i], robot_plan_msg);
+    // printf("x = %5.3f, dx = %5.3f\n", body_plan_[i][0], body_plan_[i][6]);
+  }
   
   if (robot_plan_msg.states.size() != robot_plan_msg.grfs.size()) {
     throw std::runtime_error("Mismatch between number of states and wrenches, something is wrong");

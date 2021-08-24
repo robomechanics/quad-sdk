@@ -1,7 +1,8 @@
 #!/bin/bash
 
-echo "Navigaing to spirit-software"
-cd ~/catkin_ws/src/spirit-software/
+echo "Syncing clock with remote computer"
+sudo iw dev wlan0 set power_save off
+sudo ntpdate 192.168.168.5
 
 echo "Pull and build most recent code (requires internet connection)? [y/n]"
 read input
@@ -25,3 +26,4 @@ source ~/catkin_ws/src/spirit-software/spirit_utils/scripts/init_robot.sh
 
 echo "Launching robot_driver.launch"
 roslaunch spirit_utils robot_driver.launch mocap:=true
+

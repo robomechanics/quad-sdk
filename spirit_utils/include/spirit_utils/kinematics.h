@@ -8,6 +8,10 @@
 #include <chrono>
 #include <random>
 #include <math.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <rbdl/rbdl.h>
+#include <rbdl/rbdl_utils.h>
+#include <rbdl/addons/urdfreader/urdfreader.h>
 
 namespace spirit_utils {
  
@@ -168,14 +172,52 @@ class SpiritKinematics {
     Eigen::Vector3d body_rpy, Eigen::Vector3d &leg_base_pos_world) const;
 
   /**
-   * @brief Get the position of the nominal footstep in the world frame
+   * @brief Get the position of the nominal hip location in the world frame
    * @param[in] leg_index Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
    * @param[in] body_pos Position of center of body frame
    * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
    * @param[out] nominal_footstep_pos_world Location of nominal footstep in world frame
    */
-  void nominalFootstepFK(int leg_index, Eigen::Vector3d body_pos,
+  void nominalHipFK(int leg_index, Eigen::Vector3d body_pos,
     Eigen::Vector3d body_rpy, Eigen::Vector3d &nominal_footstep_pos_world) const;
+
+  /**
+   * @brief Compute Jacobian for generalized coordinates
+   * @param[in] state Joint and body states
+   * @param[out] jacobian Jacobian for generalized coordinates
+   */
+  void getJacobianGenCoord(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const;
+
+  /**
+   * @brief Compute Jacobian for angular velocity in body frame
+   * @param[in] state Joint and body states
+   * @param[out] jacobian Jacobian for angular velocity in body frame
+   */
+  void getJacobianBodyAngVel(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const;
+
+  /**
+   * @brief Compute Jacobian for angular velocity in world frame
+   * @param[in] state Joint and body states
+   * @param[out] jacobian Jacobian for angular velocity in world frame
+   */
+  void getJacobianWorldAngVel(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const;
+
+  /**
+   * @brief Compute rotation matrix given roll pitch and yaw
+   * @param[in] rpy Roll pitch and yaw
+   * @param[out] rot Rotation matrix
+   */
+  void getRotationMatrix(const Eigen::VectorXd &rpy, Eigen::Matrix3d &rot) const;
+
+  /**
+   * @brief Compute inverse dynamics for swing leg
+   * @param[in] state_pos Position states
+   * @param[in] state_vel Velocity states
+   * @param[in] foot_acc Foot absolute acceleration in world frame
+   * @param[in] grf Ground reaction force
+   * @param[out] tau Joint torques
+   */
+  void compInvDyn(const Eigen::VectorXd &state_pos,const Eigen::VectorXd &state_vel,const Eigen::VectorXd &foot_acc,const Eigen::VectorXd &grf,Eigen::VectorXd &tau) const;
 
   private:
 
@@ -223,6 +265,14 @@ class SpiritKinematics {
 
     /// Vector of the joint upper limits
     const std::vector<double> joint_max_ = {1-joint_eps,M_PI-joint_eps,M_PI-joint_eps};
+
+    RigidBodyDynamics::Model *model_;
+
+    std::vector<std::string> body_name_list_;
+
+    std::vector<unsigned int> body_id_list_;
+
+    std::vector<int> leg_idx_list_;
 };
 
 }
