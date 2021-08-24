@@ -2,6 +2,8 @@ var searchData=
 [
   ['f_5fmax_5f',['f_max_',['../classQuadrupedMPC.html#a1b0f485176d89ce69f72fa1096f10533',1,'QuadrupedMPC']]],
   ['f_5fmin_5f',['f_min_',['../classQuadrupedMPC.html#a63f018115ed5cf20622c4686c59f824f',1,'QuadrupedMPC']]],
+  ['filter_5fsmoothing_5fconstant_5f',['filter_smoothing_constant_',['../classLocalPlanner.html#a87615696d79cd93456359cd0def78890',1,'LocalPlanner']]],
+  ['first_5fplan_5f',['first_plan_',['../classLocalPlanner.html#a7926e736ab47d2ed03f0d563415131e2',1,'LocalPlanner']]],
   ['flight',['FLIGHT',['../classGlobalFootstepPlanner.html#ab0c07c799b33ac8915ac931cf8b276bb',1,'GlobalFootstepPlanner::FLIGHT()'],['../classLocalFootstepPlanner.html#a4d80952c1299bc54c08fafbe4b695b1b',1,'LocalFootstepPlanner::FLIGHT()']]],
   ['foot_5f0_5fplan_5fcontinuous_5fviz_5fpub_5f',['foot_0_plan_continuous_viz_pub_',['../classRVizInterface.html#a5ad1dda3fcbc4271a72db281cacc3988',1,'RVizInterface']]],
   ['foot_5f1_5fplan_5fcontinuous_5fviz_5fpub_5f',['foot_1_plan_continuous_viz_pub_',['../classRVizInterface.html#a037da82ad6bd10cdc11b8e481ee3b2bf',1,'RVizInterface']]],

@@ -9,5 +9,6 @@ var searchData=
   ['joint_5fmin_5f',['joint_min_',['../classspirit__utils_1_1SpiritKinematics.html#ab1c8075eca4126baa6ff99534b81613a',1,'spirit_utils::SpiritKinematics']]],
   ['joint_5fnames_5f',['joint_names_',['../classMBLinkConverter.html#aba592a4e42922af47933d01413825b39',1,'MBLinkConverter']]],
   ['joint_5fstate_5fmsg_5ftime_5fdiff_5fmax_5f',['joint_state_msg_time_diff_max_',['../classEKFEstimator.html#aa78129153d7bcc537c5813693d35c4f7',1,'EKFEstimator']]],
-  ['joint_5furdfs_5f',['joint_urdfs_',['../classeffort__controllers_1_1SpiritController.html#ab6fe316aa79e3c5c67119b8041e8c29a',1,'effort_controllers::SpiritController']]]
+  ['joint_5furdfs_5f',['joint_urdfs_',['../classeffort__controllers_1_1SpiritController.html#ab6fe316aa79e3c5c67119b8041e8c29a',1,'effort_controllers::SpiritController']]],
+  ['joints_5forder_5f',['joints_order_',['../classGroundTruthPublisher.html#ad89e7fa1414b64f8f7751fe97d12e063',1,'GroundTruthPublisher']]]
 ];

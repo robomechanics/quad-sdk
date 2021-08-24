@@ -95,6 +95,10 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:abde4dba9da7824f7dd88b19e40709550"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#abde4dba9da7824f7dd88b19e40709550">legControlCallback</a> (const spirit_msgs::LegCommandArray::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:abde4dba9da7824f7dd88b19e40709550"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new leg command data.  <a href="#abde4dba9da7824f7dd88b19e40709550">More...</a><br /></td></tr>
 <tr class="separator:abde4dba9da7824f7dd88b19e40709550"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d7ae58c88aec87e02c74f6a6298f1d6"><td class="memItemLeft" align="right" valign="top"><a id="a3d7ae58c88aec87e02c74f6a6298f1d6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#a3d7ae58c88aec87e02c74f6a6298f1d6">remoteHeartbeatCallback</a> (const std_msgs::Header::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a3d7ae58c88aec87e02c74f6a6298f1d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback to handle new remote heartbeat messages. <br /></td></tr>
+<tr class="separator:a3d7ae58c88aec87e02c74f6a6298f1d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa3efb7eb75fc04f545767c9188928d7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#afa3efb7eb75fc04f545767c9188928d7">packFloats</a> (float in1, float in2)</td></tr>
 <tr class="memdesc:afa3efb7eb75fc04f545767c9188928d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compress two floats into one.  <a href="#afa3efb7eb75fc04f545767c9188928d7">More...</a><br /></td></tr>
 <tr class="separator:afa3efb7eb75fc04f545767c9188928d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -112,6 +116,10 @@ Private Attributes</h2></td></tr>
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#ae48e9cc552f57806f5f96e6ebd89c2d3">leg_control_sub_</a></td></tr>
 <tr class="memdesc:ae48e9cc552f57806f5f96e6ebd89c2d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subscriber for motor control messages. <br /></td></tr>
 <tr class="separator:ae48e9cc552f57806f5f96e6ebd89c2d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cf678080f83962798774ba308d5d91b"><td class="memItemLeft" align="right" valign="top"><a id="a9cf678080f83962798774ba308d5d91b"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#a9cf678080f83962798774ba308d5d91b">remote_heartbeat_sub_</a></td></tr>
+<tr class="memdesc:a9cf678080f83962798774ba308d5d91b"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for remote heartbeat. <br /></td></tr>
+<tr class="separator:a9cf678080f83962798774ba308d5d91b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad48fc34d9e86305a63d50d2e1dd58a76"><td class="memItemLeft" align="right" valign="top"><a id="ad48fc34d9e86305a63d50d2e1dd58a76"></a>
 ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#ad48fc34d9e86305a63d50d2e1dd58a76">nh_</a></td></tr>
 <tr class="memdesc:ad48fc34d9e86305a63d50d2e1dd58a76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nodehandle to pub to and sub from. <br /></td></tr>
@@ -132,6 +140,21 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 spirit_msgs::LegCommandArray::ConstPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#ad9050d7cc3d27c5a65d8f2ed29fee88e">last_leg_command_array_msg_</a></td></tr>
 <tr class="memdesc:ad9050d7cc3d27c5a65d8f2ed29fee88e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last motor control message (keep sending until we get a new message in or node is shutdown) <br /></td></tr>
 <tr class="separator:ad9050d7cc3d27c5a65d8f2ed29fee88e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28a5b45ed86f95171f3c0e51ce3e2486"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#a28a5b45ed86f95171f3c0e51ce3e2486">last_heartbeat_time_</a></td></tr>
+<tr class="memdesc:a28a5b45ed86f95171f3c0e51ce3e2486"><td class="mdescLeft">&#160;</td><td class="mdescRight">Most recent remote heartbeat.  <a href="#a28a5b45ed86f95171f3c0e51ce3e2486">More...</a><br /></td></tr>
+<tr class="separator:a28a5b45ed86f95171f3c0e51ce3e2486"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ff82a1e5dc13435f8caa08583c71ae8"><td class="memItemLeft" align="right" valign="top"><a id="a3ff82a1e5dc13435f8caa08583c71ae8"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#a3ff82a1e5dc13435f8caa08583c71ae8">last_leg_command_time_</a></td></tr>
+<tr class="memdesc:a3ff82a1e5dc13435f8caa08583c71ae8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remote heartbeat timeout threshold in seconds. <br /></td></tr>
+<tr class="separator:a3ff82a1e5dc13435f8caa08583c71ae8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab299d88945d73e08927003565ae62af4"><td class="memItemLeft" align="right" valign="top"><a id="ab299d88945d73e08927003565ae62af4"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#ab299d88945d73e08927003565ae62af4">remote_heartbeat_timeout_</a></td></tr>
+<tr class="memdesc:ab299d88945d73e08927003565ae62af4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remote heartbeat timeout threshold in seconds. <br /></td></tr>
+<tr class="separator:ab299d88945d73e08927003565ae62af4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4489bd6705cb0e54c21600edcd9e6f75"><td class="memItemLeft" align="right" valign="top"><a id="a4489bd6705cb0e54c21600edcd9e6f75"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#a4489bd6705cb0e54c21600edcd9e6f75">leg_command_timeout_</a></td></tr>
+<tr class="memdesc:a4489bd6705cb0e54c21600edcd9e6f75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Leg command timeout threshold in seconds. <br /></td></tr>
+<tr class="separator:a4489bd6705cb0e54c21600edcd9e6f75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f3f000255a6fce878a882bccac9906c"><td class="memItemLeft" align="right" valign="top"><a id="a5f3f000255a6fce878a882bccac9906c"></a>
 MBLink&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMBLinkConverter.html#a5f3f000255a6fce878a882bccac9906c">mblink_</a></td></tr>
 <tr class="memdesc:a5f3f000255a6fce878a882bccac9906c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to MBLink object (constructor wants argc and argv, so instantiated in main) <br /></td></tr>
@@ -328,6 +351,31 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= {0.546,0.546,1.092,0.546,0.546,1.092,</div><div class="line">    0.546,0.546,1.092,0.546,0.546,1.092}</div></div><!-- fragment -->
 <p>Vector of kt values for each joint. </p>
+
+</div>
+</div>
+<a id="a28a5b45ed86f95171f3c0e51ce3e2486"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28a5b45ed86f95171f3c0e51ce3e2486">&#9670;&nbsp;</a></span>last_heartbeat_time_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double MBLinkConverter::last_heartbeat_time_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Most recent remote heartbeat. </p>
+<p>Remote heartbeat timeout threshold in seconds </p>
 
 </div>
 </div>

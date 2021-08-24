@@ -11,5 +11,6 @@ var searchData=
   ['body_5fplan_5fmsg_5f',['body_plan_msg_',['../classGlobalFootstepPlanner.html#ad85cda40f6b31b06bd45ad0c4e434370',1,'GlobalFootstepPlanner::body_plan_msg_()'],['../classLocalPlanner.html#a585b84d257a1c9e99a6c5c05c81eca5b',1,'LocalPlanner::body_plan_msg_()'],['../classTrajectoryPublisher.html#aa3ce281b428b24470d1023d0a15b3e70',1,'TrajectoryPublisher::body_plan_msg_()']]],
   ['body_5fplan_5fpub_5f',['body_plan_pub_',['../classGlobalBodyPlanner.html#a5b7373f6e544a844dc1d09f296d92e1c',1,'GlobalBodyPlanner::body_plan_pub_()'],['../classTwistBodyPlanner.html#a14cdaf4b56e4cba25050af64b0d18797',1,'TwistBodyPlanner::body_plan_pub_()']]],
   ['body_5fplan_5fsub_5f',['body_plan_sub_',['../classGlobalFootstepPlanner.html#aff25cbdfe61ce33bd6aa186c20542e35',1,'GlobalFootstepPlanner::body_plan_sub_()'],['../classInverseDynamics.html#abb6ab9ca34d0f73f18cf02edd492b845',1,'InverseDynamics::body_plan_sub_()'],['../classLocalPlanner.html#a769b77247e21aa8fae04e065ae2650a4',1,'LocalPlanner::body_plan_sub_()'],['../classTrajectoryPublisher.html#a2fe6e1edaff1bf56fd943f7340640d94',1,'TrajectoryPublisher::body_plan_sub_()']]],
-  ['body_5fplan_5ftopic_5f',['body_plan_topic_',['../classGlobalFootstepPlanner.html#ac1a643e512db49305a7e34d0640b70cb',1,'GlobalFootstepPlanner']]]
+  ['body_5fplan_5ftopic_5f',['body_plan_topic_',['../classGlobalFootstepPlanner.html#ac1a643e512db49305a7e34d0640b70cb',1,'GlobalFootstepPlanner']]],
+  ['buffer_5f',['buffer_',['../classContactStatePublisher.html#a64691c2ed256b88adc8b7433d921aa87',1,'ContactStatePublisher']]]
 ];

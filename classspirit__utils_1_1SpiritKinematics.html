@@ -123,9 +123,24 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a63300a642ebd68901e195a5cd4560ead"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a63300a642ebd68901e195a5cd4560ead">legBaseFK</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Vector3d &amp;leg_base_pos_world) const</td></tr>
 <tr class="memdesc:a63300a642ebd68901e195a5cd4560ead"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the position of the leg base frame origin in the world frame.  <a href="#a63300a642ebd68901e195a5cd4560ead">More...</a><br /></td></tr>
 <tr class="separator:a63300a642ebd68901e195a5cd4560ead"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61d8a08b1f24d569fa21ba5a88d907f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a61d8a08b1f24d569fa21ba5a88d907f8">nominalFootstepFK</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Vector3d &amp;nominal_footstep_pos_world) const</td></tr>
-<tr class="memdesc:a61d8a08b1f24d569fa21ba5a88d907f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the position of the nominal footstep in the world frame.  <a href="#a61d8a08b1f24d569fa21ba5a88d907f8">More...</a><br /></td></tr>
-<tr class="separator:a61d8a08b1f24d569fa21ba5a88d907f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7774c3ee86747d9f3fc2f3ebe5c77bb7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a7774c3ee86747d9f3fc2f3ebe5c77bb7">nominalHipFK</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Vector3d &amp;nominal_footstep_pos_world) const</td></tr>
+<tr class="memdesc:a7774c3ee86747d9f3fc2f3ebe5c77bb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the position of the nominal hip location in the world frame.  <a href="#a7774c3ee86747d9f3fc2f3ebe5c77bb7">More...</a><br /></td></tr>
+<tr class="separator:a7774c3ee86747d9f3fc2f3ebe5c77bb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49c22e96462df2aa454b5afc832c1887"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a49c22e96462df2aa454b5afc832c1887">getJacobianGenCoord</a> (const Eigen::VectorXd &amp;state, Eigen::MatrixXd &amp;jacobian) const</td></tr>
+<tr class="memdesc:a49c22e96462df2aa454b5afc832c1887"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute Jacobian for generalized coordinates.  <a href="#a49c22e96462df2aa454b5afc832c1887">More...</a><br /></td></tr>
+<tr class="separator:a49c22e96462df2aa454b5afc832c1887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a438e8dafd7040848fd514f5920b01220"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a438e8dafd7040848fd514f5920b01220">getJacobianBodyAngVel</a> (const Eigen::VectorXd &amp;state, Eigen::MatrixXd &amp;jacobian) const</td></tr>
+<tr class="memdesc:a438e8dafd7040848fd514f5920b01220"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute Jacobian for angular velocity in body frame.  <a href="#a438e8dafd7040848fd514f5920b01220">More...</a><br /></td></tr>
+<tr class="separator:a438e8dafd7040848fd514f5920b01220"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1e2534d0236fa8654a7d334a86c2aa5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#ae1e2534d0236fa8654a7d334a86c2aa5">getJacobianWorldAngVel</a> (const Eigen::VectorXd &amp;state, Eigen::MatrixXd &amp;jacobian) const</td></tr>
+<tr class="memdesc:ae1e2534d0236fa8654a7d334a86c2aa5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute Jacobian for angular velocity in world frame.  <a href="#ae1e2534d0236fa8654a7d334a86c2aa5">More...</a><br /></td></tr>
+<tr class="separator:ae1e2534d0236fa8654a7d334a86c2aa5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5678b5387ff6ffddefd032db159c094"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#ad5678b5387ff6ffddefd032db159c094">getRotationMatrix</a> (const Eigen::VectorXd &amp;rpy, Eigen::Matrix3d &amp;rot) const</td></tr>
+<tr class="memdesc:ad5678b5387ff6ffddefd032db159c094"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute rotation matrix given roll pitch and yaw.  <a href="#ad5678b5387ff6ffddefd032db159c094">More...</a><br /></td></tr>
+<tr class="separator:ad5678b5387ff6ffddefd032db159c094"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f6e98cdceee06bdc1efd90119df1ac9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a0f6e98cdceee06bdc1efd90119df1ac9">compInvDyn</a> (const Eigen::VectorXd &amp;state_pos, const Eigen::VectorXd &amp;state_vel, const Eigen::VectorXd &amp;foot_acc, const Eigen::VectorXd &amp;grf, Eigen::VectorXd &amp;tau) const</td></tr>
+<tr class="memdesc:a0f6e98cdceee06bdc1efd90119df1ac9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute inverse dynamics for swing leg.  <a href="#a0f6e98cdceee06bdc1efd90119df1ac9">More...</a><br /></td></tr>
+<tr class="separator:a0f6e98cdceee06bdc1efd90119df1ac9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -189,6 +204,18 @@ const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bot
 const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classspirit__utils_1_1SpiritKinematics.html#acc11bdb27637f55385ed9b56cf113cac">joint_max_</a> = {1-<a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a4ddab2a65cea03eea9ef1d248232d58c">joint_eps</a>,M_PI-<a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a4ddab2a65cea03eea9ef1d248232d58c">joint_eps</a>,M_PI-<a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a4ddab2a65cea03eea9ef1d248232d58c">joint_eps</a>}</td></tr>
 <tr class="memdesc:acc11bdb27637f55385ed9b56cf113cac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of the joint upper limits. <br /></td></tr>
 <tr class="separator:acc11bdb27637f55385ed9b56cf113cac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa718f6d84cc3f18e2a7459fb3e14ba8e"><td class="memItemLeft" align="right" valign="top"><a id="aa718f6d84cc3f18e2a7459fb3e14ba8e"></a>
+RigidBodyDynamics::Model *&#160;</td><td class="memItemRight" valign="bottom"><b>model_</b></td></tr>
+<tr class="separator:aa718f6d84cc3f18e2a7459fb3e14ba8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d5453c34562971f6f4068b67fcc11ef"><td class="memItemLeft" align="right" valign="top"><a id="a2d5453c34562971f6f4068b67fcc11ef"></a>
+std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>body_name_list_</b></td></tr>
+<tr class="separator:a2d5453c34562971f6f4068b67fcc11ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad192d6dafa62072de1f4aee641bbdb63"><td class="memItemLeft" align="right" valign="top"><a id="ad192d6dafa62072de1f4aee641bbdb63"></a>
+std::vector&lt; unsigned int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>body_id_list_</b></td></tr>
+<tr class="separator:ad192d6dafa62072de1f4aee641bbdb63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1409d048e2341763146aca4861a17b13"><td class="memItemLeft" align="right" valign="top"><a id="a1409d048e2341763146aca4861a17b13"></a>
+std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>leg_idx_list_</b></td></tr>
+<tr class="separator:a1409d048e2341763146aca4861a17b13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A lightweight library for spirit kinematic functions. </p>
@@ -303,6 +330,64 @@ const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bot
 
 </div>
 </div>
+<a id="a0f6e98cdceee06bdc1efd90119df1ac9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f6e98cdceee06bdc1efd90119df1ac9">&#9670;&nbsp;</a></span>compInvDyn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SpiritKinematics::compInvDyn </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>state_pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>state_vel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>foot_acc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>grf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>tau</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute inverse dynamics for swing leg. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">state_pos</td><td>Position states </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">state_vel</td><td>Velocity states </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">foot_acc</td><td>Foot absolute acceleration in world frame </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">grf</td><td>Ground reaction force </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">tau</td><td>Joint torques </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="aca0d22b864f1ce48d66748a7c7cc04e7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aca0d22b864f1ce48d66748a7c7cc04e7">&#9670;&nbsp;</a></span>createAffineMatrix() <span class="overload">[1/2]</span></h2>
 
@@ -376,6 +461,117 @@ const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bot
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Homogenous transformation matrix </dd></dl>
+
+</div>
+</div>
+<a id="a438e8dafd7040848fd514f5920b01220"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a438e8dafd7040848fd514f5920b01220">&#9670;&nbsp;</a></span>getJacobianBodyAngVel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SpiritKinematics::getJacobianBodyAngVel </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>jacobian</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute Jacobian for angular velocity in body frame. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">state</td><td>Joint and body states </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">jacobian</td><td>Jacobian for angular velocity in body frame </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a49c22e96462df2aa454b5afc832c1887"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49c22e96462df2aa454b5afc832c1887">&#9670;&nbsp;</a></span>getJacobianGenCoord()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SpiritKinematics::getJacobianGenCoord </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>jacobian</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute Jacobian for generalized coordinates. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">state</td><td>Joint and body states </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">jacobian</td><td>Jacobian for generalized coordinates </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ae1e2534d0236fa8654a7d334a86c2aa5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1e2534d0236fa8654a7d334a86c2aa5">&#9670;&nbsp;</a></span>getJacobianWorldAngVel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SpiritKinematics::getJacobianWorldAngVel </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>jacobian</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute Jacobian for angular velocity in world frame. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">state</td><td>Joint and body states </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">jacobian</td><td>Jacobian for angular velocity in world frame </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -472,6 +668,43 @@ const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bot
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Requested link length </dd></dl>
+
+</div>
+</div>
+<a id="ad5678b5387ff6ffddefd032db159c094"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5678b5387ff6ffddefd032db159c094">&#9670;&nbsp;</a></span>getRotationMatrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SpiritKinematics::getRotationMatrix </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>rpy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Matrix3d &amp;&#160;</td>
+          <td class="paramname"><em>rot</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute rotation matrix given roll pitch and yaw. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">rpy</td><td>Roll pitch and yaw </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">rot</td><td>Rotation matrix </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -751,14 +984,14 @@ const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bot
 
 </div>
 </div>
-<a id="a61d8a08b1f24d569fa21ba5a88d907f8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a61d8a08b1f24d569fa21ba5a88d907f8">&#9670;&nbsp;</a></span>nominalFootstepFK()</h2>
+<a id="a7774c3ee86747d9f3fc2f3ebe5c77bb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7774c3ee86747d9f3fc2f3ebe5c77bb7">&#9670;&nbsp;</a></span>nominalHipFK()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void SpiritKinematics::nominalFootstepFK </td>
+          <td class="memname">void SpiritKinematics::nominalHipFK </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>leg_index</em>, </td>
@@ -789,7 +1022,7 @@ const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bot
       </table>
 </div><div class="memdoc">
 
-<p>Get the position of the nominal footstep in the world frame. </p>
+<p>Get the position of the nominal hip location in the world frame. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">leg_index</td><td>Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR) </td></tr>

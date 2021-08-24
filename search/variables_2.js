@@ -1,9 +1,10 @@
 var searchData=
 [
   ['cmd_5fvel_5f',['cmd_vel_',['../classTwistBodyPlanner.html#a6b7dbe4f18a900a4cbdbbaaa66e976d5',1,'TwistBodyPlanner']]],
-  ['cmd_5fvel_5fscale_5f',['cmd_vel_scale_',['../classTwistBodyPlanner.html#a4e2bf4654846db912573b3212042fb09',1,'TwistBodyPlanner']]],
-  ['cmd_5fvel_5fsub_5f',['cmd_vel_sub_',['../classTwistBodyPlanner.html#a13a77d06bef51add939a0dbb8b75b43c',1,'TwistBodyPlanner']]],
+  ['cmd_5fvel_5fscale_5f',['cmd_vel_scale_',['../classLocalPlanner.html#ad99dbc39df819137699ffa260ff766a3',1,'LocalPlanner::cmd_vel_scale_()'],['../classTwistBodyPlanner.html#a4e2bf4654846db912573b3212042fb09',1,'TwistBodyPlanner::cmd_vel_scale_()']]],
+  ['cmd_5fvel_5fsub_5f',['cmd_vel_sub_',['../classLocalPlanner.html#a77dfdc020f29497dec1f1e351988403e',1,'LocalPlanner::cmd_vel_sub_()'],['../classTwistBodyPlanner.html#a13a77d06bef51add939a0dbb8b75b43c',1,'TwistBodyPlanner::cmd_vel_sub_()']]],
   ['committed_5fhorizon_5f',['committed_horizon_',['../classGlobalBodyPlanner.html#a374758b62509d9be6fb6afdfadb8fa81',1,'GlobalBodyPlanner']]],
+  ['compute_5ftime_5f',['compute_time_',['../classLocalPlanner.html#aba25a4dcb5ad43bb36d3a0346d8f37e6',1,'LocalPlanner']]],
   ['connect_5fstance',['CONNECT_STANCE',['../classGlobalFootstepPlanner.html#ab9b74ccfdbe46328420bf7a071881c6c',1,'GlobalFootstepPlanner::CONNECT_STANCE()'],['../classLocalFootstepPlanner.html#afa09d542cb363662eb771cc1a8942b97',1,'LocalFootstepPlanner::CONNECT_STANCE()']]],
   ['contact_5fschedule_5f',['contact_schedule_',['../classLocalPlanner.html#aaaed9e387826f9dda4086f9df721831a',1,'LocalPlanner']]],
   ['contact_5fsub_5f',['contact_sub_',['../classEKFEstimator.html#aaac33edc41f9e699982587871418091a',1,'EKFEstimator']]],
@@ -15,5 +16,6 @@ var searchData=
   ['cur_5fstate_5f',['cur_state_',['../classMPCController.html#add1840590c07adf3ebe08daf71f7758c',1,'MPCController']]],
   ['current_5fcost_5f',['current_cost_',['../classGlobalBodyPlanner.html#af08776625ec691c5fc8ff1df56544737',1,'GlobalBodyPlanner']]],
   ['current_5fplan_5findex_5f',['current_plan_index_',['../classLocalPlanner.html#aa443def11dac297395fdc590cad1eaed',1,'LocalPlanner']]],
-  ['current_5fstate_5f',['current_state_',['../classLocalPlanner.html#a494809df7870eebd433aec7ff6a4f4c1',1,'LocalPlanner']]]
+  ['current_5fstate_5f',['current_state_',['../classLocalPlanner.html#a494809df7870eebd433aec7ff6a4f4c1',1,'LocalPlanner']]],
+  ['current_5fstate_5ftimestamp_5f',['current_state_timestamp_',['../classLocalPlanner.html#a0bea76daff76ae2c585d3d0ee63623d2',1,'LocalPlanner']]]
 ];

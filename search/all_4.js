@@ -7,5 +7,6 @@ var searchData=
   ['discretebodyplancallback',['discreteBodyPlanCallback',['../classRVizInterface.html#a75caed0d4cb0419865704d05cc3af389',1,'RVizInterface']]],
   ['dt_5f',['dt_',['../classGlobalBodyPlanner.html#aac85cd31171ed85023194ca018f256c3',1,'GlobalBodyPlanner::dt_()'],['../classInverseDynamics.html#aab0556cd474371ac9e2f0d06a4d01a7c',1,'InverseDynamics::dt_()'],['../classLocalFootstepPlanner.html#a3042d5de896f54fd9fd05f8df2617fad',1,'LocalFootstepPlanner::dt_()'],['../classLocalPlanner.html#a9c2ea984eab9f4f3237818a5ef0ab79d',1,'LocalPlanner::dt_()'],['../classMPCController.html#a402ed932ccdd1e9d8180b2dd3fe0183d',1,'MPCController::dt_()'],['../classQuadrupedMPC.html#a896532da376ed2fbd8b6691233755e93',1,'QuadrupedMPC::dt_()'],['../classTwistBodyPlanner.html#aa92998215c45c665e93739763994686f',1,'TwistBodyPlanner::dt_()']]],
   ['dt_5fset_5f',['dt_set_',['../classQuadrupedMPC.html#ac964d0ddfb256bd73285655cd31889bd',1,'QuadrupedMPC']]],
+  ['dt_5fvec_5f',['dt_vec_',['../classQuadrupedMPC.html#a517203a974c570b109d20075d5426149',1,'QuadrupedMPC']]],
   ['duty_5fcycles_5f',['duty_cycles_',['../classLocalFootstepPlanner.html#a6a7c20eda1edb6c9dc0d57b0c83c38a3',1,'LocalFootstepPlanner']]]
 ];

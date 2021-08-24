@@ -15,6 +15,6 @@ var searchData=
   ['updateparams',['updateParams',['../classTerrainMapPublisher.html#ac0e9d8d230df9fe17208038f7edc3677',1,'TerrainMapPublisher']]],
   ['updateplan',['updatePlan',['../classTwistBodyPlanner.html#aa23b33f17af0cf11c8e0115e1be07db3',1,'TwistBodyPlanner']]],
   ['updaterestartflag',['updateRestartFlag',['../classGlobalBodyPlanner.html#a122abcda63f8b7aacd6335b974e678b4',1,'GlobalBodyPlanner']]],
-  ['updatestep',['updateStep',['../classEKFEstimator.html#a2aa7c42b497574075809cf6812cc1ac6',1,'EKFEstimator::updateStep()'],['../classGroundTruthPublisher.html#a0da4de457cabb8dfb3812ea7589b04ab',1,'GroundTruthPublisher::updateStep()']]],
+  ['updatestep',['updateStep',['../classEKFEstimator.html#a2aa7c42b497574075809cf6812cc1ac6',1,'EKFEstimator::updateStep()'],['../classGroundTruthPublisher.html#aca36219aafd72f29e9687a9676d27269',1,'GroundTruthPublisher::updateStep()']]],
   ['updatetrajectory',['updateTrajectory',['../classTrajectoryPublisher.html#a8b909db4c03b058debfcd70ee02b8600',1,'TrajectoryPublisher']]]
 ];

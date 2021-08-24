@@ -15,6 +15,10 @@ var searchData=
   ['terrain_5ftype_5f',['terrain_type_',['../classTerrainMapPublisher.html#a86d3497f911cbec8d7d250cfce4d403a',1,'TerrainMapPublisher']]],
   ['terrainmapcallback',['terrainMapCallback',['../classGlobalBodyPlanner.html#a209eb08a4c8c9e51b88c4039a6cfbd12',1,'GlobalBodyPlanner::terrainMapCallback()'],['../classGlobalFootstepPlanner.html#a9db071920c633a2b20bd60dca2f0cd57',1,'GlobalFootstepPlanner::terrainMapCallback()'],['../classLocalPlanner.html#af0a86ce03730126ecadea85abe6c0bb4',1,'LocalPlanner::terrainMapCallback()']]],
   ['terrainmappublisher',['TerrainMapPublisher',['../classTerrainMapPublisher.html',1,'TerrainMapPublisher'],['../classTerrainMapPublisher.html#a0a8d623893002835ad1efd85b2fd321b',1,'TerrainMapPublisher::TerrainMapPublisher()']]],
+  ['toe0_5fcontact_5fstate_5fsub',['toe0_contact_state_sub',['../classContactStatePublisher.html#ac5e8985576f17b79b8ae15ca0f5cc4e2',1,'ContactStatePublisher']]],
+  ['toe1_5fcontact_5fstate_5fsub',['toe1_contact_state_sub',['../classContactStatePublisher.html#a595dc3c8bd901f72aa07f4b0fe68479b',1,'ContactStatePublisher']]],
+  ['toe2_5fcontact_5fstate_5fsub',['toe2_contact_state_sub',['../classContactStatePublisher.html#a7ecb15078fa045201dabdee145142d2d',1,'ContactStatePublisher']]],
+  ['toe3_5fcontact_5fstate_5fsub',['toe3_contact_state_sub',['../classContactStatePublisher.html#a52979559c64bcce5d9f4c6a8c7f59b91',1,'ContactStatePublisher']]],
   ['toe_5fforce_5fpub_5f',['toe_force_pub_',['../classBodyForceEstimator.html#a4fe737490b30b8335af85b98e6cea732',1,'BodyForceEstimator']]],
   ['torque_5flims_5f',['torque_lims_',['../classeffort__controllers_1_1SpiritController.html#af1da15d2c33e320435beaa1d44be7c3d',1,'effort_controllers::SpiritController']]],
   ['traj_5fmsg_5f',['traj_msg_',['../classTrajectoryPublisher.html#a772f133318c9386be67a8af090fc115d',1,'TrajectoryPublisher']]],
@@ -28,8 +32,11 @@ var searchData=
   ['trajectorypublisher',['TrajectoryPublisher',['../classTrajectoryPublisher.html',1,'TrajectoryPublisher'],['../classTrajectoryPublisher.html#a8829068c0d4aeca30c6293872f4bcfc7',1,'TrajectoryPublisher::TrajectoryPublisher()']]],
   ['trajectorystatecallback',['trajectoryStateCallback',['../classInverseDynamics.html#af2b41f1d3b98482ffb0df8837c947b52',1,'InverseDynamics']]],
   ['transformbodytoworld',['transformBodyToWorld',['../classspirit__utils_1_1SpiritKinematics.html#a7372237b916caab199c1d6159462ecd7',1,'spirit_utils::SpiritKinematics']]],
+  ['transformsstamped_5f',['transformsStamped_',['../classContactStatePublisher.html#a6dcc166a661f2b4a74afec1bd2c3f938',1,'ContactStatePublisher']]],
   ['transformworldtobody',['transformWorldToBody',['../classspirit__utils_1_1SpiritKinematics.html#af9d2d78a0bb9d02f84cb58ee616e871c',1,'spirit_utils::SpiritKinematics']]],
   ['transition_5fduration_5f',['transition_duration_',['../classInverseDynamics.html#a00c02fb1f368a7bab0706c82a2b237ad',1,'InverseDynamics']]],
   ['transition_5ftimestamp_5f',['transition_timestamp_',['../classInverseDynamics.html#a48cad9a840f22e0116a633ad4f5b1818',1,'InverseDynamics']]],
+  ['twist',['Twist',['../classLocalPlanner.html#ac9ddf5a4024cfb8ba8af257b325fb7f0',1,'LocalPlanner']]],
+  ['twist_5fpub_5f',['twist_pub_',['../classRobotProxy.html#abc64a9d59c5a2f70ed30090c19de4c40',1,'RobotProxy']]],
   ['twistbodyplanner',['TwistBodyPlanner',['../classTwistBodyPlanner.html',1,'TwistBodyPlanner'],['../classTwistBodyPlanner.html#ab05c1949c1634c1dd745d01a06e73661',1,'TwistBodyPlanner::TwistBodyPlanner()']]]
 ];

@@ -107,9 +107,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a61b3887d0ba070e965c4cd0afcc07ff3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a61b3887d0ba070e965c4cd0afcc07ff3">computeContactSchedule</a> (int current_plan_index, Eigen::VectorXd current_state, Eigen::MatrixXd ref_body_plan, std::vector&lt; std::vector&lt; bool &gt;&gt; &amp;contact_schedule)</td></tr>
 <tr class="memdesc:a61b3887d0ba070e965c4cd0afcc07ff3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the contact schedule based on the current phase.  <a href="#a61b3887d0ba070e965c4cd0afcc07ff3">More...</a><br /></td></tr>
 <tr class="separator:a61b3887d0ba070e965c4cd0afcc07ff3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abae26e239dc9cb0f7c319effc4337673"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#abae26e239dc9cb0f7c319effc4337673">computeFootPositions</a> (const Eigen::MatrixXd &amp;body_plan, const Eigen::MatrixXd &amp;grf_plan, const std::vector&lt; std::vector&lt; bool &gt;&gt; &amp;contact_schedule, Eigen::MatrixXd &amp;foot_positions)</td></tr>
-<tr class="memdesc:abae26e239dc9cb0f7c319effc4337673"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the discrete footstep plan with the current plan.  <a href="#abae26e239dc9cb0f7c319effc4337673">More...</a><br /></td></tr>
-<tr class="separator:abae26e239dc9cb0f7c319effc4337673"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9272f4ae48531e2f2d19d89351d99574"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a9272f4ae48531e2f2d19d89351d99574">computeFootPositions</a> (const Eigen::MatrixXd &amp;body_plan, const Eigen::MatrixXd &amp;grf_plan, const std::vector&lt; std::vector&lt; bool &gt;&gt; &amp;contact_schedule, const Eigen::MatrixXd &amp;ref_body_plan, Eigen::MatrixXd &amp;foot_positions)</td></tr>
+<tr class="memdesc:a9272f4ae48531e2f2d19d89351d99574"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the discrete footstep plan with the current plan.  <a href="#a9272f4ae48531e2f2d19d89351d99574">More...</a><br /></td></tr>
+<tr class="separator:a9272f4ae48531e2f2d19d89351d99574"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cc11b9b4ef70c796055933abe5a1ac5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a0cc11b9b4ef70c796055933abe5a1ac5">computeFootPlanMsgs</a> (const std::vector&lt; std::vector&lt; bool &gt;&gt; &amp;contact_schedule, const Eigen::MatrixXd &amp;foot_positions, int current_plan_index, spirit_msgs::MultiFootPlanDiscrete &amp;past_footholds_msg, spirit_msgs::MultiFootPlanDiscrete &amp;future_footholds_msg, spirit_msgs::MultiFootPlanContinuous &amp;foot_plan_continuous_msg)</td></tr>
 <tr class="memdesc:a0cc11b9b4ef70c796055933abe5a1ac5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert the foot positions and contact schedule into ros messages for the foot plan.  <a href="#a0cc11b9b4ef70c796055933abe5a1ac5">More...</a><br /></td></tr>
 <tr class="separator:a0cc11b9b4ef70c796055933abe5a1ac5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -123,9 +123,9 @@ Private Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aba0d461220650f7f0ebbd484359df2e4">updateContinuousPlan</a> ()</td></tr>
 <tr class="memdesc:aba0d461220650f7f0ebbd484359df2e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the continuous foot plan to match the discrete. <br /></td></tr>
 <tr class="separator:aba0d461220650f7f0ebbd484359df2e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a84d26fb92bed152d44ef259888ffece9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a84d26fb92bed152d44ef259888ffece9">computeSwingFootState</a> (const Eigen::Vector3d &amp;foot_position_prev, const Eigen::Vector3d &amp;foot_position_next, double swing_phase, int swing_duration, Eigen::Vector3d &amp;foot_position, Eigen::Vector3d &amp;foot_velocity)</td></tr>
-<tr class="memdesc:a84d26fb92bed152d44ef259888ffece9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the foot state for a swing foot as a function of the previous and next steps.  <a href="#a84d26fb92bed152d44ef259888ffece9">More...</a><br /></td></tr>
-<tr class="separator:a84d26fb92bed152d44ef259888ffece9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdff1bd882cf1df87f348ab1ffd19906"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#abdff1bd882cf1df87f348ab1ffd19906">computeSwingFootState</a> (const Eigen::Vector3d &amp;foot_position_prev, const Eigen::Vector3d &amp;foot_position_next, double swing_phase, int swing_duration, Eigen::Vector3d &amp;foot_position, Eigen::Vector3d &amp;foot_velocity, Eigen::Vector3d &amp;foot_acceleration)</td></tr>
+<tr class="memdesc:abdff1bd882cf1df87f348ab1ffd19906"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the foot state for a swing foot as a function of the previous and next steps.  <a href="#abdff1bd882cf1df87f348ab1ffd19906">More...</a><br /></td></tr>
+<tr class="separator:abdff1bd882cf1df87f348ab1ffd19906"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6abeea71032808566b14e33fd58addf4"><td class="memItemLeft" align="right" valign="top"><a id="a6abeea71032808566b14e33fd58addf4"></a>
 Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a6abeea71032808566b14e33fd58addf4">getFootData</a> (const Eigen::MatrixXd &amp;foot_state_vars, int horizon_index, int foot_index)</td></tr>
 <tr class="memdesc:a6abeea71032808566b14e33fd58addf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract foot data from the matrix. <br /></td></tr>
@@ -363,8 +363,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 
 </div>
 </div>
-<a id="abae26e239dc9cb0f7c319effc4337673"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abae26e239dc9cb0f7c319effc4337673">&#9670;&nbsp;</a></span>computeFootPositions()</h2>
+<a id="a9272f4ae48531e2f2d19d89351d99574"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9272f4ae48531e2f2d19d89351d99574">&#9670;&nbsp;</a></span>computeFootPositions()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -390,6 +390,12 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>ref_body_plan</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
           <td class="paramname"><em>foot_positions</em>&#160;</td>
         </tr>
@@ -408,6 +414,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
     <tr><td class="paramdir">[in]</td><td class="paramname">body_plan</td><td>Current body plan </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">grf_plan</td><td>Current grf plan </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">contact_schedule</td><td>Current contact schedule </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">current_state</td><td>Current state of the robot body </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">foot_positions</td><td>Foot positions over the horizon </td></tr>
   </table>
   </dd>
@@ -452,8 +459,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 
 </div>
 </div>
-<a id="a84d26fb92bed152d44ef259888ffece9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a84d26fb92bed152d44ef259888ffece9">&#9670;&nbsp;</a></span>computeSwingFootState()</h2>
+<a id="abdff1bd882cf1df87f348ab1ffd19906"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdff1bd882cf1df87f348ab1ffd19906">&#9670;&nbsp;</a></span>computeSwingFootState()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -495,7 +502,13 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">Eigen::Vector3d &amp;&#160;</td>
-          <td class="paramname"><em>foot_velocity</em>&#160;</td>
+          <td class="paramname"><em>foot_velocity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>foot_acceleration</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

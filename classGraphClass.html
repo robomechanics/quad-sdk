@@ -101,6 +101,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac9d39ec62febc8b866c596f6672f5423"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#ac9d39ec62febc8b866c596f6672f5423">addEdge</a> (int idx1, int idx2)</td></tr>
 <tr class="memdesc:ac9d39ec62febc8b866c596f6672f5423"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a new edge to the graph.  <a href="#ac9d39ec62febc8b866c596f6672f5423">More...</a><br /></td></tr>
 <tr class="separator:ac9d39ec62febc8b866c596f6672f5423"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf9dcf5cee3197141fe3695ce26a04b1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#abf9dcf5cee3197141fe3695ce26a04b1">addEdge</a> (int idx1, int idx2, double edge_cost)</td></tr>
+<tr class="memdesc:abf9dcf5cee3197141fe3695ce26a04b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a new edge to the graph.  <a href="#abf9dcf5cee3197141fe3695ce26a04b1">More...</a><br /></td></tr>
+<tr class="separator:abf9dcf5cee3197141fe3695ce26a04b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac6775293717a51d5c223b5f6b3a9425a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraphClass.html#ac6775293717a51d5c223b5f6b3a9425a">removeEdge</a> (int idx1, int idx2)</td></tr>
 <tr class="memdesc:ac6775293717a51d5c223b5f6b3a9425a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove an edge of the graph.  <a href="#ac6775293717a51d5c223b5f6b3a9425a">More...</a><br /></td></tr>
 <tr class="separator:ac6775293717a51d5c223b5f6b3a9425a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -229,7 +232,7 @@ std::unordered_map&lt; int, double &gt;&#160;</td><td class="memItemRight" valig
 </div>
 </div>
 <a id="ac9d39ec62febc8b866c596f6672f5423"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac9d39ec62febc8b866c596f6672f5423">&#9670;&nbsp;</a></span>addEdge()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9d39ec62febc8b866c596f6672f5423">&#9670;&nbsp;</a></span>addEdge() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -267,6 +270,58 @@ std::unordered_map&lt; int, double &gt;&#160;</td><td class="memItemRight" valig
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">idx1</td><td>Index of the outgoing vertex of the edge </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">idx2</td><td>Index of the incoming vertex of the edge </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="abf9dcf5cee3197141fe3695ce26a04b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf9dcf5cee3197141fe3695ce26a04b1">&#9670;&nbsp;</a></span>addEdge() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GraphClass::addEdge </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>edge_cost</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Add a new edge to the graph. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx1</td><td>Index of the outgoing vertex of the edge </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx2</td><td>Index of the incoming vertex of the edge </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">edge_code</td><td>Cost of the new edge </td></tr>
   </table>
   </dd>
 </dl>

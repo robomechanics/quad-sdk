@@ -100,9 +100,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0dacd8aece5a74d28bc58ce075fdbb9c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a0dacd8aece5a74d28bc58ce075fdbb9c">getStatistics</a> (double &amp;plan_time, int &amp;vertices_generated, double &amp;plan_length, double &amp;path_duration)</td></tr>
 <tr class="memdesc:a0dacd8aece5a74d28bc58ce075fdbb9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute the planner by constructing the tree until a path is found.  <a href="#a0dacd8aece5a74d28bc58ce075fdbb9c">More...</a><br /></td></tr>
 <tr class="separator:a0dacd8aece5a74d28bc58ce075fdbb9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af86975e402f01b679c73b5daefe8d221"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#af86975e402f01b679c73b5daefe8d221">newConfig</a> (State s, State s_near, State &amp;s_new, Action &amp;a_new, const <a class="el" href="structplanning__utils_1_1PlannerConfig.html">PlannerConfig</a> &amp;planner_config, int direction)</td></tr>
-<tr class="memdesc:af86975e402f01b679c73b5daefe8d221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a new state that can be connected to the tree and is as close as possible to the specified state.  <a href="#af86975e402f01b679c73b5daefe8d221">More...</a><br /></td></tr>
-<tr class="separator:af86975e402f01b679c73b5daefe8d221"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae30fd98a2913fd4c45615c37974b81ae"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#ae30fd98a2913fd4c45615c37974b81ae">newConfig</a> (State s, State s_near, <a class="el" href="structplanning__utils_1_1StateActionResult.html">StateActionResult</a> &amp;result, const <a class="el" href="structplanning__utils_1_1PlannerConfig.html">PlannerConfig</a> &amp;planner_config, int direction)</td></tr>
+<tr class="memdesc:ae30fd98a2913fd4c45615c37974b81ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a new state that can be connected to the tree and is as close as possible to the specified state.  <a href="#ae30fd98a2913fd4c45615c37974b81ae">More...</a><br /></td></tr>
+<tr class="separator:ae30fd98a2913fd4c45615c37974b81ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7da5d15380a10262f01fa1c66b5064f9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; State &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a7da5d15380a10262f01fa1c66b5064f9">getStateSequence</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
 <tr class="memdesc:a7da5d15380a10262f01fa1c66b5064f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the states along the specified path of vertex indices.  <a href="#a7da5d15380a10262f01fa1c66b5064f9">More...</a><br /></td></tr>
 <tr class="separator:a7da5d15380a10262f01fa1c66b5064f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -358,8 +358,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 
 </div>
 </div>
-<a id="af86975e402f01b679c73b5daefe8d221"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af86975e402f01b679c73b5daefe8d221">&#9670;&nbsp;</a></span>newConfig()</h2>
+<a id="ae30fd98a2913fd4c45615c37974b81ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae30fd98a2913fd4c45615c37974b81ae">&#9670;&nbsp;</a></span>newConfig()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -379,14 +379,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">State &amp;&#160;</td>
-          <td class="paramname"><em>s_new</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Action &amp;&#160;</td>
-          <td class="paramname"><em>a_new</em>, </td>
+          <td class="paramtype"><a class="el" href="structplanning__utils_1_1StateActionResult.html">StateActionResult</a> &amp;&#160;</td>
+          <td class="paramname"><em>result</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -413,9 +407,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>Specific state to move towards </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">s_near</td><td>Closest state in the tree to the specified state </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">s_new</td><td>New state yielded by taking an action from s_near </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">a_new</td><td>New action to take from s_near to get to s </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">terrain</td><td>Height map of the terrain </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Result of the newConfig operation </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">planner_config</td><td>Planner configuration parameters </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">direction</td><td>Direction of the dynamics (either FORWARD or REVERSE) </td></tr>
   </table>
   </dd>

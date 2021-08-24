@@ -100,10 +100,16 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:af2b41f1d3b98482ffb0df8837c947b52"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#af2b41f1d3b98482ffb0df8837c947b52">trajectoryStateCallback</a> (const spirit_msgs::RobotState::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:af2b41f1d3b98482ffb0df8837c947b52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle reference trajectory state.  <a href="#af2b41f1d3b98482ffb0df8837c947b52">More...</a><br /></td></tr>
 <tr class="separator:af2b41f1d3b98482ffb0df8837c947b52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf5634798acb3e5ab4cc5caf830a570f"><td class="memItemLeft" align="right" valign="top"><a id="abf5634798acb3e5ab4cc5caf830a570f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#abf5634798acb3e5ab4cc5caf830a570f">legOverrideCallback</a> (const spirit_msgs::LegOverride::ConstPtr &amp;msg)</td></tr>
-<tr class="memdesc:abf5634798acb3e5ab4cc5caf830a570f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback to handle new leg override commands @ param[in] Leg override commands. <br /></td></tr>
+<tr class="memitem:abf5634798acb3e5ab4cc5caf830a570f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#abf5634798acb3e5ab4cc5caf830a570f">legOverrideCallback</a> (const spirit_msgs::LegOverride::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:abf5634798acb3e5ab4cc5caf830a570f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback to handle new leg override commands.  <a href="#abf5634798acb3e5ab4cc5caf830a570f">More...</a><br /></td></tr>
 <tr class="separator:abf5634798acb3e5ab4cc5caf830a570f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab456373095e39a86cb8208f57652c2ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#ab456373095e39a86cb8208f57652c2ff">remoteHeartbeatCallback</a> (const std_msgs::Header::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:ab456373095e39a86cb8208f57652c2ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback to handle new remote heartbeat messages.  <a href="#ab456373095e39a86cb8208f57652c2ff">More...</a><br /></td></tr>
+<tr class="separator:ab456373095e39a86cb8208f57652c2ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86acd469cdcea94cbb1fd8ab1fb2db65"><td class="memItemLeft" align="right" valign="top"><a id="a86acd469cdcea94cbb1fd8ab1fb2db65"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a86acd469cdcea94cbb1fd8ab1fb2db65">checkMessages</a> ()</td></tr>
+<tr class="memdesc:a86acd469cdcea94cbb1fd8ab1fb2db65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check to make sure required messages are fresh. <br /></td></tr>
+<tr class="separator:a86acd469cdcea94cbb1fd8ab1fb2db65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85468b1d8e8c7744d57a99ede6cb8b80"><td class="memItemLeft" align="right" valign="top"><a id="a85468b1d8e8c7744d57a99ede6cb8b80"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a85468b1d8e8c7744d57a99ede6cb8b80">publishLegCommandArray</a> ()</td></tr>
 <tr class="memdesc:a85468b1d8e8c7744d57a99ede6cb8b80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to compute and publish leg command array message. <br /></td></tr>
@@ -127,10 +133,10 @@ ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#aaca98d2eefee63c20cf359b12d4041ce">robot_state_sub_</a></td></tr>
 <tr class="memdesc:aaca98d2eefee63c20cf359b12d4041ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for state estimate. <br /></td></tr>
 <tr class="separator:aaca98d2eefee63c20cf359b12d4041ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af711cc607b2324eda173fd1200437770"><td class="memItemLeft" align="right" valign="top"><a id="af711cc607b2324eda173fd1200437770"></a>
-ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#af711cc607b2324eda173fd1200437770">grf_input_sub_</a></td></tr>
-<tr class="memdesc:af711cc607b2324eda173fd1200437770"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for control input. <br /></td></tr>
-<tr class="separator:af711cc607b2324eda173fd1200437770"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af620f9081ed5c66c9d4b6388c50d50d0"><td class="memItemLeft" align="right" valign="top"><a id="af620f9081ed5c66c9d4b6388c50d50d0"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#af620f9081ed5c66c9d4b6388c50d50d0">grf_sub_</a></td></tr>
+<tr class="memdesc:af620f9081ed5c66c9d4b6388c50d50d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for control input. <br /></td></tr>
+<tr class="separator:af620f9081ed5c66c9d4b6388c50d50d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab432ce54fec33ba123b3c2259d273b66"><td class="memItemLeft" align="right" valign="top"><a id="ab432ce54fec33ba123b3c2259d273b66"></a>
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#ab432ce54fec33ba123b3c2259d273b66">trajectory_state_sub_</a></td></tr>
 <tr class="memdesc:ab432ce54fec33ba123b3c2259d273b66"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for trajectory. <br /></td></tr>
@@ -139,14 +145,22 @@ ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#aca159c5b4259e98433cba3b141d81074">leg_override_sub_</a></td></tr>
 <tr class="memdesc:aca159c5b4259e98433cba3b141d81074"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for leg override commands. <br /></td></tr>
 <tr class="separator:aca159c5b4259e98433cba3b141d81074"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a311b2e37ff61a63c636fac4fd130d659"><td class="memItemLeft" align="right" valign="top"><a id="a311b2e37ff61a63c636fac4fd130d659"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a311b2e37ff61a63c636fac4fd130d659">remote_heartbeat_sub_</a></td></tr>
+<tr class="memdesc:a311b2e37ff61a63c636fac4fd130d659"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for remote heartbeat. <br /></td></tr>
+<tr class="separator:a311b2e37ff61a63c636fac4fd130d659"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa53d575acdd6a4da475b43475b02d24"><td class="memItemLeft" align="right" valign="top"><a id="afa53d575acdd6a4da475b43475b02d24"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#afa53d575acdd6a4da475b43475b02d24">robot_heartbeat_pub_</a></td></tr>
+<tr class="memdesc:afa53d575acdd6a4da475b43475b02d24"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS publisher for robot heartbeat. <br /></td></tr>
+<tr class="separator:afa53d575acdd6a4da475b43475b02d24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a307c284efedcd89bdce87e3a75c2b160"><td class="memItemLeft" align="right" valign="top"><a id="a307c284efedcd89bdce87e3a75c2b160"></a>
 ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a307c284efedcd89bdce87e3a75c2b160">leg_command_array_pub_</a></td></tr>
 <tr class="memdesc:a307c284efedcd89bdce87e3a75c2b160"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS publisher for inverse dynamics. <br /></td></tr>
 <tr class="separator:a307c284efedcd89bdce87e3a75c2b160"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1bfe3d590fc210d03506829b6c5efd1f"><td class="memItemLeft" align="right" valign="top"><a id="a1bfe3d590fc210d03506829b6c5efd1f"></a>
-ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a1bfe3d590fc210d03506829b6c5efd1f">leg_command_diagnostics_pub_</a></td></tr>
-<tr class="memdesc:a1bfe3d590fc210d03506829b6c5efd1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS publisher for inverse dynamics. <br /></td></tr>
-<tr class="separator:a1bfe3d590fc210d03506829b6c5efd1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48d4611911f8b64f10c45f8127f82ffb"><td class="memItemLeft" align="right" valign="top"><a id="a48d4611911f8b64f10c45f8127f82ffb"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a48d4611911f8b64f10c45f8127f82ffb">grf_pub_</a></td></tr>
+<tr class="memdesc:a48d4611911f8b64f10c45f8127f82ffb"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS publisher for desired GRF. <br /></td></tr>
+<tr class="separator:a48d4611911f8b64f10c45f8127f82ffb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4cd46dbae8c2fe2146b71c003c8733ce"><td class="memItemLeft" align="right" valign="top"><a id="a4cd46dbae8c2fe2146b71c003c8733ce"></a>
 ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a4cd46dbae8c2fe2146b71c003c8733ce">nh_</a></td></tr>
 <tr class="memdesc:a4cd46dbae8c2fe2146b71c003c8733ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nodehandle to pub to and sub from. <br /></td></tr>
@@ -183,6 +197,10 @@ const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href=
 const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a1affbbcf967c9b07f76765c063690aff">STAND_TO_SIT</a> = 3</td></tr>
 <tr class="memdesc:a1affbbcf967c9b07f76765c063690aff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define ids for control modes: Stand to sit. <br /></td></tr>
 <tr class="separator:a1affbbcf967c9b07f76765c063690aff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f518b492d074a837915b1d88ba05104"><td class="memItemLeft" align="right" valign="top"><a id="a1f518b492d074a837915b1d88ba05104"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a1f518b492d074a837915b1d88ba05104">SAFETY</a> = 4</td></tr>
+<tr class="memdesc:a1f518b492d074a837915b1d88ba05104"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define ids for control modes: Safety. <br /></td></tr>
+<tr class="separator:a1f518b492d074a837915b1d88ba05104"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a048c0f292faa57369acc05a67e965145"><td class="memItemLeft" align="right" valign="top"><a id="a048c0f292faa57369acc05a67e965145"></a>
 const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a048c0f292faa57369acc05a67e965145">NONE</a> = 0</td></tr>
 <tr class="memdesc:a048c0f292faa57369acc05a67e965145"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define ids for input types: none. <br /></td></tr>
@@ -215,10 +233,40 @@ spirit_msgs::RobotState::ConstPtr&#160;</td><td class="memItemRight" valign="bot
 spirit_msgs::LegOverride&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a11aaf5c5fe2049c68bbfb46c160fff98">last_leg_override_msg_</a></td></tr>
 <tr class="memdesc:a11aaf5c5fe2049c68bbfb46c160fff98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Most recent leg override. <br /></td></tr>
 <tr class="separator:a11aaf5c5fe2049c68bbfb46c160fff98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fb152021fa5c9102ba67a30037f5747"><td class="memItemLeft" align="right" valign="top"><a id="a8fb152021fa5c9102ba67a30037f5747"></a>
+std_msgs::Header::ConstPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a8fb152021fa5c9102ba67a30037f5747">last_remote_heartbeat_msg_</a></td></tr>
+<tr class="memdesc:a8fb152021fa5c9102ba67a30037f5747"><td class="mdescLeft">&#160;</td><td class="mdescRight">Most recent remote. <br /></td></tr>
+<tr class="separator:a8fb152021fa5c9102ba67a30037f5747"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2e052b0de0f83dce73df2b0688f9a97"><td class="memItemLeft" align="right" valign="top"><a id="aa2e052b0de0f83dce73df2b0688f9a97"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>last_state_time_</b></td></tr>
+<tr class="separator:aa2e052b0de0f83dce73df2b0688f9a97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc7cacc331a5b52bff10c4b5cd12936c"><td class="memItemLeft" align="right" valign="top"><a id="acc7cacc331a5b52bff10c4b5cd12936c"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>last_remote_heartbeat_time_</b></td></tr>
+<tr class="separator:acc7cacc331a5b52bff10c4b5cd12936c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00c02fb1f368a7bab0706c82a2b237ad"><td class="memItemLeft" align="right" valign="top"><a id="a00c02fb1f368a7bab0706c82a2b237ad"></a>
 const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a00c02fb1f368a7bab0706c82a2b237ad">transition_duration_</a> = 1.0</td></tr>
 <tr class="memdesc:a00c02fb1f368a7bab0706c82a2b237ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duration for sit to stand behavior. <br /></td></tr>
 <tr class="separator:a00c02fb1f368a7bab0706c82a2b237ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d7246c96c69e8c450779a829e71689e"><td class="memItemLeft" align="right" valign="top"><a id="a7d7246c96c69e8c450779a829e71689e"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a7d7246c96c69e8c450779a829e71689e">input_timeout_</a></td></tr>
+<tr class="memdesc:a7d7246c96c69e8c450779a829e71689e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timeout (in s) for receiving new input reference messages. <br /></td></tr>
+<tr class="separator:a7d7246c96c69e8c450779a829e71689e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae55a23d4b4aced2b69b89634521da6ca"><td class="memItemLeft" align="right" valign="top"><a id="ae55a23d4b4aced2b69b89634521da6ca"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#ae55a23d4b4aced2b69b89634521da6ca">state_timeout_</a></td></tr>
+<tr class="memdesc:ae55a23d4b4aced2b69b89634521da6ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timeout (in s) for receiving new state messages. <br /></td></tr>
+<tr class="separator:ae55a23d4b4aced2b69b89634521da6ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac39555c6650ddd4e822a22888ad15262"><td class="memItemLeft" align="right" valign="top"><a id="ac39555c6650ddd4e822a22888ad15262"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#ac39555c6650ddd4e822a22888ad15262">heartbeat_timeout_</a></td></tr>
+<tr class="memdesc:ac39555c6650ddd4e822a22888ad15262"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timeout (in s) for receiving new heartbeat messages. <br /></td></tr>
+<tr class="separator:ac39555c6650ddd4e822a22888ad15262"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a900ad120b05fd8666ad4cb56fa3aecb8"><td class="memItemLeft" align="right" valign="top"><a id="a900ad120b05fd8666ad4cb56fa3aecb8"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a900ad120b05fd8666ad4cb56fa3aecb8">remote_latency_threshold_warn_</a></td></tr>
+<tr class="memdesc:a900ad120b05fd8666ad4cb56fa3aecb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Latency threshold on robot messages for warnings (s) <br /></td></tr>
+<tr class="separator:a900ad120b05fd8666ad4cb56fa3aecb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad42cafe4d9f528bd796cf634baea034f"><td class="memItemLeft" align="right" valign="top"><a id="ad42cafe4d9f528bd796cf634baea034f"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#ad42cafe4d9f528bd796cf634baea034f">remote_latency_threshold_error_</a></td></tr>
+<tr class="memdesc:ad42cafe4d9f528bd796cf634baea034f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Latency threshold on robot messages for error (s) <br /></td></tr>
+<tr class="separator:ad42cafe4d9f528bd796cf634baea034f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17c036cdac968e622a64353e067ad73f"><td class="memItemLeft" align="right" valign="top"><a id="a17c036cdac968e622a64353e067ad73f"></a>
 spirit_msgs::LegCommandArray&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a17c036cdac968e622a64353e067ad73f">leg_command_array_msg_</a></td></tr>
 <tr class="memdesc:a17c036cdac968e622a64353e067ad73f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message for leg command array. <br /></td></tr>
@@ -227,20 +275,41 @@ spirit_msgs::LegCommandArray&#160;</td><td class="memItemRight" valign="bottom">
 ros::Time&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a48cad9a840f22e0116a633ad4f5b1818">transition_timestamp_</a></td></tr>
 <tr class="memdesc:a48cad9a840f22e0116a633ad4f5b1818"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time at which to start transition. <br /></td></tr>
 <tr class="separator:a48cad9a840f22e0116a633ad4f5b1818"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e1070397c0ebe3773d4e508d1b1b020"><td class="memItemLeft" align="right" valign="top"><a id="a7e1070397c0ebe3773d4e508d1b1b020"></a>
-std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a7e1070397c0ebe3773d4e508d1b1b020">walk_kp_</a></td></tr>
-<tr class="memdesc:a7e1070397c0ebe3773d4e508d1b1b020"><td class="mdescLeft">&#160;</td><td class="mdescRight">PD gain when standing on the ground. <br /></td></tr>
-<tr class="separator:a7e1070397c0ebe3773d4e508d1b1b020"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaaa3627ce06b63ba722c80a5ed55f80e"><td class="memItemLeft" align="right" valign="top"><a id="aaaa3627ce06b63ba722c80a5ed55f80e"></a>
-std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>walk_kd_</b></td></tr>
-<tr class="separator:aaaa3627ce06b63ba722c80a5ed55f80e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0619f85fcfa8b5058cf8165f9b715b0"><td class="memItemLeft" align="right" valign="top"><a id="ae0619f85fcfa8b5058cf8165f9b715b0"></a>
-std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#ae0619f85fcfa8b5058cf8165f9b715b0">aerial_kp_</a></td></tr>
-<tr class="memdesc:ae0619f85fcfa8b5058cf8165f9b715b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">PD gain when feet in the air. <br /></td></tr>
-<tr class="separator:ae0619f85fcfa8b5058cf8165f9b715b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e2a159744fdb55c4a97e590a0a6536a"><td class="memItemLeft" align="right" valign="top"><a id="a8e2a159744fdb55c4a97e590a0a6536a"></a>
-std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>aerial_kd_</b></td></tr>
-<tr class="separator:a8e2a159744fdb55c4a97e590a0a6536a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f2d3ae60e1d2a5e41c9e53c51cb565e"><td class="memItemLeft" align="right" valign="top"><a id="a2f2d3ae60e1d2a5e41c9e53c51cb565e"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a2f2d3ae60e1d2a5e41c9e53c51cb565e">safety_kp_</a></td></tr>
+<tr class="memdesc:a2f2d3ae60e1d2a5e41c9e53c51cb565e"><td class="mdescLeft">&#160;</td><td class="mdescRight">PD gain when in safety mode. <br /></td></tr>
+<tr class="separator:a2f2d3ae60e1d2a5e41c9e53c51cb565e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fd94e5c9635a209c04b367f2529033e"><td class="memItemLeft" align="right" valign="top"><a id="a3fd94e5c9635a209c04b367f2529033e"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>safety_kd_</b></td></tr>
+<tr class="separator:a3fd94e5c9635a209c04b367f2529033e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcf612fc522b1f3b05de5d6c4a2289ab"><td class="memItemLeft" align="right" valign="top"><a id="adcf612fc522b1f3b05de5d6c4a2289ab"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#adcf612fc522b1f3b05de5d6c4a2289ab">sit_kp_</a></td></tr>
+<tr class="memdesc:adcf612fc522b1f3b05de5d6c4a2289ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">PD gain when in sit mode. <br /></td></tr>
+<tr class="separator:adcf612fc522b1f3b05de5d6c4a2289ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2b4636229be5861903b7db9c57d8924"><td class="memItemLeft" align="right" valign="top"><a id="ad2b4636229be5861903b7db9c57d8924"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sit_kd_</b></td></tr>
+<tr class="separator:ad2b4636229be5861903b7db9c57d8924"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a784e3da82cc90fd15d2e13f021c12f1b"><td class="memItemLeft" align="right" valign="top"><a id="a784e3da82cc90fd15d2e13f021c12f1b"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a784e3da82cc90fd15d2e13f021c12f1b">stand_kp_</a></td></tr>
+<tr class="memdesc:a784e3da82cc90fd15d2e13f021c12f1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">PD gain when in standing mode. <br /></td></tr>
+<tr class="separator:a784e3da82cc90fd15d2e13f021c12f1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2fa66d7d347544ac1c40161db65ef0d"><td class="memItemLeft" align="right" valign="top"><a id="aa2fa66d7d347544ac1c40161db65ef0d"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>stand_kd_</b></td></tr>
+<tr class="separator:aa2fa66d7d347544ac1c40161db65ef0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59085b40c262a72a6cc59f8c32bf26f4"><td class="memItemLeft" align="right" valign="top"><a id="a59085b40c262a72a6cc59f8c32bf26f4"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a59085b40c262a72a6cc59f8c32bf26f4">stance_kp_</a></td></tr>
+<tr class="memdesc:a59085b40c262a72a6cc59f8c32bf26f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">PD gain when foot is in stance. <br /></td></tr>
+<tr class="separator:a59085b40c262a72a6cc59f8c32bf26f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad247dbed2ecbfa9438896a40357a5eb0"><td class="memItemLeft" align="right" valign="top"><a id="ad247dbed2ecbfa9438896a40357a5eb0"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>stance_kd_</b></td></tr>
+<tr class="separator:ad247dbed2ecbfa9438896a40357a5eb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a5c76f5fb33a755482ab4a9f817c12f"><td class="memItemLeft" align="right" valign="top"><a id="a5a5c76f5fb33a755482ab4a9f817c12f"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#a5a5c76f5fb33a755482ab4a9f817c12f">swing_kp_</a></td></tr>
+<tr class="memdesc:a5a5c76f5fb33a755482ab4a9f817c12f"><td class="mdescLeft">&#160;</td><td class="mdescRight">PD gain when foot is in swing. <br /></td></tr>
+<tr class="separator:a5a5c76f5fb33a755482ab4a9f817c12f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acca077aa160bf4ab41e7c1f7b6cb9092"><td class="memItemLeft" align="right" valign="top"><a id="acca077aa160bf4ab41e7c1f7b6cb9092"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>swing_kd_</b></td></tr>
+<tr class="separator:acca077aa160bf4ab41e7c1f7b6cb9092"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a478d10676bf35601ffef410bfcd5121b"><td class="memItemLeft" align="right" valign="top"><a id="a478d10676bf35601ffef410bfcd5121b"></a>
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>f0x</b></td></tr>
 <tr class="separator:a478d10676bf35601ffef410bfcd5121b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -316,9 +385,10 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <tr class="memitem:afdf891d380130f793a0ea8a30e79139d"><td class="memItemLeft" align="right" valign="top"><a id="afdf891d380130f793a0ea8a30e79139d"></a>
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>counterVec</b></td></tr>
 <tr class="separator:afdf891d380130f793a0ea8a30e79139d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a81598a00589a447663f4223349872d60"><td class="memItemLeft" align="right" valign="top"><a id="a81598a00589a447663f4223349872d60"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>step_number</b></td></tr>
-<tr class="separator:a81598a00589a447663f4223349872d60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa2f730e1f3a49df52f4d8020479e526"><td class="memItemLeft" align="right" valign="top"><a id="aaa2f730e1f3a49df52f4d8020479e526"></a>
+std::shared_ptr&lt; <a class="el" href="classspirit__utils_1_1SpiritKinematics.html">spirit_utils::SpiritKinematics</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamics.html#aaa2f730e1f3a49df52f4d8020479e526">kinematics_</a></td></tr>
+<tr class="memdesc:aaa2f730e1f3a49df52f4d8020479e526"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spirit Kinematics class. <br /></td></tr>
+<tr class="separator:aaa2f730e1f3a49df52f4d8020479e526"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Implements inverse dynamics. </p>
@@ -420,6 +490,40 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>step_number</b></td
 
 </div>
 </div>
+<a id="abf5634798acb3e5ab4cc5caf830a570f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf5634798acb3e5ab4cc5caf830a570f">&#9670;&nbsp;</a></span>legOverrideCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void InverseDynamics::legOverrideCallback </td>
+          <td>(</td>
+          <td class="paramtype">const spirit_msgs::LegOverride::ConstPtr &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback to handle new leg override commands. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>Leg override commands </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a73b05325b32ee857d3d7b07fe3a1a244"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a73b05325b32ee857d3d7b07fe3a1a244">&#9670;&nbsp;</a></span>localPlanCallback()</h2>
 
@@ -448,6 +552,40 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>step_number</b></td
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>input message contining the local plan </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ab456373095e39a86cb8208f57652c2ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab456373095e39a86cb8208f57652c2ff">&#9670;&nbsp;</a></span>remoteHeartbeatCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void InverseDynamics::remoteHeartbeatCallback </td>
+          <td>(</td>
+          <td class="paramtype">const std_msgs::Header::ConstPtr &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback to handle new remote heartbeat messages. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>Remote heartbeat message </td></tr>
   </table>
   </dd>
 </dl>

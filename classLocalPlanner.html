@@ -60,6 +60,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-types">Private Types</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classLocalPlanner-members.html">List of all members</a>  </div>
@@ -91,6 +92,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:a6a432060f73742e5a3815172a0721dc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primary work function in class, called in node file for this component. <br /></td></tr>
 <tr class="separator:a6a432060f73742e5a3815172a0721dc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-types"></a>
+Private Types</h2></td></tr>
+<tr class="memitem:ac9ddf5a4024cfb8ba8af257b325fb7f0"><td class="memItemLeft" align="right" valign="top"><a id="ac9ddf5a4024cfb8ba8af257b325fb7f0"></a>
+typedef std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#ac9ddf5a4024cfb8ba8af257b325fb7f0">Twist</a></td></tr>
+<tr class="memdesc:ac9ddf5a4024cfb8ba8af257b325fb7f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Twist input. <br /></td></tr>
+<tr class="separator:ac9ddf5a4024cfb8ba8af257b325fb7f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:a34be4d4154efb662d6e4b0c507a7b414"><td class="memItemLeft" align="right" valign="top"><a id="a34be4d4154efb662d6e4b0c507a7b414"></a>
@@ -110,10 +118,17 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:ad294a1e354b3c34c30b5396f6cf6a07e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#ad294a1e354b3c34c30b5396f6cf6a07e">robotStateCallback</a> (const spirit_msgs::RobotState::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:ad294a1e354b3c34c30b5396f6cf6a07e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new state estimates.  <a href="#ad294a1e354b3c34c30b5396f6cf6a07e">More...</a><br /></td></tr>
 <tr class="separator:ad294a1e354b3c34c30b5396f6cf6a07e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a63c0e0faa9a1794d41da02d2fdfe7833"><td class="memItemLeft" align="right" valign="top"><a id="a63c0e0faa9a1794d41da02d2fdfe7833"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a63c0e0faa9a1794d41da02d2fdfe7833">preProcessPlanAndState</a> ()</td></tr>
-<tr class="memdesc:a63c0e0faa9a1794d41da02d2fdfe7833"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to pre-process the body plan and robot state messages into Eigen arrays. <br /></td></tr>
-<tr class="separator:a63c0e0faa9a1794d41da02d2fdfe7833"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ceeeee51bc6bba61bb85e6232e20d9d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a8ceeeee51bc6bba61bb85e6232e20d9d">cmdVelCallback</a> (const geometry_msgs::Twist::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a8ceeeee51bc6bba61bb85e6232e20d9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new desired twist data when using twist input.  <a href="#a8ceeeee51bc6bba61bb85e6232e20d9d">More...</a><br /></td></tr>
+<tr class="separator:a8ceeeee51bc6bba61bb85e6232e20d9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5093d5715cb4bbafb9190c0ceeda5283"><td class="memItemLeft" align="right" valign="top"><a id="a5093d5715cb4bbafb9190c0ceeda5283"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a5093d5715cb4bbafb9190c0ceeda5283">getStateAndReferencePlan</a> ()</td></tr>
+<tr class="memdesc:a5093d5715cb4bbafb9190c0ceeda5283"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to pre-process the body plan and robot state messages into Eigen arrays. <br /></td></tr>
+<tr class="separator:a5093d5715cb4bbafb9190c0ceeda5283"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aece16b71dfb6520d7b2d82b4883ae696"><td class="memItemLeft" align="right" valign="top"><a id="aece16b71dfb6520d7b2d82b4883ae696"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#aece16b71dfb6520d7b2d82b4883ae696">getStateAndTwistInput</a> ()</td></tr>
+<tr class="memdesc:aece16b71dfb6520d7b2d82b4883ae696"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to read robot state and twist command messages into Eigen arrays. <br /></td></tr>
+<tr class="separator:aece16b71dfb6520d7b2d82b4883ae696"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a72ba8fe6eaf69bc3c452e0492d857779"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a72ba8fe6eaf69bc3c452e0492d857779">computeLocalPlan</a> ()</td></tr>
 <tr class="memdesc:a72ba8fe6eaf69bc3c452e0492d857779"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to compute the local plan.  <a href="#a72ba8fe6eaf69bc3c452e0492d857779">More...</a><br /></td></tr>
 <tr class="separator:a72ba8fe6eaf69bc3c452e0492d857779"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -136,6 +151,10 @@ ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a11dd212621f0a17591d34b341206018a">robot_state_sub_</a></td></tr>
 <tr class="memdesc:a11dd212621f0a17591d34b341206018a"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS Subscriber for incoming states. <br /></td></tr>
 <tr class="separator:a11dd212621f0a17591d34b341206018a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77dfdc020f29497dec1f1e351988403e"><td class="memItemLeft" align="right" valign="top"><a id="a77dfdc020f29497dec1f1e351988403e"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a77dfdc020f29497dec1f1e351988403e">cmd_vel_sub_</a></td></tr>
+<tr class="memdesc:a77dfdc020f29497dec1f1e351988403e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subscriber for twist input messages. <br /></td></tr>
+<tr class="separator:a77dfdc020f29497dec1f1e351988403e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5056b1eeccbffa9177ef72488b7c042"><td class="memItemLeft" align="right" valign="top"><a id="ad5056b1eeccbffa9177ef72488b7c042"></a>
 ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#ad5056b1eeccbffa9177ef72488b7c042">local_plan_pub_</a></td></tr>
 <tr class="memdesc:ad5056b1eeccbffa9177ef72488b7c042"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS publisher for local plan output. <br /></td></tr>
@@ -164,10 +183,13 @@ ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a6870af1dbc25d981c6b86b8512a8031f">update_rate_</a></td></tr>
 <tr class="memdesc:a6870af1dbc25d981c6b86b8512a8031f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update rate for sending and receiving data;. <br /></td></tr>
 <tr class="separator:a6870af1dbc25d981c6b86b8512a8031f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e2ce000d2c1907a43eca837ee18035e"><td class="memItemLeft" align="right" valign="top"><a id="a7e2ce000d2c1907a43eca837ee18035e"></a>
-std::shared_ptr&lt; <a class="el" href="classQuadrupedMPC.html">QuadrupedMPC</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a7e2ce000d2c1907a43eca837ee18035e">local_body_planner_</a></td></tr>
-<tr class="memdesc:a7e2ce000d2c1907a43eca837ee18035e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local Body Planner object. <br /></td></tr>
-<tr class="separator:a7e2ce000d2c1907a43eca837ee18035e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad849d28c0832972b91ddb7b87a0ebf60"><td class="memItemLeft" align="right" valign="top"><a id="ad849d28c0832972b91ddb7b87a0ebf60"></a>
+std::shared_ptr&lt; <a class="el" href="classQuadrupedMPC.html">QuadrupedMPC</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#ad849d28c0832972b91ddb7b87a0ebf60">local_body_planner_convex_</a></td></tr>
+<tr class="memdesc:ad849d28c0832972b91ddb7b87a0ebf60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local Body Planner object. <br /></td></tr>
+<tr class="separator:ad849d28c0832972b91ddb7b87a0ebf60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae53444fe2e816b690372051b7cbd85a7"><td class="memItemLeft" align="right" valign="top"><a id="ae53444fe2e816b690372051b7cbd85a7"></a>
+std::shared_ptr&lt; <a class="el" href="classNMPCController.html">NMPCController</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>local_body_planner_nonlinear_</b></td></tr>
+<tr class="separator:ae53444fe2e816b690372051b7cbd85a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae187c533b357a2d24eb0282fd5002beb"><td class="memItemLeft" align="right" valign="top"><a id="ae187c533b357a2d24eb0282fd5002beb"></a>
 std::shared_ptr&lt; <a class="el" href="classLocalFootstepPlanner.html">LocalFootstepPlanner</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#ae187c533b357a2d24eb0282fd5002beb">local_footstep_planner_</a></td></tr>
 <tr class="memdesc:ae187c533b357a2d24eb0282fd5002beb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local Footstep Planner object. <br /></td></tr>
@@ -184,6 +206,10 @@ spirit_msgs::RobotState::ConstPtr&#160;</td><td class="memItemRight" valign="bot
 spirit_msgs::MultiFootPlanDiscrete&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a8d2b79fe1a6c6168d8ab9b975cde5e44">past_footholds_msg_</a></td></tr>
 <tr class="memdesc:a8d2b79fe1a6c6168d8ab9b975cde5e44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Past foothold locations. <br /></td></tr>
 <tr class="separator:a8d2b79fe1a6c6168d8ab9b975cde5e44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bea76daff76ae2c585d3d0ee63623d2"><td class="memItemLeft" align="right" valign="top"><a id="a0bea76daff76ae2c585d3d0ee63623d2"></a>
+ros::Time&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a0bea76daff76ae2c585d3d0ee63623d2">current_state_timestamp_</a></td></tr>
+<tr class="memdesc:a0bea76daff76ae2c585d3d0ee63623d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timestamp of the state estimate. <br /></td></tr>
+<tr class="separator:a0bea76daff76ae2c585d3d0ee63623d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a494809df7870eebd433aec7ff6a4f4c1"><td class="memItemLeft" align="right" valign="top"><a id="a494809df7870eebd433aec7ff6a4f4c1"></a>
 Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a494809df7870eebd433aec7ff6a4f4c1">current_state_</a></td></tr>
 <tr class="memdesc:a494809df7870eebd433aec7ff6a4f4c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current state (ground truth or estimate) <br /></td></tr>
@@ -214,6 +240,18 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a9c2ea984eab9f4f3237818a5ef0ab79d">dt_</a></td></tr>
 <tr class="memdesc:a9c2ea984eab9f4f3237818a5ef0ab79d"><td class="mdescLeft">&#160;</td><td class="mdescRight">local planner timestep (seconds) <br /></td></tr>
 <tr class="separator:a9c2ea984eab9f4f3237818a5ef0ab79d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba25a4dcb5ad43bb36d3a0346d8f37e6"><td class="memItemLeft" align="right" valign="top"><a id="aba25a4dcb5ad43bb36d3a0346d8f37e6"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#aba25a4dcb5ad43bb36d3a0346d8f37e6">compute_time_</a></td></tr>
+<tr class="memdesc:aba25a4dcb5ad43bb36d3a0346d8f37e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computation time in computeLocalPlan. <br /></td></tr>
+<tr class="separator:aba25a4dcb5ad43bb36d3a0346d8f37e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeac6cb8d4b87f44e7012fcd684ccc142"><td class="memItemLeft" align="right" valign="top"><a id="aeac6cb8d4b87f44e7012fcd684ccc142"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#aeac6cb8d4b87f44e7012fcd684ccc142">mean_compute_time_</a></td></tr>
+<tr class="memdesc:aeac6cb8d4b87f44e7012fcd684ccc142"><td class="mdescLeft">&#160;</td><td class="mdescRight">Average computation time in computeLocalPlan. <br /></td></tr>
+<tr class="separator:aeac6cb8d4b87f44e7012fcd684ccc142"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87615696d79cd93456359cd0def78890"><td class="memItemLeft" align="right" valign="top"><a id="a87615696d79cd93456359cd0def78890"></a>
+const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a87615696d79cd93456359cd0def78890">filter_smoothing_constant_</a> = 0.5</td></tr>
+<tr class="memdesc:a87615696d79cd93456359cd0def78890"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exponential filter smoothing constant (higher updates slower) <br /></td></tr>
+<tr class="separator:a87615696d79cd93456359cd0def78890"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a355e43c15557f2bcf32ec9edf15695"><td class="memItemLeft" align="right" valign="top"><a id="a0a355e43c15557f2bcf32ec9edf15695"></a>
 const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a0a355e43c15557f2bcf32ec9edf15695">N_</a> = 24</td></tr>
 <tr class="memdesc:a0a355e43c15557f2bcf32ec9edf15695"><td class="mdescLeft">&#160;</td><td class="mdescRight">MPC Horizon length. <br /></td></tr>
@@ -270,6 +308,41 @@ Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 std::shared_ptr&lt; <a class="el" href="classspirit__utils_1_1SpiritKinematics.html">spirit_utils::SpiritKinematics</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a64edab83e3edb44e3938318f8042be9a">kinematics_</a></td></tr>
 <tr class="memdesc:a64edab83e3edb44e3938318f8042be9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spirit Kinematics class. <br /></td></tr>
 <tr class="separator:a64edab83e3edb44e3938318f8042be9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79d0679cf31514b5732416aaf0fdabd3"><td class="memItemLeft" align="right" valign="top"><a id="a79d0679cf31514b5732416aaf0fdabd3"></a>
+<a class="el" href="classLocalPlanner.html#ac9ddf5a4024cfb8ba8af257b325fb7f0">Twist</a>&#160;</td><td class="memItemRight" valign="bottom"><b>cmd_vel_</b></td></tr>
+<tr class="separator:a79d0679cf31514b5732416aaf0fdabd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad99dbc39df819137699ffa260ff766a3"><td class="memItemLeft" align="right" valign="top"><a id="ad99dbc39df819137699ffa260ff766a3"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#ad99dbc39df819137699ffa260ff766a3">cmd_vel_scale_</a></td></tr>
+<tr class="memdesc:ad99dbc39df819137699ffa260ff766a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scale for twist cmd_val. <br /></td></tr>
+<tr class="separator:ad99dbc39df819137699ffa260ff766a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a211859d86ceeec95dfbd5705467cc4db"><td class="memItemLeft" align="right" valign="top"><a id="a211859d86ceeec95dfbd5705467cc4db"></a>
+const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a211859d86ceeec95dfbd5705467cc4db">z_des_</a> = 0.3</td></tr>
+<tr class="memdesc:a211859d86ceeec95dfbd5705467cc4db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nominal robot height. <br /></td></tr>
+<tr class="separator:a211859d86ceeec95dfbd5705467cc4db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ae22dedc490d6e8b2eb012b2bffb963"><td class="memItemLeft" align="right" valign="top"><a id="a8ae22dedc490d6e8b2eb012b2bffb963"></a>
+ros::Time&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a8ae22dedc490d6e8b2eb012b2bffb963">last_cmd_vel_msg_time_</a></td></tr>
+<tr class="memdesc:a8ae22dedc490d6e8b2eb012b2bffb963"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time of the most recent cmd_vel data. <br /></td></tr>
+<tr class="separator:a8ae22dedc490d6e8b2eb012b2bffb963"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabb9b1a94cdfb1acbdcd103f21391bd7"><td class="memItemLeft" align="right" valign="top"><a id="aabb9b1a94cdfb1acbdcd103f21391bd7"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#aabb9b1a94cdfb1acbdcd103f21391bd7">last_cmd_vel_msg_time_max_</a></td></tr>
+<tr class="memdesc:aabb9b1a94cdfb1acbdcd103f21391bd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Threshold for waiting for twist cmd_vel data. <br /></td></tr>
+<tr class="separator:aabb9b1a94cdfb1acbdcd103f21391bd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bceca95c9f941e5f287a46501e3b6aa"><td class="memItemLeft" align="right" valign="top"><a id="a1bceca95c9f941e5f287a46501e3b6aa"></a>
+ros::Time&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a1bceca95c9f941e5f287a46501e3b6aa">initial_timestamp_</a></td></tr>
+<tr class="memdesc:a1bceca95c9f941e5f287a46501e3b6aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial timestamp for contact cycling. <br /></td></tr>
+<tr class="separator:a1bceca95c9f941e5f287a46501e3b6aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7926e736ab47d2ed03f0d563415131e2"><td class="memItemLeft" align="right" valign="top"><a id="a7926e736ab47d2ed03f0d563415131e2"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a7926e736ab47d2ed03f0d563415131e2">first_plan_</a></td></tr>
+<tr class="memdesc:a7926e736ab47d2ed03f0d563415131e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Foot initialization flag when using twist input without a global body plan. <br /></td></tr>
+<tr class="separator:a7926e736ab47d2ed03f0d563415131e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17e6ea84fb44d2fb7d5a868637f2a717"><td class="memItemLeft" align="right" valign="top"><a id="a17e6ea84fb44d2fb7d5a868637f2a717"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a17e6ea84fb44d2fb7d5a868637f2a717">use_twist_input_</a></td></tr>
+<tr class="memdesc:a17e6ea84fb44d2fb7d5a868637f2a717"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean for using twist input instead of a global body plan. <br /></td></tr>
+<tr class="separator:a17e6ea84fb44d2fb7d5a868637f2a717"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9821bb80590eee9bf8c4c63bdebeb4fa"><td class="memItemLeft" align="right" valign="top"><a id="a9821bb80590eee9bf8c4c63bdebeb4fa"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a9821bb80590eee9bf8c4c63bdebeb4fa">use_nmpc_</a></td></tr>
+<tr class="memdesc:a9821bb80590eee9bf8c4c63bdebeb4fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean for using nonlinear MPC. <br /></td></tr>
+<tr class="separator:a9821bb80590eee9bf8c4c63bdebeb4fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Local Body Planner library. </p>
@@ -303,6 +376,40 @@ std::shared_ptr&lt; <a class="el" href="classspirit__utils_1_1SpiritKinematics.h
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a8ceeeee51bc6bba61bb85e6232e20d9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ceeeee51bc6bba61bb85e6232e20d9d">&#9670;&nbsp;</a></span>cmdVelCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LocalPlanner::cmdVelCallback </td>
+          <td>(</td>
+          <td class="paramtype">const geometry_msgs::Twist::ConstPtr &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback function to handle new desired twist data when using twist input. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>the message contining twist data </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a72ba8fe6eaf69bc3c452e0492d857779"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a72ba8fe6eaf69bc3c452e0492d857779">&#9670;&nbsp;</a></span>computeLocalPlan()</h2>
 

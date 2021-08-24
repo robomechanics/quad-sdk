@@ -71,10 +71,12 @@ $(function() {
 : <a class="el" href="classspirit__utils_1_1SpiritKinematics.html#a093bbf828e49b8eaf8fb81900b1ddebb">spirit_utils::SpiritKinematics</a>
 </li>
 <li>last_cmd_vel_msg_time_
-: <a class="el" href="classTwistBodyPlanner.html#a5c940c533b47bda515f903232b133ff7">TwistBodyPlanner</a>
+: <a class="el" href="classLocalPlanner.html#a8ae22dedc490d6e8b2eb012b2bffb963">LocalPlanner</a>
+, <a class="el" href="classTwistBodyPlanner.html#a5c940c533b47bda515f903232b133ff7">TwistBodyPlanner</a>
 </li>
 <li>last_cmd_vel_msg_time_max_
-: <a class="el" href="classTwistBodyPlanner.html#aad333bd74dcd74d9b39549fe0a51b9ee">TwistBodyPlanner</a>
+: <a class="el" href="classLocalPlanner.html#aabb9b1a94cdfb1acbdcd103f21391bd7">LocalPlanner</a>
+, <a class="el" href="classTwistBodyPlanner.html#aad333bd74dcd74d9b39549fe0a51b9ee">TwistBodyPlanner</a>
 </li>
 <li>last_contact_est_
 : <a class="el" href="classContactDetection.html#a2ae3ae173cb542bdfaa51bb0a4fe18f8">ContactDetection</a>
@@ -84,6 +86,9 @@ $(function() {
 </li>
 <li>last_grf_array_msg_
 : <a class="el" href="classInverseDynamics.html#aa237b16390f405d79bd736f0dfb1c065">InverseDynamics</a>
+</li>
+<li>last_heartbeat_time_
+: <a class="el" href="classMBLinkConverter.html#a28a5b45ed86f95171f3c0e51ce3e2486">MBLinkConverter</a>
 </li>
 <li>last_imu_msg_
 : <a class="el" href="classContactDetection.html#a71bee086651ae1a5d3f8d50859971534">ContactDetection</a>
@@ -98,6 +103,9 @@ $(function() {
 <li>last_leg_command_array_msg_
 : <a class="el" href="classMBLinkConverter.html#ad9050d7cc3d27c5a65d8f2ed29fee88e">MBLinkConverter</a>
 </li>
+<li>last_leg_command_time_
+: <a class="el" href="classMBLinkConverter.html#a3ff82a1e5dc13435f8caa08583c71ae8">MBLinkConverter</a>
+</li>
 <li>last_leg_override_msg_
 : <a class="el" href="classInverseDynamics.html#a11aaf5c5fe2049c68bbfb46c160fff98">InverseDynamics</a>
 </li>
@@ -110,6 +118,9 @@ $(function() {
 <li>last_plan_msg_
 : <a class="el" href="classMPCController.html#a9741e98e1414c3cffb888593f441858b">MPCController</a>
 </li>
+<li>last_remote_heartbeat_msg_
+: <a class="el" href="classInverseDynamics.html#a8fb152021fa5c9102ba67a30037f5747">InverseDynamics</a>
+</li>
 <li>last_robot_state_msg_
 : <a class="el" href="classInverseDynamics.html#a12e5220afef0eb5fedf90fe68d7a0feb">InverseDynamics</a>
 </li>
@@ -120,14 +131,17 @@ $(function() {
 <li>last_trajectory_state_msg_
 : <a class="el" href="classInverseDynamics.html#a474edf37736d7191490a5543068006dc">InverseDynamics</a>
 </li>
+<li>last_vel_msg_
+: <a class="el" href="classGroundTruthPublisher.html#a0c9f403f43a75f0ccae53b3c062814ca">GroundTruthPublisher</a>
+</li>
 <li>leg_command_array_msg_
 : <a class="el" href="classInverseDynamics.html#a17c036cdac968e622a64353e067ad73f">InverseDynamics</a>
 </li>
 <li>leg_command_array_pub_
 : <a class="el" href="classInverseDynamics.html#a307c284efedcd89bdce87e3a75c2b160">InverseDynamics</a>
 </li>
-<li>leg_command_diagnostics_pub_
-: <a class="el" href="classInverseDynamics.html#a1bfe3d590fc210d03506829b6c5efd1f">InverseDynamics</a>
+<li>leg_command_timeout_
+: <a class="el" href="classMBLinkConverter.html#a4489bd6705cb0e54c21600edcd9e6f75">MBLinkConverter</a>
 </li>
 <li>leg_control_sub_
 : <a class="el" href="classMBLinkConverter.html#ae48e9cc552f57806f5f96e6ebd89c2d3">MBLinkConverter</a>
@@ -159,8 +173,14 @@ $(function() {
 <li>legbase_offsets_
 : <a class="el" href="classspirit__utils_1_1SpiritKinematics.html#aee7b36d6a90383d11c03207237dd2c02">spirit_utils::SpiritKinematics</a>
 </li>
-<li>local_body_planner_
-: <a class="el" href="classLocalPlanner.html#a7e2ce000d2c1907a43eca837ee18035e">LocalPlanner</a>
+<li>length_plan_
+: <a class="el" href="classGlobalBodyPlanner.html#a7ddd9f9ea6aa6d31e97c0974e60766f4">GlobalBodyPlanner</a>
+</li>
+<li>listener_
+: <a class="el" href="classContactStatePublisher.html#ad36f926a0657179bd8bc4f1f8560db86">ContactStatePublisher</a>
+</li>
+<li>local_body_planner_convex_
+: <a class="el" href="classLocalPlanner.html#ad849d28c0832972b91ddb7b87a0ebf60">LocalPlanner</a>
 </li>
 <li>local_footstep_planner_
 : <a class="el" href="classLocalPlanner.html#ae187c533b357a2d24eb0282fd5002beb">LocalPlanner</a>
@@ -170,6 +190,9 @@ $(function() {
 </li>
 <li>local_plan_grf_viz_pub_
 : <a class="el" href="classRVizInterface.html#ab93dd0dcf6376fb6312a9646104b0bff">RVizInterface</a>
+</li>
+<li>local_plan_ori_viz_pub_
+: <a class="el" href="classRVizInterface.html#a1b8e2adc2bdd14bfffdf88a06d9f30a9">RVizInterface</a>
 </li>
 <li>local_plan_pub_
 : <a class="el" href="classLocalPlanner.html#ad5056b1eeccbffa9177ef72488b7c042">LocalPlanner</a>

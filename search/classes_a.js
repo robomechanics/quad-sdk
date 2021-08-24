@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['obstacle',['Obstacle',['../structObstacle.html',1,'']]],
-  ['openloopcontroller',['OpenLoopController',['../classOpenLoopController.html',1,'']]]
+  ['nmpccontroller',['NMPCController',['../classNMPCController.html',1,'']]]
 ];
