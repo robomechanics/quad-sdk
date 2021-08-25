@@ -10,7 +10,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   
     // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic, local_plan_topic,
-    foot_plan_discrete_topic, foot_plan_continuous_topic, cmd_vel_topic, tail_plan_topic;
+    foot_plan_discrete_topic, foot_plan_continuous_topic, cmd_vel_topic, tail_plan_topic, grf_topic;
   spirit_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
   spirit_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   spirit_utils::loadROSParam(nh_, "topics/state/ground_truth",robot_state_topic);
@@ -18,6 +18,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   spirit_utils::loadROSParam(nh_, "topics/foot_plan_discrete", foot_plan_discrete_topic);
   spirit_utils::loadROSParam(nh_, "topics/foot_plan_continuous", foot_plan_continuous_topic);
   spirit_utils::loadROSParam(nh_, "/topics/control/tail_plan", tail_plan_topic);
+  spirit_utils::loadROSParam(nh_, "/topics/state/grfs", grf_topic);
   spirit_utils::loadROSParam(nh_, "map_frame", map_frame_);
 
   nh_.param<std::string>("topics/cmd_vel", cmd_vel_topic, "/cmd_vel");
@@ -26,6 +27,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1, &LocalPlanner::terrainMapCallback, this);
   body_plan_sub_ = nh_.subscribe(body_plan_topic,1, &LocalPlanner::robotPlanCallback, this);
   robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&LocalPlanner::robotStateCallback,this);
+  grf_sub_ = nh_.subscribe(grf_topic,1,&LocalPlanner::grfCallback,this);
   local_plan_pub_ = nh_.advertise<spirit_msgs::RobotPlan>(local_plan_topic,1);
   foot_plan_discrete_pub_ = nh_.advertise<
     spirit_msgs::MultiFootPlanDiscrete>(foot_plan_discrete_topic,1);
@@ -86,7 +88,9 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   first_plan_ = true;
 
   // Assume we know the step height
-  z_des_ = 0.4;
+  z_des_ = std::numeric_limits<double>::max();
+
+  miss_contact_leg_.resize(4);
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -229,6 +233,11 @@ void LocalPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& m
   robot_state_msg_ = msg;
 }
 
+void LocalPlanner::grfCallback(const spirit_msgs::GRFArray::ConstPtr &msg)
+{
+  grf_msg_ = msg;
+}
+
 void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg) {
 
   if ((cmd_vel_[0] != msg->linear.x) || (cmd_vel_[1] != msg->linear.y) || 
@@ -314,7 +323,7 @@ void LocalPlanner::getStateAndReferencePlan() {
 
 void LocalPlanner::getStateAndTwistInput() {
   //*
-  if (robot_state_msg_ == NULL)
+  if (robot_state_msg_ == NULL || grf_msg_ == NULL)
     return;
 
   // // Ignore non-planar components of desired twist
@@ -358,12 +367,33 @@ void LocalPlanner::getStateAndTwistInput() {
   }
 
   // Adaptive body height, assume we know step height
-  if (abs(current_foot_positions_world_(2) - current_state_(2)) >= 0.35 ||
-  abs(current_foot_positions_world_(5) - current_state_(2)) >= 0.35 || 
-  abs(current_foot_positions_world_(8) - current_state_(2)) >= 0.35 || 
-  abs(current_foot_positions_world_(11) - current_state_(2)) >= 0.35)
+  // if (abs(current_foot_positions_world_(2) - current_state_(2)) >= 0.35 ||
+  // abs(current_foot_positions_world_(5) - current_state_(2)) >= 0.35 || 
+  // abs(current_foot_positions_world_(8) - current_state_(2)) >= 0.35 || 
+  // abs(current_foot_positions_world_(11) - current_state_(2)) >= 0.35)
+  // {
+  //   z_des_ = 0.3;
+  // }
+
+  // Adaptive body height, use the lowest contact foot and exponential filter
+  std::vector<double> contact_foot_height;
+  for (size_t i = 0; i < 4; i++)
   {
-    z_des_ = 0.3;
+    if (grf_msg_->contact_states.at(i) && grf_msg_->vectors.at(i).z > 10)
+    {
+      contact_foot_height.push_back(current_foot_positions_world_(3 * i + 2));
+    }
+  }
+  if (!contact_foot_height.empty())
+  {
+    if (z_des_ == std::numeric_limits<double>::max())
+    {
+      z_des_ = *std::min_element(contact_foot_height.begin(), contact_foot_height.end()) + 0.3;
+    }
+    else
+    {
+      z_des_ = 0.75 * (*std::min_element(contact_foot_height.begin(), contact_foot_height.end()) + 0.3) + 0.25 * z_des_;
+    }
   }
 
   // Integrate to get full body plan
@@ -431,7 +461,7 @@ void LocalPlanner::getStateAndTwistInput() {
 
 bool LocalPlanner::computeLocalPlan() {
 
-  if (terrain_.isEmpty() || body_plan_msg_ == NULL && !use_twist_input_ || robot_state_msg_ == NULL)
+  if (terrain_.isEmpty() || body_plan_msg_ == NULL && !use_twist_input_ || robot_state_msg_ == NULL || grf_msg_ == NULL)
     return false;  
 
   // If desired, start the timer
@@ -454,13 +484,85 @@ bool LocalPlanner::computeLocalPlan() {
         foot_positions_body_);
     }
 
+    // Contact sensing
+    adpative_contact_schedule_ = contact_schedule_;
+
+    for (size_t i = 0; i < 4; i++)
+    {
+      // Check foot distance
+      Eigen::VectorXd foot_position_vec = foot_positions_body_.block(0, 3 * i, 1, 3).transpose();
+      if (foot_position_vec.squaredNorm() > 3.5)
+      {
+        miss_contact_leg_.at(i) = true;
+      }
+
+      if (contact_schedule_.at(0).at(i) && grf_msg_->contact_states.at(i) && miss_contact_leg_.at(i))
+      {
+        miss_contact_leg_.at(i) = false;
+      }
+
+      if (miss_contact_leg_.at(i))
+      {
+        // We assume it will not touch the ground at this gait peroid
+        for (size_t j = 0; j < N_; j++)
+        {
+          if (contact_schedule_.at(j).at(i))
+          {
+            adpative_contact_schedule_.at(j).at(i) = false;
+          }
+          else
+          {
+            break;
+          }
+        }
+      }
+
+      // // Later contact
+      // // if (contact_schedule_.at(0).at(i) && abs(current_foot_positions_world_(2 + i * 3) - current_state_(2)) > 0.325)
+      // if (contact_schedule_.at(0).at(i) && !grf_msg_->contact_states.at(i))
+      // {
+      //   sense_miss_contact = true;
+      //   // If not, we assume it will not touch the ground at this gait peroid
+      //   for (size_t j = 0; j < N_; j++)
+      //   {
+      //     if (contact_schedule_.at(j).at(i))
+      //     {
+      //       adpative_contact_schedule_.at(j).at(i) = false;
+      //     }
+      //     else
+      //     {
+      //       break;
+      //     }
+      //   }
+      // }
+
+        // // Early contact
+        // // if (contact_schedule_.at(0).at(i) && abs(current_foot_positions_world_(2 + i * 3) - current_state_(2)) > 0.325)
+        // if (!contact_schedule_.at(0).at(i) && contact_schedule_.at(5).at(i) && grf_msg_->contact_states.at(i))
+        // {
+        //   sense_miss_contact = true;
+        //   // If so, we assume it will not touch the ground at this gait peroid
+        //   for (size_t j = 0; j < N_; j++)
+        //   {
+        //     if (!contact_schedule_.at(j).at(i))
+        //     {
+        //       adpative_contact_schedule_.at(j).at(i) = true;
+        //     }
+        //     else
+        //     {
+        //       break;
+        //     }
+        //   }
+        // }
+    }
+
     // Compute body plan with MPC, return if solve fails
     if (tail_type_ == CENTRALIZED)
     {
       if (!local_body_planner_nonlinear_->computeCentralizedTailPlan(current_state_,
                                                                      ref_body_plan_,
                                                                      foot_positions_body_,
-                                                                     contact_schedule_,
+                                                                     adpative_contact_schedule_,
                                                                      tail_current_state_,
                                                                      ref_tail_plan_,
                                                                      body_plan_,
@@ -472,13 +574,13 @@ bool LocalPlanner::computeLocalPlan() {
     else if (use_nmpc_)
     {
       if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_, foot_positions_body_,
-                                                         contact_schedule_, body_plan_, grf_plan_))
+                                                         adpative_contact_schedule_, body_plan_, grf_plan_))
         return false;
     }
     else
     {
       if (!local_body_planner_convex_->computePlan(current_state_, ref_body_plan_, foot_positions_body_,
-                                                   contact_schedule_, body_plan_, grf_plan_))
+                                                   adpative_contact_schedule_, body_plan_, grf_plan_))
         return false;
     }
   }
@@ -537,10 +639,29 @@ void LocalPlanner::publishLocalPlan() {
 
   // Compute the discrete and continuous foot plan messages
   local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_world_,
-    current_plan_index_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
+    current_plan_index_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);  
 
   // Add body, foot, joint, and grf data to the local plan message
   for (int i = 0; i < N_; i++) {
+
+    // for (int j = 0; j < num_feet_; j++)
+    // {
+    //   // Potential leg control for later contact
+    //   if (contact_schedule_[i][j] && !adpative_contact_schedule_[i][j])
+    //   {
+    //     Eigen::VectorXd body_foot_positions = foot_positions_body_.block(i, 3 * j, 1, 3).transpose();
+
+    //     foot_plan_msg.states[i].feet[j].position.x += 0.1*body_plan_(0, 6);
+    //     foot_plan_msg.states[i].feet[j].position.y += 0.1*body_plan_(0, 7);
+    //     foot_plan_msg.states[i].feet[j].position.z = body_plan_(i, 2) - 0.35;
+    //   }
+
+    //   // Potential leg control for early contact
+    //   if (!contact_schedule_[i][j] && adpative_contact_schedule_[i][j])
+    //   {
+    //     foot_plan_msg.states[i].feet[j].contact = true;
+    //   }
+    // }
 
     // Add the state information
     spirit_msgs::RobotState robot_state_msg;
@@ -550,12 +671,27 @@ void LocalPlanner::publishLocalPlan() {
 
     // Add the GRF information
     spirit_msgs::GRFArray grf_array_msg;
-    spirit_utils::eigenToGRFArrayMsg(grf_plan_.row(i), foot_plan_msg.states[i], grf_array_msg);
     grf_array_msg.contact_states.resize(num_feet_);
-    for (int j = 0; j < num_feet_; j++) {
+    for (int j = 0; j < num_feet_; j++)
+    {
       grf_array_msg.contact_states[j] = contact_schedule_[i][j];
+
+      // // Potential leg control for later contact
+      // if (contact_schedule_[i][j] && !adpative_contact_schedule_[i][j])
+      // {
+      //   Eigen::VectorXd hip_foot_positions = (hip_projected_foot_positions_.block(i, 3 * j, 1, 3) - foot_positions_body_.block(i, 3 * j, 1, 3)).transpose();
+
+      //   grf_plan_(i, 3 * j + 0) = hip_foot_positions(0) / 0.3 * 58;
+      //   grf_plan_(i, 3 * j + 1) = hip_foot_positions(1) / 0.3 * 58;
+      //   grf_plan_(i, 3 * j + 2) = 58;
+
+      //   grf_plan_(i, 3 * j + 0) = 0;
+      //   grf_plan_(i, 3 * j + 1) = 0;
+      //   grf_plan_(i, 3 * j + 2) = 0;
+      // }
     }
-    
+    spirit_utils::eigenToGRFArrayMsg(grf_plan_.row(i), foot_plan_msg.states[i], grf_array_msg);
+
     // Update the headers and plan indices of the messages
     ros::Time timestamp = local_plan_msg.header.stamp + ros::Duration(i*dt_);
     spirit_utils::updateStateHeaders(robot_state_msg, timestamp, map_frame_, current_plan_index_+i);

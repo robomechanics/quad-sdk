@@ -3,7 +3,7 @@
 #include <chrono>
 
 LocalFootstepPlanner::LocalFootstepPlanner() {
-
+  ground_height_ = std::numeric_limits<double>::max();
 }
 
 void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_length) {
@@ -185,16 +185,23 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         //   terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());
 
         // Assume flat plane
-        double hip_height;
-        hip_height = current_body_pos.z();
-        // if (body_pos_midstance.z() < 0.4)
+        if (ground_height_ == std::numeric_limits<double>::max())
+        {
+          ground_height_ = std::max(std::min(current_body_pos.z() - 0.3, 0.1), 0.0);
+        }
+        else
+        {
+          ground_height_ = 0.75 * std::max(std::min(current_body_pos.z() - 0.3, 0.1), 0.0) + 0.25 * ground_height_;
+        }
+        // if (body_pos_midstance.z() < 0.35)
         // {
-        //   hip_height = hip_position_midstance.z() - 0.0;
+        //   ground_height = 0.0;
         // }
         // else
         // {
-        //   hip_height = hip_position_midstance.z() - 0.2;
+        //   ground_height = 0.2;
         // }
+        double hip_height = hip_position_midstance.z() - ground_height_;
 
         centrifugal = (hip_height/9.81)*body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
         vel_tracking = 0.03*(body_vel_touchdown - ref_body_vel_touchdown);
@@ -209,15 +216,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         //   foot_position_nominal.y());
 
         // Assume flat plane
-        foot_position_nominal.z() = current_body_pos.z() - 0.3;
-        // if (body_pos_midstance.z() < 0.4)
-        // {
-        //   foot_position_nominal.z() = 0.0;
-        // }
-        // else
-        // {
-        //   foot_position_nominal.z() = 0.2;
-        // }
+        foot_position_nominal.z() = ground_height_;
 
         // (Optional) Optimize the foothold location to get the final position
         // foot_position = map_search::optimizeFoothold(foot_position_nominal, stuff); // ADAM

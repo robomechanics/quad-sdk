@@ -309,7 +309,7 @@ bool spiritNLP::eval_f(
       }
       else if (i == N_ - 1)
       {
-         obj_value += (xk.transpose() * Q_.asDiagonal() * xk / 2 + uk.transpose() * R_.asDiagonal() * uk / 2)(0, 0) * terminal_scale_factor_;
+         obj_value += (xk.transpose() * Q_.asDiagonal() * xk / 2)(0, 0) * terminal_scale_factor_ + (uk.transpose() * R_.asDiagonal() * uk / 2)(0, 0);
       }
       else
       {
@@ -345,7 +345,7 @@ bool spiritNLP::eval_grad_f(
       }
       else if (i == N_ - 1)
       {
-         grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_.asDiagonal() * uk * terminal_scale_factor_;
+         grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_.asDiagonal() * uk;
          grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_.asDiagonal() * xk * terminal_scale_factor_;
       }
       else
@@ -674,7 +674,7 @@ bool spiritNLP::eval_h(
          }
          else if (i == N_ - 1)
          {
-            values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * terminal_scale_factor_ * R_.array()).matrix();
+            values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_.array()).matrix();
             values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * terminal_scale_factor_ * Q_.array()).matrix();
          }
          else

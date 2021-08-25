@@ -42,6 +42,8 @@ private:
 
 	void cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg);
 
+	void grfCallback(const spirit_msgs::GRFArray::ConstPtr &msg);
+
 	void computeTailPlan();
 
 	ros::NodeHandle nh_;
@@ -58,6 +60,8 @@ private:
 
 	ros::Subscriber cmd_vel_sub_;
 
+	ros::Subscriber grf_sub_;
+
 	std::shared_ptr<NMPCController> tail_planner_;
 
 	spirit_msgs::RobotPlan::ConstPtr body_plan_msg_;
@@ -66,11 +70,15 @@ private:
 
 	spirit_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
+	spirit_msgs::GRFArray::ConstPtr grf_msg_;
+
 	Eigen::VectorXd current_state_;
 
 	Eigen::MatrixXd ref_body_plan_;
 
 	std::vector<std::vector<bool>> contact_schedule_;
+	
+	std::vector<std::vector<bool>> adpative_contact_schedule_;
 
 	Eigen::MatrixXd foot_positions_body_;
 

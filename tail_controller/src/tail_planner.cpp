@@ -5,13 +5,14 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
   nh_ = nh;
 
   // Get rosparams
-  std::string body_plan_topic, robot_state_topic, local_plan_topic, tail_plan_topic, cmd_vel_topic;
+  std::string body_plan_topic, robot_state_topic, local_plan_topic, tail_plan_topic, cmd_vel_topic, grf_topic;
   spirit_utils::loadROSParam(nh_, "/topics/control/tail_plan", tail_plan_topic);
   spirit_utils::loadROSParam(nh_, "/topics/global_plan", body_plan_topic);
   spirit_utils::loadROSParam(nh_, "/topics/state/ground_truth", robot_state_topic);
   spirit_utils::loadROSParam(nh_, "/topics/local_plan", local_plan_topic);
   spirit_utils::loadROSParam(nh_, "/tail_controller/planner_update_rate", update_rate_);
   nh_.param<std::string>("/topics/cmd_vel", cmd_vel_topic, "/cmd_vel");
+  spirit_utils::loadROSParam(nh_, "/topics/state/grfs", grf_topic);
 
   // Setup pubs and subs
   tail_plan_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(tail_plan_topic, 1);
@@ -19,6 +20,7 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
   robot_state_sub_ = nh_.subscribe(robot_state_topic, 1, &TailPlanner::robotStateCallback, this);
   local_plan_sub_ = nh_.subscribe(local_plan_topic, 1, &TailPlanner::localPlanCallback, this);
   cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic, 1, &TailPlanner::cmdVelCallback, this);
+  grf_sub_ = nh_.subscribe(grf_topic, 1, &TailPlanner::grfCallback, this);
 
   nh.param<int>("/tail_controller/tail_type", tail_type_, 0);
   nh.param<bool>("/local_planner/use_twist_input", use_twist_input_, false);
@@ -128,9 +130,14 @@ void TailPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg)
   last_cmd_vel_msg_time_ = ros::Time::now();
 }
 
+void TailPlanner::grfCallback(const spirit_msgs::GRFArray::ConstPtr &msg)
+{
+  grf_msg_ = msg;
+}
+
 void TailPlanner::computeTailPlan()
 {
-  if (last_local_plan_msg_ == NULL || (body_plan_msg_ == NULL && !use_twist_input_) || robot_state_msg_ == NULL)
+  if (last_local_plan_msg_ == NULL || (body_plan_msg_ == NULL && !use_twist_input_) || robot_state_msg_ == NULL || grf_msg_ == NULL)
     return;
 
   ref_tail_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 4);
@@ -256,10 +263,53 @@ void TailPlanner::computeTailPlan()
     }
   }
 
+  // Contact sensing
+  adpative_contact_schedule_ = contact_schedule_;
+
+  for (size_t i = 0; i < 4; i++)
+  {
+    // Later contact
+    // if (contact_schedule_.at(0).at(i) && abs(current_foot_positions_world_(2 + i * 3) - current_state_(2)) > 0.325)
+    if (contact_schedule_.at(0).at(i) && !grf_msg_->contact_states.at(i))
+    {
+      // If not, we assume it will not touch the ground at this gait peroid
+      for (size_t j = 0; j < N_; j++)
+      {
+        if (contact_schedule_.at(j).at(i))
+        {
+          adpative_contact_schedule_.at(j).at(i) = false;
+        }
+        else
+        {
+          break;
+        }
+      }
+    }
+
+      // // Early contact
+      // // if (contact_schedule_.at(0).at(i) && abs(current_foot_positions_world_(2 + i * 3) - current_state_(2)) > 0.325)
+      // if (!contact_schedule_.at(0).at(i) && contact_schedule_.at(5).at(i) && grf_msg_->contact_states.at(i))
+      // {
+      //   sense_miss_contact = true;
+      //   // If so, we assume it will not touch the ground at this gait peroid
+      //   for (size_t j = 0; j < N_; j++)
+      //   {
+      //     if (!contact_schedule_.at(j).at(i))
+      //     {
+      //       adpative_contact_schedule_.at(j).at(i) = true;
+      //     }
+      //     else
+      //     {
+      //       break;
+      //     }
+      //   }
+      // }
+  }
+
   if (!tail_planner_->computeDistributedTailPlan(current_state_,
                                                  ref_body_plan_,
                                                  foot_positions_body_,
-                                                 contact_schedule_,
+                                                 adpative_contact_schedule_,
                                                  tail_current_state_,
                                                  ref_tail_plan_,
                                                  body_plan_,

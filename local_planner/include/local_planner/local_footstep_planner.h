@@ -274,6 +274,8 @@ class LocalFootstepPlanner {
     /// Threshold of body error from desired goal to start stepping
     double standing_error_threshold_ = 0;
 
+    double ground_height_;
+
 };
 
 

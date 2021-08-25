@@ -72,6 +72,8 @@ private:
    */
   void cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg);
 
+  void grfCallback(const spirit_msgs::GRFArray::ConstPtr& msg);
+
   /**
    * @brief Function to pre-process the body plan and robot state messages into Eigen arrays
    */
@@ -104,6 +106,8 @@ private:
 
   /// Subscriber for twist input messages
   ros::Subscriber cmd_vel_sub_;
+
+  ros::Subscriber grf_sub_;
 
 	/// ROS publisher for local plan output
 	ros::Publisher local_plan_pub_;
@@ -138,6 +142,8 @@ private:
 
   /// Most recent robot state
 	spirit_msgs::RobotState::ConstPtr robot_state_msg_;
+
+	spirit_msgs::GRFArray::ConstPtr grf_msg_;
 
   /// Past foothold locations
 	spirit_msgs::MultiFootPlanDiscrete past_footholds_msg_;
@@ -202,6 +208,8 @@ private:
   /// Contact schedule
   std::vector<std::vector<bool>> contact_schedule_;
 
+  std::vector<std::vector<bool>> adpative_contact_schedule_;
+
   /// Matrix of continuous foot positions in world frame
   Eigen::MatrixXd foot_positions_world_;
 
@@ -256,6 +264,8 @@ private:
   Eigen::MatrixXd tail_torque_plan_;
 
   ros::Publisher tail_plan_pub_;
+
+  std::vector<bool> miss_contact_leg_;
 };
 
 
