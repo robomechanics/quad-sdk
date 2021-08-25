@@ -28,6 +28,10 @@ topics:
     tail_command: /control/tail_command
     mode: /control/mode
     leg_override: /control/leg_override
+  cmd_vel: /cmd_vel
+  heartbeat:
+    remote: /heartbeat/remote
+    robot: /heartbeat/robot
   visualization:
     global_plan: /visualization/global_plan
     local_plan: /visualization/local_plan

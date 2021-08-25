@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   RobotState.msg
+  BodyState.msg
   RobotStateTrajectory.msg
   GRFArray.msg
   RobotPlan.msg

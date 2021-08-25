@@ -33,6 +33,7 @@ UNSET( RBDL_GEOMETRY_LIBRARY         CACHE)
 #        locations are used. Note that at the present time these typical install
 #        include paths that will only work on linux
 
+set(CUSTOM_RBDL_PATH /usr/local)
 IF(CUSTOM_RBDL_PATH)
 
 

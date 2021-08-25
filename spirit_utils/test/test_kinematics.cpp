@@ -33,7 +33,7 @@ TEST(KinematicsTest, testDifferentialFKIK)
         3.14 * (double)rand() / RAND_MAX - 1.57,
         3.14 * (double)rand() / RAND_MAX - 1.57;
 
-    state.body = eigenToOdomMsg(body_state);
+    state.body = eigenToBodyStateMsg(body_state);
 
     state.joints.name = {"8", "0", "1", "9", "2", "3", "10", "4", "5", "11", "6", "7"};
     state.joints.position.clear();

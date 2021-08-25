@@ -202,17 +202,17 @@ void GlobalFootstepPlanner::updateDiscretePlan() {
       }
 
       // Compute the body and hip positions and velocities
-      Eigen::Vector3d body_pos_touchdown = {state_touchdown.body.pose.pose.position.x,
-        state_touchdown.body.pose.pose.position.y,
-        state_touchdown.body.pose.pose.position.z};
+      Eigen::Vector3d body_pos_touchdown = {state_touchdown.body.pose.position.x,
+        state_touchdown.body.pose.position.y,
+        state_touchdown.body.pose.position.z};
 
-      Eigen::Vector3d body_vel_midstance = {state_midstance.body.twist.twist.linear.x,
-        state_midstance.body.twist.twist.linear.y,
-        state_midstance.body.twist.twist.linear.z};
+      Eigen::Vector3d body_vel_midstance = {state_midstance.body.twist.linear.x,
+        state_midstance.body.twist.linear.y,
+        state_midstance.body.twist.linear.z};
 
       // Convert orientation from quaternion to rpy
       tf2::Quaternion q;
-      tf2::convert(state_touchdown.body.pose.pose.orientation,q);
+      tf2::convert(state_touchdown.body.pose.orientation,q);
       tf2::Matrix3x3 m(q);
       double roll, pitch, yaw;
       m.getRPY(roll, pitch, yaw);
@@ -252,12 +252,12 @@ void GlobalFootstepPlanner::updateDiscretePlan() {
       // Add final foot configuration
       spirit_msgs::RobotState state_final = body_plan_msg_->states.back();
 
-      Eigen::Vector3d body_pos_final = {state_final.body.pose.pose.position.x,
-          state_final.body.pose.pose.position.y,
-          state_final.body.pose.pose.position.z};
+      Eigen::Vector3d body_pos_final = {state_final.body.pose.position.x,
+          state_final.body.pose.position.y,
+          state_final.body.pose.position.z};
       
       tf2::Quaternion q;
-      tf2::convert(state_final.body.pose.pose.orientation,q);
+      tf2::convert(state_final.body.pose.orientation,q);
       tf2::Matrix3x3 m(q);
       double roll, pitch, yaw;
       m.getRPY(roll, pitch, yaw);

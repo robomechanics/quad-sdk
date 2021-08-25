@@ -100,13 +100,13 @@ Eigen::VectorXd MPCController::state_to_eigen(spirit_msgs::RobotState robot_stat
   Eigen::VectorXd state = Eigen::VectorXd::Zero(Nx_);
 
   // Position
-  state(0) = robot_state.body.pose.pose.position.x;
-  state(1) = robot_state.body.pose.pose.position.y;
-  state(2) = robot_state.body.pose.pose.position.z;
+  state(0) = robot_state.body.pose.position.x;
+  state(1) = robot_state.body.pose.position.y;
+  state(2) = robot_state.body.pose.position.z;
 
   // Orientation
   tf2::Quaternion quat;
-  tf2::convert(robot_state.body.pose.pose.orientation, quat);
+  tf2::convert(robot_state.body.pose.orientation, quat);
   double r,p,y;
   tf2::Matrix3x3 m(quat);
   m.getRPY(r,p,y);
@@ -116,14 +116,14 @@ Eigen::VectorXd MPCController::state_to_eigen(spirit_msgs::RobotState robot_stat
 
   if (!zero_vel) {
     // Linear Velocity
-    state(6) = robot_state.body.twist.twist.linear.x;
-    state(7) = robot_state.body.twist.twist.linear.y;
-    state(8) = robot_state.body.twist.twist.linear.z;
+    state(6) = robot_state.body.twist.linear.x;
+    state(7) = robot_state.body.twist.linear.y;
+    state(8) = robot_state.body.twist.linear.z;
 
     // Angular Velocity
-    state(9) = robot_state.body.twist.twist.angular.x;
-    state(10) = robot_state.body.twist.twist.angular.y;
-    state(11) = robot_state.body.twist.twist.angular.z;
+    state(9) = robot_state.body.twist.angular.x;
+    state(10) = robot_state.body.twist.angular.y;
+    state(11) = robot_state.body.twist.angular.z;
   }
 
   return state;

@@ -5,7 +5,7 @@
 
 Header header
 uint32 traj_index
-nav_msgs/Odometry body
+spirit_msgs/BodyState body
 sensor_msgs/JointState joints
 sensor_msgs/JointState tail_joints
 spirit_msgs/MultiFootState feet
