@@ -152,7 +152,7 @@ void TailPlanner::computeTailPlan()
 
   // Start from current time and change the first time interval the align local planner
   tail_current_state_ = spirit_utils::odomMsgToEigenForTail(*robot_state_msg_);
-  current_state_ = spirit_utils::odomMsgToEigen(robot_state_msg_->body);
+  current_state_ = spirit_utils::bodyStateMsgToEigen(robot_state_msg_->body);
   spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
 
   double t_now = ros::Time::now().toSec();
@@ -231,11 +231,11 @@ void TailPlanner::computeTailPlan()
     {
       if (i + current_plan_index_ > body_plan_msg_->plan_indices.back())
       {
-        ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states.back().body);
+        ref_body_plan_.row(i) = spirit_utils::bodyStateMsgToEigen(body_plan_msg_->states.back().body);
       }
       else
       {
-        ref_body_plan_.row(i) = spirit_utils::odomMsgToEigen(body_plan_msg_->states[i + current_plan_index_].body);
+        ref_body_plan_.row(i) = spirit_utils::bodyStateMsgToEigen(body_plan_msg_->states[i + current_plan_index_].body);
       }
     }
   }
@@ -249,7 +249,7 @@ void TailPlanner::computeTailPlan()
       idx = N_ - 1;
     }
 
-    body_plan_.row(i) = spirit_utils::odomMsgToEigen(last_local_plan_msg_->states[idx].body).transpose();
+    body_plan_.row(i) = spirit_utils::bodyStateMsgToEigen(last_local_plan_msg_->states[idx].body).transpose();
     grf_plan_.row(i) = spirit_utils::grfArrayMsgToEigen(last_local_plan_msg_->grfs[idx]).transpose();
 
     Eigen::VectorXd foot_positions(12);
