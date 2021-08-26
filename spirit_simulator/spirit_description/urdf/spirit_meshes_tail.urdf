@@ -1046,16 +1046,16 @@
   </gazebo>
   <link name="tail_link_1">
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0.5"/>
+      <origin rpy="0 0 0" xyz="0 0 0.27"/>
       <geometry>
-        <cylinder length="1" radius="0.02"/>
+        <cylinder length="0.54" radius="0.02"/>
       </geometry>
       <material name="gray"/>
     </visual>
     <collision>
-      <origin rpy="0 0 0" xyz="0 0 0.5"/>
+      <origin rpy="0 0 0" xyz="0 0 0.27"/>
       <geometry>
-        <cylinder length="1" radius="0.02"/>
+        <cylinder length="0.54" radius="0.02"/>
       </geometry>
     </collision>
     <inertial>
@@ -1081,8 +1081,8 @@
       </geometry>
     </collision>
     <inertial>
-      <mass value="0.25"/>
-      <inertia ixx="0.025" ixy="0" ixz="0" iyy="0.025" iyz="0" izz="0.025"/>
+      <mass value="0.6"/>
+      <inertia ixx="0.06" ixy="0" ixz="0" iyy="0.06" iyz="0" izz="0.06"/>
     </inertial>
   </link>
   <gazebo reference="tail_mass">
@@ -1095,7 +1095,7 @@
     <child link="tail_link_0"/>
     <axis xyz="1 0 0"/>
     <origin xyz="-0.1675 0 0.052"/>
-    <limit effort="10" lower="-1.79769e+308" upper="1.79769e+308" velocity="30"/>
+    <limit effort="15" lower="-1.79769e+308" upper="1.79769e+308" velocity="30"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
   <!-- Transmission elements required for Gazebo -->
@@ -1114,7 +1114,7 @@
     <child link="tail_link_1"/>
     <axis xyz="0 1 0"/>
     <origin xyz="0 0 0"/>
-    <limit effort="10" lower="-3.14159" upper="1.57080" velocity="30"/>
+    <limit effort="15" lower="-3.14159" upper="1.57080" velocity="30"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
   <!-- Transmission elements required for Gazebo -->
@@ -1131,7 +1131,7 @@
   <joint name="tail_link_mass_joint" type="fixed">
     <parent link="tail_link_1"/>
     <child link="tail_mass"/>
-    <origin xyz="0 0 1"/>
+    <origin xyz="0 0 0.54"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
 </robot>

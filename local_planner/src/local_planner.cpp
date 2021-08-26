@@ -342,11 +342,13 @@ void LocalPlanner::getStateAndTwistInput() {
   ref_body_plan_.setZero();
 
   // Check that we have recent twist data, otherwise set cmd_vel to zero
-  ros::Duration time_elapsed_since_msg = ros::Time::now() - last_cmd_vel_msg_time_;
-  if (time_elapsed_since_msg.toSec() > last_cmd_vel_msg_time_max_) {
-    std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
-    ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
-  }
+  // ros::Duration time_elapsed_since_msg = ros::Time::now() - last_cmd_vel_msg_time_;
+  // if (time_elapsed_since_msg.toSec() > last_cmd_vel_msg_time_max_) {
+  //   std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
+  //   ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
+  // }
+  std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
+  cmd_vel_.at(1) = 0.5;
 
   // Adaptive body height, assume we know step height
   // if (abs(current_foot_positions_world_(2) - current_state_(2)) >= 0.35 ||
