@@ -166,6 +166,9 @@ private:
 
 	/// Define ids for input types: grf array
 	const int GRFS = 2;
+
+	/// Underbrush swing instead of standard swing
+	bool underbrush_swing_;
 	
 	/// Most recent local plan
 	spirit_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
@@ -234,6 +237,10 @@ private:
 	/// PD gain when foot is in swing
 	std::vector<double> swing_kp_;
 	std::vector<double> swing_kd_;
+
+	/// PD gain when foot is in swing in underbrush
+	std::vector<double> underbrush_swing_kp_;
+	std::vector<double> underbrush_swing_kd_;
 
 	std::vector<double> f0x;
 	std::vector<double> f1x;

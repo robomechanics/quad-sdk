@@ -33,6 +33,8 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh_, "inverse_dynamics/swing_kd", swing_kd_);
   spirit_utils::loadROSParam(nh_, "inverse_dynamics/safety_kp", safety_kp_);
   spirit_utils::loadROSParam(nh_, "inverse_dynamics/safety_kd", safety_kd_);
+  spirit_utils::loadROSParam(nh_, "inverse_dynamics/underbrush_swing_kp", underbrush_swing_kp_);
+  spirit_utils::loadROSParam(nh_, "inverse_dynamics/underbrush_swing_kd", underbrush_swing_kd_);
   spirit_utils::loadROSParam(nh_, "inverse_dynamics/remote_latency_threshold_warn",
     remote_latency_threshold_warn_);
   spirit_utils::loadROSParam(nh_, "inverse_dynamics/remote_latency_threshold_error",
@@ -62,6 +64,8 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   last_state_time_ = std::numeric_limits<double>::max();  
 
   kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
+
+  underbrush_swing_ = true;//false;
 }
 
 void InverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
@@ -188,6 +192,8 @@ void InverseDynamics::publishLegCommandArray() {
   Eigen::VectorXd tau_array(3*num_feet_), tau_swing_leg_array(3*num_feet_);
   leg_command_array_msg_.leg_commands.resize(num_feet_);
 
+  spirit_msgs::RobotState ref_underbrush_msg;
+
   // Set the input handling based on what data we've recieved, prioritizing local plan over grf
   // JN - removed GRFS option, mpc_controller would need updating to publish local plans now
   int input_type;
@@ -231,6 +237,36 @@ void InverseDynamics::publishLegCommandArray() {
         break;
       }
     }
+
+    // Underbrush swing leg motion
+    ref_underbrush_msg = ref_state_msg;
+    if (underbrush_swing_) {
+      for (int i = 0; i < 4; i++) {
+        if (!ref_state_msg.feet.feet.at(i).contact){
+          for (int j = 0; j < last_local_plan_msg_->states.size()-1; j++) {
+            if (t_now < last_local_plan_msg_->states[j].header.stamp.toSec() &&
+                bool(last_local_plan_msg_->states[j].feet.feet.at(i).contact)) {
+              ref_underbrush_msg.feet.feet.at(i).position.x = last_local_plan_msg_->states[j].feet.feet.at(i).position.x;
+              ref_underbrush_msg.feet.feet.at(i).position.y = last_local_plan_msg_->states[j].feet.feet.at(i).position.y;
+              ref_underbrush_msg.feet.feet.at(i).position.z = last_local_plan_msg_->states[j].feet.feet.at(i).position.z;
+              ref_underbrush_msg.feet.feet.at(i).velocity.x = 0;
+              ref_underbrush_msg.feet.feet.at(i).velocity.y = 0;
+              ref_underbrush_msg.feet.feet.at(i).velocity.z = 0;
+              ref_underbrush_msg.feet.feet.at(i).acceleration.x = 0;
+              ref_underbrush_msg.feet.feet.at(i).acceleration.y = 0;
+              ref_underbrush_msg.feet.feet.at(i).acceleration.z = 0;
+
+              break;
+            }
+          }
+        }
+      }
+      spirit_utils::ikRobotState(*kinematics_, ref_underbrush_msg);
+      ref_state_msg = ref_underbrush_msg;
+      std::cout << ref_state_msg.feet.feet.at(1).position.x;
+      std::cout << " " << (ref_state_msg.feet.feet.at(1).contact?"y":"n") << std::endl;
+    }
+
   } else if (input_type == GRFS) {
     ref_state_msg = *(last_trajectory_state_msg_);
     grf_array_msg = *(last_grf_array_msg_);
@@ -315,11 +351,18 @@ void InverseDynamics::publishLegCommandArray() {
           }
           else
           {
-            leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kp = swing_kp_.at(j);
-            leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = swing_kd_.at(j);
+            if (underbrush_swing_) {
+              leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kp = underbrush_swing_kp_.at(j);
+              leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = underbrush_swing_kd_.at(j);
 
-            leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff =
-                tau_swing_leg_array(joint_idx);
+              leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+            } else {
+              leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kp = swing_kp_.at(j);
+              leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = swing_kd_.at(j);
+
+              leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff =
+                  tau_swing_leg_array(joint_idx);
+            }
           }
         } else {
           leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 
