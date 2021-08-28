@@ -184,7 +184,7 @@ bool NMPCController::computeCentralizedTailPlan(const Eigen::VectorXd &initial_s
       foot_positions,
       contact_schedule);
 
-  this->computePlan(initial_state_with_tail,
+  bool success = this->computePlan(initial_state_with_tail,
                     ref_traj_with_tail,
                     foot_positions,
                     contact_schedule,
@@ -206,7 +206,7 @@ bool NMPCController::computeCentralizedTailPlan(const Eigen::VectorXd &initial_s
 
   tail_control_traj = control_traj_with_tail.leftCols(2);
 
-  return true;
+  return success;
 }
 
 bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_state,
@@ -264,7 +264,7 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
   // std::cout << "w0_start.transpose().format(CleanFmt)" << std::endl;
   // std::cout << w0_start.transpose().format(CleanFmt) << std::endl;
 
-  this->computePlan(initial_state_with_tail,
+  bool success = this->computePlan(initial_state_with_tail,
                     ref_traj_with_tail,
                     foot_positions,
                     contact_schedule,
@@ -290,7 +290,7 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
 
   tail_control_traj = control_traj_with_tail.leftCols(2);
 
-  return true;
+  return success;
 }
 
 bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
@@ -325,6 +325,7 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     control_traj = u.transpose();
 
     ROS_INFO_STREAM(param_ns_ << " solving success");
+    return true;
   }
   else
   {
@@ -353,12 +354,6 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     control_traj = last_control_traj_;
 
     ROS_INFO_STREAM(param_ns_ << " solving fail");
-
-    // The tail mpc will fail if keep using the previous solution
-    if (type_ != NONE)
-    {
-      return false;
-    }
+    return false;
   }
-  return true;
 }

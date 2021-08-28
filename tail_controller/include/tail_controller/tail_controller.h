@@ -38,6 +38,8 @@ private:
 	 */
 	void tailPlanCallback(const spirit_msgs::LegCommandArray::ConstPtr &msg);
 
+	void robotStateCallback(const spirit_msgs::RobotState::ConstPtr &msg);
+
 	/**
 	 * @brief Compute and send open loop joint positions
 	 * @param[in] elapsed_time Time since node began
@@ -60,11 +62,17 @@ private:
 
 	ros::Subscriber tail_plan_sub_;
 
+	ros::Subscriber robot_state_sub_;
+
+	spirit_msgs::RobotState::ConstPtr robot_state_msg_;
+
 	spirit_msgs::LegCommandArray::ConstPtr last_tail_plan_msg_;
 
 	double dt_;
 
 	int tail_type_;
+
+	Eigen::VectorXd tail_current_state_;
 };
 
 #endif // TAIL_CONTROLLER_H

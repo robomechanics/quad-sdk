@@ -269,6 +269,8 @@ private:
   ros::Publisher tail_plan_pub_;
 
   std::vector<bool> miss_contact_leg_;
+
+  ros::Time entrance_time_;
 };
 
 

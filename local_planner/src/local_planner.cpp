@@ -372,11 +372,11 @@ void LocalPlanner::getStateAndTwistInput() {
   {
     if (z_des_ == std::numeric_limits<double>::max())
     {
-      z_des_ = *std::min_element(contact_foot_height.begin(), contact_foot_height.end()) + 0.3;
+      z_des_ = std::max(*std::min_element(contact_foot_height.begin(), contact_foot_height.end()) + 0.3, 0.0);
     }
     else
     {
-      z_des_ = 0.75 * (*std::min_element(contact_foot_height.begin(), contact_foot_height.end()) + 0.3) + 0.25 * z_des_;
+      z_des_ = 0.75 * std::max(*std::min_element(contact_foot_height.begin(), contact_foot_height.end()) + 0.3, 0.0) + 0.25 * z_des_;
     }
   }
 
@@ -471,7 +471,7 @@ bool LocalPlanner::computeLocalPlan() {
   {
     // Check foot distance
     Eigen::VectorXd foot_position_vec = foot_positions_body_.block(0, 3 * i, 1, 3).transpose();
-    if (foot_position_vec.squaredNorm() > 3.5)
+    if (foot_position_vec.squaredNorm() > 0.35)
     {
       miss_contact_leg_.at(i) = true;
     }
@@ -583,15 +583,15 @@ bool LocalPlanner::computeLocalPlan() {
 void LocalPlanner::publishLocalPlan() {
 
   // if (current_plan_index_ >= 50) {
-  //   std::cout << "current_state_\n" << current_state_ << std::endl;
-  //   std::cout << "ref_body_plan_\n" << ref_body_plan_ << std::endl;
-  //   std::cout << "body_plan_\n" << body_plan_ << std::endl;
-  //   std::cout << "grf_plan_\n" << grf_plan_ << std::endl;
-  //   std::cout << "foot_positions_world_\n" << foot_positions_world_ << std::endl;
-  //   std::cout << "foot_positions_body_\n" << foot_positions_body_ << std::endl;
-  //   throw std::runtime_error("Stop");
+  // std::cout << "current_state_\n" << current_state_ << std::endl;
+  // std::cout << "ref_body_plan_\n" << ref_body_plan_ << std::endl;
+  // std::cout << "body_plan_\n" << body_plan_ << std::endl;
+  // std::cout << "grf_plan_\n" << grf_plan_ << std::endl;
+  // std::cout << "foot_positions_world_\n" << foot_positions_world_ << std::endl;
+  // std::cout << "foot_positions_body_\n" << foot_positions_body_ << std::endl;
+  // throw std::runtime_error("Stop");
   // }
-  
+
   // Create messages to publish
   spirit_msgs::RobotPlan local_plan_msg;
   spirit_msgs::MultiFootPlanDiscrete future_footholds_msg;
@@ -599,7 +599,7 @@ void LocalPlanner::publishLocalPlan() {
   spirit_msgs::LegCommandArray tail_plan_msg;
 
   // Update the headers of all messages
-  ros::Time timestamp = ros::Time::now();
+  ros::Time timestamp = entrance_time_;
   local_plan_msg.header.stamp = timestamp;
   local_plan_msg.header.frame_id = map_frame_;
   if (!use_twist_input_) {
@@ -721,6 +721,8 @@ void LocalPlanner::spin() {
   while (ros::ok()) {
 
     ros::spinOnce();
+
+    entrance_time_ = ros::Time::now();
 
     // Wait until all required data has been received
     if (terrain_.isEmpty() || body_plan_msg_ == NULL && !use_twist_input_ || robot_state_msg_ == NULL)

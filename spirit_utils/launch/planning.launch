@@ -6,6 +6,7 @@
     <arg name="local_planner" default="full"/>
     <arg name="mpc_type" default="nonlinear"/>
     <arg name="tail" default="false"/>
+    <arg name="logging" default="false"/>
 
     <!-- Launch the node to publish the global body plan -->
     <group if="$(eval arg('global_planner') == 'fgmp')">
@@ -43,6 +44,11 @@
     <!-- Launch the node to publish the tail plan -->
     <group if="$(arg tail)">
         <node name="tail_planner" pkg="tail_controller" type="tail_planner_node" output="screen"/>
+    </group>
+
+    <group if="$(arg logging)">
+        <node pkg="rosbag" type="record" name="rosbag_record"
+    args="record -o $(find spirit_logger)/bags/spirit_log /state/ground_truth /local_plan /control/tail_plan /state/grfs /control/joint_command /control/tail_command /terrain_map" />
     </group>
 
 </launch>

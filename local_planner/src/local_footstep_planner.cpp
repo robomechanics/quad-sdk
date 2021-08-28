@@ -187,11 +187,11 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         // Assume flat plane
         if (ground_height_ == std::numeric_limits<double>::max())
         {
-          ground_height_ = std::max(std::min(current_body_pos.z() - 0.3, 0.1), 0.0);
+          ground_height_ = std::max(current_body_pos.z() - 0.3, 0.0);
         }
         else
         {
-          ground_height_ = 0.75 * std::max(std::min(current_body_pos.z() - 0.3, 0.1), 0.0) + 0.25 * ground_height_;
+          ground_height_ = 0.75 * std::max(current_body_pos.z() - 0.3, 0.0) + 0.25 * ground_height_;
         }
         // if (body_pos_midstance.z() < 0.35)
         // {

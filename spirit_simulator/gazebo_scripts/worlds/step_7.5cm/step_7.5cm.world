@@ -18,12 +18,12 @@
       <link name="body">
         <visual name="visual">
           <geometry>
-            <mesh><uri>model:///step_20cm/step_20cm.stl</uri></mesh>
+            <mesh><uri>model:///step_7.5cm/step_7.5cm.stl</uri></mesh>
           </geometry>
         </visual>
         <collision name="collision">
           <geometry>
-            <mesh><uri>model:///step_20cm/step_20cm.stl</uri></mesh>
+            <mesh><uri>model:///step_7.5cm/step_7.5cm.stl</uri></mesh>
           </geometry>
         </collision>
       </link>

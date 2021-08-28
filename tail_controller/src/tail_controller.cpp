@@ -33,9 +33,10 @@ TailController::TailController(ros::NodeHandle nh)
   ros::param::get("/nmpc_controller/" + param_ns + "/step_length", dt_);
 
   // Get rosparams
-  std::string tail_plan_topic, tail_control_topic;
+  std::string tail_plan_topic, tail_control_topic, robot_state_topic;
   spirit_utils::loadROSParam(nh_, "/topics/control/tail_plan", tail_plan_topic);
   spirit_utils::loadROSParam(nh_, "/topics/control/tail_command", tail_control_topic);
+  spirit_utils::loadROSParam(nh_, "/topics/state/ground_truth", robot_state_topic);
   spirit_utils::loadROSParam(nh_, "tail_controller/controller_update_rate", update_rate_);
   spirit_utils::loadROSParam(nh_, "tail_controller/roll_kp", roll_kp_);
   spirit_utils::loadROSParam(nh_, "tail_controller/roll_kd", roll_kd_);
@@ -45,6 +46,7 @@ TailController::TailController(ros::NodeHandle nh)
   // Setup pubs and subs
   tail_control_pub_ = nh_.advertise<spirit_msgs::LegCommand>(tail_control_topic, 1);
   tail_plan_sub_ = nh_.subscribe(tail_plan_topic, 1, &TailController::tailPlanCallback, this);
+  robot_state_sub_ = nh_.subscribe(robot_state_topic, 1, &TailController::robotStateCallback, this);
 }
 
 void TailController::tailPlanCallback(const spirit_msgs::LegCommandArray::ConstPtr &msg)
@@ -52,12 +54,21 @@ void TailController::tailPlanCallback(const spirit_msgs::LegCommandArray::ConstP
   last_tail_plan_msg_ = msg;
 }
 
+void TailController::robotStateCallback(const spirit_msgs::RobotState::ConstPtr &msg)
+{
+  // Make sure the data is actually populated
+  if (msg->feet.feet.empty() || msg->joints.position.empty())
+    return;
+
+  robot_state_msg_ = msg;
+}
+
 void TailController::publishTailCommand()
 {
   spirit_msgs::LegCommand msg;
   msg.motor_commands.resize(2);
 
-  if (last_tail_plan_msg_ == NULL)
+  if (last_tail_plan_msg_ == NULL || robot_state_msg_ == NULL)
   {
     msg.motor_commands.at(0).pos_setpoint = 0;
     msg.motor_commands.at(0).vel_setpoint = 0;
@@ -133,21 +144,39 @@ void TailController::publishTailCommand()
     msg.motor_commands.at(1).kd = pitch_kd_;
 
     // ROS_INFO_STREAM_THROTTLE(0.1, "current_plan_index: " << current_plan_index << "pos: " << msg.motor_commands.at(0).pos_setpoint << ", " << msg.motor_commands.at(1).pos_setpoint);
+
+    tail_current_state_ = spirit_utils::odomMsgToEigenForTail(*robot_state_msg_);
+
+    if (abs(msg.motor_commands.at(0).pos_setpoint) > 1.4)
+    {
+      if (msg.motor_commands.at(0).pos_setpoint > 1.4)
+      {
+        msg.motor_commands.at(0).vel_setpoint = std::min(msg.motor_commands.at(0).vel_setpoint, 0.);
+        msg.motor_commands.at(0).torque_ff = std::min(msg.motor_commands.at(0).torque_ff, 0.);
+      }
+      else
+      {
+        msg.motor_commands.at(0).vel_setpoint = std::max(msg.motor_commands.at(0).vel_setpoint, 0.);
+        msg.motor_commands.at(0).torque_ff = std::max(msg.motor_commands.at(0).torque_ff, 0.);
+      }
+      msg.motor_commands.at(0).pos_setpoint = std::min(std::max(-1.4, msg.motor_commands.at(0).pos_setpoint), 1.4);
+    }
+
+    if (abs(msg.motor_commands.at(1).pos_setpoint) > 1.4)
+    {
+      if (msg.motor_commands.at(1).pos_setpoint > 1.4)
+      {
+        msg.motor_commands.at(1).vel_setpoint = std::min(msg.motor_commands.at(1).vel_setpoint, 0.);
+        msg.motor_commands.at(1).torque_ff = std::min(msg.motor_commands.at(1).torque_ff, 0.);
+      }
+      else
+      {
+        msg.motor_commands.at(1).vel_setpoint = std::max(msg.motor_commands.at(1).vel_setpoint, 0.);
+        msg.motor_commands.at(1).torque_ff = std::max(msg.motor_commands.at(1).torque_ff, 0.);
+      }
+      msg.motor_commands.at(1).pos_setpoint = std::min(std::max(-1.4, msg.motor_commands.at(1).pos_setpoint), 1.4);
+    }
   }
-
-  // if (abs(msg.motor_commands.at(0).pos_setpoint) > 1.4)
-  // {
-  //   msg.motor_commands.at(0).pos_setpoint = std::min(std::max(-1.4, msg.motor_commands.at(0).pos_setpoint), 1.4);
-  //   msg.motor_commands.at(0).vel_setpoint = 0;
-  //   msg.motor_commands.at(0).torque_ff = 0;
-  // }
-
-  // if (abs(msg.motor_commands.at(1).pos_setpoint) > 1.4)
-  // {
-  //   msg.motor_commands.at(1).pos_setpoint = std::min(std::max(-1.4, msg.motor_commands.at(1).pos_setpoint), 1.4);
-  //   msg.motor_commands.at(1).vel_setpoint = 0;
-  //   msg.motor_commands.at(1).torque_ff = 0;
-  // }
 
   msg.header.stamp = ros::Time::now();
   tail_control_pub_.publish(msg);
@@ -159,8 +188,8 @@ void TailController::spin()
   ros::Rate r(update_rate_);
   while (ros::ok())
   {
-    this->publishTailCommand();
     ros::spinOnce();
+    this->publishTailCommand();
     r.sleep();
   }
 }

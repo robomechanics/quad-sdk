@@ -120,6 +120,8 @@ private:
 
 	/// Boolean for using twist input instead of a global body plan
 	bool use_twist_input_;
+
+	ros::Time entrance_time_;
 };
 
 #endif // TAIL_CONTROLLER_H

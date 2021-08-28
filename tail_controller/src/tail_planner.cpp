@@ -88,7 +88,7 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
   std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
 
   // Assume we know the step height
-  z_des_ = 0.4;
+  z_des_ == std::numeric_limits<double>::max();
 }
 
 void TailPlanner::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr &msg)
@@ -177,26 +177,49 @@ void TailPlanner::computeTailPlan()
 
   if (use_twist_input_)
   {
+    // Clear any old reference plans
     ref_body_plan_.setZero();
 
     // Check that we have recent twist data, otherwise set cmd_vel to zero
-    ros::Duration time_elapsed_since_msg = ros::Time::now() - last_cmd_vel_msg_time_;
-    if (time_elapsed_since_msg.toSec() > last_cmd_vel_msg_time_max_)
-    {
-      std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
-      ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
-    }
+    // ros::Duration time_elapsed_since_msg = ros::Time::now() - last_cmd_vel_msg_time_;
+    // if (time_elapsed_since_msg.toSec() > last_cmd_vel_msg_time_max_) {
+    //   std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
+    //   ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
+    // }
+    std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
+    cmd_vel_.at(1) = 0.5;
 
     // Adaptive body height, assume we know step height
-    if (abs(current_foot_positions_world_(2) - current_state_(2)) >= 0.35 ||
-        abs(current_foot_positions_world_(5) - current_state_(2)) >= 0.35 ||
-        abs(current_foot_positions_world_(8) - current_state_(2)) >= 0.35 ||
-        abs(current_foot_positions_world_(11) - current_state_(2)) >= 0.35)
+    // if (abs(current_foot_positions_world_(2) - current_state_(2)) >= 0.35 ||
+    // abs(current_foot_positions_world_(5) - current_state_(2)) >= 0.35 ||
+    // abs(current_foot_positions_world_(8) - current_state_(2)) >= 0.35 ||
+    // abs(current_foot_positions_world_(11) - current_state_(2)) >= 0.35)
+    // {
+    //   z_des_ = 0.3;
+    // }
+
+    // Adaptive body height, use the lowest contact foot and exponential filter
+    std::vector<double> contact_foot_height;
+    for (size_t i = 0; i < 4; i++)
     {
-      z_des_ = 0.3;
+      if (grf_msg_->contact_states.at(i) && grf_msg_->vectors.at(i).z > 10)
+      {
+        contact_foot_height.push_back(current_foot_positions_world_(3 * i + 2));
+      }
+    }
+    if (!contact_foot_height.empty())
+    {
+      if (z_des_ == std::numeric_limits<double>::max())
+      {
+        z_des_ = *std::min_element(contact_foot_height.begin(), contact_foot_height.end()) + 0.3;
+      }
+      else
+      {
+        z_des_ = 0.75 * (*std::min_element(contact_foot_height.begin(), contact_foot_height.end()) + 0.3) + 0.25 * z_des_;
+      }
     }
 
-    // Integrate to get full body plan
+    // Set initial condition for forward integration
     ref_body_plan_(0, 0) = current_state_[0];
     ref_body_plan_(0, 1) = current_state_[1];
     ref_body_plan_(0, 2) = z_des_;
@@ -210,7 +233,8 @@ void TailPlanner::computeTailPlan()
     ref_body_plan_(0, 10) = cmd_vel_[4];
     ref_body_plan_(0, 11) = cmd_vel_[5];
 
-    for (size_t i = 1; i < N_ + 1; i++)
+    // Integrate to get full body plan (Forward Euler)
+    for (int i = 1; i < N_ + 1; i++)
     {
       std::vector<double> current_cmd_vel = cmd_vel_;
 
@@ -286,24 +310,24 @@ void TailPlanner::computeTailPlan()
       }
     }
 
-      // // Early contact
-      // // if (contact_schedule_.at(0).at(i) && abs(current_foot_positions_world_(2 + i * 3) - current_state_(2)) > 0.325)
-      // if (!contact_schedule_.at(0).at(i) && contact_schedule_.at(5).at(i) && grf_msg_->contact_states.at(i))
-      // {
-      //   sense_miss_contact = true;
-      //   // If so, we assume it will not touch the ground at this gait peroid
-      //   for (size_t j = 0; j < N_; j++)
-      //   {
-      //     if (!contact_schedule_.at(j).at(i))
-      //     {
-      //       adpative_contact_schedule_.at(j).at(i) = true;
-      //     }
-      //     else
-      //     {
-      //       break;
-      //     }
-      //   }
-      // }
+    // // Early contact
+    // // if (contact_schedule_.at(0).at(i) && abs(current_foot_positions_world_(2 + i * 3) - current_state_(2)) > 0.325)
+    // if (!contact_schedule_.at(0).at(i) && contact_schedule_.at(5).at(i) && grf_msg_->contact_states.at(i))
+    // {
+    //   sense_miss_contact = true;
+    //   // If so, we assume it will not touch the ground at this gait peroid
+    //   for (size_t j = 0; j < N_; j++)
+    //   {
+    //     if (!contact_schedule_.at(j).at(i))
+    //     {
+    //       adpative_contact_schedule_.at(j).at(i) = true;
+    //     }
+    //     else
+    //     {
+    //       break;
+    //     }
+    //   }
+    // }
   }
 
   if (!tail_planner_->computeDistributedTailPlan(current_state_,
@@ -320,7 +344,7 @@ void TailPlanner::computeTailPlan()
     return;
 
   spirit_msgs::LegCommandArray tail_plan_msg;
-  ros::Time timestamp = ros::Time::now();
+  ros::Time timestamp = entrance_time_;
   tail_plan_msg.header.stamp = timestamp;
   tail_plan_msg.dt_first_step = dt_first_step;
 
@@ -348,12 +372,12 @@ void TailPlanner::computeTailPlan()
 
 void TailPlanner::spin()
 {
-  double start_time = ros::Time::now().toSec();
   ros::Rate r(update_rate_);
   while (ros::ok())
   {
-    this->computeTailPlan();
     ros::spinOnce();
+    entrance_time_ = ros::Time::now();
+    this->computeTailPlan();
     r.sleep();
   }
 }
