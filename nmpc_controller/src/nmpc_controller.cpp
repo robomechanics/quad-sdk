@@ -139,14 +139,12 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
       foot_positions,
       contact_schedule);
 
-  this->computePlan(initial_state,
+  return this->computePlan(initial_state,
                     ref_traj,
                     foot_positions,
                     contact_schedule,
                     state_traj,
                     control_traj);
-
-  return true;
 }
 
 bool NMPCController::computeCentralizedTailPlan(const Eigen::VectorXd &initial_state,
