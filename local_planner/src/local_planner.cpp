@@ -316,12 +316,12 @@ void LocalPlanner::getStateAndTwistInput() {
   if (robot_state_msg_ == NULL || grf_msg_ == NULL)
     return;
 
-  // Get index
-  current_plan_index_ = spirit_utils::getPlanIndex(initial_timestamp_,dt_);
-
   // Initializing foot positions if not data has arrived
   if (first_plan_) {
     first_plan_ = false;
+    initial_timestamp_ = ros::Time::now();
+    // ros::Duration tmp(0.03*6);
+    // initial_timestamp_ = initial_timestamp_ - tmp;
     past_footholds_msg_.header = robot_state_msg_->header;
     for (int i = 0; i < num_feet_; i++) {
       past_footholds_msg_.feet[i].footholds.clear();
@@ -330,6 +330,9 @@ void LocalPlanner::getStateAndTwistInput() {
       past_footholds_msg_.feet[i].footholds.front().traj_index = 0;
     }
   }
+
+  // Get index
+  current_plan_index_ = spirit_utils::getPlanIndex(initial_timestamp_,dt_);
 
   // Get the current body and foot positions into Eigen
   current_state_ = spirit_utils::bodyStateMsgToEigen(robot_state_msg_->body);
@@ -469,33 +472,33 @@ bool LocalPlanner::computeLocalPlan() {
 
   for (size_t i = 0; i < 4; i++)
   {
-    // Check foot distance
-    Eigen::VectorXd foot_position_vec = foot_positions_body_.block(0, 3 * i, 1, 3).transpose();
-    if (foot_position_vec.squaredNorm() > 0.35)
-    {
-      miss_contact_leg_.at(i) = true;
-    }
+    // // Check foot distance
+    // Eigen::VectorXd foot_position_vec = foot_positions_body_.block(0, 3 * i, 1, 3).transpose();
+    // if (foot_position_vec.squaredNorm() > 0.35)
+    // {
+    //   miss_contact_leg_.at(i) = true;
+    // }
 
-    if (contact_schedule_.at(0).at(i) && grf_msg_->contact_states.at(i) && miss_contact_leg_.at(i))
-    {
-      miss_contact_leg_.at(i) = false;
-    }
+    // if (contact_schedule_.at(0).at(i) && grf_msg_->contact_states.at(i) && miss_contact_leg_.at(i))
+    // {
+    //   miss_contact_leg_.at(i) = false;
+    // }
 
-    if (miss_contact_leg_.at(i))
-    {
-      // We assume it will not touch the ground at this gait peroid
-      for (size_t j = 0; j < N_; j++)
-      {
-        if (contact_schedule_.at(j).at(i))
-        {
-          adpative_contact_schedule_.at(j).at(i) = false;
-        }
-        else
-        {
-          break;
-        }
-      }
-    }
+    // if (miss_contact_leg_.at(i))
+    // {
+    //   // We assume it will not touch the ground at this gait peroid
+    //   for (size_t j = 0; j < N_; j++)
+    //   {
+    //     if (contact_schedule_.at(j).at(i))
+    //     {
+    //       adpative_contact_schedule_.at(j).at(i) = false;
+    //     }
+    //     else
+    //     {
+    //       break;
+    //     }
+    //   }
+    // }
 
     // // Later contact
     // // if (contact_schedule_.at(0).at(i) && abs(current_foot_positions_world_(2 + i * 3) - current_state_(2)) > 0.325)
@@ -619,7 +622,28 @@ void LocalPlanner::publishLocalPlan() {
 
   // Compute the discrete and continuous foot plan messages
   local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_world_,
-    current_plan_index_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);  
+    current_plan_index_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
+
+  // for (size_t i = 0; i < 4; i++)
+  // {
+  //   if (miss_contact_leg_.at(i))
+  //   {
+  //     // We assume it will not touch the ground at this gait peroid
+  //     for (size_t j = 0; j < N_; j++)
+  //     {
+  //       if (contact_schedule_.at(j).at(i))
+  //       {
+  //         grf_plan_(j, i * 3 + 0) = 0;
+  //         grf_plan_(j, i * 3 + 1) = 0;
+  //         grf_plan_(j, i * 3 + 2) = 0;
+  //       }
+  //       else
+  //       {
+  //         break;
+  //       }
+  //     }
+  //   }
+  // }
 
   // Add body, foot, joint, and grf data to the local plan message
   for (int i = 0; i < N_; i++) {

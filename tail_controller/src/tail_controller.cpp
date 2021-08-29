@@ -149,7 +149,7 @@ void TailController::publishTailCommand()
 
     if (abs(msg.motor_commands.at(0).pos_setpoint) > 1.4)
     {
-      if (msg.motor_commands.at(0).pos_setpoint > 1.4)
+      if (msg.motor_commands.at(0).pos_setpoint > 0)
       {
         msg.motor_commands.at(0).vel_setpoint = std::min(msg.motor_commands.at(0).vel_setpoint, 0.);
         msg.motor_commands.at(0).torque_ff = std::min(msg.motor_commands.at(0).torque_ff, 0.);
@@ -164,7 +164,7 @@ void TailController::publishTailCommand()
 
     if (abs(msg.motor_commands.at(1).pos_setpoint) > 1.4)
     {
-      if (msg.motor_commands.at(1).pos_setpoint > 1.4)
+      if (msg.motor_commands.at(1).pos_setpoint > 0)
       {
         msg.motor_commands.at(1).vel_setpoint = std::min(msg.motor_commands.at(1).vel_setpoint, 0.);
         msg.motor_commands.at(1).torque_ff = std::min(msg.motor_commands.at(1).torque_ff, 0.);

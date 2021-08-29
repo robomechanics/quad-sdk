@@ -1682,7 +1682,7 @@ SOFTWARE.
         <limit>
           <lower>-1.79769e+308</lower>
           <upper>1.79769e+308</upper>
-          <effort>15</effort>
+          <effort>10</effort>
           <velocity>30</velocity>
         </limit>
         <dynamics>
@@ -1703,7 +1703,7 @@ SOFTWARE.
         <limit>
           <lower>-1.79769e+308</lower>
           <upper>1.79769e+308</upper>
-          <effort>15</effort>
+          <effort>10</effort>
           <velocity>30</velocity>
         </limit>
         <dynamics>

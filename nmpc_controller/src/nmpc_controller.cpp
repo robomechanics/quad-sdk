@@ -140,11 +140,11 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
       contact_schedule);
 
   return this->computePlan(initial_state,
-                    ref_traj,
-                    foot_positions,
-                    contact_schedule,
-                    state_traj,
-                    control_traj);
+                           ref_traj,
+                           foot_positions,
+                           contact_schedule,
+                           state_traj,
+                           control_traj);
 }
 
 bool NMPCController::computeCentralizedTailPlan(const Eigen::VectorXd &initial_state,
@@ -183,11 +183,11 @@ bool NMPCController::computeCentralizedTailPlan(const Eigen::VectorXd &initial_s
       contact_schedule);
 
   bool success = this->computePlan(initial_state_with_tail,
-                    ref_traj_with_tail,
-                    foot_positions,
-                    contact_schedule,
-                    state_traj_with_tail,
-                    control_traj_with_tail);
+                                   ref_traj_with_tail,
+                                   foot_positions,
+                                   contact_schedule,
+                                   state_traj_with_tail,
+                                   control_traj_with_tail);
 
   state_traj = Eigen::MatrixXd::Zero(N_ + 1, 12);
   control_traj = Eigen::MatrixXd::Zero(N_, 12);
@@ -263,11 +263,11 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
   // std::cout << w0_start.transpose().format(CleanFmt) << std::endl;
 
   bool success = this->computePlan(initial_state_with_tail,
-                    ref_traj_with_tail,
-                    foot_positions,
-                    contact_schedule,
-                    state_traj_with_tail,
-                    control_traj_with_tail);
+                                   ref_traj_with_tail,
+                                   foot_positions,
+                                   contact_schedule,
+                                   state_traj_with_tail,
+                                   control_traj_with_tail);
 
   // Eigen::Map<Eigen::MatrixXd> w0_end(mynlp_->w0_.data(), n_ + m_, N_);
   // std::cout << "w0_end.transpose().format(CleanFmt)" << std::endl;
