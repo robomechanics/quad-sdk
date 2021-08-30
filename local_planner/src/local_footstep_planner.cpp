@@ -261,6 +261,9 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
     spirit_utils::footStateMsgToEigen(most_recent_foothold_msg, foot_position_prev);
     Eigen::Vector3d foot_position_next = getFootData(foot_positions, i_touchdown, j);
 
+    // We assume the swing foot is always at the same height
+    foot_position_prev(2) = foot_position_next(2);
+
     // Loop through the horizon
     for (int i = 0; i < contact_schedule.size(); i++) {
 
@@ -336,6 +339,11 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
       if (i == 1 && isNewLiftoff(contact_schedule, i, j)) {
         past_footholds_msg.feet[j].footholds.push_back(foot_state_msg);
       }
+      else
+      {
+        past_footholds_msg.feet[j].footholds.back().position.z = foot_position_prev(2);
+      }
+      
     }
   }
 }

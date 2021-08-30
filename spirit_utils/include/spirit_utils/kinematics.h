@@ -12,6 +12,7 @@
 #include <rbdl/rbdl.h>
 #include <rbdl/rbdl_utils.h>
 #include <rbdl/addons/urdfreader/urdfreader.h>
+#include <Eigen/SVD>
 
 namespace spirit_utils {
  
@@ -218,6 +219,8 @@ class SpiritKinematics {
    * @param[out] tau Joint torques
    */
   void compInvDyn(const Eigen::VectorXd &state_pos,const Eigen::VectorXd &state_vel,const Eigen::VectorXd &foot_acc,const Eigen::VectorXd &grf,Eigen::VectorXd &tau) const;
+
+  Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian) const;
 
   private:
 

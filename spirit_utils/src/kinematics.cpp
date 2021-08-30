@@ -554,7 +554,7 @@ void SpiritKinematics::compInvDyn(const Eigen::VectorXd &state_pos,
 
   // Compute the toe acceleration difference
   Eigen::VectorXd foot_acc_delta = foot_acc - foot_acc_grf;
-  Eigen::VectorXd q_ddot_delta = jacobian.block(0, 6, 12, 12).colPivHouseholderQr().solve(foot_acc_delta);
+  Eigen::VectorXd q_ddot_delta = sdlsInv(jacobian.block(0, 6, 12, 12)) * foot_acc_delta;
 
   // Perform inverse dynamics
   Eigen::VectorXd tau_rbdl(12);
@@ -571,4 +571,32 @@ void SpiritKinematics::compInvDyn(const Eigen::VectorXd &state_pos,
   {
     tau.setZero();
   }
+}
+
+Eigen::MatrixXd SpiritKinematics::sdlsInv(const Eigen::MatrixXd &jacobian) const
+{
+  Eigen::JacobiSVD<Eigen::MatrixXd> svd(jacobian, Eigen::ComputeThinU | Eigen::ComputeThinV);
+
+  Eigen::VectorXd sig = svd.singularValues();
+  Eigen::VectorXd sig_inv = sig;
+
+  for (size_t i = 0; i < sig.size(); i++)
+  {
+    if (sig(i) == 0)
+    {
+      sig_inv(i) = 0;
+    }
+    else if (sig(i) < 1e-2)
+    {
+      sig_inv(i) = 100;
+    }
+    else
+    {
+      sig_inv(i) = 1 / sig(i);
+    }
+  }
+
+  Eigen::MatrixXd jacobian_inv = svd.matrixV() * sig_inv.asDiagonal() * svd.matrixU().transpose();
+
+  return jacobian_inv;
 }
