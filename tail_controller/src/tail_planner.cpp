@@ -288,6 +288,7 @@ void TailPlanner::computeTailPlan()
   }
 
   // Contact sensing
+  std::vector<bool> miss_contact;
   adpative_contact_schedule_ = contact_schedule_;
 
   for (size_t i = 0; i < 4; i++)
@@ -296,6 +297,7 @@ void TailPlanner::computeTailPlan()
     // if (contact_schedule_.at(0).at(i) && abs(current_foot_positions_world_(2 + i * 3) - current_state_(2)) > 0.325)
     if (contact_schedule_.at(0).at(i) && !grf_msg_->contact_states.at(i))
     {
+      miss_contact.push_back(true);
       // If not, we assume it will not touch the ground at this gait peroid
       for (size_t j = 0; j < N_; j++)
       {
@@ -309,6 +311,11 @@ void TailPlanner::computeTailPlan()
         }
       }
     }
+    else
+    {
+      miss_contact.push_back(false);
+    }
+    
 
     // // Early contact
     // // if (contact_schedule_.at(0).at(i) && abs(current_foot_positions_world_(2 + i * 3) - current_state_(2)) > 0.325)
@@ -347,6 +354,11 @@ void TailPlanner::computeTailPlan()
   ros::Time timestamp = entrance_time_;
   tail_plan_msg.header.stamp = timestamp;
   tail_plan_msg.dt_first_step = dt_first_step;
+
+  for (size_t i = 0; i < 4; i++)
+  {
+    tail_plan_msg.miss_contact.push_back(miss_contact.at(i));
+  }
 
   for (size_t i = 0; i < N_; i++)
   {
