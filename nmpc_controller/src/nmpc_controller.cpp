@@ -84,7 +84,7 @@ NMPCController::NMPCController(int type)
   app_->Options()->SetStringValue("bound_mult_init_method", "mu-based");
   // app_->Options()->SetStringValue("adaptive_mu_globalization", "never-monotone-mode");
   // app_->Options()->SetStringValue("accept_every_trial_step", "yes");
-  // app_->Options()->SetStringValue("nlp_scaling_method", "none");
+  app_->Options()->SetStringValue("nlp_scaling_method", "none");
 
   app_->Options()->SetStringValue("warm_start_init_point", "yes");
 
@@ -310,12 +310,12 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     x.block(0, i, n_, 1) = mynlp_->w0_.block(i * (n_ + m_) + m_, 0, n_, 1);
   }
 
-  state_traj = Eigen::MatrixXd::Zero(N_ + 1, n_);
-  state_traj.topRows(1) = initial_state.transpose();
-  control_traj = Eigen::MatrixXd::Zero(N_, m_);
-
   if (status == Solve_Succeeded)
   {
+    state_traj = Eigen::MatrixXd::Zero(N_ + 1, n_);
+    state_traj.topRows(1) = initial_state.transpose();
+    control_traj = Eigen::MatrixXd::Zero(N_, m_);
+
     last_state_traj_ = x.transpose();
     last_control_traj_ = u.transpose();
 
@@ -348,8 +348,8 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     mynlp_->z_U0_.setZero();
     mynlp_->lambda0_.setZero();
 
-    state_traj.bottomRows(N_) = last_state_traj_;
-    control_traj = last_control_traj_;
+    // state_traj.bottomRows(N_) = last_state_traj_;
+    // control_traj = last_control_traj_;
 
     ROS_INFO_STREAM(param_ns_ << " solving fail");
     return false;

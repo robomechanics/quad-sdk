@@ -170,10 +170,11 @@ void LocalPlanner::initLocalBodyPlanner() {
 void LocalPlanner::initLocalFootstepPlanner() {
 
   // Load parameters from server
-  double grf_weight, ground_clearance, standing_error_threshold, period_d;
+  double grf_weight, min_ground_clearance, max_ground_clearance, standing_error_threshold, period_d;
   int period;
   spirit_utils::loadROSParam(nh_, "local_footstep_planner/grf_weight", grf_weight);
-  spirit_utils::loadROSParam(nh_, "local_footstep_planner/ground_clearance", ground_clearance);
+  spirit_utils::loadROSParam(nh_, "local_footstep_planner/min_ground_clearance", min_ground_clearance);
+  spirit_utils::loadROSParam(nh_, "local_footstep_planner/max_ground_clearance", max_ground_clearance);
   spirit_utils::loadROSParam(nh_, "local_footstep_planner/standing_error_threshold",
     standing_error_threshold);
   spirit_utils::loadROSParam(nh_, "local_footstep_planner/period", period_d);
@@ -189,7 +190,7 @@ void LocalPlanner::initLocalFootstepPlanner() {
   // Create footstep class, make sure we use the same dt as the local planner
   local_footstep_planner_ = std::make_shared<LocalFootstepPlanner>();
   local_footstep_planner_->setTemporalParams(dt_, period, N_);
-  local_footstep_planner_->setSpatialParams(ground_clearance, standing_error_threshold,
+  local_footstep_planner_->setSpatialParams(min_ground_clearance, max_ground_clearance, standing_error_threshold,
     grf_weight, kinematics_);
 
   past_footholds_msg_.feet.resize(num_feet_);
@@ -472,33 +473,33 @@ bool LocalPlanner::computeLocalPlan() {
 
   for (size_t i = 0; i < 4; i++)
   {
-    // // Check foot distance
-    // Eigen::VectorXd foot_position_vec = foot_positions_body_.block(0, 3 * i, 1, 3).transpose();
-    // if (foot_position_vec.squaredNorm() > 0.35)
-    // {
-    //   miss_contact_leg_.at(i) = true;
-    // }
+    // Check foot distance
+    Eigen::VectorXd foot_position_vec = foot_positions_body_.block(0, 3 * i, 1, 3).transpose();
+    if (foot_position_vec.squaredNorm() > 0.35)
+    {
+      miss_contact_leg_.at(i) = true;
+    }
 
-    // if (contact_schedule_.at(0).at(i) && grf_msg_->contact_states.at(i) && miss_contact_leg_.at(i))
-    // {
-    //   miss_contact_leg_.at(i) = false;
-    // }
+    if (contact_schedule_.at(0).at(i) && grf_msg_->contact_states.at(i) && miss_contact_leg_.at(i))
+    {
+      miss_contact_leg_.at(i) = false;
+    }
 
-    // if (miss_contact_leg_.at(i))
-    // {
-    //   // We assume it will not touch the ground at this gait peroid
-    //   for (size_t j = 0; j < N_; j++)
-    //   {
-    //     if (contact_schedule_.at(j).at(i))
-    //     {
-    //       adpative_contact_schedule_.at(j).at(i) = false;
-    //     }
-    //     else
-    //     {
-    //       break;
-    //     }
-    //   }
-    // }
+    if (miss_contact_leg_.at(i))
+    {
+      // We assume it will not touch the ground at this gait peroid
+      for (size_t j = 0; j < N_; j++)
+      {
+        if (contact_schedule_.at(j).at(i))
+        {
+          adpative_contact_schedule_.at(j).at(i) = false;
+        }
+        else
+        {
+          break;
+        }
+      }
+    }
 
     // // Later contact
     // // if (contact_schedule_.at(0).at(i) && abs(current_foot_positions_world_(2 + i * 3) - current_state_(2)) > 0.325)

@@ -34,10 +34,11 @@ void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_
 }
 
 
-void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double grf_weight, 
+void LocalFootstepPlanner::setSpatialParams(double min_ground_clearance, double max_ground_clearance, double grf_weight, 
   double standing_error_threshold, std::shared_ptr<spirit_utils::SpiritKinematics> kinematics) {
 
-  ground_clearance_ = ground_clearance;
+  min_ground_clearance_ = min_ground_clearance;
+  max_ground_clearance_ = max_ground_clearance;
   standing_error_threshold_ = standing_error_threshold;
   grf_weight_ = grf_weight;
   kinematics_ = kinematics;
@@ -115,7 +116,8 @@ void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_pos
     basis_5*foot_position_next.array())/pow(swing_duration*dt_, 2);
 
   // Update z to clear both footholds by the specified height
-  double swing_apex = ground_clearance_ + std::max(foot_position_prev.z(), foot_position_next.z());
+  double swing_apex = std::max(std::min(foot_position_prev.z(), foot_position_next.z()) + max_ground_clearance_,
+                               std::max(foot_position_prev.z(), foot_position_next.z()) + min_ground_clearance_);
   double phi_z = 2*fmod(phi, 0.5);
   phi3 = phi_z*phi_z*phi_z;
   phi2 = phi_z*phi_z;
@@ -262,7 +264,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
     Eigen::Vector3d foot_position_next = getFootData(foot_positions, i_touchdown, j);
 
     // We assume the swing foot is always at the same height
-    foot_position_prev(2) = foot_position_next(2);
+    // foot_position_prev(2) = foot_position_next(2);
 
     // Loop through the horizon
     for (int i = 0; i < contact_schedule.size(); i++) {
@@ -339,10 +341,10 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
       if (i == 1 && isNewLiftoff(contact_schedule, i, j)) {
         past_footholds_msg.feet[j].footholds.push_back(foot_state_msg);
       }
-      else
-      {
-        past_footholds_msg.feet[j].footholds.back().position.z = foot_position_prev(2);
-      }
+      // else
+      // {
+      //   past_footholds_msg.feet[j].footholds.back().position.z = foot_position_prev(2);
+      // }
       
     }
   }

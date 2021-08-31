@@ -51,7 +51,7 @@ class LocalFootstepPlanner {
      * @param[in] grf_weight Weight on GRF projection (0 to 1)
      * @param[in] kinematics Kinematics class for computations
      */
-    void setSpatialParams(double ground_clearance, double grf_weight,double standing_error_threshold,
+    void setSpatialParams(double min_ground_clearance, double max_ground_clearance, double grf_weight,double standing_error_threshold,
       std::shared_ptr<spirit_utils::SpiritKinematics> kinematics);
 
     /**
@@ -254,7 +254,8 @@ class LocalFootstepPlanner {
     std::vector<std::vector<bool>> nominal_contact_schedule_;
 
     /// Ground clearance
-    double ground_clearance_;
+    double min_ground_clearance_;
+    double max_ground_clearance_;
 
     /// Weighting on the projection of the grf
     double grf_weight_;

@@ -586,9 +586,9 @@ Eigen::MatrixXd SpiritKinematics::sdlsInv(const Eigen::MatrixXd &jacobian) const
     {
       sig_inv(i) = 0;
     }
-    else if (sig(i) < 1e-2)
+    else if (sig(i) < 1e-1)
     {
-      sig_inv(i) = 100;
+      sig_inv(i) = 10;
     }
     else
     {
