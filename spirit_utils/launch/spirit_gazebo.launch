@@ -34,6 +34,9 @@ SOFTWARE.
   <arg name="mblink"          default="false"/>
   <arg name="world"           default="flat"/>
   <arg name="tail"            default="false"/>
+  <arg name="tail_type"       default="0"/>
+
+  <param name="tail_controller/tail_type" value="$(arg tail_type)"/>
 
   <!-- Load the parameters and the sdf description -->
   <include file="$(find spirit_utils)/launch/load_params.launch" />

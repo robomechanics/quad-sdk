@@ -82,6 +82,8 @@ NMPCController::NMPCController(int type)
   // app_->Options()->SetStringValue("mu_oracle", "probing");
   app_->Options()->SetStringValue("mehrotra_algorithm", "yes");
   app_->Options()->SetStringValue("bound_mult_init_method", "mu-based");
+  app_->Options()->SetStringValue("fast_step_computation", "yes");
+  // app_->Options()->SetStringValue("expect_infeasible_problem", "yes");
   // app_->Options()->SetStringValue("adaptive_mu_globalization", "never-monotone-mode");
   // app_->Options()->SetStringValue("accept_every_trial_step", "yes");
   app_->Options()->SetStringValue("nlp_scaling_method", "none");
@@ -89,6 +91,7 @@ NMPCController::NMPCController(int type)
   app_->Options()->SetStringValue("warm_start_init_point", "yes");
 
   app_->Options()->SetNumericValue("tol", 1e-3);
+  // app_->Options()->SetNumericValue("bound_relax_factor", 1e-3);
   app_->Options()->SetNumericValue("max_wall_time", 0.9 * dt_);
   app_->Options()->SetNumericValue("max_cpu_time", 0.9 * dt_);
 

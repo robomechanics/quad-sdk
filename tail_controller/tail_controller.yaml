@@ -2,7 +2,7 @@ tail_controller:
   odrive_update_rate: 400
   controller_update_rate: 200
   planner_update_rate: 33
-  tail_type: 2 # 0: none, 1: centralized, 2: distributed, 3: decentralized
+  # tail_type: 2 # 0: none, 1: centralized, 2: distributed, 3: decentralized
   roll_kp: 25
   roll_kd: 5
   pitch_kp: 25

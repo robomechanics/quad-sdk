@@ -123,58 +123,75 @@ void TailController::publishTailCommand()
     //   }
     // }
 
-    msg.motor_commands.at(0).pos_setpoint = math_utils::lerp(last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[0].pos_setpoint,
-                                                             last_tail_plan_msg_->leg_commands[current_plan_index + 1].motor_commands[0].pos_setpoint,
-                                                             t_interp);
-    msg.motor_commands.at(0).vel_setpoint = math_utils::lerp(last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[0].vel_setpoint,
-                                                             last_tail_plan_msg_->leg_commands[current_plan_index + 1].motor_commands[0].vel_setpoint,
-                                                             t_interp);
-    msg.motor_commands.at(0).torque_ff = last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[0].torque_ff;
-    msg.motor_commands.at(0).kp = roll_kp_;
-    msg.motor_commands.at(0).kd = roll_kd_;
-
-    msg.motor_commands.at(1).pos_setpoint = math_utils::lerp(last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[1].pos_setpoint,
-                                                             last_tail_plan_msg_->leg_commands[current_plan_index + 1].motor_commands[1].pos_setpoint,
-                                                             t_interp);
-    msg.motor_commands.at(1).vel_setpoint = math_utils::lerp(last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[1].vel_setpoint,
-                                                             last_tail_plan_msg_->leg_commands[current_plan_index + 1].motor_commands[1].vel_setpoint,
-                                                             t_interp);
-    msg.motor_commands.at(1).torque_ff = last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[1].torque_ff;
-    msg.motor_commands.at(1).kp = pitch_kp_;
-    msg.motor_commands.at(1).kd = pitch_kd_;
-
-    // ROS_INFO_STREAM_THROTTLE(0.1, "current_plan_index: " << current_plan_index << "pos: " << msg.motor_commands.at(0).pos_setpoint << ", " << msg.motor_commands.at(1).pos_setpoint);
-
-    tail_current_state_ = spirit_utils::odomMsgToEigenForTail(*robot_state_msg_);
-
-    if (abs(msg.motor_commands.at(0).pos_setpoint) > 1.4)
+    if (current_plan_index + 1 > last_tail_plan_msg_->leg_commands.size() - 1)
     {
-      if (msg.motor_commands.at(0).pos_setpoint > 0)
-      {
-        msg.motor_commands.at(0).vel_setpoint = std::min(msg.motor_commands.at(0).vel_setpoint, 0.);
-        msg.motor_commands.at(0).torque_ff = std::min(msg.motor_commands.at(0).torque_ff, 0.);
-      }
-      else
-      {
-        msg.motor_commands.at(0).vel_setpoint = std::max(msg.motor_commands.at(0).vel_setpoint, 0.);
-        msg.motor_commands.at(0).torque_ff = std::max(msg.motor_commands.at(0).torque_ff, 0.);
-      }
-      msg.motor_commands.at(0).pos_setpoint = std::min(std::max(-1.4, msg.motor_commands.at(0).pos_setpoint), 1.4);
+      msg.motor_commands.at(0).pos_setpoint = 0;
+      msg.motor_commands.at(0).vel_setpoint = 0;
+      msg.motor_commands.at(0).torque_ff = 0;
+      msg.motor_commands.at(0).kp = roll_kp_;
+      msg.motor_commands.at(0).kd = roll_kd_;
+
+      msg.motor_commands.at(1).pos_setpoint = 0;
+      msg.motor_commands.at(1).vel_setpoint = 0;
+      msg.motor_commands.at(1).torque_ff = 0;
+      msg.motor_commands.at(1).kp = pitch_kp_;
+      msg.motor_commands.at(1).kd = pitch_kd_;
     }
-
-    if (abs(msg.motor_commands.at(1).pos_setpoint) > 1.4)
+    else
     {
-      if (msg.motor_commands.at(1).pos_setpoint > 0)
+      msg.motor_commands.at(0).pos_setpoint = math_utils::lerp(last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[0].pos_setpoint,
+                                                               last_tail_plan_msg_->leg_commands[current_plan_index + 1].motor_commands[0].pos_setpoint,
+                                                               t_interp);
+      msg.motor_commands.at(0).vel_setpoint = math_utils::lerp(last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[0].vel_setpoint,
+                                                               last_tail_plan_msg_->leg_commands[current_plan_index + 1].motor_commands[0].vel_setpoint,
+                                                               t_interp);
+      msg.motor_commands.at(0).torque_ff = last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[0].torque_ff;
+      msg.motor_commands.at(0).kp = roll_kp_;
+      msg.motor_commands.at(0).kd = roll_kd_;
+
+      msg.motor_commands.at(1).pos_setpoint = math_utils::lerp(last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[1].pos_setpoint,
+                                                               last_tail_plan_msg_->leg_commands[current_plan_index + 1].motor_commands[1].pos_setpoint,
+                                                               t_interp);
+      msg.motor_commands.at(1).vel_setpoint = math_utils::lerp(last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[1].vel_setpoint,
+                                                               last_tail_plan_msg_->leg_commands[current_plan_index + 1].motor_commands[1].vel_setpoint,
+                                                               t_interp);
+      msg.motor_commands.at(1).torque_ff = last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[1].torque_ff;
+      msg.motor_commands.at(1).kp = pitch_kp_;
+      msg.motor_commands.at(1).kd = pitch_kd_;
+
+      // ROS_INFO_STREAM_THROTTLE(0.1, "current_plan_index: " << current_plan_index << "pos: " << msg.motor_commands.at(0).pos_setpoint << ", " << msg.motor_commands.at(1).pos_setpoint);
+
+      tail_current_state_ = spirit_utils::odomMsgToEigenForTail(*robot_state_msg_);
+
+      if (abs(msg.motor_commands.at(0).pos_setpoint) > 1.5)
       {
-        msg.motor_commands.at(1).vel_setpoint = std::min(msg.motor_commands.at(1).vel_setpoint, 0.);
-        msg.motor_commands.at(1).torque_ff = std::min(msg.motor_commands.at(1).torque_ff, 0.);
+        if (msg.motor_commands.at(0).pos_setpoint > 0)
+        {
+          msg.motor_commands.at(0).vel_setpoint = std::min(msg.motor_commands.at(0).vel_setpoint, 0.);
+          msg.motor_commands.at(0).torque_ff = std::min(msg.motor_commands.at(0).torque_ff, 0.);
+        }
+        else
+        {
+          msg.motor_commands.at(0).vel_setpoint = std::max(msg.motor_commands.at(0).vel_setpoint, 0.);
+          msg.motor_commands.at(0).torque_ff = std::max(msg.motor_commands.at(0).torque_ff, 0.);
+        }
+        msg.motor_commands.at(0).pos_setpoint = std::min(std::max(-1.5, msg.motor_commands.at(0).pos_setpoint), 1.5);
       }
-      else
+
+      if (abs(msg.motor_commands.at(1).pos_setpoint) > 1.5)
       {
-        msg.motor_commands.at(1).vel_setpoint = std::max(msg.motor_commands.at(1).vel_setpoint, 0.);
-        msg.motor_commands.at(1).torque_ff = std::max(msg.motor_commands.at(1).torque_ff, 0.);
+        if (msg.motor_commands.at(1).pos_setpoint > 0)
+        {
+          msg.motor_commands.at(1).vel_setpoint = std::min(msg.motor_commands.at(1).vel_setpoint, 0.);
+          msg.motor_commands.at(1).torque_ff = std::min(msg.motor_commands.at(1).torque_ff, 0.);
+        }
+        else
+        {
+          msg.motor_commands.at(1).vel_setpoint = std::max(msg.motor_commands.at(1).vel_setpoint, 0.);
+          msg.motor_commands.at(1).torque_ff = std::max(msg.motor_commands.at(1).torque_ff, 0.);
+        }
+        msg.motor_commands.at(1).pos_setpoint = std::min(std::max(-1.5, msg.motor_commands.at(1).pos_setpoint), 1.5);
       }
-      msg.motor_commands.at(1).pos_setpoint = std::min(std::max(-1.4, msg.motor_commands.at(1).pos_setpoint), 1.4);
     }
   }
 
