@@ -271,6 +271,8 @@ private:
   std::vector<bool> miss_contact_leg_;
 
   ros::Time entrance_time_;
+
+  bool first_solve_success;
 };
 
 

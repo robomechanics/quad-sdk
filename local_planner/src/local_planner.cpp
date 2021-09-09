@@ -88,6 +88,8 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   z_des_ = std::numeric_limits<double>::max();
 
   miss_contact_leg_.resize(4);
+
+  first_solve_success = false;
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -320,9 +322,6 @@ void LocalPlanner::getStateAndTwistInput() {
   // Initializing foot positions if not data has arrived
   if (first_plan_) {
     first_plan_ = false;
-    initial_timestamp_ = ros::Time::now();
-    // ros::Duration tmp(0.03*6);
-    // initial_timestamp_ = initial_timestamp_ - tmp;
     past_footholds_msg_.header = robot_state_msg_->header;
     for (int i = 0; i < num_feet_; i++) {
       past_footholds_msg_.feet[i].footholds.clear();
@@ -332,6 +331,13 @@ void LocalPlanner::getStateAndTwistInput() {
     }
   }
 
+  if (!first_solve_success)
+  {
+    initial_timestamp_ = ros::Time::now();
+    // ros::Duration tmp(0.03*6);
+    // initial_timestamp_ = initial_timestamp_ - tmp;
+  }
+  
   // Get index
   current_plan_index_ = spirit_utils::getPlanIndex(initial_timestamp_,dt_);
 
@@ -567,6 +573,8 @@ bool LocalPlanner::computeLocalPlan() {
                                                    adpative_contact_schedule_, body_plan_, grf_plan_))
         return false;
     }
+
+  first_solve_success = true;
 
   // Record computation time and update exponential filter
   compute_time_ = 1000.0*timer.reportSilent();

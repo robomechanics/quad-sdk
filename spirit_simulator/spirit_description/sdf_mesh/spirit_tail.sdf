@@ -1683,7 +1683,7 @@ SOFTWARE.
           <lower>-1.79769e+308</lower>
           <upper>1.79769e+308</upper>
           <effort>10</effort>
-          <velocity>30</velocity>
+          <velocity>1.79769e+308</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -1704,7 +1704,7 @@ SOFTWARE.
           <lower>-1.79769e+308</lower>
           <upper>1.79769e+308</upper>
           <effort>10</effort>
-          <velocity>30</velocity>
+          <velocity>1.79769e+308</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>

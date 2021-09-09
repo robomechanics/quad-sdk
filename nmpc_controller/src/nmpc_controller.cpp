@@ -35,6 +35,7 @@ NMPCController::NMPCController(int type)
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_dimension", n_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_dimension", m_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/step_length", dt_);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/terminal_scale_factor", terminal_scale_factor_);
 
   // Load MPC cost weighting and bounds
   std::vector<double> state_weights,
@@ -65,6 +66,7 @@ NMPCController::NMPCController(int type)
       n_,
       m_,
       dt_,
+      terminal_scale_factor_,
       Q,
       R,
       x_min,
@@ -290,6 +292,11 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
   tail_state_traj.rightCols(2) = state_traj_with_tail.block(0, 14, N_ + 1, 2);
 
   tail_control_traj = control_traj_with_tail.leftCols(2);
+
+  // std::cout << "tail_state_traj.format(CleanFmt)" << std::endl;
+  // std::cout << tail_state_traj.format(CleanFmt) << std::endl;
+  // std::cout << "tail_control_traj.format(CleanFmt)" << std::endl;
+  // std::cout << tail_control_traj.format(CleanFmt) << std::endl;
 
   return success;
 }

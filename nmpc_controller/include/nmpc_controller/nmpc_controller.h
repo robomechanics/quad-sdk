@@ -108,6 +108,8 @@ private:
 
   double dt_;
 
+  double terminal_scale_factor_;
+
   int type_;
 
   std::string param_ns_;

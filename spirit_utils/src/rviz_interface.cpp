@@ -119,7 +119,7 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   foot_3_plan_continuous_viz_pub_ = nh_.advertise<nav_msgs::Path>
     (foot_3_plan_continuous_viz_topic,1);
 
-  nh.param<int>("/tail_controller/tail_type", tail_type_, 0);
+  nh.param<int>("/tail_controller/tail_type", tail_type_, 2);
 }
 
 void RVizInterface::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg,

@@ -294,8 +294,8 @@ void TailPlanner::computeTailPlan()
   for (size_t i = 0; i < 4; i++)
   {
     // Later contact
-    // if (contact_schedule_.at(0).at(i) && abs(current_foot_positions_world_(2 + i * 3) - current_state_(2)) > 0.325)
-    if (contact_schedule_.at(0).at(i) && !grf_msg_->contact_states.at(i))
+    Eigen::VectorXd foot_position_vec = current_foot_positions_world_.segment(i * 3, 3) - current_state_.segment(0, 3);
+    if (contact_schedule_.at(0).at(i) && (!grf_msg_->contact_states.at(i) || foot_position_vec.squaredNorm() > 0.35))
     {
       miss_contact.push_back(true);
       // If not, we assume it will not touch the ground at this gait peroid
@@ -315,7 +315,6 @@ void TailPlanner::computeTailPlan()
     {
       miss_contact.push_back(false);
     }
-    
 
     // // Early contact
     // // if (contact_schedule_.at(0).at(i) && abs(current_foot_positions_world_(2 + i * 3) - current_state_(2)) > 0.325)

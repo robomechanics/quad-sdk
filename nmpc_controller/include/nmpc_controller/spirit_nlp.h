@@ -110,6 +110,7 @@ public:
         int n,
         int m,
         double dt,
+        double terminal_scale_factor,
         Eigen::MatrixXd Q,
         Eigen::MatrixXd R,
         Eigen::MatrixXd x_min,

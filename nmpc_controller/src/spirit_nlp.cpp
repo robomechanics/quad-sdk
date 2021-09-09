@@ -16,6 +16,7 @@ spiritNLP::spiritNLP(
     int n,
     int m,
     double dt,
+    double terminal_scale_factor,
     Eigen::MatrixXd Q,
     Eigen::MatrixXd R,
     Eigen::MatrixXd x_min,
@@ -107,7 +108,7 @@ spiritNLP::spiritNLP(
    dt_ = dt;
    dt_first_step_ = dt;
 
-   terminal_scale_factor_ = 10.0;
+   terminal_scale_factor_ = terminal_scale_factor;
 
    x_min_ = x_min;
    x_max_ = x_max;

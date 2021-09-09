@@ -73,6 +73,10 @@ private:
 	int tail_type_;
 
 	Eigen::VectorXd tail_current_state_;
+
+	std::string param_ns_;
+
+	Eigen::VectorXd current_state_;
 };
 
 #endif // TAIL_CONTROLLER_H

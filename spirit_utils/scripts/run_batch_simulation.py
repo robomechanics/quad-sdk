@@ -1,7 +1,9 @@
 import roslaunch
 import rospy
 
-for i in range(100):
+num = 100
+
+for i in range(num):
 
     uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
     roslaunch.configure_logging(uuid)
@@ -34,12 +36,12 @@ for i in range(100):
     launch_2.shutdown()
     launch_3.shutdown()
 
-for i in range(100):
+for i in range(num):
 
     uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
     roslaunch.configure_logging(uuid)
 
-    launch_args = ['spirit_utils', 'spirit_gazebo.launch', 'paused:=false', 'world:=step_17.5cm', 'tail:=true', 'tail_type:=2']
+    launch_args = ['spirit_utils', 'spirit_gazebo.launch', 'paused:=false', 'world:=step_20cm', 'tail:=true', 'tail_type:=3']
     launch_pars = [(roslaunch.rlutil.resolve_launch_arguments(launch_args)[0], launch_args[2:])]
     launch = roslaunch.parent.ROSLaunchParent(uuid, launch_pars)
     launch.start()
@@ -67,12 +69,12 @@ for i in range(100):
     launch_2.shutdown()
     launch_3.shutdown()
 
-for i in range(100):
+for i in range(num):
 
     uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
     roslaunch.configure_logging(uuid)
 
-    launch_args = ['spirit_utils', 'spirit_gazebo.launch', 'paused:=false', 'world:=step_17.5cm', 'tail_type:=0']
+    launch_args = ['spirit_utils', 'spirit_gazebo.launch', 'paused:=false', 'world:=step_20cm', 'tail_type:=0']
     launch_pars = [(roslaunch.rlutil.resolve_launch_arguments(launch_args)[0], launch_args[2:])]
     launch = roslaunch.parent.ROSLaunchParent(uuid, launch_pars)
     launch.start()
