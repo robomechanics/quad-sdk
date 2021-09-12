@@ -31,7 +31,15 @@ void GraphClass::addEdge(int idx1, int idx2)
 {
     edges[idx2].push_back(idx1);
     successors[idx1].push_back(idx2);
-    g_values[idx2] = g_values[idx1] + poseDistance(vertices[idx1], vertices[idx2]);
+    g_values[idx2] = g_values[idx1] + computeEdgeCost(idx1, idx2);
+    return;
+}
+
+void GraphClass::addEdge(int idx1, int idx2, double edge_cost)
+{
+    edges[idx2].push_back(idx1);
+    successors[idx1].push_back(idx2);
+    g_values[idx2] = g_values[idx1] + edge_cost;
     return;
 }
 
@@ -130,13 +138,21 @@ double GraphClass::getGValue(int idx)
     return g_values[idx];
 }
 
+double GraphClass::computeEdgeCost(int idx1, int idx2) {
+    double cost = poseDistance(getVertex(idx1), getVertex(idx2));
+    // Action a = getAction(idx2);
+    // double cost = a[6] + a[7];
+
+    return cost;
+}
+
 void GraphClass::updateGValue(int idx, double val)
 {
-    g_values[idx] = val;
-    for (int successor : getSuccessors(idx))
-    {
-        updateGValue(successor, g_values[idx] + poseDistance(getVertex(idx), getVertex(successor)));
-    }
+    // g_values[idx] = val;
+    // for (int successor : getSuccessors(idx))
+    // {
+    //     updateGValue(successor, g_values[idx] + computeEdgeCost(idx, successor));
+    // }
 }
 
 void GraphClass::init(State q)

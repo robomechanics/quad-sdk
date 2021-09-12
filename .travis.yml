@@ -3,13 +3,14 @@ sudo: required
 notifications:
   email:
     recipients:
-    - nflowers@andrew.cmu.edu
+    - robomechanicslab@gmail.com
+    - jnorby@andrew.cmu.edu
     on_success: always
     on_failure: always
 
 branches:
   only:
-  - master
+  - main
 
 addons:
   apt:
@@ -33,7 +34,7 @@ matrix:
 env:
   global:
   - CI_SOURCE_PATH=$(pwd)
-  - ROS_PARALLEL_JOBS='-j8 -l6'
+  - ROS_PARALLEL_JOBS='-j4 -l6'
   - secure: uV0Csk4OKk0bpv6BYJyi3wjlvO0KPgmeATQaL6XWlTzzkh58M24R7jRBVobDfXkrrofsC5rIAKAx+BJcNB1BeLEZ4FWceG5/uFF9FU81ugLZT1ZdkDvnL6pFHhGHYVg8ZAF8XQxHCxaCK99p8XkKqE+/DJSn1x//l7CtKJPFvqI+lvXR6xn4LubyTp0yrGodX2wi6zyk2Mvv0hLERvupWYuo9JC7a/M1mt53AL7VcmFiLpwV59XGOEaj6BZEAA53DhaVdvDp+boB5H4tvH7ENKEolqRdQwnlnDLqsi9oNuEz1WMou8/AX+QBl8i2yRgemHqdnMEUef/YzoUSCemquRCzLlSqk9WvOG77KxfNMcKkYCAKFIDJFaUsGutDWBb2tUELixIOiti4kUFK9z+SMJEnc/NEc27LIGlxpexDG55HFgjVBO3RyFHPZRrjh9AwH0bLKyi717QaBWfyCedk125Qx4CTfizAf596puYbal+7qhCgOSEY3rNFHEjQ7Y9jCAnjoVIOvI7rmxNJUWnZN4b/9j3CNEDBBzvqw60AY06+UAsVwXQYY0gef/E8tKugAtoe536sFM/lBX1A9B0un/IRcHTEgbalSQgYR0llLnPNkLwFXoxwWbM4FhkDWM8bEk+G/IM8VIiLsAivCe0Fzr/V7pcPgg3BEGFOKSq5ABY=
 
 before_install:
@@ -53,6 +54,7 @@ install:
 - mkdir -p ~/catkin_ws/src
 - ln -s $CI_SOURCE_PATH ~/catkin_ws/src/
 - cd $TRAVIS_BUILD_DIR
+- git submodule update --init
 - chmod +x setup.sh
 - ./setup.sh
 - source /opt/ros/$ROS_DISTRO/setup.bash
@@ -66,6 +68,8 @@ before_script:
 
 script:
 - cd ~/catkin_ws
+- roslaunch spirit_utils load_params.launch
+- sleep 2
 - catkin_make run_tests && catkin_test_results
 
 before_deploy:
@@ -79,4 +83,4 @@ deploy:
   keep_history: true
   local_dir: docs/
   on:
-    branch: master
+    branch: main

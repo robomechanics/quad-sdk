@@ -5,6 +5,9 @@
       <real_time_update_rate>10000</real_time_update_rate> <!-- 10000 -->
       <real_time_factor>1</real_time_factor>
     </physics>
+    <scene>
+      <shadows>false</shadows>
+    </scene>
     <gravity>0 0 -9.81</gravity>
     <include>
       <uri>model://custom_sun</uri>

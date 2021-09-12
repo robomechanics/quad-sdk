@@ -1,5 +1,7 @@
 docs/
 *.pyc
 *.vscode
-external/libInterpolate/build/
+**/build/
 *.vscode
+external/ipopt/*
+!external/ipopt/.gitkeep

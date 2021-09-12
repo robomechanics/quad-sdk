@@ -26,42 +26,12 @@ spirit:
   # Publish all joint states -----------------------------------
   joint_state_controller:
     type: joint_state_controller/JointStateController
-    publish_rate: 2000  
+    publish_rate: 500  
 
-  # Position Controllers ---------------------------------------
-  joint0_effort_controller:
-    type: effort_controllers/JointEffortController
-    joint: "0"
-  joint1_effort_controller:
-    type: effort_controllers/JointEffortController
-    joint: "1"
-  joint2_effort_controller:
-    type: effort_controllers/JointEffortController
-    joint: "2"
-  joint3_effort_controller:
-    type: effort_controllers/JointEffortController
-    joint: "3"
-  joint4_effort_controller:
-    type: effort_controllers/JointEffortController
-    joint: "4"
-  joint5_effort_controller:
-    type: effort_controllers/JointEffortController
-    joint: "5"
-  joint6_effort_controller:
-    type: effort_controllers/JointEffortController
-    joint: "6"
-  joint7_effort_controller:
-    type: effort_controllers/JointEffortController
-    joint: "7"
-  joint8_effort_controller:
-    type: effort_controllers/JointEffortController
-    joint: "8"
-  joint9_effort_controller:
-    type: effort_controllers/JointEffortController
-    joint: "9"
-  joint10_effort_controller:
-    type: effort_controllers/JointEffortController
-    joint: "10"
-  joint11_effort_controller:
-    type: effort_controllers/JointEffortController
-    joint: "11"
+# Position Controllers ---------------------------------------
+  joint_controller:
+    type: effort_controllers/SpiritController
+    joints: ['0','1','2','3','4','5','6','7','8','9','10','11']
+
+contact_state_publisher:
+  update_rate: 200

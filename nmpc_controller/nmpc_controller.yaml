@@ -1,0 +1,49 @@
+nmpc_controller:
+  leg:
+    update_rate: 33
+    horizon_length: 24
+    state_dimension: 12
+    control_dimension: 12
+    step_length: 0.03
+    state_weights: [5, 5, 50, 2.5, 2.5, 10, 0.25, 0.25, 0.1, 0, 0, 0.3]
+    control_weights: [!!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6]
+    state_lower_bound: [!!float -2e19, !!float -2e19, 0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    state_upper_bound: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+    control_lower_bound: [!!float -2e19, !!float -2e19, 0, !!float -2e19, !!float -2e19, 0, !!float -2e19, !!float -2e19, 0, !!float -2e19, !!float -2e19, 0]
+    control_upper_bound: [!!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150]
+  centralized_tail:
+    update_rate: 33
+    horizon_length: 24
+    control_dimension: 14
+    state_dimension: 16
+    step_length: 0.03
+    state_weights: [5, 5, 50, 0.25, 0.25, 10, 0.1, 0.1, 0.25, 0.25, 0.1, 0, 0, 0.3, 0.001, 0.001]
+    control_weights: [!!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6]
+    state_lower_bound: [!!float -2e19, !!float -2e19, 0, -3.14159, -3.14159, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    state_upper_bound: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+    control_lower_bound: [-10, -10, !!float -2e19, !!float -2e19, 0, !!float -2e19, !!float -2e19, 0, !!float -2e19, !!float -2e19, 0, !!float -2e19, !!float -2e19, 0]
+    control_upper_bound: [10, 10, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150]
+  distributed_tail:
+    update_rate: 33
+    horizon_length: 24
+    control_dimension: 14
+    state_dimension: 16
+    step_length: 0.03
+    state_weights: [0, 0, 0, 0.25, 0.25, 0, 0.1, 0.1, 0, 0, 0, 0, 0, 0, 0.001, 0.001]
+    control_weights: [!!float 5e-6, !!float 5e-6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    state_lower_bound: [!!float -2e19, !!float -2e19, !!float -2e19, -3.14159, -3.14159, !!float -2e19, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    state_upper_bound: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, !!float 2e19, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+    control_lower_bound: [-10, -10, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    control_upper_bound: [10, 10, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+  decentralized_tail:
+    update_rate: 33
+    horizon_length: 24
+    control_dimension: 14
+    state_dimension: 16
+    step_length: 0.03
+    state_weights: [0, 0, 0, 0.25, 0.25, 10, 0.1, 0.1, 0, 0, 0, 0, 0, 0.3, 0.001, 0.001]
+    control_weights: [!!float 5e-6, !!float 5e-6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    state_lower_bound: [!!float -2e19, !!float -2e19, 0, -3.14159, -3.14159, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    state_upper_bound: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+    control_lower_bound: [-10, -10, !!float -2e19, !!float -2e19, 0, !!float -2e19, !!float -2e19, 0, !!float -2e19, !!float -2e19, 0, !!float -2e19, !!float -2e19, 0]
+    control_upper_bound: [10, 10, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150]

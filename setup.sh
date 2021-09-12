@@ -4,7 +4,7 @@ echo "#########################"
 echo "Install base dependencies"
 echo "#########################"
 echo
-sudo apt install doxygen
+sudo apt install doxygen libeigen3-dev
 
 # Install all dependencies from package setup files
 echo
@@ -28,4 +28,4 @@ echo "#######################"
 echo "Install all rosdeps"
 echo "#######################"
 echo
-rosdep install --from-paths .. --ignore-src -r -y
+rosdep install --from-paths .. --ignore-src -r -y --rosdistro melodic

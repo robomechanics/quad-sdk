@@ -58,6 +58,14 @@ class GraphClass
      * @param[in] idx2 Index of the incoming vertex of the edge
      */
     virtual void addEdge(int idx1, int idx2);
+
+    /**
+     * @brief Add a new edge to the graph
+     * @param[in] idx1 Index of the outgoing vertex of the edge
+     * @param[in] idx2 Index of the incoming vertex of the edge
+     * @param[in] edge_code Cost of the new edge
+     */
+    virtual void addEdge(int idx1, int idx2, double edge_cost);
     
     /**
      * @brief Remove an edge of the graph
@@ -107,6 +115,14 @@ class GraphClass
      * @return G-value corresponding to the desired vertex
      */
     double getGValue(int idx);
+
+    /**
+     * @brief Compute the cost of an edge between two vertices
+     * @param[in] idx1 Index of vertex 1
+     * @param[in] idx2 Index of vertex 2
+     * @return Cost of the edge between idx1 and idx2
+     */
+    double computeEdgeCost(int idx1, int idx2);
 
     /**
      * @brief Print the state information via stdout

@@ -29,7 +29,7 @@ class PlannerClass : public GraphClass
      * @param[in] terrain Height map of the terrain
      * @return Newly generated random state
      */
-    State randomState(FastTerrainMap& terrain);
+    State randomState(const PlannerConfig &planner_config);
     
     /**
      * @brief Get the closest N vertices to the specified state by Euclidean distance.
