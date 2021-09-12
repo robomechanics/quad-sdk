@@ -21,46 +21,74 @@ find_package(catkin REQUIRED COMPONENTS
   spirit_msgs
   grid_map_core
   grid_map_ros
+  grid_map_pcl
 )
+
+find_package(PythonLibs 2.7)
+find_package(Eigen3 REQUIRED)
+
+# We need to add the project source path to the CMake module path so that
+# the FindRBDL.cmake script can be found.
+LIST( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR} )
+
+# Search for the RBDL include directory and library
+FIND_PACKAGE (RBDL COMPONENTS URDFREADER REQUIRED)
 
 catkin_package(
-  INCLUDE_DIRS include
+  INCLUDE_DIRS include ${PYTHON_INCLUDE_DIRS}
   LIBRARIES spirit_utils
-#  CATKIN_DEPENDS roscpp std_msgs
-#	DEPENDS
+  CATKIN_DEPENDS roscpp std_msgs nav_msgs sensor_msgs geometry_msgs spirit_msgs grid_map_core grid_map_ros grid_map_pcl
+	DEPENDS EIGEN3
 )
-
-find_package(libInterpolate REQUIRED)
 
 ###########
 ## Build ##
 ###########
-
-
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
+  ${PYTHON_INCLUDE_DIRS}
 )
 
-## Declare a C++ library
+# Add the include directory to the include paths
+INCLUDE_DIRECTORIES ( ${RBDL_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIR})
+
 add_library(spirit_utils
   src/rviz_interface.cpp
   src/fast_terrain_map.cpp
   src/terrain_map_publisher.cpp
-  src/robot_interface.cpp
+  src/mesh_to_grid_map_converter.cpp
+  src/ground_truth_publisher.cpp
+  src/robot_proxy.cpp
+  src/math_utils.cpp
+  src/ros_utils.cpp
+  src/kinematics.cpp
+  src/trajectory_publisher.cpp
+  src/remote_heartbeat.cpp
 )
 add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(spirit_utils libInterpolate::Interpolate)
+target_link_libraries(spirit_utils)
+
+# And link the library against the executable
+TARGET_LINK_LIBRARIES ( spirit_utils
+	${RBDL_LIBRARY}
+	${RBDL_URDFREADER_LIBRARY}
+	)
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(rviz_interface_node src/rviz_interface_node.cpp)
 add_executable(terrain_map_publisher_node src/terrain_map_publisher_node.cpp)
-add_executable(robot_interface_node src/robot_interface_node.cpp)
+add_executable(mesh_to_grid_map_node src/mesh_to_grid_map_node.cpp)
+add_executable(ground_truth_publisher_node src/ground_truth_publisher_node.cpp)
+add_executable(trajectory_publisher_node src/trajectory_publisher_node.cpp)
+add_executable(robot_proxy_node src/robot_proxy_node.cpp)
+add_executable(remote_heartbeat_node src/remote_heartbeat_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(rviz_interface_node
@@ -69,11 +97,31 @@ target_link_libraries(rviz_interface_node
 )
 
 target_link_libraries(terrain_map_publisher_node
-  ${PROJECT_NAME}
+  spirit_utils
   ${catkin_LIBRARIES}
 )
 
-target_link_libraries(robot_interface_node
+target_link_libraries(mesh_to_grid_map_node
+  spirit_utils
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(ground_truth_publisher_node
+  spirit_utils
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(trajectory_publisher_node
+  spirit_utils
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(robot_proxy_node
+  spirit_utils
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(remote_heartbeat_node
   spirit_utils
   ${catkin_LIBRARIES}
 )
@@ -83,10 +131,14 @@ target_link_libraries(robot_interface_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-catkin_add_gtest(${PROJECT_NAME}-test 
+catkin_add_gtest(spirit_utils-test 
   test/test_rviz_interface.cpp
   test/test_terrain_map_publisher.cpp
-  test/test_robot_interface.cpp
+  test/test_ground_truth_publisher.cpp
+  test/test_robot_proxy.cpp
+  test/test_fast_terrain_map.cpp
+  test/test_kinematics.cpp
+  test/test_eigen.cpp
+  test/test_math_utils.cpp
   test/test_main.cpp)
-target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME} ${catkin_LIBRARIES})
-
+target_link_libraries(spirit_utils-test spirit_utils ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})

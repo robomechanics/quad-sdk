@@ -1,0 +1,37 @@
+<launch>
+    <include file="$(find spirit_utils)/launch/load_params.launch" />
+
+    <arg name="mblink" default="true"/>
+    <arg name="proxy" default="false"/>
+    <arg name="mocap" default="false"/>
+    <arg name="logging" default="false"/>
+    <arg name="controller" default="inverse_dynamics"/>
+
+    <include file="$(find spirit_utils)/launch/control.launch">
+        <arg name="controller" value="$(arg controller)" />
+    </include>
+
+    <include file="$(find spirit_utils)/launch/estimation.launch" />
+
+    <!-- Launch the robot_proxy if specified-->
+    <group if="$(arg proxy)">
+        <node name="robot_proxy" pkg="spirit_utils" type="robot_proxy_node" output="screen"/>
+        <include file="$(find spirit_utils)/launch/mocap.launch" />
+    </group>
+
+    <!-- Launch the mocap node if specified-->
+    <group if="$(arg mocap)">
+        <include file="$(find spirit_utils)/launch/mocap.launch" />
+    </group>
+
+    <!-- Record into bag if specified-->
+    <group if="$(arg logging)">
+        <include file="$(find spirit_utils)/launch/logging.launch" />
+    </group>
+
+    <!-- Launch the mblink converter unless using a proxy-->
+    <group if="$(arg mblink)">
+        <node name="mblink_converter" pkg="mblink_converter" type="mblink_converter_node" output="screen"/>
+    </group>
+
+</launch>
