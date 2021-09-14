@@ -262,9 +262,17 @@ void InverseDynamics::publishLegCommandArray() {
         }
       }
       spirit_utils::ikRobotState(*kinematics_, ref_underbrush_msg);
+      for (int i = 0; i < 4; i++) {
+        int abad_idx = 3*i+0;
+        int hip_idx = 3*i+1;
+        int knee_idx = 3*i+2;
+        ref_underbrush_msg.joints.position.at(knee_idx) +=
+          -0.5*std::abs(state_positions[hip_idx] - ref_underbrush_msg.joints.position.at(hip_idx))
+          -0.5*std::abs(state_positions[abad_idx] - ref_underbrush_msg.joints.position.at(abad_idx));
+      }
       ref_state_msg = ref_underbrush_msg;
-      std::cout << ref_state_msg.feet.feet.at(1).position.x;
-      std::cout << " " << (ref_state_msg.feet.feet.at(1).contact?"y":"n") << std::endl;
+      //std::cout << ref_state_msg.feet.feet.at(1).position.x;
+      //std::cout << " " << (ref_state_msg.feet.feet.at(1).contact?"y":"n") << std::endl;
     }
 
   } else if (input_type == GRFS) {
