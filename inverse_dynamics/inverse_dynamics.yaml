@@ -13,7 +13,7 @@ inverse_dynamics:
   safety_kp: [0, 0, 0]
   safety_kd: [2, 2, 2]
   underbrush_swing_kp: [10, 10, 20]
-  underbrush_swing_kd: [1, 1, 1]
+  underbrush_swing_kd: [1, 1, 0.1]
   input_timeout: 0.1
   state_timeout: 0.1
   heartbeat_timeout: 0.2

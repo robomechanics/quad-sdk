@@ -77,7 +77,7 @@ NMPCController::NMPCController(int type)
   // app_->Options()->SetIntegerValue("max_iter", 100);
   // app_->Options()->SetStringValue("print_timing_statistics", "yes");
   // app_->Options()->SetStringValue("linear_solver", "ma57");
-  app_->Options()->SetIntegerValue("print_level", 0);
+  // app_->Options()->SetIntegerValue("print_level", 0); // JY comment this for printing
   app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("mu_oracle", "probing");
   app_->Options()->SetStringValue("mehrotra_algorithm", "yes");
@@ -88,8 +88,8 @@ NMPCController::NMPCController(int type)
   app_->Options()->SetStringValue("warm_start_init_point", "yes");
 
   app_->Options()->SetNumericValue("tol", 1e-3);
-  app_->Options()->SetNumericValue("max_wall_time", 0.9 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 0.9 * dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 1.8 * dt_); // JY increase this
+  app_->Options()->SetNumericValue("max_cpu_time", 1.8 * dt_); // JY increase this
 
   ApplicationReturnStatus status;
   status = app_->Initialize();

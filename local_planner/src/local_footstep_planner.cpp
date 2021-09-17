@@ -22,7 +22,8 @@ void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_
 
       // If this index in the horizon is between touchdown and liftoff, set contact to true
       if ((i % period_) >= period_*phase_offsets_[leg_idx] && 
-        (i % period_) < period_*(phase_offsets_[leg_idx] + duty_cycles_[leg_idx])) {
+        (i % period_) < period_*(phase_offsets_[leg_idx] + duty_cycles_[leg_idx]) ||
+        (i % period_) <= period_*(phase_offsets_[leg_idx] + duty_cycles_[leg_idx] - 1)) {
 
         nominal_contact_schedule_.at(i).at(leg_idx) = true;
       } else {

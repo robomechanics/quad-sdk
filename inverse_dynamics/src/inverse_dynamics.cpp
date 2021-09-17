@@ -65,7 +65,7 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
 
   kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
 
-  underbrush_swing_ = true;//false;
+  underbrush_swing_ = true;//false;//
 }
 
 void InverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
@@ -267,8 +267,8 @@ void InverseDynamics::publishLegCommandArray() {
         int hip_idx = 3*i+1;
         int knee_idx = 3*i+2;
         ref_underbrush_msg.joints.position.at(knee_idx) +=
-          -0.5*std::abs(state_positions[hip_idx] - ref_underbrush_msg.joints.position.at(hip_idx))
-          -0.5*std::abs(state_positions[abad_idx] - ref_underbrush_msg.joints.position.at(abad_idx));
+          -0.8*std::abs(state_positions[hip_idx] - ref_underbrush_msg.joints.position.at(hip_idx))
+          -0.8*std::abs(state_positions[abad_idx] - ref_underbrush_msg.joints.position.at(abad_idx));
       }
       ref_state_msg = ref_underbrush_msg;
       //std::cout << ref_state_msg.feet.feet.at(1).position.x;

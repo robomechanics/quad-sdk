@@ -245,10 +245,10 @@ class LocalFootstepPlanner {
     int horizon_length_;
 
     /// Phase offsets for the touchdown of each foot
-    std::vector<double> phase_offsets_ = {0,0.5,0.5,0};
+    std::vector<double> phase_offsets_ = {0,0.65,0.5,0.15};//{0,0.5,0.5,0};
 
     /// Duty cycles for the stance duration of each foot
-    std::vector<double> duty_cycles_ = {0.5,0.5,0.5,0.5};
+    std::vector<double> duty_cycles_ = {0.65,0.65,0.65,0.65};//{0.5,0.5,0.5,0.5};
 
     /// Nominal contact schedule
     std::vector<std::vector<bool>> nominal_contact_schedule_;
