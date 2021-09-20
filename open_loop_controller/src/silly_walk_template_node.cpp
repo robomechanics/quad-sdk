@@ -7,8 +7,8 @@ int main(int argc, char** argv) {
 	ros::init(argc, argv, "silly_walk_template_node");
 	ros::NodeHandle nh;
 
-	SillyWalkController silly_walk_controller(nh);
-	silly_walk_controller.spin();
+	SillyWalkTemplate silly_walk_template(nh);
+	silly_walk_template.spin();
 
 	return 0;
 }
