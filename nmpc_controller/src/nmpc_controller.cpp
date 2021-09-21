@@ -27,9 +27,6 @@ NMPCController::NMPCController(int type)
     break;
   }
 
-  // Load rosparams from parameter server
-  ros::param::get("nmpc_controller/" + param_ns_ + "/update_rate", update_rate_);
-
   // Load MPC/system parameters
   ros::param::get("/nmpc_controller/" + param_ns_ + "/horizon_length", N_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_dimension", n_);
@@ -94,8 +91,8 @@ NMPCController::NMPCController(int type)
 
   app_->Options()->SetNumericValue("tol", 1e-3);
   // app_->Options()->SetNumericValue("bound_relax_factor", 1e-3);
-  app_->Options()->SetNumericValue("max_wall_time", 0.9 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 0.9 * dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 3.6 * dt_);
+  app_->Options()->SetNumericValue("max_cpu_time", 3.6 * dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();

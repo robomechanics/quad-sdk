@@ -3,8 +3,8 @@ tail_controller:
   controller_update_rate: 200
   planner_update_rate: 33
   # tail_type: 2 # 0: none, 1: centralized, 2: distributed, 3: decentralized
-  roll_kp: 25
-  roll_kd: 5
-  pitch_kp: 25
-  pitch_kd: 5
+  roll_kp: 5
+  roll_kd: 1
+  pitch_kp: 5
+  pitch_kd: 1
   gear_ratio: 50

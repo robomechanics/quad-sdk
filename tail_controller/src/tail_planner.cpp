@@ -67,11 +67,11 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
 
   foot_positions_body_ = Eigen::MatrixXd::Zero(N_, 12);
 
-  body_plan_ = Eigen::MatrixXd::Zero(N_, 12);
+  body_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 12);
 
   grf_plan_ = Eigen::MatrixXd::Zero(N_, 12);
 
-  tail_plan_ = Eigen::MatrixXd::Zero(N_, 4);
+  tail_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 4);
 
   tail_torque_plan_ = Eigen::MatrixXd::Zero(N_, 2);
 
@@ -141,6 +141,7 @@ void TailPlanner::computeTailPlan()
     return;
 
   ref_tail_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 4);
+
   double dt_first_step;
 
   // //  Start at the same point as local planner, but we need a tail state at the local planner start time
@@ -155,6 +156,8 @@ void TailPlanner::computeTailPlan()
   current_state_ = spirit_utils::bodyStateMsgToEigen(robot_state_msg_->body);
   spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
 
+  ref_tail_plan_.row(0) = tail_current_state_.transpose();
+
   double t_now = ros::Time::now().toSec();
 
   if ((t_now < last_local_plan_msg_->states.front().header.stamp.toSec()) ||
@@ -168,8 +171,17 @@ void TailPlanner::computeTailPlan()
     if ((t_now >= last_local_plan_msg_->states[i].header.stamp.toSec()) &&
         (t_now < last_local_plan_msg_->states[i + 1].header.stamp.toSec()))
     {
-      dt_first_step = last_local_plan_msg_->states[i + 1].header.stamp.toSec() - t_now;
-      current_plan_index_ = i + last_local_plan_msg_->plan_indices[0];
+      if (t_now - last_local_plan_msg_->states[i].header.stamp.toSec() <=
+          last_local_plan_msg_->states[i + 1].header.stamp.toSec() - t_now)
+      {
+        current_plan_index_ = i + last_local_plan_msg_->plan_indices[0];
+      }
+      else
+      {
+        current_plan_index_ = i + 1 + last_local_plan_msg_->plan_indices[0];
+      }
+
+      dt_first_step = dt_;
 
       break;
     }
@@ -280,7 +292,7 @@ void TailPlanner::computeTailPlan()
     spirit_utils::multiFootStateMsgToEigen(last_local_plan_msg_->states[idx].feet, foot_positions);
     for (size_t j = 0; j < 4; j++)
     {
-      contact_schedule_[i][j] = last_local_plan_msg_->grfs[idx].contact_states[j];
+      contact_schedule_[i][j] = bool(last_local_plan_msg_->grfs[idx].contact_states[j]);
 
       foot_positions_body_.block(i, j * 3, 1, 3) = foot_positions.segment(j * 3, 3).transpose() -
                                                    body_plan_.block(i, 0, 1, 3);

@@ -856,7 +856,7 @@ void spiritNLP::update_solver(
    {
       for (size_t j = 0; j < contact_schedule.front().size(); j++)
       {
-         if (contact_schedule.at(i).at(j))
+         if (bool(contact_schedule.at(i).at(j)))
          {
             contact_sequence_(j, i) = 1;
          }
@@ -868,7 +868,7 @@ void spiritNLP::update_solver(
    }
 
    // Update initial states
-   x_current_ = initial_state;
+   x_current_ = initial_state.transpose();
 
    // Update reference trajectory
    // Local planner has row as N+1 horizon and col as states
@@ -889,7 +889,7 @@ void spiritNLP::update_solver(
        foot_positions,
        contact_schedule);
 
-   leg_input_ = control_traj.transpose();
+   leg_input_ = control_traj.bottomRows(N_).transpose();
 
    known_leg_input_ = true;
 }

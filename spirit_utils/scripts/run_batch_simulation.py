@@ -30,7 +30,7 @@ for i in range(num):
     launch_3.start()
     rospy.loginfo('MPC running')
 
-    rospy.sleep(20)
+    rospy.sleep(40)
 
     launch.shutdown()
     launch_2.shutdown()
@@ -63,7 +63,7 @@ for i in range(num):
     launch_3.start()
     rospy.loginfo('MPC running')
 
-    rospy.sleep(20)
+    rospy.sleep(40)
 
     launch.shutdown()
     launch_2.shutdown()
@@ -96,7 +96,7 @@ for i in range(num):
     launch_3.start()
     rospy.loginfo('MPC running')
 
-    rospy.sleep(20)
+    rospy.sleep(40)
 
     launch.shutdown()
     launch_2.shutdown()

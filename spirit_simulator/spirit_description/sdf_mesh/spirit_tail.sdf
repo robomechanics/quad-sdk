@@ -1520,7 +1520,7 @@ SOFTWARE.
           <izz>1e-04</izz>
         </inertia>
       </inertial>
-      <collision name='tail_link_0_collision'>
+      <!-- <collision name='tail_link_0_collision'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -1535,7 +1535,7 @@ SOFTWARE.
             <ode/>
           </friction>
         </surface>
-      </collision>
+      </collision> -->
       <visual name='tail_link_0_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
@@ -1562,20 +1562,20 @@ SOFTWARE.
       <velocity_decay/>
     </link>
     <link name='tail_link_1'>
-      <pose frame=''>0 0 0.552 0 -0 0</pose>
+      <pose frame=''>0 0 0.322 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 0 0 0 -0 0</pose>
-        <mass>0.025</mass>
+        <mass>1e-03</mass>
         <inertia>
-          <ixx>0.00364583</ixx>
+          <ixx>1e-04</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.00364583</iyy>
+          <iyy>1e-04</iyy>
           <iyz>0</iyz>
-          <izz>0.003125</izz>
+          <izz>1e-04</izz>
         </inertia>
       </inertial>
-      <collision name='tail_link_1_collision'>
+      <!-- <collision name='tail_link_1_collision'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <cylinder>
@@ -1591,7 +1591,7 @@ SOFTWARE.
             <ode/>
           </friction>
         </surface>
-      </collision>
+      </collision> -->
       <visual name='tail_link_1_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
          <geometry>
@@ -1619,20 +1619,20 @@ SOFTWARE.
       <velocity_decay/>
     </link>
     <link name='tail_mass'>
-      <pose frame=''>0 0 1.052 0 -0 0</pose>
+      <pose frame=''>0 0 0.592 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <mass>0.6</mass>
         <inertia>
-          <ixx>0.06</ixx>
+          <ixx>6e-04</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.06</iyy>
+          <iyy>6e-04</iyy>
           <iyz>0</iyz>
-          <izz>0.06</izz>
+          <izz>6e-04</izz>
         </inertia>
       </inertial>
-      <collision name='tail_mass_collision'>
+      <!-- <collision name='tail_mass_collision'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -1647,7 +1647,7 @@ SOFTWARE.
             <ode/>
           </friction>
         </surface>
-      </collision>
+      </collision> -->
       <visual name='tail_mass_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
@@ -1680,8 +1680,8 @@ SOFTWARE.
       <axis>
         <xyz>1 0 0</xyz>
         <limit>
-          <lower>-1.79769e+308</lower>
-          <upper>1.79769e+308</upper>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
           <effort>10</effort>
           <velocity>1.79769e+308</velocity>
         </limit>
@@ -1701,8 +1701,8 @@ SOFTWARE.
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-1.79769e+308</lower>
-          <upper>1.79769e+308</upper>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
           <effort>10</effort>
           <velocity>1.79769e+308</velocity>
         </limit>

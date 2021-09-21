@@ -941,12 +941,6 @@
       </geometry>
       <material name="gray"/>
     </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <sphere radius="0.02"/>
-      </geometry>
-    </collision>
     <inertial>
       <mass value="1e-03"/>
       <inertia ixx="1e-04" ixy="0" ixz="0" iyy="1e-04" iyz="0" izz="1e-04"/>
@@ -963,15 +957,9 @@
       </geometry>
       <material name="gray"/>
     </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0.27"/>
-      <geometry>
-        <cylinder length="0.54" radius="0.02"/>
-      </geometry>
-    </collision>
     <inertial>
-      <mass value="0.025"/>
-      <inertia ixx="0.00364583" ixy="0" ixz="0" iyy="0.00364583" iyz="0" izz="0.003125"/>
+      <mass value="1e-03"/>
+      <inertia ixx="1e-04" ixy="0" ixz="0" iyy="1e-04" iyz="0" izz="1e-04"/>
     </inertial>
   </link>
   <gazebo reference="tail_link_1">
@@ -985,15 +973,9 @@
       </geometry>
       <material name="gray"/>
     </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <sphere radius="0.04"/>
-      </geometry>
-    </collision>
     <inertial>
       <mass value="0.6"/>
-      <inertia ixx="0.06" ixy="0" ixz="0" iyy="0.06" iyz="0" izz="0.06"/>
+      <inertia ixx="6e-04" ixy="0" ixz="0" iyy="6e-04" iyz="0" izz="6e-04"/>
     </inertial>
   </link>
   <gazebo reference="tail_mass">
@@ -1006,7 +988,7 @@
     <child link="tail_link_0"/>
     <axis xyz="1 0 0"/>
     <origin xyz="0 0 0.052"/>
-    <limit effort="10" lower="-1.79769e+308" upper="1.79769e+308" velocity="1.79769e+308"/>
+    <limit effort="10" lower="-1.57" upper="1.57" velocity="1.79769e+308"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
   <!-- Transmission elements required for Gazebo -->
@@ -1025,7 +1007,7 @@
     <child link="tail_link_1"/>
     <axis xyz="0 1 0"/>
     <origin xyz="0 0 0"/>
-    <limit effort="10" lower="-1.79769e+308" upper="1.79769e+308" velocity="1.79769e+308"/>
+    <limit effort="10" lower="-1.57" upper="1.57" velocity="1.79769e+308"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
   <!-- Transmission elements required for Gazebo -->

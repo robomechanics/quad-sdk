@@ -176,15 +176,15 @@ void TailController::publishTailCommand()
 
     if (current_plan_index + 1 > last_tail_plan_msg_->leg_commands.size() - 1)
     {
-      msg.motor_commands.at(0).pos_setpoint = 0;
-      msg.motor_commands.at(0).vel_setpoint = 0;
-      msg.motor_commands.at(0).torque_ff = 0;
+      msg.motor_commands.at(0).pos_setpoint = last_tail_plan_msg_->leg_commands.back().motor_commands[0].pos_setpoint;
+      msg.motor_commands.at(0).vel_setpoint = last_tail_plan_msg_->leg_commands.back().motor_commands[0].vel_setpoint;
+      msg.motor_commands.at(0).torque_ff = last_tail_plan_msg_->leg_commands.back().motor_commands[0].torque_ff;
       msg.motor_commands.at(0).kp = roll_kp_;
       msg.motor_commands.at(0).kd = roll_kd_;
 
-      msg.motor_commands.at(1).pos_setpoint = 0;
-      msg.motor_commands.at(1).vel_setpoint = 0;
-      msg.motor_commands.at(1).torque_ff = 0;
+      msg.motor_commands.at(1).pos_setpoint = last_tail_plan_msg_->leg_commands.back().motor_commands[1].pos_setpoint;
+      msg.motor_commands.at(1).vel_setpoint = last_tail_plan_msg_->leg_commands.back().motor_commands[1].vel_setpoint;
+      msg.motor_commands.at(1).torque_ff = last_tail_plan_msg_->leg_commands.back().motor_commands[1].torque_ff;
       msg.motor_commands.at(1).kp = pitch_kp_;
       msg.motor_commands.at(1).kd = pitch_kd_;
     }
