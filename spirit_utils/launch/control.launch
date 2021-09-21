@@ -14,6 +14,11 @@
         <node name="inverse_dynamics" pkg="inverse_dynamics" type="inverse_dynamics_node" output="screen"/>
     </group>
 
+    <!-- Launch the node to publish silly control-->
+    <group if="$(eval arg('controller') == 'silly_walk')">
+        <node name="silly_walk_template" pkg="open_loop_controller" type="silly_walk_template_node" output="screen"/>
+    </group>
+
     <!-- Launch the leg override-->
     <node name="leg_overrider" pkg="inverse_dynamics" type="leg_overrider_node" output="screen"/>
 

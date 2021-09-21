@@ -41,40 +41,32 @@ void SillyWalkTemplate::computeJointControl()
 
   // You can use something like this if you want a state machine
   // (This can be useful to implement basic stop/go functionality)
-  switch (control_mode_){
-    case SIT: // sit
+  if (control_mode_ == SIT) {
+    for (int i = 0; i < 4; ++i)
     {
-      for (int i = 0; i < 4; ++i)
+      control_msg_.leg_commands.at(i).motor_commands.resize(3);
+      for (int j = 0; j < 3; ++j)
       {
-        control_msg_.leg_commands.at(i).motor_commands.resize(3);
-        for (int j = 0; j < 3; ++j)
-        {
-          control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 0;
-          control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-          control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 5;
-          control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 0.1;
-          control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
-        }
+        control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 0;
+        control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
+        control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 5;
+        control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 0.1;
+        control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
       }
     }
-    break;
-
-    case STAND: // stand
+  } else if (control_mode_ == STAND) {
+    for (int i = 0; i < 4; ++i)
     {
-      for (int i = 0; i < 4; ++i)
+      control_msg_.leg_commands.at(i).motor_commands.resize(3);
+      for (int j = 0; j < 3; ++j)
       {
-        control_msg_.leg_commands.at(i).motor_commands.resize(3);
-        for (int j = 0; j < 3; ++j)
-        {
-          control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = stand_joint_angles_.at(j);
-          control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-          control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 5;
-          control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 0.1;
-          control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
-        }
+        control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = stand_joint_angles_.at(j);
+        control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
+        control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 5;
+        control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 0.1;
+        control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
       }
     }
-    break;
   }
 }
 
