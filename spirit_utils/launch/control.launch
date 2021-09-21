@@ -1,0 +1,25 @@
+<launch>
+
+    <include file="$(find spirit_utils)/launch/load_params.launch" />
+
+    <arg name="controller" default="inverse_dynamics"/>
+
+    <!-- Launch the node to publish open loop control-->
+    <group if="$(eval arg('controller') == 'open_loop')">
+        <node name="open_loop_controller" pkg="open_loop_controller" type="open_loop_controller_node" output="screen"/>
+    </group>
+
+    <!-- Launch the node to publish inverse dynamics control-->
+    <group if="$(eval arg('controller') == 'inverse_dynamics')">
+        <node name="inverse_dynamics" pkg="inverse_dynamics" type="inverse_dynamics_node" output="screen"/>
+    </group>
+
+    <!-- Launch the node to publish silly control-->
+    <group if="$(eval arg('controller') == 'silly_walk')">
+        <node name="silly_walk_template" pkg="open_loop_controller" type="silly_walk_template_node" output="screen"/>
+    </group>
+
+    <!-- Launch the leg override-->
+    <node name="leg_overrider" pkg="inverse_dynamics" type="leg_overrider_node" output="screen"/>
+
+</launch>
