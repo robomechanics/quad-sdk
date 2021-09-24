@@ -65,7 +65,7 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
 
   kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
 
-  underbrush_swing_ = true;//false;//
+  underbrush_swing_ = false;//true;//
 }
 
 void InverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
