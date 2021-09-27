@@ -140,10 +140,6 @@ void RVizInterface::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& ms
   geometry_msgs::PoseArray body_plan_ori_viz;
   body_plan_ori_viz.header = msg->header;
 
-  // Construct MarkerArray for body plan orientation
-  geometry_msgs::PoseArray body_plan_ori_viz;
-  body_plan_ori_viz.header = msg->header;
-
   // Loop through the BodyPlan message to get the state info
   int length = msg->states.size();
   for (int i=0; i < length; i++) {
@@ -175,10 +171,10 @@ void RVizInterface::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& ms
       }
     }
     body_plan_viz.colors.push_back(color);
-    body_plan_viz.points.push_back(msg->states[i].body.pose.pose.position);
+    body_plan_viz.points.push_back(msg->states[i].body.pose.position);
 
     // Add to the path message
-    body_plan_viz.poses.push_back(pose_stamped);
+    // body_plan_viz.poses.push_back(pose_stamped);
 
     // Add poses to the orientation message
     if ((i%orientation_subsample_) == ((length-1)%orientation_subsample_)) {
