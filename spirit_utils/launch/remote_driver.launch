@@ -2,7 +2,6 @@
 
     <include file="$(find spirit_utils)/launch/load_params.launch" />
 
-
     <arg name="proxy"           default="false"/>
     <arg name="controller"      default="inverse_dynamics"/>
     <arg name="logging"         default="false"/>
@@ -38,6 +37,6 @@
     </group>
 
     <!-- Start the heartbeat node -->
-    <node name="remote_heartbeat" pkg="spirit_utils" type="remote_heartbeat_node"/>
+    <node name="remote_heartbeat" pkg="spirit_utils" type="remote_heartbeat_node" output="screen"/>
 
 </launch>

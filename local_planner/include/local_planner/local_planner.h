@@ -144,6 +144,9 @@ private:
   /// Past foothold locations
 	spirit_msgs::MultiFootPlanDiscrete past_footholds_msg_;
 
+  /// Timestamp of the state estimate
+  ros::Time current_state_timestamp_;
+
   /// Current state (ground truth or estimate)
   Eigen::VectorXd current_state_;
 

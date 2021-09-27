@@ -271,6 +271,19 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
   wrapped_yaw = math_utils::wrapToPi(unwrapped_yaw);
   filtered_yaw = math_utils::wrapToPi(filtered_yaw);
 
+  // plt::clf();
+  // plt::ion();
+  // // plt::named_plot("unwrapped yaw", interp_t, unwrapped_yaw);
+  // plt::named_plot("wrapped yaw", interp_t, wrapped_yaw);
+  // plt::named_plot("filtered yaw", interp_t, filtered_yaw);
+  // plt::named_plot("yaw rate", interp_t, yaw_rate);
+  // plt::named_plot("filtered yaw rate", interp_t, filtered_yaw_rate);
+  // plt::xlabel("t");
+  // plt::ylabel("z");
+  // plt::legend();
+  // plt::show();
+  // plt::pause(0.001);
+
   // Add full state data into the array
   std::vector<double> x_vec, y_vec, z_vec;
   for (int i = 0; i < num_states; i++) {
@@ -438,6 +451,14 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
     }
     interp_reduced_plan.push_back(s_next);
     interp_GRF.push_back(getGRF(a,t, planner_config));
+
+    if (!isValidYawRate(s,a,t,planner_config)) {
+      std::cout << "Invalid yaw detected!" << std::endl;
+      printStateNewline(s);
+      printActionNewline(a);
+      std::cout << "t = " << t<< std::endl;
+      std::cout << "t_f = " << t_f<< std::endl;
+    }
 
     if (t_f==0)
       interp_primitive_id.push_back(CONNECT_STANCE);
