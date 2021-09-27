@@ -211,36 +211,6 @@ void TailController::publishTailCommand()
       msg.motor_commands.at(1).kd = pitch_kd_;
 
       // ROS_INFO_STREAM_THROTTLE(0.1, "current_plan_index: " << current_plan_index << "pos: " << msg.motor_commands.at(0).pos_setpoint << ", " << msg.motor_commands.at(1).pos_setpoint);
-
-      if (abs(msg.motor_commands.at(0).pos_setpoint) > 1.5)
-      {
-        if (msg.motor_commands.at(0).pos_setpoint > 0)
-        {
-          msg.motor_commands.at(0).vel_setpoint = std::min(msg.motor_commands.at(0).vel_setpoint, 0.);
-          msg.motor_commands.at(0).torque_ff = std::min(msg.motor_commands.at(0).torque_ff, 0.);
-        }
-        else
-        {
-          msg.motor_commands.at(0).vel_setpoint = std::max(msg.motor_commands.at(0).vel_setpoint, 0.);
-          msg.motor_commands.at(0).torque_ff = std::max(msg.motor_commands.at(0).torque_ff, 0.);
-        }
-        msg.motor_commands.at(0).pos_setpoint = std::min(std::max(-1.5, msg.motor_commands.at(0).pos_setpoint), 1.5);
-      }
-
-      if (abs(msg.motor_commands.at(1).pos_setpoint) > 1.5)
-      {
-        if (msg.motor_commands.at(1).pos_setpoint > 0)
-        {
-          msg.motor_commands.at(1).vel_setpoint = std::min(msg.motor_commands.at(1).vel_setpoint, 0.);
-          msg.motor_commands.at(1).torque_ff = std::min(msg.motor_commands.at(1).torque_ff, 0.);
-        }
-        else
-        {
-          msg.motor_commands.at(1).vel_setpoint = std::max(msg.motor_commands.at(1).vel_setpoint, 0.);
-          msg.motor_commands.at(1).torque_ff = std::max(msg.motor_commands.at(1).torque_ff, 0.);
-        }
-        msg.motor_commands.at(1).pos_setpoint = std::min(std::max(-1.5, msg.motor_commands.at(1).pos_setpoint), 1.5);
-      }
     }
   }
 

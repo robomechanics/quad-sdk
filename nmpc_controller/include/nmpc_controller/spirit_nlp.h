@@ -39,6 +39,8 @@ public:
     // State cost weighting, input cost weighting
     Eigen::MatrixXd Q_, R_;
 
+    double alpha_;
+
     // Feet location from feet to body COM in world frame
     Eigen::MatrixXd feet_location_;
 

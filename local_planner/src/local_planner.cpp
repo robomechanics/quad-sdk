@@ -373,10 +373,10 @@ void LocalPlanner::getStateAndTwistInput() {
   std::vector<double> contact_foot_height;
   for (size_t i = 0; i < 4; i++)
   {
-    if (grf_msg_->contact_states.at(i) && grf_msg_->vectors.at(i).z > 10)
-    {
+    // if (grf_msg_->contact_states.at(i) && grf_msg_->vectors.at(i).z > 10)
+    // {
       contact_foot_height.push_back(current_foot_positions_world_(3 * i + 2));
-    }
+    // }
   }
   if (!contact_foot_height.empty())
   {
@@ -480,13 +480,17 @@ bool LocalPlanner::computeLocalPlan() {
   for (size_t i = 0; i < 4; i++)
   {
     // Check foot distance
-    Eigen::VectorXd foot_position_vec = foot_positions_body_.block(0, 3 * i, 1, 3).transpose();
-    if (foot_position_vec.squaredNorm() > 0.35)
+    Eigen::VectorXd foot_position_vec = current_foot_positions_body_.segment(3 * i, 3);
+
+    ROS_WARN_STREAM("dis: " << foot_position_vec.norm());
+
+    if (foot_position_vec.norm() > 0.45)
     {
+      ROS_WARN_STREAM("miss!");
       miss_contact_leg_.at(i) = true;
     }
 
-    if (contact_schedule_.at(0).at(i) && grf_msg_->contact_states.at(i) && miss_contact_leg_.at(i))
+    if (contact_schedule_.at(0).at(i) && bool(grf_msg_->contact_states.at(i)) && miss_contact_leg_.at(i))
     {
       miss_contact_leg_.at(i) = false;
     }
@@ -499,6 +503,12 @@ bool LocalPlanner::computeLocalPlan() {
         if (contact_schedule_.at(j).at(i))
         {
           adpative_contact_schedule_.at(j).at(i) = false;
+          if (j > 0)
+          {
+            foot_positions_world_(j, i * 3 + 0) = foot_positions_world_(j, i * 3 + 0) - 0.05;
+            foot_positions_body_(j, i * 3 + 0) = foot_positions_body_(j, i * 3 + 0) - 0.05;
+            ROS_WARN_STREAM("shift: " << i << "leg");
+          }
         }
         else
         {

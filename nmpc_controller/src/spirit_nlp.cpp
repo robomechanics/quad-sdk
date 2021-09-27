@@ -98,6 +98,8 @@ spiritNLP::spiritNLP(
    Q_ = Q;
    R_ = R;
 
+   alpha_ = 1;
+
    // feet location initialized by nominal position
    feet_location_ = Eigen::MatrixXd(12, N_);
    for (int i = 0; i < N_; ++i)
@@ -304,18 +306,23 @@ bool spiritNLP::eval_f(
 
       xk = (xk.array() - x_reference_.block(0, i, n_, 1).array()).matrix();
 
-      if (i == 0)
-      {
-         obj_value += (xk.transpose() * Q_.asDiagonal() * xk / 2 + uk.transpose() * R_.asDiagonal() * uk / 2)(0, 0) * (dt_first_step_ / dt_);
-      }
-      else if (i == N_ - 1)
-      {
-         obj_value += (xk.transpose() * Q_.asDiagonal() * xk / 2)(0, 0) * terminal_scale_factor_ + (uk.transpose() * R_.asDiagonal() * uk / 2)(0, 0);
-      }
-      else
-      {
-         obj_value += (xk.transpose() * Q_.asDiagonal() * xk / 2 + uk.transpose() * R_.asDiagonal() * uk / 2)(0, 0);
-      }
+      // if (i == 0)
+      // {
+      //    obj_value += (xk.transpose() * Q_.asDiagonal() * xk / 2 + uk.transpose() * R_.asDiagonal() * uk / 2)(0, 0) * (dt_first_step_ / dt_);
+      // }
+      // else if (i == N_ - 1)
+      // {
+      //    obj_value += (xk.transpose() * Q_.asDiagonal() * xk / 2)(0, 0) * terminal_scale_factor_ + (uk.transpose() * R_.asDiagonal() * uk / 2)(0, 0);
+      // }
+      // else
+      // {
+      //    obj_value += (xk.transpose() * Q_.asDiagonal() * xk / 2 + uk.transpose() * R_.asDiagonal() * uk / 2)(0, 0);
+      // }
+
+      Eigen::MatrixXd Q_i = Q_ * pow(alpha_, N_ - (i + 1));
+      Eigen::MatrixXd R_i = R_ * pow(alpha_, i);
+
+      obj_value += (xk.transpose() * Q_i.asDiagonal() * xk / 2 + uk.transpose() * R_i.asDiagonal() * uk / 2)(0, 0);
    }
 
    return true;
@@ -339,21 +346,27 @@ bool spiritNLP::eval_grad_f(
 
       xk = (xk.array() - x_reference_.block(0, i, n_, 1).array()).matrix();
 
-      if (i == 0)
-      {
-         grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_.asDiagonal() * uk * (dt_first_step_ / dt_);
-         grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_.asDiagonal() * xk * (dt_first_step_ / dt_);
-      }
-      else if (i == N_ - 1)
-      {
-         grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_.asDiagonal() * uk;
-         grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_.asDiagonal() * xk * terminal_scale_factor_;
-      }
-      else
-      {
-         grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_.asDiagonal() * uk;
-         grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_.asDiagonal() * xk;
-      }
+      // if (i == 0)
+      // {
+      //    grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_.asDiagonal() * uk * (dt_first_step_ / dt_);
+      //    grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_.asDiagonal() * xk * (dt_first_step_ / dt_);
+      // }
+      // else if (i == N_ - 1)
+      // {
+      //    grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_.asDiagonal() * uk;
+      //    grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_.asDiagonal() * xk * terminal_scale_factor_;
+      // }
+      // else
+      // {
+      //    grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_.asDiagonal() * uk;
+      //    grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_.asDiagonal() * xk;
+      // }
+
+      Eigen::MatrixXd Q_i = Q_ * pow(alpha_, N_ - (i + 1));
+      Eigen::MatrixXd R_i = R_ * pow(alpha_, i);
+
+      grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_i.asDiagonal() * uk;
+      grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_i.asDiagonal() * xk;
    }
 
    return true;
@@ -668,21 +681,27 @@ bool spiritNLP::eval_h(
          eval_hess_g_release_(mem);
          eval_hess_g_decref_();
 
-         if (i == 0)
-         {
-            values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * (dt_first_step_ / dt_) * R_.array()).matrix();
-            values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * (dt_first_step_ / dt_) * Q_.array()).matrix();
-         }
-         else if (i == N_ - 1)
-         {
-            values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_.array()).matrix();
-            values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * terminal_scale_factor_ * Q_.array()).matrix();
-         }
-         else
-         {
-            values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_.array()).matrix();
-            values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * Q_.array()).matrix();
-         }
+         // if (i == 0)
+         // {
+         //    values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * (dt_first_step_ / dt_) * R_.array()).matrix();
+         //    values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * (dt_first_step_ / dt_) * Q_.array()).matrix();
+         // }
+         // else if (i == N_ - 1)
+         // {
+         //    values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_.array()).matrix();
+         //    values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * terminal_scale_factor_ * Q_.array()).matrix();
+         // }
+         // else
+         // {
+         //    values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_.array()).matrix();
+         //    values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * Q_.array()).matrix();
+         // }
+
+         Eigen::MatrixXd Q_i = Q_ * pow(alpha_, N_ - (i + 1));
+         Eigen::MatrixXd R_i = R_ * pow(alpha_, i);
+
+         values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_i.array()).matrix();
+         values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * Q_i.array()).matrix();
       }
 
       std::vector<Eigen::Triplet<double>> tripletList;
