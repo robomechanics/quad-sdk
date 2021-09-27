@@ -107,6 +107,9 @@ private:
   /// Velocity update weight on exponential decay filter
   double alpha_;
 
+  /// RML standard joints order
+  std::vector<int> joints_order_;
+
 };
 
 #endif // GROUND_TRUTH_PUBLISHER_H

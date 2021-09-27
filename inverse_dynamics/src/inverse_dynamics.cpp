@@ -7,11 +7,13 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
 
     // Load rosparams from parameter server
   std::string grf_topic, trajectory_state_topic, robot_state_topic, local_plan_topic,
-    leg_command_array_topic, control_mode_topic, leg_override_topic, remote_heartbeat_topic; 
+    leg_command_array_topic, control_mode_topic, leg_override_topic,
+    remote_heartbeat_topic, robot_heartbeat_topic;
   spirit_utils::loadROSParam(nh_,"topics/local_plan",local_plan_topic);
   spirit_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
   spirit_utils::loadROSParam(nh_,"topics/state/trajectory",trajectory_state_topic);
-  spirit_utils::loadROSParam(nh_,"topics/remote_heartbeat",remote_heartbeat_topic);
+  spirit_utils::loadROSParam(nh_,"topics/heartbeat/remote",remote_heartbeat_topic);
+  spirit_utils::loadROSParam(nh_,"topics/heartbeat/robot",robot_heartbeat_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/grfs",grf_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/joint_command",leg_command_array_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/leg_override",leg_override_topic);
@@ -31,6 +33,10 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh_, "inverse_dynamics/swing_kd", swing_kd_);
   spirit_utils::loadROSParam(nh_, "inverse_dynamics/safety_kp", safety_kp_);
   spirit_utils::loadROSParam(nh_, "inverse_dynamics/safety_kd", safety_kd_);
+  spirit_utils::loadROSParam(nh_, "inverse_dynamics/remote_latency_threshold_warn",
+    remote_latency_threshold_warn_);
+  spirit_utils::loadROSParam(nh_, "inverse_dynamics/remote_latency_threshold_error",
+    remote_latency_threshold_error_);
 
   spirit_utils::loadROSParam(nh_,"local_planner/timestep", dt_);
 
@@ -48,10 +54,11 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
     remote_heartbeat_topic,1,&InverseDynamics::remoteHeartbeatCallback, this);
   leg_command_array_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_command_array_topic,1);
   grf_pub_ = nh_.advertise<spirit_msgs::GRFArray>(grf_topic,1);
+  robot_heartbeat_pub_ = nh_.advertise<std_msgs::Header>(robot_heartbeat_topic,1);
 
   // Start sitting
   control_mode_ = SIT;
-  last_heartbeat_time_ = std::numeric_limits<double>::max();
+  last_remote_heartbeat_time_ = std::numeric_limits<double>::max();
   last_state_time_ = std::numeric_limits<double>::max();  
 
   kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
@@ -73,7 +80,7 @@ void InverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) 
     control_mode_ = STAND_TO_SIT;
     transition_timestamp_ = ros::Time::now();
 
-  } else if (msg->data == SIT || (control_mode_ == SAFETY)) { // Allow sit or safety modes
+  } else if (msg->data == SIT || (msg->data == SAFETY)) { // Allow sit or safety modes
     
     control_mode_ = msg->data;
   }
@@ -81,6 +88,12 @@ void InverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) 
 
 void InverseDynamics::localPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg) {
   last_local_plan_msg_ = msg;
+
+  double round_trip_time_diff = (ros::Time::now() - last_local_plan_msg_->state_timestamp).toSec();
+  ROS_INFO_STREAM("round trip time difference: " << round_trip_time_diff);
+
+  double local_plan_time_diff = (ros::Time::now() - last_local_plan_msg_->header.stamp).toSec();
+  ROS_INFO_STREAM("local plan time difference: " << local_plan_time_diff);
 }
 
 void InverseDynamics::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
@@ -104,22 +117,42 @@ void InverseDynamics::legOverrideCallback(const spirit_msgs::LegOverride::ConstP
 }
 
 void InverseDynamics::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg) {
-  last_heartbeat_time_ = msg->stamp.toSec();
+
+  // Get the current time and compare to the message time
+  last_remote_heartbeat_time_ = msg->stamp.toSec();
+  double t_now = ros::Time::now().toSec();
+  double t_latency = t_now - last_remote_heartbeat_time_;
+
+  ROS_INFO_THROTTLE(1.0,"Remote latency = %6.4fs", t_latency);
+
+  if (abs(t_latency) >= remote_latency_threshold_warn_) {
+    ROS_WARN_THROTTLE(1.0,"Remote latency = %6.4fs which exceeds the warning threshold of %6.4fs\n",
+      t_latency, remote_latency_threshold_warn_);
+  }
+
+  if (abs(t_latency) >= remote_latency_threshold_error_) {
+    ROS_WARN_THROTTLE(1.0,"Remote latency = %6.4fs which exceeds the maximum threshold of %6.4fs, "
+      "entering safety mode\n", t_latency, remote_latency_threshold_error_);
+    control_mode_ = SAFETY;
+  }
 }
 
 void InverseDynamics::checkMessages() {
 
+  // Do nothing if already in safety mode
   if (control_mode_ == SAFETY)
     return;
 
-
-  if ((ros::Time::now().toSec() - last_heartbeat_time_) >= heartbeat_timeout_)
+  // Check the remote heartbeat for timeout
+  // (this adds extra safety if no heartbeat messages are arriving)
+  if (abs(ros::Time::now().toSec() - last_remote_heartbeat_time_) >= heartbeat_timeout_ && last_remote_heartbeat_time_ != std::numeric_limits<double>::max())
   {
     control_mode_ = SAFETY;
     ROS_WARN_THROTTLE(1,"Remote heartbeat lost or late to ID node, entering safety mode");
   }
 
-  if ((ros::Time::now().toSec() - last_state_time_) >= state_timeout_)
+  // Check the state message latency
+  if (abs(ros::Time::now().toSec() - last_state_time_) >= state_timeout_ && last_state_time_ != std::numeric_limits<double>::max())
   {
     control_mode_ = SAFETY;
     transition_timestamp_ = ros::Time::now();
@@ -138,7 +171,7 @@ void InverseDynamics::publishLegCommandArray() {
   Eigen::VectorXd joint_positions(3*num_feet_), joint_velocities(3*num_feet_), body_state(12);
   spirit_utils::vectorToEigen(last_robot_state_msg_->joints.position, joint_positions);
   spirit_utils::vectorToEigen(last_robot_state_msg_->joints.velocity, joint_velocities);
-  body_state = spirit_utils::odomMsgToEigen(last_robot_state_msg_->body);
+  body_state = spirit_utils::bodyStateMsgToEigen(last_robot_state_msg_->body);
 
   // Define vectors for state positions and velocities 
   Eigen::VectorXd state_positions(3*num_feet_+6), state_velocities(3*num_feet_+6);
@@ -214,7 +247,7 @@ void InverseDynamics::publishLegCommandArray() {
         ref_foot_positions(3 * num_feet_), ref_foot_velocities(3 * num_feet_), ref_foot_acceleration(3 * num_feet_);
 
     // Load plan and state data from messages
-    ref_body_state = spirit_utils::odomMsgToEigen(ref_state_msg.body);
+    ref_body_state = spirit_utils::bodyStateMsgToEigen(ref_state_msg.body);
     spirit_utils::multiFootStateMsgToEigen(
         ref_state_msg.feet, ref_foot_positions, ref_foot_velocities, ref_foot_acceleration);
     grf_array = spirit_utils::grfArrayMsgToEigen(grf_array_msg);
@@ -407,6 +440,11 @@ void InverseDynamics::spin() {
   ros::Rate r(update_rate_);
   while (ros::ok()) {
 
+    // Publish hearbeat
+    std_msgs::Header msg;
+    msg.stamp = ros::Time::now();
+    robot_heartbeat_pub_.publish(msg);
+
     // Collect new messages on subscriber topics
     ros::spinOnce();
 
@@ -418,7 +456,7 @@ void InverseDynamics::spin() {
 
       // Compute and publish control input data
       publishLegCommandArray();
-    }  
+    }
 
     // Enforce update rate
     r.sleep();

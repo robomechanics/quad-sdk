@@ -13,7 +13,7 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
   // Load rosparams from parameter server
   std::string leg_control_topic, joint_encoder_topic, imu_topic, remote_heartbeat_topic;
   spirit_utils::loadROSParam(nh_,"topics/control/joint_command",leg_control_topic);
-  spirit_utils::loadROSParam(nh_,"topics/remote_heartbeat",remote_heartbeat_topic);
+  spirit_utils::loadROSParam(nh_,"topics/heartbeat/remote",remote_heartbeat_topic);
   spirit_utils::loadROSParam(nh_,"topics/joint_encoder",joint_encoder_topic);
   spirit_utils::loadROSParam(nh_,"topics/imu",imu_topic);
   spirit_utils::loadROSParam(nh_,"mblink_converter/update_rate",update_rate_);
@@ -37,6 +37,9 @@ void MBLinkConverter::legControlCallback(
 {
   last_leg_command_array_msg_ = msg;
   last_leg_command_time_ = msg->header.stamp.toSec();
+
+  // double t_now = ros::Time::now().toSec();
+  // ROS_INFO("Current time = %6.4f, msg time = %6.4f, diff = %6.4fs", t_now, last_leg_command_time_, t_now - last_leg_command_time_);
 }
 
 void MBLinkConverter::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg) {

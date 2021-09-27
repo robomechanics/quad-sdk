@@ -140,6 +140,10 @@ void RVizInterface::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& ms
   geometry_msgs::PoseArray body_plan_ori_viz;
   body_plan_ori_viz.header = msg->header;
 
+  // Construct MarkerArray for body plan orientation
+  geometry_msgs::PoseArray body_plan_ori_viz;
+  body_plan_ori_viz.header = msg->header;
+
   // Loop through the BodyPlan message to get the state info
   int length = msg->states.size();
   for (int i=0; i < length; i++) {
@@ -147,7 +151,7 @@ void RVizInterface::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& ms
     // Load in the pose data directly from the Odometry message
     geometry_msgs::PoseStamped pose_stamped;
     pose_stamped.header = msg->states[i].header;
-    pose_stamped.pose = msg->states[i].body.pose.pose;
+    pose_stamped.pose = msg->states[i].body.pose;
 
     std_msgs::ColorRGBA color;
     color.a = 1;
@@ -174,7 +178,7 @@ void RVizInterface::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& ms
     body_plan_viz.points.push_back(msg->states[i].body.pose.pose.position);
 
     // Add to the path message
-    // body_plan_viz.poses.push_back(pose_stamped);
+    body_plan_viz.poses.push_back(pose_stamped);
 
     // Add poses to the orientation message
     if ((i%orientation_subsample_) == ((length-1)%orientation_subsample_)) {
@@ -276,9 +280,9 @@ void RVizInterface::discreteBodyPlanCallback(
   int length = msg->states.size();
   for (int i=0; i < length; i++) {
     geometry_msgs::Point p;
-    p.x = msg->states[i].body.pose.pose.position.x;
-    p.y = msg->states[i].body.pose.pose.position.y;
-    p.z = msg->states[i].body.pose.pose.position.z;
+    p.x = msg->states[i].body.pose.position.x;
+    p.y = msg->states[i].body.pose.position.y;
+    p.z = msg->states[i].body.pose.position.z;
     discrete_body_plan.points.push_back(p);
   }
 
@@ -383,10 +387,10 @@ void RVizInterface::robotStateCallback(
   transformStamped.header = msg->header;
   transformStamped.header.stamp = ros::Time::now();
   transformStamped.header.frame_id = map_frame_;
-  transformStamped.transform.translation.x = msg->body.pose.pose.position.x;
-  transformStamped.transform.translation.y = msg->body.pose.pose.position.y;
-  transformStamped.transform.translation.z = msg->body.pose.pose.position.z;
-  transformStamped.transform.rotation = msg->body.pose.pose.orientation;
+  transformStamped.transform.translation.x = msg->body.pose.position.x;
+  transformStamped.transform.translation.y = msg->body.pose.position.y;
+  transformStamped.transform.translation.z = msg->body.pose.position.z;
+  transformStamped.transform.rotation = msg->body.pose.orientation;
 
   // Copy the joint portion of the state estimate message to a new message
   sensor_msgs::JointState joint_msg;

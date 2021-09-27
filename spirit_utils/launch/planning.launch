@@ -4,7 +4,7 @@
 
     <arg name="global_planner" default="fgmp"/>
     <arg name="local_planner" default="full"/>
-    <arg name="mpc_type" default="convex"/>
+    <arg name="mpc_type" default="nonlinear"/>
 
     <!-- Launch the node to publish the global body plan -->
     <group if="$(eval arg('global_planner') == 'fgmp')">
@@ -36,8 +36,8 @@
         <node name="nmpc_controller" pkg="nmpc_controller" type="nmpc_controller_node" output="screen"/>
     </group>
 
+    <!-- Launch the node to publish the local plan -->
     <node name="plan_publisher" pkg="spirit_utils" type="trajectory_publisher_node" output="screen"/>
 
-    <!-- Launch the node to publish the local plan -->
 
 </launch>

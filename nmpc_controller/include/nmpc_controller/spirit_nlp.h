@@ -15,6 +15,7 @@
 #include "nmpc_controller/eval_g_tail.h"
 #include "nmpc_controller/eval_jac_g_tail.h"
 #include "nmpc_controller/eval_hess_g_tail.h"
+#include "spirit_utils/tail_type.h"
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <vector>
@@ -29,7 +30,11 @@ public:
 
     int leg_input_start_idx_;
 
-    bool with_tail_;
+    int type_;
+
+    bool known_leg_input_;
+
+    Eigen::MatrixXd leg_input_;
 
     // State cost weighting, input cost weighting
     Eigen::MatrixXd Q_, R_;
@@ -96,11 +101,11 @@ public:
 
     /** Default constructor */
     spiritNLP(
+        int type,
         int N,
         int n,
         int m,
         double dt,
-        bool with_tail,
         Eigen::MatrixXd Q,
         Eigen::MatrixXd R,
         Eigen::MatrixXd x_min,
@@ -220,6 +225,14 @@ public:
         const Eigen::MatrixXd &ref_traj,
         const Eigen::MatrixXd &foot_positions,
         const std::vector<std::vector<bool>> &contact_schedule);
+
+    virtual void update_solver(
+        const Eigen::VectorXd &initial_state,
+        const Eigen::MatrixXd &ref_traj,
+        const Eigen::MatrixXd &foot_positions,
+        const std::vector<std::vector<bool>> &contact_schedule,
+        const Eigen::MatrixXd &state_traj,
+        const Eigen::MatrixXd &control_traj);
 
     //@}
 

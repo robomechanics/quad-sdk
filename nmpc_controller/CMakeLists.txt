@@ -66,12 +66,6 @@ add_dependencies(nmpc_controller
   ${nmpc_controller_EXPORTED_TARGETS} 
   ${catkin_EXPORTED_TARGETS})
 
-add_executable(nmpc_controller_node src/nmpc_controller_node.cpp)
-target_link_libraries(nmpc_controller_node
-  nmpc_controller
-  ${catkin_LIBRARIES}
-)
-
 #############
 ## Testing ##
 #############

@@ -6,6 +6,7 @@
 
 Header header
 time global_plan_timestamp
+time state_timestamp
 spirit_msgs/RobotState[] states
 spirit_msgs/GRFArray[] grfs
 uint32[] plan_indices

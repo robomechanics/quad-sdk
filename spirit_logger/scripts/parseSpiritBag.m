@@ -38,16 +38,16 @@ else
     stateEstimate.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, stateEstimateData, 'UniformOutput', 0));
     
     stateEstimate.position = cell2mat(cellfun(@(m) ...
-        [m.Body.Pose.Pose.Position.X, m.Body.Pose.Pose.Position.Y, m.Body.Pose.Pose.Position.Z], stateEstimateData, 'UniformOutput', 0));
+        [m.body.pose.Position.X, m.body.pose.Position.Y, m.body.pose.Position.Z], stateEstimateData, 'UniformOutput', 0));
     stateEstimate.velocity = cell2mat(cellfun(@(m) ...
-        [m.Body.Twist.Twist.Linear.X, m.Body.Twist.Twist.Linear.Y, m.Body.Twist.Twist.Linear.Z], stateEstimateData, 'UniformOutput', 0));
+        [m.body.twist.Linear.X, m.body.twist.Linear.Y, m.body.twist.Linear.Z], stateEstimateData, 'UniformOutput', 0));
     
     stateEstimate.orientationRPY = cell2mat(cellfun(@(m) ...
-        fliplr(quat2eul([m.Body.Pose.Pose.Orientation.W, m.Body.Pose.Pose.Orientation.X, m.Body.Pose.Pose.Orientation.Y, m.Body.Pose.Pose.Orientation.Z])), stateEstimateData, 'UniformOutput', 0));
+        fliplr(quat2eul([m.body.pose.Orientation.W, m.body.pose.Orientation.X, m.body.pose.Orientation.Y, m.body.pose.Orientation.Z])), stateEstimateData, 'UniformOutput', 0));
     stateEstimate.orientationQuat = cell2mat(cellfun(@(m) ...
-        [m.Body.Pose.Pose.Orientation.W, m.Body.Pose.Pose.Orientation.X, m.Body.Pose.Pose.Orientation.Y, m.Body.Pose.Pose.Orientation.Z], stateEstimateData, 'UniformOutput', 0));
+        [m.body.pose.Orientation.W, m.body.pose.Orientation.X, m.body.pose.Orientation.Y, m.body.pose.Orientation.Z], stateEstimateData, 'UniformOutput', 0));
     stateEstimate.angularVelocity = cell2mat(cellfun(@(m) ...
-        [m.Body.Twist.Twist.Angular.X, m.Body.Twist.Twist.Angular.Y, m.Body.Twist.Twist.Angular.Z], stateEstimateData, 'UniformOutput', 0));
+        [m.body.twist.Angular.X, m.body.twist.Angular.Y, m.body.twist.Angular.Z], stateEstimateData, 'UniformOutput', 0));
     
     stateEstimate.jointPosition = cell2mat(cellfun(@(m) m.Joints.Position.', stateEstimateData, 'UniformOutput', 0));
     stateEstimate.jointVelocity = cell2mat(cellfun(@(m) m.Joints.Velocity.', stateEstimateData, 'UniformOutput', 0));
@@ -64,16 +64,16 @@ else
     stateGroundTruth.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, stateGroundTruthData, 'UniformOutput', 0));
     
     stateGroundTruth.position = cell2mat(cellfun(@(m) ...
-        [m.Body.Pose.Pose.Position.X, m.Body.Pose.Pose.Position.Y, m.Body.Pose.Pose.Position.Z], stateGroundTruthData, 'UniformOutput', 0));
+        [m.body.pose.Position.X, m.body.pose.Position.Y, m.body.pose.Position.Z], stateGroundTruthData, 'UniformOutput', 0));
     stateGroundTruth.velocity = cell2mat(cellfun(@(m) ...
-        [m.Body.Twist.Twist.Linear.X, m.Body.Twist.Twist.Linear.Y, m.Body.Twist.Twist.Linear.Z], stateGroundTruthData, 'UniformOutput', 0));
+        [m.body.twist.Linear.X, m.body.twist.Linear.Y, m.body.twist.Linear.Z], stateGroundTruthData, 'UniformOutput', 0));
     
     stateGroundTruth.orientationRPY = cell2mat(cellfun(@(m) ...
-        fliplr(quat2eul([m.Body.Pose.Pose.Orientation.W, m.Body.Pose.Pose.Orientation.X, m.Body.Pose.Pose.Orientation.Y, m.Body.Pose.Pose.Orientation.Z])), stateGroundTruthData, 'UniformOutput', 0));
+        fliplr(quat2eul([m.body.pose.Orientation.W, m.body.pose.Orientation.X, m.body.pose.Orientation.Y, m.body.pose.Orientation.Z])), stateGroundTruthData, 'UniformOutput', 0));
     stateGroundTruth.orientationQuat = cell2mat(cellfun(@(m) ...
-        [m.Body.Pose.Pose.Orientation.W, m.Body.Pose.Pose.Orientation.X, m.Body.Pose.Pose.Orientation.Y, m.Body.Pose.Pose.Orientation.Z], stateGroundTruthData, 'UniformOutput', 0));
+        [m.body.pose.Orientation.W, m.body.pose.Orientation.X, m.body.pose.Orientation.Y, m.body.pose.Orientation.Z], stateGroundTruthData, 'UniformOutput', 0));
     stateGroundTruth.angularVelocity = cell2mat(cellfun(@(m) ...
-        [m.Body.Twist.Twist.Angular.X, m.Body.Twist.Twist.Angular.Y, m.Body.Twist.Twist.Angular.Z], stateGroundTruthData, 'UniformOutput', 0));
+        [m.body.twist.Angular.X, m.body.twist.Angular.Y, m.body.twist.Angular.Z], stateGroundTruthData, 'UniformOutput', 0));
     
     stateGroundTruth.jointPosition = cell2mat(cellfun(@(m) m.Joints.Position.', stateGroundTruthData, 'UniformOutput', 0));
     stateGroundTruth.jointVelocity = cell2mat(cellfun(@(m) m.Joints.Velocity.', stateGroundTruthData, 'UniformOutput', 0));
@@ -109,16 +109,16 @@ else
     stateTrajectory.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, stateTrajectoryData, 'UniformOutput', 0));
     
     stateTrajectory.position = cell2mat(cellfun(@(m) ...
-        [m.Body.Pose.Pose.Position.X, m.Body.Pose.Pose.Position.Y, m.Body.Pose.Pose.Position.Z], stateTrajectoryData, 'UniformOutput', 0));
+        [m.body.pose.Position.X, m.body.pose.Position.Y, m.body.pose.Position.Z], stateTrajectoryData, 'UniformOutput', 0));
     stateTrajectory.velocity = cell2mat(cellfun(@(m) ...
-        [m.Body.Twist.Twist.Linear.X, m.Body.Twist.Twist.Linear.Y, m.Body.Twist.Twist.Linear.Z], stateTrajectoryData, 'UniformOutput', 0));
+        [m.body.twist.Linear.X, m.body.twist.Linear.Y, m.body.twist.Linear.Z], stateTrajectoryData, 'UniformOutput', 0));
     
     stateTrajectory.orientationRPY = cell2mat(cellfun(@(m) ...
-        fliplr(quat2eul([m.Body.Pose.Pose.Orientation.W, m.Body.Pose.Pose.Orientation.X, m.Body.Pose.Pose.Orientation.Y, m.Body.Pose.Pose.Orientation.Z])), stateTrajectoryData, 'UniformOutput', 0));
+        fliplr(quat2eul([m.body.pose.Orientation.W, m.body.pose.Orientation.X, m.body.pose.Orientation.Y, m.body.pose.Orientation.Z])), stateTrajectoryData, 'UniformOutput', 0));
     stateTrajectory.orientationQuat = cell2mat(cellfun(@(m) ...
-        [m.Body.Pose.Pose.Orientation.W, m.Body.Pose.Pose.Orientation.X, m.Body.Pose.Pose.Orientation.Y, m.Body.Pose.Pose.Orientation.Z], stateTrajectoryData, 'UniformOutput', 0));
+        [m.body.pose.Orientation.W, m.body.pose.Orientation.X, m.body.pose.Orientation.Y, m.body.pose.Orientation.Z], stateTrajectoryData, 'UniformOutput', 0));
     stateTrajectory.angularVelocity = cell2mat(cellfun(@(m) ...
-        [m.Body.Twist.Twist.Angular.X, m.Body.Twist.Twist.Angular.Y, m.Body.Twist.Twist.Angular.Z], stateTrajectoryData, 'UniformOutput', 0));
+        [m.body.twist.Angular.X, m.body.twist.Angular.Y, m.body.twist.Angular.Z], stateTrajectoryData, 'UniformOutput', 0));
     
     stateTrajectory.jointPosition = cell2mat(cellfun(@(m) m.Joints.Position.', stateTrajectoryData, 'UniformOutput', 0));
     stateTrajectory.jointVelocity = cell2mat(cellfun(@(m) m.Joints.Velocity.', stateTrajectoryData, 'UniformOutput', 0));

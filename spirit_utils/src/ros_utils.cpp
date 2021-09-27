@@ -37,40 +37,40 @@ namespace spirit_utils {
     interp_header.stamp = header_1.stamp + ros::Duration(interp_duration);
   }
 
-  void interpOdometry(nav_msgs::Odometry state_1, nav_msgs::Odometry state_2, 
-      double t_interp, nav_msgs::Odometry &interp_state) {
+  void interpOdometry(spirit_msgs::BodyState state_1, spirit_msgs::BodyState state_2, 
+      double t_interp, spirit_msgs::BodyState &interp_state) {
 
     interpHeader(state_1.header, state_2.header,t_interp,interp_state.header);
 
     // Interp body position
-    interp_state.pose.pose.position.x = 
-      math_utils::lerp(state_1.pose.pose.position.x, state_2.pose.pose.position.x, t_interp);
-    interp_state.pose.pose.position.y = 
-      math_utils::lerp(state_1.pose.pose.position.y, state_2.pose.pose.position.y, t_interp);
-    interp_state.pose.pose.position.z = 
-      math_utils::lerp(state_1.pose.pose.position.z, state_2.pose.pose.position.z, t_interp);
+    interp_state.pose.position.x = 
+      math_utils::lerp(state_1.pose.position.x, state_2.pose.position.x, t_interp);
+    interp_state.pose.position.y = 
+      math_utils::lerp(state_1.pose.position.y, state_2.pose.position.y, t_interp);
+    interp_state.pose.position.z = 
+      math_utils::lerp(state_1.pose.position.z, state_2.pose.position.z, t_interp);
     
     // Interp body orientation with smath_utils::lerp
     tf2::Quaternion q_1, q_2, q_interp;
-    tf2::convert(state_1.pose.pose.orientation,q_1);
-    tf2::convert(state_2.pose.pose.orientation,q_2);
+    tf2::convert(state_1.pose.orientation,q_1);
+    tf2::convert(state_2.pose.orientation,q_2);
     q_interp = q_1.slerp(q_2, t_interp);
-    interp_state.pose.pose.orientation = tf2::toMsg(q_interp);
+    interp_state.pose.orientation = tf2::toMsg(q_interp);
 
     // Interp twist
-    interp_state.twist.twist.linear.x = 
-      math_utils::lerp(state_1.twist.twist.linear.x, state_2.twist.twist.linear.x, t_interp);
-    interp_state.twist.twist.linear.y = 
-      math_utils::lerp(state_1.twist.twist.linear.y, state_2.twist.twist.linear.y, t_interp);
-    interp_state.twist.twist.linear.z = 
-      math_utils::lerp(state_1.twist.twist.linear.z, state_2.twist.twist.linear.z, t_interp);
+    interp_state.twist.linear.x = 
+      math_utils::lerp(state_1.twist.linear.x, state_2.twist.linear.x, t_interp);
+    interp_state.twist.linear.y = 
+      math_utils::lerp(state_1.twist.linear.y, state_2.twist.linear.y, t_interp);
+    interp_state.twist.linear.z = 
+      math_utils::lerp(state_1.twist.linear.z, state_2.twist.linear.z, t_interp);
 
-    interp_state.twist.twist.angular.x = 
-      math_utils::lerp(state_1.twist.twist.angular.x, state_2.twist.twist.angular.x, t_interp);
-    interp_state.twist.twist.angular.y = 
-      math_utils::lerp(state_1.twist.twist.angular.y, state_2.twist.twist.angular.y, t_interp);
-    interp_state.twist.twist.angular.z = 
-      math_utils::lerp(state_1.twist.twist.angular.z, state_2.twist.twist.angular.z, t_interp);
+    interp_state.twist.angular.x = 
+      math_utils::lerp(state_1.twist.angular.x, state_2.twist.angular.x, t_interp);
+    interp_state.twist.angular.y = 
+      math_utils::lerp(state_1.twist.angular.y, state_2.twist.angular.y, t_interp);
+    interp_state.twist.angular.z = 
+      math_utils::lerp(state_1.twist.angular.z, state_2.twist.angular.z, t_interp);
   }
 
   void interpJointState(sensor_msgs::JointState state_1,
@@ -308,7 +308,7 @@ namespace spirit_utils {
   }
 
   void ikRobotState(const spirit_utils::SpiritKinematics &kinematics,
-    nav_msgs::Odometry body_state, spirit_msgs::MultiFootState multi_foot_state,
+    spirit_msgs::BodyState body_state, spirit_msgs::MultiFootState multi_foot_state,
     sensor_msgs::JointState &joint_state) {
 
     joint_state.header = multi_foot_state.header;
@@ -329,11 +329,11 @@ namespace spirit_utils {
       foot_pos[2] = multi_foot_state.feet[i].position.z;      
 
       // Get corresponding body plan data
-      Eigen::Vector3d body_pos = {body_state.pose.pose.position.x,
-        body_state.pose.pose.position.y,body_state.pose.pose.position.z};
+      Eigen::Vector3d body_pos = {body_state.pose.position.x,
+        body_state.pose.position.y,body_state.pose.position.z};
 
       tf2::Quaternion q;
-      tf2::convert(body_state.pose.pose.orientation,q);
+      tf2::convert(body_state.pose.orientation,q);
       tf2::Matrix3x3 m(q);
       double roll, pitch, yaw;
       m.getRPY(roll, pitch, yaw);
@@ -357,7 +357,7 @@ namespace spirit_utils {
     Eigen::VectorXd ref_body_state(12), ref_foot_positions(12), ref_foot_velocities(12);
 
     // Load state data
-    ref_body_state = spirit_utils::odomMsgToEigen(body_state);
+    ref_body_state = spirit_utils::bodyStateMsgToEigen(body_state);
     spirit_utils::multiFootStateMsgToEigen(
       multi_foot_state, ref_foot_positions, ref_foot_velocities);
 
@@ -395,7 +395,7 @@ namespace spirit_utils {
   }
 
   void fkRobotState(const spirit_utils::SpiritKinematics &kinematics,
-    nav_msgs::Odometry body_state, sensor_msgs::JointState joint_state,
+    spirit_msgs::BodyState body_state, sensor_msgs::JointState joint_state,
     spirit_msgs::MultiFootState &multi_foot_state) {
 
     multi_foot_state.header = joint_state.header;
@@ -416,11 +416,11 @@ namespace spirit_utils {
       }    
 
       // Get corresponding body plan data
-      Eigen::Vector3d body_pos = {body_state.pose.pose.position.x,
-        body_state.pose.pose.position.y,body_state.pose.pose.position.z};
+      Eigen::Vector3d body_pos = {body_state.pose.position.x,
+        body_state.pose.position.y,body_state.pose.position.z};
 
       tf2::Quaternion q;
-      tf2::convert(body_state.pose.pose.orientation,q);
+      tf2::convert(body_state.pose.orientation,q);
       tf2::Matrix3x3 m(q);
       double roll, pitch, yaw;
       m.getRPY(roll, pitch, yaw);
@@ -442,7 +442,7 @@ namespace spirit_utils {
     Eigen::VectorXd ref_body_state(12), foot_velocities(12);
 
     // Load state data
-    ref_body_state = spirit_utils::odomMsgToEigen(body_state);
+    ref_body_state = spirit_utils::bodyStateMsgToEigen(body_state);
 
     // Define vectors for joint positions and velocities
     Eigen::VectorXd joint_positions(12), joint_velocities(12);
@@ -484,9 +484,9 @@ namespace spirit_utils {
     fkRobotState(kinematics, state.body, state.joints, state.feet);
   }
 
-  nav_msgs::Odometry eigenToOdomMsg(const Eigen::VectorXd &state) {
+  spirit_msgs::BodyState eigenToBodyStateMsg(const Eigen::VectorXd &state) {
     
-    nav_msgs::Odometry state_msg;
+    spirit_msgs::BodyState state_msg;
 
     // Transform from RPY to quat msg
     tf2::Quaternion quat_tf;
@@ -495,33 +495,33 @@ namespace spirit_utils {
     quat_msg = tf2::toMsg(quat_tf);
 
     // Load the data into the message
-    state_msg.pose.pose.position.x = state[0];
-    state_msg.pose.pose.position.y = state[1];
-    state_msg.pose.pose.position.z = state[2];
-    state_msg.pose.pose.orientation = quat_msg;
+    state_msg.pose.position.x = state[0];
+    state_msg.pose.position.y = state[1];
+    state_msg.pose.position.z = state[2];
+    state_msg.pose.orientation = quat_msg;
 
-    state_msg.twist.twist.linear.x = state[6];
-    state_msg.twist.twist.linear.y = state[7];
-    state_msg.twist.twist.linear.z = state[8];
-    state_msg.twist.twist.angular.x = state[9];
-    state_msg.twist.twist.angular.y = state[10];
-    state_msg.twist.twist.angular.z = state[11];
+    state_msg.twist.linear.x = state[6];
+    state_msg.twist.linear.y = state[7];
+    state_msg.twist.linear.z = state[8];
+    state_msg.twist.angular.x = state[9];
+    state_msg.twist.angular.y = state[10];
+    state_msg.twist.angular.z = state[11];
 
     return state_msg;
   }
 
-  Eigen::VectorXd odomMsgToEigen(const nav_msgs::Odometry &body) {
+  Eigen::VectorXd bodyStateMsgToEigen(const spirit_msgs::BodyState &body) {
 
     Eigen::VectorXd state = Eigen::VectorXd::Zero(12);
 
     // Position
-    state(0) = body.pose.pose.position.x;
-    state(1) = body.pose.pose.position.y;
-    state(2) = body.pose.pose.position.z;
+    state(0) = body.pose.position.x;
+    state(1) = body.pose.position.y;
+    state(2) = body.pose.position.z;
 
     // Orientation
     tf2::Quaternion quat;
-    tf2::convert(body.pose.pose.orientation, quat);
+    tf2::convert(body.pose.orientation, quat);
     double r,p,y;
     tf2::Matrix3x3 m(quat);
     m.getRPY(r,p,y);
@@ -530,14 +530,14 @@ namespace spirit_utils {
     state(5) = y;
 
     // Linear Velocity
-    state(6) = body.twist.twist.linear.x;
-    state(7) = body.twist.twist.linear.y;
-    state(8) = body.twist.twist.linear.z;
+    state(6) = body.twist.linear.x;
+    state(7) = body.twist.linear.y;
+    state(8) = body.twist.linear.z;
 
     // Angular Velocity
-    state(9) = body.twist.twist.angular.x;
-    state(10) = body.twist.twist.angular.y;
-    state(11) = body.twist.twist.angular.z;
+    state(9) = body.twist.angular.x;
+    state(10) = body.twist.angular.y;
+    state(11) = body.twist.angular.z;
 
     return state;
   }

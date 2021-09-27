@@ -1,5 +1,5 @@
 local_planner:
-  update_rate: 80 # Hz
+  update_rate: 33 # Hz
   timestep: 0.03 # s
   horizon_length: 24 # timesteps
   iterations: 1
@@ -13,7 +13,7 @@ local_body_planner:
   terminal_weight_scaling: 1.0
   control_weights: [0.000001, 0.000001, 0.000001] #fx,fy,fz 
   state_lower_bound: [-100,-100, 0.15,-0.785,-0.785,-10,-5,-5,-2,-10,-10,-10]
-  state_upper_bound: [ 100, 100, 0.65, 0.785, 0.785, 10, 5, 5, 2, 10, 10, 10]
+  state_upper_bound: [ 100, 100, 0.35, 0.785, 0.785, 10, 5, 5, 2, 10, 10, 10]
   friction_mu: 0.5
   normal_lo: 5
   normal_hi: 150

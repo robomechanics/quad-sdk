@@ -90,7 +90,6 @@ class RRTConnectClass : public RRTClass
 
     /// Factor by which horizon is increased if replanning is required
     double horizon_expansion_factor = 1.2;
-
 };
 
 #endif
