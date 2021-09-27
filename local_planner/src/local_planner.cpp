@@ -71,9 +71,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   current_foot_positions_body_ = Eigen::VectorXd::Zero(num_feet_*3);
   current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_*3);
 
-  tail_plan_ = Eigen::MatrixXd::Zero(N_, 4);
-  tail_torque_plan_ = Eigen::MatrixXd::Zero(N_, 2);
-
   // Initialize body and footstep planners
   initLocalBodyPlanner();
   initLocalFootstepPlanner();
@@ -84,7 +81,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   initial_timestamp_ = ros::Time::now();
   first_plan_ = true;
 
-  // Assume we know the step height
+  // Initialize body height estimation, we'll use foot position to estimate it
   z_des_ = std::numeric_limits<double>::max();
 
   miss_contact_leg_.resize(4);
@@ -285,6 +282,7 @@ void LocalPlanner::getStateAndReferencePlan() {
   {
     tail_current_state_ = spirit_utils::odomMsgToEigenForTail(*robot_state_msg_);
     ref_tail_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 4);
+    ref_tail_plan_.row(0) = tail_current_state_.transpose();
   }
 
   // Update the body plan to use for linearization
@@ -331,11 +329,10 @@ void LocalPlanner::getStateAndTwistInput() {
     }
   }
 
+  // The first couple solving might fail, we want to aligh all the gait  
   if (!first_solve_success)
   {
     initial_timestamp_ = ros::Time::now();
-    // ros::Duration tmp(0.03*6);
-    // initial_timestamp_ = initial_timestamp_ - tmp;
   }
   
   // Get index
@@ -360,34 +357,20 @@ void LocalPlanner::getStateAndTwistInput() {
   std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
   cmd_vel_.at(1) = 0.5;
 
-  // Adaptive body height, assume we know step height
-  // if (abs(current_foot_positions_world_(2) - current_state_(2)) >= 0.35 ||
-  // abs(current_foot_positions_world_(5) - current_state_(2)) >= 0.35 || 
-  // abs(current_foot_positions_world_(8) - current_state_(2)) >= 0.35 || 
-  // abs(current_foot_positions_world_(11) - current_state_(2)) >= 0.35)
-  // {
-  //   z_des_ = 0.3;
-  // }
-
-  // Adaptive body height, use the lowest contact foot and exponential filter
-  std::vector<double> contact_foot_height;
+  // Adaptive body height, use the lowest foot and exponential filter
+  std::vector<double> foot_height;
   for (size_t i = 0; i < 4; i++)
   {
-    // if (grf_msg_->contact_states.at(i) && grf_msg_->vectors.at(i).z > 10)
-    // {
-      contact_foot_height.push_back(current_foot_positions_world_(3 * i + 2));
-    // }
+    foot_height.push_back(current_foot_positions_world_(3 * i + 2));
   }
-  if (!contact_foot_height.empty())
+
+  if (z_des_ == std::numeric_limits<double>::max())
   {
-    if (z_des_ == std::numeric_limits<double>::max())
-    {
-      z_des_ = std::max(*std::min_element(contact_foot_height.begin(), contact_foot_height.end()) + 0.3, 0.0);
-    }
-    else
-    {
-      z_des_ = 0.75 * std::max(*std::min_element(contact_foot_height.begin(), contact_foot_height.end()) + 0.3, 0.0) + 0.25 * z_des_;
-    }
+    z_des_ = std::max(*std::min_element(foot_height.begin(), foot_height.end()) + 0.3, 0.0);
+  }
+  else
+  {
+    z_des_ = 0.75 * std::max(*std::min_element(foot_height.begin(), foot_height.end()) + 0.3, 0.0) + 0.25 * z_des_;
   }
 
   // Set initial condition for forward integration
@@ -477,19 +460,24 @@ bool LocalPlanner::computeLocalPlan() {
   // Contact sensing
   adpative_contact_schedule_ = contact_schedule_;
 
+  // Late contact 
   for (size_t i = 0; i < 4; i++)
   {
     // Check foot distance
     Eigen::VectorXd foot_position_vec = current_foot_positions_body_.segment(3 * i, 3);
 
-    ROS_WARN_STREAM("dis: " << foot_position_vec.norm());
+    // ROS_WARN_STREAM("dis: " << foot_position_vec.norm());
+    // ROS_WARN_STREAM("height: " << foot_position_vec(2));
 
-    if (foot_position_vec.norm() > 0.45)
+    // If it stretches too long, we assume miss contact
+    // if (foot_position_vec.norm() > 0.45)
+    if (foot_position_vec(2) < -0.3125)
     {
       ROS_WARN_STREAM("miss!");
       miss_contact_leg_.at(i) = true;
     }
 
+    // It will recover only when contact sensor report it hits ground
     if (contact_schedule_.at(0).at(i) && bool(grf_msg_->contact_states.at(i)) && miss_contact_leg_.at(i))
     {
       miss_contact_leg_.at(i) = false;
@@ -505,6 +493,7 @@ bool LocalPlanner::computeLocalPlan() {
           adpative_contact_schedule_.at(j).at(i) = false;
           if (j > 0)
           {
+            // We try to move the leg more to balance the body
             foot_positions_world_(j, i * 3 + 0) = foot_positions_world_(j, i * 3 + 0) - 0.05;
             foot_positions_body_(j, i * 3 + 0) = foot_positions_body_(j, i * 3 + 0) - 0.05;
             ROS_WARN_STREAM("shift: " << i << "leg");
@@ -584,6 +573,7 @@ bool LocalPlanner::computeLocalPlan() {
         return false;
     }
 
+  // We are here, meaning we get the solving success
   first_solve_success = true;
 
   // Record computation time and update exponential filter
@@ -621,6 +611,7 @@ void LocalPlanner::publishLocalPlan() {
   spirit_msgs::LegCommandArray tail_plan_msg;
 
   // Update the headers of all messages
+  // We use entrance time so we address the solving time problem but we need to assume the solutions are consistant
   ros::Time timestamp = entrance_time_;
   local_plan_msg.header.stamp = timestamp;
   local_plan_msg.header.frame_id = map_frame_;
@@ -636,55 +627,14 @@ void LocalPlanner::publishLocalPlan() {
   if (tail_type_ == CENTRALIZED)
   {
     tail_plan_msg.header = local_plan_msg.header;
-      tail_plan_msg.dt_first_step = dt_;
   }
 
   // Compute the discrete and continuous foot plan messages
   local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_world_,
     current_plan_index_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
 
-  // for (size_t i = 0; i < 4; i++)
-  // {
-  //   if (miss_contact_leg_.at(i))
-  //   {
-  //     // We assume it will not touch the ground at this gait peroid
-  //     for (size_t j = 0; j < N_; j++)
-  //     {
-  //       if (contact_schedule_.at(j).at(i))
-  //       {
-  //         grf_plan_(j, i * 3 + 0) = 0;
-  //         grf_plan_(j, i * 3 + 1) = 0;
-  //         grf_plan_(j, i * 3 + 2) = 0;
-  //       }
-  //       else
-  //       {
-  //         break;
-  //       }
-  //     }
-  //   }
-  // }
-
   // Add body, foot, joint, and grf data to the local plan message
   for (int i = 0; i < N_; i++) {
-
-    // for (int j = 0; j < num_feet_; j++)
-    // {
-    //   // Potential leg control for later contact
-    //   if (contact_schedule_[i][j] && !adpative_contact_schedule_[i][j])
-    //   {
-    //     Eigen::VectorXd body_foot_positions = foot_positions_body_.block(i, 3 * j, 1, 3).transpose();
-
-    //     foot_plan_msg.states[i].feet[j].position.x += 0.1*body_plan_(0, 6);
-    //     foot_plan_msg.states[i].feet[j].position.y += 0.1*body_plan_(0, 7);
-    //     foot_plan_msg.states[i].feet[j].position.z = body_plan_(i, 2) - 0.35;
-    //   }
-
-    //   // Potential leg control for early contact
-    //   if (!contact_schedule_[i][j] && adpative_contact_schedule_[i][j])
-    //   {
-    //     foot_plan_msg.states[i].feet[j].contact = true;
-    //   }
-    // }
 
     // Add the state information
     spirit_msgs::RobotState robot_state_msg;
@@ -694,26 +644,11 @@ void LocalPlanner::publishLocalPlan() {
 
     // Add the GRF information
     spirit_msgs::GRFArray grf_array_msg;
-    grf_array_msg.contact_states.resize(num_feet_);
-    for (int j = 0; j < num_feet_; j++)
-    {
-      grf_array_msg.contact_states[j] = contact_schedule_[i][j];
-
-      // // Potential leg control for later contact
-      // if (contact_schedule_[i][j] && !adpative_contact_schedule_[i][j])
-      // {
-      //   Eigen::VectorXd hip_foot_positions = (hip_projected_foot_positions_.block(i, 3 * j, 1, 3) - foot_positions_body_.block(i, 3 * j, 1, 3)).transpose();
-
-      //   grf_plan_(i, 3 * j + 0) = hip_foot_positions(0) / 0.3 * 58;
-      //   grf_plan_(i, 3 * j + 1) = hip_foot_positions(1) / 0.3 * 58;
-      //   grf_plan_(i, 3 * j + 2) = 58;
-
-      //   grf_plan_(i, 3 * j + 0) = 0;
-      //   grf_plan_(i, 3 * j + 1) = 0;
-      //   grf_plan_(i, 3 * j + 2) = 0;
-      // }
-    }
     spirit_utils::eigenToGRFArrayMsg(grf_plan_.row(i), foot_plan_msg.states[i], grf_array_msg);
+    grf_array_msg.contact_states.resize(num_feet_);
+    for (int j = 0; j < num_feet_; j++) {
+      grf_array_msg.contact_states[j] = contact_schedule_[i][j];
+    }
 
     // Update the headers and plan indices of the messages
     ros::Time state_timestamp = local_plan_msg.header.stamp + ros::Duration(i*dt_);

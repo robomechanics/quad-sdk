@@ -38,9 +38,6 @@ SOFTWARE.
 
   <param name="tail_controller/tail_type" value="$(arg tail_type)"/>
 
-  <!-- Load the parameters and the sdf description -->
-  <include file="$(find spirit_utils)/launch/load_params.launch" />
-
   <include file="$(find spirit_utils)/launch/mapping.launch" >
     <arg name="input_type" value="mesh"/>
     <arg name="world" value="$(arg world)"/>
@@ -75,20 +72,20 @@ SOFTWARE.
     <arg name="physics" value="ode"/>
   </include>
 
+  <!-- Load the parameters and the sdf description -->
+  <include file="$(find spirit_utils)/launch/load_params.launch" />
   <param name="robot_description_body" textfile="$(find spirit_description)/urdf/spirit.urdf" />
 
   <group if="$(arg tail)">
     <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_tail.urdf" />
     <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit_tail.sdf" />
     <rosparam file="$(find gazebo_scripts)/config/spirit_control_tail.yaml" command="load"/>
-    <rosparam file="$(find gazebo_scripts)/config/spirit_estimate_tail.yaml" command="load"/>
   </group>
 
   <group unless="$(arg tail)">
     <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit.urdf" />
     <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
     <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
-    <rosparam file="$(find gazebo_scripts)/config/spirit_estimate.yaml" command="load"/>
   </group>
 
   <!-- Spawn SDF model -->

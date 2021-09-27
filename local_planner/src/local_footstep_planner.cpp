@@ -3,6 +3,7 @@
 #include <chrono>
 
 LocalFootstepPlanner::LocalFootstepPlanner() {
+  // Initialize the ground height estimation as infinity, we'll use foot position to estimate it online
   ground_height_ = std::numeric_limits<double>::max();
 }
 
@@ -36,9 +37,10 @@ void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_
 
 void LocalFootstepPlanner::setSpatialParams(double min_ground_clearance, double max_ground_clearance, double grf_weight, 
   double standing_error_threshold, std::shared_ptr<spirit_utils::SpiritKinematics> kinematics) {
-
+  // Minimum and maximum ground clearance when computing the swing traj
   min_ground_clearance_ = min_ground_clearance;
   max_ground_clearance_ = max_ground_clearance;
+
   standing_error_threshold_ = standing_error_threshold;
   grf_weight_ = grf_weight;
   kinematics_ = kinematics;
@@ -116,6 +118,7 @@ void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_pos
     basis_5*foot_position_next.array())/pow(swing_duration*dt_, 2);
 
   // Update z to clear both footholds by the specified height
+  // We select the higher one between minimum clearance on the lower one or the maximum clearance on the higher one
   double swing_apex = std::max(std::min(foot_position_prev.z(), foot_position_next.z()) + max_ground_clearance_,
                                std::max(foot_position_prev.z(), foot_position_next.z()) + min_ground_clearance_);
   double phi_z = 2*fmod(phi, 0.5);
@@ -183,10 +186,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         kinematics_->nominalHipFK(j, body_pos_midstance, body_rpy_midstance, 
           hip_position_midstance);
 
-        // double hip_height = hip_position_midstance.z() - 
-        //   terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());
-
-        // Assume flat plane
+        // Use body height to estimate ground height
         if (ground_height_ == std::numeric_limits<double>::max())
         {
           ground_height_ = std::max(current_body_pos.z() - 0.3, 0.0);
@@ -195,14 +195,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         {
           ground_height_ = 0.75 * std::max(current_body_pos.z() - 0.3, 0.0) + 0.25 * ground_height_;
         }
-        // if (body_pos_midstance.z() < 0.35)
-        // {
-        //   ground_height = 0.0;
-        // }
-        // else
-        // {
-        //   ground_height = 0.2;
-        // }
+
         double hip_height = hip_position_midstance.z() - ground_height_;
 
         centrifugal = (hip_height/9.81)*body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
@@ -214,10 +207,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         //   (1-grf_weight_)*(hip_position_midstance + vel_tracking);
         foot_position_nominal = hip_position_midstance + centrifugal + vel_tracking;
 
-        // foot_position_nominal.z() = terrain_.getGroundHeight(foot_position_nominal.x(),
-        //   foot_position_nominal.y());
-
-        // Assume flat plane
+        // We don't have terrian info here, so assume flat plane
         foot_position_nominal.z() = ground_height_;
 
         // (Optional) Optimize the foothold location to get the final position
@@ -263,7 +253,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
     spirit_utils::footStateMsgToEigen(most_recent_foothold_msg, foot_position_prev);
     Eigen::Vector3d foot_position_next = getFootData(foot_positions, i_touchdown, j);
 
-    // We assume the swing foot is always at the same height
+    // The swing foot might not has the same height, so we use the actual data
     // foot_position_prev(2) = foot_position_next(2);
 
     // Loop through the horizon
@@ -341,6 +331,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
       if (i == 1 && isNewLiftoff(contact_schedule, i, j)) {
         past_footholds_msg.feet[j].footholds.push_back(foot_state_msg);
       }
+      // We don't want to update the past foothold with current height
       // else
       // {
       //   past_footholds_msg.feet[j].footholds.back().position.z = foot_position_prev(2);

@@ -360,6 +360,8 @@ void RVizInterface::robotStateCallback(
 
   // Copy the joint portion of the state estimate message to a new message
   sensor_msgs::JointState joint_msg;
+
+  // Combine leg and tail joints together
   if (tail_type_ != NONE)
   {
     joint_msg.name.reserve(msg->joints.name.size() + msg->tail_joints.name.size());

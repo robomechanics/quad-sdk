@@ -39,17 +39,14 @@ public:
     // State cost weighting, input cost weighting
     Eigen::MatrixXd Q_, R_;
 
-    double alpha_;
+    // Scale factor for Q and R
+    Eigen::MatrixXd Q_factor_, R_factor_;
 
     // Feet location from feet to body COM in world frame
     Eigen::MatrixXd feet_location_;
 
     // Step length
     double dt_;
-
-    double dt_first_step_;
-
-    double terminal_scale_factor_;
 
     // State bounds, input bounds, constraint bounds
     Eigen::MatrixXd x_min_, x_max_, u_min_, u_max_, g_min_, g_max_;
@@ -112,9 +109,10 @@ public:
         int n,
         int m,
         double dt,
-        double terminal_scale_factor,
         Eigen::MatrixXd Q,
         Eigen::MatrixXd R,
+        Eigen::MatrixXd Q_factor,
+        Eigen::MatrixXd R_factor,
         Eigen::MatrixXd x_min,
         Eigen::MatrixXd x_max,
         Eigen::MatrixXd u_min,

@@ -156,13 +156,12 @@ namespace effort_controllers
       }
     }
 
-    for (unsigned int i = 0; i < 12; i++)
+    for(unsigned int i=0; i<12; i++)
     {
-      // Leg control
-      std::pair<int, int> ind = leg_map_[i];
+      std::pair<int,int> ind = leg_map_[i];
       spirit_msgs::MotorCommand motor_command = commands.at(ind.first).motor_commands.at(ind.second);
 
-      // Collect feedforward torque
+      // Collect feedforward torque 
       double torque_ff = motor_command.torque_ff;
 
       // Compute position error
@@ -172,11 +171,11 @@ namespace effort_controllers
       double kp = motor_command.kp;
       double pos_error;
       angles::shortest_angular_distance_with_large_limits(
-          current_position,
-          command_position,
-          joint_urdfs_[i]->limits->lower,
-          joint_urdfs_[i]->limits->upper,
-          pos_error);
+        current_position,
+        command_position,
+        joint_urdfs_[i]->limits->lower,
+        joint_urdfs_[i]->limits->upper,
+        pos_error);
 
       // Compute velocity error
       double current_vel = joints_.at(i).getVelocity();
@@ -184,10 +183,10 @@ namespace effort_controllers
       double vel_error = command_vel - current_vel;
       double kd = motor_command.kd;
 
-      // Collect feedback
+      // Collect feedback 
       double torque_feedback = kp * pos_error + kd * vel_error;
       double torque_lim = torque_lims_[ind.second];
-      double torque_command = std::min(std::max(torque_feedback + torque_ff, -torque_lim), torque_lim);
+      double torque_command = std::min(std::max(torque_feedback + torque_ff, -torque_lim),torque_lim);
 
       // std::cout << "Joint " << i << ": " << "FF Torque: " << torque_ff << " FF Torque %: " << torque_ff/torque_command << " FB Torque: " << torque_feedback << " FB Torque %: " << torque_feedback/torque_command << " Total Torque: " << torque_command << std::endl;
 

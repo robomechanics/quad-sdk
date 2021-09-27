@@ -362,7 +362,7 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
   }
 
   // Compute joint angles
-  q1 = atan2(-z, -x) - acos(temp2);
+  q1 = 0.5 * M_PI + atan2(x, -z) - acos(temp2);
   q2 = acos(temp3);
 
   // Make sure hip is within joint limits (try other direction if fails)
@@ -372,7 +372,7 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
 
     q0 = q0_inverted;
     z = -sin(q0) * y + cos(q0) * z_body_frame;
-    q1 = atan2(-z, -x) - acos(temp2);
+    q1 = 0.5 * M_PI + atan2(x, -z) - acos(temp2);
     q2 = acos(temp3);
 
     if (q1 > joint_max_[1] || q1 < joint_min_[1])

@@ -20,10 +20,6 @@
         <arg name="live_plot" value="$(arg live_plot)"/>
     </include>
 
-    <group if="$(arg logging)">
-        <include file="$(find spirit_utils)/launch/logging.launch" />
-    </group>
-
     <!-- Launch the robot_proxy if specified-->
     <group if="$(arg proxy)">
         <include file="$(find spirit_utils)/launch/robot_driver.launch">

@@ -32,23 +32,28 @@ NMPCController::NMPCController(int type)
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_dimension", n_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_dimension", m_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/step_length", dt_);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/terminal_scale_factor", terminal_scale_factor_);
 
   // Load MPC cost weighting and bounds
   std::vector<double> state_weights,
       control_weights,
+      state_weights_factors,
+      control_weights_factors,
       state_lower_bound,
       state_upper_bound,
       control_lower_bound,
       control_upper_bound;
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_weights", state_weights);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_weights", control_weights);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/state_weights_factors", state_weights_factors);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/control_weights_factors", control_weights_factors);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_lower_bound", state_lower_bound);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_upper_bound", state_upper_bound);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_lower_bound", control_lower_bound);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_upper_bound", control_upper_bound);
   Eigen::Map<Eigen::MatrixXd> Q(state_weights.data(), n_, 1),
       R(control_weights.data(), m_, 1),
+      Q_factor(state_weights_factors.data(), N_, 1),
+      R_factor(control_weights_factors.data(), N_, 1),
       x_min(state_lower_bound.data(), n_, 1),
       x_max(state_upper_bound.data(), n_, 1),
       u_min(control_lower_bound.data(), m_, 1),
@@ -63,9 +68,10 @@ NMPCController::NMPCController(int type)
       n_,
       m_,
       dt_,
-      terminal_scale_factor_,
       Q,
       R,
+      Q_factor,
+      R_factor,
       x_min,
       x_max,
       u_min,
@@ -116,9 +122,6 @@ NMPCController::NMPCController(int type)
     x.block(0, i, n_, 1) = mynlp_->w0_.block(i * (n_ + m_) + m_, 0, n_, 1);
   }
 
-  last_state_traj_ = x.transpose();
-  last_control_traj_ = u.transpose();
-
   app_->Options()->SetStringValue("warm_start_same_structure", "yes");
 
   mynlp_->w0_.setZero();
@@ -134,10 +137,11 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
                                     Eigen::MatrixXd &state_traj,
                                     Eigen::MatrixXd &control_traj)
 {
+  // Local planner will send a reference traj with N+1 rows
   mynlp_->shift_initial_guess();
   mynlp_->update_solver(
       initial_state,
-      ref_traj,
+      ref_traj.bottomRows(N_),
       foot_positions,
       contact_schedule);
 
@@ -180,7 +184,7 @@ bool NMPCController::computeCentralizedTailPlan(const Eigen::VectorXd &initial_s
   mynlp_->shift_initial_guess();
   mynlp_->update_solver(
       initial_state_with_tail,
-      ref_traj_with_tail,
+      ref_traj_with_tail.bottomRows(N_),
       foot_positions,
       contact_schedule);
 
@@ -217,7 +221,6 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
                                                 const Eigen::MatrixXd &tail_ref_traj,
                                                 const Eigen::MatrixXd &state_traj,
                                                 const Eigen::MatrixXd &control_traj,
-                                                const double dt_first_step,
                                                 Eigen::MatrixXd &tail_state_traj,
                                                 Eigen::MatrixXd &tail_control_traj)
 {
@@ -241,12 +244,11 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
   mynlp_->shift_initial_guess();
   mynlp_->update_solver(
       initial_state_with_tail,
-      ref_traj_with_tail,
+      ref_traj_with_tail.bottomRows(N_),
       foot_positions,
       contact_schedule,
-      state_traj.bottomRows(N_),
+      state_traj,
       control_traj);
-  mynlp_->dt_first_step_ = dt_first_step;
 
   // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
   // std::cout << "mynlp_->x_current_.transpose().format(CleanFmt)" << std::endl;
@@ -323,9 +325,6 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     state_traj.topRows(1) = initial_state.transpose();
     control_traj = Eigen::MatrixXd::Zero(N_, m_);
 
-    last_state_traj_ = x.transpose();
-    last_control_traj_ = u.transpose();
-
     state_traj.bottomRows(N_) = x.transpose();
     control_traj = u.transpose();
 
@@ -334,29 +333,10 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
   }
   else
   {
-    last_state_traj_.topRows(N_ - 1) = last_state_traj_.bottomRows(N_ - 1);
-    last_control_traj_.topRows(N_ - 1) = last_control_traj_.bottomRows(N_ - 1);
-
-    if (contact_schedule.rbegin()[0] != contact_schedule.rbegin()[1])
-    {
-      for (size_t i = 2; i < N_; i++)
-      {
-        // std::cout << "change contact to idx: " << i << std::endl;
-        if (contact_schedule.rbegin()[0] == contact_schedule.rbegin()[i])
-        {
-          last_control_traj_.bottomRows(1) = last_control_traj_.row(N_ - (i + 1));
-          break;
-        }
-      }
-    }
-
-    mynlp_->w0_.setZero();
-    mynlp_->z_L0_.setZero();
-    mynlp_->z_U0_.setZero();
-    mynlp_->lambda0_.setZero();
-
-    // state_traj.bottomRows(N_) = last_state_traj_;
-    // control_traj = last_control_traj_;
+    // mynlp_->w0_.setZero();
+    // mynlp_->z_L0_.setZero();
+    // mynlp_->z_U0_.setZero();
+    // mynlp_->lambda0_.setZero();
 
     ROS_INFO_STREAM(param_ns_ << " solving fail");
     return false;

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <root version="2.3.8">
  <tabbed_widget parent="main_window" name="Main Window">
-  <Tab tab_name="Body" containers="1">
+  <Tab containers="1" tab_name="Body">
    <Container>
     <DockSplitter sizes="0.500747;0.499253" count="2" orientation="-">
      <DockSplitter sizes="0.5;0.5" count="2" orientation="|">
@@ -48,7 +48,7 @@
     </DockSplitter>
    </Container>
   </Tab>
-  <Tab tab_name="Body Position XY" containers="1">
+  <Tab containers="1" tab_name="Body Position XY">
    <Container>
     <DockSplitter sizes="0.500747;0.499253" count="2" orientation="-">
      <DockArea name="Transverse Plane (m)">
@@ -66,7 +66,7 @@
     </DockSplitter>
    </Container>
   </Tab>
-  <Tab tab_name="Feet" containers="1">
+  <Tab containers="1" tab_name="Feet">
    <Container>
     <DockSplitter sizes="1" count="1" orientation="-">
      <DockSplitter sizes="0.5;0.5" count="2" orientation="|">
@@ -114,7 +114,7 @@
     </DockSplitter>
    </Container>
   </Tab>
-  <Tab tab_name="Joint Commands Leg 0" containers="1">
+  <Tab containers="1" tab_name="Joint Commands Leg 0">
    <Container>
     <DockSplitter sizes="0.350299;0.348802;0.300898" count="3" orientation="-">
      <DockArea name="Feedback Torques (Nm)">
@@ -230,4 +230,3 @@
  <snippets/>
  <!-- - - - - - - - - - - - - - - -->
 </root>
-

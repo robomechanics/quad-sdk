@@ -16,9 +16,10 @@ spiritNLP::spiritNLP(
     int n,
     int m,
     double dt,
-    double terminal_scale_factor,
     Eigen::MatrixXd Q,
     Eigen::MatrixXd R,
+    Eigen::MatrixXd Q_factor,
+    Eigen::MatrixXd R_factor,
     Eigen::MatrixXd x_min,
     Eigen::MatrixXd x_max,
     Eigen::MatrixXd u_min,
@@ -97,8 +98,8 @@ spiritNLP::spiritNLP(
 
    Q_ = Q;
    R_ = R;
-
-   alpha_ = 1;
+   Q_factor_ = Q_factor;
+   R_factor_ = R_factor;
 
    // feet location initialized by nominal position
    feet_location_ = Eigen::MatrixXd(12, N_);
@@ -108,9 +109,6 @@ spiritNLP::spiritNLP(
    }
 
    dt_ = dt;
-   dt_first_step_ = dt;
-
-   terminal_scale_factor_ = terminal_scale_factor;
 
    x_min_ = x_min;
    x_max_ = x_max;
@@ -306,21 +304,8 @@ bool spiritNLP::eval_f(
 
       xk = (xk.array() - x_reference_.block(0, i, n_, 1).array()).matrix();
 
-      // if (i == 0)
-      // {
-      //    obj_value += (xk.transpose() * Q_.asDiagonal() * xk / 2 + uk.transpose() * R_.asDiagonal() * uk / 2)(0, 0) * (dt_first_step_ / dt_);
-      // }
-      // else if (i == N_ - 1)
-      // {
-      //    obj_value += (xk.transpose() * Q_.asDiagonal() * xk / 2)(0, 0) * terminal_scale_factor_ + (uk.transpose() * R_.asDiagonal() * uk / 2)(0, 0);
-      // }
-      // else
-      // {
-      //    obj_value += (xk.transpose() * Q_.asDiagonal() * xk / 2 + uk.transpose() * R_.asDiagonal() * uk / 2)(0, 0);
-      // }
-
-      Eigen::MatrixXd Q_i = Q_ * pow(alpha_, N_ - (i + 1));
-      Eigen::MatrixXd R_i = R_ * pow(alpha_, i);
+      Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
+      Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
 
       obj_value += (xk.transpose() * Q_i.asDiagonal() * xk / 2 + uk.transpose() * R_i.asDiagonal() * uk / 2)(0, 0);
    }
@@ -346,24 +331,8 @@ bool spiritNLP::eval_grad_f(
 
       xk = (xk.array() - x_reference_.block(0, i, n_, 1).array()).matrix();
 
-      // if (i == 0)
-      // {
-      //    grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_.asDiagonal() * uk * (dt_first_step_ / dt_);
-      //    grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_.asDiagonal() * xk * (dt_first_step_ / dt_);
-      // }
-      // else if (i == N_ - 1)
-      // {
-      //    grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_.asDiagonal() * uk;
-      //    grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_.asDiagonal() * xk * terminal_scale_factor_;
-      // }
-      // else
-      // {
-      //    grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_.asDiagonal() * uk;
-      //    grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_.asDiagonal() * xk;
-      // }
-
-      Eigen::MatrixXd Q_i = Q_ * pow(alpha_, N_ - (i + 1));
-      Eigen::MatrixXd R_i = R_ * pow(alpha_, i);
+      Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
+      Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
 
       grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_i.asDiagonal() * uk;
       grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_i.asDiagonal() * xk;
@@ -387,14 +356,7 @@ bool spiritNLP::eval_g(
    for (int i = 0; i < N_; ++i)
    {
       Eigen::MatrixXd pk(13, 1);
-      if (i == 0)
-      {
-         pk(0, 0) = dt_first_step_;
-      }
-      else
-      {
-         pk(0, 0) = dt_;
-      }
+      pk(0, 0) = dt_;
       pk.block(1, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
 
       casadi_int sz_arg;
@@ -464,14 +426,7 @@ bool spiritNLP::eval_jac_g(
       for (int i = 0; i < N_; ++i)
       {
          Eigen::MatrixXd pk(13, 1);
-         if (i == 0)
-         {
-            pk(0, 0) = dt_first_step_;
-         }
-         else
-         {
-            pk(0, 0) = dt_;
-         }
+         pk(0, 0) = dt_;
          pk.block(1, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
 
          casadi_int sz_arg;
@@ -621,14 +576,7 @@ bool spiritNLP::eval_h(
       for (int i = 0; i < N_; ++i)
       {
          Eigen::MatrixXd pk(13, 1);
-         if (i == 0)
-         {
-            pk(0, 0) = dt_first_step_;
-         }
-         else
-         {
-            pk(0, 0) = dt_;
-         }
+         pk(0, 0) = dt_;
          pk.block(1, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
 
          casadi_int sz_arg;
@@ -681,24 +629,8 @@ bool spiritNLP::eval_h(
          eval_hess_g_release_(mem);
          eval_hess_g_decref_();
 
-         // if (i == 0)
-         // {
-         //    values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * (dt_first_step_ / dt_) * R_.array()).matrix();
-         //    values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * (dt_first_step_ / dt_) * Q_.array()).matrix();
-         // }
-         // else if (i == N_ - 1)
-         // {
-         //    values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_.array()).matrix();
-         //    values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * terminal_scale_factor_ * Q_.array()).matrix();
-         // }
-         // else
-         // {
-         //    values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_.array()).matrix();
-         //    values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * Q_.array()).matrix();
-         // }
-
-         Eigen::MatrixXd Q_i = Q_ * pow(alpha_, N_ - (i + 1));
-         Eigen::MatrixXd R_i = R_ * pow(alpha_, i);
+         Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
+         Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
 
          values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_i.array()).matrix();
          values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * Q_i.array()).matrix();
@@ -835,16 +767,19 @@ void spiritNLP::finalize_solution(
     const IpoptData *ip_data,
     IpoptCalculatedQuantities *ip_cq)
 {
-   Eigen::Map<const Eigen::MatrixXd> w(x, n, 1);
-   w0_ = w;
+   if (status == SUCCESS)
+   {
+      Eigen::Map<const Eigen::MatrixXd> w(x, n, 1);
+      w0_ = w;
 
-   Eigen::Map<const Eigen::MatrixXd> z_L_matrix(z_L, n, 1);
-   Eigen::Map<const Eigen::MatrixXd> z_U_matrix(z_L, n, 1);
-   z_L0_ = z_L_matrix;
-   z_U0_ = z_U_matrix;
+      Eigen::Map<const Eigen::MatrixXd> z_L_matrix(z_L, n, 1);
+      Eigen::Map<const Eigen::MatrixXd> z_U_matrix(z_L, n, 1);
+      z_L0_ = z_L_matrix;
+      z_U0_ = z_U_matrix;
 
-   Eigen::Map<const Eigen::MatrixXd> lambda_matrix(lambda, m, 1);
-   lambda0_ = lambda_matrix;
+      Eigen::Map<const Eigen::MatrixXd> lambda_matrix(lambda, m, 1);
+      lambda0_ = lambda_matrix;
+   }
 }
 
 void spiritNLP::shift_initial_guess()
@@ -891,7 +826,7 @@ void spiritNLP::update_solver(
 
    // Update reference trajectory
    // Local planner has row as N+1 horizon and col as states
-   x_reference_ = ref_traj.bottomRows(N_).transpose();
+   x_reference_ = ref_traj.transpose();
 }
 
 void spiritNLP::update_solver(
@@ -908,7 +843,7 @@ void spiritNLP::update_solver(
        foot_positions,
        contact_schedule);
 
-   leg_input_ = control_traj.bottomRows(N_).transpose();
+   leg_input_ = control_traj.transpose();
 
    known_leg_input_ = true;
 }

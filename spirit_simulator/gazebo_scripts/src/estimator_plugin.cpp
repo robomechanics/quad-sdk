@@ -111,6 +111,7 @@ namespace gazebo{
     state.body.twist.angular.z = ang_vel.Z();
 
     physics::Joint_V joint_vec = model_->GetJoints();
+    int num_joints = joint_names_.size();
     std::vector<std::string> model_joint_name;
 
     // Record all joint names
@@ -118,8 +119,6 @@ namespace gazebo{
       physics::JointPtr joint = joint_vec[i];
       model_joint_name.push_back(joint->GetName());
     }
-
-    int num_joints = joint_names_.size();
 
     if (tail_type_ != NONE)
     {

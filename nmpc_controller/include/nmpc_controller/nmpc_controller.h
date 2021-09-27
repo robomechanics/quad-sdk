@@ -79,7 +79,6 @@ public:
                                   const Eigen::MatrixXd &tail_ref_traj,
                                   const Eigen::MatrixXd &state_traj,
                                   const Eigen::MatrixXd &control_traj,
-                                  const double dt_first_step,
                                   Eigen::MatrixXd &tail_state_traj,
                                   Eigen::MatrixXd &tail_control_traj);
 
@@ -96,10 +95,6 @@ private:
 
   SmartPtr<IpoptApplication> app_;
 
-  Eigen::MatrixXd last_state_traj_;
-
-  Eigen::MatrixXd last_control_traj_;
-
   int N_;
 
   int n_;
@@ -107,8 +102,6 @@ private:
   int m_;
 
   double dt_;
-
-  double terminal_scale_factor_;
 
   int type_;
 

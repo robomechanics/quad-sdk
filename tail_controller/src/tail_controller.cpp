@@ -75,8 +75,9 @@ void TailController::publishTailCommand()
   spirit_msgs::LegCommand msg;
   msg.motor_commands.resize(2);
 
-  if (robot_state_msg_ != NULL && param_ns_ == "decentralized_tail")
+  if (param_ns_ == "decentralized_tail")
   {
+    // Feedback tail
     msg.motor_commands.at(0).pos_setpoint = 5 * current_state_(3);
     msg.motor_commands.at(0).vel_setpoint = 5 * current_state_(9);
     msg.motor_commands.at(0).torque_ff = 0;
@@ -89,6 +90,7 @@ void TailController::publishTailCommand()
     msg.motor_commands.at(1).kp = pitch_kp_;
     msg.motor_commands.at(1).kd = pitch_kd_;
 
+    // Satuate it if out of limits
     if (abs(msg.motor_commands.at(0).pos_setpoint) > 1.5)
     {
       if (msg.motor_commands.at(0).pos_setpoint > 0)
@@ -119,8 +121,9 @@ void TailController::publishTailCommand()
       msg.motor_commands.at(1).pos_setpoint = std::min(std::max(-1.5, msg.motor_commands.at(1).pos_setpoint), 1.5);
     }
   }
-  else if (last_tail_plan_msg_ == NULL || robot_state_msg_ == NULL)
+  else if (last_tail_plan_msg_ == NULL)
   {
+    // No tail plan yet
     msg.motor_commands.at(0).pos_setpoint = 0;
     msg.motor_commands.at(0).vel_setpoint = 0;
     msg.motor_commands.at(0).torque_ff = 0;
@@ -139,41 +142,11 @@ void TailController::publishTailCommand()
     int current_plan_index;
     double t_now = ros::Time::now().toSec();
 
-    //  Tail plan starts now
     double current_time = t_now - last_tail_plan_msg_->header.stamp.toSec();
-    current_plan_index = std::floor((current_time - last_tail_plan_msg_->dt_first_step) / dt_) + 1;
-    if (current_plan_index == 0)
-    {
-      t_interp = current_time / last_tail_plan_msg_->dt_first_step;
-    }
-    else
-    {
-      t_interp = std::fmod((current_time - last_tail_plan_msg_->dt_first_step), dt_) / dt_;
-    }
+    current_plan_index = std::floor(current_time / dt_);
+    t_interp = std::fmod(current_time, dt_) / dt_;
 
-    // //  Tail plan starts at the same point as local plan
-    // if ((t_now < last_tail_plan_msg_->leg_commands.front().header.stamp.toSec()) ||
-    //     (t_now > last_tail_plan_msg_->leg_commands.back().header.stamp.toSec()))
-    // {
-    //   ROS_ERROR("Tail controller node couldn't find the correct ref state!");
-    // }
-
-    // // Interpolate the local plan to get the reference state and ff GRF
-    // for (size_t i = 0; i < last_tail_plan_msg_->leg_commands.size() - 1; i++)
-    // {
-    //   if ((t_now >= last_tail_plan_msg_->leg_commands[i].header.stamp.toSec()) &&
-    //       (t_now < last_tail_plan_msg_->leg_commands[i + 1].header.stamp.toSec()))
-    //   {
-    //     t_interp = (t_now - last_tail_plan_msg_->leg_commands[i].header.stamp.toSec()) /
-    //                (last_tail_plan_msg_->leg_commands[i + 1].header.stamp.toSec() -
-    //                 last_tail_plan_msg_->leg_commands[i].header.stamp.toSec());
-
-    //     current_plan_index = i;
-
-    //     break;
-    //   }
-    // }
-
+    // If we are out of the plan interval
     if (current_plan_index + 1 > last_tail_plan_msg_->leg_commands.size() - 1)
     {
       msg.motor_commands.at(0).pos_setpoint = last_tail_plan_msg_->leg_commands.back().motor_commands[0].pos_setpoint;
@@ -190,6 +163,7 @@ void TailController::publishTailCommand()
     }
     else
     {
+      // Interpolate between two plans
       msg.motor_commands.at(0).pos_setpoint = math_utils::lerp(last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[0].pos_setpoint,
                                                                last_tail_plan_msg_->leg_commands[current_plan_index + 1].motor_commands[0].pos_setpoint,
                                                                t_interp);
@@ -209,11 +183,10 @@ void TailController::publishTailCommand()
       msg.motor_commands.at(1).torque_ff = last_tail_plan_msg_->leg_commands[current_plan_index].motor_commands[1].torque_ff;
       msg.motor_commands.at(1).kp = pitch_kp_;
       msg.motor_commands.at(1).kd = pitch_kd_;
-
-      // ROS_INFO_STREAM_THROTTLE(0.1, "current_plan_index: " << current_plan_index << "pos: " << msg.motor_commands.at(0).pos_setpoint << ", " << msg.motor_commands.at(1).pos_setpoint);
     }
   }
 
+  // Record control history
   for (size_t i = 0; i < 2; i++)
   {
     double pos_component = msg.motor_commands.at(i).kp * (msg.motor_commands.at(i).pos_setpoint - tail_current_state_(i));

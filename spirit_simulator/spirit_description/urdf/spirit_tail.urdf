@@ -24,12 +24,6 @@
     <color rgba="0.8 0.0 0.2 1.0"/>
   </material>
   <!-- Body -->
-  <link name="dummy">
-  </link>
-  <joint name="dummy_joint" type="fixed">
-     <parent link="dummy"/>
-     <child link="body"/>
-  </joint>
   <link name="body">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>

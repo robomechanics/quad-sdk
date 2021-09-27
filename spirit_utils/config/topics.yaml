@@ -14,7 +14,6 @@ topics:
     joint_torques: /body_force/joint_torques
     toe_forces: /body_force/toe_forces
   trajectory: /robot_plan
-  remote_heartbeat: /remote_heartbeat
   state: # These should not change for the remapping to work in some launch files
     ground_truth: /state/ground_truth
     estimate: /state/estimate

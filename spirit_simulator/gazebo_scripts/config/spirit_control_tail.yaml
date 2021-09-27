@@ -33,5 +33,10 @@ spirit:
     type: effort_controllers/SpiritController
     joints: ['0','1','2','3','4','5','6','7','8','9','10','11','body_tail_joint_0','body_tail_joint_1']
 
+# Ground truth ---------------------------------------
+  joint_estimator:
+    type: gazebo/SpiritEstimatorGroundTruth
+    joints: ["8", "0", "1", "9","2","3","10","4","5","11","6","7","body_tail_joint_0","body_tail_joint_1"]
+
 contact_state_publisher:
   update_rate: 200

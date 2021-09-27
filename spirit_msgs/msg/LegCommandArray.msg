@@ -5,5 +5,4 @@
 Header header
 
 LegCommand[] leg_commands # FL, BL, FR, BR
-float64 dt_first_step
 bool[] miss_contact
