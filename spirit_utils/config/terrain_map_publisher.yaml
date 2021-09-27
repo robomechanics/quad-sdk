@@ -8,6 +8,6 @@ terrain_map_publisher:
   obstacle_radius: 1.0
   obstacle_height: 0.0
   step_x: 2.0
-  step_height: 0.0
+  step_height: 0.2
 
 map_frame: map

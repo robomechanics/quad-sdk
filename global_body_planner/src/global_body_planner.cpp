@@ -102,12 +102,12 @@ void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstP
     robot_state_.push_back(roll);
     robot_state_.push_back(pitch);
     robot_state_.push_back(yaw);
-    robot_state_.push_back(msg->body.twist.twist.linear.x);
-    robot_state_.push_back(msg->body.twist.twist.linear.y);
-    robot_state_.push_back(msg->body.twist.twist.linear.z);
-    robot_state_.push_back(msg->body.twist.twist.angular.x);
-    robot_state_.push_back(msg->body.twist.twist.angular.y);
-    robot_state_.push_back(msg->body.twist.twist.angular.z);
+    robot_state_.push_back(msg->body.twist.linear.x);
+    robot_state_.push_back(msg->body.twist.linear.y);
+    robot_state_.push_back(msg->body.twist.linear.z);
+    robot_state_.push_back(msg->body.twist.angular.x);
+    robot_state_.push_back(msg->body.twist.angular.y);
+    robot_state_.push_back(msg->body.twist.angular.z);
 
   } else {
     ROS_WARN_THROTTLE(1.0, "Invalid quaternion received in GlobalBodyPlanner, "
