@@ -19,7 +19,7 @@ jobs:
             cd ..
             catkin_make
 workflows:
-  version: 1
+  version: 2
   build-and-test:
     jobs:
       - build-melodic:
