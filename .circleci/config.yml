@@ -2,7 +2,7 @@ jobs:
   build-melodic:
     working_directory: /catkin_ws/src
     docker:
-      - image: ros:melodic-ros-core-bionic
+      - image: ros:melodic-ros-base-bionic
     steps:
       - checkout
       - run:
