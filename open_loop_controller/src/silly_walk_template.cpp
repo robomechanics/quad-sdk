@@ -8,18 +8,22 @@ SillyWalkTemplate::SillyWalkTemplate(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Get rosparams from the server
-  std::string joint_command_topic,control_mode_topic;
+  std::string joint_command_topic,control_mode_topic, joint_state_topic;
   spirit_utils::loadROSParam(nh_,"topics/control/joint_command",joint_command_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
   spirit_utils::loadROSParam(nh_,"silly_walk_template/update_rate",update_rate_);
   spirit_utils::loadROSParam(nh_,"silly_walk_template/stand_angles",stand_joint_angles_);
+  spirit_utils::loadROSParam(nh_,"topics/spirit/joint_states",joint_state_topic);
   
   // Setup pubs and subs
   joint_control_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(joint_command_topic,1);
   control_mode_sub_ = nh_.subscribe(control_mode_topic,1,&SillyWalkTemplate::controlModeCallback, this);
-
+  joint_state_sub_ = nh_.subscribe(joint_state_topic,1,&SillyWalkTemplate::jointStateCallback, this);
   // Add any other class initialization goes here
   control_mode_ = SIT;
+
+  // Initialize foot position arrays
+  foot_positions_body_ = Eigen::MatrixXd::Zero(num_legs_,3);
 }
 
 void SillyWalkTemplate::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
@@ -28,6 +32,20 @@ void SillyWalkTemplate::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg
   if (msg->data == SIT || (msg->data == STAND))
   {  
     control_mode_ = msg->data;
+  }
+}
+
+void SillyWalkTemplate::jointStateCallback(const sensor_msgs::JointState::ConstPtr& msg){
+  if (msg->position.empty())
+    return;
+  joint_state_angles_ = msg->position;
+  // Calculate the foot position in body frame
+  for (int i = 0; i < num_legs_; i++){
+    Eigen::Vector3d joint_state_i;
+    Eigen::Vector3d foot_positions_body_i; 
+    joint_state_i << joint_state_angles_[3*i], joint_state_angles_[3*i+1], joint_state_angles_[3*i+2];
+    SpiritKinematics::bodyToFootFK(i, joint_state_i, foot_positions_body_i);
+    foot_positions_body_.row(i) = foot_positions_body_i;
   }
 }
 

@@ -34,16 +34,23 @@ private:
 	void controlModeCallback(const std_msgs::UInt8::ConstPtr& msg);
 
 	/**
+	 * @brief Get instant legs' joint states
+	 * @param[in] msg New joint state
+	 */
+	void jointStateCallback(const sensor_msgs::JointState::ConstPtr& msg);
+
+	/**
 	 * @brief Compute open loop joint control
 	 */
-  void computeJointControl();
+  	void computeJointControl();
 
 	/**
 	 * @brief Send open loop joint control
 	 */
-  void publishJointControl();
+  	void publishJointControl();
 
-  void setupTrajectory();
+
+  	void setupTrajectory();
 
 	/**
 	 * @brief Send open loop joint control
@@ -51,13 +58,16 @@ private:
 	 * @param[out] output Describe variables coming out of the function
 	 * @return Describe the return value of the function
 	 */
-  void doxygenExampleFunction(const std::vector<int> &input, std::vector<double> &output);
+ 	 void doxygenExampleFunction(const std::vector<int> &input, std::vector<double> &output);
 
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;
 
 	/// Subscriber for control mode
 	ros::Subscriber control_mode_sub_;
+
+	/// SUbscribe for joint state
+	ros::Subscriber joint_state_sub_;
 
 	/// Publisher for desired joint control
 	ros::Publisher joint_control_pub_;
@@ -83,8 +93,14 @@ private:
 	/// Standing joint angles
 	std::vector<double> stand_joint_angles_;
 
+	/// Joint state angles
+	std::vector<double> joint_state_angles_;
+
 	// Use a kinematics object to make kinematics calculations easier
 	spirit_utils::SpiritKinematics kinematics_;
+
+	/// Matrix of continuous foot positions in body frame
+  	Eigen::MatrixXd foot_positions_body_;
 };
 
 
