@@ -26,6 +26,6 @@ workflows:
           filters:
             branches:
               only:
-                - master
-                - develop
-                - melodic-devel
+                - main
+                - circleci-project-setup
+                - circleci-editor/circleci-project-setup
