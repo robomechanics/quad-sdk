@@ -54,9 +54,8 @@ cd ../..
 # cd ../..
 
 # Setup and build for rbdl
+sudo apt install -y ros-melodic-urdf
 cd rbdl-orb
-git submodule init
-git submodule update
 quiet_mkdir build
 cd build
 cmake -D CMAKE_BUILD_TYPE=Release -D RBDL_BUILD_ADDON_URDFREADER=ON ..
