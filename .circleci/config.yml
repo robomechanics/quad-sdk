@@ -8,10 +8,6 @@ jobs:
       - run:
           command: |
             sudo apt update
-            sudo apt install -y build-essential
-            sudo apt install -y ros-melodic-tf python-rosdep python-rosinstall python-rosinstall-generator python-wstool
-      - run:
-          command: |
             source /opt/ros/melodic/setup.bash
             catkin_init_workspace
             chmod +x setup.sh
