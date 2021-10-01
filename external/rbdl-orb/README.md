@@ -79,32 +79,32 @@ Building and Installation
 ```
 2. Install git
 ```
-  sudo apt install git-core
+  sudo apt install -y git-core
 ```
 
 3. Install cmake 
 ```
-  sudo apt install cmake
+  sudo apt install -y cmake
 ```
 
 4. Install Eigen3
   RBDL uses Eigen3 for efficient computations ([http://eigen.tuxfamily.org](http://eigen.tuxfamily.org)). 
 
 ```
-  sudo apt install libeigen3-dev
+  sudo apt install -y libeigen3-dev
 ```
 
 5. Install a c++ compiler
   The choice of compiler can have a large effect on performance. Consider evaluating a few different compilers, such as Clang, for the best performance.
 
 ```
-  sudo apt-get install build-essential
+  sudo apt install -y build-essential
 ```
 
 6. Install cmake-curses *(optional)*
     If you are planning on taking advantage of the many addons and other build options we recommend that you use cmake-curses as it makes the build configuration process faster and less prone to error.
 ```
-  sudo apt install cmake-curses-gui
+  sudo apt install -y cmake-curses-gui
 ```
 
 7. Install Catch2 *(optional)*
@@ -142,7 +142,7 @@ at which point you will see full list of build options for RBDL. We recommend th
 
 1. Install doxygen
 ```  
-    sudo apt install doxygen
+    sudo apt install -y doxygen
 ```
 
 2. Build the doxygen:
@@ -158,7 +158,7 @@ at which point you will see full list of build options for RBDL. We recommend th
 1. Install Boost *(optional)*
   Boost is needed to run many of the example simulations that come with RBDL.
   ```
-  sudo apt install libboost-all-dev
+  sudo apt install -y libboost-all-dev
   ```    
 
 ## Linux: RBDL's addon dependencies
@@ -167,8 +167,8 @@ at which point you will see full list of build options for RBDL. We recommend th
   -  If you'd like to load model files written in Lua to RBDL. Without this addon you will need to build models programmatically, or read them in using the URDF addon. To do so:
   - Install Lua51 
   ```
-    sudo apt install lua5.1
-    sudo apt install liblua5.1-0-dev
+    sudo apt install -y lua5.1
+    sudo apt install -y liblua5.1-0-dev
   ```
   - Build RBDL with
   ```
@@ -243,7 +243,7 @@ you can install it using setup.py. This is done automatically when using
   ```
   - If you already have python3 installed system-wide then you can get the remaining libraries with
   ```
-  sudo apt install cython3 python3-numpy python3-scipy python3-matplotlib
+  sudo apt install -y cython3 python3-numpy python3-scipy python3-matplotlib
   ```
   - If you are not using Ubuntu 18.04, and do not currently have python3, please
     look for instructions online to install these libraries on your system.     
