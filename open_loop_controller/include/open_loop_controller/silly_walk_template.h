@@ -49,8 +49,32 @@ private:
 	 */
   	void publishJointControl();
 
+	/**
+   	* @brief Set up trajectory for each foot
+    */
+  	Eigen::MatrixX3d SillyWalkTemplate::setupTrajectory(Eigen::Vector3d initpoint);
+	
+	/**
+   	* @brief Function to pre-process the body plan and robot state messages into Eigen arrays
+   	*/
+  	void getStateAndReferencePlan();
 
-  	void setupTrajectory();
+	/**
+   	* @brief Function to compute the local plan
+   	* @return Boolean if local plan was found successfully
+   	*/
+  	bool computeLocalPlan();
+
+	/**
+   	* @brief Function to publish the local plan
+    */
+    void publishLocalPlan();
+
+	/**
+   	* @brief Check foot has reached target point
+   	* @return Boolean if target point is reached
+   	*/
+	bool isReached();
 
 	/**
 	 * @brief Send open loop joint control
@@ -90,6 +114,9 @@ private:
 	/// Number of legs
 	const int num_legs_ = 4;
 
+	/// one step horizen length
+	const int N_ = 24;
+
 	/// Standing joint angles
 	std::vector<double> stand_joint_angles_;
 
@@ -101,6 +128,12 @@ private:
 
 	/// Matrix of continuous foot positions in body frame
   	Eigen::MatrixXd foot_positions_body_;
+
+	/// Spirit Kinematics class
+  	std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
+
+	/// Contact schedule
+  	std::vector<std::vector<bool>> contact_schedule_;
 };
 
 

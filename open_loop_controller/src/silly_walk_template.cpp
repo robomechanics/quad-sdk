@@ -24,6 +24,9 @@ SillyWalkTemplate::SillyWalkTemplate(ros::NodeHandle nh) {
 
   // Initialize foot position arrays
   foot_positions_body_ = Eigen::MatrixXd::Zero(num_legs_,3);
+
+  // Convert kinematics
+  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
 }
 
 void SillyWalkTemplate::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
@@ -42,18 +45,59 @@ void SillyWalkTemplate::jointStateCallback(const sensor_msgs::JointState::ConstP
   // Calculate the foot position in body frame
   for (int i = 0; i < num_legs_; i++){
     Eigen::Vector3d joint_state_i;
-    Eigen::Vector3d foot_positions_body_i; 
+    Eigen::Vector3d foot_positions_body; 
     joint_state_i << joint_state_angles_[3*i], joint_state_angles_[3*i+1], joint_state_angles_[3*i+2];
-    SpiritKinematics::bodyToFootFK(i, joint_state_i, foot_positions_body_i);
-    foot_positions_body_.row(i) = foot_positions_body_i;
+    kinematics_->bodyToFootFK(i, joint_state_i, foot_positions_body);
+    foot_positions_body_.row(i) = foot_positions_body;
   }
 }
 
-void SillyWalkTemplate::setupTrajectory(){
+Eigen::MatrixX3d SillyWalkTemplate::setupTrajectory(Eigen::Vector3d initpoint){
   // get the current leg state
   Eigen::Vector3d a;
-  // SpiritKinematics::legFK(1,Eigen::Vector3d::nonZeros,Eigen::Vector3d::nonZeros,Eigen::Vector3d::nonZeros, a);
 }
+
+void SillyWalkTemplate::getStateAndReferencePlan() {
+
+}
+
+bool SillyWalkTemplate::computeLocalPlan() {
+
+}
+
+bool SillyWalkTemplate
+
+void SillyWalkTemplate::publishLocalPlan() {
+  spirit_msgs::RobotPlan local_plan_msg;
+
+  ros::Time timestamp = ros::Time::now();
+  local_plan_msg.header.stamp = timestamp;
+  
+  for (int i = 0; i < N_; i++){
+    spirit_msgs::RobotState robot_state_msg;
+
+  }
+}
+
+void SillyWalkTemplate::spin() {
+
+  // Set update rate and do any other pre-loop stuff
+  ros::Rate r(update_rate_);
+
+  // Enter the main loop
+  while (ros::ok()) {
+
+    // Compute and publish the control
+    // Doesn't need to be structured this way but keep spin() succinct
+    this->computeJointControl();
+    this->publishJointControl();
+
+    // Always include this to keep the subscribers up to date and the update rate constant
+    ros::spinOnce();
+    r.sleep();
+  }
+}
+
 
 void SillyWalkTemplate::computeJointControl()
 {
@@ -105,21 +149,4 @@ void SillyWalkTemplate::publishJointControl()
   joint_control_pub_.publish(control_msg_);
 }
 
-void SillyWalkTemplate::spin() {
 
-  // Set update rate and do any other pre-loop stuff
-  ros::Rate r(update_rate_);
-
-  // Enter the main loop
-  while (ros::ok()) {
-
-    // Compute and publish the control
-    // Doesn't need to be structured this way but keep spin() succinct
-    this->computeJointControl();
-    this->publishJointControl();
-
-    // Always include this to keep the subscribers up to date and the update rate constant
-    ros::spinOnce();
-    r.sleep();
-  }
-}
