@@ -52,7 +52,7 @@ private:
 	/**
    	* @brief Set up trajectory for each foot
     */
-  	Eigen::MatrixX3d SillyWalkTemplate::setupTrajectory(Eigen::Vector3d initpoint);
+  	Eigen::Matrix3d SillyWalkTemplate::setupTrajectory(Eigen::Vector3d init_point_);
 	
 	/**
    	* @brief Function to pre-process the body plan and robot state messages into Eigen arrays
@@ -63,7 +63,7 @@ private:
    	* @brief Function to compute the local plan
    	* @return Boolean if local plan was found successfully
    	*/
-  	bool computeLocalPlan();
+  	bool computeNextFlight();
 
 	/**
    	* @brief Function to publish the local plan
@@ -71,10 +71,22 @@ private:
     void publishLocalPlan();
 
 	/**
+   	* @brief Update data after finishing a flight
+	* @return check if the leg on flight has reached the ground  
+    */
+	bool finishFlight();
+
+	/**
    	* @brief Check foot has reached target point
    	* @return Boolean if target point is reached
    	*/
-	bool isReached();
+	bool isReached(int leg_number_);
+
+	/**
+    * @brief Callback function to handle new plans
+    * @param[in] msg Robot state trajectory message
+    */
+    void robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg);
 
 	/**
 	 * @brief Send open loop joint control
@@ -101,6 +113,18 @@ private:
 
 	/// Robot mode
 	int control_mode_;
+
+	/**
+	 *  Flight mode: which foot is on the flight
+	 *  All feet on the ground: 0
+	 *  Front left: 1; Back left: 2; Front right: 3; Back right: 4
+	*/
+	int flight_mode;
+
+	/**
+	 * Next flight mode: from 1 to 4 
+	*/
+	int next_flight;
 
 	/// Define ids for control modes: Sit
 	const int SIT = 0;
@@ -134,6 +158,9 @@ private:
 
 	/// Contact schedule
   	std::vector<std::vector<bool>> contact_schedule_;
+
+	/// Matrix of body states (N x Nx: rows correspond to individual states in the horizon)
+  	Eigen::MatrixXd body_plan_;
 };
 
 

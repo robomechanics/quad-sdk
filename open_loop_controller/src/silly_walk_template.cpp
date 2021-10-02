@@ -1,5 +1,6 @@
 #include "open_loop_controller/silly_walk_template.h"
 #include "spirit_utils/kinematics.h"
+#include "spirit_utils/math_utils.h"
 
 using namespace spirit_utils;
 SillyWalkTemplate::SillyWalkTemplate(ros::NodeHandle nh) {
@@ -52,20 +53,38 @@ void SillyWalkTemplate::jointStateCallback(const sensor_msgs::JointState::ConstP
   }
 }
 
-Eigen::MatrixX3d SillyWalkTemplate::setupTrajectory(Eigen::Vector3d initpoint){
+Eigen::Matrix3d SillyWalkTemplate::setupTrajectory(Eigen::Vector3d init_point_){
   // get the current leg state
-  Eigen::Vector3d a;
+  Eigen::Vector3d end_point_ = init_point_;
+  end_point_(0) += 0.08;
+  Eigen::Vetor3d mid_point_ = (init_point_ + end_point_)/2;
+  mid_point_(2) += 0.05;
+  std::vector<double> input_vec{0,4,8};
+  std::vector<Eigen::Vector3d> output_mat{init_point_, mid_point_, end_point_};
+  Eigen::Matrix3d traj = Eigen::Matrax3d::Zeros(9,3)
+  for (int i=0; i<=8; i++){
+    traj.rows(i) = math_utils::interpVector3d(init_point_, output_mat, i);
+  }
+  return traj;
 }
 
-void SillyWalkTemplate::getStateAndReferencePlan() {
 
+bool SillyWalkTemplate::computeNextFlight() {
+  Eigen::Matrix3d traj = setupTrajectory(foot_positions_body_.row(next_flight));
+  publishLocalPlan();
 }
 
-bool SillyWalkTemplate::computeLocalPlan() {
-
+bool SillyWalkTemplate::finishFlight(int leg_number_) {
+  if(isReached(leg_number_)){
+    if(flight_mode!=4){
+      next_flight ++;
+    }
+    else{
+      next_flight = 1;
+    }
+    flight_mode=0;
+  }
 }
-
-bool SillyWalkTemplate
 
 void SillyWalkTemplate::publishLocalPlan() {
   spirit_msgs::RobotPlan local_plan_msg;
@@ -75,7 +94,7 @@ void SillyWalkTemplate::publishLocalPlan() {
   
   for (int i = 0; i < N_; i++){
     spirit_msgs::RobotState robot_state_msg;
-
+    robot_state
   }
 }
 
