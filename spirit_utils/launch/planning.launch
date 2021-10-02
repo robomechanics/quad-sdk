@@ -48,7 +48,7 @@
 
     <group if="$(arg logging)">
         <node pkg="rosbag" type="record" name="rosbag_record"
-    args="record -o $(find spirit_logger)/bags/spirit_log --duration=7.5 /state/ground_truth /local_plan /control/tail_plan /state/grfs /control/joint_command /control/tail_command /terrain_map /foot_plan_continuous /foot_plan_discrete" />
+    args="record -o $(find spirit_logger)/bags/spirit_log --duration=6 /state/ground_truth /local_plan /control/tail_plan /state/grfs /control/joint_command /control/tail_command /terrain_map /foot_plan_continuous /foot_plan_discrete" />
     </group>
 
 </launch>

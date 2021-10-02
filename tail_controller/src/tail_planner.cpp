@@ -288,7 +288,8 @@ void TailPlanner::computeTailPlan()
   {
     // Later contact
     Eigen::VectorXd foot_position_vec = current_foot_positions_world_.segment(i * 3, 3) - current_state_.segment(0, 3);
-    if (contact_schedule_.at(0).at(i) && (!grf_msg_->contact_states.at(i) || foot_position_vec.norm() > 0.45))
+    // if (contact_schedule_.at(0).at(i) && (!grf_msg_->contact_states.at(i) || foot_position_vec.norm() > 0.45))
+    if (contact_schedule_.at(0).at(i) && (!grf_msg_->contact_states.at(i) || grf_msg_->vectors.at(i).z <= 14 || foot_position_vec(2) < -0.325))
     {
       miss_contact.push_back(true);
       // We assume it will not touch the ground at this gait peroid

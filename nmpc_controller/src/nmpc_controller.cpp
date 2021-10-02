@@ -145,6 +145,9 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
       foot_positions,
       contact_schedule);
 
+  std::cout << "contact_sequence_" << std::endl;
+  std::cout << mynlp_->contact_sequence_.transpose() << std::endl;
+
   return this->computePlan(initial_state,
                            ref_traj,
                            foot_positions,
@@ -333,10 +336,10 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
   }
   else
   {
-    // mynlp_->w0_.setZero();
-    // mynlp_->z_L0_.setZero();
-    // mynlp_->z_U0_.setZero();
-    // mynlp_->lambda0_.setZero();
+    mynlp_->w0_.setZero();
+    mynlp_->z_L0_.setZero();
+    mynlp_->z_U0_.setZero();
+    mynlp_->lambda0_.setZero();
 
     ROS_INFO_STREAM(param_ns_ << " solving fail");
     return false;

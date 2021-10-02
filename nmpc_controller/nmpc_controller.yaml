@@ -38,7 +38,7 @@ nmpc_controller:
     state_dimension: 16
     step_length: 0.03
     state_weights: [0, 0, 0, 2.5, 2.5, 0, 0.25, 0.25, 0, 0, 0, 0, 0, 0, 0, 0]
-    control_weights: [!!float 1e-3, !!float 1e-3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    control_weights: [!!float 1e-4, !!float 1e-4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     state_weights_factors: [ 1.        ,  1.25      ,  1.5625    ,  1.953125  ,  2.44140625,
         3.05175781,  3.81469727,  4.76837158,  5.96046448,  7.4505806 ,
         9.31322575, 11.64153218]

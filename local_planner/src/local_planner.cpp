@@ -471,37 +471,76 @@ bool LocalPlanner::computeLocalPlan() {
 
     // If it stretches too long, we assume miss contact
     // if (foot_position_vec.norm() > 0.45)
-    if (foot_position_vec(2) < -0.3125)
+    if (foot_position_vec(2) < -0.325)
     {
       ROS_WARN_STREAM("miss!");
       miss_contact_leg_.at(i) = true;
     }
 
     // It will recover only when contact sensor report it hits ground
-    if (contact_schedule_.at(0).at(i) && bool(grf_msg_->contact_states.at(i)) && miss_contact_leg_.at(i))
+    if (contact_schedule_.at(0).at(i) && bool(grf_msg_->contact_states.at(i)) && grf_msg_->vectors.at(i).z > 14 && miss_contact_leg_.at(i))
     {
       miss_contact_leg_.at(i) = false;
     }
 
     if (miss_contact_leg_.at(i))
     {
+      Eigen::Vector3d hip_position, foot_shift, nominal_pos;
+      // kinematics_->nominalHipFK(i, body_plan_.block(0, 0, 1, 3).transpose(), body_plan_.block(0, 3, 1, 3).transpose(), hip_position);
+      // foot_shift = foot_positions_world_.block(0, i * 3, 1, 3).transpose() - hip_position;
+      Eigen::Matrix3d rotation_matrix, body_rotation_matrix;
+      // double rx = -foot_shift(1) / sqrt(foot_shift(0) * foot_shift(0) + foot_shift(1) * foot_shift(1));
+      // double ry = foot_shift(0) / sqrt(foot_shift(0) * foot_shift(0) + foot_shift(1) * foot_shift(1));
+      double theta = 0.707;
+      double yaw = body_plan_(0, 5);
+      // rotation_matrix << (1 - cos(theta)) * rx * rx + cos(theta),
+      //     -rx * ry * (cos(theta) - 1),
+      //     ry * sin(theta),
+      //     -rx * ry * (cos(theta) - 1),
+      //     (1 - cos(theta)) * ry * ry + cos(theta),
+      //     -rx * sin(theta),
+      //     -ry * sin(theta),
+      //     rx * sin(theta), cos(theta);
+      body_rotation_matrix << cos(yaw), -sin(yaw), 0, sin(yaw), cos(yaw), 0, 0, 0, 1;
+      body_rotation_matrix = body_rotation_matrix.transpose();
+      // rotation_matrix << cos(theta), 0, sin(theta), 0, 1, 0, -sin(theta), 0, cos(theta);
+      rotation_matrix << 1, 0, 0, 0, cos(theta), -sin(theta), 0, sin(theta), cos(theta);
+      rotation_matrix = rotation_matrix.transpose();
+      nominal_pos << 0, 0, -0.3;
+
       // We assume it will not touch the ground at this gait peroid
       for (size_t j = 0; j < N_; j++)
       {
         if (contact_schedule_.at(j).at(i))
         {
+          ROS_WARN_STREAM("shift leg: " << i);
           adpative_contact_schedule_.at(j).at(i) = false;
           if (j > 0)
           {
             // We try to move the leg more to balance the body
-            foot_positions_world_(j, i * 3 + 0) = foot_positions_world_(j, i * 3 + 0) - 0.05;
-            foot_positions_body_(j, i * 3 + 0) = foot_positions_body_(j, i * 3 + 0) - 0.05;
-            ROS_WARN_STREAM("shift: " << i << "leg");
+            // foot_positions_world_(j, i * 3 + 0) = foot_positions_world_(j, i * 3 + 0) - 0.1;
+            // foot_positions_body_(j, i * 3 + 0) = foot_positions_body_(j, i * 3 + 0) - 0.1;
+
+            Eigen::Vector3d hip_position_plan;
+            kinematics_->nominalHipFK(i, body_plan_.block(j, 0, 1, 3).transpose(), body_plan_.block(j, 3, 1, 3).transpose(), hip_position_plan);
+            foot_positions_world_.block(j, i * 3, 1, 3) = (body_rotation_matrix * rotation_matrix * nominal_pos + hip_position_plan).transpose();
+            foot_positions_body_.block(j, i * 3, 1, 3) = (body_rotation_matrix * rotation_matrix * nominal_pos + hip_position_plan).transpose() - body_plan_.block(j, 0, 1, 3);
           }
         }
         else
         {
-          break;
+          if (j > 0)
+          {
+            Eigen::Vector3d hip_position_plan;
+            kinematics_->nominalHipFK(i, body_plan_.block(j, 0, 1, 3).transpose(), body_plan_.block(j, 3, 1, 3).transpose(), hip_position_plan);
+            foot_positions_world_.block(j, i * 3, 1, 3) = (body_rotation_matrix * rotation_matrix * nominal_pos + hip_position_plan).transpose();
+            foot_positions_body_.block(j, i * 3, 1, 3) = (body_rotation_matrix * rotation_matrix * nominal_pos + hip_position_plan).transpose() - body_plan_.block(j, 0, 1, 3);
+          }
+
+          if (contact_schedule_.at(j + 1).at(i))
+          {
+            break;
+          }
         }
       }
     }
@@ -600,7 +639,7 @@ void LocalPlanner::publishLocalPlan() {
   // std::cout << "body_plan_\n" << body_plan_ << std::endl;
   // std::cout << "grf_plan_\n" << grf_plan_ << std::endl;
   // std::cout << "foot_positions_world_\n" << foot_positions_world_ << std::endl;
-  // std::cout << "foot_positions_body_\n" << foot_positions_body_ << std::endl;
+  std::cout << "foot_positions_body_\n" << foot_positions_body_ << std::endl;
   // throw std::runtime_error("Stop");
   // }
 
