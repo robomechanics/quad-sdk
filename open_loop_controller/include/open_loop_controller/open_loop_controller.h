@@ -15,8 +15,9 @@
    torques and gains to the low level controller. Trajectories are
    specified via waypoints and waypoint transition durations.
 */
-class OpenLoopController {
-  public:
+class OpenLoopController
+{
+public:
 	/**
 	 * @brief Constructor for OpenLoopController
 	 * @param[in] nh ROS NodeHandle to publish and subscribe from
@@ -33,27 +34,20 @@ private:
 	/**
 	 * @brief Verifies and updates new control mode
 	 * @param[in] msg New control mode
-	 */ 
-	void controlModeCallback(const std_msgs::UInt8::ConstPtr& msg);
+	 */
+	void controlModeCallback(const std_msgs::UInt8::ConstPtr &msg);
 
 	/**
-	 * @brief Setup open loop trajectory in shoulder space
-	 */ 
-	void setupTrajectory();
-	
-	/**
-	 * @brief Compute hip and knee positions to hit x y end effector pos
-	 * @param[in] x Target x position in shoulder space 
-	 * @param[in] y Target y position in shoulder space
-	 * @return pair of hip angle and knee angle
+	 * @brief Callback function to handle current robot state
+	 * @param[in] msg input message contining current robot state
 	 */
-	std::pair<double,double> compute2DIk(double x, double y);
+	void robotStateCallback(const spirit_msgs::RobotState::ConstPtr &msg);
 
 	/**
 	 * @brief Compute and send open loop joint positions
 	 * @param[in] elapsed_time Time since node began
 	 */
-  void sendJointPositions(double &elapsed_time);
+	void sendJointPositions(double &elapsed_time);
 
 	/// Publisher for desired joint positions
 	ros::Publisher joint_control_pub_;
@@ -61,8 +55,14 @@ private:
 	/// Subscriber for control mode
 	ros::Subscriber control_mode_sub_;
 
+	/// ROS subscriber for state estimate
+	ros::Subscriber robot_state_sub_;
+
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;
+
+	/// Most recent state estimate
+	spirit_msgs::RobotState::ConstPtr last_robot_state_msg_;
 
 	/// Update rate for sending and receiving data;
 	double update_rate_;
@@ -77,7 +77,7 @@ private:
 	double interp_dt_;
 
 	/// Target points to hit (hip angle, knee angle)
-	std::vector<std::pair<double,double>> target_pts_;
+	std::vector<std::pair<double, double>> target_pts_;
 
 	/// Vector of timestamps to hit each target_pt at
 	std::vector<double> target_times_;
@@ -102,7 +102,10 @@ private:
 
 	/// Numerically differentiate trajectory for velocity command
 	bool use_diff_for_velocity_;
-};
 
+	std::vector<double> x_;
+
+	std::vector<double> y_;
+};
 
 #endif // OPEN_LOOP_CONTROLLER_H
