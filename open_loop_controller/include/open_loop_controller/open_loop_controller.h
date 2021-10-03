@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include <spirit_msgs/LegCommandArray.h>
 #include <spirit_utils/ros_utils.h>
+#include <spirit_utils/kinematics.h>
 #include <std_msgs/UInt8.h>
 #include <math.h>
 #include <algorithm>
@@ -85,6 +86,9 @@ private:
 	/// Joint angles in stand config
 	std::vector<double> stand_joint_angles_;
 
+	/// Joint angles in stand config
+	std::vector<double> sit_joint_angles_;
+
 	/// Stand proportional gain for each joint
 	std::vector<double> stand_kp_;
 
@@ -106,6 +110,9 @@ private:
 	std::vector<double> x_;
 
 	std::vector<double> y_;
+
+	/// Spirit Kinematics class
+	std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
 };
 
 #endif // OPEN_LOOP_CONTROLLER_H
