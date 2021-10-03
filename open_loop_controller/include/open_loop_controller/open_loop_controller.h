@@ -45,6 +45,12 @@ private:
 	void robotStateCallback(const spirit_msgs::RobotState::ConstPtr &msg);
 
 	/**
+	 * @brief Callback function to handle new desired twist data when using twist input
+	 * @param[in] msg the message contining twist data
+	 */
+	void cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg);
+
+	/**
 	 * @brief Compute and send open loop joint positions
 	 * @param[in] elapsed_time Time since node began
 	 */
@@ -113,6 +119,9 @@ private:
 
 	/// Spirit Kinematics class
 	std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
+
+	/// Subscriber for twist input messages
+	ros::Subscriber cmd_vel_sub_;
 };
 
 #endif // OPEN_LOOP_CONTROLLER_H

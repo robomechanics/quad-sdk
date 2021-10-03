@@ -5,7 +5,8 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh)
   nh_ = nh;
 
   // Get rosparams
-  std::string leg_control_topic, control_mode_topic, robot_state_topic;
+  std::string leg_control_topic, control_mode_topic, robot_state_topic, cmd_vel_topic;
+  spirit_utils::loadROSParam(nh_, "topics/cmd_vel", cmd_vel_topic);
   spirit_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
   spirit_utils::loadROSParam(nh_, "topics/control/joint_command", leg_control_topic);
   spirit_utils::loadROSParam(nh_, "topics/control/mode", control_mode_topic);
@@ -26,6 +27,7 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh)
   joint_control_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_control_topic, 1);
   robot_state_sub_ = nh_.subscribe(robot_state_topic, 1, &OpenLoopController::robotStateCallback, this);
   control_mode_sub_ = nh_.subscribe(control_mode_topic, 1, &OpenLoopController::controlModeCallback, this);
+  cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic, 1, &OpenLoopController::cmdVelCallback, this);
 
   // Convert kinematics
   kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
@@ -35,6 +37,36 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh)
 
   x_ = {0, 0, 0, 0};
   y_ = {1, -1, -1, 1};
+}
+
+void OpenLoopController::cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg)
+{
+  if (abs(msg->linear.x) < 1e-3 && abs(msg->linear.y) < 1e-3)
+  {
+    control_mode_ = 1;
+  }
+  else if (abs(msg->linear.x) > abs(msg->linear.y))
+  {
+    if (msg->linear.x >= 0)
+    {
+      control_mode_ = 2;
+    }
+    else
+    {
+      control_mode_ = 3;
+    }
+  }
+  else
+  {
+    if (msg->linear.y >= 0)
+    {
+      control_mode_ = 4;
+    }
+    else
+    {
+      control_mode_ = 5;
+    }
+  }
 }
 
 void OpenLoopController::robotStateCallback(const spirit_msgs::RobotState::ConstPtr &msg)
@@ -155,7 +187,10 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
   }
   break;
 
-  case 2: // walk
+  case 2:
+  case 3:
+  case 4:
+  case 5:
   {
     std::vector<double> new_x(4), new_y(4);
     std::vector<int> contact_leg;
@@ -207,66 +242,106 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
 
       Eigen::VectorXd joint_command(6);
 
-      // joint_command(0) = 0;
-      // joint_command(3) = 0;
-      // joint_command(1) = x * stand_joint_angles_.at(1) / 4 + stand_joint_angles_.at(1);
-      // joint_command(4) = stand_joint_angles_.at(1) / 4 * x_dot;
-
-      // if (y <= 0)
-      // {
-      //   joint_command(2) = stand_joint_angles_.at(2) / 4 * 2 * 0 + stand_joint_angles_.at(2) / 4 * 3;
-      //   joint_command(5) = stand_joint_angles_.at(2) / 4 * 2 * 0;
-      // }
-      // else if (y > 0 && abs(x) > 0.9)
-      // {
-      //   joint_command(2) = stand_joint_angles_.at(2) / 4 * 2 * 10 * (1 - abs(x)) + stand_joint_angles_.at(2) / 4 * 3;
-      //   if (x > 0)
-      //   {
-      //     joint_command(5) = -stand_joint_angles_.at(2) / 4 * 2 * 10 * x_dot;
-      //   }
-      //   else
-      //   {
-      //     joint_command(5) = stand_joint_angles_.at(2) / 4 * 2 * 10 * x_dot;
-      //   }
-      // }
-      // else
-      // {
-      //   contact = true;
-
-      //   joint_command(2) = stand_joint_angles_.at(2) / 4 * 2 * 1 + stand_joint_angles_.at(2) / 4 * 3;
-      //   joint_command(5) = stand_joint_angles_.at(2) / 4 * 2 * 0;
-      // }
-
-      joint_command(1) = stand_joint_angles_.at(1);
-      joint_command(4) = 0;
-      joint_command(0) = x * stand_joint_angles_.at(1) / 8 - stand_joint_angles_.at(1) / 2;
-      joint_command(3) = stand_joint_angles_.at(1) / 8 * x_dot;
-
-      if (y <= 0)
+      switch (control_mode_)
       {
-        joint_command(2) = stand_joint_angles_.at(2) / 4 * 2 * 0 + stand_joint_angles_.at(2) / 4 * 3;
-        joint_command(5) = stand_joint_angles_.at(2) / 4 * 2 * 0;
-      }
-      else if (y > 0 && abs(x) > 0.9)
+      case 2:
+      case 3:
       {
-        joint_command(2) = stand_joint_angles_.at(2) / 4 * 2 * 10 * (1 - abs(x)) + stand_joint_angles_.at(2) / 4 * 3;
-        if (x > 0)
+        int direction = 1;
+        switch (control_mode_)
         {
-          joint_command(5) = -stand_joint_angles_.at(2) / 4 * 2 * 10 * x_dot;
+        case 2:
+        {
+          direction = 1;
+        }
+        break;
+        case 3:
+        {
+          direction = -1;
+        }
+        break;
+        }
+        joint_command(0) = 0;
+        joint_command(3) = 0;
+        joint_command(1) = direction * x * stand_joint_angles_.at(1) / 4 + stand_joint_angles_.at(1);
+        joint_command(4) = direction * stand_joint_angles_.at(1) / 4 * x_dot;
+
+        if (y <= 0)
+        {
+          joint_command(2) = stand_joint_angles_.at(2) / 4 * 2 * 0 + stand_joint_angles_.at(2) / 4 * 3;
+          joint_command(5) = stand_joint_angles_.at(2) / 4 * 2 * 0;
+        }
+        else if (y > 0 && abs(x) > 0.9)
+        {
+          joint_command(2) = stand_joint_angles_.at(2) / 4 * 2 * 10 * (1 - abs(x)) + stand_joint_angles_.at(2) / 4 * 3;
+          if (x > 0)
+          {
+            joint_command(5) = -stand_joint_angles_.at(2) / 4 * 2 * 10 * x_dot;
+          }
+          else
+          {
+            joint_command(5) = stand_joint_angles_.at(2) / 4 * 2 * 10 * x_dot;
+          }
         }
         else
         {
-          joint_command(5) = stand_joint_angles_.at(2) / 4 * 2 * 10 * x_dot;
+          contact = true;
+
+          joint_command(2) = stand_joint_angles_.at(2) / 4 * 2 * 1 + stand_joint_angles_.at(2) / 4 * 3;
+          joint_command(5) = stand_joint_angles_.at(2) / 4 * 2 * 0;
         }
       }
-      else
+      break;
+
+      case 4:
+      case 5:
       {
-        contact = true;
+        int direction = 1;
+        switch (control_mode_)
+        {
+        case 4:
+        {
+          direction = 1;
+        }
+        break;
+        case 5:
+        {
+          direction = -1;
+        }
+        break;
+        }
+        joint_command(1) = stand_joint_angles_.at(1);
+        joint_command(4) = 0;
+        joint_command(0) = direction * x * stand_joint_angles_.at(1) / 8 - direction * stand_joint_angles_.at(1) / 2;
+        joint_command(3) = direction * stand_joint_angles_.at(1) / 8 * x_dot;
 
-        joint_command(2) = stand_joint_angles_.at(2) / 4 * 2 * 1 + stand_joint_angles_.at(2) / 4 * 3;
-        joint_command(5) = stand_joint_angles_.at(2) / 4 * 2 * 0;
+        if (y <= 0)
+        {
+          joint_command(2) = stand_joint_angles_.at(2) / 4 * 2 * 0 + stand_joint_angles_.at(2) / 4 * 3;
+          joint_command(5) = stand_joint_angles_.at(2) / 4 * 2 * 0;
+        }
+        else if (y > 0 && abs(x) > 0.9)
+        {
+          joint_command(2) = stand_joint_angles_.at(2) / 4 * 2 * 10 * (1 - abs(x)) + stand_joint_angles_.at(2) / 4 * 3;
+          if (x > 0)
+          {
+            joint_command(5) = -stand_joint_angles_.at(2) / 4 * 2 * 10 * x_dot;
+          }
+          else
+          {
+            joint_command(5) = stand_joint_angles_.at(2) / 4 * 2 * 10 * x_dot;
+          }
+        }
+        else
+        {
+          contact = true;
+
+          joint_command(2) = stand_joint_angles_.at(2) / 4 * 2 * 1 + stand_joint_angles_.at(2) / 4 * 3;
+          joint_command(5) = stand_joint_angles_.at(2) / 4 * 2 * 0;
+        }
       }
-
+      break;
+      }
       // Fill out motor command
       int idx;
       if (i == 1)
@@ -323,7 +398,7 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
     // gravity << 0, 0, 11.51 * 9.81;
     Eigen::VectorXd gravity(6);
     gravity << 0, 0, 11.51 * 9.81, 0, 0, 0;
-    
+
     grf_vec = partial_force_basis.colPivHouseholderQr().solve(gravity);
     grf_array.setZero();
     for (size_t i = 0; i < contact_leg.size(); i++)

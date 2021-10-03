@@ -22,22 +22,22 @@ launch_3 = roslaunch.parent.ROSLaunchParent(uuid, launch_pars)
 launch_3.start()
 rospy.loginfo('Controller running')
 
-launch_args = ['spirit_utils', 'standing.launch', 'mode:=standing']
-launch_pars = [(roslaunch.rlutil.resolve_launch_arguments(launch_args)[0], launch_args[2:])]
-launch_4 = roslaunch.parent.ROSLaunchParent(uuid, launch_pars)
-launch_4.start()
-rospy.loginfo('Standing')
+# launch_args = ['spirit_utils', 'standing.launch', 'mode:=standing']
+# launch_pars = [(roslaunch.rlutil.resolve_launch_arguments(launch_args)[0], launch_args[2:])]
+# launch_4 = roslaunch.parent.ROSLaunchParent(uuid, launch_pars)
+# launch_4.start()
+# rospy.loginfo('Standing')
 
-rospy.sleep(5)
+# rospy.sleep(5)
 
-launch_4.shutdown()
-launch_args = ['spirit_utils', 'standing.launch', 'mode:=walking']
-launch_pars = [(roslaunch.rlutil.resolve_launch_arguments(launch_args)[0], launch_args[2:])]
-launch_4 = roslaunch.parent.ROSLaunchParent(uuid, launch_pars)
-launch_4.start()
-rospy.loginfo('Walking')
+# launch_4.shutdown()
+# launch_args = ['spirit_utils', 'standing.launch', 'mode:=walking']
+# launch_pars = [(roslaunch.rlutil.resolve_launch_arguments(launch_args)[0], launch_args[2:])]
+# launch_4 = roslaunch.parent.ROSLaunchParent(uuid, launch_pars)
+# launch_4.start()
+# rospy.loginfo('Walking')
 
-rospy.sleep(50)
+rospy.sleep(100)
 
 launch.shutdown()
 launch_2.shutdown()
