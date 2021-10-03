@@ -82,8 +82,18 @@ bool GroundTruthPublisher::updateStep(spirit_msgs::RobotState &new_state_est) {
     new_state_est.body.pose.position = last_mocap_msg_->pose.position;
     new_state_est.body.twist.linear = mocap_vel_estimate_;
   } else {
-    fully_populated = false;
-    ROS_WARN_THROTTLE(1, "No body pose (mocap) in /state/ground_truth");
+    // fully_populated = false;
+    new_state_est.body.pose.orientation.x = 0;
+    new_state_est.body.pose.orientation.y = 0;
+    new_state_est.body.pose.orientation.z = 0;
+    new_state_est.body.pose.orientation.w = 1;
+    new_state_est.body.pose.position.x = 0;
+    new_state_est.body.pose.position.y = 0;
+    new_state_est.body.pose.position.z = 0;
+    new_state_est.body.twist.linear.x = 0;
+    new_state_est.body.twist.linear.y = 0;
+    new_state_est.body.twist.linear.z = 0;
+    ROS_WARN_THROTTLE(1, "No body pose (mocap) in /state/ground_truth, but I fill in zeros");
   }
   if (last_joint_state_msg_ != NULL)
   {

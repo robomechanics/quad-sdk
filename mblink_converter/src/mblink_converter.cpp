@@ -22,7 +22,7 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
   spirit_utils::loadROSParam(nh_,"mblink_converter/leg_command_timeout",leg_command_timeout_);
 
   // Setup pubs and subs
-  leg_control_sub_ = nh_.subscribe(leg_control_topic,1,&MBLinkConverter::legControlCallback, this);
+  leg_control_sub_ = nh_.subscribe(leg_control_topic,1,&MBLinkConverter::legControlCallback, this, ros::TransportHints().tcpNoDelay());
   remote_heartbeat_sub_ = nh_.subscribe(remote_heartbeat_topic,1,&MBLinkConverter::remoteHeartbeatCallback, this);
   // joint_encoder_pub_ = nh_.advertise<sensor_msgs::JointState>(joint_encoder_topic,1);
   // imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic,1);
