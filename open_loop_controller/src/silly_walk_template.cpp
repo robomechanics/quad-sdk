@@ -57,13 +57,13 @@ Eigen::Matrix3d SillyWalkTemplate::setupTrajectory(Eigen::Vector3d init_point_){
   // get the current leg state
   Eigen::Vector3d end_point_ = init_point_;
   end_point_(0) += 0.08;
-  Eigen::Vetor3d mid_point_ = (init_point_ + end_point_)/2;
+  Eigen::Vector3d mid_point_ = (init_point_ + end_point_)/2;
   mid_point_(2) += 0.05;
   std::vector<double> input_vec{0,4,8};
   std::vector<Eigen::Vector3d> output_mat{init_point_, mid_point_, end_point_};
-  Eigen::Matrix3d traj = Eigen::Matrax3d::Zeros(9,3)
+  Eigen::MatrixX3d traj = Eigen::MatrixX3d::Ones(9);
   for (int i=0; i<=8; i++){
-    traj.rows(i) = math_utils::interpVector3d(init_point_, output_mat, i);
+    traj.row(i) = math_utils::interpVector3d(input_vec, output_mat, i);
   }
   return traj;
 }
@@ -92,9 +92,25 @@ void SillyWalkTemplate::publishLocalPlan() {
   ros::Time timestamp = ros::Time::now();
   local_plan_msg.header.stamp = timestamp;
   
-  for (int i = 0; i < N_; i++){
+  for (int i = 0; i < 9; i++){
     spirit_msgs::RobotState robot_state_msg;
-    robot_state
+    // BodyState
+    spirit_msgs::BodyState body_msg;
+    // body_msg.pose.position.x = 0;
+    // body_msg.pose.position.y = 0;
+    // state_msg.pose.position.y = state[1];
+    // state_msg.pose.position.z = state[2];
+    // state_msg.pose.orientation = quat_msg;
+
+    // state_msg.twist.linear.x = state[6];
+    // state_msg.twist.linear.y = state[7];
+    // state_msg.twist.linear.z = state[8];
+    // state_msg.twist.angular.x = state[9];
+    // state_msg.twist.angular.y = state[10];
+    // state_msg.twist.angular.z = state[11];
+
+    sensor_msgs::JointState joint;
+    spirit_msgs::MultiFootState feet;
   }
 }
 

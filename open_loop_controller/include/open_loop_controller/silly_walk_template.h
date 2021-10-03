@@ -74,7 +74,7 @@ private:
    	* @brief Update data after finishing a flight
 	* @return check if the leg on flight has reached the ground  
     */
-	bool finishFlight();
+	bool finishFlight(int leg_number_);
 
 	/**
    	* @brief Check foot has reached target point
