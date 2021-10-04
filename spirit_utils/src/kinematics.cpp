@@ -271,6 +271,7 @@ void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos,
   //   << std::endl;
 }
 
+
 void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
                              Eigen::Vector3d body_rpy, Eigen::Vector3d foot_pos_world,
                              Eigen::Vector3d &joint_state) const
@@ -289,7 +290,7 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
   Eigen::Matrix4d g_world_legbase;
   Eigen::Matrix4d g_world_foot;
   Eigen::Matrix4d g_legbase_foot;
-  Eigen::Vector3d foot_pos_rel;
+  Eigen::Vector3d foot_pos_legbase;
 
   // Compute transforms
   legBaseFK(leg_index, body_pos, body_rpy, g_world_legbase);
@@ -299,12 +300,24 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
 
   // Compute foot position relative to the leg base in cartesian coordinates
   g_legbase_foot = g_world_legbase.inverse() * g_world_foot;
-  foot_pos_rel = g_legbase_foot.block<3, 1>(0, 3);
+  foot_pos_legbase = g_legbase_foot.block<3, 1>(0, 3);
+
+  legIKLegBaseFrame(leg_index, foot_pos_legbase, joint_state);
+}
+
+void SpiritKinematics::legIKLegBaseFrame(int leg_index, Eigen::Vector3d foot_pos_legbase,
+                             Eigen::Vector3d &joint_state) const
+{
+
+  // Calculate offsets
+  Eigen::Vector3d legbase_offset = legbase_offsets_[leg_index];
+  double l0 = l0_vec_[leg_index];
+
 
   // Extract coordinates and declare joint variables
-  double x = foot_pos_rel[0];
-  double y = foot_pos_rel[1];
-  double z = foot_pos_rel[2];
+  double x = foot_pos_legbase[0];
+  double y = foot_pos_legbase[1];
+  double z = foot_pos_legbase[2];
   double q0;
   double q1;
   double q2;
@@ -405,13 +418,6 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
 
   joint_state = {q0, q1, q2};
 }
-
-// void SpiritKinematics::legIKVel(int leg_index, Eigen::Vector3d body_state,
-//   Eigen::Vector3d foot_vel_world, Eigen::Vector3d &joint_vel) const {
-
-//   // Compute IKVel here
-
-// }
 
 void SpiritKinematics::getJacobianGenCoord(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const
 {
