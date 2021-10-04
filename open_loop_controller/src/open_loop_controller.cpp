@@ -27,9 +27,9 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh)
 
   // Setup pubs and subs
   joint_control_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_control_topic, 1);
-  robot_state_sub_ = nh_.subscribe(robot_state_topic, 1, &OpenLoopController::robotStateCallback, this);
-  control_mode_sub_ = nh_.subscribe(control_mode_topic, 1, &OpenLoopController::controlModeCallback, this);
-  cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic, 1, &OpenLoopController::cmdVelCallback, this);
+  robot_state_sub_ = nh_.subscribe(robot_state_topic, 1, &OpenLoopController::robotStateCallback, this, ros::TransportHints().tcpNoDelay(true));
+  control_mode_sub_ = nh_.subscribe(control_mode_topic, 1, &OpenLoopController::controlModeCallback, this, ros::TransportHints().tcpNoDelay(true));
+  cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic, 1, &OpenLoopController::cmdVelCallback, this, ros::TransportHints().tcpNoDelay(true));
 
   // Convert kinematics
   kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();

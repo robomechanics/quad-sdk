@@ -20,10 +20,10 @@ GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
   mocap_vel_estimate_.z = 0;
 
   // Setup pubs and subs
-  joint_encoder_sub_ = nh_.subscribe(joint_encoder_topic,1,&GroundTruthPublisher::jointEncoderCallback, this);
-  imu_sub_ = nh_.subscribe(imu_topic,1,&GroundTruthPublisher::imuCallback, this);
-  vel_sub_ = nh_.subscribe(vel_topic,1,&GroundTruthPublisher::velCallback, this);
-  mocap_sub_ = nh_.subscribe(mocap_topic,1,&GroundTruthPublisher::mocapCallback, this);
+  joint_encoder_sub_ = nh_.subscribe(joint_encoder_topic,1,&GroundTruthPublisher::jointEncoderCallback, this, ros::TransportHints().tcpNoDelay(true));
+  imu_sub_ = nh_.subscribe(imu_topic,1,&GroundTruthPublisher::imuCallback, this, ros::TransportHints().tcpNoDelay(true));
+  vel_sub_ = nh_.subscribe(vel_topic,1,&GroundTruthPublisher::velCallback, this, ros::TransportHints().tcpNoDelay(true));
+  mocap_sub_ = nh_.subscribe(mocap_topic,1,&GroundTruthPublisher::mocapCallback, this, ros::TransportHints().tcpNoDelay(true));
   ground_truth_state_pub_ = nh_.advertise<spirit_msgs::RobotState>(ground_truth_state_topic,1);
 
   // Convert kinematics
