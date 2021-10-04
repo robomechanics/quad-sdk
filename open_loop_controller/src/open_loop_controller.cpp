@@ -15,8 +15,10 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh)
   spirit_utils::loadROSParam(nh_, "open_loop_controller/sit_angles", sit_joint_angles_);
   spirit_utils::loadROSParam(nh_, "open_loop_controller/stand_kp", stand_kp_);
   spirit_utils::loadROSParam(nh_, "open_loop_controller/stand_kd", stand_kd_);
-  spirit_utils::loadROSParam(nh_, "open_loop_controller/walk_kp", walk_kp_);
-  spirit_utils::loadROSParam(nh_, "open_loop_controller/walk_kd", walk_kd_);
+  spirit_utils::loadROSParam(nh_, "open_loop_controller/swing_kp", swing_kp_);
+  spirit_utils::loadROSParam(nh_, "open_loop_controller/swing_kd", swing_kd_);
+  spirit_utils::loadROSParam(nh_, "open_loop_controller/stance_kp", stance_kp_);
+  spirit_utils::loadROSParam(nh_, "open_loop_controller/stance_kd", stance_kd_);
   spirit_utils::loadROSParam(nh_, "open_loop_controller/leg_phases", leg_phases_);
   spirit_utils::loadROSParam(nh_, "open_loop_controller/use_diff_for_velocity", use_diff_for_velocity_);
 
@@ -24,7 +26,7 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh)
   control_mode_ = 0;
 
   // Setup pubs and subs
-  joint_control_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_control_topic, 1, ros::TransportHints().tcpNoDelay());
+  joint_control_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_control_topic, 1);
   robot_state_sub_ = nh_.subscribe(robot_state_topic, 1, &OpenLoopController::robotStateCallback, this);
   control_mode_sub_ = nh_.subscribe(control_mode_topic, 1, &OpenLoopController::controlModeCallback, this);
   cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic, 1, &OpenLoopController::cmdVelCallback, this);
@@ -153,7 +155,7 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
     Eigen::VectorXd gravity(6);
     gravity << 0, 0, 11.51 * 9.81, 0, 0, 0;
 
-    grf_vec = force_basis.colPivHouseholderQr().solve(gravity);
+    grf_vec = force_basis.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(gravity);
     grf_array.setZero();
     for (size_t i = 0; i < 4; i++)
     {
@@ -164,10 +166,10 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
     Eigen::VectorXd tau_array(3 * 4);
     tau_array = -jacobian.transpose().block<12, 12>(0, 0) * grf_array;
 
-    // ROS_INFO_STREAM_THROTTLE(0.1, "force_basis:" << force_basis);
-    // ROS_INFO_STREAM_THROTTLE(0.1, "grf_vec:" << grf_vec);
-    // ROS_INFO_STREAM_THROTTLE(0.1, "grf_array:" << grf_array);
-    // ROS_INFO_STREAM_THROTTLE(0.1, "tau_array:" << tau_array);
+    ROS_INFO_STREAM_THROTTLE(0.1, "force_basis:" << force_basis);
+    ROS_INFO_STREAM_THROTTLE(0.1, "grf_vec:" << grf_vec);
+    ROS_INFO_STREAM_THROTTLE(0.1, "grf_array:" << grf_array);
+    ROS_INFO_STREAM_THROTTLE(0.1, "tau_array:" << tau_array);
 
     for (int i = 0; i < 4; ++i)
     {
@@ -312,7 +314,7 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
         }
         joint_command(1) = stand_joint_angles_.at(1);
         joint_command(4) = 0;
-        joint_command(0) = direction * x * stand_joint_angles_.at(1) / 8 - direction * stand_joint_angles_.at(1) / 2;
+        joint_command(0) = direction * x * stand_joint_angles_.at(1) / 8 - direction * stand_joint_angles_.at(1) / 4;
         joint_command(3) = direction * stand_joint_angles_.at(1) / 8 * x_dot;
 
         if (y <= 0)
@@ -357,27 +359,29 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
         idx = i;
       }
 
-      contact_leg.push_back(idx);
+      if (contact)
+      {
+        contact_leg.push_back(idx);
+      }
 
       msg.leg_commands.at(idx).motor_commands.resize(3);
 
-      msg.leg_commands.at(idx).motor_commands.at(0).pos_setpoint = joint_command(0);
-      msg.leg_commands.at(idx).motor_commands.at(0).kp = walk_kp_.at(0);
-      msg.leg_commands.at(idx).motor_commands.at(0).kd = walk_kd_.at(0);
-      msg.leg_commands.at(idx).motor_commands.at(0).vel_setpoint = joint_command(3);
-      msg.leg_commands.at(idx).motor_commands.at(0).torque_ff = 0;
-
-      msg.leg_commands.at(idx).motor_commands.at(1).pos_setpoint = joint_command(1);
-      msg.leg_commands.at(idx).motor_commands.at(1).kp = walk_kp_.at(1);
-      msg.leg_commands.at(idx).motor_commands.at(1).kd = walk_kd_.at(1);
-      msg.leg_commands.at(idx).motor_commands.at(1).vel_setpoint = joint_command(4);
-      msg.leg_commands.at(idx).motor_commands.at(1).torque_ff = 0;
-
-      msg.leg_commands.at(idx).motor_commands.at(2).pos_setpoint = joint_command(2);
-      msg.leg_commands.at(idx).motor_commands.at(2).kp = walk_kp_.at(2);
-      msg.leg_commands.at(idx).motor_commands.at(2).kd = walk_kd_.at(2);
-      msg.leg_commands.at(idx).motor_commands.at(2).vel_setpoint = joint_command(5);
-      msg.leg_commands.at(idx).motor_commands.at(2).torque_ff = 0;
+      for (size_t j = 0; j < 3; j++)
+      {
+        msg.leg_commands.at(idx).motor_commands.at(j).pos_setpoint = joint_command(j);
+        msg.leg_commands.at(idx).motor_commands.at(j).vel_setpoint = joint_command(j + 3);
+        msg.leg_commands.at(idx).motor_commands.at(j).torque_ff = 0;
+        if (contact)
+        {
+          msg.leg_commands.at(idx).motor_commands.at(j).kp = stance_kp_.at(j);
+          msg.leg_commands.at(idx).motor_commands.at(j).kd = stance_kd_.at(j);
+        }
+        else
+        {
+          msg.leg_commands.at(idx).motor_commands.at(j).kp = swing_kp_.at(j);
+          msg.leg_commands.at(idx).motor_commands.at(j).kd = swing_kd_.at(j);
+        }
+      }
 
       new_x.at(i) = x;
       new_y.at(i) = y;
@@ -386,41 +390,44 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
     x_ = new_x;
     y_ = new_y;
 
-    // Eigen::MatrixXd partial_force_basis(3, contact_leg.size());
-    Eigen::MatrixXd partial_force_basis(6, contact_leg.size());
-    for (size_t i = 0; i < contact_leg.size(); i++)
+    if (!contact_leg.empty())
     {
-      partial_force_basis.col(i) = force_basis.col(contact_leg.at(i));
+      // Eigen::MatrixXd partial_force_basis(3, contact_leg.size());
+      Eigen::MatrixXd partial_force_basis(6, contact_leg.size());
+      for (size_t i = 0; i < contact_leg.size(); i++)
+      {
+        partial_force_basis.col(i) = force_basis.col(contact_leg.at(i));
+      }
+
+      Eigen::VectorXd grf_vec(contact_leg.size()), grf_array(3 * 4);
+      // Eigen::Vector3d gravity;
+      // gravity << 0, 0, 11.51 * 9.81;
+      Eigen::VectorXd gravity(6);
+      gravity << 0, 0, 11.51 * 9.81, 0, 0, 0;
+
+      grf_vec = partial_force_basis.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(gravity);
+      grf_array.setZero();
+      for (size_t i = 0; i < contact_leg.size(); i++)
+      {
+        // grf_array.segment(3 * contact_leg.at(i), 3) = grf_vec(i) * partial_force_basis.col(i);
+        grf_array.segment(3 * contact_leg.at(i), 3) << 0, 0, grf_vec(i);
+      }
+
+      Eigen::VectorXd tau_array(3 * 4);
+      tau_array = -jacobian.transpose().block<12, 12>(0, 0) * grf_array;
+
+      for (size_t i = 0; i < contact_leg.size(); i++)
+      {
+        msg.leg_commands.at(contact_leg.at(i)).motor_commands.at(0).torque_ff = tau_array(contact_leg.at(i) * 3 + 0);
+        msg.leg_commands.at(contact_leg.at(i)).motor_commands.at(1).torque_ff = tau_array(contact_leg.at(i) * 3 + 1);
+        msg.leg_commands.at(contact_leg.at(i)).motor_commands.at(2).torque_ff = tau_array(contact_leg.at(i) * 3 + 2);
+      }
+
+      ROS_INFO_STREAM_THROTTLE(0.1, "force_basis:" << force_basis);
+      ROS_INFO_STREAM_THROTTLE(0.1, "grf_vec:" << grf_vec);
+      ROS_INFO_STREAM_THROTTLE(0.1, "grf_array:" << grf_array);
+      ROS_INFO_STREAM_THROTTLE(0.1, "tau_array:" << tau_array);
     }
-
-    Eigen::VectorXd grf_vec(contact_leg.size()), grf_array(3 * 4);
-    // Eigen::Vector3d gravity;
-    // gravity << 0, 0, 11.51 * 9.81;
-    Eigen::VectorXd gravity(6);
-    gravity << 0, 0, 11.51 * 9.81, 0, 0, 0;
-
-    grf_vec = partial_force_basis.colPivHouseholderQr().solve(gravity);
-    grf_array.setZero();
-    for (size_t i = 0; i < contact_leg.size(); i++)
-    {
-      // grf_array.segment(3 * contact_leg.at(i), 3) = grf_vec(i) * partial_force_basis.col(i);
-      grf_array.segment(3 * contact_leg.at(i), 3) << 0, 0, grf_vec(i);
-    }
-
-    Eigen::VectorXd tau_array(3 * 4);
-    tau_array = -jacobian.transpose().block<12, 12>(0, 0) * grf_array;
-
-    for (size_t i = 0; i < contact_leg.size(); i++)
-    {
-      msg.leg_commands.at(contact_leg.at(i)).motor_commands.at(0).torque_ff = tau_array(contact_leg.at(i) * 3 + 0);
-      msg.leg_commands.at(contact_leg.at(i)).motor_commands.at(1).torque_ff = tau_array(contact_leg.at(i) * 3 + 1);
-      msg.leg_commands.at(contact_leg.at(i)).motor_commands.at(2).torque_ff = tau_array(contact_leg.at(i) * 3 + 2);
-    }
-
-    // ROS_INFO_STREAM_THROTTLE(0.1, "force_basis:" << force_basis);
-    // ROS_INFO_STREAM_THROTTLE(0.1, "grf_vec:" << grf_vec);
-    // ROS_INFO_STREAM_THROTTLE(0.1, "grf_array:" << grf_array);
-    // ROS_INFO_STREAM_THROTTLE(0.1, "tau_array:" << tau_array);
   }
   break;
   }

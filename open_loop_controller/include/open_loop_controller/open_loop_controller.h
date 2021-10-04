@@ -102,10 +102,16 @@ private:
 	std::vector<double> stand_kd_;
 
 	/// Walk proportional gain for each joint
-	std::vector<double> walk_kp_;
+	std::vector<double> swing_kp_;
 
 	/// Walk derivative gain for each joint
-	std::vector<double> walk_kd_;
+	std::vector<double> swing_kd_;
+
+	/// Walk proportional gain for each joint
+	std::vector<double> stance_kp_;
+
+	/// Walk derivative gain for each joint
+	std::vector<double> stance_kd_;
 
 	/// Gait phase info for each leg
 	std::vector<double> leg_phases_;

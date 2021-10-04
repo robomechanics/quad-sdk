@@ -7,8 +7,10 @@ open_loop_controller:
   waypoint_xs: [-0.12,0,0.12]
   waypoint_ys: [-0.24,-0.14,-0.24]
   interp_dt: 0.005
-  stand_kp: [20,20,20]
+  stand_kp: [35,35,35]
   stand_kd: [5,5,5]
-  walk_kp: [20,20,20]
-  walk_kd: [5,5,5]
+  swing_kp: [20,20,20]
+  swing_kd: [1,1,1]
+  stance_kp: [35,35,35]
+  stance_kd: [5,5,5]
   use_diff_for_velocity: true
