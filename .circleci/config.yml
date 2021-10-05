@@ -20,8 +20,7 @@ jobs:
           name: "Test"
           command: |
             source /catkin_ws/devel/setup.bash
-            roslaunch spirit_utils load_params.launch
-            sleep 2
+            roslaunch spirit_utils load_params.launch & sleep 5
             catkin_make run_tests && catkin_test_results
 workflows:
   version: 2
