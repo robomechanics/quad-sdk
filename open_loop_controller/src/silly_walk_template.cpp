@@ -56,9 +56,9 @@ void SillyWalkTemplate::jointStateCallback(const sensor_msgs::JointState::ConstP
 Eigen::Matrix3d SillyWalkTemplate::setupTrajectory(Eigen::Vector3d init_point_){
   // get the current leg state
   Eigen::Vector3d end_point_ = init_point_;
-  end_point_(0) += 0.08;
+  end_point_(0) += 0.06;
   Eigen::Vector3d mid_point_ = (init_point_ + end_point_)/2;
-  mid_point_(2) += 0.05;
+  mid_point_(2) += 0.04;
   std::vector<double> input_vec{0,4,8};
   std::vector<Eigen::Vector3d> output_mat{init_point_, mid_point_, end_point_};
   Eigen::MatrixX3d traj = Eigen::MatrixX3d::Ones(9);
@@ -71,7 +71,7 @@ Eigen::Matrix3d SillyWalkTemplate::setupTrajectory(Eigen::Vector3d init_point_){
 
 bool SillyWalkTemplate::computeNextFlight() {
   Eigen::Matrix3d traj = setupTrajectory(foot_positions_body_.row(next_flight));
-  publishLocalPlan();
+  computeJointControl();
 }
 
 bool SillyWalkTemplate::finishFlight(int leg_number_) {
@@ -172,7 +172,29 @@ void SillyWalkTemplate::computeJointControl()
         control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
       }
     }
+  } else if (control_mode_ == WALK) {
+    for (int i = 0; i < 4; ++i){
+      control_msg_.leg_commands.at(i).motor_commands.resize(3);
+      if (i == flight_mode){
+        Eigen::Vector3d joint_state;
+        kinematics_->legIK(i, Eigen::Vector3d:Zeros(3), Eigen::Vector3d::Zeros(3),
+                           traj.row(i), joint_State);
+        for (int j = 0; j < 3; ++j)
+        {
+          control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = joint_state[j];
+          control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
+          control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 5;
+          control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 0.1;
+          control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+        }               
+      } else{
+
+        
+      }
+
+    }
   }
+  
 }
 
 void SillyWalkTemplate::publishJointControl()
