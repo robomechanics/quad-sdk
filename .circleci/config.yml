@@ -1,4 +1,3 @@
-version: 2
 jobs:
   build-and-test:
     working_directory: /catkin_ws/src
@@ -10,14 +9,11 @@ jobs:
           name: "Update packages"
           command: sudo apt update
       - run:
-          name: "Call setup script"
-          command: |
-            chmod +x setup.sh
-            ./setup.sh
-      - run:
-          name: "Build"
+          name: "Call setup script and build"
           command: |
             source /opt/ros/melodic/setup.bash
+            chmod +x setup.sh
+            ./setup.sh
             cd ..
             catkin_make
       - run:
