@@ -128,6 +128,24 @@ private:
 
 	/// Subscriber for twist input messages
 	ros::Subscriber cmd_vel_sub_;
+
+	std::vector<double> ff_force_;
+
+	double abad_scale_;
+
+	double abad_const_;
+
+	double hip_scale_;
+
+	double hip_const_;
+
+	double knee_scale_;
+
+	double knee_const_;
+
+	double alpha_;
+
+	double beta_;
 };
 
 #endif // OPEN_LOOP_CONTROLLER_H

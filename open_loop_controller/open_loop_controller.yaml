@@ -9,8 +9,17 @@ open_loop_controller:
   interp_dt: 0.005
   stand_kp: [35,35,35]
   stand_kd: [5,5,5]
-  swing_kp: [20,20,20]
-  swing_kd: [1,1,1]
-  stance_kp: [35,35,35]
+  swing_kp: [70,70,70]
+  swing_kd: [5,5,5]
+  stance_kp: [70,70,70]
   stance_kd: [5,5,5]
+  ff_force: [0,0]
+  abad_scale: 0.125
+  abad_const: 0.25
+  hip_scale: 0.25
+  hip_const: 1
+  knee_scale: 0.5
+  knee_const: 0.75
+  alpha: 5
+  beta: 50
   use_diff_for_velocity: true
