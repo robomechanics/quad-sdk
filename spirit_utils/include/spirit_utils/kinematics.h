@@ -51,19 +51,21 @@ class SpiritKinematics {
       Eigen::AngleAxisd rot) const;
 
   /**
-   * @brief Tranform a transformation matrix from the body frame to the world frame
+   * @brief Transform a transformation matrix from the body frame to the world frame
    * @param[in] body_pos Position of center of body frame
    * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
-   * @param[out] transform Sprcified transform in the world frame
+   * @param[in] transform_body Specified transform in the body frame
+   * @param[out] transform_world Specified transform in the world frame
    */
   void transformBodyToWorld(Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, 
     Eigen::Matrix4d transform_body, Eigen::Matrix4d &transform_world) const;
 
   /**
-   * @brief Tranform a transformation matrix from the world frame to the body frame
+   * @brief Transform a transformation matrix from the world frame to the body frame
    * @param[in] body_pos Position of center of body frame
    * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
-   * @param[out] transform Sprcified transform in the body frame
+   * @param[in] transform_world Specified transform in the world frame
+   * @param[out] transform_body Specified transform in the body frame
    */
   void transformWorldToBody(Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, 
     Eigen::Matrix4d transform_world, Eigen::Matrix4d &transform_body) const;
@@ -119,15 +121,14 @@ class SpiritKinematics {
   void legIK(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
       Eigen::Vector3d foot_pos_world, Eigen::Vector3d &joint_state) const;
 
-  // /**
-  //  * @brief Compute inverse kinematics for a specified leg
-  //  * @param[in] leg_index Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
-  //  * @param[in] body_state Pose and twist of center of body frame
-  //  * @param[in] foot_vel_world Position of the specified foot in world frame
-  //  * @param[out] joint_vel Joint velocities for the specified leg (abad, hip, knee)
-  //  */
-  // void legIKVel(int leg_index, Eigen::Vector3d body_state,
-  //     Eigen::Vector3d foot_vel_world, Eigen::Vector3d &joint_vel) const;
+  /**
+   * @brief Compute inverse kinematics for a specified leg in the leg base frame
+   * @param[in] leg_index Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
+   * @param[in] foot_pos_legbase Position of the specified foot in leg base frame
+   * @param[out] joint_state Joint states for the specified leg (abad, hip, knee)
+   */
+  void legIKLegBaseFrame(int leg_index, Eigen::Vector3d foot_pos_legbase,
+    Eigen::Vector3d &joint_state) const;
 
   /**
    * @brief Get the lower joint limit of a particular joint
