@@ -1,24 +1,37 @@
+version: 2
 jobs:
-  build-melodic:
+  build-and-test:
     working_directory: /catkin_ws/src
     docker:
       - image: ros:melodic-ros-base-bionic
     steps:
       - checkout
       - run:
+          name: "Update packages"
+          command: sudo apt update
+      - run:
+          name: "Call setup script"
           command: |
-            sudo apt update
             source /opt/ros/melodic/setup.bash
             catkin_init_workspace
             chmod +x setup.sh
             ./setup.sh
+      - run:
+          name: "Build"
+          command: |
             cd ..
             catkin_make
+      - run:
+          name: "Test"
+          command: |
+            roslaunch spirit_utils load_params.launch
+            sleep 2
+            catkin_make run_tests && catkin_test_results
 workflows:
   version: 2
   build-and-test:
     jobs:
-      - build-melodic:
+      - build-and-test:
           filters:
             branches:
               only:
