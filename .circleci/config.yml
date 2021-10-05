@@ -12,14 +12,13 @@ jobs:
       - run:
           name: "Call setup script"
           command: |
-            cd spirit_software
             chmod +x setup.sh
             ./setup.sh
       - run:
           name: "Build"
           command: |
             source /opt/ros/melodic/setup.bash
-            cd ../..
+            cd ..
             catkin_make
       - run:
           name: "Test"
