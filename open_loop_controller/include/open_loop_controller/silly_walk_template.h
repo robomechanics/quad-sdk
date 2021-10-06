@@ -53,7 +53,7 @@ private:
 	/**
    	* @brief Set up trajectory for each foot
     */
-  	Eigen::Matrix3d SillyWalkTemplate::setupTrajectory(Eigen::Vector3d init_point_);
+  	void setupTrajectory(Eigen::Vector3d init_point_);
 	
 	/**
    	* @brief Function to pre-process the body plan and robot state messages into Eigen arrays
@@ -69,13 +69,13 @@ private:
 	/**
    	* @brief Function to publish the local plan
     */
-    void publishLocalPlan();
+    void calculateNextPlan();
 
 	/**
    	* @brief Update data after finishing a flight
 	* @return check if the leg on flight has reached the ground  
     */
-	bool finishFlight(int leg_number_);
+	bool finishFlight();
 
 	/**
    	* @brief Check foot has reached target point
@@ -134,6 +134,15 @@ private:
 
 	/// Define ids for control modes: Stand
 	const int STAND = 1;
+
+	/// Define ids for control modes: Walk
+	const int WALK = 2;
+
+	int leg_length;
+
+	int cur_traj_track_seq = 0;
+
+	Eigen::MatrixX3d traj;
 
 	/// Joint control message
 	spirit_msgs::LegCommandArray control_msg_;

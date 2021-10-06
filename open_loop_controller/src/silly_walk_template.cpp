@@ -34,7 +34,7 @@ SillyWalkTemplate::SillyWalkTemplate(ros::NodeHandle nh) {
 void SillyWalkTemplate::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
   
   // Use this to set any logic for control modes (see inverse_dynamics for more examples)
-  if (msg->data == SIT || (msg->data == STAND))
+  if (msg->data == SIT || (msg->data == STAND) || (msg->data == WALK))
   {  
     control_mode_ = msg->data;
   }
@@ -54,86 +54,47 @@ void SillyWalkTemplate::jointStateCallback(const sensor_msgs::JointState::ConstP
   }
 }
 
-Eigen::Matrix3d SillyWalkTemplate::setupTrajectory(Eigen::Vector3d init_point_){
+void SillyWalkTemplate::setupTrajectory(Eigen::Vector3d init_point_){
   // get the current leg state
   Eigen::Vector3d end_point_ = init_point_;
-  end_point_(0) += 0.08;
+  end_point_(0) += 0.06;
   Eigen::Vector3d mid_point_ = (init_point_ + end_point_)/2;
-  mid_point_(2) += 0.05;
+  mid_point_(2) += 0.03;
   std::vector<double> input_vec{0,4,8};
   std::vector<Eigen::Vector3d> output_mat{init_point_, mid_point_, end_point_};
-  Eigen::MatrixX3d traj = Eigen::MatrixX3d::Ones(9);
+  traj = Eigen::MatrixX3d::Ones(9);
   for (int i=0; i<=8; i++){
     traj.row(i) = math_utils::interpVector3d(input_vec, output_mat, i);
   }
-  return traj;
 }
 
 
 bool SillyWalkTemplate::computeNextFlight() {
-  Eigen::Matrix3d traj = setupTrajectory(foot_positions_body_.row(next_flight));
-  publishLocalPlan();
+  // setupTrajectory(foot_positions_body_.row(next_flight));
+  // computeJointControl(traj);
 }
 
-bool SillyWalkTemplate::finishFlight(int leg_number_) {
-  if(isReached(leg_number_)){
+bool SillyWalkTemplate::finishFlight() {
+  if(cur_traj_track_seq == 7){
     if(flight_mode!=4){
       next_flight ++;
     }
     else{
       next_flight = 1;
     }
-    flight_mode=0;
+    flight_mode = 0;
+    cur_traj_track_seq = 0;
+    return true;
   }
+  return false;
 }
 
-void SillyWalkTemplate::publishLocalPlan() {
-  spirit_msgs::RobotPlan local_plan_msg;
-
-  ros::Time timestamp = ros::Time::now();
-  local_plan_msg.header.stamp = timestamp;
-  
-  for (int i = 0; i < 9; i++){
-    spirit_msgs::RobotState robot_state_msg;
-    // BodyState
-    spirit_msgs::BodyState body_msg;
-    // body_msg.pose.position.x = 0;
-    // body_msg.pose.position.y = 0;
-    // state_msg.pose.position.y = state[1];
-    // state_msg.pose.position.z = state[2];
-    // state_msg.pose.orientation = quat_msg;
-
-    // state_msg.twist.linear.x = state[6];
-    // state_msg.twist.linear.y = state[7];
-    // state_msg.twist.linear.z = state[8];
-    // state_msg.twist.angular.x = state[9];
-    // state_msg.twist.angular.y = state[10];
-    // state_msg.twist.angular.z = state[11];
-
-    sensor_msgs::JointState joint;
-    spirit_msgs::MultiFootState feet;
-  }
+void SillyWalkTemplate::calculateNextPlan() {
 }
 
-void SillyWalkTemplate::spin() {
-
-  // Set update rate and do any other pre-loop stuff
-  ros::Rate r(update_rate_);
-
-  // Enter the main loop
-  while (ros::ok()) {
-
-    // Compute and publish the control
-    // Doesn't need to be structured this way but keep spin() succinct
-    this->computeJointControl();
-    this->publishJointControl();
-
-    // Always include this to keep the subscribers up to date and the update rate constant
-    ros::spinOnce();
-    r.sleep();
-  }
+bool SillyWalkTemplate::isReached(int leg_number_){
+ return 1;
 }
-
 
 void SillyWalkTemplate::computeJointControl()
 {
@@ -173,7 +134,51 @@ void SillyWalkTemplate::computeJointControl()
         control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
       }
     }
+  } else if (control_mode_ == WALK) {
+    for (int i = 0; i < 4; ++i){
+      control_msg_.leg_commands.at(i).motor_commands.resize(3);
+      Eigen::Vector3d joint_state = Eigen::Vector3d::Zero();
+      if (i == flight_mode){
+        kinematics_->legIKLegBaseFrame(i, traj.row(cur_traj_track_seq), joint_state);
+        for (int j = 0; j < 3; ++j)
+        {
+          control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = joint_state[j];
+          control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
+          control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 5;
+          control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 0.1;
+          control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+        }               
+      } else{
+        if(cur_traj_track_seq == 1){
+          double x = 0.02;
+          double alpha = atan2(0.02, sqrt(2)*leg_length);
+          double m = sqrt(2*pow(leg_length,2) + pow(x,2));
+          double beta = acos(m/leg_length);
+          joint_state[1] = M_PI - alpha -beta;
+          joint_state[2] = 2 * asin(m/leg_length);
+          for (int j = 0; j < 3; ++j)
+          {
+            control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = joint_state[j];
+            control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
+            control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 5;
+            control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 0.1;
+            control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+          }     
+        }else{
+          for (int j = 0; j < 3; ++j)
+          {
+            control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = joint_state_angles_[3*i + j];
+            control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
+            control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 5;
+            control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 0.1;
+            control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+          }   
+        }
+      }
+    }
+    cur_traj_track_seq++;
   }
+  
 }
 
 void SillyWalkTemplate::publishJointControl()
@@ -188,16 +193,22 @@ void SillyWalkTemplate::publishJointControl()
 void SillyWalkTemplate::spin() {
 
   // Set update rate and do any other pre-loop stuff
+  double start_time = ros::Time::now().toSec();
   ros::Rate r(update_rate_);
 
   // Enter the main loop
   while (ros::ok()) {
-
-    // Compute and publish the control
-    // Doesn't need to be structured this way but keep spin() succinct
-    this->computeJointControl();
-    this->publishJointControl();
-
+    double elapsed_time = ros::Time::now().toSec() - start_time;
+    if(elapsed_time > 0.3){
+      start_time = ros::Time::now().toSec();
+      if(finishFlight()){
+        setupTrajectory(foot_positions_body_.row(next_flight));
+      }
+        // Compute and publish the control
+        // Doesn't need to be structured this way but keep spin() succinct
+        this->computeJointControl();
+        this->publishJointControl();
+    }
     // Always include this to keep the subscribers up to date and the update rate constant
     ros::spinOnce();
     r.sleep();
