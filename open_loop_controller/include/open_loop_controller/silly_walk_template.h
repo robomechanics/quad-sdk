@@ -142,7 +142,7 @@ private:
 
 	int cur_traj_track_seq = 0;
 
-	Eigen::MatrixX3d traj;
+	Eigen::MatrixXd traj;
 
 	/// Joint control message
 	spirit_msgs::LegCommandArray control_msg_;
@@ -159,8 +159,6 @@ private:
 	/// Joint state angles
 	std::vector<double> joint_state_angles_;
 
-	// Use a kinematics object to make kinematics calculations easier
-	spirit_utils::SpiritKinematics kinematics_;
 
 	/// Matrix of continuous foot positions in body frame
   	Eigen::MatrixXd foot_positions_body_;

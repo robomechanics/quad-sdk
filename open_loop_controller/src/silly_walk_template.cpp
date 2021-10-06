@@ -26,6 +26,11 @@ SillyWalkTemplate::SillyWalkTemplate(ros::NodeHandle nh) {
 
   // Initialize foot position arrays
   foot_positions_body_ = Eigen::MatrixXd::Zero(num_legs_,3);
+  traj = Eigen::MatrixXd::Zero(9,3);
+
+   cur_traj_track_seq = 0;
+   flight_mode = 0;
+   next_flight = 1;
 
   // Convert kinematics
   kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
@@ -62,7 +67,6 @@ void SillyWalkTemplate::setupTrajectory(Eigen::Vector3d init_point_){
   mid_point_(2) += 0.03;
   std::vector<double> input_vec{0,4,8};
   std::vector<Eigen::Vector3d> output_mat{init_point_, mid_point_, end_point_};
-  traj = Eigen::MatrixX3d::Ones(9);
   for (int i=0; i<=8; i++){
     traj.row(i) = math_utils::interpVector3d(input_vec, output_mat, i);
   }
@@ -129,7 +133,7 @@ void SillyWalkTemplate::computeJointControl()
       {
         control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = stand_joint_angles_.at(j);
         control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-        control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 5;
+        control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 10;
         control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 0.1;
         control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
       }
