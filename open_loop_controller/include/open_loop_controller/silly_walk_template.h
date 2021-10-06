@@ -44,6 +44,7 @@ private:
 	 */
   	void computeJointControl();
 
+
 	/**
 	 * @brief Send open loop joint control
 	 */
@@ -96,6 +97,7 @@ private:
 	 */
  	 void doxygenExampleFunction(const std::vector<int> &input, std::vector<double> &output);
 
+
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;
 
@@ -104,6 +106,7 @@ private:
 
 	/// SUbscribe for joint state
 	ros::Subscriber joint_state_sub_;
+
 
 	/// Publisher for desired joint control
 	ros::Publisher joint_control_pub_;
@@ -165,3 +168,4 @@ private:
 
 
 #endif // SILLY_WALK_TEMPLATE_H
+

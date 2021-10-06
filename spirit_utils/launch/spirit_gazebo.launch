@@ -29,7 +29,7 @@ SOFTWARE.
   <arg name="gui"             default="false"/>
   <arg name="paused"          default="false"/>
   <arg name="software"        default="true"/>
-  <arg name="global_planner"  default="fgmp"/>
+  <arg name="controller"      default="inverse_dynamics"/>
   <arg name="live_plot"       default="false"/>
   <arg name="mblink"          default="false"/>
   <arg name="world"           default="flat"/>
@@ -45,6 +45,7 @@ SOFTWARE.
     </include>
     <include file="$(find spirit_utils)/launch/robot_driver.launch">
       <arg name="mblink" value="$(arg mblink)"/>
+      <arg name="controller" value="$(arg controller)"/>
     </include>
     <!-- <include file="$(find spirit_utils)/launch/planning.launch">
       <arg name="global_planner" value="$(arg global_planner)"/>

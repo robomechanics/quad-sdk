@@ -11,4 +11,8 @@ int main(int argc, char** argv) {
 	silly_walk_template.spin();
 
 	return 0;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/silly-walk-example

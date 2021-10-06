@@ -3,6 +3,7 @@
 #include "spirit_utils/math_utils.h"
 
 using namespace spirit_utils;
+
 SillyWalkTemplate::SillyWalkTemplate(ros::NodeHandle nh) {
   
   // Assign the node handle to the class
@@ -184,4 +185,22 @@ void SillyWalkTemplate::publishJointControl()
   joint_control_pub_.publish(control_msg_);
 }
 
+void SillyWalkTemplate::spin() {
+
+  // Set update rate and do any other pre-loop stuff
+  ros::Rate r(update_rate_);
+
+  // Enter the main loop
+  while (ros::ok()) {
+
+    // Compute and publish the control
+    // Doesn't need to be structured this way but keep spin() succinct
+    this->computeJointControl();
+    this->publishJointControl();
+
+    // Always include this to keep the subscribers up to date and the update rate constant
+    ros::spinOnce();
+    r.sleep();
+  }
+}
 
