@@ -7,7 +7,8 @@
 #include <std_msgs/UInt8.h>
 #include <math.h>
 #include <algorithm>
-
+#include <iostream>
+#include <cmath>
 //! A Silly Walk class. Brief class description goes here.
 /*!
    SillyWalkTemplate implements a silly walk. Put a detailed description of your class here.
@@ -36,7 +37,7 @@ private:
 	/**
 	 * @brief Compute open loop joint control
 	 */
-  void computeJointControl();
+  void computeJointControl(double t);
 
 	/**
 	 * @brief Send open loop joint control
@@ -44,7 +45,7 @@ private:
   void publishJointControl();
 
 	/**
-	 * @brief Send open loop joint control
+	 * @brief Send open loop joint controlcomputeJointControl
 	 * @param[in] input Describe variables going into the function (past by const ref if large)
 	 * @param[out] output Describe variables coming out of the function
 	 * @return Describe the return value of the function
@@ -71,6 +72,11 @@ private:
 
 	/// Define ids for control modes: Stand
 	const int STAND = 1;
+
+
+	/// Define ids for control modes: Stand
+	const int HOP = 2;
+
 
 	/// Joint control message
 	spirit_msgs::LegCommandArray control_msg_;

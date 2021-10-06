@@ -69,4 +69,7 @@ target_link_libraries(silly_walk_template_node
 catkin_add_gtest(open_loop_controller_test test/test_open_loop_controller.cpp)
 target_link_libraries(open_loop_controller_test open_loop_controller ${catkin_LIBRARIES})
 
+# catkin_add_gtest(open_loop_controller_test test/test_open_loop_controller.cpp)
+# target_link_libraries(open_loop_controller_test open_loop_controller ${catkin_LIBRARIES})
+
 
