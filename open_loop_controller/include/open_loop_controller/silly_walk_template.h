@@ -136,11 +136,13 @@ private:
 	const int STAND = 1;
 
 	/// Define ids for control modes: Walk
-	const int WALK = 2;
+	const int STANCE = 2;
 
-	int leg_length;
+	const int WALK = 3;
 
-	int cur_traj_track_seq = 0;
+	const int leg_length = 0.206;
+
+	int cur_traj_track_seq;
 
 	Eigen::MatrixXd traj;
 
@@ -171,6 +173,18 @@ private:
 
 	/// Matrix of body states (N x Nx: rows correspond to individual states in the horizon)
   	Eigen::MatrixXd body_plan_;
+
+	/// PD gain when in standing mode
+	std::vector<double> stand_kp_;
+	std::vector<double> stand_kd_;
+
+	ros::Time transition_timestamp_;
+
+	const double transition_duration_ = 1.0;
+
+	/// PD gain when foot is in stance
+	std::vector<double> stance_kp_;
+	std::vector<double> stance_kd_;
 };
 
 
