@@ -64,16 +64,16 @@ void SillyWalkTemplate::computeJointControl(double t)
       for (int j = 0; j < 3; ++j)
       {
         if (j == 2 && (i == 0 || i == 2)){
-          control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = stand_joint_angles_.at(j);
+          control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = stand_joint_angles_.at(j) - 0.5;
           control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-          control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 5;
+          control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 35;
           control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 0.1;
           control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
         }
         else{
           control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = stand_joint_angles_.at(j);
           control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-          control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 5;
+          control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 35;
           control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 0.1;
           control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
         }
@@ -89,21 +89,21 @@ void SillyWalkTemplate::computeJointControl(double t)
       {
         if (j == 2 && (i == 1 || i == 3)){
           double diff = t - floor(t);
-          double angleBack = 2.0 +(sin(diff * (8*M_PI))) * 1;
+          double angleBack = 2.0 +(sin(diff * (4*M_PI))) * 1;
           std::cout << "at " <<diff << " leg angle at back" << angleBack << std::endl;
           control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = angleBack;
           control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-          control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 5;
+          control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 35;
           control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 0.1;
           control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
 
         }else if (j == 2 && (i == 0 || i == 2)){
           double diff = t - floor(t);
-          double angleFront = 1.6 +(sin(diff * (8*M_PI))) * 0.8;
+          double angleFront = 1.6 +(sin(diff * (4*M_PI))) * 0.8;
           std::cout << "at " <<diff << " leg angle at front" << angleFront << std::endl;
           control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = angleFront;
           control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-          control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 5;
+          control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 35;
           control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 0.1;
           control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
 
@@ -138,11 +138,11 @@ void SillyWalkTemplate::spin() {
 
   // Set update rate and do any other pre-loop stuff
   ros::Rate r(update_rate_);
-  
+  double t_start = ros::Time::now().sec + ros::Time::now().nsec * 0.000000001;
   // Enter the main loop
   while (ros::ok()) {
 
-    double t = ros::Time::now().sec + ros::Time::now().nsec * 0.000000001;
+    double t = ros::Time::now().sec + ros::Time::now().nsec * 0.000000001 - t_start;
 
     if (t <= 2){
       control_mode_ = SIT;
