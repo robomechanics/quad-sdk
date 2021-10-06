@@ -23,7 +23,7 @@ SillyWalkTemplate::SillyWalkTemplate(ros::NodeHandle nh) {
 void SillyWalkTemplate::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
   
   // Use this to set any logic for control modes (see inverse_dynamics for more examples)
-  if (msg->data == SIT || (msg->data == STAND))
+  if (msg->data == SIT || (msg->data == STAND) || (msg->data == WALK))
   {  
     control_mode_ = msg->data;
   }
@@ -56,6 +56,19 @@ void SillyWalkTemplate::computeJointControl()
     }
   } else if (control_mode_ == STAND) {
     for (int i = 0; i < 4; ++i)
+    {
+      control_msg_.leg_commands.at(i).motor_commands.resize(3);
+      for (int j = 0; j < 3; ++j)
+      {
+        control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = stand_joint_angles_.at(j);
+        control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
+        control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 5;
+        control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 0.1;
+        control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+      }
+    }
+  } else if (control_mode_ == WALK) {
+      for (int i = 0; i < 4; ++i)
     {
       control_msg_.leg_commands.at(i).motor_commands.resize(3);
       for (int j = 0; j < 3; ++j)

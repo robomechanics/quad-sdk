@@ -72,6 +72,9 @@ private:
 	/// Define ids for control modes: Stand
 	const int STAND = 1;
 
+	/// Define ids for control modes: Walk
+	const int WALK = 2;
+
 	/// Joint control message
 	spirit_msgs::LegCommandArray control_msg_;
 
