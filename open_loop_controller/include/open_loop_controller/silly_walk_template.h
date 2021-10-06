@@ -51,6 +51,12 @@ private:
 	 */
   void doxygenExampleFunction(const std::vector<int> &input, std::vector<double> &output);
 
+  	/**
+	 * @brief Callback function to handle current robot state
+	 * @param[in] msg input message contining current robot state
+	 */
+	void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+
 	/// Nodehandle to pub to and sub from
 	ros::NodeHandle nh_;
 
@@ -70,10 +76,12 @@ private:
 	const int SIT = 0;
 
 	/// Define ids for control modes: Stand
-	const int STAND = 1;
+	const int STANDUP = 1;
+	const int STAND = 100;
 
 	/// Define ids for control modes: Walk
-	const int WALK = 2;
+	const int WALK_1 = 2;
+	const int WALK_2 = 3;
 
 	/// Joint control message
 	spirit_msgs::LegCommandArray control_msg_;
@@ -84,8 +92,24 @@ private:
 	/// Standing joint angles
 	std::vector<double> stand_joint_angles_;
 
+	/// Sitting joint angles
+	std::vector<double> sit_joint_angles_;
+
+	/// Walking joint angles
+	std::vector<double> swing_joint_angles_;
+	std::vector<double> td_joint_angles_;
+
 	// Use a kinematics object to make kinematics calculations easier
 	spirit_utils::SpiritKinematics kinematics_;
+
+	/// Duration for sit to stand behavior
+	const double transition_duration_ = 1.0;
+
+	/// Time at which to start transition
+	ros::Time transition_timestamp_;
+
+	// State timeout threshold in seconds
+	double last_state_time_;
 };
 
 
