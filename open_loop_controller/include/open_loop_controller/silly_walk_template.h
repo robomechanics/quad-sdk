@@ -160,6 +160,7 @@ private:
 
 	/// Joint state angles
 	std::vector<double> joint_state_angles_;
+	std::vector<double> temporary_save_;
 
 
 	/// Matrix of continuous foot positions in body frame

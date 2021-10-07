@@ -31,7 +31,7 @@ SillyWalkTemplate::SillyWalkTemplate(ros::NodeHandle nh) {
   // Initialize foot position arrays
   foot_positions_body_ = Eigen::MatrixXd::Zero(num_legs_,3);
   traj = Eigen::MatrixXd::Zero(9,3);
-
+  temporary_save_ = std::vector<double>(12,0); 
    cur_traj_track_seq = 8;
    flight_mode = 4;
    next_flight = 1;
@@ -56,7 +56,7 @@ void SillyWalkTemplate::jointStateCallback(const spirit_msgs::RobotState::ConstP
     return;
   joint_state_angles_ = msg->joints.position;
   // Calculate the foot position in body frame
-  for (int i = 0; i < num_legs_; i++){
+  for (int i = 0; i < 4; i++){
     Eigen::Vector3d joint_state_i;
     Eigen::Vector3d foot_positions_body; 
     joint_state_i << joint_state_angles_[3*i], joint_state_angles_[3*i+1], joint_state_angles_[3*i+2];
@@ -66,26 +66,42 @@ void SillyWalkTemplate::jointStateCallback(const spirit_msgs::RobotState::ConstP
 }
 
 void SillyWalkTemplate::setupTrajectory(Eigen::Vector3d init_point_){
-  std::cout<<"here start setpup traj"<<std::endl;
   // get the current leg state
   Eigen::Vector3d end_point_ = init_point_;
-  end_point_(0) += 0.06;
+  end_point_(0) += 0.10;
   Eigen::Vector3d mid_point_ = (init_point_ + end_point_)/2;
-  mid_point_(2) += 0.03;
+  mid_point_(2) += 0.05;
   std::vector<double> input_vec{0,4,8};
   std::vector<Eigen::Vector3d> output_mat{init_point_, mid_point_, end_point_};
-  std::cout<<output_mat[1]<<std::endl<<output_mat[2]<<std::endl<<output_mat[3]<<std::endl<<std::endl;
+  // std::cout<<output_mat[1]<<std::endl<<output_mat[2]<<std::endl<<output_mat[3]<<std::endl<<std::endl;
   for (int i=0; i<=7; i++){
     traj.row(i) = math_utils::interpVector3d(input_vec, output_mat, i);
   }
   traj.row(8) = end_point_;
+  switch (flight_mode)
+  {
+  case 1:
+    traj.col(0) -= Eigen::VectorXd::Ones(9)*0.2263;
+    traj.col(1) -= Eigen::VectorXd::Ones(9)*0.07;
+    break;
+
+  case 2:
+    traj.col(0) += Eigen::VectorXd::Ones(9)*0.2263;
+    traj.col(1) -= Eigen::VectorXd::Ones(9)*0.07;
+    break;
+
+  case 3:
+    traj.col(0) -= Eigen::VectorXd::Ones(9)*0.2263;
+    traj.col(1) += Eigen::VectorXd::Ones(9)*0.07;
+    break;
+
+  case 4:
+    traj.col(0) += Eigen::VectorXd::Ones(9)*0.2263;
+    traj.col(1) += Eigen::VectorXd::Ones(9)*0.07;
+    break;
+  }
   std::cout<<traj<<std::endl;
-}
-
-
-bool SillyWalkTemplate::computeNextFlight() {
-  // setupTrajectory(foot_positions_body_.row(next_flight));
-  // computeJointControl(traj);
+  ros::Duration(0.3).sleep();
 }
 
 bool SillyWalkTemplate::finishFlight() {
@@ -97,17 +113,9 @@ bool SillyWalkTemplate::finishFlight() {
       flight_mode = 1;
     }
     cur_traj_track_seq = 0;
-    std::cout<<"here finishflight"<<std::endl;
     return true;
   }
   return false;
-}
-
-void SillyWalkTemplate::calculateNextPlan() {
-}
-
-bool SillyWalkTemplate::isReached(int leg_number_){
- return 1;
 }
 
 void SillyWalkTemplate::computeJointControl()
@@ -166,7 +174,7 @@ void SillyWalkTemplate::computeJointControl()
           (stand_joint_angles_.at(j) - sit_joint_angles_.at(j))*t_interp + 
           sit_joint_angles_.at(j);
         control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-        control_msg_.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
+        control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 70; stand_kp_.at(j);
         control_msg_.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
         control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
       }
@@ -183,65 +191,118 @@ void SillyWalkTemplate::computeJointControl()
         control_msg_.leg_commands.at(i).motor_commands.at(j).kp =  70;
         control_msg_.leg_commands.at(i).motor_commands.at(j).kd =  stance_kd_.at(j);
         control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+        temporary_save_.at(3*i+j) = stand_joint_angles_.at(j);
       }
     }
   }
   else if (control_mode_ == WALK) {
-    double elapsed_time = ros::Time::now().toSec() - transition_timestamp_.toSec(); 
-    std::cout<< "here1"<<std::endl;
-    std::cout<<foot_positions_body_<<std::endl;
+    ros::Duration duration = ros::Time::now() - transition_timestamp_;
+    double elapsed_time = duration.toSec(); 
+    
     if(finishFlight()){
-        std::cout<<next_flight<<std::endl;
-      setupTrajectory(foot_positions_body_.row(next_flight-1));
-      std::cout<< "here2"<<std::endl;
+      setupTrajectory(foot_positions_body_.row(flight_mode-1));
     }
-    if(elapsed_time > 0.3){
+    if(elapsed_time > 0.05){
       transition_timestamp_ = ros::Time::now();
       cur_traj_track_seq ++ ;
+      if(cur_traj_track_seq <= 0) cur_traj_track_seq=0;
+      if(cur_traj_track_seq >= 8) cur_traj_track_seq=8;
+      // std::cout<< flight_mode<< "  "<<cur_traj_track_seq<<std::endl;
     }
+
     for (int i = 0; i < 4; ++i){
       control_msg_.leg_commands.at(i).motor_commands.resize(3);
       Eigen::Vector3d joint_state = Eigen::Vector3d::Zero();
-      if (i == flight_mode){
+
+      //for the moving foward leg
+      if (i == flight_mode-1){
         kinematics_->legIKLegBaseFrame(i, traj.row(cur_traj_track_seq), joint_state);
+        temporary_save_[3*i+1] = joint_state[1];
+        temporary_save_[3*i+2] = joint_state[2];
+        std::cout<<joint_state<<std::endl;
         for (int j = 0; j < 3; ++j)
         {
           control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = joint_state[j];
           control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-          control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 25;
-          control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 0.5;
+          control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 75;
+          control_msg_.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
           control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
         }               
-      } else{
+      } 
+
+      //for the following leg
+      else{
         if(cur_traj_track_seq == 1){
-          double x = 0.02;
-          double alpha = atan2(0.02, sqrt(2)*leg_length);
-          //double m = sqrt(2*pow(leg_length,2) + pow(x,2));
-          double m = 0.3;
-          double beta = acos(m/leg_length);
-          joint_state[1] = M_PI - alpha -beta;
-          joint_state[2] = 2 * asin(m/leg_length);
+        // //if(false){  
+        //   double x_2 = 0.02;
+        //   //double alpha = atan2(0.02, sqrt(2)*leg_length);
+        //   //double m = sqrt(2*pow(leg_length,2) + pow(x,2));
+        //   double height = leg_length*sin(temporary_save_[3*i+1])+leg_length*sin(temporary_save_[3*i+1]-temporary_save_[3*i+2]);
+          
+        //   double x_1 = leg_length*cos(temporary_save_[3*i+1])-leg_length*cos(temporary_save_[3*i+1]-temporary_save_[3*i+2]);
+        //   double gamma = acos((x_1+x_2)/height);
+        //   double z = sqrt(pow(height,2)+pow((x_1+x_2),2));
+        //   double omega = acos(z/(2*leg_length));
+        //   double alpha_2 = M_PI - gamma- omega;
+        //   double beta_2 = M_PI - 2*omega;
+        //   std::cout<< height<<std::endl<<x_1<<std::endl<<gamma<<z<<std::endl<<std::endl<<alpha_2<<std::endl<<beta_2<<std::endl<<std::endl;
+        //   ros::Duration(0.05).sleep();
+        //   Eigen::Vector3d joint_state;
+        //   joint_state << 0, alpha_2, beta_2;
+        //   temporary_save_[3*i+1] = alpha_2;
+        //   temporary_save_[3*i+2] = beta_2;
+        Eigen::Vector3d newFootLocation;
+        Eigen::Vector3d stand_joint_angles;
+        stand_joint_angles << stand_joint_angles_.at(0), stand_joint_angles_.at(1), stand_joint_angles_.at(2);
+        kinematics_->bodyToFootFK(i, stand_joint_angles, newFootLocation);
+        newFootLocation(0)-=0.02;
+        switch (i)
+        {
+        case 0:
+        newFootLocation(0) -= 0.2263;
+        newFootLocation(1) -= 0.07;
+        break;
+
+        case 1:
+        newFootLocation(0) += 0.2263;
+        newFootLocation(1) -= 0.07;
+        break;
+
+        case 2:
+        newFootLocation(0) -= 0.2263;
+        newFootLocation(1) += 0.07;
+        break;
+
+        case 3:
+        newFootLocation(0) += 0.2263;
+        newFootLocation(1) += 0.07;
+        break;
+        }
+        kinematics_->legIKLegBaseFrame(i, newFootLocation, joint_state);
+        temporary_save_[3*i+1] = joint_state[1];
+        temporary_save_[3*i+2] = joint_state[2];
           for (int j = 0; j < 3; ++j)
           {
             control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = joint_state[j];
             control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-            control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 25;
-            control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 0.5;
+            control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 100;
+            control_msg_.leg_commands.at(i).motor_commands.at(j).kd = stance_kd_.at(j);;
             control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
           }     
-        }else{
+        }
+        else{
           for (int j = 0; j < 3; ++j)
           {
-            control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = joint_state_angles_[3*i + j];
+            // std::cout<< joint_state_angles_.at(3)<<" "<<joint_state_angles_.at(4)<<" "<<joint_state_angles_.at(5)<<std::endl;
+            control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = temporary_save_[3*i+j]; //stand_joint_angles_.at(j);
             control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-            control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 25;
-            control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 0.5;
+            control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 70;
+            control_msg_.leg_commands.at(i).motor_commands.at(j).kd = stance_kd_.at(j);
             control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
           }   
         }
       }
     }
-    cur_traj_track_seq++;
   }
 }
 
@@ -273,3 +334,15 @@ void SillyWalkTemplate::spin() {
   }
 }
 
+
+void SillyWalkTemplate::calculateNextPlan() {
+}
+
+bool SillyWalkTemplate::isReached(int leg_number_){
+ return 1;
+}
+
+bool SillyWalkTemplate::computeNextFlight() {
+  // setupTrajectory(foot_positions_body_.row(next_flight));
+  // computeJointControl(traj);
+}
