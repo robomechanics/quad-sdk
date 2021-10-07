@@ -68,8 +68,8 @@ void SillyWalkTemplate::computeJointControl()
         {
           control_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = stand_joint_angles_.at(j);
           control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-          control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 100;
-          control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 4;
+          control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 50;
+          control_msg_.leg_commands.at(i).motor_commands.at(j).kd = 2;
           control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
         }
       }
