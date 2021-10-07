@@ -37,7 +37,7 @@ private:
 	 * @brief Get instant legs' joint states
 	 * @param[in] msg New joint state
 	 */
-	void jointStateCallback(const sensor_msgs::JointState::ConstPtr& msg);
+	void jointStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
 
 	/**
 	 * @brief Compute open loop joint control

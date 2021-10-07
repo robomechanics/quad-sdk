@@ -15,7 +15,7 @@ SillyWalkTemplate::SillyWalkTemplate(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
   spirit_utils::loadROSParam(nh_,"silly_walk_template/update_rate",update_rate_);
   spirit_utils::loadROSParam(nh_,"silly_walk_template/stand_angles",stand_joint_angles_);
-  spirit_utils::loadROSParam(nh_,"topics/joint_encoder",joint_state_topic);
+  // spirit_utils::loadROSParam(nh_,"gazebo/state/ground_truth",joint_state_topic);
   spirit_utils::loadROSParam(nh_, "inverse_dynamics/stand_kp", stand_kp_);
   spirit_utils::loadROSParam(nh_, "inverse_dynamics/stand_kd", stand_kd_);
   spirit_utils::loadROSParam(nh_, "inverse_dynamics/stance_kp", stance_kp_);
@@ -24,7 +24,7 @@ SillyWalkTemplate::SillyWalkTemplate(ros::NodeHandle nh) {
   // Setup pubs and subs
   joint_control_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(joint_command_topic,1);
   control_mode_sub_ = nh_.subscribe(control_mode_topic,1,&SillyWalkTemplate::controlModeCallback, this);
-  joint_state_sub_ = nh_.subscribe(joint_state_topic,1,&SillyWalkTemplate::jointStateCallback, this);
+  joint_state_sub_ = nh_.subscribe("state/ground_truth",1,&SillyWalkTemplate::jointStateCallback, this);
   // Add any other class initialization goes here
   control_mode_ = SIT;
 
@@ -50,10 +50,11 @@ void SillyWalkTemplate::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg
   }
 }
 
-void SillyWalkTemplate::jointStateCallback(const sensor_msgs::JointState::ConstPtr& msg){
-  if (msg->position.empty())
+void SillyWalkTemplate::jointStateCallback(const spirit_msgs::RobotState::ConstPtr& msg){
+  // sensor_msgs::JointState::ConstPtr
+  if (msg->joints.position.empty())
     return;
-  joint_state_angles_ = msg->position;
+  joint_state_angles_ = msg->joints.position;
   // Calculate the foot position in body frame
   for (int i = 0; i < num_legs_; i++){
     Eigen::Vector3d joint_state_i;
@@ -74,9 +75,10 @@ void SillyWalkTemplate::setupTrajectory(Eigen::Vector3d init_point_){
   std::vector<double> input_vec{0,4,8};
   std::vector<Eigen::Vector3d> output_mat{init_point_, mid_point_, end_point_};
   std::cout<<output_mat[1]<<std::endl<<output_mat[2]<<std::endl<<output_mat[3]<<std::endl<<std::endl;
-  for (int i=0; i<=8; i++){
+  for (int i=0; i<=7; i++){
     traj.row(i) = math_utils::interpVector3d(input_vec, output_mat, i);
   }
+  traj.row(8) = end_point_;
   std::cout<<traj<<std::endl;
 }
 
@@ -214,7 +216,8 @@ void SillyWalkTemplate::computeJointControl()
         if(cur_traj_track_seq == 1){
           double x = 0.02;
           double alpha = atan2(0.02, sqrt(2)*leg_length);
-          double m = sqrt(2*pow(leg_length,2) + pow(x,2));
+          //double m = sqrt(2*pow(leg_length,2) + pow(x,2));
+          double m = 0.3;
           double beta = acos(m/leg_length);
           joint_state[1] = M_PI - alpha -beta;
           joint_state[2] = 2 * asin(m/leg_length);
