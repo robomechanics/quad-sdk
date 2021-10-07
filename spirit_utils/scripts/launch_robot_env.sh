@@ -2,28 +2,16 @@
 
 echo "Syncing clock with remote computer"
 sudo iw dev wlan0 set power_save off
-sudo ntpdate 192.168.168.5
+sudo ntpdate 192.168.8.102 192.168.8.103
 
-echo "Pull and build most recent code (requires internet connection)? [y/n]"
-read input
-
-if [[ $input == "Y" || $input == "y" ]]; then
-	echo "Pulling most recent code from main"
-	git checkout main
-	git pull
-
-	echo "Running setup script to make sure package deps are up to date"
-	./setup.sh
-
-	echo "Compiling"
-	cd ~/catkin_ws/
-	catkin_make
-	cd ~/catkin_ws/src/spirit-software/
-fi
+echo "Restarting ghost service to use correct IP"
+sudo service ghost restart
 
 echo "Sourcing spirit_utils/scripts/init_robot.sh to source env and setup IPs"
 source ~/catkin_ws/src/spirit-software/spirit_utils/scripts/init_robot.sh
 
-echo "Launching robot_driver.launch"
-roslaunch spirit_utils robot_driver.launch mocap:=true
-
+echo "Launch robot_driver.launch with inverse dynamic controller? (y/n)"
+read input
+if [[ $input == "Y" || $input == "y" ]]; then
+	roslaunch spirit_utils robot_driver.launch mocap:=true
+fi
