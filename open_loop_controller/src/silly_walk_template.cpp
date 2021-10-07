@@ -24,7 +24,8 @@ SillyWalkTemplate::SillyWalkTemplate(ros::NodeHandle nh) {
   // Setup pubs and subs
   joint_control_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(joint_command_topic,1);
   control_mode_sub_ = nh_.subscribe(control_mode_topic,1,&SillyWalkTemplate::controlModeCallback, this);
-  joint_state_sub_ = nh_.subscribe("state/ground_truth",1,&SillyWalkTemplate::jointStateCallback, this);
+  //joint_state_sub_ = nh_.subscribe("state/ground_truth",1,&SillyWalkTemplate::jointStateCallback, this);
+  joint_state_sub_ = nh_.subscribe("/mcu/state/jointURDF",1,&SillyWalkTemplate::jointStateCallback, this);
   // Add any other class initialization goes here
   control_mode_ = SIT;
 
@@ -50,11 +51,17 @@ void SillyWalkTemplate::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg
   }
 }
 
-void SillyWalkTemplate::jointStateCallback(const spirit_msgs::RobotState::ConstPtr& msg){
+void SillyWalkTemplate::jointStateCallback(const sensor_msgs::JointState ::ConstPtr& msg){
   // sensor_msgs::JointState::ConstPtr
-  if (msg->joints.position.empty())
+//  if (msg->joints.position.empty())
+//     return;
+//   joint_state_angles_ = msg->joints.position;
+
+  if (msg->position.empty())
     return;
-  joint_state_angles_ = msg->joints.position;
+  joint_state_angles_ = msg->position;
+
+
   // Calculate the foot position in body frame
   for (int i = 0; i < 4; i++){
     Eigen::Vector3d joint_state_i;
