@@ -28,8 +28,6 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh)
   spirit_utils::loadROSParam(nh_, "open_loop_controller/knee_const", knee_const_);
   spirit_utils::loadROSParam(nh_, "open_loop_controller/alpha", alpha_);
   spirit_utils::loadROSParam(nh_, "open_loop_controller/beta", beta_);
-  spirit_utils::loadROSParam(nh_, "open_loop_controller/leg_phases", leg_phases_);
-  spirit_utils::loadROSParam(nh_, "open_loop_controller/use_diff_for_velocity", use_diff_for_velocity_);
 
   // Start sitting
   control_mode_ = 0;
@@ -52,6 +50,8 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh)
 
 void OpenLoopController::cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg)
 {
+  last_cmd_vel_msg_time_ = ros::Time::now();
+
   if (abs(msg->linear.x) < 1e-3 && abs(msg->linear.y) < 1e-3)
   {
     control_mode_ = 1;
@@ -95,6 +95,11 @@ void OpenLoopController::controlModeCallback(const std_msgs::UInt8::ConstPtr &ms
 
 void OpenLoopController::sendJointPositions(double &elapsed_time)
 {
+  if ((ros::Time::now() - last_cmd_vel_msg_time_).toSec() > 1)
+  {
+    control_mode_ = 0;
+  }
+
   if (last_robot_state_msg_ == NULL)
   {
     return;
@@ -145,8 +150,8 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
       {
         msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = sit_joint_angles_.at(j);
         msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-        msg.leg_commands.at(i).motor_commands.at(j).kp = 5;
-        msg.leg_commands.at(i).motor_commands.at(j).kd = 0.1;
+        msg.leg_commands.at(i).motor_commands.at(j).kp = 0;
+        msg.leg_commands.at(i).motor_commands.at(j).kd = 5;
         msg.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
       }
     }
@@ -240,6 +245,7 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
       //     -1, 0, -1, 1,
       //     -1, 1, 0, -1,
       //     1, -1, -1, 0;
+      k = k.transpose();
 
       double w = w_stance / (exp(-b * y) + 1) + w_swing / (exp(b * y) + 1);
 
@@ -254,7 +260,7 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
       y += 0.002 * y_dot;
 
       Eigen::VectorXd joint_command(6);
-      
+
       switch (control_mode_)
       {
       case 2:
@@ -274,6 +280,7 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
         }
         break;
         }
+
         joint_command(0) = 0;
         joint_command(3) = 0;
         joint_command(1) = direction * x * stand_joint_angles_.at(1) * hip_scale_ + stand_joint_angles_.at(1) * hip_const_;
@@ -284,19 +291,19 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
           joint_command(2) = stand_joint_angles_.at(2) * knee_scale_ * 0 + stand_joint_angles_.at(2) * knee_const_;
           joint_command(5) = stand_joint_angles_.at(2) * knee_scale_ * 0;
         }
-        else if (y > 0 && abs(x) > 0.95)
+        else if (y > 0 && abs(x) > 0.9)
         {
-          joint_command(2) = stand_joint_angles_.at(2) * knee_scale_ * 20 * (1 - abs(x)) + stand_joint_angles_.at(2) * knee_const_;
+          joint_command(2) = stand_joint_angles_.at(2) * knee_scale_ * 10 * (1 - abs(x)) + stand_joint_angles_.at(2) * knee_const_;
           if (x > 0)
           {
-            joint_command(5) = -stand_joint_angles_.at(2) * knee_scale_ * 20 * x_dot;
+            joint_command(5) = -stand_joint_angles_.at(2) * knee_scale_ * 10 * x_dot;
           }
           else
           {
-            joint_command(5) = stand_joint_angles_.at(2) * knee_scale_ * 20 * x_dot;
+            joint_command(5) = stand_joint_angles_.at(2) * knee_scale_ * 10 * x_dot;
           }
 
-          if (direction * x < 0)
+          if (direction * x > 0)
           {
             contact = true;
           }
@@ -309,7 +316,7 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
           joint_command(5) = stand_joint_angles_.at(2) * knee_scale_ * 0;
         }
 
-        gravity << direction*ff_force_.at(0), 0, 11.51 * 9.81, 0, 0, 0;
+        gravity << direction * ff_force_.at(0), 0, 11.51 * 9.81, 0, 0, 0;
       }
       break;
 
@@ -330,6 +337,7 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
         }
         break;
         }
+
         joint_command(1) = stand_joint_angles_.at(1);
         joint_command(4) = 0;
         joint_command(0) = direction * x * stand_joint_angles_.at(1) * abad_scale_ - direction * stand_joint_angles_.at(1) * abad_const_;
@@ -340,19 +348,19 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
           joint_command(2) = stand_joint_angles_.at(2) * knee_scale_ * 0 + stand_joint_angles_.at(2) * knee_const_;
           joint_command(5) = stand_joint_angles_.at(2) * knee_scale_ * 0;
         }
-        else if (y > 0 && abs(x) > 0.95)
+        else if (y > 0 && abs(x) > 0.9)
         {
-          joint_command(2) = stand_joint_angles_.at(2) * knee_scale_ * 20 * (1 - abs(x)) + stand_joint_angles_.at(2) * knee_const_;
+          joint_command(2) = stand_joint_angles_.at(2) * knee_scale_ * 10 * (1 - abs(x)) + stand_joint_angles_.at(2) * knee_const_;
           if (x > 0)
           {
-            joint_command(5) = -stand_joint_angles_.at(2) * knee_scale_ * 20 * x_dot;
+            joint_command(5) = -stand_joint_angles_.at(2) * knee_scale_ * 10 * x_dot;
           }
           else
           {
-            joint_command(5) = stand_joint_angles_.at(2) * knee_scale_ * 20 * x_dot;
+            joint_command(5) = stand_joint_angles_.at(2) * knee_scale_ * 10 * x_dot;
           }
 
-          if (direction * x < 0)
+          if (direction * x > 0)
           {
             contact = true;
           }
@@ -365,7 +373,7 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
           joint_command(5) = stand_joint_angles_.at(2) * knee_scale_ * 0;
         }
 
-        gravity << 0, direction*ff_force_.at(1), 11.51 * 9.81, 0, 0, 0;
+        gravity << 0, direction * ff_force_.at(1), 11.51 * 9.81, 0, 0, 0;
       }
       break;
       }
@@ -398,12 +406,28 @@ void OpenLoopController::sendJointPositions(double &elapsed_time)
         msg.leg_commands.at(idx).motor_commands.at(j).torque_ff = 0;
         if (contact)
         {
-          msg.leg_commands.at(idx).motor_commands.at(j).kp = stance_kp_.at(j);
+          if (control_mode_ == 2)
+          {
+            // I don't know why but this works better for walking forward
+            msg.leg_commands.at(idx).motor_commands.at(j).kp = 55;
+          }
+          else
+          {
+            msg.leg_commands.at(idx).motor_commands.at(j).kp = stance_kp_.at(j);
+          }
           msg.leg_commands.at(idx).motor_commands.at(j).kd = stance_kd_.at(j);
         }
         else
         {
-          msg.leg_commands.at(idx).motor_commands.at(j).kp = swing_kp_.at(j);
+          if (control_mode_ == 2)
+          {
+            // I don't know why but this works better for walking forward
+            msg.leg_commands.at(idx).motor_commands.at(j).kp = 55;
+          }
+          else
+          {
+            msg.leg_commands.at(idx).motor_commands.at(j).kp = swing_kp_.at(j);
+          }
           msg.leg_commands.at(idx).motor_commands.at(j).kd = swing_kd_.at(j);
         }
       }

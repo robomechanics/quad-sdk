@@ -1,12 +1,7 @@
 open_loop_controller:
   update_rate: 500
-  leg_phases: [0,0.5,0.5,0]
   sit_angles: [0,0.1,0.2]
   stand_angles: [0,0.76,1.52]
-  waypoint_ts: [0.2,0.2,0.2]
-  waypoint_xs: [-0.12,0,0.12]
-  waypoint_ys: [-0.24,-0.14,-0.24]
-  interp_dt: 0.005
   stand_kp: [35,35,35]
   stand_kd: [5,5,5]
   swing_kp: [70,70,70]
@@ -22,4 +17,3 @@ open_loop_controller:
   knee_const: 0.75
   alpha: 5
   beta: 50
-  use_diff_for_velocity: true

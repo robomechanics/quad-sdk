@@ -74,20 +74,8 @@ private:
 	/// Update rate for sending and receiving data;
 	double update_rate_;
 
-	/// Time for one step cycle
-	double t_cycle_;
-
 	/// Robot mode (Sit 0, Walk 1 or Stand 2)
 	int control_mode_;
-
-	/// Timestep to interpolate points at
-	double interp_dt_;
-
-	/// Target points to hit (hip angle, knee angle)
-	std::vector<std::pair<double, double>> target_pts_;
-
-	/// Vector of timestamps to hit each target_pt at
-	std::vector<double> target_times_;
 
 	/// Joint angles in stand config
 	std::vector<double> stand_joint_angles_;
@@ -112,12 +100,6 @@ private:
 
 	/// Walk derivative gain for each joint
 	std::vector<double> stance_kd_;
-
-	/// Gait phase info for each leg
-	std::vector<double> leg_phases_;
-
-	/// Numerically differentiate trajectory for velocity command
-	bool use_diff_for_velocity_;
 
 	std::vector<double> x_;
 
@@ -146,6 +128,8 @@ private:
 	double alpha_;
 
 	double beta_;
+
+	ros::Time last_cmd_vel_msg_time_;
 };
 
 #endif // OPEN_LOOP_CONTROLLER_H
