@@ -22,6 +22,9 @@ jobs:
       #       source /catkin_ws/devel/setup.bash
       #       roslaunch spirit_utils load_params.launch & sleep 5
       #       catkin_make run_tests && catkin_test_results
+      - run:
+          command: cat /sys/fs/cgroup/memory/memory.max_usage_in_bytes
+          when: always
 workflows:
   version: 2
   build-and-test:
