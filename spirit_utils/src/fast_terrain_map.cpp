@@ -37,6 +37,27 @@ void FastTerrainMap::loadData(int x_size,
   nz_data_filt_ = nz_data_filt;
 }
 
+void FastTerrainMap::loadDefault(){
+
+  int x_size = 2;
+  int y_size = 2;
+  std::vector<double> x_data = {-5, 5};
+  std::vector<double> y_data = {-5, 5};
+  std::vector<double> z_data_vec = {0, 0};
+  std::vector<double> nz_data_vec = {1, 1};
+  std::vector<std::vector<double>> z_data = {z_data_vec, z_data_vec};
+  std::vector<std::vector<double>> nx_data = z_data;
+  std::vector<std::vector<double>> ny_data = z_data;
+  std::vector<std::vector<double>> nz_data = {nz_data_vec, nz_data_vec};
+  std::vector<std::vector<double>> z_data_filt = z_data;
+  std::vector<std::vector<double>> nx_data_filt = z_data;
+  std::vector<std::vector<double>> ny_data_filt = z_data;
+  std::vector<std::vector<double>> nz_data_filt = nz_data;
+
+  this->loadData(x_size, y_size, x_data, y_data, z_data, nx_data, ny_data, nz_data,
+    z_data_filt, nx_data_filt, ny_data_filt, nz_data_filt);
+}
+
 void FastTerrainMap::loadDataFromGridMap(const grid_map::GridMap map){
   // Initialize the data structures for the map
   int x_size = map.getSize()(0);
@@ -77,10 +98,10 @@ void FastTerrainMap::loadDataFromGridMap(const grid_map::GridMap map){
       double height = (double) map.at("z", index);
       z_data[i].push_back(height);
 
-      if (map.exists("nx") == true) {
-        double nx = (double) map.at("nx", index);
-        double ny = (double) map.at("ny", index);
-        double nz = (double) map.at("nz", index);
+      if (map.exists("normal_vectors_x") == true) {
+        double nx = (double) map.at("normal_vectors_x", index);
+        double ny = (double) map.at("normal_vectors_y", index);
+        double nz = (double) map.at("normal_vectors_z", index);
         nx_data[i].push_back(nx);
         ny_data[i].push_back(ny);
         nz_data[i].push_back(nz);
@@ -90,11 +111,11 @@ void FastTerrainMap::loadDataFromGridMap(const grid_map::GridMap map){
         nz_data[i].push_back(1.0);
       }
 
-      if (map.exists("z_filt") == true) {
-        double z_filt = (double) map.at("z_filt", index);
-        double nx_filt = (double) map.at("nx_filt", index);
-        double ny_filt = (double) map.at("ny_filt", index);
-        double nz_filt = (double) map.at("nz_filt", index);
+      if (map.exists("z_smooth") == true) {
+        double z_filt = (double) map.at("z_smooth", index);
+        double nx_filt = (double) map.at("smooth_normal_vectors_x", index);
+        double ny_filt = (double) map.at("smooth_normal_vectors_y", index);
+        double nz_filt = (double) map.at("smooth_normal_vectors_z", index);
         z_data_filt[i].push_back(z_filt);
         nx_data_filt[i].push_back(nx_filt);
         ny_data_filt[i].push_back(ny_filt);
@@ -269,7 +290,7 @@ std::array<double, 3> FastTerrainMap::getSurfaceNormal(const double x, const dou
     return surf_norm;
 }
 
-std::array<double, 3> FastTerrainMap::getSurfaceNormalFiltered(const double x, const double y)
+std::array<double, 3> FastTerrainMap::getSurfaceNormalFiltered(const double x, const double y) const
 {
     std::array<double, 3> surf_norm;
 

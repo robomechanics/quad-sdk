@@ -182,13 +182,13 @@ void LocalPlanner::initLocalFootstepPlanner() {
 
 void LocalPlanner::terrainMapCallback(
   const grid_map_msgs::GridMap::ConstPtr& msg) {
-  // Get the map in its native form
-  grid_map::GridMap map;
-  grid_map::GridMapRosConverter::fromMessage(*msg, map);
+  // grid_map::GridMap map;
+  grid_map::GridMapRosConverter::fromMessage(*msg, terrain_grid_);
 
   // Convert to FastTerrainMap structure for faster querying
-  terrain_.loadDataFromGridMap(map);
+  terrain_.loadDataFromGridMap(terrain_grid_);
   local_footstep_planner_->updateMap(terrain_);
+  local_footstep_planner_->updateMap(terrain_grid_);
 }
 
 void LocalPlanner::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg) {
