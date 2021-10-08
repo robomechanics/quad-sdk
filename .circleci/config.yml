@@ -1,0 +1,35 @@
+jobs:
+  build-and-test:
+    working_directory: /catkin_ws/src
+    docker:
+      - image: osrf/ros:melodic-desktop-full
+    steps:
+      - checkout
+      - run:
+          name: "Update packages"
+          command: sudo apt update
+      - run:
+          name: "Call setup script and build"
+          command: |
+            source /opt/ros/melodic/setup.bash
+            chmod +x setup.sh
+            ./setup.sh
+            cd ..
+            catkin_make
+      # - run:
+      #     name: "Test"
+      #     command: |
+      #       source /catkin_ws/devel/setup.bash
+      #       roslaunch spirit_utils load_params.launch & sleep 5
+      #       catkin_make run_tests && catkin_test_results
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - build-and-test:
+          filters:
+            branches:
+              only:
+                - main
+                - circleci-editor/circleci-project-setup
+                - circleci-project-setup
