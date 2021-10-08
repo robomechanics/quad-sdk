@@ -2,7 +2,7 @@
 
 echo "Syncing clock with remote computer"
 sudo iw dev wlan0 set power_save off
-sudo ntpdate 192.168.8.102 192.168.8.103
+sudo chronyc -a makestep
 
 echo "Restarting ghost service to use correct IP"
 sudo service ghost restart
