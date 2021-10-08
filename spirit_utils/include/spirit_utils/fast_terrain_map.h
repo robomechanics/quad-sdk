@@ -45,6 +45,11 @@ class FastTerrainMap {
       std::vector<std::vector<double>> nz_data_filt);
 
     /**
+     * @brief Load in a default terrain map 10x10m, four corners with flat terrain
+     */
+    void loadDefault();
+
+    /**
      * @brief Load data from a grid_map::GridMap object into a FastTerrainMap object
      * @param[in] grid_map::GridMap object with map data
      */
@@ -88,7 +93,7 @@ class FastTerrainMap {
      * @param[in] double y location
      * @return std::array<double, 3> surface normal at location [x,y]
      */
-    std::array<double, 3> getSurfaceNormalFiltered(const double x,const double y);
+    std::array<double, 3> getSurfaceNormalFiltered(const double x,const double y) const;
 
     /**
      * @brief Return the (approximate) intersection of the height map and a vector. Returned point lies exactly on the map but not entirely on the vector.

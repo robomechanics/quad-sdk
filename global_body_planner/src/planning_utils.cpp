@@ -411,7 +411,7 @@ bool isValidYawRate(State s, Action a, double t, const PlannerConfig &planner_co
 
 double getPitchFromState(State s, const PlannerConfig &planner_config) {
 
-  std::array<double, 3> surf_norm = planner_config.terrain.getSurfaceNormal(s[0], s[1]);
+  std::array<double, 3> surf_norm = planner_config.terrain.getSurfaceNormalFiltered(s[0], s[1]);
 
   double denom = s[3]*s[3] + s[4]*s[4];
 
@@ -431,7 +431,7 @@ double getPitchFromState(State s, const PlannerConfig &planner_config) {
 
 double getHeightFromState(State s, const PlannerConfig &planner_config) {
 
-  return (planner_config.terrain.getGroundHeight(s[0], s[1]));
+  return (planner_config.terrain.getGroundHeightFiltered(s[0], s[1]));
 
 }
 

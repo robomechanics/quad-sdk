@@ -182,13 +182,13 @@ void LocalPlanner::initLocalFootstepPlanner() {
 
 void LocalPlanner::terrainMapCallback(
   const grid_map_msgs::GridMap::ConstPtr& msg) {
-  // Get the map in its native form
-  grid_map::GridMap map;
-  grid_map::GridMapRosConverter::fromMessage(*msg, map);
+  // grid_map::GridMap map;
+  grid_map::GridMapRosConverter::fromMessage(*msg, terrain_grid_);
 
   // Convert to FastTerrainMap structure for faster querying
-  terrain_.loadDataFromGridMap(map);
+  terrain_.loadDataFromGridMap(terrain_grid_);
   local_footstep_planner_->updateMap(terrain_);
+  local_footstep_planner_->updateMap(terrain_grid_);
 }
 
 void LocalPlanner::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg) {
@@ -328,8 +328,8 @@ void LocalPlanner::getStateAndTwistInput() {
   ref_body_plan_(0,3) = 0;
   ref_body_plan_(0,4) = 0;
   ref_body_plan_(0,5) = current_state_[5];
-  ref_body_plan_(0,6) = cmd_vel_[0];
-  ref_body_plan_(0,7) = cmd_vel_[1];
+  ref_body_plan_(0,6) = cmd_vel_[0]*cos(current_state_[5]) - cmd_vel_[1]*sin(current_state_[5]);
+  ref_body_plan_(0,7) = cmd_vel_[0]*sin(current_state_[5]) + cmd_vel_[1]*cos(current_state_[5]);
   ref_body_plan_(0,8) = cmd_vel_[2];
   ref_body_plan_(0,9) = cmd_vel_[3];
   ref_body_plan_(0,10) = cmd_vel_[4];
