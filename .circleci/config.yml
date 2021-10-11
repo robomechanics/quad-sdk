@@ -17,11 +17,11 @@ jobs:
             cd ..
             catkin_make -j8 -l8
       - run:
-          name: "Test"
+          name: "Run tests"
           command: |
             source /catkin_ws/devel/setup.bash
             roslaunch spirit_utils load_params.launch & sleep 10
-            catkin_make run_tests && catkin_test_results
+            catkin_make -j8 -l8 run_tests && catkin_test_results
 workflows:
   version: 2
   build-and-test:
