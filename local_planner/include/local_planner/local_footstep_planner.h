@@ -77,6 +77,12 @@ class LocalFootstepPlanner {
      * @param[in] terrain The map of the terrain
      */
     void updateMap(const FastTerrainMap &terrain);
+
+    /**
+     * @brief Update the map of this object
+     * @param[in] terrain The map of the terrain
+     */
+    void updateMap(const grid_map::GridMap &terrain);
     
     /**
      * @brief Compute the contact schedule based on the current phase
@@ -225,6 +231,9 @@ class LocalFootstepPlanner {
 
     /// Struct for terrain map data
     FastTerrainMap terrain_;
+
+    /// GridMap for terrain map data
+    grid_map::GridMap terrain_grid_;
 
     /// Current continuous footstep plan
     spirit_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
