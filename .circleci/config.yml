@@ -15,6 +15,7 @@ jobs:
             chmod +x setup.sh
             ./setup.sh
             cd ..
+            export ROS_PARALLEL_JOBS=8
             catkin_make
       # - run:
       #     name: "Test"
