@@ -40,7 +40,7 @@ void MeshToGridMapConverter::subscribeToTopics() {
 
 void MeshToGridMapConverter::advertiseTopics() {
   grid_map_pub_ = nh_.advertise<grid_map_msgs::GridMap>(
-      "terrain_map", 1, latch_grid_map_pub_);
+      "terrain_map_raw", 1, latch_grid_map_pub_);
 }
 
 void MeshToGridMapConverter::advertiseServices() {
