@@ -14,7 +14,7 @@ jobs:
             source /opt/ros/melodic/setup.bash
             chmod +x setup.sh
             ./setup.sh
-            cd ..
+            cd /catkin_ws
             catkin_make -j8 -l8
       - run:
           name: "Load ROS params in the background"
