@@ -185,7 +185,6 @@ void LocalPlanner::initLocalFootstepPlanner() {
 
 void LocalPlanner::terrainMapCallback(
   const grid_map_msgs::GridMap::ConstPtr& msg) {
-  // Get the map in its native form
   // grid_map::GridMap map;
   grid_map::GridMapRosConverter::fromMessage(*msg, terrain_grid_);
 

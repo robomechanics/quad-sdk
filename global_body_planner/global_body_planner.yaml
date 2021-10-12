@@ -1,9 +1,9 @@
-global_body_planner:
+sglobal_body_planner:
   update_rate: 10
   num_calls: 1            # Number of times to call the planner
-  max_planning_time: 100.0  # Minimum amount of time to run the planner (will replan to find better solutions until this duration is up)
-  start_state: [2.0,-2.0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
-  goal_state: [6.0,0.0,0.3,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0]
+  max_planning_time: 2.0  # Minimum amount of time to run the planner (will replan to find better solutions until this duration is up)
+  start_state: [0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+  goal_state: [6.0,0.0,0.4,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
   state_error_threshold: 25 #0.25
   startup_delay: 0.5      # Time to delay after starting node before planning
   replanning: false        # Boolean to determine if replanning is allowed

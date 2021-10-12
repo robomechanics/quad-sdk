@@ -290,7 +290,7 @@ std::array<double, 3> FastTerrainMap::getSurfaceNormal(const double x, const dou
     return surf_norm;
 }
 
-std::array<double, 3> FastTerrainMap::getSurfaceNormalFiltered(const double x, const double y)
+std::array<double, 3> FastTerrainMap::getSurfaceNormalFiltered(const double x, const double y) const
 {
     std::array<double, 3> surf_norm;
 

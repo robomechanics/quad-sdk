@@ -12,16 +12,16 @@ sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `ls
 cat /etc/apt/sources.list.d/gazebo-stable.list
 wget https://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
 sudo apt update
-sudo apt install gazebo9 -y
+sudo apt install -y gazebo9 -y
 
 
 
-sudo apt install ros-melodic-controller-manager -y
-sudo apt install ros-melodic-joint-state-controller -y
-sudo apt install ros-melodic-gazebo-ros-pkgs -y
-sudo apt install ros-melodic-ros-control -y
-sudo apt install ros-melodic-gazebo-ros-control -y
-sudo apt install ros-melodic-effort-controllers -y
-sudo apt install ros-melodic-robot-state-publisher -y
-sudo apt install ros-melodic-imu-tools -y
-sudo apt install ros-melodic-message-to-tf -y
+sudo apt install -y ros-melodic-controller-manager -y
+sudo apt install -y ros-melodic-joint-state-controller -y
+sudo apt install -y ros-melodic-gazebo-ros-pkgs -y
+sudo apt install -y ros-melodic-ros-control -y
+sudo apt install -y ros-melodic-gazebo-ros-control -y
+sudo apt install -y ros-melodic-effort-controllers -y
+sudo apt install -y ros-melodic-robot-state-publisher -y
+sudo apt install -y ros-melodic-imu-tools -y
+sudo apt install -y ros-melodic-message-to-tf -y
