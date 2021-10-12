@@ -93,7 +93,7 @@ class FastTerrainMap {
      * @param[in] double y location
      * @return std::array<double, 3> surface normal at location [x,y]
      */
-    std::array<double, 3> getSurfaceNormalFiltered(const double x,const double y);
+    std::array<double, 3> getSurfaceNormalFiltered(const double x,const double y) const;
 
     /**
      * @brief Return the (approximate) intersection of the height map and a vector. Returned point lies exactly on the map but not entirely on the vector.
