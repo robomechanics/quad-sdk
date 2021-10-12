@@ -1,1 +1,1 @@
-sudo apt install ros-melodic-grid-map
+sudo apt install -y ros-melodic-grid-map

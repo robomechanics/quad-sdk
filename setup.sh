@@ -4,7 +4,7 @@ echo "#########################"
 echo "Install base dependencies"
 echo "#########################"
 echo
-sudo apt install doxygen libeigen3-dev
+sudo apt install -y doxygen libeigen3-dev
 
 # Install all dependencies from package setup files
 echo
