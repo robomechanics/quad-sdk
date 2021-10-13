@@ -59,6 +59,13 @@ FullState stateToFullState(State state, double roll, double pitch, double yaw,
   return full_state;
 }
 
+void flipDirection(State &state)
+{
+  state[3] = -state[3];
+  state[4] = -state[4];
+  state[5] = -state[5];
+};
+
 void vectorToArray(State vec, double * new_array)
 {
   for (int i = 0; i < vec.size(); i++)

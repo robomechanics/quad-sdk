@@ -20,7 +20,7 @@
 
 // Uncomment to add visualization features
 #define VISUALIZE_TREE
-// #define VISUALIZE_ALL_CANDIDATE_ACTIONS
+#define VISUALIZE_ALL_CANDIDATE_ACTIONS
 // #define PLOT_TRAJECTORIES
 
 namespace planning_utils {
@@ -99,6 +99,7 @@ const double MY_PI = 3.14159;
 State fullStateToState(FullState full_state);
 FullState stateToFullState(State state, double roll, double pitch, double yaw, 
   double roll_rate, double pitch_rate, double yaw_rate);
+void flipDirection(State &state);
 void vectorToArray(State vec, double * new_array);
 
 // Define some useful print statements
