@@ -313,6 +313,11 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     state_traj.bottomRows(N_) = last_state_traj_;
     control_traj = last_control_traj_;
 
+    mynlp_->w0_.setZero();
+    mynlp_->z_L0_.setZero();
+    mynlp_->z_U0_.setZero();
+    mynlp_->lambda0_.setZero();
+
     ROS_INFO_STREAM(param_ns_ << " solving fail");
     return false;
   }
