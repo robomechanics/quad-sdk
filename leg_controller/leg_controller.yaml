@@ -1,4 +1,4 @@
-inverse_dynamics:
+leg_controller:
   update_rate: 200
   sit_kp: [10, 10, 10]
   sit_kd: [1, 1, 1]

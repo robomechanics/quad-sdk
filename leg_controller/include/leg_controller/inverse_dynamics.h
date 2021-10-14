@@ -18,7 +18,6 @@
 #include <spirit_msgs/LegOverride.h>
 #include <spirit_msgs/MultiFootPlanContinuous.h>
 #include <eigen_conversions/eigen_msg.h>
-#include "spirit_utils/matplotlibcpp.h"
 
 
 #include <cmath>
