@@ -201,8 +201,8 @@ class RVizInterface {
   /// in callbacks
   double update_rate_;
 
-  /// Interval for showing orientation of plan
-  int orientation_subsample_interval_;
+  /// Number for showing orientation of plan
+  int orientation_subsample_num_;
 
   /// Handle for the map frame
   std::string map_frame_;
