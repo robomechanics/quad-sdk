@@ -322,15 +322,12 @@ bool NMPCController::computePlan(
         state_traj_lifted.middleCols(n_body_ + n_foot_ / 2, n_foot_ / 2);
   }
 
-  // Update warm start info based on solve status
-  if (status == Solve_Succeeded) {
-    mynlp_->warm_start_ = true;
-    return true;
-  } else {
-    mynlp_->mu0_ = 1e-1;
-    mynlp_->warm_start_ = false;
-    require_init_ = true;
-    ROS_WARN_STREAM("NMPC solving fail");
+    mynlp_->w0_.setZero();
+    mynlp_->z_L0_.setZero();
+    mynlp_->z_U0_.setZero();
+    mynlp_->lambda0_.setZero();
+
+    ROS_INFO_STREAM(param_ns_ << " solving fail");
     return false;
   }
 }
