@@ -1,4 +1,4 @@
-#include "inverse_dynamics/leg_overrider.h"
+#include "leg_controller/leg_overrider.h"
 
 LegOverrider::LegOverrider(ros::NodeHandle nh) {
   nh_ = nh;

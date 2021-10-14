@@ -1,8 +1,8 @@
-#include "inverse_dynamics/inverse_dynamics.h"
+#include "leg_controller/leg_controller.h"
 
 namespace plt = matplotlibcpp;
 
-InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
+LegController::LegController(ros::NodeHandle nh) {
 	nh_ = nh;
 
     // Load rosparams from parameter server
@@ -19,39 +19,39 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh_,"topics/control/leg_override",leg_override_topic);
   spirit_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
 
-  spirit_utils::loadROSParam(nh_,"inverse_dynamics/update_rate", update_rate_);
-  spirit_utils::loadROSParam(nh_,"inverse_dynamics/input_timeout", input_timeout_);
-  spirit_utils::loadROSParam(nh_,"inverse_dynamics/state_timeout", state_timeout_);
-  spirit_utils::loadROSParam(nh_,"inverse_dynamics/heartbeat_timeout", heartbeat_timeout_);
-  spirit_utils::loadROSParam(nh_, "inverse_dynamics/sit_kp", sit_kp_);
-  spirit_utils::loadROSParam(nh_, "inverse_dynamics/sit_kd", sit_kd_);
-  spirit_utils::loadROSParam(nh_, "inverse_dynamics/stand_kp", stand_kp_);
-  spirit_utils::loadROSParam(nh_, "inverse_dynamics/stand_kd", stand_kd_);
-  spirit_utils::loadROSParam(nh_, "inverse_dynamics/stance_kp", stance_kp_);
-  spirit_utils::loadROSParam(nh_, "inverse_dynamics/stance_kd", stance_kd_);
-  spirit_utils::loadROSParam(nh_, "inverse_dynamics/swing_kp", swing_kp_);
-  spirit_utils::loadROSParam(nh_, "inverse_dynamics/swing_kd", swing_kd_);
-  spirit_utils::loadROSParam(nh_, "inverse_dynamics/safety_kp", safety_kp_);
-  spirit_utils::loadROSParam(nh_, "inverse_dynamics/safety_kd", safety_kd_);
-  spirit_utils::loadROSParam(nh_, "inverse_dynamics/remote_latency_threshold_warn",
+  spirit_utils::loadROSParam(nh_,"leg_controller/update_rate", update_rate_);
+  spirit_utils::loadROSParam(nh_,"leg_controller/input_timeout", input_timeout_);
+  spirit_utils::loadROSParam(nh_,"leg_controller/state_timeout", state_timeout_);
+  spirit_utils::loadROSParam(nh_,"leg_controller/heartbeat_timeout", heartbeat_timeout_);
+  spirit_utils::loadROSParam(nh_, "leg_controller/sit_kp", sit_kp_);
+  spirit_utils::loadROSParam(nh_, "leg_controller/sit_kd", sit_kd_);
+  spirit_utils::loadROSParam(nh_, "leg_controller/stand_kp", stand_kp_);
+  spirit_utils::loadROSParam(nh_, "leg_controller/stand_kd", stand_kd_);
+  spirit_utils::loadROSParam(nh_, "leg_controller/stance_kp", stance_kp_);
+  spirit_utils::loadROSParam(nh_, "leg_controller/stance_kd", stance_kd_);
+  spirit_utils::loadROSParam(nh_, "leg_controller/swing_kp", swing_kp_);
+  spirit_utils::loadROSParam(nh_, "leg_controller/swing_kd", swing_kd_);
+  spirit_utils::loadROSParam(nh_, "leg_controller/safety_kp", safety_kp_);
+  spirit_utils::loadROSParam(nh_, "leg_controller/safety_kd", safety_kd_);
+  spirit_utils::loadROSParam(nh_, "leg_controller/remote_latency_threshold_warn",
     remote_latency_threshold_warn_);
-  spirit_utils::loadROSParam(nh_, "inverse_dynamics/remote_latency_threshold_error",
+  spirit_utils::loadROSParam(nh_, "leg_controller/remote_latency_threshold_error",
     remote_latency_threshold_error_);
 
   spirit_utils::loadROSParam(nh_,"local_planner/timestep", dt_);
 
   // Setup pubs and subs
-  local_plan_sub_ = nh_.subscribe(local_plan_topic,1,&InverseDynamics::localPlanCallback, this);
-  robot_state_sub_= nh_.subscribe(robot_state_topic,1,&InverseDynamics::robotStateCallback, this);
-  grf_sub_ = nh_.subscribe(grf_topic,1,&InverseDynamics::grfInputCallback, this);
+  local_plan_sub_ = nh_.subscribe(local_plan_topic,1,&LegController::localPlanCallback, this);
+  robot_state_sub_= nh_.subscribe(robot_state_topic,1,&LegController::robotStateCallback, this);
+  grf_sub_ = nh_.subscribe(grf_topic,1,&LegController::grfInputCallback, this);
   trajectory_state_sub_ = nh_.subscribe(
-    trajectory_state_topic,1,&InverseDynamics::trajectoryStateCallback, this);
+    trajectory_state_topic,1,&LegController::trajectoryStateCallback, this);
   control_mode_sub_ = nh_.subscribe(
-    control_mode_topic,1,&InverseDynamics::controlModeCallback, this);
+    control_mode_topic,1,&LegController::controlModeCallback, this);
   leg_override_sub_ = nh_.subscribe(
-    leg_override_topic,1,&InverseDynamics::legOverrideCallback, this);
+    leg_override_topic,1,&LegController::legOverrideCallback, this);
   remote_heartbeat_sub_ = nh_.subscribe(
-    remote_heartbeat_topic,1,&InverseDynamics::remoteHeartbeatCallback, this);
+    remote_heartbeat_topic,1,&LegController::remoteHeartbeatCallback, this);
   leg_command_array_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_command_array_topic,1);
   grf_pub_ = nh_.advertise<spirit_msgs::GRFArray>(grf_topic,1);
   robot_heartbeat_pub_ = nh_.advertise<std_msgs::Header>(robot_heartbeat_topic,1);
@@ -64,7 +64,7 @@ InverseDynamics::InverseDynamics(ros::NodeHandle nh) {
   kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
 }
 
-void InverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
+void LegController::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
   
   // Wait if transitioning
   if ((control_mode_ == SIT_TO_STAND) || (control_mode_ == STAND_TO_SIT))
@@ -86,7 +86,7 @@ void InverseDynamics::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) 
   }
 }
 
-void InverseDynamics::localPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg) {
+void LegController::localPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg) {
   last_local_plan_msg_ = msg;
 
   double round_trip_time_diff = (ros::Time::now() - last_local_plan_msg_->state_timestamp).toSec();
@@ -96,27 +96,27 @@ void InverseDynamics::localPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& 
   ROS_INFO_STREAM("local plan time difference: " << local_plan_time_diff);
 }
 
-void InverseDynamics::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
+void LegController::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
   // ROS_INFO("In robotStateCallback");
   last_robot_state_msg_ = msg;
   last_state_time_ = msg->header.stamp.toSec();
 }
 
-void InverseDynamics::grfInputCallback(const spirit_msgs::GRFArray::ConstPtr& msg) {
+void LegController::grfInputCallback(const spirit_msgs::GRFArray::ConstPtr& msg) {
   // ROS_INFO("In controlInputCallback");
   last_grf_array_msg_ = msg;
 }
 
-void InverseDynamics::trajectoryStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
+void LegController::trajectoryStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
   // ROS_INFO("In footPlanContinuousCallback");
   last_trajectory_state_msg_ = msg;
 }
 
-void InverseDynamics::legOverrideCallback(const spirit_msgs::LegOverride::ConstPtr& msg) {
+void LegController::legOverrideCallback(const spirit_msgs::LegOverride::ConstPtr& msg) {
   last_leg_override_msg_ = *msg;
 }
 
-void InverseDynamics::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg) {
+void LegController::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg) {
 
   // Get the current time and compare to the message time
   last_remote_heartbeat_time_ = msg->stamp.toSec();
@@ -137,7 +137,7 @@ void InverseDynamics::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& 
   }
 }
 
-void InverseDynamics::checkMessages() {
+void LegController::checkMessages() {
 
   // Do nothing if already in safety mode
   if (control_mode_ == SAFETY)
@@ -161,7 +161,7 @@ void InverseDynamics::checkMessages() {
 
 }
 
-void InverseDynamics::publishLegCommandArray() {
+void LegController::computeLegCommandArray() {
 
   // Define static position setpoints and gains
   static const std::vector<double> stand_joint_angles_{0,0.76,2*0.76};
@@ -184,7 +184,6 @@ void InverseDynamics::publishLegCommandArray() {
 
   // Initialize variables for ff and fb
   spirit_msgs::RobotState ref_state_msg;
-  spirit_msgs::GRFArray grf_array_msg;
   Eigen::VectorXd tau_array(3*num_feet_), tau_swing_leg_array(3*num_feet_);
   leg_command_array_msg_.leg_commands.resize(num_feet_);
 
@@ -223,20 +222,20 @@ void InverseDynamics::publishLegCommandArray() {
           last_local_plan_msg_->states[i+1], t_interp, ref_state_msg);
 
         // spirit_utils::interpGRFArray(last_local_plan_msg_->grfs[i],
-        //   last_local_plan_msg_->grfs[i+1], t_interp, grf_array_msg);
+        //   last_local_plan_msg_->grfs[i+1], t_interp, grf_array_msg_);
 
         // ref_state_msg = last_local_plan_msg_->states[i];
-        grf_array_msg = last_local_plan_msg_->grfs[i];
+        grf_array_msg_ = last_local_plan_msg_->grfs[i];
 
         break;
       }
     }
   } else if (input_type == GRFS) {
     ref_state_msg = *(last_trajectory_state_msg_);
-    grf_array_msg = *(last_grf_array_msg_);
+    grf_array_msg_ = *(last_grf_array_msg_);
 
     Eigen::VectorXd grf_array(3*num_feet_);
-    grf_array = spirit_utils::grfArrayMsgToEigen(grf_array_msg);
+    grf_array = spirit_utils::grfArrayMsgToEigen(grf_array_msg_);
   }
 
   // Load feedforward torques if provided
@@ -250,15 +249,15 @@ void InverseDynamics::publishLegCommandArray() {
     ref_body_state = spirit_utils::bodyStateMsgToEigen(ref_state_msg.body);
     spirit_utils::multiFootStateMsgToEigen(
         ref_state_msg.feet, ref_foot_positions, ref_foot_velocities, ref_foot_acceleration);
-    grf_array = spirit_utils::grfArrayMsgToEigen(grf_array_msg);
+    grf_array = spirit_utils::grfArrayMsgToEigen(grf_array_msg_);
 
     tau_array = -jacobian.transpose().block<12,12>(0,0)*grf_array;
 
     kinematics_->compInvDyn(state_positions, state_velocities, ref_foot_acceleration, grf_array, tau_swing_leg_array);
   } else {
-    grf_array_msg.header.stamp = ros::Time::now();
-    grf_array_msg.points.resize(num_feet_);
-    grf_array_msg.vectors.resize(num_feet_);
+    grf_array_msg_.header.stamp = ros::Time::now();
+    grf_array_msg_.points.resize(num_feet_);
+    grf_array_msg_.vectors.resize(num_feet_);
   }
 
   // Enter state machine for filling motor command message
@@ -429,14 +428,17 @@ void InverseDynamics::publishLegCommandArray() {
       leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).fb_ratio = fb_ratio;
     }
   }
+}
+
+void LegController::publishLegCommandArray() {
 
   // Stamp and send the message
   leg_command_array_msg_.header.stamp = ros::Time::now();
   leg_command_array_pub_.publish(leg_command_array_msg_);
-  grf_pub_.publish(grf_array_msg);
+  grf_pub_.publish(grf_array_msg_);
 }
 
-void InverseDynamics::spin() {
+void LegController::spin() {
   ros::Rate r(update_rate_);
   while (ros::ok()) {
 
@@ -455,6 +457,7 @@ void InverseDynamics::spin() {
       checkMessages();
 
       // Compute and publish control input data
+      computeLegCommandArray();
       publishLegCommandArray();
     }
 
