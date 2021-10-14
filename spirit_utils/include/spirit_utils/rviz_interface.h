@@ -159,8 +159,8 @@ private:
   /// Update rate for sending and receiving data, unused since pubs are called in callbacks
   double update_rate_;
 
-  /// Update rate for showing orientation of plan
-  int orientation_subsample_;
+  /// Number for showing orientation of plan
+  int orientation_subsample_num_;
 
   /// Handle for the map frame
   std::string map_frame_;

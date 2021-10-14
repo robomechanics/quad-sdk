@@ -42,7 +42,7 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   // Setup rviz_interface parameters
   spirit_utils::loadROSParam(nh_,"map_frame",map_frame_);
   nh.param<double>("rviz_interface/update_rate", update_rate_, 10);
-  nh.param<int>("rviz_interface/orientation_subsample", orientation_subsample_,10);
+  nh.param<int>("rviz_interface/orientation_subsample_num", orientation_subsample_num_,3);
   nh.param<std::vector<int> >("rviz_interface/colors/front_left",
     front_left_color_, {0,255,0});
   nh.param<std::vector<int> >("rviz_interface/colors/back_left",
@@ -135,6 +135,7 @@ void RVizInterface::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& ms
 
   // Loop through the BodyPlan message to get the state info
   int length = msg->states.size();
+  int orientation_subsample_interval = round(length/orientation_subsample_num_);
   for (int i=0; i < length; i++) {
 
     // Load in the pose data directly from the Odometry message
@@ -146,7 +147,7 @@ void RVizInterface::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& ms
     body_plan_viz.poses.push_back(pose_stamped);
 
     // Add poses to the orientation message
-    if ((i%orientation_subsample_) == ((length-1)%orientation_subsample_)) {
+    if (i % orientation_subsample_interval == 0) {
       body_plan_ori_viz.poses.push_back(pose_stamped.pose);
     }
   }
