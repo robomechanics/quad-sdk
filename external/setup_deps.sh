@@ -32,7 +32,7 @@ cd ../..
 
 # Setup and build for IPOPT
 cd ipopt
-sudo apt-get install gcc g++ gfortran git patch wget pkg-config liblapack-dev libmetis-dev
+sudo apt-get install -y gcc g++ gfortran git patch wget pkg-config liblapack-dev libmetis-dev
 if [ -d "./coinbrew" ] 
 then
 	sudo rm -r ./coinbrew
@@ -54,6 +54,7 @@ sudo ./coinbrew build Ipopt --prefix=/usr/local --no-prompt --parallel-jobs=8
 cd ../..
 
 # Setup and build for rbdl
+sudo apt install -y ros-melodic-urdf
 cd rbdl-orb
 quiet_mkdir build
 cd build
