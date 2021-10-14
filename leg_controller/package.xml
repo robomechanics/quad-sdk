@@ -82,10 +82,6 @@
   <exec_depend>grid_map_core</exec_depend>
   <exec_depend>grid_map_ros</exec_depend>
 
-  <depend>tf</depend>
-  <depend>tf2</depend>
-  <depend>tf2_geometry_msgs</depend>
-  <depend>grid_map</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
