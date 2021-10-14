@@ -1,3 +1,3 @@
-[![Build Status](https://travis-ci.com/robomechanics/spirit-software.svg?branch=main)](https://travis-ci.com/robomechanics/spirit-software)
+[![CircleCI](https://circleci.com/gh/robomechanics/spirit-software/tree/main.svg?style=shield)](https://circleci.com/gh/robomechanics/spirit-software/tree/main)
 
 This repository contains all of the RML developed software designed for Spirit, most of which is being done by the legged controls group.
