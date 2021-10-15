@@ -502,6 +502,18 @@ void QuadKD::compInvDyn(const Eigen::VectorXd &state_pos,
                                   const std::vector<int> &contact_mode,
                                   Eigen::VectorXd &tau) const
 {
+  // Declare arrays (TODO unify these)
+  Eigen::VectorXd tau_stance(12);
+  Eigen::VectorXd tau_swing(12);
+
+  // Compute Jacobians for stance leg control
+  Eigen::MatrixXd stance_jacobian = Eigen::MatrixXd::Zero(12, state_vel.size());
+  getJacobianBodyAngVel(state_pos,stance_jacobian);
+
+  // Use Jacobian to map GRFs to joint torques
+  tau_stance = -stance_jacobian.transpose().block<12,12>(0,0)*grf;
+
+
   // Convert q, q_dot into RBDL order
   Eigen::VectorXd q(19), q_dot(18);
   q.setZero();
@@ -570,19 +582,21 @@ void QuadKD::compInvDyn(const Eigen::VectorXd &state_pos,
   // Convert the order back
   for (size_t i = 0; i < 4; i++)
   {
-    tau.segment(3 * leg_idx_list_.at(i), 3) = tau_rbdl.segment(3 * i, 3);
+    tau_swing.segment(3 * leg_idx_list_.at(i), 3) = tau_rbdl.segment(3 * i, 3);
   }
 
   // Check inf or nan
-  if (!(tau.array() == tau.array()).all() || !((tau - tau).array() == (tau - tau).array()).all())
+  if (!(tau_swing.array() == tau_swing.array()).all() || !((tau_swing - tau_swing).array() == (tau_swing - tau_swing).array()).all())
   {
-    tau.setZero();
+    tau_swing.setZero();
   }
 
   // Apply stance leg feedforward term for legs in contact
   for (int i = 0; i < 4; i++) {
     if (contact_mode[i]) {
-      tau.segment(3 * i, 3) = tau_grf.segment(3 * i, 3);
+      tau.segment(3 * i, 3) = tau_stance.segment(3 * i, 3);
+    } else {
+      tau.segment(3 * i, 3) = tau_swing.segment(3 * i, 3);
     }
   }
 }
