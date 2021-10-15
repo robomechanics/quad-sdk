@@ -176,8 +176,11 @@ void LegController::computeLegCommandArray() {
 
   // Define vectors for joint positions and velocities
   Eigen::VectorXd joint_positions(3*num_feet_), joint_velocities(3*num_feet_), body_state(12);
-  spirit_utils::vectorToEigen(last_robot_state_msg->joints.position, joint_positions);
-  spirit_utils::vectorToEigen(last_robot_state_msg->joints.velocity, joint_velocities);
+  spirit_utils::vectorToEigen(last_robot_state_msg_->joints.position, joint_positions);
+  spirit_utils::vectorToEigen(last_robot_state_msg_->joints.velocity, joint_velocities);
+
+  // Initialize leg command message
+  leg_command_array_msg_.leg_commands.resize(num_feet_);
 
   // Enter state machine for filling motor command message
   if (control_mode_ == SAFETY)
@@ -214,7 +217,7 @@ void LegController::computeLegCommandArray() {
     if (last_local_plan_msg_ != NULL && 
           (ros::Time::now() - last_local_plan_msg_->header.stamp).toSec() < input_timeout_) {
 
-      inverse_dynamics_->computeLegCommandArrayFromPlan(last_robot_state_msg,
+      inverse_dynamics_->computeLegCommandArrayFromPlan(last_robot_state_msg_,
         last_local_plan_msg_, leg_command_array_msg_);
 
     } else {
