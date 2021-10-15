@@ -58,8 +58,8 @@ void InverseDynamicsController::computeJointTorques(const Eigen::VectorXd &state
 void InverseDynamicsController::computeLegCommandArrayFromPlan(
   const spirit_msgs::RobotState::ConstPtr &robot_state_msg,
   const spirit_msgs::RobotPlan::ConstPtr &local_plan_msg,
-  spirit_msgs::LegCommandArray &leg_command_array_msg
-  )
+  spirit_msgs::LegCommandArray &leg_command_array_msg,
+  spirit_msgs::GRFArray &grf_array_msg)
 {
   leg_command_array_msg.leg_commands.resize(num_feet_);
 
@@ -76,7 +76,6 @@ void InverseDynamicsController::computeLegCommandArrayFromPlan(
 
   // Initialize variables for ff and fb
   spirit_msgs::RobotState ref_state_msg;
-  spirit_msgs::GRFArray grf_array_msg;
   Eigen::VectorXd tau_array(3*num_feet_), tau_swing_leg_array(3*num_feet_);
 
   // Get reference state and grf from local plan or traj + grf messages
@@ -152,4 +151,5 @@ void InverseDynamicsController::computeLegCommandArrayFromPlan(
       }
     }
   }
+  
 }
