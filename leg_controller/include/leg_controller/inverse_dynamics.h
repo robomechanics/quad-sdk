@@ -24,17 +24,17 @@
 #define MATH_PI 3.141592
 
 
-//! Implements inverse dynamics
+//! Implements inverse dynamics as a controller within the ROS framework.
 /*!
-   InverseDynamics implements inverse dynamics logic. It should expose a constructor that does any initialization required and an update method called at some frequency.
+   InverseDynamicsController implements inverse dynamics logic. It should expose a constructor that does any initialization required and an update method called at some frequency.
 */
-class InverseDynamics {
+class InverseDynamicsController {
   public:
     /**
-     * @brief Constructor for InverseDynamics
-     * @return Constructed object of type InverseDynamics
+     * @brief Constructor for InverseDynamicsController
+     * @return Constructed object of type InverseDynamicsController
      */
-    InverseDynamics();
+    InverseDynamicsController();
 
     /**
      * @brief Compute the joint torques for a given state, set of GRFs, and foot accelerations
@@ -83,41 +83,12 @@ class InverseDynamics {
         std::vector<double> swing_kp, std::vector<double> swing_kd);
 
 private:
-    
-  /**
-     * @brief Function to compute and publish leg command array message
-     */
-    void computeLegCommandArray();
-
-    /// Timestep of local plan
-    double dt_;
 
     /// Number of feet
     const int num_feet_ = 4;
 
-    /// Define ids for input types: local plan
-    const int LOCAL_PLAN = 1;
-
-    /// Define ids for input types: grf array
-    const int GRFS = 2;
-    
-    /// Most recent local plan
-    spirit_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
-
-    /// Most recent state estimate
-    spirit_msgs::RobotState::ConstPtr last_robot_state_msg_;
-
-    /// Most recent local plan
-    spirit_msgs::GRFArray::ConstPtr last_grf_array_msg_;
-
-    /// Most recent state estimate
-    spirit_msgs::RobotState::ConstPtr last_trajectory_state_msg_;
-
-    /// Message for leg command array
-    spirit_msgs::LegCommandArray leg_command_array_msg_;
-
-    /// Spirit Kinematics class
-    std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
+    /// QuadKD class
+    std::shared_ptr<spirit_utils::QuadKD>quadKD_;
 
     /// PD gain when foot is in stance
     std::vector<double> stance_kp_;

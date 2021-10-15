@@ -62,11 +62,11 @@ LegController::LegController(ros::NodeHandle nh) {
   last_state_time_ = std::numeric_limits<double>::max();  
 
   // Initialize kinematics object
-  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
+quadKD_ = std::make_shared<spirit_utils::QuadKD>();
 
   // Initialize inverse dynamics object
-  inverse_dynamics_ = std::make_shared<InverseDynamics>();
-  inverse_dynamics_->setGains(stance_kp_, stance_kd_, swing_kp_, swing_kd_);
+  inverse_dynamics_controller_ = std::make_shared<InverseDynamicsController>();
+  inverse_dynamics_controller_->setGains(stance_kp_, stance_kd_, swing_kp_, swing_kd_);
 }
 
 void LegController::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
@@ -168,11 +168,29 @@ void LegController::checkMessages() {
 
 }
 
-void LegController::computeLegCommandArray() {
+void LegController::executeCustomController() {
+  if (last_local_plan_msg_ != NULL && 
+    (ros::Time::now() - last_local_plan_msg_->header.stamp).toSec() < input_timeout_) {
 
-  // Define static position setpoints and gains
-  static const std::vector<double> stand_joint_angles_{0,0.76,2*0.76};
-  static const std::vector<double> sit_joint_angles_{0.0,0.0,0.0};
+    inverse_dynamics_controller_->computeLegCommandArrayFromPlan(last_robot_state_msg_,
+      last_local_plan_msg_, leg_command_array_msg_);
+
+  } else {
+    for (int i = 0; i < num_feet_; ++i) {
+      leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
+      for (int j = 0; j < 3; ++j) {
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 
+          stand_joint_angles_.at(j);
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+      }
+    }
+  }
+}
+
+void LegController::computeLegCommandArray() {
 
   // Define vectors for joint positions and velocities
   Eigen::VectorXd joint_positions(3*num_feet_), joint_velocities(3*num_feet_), body_state(12);
@@ -214,25 +232,7 @@ void LegController::computeLegCommandArray() {
   } 
   else if (control_mode_ == READY)
   {
-    if (last_local_plan_msg_ != NULL && 
-          (ros::Time::now() - last_local_plan_msg_->header.stamp).toSec() < input_timeout_) {
-
-      inverse_dynamics_->computeLegCommandArrayFromPlan(last_robot_state_msg_,
-        last_local_plan_msg_, leg_command_array_msg_);
-
-    } else {
-      for (int i = 0; i < num_feet_; ++i) {
-        leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
-        for (int j = 0; j < 3; ++j) {
-          leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 
-            stand_joint_angles_.at(j);
-          leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-          leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
-          leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
-          leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
-        }
-      }
-    }
+    executeCustomController();
     
     int n_override = last_leg_override_msg_.leg_index.size();
     int leg_ind;

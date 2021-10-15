@@ -1,11 +1,10 @@
 #include "leg_controller/inverse_dynamics.h"
 
-InverseDynamics::InverseDynamics() {
-
-  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
+InverseDynamicsController::InverseDynamicsController() {
+  quadKD_ = std::make_shared<spirit_utils::QuadKD>();
 }
 
-void InverseDynamics::setGains(std::vector<double> stance_kp, std::vector<double> stance_kd,
+void InverseDynamicsController::setGains(std::vector<double> stance_kp, std::vector<double> stance_kd,
   std::vector<double> swing_kp, std::vector<double> swing_kd) {
 
   stance_kp_ = stance_kp;
@@ -14,49 +13,49 @@ void InverseDynamics::setGains(std::vector<double> stance_kp, std::vector<double
   swing_kd_ = swing_kd;
 }
 
-void InverseDynamics::computeJointTorques(const Eigen::VectorXd &state_positions,
+void InverseDynamicsController::computeJointTorques(const Eigen::VectorXd &state_positions,
   const Eigen::VectorXd &state_velocities, const Eigen::VectorXd &grf_array,
   const Eigen::VectorXd &ref_foot_acceleration, const std::vector<int> &contact_mode,
   Eigen::VectorXd &tau_array) {
 
-  // Compute Jacobians
-  Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(3*num_feet_, state_velocities.size());
-  kinematics_->getJacobianBodyAngVel(state_positions,jacobian);
+  // // Compute Jacobians
+  // Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(3*num_feet_, state_velocities.size());
+  // quadKD_->getJacobianBodyAngVel(state_positions,jacobian);
 
-  // Use Jacobian and RBDL to map GRFs to joint torques
-  tau_array = -jacobian.transpose().block<12,12>(0,0)*grf_array;
+  // // Use Jacobian and RBDL to map GRFs to joint torques
+  // tau_array = -jacobian.transpose().block<12,12>(0,0)*grf_array;
 
-  // Use RBDL to map foot accelerations to joint torques
-  Eigen::VectorXd tau_swing_leg_array(12);
-  kinematics_->compInvDyn(state_positions, state_velocities, ref_foot_acceleration,
-    grf_array, tau_swing_leg_array);
+  // // Use RBDL to map foot accelerations to joint torques
+  // Eigen::VectorXd tau_swing_leg_array(12);
+  // quadKD_->compInvDyn(state_positions, state_velocities, ref_foot_acceleration,
+  //   grf_array, tau_swing_leg_array);
 
-  // Apply swing leg feedforward term for legs not in contact
-  for (int i = 0; i < num_feet_; i++) {
-    if (!contact_mode[i]) {
-      for (int j = 0; j < 3; j++) {
-        tau_array[3*i+j] = tau_swing_leg_array[3*i+j];
-      }
-    }
-  }
+  // // Apply swing leg feedforward term for legs not in contact
+  // for (int i = 0; i < num_feet_; i++) {
+  //   if (!contact_mode[i]) {
+  //     for (int j = 0; j < 3; j++) {
+  //       tau_array[3*i+j] = tau_swing_leg_array[3*i+j];
+  //     }
+  //   }
+  // }
 }
 
-void InverseDynamics::computeJointTorques(const Eigen::VectorXd &state_positions,
+void InverseDynamicsController::computeJointTorques(const Eigen::VectorXd &state_positions,
   const Eigen::VectorXd &state_velocities, const Eigen::VectorXd &grf_array,
   Eigen::VectorXd &tau_array) {
 
-  // Set all feet to be in contact (ignore swing phase ID)
-  Eigen::VectorXd ref_foot_acceleration(12);
-  ref_foot_acceleration.setZero();
-  std::vector<int> contact_mode = {1,1,1,1};
+  // // Set all feet to be in contact (ignore swing phase ID)
+  // Eigen::VectorXd ref_foot_acceleration(12);
+  // ref_foot_acceleration.setZero();
+  // std::vector<int> contact_mode = {1,1,1,1};
 
-  // Compute joint torques
-  computeJointTorques(state_positions, state_velocities, grf_array, ref_foot_acceleration,
-    contact_mode, tau_array);
+  // // Compute joint torques
+  // computeJointTorques(state_positions, state_velocities, grf_array, ref_foot_acceleration,
+  //   contact_mode, tau_array);
 
 }
 
-void InverseDynamics::computeLegCommandArrayFromPlan(
+void InverseDynamicsController::computeLegCommandArrayFromPlan(
   const spirit_msgs::RobotState::ConstPtr &robot_state_msg,
   const spirit_msgs::RobotPlan::ConstPtr &local_plan_msg,
   spirit_msgs::LegCommandArray &leg_command_array_msg
@@ -128,7 +127,7 @@ void InverseDynamics::computeLegCommandArrayFromPlan(
   }
   
   // Compute joint torques
-  computeJointTorques(state_positions, state_velocities, grf_array, ref_foot_acceleration,
+  quadKD_->compInvDyn(state_positions, state_velocities, ref_foot_acceleration, grf_array,
     contact_mode, tau_array);
 
   for (int i = 0; i < num_feet_; ++i) {

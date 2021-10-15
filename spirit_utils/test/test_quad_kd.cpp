@@ -1,17 +1,17 @@
 #include <ros/ros.h>
 #include <gtest/gtest.h>
 
-#include "spirit_utils/kinematics.h"
+#include "spirit_utils/quad_kd.h"
 #include "spirit_utils/ros_utils.h"
 
 using namespace spirit_utils;
 
-const double kinematics_tol = 1e-4;
+const doublequadKD_tol = 1e-4;
 
 TEST(KinematicsTest, testDifferentialFKIK)
 {
   // Declare kinematics object
-  SpiritKinematics kinematics;
+  QuadKD kinematics;
 
   for (size_t i = 0; i < 20; i++)
   {
@@ -69,7 +69,7 @@ TEST(KinematicsTest, testDifferentialFKIK)
 
     // Check the answers
     Eigen::VectorXd error = vel - vel_out;
-    EXPECT_TRUE(error.norm() <= kinematics_tol);
+    EXPECT_TRUE(error.norm() <=quadKD_tol);
   }
 }
 
@@ -77,7 +77,7 @@ TEST(KinematicsTest, testDifferentialFKIK)
 TEST(KinematicsTest, testFootForces) {
 
   // Declare kinematics object
-  SpiritKinematics kinematics;
+  QuadKD kinematics;
 
   // Length parameters from URDF
   // TODO: load these from parameters rather than hard-coding
@@ -124,7 +124,7 @@ TEST(KinematicsTest, testFootForces) {
   Eigen::MatrixXd toPrint(18,2);
   toPrint << torques, torques_solution;
   //std::cout << "Test 1:\n" << toPrint << std::endl;
-  EXPECT_TRUE(error.norm() <= kinematics_tol);
+  EXPECT_TRUE(error.norm() <=quadKD_tol);
 
   // Set up known solution problem 2 ----------------------------------
   state_positions = Eigen::VectorXd::Zero(18);
@@ -157,7 +157,7 @@ TEST(KinematicsTest, testFootForces) {
   error = torques - torques_solution;
   toPrint << torques, torques_solution;
   //std::cout << "Test 2:\n" << toPrint << std::endl;
-  EXPECT_TRUE(error.norm() <= kinematics_tol);
+  EXPECT_TRUE(error.norm() <=quadKD_tol);
 
   // Set up known solution problem 3 ----------------------------------
   state_positions = Eigen::VectorXd::Zero(18);
@@ -188,7 +188,7 @@ TEST(KinematicsTest, testFootForces) {
   error = torques - torques_solution;
   toPrint << torques, torques_solution;
   //std::cout << "Test 3:\n" << toPrint << std::endl;
-  EXPECT_TRUE(error.norm() <= kinematics_tol);
+  EXPECT_TRUE(error.norm() <=quadKD_tol);
 
   // Set up known solution problem 4 ----------------------------------
   state_positions = Eigen::VectorXd::Zero(18);
@@ -226,7 +226,7 @@ TEST(KinematicsTest, testFootForces) {
   error = torques - torques_solution;
   toPrint << torques, torques_solution;
   //std::cout << "Test 4:\n" << toPrint << std::endl;
-  EXPECT_TRUE(error.norm() <= kinematics_tol);
+  EXPECT_TRUE(error.norm() <=quadKD_tol);
 
 }
 
@@ -234,7 +234,7 @@ TEST(KinematicsTest, testFKIKFeasibleConfigurations) {
   ros::NodeHandle nh;
  
   // Declare kinematics object
-  SpiritKinematics spirit;
+  QuadKD spirit;
 
   // Set up problem variables
   Eigen::Vector3d body_pos = {0,0,0};
@@ -272,7 +272,7 @@ TEST(KinematicsTest, testFKIKFeasibleConfigurations) {
 
       // Check the answers
       Eigen::Vector3d error = (foot_pos_world - foot_pos_world_test);
-      EXPECT_TRUE(error.norm() <= kinematics_tol);
+      EXPECT_TRUE(error.norm() <=quadKD_tol);
     }
   }
 }
@@ -280,7 +280,7 @@ TEST(KinematicsTest, testFKIKFeasibleConfigurations) {
 TEST(KinematicsTest, testFKIKInfeasibleConfigurations) {
   ros::NodeHandle nh;
  
-  SpiritKinematics spirit;
+  QuadKD spirit;
 
   // Set up problem variables
   Eigen::Vector3d body_pos = {0,0,0};
@@ -325,7 +325,7 @@ TEST(KinematicsTest, testBodyToFootFK) {
   ros::NodeHandle nh;
  
   // Declare kinematics object
-  SpiritKinematics spirit;
+  QuadKD spirit;
 
   // Set up problem variables
   Eigen::Matrix4d g_world_foot;

@@ -66,7 +66,7 @@ add_library(spirit_utils
   src/robot_proxy.cpp
   src/math_utils.cpp
   src/ros_utils.cpp
-  src/kinematics.cpp
+  src/quad_kd.cpp
   src/trajectory_publisher.cpp
   src/remote_heartbeat.cpp
 )
@@ -137,7 +137,7 @@ catkin_add_gtest(spirit_utils-test
   test/test_ground_truth_publisher.cpp
   test/test_robot_proxy.cpp
   test/test_fast_terrain_map.cpp
-  test/test_kinematics.cpp
+  test/test_quad_kd.cpp
   test/test_eigen.cpp
   test/test_math_utils.cpp
   test/test_main.cpp)

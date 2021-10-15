@@ -1,10 +1,10 @@
-#include "spirit_utils/kinematics.h"
+#include "spirit_utils/quad_kd.h"
 
 using namespace spirit_utils;
 
 Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
-SpiritKinematics::SpiritKinematics()
+QuadKD::QuadKD()
 {
   legbase_offsets_.resize(4);
   legbase_offsets_[0] = legbase_offset_0_;
@@ -48,7 +48,7 @@ SpiritKinematics::SpiritKinematics()
             { return body_id_list_.at(i) < body_id_list_.at(j); });
 }
 
-Eigen::Matrix4d SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans,
+Eigen::Matrix4d QuadKD::createAffineMatrix(Eigen::Vector3d trans,
                                                      Eigen::Vector3d rpy) const
 {
 
@@ -61,7 +61,7 @@ Eigen::Matrix4d SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans,
   return t.matrix();
 }
 
-Eigen::Matrix4d SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans,
+Eigen::Matrix4d QuadKD::createAffineMatrix(Eigen::Vector3d trans,
                                                      Eigen::AngleAxisd rot) const
 {
 
@@ -72,17 +72,17 @@ Eigen::Matrix4d SpiritKinematics::createAffineMatrix(Eigen::Vector3d trans,
   return t.matrix();
 }
 
-double SpiritKinematics::getJointLowerLimit(int joint_index) const
+double QuadKD::getJointLowerLimit(int joint_index) const
 {
   return joint_min_[joint_index];
 }
 
-double SpiritKinematics::getJointUpperLimit(int joint_index) const
+double QuadKD::getJointUpperLimit(int joint_index) const
 {
   return joint_max_[joint_index];
 }
 
-double SpiritKinematics::getLinkLength(int leg_index, int link_index) const
+double QuadKD::getLinkLength(int leg_index, int link_index) const
 {
   switch (link_index)
   {
@@ -97,7 +97,7 @@ double SpiritKinematics::getLinkLength(int leg_index, int link_index) const
   }
 }
 
-void SpiritKinematics::transformBodyToWorld(Eigen::Vector3d body_pos,
+void QuadKD::transformBodyToWorld(Eigen::Vector3d body_pos,
                                             Eigen::Vector3d body_rpy, Eigen::Matrix4d transform_body, Eigen::Matrix4d &transform_world) const
 {
 
@@ -108,7 +108,7 @@ void SpiritKinematics::transformBodyToWorld(Eigen::Vector3d body_pos,
   transform_world = g_world_body * transform_body;
 }
 
-void SpiritKinematics::transformWorldToBody(Eigen::Vector3d body_pos,
+void QuadKD::transformWorldToBody(Eigen::Vector3d body_pos,
                                             Eigen::Vector3d body_rpy, Eigen::Matrix4d transform_world, Eigen::Matrix4d &transform_body) const
 {
 
@@ -119,7 +119,7 @@ void SpiritKinematics::transformWorldToBody(Eigen::Vector3d body_pos,
   transform_body = g_world_body.inverse() * transform_world;
 }
 
-void SpiritKinematics::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
+void QuadKD::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
                                  Eigen::Vector3d body_rpy, Eigen::Matrix4d &g_world_legbase) const
 {
 
@@ -130,7 +130,7 @@ void SpiritKinematics::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
   g_world_legbase = g_world_body * g_body_legbases_[leg_index];
 }
 
-void SpiritKinematics::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
+void QuadKD::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
                                  Eigen::Vector3d body_rpy, Eigen::Vector3d &leg_base_pos_world) const
 {
 
@@ -140,7 +140,7 @@ void SpiritKinematics::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
   leg_base_pos_world = g_world_legbase.block<3, 1>(0, 3);
 }
 
-void SpiritKinematics::nominalHipFK(int leg_index, Eigen::Vector3d body_pos,
+void QuadKD::nominalHipFK(int leg_index, Eigen::Vector3d body_pos,
                                     Eigen::Vector3d body_rpy, Eigen::Vector3d &nominal_footstep_pos_world) const
 {
 
@@ -157,7 +157,7 @@ void SpiritKinematics::nominalHipFK(int leg_index, Eigen::Vector3d body_pos,
   nominal_footstep_pos_world = g_world_nominal_footstep.block<3, 1>(0, 3);
 }
 
-void SpiritKinematics::bodyToFootFK(int leg_index,
+void QuadKD::bodyToFootFK(int leg_index,
                                     Eigen::Vector3d joint_state, Eigen::Matrix4d &g_body_foot) const
 {
 
@@ -192,18 +192,18 @@ void SpiritKinematics::bodyToFootFK(int leg_index,
                 g_abad_hip * g_hip_knee * g_knee_foot;
 }
 
-void SpiritKinematics::bodyToFootFK(int leg_index,
+void QuadKD::bodyToFootFK(int leg_index,
                                     Eigen::Vector3d joint_state, Eigen::Vector3d &foot_pos_body) const
 {
 
   Eigen::Matrix4d g_body_foot;
-  SpiritKinematics::bodyToFootFK(leg_index, joint_state, g_body_foot);
+  QuadKD::bodyToFootFK(leg_index, joint_state, g_body_foot);
 
   // Extract cartesian position of foot
   foot_pos_body = g_body_foot.block<3, 1>(0, 3);
 }
 
-void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos,
+void QuadKD::legFK(int leg_index, Eigen::Vector3d body_pos,
                              Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state,
                              Eigen::Matrix4d &g_world_foot) const
 {
@@ -244,7 +244,7 @@ void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos,
                  g_abad_hip * g_hip_knee * g_knee_foot;
 }
 
-void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos,
+void QuadKD::legFK(int leg_index, Eigen::Vector3d body_pos,
                              Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state,
                              Eigen::Vector3d &foot_pos_world) const
 {
@@ -272,7 +272,7 @@ void SpiritKinematics::legFK(int leg_index, Eigen::Vector3d body_pos,
 }
 
 
-void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
+void QuadKD::legIK(int leg_index, Eigen::Vector3d body_pos,
                              Eigen::Vector3d body_rpy, Eigen::Vector3d foot_pos_world,
                              Eigen::Vector3d &joint_state) const
 {
@@ -305,7 +305,7 @@ void SpiritKinematics::legIK(int leg_index, Eigen::Vector3d body_pos,
   legIKLegBaseFrame(leg_index, foot_pos_legbase, joint_state);
 }
 
-void SpiritKinematics::legIKLegBaseFrame(int leg_index, Eigen::Vector3d foot_pos_legbase,
+void QuadKD::legIKLegBaseFrame(int leg_index, Eigen::Vector3d foot_pos_legbase,
                              Eigen::Vector3d &joint_state) const
 {
 
@@ -419,7 +419,7 @@ void SpiritKinematics::legIKLegBaseFrame(int leg_index, Eigen::Vector3d foot_pos
   joint_state = {q0, q1, q2};
 }
 
-void SpiritKinematics::getJacobianGenCoord(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const
+void QuadKD::getJacobianGenCoord(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const
 {
   this->getJacobianBodyAngVel(state, jacobian);
 
@@ -434,7 +434,7 @@ void SpiritKinematics::getJacobianGenCoord(const Eigen::VectorXd &state, Eigen::
   }
 }
 
-void SpiritKinematics::getJacobianBodyAngVel(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const
+void QuadKD::getJacobianBodyAngVel(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const
 {
   assert(state.size() == 18);
 
@@ -475,7 +475,7 @@ void SpiritKinematics::getJacobianBodyAngVel(const Eigen::VectorXd &state, Eigen
   }
 }
 
-void SpiritKinematics::getJacobianWorldAngVel(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const
+void QuadKD::getJacobianWorldAngVel(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const
 {
   this->getJacobianBodyAngVel(state, jacobian);
 
@@ -488,17 +488,18 @@ void SpiritKinematics::getJacobianWorldAngVel(const Eigen::VectorXd &state, Eige
   }
 }
 
-void SpiritKinematics::getRotationMatrix(const Eigen::VectorXd &rpy, Eigen::Matrix3d &rot) const
+void QuadKD::getRotationMatrix(const Eigen::VectorXd &rpy, Eigen::Matrix3d &rot) const
 {
   rot = Eigen::AngleAxisd(rpy(2), Eigen::Vector3d::UnitZ()) *
         Eigen::AngleAxisd(rpy(1), Eigen::Vector3d::UnitY()) *
         Eigen::AngleAxisd(rpy(0), Eigen::Vector3d::UnitX());
 }
 
-void SpiritKinematics::compInvDyn(const Eigen::VectorXd &state_pos,
+void QuadKD::compInvDyn(const Eigen::VectorXd &state_pos,
                                   const Eigen::VectorXd &state_vel,
                                   const Eigen::VectorXd &foot_acc,
                                   const Eigen::VectorXd &grf,
+                                  const std::vector<int> &contact_mode,
                                   Eigen::VectorXd &tau) const
 {
   // Convert q, q_dot into RBDL order
@@ -576,5 +577,12 @@ void SpiritKinematics::compInvDyn(const Eigen::VectorXd &state_pos,
   if (!(tau.array() == tau.array()).all() || !((tau - tau).array() == (tau - tau).array()).all())
   {
     tau.setZero();
+  }
+
+  // Apply stance leg feedforward term for legs in contact
+  for (int i = 0; i < 4; i++) {
+    if (contact_mode[i]) {
+      tau.segment(3 * i, 3) = tau_grf.segment(3 * i, 3);
+    }
   }
 }

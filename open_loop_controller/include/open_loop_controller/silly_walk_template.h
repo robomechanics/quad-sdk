@@ -82,7 +82,7 @@ private:
 	std::vector<double> stand_joint_angles_;
 
 	// Use a kinematics object to make kinematics calculations easier
-	spirit_utils::SpiritKinematics kinematics_;
+	spirit_utils::QuadKD quadKD_;
 };
 
 
