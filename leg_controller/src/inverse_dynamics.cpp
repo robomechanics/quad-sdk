@@ -27,7 +27,7 @@ void InverseDynamics::computeJointTorques(const Eigen::VectorXd &state_positions
   tau_array = -jacobian.transpose().block<12,12>(0,0)*grf_array;
 
   // Use RBDL to map foot accelerations to joint torques
-  Eigen::VectorXd tau_swing_leg_array;
+  Eigen::VectorXd tau_swing_leg_array(12);
   kinematics_->compInvDyn(state_positions, state_velocities, ref_foot_acceleration,
     grf_array, tau_swing_leg_array);
 
@@ -122,7 +122,7 @@ void InverseDynamics::computeLegCommandArrayFromPlan(
   grf_array = spirit_utils::grfArrayMsgToEigen(grf_array_msg);
 
   // Load contact mode
-  std::vector<int> contact_mode;
+  std::vector<int> contact_mode(num_feet_);
   for (int i = 0; i < num_feet_; i++) {
     contact_mode[i] = ref_state_msg.feet.feet[i].contact;
   }
