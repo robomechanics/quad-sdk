@@ -70,7 +70,7 @@ private:
 	const int SIT = 0;
 
 	/// Define ids for control modes: Stand
-	const int STAND = 1;
+	const int READY = 1;
 
 	/// Joint control message
 	spirit_msgs::LegCommandArray control_msg_;
