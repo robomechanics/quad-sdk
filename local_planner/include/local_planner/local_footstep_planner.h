@@ -14,7 +14,7 @@
 #include <spirit_utils/function_timer.h>
 #include <spirit_utils/math_utils.h>
 #include <spirit_utils/ros_utils.h>
-#include <spirit_utils/kinematics.h>
+#include <spirit_utils/quad_kd.h>
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
@@ -52,7 +52,7 @@ class LocalFootstepPlanner {
      * @param[in] kinematics Kinematics class for computations
      */
     void setSpatialParams(double ground_clearance, double grf_weight,double standing_error_threshold,
-      std::shared_ptr<spirit_utils::SpiritKinematics> kinematics);
+      std::shared_ptr<spirit_utils::QuadKD> kinematics);
 
     /**
      * @brief Transform a vector of foot positions from the world to the body frame
@@ -277,8 +277,8 @@ class LocalFootstepPlanner {
     /// Primitive ids - CONNECT_STANCE
     const int CONNECT_STANCE = 2;
 
-    /// Spirit Kinematics class
-    std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
+    /// QuadKD class
+    std::shared_ptr<spirit_utils::QuadKD>quadKD_;
 
     /// Threshold of body error from desired goal to start stepping
     double standing_error_threshold_ = 0;

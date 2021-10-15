@@ -84,7 +84,7 @@ namespace RigidBodyDynamics
  * the first joint.
  *
  * Once this is done, the model structure can be used with the functions of \ref
- * kinematics_group, \ref dynamics_group, \ref constraints_group, to perform
+ *quadKD_group, \ref dynamics_group, \ref constraints_group, to perform
  * computations.
  *
  * A simple example can be found \ref SimpleExample "here".

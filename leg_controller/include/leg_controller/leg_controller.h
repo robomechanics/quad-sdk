@@ -98,6 +98,11 @@ private:
 	void publishHeartbeat();
 
 	/**
+	 * @brief Function to compute custom leg control.
+	 */
+	void executeCustomController();
+
+	/**
 	 * @brief Function to compute leg command array message
 	 */
 	void computeLegCommandArray();
@@ -250,11 +255,17 @@ private:
 	std::vector<double> swing_kp_;
 	std::vector<double> swing_kd_;
 
-	/// Spirit Kinematics class
-	std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
+	/// Define standing joint angles
+  	 const std::vector<double> stand_joint_angles_{0,0.76,2*0.76};
 
-	/// Spirit Kinematics class
-	std::shared_ptr<InverseDynamics> inverse_dynamics_;
+	/// Define sitting joint angles
+  	const std::vector<double> sit_joint_angles_{0.0,0.0,0.0};
+
+	/// QuadKD class
+	std::shared_ptr<spirit_utils::QuadKD>quadKD_;
+
+	/// Inverse Dynamics Controller class
+	std::shared_ptr<InverseDynamicsController> inverse_dynamics_controller_;
 };
 
 

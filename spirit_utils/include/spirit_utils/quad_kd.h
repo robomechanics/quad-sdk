@@ -21,14 +21,14 @@ namespace spirit_utils {
   calculations. It relies on Eigen, as well as some MATLAB codegen for more 
   complicated computations that would be a pain to write out by hand.
 */
-class SpiritKinematics {
+class QuadKD {
 
   public:
   /**
-   * @brief Constructor for SpiritKinematics Class
-   * @return Constructed object of type SpiritKinematics
+   * @brief Constructor for QuadKD Class
+   * @return Constructed object of type QuadKD
    */
-  SpiritKinematics();
+  QuadKD();
 
   /**
    * @brief Create an Eigen Eigen::Matrix4d containing a homogeneous transform 
@@ -216,9 +216,12 @@ class SpiritKinematics {
    * @param[in] state_vel Velocity states
    * @param[in] foot_acc Foot absolute acceleration in world frame
    * @param[in] grf Ground reaction force
+   * @param[in] contact_mode Contact mode of the legs
    * @param[out] tau Joint torques
    */
-  void compInvDyn(const Eigen::VectorXd &state_pos,const Eigen::VectorXd &state_vel,const Eigen::VectorXd &foot_acc,const Eigen::VectorXd &grf,Eigen::VectorXd &tau) const;
+  void compInvDyn(const Eigen::VectorXd &state_pos,const Eigen::VectorXd &state_vel,
+    const Eigen::VectorXd &foot_acc,const Eigen::VectorXd &grf,
+    const std::vector<int> &contact_mode, Eigen::VectorXd &tau) const;
 
   private:
 

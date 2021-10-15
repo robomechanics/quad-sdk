@@ -102,7 +102,7 @@ private:
   geometry_msgs::Vector3 mocap_vel_estimate_;
 
   /// Kinematics object
-  std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
+  std::shared_ptr<spirit_utils::QuadKD>quadKD_;
 
   /// Velocity update weight on exponential decay filter
   double alpha_;

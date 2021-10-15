@@ -57,7 +57,7 @@ NMPCController::NMPCController(int type)
       u_max(control_upper_bound.data(), m_, 1);
 
   // Convert kinematics
-  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
+quadKD_ = std::make_shared<spirit_utils::QuadKD>();
 
   mynlp_ = new spiritNLP(
       type_,
