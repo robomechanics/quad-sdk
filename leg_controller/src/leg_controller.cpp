@@ -62,7 +62,7 @@ LegController::LegController(ros::NodeHandle nh) {
   last_state_time_ = std::numeric_limits<double>::max();  
 
   // Initialize kinematics object
-quadKD_ = std::make_shared<spirit_utils::QuadKD>();
+  quadKD_ = std::make_shared<spirit_utils::QuadKD>();
 
   // Initialize inverse dynamics object
   inverse_dynamics_controller_ = std::make_shared<InverseDynamicsController>();
