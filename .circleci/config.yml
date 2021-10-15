@@ -34,9 +34,4 @@ workflows:
   version: 2
   melodic-build-and-test:
     jobs:
-      - build-and-test:
-          filters:
-            branches:
-              only:
-                - main
-                - circleci-editor/circleci-project-setup
+      - build-and-test
