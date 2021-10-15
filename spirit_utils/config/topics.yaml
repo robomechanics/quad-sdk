@@ -35,6 +35,7 @@ topics:
     local_plan_ori: /visualization/local_plan_ori
     global_plan_grf: /visualization/global_plan_grf
     local_plan_grf: /visualization/local_plan_grf
+    current_grf: /visualization/current_grf
     global_plan_discrete: /visualization/global_plan_discrete
     foot_plan_discrete: /visualization/foot_plan_discrete
     joint_states:
