@@ -471,7 +471,7 @@ bool LocalPlanner::computeLocalPlan() {
 
     // If it stretches too long, we assume miss contact
     // if (foot_position_vec.norm() > 0.45)
-    if (foot_position_vec(2) < -0.325)
+    if (foot_position_vec(2) < -0.35)
     {
       ROS_WARN_STREAM("miss!");
       miss_contact_leg_.at(i) = true;
@@ -639,7 +639,7 @@ void LocalPlanner::publishLocalPlan() {
   // std::cout << "body_plan_\n" << body_plan_ << std::endl;
   // std::cout << "grf_plan_\n" << grf_plan_ << std::endl;
   // std::cout << "foot_positions_world_\n" << foot_positions_world_ << std::endl;
-  std::cout << "foot_positions_body_\n" << foot_positions_body_ << std::endl;
+  // std::cout << "foot_positions_body_\n" << foot_positions_body_ << std::endl;
   // throw std::runtime_error("Stop");
   // }
 

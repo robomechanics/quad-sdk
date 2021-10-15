@@ -89,6 +89,8 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
 
   // Assume we know the step height
   z_des_ == std::numeric_limits<double>::max();
+
+  miss_contact_leg_.resize(4);
 }
 
 void TailPlanner::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr &msg)
@@ -190,7 +192,7 @@ void TailPlanner::computeTailPlan()
     //   ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
     // }
     std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
-    cmd_vel_.at(1) = 0.5;
+    cmd_vel_.at(1) = 0.76;
 
     // Adaptive body height, use the lowest foot and exponential filter
     std::vector<double> foot_height;
@@ -284,12 +286,27 @@ void TailPlanner::computeTailPlan()
   std::vector<bool> miss_contact;
   adpative_contact_schedule_ = contact_schedule_;
 
+  // Late contact
   for (size_t i = 0; i < 4; i++)
   {
-    // Later contact
+    // Check foot distance
     Eigen::VectorXd foot_position_vec = current_foot_positions_world_.segment(i * 3, 3) - current_state_.segment(0, 3);
-    // if (contact_schedule_.at(0).at(i) && (!grf_msg_->contact_states.at(i) || foot_position_vec.norm() > 0.45))
-    if (contact_schedule_.at(0).at(i) && (!grf_msg_->contact_states.at(i) || grf_msg_->vectors.at(i).z <= 14 || foot_position_vec(2) < -0.325))
+
+    // If it stretches too long, we assume miss contact
+    // if (foot_position_vec.norm() > 0.45)
+    if (foot_position_vec(2) < -0.35)
+    {
+      // ROS_WARN_STREAM("miss!");
+      miss_contact_leg_.at(i) = true;
+    }
+
+    // It will recover only when contact sensor report it hits ground
+    if (contact_schedule_.at(0).at(i) && bool(grf_msg_->contact_states.at(i)) && grf_msg_->vectors.at(i).z > 14 && miss_contact_leg_.at(i))
+    {
+      miss_contact_leg_.at(i) = false;
+    }
+
+    if (miss_contact_leg_.at(i))
     {
       miss_contact.push_back(true);
       // We assume it will not touch the ground at this gait peroid
@@ -309,25 +326,6 @@ void TailPlanner::computeTailPlan()
     {
       miss_contact.push_back(false);
     }
-
-    // // Early contact
-    // // if (contact_schedule_.at(0).at(i) && abs(current_foot_positions_world_(2 + i * 3) - current_state_(2)) > 0.325)
-    // if (!contact_schedule_.at(0).at(i) && contact_schedule_.at(5).at(i) && grf_msg_->contact_states.at(i))
-    // {
-    //   sense_miss_contact = true;
-    //   // If so, we assume it will not touch the ground at this gait peroid
-    //   for (size_t j = 0; j < N_; j++)
-    //   {
-    //     if (!contact_schedule_.at(j).at(i))
-    //     {
-    //       adpative_contact_schedule_.at(j).at(i) = true;
-    //     }
-    //     else
-    //     {
-    //       break;
-    //     }
-    //   }
-    // }
   }
 
   if (!tail_planner_->computeDistributedTailPlan(current_state_,

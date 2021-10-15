@@ -543,7 +543,7 @@ void SpiritKinematics::compInvDyn(const Eigen::VectorXd &state_pos,
 
   // Compute q_ddot caused by grf
   Eigen::VectorXd q_ddot_grf(18);
-  q_ddot_grf = M.colPivHouseholderQr().solve(tau_grf - N);
+  q_ddot_grf = M.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(tau_grf - N);
 
   // Compute toe acceleration caused by grf
   Eigen::VectorXd foot_acc_grf(12);

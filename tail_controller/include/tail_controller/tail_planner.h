@@ -122,6 +122,8 @@ private:
 	bool use_twist_input_;
 
 	ros::Time entrance_time_;
+
+  	std::vector<bool> miss_contact_leg_;
 };
 
 #endif // TAIL_CONTROLLER_H
