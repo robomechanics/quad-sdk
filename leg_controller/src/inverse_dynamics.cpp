@@ -13,48 +13,6 @@ void InverseDynamicsController::setGains(std::vector<double> stance_kp, std::vec
   swing_kd_ = swing_kd;
 }
 
-void InverseDynamicsController::computeJointTorques(const Eigen::VectorXd &state_positions,
-  const Eigen::VectorXd &state_velocities, const Eigen::VectorXd &grf_array,
-  const Eigen::VectorXd &ref_foot_acceleration, const std::vector<int> &contact_mode,
-  Eigen::VectorXd &tau_array) {
-
-  // // Compute Jacobians
-  // Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(3*num_feet_, state_velocities.size());
-  // quadKD_->getJacobianBodyAngVel(state_positions,jacobian);
-
-  // // Use Jacobian and RBDL to map GRFs to joint torques
-  // tau_array = -jacobian.transpose().block<12,12>(0,0)*grf_array;
-
-  // // Use RBDL to map foot accelerations to joint torques
-  // Eigen::VectorXd tau_swing_leg_array(12);
-  // quadKD_->compInvDyn(state_positions, state_velocities, ref_foot_acceleration,
-  //   grf_array, tau_swing_leg_array);
-
-  // // Apply swing leg feedforward term for legs not in contact
-  // for (int i = 0; i < num_feet_; i++) {
-  //   if (!contact_mode[i]) {
-  //     for (int j = 0; j < 3; j++) {
-  //       tau_array[3*i+j] = tau_swing_leg_array[3*i+j];
-  //     }
-  //   }
-  // }
-}
-
-void InverseDynamicsController::computeJointTorques(const Eigen::VectorXd &state_positions,
-  const Eigen::VectorXd &state_velocities, const Eigen::VectorXd &grf_array,
-  Eigen::VectorXd &tau_array) {
-
-  // // Set all feet to be in contact (ignore swing phase ID)
-  // Eigen::VectorXd ref_foot_acceleration(12);
-  // ref_foot_acceleration.setZero();
-  // std::vector<int> contact_mode = {1,1,1,1};
-
-  // // Compute joint torques
-  // computeJointTorques(state_positions, state_velocities, grf_array, ref_foot_acceleration,
-  //   contact_mode, tau_array);
-
-}
-
 void InverseDynamicsController::computeLegCommandArrayFromPlan(
   const spirit_msgs::RobotState::ConstPtr &robot_state_msg,
   const spirit_msgs::RobotPlan::ConstPtr &local_plan_msg,

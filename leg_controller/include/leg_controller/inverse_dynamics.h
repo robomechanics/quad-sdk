@@ -37,31 +37,6 @@ class InverseDynamicsController {
     InverseDynamicsController();
 
     /**
-     * @brief Compute the joint torques for a given state, set of GRFs, and foot accelerations
-     * @param[in] state_positions Position coordinates of the robot [body, joints]
-     * @param[in] state_velocities Velocity coordinates of the robot [body, joints]
-     * @param[in] grf_array Ground reaction forces at each foot
-     * @param[in] ref_foot_acceleration Desired acceleration of the feet
-     * @param[in] contact_mode Contact mode to determine whether to use stance or swing ID
-     * @param[out] tau_array Joint torques from ID solution
-     */
-    void computeJointTorques(const Eigen::VectorXd &state_positions,
-      const Eigen::VectorXd &state_velocities, const Eigen::VectorXd &grf_array,
-      const Eigen::VectorXd &ref_foot_acceleration, const std::vector<int> &contact_mode,
-      Eigen::VectorXd &tau_array);
-
-    /**
-     * @brief Compute the joint torques for a given state and set of GRFs (ignoring swing feet)
-     * @param[in] state_positions Position coordinates of the robot [body, joints]
-     * @param[in] state_velocities Velocity coordinates of the robot [body, joints]
-     * @param[in] grf_array Ground reaction forces at each foot
-     * @param[out] tau_array Joint torques from ID solution
-     */
-    void computeJointTorques(const Eigen::VectorXd &state_positions,
-      const Eigen::VectorXd &state_velocities, const Eigen::VectorXd &grf_array,
-      Eigen::VectorXd &tau_array);
-
-    /**
      * @brief Compute the leg command array message for a given current state and reference plan
      * @param[in] robot_state_msg Message of the current robot state
      * @param[in] local_plan_msg Message of the local referance plan
