@@ -35,8 +35,8 @@ void SillyWalkTemplate::computeJointControl()
   control_msg_.leg_commands.clear();
   control_msg_.leg_commands.resize(num_legs_);
 
-  // The SpiritKinematics class can help do basic kinematic computations (with type Eigen::VectorXd)
-  // For example: kinematics_.legIK(leg_index, body_pos, body_rpy, foot_pos_world,joint_state);
+  // The QuadKD class can help do basic kinematic computations (with type Eigen::VectorXd)
+  // For example:quadKD_.legIK(leg_index, body_pos, body_rpy, foot_pos_world,joint_state);
   // See inverse_dynamics for more elaborate implementations
 
   // You can use something like this if you want a state machine

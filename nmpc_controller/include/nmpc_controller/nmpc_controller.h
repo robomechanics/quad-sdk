@@ -2,13 +2,16 @@
 #define NMPC_CONTROLLER_H
 
 #include <math.h>
-#include <quad_msgs/GRFArray.h>
-#include <quad_msgs/LegCommand.h>
-#include <quad_msgs/MultiFootPlanDiscrete.h>
-#include <quad_msgs/RobotPlan.h>
-#include <quad_msgs/RobotState.h>
-#include <quad_utils/ros_utils.h>
-#include <ros/ros.h>
+// #include <eigen3/Eigen/Eigen>
+#include <spirit_msgs/RobotPlan.h>
+#include <spirit_msgs/MultiFootPlanDiscrete.h>
+#include <spirit_msgs/GRFArray.h>
+#include <spirit_msgs/RobotState.h>
+#include <spirit_msgs/RobotStateTrajectory.h>
+// #include <local_planner/quadruped_mpc.h>
+#include <spirit_utils/ros_utils.h>
+#include <spirit_utils/quad_kd.h>
+#include "spirit_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <Eigen/Dense>
@@ -109,8 +112,15 @@ class NMPCController {
   /// Update rate for sending and receiving data;
   double update_rate_;
 
+<<<<<<< HEAD
   /// Pointer to nlp formulation
   SmartPtr<quadNLP> mynlp_;
+=======
+  /// QuadKD class
+  std::shared_ptr<spirit_utils::QuadKD>quadKD_;
+
+  SmartPtr<spiritNLP> mynlp_;
+>>>>>>> Switch SpiritKinematics to QuadKD, switch inverse dynamics function to QuadKD
 
   /// Pointer to IPOPT solver
   SmartPtr<IpoptApplication> app_;

@@ -66,6 +66,7 @@ add_library(quad_utils
   src/math_utils.cpp
   src/ros_utils.cpp
   src/quad_kd.cpp
+  src/trajectory_publisher.cpp
   src/remote_heartbeat.cpp
 )
 add_dependencies(quad_utils ${quad_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

@@ -35,21 +35,15 @@ void LocalFootstepPlanner::setTemporalParams(
   }
 }
 
-void LocalFootstepPlanner::setSpatialParams(
-    double ground_clearance, double hip_clearance, double grf_weight,
-    double standing_error_threshold,
-    std::shared_ptr<quad_utils::QuadKD> kinematics,
-    double foothold_search_radius, double foothold_obj_threshold,
-    std::string obj_fun_layer, double toe_radius) {
+
+void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double grf_weight, 
+  double standing_error_threshold, std::shared_ptr<spirit_utils::QuadKD> kinematics) {
+
   ground_clearance_ = ground_clearance;
   hip_clearance_ = hip_clearance;
   standing_error_threshold_ = standing_error_threshold;
   grf_weight_ = grf_weight;
-  quadKD_ = kinematics;
-  foothold_search_radius_ = foothold_search_radius;
-  foothold_obj_threshold_ = foothold_obj_threshold;
-  obj_fun_layer_ = obj_fun_layer;
-  toe_radius_ = toe_radius;
+quadKD_ = kinematics;
 }
 
 void LocalFootstepPlanner::updateMap(const FastTerrainMap &terrain) {
@@ -251,8 +245,10 @@ void LocalFootstepPlanner::computeFootPlan(
         ref_body_ang_vel_touchdown = ref_body_plan.block<1,3>(i,9);
 
         // Compute nominal foot positions for kinematic and grf-projection measures
-        quadKD_->worldToNominalHipFKWorldFrame(j, body_pos_midstance, body_rpy_midstance, 
-            hip_position_midstance);
+      quadKD_->nominalHipFK(j, body_pos_midstance, body_rpy_midstance, 
+          hip_position_midstance);
+        // double hip_height = hip_position_midstance.z() - 
+        //   terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());
         grid_map::Position hip_position_grid_map = {hip_position_midstance.x(), hip_position_midstance.y()};
         auto hip_height = hip_position_midstance.z() - terrain_grid_.atPosition(
           "z",hip_position_grid_map, grid_map::InterpolationMethods::INTER_NEAREST);

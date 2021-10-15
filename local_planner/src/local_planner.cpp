@@ -62,23 +62,19 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) : local_body_planner_nonlinear_()
   nh.param<bool>("local_planner/use_twist_input", use_twist_input_, false);
 
   // Convert kinematics
-  quadKD_ = std::make_shared<quad_utils::QuadKD>();
+quadKD_ = std::make_shared<spirit_utils::QuadKD>();
 
-  // Initialize body and foot position arrays (grf_plan horizon is one index
-  // shorter since control after last state is not in the horizon)
-  ref_body_plan_ = Eigen::MatrixXd::Zero(N_, Nx_);
-  foot_positions_world_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
-  foot_velocities_world_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
-  foot_accelerations_world_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
-  foot_positions_body_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
-  current_foot_positions_body_ = Eigen::VectorXd::Zero(num_feet_ * 3);
-  current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_ * 3);
-  current_foot_velocities_world_ = Eigen::VectorXd::Zero(num_feet_ * 3);
-  ref_primitive_plan_ = Eigen::VectorXi::Zero(N_);
-  ref_ground_height_ = Eigen::VectorXd::Zero(N_);
-  grf_plan_ = Eigen::MatrixXd::Zero(N_ - 1, 12);
-  for (int i = 0; i < num_feet_; i++) {
-    grf_plan_.col(3 * i + 2).fill(13.3 * 9.81 / num_feet_);
+  // Initialize nominal footstep positions projected down from the hips
+  Eigen::Vector3d nominal_joint_state;
+  nominal_joint_state << 0, 0.78, 1.57; // Default stand angles
+  hip_projected_foot_positions_ = Eigen::MatrixXd::Zero(N_,num_feet_*3); 
+
+  for (int i = 0; i < N_; ++i) {
+    for (int j = 0; j < num_feet_; ++j) {
+      Eigen::Vector3d toe_body_pos;
+    quadKD_->bodyToFootFK(j, nominal_joint_state, toe_body_pos);
+      hip_projected_foot_positions_.block<1,3>(i,j*3) = toe_body_pos;
+    }
   }
 
   // Initialize body and footstep planners
@@ -216,12 +212,9 @@ void LocalPlanner::initLocalFootstepPlanner() {
 
   // Create footstep class, make sure we use the same dt as the local planner
   local_footstep_planner_ = std::make_shared<LocalFootstepPlanner>();
-  local_footstep_planner_->setTemporalParams(dt_, period, N_, duty_cycles,
-                                             phase_offsets);
-  local_footstep_planner_->setSpatialParams(
-      ground_clearance, hip_clearance, standing_error_threshold, grf_weight,
-      quadKD_, foothold_search_radius, foothold_obj_threshold, obj_fun_layer,
-      toe_radius_);
+  local_footstep_planner_->setTemporalParams(dt_, period, N_);
+  local_footstep_planner_->setSpatialParams(ground_clearance, standing_error_threshold,
+    grf_weight,quadKD_);
 
   past_footholds_msg_.feet.resize(num_feet_);
 }
@@ -615,7 +608,11 @@ void LocalPlanner::publishLocalPlan() {
     quad_msgs::RobotState robot_state_msg;
     robot_state_msg.body = quad_utils::eigenToBodyStateMsg(body_plan_.row(i));
     robot_state_msg.feet = foot_plan_msg.states[i];
+<<<<<<< HEAD
     quad_utils::ikRobotState(*quadKD_, robot_state_msg);
+=======
+    spirit_utils::ikRobotState(*quadKD_, robot_state_msg);
+>>>>>>> Switch SpiritKinematics to QuadKD, switch inverse dynamics function to QuadKD
 
     // Add the GRF information
     quad_msgs::GRFArray grf_array_msg;
