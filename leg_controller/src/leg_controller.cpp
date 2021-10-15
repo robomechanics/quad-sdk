@@ -173,7 +173,7 @@ void LegController::executeCustomController() {
     (ros::Time::now() - last_local_plan_msg_->header.stamp).toSec() < input_timeout_) {
 
     inverse_dynamics_controller_->computeLegCommandArrayFromPlan(last_robot_state_msg_,
-      last_local_plan_msg_, leg_command_array_msg_);
+      last_local_plan_msg_, leg_command_array_msg_, grf_array_msg_);
 
   } else {
     for (int i = 0; i < num_feet_; ++i) {
