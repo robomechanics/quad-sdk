@@ -19,7 +19,7 @@
 #include <spirit_msgs/MultiFootPlanContinuous.h>
 #include <eigen_conversions/eigen_msg.h>
 #include "spirit_utils/matplotlibcpp.h"
-
+#include "leg_controller/inverse_dynamics.h"
 
 #include <cmath>
 #define MATH_PI 3.141592
@@ -93,6 +93,11 @@ private:
 	void checkMessages();
 
 	/**
+	 * @brief Function to publish heartbeat message
+	 */
+	void publishHeartbeat();
+
+	/**
 	 * @brief Function to compute leg command array message
 	 */
 	void computeLegCommandArray();
@@ -154,13 +159,13 @@ private:
 	const int SIT = 0;
 
 	/// Define ids for control modes: Stand
-	const int STAND = 1;
+	const int READY = 1;
 
 	/// Define ids for control modes: Sit to stand
-	const int SIT_TO_STAND = 2;
+	const int SIT_TO_READY = 2;
 
 	/// Define ids for control modes: Stand to sit
-	const int STAND_TO_SIT = 3;
+	const int READY_TO_SIT = 3;
 
 	/// Define ids for control modes: Safety
 	const int SAFETY = 4;
@@ -247,6 +252,9 @@ private:
 
 	/// Spirit Kinematics class
 	std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
+
+	/// Spirit Kinematics class
+	std::shared_ptr<InverseDynamics> inverse_dynamics_;
 };
 
 
