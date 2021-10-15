@@ -4,6 +4,7 @@
 #include <eigen_conversions/eigen_msg.h>
 #include <local_planner/local_planner_modes.h>
 #include <nav_msgs/Path.h>
+<<<<<<< HEAD
 #include <quad_msgs/FootPlanDiscrete.h>
 #include <quad_msgs/FootState.h>
 #include <quad_msgs/MultiFootPlanContinuous.h>
@@ -17,6 +18,20 @@
 #include <quad_utils/quad_kd.h>
 #include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
+=======
+#include <spirit_msgs/RobotPlan.h>
+#include <spirit_msgs/RobotState.h>
+#include <spirit_msgs/FootState.h>
+#include <spirit_msgs/MultiFootState.h>
+#include <spirit_msgs/FootPlanDiscrete.h>
+#include <spirit_msgs/MultiFootPlanContinuous.h>
+#include <spirit_msgs/MultiFootPlanDiscrete.h>
+#include <spirit_utils/fast_terrain_map.h>
+#include <spirit_utils/function_timer.h>
+#include <spirit_utils/math_utils.h>
+#include <spirit_utils/ros_utils.h>
+#include <spirit_utils/quad_kd.h>
+>>>>>>> Switch SpiritKinematics to QuadKD, switch inverse dynamics function to QuadKD
 
 #include <eigen3/Eigen/Eigen>
 #include <grid_map_core/grid_map_core.hpp>
@@ -54,8 +69,13 @@ class LocalFootstepPlanner {
      * @param[in] grf_weight Weight on GRF projection (0 to 1)
      * @param[in] kinematics Kinematics class for computations
      */
+<<<<<<< HEAD
     void setSpatialParams(double ground_clearance, double hip_clearance, double grf_weight,double standing_error_threshold,
       std::shared_ptr<quad_utils::QuadKD> kinematics);
+=======
+    void setSpatialParams(double ground_clearance, double grf_weight,double standing_error_threshold,
+      std::shared_ptr<spirit_utils::QuadKD> kinematics);
+>>>>>>> Switch SpiritKinematics to QuadKD, switch inverse dynamics function to QuadKD
 
     /**
      * @brief Transform a vector of foot positions from the world to the body frame
@@ -403,8 +423,13 @@ class LocalFootstepPlanner {
   /// Radius to locally search for valid footholds (m)
   double foothold_search_radius_;
 
+<<<<<<< HEAD
   /// Minimum objective function value for valid foothold
   double foothold_obj_threshold_;
+=======
+    /// QuadKD class
+    std::shared_ptr<spirit_utils::QuadKD>quadKD_;
+>>>>>>> Switch SpiritKinematics to QuadKD, switch inverse dynamics function to QuadKD
 
   /// Terrain layer for foothold search
   std::string obj_fun_layer_;

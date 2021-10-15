@@ -20,94 +20,50 @@ NMPCController::NMPCController(ros::NodeHandle &nh, int robot_id) {
       break;
   }
 
-  // Load parameters set by local planner
-  quad_utils::loadROSParam(nh_, "/local_planner/horizon_length", N_);
-  quad_utils::loadROSParam(nh_, "/local_planner/timestep", dt_);
+  // Load rosparams from parameter server
+  ros::param::get("nmpc_controller/" + param_ns_ + "/update_rate", update_rate_);
 
-  // Load system parameters
-  double mu, panic_weights, constraint_panic_weights, Q_temporal_factor,
-      R_temporal_factor;
-  quad_utils::loadROSParam(nh_, "/nmpc_controller/friction_coefficient", mu);
-  quad_utils::loadROSParam(nh_, "/nmpc_controller/panic_weights",
-                           panic_weights);
-  quad_utils::loadROSParam(nh_, "/nmpc_controller/constraint_panic_weights",
-                           constraint_panic_weights);
-  quad_utils::loadROSParam(nh_, "/nmpc_controller/Q_temporal_factor",
-                           Q_temporal_factor);
-  quad_utils::loadROSParam(nh_, "/nmpc_controller/R_temporal_factor",
-                           R_temporal_factor);
-  Q_temporal_factor = std::pow(Q_temporal_factor, 1.0 / (N_ - 2));
-  R_temporal_factor = std::pow(R_temporal_factor, 1.0 / (N_ - 2));
+  // Load MPC/system parameters
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/horizon_length", N_);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/state_dimension", n_);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/control_dimension", m_);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/step_length", dt_);
 
-  // Determine whether to let horizon length vary or not
-  quad_utils::loadROSParam(nh_, "/nmpc_controller/enable_variable_horizon",
-                           enable_variable_horizon_);
-  quad_utils::loadROSParam(nh_, "/nmpc_controller/min_horizon_length", N_min_);
-  N_max_ = N_;
+  // Load MPC cost weighting and bounds
+  std::vector<double> state_weights,
+      control_weights,
+      state_lower_bound,
+      state_upper_bound,
+      control_lower_bound,
+      control_upper_bound;
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/state_weights", state_weights);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/control_weights", control_weights);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/state_lower_bound", state_lower_bound);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/state_upper_bound", state_upper_bound);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/control_lower_bound", control_lower_bound);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/control_upper_bound", control_upper_bound);
+  Eigen::Map<Eigen::MatrixXd> Q(state_weights.data(), n_, 1),
+      R(control_weights.data(), m_, 1),
+      x_min(state_lower_bound.data(), n_, 1),
+      x_max(state_upper_bound.data(), n_, 1),
+      u_min(control_lower_bound.data(), m_, 1),
+      u_max(control_upper_bound.data(), m_, 1);
 
-  // Define the components, their order, and which are simple
-  std::vector<std::string> components = {"body", "feet", "joints"};
-  std::vector<bool> components_in_simple = {true, false, false};
-  std::vector<bool> components_in_complex = {true, true, true};
-  std::vector<bool> components_in_cost = {true, true, false};
+  // Convert kinematics
+quadKD_ = std::make_shared<spirit_utils::QuadKD>();
 
-  std::vector<double> x_weights_complex, u_weights_complex, x_lb_complex,
-      x_ub_complex, x_lb_complex_soft, x_ub_complex_soft, u_lb_complex,
-      u_ub_complex, g_lb_complex, g_ub_complex;
-
-  // Loop through each system component and read parameters
-  for (int i = 0; i < components.size(); i++) {
-    double x_dim, u_dim, g_dim;
-    std::vector<double> x_weights, u_weights, x_lb, x_ub, u_lb, u_ub, g_lb,
-        g_ub, x_lb_soft, x_ub_soft;
-
-    // Read component parameters
-    std::string component = components[i];
-    quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/x_dim",
-                             x_dim);
-    quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/u_dim",
-                             u_dim);
-    quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/g_dim",
-                             g_dim);
-    quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/x_lb",
-                             x_lb);
-    quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/x_ub",
-                             x_ub);
-    quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/x_lb_soft",
-                             x_lb_soft);
-    quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/x_ub_soft",
-                             x_ub_soft);
-    quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/u_lb",
-                             u_lb);
-    quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/u_ub",
-                             u_ub);
-    quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/g_lb",
-                             g_lb);
-    quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/g_ub",
-                             g_ub);
-    quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/x_weights",
-                             x_weights);
-    quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/u_weights",
-                             u_weights);
-
-    // Make sure the bounds are the correct size
-    if (x_dim != x_lb.size()) throw std::runtime_error("x_lb wrong size");
-    if (x_dim != x_ub.size()) throw std::runtime_error("x_ub wrong size");
-    if (u_dim != u_lb.size()) throw std::runtime_error("u_lb wrong size");
-    if (u_dim != u_ub.size()) throw std::runtime_error("u_ub wrong size");
-    if (g_dim != g_lb.size()) throw std::runtime_error("g_lb wrong size");
-    if (g_dim != g_ub.size()) throw std::runtime_error("g_ub wrong size");
-
-    // Add to simple if specified
-    if (components_in_simple[i]) {
-      assert(components_in_complex[i]);
-      assert(components_in_cost[i]);
-      config_.x_dim_simple += x_dim;
-      config_.u_dim_simple += u_dim;
-      config_.g_dim_simple += g_dim;
-      config_.x_dim_cost_simple += x_dim;
-      config_.u_dim_cost_simple += u_dim;
-    }
+  mynlp_ = new spiritNLP(
+      type_,
+      N_,
+      n_,
+      m_,
+      dt_,
+      Q,
+      R,
+      x_min,
+      x_max,
+      u_min,
+      u_max);
 
     // Add to complex if specified
     if (components_in_complex[i]) {
