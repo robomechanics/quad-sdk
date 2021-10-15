@@ -66,11 +66,13 @@ class InverseDynamicsController {
      * @param[in] robot_state_msg Message of the current robot state
      * @param[in] local_plan_msg Message of the local referance plan
      * @param[out] leg_command_array_msg Command message after solving inverse dynamics and including reference setpoints for each joint
+     * @param[out] grf_array_msg GRF command message
      */
     void computeLegCommandArrayFromPlan(
       const spirit_msgs::RobotState::ConstPtr &robot_state_msg,
       const spirit_msgs::RobotPlan::ConstPtr &local_plan_msg,
-      spirit_msgs::LegCommandArray &leg_command_array_msg);
+      spirit_msgs::LegCommandArray &leg_command_array_msg,
+      spirit_msgs::GRFArray &grf_array_msg);
 
       /**
        * @brief Set the desired stance and swing proportional and derivative gains
