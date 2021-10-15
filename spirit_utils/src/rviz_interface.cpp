@@ -6,11 +6,12 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   // Load rosparams from parameter server
   std::string global_plan_topic, local_plan_topic, discrete_global_plan_topic,
     foot_plan_discrete_topic, foot_plan_continuous_topic, state_estimate_topic,
-    ground_truth_state_topic, trajectory_state_topic;
+    ground_truth_state_topic, trajectory_state_topic, grf_topic;
 
   // Load topic names from parameter server
   spirit_utils::loadROSParam(nh_,"topics/global_plan", global_plan_topic);
   spirit_utils::loadROSParam(nh_,"topics/local_plan", local_plan_topic);
+  spirit_utils::loadROSParam(nh_,"topics/control/grfs", grf_topic);
   spirit_utils::loadROSParam(nh_,"topics/global_plan_discrete", discrete_global_plan_topic);
   spirit_utils::loadROSParam(nh_,"topics/foot_plan_discrete", foot_plan_discrete_topic);
   spirit_utils::loadROSParam(nh_,"topics/foot_plan_continuous", foot_plan_continuous_topic);
@@ -19,8 +20,8 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh_,"topics/state/trajectory", trajectory_state_topic);
   
   std::string global_plan_viz_topic, local_plan_viz_topic, local_plan_ori_viz_topic,
-    global_plan_grf_viz_topic, local_plan_grf_viz_topic, discrete_body_plan_viz_topic,
-    foot_plan_discrete_viz_topic, estimate_joint_states_viz_topic, 
+    global_plan_grf_viz_topic, local_plan_grf_viz_topic, current_grf_viz_topic,
+    discrete_body_plan_viz_topic, foot_plan_discrete_viz_topic, estimate_joint_states_viz_topic, 
     ground_truth_joint_states_viz_topic, trajectory_joint_states_viz_topic;
 
   spirit_utils::loadROSParam(nh_,"topics/visualization/global_plan", global_plan_viz_topic);
@@ -28,6 +29,7 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   spirit_utils::loadROSParam(nh_,"topics/visualization/local_plan_ori", local_plan_ori_viz_topic);
   spirit_utils::loadROSParam(nh_,"topics/visualization/global_plan_grf", global_plan_grf_viz_topic);
   spirit_utils::loadROSParam(nh_,"topics/visualization/local_plan_grf", local_plan_grf_viz_topic);
+  spirit_utils::loadROSParam(nh_,"topics/visualization/current_grf", current_grf_viz_topic);
   spirit_utils::loadROSParam(nh_,"topics/visualization/global_plan_discrete", 
     discrete_body_plan_viz_topic);
   spirit_utils::loadROSParam(nh_,"topics/visualization/foot_plan_discrete", 
@@ -61,8 +63,7 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
     boost::bind( &RVizInterface::robotPlanCallback, this, _1, GLOBAL));
   local_plan_sub_ = nh_.subscribe<spirit_msgs::RobotPlan>(local_plan_topic,1,
     boost::bind( &RVizInterface::robotPlanCallback, this, _1, LOCAL));
-  discrete_body_plan_sub_ = nh_.subscribe(discrete_global_plan_topic,1,
-    &RVizInterface::discreteBodyPlanCallback, this);
+  grf_sub_ = nh_.subscribe(grf_topic,1,&RVizInterface::grfCallback, this);
   foot_plan_discrete_sub_ = nh_.subscribe(foot_plan_discrete_topic,1,
     &RVizInterface::footPlanDiscreteCallback, this);
   foot_plan_continuous_sub_ = nh_.subscribe(foot_plan_continuous_topic,1,
@@ -71,10 +72,12 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   // Setup plan visual pubs
   global_plan_viz_pub_ = nh_.advertise<nav_msgs::Path>(global_plan_viz_topic,1);
   local_plan_viz_pub_ = nh_.advertise<nav_msgs::Path>(local_plan_viz_topic,1);
+    (local_plan_grf_viz_topic,1);
   global_plan_grf_viz_pub_ = nh_.advertise<visualization_msgs::MarkerArray>
     (global_plan_grf_viz_topic,1);
   local_plan_grf_viz_pub_ = nh_.advertise<visualization_msgs::MarkerArray>
     (local_plan_grf_viz_topic,1);
+  current_grf_viz_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(current_grf_viz_topic,1);
   discrete_body_plan_viz_pub_ = nh_.advertise<visualization_msgs::Marker>
     (discrete_body_plan_viz_topic,1);
   foot_plan_discrete_viz_pub_ = nh_.advertise<visualization_msgs::Marker>
@@ -206,7 +209,6 @@ void RVizInterface::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& ms
       // if GRF = 0, set alpha to zero
       if (msg->grfs[i].contact_states[j] == false) {
         marker.color.a = 0.0;
-        continue;
       }
 
       // Add the points to the marker and add the marker to the array
@@ -222,6 +224,62 @@ void RVizInterface::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& ms
   } else if (pub_id == LOCAL) {
     local_plan_grf_viz_pub_.publish(grfs_viz_msg);
   }
+}
+
+void RVizInterface::grfCallback(const spirit_msgs::GRFArray::ConstPtr& msg)
+{
+  if (msg->vectors.empty()) {
+    return;
+  }
+
+  // Construct MarkerArray and Marker message for GRFs
+  visualization_msgs::MarkerArray grfs_viz_msg;
+  visualization_msgs::Marker marker;
+
+  // Initialize the headers and types
+  marker.header = msg->header;
+  marker.type = visualization_msgs::Marker::ARROW;
+
+  // Define the shape of the discrete states
+  double arrow_diameter = 0.01;
+  marker.scale.x = arrow_diameter;
+  marker.scale.y = 4*arrow_diameter;
+  marker.color.g = 0.733f;
+  marker.pose.orientation.w = 1.0;
+
+  for (int i = 0; i < msg->vectors.size(); i++) {
+
+    // Reset the marker message
+    marker.points.clear();
+    marker.color.a = 1.0;
+    marker.id = i;
+
+    marker.color.r = (float) individual_grf_color_[0]/255.0;
+    marker.color.g = (float) individual_grf_color_[1]/255.0;
+    marker.color.b = (float) individual_grf_color_[2]/255.0;
+
+    // Define point messages for the base and tip of each GRF arrow
+    geometry_msgs::Point p_base, p_tip;
+    p_base = msg->points[i];
+
+    /// Define the endpoint of the GRF arrow
+    double grf_length_scale = 0.002;
+    p_tip.x = p_base.x + grf_length_scale*msg->vectors[i].x;
+    p_tip.y = p_base.y + grf_length_scale*msg->vectors[i].y;
+    p_tip.z = p_base.z + grf_length_scale*msg->vectors[i].z;
+
+    // if GRF = 0, set alpha to zero
+    if (msg->contact_states[i] == false) {
+      marker.color.a = 0.0;
+    }
+
+    // Add the points to the marker and add the marker to the array
+    marker.points.push_back(p_base);
+    marker.points.push_back(p_tip);
+    grfs_viz_msg.markers.push_back(marker);
+  }
+
+  current_grf_viz_pub_.publish(grfs_viz_msg);
 }
 
 void RVizInterface::discreteBodyPlanCallback(

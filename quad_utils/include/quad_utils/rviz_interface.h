@@ -4,16 +4,16 @@
 #include <geometry_msgs/PoseArray.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Path.h>
-#include <quad_msgs/FootPlanDiscrete.h>
-#include <quad_msgs/FootState.h>
-#include <quad_msgs/GRFArray.h>
-#include <quad_msgs/MultiFootPlanContinuous.h>
-#include <quad_msgs/MultiFootPlanDiscrete.h>
-#include <quad_msgs/MultiFootState.h>
-#include <quad_msgs/RobotPlan.h>
-#include <quad_msgs/RobotState.h>
-#include <quad_utils/ros_utils.h>
-#include <ros/ros.h>
+#include <spirit_msgs/RobotState.h>
+#include <spirit_msgs/RobotPlan.h>
+#include <spirit_msgs/FootState.h>
+#include <spirit_msgs/MultiFootState.h>
+#include <spirit_msgs/MultiFootPlanContinuous.h>
+#include <spirit_msgs/FootPlanDiscrete.h>
+#include <spirit_msgs/MultiFootPlanDiscrete.h>
+#include <spirit_msgs/GRFArray.h>
+#include <spirit_utils/ros_utils.h>
+
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <visualization_msgs/Marker.h>
@@ -44,14 +44,13 @@ class RVizInterface {
    * @brief Callback function to handle new body plan data
    * @param[in] msg plan message contining interpolated output of body planner
    */
-  void robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg,
-                         const int pub_id);
+  void grfCallback(const quad_msgs::GRFArray::ConstPtr &msg);
 
   /**
    * @brief Callback function to handle new grf data
    * @param[in] msg plan message contining interpolated output of body planner
    */
-  void grfCallback(const quad_msgs::GRFArray::ConstPtr &msg);
+  void grfCallback(const spirit_msgs::GRFArray::ConstPtr& msg);
 
   /**
    * @brief Callback function to handle new body plan discrete state data
