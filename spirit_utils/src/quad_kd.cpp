@@ -571,8 +571,8 @@ void QuadKD::compInvDyn(const Eigen::VectorXd &state_pos,
   // Convert the order back
   for (size_t i = 0; i < 4; i++)
   {
-    if (contact_mode[i]) {
-      tau.segment(3 * leg_idx_list_.at(i), 3) = tau_stance.segment(3 * i, 3);
+    if (contact_mode.at(leg_idx_list_.at(i))) {
+      tau.segment(3 * leg_idx_list_.at(i), 3) = tau_stance.segment(6 + 3 * i, 3);
     } else {
       tau.segment(3 * leg_idx_list_.at(i), 3) = tau_swing.segment(3 * i, 3);
     }
