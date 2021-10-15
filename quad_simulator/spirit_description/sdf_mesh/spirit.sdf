@@ -150,7 +150,7 @@ SOFTWARE.
       <pose frame=''>0.2263 0.17098 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>-0.040 -0.041 0 0 -0 0</pose>
-        <mass>0.792</mass>
+        <mass>0.775</mass>
         <inertia>
           <ixx>5e-03</ixx>
           <ixy>0</ixy>
@@ -360,7 +360,7 @@ SOFTWARE.
       <pose frame=''>-0.2263 0.17098 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>-0.040 -0.041 0 0 -0 0</pose>
-        <mass>0.792</mass>
+        <mass>0.775</mass>
         <inertia>
           <ixx>5e-03</ixx>
           <ixy>0</ixy>
@@ -571,7 +571,7 @@ SOFTWARE.
       <pose frame=''>0.2263 -0.17098 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>-0.040 0.041 0 0 -0 0</pose>
-        <mass>0.792</mass>
+        <mass>0.775</mass>
         <inertia>
           <ixx>5e-03</ixx>
           <ixy>0</ixy>
@@ -781,7 +781,7 @@ SOFTWARE.
       <pose frame=''>-0.2263 -0.17098 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>-0.040 0.041 0 0 -0 0</pose>
-        <mass>0.792</mass>
+        <mass>0.775</mass>
         <inertia>
           <ixx>5e-03</ixx>
           <ixy>0</ixy>
