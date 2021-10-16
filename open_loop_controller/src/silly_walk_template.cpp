@@ -24,8 +24,8 @@ SillyWalkTemplate::SillyWalkTemplate(ros::NodeHandle nh) {
   // Setup pubs and subs
   joint_control_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(joint_command_topic,1);
   control_mode_sub_ = nh_.subscribe(control_mode_topic,1,&SillyWalkTemplate::controlModeCallback, this);
-  //joint_state_sub_ = nh_.subscribe("state/ground_truth",1,&SillyWalkTemplate::jointStateCallback, this);
-  joint_state_sub_ = nh_.subscribe("/mcu/state/jointURDF",1,&SillyWalkTemplate::jointStateCallback, this);
+  joint_state_sub_ = nh_.subscribe("state/ground_truth",1,&SillyWalkTemplate::jointStateCallback, this);
+  // joint_state_sub_ = nh_.subscribe("/mcu/state/jointURDF",1,&SillyWalkTemplate::jointStateCallback, this);
   // Add any other class initialization goes here
   control_mode_ = SIT;
 
@@ -51,15 +51,16 @@ void SillyWalkTemplate::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg
   }
 }
 
-void SillyWalkTemplate::jointStateCallback(const sensor_msgs::JointState ::ConstPtr& msg){
+//void SillyWalkTemplate::jointStateCallback(const spirit_msgs::RobotState::ConstPtr& msg){
+void SillyWalkTemplate::jointStateCallback(const spirit_msgs::RobotState::ConstPtr& msg){
   // sensor_msgs::JointState::ConstPtr
-//  if (msg->joints.position.empty())
-//     return;
-//   joint_state_angles_ = msg->joints.position;
-
-  if (msg->position.empty())
+ if (msg->joints.position.empty())
     return;
-  joint_state_angles_ = msg->position;
+  joint_state_angles_ = msg->joints.position;
+
+  // if (msg->position.empty())
+  //   return;
+  // joint_state_angles_ = msg->position;
 
 
   // Calculate the foot position in body frame
@@ -174,6 +175,7 @@ void SillyWalkTemplate::computeJointControl()
       control_mode_ = STANCE;
       return;
     }
+    std::cout<<"here2"<<std::endl;
      for (int i = 0; i < 4; ++i) {
       control_msg_.leg_commands.at(i).motor_commands.resize(3);
       for (int j = 0; j < 3; ++j) {
@@ -181,7 +183,7 @@ void SillyWalkTemplate::computeJointControl()
           (stand_joint_angles_.at(j) - sit_joint_angles_.at(j))*t_interp + 
           sit_joint_angles_.at(j);
         control_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-        control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 70; stand_kp_.at(j);
+        control_msg_.leg_commands.at(i).motor_commands.at(j).kp = 70;// stand_kp_.at(j);
         control_msg_.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
         control_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
       }
@@ -317,9 +319,10 @@ void SillyWalkTemplate::publishJointControl()
 {
   // Always need to set the timestamp
   control_msg_.header.stamp = ros::Time::now();
-
+  std::cout<<"here3"<<std::endl;
   // Publish the message
   joint_control_pub_.publish(control_msg_);
+  std::cout<<"here4"<<std::endl;
 }
 
 void SillyWalkTemplate::spin() {
@@ -327,7 +330,7 @@ void SillyWalkTemplate::spin() {
   // Set update rate and do any other pre-loop stuff
   double start_time = ros::Time::now().toSec();
   ros::Rate r(update_rate_);
-
+  std::cout<<"here"<<std::endl;
   // Enter the main loop
   while (ros::ok()) {
     // Compute and publish the control
