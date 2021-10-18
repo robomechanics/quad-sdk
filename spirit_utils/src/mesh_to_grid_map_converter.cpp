@@ -24,13 +24,35 @@ MeshToGridMapConverter::MeshToGridMapConverter(ros::NodeHandle nh,
   advertiseTopics();
   advertiseServices();
   getParametersFromRos();
+  loadParams();
 
   std::string package_path = ros::package::getPath("gazebo_scripts");
-  std::string full_path = package_path + "/worlds/" + world_name_ + "/" + world_name_ + ".ply";
+  std::string full_path = package_path + "/worlds/" + world_name_ + "/" + world_name_ + ".obj";
 
+  generateTerrain(full_path);
+
+  while(!exists_file(full_path)){};
   std::cout << full_path << std::endl;
   bool success = loadMeshFromFile(full_path);
 
+}
+
+void MeshToGridMapConverter::loadParams() {
+  nh_.param<double>("mesh_to_grid_map_converter/numPointsX", profile_.numPointsX);
+  nh_.param<double>("mesh_to_grid_map_converter/numPointsY", profile_.numPointsY);
+  nh_.param<double>("mesh_to_grid_map_converter/waviness", profile_.waviness);
+  nh_.param<double>("mesh_to_grid_map_converter/xMin", profile_.xMin);
+  nh_.param<double>("mesh_to_grid_map_converter/yMin", profile_.yMin);
+  nh_.param<double>("mesh_to_grid_map_converter/zMin", profile_.zMin);
+  nh_.param<double>("mesh_to_grid_map_converter/xMax", profile_.xMax);
+  nh_.param<double>("mesh_to_grid_map_converter/yMax", profile_.yMax);
+  nh_.param<double>("mesh_to_grid_map_converter/zMax", profile_.zMax);
+  nh_.param<double>("mesh_to_grid_map_converter/seed", seed);
+}
+
+inline bool MeshToGridMapConverter::exists_file (const std::string& name) {
+  ifstream f(name.c_str());
+  return f.good();
 }
 
 void MeshToGridMapConverter::subscribeToTopics() {
@@ -171,7 +193,7 @@ bool MeshToGridMapConverter::loadMeshFromFile(const std::string& path_to_mesh_to
   }
 
   pcl::PolygonMesh mesh_from_file;
-  pcl::io::loadPolygonFilePLY(path_to_mesh_to_load,
+  pcl::io::loadPolygonFileOBJ(path_to_mesh_to_load,
                               mesh_from_file);
 
   if (mesh_from_file.polygons.empty()) {
@@ -192,6 +214,37 @@ bool MeshToGridMapConverter::loadMeshFromFile(const std::string& path_to_mesh_to
   }
 
   return true;
+}
+
+void MeshToGridMapConverter::GetInputPoints(std::vector<GEOM_FADE25D::Point2>& vPointsOut)
+{
+	GEOM_FADE25D::generateRandomSurfacePoints(
+		 profile_.numPointsX, // profile_.numPointsX
+		 profile_.numPointsY,
+		 profile_.waviness, // numCenters (waviness)
+		 profile_.xMin, profile_.yMin, profile_.zMin, profile_.xMax, profile_.yMax, profile_.zMax, /* Bounds xmin, ymin, zmin, xmax, ymax, zmax(0, 0, 0, 100, 100, 50) */
+		vPointsOut, // Output vector
+		seed  // Seed (0 is random, >0 is static)
+	);
+}
+
+void MeshToGridMapConverter::generateTerrain(std::string path) {
+
+	std::vector<GEOM_FADE25D::Point2> vInputPoints;
+	GetInputPoints(vInputPoints);
+
+	GEOM_FADE25D::Fade_2D dt;
+	GEOM_FADE25D::CloudPrepare cloudPrep;
+	cloudPrep.add(vInputPoints);
+	dt.insert(&cloudPrep, true); // More memory efficient
+
+	GEOM_FADE25D::FadeExport fadeExport;
+	bool bCustomIndices(true);
+	bool bClear(true);
+	dt.exportTriangulation(fadeExport, bCustomIndices, bClear);
+
+	dt.showGeomview((std::string("random")+std::string(".list")).c_str());
+	fadeExport.writeObj(path.c_str());
 }
 
 }  // namespace mesh_to_grid_map

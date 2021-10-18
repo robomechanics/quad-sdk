@@ -5,6 +5,7 @@
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
 #include <grid_map_ros/GridMapRosConverter.hpp>
+
 #include <ros/package.h>
 
 #include <string>
@@ -53,6 +54,16 @@ public:
    */
   void updateMap();
 
+  // /**
+  //  * @brief Create a profile for the terrain
+  //  */
+  // void GetInputPoints(std::vector<Point2>& vPointsOut);
+
+  // /**
+  //  * @brief Create terrain OBJ
+  //  */
+  // void generateTerrain();
+
   /**
    * @brief Loads data from a specified CSV file into a nested std::vector structure
    * @param[in] filename Path to the CSV file
@@ -70,6 +81,11 @@ public:
    * @param[in] msg ROS image message
    */
   void loadMapFromImage(const sensor_msgs::Image& msg);
+
+  /**
+   * @brief Loads data into the map object from a OBJ
+   */
+  void loadMapFromOBJ();
 
   /**
    * @brief Publishes map data to the terrain_map topic

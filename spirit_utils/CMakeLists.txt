@@ -27,6 +27,11 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(PythonLibs 2.7)
 find_package(Eigen3 REQUIRED)
 
+set(FADE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/fade")
+set(FADE25D_INCLUDE_DIRS "${FADE_DIR}/include_fade25d")
+set(FADE25D_LIBRARIES "${FADE_DIR}/libs")
+find_library(Fade25d NAMES fade25d PATHS ${FADE25D_LIBRARIES} REQUIRED)
+
 # We need to add the project source path to the CMake module path so that
 # the FindRBDL.cmake script can be found.
 LIST( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR} )
@@ -52,6 +57,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
   ${PYTHON_INCLUDE_DIRS}
+  ${FADE25D_INCLUDE_DIRS}
 )
 
 # Add the include directory to the include paths
@@ -71,7 +77,9 @@ add_library(spirit_utils
   src/remote_heartbeat.cpp
 )
 add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(spirit_utils)
+target_link_libraries(spirit_utils 
+  ${Fade25d}
+)
 
 # And link the library against the executable
 TARGET_LINK_LIBRARIES ( spirit_utils

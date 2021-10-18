@@ -31,7 +31,11 @@ find_package(PythonLibs 2.7)
 set(QPOASES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/qpOASES")
 set(QPOASES_INCLUDE_DIRS "${QPOASES_DIR}/include")
 set(QPOASES_LIBRARIES "${QPOASES_DIR}/build/libs")
+set(FADE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/fade")
+set(FADE25D_INCLUDE_DIRS "${FADE_DIR}/include_fade25d")
+set(FADE25D_LIBRARIES "${FADE_DIR}/libs")
 find_library(QPOASES NAMES qpOASES PATHS ${QPOASES_LIBRARIES} REQUIRED)
+find_library(Fade25d NAMES fade25d PATHS ${FADE25D_LIBRARIES} REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -52,8 +56,10 @@ include_directories(
   ${EIGEN3_INCLUDE_DIRS}
   ${QPOASES_INCLUDE_DIRS}
   ${PYTHON_INCLUDE_DIRS}
+  ${FADE25D_INCLUDE_DIRS}
   /usr/local/include/coin-or
 )
+
 link_directories(/usr/local/lib)
 
 add_library(quadruped_mpc
@@ -72,7 +78,7 @@ add_library(local_planner
   src/local_planner.cpp
   src/local_footstep_planner.cpp
 )
-target_link_libraries(local_planner quadruped_mpc)
+target_link_libraries(local_planner quadruped_mpc ${Fade25d})
 add_dependencies(local_planner ${local_planner_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 

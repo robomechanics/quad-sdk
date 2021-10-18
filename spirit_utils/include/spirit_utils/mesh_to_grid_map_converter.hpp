@@ -14,6 +14,10 @@
 #include <grid_map_core/GridMap.hpp>
 #include <ros/package.h>
 
+#include <Fade_2D.h>
+#include <Visualizer3.h>
+#include "someTools.h"
+
 namespace mesh_to_grid_map {
 
 constexpr double kDefaultGridMapResolution = 0.2;
@@ -21,7 +25,19 @@ static const std::string kDefaultLayerName = "elevation";
 constexpr bool kDefaultLatchGridMapPub = true;
 constexpr bool kDefaultVerbose = false;
 static const std::string kDefaultFrameIdMeshLoaded = "map";
-static const std::string kDefaultWorldName = "flat";
+static const std::string kDefaultWorldName = "random";
+
+struct Profile{
+  double numPointsX;
+  double numPointsY;
+  double waviness;
+  double xMin;
+  double yMin;
+  double zMin;
+  double xMax;
+  double yMax;
+  double zMax;
+};
 
 class MeshToGridMapConverter {
  public:
@@ -36,6 +52,8 @@ class MeshToGridMapConverter {
 
   // Datacallback
   void meshCallback(const pcl_msgs::PolygonMesh& mesh);
+
+  void loadParams();
 
   // Save callback
   bool saveGridMapService(grid_map_msgs::ProcessFile::Request& request,
@@ -57,6 +75,18 @@ class MeshToGridMapConverter {
   bool saveGridMap(const grid_map::GridMap& map,
                    const std::string& path_to_file,
                    const std::string& topic_name);
+
+  /**
+   * @brief Create a profile for the terrain
+   */
+  void GetInputPoints(std::vector<GEOM_FADE25D::Point2>& vPointsOut);
+
+  /**
+   * @brief Create terrain OBJ
+   */
+  void generateTerrain(std::string path);
+
+  inline bool exists_file (const std::string& name);
 
   // Node Handles
   ros::NodeHandle nh_;
@@ -86,6 +116,9 @@ class MeshToGridMapConverter {
   // Load mesh parameters
   ros::ServiceServer load_map_service_server_;
   std::string frame_id_mesh_loaded_;
+
+  Profile profile_;
+  int seed; 
 };
 
 }  // namespace mesh_to_grid_map

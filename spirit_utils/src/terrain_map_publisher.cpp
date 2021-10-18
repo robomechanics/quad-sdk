@@ -59,6 +59,37 @@ void TerrainMapPublisher::createMap() {
 
 }
 
+// void TerrainMapPublisher::GetInputPoints(std::vector<Point2>& vPointsOut)
+// {
+// 	generateRandomSurfacePoints(
+// 		100, // numPointsX
+// 		10, // numPoint sY
+// 		200, // numCenters (waviness)
+// 		-1, -0.4, (0 - 0.05), 7, 0.4, (0 + 0.05), /* Bounds xmin, ymin, zmin, xmax, ymax, zmax(0, 0, 0, 100, 100, 50) */
+// 		vPointsOut, // Output vector
+// 		0  // Seed (0 is random, >0 is static)
+// 	);
+// }
+
+// void TerrainMapPublisher::TerrainGeneration() {
+
+// 	std::vector<Point2> vInputPoints;
+// 	GetInputPoints(vInputPoints);
+
+// 	Fade_2D dt;
+// 	CloudPrepare cloudPrep;
+// 	cloudPrep.add(vInputPoints);
+// 	dt.insert(&cloudPrep, true); // More memory efficient
+
+// 	FadeExport fadeExport;
+// 	bool bCustomIndices(true);
+// 	bool bClear(true);
+// 	dt.exportTriangulation(fadeExport, bCustomIndices, bClear);
+
+// 	//fadeExport.print();
+// 	fadeExport.writeObj("random_terrain.obj");
+// }
+
 void TerrainMapPublisher::updateMap() {
   // Add terrain info
   for (grid_map::GridMapIterator it(terrain_map_); !it.isPastEnd(); ++it) {
