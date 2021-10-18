@@ -201,7 +201,7 @@ void interpRobotPlan(spirit_msgs::RobotPlan msg, double t,
    * @param[in] multi_foot_state message of state of each foot
    * @param[out] joint_state message of the corresponding joint state
    */
-  void ikRobotState(const spirit_utils::SpiritKinematics &kinematics,
+  void ikRobotState(const spirit_utils::QuadKD &kinematics,
     spirit_msgs::BodyState body_state, spirit_msgs::MultiFootState multi_foot_state,
     sensor_msgs::JointState &joint_state);
 
@@ -210,7 +210,7 @@ void interpRobotPlan(spirit_msgs::RobotPlan msg, double t,
    * @param[in] kinematics Pointer to kinematics object
    * @param[out] state RobotState message to which to add joint data
    */
-  void ikRobotState(const spirit_utils::SpiritKinematics &kinematics,
+  void ikRobotState(const spirit_utils::QuadKD &kinematics,
     spirit_msgs::RobotState &state);
 
   /**
@@ -220,7 +220,7 @@ void interpRobotPlan(spirit_msgs::RobotPlan msg, double t,
    * @param[in] joint_state message of the corresponding joint state
    * @param[out] multi_foot_state message of state of each foot
    */
-  void fkRobotState(const spirit_utils::SpiritKinematics &kinematics,
+  void fkRobotState(const spirit_utils::QuadKD &kinematics,
     spirit_msgs::BodyState body_state, sensor_msgs::JointState joint_state,
     spirit_msgs::MultiFootState &multi_foot_state);
 
@@ -229,7 +229,7 @@ void interpRobotPlan(spirit_msgs::RobotPlan msg, double t,
    * @param[in] kinematics Pointer to kinematics object
    * @param[out] state RobotState message to which to add joint data
    */
-  void fkRobotState(const spirit_utils::SpiritKinematics &kinematics,
+  void fkRobotState(const spirit_utils::QuadKD &kinematics,
     spirit_msgs::RobotState &state);
 
   /**

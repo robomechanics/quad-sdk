@@ -11,7 +11,7 @@
 #include <spirit_msgs/RobotStateTrajectory.h>
 // #include <local_planner/quadruped_mpc.h>
 #include <spirit_utils/ros_utils.h>
-#include <spirit_utils/kinematics.h>
+#include <spirit_utils/quad_kd.h>
 #include "spirit_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <spirit_msgs/LegCommand.h>
@@ -88,8 +88,8 @@ private:
   /// Update rate for sending and receiving data;
   double update_rate_;
 
-  /// Spirit Kinematics class
-  std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
+  /// QuadKD class
+  std::shared_ptr<spirit_utils::QuadKD>quadKD_;
 
   SmartPtr<spiritNLP> mynlp_;
 

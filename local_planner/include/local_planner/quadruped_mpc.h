@@ -5,7 +5,7 @@
 // #include <eigen3/Eigen/Eigen>
 #include <Eigen/Core>
 #include <Eigen/Dense>
-#include <spirit_utils/kinematics.h>
+#include <spirit_utils/quad_kd.h>
 #include <assert.h>
 
 //! Implements online MPC for quadrupedal MPC
@@ -245,8 +245,8 @@ private:
   /// OSQP solver instance
   OsqpEigen::Solver solver_;
 
-  /// Spirit Kinematics class
-  std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
+  /// QuadKD class
+  std::shared_ptr<spirit_utils::QuadKD>quadKD_;
 };
 
 

@@ -1,5 +1,5 @@
-#ifndef INVERSE_DYNAMICS_H
-#define INVERSE_DYNAMICS_H
+#ifndef LEG_CONTROLLER_H
+#define LEG_CONTROLLER_H
 
 #include <ros/ros.h>
 #include <eigen3/Eigen/Eigen>
@@ -19,24 +19,26 @@
 #include <spirit_msgs/MultiFootPlanContinuous.h>
 #include <eigen_conversions/eigen_msg.h>
 #include "spirit_utils/matplotlibcpp.h"
-
+#include "leg_controller/inverse_dynamics.h"
 
 #include <cmath>
 #define MATH_PI 3.141592
 
 
-//! Implements inverse dynamics
+//! ROS Wrapper for a leg controller class
 /*!
-   InverseDynamics implements inverse dynamics logic. It should expose a constructor that does any initialization required and an update method called at some frequency.
+   LegController implements a class to generate leg commands to be sent to either the robot or a simulator.
+   It may subscribe to any number of topics to determine the leg control, but will always publish a
+   LegCommandArray message to control the robot's legs.
 */
-class InverseDynamics {
+class LegController {
   public:
 	/**
-	 * @brief Constructor for InverseDynamics
+	 * @brief Constructor for LegController
 	 * @param[in] nh ROS NodeHandle to publish and subscribe from
-	 * @return Constructed object of type InverseDynamics
+	 * @return Constructed object of type LegController
 	 */
-	InverseDynamics(ros::NodeHandle nh);
+	LegController(ros::NodeHandle nh);
 	/**
 	 * @brief Calls ros spinOnce and pubs data at set frequency
 	 */
@@ -89,9 +91,24 @@ private:
 	 * @brief Check to make sure required messages are fresh
 	 */
 	void checkMessages();
+
+	/**
+	 * @brief Function to publish heartbeat message
+	 */
+	void publishHeartbeat();
+
+	/**
+	 * @brief Function to compute custom leg control.
+	 */
+	void executeCustomController();
+
+	/**
+	 * @brief Function to compute leg command array message
+	 */
+	void computeLegCommandArray();
 	
-  /**
-	 * @brief Function to compute and publish leg command array message
+  	/**
+	 * @brief Function to publish leg command array message
 	 */
 	void publishLegCommandArray();
 
@@ -147,13 +164,13 @@ private:
 	const int SIT = 0;
 
 	/// Define ids for control modes: Stand
-	const int STAND = 1;
+	const int READY = 1;
 
 	/// Define ids for control modes: Sit to stand
-	const int SIT_TO_STAND = 2;
+	const int SIT_TO_READY = 2;
 
 	/// Define ids for control modes: Stand to sit
-	const int STAND_TO_SIT = 3;
+	const int READY_TO_SIT = 3;
 
 	/// Define ids for control modes: Safety
 	const int SAFETY = 4;
@@ -212,6 +229,9 @@ private:
 	/// Message for leg command array
 	spirit_msgs::LegCommandArray leg_command_array_msg_;
 
+	/// Message for leg command array
+	spirit_msgs::GRFArray grf_array_msg_;
+
 	/// Time at which to start transition
 	ros::Time transition_timestamp_;
 
@@ -235,37 +255,18 @@ private:
 	std::vector<double> swing_kp_;
 	std::vector<double> swing_kd_;
 
-	std::vector<double> f0x;
-	std::vector<double> f1x;
-	std::vector<double> f2x;
-	std::vector<double> f3x;
-	std::vector<double> f0y;
-	std::vector<double> f1y;
-	std::vector<double> f2y;
-	std::vector<double> f3y;
-	std::vector<double> f0z;
-	std::vector<double> f1z;
-	std::vector<double> f2z;
-	std::vector<double> f3z;
+	/// Define standing joint angles
+  	 const std::vector<double> stand_joint_angles_{0,0.76,2*0.76};
 
-	std::vector<double> f0xJ;
-	std::vector<double> f1xJ;
-	std::vector<double> f2xJ;
-	std::vector<double> f3xJ;
-	std::vector<double> f0yJ;
-	std::vector<double> f1yJ;
-	std::vector<double> f2yJ;
-	std::vector<double> f3yJ;
-	std::vector<double> f0zJ;
-	std::vector<double> f1zJ;
-	std::vector<double> f2zJ;
-	std::vector<double> f3zJ;
-	
-	std::vector<double> counterVec;
+	/// Define sitting joint angles
+  	const std::vector<double> sit_joint_angles_{0.0,0.0,0.0};
 
-	/// Spirit Kinematics class
-	std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
+	/// QuadKD class
+	std::shared_ptr<spirit_utils::QuadKD>quadKD_;
+
+	/// Inverse Dynamics Controller class
+	std::shared_ptr<InverseDynamicsController> inverse_dynamics_controller_;
 };
 
 
-#endif // MPC_CONTROLLER_H
+#endif // LEG_CONTROLLER_H

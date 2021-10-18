@@ -11,3 +11,7 @@ open_loop_controller:
   walk_kp: [10,10,10]
   walk_kd: [0.1,0.1,0.1]
   use_diff_for_velocity: true
+
+silly_walk_template:
+  update_rate: 500
+  stand_angles: [0,0.3,0.3]

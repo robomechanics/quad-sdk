@@ -13,7 +13,7 @@
 #include <spirit_utils/function_timer.h>
 #include <spirit_utils/math_utils.h>
 #include <spirit_utils/ros_utils.h>
-#include <spirit_utils/kinematics.h>
+#include <spirit_utils/quad_kd.h>
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
