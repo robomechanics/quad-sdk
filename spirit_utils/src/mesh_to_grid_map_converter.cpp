@@ -38,16 +38,17 @@ MeshToGridMapConverter::MeshToGridMapConverter(ros::NodeHandle nh,
 }
 
 void MeshToGridMapConverter::loadParams() {
-  nh_.param<double>("mesh_to_grid_map_converter/numPointsX", profile_.numPointsX);
-  nh_.param<double>("mesh_to_grid_map_converter/numPointsY", profile_.numPointsY);
-  nh_.param<double>("mesh_to_grid_map_converter/waviness", profile_.waviness);
-  nh_.param<double>("mesh_to_grid_map_converter/xMin", profile_.xMin);
-  nh_.param<double>("mesh_to_grid_map_converter/yMin", profile_.yMin);
-  nh_.param<double>("mesh_to_grid_map_converter/zMin", profile_.zMin);
-  nh_.param<double>("mesh_to_grid_map_converter/xMax", profile_.xMax);
-  nh_.param<double>("mesh_to_grid_map_converter/yMax", profile_.yMax);
-  nh_.param<double>("mesh_to_grid_map_converter/zMax", profile_.zMax);
-  nh_.param<double>("mesh_to_grid_map_converter/seed", seed);
+  nh_.param<double>("/mesh_to_grid_map_converter/numPointsX", profile_.numPointsX, 100.0);
+  nh_.param<double>("/mesh_to_grid_map_converter/numPointsY", profile_.numPointsY, 100.0);
+  nh_.param<double>("/mesh_to_grid_map_converter/waviness", profile_.waviness, 0.0);
+  nh_.param<double>("/mesh_to_grid_map_converter/xMin", profile_.xMin, -10.0);
+  nh_.param<double>("/mesh_to_grid_map_converter/yMin", profile_.yMin, -10.0);
+  nh_.param<double>("/mesh_to_grid_map_converter/zMin", profile_.zMin, 0.0);
+  nh_.param<double>("/mesh_to_grid_map_converter/xMax", profile_.xMax, 10.0);
+  nh_.param<double>("/mesh_to_grid_map_converter/yMax", profile_.yMax, 10.0);
+  nh_.param<double>("/mesh_to_grid_map_converter/zMax", profile_.zMax, 0.0);
+  nh_.param<int>("/mesh_to_grid_map_converter/seed", seed, 1);
+  std::cout<< profile_.numPointsX << profile_.numPointsY << profile_.waviness<<std::endl;
 }
 
 inline bool MeshToGridMapConverter::exists_file (const std::string& name) {

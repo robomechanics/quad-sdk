@@ -34,6 +34,8 @@ SOFTWARE.
   <arg name="mblink"          default="false"/>
   <arg name="world"           default="flat"/>
 
+
+  
   <include file="$(find spirit_utils)/launch/mapping.launch" >
     <arg name="input_type" value="mesh"/>
     <arg name="world" value="$(arg world)"/>

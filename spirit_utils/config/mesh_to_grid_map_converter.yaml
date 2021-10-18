@@ -1,11 +1,11 @@
 mesh_to_grid_map_converter:
-  numPointX: 200
-  numPointY: 200
-  waviness: 200
+  numPointsX: 200
+  numPointsY: 200
+  waviness: 1000000
   xMin: -10
   yMin: -10
-  zMin: -0.5
+  zMin: -1.5
   xMax: 10
   yMax: 10
-  zMax: 0.5
-  seed: 5
+  zMax: 1.5
+  seed: 1
