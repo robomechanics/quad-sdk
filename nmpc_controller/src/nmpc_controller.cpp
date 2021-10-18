@@ -57,7 +57,7 @@ NMPCController::NMPCController(int type)
       u_max(control_upper_bound.data(), m_, 1);
 
   // Convert kinematics
-  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
+quadKD_ = std::make_shared<spirit_utils::QuadKD>();
 
   mynlp_ = new spiritNLP(
       type_,
@@ -312,6 +312,11 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
 
     state_traj.bottomRows(N_) = last_state_traj_;
     control_traj = last_control_traj_;
+
+    mynlp_->w0_.setZero();
+    mynlp_->z_L0_.setZero();
+    mynlp_->z_U0_.setZero();
+    mynlp_->lambda0_.setZero();
 
     ROS_INFO_STREAM(param_ns_ << " solving fail");
     return false;

@@ -28,7 +28,7 @@ QuadrupedMPC::QuadrupedMPC() {
   // b_contact_hi_ = Eigen::VectorXd::Zero(num_contact_constraints_);
   // b_dyn_ = Eigen::VectorXd::Zero(num_dyn_constraints_);
 
-  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
+quadKD_ = std::make_shared<spirit_utils::QuadKD>();
 }
 
 void QuadrupedMPC::setMassProperties(const double m, const Eigen::Matrix3d Ib) {
@@ -97,7 +97,7 @@ void QuadrupedMPC::update_dynamics_hip_projected_feet(const StateTraj &ref_traj)
   for (int i = 0; i < N_; ++i) {
     for (int j = 0; j < 4; ++j) {
     Eigen::Vector3d toe_body_pos;
-    this->kinematics_->bodyToFootFK(j, nominal_joint_state, toe_body_pos);
+    this->quadKD_->bodyToFootFK(j, nominal_joint_state, toe_body_pos);
     foot_positions.block<1,3>(i,j*3) = toe_body_pos;
     }
   }

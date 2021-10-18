@@ -15,7 +15,7 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include "spirit_utils/function_timer.h"
-#include "spirit_utils/kinematics.h"
+#include "spirit_utils/quad_kd.h"
 
 namespace math_utils {
 

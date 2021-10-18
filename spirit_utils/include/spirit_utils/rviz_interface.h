@@ -14,6 +14,7 @@
 #include <spirit_msgs/MultiFootPlanContinuous.h>
 #include <spirit_msgs/FootPlanDiscrete.h>
 #include <spirit_msgs/MultiFootPlanDiscrete.h>
+#include <spirit_msgs/GRFArray.h>
 #include <spirit_utils/ros_utils.h>
 
 #include <tf2/LinearMath/Quaternion.h>
@@ -42,14 +43,20 @@ public:
 private:
   /**
    * @brief Callback function to handle new body plan data
-   * @param[in] Body plan message contining interpolated output of body planner
+   * @param[in] msg plan message contining interpolated output of body planner
    */
   void robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg,
     const int pub_id);
 
   /**
+   * @brief Callback function to handle new grf data
+   * @param[in] msg plan message contining interpolated output of body planner
+   */
+  void grfCallback(const spirit_msgs::GRFArray::ConstPtr& msg);
+
+  /**
    * @brief Callback function to handle new body plan discrete state data
-   * @param[in] Body plan message contining discrete output of body planner
+   * @param[in] msg plan message contining discrete output of body planner
    */
   void discreteBodyPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg);
 
@@ -84,6 +91,9 @@ private:
   /// ROS subscriber for the local plan
   ros::Subscriber local_plan_sub_;
 
+  /// ROS subscriber for the current
+  ros::Subscriber grf_sub_;
+
   /// ROS subscriber for the body plan
   ros::Subscriber discrete_body_plan_sub_;
 
@@ -98,6 +108,9 @@ private:
 
   /// ROS Publisher for the interpolated local plan vizualization
   ros::Publisher local_plan_viz_pub_;
+
+  /// ROS Publisher for the current GRFs
+  ros::Publisher current_grf_viz_pub_;
 
   /// ROS Publisher for local plan orientation vizualization
   ros::Publisher local_plan_ori_viz_pub_;
@@ -159,8 +172,8 @@ private:
   /// Update rate for sending and receiving data, unused since pubs are called in callbacks
   double update_rate_;
 
-  /// Update rate for showing orientation of plan
-  int orientation_subsample_;
+  /// Number for showing orientation of plan
+  int orientation_subsample_num_;
 
   /// Handle for the map frame
   std::string map_frame_;

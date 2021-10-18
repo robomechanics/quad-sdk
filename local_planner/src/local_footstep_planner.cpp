@@ -35,12 +35,12 @@ void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_
 
 
 void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double grf_weight, 
-  double standing_error_threshold, std::shared_ptr<spirit_utils::SpiritKinematics> kinematics) {
+  double standing_error_threshold, std::shared_ptr<spirit_utils::QuadKD> kinematics) {
 
   ground_clearance_ = ground_clearance;
   standing_error_threshold_ = standing_error_threshold;
   grf_weight_ = grf_weight;
-  kinematics_ = kinematics;
+quadKD_ = kinematics;
 }
 
 void LocalFootstepPlanner::updateMap(const FastTerrainMap &terrain) {
@@ -180,7 +180,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         grf_midstance = grf_plan.block<1,3>(midstance,3*j);
 
         // Compute nominal foot positions for kinematic and grf-projection measures
-        kinematics_->nominalHipFK(j, body_pos_midstance, body_rpy_midstance, 
+      quadKD_->nominalHipFK(j, body_pos_midstance, body_rpy_midstance, 
           hip_position_midstance);
         // double hip_height = hip_position_midstance.z() - 
         //   terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());
