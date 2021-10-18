@@ -223,6 +223,46 @@ class QuadKD {
     const Eigen::VectorXd &foot_acc,const Eigen::VectorXd &grf,
     const std::vector<int> &contact_mode, Eigen::VectorXd &tau) const;
 
+  /**
+   * @brief Convert centroidal model states (foot coordinates and grfs) to full body (joints and torques)
+   * @param[in] state_pos Position states
+   * @param[in] state_vel Velocity states
+   * @param[in] foot_acc Foot absolute acceleration in world frame
+   * @param[in] grf Ground reaction force
+   * @param[in] contact_mode Contact mode of the legs
+   * @param[out] tau Joint torques
+   */
+  void convertCentroidalToFullBody(const Eigen::VectorXd &body_positions,
+    const Eigen::VectorXd &body_velocities, const Eigen::VectorXd &foot_positions,
+    const Eigen::VectorXd &foot_velocities, const Eigen::VectorXd &grfs, 
+    Eigen::VectorXd &joint_positions, Eigen::VectorXd &joint_velocities,
+    Eigen::VectorXd &torques);
+
+  /**
+   * @brief Apply a uniform maximum torque to a given set of joint torques
+   * @param[in] torques Joint torques. in Nm
+   * @param[in] constrained_torques Joint torques after applying max, in Nm
+   * @return Boolean to indicate if initial torques is feasible (checks if torques == constrained_torques)
+   */
+  bool applyMotorModel(const Eigen::VectorXd &torques, Eigen::VectorXd &constrained_torques);
+
+  /**
+   * @brief Apply a linear motor model to a given set of joint torques and velocities
+   * @param[in] torques Joint torques. in Nm
+   * @param[in] joint_velocities Velocities of each joint. in rad/s
+   * @param[in] constrained_torques Joint torques after applying motor model, in Nm
+   * @return Boolean to indicate if initial torques is feasible (checks if torques == constrained_torques)
+   */
+  bool applyMotorModel(const Eigen::VectorXd &torques, const Eigen::VectorXd &joint_velocities,
+    Eigen::VectorXd &constrained_torques);
+
+  /**
+   * @brief Check if state is valid
+   * @param[in] state Robot state
+   * @return Boolean for state validity
+   */
+  bool isValidState(const Eigen::VectorXd &state);
+
   private:
 
     /// Vector of the abad link lengths 
@@ -277,6 +317,38 @@ class QuadKD {
     std::vector<unsigned int> body_id_list_;
 
     std::vector<int> leg_idx_list_;
+
+    /// Abad max joint torque
+    const double abad_tau_max_ = 21;
+
+    /// Hip max joint torque
+    const double hip_tau_max_ = 21;
+
+    /// Knee max joint torque
+    const double knee_tau_max_ = 32;
+
+    /// Vector of max torques
+    const Eigen::VectorXd tau_max_ = (Eigen::VectorXd(12) << abad_tau_max_,hip_tau_max_,knee_tau_max_,
+      abad_tau_max_,hip_tau_max_,knee_tau_max_,
+      abad_tau_max_,hip_tau_max_,knee_tau_max_,
+      abad_tau_max_,hip_tau_max_,knee_tau_max_).finished();
+
+    /// Abad max joint velocity
+    const double abad_vel_max_ = 37.7;
+
+    /// Hip max joint velocity
+    const double hip_vel_max_ = 37.7;
+
+    /// Knee max joint velocity
+    const double knee_vel_max_ = 25.1;
+
+    /// Vector of max velocities
+    const Eigen::VectorXd vel_max_ = (Eigen::VectorXd(12) << abad_vel_max_,hip_vel_max_,knee_vel_max_,
+      abad_vel_max_,hip_vel_max_,knee_vel_max_,
+      abad_vel_max_,hip_vel_max_,knee_vel_max_,
+      abad_vel_max_,hip_vel_max_,knee_vel_max_).finished();
+
+    const Eigen::VectorXd mm_slope_ = tau_max_.cwiseQuotient(vel_max_);
 };
 
 }

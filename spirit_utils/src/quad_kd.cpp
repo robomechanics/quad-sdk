@@ -584,3 +584,42 @@ void QuadKD::compInvDyn(const Eigen::VectorXd &state_pos,
     tau.setZero();
   }
 }
+
+void QuadKD::convertCentroidalToFullBody(const Eigen::VectorXd &body_positions,
+  const Eigen::VectorXd &body_velocities, const Eigen::VectorXd &foot_positions,
+  const Eigen::VectorXd &foot_velocities, const Eigen::VectorXd &grfs, 
+  Eigen::VectorXd &joint_positions, Eigen::VectorXd &joint_velocities,
+  Eigen::VectorXd &torques) {
+
+  
+
+}
+
+bool QuadKD::applyMotorModel(const Eigen::VectorXd &torques, Eigen::VectorXd &constrained_torques) {
+  
+  // Constrain torques to max values
+  constrained_torques.resize(torques.size());  
+  constrained_torques = torques.cwiseMax(-tau_max_).cwiseMin(tau_max_);
+
+  // Check if torques was modified
+  return constrained_torques.isApprox(torques);
+}
+
+bool QuadKD::applyMotorModel(const Eigen::VectorXd &torques, const Eigen::VectorXd &joint_velocities,
+  Eigen::VectorXd &constrained_torques) {
+  
+  // Constrain torques to max values
+  constrained_torques.resize(torques.size());  
+  constrained_torques = torques.cwiseMax(-tau_max_).cwiseMin(tau_max_);
+
+  // Apply linear motor model
+  Eigen::VectorXd emf = joint_velocities.cwiseProduct(mm_slope_);
+  constrained_torques = constrained_torques.cwiseMax(-tau_max_ - emf).cwiseMin(tau_max_ - emf);
+
+  // Check if torques was modified
+  return constrained_torques.isApprox(torques);
+}
+
+bool QuadKD::isValidState(const Eigen::VectorXd &state) {
+
+}

@@ -385,3 +385,40 @@ TEST(KinematicsTest, testBodyToFootFK) {
     }
   }
 }
+
+TEST(KinematicsTest, testMotorModel) {
+
+  // Declare kinematics object
+  QuadKD quad_kd;
+
+  Eigen::VectorXd state_vel(12);
+  Eigen::VectorXd valid_input(12);
+  Eigen::VectorXd invalid_input(12);
+  Eigen::VectorXd constrained_input(12);
+
+  state << 0,0,0,10,10,10,0,0,0,10,10,10;
+  valid_input << 10,10,10,10,10,10,-10,-10,-10,-10,-10,-10;
+  invalid_input << 40,10,10,10,10,10,-10,-10,-10,-10,-10,-10;
+
+  bool valid_result = quad_kd.applyMotorModel(valid_input, state_vel, constrained_input);
+  bool invalid_result = quad_kd.applyMotorModel(invalid_input, state_vel, constrained_input);
+
+  EXPECT_TRUE(valid_result == true);
+  EXPECT_TRUE(invalid_result == false);
+
+  int N = 1000;
+  int count = 0;
+  auto t_start = std::chrono::steady_clock::now();
+  for (int i = 0; i < N; i++) {
+    count++;
+    bool valid_result = quad_kd.applyMotorModel(valid_input, state_vel, constrained_input);
+  }
+  auto t_end = std::chrono::steady_clock::now();
+
+  std::chrono::duration<double> t_diff = std::chrono::duration_cast<std::chrono::duration<double>>(t_end - t_start);
+  double average_time = t_diff.count()/N;
+
+  std::cout << "Average motor model computation time = " << average_time << " s" << std::endl;
+
+  EXPECT_TRUE(average_time<=1e-6);
+}
