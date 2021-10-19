@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(inverse_dynamics)
+project(leg_controller)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -41,25 +41,26 @@ include_directories(
 )
 
 ## Declare a C++ library for control
-add_library(inverse_dynamics
+add_library(leg_controller
+	src/leg_controller.cpp
 	src/inverse_dynamics.cpp
   src/leg_overrider.cpp
 )
-add_dependencies(inverse_dynamics ${inverse_dynamics_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(leg_controller ${leg_controller_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(inverse_dynamics_node src/inverse_dynamics_node.cpp)
+add_executable(leg_controller_node src/leg_controller_node.cpp)
 add_executable(leg_overrider_node src/leg_overrider_node.cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(inverse_dynamics_node
-  inverse_dynamics
+target_link_libraries(leg_controller_node
+  leg_controller
 	${catkin_LIBRARIES}
 )
 target_link_libraries(leg_overrider_node
-  inverse_dynamics
+  leg_controller
   ${catkin_LIBRARIES}
 )
 
@@ -67,8 +68,9 @@ target_link_libraries(leg_overrider_node
 ## Testing ##
 #############
 
-## Google test file for inverse_dynamics library
-catkin_add_gtest(inverse_dynamics_test test/test_inverse_dynamics.cpp)
-target_link_libraries(inverse_dynamics_test inverse_dynamics ${catkin_LIBRARIES})
+## Google test file for leg_controller library
+catkin_add_gtest(leg_controller_test
+  test/test_inverse_dynamics.cpp)
+target_link_libraries(leg_controller_test leg_controller ${catkin_LIBRARIES})
 
 

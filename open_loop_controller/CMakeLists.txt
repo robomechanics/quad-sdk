@@ -40,6 +40,7 @@ include_directories(
 ## Declare a C++ library for control
 add_library(open_loop_controller
 	src/open_loop_controller.cpp
+	src/silly_walk_template.cpp
 )
 add_dependencies(open_loop_controller ${open_loop_controller} ${catkin_EXPORTED_TARGETS})
 
@@ -47,9 +48,15 @@ add_dependencies(open_loop_controller ${open_loop_controller} ${catkin_EXPORTED_
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(open_loop_controller_node src/open_loop_controller_node.cpp)
+add_executable(silly_walk_template_node src/silly_walk_template_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(open_loop_controller_node
+  open_loop_controller
+	${catkin_LIBRARIES}
+)
+
+target_link_libraries(silly_walk_template_node
   open_loop_controller
 	${catkin_LIBRARIES}
 )
@@ -60,6 +67,6 @@ target_link_libraries(open_loop_controller_node
 
 ## Google test file for clark_trot_controller library
 catkin_add_gtest(open_loop_controller_test test/test_open_loop_controller.cpp)
-target_link_libraries(open_loop_controller_test ${catkin_LIBRARIES} open_loop_controller)
+target_link_libraries(open_loop_controller_test open_loop_controller ${catkin_LIBRARIES})
 
 

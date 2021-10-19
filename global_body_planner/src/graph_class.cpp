@@ -141,7 +141,7 @@ double GraphClass::getGValue(int idx)
 double GraphClass::computeEdgeCost(int idx1, int idx2) {
     double cost = poseDistance(getVertex(idx1), getVertex(idx2));
     // Action a = getAction(idx2);
-    // double cost = a[6] + a[7];
+    // double cost = a[7] + a[8];
 
     return cost;
 }

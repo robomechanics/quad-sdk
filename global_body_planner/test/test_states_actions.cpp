@@ -7,7 +7,7 @@
 
 TEST(GlobalBodyPlannerTest, testActions) {
 
-  int N = 1000000;
+  int N = 10000;
   std::vector<planning_utils::State> eig_vec;
   std::vector<planning_utils::WalkAction> action_vec;
   std::chrono::time_point<std::chrono::steady_clock> t_start = std::chrono::steady_clock::now();
