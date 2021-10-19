@@ -585,13 +585,25 @@ void QuadKD::compInvDyn(const Eigen::VectorXd &state_pos,
   }
 }
 
-void QuadKD::convertCentroidalToFullBody(const Eigen::VectorXd &body_positions,
-  const Eigen::VectorXd &body_velocities, const Eigen::VectorXd &foot_positions,
-  const Eigen::VectorXd &foot_velocities, const Eigen::VectorXd &grfs, 
+void QuadKD::convertCentroidalToFullBody(const Eigen::VectorXd &body_state,
+  const Eigen::VectorXd &foot_positions, const Eigen::VectorXd &foot_velocities,
+  const Eigen::VectorXd &grfs, const std::vector<bool> contact_mode,
   Eigen::VectorXd &joint_positions, Eigen::VectorXd &joint_velocities,
   Eigen::VectorXd &torques) {
 
-  
+  // Extract kinematic quantities
+  Eigen::Vector3d body_pos = body_state.segment<3>(0);
+  Eigen::Vector3d body_rpy = body_state.segment<3>(3);
+
+  // Perform IK for each leg
+  for (int i = 0; i < num_feet_; i++) {
+    Eigen::Vector3d leg_joint_state;
+    Eigen::Vector3d foot_pos = foot_positions.segment<3>(3*i);
+    legIK(i,body_pos,body_rpy,foot_pos,leg_joint_state);
+    joint_positions.segment<3>(3*i) = leg_joint_state;
+  }
+
+  compInvDyn(state_pos, state_vel, foot_acc, grfs, contact_mode, tau);
 
 }
 

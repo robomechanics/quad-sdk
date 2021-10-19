@@ -46,7 +46,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   nh.param<bool>("local_planner/use_twist_input", use_twist_input_, false);
 
   // Convert kinematics
-quadKD_ = std::make_shared<spirit_utils::QuadKD>();
+  quadKD_ = std::make_shared<spirit_utils::QuadKD>();
 
   // Initialize nominal footstep positions projected down from the hips
   Eigen::Vector3d nominal_joint_state;
