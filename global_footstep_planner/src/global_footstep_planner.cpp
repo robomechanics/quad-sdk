@@ -125,7 +125,7 @@ void GlobalFootstepPlanner::updateDiscretePlan() {
     primitive_id_plan_.push_back(body_plan_msg_->primitive_ids[i]);
   }
 
-  spirit_utils::SpiritKinematics kinematics;
+  spirit_utils::QuadKD kinematics;
   
   // Clear out the old footstep plan
   footstep_plan_.clear();

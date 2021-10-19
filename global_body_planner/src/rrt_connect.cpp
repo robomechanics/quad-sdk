@@ -185,7 +185,8 @@ void RRTConnectClass::postProcessPath(std::vector<State> &state_sequence, std::v
       new_action_sequence.push_back(old_action);
 
       // Recompute path length
-      isValidStateActionPairReverse(old_state,old_action,result,planner_config);
+      flipDirection(old_state);
+      isValidStateActionPair(old_state,old_action,result,planner_config);
       path_length_ += result.length;
       s = old_state;
     }
@@ -285,7 +286,7 @@ bool RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
 
     // static int i = 0;
 
-    if (isValidState(s_rand, planner_config, STANCE))
+    if (isValidState(s_rand, planner_config, LEAP_STANCE))
     {
       if (extend(Ta, s_rand, planner_config, FORWARD, tree_pub) != TRAPPED)
       {
@@ -312,7 +313,7 @@ bool RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
 
     s_rand = Tb.randomState(planner_config);
 
-    if (isValidState(s_rand, planner_config, STANCE))
+    if (isValidState(s_rand, planner_config, LEAP_STANCE))
     {
       if (extend(Tb, s_rand, planner_config, REVERSE, tree_pub) != TRAPPED)
       {
@@ -353,7 +354,7 @@ bool RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
   path_duration_ = 0.0;
   for (Action a : action_sequence)
   {
-    path_duration_ += (a[6] + a[7]);
+    path_duration_ += (a[7] + a[8]);
   }
 
   return success;

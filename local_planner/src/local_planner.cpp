@@ -49,7 +49,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   nh_.param<double>("twist_body_planner/last_cmd_vel_msg_time_max",last_cmd_vel_msg_time_max_,1.0);
 
   // Convert kinematics
-  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
+quadKD_ = std::make_shared<spirit_utils::QuadKD>();
 
   // Initialize nominal footstep positions projected down from the hips
   Eigen::Vector3d nominal_joint_state;
@@ -59,7 +59,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   for (int i = 0; i < N_; ++i) {
     for (int j = 0; j < num_feet_; ++j) {
       Eigen::Vector3d toe_body_pos;
-      kinematics_->bodyToFootFK(j, nominal_joint_state, toe_body_pos);
+    quadKD_->bodyToFootFK(j, nominal_joint_state, toe_body_pos);
       hip_projected_foot_positions_.block<1,3>(i,j*3) = toe_body_pos;
     }
   }
@@ -178,7 +178,7 @@ void LocalPlanner::initLocalFootstepPlanner() {
   local_footstep_planner_ = std::make_shared<LocalFootstepPlanner>();
   local_footstep_planner_->setTemporalParams(dt_, period, N_);
   local_footstep_planner_->setSpatialParams(ground_clearance, standing_error_threshold,
-    grf_weight, kinematics_);
+    grf_weight,quadKD_);
 
   past_footholds_msg_.feet.resize(num_feet_);
 }
@@ -471,7 +471,7 @@ void LocalPlanner::publishLocalPlan() {
     spirit_msgs::RobotState robot_state_msg;
     robot_state_msg.body = spirit_utils::eigenToBodyStateMsg(body_plan_.row(i));
     robot_state_msg.feet = foot_plan_msg.states[i];
-    spirit_utils::ikRobotState(*kinematics_, robot_state_msg);
+    spirit_utils::ikRobotState(*quadKD_, robot_state_msg);
 
     // Add the GRF information
     spirit_msgs::GRFArray grf_array_msg;

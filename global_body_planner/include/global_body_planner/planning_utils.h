@@ -62,9 +62,10 @@ struct PlannerConfig {
 };
 
 // Define phase variable labels
-const int FLIGHT = 0;
-const int STANCE = 1;
-const int CONNECT_STANCE = 2;
+const int CONNECT = 0;
+const int LEAP_STANCE = 1;
+const int FLIGHT = 2;
+const int LAND_STANCE = 3;
 const int FORWARD = 0;
 const int REVERSE = 1;
 
@@ -72,7 +73,7 @@ const int REVERSE = 1;
 const int POSEDIM = 3;
 const int STATEDIM = 6;
 const int FULLSTATEDIM = 12;
-const int ACTIONDIM = 8;
+const int ACTIONDIM = 10;
 typedef std::array<double, STATEDIM> State;
 typedef std::array<double, ACTIONDIM> Action;
 typedef std::vector<double> FullState;
@@ -145,13 +146,13 @@ void getInterpPlan(FullState start_state, std::vector<State> state_sequence,
   std::vector<double> &interp_length, const PlannerConfig &planner_config);
 
 // Define planning helper functions
-State applyStance(State s, Action a, double t, const PlannerConfig &planner_config);
-State applyStance(State s, Action a, const PlannerConfig &planner_config);
+State applyStance(State s, Action a, double t, int phase, const PlannerConfig &planner_config);
+State applyStance(State s, Action a, int phase, const PlannerConfig &planner_config);
 State applyFlight(State s, double t_f);
 State applyAction(State s, Action a, const PlannerConfig &planner_config);
-State applyActionReverse(State s, Action a, const PlannerConfig &planner_config);
-State applyStanceReverse(State s, Action a, double t, const PlannerConfig &planner_config);
-State applyStanceReverse(State s, Action a, const PlannerConfig &planner_config);
+// State applyActionReverse(State s, Action a, const PlannerConfig &planner_config);
+// State applyStanceReverse(State s, Action a, double t, const PlannerConfig &planner_config);
+// State applyStanceReverse(State s, Action a, const PlannerConfig &planner_config);
 Action getRandomAction(std::array<double, 3> surf_norm, const PlannerConfig &planner_config);
 Action getRandomLeapAction(const State &s, std::array<double, 3> surf_norm,
   const PlannerConfig &planner_config);
@@ -162,8 +163,8 @@ bool isValidState(State s, const PlannerConfig &planner_config, int phase);
 bool isValidStateActionPair(State s, Action a, StateActionResult &result, 
   const PlannerConfig &planner_config);
 // bool isValidStateActionPairReverse(State s, Action a, const PlannerConfig &planner_config, State &s_new, double& t_new);
-bool isValidStateActionPairReverse(State s, Action a, StateActionResult &result, 
-  const PlannerConfig &planner_config);
+// bool isValidStateActionPairReverse(State s, Action a, StateActionResult &result, 
+//   const PlannerConfig &planner_config);
 
 // Define visualization functions
 void publishStateActionPair(const State &s, const Action &a, const State &s_goal,

@@ -212,12 +212,12 @@ bool GlobalBodyPlanner::callPlanner() {
   State goal_state = fullStateToState(goal_state_);
   
   // Make sure terminal states are valid
-  if (!isValidState(start_state, planner_config_, STANCE)) {
+  if (!isValidState(start_state, planner_config_, LEAP_STANCE)) {
     ROS_WARN_THROTTLE(2, "Invalid start state, exiting global planner");
     return false;
   }
   goal_state[2] += planner_config_.terrain.getGroundHeight(goal_state_[0], goal_state_[1]);
-  if (!isValidState(goal_state, planner_config_, STANCE)) {
+  if (!isValidState(goal_state, planner_config_, LEAP_STANCE)) {
     ROS_WARN_THROTTLE(2, "Invalid goal state, exiting global planner");
     return false;
   }

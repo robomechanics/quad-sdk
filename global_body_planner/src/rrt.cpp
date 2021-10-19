@@ -10,6 +10,7 @@ using namespace planning_utils;
 bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 	const PlannerConfig &planner_config, int direction, ros::Publisher &tree_pub)
 {
+  std::cout << "Entering new config" << std::endl;	
 	double best_so_far = stateDistance(s_near, s);
 	std::array<double, 3> surf_norm = planner_config.terrain.getSurfaceNormal(s[0], s[1]);
 
@@ -30,22 +31,26 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 		Action a_test = getRandomLeapAction(s_near,surf_norm,planner_config);
 		for (int j = 0; j < planner_config.NUM_GEN_STATES; ++j)
 		{
+    
 			bool is_valid;
-			if (direction == FORWARD)
-			{
-				is_valid = isValidStateActionPair(s_near, a_test, current_result, planner_config);
-			} else if (direction == REVERSE)
-			{
-				is_valid = isValidStateActionPair(s_near, a_test, current_result, planner_config);
-			}
+      is_valid = isValidStateActionPair(s_near, a_test, current_result, planner_config);
+			// if (direction == FORWARD)
+			// {
+			// 	is_valid = isValidStateActionPair(s_near, a_test, current_result, planner_config);
+			// } else if (direction == REVERSE)
+			// {
+			// 	is_valid = isValidStateActionPair(s_near, a_test, current_result, planner_config);
+			// }
 
       #ifdef VISUALIZE_ALL_CANDIDATE_ACTIONS
         if (direction == FORWARD) {
+          std::cout << "visualizing new action: ";
+          printActionNewline(current_result.a_new);
           publishStateActionPair(s_near,current_result.a_new, s,planner_config, tree_viz_msg_, tree_pub);
         } else if (direction == REVERSE) {
-          State s_reverse = applyActionReverse(s_near,a_test,planner_config);
-          publishStateActionPair(s_reverse, a_test, s,planner_config, tree_viz_msg_,
-            tree_pub);
+        //   State s_reverse = applyActionReverse(s_near,a_test,planner_config);
+        //   publishStateActionPair(s_reverse, a_test, s,planner_config, tree_viz_msg_,
+        //     tree_pub);
         }
       #endif
 
@@ -59,7 +64,7 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 				// a_test = getRandomAction(surf_norm,planner_config);
 				a_test = getRandomLeapAction(s_near,surf_norm,planner_config);
 			}
-		}			
+		}	
 
 		if (valid_state_found == true)
 		{
@@ -75,7 +80,7 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 		}
 	}
 
-  std::cout << "Reverse = " << direction << ", valid action found = " << any_valid_actions << std::endl;
+  std::cout << "Reverse = " << direction << ", valid action found = " << (any_valid_actions ? 1 : 0) << std::endl;
 
   // // Try connecting directly
   // StateActionResult current_result;
@@ -111,6 +116,11 @@ int RRTClass::attemptConnect(State s_existing, State s, double t_s, StateActionR
   // Enforce stance time greater than the kinematic check resolution to ensure that the action is useful
   if (t_s <= planner_config.KINEMATICS_RES)
     return TRAPPED;
+
+	if (direction == REVERSE) {
+		flipDirection(s_existing);
+	}
+	direction = FORWARD;
 
   // Initialize the start and goal states depending on the direction, as well as the stance and flight times
   State s_start = (direction == FORWARD) ? s_existing : s;
@@ -160,8 +170,7 @@ int RRTClass::attemptConnect(State s_existing, State s, double t_s, StateActionR
   if (isValidAction(result.a_new,planner_config) == true)
   {
     // Check if the resulting state action pair is kinematically valid
-    bool isValid = (direction == FORWARD) ? (isValidStateActionPair(s_start, result.a_new, result, 
-      planner_config)) : (isValidStateActionPairReverse(s_goal,result.a_new, result, planner_config));
+    bool isValid = isValidStateActionPair(s_start, result.a_new, result,planner_config);
 
     // If valid, great, return REACHED, otherwise try again to the valid state returned by isValidStateActionPair
     if (isValid == true)
@@ -198,6 +207,7 @@ int RRTClass::extend(PlannerClass &T, State s, const PlannerConfig &planner_conf
 		T.addVertex(s_new_index, result.s_new);
 		T.addEdge(s_near_index, s_new_index, result.length);
 		T.addAction(s_new_index, result.a_new);
+
 		// T.updateGValue(s_new_index, T.getGValue(s_near_index) + result.length);
 
 		// if (s_new == s)

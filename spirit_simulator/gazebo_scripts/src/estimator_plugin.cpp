@@ -123,7 +123,7 @@ namespace gazebo{
     int num_feet = 4;
     state.feet.feet.resize(num_feet);
 
-    spirit_utils::SpiritKinematics kinematics;
+    spirit_utils::QuadKD kinematics;
     spirit_utils::fkRobotState(kinematics,state);
 
     for (int i = 0; i<num_feet; i++) {

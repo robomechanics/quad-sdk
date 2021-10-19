@@ -113,7 +113,7 @@ void TrajectoryPublisher::updateTrajectory() {
   traj_msg_.header.frame_id = map_frame_;
   traj_msg_.header.stamp = body_plan_msg_.header.stamp;
 
-  spirit_utils::SpiritKinematics kinematics;
+  spirit_utils::QuadKD kinematics;
   
 
   // Add states to the traj message

@@ -27,7 +27,7 @@ GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
   ground_truth_state_pub_ = nh_.advertise<spirit_msgs::RobotState>(ground_truth_state_topic,1);
 
   // Convert kinematics
-  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
+quadKD_ = std::make_shared<spirit_utils::QuadKD>();
 
   joints_order_ = {8, 0, 1, 9, 2, 3, 10, 4, 5, 11, 6, 7};
 }
@@ -103,7 +103,7 @@ bool GroundTruthPublisher::updateStep(spirit_msgs::RobotState &new_state_est) {
 
     if (last_vel_msg_ != NULL)
     {
-      spirit_utils::fkRobotState(*kinematics_, new_state_est.body,new_state_est.joints, new_state_est.feet);
+      spirit_utils::fkRobotState(*quadKD_, new_state_est.body,new_state_est.joints, new_state_est.feet);
     }
   } else {
     fully_populated = false;
