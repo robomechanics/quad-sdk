@@ -172,7 +172,7 @@ void MPCController::extractMPCTrajectory(int start_idx,
         joint_pos(joint_idx) = joint_states.at(leg_idx*num_joints_per_leg_+joint_idx);
       }
 
-    quadKD_->bodyToFootFK(leg_idx, joint_pos, foot_pos_body);
+    quadKD_->bodyToFootFKBodyFrame(leg_idx, joint_pos, foot_pos_body);
       
       // This should be replaced with a block operation but for now it'll do
       foot_positions(i,leg_idx*num_joints_per_leg_+0) = foot_pos_body(0);
