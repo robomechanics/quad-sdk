@@ -119,7 +119,7 @@ void QuadKD::transformWorldToBody(Eigen::Vector3d body_pos,
   transform_body = g_world_body.inverse() * transform_world;
 }
 
-void QuadKD::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
+void QuadKD::worldToLegbaseFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
                                  Eigen::Vector3d body_rpy, Eigen::Matrix4d &g_world_legbase) const
 {
 
@@ -130,18 +130,18 @@ void QuadKD::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
   g_world_legbase = g_world_body * g_body_legbases_[leg_index];
 }
 
-void QuadKD::legBaseFK(int leg_index, Eigen::Vector3d body_pos,
+void QuadKD::worldToLegbaseFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
                                  Eigen::Vector3d body_rpy, Eigen::Vector3d &leg_base_pos_world) const
 {
 
   Eigen::Matrix4d g_world_legbase;
-  legBaseFK(leg_index, body_pos, body_rpy, g_world_legbase);
+  worldToLegbaseFKWorldFrame(leg_index, body_pos, body_rpy, g_world_legbase);
 
   leg_base_pos_world = g_world_legbase.block<3, 1>(0, 3);
 }
 
-void QuadKD::nominalHipFK(int leg_index, Eigen::Vector3d body_pos,
-                                    Eigen::Vector3d body_rpy, Eigen::Vector3d &nominal_footstep_pos_world) const
+void QuadKD::worldToNominalHipFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
+                                    Eigen::Vector3d body_rpy, Eigen::Vector3d &nominal_hip_pos_world) const
 {
 
   // Compute transforms
@@ -152,12 +152,12 @@ void QuadKD::nominalHipFK(int leg_index, Eigen::Vector3d body_pos,
   g_body_nominal_hip(1, 3) += l0_vec_[leg_index];
 
   // Compute transform for offset leg base relative to the world frame
-  Eigen::Matrix4d g_world_nominal_footstep = g_world_body * g_body_nominal_hip;
+  Eigen::Matrix4d g_world_nominal_hip = g_world_body * g_body_nominal_hip;
 
-  nominal_footstep_pos_world = g_world_nominal_footstep.block<3, 1>(0, 3);
+  nominal_hip_pos_world = g_world_nominal_hip.block<3, 1>(0, 3);
 }
 
-void QuadKD::bodyToFootFK(int leg_index,
+void QuadKD::bodyToFootFKBodyFrame(int leg_index,
                                     Eigen::Vector3d joint_state, Eigen::Matrix4d &g_body_foot) const
 {
 
@@ -192,18 +192,18 @@ void QuadKD::bodyToFootFK(int leg_index,
                 g_abad_hip * g_hip_knee * g_knee_foot;
 }
 
-void QuadKD::bodyToFootFK(int leg_index,
+void QuadKD::bodyToFootFKBodyFrame(int leg_index,
                                     Eigen::Vector3d joint_state, Eigen::Vector3d &foot_pos_body) const
 {
 
   Eigen::Matrix4d g_body_foot;
-  QuadKD::bodyToFootFK(leg_index, joint_state, g_body_foot);
+  QuadKD::bodyToFootFKBodyFrame(leg_index, joint_state, g_body_foot);
 
   // Extract cartesian position of foot
   foot_pos_body = g_body_foot.block<3, 1>(0, 3);
 }
 
-void QuadKD::legFK(int leg_index, Eigen::Vector3d body_pos,
+void QuadKD::worldToFootFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
                              Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state,
                              Eigen::Matrix4d &g_world_foot) const
 {
@@ -225,7 +225,7 @@ void QuadKD::legFK(int leg_index, Eigen::Vector3d body_pos,
 
   // Compute transforms
   Eigen::Matrix4d g_world_legbase;
-  legBaseFK(leg_index, body_pos, body_rpy, g_world_legbase);
+  worldToLegbaseFKWorldFrame(leg_index, body_pos, body_rpy, g_world_legbase);
 
   g_legbase_abad = createAffineMatrix(abad_offset_,
                                       Eigen::AngleAxisd(joint_state[0], Eigen::Vector3d::UnitX()));
@@ -244,13 +244,13 @@ void QuadKD::legFK(int leg_index, Eigen::Vector3d body_pos,
                  g_abad_hip * g_hip_knee * g_knee_foot;
 }
 
-void QuadKD::legFK(int leg_index, Eigen::Vector3d body_pos,
+void QuadKD::worldToFootFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
                              Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state,
                              Eigen::Vector3d &foot_pos_world) const
 {
 
   Eigen::Matrix4d g_world_foot;
-  legFK(leg_index, body_pos, body_rpy, joint_state, g_world_foot);
+  worldToFootFKWorldFrame(leg_index, body_pos, body_rpy, joint_state, g_world_foot);
 
   // Extract cartesian position of foot
   foot_pos_world = g_world_foot.block<3, 1>(0, 3);
@@ -272,7 +272,7 @@ void QuadKD::legFK(int leg_index, Eigen::Vector3d body_pos,
 }
 
 
-void QuadKD::legIK(int leg_index, Eigen::Vector3d body_pos,
+void QuadKD::worldToFootIKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
                              Eigen::Vector3d body_rpy, Eigen::Vector3d foot_pos_world,
                              Eigen::Vector3d &joint_state) const
 {
@@ -293,7 +293,7 @@ void QuadKD::legIK(int leg_index, Eigen::Vector3d body_pos,
   Eigen::Vector3d foot_pos_legbase;
 
   // Compute transforms
-  legBaseFK(leg_index, body_pos, body_rpy, g_world_legbase);
+  worldToLegbaseFKWorldFrame(leg_index, body_pos, body_rpy, g_world_legbase);
 
   g_world_foot = createAffineMatrix(foot_pos_world, Eigen::AngleAxisd(
                                                         0, Eigen::Vector3d::UnitY()));
@@ -302,10 +302,10 @@ void QuadKD::legIK(int leg_index, Eigen::Vector3d body_pos,
   g_legbase_foot = g_world_legbase.inverse() * g_world_foot;
   foot_pos_legbase = g_legbase_foot.block<3, 1>(0, 3);
 
-  legIKLegBaseFrame(leg_index, foot_pos_legbase, joint_state);
+  legbaseToFootIKLegbaseFrame(leg_index, foot_pos_legbase, joint_state);
 }
 
-void QuadKD::legIKLegBaseFrame(int leg_index, Eigen::Vector3d foot_pos_legbase,
+void QuadKD::legbaseToFootIKLegbaseFrame(int leg_index, Eigen::Vector3d foot_pos_legbase,
                              Eigen::Vector3d &joint_state) const
 {
 
@@ -495,7 +495,7 @@ void QuadKD::getRotationMatrix(const Eigen::VectorXd &rpy, Eigen::Matrix3d &rot)
         Eigen::AngleAxisd(rpy(0), Eigen::Vector3d::UnitX());
 }
 
-void QuadKD::compInvDyn(const Eigen::VectorXd &state_pos,
+void QuadKD::computeInverseDynamics(const Eigen::VectorXd &state_pos,
                                   const Eigen::VectorXd &state_vel,
                                   const Eigen::VectorXd &foot_acc,
                                   const Eigen::VectorXd &grf,
