@@ -396,7 +396,7 @@ TEST(KinematicsTest, testMotorModel) {
   Eigen::VectorXd invalid_input(12);
   Eigen::VectorXd constrained_input(12);
 
-  state << 0,0,0,10,10,10,0,0,0,10,10,10;
+  state_vel << 0,0,0,10,10,10,0,0,0,10,10,10;
   valid_input << 10,10,10,10,10,10,-10,-10,-10,-10,-10,-10;
   invalid_input << 40,10,10,10,10,10,-10,-10,-10,-10,-10,-10;
 
@@ -416,7 +416,7 @@ TEST(KinematicsTest, testMotorModel) {
   auto t_end = std::chrono::steady_clock::now();
 
   std::chrono::duration<double> t_diff = std::chrono::duration_cast<std::chrono::duration<double>>(t_end - t_start);
-  double average_time = t_diff.count()/N;
+  double average_time = t_diff.count()/count;
 
   std::cout << "Average motor model computation time = " << average_time << " s" << std::endl;
 
