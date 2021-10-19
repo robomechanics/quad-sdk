@@ -88,7 +88,8 @@ NMPCController::NMPCController(int type)
   app_->Options()->SetStringValue("mehrotra_algorithm", "yes");
   app_->Options()->SetStringValue("bound_mult_init_method", "mu-based");
   app_->Options()->SetStringValue("fast_step_computation", "yes");
-  // app_->Options()->SetStringValue("expect_infeasible_problem", "yes");
+  app_->Options()->SetStringValue("expect_infeasible_problem", "yes");
+  // app_->Options()->SetStringValue("start_with_resto", "yes");
   // app_->Options()->SetStringValue("adaptive_mu_globalization", "never-monotone-mode");
   // app_->Options()->SetStringValue("accept_every_trial_step", "yes");
   app_->Options()->SetStringValue("nlp_scaling_method", "none");
@@ -96,7 +97,7 @@ NMPCController::NMPCController(int type)
   app_->Options()->SetStringValue("warm_start_init_point", "yes");
 
   app_->Options()->SetNumericValue("tol", 1e-3);
-  // app_->Options()->SetNumericValue("bound_relax_factor", 1e-3);
+  app_->Options()->SetNumericValue("bound_relax_factor", 1e-3);
   app_->Options()->SetNumericValue("max_wall_time", 3.6 * dt_);
   app_->Options()->SetNumericValue("max_cpu_time", 3.6 * dt_);
 
@@ -145,8 +146,8 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
       foot_positions,
       contact_schedule);
 
-  std::cout << "contact_sequence_" << std::endl;
-  std::cout << mynlp_->contact_sequence_.transpose() << std::endl;
+  // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+  // std::cout << "leg contact_sequence_: " << mynlp_->contact_sequence_.transpose().format(CleanFmt) << std::endl;
 
   return this->computePlan(initial_state,
                            ref_traj,
@@ -254,6 +255,9 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
       control_traj);
 
   // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+  // std::cout << "tail contact_sequence_: " << mynlp_->contact_sequence_.transpose().format(CleanFmt) << std::endl;
+
+  // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
   // std::cout << "mynlp_->x_current_.transpose().format(CleanFmt)" << std::endl;
   // std::cout << mynlp_->x_current_.transpose().format(CleanFmt) << std::endl;
   // std::cout << "mynlp_->x_reference_.transpose().format(CleanFmt)" << std::endl;
@@ -322,6 +326,14 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     x.block(0, i, n_, 1) = mynlp_->w0_.block(i * (n_ + m_) + m_, 0, n_, 1);
   }
 
+  // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+  // Eigen::Map<Eigen::MatrixXd> w0_print(mynlp_->w0_.data(), n_ + m_, N_);
+  // std::cout << w0_print.transpose().format(CleanFmt) << std::endl;
+
+  // if (status == Solve_Succeeded ||
+  //     status == Solved_To_Acceptable_Level ||
+  //     status == Infeasible_Problem_Detected ||
+  //     status == Search_Direction_Becomes_Too_Small)
   if (status == Solve_Succeeded)
   {
     state_traj = Eigen::MatrixXd::Zero(N_ + 1, n_);

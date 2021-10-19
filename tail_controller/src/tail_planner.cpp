@@ -149,7 +149,7 @@ void TailPlanner::computeTailPlan()
 
   // Define reference tail plan
   ref_tail_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 4);
-  ref_tail_plan_.col(0) = Eigen::MatrixXd::Constant(N_ + 1, 1, 0.5);
+  ref_tail_plan_.col(0) = Eigen::MatrixXd::Constant(N_ + 1, 1, 0.76);
   ref_tail_plan_.row(0) = tail_current_state_.transpose();
 
   double t_now = ros::Time::now().toSec();
@@ -192,7 +192,7 @@ void TailPlanner::computeTailPlan()
     //   ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
     // }
     std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
-    cmd_vel_.at(1) = 0.76;
+    cmd_vel_.at(1) = 0.75;
 
     // Adaptive body height, use the lowest foot and exponential filter
     std::vector<double> foot_height;
@@ -259,9 +259,9 @@ void TailPlanner::computeTailPlan()
   {
     int idx = current_plan_index_ - last_local_plan_msg_->plan_indices[0] + i;
 
-    if (idx > N_ - 1)
+    if (idx > last_local_plan_msg_->plan_indices.size() - 1)
     {
-      idx = N_ - 1;
+      idx = last_local_plan_msg_->plan_indices.size() - 1;
     }
 
     body_plan_.row(i) = spirit_utils::bodyStateMsgToEigen(last_local_plan_msg_->states[idx].body).transpose();

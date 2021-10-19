@@ -767,19 +767,16 @@ void spiritNLP::finalize_solution(
     const IpoptData *ip_data,
     IpoptCalculatedQuantities *ip_cq)
 {
-   if (status == SUCCESS)
-   {
-      Eigen::Map<const Eigen::MatrixXd> w(x, n, 1);
-      w0_ = w;
+   Eigen::Map<const Eigen::MatrixXd> w(x, n, 1);
+   w0_ = w;
 
-      Eigen::Map<const Eigen::MatrixXd> z_L_matrix(z_L, n, 1);
-      Eigen::Map<const Eigen::MatrixXd> z_U_matrix(z_L, n, 1);
-      z_L0_ = z_L_matrix;
-      z_U0_ = z_U_matrix;
+   Eigen::Map<const Eigen::MatrixXd> z_L_matrix(z_L, n, 1);
+   Eigen::Map<const Eigen::MatrixXd> z_U_matrix(z_L, n, 1);
+   z_L0_ = z_L_matrix;
+   z_U0_ = z_U_matrix;
 
-      Eigen::Map<const Eigen::MatrixXd> lambda_matrix(lambda, m, 1);
-      lambda0_ = lambda_matrix;
-   }
+   Eigen::Map<const Eigen::MatrixXd> lambda_matrix(lambda, m, 1);
+   lambda0_ = lambda_matrix;
 }
 
 void spiritNLP::shift_initial_guess()
