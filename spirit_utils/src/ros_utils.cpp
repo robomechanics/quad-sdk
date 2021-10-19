@@ -341,7 +341,7 @@ namespace spirit_utils {
 
       // Compute IK to get joint data
       Eigen::Vector3d leg_joint_state;
-      kinematics.legIK(i,body_pos,body_rpy,foot_pos,leg_joint_state);
+      kinematics.worldToFootIKWorldFrame(i,body_pos,body_rpy,foot_pos,leg_joint_state);
 
       // Add to the joint state vector
       joint_state.position.push_back(leg_joint_state[0]);
@@ -428,7 +428,7 @@ namespace spirit_utils {
 
       // Compute IK to get joint data
       Eigen::Vector3d foot_pos;
-      kinematics.legFK(i,body_pos,body_rpy,leg_joint_state,foot_pos);
+      kinematics.worldToFootFKWorldFrame(i,body_pos,body_rpy,leg_joint_state,foot_pos);
 
       // Add to the foot position vector
       multi_foot_state.feet[i].position.x = foot_pos[0];

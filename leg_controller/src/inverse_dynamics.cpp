@@ -84,7 +84,7 @@ void InverseDynamicsController::computeLegCommandArrayFromPlan(
   }
   
   // Compute joint torques
-  quadKD_->compInvDyn(state_positions, state_velocities, ref_foot_acceleration,grf_array,
+  quadKD_->computeInverseDynamics(state_positions, state_velocities, ref_foot_acceleration,grf_array,
     contact_mode, tau_array);
 
   for (int i = 0; i < num_feet_; ++i) {
