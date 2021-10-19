@@ -56,7 +56,7 @@ quadKD_ = std::make_shared<spirit_utils::QuadKD>();
   for (int i = 0; i < N_; ++i) {
     for (int j = 0; j < num_feet_; ++j) {
       Eigen::Vector3d toe_body_pos;
-    quadKD_->bodyToFootFK(j, nominal_joint_state, toe_body_pos);
+    quadKD_->bodyToFootFKBodyFrame(j, nominal_joint_state, toe_body_pos);
       hip_projected_foot_positions_.block<1,3>(i,j*3) = toe_body_pos;
     }
   }

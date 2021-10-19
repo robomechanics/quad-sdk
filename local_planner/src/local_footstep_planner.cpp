@@ -180,7 +180,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         grf_midstance = grf_plan.block<1,3>(midstance,3*j);
 
         // Compute nominal foot positions for kinematic and grf-projection measures
-      quadKD_->nominalHipFK(j, body_pos_midstance, body_rpy_midstance, 
+      quadKD_->worldToNominalHipFKWorldFrame(j, body_pos_midstance, body_rpy_midstance, 
           hip_position_midstance);
         // double hip_height = hip_position_midstance.z() - 
         //   terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());

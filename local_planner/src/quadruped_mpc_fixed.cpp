@@ -97,7 +97,7 @@ void QuadrupedMPC::update_dynamics_hip_projected_feet(const StateTraj &ref_traj)
   for (int i = 0; i < N_; ++i) {
     for (int j = 0; j < 4; ++j) {
     Eigen::Vector3d toe_body_pos;
-    this->quadKD_->bodyToFootFK(j, nominal_joint_state, toe_body_pos);
+    this->quadKD_->bodyToFootFKBodyFrame(j, nominal_joint_state, toe_body_pos);
     foot_positions.block<1,3>(i,j*3) = toe_body_pos;
     }
   }
