@@ -351,7 +351,7 @@ void LocalPlanner::getStateAndTwistInput() {
 
   // Update the body plan to use for linearization
   if (body_plan_.rows() < N_+1) {
-    // Cold start with reference  plan
+    // Cold start with reference plan
     body_plan_ = ref_body_plan_;
 
     // Initialize with the current foot positions
@@ -374,6 +374,28 @@ void LocalPlanner::getStateAndTwistInput() {
   body_plan_.row(0) = current_state_;
   foot_positions_body_.row(0) = current_foot_positions_body_;
   foot_positions_world_.row(0) = current_foot_positions_world_;
+}
+
+std::vector<int> LocalPlanner::getInvalidRegions() {
+
+  std::vector<int> invalid_indices;
+
+  std::cout << "body_plan_;" << body_plan_ << std::endl;
+  std::cout << "foot_positions_world_;" << foot_positions_world_ << std::endl;
+  std::cout << "grf_plan_;" << grf_plan_ << std::endl;
+
+  for (int i = 0; i < grf_plan_.size(); i++) {
+    bool is_state_valid = quadKD_->isValidCentroidalState(body_plan_.col(i),foot_positions_world_.col(i),
+      foot_positions_world_.col(i)*0, grf_plan_.col(i),terrain_grid_);
+    if (!is_state_valid) { 
+      invalid_indices.push_back(i);
+    }
+  }
+  for (int i = 0; i < invalid_indices.size(); i++) {
+    std::cout << invalid_indices[i] << " " << std::endl;
+  }
+  throw std::runtime_error("Stop");
+  return invalid_indices;
 }
 
 bool LocalPlanner::computeLocalPlan() {
@@ -403,7 +425,10 @@ bool LocalPlanner::computeLocalPlan() {
   if (use_nmpc_) {
     if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_,
       foot_positions_body_, contact_schedule_, body_plan_, grf_plan_))
-      return false;
+      {
+        std::vector<int> invalid_indices = getInvalidRegions();
+        return false;
+      }
   } else {
     if (!local_body_planner_convex_->computePlan(current_state_, ref_body_plan_,
       foot_positions_body_, contact_schedule_, body_plan_, grf_plan_))

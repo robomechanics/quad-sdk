@@ -9,6 +9,7 @@
 #include <random>
 #include <math.h>
 #include <tf2/LinearMath/Quaternion.h>
+#include <grid_map_core/GridMap.hpp>
 #include <rbdl/rbdl.h>
 #include <rbdl/rbdl_utils.h>
 #include <rbdl/addons/urdfreader/urdfreader.h>
@@ -111,6 +112,28 @@ class QuadKD {
       Eigen::Vector3d joint_state, Eigen::Vector3d &foot_pos_world) const;
 
   /**
+   * @brief Compute forward kinematics for a specified leg
+   * @param[in] leg_index Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
+   * @param[in] body_pos Position of center of body frame
+   * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
+   * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
+   * @param[out] g_world_knee Transform of the specified knee in world frame
+   */
+  void worldToKneeFKWorldFrame(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
+      Eigen::Vector3d joint_state, Eigen::Matrix4d &g_world_knee) const;
+
+  /**
+   * @brief Compute forward kinematics for a specified leg
+   * @param[in] leg_index Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
+   * @param[in] body_pos Position of center of body frame
+   * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
+   * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
+   * @param[out] knee_pos_world Position of the specified knee in world frame
+   */
+  void worldToKneeFKWorldFrame(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
+      Eigen::Vector3d joint_state, Eigen::Vector3d &knee_pos_world) const;
+
+  /**
    * @brief Compute inverse kinematics for a specified leg
    * @param[in] leg_index Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
    * @param[in] body_pos Position of center of body frame
@@ -118,7 +141,7 @@ class QuadKD {
    * @param[in] foot_pos_world Position of the specified foot in world frame
    * @param[out] joint_state Joint states for the specified leg (abad, hip, knee)
    */
-  void worldToFootIKWorldFrame(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
+  bool worldToFootIKWorldFrame(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
       Eigen::Vector3d foot_pos_world, Eigen::Vector3d &joint_state) const;
 
   /**
@@ -127,7 +150,7 @@ class QuadKD {
    * @param[in] foot_pos_legbase Position of the specified foot in leg base frame
    * @param[out] joint_state Joint states for the specified leg (abad, hip, knee)
    */
-  void legbaseToFootIKLegbaseFrame(int leg_index, Eigen::Vector3d foot_pos_legbase,
+  bool legbaseToFootIKLegbaseFrame(int leg_index, Eigen::Vector3d foot_pos_legbase,
     Eigen::Vector3d &joint_state) const;
 
   /**
@@ -225,18 +248,19 @@ class QuadKD {
 
   /**
    * @brief Convert centroidal model states (foot coordinates and grfs) to full body (joints and torques)
-   * @param[in] state_pos Position states
-   * @param[in] state_vel Velocity states
-   * @param[in] foot_acc Foot absolute acceleration in world frame
-   * @param[in] grf Ground reaction force
-   * @param[in] contact_mode Contact mode of the legs
+   * @param[in] body_state Position states
+   * @param[in] foot_positions Foot positions in the world frame
+   * @param[in] foot_velocities Foot velocities in the world frame
+   * @param[in] grfs Ground reaction forces
+   * @param[out] joint_positions Joint positions
+   * @param[out] joint_velocities Joint velocities
    * @param[out] tau Joint torques
+   * @return boolean for exactness of kinematics
    */
-  void convertCentroidalToFullBody(const Eigen::VectorXd &body_positions,
-    const Eigen::VectorXd &body_velocities, const Eigen::VectorXd &foot_positions,
-    const Eigen::VectorXd &foot_velocities, const Eigen::VectorXd &grfs, 
-    Eigen::VectorXd &joint_positions, Eigen::VectorXd &joint_velocities,
-    Eigen::VectorXd &torques);
+  bool convertCentroidalToFullBody(const Eigen::VectorXd &body_state,
+    const Eigen::VectorXd &foot_positions, const Eigen::VectorXd &foot_velocities,
+    const Eigen::VectorXd &grfs, Eigen::VectorXd &joint_positions,
+    Eigen::VectorXd &joint_velocities, Eigen::VectorXd &torques);
 
   /**
    * @brief Apply a uniform maximum torque to a given set of joint torques
@@ -258,12 +282,32 @@ class QuadKD {
 
   /**
    * @brief Check if state is valid
-   * @param[in] state Robot state
+   * @param[in] body_state Robot body positions and velocities
+   * @param[in] joint_state Joint positions and velocities
+   * @param[in] torques Joint torques
+   * @param[in] terrain Map of the terrain for collision checking
    * @return Boolean for state validity
    */
-  bool isValidState(const Eigen::VectorXd &state);
+  bool isValidFullState(const Eigen::VectorXd &body_state, const Eigen::VectorXd &joint_state,
+    const Eigen::VectorXd &torques, const grid_map::GridMap &terrain);
+
+  /**
+   * @brief Check if state is valid
+   * @param[in] body_state Robot body positions and velocities
+   * @param[in] foot_positions Foot positions
+   * @param[in] foot_velocities Foot velocities
+   * @param[in] grfs Ground reaction forces in the world frame
+   * @param[in] terrain Map of the terrain for collision checking
+   * @return Boolean for state validity
+   */
+  bool isValidCentroidalState(const Eigen::VectorXd &body_state,
+    const Eigen::VectorXd &foot_positions, const Eigen::VectorXd &foot_velocities,
+    const Eigen::VectorXd &grfs, const grid_map::GridMap &terrain);
 
   private:
+
+    /// Number of feet
+    const int num_feet_ = 4;
 
     /// Vector of the abad link lengths 
     const std::vector<double> l0_vec_ = {0.1,0.1,-0.1,-0.1};
