@@ -441,6 +441,7 @@ TEST(KinematicsTest, testConvertCentroidalToFullBody) {
   Eigen::VectorXd joint_positions(12);
   Eigen::VectorXd joint_velocities(12);
   Eigen::VectorXd torques(12);
+  Eigen::VectorXd state_violation, control_violation;
 
   // Define terrain map
   grid_map::GridMap map({"z"});
@@ -515,7 +516,8 @@ TEST(KinematicsTest, testConvertCentroidalToFullBody) {
     EXPECT_TRUE(joint_velocities.isApprox(joint_velocities_expected));
 
     // Check validity
-    bool is_state_valid = quad_kd.isValidCentroidalState(body_state,foot_positions,foot_velocities,grfs,map);
+    bool is_state_valid = quad_kd.isValidCentroidalState(body_state,foot_positions,foot_velocities,
+      grfs,map, state_violation, control_violation);
     EXPECT_TRUE(is_state_valid);
 
     body_state[2] += 0.5;
@@ -524,7 +526,8 @@ TEST(KinematicsTest, testConvertCentroidalToFullBody) {
     EXPECT_FALSE(is_exact);
 
     // Check validity
-    is_state_valid = quad_kd.isValidCentroidalState(body_state,foot_positions,foot_velocities,grfs,map);
+    is_state_valid = quad_kd.isValidCentroidalState(body_state,foot_positions,foot_velocities,grfs,
+      map, state_violation, control_violation);
     EXPECT_FALSE(is_state_valid);
   }
 

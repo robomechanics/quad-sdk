@@ -703,6 +703,7 @@ bool QuadKD::applyMotorModel(const Eigen::VectorXd &torques, const Eigen::Vector
   Eigen::VectorXd &constrained_torques) {
   
   // Constrain torques to max values
+  Eigen::VectorXd constraint_violation(torques.size()); 
   constrained_torques.resize(torques.size());  
   constrained_torques = torques.cwiseMax(-tau_max_).cwiseMin(tau_max_);
 
@@ -710,36 +711,40 @@ bool QuadKD::applyMotorModel(const Eigen::VectorXd &torques, const Eigen::Vector
   Eigen::VectorXd emf = joint_velocities.cwiseProduct(mm_slope_);
   constrained_torques = constrained_torques.cwiseMax(-tau_max_ - emf).cwiseMin(tau_max_ - emf);
 
-  // Check if torques was modified
+  // Check if torques were modified
   return constrained_torques.isApprox(torques);
 }
 
 bool QuadKD::isValidFullState(const Eigen::VectorXd &body_state, const Eigen::VectorXd &joint_state,
-  const Eigen::VectorXd &torques, const grid_map::GridMap &terrain) {
-  
-  // Check motor model
-  Eigen::VectorXd constrained_torques(12);
-  bool torques_valid = applyMotorModel(torques, joint_state.tail(12), constrained_torques);
-  bool kinematics_valid = true;
+  const Eigen::VectorXd &torques, const grid_map::GridMap &terrain,
+  Eigen::VectorXd &state_violation, Eigen::VectorXd &control_violation) {
 
-  // Check kinematics
+  // Check state constraints
+  // Kinematics
+  state_violation.setZero(num_feet_);
   for (int i = 0; i < num_feet_; i++) {
     Eigen::Vector3d knee_pos_world;
     worldToKneeFKWorldFrame(i,body_state.segment<3>(0),body_state.segment<3>(3),
       joint_state.segment<3>(3*i),knee_pos_world);
-    grid_map::Position knee_pos = {knee_pos_world.x(), knee_pos_world.y()};
-    std::cout << "[x,y] = " << knee_pos << std::endl;
-    std::cout << "z = " << terrain.atPosition("z",knee_pos) << std::endl;
-    kinematics_valid = kinematics_valid && (knee_pos_world.z() >= terrain.atPosition("z",knee_pos));
+    state_violation[i] = getGroundClearance(knee_pos_world,terrain);
   }
+  bool state_valid = (state_violation.array() >= 0).all();
+
+  // Check control constraints
+  // Motor model
+  Eigen::VectorXd constrained_torques(12);
+  bool control_valid = applyMotorModel(torques, joint_state.tail(12), constrained_torques);
+  control_violation.setZero(torques.size());
+  control_violation = -(constrained_torques - torques).cwiseAbs();
 
   // Only valid if each subcheck is valid
-  return (torques_valid && kinematics_valid);
+  return (state_valid && control_valid);
 }
 
 bool QuadKD::isValidCentroidalState(const Eigen::VectorXd &body_state,
   const Eigen::VectorXd &foot_positions, const Eigen::VectorXd &foot_velocities,
-  const Eigen::VectorXd &grfs, const grid_map::GridMap &terrain) {
+  const Eigen::VectorXd &grfs, const grid_map::GridMap &terrain,
+  Eigen::VectorXd &state_violation, Eigen::VectorXd &control_violation) {
 
   Eigen::VectorXd joint_positions(12);
   Eigen::VectorXd joint_velocities(12);
@@ -751,7 +756,8 @@ bool QuadKD::isValidCentroidalState(const Eigen::VectorXd &body_state,
   
   Eigen::VectorXd joint_state(24);
   joint_state << joint_positions,joint_velocities;
-  bool is_valid = isValidFullState(body_state, joint_state, torques, terrain);
+  bool is_valid = isValidFullState(body_state, joint_state, torques, terrain, state_violation,
+    control_violation);
 
   return (is_exact && is_valid);
 }

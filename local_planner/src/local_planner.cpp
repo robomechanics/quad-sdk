@@ -379,16 +379,22 @@ void LocalPlanner::getStateAndTwistInput() {
 std::vector<int> LocalPlanner::getInvalidRegions() {
 
   std::vector<int> invalid_indices;
+  Eigen::VectorXd state_violations, control_violations;
 
-  std::cout << "body_plan_;" << body_plan_ << std::endl;
-  std::cout << "foot_positions_world_;" << foot_positions_world_ << std::endl;
-  std::cout << "grf_plan_;" << grf_plan_ << std::endl;
+  std::cout << "body_plan_ = " << body_plan_ << std::endl;
+  std::cout << "foot_positions_world_ = " << foot_positions_world_ << std::endl;
+  std::cout << "grf_plan_ = " << grf_plan_ << std::endl;
 
-  for (int i = 0; i < grf_plan_.size(); i++) {
-    bool is_state_valid = quadKD_->isValidCentroidalState(body_plan_.col(i),foot_positions_world_.col(i),
-      foot_positions_world_.col(i)*0, grf_plan_.col(i),terrain_grid_);
+  for (int i = 0; i < grf_plan_.rows(); i++) {
+    bool is_state_valid = quadKD_->isValidCentroidalState(body_plan_.row(i),
+      foot_positions_world_.row(i), foot_positions_world_.row(i)*0, grf_plan_.row(i),terrain_grid_,
+      state_violations, control_violations);
     if (!is_state_valid) { 
       invalid_indices.push_back(i);
+      std::cout << "i = " << i << std::endl;
+      std::cout << "state_violations = " << state_violations << std::endl;
+      std::cout << "control_violations = " << control_violations << std::endl;
+
     }
   }
   for (int i = 0; i < invalid_indices.size(); i++) {

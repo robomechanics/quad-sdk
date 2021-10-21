@@ -1,5 +1,5 @@
-#ifndef KINEMATICS_H
-#define KINEMATICS_H
+#ifndef QUAD_KD_H
+#define QUAD_KD_H
 
 #include <vector>
 #include <ros/ros.h>
@@ -289,7 +289,8 @@ class QuadKD {
    * @return Boolean for state validity
    */
   bool isValidFullState(const Eigen::VectorXd &body_state, const Eigen::VectorXd &joint_state,
-    const Eigen::VectorXd &torques, const grid_map::GridMap &terrain);
+    const Eigen::VectorXd &torques, const grid_map::GridMap &terrain,
+    Eigen::VectorXd &state_violation, Eigen::VectorXd &control_violation);
 
   /**
    * @brief Check if state is valid
@@ -302,7 +303,13 @@ class QuadKD {
    */
   bool isValidCentroidalState(const Eigen::VectorXd &body_state,
     const Eigen::VectorXd &foot_positions, const Eigen::VectorXd &foot_velocities,
-    const Eigen::VectorXd &grfs, const grid_map::GridMap &terrain);
+    const Eigen::VectorXd &grfs, const grid_map::GridMap &terrain,
+    Eigen::VectorXd &state_violation, Eigen::VectorXd &control_violation);
+
+  inline double getGroundClearance(const Eigen::Vector3d &point, const grid_map::GridMap &terrain) {
+    grid_map::Position pos = {point.x(),point.y()};
+    return (point.z() - terrain.atPosition("z", pos));
+  }
 
   private:
 
@@ -397,4 +404,4 @@ class QuadKD {
 
 }
 
-#endif // KINEMATICS_H
+#endif // QUAD_KD_H
