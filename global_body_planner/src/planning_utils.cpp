@@ -598,11 +598,11 @@ State applyStance(State s, Action a, double t, const PlannerConfig &planner_conf
   s_new[4] = dy_td + a_y_td*t + (a_y_to - a_y_td)*t*t/(2.0*t_s);
   s_new[5] = dz_td + a_z_td*t + (a_z_to - a_z_td)*t*t/(2.0*t_s);
 
-  if (a[7] == 0) {
-    s_new[2] = a_z_td + (a_z_to - a_z_td)*(t/t_s) + getHeightFromState(s_new, planner_config);
-    // s_new[2] = getHeightFromState(s_new, planner_config);
-    s_new[5] = 0;//sqrt(s_new[3]*s_new[3] + s_new[4]*s_new[4])*sin();
-  }
+  // if (a[7] == 0) {
+  //   s_new[2] = a_z_td + (a_z_to - a_z_td)*(t/t_s) + getHeightFromState(s_new, planner_config);
+  //   // s_new[2] = getHeightFromState(s_new, planner_config);
+  //   s_new[5] = 0;//sqrt(s_new[3]*s_new[3] + s_new[4]*s_new[4])*sin();
+  // }
 
   return s_new;
 }

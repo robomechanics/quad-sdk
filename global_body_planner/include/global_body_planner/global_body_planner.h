@@ -40,6 +40,11 @@ class GlobalBodyPlanner {
     void callPlanner();
 
     /**
+     * @brief Construct a leap plan
+     */
+    void callLeapPlanner();
+
+    /**
      * @brief Primary work function in class, called in node file for this component
      */
     void spin();

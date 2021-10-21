@@ -315,6 +315,58 @@ void GlobalBodyPlanner::callPlanner() {
 
 }
 
+void GlobalBodyPlanner::callLeapPlanner() {
+
+  // Reset planning time and sequences
+  replan_start_time_ = 0;
+  state_sequence_.clear();
+  action_sequence_.clear();
+
+  // Define acceleration phase
+  double v_des_takeoff = 0.5;
+  double acc_duration = 4.0;
+  Action acc_action = {v_des_takeoff/acc_duration,0,0,v_des_takeoff/acc_duration,0,0,acc_duration,0};
+  Action decel_action = {-v_des_takeoff/acc_duration,0,0,-v_des_takeoff/acc_duration,0,0,acc_duration,0};
+
+  start_state_[2] = 0.20;
+  State start_state = fullStateToState(start_state_);
+  State pre_leap_state = applyAction(start_state, acc_action, planner_config_);
+
+  // Set vertical acceleration during leap
+  double a_z0 = 8.0;
+  double a_zf = 8.0;
+
+  // Define stance and flight times
+  double t_s = 0.2;
+  double t_f = 0;
+  Action leap_action = {0, 0, a_z0, 0, 0, a_zf, t_s, t_f};
+  State takeoff_state = applyStance(pre_leap_state, leap_action, planner_config_);
+  leap_action[7] = 2*takeoff_state[5]/9.81;
+  takeoff_state = applyStance(pre_leap_state, leap_action, planner_config_);
+  Action land_action = {0, 0, a_zf, 0, 0, a_zf, t_s, 0.0};
+
+  // Define remaining states
+  State land_state = applyAction(pre_leap_state, leap_action, planner_config_);
+  State post_land_state = applyAction(land_state, land_action, planner_config_);
+  State end_state = applyAction(post_land_state, decel_action, planner_config_);
+
+  state_sequence_.push_back(start_state);
+  state_sequence_.push_back(pre_leap_state);
+  state_sequence_.push_back(land_state);
+  state_sequence_.push_back(post_land_state);
+  state_sequence_.push_back(end_state);
+  action_sequence_.push_back(acc_action);
+  action_sequence_.push_back(leap_action);
+  action_sequence_.push_back(land_action);
+  action_sequence_.push_back(decel_action);
+
+  printStateSequence(state_sequence_);
+  printActionSequence(action_sequence_);
+
+  getInterpPlan(start_state_, state_sequence_, action_sequence_, dt_, replan_start_time_, 
+        body_plan_, grf_plan_, t_plan_, primitive_id_plan_, length_plan_, planner_config_);
+}
+
 void GlobalBodyPlanner::addStateAndGRFToMsg(double t, int plan_index, FullState body_state, 
   GRF grf, int primitive_id, spirit_msgs::RobotPlan& msg) {
 
@@ -443,7 +495,9 @@ void GlobalBodyPlanner::spin() {
 
   // Once we get map and state data, start planning until startup delay is up
   waitForData();
-  getInitialPlan();
+  initPlanner();
+  // getInitialPlan();
+  callLeapPlanner();
 
   // Set the timestamp for the initial plan to now and publish
   plan_timestamp_ = ros::Time::now();
@@ -454,7 +508,7 @@ void GlobalBodyPlanner::spin() {
 
     // IF allowed, continue updating and publishing the plan
     if (replanning_allowed_) {
-      callPlanner();
+      // callPlanner();
       publishPlan();
     }
 
