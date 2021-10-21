@@ -304,6 +304,7 @@ class QuadKD {
   bool isValidCentroidalState(const Eigen::VectorXd &body_state,
     const Eigen::VectorXd &foot_positions, const Eigen::VectorXd &foot_velocities,
     const Eigen::VectorXd &grfs, const grid_map::GridMap &terrain,
+    Eigen::VectorXd &joint_positions, Eigen::VectorXd &joint_velocities, Eigen::VectorXd &torques,
     Eigen::VectorXd &state_violation, Eigen::VectorXd &control_violation);
 
   inline double getGroundClearance(const Eigen::Vector3d &point, const grid_map::GridMap &terrain) {

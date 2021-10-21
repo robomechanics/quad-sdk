@@ -381,26 +381,35 @@ std::vector<int> LocalPlanner::getInvalidRegions() {
   std::vector<int> invalid_indices;
   Eigen::VectorXd state_violations, control_violations;
 
-  std::cout << "body_plan_ = " << body_plan_ << std::endl;
-  std::cout << "foot_positions_world_ = " << foot_positions_world_ << std::endl;
-  std::cout << "grf_plan_ = " << grf_plan_ << std::endl;
-
   for (int i = 0; i < grf_plan_.rows(); i++) {
+    Eigen::VectorXd joint_positions(12);
+    Eigen::VectorXd joint_velocities(12);
+    Eigen::VectorXd joint_torques(12);
+
     bool is_state_valid = quadKD_->isValidCentroidalState(body_plan_.row(i),
       foot_positions_world_.row(i), foot_positions_world_.row(i)*0, grf_plan_.row(i),terrain_grid_,
-      state_violations, control_violations);
+      joint_positions,joint_velocities,joint_torques, state_violations, control_violations);
     if (!is_state_valid) { 
       invalid_indices.push_back(i);
-      std::cout << "i = " << i << std::endl;
-      std::cout << "state_violations = " << state_violations << std::endl;
-      std::cout << "control_violations = " << control_violations << std::endl;
-
+      // std::cout << "body_plan_ = \n" << body_plan_.row(i).format(CleanFmt) << std::endl;
+      // std::cout << "foot_positions_world_ = \n" << foot_positions_world_.row(i).format(CleanFmt) << std::endl;
+      // std::cout << "grf_plan_ = \n" << grf_plan_.row(i).format(CleanFmt) << std::endl;
+      // std::cout << "joint_positions = \n" << joint_positions.transpose().format(CleanFmt) << std::endl;
+      // std::cout << "joint_velocities = \n" << joint_velocities.transpose().format(CleanFmt) << std::endl;
+      // std::cout << "joint_torques = \n" << joint_torques.transpose().format(CleanFmt) << std::endl;
+      // std::cout << "i = " << i << std::endl;
+      // std::cout << "state_violations = \n" << state_violations.transpose().format(CleanFmt) << std::endl;
+      // std::cout << "control_violations = \n" << control_violations.transpose().format(CleanFmt) << std::endl;
     }
+  if (invalid_indices.empty()) {
+    ROS_INFO("All planned states are valid");
+  } else {
+    ROS_WARN("Some planned states are invalid!");
+    for (int i = 0; i < invalid_indices.size(); i++) {
+      std::cout << invalid_indices[i] << " ";
+    }
+    std::cout << std::endl;
   }
-  for (int i = 0; i < invalid_indices.size(); i++) {
-    std::cout << invalid_indices[i] << " " << std::endl;
-  }
-  throw std::runtime_error("Stop");
   return invalid_indices;
 }
 
@@ -429,10 +438,11 @@ bool LocalPlanner::computeLocalPlan() {
 
   // Compute body plan with MPC, return if solve fails
   if (use_nmpc_) {
-    if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_,
-      foot_positions_body_, contact_schedule_, body_plan_, grf_plan_))
+    bool success = local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_,
+      foot_positions_body_, contact_schedule_, body_plan_, grf_plan_);
+    std::vector<int> invalid_indices = getInvalidRegions();
+    if (!success)
       {
-        std::vector<int> invalid_indices = getInvalidRegions();
         return false;
       }
   } else {
