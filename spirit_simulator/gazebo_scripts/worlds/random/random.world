@@ -34,12 +34,18 @@
       <link name="body">
         <visual name="visual">
           <geometry>
-            <mesh><uri>model:///random/random.obj</uri></mesh>
+            <mesh>
+	      <uri>model:///random/random.obj</uri>
+	      <scale>0.25 0.25 1</scale>
+            </mesh>
           </geometry>
         </visual>
         <collision name="collision">
           <geometry>
-            <mesh><uri>model:///random/random.obj</uri></mesh>
+            <mesh>
+	      <uri>model:///random/random.obj</uri>
+	      <scale>0.25 0.25 1</scale>
+            </mesh>
           </geometry>
         </collision>
       </link>

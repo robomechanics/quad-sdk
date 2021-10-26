@@ -17,6 +17,7 @@
 #include <Fade_2D.h>
 #include <Visualizer3.h>
 #include "someTools.h"
+#include <spirit_utils/diamond_square.h>
 
 namespace mesh_to_grid_map {
 

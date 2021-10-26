@@ -75,6 +75,7 @@ add_library(spirit_utils
   src/kinematics.cpp
   src/trajectory_publisher.cpp
   src/remote_heartbeat.cpp
+  src/diamond_square.cpp
 )
 add_dependencies(spirit_utils ${spirit_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(spirit_utils 
