@@ -226,34 +226,22 @@ class QuadKD {
   private:
 
     /// Vector of the abad link lengths 
-    const std::vector<double> l0_vec_ = {0.1,0.1,-0.1,-0.1};
+    std::vector<double> l0_vec_;
 
     /// Upper link length
-    const double l1_ = 0.206;
+    double l1_;
 
     /// Lower link length
-    const double l2_ = 0.206;
+    double l2_;
 
     /// Abad offset from legbase
-    Eigen::Vector3d abad_offset_ = {0,0,0};
+    Eigen::Vector3d abad_offset_;
 
     /// Knee offset from hip
-    Eigen::Vector3d knee_offset_ = {-l1_,0,0};
+    Eigen::Vector3d knee_offset_;
 
     /// Foot offset from knee
-    Eigen::Vector3d foot_offset_ = {l2_,0,0};
-
-    /// Leg 0 legbase offset
-    const Eigen::Vector3d legbase_offset_0_ = {0.2263, 0.07, 0};
-
-    /// Leg 1 legbase offset
-    const Eigen::Vector3d legbase_offset_1_ = {-0.2263, 0.07, 0};
-
-    /// Leg 2 legbase offset
-    const Eigen::Vector3d legbase_offset_2_ = {0.2263, -0.07, 0};
-
-    /// Leg 3 legbase offset
-    const Eigen::Vector3d legbase_offset_3_ = {-0.2263, -0.07, 0};
+    Eigen::Vector3d foot_offset_;
 
     /// Vector of legbase offsets
     std::vector<Eigen::Vector3d> legbase_offsets_;
