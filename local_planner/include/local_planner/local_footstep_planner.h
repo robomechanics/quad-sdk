@@ -4,21 +4,6 @@
 #include <eigen_conversions/eigen_msg.h>
 #include <local_planner/local_planner_modes.h>
 #include <nav_msgs/Path.h>
-<<<<<<< HEAD
-#include <quad_msgs/FootPlanDiscrete.h>
-#include <quad_msgs/FootState.h>
-#include <quad_msgs/MultiFootPlanContinuous.h>
-#include <quad_msgs/MultiFootPlanDiscrete.h>
-#include <quad_msgs/MultiFootState.h>
-#include <quad_msgs/RobotPlan.h>
-#include <quad_msgs/RobotState.h>
-#include <quad_utils/fast_terrain_map.h>
-#include <quad_utils/function_timer.h>
-#include <quad_utils/math_utils.h>
-#include <quad_utils/quad_kd.h>
-#include <quad_utils/ros_utils.h>
-#include <ros/ros.h>
-=======
 #include <spirit_msgs/RobotPlan.h>
 #include <spirit_msgs/RobotState.h>
 #include <spirit_msgs/FootState.h>
@@ -31,7 +16,6 @@
 #include <spirit_utils/math_utils.h>
 #include <spirit_utils/ros_utils.h>
 #include <spirit_utils/quad_kd.h>
->>>>>>> Switch SpiritKinematics to QuadKD, switch inverse dynamics function to QuadKD
 
 #include <eigen3/Eigen/Eigen>
 #include <grid_map_core/grid_map_core.hpp>
@@ -69,13 +53,8 @@ class LocalFootstepPlanner {
      * @param[in] grf_weight Weight on GRF projection (0 to 1)
      * @param[in] kinematics Kinematics class for computations
      */
-<<<<<<< HEAD
-    void setSpatialParams(double ground_clearance, double hip_clearance, double grf_weight,double standing_error_threshold,
-      std::shared_ptr<quad_utils::QuadKD> kinematics);
-=======
     void setSpatialParams(double ground_clearance, double grf_weight,double standing_error_threshold,
       std::shared_ptr<spirit_utils::QuadKD> kinematics);
->>>>>>> Switch SpiritKinematics to QuadKD, switch inverse dynamics function to QuadKD
 
     /**
      * @brief Transform a vector of foot positions from the world to the body frame
@@ -165,29 +144,41 @@ class LocalFootstepPlanner {
       }
       printf("\n");
     }
-  }
 
-  inline double getTerrainHeight(double x, double y) {
-    grid_map::Position pos = {x, y};
-    double height = this->terrain_grid_.atPosition(
-        "z_smooth", terrain_grid_.getClosestPositionInMap(pos),
-        grid_map::InterpolationMethods::INTER_LINEAR);
-    return (height);
-  }
+    inline double getTerrainHeight(double x, double y)
+    {
+      grid_map::Position pos = {x, y};
+      double height = this->terrain_grid_.atPosition("z", pos, grid_map::InterpolationMethods::INTER_NEAREST);
+      return (height);
+    }
 
-  inline double getTerrainSlope(double x, double y, double dx, double dy) {
-    std::array<double, 3> surf_norm =
-        this->terrain_.getSurfaceNormalFiltered(x, y);
+  private:
 
-    double denom = dx * dx + dy * dy;
-    if (denom <= 0 || surf_norm[2] <= 0) {
-      double default_pitch = 0;
-      return default_pitch;
-    } else {
-      double v_proj = (dx * surf_norm[0] + dy * surf_norm[1]) / sqrt(denom);
-      double pitch = atan2(v_proj, surf_norm[2]);
+    /**
+     * @brief Update the continuous foot plan to match the discrete
+     */
+    void updateContinuousPlan();
 
-      return pitch;
+    /**
+     * @brief Compute the foot state for a swing foot as a function of the previous and next steps
+     * @param[in] foot_position_prev Previous foothold
+     * @param[in] foot_position_next Next foothold
+     * @param[in] swing_phase Phase variable for swing phase (as a fraction)
+     * @param[in] swing_duration Duration of swing (in timesteps)
+     * @param[out] foot_position Position of swing foot
+     * @param[out] foot_velocity Velocity of swing foot
+     */
+    void computeSwingFootState(const Eigen::Vector3d &foot_position_prev,
+      const Eigen::Vector3d &foot_position_next, double swing_phase, int swing_duration,
+      Eigen::Vector3d &foot_position, Eigen::Vector3d &foot_velocity, Eigen::Vector3d &foot_acceleration);
+
+    /**
+     * @brief Extract foot data from the matrix
+     */
+    inline Eigen::Vector3d getFootData(const Eigen::MatrixXd &foot_state_vars,
+      int horizon_index, int foot_index) {
+
+      return foot_state_vars.block<1,3>(horizon_index,3*foot_index);
     }
   }
 
@@ -423,13 +414,8 @@ class LocalFootstepPlanner {
   /// Radius to locally search for valid footholds (m)
   double foothold_search_radius_;
 
-<<<<<<< HEAD
-  /// Minimum objective function value for valid foothold
-  double foothold_obj_threshold_;
-=======
     /// QuadKD class
     std::shared_ptr<spirit_utils::QuadKD>quadKD_;
->>>>>>> Switch SpiritKinematics to QuadKD, switch inverse dynamics function to QuadKD
 
   /// Terrain layer for foothold search
   std::string obj_fun_layer_;

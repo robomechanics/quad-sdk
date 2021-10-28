@@ -10,7 +10,6 @@
 #include <spirit_msgs/RobotStateTrajectory.h>
 // #include <local_planner/quadruped_mpc.h>
 #include <spirit_utils/ros_utils.h>
-#include <spirit_utils/quad_kd.h>
 #include "spirit_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
@@ -79,8 +78,6 @@ class NMPCController {
                       Eigen::MatrixXd &foot_velocities,
                       const std::vector<std::vector<bool>> &contact_schedule,
                       const Eigen::VectorXd &ref_ground_height,
-                      const double &first_element_duration, int plan_index_diff,
-                      const grid_map::GridMap &terrain,
                       Eigen::MatrixXd &state_traj,
                       Eigen::MatrixXd &control_traj);
 
@@ -113,18 +110,22 @@ class NMPCController {
   double update_rate_;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   /// Pointer to nlp formulation
   SmartPtr<quadNLP> mynlp_;
 =======
   /// QuadKD class
   std::shared_ptr<spirit_utils::QuadKD>quadKD_;
 
+=======
+>>>>>>> update NMPC, adaptive body height and constraints using terrain information
   SmartPtr<spiritNLP> mynlp_;
 >>>>>>> Switch SpiritKinematics to QuadKD, switch inverse dynamics function to QuadKD
 
   /// Pointer to IPOPT solver
   SmartPtr<IpoptApplication> app_;
 
+<<<<<<< HEAD
   /// Pointer to robot kinematics
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
 
@@ -133,6 +134,9 @@ class NMPCController {
 
   /// Whether enable mixed complexity
   bool enable_mixed_complexity_ = false;
+=======
+  int N_;
+>>>>>>> update NMPC, adaptive body height and constraints using terrain information
 
   /// Whether enable adaptive complexity
   bool enable_adaptive_complexity_ = false;
