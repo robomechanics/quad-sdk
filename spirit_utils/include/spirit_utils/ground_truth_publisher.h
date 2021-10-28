@@ -77,6 +77,9 @@ private:
   /// Publisher for ground truth state messages
   ros::Publisher ground_truth_state_pub_;
 
+  /// Publisher for ground truth state in body frame messages
+  ros::Publisher ground_truth_state_body_frame_pub_;
+
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
 
