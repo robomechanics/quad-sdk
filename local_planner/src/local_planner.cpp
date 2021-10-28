@@ -77,6 +77,14 @@ quadKD_ = std::make_shared<spirit_utils::QuadKD>();
     }
   }
 
+  // Initialize body and foot position arrays
+  ref_body_plan_ = Eigen::MatrixXd::Zero(N_+1, Nx_);
+  foot_positions_world_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
+  foot_positions_body_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
+  current_foot_positions_body_ = Eigen::VectorXd::Zero(num_feet_*3);
+  current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_*3);
+  ref_ground_height_ = Eigen::VectorXd::Zero(N_+1);
+
   // Initialize body and footstep planners
   initLocalBodyPlanner();
   initLocalFootstepPlanner();
@@ -312,9 +320,15 @@ void LocalPlanner::getReference() {
       ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
     }
 
-    // Set initial ground height
-    ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(
-        current_state_(0), current_state_(1));
+    ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_(i, 0), ref_body_plan_(i, 1));
+  }
+
+  ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(current_state_(0), current_state_(1));
+
+  // Update the body plan to use for linearization
+  if (body_plan_.rows() < N_+1) {
+    // Cold start with reference  plan
+    body_plan_ = ref_body_plan_;
 
     // If it's not initialized, set to current positions
     if (stand_pose_(0) == std::numeric_limits<double>::max() &&
@@ -437,11 +451,38 @@ void LocalPlanner::getReference() {
     ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(
         current_state_(0), current_state_(1));
 
-    // Stand if the plan has been tracked
-    if ((current_state_ - ref_body_plan_.bottomRows(1).transpose()).norm() <=
-        stand_pos_error_threshold_) {
-      control_mode_ = STAND;
+  // Set initial ground height
+  ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(current_state_(0), current_state_(1));
+
+  // Set initial condition for forward integration
+  ref_body_plan_(0,0) = current_state_[0];
+  ref_body_plan_(0,1) = current_state_[1];
+  ref_body_plan_(0,2) = z_des_ + ref_ground_height_(0);
+  ref_body_plan_(0,3) = 0;
+  ref_body_plan_(0,4) = 0;
+  ref_body_plan_(0,5) = current_state_[5];
+  ref_body_plan_(0,6) = cmd_vel_[0]*cos(current_state_[5]) - cmd_vel_[1]*sin(current_state_[5]);
+  ref_body_plan_(0,7) = cmd_vel_[0]*sin(current_state_[5]) + cmd_vel_[1]*cos(current_state_[5]);
+  ref_body_plan_(0,8) = cmd_vel_[2];
+  ref_body_plan_(0,9) = cmd_vel_[3];
+  ref_body_plan_(0,10) = cmd_vel_[4];
+  ref_body_plan_(0,11) = cmd_vel_[5];
+
+  // Integrate to get full body plan (Forward Euler)
+  for (int i = 1; i < N_+1; i++) {
+    Twist current_cmd_vel = cmd_vel_;
+
+    double yaw = ref_body_plan_(i-1,5);
+    current_cmd_vel[0] = cmd_vel_[0]*cos(yaw) - cmd_vel_[1]*sin(yaw);
+    current_cmd_vel[1] = cmd_vel_[0]*sin(yaw) + cmd_vel_[1]*cos(yaw);
+
+    for (int j = 0; j < 6; j ++) {
+      ref_body_plan_(i,j) = ref_body_plan_(i-1,j) + current_cmd_vel[j]*dt_;
+      ref_body_plan_(i,j+6) = (current_cmd_vel[j]);
     }
+
+    ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_(i, 0), ref_body_plan_(i, 1));
+    ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);
   }
 
   // Update the body plan to use for foot planning
@@ -562,7 +603,15 @@ bool LocalPlanner::computeLocalPlan() {
 
   // Compute body plan with NMPC, return if solve fails
     if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_,
+<<<<<<< HEAD
       foot_positions_body_, contact_schedule_, ref_ground_height_, time_ahead_, same_plan_index_, body_plan_, grf_plan_))
+=======
+      foot_positions_body_, contact_schedule_, ref_ground_height_, body_plan_, grf_plan_))
+      return false;
+  } else {
+    if (!local_body_planner_convex_->computePlan(current_state_, ref_body_plan_,
+      foot_positions_body_, contact_schedule_, body_plan_, grf_plan_))
+>>>>>>> update NMPC, adaptive body height and constraints using terrain information
       return false;
 >>>>>>> cleaned up the mpc stuff and removed dependencies
 
