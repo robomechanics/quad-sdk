@@ -18,6 +18,8 @@ spiritNLP::spiritNLP(
     double dt,
     Eigen::MatrixXd Q,
     Eigen::MatrixXd R,
+    Eigen::MatrixXd Q_factor,
+    Eigen::MatrixXd R_factor,
     Eigen::MatrixXd x_min,
     Eigen::MatrixXd x_max,
     Eigen::MatrixXd u_min,
@@ -96,6 +98,8 @@ spiritNLP::spiritNLP(
 
    Q_ = Q;
    R_ = R;
+   Q_factor_ = Q_factor;
+   R_factor_ = R_factor;
 
    // feet location initialized by nominal position
    feet_location_ = Eigen::MatrixXd(12, N_);
@@ -119,6 +123,9 @@ spiritNLP::spiritNLP(
    g_min_.block(n_, 0, 16, 1).fill(-2e19);
    g_max_.block(0, 0, n_, 1).fill(0);
    g_max_.block(n_, 0, 16, 1).fill(0);
+
+   ground_height_ = Eigen::MatrixXd(1, N_);
+   ground_height_.fill(0);
 
    w0_ = Eigen::MatrixXd((n_ + m_) * N_, 1);
    w0_.fill(0);
@@ -225,7 +232,7 @@ bool spiritNLP::get_bounds_info(
          x_l_matrix.block(i * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1) = leg_input_.block(0, i, m_ - leg_input_start_idx_, 1);
          x_u_matrix.block(i * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1) = leg_input_.block(0, i, m_ - leg_input_start_idx_, 1);
       }
-      
+
       // Contact sequence
       for (int j = 0; j < 4; ++j)
       {
@@ -238,6 +245,7 @@ bool spiritNLP::get_bounds_info(
       // States bound
       x_l_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = x_min_;
       x_u_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = x_max_;
+      x_l_matrix(i * (n_ + m_) + m_ + 2) = ground_height_(0, i);
 
       // Constraints bound
       g_l_matrix.block(i * g_, 0, g_, 1) = g_min_;
@@ -300,7 +308,10 @@ bool spiritNLP::eval_f(
 
       xk = (xk.array() - x_reference_.block(0, i, n_, 1).array()).matrix();
 
-      obj_value += (xk.transpose() * Q_.asDiagonal() * xk / 2 + uk.transpose() * R_.asDiagonal() * uk / 2)(0, 0);
+      Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
+      Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
+
+      obj_value += (xk.transpose() * Q_i.asDiagonal() * xk / 2 + uk.transpose() * R_i.asDiagonal() * uk / 2)(0, 0);
    }
 
    return true;
@@ -324,8 +335,11 @@ bool spiritNLP::eval_grad_f(
 
       xk = (xk.array() - x_reference_.block(0, i, n_, 1).array()).matrix();
 
-      grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_.asDiagonal() * uk;
-      grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_.asDiagonal() * xk;
+      Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
+      Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
+
+      grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_i.asDiagonal() * uk;
+      grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_i.asDiagonal() * xk;
    }
 
    return true;
@@ -619,8 +633,11 @@ bool spiritNLP::eval_h(
          eval_hess_g_release_(mem);
          eval_hess_g_decref_();
 
-         values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_.array()).matrix();
-         values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * Q_.array()).matrix();
+         Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
+         Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
+
+         values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_i.array()).matrix();
+         values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * Q_i.array()).matrix();
       }
 
       std::vector<Eigen::Triplet<double>> tripletList;
@@ -794,7 +811,7 @@ void spiritNLP::update_solver(
    {
       for (size_t j = 0; j < contact_schedule.front().size(); j++)
       {
-         if (contact_schedule.at(i).at(j))
+         if (bool(contact_schedule.at(i).at(j)))
          {
             contact_sequence_(j, i) = 1;
          }
@@ -806,11 +823,11 @@ void spiritNLP::update_solver(
    }
 
    // Update initial states
-   x_current_ = initial_state;
+   x_current_ = initial_state.transpose();
 
    // Update reference trajectory
    // Local planner has row as N+1 horizon and col as states
-   x_reference_ = ref_traj.bottomRows(N_).transpose();
+   x_reference_ = ref_traj.transpose();
 }
 
 void spiritNLP::update_solver(
@@ -827,14 +844,23 @@ void spiritNLP::update_solver(
        foot_positions,
        contact_schedule);
 
-   for (size_t i = 0; i < N_ - 1; i++)
-   {
-      w0_.block(i * (n_ + m_) + leg_input_start_idx_, 0, 12, 1) = control_traj.row(i).transpose();
-      w0_.block(i * (n_ + m_) + m_, 0, 6, 1) = state_traj.block(i, 0, 1, 6).transpose();
-      w0_.block(i * (n_ + m_) + m_ + 8, 0, 6, 1) = state_traj.block(i, 6, 1, 6).transpose();
-   }
-
    leg_input_ = control_traj.transpose();
 
    known_leg_input_ = true;
+}
+
+void spiritNLP::update_solver(
+    const Eigen::VectorXd &initial_state,
+    const Eigen::MatrixXd &ref_traj,
+    const Eigen::MatrixXd &foot_positions,
+    const std::vector<std::vector<bool>> &contact_schedule,
+    const Eigen::VectorXd &ground_height)
+{
+   this->update_solver(
+       initial_state,
+       ref_traj,
+       foot_positions,
+       contact_schedule);
+
+   ground_height_ = ground_height.transpose();
 }

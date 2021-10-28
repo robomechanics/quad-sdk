@@ -67,6 +67,7 @@ quadKD_ = std::make_shared<spirit_utils::QuadKD>();
   foot_positions_body_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
   current_foot_positions_body_ = Eigen::VectorXd::Zero(num_feet_*3);
   current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_*3);
+  ref_ground_height_ = Eigen::VectorXd::Zero(N_+1);
 
   // Initialize body and footstep planners
   initLocalBodyPlanner();
@@ -256,7 +257,11 @@ void LocalPlanner::getStateAndReferencePlan() {
     } else {
       ref_body_plan_.row(i) = spirit_utils::bodyStateMsgToEigen(body_plan_msg_->states[i+current_plan_index_].body);
     }
+
+    ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_(i, 0), ref_body_plan_(i, 1));
   }
+
+  ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(current_state_(0), current_state_(1));
 
   // Update the body plan to use for linearization
   if (body_plan_.rows() < N_+1) {
@@ -321,10 +326,13 @@ void LocalPlanner::getStateAndTwistInput() {
     ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
   }
 
+  // Set initial ground height
+  ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(current_state_(0), current_state_(1));
+
   // Set initial condition for forward integration
   ref_body_plan_(0,0) = current_state_[0];
   ref_body_plan_(0,1) = current_state_[1];
-  ref_body_plan_(0,2) = z_des_;
+  ref_body_plan_(0,2) = z_des_ + ref_ground_height_(0);
   ref_body_plan_(0,3) = 0;
   ref_body_plan_(0,4) = 0;
   ref_body_plan_(0,5) = current_state_[5];
@@ -347,6 +355,9 @@ void LocalPlanner::getStateAndTwistInput() {
       ref_body_plan_(i,j) = ref_body_plan_(i-1,j) + current_cmd_vel[j]*dt_;
       ref_body_plan_(i,j+6) = (current_cmd_vel[j]);
     }
+
+    ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_(i, 0), ref_body_plan_(i, 1));
+    ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);
   }
 
   // Update the body plan to use for linearization
@@ -402,7 +413,7 @@ bool LocalPlanner::computeLocalPlan() {
   // Compute body plan with MPC, return if solve fails
   if (use_nmpc_) {
     if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_,
-      foot_positions_body_, contact_schedule_, body_plan_, grf_plan_))
+      foot_positions_body_, contact_schedule_, ref_ground_height_, body_plan_, grf_plan_))
       return false;
   } else {
     if (!local_body_planner_convex_->computePlan(current_state_, ref_body_plan_,
