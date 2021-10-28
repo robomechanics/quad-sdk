@@ -201,6 +201,9 @@ private:
   /// Matrix of body states (N x Nx: rows correspond to individual states in the horizon)
   Eigen::MatrixXd ref_body_plan_;
 
+  /// Vector of ground height along reference trajectory
+  Eigen::MatrixXd ref_ground_height_;
+
   /// Matrix of grfs (N x Nu: rows correspond to individual arrays of GRFs in the horizon)
   Eigen::MatrixXd grf_plan_; 
 

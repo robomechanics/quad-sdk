@@ -39,6 +39,9 @@ public:
     // State cost weighting, input cost weighting
     Eigen::MatrixXd Q_, R_;
 
+    // Scale factor for Q and R
+    Eigen::MatrixXd Q_factor_, R_factor_;
+
     // Feet location from feet to body COM in world frame
     Eigen::MatrixXd feet_location_;
 
@@ -47,6 +50,9 @@ public:
 
     // State bounds, input bounds, constraint bounds
     Eigen::MatrixXd x_min_, x_max_, u_min_, u_max_, g_min_, g_max_;
+
+    // Ground height structure for the height bounds
+    Eigen::MatrixXd ground_height_;
 
     // Initial guess
     Eigen::MatrixXd w0_, z_L0_, z_U0_, lambda0_;
@@ -108,6 +114,8 @@ public:
         double dt,
         Eigen::MatrixXd Q,
         Eigen::MatrixXd R,
+        Eigen::MatrixXd Q_factor,
+        Eigen::MatrixXd R_factor,
         Eigen::MatrixXd x_min,
         Eigen::MatrixXd x_max,
         Eigen::MatrixXd u_min,
@@ -225,6 +233,13 @@ public:
         const Eigen::MatrixXd &ref_traj,
         const Eigen::MatrixXd &foot_positions,
         const std::vector<std::vector<bool>> &contact_schedule);
+
+    virtual void update_solver(
+        const Eigen::VectorXd &initial_state,
+        const Eigen::MatrixXd &ref_traj,
+        const Eigen::MatrixXd &foot_positions,
+        const std::vector<std::vector<bool>> &contact_schedule,
+        const Eigen::VectorXd &ground_height);
 
     virtual void update_solver(
         const Eigen::VectorXd &initial_state,
