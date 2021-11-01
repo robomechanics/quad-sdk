@@ -232,7 +232,7 @@ void MeshToGridMapConverter::GetInputPoints(std::vector<GEOM_FADE25D::Point2>& v
 void MeshToGridMapConverter::generateTerrain(std::string path) {
 
   // // diamond_square
-  double range = 3.0; // +-10
+  double range = 4.0; // +-10
 	int width = pow(2, 8)+1;
   double** map_ = new double* [width];
   std::cout<< "here"<<std::endl;

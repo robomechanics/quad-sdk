@@ -12,7 +12,7 @@
     <include>
       <uri>model://custom_sun</uri>
     </include>
-    <model name="flat_terrain">
+    <!--model name="flat_terrain">
       <pose>-1 -4 -0.1  0 0 0</pose>
       <static>true</static>
       <link name="body">
@@ -27,9 +27,9 @@
           </geometry>
         </collision>
       </link>
-    </model>
+    </model-->
      <model name="random_terrain">
-      <pose>0 0 0  0 0 0</pose>
+      <pose>-2 -2 0  0 0 0</pose>
       <static>true</static>
       <link name="body">
         <visual name="visual">

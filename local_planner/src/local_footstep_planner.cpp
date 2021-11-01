@@ -33,6 +33,10 @@ void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_
   }
 }
 
+void LocalFootstepPlanner::setGaitParams(std::vector<double>  phase_offsets, std::vector<double> duty_cycles){
+  phase_offsets_ = phase_offsets;
+  duty_cycles_ = duty_cycles;
+}
 
 void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double grf_weight, 
   double standing_error_threshold, std::shared_ptr<spirit_utils::SpiritKinematics> kinematics) {
@@ -175,9 +179,20 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         ref_body_ang_vel_touchdown = ref_body_plan.block<1,3>(i,9);
         grf_midstance = grf_plan.block<1,3>(midstance,3*j);
 
+        Eigen::Vector3d current_body_pos = body_plan.block<1,3>(0,0);
+
         // Compute nominal foot positions for kinematic and grf-projection measures
         kinematics_->nominalHipFK(j, body_pos_midstance, body_rpy_midstance, 
           hip_position_midstance);
+
+        // Use body height to estimate ground height
+        if (ground_height_ == std::numeric_limits<double>::max()){
+          ground_height_ = std::max(current_body_pos.z() - 0.3, 0.0);
+        }
+        else{
+          ground_height_ = 0.75 * std::max(current_body_pos.z() - 0.3, 0.0) + 0.25 * ground_height_;
+        }
+
         double hip_height = hip_position_midstance.z() - 
           terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());
         centrifugal = (hip_height/9.81)*body_vel_touchdown.cross(ref_body_ang_vel_touchdown);

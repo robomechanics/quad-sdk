@@ -321,6 +321,18 @@ void LocalPlanner::getStateAndTwistInput() {
     ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
   }
 
+  // Adaptive body height, use the lowest foot and exponential filter
+  std::vector<double> foot_height;
+  for (size_t i = 0; i < 4; i++){
+    foot_height.push_back(current_foot_positions_world_(3 * i + 2));
+  }
+
+  if (z_des_ == std::numeric_limits<double>::max()){
+    z_des_ = std::max(*std::min_element(foot_height.begin(), foot_height.end()) + 0.3, 0.0);
+  }else{
+    z_des_ = 0.75 * std::max(*std::min_element(foot_height.begin(), foot_height.end()) + 0.3, 0.0) + 0.25 * z_des_;
+  }
+
   // Set initial condition for forward integration
   ref_body_plan_(0,0) = current_state_[0];
   ref_body_plan_(0,1) = current_state_[1];

@@ -44,6 +44,7 @@ class LocalFootstepPlanner {
      */
     void setTemporalParams(double dt, int period, int horizon_length);
 
+    void setGaitParams(std::vector<double>  phase_offsets, std::vector<double> duty_cycles);
     /**
      * @brief Set the spatial parameters of this object
      * @param[in] ground_clearance The foot clearance over adjacent footholds in cm
@@ -273,6 +274,8 @@ class LocalFootstepPlanner {
 
     /// Threshold of body error from desired goal to start stepping
     double standing_error_threshold_ = 0;
+
+    double ground_height_;
 
 };
 
