@@ -10,16 +10,15 @@ using namespace planning_utils;
 bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 	const PlannerConfig &planner_config, int direction, ros::Publisher &tree_pub)
 {
-  std::cout << "Entering new config" << std::endl;	
 	double best_so_far = stateDistance(s_near, s);
 	std::array<double, 3> surf_norm = planner_config.terrain.getSurfaceNormal(s[0], s[1]);
 
   int tree_size = tree_viz_msg_.markers.size();
 
-	if (direction == REVERSE) {
-		flipDirection(s_near);
-	}
-	direction = FORWARD;
+	// if (direction == REVERSE) {
+	// 	flipDirection(s_near);
+	// }
+	// direction = FORWARD;
 
   bool any_valid_actions = false;
 	for (int i = 0; i < planner_config.NUM_GEN_STATES; ++i)
@@ -80,21 +79,19 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 		}
 	}
 
-  std::cout << "Reverse = " << direction << ", valid action found = " << (any_valid_actions ? 1 : 0) << std::endl;
+//   // Try connecting directly
+//   StateActionResult current_result;
+// 	if (attemptConnect(s_near, s, current_result, planner_config, direction) != TRAPPED) {
+// 		double current_dist = stateDistance(current_result.s_new, s);
 
-  // // Try connecting directly
-  // StateActionResult current_result;
-	// if (attemptConnect(s_near, s, current_result, planner_config, direction) != TRAPPED) {
-	// 	double current_dist = stateDistance(current_result.s_new, s);
-
-  //   if (current_dist < best_so_far)
-  //   {
-  //     best_so_far = current_dist;
-  //     result.s_new = current_result.s_new;
-  //     result.a_new = current_result.a_new;
-  //     result.length = current_result.length;
-  //   }
-	// }
+//     if (current_dist < best_so_far)
+//     {
+//       best_so_far = current_dist;
+//       result.s_new = current_result.s_new;
+//       result.a_new = current_result.a_new;
+//       result.length = current_result.length;
+//     }
+// 	}
 
 
   #ifdef VISUALIZE_ALL_CANDIDATE_ACTIONS
@@ -117,10 +114,10 @@ int RRTClass::attemptConnect(State s_existing, State s, double t_s, StateActionR
   if (t_s <= planner_config.KINEMATICS_RES)
     return TRAPPED;
 
-	if (direction == REVERSE) {
-		flipDirection(s_existing);
-	}
-	direction = FORWARD;
+	// if (direction == REVERSE) {
+	// 	flipDirection(s_existing);
+	// }
+	// direction = FORWARD;
 
   // Initialize the start and goal states depending on the direction, as well as the stance and flight times
   State s_start = (direction == FORWARD) ? s_existing : s;
@@ -133,19 +130,19 @@ int RRTClass::attemptConnect(State s_existing, State s, double t_s, StateActionR
   double z_td = s_start[2];
   double dx_td = s_start[3];
   double dy_td = s_start[4];
-  double dz_td = s_start[5];
+  double dz_td = 0;//s_start[5];
 
   double x_to = s_goal[0];
   double y_to = s_goal[1];
   double z_to = s_goal[2];
   double dx_to = s_goal[3];
   double dy_to = s_goal[4];
-  double dz_to = s_goal[5];
+  double dz_to = 0;//s_goal[5];
 
-  double p_td = s_start[6];
-  double dp_td = s_start[7];
-  double p_to = s_goal[6];
-  double dp_to = s_goal[7];
+//   double p_td = s_start[6];
+//   double dp_td = s_start[7];
+//   double p_to = s_goal[6];
+//   double dp_to = s_goal[7];
 
   // result.a_new[0] = -(2.0*(3.0*x_td - 3.0*x_to + 2.0*dx_td*t_s + dx_to*t_s))/(t_s*t_s);
   // result.a_new[1] = -(2.0*(3.0*y_td - 3.0*y_to + 2.0*dy_td*t_s + dy_to*t_s))/(t_s*t_s);
@@ -162,9 +159,11 @@ int RRTClass::attemptConnect(State s_existing, State s, double t_s, StateActionR
   result.a_new[3] = (2.0*(3.0*x_td - 3.0*x_to + dx_td*t_s + 2.0*dx_to*t_s))/(t_s*t_s);
   result.a_new[4] = (2.0*(3.0*y_td - 3.0*y_to + dy_td*t_s + 2.0*dy_to*t_s))/(t_s*t_s);
   result.a_new[5] = z_to - planner_config.terrain.getGroundHeight(x_to,y_to);;
-  result.a_new[6] = t_s;
-  result.a_new[7] = t_f;
-  
+  result.a_new[6] = 0;
+  result.a_new[7] = 0;
+  result.a_new[8] = t_s;
+  result.a_new[9] = t_f;
+  result.a_new[10] = 0;
 
   // If the connection results in an infeasible action, abort and return trapped
   if (isValidAction(result.a_new,planner_config) == true)

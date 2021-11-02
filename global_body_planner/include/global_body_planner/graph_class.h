@@ -168,6 +168,7 @@ class GraphClass
 
     /// Map from vertex indices to their costs (g-values)
     std::unordered_map<int, double> g_values;
+
 };
 
 #endif
