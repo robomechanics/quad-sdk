@@ -77,6 +77,9 @@ private:
   /// Publisher for ground truth state messages
   ros::Publisher ground_truth_state_pub_;
 
+  /// Publisher for ground truth state in body frame messages
+  ros::Publisher ground_truth_state_body_frame_pub_;
+
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
 
@@ -102,7 +105,7 @@ private:
   geometry_msgs::Vector3 mocap_vel_estimate_;
 
   /// Kinematics object
-  std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
+  std::shared_ptr<spirit_utils::QuadKD>quadKD_;
 
   /// Velocity update weight on exponential decay filter
   double alpha_;

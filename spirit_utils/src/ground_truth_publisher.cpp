@@ -4,13 +4,14 @@ GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string joint_encoder_topic, imu_topic, vel_topic, mocap_topic, ground_truth_state_topic;
+  std::string joint_encoder_topic, imu_topic, vel_topic, mocap_topic, ground_truth_state_topic, ground_truth_state_body_frame_topic;
 
   spirit_utils::loadROSParam(nh_,"topics/joint_encoder",joint_encoder_topic);
   spirit_utils::loadROSParam(nh_,"topics/imu",imu_topic);
   spirit_utils::loadROSParam(nh_,"topics/vel",vel_topic);
   spirit_utils::loadROSParam(nh_,"topics/mocap",mocap_topic);
   spirit_utils::loadROSParam(nh_,"topics/state/ground_truth",ground_truth_state_topic);
+  spirit_utils::loadROSParam(nh_,"topics/state/ground_truth_body_frame",ground_truth_state_body_frame_topic);
   spirit_utils::loadROSParam(nh_,"ground_truth_publisher/velocity_smoothing_weight",alpha_);
   spirit_utils::loadROSParam(nh_,"ground_truth_publisher/mocap_rate",mocap_rate_);
 
@@ -25,9 +26,10 @@ GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
   vel_sub_ = nh_.subscribe(vel_topic,1,&GroundTruthPublisher::velCallback, this);
   mocap_sub_ = nh_.subscribe(mocap_topic,1,&GroundTruthPublisher::mocapCallback, this);
   ground_truth_state_pub_ = nh_.advertise<spirit_msgs::RobotState>(ground_truth_state_topic,1);
+  ground_truth_state_body_frame_pub_ = nh_.advertise<spirit_msgs::RobotState>(ground_truth_state_body_frame_topic,1);
 
   // Convert kinematics
-  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
+  quadKD_ = std::make_shared<spirit_utils::QuadKD>();
 
   joints_order_ = {8, 0, 1, 9, 2, 3, 10, 4, 5, 11, 6, 7};
 }
@@ -72,6 +74,7 @@ bool GroundTruthPublisher::updateStep(spirit_msgs::RobotState &new_state_est) {
   {
     // new_state_est.body.pose.pose.orientation = last_imu_msg_->orientation;
     new_state_est.body.twist.angular = last_vel_msg_->twist.angular;
+    new_state_est.body.twist.linear = last_vel_msg_->twist.linear;
   } else {
     fully_populated = false;
     ROS_WARN_THROTTLE(1, "No imu in /state/ground_truth");
@@ -84,6 +87,14 @@ bool GroundTruthPublisher::updateStep(spirit_msgs::RobotState &new_state_est) {
   } else {
     fully_populated = false;
     ROS_WARN_THROTTLE(1, "No body pose (mocap) in /state/ground_truth");
+
+    new_state_est.body.pose.orientation.x = 0;
+    new_state_est.body.pose.orientation.y = 0;
+    new_state_est.body.pose.orientation.z = 0;
+    new_state_est.body.pose.orientation.w = 1;
+    new_state_est.body.pose.position.x = 0;
+    new_state_est.body.pose.position.y = 0;
+    new_state_est.body.pose.position.z = 0;
   }
   if (last_joint_state_msg_ != NULL)
   {
@@ -103,7 +114,7 @@ bool GroundTruthPublisher::updateStep(spirit_msgs::RobotState &new_state_est) {
 
     if (last_vel_msg_ != NULL)
     {
-      spirit_utils::fkRobotState(*kinematics_, new_state_est.body,new_state_est.joints, new_state_est.feet);
+      spirit_utils::fkRobotState(*quadKD_, new_state_est.body,new_state_est.joints, new_state_est.feet);
     }
   } else {
     fully_populated = false;
@@ -130,6 +141,8 @@ void GroundTruthPublisher::spin() {
     if (fully_populated) {
       ground_truth_state_pub_.publish(new_state_est);
     }
+    ground_truth_state_body_frame_pub_.publish(new_state_est);
+
     // Store new state estimate for next iteration
     last_state_est_ = new_state_est;
 

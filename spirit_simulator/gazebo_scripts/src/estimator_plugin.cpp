@@ -27,10 +27,18 @@ namespace gazebo{
 
     // Setup state estimate publisher
     ros::NodeHandle nh;
-    ground_truth_state_pub_ = nh.advertise<spirit_msgs::RobotState>("/state/ground_truth",1);
 
-      // Listen to the update event. This event is broadcast every
-      // simulation iteration.
+    // Load rosparams from parameter server
+    std::string ground_truth_state_topic, ground_truth_state_body_frame_topic;
+
+    spirit_utils::loadROSParam(nh,"topics/state/ground_truth",ground_truth_state_topic);
+    spirit_utils::loadROSParam(nh,"topics/state/ground_truth_body_frame",ground_truth_state_body_frame_topic);
+
+    ground_truth_state_pub_ = nh.advertise<spirit_msgs::RobotState>(ground_truth_state_topic, 1);
+    ground_truth_state_body_frame_pub_ = nh.advertise<spirit_msgs::RobotState>(ground_truth_state_body_frame_topic, 1);
+
+    // Listen to the update event. This event is broadcast every
+    // simulation iteration.
     updateConnection_= event::Events::ConnectWorldUpdateBegin(
         std::bind(&SpiritEstimatorGroundTruth::OnUpdate, this));
   }
@@ -123,7 +131,7 @@ namespace gazebo{
     int num_feet = 4;
     state.feet.feet.resize(num_feet);
 
-    spirit_utils::SpiritKinematics kinematics;
+    spirit_utils::QuadKD kinematics;
     spirit_utils::fkRobotState(kinematics,state);
 
     for (int i = 0; i<num_feet; i++) {
@@ -172,6 +180,16 @@ namespace gazebo{
 
     state.header.stamp = ros::Time::now();
     ground_truth_state_pub_.publish(state);
+
+    spirit_msgs::RobotState state_body_frame = state;
+    state_body_frame.body.pose.orientation.x = 0;
+    state_body_frame.body.pose.orientation.y = 0;
+    state_body_frame.body.pose.orientation.z = 0;
+    state_body_frame.body.pose.orientation.w = 1;
+    state_body_frame.body.pose.position.x = 0;
+    state_body_frame.body.pose.position.y = 0;
+    state_body_frame.body.pose.position.z = 0;
+    ground_truth_state_body_frame_pub_.publish(state_body_frame);
 
     last_time_ = current_time;
   }

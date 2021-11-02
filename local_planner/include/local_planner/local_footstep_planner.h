@@ -14,7 +14,7 @@
 #include <spirit_utils/function_timer.h>
 #include <spirit_utils/math_utils.h>
 #include <spirit_utils/ros_utils.h>
-#include <spirit_utils/kinematics.h>
+#include <spirit_utils/quad_kd.h>
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
@@ -53,7 +53,7 @@ class LocalFootstepPlanner {
      * @param[in] kinematics Kinematics class for computations
      */
     void setSpatialParams(double ground_clearance, double grf_weight,double standing_error_threshold,
-      std::shared_ptr<spirit_utils::SpiritKinematics> kinematics);
+      std::shared_ptr<spirit_utils::QuadKD> kinematics);
 
     /**
      * @brief Transform a vector of foot positions from the world to the body frame
@@ -78,6 +78,12 @@ class LocalFootstepPlanner {
      * @param[in] terrain The map of the terrain
      */
     void updateMap(const FastTerrainMap &terrain);
+
+    /**
+     * @brief Update the map of this object
+     * @param[in] terrain The map of the terrain
+     */
+    void updateMap(const grid_map::GridMap &terrain);
     
     /**
      * @brief Compute the contact schedule based on the current phase
@@ -138,6 +144,13 @@ class LocalFootstepPlanner {
         }
         printf("\n");
       }
+    }
+
+    inline double getTerrainHeight(double x, double y)
+    {
+      grid_map::Position pos = {x, y};
+      double height = this->terrain_grid_.atPosition("z", pos, grid_map::InterpolationMethods::INTER_NEAREST);
+      return (height);
     }
 
   private:
@@ -227,6 +240,9 @@ class LocalFootstepPlanner {
     /// Struct for terrain map data
     FastTerrainMap terrain_;
 
+    /// GridMap for terrain map data
+    grid_map::GridMap terrain_grid_;
+
     /// Current continuous footstep plan
     spirit_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
 
@@ -269,8 +285,8 @@ class LocalFootstepPlanner {
     /// Primitive ids - CONNECT_STANCE
     const int CONNECT_STANCE = 2;
 
-    /// Spirit Kinematics class
-    std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
+    /// QuadKD class
+    std::shared_ptr<spirit_utils::QuadKD>quadKD_;
 
     /// Threshold of body error from desired goal to start stepping
     double standing_error_threshold_ = 0;

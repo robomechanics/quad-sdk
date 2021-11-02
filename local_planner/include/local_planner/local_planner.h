@@ -12,7 +12,7 @@
 #include <local_planner/quadruped_mpc.h>
 #include <local_planner/local_footstep_planner.h>
 #include <spirit_utils/ros_utils.h>
-#include <spirit_utils/kinematics.h>
+#include <spirit_utils/quad_kd.h>
 #include "spirit_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <nmpc_controller/nmpc_controller.h>
@@ -122,6 +122,9 @@ private:
   /// Struct for terrain map data
   FastTerrainMap terrain_;
 
+  /// GridMap for terrain map data
+  grid_map::GridMap terrain_grid_;
+
 	/// Update rate for sending and receiving data;
 	double update_rate_;
 
@@ -198,6 +201,9 @@ private:
   /// Matrix of body states (N x Nx: rows correspond to individual states in the horizon)
   Eigen::MatrixXd ref_body_plan_;
 
+  /// Vector of ground height along reference trajectory
+  Eigen::MatrixXd ref_ground_height_;
+
   /// Matrix of grfs (N x Nu: rows correspond to individual arrays of GRFs in the horizon)
   Eigen::MatrixXd grf_plan_; 
 
@@ -216,8 +222,8 @@ private:
   /// Matrix of foot contact locations (number of contacts x num_legs_)
   Eigen::MatrixXd foot_plan_discrete_;
 
-  /// Spirit Kinematics class
-  std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
+  /// QuadKD class
+  std::shared_ptr<spirit_utils::QuadKD>quadKD_;
 
   /// Twist input
   typedef std::vector<double> Twist;

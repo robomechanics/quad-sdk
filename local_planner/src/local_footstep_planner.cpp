@@ -39,16 +39,20 @@ void LocalFootstepPlanner::setGaitParams(std::vector<double>  phase_offsets, std
 }
 
 void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double grf_weight, 
-  double standing_error_threshold, std::shared_ptr<spirit_utils::SpiritKinematics> kinematics) {
+  double standing_error_threshold, std::shared_ptr<spirit_utils::QuadKD> kinematics) {
 
   ground_clearance_ = ground_clearance;
   standing_error_threshold_ = standing_error_threshold;
   grf_weight_ = grf_weight;
-  kinematics_ = kinematics;
+quadKD_ = kinematics;
 }
 
 void LocalFootstepPlanner::updateMap(const FastTerrainMap &terrain) {
   terrain_ = terrain;
+}
+
+void LocalFootstepPlanner::updateMap(const grid_map::GridMap &terrain) {
+  terrain_grid_ = terrain;
 }
 
 void LocalFootstepPlanner::getFootPositionsBodyFrame(const Eigen::VectorXd &body_plan,
@@ -182,19 +186,13 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         Eigen::Vector3d current_body_pos = body_plan.block<1,3>(0,0);
 
         // Compute nominal foot positions for kinematic and grf-projection measures
-        kinematics_->nominalHipFK(j, body_pos_midstance, body_rpy_midstance, 
+      quadKD_->worldToNominalHipFKWorldFrame(j, body_pos_midstance, body_rpy_midstance, 
           hip_position_midstance);
-
-        // Use body height to estimate ground height
-        if (ground_height_ == std::numeric_limits<double>::max()){
-          ground_height_ = std::max(current_body_pos.z() - 0.3, 0.0);
-        }
-        else{
-          ground_height_ = 0.75 * std::max(current_body_pos.z() - 0.3, 0.0) + 0.25 * ground_height_;
-        }
-
-        double hip_height = hip_position_midstance.z() - 
-          terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());
+        // double hip_height = hip_position_midstance.z() - 
+        //   terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());
+        grid_map::Position hip_position_grid_map = {hip_position_midstance.x(), hip_position_midstance.y()};
+        double hip_height = hip_position_midstance.z() - terrain_grid_.atPosition(
+          "z",hip_position_grid_map, grid_map::InterpolationMethods::INTER_NEAREST);
         centrifugal = (hip_height/9.81)*body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
         vel_tracking = 0.03*(body_vel_touchdown - ref_body_vel_touchdown);
         // foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
@@ -203,8 +201,9 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         // foot_position_nominal = grf_weight_*foot_position_grf +
         //   (1-grf_weight_)*(hip_position_midstance + vel_tracking);
         foot_position_nominal = hip_position_midstance + centrifugal + vel_tracking;
-        foot_position_nominal.z() = terrain_.getGroundHeight(foot_position_nominal.x(),
-          foot_position_nominal.y());
+        grid_map::Position foot_position_grid_map = {foot_position_nominal.x(), foot_position_nominal.y()};
+        foot_position_nominal.z() = terrain_grid_.atPosition("z", foot_position_grid_map,
+          grid_map::InterpolationMethods::INTER_NEAREST);
 
         // (Optional) Optimize the foothold location to get the final position
         // foot_position = map_search::optimizeFoothold(foot_position_nominal, stuff); // ADAM

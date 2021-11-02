@@ -125,7 +125,7 @@ void GlobalFootstepPlanner::updateDiscretePlan() {
     primitive_id_plan_.push_back(body_plan_msg_->primitive_ids[i]);
   }
 
-  spirit_utils::SpiritKinematics kinematics;
+  spirit_utils::QuadKD kinematics;
   
   // Clear out the old footstep plan
   footstep_plan_.clear();
@@ -219,7 +219,7 @@ void GlobalFootstepPlanner::updateDiscretePlan() {
       Eigen::Vector3d body_rpy_touchdown = {roll,pitch,yaw};
 
       Eigen::Vector3d nominal_footstep_pos_touchdown;
-      kinematics.nominalHipFK(j, body_pos_touchdown, body_rpy_touchdown, nominal_footstep_pos_touchdown);
+      kinematics.worldToNominalHipFKWorldFrame(j, body_pos_touchdown, body_rpy_touchdown, nominal_footstep_pos_touchdown);
 
       Eigen::Vector3d grf_midstance = {grf_array_midstance.vectors[0].x,
         grf_array_midstance.vectors[0].y,
@@ -264,7 +264,7 @@ void GlobalFootstepPlanner::updateDiscretePlan() {
       Eigen::Vector3d body_rpy_final = {roll,pitch,yaw};
 
       Eigen::Vector3d nominal_footstep_pos_final;
-        kinematics.nominalHipFK(j, body_pos_final, body_rpy_final, nominal_footstep_pos_final);
+        kinematics.worldToNominalHipFKWorldFrame(j, body_pos_final, body_rpy_final, nominal_footstep_pos_final);
 
       footstep.clear();
       footstep.resize(4);

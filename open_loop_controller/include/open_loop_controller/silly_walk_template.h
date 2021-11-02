@@ -134,7 +134,7 @@ private:
 	const int SIT = 0;
 
 	/// Define ids for control modes: Stand
-	const int STAND = 1;
+	const int READY = 1;
 
 	/// Define ids for control modes: Walk
 	const int STANCE = 2;

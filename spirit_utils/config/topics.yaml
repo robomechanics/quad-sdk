@@ -4,6 +4,7 @@ topics:
   vel: /mcu/state/vel
   mocap: /mocap_node/spirit/pose
   terrain_map: /terrain_map
+  terrain_map_raw: /terrain_map_raw
   global_plan: /global_plan
   global_plan_discrete: /global_plan_discrete
   foot_plan_continuous: /foot_plan_continuous
@@ -15,6 +16,7 @@ topics:
   trajectory: /robot_plan
   state: # These should not change for the remapping to work in some launch files
     ground_truth: /state/ground_truth
+    ground_truth_body_frame: /state/ground_truth_body_frame
     estimate: /state/estimate
     trajectory: /state/trajectory
     grfs: /state/grfs
@@ -34,6 +36,7 @@ topics:
     local_plan_ori: /visualization/local_plan_ori
     global_plan_grf: /visualization/global_plan_grf
     local_plan_grf: /visualization/local_plan_grf
+    current_grf: /visualization/current_grf
     global_plan_discrete: /visualization/global_plan_discrete
     foot_plan_discrete: /visualization/foot_plan_discrete
     joint_states:

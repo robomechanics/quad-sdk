@@ -21,14 +21,14 @@ namespace spirit_utils {
   calculations. It relies on Eigen, as well as some MATLAB codegen for more 
   complicated computations that would be a pain to write out by hand.
 */
-class SpiritKinematics {
+class QuadKD {
 
   public:
   /**
-   * @brief Constructor for SpiritKinematics Class
-   * @return Constructed object of type SpiritKinematics
+   * @brief Constructor for QuadKD Class
+   * @return Constructed object of type QuadKD
    */
-  SpiritKinematics();
+  QuadKD();
 
   /**
    * @brief Create an Eigen Eigen::Matrix4d containing a homogeneous transform 
@@ -76,7 +76,7 @@ class SpiritKinematics {
    * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
    * @param[out] g_body_foot Transform of the specified foot in world frame
    */
-  void bodyToFootFK(int leg_index, Eigen::Vector3d joint_state, 
+  void bodyToFootFKBodyFrame(int leg_index, Eigen::Vector3d joint_state, 
     Eigen::Matrix4d &g_body_foot) const;
 
   /**
@@ -85,7 +85,7 @@ class SpiritKinematics {
    * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
    * @param[out] foot_pos_world Position of the specified foot in world frame
    */
-  void bodyToFootFK(int leg_index, Eigen::Vector3d joint_state, 
+  void bodyToFootFKBodyFrame(int leg_index, Eigen::Vector3d joint_state, 
     Eigen::Vector3d &foot_pos_body) const;
 
   /**
@@ -96,7 +96,7 @@ class SpiritKinematics {
    * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
    * @param[out] g_world_foot Transform of the specified foot in world frame
    */
-  void legFK(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
+  void worldToFootFKWorldFrame(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
       Eigen::Vector3d joint_state, Eigen::Matrix4d &g_world_foot) const;
 
   /**
@@ -107,7 +107,7 @@ class SpiritKinematics {
    * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
    * @param[out] foot_pos_world Position of the specified foot in world frame
    */
-  void legFK(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
+  void worldToFootFKWorldFrame(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
       Eigen::Vector3d joint_state, Eigen::Vector3d &foot_pos_world) const;
 
   /**
@@ -118,7 +118,7 @@ class SpiritKinematics {
    * @param[in] foot_pos_world Position of the specified foot in world frame
    * @param[out] joint_state Joint states for the specified leg (abad, hip, knee)
    */
-  void legIK(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
+  void worldToFootIKWorldFrame(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
       Eigen::Vector3d foot_pos_world, Eigen::Vector3d &joint_state) const;
 
   /**
@@ -127,7 +127,7 @@ class SpiritKinematics {
    * @param[in] foot_pos_legbase Position of the specified foot in leg base frame
    * @param[out] joint_state Joint states for the specified leg (abad, hip, knee)
    */
-  void legIKLegBaseFrame(int leg_index, Eigen::Vector3d foot_pos_legbase,
+  void legbaseToFootIKLegbaseFrame(int leg_index, Eigen::Vector3d foot_pos_legbase,
     Eigen::Vector3d &joint_state) const;
 
   /**
@@ -159,7 +159,7 @@ class SpiritKinematics {
    * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
    * @param[out] g_world_legbase Transformation matrix of world to leg base
    */
-  void legBaseFK(int leg_index, Eigen::Vector3d body_pos,
+  void worldToLegbaseFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
     Eigen::Vector3d body_rpy, Eigen::Matrix4d &g_world_legbase) const;
 
   /**
@@ -169,7 +169,7 @@ class SpiritKinematics {
    * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
    * @param[out] leg_base_pos_world Origin of leg base frame in world frame
    */
-  void legBaseFK(int leg_index, Eigen::Vector3d body_pos,
+  void worldToLegbaseFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
     Eigen::Vector3d body_rpy, Eigen::Vector3d &leg_base_pos_world) const;
 
   /**
@@ -177,10 +177,10 @@ class SpiritKinematics {
    * @param[in] leg_index Spirit leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
    * @param[in] body_pos Position of center of body frame
    * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
-   * @param[out] nominal_footstep_pos_world Location of nominal footstep in world frame
+   * @param[out] nominal_hip_pos_world Location of nominal hip in world frame
    */
-  void nominalHipFK(int leg_index, Eigen::Vector3d body_pos,
-    Eigen::Vector3d body_rpy, Eigen::Vector3d &nominal_footstep_pos_world) const;
+  void worldToNominalHipFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
+    Eigen::Vector3d body_rpy, Eigen::Vector3d &nominal_hip_pos_world) const;
 
   /**
    * @brief Compute Jacobian for generalized coordinates
@@ -216,41 +216,32 @@ class SpiritKinematics {
    * @param[in] state_vel Velocity states
    * @param[in] foot_acc Foot absolute acceleration in world frame
    * @param[in] grf Ground reaction force
+   * @param[in] contact_mode Contact mode of the legs
    * @param[out] tau Joint torques
    */
-  void compInvDyn(const Eigen::VectorXd &state_pos,const Eigen::VectorXd &state_vel,const Eigen::VectorXd &foot_acc,const Eigen::VectorXd &grf,Eigen::VectorXd &tau) const;
+  void computeInverseDynamics(const Eigen::VectorXd &state_pos,const Eigen::VectorXd &state_vel,
+    const Eigen::VectorXd &foot_acc,const Eigen::VectorXd &grf,
+    const std::vector<int> &contact_mode, Eigen::VectorXd &tau) const;
 
   private:
 
     /// Vector of the abad link lengths 
-    const std::vector<double> l0_vec_ = {0.1,0.1,-0.1,-0.1};
+    std::vector<double> l0_vec_;
 
     /// Upper link length
-    const double l1_ = 0.206;
+    double l1_;
 
     /// Lower link length
-    const double l2_ = 0.206;
+    double l2_;
 
     /// Abad offset from legbase
-    Eigen::Vector3d abad_offset_ = {0,0,0};
+    Eigen::Vector3d abad_offset_;
 
     /// Knee offset from hip
-    Eigen::Vector3d knee_offset_ = {-l1_,0,0};
+    Eigen::Vector3d knee_offset_;
 
     /// Foot offset from knee
-    Eigen::Vector3d foot_offset_ = {l2_,0,0};
-
-    /// Leg 0 legbase offset
-    const Eigen::Vector3d legbase_offset_0_ = {0.2263, 0.07, 0};
-
-    /// Leg 1 legbase offset
-    const Eigen::Vector3d legbase_offset_1_ = {-0.2263, 0.07, 0};
-
-    /// Leg 2 legbase offset
-    const Eigen::Vector3d legbase_offset_2_ = {0.2263, -0.07, 0};
-
-    /// Leg 3 legbase offset
-    const Eigen::Vector3d legbase_offset_3_ = {-0.2263, -0.07, 0};
+    Eigen::Vector3d foot_offset_;
 
     /// Vector of legbase offsets
     std::vector<Eigen::Vector3d> legbase_offsets_;

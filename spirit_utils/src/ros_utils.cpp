@@ -307,7 +307,7 @@ namespace spirit_utils {
 
   }
 
-  void ikRobotState(const spirit_utils::SpiritKinematics &kinematics,
+  void ikRobotState(const spirit_utils::QuadKD &kinematics,
     spirit_msgs::BodyState body_state, spirit_msgs::MultiFootState multi_foot_state,
     sensor_msgs::JointState &joint_state) {
 
@@ -341,7 +341,7 @@ namespace spirit_utils {
 
       // Compute IK to get joint data
       Eigen::Vector3d leg_joint_state;
-      kinematics.legIK(i,body_pos,body_rpy,foot_pos,leg_joint_state);
+      kinematics.worldToFootIKWorldFrame(i,body_pos,body_rpy,foot_pos,leg_joint_state);
 
       // Add to the joint state vector
       joint_state.position.push_back(leg_joint_state[0]);
@@ -388,13 +388,13 @@ namespace spirit_utils {
     }
   }
 
-  void ikRobotState(const spirit_utils::SpiritKinematics &kinematics,
+  void ikRobotState(const spirit_utils::QuadKD &kinematics,
     spirit_msgs::RobotState &state) {
       
     ikRobotState(kinematics, state.body, state.feet, state.joints);
   }
 
-  void fkRobotState(const spirit_utils::SpiritKinematics &kinematics,
+  void fkRobotState(const spirit_utils::QuadKD &kinematics,
     spirit_msgs::BodyState body_state, sensor_msgs::JointState joint_state,
     spirit_msgs::MultiFootState &multi_foot_state) {
 
@@ -428,7 +428,7 @@ namespace spirit_utils {
 
       // Compute IK to get joint data
       Eigen::Vector3d foot_pos;
-      kinematics.legFK(i,body_pos,body_rpy,leg_joint_state,foot_pos);
+      kinematics.worldToFootFKWorldFrame(i,body_pos,body_rpy,leg_joint_state,foot_pos);
 
       // Add to the foot position vector
       multi_foot_state.feet[i].position.x = foot_pos[0];
@@ -478,7 +478,7 @@ namespace spirit_utils {
     }
   }
 
-  void fkRobotState(const spirit_utils::SpiritKinematics &kinematics,
+  void fkRobotState(const spirit_utils::QuadKD &kinematics,
     spirit_msgs::RobotState &state) {
     
     fkRobotState(kinematics, state.body, state.joints, state.feet);

@@ -11,7 +11,7 @@ Maintainer: Vasileios Vasilopoulos (<vvasilo@seas.upenn.edu>)
 ## Running the simulation
 1. For the package to work properly, make sure you have installed the following packages:
 ```
-$ sudo apt-get install ros-melodic-controller-manager ros-melodic-joint-state-controller ros-melodic-gazebo-ros-pkgs ros-melodic-gazebo-ros-control ros-melodic-effort-controllers python-catkin-tools
+$ sudo apt install -y ros-melodic-controller-manager ros-melodic-joint-state-controller ros-melodic-gazebo-ros-pkgs ros-melodic-gazebo-ros-control ros-melodic-effort-controllers python-catkin-tools
 ```
 
 2. For some illustrations, we also use the package [3DGEMS](http://data.nvision2.eecs.yorku.ca/3DGEMS/). Download all the subfolders mentioned on the package website and put them in a separate folder.

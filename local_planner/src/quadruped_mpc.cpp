@@ -35,7 +35,7 @@ QuadrupedMPC::QuadrupedMPC() {
   b_contact_hi_ = Eigen::VectorXd::Zero(num_contact_constraints_);
   b_dyn_ = Eigen::VectorXd::Zero(num_dyn_constraints_);
 
-  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
+quadKD_ = std::make_shared<spirit_utils::QuadKD>();
 }
 
 void QuadrupedMPC::setMassProperties(const double m, const Eigen::Matrix3d Ib) {
@@ -106,7 +106,7 @@ void QuadrupedMPC::update_dynamics_hip_projected_feet(const Eigen::MatrixXd &ref
   for (int i = 0; i < N_; ++i) {
     for (int j = 0; j < 4; ++j) {
     Eigen::Vector3d toe_body_pos;
-    this->kinematics_->bodyToFootFK(j, nominal_joint_state, toe_body_pos);
+    this->quadKD_->bodyToFootFKBodyFrame(j, nominal_joint_state, toe_body_pos);
     foot_positions.block(i,j*3,1,3) = toe_body_pos;
     }
   }
@@ -373,7 +373,7 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
   rpy = initial_state.segment(3, 3);
   angvel_body = initial_state.segment(9, 3);
 
-  kinematics_->getRotationMatrix(rpy, rot);
+quadKD_->getRotationMatrix(rpy, rot);
   angvel_world = rot * angvel_body;
 
   initial_state_angvel_world.segment(9, 3) = angvel_world;
@@ -383,7 +383,7 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
     rpy = ref_traj.block(i, 3, 1, 3).transpose();
     angvel_body = ref_traj.block(i, 9, 1, 3).transpose();
 
-    kinematics_->getRotationMatrix(rpy, rot);
+  quadKD_->getRotationMatrix(rpy, rot);
     angvel_world = rot * angvel_body;
 
     ref_traj_angvel_world.block(i, 9, 1, 3) = angvel_world.transpose();
@@ -413,7 +413,7 @@ bool QuadrupedMPC::computePlan(const Eigen::VectorXd &initial_state,
     rpy = state_traj.block(i, 3, 1, 3).transpose();
     angvel_world = state_traj.block(i, 9, 1, 3).transpose();
 
-    kinematics_->getRotationMatrix(rpy, rot);
+  quadKD_->getRotationMatrix(rpy, rot);
     angvel_body = rot.transpose() * angvel_world;
 
     state_traj.block(i, 9, 1, 3) = angvel_body.transpose();

@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <gtest/gtest.h>
 
-#include "spirit_utils/kinematics.h"
+#include "spirit_utils/quad_kd.h"
 #include "spirit_utils/ros_utils.h"
 
 using namespace spirit_utils;
@@ -11,7 +11,7 @@ const double kinematics_tol = 1e-4;
 TEST(KinematicsTest, testDifferentialFKIK)
 {
   // Declare kinematics object
-  SpiritKinematics kinematics;
+  QuadKD kinematics;
 
   for (size_t i = 0; i < 20; i++)
   {
@@ -77,7 +77,7 @@ TEST(KinematicsTest, testDifferentialFKIK)
 TEST(KinematicsTest, testFootForces) {
 
   // Declare kinematics object
-  SpiritKinematics kinematics;
+  QuadKD kinematics;
 
   // Length parameters from URDF
   // TODO: load these from parameters rather than hard-coding
@@ -234,7 +234,7 @@ TEST(KinematicsTest, testFKIKFeasibleConfigurations) {
   ros::NodeHandle nh;
  
   // Declare kinematics object
-  SpiritKinematics spirit;
+  QuadKD spirit;
 
   // Set up problem variables
   Eigen::Vector3d body_pos = {0,0,0};
@@ -261,13 +261,13 @@ TEST(KinematicsTest, testFKIKFeasibleConfigurations) {
       int leg_index = i;
 
       // Compute foot positions in this configuration
-      spirit.legFK(leg_index,body_pos,body_rpy,joint_state,foot_pos_world);
+      spirit.worldToFootFKWorldFrame(leg_index,body_pos,body_rpy,joint_state,foot_pos_world);
 
       // Run IK to compute corresponding joint angles, then back through FK
       // This ensures that we are enforcing a hip-above-knee configuration if
       // otherwise ambiguous.
-      spirit.legIK(leg_index,body_pos,body_rpy,foot_pos_world,joint_state_test);
-      spirit.legFK(leg_index,body_pos,body_rpy,joint_state_test,
+      spirit.worldToFootIKWorldFrame(leg_index,body_pos,body_rpy,foot_pos_world,joint_state_test);
+      spirit.worldToFootFKWorldFrame(leg_index,body_pos,body_rpy,joint_state_test,
         foot_pos_world_test);
 
       // Check the answers
@@ -280,7 +280,7 @@ TEST(KinematicsTest, testFKIKFeasibleConfigurations) {
 TEST(KinematicsTest, testFKIKInfeasibleConfigurations) {
   ros::NodeHandle nh;
  
-  SpiritKinematics spirit;
+  QuadKD spirit;
 
   // Set up problem variables
   Eigen::Vector3d body_pos = {0,0,0};
@@ -308,11 +308,11 @@ TEST(KinematicsTest, testFKIKInfeasibleConfigurations) {
 
       // Transform foot offset into world frame
       Eigen::Vector3d shoulder_pos;
-      spirit.legBaseFK(leg_index, body_pos, body_rpy, shoulder_pos);
+      spirit.worldToLegbaseFKWorldFrame(leg_index, body_pos, body_rpy, shoulder_pos);
       foot_pos_world = shoulder_pos + foot_offset;
 
       // Run IK and make sure there aren't any errors
-      spirit.legIK(leg_index,body_pos,body_rpy,foot_pos_world,joint_state_test);
+      spirit.worldToFootIKWorldFrame(leg_index,body_pos,body_rpy,foot_pos_world,joint_state_test);
 
       // To do: Check these solutions and make sure they are what we want
     }
@@ -325,7 +325,7 @@ TEST(KinematicsTest, testBodyToFootFK) {
   ros::NodeHandle nh;
  
   // Declare kinematics object
-  SpiritKinematics spirit;
+  QuadKD spirit;
 
   // Set up problem variables
   Eigen::Matrix4d g_world_foot;
@@ -371,13 +371,13 @@ TEST(KinematicsTest, testBodyToFootFK) {
     for (int leg_index = 0; leg_index < 4; leg_index++) {
 
       // Compute the foot position in world frame with FK then tranform into body frame
-      spirit.legFK(leg_index, body_pos, body_rpy, joint_state, g_world_foot);
+      spirit.worldToFootFKWorldFrame(leg_index, body_pos, body_rpy, joint_state, g_world_foot);
       spirit.transformWorldToBody(body_pos, body_rpy, g_world_foot, g_body_foot);
       foot_pos_body = g_body_foot.block<3,1>(0,3);
 
       // Compute foot positions directly from the body frame
-      spirit.bodyToFootFK(leg_index,joint_state,g_body_foot_test);
-      spirit.bodyToFootFK(leg_index,joint_state,foot_pos_body_test);
+      spirit.bodyToFootFKBodyFrame(leg_index,joint_state,g_body_foot_test);
+      spirit.bodyToFootFKBodyFrame(leg_index,joint_state,foot_pos_body_test);
 
       // Check the answers
       EXPECT_TRUE(foot_pos_body_test.isApprox(foot_pos_body));

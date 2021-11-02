@@ -44,6 +44,7 @@ SillyWalkTemplate::SillyWalkTemplate(ros::NodeHandle nh) {
 void SillyWalkTemplate::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
   
   // Use this to set any logic for control modes (see inverse_dynamics for more examples)
+
   if (msg->data == SIT || (msg->data == STAND) || (msg->data == WALK))
   {  
     control_mode_ = msg->data;
@@ -132,8 +133,8 @@ void SillyWalkTemplate::computeJointControl()
   control_msg_.leg_commands.clear();
   control_msg_.leg_commands.resize(num_legs_);
 
-  // The SpiritKinematics class can help do basic kinematic computations (with type Eigen::VectorXd)
-  // For example: kinematics_.legIK(leg_index, body_pos, body_rpy, foot_pos_world,joint_state);
+  // The QuadKD class can help do basic kinematic computations (with type Eigen::VectorXd)
+  // For example:quadKD_.worldToFootIKWorldFrame(leg_index, body_pos, body_rpy, foot_pos_world,joint_state);
   // See inverse_dynamics for more elaborate implementations
 
   // You can use something like this if you want a state machine

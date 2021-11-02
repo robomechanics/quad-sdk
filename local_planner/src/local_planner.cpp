@@ -46,7 +46,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   nh.param<bool>("local_planner/use_twist_input", use_twist_input_, false);
 
   // Convert kinematics
-  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
+quadKD_ = std::make_shared<spirit_utils::QuadKD>();
 
   // Initialize nominal footstep positions projected down from the hips
   Eigen::Vector3d nominal_joint_state;
@@ -56,7 +56,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   for (int i = 0; i < N_; ++i) {
     for (int j = 0; j < num_feet_; ++j) {
       Eigen::Vector3d toe_body_pos;
-      kinematics_->bodyToFootFK(j, nominal_joint_state, toe_body_pos);
+    quadKD_->bodyToFootFKBodyFrame(j, nominal_joint_state, toe_body_pos);
       hip_projected_foot_positions_.block<1,3>(i,j*3) = toe_body_pos;
     }
   }
@@ -67,6 +67,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   foot_positions_body_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
   current_foot_positions_body_ = Eigen::VectorXd::Zero(num_feet_*3);
   current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_*3);
+  ref_ground_height_ = Eigen::VectorXd::Zero(N_+1);
 
   // Initialize body and footstep planners
   initLocalBodyPlanner();
@@ -175,20 +176,20 @@ void LocalPlanner::initLocalFootstepPlanner() {
   local_footstep_planner_ = std::make_shared<LocalFootstepPlanner>();
   local_footstep_planner_->setTemporalParams(dt_, period, N_);
   local_footstep_planner_->setSpatialParams(ground_clearance, standing_error_threshold,
-    grf_weight, kinematics_);
+    grf_weight,quadKD_);
 
   past_footholds_msg_.feet.resize(num_feet_);
 }
 
 void LocalPlanner::terrainMapCallback(
   const grid_map_msgs::GridMap::ConstPtr& msg) {
-  // Get the map in its native form
-  grid_map::GridMap map;
-  grid_map::GridMapRosConverter::fromMessage(*msg, map);
+  // grid_map::GridMap map;
+  grid_map::GridMapRosConverter::fromMessage(*msg, terrain_grid_);
 
   // Convert to FastTerrainMap structure for faster querying
-  terrain_.loadDataFromGridMap(map);
+  terrain_.loadDataFromGridMap(terrain_grid_);
   local_footstep_planner_->updateMap(terrain_);
+  local_footstep_planner_->updateMap(terrain_grid_);
 }
 
 void LocalPlanner::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg) {
@@ -256,7 +257,11 @@ void LocalPlanner::getStateAndReferencePlan() {
     } else {
       ref_body_plan_.row(i) = spirit_utils::bodyStateMsgToEigen(body_plan_msg_->states[i+current_plan_index_].body);
     }
+
+    ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_(i, 0), ref_body_plan_(i, 1));
   }
+
+  ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(current_state_(0), current_state_(1));
 
   // Update the body plan to use for linearization
   if (body_plan_.rows() < N_+1) {
@@ -320,28 +325,18 @@ void LocalPlanner::getStateAndTwistInput() {
     std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
     ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
   }
-
-  // Adaptive body height, use the lowest foot and exponential filter
-  std::vector<double> foot_height;
-  for (size_t i = 0; i < 4; i++){
-    foot_height.push_back(current_foot_positions_world_(3 * i + 2));
-  }
-
-  if (z_des_ == std::numeric_limits<double>::max()){
-    z_des_ = std::max(*std::min_element(foot_height.begin(), foot_height.end()) + 0.3, 0.0);
-  }else{
-    z_des_ = 0.75 * std::max(*std::min_element(foot_height.begin(), foot_height.end()) + 0.3, 0.0) + 0.25 * z_des_;
-  }
+  // Set initial ground height
+  ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(current_state_(0), current_state_(1));
 
   // Set initial condition for forward integration
   ref_body_plan_(0,0) = current_state_[0];
   ref_body_plan_(0,1) = current_state_[1];
-  ref_body_plan_(0,2) = z_des_;
+  ref_body_plan_(0,2) = z_des_ + ref_ground_height_(0);
   ref_body_plan_(0,3) = 0;
   ref_body_plan_(0,4) = 0;
   ref_body_plan_(0,5) = current_state_[5];
-  ref_body_plan_(0,6) = cmd_vel_[0];
-  ref_body_plan_(0,7) = cmd_vel_[1];
+  ref_body_plan_(0,6) = cmd_vel_[0]*cos(current_state_[5]) - cmd_vel_[1]*sin(current_state_[5]);
+  ref_body_plan_(0,7) = cmd_vel_[0]*sin(current_state_[5]) + cmd_vel_[1]*cos(current_state_[5]);
   ref_body_plan_(0,8) = cmd_vel_[2];
   ref_body_plan_(0,9) = cmd_vel_[3];
   ref_body_plan_(0,10) = cmd_vel_[4];
@@ -359,6 +354,9 @@ void LocalPlanner::getStateAndTwistInput() {
       ref_body_plan_(i,j) = ref_body_plan_(i-1,j) + current_cmd_vel[j]*dt_;
       ref_body_plan_(i,j+6) = (current_cmd_vel[j]);
     }
+
+    ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_(i, 0), ref_body_plan_(i, 1));
+    ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);
   }
 
   // Update the body plan to use for linearization
@@ -414,7 +412,7 @@ bool LocalPlanner::computeLocalPlan() {
   // Compute body plan with MPC, return if solve fails
   if (use_nmpc_) {
     if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_,
-      foot_positions_body_, contact_schedule_, body_plan_, grf_plan_))
+      foot_positions_body_, contact_schedule_, ref_ground_height_, body_plan_, grf_plan_))
       return false;
   } else {
     if (!local_body_planner_convex_->computePlan(current_state_, ref_body_plan_,
@@ -469,7 +467,7 @@ void LocalPlanner::publishLocalPlan() {
     spirit_msgs::RobotState robot_state_msg;
     robot_state_msg.body = spirit_utils::eigenToBodyStateMsg(body_plan_.row(i));
     robot_state_msg.feet = foot_plan_msg.states[i];
-    spirit_utils::ikRobotState(*kinematics_, robot_state_msg);
+    spirit_utils::ikRobotState(*quadKD_, robot_state_msg);
 
     // Add the GRF information
     spirit_msgs::GRFArray grf_array_msg;

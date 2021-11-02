@@ -11,7 +11,6 @@
 #include <spirit_msgs/RobotStateTrajectory.h>
 // #include <local_planner/quadruped_mpc.h>
 #include <spirit_utils/ros_utils.h>
-#include <spirit_utils/kinematics.h>
 #include "spirit_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <spirit_msgs/LegCommand.h>
@@ -57,6 +56,7 @@ public:
                       const Eigen::MatrixXd &ref_traj,
                       const Eigen::MatrixXd &foot_positions,
                       const std::vector<std::vector<bool>> &contact_schedule,
+                      const Eigen::VectorXd &ref_ground_height,
                       Eigen::MatrixXd &state_traj,
                       Eigen::MatrixXd &control_traj);
 
@@ -88,16 +88,9 @@ private:
   /// Update rate for sending and receiving data;
   double update_rate_;
 
-  /// Spirit Kinematics class
-  std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
-
   SmartPtr<spiritNLP> mynlp_;
 
   SmartPtr<IpoptApplication> app_;
-
-  Eigen::MatrixXd last_state_traj_;
-
-  Eigen::MatrixXd last_control_traj_;
 
   int N_;
 

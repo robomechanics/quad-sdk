@@ -78,7 +78,7 @@ MPCController::MPCController(ros::NodeHandle nh) {
   quad_mpc_->update_friction(mu);
 
   // Convert kinematics
-  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
+quadKD_ = std::make_shared<spirit_utils::QuadKD>();
 
   // Setup pubs and subs
   robot_state_traj_sub_ = nh_.subscribe(robot_state_traj_topic,1,&MPCController::robotPlanCallback, this);
@@ -172,7 +172,7 @@ void MPCController::extractMPCTrajectory(int start_idx,
         joint_pos(joint_idx) = joint_states.at(leg_idx*num_joints_per_leg_+joint_idx);
       }
 
-      kinematics_->bodyToFootFK(leg_idx, joint_pos, foot_pos_body);
+    quadKD_->bodyToFootFKBodyFrame(leg_idx, joint_pos, foot_pos_body);
       
       // This should be replaced with a block operation but for now it'll do
       foot_positions(i,leg_idx*num_joints_per_leg_+0) = foot_pos_body(0);

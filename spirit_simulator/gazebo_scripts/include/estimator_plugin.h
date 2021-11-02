@@ -30,6 +30,7 @@ namespace gazebo
       common::Time last_time_;
 
       ros::Publisher ground_truth_state_pub_;
+      ros::Publisher ground_truth_state_body_frame_pub_;
       physics::ModelPtr model_;
       event::ConnectionPtr updateConnection_;
   };
