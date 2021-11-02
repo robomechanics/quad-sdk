@@ -19,8 +19,8 @@
 #include <unistd.h>
 
 // Uncomment to add visualization features
-#define VISUALIZE_TREE
-#define VISUALIZE_ALL_CANDIDATE_ACTIONS
+// #define VISUALIZE_TREE
+// #define VISUALIZE_ALL_CANDIDATE_ACTIONS
 // #define PLOT_TRAJECTORIES
 
 namespace planning_utils {
@@ -73,7 +73,7 @@ const int REVERSE = 1;
 const int POSEDIM = 3;
 const int STATEDIM = 6;
 const int FULLSTATEDIM = 12;
-const int ACTIONDIM = 10;
+const int ACTIONDIM = 11;
 typedef std::array<double, STATEDIM> State;
 typedef std::array<double, ACTIONDIM> Action;
 typedef std::vector<double> FullState;
@@ -101,6 +101,7 @@ State fullStateToState(FullState full_state);
 FullState stateToFullState(State state, double roll, double pitch, double yaw, 
   double roll_rate, double pitch_rate, double yaw_rate);
 void flipDirection(State &state);
+void flipDirection(Action &action);
 void vectorToArray(State vec, double * new_array);
 
 // Define some useful print statements
@@ -132,7 +133,7 @@ inline double getSpeed(const State &s) {
 void addFullStates(FullState start_state, std::vector<State> interp_reduced_path, double dt, 
   std::vector<FullState> &interp_full_path, const PlannerConfig &planner_config);
 GRF getGRF(Action a,double t, const PlannerConfig &planner_config);
-Eigen::Vector3d getAcceleration(State s, Action a, double t);
+Eigen::Vector3d getAcceleration(State s, Action a, double t, int phase);
 double getHeightFromState(State s, const PlannerConfig &planner_config);
 double getPitchFromState(State s, const PlannerConfig &planner_config);
 void interpStateActionPair(State s, Action a,double t0,double dt,
@@ -157,7 +158,7 @@ Action getRandomAction(std::array<double, 3> surf_norm, const PlannerConfig &pla
 Action getRandomLeapAction(const State &s, std::array<double, 3> surf_norm,
   const PlannerConfig &planner_config);
 bool isValidAction(Action a, const PlannerConfig &planner_config);
-bool isValidYawRate(State s, Action a, double t, const PlannerConfig &planner_config);
+bool isValidYawRate(State s, Action a, double t, int phase, const PlannerConfig &planner_config);
 bool isValidState(State s, const PlannerConfig &planner_config, int phase);
 // bool isValidStateActionPair(State s, Action a, const PlannerConfig &planner_config, State &s_new, double& t_new);
 bool isValidStateActionPair(State s, Action a, StateActionResult &result, 

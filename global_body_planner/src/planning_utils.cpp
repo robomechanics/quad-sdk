@@ -66,6 +66,26 @@ void flipDirection(State &state)
   state[5] = -state[5];
 };
 
+void flipDirection(Action &action)
+{
+  double peak_grf_x = action[0];
+  double peak_grf_y = action[1];
+  double peak_grf_z = action[2];
+  double dz0 = action[6];
+  double t_s = action[8];
+  action[0] = action[3];
+  action[1] = action[4];
+  action[2] = action[5];
+  action[3] = peak_grf_x;
+  action[4] = peak_grf_y;
+  action[5] = peak_grf_z;
+  action[6] = -action[7];
+  action[7] = -dz0;
+  action[8] = action[10];
+  action[10] = t_s;
+
+};
+
 void vectorToArray(State vec, double * new_array)
 {
   for (int i = 0; i < vec.size(); i++)
@@ -349,7 +369,7 @@ GRF getGRF(Action a,double t, const PlannerConfig &planner_config) {
 
   double m = planner_config.M_CONST;
   double g = planner_config.G_CONST;
-  double t_s = a[7];
+  double t_s = a[8];
 
   GRF grf;
 
@@ -367,28 +387,63 @@ GRF getGRF(Action a,double t, const PlannerConfig &planner_config) {
 
 }
 
-Eigen::Vector3d getAcceleration(State s, Action a, double t)
+Eigen::Vector3d getAcceleration(State s, Action a, double t, int phase)
 {
     Eigen::Vector3d acc;
 
-    double a_x_td = a[0]; // Acceleration in x at touchdown
-    double a_y_td = a[1];
-    double a_z_td = a[2];
-    double a_x_to = a[3]; // Acceleration in x at takeoff
-    double a_y_to = a[4];
-    double a_z_to = a[5];
-    double t_s = a[7];
+    if (phase == CONNECT) {
+      double a_x_td = a[0]; // Acceleration in x at touchdown
+      double a_y_td = a[1];
+      double a_z_td = a[2];
+      double a_x_to = a[3]; // Acceleration in x at takeoff
+      double a_y_to = a[4];
+      double a_z_to = a[5];
+      double t_s = a[8];
 
-    acc(0) = a_x_td + (a_x_to - a_x_td)*t/(t_s);
-    acc(1) = a_y_td + (a_y_to - a_y_td)*t/(t_s);
-    acc(2) = a_z_td + (a_z_to - a_z_td)*t/(t_s);
+      acc.x() = a_x_td + (a_x_to - a_x_td)*t/(t_s);
+      acc.y() = a_y_td + (a_y_to - a_y_td)*t/(t_s);
+      acc.z() = a_z_td + (a_z_to - a_z_td)*t/(t_s);
+    } else {
+      double g = 9.81;
+      double x0 = s[0];
+      double y0 = s[1];
+      double z0 = s[2];
+      double dx0 = s[3];
+      double dy0 = s[4];
+      double dz0 = s[5];
+
+      double peak_grf_x;
+      double peak_grf_y;
+      double peak_grf_z;
+      double t_s;
+
+      if (phase == LEAP_STANCE) {
+        peak_grf_x = a[0];
+        peak_grf_y = a[1];
+        peak_grf_z = a[2];
+        dz0 = a[6];
+        t_s = a[8];
+      } else if (phase == LAND_STANCE) {
+        peak_grf_x = a[3];
+        peak_grf_y = a[4];
+        peak_grf_z = a[5];
+        t_s = a[10];
+      } else {
+        throw std::runtime_error("Invalid phase ID");
+      }
+      acc.x() = -(4*g*peak_grf_x*t*(t - t_s))/pow(t_s,2);
+      acc.y() = -(4*g*peak_grf_y*t*(t - t_s))/pow(t_s,2);
+      acc.z() = -(g*(4*peak_grf_z*pow(t,2) - 4*peak_grf_z*t*t_s + pow(t_s,2)))/pow(t_s,2);
+    }
+    
     return acc;
 }
 
-bool isValidYawRate(State s, Action a, double t, const PlannerConfig &planner_config)
+bool isValidYawRate(State s, Action a, double t, int phase, const PlannerConfig &planner_config)
 {
-  Eigen::Vector3d acc = getAcceleration(s, a, t);
-  State s_next = applyStance(s,a,t,planner_config);
+  return true;
+  Eigen::Vector3d acc = getAcceleration(s, a, t, phase);
+  State s_next = applyStance(s,a,t,phase,planner_config);
 
   double dy = s_next[4];
   double dx = s_next[3];
@@ -435,7 +490,8 @@ double getPitchFromState(State s, const PlannerConfig &planner_config) {
 
 double getHeightFromState(State s, const PlannerConfig &planner_config) {
 
-  return (planner_config.terrain.getGroundHeightFiltered(s[0], s[1]));
+  // return (planner_config.terrain.getGroundHeightFiltered(s[0], s[1]));
+  return (planner_config.terrain.getGroundHeight(s[0], s[1]));
 
 }
 
@@ -444,20 +500,21 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
   std::vector<double> &interp_t, std::vector<int> &interp_primitive_id,
   std::vector<double> &interp_length, const PlannerConfig &planner_config)
 {
-  double t_s = a[7];
-  double t_f = a[8];
-  double t_s_land = a[9];
+  double t_s = a[8];
+  double t_f = a[9];
+  double t_s_land = a[10];
 
-  printStateNewline(s);
-  printActionNewline(a);
+  // printStateNewline(s);
+  // printActionNewline(a);
 
-  std::cout << "In interpStateActionPair" << std::endl;
+  // std::cout << "In interpStateActionPair" << std::endl;
 
   int phase;
   if (t_f == 0) {
     phase = CONNECT;
   } else {
     phase = LEAP_STANCE;
+    s[5] = a[6];
   }
 
   // Add points during stance phase
@@ -471,12 +528,12 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
     interp_reduced_plan.push_back(s_next);
     interp_GRF.push_back(getGRF(a,t, planner_config));
 
-    if (!isValidYawRate(s,a,t,planner_config)) {
-      std::cout << "Invalid yaw detected!" << std::endl;
-      printStateNewline(s);
-      printActionNewline(a);
-      std::cout << "t = " << t<< std::endl;
-      std::cout << "t_f = " << t_f<< std::endl;
+    if (!isValidYawRate(s,a,t,phase,planner_config)) {
+      // std::cout << "Invalid yaw detected!" << std::endl;
+      // printStateNewline(s);
+      // printActionNewline(a);
+      // std::cout << "t = " << t<< std::endl;
+      // std::cout << "t_f = " << t_f<< std::endl;
     }
 
     interp_primitive_id.push_back(phase);
@@ -484,7 +541,7 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
 
   State s_takeoff = applyStance(s, a, phase, planner_config);
 
-  std::cout << "In interpStateActionPair, in flight" << std::endl;
+  // std::cout << "In interpStateActionPair, in flight" << std::endl;
   // // Include the exact moment of liftoff if flight phase exists
   // if (t_f>0) {
   //   interp_t.push_back(t0+t_s);
@@ -507,7 +564,7 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
   }
 
   State s_land = applyFlight(s_takeoff, t_f);
-  std::cout << "In interpStateActionPair, in land" << std::endl;
+  // std::cout << "In interpStateActionPair, in land" << std::endl;
 
 
   if (phase != CONNECT) {
@@ -524,18 +581,18 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
       interp_reduced_plan.push_back(s_next);
       interp_GRF.push_back(getGRF(a,t, planner_config));
 
-      if (!isValidYawRate(s,a,t,planner_config)) {
-        std::cout << "Invalid yaw detected!" << std::endl;
-        printStateNewline(s);
-        printActionNewline(a);
-        std::cout << "t = " << t<< std::endl;
-        std::cout << "t_f = " << t_f<< std::endl;
+      if (!isValidYawRate(s,a,t,phase,planner_config)) {
+        // std::cout << "Invalid yaw detected!" << std::endl;
+        // printStateNewline(s);
+        // printActionNewline(a);
+        // std::cout << "t = " << t<< std::endl;
+        // std::cout << "t_f = " << t_f<< std::endl;
       }
 
       interp_primitive_id.push_back(phase);
     }
   }
-  std::cout << "In interpStateActionPair, finished landing, exiting" << std::endl;
+  // std::cout << "In interpStateActionPair, finished landing, exiting" << std::endl;
 
 
   // // Include the exact landing state if there is a flight phase
@@ -632,7 +689,7 @@ State applyStance(State s, Action a, double t, int phase, const PlannerConfig &p
     double a_x_to = a[3]; // Acceleration in x at takeoff
     double a_y_to = a[4];
     double a_z_to = a[5];
-    double t_s = a[7];
+    double t_s = a[8];
 
     double x_td = s[0];
     double y_td = s[1];
@@ -667,12 +724,12 @@ State applyStance(State s, Action a, double t, int phase, const PlannerConfig &p
       peak_grf_y = a[1];
       peak_grf_z = a[2];
       dz0 = a[6];
-      t_s = a[7];
+      t_s = a[8];
     } else if (phase == LAND_STANCE) {
       peak_grf_x = a[3];
       peak_grf_y = a[4];
       peak_grf_z = a[5];
-      t_s = a[9];
+      t_s = a[10];
     } else {
       throw std::runtime_error("Invalid phase ID");
     }
@@ -694,7 +751,7 @@ State applyStance(State s, Action a, double t, int phase, const PlannerConfig &p
 
 State applyStance(State s, Action a, int phase, const PlannerConfig &planner_config)
 {
-  double t_s = (phase == CONNECT || phase == LEAP_STANCE) ? a[7] : a[9];
+  double t_s = (phase == CONNECT || phase == LEAP_STANCE) ? a[8] : a[10];
   return applyStance(s, a, t_s, phase, planner_config);
 }
 
@@ -721,9 +778,9 @@ State applyFlight(State s, double t_f)
 
 State applyAction(State s, Action a, const PlannerConfig &planner_config)
 {
-  double t_s = a[7];
-  double t_f = a[8];
-  double t_s_land = a[9];
+  double t_s = a[8];
+  double t_f = a[9];
+  double t_s_land = a[10];
   State s_new;
 
   if (t_f == 0)
@@ -743,8 +800,8 @@ State applyAction(State s, Action a, const PlannerConfig &planner_config)
 //   double t_s;
 //   double t_f;
 
-//   t_s = a[7];
-//   t_f = a[8];
+//   t_s = a[8];
+//   t_f = a[9];
 
 //   State s_to = applyFlight(s, -t_f);
 //   State s_new = applyStanceReverse(s_to, a, planner_config);
@@ -759,7 +816,7 @@ State applyAction(State s, Action a, const PlannerConfig &planner_config)
 //   double a_x_to = a[3];
 //   double a_y_to = a[4];
 //   double a_z_to = a[5];
-//   double t_s = a[7];
+//   double t_s = a[8];
 
 //   double x_to = s[0];
 //   double y_to = s[1];
@@ -781,7 +838,7 @@ State applyAction(State s, Action a, const PlannerConfig &planner_config)
 //   s_new[1] = y_to - cy*(t_s - t) - 0.5*a_y_td*(t_s*t_s - t*t) - (a_y_to - a_y_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
 //   s_new[2] = z_to - cz*(t_s - t) - 0.5*a_z_td*(t_s*t_s - t*t) - (a_z_to - a_z_td)*(t_s*t_s*t_s - t*t*t)/(6.0*t_s);
 
-//   if (a[8] == 0) {
+//   if (a[9] == 0) {
 //     s_new[2] = a_z_to + (a_z_td - a_z_to)*(t/t_s) + getHeightFromState(s_new, planner_config);
 //     // s_new[2] = getHeightFromState(s_new, planner_config);
 //     s_new[5] = 0;//sqrt(s_new[3]*s_new[3] + s_new[4]*s_new[4])*sin();
@@ -852,8 +909,8 @@ Action getRandomAction(std::array<double, 3> surf_norm, const PlannerConfig &pla
   a[3] = f_to[0]/planner_config.M_CONST;
   a[4] = f_to[1]/planner_config.M_CONST;
   a[5] = f_to[2]/planner_config.M_CONST - planner_config.G_CONST;
-  a[7] = t_s;
-  a[8] = t_f;
+  a[8] = t_s;
+  a[9] = t_f;
 
   return a;
 }
@@ -884,7 +941,7 @@ Action getRandomLeapAction(const State &s, std::array<double, 3> surf_norm,
   double f_z_land = f_max*cos(ang_inc);
 
 
-  double dz0 = (double)rand()/RAND_MAX - 1.0;
+  double dz0 = (double)rand()/RAND_MAX - 2.0;
 
   // std::array<double, 3> f_td = {f_x_td, f_y_td, f_z_td};
   // std::array<double, 3> f_to = {f_x_to, f_y_to, f_z_to};
@@ -912,9 +969,10 @@ Action getRandomLeapAction(const State &s, std::array<double, 3> surf_norm,
   a[4] = f_y_land;
   a[5] = f_z_land;
   a[6] = dz0;
-  a[7] = t_s_leap;
-  a[8] = t_f;
-  a[9] = t_s_land;
+  a[7] = -dz0;
+  a[8] = t_s_leap;
+  a[9] = t_f;
+  a[10] = t_s_land;
 
   return a;
 }
@@ -922,7 +980,7 @@ Action getRandomLeapAction(const State &s, std::array<double, 3> surf_norm,
 bool isValidAction(Action a, const PlannerConfig &planner_config)
 {
    
-  if ((a[7] <= 0) || (a[8] < 0))
+  if ((a[8] <= 0) || (a[9] < 0))
     return false;
 
   double m = planner_config.M_CONST;
@@ -959,11 +1017,17 @@ bool isValidAction(Action a, const PlannerConfig &planner_config)
 
 bool isValidState(State s, const PlannerConfig &planner_config, int phase)
 {
-  if (planner_config.terrain.isInRange(s[0], s[1]) == false)
+  if (planner_config.terrain.isInRange(s[0], s[1]) == false) {
+    // std::cout << "Out of terrain range" << std::endl;
+    // printStateNewline(s);
     return false;
+  }
 
-  if (sqrt(s[3]*s[3] + s[4]*s[4]) > planner_config.V_MAX) // Ignore limit on vertical velocity since this is accurately bounded by gravity
+  if (sqrt(pow(s[3],2) + pow(s[4],2)) > planner_config.V_MAX) {// Ignore limit on vertical velocity since this is accurately bounded by gravity
+    // std::cout << "V_MAX exceeded" << std::endl;
+    // printStateNewline(s);
     return false;
+  } 
 
   // Find yaw, pitch, and their sines and cosines
   double yaw = atan2(s[4],s[3]); double cy = cos(yaw); double sy = sin(yaw);
@@ -998,16 +1062,23 @@ bool isValidState(State s, const PlannerConfig &planner_config, int phase)
         planner_config.terrain.getGroundHeight(x_corner,y_corner);
 
       // Check for collision
-      if (corner_height < planner_config.H_MIN)
+      if (corner_height < planner_config.H_MIN) {
+        // std::cout << "H_MIN exceeded for leg" << std::endl;
+        // printStateNewline(s);
         return false;
+      }
       
       // Check for reachability
       if (phase == CONNECT) {
         if (leg_height > planner_config.H_MAX) {
+          // std::cout << "H_MAX exceeded" << std::endl;
+          // printStateNewline(s);
           return false;
         }
       } else if (phase == LEAP_STANCE || phase == LAND_STANCE) {
         if (leg_height > planner_config.H_MAX) {
+          // std::cout << "H_MAX exceeded" << std::endl;
+          // printStateNewline(s);
           return false;
         }
       }
@@ -1017,9 +1088,11 @@ bool isValidState(State s, const PlannerConfig &planner_config, int phase)
   // Check the center of the underside of the robot for penetration
   double height = (s[2] + R_33*z_body) - planner_config.terrain.getGroundHeight(s[0] + 
     R_13*z_body,s[1] + R_23*z_body);
-  if (height < planner_config.H_MIN)
+  if (height < planner_config.H_MIN) {
+    // std::cout << "H_MIN exceeded for body center" << std::endl;
+    // printStateNewline(s);
     return false;
-
+  }
 
   return true;
 }
@@ -1029,9 +1102,9 @@ bool isValidStateActionPair(State s, Action a, StateActionResult &result,
 {
 
   // Declare stance and flight times
-  double t_s = a[7];
-  double t_f = a[8];
-  double t_s_land = a[9];
+  double t_s = a[8];
+  double t_f = a[9];
+  double t_s_land = a[10];
 
   // Declare states, actions, and lengths for upcoming validity and distance checks
   State s_prev = s;
@@ -1046,11 +1119,12 @@ bool isValidStateActionPair(State s, Action a, StateActionResult &result,
     phase = LEAP_STANCE;
   }
 
-  std::cout << "Entering isValidStateActionPair" << std::endl;
-  std::cout << "In isValidStateActionPair, initial state: ";
-  printStateNewline(s);
-  std::cout << "In isValidStateActionPair, initial action: ";
-  printActionNewline(result.a_new);
+  // std::cout << std::endl;
+  // std::cout << "Entering isValidStateActionPair, phase = " << phase << std::endl;
+  // std::cout << "In isValidStateActionPair, initial state: ";
+  // printStateNewline(s);
+  // std::cout << "In isValidStateActionPair, initial action: ";
+  // printActionNewline(result.a_new);
 
   // LEAP (OR CONNECT) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1059,14 +1133,14 @@ bool isValidStateActionPair(State s, Action a, StateActionResult &result,
     // Compute state to check
     State s_next = applyStance(s,a,t,phase,planner_config);
 
-    if (isValidState(s_next, planner_config, phase) == false || (!isValidYawRate(s,a,t,planner_config)))
+    if ((isValidState(s_next, planner_config, phase) == false) || (!isValidYawRate(s,a,t,phase,planner_config)))
     {
+      // std::cout << "Invalid leaping stance config" << std::endl;
       result.t_new = (1.0-planner_config.BACKUP_RATIO)*t;
       result.s_new = applyStance(s,a,result.t_new,phase,planner_config);
-      result.a_new[8] = 0.001;
       result.a_new[9] = 0.001;
+      result.a_new[10] = 0.001;
       // s_new = applyStance(s,a,(t - planner_config.BACKUP_TIME));
-      std::cout << "Invalid leaping stance config" << std::endl;
       return false;
     } else {
       result.t_new = t;
@@ -1076,21 +1150,20 @@ bool isValidStateActionPair(State s, Action a, StateActionResult &result,
     }
   }
 
+  // std::cout << "In isValidStateActionPair, takeoff state: " << std::endl;
   State s_takeoff = applyStance(s, a,phase,planner_config);
+  // printStateNewline(s_takeoff);
+  // std::cout << "In isValidStateActionPair, takeoff action: ";
+  // printActionNewline(result.a_new);
 
   if (!isValidState(s_takeoff, planner_config, phase)) {
     result.t_new = (1.0-planner_config.BACKUP_RATIO)*t_s;
     result.s_new = applyStance(s,a,result.t_new,planner_config);
-    std::cout << "Invalid takeoff config" << std::endl;
-    result.a_new[8] = 0.001;
+    // std::cout << "Invalid takeoff config" << std::endl;
     result.a_new[9] = 0.001;
+    result.a_new[10] = 0.001;
     return false;
   }
-
-  std::cout << "In isValidStateActionPair, takeoff state: ";
-  printStateNewline(s_takeoff);
-  std::cout << "In isValidStateActionPair, takeoff action: ";
-  printActionNewline(result.a_new);
 
   // FLIGHT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1102,7 +1175,7 @@ bool isValidStateActionPair(State s, Action a, StateActionResult &result,
     State s_next = applyFlight(s_takeoff, t);
     result.length += poseDistance(s_next, s_prev);
     result.t_new = t_s+t;
-    result.a_new[8] = t;
+    result.a_new[9] = t;
     // result.a_new[4] = s_next[5];
     result.s_new = s_next;
      
@@ -1123,15 +1196,14 @@ bool isValidStateActionPair(State s, Action a, StateActionResult &result,
             pow(getSpeed(s_land),2)/(2*poseDistance(s_land,s_next)) &&
             isValidState(s_land, planner_config, LAND_STANCE)) {
 
-          result.a_new[8] = t_f_land;
+          result.a_new[9] = t_f_land;
           // result.a_new[4] = s_land[5];
           result.s_new = s_land;
-          std::cout << "Valid landing config found, continuing" << std::endl;
+          // std::cout << "Valid landing config found, continuing" << std::endl;
           break;
-          // std::cout << "Valid landing config" << std::endl;
         } else {
-          result.a_new[9] = 0.001;
-          std::cout << "Invalid landing config" << std::endl;
+          result.a_new[10] = 0.001;
+          // std::cout << "Invalid landing config" << std::endl;
           return false;
         }
       }
@@ -1139,9 +1211,9 @@ bool isValidStateActionPair(State s, Action a, StateActionResult &result,
 
     // Check collision in flight
     if (!isValidState(s_next, planner_config, FLIGHT)) {
-      std::cout << "Flight collision, exiting" << std::endl;
-      result.a_new[8] = t;
-      result.a_new[9] = 0.001;
+      // std::cout << "Flight collision, exiting" << std::endl;
+      result.a_new[9] = t;
+      result.a_new[10] = 0.001;
       return false;
     }
 
@@ -1160,32 +1232,30 @@ bool isValidStateActionPair(State s, Action a, StateActionResult &result,
 
     t_s_land = (3.0*(dz0 - sqrt(pow(dz0,2) + 2*g*z0 - 2*g*z_max - (4*g*f_z_land*z0)/3.0 +
       (4*g*f_z_land*z_max)/3.0)))/(3*g - 2*g*f_z_land);
-    result.a_new[9] = t_s_land;
+    result.a_new[10] = t_s_land;
 
     if (t_s_land <= 0 || t_s_land >= 1) {
-      std::cout << "t_s_land = " << t_s_land << ", invalid" << std::endl;
-      result.a_new[9] = 0.001;
+      // std::cout << "t_s_land = " << t_s_land << ", invalid" << std::endl;
+      result.a_new[10] = 0.001;
       return false;
     }
 
-    std::cout << "In isValidStateActionPair, landing state: ";
-    printStateNewline(s_land);
-    std::cout << "In isValidStateActionPair, landing action: ";
-    printActionNewline(result.a_new);
+    // std::cout << "In isValidStateActionPair, landing state: ";
+    // printStateNewline(s_land);
+    // std::cout << "In isValidStateActionPair, landing action: ";
+    // printActionNewline(result.a_new);
 
     for (double t = 0; t <= t_s_land; t += planner_config.KINEMATICS_RES)
     {
       // Compute state to check
       State s_next = applyStance(s_land,result.a_new,t,LAND_STANCE,planner_config);
 
-      if (isValidState(s_next, planner_config, LAND_STANCE) == false || (!isValidYawRate(s,result.a_new,t,planner_config)))
+      if (isValidState(s_next, planner_config, LAND_STANCE) == false || (!isValidYawRate(s,result.a_new,t,phase,planner_config)))
       {
         result.t_new = (1.0-planner_config.BACKUP_RATIO)*t;
         result.s_new = applyStance(s,result.a_new,result.t_new,LAND_STANCE,planner_config);
-        // result.a_new[8] = 0.001;
-        // s_new = applyStance(s,a,(t - planner_config.BACKUP_TIME));
-        std::cout << "Invalid landing stance config: ";
-        printStateNewline(s_next);
+        // std::cout << "Invalid landing stance config: ";
+        // printStateNewline(s_next);
         return false;
       } else {
         result.t_new = t;
@@ -1200,190 +1270,23 @@ bool isValidStateActionPair(State s, Action a, StateActionResult &result,
     if (!isValidState(s_final, planner_config, LAND_STANCE)) {
       result.t_new = (1.0-planner_config.BACKUP_RATIO)*t_s;
       result.s_new = applyStance(s_land,result.a_new,result.t_new,planner_config);
-      std::cout << "Invalid s_final config" << std::endl;
+      // std::cout << "Invalid s_final config" << std::endl;
       return false;
     }
 
-    std::cout << "In isValidStateActionPair, final state: ";
-    printStateNewline(s_final);
-    std::cout << "In isValidStateActionPair, final action: ";
-    printActionNewline(result.a_new);
+    // Update the action to reflect the final velocity (for reversing direction)
+    result.a_new[7] = s_final[5];
+
+    // std::cout << "In isValidStateActionPair, final state: ";
+    // printStateNewline(s_final);
+    // std::cout << "In isValidStateActionPair, final action: ";
+    // printActionNewline(result.a_new);
   }
 
-  std::cout << "Exiting isValidStateActionPair, success" << std::endl;
+  // std::cout << "Exiting isValidStateActionPair, success" << std::endl;
   return true;
 
-  // if (t_f == 0) {
-  //   std::cout << "t_f = 0 and valid, exiting " << std::endl;
-  //   return true;
-  // } else {
-  //   std::cout << "Did not find landing state, exiting " << std::endl;
-  //   return false;
-  // }
-
-  // // Check the exact landing state
-  // State s_land = applyFlight(s_takeoff, t_f);
-  // if (isValidState(s_land, planner_config, phase) == false)
-  // {
-  //   return false;
-  // } else {
-  //   result.t_new = t_s+t_f;
-  //   result.s_new = s_land;
-  //   result.length += poseDistance(s_land, s_prev);
-  // }
-
-  // If both stance and flight trajectories are entirely valid, return true
-  // return true;
 }
-
-// bool isValidStateActionPairReverse(State s, Action a, StateActionResult &result,
-//   const PlannerConfig &planner_config)
-// {
-
-//   std::cout << "Entering isValidStateActionPairReverse:" << std::endl;
-//   printStateNewline(s);
-//   printActionNewline(a);
-//   std::cout << std::endl;
-
-//   // Declare stance and flight times
-//   double t_s = a[7];
-//   double t_f = a[8];
-
-//   // Declare states and lengths for upcoming validity and distance checks
-//   State s_prev = s;
-//   State s_next;
-//   result.length = 0;
-//   result.a_new = a;
-//   int phase;
-//   if (t_f == 0) {
-//     phase = CONNECT;
-//   } else {
-//     phase = LEAP_STANCE;
-//     s[5] = a[4]; // Apply the reverse impulse to this initial state
-//   }
-
-//   double takeoff_height = 0.3;
-//   double t_f_takeoff = 0;
-//   State s_takeoff = s;
-//   for (double t = 0; t < t_f; t += planner_config.KINEMATICS_RES)
-//   {
-//     // State s_next = applyFlight(s, -t);
-//     // result.length += poseDistance(s_next, s_prev);
-//     // s_prev = s_next;
-
-//     // if (isValidState(s_next, planner_config, FLIGHT) == false) {
-//     //   return false;
-//     // }
-
-//     State s_next = applyFlight(s, -t);
-//     result.length += poseDistance(s_next, s_prev);
-//     result.a_new[7] = t;
-//     result.s_new = s_next;
-
-//     std::cout << "s_next: ";
-//     printStateNewline(s_next);
-     
-//     // If newly within takeoff height, update takeoff state
-//     if (s_prev[2] - getHeightFromState(s_prev, planner_config) > takeoff_height &&
-//         s_next[2] - getHeightFromState(s_next, planner_config) <= takeoff_height){
-//       t_f_takeoff = t;
-//       s_takeoff = s_next;
-//       result.s_new = s_takeoff;
-//       std::cout << "new takeoff height found" <<std::endl;
-//     }
-
-//     // Check if landing collision has been detected
-//     if (t_f_takeoff > 0) {
-//       if (!isValidState(s_next, planner_config, LEAP_STANCE)) {
-
-//         // Accept if landing and collision are far enough away, otherwise reject
-//         if (planner_config.PEAK_GRF_MAX*planner_config.G_CONST > 
-//             pow(getSpeed(s_takeoff),2)/(2*poseDistance(s_takeoff,s_next)) &&
-//             isValidState(s_takeoff, planner_config, LEAP_STANCE)) {
-
-//           result.a_new[7] = t_f_takeoff;
-//           result.s_new = s_takeoff;
-
-//           double dzf = s_takeoff[5];
-//           double zf = s_takeoff[2];
-//           double z0_ref = 0.2 + getHeightFromState(s_takeoff, planner_config);
-//           double peak_grf = a[2];
-//           double g = planner_config.G_CONST;
-//           t_s = -(3*(dzf + sqrt(pow(dzf,2) - 2*g*z0_ref + 2*g*zf + (4*g*peak_grf*z0_ref)/3.0 -
-//             (4*g*peak_grf*zf)/3.0)))/(3*g - 2*g*peak_grf);
-
-//           t_s = 0.2;
-//           a[7] = t_s;
-//           result.a_new[6] = t_s;
-
-//           std::cout << "internal: " << pow(dzf,2) - 2*g*(z0_ref + 2*g*zf + (4*g*peak_grf*(z0_ref - zf))/3.0) << std::endl;
-//           printf("dzf = %6.4f,g = %6.4f,peak_grf = %6.4f,z0_ref = %6.4f,zf = %6.4f\n",
-//             dzf, g, peak_grf, z0_ref, zf);
-//           std::cout << "Takeoff is valid, continuing" <<std::endl;
-//           break;
-//         } else {
-//           std::cout << "Takeoff is invalid, exiting" <<std::endl;
-//           return false;
-//         }
-//       }
-//     }
-
-//     // Check collision in flight
-//     if (!isValidState(s_next, planner_config, FLIGHT)) {
-//       std::cout << "Invalid flight state, exiting" <<std::endl;
-//       return false;
-//     }
-
-//     s_prev = s_next;
-//   }
-
-//   std::cout << "t_s = " << t_s << std::endl;
-//   // State s_takeoff = applyFlight(s, -t_f);
-
-//   for (double t = t_s; t >= 0; t -= planner_config.KINEMATICS_RES)
-//   {
-
-//     State s_next = applyStanceReverse(s_takeoff,a,t,planner_config);
-
-//     std::cout << "s_next: ";
-//     printStateNewline(s_next);
-
-//     if (isValidState(s_next, planner_config, phase) == false || (!isValidYawRate(s,a,t,planner_config)))
-//     {
-//       if (phase == CONNECT) {
-//         t_s = planner_config.BACKUP_RATIO*(t_s - t);
-//         a[7] = result.t_new;
-//       }
-//       // a[7] = result.t_new;
-//       // result.a_new[6] = result.t_new;
-//       result.s_new = applyStanceReverse(s_takeoff,a,t_s, planner_config);
-//       // result.s_new = applyStance(s,a,result.t_new, planner_config);
-//       std::cout << "Invalid stance state, exiting" <<std::endl;
-//       return false;
-//     } else {
-//       result.t_new = t_s - t;
-//       result.s_new = s_next;
-//       // result.a_new[6] = result.t_new;
-//       result.length += poseDistance(s_next, s_prev);
-//       s_prev = s_next;
-//     }
-//   }
-
-//   // Check the exact starting state
-//   State s_start = applyStanceReverse(s_takeoff,a, planner_config);
-//   if (isValidState(s_start, planner_config, phase) == false)
-//   {
-//     std::cout << "Invalid stance state at start, exiting" <<std::endl;
-//     return false;
-//   } else {
-//     result.t_new = t_s;
-//     result.s_new = s_start;
-//     result.length += poseDistance(s_start, s_prev);
-//   }
-//   // If both stance and flight trajectories are entirely valid, return true
-//   std::cout << "Valid action, exiting with " <<std::endl;
-//   return true;
-// }
 
 void publishStateActionPair(const State &s, const Action &a, const State &s_goal,
   const PlannerConfig &planner_config, visualization_msgs::MarkerArray &tree_viz_msg,

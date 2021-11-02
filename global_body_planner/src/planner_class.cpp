@@ -2,14 +2,18 @@
 #include <queue>
 #include <chrono>
 
-//constructor
-PlannerClass::PlannerClass(){}
-//destructor
-PlannerClass::~PlannerClass(){}
-
 using namespace planning_utils;
 
 typedef std::pair<double, int> Distance; 
+
+//constructor
+PlannerClass::PlannerClass(int direction)
+{
+    direction_ = direction;
+}
+
+//destructor
+PlannerClass::~PlannerClass(){}
 
 State PlannerClass::randomState(const PlannerConfig &planner_config)
 {

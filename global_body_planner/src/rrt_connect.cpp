@@ -89,6 +89,7 @@ int RRTConnectClass::connect(PlannerClass &T, State s, const PlannerConfig &plan
   int direction, ros::Publisher &tree_pub)
 {
   // Find nearest neighbor
+  flipDirection(s);
   int s_near_index = T.getNearestNeighbor(s);
   State s_near = T.getVertex(s_near_index);
   StateActionResult result;
@@ -185,7 +186,7 @@ void RRTConnectClass::postProcessPath(std::vector<State> &state_sequence, std::v
       new_action_sequence.push_back(old_action);
 
       // Recompute path length
-      flipDirection(old_state);
+      // flipDirection(old_state);
       isValidStateActionPair(old_state,old_action,result,planner_config);
       path_length_ += result.length;
       s = old_state;
@@ -208,10 +209,16 @@ void RRTConnectClass::extractPath(PlannerClass Ta, PlannerClass Tb, std::vector<
 
   std::reverse(path_b.begin(), path_b.end());
   std::vector<Action> action_sequence_b = getActionSequenceReverse(Tb, path_b);
+  for (int i = 0; i < action_sequence_b.size(); i++) {
+    flipDirection(action_sequence_b[i]);
+  }
   path_b.erase(path_b.begin());
 
   state_sequence = getStateSequence(Ta, path_a);
   std::vector<State> state_sequence_b = getStateSequence(Tb, path_b);
+  for (int i = 0; i < state_sequence_b.size(); i++) {
+    flipDirection(state_sequence_b[i]);
+  }
   state_sequence.insert(state_sequence.end(), state_sequence_b.begin(), state_sequence_b.end());
 
   action_sequence = getActionSequence(Ta, path_a);
@@ -240,10 +247,12 @@ bool RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
   auto t_start_current_solve = std::chrono::steady_clock::now();
   bool success = false;
 
-  PlannerClass Ta;
-  PlannerClass Tb;
+  PlannerClass Ta(FORWARD);
+  PlannerClass Tb(REVERSE);
   Ta.init(s_start);
+  flipDirection(s_goal);
   Tb.init(s_goal);
+
   #ifdef VISUALIZE_TREE
     tree_viz_msg_.markers.clear();
     tree_viz_msg_.markers.resize(1);
@@ -272,8 +281,8 @@ bool RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
         auto t_start_current_solve = std::chrono::steady_clock::now();
         anytime_horizon = anytime_horizon*horizon_expansion_factor;
         std::cout << "Failed, retrying with horizon of " << anytime_horizon << "s" << std::endl;
-        Ta = PlannerClass();
-        Tb = PlannerClass();
+        Ta = PlannerClass(FORWARD);
+        Tb = PlannerClass(REVERSE);
         tree_viz_msg_.markers.clear();
         Ta.init(s_start);
         Tb.init(s_goal);
@@ -283,8 +292,6 @@ bool RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
 
     // Generate random s
     State s_rand = Ta.randomState(planner_config);
-
-    // static int i = 0;
 
     if (isValidState(s_rand, planner_config, LEAP_STANCE))
     {
@@ -299,7 +306,7 @@ bool RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
           publishStateActionPair(s_parent,a_new, s_rand, planner_config, tree_viz_msg_, tree_pub);
         #endif
 
-        if(connect(Tb, s_new, planner_config, REVERSE, tree_pub) == REACHED)
+        if(connect(Tb, s_new, planner_config, FORWARD, tree_pub) == REACHED)
         {
           goal_found = true;
 
@@ -315,14 +322,15 @@ bool RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
 
     if (isValidState(s_rand, planner_config, LEAP_STANCE))
     {
-      if (extend(Tb, s_rand, planner_config, REVERSE, tree_pub) != TRAPPED)
+      if (extend(Tb, s_rand, planner_config, FORWARD, tree_pub) != TRAPPED)
       {
         State s_new = Tb.getVertex(Tb.getNumVertices()-1);
 
         #ifdef VISUALIZE_TREE
           std::cout << "Extended from B" << std::endl;
           Action a_new = Tb.getAction(Tb.getNumVertices()-1);
-          publishStateActionPair(s_new,a_new, s_rand, planner_config, tree_viz_msg_, tree_pub);
+          State s_parent = Tb.getVertex(Tb.getPredecessor(Tb.getNumVertices()-1));
+          publishStateActionPair(s_parent,a_new, s_rand, planner_config, tree_viz_msg_, tree_pub);
         #endif
 
         if(connect(Ta, s_new, planner_config, FORWARD, tree_pub) == REACHED)
@@ -354,7 +362,7 @@ bool RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
   path_duration_ = 0.0;
   for (Action a : action_sequence)
   {
-    path_duration_ += (a[7] + a[8]);
+    path_duration_ += (a[8] + a[9] + a[10]);
   }
 
   return success;
