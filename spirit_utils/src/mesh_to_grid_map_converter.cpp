@@ -231,37 +231,37 @@ void MeshToGridMapConverter::GetInputPoints(std::vector<GEOM_FADE25D::Point2>& v
 
 void MeshToGridMapConverter::generateTerrain(std::string path) {
 
-  // // diamond_square
-  double range = 4.0; // +-10
-	int width = pow(2, 8)+1;
-  double** map_ = new double* [width];
-  std::cout<< "here"<<std::endl;
-	for(int i = 0; i < width; i++)
-	{
-		map_[i] = new double[width];
-		for(int j = 0; j < width; j++)
-			map_[i][j] = 0.0;
-	}
-  std::cout<< "here"<<std::endl;
-	DiamondSquare ds(map_, width, range);
-  std::cout<< "here"<<std::endl;
-	double** map = ds.process();
-  std::cout<< "here"<<std::endl;
-  //std::cout<<map<<std::endl;
+  // // // diamond_square
+  // double range = 4.0; // +-10
+	// int width = pow(2, 8)+1;
+  // double** map_ = new double* [width];
+  // std::cout<< "here"<<std::endl;
+	// for(int i = 0; i < width; i++)
+	// {
+	// 	map_[i] = new double[width];
+	// 	for(int j = 0; j < width; j++)
+	// 		map_[i][j] = 0.0;
+	// }
+  // std::cout<< "here"<<std::endl;
+	// DiamondSquare ds(map_, width, range);
+  // std::cout<< "here"<<std::endl;
+	// double** map = ds.process();
+  // std::cout<< "here"<<std::endl;
+  // //std::cout<<map<<std::endl;
 
-  std::vector<GEOM_FADE25D::Point2> vInputPoints;
-  vInputPoints.reserve(width*width);
-	for(int x=0;x<=width-1;++x)
-	{
-		for(int y=0;y<=width-1;++y)
-		{
-      // std::cout<<map[x][y]<<" "<<std::endl; 
-			vInputPoints.push_back(GEOM_FADE25D::Point2(x,y,map[x][y]));
-		}
-	}
+  // std::vector<GEOM_FADE25D::Point2> vInputPoints;
+  // vInputPoints.reserve(width*width);
+	// for(int x=0;x<=width-1;++x)
+	// {
+	// 	for(int y=0;y<=width-1;++y)
+	// 	{
+  //     // std::cout<<map[x][y]<<" "<<std::endl; 
+	// 		vInputPoints.push_back(GEOM_FADE25D::Point2(x,y,map[x][y]));
+	// 	}
+	// }
 
-	// std::vector<GEOM_FADE25D::Point2> vInputPoints;
-	// GetInputPoints(vInputPoints);
+	std::vector<GEOM_FADE25D::Point2> vInputPoints;
+	GetInputPoints(vInputPoints);
 
 	GEOM_FADE25D::Fade_2D dt;
 	GEOM_FADE25D::CloudPrepare cloudPrep;

@@ -1,5 +1,5 @@
 #include "open_loop_controller/silly_walk_template.h"
-#include "spirit_utils/kinematics.h"
+// #include "spirit_utils/kinematics.h"
 #include "spirit_utils/math_utils.h"
 
 using namespace spirit_utils;
