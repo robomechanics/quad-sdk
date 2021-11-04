@@ -378,9 +378,10 @@ namespace spirit_utils {
     kinematics.getJacobianBodyAngVel(state_positions, jacobian);
 
     // Compute joint velocities
-    joint_velocities = jacobian.leftCols(12).colPivHouseholderQr().solve(
-      ref_foot_velocities - jacobian.rightCols(6)*ref_body_state.tail(6));
-    
+    joint_velocities = math_utils::sdlsInv(jacobian.leftCols(12)) *
+                       (ref_foot_velocities -
+                        jacobian.rightCols(6) * ref_body_state.tail(6));
+
     // Populate joint velocities message
     for (int i = 0; i < 12; ++i)
     {

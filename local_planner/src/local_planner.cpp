@@ -470,6 +470,16 @@ void LocalPlanner::getReference() {
   ref_body_plan_(0,10) = cmd_vel_[4];
   ref_body_plan_(0,11) = cmd_vel_[5];
 
+  // Only adaptive pitch
+  // ref_body_plan_(0, 4) = local_footstep_planner_->getTerrainSlope(current_state_(0), current_state_(1), current_state_(6), current_state_(7));
+  
+  // Adaptive roll and pitch
+  local_footstep_planner_->getTerrainSlope(current_state_(0),
+                                           current_state_(1),
+                                           current_state_(5),
+                                           ref_body_plan_(0, 3),
+                                           ref_body_plan_(0, 4));
+
   // Integrate to get full body plan (Forward Euler)
   for (int i = 1; i < N_+1; i++) {
     Twist current_cmd_vel = cmd_vel_;
@@ -485,6 +495,16 @@ void LocalPlanner::getReference() {
 
     ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_(i, 0), ref_body_plan_(i, 1));
     ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);
+
+    // Only adaptive pitch
+    // ref_body_plan_(i, 4) = local_footstep_planner_->getTerrainSlope(ref_body_plan_(i, 0), ref_body_plan_(i, 1), ref_body_plan_(i, 6), ref_body_plan_(i, 7));
+    
+    // Adaptive roll and pitch
+    local_footstep_planner_->getTerrainSlope(ref_body_plan_(i, 0),
+                                             ref_body_plan_(i, 1),
+                                             ref_body_plan_(i, 5),
+                                             ref_body_plan_(i, 3),
+                                             ref_body_plan_(i, 4));
   }
 
   // Update the body plan to use for foot planning
