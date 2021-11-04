@@ -203,6 +203,33 @@ namespace math_utils {
     }
 
     return data_unwrapped;
-  } 
+  }
 
+  Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian)
+  {
+    Eigen::JacobiSVD<Eigen::MatrixXd> svd(jacobian, Eigen::ComputeThinU | Eigen::ComputeThinV);
+
+    Eigen::VectorXd sig = svd.singularValues();
+    Eigen::VectorXd sig_inv = sig;
+
+    for (size_t i = 0; i < sig.size(); i++)
+    {
+      if (sig(i) == 0)
+      {
+        sig_inv(i) = 0;
+      }
+      else if (sig(i) < 1e-1)
+      {
+        sig_inv(i) = 10;
+      }
+      else
+      {
+        sig_inv(i) = 1 / sig(i);
+      }
+    }
+
+    Eigen::MatrixXd jacobian_inv = svd.matrixV() * sig_inv.asDiagonal() * svd.matrixU().transpose();
+
+    return jacobian_inv;
+  }
 }

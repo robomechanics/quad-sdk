@@ -148,8 +148,53 @@ class LocalFootstepPlanner {
     inline double getTerrainHeight(double x, double y)
     {
       grid_map::Position pos = {x, y};
-      double height = this->terrain_grid_.atPosition("z", pos, grid_map::InterpolationMethods::INTER_NEAREST);
+      double height = this->terrain_grid_.atPosition("z_smooth", pos, grid_map::InterpolationMethods::INTER_NEAREST);
       return (height);
+    }
+
+    inline double getTerrainSlope(double x, double y, double dx, double dy)
+    {
+      std::array<double, 3> surf_norm = this->terrain_.getSurfaceNormalFiltered(x, y);
+
+      double denom = dx * dx + dy * dy;
+      if (denom <= 0 || surf_norm[2] <= 0)
+      {
+        double default_pitch = 0;
+        return default_pitch;
+      }
+      else
+      {
+        double v_proj = (dx * surf_norm[0] + dy * surf_norm[1]) /
+                        sqrt(denom);
+        double pitch = atan2(v_proj, surf_norm[2]);
+
+        return pitch;
+      }
+    }
+
+    inline void getTerrainSlope(double x, double y, double yaw, double &roll, double &pitch)
+    {
+      std::array<double, 3> surf_norm = this->terrain_.getSurfaceNormalFiltered(x, y);
+
+      Eigen::Vector3d norm_vec(surf_norm.data());
+      Eigen::Vector3d axis = Eigen::Vector3d::UnitZ().cross(norm_vec);
+      double ang = acos(std::max(std::min(Eigen::Vector3d::UnitZ().dot(norm_vec), 1.), -1.));
+
+      if (ang < 1e-3)
+      {
+        roll = 0;
+        pitch = 0;
+        return;
+      }
+      else
+      {
+        Eigen::Matrix3d rot(Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ()));
+        axis = rot.transpose() * (axis / axis.norm());
+        tf2::Quaternion quat(tf2::Vector3(axis(0), axis(1), axis(2)), ang);
+        tf2::Matrix3x3 m(quat);
+        double tmp;
+        m.getRPY(roll, pitch, tmp);
+      }
     }
 
   private:

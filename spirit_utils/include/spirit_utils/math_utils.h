@@ -130,6 +130,12 @@ namespace math_utils {
    */
   std::vector<double> unwrap(std::vector<double> data);
 
+  /**
+   * @brief Selective damping least square matrix inverse
+   * @param[in] jacobian Input matrix
+   * @return Pseudo-inverse of the input matrix
+   */
+  Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian);
 }
 
 #endif // SPIRIT_MATH_UTILS_H

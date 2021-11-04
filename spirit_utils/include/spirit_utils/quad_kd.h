@@ -5,6 +5,7 @@
 #include <ros/ros.h>
 #include <Eigen/Geometry>
 #include "spirit_utils/function_timer.h"
+#include "spirit_utils/math_utils.h"
 #include <chrono>
 #include <random>
 #include <math.h>
