@@ -588,7 +588,7 @@ void QuadKD::computeInverseDynamics(const Eigen::VectorXd &state_pos,
 
   // Compute the toe acceleration difference
   Eigen::VectorXd foot_acc_delta = foot_acc - foot_acc_grf;
-  Eigen::VectorXd q_ddot_delta = jacobian.block(0, 6, 12, 12).colPivHouseholderQr().solve(foot_acc_delta);
+  Eigen::VectorXd q_ddot_delta = math_utils::sdlsInv(jacobian.block(0, 6, 12, 12)) * foot_acc_delta;
 
   // Perform inverse dynamics
   Eigen::VectorXd tau_swing(12);
