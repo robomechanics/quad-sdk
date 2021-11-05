@@ -377,6 +377,18 @@ void GlobalBodyPlanner::publishPlan() {
   if (body_plan_.empty())
     return;
 
+  // std::cout << "body_plan_" << std::endl;
+  // for (int i = 0; i < body_plan_.size(); i++) {
+  //   std::cout << "t = " << t_plan_[i] << ", state = ";
+  //   printState(fullStateToState(body_plan_[i]));
+  //   std::cout << ", id = " << primitive_id_plan_[i] << std::endl;
+  // }
+
+  // printStateSequence(state_sequence_);
+  // printActionSequence(action_sequence_);
+
+  // throw std::runtime_error("Stop");
+
   // Construct BodyPlan messages
   spirit_msgs::RobotPlan robot_plan_msg;
   spirit_msgs::RobotPlan discrete_robot_plan_msg;

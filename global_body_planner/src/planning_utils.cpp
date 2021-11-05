@@ -315,7 +315,7 @@ void addFullStates(FullState start_state, std::vector<State> interp_reduced_plan
   std::vector<double> x_vec, y_vec, z_vec;
   for (int i = 0; i < num_states; i++) {
     State body_state = interp_reduced_plan[i];
-    body_state[2] = filtered_z[i];
+    // body_state[2] = filtered_z[i];
     body_state[8] = filtered_z_rate[i];
     FullState body_full_state = stateToFullState(body_state, roll, pitch[i],
       filtered_yaw[i], roll_rate, filtered_pitch_rate[i], filtered_yaw_rate[i]);
@@ -442,30 +442,29 @@ Eigen::Vector3d getAcceleration(State s, Action a, double t, int phase)
 bool isValidYawRate(State s, Action a, double t, int phase, const PlannerConfig &planner_config)
 {
   return true;
-  Eigen::Vector3d acc = getAcceleration(s, a, t, phase);
-  State s_next = applyStance(s,a,t,phase,planner_config);
+  // Eigen::Vector3d acc = getAcceleration(s, a, t, phase);
+  // State s_next = applyStance(s,a,t,phase,planner_config);
 
-  double dy = s_next[4];
-  double dx = s_next[3];
-  double ddy = acc.y();
-  double ddx = acc.x();
-  double d_yaw;
+  // double dy = s_next[4];
+  // double dx = s_next[3];
+  // double ddy = acc.y();
+  // double ddx = acc.x();
+  // double d_yaw;
 
-  // Don't limit if moving slowly
-  if ((dx*dx + dy*dy) <= 0.25)
-  {
-      d_yaw = 0;
-      // std::cout << "Not moving, pass" << std::endl;
-  } else {
-      d_yaw = (dy*ddx - dx*ddy)/(dx*dx + dy*dy);
-  }
+  // // Don't limit if moving slowly
+  // if ((dx*dx + dy*dy) <= 0.25)
+  // {
+  //     d_yaw = 0;
+  // } else {
+  //     d_yaw = (dy*ddx - dx*ddy)/(dx*dx + dy*dy);
+  // }
 
-  if (abs(d_yaw) > planner_config.DY_MAX)
-  {
-      return false;
-  } else {
-      return true;
-  }
+  // if (abs(d_yaw) > planner_config.DY_MAX)
+  // {
+  //     return false;
+  // } else {
+  //     return true;
+  // }
 }
 
 double getPitchFromState(State s, const PlannerConfig &planner_config) {
@@ -490,8 +489,8 @@ double getPitchFromState(State s, const PlannerConfig &planner_config) {
 
 double getHeightFromState(State s, const PlannerConfig &planner_config) {
 
-  // return (planner_config.terrain.getGroundHeightFiltered(s[0], s[1]));
-  return (planner_config.terrain.getGroundHeight(s[0], s[1]));
+  return (planner_config.terrain.getGroundHeightFiltered(s[0], s[1]));
+  // return (planner_config.terrain.getGroundHeight(s[0], s[1]));
 
 }
 
@@ -573,7 +572,7 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
       // Add points during stance phase
     for (double t = 0; t < t_s_land; t += dt)
     {
-      interp_t.push_back(t0+t);
+      interp_t.push_back(t0+t_s+t_f+t);
       State s_next = applyStance(s_land,a,t,phase,planner_config);
       if (!interp_reduced_plan.empty()) {
         interp_length.push_back(interp_length.back() + poseDistance(s_next, interp_reduced_plan.back()));
@@ -618,7 +617,7 @@ void getInterpPlan(FullState start_state, std::vector<State> state_sequence,
   {
     interpStateActionPair(state_sequence[i], action_sequence[i], t0, dt, interp_reduced_plan,
       interp_GRF, interp_t, interp_primitive_id, interp_length, planner_config);
-    t0 += (action_sequence[i][6] + action_sequence[i][7]);
+    t0 += (action_sequence[i][8] + action_sequence[i][9] + action_sequence[i][10]);
   }
 
   // Add the final state in case it was missed by interp (GRF is undefined 
@@ -1399,7 +1398,7 @@ void publishStateActionPair(const State &s, const Action &a, const State &s_goal
 
   // Publish the tree and wait so that RViz has time to process it
   tree_pub.publish(tree_viz_msg);
-  double freq = 2.0; // Hz
+  double freq = 20.0; // Hz
   usleep(1000000.0/freq);
 
 }
