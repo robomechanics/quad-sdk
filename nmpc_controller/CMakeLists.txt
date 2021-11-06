@@ -70,4 +70,7 @@ add_dependencies(nmpc_controller
 ## Testing ##
 #############
 
-## Google test file for nmpc_controller library
+## Add gtest based cpp test target and link libraries
+catkin_add_gtest(nmpc_controller-test 
+  test/test_nmpc_controller.cpp)
+target_link_libraries(nmpc_controller-test nmpc_controller ${catkin_LIBRARIES})

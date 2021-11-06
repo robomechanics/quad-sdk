@@ -6,20 +6,6 @@ Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
 QuadKD::QuadKD()
 {
-  legbase_offsets_.resize(4);
-  legbase_offsets_[0] = legbase_offset_0_;
-  legbase_offsets_[1] = legbase_offset_1_;
-  legbase_offsets_[2] = legbase_offset_2_;
-  legbase_offsets_[3] = legbase_offset_3_;
-
-  g_body_legbases_.resize(4);
-  for (int leg_index = 0; leg_index < 4; leg_index++)
-  {
-    // Compute transforms
-    g_body_legbases_[leg_index] = createAffineMatrix(legbase_offsets_[leg_index],
-                                                     Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()));
-  }
-
   std::string robot_description_string;
   if (!ros::param::get("robot_description", robot_description_string))
   {
@@ -46,6 +32,46 @@ QuadKD::QuadKD()
   std::iota(leg_idx_list_.begin(), leg_idx_list_.end(), 0);
   std::sort(leg_idx_list_.begin(), leg_idx_list_.end(), [&](int i, int j)
             { return body_id_list_.at(i) < body_id_list_.at(j); });
+
+  // Read leg geometry from URDF
+  legbase_offsets_.resize(4);
+  l0_vec_.resize(4);
+  std::vector<std::string> hip_name_list = {"hip0", "hip1", "hip2", "hip3"};
+  std::vector<std::string> upper_name_list = {"upper0", "upper1", "upper2", "upper3"};
+  std::vector<std::string> lower_name_list = {"lower0", "lower1", "lower2", "lower3"};
+  std::vector<std::string> toe_name_list = {"toe0", "toe1", "toe2", "toe3"};
+  RigidBodyDynamics::Math::SpatialTransform tform;
+  for (size_t i = 0; i < 4; i++)
+  {
+    // From body COM to abad
+    tform = model_->GetJointFrame(model_->GetBodyId(hip_name_list.at(i).c_str()));
+    legbase_offsets_[i] = tform.r;
+
+    // From abad to hip
+    tform = model_->GetJointFrame(model_->GetBodyId(upper_name_list.at(i).c_str()));
+    l0_vec_[i] = tform.r(1);
+
+    // From hip to knee (we know they should be the same and the equation in IK uses the magnitute of it)
+    tform = model_->GetJointFrame(model_->GetBodyId(lower_name_list.at(i).c_str()));
+    l1_ = abs(tform.r(0));
+    knee_offset_ = tform.r;
+
+    // From knee to toe (we know they should be the same and the equation in IK uses the magnitute of it)
+    tform = model_->GetJointFrame(model_->GetBodyId(toe_name_list.at(i).c_str()));
+    l2_ = abs(tform.r(0));
+    foot_offset_ = tform.r;
+  }
+
+  // Abad offset from legbase
+  abad_offset_ = {0, 0, 0};
+
+  g_body_legbases_.resize(4);
+  for (int leg_index = 0; leg_index < 4; leg_index++)
+  {
+    // Compute transforms
+    g_body_legbases_[leg_index] = createAffineMatrix(legbase_offsets_[leg_index],
+                                                     Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()));
+  }
 }
 
 Eigen::Matrix4d QuadKD::createAffineMatrix(Eigen::Vector3d trans,
@@ -562,7 +588,7 @@ void QuadKD::computeInverseDynamics(const Eigen::VectorXd &state_pos,
 
   // Compute the toe acceleration difference
   Eigen::VectorXd foot_acc_delta = foot_acc - foot_acc_grf;
-  Eigen::VectorXd q_ddot_delta = jacobian.block(0, 6, 12, 12).colPivHouseholderQr().solve(foot_acc_delta);
+  Eigen::VectorXd q_ddot_delta = math_utils::sdlsInv(jacobian.block(0, 6, 12, 12)) * foot_acc_delta;
 
   // Perform inverse dynamics
   Eigen::VectorXd tau_swing(12);
