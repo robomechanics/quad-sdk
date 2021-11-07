@@ -3,7 +3,7 @@ global_body_planner:
   num_calls: 1            # Number of times to call the planner
   max_planning_time: 200.0  # Minimum amount of time to run the planner (will replan to find better solutions until this duration is up)
   start_state: [0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
-  goal_state: [6.0,0.0,0.3,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+  goal_state: [8.0,0.0,0.3,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
   state_error_threshold: 25 #0.25
   startup_delay: 0.5      # Time to delay after starting node before planning
   replanning: true        # Boolean to determine if replanning is allowed
@@ -23,13 +23,13 @@ global_body_planner:
   F_MAX: 250.0            # Maximum GRF, N (800 for cheetah, 500 for anymal)
   PEAK_GRF_MIN: 4.0       # Minimum GRF in units of body weight
   PEAK_GRF_MAX: 6.0       # Maximum GRF in units of body weight
-  MU: 0.5                 # Friction coefficient (1.0 for Cheetah, 0.5 for ANYmal)
+  MU: 1.0                 # Friction coefficient (1.0 for Cheetah, 0.5 for ANYmal)
   T_S_MIN: 0.3            # Minimum stance time, s
   T_S_MAX: 0.3            # Maximum stance time, s
   T_F_MIN: 0.1            # Minimum flight time, s
   T_F_MAX: 0.4            # Maximum stance time, s
   KINEMATICS_RES: 0.02    # Resolution of kinematic feasibility checks, s
-  BACKUP_TIME: 0.2        # Duration of backup after finding an invalid state, s
+  BACKUP_TIME: 0.3        # Duration of backup after finding an invalid state, s
   BACKUP_RATIO: 0.5       # Ratio of trajectory to back up after finding an invalid state, s
   NUM_GEN_STATES: 5      # Number of actions computed for each extend function
   GOAL_BOUNDS: 0.5        # Distance threshold on reaching the goal (only used for vanilla RRT, not RRT-Connect)
