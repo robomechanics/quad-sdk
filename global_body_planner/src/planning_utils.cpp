@@ -633,26 +633,20 @@ void getInterpPlan(FullState start_state, std::vector<State> state_sequence,
 
 }
 
-std::array<double,3> rotateGRF(std::array<double,3> surface_norm,
-  std::array<double,3> grf)
+Eigen::Vector3d rotateGRF(Eigen::Vector3d surface_norm_eig,
+  Eigen::Vector3d grf_eig)
 {
-  // Receive data and convert to Eigen
+  // Declare unit Z vector
   Eigen::Vector3d Zs;
   Zs << 0,0,1;
 
-  Eigen::Vector3d surface_norm_eig;
-  surface_norm_eig << surface_norm[0],surface_norm[1],surface_norm[2];
-
   // Normalize surface normal
-  // surface_norm_eig.normalize();
-
-  Eigen::Vector3d grf_eig;
-  grf_eig << grf[0],grf[1],grf[2];
+  surface_norm_eig.normalize();
 
   // Compute priors
-  Eigen::Vector3d v = surface_norm_eig.cross(Zs);
+  Eigen::Vector3d v = Zs.cross(surface_norm_eig);
   double s = v.norm();
-  double c = surface_norm_eig.dot(Zs);
+  double c = Zs.dot(surface_norm_eig);
 
   Eigen::Matrix3d vskew;
   vskew << 0, -v[2], v[1],
@@ -671,8 +665,22 @@ std::array<double,3> rotateGRF(std::array<double,3> surface_norm,
   }
 
   Eigen::Vector3d grf_spatial_eig = R*grf_eig;
-  std::array<double,3> grf_spatial = {grf_spatial_eig[0],grf_spatial_eig[1],grf_spatial_eig[2]};
 
+  return grf_spatial_eig;
+}
+
+std::array<double,3> rotateGRF(std::array<double,3> surface_norm,
+  std::array<double,3> grf)
+{
+  // Receive data and convert to Eigen
+  Eigen::Vector3d surface_norm_eig;
+  surface_norm_eig << surface_norm[0],surface_norm[1],surface_norm[2];
+
+  Eigen::Vector3d grf_eig;
+  grf_eig << grf[0],grf[1],grf[2];
+
+  Eigen::Vector3d grf_spatial_eig = rotateGRF(surface_norm_eig, grf_eig);
+  std::array<double,3> grf_spatial = {grf_spatial_eig[0],grf_spatial_eig[1],grf_spatial_eig[2]};
   return grf_spatial;
 }
 
@@ -684,10 +692,10 @@ State applyStance(State s, Action a, double t, int phase, const PlannerConfig &p
   if (phase == CONNECT) {
     double a_x_td = a[0]; // Acceleration in x at touchdown
     double a_y_td = a[1];
-    double a_z_td = a[2];
+    double z_0 = a[2];
     double a_x_to = a[3]; // Acceleration in x at takeoff
     double a_y_to = a[4];
-    double a_z_to = a[5];
+    double z_f = a[5];
     double t_s = a[8];
 
     double x_td = s[0];
@@ -699,10 +707,11 @@ State applyStance(State s, Action a, double t, int phase, const PlannerConfig &p
 
     s_new[0] = x_td + dx_td*t + 0.5*a_x_td*t*t + (a_x_to - a_x_td)*(t*t*t)/(6.0*t_s);
     s_new[1] = y_td + dy_td*t + 0.5*a_y_td*t*t + (a_y_to - a_y_td)*(t*t*t)/(6.0*t_s);
-    s_new[2] = a_z_td + (a_z_to - a_z_td)*(t/t_s) + getHeightFromState(s_new, planner_config);
+    s_new[2] = z_0 + (z_f - z_0)*(t/t_s) + getHeightFromState(s_new, planner_config);
     s_new[3] = dx_td + a_x_td*t + (a_x_to - a_x_td)*t*t/(2.0*t_s);
     s_new[4] = dy_td + a_y_td*t + (a_y_to - a_y_td)*t*t/(2.0*t_s);
-    s_new[5] = 0;//sqrt(s_new[3]*s_new[3] + s_new[4]*s_new[4])*sin();
+    s_new[5] = sqrt(pow(s[3],2) + pow(s[4],2))*sqrt(1 - 
+      planner_config.terrain.getSurfaceNormalFiltered(s[0], s[1])[2]);//sqrt(s_new[3]*s_new[3] + s_new[4]*s_new[4])*sin();
     
   } else {
     double g = planner_config.G_CONST;
@@ -917,7 +926,10 @@ Action getRandomAction(std::array<double, 3> surf_norm, const PlannerConfig &pla
 Action getRandomLeapAction(const State &s, std::array<double, 3> surf_norm,
   const PlannerConfig &planner_config)
 { 
+  // Declare variables;
   Action a;
+  const double g = planner_config.G_CONST;
+  const double m = planner_config.M_CONST;
 
   // Random normal forces between 0 and planner_config.F_MAX
   double f_max = (planner_config.PEAK_GRF_MAX-planner_config.PEAK_GRF_MIN)*(double)rand()/
@@ -939,24 +951,38 @@ Action getRandomLeapAction(const State &s, std::array<double, 3> surf_norm,
   double f_y_land = f_max*sin(ang_az)*sin(ang_inc);
   double f_z_land = f_max*cos(ang_inc);
 
+  double dz0 = s[5] + (double)rand()/RAND_MAX - 2.0;
 
-  double dz0 = (double)rand()/RAND_MAX - 2.0;
+  std::array<double, 3> f_leap = {f_x_leap, f_y_leap, f_z_leap};
+  std::array<double, 3> f_land = {f_x_land, f_y_land, f_z_land};
 
-  // std::array<double, 3> f_td = {f_x_td, f_y_td, f_z_td};
-  // std::array<double, 3> f_to = {f_x_to, f_y_to, f_z_to};
+  f_leap = rotateGRF(surf_norm, f_leap);
+  f_land = rotateGRF(surf_norm, f_land);
 
-  // f_td = rotateGRF(surf_norm, f_td);
-  // f_to = rotateGRF(surf_norm, f_to);
+  f_x_leap = f_leap[0]; f_y_leap = f_leap[1]; f_z_leap = f_leap[2];
+  f_x_land = f_land[0]; f_y_land = f_land[1]; f_z_land = f_land[2];
 
   // Random stance and flight times between 0 and T_MAX
   // double t_s = (planner_config.T_S_MAX - planner_config.T_S_MIN)*(double)rand()/RAND_MAX + planner_config.T_S_MIN;
   double z0 = s[2];
-  double z_max = getHeightFromState(s, planner_config) + planner_config.H_MAX - 0.025;
-  double g = planner_config.G_CONST;
-  double m = planner_config.M_CONST;
+  State s_f_nom = s;
+  double t_s_nom = 0.15;
+  s_f_nom = {s[0] + s[3]*t_s_nom - ((g*f_x_leap*pow(t_s_nom,4))/3.0 - 
+      (2*g*f_x_leap*t_s_nom*pow(t_s_nom,3))/3.0)/pow(t_s_nom,2),
+    s[1] + s[4]*t_s_nom - ((g*f_y_leap*pow(t_s_nom,4))/3.0 - 
+      (2*g*f_y_leap*t_s_nom*pow(t_s_nom,3))/3.0)/pow(t_s_nom,2),
+    s[2],0,0,0};
+  double z_max = getHeightFromState(s_f_nom, planner_config) + planner_config.H_MAX - 0.05;
 
   double t_s_leap = (3.0*(dz0 - sqrt(pow(dz0,2) + 2*g*z0 - 2*g*z_max - (4*g*f_z_leap*z0)/3.0 +
     (4*g*f_z_leap*z_max)/3.0)))/(3*g - 2*g*f_z_leap);
+
+  std::cout << "s_f_nom = ";
+  printStateNewline(s_f_nom);
+  std::cout << "s = ";
+  printStateNewline(s);
+  std::cout << "z_max = " << z_max << std::endl;
+  std::cout << "t_s_leap = " << t_s_leap << std::endl;
 
   double t_f = 1.0;
   double t_s_land = 1.0;

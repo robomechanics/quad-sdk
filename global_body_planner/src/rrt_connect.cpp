@@ -105,10 +105,8 @@ int RRTConnectClass::connect(PlannerClass &T, State s, const PlannerConfig &plan
 
     #ifdef VISUALIZE_TREE
       if (direction == FORWARD) {
-        std::cout << "Connected from A" << std::endl;
         publishStateActionPair(s_near,result.a_new, s,planner_config, tree_viz_msg_, tree_pub);
       } else if (direction == REVERSE) {
-        std::cout << "Connected from B" << std::endl;
         publishStateActionPair(result.s_new,result.a_new, s,planner_config, tree_viz_msg_, tree_pub);
       }
     #endif
@@ -300,7 +298,6 @@ bool RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
         State s_new = Ta.getVertex(Ta.getNumVertices()-1);
 
         #ifdef VISUALIZE_TREE
-          std::cout << "Extended from A" << std::endl;
           Action a_new = Ta.getAction(Ta.getNumVertices()-1);
           State s_parent = Ta.getVertex(Ta.getPredecessor(Ta.getNumVertices()-1));
           publishStateActionPair(s_parent,a_new, s_rand, planner_config, tree_viz_msg_, tree_pub);
@@ -327,7 +324,6 @@ bool RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
         State s_new = Tb.getVertex(Tb.getNumVertices()-1);
 
         #ifdef VISUALIZE_TREE
-          std::cout << "Extended from B" << std::endl;
           Action a_new = Tb.getAction(Tb.getNumVertices()-1);
           State s_parent = Tb.getVertex(Tb.getPredecessor(Tb.getNumVertices()-1));
           publishStateActionPair(s_parent,a_new, s_rand, planner_config, tree_viz_msg_, tree_pub);

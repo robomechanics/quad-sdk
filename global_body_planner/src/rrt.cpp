@@ -11,7 +11,7 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 	const PlannerConfig &planner_config, int direction, ros::Publisher &tree_pub)
 {
 	double best_so_far = stateDistance(s_near, s);
-	std::array<double, 3> surf_norm = planner_config.terrain.getSurfaceNormal(s[0], s[1]);
+	std::array<double, 3> surf_norm = planner_config.terrain.getSurfaceNormalFiltered(s[0], s[1]);
 
   int tree_size = tree_viz_msg_.markers.size();
 
@@ -43,8 +43,6 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 
       #ifdef VISUALIZE_ALL_CANDIDATE_ACTIONS
         if (direction == FORWARD) {
-          std::cout << "visualizing new action: ";
-          printActionNewline(current_result.a_new);
           publishStateActionPair(s_near,current_result.a_new, s,planner_config, tree_viz_msg_, tree_pub);
         } else if (direction == REVERSE) {
         //   State s_reverse = applyActionReverse(s_near,a_test,planner_config);
@@ -79,19 +77,19 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 		}
 	}
 
-//   // Try connecting directly
-//   StateActionResult current_result;
-// 	if (attemptConnect(s_near, s, current_result, planner_config, direction) != TRAPPED) {
-// 		double current_dist = stateDistance(current_result.s_new, s);
+  // Try connecting directly
+  StateActionResult current_result;
+	if (attemptConnect(s_near, s, current_result, planner_config, direction) != TRAPPED) {
+		double current_dist = stateDistance(current_result.s_new, s);
 
-//     if (current_dist < best_so_far)
-//     {
-//       best_so_far = current_dist;
-//       result.s_new = current_result.s_new;
-//       result.a_new = current_result.a_new;
-//       result.length = current_result.length;
-//     }
-// 	}
+    if (current_dist < best_so_far)
+    {
+      best_so_far = current_dist;
+      result.s_new = current_result.s_new;
+      result.a_new = current_result.a_new;
+      result.length = current_result.length;
+    }
+	}
 
 
   #ifdef VISUALIZE_ALL_CANDIDATE_ACTIONS

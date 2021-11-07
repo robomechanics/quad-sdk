@@ -19,8 +19,8 @@
 #include <unistd.h>
 
 // Uncomment to add visualization features
-// #define VISUALIZE_TREE
-// #define VISUALIZE_ALL_CANDIDATE_ACTIONS
+#define VISUALIZE_TREE
+#define VISUALIZE_ALL_CANDIDATE_ACTIONS
 // #define PLOT_TRAJECTORIES
 
 namespace planning_utils {
@@ -124,6 +124,7 @@ double stateDistance(State q1, State q2);
 double poseDistance(std::vector<double> v1, std::vector<double> v2);
 bool isWithinBounds(State s1, State s2, const PlannerConfig &planner_config);
 std::array<double,3> rotateGRF(std::array<double,3> surface_norm, std::array<double,3> grf);
+Eigen::Vector3d rotateGRF(Eigen::Vector3d surface_norm, Eigen::Vector3d grf);
 
 inline double getSpeed(const State &s) {
   return sqrt(pow(s[3], 2) + pow(s[4], 2) + pow(s[5], 2));

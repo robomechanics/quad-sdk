@@ -92,7 +92,8 @@ target_link_libraries(${PROJECT_NAME}_node
 # Add gtest based cpp test target and link libraries
 catkin_add_gtest(${PROJECT_NAME}-test
   test/test_global_body_planner.cpp
-  test/test_action_commutation.cpp)
+  test/test_action_commutation.cpp
+  test/test_rotate_grf.cpp)
 target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME} ${catkin_LIBRARIES})
 
 ## Add folders to be run by python nosetests
