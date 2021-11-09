@@ -1,0 +1,29 @@
+{
+    "log": {
+        "level": "warn"
+    },
+    "pluginsLoaded": [
+        // Gym plugin
+        "carb.gym.plugin",
+
+        // Carb SDK & GFX plugins
+        "carb.assets.plugin",
+        "carb.datasource-file.plugin",
+        "carb.dictionary.plugin",
+        "carb.dictionary.serializer-json.plugin.dll",
+        "carb.graphics-direct3d.plugin",
+        "carb.imaging.plugin",
+        "carb.imgui.plugin",
+        "carb.input.plugin",
+        "carb.profiler-nvtx.plugin",
+        "carb.settings.plugin",
+        "carb.tasking.plugin",
+        "carb.windowing-glfw.plugin",
+
+        // NVF
+        "nvf.plugin",
+        "nvfext.plugin"
+    ],
+    "app": {
+    }
+}

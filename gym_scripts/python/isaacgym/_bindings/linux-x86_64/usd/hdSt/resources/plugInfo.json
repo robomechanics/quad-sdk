@@ -1,0 +1,14 @@
+{
+    "Plugins": [
+        {
+            "Info": {
+                "ShaderResources": "shaders"
+            },
+            "LibraryPath": "../../libhdSt.so",
+            "Name": "hdSt",
+            "ResourcePath": "resources",
+            "Root": "..",
+            "Type": "library"
+        }
+    ]
+}

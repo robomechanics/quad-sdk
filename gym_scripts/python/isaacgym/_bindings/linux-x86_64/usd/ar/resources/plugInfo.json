@@ -1,0 +1,17 @@
+{
+    "Plugins": [
+        {
+            "Info": {
+                "Types": {
+                    "ArResolver": {},
+                    "ArPackageResolver": {}
+                }
+            },
+            "LibraryPath": "../../libar.so", 
+            "Name": "ar", 
+            "ResourcePath": "resources", 
+            "Root": "..", 
+            "Type": "library"
+        }
+    ]
+}

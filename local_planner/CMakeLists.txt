@@ -15,6 +15,7 @@ endif()
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  pybind11_catkin
   spirit_msgs
   spirit_utils
   grid_map_core
@@ -39,7 +40,7 @@ find_library(Fade25d NAMES fade25d PATHS ${FADE25D_LIBRARIES} REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp std_msgs spirit_msgs spirit_utils grid_map_core grid_map_ros eigen_conversions nmpc_controller
+  CATKIN_DEPENDS roscpp std_msgs spirit_msgs spirit_utils grid_map_core grid_map_ros eigen_conversions nmpc_controller pybind11_catkin
   DEPENDS EIGEN3
 )
 
@@ -78,9 +79,8 @@ add_library(local_planner
   src/local_planner.cpp
   src/local_footstep_planner.cpp
 )
-target_link_libraries(local_planner quadruped_mpc ${Fade25d})
-add_dependencies(local_planner ${local_planner_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
+target_link_libraries(local_planner quadruped_mpc)
+# add_dependencies(local_planner ${local_planner_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
@@ -94,11 +94,34 @@ target_link_libraries(local_planner_node
   ${catkin_LIBRARIES}
 )
 
-target_link_libraries(mpc_controller_node
+target_link_libraries(mpc_controller_node 
   mpc_controller
   ${catkin_LIBRARIES}
 )
 
+pybind11_add_module(local_planner_python MODULE src/local_planner.cpp)
+
+target_link_libraries(local_planner_python PRIVATE local_planner quadruped_mpc ${catkin_LIBRARIES})
+catkin_install_python(
+  PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../gym_scripts/python/examples/hello_world.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+install(TARGETS local_planner_python
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+# target_compile_definitions(local_planner_python
+#                            PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
+
+
+pybind_add_module(logger MODULE src/logger.cpp)
+
+catkin_install_python(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../gym_scripts/python/examples/hello_world.py
+                      DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+install(TARGETS logger
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 #############
 ## Testing ##
 #############

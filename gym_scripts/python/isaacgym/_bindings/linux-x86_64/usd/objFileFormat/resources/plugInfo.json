@@ -1,0 +1,27 @@
+{
+    "Plugins": [
+        {
+            "Info": {
+                "Types": {
+                    "ObjFileFormat": {
+                        "bases": [
+                            "SdfFileFormat"
+                        ],
+                        "displayName": "USD OBJ File Format",
+                        "extensions": [
+                            "obj"
+                        ],
+                        "formatId": "obj",
+                        "primary": true,
+                        "target": "usd"
+                    }
+                }
+            },
+        "LibraryPath": "../../libobjFileFormat.so",
+        "Name": "OBJ file format plugin",
+        "ResourcePath": "resources",
+        "Root": "..",
+            "Type": "library"
+        }
+    ]
+}

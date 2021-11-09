@@ -1,0 +1,12 @@
+{
+    "Plugins": [
+        {
+            "Info": {},
+            "LibraryPath": "../../libhd.so",
+            "Name": "hd",
+            "ResourcePath": "resources",
+            "Root": "..",
+            "Type": "library"
+        }
+    ]
+}

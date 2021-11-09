@@ -1,0 +1,27 @@
+{
+    "Plugins": [
+      {
+        "Info": {
+          "Types": {
+            "UrdfFileFormat": {
+              "bases": [
+                "SdfFileFormat"
+              ],
+              "displayName": "USD URDF File Format",
+              "extensions": [
+                "urdf"
+              ],
+              "formatId": "urdf",
+              "primary": true,
+              "target": "usd"
+            }
+          }
+        },
+        "LibraryPath": "../../liburdfFileFormat.so",
+        "Name": "URDF file format plugin",
+        "ResourcePath": "resources",
+        "Root": "..",
+        "Type": "library"
+      }
+    ]
+}

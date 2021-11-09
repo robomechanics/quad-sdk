@@ -1,0 +1,29 @@
+{
+    "Plugins": [
+        {
+            "Info": {
+                "Types": {
+                    "UsdSkelImagingSkeletonAdapter": {
+                        "bases": [
+                            "UsdImagingPrimAdapter"
+                        ],
+                        "isInternal": true,
+                        "primTypeName": "Skeleton"
+                    },
+                    "UsdSkelImagingSkelRootAdapter": {
+                        "bases": [
+                            "UsdImagingPrimAdapter"
+                        ],
+                        "isInternal": true,
+                        "primTypeName": "SkelRoot"
+                    }
+                }
+            },
+            "LibraryPath": "../../libusdSkelImaging.so",
+            "Name": "usdSkelImaging",
+            "ResourcePath": "resources",
+            "Root": "..",
+            "Type": "library"
+        }
+    ]
+}

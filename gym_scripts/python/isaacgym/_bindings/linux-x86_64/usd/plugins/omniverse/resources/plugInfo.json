@@ -1,0 +1,34 @@
+{
+    "Plugins": [
+        {
+            "Info": {
+                "Types": {
+                    "OmniverseResolver" : {
+                        "bases": [ "ArResolver" ]
+                    },
+                    "OmniverseWrapperFileFormat": {
+                        "bases": [ "SdfFileFormat" ],
+                        "displayName": "Omniverse file format that wraps usda/usdc files",
+                        "extensions": [ "omni_usd" ],
+                        "formatId": "omni_usd",
+                        "primary": true,
+                        "target": "usd"
+                    },
+                    "OmniverseAssetFileFormat": {
+                        "bases": [ "SdfFileFormat" ],
+                        "displayName": "Omniverse asset file format",
+                        "extensions": [ "usdov" ],
+                        "formatId": "usdov",
+                        "primary": true,
+                        "target": "usd"
+                    }
+                }
+            },
+            "LibraryPath": "../../../libomni_usd_plugin.so",
+            "Name": "Omniverse USD Plugin",
+            "ResourcePath": "resources",
+            "Root": "..",
+            "Type": "library"
+        }
+    ]
+}

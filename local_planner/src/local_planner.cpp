@@ -2,7 +2,7 @@
 
 // namespace plt = matplotlibcpp;
 Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
-
+LocalPlanner::LocalPlanner(){}
 LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   local_body_planner_convex_(), local_body_planner_nonlinear_(), local_footstep_planner_() {
 
@@ -522,4 +522,19 @@ void LocalPlanner::spin() {
     
     r.sleep();
   }
+}
+
+struct Pet {
+    Pet(const std::string &name) : name(name) { }
+    void setName(const std::string &name_) { name = name_; }
+    const std::string &getName() const { return name; }
+
+    std::string name;
+};
+
+PYBIND11_MODULE(local_planner_python, m) {
+    py::class_<Pet>(m, "Pet")
+        .def(py::init<const std::string &>())
+        .def("setName", &Pet::setName)
+        .def("getName", &Pet::getName);
 }

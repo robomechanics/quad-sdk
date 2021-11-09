@@ -1,3 +1,7 @@
 [submodule "external/mpcplusplus"]
 	path = external/mpcplusplus
 	url = https://github.com/nikolaif399/mpcplusplus.git
+[submodule "external/pybind11"]
+	path = external/pybind11
+	url = https://github.com/pybind/pybind11.git
+	branch = stable

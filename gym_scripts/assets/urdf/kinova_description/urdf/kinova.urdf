@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<robot name="kinova">
+
+  <link name="kinova_link_base">
+    <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/base_smoothed.obj"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/base.STL"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.0"/>
+      <origin rpy="0 0 0" xyz="0 0 0.1255"/>
+      <inertia ixx="0.000951270861568" ixy="0" ixz="0" iyy="0.000951270861568" iyz="0" izz="0.000374272"/>
+    </inertial>
+  </link>
+
+  <link name="kinova_link_1">
+    <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/shoulder_smoothed.obj"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+    <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/ring_big_smoothed.obj"/>
+      </geometry>
+        <material name="white">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/shoulder.STL"/>
+      </geometry>
+    </collision>                       
+    <inertial>
+      <mass value="0.7477"/>
+      <origin xyz="0 -0.002 -0.0605"/>
+      <inertia ixx="0.00152031725204" ixy="0" ixz="0" iyy="0.00152031725204" iyz="0" izz="0.00059816"/>
+    </inertial>
+  </link>
+  <joint name="kinova_joint_1" type="revolute">
+    <parent link="kinova_link_base"/>
+    <child link="kinova_link_1"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="30.5" lower="-6.28318530718" upper="6.28318530718" velocity="15"/>
+    <origin rpy="0 3.14159265359 0" xyz="0 0 0.15675"/>
+    <dynamics damping="0.0" friction="0.01"/>
+  </joint>
+  <link name="kinova_link_2">
+    <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/arm_smoothed.obj"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+    <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/ring_big_smoothed.obj"/>
+      </geometry>
+       <material name="white">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/arm.STL"/>
+      </geometry>
+    </collision>                        
+    <inertial>
+      <mass value="0.99"/>
+      <origin xyz="0 -0.2065 -0.01"/>
+      <inertia ixx="0.010502207991" ixy="0" ixz="0" iyy="0.000792" iyz="0" izz="0.010502207991"/>
+    </inertial>
+  </link>
+  <joint name="kinova_joint_2" type="revolute">
+    <parent link="kinova_link_1"/>
+    <child link="kinova_link_2"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="30.5" lower="-6.28318530718" upper="6.28318530718" velocity="15"/>
+    <origin rpy="-1.57079632679 0 3.14159265359" xyz="0 0.0016 -0.11875"/>
+    <dynamics damping="0.0" friction="0.01"/>
+  </joint>
+  <link name="kinova_link_3">
+    <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/forearm_smoothed.obj"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+    <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/ring_big_smoothed.obj"/>
+      </geometry>
+       <material name="white">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/forearm.STL"/>
+      </geometry>
+    </collision>     
+    <inertial>
+      <mass value="0.6763"/>
+      <origin xyz="0 0.081 -0.0086"/>
+      <inertia ixx="0.00142022431908" ixy="0" ixz="0" iyy="0.000304335" iyz="0" izz="0.00142022431908"/>
+    </inertial>
+  </link>
+  <joint name="kinova_joint_3" type="revolute">
+    <parent link="kinova_link_2"/>
+    <child link="kinova_link_3"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="30.5" lower="-6.28318530718" upper="6.28318530718" velocity="15"/>
+    <origin rpy="0 3.14159265359 0" xyz="0 -0.410 0"/>
+    <dynamics damping="0.0" friction="0.01"/>
+  </joint>
+  <link name="kinova_link_4">
+    <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/wrist_spherical_1_smoothed.obj"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+    <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/ring_small_smoothed.obj"/>
+      </geometry>
+       <material name="white">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/wrist_spherical_1.STL"/>
+      </geometry>
+    </collision>          
+    <inertial>
+      <mass value="0.463"/>
+      <origin xyz="0 0.0028848942 -0.0541932613"/>
+      <inertia ixx="0.0004321316048" ixy="0" ixz="0" iyy="0.0004321316048" iyz="0" izz="9.26e-05"/>
+    </inertial>
+  </link>
+  <joint name="kinova_joint_4" type="revolute">
+    <parent link="kinova_link_3"/>
+    <child link="kinova_link_4"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="6.8" lower="-6.28318530718" upper="6.28318530718" velocity="15"/>
+    <origin rpy="-1.57079632679 0 3.14159265359" xyz="0 0.2073 -0.0114"/>
+    <dynamics damping="0.0" friction="0.01"/>
+  </joint>
+  <link name="kinova_link_5">
+    <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/wrist_spherical_2_smoothed.obj"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+    <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/ring_small_smoothed.obj"/>
+      </geometry>
+       <material name="white">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/wrist_spherical_2.STL"/>
+      </geometry>
+    </collision>           
+    <inertial>
+      <mass value="0.463"/>
+      <origin xyz="0 0.0497208855 -0.0028562765"/>
+      <inertia ixx="0.0004321316048" ixy="0" ixz="0" iyy="9.26e-05" iyz="0" izz="0.0004321316048"/>
+    </inertial>
+  </link>
+  <joint name="kinova_joint_5" type="revolute">
+    <parent link="kinova_link_4"/>
+    <child link="kinova_link_5"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="6.8" lower="-6.28318530718" upper="6.28318530718" velocity="15"/>
+    <origin rpy="1.57079632679 0 3.14159265359" xyz="0 0 -0.10375"/>
+    <dynamics damping="0.0" friction="0.01"/>
+  </joint>
+  <link name="kinova_link_6">
+    <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/hand_3finger_smoothed.obj"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+      <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/ring_small_smoothed.obj"/>
+      </geometry>
+       <material name="white">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/hand_3finger.STL"/>
+      </geometry>
+    </collision>              
+    <inertial>
+      <mass value="1.327"/>
+      <origin xyz="0 0 -0.06"/>
+      <inertia ixx="0.0003453236187" ixy="0" ixz="0" iyy="0.0003453236187" iyz="0" izz="0.0005816"/>
+    </inertial>
+  </link>
+  <joint name="kinova_joint_6" type="revolute">
+    <parent link="kinova_link_5"/>
+    <child link="kinova_link_6"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="6.8" lower="-6.28318530718" upper="6.28318530718" velocity="15"/>
+    <origin rpy="-1.57079632679 0 3.14159265359" xyz="0 0.10375 0"/>
+    <dynamics damping="0.0" friction="0.01"/>
+  </joint>
+    <link name="kinova_end_effector">
+      <!-- Inertial properties and a fixed revolute joint have been added to this link to make it possible to use the gazebo_link_attacher plugin -->
+      <!-- Minor collision properties are added to avoid bug/crash when running model in Gazebo -->
+      <visual>
+        <geometry>
+          <box size="0 0 0"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.0001 0.0001 0.0001"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+        <mass value="0.0000001"/>
+        <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+      </inertial>
+    </link>
+    <joint name="kinova_joint_end_effector" type="fixed">
+      <!--joint name="${joint_name}" type="fixed"-->
+      <parent link="kinova_link_6"/>
+      <child link="kinova_end_effector"/>
+      <axis xyz="0 0 0"/>
+      <limit effort="2000" lower="0" upper="0" velocity="1"/>
+      <origin rpy="3.14159265359 0 0" xyz="0 0 -0.1600"/>
+    </joint>
+  <link name="kinova_link_finger_1">
+    <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/finger_proximal.dae"/>
+      </geometry>
+      <material name="white">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/finger_proximal.STL"/>
+      </geometry>
+    </collision>              
+    <inertial>
+      <mass value="0.01"/>
+      <origin xyz="0.022 0 0"/>
+      <inertia ixx="7.8999684e-07" ixy="0" ixz="0" iyy="7.8999684e-07" iyz="0" izz="8e-08"/>
+    </inertial>
+  </link>
+  <joint name="kinova_joint_finger_1" type="fixed">
+    <parent link="kinova_link_6"/>
+    <child link="kinova_link_finger_1"/>
+    <axis xyz="0 0 1"/>
+    <origin rpy="-1.570796327 .649262481663582 1.35961148639407" xyz="0.00279 0.03126 -0.11467"/>
+  </joint>
+  <link name="kinova_link_finger_tip_1">
+    <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/finger_distal.dae"/>
+      </geometry>
+      <material name="white">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/finger_distal.STL"/>
+      </geometry>
+    </collision>      
+    <inertial>
+      <mass value="0.01"/>
+      <origin xyz="0.022 0 0"/>
+      <inertia ixx="7.8999684e-07" ixy="0" ixz="0" iyy="7.8999684e-07" iyz="0" izz="8e-08"/>
+    </inertial>
+  </link>
+  <joint name="kinova_joint_finger_tip_1" type="fixed">
+    <parent link="kinova_link_finger_1"/>
+    <child link="kinova_link_finger_tip_1"/>
+    <axis xyz="0 0 1"/>
+    <origin rpy="0 0 0" xyz="0.044 -0.003 0"/>
+    <limit effort="2000" lower="0" upper="2" velocity="1"/>
+  </joint>
+  <link name="kinova_link_finger_2">
+    <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/finger_proximal.dae"/>
+      </geometry>
+      <material name="white">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/finger_proximal.STL"/>
+      </geometry>
+    </collision>                  
+    <inertial>
+      <mass value="0.01"/>
+      <origin xyz="0.022 0 0"/>
+      <inertia ixx="7.8999684e-07" ixy="0" ixz="0" iyy="7.8999684e-07" iyz="0" izz="8e-08"/>
+    </inertial>
+  </link>
+  <joint name="kinova_joint_finger_2" type="fixed">
+    <parent link="kinova_link_6"/>
+    <child link="kinova_link_finger_2"/>
+    <axis xyz="0 0 1"/>
+    <origin rpy="-1.570796327 .649262481663582 -1.38614049188413" xyz="0.02226 -0.02707 -0.11482"/>
+  </joint>
+  <link name="kinova_link_finger_tip_2">
+    <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/finger_distal.dae"/>
+      </geometry>
+      <material name="white">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/finger_distal.STL"/>
+      </geometry>
+    </collision>                 
+    <inertial>
+      <mass value="0.01"/>
+      <origin xyz="0.022 0 0"/>
+      <inertia ixx="7.8999684e-07" ixy="0" ixz="0" iyy="7.8999684e-07" iyz="0" izz="8e-08"/>
+    </inertial>
+  </link>
+  <joint name="kinova_joint_finger_tip_2" type="fixed">
+    <parent link="kinova_link_finger_2"/>
+    <child link="kinova_link_finger_tip_2"/>
+    <axis xyz="0 0 1"/>
+    <origin rpy="0 0 0" xyz="0.044 -0.003 0"/>
+    <limit effort="2000" lower="0" upper="2" velocity="1"/>
+  </joint>
+  <link name="kinova_link_finger_3">
+    <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/finger_proximal.dae"/>
+      </geometry>
+      <material name="white">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/finger_proximal.STL"/>
+      </geometry>
+    </collision> 
+    <inertial>
+      <mass value="0.01"/>
+      <origin xyz="0.022 0 0"/>
+      <inertia ixx="7.8999684e-07" ixy="0" ixz="0" iyy="7.8999684e-07" iyz="0" izz="8e-08"/>
+    </inertial>
+  </link>
+  <joint name="kinova_joint_finger_3" type="fixed">
+    <parent link="kinova_link_6"/>
+    <child link="kinova_link_finger_3"/>
+    <axis xyz="0 0 1"/>
+    <origin rpy="-1.570796327 .649262481663582 -1.75545216211587" xyz="-0.02226 -0.02707 -0.11482"/>
+  </joint>
+  <link name="kinova_link_finger_tip_3">
+    <visual>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/finger_distal.dae"/>
+      </geometry>
+      <material name="white">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://kinova_description/meshes/finger_distal.STL"/>
+      </geometry>
+    </collision>     
+    <inertial>
+      <mass value="0.01"/>
+      <origin xyz="0.022 0 0"/>
+      <inertia ixx="7.8999684e-07" ixy="0" ixz="0" iyy="7.8999684e-07" iyz="0" izz="8e-08"/>
+    </inertial>
+  </link>
+  <joint name="kinova_joint_finger_tip_3" type="fixed">
+    <parent link="kinova_link_finger_3"/>
+    <child link="kinova_link_finger_tip_3"/>
+    <axis xyz="0 0 1"/>
+    <origin rpy="0 0 0" xyz="0.044 -0.003 0"/>
+    <limit effort="2000" lower="0" upper="2" velocity="1"/>
+  </joint>
+</robot>

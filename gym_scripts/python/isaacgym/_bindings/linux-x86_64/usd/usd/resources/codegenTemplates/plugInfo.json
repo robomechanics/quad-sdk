@@ -1,0 +1,15 @@
+{
+    "Plugins": [
+        {
+            "Info": {
+                "Types": {
+                }
+            }, 
+            "LibraryPath": "../../libusd.so", 
+            "Name": "{{ libraryName }}", 
+            "ResourcePath": "resources", 
+            "Root": "..", 
+            "Type": "library"
+        }
+    ]
+}

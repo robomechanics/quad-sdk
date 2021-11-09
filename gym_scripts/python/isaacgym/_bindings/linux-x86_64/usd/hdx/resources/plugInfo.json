@@ -1,0 +1,14 @@
+{
+    "Plugins": [
+        {
+            "Info": {
+                 "ShaderResources": "shaders"
+            },
+            "LibraryPath": "../../libhdx.so",
+            "Name": "hdx",
+            "ResourcePath": "resources",
+            "Root": "..",
+            "Type": "library"
+        }
+    ]
+}

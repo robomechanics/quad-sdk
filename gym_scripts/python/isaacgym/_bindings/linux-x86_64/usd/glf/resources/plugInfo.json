@@ -1,0 +1,31 @@
+{
+    "Plugins": [
+        {
+            "Info": {
+                "ShaderResources": "shaders",
+                "Types": {                                                                  
+                    "Glf_StbImage" : {
+                        "bases": ["GlfImage"],
+                        "imageTypes": ["bmp", "jpg", "png", "tga", "hdr"],
+                        "precedence": -1 
+                    },
+                    "GlfPtexTexture" : {
+                        "bases": ["GlfTexture"],
+                        "textureTypes": ["ptx", "ptex"],
+                        "precedence": 1
+                    },
+                    "GlfUVTexture" : {
+                        "bases": ["GlfBaseTexture"],
+                        "textureTypes": ["*"],
+                        "precedence": 0
+                    }
+                }
+            },
+            "LibraryPath": "../../libglf.so",
+            "Name": "glf",
+            "ResourcePath": "resources",
+            "Root": "..",
+            "Type": "library"
+        }
+    ]
+}

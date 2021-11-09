@@ -1,0 +1,25 @@
+{
+    "Plugins": [
+        {
+            "Info": {
+                "Types": {
+                    "UsdImagingGLDrawModeAdapter" : {
+                        "bases": ["UsdImagingPrimAdapter"],
+                        "isInternal": true,
+                        "primTypeName": "__drawModeAdapter"
+                    },
+                    "UsdImagingGLHydraMaterialAdapter" : {
+                        "bases": ["UsdImagingPrimAdapter"],
+                        "isInternal": true,
+                        "primTypeName": "HydraPbsSurface"
+                    }
+                }
+            },
+            "LibraryPath": "../../libusdImagingGL.so",
+            "Name": "usdImagingGL",
+            "ResourcePath": "resources",
+            "Root": "..",
+            "Type": "library"
+        }
+    ]
+}

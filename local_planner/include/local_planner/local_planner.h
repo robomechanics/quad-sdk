@@ -16,6 +16,9 @@
 #include "spirit_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <nmpc_controller/nmpc_controller.h>
+#include <pybind11/pybind11.h>
+
+namespace py = pybind11;
 
 //! Local Body Planner library
 /*!
@@ -28,12 +31,17 @@ class LocalPlanner {
 	 * @param[in] nh ROS NodeHandle to publish and subscribe from
 	 * @return Constructed object of type LocalPlanner
 	 */
+  LocalPlanner();
 	LocalPlanner(ros::NodeHandle nh);
 
   /**
    * @brief Primary work function in class, called in node file for this component
    */
   void spin();  
+
+  // int add(int i, int j) {
+  //   return i + j;
+  // }
   
 private:
 
@@ -254,5 +262,26 @@ private:
   bool use_nmpc_;
 };
 
+
+// struct Pet {
+//     Pet(const std::string &name) : name(name) { }
+//     void setName(const std::string &name_) { name = name_; }
+//     const std::string &getName() const { return name; }
+
+//     std::string name;
+// };
+
+// PYBIND11_MODULE(local_planner_python, m) {
+//     py::class_<Pet>(m, "Pet")
+//         .def(py::init<const std::string &>())
+//         .def("setName", &Pet::setName)
+//         .def("getName", &Pet::getName);
+// }
+// PYBIND11_MODULE(local_planner_python, m) {
+//   py::class_<LocalPlanner>(m,"LocalPlanner")
+//     .def(py::init<>())
+//     .def("spin", &LocalPlanner::spin)
+//     .def("add", &LocalPlanner::add, "A function which adds two numbers");
+// }
 
 #endif // LOCAL_PLANNER_H
