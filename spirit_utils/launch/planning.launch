@@ -56,7 +56,9 @@
             /body_plan_continuous
             /body_plan_discrete
             /foot_plan_continuous 
-            /foot_plan_discrete" />
+            /foot_plan_discrete
+            /global_plan
+            /global_plan_discrete" />
     </group>
 
 </launch>

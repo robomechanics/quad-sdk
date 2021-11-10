@@ -84,14 +84,33 @@ void LocalFootstepPlanner::computeStanceContactSchedule(int current_plan_index,
   }
 }
 
-void LocalFootstepPlanner::computeContactSchedule(int current_plan_index,
-  Eigen::VectorXd current_state, Eigen::MatrixXd ref_body_plan,
-  std::vector<std::vector<bool>> &contact_schedule) {
-
+void LocalFootstepPlanner::computeContactSchedule(
+    int current_plan_index,
+    Eigen::VectorXd current_state,
+    Eigen::MatrixXd ref_body_plan,
+    Eigen::VectorXi ref_primitive_plan_,
+    std::vector<std::vector<bool>> &contact_schedule)
+{
   int phase = current_plan_index % period_;
   contact_schedule = nominal_contact_schedule_;
-  std::rotate(contact_schedule.begin(), contact_schedule.begin()+phase, contact_schedule.end());
 
+  // We keep the contact schedule rotating even if there's a standing or flight phase
+  std::rotate(contact_schedule.begin(), contact_schedule.begin() + phase, contact_schedule.end());
+
+  // Check the primitive plan to see if there's standing or flight phase
+  for (size_t i = 0; i < horizon_length_; i++)
+  {
+    // Standing
+    if (ref_primitive_plan_(i) == 1)
+    {
+      std::fill(contact_schedule.at(i).begin(), contact_schedule.at(i).end(), true);
+    }
+    // Flight
+    else if (ref_primitive_plan_(i) == 0)
+    {
+      std::fill(contact_schedule.at(i).begin(), contact_schedule.at(i).end(), false);
+    }
+  }
 }
 
 void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_position_prev,
@@ -145,9 +164,13 @@ void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_pos
   }  
 }
 
-void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan,
-  const Eigen::MatrixXd &grf_plan, const std::vector<std::vector<bool>> &contact_schedule,
-  const Eigen::MatrixXd &ref_body_plan, Eigen::MatrixXd &foot_positions) {
+void LocalFootstepPlanner::computeFootPositions(
+  const Eigen::MatrixXd &body_plan,
+  const Eigen::MatrixXd &grf_plan, 
+  const std::vector<std::vector<bool>> &contact_schedule,
+  const Eigen::MatrixXd &ref_body_plan, 
+  const Eigen::VectorXi &ref_primitive_plan_, 
+  Eigen::MatrixXd &foot_positions) {
 
   // Loop through each foot
   for (int j=0; j<num_feet_; j++) {
@@ -158,7 +181,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
     // Loop through the horizon to identify instances of touchdown
     for (int i = 1; i < contact_schedule.size(); i++) {
 
-      if (isNewContact(contact_schedule, i, j)) {
+      if (isNewContact(contact_schedule, i, j) || ref_primitive_plan_(i) == 0) {
       
         // Declare foot position vectors
         Eigen::Vector3d foot_position, foot_position_grf,
@@ -203,6 +226,12 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         // foot_position = map_search::optimizeFoothold(foot_position_nominal, stuff); // ADAM
         foot_position = foot_position_nominal;
 
+        // We compute the flight phase foot position so that it will lift its foot
+        if (ref_primitive_plan_(i) == 0)
+        {
+          foot_position(2) = std::max(body_plan(i, 2) - 0.3, 0.);
+        }
+
         // Store foot position in the Eigen matrix
         foot_positions.block<1,3>(i,3*j) = foot_position;    
 
@@ -216,8 +245,11 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
 }
 
 void LocalFootstepPlanner::computeFootPlanMsgs(
-  const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
-  int current_plan_index, spirit_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+  const std::vector<std::vector<bool>> &contact_schedule, 
+  const Eigen::MatrixXd &foot_positions,
+  int current_plan_index, 
+  const Eigen::VectorXi &ref_primitive_plan_, 
+  spirit_msgs::MultiFootPlanDiscrete &past_footholds_msg,
   spirit_msgs::MultiFootPlanDiscrete &future_footholds_msg,
   spirit_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg) {
 
@@ -296,12 +328,31 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         }
         else
         {
-          swing_phase = (i - i_liftoff)/(double)swing_duration;
+          swing_phase = (i - i_liftoff) / (double)swing_duration;
         }
-        computeSwingFootState(foot_position_prev, foot_position_next, swing_phase, swing_duration,
-          foot_position, foot_velocity, foot_acceleration);
-        foot_state_msg.contact = false;
 
+        // Flight phase
+        if (ref_primitive_plan_(i) == 0)
+        {
+          // We lift the foot for the first half and extend leg to the landing foot hold for the second half
+          if (swing_phase < 0.5)
+          {
+            foot_position = getFootData(foot_positions, i, j);
+          }
+          else
+          {
+            foot_position = foot_position_next;
+          }
+          foot_velocity << 0, 0, 0;
+          foot_acceleration << 0, 0, 0;
+        }
+        // Walking phase
+        else
+        {
+          computeSwingFootState(foot_position_prev, foot_position_next, swing_phase, swing_duration,
+                                foot_position, foot_velocity, foot_acceleration);
+        }
+        foot_state_msg.contact = false;
       }
 
       // Load state data into the message

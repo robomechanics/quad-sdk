@@ -94,8 +94,8 @@ NMPCController::NMPCController(int type)
 
   app_->Options()->SetNumericValue("tol", 1e-3);
   app_->Options()->SetNumericValue("bound_relax_factor", 1e-3);
-  app_->Options()->SetNumericValue("max_wall_time", 3.6 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 3.6 * dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 4.0 * dt_);
+  app_->Options()->SetNumericValue("max_cpu_time", 4.0 * dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();

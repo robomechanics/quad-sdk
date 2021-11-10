@@ -68,6 +68,7 @@ quadKD_ = std::make_shared<spirit_utils::QuadKD>();
   current_foot_positions_body_ = Eigen::VectorXd::Zero(num_feet_*3);
   current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_*3);
   ref_ground_height_ = Eigen::VectorXd::Zero(N_+1);
+  ref_primitive_plan_ = Eigen::VectorXi::Zero(N_);
 
   // Initialize body and footstep planners
   initLocalBodyPlanner();
@@ -249,13 +250,39 @@ void LocalPlanner::getStateAndReferencePlan() {
 
   // Grab the appropriate states from the body plan and convert to an Eigen matrix
   ref_body_plan_.setZero();
-  for (int i = 0; i < N_+1; i++) {
+  ref_primitive_plan_.setZero();
 
+  for (int i = 0; i < N_ + 1; i++)
+  {
     // If the horizon extends past the reference trajectory, just hold the last state
-    if (i+current_plan_index_ > body_plan_msg_->plan_indices.back()) {
+    if (i + current_plan_index_ > body_plan_msg_->plan_indices.back())
+    {
       ref_body_plan_.row(i) = spirit_utils::bodyStateMsgToEigen(body_plan_msg_->states.back().body);
-    } else {
-      ref_body_plan_.row(i) = spirit_utils::bodyStateMsgToEigen(body_plan_msg_->states[i+current_plan_index_].body);
+      if (i < N_)
+      {
+        ref_primitive_plan_(i) = body_plan_msg_->primitive_ids.back();
+      }
+    }
+    else
+    {
+      ref_body_plan_.row(i) = spirit_utils::bodyStateMsgToEigen(body_plan_msg_->states[i + current_plan_index_].body);
+      if (i < N_)
+      {
+        ref_primitive_plan_(i) = body_plan_msg_->primitive_ids[i + current_plan_index_];
+
+        // Manully add landing phase
+        // if (ref_primitive_plan_(i) == 2)
+        // {
+        //   for (size_t j = 0; j < 7; j++)
+        //   {
+        //     if (body_plan_msg_->primitive_ids[i + current_plan_index_ - j - 1] == 0)
+        //     {
+        //       ref_primitive_plan_(i) = 1;
+        //       break;
+        //     }
+        //   }
+        // }
+      }
     }
 
     ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_(i, 0), ref_body_plan_(i, 1));
@@ -417,13 +444,13 @@ bool LocalPlanner::computeLocalPlan() {
 
   // Compute the contact schedule
   local_footstep_planner_->computeContactSchedule(current_plan_index_, current_state_,
-    ref_body_plan_,contact_schedule_);
+    ref_body_plan_, ref_primitive_plan_, contact_schedule_);
 
   // Compute the new footholds if we have a valid existing plan (i.e. if grf_plan is filled)
   if (grf_plan_.rows() == N_) {
     
     local_footstep_planner_->computeFootPositions(body_plan_, grf_plan_,
-      contact_schedule_, ref_body_plan_, foot_positions_world_);
+      contact_schedule_, ref_body_plan_, ref_primitive_plan_, foot_positions_world_);
 
     // Transform the new foot positions into the body frame for body planning
     local_footstep_planner_->getFootPositionsBodyFrame(body_plan_, foot_positions_world_,
@@ -479,7 +506,7 @@ void LocalPlanner::publishLocalPlan() {
 
   // Compute the discrete and continuous foot plan messages
   local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_world_,
-    current_plan_index_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
+    current_plan_index_, ref_primitive_plan_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
 
   // Add body, foot, joint, and grf data to the local plan message
   for (int i = 0; i < N_; i++) {
