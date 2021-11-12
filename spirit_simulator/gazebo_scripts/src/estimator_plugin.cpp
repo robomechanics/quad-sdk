@@ -46,15 +46,20 @@ namespace gazebo{
 
     ignition::math::Vector3d toe_offset(0.206, 0, 0);
 
-    physics::LinkPtr lower0 = model_->GetChildLink("lower0");
-    physics::LinkPtr lower1 = model_->GetChildLink("lower1");
-    physics::LinkPtr lower2 = model_->GetChildLink("lower2");
-    physics::LinkPtr lower3 = model_->GetChildLink("lower3");
+    // physics::LinkPtr lower0 = model_->GetChildLink("lower0");
+    // physics::LinkPtr lower1 = model_->GetChildLink("lower1");
+    // physics::LinkPtr lower2 = model_->GetChildLink("lower2");
+    // physics::LinkPtr lower3 = model_->GetChildLink("lower3");
 
-    physics::LinkPtr toe0 = model_->GetChildLink("toe0");
-    physics::LinkPtr toe1 = model_->GetChildLink("toe1");
-    physics::LinkPtr toe2 = model_->GetChildLink("toe2");
-    physics::LinkPtr toe3 = model_->GetChildLink("toe3");
+    physics::LinkPtr lower0 = model_->GetChildLink("FL_calf");
+    physics::LinkPtr lower1 = model_->GetChildLink("RL_calf");
+    physics::LinkPtr lower2 = model_->GetChildLink("FR_calf");
+    physics::LinkPtr lower3 = model_->GetChildLink("RR_calf");
+
+    physics::LinkPtr toe0 = model_->GetChildLink("FL_calf");
+    physics::LinkPtr toe1 = model_->GetChildLink("RL_calf");
+    physics::LinkPtr toe2 = model_->GetChildLink("FR_calf");
+    physics::LinkPtr toe3 = model_->GetChildLink("RR_calf");
 
     if (!body_link)
     {
