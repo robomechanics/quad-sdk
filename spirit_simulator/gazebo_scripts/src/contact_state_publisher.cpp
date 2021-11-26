@@ -90,10 +90,10 @@ void ContactStatePublisher::spin() {
 
     // Get the new toe frame transforms
     try {
-      transformsStamped_[0] = buffer_.lookupTransform("map", "ground_truth/toe0", ros::Time(0));
-      transformsStamped_[1] = buffer_.lookupTransform("map", "ground_truth/toe1", ros::Time(0));
-      transformsStamped_[2] = buffer_.lookupTransform("map", "ground_truth/toe2", ros::Time(0));
-      transformsStamped_[3] = buffer_.lookupTransform("map", "ground_truth/toe3", ros::Time(0));
+      transformsStamped_[0] = buffer_.lookupTransform("map", "ground_truth/FL_foot", ros::Time(0));
+      transformsStamped_[1] = buffer_.lookupTransform("map", "ground_truth/RL_foot", ros::Time(0));
+      transformsStamped_[2] = buffer_.lookupTransform("map", "ground_truth/FR_foot", ros::Time(0));
+      transformsStamped_[3] = buffer_.lookupTransform("map", "ground_truth/RR_foot", ros::Time(0));
     }
     catch (tf2::TransformException &ex) {
       ROS_WARN_THROTTLE(1,"%s",ex.what());

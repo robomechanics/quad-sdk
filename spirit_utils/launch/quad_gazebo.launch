@@ -73,7 +73,7 @@ SOFTWARE.
   <include file="$(find spirit_utils)/launch/load_params.launch" />
   <!-- <param name="robot_description_urdf" textfile="$(find a1_description)/urdf/a1.urdf" /> -->
   <!-- Spawn SDF model -->
-  <node name="spawn_urdf_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model a1_gazebo -x 0.0 -y 0.0 -z 0.6" output="screen"/>
+  <node name="spawn_urdf_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model a1 -x 0.0 -y 0.0 -z 0.6" output="screen"/>
 
   <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
   

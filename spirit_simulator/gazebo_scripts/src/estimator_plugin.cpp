@@ -2,10 +2,7 @@
 #include <iostream>
 namespace gazebo{
 
-  SpiritEstimatorGroundTruth::SpiritEstimatorGroundTruth()
-  {
-
-  }
+  SpiritEstimatorGroundTruth::SpiritEstimatorGroundTruth(){}
   SpiritEstimatorGroundTruth::~SpiritEstimatorGroundTruth(){}
 
   void SpiritEstimatorGroundTruth::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
@@ -18,22 +15,23 @@ namespace gazebo{
     {
       update_rate_ =  _sdf->Get<double>("updateRateHZ");
       ROS_INFO_STREAM("Ground Truth State Estimator: <updateRateHZ> set to: " << update_rate_);
-     }
-     else
-     {
-       update_rate_ = 100.0;
-       ROS_WARN_STREAM("Ground Truth State Estimator: missing <updateRateHZ>, set to default: " << update_rate_);
-     }
+    }
+    else
+    {
+      update_rate_ = 100.0;
+      ROS_WARN_STREAM("Ground Truth State Estimator: missing <updateRateHZ>, set to default: " << update_rate_);
+    }
 
     // Setup state estimate publisher
     ros::NodeHandle nh;
     ground_truth_state_pub_ = nh.advertise<spirit_msgs::RobotState>("/state/ground_truth",1);
 
-      // Listen to the update event. This event is broadcast every
-      // simulation iteration.
+    // Listen to the update event. This event is broadcast every
+    // simulation iteration.
     updateConnection_= event::Events::ConnectWorldUpdateBegin(
         std::bind(&SpiritEstimatorGroundTruth::OnUpdate, this));
   }
+
   void SpiritEstimatorGroundTruth::OnUpdate()
   {
     common::Time current_time = model_->GetWorld()->SimTime();
@@ -50,6 +48,12 @@ namespace gazebo{
     // physics::LinkPtr lower1 = model_->GetChildLink("lower1");
     // physics::LinkPtr lower2 = model_->GetChildLink("lower2");
     // physics::LinkPtr lower3 = model_->GetChildLink("lower3");
+
+    // physics::LinkPtr toe0 = model_->GetChildLink("toe0");
+    // physics::LinkPtr toe1 = model_->GetChildLink("toe1");
+    // physics::LinkPtr toe2 = model_->GetChildLink("toe2");
+    // physics::LinkPtr toe3 = model_->GetChildLink("toe3");
+
 
     physics::LinkPtr lower0 = model_->GetChildLink("FL_calf");
     physics::LinkPtr lower1 = model_->GetChildLink("RL_calf");
@@ -109,7 +113,11 @@ namespace gazebo{
     physics::Joint_V joint_vec = model_->GetJoints();
     int num_joints = 12;
 
-    state.joints.name = {"8", "0", "1", "9","2","3","10","4","5","11","6","7"};
+    // state.joints.name = {"8", "0", "1", "9","2","3","10","4","5","11","6","7"};
+    // joints: ['0','1','2','3','4','5','6','7','8','9','10','11']
+    std::vector<std::string> joints {"FL_hip_joint","FL_thigh_joint","FL_calf_joint","RL_hip_joint","RL_thigh_joint","RL_calf_joint",
+             "FR_hip_joint","FR_thigh_joint","FR_calf_joint","RR_hip_joint","RR_thigh_joint","RR_calf_joint"};
+    state.joints.name = {joints[8], joints[0], joints[1], joints[9],joints[2],joints[3],joints[10],joints[4],joints[5],joints[11],joints[6],joints[7]};
 
     for (int i = 0; i<num_joints; i++) {
       // std::cout << joint->GetName() << std::endl;
