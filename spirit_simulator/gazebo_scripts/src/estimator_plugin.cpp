@@ -8,7 +8,7 @@ namespace gazebo{
   void SpiritEstimatorGroundTruth::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
   {
     model_ = _parent;
-
+    std::cout<<"--------------------------------------"<<std::endl;
     last_time_ = model_->GetWorld()->SimTime();
     // Load update rate from SDF
     if (_sdf->HasElement("updateRateHZ"))
@@ -60,10 +60,10 @@ namespace gazebo{
     physics::LinkPtr lower2 = model_->GetChildLink("FR_calf");
     physics::LinkPtr lower3 = model_->GetChildLink("RR_calf");
 
-    physics::LinkPtr toe0 = model_->GetChildLink("FL_calf");
-    physics::LinkPtr toe1 = model_->GetChildLink("RL_calf");
-    physics::LinkPtr toe2 = model_->GetChildLink("FR_calf");
-    physics::LinkPtr toe3 = model_->GetChildLink("RR_calf");
+    physics::LinkPtr toe0 = model_->GetChildLink("FL_foot");
+    physics::LinkPtr toe1 = model_->GetChildLink("RL_foot");
+    physics::LinkPtr toe2 = model_->GetChildLink("FR_foot");
+    physics::LinkPtr toe3 = model_->GetChildLink("RR_foot");
 
     if (!body_link)
     {
@@ -116,8 +116,8 @@ namespace gazebo{
     // state.joints.name = {"8", "0", "1", "9","2","3","10","4","5","11","6","7"};
     // joints: ['0','1','2','3','4','5','6','7','8','9','10','11']
     std::vector<std::string> joints {"FL_hip_joint","FL_thigh_joint","FL_calf_joint","RL_hip_joint","RL_thigh_joint","RL_calf_joint",
-             "FR_hip_joint","FR_thigh_joint","FR_calf_joint","RR_hip_joint","RR_thigh_joint","RR_calf_joint"};
-    state.joints.name = {joints[8], joints[0], joints[1], joints[9],joints[2],joints[3],joints[10],joints[4],joints[5],joints[11],joints[6],joints[7]};
+                                     "FR_hip_joint","FR_thigh_joint","FR_calf_joint","RR_hip_joint","RR_thigh_joint","RR_calf_joint"};
+    state.joints.name = {joints[8], joints[0], joints[1], joints[9], joints[2], joints[3], joints[10], joints[4], joints[5], joints[11], joints[6], joints[7]};
 
     for (int i = 0; i<num_joints; i++) {
       // std::cout << joint->GetName() << std::endl;

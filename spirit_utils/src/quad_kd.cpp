@@ -34,8 +34,8 @@ QuadKD::QuadKD()
     abort();
   }
 
-  body_name_list_ = {"toe0", "toe1", "toe2", "toe3"};
-
+  // body_name_list_ = {"toe0", "toe1", "toe2", "toe3"};
+  body_name_list_ = {"FL_foot", "RL_foot", "FR_foot", "RR_foot"};
   body_id_list_.resize(4);
   for (size_t i = 0; i < body_name_list_.size(); i++)
   {

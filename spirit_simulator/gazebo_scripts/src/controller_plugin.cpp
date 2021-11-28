@@ -56,6 +56,7 @@ namespace effort_controllers
 
     // Get URDF
     urdf::Model urdf;
+    std::cout<<"here"<<std::endl;
     if (!urdf.initParam("robot_description"))
     {
       ROS_ERROR("Failed to parse urdf file");
@@ -90,6 +91,7 @@ namespace effort_controllers
 
     std::string joint_command_topic;
     spirit_utils::loadROSParam(n, "/topics/control/joint_command",joint_command_topic);
+    std::cout<<joint_command_topic<<std::endl;
 
     sub_command_ = n.subscribe<spirit_msgs::LegCommandArray>(joint_command_topic, 1, &SpiritController::commandCB, this);
     return true;

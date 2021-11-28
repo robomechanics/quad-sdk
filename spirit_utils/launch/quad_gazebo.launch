@@ -71,21 +71,28 @@ SOFTWARE.
 
   <!-- Load the parameters and the sdf description -->
   <include file="$(find spirit_utils)/launch/load_params.launch" />
-  <!-- <param name="robot_description_urdf" textfile="$(find a1_description)/urdf/a1.urdf" /> -->
+  <param name="robot_description" textfile="$(find a1_description)/urdf/a1.urdf" />
   <!-- Spawn SDF model -->
-  <node name="spawn_urdf_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model a1 -x 0.0 -y 0.0 -z 0.6" output="screen"/>
+  <!-- <param name="robot_description_urdf" command="$(find a1_description)/xacro inorder '$(find a1_description)/xacro/robot.xacro' " /> -->
+
+  <node name="spawn_urdf_model" pkg="gazebo_ros" type="spawn_model" respawn="false" args="-urdf -param robot_description -model a1 -x 0.0 -y 0.0 -z 0.6" output="screen"/>
 
   <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
-  
+
   <node name="controller_spawner"
         pkg="controller_manager"
         type="spawner"
         respawn="false"
         output="screen"
         ns="/spirit"
-        args="joint_controller joint_state_controller">
+        args="joint_controller joint_state_controller" >
   </node>
 
+  <!-- convert joint states to TF transforms for rviz, etc -->
+  <!-- <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+    respawn="false" output="screen">
+    <remap from="/joint_states" to="/spirit/joint_states" />
+  </node> -->
   <!-- Load the contact state publisher -->
   <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
   
