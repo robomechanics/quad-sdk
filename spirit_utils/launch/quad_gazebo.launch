@@ -79,6 +79,15 @@ SOFTWARE.
 
   <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
 
+  <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher">
+      <remap from="/joint_states" to="/spirit/joint_states" />
+      <param name="robot_description" textfile="$(find a1_description)/urdf/a1.urdf" />
+  </node>
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+      <remap from="/joint_states" to="/spirit/joint_states" />
+  </node>
+
   <node name="controller_spawner"
         pkg="controller_manager"
         type="spawner"
