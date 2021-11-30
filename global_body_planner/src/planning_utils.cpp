@@ -1000,6 +1000,65 @@ Action getRandomLeapAction(const State &s, std::array<double, 3> surf_norm,
   a[10] = t_s_land;
 
   return a;
+  // Action a;
+
+  // // Random normal forces between 0 and planner_config.F_MAX
+  // double f_max = (planner_config.PEAK_GRF_MAX-planner_config.PEAK_GRF_MIN)*(double)rand()/
+  //   RAND_MAX + planner_config.PEAK_GRF_MIN;
+  // double ang_az = 2*M_PI*(double)rand()/RAND_MAX;
+  // double max_ang_inc = atan(planner_config.MU);
+  // double ang_inc = 2*max_ang_inc*(double)rand()/RAND_MAX - max_ang_inc;
+
+  // double f_x_leap = f_max*cos(ang_az)*sin(ang_inc);
+  // double f_y_leap = f_max*sin(ang_az)*sin(ang_inc);
+  // double f_z_leap = f_max*cos(ang_inc);
+
+  // f_max = (planner_config.PEAK_GRF_MAX-planner_config.PEAK_GRF_MIN)*(double)rand()/
+  //   RAND_MAX + planner_config.PEAK_GRF_MIN;
+  // ang_az = 2*M_PI*(double)rand()/RAND_MAX;
+  // ang_inc = 2*max_ang_inc*(double)rand()/RAND_MAX - max_ang_inc;
+
+  // double f_x_land = f_max*cos(ang_az)*sin(ang_inc);
+  // double f_y_land = f_max*sin(ang_az)*sin(ang_inc);
+  // double f_z_land = f_max*cos(ang_inc);
+
+
+  // double dz0 = (double)rand()/RAND_MAX - 2.0;
+
+  // // std::array<double, 3> f_td = {f_x_td, f_y_td, f_z_td};
+  // // std::array<double, 3> f_to = {f_x_to, f_y_to, f_z_to};
+
+  // // f_td = rotateGRF(surf_norm, f_td);
+  // // f_to = rotateGRF(surf_norm, f_to);
+
+  // // Random stance and flight times between 0 and T_MAX
+  // // double t_s = (planner_config.T_S_MAX - planner_config.T_S_MIN)*(double)rand()/RAND_MAX + planner_config.T_S_MIN;
+  // double z0 = s[2];
+  // double z_max = getHeightFromState(s, planner_config) + planner_config.H_MAX - 0.025;
+  // double g = planner_config.G_CONST;
+  // double m = planner_config.M_CONST;
+
+  // double t_s_leap = (3.0*(dz0 - sqrt(pow(dz0,2) + 2*g*z0 - 2*g*z_max - (4*g*f_z_leap*z0)/3.0 +
+  //   (4*g*f_z_leap*z_max)/3.0)))/(3*g - 2*g*f_z_leap);
+
+  // std::cout << "t_s_leap = " << t_s_leap << std::endl;
+
+  // double t_f = 1.0;
+  // double t_s_land = 1.0;
+
+  // a[0] = f_x_leap;
+  // a[1] = f_y_leap;
+  // a[2] = f_z_leap;
+  // a[3] = f_x_land;
+  // a[4] = f_y_land;
+  // a[5] = f_z_land;
+  // a[6] = dz0;
+  // a[7] = -dz0;
+  // a[8] = t_s_leap;
+  // a[9] = t_f;
+  // a[10] = t_s_land;
+
+  // return a;
 }
 
 bool isValidAction(Action a, const PlannerConfig &planner_config)
