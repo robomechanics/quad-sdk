@@ -68,7 +68,7 @@ before_script:
 
 script:
 - cd ~/catkin_ws
-- roslaunch spirit_utils load_params.launch
+- roslaunch quad_utils load_params.launch
 - sleep 2
 - catkin_make run_tests && catkin_test_results
 

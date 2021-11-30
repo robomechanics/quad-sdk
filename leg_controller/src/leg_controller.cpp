@@ -9,36 +9,36 @@ LegController::LegController(ros::NodeHandle nh) {
   std::string grf_topic, trajectory_state_topic, robot_state_topic, local_plan_topic,
     leg_command_array_topic, control_mode_topic, leg_override_topic,
     remote_heartbeat_topic, robot_heartbeat_topic;
-  spirit_utils::loadROSParam(nh_,"topics/local_plan",local_plan_topic);
-  spirit_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
-  spirit_utils::loadROSParam(nh_,"topics/state/trajectory",trajectory_state_topic);
-  spirit_utils::loadROSParam(nh_,"topics/heartbeat/remote",remote_heartbeat_topic);
-  spirit_utils::loadROSParam(nh_,"topics/heartbeat/robot",robot_heartbeat_topic);
-  spirit_utils::loadROSParam(nh_,"topics/control/grfs",grf_topic);
-  spirit_utils::loadROSParam(nh_,"topics/control/joint_command",leg_command_array_topic);
-  spirit_utils::loadROSParam(nh_,"topics/control/leg_override",leg_override_topic);
-  spirit_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
+  quad_utils::loadROSParam(nh_,"topics/local_plan",local_plan_topic);
+  quad_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
+  quad_utils::loadROSParam(nh_,"topics/state/trajectory",trajectory_state_topic);
+  quad_utils::loadROSParam(nh_,"topics/heartbeat/remote",remote_heartbeat_topic);
+  quad_utils::loadROSParam(nh_,"topics/heartbeat/robot",robot_heartbeat_topic);
+  quad_utils::loadROSParam(nh_,"topics/control/grfs",grf_topic);
+  quad_utils::loadROSParam(nh_,"topics/control/joint_command",leg_command_array_topic);
+  quad_utils::loadROSParam(nh_,"topics/control/leg_override",leg_override_topic);
+  quad_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
 
-  spirit_utils::loadROSParam(nh_,"leg_controller/update_rate", update_rate_);
-  spirit_utils::loadROSParam(nh_,"leg_controller/input_timeout", input_timeout_);
-  spirit_utils::loadROSParam(nh_,"leg_controller/state_timeout", state_timeout_);
-  spirit_utils::loadROSParam(nh_,"leg_controller/heartbeat_timeout", heartbeat_timeout_);
-  spirit_utils::loadROSParam(nh_, "leg_controller/sit_kp", sit_kp_);
-  spirit_utils::loadROSParam(nh_, "leg_controller/sit_kd", sit_kd_);
-  spirit_utils::loadROSParam(nh_, "leg_controller/stand_kp", stand_kp_);
-  spirit_utils::loadROSParam(nh_, "leg_controller/stand_kd", stand_kd_);
-  spirit_utils::loadROSParam(nh_, "leg_controller/stance_kp", stance_kp_);
-  spirit_utils::loadROSParam(nh_, "leg_controller/stance_kd", stance_kd_);
-  spirit_utils::loadROSParam(nh_, "leg_controller/swing_kp", swing_kp_);
-  spirit_utils::loadROSParam(nh_, "leg_controller/swing_kd", swing_kd_);
-  spirit_utils::loadROSParam(nh_, "leg_controller/safety_kp", safety_kp_);
-  spirit_utils::loadROSParam(nh_, "leg_controller/safety_kd", safety_kd_);
-  spirit_utils::loadROSParam(nh_, "leg_controller/remote_latency_threshold_warn",
+  quad_utils::loadROSParam(nh_,"leg_controller/update_rate", update_rate_);
+  quad_utils::loadROSParam(nh_,"leg_controller/input_timeout", input_timeout_);
+  quad_utils::loadROSParam(nh_,"leg_controller/state_timeout", state_timeout_);
+  quad_utils::loadROSParam(nh_,"leg_controller/heartbeat_timeout", heartbeat_timeout_);
+  quad_utils::loadROSParam(nh_, "leg_controller/sit_kp", sit_kp_);
+  quad_utils::loadROSParam(nh_, "leg_controller/sit_kd", sit_kd_);
+  quad_utils::loadROSParam(nh_, "leg_controller/stand_kp", stand_kp_);
+  quad_utils::loadROSParam(nh_, "leg_controller/stand_kd", stand_kd_);
+  quad_utils::loadROSParam(nh_, "leg_controller/stance_kp", stance_kp_);
+  quad_utils::loadROSParam(nh_, "leg_controller/stance_kd", stance_kd_);
+  quad_utils::loadROSParam(nh_, "leg_controller/swing_kp", swing_kp_);
+  quad_utils::loadROSParam(nh_, "leg_controller/swing_kd", swing_kd_);
+  quad_utils::loadROSParam(nh_, "leg_controller/safety_kp", safety_kp_);
+  quad_utils::loadROSParam(nh_, "leg_controller/safety_kd", safety_kd_);
+  quad_utils::loadROSParam(nh_, "leg_controller/remote_latency_threshold_warn",
     remote_latency_threshold_warn_);
-  spirit_utils::loadROSParam(nh_, "leg_controller/remote_latency_threshold_error",
+  quad_utils::loadROSParam(nh_, "leg_controller/remote_latency_threshold_error",
     remote_latency_threshold_error_);
 
-  spirit_utils::loadROSParam(nh_,"local_planner/timestep", dt_);
+  quad_utils::loadROSParam(nh_,"local_planner/timestep", dt_);
 
   // Setup pubs and subs
   local_plan_sub_ = nh_.subscribe(local_plan_topic,1,&LegController::localPlanCallback, this);
@@ -52,8 +52,8 @@ LegController::LegController(ros::NodeHandle nh) {
     leg_override_topic,1,&LegController::legOverrideCallback, this);
   remote_heartbeat_sub_ = nh_.subscribe(
     remote_heartbeat_topic,1,&LegController::remoteHeartbeatCallback, this);
-  leg_command_array_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_command_array_topic,1);
-  grf_pub_ = nh_.advertise<spirit_msgs::GRFArray>(grf_topic,1);
+  leg_command_array_pub_ = nh_.advertise<quad_msgs::LegCommandArray>(leg_command_array_topic,1);
+  grf_pub_ = nh_.advertise<quad_msgs::GRFArray>(grf_topic,1);
   robot_heartbeat_pub_ = nh_.advertise<std_msgs::Header>(robot_heartbeat_topic,1);
 
   // Start sitting
@@ -62,7 +62,7 @@ LegController::LegController(ros::NodeHandle nh) {
   last_state_time_ = std::numeric_limits<double>::max();  
 
   // Initialize kinematics object
-  quadKD_ = std::make_shared<spirit_utils::QuadKD>();
+  quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
   // Initialize inverse dynamics object
   inverse_dynamics_controller_ = std::make_shared<InverseDynamicsController>();
@@ -91,7 +91,7 @@ void LegController::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
   }
 }
 
-void LegController::localPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg) {
+void LegController::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg) {
   last_local_plan_msg_ = msg;
 
   double round_trip_time_diff = (ros::Time::now() - last_local_plan_msg_->state_timestamp).toSec();
@@ -101,23 +101,23 @@ void LegController::localPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& ms
   ROS_INFO_STREAM("local plan time difference: " << local_plan_time_diff);
 }
 
-void LegController::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
+void LegController::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
   // ROS_INFO("In robotStateCallback");
   last_robot_state_msg_ = msg;
   last_state_time_ = msg->header.stamp.toSec();
 }
 
-void LegController::grfInputCallback(const spirit_msgs::GRFArray::ConstPtr& msg) {
+void LegController::grfInputCallback(const quad_msgs::GRFArray::ConstPtr& msg) {
   // ROS_INFO("In controlInputCallback");
   last_grf_array_msg_ = msg;
 }
 
-void LegController::trajectoryStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
+void LegController::trajectoryStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
   // ROS_INFO("In footPlanContinuousCallback");
   last_trajectory_state_msg_ = msg;
 }
 
-void LegController::legOverrideCallback(const spirit_msgs::LegOverride::ConstPtr& msg) {
+void LegController::legOverrideCallback(const quad_msgs::LegOverride::ConstPtr& msg) {
   last_leg_override_msg_ = *msg;
 }
 
@@ -194,8 +194,8 @@ void LegController::computeLegCommandArray() {
 
   // Define vectors for joint positions and velocities
   Eigen::VectorXd joint_positions(3*num_feet_), joint_velocities(3*num_feet_), body_state(12);
-  spirit_utils::vectorToEigen(last_robot_state_msg_->joints.position, joint_positions);
-  spirit_utils::vectorToEigen(last_robot_state_msg_->joints.velocity, joint_velocities);
+  quad_utils::vectorToEigen(last_robot_state_msg_->joints.position, joint_positions);
+  quad_utils::vectorToEigen(last_robot_state_msg_->joints.velocity, joint_velocities);
 
   // Initialize leg command message
   leg_command_array_msg_.leg_commands.resize(num_feet_);
@@ -236,7 +236,7 @@ void LegController::computeLegCommandArray() {
     
     int n_override = last_leg_override_msg_.leg_index.size();
     int leg_ind;
-    spirit_msgs::MotorCommand motor_command;
+    quad_msgs::MotorCommand motor_command;
     if (n_override > 0){
       for (int i = 0; i < n_override; i++) {
         leg_ind = last_leg_override_msg_.leg_index.at(i);
@@ -310,7 +310,7 @@ void LegController::computeLegCommandArray() {
   for (int i = 0; i < num_feet_; ++i) {
     for (int j = 0; j < 3; ++j) {
       int joint_idx = 3*i+j;
-      spirit_msgs::MotorCommand cmd =leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j);
+      quad_msgs::MotorCommand cmd =leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j);
       double pos_component = cmd.kp*(cmd.pos_setpoint - joint_positions[joint_idx]);
       double vel_component = cmd.kd*(cmd.vel_setpoint - joint_velocities[joint_idx]);
       double fb_component = pos_component + vel_component;

@@ -1,5 +1,5 @@
 #include "mpc_controller/quadruped_mpc.h"
-#include "spirit_utils/matrix_utils.h"
+#include "quad_utils/matrix_utils.h"
 
 #include <iostream>
 #include <chrono>
@@ -28,7 +28,7 @@ QuadrupedMPC::QuadrupedMPC() {
   // b_contact_hi_ = Eigen::VectorXd::Zero(num_contact_constraints_);
   // b_dyn_ = Eigen::VectorXd::Zero(num_dyn_constraints_);
 
-quadKD_ = std::make_shared<spirit_utils::QuadKD>();
+quadKD_ = std::make_shared<quad_utils::QuadKD>();
 }
 
 void QuadrupedMPC::setMassProperties(const double m, const Eigen::Matrix3d Ib) {

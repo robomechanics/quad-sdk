@@ -16,7 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   sensor_msgs
-  spirit_msgs
+  quad_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -24,7 +24,7 @@ find_package(Eigen3 REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
-  CATKIN_DEPENDS roscpp std_msgs sensor_msgs spirit_msgs
+  CATKIN_DEPENDS roscpp std_msgs sensor_msgs quad_msgs
   DEPENDS EIGEN3
 )
 

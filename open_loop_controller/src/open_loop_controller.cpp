@@ -5,16 +5,16 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh) {
 
   // Get rosparams
   std::string leg_control_topic,control_mode_topic;
-  spirit_utils::loadROSParam(nh_,"topics/control/joint_command",leg_control_topic);
-  spirit_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
-  spirit_utils::loadROSParam(nh_,"open_loop_controller/update_rate",update_rate_);
-  spirit_utils::loadROSParam(nh_,"open_loop_controller/stand_angles",stand_joint_angles_);
-  spirit_utils::loadROSParam(nh_,"open_loop_controller/stand_kp",stand_kp_);
-  spirit_utils::loadROSParam(nh_,"open_loop_controller/stand_kd",stand_kd_);
-  spirit_utils::loadROSParam(nh_,"open_loop_controller/walk_kp",walk_kp_);
-  spirit_utils::loadROSParam(nh_,"open_loop_controller/walk_kd",walk_kd_);
-  spirit_utils::loadROSParam(nh_,"open_loop_controller/leg_phases",leg_phases_);
-  spirit_utils::loadROSParam(nh_,"open_loop_controller/use_diff_for_velocity",use_diff_for_velocity_);
+  quad_utils::loadROSParam(nh_,"topics/control/joint_command",leg_control_topic);
+  quad_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
+  quad_utils::loadROSParam(nh_,"open_loop_controller/update_rate",update_rate_);
+  quad_utils::loadROSParam(nh_,"open_loop_controller/stand_angles",stand_joint_angles_);
+  quad_utils::loadROSParam(nh_,"open_loop_controller/stand_kp",stand_kp_);
+  quad_utils::loadROSParam(nh_,"open_loop_controller/stand_kd",stand_kd_);
+  quad_utils::loadROSParam(nh_,"open_loop_controller/walk_kp",walk_kp_);
+  quad_utils::loadROSParam(nh_,"open_loop_controller/walk_kd",walk_kd_);
+  quad_utils::loadROSParam(nh_,"open_loop_controller/leg_phases",leg_phases_);
+  quad_utils::loadROSParam(nh_,"open_loop_controller/use_diff_for_velocity",use_diff_for_velocity_);
 
   // Start sitting
   control_mode_ = 0;
@@ -23,7 +23,7 @@ OpenLoopController::OpenLoopController(ros::NodeHandle nh) {
   this->setupTrajectory();
   
   // Setup pubs and subs
-	joint_control_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(leg_control_topic,1);
+	joint_control_pub_ = nh_.advertise<quad_msgs::LegCommandArray>(leg_control_topic,1);
   control_mode_sub_ = nh_.subscribe(control_mode_topic,1,&OpenLoopController::controlModeCallback, this);
 }
 
@@ -38,10 +38,10 @@ void OpenLoopController::controlModeCallback(const std_msgs::UInt8::ConstPtr& ms
 void OpenLoopController::setupTrajectory()
 {
   std::vector<double> xs,ys,ts;
-  spirit_utils::loadROSParam(nh_,"open_loop_controller/waypoint_ts",ts);
-  spirit_utils::loadROSParam(nh_,"open_loop_controller/waypoint_xs",xs);
-  spirit_utils::loadROSParam(nh_,"open_loop_controller/waypoint_ys",ys);
-  spirit_utils::loadROSParam(nh_,"open_loop_controller/interp_dt",interp_dt_);
+  quad_utils::loadROSParam(nh_,"open_loop_controller/waypoint_ts",ts);
+  quad_utils::loadROSParam(nh_,"open_loop_controller/waypoint_xs",xs);
+  quad_utils::loadROSParam(nh_,"open_loop_controller/waypoint_ys",ys);
+  quad_utils::loadROSParam(nh_,"open_loop_controller/interp_dt",interp_dt_);
 
   double dt = 0.005;
 
@@ -94,7 +94,7 @@ std::pair<double,double> OpenLoopController::compute2DIk(double x, double y)
 
 void OpenLoopController::sendJointPositions(double &elapsed_time)
 {
-	spirit_msgs::LegCommandArray msg;
+	quad_msgs::LegCommandArray msg;
 	msg.leg_commands.resize(4);
 
   switch (control_mode_){

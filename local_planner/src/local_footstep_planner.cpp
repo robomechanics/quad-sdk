@@ -35,7 +35,7 @@ void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_
 
 
 void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double grf_weight, 
-  double standing_error_threshold, std::shared_ptr<spirit_utils::QuadKD> kinematics) {
+  double standing_error_threshold, std::shared_ptr<quad_utils::QuadKD> kinematics) {
 
   ground_clearance_ = ground_clearance;
   standing_error_threshold_ = standing_error_threshold;
@@ -217,9 +217,9 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
 
 void LocalFootstepPlanner::computeFootPlanMsgs(
   const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
-  int current_plan_index, spirit_msgs::MultiFootPlanDiscrete &past_footholds_msg,
-  spirit_msgs::MultiFootPlanDiscrete &future_footholds_msg,
-  spirit_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg) {
+  int current_plan_index, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+  quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
+  quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg) {
 
   foot_plan_continuous_msg.states.resize(contact_schedule.size());
   future_footholds_msg.feet.resize(num_feet_);
@@ -231,7 +231,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
 
     // Declare variables for computing initial swing foot state
     // Identify index for the liftoff and touchdown events
-    spirit_msgs::FootState most_recent_foothold_msg = past_footholds_msg.feet[j].footholds.back();
+    quad_msgs::FootState most_recent_foothold_msg = past_footholds_msg.feet[j].footholds.back();
     
     int i_liftoff = most_recent_foothold_msg.traj_index - current_plan_index;
     int i_touchdown = getNextContactIndex(contact_schedule, 0, j);
@@ -239,7 +239,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
 
     // Identify positions of the previous and next footholds
     Eigen::Vector3d foot_position_prev;
-    spirit_utils::footStateMsgToEigen(most_recent_foothold_msg, foot_position_prev);
+    quad_utils::footStateMsgToEigen(most_recent_foothold_msg, foot_position_prev);
     Eigen::Vector3d foot_position_next = getFootData(foot_positions, i_touchdown, j);
 
     // Loop through the horizon
@@ -254,7 +254,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
       }
 
       // Create the foot state message
-      spirit_msgs::FootState foot_state_msg;
+      quad_msgs::FootState foot_state_msg;
       foot_state_msg.header = foot_plan_continuous_msg.header;
       foot_state_msg.traj_index = foot_plan_continuous_msg.states[i].traj_index;
 
@@ -305,7 +305,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
       }
 
       // Load state data into the message
-      spirit_utils::eigenToFootStateMsg(foot_position, foot_velocity, foot_acceleration, foot_state_msg);
+      quad_utils::eigenToFootStateMsg(foot_position, foot_velocity, foot_acceleration, foot_state_msg);
       foot_plan_continuous_msg.states[i].feet.push_back(foot_state_msg);
 
       // If this is a touchdown event, add to the future footholds message

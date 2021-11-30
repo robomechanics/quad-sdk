@@ -5,6 +5,7 @@ echo "Install base dependencies"
 echo "#########################"
 echo
 sudo apt install -y doxygen libeigen3-dev
+sudo apt-get install python3-catkin-tools
 
 # Install all dependencies from package setup files
 echo

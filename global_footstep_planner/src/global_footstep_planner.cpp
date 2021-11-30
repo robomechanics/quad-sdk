@@ -42,9 +42,9 @@ GlobalFootstepPlanner::GlobalFootstepPlanner(ros::NodeHandle nh) {
   robot_state_sub_ = nh_.subscribe(robot_state_topic,1,
     &GlobalFootstepPlanner::robotStateCallback, this);
   foot_plan_discrete_pub_ = nh_.advertise<
-    spirit_msgs::MultiFootPlanDiscrete>(foot_plan_discrete_topic,1);
+    quad_msgs::MultiFootPlanDiscrete>(foot_plan_discrete_topic,1);
   foot_plan_continuous_pub_ = nh_.advertise<
-    spirit_msgs::MultiFootPlanContinuous>(foot_plan_continuous_topic,1);
+    quad_msgs::MultiFootPlanContinuous>(foot_plan_continuous_topic,1);
 
 }
 
@@ -59,7 +59,7 @@ void GlobalFootstepPlanner::terrainMapCallback(
 }
 
 void GlobalFootstepPlanner::robotPlanCallback(
-  const spirit_msgs::RobotPlan::ConstPtr& msg) {
+  const quad_msgs::RobotPlan::ConstPtr& msg) {
 
   // Only update if the new plan is different
   if (body_plan_msg_ != NULL) {
@@ -75,7 +75,7 @@ void GlobalFootstepPlanner::robotPlanCallback(
 }
 
 void GlobalFootstepPlanner::robotStateCallback(
-  const spirit_msgs::RobotState::ConstPtr& msg) {
+  const quad_msgs::RobotState::ConstPtr& msg) {
 
   if (msg->feet.feet.empty())
     return;
@@ -108,7 +108,7 @@ double GlobalFootstepPlanner::computeTimeUntilNextFlight(double t) {
 }
 
 void GlobalFootstepPlanner::updateDiscretePlan() {
-  // spirit_utils::FunctionTimer timer(__FUNCTION__);
+  // quad_utils::FunctionTimer timer(__FUNCTION__);
 
   if (body_plan_msg_ == NULL) {
     ROS_WARN_THROTTLE(0.5, "No body plan in GlobalFootstepPlanner, exiting");
@@ -125,7 +125,7 @@ void GlobalFootstepPlanner::updateDiscretePlan() {
     primitive_id_plan_.push_back(body_plan_msg_->primitive_ids[i]);
   }
 
-  spirit_utils::QuadKD kinematics;
+  quad_utils::QuadKD kinematics;
   
   // Clear out the old footstep plan
   footstep_plan_.clear();
@@ -187,13 +187,13 @@ void GlobalFootstepPlanner::updateDiscretePlan() {
       double t_touchdown = t_cycle + t_offsets_trot[j];
       double t_midstance = t_cycle + t_offsets_trot[j] + 0.5*t_s[j];
 
-      spirit_msgs::RobotState state_touchdown, state_midstance;
+      quad_msgs::RobotState state_touchdown, state_midstance;
       int primitive_id_touchdown, primitive_id_midstance;
-      spirit_msgs::GRFArray grf_array_touchdown, grf_array_midstance;
+      quad_msgs::GRFArray grf_array_touchdown, grf_array_midstance;
 
-      spirit_utils::interpRobotPlan((*body_plan_msg_), t_touchdown, state_touchdown,
+      quad_utils::interpRobotPlan((*body_plan_msg_), t_touchdown, state_touchdown,
         primitive_id_touchdown, grf_array_touchdown);
-      spirit_utils::interpRobotPlan((*body_plan_msg_), t_midstance, state_midstance,
+      quad_utils::interpRobotPlan((*body_plan_msg_), t_midstance, state_midstance,
         primitive_id_midstance, grf_array_midstance);
 
       // Skip if this would occur during a flight phase
@@ -250,7 +250,7 @@ void GlobalFootstepPlanner::updateDiscretePlan() {
     
     if (t_cycle_end >=t_plan_.back()) {
       // Add final foot configuration
-      spirit_msgs::RobotState state_final = body_plan_msg_->states.back();
+      quad_msgs::RobotState state_final = body_plan_msg_->states.back();
 
       Eigen::Vector3d body_pos_final = {state_final.body.pose.position.x,
           state_final.body.pose.position.y,
@@ -285,7 +285,7 @@ void GlobalFootstepPlanner::updateDiscretePlan() {
 }
 
 void GlobalFootstepPlanner::updateContinuousPlan() {
-  // spirit_utils::FunctionTimer timer(__FUNCTION__);
+  // quad_utils::FunctionTimer timer(__FUNCTION__);
 
   // Make sure we already have footstep data
   if (footstep_plan_.empty()){
@@ -306,7 +306,7 @@ void GlobalFootstepPlanner::updateContinuousPlan() {
   for (double t = 0; t < footstep_horizon; t+=interp_dt_) {
     
     // Initialize MultiFootState message
-    spirit_msgs::MultiFootState multi_foot_state_msg;
+    quad_msgs::MultiFootState multi_foot_state_msg;
     multi_foot_state_msg.header.frame_id = 
       multi_foot_plan_continuous_msg_.header.frame_id;
     multi_foot_state_msg.header.stamp = 
@@ -315,7 +315,7 @@ void GlobalFootstepPlanner::updateContinuousPlan() {
     // Iterate through each foot
     for (int i=0; i<num_feet_; i++) {
 
-      spirit_msgs::FootState foot_state_msg;
+      quad_msgs::FootState foot_state_msg;
       foot_state_msg.header = multi_foot_state_msg.header;
       int state_index = 0;
 
@@ -439,7 +439,7 @@ void GlobalFootstepPlanner::publishDiscretePlan() {
   }
   
   // Initialize MultiFootPlanDiscrete message
-  spirit_msgs::MultiFootPlanDiscrete multi_foot_plan_discrete_msg;
+  quad_msgs::MultiFootPlanDiscrete multi_foot_plan_discrete_msg;
   multi_foot_plan_discrete_msg.header.stamp = plan_timestamp_;
   multi_foot_plan_discrete_msg.header.frame_id = map_frame_;
 
@@ -447,14 +447,14 @@ void GlobalFootstepPlanner::publishDiscretePlan() {
   for (int i=0;i<footstep_plan_.size(); ++i) {
 
     // Initialize to match the MultiFootPlanDiscrete header
-    spirit_msgs::FootPlanDiscrete foot_plan_discrete_msg;
+    quad_msgs::FootPlanDiscrete foot_plan_discrete_msg;
     foot_plan_discrete_msg.header = multi_foot_plan_discrete_msg.header;
 
     // Loop through each state for this foot
     for (int j=0;j<footstep_plan_[i].size(); ++j) {
 
       // Initialize a footstep message and load the data
-      spirit_msgs::FootState foot_state_msg;
+      quad_msgs::FootState foot_state_msg;
 
       foot_state_msg.position.x = footstep_plan_[i][j][0];
       foot_state_msg.position.y = footstep_plan_[i][j][1];
@@ -495,10 +495,10 @@ void GlobalFootstepPlanner::waitForData() {
     ros::spinOnce();
   }
 
-  boost::shared_ptr<spirit_msgs::RobotPlan const> shared_body_plan;
+  boost::shared_ptr<quad_msgs::RobotPlan const> shared_body_plan;
   while((shared_body_plan == nullptr) && ros::ok())
   {
-    shared_body_plan = ros::topic::waitForMessage<spirit_msgs::RobotPlan>(
+    shared_body_plan = ros::topic::waitForMessage<quad_msgs::RobotPlan>(
       body_plan_topic_, nh_);
     ros::spinOnce();
   }

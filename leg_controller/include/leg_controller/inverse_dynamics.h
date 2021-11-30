@@ -4,19 +4,19 @@
 #include <ros/ros.h>
 #include <eigen3/Eigen/Eigen>
 // #include <eigen3/Eigen/Eigen>
-#include <spirit_utils/ros_utils.h>
-#include <spirit_utils/math_utils.h>
-#include <spirit_utils/ros_utils.h>
-#include <spirit_msgs/GRFArray.h>
+#include <quad_utils/ros_utils.h>
+#include <quad_utils/math_utils.h>
+#include <quad_utils/ros_utils.h>
+#include <quad_msgs/GRFArray.h>
 #include <std_msgs/UInt8.h>
-#include <spirit_msgs/RobotState.h>
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/MotorCommand.h>
-#include <spirit_msgs/LegCommand.h>
-#include <spirit_msgs/LegCommandArray.h>
-#include <spirit_msgs/LegOverride.h>
-#include <spirit_msgs/MultiFootPlanContinuous.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/MotorCommand.h>
+#include <quad_msgs/LegCommand.h>
+#include <quad_msgs/LegCommandArray.h>
+#include <quad_msgs/LegOverride.h>
+#include <quad_msgs/MultiFootPlanContinuous.h>
 #include <eigen_conversions/eigen_msg.h>
 
 
@@ -44,10 +44,10 @@ class InverseDynamicsController {
      * @param[out] grf_array_msg GRF command message
      */
     void computeLegCommandArrayFromPlan(
-      const spirit_msgs::RobotState::ConstPtr &robot_state_msg,
-      const spirit_msgs::RobotPlan::ConstPtr &local_plan_msg,
-      spirit_msgs::LegCommandArray &leg_command_array_msg,
-      spirit_msgs::GRFArray &grf_array_msg);
+      const quad_msgs::RobotState::ConstPtr &robot_state_msg,
+      const quad_msgs::RobotPlan::ConstPtr &local_plan_msg,
+      quad_msgs::LegCommandArray &leg_command_array_msg,
+      quad_msgs::GRFArray &grf_array_msg);
 
       /**
        * @brief Set the desired stance and swing proportional and derivative gains
@@ -65,7 +65,7 @@ private:
     const int num_feet_ = 4;
 
     /// QuadKD class
-    std::shared_ptr<spirit_utils::QuadKD>quadKD_;
+    std::shared_ptr<quad_utils::QuadKD>quadKD_;
 
     /// PD gain when foot is in stance
     std::vector<double> stance_kp_;
