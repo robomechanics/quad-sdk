@@ -15,7 +15,7 @@ jobs:
             chmod +x setup.sh
             ./setup.sh
             cd /catkin_ws
-            catkin build -j8 -l8
+            catkin build -j4 -l4
       - run:
           name: "Load ROS params in the background"
           command: |
@@ -29,7 +29,7 @@ jobs:
             cd /catkin_ws
             source /opt/ros/melodic/setup.bash
             source /catkin_ws/devel/setup.bash
-            catkin run_tests -j8 -l8 && catkin_test_results
+            catkin run_tests -j4 -l4 && catkin_test_results
 workflows:
   version: 2
   melodic-build-and-test:
