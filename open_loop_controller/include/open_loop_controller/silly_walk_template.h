@@ -2,8 +2,8 @@
 #define SILLY_WALK_TEMPLATE_H
 
 #include <ros/ros.h>
-#include <spirit_msgs/LegCommandArray.h>
-#include <spirit_utils/ros_utils.h>
+#include <quad_msgs/LegCommandArray.h>
+#include <quad_utils/ros_utils.h>
 #include <std_msgs/UInt8.h>
 #include <math.h>
 #include <algorithm>
@@ -73,7 +73,7 @@ private:
 	const int READY = 1;
 
 	/// Joint control message
-	spirit_msgs::LegCommandArray control_msg_;
+	quad_msgs::LegCommandArray control_msg_;
 
 	/// Number of legs
 	const int num_legs_ = 4;
@@ -82,7 +82,7 @@ private:
 	std::vector<double> stand_joint_angles_;
 
 	// Use a kinematics object to make kinematics calculations easier
-	spirit_utils::QuadKD quadKD_;
+	quad_utils::QuadKD quadKD_;
 };
 
 

@@ -13,8 +13,8 @@
 #include <eigen3/Eigen/Eigen>
 #include <grid_map_core/grid_map_core.hpp>
 #include <ros/ros.h>
-#include <spirit_utils/fast_terrain_map.h>
-#include <spirit_utils/math_utils.h>
+#include <quad_utils/fast_terrain_map.h>
+#include <quad_utils/math_utils.h>
 
 namespace planning_utils {
 
@@ -32,7 +32,7 @@ struct PlannerConfig {
   double ROBOT_H = 0.05;        // Vertical distance between leg base and bottom of robot, m (0.1 cheetah, 0.04 ANYmal)
 
   // Define dynamic constraint parameters
-  double M_CONST = 12;          // Robot mass, kg (12 for spirit, 43 for cheetah, 30 for anymal)
+  double M_CONST = 12;          // Robot mass, kg (12 for quad, 43 for cheetah, 30 for anymal)
   double J_CONST = 1.0;         // Moment of inertia about the robot's y axis (pitch)
   double G_CONST = 9.81;        // Gravity constant, m/s^2
   double F_MAX = 300;           // Maximum GRF, N (800 for cheetah, 500 for anymal)

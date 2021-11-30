@@ -1,7 +1,7 @@
 
 #include "local_planner/quadruped_mpc.h"
 
-#include "spirit_utils/matplotlibcpp.h"
+#include "quad_utils/matplotlibcpp.h"
 #include <eigen3/Eigen/Eigen>
 #include <iostream>
 #include <math.h>

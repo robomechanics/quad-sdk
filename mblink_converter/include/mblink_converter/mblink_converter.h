@@ -2,12 +2,12 @@
 #define MBLINK_CONVERTER_H
 
 #include <ros/ros.h>
-#include <spirit_msgs/LegCommandArray.h>
+#include <quad_msgs/LegCommandArray.h>
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <mblink/mblink.hpp>
 #include <eigen3/Eigen/Eigen>
-#include <spirit_utils/ros_utils.h>
+#include <quad_utils/ros_utils.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <chrono>
@@ -47,9 +47,9 @@ public:
 private:
   /**
    * @brief Callback function to handle new leg command data
-   * @param[in] msg spirit_msgs<LegCommandArray> containing pos, vel and torque setpoints and gains
+   * @param[in] msg quad_msgs<LegCommandArray> containing pos, vel and torque setpoints and gains
    */
-  void legControlCallback(const spirit_msgs::LegCommandArray::ConstPtr& msg);
+  void legControlCallback(const quad_msgs::LegCommandArray::ConstPtr& msg);
 
   /**
 	 * @brief Callback to handle new remote heartbeat messages
@@ -94,7 +94,7 @@ private:
   double update_rate_;
 
   /// Last motor control message (keep sending until we get a new message in or node is shutdown)
-  spirit_msgs::LegCommandArray::ConstPtr last_leg_command_array_msg_;
+  quad_msgs::LegCommandArray::ConstPtr last_leg_command_array_msg_;
 
   /// Most recent remote heartbeat
 	// std_msgs::Header::ConstPtr last_remote_heartbeat_msg_;

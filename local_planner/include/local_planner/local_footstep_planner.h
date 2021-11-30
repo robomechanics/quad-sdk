@@ -3,18 +3,18 @@
 
 #include <ros/ros.h>
 #include <nav_msgs/Path.h>
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/RobotState.h>
-#include <spirit_msgs/FootState.h>
-#include <spirit_msgs/MultiFootState.h>
-#include <spirit_msgs/FootPlanDiscrete.h>
-#include <spirit_msgs/MultiFootPlanContinuous.h>
-#include <spirit_msgs/MultiFootPlanDiscrete.h>
-#include <spirit_utils/fast_terrain_map.h>
-#include <spirit_utils/function_timer.h>
-#include <spirit_utils/math_utils.h>
-#include <spirit_utils/ros_utils.h>
-#include <spirit_utils/quad_kd.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_msgs/FootState.h>
+#include <quad_msgs/MultiFootState.h>
+#include <quad_msgs/FootPlanDiscrete.h>
+#include <quad_msgs/MultiFootPlanContinuous.h>
+#include <quad_msgs/MultiFootPlanDiscrete.h>
+#include <quad_utils/fast_terrain_map.h>
+#include <quad_utils/function_timer.h>
+#include <quad_utils/math_utils.h>
+#include <quad_utils/ros_utils.h>
+#include <quad_utils/quad_kd.h>
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
@@ -23,7 +23,7 @@
 #include <eigen3/Eigen/Eigen>
 #include <eigen_conversions/eigen_msg.h>
 
-//! A local footstep planning class for spirit
+//! A local footstep planning class for quad
 /*!
    FootstepPlanner is a container for all of the logic utilized in the local footstep planning node.
    The implementation must provide a clean and high level interface to the core algorithm
@@ -52,7 +52,7 @@ class LocalFootstepPlanner {
      * @param[in] kinematics Kinematics class for computations
      */
     void setSpatialParams(double ground_clearance, double grf_weight,double standing_error_threshold,
-      std::shared_ptr<spirit_utils::QuadKD> kinematics);
+      std::shared_ptr<quad_utils::QuadKD> kinematics);
 
     /**
      * @brief Transform a vector of foot positions from the world to the body frame
@@ -127,9 +127,9 @@ class LocalFootstepPlanner {
      */
     void computeFootPlanMsgs(
       const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
-      int current_plan_index, spirit_msgs::MultiFootPlanDiscrete &past_footholds_msg,
-      spirit_msgs::MultiFootPlanDiscrete &future_footholds_msg,
-      spirit_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
+      int current_plan_index, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+      quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
+      quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
 
     inline void printContactSchedule(const std::vector<std::vector<bool>> &contact_schedule) {
       
@@ -288,7 +288,7 @@ class LocalFootstepPlanner {
     grid_map::GridMap terrain_grid_;
 
     /// Current continuous footstep plan
-    spirit_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
+    quad_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
 
     /// Number of feet
     const int num_feet_ = 4;
@@ -330,7 +330,7 @@ class LocalFootstepPlanner {
     const int CONNECT_STANCE = 2;
 
     /// QuadKD class
-    std::shared_ptr<spirit_utils::QuadKD>quadKD_;
+    std::shared_ptr<quad_utils::QuadKD>quadKD_;
 
     /// Threshold of body error from desired goal to start stepping
     double standing_error_threshold_ = 0;

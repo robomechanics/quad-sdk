@@ -12,14 +12,14 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
 
   // Load rosparams from parameter server
   std::string leg_control_topic, joint_encoder_topic, imu_topic, remote_heartbeat_topic;
-  spirit_utils::loadROSParam(nh_,"topics/control/joint_command",leg_control_topic);
-  spirit_utils::loadROSParam(nh_,"topics/heartbeat/remote",remote_heartbeat_topic);
-  spirit_utils::loadROSParam(nh_,"topics/joint_encoder",joint_encoder_topic);
-  spirit_utils::loadROSParam(nh_,"topics/imu",imu_topic);
-  spirit_utils::loadROSParam(nh_,"mblink_converter/update_rate",update_rate_);
-  spirit_utils::loadROSParam(nh_,"mblink_converter/remote_heartbeat_timeout",
+  quad_utils::loadROSParam(nh_,"topics/control/joint_command",leg_control_topic);
+  quad_utils::loadROSParam(nh_,"topics/heartbeat/remote",remote_heartbeat_topic);
+  quad_utils::loadROSParam(nh_,"topics/joint_encoder",joint_encoder_topic);
+  quad_utils::loadROSParam(nh_,"topics/imu",imu_topic);
+  quad_utils::loadROSParam(nh_,"mblink_converter/update_rate",update_rate_);
+  quad_utils::loadROSParam(nh_,"mblink_converter/remote_heartbeat_timeout",
     remote_heartbeat_timeout_);
-  spirit_utils::loadROSParam(nh_,"mblink_converter/leg_command_timeout",leg_command_timeout_);
+  quad_utils::loadROSParam(nh_,"mblink_converter/leg_command_timeout",leg_command_timeout_);
 
   // Setup pubs and subs
   leg_control_sub_ = nh_.subscribe(leg_control_topic,1,&MBLinkConverter::legControlCallback, this);
@@ -33,7 +33,7 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
 }
 
 void MBLinkConverter::legControlCallback(
-  const spirit_msgs::LegCommandArray::ConstPtr& msg)
+  const quad_msgs::LegCommandArray::ConstPtr& msg)
 {
   last_leg_command_array_msg_ = msg;
   last_leg_command_time_ = msg->header.stamp.toSec();
@@ -66,7 +66,7 @@ bool MBLinkConverter::sendMBlink()
   LimbCmd_t limbcmd[4];
   for (int i = 0; i < 4; ++i) // For each leg
   {
-    spirit_msgs::LegCommand leg_command = 
+    quad_msgs::LegCommand leg_command = 
       last_leg_command_array_msg_->leg_commands.at(i);
 
     for (int j = 0; j < 3; ++j) // For each joint

@@ -11,14 +11,14 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
     // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic, local_plan_topic,
     foot_plan_discrete_topic, foot_plan_continuous_topic, cmd_vel_topic;
-  spirit_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
-  spirit_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
-  spirit_utils::loadROSParam(nh_, "topics/state/ground_truth",robot_state_topic);
-  spirit_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
-  spirit_utils::loadROSParam(nh_, "topics/foot_plan_discrete", foot_plan_discrete_topic);
-  spirit_utils::loadROSParam(nh_, "topics/foot_plan_continuous", foot_plan_continuous_topic);
-  spirit_utils::loadROSParam(nh_, "topics/cmd_vel", cmd_vel_topic);
-  spirit_utils::loadROSParam(nh_, "map_frame", map_frame_);
+  quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
+  quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
+  quad_utils::loadROSParam(nh_, "topics/state/ground_truth",robot_state_topic);
+  quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
+  quad_utils::loadROSParam(nh_, "topics/foot_plan_discrete", foot_plan_discrete_topic);
+  quad_utils::loadROSParam(nh_, "topics/foot_plan_continuous", foot_plan_continuous_topic);
+  quad_utils::loadROSParam(nh_, "topics/cmd_vel", cmd_vel_topic);
+  quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
 
 
   // Setup pubs and subs
@@ -27,18 +27,18 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&LocalPlanner::robotStateCallback,this);
   cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic,1,&LocalPlanner::cmdVelCallback, this);
 
-  local_plan_pub_ = nh_.advertise<spirit_msgs::RobotPlan>(local_plan_topic,1);
+  local_plan_pub_ = nh_.advertise<quad_msgs::RobotPlan>(local_plan_topic,1);
   foot_plan_discrete_pub_ = nh_.advertise<
-    spirit_msgs::MultiFootPlanDiscrete>(foot_plan_discrete_topic,1);
+    quad_msgs::MultiFootPlanDiscrete>(foot_plan_discrete_topic,1);
   foot_plan_continuous_pub_ = nh_.advertise<
-    spirit_msgs::MultiFootPlanContinuous>(foot_plan_continuous_topic,1);  
+    quad_msgs::MultiFootPlanContinuous>(foot_plan_continuous_topic,1);  
 
   // Load system parameters from parameter server
-  spirit_utils::loadROSParam(nh_, "local_planner/update_rate", update_rate_);
-  spirit_utils::loadROSParam(nh_, "local_planner/timestep",dt_);
-  spirit_utils::loadROSParam(nh_, "local_planner/iterations",iterations_);
-  spirit_utils::loadROSParam(nh_, "twist_body_planner/cmd_vel_scale", cmd_vel_scale_);
-  spirit_utils::loadROSParam(nh_, "twist_body_planner/last_cmd_vel_msg_time_max",
+  quad_utils::loadROSParam(nh_, "local_planner/update_rate", update_rate_);
+  quad_utils::loadROSParam(nh_, "local_planner/timestep",dt_);
+  quad_utils::loadROSParam(nh_, "local_planner/iterations",iterations_);
+  quad_utils::loadROSParam(nh_, "twist_body_planner/cmd_vel_scale", cmd_vel_scale_);
+  quad_utils::loadROSParam(nh_, "twist_body_planner/last_cmd_vel_msg_time_max",
     last_cmd_vel_msg_time_max_);
 
   // Load system parameters from launch file (not in config file)
@@ -46,7 +46,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   nh.param<bool>("local_planner/use_twist_input", use_twist_input_, false);
 
   // Convert kinematics
-quadKD_ = std::make_shared<spirit_utils::QuadKD>();
+quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
   // Initialize nominal footstep positions projected down from the hips
   Eigen::Vector3d nominal_joint_state;
@@ -84,22 +84,22 @@ void LocalPlanner::initLocalBodyPlanner() {
 
     // Load MPC parameters 
   double m,Ixx,Iyy,Izz,mu,normal_lo, normal_hi;
-  spirit_utils::loadROSParam(nh_, "local_body_planner/body_mass",m);
-  spirit_utils::loadROSParam(nh_, "local_body_planner/body_ixx",Ixx);
-  spirit_utils::loadROSParam(nh_, "local_body_planner/body_iyy",Iyy);
-  spirit_utils::loadROSParam(nh_, "local_body_planner/body_izz",Izz);
-  spirit_utils::loadROSParam(nh_, "local_body_planner/friction_mu",mu);
-  spirit_utils::loadROSParam(nh_, "local_body_planner/normal_lo",normal_lo);
-  spirit_utils::loadROSParam(nh_, "local_body_planner/normal_hi",normal_hi);
+  quad_utils::loadROSParam(nh_, "local_body_planner/body_mass",m);
+  quad_utils::loadROSParam(nh_, "local_body_planner/body_ixx",Ixx);
+  quad_utils::loadROSParam(nh_, "local_body_planner/body_iyy",Iyy);
+  quad_utils::loadROSParam(nh_, "local_body_planner/body_izz",Izz);
+  quad_utils::loadROSParam(nh_, "local_body_planner/friction_mu",mu);
+  quad_utils::loadROSParam(nh_, "local_body_planner/normal_lo",normal_lo);
+  quad_utils::loadROSParam(nh_, "local_body_planner/normal_hi",normal_hi);
 
   std::vector<double> state_weights, control_weights, state_lower_bound, state_upper_bound;
   double terminal_weight_scaling;
-  spirit_utils::loadROSParam(nh_, "local_body_planner/state_weights",state_weights);
-  spirit_utils::loadROSParam(nh_, "local_body_planner/terminal_weight_scaling",
+  quad_utils::loadROSParam(nh_, "local_body_planner/state_weights",state_weights);
+  quad_utils::loadROSParam(nh_, "local_body_planner/terminal_weight_scaling",
     terminal_weight_scaling);
-  spirit_utils::loadROSParam(nh_, "local_body_planner/control_weights",control_weights);
-  spirit_utils::loadROSParam(nh_, "local_body_planner/state_lower_bound",state_lower_bound);
-  spirit_utils::loadROSParam(nh_, "local_body_planner/state_upper_bound",state_upper_bound);
+  quad_utils::loadROSParam(nh_, "local_body_planner/control_weights",control_weights);
+  quad_utils::loadROSParam(nh_, "local_body_planner/state_lower_bound",state_lower_bound);
+  quad_utils::loadROSParam(nh_, "local_body_planner/state_upper_bound",state_upper_bound);
 
   // Load state weights and bounds
   Eigen::MatrixXd Qx = Eigen::MatrixXd::Zero(Nx_, Nx_);
@@ -158,11 +158,11 @@ void LocalPlanner::initLocalFootstepPlanner() {
   // Load parameters from server
   double grf_weight, ground_clearance, standing_error_threshold, period_d;
   int period;
-  spirit_utils::loadROSParam(nh_, "local_footstep_planner/grf_weight", grf_weight);
-  spirit_utils::loadROSParam(nh_, "local_footstep_planner/ground_clearance", ground_clearance);
-  spirit_utils::loadROSParam(nh_, "local_footstep_planner/standing_error_threshold",
+  quad_utils::loadROSParam(nh_, "local_footstep_planner/grf_weight", grf_weight);
+  quad_utils::loadROSParam(nh_, "local_footstep_planner/ground_clearance", ground_clearance);
+  quad_utils::loadROSParam(nh_, "local_footstep_planner/standing_error_threshold",
     standing_error_threshold);
-  spirit_utils::loadROSParam(nh_, "local_footstep_planner/period", period_d);
+  quad_utils::loadROSParam(nh_, "local_footstep_planner/period", period_d);
 
   period = period_d/dt_;
 
@@ -192,7 +192,7 @@ void LocalPlanner::terrainMapCallback(
   local_footstep_planner_->updateMap(terrain_grid_);
 }
 
-void LocalPlanner::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg) {
+void LocalPlanner::robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg) {
   // If this is the first plan, initialize the message of past footholds with current foot positions
   if (body_plan_msg_ == NULL && robot_state_msg_ != NULL) {
     past_footholds_msg_.header = msg->header;
@@ -207,7 +207,7 @@ void LocalPlanner::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg
   body_plan_msg_ = msg;
 }
 
-void LocalPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
+void LocalPlanner::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
 
   // Make sure the data is actually populated
   if (msg->feet.feet.empty() || msg->joints.position.empty())
@@ -238,12 +238,12 @@ void LocalPlanner::getStateAndReferencePlan() {
     return;
 
   // Get index within the global plan
-  current_plan_index_ = spirit_utils::getPlanIndex(body_plan_msg_->global_plan_timestamp,dt_);
+  current_plan_index_ = quad_utils::getPlanIndex(body_plan_msg_->global_plan_timestamp,dt_);
 
   // Get the current body and foot positions into Eigen
-  current_state_ = spirit_utils::bodyStateMsgToEigen(robot_state_msg_->body);
+  current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
   current_state_timestamp_ = robot_state_msg_->header.stamp;
-  spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
+  quad_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
   local_footstep_planner_->getFootPositionsBodyFrame(current_state_, current_foot_positions_world_,
       current_foot_positions_body_);
 
@@ -253,9 +253,9 @@ void LocalPlanner::getStateAndReferencePlan() {
 
     // If the horizon extends past the reference trajectory, just hold the last state
     if (i+current_plan_index_ > body_plan_msg_->plan_indices.back()) {
-      ref_body_plan_.row(i) = spirit_utils::bodyStateMsgToEigen(body_plan_msg_->states.back().body);
+      ref_body_plan_.row(i) = quad_utils::bodyStateMsgToEigen(body_plan_msg_->states.back().body);
     } else {
-      ref_body_plan_.row(i) = spirit_utils::bodyStateMsgToEigen(body_plan_msg_->states[i+current_plan_index_].body);
+      ref_body_plan_.row(i) = quad_utils::bodyStateMsgToEigen(body_plan_msg_->states[i+current_plan_index_].body);
     }
 
     ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_(i, 0), ref_body_plan_(i, 1));
@@ -295,7 +295,7 @@ void LocalPlanner::getStateAndTwistInput() {
     return;
 
   // Get index
-  current_plan_index_ = spirit_utils::getPlanIndex(initial_timestamp_,dt_);
+  current_plan_index_ = quad_utils::getPlanIndex(initial_timestamp_,dt_);
 
   // Initializing foot positions if not data has arrived
   if (first_plan_) {
@@ -310,9 +310,9 @@ void LocalPlanner::getStateAndTwistInput() {
   }
 
   // Get the current body and foot positions into Eigen
-  current_state_ = spirit_utils::bodyStateMsgToEigen(robot_state_msg_->body);
+  current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
   current_state_timestamp_ = robot_state_msg_->header.stamp;
-  spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
+  quad_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
   local_footstep_planner_->getFootPositionsBodyFrame(current_state_, current_foot_positions_world_,
       current_foot_positions_body_);
 
@@ -413,7 +413,7 @@ bool LocalPlanner::computeLocalPlan() {
     return false;  
 
   // Start the timer
-  spirit_utils::FunctionTimer timer(__FUNCTION__);
+  quad_utils::FunctionTimer timer(__FUNCTION__);
 
   // Compute the contact schedule
   local_footstep_planner_->computeContactSchedule(current_plan_index_, current_state_,
@@ -460,9 +460,9 @@ bool LocalPlanner::computeLocalPlan() {
 void LocalPlanner::publishLocalPlan() {
 
   // Create messages to publish
-  spirit_msgs::RobotPlan local_plan_msg;
-  spirit_msgs::MultiFootPlanDiscrete future_footholds_msg;
-  spirit_msgs::MultiFootPlanContinuous foot_plan_msg;
+  quad_msgs::RobotPlan local_plan_msg;
+  quad_msgs::MultiFootPlanDiscrete future_footholds_msg;
+  quad_msgs::MultiFootPlanContinuous foot_plan_msg;
 
   // Update the headers of all messages
   ros::Time timestamp = ros::Time::now();
@@ -485,14 +485,14 @@ void LocalPlanner::publishLocalPlan() {
   for (int i = 0; i < N_; i++) {
 
     // Add the state information
-    spirit_msgs::RobotState robot_state_msg;
-    robot_state_msg.body = spirit_utils::eigenToBodyStateMsg(body_plan_.row(i));
+    quad_msgs::RobotState robot_state_msg;
+    robot_state_msg.body = quad_utils::eigenToBodyStateMsg(body_plan_.row(i));
     robot_state_msg.feet = foot_plan_msg.states[i];
-    spirit_utils::ikRobotState(*quadKD_, robot_state_msg);
+    quad_utils::ikRobotState(*quadKD_, robot_state_msg);
 
     // Add the GRF information
-    spirit_msgs::GRFArray grf_array_msg;
-    spirit_utils::eigenToGRFArrayMsg(grf_plan_.row(i), foot_plan_msg.states[i], grf_array_msg);
+    quad_msgs::GRFArray grf_array_msg;
+    quad_utils::eigenToGRFArrayMsg(grf_plan_.row(i), foot_plan_msg.states[i], grf_array_msg);
     grf_array_msg.contact_states.resize(num_feet_);
     for (int j = 0; j < num_feet_; j++) {
       grf_array_msg.contact_states[j] = contact_schedule_[i][j];
@@ -500,7 +500,7 @@ void LocalPlanner::publishLocalPlan() {
     
     // Update the headers and plan indices of the messages
     ros::Time state_timestamp = local_plan_msg.header.stamp + ros::Duration(i*dt_);
-    spirit_utils::updateStateHeaders(robot_state_msg, state_timestamp, map_frame_, current_plan_index_+i);
+    quad_utils::updateStateHeaders(robot_state_msg, state_timestamp, map_frame_, current_plan_index_+i);
     grf_array_msg.header = robot_state_msg.header;
     grf_array_msg.traj_index = robot_state_msg.traj_index;
 
