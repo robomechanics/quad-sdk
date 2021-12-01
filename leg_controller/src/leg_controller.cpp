@@ -67,6 +67,21 @@ LegController::LegController(ros::NodeHandle nh) {
   // Initialize inverse dynamics object
   inverse_dynamics_controller_ = std::make_shared<InverseDynamicsController>();
   inverse_dynamics_controller_->setGains(stance_kp_, stance_kd_, swing_kp_, swing_kd_);
+
+  grf_pid_controller_ = std::make_shared<GrfPidController>();
+
+  grf_array_msg_.vectors.resize(num_feet_);
+  grf_array_msg_.points.resize(num_feet_);
+  grf_array_msg_.contact_states.resize(num_feet_);
+  grf_array_msg_.header.frame_id = "map";
+  for (int i = 0; i < num_feet_; i++) {
+    geometry_msgs::Vector3 vec;
+    geometry_msgs::Point point;
+    bool contact_state = true;
+    grf_array_msg_.vectors[i] = vec;
+    grf_array_msg_.points[i] = point;
+    grf_array_msg_.contact_states[i] = contact_state;
+  }
 }
 
 void LegController::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
@@ -99,12 +114,19 @@ void LegController::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg)
 
   double local_plan_time_diff = (ros::Time::now() - last_local_plan_msg_->header.stamp).toSec();
   ROS_INFO_STREAM("local plan time difference: " << local_plan_time_diff);
+
+  inverse_dynamics_controller_->updateLocalPlanMsg(last_local_plan_msg_);
 }
 
 void LegController::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
   // ROS_INFO("In robotStateCallback");
+  if (last_robot_state_msg_ != NULL) {
+    first_robot_state_msg_ = msg;
+  }
+
   last_robot_state_msg_ = msg;
   last_state_time_ = msg->header.stamp.toSec();
+
 }
 
 void LegController::grfInputCallback(const quad_msgs::GRFArray::ConstPtr& msg) {
@@ -169,25 +191,30 @@ void LegController::checkMessages() {
 }
 
 void LegController::executeCustomController() {
-  if (last_local_plan_msg_ != NULL && 
-    (ros::Time::now() - last_local_plan_msg_->header.stamp).toSec() < input_timeout_) {
 
-    inverse_dynamics_controller_->computeLegCommandArrayFromPlan(last_robot_state_msg_,
-      last_local_plan_msg_, leg_command_array_msg_, grf_array_msg_);
+  grf_pid_controller_->setDesiredState(first_robot_state_msg_);
+  grf_pid_controller_->computeLegCommandArray(last_robot_state_msg_,
+      leg_command_array_msg_, grf_array_msg_);
 
-  } else {
-    for (int i = 0; i < num_feet_; ++i) {
-      leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
-      for (int j = 0; j < 3; ++j) {
-        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 
-          stand_joint_angles_.at(j);
-        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
-        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
-        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
-      }
-    }
-  }
+  // if (last_local_plan_msg_ != NULL && 
+  //   (ros::Time::now() - last_local_plan_msg_->header.stamp).toSec() < input_timeout_) {
+
+  //   inverse_dynamics_controller_->computeLegCommandArray(last_robot_state_msg_,
+  //     leg_command_array_msg_, grf_array_msg_);
+
+  // } else {
+  //   for (int i = 0; i < num_feet_; ++i) {
+  //     leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
+  //     for (int j = 0; j < 3; ++j) {
+  //       leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 
+  //         stand_joint_angles_.at(j);
+  //       leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
+  //       leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
+  //       leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
+  //       leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+  //     }
+  //   }
+  // }
 }
 
 void LegController::computeLegCommandArray() {
@@ -342,11 +369,11 @@ void LegController::publishHeartbeat() {
   robot_heartbeat_pub_.publish(msg);
 }
 
-
 void LegController::publishLegCommandArray() {
 
   // Stamp and send the message
   leg_command_array_msg_.header.stamp = ros::Time::now();
+  grf_array_msg_.header.stamp = leg_command_array_msg_.header.stamp;
   leg_command_array_pub_.publish(leg_command_array_msg_);
   grf_pub_.publish(grf_array_msg_);
 }

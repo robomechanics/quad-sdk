@@ -1,21 +1,13 @@
 #include "leg_controller/inverse_dynamics.h"
 
-InverseDynamicsController::InverseDynamicsController() {
-  quadKD_ = std::make_shared<quad_utils::QuadKD>();
+InverseDynamicsController::InverseDynamicsController() {}
+
+void InverseDynamicsController::updateLocalPlanMsg(quad_msgs::RobotPlan::ConstPtr msg) {
+  last_local_plan_msg_ = msg;
 }
 
-void InverseDynamicsController::setGains(std::vector<double> stance_kp, std::vector<double> stance_kd,
-  std::vector<double> swing_kp, std::vector<double> swing_kd) {
-
-  stance_kp_ = stance_kp;
-  stance_kd_ = stance_kd;
-  swing_kp_ = swing_kp;
-  swing_kd_ = swing_kd;
-}
-
-void InverseDynamicsController::computeLegCommandArrayFromPlan(
+bool InverseDynamicsController::computeLegCommandArray(
   const quad_msgs::RobotState::ConstPtr &robot_state_msg,
-  const quad_msgs::RobotPlan::ConstPtr &local_plan_msg,
   quad_msgs::LegCommandArray &leg_command_array_msg,
   quad_msgs::GRFArray &grf_array_msg)
 {
@@ -39,29 +31,29 @@ void InverseDynamicsController::computeLegCommandArrayFromPlan(
   // Get reference state and grf from local plan or traj + grf messages
   double t_now = ros::Time::now().toSec();
   
-  if ( (t_now < local_plan_msg->states.front().header.stamp.toSec()) || 
-        (t_now > local_plan_msg->states.back().header.stamp.toSec()) ) {
+  if ( (t_now < last_local_plan_msg_->states.front().header.stamp.toSec()) || 
+        (t_now > last_local_plan_msg_->states.back().header.stamp.toSec()) ) {
     ROS_ERROR("ID node couldn't find the correct ref state!");
   }    
 
   // Interpolate the local plan to get the reference state and ff GRF
-  for (int i = 0; i < local_plan_msg->states.size()-1; i++) {
+  for (int i = 0; i < last_local_plan_msg_->states.size()-1; i++) {
     
-    if ( (t_now >= local_plan_msg->states[i].header.stamp.toSec()) && 
-        ( t_now <  local_plan_msg->states[i+1].header.stamp.toSec() )) {
+    if ( (t_now >= last_local_plan_msg_->states[i].header.stamp.toSec()) && 
+        ( t_now <  last_local_plan_msg_->states[i+1].header.stamp.toSec() )) {
 
-      double t_interp = (t_now - local_plan_msg->states[i].header.stamp.toSec())/
-        (local_plan_msg->states[i+1].header.stamp.toSec() - 
-          local_plan_msg->states[i].header.stamp.toSec());
+      double t_interp = (t_now - last_local_plan_msg_->states[i].header.stamp.toSec())/
+        (last_local_plan_msg_->states[i+1].header.stamp.toSec() - 
+          last_local_plan_msg_->states[i].header.stamp.toSec());
       
-      quad_utils::interpRobotState(local_plan_msg->states[i],
-        local_plan_msg->states[i+1], t_interp, ref_state_msg);
+      quad_utils::interpRobotState(last_local_plan_msg_->states[i],
+        last_local_plan_msg_->states[i+1], t_interp, ref_state_msg);
 
-      // quad_utils::interpGRFArray(local_plan_msg->grfs[i],
-      //   local_plan_msg->grfs[i+1], t_interp, grf_array_msg);
+      // quad_utils::interpGRFArray(last_local_plan_msg_->grfs[i],
+      //   last_local_plan_msg_->grfs[i+1], t_interp, grf_array_msg);
 
-      // ref_state_msg = local_plan_msg->states[i];
-      grf_array_msg = local_plan_msg->grfs[i];
+      // ref_state_msg = last_local_plan_msg_->states[i];
+      grf_array_msg = last_local_plan_msg_->grfs[i];
 
       break;
     }
@@ -109,5 +101,7 @@ void InverseDynamicsController::computeLegCommandArrayFromPlan(
       }
     }
   }
+
+  return true;
   
 }
