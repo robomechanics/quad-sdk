@@ -40,7 +40,7 @@ namespace gazebo{
       return;
 
     // Extract all relevant information from simulator
-    physics::LinkPtr body_link = model_->GetChildLink("body");
+    physics::LinkPtr body_link = model_->GetChildLink("base");
 
     ignition::math::Vector3d toe_offset(0.206, 0, 0);
 
@@ -68,6 +68,12 @@ namespace gazebo{
     if (!body_link)
     {
       ROS_ERROR("Can't find body link in sdf. Make sure the name in the plugin matches the sdf.");
+      return;
+    }
+
+    if (!lower0)
+    {
+      ROS_ERROR("Can't find link in sdf. Make sure the name in the plugin matches the sdf.");
       return;
     }
 
@@ -106,10 +112,8 @@ namespace gazebo{
     state.body.twist.linear.x = lin_vel.X();
     state.body.twist.linear.y = lin_vel.Y();
     state.body.twist.linear.z = lin_vel.Z();
-    state.body.twist.angular.x = ang_vel.X();
     state.body.twist.angular.y = ang_vel.Y();
     state.body.twist.angular.z = ang_vel.Z();
-
     physics::Joint_V joint_vec = model_->GetJoints();
     int num_joints = 12;
 
@@ -117,14 +121,18 @@ namespace gazebo{
     // joints: ['0','1','2','3','4','5','6','7','8','9','10','11']
     std::vector<std::string> joints {"FL_hip_joint","FL_thigh_joint","FL_calf_joint","RL_hip_joint","RL_thigh_joint","RL_calf_joint",
                                      "FR_hip_joint","FR_thigh_joint","FR_calf_joint","RR_hip_joint","RR_thigh_joint","RR_calf_joint"};
-    state.joints.name = {joints[8], joints[0], joints[1], joints[9], joints[2], joints[3], joints[10], joints[4], joints[5], joints[11], joints[6], joints[7]};
-
+    // state.joints.name = {joints[0], joints[1], joints[2], joints[9], joints[2], joints[3], joints[10], joints[4], joints[5], joints[11], joints[6], joints[7]};
+    state.joints.name = joints;
     for (int i = 0; i<num_joints; i++) {
       // std::cout << joint->GetName() << std::endl;
       // std::cout << joint->Position() << std::endl;
       // std::cout << joint->GetVelocity(0) << std::endl;
 
-      physics::JointPtr joint = joint_vec[i];
+      // physics::JointPtr joint = joint_vec[i];
+      physics::JointPtr joint = model_-> GetJoint(joints[i]);
+      // std::cout << joint->GetName() << std::endl;
+      // std::cout << joint->Position() << std::endl;
+      // std::cout << joint->GetVelocity(0) << std::endl;
       physics::JointWrench wrench = joint->GetForceTorque(0);
       double torque = wrench.body1Torque.Z(); // Note that this doesn't seem to work but at least will populate with zeros
 

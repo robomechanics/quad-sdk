@@ -35,7 +35,7 @@ ContactStatePublisher::ContactStatePublisher(ros::NodeHandle nh) : listener_(buf
 
 void ContactStatePublisher::contactStateCallback(const gazebo_msgs::ContactsState::ConstPtr& msg, const int toe_idx) {
   std::string terrain_name = "mesh_terrain";
-  std::string toe_collision_names[4] = {"toe0_collision","toe1_collision", "toe2_collision","toe3_collision"};
+  std::string toe_collision_names[4] = {"FL_foot_collision","RL_foot_collision", "FR_foot_collision","RR_foot_collision"};
   std::string toe_string = toe_collision_names[toe_idx];
 
   int count = 0;

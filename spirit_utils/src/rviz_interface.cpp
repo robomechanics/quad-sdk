@@ -425,15 +425,15 @@ void RVizInterface::robotStateCallback(
   joint_msg.header.stamp = ros::Time::now();
 
   if (pub_id == ESTIMATE) {
-    transformStamped.child_frame_id = "/estimate/body";
+    transformStamped.child_frame_id = "/estimate/base";
     estimate_base_tf_br_.sendTransform(transformStamped);
     estimate_joint_states_viz_pub_.publish(joint_msg);
   } else if (pub_id == GROUND_TRUTH) {
-    transformStamped.child_frame_id = "/ground_truth/body";
+    transformStamped.child_frame_id = "/ground_truth/base";
     ground_truth_base_tf_br_.sendTransform(transformStamped);
     ground_truth_joint_states_viz_pub_.publish(joint_msg);
   } else if (pub_id == TRAJECTORY) {
-    transformStamped.child_frame_id = "/trajectory/body";
+    transformStamped.child_frame_id = "/trajectory/base";
     trajectory_base_tf_br_.sendTransform(transformStamped);
     trajectory_joint_states_viz_pub_.publish(joint_msg);
   } else {

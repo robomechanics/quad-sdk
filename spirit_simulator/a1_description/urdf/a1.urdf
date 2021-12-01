@@ -97,6 +97,11 @@
       <pose>0 0 0 0 0 0</pose>
     </sensor>
   </gazebo>
+  <gazebo>
+    <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
+      <updateRateHZ>100.0</updateRateHZ>
+    </plugin>
+  </gazebo>
   <!-- Foot contacts. -->
   <gazebo reference="FR_calf">
     <sensor name="FR_foot_contact" type="contact">
@@ -972,6 +977,33 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
+  <gazebo reference='FL_foot_fixed'>
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  <gazebo reference='RL_foot_fixed'>
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  <gazebo reference='FR_foot_fixed'>
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  <gazebo reference='RR_foot_fixed'>
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  <!-- <gazebo reference='floating_base'>
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo> -->
+  <gazebo reference='FL_hip_fixed'>
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  <gazebo reference='RL_hip_fixed'>
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  <gazebo reference='FR_hip_fixed'>
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  <gazebo reference='RR_hip_fixed'>
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
   <!-- <xacro:stairs stairs="15" xpos="0" ypos="2.0" zpos="0" /> -->
 </robot>
 

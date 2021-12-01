@@ -81,7 +81,7 @@ void ContactPlugin::OnUpdate() {
   spirit_msgs::ContactMode contact_msg;
   contact_msg.leg_contacts.resize(4);
 
-  std::string toe_collision_names[4] = {"toe0_collision","toe1_collision", "toe2_collision","toe3_collision"};
+  std::string toe_collision_names[4] = {"FL_foot_collision","RL_foot_collision", "FR_foot_collision","RR_foot_collision"};
 
   // Assume no contact
   for (unsigned int i = 0; i < 4; ++i)

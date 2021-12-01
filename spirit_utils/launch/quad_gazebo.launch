@@ -72,28 +72,30 @@ SOFTWARE.
   <!-- Load the parameters and the sdf description -->
   <include file="$(find spirit_utils)/launch/load_params.launch" />
   <param name="robot_description" textfile="$(find a1_description)/urdf/a1.urdf" />
+  <param name="robot_description_sdf" textfile="$(find a1_description)/a1_test.sdf" />
   <!-- Spawn SDF model -->
   <!-- <param name="robot_description_urdf" command="$(find a1_description)/xacro inorder '$(find a1_description)/xacro/robot.xacro' " /> -->
 
-  <node name="spawn_urdf_model" pkg="gazebo_ros" type="spawn_model" respawn="false" args="-urdf -param robot_description -model a1 -x 0.0 -y 0.0 -z 0.6" output="screen"/>
+  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" 
+    respawn="false" args="-sdf -param robot_description_sdf -model a1_gazebo -x 0.0 -y 0.0 -z 0.6" output="screen"/>
+  <!-- <node name="spawn_urdf_model" pkg="gazebo_ros" type="spawn_model" respawn="false" args="-urdf -param robot_description -model a1_gazebo -x 0.0 -y 0.0 -z 0.6" output="screen"/> -->
+  <rosparam file="$(find gazebo_scripts)/config/a1_control.yaml" command="load"/>
 
-  <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
-
-  <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher">
+  <!-- <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher">
       <remap from="/joint_states" to="/spirit/joint_states" />
       <param name="robot_description" textfile="$(find a1_description)/urdf/a1.urdf" />
   </node>
 
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
       <remap from="/joint_states" to="/spirit/joint_states" />
-  </node>
+  </node> -->
 
   <node name="controller_spawner"
         pkg="controller_manager"
         type="spawner"
         respawn="false"
         output="screen"
-        ns="/spirit"
+        ns="/a1_gazebo"
         args="joint_controller joint_state_controller" >
   </node>
 
