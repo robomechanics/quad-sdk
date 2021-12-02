@@ -186,7 +186,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         //   terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());
         grid_map::Position hip_position_grid_map = {hip_position_midstance.x(), hip_position_midstance.y()};
         double hip_height = hip_position_midstance.z() - terrain_grid_.atPosition(
-          "z",hip_position_grid_map, grid_map::InterpolationMethods::INTER_NEAREST);
+          "z_smooth",hip_position_grid_map, grid_map::InterpolationMethods::INTER_LINEAR);
         centrifugal = (hip_height/9.81)*body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
         vel_tracking = 0.03*(body_vel_touchdown - ref_body_vel_touchdown);
         // foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
@@ -196,8 +196,8 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         //   (1-grf_weight_)*(hip_position_midstance + vel_tracking);
         foot_position_nominal = hip_position_midstance + centrifugal + vel_tracking;
         grid_map::Position foot_position_grid_map = {foot_position_nominal.x(), foot_position_nominal.y()};
-        foot_position_nominal.z() = terrain_grid_.atPosition("z", foot_position_grid_map,
-          grid_map::InterpolationMethods::INTER_NEAREST);
+        foot_position_nominal.z() = terrain_grid_.atPosition("z_smooth", foot_position_grid_map,
+          grid_map::InterpolationMethods::INTER_LINEAR);
 
         // (Optional) Optimize the foothold location to get the final position
         // foot_position = map_search::optimizeFoothold(foot_position_nominal, stuff); // ADAM

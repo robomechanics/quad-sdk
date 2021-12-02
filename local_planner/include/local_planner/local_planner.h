@@ -16,6 +16,7 @@
 #include "spirit_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <nmpc_controller/nmpc_controller.h>
+#include <filters/filter_chain.h>
 
 //! Local Body Planner library
 /*!
@@ -72,6 +73,12 @@ private:
   void cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg);
 
   /**
+   * @brief Callback function to handle new GRF estimates
+   * @param[in] msg the message contining GRF data
+   */
+  void grfCallback(const spirit_msgs::GRFArray::ConstPtr& msg);
+
+  /**
    * @brief Function to pre-process the body plan and robot state messages into Eigen arrays
    */
   void getStateAndReferencePlan();
@@ -92,6 +99,11 @@ private:
    */
   void publishLocalPlan();
 
+  /**
+   * @brief Function to publish the footstep history
+   */
+  void publishFootStepHist();
+
 	/// ROS subscriber for incoming terrain_map
 	ros::Subscriber terrain_map_sub_;
   
@@ -103,6 +115,9 @@ private:
 
   /// Subscriber for twist input messages
   ros::Subscriber cmd_vel_sub_;
+
+  /// Subscriber for GRF messages
+  ros::Subscriber grf_sub_;
 
 	/// ROS publisher for local plan output
 	ros::Publisher local_plan_pub_;
@@ -143,6 +158,9 @@ private:
 
   /// Past foothold locations
 	spirit_msgs::MultiFootPlanDiscrete past_footholds_msg_;
+
+  /// Most recent GRF
+  spirit_msgs::GRFArray::ConstPtr grf_msg_;
 
   /// Timestamp of the state estimate
   ros::Time current_state_timestamp_;
@@ -252,6 +270,18 @@ private:
 
   /// Boolean for using nonlinear MPC
   bool use_nmpc_;
+
+  /// Footstep history
+  grid_map::GridMap foot_step_hist_;
+
+  /// Footstep history publisher
+  ros::Publisher foot_step_hist_pub_;
+
+  /// Filter chain.
+  filters::FilterChain<grid_map::GridMap> filterChain_;
+
+  /// Filter chain parameters name.
+  std::string filterChainParametersName_;
 };
 
 

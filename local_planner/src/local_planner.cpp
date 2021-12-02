@@ -3,14 +3,15 @@
 // namespace plt = matplotlibcpp;
 Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
-LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
-  local_body_planner_convex_(), local_body_planner_nonlinear_(), local_footstep_planner_() {
+LocalPlanner::LocalPlanner(ros::NodeHandle nh) : 
+  local_body_planner_convex_(), local_body_planner_nonlinear_(), local_footstep_planner_(), filterChain_("grid_map::GridMap")
+{
 
-	nh_ = nh;
+  nh_ = nh;
   
     // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic, local_plan_topic,
-    foot_plan_discrete_topic, foot_plan_continuous_topic, cmd_vel_topic;
+    foot_plan_discrete_topic, foot_plan_continuous_topic, cmd_vel_topic, grf_topic;
   spirit_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
   spirit_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   spirit_utils::loadROSParam(nh_, "topics/state/ground_truth",robot_state_topic);
@@ -19,13 +20,14 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   spirit_utils::loadROSParam(nh_, "topics/foot_plan_continuous", foot_plan_continuous_topic);
   spirit_utils::loadROSParam(nh_, "topics/cmd_vel", cmd_vel_topic);
   spirit_utils::loadROSParam(nh_, "map_frame", map_frame_);
-
+  spirit_utils::loadROSParam(nh_, "/topics/state/grfs", grf_topic);
 
   // Setup pubs and subs
-  terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1, &LocalPlanner::terrainMapCallback, this);
+  // terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1, &LocalPlanner::terrainMapCallback, this);
   body_plan_sub_ = nh_.subscribe(body_plan_topic,1, &LocalPlanner::robotPlanCallback, this);
   robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&LocalPlanner::robotStateCallback,this);
   cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic,1,&LocalPlanner::cmdVelCallback, this);
+  grf_sub_ = nh_.subscribe(grf_topic,1,&LocalPlanner::grfCallback,this);
 
   local_plan_pub_ = nh_.advertise<spirit_msgs::RobotPlan>(local_plan_topic,1);
   foot_plan_discrete_pub_ = nh_.advertise<
@@ -46,7 +48,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   nh.param<bool>("local_planner/use_twist_input", use_twist_input_, false);
 
   // Convert kinematics
-quadKD_ = std::make_shared<spirit_utils::QuadKD>();
+  quadKD_ = std::make_shared<spirit_utils::QuadKD>();
 
   // Initialize nominal footstep positions projected down from the hips
   Eigen::Vector3d nominal_joint_state;
@@ -78,6 +80,23 @@ quadKD_ = std::make_shared<spirit_utils::QuadKD>();
   std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
   initial_timestamp_ = ros::Time::now();
   first_plan_ = true;
+
+  // Initialize footstep history publisher
+  foot_step_hist_pub_ = nh_.advertise<grid_map_msgs::GridMap>("/foot_step_hist", 1, true);
+
+  // Initialize footstep history map
+  foot_step_hist_ = grid_map::GridMap({"z"});
+  foot_step_hist_.setFrameId("map");
+  foot_step_hist_.setGeometry(grid_map::Length(10.0, 8.0), 0.1, grid_map::Position(3.0, 0.0));
+  foot_step_hist_.clear("z");
+
+  // Initialize footstep history filter
+  filterChainParametersName_ = std::string("/local_planner/grid_map_filters");
+  if (!filterChain_.configure(filterChainParametersName_, nh))
+  {
+    ROS_ERROR("Could not configure the filter chain!");
+    return;
+  }
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -231,6 +250,11 @@ void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg) {
 
 }
 
+void LocalPlanner::grfCallback(const spirit_msgs::GRFArray::ConstPtr &msg)
+{
+  grf_msg_ = msg;
+}
+
 void LocalPlanner::getStateAndReferencePlan() {
 
   // Make sure body plan and robot state data is populated
@@ -289,9 +313,52 @@ void LocalPlanner::getStateAndReferencePlan() {
   foot_positions_world_.row(0) = current_foot_positions_world_;
 }
 
+void LocalPlanner::publishFootStepHist()
+{
+  if (robot_state_msg_ == NULL || grf_msg_ == NULL)
+    return;
+
+  // Get the current body and foot positions into Eigen
+  current_state_ = spirit_utils::bodyStateMsgToEigen(robot_state_msg_->body);
+  current_state_timestamp_ = robot_state_msg_->header.stamp;
+  spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet,
+                                         current_foot_positions_world_);
+  local_footstep_planner_->getFootPositionsBodyFrame(current_state_,
+                                                     current_foot_positions_world_,
+                                                     current_foot_positions_body_);
+
+  for (size_t i = 0; i < 4; i++)
+  {
+    // Check if it's on the ground
+    if (grf_msg_->contact_states.at(i) && sqrt(pow(grf_msg_->vectors.at(i).x, 2) +
+                                               pow(grf_msg_->vectors.at(i).y, 2) +
+                                               pow(grf_msg_->vectors.at(i).z, 2)) > 1)
+    {
+      // Add the foot position to the history
+      foot_step_hist_.atPosition("z", grid_map::Position(current_foot_positions_world_(3 * i + 0),
+                                                         current_foot_positions_world_(3 * i + 1))) = current_foot_positions_world_(3 * i + 2);
+    }
+  }
+
+  // Apply filter
+  if (!filterChain_.update(foot_step_hist_, terrain_grid_))
+  {
+    ROS_ERROR("Could not update the grid map filter chain!");
+    return;
+  }
+
+  // Update footstep planner
+  local_footstep_planner_->updateMap(terrain_grid_);
+
+  // Publish footstep history
+  grid_map_msgs::GridMap foot_step_hist_message;
+  grid_map::GridMapRosConverter::toMessage(terrain_grid_, foot_step_hist_message);
+  foot_step_hist_pub_.publish(foot_step_hist_message);
+}
+
 void LocalPlanner::getStateAndTwistInput() {
 
-  if (robot_state_msg_ == NULL)
+  if (!terrain_grid_.exists("z_smooth") || robot_state_msg_ == NULL || grf_msg_ == NULL)
     return;
 
   // Get index
@@ -409,7 +476,7 @@ void LocalPlanner::getStateAndTwistInput() {
 
 bool LocalPlanner::computeLocalPlan() {
 
-  if (terrain_.isEmpty() || body_plan_msg_ == NULL && !use_twist_input_ || robot_state_msg_ == NULL)
+  if (!terrain_grid_.exists("z_smooth") || body_plan_msg_ == NULL && !use_twist_input_ || robot_state_msg_ == NULL || grf_msg_ == NULL)
     return false;  
 
   // Start the timer
@@ -525,22 +592,27 @@ void LocalPlanner::spin() {
 
     ros::spinOnce();
 
-    // Wait until all required data has been received
-    if (terrain_.isEmpty() || body_plan_msg_ == NULL && !use_twist_input_ || robot_state_msg_ == NULL)
-      continue;
+    publishFootStepHist();
 
-    if (use_twist_input_) {
-      // Get twist commands
-      getStateAndTwistInput();
-    } else {
-      // Get the reference plan and robot state into the desired data structures
-      getStateAndReferencePlan();
+    // Wait until all required data has been received
+    if (!(!terrain_grid_.exists("z_smooth") || body_plan_msg_ == NULL && !use_twist_input_ || robot_state_msg_ == NULL))
+    {
+      if (use_twist_input_)
+      {
+        // Get twist commands
+        getStateAndTwistInput();
+      }
+      else
+      {
+        // Get the reference plan and robot state into the desired data structures
+        getStateAndReferencePlan();
+      }
+
+      // Compute the local plan and publish if it solved successfully, otherwise just sleep
+      if (computeLocalPlan())
+        publishLocalPlan();
     }
 
-    // Compute the local plan and publish if it solved successfully, otherwise just sleep
-    if (computeLocalPlan())
-      publishLocalPlan();
-    
     r.sleep();
   }
 }
