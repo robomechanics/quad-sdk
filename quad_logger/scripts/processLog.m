@@ -16,7 +16,7 @@ else
 end
 
 % Check that this is the right current directory otherwise paths won't work
-if ~endsWith(pwd, 'quad-software/quad_logger/scripts')
+if ~endsWith(pwd, 'spirit-software/quad_logger/scripts')
     error('This script must be run from quad-software/quad_logger/scripts/');
 end
 
