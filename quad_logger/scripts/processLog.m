@@ -10,8 +10,8 @@ if nargin>0
     bSave = true;
 else
     % Specify the trial name and settings
-    trialName = 'quad_log_current';
-    bAnimate = true;
+    trialName = '';
+    bAnimate = false;
     bSave = true;
 end
 
@@ -34,7 +34,8 @@ stateTrajectory = data.stateTrajectory;
 
 % Plot the state
 [figArray] = plotState(stateGroundTruth,'-');
-[figArray] = plotState(stateTrajectory, ':', figArray);
+plotControl(data.controlGRFs,'-');
+% [figArray] = plotState(stateTrajectory, ':', figArray);
 % plotState(stateEstimate);
 
 % Compute and plot the toe forces - in progress
