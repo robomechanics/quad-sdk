@@ -8,7 +8,7 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
   mblink_.start(argc,argv);
   mblink_.rxstart();
   mblink_.setRetry("_UPST_ADDRESS", 255);
-  mblink_.setRetry("UPST_LOOP_DELAY", 5);
+  mblink_.setRetry("UPST_LOOP_DELAY", 2);
 
   // Load rosparams from parameter server
   std::string leg_control_topic, joint_encoder_topic, imu_topic, remote_heartbeat_topic, control_restart_flag_topic;
