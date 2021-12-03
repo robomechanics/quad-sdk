@@ -27,9 +27,7 @@ MeshToGridMapConverter::MeshToGridMapConverter(ros::NodeHandle nh,
   loadParams();
 
   std::string package_path = ros::package::getPath("gazebo_scripts");
-  std::string full_path = package_path + "/worlds/" + world_name_ + "/" + world_name_ + ".obj";
-
-  generateTerrain(full_path);
+  std::string full_path = package_path + "/worlds/" + world_name_ + "/output.stl";
 
   while(!exists_file(full_path)){};
   std::cout << full_path << std::endl;
@@ -194,7 +192,7 @@ bool MeshToGridMapConverter::loadMeshFromFile(const std::string& path_to_mesh_to
   }
 
   pcl::PolygonMesh mesh_from_file;
-  pcl::io::loadPolygonFileOBJ(path_to_mesh_to_load,
+  pcl::io::loadPolygonFileSTL(path_to_mesh_to_load,
                               mesh_from_file);
 
   if (mesh_from_file.polygons.empty()) {

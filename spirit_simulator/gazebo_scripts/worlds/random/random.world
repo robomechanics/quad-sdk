@@ -29,22 +29,22 @@
       </link>
     </model-->
      <model name="random_terrain">
-      <pose>-2 -2 0  0 0 0</pose>
+      <pose>0 0 0  0 0 0</pose>
       <static>true</static>
       <link name="body">
         <visual name="visual">
           <geometry>
             <mesh>
-	      <uri>model:///random/random.obj</uri>
-	      <scale>0.25 0.25 1</scale>
+	      <uri>model:///random/output.stl</uri>
+	      <scale>1 1 1</scale>
             </mesh>
           </geometry>
         </visual>
         <collision name="collision">
           <geometry>
             <mesh>
-	      <uri>model:///random/random.obj</uri>
-	      <scale>0.25 0.25 1</scale>
+	      <uri>model:///random/output.stl</uri>
+	      <scale>1 1 1</scale>
             </mesh>
           </geometry>
         </collision>

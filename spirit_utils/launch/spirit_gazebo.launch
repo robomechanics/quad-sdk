@@ -32,7 +32,8 @@ SOFTWARE.
   <arg name="controller"      default="inverse_dynamics"/>
   <arg name="live_plot"       default="false"/>
   <arg name="mblink"          default="false"/>
-  <arg name="world"           default="flat"/>
+  <arg name="world"           default="random"/>
+  <arg name="init_controller"           default="false"/>
 
 
   
@@ -72,6 +73,7 @@ SOFTWARE.
   </include>
 
   <!-- Load the parameters and the sdf description -->
+  <group if="$(arg init_controller)">
   <include file="$(find spirit_utils)/launch/load_params.launch" />
   <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
 
@@ -91,5 +93,5 @@ SOFTWARE.
 
   <!-- Load the contact state publisher -->
   <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
-  
+  </group>
 </launch>
