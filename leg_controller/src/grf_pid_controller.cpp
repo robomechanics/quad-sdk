@@ -62,10 +62,10 @@ bool GrfPidController::computeLegCommandArray(
   // Load model and desired pos data
   double m = 11.5;
   double g = 9.81;
-  double pos_kp = 1e3;
-  double ang_kp = 1e2;
-  double pos_ki = 0.5*pos_kp;
-  double ang_ki = 0.5*ang_kp;
+  double pos_kp = 1e2;
+  double ang_kp = 1e1;
+  double pos_ki = 0*pos_kp;
+  double ang_ki = 0*ang_kp;
   double pos_kd = 0.1*pos_kp;
   double ang_kd = 0.1*ang_kp;
   Eigen::Vector3d grf_array_ff;
