@@ -4,21 +4,21 @@
 #include <ros/ros.h>
 #include <eigen3/Eigen/Eigen>
 // #include <eigen3/Eigen/Eigen>
-#include <spirit_utils/ros_utils.h>
-#include <spirit_utils/math_utils.h>
-#include <spirit_utils/ros_utils.h>
-#include <spirit_msgs/GRFArray.h>
+#include <quad_utils/ros_utils.h>
+#include <quad_utils/math_utils.h>
+#include <quad_utils/ros_utils.h>
+#include <quad_msgs/GRFArray.h>
 #include <std_msgs/UInt8.h>
-#include <spirit_msgs/RobotState.h>
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/MotorCommand.h>
-#include <spirit_msgs/LegCommand.h>
-#include <spirit_msgs/LegCommandArray.h>
-#include <spirit_msgs/LegOverride.h>
-#include <spirit_msgs/MultiFootPlanContinuous.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/MotorCommand.h>
+#include <quad_msgs/LegCommand.h>
+#include <quad_msgs/LegCommandArray.h>
+#include <quad_msgs/LegOverride.h>
+#include <quad_msgs/MultiFootPlanContinuous.h>
 #include <eigen_conversions/eigen_msg.h>
-#include "spirit_utils/matplotlibcpp.h"
+#include "quad_utils/matplotlibcpp.h"
 #include "leg_controller/inverse_dynamics.h"
 
 #include <cmath>
@@ -55,31 +55,31 @@ private:
 	 * @brief Callback function to handle new local plan (states and GRFs)
 	 * @param[in] msg input message contining the local plan
 	 */
-	void localPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg);
+	void localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg);
 	
 	/**
 	 * @brief Callback function to handle current robot state
 	 * @param[in] msg input message contining current robot state
 	 */
-	void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+	void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
 
 	/**
 	 * @brief Callback function to handle new control input (GRF)
 	 * @param[in] msg input message contining ground reaction forces
 	 */
-	void grfInputCallback(const spirit_msgs::GRFArray::ConstPtr& msg);
+	void grfInputCallback(const quad_msgs::GRFArray::ConstPtr& msg);
 	
 	/**
 	 * @brief Callback function to handle reference trajectory state
 	 * @param[in] msg input message contining reference trajectory state
 	 */
-	void trajectoryStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+	void trajectoryStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
 	
   /**
 	 * @brief Callback to handle new leg override commands
 	 * @param[in] msg Leg override commands
 	 */
-	void legOverrideCallback(const spirit_msgs::LegOverride::ConstPtr& msg);
+	void legOverrideCallback(const quad_msgs::LegOverride::ConstPtr& msg);
 
 	/**
 	 * @brief Callback to handle new remote heartbeat messages
@@ -185,19 +185,19 @@ private:
 	const int GRFS = 2;
 	
 	/// Most recent local plan
-	spirit_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
+	quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
 	/// Most recent state estimate
-	spirit_msgs::RobotState::ConstPtr last_robot_state_msg_;
+	quad_msgs::RobotState::ConstPtr last_robot_state_msg_;
 
 	/// Most recent local plan
-	spirit_msgs::GRFArray::ConstPtr last_grf_array_msg_;
+	quad_msgs::GRFArray::ConstPtr last_grf_array_msg_;
 
 	/// Most recent state estimate
-	spirit_msgs::RobotState::ConstPtr last_trajectory_state_msg_;
+	quad_msgs::RobotState::ConstPtr last_trajectory_state_msg_;
 
 	/// Most recent leg override
-	spirit_msgs::LegOverride last_leg_override_msg_;
+	quad_msgs::LegOverride last_leg_override_msg_;
 
 	/// Most recent remote 
 	std_msgs::Header::ConstPtr last_remote_heartbeat_msg_;
@@ -227,10 +227,10 @@ private:
 	double remote_latency_threshold_error_;
 
 	/// Message for leg command array
-	spirit_msgs::LegCommandArray leg_command_array_msg_;
+	quad_msgs::LegCommandArray leg_command_array_msg_;
 
 	/// Message for leg command array
-	spirit_msgs::GRFArray grf_array_msg_;
+	quad_msgs::GRFArray grf_array_msg_;
 
 	/// Time at which to start transition
 	ros::Time transition_timestamp_;
@@ -262,7 +262,7 @@ private:
   	const std::vector<double> sit_joint_angles_{0.0,0.0,0.0};
 
 	/// QuadKD class
-	std::shared_ptr<spirit_utils::QuadKD>quadKD_;
+	std::shared_ptr<quad_utils::QuadKD>quadKD_;
 
 	/// Inverse Dynamics Controller class
 	std::shared_ptr<InverseDynamicsController> inverse_dynamics_controller_;

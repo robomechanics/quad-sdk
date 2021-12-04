@@ -15,8 +15,8 @@ endif()
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
-  spirit_msgs
-  spirit_utils
+  quad_msgs
+  quad_utils
   grid_map_core
   grid_map_ros
   eigen_conversions
@@ -27,7 +27,7 @@ find_package(Eigen3 REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp std_msgs spirit_msgs spirit_utils grid_map_core grid_map_ros eigen_conversions
+  CATKIN_DEPENDS roscpp std_msgs quad_msgs quad_utils grid_map_core grid_map_ros eigen_conversions
   DEPENDS EIGEN3
   LIBRARIES nmpc_controller
 )
@@ -55,7 +55,7 @@ add_library(nmpc_controller
   src/eval_g_tail.cpp
   src/eval_jac_g_tail.cpp
   src/eval_hess_g_tail.cpp
-  src/spirit_nlp.cpp
+  src/quad_nlp.cpp
   src/nmpc_controller.cpp
 )
 target_link_libraries(nmpc_controller 
@@ -70,4 +70,7 @@ add_dependencies(nmpc_controller
 ## Testing ##
 #############
 
-## Google test file for nmpc_controller library
+## Add gtest based cpp test target and link libraries
+catkin_add_gtest(nmpc_controller-test 
+  test/test_nmpc_controller.cpp)
+target_link_libraries(nmpc_controller-test nmpc_controller ${catkin_LIBRARIES})

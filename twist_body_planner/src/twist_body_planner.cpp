@@ -14,12 +14,12 @@ TwistBodyPlanner::TwistBodyPlanner(ros::NodeHandle nh) {
   nh_.param<double>("twist_body_planner/update_rate", update_rate_, 5);
   nh_.param<double>("twist_body_planner/horizon_length", horizon_length_, 1.5);
   nh_.param<double>("twist_body_planner/last_cmd_vel_msg_time_max",last_cmd_vel_msg_time_max_,1.0);
-  spirit_utils::loadROSParam(nh_, "local_planner/timestep",dt_);
+  quad_utils::loadROSParam(nh_, "local_planner/timestep",dt_);
 
   // Setup pubs and subs
   cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic,1,&TwistBodyPlanner::cmdVelCallback, this);
   robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&TwistBodyPlanner::robotStateCallback, this);
-  body_plan_pub_ = nh_.advertise<spirit_msgs::RobotPlan>(body_plan_topic,1);
+  body_plan_pub_ = nh_.advertise<quad_msgs::RobotPlan>(body_plan_topic,1);
 
   start_state_.resize(12);
   cmd_vel_.resize(6);
@@ -49,7 +49,7 @@ void TwistBodyPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg)
 
 }
 
-void TwistBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
+void TwistBodyPlanner::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
 
   tf2::Quaternion q(
         msg->body.pose.orientation.x,
@@ -121,14 +121,14 @@ void TwistBodyPlanner::updatePlan() {
 }
 
 void TwistBodyPlanner::addStateWrenchToMsg(double t, int plan_index, State body_state,
-    spirit_msgs::RobotPlan& msg) {
+    quad_msgs::RobotPlan& msg) {
 
   // Make sure the timestamps match the trajectory timing
   ros::Time current_time = msg.header.stamp + ros::Duration(t);
 
   // Represent each state as an Odometry message
-  spirit_msgs::RobotState state;
-  spirit_utils::updateStateHeaders(state, msg.header.stamp+ros::Duration(t), map_frame_,plan_index);
+  quad_msgs::RobotState state;
+  quad_utils::updateStateHeaders(state, msg.header.stamp+ros::Duration(t), map_frame_,plan_index);
 
   // Transform from RPY to quat msg
   tf2::Quaternion quat_tf;
@@ -151,7 +151,7 @@ void TwistBodyPlanner::addStateWrenchToMsg(double t, int plan_index, State body_
 
   double m = 11.5;
   double g = 9.81;
-  spirit_msgs::GRFArray grf_msg;
+  quad_msgs::GRFArray grf_msg;
   geometry_msgs::Vector3 vector_msg;
   vector_msg.x = 0;
   vector_msg.y = 0;
@@ -182,7 +182,7 @@ void TwistBodyPlanner::publishPlan() {
   }
 
   // Construct BodyPlan messages
-  spirit_msgs::RobotPlan robot_plan_msg;
+  quad_msgs::RobotPlan robot_plan_msg;
 
   // plan_timestamp_ = ros::Time::now();
 

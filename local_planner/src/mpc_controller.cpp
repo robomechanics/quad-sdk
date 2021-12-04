@@ -10,30 +10,30 @@ MPCController::MPCController(ros::NodeHandle nh) {
 
     // Load rosparams from parameter server
   std::string robot_state_traj_topic,robot_state_topic,grf_array_topic, control_traj_topic;
-  spirit_utils::loadROSParam(nh, "topics/trajectory", robot_state_traj_topic);
-  spirit_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
-  spirit_utils::loadROSParam(nh, "topics/control/grfs", grf_array_topic);
-  spirit_utils::loadROSParam(nh, "topics/control/trajectory", control_traj_topic);
-  spirit_utils::loadROSParam(nh, "map_frame", map_frame_);
+  quad_utils::loadROSParam(nh, "topics/trajectory", robot_state_traj_topic);
+  quad_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
+  quad_utils::loadROSParam(nh, "topics/control/grfs", grf_array_topic);
+  quad_utils::loadROSParam(nh, "topics/control/trajectory", control_traj_topic);
+  quad_utils::loadROSParam(nh, "map_frame", map_frame_);
 
   // Load MPC/system parameters
-  spirit_utils::loadROSParam(nh, "mpc_controller/horizon_length",N_);
-  spirit_utils::loadROSParam(nh, "mpc_controller/update_rate", update_rate_);
+  quad_utils::loadROSParam(nh, "mpc_controller/horizon_length",N_);
+  quad_utils::loadROSParam(nh, "mpc_controller/update_rate", update_rate_);
   
   double m,Ixx,Iyy,Izz,mu;
-  spirit_utils::loadROSParam(nh, "mpc_controller/timestep",dt_);
-  spirit_utils::loadROSParam(nh, "mpc_controller/body_mass",m);
-  spirit_utils::loadROSParam(nh, "mpc_controller/body_ixx",Ixx);
-  spirit_utils::loadROSParam(nh, "mpc_controller/body_iyy",Iyy);
-  spirit_utils::loadROSParam(nh, "mpc_controller/body_izz",Izz);
-  spirit_utils::loadROSParam(nh, "mpc_controller/friction_mu",mu);
-  spirit_utils::loadROSParam(nh, "mpc_controller/normal_lo",normal_lo_);
-  spirit_utils::loadROSParam(nh, "mpc_controller/normal_hi",normal_hi_);
+  quad_utils::loadROSParam(nh, "mpc_controller/timestep",dt_);
+  quad_utils::loadROSParam(nh, "mpc_controller/body_mass",m);
+  quad_utils::loadROSParam(nh, "mpc_controller/body_ixx",Ixx);
+  quad_utils::loadROSParam(nh, "mpc_controller/body_iyy",Iyy);
+  quad_utils::loadROSParam(nh, "mpc_controller/body_izz",Izz);
+  quad_utils::loadROSParam(nh, "mpc_controller/friction_mu",mu);
+  quad_utils::loadROSParam(nh, "mpc_controller/normal_lo",normal_lo_);
+  quad_utils::loadROSParam(nh, "mpc_controller/normal_hi",normal_hi_);
   std::vector<double> state_weights, control_weights, state_lower_bound, state_upper_bound;
-  spirit_utils::loadROSParam(nh, "mpc_controller/state_weights",state_weights);
-  spirit_utils::loadROSParam(nh, "mpc_controller/control_weights",control_weights);
-  spirit_utils::loadROSParam(nh, "mpc_controller/state_lower_bound",state_lower_bound);
-  spirit_utils::loadROSParam(nh, "mpc_controller/state_upper_bound",state_upper_bound);
+  quad_utils::loadROSParam(nh, "mpc_controller/state_weights",state_weights);
+  quad_utils::loadROSParam(nh, "mpc_controller/control_weights",control_weights);
+  quad_utils::loadROSParam(nh, "mpc_controller/state_lower_bound",state_lower_bound);
+  quad_utils::loadROSParam(nh, "mpc_controller/state_upper_bound",state_upper_bound);
 
   // Load state weights and bounds
   Eigen::MatrixXd Qx = Eigen::MatrixXd::Zero(Nx_, Nx_);
@@ -78,25 +78,25 @@ MPCController::MPCController(ros::NodeHandle nh) {
   quad_mpc_->update_friction(mu);
 
   // Convert kinematics
-quadKD_ = std::make_shared<spirit_utils::QuadKD>();
+quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
   // Setup pubs and subs
   robot_state_traj_sub_ = nh_.subscribe(robot_state_traj_topic,1,&MPCController::robotPlanCallback, this);
   robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&MPCController::robotStateCallback,this);
-  grf_array_pub_ = nh_.advertise<spirit_msgs::GRFArray>(grf_array_topic,1);
-  traj_pub_ = nh_.advertise<spirit_msgs::RobotPlan>(control_traj_topic,1);
+  grf_array_pub_ = nh_.advertise<quad_msgs::GRFArray>(grf_array_topic,1);
+  traj_pub_ = nh_.advertise<quad_msgs::RobotPlan>(control_traj_topic,1);
   ROS_INFO("MPC Controller setup, waiting for callbacks");
 }
 
-void MPCController::robotPlanCallback(const spirit_msgs::RobotStateTrajectory::ConstPtr& msg) {
+void MPCController::robotPlanCallback(const quad_msgs::RobotStateTrajectory::ConstPtr& msg) {
   last_plan_msg_ = msg;
 }
 
-void MPCController::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
+void MPCController::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
   cur_state_ = this->state_to_eigen(*msg);
 }
 
-Eigen::VectorXd MPCController::state_to_eigen(spirit_msgs::RobotState robot_state, bool zero_vel) {
+Eigen::VectorXd MPCController::state_to_eigen(quad_msgs::RobotState robot_state, bool zero_vel) {
   Eigen::VectorXd state = Eigen::VectorXd::Zero(Nx_);
 
   // Position
@@ -140,7 +140,7 @@ void MPCController::extractMPCTrajectory(int start_idx,
   ref_traj = Eigen::MatrixXd::Zero(N_+1,Nx_);
   ref_traj.row(0) = cur_state_;
 
-  spirit_msgs::RobotState robot_state;
+  quad_msgs::RobotState robot_state;
   Eigen::Vector3d foot_pos_body;
   sensor_msgs::JointState joint_state;
 
@@ -195,7 +195,7 @@ void MPCController::publishGRFArray() {
     return;
   }
 
-  double last_plan_age_seconds = spirit_utils::getROSMessageAgeInMs(last_plan_msg_->header)/1000.0;
+  double last_plan_age_seconds = quad_utils::getROSMessageAgeInMs(last_plan_msg_->header)/1000.0;
 
   //ROS_INFO("Last plan age (s): %f    Dt: %f", last_plan_age_seconds, dt_);
   int start_idx = ceil(last_plan_age_seconds/dt_) + 1;
@@ -226,7 +226,7 @@ void MPCController::publishGRFArray() {
   quad_mpc_->get_output(x_out, opt_traj, control_traj, f_val);
 
   // Copy normal forces into GRFArray
-  spirit_msgs::GRFArray msg; // control traj nu x n
+  quad_msgs::GRFArray msg; // control traj nu x n
   msg.points.resize(num_legs_);
   msg.vectors.resize(num_legs_);
   for (int i = 0; i < num_legs_; ++i) {

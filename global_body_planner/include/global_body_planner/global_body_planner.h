@@ -6,9 +6,9 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/RobotState.h>
-#include <spirit_utils/ros_utils.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_utils/ros_utils.h>
 
 #include "global_body_planner/rrt_connect.h"
 
@@ -55,7 +55,7 @@ class GlobalBodyPlanner {
      * @brief Callback function to handle new robot state data
      * @param[in] msg the message contining robot state data
      */
-    void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+    void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
 
     /**
      * @brief Callback function to handle new goal state
@@ -87,7 +87,7 @@ class GlobalBodyPlanner {
      * @param[in] body_plan_msg Body plan message
      */
     void addStateAndGRFToMsg(double t, int plan_index, FullState body_state, GRF grf,
-      int primitive_id, spirit_msgs::RobotPlan& body_plan_msg);
+      int primitive_id, quad_msgs::RobotPlan& body_plan_msg);
 
     /**
      * @brief Publish the current body plan
