@@ -53,8 +53,8 @@
   <build_export_depend>roscpp</build_export_depend>
   <exec_depend>roscpp</exec_depend>
 
-  <depend>spirit_msgs</depend>
-  <depend>spirit_utils</depend>
+  <depend>quad_msgs</depend>
+  <depend>quad_utils</depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

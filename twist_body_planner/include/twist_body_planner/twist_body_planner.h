@@ -7,9 +7,9 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/RobotState.h>
-#include <spirit_utils/ros_utils.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_utils/ros_utils.h>
 
 
 //! A twist body planning class for legged robots
@@ -52,7 +52,7 @@ class TwistBodyPlanner {
      * @brief Callback function to handle new robot state data
      * @param[in] msg the message contining robot state data
      */
-    void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+    void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
 
     /**
      * @brief Clear the plan member variables
@@ -68,7 +68,7 @@ class TwistBodyPlanner {
      * @param[in] body_plan_msg Body plan message
      */
     void addStateWrenchToMsg(double t, int plan_index, State body_state,
-      spirit_msgs::RobotPlan& body_plan_msg);
+      quad_msgs::RobotPlan& body_plan_msg);
 
     /**
      * @brief Publish the current body plan

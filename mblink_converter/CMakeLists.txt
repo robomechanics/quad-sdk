@@ -9,8 +9,8 @@ project(mblink_converter)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  spirit_msgs
-  spirit_utils
+  quad_msgs
+  quad_utils
 )
 
 ## Setup MBLINK and MAVLINK
@@ -28,8 +28,6 @@ endif()
 include_directories(${MBLINK_DIR}/include)
 link_directories(${MBLINK_DIR}/lib)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../external/SpiritSDK/SDK/thirdparty)
-
 find_package(Eigen3 REQUIRED)
 
 ###################################
@@ -44,7 +42,7 @@ find_package(Eigen3 REQUIRED)
 catkin_package(
   INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
   LIBRARIES mblink_converter
-  CATKIN_DEPENDS roscpp spirit_msgs spirit_utils
+  CATKIN_DEPENDS roscpp quad_msgs quad_utils
 #  DEPENDS system_lib
 )
 

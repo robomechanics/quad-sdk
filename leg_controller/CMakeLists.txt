@@ -15,8 +15,8 @@ endif()
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
-  spirit_msgs
-  spirit_utils
+  quad_msgs
+  quad_utils
   eigen_conversions
 )
 
@@ -25,7 +25,7 @@ find_package(Eigen3 REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS}
-  CATKIN_DEPENDS roscpp std_msgs spirit_msgs spirit_utils eigen_conversions
+  CATKIN_DEPENDS roscpp std_msgs quad_msgs quad_utils eigen_conversions
   DEPENDS EIGEN3
 )
 
