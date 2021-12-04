@@ -21,10 +21,10 @@ if ~endsWith(pwd, 'quad-software/quad_logger/scripts')
 end
 
 % Import URDF
-quad40 = importrobot('../../quad_simulator/spirit_description/urdf/spirit.urdf');
+spirit40 = importrobot('../../quad_simulator/spirit_description/urdf/spirit.urdf');
 %figure
-% homeConfig = homeConfiguration(quad40);
-% show(quad40,homeConfig);
+% homeConfig = homeConfiguration(spirit40);
+% show(spirit40,homeConfig);
 
 % Load the data
 [data, trialName] = parseQuadBag(trialName);
@@ -38,7 +38,7 @@ stateTrajectory = data.stateTrajectory;
 % plotState(stateEstimate);
 
 % Compute and plot the toe forces - in progress
-% toeForces = getToeForces(quad40, stateEstimate);
+% toeForces = getToeForces(spirit40, stateEstimate);
 % plotToeForces(toeForces);
 
 % Save the data if desired
@@ -50,5 +50,5 @@ end
 % Animate and save if desired
 if bAnimate
     videosDir = fullfile(logDir,'videos/');
-    animateData(quad40,stateTrajectory, fullfile(videosDir, trialName), bSave);
+    animateData(spirit40,stateTrajectory, fullfile(videosDir, trialName), bSave);
 end
