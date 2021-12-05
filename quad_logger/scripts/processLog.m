@@ -10,18 +10,18 @@ if nargin>0
     bSave = true;
 else
     % Specify the trial name and settings
-    trialName = '';
-    bAnimate = false;
+    trialName = 'quad_log_current';
+    bAnimate = true;
     bSave = true;
 end
 
 % Check that this is the right current directory otherwise paths won't work
-if ~endsWith(pwd, 'spirit-software/quad_logger/scripts')
+if ~endsWith(pwd, 'quad-software/quad_logger/scripts')
     error('This script must be run from quad-software/quad_logger/scripts/');
 end
 
 % Import URDF
-quad40 = importrobot('../../quad_simulator/spirit_description/urdf/spirit.urdf');
+spirit40 = importrobot('../../quad_simulator/spirit_description/urdf/spirit.urdf');
 %figure
 % homeConfig = homeConfiguration(quad40);
 % show(quad40,homeConfig);
@@ -51,5 +51,5 @@ end
 % Animate and save if desired
 if bAnimate
     videosDir = fullfile(logDir,'videos/');
-    animateData(quad40,stateTrajectory, fullfile(videosDir, trialName), bSave);
+    animateData(spirit40,stateTrajectory, fullfile(videosDir, trialName), bSave);
 end

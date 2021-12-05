@@ -214,18 +214,7 @@ namespace math_utils {
 
     for (size_t i = 0; i < sig.size(); i++)
     {
-      if (sig(i) == 0)
-      {
-        sig_inv(i) = 0;
-      }
-      else if (sig(i) < 1e-1)
-      {
-        sig_inv(i) = 10;
-      }
-      else
-      {
-        sig_inv(i) = 1 / sig(i);
-      }
+        sig_inv(i) = std::min(1 / sig(i), 1 / (1e-1 * sig.maxCoeff()));
     }
 
     Eigen::MatrixXd jacobian_inv = svd.matrixV() * sig_inv.asDiagonal() * svd.matrixU().transpose();

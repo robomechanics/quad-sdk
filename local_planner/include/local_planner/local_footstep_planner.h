@@ -148,7 +148,7 @@ class LocalFootstepPlanner {
     inline double getTerrainHeight(double x, double y)
     {
       grid_map::Position pos = {x, y};
-      double height = this->terrain_grid_.atPosition("z_smooth", pos, grid_map::InterpolationMethods::INTER_NEAREST);
+      double height = this->terrain_grid_.atPosition("z_smooth", pos, grid_map::InterpolationMethods::INTER_LINEAR);
       return (height);
     }
 
