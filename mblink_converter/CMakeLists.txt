@@ -28,8 +28,6 @@ endif()
 include_directories(${MBLINK_DIR}/include)
 link_directories(${MBLINK_DIR}/lib)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../external/QuadSDK/SDK/thirdparty)
-
 find_package(Eigen3 REQUIRED)
 
 ###################################
