@@ -19,6 +19,7 @@
 #include "leg_controller/leg_controller_template.h"
 #include "leg_controller/inverse_dynamics.h"
 #include "leg_controller/grf_pid_controller.h"
+#include "leg_controller/joint_controller.h"
 
 #include <cmath>
 #define MATH_PI 3.141592
@@ -81,6 +82,12 @@ class LegController {
     void legOverrideCallback(const quad_msgs::LegOverride::ConstPtr& msg);
 
     /**
+     * @brief Callback to handle new leg override commands
+     * @param[in] msg Leg override commands
+     */
+    void singleJointCommandCallback(const geometry_msgs::Vector3::ConstPtr& msg);
+
+    /**
      * @brief Callback to handle new remote heartbeat messages
      * @param[in] msg Remote heartbeat message
      */
@@ -134,6 +141,9 @@ class LegController {
 
     /// ROS subscriber for remote heartbeat
     ros::Subscriber remote_heartbeat_sub_;
+
+    /// ROS subscriber for single joint command
+    ros::Subscriber single_joint_cmd_sub_;
 
     /// ROS publisher for robot heartbeat
     ros::Publisher robot_heartbeat_pub_;
