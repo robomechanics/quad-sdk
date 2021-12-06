@@ -17,6 +17,15 @@ class GrfPidController : public LegControllerTemplate {
     GrfPidController();
 
     /**
+     * @brief  Get the ID of this controller type
+     * @return string containing the controller ID
+     */
+    static std::string getID() {
+      std::string controller_id = "grf_pid";
+      return controller_id;
+    }
+
+    /**
      * @brief  Set the desired state of a robot given the initial state
      * @param[in] init_robot_state_msg Message of the initial robot state
      */
@@ -34,20 +43,20 @@ class GrfPidController : public LegControllerTemplate {
 
   private:
 
-  /// Desired position
-  Eigen::Vector3d pos_des_;
+    /// Desired position
+    Eigen::Vector3d pos_des_;
 
-  /// Desired orientation
-  Eigen::Vector3d ang_des_;
+    /// Desired orientation
+    Eigen::Vector3d ang_des_;
 
-  /// Position error integral
-  Eigen::Vector3d pos_error_int_;
+    /// Position error integral
+    Eigen::Vector3d pos_error_int_;
 
-  /// Orientation error integral
-  Eigen::Vector3d ang_error_int_;
+    /// Orientation error integral
+    Eigen::Vector3d ang_error_int_;
 
-  /// Timekeeping variable for integral term
-  ros::Time t_old_;
+    /// Timekeeping variable for integral term
+    ros::Time t_old_;
 
 };
 

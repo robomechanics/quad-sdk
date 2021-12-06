@@ -12,6 +12,8 @@ leg_controller:
   swing_kd: [1, 1, 1]
   safety_kp: [0, 0, 0]
   safety_kd: [2, 2, 2]
+  stand_joint_angles: [0.0,0.76,1.52]
+  sit_joint_angles: [0.0,0.0,0.0]
   input_timeout: 0.1
   state_timeout: 0.1
   heartbeat_timeout: 0.2
