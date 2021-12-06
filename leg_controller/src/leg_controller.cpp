@@ -19,6 +19,7 @@ LegController::LegController(ros::NodeHandle nh) {
   quad_utils::loadROSParam(nh_,"topics/control/leg_override",leg_override_topic);
   quad_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
 
+  quad_utils::loadROSParam(nh_,"leg_controller/controller", controller_id_);
   quad_utils::loadROSParam(nh_,"leg_controller/update_rate", update_rate_);
   quad_utils::loadROSParam(nh_,"leg_controller/input_timeout", input_timeout_);
   quad_utils::loadROSParam(nh_,"leg_controller/state_timeout", state_timeout_);
@@ -33,6 +34,8 @@ LegController::LegController(ros::NodeHandle nh) {
   quad_utils::loadROSParam(nh_, "leg_controller/swing_kd", swing_kd_);
   quad_utils::loadROSParam(nh_, "leg_controller/safety_kp", safety_kp_);
   quad_utils::loadROSParam(nh_, "leg_controller/safety_kd", safety_kd_);
+  quad_utils::loadROSParam(nh_, "leg_controller/stand_joint_angles", stand_joint_angles_);
+  quad_utils::loadROSParam(nh_, "leg_controller/sit_joint_angles", sit_joint_angles_);
   quad_utils::loadROSParam(nh_, "leg_controller/remote_latency_threshold_warn",
     remote_latency_threshold_warn_);
   quad_utils::loadROSParam(nh_, "leg_controller/remote_latency_threshold_error",
@@ -59,16 +62,21 @@ LegController::LegController(ros::NodeHandle nh) {
   // Start sitting
   control_mode_ = SIT;
   last_remote_heartbeat_time_ = std::numeric_limits<double>::max();
-  last_state_time_ = std::numeric_limits<double>::max();  
+  last_state_time_ = std::numeric_limits<double>::max();
 
   // Initialize kinematics object
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
-  // Initialize inverse dynamics object
-  inverse_dynamics_controller_ = std::make_shared<InverseDynamicsController>();
-  inverse_dynamics_controller_->setGains(stance_kp_, stance_kd_, swing_kp_, swing_kd_);
-
-  grf_pid_controller_ = std::make_shared<GrfPidController>();
+  // Initialize leg controller object
+  if (controller_id_ == "inverse_dynamics") {
+    leg_controller_ = std::make_shared<InverseDynamicsController>();
+  } else if (controller_id_ == "grf_pid") {
+    leg_controller_ = std::make_shared<GrfPidController>();
+  } else {
+    ROS_ERROR_STREAM("Invalid controller id " << controller_id_ << ", returning nullptr");
+    leg_controller_ = nullptr;
+  }
+  leg_controller_->setGains(stance_kp_, stance_kd_, swing_kp_, swing_kd_);
 
   grf_array_msg_.vectors.resize(num_feet_);
   grf_array_msg_.points.resize(num_feet_);
@@ -115,7 +123,9 @@ void LegController::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg)
   double local_plan_time_diff = (ros::Time::now() - last_local_plan_msg_->header.stamp).toSec();
   ROS_INFO_STREAM("local plan time difference: " << local_plan_time_diff);
 
-  inverse_dynamics_controller_->updateLocalPlanMsg(last_local_plan_msg_);
+  if (InverseDynamicsController* c = dynamic_cast<InverseDynamicsController*>(leg_controller_.get())) {
+    c->updateLocalPlanMsg(last_local_plan_msg_);
+  }
 }
 
 void LegController::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
@@ -192,9 +202,29 @@ void LegController::checkMessages() {
 
 void LegController::executeCustomController() {
 
-  grf_pid_controller_->setDesiredState(first_robot_state_msg_);
-  grf_pid_controller_->computeLegCommandArray(last_robot_state_msg_,
-      leg_command_array_msg_, grf_array_msg_);
+  if (GrfPidController* c = dynamic_cast<GrfPidController*>(leg_controller_.get())) {
+    c->setDesiredState(first_robot_state_msg_);
+  }
+
+  if (leg_controller_->computeLegCommandArray(last_robot_state_msg_,
+      leg_command_array_msg_, grf_array_msg_) == false) {
+
+    for (int i = 0; i < num_feet_; ++i) {
+      leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
+      for (int j = 0; j < 3; ++j) {
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 
+          stand_joint_angles_.at(j);
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
+        leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+      }
+    }
+  }
+  
+  // grf_pid_controller_->setDesiredState(first_robot_state_msg_);
+  // grf_pid_controller_->computeLegCommandArray(last_robot_state_msg_,
+  //     leg_command_array_msg_, grf_array_msg_);
 
   // if (last_local_plan_msg_ != NULL && 
   //   (ros::Time::now() - last_local_plan_msg_->header.stamp).toSec() < input_timeout_) {
@@ -296,9 +326,25 @@ void LegController::computeLegCommandArray() {
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
       for (int j = 0; j < 3; ++j) {
+        double ang = stand_joint_angles_.at(j);
+        // if (j == 1) {
+        //   if (i == 0 || i == 2) {
+        //     ang += 0.6;
+        //   } else {
+        //     ang -= 0.6;
+        //   }
+        // }
+        // if (j == 0) {
+        //   if (i == 0 || i == 1) {
+        //     ang += 0.5;
+        //   } else {
+        //     ang -= 0.5;
+        //   }
+        // }
         leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 
-          (stand_joint_angles_.at(j) - sit_joint_angles_.at(j))*t_interp + 
+          (ang - sit_joint_angles_.at(j))*t_interp + 
           sit_joint_angles_.at(j);
+        
         leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
         leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
         leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
