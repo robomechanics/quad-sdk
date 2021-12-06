@@ -8,7 +8,7 @@ LegController::LegController(ros::NodeHandle nh) {
     // Load rosparams from parameter server
   std::string grf_topic, trajectory_state_topic, robot_state_topic, local_plan_topic,
     leg_command_array_topic, control_mode_topic, leg_override_topic,
-    remote_heartbeat_topic, robot_heartbeat_topic;
+    remote_heartbeat_topic, robot_heartbeat_topic, single_joint_cmd_topic;
   quad_utils::loadROSParam(nh_,"topics/local_plan",local_plan_topic);
   quad_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
   quad_utils::loadROSParam(nh_,"topics/state/trajectory",trajectory_state_topic);
@@ -18,6 +18,7 @@ LegController::LegController(ros::NodeHandle nh) {
   quad_utils::loadROSParam(nh_,"topics/control/joint_command",leg_command_array_topic);
   quad_utils::loadROSParam(nh_,"topics/control/leg_override",leg_override_topic);
   quad_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
+  quad_utils::loadROSParam(nh_,"topics/control/single_joint_command",single_joint_cmd_topic);
 
   quad_utils::loadROSParam(nh_,"leg_controller/controller", controller_id_);
   quad_utils::loadROSParam(nh_,"leg_controller/update_rate", update_rate_);
@@ -51,6 +52,8 @@ LegController::LegController(ros::NodeHandle nh) {
     trajectory_state_topic,1,&LegController::trajectoryStateCallback, this);
   control_mode_sub_ = nh_.subscribe(
     control_mode_topic,1,&LegController::controlModeCallback, this);
+  single_joint_cmd_sub_ = nh_.subscribe(
+    single_joint_cmd_topic,1,&LegController::singleJointCommandCallback, this);
   leg_override_sub_ = nh_.subscribe(
     leg_override_topic,1,&LegController::legOverrideCallback, this);
   remote_heartbeat_sub_ = nh_.subscribe(
@@ -72,6 +75,8 @@ LegController::LegController(ros::NodeHandle nh) {
     leg_controller_ = std::make_shared<InverseDynamicsController>();
   } else if (controller_id_ == "grf_pid") {
     leg_controller_ = std::make_shared<GrfPidController>();
+  } else if (controller_id_ == "joint") {
+    leg_controller_ = std::make_shared<JointController>();
   } else {
     ROS_ERROR_STREAM("Invalid controller id " << controller_id_ << ", returning nullptr");
     leg_controller_ = nullptr;
@@ -114,6 +119,13 @@ void LegController::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
   }
 }
 
+void LegController::singleJointCommandCallback(const geometry_msgs::Vector3::ConstPtr& msg) {
+  // ROS_INFO("In controlInputCallback");
+  if (JointController* c = dynamic_cast<JointController*>(leg_controller_.get())) {
+    c->updateSingleJointCommand(msg);
+  }
+}
+
 void LegController::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg) {
   last_local_plan_msg_ = msg;
 
@@ -130,18 +142,18 @@ void LegController::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg)
 
 void LegController::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
   // ROS_INFO("In robotStateCallback");
-  if (last_robot_state_msg_ != NULL) {
-    first_robot_state_msg_ = msg;
-  }
+  // if (last_robot_state_msg_ != NULL) {
+  //   first_robot_state_msg_ = msg;
+  // }
 
-  last_robot_state_msg_ = msg;
-  last_state_time_ = msg->header.stamp.toSec();
+  // last_robot_state_msg_ = msg;
+  // last_state_time_ = msg->header.stamp.toSec();
 
 }
 
 void LegController::grfInputCallback(const quad_msgs::GRFArray::ConstPtr& msg) {
   // ROS_INFO("In controlInputCallback");
-  last_grf_array_msg_ = msg;
+  // last_grf_array_msg_ = msg;
 }
 
 void LegController::trajectoryStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
@@ -421,7 +433,7 @@ void LegController::publishLegCommandArray() {
   leg_command_array_msg_.header.stamp = ros::Time::now();
   grf_array_msg_.header.stamp = leg_command_array_msg_.header.stamp;
   leg_command_array_pub_.publish(leg_command_array_msg_);
-  grf_pub_.publish(grf_array_msg_);
+  // grf_pub_.publish(grf_array_msg_);
 }
 
 void LegController::spin() {
@@ -432,14 +444,18 @@ void LegController::spin() {
     ros::spinOnce();
     publishHeartbeat();
 
-    // Wait until we have our first state messages
-    if (last_robot_state_msg_ != NULL)
-    {
-      // Check that messages are still fresh
-      checkMessages();
+    // // Wait until we have our first state messages
+    // if (last_robot_state_msg_ != NULL)
+    // {
+    //   // Check that messages are still fresh
+    //   checkMessages();
 
-      // Compute and publish control input data
-      computeLegCommandArray();
+    //   // Compute and publish control input data
+    //   computeLegCommandArray();
+    //   publishLegCommandArray();
+    // }
+    if (JointController* c = dynamic_cast<JointController*>(leg_controller_.get())) {
+      c->computeLegCommandArray(last_robot_state_msg_, leg_command_array_msg_, grf_array_msg_);
       publishLegCommandArray();
     }
 
