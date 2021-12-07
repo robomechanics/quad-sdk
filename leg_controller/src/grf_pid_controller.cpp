@@ -101,6 +101,12 @@ bool GrfPidController::computeLegCommandArray(
     
     grf_array.segment<3>(3*i).x() += -yaw_fb*sin(body_state(5));
     grf_array.segment<3>(3*i).y() += yaw_fb*cos(body_state(5));
+
+    if (i == 0 && abs(joint_positions[2]) <= 2.75) {
+      grf_array.segment<3>(3*i) << 0, 0, 30;
+    } else {
+      grf_array.segment<3>(3*i).setZero();
+    }
   }
 
   // Load contact mode
