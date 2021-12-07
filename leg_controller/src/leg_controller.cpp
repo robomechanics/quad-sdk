@@ -87,6 +87,7 @@ LegController::LegController(ros::NodeHandle nh) {
   grf_array_msg_.points.resize(num_feet_);
   grf_array_msg_.contact_states.resize(num_feet_);
   grf_array_msg_.header.frame_id = "map";
+  grf_array_msg_.header.stamp = ros::Time::now();
   for (int i = 0; i < num_feet_; i++) {
     geometry_msgs::Vector3 vec;
     geometry_msgs::Point point;
@@ -120,7 +121,6 @@ void LegController::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
 }
 
 void LegController::singleJointCommandCallback(const geometry_msgs::Vector3::ConstPtr& msg) {
-  // ROS_INFO("In controlInputCallback");
   if (JointController* c = dynamic_cast<JointController*>(leg_controller_.get())) {
     c->updateSingleJointCommand(msg);
   }
@@ -141,23 +141,20 @@ void LegController::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg)
 }
 
 void LegController::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
-  // ROS_INFO("In robotStateCallback");
-  // if (last_robot_state_msg_ != NULL) {
-  //   first_robot_state_msg_ = msg;
-  // }
+  if (last_robot_state_msg_ != NULL) {
+    first_robot_state_msg_ = msg;
+  }
 
-  // last_robot_state_msg_ = msg;
-  // last_state_time_ = msg->header.stamp.toSec();
+  last_robot_state_msg_ = msg;
+  last_state_time_ = msg->header.stamp.toSec();
 
 }
 
 void LegController::grfInputCallback(const quad_msgs::GRFArray::ConstPtr& msg) {
-  // ROS_INFO("In controlInputCallback");
-  // last_grf_array_msg_ = msg;
+  last_grf_array_msg_ = msg;
 }
 
 void LegController::trajectoryStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
-  // ROS_INFO("In footPlanContinuousCallback");
   last_trajectory_state_msg_ = msg;
 }
 
@@ -233,30 +230,6 @@ void LegController::executeCustomController() {
       }
     }
   }
-  
-  // grf_pid_controller_->setDesiredState(first_robot_state_msg_);
-  // grf_pid_controller_->computeLegCommandArray(last_robot_state_msg_,
-  //     leg_command_array_msg_, grf_array_msg_);
-
-  // if (last_local_plan_msg_ != NULL && 
-  //   (ros::Time::now() - last_local_plan_msg_->header.stamp).toSec() < input_timeout_) {
-
-  //   inverse_dynamics_controller_->computeLegCommandArray(last_robot_state_msg_,
-  //     leg_command_array_msg_, grf_array_msg_);
-
-  // } else {
-  //   for (int i = 0; i < num_feet_; ++i) {
-  //     leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
-  //     for (int j = 0; j < 3; ++j) {
-  //       leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 
-  //         stand_joint_angles_.at(j);
-  //       leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0;
-  //       leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kp = stand_kp_.at(j);
-  //       leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).kd = stand_kd_.at(j);
-  //       leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
-  //     }
-  //   }
-  // }
 }
 
 void LegController::computeLegCommandArray() {
@@ -433,7 +406,7 @@ void LegController::publishLegCommandArray() {
   leg_command_array_msg_.header.stamp = ros::Time::now();
   grf_array_msg_.header.stamp = leg_command_array_msg_.header.stamp;
   leg_command_array_pub_.publish(leg_command_array_msg_);
-  // grf_pub_.publish(grf_array_msg_);
+  grf_pub_.publish(grf_array_msg_);
 }
 
 void LegController::spin() {
@@ -444,18 +417,14 @@ void LegController::spin() {
     ros::spinOnce();
     publishHeartbeat();
 
-    // // Wait until we have our first state messages
-    // if (last_robot_state_msg_ != NULL)
-    // {
-    //   // Check that messages are still fresh
-    //   checkMessages();
+    // Wait until we have our first state messages
+    if (last_robot_state_msg_ != NULL)
+    {
+      // Check that messages are still fresh
+      checkMessages();
 
-    //   // Compute and publish control input data
-    //   computeLegCommandArray();
-    //   publishLegCommandArray();
-    // }
-    if (JointController* c = dynamic_cast<JointController*>(leg_controller_.get())) {
-      c->computeLegCommandArray(last_robot_state_msg_, leg_command_array_msg_, grf_array_msg_);
+      // Compute and publish control input data
+      computeLegCommandArray();
       publishLegCommandArray();
     }
 
