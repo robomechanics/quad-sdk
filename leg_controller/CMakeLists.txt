@@ -73,7 +73,7 @@ target_link_libraries(leg_overrider_node
 
 ## Google test file for leg_controller library
 catkin_add_gtest(leg_controller_test
-  test/test_inverse_dynamics.cpp)
+  test/test_leg_controller.cpp)
 target_link_libraries(leg_controller_test leg_controller ${catkin_LIBRARIES})
 
 
