@@ -55,7 +55,7 @@ for Vision60, or
 ```
 $ roslaunch gazebo_scripts spirit_gazebo.launch
 ```
-for Quad.
+for Spirit.
 
 9. (Optional) If you want to control the robot using the Ghost SDK, compile and run the corresponding Ghost Robotics SDK script. For this, please use the [Makefile example](extras/Makefile) provided here (the format might change in the future). The simulation exposes 3 ROS topics for control: `/behaviorId`, `/behaviorMode` and `/twist`, and several others for checking the robot state: `/<robot_name>/state/imu`, `/<robot_name>/state/batteryState`, `/<robot_name>/state/behaviorId`, `/<robot_name>/state/behaviorMode`, `/<robot_name>/state/joint`, `/<robot_name>/state/pose`. As an example following the Ghost Robotics SDK FirstHop example for Minitaur, the overall process should look like that:
 ```
@@ -291,7 +291,7 @@ After the conversion:
 ```
 2. Make sure to move the SDF file to the [vision60 SDF folder](vision60_description/sdf) and rename it to vision60.sdf.
 
-## Converting Quad's URDF to SDF
+## Converting Spirit's URDF to SDF
 We have a URDF xacro file ([spirit_gazebo.urdf.xacro](spirit_description/urdf/spirit_gazebo.urdf.xacro)) in the urdf folder that can be converted to URDF with
 ```bash
 $ python xacro.py spirit_gazebo.urdf.xacro > spirit_gazebo.urdf

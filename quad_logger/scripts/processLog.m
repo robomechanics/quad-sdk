@@ -23,8 +23,8 @@ end
 % Import URDF
 spirit40 = importrobot('../../quad_simulator/spirit_description/urdf/spirit.urdf');
 %figure
-% homeConfig = homeConfiguration(quad40);
-% show(quad40,homeConfig);
+% homeConfig = homeConfiguration(spirit40);
+% show(spirit40,homeConfig);
 
 % Load the data
 [data, trialName] = parseQuadBag(trialName);
@@ -39,7 +39,7 @@ plotControl(data.controlGRFs,'-');
 % plotState(stateEstimate);
 
 % Compute and plot the toe forces - in progress
-% toeForces = getToeForces(quad40, stateEstimate);
+% toeForces = getToeForces(spirit40, stateEstimate);
 % plotToeForces(toeForces);
 
 % Save the data if desired
