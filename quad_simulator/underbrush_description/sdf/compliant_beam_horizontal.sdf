@@ -1,67 +1,32 @@
 <?xml version='1.0'?>
 <sdf version='1.6'>
   <model name="compliant_beam_horizontal.sdf">
-  
-    <!--
-    <link name='base'>
-      <pose>0 0 .1 0 0 0</pose>
-
-      <collision name='collision'>
-        <geometry>
-          <box>
-            <size>.4 .2 .1</size>
-          </box>
-        </geometry>
-      </collision>
-
-      <visual name='visual'>
-        <geometry>
-          <box>
-            <size>.4 .2 .1</size>
-          </box>
-        </geometry>
-      </visual>
-
-      <inertial>
-        <pose frame=''>0 0 0 0 0 0</pose>
-        <mass>10</mass>
-        <inertia>
-          <ixx>1</ixx>
-          <ixy>1</ixy>
-          <ixz>1</ixz>
-          <iyy>1</iyy>
-          <iyz>1</iyz>
-          <izz>1</izz>
-        </inertia>
-      </inertial>
-    </link>
-    -->
 
     <link name='branch'>
 
-      <pose frame=''>0 0 0.05 0 0 0</pose>
+      <pose frame=''>0 0 0.01 -1.570796 0 0</pose>
       <collision name='collision'>
-        <pose frame=''>0 0 0.25 0 0 0</pose>
+        <pose frame=''>0 0 0.2 0 0 0</pose>
         <geometry>
           <cylinder>
-            <length>0.5</length>
-            <radius>0.02</radius>
+            <length>0.4</length>
+            <radius>0.01</radius>
           </cylinder>
         </geometry>
       </collision>
 
       <visual name='visual'>
-        <pose frame=''>0 0 0.25 0 0 0</pose>
+        <pose frame=''>0 0 0.2 0 0 0</pose>
         <geometry>
           <cylinder>
-            <length>0.5</length>
-            <radius>0.02</radius>
+            <length>0.4</length>
+            <radius>0.01</radius>
           </cylinder>
         </geometry>
       </visual>
 
       <inertial>
-        <pose frame=''>0 0 0.25 0 0 0</pose>
+        <pose frame=''>0 0 0.2 0 0 0</pose>
         <mass>0.1</mass>
         <inertia>
           <ixx>4e-3</ixx>
@@ -74,18 +39,26 @@
       </inertial>
     </link>
 
-    <joint name='base_to_branch' type='revolute'>
+    <joint name='base_to_branch' type='universal'>
       <parent>world</parent>
       <child>branch</child>
       <pose>0 0 0 0 0 0</pose>
       <axis>
         <xyz>0 1 0</xyz>
         <dynamics>
-          <damping>0.01</damping>
+          <damping>1.0</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>1.0</spring_stiffness>
+          <spring_stiffness>10.0</spring_stiffness>
         </dynamics>
       </axis>
+      <axis2>
+        <xyz>1 0 0</xyz>
+        <dynamics>
+          <damping>1.0</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>10.0</spring_stiffness>
+        </dynamics>
+      </axis2>
     </joint>
   </model>
 </sdf>
