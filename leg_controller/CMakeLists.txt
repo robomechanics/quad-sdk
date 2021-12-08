@@ -42,7 +42,7 @@ include_directories(
 
 ## Declare a C++ library for control
 add_library(leg_controller
-	src/leg_controller.cpp
+	src/leg_controller_interface.cpp
   src/leg_controller_template.cpp
 	src/inverse_dynamics.cpp
 	src/grf_pid_controller.cpp

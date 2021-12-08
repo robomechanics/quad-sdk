@@ -56,10 +56,20 @@ class LegControllerTemplate {
       std::vector<double> swing_kp, std::vector<double> swing_kd);
 
     /**
+     * @brief Compute the leg command array message for a given current state and reference plan
+     * @param[in] local_plan_msg Message of the local referance plan
+     */
+    void updateLocalPlanMsg(quad_msgs::RobotPlan::ConstPtr msg, const ros::Time &t_msg);
+
+    /**
      * @brief Compute the leg command array message
      */
     virtual bool computeLegCommandArray(const quad_msgs::RobotState::ConstPtr &robot_state_msg,
       quad_msgs::LegCommandArray &leg_command_array_msg, quad_msgs::GRFArray &grf_array_msg) = 0;
+
+    inline bool overrideStateMachine() {
+      return override_state_machine_;
+    }
 
   protected:
 
@@ -76,6 +86,15 @@ class LegControllerTemplate {
     /// PD gain when foot is in swing
     std::vector<double> swing_kp_;
     std::vector<double> swing_kd_;
+
+    /// Last local plan message
+    quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
+
+    /// Time of last local plan message
+    ros::Time last_local_plan_time_;
+
+    /// Bool for whether to override the state machine
+    bool override_state_machine_;
 };
 
 

@@ -16,21 +16,6 @@ class InverseDynamicsController : public LegControllerTemplate {
     InverseDynamicsController();
 
     /**
-     * @brief  Get the ID of this controller type
-     * @return string containing the controller ID
-     */
-    static std::string getID() {
-      std::string controller_id = "inverse_dynamics";
-      return controller_id;
-    }
-
-    /**
-     * @brief Compute the leg command array message for a given current state and reference plan
-     * @param[in] local_plan_msg Message of the local referance plan
-     */
-    void updateLocalPlanMsg(quad_msgs::RobotPlan::ConstPtr msg);
-
-    /**
      * @brief Compute the leg command array message for a given current state and reference plan
      * @param[in] robot_state_msg Message of the current robot state
      * @param[out] leg_command_array_msg Command message after solving inverse dynamics and including reference setpoints for each joint
@@ -42,9 +27,6 @@ class InverseDynamicsController : public LegControllerTemplate {
       quad_msgs::GRFArray &grf_array_msg);
 
 private:
-
-  /// Last local plan message
-  quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
 };
 

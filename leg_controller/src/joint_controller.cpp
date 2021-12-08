@@ -4,10 +4,14 @@ JointController::JointController() {
   leg_idx_ = 0;
   joint_idx_ = 0;
   joint_torque_ = 0.0;
+  this->override_state_machine_ = true;
+  std::cout << "In JointController constructor, override_state_machine_ = " <<
+    this->override_state_machine_ << std::endl;
+  std::cout << "addr = " << this << std::endl;
+
 }
 
 void JointController::updateSingleJointCommand(const geometry_msgs::Vector3::ConstPtr& msg) {
-  std::cout << "updating cmd" << std::endl;
   leg_idx_ = (int)msg->x;
   joint_idx_ = (int)msg->y;
   joint_torque_ = msg->z;
@@ -18,7 +22,6 @@ bool JointController::computeLegCommandArray(
   quad_msgs::LegCommandArray &leg_command_array_msg,
   quad_msgs::GRFArray &grf_array_msg)
 {
-  std::cout << "computing command" << std::endl;
   leg_command_array_msg.leg_commands.resize(num_feet_);
 
   for (int i = 0; i < num_feet_; ++i) {
@@ -30,12 +33,12 @@ bool JointController::computeLegCommandArray(
       double joint_torque_val = 0;
 
       if ((i == leg_idx_) && (j == joint_idx_)) {
-        joint_torque_val = joint_torque_;
+        joint_torque_val = std::max(std::min(joint_torque_,5.0),-5.0);
+        ROS_INFO_THROTTLE(0.2, "Leg %d, joint %d, cmd = %5.3f", i,j,joint_torque_val);
       } else {
         joint_torque_val = 0;
       }
 
-      std::cout << "Leg = " << i << ", joint = " << j << ", cmd = " << joint_torque_val << std::endl;
 
       leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 0.0;
       leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 0.0;
