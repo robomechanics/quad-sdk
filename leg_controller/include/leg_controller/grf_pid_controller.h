@@ -17,21 +17,6 @@ class GrfPidController : public LegControllerTemplate {
     GrfPidController();
 
     /**
-     * @brief  Get the ID of this controller type
-     * @return string containing the controller ID
-     */
-    static std::string getID() {
-      std::string controller_id = "grf_pid";
-      return controller_id;
-    }
-
-    /**
-     * @brief  Set the desired state of a robot given the initial state
-     * @param[in] init_robot_state_msg Message of the initial robot state
-     */
-    void setDesiredState(const quad_msgs::RobotState::ConstPtr &init_robot_state_msg);
-
-    /**
      * @brief Compute the leg command array message for a given current state and reference plan
      * @param[out] leg_command_array_msg Command message after solving inverse dynamics and including reference setpoints for each joint
      * @param[out] grf_array_msg GRF command message

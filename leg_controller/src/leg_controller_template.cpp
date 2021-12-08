@@ -2,6 +2,14 @@
 
 LegControllerTemplate::LegControllerTemplate() {
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
+  override_state_machine_ = false;
+}
+
+void LegControllerTemplate::updateLocalPlanMsg(quad_msgs::RobotPlan::ConstPtr msg,
+  const ros::Time &t_msg) {
+
+  last_local_plan_msg_ = msg;
+  last_local_plan_time_ = t_msg;
 }
 
 void LegControllerTemplate::setGains(double kp, double kd) {

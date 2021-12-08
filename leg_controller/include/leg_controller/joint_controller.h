@@ -30,10 +30,13 @@ class JointController : public LegControllerTemplate {
       quad_msgs::GRFArray &grf_array_msg);
 
   private:
+    /// Leg index for controlled joint
     int leg_idx_ = 0;
 
+    /// Joint index for controlled joint
     int joint_idx_ = 0;
 
+    /// Desired torque in Nm
     double joint_torque_ = 0.0;
 
 };

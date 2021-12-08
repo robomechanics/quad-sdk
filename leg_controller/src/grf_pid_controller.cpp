@@ -7,26 +7,18 @@ GrfPidController::GrfPidController() {
   ang_des_.setZero();
 }
 
-void GrfPidController::setDesiredState(const quad_msgs::RobotState::ConstPtr &init_robot_state_msg) {
-  Eigen::VectorXd body_state(12);
-  body_state = quad_utils::bodyStateMsgToEigen(init_robot_state_msg->body);
-  ang_des_ << 0, 0, body_state(5);
-  // double x_mean = 0;
-  // double y_mean = 0;
-  // for (int i = 0; i < num_feet_; i++) {
-  //   x_mean += init_robot_state_msg
-  // }
-  // pos_des_.x() = 0;//init_robot_state_msg->body.pose.position.x;
-  // pos_des_.y() = 0;//init_robot_state_msg->body.pose.position.y;
-  // pos_des_.z() = 2*0.206*sin(M_PI*0.25);
-}
-
 bool GrfPidController::computeLegCommandArray(
   const quad_msgs::RobotState::ConstPtr &robot_state_msg,
   quad_msgs::LegCommandArray &leg_command_array_msg,
   quad_msgs::GRFArray &grf_array_msg)
 {
   leg_command_array_msg.leg_commands.resize(num_feet_);
+
+  // Define vectors for joint positions and velocities
+  Eigen::VectorXd joint_positions(3*num_feet_), joint_velocities(3*num_feet_), body_state(12);
+  quad_utils::vectorToEigen(robot_state_msg->joints.position, joint_positions);
+  quad_utils::vectorToEigen(robot_state_msg->joints.velocity, joint_velocities);
+  body_state = quad_utils::bodyStateMsgToEigen(robot_state_msg->body);
 
   // Get desired x/y location
   double x_mean = 0;
@@ -38,12 +30,8 @@ bool GrfPidController::computeLegCommandArray(
   pos_des_.x() = x_mean;
   pos_des_.y() = y_mean;
   pos_des_.z() = 2*0.206*sin(M_PI*0.25);
-
-  // Define vectors for joint positions and velocities
-  Eigen::VectorXd joint_positions(3*num_feet_), joint_velocities(3*num_feet_), body_state(12);
-  quad_utils::vectorToEigen(robot_state_msg->joints.position, joint_positions);
-  quad_utils::vectorToEigen(robot_state_msg->joints.velocity, joint_velocities);
-  body_state = quad_utils::bodyStateMsgToEigen(robot_state_msg->body);
+  ang_des_.setZero();
+  ang_des_ << 0, 0, body_state(5);
 
   // Define vectors for state positions and velocities 
   Eigen::VectorXd state_positions(3*num_feet_+6), state_velocities(3*num_feet_+6);
@@ -101,12 +89,6 @@ bool GrfPidController::computeLegCommandArray(
     
     grf_array.segment<3>(3*i).x() += -yaw_fb*sin(body_state(5));
     grf_array.segment<3>(3*i).y() += yaw_fb*cos(body_state(5));
-
-    if (i == 0 && abs(joint_positions[2]) <= 2.75) {
-      grf_array.segment<3>(3*i) << 0, 0, 30;
-    } else {
-      grf_array.segment<3>(3*i).setZero();
-    }
   }
 
   // Load contact mode

@@ -2,10 +2,6 @@
 
 InverseDynamicsController::InverseDynamicsController() {}
 
-void InverseDynamicsController::updateLocalPlanMsg(quad_msgs::RobotPlan::ConstPtr msg) {
-  last_local_plan_msg_ = msg;
-}
-
 bool InverseDynamicsController::computeLegCommandArray(
   const quad_msgs::RobotState::ConstPtr &robot_state_msg,
   quad_msgs::LegCommandArray &leg_command_array_msg,
@@ -18,7 +14,6 @@ bool InverseDynamicsController::computeLegCommandArray(
     return false;
   } else {
 
-    std::cout << "In computeLegCommandArray" << std::endl;
     leg_command_array_msg.leg_commands.resize(num_feet_);
 
     // Define vectors for joint positions and velocities
@@ -37,20 +32,22 @@ bool InverseDynamicsController::computeLegCommandArray(
     Eigen::VectorXd tau_array(3*num_feet_), tau_swing_leg_array(3*num_feet_);
 
     // Get reference state and grf from local plan or traj + grf messages
-    double t_now = ros::Time::now().toSec();
+    ros::Time t_first_state = last_local_plan_msg_->states.front().header.stamp;
+    double t_now = (ros::Time::now() - last_local_plan_time_).toSec(); // Use time of plan receipt
+    // double t_now = (ros::Time::now() - t_first_state).toSec(); // Use time of first state
 
-    if ( (t_now < last_local_plan_msg_->states.front().header.stamp.toSec()) || 
-          (t_now > last_local_plan_msg_->states.back().header.stamp.toSec()) ) {
+    if ( (t_now < (last_local_plan_msg_->states.front().header.stamp - t_first_state).toSec()) || 
+          (t_now > (last_local_plan_msg_->states.back().header.stamp - t_first_state).toSec()) ) {
       ROS_ERROR("ID node couldn't find the correct ref state!");
     }    
 
     // Interpolate the local plan to get the reference state and ff GRF
     for (int i = 0; i < last_local_plan_msg_->states.size()-1; i++) {
       
-      if ( (t_now >= last_local_plan_msg_->states[i].header.stamp.toSec()) && 
-          ( t_now <  last_local_plan_msg_->states[i+1].header.stamp.toSec() )) {
+      if ( (t_now >= (last_local_plan_msg_->states[i].header.stamp - t_first_state).toSec()) && 
+          ( t_now <  (last_local_plan_msg_->states[i+1].header.stamp - t_first_state).toSec() )) {
 
-        double t_interp = (t_now - last_local_plan_msg_->states[i].header.stamp.toSec())/
+        double t_interp = (t_now - (last_local_plan_msg_->states[i].header.stamp-t_first_state).toSec())/
           (last_local_plan_msg_->states[i+1].header.stamp.toSec() - 
             last_local_plan_msg_->states[i].header.stamp.toSec());
         
@@ -82,27 +79,16 @@ bool InverseDynamicsController::computeLegCommandArray(
     for (int i = 0; i < num_feet_; i++) {
       contact_mode[i] = ref_state_msg.feet.feet[i].contact;
     }
-
-    std::cout << "Here" << std::endl;
-    std::cout << "state_positions\n" << state_positions << std::endl;
-    std::cout << "state_velocities\n" << state_velocities << std::endl;
-    std::cout << "ref_foot_acceleration\n" << ref_foot_acceleration << std::endl;
-    std::cout << "grf_array\n" << grf_array << std::endl;
     
     // Compute joint torques
     quadKD_->computeInverseDynamics(state_positions, state_velocities, ref_foot_acceleration,grf_array,
       contact_mode, tau_array);
-
-    std::cout << "tau_array\n" << tau_array << std::endl;
 
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg.leg_commands.at(i).motor_commands.resize(3);
       for (int j = 0; j < 3; ++j) {
 
         int joint_idx = 3*i+j;
-
-        std::cout << "i = " << i << ", j = " << j << std::endl;
-        std::cout << "joint_idx = " << joint_idx << std::endl;
 
         leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 
           ref_state_msg.joints.position.at(joint_idx);
@@ -112,19 +98,14 @@ bool InverseDynamicsController::computeLegCommandArray(
             tau_array(joint_idx);
 
         if (contact_mode[i]) {
-          std::cout << "contact_mode[i] = true " << std::endl;
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp = stance_kp_.at(j);
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd = stance_kd_.at(j);
-          std::cout << "done " << std::endl;
         } else {
-          std::cout << "contact_mode[i] = false " << std::endl;
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp = swing_kp_.at(j);
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd = swing_kd_.at(j);
-          std::cout << "done " << std::endl;
         }
       }
     }
-    std::cout << "leaving" << std::endl;
 
     return true;
   }

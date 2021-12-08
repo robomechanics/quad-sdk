@@ -175,7 +175,7 @@ void QuadKD::worldToNominalHipFKWorldFrame(int leg_index, Eigen::Vector3d body_p
 
   // Compute transform from body to legbase but offset by l0
   Eigen::Matrix4d g_body_nominal_hip = g_body_legbases_[leg_index];
-  g_body_nominal_hip(1, 3) += l0_vec_[leg_index];
+  g_body_nominal_hip(1, 3) += 0.5*l0_vec_[leg_index];
 
   // Compute transform for offset leg base relative to the world frame
   Eigen::Matrix4d g_world_nominal_hip = g_world_body * g_body_nominal_hip;

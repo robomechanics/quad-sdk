@@ -1,5 +1,5 @@
-#ifndef LEG_CONTROLLER_H
-#define LEG_CONTROLLER_H
+#ifndef LEG_CONTROLLER_INTERFACE_H
+#define LEG_CONTROLLER_INTERFACE_H
 
 #include <ros/ros.h>
 #include <eigen3/Eigen/Eigen>
@@ -27,18 +27,18 @@
 
 //! ROS Wrapper for a leg controller class
 /*!
-   LegController implements a class to generate leg commands to be sent to either the robot or a simulator.
+   LegControllerInterface implements a class to generate leg commands to be sent to either the robot or a simulator.
    It may subscribe to any number of topics to determine the leg control, but will always publish a
    LegCommandArray message to control the robot's legs.
 */
-class LegController {
+class LegControllerInterface {
   public:
   /**
-   * @brief Constructor for LegController
+   * @brief Constructor for LegControllerInterface
    * @param[in] nh ROS NodeHandle to publish and subscribe from
-   * @return Constructed object of type LegController
+   * @return Constructed object of type LegControllerInterface
    */
-  LegController(ros::NodeHandle nh);
+  LegControllerInterface(ros::NodeHandle nh);
   /**
    * @brief Calls ros spinOnce and pubs data at set frequency
    */
@@ -62,12 +62,6 @@ class LegController {
      * @param[in] msg input message contining current robot state
      */
     void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
-
-    /**
-     * @brief Callback function to handle new control input (GRF)
-     * @param[in] msg input message contining ground reaction forces
-     */
-    void grfInputCallback(const quad_msgs::GRFArray::ConstPtr& msg);
     
     /**
      * @brief Callback function to handle reference trajectory state
@@ -111,7 +105,7 @@ class LegController {
     /**
      * @brief Function to compute leg command array message
      */
-    void computeLegCommandArray();
+    bool computeLegCommandArray();
     
       /**
      * @brief Function to publish leg command array message
@@ -129,9 +123,6 @@ class LegController {
 
     /// ROS subscriber for state estimate
     ros::Subscriber robot_state_sub_;
-
-    /// ROS subscriber for control input
-    ros::Subscriber grf_sub_;
 
     /// ROS subscriber for trajectory
     ros::Subscriber trajectory_state_sub_;
@@ -171,6 +162,9 @@ class LegController {
 
     /// Robot mode
     int control_mode_;
+
+    /// Torque limits
+    Eigen::Vector3d torque_limits_;
 
     /// Define ids for control modes: Sit
     const int SIT = 0;
@@ -281,12 +275,6 @@ class LegController {
 
     /// Leg Controller template class
     std::shared_ptr<LegControllerTemplate> leg_controller_;
-
-    // /// Inverse Dynamics Controller class
-    // std::shared_ptr<InverseDynamicsController> inverse_dynamics_controller_;
-
-    // /// Inverse Dynamics Controller class
-    // std::shared_ptr<GrfPidController> grf_pid_controller_;
 };
 
 
