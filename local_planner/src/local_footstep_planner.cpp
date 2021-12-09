@@ -12,27 +12,26 @@ void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_
   period_ = period;
   horizon_length_ = horizon_length;
 
-  nominal_contact_schedule_.resize(horizon_length_);
+  nominal_contact_schedule_.resize(period_);
 
-  for (int i = 0; i < horizon_length_; i++) { // For each finite element
+  for (int i = 0; i < period_; i++) { // For each finite element
       
     nominal_contact_schedule_.at(i).resize(num_feet_);
 
     for (int leg_idx = 0; leg_idx < num_feet_; leg_idx++) { // For each leg
 
       // If this index in the horizon is between touchdown and liftoff, set contact to true
-      if ((i % period_) >= period_*phase_offsets_[leg_idx] && 
-        (i % period_) < period_*(phase_offsets_[leg_idx] + duty_cycles_[leg_idx])) {
+      if ((i >= period_*phase_offsets_[leg_idx] && 
+        i < period_*(phase_offsets_[leg_idx] + duty_cycles_[leg_idx])) || 
+        i < period_*(phase_offsets_[leg_idx] + duty_cycles_[leg_idx] - 1.0)) {
 
         nominal_contact_schedule_.at(i).at(leg_idx) = true;
       } else {
         nominal_contact_schedule_.at(i).at(leg_idx) = false;
-        // ROS_WARN("Contact mode is fixed in full stance for testing purposes!");
       }
     }
   }
 }
-
 
 void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double grf_weight, 
   double standing_error_threshold, std::shared_ptr<quad_utils::QuadKD> kinematics) {
@@ -40,7 +39,7 @@ void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double grf_
   ground_clearance_ = ground_clearance;
   standing_error_threshold_ = standing_error_threshold;
   grf_weight_ = grf_weight;
-quadKD_ = kinematics;
+  quadKD_ = kinematics;
 }
 
 void LocalFootstepPlanner::updateMap(const FastTerrainMap &terrain) {
@@ -79,7 +78,7 @@ void LocalFootstepPlanner::computeStanceContactSchedule(int current_plan_index,
   for (int i = 0; i < horizon_length_; i++) { // For each finite element
     contact_schedule.at(i).resize(num_feet_);
     for (int leg_idx = 0; leg_idx < num_feet_; leg_idx++) { // For each leg
-        nominal_contact_schedule_.at(i).at(leg_idx) = true;
+      nominal_contact_schedule_.at(i).at(leg_idx) = true;
     }
   }
 }
@@ -88,10 +87,14 @@ void LocalFootstepPlanner::computeContactSchedule(int current_plan_index,
   Eigen::VectorXd current_state, Eigen::MatrixXd ref_body_plan,
   std::vector<std::vector<bool>> &contact_schedule) {
 
+  // Compute the current phase in the nominal contact schedule
   int phase = current_plan_index % period_;
-  contact_schedule = nominal_contact_schedule_;
-  std::rotate(contact_schedule.begin(), contact_schedule.begin()+phase, contact_schedule.end());
 
+  // Compute the current contact schedule by looping through the nominal starting at the phase
+  contact_schedule.resize(horizon_length_);
+  for (int i = 0; i < horizon_length_; i++) {
+    contact_schedule[i] = nominal_contact_schedule_[(i + phase) % period_];
+  }
 }
 
 void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_position_prev,
