@@ -275,6 +275,12 @@ class LegControllerInterface {
 
     /// Leg Controller template class
     std::shared_ptr<LegControllerTemplate> leg_controller_;
+
+    /// Trotting duration
+    double trotting_duration_;
+
+    /// Trotting count
+    double trotting_count_;
 };
 
 
