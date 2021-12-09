@@ -1,0 +1,452 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <model name="compliant_cord.sdf">
+
+    <link name='l1'>
+      <pose frame=''>0 0 0.01 -1.570796 0 0</pose>
+      <collision name='collision'>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.20</length>
+            <radius>0.005</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+
+      <visual name='visual'>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.20</length>
+            <radius>0.005</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.3 0.01</diffuse>
+        </material>
+      </visual>
+      <visual name='end_visual'>
+        <pose frame=''>0 0 0 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.03</length>
+            <radius>0.015</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.3 0.01</diffuse>
+        </material>
+      </visual>
+
+      <inertial>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <mass>0.01</mass>
+        <inertia>
+          <ixx>4e-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>4e-4</iyy>
+          <iyz>0</iyz>
+          <izz>1e-6</izz>
+        </inertia>
+      </inertial>
+    </link>
+
+    <joint name='j0' type='universal'>
+      <parent>world</parent>
+      <child>l1</child>
+      <pose>0 0 0 0 0 0</pose>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <dynamics>
+          <damping>0.1</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>1.0</spring_stiffness>
+        </dynamics>
+      </axis>
+      <axis2>
+        <xyz>1 0 0</xyz>
+        <dynamics>
+          <damping>0.1</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>1.0</spring_stiffness>
+        </dynamics>
+      </axis2>
+    </joint>
+
+    <link name='l2'>
+      <pose frame=''>0 0.2 0.01 -1.570796 0 0</pose>
+      <collision name='collision'>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.20</length>
+            <radius>0.005</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+
+      <visual name='visual'>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.20</length>
+            <radius>0.005</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.3 0.01</diffuse>
+        </material>
+      </visual>
+
+      <inertial>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <mass>0.01</mass>
+        <inertia>
+          <ixx>4e-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>4e-4</iyy>
+          <iyz>0</iyz>
+          <izz>1e-6</izz>
+        </inertia>
+      </inertial>
+    </link>
+
+    <joint name='j1' type='universal'>
+      <parent>l1</parent>
+      <child>l2</child>
+      <pose>0 0 0 0 0 0</pose>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <dynamics>
+          <damping>0.1</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>1.0</spring_stiffness>
+        </dynamics>
+      </axis>
+      <axis2>
+        <xyz>1 0 0</xyz>
+        <dynamics>
+          <damping>0.1</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>1.0</spring_stiffness>
+        </dynamics>
+      </axis2>
+    </joint>
+
+    <link name='l3'>
+      <pose frame=''>0 0.4 0.01 -1.570796 0 0</pose>
+      <collision name='collision'>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.20</length>
+            <radius>0.005</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+
+      <visual name='visual'>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.20</length>
+            <radius>0.005</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.3 0.01</diffuse>
+        </material>
+      </visual>
+
+      <inertial>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <mass>0.01</mass>
+        <inertia>
+          <ixx>4e-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>4e-4</iyy>
+          <iyz>0</iyz>
+          <izz>1e-6</izz>
+        </inertia>
+      </inertial>
+    </link>
+
+    <joint name='j2' type='universal'>
+      <parent>l2</parent>
+      <child>l3</child>
+      <pose>0 0 0 0 0 0</pose>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <dynamics>
+          <damping>0.1</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>1.0</spring_stiffness>
+        </dynamics>
+      </axis>
+      <axis2>
+        <xyz>1 0 0</xyz>
+        <dynamics>
+          <damping>0.1</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>1.0</spring_stiffness>
+        </dynamics>
+      </axis2>
+    </joint>
+
+    <link name='l4'>
+      <pose frame=''>0 0.6 0.01 -1.570796 0 0</pose>
+      <collision name='collision'>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.20</length>
+            <radius>0.005</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+
+      <visual name='visual'>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.20</length>
+            <radius>0.005</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.3 0.01</diffuse>
+        </material>
+      </visual>
+
+      <inertial>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <mass>0.01</mass>
+        <inertia>
+          <ixx>4e-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>4e-4</iyy>
+          <iyz>0</iyz>
+          <izz>1e-6</izz>
+        </inertia>
+      </inertial>
+    </link>
+
+    <joint name='j3' type='universal'>
+      <parent>l3</parent>
+      <child>l4</child>
+      <pose>0 0 0 0 0 0</pose>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <dynamics>
+          <damping>0.1</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>1.0</spring_stiffness>
+        </dynamics>
+      </axis>
+      <axis2>
+        <xyz>1 0 0</xyz>
+        <dynamics>
+          <damping>0.1</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>1.0</spring_stiffness>
+        </dynamics>
+      </axis2>
+    </joint>
+
+    <link name='l5'>
+      <pose frame=''>0 0.8 0.01 -1.570796 0 0</pose>
+      <collision name='collision'>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.20</length>
+            <radius>0.005</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+
+      <visual name='visual'>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.20</length>
+            <radius>0.005</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.3 0.01</diffuse>
+        </material>
+      </visual>
+
+      <inertial>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <mass>0.01</mass>
+        <inertia>
+          <ixx>4e-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>4e-4</iyy>
+          <iyz>0</iyz>
+          <izz>1e-6</izz>
+        </inertia>
+      </inertial>
+    </link>
+
+    <joint name='j4' type='universal'>
+      <parent>l4</parent>
+      <child>l5</child>
+      <pose>0 0 0 0 0 0</pose>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <dynamics>
+          <damping>0.1</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>1.0</spring_stiffness>
+        </dynamics>
+      </axis>
+      <axis2>
+        <xyz>1 0 0</xyz>
+        <dynamics>
+          <damping>0.1</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>1.0</spring_stiffness>
+        </dynamics>
+      </axis2>
+    </joint>
+
+    <link name='l6'>
+      <pose frame=''>0 1.0 0.01 -1.570796 0 0</pose>
+      <collision name='collision'>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.20</length>
+            <radius>0.005</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+
+      <visual name='visual'>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.20</length>
+            <radius>0.005</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.3 0.01</diffuse>
+        </material>
+      </visual>
+
+      <inertial>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <mass>0.01</mass>
+        <inertia>
+          <ixx>4e-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>4e-4</iyy>
+          <iyz>0</iyz>
+          <izz>1e-6</izz>
+        </inertia>
+      </inertial>
+    </link>
+
+    <joint name='j5' type='universal'>
+      <parent>l5</parent>
+      <child>l6</child>
+      <pose>0 0 0 0 0 0</pose>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <dynamics>
+          <damping>0.1</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>1.0</spring_stiffness>
+        </dynamics>
+      </axis>
+      <axis2>
+        <xyz>1 0 0</xyz>
+        <dynamics>
+          <damping>0.1</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>1.0</spring_stiffness>
+        </dynamics>
+      </axis2>
+    </joint>
+
+    <link name='l_end'>
+      <pose frame=''>0 1.0 0.01 -1.570796 0 0</pose>
+      <visual name='visual'>
+        <pose frame=''>0 0 0 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.03</length>
+            <radius>0.015</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.3 0.01</diffuse>
+        </material>
+      </visual>
+
+      <inertial>
+        <pose frame=''>0 0 0.1 0 0 0</pose>
+        <mass>0.01</mass>
+        <inertia>
+          <ixx>1e-5</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1e-5</iyy>
+          <iyz>0</iyz>
+          <izz>1e-5</izz>
+        </inertia>
+      </inertial>
+    </link>
+
+    <joint name='j_end2' type='universal'>
+      <parent>world</parent>
+      <child>l_end</child>
+      <pose>0 0 0 0 0 0</pose>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <dynamics>
+          <damping>0.1</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>1.0</spring_stiffness>
+        </dynamics>
+      </axis>
+      <axis2>
+        <xyz>1 0 0</xyz>
+        <dynamics>
+          <damping>0.1</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>1.0</spring_stiffness>
+        </dynamics>
+      </axis2>
+    </joint>
+
+    <joint name='j_end1' type='prismatic'>
+      <parent>l_end</parent>
+      <child>l6</child>
+      <pose>0 0 0 0 0 0</pose>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <dynamics>
+          <damping>0.1</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>1.0</spring_stiffness>
+        </dynamics>
+        <limit>
+          <lower>-0.2</lower>
+          <upper>0</upper>
+        </limit>
+      </axis>
+    </joint>
+  </model>
+</sdf>
