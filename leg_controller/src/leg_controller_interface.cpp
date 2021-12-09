@@ -45,8 +45,8 @@ LegControllerInterface::LegControllerInterface(ros::NodeHandle nh) {
   quad_utils::loadROSParam(nh_,"local_planner/timestep", dt_);
 
   // Setup pubs and subs
-  local_plan_sub_ = nh_.subscribe(local_plan_topic,1,&LegControllerInterface::localPlanCallback, this);
-  robot_state_sub_= nh_.subscribe(robot_state_topic,1,&LegControllerInterface::robotStateCallback, this);
+  local_plan_sub_ = nh_.subscribe(local_plan_topic,1,&LegControllerInterface::localPlanCallback, this, ros::TransportHints().tcpNoDelay(true));
+  robot_state_sub_= nh_.subscribe(robot_state_topic,1,&LegControllerInterface::robotStateCallback, this, ros::TransportHints().tcpNoDelay(true));
   trajectory_state_sub_ = nh_.subscribe(
     trajectory_state_topic,1,&LegControllerInterface::trajectoryStateCallback, this);
   control_mode_sub_ = nh_.subscribe(
@@ -98,6 +98,12 @@ LegControllerInterface::LegControllerInterface(ros::NodeHandle nh) {
 
   // Set joint torque limits
   torque_limits_ << 21, 21, 32;
+
+  // Not allow to trot at first
+  double gait_period;
+  quad_utils::loadROSParam(nh_, "/local_footstep_planner/period", gait_period);
+  trotting_duration_ = gait_period * 2 * update_rate_;
+  trotting_count_ = trotting_duration_++;
 }
 
 void LegControllerInterface::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
@@ -210,7 +216,7 @@ void LegControllerInterface::checkMessages() {
 void LegControllerInterface::executeCustomController() {
 
   if (leg_controller_->computeLegCommandArray(last_robot_state_msg_,
-      leg_command_array_msg_, grf_array_msg_) == false) {
+      leg_command_array_msg_, grf_array_msg_) == false || trotting_count_ >= trotting_duration_) {
 
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
@@ -224,6 +230,11 @@ void LegControllerInterface::executeCustomController() {
       }
     }
   }
+  else
+  {
+    trotting_count_++;
+  }
+  
 }
 
 bool LegControllerInterface::computeLegCommandArray() {
@@ -316,6 +327,7 @@ bool LegControllerInterface::computeLegCommandArray() {
 
     if (t_interp >= 1) {
       control_mode_ = READY;
+      trotting_count_ = 0;
       return valid_cmd;
     }
 
