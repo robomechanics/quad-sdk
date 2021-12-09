@@ -21,6 +21,11 @@
   <!-- Load underbrush compliant elements -->
   <param name="underbrush_description_sdf" textfile="$(find underbrush_description)/sdf/compliant_beam_horizontal.sdf" />
 
+  <param name="cord_description_sdf" textfile="$(find underbrush_description)/sdf/compliant_cord.sdf" />
+
+  <node name="spawn_underbrush" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush -x 0.6 -y -0.5 -z 0.2" output="screen"/>
+
+  <!--
   <node name="spawn_underbrush" pkg="gazebo_ros" type="spawn_model" args="-sdf -param underbrush_description_sdf -model underbrush -x 0.6 -y -0.2 -z 0.1" output="screen"/>
 
   <node name="spawn_underbrush1" pkg="gazebo_ros" type="spawn_model" args="-sdf -param underbrush_description_sdf -model underbrush1 -x 0.6 -y -0.2 -z 0.2" output="screen"/>
@@ -32,4 +37,5 @@
   <node name="spawn_underbrush4" pkg="gazebo_ros" type="spawn_model" args="-sdf -param underbrush_description_sdf -model underbrush4 -x 0.8 -y -0.2 -z 0.2" output="screen"/>
 
   <node name="spawn_underbrush5" pkg="gazebo_ros" type="spawn_model" args="-sdf -param underbrush_description_sdf -model underbrush5 -x 0.8 -y -0.2 -z 0.3" output="screen"/>
+  -->
 </launch>
