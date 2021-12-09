@@ -122,8 +122,8 @@ NMPCController::NMPCController(int type)
   app_->Options()->SetStringValue("warm_start_same_structure", "yes");
 
   mynlp_->w0_.setZero();
-  mynlp_->z_L0_.setZero();
-  mynlp_->z_U0_.setZero();
+  mynlp_->z_L0_.fill(1);
+  mynlp_->z_U0_.fill(1);
   mynlp_->lambda0_.setZero();
 }
 
@@ -144,11 +144,11 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
       contact_schedule,
       ref_ground_height.tail(N_));
 
-  // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+  Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
   // std::cout << "x_current_: " << mynlp_->x_current_.transpose().format(CleanFmt) << std::endl;
   // std::cout << "x_reference_: " << mynlp_->x_reference_.transpose().format(CleanFmt) << std::endl;
   // std::cout << "feet_location_: " << mynlp_->feet_location_.transpose().format(CleanFmt) << std::endl;
-  // std::cout << "contact_sequence_: " << mynlp_->contact_sequence_.transpose().format(CleanFmt) << std::endl;
+  std::cout << "contact_sequence_: " << mynlp_->contact_sequence_.transpose().format(CleanFmt) << std::endl;
   
   return this->computePlan(initial_state,
                            ref_traj,
@@ -304,8 +304,8 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
   else
   {
     mynlp_->w0_.setZero();
-    mynlp_->z_L0_.setZero();
-    mynlp_->z_U0_.setZero();
+    mynlp_->z_L0_.fill(1);
+    mynlp_->z_U0_.fill(1);
     mynlp_->lambda0_.setZero();
 
     ROS_INFO_STREAM(param_ns_ << " solving fail");

@@ -330,8 +330,15 @@ void LocalPlanner::getStateAndTwistInput() {
   ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(current_state_(0), current_state_(1));
 
   // Set initial condition for forward integration
-  ref_body_plan_(0,0) = current_state_[0];
-  ref_body_plan_(0,1) = current_state_[1];
+  double x_mean = 0;
+  double y_mean = 0;
+  for (int i = 0; i < num_feet_; i++) {
+    x_mean += robot_state_msg_->feet.feet[i].position.x/(num_feet_);
+    y_mean += robot_state_msg_->feet.feet[i].position.y/(num_feet_);
+  }
+
+  ref_body_plan_(0,0) = x_mean;
+  ref_body_plan_(0,1) = y_mean;
   ref_body_plan_(0,2) = z_des_ + ref_ground_height_(0);
   ref_body_plan_(0,3) = 0;
   ref_body_plan_(0,4) = 0;
