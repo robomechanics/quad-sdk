@@ -45,8 +45,8 @@ LegControllerInterface::LegControllerInterface(ros::NodeHandle nh) {
   quad_utils::loadROSParam(nh_,"local_planner/timestep", dt_);
 
   // Setup pubs and subs
-  local_plan_sub_ = nh_.subscribe(local_plan_topic,1,&LegControllerInterface::localPlanCallback, this);
-  robot_state_sub_= nh_.subscribe(robot_state_topic,1,&LegControllerInterface::robotStateCallback, this);
+  local_plan_sub_ = nh_.subscribe(local_plan_topic,1,&LegControllerInterface::localPlanCallback, this, ros::TransportHints().tcpNoDelay(true));
+  robot_state_sub_= nh_.subscribe(robot_state_topic,1,&LegControllerInterface::robotStateCallback, this, ros::TransportHints().tcpNoDelay(true));
   trajectory_state_sub_ = nh_.subscribe(
     trajectory_state_topic,1,&LegControllerInterface::trajectoryStateCallback, this);
   control_mode_sub_ = nh_.subscribe(
@@ -63,7 +63,7 @@ LegControllerInterface::LegControllerInterface(ros::NodeHandle nh) {
 
   // Start sitting
   control_mode_ = SIT;
-  last_remote_heartbeat_time_ = std::numeric_limits<double>::max();
+  remote_heartbeat_received_time_ = std::numeric_limits<double>::max();
   last_state_time_ = std::numeric_limits<double>::max();
 
   // Initialize kinematics object
@@ -148,8 +148,6 @@ void LegControllerInterface::robotStateCallback(const quad_msgs::RobotState::Con
   }
 
   last_robot_state_msg_ = msg;
-  last_state_time_ = msg->header.stamp.toSec();
-
 }
 
 void LegControllerInterface::trajectoryStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
@@ -163,9 +161,9 @@ void LegControllerInterface::legOverrideCallback(const quad_msgs::LegOverride::C
 void LegControllerInterface::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg) {
 
   // Get the current time and compare to the message time
-  last_remote_heartbeat_time_ = msg->stamp.toSec();
-  double t_now = ros::Time::now().toSec();
-  double t_latency = t_now - last_remote_heartbeat_time_;
+  double remote_heartbeat_sent_time = msg->stamp.toSec();
+  remote_heartbeat_received_time_ = ros::Time::now().toSec();
+  double t_latency = remote_heartbeat_received_time_ - remote_heartbeat_sent_time;
 
   ROS_INFO_THROTTLE(1.0,"Remote latency = %6.4fs", t_latency);
 
@@ -177,7 +175,7 @@ void LegControllerInterface::remoteHeartbeatCallback(const std_msgs::Header::Con
   if (abs(t_latency) >= remote_latency_threshold_error_) {
     ROS_WARN_THROTTLE(1.0,"Remote latency = %6.4fs which exceeds the maximum threshold of %6.4fs, "
       "entering safety mode\n", t_latency, remote_latency_threshold_error_);
-    control_mode_ = SAFETY;
+    // control_mode_ = SAFETY;
   }
 }
 
@@ -189,8 +187,8 @@ void LegControllerInterface::checkMessages() {
 
   // Check the remote heartbeat for timeout
   // (this adds extra safety if no heartbeat messages are arriving)
-  if (abs(ros::Time::now().toSec() - last_remote_heartbeat_time_) >= heartbeat_timeout_ && 
-    last_remote_heartbeat_time_ != std::numeric_limits<double>::max())
+  if (abs(ros::Time::now().toSec() - remote_heartbeat_received_time_) >= heartbeat_timeout_ && 
+    remote_heartbeat_received_time_ != std::numeric_limits<double>::max())
   {
     control_mode_ = SAFETY;
     ROS_WARN_THROTTLE(1,"Remote heartbeat lost or late to ID node, entering safety mode");
@@ -249,6 +247,8 @@ bool LegControllerInterface::computeLegCommandArray() {
   Eigen::VectorXd joint_positions(3*num_feet_), joint_velocities(3*num_feet_), body_state(12);
   quad_utils::vectorToEigen(last_robot_state_msg_->joints.position, joint_positions);
   quad_utils::vectorToEigen(last_robot_state_msg_->joints.velocity, joint_velocities);
+
+  // std::cout << "joint_positions\n" << joint_positions << std::endl;
 
   // Initialize leg command message
   leg_command_array_msg_.leg_commands.resize(num_feet_);
@@ -411,6 +411,7 @@ void LegControllerInterface::publishLegCommandArray() {
 
 void LegControllerInterface::spin() {
   ros::Rate r(update_rate_);
+  double t_last = 0;
   while (ros::ok()) {
 
     // Collect new messages on subscriber topics and publish heartbeat
