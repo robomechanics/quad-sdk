@@ -34,9 +34,9 @@ void RemoteHeartbeat::robotHeartbeatCallback(const std_msgs::Header::ConstPtr& m
   }
 
   if (abs(t_latency) >= robot_latency_threshold_error_) {
-    ROS_ERROR("Robot latency = %6.4fs which exceeds the maximum threshold of %6.4fs, "
-      "killing remote heartbeat\n", t_latency, robot_latency_threshold_error_);
-    throw std::runtime_error("Shutting down remote heartbeat");
+    // ROS_ERROR("Robot latency = %6.4fs which exceeds the maximum threshold of %6.4fs, "
+    //   "killing remote heartbeat\n", t_latency, robot_latency_threshold_error_);
+    // throw std::runtime_error("Shutting down remote heartbeat");
   }
   
 }
