@@ -35,6 +35,10 @@
         </include>
     </group>
 
+    <group if="$(arg logging)">
+        <include file="$(find quad_utils)/launch/logging.launch"/>
+    </group>
+
     <!-- Start the heartbeat node -->
     <node name="remote_heartbeat" pkg="quad_utils" type="remote_heartbeat_node" output="screen"/>
 
