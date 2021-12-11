@@ -346,7 +346,7 @@ void LocalPlanner::getStateAndTwistInput() {
   ref_body_plan_(0,2) = z_des_ + ref_ground_height_(0);
   ref_body_plan_(0,3) = 0;
   ref_body_plan_(0,4) = 0;
-  ref_body_plan_(0,5) = current_state_[5];
+  ref_body_plan_(0,5) = 0;
   ref_body_plan_(0,6) = cmd_vel_[0]*cos(current_state_[5]) - cmd_vel_[1]*sin(current_state_[5]);
   ref_body_plan_(0,7) = cmd_vel_[0]*sin(current_state_[5]) + cmd_vel_[1]*cos(current_state_[5]);
   ref_body_plan_(0,8) = cmd_vel_[2];
