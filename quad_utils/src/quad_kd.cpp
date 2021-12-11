@@ -600,7 +600,7 @@ void QuadKD::computeInverseDynamics(const Eigen::VectorXd &state_pos,
     if (contact_mode.at(leg_idx_list_.at(i))) {
       tau.segment(3 * leg_idx_list_.at(i), 3) = tau_stance.segment(6 + 3 * i, 3);
     } else {
-      tau.segment(3 * leg_idx_list_.at(i), 3) = tau_swing.segment(3 * i, 3);
+      tau.segment(3 * leg_idx_list_.at(i), 3) = 0*tau_swing.segment(3 * i, 3);
     }
   }
 

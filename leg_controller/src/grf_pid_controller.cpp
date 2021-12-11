@@ -51,7 +51,7 @@ bool GrfPidController::computeLegCommandArray(
   double m = 11.5;
   double g = 9.81;
   double pos_kp = 1e2;
-  double ang_kp = 1e2;
+  double ang_kp = 5e1;
   double pos_ki = 0*pos_kp;
   double ang_ki = 0*ang_kp;
   double pos_kd = 0.2*pos_kp;
@@ -85,7 +85,7 @@ bool GrfPidController::computeLegCommandArray(
     grf_array.segment<3>(3*i).z() += -ang_kp*ang_dir.dot(ang_error) - 
       ang_kd*ang_dir.dot(ang_vel_error) - ang_ki*ang_dir.dot(ang_error_int_);
     double yaw_fb = -ang_kp*(-ang_dir.y())*ang_error.z() - 
-      ang_kp*(-ang_dir.y())*ang_vel_error.z()- ang_ki*(-ang_dir.y())*ang_error_int_.z();
+      ang_kd*(-ang_dir.y())*ang_vel_error.z()- ang_ki*(-ang_dir.y())*ang_error_int_.z();
     
     grf_array.segment<3>(3*i).x() += -yaw_fb*sin(body_state(5));
     grf_array.segment<3>(3*i).y() += yaw_fb*cos(body_state(5));

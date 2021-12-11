@@ -6,11 +6,14 @@ LocalFootstepPlanner::LocalFootstepPlanner() {
 
 }
 
-void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_length) {
+void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_length, 
+  const std::vector<double> &duty_cycles, const std::vector<double> &phase_offsets) {
   
   dt_ = dt;
   period_ = period;
   horizon_length_ = horizon_length;
+  duty_cycles_ = duty_cycles;
+  phase_offsets_ = phase_offsets;
 
   nominal_contact_schedule_.resize(period_);
 

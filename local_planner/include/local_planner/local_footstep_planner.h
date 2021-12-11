@@ -42,7 +42,8 @@ class LocalFootstepPlanner {
      * @param[in] period The period of a gait cycle in number of timesteps
      * @param[in] horizon_length The length of the planning horizon in number of timesteps
      */
-    void setTemporalParams(double dt, int period, int horizon_length);
+    void setTemporalParams(double dt, int period, int horizon_length, 
+      const std::vector<double> &duty_cycles, const std::vector<double> &phase_offsets);
 
     /**
      * @brief Set the spatial parameters of this object
@@ -306,10 +307,10 @@ class LocalFootstepPlanner {
     int horizon_length_;
 
     /// Phase offsets for the touchdown of each foot
-    std::vector<double> phase_offsets_ = {0,0.25,0.5,0.75};
+    std::vector<double> phase_offsets_ = {0,0.5,0.5,0.0};
 
     /// Duty cycles for the stance duration of each foot
-    std::vector<double> duty_cycles_ = {1,1,1,1};
+    std::vector<double> duty_cycles_ = {1.0,1.0,1.0,1.0};
 
     /// Nominal contact schedule
     std::vector<std::vector<bool>> nominal_contact_schedule_;

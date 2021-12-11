@@ -5,6 +5,7 @@
 #include <eigen3/Eigen/Eigen>
 #include <quad_utils/ros_utils.h>
 #include <quad_utils/math_utils.h>
+#include <quad_utils/function_timer.h>
 #include <quad_msgs/GRFArray.h>
 #include <std_msgs/UInt8.h>
 #include <quad_msgs/RobotState.h>
@@ -215,7 +216,7 @@ class LegControllerInterface {
     double last_state_time_;
     
     // Remote heartbeat timeout threshold in seconds
-    double last_remote_heartbeat_time_;
+    double remote_heartbeat_received_time_;
 
     /// Duration for sit to stand behavior
     const double transition_duration_ = 1.0;

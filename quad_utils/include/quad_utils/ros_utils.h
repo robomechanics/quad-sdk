@@ -4,6 +4,8 @@
 #include <ros/ros.h>
 #include <std_msgs/Header.h>
 #include <quad_utils/math_utils.h>
+#include <geometry_msgs/Point.h>
+#include <geometry_msgs/Vector3.h>
 
 namespace quad_utils {
   /**
@@ -329,6 +331,34 @@ void interpRobotPlan(quad_msgs::RobotPlan msg, double t,
    * @param[out] eigen_vec Eigen vector with data
    */
   void vectorToEigen(const std::vector<double> &vec, Eigen::VectorXd &eigen_vec);
+
+  /**
+   * @brief Convert eigen vector to geometry_msgs::Vector3
+   * @param[in] vec Eigen vector
+   * @param[out] eigen_vec msg vector
+   */
+  void Eigen3ToVector3Msg(const Eigen::Vector3d &eigen_vec, geometry_msgs::Vector3 &vec);
+
+  /**
+   * @brief Convert geometry_msgs::Vector3 vector to eigen vector
+   * @param[in] vec msg vector
+   * @param[out] eigen_vec Eigen vector
+   */
+  void vector3MsgToEigen(const geometry_msgs::Vector3 &vec, Eigen::Vector3d &eigen_vec);
+
+  /**
+   * @brief Convert eigen vector to geometry_msgs::Point
+   * @param[in] vec Eigen vector
+   * @param[out] eigen_vec msg point
+   */
+  void Eigen3ToPointMsg(const Eigen::Vector3d &eigen_vec, geometry_msgs::Point &vec);
+
+  /**
+   * @brief Convert geometry_msgs::Point vector to eigen vector
+   * @param[in] vec msg point
+   * @param[out] eigen_vec Eigen vector
+   */
+  void pointMsgToEigen(const geometry_msgs::Point &vec, Eigen::Vector3d &eigen_vec);
 }
 
 #endif
