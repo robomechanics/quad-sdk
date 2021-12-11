@@ -181,7 +181,7 @@ private:
   const double filter_smoothing_constant_ = 0.5;
 
   /// MPC Horizon length
-  const int N_ = 24;
+  int N_;
 
   /// Number of states
   const int Nx_ = 12;

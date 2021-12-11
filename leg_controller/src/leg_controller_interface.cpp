@@ -232,7 +232,7 @@ void LegControllerInterface::executeCustomController() {
   }
   else
   {
-    trotting_count_++;
+    // trotting_count_++;
   }
   
 }

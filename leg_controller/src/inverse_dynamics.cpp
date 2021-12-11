@@ -33,8 +33,9 @@ bool InverseDynamicsController::computeLegCommandArray(
 
     // Get reference state and grf from local plan or traj + grf messages
     ros::Time t_first_state = last_local_plan_msg_->states.front().header.stamp;
-    double t_now = (ros::Time::now() - last_local_plan_time_).toSec(); // Use time of plan receipt
-    // double t_now = (ros::Time::now() - t_first_state).toSec(); // Use time of first state
+    double t_now = (ros::Time::now() - last_local_plan_msg_->state_timestamp).toSec(); // Use time of state - RECOMMENDED
+    // double t_now = (ros::Time::now() - last_local_plan_time_).toSec(); // Use time of plan receipt
+    // double t_now = (ros::Time::now() - t_first_state).toSec(); // Use time of first state in plan
 
     if ( (t_now < (last_local_plan_msg_->states.front().header.stamp - t_first_state).toSec()) || 
           (t_now > (last_local_plan_msg_->states.back().header.stamp - t_first_state).toSec()) ) {

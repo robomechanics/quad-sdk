@@ -36,6 +36,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   // Load system parameters from parameter server
   quad_utils::loadROSParam(nh_, "local_planner/update_rate", update_rate_);
   quad_utils::loadROSParam(nh_, "local_planner/timestep",dt_);
+  quad_utils::loadROSParam(nh_, "local_planner/horizon_length",N_);
   quad_utils::loadROSParam(nh_, "local_planner/iterations",iterations_);
   quad_utils::loadROSParam(nh_, "twist_body_planner/cmd_vel_scale", cmd_vel_scale_);
   quad_utils::loadROSParam(nh_, "twist_body_planner/last_cmd_vel_msg_time_max",
@@ -46,7 +47,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   nh.param<bool>("local_planner/use_twist_input", use_twist_input_, false);
 
   // Convert kinematics
-quadKD_ = std::make_shared<quad_utils::QuadKD>();
+  quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
   // Initialize nominal footstep positions projected down from the hips
   Eigen::Vector3d nominal_joint_state;
@@ -158,11 +159,14 @@ void LocalPlanner::initLocalFootstepPlanner() {
   // Load parameters from server
   double grf_weight, ground_clearance, standing_error_threshold, period_d;
   int period;
+  std::vector<double> duty_cycles, phase_offsets;
   quad_utils::loadROSParam(nh_, "local_footstep_planner/grf_weight", grf_weight);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/ground_clearance", ground_clearance);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/standing_error_threshold",
     standing_error_threshold);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/period", period_d);
+  quad_utils::loadROSParam(nh_, "local_footstep_planner/duty_cycles", duty_cycles);
+  quad_utils::loadROSParam(nh_, "local_footstep_planner/phase_offsets", phase_offsets);
 
   period = period_d/dt_;
 
@@ -174,7 +178,7 @@ void LocalPlanner::initLocalFootstepPlanner() {
 
   // Create footstep class, make sure we use the same dt as the local planner
   local_footstep_planner_ = std::make_shared<LocalFootstepPlanner>();
-  local_footstep_planner_->setTemporalParams(dt_, period, N_);
+  local_footstep_planner_->setTemporalParams(dt_, period, N_, duty_cycles, phase_offsets);
   local_footstep_planner_->setSpatialParams(ground_clearance, standing_error_threshold,
     grf_weight,quadKD_);
 
