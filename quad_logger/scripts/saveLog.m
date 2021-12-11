@@ -22,6 +22,7 @@ jointVelocityFig = figArray(5);
 jointEffortFig = figArray(6);
 footPositionFig = figArray(7);
 footVelocityFig = figArray(8);
+grfsFig = figArray(9);
 
 % Only save if requested
 % Copy the bag
@@ -52,3 +53,6 @@ saveas(footPositionFig, [figuresDir, trialName, '_foot_positions'], 'png');
 saveas(footVelocityFig, [figuresDir, trialName, '_foot_velocities'], 'fig');
 saveas(footVelocityFig, [figuresDir, trialName, '_foot_velocities'], 'pdf');
 saveas(footVelocityFig, [figuresDir, trialName, '_foot_velocities'], 'png');
+saveas(grfsFig, [figuresDir, trialName, '_grfs'], 'fig');
+saveas(grfsFig, [figuresDir, trialName, '_grfs'], 'pdf');
+saveas(grfsFig, [figuresDir, trialName, '_grfs'], 'png');

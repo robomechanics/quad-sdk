@@ -10,7 +10,7 @@ if nargin>0
     bSave = true;
 else
     % Specify the trial name and settings
-    trialName = 'quad_log_current';
+    trialName = '';
     bAnimate = true;
     bSave = true;
 end
@@ -34,7 +34,8 @@ stateTrajectory = data.stateTrajectory;
 
 % Plot the state
 [figArray] = plotState(stateGroundTruth,'-');
-plotControl(data.controlGRFs,'-');
+GRFVectorsFig = plotControl(data.controlGRFs,'-');
+figArray = [figArray, GRFVectorsFig];
 % [figArray] = plotState(stateTrajectory, ':', figArray);
 % plotState(stateEstimate);
 
@@ -51,5 +52,5 @@ end
 % Animate and save if desired
 if bAnimate
     videosDir = fullfile(logDir,'videos/');
-    animateData(spirit40,stateTrajectory, fullfile(videosDir, trialName), bSave);
+    animateData(spirit40,stateGroundTruth, fullfile(videosDir, trialName), bSave);
 end

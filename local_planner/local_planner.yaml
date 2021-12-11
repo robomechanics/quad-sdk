@@ -20,11 +20,11 @@ local_body_planner:
 
 local_footstep_planner:
   grf_weight: 0.5
-  period: 0.75 # s
+  period: 1.0 # s
   ground_clearance: 0.10
   standing_error_threshold: 0.03 # m
-  duty_cycles: [1.0, 1.0, 1.0, 1.0]
-  phase_offsets: [0.0, 0.5, 0.5, 0.0]
+  duty_cycles: [0.75, 0.75, 0.75, 0.75]
+  phase_offsets: [0.25, 0.0, 0.75, 0.5]
 
 mpc_controller:
   update_rate: 50
