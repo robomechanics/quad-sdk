@@ -76,7 +76,7 @@ bool InverseDynamicsController::computeLegCommandArray(
     grf_array = quad_utils::grfArrayMsgToEigen(grf_array_msg);
     if (last_grf_array_.norm() >= 1e-3) {
       grf_array = grf_exp_filter_const_*grf_array.array() + 
-        grf_exp_filter_const_*last_grf_array_.array();
+        (1 - grf_exp_filter_const_)*last_grf_array_.array();
       quad_utils::eigenToGRFArrayMsg(grf_array, ref_state_msg.feet, grf_array_msg);
     }
 
