@@ -74,6 +74,11 @@ bool InverseDynamicsController::computeLegCommandArray(
     quad_utils::multiFootStateMsgToEigen(
         ref_state_msg.feet, ref_foot_positions, ref_foot_velocities, ref_foot_acceleration);
     grf_array = quad_utils::grfArrayMsgToEigen(grf_array_msg);
+    if (last_grf_array_.norm() >= 1e-3) {
+      grf_array = grf_exp_filter_const_*grf_array.array() + 
+        grf_exp_filter_const_*last_grf_array_.array();
+      quad_utils::eigenToGRFArrayMsg(grf_array, ref_state_msg.feet, grf_array_msg);
+    }
 
     // Load contact mode
     std::vector<int> contact_mode(num_feet_);
@@ -108,6 +113,7 @@ bool InverseDynamicsController::computeLegCommandArray(
       }
     }
 
+    last_grf_array_ = grf_array;
     return true;
   }
 }

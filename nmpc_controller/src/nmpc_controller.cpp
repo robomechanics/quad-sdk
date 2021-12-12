@@ -148,7 +148,7 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
   // std::cout << "x_current_: " << mynlp_->x_current_.transpose().format(CleanFmt) << std::endl;
   // std::cout << "x_reference_: " << mynlp_->x_reference_.transpose().format(CleanFmt) << std::endl;
   // std::cout << "feet_location_: " << mynlp_->feet_location_.transpose().format(CleanFmt) << std::endl;
-  std::cout << "contact_sequence_: " << mynlp_->contact_sequence_.transpose().format(CleanFmt) << std::endl;
+  // std::cout << "contact_sequence_: " << mynlp_->contact_sequence_.transpose().format(CleanFmt) << std::endl;
   
   return this->computePlan(initial_state,
                            ref_traj,

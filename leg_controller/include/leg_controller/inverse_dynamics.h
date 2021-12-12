@@ -28,6 +28,12 @@ class InverseDynamicsController : public LegControllerTemplate {
 
 private:
 
+  /// Prior grf_array
+  Eigen::VectorXd last_grf_array_;
+
+  /// GRF exponential filter constant
+  const double grf_exp_filter_const_ = 0.5;
+
 };
 
 

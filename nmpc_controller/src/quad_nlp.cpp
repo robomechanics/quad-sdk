@@ -303,7 +303,22 @@ bool quadNLP::eval_f(
 
    for (int i = 0; i < N_; ++i)
    {
-      Eigen::MatrixXd uk = w.block(i * (n_ + m_), 0, m_, 1);
+
+      // Compute the number of contacts
+      Eigen::VectorXd u_nom(m_);
+      u_nom.setZero();
+      double num_contacts = contact_sequence_.col(i).sum();
+      
+      // If there are some contacts, set the nominal input accordingly
+      if (num_contacts > 0) {
+         for (int j = 0; j < contact_sequence_.rows(); j++) {
+            if (contact_sequence_(j,i)) {
+               u_nom[3*j+2] = mass_*grav_/num_contacts;
+            }
+         }
+      }
+
+      Eigen::MatrixXd uk = w.block(i * (n_ + m_), 0, m_, 1) - u_nom;
       Eigen::MatrixXd xk = w.block(i * (n_ + m_) + m_, 0, n_, 1);
 
       xk = (xk.array() - x_reference_.block(0, i, n_, 1).array()).matrix();
@@ -330,7 +345,22 @@ bool quadNLP::eval_grad_f(
 
    for (int i = 0; i < N_; ++i)
    {
-      Eigen::MatrixXd uk = w.block(i * (n_ + m_), 0, m_, 1);
+
+      // Compute the number of contacts
+      Eigen::VectorXd u_nom(m_);
+      u_nom.setZero();
+      double num_contacts = contact_sequence_.col(i).sum();
+      
+      // If there are some contacts, set the nominal input accordingly
+      if (num_contacts > 0) {
+         for (int j = 0; j < contact_sequence_.rows(); j++) {
+            if (contact_sequence_(j,i)) {
+               u_nom[3*j+2] = mass_*grav_/num_contacts;
+            }
+         }
+      }
+
+      Eigen::MatrixXd uk = w.block(i * (n_ + m_), 0, m_, 1) - u_nom;
       Eigen::MatrixXd xk = w.block(i * (n_ + m_) + m_, 0, n_, 1);
 
       xk = (xk.array() - x_reference_.block(0, i, n_, 1).array()).matrix();

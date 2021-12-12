@@ -48,6 +48,12 @@ public:
     // Step length
     double dt_;
 
+    /// Mass of the platform
+    const double mass_ = 13.3;
+
+    /// Gravity constant
+    const double grav_ = 9.81;
+
     // State bounds, input bounds, constraint bounds
     Eigen::MatrixXd x_min_, x_max_, u_min_, u_max_, g_min_, g_max_;
 
