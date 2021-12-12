@@ -48,8 +48,8 @@ public:
     // Step length
     double dt_;
 
-    /// Mass of the platform
-    const double mass_ = 13.3;
+    /// Mass of the platform (set to zero to ignore nominal ff)
+    const double mass_ = 0.0;
 
     /// Gravity constant
     const double grav_ = 9.81;
