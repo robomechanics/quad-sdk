@@ -95,6 +95,9 @@ private:
   /// Update rate of the motion capture system
   double mocap_rate_;
 
+  /// Update rate of the imu
+  double imu_rate_;
+
   /// Update rate of the ground truth publisher node
   double update_rate_;
 
@@ -114,16 +117,20 @@ private:
   geometry_msgs::PoseStamped::ConstPtr last_mocap_msg_;
   
   /// Best estimate of velocity from mocap diff
+  Eigen::Vector3d imu_vel_estimate_;
   Eigen::Vector3d mocap_vel_estimate_;
 
   /// Kinematics object
   std::shared_ptr<quad_utils::QuadKD>quadKD_;
 
-  /// Velocity update weight on exponential decay filter
-  double alpha_;
+  /// Velocity filter time constant
+  double filter_time_constant_;
 
   /// Maximum time elapsed between mocap messages before committing to new message
   double mocap_dropout_threshold_;
+
+  /// Maximum time elapsed between imu messages before committing to new message
+  double imu_dropout_threshold_;
 
   // Vector containing history of velocity measurements
   std::vector<std::vector<double> > vel_hist_;
