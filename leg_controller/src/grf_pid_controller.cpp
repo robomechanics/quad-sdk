@@ -31,7 +31,7 @@ bool GrfPidController::computeLegCommandArray(
   pos_des_.y() = y_mean;
   pos_des_.z() = 2*0.206*sin(M_PI*0.25);
   ang_des_.setZero();
-  ang_des_ << 0, 0, body_state(5);
+  ang_des_ << 0, 0, 0;
 
   // Define vectors for state positions and velocities 
   Eigen::VectorXd state_positions(3*num_feet_+6), state_velocities(3*num_feet_+6);
@@ -48,14 +48,14 @@ bool GrfPidController::computeLegCommandArray(
   ref_foot_acceleration.setZero();
 
   // Load model and desired pos data
-  double m = 11.5;
+  double m = 13.3;
   double g = 9.81;
-  double pos_kp = 1e2;
-  double ang_kp = 5e1;
+  double pos_kp = 100;
+  double ang_kp = 50;
   double pos_ki = 0*pos_kp;
   double ang_ki = 0*ang_kp;
   double pos_kd = 0.2*pos_kp;
-  double ang_kd = 0.2*ang_kp;
+  double ang_kd = 0.02*ang_kp;
   Eigen::Vector3d grf_array_ff;
   grf_array_ff << 0, 0, m*g*0.25;
 
@@ -76,6 +76,9 @@ bool GrfPidController::computeLegCommandArray(
 
   t_old_ = t_now;
 
+  std::vector<double> rx_vec = {0.2263, -0.2263, 0.2263, -0.2263};
+  std::vector<double> ry_vec = {0.098, 0.098, -0.098, -0.098};
+
   for (int i = 0; i < num_feet_; i++) {
     Eigen::Vector3d ang_dir(3);
     ang_dir << ((i <= 1) ? 1 : -1), ((i % 2 == 0) ? -1 : 1), 0;
@@ -84,11 +87,13 @@ bool GrfPidController::computeLegCommandArray(
       pos_kd*vel_error.array() - pos_ki*pos_error_int_.array();
     grf_array.segment<3>(3*i).z() += -ang_kp*ang_dir.dot(ang_error) - 
       ang_kd*ang_dir.dot(ang_vel_error) - ang_ki*ang_dir.dot(ang_error_int_);
-    double yaw_fb = -ang_kp*(-ang_dir.y())*ang_error.z() - 
-      ang_kd*(-ang_dir.y())*ang_vel_error.z()- ang_ki*(-ang_dir.y())*ang_error_int_.z();
+    double yaw_fb = -ang_kp*ang_error.z() - 
+      ang_kd*ang_vel_error.z()- ang_ki*ang_error_int_.z();
+
+    double yaw_ang_dir = atan2(ry_vec[i],rx_vec[i]);
     
-    grf_array.segment<3>(3*i).x() += -yaw_fb*sin(body_state(5));
-    grf_array.segment<3>(3*i).y() += yaw_fb*cos(body_state(5));
+    grf_array.segment<3>(3*i).x() += -yaw_fb*sin(body_state(5) + yaw_ang_dir);
+    grf_array.segment<3>(3*i).y() += yaw_fb*cos(body_state(5) + yaw_ang_dir);
   }
 
   // Load contact mode
