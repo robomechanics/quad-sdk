@@ -34,7 +34,8 @@ stateTrajectory = data.stateTrajectory;
 
 % Plot the state
 [figArray] = plotState(stateGroundTruth,'-');
-[figArray] = plotState(stateTrajectory, ':', figArray);
+plotControl(data.controlGRFs,'-');
+% [figArray] = plotState(stateTrajectory, ':', figArray);
 % plotState(stateEstimate);
 
 % Compute and plot the toe forces - in progress

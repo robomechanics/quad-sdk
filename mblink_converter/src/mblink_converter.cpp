@@ -8,11 +8,12 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
   mblink_.start(argc,argv);
   mblink_.rxstart();
   mblink_.setRetry("_UPST_ADDRESS", 255);
-  mblink_.setRetry("UPST_LOOP_DELAY", 5);
+  mblink_.setRetry("UPST_LOOP_DELAY", 2);
 
   // Load rosparams from parameter server
-  std::string leg_control_topic, joint_encoder_topic, imu_topic, remote_heartbeat_topic;
+  std::string leg_control_topic, joint_encoder_topic, imu_topic, remote_heartbeat_topic, control_restart_flag_topic;
   quad_utils::loadROSParam(nh_,"topics/control/joint_command",leg_control_topic);
+  quad_utils::loadROSParam(nh_,"topics/control/restart_flag",control_restart_flag_topic);
   quad_utils::loadROSParam(nh_,"topics/heartbeat/remote",remote_heartbeat_topic);
   quad_utils::loadROSParam(nh_,"topics/joint_encoder",joint_encoder_topic);
   quad_utils::loadROSParam(nh_,"topics/imu",imu_topic);
@@ -23,12 +24,15 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
 
   // Setup pubs and subs
   leg_control_sub_ = nh_.subscribe(leg_control_topic,1,&MBLinkConverter::legControlCallback, this);
+  control_restart_flag_sub_ = nh_.subscribe(control_restart_flag_topic,1,&MBLinkConverter::controlRestartFlagCallback, this);
   remote_heartbeat_sub_ = nh_.subscribe(remote_heartbeat_topic,1,&MBLinkConverter::remoteHeartbeatCallback, this);
   // joint_encoder_pub_ = nh_.advertise<sensor_msgs::JointState>(joint_encoder_topic,1);
   // imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic,1);
 
   last_heartbeat_time_ = std::numeric_limits<double>::max();
   last_leg_command_time_ = std::numeric_limits<double>::max();
+
+  restart_flag_ = false;
   
 }
 
@@ -44,6 +48,11 @@ void MBLinkConverter::legControlCallback(
 
 void MBLinkConverter::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg) {
   last_heartbeat_time_ = msg->stamp.toSec();
+}
+
+void MBLinkConverter::controlRestartFlagCallback(const std_msgs::Bool::ConstPtr& msg) {
+  restart_flag_ = msg->data;
+  restart_flag_time_ = ros::Time::now();
 }
 
 bool MBLinkConverter::sendMBlink()
@@ -76,6 +85,7 @@ bool MBLinkConverter::sendMBlink()
       limbcmd[i].tau[j] = leg_command_heartbeat*leg_command.motor_commands.at(j).torque_ff;
       limbcmd[i].kp[j] = static_cast<short>(leg_command_heartbeat*leg_command.motor_commands.at(j).kp);
       limbcmd[i].kd[j] = leg_command_heartbeat*leg_command.motor_commands.at(j).kd;
+      limbcmd[i].restart_flag = restart_flag_;
     }
   }
   
@@ -147,6 +157,11 @@ void MBLinkConverter::spin()
 
     // Collect new messages on subscriber topics
     ros::spinOnce(); 
+
+    // Unset the restart flag after a timeout duration
+    if ((ros::Time::now() - restart_flag_time_).toSec() >= 0.1) {
+      restart_flag_ = false;
+    }
 
     // Send out the most recent one over mblink
     this->sendMBlink();

@@ -38,16 +38,16 @@ else
     stateEstimate.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, stateEstimateData, 'UniformOutput', 0));
     
     stateEstimate.position = cell2mat(cellfun(@(m) ...
-        [m.body.pose.Position.X, m.body.pose.Position.Y, m.body.pose.Position.Z], stateEstimateData, 'UniformOutput', 0));
+        [m.Body.Pose.Position.X, m.Body.Pose.Position.Y, m.Body.Pose.Position.Z], stateEstimateData, 'UniformOutput', 0));
     stateEstimate.velocity = cell2mat(cellfun(@(m) ...
-        [m.body.twist.Linear.X, m.body.twist.Linear.Y, m.body.twist.Linear.Z], stateEstimateData, 'UniformOutput', 0));
+        [m.Body.Twist.Linear.X, m.Body.Twist.Linear.Y, m.Body.Twist.Linear.Z], stateEstimateData, 'UniformOutput', 0));
     
     stateEstimate.orientationRPY = cell2mat(cellfun(@(m) ...
-        fliplr(quat2eul([m.body.pose.Orientation.W, m.body.pose.Orientation.X, m.body.pose.Orientation.Y, m.body.pose.Orientation.Z])), stateEstimateData, 'UniformOutput', 0));
+        fliplr(quat2eul([m.Body.Pose.Orientation.W, m.Body.Pose.Orientation.X, m.Body.Pose.Orientation.Y, m.Body.Pose.Orientation.Z])), stateEstimateData, 'UniformOutput', 0));
     stateEstimate.orientationQuat = cell2mat(cellfun(@(m) ...
-        [m.body.pose.Orientation.W, m.body.pose.Orientation.X, m.body.pose.Orientation.Y, m.body.pose.Orientation.Z], stateEstimateData, 'UniformOutput', 0));
+        [m.Body.Pose.Orientation.W, m.Body.Pose.Orientation.X, m.Body.Pose.Orientation.Y, m.Body.Pose.Orientation.Z], stateEstimateData, 'UniformOutput', 0));
     stateEstimate.angularVelocity = cell2mat(cellfun(@(m) ...
-        [m.body.twist.Angular.X, m.body.twist.Angular.Y, m.body.twist.Angular.Z], stateEstimateData, 'UniformOutput', 0));
+        [m.Body.Twist.Angular.X, m.Body.Twist.Angular.Y, m.Body.Twist.Angular.Z], stateEstimateData, 'UniformOutput', 0));
     
     stateEstimate.jointPosition = cell2mat(cellfun(@(m) m.Joints.Position.', stateEstimateData, 'UniformOutput', 0));
     stateEstimate.jointVelocity = cell2mat(cellfun(@(m) m.Joints.Velocity.', stateEstimateData, 'UniformOutput', 0));
@@ -64,16 +64,16 @@ else
     stateGroundTruth.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, stateGroundTruthData, 'UniformOutput', 0));
     
     stateGroundTruth.position = cell2mat(cellfun(@(m) ...
-        [m.body.pose.Position.X, m.body.pose.Position.Y, m.body.pose.Position.Z], stateGroundTruthData, 'UniformOutput', 0));
+        [m.Body.Pose.Position.X, m.Body.Pose.Position.Y, m.Body.Pose.Position.Z], stateGroundTruthData, 'UniformOutput', 0));
     stateGroundTruth.velocity = cell2mat(cellfun(@(m) ...
-        [m.body.twist.Linear.X, m.body.twist.Linear.Y, m.body.twist.Linear.Z], stateGroundTruthData, 'UniformOutput', 0));
+        [m.Body.Twist.Linear.X, m.Body.Twist.Linear.Y, m.Body.Twist.Linear.Z], stateGroundTruthData, 'UniformOutput', 0));
     
     stateGroundTruth.orientationRPY = cell2mat(cellfun(@(m) ...
-        fliplr(quat2eul([m.body.pose.Orientation.W, m.body.pose.Orientation.X, m.body.pose.Orientation.Y, m.body.pose.Orientation.Z])), stateGroundTruthData, 'UniformOutput', 0));
+        fliplr(quat2eul([m.Body.Pose.Orientation.W, m.Body.Pose.Orientation.X, m.Body.Pose.Orientation.Y, m.Body.Pose.Orientation.Z])), stateGroundTruthData, 'UniformOutput', 0));
     stateGroundTruth.orientationQuat = cell2mat(cellfun(@(m) ...
-        [m.body.pose.Orientation.W, m.body.pose.Orientation.X, m.body.pose.Orientation.Y, m.body.pose.Orientation.Z], stateGroundTruthData, 'UniformOutput', 0));
+        [m.Body.Pose.Orientation.W, m.Body.Pose.Orientation.X, m.Body.Pose.Orientation.Y, m.Body.Pose.Orientation.Z], stateGroundTruthData, 'UniformOutput', 0));
     stateGroundTruth.angularVelocity = cell2mat(cellfun(@(m) ...
-        [m.body.twist.Angular.X, m.body.twist.Angular.Y, m.body.twist.Angular.Z], stateGroundTruthData, 'UniformOutput', 0));
+        [m.Body.Twist.Angular.X, m.Body.Twist.Angular.Y, m.Body.Twist.Angular.Z], stateGroundTruthData, 'UniformOutput', 0));
     
     stateGroundTruth.jointPosition = cell2mat(cellfun(@(m) m.Joints.Position.', stateGroundTruthData, 'UniformOutput', 0));
     stateGroundTruth.jointVelocity = cell2mat(cellfun(@(m) m.Joints.Velocity.', stateGroundTruthData, 'UniformOutput', 0));
@@ -88,7 +88,7 @@ else
     end
 end
 
-% Read the ground truth data
+% Read the trajectory data
 stateTrajectoryData = readMessages(select(bag,'Topic','/state/trajectory'),'DataFormat','struct');
 stateTrajectory = struct;
 if isempty(stateTrajectoryData)
@@ -109,16 +109,16 @@ else
     stateTrajectory.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, stateTrajectoryData, 'UniformOutput', 0));
     
     stateTrajectory.position = cell2mat(cellfun(@(m) ...
-        [m.body.pose.Position.X, m.body.pose.Position.Y, m.body.pose.Position.Z], stateTrajectoryData, 'UniformOutput', 0));
+        [m.Body.Pose.Position.X, m.Body.Pose.Position.Y, m.Body.Pose.Position.Z], stateTrajectoryData, 'UniformOutput', 0));
     stateTrajectory.velocity = cell2mat(cellfun(@(m) ...
-        [m.body.twist.Linear.X, m.body.twist.Linear.Y, m.body.twist.Linear.Z], stateTrajectoryData, 'UniformOutput', 0));
+        [m.Body.Twist.Linear.X, m.Body.Twist.Linear.Y, m.Body.Twist.Linear.Z], stateTrajectoryData, 'UniformOutput', 0));
     
     stateTrajectory.orientationRPY = cell2mat(cellfun(@(m) ...
-        fliplr(quat2eul([m.body.pose.Orientation.W, m.body.pose.Orientation.X, m.body.pose.Orientation.Y, m.body.pose.Orientation.Z])), stateTrajectoryData, 'UniformOutput', 0));
+        fliplr(quat2eul([m.Body.Pose.Orientation.W, m.Body.Pose.Orientation.X, m.Body.Pose.Orientation.Y, m.Body.Pose.Orientation.Z])), stateTrajectoryData, 'UniformOutput', 0));
     stateTrajectory.orientationQuat = cell2mat(cellfun(@(m) ...
-        [m.body.pose.Orientation.W, m.body.pose.Orientation.X, m.body.pose.Orientation.Y, m.body.pose.Orientation.Z], stateTrajectoryData, 'UniformOutput', 0));
+        [m.Body.Pose.Orientation.W, m.Body.Pose.Orientation.X, m.Body.Pose.Orientation.Y, m.Body.Pose.Orientation.Z], stateTrajectoryData, 'UniformOutput', 0));
     stateTrajectory.angularVelocity = cell2mat(cellfun(@(m) ...
-        [m.body.twist.Angular.X, m.body.twist.Angular.Y, m.body.twist.Angular.Z], stateTrajectoryData, 'UniformOutput', 0));
+        [m.Body.Twist.Angular.X, m.Body.Twist.Angular.Y, m.Body.Twist.Angular.Z], stateTrajectoryData, 'UniformOutput', 0));
     
     stateTrajectory.jointPosition = cell2mat(cellfun(@(m) m.Joints.Position.', stateTrajectoryData, 'UniformOutput', 0));
     stateTrajectory.jointVelocity = cell2mat(cellfun(@(m) m.Joints.Velocity.', stateTrajectoryData, 'UniformOutput', 0));
@@ -135,18 +135,43 @@ else
     
 end
 
+% Read the trajectory data
+controlGRFsData = readMessages(select(bag,'Topic','/control/grfs'),'DataFormat','struct');
+controlGRFs = struct;
+if isempty(controlGRFsData)
+    warning('Warning, no data on grf control topic');
+    controlGRFs.time = [];
+    controlGRFs.vectors = [];
+    controlGRFs.points = [];
+    controlGRFs.contactStates = [];
+else
+    
+    controlGRFs.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, controlGRFsData, 'UniformOutput', 0));
+    num_feet = size(controlGRFsData{1}.Vectors, 2);
+    for i = 1:num_feet
+        controlGRFs.vectors{i} = cell2mat(cellfun(@(m) ...
+            [m.Vectors(i).X, m.Vectors(i).Y, m.Vectors(i).Z], controlGRFsData, 'UniformOutput', 0));
+        controlGRFs.points{i} = cell2mat(cellfun(@(m) ...
+            [m.Points(i).X, m.Points(i).Y, m.Points(i).Z], controlGRFsData, 'UniformOutput', 0));
+        controlGRFs.contactStates{i} = cell2mat(cellfun(@(m) ...
+            [m.ContactStates(i), m.ContactStates(i), m.ContactStates(i)], controlGRFsData, 'UniformOutput', 0));
+    end
+end
+
 % Localize time to the first message
 % startTime = min([stateGroundTruth.time(1), stateEstimate.time(1), stateTrajectory.time(1)]);
 startTime = stateGroundTruth.time(1);
 % stateEstimate.time = stateEstimate.time - startTime;
 stateGroundTruth.time = stateGroundTruth.time - startTime;
 stateTrajectory.time = stateTrajectory.time - startTime;
+controlGRFs.time = controlGRFs.time - startTime;
 
-% Pack data into a struct for namespace purposes
+% Pack data into a struct for namespace purPoses
 data = struct;
 data.stateEstimate = [];% stateEstimate;
 data.stateGroundTruth = stateGroundTruth;
 data.stateTrajectory = stateTrajectory;
+data.controlGRFs = controlGRFs;
 
 % If prompted, return the name of the filename
 if (nargout>1)

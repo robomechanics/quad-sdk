@@ -25,7 +25,9 @@ topics:
     trajectory: /control/trajectory
     joint_command: /control/joint_command
     mode: /control/mode
+    restart_flag: /control/restart_flag
     leg_override: /control/leg_override
+    single_joint_command: /control/single_joint_command
   cmd_vel: /cmd_vel
   heartbeat:
     remote: /heartbeat/remote

@@ -2,6 +2,7 @@
 #define MBLINK_CONVERTER_H
 
 #include <ros/ros.h>
+#include <std_msgs/Bool.h>
 #include <quad_msgs/LegCommandArray.h>
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
@@ -21,6 +22,7 @@ struct LimbCmd_t {
   Eigen::Vector3f tau;
   short kp[3];
   float kd[3];
+  bool restart_flag;
 };
 
 typedef std::unordered_map<std::string, Eigen::VectorXf> RxData_t;
@@ -57,6 +59,11 @@ private:
 	void remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg);
 
   /**
+	 * @brief Callback to handle control restart flag messages
+	 */
+  void controlRestartFlagCallback(const std_msgs::Bool::ConstPtr& msg);
+
+  /**
    * @brief Compress two floats into one
    * @param[in] in1 First float to be packed
    * @param[out] in2 Second float to be packed
@@ -80,6 +87,9 @@ private:
 
 	/// ROS subscriber for remote heartbeat
 	ros::Subscriber remote_heartbeat_sub_;
+
+  /// ROS subscriber for control restart flag
+  ros::Subscriber control_restart_flag_sub_;
 
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
@@ -110,6 +120,12 @@ private:
 
   /// Leg command timeout threshold in seconds
 	double leg_command_timeout_;
+
+  /// Restart flag
+  bool restart_flag_;
+
+  // Time of last restart flag message
+  ros::Time restart_flag_time_;
 
   /// Pointer to MBLink object (constructor wants argc and argv, so instantiated in main)
   MBLink mblink_; 
