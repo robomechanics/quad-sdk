@@ -2,7 +2,7 @@
   
     <include file="$(find quad_utils)/launch/load_params.launch" />
 
-    <arg name="global_planner" default="fgmp"/>
+    <arg name="global_planner" default="twist"/>
     <arg name="local_planner" default="full"/>
     <arg name="mpc_type" default="nonlinear"/>
     <arg name="logging" default="false"/>
