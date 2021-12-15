@@ -341,6 +341,9 @@ class LegControllerInterface {
     /// Mainboard data
     MBData_t mbdata_;
 
+    /// Last mainboard time
+    double last_mainboard_time_;
+
     /// Vector of joint names
     std::vector<std::string> joint_names_ = {"8","0","1","9","2","3","10","4","5","11","6","7"};
 

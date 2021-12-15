@@ -445,10 +445,18 @@ bool LegControllerInterface::computeLegCommandArray() {
 bool LegControllerInterface::updateState() {
 
   // Get the newest data from the mainboard (BLOCKING)
+  ros::Time t_mb0 = ros::Time::now();
   mblink_converter_->getMBlink(mbdata_);
 
   // Record the timestamp of this data
   ros::Time state_timestamp = ros::Time::now();
+
+  double t_diff_mb = mbdata_["y"][20] - last_mainboard_time_;
+  double t_diff_ros = (state_timestamp - last_joint_state_msg_->header.stamp).toSec();
+  double t_diff_mb_get = (state_timestamp - t_mb0).toSec();
+  ROS_INFO("t_diff_mb = %8.5fs, t_diff_ros = %8.5fs, t_diff_mb_get = %8.5fs",
+    t_diff_mb, t_diff_ros, t_diff_mb_get);
+  last_mainboard_time_ = mbdata_["y"][20];
 
   // Declare the joint state msg and apply the timestamp
   last_joint_state_msg_->header.stamp = state_timestamp;
