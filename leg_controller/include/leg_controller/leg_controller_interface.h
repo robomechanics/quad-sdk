@@ -63,11 +63,17 @@ class LegControllerInterface {
      */
     void localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg);
     
+    // /**
+    //  * @brief Callback function to handle current robot state
+    //  * @param[in] msg input message contining current robot state
+    //  */
+    // void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
     /**
-     * @brief Callback function to handle current robot state
-     * @param[in] msg input message contining current robot state
+     * @brief Callback function to handle current robot pose
+     * @param[in] msg input message contining current robot pose
      */
-    void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
+    void mocapCallback(const geometry_msgs::PoseStamped::ConstPtr& msg);
+
     
     /**
      * @brief Callback function to handle reference trajectory state
@@ -99,6 +105,16 @@ class LegControllerInterface {
     void checkMessages();
 
     /**
+     * @brief Update the most recent state message with the given data
+     */
+    bool updateState();
+
+    /**
+     * @brief Publish the most recent state message with the given data
+     */
+    void publishState();
+
+    /**
      * @brief Function to publish heartbeat message
      */
     void publishHeartbeat();
@@ -124,11 +140,14 @@ class LegControllerInterface {
     /// ROS subscriber for body plan
     ros::Subscriber body_plan_sub_;
 
-      /// ROS subscriber for local plan
+    /// ROS subscriber for local plan
     ros::Subscriber local_plan_sub_;
 
+    /// ROS subscriber for local plan
+    ros::Subscriber mocap_sub_;
+
     /// ROS subscriber for state estimate
-    ros::Subscriber robot_state_sub_;
+    ros::Publisher robot_state_pub_;
 
     /// ROS subscriber for trajectory
     ros::Subscriber trajectory_state_sub_;
@@ -157,8 +176,12 @@ class LegControllerInterface {
     /// Controller type
     std::string controller_id_;
 
-    /// Update rate for sending and receiving data;
+    /// Update rate for computing new controls;
     double update_rate_;
+
+    /// Update rate for publishing data to ROS;
+    double publish_rate_;
+
 
     /// Timestep of local plan
     double dt_;
@@ -200,7 +223,7 @@ class LegControllerInterface {
     quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
     /// Most recent state estimate
-    quad_msgs::RobotState::ConstPtr last_robot_state_msg_;
+    quad_msgs::RobotState::Ptr last_robot_state_msg_;
 
     /// First state estimate
     quad_msgs::RobotState::ConstPtr first_robot_state_msg_;
@@ -290,6 +313,44 @@ class LegControllerInterface {
 
     /// Mblink converter object
     std::shared_ptr<MBLinkConverter> mblink_converter_;
+
+    /// Last mocap data
+    geometry_msgs::PoseStamped::ConstPtr last_mocap_msg_;
+
+    /// Most recent IMU data
+    sensor_msgs::Imu::Ptr last_imu_msg_;
+
+    /// Most recent joint data
+    sensor_msgs::JointState::Ptr last_joint_state_msg_;
+
+    /// Best estimate of velocity from mocap diff
+    Eigen::Vector3d mocap_vel_estimate_;
+
+    /// Best estimate of imu velocity
+    Eigen::Vector3d imu_vel_estimate_;
+
+    /// Velocity filter time constant
+    double filter_time_constant_;
+
+    /// Maximum time elapsed between mocap messages before committing to new message
+    double mocap_dropout_threshold_;
+
+    /// Update rate of the motion capture system
+    const double mocap_rate_ = 100.0;
+
+    /// Mainboard data
+    MBData_t mbdata_;
+
+    /// Vector of joint names
+    std::vector<std::string> joint_names_ = {"8","0","1","9","2","3","10","4","5","11","6","7"};
+
+    /// Vector denoting joint indices
+    std::vector<int> joint_indices_ = {8,0,1,9,2,3,10,4,5,11,6,7};
+
+    /// Vector of kt values for each joint
+    std::vector<double> kt_vec_ = {0.546,0.546,1.092,0.546,0.546,1.092,
+      0.546,0.546,1.092,0.546,0.546,1.092};
+
 };
 
 

@@ -79,9 +79,6 @@ class LegControllerTemplate {
       return override_state_machine_;
     }
 
-    /// Mainboard data
-    MBData_t mbdata_;
-
   protected:
 
     /// Number of feet

@@ -26,6 +26,7 @@ bool GrfPidController::computeLegCommandArray(
   for (int i = 0; i < num_feet_; i++) {
     x_mean += robot_state_msg->feet.feet[i].position.x/(num_feet_);
     y_mean += robot_state_msg->feet.feet[i].position.y/(num_feet_);
+    
   }
   pos_des_.x() = x_mean;
   pos_des_.y() = y_mean;

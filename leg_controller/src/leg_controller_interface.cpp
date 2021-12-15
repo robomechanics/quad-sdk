@@ -8,7 +8,7 @@ LegControllerInterface::LegControllerInterface(ros::NodeHandle nh, int argc, cha
     // Load rosparams from parameter server
   std::string grf_topic, trajectory_state_topic, robot_state_topic, local_plan_topic,
     leg_command_array_topic, control_mode_topic, leg_override_topic,
-    remote_heartbeat_topic, robot_heartbeat_topic, single_joint_cmd_topic;
+    remote_heartbeat_topic, robot_heartbeat_topic, single_joint_cmd_topic, mocap_topic;
   quad_utils::loadROSParam(nh_,"topics/local_plan",local_plan_topic);
   quad_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
   quad_utils::loadROSParam(nh_,"topics/state/trajectory",trajectory_state_topic);
@@ -19,9 +19,11 @@ LegControllerInterface::LegControllerInterface(ros::NodeHandle nh, int argc, cha
   quad_utils::loadROSParam(nh_,"topics/control/leg_override",leg_override_topic);
   quad_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
   quad_utils::loadROSParam(nh_,"topics/control/single_joint_command",single_joint_cmd_topic);
+  quad_utils::loadROSParam(nh_,"topics/mocap",mocap_topic);
 
   quad_utils::loadROSParam(nh_,"leg_controller/controller", controller_id_);
   quad_utils::loadROSParam(nh_,"leg_controller/update_rate", update_rate_);
+  quad_utils::loadROSParam(nh_,"leg_controller/publish_rate", publish_rate_);
   quad_utils::loadROSParam(nh_,"leg_controller/input_timeout", input_timeout_);
   quad_utils::loadROSParam(nh_,"leg_controller/state_timeout", state_timeout_);
   quad_utils::loadROSParam(nh_,"leg_controller/heartbeat_timeout", heartbeat_timeout_);
@@ -46,7 +48,6 @@ LegControllerInterface::LegControllerInterface(ros::NodeHandle nh, int argc, cha
 
   // Setup pubs and subs
   local_plan_sub_ = nh_.subscribe(local_plan_topic,1,&LegControllerInterface::localPlanCallback, this, ros::TransportHints().tcpNoDelay(true));
-  robot_state_sub_= nh_.subscribe(robot_state_topic,1,&LegControllerInterface::robotStateCallback, this, ros::TransportHints().tcpNoDelay(true));
   trajectory_state_sub_ = nh_.subscribe(
     trajectory_state_topic,1,&LegControllerInterface::trajectoryStateCallback, this);
   control_mode_sub_ = nh_.subscribe(
@@ -57,8 +58,10 @@ LegControllerInterface::LegControllerInterface(ros::NodeHandle nh, int argc, cha
     leg_override_topic,1,&LegControllerInterface::legOverrideCallback, this);
   remote_heartbeat_sub_ = nh_.subscribe(
     remote_heartbeat_topic,1,&LegControllerInterface::remoteHeartbeatCallback, this);
+  mocap_sub_ = nh_.subscribe(mocap_topic,1000,&LegControllerInterface::mocapCallback, this, ros::TransportHints().tcpNoDelay(true));
   grf_pub_ = nh_.advertise<quad_msgs::GRFArray>(grf_topic,1);
   leg_command_array_pub_ = nh_.advertise<quad_msgs::LegCommandArray>(leg_command_array_topic,1);
+  robot_state_pub_= nh_.advertise<quad_msgs::RobotState>(robot_state_topic,1);
   robot_heartbeat_pub_ = nh_.advertise<std_msgs::Header>(robot_heartbeat_topic,1);
 
   // Start sitting
@@ -150,14 +153,46 @@ void LegControllerInterface::localPlanCallback(const quad_msgs::RobotPlan::Const
   leg_controller_->updateLocalPlanMsg(last_local_plan_msg_, t_now);
 }
 
-void LegControllerInterface::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
-  
-  if (last_robot_state_msg_ != NULL) {
-    first_robot_state_msg_ = msg;
+void LegControllerInterface::mocapCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
+
+  if (last_mocap_msg_ != NULL)
+  {
+    // Collect change in position for velocity update
+    Eigen::Vector3d pos_new, pos_old;
+    quad_utils::pointMsgToEigen(msg->pose.position, pos_new);
+    quad_utils::pointMsgToEigen(last_mocap_msg_->pose.position, pos_old);
+
+    // Record time diff between messages
+    double t_diff_mocap_msg = (msg->header.stamp - last_mocap_msg_->header.stamp).toSec();
+
+    // Use new measurement
+    if (abs(t_diff_mocap_msg - 1.0/mocap_rate_) < mocap_dropout_threshold_) {
+      
+      // Declare vectors for vel measurement and estimate
+      Eigen::Vector3d vel_new_measured, vel_new_est;
+      vel_new_measured = (pos_new - pos_old)*mocap_rate_;
+
+      // Filtered velocity estimate assuming motion capture frame rate is constant at mocap_rate_
+      // in order to avoid variable network and ROS latency that appears in the message time stamp
+      mocap_vel_estimate_ = (1-1/mocap_rate_/filter_time_constant_)*mocap_vel_estimate_ + (1/mocap_rate_/filter_time_constant_)*vel_new_measured;
+    } else {
+      ROS_WARN("Mocap time diff exceeds max dropout threshold, hold the last value");
+      // mocap_vel_estimate_ = (pos_new - pos_old)/t_diff_mocap_msg;
+    }
   }
 
-  last_robot_state_msg_ = msg;
+  // Update our cached mocap position
+  last_mocap_msg_ = msg;
+  
 }
+// void LegControllerInterface::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
+  
+//   if (last_robot_state_msg_ != NULL) {
+//     first_robot_state_msg_ = msg;
+//   }
+
+//   last_robot_state_msg_ = msg;
+// }
 
 void LegControllerInterface::trajectoryStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
   last_trajectory_state_msg_ = msg;
@@ -407,6 +442,143 @@ bool LegControllerInterface::computeLegCommandArray() {
   return valid_cmd;
 }
 
+bool LegControllerInterface::updateState() {
+
+  // Get the newest data from the mainboard (BLOCKING)
+  mblink_converter_->getMBlink(mbdata_);
+
+  // Record the timestamp of this data
+  ros::Time state_timestamp = ros::Time::now();
+
+  // Declare the joint state msg and apply the timestamp
+  last_joint_state_msg_->header.stamp = state_timestamp;
+
+  // Add the data corresponding to each joint
+  for (int i = 0; i < joint_names_.size(); i++)
+  {
+    last_joint_state_msg_->name.push_back(joint_names_[i]);
+    last_joint_state_msg_->position.push_back(mbdata_["joint_position"][joint_indices_[i]]);
+    last_joint_state_msg_->velocity.push_back(mbdata_["joint_velocity"][joint_indices_[i]]);
+
+    // Convert from current to torque
+    last_joint_state_msg_->effort.push_back(kt_vec_[i]*mbdata_["joint_current"][joint_indices_[i]]);
+  }
+
+  // Declare the imu message
+  last_imu_msg_->header.stamp = state_timestamp;
+
+  // Transform from rpy to quaternion
+  geometry_msgs::Quaternion orientation_msg;
+  tf2::Quaternion quat_tf;
+  quat_tf.setRPY(mbdata_["imu_euler"][0],mbdata_["imu_euler"][1],mbdata_["imu_euler"][2]);
+  tf2::convert(quat_tf, orientation_msg);
+
+  // Load the data into the imu message
+  last_imu_msg_->orientation = orientation_msg;
+  last_imu_msg_->angular_velocity.x = mbdata_["imu_angular_velocity"][0];
+  last_imu_msg_->angular_velocity.y = mbdata_["imu_angular_velocity"][1];
+  last_imu_msg_->angular_velocity.z = mbdata_["imu_angular_velocity"][2];
+  last_imu_msg_->linear_acceleration.x = mbdata_["imu_linear_acceleration"][0];
+  last_imu_msg_->linear_acceleration.y = mbdata_["imu_linear_acceleration"][1];
+  last_imu_msg_->linear_acceleration.z = mbdata_["imu_linear_acceleration"][2];
+
+  // IMU uses a different coordinates
+  Eigen::Vector3d acc;
+  acc << mbdata_["imu_linear_acceleration"][1], mbdata_["imu_linear_acceleration"][0], mbdata_["imu_linear_acceleration"][2];
+
+  // Rotate body frame to world frame
+  Eigen::Matrix3d rot;
+  tf2::Quaternion q(last_mocap_msg_->pose.orientation.x, last_mocap_msg_->pose.orientation.y, last_mocap_msg_->pose.orientation.z, last_mocap_msg_->pose.orientation.w);
+  q.normalize();
+  tf2::Matrix3x3 m(q);
+  Eigen::Vector3d rpy;
+  m.getRPY(rpy[0], rpy[1], rpy[2]);
+  quadKD_->getRotationMatrix(rpy, rot);
+  acc = rot*acc;
+
+  // Ignore gravity
+  acc[2] += 9.81;
+
+  // Use new measurement
+  imu_vel_estimate_ = (imu_vel_estimate_+acc/update_rate_)*(1-1/update_rate_/filter_time_constant_);
+
+
+  // Begin populating state message
+  bool fully_populated = true;
+
+  if (last_imu_msg_ != NULL)
+  {
+    // last_robot_state_msg_->body.pose.pose.orientation = last_imu_msg_->orientation;
+    last_robot_state_msg_->body.twist.angular = last_imu_msg_->angular_velocity;
+    // last_robot_state_msg_->body.twist.linear = last_vel_msg_->twist.linear;
+  } else {
+    fully_populated = false;
+    ROS_WARN_THROTTLE(1, "No imu data from mblink");
+  }
+  if (last_mocap_msg_ != NULL)
+  {
+    last_robot_state_msg_->body.pose.orientation = last_mocap_msg_->pose.orientation;
+    last_robot_state_msg_->body.pose.position = last_mocap_msg_->pose.position;
+  } else {
+    fully_populated = false;
+    ROS_WARN_THROTTLE(1, "No body pose (mocap) recieved");
+
+    last_robot_state_msg_->body.pose.orientation.x = 0;
+    last_robot_state_msg_->body.pose.orientation.y = 0;
+    last_robot_state_msg_->body.pose.orientation.z = 0;
+    last_robot_state_msg_->body.pose.orientation.w = 1;
+    last_robot_state_msg_->body.pose.position.x = 0;
+    last_robot_state_msg_->body.pose.position.y = 0;
+    last_robot_state_msg_->body.pose.position.z = 0;
+  }
+  if (last_mocap_msg_ != NULL && last_imu_msg_ != NULL)
+  {
+    // Complementary filter
+    quad_utils::Eigen3ToVector3Msg(mocap_vel_estimate_ + imu_vel_estimate_, last_robot_state_msg_->body.twist.linear);
+  }
+  else
+  {
+    fully_populated = false;
+    ROS_WARN_THROTTLE(1, "No mocap or imu recieved");
+
+    last_robot_state_msg_->body.twist.linear.x = 0;
+    last_robot_state_msg_->body.twist.linear.y = 0;
+    last_robot_state_msg_->body.twist.linear.z = 0;
+  }
+  if (last_joint_state_msg_ != NULL)
+  {
+
+    last_robot_state_msg_->joints.name.resize(joint_indices_.size());
+    last_robot_state_msg_->joints.position.resize(joint_indices_.size());
+    last_robot_state_msg_->joints.velocity.resize(joint_indices_.size());
+    last_robot_state_msg_->joints.effort.resize(joint_indices_.size());
+
+    for (size_t i = 0; i < joint_indices_.size(); i++)
+    {
+      last_robot_state_msg_->joints.name.at(i) = last_joint_state_msg_->name.at(joint_indices_.at(i));
+      last_robot_state_msg_->joints.position.at(i) = last_joint_state_msg_->position.at(joint_indices_.at(i));
+      last_robot_state_msg_->joints.velocity.at(i) = last_joint_state_msg_->velocity.at(joint_indices_.at(i));
+      last_robot_state_msg_->joints.effort.at(i) = last_joint_state_msg_->effort.at(joint_indices_.at(i));
+    }
+
+    if (last_imu_msg_ != NULL)
+    {
+      quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_->body,last_robot_state_msg_->joints, last_robot_state_msg_->feet);
+    }
+  } else {
+    fully_populated = false;
+    ROS_WARN_THROTTLE(1, "No joints or feet in /state/ground_truth");
+  }
+
+  quad_utils::updateStateHeaders(*last_robot_state_msg_, state_timestamp, "map", 0);
+  return fully_populated;
+  
+}
+
+void LegControllerInterface::publishState() {
+  robot_state_pub_.publish(last_robot_state_msg_);
+}
+
 void LegControllerInterface::publishHeartbeat() {
 
   // Publish hearbeat
@@ -426,15 +598,14 @@ void LegControllerInterface::publishLegCommandArray() {
 
 void LegControllerInterface::spin() {
   ros::Rate r(update_rate_);
-  ros::Time t_now = ros::Time::now();
+  ros::Time t_pub = ros::Time::now();
   while (ros::ok()) {
 
     // Collect new messages on subscriber topics and publish heartbeat
     ros::spinOnce();
-    publishHeartbeat();
 
-    // Get new mainboard data and pass it to the controller
-    mblink_converter_->getMBlink(leg_controller_->mbdata_);
+    // Get new mainboard data and construct the new state message
+    updateState();
 
     // Compute the leg command and publish if valid
     bool valid_cmd = computeLegCommandArray();
@@ -444,14 +615,16 @@ void LegControllerInterface::spin() {
 
       // Send command to the robot
       // Todo: support sending to gazebo
-      mblink_converter_->sendMBlink(leg_command_array_msg_);
-
-      // If publishing period had elapsed, publish the leg command for logging
-      if ((ros::Time::now() - t_now).toSec() >= 0.01) {
-        publishLegCommandArray();
-        t_now = ros::Time::now();
-      }
+      // mblink_converter_->sendMBlink(leg_command_array_msg_);
     }
+
+    // If publishing period had elapsed, publish the leg command for logging
+    // if ((ros::Time::now() - t_pub).toSec() >= publish_rate_) {
+      publishLegCommandArray();
+      publishState();
+      publishHeartbeat();
+      t_pub = ros::Time::now();
+    // }
 
     // Enforce update rate
     r.sleep();

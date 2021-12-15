@@ -1,6 +1,7 @@
 leg_controller:
   controller: inverse_dynamics
-  update_rate: 200
+  update_rate: 500
+  publish_rate_: 500
   sit_kp: [10, 10, 10]
   sit_kd: [1, 1, 1]
   stand_kp: [35, 35, 35]

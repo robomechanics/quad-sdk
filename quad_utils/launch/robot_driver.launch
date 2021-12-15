@@ -30,8 +30,8 @@
     </group>
 
     <!-- Launch the mblink converter unless using a proxy-->
-    <group if="$(arg mblink)">
+    <!-- <group if="$(arg mblink)">
         <node name="mblink_converter" pkg="mblink_converter" type="mblink_converter_node" output="screen"/>
-    </group>
+    </group> -->
 
 </launch>
