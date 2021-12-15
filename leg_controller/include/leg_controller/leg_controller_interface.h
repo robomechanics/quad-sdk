@@ -7,7 +7,6 @@
 #include <quad_utils/ros_utils.h>
 #include <quad_utils/math_utils.h>
 #include <quad_utils/function_timer.h>
-#include "quad_utils/matplotlibcpp.h"
 #include <quad_msgs/GRFArray.h>
 
 #include <std_msgs/UInt8.h>
@@ -170,6 +169,8 @@ class LegControllerInterface {
     /// ROS publisher for desired GRF
     ros::Publisher grf_pub_;
 
+    ros::Publisher imu_pub_;
+
     /// Nodehandle to pub to and sub from
     ros::NodeHandle nh_;
 
@@ -223,7 +224,7 @@ class LegControllerInterface {
     quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
     /// Most recent state estimate
-    quad_msgs::RobotState::Ptr last_robot_state_msg_;
+    quad_msgs::RobotState last_robot_state_msg_;
 
     /// First state estimate
     quad_msgs::RobotState::ConstPtr first_robot_state_msg_;
@@ -318,10 +319,10 @@ class LegControllerInterface {
     geometry_msgs::PoseStamped::ConstPtr last_mocap_msg_;
 
     /// Most recent IMU data
-    sensor_msgs::Imu::Ptr last_imu_msg_;
+    sensor_msgs::Imu last_imu_msg_;
 
     /// Most recent joint data
-    sensor_msgs::JointState::Ptr last_joint_state_msg_;
+    sensor_msgs::JointState last_joint_state_msg_;
 
     /// Best estimate of velocity from mocap diff
     Eigen::Vector3d mocap_vel_estimate_;
@@ -336,13 +337,16 @@ class LegControllerInterface {
     double mocap_dropout_threshold_;
 
     /// Update rate of the motion capture system
-    const double mocap_rate_ = 100.0;
+    double mocap_rate_;
 
     /// Mainboard data
     MBData_t mbdata_;
 
     /// Last mainboard time
     double last_mainboard_time_;
+
+    /// Last mocap time
+    ros::Time last_mocap_time_;
 
     /// Vector of joint names
     std::vector<std::string> joint_names_ = {"8","0","1","9","2","3","10","4","5","11","6","7"};

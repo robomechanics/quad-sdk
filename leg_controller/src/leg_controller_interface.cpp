@@ -1,7 +1,5 @@
 #include "leg_controller/leg_controller_interface.h"
 
-namespace plt = matplotlibcpp;
-
 LegControllerInterface::LegControllerInterface(ros::NodeHandle nh, int argc, char** argv) {
 	nh_ = nh;
 
@@ -23,6 +21,10 @@ LegControllerInterface::LegControllerInterface(ros::NodeHandle nh, int argc, cha
 
   quad_utils::loadROSParam(nh_,"leg_controller/controller", controller_id_);
   quad_utils::loadROSParam(nh_,"leg_controller/update_rate", update_rate_);
+  quad_utils::loadROSParam(nh_,"leg_controller/publish_rate", publish_rate_);
+  quad_utils::loadROSParam(nh_,"leg_controller/mocap_rate", mocap_rate_);
+  quad_utils::loadROSParam(nh_,"leg_controller/mocap_dropout_threshold", mocap_dropout_threshold_);
+  quad_utils::loadROSParam(nh_,"leg_controller/filter_time_constant", filter_time_constant_);
   quad_utils::loadROSParam(nh_,"leg_controller/publish_rate", publish_rate_);
   quad_utils::loadROSParam(nh_,"leg_controller/input_timeout", input_timeout_);
   quad_utils::loadROSParam(nh_,"leg_controller/state_timeout", state_timeout_);
@@ -63,6 +65,7 @@ LegControllerInterface::LegControllerInterface(ros::NodeHandle nh, int argc, cha
   leg_command_array_pub_ = nh_.advertise<quad_msgs::LegCommandArray>(leg_command_array_topic,1);
   robot_state_pub_= nh_.advertise<quad_msgs::RobotState>(robot_state_topic,1);
   robot_heartbeat_pub_ = nh_.advertise<std_msgs::Header>(robot_heartbeat_topic,1);
+  imu_pub_ = nh_.advertise<sensor_msgs::Imu>("/state/imu",1);
 
   // Start sitting
   control_mode_ = SIT;
@@ -110,6 +113,14 @@ LegControllerInterface::LegControllerInterface(ros::NodeHandle nh, int argc, cha
   quad_utils::loadROSParam(nh_, "/local_footstep_planner/period", gait_period);
   trotting_duration_ = gait_period * 2 * update_rate_;
   trotting_count_ = trotting_duration_++;
+
+  // Initialize timing
+  last_mainboard_time_ = 0;
+  last_robot_state_msg_.header.stamp = ros::Time::now();
+
+  // Assume zero initial velocity
+  mocap_vel_estimate_.setZero();
+  imu_vel_estimate_.setZero();
 }
 
 void LegControllerInterface::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
@@ -164,6 +175,12 @@ void LegControllerInterface::mocapCallback(const geometry_msgs::PoseStamped::Con
 
     // Record time diff between messages
     double t_diff_mocap_msg = (msg->header.stamp - last_mocap_msg_->header.stamp).toSec();
+    // std::cout << "t_diff_mocap_msg = " << t_diff_mocap_msg << std::endl;
+    ros::Time t_now = ros::Time::now();
+    // std::cout << "t_diff_ros = " << (t_now - last_mocap_time_).toSec() << std::endl;
+    last_mocap_time_ = t_now;
+    double t_mocap_ros_latency = (ros::Time::now() - msg->header.stamp).toSec();
+    // std::cout << "t_mocap_ros_latency = " << t_mocap_ros_latency << std::endl;
 
     // Use new measurement
     if (abs(t_diff_mocap_msg - 1.0/mocap_rate_) < mocap_dropout_threshold_) {
@@ -176,7 +193,7 @@ void LegControllerInterface::mocapCallback(const geometry_msgs::PoseStamped::Con
       // in order to avoid variable network and ROS latency that appears in the message time stamp
       mocap_vel_estimate_ = (1-1/mocap_rate_/filter_time_constant_)*mocap_vel_estimate_ + (1/mocap_rate_/filter_time_constant_)*vel_new_measured;
     } else {
-      ROS_WARN("Mocap time diff exceeds max dropout threshold, hold the last value");
+      ROS_WARN_THROTTLE(0.1,"Mocap time diff exceeds max dropout threshold, hold the last value");
       // mocap_vel_estimate_ = (pos_new - pos_old)/t_diff_mocap_msg;
     }
   }
@@ -238,20 +255,21 @@ void LegControllerInterface::checkMessages() {
     ROS_WARN_THROTTLE(1,"Remote heartbeat lost or late to ID node, entering safety mode");
   }
 
-  // Check the state message latency
-  if (abs(ros::Time::now().toSec() - last_state_time_) >= state_timeout_ && 
-    last_state_time_ != std::numeric_limits<double>::max())
-  {
-    control_mode_ = SAFETY;
-    transition_timestamp_ = ros::Time::now();
-    ROS_WARN_THROTTLE(1,"State messages lost in ID node, entering safety mode");
-  }
+  // // Check the state message latency
+  // if (abs(ros::Time::now().toSec() - last_state_time_) >= state_timeout_ && 
+  //   last_state_time_ != std::numeric_limits<double>::max())
+  // {
+  //   control_mode_ = SAFETY;
+  //   transition_timestamp_ = ros::Time::now();
+  //   ROS_WARN_THROTTLE(1,"State messages lost in ID node, entering safety mode");
+  // }
 
 }
 
 void LegControllerInterface::executeCustomController() {
 
-  if (leg_controller_->computeLegCommandArray(last_robot_state_msg_,
+  quad_msgs::RobotState::ConstPtr last_robot_state_msg_ptr(new quad_msgs::RobotState(last_robot_state_msg_));
+  if (leg_controller_->computeLegCommandArray(last_robot_state_msg_ptr,
       leg_command_array_msg_, grf_array_msg_) == false || trotting_count_ >= trotting_duration_) {
 
     for (int i = 0; i < num_feet_; ++i) {
@@ -278,24 +296,20 @@ bool LegControllerInterface::computeLegCommandArray() {
   // Check if state machine should be skipped
   bool valid_cmd = true;
   if (leg_controller_->overrideStateMachine()) {
-      valid_cmd = leg_controller_->computeLegCommandArray(last_robot_state_msg_,
-        leg_command_array_msg_, grf_array_msg_);
-      return valid_cmd;
-  }
+    quad_msgs::RobotState::ConstPtr last_robot_state_msg_ptr(new quad_msgs::RobotState(last_robot_state_msg_));
 
-  // If we haven't received a state message yet, do nothing
-  if (last_robot_state_msg_ == NULL)
-  {
-    return false;
-  }
+    valid_cmd = leg_controller_->computeLegCommandArray(last_robot_state_msg_ptr,
+      leg_command_array_msg_, grf_array_msg_);
+    return valid_cmd;
+}
 
   // Check incoming messages to determine if we should enter safety mode
   checkMessages();
 
   // Define vectors for joint positions and velocities
   Eigen::VectorXd joint_positions(3*num_feet_), joint_velocities(3*num_feet_), body_state(12);
-  quad_utils::vectorToEigen(last_robot_state_msg_->joints.position, joint_positions);
-  quad_utils::vectorToEigen(last_robot_state_msg_->joints.velocity, joint_velocities);
+  quad_utils::vectorToEigen(last_robot_state_msg_.joints.position, joint_positions);
+  quad_utils::vectorToEigen(last_robot_state_msg_.joints.velocity, joint_velocities);
 
   // std::cout << "joint_positions\n" << joint_positions << std::endl;
 
@@ -448,32 +462,38 @@ bool LegControllerInterface::updateState() {
   ros::Time t_mb0 = ros::Time::now();
   mblink_converter_->getMBlink(mbdata_);
 
+  if (mbdata_.empty()) {
+    ROS_WARN_THROTTLE(1,"No data recieved from mblink");
+    return false;
+  } else {
+  }
+
   // Record the timestamp of this data
   ros::Time state_timestamp = ros::Time::now();
 
   double t_diff_mb = mbdata_["y"][20] - last_mainboard_time_;
-  double t_diff_ros = (state_timestamp - last_joint_state_msg_->header.stamp).toSec();
+  double t_diff_ros = (state_timestamp - last_robot_state_msg_.header.stamp).toSec();
   double t_diff_mb_get = (state_timestamp - t_mb0).toSec();
-  ROS_INFO("t_diff_mb = %8.5fs, t_diff_ros = %8.5fs, t_diff_mb_get = %8.5fs",
+  ROS_INFO_THROTTLE(0.1,"t_diff_mb = %8.5fs, t_diff_ros = %8.5fs, t_diff_mb_get = %8.5fs",
     t_diff_mb, t_diff_ros, t_diff_mb_get);
   last_mainboard_time_ = mbdata_["y"][20];
 
   // Declare the joint state msg and apply the timestamp
-  last_joint_state_msg_->header.stamp = state_timestamp;
+  last_joint_state_msg_.header.stamp = state_timestamp;
 
   // Add the data corresponding to each joint
   for (int i = 0; i < joint_names_.size(); i++)
   {
-    last_joint_state_msg_->name.push_back(joint_names_[i]);
-    last_joint_state_msg_->position.push_back(mbdata_["joint_position"][joint_indices_[i]]);
-    last_joint_state_msg_->velocity.push_back(mbdata_["joint_velocity"][joint_indices_[i]]);
+    last_joint_state_msg_.name.push_back(joint_names_[i]);
+    last_joint_state_msg_.position.push_back(mbdata_["joint_position"][joint_indices_[i]]);
+    last_joint_state_msg_.velocity.push_back(mbdata_["joint_velocity"][joint_indices_[i]]);
 
     // Convert from current to torque
-    last_joint_state_msg_->effort.push_back(kt_vec_[i]*mbdata_["joint_current"][joint_indices_[i]]);
+    last_joint_state_msg_.effort.push_back(kt_vec_[i]*mbdata_["joint_current"][joint_indices_[i]]);
   }
 
   // Declare the imu message
-  last_imu_msg_->header.stamp = state_timestamp;
+  last_imu_msg_.header.stamp = state_timestamp;
 
   // Transform from rpy to quaternion
   geometry_msgs::Quaternion orientation_msg;
@@ -482,108 +502,101 @@ bool LegControllerInterface::updateState() {
   tf2::convert(quat_tf, orientation_msg);
 
   // Load the data into the imu message
-  last_imu_msg_->orientation = orientation_msg;
-  last_imu_msg_->angular_velocity.x = mbdata_["imu_angular_velocity"][0];
-  last_imu_msg_->angular_velocity.y = mbdata_["imu_angular_velocity"][1];
-  last_imu_msg_->angular_velocity.z = mbdata_["imu_angular_velocity"][2];
-  last_imu_msg_->linear_acceleration.x = mbdata_["imu_linear_acceleration"][0];
-  last_imu_msg_->linear_acceleration.y = mbdata_["imu_linear_acceleration"][1];
-  last_imu_msg_->linear_acceleration.z = mbdata_["imu_linear_acceleration"][2];
+  last_imu_msg_.orientation = orientation_msg;
+  last_imu_msg_.angular_velocity.x = mbdata_["imu_angular_velocity"][0];
+  last_imu_msg_.angular_velocity.y = mbdata_["imu_angular_velocity"][1];
+  last_imu_msg_.angular_velocity.z = mbdata_["imu_angular_velocity"][2];
+  last_imu_msg_.linear_acceleration.x = mbdata_["imu_linear_acceleration"][0];
+  last_imu_msg_.linear_acceleration.y = mbdata_["imu_linear_acceleration"][1];
+  last_imu_msg_.linear_acceleration.z = mbdata_["imu_linear_acceleration"][2];
 
   // IMU uses a different coordinates
   Eigen::Vector3d acc;
   acc << mbdata_["imu_linear_acceleration"][1], mbdata_["imu_linear_acceleration"][0], mbdata_["imu_linear_acceleration"][2];
 
   // Rotate body frame to world frame
-  Eigen::Matrix3d rot;
-  tf2::Quaternion q(last_mocap_msg_->pose.orientation.x, last_mocap_msg_->pose.orientation.y, last_mocap_msg_->pose.orientation.z, last_mocap_msg_->pose.orientation.w);
-  q.normalize();
-  tf2::Matrix3x3 m(q);
-  Eigen::Vector3d rpy;
-  m.getRPY(rpy[0], rpy[1], rpy[2]);
-  quadKD_->getRotationMatrix(rpy, rot);
-  acc = rot*acc;
+  if (last_mocap_msg_ != NULL){
+    Eigen::Matrix3d rot;
+    tf2::Quaternion q(last_mocap_msg_->pose.orientation.x, last_mocap_msg_->pose.orientation.y, last_mocap_msg_->pose.orientation.z, last_mocap_msg_->pose.orientation.w);
+    q.normalize();
+    tf2::Matrix3x3 m(q);
+    Eigen::Vector3d rpy;
+    m.getRPY(rpy[0], rpy[1], rpy[2]);
+    quadKD_->getRotationMatrix(rpy, rot);
+    acc = rot*acc;
 
-  // Ignore gravity
-  acc[2] += 9.81;
+    // Ignore gravity
+    acc[2] += 9.81;
 
-  // Use new measurement
-  imu_vel_estimate_ = (imu_vel_estimate_+acc/update_rate_)*(1-1/update_rate_/filter_time_constant_);
+    // Use new measurement
+    imu_vel_estimate_ = (imu_vel_estimate_+acc/update_rate_)*(1-1/update_rate_/filter_time_constant_);
+  } else {
+    ROS_WARN_THROTTLE(1, "No body pose (mocap) recieved");
+  }
 
 
   // Begin populating state message
   bool fully_populated = true;
 
-  if (last_imu_msg_ != NULL)
-  {
-    // last_robot_state_msg_->body.pose.pose.orientation = last_imu_msg_->orientation;
-    last_robot_state_msg_->body.twist.angular = last_imu_msg_->angular_velocity;
-    // last_robot_state_msg_->body.twist.linear = last_vel_msg_->twist.linear;
-  } else {
-    fully_populated = false;
-    ROS_WARN_THROTTLE(1, "No imu data from mblink");
-  }
+  // last_robot_state_msg_.body.pose.pose.orientation = last_imu_msg_.orientation;
+  last_robot_state_msg_.body.twist.angular = last_imu_msg_.angular_velocity;
+  // last_robot_state_msg_.body.twist.linear = last_vel_msg_->twist.linear;
+
   if (last_mocap_msg_ != NULL)
   {
-    last_robot_state_msg_->body.pose.orientation = last_mocap_msg_->pose.orientation;
-    last_robot_state_msg_->body.pose.position = last_mocap_msg_->pose.position;
+    last_robot_state_msg_.body.pose.orientation = last_mocap_msg_->pose.orientation;
+    last_robot_state_msg_.body.pose.position = last_mocap_msg_->pose.position;
+
   } else {
     fully_populated = false;
     ROS_WARN_THROTTLE(1, "No body pose (mocap) recieved");
 
-    last_robot_state_msg_->body.pose.orientation.x = 0;
-    last_robot_state_msg_->body.pose.orientation.y = 0;
-    last_robot_state_msg_->body.pose.orientation.z = 0;
-    last_robot_state_msg_->body.pose.orientation.w = 1;
-    last_robot_state_msg_->body.pose.position.x = 0;
-    last_robot_state_msg_->body.pose.position.y = 0;
-    last_robot_state_msg_->body.pose.position.z = 0;
+    last_robot_state_msg_.body.pose.orientation.x = 0;
+    last_robot_state_msg_.body.pose.orientation.y = 0;
+    last_robot_state_msg_.body.pose.orientation.z = 0;
+    last_robot_state_msg_.body.pose.orientation.w = 1;
+    last_robot_state_msg_.body.pose.position.x = 0;
+    last_robot_state_msg_.body.pose.position.y = 0;
+    last_robot_state_msg_.body.pose.position.z = 0;
   }
-  if (last_mocap_msg_ != NULL && last_imu_msg_ != NULL)
+  
+  if (last_mocap_msg_ != NULL)
   {
     // Complementary filter
-    quad_utils::Eigen3ToVector3Msg(mocap_vel_estimate_ + imu_vel_estimate_, last_robot_state_msg_->body.twist.linear);
+    quad_utils::Eigen3ToVector3Msg(mocap_vel_estimate_ + imu_vel_estimate_, last_robot_state_msg_.body.twist.linear);
   }
   else
   {
     fully_populated = false;
     ROS_WARN_THROTTLE(1, "No mocap or imu recieved");
 
-    last_robot_state_msg_->body.twist.linear.x = 0;
-    last_robot_state_msg_->body.twist.linear.y = 0;
-    last_robot_state_msg_->body.twist.linear.z = 0;
+    last_robot_state_msg_.body.twist.linear.x = 0;
+    last_robot_state_msg_.body.twist.linear.y = 0;
+    last_robot_state_msg_.body.twist.linear.z = 0;
   }
-  if (last_joint_state_msg_ != NULL)
+
+  last_robot_state_msg_.joints.name.resize(joint_indices_.size());
+  last_robot_state_msg_.joints.position.resize(joint_indices_.size());
+  last_robot_state_msg_.joints.velocity.resize(joint_indices_.size());
+  last_robot_state_msg_.joints.effort.resize(joint_indices_.size());
+
+  for (size_t i = 0; i < joint_indices_.size(); i++)
   {
-
-    last_robot_state_msg_->joints.name.resize(joint_indices_.size());
-    last_robot_state_msg_->joints.position.resize(joint_indices_.size());
-    last_robot_state_msg_->joints.velocity.resize(joint_indices_.size());
-    last_robot_state_msg_->joints.effort.resize(joint_indices_.size());
-
-    for (size_t i = 0; i < joint_indices_.size(); i++)
-    {
-      last_robot_state_msg_->joints.name.at(i) = last_joint_state_msg_->name.at(joint_indices_.at(i));
-      last_robot_state_msg_->joints.position.at(i) = last_joint_state_msg_->position.at(joint_indices_.at(i));
-      last_robot_state_msg_->joints.velocity.at(i) = last_joint_state_msg_->velocity.at(joint_indices_.at(i));
-      last_robot_state_msg_->joints.effort.at(i) = last_joint_state_msg_->effort.at(joint_indices_.at(i));
-    }
-
-    if (last_imu_msg_ != NULL)
-    {
-      quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_->body,last_robot_state_msg_->joints, last_robot_state_msg_->feet);
-    }
-  } else {
-    fully_populated = false;
-    ROS_WARN_THROTTLE(1, "No joints or feet in /state/ground_truth");
+    last_robot_state_msg_.joints.name.at(i) = last_joint_state_msg_.name.at(joint_indices_.at(i));
+    last_robot_state_msg_.joints.position.at(i) = last_joint_state_msg_.position.at(joint_indices_.at(i));
+    last_robot_state_msg_.joints.velocity.at(i) = last_joint_state_msg_.velocity.at(joint_indices_.at(i));
+    last_robot_state_msg_.joints.effort.at(i) = last_joint_state_msg_.effort.at(joint_indices_.at(i));
   }
 
-  quad_utils::updateStateHeaders(*last_robot_state_msg_, state_timestamp, "map", 0);
+  quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_.body,last_robot_state_msg_.joints, last_robot_state_msg_.feet);
+
+  quad_utils::updateStateHeaders(last_robot_state_msg_, state_timestamp, "map", 0);
   return fully_populated;
   
 }
 
 void LegControllerInterface::publishState() {
+  imu_pub_.publish(last_imu_msg_);
   robot_state_pub_.publish(last_robot_state_msg_);
 }
 
@@ -615,7 +628,7 @@ void LegControllerInterface::spin() {
     // Get new mainboard data and construct the new state message
     updateState();
 
-    // Compute the leg command and publish if valid
+    // // Compute the leg command and publish if valid
     bool valid_cmd = computeLegCommandArray();
 
     // If valid, send to the robot
@@ -623,16 +636,21 @@ void LegControllerInterface::spin() {
 
       // Send command to the robot
       // Todo: support sending to gazebo
-      // mblink_converter_->sendMBlink(leg_command_array_msg_);
+      std::cout << "sendMBlink" << std::endl;
+      std::cout << "leg_command_array_msg_\n" <<  leg_command_array_msg_ << std::endl;
+      mblink_converter_->sendMBlink(leg_command_array_msg_);
+      std::cout << "cmd sent" << std::endl;
+    } else {
+      std::cout << "cmd invalid, not sending" << std::endl;
     }
 
-    // If publishing period had elapsed, publish the leg command for logging
-    // if ((ros::Time::now() - t_pub).toSec() >= publish_rate_) {
+    // // If publishing period had elapsed, publish the leg command for logging
+    // // if ((ros::Time::now() - t_pub).toSec() >= publish_rate_) {
       publishLegCommandArray();
       publishState();
-      publishHeartbeat();
-      t_pub = ros::Time::now();
-    // }
+      // publishHeartbeat();
+      // t_pub = ros::Time::now();
+    // // }
 
     // Enforce update rate
     r.sleep();

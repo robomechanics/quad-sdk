@@ -18,7 +18,7 @@
     <rosparam command="load" file="$(find leg_controller)/leg_controller.yaml"/>
     <rosparam command="load" file="$(find contact_detection)/contact_detection.yaml"/>
     <rosparam command="load" file="$(find body_force_estimator)/body_force_estimator.yaml"/>
-    <rosparam command="load" file="$(find mblink_converter)/mblink_converter.yaml"/>
+    <!-- <rosparam command="load" file="$(find mblink_converter)/mblink_converter.yaml"/> -->
     <rosparam command="load" file="$(find open_loop_controller)/open_loop_controller.yaml"/>
     <rosparam command="load" file="$(find nmpc_controller)/nmpc_controller.yaml"/>
 

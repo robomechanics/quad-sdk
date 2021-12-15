@@ -17,13 +17,11 @@
 using gr::MBLink;
 
 struct LimbCmd_t {
-  Eigen::Vector3f pos;
-  Eigen::Vector3f vel;
-  Eigen::Vector3f tau;
+  Eigen::Vector3f pos, vel, tau;
   short kp[3];
-  float kd[3];
+  short kd[3];
   bool restart_flag;
-};
+}; // This avoid gcc to padding the struct to align the memory
 
 typedef std::unordered_map<std::string, Eigen::VectorXf> MBData_t;
 
