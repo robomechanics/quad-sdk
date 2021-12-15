@@ -15,6 +15,7 @@
 #include <quad_msgs/LegCommandArray.h>
 #include <quad_msgs/LegOverride.h>
 #include <quad_msgs/MultiFootPlanContinuous.h>
+#include <leg_controller/mblink_converter.h>
 
 #include <cmath>
 #define MATH_PI 3.141592
@@ -62,6 +63,13 @@ class LegControllerTemplate {
     void updateLocalPlanMsg(quad_msgs::RobotPlan::ConstPtr msg, const ros::Time &t_msg);
 
     /**
+     * @brief Compute the leg command array message for a given current state and reference plan
+     * @param[in] local_plan_msg Message of the local referance plan
+     */
+    void updateMBData();
+
+
+    /**
      * @brief Compute the leg command array message
      */
     virtual bool computeLegCommandArray(const quad_msgs::RobotState::ConstPtr &robot_state_msg,
@@ -70,6 +78,9 @@ class LegControllerTemplate {
     inline bool overrideStateMachine() {
       return override_state_machine_;
     }
+
+    /// Mainboard data
+    MBData_t mbdata_;
 
   protected:
 

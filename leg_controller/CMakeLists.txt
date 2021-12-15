@@ -9,6 +9,23 @@ if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
+## Setup MBLINK and MAVLINK
+set(CMAKE_CXX_STANDARD 17)
+set(MBLINK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../external/mblink/)
+
+message(STATUS "Using architecture ${CMAKE_SYSTEM_PROCESSOR}")
+
+if (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
+  set(GRMBLINK libgrmblink_tx2.a)
+else()
+  set(GRMBLINK libgrmblink_linux.a)
+endif()
+
+include_directories(${MBLINK_DIR}/include)
+link_directories(${MBLINK_DIR}/lib)
+
+find_package(Eigen3 REQUIRED)
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -48,8 +65,14 @@ add_library(leg_controller
 	src/grf_pid_controller.cpp
 	src/joint_controller.cpp
   src/leg_overrider.cpp
+  src/mblink_converter.cpp
 )
 add_dependencies(leg_controller ${leg_controller_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+target_link_libraries(leg_controller
+  ${GRMBLINK}
+  ${catkin_LIBRARIES}
+)
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
@@ -73,7 +96,8 @@ target_link_libraries(leg_overrider_node
 
 ## Google test file for leg_controller library
 catkin_add_gtest(leg_controller_test
-  test/test_leg_controller.cpp)
+  test/test_leg_controller.cpp
+  test/test_mblink_converter.cpp)
 target_link_libraries(leg_controller_test leg_controller ${catkin_LIBRARIES})
 
 

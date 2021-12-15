@@ -3,10 +3,13 @@
 
 #include <ros/ros.h>
 #include <eigen3/Eigen/Eigen>
+
 #include <quad_utils/ros_utils.h>
 #include <quad_utils/math_utils.h>
 #include <quad_utils/function_timer.h>
+#include "quad_utils/matplotlibcpp.h"
 #include <quad_msgs/GRFArray.h>
+
 #include <std_msgs/UInt8.h>
 #include <quad_msgs/RobotState.h>
 #include <quad_msgs/RobotPlan.h>
@@ -16,15 +19,17 @@
 #include <quad_msgs/LegOverride.h>
 #include <quad_msgs/MultiFootPlanContinuous.h>
 #include <eigen_conversions/eigen_msg.h>
-#include "quad_utils/matplotlibcpp.h"
+
 #include "leg_controller/leg_controller_template.h"
 #include "leg_controller/inverse_dynamics.h"
 #include "leg_controller/grf_pid_controller.h"
 #include "leg_controller/joint_controller.h"
+#include "leg_controller/mblink_converter.h"
 
 #include <cmath>
 #define MATH_PI 3.141592
 
+using gr::MBLink;
 
 //! ROS Wrapper for a leg controller class
 /*!
@@ -39,7 +44,7 @@ class LegControllerInterface {
    * @param[in] nh ROS NodeHandle to publish and subscribe from
    * @return Constructed object of type LegControllerInterface
    */
-  LegControllerInterface(ros::NodeHandle nh);
+  LegControllerInterface(ros::NodeHandle nh, int argc, char** argv);
   /**
    * @brief Calls ros spinOnce and pubs data at set frequency
    */
@@ -282,6 +287,9 @@ class LegControllerInterface {
 
     /// Trotting count
     double trotting_count_;
+
+    /// Mblink converter object
+    std::shared_ptr<MBLinkConverter> mblink_converter_;
 };
 
 

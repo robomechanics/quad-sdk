@@ -2,7 +2,7 @@
 
 namespace plt = matplotlibcpp;
 
-LegControllerInterface::LegControllerInterface(ros::NodeHandle nh) {
+LegControllerInterface::LegControllerInterface(ros::NodeHandle nh, int argc, char** argv) {
 	nh_ = nh;
 
     // Load rosparams from parameter server
@@ -68,6 +68,9 @@ LegControllerInterface::LegControllerInterface(ros::NodeHandle nh) {
 
   // Initialize kinematics object
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
+
+  // Initialize mblink converter
+  mblink_converter_ = std::make_shared<MBLinkConverter>(nh_, argc, argv);
 
   // Initialize leg controller object
   if (controller_id_ == "inverse_dynamics") {
@@ -423,17 +426,31 @@ void LegControllerInterface::publishLegCommandArray() {
 
 void LegControllerInterface::spin() {
   ros::Rate r(update_rate_);
-  double t_last = 0;
+  ros::Time t_now = ros::Time::now();
   while (ros::ok()) {
 
     // Collect new messages on subscriber topics and publish heartbeat
     ros::spinOnce();
     publishHeartbeat();
 
+    // Get new mainboard data and pass it to the controller
+    mblink_converter_->getMBlink(leg_controller_->mbdata_);
+
     // Compute the leg command and publish if valid
-    bool valid_cmd = computeLegCommandArray();    
+    bool valid_cmd = computeLegCommandArray();
+
+    // If valid, send to the robot
     if (valid_cmd) {
-      publishLegCommandArray();
+
+      // Send command to the robot
+      // Todo: support sending to gazebo
+      mblink_converter_->sendMBlink(leg_command_array_msg_);
+
+      // If publishing period had elapsed, publish the leg command for logging
+      if ((ros::Time::now() - t_now).toSec() >= 0.01) {
+        publishLegCommandArray();
+        t_now = ros::Time::now();
+      }
     }
 
     // Enforce update rate

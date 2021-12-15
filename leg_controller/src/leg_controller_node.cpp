@@ -7,7 +7,7 @@ int main(int argc, char** argv) {
   ros::init(argc, argv, "leg_controller_node");
   ros::NodeHandle nh;
 
-  LegControllerInterface leg_controller_interface(nh);
+  LegControllerInterface leg_controller_interface(nh, argc, argv);
   leg_controller_interface.spin();
 
   return 0;

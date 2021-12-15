@@ -25,7 +25,7 @@ struct LimbCmd_t {
   bool restart_flag;
 };
 
-typedef std::unordered_map<std::string, Eigen::VectorXf> RxData_t;
+typedef std::unordered_map<std::string, Eigen::VectorXf> MBData_t;
 
 //! Implements online conversion from ROS type to MBLink
 /*!
@@ -42,16 +42,17 @@ public:
   MBLinkConverter(ros::NodeHandle nh, int argc, char** argv);
 
   /**
-   * @brief Calls ros spinOnce and spins at set frequency
+   * @brief Send most recent motor command over mblink
+   * @return Boolean signaling successful mblink send
    */
-  void spin();
+  bool sendMBlink(const quad_msgs::LegCommandArray& last_leg_command_array_msg_);
+
+  /**
+ * @brief Get most recent data payload over mblink and process it
+ */
+  void getMBlink(MBData_t &data);
 
 private:
-  /**
-   * @brief Callback function to handle new leg command data
-   * @param[in] msg quad_msgs<LegCommandArray> containing pos, vel and torque setpoints and gains
-   */
-  void legControlCallback(const quad_msgs::LegCommandArray::ConstPtr& msg);
 
   /**
 	 * @brief Callback to handle new remote heartbeat messages
@@ -70,17 +71,6 @@ private:
    * @return Compressed float
    */
   float packFloats(float in1, float in2);
-
-  /**
-   * @brief Send most recent motor command over mblink
-   * @return Boolean signaling successful mblink send
-   */
-  bool sendMBlink();
-
-  /**
- * @brief Get most recent data payload over mblink and process it
- */
-  void publishMBlink();
 
   /// Subscriber for motor control messages
   ros::Subscriber leg_control_sub_;

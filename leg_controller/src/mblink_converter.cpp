@@ -1,4 +1,4 @@
-#include "mblink_converter/mblink_converter.h"
+#include "leg_controller/mblink_converter.h"
 
 MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
 {
@@ -17,13 +17,8 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
   quad_utils::loadROSParam(nh_,"topics/heartbeat/remote",remote_heartbeat_topic);
   quad_utils::loadROSParam(nh_,"topics/joint_encoder",joint_encoder_topic);
   quad_utils::loadROSParam(nh_,"topics/imu",imu_topic);
-  quad_utils::loadROSParam(nh_,"mblink_converter/update_rate",update_rate_);
-  quad_utils::loadROSParam(nh_,"mblink_converter/remote_heartbeat_timeout",
-    remote_heartbeat_timeout_);
-  quad_utils::loadROSParam(nh_,"mblink_converter/leg_command_timeout",leg_command_timeout_);
 
   // Setup pubs and subs
-  leg_control_sub_ = nh_.subscribe(leg_control_topic,1,&MBLinkConverter::legControlCallback, this);
   control_restart_flag_sub_ = nh_.subscribe(control_restart_flag_topic,1,&MBLinkConverter::controlRestartFlagCallback, this);
   remote_heartbeat_sub_ = nh_.subscribe(remote_heartbeat_topic,1,&MBLinkConverter::remoteHeartbeatCallback, this);
   // joint_encoder_pub_ = nh_.advertise<sensor_msgs::JointState>(joint_encoder_topic,1);
@@ -36,15 +31,15 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
   
 }
 
-void MBLinkConverter::legControlCallback(
-  const quad_msgs::LegCommandArray::ConstPtr& msg)
-{
-  last_leg_command_array_msg_ = msg;
-  last_leg_command_time_ = msg->header.stamp.toSec();
+// void MBLinkConverter::updateLegCommandArray(
+//   const quad_msgs::LegCommandArray::ConstPtr& msg)
+// {
+//   last_leg_command_array_msg_ = msg;
+//   last_leg_command_time_ = msg->header.stamp.toSec();
 
-  // double t_now = ros::Time::now().toSec();
-  // ROS_INFO("Current time = %6.4f, msg time = %6.4f, diff = %6.4fs", t_now, last_leg_command_time_, t_now - last_leg_command_time_);
-}
+//   // double t_now = ros::Time::now().toSec();
+//   // ROS_INFO("Current time = %6.4f, msg time = %6.4f, diff = %6.4fs", t_now, last_leg_command_time_, t_now - last_leg_command_time_);
+// }
 
 void MBLinkConverter::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg) {
   last_heartbeat_time_ = msg->stamp.toSec();
@@ -55,28 +50,28 @@ void MBLinkConverter::controlRestartFlagCallback(const std_msgs::Bool::ConstPtr&
   restart_flag_time_ = ros::Time::now();
 }
 
-bool MBLinkConverter::sendMBlink()
+bool MBLinkConverter::sendMBlink(const quad_msgs::LegCommandArray& last_leg_command_array_msg)
 {
-  // If we've haven't received a motor control message, exit
-  if (last_leg_command_array_msg_ == NULL)
-  {
-    ROS_DEBUG_THROTTLE(1,"MBLinkConverter node has not received MotorCommandArray messages yet.");
-    return false;
-  }
+  // // If we've haven't received a motor control message, exit
+  // if (last_leg_command_array_msg == NULL)
+  // {
+  //   ROS_DEBUG_THROTTLE(1,"MBLinkConverter node has not received MotorCommandArray messages yet.");
+  //   return false;
+  // }
 
   int leg_command_heartbeat = 1;
 
-  if ((ros::Time::now().toSec() - last_leg_command_time_) >= leg_command_timeout_)
-  {
-    leg_command_heartbeat = 0;
-    ROS_WARN_THROTTLE(1,"Leg command heartbeat lost in MBLinkConverter, sending zeros");
-  }
+  // if ((ros::Time::now().toSec() - last_leg_command_time_) >= leg_command_timeout_)
+  // {
+  //   leg_command_heartbeat = 0;
+  //   ROS_WARN_THROTTLE(1,"Leg command heartbeat lost in MBLinkConverter, sending zeros");
+  // }
   
   LimbCmd_t limbcmd[4];
   for (int i = 0; i < 4; ++i) // For each leg
   {
     quad_msgs::LegCommand leg_command = 
-      last_leg_command_array_msg_->leg_commands.at(i);
+      last_leg_command_array_msg.leg_commands.at(i);
 
     for (int j = 0; j < 3; ++j) // For each joint
     {
@@ -96,11 +91,11 @@ bool MBLinkConverter::sendMBlink()
   return true;
 }
 
-void MBLinkConverter::publishMBlink()
+void MBLinkConverter::getMBlink(MBData_t &data)
 {
 
   // Get the data and appropriate timestamp (this may be blocking)
-  RxData_t data = mblink_.get();
+  data = mblink_.get();
 
   if (data.empty()) {
     ROS_WARN_THROTTLE(0.5, "No data received from mblink");
@@ -150,24 +145,24 @@ void MBLinkConverter::publishMBlink()
   // imu_pub_.publish(imu_msg);
 }
 
-void MBLinkConverter::spin()
-{
-  ros::Rate r(update_rate_);
-  while (ros::ok()) {
+// void MBLinkConverter::spin()
+// {
+//   ros::Rate r(update_rate_);
+//   while (ros::ok()) {
 
-    // Collect new messages on subscriber topics
-    ros::spinOnce(); 
+//     // Collect new messages on subscriber topics
+//     ros::spinOnce(); 
 
-    // Unset the restart flag after a timeout duration
-    if ((ros::Time::now() - restart_flag_time_).toSec() >= 0.1) {
-      restart_flag_ = false;
-    }
+//     // Unset the restart flag after a timeout duration
+//     if ((ros::Time::now() - restart_flag_time_).toSec() >= 0.1) {
+//       restart_flag_ = false;
+//     }
 
-    // Send out the most recent one over mblink
-    this->sendMBlink();
-    this->publishMBlink();
+//     // Send out the most recent one over mblink
+//     this->sendMBlink();
+//     this->getMBlink();
 
-    // Enforce update rate
-    r.sleep();
-  }
-}
+//     // Enforce update rate
+//     r.sleep();
+//   }
+// }
