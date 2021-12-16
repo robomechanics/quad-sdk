@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(leg_controller)
+project(robot_driver)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -58,8 +58,9 @@ include_directories(
 )
 
 ## Declare a C++ library for control
-add_library(leg_controller
-	src/leg_controller_interface.cpp
+add_library(robot_driver
+	src/robot_driver.cpp
+	src/robot_driver_utils.cpp
   src/leg_controller_template.cpp
 	src/inverse_dynamics.cpp
 	src/grf_pid_controller.cpp
@@ -67,9 +68,9 @@ add_library(leg_controller
   src/leg_overrider.cpp
   src/mblink_converter.cpp
 )
-add_dependencies(leg_controller ${leg_controller_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(robot_driver ${robot_driver_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-target_link_libraries(leg_controller
+target_link_libraries(robot_driver
   ${GRMBLINK}
   ${catkin_LIBRARIES}
 )
@@ -77,16 +78,16 @@ target_link_libraries(leg_controller
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(leg_controller_node src/leg_controller_node.cpp)
+add_executable(robot_driver_node src/robot_driver_node.cpp)
 add_executable(leg_overrider_node src/leg_overrider_node.cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(leg_controller_node
-  leg_controller
+target_link_libraries(robot_driver_node
+  robot_driver
 	${catkin_LIBRARIES}
 )
 target_link_libraries(leg_overrider_node
-  leg_controller
+  robot_driver
   ${catkin_LIBRARIES}
 )
 
@@ -94,10 +95,10 @@ target_link_libraries(leg_overrider_node
 ## Testing ##
 #############
 
-## Google test file for leg_controller library
-catkin_add_gtest(leg_controller_test
-  test/test_leg_controller.cpp
+## Google test file for robot_driver library
+catkin_add_gtest(robot_driver_test
+  test/test_robot_driver.cpp
   test/test_mblink_converter.cpp)
-target_link_libraries(leg_controller_test leg_controller ${catkin_LIBRARIES})
+target_link_libraries(robot_driver_test robot_driver ${catkin_LIBRARIES})
 
 

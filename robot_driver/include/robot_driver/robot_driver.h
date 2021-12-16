@@ -1,5 +1,5 @@
-#ifndef LEG_CONTROLLER_INTERFACE_H
-#define LEG_CONTROLLER_INTERFACE_H
+#ifndef ROBOT_DRIVER_INTERFACE_H
+#define ROBOT_DRIVER_INTERFACE_H
 
 #include <ros/ros.h>
 #include <eigen3/Eigen/Eigen>
@@ -19,11 +19,12 @@
 #include <quad_msgs/MultiFootPlanContinuous.h>
 #include <eigen_conversions/eigen_msg.h>
 
-#include "leg_controller/leg_controller_template.h"
-#include "leg_controller/inverse_dynamics.h"
-#include "leg_controller/grf_pid_controller.h"
-#include "leg_controller/joint_controller.h"
-#include "leg_controller/mblink_converter.h"
+#include "robot_driver/robot_driver_utils.h"
+#include "robot_driver/leg_controller_template.h"
+#include "robot_driver/inverse_dynamics.h"
+#include "robot_driver/grf_pid_controller.h"
+#include "robot_driver/joint_controller.h"
+#include "robot_driver/mblink_converter.h"
 
 #include <cmath>
 #define MATH_PI 3.141592
@@ -32,18 +33,18 @@ using gr::MBLink;
 
 //! ROS Wrapper for a leg controller class
 /*!
-   LegControllerInterface implements a class to generate leg commands to be sent to either the robot or a simulator.
+   RobotDriver implements a class to generate leg commands to be sent to either the robot or a simulator.
    It may subscribe to any number of topics to determine the leg control, but will always publish a
    LegCommandArray message to control the robot's legs.
 */
-class LegControllerInterface {
+class RobotDriver {
   public:
   /**
-   * @brief Constructor for LegControllerInterface
+   * @brief Constructor for RobotDriver
    * @param[in] nh ROS NodeHandle to publish and subscribe from
-   * @return Constructed object of type LegControllerInterface
+   * @return Constructed object of type RobotDriver
    */
-  LegControllerInterface(ros::NodeHandle nh, int argc, char** argv);
+  RobotDriver(ros::NodeHandle nh, int argc, char** argv);
   /**
    * @brief Calls ros spinOnce and pubs data at set frequency
    */
@@ -62,18 +63,18 @@ class LegControllerInterface {
      */
     void localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg);
     
-    // /**
-    //  * @brief Callback function to handle current robot state
-    //  * @param[in] msg input message contining current robot state
-    //  */
-    // void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
+    /**
+     * @brief Callback function to handle current robot state
+     * @param[in] msg input message contining current robot state
+     */
+    void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
+    
     /**
      * @brief Callback function to handle current robot pose
      * @param[in] msg input message contining current robot pose
      */
     void mocapCallback(const geometry_msgs::PoseStamped::ConstPtr& msg);
 
-    
     /**
      * @brief Callback function to handle reference trajectory state
      * @param[in] msg input message contining reference trajectory state
@@ -109,29 +110,24 @@ class LegControllerInterface {
     bool updateState();
 
     /**
+     * @brief Function to compute leg command array message
+     */
+    bool updateControl();
+
+    /**
      * @brief Publish the most recent state message with the given data
      */
     void publishState();
-
-    /**
-     * @brief Function to publish heartbeat message
-     */
-    void publishHeartbeat();
-
-    /**
-     * @brief Function to compute custom leg control.
-     */
-    void executeCustomController();
-
-    /**
-     * @brief Function to compute leg command array message
-     */
-    bool computeLegCommandArray();
     
       /**
      * @brief Function to publish leg command array message
      */
-    void publishLegCommandArray();
+    void publishControl();
+    
+    /**
+     * @brief Function to publish heartbeat message
+     */
+    void publishHeartbeat();
 
     /// Subscriber for control mode
     ros::Subscriber control_mode_sub_;
@@ -146,10 +142,10 @@ class LegControllerInterface {
     ros::Subscriber mocap_sub_;
 
     /// ROS subscriber for state estimate
-    ros::Publisher robot_state_pub_;
+    ros::Subscriber robot_state_sub_;
 
-    /// ROS subscriber for trajectory
-    ros::Subscriber trajectory_state_sub_;
+    /// ROS publisher for state estimate
+    ros::Publisher robot_state_pub_;
 
     /// ROS subscriber for leg override commands
     ros::Subscriber leg_override_sub_;
@@ -169,10 +165,14 @@ class LegControllerInterface {
     /// ROS publisher for desired GRF
     ros::Publisher grf_pub_;
 
+    /// ROS publisher for imu data
     ros::Publisher imu_pub_;
 
     /// Nodehandle to pub to and sub from
     ros::NodeHandle nh_;
+
+    /// Boolean for whether robot layer is hardware (else sim)
+    bool is_hw_;
 
     /// Controller type
     std::string controller_id_;
@@ -182,10 +182,6 @@ class LegControllerInterface {
 
     /// Update rate for publishing data to ROS;
     double publish_rate_;
-
-
-    /// Timestep of local plan
-    double dt_;
 
     /// Number of feet
     const int num_feet_ = 4;
@@ -226,20 +222,17 @@ class LegControllerInterface {
     /// Most recent state estimate
     quad_msgs::RobotState last_robot_state_msg_;
 
-    /// First state estimate
-    quad_msgs::RobotState::ConstPtr first_robot_state_msg_;
-
     /// Most recent local plan
     quad_msgs::GRFArray::ConstPtr last_grf_array_msg_;
-
-    /// Most recent state estimate
-    quad_msgs::RobotState::ConstPtr last_trajectory_state_msg_;
 
     /// Most recent leg override
     quad_msgs::LegOverride last_leg_override_msg_;
 
-    /// Most recent remote 
+    /// Most recent remote  heartbeat
     std_msgs::Header::ConstPtr last_remote_heartbeat_msg_;
+
+    /// Most recent robot heartbeat 
+    std_msgs::Header last_robot_heartbeat_msg_;
 
     // State timeout threshold in seconds
     double last_state_time_;
@@ -348,6 +341,9 @@ class LegControllerInterface {
     /// Last mocap time
     ros::Time last_mocap_time_;
 
+    /// Time of last publishing
+    ros::Time t_pub_;
+
     /// Vector of joint names
     std::vector<std::string> joint_names_ = {"8","0","1","9","2","3","10","4","5","11","6","7"};
 
@@ -361,4 +357,4 @@ class LegControllerInterface {
 };
 
 
-#endif // LEG_CONTROLLER_H
+#endif // ROBOT_DRIVER_INTERFACE_H

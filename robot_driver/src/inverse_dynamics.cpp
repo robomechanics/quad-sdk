@@ -1,9 +1,9 @@
-#include "leg_controller/inverse_dynamics.h"
+#include "robot_driver/inverse_dynamics.h"
 
 InverseDynamicsController::InverseDynamicsController() {}
 
 bool InverseDynamicsController::computeLegCommandArray(
-  const quad_msgs::RobotState::ConstPtr &robot_state_msg,
+  const quad_msgs::RobotState &robot_state_msg,
   quad_msgs::LegCommandArray &leg_command_array_msg,
   quad_msgs::GRFArray &grf_array_msg)
 {
@@ -18,9 +18,9 @@ bool InverseDynamicsController::computeLegCommandArray(
 
     // Define vectors for joint positions and velocities
     Eigen::VectorXd joint_positions(3*num_feet_), joint_velocities(3*num_feet_), body_state(12);
-    quad_utils::vectorToEigen(robot_state_msg->joints.position, joint_positions);
-    quad_utils::vectorToEigen(robot_state_msg->joints.velocity, joint_velocities);
-    body_state = quad_utils::bodyStateMsgToEigen(robot_state_msg->body);
+    quad_utils::vectorToEigen(robot_state_msg.joints.position, joint_positions);
+    quad_utils::vectorToEigen(robot_state_msg.joints.velocity, joint_velocities);
+    body_state = quad_utils::bodyStateMsgToEigen(robot_state_msg.body);
 
     // Define vectors for state positions and velocities 
     Eigen::VectorXd state_positions(3*num_feet_+6), state_velocities(3*num_feet_+6);

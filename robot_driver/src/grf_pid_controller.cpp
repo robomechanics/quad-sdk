@@ -1,4 +1,4 @@
-#include "leg_controller/grf_pid_controller.h"
+#include "robot_driver/grf_pid_controller.h"
 
 GrfPidController::GrfPidController() {
   pos_error_int_.setZero();
@@ -8,7 +8,7 @@ GrfPidController::GrfPidController() {
 }
 
 bool GrfPidController::computeLegCommandArray(
-  const quad_msgs::RobotState::ConstPtr &robot_state_msg,
+  const quad_msgs::RobotState &robot_state_msg,
   quad_msgs::LegCommandArray &leg_command_array_msg,
   quad_msgs::GRFArray &grf_array_msg)
 {
@@ -16,16 +16,16 @@ bool GrfPidController::computeLegCommandArray(
 
   // Define vectors for joint positions and velocities
   Eigen::VectorXd joint_positions(3*num_feet_), joint_velocities(3*num_feet_), body_state(12);
-  quad_utils::vectorToEigen(robot_state_msg->joints.position, joint_positions);
-  quad_utils::vectorToEigen(robot_state_msg->joints.velocity, joint_velocities);
-  body_state = quad_utils::bodyStateMsgToEigen(robot_state_msg->body);
+  quad_utils::vectorToEigen(robot_state_msg.joints.position, joint_positions);
+  quad_utils::vectorToEigen(robot_state_msg.joints.velocity, joint_velocities);
+  body_state = quad_utils::bodyStateMsgToEigen(robot_state_msg.body);
 
   // Get desired x/y location
   double x_mean = 0;
   double y_mean = 0;
   for (int i = 0; i < num_feet_; i++) {
-    x_mean += robot_state_msg->feet.feet[i].position.x/(num_feet_);
-    y_mean += robot_state_msg->feet.feet[i].position.y/(num_feet_);
+    x_mean += robot_state_msg.feet.feet[i].position.x/(num_feet_);
+    y_mean += robot_state_msg.feet.feet[i].position.y/(num_feet_);
     
   }
   pos_des_.x() = x_mean;
@@ -121,7 +121,7 @@ bool GrfPidController::computeLegCommandArray(
     }
   }
 
-  quad_utils::eigenToGRFArrayMsg(grf_array, robot_state_msg->feet, grf_array_msg);
+  quad_utils::eigenToGRFArrayMsg(grf_array, robot_state_msg.feet, grf_array_msg);
 
   return true;
   
