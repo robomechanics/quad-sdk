@@ -72,6 +72,7 @@ TEST(NMPCTest, testTailMPC)
 		toc = std::chrono::steady_clock::now();
 		std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(toc - tic).count() << "[µs]" << std::endl;
 		
+		current_state_ = body_plan_.row(1).transpose();
 		std::rotate(adpative_contact_schedule_.begin(), adpative_contact_schedule_.begin() + 1, adpative_contact_schedule_.end());
 	}
 
