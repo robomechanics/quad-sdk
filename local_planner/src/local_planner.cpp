@@ -20,7 +20,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   quad_utils::loadROSParam(nh_, "topics/foot_plan_continuous", foot_plan_continuous_topic);
   quad_utils::loadROSParam(nh_, "topics/cmd_vel", cmd_vel_topic);
   quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
-  spirit_utils::loadROSParam(nh_, "/topics/state/grfs", grf_topic);
+  quad_utils::loadROSParam(nh_, "/topics/state/grfs", grf_topic);
 
   // Setup pubs and subs
   // terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1, &LocalPlanner::terrainMapCallback, this);
@@ -256,7 +256,7 @@ void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg) {
 
 }
 
-void LocalPlanner::grfCallback(const spirit_msgs::GRFArray::ConstPtr &msg)
+void LocalPlanner::grfCallback(const quad_msgs::GRFArray::ConstPtr &msg)
 {
   grf_msg_ = msg;
 }
@@ -325,9 +325,9 @@ void LocalPlanner::publishFootStepHist()
     return;
 
   // Get the current body and foot positions into Eigen
-  current_state_ = spirit_utils::bodyStateMsgToEigen(robot_state_msg_->body);
+  current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
   current_state_timestamp_ = robot_state_msg_->header.stamp;
-  spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet,
+  quad_utils::multiFootStateMsgToEigen(robot_state_msg_->feet,
                                          current_foot_positions_world_);
   local_footstep_planner_->getFootPositionsBodyFrame(current_state_,
                                                      current_foot_positions_world_,

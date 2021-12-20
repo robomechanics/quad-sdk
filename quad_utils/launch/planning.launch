@@ -21,7 +21,7 @@
     <!-- Launch the node to publish the local plan -->
     <group if="$(eval arg('local_planner') == 'full')">
         <node name="local_planner" pkg="local_planner" type="local_planner_node" output="screen" >
-            <rosparam command="load" file="$(find spirit_utils)/config/footstep_filter.yaml" />
+            <rosparam command="load" file="$(find quad_utils)/config/footstep_filter.yaml" />
         </node>
 
         <group if="$(eval arg('mpc_type') == 'convex')">

@@ -76,7 +76,7 @@ private:
    * @brief Callback function to handle new GRF estimates
    * @param[in] msg the message contining GRF data
    */
-  void grfCallback(const spirit_msgs::GRFArray::ConstPtr& msg);
+  void grfCallback(const quad_msgs::GRFArray::ConstPtr& msg);
 
   /**
    * @brief Function to pre-process the body plan and robot state messages into Eigen arrays
@@ -160,7 +160,7 @@ private:
 	quad_msgs::MultiFootPlanDiscrete past_footholds_msg_;
 
   /// Most recent GRF
-  spirit_msgs::GRFArray::ConstPtr grf_msg_;
+  quad_msgs::GRFArray::ConstPtr grf_msg_;
 
   /// Timestamp of the state estimate
   ros::Time current_state_timestamp_;
