@@ -252,6 +252,9 @@ private:
 
   /// Boolean for using nonlinear MPC
   bool use_nmpc_;
+
+  /// Vector for stand pose (x, y, yaw)
+  Eigen::Vector3d stand_pose_;
 };
 
 

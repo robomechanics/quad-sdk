@@ -575,24 +575,26 @@ void QuadKD::computeInverseDynamics(const Eigen::VectorXd &state_pos,
   RigidBodyDynamics::CompositeRigidBodyAlgorithm(*model_, q, M);
   RigidBodyDynamics::NonlinearEffects(*model_, q, q_dot, N);
 
-  // Compute q_ddot caused by grf
-  Eigen::VectorXd q_ddot_grf(18);
-  q_ddot_grf = M.bdcSvd(Eigen::ComputeThinU|Eigen::ComputeThinV).solve(-tau_stance - N);
-
-  // Compute toe acceleration caused by grf
-  Eigen::VectorXd foot_acc_grf(12);
+  // Compute J_dot*q_dot
+  Eigen::VectorXd foot_acc_J_dot(12);
   for (size_t i = 0; i < 4; i++)
   {
-    foot_acc_grf.segment(3 * i, 3) = RigidBodyDynamics::CalcPointAcceleration(*model_, q, q_dot, q_ddot_grf, body_id_list_.at(i), Eigen::Vector3d::Zero());
+    foot_acc_J_dot.segment(3 * i, 3) = RigidBodyDynamics::CalcPointAcceleration(*model_, q, q_dot, Eigen::VectorXd::Zero(18), body_id_list_.at(i), Eigen::Vector3d::Zero());
   }
 
   // Compute the toe acceleration difference
-  Eigen::VectorXd foot_acc_delta = foot_acc - foot_acc_grf;
-  Eigen::VectorXd q_ddot_delta = math_utils::sdlsInv(jacobian.block(0, 6, 12, 12)) * foot_acc_delta;
+  Eigen::VectorXd foot_acc_q_ddot = foot_acc - foot_acc_J_dot;
+  Eigen::VectorXd q_ddot_desired = math_utils::sdlsInv(jacobian.block(0, 6, 12, 12)) * foot_acc_q_ddot;
+
+  // In the EOM, we know M, N, tau_grf, and q_ddot_leg, we need to solve q_ddot_body and tau_swing 
+  Eigen::MatrixXd blk_mat = Eigen::MatrixXd::Zero(18, 18);
+  blk_mat.block(0, 0, 18, 6) = -M.block(0, 0, 18, 6);
+  blk_mat.block(6, 6, 12, 12).diagonal().fill(1);
 
   // Perform inverse dynamics
-  Eigen::VectorXd tau_swing(12);
-  tau_swing = M.block(6, 6, 12, 12) * q_ddot_delta + N.tail(12);
+  Eigen::VectorXd tau_swing(12), blk_sol(18);
+  blk_sol = blk_mat.bdcSvd(Eigen::ComputeThinU|Eigen::ComputeThinV).solve(M.block(0, 6, 18, 12)*q_ddot_desired + N + tau_stance);
+  tau_swing = blk_sol.segment(6, 12);
 
   // Convert the order back
   for (size_t i = 0; i < 4; i++)
@@ -601,6 +603,7 @@ void QuadKD::computeInverseDynamics(const Eigen::VectorXd &state_pos,
       tau.segment(3 * leg_idx_list_.at(i), 3) = tau_stance.segment(6 + 3 * i, 3);
     } else {
       tau.segment(3 * leg_idx_list_.at(i), 3) = tau_swing.segment(3 * i, 3);
+      // tau.segment(3 * leg_idx_list_.at(i), 3) = Eigen::VectorXd::Zero(3);
     }
   }
 

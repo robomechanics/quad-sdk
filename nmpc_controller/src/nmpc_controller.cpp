@@ -103,18 +103,6 @@ NMPCController::NMPCController(int type)
     return;
   }
 
-  // Optimize once for structure preparation
-  status = app_->OptimizeTNLP(mynlp_);
-
-  Eigen::MatrixXd x(n_, N_);
-  Eigen::MatrixXd u(m_, N_);
-
-  for (int i = 0; i < N_; ++i)
-  {
-    u.block(0, i, m_, 1) = mynlp_->w0_.block(i * (n_ + m_), 0, m_, 1);
-    x.block(0, i, n_, 1) = mynlp_->w0_.block(i * (n_ + m_) + m_, 0, n_, 1);
-  }
-
   mynlp_->w0_.setZero();
   mynlp_->z_L0_.fill(1);
   mynlp_->z_U0_.fill(1);
