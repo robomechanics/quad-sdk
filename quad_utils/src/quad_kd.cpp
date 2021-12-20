@@ -582,18 +582,21 @@ void QuadKD::computeInverseDynamics(const Eigen::VectorXd &state_pos,
     foot_acc_J_dot.segment(3 * i, 3) = RigidBodyDynamics::CalcPointAcceleration(*model_, q, q_dot, Eigen::VectorXd::Zero(18), body_id_list_.at(i), Eigen::Vector3d::Zero());
   }
 
-  // Compute the toe acceleration difference
+  // Compute acceleration from J*q_ddot
   Eigen::VectorXd foot_acc_q_ddot = foot_acc - foot_acc_J_dot;
-  Eigen::VectorXd q_ddot_desired = math_utils::sdlsInv(jacobian.block(0, 6, 12, 12)) * foot_acc_q_ddot;
 
-  // In the EOM, we know M, N, tau_grf, and q_ddot_leg, we need to solve q_ddot_body and tau_swing 
+  // Compuate damped jacobian inverser
+  Eigen::MatrixXd jacobian_inv = math_utils::sdlsInv(jacobian.block(0, 6, 12, 12));
+
+  // In the EOM, we know M, N, tau_grf, and a = J_b*q_ddot_b + J_l*q_ddot_l, we need to solve q_ddot_b and tau_swing
   Eigen::MatrixXd blk_mat = Eigen::MatrixXd::Zero(18, 18);
-  blk_mat.block(0, 0, 18, 6) = -M.block(0, 0, 18, 6);
+  blk_mat.block(0, 0, 6, 6) = -M.block(0, 0, 6, 6) + M.block(0, 6, 6, 12) * jacobian_inv * jacobian.block(0, 0, 12, 6);
+  blk_mat.block(6, 0, 12, 6) = -M.block(6, 0, 12, 6) + M.block(6, 6, 12, 12) * jacobian_inv * jacobian.block(0, 0, 12, 6);
   blk_mat.block(6, 6, 12, 12).diagonal().fill(1);
 
   // Perform inverse dynamics
   Eigen::VectorXd tau_swing(12), blk_sol(18);
-  blk_sol = blk_mat.bdcSvd(Eigen::ComputeThinU|Eigen::ComputeThinV).solve(M.block(0, 6, 18, 12)*q_ddot_desired + N + tau_stance);
+  blk_sol = blk_mat.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(M.block(0, 6, 18, 12) * jacobian_inv * foot_acc_q_ddot + N + tau_stance);
   tau_swing = blk_sol.segment(6, 12);
 
   // Convert the order back

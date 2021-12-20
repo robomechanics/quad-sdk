@@ -84,9 +84,6 @@ quadKD_ = std::make_shared<quad_utils::QuadKD>();
   // Initialize stand pose
   stand_pose_.fill(std::numeric_limits<double>::max());
 
-  // Initialize index for gait planning
-  current_plan_index_ = 0;
-
   // Initialize footstep history publisher
   foot_step_hist_pub_ = nh_.advertise<grid_map_msgs::GridMap>("/foot_step_hist", 1, true);
 
@@ -181,10 +178,11 @@ void LocalPlanner::initLocalBodyPlanner() {
 void LocalPlanner::initLocalFootstepPlanner() {
 
   // Load parameters from server
-  double grf_weight, ground_clearance, standing_error_threshold, period_d;
+  double grf_weight, ground_clearance, hip_clearance, standing_error_threshold, period_d;
   int period;
   quad_utils::loadROSParam(nh_, "local_footstep_planner/grf_weight", grf_weight);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/ground_clearance", ground_clearance);
+  quad_utils::loadROSParam(nh_, "local_footstep_planner/hip_clearance", hip_clearance);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/standing_error_threshold",
     standing_error_threshold);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/period", period_d);
@@ -200,7 +198,7 @@ void LocalPlanner::initLocalFootstepPlanner() {
   // Create footstep class, make sure we use the same dt as the local planner
   local_footstep_planner_ = std::make_shared<LocalFootstepPlanner>();
   local_footstep_planner_->setTemporalParams(dt_, period, N_);
-  local_footstep_planner_->setSpatialParams(ground_clearance, standing_error_threshold,
+  local_footstep_planner_->setSpatialParams(ground_clearance, hip_clearance, standing_error_threshold,
     grf_weight,quadKD_);
 
   past_footholds_msg_.feet.resize(num_feet_);
@@ -368,7 +366,7 @@ void LocalPlanner::getStateAndTwistInput() {
     return;
 
   // Get index
-  // current_plan_index_ = quad_utils::getPlanIndex(initial_timestamp_,dt_);
+  current_plan_index_ = quad_utils::getPlanIndex(initial_timestamp_,dt_);
 
   // Initializing foot positions if not data has arrived
   if (first_plan_) {
@@ -422,12 +420,12 @@ void LocalPlanner::getStateAndTwistInput() {
   }
 
   // Set initial condition for forward integration
-  ref_body_plan_(0,0) = stand_pose_[0];
-  ref_body_plan_(0,1) = stand_pose_[1];
+  ref_body_plan_(0,0) = current_state_[0];
+  ref_body_plan_(0,1) = current_state_[1];
   ref_body_plan_(0,2) = z_des_ + ref_ground_height_(0);
   ref_body_plan_(0,3) = 0;
   ref_body_plan_(0,4) = 0;
-  ref_body_plan_(0,5) = stand_pose_[2];
+  ref_body_plan_(0,5) = current_state_[5];
   ref_body_plan_(0,6) = cmd_vel_[0]*cos(current_state_[5]) - cmd_vel_[1]*sin(current_state_[5]);
   ref_body_plan_(0,7) = cmd_vel_[0]*sin(current_state_[5]) + cmd_vel_[1]*cos(current_state_[5]);
   ref_body_plan_(0,8) = cmd_vel_[2];
@@ -510,9 +508,6 @@ bool LocalPlanner::computeLocalPlan() {
   // Compute the contact schedule
   local_footstep_planner_->computeContactSchedule(current_plan_index_, current_state_,
     ref_body_plan_,contact_schedule_);
-  
-  // We trust the ros rate and let the gait use the same rate as the node running to avoid round-up problem in the time-based method
-  current_plan_index_++;
 
   // Compute the new footholds if we have a valid existing plan (i.e. if grf_plan is filled)
   if (grf_plan_.rows() == N_) {
@@ -574,7 +569,7 @@ void LocalPlanner::publishLocalPlan() {
 
   // Compute the discrete and continuous foot plan messages
   local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_world_,
-    current_plan_index_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
+    current_plan_index_, body_plan_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
 
   // Add body, foot, joint, and grf data to the local plan message
   for (int i = 0; i < N_; i++) {
