@@ -34,10 +34,11 @@ void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_
 }
 
 
-void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double grf_weight, 
+void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double hip_clearance, double grf_weight, 
   double standing_error_threshold, std::shared_ptr<quad_utils::QuadKD> kinematics) {
 
   ground_clearance_ = ground_clearance;
+  hip_clearance_ = hip_clearance;
   standing_error_threshold_ = standing_error_threshold;
   grf_weight_ = grf_weight;
 quadKD_ = kinematics;
@@ -95,7 +96,7 @@ void LocalFootstepPlanner::computeContactSchedule(int current_plan_index,
 }
 
 void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_position_prev,
-  const Eigen::Vector3d &foot_position_next, double swing_phase, int swing_duration,
+  const Eigen::Vector3d &foot_position_next, double swing_phase, int swing_duration, const Eigen::VectorXd &body_plan, int leg_index,
   Eigen::Vector3d &foot_position, Eigen::Vector3d &foot_velocity, Eigen::Vector3d &foot_acceleration) {
 
   assert((swing_phase >= 0) && (swing_phase <= 1));
@@ -118,8 +119,15 @@ void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_pos
   foot_acceleration = (basis_4*foot_position_prev.array() +
     basis_5*foot_position_next.array())/pow(swing_duration*dt_, 2);
 
-  // Update z to clear both footholds by the specified height
-  double swing_apex = ground_clearance_ + std::max(foot_position_prev.z(), foot_position_next.z());
+  // Compute hip height according to the MPC plan
+  Eigen::Vector3d body_pos, body_rpy;
+  body_pos = body_plan.segment(0, 3);
+  body_rpy = body_plan.segment(3, 3);
+  Eigen::Matrix4d g_world_legbase;
+  quadKD_->worldToLegbaseFKWorldFrame(leg_index, body_pos, body_rpy, g_world_legbase);
+  
+  // Update z to clear both footholds by the specified height under the constraints of hip height
+  double swing_apex = std::min(ground_clearance_ + std::max(foot_position_prev.z(), foot_position_next.z()), g_world_legbase(2, 3) - hip_clearance_);
   double phi_z = 2*fmod(phi, 0.5);
   phi3 = phi_z*phi_z*phi_z;
   phi2 = phi_z*phi_z;
@@ -217,7 +225,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
 
 void LocalFootstepPlanner::computeFootPlanMsgs(
   const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
-  int current_plan_index, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+  int current_plan_index, const Eigen::MatrixXd &body_plan, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
   quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
   quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg) {
 
@@ -298,7 +306,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         {
           swing_phase = (i - i_liftoff)/(double)swing_duration;
         }
-        computeSwingFootState(foot_position_prev, foot_position_next, swing_phase, swing_duration,
+        computeSwingFootState(foot_position_prev, foot_position_next, swing_phase, swing_duration, body_plan.row(i).transpose(), j,
           foot_position, foot_velocity, foot_acceleration);
         foot_state_msg.contact = false;
 
