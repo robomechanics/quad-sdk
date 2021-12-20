@@ -4,8 +4,8 @@
 #
 rigid_bodies:
     '5':
-        pose: spirit/pose
-        pose2d: spirit/ground_pose
+        pose: quad/pose
+        pose2d: quad/ground_pose
         child_frame_id: body
         parent_frame_id: map
 optitrack_config:

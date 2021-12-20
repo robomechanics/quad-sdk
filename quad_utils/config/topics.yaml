@@ -1,0 +1,56 @@
+topics:
+  joint_encoder: /mcu/state/jointURDF
+  imu: /mcu/state/imu
+  vel: /mcu/state/vel
+  mocap: /mocap_node/quad/pose
+  terrain_map: /terrain_map
+  terrain_map_raw: /terrain_map_raw
+  global_plan: /global_plan
+  global_plan_discrete: /global_plan_discrete
+  foot_plan_continuous: /foot_plan_continuous
+  foot_plan_discrete: /foot_plan_discrete
+  local_plan: /local_plan
+  body_force:
+    joint_torques: /body_force/joint_torques
+    toe_forces: /body_force/toe_forces
+  trajectory: /robot_plan
+  state: # These should not change for the remapping to work in some launch files
+    ground_truth: /state/ground_truth
+    ground_truth_body_frame: /state/ground_truth_body_frame
+    estimate: /state/estimate
+    trajectory: /state/trajectory
+    grfs: /state/grfs
+  control:
+    grfs: /control/grfs
+    trajectory: /control/trajectory
+    joint_command: /control/joint_command
+    mode: /control/mode
+    restart_flag: /control/restart_flag
+    leg_override: /control/leg_override
+    single_joint_command: /control/single_joint_command
+  cmd_vel: /cmd_vel
+  heartbeat:
+    remote: /heartbeat/remote
+    robot: /heartbeat/robot
+  visualization:
+    global_plan: /visualization/global_plan
+    local_plan: /visualization/local_plan
+    local_plan_ori: /visualization/local_plan_ori
+    global_plan_grf: /visualization/global_plan_grf
+    local_plan_grf: /visualization/local_plan_grf
+    current_grf: /visualization/current_grf
+    global_plan_discrete: /visualization/global_plan_discrete
+    foot_plan_discrete: /visualization/foot_plan_discrete
+    joint_states:
+      estimate: /visualization/joint_states/estimate
+      ground_truth: /visualization/joint_states/ground_truth
+      trajectory: /visualization/joint_states/trajectory
+    foot_0_plan_continuous: /visualization/foot_0_plan_continuous
+    foot_1_plan_continuous: /visualization/foot_1_plan_continuous
+    foot_2_plan_continuous: /visualization/foot_2_plan_continuous
+    foot_3_plan_continuous: /visualization/foot_3_plan_continuous
+  gazebo:
+    toe0_contact_state: /gazebo/toe0_contact_state
+    toe1_contact_state: /gazebo/toe1_contact_state
+    toe2_contact_state: /gazebo/toe2_contact_state
+    toe3_contact_state: /gazebo/toe3_contact_state

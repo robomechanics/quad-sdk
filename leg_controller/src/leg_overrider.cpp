@@ -11,11 +11,11 @@ LegOverrider::LegOverrider(ros::NodeHandle nh) {
 
   // Setup pubs and subs here
   body_force_sub_ = nh_.subscribe(body_force_topic,1,&LegOverrider::bodyForceCallback, this);
-  leg_override_pub_ = nh_.advertise<spirit_msgs::LegOverride>(leg_override_topic,1);
+  leg_override_pub_ = nh_.advertise<quad_msgs::LegOverride>(leg_override_topic,1);
   
 }
 
-void LegOverrider::bodyForceCallback(const spirit_msgs::BodyForceEstimate::ConstPtr& msg) {
+void LegOverrider::bodyForceCallback(const quad_msgs::BodyForceEstimate::ConstPtr& msg) {
   // ROS_INFO("In robotStateCallback");
   last_body_force_estimate_msg_ = msg;
 }
@@ -23,9 +23,9 @@ void LegOverrider::bodyForceCallback(const spirit_msgs::BodyForceEstimate::Const
 
 void LegOverrider::publishLegOverride() {
   // ROS_INFO("In BodyForce");
-  spirit_msgs::LegOverride msg;
-  spirit_msgs::LegCommand leg_command;
-  spirit_msgs::MotorCommand motor_command;
+  quad_msgs::LegOverride msg;
+  quad_msgs::LegCommand leg_command;
+  quad_msgs::MotorCommand motor_command;
 
   double legPos[3] = {0.0, 0.4, 0.8};
   for (int i = 0; i< 3; i++) {

@@ -4,7 +4,7 @@
 #include "OsqpEigen/OsqpEigen.h"
 #include <Eigen/Core>
 #include <Eigen/Dense>
-#include <spirit_utils/quad_kd.h>
+#include <quad_utils/quad_kd.h>
 #include <assert.h>
 
 //! Implements online MPC for quadrupedal MPC
@@ -242,7 +242,7 @@ private:
   OsqpEigen::Solver solver_;
 
   /// QuadKD class
-  std::shared_ptr<spirit_utils::QuadKD>quadKD_;
+  std::shared_ptr<quad_utils::QuadKD>quadKD_;
 };
 
 
