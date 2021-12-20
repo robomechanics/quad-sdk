@@ -78,6 +78,12 @@ quadKD_ = std::make_shared<quad_utils::QuadKD>();
   std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
   initial_timestamp_ = ros::Time::now();
   first_plan_ = true;
+
+  // Initialize stand pose
+  stand_pose_.fill(std::numeric_limits<double>::max());
+
+  // Initialize index for gait planning
+  current_plan_index_ = 0;
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -295,7 +301,7 @@ void LocalPlanner::getStateAndTwistInput() {
     return;
 
   // Get index
-  current_plan_index_ = quad_utils::getPlanIndex(initial_timestamp_,dt_);
+  // current_plan_index_ = quad_utils::getPlanIndex(initial_timestamp_,dt_);
 
   // Initializing foot positions if not data has arrived
   if (first_plan_) {
@@ -329,13 +335,32 @@ void LocalPlanner::getStateAndTwistInput() {
   // Set initial ground height
   ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(current_state_(0), current_state_(1));
 
+  // If it's not initialized, set to current positions
+  if (stand_pose_(0) == std::numeric_limits<double>::max() && stand_pose_(1) == std::numeric_limits<double>::max() && stand_pose_(2) == std::numeric_limits<double>::max())
+  {
+    stand_pose_ << current_state_[0], current_state_[1], current_state_[5];
+  }
+
+  // If it's going to walk, use latest states
+  if (cmd_vel_[0] != 0 || cmd_vel_[1] != 0 || cmd_vel_[5] != 0)
+  {
+    stand_pose_ << current_state_[0], current_state_[1], current_state_[5];
+  }
+  // If it's standing, try to stablized the waggling
+  else
+  {
+    Eigen::Vector3d current_stand_pose;
+    current_stand_pose << current_state_[0], current_state_[1], current_state_[5];
+    stand_pose_ = stand_pose_ * (1 - 1 / update_rate_) + current_stand_pose * 1 / update_rate_;
+  }
+
   // Set initial condition for forward integration
-  ref_body_plan_(0,0) = current_state_[0];
-  ref_body_plan_(0,1) = current_state_[1];
+  ref_body_plan_(0,0) = stand_pose_[0];
+  ref_body_plan_(0,1) = stand_pose_[1];
   ref_body_plan_(0,2) = z_des_ + ref_ground_height_(0);
   ref_body_plan_(0,3) = 0;
   ref_body_plan_(0,4) = 0;
-  ref_body_plan_(0,5) = current_state_[5];
+  ref_body_plan_(0,5) = stand_pose_[2];
   ref_body_plan_(0,6) = cmd_vel_[0]*cos(current_state_[5]) - cmd_vel_[1]*sin(current_state_[5]);
   ref_body_plan_(0,7) = cmd_vel_[0]*sin(current_state_[5]) + cmd_vel_[1]*cos(current_state_[5]);
   ref_body_plan_(0,8) = cmd_vel_[2];
@@ -347,9 +372,9 @@ void LocalPlanner::getStateAndTwistInput() {
   // ref_body_plan_(0, 4) = local_footstep_planner_->getTerrainSlope(current_state_(0), current_state_(1), current_state_(6), current_state_(7));
   
   // Adaptive roll and pitch
-  local_footstep_planner_->getTerrainSlope(current_state_(0),
-                                           current_state_(1),
-                                           current_state_(5),
+  local_footstep_planner_->getTerrainSlope(ref_body_plan_(0, 0),
+                                           ref_body_plan_(0, 1),
+                                           ref_body_plan_(0, 5),
                                            ref_body_plan_(0, 3),
                                            ref_body_plan_(0, 4));
 
@@ -418,6 +443,9 @@ bool LocalPlanner::computeLocalPlan() {
   // Compute the contact schedule
   local_footstep_planner_->computeContactSchedule(current_plan_index_, current_state_,
     ref_body_plan_,contact_schedule_);
+  
+  // We trust the ros rate and let the gait use the same rate as the node running to avoid round-up problem in the time-based method
+  current_plan_index_++;
 
   // Compute the new footholds if we have a valid existing plan (i.e. if grf_plan is filled)
   if (grf_plan_.rows() == N_) {
@@ -465,7 +493,7 @@ void LocalPlanner::publishLocalPlan() {
   quad_msgs::MultiFootPlanContinuous foot_plan_msg;
 
   // Update the headers of all messages
-  ros::Time timestamp = ros::Time::now();
+  ros::Time timestamp = robot_state_msg_->header.stamp;
   local_plan_msg.header.stamp = timestamp;
   local_plan_msg.header.frame_id = map_frame_;
   if (!use_twist_input_) {
