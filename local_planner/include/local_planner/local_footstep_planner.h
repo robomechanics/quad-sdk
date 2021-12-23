@@ -327,8 +327,7 @@ class LocalFootstepPlanner {
     std::vector<std::vector<bool>> nominal_contact_schedule_;
 
     /// Ground clearance
-    double min_ground_clearance_;
-    double max_ground_clearance_;
+    double ground_clearance_;
 
     /// Hip clearance
     double hip_clearance_;
@@ -350,8 +349,6 @@ class LocalFootstepPlanner {
 
     /// Threshold of body error from desired goal to start stepping
     double standing_error_threshold_ = 0;
-
-    double ground_height_;
 
 };
 

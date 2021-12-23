@@ -13,7 +13,6 @@
 #include <rbdl/rbdl.h>
 #include <rbdl/rbdl_utils.h>
 #include <rbdl/addons/urdfreader/urdfreader.h>
-#include <Eigen/SVD>
 
 namespace quad_utils {
  
@@ -224,8 +223,6 @@ class QuadKD {
   void computeInverseDynamics(const Eigen::VectorXd &state_pos,const Eigen::VectorXd &state_vel,
     const Eigen::VectorXd &foot_acc,const Eigen::VectorXd &grf,
     const std::vector<int> &contact_mode, Eigen::VectorXd &tau) const;
-
-  Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian) const;
 
   private:
 

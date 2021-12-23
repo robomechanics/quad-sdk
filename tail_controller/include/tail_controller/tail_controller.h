@@ -2,9 +2,9 @@
 #define TAIL_CONTROLLER_H
 
 #include <ros/ros.h>
-#include <spirit_msgs/LegCommandArray.h>
-#include <spirit_utils/tail_type.h>
-#include <spirit_utils/ros_utils.h>
+#include <quad_msgs/LegCommandArray.h>
+#include <quad_utils/tail_type.h>
+#include <quad_utils/ros_utils.h>
 #include <std_msgs/UInt8.h>
 #include <math.h>
 #include <algorithm>
@@ -36,9 +36,9 @@ private:
 	 * @brief Verifies and updates new control mode
 	 * @param[in] msg New control mode
 	 */
-	void tailPlanCallback(const spirit_msgs::LegCommandArray::ConstPtr &msg);
+	void tailPlanCallback(const quad_msgs::LegCommandArray::ConstPtr &msg);
 
-	void robotStateCallback(const spirit_msgs::RobotState::ConstPtr &msg);
+	void robotStateCallback(const quad_msgs::RobotState::ConstPtr &msg);
 
 	/**
 	 * @brief Compute and send open loop joint positions
@@ -64,9 +64,9 @@ private:
 
 	ros::Subscriber robot_state_sub_;
 
-	spirit_msgs::RobotState::ConstPtr robot_state_msg_;
+	quad_msgs::RobotState::ConstPtr robot_state_msg_;
 
-	spirit_msgs::LegCommandArray::ConstPtr last_tail_plan_msg_;
+	quad_msgs::LegCommandArray::ConstPtr last_tail_plan_msg_;
 
 	double dt_;
 

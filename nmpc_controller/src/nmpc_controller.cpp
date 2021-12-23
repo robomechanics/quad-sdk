@@ -126,9 +126,6 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
       ref_ground_height.tail(N_));
   mynlp_->shift_initial_guess();
 
-  // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
-  // std::cout << "leg contact_sequence_: " << mynlp_->contact_sequence_.transpose().format(CleanFmt) << std::endl;
-
   return this->computePlan(initial_state,
                            ref_traj,
                            foot_positions,
@@ -240,43 +237,6 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
                                    contact_schedule,
                                    state_traj_with_tail,
                                    control_traj_with_tail);
-
-  // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
-  // std::cout << "mynlp_->x_current_.transpose().format(CleanFmt)" << std::endl;
-  // std::cout << mynlp_->x_current_.transpose().format(CleanFmt) << std::endl;
-  // std::cout << "mynlp_->x_reference_.transpose().format(CleanFmt)" << std::endl;
-  // std::cout << mynlp_->x_reference_.transpose().format(CleanFmt) << std::endl;
-  // std::cout << "mynlp_->feet_location_.transpose().format(CleanFmt)" << std::endl;
-  // std::cout << mynlp_->feet_location_.transpose().format(CleanFmt) << std::endl;
-  // std::cout << "mynlp_->contact_sequence_.transpose().format(CleanFmt)" << std::endl;
-  // std::cout << mynlp_->contact_sequence_.transpose().format(CleanFmt) << std::endl;
-  // std::cout << "mynlp_->leg_input_.transpose().format(CleanFmt)" << std::endl;
-  // std::cout << mynlp_->leg_input_.transpose().format(CleanFmt) << std::endl;
-
-  // Eigen::Map<Eigen::MatrixXd> w0_start(mynlp_->w0_.data(), n_ + m_, N_);
-  // std::cout << "w0_start.transpose().format(CleanFmt)" << std::endl;
-  // std::cout << w0_start.transpose().format(CleanFmt) << std::endl;
-
-  bool success = this->computePlan(initial_state_with_tail,
-                                   ref_traj_with_tail,
-                                   foot_positions,
-                                   contact_schedule,
-                                   state_traj_with_tail,
-                                   control_traj_with_tail);
-
-  // Eigen::Map<Eigen::MatrixXd> w0_end(mynlp_->w0_.data(), n_ + m_, N_);
-  // std::cout << "w0_end.transpose().format(CleanFmt)" << std::endl;
-  // std::cout << w0_end.transpose().format(CleanFmt) << std::endl;
-
-  // Eigen::Map<Eigen::MatrixXd> z_L_matrix(mynlp_->z_L0_.data(), n_ + m_, N_);
-  // Eigen::Map<Eigen::MatrixXd> z_U_matrix(mynlp_->z_U0_.data(), n_ + m_, N_);
-  // Eigen::Map<Eigen::MatrixXd> lambda_matrix(mynlp_->lambda0_.data(), n_ + 16, N_);
-  // std::cout << "z_L_matrix.transpose().format(CleanFmt)" << std::endl;
-  // std::cout << z_L_matrix.transpose().format(CleanFmt) << std::endl;
-  // std::cout << "z_U_matrix.transpose().format(CleanFmt)" << std::endl;
-  // std::cout << z_U_matrix.transpose().format(CleanFmt) << std::endl;
-  // std::cout << "lambda_matrix.transpose().format(CleanFmt)" << std::endl;
-  // std::cout << lambda_matrix.transpose().format(CleanFmt) << std::endl;
 
   tail_state_traj.leftCols(2) = state_traj_with_tail.block(0, 6, N_ + 1, 2);
   tail_state_traj.rightCols(2) = state_traj_with_tail.block(0, 14, N_ + 1, 2);

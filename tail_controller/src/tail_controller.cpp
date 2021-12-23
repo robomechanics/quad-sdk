@@ -33,27 +33,27 @@ TailController::TailController(ros::NodeHandle nh)
 
   // Get rosparams
   std::string tail_plan_topic, tail_control_topic, robot_state_topic;
-  spirit_utils::loadROSParam(nh_, "/topics/control/tail_plan", tail_plan_topic);
-  spirit_utils::loadROSParam(nh_, "/topics/control/tail_command", tail_control_topic);
-  spirit_utils::loadROSParam(nh_, "/topics/state/ground_truth", robot_state_topic);
-  spirit_utils::loadROSParam(nh_, "tail_controller/controller_update_rate", update_rate_);
-  spirit_utils::loadROSParam(nh_, "tail_controller/roll_kp", roll_kp_);
-  spirit_utils::loadROSParam(nh_, "tail_controller/roll_kd", roll_kd_);
-  spirit_utils::loadROSParam(nh_, "tail_controller/pitch_kp", pitch_kp_);
-  spirit_utils::loadROSParam(nh_, "tail_controller/pitch_kd", pitch_kd_);
+  quad_utils::loadROSParam(nh_, "/topics/control/tail_plan", tail_plan_topic);
+  quad_utils::loadROSParam(nh_, "/topics/control/tail_command", tail_control_topic);
+  quad_utils::loadROSParam(nh_, "/topics/state/ground_truth", robot_state_topic);
+  quad_utils::loadROSParam(nh_, "tail_controller/controller_update_rate", update_rate_);
+  quad_utils::loadROSParam(nh_, "tail_controller/roll_kp", roll_kp_);
+  quad_utils::loadROSParam(nh_, "tail_controller/roll_kd", roll_kd_);
+  quad_utils::loadROSParam(nh_, "tail_controller/pitch_kp", pitch_kp_);
+  quad_utils::loadROSParam(nh_, "tail_controller/pitch_kd", pitch_kd_);
 
   // Setup pubs and subs
-  tail_control_pub_ = nh_.advertise<spirit_msgs::LegCommand>(tail_control_topic, 1);
+  tail_control_pub_ = nh_.advertise<quad_msgs::LegCommand>(tail_control_topic, 1);
   tail_plan_sub_ = nh_.subscribe(tail_plan_topic, 1, &TailController::tailPlanCallback, this);
   robot_state_sub_ = nh_.subscribe(robot_state_topic, 1, &TailController::robotStateCallback, this);
 }
 
-void TailController::tailPlanCallback(const spirit_msgs::LegCommandArray::ConstPtr &msg)
+void TailController::tailPlanCallback(const quad_msgs::LegCommandArray::ConstPtr &msg)
 {
   last_tail_plan_msg_ = msg;
 }
 
-void TailController::robotStateCallback(const spirit_msgs::RobotState::ConstPtr &msg)
+void TailController::robotStateCallback(const quad_msgs::RobotState::ConstPtr &msg)
 {
   // Make sure the data is actually populated
   if (msg->feet.feet.empty() || msg->joints.position.empty())
@@ -69,10 +69,10 @@ void TailController::publishTailCommand()
     return;
   }
 
-  current_state_ = spirit_utils::bodyStateMsgToEigen(robot_state_msg_->body);
-  tail_current_state_ = spirit_utils::odomMsgToEigenForTail(*robot_state_msg_);
+  current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
+  tail_current_state_ = quad_utils::odomMsgToEigenForTail(*robot_state_msg_);
 
-  spirit_msgs::LegCommand msg;
+  quad_msgs::LegCommand msg;
   msg.motor_commands.resize(2);
 
   if (param_ns_ == "decentralized_tail")
@@ -184,35 +184,35 @@ void TailController::publishTailCommand()
       msg.motor_commands.at(1).kp = pitch_kp_;
       msg.motor_commands.at(1).kd = pitch_kd_;
 
-      if (abs(msg.motor_commands.at(0).pos_setpoint) > 1.5)
-      {
-        if (msg.motor_commands.at(0).pos_setpoint > 0)
-        {
-          msg.motor_commands.at(0).vel_setpoint = std::min(msg.motor_commands.at(0).vel_setpoint, 0.);
-          msg.motor_commands.at(0).torque_ff = std::min(msg.motor_commands.at(0).torque_ff, 0.);
-        }
-        else
-        {
-          msg.motor_commands.at(0).vel_setpoint = std::max(msg.motor_commands.at(0).vel_setpoint, 0.);
-          msg.motor_commands.at(0).torque_ff = std::max(msg.motor_commands.at(0).torque_ff, 0.);
-        }
-        msg.motor_commands.at(0).pos_setpoint = std::min(std::max(-1.5, msg.motor_commands.at(0).pos_setpoint), 1.5);
-      }
+      // if (abs(msg.motor_commands.at(0).pos_setpoint) > 1.5)
+      // {
+      //   if (msg.motor_commands.at(0).pos_setpoint > 0)
+      //   {
+      //     msg.motor_commands.at(0).vel_setpoint = std::min(msg.motor_commands.at(0).vel_setpoint, 0.);
+      //     msg.motor_commands.at(0).torque_ff = std::min(msg.motor_commands.at(0).torque_ff, 0.);
+      //   }
+      //   else
+      //   {
+      //     msg.motor_commands.at(0).vel_setpoint = std::max(msg.motor_commands.at(0).vel_setpoint, 0.);
+      //     msg.motor_commands.at(0).torque_ff = std::max(msg.motor_commands.at(0).torque_ff, 0.);
+      //   }
+      //   msg.motor_commands.at(0).pos_setpoint = std::min(std::max(-1.5, msg.motor_commands.at(0).pos_setpoint), 1.5);
+      // }
 
-      if (abs(msg.motor_commands.at(1).pos_setpoint) > 1.5)
-      {
-        if (msg.motor_commands.at(1).pos_setpoint > 0)
-        {
-          msg.motor_commands.at(1).vel_setpoint = std::min(msg.motor_commands.at(1).vel_setpoint, 0.);
-          msg.motor_commands.at(1).torque_ff = std::min(msg.motor_commands.at(1).torque_ff, 0.);
-        }
-        else
-        {
-          msg.motor_commands.at(1).vel_setpoint = std::max(msg.motor_commands.at(1).vel_setpoint, 0.);
-          msg.motor_commands.at(1).torque_ff = std::max(msg.motor_commands.at(1).torque_ff, 0.);
-        }
-        msg.motor_commands.at(1).pos_setpoint = std::min(std::max(-1.5, msg.motor_commands.at(1).pos_setpoint), 1.5);
-      }
+      // if (abs(msg.motor_commands.at(1).pos_setpoint) > 1.5)
+      // {
+      //   if (msg.motor_commands.at(1).pos_setpoint > 0)
+      //   {
+      //     msg.motor_commands.at(1).vel_setpoint = std::min(msg.motor_commands.at(1).vel_setpoint, 0.);
+      //     msg.motor_commands.at(1).torque_ff = std::min(msg.motor_commands.at(1).torque_ff, 0.);
+      //   }
+      //   else
+      //   {
+      //     msg.motor_commands.at(1).vel_setpoint = std::max(msg.motor_commands.at(1).vel_setpoint, 0.);
+      //     msg.motor_commands.at(1).torque_ff = std::max(msg.motor_commands.at(1).torque_ff, 0.);
+      //   }
+      //   msg.motor_commands.at(1).pos_setpoint = std::min(std::max(-1.5, msg.motor_commands.at(1).pos_setpoint), 1.5);
+      // }
     }
   }
 

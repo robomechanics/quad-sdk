@@ -23,8 +23,6 @@ local_footstep_planner:
   period: 0.36 # s
   ground_clearance: 0.15
   hip_clearance: 0.1
-  max_ground_clearance: 0.15
-  min_ground_clearance: 0.1
   standing_error_threshold: 0.03 # m
 
 mpc_controller:

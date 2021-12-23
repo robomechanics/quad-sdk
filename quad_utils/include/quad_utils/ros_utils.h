@@ -246,7 +246,12 @@ void interpRobotPlan(quad_msgs::RobotPlan msg, double t,
    */
   Eigen::VectorXd bodyStateMsgToEigen(const quad_msgs::BodyState &body);
 
-  Eigen::VectorXd odomMsgToEigenForTail(const spirit_msgs::RobotState &msg);
+  /**
+   * @brief Convert robot state message to tail state in Eigen
+   * @param[in] body Odometry msg with body state data
+   * @return Eigen vector with tail state data
+   */
+  Eigen::VectorXd odomMsgToEigenForTail(const quad_msgs::RobotState &msg);
 
   /**
    * @brief Convert Eigen vector of GRFs to GRFArray msg

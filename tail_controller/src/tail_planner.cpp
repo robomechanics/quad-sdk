@@ -6,16 +6,16 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
 
   // Get rosparams
   std::string body_plan_topic, robot_state_topic, local_plan_topic, tail_plan_topic, cmd_vel_topic, grf_topic;
-  spirit_utils::loadROSParam(nh_, "/topics/control/tail_plan", tail_plan_topic);
-  spirit_utils::loadROSParam(nh_, "/topics/global_plan", body_plan_topic);
-  spirit_utils::loadROSParam(nh_, "/topics/state/ground_truth", robot_state_topic);
-  spirit_utils::loadROSParam(nh_, "/topics/local_plan", local_plan_topic);
-  spirit_utils::loadROSParam(nh_, "/tail_controller/planner_update_rate", update_rate_);
+  quad_utils::loadROSParam(nh_, "/topics/control/tail_plan", tail_plan_topic);
+  quad_utils::loadROSParam(nh_, "/topics/global_plan", body_plan_topic);
+  quad_utils::loadROSParam(nh_, "/topics/state/ground_truth", robot_state_topic);
+  quad_utils::loadROSParam(nh_, "/topics/local_plan", local_plan_topic);
+  quad_utils::loadROSParam(nh_, "/tail_controller/planner_update_rate", update_rate_);
   nh_.param<std::string>("/topics/cmd_vel", cmd_vel_topic, "/cmd_vel");
-  spirit_utils::loadROSParam(nh_, "/topics/state/grfs", grf_topic);
+  quad_utils::loadROSParam(nh_, "/topics/state/grfs", grf_topic);
 
   // Setup pubs and subs
-  tail_plan_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(tail_plan_topic, 1);
+  tail_plan_pub_ = nh_.advertise<quad_msgs::LegCommandArray>(tail_plan_topic, 1);
   body_plan_sub_ = nh_.subscribe(body_plan_topic, 1, &TailPlanner::robotPlanCallback, this);
   robot_state_sub_ = nh_.subscribe(robot_state_topic, 1, &TailPlanner::robotStateCallback, this);
   local_plan_sub_ = nh_.subscribe(local_plan_topic, 1, &TailPlanner::localPlanCallback, this);
@@ -93,12 +93,12 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
   miss_contact_leg_.resize(4);
 }
 
-void TailPlanner::robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr &msg)
+void TailPlanner::robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg)
 {
   body_plan_msg_ = msg;
 }
 
-void TailPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr &msg)
+void TailPlanner::robotStateCallback(const quad_msgs::RobotState::ConstPtr &msg)
 {
   // Make sure the data is actually populated
   if (msg->feet.feet.empty() || msg->joints.position.empty())
@@ -107,7 +107,7 @@ void TailPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr &ms
   robot_state_msg_ = msg;
 }
 
-void TailPlanner::localPlanCallback(const spirit_msgs::RobotPlan::ConstPtr &msg)
+void TailPlanner::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg)
 {
   last_local_plan_msg_ = msg;
 }
@@ -132,7 +132,7 @@ void TailPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg)
   last_cmd_vel_msg_time_ = ros::Time::now();
 }
 
-void TailPlanner::grfCallback(const spirit_msgs::GRFArray::ConstPtr &msg)
+void TailPlanner::grfCallback(const quad_msgs::GRFArray::ConstPtr &msg)
 {
   grf_msg_ = msg;
 }
@@ -143,9 +143,9 @@ void TailPlanner::computeTailPlan()
     return;
 
   // Start from current time
-  tail_current_state_ = spirit_utils::odomMsgToEigenForTail(*robot_state_msg_);
-  current_state_ = spirit_utils::bodyStateMsgToEigen(robot_state_msg_->body);
-  spirit_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
+  tail_current_state_ = quad_utils::odomMsgToEigenForTail(*robot_state_msg_);
+  current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
+  quad_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
 
   // Define reference tail plan
   ref_tail_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 4);
@@ -246,11 +246,11 @@ void TailPlanner::computeTailPlan()
     {
       if (i + current_plan_index_ > body_plan_msg_->plan_indices.back())
       {
-        ref_body_plan_.row(i) = spirit_utils::bodyStateMsgToEigen(body_plan_msg_->states.back().body);
+        ref_body_plan_.row(i) = quad_utils::bodyStateMsgToEigen(body_plan_msg_->states.back().body);
       }
       else
       {
-        ref_body_plan_.row(i) = spirit_utils::bodyStateMsgToEigen(body_plan_msg_->states[i + current_plan_index_].body);
+        ref_body_plan_.row(i) = quad_utils::bodyStateMsgToEigen(body_plan_msg_->states[i + current_plan_index_].body);
       }
     }
   }
@@ -264,14 +264,14 @@ void TailPlanner::computeTailPlan()
       idx = last_local_plan_msg_->plan_indices.size() - 1;
     }
 
-    body_plan_.row(i) = spirit_utils::bodyStateMsgToEigen(last_local_plan_msg_->states[idx].body).transpose();
+    body_plan_.row(i) = quad_utils::bodyStateMsgToEigen(last_local_plan_msg_->states[idx].body).transpose();
 
     if (i < N_)
     {
-      grf_plan_.row(i) = spirit_utils::grfArrayMsgToEigen(last_local_plan_msg_->grfs[idx]).transpose();
+      grf_plan_.row(i) = quad_utils::grfArrayMsgToEigen(last_local_plan_msg_->grfs[idx]).transpose();
 
       Eigen::VectorXd foot_positions(12);
-      spirit_utils::multiFootStateMsgToEigen(last_local_plan_msg_->states[idx].feet, foot_positions);
+      quad_utils::multiFootStateMsgToEigen(last_local_plan_msg_->states[idx].feet, foot_positions);
       for (size_t j = 0; j < 4; j++)
       {
         contact_schedule_[i][j] = bool(last_local_plan_msg_->grfs[idx].contact_states[j]);
@@ -340,7 +340,7 @@ void TailPlanner::computeTailPlan()
                                                  tail_torque_plan_))
     return;
 
-  spirit_msgs::LegCommandArray tail_plan_msg;
+  quad_msgs::LegCommandArray tail_plan_msg;
   ros::Time timestamp = entrance_time_;
   tail_plan_msg.header.stamp = timestamp;
 
@@ -351,7 +351,7 @@ void TailPlanner::computeTailPlan()
 
   for (size_t i = 0; i < N_; i++)
   {
-    spirit_msgs::LegCommand tail_msg;
+    quad_msgs::LegCommand tail_msg;
     tail_msg.motor_commands.resize(2);
 
     tail_msg.motor_commands.at(0).pos_setpoint = tail_plan_(i, 0);

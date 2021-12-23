@@ -2,13 +2,13 @@
 #define TAIL_CONTROLLER_H
 
 #include <ros/ros.h>
-#include <spirit_msgs/LegCommandArray.h>
-#include <spirit_msgs/RobotState.h>
-#include <spirit_utils/ros_utils.h>
+#include <quad_msgs/LegCommandArray.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_utils/ros_utils.h>
 #include <std_msgs/UInt8.h>
 #include <math.h>
 #include <algorithm>
-#include <spirit_utils/tail_type.h>
+#include <quad_utils/tail_type.h>
 #include <nmpc_controller/nmpc_controller.h>
 
 //! Implements open loop controller
@@ -34,15 +34,15 @@ public:
 	void spin();
 
 private:
-	void robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr &msg);
+	void robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg);
 
-	void robotStateCallback(const spirit_msgs::RobotState::ConstPtr &msg);
+	void robotStateCallback(const quad_msgs::RobotState::ConstPtr &msg);
 
-	void localPlanCallback(const spirit_msgs::RobotPlan::ConstPtr &msg);
+	void localPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg);
 
 	void cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg);
 
-	void grfCallback(const spirit_msgs::GRFArray::ConstPtr &msg);
+	void grfCallback(const quad_msgs::GRFArray::ConstPtr &msg);
 
 	void computeTailPlan();
 
@@ -64,13 +64,13 @@ private:
 
 	std::shared_ptr<NMPCController> tail_planner_;
 
-	spirit_msgs::RobotPlan::ConstPtr body_plan_msg_;
+	quad_msgs::RobotPlan::ConstPtr body_plan_msg_;
 
-	spirit_msgs::RobotState::ConstPtr robot_state_msg_;
+	quad_msgs::RobotState::ConstPtr robot_state_msg_;
 
-	spirit_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
+	quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
-	spirit_msgs::GRFArray::ConstPtr grf_msg_;
+	quad_msgs::GRFArray::ConstPtr grf_msg_;
 
 	Eigen::VectorXd current_state_;
 

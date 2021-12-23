@@ -543,6 +543,17 @@ namespace quad_utils {
     return state;
   }
 
+  Eigen::VectorXd odomMsgToEigenForTail(const spirit_msgs::RobotState &msg) {
+
+    Eigen::VectorXd state = Eigen::VectorXd::Zero(4);
+    state(0) = msg.tail_joints.position[0];
+    state(1) = msg.tail_joints.position[1];
+    state(2) = msg.tail_joints.velocity[0];
+    state(3) = msg.tail_joints.velocity[1];
+
+    return state;
+  }
+
   void eigenToGRFArrayMsg(Eigen::VectorXd grf_array, quad_msgs::MultiFootState multi_foot_state_msg,
     quad_msgs::GRFArray &grf_msg) {
 

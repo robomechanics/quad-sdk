@@ -10,8 +10,8 @@ project(tail_controller)
 find_package(catkin REQUIRED COMPONENTS
 	roscpp
 	sensor_msgs
-	spirit_msgs
-	spirit_utils
+	quad_msgs
+	quad_utils
 	std_msgs
 	nmpc_controller
 	)
@@ -73,7 +73,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   sensor_msgs#   spirit_msgs#   std_msgs
+#   sensor_msgs#   quad_msgs#   std_msgs
 # )
 
 ################################################
@@ -108,7 +108,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 	INCLUDE_DIRS include
 	LIBRARIES tail_controller
-	CATKIN_DEPENDS roscpp sensor_msgs spirit_msgs spirit_utils std_msgs nmpc_controller
+	CATKIN_DEPENDS roscpp sensor_msgs quad_msgs quad_utils std_msgs nmpc_controller
 	DEPENDS
 	)
 

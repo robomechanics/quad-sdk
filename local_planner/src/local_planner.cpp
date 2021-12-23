@@ -11,7 +11,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   
     // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic, local_plan_topic,
-    foot_plan_discrete_topic, foot_plan_continuous_topic, cmd_vel_topic, tail_plan_topic, grf_topic;
+    foot_plan_discrete_topic, foot_plan_continuous_topic, cmd_vel_topic, grf_topic, tail_plan_topic;
   quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
   quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth",robot_state_topic);
@@ -21,7 +21,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   quad_utils::loadROSParam(nh_, "topics/cmd_vel", cmd_vel_topic);
   quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
   quad_utils::loadROSParam(nh_, "/topics/state/grfs", grf_topic);
-  spirit_utils::loadROSParam(nh_, "/topics/control/tail_plan", tail_plan_topic);
+  quad_utils::loadROSParam(nh_, "/topics/control/tail_plan", tail_plan_topic);
 
   // Setup pubs and subs
   // terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1, &LocalPlanner::terrainMapCallback, this);
@@ -35,7 +35,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
     quad_msgs::MultiFootPlanDiscrete>(foot_plan_discrete_topic,1);
   foot_plan_continuous_pub_ = nh_.advertise<
     quad_msgs::MultiFootPlanContinuous>(foot_plan_continuous_topic,1);  
-  tail_plan_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(tail_plan_topic, 1);
+  tail_plan_pub_ = nh_.advertise<quad_msgs::LegCommandArray>(tail_plan_topic, 1);
 
   // Load system parameters from parameter server
   quad_utils::loadROSParam(nh_, "local_planner/update_rate", update_rate_);
@@ -104,8 +104,10 @@ quadKD_ = std::make_shared<quad_utils::QuadKD>();
     return;
   }
 
+  // Initialize leg contact miss states vector
   miss_contact_leg_.resize(4);
 
+  // Initialize solve success state boolean
   first_solve_success = false;
 }
 
@@ -190,14 +192,11 @@ void LocalPlanner::initLocalFootstepPlanner() {
 
   // Load parameters from server
   double grf_weight, ground_clearance, hip_clearance, standing_error_threshold, period_d;
-  double grf_weight, min_ground_clearance, max_ground_clearance, standing_error_threshold, period_d;
   int period;
   quad_utils::loadROSParam(nh_, "local_footstep_planner/grf_weight", grf_weight);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/ground_clearance", ground_clearance);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/hip_clearance", hip_clearance);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/standing_error_threshold",
-  spirit_utils::loadROSParam(nh_, "local_footstep_planner/min_ground_clearance", min_ground_clearance);
-  spirit_utils::loadROSParam(nh_, "local_footstep_planner/max_ground_clearance", max_ground_clearance);
     standing_error_threshold);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/period", period_d);
 
@@ -214,8 +213,6 @@ void LocalPlanner::initLocalFootstepPlanner() {
   local_footstep_planner_->setTemporalParams(dt_, period, N_);
   local_footstep_planner_->setSpatialParams(ground_clearance, hip_clearance, standing_error_threshold,
     grf_weight,quadKD_);
-  local_footstep_planner_->setSpatialParams(min_ground_clearance, max_ground_clearance, standing_error_threshold,
-    grf_weight, kinematics_);
 
   past_footholds_msg_.feet.resize(num_feet_);
 }
@@ -309,7 +306,7 @@ void LocalPlanner::getStateAndReferencePlan() {
 
   if (tail_type_ == CENTRALIZED)
   {
-    tail_current_state_ = spirit_utils::odomMsgToEigenForTail(*robot_state_msg_);
+    tail_current_state_ = quad_utils::odomMsgToEigenForTail(*robot_state_msg_);
     ref_tail_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 4);
     ref_tail_plan_.row(0) = tail_current_state_.transpose();
   }
@@ -338,7 +335,6 @@ void LocalPlanner::getStateAndReferencePlan() {
   body_plan_.row(0) = current_state_;
   foot_positions_body_.row(0) = current_foot_positions_body_;
   foot_positions_world_.row(0) = current_foot_positions_world_;
-  //*/
 }
 
 void LocalPlanner::publishFootStepHist()
@@ -389,6 +385,12 @@ void LocalPlanner::getStateAndTwistInput() {
   if (!terrain_grid_.exists("z_smooth") || robot_state_msg_ == NULL || grf_msg_ == NULL)
     return;
 
+  // The first couple solving might fail, we want to aligh all the gait  
+  if (!first_solve_success)
+  {
+    initial_timestamp_ = ros::Time::now();
+  }
+
   // Get index
   current_plan_index_ = quad_utils::getPlanIndex(initial_timestamp_,dt_);
 
@@ -404,15 +406,6 @@ void LocalPlanner::getStateAndTwistInput() {
     }
   }
 
-  // The first couple solving might fail, we want to aligh all the gait  
-  if (!first_solve_success)
-  {
-    initial_timestamp_ = ros::Time::now();
-  }
-  
-  // Get index
-  current_plan_index_ = spirit_utils::getPlanIndex(initial_timestamp_,dt_);
-
   // Get the current body and foot positions into Eigen
   current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
   current_state_timestamp_ = robot_state_msg_->header.stamp;
@@ -423,21 +416,8 @@ void LocalPlanner::getStateAndTwistInput() {
   // Clear any old reference plans
   ref_body_plan_.setZero();
 
-  // Check that we have recent twist data, otherwise set cmd_vel to zero
-  // ros::Duration time_elapsed_since_msg = ros::Time::now() - last_cmd_vel_msg_time_;
-  // if (time_elapsed_since_msg.toSec() > last_cmd_vel_msg_time_max_) {
-  //   std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
-  //   ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
-  // }
-  std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
-  cmd_vel_.at(1) = 0.75;
-
-  // Adaptive body height, use the lowest foot and exponential filter
-  std::vector<double> foot_height;
-  for (size_t i = 0; i < 4; i++)
-  {
-    foot_height.push_back(current_foot_positions_world_(3 * i + 2));
-  }
+  // Assign a sidewalk velocity
+  cmd_vel_.at(1) = 0.5;
 
   // Set initial ground height
   ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(current_state_(0), current_state_(1));
@@ -568,15 +548,7 @@ bool LocalPlanner::computeLocalPlan() {
       foot_positions_body_);
   }
 
-  // Compute body plan with MPC, return if solve fails
-  if (use_nmpc_) {
-    if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_,
-      foot_positions_body_, contact_schedule_, ref_ground_height_, body_plan_, grf_plan_))
-      return false;
-  } else {
-    if (!local_body_planner_convex_->computePlan(current_state_, ref_body_plan_,
-      foot_positions_body_, contact_schedule_, body_plan_, grf_plan_))
-      return false;
+  // TODO: this should be move to local footstep planner since we'll need the hip position and hip height for reference
   // Contact sensing
   adpative_contact_schedule_ = contact_schedule_;
 
@@ -704,33 +676,43 @@ bool LocalPlanner::computeLocalPlan() {
     // }
   }
 
-    // Compute body plan with MPC, return if solve fails
-    if (tail_type_ == CENTRALIZED)
-    {
-      if (!local_body_planner_nonlinear_->computeCentralizedTailPlan(current_state_,
-                                                                     ref_body_plan_,
-                                                                     foot_positions_body_,
-                                                                     adpative_contact_schedule_,
-                                                                     tail_current_state_,
-                                                                     ref_tail_plan_,
-                                                                     body_plan_,
-                                                                     grf_plan_,
-                                                                     tail_plan_,
-                                                                     tail_torque_plan_))
-        return false;
-    }
-    else if (use_nmpc_)
-    {
-      if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_, foot_positions_body_,
-                                                         adpative_contact_schedule_, body_plan_, grf_plan_))
-        return false;
-    }
-    else
-    {
-      if (!local_body_planner_convex_->computePlan(current_state_, ref_body_plan_, foot_positions_body_,
-                                                   adpative_contact_schedule_, body_plan_, grf_plan_))
-        return false;
-    }
+  // Compute body plan with MPC, return if solve fails
+  if (tail_type_ == CENTRALIZED)
+  {
+    // TODO: we've not yet implement ground height verison for centralized tail
+    if (!local_body_planner_nonlinear_->computeCentralizedTailPlan(current_state_,
+                                                                   ref_body_plan_,
+                                                                   foot_positions_body_,
+                                                                   adpative_contact_schedule_,
+                                                                   tail_current_state_,
+                                                                   ref_tail_plan_,
+                                                                   body_plan_,
+                                                                   grf_plan_,
+                                                                   tail_plan_,
+                                                                   tail_torque_plan_))
+      return false;
+  }
+  else if (use_nmpc_)
+  {
+    if (!local_body_planner_nonlinear_->computeLegPlan(current_state_,
+                                                       ref_body_plan_,
+                                                       foot_positions_body_,
+                                                       adpative_contact_schedule_,
+                                                       ref_ground_height_,
+                                                       body_plan_,
+                                                       grf_plan_))
+      return false;
+  }
+  else
+  {
+    if (!local_body_planner_convex_->computePlan(current_state_,
+                                                 ref_body_plan_,
+                                                 foot_positions_body_,
+                                                 contact_schedule_,
+                                                 body_plan_,
+                                                 grf_plan_))
+      return false;
+  }
 
   // We are here, meaning we get the solving success
   first_solve_success = true;
@@ -753,21 +735,11 @@ bool LocalPlanner::computeLocalPlan() {
 
 void LocalPlanner::publishLocalPlan() {
 
-  // if (current_plan_index_ >= 50) {
-  // std::cout << "current_state_\n" << current_state_ << std::endl;
-  // std::cout << "ref_body_plan_\n" << ref_body_plan_ << std::endl;
-  // std::cout << "body_plan_\n" << body_plan_ << std::endl;
-  // std::cout << "grf_plan_\n" << grf_plan_ << std::endl;
-  // std::cout << "foot_positions_world_\n" << foot_positions_world_ << std::endl;
-  // std::cout << "foot_positions_body_\n" << foot_positions_body_ << std::endl;
-  // throw std::runtime_error("Stop");
-  // }
-
   // Create messages to publish
   quad_msgs::RobotPlan local_plan_msg;
   quad_msgs::MultiFootPlanDiscrete future_footholds_msg;
   quad_msgs::MultiFootPlanContinuous foot_plan_msg;
-  spirit_msgs::LegCommandArray tail_plan_msg;
+  quad_msgs::LegCommandArray tail_plan_msg;
 
   // Update the headers of all messages
   ros::Time timestamp = robot_state_msg_->header.stamp;
@@ -821,7 +793,7 @@ void LocalPlanner::publishLocalPlan() {
 
     if (tail_type_ == CENTRALIZED)
     {
-      spirit_msgs::LegCommand tail_msg;
+      quad_msgs::LegCommand tail_msg;
       tail_msg.motor_commands.resize(2);
 
       tail_msg.motor_commands.at(0).pos_setpoint = tail_plan_(i, 0);
@@ -846,8 +818,6 @@ void LocalPlanner::publishLocalPlan() {
   {
     tail_plan_pub_.publish(tail_plan_msg);
   }
-
-  // std::cout << foot_plan_msg << std::endl;
 }
 
 void LocalPlanner::spin() {

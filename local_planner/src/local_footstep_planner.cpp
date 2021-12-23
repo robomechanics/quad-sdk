@@ -3,8 +3,7 @@
 #include <chrono>
 
 LocalFootstepPlanner::LocalFootstepPlanner() {
-  // Initialize the ground height estimation as infinity, we'll use foot position to estimate it online
-  ground_height_ = std::numeric_limits<double>::max();
+
 }
 
 void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_length) {
@@ -37,9 +36,6 @@ void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_
 
 void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double hip_clearance, double grf_weight, 
   double standing_error_threshold, std::shared_ptr<quad_utils::QuadKD> kinematics) {
-  // Minimum and maximum ground clearance when computing the swing traj
-  min_ground_clearance_ = min_ground_clearance;
-  max_ground_clearance_ = max_ground_clearance;
 
   ground_clearance_ = ground_clearance;
   hip_clearance_ = hip_clearance;
@@ -191,8 +187,6 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         ref_body_ang_vel_touchdown = ref_body_plan.block<1,3>(i,9);
         grf_midstance = grf_plan.block<1,3>(midstance,3*j);
 
-        Eigen::Vector3d current_body_pos = body_plan.block<1,3>(0,0);
-
         // Compute nominal foot positions for kinematic and grf-projection measures
       quadKD_->worldToNominalHipFKWorldFrame(j, body_pos_midstance, body_rpy_midstance, 
           hip_position_midstance);
@@ -212,9 +206,6 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         grid_map::Position foot_position_grid_map = {foot_position_nominal.x(), foot_position_nominal.y()};
         foot_position_nominal.z() = terrain_grid_.atPosition("z_smooth", foot_position_grid_map,
           grid_map::InterpolationMethods::INTER_LINEAR);
-
-        // We don't have terrian info here, so assume flat plane
-        foot_position_nominal.z() = ground_height_;
 
         // (Optional) Optimize the foothold location to get the final position
         // foot_position = map_search::optimizeFoothold(foot_position_nominal, stuff); // ADAM
@@ -258,9 +249,6 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
     Eigen::Vector3d foot_position_prev;
     quad_utils::footStateMsgToEigen(most_recent_foothold_msg, foot_position_prev);
     Eigen::Vector3d foot_position_next = getFootData(foot_positions, i_touchdown, j);
-
-    // The swing foot might not has the same height, so we use the actual data
-    // foot_position_prev(2) = foot_position_next(2);
 
     // Loop through the horizon
     for (int i = 0; i < contact_schedule.size(); i++) {
@@ -337,12 +325,6 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
       if (i == 1 && isNewLiftoff(contact_schedule, i, j)) {
         past_footholds_msg.feet[j].footholds.push_back(foot_state_msg);
       }
-      // We don't want to update the past foothold with current height
-      // else
-      // {
-      //   past_footholds_msg.feet[j].footholds.back().position.z = foot_position_prev(2);
-      // }
-      
     }
   }
 }

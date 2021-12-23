@@ -17,7 +17,7 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <nmpc_controller/nmpc_controller.h>
 #include <filters/filter_chain.h>
-#include <spirit_utils/tail_type.h>
+#include <quad_utils/tail_type.h>
 
 //! Local Body Planner library
 /*!
@@ -72,8 +72,6 @@ private:
    * @param[in] msg the message contining twist data
    */
   void cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg);
-
-  void grfCallback(const spirit_msgs::GRFArray::ConstPtr& msg);
 
   /**
    * @brief Callback function to handle new GRF estimates
@@ -159,8 +157,6 @@ private:
   /// Most recent robot state
 	quad_msgs::RobotState::ConstPtr robot_state_msg_;
 
-	spirit_msgs::GRFArray::ConstPtr grf_msg_;
-
   /// Past foothold locations
 	quad_msgs::MultiFootPlanDiscrete past_footholds_msg_;
 
@@ -233,6 +229,7 @@ private:
   /// Contact schedule
   std::vector<std::vector<bool>> contact_schedule_;
 
+  /// Adaptive contact schedule
   std::vector<std::vector<bool>> adpative_contact_schedule_;
 
   /// Matrix of continuous foot positions in world frame
@@ -258,7 +255,7 @@ private:
   double cmd_vel_scale_;
 
   /// Nominal robot height
-  double z_des_;
+  const double z_des_ = 0.3;
 
   /// Time of the most recent cmd_vel data
   ros::Time last_cmd_vel_msg_time_;
@@ -306,8 +303,6 @@ private:
   ros::Publisher tail_plan_pub_;
 
   std::vector<bool> miss_contact_leg_;
-
-  ros::Time entrance_time_;
 
   bool first_solve_success;
 };
