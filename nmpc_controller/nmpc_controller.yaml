@@ -5,13 +5,10 @@ nmpc_controller:
     state_dimension: 12
     control_dimension: 12
     step_length: 0.03
-    state_weights: [5, 5, 50, 2.5, 2.5, 10, 0.25, 0.25, 0.1, 0, 0, 0.3]
+    panic_weights: !!float 1e3
+    state_weights: [5, 5, 50, 2.5, 2.5, 10, 0.25, 0.25, 0.1, 0.1, 0.1, 0.3]
     control_weights: [!!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6]
-    state_weights_factors: [1.        , 1.1       , 1.21      , 1.331     , 1.4641    ,
-       1.61051   , 1.771561  , 1.9487171 , 2.14358881, 2.35794769,
-       2.59374246, 2.85311671, 3.13842838, 3.45227121, 3.79749834,
-       4.17724817, 4.59497299, 5.05447028, 5.55991731, 6.11590904,
-       6.72749995, 7.40024994, 8.14027494, 8.95430243]
+    state_weights_factors: [1,1.11250000000000,1.23765625000000,1.37689257812500,1.53179299316406,1.70411970489502,1.89583317169571,2.10911440351148,2.34638977390652,2.61035862347100,2.90402396861149,3.23072666508028,3.59418341490181,3.99852904907827,4.44836356709957,4.94880446839828,5.50554497109308,6.12491878034106,6.81397214312942,7.58054400923148,8.43335521027003,9.38210767142540,10.4375947844608,11.6118241977126]
     control_weights_factors: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     state_lower_bound: [!!float -2e19, !!float -2e19, 0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
     state_upper_bound: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
@@ -23,6 +20,7 @@ nmpc_controller:
     control_dimension: 14
     state_dimension: 16
     step_length: 0.03
+    panic_weights: !!float 1e3
     state_weights: [5, 5, 50, 2.5, 2.5, 10, 0.1, 0.1, 0.25, 0.25, 0.1, 0, 0, 0.3, 0.001, 0.001]
     control_weights: [!!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6]
     state_weights_factors: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
@@ -37,6 +35,7 @@ nmpc_controller:
     control_dimension: 14
     state_dimension: 16
     step_length: 0.03
+    panic_weights: !!float 1e3
     state_weights: [0, 0, 0, 2.5, 2.5, 0, 0.25, 0.25, 0, 0, 0, 0, 0, 0, 0, 0]
     control_weights: [!!float 1e-3, !!float 1e-3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     state_weights_factors: [ 1.        ,  1.15      ,  1.3225    ,  1.520875  ,  1.74900625,
@@ -54,6 +53,7 @@ nmpc_controller:
     control_dimension: 14
     state_dimension: 16
     step_length: 0.03
+    panic_weights: !!float 1e3
     state_weights: [0, 0, 0, 2.5, 2.5, 0, 0.25, 0.25, 0, 0, 0, 0, 0, 0, 0.001, 0.001]
     control_weights: [!!float 5e-6, !!float 5e-6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     state_weights_factors: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]

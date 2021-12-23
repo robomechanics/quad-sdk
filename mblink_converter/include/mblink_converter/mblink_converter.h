@@ -2,12 +2,13 @@
 #define MBLINK_CONVERTER_H
 
 #include <ros/ros.h>
-#include <spirit_msgs/LegCommandArray.h>
+#include <std_msgs/Bool.h>
+#include <quad_msgs/LegCommandArray.h>
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <mblink/mblink.hpp>
 #include <eigen3/Eigen/Eigen>
-#include <spirit_utils/ros_utils.h>
+#include <quad_utils/ros_utils.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <chrono>
@@ -21,6 +22,7 @@ struct LimbCmd_t {
   Eigen::Vector3f tau;
   short kp[3];
   float kd[3];
+  bool restart_flag;
 };
 
 typedef std::unordered_map<std::string, Eigen::VectorXf> RxData_t;
@@ -47,14 +49,19 @@ public:
 private:
   /**
    * @brief Callback function to handle new leg command data
-   * @param[in] msg spirit_msgs<LegCommandArray> containing pos, vel and torque setpoints and gains
+   * @param[in] msg quad_msgs<LegCommandArray> containing pos, vel and torque setpoints and gains
    */
-  void legControlCallback(const spirit_msgs::LegCommandArray::ConstPtr& msg);
+  void legControlCallback(const quad_msgs::LegCommandArray::ConstPtr& msg);
 
   /**
 	 * @brief Callback to handle new remote heartbeat messages
 	 */
 	void remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg);
+
+  /**
+	 * @brief Callback to handle control restart flag messages
+	 */
+  void controlRestartFlagCallback(const std_msgs::Bool::ConstPtr& msg);
 
   /**
    * @brief Compress two floats into one
@@ -81,6 +88,9 @@ private:
 	/// ROS subscriber for remote heartbeat
 	ros::Subscriber remote_heartbeat_sub_;
 
+  /// ROS subscriber for control restart flag
+  ros::Subscriber control_restart_flag_sub_;
+
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
 
@@ -94,7 +104,7 @@ private:
   double update_rate_;
 
   /// Last motor control message (keep sending until we get a new message in or node is shutdown)
-  spirit_msgs::LegCommandArray::ConstPtr last_leg_command_array_msg_;
+  quad_msgs::LegCommandArray::ConstPtr last_leg_command_array_msg_;
 
   /// Most recent remote heartbeat
 	// std_msgs::Header::ConstPtr last_remote_heartbeat_msg_;
@@ -110,6 +120,12 @@ private:
 
   /// Leg command timeout threshold in seconds
 	double leg_command_timeout_;
+
+  /// Restart flag
+  bool restart_flag_;
+
+  // Time of last restart flag message
+  ros::Time restart_flag_time_;
 
   /// Pointer to MBLink object (constructor wants argc and argv, so instantiated in main)
   MBLink mblink_; 

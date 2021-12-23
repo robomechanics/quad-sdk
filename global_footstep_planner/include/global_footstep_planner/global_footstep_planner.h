@@ -3,17 +3,17 @@
 
 #include <ros/ros.h>
 #include <nav_msgs/Path.h>
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/FootState.h>
-#include <spirit_msgs/MultiFootState.h>
-#include <spirit_msgs/MultiFootPlanContinuous.h>
-#include <spirit_msgs/FootPlanDiscrete.h>
-#include <spirit_msgs/MultiFootPlanDiscrete.h>
-#include <spirit_utils/fast_terrain_map.h>
-#include <spirit_utils/function_timer.h>
-#include <spirit_utils/math_utils.h>
-#include <spirit_utils/ros_utils.h>
-#include <spirit_utils/kinematics.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/FootState.h>
+#include <quad_msgs/MultiFootState.h>
+#include <quad_msgs/MultiFootPlanContinuous.h>
+#include <quad_msgs/FootPlanDiscrete.h>
+#include <quad_msgs/MultiFootPlanDiscrete.h>
+#include <quad_utils/fast_terrain_map.h>
+#include <quad_utils/function_timer.h>
+#include <quad_utils/math_utils.h>
+#include <quad_utils/ros_utils.h>
+#include <quad_utils/quad_kd.h>
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
@@ -22,7 +22,7 @@
 #include <eigen3/Eigen/Eigen>
 #include <eigen_conversions/eigen_msg.h>
 
-//! A global footstep planning class for spirit
+//! A global footstep planning class for quad
 /*!
    FootstepPlanner is a container for all of the logic utilized in the global footstep planning node.
    The implementation must provide a clean and high level interface to the core algorithm
@@ -52,13 +52,13 @@ class GlobalFootstepPlanner {
      * @brief Callback function to handle new body plan data
      * @param[in] nav_msgs::Path contining map data
      */
-    void robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg);
+    void robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg);
 
     /**
      * @brief Callback function to handle new robot state data
      * @param[in] msg the message contining robot state data
      */
-    void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+    void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
 
     /**
      * @brief Compute the amount of time until the next flight phase
@@ -150,13 +150,13 @@ class GlobalFootstepPlanner {
     ros::Time plan_timestamp_;
 
     /// Current body plan
-    spirit_msgs::RobotPlan::ConstPtr body_plan_msg_;
+    quad_msgs::RobotPlan::ConstPtr body_plan_msg_;
 
     /// Current robot state
-    spirit_msgs::RobotState::ConstPtr robot_state_msg_;
+    quad_msgs::RobotState::ConstPtr robot_state_msg_;
 
     /// Current continuous footstep plan
-    spirit_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
+    quad_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
 
     /// Boolean for whether or not to replan to accomodate an updated body plan
     bool update_flag_;

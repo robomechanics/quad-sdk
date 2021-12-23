@@ -4,15 +4,15 @@
 #include <ros/ros.h>
 #include <math.h>
 #include <eigen3/Eigen/Eigen>
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/MultiFootPlanDiscrete.h>
-#include <spirit_msgs/GRFArray.h>
-#include <spirit_msgs/RobotState.h>
-#include <spirit_msgs/RobotStateTrajectory.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/MultiFootPlanDiscrete.h>
+#include <quad_msgs/GRFArray.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_msgs/RobotStateTrajectory.h>
 #include <local_planner/quadruped_mpc.h>
-#include <spirit_utils/ros_utils.h>
-#include <spirit_utils/kinematics.h>
-#include "spirit_utils/matplotlibcpp.h"
+#include <quad_utils/ros_utils.h>
+#include <quad_utils/quad_kd.h>
+#include "quad_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 //! MPC controller ROS node
@@ -38,16 +38,16 @@ private:
    * @brief Callback function to handle new plans
    * @param[in] msg Robot state trajectory message
    */
-  void robotPlanCallback(const spirit_msgs::RobotStateTrajectory::ConstPtr& msg);
+  void robotPlanCallback(const quad_msgs::RobotStateTrajectory::ConstPtr& msg);
 
   /**
    * @brief Callback function to handle new state estimates
    * @param[in] State estimate message contining position and velocity for each joint and robot body
    */
-  void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+  void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
 
   
-  Eigen::VectorXd state_to_eigen(spirit_msgs::RobotState robot_state, bool zero_vel=false);
+  Eigen::VectorXd state_to_eigen(quad_msgs::RobotState robot_state, bool zero_vel=false);
 
   /**
    * @brief Internal function to convert robot state trajectory into MPC useful
@@ -91,7 +91,7 @@ private:
   std::shared_ptr<QuadrupedMPC> quad_mpc_;
 
 	/// Most recent robot plan
-	spirit_msgs::RobotStateTrajectory::ConstPtr last_plan_msg_;
+	quad_msgs::RobotStateTrajectory::ConstPtr last_plan_msg_;
 
   /// Current state (ground truth or estimate)
   Eigen::VectorXd cur_state_;
@@ -120,8 +120,8 @@ private:
   /// Number of joints per leg
   const int num_joints_per_leg_ = 3;
 
-  /// Spirit Kinematics class
-  std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
+  /// QuadKD class
+  std::shared_ptr<quad_utils::QuadKD>quadKD_;
 
 };
 

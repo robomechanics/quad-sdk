@@ -3,18 +3,18 @@
 
 #include <ros/ros.h>
 #include <nav_msgs/Path.h>
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/RobotState.h>
-#include <spirit_msgs/FootState.h>
-#include <spirit_msgs/MultiFootState.h>
-#include <spirit_msgs/FootPlanDiscrete.h>
-#include <spirit_msgs/MultiFootPlanContinuous.h>
-#include <spirit_msgs/MultiFootPlanDiscrete.h>
-#include <spirit_utils/fast_terrain_map.h>
-#include <spirit_utils/function_timer.h>
-#include <spirit_utils/math_utils.h>
-#include <spirit_utils/ros_utils.h>
-#include <spirit_utils/kinematics.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_msgs/FootState.h>
+#include <quad_msgs/MultiFootState.h>
+#include <quad_msgs/FootPlanDiscrete.h>
+#include <quad_msgs/MultiFootPlanContinuous.h>
+#include <quad_msgs/MultiFootPlanDiscrete.h>
+#include <quad_utils/fast_terrain_map.h>
+#include <quad_utils/function_timer.h>
+#include <quad_utils/math_utils.h>
+#include <quad_utils/ros_utils.h>
+#include <quad_utils/quad_kd.h>
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
@@ -23,7 +23,7 @@
 #include <eigen3/Eigen/Eigen>
 #include <eigen_conversions/eigen_msg.h>
 
-//! A local footstep planning class for spirit
+//! A local footstep planning class for quad
 /*!
    FootstepPlanner is a container for all of the logic utilized in the local footstep planning node.
    The implementation must provide a clean and high level interface to the core algorithm
@@ -46,13 +46,14 @@ class LocalFootstepPlanner {
 
     /**
      * @brief Set the spatial parameters of this object
-     * @param[in] ground_clearance The foot clearance over adjacent footholds in cm
+     * @param[in] ground_clearance The foot clearance over adjacent footholds in m
+     * @param[in] hip_clearance The foot clearance under hip in m
      * @param[in] standing_error_threshold Threshold of body error from desired goal to start stepping
      * @param[in] grf_weight Weight on GRF projection (0 to 1)
      * @param[in] kinematics Kinematics class for computations
      */
-    void setSpatialParams(double min_ground_clearance, double max_ground_clearance, double grf_weight,double standing_error_threshold,
-      std::shared_ptr<spirit_utils::SpiritKinematics> kinematics);
+    void setSpatialParams(double ground_clearance, double hip_clearance, double grf_weight,double standing_error_threshold,
+      std::shared_ptr<quad_utils::QuadKD> kinematics);
 
     /**
      * @brief Transform a vector of foot positions from the world to the body frame
@@ -77,6 +78,12 @@ class LocalFootstepPlanner {
      * @param[in] terrain The map of the terrain
      */
     void updateMap(const FastTerrainMap &terrain);
+
+    /**
+     * @brief Update the map of this object
+     * @param[in] terrain The map of the terrain
+     */
+    void updateMap(const grid_map::GridMap &terrain);
     
     /**
      * @brief Compute the contact schedule based on the current phase
@@ -115,15 +122,16 @@ class LocalFootstepPlanner {
      * @param[in] contact_schedule Current contact schedule
      * @param[in] foot_positions Foot positions over the horizon
      * @param[in] current_plan_index Current index in the global plan
+     * @param[in] body_plan Body plan from MPC
      * @param[out] past_footholds_msg Message for previous footholds
      * @param[out] future_footholds_msg Message for future (planned) footholds
      * @param[out] foot_plan_continuous_msg Message for continuous foot trajectories
      */
     void computeFootPlanMsgs(
       const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
-      int current_plan_index, spirit_msgs::MultiFootPlanDiscrete &past_footholds_msg,
-      spirit_msgs::MultiFootPlanDiscrete &future_footholds_msg,
-      spirit_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
+      int current_plan_index, const Eigen::MatrixXd &body_plan, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+      quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
+      quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
 
     inline void printContactSchedule(const std::vector<std::vector<bool>> &contact_schedule) {
       
@@ -136,6 +144,66 @@ class LocalFootstepPlanner {
           } 
         }
         printf("\n");
+      }
+    }
+
+    inline double getTerrainHeight(double x, double y)
+    {
+      grid_map::Position pos = {x, y};
+      double height = this->terrain_grid_.atPosition("z_smooth", pos, grid_map::InterpolationMethods::INTER_LINEAR);
+      return height;
+    }
+
+    inline double getTerrainSlope(double x, double y, double dx, double dy)
+    {
+      grid_map::Position pos = {x, y};
+      Eigen::Vector3d surf_norm;
+      surf_norm << terrain_grid_.atPosition("normal_vectors_x", pos, grid_map::InterpolationMethods::INTER_NEAREST),
+          terrain_grid_.atPosition("normal_vectors_y", pos, grid_map::InterpolationMethods::INTER_NEAREST),
+          terrain_grid_.atPosition("normal_vectors_z", pos, grid_map::InterpolationMethods::INTER_NEAREST);
+
+      double denom = dx * dx + dy * dy;
+      if (denom <= 0 || surf_norm[2] <= 0)
+      {
+        double default_pitch = 0;
+        return default_pitch;
+      }
+      else
+      {
+        double v_proj = (dx * surf_norm[0] + dy * surf_norm[1]) /
+                        sqrt(denom);
+        double pitch = atan2(v_proj, surf_norm[2]);
+
+        return pitch;
+      }
+    }
+
+    inline void getTerrainSlope(double x, double y, double yaw, double &roll, double &pitch)
+    {
+      grid_map::Position pos = {x, y};
+      Eigen::Vector3d surf_norm;
+      surf_norm << terrain_grid_.atPosition("normal_vectors_x", pos, grid_map::InterpolationMethods::INTER_NEAREST),
+          terrain_grid_.atPosition("normal_vectors_y", pos, grid_map::InterpolationMethods::INTER_NEAREST),
+          terrain_grid_.atPosition("normal_vectors_z", pos, grid_map::InterpolationMethods::INTER_NEAREST);
+
+      Eigen::Vector3d norm_vec(surf_norm.data());
+      Eigen::Vector3d axis = Eigen::Vector3d::UnitZ().cross(norm_vec);
+      double ang = acos(std::max(std::min(Eigen::Vector3d::UnitZ().dot(norm_vec), 1.), -1.));
+
+      if (ang < 1e-3)
+      {
+        roll = 0;
+        pitch = 0;
+        return;
+      }
+      else
+      {
+        Eigen::Matrix3d rot(Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ()));
+        axis = rot.transpose() * (axis / axis.norm());
+        tf2::Quaternion quat(tf2::Vector3(axis(0), axis(1), axis(2)), ang);
+        tf2::Matrix3x3 m(quat);
+        double tmp;
+        m.getRPY(roll, pitch, tmp);
       }
     }
 
@@ -152,11 +220,13 @@ class LocalFootstepPlanner {
      * @param[in] foot_position_next Next foothold
      * @param[in] swing_phase Phase variable for swing phase (as a fraction)
      * @param[in] swing_duration Duration of swing (in timesteps)
+     * @param[in] body_plan Body plan of current step from MPC
+     * @param[in] leg_index Leg index
      * @param[out] foot_position Position of swing foot
      * @param[out] foot_velocity Velocity of swing foot
      */
     void computeSwingFootState(const Eigen::Vector3d &foot_position_prev,
-      const Eigen::Vector3d &foot_position_next, double swing_phase, int swing_duration,
+      const Eigen::Vector3d &foot_position_next, double swing_phase, int swing_duration, const Eigen::VectorXd &body_plan, int leg_index,
       Eigen::Vector3d &foot_position, Eigen::Vector3d &foot_velocity, Eigen::Vector3d &foot_acceleration);
 
     /**
@@ -226,8 +296,11 @@ class LocalFootstepPlanner {
     /// Struct for terrain map data
     FastTerrainMap terrain_;
 
+    /// GridMap for terrain map data
+    grid_map::GridMap terrain_grid_;
+
     /// Current continuous footstep plan
-    spirit_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
+    quad_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
 
     /// Number of feet
     const int num_feet_ = 4;
@@ -257,6 +330,9 @@ class LocalFootstepPlanner {
     double min_ground_clearance_;
     double max_ground_clearance_;
 
+    /// Hip clearance
+    double hip_clearance_;
+
     /// Weighting on the projection of the grf
     double grf_weight_;
 
@@ -269,8 +345,8 @@ class LocalFootstepPlanner {
     /// Primitive ids - CONNECT_STANCE
     const int CONNECT_STANCE = 2;
 
-    /// Spirit Kinematics class
-    std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
+    /// QuadKD class
+    std::shared_ptr<quad_utils::QuadKD>quadKD_;
 
     /// Threshold of body error from desired goal to start stepping
     double standing_error_threshold_ = 0;

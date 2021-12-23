@@ -42,8 +42,10 @@ NMPCController::NMPCController(int type)
       state_upper_bound,
       control_lower_bound,
       control_upper_bound;
+  double panic_weights;
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_weights", state_weights);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_weights", control_weights);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/panic_weights", panic_weights);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_weights_factors", state_weights_factors);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_weights_factors", control_weights_factors);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_lower_bound", state_lower_bound);
@@ -59,15 +61,13 @@ NMPCController::NMPCController(int type)
       u_min(control_lower_bound.data(), m_, 1),
       u_max(control_upper_bound.data(), m_, 1);
 
-  // Convert kinematics
-  kinematics_ = std::make_shared<spirit_utils::SpiritKinematics>();
-
-  mynlp_ = new spiritNLP(
+  mynlp_ = new quadNLP(
       type_,
       N_,
       n_,
       m_,
       dt_,
+      panic_weights,
       Q,
       R,
       Q_factor,
@@ -83,23 +83,15 @@ NMPCController::NMPCController(int type)
   // app_->Options()->SetStringValue("print_timing_statistics", "yes");
   // app_->Options()->SetStringValue("linear_solver", "ma57");
   app_->Options()->SetIntegerValue("print_level", 0);
-  app_->Options()->SetStringValue("mu_strategy", "adaptive");
-  // app_->Options()->SetStringValue("mu_oracle", "probing");
-  app_->Options()->SetStringValue("mehrotra_algorithm", "yes");
-  app_->Options()->SetStringValue("bound_mult_init_method", "mu-based");
-  app_->Options()->SetStringValue("fast_step_computation", "yes");
-  app_->Options()->SetStringValue("expect_infeasible_problem", "yes");
-  // app_->Options()->SetStringValue("start_with_resto", "yes");
-  // app_->Options()->SetStringValue("adaptive_mu_globalization", "never-monotone-mode");
-  // app_->Options()->SetStringValue("accept_every_trial_step", "yes");
-  app_->Options()->SetStringValue("nlp_scaling_method", "none");
-
-  app_->Options()->SetStringValue("warm_start_init_point", "yes");
-
+  // app_->Options()->SetStringValue("mu_strategy", "adaptive");
+  // app_->Options()->SetStringValue("nlp_scaling_method", "none");
   app_->Options()->SetNumericValue("tol", 1e-3);
-  app_->Options()->SetNumericValue("bound_relax_factor", 1e-3);
-  app_->Options()->SetNumericValue("max_wall_time", 3.6 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 3.6 * dt_);
+  app_->Options()->SetNumericValue("warm_start_bound_push", 1e-6);
+  app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
+  app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
+
+  app_->Options()->SetNumericValue("max_wall_time", 4.0 * dt_);
+  app_->Options()->SetNumericValue("max_cpu_time", 4.0 * dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();
@@ -111,23 +103,9 @@ NMPCController::NMPCController(int type)
     return;
   }
 
-  // Optimize once for structure preparation
-  status = app_->OptimizeTNLP(mynlp_);
-
-  Eigen::MatrixXd x(n_, N_);
-  Eigen::MatrixXd u(m_, N_);
-
-  for (int i = 0; i < N_; ++i)
-  {
-    u.block(0, i, m_, 1) = mynlp_->w0_.block(i * (n_ + m_), 0, m_, 1);
-    x.block(0, i, n_, 1) = mynlp_->w0_.block(i * (n_ + m_) + m_, 0, n_, 1);
-  }
-
-  app_->Options()->SetStringValue("warm_start_same_structure", "yes");
-
   mynlp_->w0_.setZero();
-  mynlp_->z_L0_.setZero();
-  mynlp_->z_U0_.setZero();
+  mynlp_->z_L0_.fill(1);
+  mynlp_->z_U0_.fill(1);
   mynlp_->lambda0_.setZero();
 }
 
@@ -135,16 +113,18 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
                                     const Eigen::MatrixXd &ref_traj,
                                     const Eigen::MatrixXd &foot_positions,
                                     const std::vector<std::vector<bool>> &contact_schedule,
+                                    const Eigen::VectorXd &ref_ground_height,
                                     Eigen::MatrixXd &state_traj,
                                     Eigen::MatrixXd &control_traj)
 {
   // Local planner will send a reference traj with N+1 rows
-  mynlp_->shift_initial_guess();
   mynlp_->update_solver(
       initial_state,
       ref_traj.bottomRows(N_),
       foot_positions,
-      contact_schedule);
+      contact_schedule,
+      ref_ground_height.tail(N_));
+  mynlp_->shift_initial_guess();
 
   // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
   // std::cout << "leg contact_sequence_: " << mynlp_->contact_sequence_.transpose().format(CleanFmt) << std::endl;
@@ -185,12 +165,12 @@ bool NMPCController::computeCentralizedTailPlan(const Eigen::VectorXd &initial_s
   initial_state_with_tail.segment(8, 6) = initial_state.tail(6);
   initial_state_with_tail.segment(14, 2) = tail_initial_state.tail(2);
 
-  mynlp_->shift_initial_guess();
   mynlp_->update_solver(
       initial_state_with_tail,
       ref_traj_with_tail.bottomRows(N_),
       foot_positions,
       contact_schedule);
+  mynlp_->shift_initial_guess();
 
   bool success = this->computePlan(initial_state_with_tail,
                                    ref_traj_with_tail,
@@ -245,7 +225,6 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
   initial_state_with_tail.segment(8, 6) = initial_state.tail(6);
   initial_state_with_tail.segment(14, 2) = tail_initial_state.tail(2);
 
-  mynlp_->shift_initial_guess();
   mynlp_->update_solver(
       initial_state_with_tail,
       ref_traj_with_tail.bottomRows(N_),
@@ -253,9 +232,14 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
       contact_schedule,
       state_traj,
       control_traj);
+  mynlp_->shift_initial_guess();
 
-  // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
-  // std::cout << "tail contact_sequence_: " << mynlp_->contact_sequence_.transpose().format(CleanFmt) << std::endl;
+  bool success = this->computePlan(initial_state_with_tail,
+                                   ref_traj_with_tail,
+                                   foot_positions,
+                                   contact_schedule,
+                                   state_traj_with_tail,
+                                   control_traj_with_tail);
 
   // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
   // std::cout << "mynlp_->x_current_.transpose().format(CleanFmt)" << std::endl;
@@ -299,11 +283,6 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
 
   tail_control_traj = control_traj_with_tail.leftCols(2);
 
-  // std::cout << "tail_state_traj.format(CleanFmt)" << std::endl;
-  // std::cout << tail_state_traj.format(CleanFmt) << std::endl;
-  // std::cout << "tail_control_traj.format(CleanFmt)" << std::endl;
-  // std::cout << tail_control_traj.format(CleanFmt) << std::endl;
-
   return success;
 }
 
@@ -315,7 +294,7 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
                                  Eigen::MatrixXd &control_traj)
 {
   ApplicationReturnStatus status;
-  status = app_->ReOptimizeTNLP(mynlp_);
+  status = app_->OptimizeTNLP(mynlp_);
 
   Eigen::MatrixXd x(n_, N_);
   Eigen::MatrixXd u(m_, N_);
@@ -326,14 +305,6 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     x.block(0, i, n_, 1) = mynlp_->w0_.block(i * (n_ + m_) + m_, 0, n_, 1);
   }
 
-  // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
-  // Eigen::Map<Eigen::MatrixXd> w0_print(mynlp_->w0_.data(), n_ + m_, N_);
-  // std::cout << w0_print.transpose().format(CleanFmt) << std::endl;
-
-  // if (status == Solve_Succeeded ||
-  //     status == Solved_To_Acceptable_Level ||
-  //     status == Infeasible_Problem_Detected ||
-  //     status == Search_Direction_Becomes_Too_Small)
   if (status == Solve_Succeeded)
   {
     state_traj = Eigen::MatrixXd::Zero(N_ + 1, n_);
@@ -343,15 +314,21 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     state_traj.bottomRows(N_) = x.transpose();
     control_traj = u.transpose();
 
+    app_->Options()->SetStringValue("warm_start_init_point", "yes");
+    app_->Options()->SetNumericValue("mu_init", 1e-6);
+
     ROS_INFO_STREAM(param_ns_ << " solving success");
     return true;
   }
   else
   {
     mynlp_->w0_.setZero();
-    mynlp_->z_L0_.setZero();
-    mynlp_->z_U0_.setZero();
+    mynlp_->z_L0_.fill(1);
+    mynlp_->z_U0_.fill(1);
     mynlp_->lambda0_.setZero();
+
+    app_->Options()->SetStringValue("warm_start_init_point", "no");
+    app_->Options()->SetNumericValue("mu_init", 1e-1);
 
     ROS_INFO_STREAM(param_ns_ << " solving fail");
     return false;

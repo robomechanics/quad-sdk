@@ -4,19 +4,18 @@
 #include <ros/ros.h>
 #include <math.h>
 // #include <eigen3/Eigen/Eigen>
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/MultiFootPlanDiscrete.h>
-#include <spirit_msgs/GRFArray.h>
-#include <spirit_msgs/RobotState.h>
-#include <spirit_msgs/RobotStateTrajectory.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/MultiFootPlanDiscrete.h>
+#include <quad_msgs/GRFArray.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_msgs/RobotStateTrajectory.h>
 // #include <local_planner/quadruped_mpc.h>
-#include <spirit_utils/ros_utils.h>
-#include <spirit_utils/kinematics.h>
-#include "spirit_utils/matplotlibcpp.h"
+#include <quad_utils/ros_utils.h>
+#include "quad_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <spirit_msgs/LegCommand.h>
+#include <quad_msgs/LegCommand.h>
 
-#include "nmpc_controller/spirit_nlp.h"
+#include "nmpc_controller/quad_nlp.h"
 #include "IpIpoptApplication.hpp"
 #include <Eigen/Dense>
 
@@ -57,6 +56,7 @@ public:
                       const Eigen::MatrixXd &ref_traj,
                       const Eigen::MatrixXd &foot_positions,
                       const std::vector<std::vector<bool>> &contact_schedule,
+                      const Eigen::VectorXd &ref_ground_height,
                       Eigen::MatrixXd &state_traj,
                       Eigen::MatrixXd &control_traj);
 
@@ -88,10 +88,7 @@ private:
   /// Update rate for sending and receiving data;
   double update_rate_;
 
-  /// Spirit Kinematics class
-  std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
-
-  SmartPtr<spiritNLP> mynlp_;
+  SmartPtr<quadNLP> mynlp_;
 
   SmartPtr<IpoptApplication> app_;
 

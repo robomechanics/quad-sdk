@@ -1,0 +1,26 @@
+grid_map_filters:
+
+  # Fill holes in the map with inpainting.
+  - name: inpaint
+    type: gridMapCv/InpaintFilter
+    params:
+      input_layer: z
+      output_layer: z_inpainted
+      radius: 0.19
+
+  # Reduce noise with a radial blurring filter.
+  - name: mean_in_radius
+    type: gridMapFilters/MeanInRadiusFilter
+    params:
+      input_layer: z_inpainted
+      output_layer: z_smooth
+      radius: 0.2
+
+  # Compute surface normals.
+  - name: surface_normals
+    type: gridMapFilters/NormalVectorsFilter
+    params:
+      input_layer: z_smooth
+      output_layers_prefix: normal_vectors_
+      radius: 0.19
+      normal_vector_positive_axis: z

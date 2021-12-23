@@ -3,19 +3,20 @@
 
 #include <ros/ros.h>
 #include <math.h>
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/LegCommandArray.h>
-#include <spirit_msgs/MultiFootPlanDiscrete.h>
-#include <spirit_msgs/GRFArray.h>
-#include <spirit_msgs/RobotState.h>
-#include <spirit_msgs/RobotStateTrajectory.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/MultiFootPlanDiscrete.h>
+#include <quad_msgs/GRFArray.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_msgs/RobotStateTrajectory.h>
 #include <local_planner/quadruped_mpc.h>
 #include <local_planner/local_footstep_planner.h>
-#include <spirit_utils/ros_utils.h>
-#include <spirit_utils/kinematics.h>
-#include "spirit_utils/matplotlibcpp.h"
+#include <quad_utils/ros_utils.h>
+#include <quad_utils/quad_kd.h>
+#include "quad_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <nmpc_controller/nmpc_controller.h>
+#include <filters/filter_chain.h>
 #include <spirit_utils/tail_type.h>
 
 //! Local Body Planner library
@@ -58,13 +59,13 @@ private:
    * @brief Callback function to handle new plans
    * @param[in] msg Robot state trajectory message
    */
-  void robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg);
+  void robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg);
 
   /**
    * @brief Callback function to handle new state estimates
    * @param[in] State estimate message contining position and velocity for each joint and robot body
    */
-  void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+  void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
 
   /**
    * @brief Callback function to handle new desired twist data when using twist input
@@ -73,6 +74,12 @@ private:
   void cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg);
 
   void grfCallback(const spirit_msgs::GRFArray::ConstPtr& msg);
+
+  /**
+   * @brief Callback function to handle new GRF estimates
+   * @param[in] msg the message contining GRF data
+   */
+  void grfCallback(const quad_msgs::GRFArray::ConstPtr& msg);
 
   /**
    * @brief Function to pre-process the body plan and robot state messages into Eigen arrays
@@ -95,6 +102,11 @@ private:
    */
   void publishLocalPlan();
 
+  /**
+   * @brief Function to publish the footstep history
+   */
+  void publishFootStepHist();
+
 	/// ROS subscriber for incoming terrain_map
 	ros::Subscriber terrain_map_sub_;
   
@@ -107,6 +119,7 @@ private:
   /// Subscriber for twist input messages
   ros::Subscriber cmd_vel_sub_;
 
+  /// Subscriber for GRF messages
   ros::Subscriber grf_sub_;
 
 	/// ROS publisher for local plan output
@@ -127,6 +140,9 @@ private:
   /// Struct for terrain map data
   FastTerrainMap terrain_;
 
+  /// GridMap for terrain map data
+  grid_map::GridMap terrain_grid_;
+
 	/// Update rate for sending and receiving data;
 	double update_rate_;
 
@@ -138,15 +154,18 @@ private:
   std::shared_ptr<LocalFootstepPlanner> local_footstep_planner_;
 
 	/// Most recent robot plan
-	spirit_msgs::RobotPlan::ConstPtr body_plan_msg_;
+	quad_msgs::RobotPlan::ConstPtr body_plan_msg_;
 
   /// Most recent robot state
-	spirit_msgs::RobotState::ConstPtr robot_state_msg_;
+	quad_msgs::RobotState::ConstPtr robot_state_msg_;
 
 	spirit_msgs::GRFArray::ConstPtr grf_msg_;
 
   /// Past foothold locations
-	spirit_msgs::MultiFootPlanDiscrete past_footholds_msg_;
+	quad_msgs::MultiFootPlanDiscrete past_footholds_msg_;
+
+  /// Most recent GRF
+  quad_msgs::GRFArray::ConstPtr grf_msg_;
 
   /// Timestamp of the state estimate
   ros::Time current_state_timestamp_;
@@ -205,6 +224,9 @@ private:
   /// Matrix of body states (N x Nx: rows correspond to individual states in the horizon)
   Eigen::MatrixXd ref_body_plan_;
 
+  /// Vector of ground height along reference trajectory
+  Eigen::MatrixXd ref_ground_height_;
+
   /// Matrix of grfs (N x Nu: rows correspond to individual arrays of GRFs in the horizon)
   Eigen::MatrixXd grf_plan_; 
 
@@ -225,8 +247,8 @@ private:
   /// Matrix of foot contact locations (number of contacts x num_legs_)
   Eigen::MatrixXd foot_plan_discrete_;
 
-  /// Spirit Kinematics class
-  std::shared_ptr<spirit_utils::SpiritKinematics> kinematics_;
+  /// QuadKD class
+  std::shared_ptr<quad_utils::QuadKD>quadKD_;
 
   /// Twist input
   typedef std::vector<double> Twist;
@@ -255,6 +277,21 @@ private:
 
   /// Boolean for using nonlinear MPC
   bool use_nmpc_;
+
+  /// Vector for stand pose (x, y, yaw)
+  Eigen::Vector3d stand_pose_;
+
+  /// Footstep history
+  grid_map::GridMap foot_step_hist_;
+
+  /// Footstep history publisher
+  ros::Publisher foot_step_hist_pub_;
+
+  /// Filter chain.
+  filters::FilterChain<grid_map::GridMap> filterChain_;
+
+  /// Filter chain parameters name.
+  std::string filterChainParametersName_;
 
   int tail_type_;
 
