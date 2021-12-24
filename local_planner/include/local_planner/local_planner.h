@@ -4,7 +4,7 @@
 #include <ros/ros.h>
 #include <math.h>
 #include <quad_msgs/RobotPlan.h>
-#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/LegCommandArray.h>
 #include <quad_msgs/MultiFootPlanDiscrete.h>
 #include <quad_msgs/GRFArray.h>
 #include <quad_msgs/RobotState.h>

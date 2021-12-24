@@ -543,7 +543,7 @@ namespace quad_utils {
     return state;
   }
 
-  Eigen::VectorXd odomMsgToEigenForTail(const spirit_msgs::RobotState &msg) {
+  Eigen::VectorXd odomMsgToEigenForTail(const quad_msgs::RobotState &msg) {
 
     Eigen::VectorXd state = Eigen::VectorXd::Zero(4);
     state(0) = msg.tail_joints.position[0];

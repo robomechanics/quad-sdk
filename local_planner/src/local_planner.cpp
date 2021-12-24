@@ -494,7 +494,7 @@ void LocalPlanner::getStateAndTwistInput() {
 
   if (tail_type_ == CENTRALIZED)
   {
-    tail_current_state_ = spirit_utils::odomMsgToEigenForTail(*robot_state_msg_);
+    tail_current_state_ = quad_utils::odomMsgToEigenForTail(*robot_state_msg_);
     ref_tail_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 4);
   }
 
@@ -614,7 +614,7 @@ bool LocalPlanner::computeLocalPlan() {
             // foot_positions_body_(j, i * 3 + 0) = foot_positions_body_(j, i * 3 + 0) - 0.1;
 
             Eigen::Vector3d hip_position_plan;
-            kinematics_->nominalHipFK(i, body_plan_.block(j, 0, 1, 3).transpose(), body_plan_.block(j, 3, 1, 3).transpose(), hip_position_plan);
+            quadKD_->worldToNominalHipFKWorldFrame(i, body_plan_.block(j, 0, 1, 3).transpose(), body_plan_.block(j, 3, 1, 3).transpose(), hip_position_plan);
             foot_positions_world_.block(j, i * 3, 1, 3) = (body_rotation_matrix * rotation_matrix * nominal_pos + hip_position_plan).transpose();
             foot_positions_body_.block(j, i * 3, 1, 3) = (body_rotation_matrix * rotation_matrix * nominal_pos + hip_position_plan).transpose() - body_plan_.block(j, 0, 1, 3);
           }
@@ -624,7 +624,7 @@ bool LocalPlanner::computeLocalPlan() {
           if (j > 0)
           {
             Eigen::Vector3d hip_position_plan;
-            kinematics_->nominalHipFK(i, body_plan_.block(j, 0, 1, 3).transpose(), body_plan_.block(j, 3, 1, 3).transpose(), hip_position_plan);
+            quadKD_->worldToNominalHipFKWorldFrame(i, body_plan_.block(j, 0, 1, 3).transpose(), body_plan_.block(j, 3, 1, 3).transpose(), hip_position_plan);
             foot_positions_world_.block(j, i * 3, 1, 3) = (body_rotation_matrix * rotation_matrix * nominal_pos + hip_position_plan).transpose();
             foot_positions_body_.block(j, i * 3, 1, 3) = (body_rotation_matrix * rotation_matrix * nominal_pos + hip_position_plan).transpose() - body_plan_.block(j, 0, 1, 3);
           }

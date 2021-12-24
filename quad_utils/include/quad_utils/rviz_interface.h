@@ -16,6 +16,7 @@
 #include <quad_msgs/MultiFootPlanDiscrete.h>
 #include <quad_msgs/GRFArray.h>
 #include <quad_utils/ros_utils.h>
+#include <quad_utils/tail_type.h>
 
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>
@@ -177,6 +178,9 @@ private:
 
   /// Handle for the map frame
   std::string map_frame_;
+
+  /// Tail type variable
+  int tail_type_;
 
   /// Colors
   std::vector<int> front_left_color_;

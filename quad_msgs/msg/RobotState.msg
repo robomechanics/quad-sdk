@@ -7,4 +7,5 @@ Header header
 uint32 traj_index
 quad_msgs/BodyState body
 sensor_msgs/JointState joints
+sensor_msgs/JointState tail_joints
 quad_msgs/MultiFootState feet
