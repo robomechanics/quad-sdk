@@ -223,6 +223,108 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
   }
 }
 
+void LocalFootstepPlanner::contactSensing(const Eigen::MatrixXd &body_plan,
+                                          const std::vector<std::vector<bool>> &contact_schedule, 
+                                          const Eigen::MatrixXd &ref_body_plan,
+                                          const quad_msgs::GRFArray::ConstPtr grf_msg, 
+                                          Eigen::MatrixXd &foot_positions,
+                                          std::vector<std::vector<bool>> &adaptive_contact_schedule, 
+                                          std::vector<bool> &miss_contact_leg)
+{
+  // Start from nominal contact schedule
+  adaptive_contact_schedule = contact_schedule;
+
+  // Late contact 
+  for (size_t i = 0; i < 4; i++)
+  {
+    // Pull the current foot position in world frame
+    Eigen::VectorXd current_foot_position_world_vec = foot_positions.block(0, 3 * i, 1, 3).transpose();
+
+    // Convert to grid map position
+    grid_map::Position foot_position_grid_map = {current_foot_position_world_vec.x(), current_foot_position_world_vec.y()};
+    
+    // Get the map height on such position
+    double current_foot_nominal_height = terrain_grid_.atPosition("z_smooth", foot_position_grid_map,
+          grid_map::InterpolationMethods::INTER_LINEAR);
+
+    // If it stretches through the ground, we assume miss contact
+    if (current_foot_position_world_vec(2) - current_foot_nominal_height < -0.05)
+    {
+      ROS_WARN_STREAM("miss!");
+      miss_contact_leg.at(i) = true;
+    }
+
+    // Miss leg will recover only when contact sensor report it hits ground or it's going to swing
+    if (!contact_schedule.at(0).at(i) ||
+        (contact_schedule.at(0).at(i) && bool(grf_msg->contact_states.at(i)) && grf_msg->vectors.at(i).z > 5 && miss_contact_leg.at(i)))
+    {
+      miss_contact_leg.at(i) = false;
+    }
+
+    // If we confirm the leg contact missed, we need to modify the foot position to hold it in body frame instead of world frame
+    if (miss_contact_leg.at(i))
+    {
+      // We assume it will not touch the ground at this gait peroid, and we refine the foot position to hold it in body frame
+      for (size_t j = 0; j < contact_schedule.size(); j++)
+      {
+        // If it should be in contact, modify the foot position and contact schedule
+        if (contact_schedule.at(j).at(i))
+        {
+          ROS_WARN_STREAM("shift leg: " << i);
+          adaptive_contact_schedule.at(j).at(i) = false;
+
+          // If there's still more step for contact, modify the foot position, otherwise, we can use the old one
+          if (j > 0)
+          {
+            // Declare foot position vectors
+            Eigen::Vector3d foot_position, hip_position, centrifugal, vel_tracking;
+
+            // Declare body and grf vectors
+            Eigen::Vector3d body_pos, body_rpy, body_vel_touchdown, ref_body_vel_touchdown, ref_body_ang_vel_touchdown;
+
+            body_pos = body_plan.block(j, 0, 1, 3).transpose();
+            body_rpy = body_plan.block(j, 3, 1, 3).transpose();
+
+            // Compute nominal foot positions for kinematic and grf-projection measures
+            quadKD_->worldToNominalHipFKWorldFrame(j, body_pos, body_rpy, hip_position);
+            grid_map::Position hip_position_grid_map = {hip_position.x(), hip_position.y()};
+            double hip_height = hip_position.z() - terrain_grid_.atPosition("z_smooth", hip_position_grid_map, grid_map::InterpolationMethods::INTER_LINEAR);
+
+            body_vel_touchdown = body_plan.block(j, 6, 1, 3).transpose();
+            ref_body_vel_touchdown = ref_body_plan.block(j, 6, 1, 3).transpose();
+            ref_body_ang_vel_touchdown = ref_body_plan.block(j, 9, 1, 3).transpose();
+
+            centrifugal = (hip_height / 9.81) * body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
+            vel_tracking = 0.03 * (body_vel_touchdown - ref_body_vel_touchdown);
+
+            // Combine these measures to get the nominal foot position and grab correct height
+            foot_position = hip_position + centrifugal + vel_tracking;
+            grid_map::Position foot_position_grid_map = {foot_position.x(), foot_position.y()};
+            foot_position.z() = terrain_grid_.atPosition("z_smooth", foot_position_grid_map, grid_map::InterpolationMethods::INTER_LINEAR);
+
+            // Store foot position in the Eigen matrix
+            foot_positions.block(j, i*3, 1, 3) = foot_position.transpose();
+          }
+        }
+        else
+        {
+          // We need the modified foot position to compute the swing trajectory
+          if (j > 0)
+          {
+            foot_positions.block(j, i*3, 1, 3) = foot_positions.block(j-1, i*3, 1, 3);
+          }
+
+          // We assume the next step should perform normally so break the loop
+          if (contact_schedule.at(j + 1).at(i))
+          {
+            break;
+          }
+        }
+      }
+    }
+  }
+}
+
 void LocalFootstepPlanner::computeFootPlanMsgs(
   const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
   int current_plan_index, const Eigen::MatrixXd &body_plan, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,

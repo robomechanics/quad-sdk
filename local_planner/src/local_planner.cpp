@@ -543,137 +543,17 @@ bool LocalPlanner::computeLocalPlan() {
     local_footstep_planner_->computeFootPositions(body_plan_, grf_plan_,
       contact_schedule_, ref_body_plan_, foot_positions_world_);
 
+    local_footstep_planner_->contactSensing(body_plan_,
+                        contact_schedule_,
+                        ref_body_plan_,
+                        grf_msg_,
+                        foot_positions_world_,
+                        adaptive_contact_schedule_,
+                        miss_contact_leg_);
+
     // Transform the new foot positions into the body frame for body planning
     local_footstep_planner_->getFootPositionsBodyFrame(body_plan_, foot_positions_world_,
       foot_positions_body_);
-  }
-
-  // TODO: this should be move to local footstep planner since we'll need the hip position and hip height for reference
-  // Contact sensing
-  adpative_contact_schedule_ = contact_schedule_;
-
-  // Late contact 
-  for (size_t i = 0; i < 4; i++)
-  {
-    // Check foot distance
-    Eigen::VectorXd foot_position_vec = current_foot_positions_body_.segment(3 * i, 3);
-
-    // ROS_WARN_STREAM("dis: " << foot_position_vec.norm());
-    // ROS_WARN_STREAM("height: " << foot_position_vec(2));
-
-    // If it stretches too long, we assume miss contact
-    // if (foot_position_vec.norm() > 0.45)
-    if (foot_position_vec(2) < -0.35)
-    {
-      ROS_WARN_STREAM("miss!");
-      miss_contact_leg_.at(i) = true;
-    }
-
-    // It will recover only when contact sensor report it hits ground
-    if (contact_schedule_.at(0).at(i) && bool(grf_msg_->contact_states.at(i)) && grf_msg_->vectors.at(i).z > 14 && miss_contact_leg_.at(i))
-    {
-      miss_contact_leg_.at(i) = false;
-    }
-
-    if (miss_contact_leg_.at(i))
-    {
-      Eigen::Vector3d hip_position, foot_shift, nominal_pos;
-      // kinematics_->nominalHipFK(i, body_plan_.block(0, 0, 1, 3).transpose(), body_plan_.block(0, 3, 1, 3).transpose(), hip_position);
-      // foot_shift = foot_positions_world_.block(0, i * 3, 1, 3).transpose() - hip_position;
-      Eigen::Matrix3d rotation_matrix, body_rotation_matrix;
-      // double rx = -foot_shift(1) / sqrt(foot_shift(0) * foot_shift(0) + foot_shift(1) * foot_shift(1));
-      // double ry = foot_shift(0) / sqrt(foot_shift(0) * foot_shift(0) + foot_shift(1) * foot_shift(1));
-      double theta = 0.707;
-      double yaw = body_plan_(0, 5);
-      // rotation_matrix << (1 - cos(theta)) * rx * rx + cos(theta),
-      //     -rx * ry * (cos(theta) - 1),
-      //     ry * sin(theta),
-      //     -rx * ry * (cos(theta) - 1),
-      //     (1 - cos(theta)) * ry * ry + cos(theta),
-      //     -rx * sin(theta),
-      //     -ry * sin(theta),
-      //     rx * sin(theta), cos(theta);
-      body_rotation_matrix << cos(yaw), -sin(yaw), 0, sin(yaw), cos(yaw), 0, 0, 0, 1;
-      body_rotation_matrix = body_rotation_matrix.transpose();
-      // rotation_matrix << cos(theta), 0, sin(theta), 0, 1, 0, -sin(theta), 0, cos(theta);
-      rotation_matrix << 1, 0, 0, 0, cos(theta), -sin(theta), 0, sin(theta), cos(theta);
-      rotation_matrix = rotation_matrix.transpose();
-      nominal_pos << 0, 0, -0.3;
-
-      // We assume it will not touch the ground at this gait peroid
-      for (size_t j = 0; j < N_; j++)
-      {
-        if (contact_schedule_.at(j).at(i))
-        {
-          ROS_WARN_STREAM("shift leg: " << i);
-          adpative_contact_schedule_.at(j).at(i) = false;
-          if (j > 0)
-          {
-            // We try to move the leg more to balance the body
-            // foot_positions_world_(j, i * 3 + 0) = foot_positions_world_(j, i * 3 + 0) - 0.1;
-            // foot_positions_body_(j, i * 3 + 0) = foot_positions_body_(j, i * 3 + 0) - 0.1;
-
-            Eigen::Vector3d hip_position_plan;
-            quadKD_->worldToNominalHipFKWorldFrame(i, body_plan_.block(j, 0, 1, 3).transpose(), body_plan_.block(j, 3, 1, 3).transpose(), hip_position_plan);
-            foot_positions_world_.block(j, i * 3, 1, 3) = (body_rotation_matrix * rotation_matrix * nominal_pos + hip_position_plan).transpose();
-            foot_positions_body_.block(j, i * 3, 1, 3) = (body_rotation_matrix * rotation_matrix * nominal_pos + hip_position_plan).transpose() - body_plan_.block(j, 0, 1, 3);
-          }
-        }
-        else
-        {
-          if (j > 0)
-          {
-            Eigen::Vector3d hip_position_plan;
-            quadKD_->worldToNominalHipFKWorldFrame(i, body_plan_.block(j, 0, 1, 3).transpose(), body_plan_.block(j, 3, 1, 3).transpose(), hip_position_plan);
-            foot_positions_world_.block(j, i * 3, 1, 3) = (body_rotation_matrix * rotation_matrix * nominal_pos + hip_position_plan).transpose();
-            foot_positions_body_.block(j, i * 3, 1, 3) = (body_rotation_matrix * rotation_matrix * nominal_pos + hip_position_plan).transpose() - body_plan_.block(j, 0, 1, 3);
-          }
-
-          if (contact_schedule_.at(j + 1).at(i))
-          {
-            break;
-          }
-        }
-      }
-    }
-
-    // // Later contact
-    // // if (contact_schedule_.at(0).at(i) && abs(current_foot_positions_world_(2 + i * 3) - current_state_(2)) > 0.325)
-    // if (contact_schedule_.at(0).at(i) && !grf_msg_->contact_states.at(i))
-    // {
-    //   sense_miss_contact = true;
-    //   // If not, we assume it will not touch the ground at this gait peroid
-    //   for (size_t j = 0; j < N_; j++)
-    //   {
-    //     if (contact_schedule_.at(j).at(i))
-    //     {
-    //       adpative_contact_schedule_.at(j).at(i) = false;
-    //     }
-    //     else
-    //     {
-    //       break;
-    //     }
-    //   }
-    // }
-
-    // // Early contact
-    // // if (contact_schedule_.at(0).at(i) && abs(current_foot_positions_world_(2 + i * 3) - current_state_(2)) > 0.325)
-    // if (!contact_schedule_.at(0).at(i) && contact_schedule_.at(5).at(i) && grf_msg_->contact_states.at(i))
-    // {
-    //   sense_miss_contact = true;
-    //   // If so, we assume it will not touch the ground at this gait peroid
-    //   for (size_t j = 0; j < N_; j++)
-    //   {
-    //     if (!contact_schedule_.at(j).at(i))
-    //     {
-    //       adpative_contact_schedule_.at(j).at(i) = true;
-    //     }
-    //     else
-    //     {
-    //       break;
-    //     }
-    //   }
-    // }
   }
 
   // Compute body plan with MPC, return if solve fails
@@ -683,7 +563,7 @@ bool LocalPlanner::computeLocalPlan() {
     if (!local_body_planner_nonlinear_->computeCentralizedTailPlan(current_state_,
                                                                    ref_body_plan_,
                                                                    foot_positions_body_,
-                                                                   adpative_contact_schedule_,
+                                                                   adaptive_contact_schedule_,
                                                                    tail_current_state_,
                                                                    ref_tail_plan_,
                                                                    body_plan_,
@@ -697,7 +577,7 @@ bool LocalPlanner::computeLocalPlan() {
     if (!local_body_planner_nonlinear_->computeLegPlan(current_state_,
                                                        ref_body_plan_,
                                                        foot_positions_body_,
-                                                       adpative_contact_schedule_,
+                                                       adaptive_contact_schedule_,
                                                        ref_ground_height_,
                                                        body_plan_,
                                                        grf_plan_))

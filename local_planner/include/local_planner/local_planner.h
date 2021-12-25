@@ -230,7 +230,7 @@ private:
   std::vector<std::vector<bool>> contact_schedule_;
 
   /// Adaptive contact schedule
-  std::vector<std::vector<bool>> adpative_contact_schedule_;
+  std::vector<std::vector<bool>> adaptive_contact_schedule_;
 
   /// Matrix of continuous foot positions in world frame
   Eigen::MatrixXd foot_positions_world_;

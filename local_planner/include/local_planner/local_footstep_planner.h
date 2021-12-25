@@ -133,6 +133,24 @@ class LocalFootstepPlanner {
       quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
       quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
 
+    /**
+     * @brief Refine foot position and contact schedule by simple contact sensing
+     * @param[in] body_plan Body plan from MPC
+     * @param[in] contact_schedule Nominal contact schedule
+     * @param[in] ref_body_plan Reference body plan
+     * @param[in] grf_msg Current ground reaction force message
+     * @param[out] foot_positions Current, nominal, and refined foot position matrix
+     * @param[out] adaptive_contact_schedule Modified contact schedule
+     * @param[out] miss_contact_leg Contact sensing results
+     */
+    void contactSensing(const Eigen::MatrixXd &body_plan,
+                        const std::vector<std::vector<bool>> &contact_schedule,
+                        const Eigen::MatrixXd &ref_body_plan,
+                        const quad_msgs::GRFArray::ConstPtr grf_msg,
+                        Eigen::MatrixXd &foot_positions,
+                        std::vector<std::vector<bool>> &adaptive_contact_schedule,
+                        std::vector<bool> &miss_contact_leg);
+
     inline void printContactSchedule(const std::vector<std::vector<bool>> &contact_schedule) {
       
       for (int i = 0; i < contact_schedule.size(); i++) {
