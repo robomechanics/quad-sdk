@@ -11,4 +11,7 @@
     <!-- Launch the leg override-->
     <node name="leg_overrider" pkg="leg_controller" type="leg_overrider_node" output="screen"/>
 
+    <!-- Launch the node to publish tail control-->
+    <node name="tail_controller" pkg="tail_controller" type="tail_controller_node" output="screen"/>
+
 </launch>

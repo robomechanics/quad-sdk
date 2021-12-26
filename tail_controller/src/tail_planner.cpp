@@ -64,20 +64,14 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
   }
 
   ref_body_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 12);
-
   foot_positions_body_ = Eigen::MatrixXd::Zero(N_, 12);
-
   body_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 12);
-
   grf_plan_ = Eigen::MatrixXd::Zero(N_, 12);
-
   tail_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 4);
-
   tail_torque_plan_ = Eigen::MatrixXd::Zero(N_, 2);
-
   current_state_ = Eigen::VectorXd::Zero(12);
-
   current_foot_positions_world_ = Eigen::VectorXd::Zero(12);
+  ref_ground_height_ = Eigen::VectorXd::Zero(N_ + 1);
 
   current_plan_index_ = 0;
 
@@ -152,7 +146,7 @@ void TailPlanner::computeTailPlan()
   ref_tail_plan_.col(0) = Eigen::MatrixXd::Constant(N_ + 1, 1, 0.76);
   ref_tail_plan_.row(0) = tail_current_state_.transpose();
 
-  double t_now = ros::Time::now().toSec();
+  double t_now = robot_state_msg_->header.stamp.toSec();
 
   if ((t_now < last_local_plan_msg_->states.front().header.stamp.toSec()) ||
       (t_now > last_local_plan_msg_->states.back().header.stamp.toSec()))
@@ -182,62 +176,16 @@ void TailPlanner::computeTailPlan()
 
   if (use_twist_input_)
   {
-    // Clear any old reference plans
-    ref_body_plan_.setZero();
-
-    // Check that we have recent twist data, otherwise set cmd_vel to zero
-    // ros::Duration time_elapsed_since_msg = ros::Time::now() - last_cmd_vel_msg_time_;
-    // if (time_elapsed_since_msg.toSec() > last_cmd_vel_msg_time_max_) {
-    //   std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
-    //   ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
-    // }
-    std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
-    cmd_vel_.at(1) = 0.75;
-
-    // Adaptive body height, use the lowest foot and exponential filter
-    std::vector<double> foot_height;
-    for (size_t i = 0; i < 4; i++)
+    for (size_t i = 0; i < N_ + 1; i++)
     {
-      foot_height.push_back(current_foot_positions_world_(3 * i + 2));
-    }
+      int idx = current_plan_index_ - last_local_plan_msg_->plan_indices[0] + i;
 
-    if (z_des_ == std::numeric_limits<double>::max())
-    {
-      z_des_ = std::max(*std::min_element(foot_height.begin(), foot_height.end()) + 0.3, 0.0);
-    }
-    else
-    {
-      z_des_ = 0.75 * std::max(*std::min_element(foot_height.begin(), foot_height.end()) + 0.3, 0.0) + 0.25 * z_des_;
-    }
-
-    // Set initial condition for forward integration
-    ref_body_plan_(0, 0) = current_state_[0];
-    ref_body_plan_(0, 1) = current_state_[1];
-    ref_body_plan_(0, 2) = z_des_;
-    ref_body_plan_(0, 3) = 0;
-    ref_body_plan_(0, 4) = 0;
-    ref_body_plan_(0, 5) = current_state_[5];
-    ref_body_plan_(0, 6) = cmd_vel_[0] * cos(current_state_[5]) - cmd_vel_[1] * sin(current_state_[5]);
-    ref_body_plan_(0, 7) = cmd_vel_[0] * sin(current_state_[5]) + cmd_vel_[1] * cos(current_state_[5]);
-    ref_body_plan_(0, 8) = cmd_vel_[2];
-    ref_body_plan_(0, 9) = cmd_vel_[3];
-    ref_body_plan_(0, 10) = cmd_vel_[4];
-    ref_body_plan_(0, 11) = cmd_vel_[5];
-
-    // Integrate to get full body plan (Forward Euler)
-    for (int i = 1; i < N_ + 1; i++)
-    {
-      std::vector<double> current_cmd_vel = cmd_vel_;
-
-      double yaw = ref_body_plan_(i - 1, 5);
-      current_cmd_vel[0] = cmd_vel_[0] * cos(yaw) - cmd_vel_[1] * sin(yaw);
-      current_cmd_vel[1] = cmd_vel_[0] * sin(yaw) + cmd_vel_[1] * cos(yaw);
-
-      for (int j = 0; j < 6; j++)
+      if (idx > last_local_plan_msg_->plan_indices.size() - 1)
       {
-        ref_body_plan_(i, j) = ref_body_plan_(i - 1, j) + current_cmd_vel[j] * dt_;
-        ref_body_plan_(i, j + 6) = (current_cmd_vel[j]);
+        idx = last_local_plan_msg_->plan_indices.size() - 1;
       }
+
+      ref_body_plan_.row(i) = quad_utils::bodyStateMsgToEigen(last_local_plan_msg_->ref_states[idx].body).transpose();
     }
   }
   else
@@ -266,6 +214,8 @@ void TailPlanner::computeTailPlan()
 
     body_plan_.row(i) = quad_utils::bodyStateMsgToEigen(last_local_plan_msg_->states[idx].body).transpose();
 
+    ref_ground_height_(i) = last_local_plan_msg_->ground_height[idx];
+
     if (i < N_)
     {
       grf_plan_.row(i) = quad_utils::grfArrayMsgToEigen(last_local_plan_msg_->grfs[idx]).transpose();
@@ -282,72 +232,21 @@ void TailPlanner::computeTailPlan()
     }
   }
 
-  // Contact sensing
-  std::vector<bool> miss_contact;
-  adpative_contact_schedule_ = contact_schedule_;
-
-  // Late contact
-  for (size_t i = 0; i < 4; i++)
-  {
-    // Check foot distance
-    Eigen::VectorXd foot_position_vec = current_foot_positions_world_.segment(i * 3, 3) - current_state_.segment(0, 3);
-
-    // If it stretches too long, we assume miss contact
-    // if (foot_position_vec.norm() > 0.45)
-    if (foot_position_vec(2) < -0.35)
-    {
-      // ROS_WARN_STREAM("miss!");
-      miss_contact_leg_.at(i) = true;
-    }
-
-    // It will recover only when contact sensor report it hits ground
-    if (contact_schedule_.at(0).at(i) && bool(grf_msg_->contact_states.at(i)) && grf_msg_->vectors.at(i).z > 14 && miss_contact_leg_.at(i))
-    {
-      miss_contact_leg_.at(i) = false;
-    }
-
-    if (miss_contact_leg_.at(i))
-    {
-      miss_contact.push_back(true);
-      // We assume it will not touch the ground at this gait peroid
-      for (size_t j = 0; j < N_; j++)
-      {
-        if (contact_schedule_.at(j).at(i))
-        {
-          adpative_contact_schedule_.at(j).at(i) = false;
-        }
-        else
-        {
-          break;
-        }
-      }
-    }
-    else
-    {
-      miss_contact.push_back(false);
-    }
-  }
-
   if (!tail_planner_->computeDistributedTailPlan(current_state_,
                                                  ref_body_plan_,
                                                  foot_positions_body_,
-                                                 adpative_contact_schedule_,
+                                                 contact_schedule_,
                                                  tail_current_state_,
                                                  ref_tail_plan_,
                                                  body_plan_,
                                                  grf_plan_,
+                                                 ref_ground_height_,
                                                  tail_plan_,
                                                  tail_torque_plan_))
     return;
 
   quad_msgs::LegCommandArray tail_plan_msg;
-  ros::Time timestamp = entrance_time_;
-  tail_plan_msg.header.stamp = timestamp;
-
-  for (size_t i = 0; i < 4; i++)
-  {
-    tail_plan_msg.miss_contact.push_back(miss_contact.at(i));
-  }
+  tail_plan_msg.header.stamp = robot_state_msg_->header.stamp;
 
   for (size_t i = 0; i < N_; i++)
   {

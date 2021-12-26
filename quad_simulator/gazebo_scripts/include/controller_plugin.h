@@ -12,6 +12,7 @@
 #include <quad_msgs/LegCommandArray.h>
 #include <quad_utils/ros_utils.h>
 #include <urdf/model.h>
+#include <quad_utils/tail_type.h>
 
 namespace effort_controllers
 {
@@ -24,6 +25,7 @@ namespace effort_controllers
 class SpiritController : public controller_interface::Controller<hardware_interface::EffortJointInterface>
 {
   typedef std::vector<quad_msgs::LegCommand> BufferType;
+  typedef std::vector<quad_msgs::MotorCommand> TailBufferType;
 
 public:
   SpiritController();
@@ -35,12 +37,14 @@ public:
   std::vector< std::string > joint_names_;
   std::vector< hardware_interface::JointHandle > joints_;
   realtime_tools::RealtimeBuffer<BufferType> commands_buffer_;
+  realtime_tools::RealtimeBuffer<TailBufferType> tail_commands_buffer_;
   unsigned int n_joints_;
 
 private: 
 
   /// Subscriber for new LegCommandArray messages
   ros::Subscriber sub_command_;
+  ros::Subscriber tail_sub_command_;
 
   /// Store reference to gazebo joints
   std::vector<urdf::JointConstSharedPtr> joint_urdfs_;
@@ -51,7 +55,10 @@ private:
   /// Torque limits for each motor
   std::vector<double> torque_lims_;
 
+  int tail_type_;
+
   void commandCB(const quad_msgs::LegCommandArrayConstPtr& msg);
+  void tailCommandCB(const quad_msgs::LegCommandConstPtr& msg);
   void enforceJointLimits(double &command, unsigned int index);
 
 }; // class

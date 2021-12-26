@@ -973,3 +973,25 @@ void quadNLP::update_solver(
 
    ground_height_ = ground_height.transpose();
 }
+
+void quadNLP::update_solver(
+    const Eigen::VectorXd &initial_state,
+    const Eigen::MatrixXd &ref_traj,
+    const Eigen::MatrixXd &foot_positions,
+    const std::vector<std::vector<bool>> &contact_schedule,
+    const Eigen::MatrixXd &state_traj,
+    const Eigen::MatrixXd &control_traj,
+    const Eigen::VectorXd &ground_height)
+{
+   this->update_solver(
+       initial_state,
+       ref_traj,
+       foot_positions,
+       contact_schedule);
+
+   leg_input_ = control_traj.transpose();
+
+   known_leg_input_ = true;
+
+   ground_height_ = ground_height.transpose();
+}

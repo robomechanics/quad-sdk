@@ -110,19 +110,63 @@ namespace gazebo{
     state.body.twist.angular.z = ang_vel.Z();
 
     physics::Joint_V joint_vec = model_->GetJoints();
-    int num_joints = 12;
+    int num_joints = joint_names_.size();
+    std::vector<std::string> model_joint_name;
 
-    state.joints.name = {"8", "0", "1", "9","2","3","10","4","5","11","6","7"};
+    // Record all joint names
+    for (int i = 0; i<joint_vec.size(); i++) {
+      physics::JointPtr joint = joint_vec[i];
+      model_joint_name.push_back(joint->GetName());
+    }
 
-    for (int i = 0; i<num_joints; i++) {
+    if (tail_type_ != NONE)
+    {
+      // With tail
+      for (size_t i = 12; i < 14; i++)
+      {
+        // Get expected joint index by name
+        int idx;
+        auto it = find(model_joint_name.begin(), model_joint_name.end(), joint_names_[i]);
+        if (it != model_joint_name.end())
+        {
+          idx = it - model_joint_name.begin();
+        }
+        else
+        {
+          ROS_ERROR_STREAM("Cannot find joint '" << joint_names_[i] << "'.");
+        }
+
+        physics::JointPtr joint = joint_vec[idx];
+        physics::JointWrench wrench = joint->GetForceTorque(0);
+        double torque = wrench.body1Torque.Z(); // Note that this doesn't seem to work but at least will populate with zeros
+
+        state.tail_joints.name.push_back(joint_names_.at(i));
+        state.tail_joints.position.push_back(joint->Position());
+        state.tail_joints.velocity.push_back(joint->GetVelocity(0));
+        state.tail_joints.effort.push_back(torque);
+      }
+    }
+
+    for (int i = 0; i<12; i++) {
       // std::cout << joint->GetName() << std::endl;
       // std::cout << joint->Position() << std::endl;
       // std::cout << joint->GetVelocity(0) << std::endl;
 
-      physics::JointPtr joint = joint_vec[i];
-      // physics::JointWrench wrench = joint->GetForceTorque(0);
-      double torque = 0;//wrench.body1Torque.Z(); // Note that this doesn't seem to work but at least will populate with zeros
+      // Get expected joint index by name
+      int idx;
+      auto it = find(model_joint_name.begin(), model_joint_name.end(), joint_names_[i]);
+      if (it != model_joint_name.end()) {
+          idx = it - model_joint_name.begin();
+      }
+      else {
+          ROS_ERROR_STREAM("Cannot find joint '" << joint_names_[i] << "'.");
+      }
 
+      physics::JointPtr joint = joint_vec[idx];
+      physics::JointWrench wrench = joint->GetForceTorque(0);
+      double torque = wrench.body1Torque.Z(); // Note that this doesn't seem to work but at least will populate with zeros
+
+      state.joints.name.push_back(joint_names_[i]);
       state.joints.position.push_back(joint->Position());
       state.joints.velocity.push_back(joint->GetVelocity(0));
       state.joints.effort.push_back(torque);

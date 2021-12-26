@@ -140,6 +140,7 @@ bool NMPCController::computeCentralizedTailPlan(const Eigen::VectorXd &initial_s
                                                 const std::vector<std::vector<bool>> &contact_schedule,
                                                 const Eigen::VectorXd &tail_initial_state,
                                                 const Eigen::MatrixXd &tail_ref_traj,
+                                                const Eigen::VectorXd &ref_ground_height,
                                                 Eigen::MatrixXd &state_traj,
                                                 Eigen::MatrixXd &control_traj,
                                                 Eigen::MatrixXd &tail_state_traj,
@@ -166,7 +167,8 @@ bool NMPCController::computeCentralizedTailPlan(const Eigen::VectorXd &initial_s
       initial_state_with_tail,
       ref_traj_with_tail.bottomRows(N_),
       foot_positions,
-      contact_schedule);
+      contact_schedule,
+      ref_ground_height.tail(N_));
   mynlp_->shift_initial_guess();
 
   bool success = this->computePlan(initial_state_with_tail,
@@ -202,6 +204,7 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
                                                 const Eigen::MatrixXd &tail_ref_traj,
                                                 const Eigen::MatrixXd &state_traj,
                                                 const Eigen::MatrixXd &control_traj,
+                                                const Eigen::VectorXd &ref_ground_height,
                                                 Eigen::MatrixXd &tail_state_traj,
                                                 Eigen::MatrixXd &tail_control_traj)
 {
@@ -228,7 +231,8 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
       foot_positions,
       contact_schedule,
       state_traj,
-      control_traj);
+      control_traj,
+      ref_ground_height.tail(N_));
   mynlp_->shift_initial_guess();
 
   bool success = this->computePlan(initial_state_with_tail,

@@ -100,6 +100,8 @@ private:
 
 	Eigen::MatrixXd tail_torque_plan_;
 
+	Eigen::VectorXd ref_ground_height_;
+
 	int N_;
 
 	double dt_;

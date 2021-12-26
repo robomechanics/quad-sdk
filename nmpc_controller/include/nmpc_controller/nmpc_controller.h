@@ -66,6 +66,7 @@ public:
                                   const std::vector<std::vector<bool>> &contact_schedule,
                                   const Eigen::VectorXd &tail_initial_state,
                                   const Eigen::MatrixXd &tail_ref_traj,
+                                  const Eigen::VectorXd &ref_ground_height,
                                   Eigen::MatrixXd &state_traj,
                                   Eigen::MatrixXd &control_traj,
                                   Eigen::MatrixXd &tail_state_traj,
@@ -79,6 +80,7 @@ public:
                                   const Eigen::MatrixXd &tail_ref_traj,
                                   const Eigen::MatrixXd &state_traj,
                                   const Eigen::MatrixXd &control_traj,
+                                  const Eigen::VectorXd &ref_ground_height,
                                   Eigen::MatrixXd &tail_state_traj,
                                   Eigen::MatrixXd &tail_control_traj);
 

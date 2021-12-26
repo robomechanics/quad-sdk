@@ -559,13 +559,13 @@ bool LocalPlanner::computeLocalPlan() {
   // Compute body plan with MPC, return if solve fails
   if (tail_type_ == CENTRALIZED)
   {
-    // TODO: we've not yet implement ground height verison for centralized tail
     if (!local_body_planner_nonlinear_->computeCentralizedTailPlan(current_state_,
                                                                    ref_body_plan_,
                                                                    foot_positions_body_,
                                                                    adaptive_contact_schedule_,
                                                                    tail_current_state_,
                                                                    ref_tail_plan_,
+                                                                   ref_ground_height_,
                                                                    body_plan_,
                                                                    grf_plan_,
                                                                    tail_plan_,
@@ -652,6 +652,10 @@ void LocalPlanner::publishLocalPlan() {
     robot_state_msg.feet = foot_plan_msg.states[i];
     quad_utils::ikRobotState(*quadKD_, robot_state_msg);
 
+    // Add refernce trajectory information
+    quad_msgs::RobotState robot_ref_state_msg;
+    robot_ref_state_msg.body = quad_utils::eigenToBodyStateMsg(ref_body_plan_.row(i));
+
     // Add the GRF information
     quad_msgs::GRFArray grf_array_msg;
     quad_utils::eigenToGRFArrayMsg(grf_plan_.row(i), foot_plan_msg.states[i], grf_array_msg);
@@ -667,9 +671,11 @@ void LocalPlanner::publishLocalPlan() {
     grf_array_msg.traj_index = robot_state_msg.traj_index;
 
     local_plan_msg.states.push_back(robot_state_msg);
+    local_plan_msg.ref_states.push_back(robot_ref_state_msg);
     local_plan_msg.grfs.push_back(grf_array_msg);
     local_plan_msg.plan_indices.push_back(current_plan_index_ + i);
     local_plan_msg.primitive_ids.push_back(2);
+    local_plan_msg.ground_height.push_back(ref_ground_height_(i));
 
     if (tail_type_ == CENTRALIZED)
     {

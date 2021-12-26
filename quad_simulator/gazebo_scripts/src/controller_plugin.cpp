@@ -36,7 +36,10 @@ namespace effort_controllers
     // Torque saturation (could change to linear model in future)
     torque_lims_ = {21,21,32};
   }
-  SpiritController::~SpiritController() {sub_command_.shutdown();}
+  SpiritController::~SpiritController() {
+    sub_command_.shutdown();
+    tail_sub_command_.shutdown();
+    }
 
   bool SpiritController::init(hardware_interface::EffortJointInterface* hw, ros::NodeHandle &n)
   {
@@ -92,20 +95,68 @@ namespace effort_controllers
     quad_utils::loadROSParam(n, "/topics/control/joint_command",joint_command_topic);
 
     sub_command_ = n.subscribe<quad_msgs::LegCommandArray>(joint_command_topic, 1, &SpiritController::commandCB, this);
+   
+    int num_tail_motors = 2;
+    tail_commands_buffer_.writeFromNonRT(TailBufferType(num_tail_motors));
+
+    std::string tail_command_topic;
+    quad_utils::loadROSParam(n, "/topics/control/tail_command",tail_command_topic);
+
+    tail_sub_command_ = n.subscribe<quad_msgs::LegCommand>(tail_command_topic, 1, &SpiritController::tailCommandCB, this);
+
+    n.param<int>("/tail_controller/tail_type", tail_type_, 0);
+
     return true;
   }
 
   void SpiritController::update(const ros::Time& time, const ros::Duration& period)
   {
     BufferType & commands = *commands_buffer_.readFromRT();
+    TailBufferType & tail_commands = *tail_commands_buffer_.readFromRT();
 
     // Check if message is populated
-    if (commands.empty() || commands.front().motor_commands.empty())
+    if (commands.empty() || commands.front().motor_commands.empty() || (tail_type_ != NONE && tail_commands.empty()))
     {
       return;
     }
 
-    for(unsigned int i=0; i<n_joints_; i++)
+    if (tail_type_ != NONE)
+    {
+      for (unsigned int i = 12; i < 14; i++)
+      {
+        // Tail control
+        quad_msgs::MotorCommand motor_command = tail_commands.at(i - 12);
+
+        // Collect feedforward torque
+        double torque_ff = motor_command.torque_ff;
+
+        // Compute position error
+        double command_position = motor_command.pos_setpoint;
+        enforceJointLimits(command_position, i);
+        double current_position = joints_.at(i).getPosition();
+        double kp = motor_command.kp;
+        double pos_error = command_position - current_position;
+
+        // Compute velocity error
+        double current_vel = joints_.at(i).getVelocity();
+        double command_vel = motor_command.vel_setpoint;
+        double vel_error = command_vel - current_vel;
+        double kd = motor_command.kd;
+
+        // Collect feedback
+        double torque_feedback = kp * pos_error + kd * vel_error;
+        // double torque_lim = torque_lims_[ind.second];
+        double torque_command = torque_feedback + torque_ff;
+        torque_command = std::max(std::min(torque_command, joint_urdfs_[i]->limits->effort), -joint_urdfs_[i]->limits->effort);
+
+        // std::cout << "Joint " << i << ": " << "FF Torque: " << torque_ff << " FF Torque %: " << torque_ff/torque_command << " FB Torque: " << torque_feedback << " FB Torque %: " << torque_feedback/torque_command << " Total Torque: " << torque_command << std::endl;
+
+        // Update joint torque
+        joints_.at(i).setCommand(torque_command);
+      }
+    }
+
+    for(unsigned int i=0; i<12; i++)
     {
       std::pair<int,int> ind = leg_map_[i];
       quad_msgs::MotorCommand motor_command = commands.at(ind.first).motor_commands.at(ind.second);
@@ -147,6 +198,11 @@ namespace effort_controllers
   void SpiritController::commandCB(const quad_msgs::LegCommandArrayConstPtr& msg)
   {
     commands_buffer_.writeFromNonRT(msg->leg_commands);
+  }
+
+  void SpiritController::tailCommandCB(const quad_msgs::LegCommandConstPtr& msg)
+  {
+    tail_commands_buffer_.writeFromNonRT(msg->motor_commands);
   }
 
   void SpiritController::enforceJointLimits(double &command, unsigned int index)

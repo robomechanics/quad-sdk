@@ -8,7 +8,9 @@ Header header
 time global_plan_timestamp
 time state_timestamp
 quad_msgs/RobotState[] states
+quad_msgs/RobotState[] ref_states
 quad_msgs/GRFArray[] grfs
 uint32[] plan_indices
 uint32[] primitive_ids
 float64 compute_time
+float64[] ground_height
