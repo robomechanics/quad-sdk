@@ -126,8 +126,9 @@
       </geometry>
     </collision>
     <inertial>
-      <mass value="0.775"/>
-      <inertia ixx="5e-05" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      <origin rpy="0 0 0" xyz="-0.040 -0.041 0"/>
+      <mass value="0.792"/>
+      <inertia ixx="5e-03" ixy="0" ixz="0" iyy="0.0070" iyz="0" izz="0.0070"/>
     </inertial>
   </link>
   <gazebo reference="upper0">
@@ -170,8 +171,9 @@
       </geometry>
     </collision>
     <inertial>
-      <mass value="0.075"/>
-      <inertia ixx="5e-06" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <origin rpy="0 0 0" xyz="0.092 0 0"/>
+      <mass value="0.096"/>
+      <inertia ixx="1.3e-05" ixy="0" ixz="0" iyy="0.00047" iyz="0" izz="0.00047"/>
     </inertial>
   </link>
   <gazebo reference="lower0">
@@ -341,8 +343,9 @@
       </geometry>
     </collision>
     <inertial>
-      <mass value="0.775"/>
-      <inertia ixx="5e-05" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      <origin rpy="0 0 0" xyz="-0.040 -0.041 0"/>
+      <mass value="0.792"/>
+      <inertia ixx="5e-03" ixy="0" ixz="0" iyy="0.0070" iyz="0" izz="0.0070"/>
     </inertial>
   </link>
   <gazebo reference="upper1">
@@ -385,8 +388,9 @@
       </geometry>
     </collision>
     <inertial>
-      <mass value="0.075"/>
-      <inertia ixx="5e-06" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <origin rpy="0 0 0" xyz="0.092 0 0"/>
+      <mass value="0.096"/>
+      <inertia ixx="1.3e-05" ixy="0" ixz="0" iyy="0.00047" iyz="0" izz="0.00047"/>
     </inertial>
   </link>
   <gazebo reference="lower1">
@@ -556,8 +560,9 @@
       </geometry>
     </collision>
     <inertial>
-      <mass value="0.775"/>
-      <inertia ixx="5e-05" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      <origin rpy="0 0 0" xyz="-0.040 0.041 0"/>
+      <mass value="0.792"/>
+      <inertia ixx="5e-03" ixy="0" ixz="0" iyy="0.0070" iyz="0" izz="0.0070"/>
     </inertial>
   </link>
   <gazebo reference="upper2">
@@ -600,8 +605,9 @@
       </geometry>
     </collision>
     <inertial>
-      <mass value="0.075"/>
-      <inertia ixx="5e-06" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <origin rpy="0 0 0" xyz="0.092 0 0"/>
+      <mass value="0.096"/>
+      <inertia ixx="1.3e-05" ixy="0" ixz="0" iyy="0.00047" iyz="0" izz="0.00047"/>
     </inertial>
   </link>
   <gazebo reference="lower2">
@@ -771,8 +777,9 @@
       </geometry>
     </collision>
     <inertial>
-      <mass value="0.775"/>
-      <inertia ixx="5e-05" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      <origin rpy="0 0 0" xyz="-0.040 0.041 0"/>
+      <mass value="0.792"/>
+      <inertia ixx="5e-03" ixy="0" ixz="0" iyy="0.0070" iyz="0" izz="0.0070"/>
     </inertial>
   </link>
   <gazebo reference="upper3">
@@ -815,8 +822,9 @@
       </geometry>
     </collision>
     <inertial>
-      <mass value="0.075"/>
-      <inertia ixx="5e-06" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <origin rpy="0 0 0" xyz="0.092 0 0"/>
+      <mass value="0.096"/>
+      <inertia ixx="1.3e-05" ixy="0" ixz="0" iyy="0.00047" iyz="0" izz="0.00047"/>
     </inertial>
   </link>
   <gazebo reference="lower3">

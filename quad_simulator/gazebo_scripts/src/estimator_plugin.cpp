@@ -137,8 +137,8 @@ namespace gazebo{
         }
 
         physics::JointPtr joint = joint_vec[idx];
-        physics::JointWrench wrench = joint->GetForceTorque(0);
-        double torque = wrench.body1Torque.Z(); // Note that this doesn't seem to work but at least will populate with zeros
+        // physics::JointWrench wrench = joint->GetForceTorque(0);
+        double torque = 0;//wrench.body1Torque.Z(); // Note that this doesn't seem to work but at least will populate with zeros
 
         state.tail_joints.name.push_back(joint_names_.at(i));
         state.tail_joints.position.push_back(joint->Position());
@@ -163,8 +163,8 @@ namespace gazebo{
       }
 
       physics::JointPtr joint = joint_vec[idx];
-      physics::JointWrench wrench = joint->GetForceTorque(0);
-      double torque = wrench.body1Torque.Z(); // Note that this doesn't seem to work but at least will populate with zeros
+      // physics::JointWrench wrench = joint->GetForceTorque(0);
+      double torque = 0;//wrench.body1Torque.Z(); // Note that this doesn't seem to work but at least will populate with zeros
 
       state.joints.name.push_back(joint_names_[i]);
       state.joints.position.push_back(joint->Position());
