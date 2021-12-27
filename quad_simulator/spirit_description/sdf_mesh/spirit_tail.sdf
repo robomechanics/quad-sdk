@@ -1742,10 +1742,11 @@ SOFTWARE.
     <!-- Setup ros control -->
     <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
       <robotNamespace>/spirit</robotNamespace>
+      <controlPeriod>0.002</controlPeriod>
     </plugin>
     <!-- Publish ground truth state data -->
     <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
-      <updateRateHZ>100.0</updateRateHZ>
+      <updateRateHZ>500.0</updateRateHZ>
     </plugin>
   </model>
 </sdf>
