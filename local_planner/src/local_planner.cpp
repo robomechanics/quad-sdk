@@ -354,9 +354,7 @@ void LocalPlanner::publishFootStepHist()
   for (size_t i = 0; i < 4; i++)
   {
     // Check if it's on the ground
-    if (grf_msg_->contact_states.at(i) && sqrt(pow(grf_msg_->vectors.at(i).x, 2) +
-                                               pow(grf_msg_->vectors.at(i).y, 2) +
-                                               pow(grf_msg_->vectors.at(i).z, 2)) > 1)
+    if (grf_msg_->contact_states.at(i) && abs(grf_msg_->vectors.at(i).z) > 5)
     {
       // Add the foot position to the history
       foot_step_hist_.atPosition("z", grid_map::Position(current_foot_positions_world_(3 * i + 0),
@@ -457,7 +455,7 @@ void LocalPlanner::getStateAndTwistInput() {
 
   // Only adaptive pitch
   // ref_body_plan_(0, 4) = local_footstep_planner_->getTerrainSlope(current_state_(0), current_state_(1), current_state_(6), current_state_(7));
-  
+
   // Adaptive roll and pitch
   local_footstep_planner_->getTerrainSlope(ref_body_plan_(0, 0),
                                            ref_body_plan_(0, 1),

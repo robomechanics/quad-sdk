@@ -136,6 +136,9 @@ void TailPlanner::computeTailPlan()
   if (last_local_plan_msg_ == NULL || (body_plan_msg_ == NULL && !use_twist_input_) || robot_state_msg_ == NULL || grf_msg_ == NULL)
     return;
 
+  // Start the timer
+  quad_utils::FunctionTimer timer(__FUNCTION__);
+
   // Start from current time
   tail_current_state_ = quad_utils::odomMsgToEigenForTail(*robot_state_msg_);
   current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
@@ -244,6 +247,19 @@ void TailPlanner::computeTailPlan()
                                                  tail_plan_,
                                                  tail_torque_plan_))
     return;
+
+  // Record computation time and update exponential filter
+  double compute_time = 1000.0 * timer.reportSilent();
+
+  if (compute_time >= 1000.0 / update_rate_)
+  {
+    ROS_WARN("TailPlanner took %5.3fms, exceeding %5.3fms allowed",
+                      compute_time, 1000.0 / update_rate_);
+  }
+  else
+  {
+    ROS_INFO("TailPlanner took %5.3f ms", compute_time);
+  };
 
   quad_msgs::LegCommandArray tail_plan_msg;
   tail_plan_msg.header.stamp = robot_state_msg_->header.stamp;

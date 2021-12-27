@@ -64,7 +64,7 @@ void TailController::robotStateCallback(const quad_msgs::RobotState::ConstPtr &m
 
 void TailController::publishTailCommand()
 {
-  if (robot_state_msg_ == NULL)
+  if (robot_state_msg_ == NULL || robot_state_msg_->tail_joints.position.empty())
   {
     return;
   }
@@ -78,14 +78,14 @@ void TailController::publishTailCommand()
   if (param_ns_ == "decentralized_tail")
   {
     // Feedback tail
-    msg.motor_commands.at(0).pos_setpoint = 5 * current_state_(3);
-    msg.motor_commands.at(0).vel_setpoint = 5 * current_state_(9);
+    msg.motor_commands.at(0).pos_setpoint = 0;
+    msg.motor_commands.at(0).vel_setpoint = 0;
     msg.motor_commands.at(0).torque_ff = 0;
     msg.motor_commands.at(0).kp = roll_kp_;
     msg.motor_commands.at(0).kd = roll_kd_;
 
-    msg.motor_commands.at(1).pos_setpoint = 5 * current_state_(4);
-    msg.motor_commands.at(1).vel_setpoint = 5 * current_state_(10);
+    msg.motor_commands.at(1).pos_setpoint = 0;
+    msg.motor_commands.at(1).vel_setpoint = 0;
     msg.motor_commands.at(1).torque_ff = 0;
     msg.motor_commands.at(1).kp = pitch_kp_;
     msg.motor_commands.at(1).kd = pitch_kd_;
@@ -208,7 +208,6 @@ void TailController::publishTailCommand()
 
 void TailController::spin()
 {
-  double start_time = ros::Time::now().toSec();
   ros::Rate r(update_rate_);
   while (ros::ok())
   {

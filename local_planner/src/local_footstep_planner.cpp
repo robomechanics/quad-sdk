@@ -188,7 +188,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         grf_midstance = grf_plan.block<1,3>(midstance,3*j);
 
         // Compute nominal foot positions for kinematic and grf-projection measures
-      quadKD_->worldToNominalHipFKWorldFrame(j, body_pos_midstance, body_rpy_midstance, 
+        quadKD_->worldToNominalHipFKWorldFrame(j, body_pos_midstance, body_rpy_midstance, 
           hip_position_midstance);
         // double hip_height = hip_position_midstance.z() - 
         //   terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());
@@ -286,7 +286,7 @@ void LocalFootstepPlanner::contactSensing(const Eigen::MatrixXd &body_plan,
             body_rpy = body_plan.block(j, 3, 1, 3).transpose();
 
             // Compute nominal foot positions for kinematic and grf-projection measures
-            quadKD_->worldToNominalHipFKWorldFrame(j, body_pos, body_rpy, hip_position);
+            quadKD_->worldToNominalHipFKWorldFrame(i, body_pos, body_rpy, hip_position);
             grid_map::Position hip_position_grid_map = {hip_position.x(), hip_position.y()};
             double hip_height = hip_position.z() - terrain_grid_.atPosition("z_smooth", hip_position_grid_map, grid_map::InterpolationMethods::INTER_LINEAR);
 
