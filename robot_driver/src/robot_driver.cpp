@@ -109,6 +109,10 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   // Assume zero initial velocity
   mocap_vel_estimate_.setZero();
   imu_vel_estimate_.setZero();
+  last_joint_state_msg_.name.resize(12);
+  last_joint_state_msg_.position.resize(12);
+  last_joint_state_msg_.velocity.resize(12);
+  last_joint_state_msg_.effort.resize(12);
 }
 
 void RobotDriver::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
@@ -193,6 +197,7 @@ void RobotDriver::legOverrideCallback(const quad_msgs::LegOverride::ConstPtr& ms
 
 void RobotDriver::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg) {
 
+
   // Get the current time and compare to the message time
   double remote_heartbeat_sent_time = msg->stamp.toSec();
   remote_heartbeat_received_time_ = ros::Time::now().toSec();
@@ -246,7 +251,7 @@ bool RobotDriver::updateState() {
     double t_diff_mb = mbdata_["y"][20] - last_mainboard_time_;
     double t_diff_ros = (state_timestamp - last_robot_state_msg_.header.stamp).toSec();
     double t_diff_mb_get = (state_timestamp - t_mb0).toSec();
-    ROS_INFO_THROTTLE(1,"t_diff_mb = %8.5fs, t_diff_ros = %8.5fs, t_diff_mb_get = %8.5fs",
+    ROS_INFO_THROTTLE(1.0,"t_diff_mb = %8.5fs, t_diff_ros = %8.5fs, t_diff_mb_get = %8.5fs",
       t_diff_mb, t_diff_ros, t_diff_mb_get);
     last_mainboard_time_ = mbdata_["y"][20];
 
@@ -256,12 +261,12 @@ bool RobotDriver::updateState() {
     // Add the data corresponding to each joint
     for (int i = 0; i < joint_names_.size(); i++)
     {
-      last_joint_state_msg_.name.push_back(joint_names_[i]);
-      last_joint_state_msg_.position.push_back(mbdata_["joint_position"][joint_indices_[i]]);
-      last_joint_state_msg_.velocity.push_back(mbdata_["joint_velocity"][joint_indices_[i]]);
+      last_joint_state_msg_.name[i] = joint_names_[i];
+      last_joint_state_msg_.position[i] = mbdata_["joint_position"][joint_indices_[i]];
+      last_joint_state_msg_.velocity[i] = mbdata_["joint_velocity"][joint_indices_[i]];
 
       // Convert from current to torque
-      last_joint_state_msg_.effort.push_back(kt_vec_[i]*mbdata_["joint_current"][joint_indices_[i]]);
+      last_joint_state_msg_.effort[i] = kt_vec_[i]*mbdata_["joint_current"][joint_indices_[i]];
     }
     last_robot_state_msg_.joints = last_joint_state_msg_;
 
@@ -271,6 +276,7 @@ bool RobotDriver::updateState() {
     // Transform from rpy to quaternion
     geometry_msgs::Quaternion orientation_msg;
     tf2::Quaternion quat_tf;
+    Eigen::Vector3f rpy;
     quat_tf.setRPY(mbdata_["imu_euler"][0],mbdata_["imu_euler"][1],mbdata_["imu_euler"][2]);
     tf2::convert(quat_tf, orientation_msg);
 

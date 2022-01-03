@@ -51,12 +51,13 @@ bool GrfPidController::computeLegCommandArray(
   // Load model and desired pos data
   double m = 13.3;
   double g = 9.81;
-  double pos_kp = 100;
-  double ang_kp = 50;
+  double mu = 0.3;
+  double pos_kp = 200;
+  double ang_kp = 100;
   double pos_ki = 0*pos_kp;
   double ang_ki = 0*ang_kp;
-  double pos_kd = 0.2*pos_kp;
-  double ang_kd = 0.02*ang_kp;
+  double pos_kd = 0.1*pos_kp;
+  double ang_kd = 0.1*ang_kp;
   Eigen::Vector3d grf_array_ff;
   grf_array_ff << 0, 0, m*g*0.25;
 
@@ -95,6 +96,12 @@ bool GrfPidController::computeLegCommandArray(
     
     grf_array.segment<3>(3*i).x() += -yaw_fb*sin(body_state(5) + yaw_ang_dir);
     grf_array.segment<3>(3*i).y() += yaw_fb*cos(body_state(5) + yaw_ang_dir);
+
+    grf_array.segment<3>(3*i).z() = std::max(grf_array.segment<3>(3*i).z(), 0.0);
+    double f_max_lateral = grf_array.segment<3>(3*i).z()*mu;
+
+    grf_array.segment<3>(3*i).x() = std::min(std::max(grf_array.segment<3>(3*i).x(), -f_max_lateral), f_max_lateral);
+    grf_array.segment<3>(3*i).y() = std::min(std::max(grf_array.segment<3>(3*i).y(), -f_max_lateral), f_max_lateral);
   }
 
   // Load contact mode

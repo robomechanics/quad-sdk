@@ -94,7 +94,6 @@ bool MBLinkConverter::sendMBlink(const quad_msgs::LegCommandArray& last_leg_comm
   }
   
   // std::cout << "ready to send" << std::endl;
-  std::cout << "Size of limbcmd = " << sizeof(limbcmd) << std::endl;
   // std::cout << "sizeof(LimbCmd_t) = " << sizeof(LimbCmd_t) << std::endl;
   float data[58] = {0};
   memcpy(data,limbcmd,4*sizeof(LimbCmd_t));
@@ -108,6 +107,7 @@ void MBLinkConverter::getMBlink(MBData_t &data)
 {
 
   // Get the data and appropriate timestamp (this may be blocking)
+  data.clear();
   data = mblink_.get();
 
   if (data.empty()) {
