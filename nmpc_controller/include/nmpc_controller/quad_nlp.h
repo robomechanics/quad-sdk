@@ -48,6 +48,9 @@ public:
     // Step length
     double dt_;
 
+    // Friction coefficient
+    double mu_;
+
     /// Mass of the platform (set to zero to ignore nominal ff)
     const double mass_ = 0.0;
 
@@ -118,6 +121,7 @@ public:
         int n,
         int m,
         double dt,
+        double mu,
         Eigen::MatrixXd Q,
         Eigen::MatrixXd R,
         Eigen::MatrixXd Q_factor,

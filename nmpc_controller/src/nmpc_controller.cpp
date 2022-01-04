@@ -28,10 +28,12 @@ NMPCController::NMPCController(int type)
   }
 
   // Load MPC/system parameters
+  double mu;
   ros::param::get("/nmpc_controller/" + param_ns_ + "/horizon_length", N_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_dimension", n_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_dimension", m_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/step_length", dt_);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/friction_coefficient", mu);
 
   // Load MPC cost weighting and bounds
   std::vector<double> state_weights,
@@ -65,6 +67,7 @@ NMPCController::NMPCController(int type)
       n_,
       m_,
       dt_,
+      mu,
       Q,
       R,
       Q_factor,

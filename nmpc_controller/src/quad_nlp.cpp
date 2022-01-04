@@ -16,6 +16,7 @@ quadNLP::quadNLP(
     int n,
     int m,
     double dt,
+    double mu,
     Eigen::MatrixXd Q,
     Eigen::MatrixXd R,
     Eigen::MatrixXd Q_factor,
@@ -109,6 +110,7 @@ quadNLP::quadNLP(
    }
 
    dt_ = dt;
+   mu_ = mu;
 
    x_min_ = x_min;
    x_max_ = x_max;
@@ -389,9 +391,10 @@ bool quadNLP::eval_g(
 
    for (int i = 0; i < N_; ++i)
    {
-      Eigen::MatrixXd pk(13, 1);
+      Eigen::MatrixXd pk(14, 1);
       pk(0, 0) = dt_;
-      pk.block(1, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
+      pk(1, 0) = mu_;
+      pk.block(2, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
 
       casadi_int sz_arg;
       casadi_int sz_res;
@@ -459,9 +462,10 @@ bool quadNLP::eval_jac_g(
 
       for (int i = 0; i < N_; ++i)
       {
-         Eigen::MatrixXd pk(13, 1);
+         Eigen::MatrixXd pk(14, 1);
          pk(0, 0) = dt_;
-         pk.block(1, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
+         pk(1, 0) = mu_;
+         pk.block(2, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
 
          casadi_int sz_arg;
          casadi_int sz_res;
@@ -609,9 +613,10 @@ bool quadNLP::eval_h(
 
       for (int i = 0; i < N_; ++i)
       {
-         Eigen::MatrixXd pk(13, 1);
+         Eigen::MatrixXd pk(14, 1);
          pk(0, 0) = dt_;
-         pk.block(1, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
+         pk(1, 0) = mu_;
+         pk.block(2, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
 
          casadi_int sz_arg;
          casadi_int sz_res;
