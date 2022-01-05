@@ -1,2 +1,3 @@
 body_force_estimator:
-  update_rate_: 200
+  update_rate: 200
+  K_O: 20

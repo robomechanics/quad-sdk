@@ -79,7 +79,7 @@ SOFTWARE.
     <link name='hip0'>
       <pose frame=''>0.2263 0.07 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose frame=''>0 0.03 0 0 -0 0</pose>
         <mass>0.575</mass>
         <inertia>
           <ixx>0.000669635</ixx>
@@ -149,15 +149,15 @@ SOFTWARE.
     <link name='upper0'>
       <pose frame=''>0.2263 0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.040 -0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.0676 -0.041 0 0 -0 0</pose>
         <mass>0.775</mass>
         <inertia>
           <ixx>5e-03</ixx>
-          <ixy>0</ixy>
+          <ixy>0.0010</ixy>
           <ixz>0</ixz>
-          <iyy>0.0070</iyy>
+          <iyy>0.0049</iyy>
           <iyz>0</iyz>
-          <izz>0.0070</izz>
+          <izz>0.0049</izz>
         </inertia>
       </inertial>
       <collision name='upper0_collision'>
@@ -349,7 +349,7 @@ SOFTWARE.
     <link name='hip1'>
       <pose frame=''>-0.2263 0.07 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose frame=''>0 0.03 0 0 -0 0</pose>
         <mass>0.575</mass>
         <inertia>
           <ixx>0.000669635</ixx>
@@ -419,15 +419,15 @@ SOFTWARE.
     <link name='upper1'>
       <pose frame=''>-0.2263 0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.040 -0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.0676 -0.041 0 0 -0 0</pose>
         <mass>0.775</mass>
         <inertia>
           <ixx>5e-03</ixx>
-          <ixy>0</ixy>
+          <ixy>0.0010</ixy>
           <ixz>0</ixz>
-          <iyy>0.0070</iyy>
+          <iyy>0.0049</iyy>
           <iyz>0</iyz>
-          <izz>0.0070</izz>
+          <izz>0.0049</izz>
         </inertia>
       </inertial>
       <collision name='upper1_collision'>
@@ -620,7 +620,7 @@ SOFTWARE.
     <link name='hip2'>
       <pose frame=''>0.2263 -0.07 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose frame=''>0 -0.03 0 0 -0 0</pose>
         <mass>0.575</mass>
         <inertia>
           <ixx>0.000669635</ixx>
@@ -690,15 +690,15 @@ SOFTWARE.
     <link name='upper2'>
       <pose frame=''>0.2263 -0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.040 0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.0676 0.041 0 0 -0 0</pose>
         <mass>0.775</mass>
         <inertia>
           <ixx>5e-03</ixx>
-          <ixy>0</ixy>
+          <ixy>0.0010</ixy>
           <ixz>0</ixz>
-          <iyy>0.0070</iyy>
+          <iyy>0.0049</iyy>
           <iyz>0</iyz>
-          <izz>0.0070</izz>
+          <izz>0.0049</izz>
         </inertia>
       </inertial>
       <collision name='upper2_collision'>
@@ -890,7 +890,7 @@ SOFTWARE.
     <link name='hip3'>
       <pose frame=''>-0.2263 -0.07 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose frame=''>0 -0.03 0 0 -0 0</pose>
         <mass>0.575</mass>
         <inertia>
           <ixx>0.000669635</ixx>
@@ -960,15 +960,15 @@ SOFTWARE.
     <link name='upper3'>
       <pose frame=''>-0.2263 -0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.040 0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.0676 0.041 0 0 -0 0</pose>
         <mass>0.775</mass>
         <inertia>
           <ixx>5e-03</ixx>
-          <ixy>0</ixy>
+          <ixy>0.0010</ixy>
           <ixz>0</ixz>
-          <iyy>0.0070</iyy>
+          <iyy>0.0049</iyy>
           <iyz>0</iyz>
-          <izz>0.0070</izz>
+          <izz>0.0049</izz>
         </inertia>
       </inertial>
       <collision name='upper3_collision'>
@@ -1506,10 +1506,11 @@ SOFTWARE.
     </joint>
 
 
-    <!-- Adding rotors to the SDF -->
+<!-- Adding rotors to the SDF ################################### -->
     <link name='abad0_rotor'>
       <pose frame=''>0.2263 0.07 0 0 0 0</pose>
       <inertial>
+        <mass>0.001</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1550,6 +1551,7 @@ SOFTWARE.
     <link name='hip0_rotor'>
       <pose frame=''>0.2263 0.07 0 0 0 0</pose>
       <inertial>
+        <mass>0.001</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1590,6 +1592,7 @@ SOFTWARE.
     <link name='knee0_rotor'>
       <pose frame=''>0.2263 0.11 0 0 0 0</pose>
       <inertial>
+        <mass>0.001</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1630,6 +1633,7 @@ SOFTWARE.
     <link name='abad1_rotor'>
       <pose frame=''>-0.2263 0.07 0 0 0 0</pose>
       <inertial>
+        <mass>0.001</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1670,6 +1674,7 @@ SOFTWARE.
     <link name='hip1_rotor'>
       <pose frame=''>-0.2263 0.07 0 0 0 0</pose>
       <inertial>
+        <mass>0.001</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1710,6 +1715,7 @@ SOFTWARE.
     <link name='knee1_rotor'>
       <pose frame=''>-0.2263 0.11 0 0 0 0</pose>
       <inertial>
+        <mass>0.001</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1750,6 +1756,7 @@ SOFTWARE.
     <link name='abad2_rotor'>
       <pose frame=''>0.2263 -0.07 0 0 0 0</pose>
       <inertial>
+        <mass>0.001</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1790,6 +1797,7 @@ SOFTWARE.
     <link name='hip2_rotor'>
       <pose frame=''>0.2263 -0.07 0 0 0 0</pose>
       <inertial>
+        <mass>0.001</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1830,6 +1838,7 @@ SOFTWARE.
     <link name='knee2_rotor'>
       <pose frame=''>0.2263 -0.11 0 0 0 0</pose>
       <inertial>
+        <mass>0.001</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1870,6 +1879,7 @@ SOFTWARE.
     <link name='abad3_rotor'>
       <pose frame=''>-0.2263 -0.07 0 0 0 0</pose>
       <inertial>
+        <mass>0.001</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1910,6 +1920,7 @@ SOFTWARE.
     <link name='hip3_rotor'>
       <pose frame=''>-0.2263 -0.07 0 0 0 0</pose>
       <inertial>
+        <mass>0.001</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1950,6 +1961,7 @@ SOFTWARE.
     <link name='knee3_rotor'>
       <pose frame=''>-0.2263 -0.11 0 0 0 0</pose>
       <inertial>
+        <mass>0.001</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1987,7 +1999,7 @@ SOFTWARE.
       </axis>
     </joint>
 
-    <!-- End new rotors -->
+  <!-- End new rotors ############################################ -->
 
     <include>
       <uri>model://cmu_text</uri>
