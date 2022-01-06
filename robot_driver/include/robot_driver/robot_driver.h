@@ -121,8 +121,9 @@ class RobotDriver {
     
       /**
      * @brief Function to publish leg command array message
+     * @param[in] is_valid Boolean for if the command is valid (only send valid commands to the robot)
      */
-    void publishControl();
+    void publishControl(bool is_valid);
     
     /**
      * @brief Function to publish heartbeat message

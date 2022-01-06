@@ -51,7 +51,7 @@ bool GrfPidController::computeLegCommandArray(
   // Load model and desired pos data
   double m = 13.3;
   double g = 9.81;
-  double mu = 0.3;
+  double mu = 0.2;
   double pos_kp = 200;
   double ang_kp = 100;
   double pos_ki = 0*pos_kp;

@@ -40,14 +40,19 @@ public:
   MBLinkConverter(ros::NodeHandle nh, int argc, char** argv);
 
   /**
+   * @brief Stop the MAVLink connection
+   */
+  void stop();
+
+  /**
    * @brief Send most recent motor command over mblink
    * @return Boolean signaling successful mblink send
    */
   bool sendMBlink(const quad_msgs::LegCommandArray& last_leg_command_array_msg_);
 
   /**
- * @brief Get most recent data payload over mblink and process it
- */
+   * @brief Get most recent data payload over mblink and process it
+   */
   void getMBlink(MBData_t &data);
 
 private:

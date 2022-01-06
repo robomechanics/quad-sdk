@@ -4,7 +4,7 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
 {
   nh_ = nh;
 
-    /// Ghost MBLink interface class
+  /// Ghost MBLink interface class
   mblink_.start(argc,argv);
   mblink_.rxstart();
   mblink_.setRetry("_UPST_ADDRESS", 255);
@@ -40,6 +40,11 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
 //   // double t_now = ros::Time::now().toSec();
 //   // ROS_INFO("Current time = %6.4f, msg time = %6.4f, diff = %6.4fs", t_now, last_leg_command_time_, t_now - last_leg_command_time_);
 // }
+
+void MBLinkConverter::stop() {
+  mblink_.rxstop();
+}
+
 
 void MBLinkConverter::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg) {
   last_heartbeat_time_ = msg->stamp.toSec();

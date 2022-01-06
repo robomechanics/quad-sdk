@@ -106,13 +106,17 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   last_robot_state_msg_.header.stamp = ros::Time::now();
   t_pub_ = ros::Time::now();
 
-  // Assume zero initial velocity
+  // Initialize state and control data structures
   mocap_vel_estimate_.setZero();
   imu_vel_estimate_.setZero();
   last_joint_state_msg_.name.resize(12);
   last_joint_state_msg_.position.resize(12);
   last_joint_state_msg_.velocity.resize(12);
   last_joint_state_msg_.effort.resize(12);
+  grf_array_msg_.vectors.resize(4);
+  grf_array_msg_.points.resize(4);
+  grf_array_msg_.contact_states.resize(4);
+  grf_array_msg_.header.frame_id = "map";
 }
 
 void RobotDriver::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
@@ -127,7 +131,6 @@ void RobotDriver::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
     control_mode_ = READY_TO_SIT;
     transition_timestamp_ = ros::Time::now();
   } else if (msg->data == SIT || (msg->data == SAFETY)) { // Allow sit or safety modes
-  
     control_mode_ = msg->data;
   }
 }
@@ -143,7 +146,7 @@ void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg) {
 
   ros::Time t_now = ros::Time::now();
   double round_trip_time_diff = (t_now - last_local_plan_msg_->state_timestamp).toSec();
-  ROS_INFO_STREAM_THROTTLE(0.5,"round trip time difference: " << round_trip_time_diff);
+  // ROS_INFO_STREAM_THROTTLE(0.5,"round trip time difference: " << round_trip_time_diff);
 
   leg_controller_->updateLocalPlanMsg(last_local_plan_msg_, t_now);
 }
@@ -161,9 +164,6 @@ void RobotDriver::mocapCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
     ros::Time t_now = ros::Time::now();
     double t_diff_mocap_msg = (msg->header.stamp - last_mocap_msg_->header.stamp).toSec();
     double t_mocap_ros_latency = (t_now - msg->header.stamp).toSec();
-    // std::cout << "t_diff_mocap_msg = " << t_diff_mocap_msg << std::endl;
-    // std::cout << "t_diff_ros = " << (t_now - last_mocap_time_).toSec() << std::endl;
-    // std::cout << "t_mocap_ros_latency = " << t_mocap_ros_latency << std::endl;
     last_mocap_time_ = t_now;
 
     // Use new measurement
@@ -203,7 +203,7 @@ void RobotDriver::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg)
   remote_heartbeat_received_time_ = ros::Time::now().toSec();
   double t_latency = remote_heartbeat_received_time_ - remote_heartbeat_sent_time;
 
-  ROS_INFO_THROTTLE(1.0,"Remote latency (+ clock skew) = %6.4fs", t_latency);
+  // ROS_INFO_THROTTLE(1.0,"Remote latency (+ clock skew) = %6.4fs", t_latency);
 }
 
 void RobotDriver::checkMessages() {
@@ -495,19 +495,23 @@ bool RobotDriver::updateControl() {
   return valid_cmd;
 }
 
-void RobotDriver::publishControl() {
+void RobotDriver::publishControl(bool is_valid) {
 
   // Stamp and send the message
-  if ((ros::Time::now() - leg_command_array_msg_.header.stamp).toSec() >= 1.0/publish_rate_) {
+  // if ((ros::Time::now() - leg_command_array_msg_.header.stamp).toSec() >= 1.0/publish_rate_) {
     leg_command_array_msg_.header.stamp = ros::Time::now();
     leg_command_array_pub_.publish(leg_command_array_msg_);
     grf_array_msg_.header.stamp = leg_command_array_msg_.header.stamp;
     grf_pub_.publish(grf_array_msg_);
-  }
+  // }
 
   // Send command to the robot
-  if (is_hw_) {
+  if (is_hw_ && is_valid) {
+    ros::Time t_start = ros::Time::now();
     mblink_converter_->sendMBlink(leg_command_array_msg_);
+    ros::Time t_end = ros::Time::now();
+
+    ROS_INFO_THROTTLE(1.0, "t_diff_mb_send = %6.4f", (t_end - t_start).toSec());
   }
 }
 
@@ -534,15 +538,19 @@ void RobotDriver::spin() {
     updateState();
 
     // Compute the leg command and publish if valid
-    if (updateControl()) {
-      publishControl();
-    }
+    bool is_valid = updateControl();
+    publishControl(is_valid);
 
-    // Publish state and heartbeat
+    // // Publish state and heartbeat
     publishState();
     publishHeartbeat();
 
     // Enforce update rate
     r.sleep();
+  }
+
+  // Close the mblink connection
+  if (is_hw_){
+    mblink_converter_->stop();
   }
 }

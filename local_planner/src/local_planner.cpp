@@ -341,12 +341,12 @@ void LocalPlanner::getStateAndTwistInput() {
     y_mean += robot_state_msg_->feet.feet[i].position.y/(num_feet_);
   }
 
-  ref_body_plan_(0,0) = x_mean;
-  ref_body_plan_(0,1) = y_mean;
+  ref_body_plan_(0,0) = 0.0;//current_state_[0];//x_mean;
+  ref_body_plan_(0,1) = 0.0;//current_state_[1];//y_mean;
   ref_body_plan_(0,2) = z_des_ + ref_ground_height_(0);
   ref_body_plan_(0,3) = 0;
   ref_body_plan_(0,4) = 0;
-  ref_body_plan_(0,5) = 0;
+  ref_body_plan_(0,5) = 0.0;//current_state_[5];
   ref_body_plan_(0,6) = cmd_vel_[0]*cos(current_state_[5]) - cmd_vel_[1]*sin(current_state_[5]);
   ref_body_plan_(0,7) = cmd_vel_[0]*sin(current_state_[5]) + cmd_vel_[1]*cos(current_state_[5]);
   ref_body_plan_(0,8) = cmd_vel_[2];

@@ -32,7 +32,7 @@ private:
   Eigen::VectorXd last_grf_array_;
 
   /// GRF exponential filter constant
-  const double grf_exp_filter_const_ = 0.5;
+  const double grf_exp_filter_const_ = 1.0; // 1.0 = no filtering
 
 };
 
