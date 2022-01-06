@@ -2,6 +2,8 @@
 
 UnderbrushInverseDynamicsController::UnderbrushInverseDynamicsController() {
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
+
+  force_mode_ = {0, 0, 0, 0};
 }
 
 void UnderbrushInverseDynamicsController::setGains(std::vector<double> stance_kp, std::vector<double> stance_kd,
@@ -18,7 +20,7 @@ void UnderbrushInverseDynamicsController::computeLegCommandArrayFromPlan(
   const quad_msgs::RobotPlan::ConstPtr &local_plan_msg,
   quad_msgs::LegCommandArray &leg_command_array_msg,
   quad_msgs::GRFArray &grf_array_msg,
-  const quad_msgs::BodyForceEstimate::ConstPtr& body_force_msg)
+  const quad_msgs::BodyForceEstimate::ConstPtr& body_force_estimate_msg)
 {
   leg_command_array_msg.leg_commands.resize(num_feet_);
 
@@ -95,7 +97,6 @@ void UnderbrushInverseDynamicsController::computeLegCommandArrayFromPlan(
     int abad_idx = 3*i+0;
     int hip_idx = 3*i+1;
     int knee_idx = 3*i+2;
-    // TODO: update knee angles
     ref_underbrush_msg.joints.position.at(knee_idx) +=
       -0.8*std::abs(state_positions[hip_idx] - ref_underbrush_msg.joints.position.at(hip_idx))
       -0.8*std::abs(state_positions[abad_idx] - ref_underbrush_msg.joints.position.at(abad_idx));
@@ -122,26 +123,74 @@ void UnderbrushInverseDynamicsController::computeLegCommandArrayFromPlan(
   quadKD_->computeInverseDynamics(state_positions, state_velocities, ref_foot_acceleration,grf_array,
     contact_mode, tau_array);
 
+  //ROS_INFO_THROTTLE(0.1, "tau_k 0: %f", body_force_estimate_msg->body_wrenches.at(0).torque.z);
+
   for (int i = 0; i < num_feet_; ++i) {
     leg_command_array_msg.leg_commands.at(i).motor_commands.resize(3);
-    for (int j = 0; j < 3; ++j) {
 
-      int joint_idx = 3*i+j;
+    // Switch swing modes
+    if (force_mode_.at(i) && (body_force_estimate_msg->body_wrenches.at(i).torque.z < 0.25)) { //JYTODO: make a parameter
+      force_mode_.at(i) = 0;
+    } else if (!force_mode_.at(i) && (body_force_estimate_msg->body_wrenches.at(i).torque.z > 1.0)) {
+      force_mode_.at(i) = 1;
+      ROS_INFO_STREAM("OBSTRUCTION DETECTED");
+    }
+    //force_mode_.at(i) = 0;
 
-      leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 
-        ref_state_msg.joints.position.at(joint_idx);
-      leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 
-        ref_state_msg.joints.velocity.at(joint_idx);
-      leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).torque_ff =
-          tau_array(joint_idx);
+    if (contact_mode[i]) {
+      // Stance phase
+      for (int j = 0; j < 3; ++j) {
 
-      if (contact_mode[i]) {
+        int joint_idx = 3*i+j;
+
+        leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 
+          ref_state_msg.joints.position.at(joint_idx);
+        leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 
+          ref_state_msg.joints.velocity.at(joint_idx);
+        leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).torque_ff =
+            tau_array(joint_idx);
+
         leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp = stance_kp_.at(j);
         leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd = stance_kd_.at(j);
-      } else {
-        leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp = swing_kp_.at(j);
-        leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd = swing_kd_.at(j);
-        leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+      }
+    } else {
+      // Swing phase
+      if (!force_mode_.at(i)) {
+        // Usual swing mode
+        for (int j = 0; j < 3; ++j) {
+
+          int joint_idx = 3*i+j;
+
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 
+            ref_state_msg.joints.position.at(joint_idx);
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).vel_setpoint = 
+            ref_state_msg.joints.velocity.at(joint_idx);
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp = swing_kp_.at(j);
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd = swing_kd_.at(j);
+        }
+      } else{
+        // Obstructed swing mode
+        ROS_INFO_THROTTLE(0.01, "Attempting circumvention");
+        for (int j = 0; j < 3; ++j) {
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 0;
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp = 0;
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd = swing_kd_.at(j);
+        }
+
+        leg_command_array_msg.leg_commands.at(i).motor_commands.at(0).pos_setpoint = 
+          ref_state_msg.joints.position.at(3*i+0);
+        leg_command_array_msg.leg_commands.at(i).motor_commands.at(0).vel_setpoint = 
+          ref_state_msg.joints.velocity.at(3*i+0);
+        leg_command_array_msg.leg_commands.at(i).motor_commands.at(0).kp = swing_kp_.at(0);
+
+        leg_command_array_msg.leg_commands.at(i).motor_commands.at(1).vel_setpoint = -12; // JYTODO: make parameter
+
+        leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).vel_setpoint = 0;
+        leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).kd = 0;
+        leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).torque_ff = -0.5; // JYTODO: make parameter
       }
     }
   }

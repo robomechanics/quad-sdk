@@ -49,7 +49,7 @@ class UnderbrushInverseDynamicsController {
       const quad_msgs::RobotPlan::ConstPtr &local_plan_msg,
       quad_msgs::LegCommandArray &leg_command_array_msg,
       quad_msgs::GRFArray &grf_array_msg,
-      const quad_msgs::BodyForceEstimate::ConstPtr& body_force_msg);
+      const quad_msgs::BodyForceEstimate::ConstPtr& body_force_estimate_msg);
 
       /**
        * @brief Set the desired stance and swing proportional and derivative gains
@@ -76,6 +76,8 @@ private:
     /// PD gain when foot is in swing
     std::vector<double> swing_kp_;
     std::vector<double> swing_kd_;
+
+    std::vector<int> force_mode_;
 };
 
 

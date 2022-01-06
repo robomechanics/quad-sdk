@@ -443,7 +443,7 @@
           <spring_stiffness>1.0</spring_stiffness>
         </dynamics>
         <limit>
-          <lower>-0.2</lower>
+          <lower>-0.1</lower>
           <upper>0</upper>
         </limit>
       </axis>
