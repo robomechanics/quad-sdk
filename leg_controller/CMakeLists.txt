@@ -44,6 +44,7 @@ include_directories(
 add_library(leg_controller
 	src/leg_controller.cpp
 	src/inverse_dynamics.cpp
+  src/underbrush_inverse_dynamics.cpp
   src/leg_overrider.cpp
 )
 add_dependencies(leg_controller ${leg_controller_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

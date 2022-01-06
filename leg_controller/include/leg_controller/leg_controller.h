@@ -16,10 +16,12 @@
 #include <quad_msgs/LegCommand.h>
 #include <quad_msgs/LegCommandArray.h>
 #include <quad_msgs/LegOverride.h>
+#include <quad_msgs/BodyForceEstimate.h>
 #include <quad_msgs/MultiFootPlanContinuous.h>
 #include <eigen_conversions/eigen_msg.h>
 #include "quad_utils/matplotlibcpp.h"
 #include "leg_controller/inverse_dynamics.h"
+#include "leg_controller/underbrush_inverse_dynamics.h"
 
 #include <cmath>
 #define MATH_PI 3.141592
@@ -82,6 +84,12 @@ private:
 	void legOverrideCallback(const quad_msgs::LegOverride::ConstPtr& msg);
 
 	/**
+	 * @brief Callback to handle new body force estimates
+	 * @param[in] msg body force estimates
+	 */
+	void bodyForceEstimateCallback(const quad_msgs::BodyForceEstimate::ConstPtr& msg);
+
+	/**
 	 * @brief Callback to handle new remote heartbeat messages
 	 * @param[in] msg Remote heartbeat message
 	 */
@@ -132,6 +140,9 @@ private:
 
 	/// ROS subscriber for leg override commands
 	ros::Subscriber leg_override_sub_;
+
+	/// ROS subscriber for body force estimates
+	ros::Subscriber body_force_estimate_sub_;
 
 	/// ROS subscriber for remote heartbeat
 	ros::Subscriber remote_heartbeat_sub_;
@@ -199,6 +210,9 @@ private:
 	/// Most recent leg override
 	quad_msgs::LegOverride last_leg_override_msg_;
 
+	/// Most recent body force estimate
+	quad_msgs::BodyForceEstimate::ConstPtr last_body_force_estimate_msg_;
+
 	/// Most recent remote 
 	std_msgs::Header::ConstPtr last_remote_heartbeat_msg_;
 
@@ -255,6 +269,9 @@ private:
 	std::vector<double> swing_kp_;
 	std::vector<double> swing_kd_;
 
+	/// Underbrush swing adaptation on or off
+	int underbrush_swing_;
+
 	/// Define standing joint angles
   	 const std::vector<double> stand_joint_angles_{0,0.76,2*0.76};
 
@@ -266,6 +283,10 @@ private:
 
 	/// Inverse Dynamics Controller class
 	std::shared_ptr<InverseDynamicsController> inverse_dynamics_controller_;
+
+	/// Underbrush Inverse Dynamics Controller class
+	std::shared_ptr<UnderbrushInverseDynamicsController> underbrush_inverse_dynamics_controller_;
+
 };
 
 

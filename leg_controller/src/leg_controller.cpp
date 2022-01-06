@@ -7,7 +7,7 @@ LegController::LegController(ros::NodeHandle nh) {
 
     // Load rosparams from parameter server
   std::string grf_topic, trajectory_state_topic, robot_state_topic, local_plan_topic,
-    leg_command_array_topic, control_mode_topic, leg_override_topic,
+    leg_command_array_topic, control_mode_topic, leg_override_topic, body_force_estimate_topic,
     remote_heartbeat_topic, robot_heartbeat_topic;
   quad_utils::loadROSParam(nh_,"topics/local_plan",local_plan_topic);
   quad_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
@@ -17,6 +17,7 @@ LegController::LegController(ros::NodeHandle nh) {
   quad_utils::loadROSParam(nh_,"topics/control/grfs",grf_topic);
   quad_utils::loadROSParam(nh_,"topics/control/joint_command",leg_command_array_topic);
   quad_utils::loadROSParam(nh_,"topics/control/leg_override",leg_override_topic);
+  quad_utils::loadROSParam(nh_,"topics/body_force/joint_torques",body_force_estimate_topic);
   quad_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
 
   quad_utils::loadROSParam(nh_,"leg_controller/update_rate", update_rate_);
@@ -33,6 +34,7 @@ LegController::LegController(ros::NodeHandle nh) {
   quad_utils::loadROSParam(nh_, "leg_controller/swing_kd", swing_kd_);
   quad_utils::loadROSParam(nh_, "leg_controller/safety_kp", safety_kp_);
   quad_utils::loadROSParam(nh_, "leg_controller/safety_kd", safety_kd_);
+  quad_utils::loadROSParam(nh_, "leg_controller/underbrush_swing", underbrush_swing_);
   quad_utils::loadROSParam(nh_, "leg_controller/remote_latency_threshold_warn",
     remote_latency_threshold_warn_);
   quad_utils::loadROSParam(nh_, "leg_controller/remote_latency_threshold_error",
@@ -50,6 +52,8 @@ LegController::LegController(ros::NodeHandle nh) {
     control_mode_topic,1,&LegController::controlModeCallback, this);
   leg_override_sub_ = nh_.subscribe(
     leg_override_topic,1,&LegController::legOverrideCallback, this);
+  body_force_estimate_sub_ = nh_.subscribe(
+    body_force_estimate_topic,1,&LegController::bodyForceEstimateCallback, this);
   remote_heartbeat_sub_ = nh_.subscribe(
     remote_heartbeat_topic,1,&LegController::remoteHeartbeatCallback, this);
   leg_command_array_pub_ = nh_.advertise<quad_msgs::LegCommandArray>(leg_command_array_topic,1);
@@ -65,8 +69,15 @@ LegController::LegController(ros::NodeHandle nh) {
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
   // Initialize inverse dynamics object
-  inverse_dynamics_controller_ = std::make_shared<InverseDynamicsController>();
-  inverse_dynamics_controller_->setGains(stance_kp_, stance_kd_, swing_kp_, swing_kd_);
+  if (underbrush_swing_) {
+    quad_utils::loadROSParam(nh_, "leg_controller/underbrush_swing_kp", swing_kp_);
+    quad_utils::loadROSParam(nh_, "leg_controller/underbrush_swing_kd", swing_kd_);
+    underbrush_inverse_dynamics_controller_ = std::make_shared<UnderbrushInverseDynamicsController>();
+    underbrush_inverse_dynamics_controller_->setGains(stance_kp_, stance_kd_, swing_kp_, swing_kd_);
+  } else { // usual inverse dynamics
+    inverse_dynamics_controller_ = std::make_shared<InverseDynamicsController>();
+    inverse_dynamics_controller_->setGains(stance_kp_, stance_kd_, swing_kp_, swing_kd_);
+  }
 }
 
 void LegController::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
@@ -121,6 +132,10 @@ void LegController::legOverrideCallback(const quad_msgs::LegOverride::ConstPtr& 
   last_leg_override_msg_ = *msg;
 }
 
+void LegController::bodyForceEstimateCallback(const quad_msgs::BodyForceEstimate::ConstPtr& msg) {
+  last_body_force_estimate_msg_ = msg;
+}
+
 void LegController::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg) {
 
   // Get the current time and compare to the message time
@@ -172,8 +187,13 @@ void LegController::executeCustomController() {
   if (last_local_plan_msg_ != NULL && 
     (ros::Time::now() - last_local_plan_msg_->header.stamp).toSec() < input_timeout_) {
 
-    inverse_dynamics_controller_->computeLegCommandArrayFromPlan(last_robot_state_msg_,
-      last_local_plan_msg_, leg_command_array_msg_, grf_array_msg_);
+    if (underbrush_swing_) {
+      underbrush_inverse_dynamics_controller_->computeLegCommandArrayFromPlan(last_robot_state_msg_,
+        last_local_plan_msg_, leg_command_array_msg_, grf_array_msg_, last_body_force_estimate_msg_);
+    } else { // default inverse dynamics controller
+      inverse_dynamics_controller_->computeLegCommandArrayFromPlan(last_robot_state_msg_,
+        last_local_plan_msg_, leg_command_array_msg_, grf_array_msg_);
+    }
 
   } else {
     for (int i = 0; i < num_feet_; ++i) {
