@@ -4,6 +4,11 @@ UnderbrushInverseDynamicsController::UnderbrushInverseDynamicsController() {
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
   force_mode_ = {0, 0, 0, 0};
+
+  double t_now = ros::Time::now().toSec();
+  t_switch_ = {t_now, t_now, t_now, t_now};
+  t_LO_ = {t_now, t_now, t_now, t_now};
+  t_TD_ = {t_now, t_now, t_now, t_now};
 }
 
 void UnderbrushInverseDynamicsController::setGains(std::vector<double> stance_kp, std::vector<double> stance_kd,
@@ -66,6 +71,15 @@ void UnderbrushInverseDynamicsController::computeLegCommandArrayFromPlan(
       // ref_state_msg = local_plan_msg->states[i];
       grf_array_msg = local_plan_msg->grfs[i];
 
+      // Don't switch immediately after beginning swing
+      for (int j = 0; j < num_feet_; j++) {
+        if (local_plan_msg->states[i].feet.feet.at(j).contact && 
+            !local_plan_msg->states[i+1].feet.feet.at(j).contact) {
+          //t_switch_.at(j) = local_plan_msg->states[i+1].header.stamp.toSec();
+          t_LO_.at(j) = local_plan_msg->states[i+1].header.stamp.toSec();
+        }
+      }
+
       break;
     }
   }
@@ -98,8 +112,11 @@ void UnderbrushInverseDynamicsController::computeLegCommandArrayFromPlan(
     int hip_idx = 3*i+1;
     int knee_idx = 3*i+2;
     ref_underbrush_msg.joints.position.at(knee_idx) +=
-      -0.8*std::abs(state_positions[hip_idx] - ref_underbrush_msg.joints.position.at(hip_idx))
-      -0.8*std::abs(state_positions[abad_idx] - ref_underbrush_msg.joints.position.at(abad_idx));
+      -0.7*std::abs(state_positions[hip_idx] - ref_underbrush_msg.joints.position.at(hip_idx))
+      -0.6*std::abs(state_positions[abad_idx] - ref_underbrush_msg.joints.position.at(abad_idx));
+    if (ref_underbrush_msg.joints.position.at(knee_idx) < 0.3) {
+      ref_underbrush_msg.joints.position.at(knee_idx) = 0.3;
+    }
   }
   ref_state_msg = ref_underbrush_msg;
 
@@ -128,11 +145,17 @@ void UnderbrushInverseDynamicsController::computeLegCommandArrayFromPlan(
   for (int i = 0; i < num_feet_; ++i) {
     leg_command_array_msg.leg_commands.at(i).motor_commands.resize(3);
 
+    // Time since last switch
+
     // Switch swing modes
-    if (force_mode_.at(i) && (body_force_estimate_msg->body_wrenches.at(i).torque.z < 0.25)) { //JYTODO: make a parameter
+    if (force_mode_.at(i) && (t_now - t_switch_.at(i) > 0.05) && //JYTODO: make a parameter
+        (body_force_estimate_msg->body_wrenches.at(i).torque.z < 0.25)) { //JYTODO: make a parameter
       force_mode_.at(i) = 0;
-    } else if (!force_mode_.at(i) && (body_force_estimate_msg->body_wrenches.at(i).torque.z > 1.0)) {
+      t_switch_.at(i) = t_now;
+    } else if (!force_mode_.at(i) && (t_now - t_switch_.at(i) > 0.05) && 
+          body_force_estimate_msg->body_wrenches.at(i).torque.z > 1.0) {
       force_mode_.at(i) = 1;
+      t_switch_.at(i) = t_now;
       ROS_INFO_STREAM("OBSTRUCTION DETECTED");
     }
     //force_mode_.at(i) = 0;
@@ -186,11 +209,11 @@ void UnderbrushInverseDynamicsController::computeLegCommandArrayFromPlan(
           ref_state_msg.joints.velocity.at(3*i+0);
         leg_command_array_msg.leg_commands.at(i).motor_commands.at(0).kp = swing_kp_.at(0);
 
-        leg_command_array_msg.leg_commands.at(i).motor_commands.at(1).vel_setpoint = -12; // JYTODO: make parameter
+        leg_command_array_msg.leg_commands.at(i).motor_commands.at(1).vel_setpoint = -20; // JYTODO: make parameter
 
         leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).vel_setpoint = 0;
         leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).kd = 0;
-        leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).torque_ff = -0.5; // JYTODO: make parameter
+        leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).torque_ff = -1.0;//-0.5; // JYTODO: make parameter
       }
     }
   }

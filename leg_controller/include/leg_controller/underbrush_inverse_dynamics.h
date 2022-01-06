@@ -78,6 +78,9 @@ private:
     std::vector<double> swing_kd_;
 
     std::vector<int> force_mode_;
+    std::vector<double> t_switch_;
+    std::vector<double> t_LO_;
+    std::vector<double> t_TD_;
 };
 
 
