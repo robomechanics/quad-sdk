@@ -13,7 +13,7 @@ leg_controller:
   safety_kp: [0, 0, 0]
   safety_kd: [2, 2, 2]
   underbrush_swing_kp: [10, 10, 20]
-  underbrush_swing_kd: [1, 1, 0.5]
+  underbrush_swing_kd: [0.5, 2.0, 0.5]
   underbrush_swing: 1
   input_timeout: 0.1
   state_timeout: 0.1

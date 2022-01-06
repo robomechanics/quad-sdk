@@ -52,6 +52,8 @@ void UnderbrushInverseDynamicsController::computeLegCommandArrayFromPlan(
     ROS_ERROR("ID node couldn't find the correct ref state!");
   }
 
+  int all_TD = 0; // end looping when all next touchdowns have been found
+
   // Interpolate the local plan to get the reference state and ff GRF
   for (int i = 0; i < local_plan_msg->states.size()-1; i++) {
     
@@ -80,7 +82,24 @@ void UnderbrushInverseDynamicsController::computeLegCommandArrayFromPlan(
         }
       }
 
-      break;
+      //break;
+
+    } else if (t_now < local_plan_msg->states[i+1].header.stamp.toSec() ) { // find next touchdowns
+      if (all_TD == pow(2.0, num_feet_) - 1) { // terminate when all next touchdowns are found
+        break;
+      }
+      for (int j = 0; j < num_feet_; j++) {
+        if (!(all_TD & (1 << j))) { // touchdown not yet found for this foot
+          if (ref_state_msg.feet.feet.at(j).contact) {
+            all_TD = all_TD | (1 << j); // foot is in stance, don't need next touchdown
+          } else {
+            if (local_plan_msg->states[i].feet.feet.at(j).contact) {
+              t_TD_.at(j) = local_plan_msg->states[i].header.stamp.toSec();
+              all_TD = all_TD | (1 << j); // next touchdown found
+            }
+          }
+        }
+      }
     }
   }
 
@@ -113,7 +132,7 @@ void UnderbrushInverseDynamicsController::computeLegCommandArrayFromPlan(
     int knee_idx = 3*i+2;
     ref_underbrush_msg.joints.position.at(knee_idx) +=
       -0.7*std::abs(state_positions[hip_idx] - ref_underbrush_msg.joints.position.at(hip_idx))
-      -0.6*std::abs(state_positions[abad_idx] - ref_underbrush_msg.joints.position.at(abad_idx));
+      -0.5*std::abs(state_positions[abad_idx] - ref_underbrush_msg.joints.position.at(abad_idx));
     if (ref_underbrush_msg.joints.position.at(knee_idx) < 0.3) {
       ref_underbrush_msg.joints.position.at(knee_idx) = 0.3;
     }
@@ -145,21 +164,6 @@ void UnderbrushInverseDynamicsController::computeLegCommandArrayFromPlan(
   for (int i = 0; i < num_feet_; ++i) {
     leg_command_array_msg.leg_commands.at(i).motor_commands.resize(3);
 
-    // Time since last switch
-
-    // Switch swing modes
-    if (force_mode_.at(i) && (t_now - t_switch_.at(i) > 0.05) && //JYTODO: make a parameter
-        (body_force_estimate_msg->body_wrenches.at(i).torque.z < 0.25)) { //JYTODO: make a parameter
-      force_mode_.at(i) = 0;
-      t_switch_.at(i) = t_now;
-    } else if (!force_mode_.at(i) && (t_now - t_switch_.at(i) > 0.05) && 
-          body_force_estimate_msg->body_wrenches.at(i).torque.z > 1.0) {
-      force_mode_.at(i) = 1;
-      t_switch_.at(i) = t_now;
-      ROS_INFO_STREAM("OBSTRUCTION DETECTED");
-    }
-    //force_mode_.at(i) = 0;
-
     if (contact_mode[i]) {
       // Stance phase
       for (int j = 0; j < 3; ++j) {
@@ -178,7 +182,22 @@ void UnderbrushInverseDynamicsController::computeLegCommandArrayFromPlan(
       }
     } else {
       // Swing phase
-      if (!force_mode_.at(i)) {
+
+      // Switch swing modes
+      if (force_mode_.at(i) && (t_now - t_switch_.at(i) > 0.08) &&//0.05) && //JYTODO: make a parameter
+          (body_force_estimate_msg->body_wrenches.at(i).torque.z < 0.25) &&
+          t_TD_.at(i) - t_now >= 0.08) { //JYTODO: make a parameter
+        force_mode_.at(i) = 0;
+        t_switch_.at(i) = t_now;
+      } else if (!force_mode_.at(i) && (t_now - t_switch_.at(i) > 0.08) &&//0.05) && 
+            body_force_estimate_msg->body_wrenches.at(i).torque.z > 1.0) {
+        force_mode_.at(i) = 1;
+        t_switch_.at(i) = t_now;
+        ROS_INFO_STREAM("OBSTRUCTION DETECTED");
+      }
+      //force_mode_.at(i) = 0;
+
+      if (!force_mode_.at(i) || t_TD_.at(i) - t_now < 0.1) { // insufficient time left in stance; put the foot down JYTODO: parameter
         // Usual swing mode
         for (int j = 0; j < 3; ++j) {
 
