@@ -91,6 +91,9 @@ public:
     // Nonzero entrance row and column in the pure hessian matrix (exclude the side jacobian part)
     Eigen::MatrixXi iRow_h_, jCol_h_, iRow_compact_h_, jCol_compact_h_;
 
+    // Penalty on panic variables
+    double panic_weights_;
+
     decltype(eval_g_leg_work) *eval_g_work_;
     decltype(eval_g_leg_incref) *eval_g_incref_;
     decltype(eval_g_leg_checkout) *eval_g_checkout_;
@@ -122,6 +125,7 @@ public:
         int m,
         double dt,
         double mu,
+        double panic_weights,
         Eigen::MatrixXd Q,
         Eigen::MatrixXd R,
         Eigen::MatrixXd Q_factor,

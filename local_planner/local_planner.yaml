@@ -20,8 +20,9 @@ local_body_planner:
 
 local_footstep_planner:
   grf_weight: 0.5
-  period: 0.4 # s
+  period: 0.36 # s
   ground_clearance: 0.05
+  hip_clearance: 0.1
   standing_error_threshold: 0.03 # m
   duty_cycles: [0.5, 0.5, 0.5, 0.5]
   phase_offsets: [0.0, 0.5, 0.5, 0.0]
