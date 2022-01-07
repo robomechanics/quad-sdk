@@ -184,21 +184,33 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
           body_vel_touchdown, ref_body_vel_touchdown, body_ang_vel_touchdown, 
           ref_body_ang_vel_touchdown, grf_midstance;
 
-        // Extract body and grf information
-        int midstance = std::min(i + half_duty_cycle, horizon_length_-1);
-        body_pos_midstance = body_plan.block<1,3>(midstance,0);
-        body_rpy_midstance = body_plan.block<1,3>(midstance,3);
+        // Compute the horizon index of midstance
+        int midstance = i + half_duty_cycle;
+
+        // Compute body pose at midstance from either the trajectory or Raibert heuristic directly
+        if (midstance < horizon_length_) {
+          body_pos_midstance = body_plan.block<1,3>(midstance,0);
+          body_rpy_midstance = body_plan.block<1,3>(midstance,3);
+          grf_midstance = grf_plan.block<1,3>(midstance,3*j);
+
+          quadKD_->worldToNominalHipFKWorldFrame(j, body_pos_midstance, body_rpy_midstance, 
+            hip_position_midstance);
+        } else {
+          body_pos_midstance = body_plan.block<1,3>(horizon_length_-1,0) +
+            body_plan.block<1,3>(horizon_length_-1,6)*(midstance-(horizon_length_-1))*dt_;
+          body_rpy_midstance = body_plan.block<1,3>(horizon_length_-1,3);
+          grf_midstance = grf_plan.block<1,3>(horizon_length_-1,3*j);
+        }
+
+        // Get touchdown information for body state
         body_vel_touchdown = body_plan.block<1,3>(i,6);
         ref_body_vel_touchdown = ref_body_plan.block<1,3>(i,6);
         body_ang_vel_touchdown = body_plan.block<1,3>(i,9);
         ref_body_ang_vel_touchdown = ref_body_plan.block<1,3>(i,9);
-        grf_midstance = grf_plan.block<1,3>(midstance,3*j);
 
         // Compute nominal foot positions for kinematic and grf-projection measures
-      quadKD_->worldToNominalHipFKWorldFrame(j, body_pos_midstance, body_rpy_midstance, 
-          hip_position_midstance);
-        // double hip_height = hip_position_midstance.z() - 
-        //   terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());
+        quadKD_->worldToNominalHipFKWorldFrame(j, body_pos_midstance, body_rpy_midstance, 
+            hip_position_midstance);
         grid_map::Position hip_position_grid_map = {hip_position_midstance.x(), hip_position_midstance.y()};
         double hip_height = hip_position_midstance.z() - terrain_grid_.atPosition(
           "z",hip_position_grid_map, grid_map::InterpolationMethods::INTER_NEAREST);
