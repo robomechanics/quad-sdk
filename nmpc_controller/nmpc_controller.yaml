@@ -4,7 +4,7 @@ nmpc_controller:
     horizon_length: 24
     state_dimension: 12
     control_dimension: 12
-    step_length: 0.02
+    step_length: 0.03
     friction_coefficient: 0.2
     panic_weights: !!float 1e3
     state_weights: [5.0, 5.0, 5.0, 0.5, 0.5, 0.5, 0.1, 0.1, 0.2, 0.01, 0.01, 0.01]

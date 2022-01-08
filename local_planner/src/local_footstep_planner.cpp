@@ -244,7 +244,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
 
 void LocalFootstepPlanner::computeFootPlanMsgs(
   const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
-  int current_plan_index, const Eigen::MatrixXd &body_plan, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+  int current_plan_index, const Eigen::MatrixXd &body_plan, const double &time_ahead, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
   quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
   quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg) {
 
@@ -323,7 +323,15 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         }
         else
         {
-          swing_phase = (i - i_liftoff)/(double)swing_duration;
+          // For the first step, it might be duplicated in the same plan index so we need to refine the phase based on the time duration to next plan index
+          if (i == 0)
+          {
+            swing_phase = (i - i_liftoff + (dt_ - time_ahead) / dt_) / (double)swing_duration;
+          }
+          else
+          {
+            swing_phase = (i - i_liftoff) / (double)swing_duration;
+          }
         }
         computeSwingFootState(foot_position_prev, foot_position_next, swing_phase, swing_duration, body_plan.row(i).transpose(), j,
           foot_position, foot_velocity, foot_acceleration);
