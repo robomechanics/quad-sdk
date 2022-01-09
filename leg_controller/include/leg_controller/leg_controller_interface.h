@@ -7,6 +7,7 @@
 #include <quad_utils/math_utils.h>
 #include <quad_msgs/GRFArray.h>
 #include <std_msgs/UInt8.h>
+#include <std_msgs/ByteMultiArray.h>
 #include <quad_msgs/RobotState.h>
 #include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/MotorCommand.h>
@@ -86,6 +87,12 @@ class LegControllerInterface {
      * @param[in] msg Remote heartbeat message
      */
     void remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg);
+
+    /**
+     * @brief Callback function to handle new GRF estimates
+     * @param[in] msg the message contining GRF data
+     */
+    void grfSensorCallback(const quad_msgs::GRFArray::ConstPtr& msg);
 
     /**
      * @brief Check to make sure required messages are fresh
@@ -275,6 +282,18 @@ class LegControllerInterface {
 
     /// Leg Controller template class
     std::shared_ptr<LegControllerTemplate> leg_controller_;
+
+    /// Contact sensing results message
+    std_msgs::ByteMultiArray contact_sensing_msg_;
+
+    /// Contact sensing results publisher
+    ros::Publisher contact_sensing_pub_;
+
+    /// Subscriber for GRF sensor data messages
+    ros::Subscriber grf_sensor_sub_;
+
+    /// Most recent GRF sensor data
+    quad_msgs::GRFArray::ConstPtr grf_sensor_msg_;
 };
 
 

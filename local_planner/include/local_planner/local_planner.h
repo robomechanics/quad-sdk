@@ -9,6 +9,7 @@
 #include <quad_msgs/GRFArray.h>
 #include <quad_msgs/RobotState.h>
 #include <quad_msgs/RobotStateTrajectory.h>
+#include <std_msgs/ByteMultiArray.h>
 #include <local_planner/quadruped_mpc.h>
 #include <local_planner/local_footstep_planner.h>
 #include <quad_utils/ros_utils.h>
@@ -80,6 +81,12 @@ private:
   void grfCallback(const quad_msgs::GRFArray::ConstPtr& msg);
 
   /**
+   * @brief Callback function to handle new GRF estimates
+   * @param[in] msg the message contining GRF data
+   */
+  void contactSensingCallback(const std_msgs::ByteMultiArray::ConstPtr& msg);
+
+  /**
    * @brief Function to pre-process the body plan and robot state messages into Eigen arrays
    */
   void getStateAndReferencePlan();
@@ -104,6 +111,11 @@ private:
    * @brief Function to publish the footstep history
    */
   void publishFootStepHist();
+
+  /**
+   * @brief Function to publish the footstep history
+   */
+  void contactSensing();
 
 	/// ROS subscriber for incoming terrain_map
 	ros::Subscriber terrain_map_sub_;
@@ -302,9 +314,20 @@ private:
 
   ros::Publisher tail_plan_pub_;
 
-  std::vector<bool> miss_contact_leg_;
+  std::vector<bool> contact_sensing_;
 
   bool first_solve_success;
+
+  /// Contact sensing results message
+  std_msgs::ByteMultiArray::ConstPtr contact_sensing_msg_;
+
+  /// Contact sensing results subscriber
+  ros::Subscriber contact_sensing_sub_;
+
+  /// Foot position record for the missing foot
+  Eigen::VectorXd foot_pos_body_miss_contact_;
+
+  quad_msgs::MultiFootState future_nominal_footholds_msg_;
 };
 
 

@@ -31,6 +31,7 @@ topics:
     restart_flag: /control/restart_flag
     leg_override: /control/leg_override
     single_joint_command: /control/single_joint_command
+    contact_sensing: /control/contact_sensing
   cmd_vel: /cmd_vel
   heartbeat:
     remote: /heartbeat/remote

@@ -9,7 +9,8 @@ bool InverseDynamicsController::computeLegCommandArray(
 {
   
   if ((last_local_plan_msg_ == NULL) || 
-    ((ros::Time::now() - last_local_plan_msg_->header.stamp).toSec() >= 0.1)) {
+    ((ros::Time::now() - last_local_plan_msg_->header.stamp).toSec() >= 0.1) ||
+    (last_grf_sensor_msg_ == NULL)) {
     
     return false;
   } else {
@@ -39,13 +40,19 @@ bool InverseDynamicsController::computeLegCommandArray(
     if ( (t_now < (last_local_plan_msg_->states.front().header.stamp - t_first_state).toSec()) || 
           (t_now > (last_local_plan_msg_->states.back().header.stamp - t_first_state).toSec()) ) {
       ROS_ERROR("ID node couldn't find the correct ref state!");
-    }    
+    }
+
+    // Storage of the current plan index
+    int current_idx;
 
     // Interpolate the local plan to get the reference state and ff GRF
     for (int i = 0; i < last_local_plan_msg_->states.size()-1; i++) {
       
       if ( (t_now >= (last_local_plan_msg_->states[i].header.stamp - t_first_state).toSec()) && 
           ( t_now <  (last_local_plan_msg_->states[i+1].header.stamp - t_first_state).toSec() )) {
+
+        // Record the current plan index
+        current_idx = i;
 
         double t_interp = (t_now - (last_local_plan_msg_->states[i].header.stamp-t_first_state).toSec())/
           (last_local_plan_msg_->states[i+1].header.stamp.toSec() - 
@@ -66,7 +73,17 @@ bool InverseDynamicsController::computeLegCommandArray(
 
     // Declare plan and state data as Eigen vectors
     Eigen::VectorXd ref_body_state(12), grf_array(3 * num_feet_),
-        ref_foot_positions(3 * num_feet_), ref_foot_velocities(3 * num_feet_), ref_foot_acceleration(3 * num_feet_);
+        ref_foot_positions(3 * num_feet_), ref_foot_velocities(3 * num_feet_), ref_foot_acceleration(3 * num_feet_),
+        current_foot_positions(3 * num_feet_), current_foot_velocities(3 * num_feet_), current_foot_acceleration(3 * num_feet_),
+        nominal_foot_positions(3 * num_feet_), nominal_foot_velocities(3 * num_feet_), nominal_foot_acceleration(3 * num_feet_);
+
+    // Load current foot data
+    quad_utils::multiFootStateMsgToEigen(
+        robot_state_msg->feet, current_foot_positions, current_foot_velocities, current_foot_acceleration);
+
+    // Load nominal foot data
+    quad_utils::multiFootStateMsgToEigen(
+        last_local_plan_msg_->states[current_idx].feet_nominal, nominal_foot_positions, nominal_foot_velocities, nominal_foot_acceleration);
 
     // Load plan and state data from messages
     ref_body_state = quad_utils::bodyStateMsgToEigen(ref_state_msg.body);
@@ -79,10 +96,71 @@ bool InverseDynamicsController::computeLegCommandArray(
     for (int i = 0; i < num_feet_; i++) {
       contact_mode[i] = ref_state_msg.feet.feet[i].contact;
     }
-    
+
+    // Contact sensing
+    // Start from nominal contact schedule
+    std::vector<int> adaptive_contact_mode = contact_mode;
+  
+    for (size_t i = 0; i < num_feet_; i++)
+    {
+      // Swing or contact to miss
+      if (contact_mode.at(i) &&
+          !last_contact_sensing_msg_.data.at(i) &&
+          (current_foot_positions(3 * i + 2) - nominal_foot_positions(3 * i + 2)) < -0.1)
+      {
+        ROS_WARN_STREAM("Leg controller: swing or contact to miss leg: " << i);
+
+        last_contact_sensing_msg_.data.at(i) = true;
+
+        // Record the joint position and hold it there
+        for (size_t j = 0; j < 3; j++)
+        {
+          joint_pos_miss_contact_(3 * i + j) = last_local_plan_msg_->states.at(current_idx).joints_nominal.position.at(3 * i + j);
+          ref_state_msg.joints.position.at(3 * i + j) = joint_pos_miss_contact_(3 * i + j);
+        }
+
+        adaptive_contact_mode.at(i) = false;
+      }
+
+      // Miss to contact
+      if (last_contact_sensing_msg_.data.at(i) &&
+          contact_mode.at(i) &&
+          last_grf_sensor_msg_->contact_states.at(i) &&
+          last_grf_sensor_msg_->vectors.at(i).z >= 5)
+      {
+        ROS_WARN_STREAM("Leg controller: miss to contact leg: " << i);
+
+        last_contact_sensing_msg_.data.at(i) = false;
+      }
+
+      // Miss to swing
+      if (last_contact_sensing_msg_.data.at(i) &&
+          !contact_mode.at(i))
+      {
+        ROS_WARN_STREAM("Leg controller: miss to swing leg: " << i);
+
+        last_contact_sensing_msg_.data.at(i) = false;
+      }
+
+      // Keep miss
+      if (last_contact_sensing_msg_.data.at(i) &&
+          contact_mode.at(i))
+      {
+        // Hold the joint position as the record
+        for (size_t j = 0; j < 3; j++)
+        {
+          ref_state_msg.joints.position.at(3 * i + j) = joint_pos_miss_contact_(3 * i + j);
+        }
+
+        adaptive_contact_mode.at(i) = false;
+      }
+
+      // Otherwise is keep contact, keep swing, swing to contact, or contact to swing
+    }
+
     // Compute joint torques
-    quadKD_->computeInverseDynamics(state_positions, state_velocities, ref_foot_acceleration,grf_array,
-      contact_mode, tau_array);
+    quadKD_->computeInverseDynamics(state_positions, state_velocities, ref_foot_acceleration, grf_array,
+                                    adaptive_contact_mode, tau_array);
 
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg.leg_commands.at(i).motor_commands.resize(3);
@@ -97,7 +175,7 @@ bool InverseDynamicsController::computeLegCommandArray(
         leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).torque_ff =
             tau_array(joint_idx);
 
-        if (contact_mode[i]) {
+        if (adaptive_contact_mode[i]) {
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp = stance_kp_.at(j);
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd = stance_kd_.at(j);
         } else {

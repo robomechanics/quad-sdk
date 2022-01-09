@@ -85,10 +85,11 @@ NMPCController::NMPCController(int type)
   app_->Options()->SetIntegerValue("print_level", 0);
   // app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
+  app_->Options()->SetStringValue("fixed_variable_treatment", "make_parameter_nodual");
   app_->Options()->SetNumericValue("tol", 1e-3);
-  app_->Options()->SetNumericValue("warm_start_bound_push", 1e-6);
-  app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
-  app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
+  app_->Options()->SetNumericValue("warm_start_bound_push", 1e-8);
+  app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-8);
+  app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-8);
 
   app_->Options()->SetNumericValue("max_wall_time", 4.0 * dt_);
   app_->Options()->SetNumericValue("max_cpu_time", 4.0 * dt_);

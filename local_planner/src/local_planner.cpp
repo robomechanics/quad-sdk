@@ -11,7 +11,8 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   
     // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic, local_plan_topic,
-    foot_plan_discrete_topic, foot_plan_continuous_topic, cmd_vel_topic, grf_topic, tail_plan_topic;
+    foot_plan_discrete_topic, foot_plan_continuous_topic, cmd_vel_topic, grf_topic, 
+    tail_plan_topic, contact_sensing_topic;
   quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
   quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth",robot_state_topic);
@@ -22,6 +23,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
   quad_utils::loadROSParam(nh_, "/topics/state/grfs", grf_topic);
   quad_utils::loadROSParam(nh_, "/topics/control/tail_plan", tail_plan_topic);
+  quad_utils::loadROSParam(nh_,"topics/control/contact_sensing",contact_sensing_topic);
 
   // Setup pubs and subs
   // terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1, &LocalPlanner::terrainMapCallback, this);
@@ -29,6 +31,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&LocalPlanner::robotStateCallback,this);
   cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic,1,&LocalPlanner::cmdVelCallback, this);
   grf_sub_ = nh_.subscribe(grf_topic,1,&LocalPlanner::grfCallback,this);
+  contact_sensing_sub_ = nh_.subscribe(contact_sensing_topic,1,&LocalPlanner::contactSensingCallback,this);
 
   local_plan_pub_ = nh_.advertise<quad_msgs::RobotPlan>(local_plan_topic,1);
   foot_plan_discrete_pub_ = nh_.advertise<
@@ -51,7 +54,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   nh.param<int>("/tail_controller/tail_type", tail_type_, 0);
 
   // Convert kinematics
-quadKD_ = std::make_shared<quad_utils::QuadKD>();
+  quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
   // Initialize nominal footstep positions projected down from the hips
   Eigen::Vector3d nominal_joint_state;
@@ -105,7 +108,10 @@ quadKD_ = std::make_shared<quad_utils::QuadKD>();
   }
 
   // Initialize leg contact miss states vector
-  miss_contact_leg_.resize(4);
+  contact_sensing_.assign(4, false);
+
+  // Initialize foor position record for missing foot
+  foot_pos_body_miss_contact_ = Eigen::VectorXd::Zero(12);
 
   // Initialize solve success state boolean
   first_solve_success = false;
@@ -215,6 +221,8 @@ void LocalPlanner::initLocalFootstepPlanner() {
     grf_weight,quadKD_);
 
   past_footholds_msg_.feet.resize(num_feet_);
+
+  future_nominal_footholds_msg_.feet.resize(num_feet_);
 }
 
 void LocalPlanner::terrainMapCallback(
@@ -270,6 +278,11 @@ void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg) {
 void LocalPlanner::grfCallback(const quad_msgs::GRFArray::ConstPtr &msg)
 {
   grf_msg_ = msg;
+}
+
+void LocalPlanner::contactSensingCallback(const std_msgs::ByteMultiArray::ConstPtr &msg)
+{
+  contact_sensing_msg_ = msg;
 }
 
 void LocalPlanner::getStateAndReferencePlan() {
@@ -354,7 +367,8 @@ void LocalPlanner::publishFootStepHist()
   for (size_t i = 0; i < 4; i++)
   {
     // Check if it's on the ground
-    if (grf_msg_->contact_states.at(i) && abs(grf_msg_->vectors.at(i).z) > 5)
+    if ((grf_msg_->contact_states.at(i) && abs(grf_msg_->vectors.at(i).z) > 5) ||
+        contact_sensing_.at(i))
     {
       // Add the foot position to the history
       foot_step_hist_.atPosition("z", grid_map::Position(current_foot_positions_world_(3 * i + 0),
@@ -401,6 +415,8 @@ void LocalPlanner::getStateAndTwistInput() {
       past_footholds_msg_.feet[i].footholds.push_back(robot_state_msg_->feet.feet[i]);
       past_footholds_msg_.feet[i].footholds.front().header = past_footholds_msg_.header;
       past_footholds_msg_.feet[i].footholds.front().traj_index = 0;
+
+      future_nominal_footholds_msg_.feet[i] = robot_state_msg_->feet.feet[i];
     }
   }
 
@@ -415,10 +431,11 @@ void LocalPlanner::getStateAndTwistInput() {
   ref_body_plan_.setZero();
 
   // Assign a sidewalk velocity
-  cmd_vel_.at(1) = 0.5;
+  cmd_vel_.at(1) = 0.6;
 
   // Set initial ground height
-  ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(current_state_(0), current_state_(1));
+  // ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(current_state_(0), current_state_(1));
+  ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(current_state_.segment(0, 3), current_state_.segment(3, 3));
 
   // If it's not initialized, set to current positions
   if (stand_pose_(0) == std::numeric_limits<double>::max() && stand_pose_(1) == std::numeric_limits<double>::max() && stand_pose_(2) == std::numeric_limits<double>::max())
@@ -476,8 +493,8 @@ void LocalPlanner::getStateAndTwistInput() {
       ref_body_plan_(i,j+6) = (current_cmd_vel[j]);
     }
 
-    ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_(i, 0), ref_body_plan_(i, 1));
-    ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);
+    // ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_(i, 0), ref_body_plan_(i, 1));
+    // ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);
 
     // Only adaptive pitch
     // ref_body_plan_(i, 4) = local_footstep_planner_->getTerrainSlope(ref_body_plan_(i, 0), ref_body_plan_(i, 1), ref_body_plan_(i, 6), ref_body_plan_(i, 7));
@@ -488,6 +505,9 @@ void LocalPlanner::getStateAndTwistInput() {
                                              ref_body_plan_(i, 5),
                                              ref_body_plan_(i, 3),
                                              ref_body_plan_(i, 4));
+
+    ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_.row(i).segment(0, 3), ref_body_plan_.row(i).segment(3, 3));
+    ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);                                 
   }
 
   if (tail_type_ == CENTRALIZED)
@@ -535,23 +555,68 @@ bool LocalPlanner::computeLocalPlan() {
   local_footstep_planner_->computeContactSchedule(current_plan_index_, current_state_,
     ref_body_plan_,contact_schedule_);
 
+  // Start from nominal contact schedule
+  adaptive_contact_schedule_ = contact_schedule_;
+
   // Compute the new footholds if we have a valid existing plan (i.e. if grf_plan is filled)
   if (grf_plan_.rows() == N_) {
     
     local_footstep_planner_->computeFootPositions(body_plan_, grf_plan_,
       contact_schedule_, ref_body_plan_, foot_positions_world_);
 
-    local_footstep_planner_->contactSensing(body_plan_,
-                        contact_schedule_,
-                        ref_body_plan_,
-                        grf_msg_,
-                        foot_positions_world_,
-                        adaptive_contact_schedule_,
-                        miss_contact_leg_);
-
     // Transform the new foot positions into the body frame for body planning
     local_footstep_planner_->getFootPositionsBodyFrame(body_plan_, foot_positions_world_,
       foot_positions_body_);
+
+    // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+    // ROS_INFO_STREAM("foot_positions_world_");
+    // ROS_INFO_STREAM(foot_positions_world_.format(CleanFmt));
+    // ROS_INFO_STREAM("foot_positions_body_");
+    // ROS_INFO_STREAM(foot_positions_body_.format(CleanFmt));
+
+    // Contact sensing
+    // Foot position refine
+    for (size_t i = 0; i < 4; i++)
+    {
+      if (contact_sensing_.at(i))
+      {
+        for (size_t j = 0; j < N_; j++)
+        {
+          foot_positions_body_.block(j, i*3, 1, 3) = foot_pos_body_miss_contact_.segment(3*i, 3).transpose();
+          adaptive_contact_schedule_.at(j).at(i) = false;
+          if (!contact_schedule_.at(j).at(i) && contact_schedule_.at(j + 1).at(i))
+          {
+            break;
+          }
+        }
+      }
+    }
+
+    local_footstep_planner_->getFootPositionsWorldFrame(body_plan_, foot_positions_body_, foot_positions_world_);
+
+    // ROS_INFO_STREAM("foot_positions_world_");
+    // ROS_INFO_STREAM(foot_positions_world_.format(CleanFmt));
+    // ROS_INFO_STREAM("foot_positions_body_");
+    // ROS_INFO_STREAM(foot_positions_body_.format(CleanFmt));
+
+    // ROS_INFO_STREAM("contact_schedule_");
+    // for (auto i = contact_schedule_.begin(); i != contact_schedule_.end(); ++i)
+    // {
+    //   for (auto j = i->begin(); j != i->end(); ++j)
+    //   {
+    //     std::cout << *j << ' ';
+    //   }
+    //   std::cout << std::endl;
+    // }
+    // ROS_INFO_STREAM("adaptive_contact_schedule_");
+    // for (auto i = adaptive_contact_schedule_.begin(); i != adaptive_contact_schedule_.end(); ++i)
+    // {
+    //   for (auto j = i->begin(); j != i->end(); ++j)
+    //   {
+    //     std::cout << *j << ' ';
+    //   }
+    //   std::cout << std::endl;
+    // }
   }
 
   // Compute body plan with MPC, return if solve fails
@@ -601,12 +666,12 @@ bool LocalPlanner::computeLocalPlan() {
     (1-filter_smoothing_constant_)*compute_time_;
 
   if (compute_time_ >= 1000.0/update_rate_) {
-    ROS_WARN_THROTTLE(0.1, "LocalPlanner took %5.3fms, exceeding %5.3fms allowed",
+    ROS_WARN("LocalPlanner took %5.3fms, exceeding %5.3fms allowed",
       compute_time_, 1000.0/update_rate_);
   } else {
     ROS_INFO("LocalPlanner took %5.3f ms", compute_time_);
   };
-  
+
   // Return true if made it this far
   return true;
 }
@@ -639,7 +704,7 @@ void LocalPlanner::publishLocalPlan() {
 
   // Compute the discrete and continuous foot plan messages
   local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_world_,
-    current_plan_index_, body_plan_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
+    current_plan_index_, body_plan_, past_footholds_msg_, future_footholds_msg, future_nominal_footholds_msg_, foot_plan_msg);
 
   // Add body, foot, joint, and grf data to the local plan message
   for (int i = 0; i < N_; i++) {
@@ -649,6 +714,14 @@ void LocalPlanner::publishLocalPlan() {
     robot_state_msg.body = quad_utils::eigenToBodyStateMsg(body_plan_.row(i));
     robot_state_msg.feet = foot_plan_msg.states[i];
     quad_utils::ikRobotState(*quadKD_, robot_state_msg);
+
+    // Compute nominal foot state
+    quad_msgs::RobotState nominal_robot_state_msg;
+    nominal_robot_state_msg.body = quad_utils::eigenToBodyStateMsg(body_plan_.row(i));
+    nominal_robot_state_msg.feet = future_nominal_footholds_msg_;
+    quad_utils::ikRobotState(*quadKD_, nominal_robot_state_msg);
+    robot_state_msg.joints_nominal = nominal_robot_state_msg.joints;
+    robot_state_msg.feet_nominal = future_nominal_footholds_msg_;
 
     // Add refernce trajectory information
     quad_msgs::RobotState robot_ref_state_msg;
@@ -667,6 +740,15 @@ void LocalPlanner::publishLocalPlan() {
     quad_utils::updateStateHeaders(robot_state_msg, state_timestamp, map_frame_, current_plan_index_+i);
     grf_array_msg.header = robot_state_msg.header;
     grf_array_msg.traj_index = robot_state_msg.traj_index;
+
+    quad_msgs::MultiFootState foot_state_msg_body;
+    for (size_t j = 0; j < 4; j++)
+    {
+      quad_msgs::FootState foot_state_msg;
+      quad_utils::eigenToFootStateMsg(foot_positions_body_.block(i, 3*j, 1, 3).transpose(), Eigen::Vector3d::Zero(3), Eigen::Vector3d::Zero(3), foot_state_msg);
+      foot_state_msg_body.feet.push_back(foot_state_msg);
+    }
+    robot_state_msg.feet_body = foot_state_msg_body;
 
     local_plan_msg.states.push_back(robot_state_msg);
     local_plan_msg.ref_states.push_back(robot_ref_state_msg);
@@ -704,6 +786,55 @@ void LocalPlanner::publishLocalPlan() {
   }
 }
 
+void LocalPlanner::contactSensing()
+{
+  if (contact_sensing_msg_ == NULL || !first_solve_success)
+  {
+    return;
+  }
+
+  // Contact sensing
+  for (size_t i = 0; i < 4; i++)
+  {
+    // Swing or contact to miss
+    if (contact_schedule_.at(0).at(i) &&
+        contact_sensing_msg_->data.at(i) &&
+        !contact_sensing_.at(i))
+    {
+      ROS_WARN_STREAM("Local planner: swing or contact to miss leg: " << i);
+
+      contact_sensing_.at(i) = true;
+
+      // Record foot position in body frame when missing
+      Eigen::VectorXd tmp_foot_pos(12);
+      quad_utils::multiFootStateMsgToEigen(future_nominal_footholds_msg_, tmp_foot_pos);
+      foot_pos_body_miss_contact_.segment(3 * i, 3) = tmp_foot_pos.segment(3 * i, 3) - body_plan_.block(0, 0, 1, 3).transpose(); // TODO: This might store some undesirable foot position
+    }
+
+    // Miss to contact
+    if (contact_schedule_.at(0).at(i) &&
+        !contact_sensing_msg_->data.at(i) &&
+        contact_sensing_.at(i))
+    {
+      ROS_WARN_STREAM("Local planner: miss to contact leg: " << i);
+
+      contact_sensing_.at(i) = false;
+    }
+
+    // Miss to swing
+    if (contact_sensing_.at(i) &&
+        !contact_schedule_.at(0).at(i))
+    {
+      ROS_WARN_STREAM("Local planner: miss to swing leg: " << i);
+
+      contact_sensing_.at(i) = false;
+    }
+
+    // Keep miss
+    // Otherwise is keep contact, keep swing, swing to contact, or contact to swing
+  }
+}
+
 void LocalPlanner::spin() {
 
   ros::Rate r(update_rate_);
@@ -712,11 +843,18 @@ void LocalPlanner::spin() {
 
     ros::spinOnce();
 
-    publishFootStepHist();
+    if (!terrain_grid_.exists("z_smooth"))
+    {
+      publishFootStepHist();
+    }
 
     // Wait until all required data has been received
     if (!(!terrain_grid_.exists("z_smooth") || body_plan_msg_ == NULL && !use_twist_input_ || robot_state_msg_ == NULL))
     {
+      contactSensing();
+
+      publishFootStepHist();
+
       if (use_twist_input_)
       {
         // Get twist commands

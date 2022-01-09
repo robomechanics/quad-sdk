@@ -229,8 +229,8 @@ void TailPlanner::computeTailPlan()
       {
         contact_schedule_[i][j] = bool(last_local_plan_msg_->grfs[idx].contact_states[j]);
 
-        foot_positions_body_.block(i, j * 3, 1, 3) = foot_positions.segment(j * 3, 3).transpose() -
-                                                     body_plan_.block(i, 0, 1, 3);
+        quad_utils::multiFootStateMsgToEigen(last_local_plan_msg_->states[idx].feet_body, foot_positions);
+        foot_positions_body_.row(i) = foot_positions.transpose();
       }
     }
   }
@@ -254,7 +254,7 @@ void TailPlanner::computeTailPlan()
   if (compute_time >= 1000.0 / update_rate_)
   {
     ROS_WARN("TailPlanner took %5.3fms, exceeding %5.3fms allowed",
-                      compute_time, 1000.0 / update_rate_);
+             compute_time, 1000.0 / update_rate_);
   }
   else
   {

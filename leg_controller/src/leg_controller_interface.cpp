@@ -1,4 +1,4 @@
-#include "leg_controller/leg_controller_interface.h"
+          #include "leg_controller/leg_controller_interface.h"
 
 namespace plt = matplotlibcpp;
 
@@ -8,10 +8,12 @@ LegControllerInterface::LegControllerInterface(ros::NodeHandle nh) {
     // Load rosparams from parameter server
   std::string grf_topic, trajectory_state_topic, robot_state_topic, local_plan_topic,
     leg_command_array_topic, control_mode_topic, leg_override_topic,
-    remote_heartbeat_topic, robot_heartbeat_topic, single_joint_cmd_topic;
+    remote_heartbeat_topic, robot_heartbeat_topic, single_joint_cmd_topic,
+    grf_sensor_topic, contact_sensing_topic;
   quad_utils::loadROSParam(nh_,"topics/local_plan",local_plan_topic);
   quad_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
   quad_utils::loadROSParam(nh_,"topics/state/trajectory",trajectory_state_topic);
+  quad_utils::loadROSParam(nh_,"topics/state/grfs",grf_sensor_topic);
   quad_utils::loadROSParam(nh_,"topics/heartbeat/remote",remote_heartbeat_topic);
   quad_utils::loadROSParam(nh_,"topics/heartbeat/robot",robot_heartbeat_topic);
   quad_utils::loadROSParam(nh_,"topics/control/grfs",grf_topic);
@@ -19,6 +21,7 @@ LegControllerInterface::LegControllerInterface(ros::NodeHandle nh) {
   quad_utils::loadROSParam(nh_,"topics/control/leg_override",leg_override_topic);
   quad_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
   quad_utils::loadROSParam(nh_,"topics/control/single_joint_command",single_joint_cmd_topic);
+  quad_utils::loadROSParam(nh_,"topics/control/contact_sensing",contact_sensing_topic);
 
   quad_utils::loadROSParam(nh_,"leg_controller/controller", controller_id_);
   quad_utils::loadROSParam(nh_,"leg_controller/update_rate", update_rate_);
@@ -57,9 +60,11 @@ LegControllerInterface::LegControllerInterface(ros::NodeHandle nh) {
     leg_override_topic,1,&LegControllerInterface::legOverrideCallback, this);
   remote_heartbeat_sub_ = nh_.subscribe(
     remote_heartbeat_topic,1,&LegControllerInterface::remoteHeartbeatCallback, this);
+  grf_sensor_sub_ = nh_.subscribe(grf_sensor_topic,1,&LegControllerInterface::grfSensorCallback,this);
   grf_pub_ = nh_.advertise<quad_msgs::GRFArray>(grf_topic,1);
   leg_command_array_pub_ = nh_.advertise<quad_msgs::LegCommandArray>(leg_command_array_topic,1);
   robot_heartbeat_pub_ = nh_.advertise<std_msgs::Header>(robot_heartbeat_topic,1);
+  contact_sensing_pub_ = nh_.advertise<std_msgs::ByteMultiArray>(contact_sensing_topic,1);
 
   // Start sitting
   control_mode_ = SIT;
@@ -179,6 +184,12 @@ void LegControllerInterface::remoteHeartbeatCallback(const std_msgs::Header::Con
       "entering safety mode\n", t_latency, remote_latency_threshold_error_);
     control_mode_ = SAFETY;
   }
+}
+
+void LegControllerInterface::grfSensorCallback(const quad_msgs::GRFArray::ConstPtr &msg)
+{
+  grf_sensor_msg_ = msg;
+  leg_controller_->updateGrfSensorMsg(msg);
 }
 
 void LegControllerInterface::checkMessages() {
@@ -407,6 +418,8 @@ void LegControllerInterface::publishLegCommandArray() {
   grf_array_msg_.header.stamp = leg_command_array_msg_.header.stamp;
   leg_command_array_pub_.publish(leg_command_array_msg_);
   grf_pub_.publish(grf_array_msg_);
+
+  contact_sensing_pub_.publish(leg_controller_->getContactSensingMsg());
 }
 
 void LegControllerInterface::spin() {

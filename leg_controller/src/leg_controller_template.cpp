@@ -3,6 +3,12 @@
 LegControllerTemplate::LegControllerTemplate() {
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
   override_state_machine_ = false;
+
+  // Initialize contact sensing message
+  last_contact_sensing_msg_.data.assign(4, false);
+
+  // Initialize joint position record for the missing foot
+  joint_pos_miss_contact_ = Eigen::VectorXd::Zero(12);
 }
 
 void LegControllerTemplate::updateLocalPlanMsg(quad_msgs::RobotPlan::ConstPtr msg,
@@ -35,4 +41,14 @@ void LegControllerTemplate::setGains(std::vector<double> stance_kp, std::vector<
   stance_kd_ = stance_kd;
   swing_kp_ = swing_kp;
   swing_kd_ = swing_kd;
+}
+
+void LegControllerTemplate::updateGrfSensorMsg(quad_msgs::GRFArray::ConstPtr msg)
+{
+  last_grf_sensor_msg_ = msg;
+}
+
+std_msgs::ByteMultiArray LegControllerTemplate::getContactSensingMsg()
+{
+  return last_contact_sensing_msg_;
 }

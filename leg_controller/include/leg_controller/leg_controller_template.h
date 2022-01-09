@@ -8,6 +8,7 @@
 #include <quad_utils/math_utils.h>
 #include <quad_msgs/GRFArray.h>
 #include <std_msgs/UInt8.h>
+#include <std_msgs/ByteMultiArray.h>
 #include <quad_msgs/RobotState.h>
 #include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/MotorCommand.h>
@@ -62,6 +63,18 @@ class LegControllerTemplate {
     void updateLocalPlanMsg(quad_msgs::RobotPlan::ConstPtr msg, const ros::Time &t_msg);
 
     /**
+     * @brief Update GRF sensor message
+     * @param[in] msg GRF sensor message
+     */
+    void updateGrfSensorMsg(quad_msgs::GRFArray::ConstPtr msg);
+
+    /**
+     * @brief Get contact sensing message
+     * @param[in] msg Message of the local referance plan
+     */
+    std_msgs::ByteMultiArray getContactSensingMsg();
+
+    /**
      * @brief Compute the leg command array message
      */
     virtual bool computeLegCommandArray(const quad_msgs::RobotState::ConstPtr &robot_state_msg,
@@ -95,6 +108,15 @@ class LegControllerTemplate {
 
     /// Bool for whether to override the state machine
     bool override_state_machine_;
+
+    /// Most recent GRF sensor data
+    quad_msgs::GRFArray::ConstPtr last_grf_sensor_msg_;
+
+    /// Most recent contact sensing data
+    std_msgs::ByteMultiArray last_contact_sensing_msg_;
+
+    /// Joint position record when missing contact
+    Eigen::VectorXd joint_pos_miss_contact_;
 };
 
 

@@ -74,6 +74,24 @@ class LocalFootstepPlanner {
       const Eigen::MatrixXd &foot_positions_world, Eigen::MatrixXd &foot_positions_body);
 
     /**
+     * @brief Transform a vector of foot positions from the world to the body frame
+     * @param[in] body_plan Current body plan
+     * @param[in] foot_positions_world Foot positions in the world frame
+     * @param[out] foot_positions_body Foot positions in the body frame
+     */
+    void getFootPositionsWorldFrame(const Eigen::VectorXd &body_plan,
+      const Eigen::VectorXd &foot_positions_body, Eigen::VectorXd &foot_positions_world);
+
+    /**
+     * @brief Transform the entire foot plan from the world to the body frame
+     * @param[in] body_plan Current body plan
+     * @param[in] foot_positions_world Foot positions in the world frame
+     * @param[out] foot_positions_body Foot positions in the body frame
+     */
+    void getFootPositionsWorldFrame(const Eigen::MatrixXd &body_plan,
+      const Eigen::MatrixXd &foot_positions_body, Eigen::MatrixXd &foot_positions_world);
+
+    /**
      * @brief Update the map of this object
      * @param[in] terrain The map of the terrain
      */
@@ -130,7 +148,7 @@ class LocalFootstepPlanner {
     void computeFootPlanMsgs(
       const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
       int current_plan_index, const Eigen::MatrixXd &body_plan, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
-      quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
+      quad_msgs::MultiFootPlanDiscrete &future_footholds_msg, quad_msgs::MultiFootState &future_nominal_footholds_msg,
       quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
 
     /**
@@ -169,6 +187,24 @@ class LocalFootstepPlanner {
     {
       grid_map::Position pos = {x, y};
       double height = this->terrain_grid_.atPosition("z_smooth", pos, grid_map::InterpolationMethods::INTER_LINEAR);
+      return height;
+    }
+
+    inline double getTerrainHeight(Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy)
+    {
+      double height = 0;
+      for (size_t i = 0; i < 4; i++)
+      {
+        Eigen::Vector3d hip_pos;
+
+        // Compute nominal foot positions for kinematic and grf-projection measures
+        quadKD_->worldToNominalHipFKWorldFrame(i, body_pos, body_rpy, hip_pos);
+        grid_map::Position hip_position_grid_map = {hip_pos.x(), hip_pos.y()};
+        double hip_height = terrain_grid_.atPosition("z_smooth", hip_position_grid_map, grid_map::InterpolationMethods::INTER_LINEAR);
+
+        height += hip_height / 4;
+      }
+
       return height;
     }
 
