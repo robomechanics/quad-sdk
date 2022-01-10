@@ -1,5 +1,5 @@
 local_planner:
-  update_rate: 66 # Hz
+  update_rate: 500 # Hz
   timestep: 0.03 # s
   horizon_length: 24 # timesteps
   iterations: 1

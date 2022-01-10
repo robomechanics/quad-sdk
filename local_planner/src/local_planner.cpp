@@ -233,12 +233,12 @@ void LocalPlanner::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg
 void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg) {
 
   // Ignore non-planar components of desired twist
-  cmd_vel_[0] = cmd_vel_scale_*msg->linear.x;
-  cmd_vel_[1] = cmd_vel_scale_*msg->linear.y;
+  cmd_vel_[0] = 0.95*cmd_vel_[0]+0.05*cmd_vel_scale_*msg->linear.x;
+  cmd_vel_[1] = 0.95*cmd_vel_[1]+0.05*cmd_vel_scale_*msg->linear.y;
   cmd_vel_[2] = 0;
   cmd_vel_[3] = 0;
   cmd_vel_[4] = 0;
-  cmd_vel_[5] = cmd_vel_scale_*msg->angular.z;
+  cmd_vel_[5] = 0.95*cmd_vel_[5]+0.05*cmd_vel_scale_*msg->angular.z;
 
   // Record when this was last reached for safety
   last_cmd_vel_msg_time_ = ros::Time::now();
@@ -409,7 +409,14 @@ void LocalPlanner::getStateAndTwistInput() {
     current_cmd_vel[1] = cmd_vel_[0]*sin(yaw) + cmd_vel_[1]*cos(yaw);
 
     for (int j = 0; j < 6; j ++) {
-      ref_body_plan_(i,j) = ref_body_plan_(i-1,j) + current_cmd_vel[j]*dt_;
+      if (i == 1)
+      {
+        ref_body_plan_(i,j) = ref_body_plan_(i-1,j) + current_cmd_vel[j]*time_ahead_;
+      }
+      else
+      {
+        ref_body_plan_(i,j) = ref_body_plan_(i-1,j) + current_cmd_vel[j]*dt_;
+      }
       ref_body_plan_(i,j+6) = (current_cmd_vel[j]);
     }
 
