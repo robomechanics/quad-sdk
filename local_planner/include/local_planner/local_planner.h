@@ -212,7 +212,7 @@ private:
   const double filter_smoothing_constant_ = 0.5;
 
   /// MPC Horizon length
-  const int N_ = 24;
+  int N_;
 
   /// Number of states
   const int Nx_ = 12;
@@ -267,7 +267,7 @@ private:
   double cmd_vel_scale_;
 
   /// Nominal robot height
-  const double z_des_ = 0.3;
+  const double z_des_ = 0.27;
 
   /// Time of the most recent cmd_vel data
   ros::Time last_cmd_vel_msg_time_;
@@ -328,6 +328,12 @@ private:
   Eigen::VectorXd foot_pos_body_miss_contact_;
 
   quad_msgs::MultiFootState future_nominal_footholds_msg_;
+  
+  /// Time duration to the next plan index
+  double time_ahead_;
+
+  /// If the current solving is duplicated in the same index
+  bool same_plan_index_;
 };
 
 

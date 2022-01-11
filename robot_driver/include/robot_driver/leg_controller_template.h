@@ -16,6 +16,7 @@
 #include <quad_msgs/LegCommandArray.h>
 #include <quad_msgs/LegOverride.h>
 #include <quad_msgs/MultiFootPlanContinuous.h>
+#include <robot_driver/mblink_converter.h>
 
 #include <cmath>
 #define MATH_PI 3.141592
@@ -77,7 +78,7 @@ class LegControllerTemplate {
     /**
      * @brief Compute the leg command array message
      */
-    virtual bool computeLegCommandArray(const quad_msgs::RobotState::ConstPtr &robot_state_msg,
+    virtual bool computeLegCommandArray(const quad_msgs::RobotState &robot_state_msg,
       quad_msgs::LegCommandArray &leg_command_array_msg, quad_msgs::GRFArray &grf_array_msg) = 0;
 
     inline bool overrideStateMachine() {

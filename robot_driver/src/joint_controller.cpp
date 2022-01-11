@@ -1,4 +1,4 @@
-#include "leg_controller/joint_controller.h"
+#include "robot_driver/joint_controller.h"
 
 JointController::JointController() {
   leg_idx_ = 0;
@@ -18,7 +18,7 @@ void JointController::updateSingleJointCommand(const geometry_msgs::Vector3::Con
 }
 
 bool JointController::computeLegCommandArray(
-  const quad_msgs::RobotState::ConstPtr &robot_state_msg,
+  const quad_msgs::RobotState &robot_state_msg,
   quad_msgs::LegCommandArray &leg_command_array_msg,
   quad_msgs::GRFArray &grf_array_msg)
 {

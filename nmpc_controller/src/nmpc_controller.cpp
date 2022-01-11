@@ -28,10 +28,12 @@ NMPCController::NMPCController(int type)
   }
 
   // Load MPC/system parameters
+  double mu;
   ros::param::get("/nmpc_controller/" + param_ns_ + "/horizon_length", N_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_dimension", n_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_dimension", m_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/step_length", dt_);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/friction_coefficient", mu);
 
   // Load MPC cost weighting and bounds
   std::vector<double> state_weights,
@@ -67,6 +69,7 @@ NMPCController::NMPCController(int type)
       n_,
       m_,
       dt_,
+      mu,
       panic_weights,
       Q,
       R,
@@ -115,6 +118,8 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
                                     const Eigen::MatrixXd &foot_positions,
                                     const std::vector<std::vector<bool>> &contact_schedule,
                                     const Eigen::VectorXd &ref_ground_height,
+                                    const double &time_ahead,
+                                    const bool &same_plan_index,
                                     Eigen::MatrixXd &state_traj,
                                     Eigen::MatrixXd &control_traj)
 {
@@ -124,8 +129,13 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
       ref_traj.bottomRows(N_),
       foot_positions,
       contact_schedule,
-      ref_ground_height.tail(N_));
-  mynlp_->shift_initial_guess();
+      ref_ground_height.tail(N_),
+      time_ahead);
+  // Only shift the warm start if we get a new plan index
+  if (!same_plan_index)
+  {
+    mynlp_->shift_initial_guess();
+  }
 
   return this->computePlan(initial_state,
                            ref_traj,

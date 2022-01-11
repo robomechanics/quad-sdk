@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <gtest/gtest.h>
 
-#include "mblink_converter/mblink_converter.h"
+#include "quad_utils/mblink_converter.h"
 
 int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);

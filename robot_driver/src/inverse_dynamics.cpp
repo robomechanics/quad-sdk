@@ -1,9 +1,9 @@
-#include "leg_controller/inverse_dynamics.h"
+#include "robot_driver/inverse_dynamics.h"
 
 InverseDynamicsController::InverseDynamicsController() {}
 
 bool InverseDynamicsController::computeLegCommandArray(
-  const quad_msgs::RobotState::ConstPtr &robot_state_msg,
+  const quad_msgs::RobotState &robot_state_msg,
   quad_msgs::LegCommandArray &leg_command_array_msg,
   quad_msgs::GRFArray &grf_array_msg)
 {
@@ -19,9 +19,9 @@ bool InverseDynamicsController::computeLegCommandArray(
 
     // Define vectors for joint positions and velocities
     Eigen::VectorXd joint_positions(3*num_feet_), joint_velocities(3*num_feet_), body_state(12);
-    quad_utils::vectorToEigen(robot_state_msg->joints.position, joint_positions);
-    quad_utils::vectorToEigen(robot_state_msg->joints.velocity, joint_velocities);
-    body_state = quad_utils::bodyStateMsgToEigen(robot_state_msg->body);
+    quad_utils::vectorToEigen(robot_state_msg.joints.position, joint_positions);
+    quad_utils::vectorToEigen(robot_state_msg.joints.velocity, joint_velocities);
+    body_state = quad_utils::bodyStateMsgToEigen(robot_state_msg.body);
 
     // Define vectors for state positions and velocities 
     Eigen::VectorXd state_positions(3*num_feet_+6), state_velocities(3*num_feet_+6);
@@ -34,8 +34,9 @@ bool InverseDynamicsController::computeLegCommandArray(
 
     // Get reference state and grf from local plan or traj + grf messages
     ros::Time t_first_state = last_local_plan_msg_->states.front().header.stamp;
-    double t_now = (ros::Time::now() - last_local_plan_time_).toSec(); // Use time of plan receipt
-    // double t_now = (ros::Time::now() - t_first_state).toSec(); // Use time of first state
+    double t_now = (ros::Time::now() - last_local_plan_msg_->state_timestamp).toSec(); // Use time of state - RECOMMENDED
+    // double t_now = (ros::Time::now() - last_local_plan_time_).toSec(); // Use time of plan receipt
+    // double t_now = (ros::Time::now() - t_first_state).toSec(); // Use time of first state in plan
 
     if ( (t_now < (last_local_plan_msg_->states.front().header.stamp - t_first_state).toSec()) || 
           (t_now > (last_local_plan_msg_->states.back().header.stamp - t_first_state).toSec()) ) {
@@ -90,6 +91,11 @@ bool InverseDynamicsController::computeLegCommandArray(
     quad_utils::multiFootStateMsgToEigen(
         ref_state_msg.feet, ref_foot_positions, ref_foot_velocities, ref_foot_acceleration);
     grf_array = quad_utils::grfArrayMsgToEigen(grf_array_msg);
+    if (last_grf_array_.norm() >= 1e-3) {
+      grf_array = grf_exp_filter_const_*grf_array.array() + 
+        (1 - grf_exp_filter_const_)*last_grf_array_.array();
+      quad_utils::eigenToGRFArrayMsg(grf_array, ref_state_msg.feet, grf_array_msg);
+    }
 
     // Load contact mode
     std::vector<int> contact_mode(num_feet_);
@@ -185,6 +191,7 @@ bool InverseDynamicsController::computeLegCommandArray(
       }
     }
 
+    last_grf_array_ = grf_array;
     return true;
   }
 }

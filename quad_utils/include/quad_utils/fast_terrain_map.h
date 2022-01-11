@@ -122,11 +122,35 @@ class FastTerrainMap {
 
   private:
 
+    /**
+     * @brief Return the x index
+     * @param[in] x X location of the point
+     * @return X index of location
+     */
+    inline int getXIndex(const double x) const {
+      return std::max(std::min((int)floor((x-x_data_[0])/x_diff_),x_size_),0);
+    };
+
+    /**
+     * @brief Return the y index
+     * @param[in] y Y location of the point
+     * @return Y index of location
+     */
+    inline int getYIndex(const double y) const {
+      return std::max(std::min((int)floor((y-y_data_[0])/y_diff_),y_size_),0);
+    };
+
     /// The number of elements in the x direction
     int x_size_ = 0;
 
     /// The number of elements in the y direction
     int y_size_ = 0;
+
+    /// Distance between nodes in x
+    double x_diff_;
+
+    /// Distance between nodes in y
+    double y_diff_;
 
     /// The vector of x data
     std::vector<double> x_data_;

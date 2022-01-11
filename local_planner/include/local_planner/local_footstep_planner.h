@@ -42,7 +42,8 @@ class LocalFootstepPlanner {
      * @param[in] period The period of a gait cycle in number of timesteps
      * @param[in] horizon_length The length of the planning horizon in number of timesteps
      */
-    void setTemporalParams(double dt, int period, int horizon_length);
+    void setTemporalParams(double dt, int period, int horizon_length, 
+      const std::vector<double> &duty_cycles, const std::vector<double> &phase_offsets);
 
     /**
      * @brief Set the spatial parameters of this object
@@ -141,13 +142,14 @@ class LocalFootstepPlanner {
      * @param[in] foot_positions Foot positions over the horizon
      * @param[in] current_plan_index Current index in the global plan
      * @param[in] body_plan Body plan from MPC
+     * @param[in] time_ahead Time duration to the next plan index
      * @param[out] past_footholds_msg Message for previous footholds
      * @param[out] future_footholds_msg Message for future (planned) footholds
      * @param[out] foot_plan_continuous_msg Message for continuous foot trajectories
      */
     void computeFootPlanMsgs(
       const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
-      int current_plan_index, const Eigen::MatrixXd &body_plan, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+      int current_plan_index, const Eigen::MatrixXd &body_plan, const double &time_ahead, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
       quad_msgs::MultiFootPlanDiscrete &future_footholds_msg, quad_msgs::MultiFootState &future_nominal_footholds_msg,
       quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
 
@@ -372,7 +374,7 @@ class LocalFootstepPlanner {
     int horizon_length_;
 
     /// Phase offsets for the touchdown of each foot
-    std::vector<double> phase_offsets_ = {0,0.5,0.5,0};
+    std::vector<double> phase_offsets_ = {0,0.5,0.5,0.0};
 
     /// Duty cycles for the stance duration of each foot
     std::vector<double> duty_cycles_ = {0.5,0.5,0.5,0.5};

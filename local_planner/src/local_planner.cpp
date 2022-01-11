@@ -43,6 +43,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   // Load system parameters from parameter server
   quad_utils::loadROSParam(nh_, "local_planner/update_rate", update_rate_);
   quad_utils::loadROSParam(nh_, "local_planner/timestep",dt_);
+  quad_utils::loadROSParam(nh_, "local_planner/horizon_length",N_);
   quad_utils::loadROSParam(nh_, "local_planner/iterations",iterations_);
   quad_utils::loadROSParam(nh_, "twist_body_planner/cmd_vel_scale", cmd_vel_scale_);
   quad_utils::loadROSParam(nh_, "twist_body_planner/last_cmd_vel_msg_time_max",
@@ -115,6 +116,12 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
 
   // Initialize solve success state boolean
   first_solve_success = false;
+  
+  // Initialize the time duration to the next plan index
+  time_ahead_ = dt_;
+
+  // Initialize the plan index boolean
+  same_plan_index_ = true;
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -199,12 +206,15 @@ void LocalPlanner::initLocalFootstepPlanner() {
   // Load parameters from server
   double grf_weight, ground_clearance, hip_clearance, standing_error_threshold, period_d;
   int period;
+  std::vector<double> duty_cycles, phase_offsets;
   quad_utils::loadROSParam(nh_, "local_footstep_planner/grf_weight", grf_weight);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/ground_clearance", ground_clearance);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/hip_clearance", hip_clearance);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/standing_error_threshold",
     standing_error_threshold);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/period", period_d);
+  quad_utils::loadROSParam(nh_, "local_footstep_planner/duty_cycles", duty_cycles);
+  quad_utils::loadROSParam(nh_, "local_footstep_planner/phase_offsets", phase_offsets);
 
   period = period_d/dt_;
 
@@ -216,7 +226,7 @@ void LocalPlanner::initLocalFootstepPlanner() {
 
   // Create footstep class, make sure we use the same dt as the local planner
   local_footstep_planner_ = std::make_shared<LocalFootstepPlanner>();
-  local_footstep_planner_->setTemporalParams(dt_, period, N_);
+  local_footstep_planner_->setTemporalParams(dt_, period, N_, duty_cycles, phase_offsets);
   local_footstep_planner_->setSpatialParams(ground_clearance, hip_clearance, standing_error_threshold,
     grf_weight,quadKD_);
 
@@ -263,12 +273,12 @@ void LocalPlanner::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg
 void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg) {
 
   // Ignore non-planar components of desired twist
-  cmd_vel_[0] = cmd_vel_scale_*msg->linear.x;
-  cmd_vel_[1] = cmd_vel_scale_*msg->linear.y;
+  cmd_vel_[0] = 0.95*cmd_vel_[0]+0.05*cmd_vel_scale_*msg->linear.x;
+  cmd_vel_[1] = 0.95*cmd_vel_[1]+0.05*cmd_vel_scale_*msg->linear.y;
   cmd_vel_[2] = 0;
   cmd_vel_[3] = 0;
   cmd_vel_[4] = 0;
-  cmd_vel_[5] = cmd_vel_scale_*msg->angular.z;
+  cmd_vel_[5] = 0.95*cmd_vel_[5]+0.05*cmd_vel_scale_*msg->angular.z;
 
   // Record when this was last reached for safety
   last_cmd_vel_msg_time_ = ros::Time::now();
@@ -291,8 +301,10 @@ void LocalPlanner::getStateAndReferencePlan() {
   if (body_plan_msg_ == NULL || robot_state_msg_ == NULL)
     return;
 
-  // Get index within the global plan
-  current_plan_index_ = quad_utils::getPlanIndex(body_plan_msg_->global_plan_timestamp,dt_);
+  // Get index within the global plan, compare with the previous one to check if this is a duplicated solve
+  int previous_plan_index = current_plan_index_;
+  quad_utils::getPlanIndex(initial_timestamp_, dt_, current_plan_index_, time_ahead_);
+  same_plan_index_ = previous_plan_index == current_plan_index_;
 
   // Get the current body and foot positions into Eigen
   current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
@@ -339,9 +351,12 @@ void LocalPlanner::getStateAndReferencePlan() {
     body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
     body_plan_.row(N_+1) = ref_body_plan_.row(N_+1);
 
-    // No reference for feet so last two elements will be the same
-    foot_positions_body_.topRows(N_-1) = foot_positions_body_.bottomRows(N_-1);
-    foot_positions_world_.topRows(N_-1) = foot_positions_world_.bottomRows(N_-1);
+    // Only shift the foot position if it's a solve for a new plan index
+    if (!same_plan_index_)
+    {
+      foot_positions_body_.topRows(N_-1) = foot_positions_body_.bottomRows(N_-1);
+      foot_positions_world_.topRows(N_-1) = foot_positions_world_.bottomRows(N_-1);
+    }
   }
 
   // Initialize with current foot and body positions
@@ -403,8 +418,10 @@ void LocalPlanner::getStateAndTwistInput() {
     initial_timestamp_ = ros::Time::now();
   }
 
-  // Get index
-  current_plan_index_ = quad_utils::getPlanIndex(initial_timestamp_,dt_);
+  // Get plan index, compare with the previous one to check if this is a duplicated solve
+  int previous_plan_index = current_plan_index_;
+  quad_utils::getPlanIndex(initial_timestamp_, dt_, current_plan_index_, time_ahead_);
+  same_plan_index_ = previous_plan_index == current_plan_index_;
 
   // Initializing foot positions if not data has arrived
   if (first_plan_) {
@@ -457,8 +474,15 @@ void LocalPlanner::getStateAndTwistInput() {
   }
 
   // Set initial condition for forward integration
-  ref_body_plan_(0,0) = current_state_[0];
-  ref_body_plan_(0,1) = current_state_[1];
+  double x_mean = 0;
+  double y_mean = 0;
+  for (int i = 0; i < num_feet_; i++) {
+    x_mean += robot_state_msg_->feet.feet[i].position.x/(num_feet_);
+    y_mean += robot_state_msg_->feet.feet[i].position.y/(num_feet_);
+  }
+
+  ref_body_plan_(0,0) = current_state_[0];//x_mean;
+  ref_body_plan_(0,1) = current_state_[1];//y_mean;
   ref_body_plan_(0,2) = z_des_ + ref_ground_height_(0);
   ref_body_plan_(0,3) = 0;
   ref_body_plan_(0,4) = 0;
@@ -489,7 +513,14 @@ void LocalPlanner::getStateAndTwistInput() {
     current_cmd_vel[1] = cmd_vel_[0]*sin(yaw) + cmd_vel_[1]*cos(yaw);
 
     for (int j = 0; j < 6; j ++) {
-      ref_body_plan_(i,j) = ref_body_plan_(i-1,j) + current_cmd_vel[j]*dt_;
+      if (i == 1)
+      {
+        ref_body_plan_(i,j) = ref_body_plan_(i-1,j) + current_cmd_vel[j]*time_ahead_;
+      }
+      else
+      {
+        ref_body_plan_(i,j) = ref_body_plan_(i-1,j) + current_cmd_vel[j]*dt_;
+      }
       ref_body_plan_(i,j+6) = (current_cmd_vel[j]);
     }
 
@@ -532,9 +563,12 @@ void LocalPlanner::getStateAndTwistInput() {
     body_plan_.row(N_+1) = ref_body_plan_.row(N_+1);
     // body_plan_.bottomRows(1) = ref_body_plan_.bottomRows(1);
 
-    // No reference for feet so last two elements will be the same
-    foot_positions_body_.topRows(N_-1) = foot_positions_body_.bottomRows(N_-1);
-    foot_positions_world_.topRows(N_-1) = foot_positions_world_.bottomRows(N_-1);
+    // Only shift the foot position if it's a solve for a new plan index
+    if (!same_plan_index_)
+    {
+      foot_positions_body_.topRows(N_-1) = foot_positions_body_.bottomRows(N_-1);
+      foot_positions_world_.topRows(N_-1) = foot_positions_world_.bottomRows(N_-1);
+    }
   }
 
   // Initialize with current foot and body positions
@@ -642,6 +676,8 @@ bool LocalPlanner::computeLocalPlan() {
                                                        foot_positions_body_,
                                                        adaptive_contact_schedule_,
                                                        ref_ground_height_,
+                                                       time_ahead_,
+                                                       same_plan_index_,
                                                        body_plan_,
                                                        grf_plan_))
       return false;
@@ -704,7 +740,7 @@ void LocalPlanner::publishLocalPlan() {
 
   // Compute the discrete and continuous foot plan messages
   local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_world_,
-    current_plan_index_, body_plan_, past_footholds_msg_, future_footholds_msg, future_nominal_footholds_msg_, foot_plan_msg);
+    current_plan_index_, body_plan_, time_ahead_, past_footholds_msg_, future_footholds_msg, future_nominal_footholds_msg_, foot_plan_msg);
 
   // Add body, foot, joint, and grf data to the local plan message
   for (int i = 0; i < N_; i++) {
@@ -736,7 +772,16 @@ void LocalPlanner::publishLocalPlan() {
     }
 
     // Update the headers and plan indices of the messages
-    ros::Time state_timestamp = local_plan_msg.header.stamp + ros::Duration(i*dt_);
+    ros::Time state_timestamp;
+    // The first duration may vary
+    if (i == 0)
+    {
+      state_timestamp = local_plan_msg.header.stamp + ros::Duration(time_ahead_);
+    }
+    else
+    {
+      state_timestamp = local_plan_msg.header.stamp + ros::Duration(time_ahead_) + ros::Duration((i - 1) * dt_);
+    }
     quad_utils::updateStateHeaders(robot_state_msg, state_timestamp, map_frame_, current_plan_index_+i);
     grf_array_msg.header = robot_state_msg.header;
     grf_array_msg.traj_index = robot_state_msg.traj_index;

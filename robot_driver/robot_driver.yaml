@@ -1,6 +1,12 @@
-leg_controller:
-  controller: inverse_dynamics
+robot_driver:
   update_rate: 500
+  publish_rate: 500
+  mocap_rate: 360.0 # This must match the mocap frame rate or velocity estimates will be mis-scaled
+  mocap_dropout_threshold: 0.027 # s
+  filter_time_constant: 0.05 # s
+  input_timeout: 0.1
+  state_timeout: 0.1
+  heartbeat_timeout: 0.2
   sit_kp: [10, 10, 10]
   sit_kd: [1, 1, 1]
   stand_kp: [35, 35, 35]
@@ -15,8 +21,3 @@ leg_controller:
   safety_kd: [2, 2, 2]
   stand_joint_angles: [0.0,0.76,1.52]
   sit_joint_angles: [0.0,0.0,0.0]
-  input_timeout: 0.1
-  state_timeout: 0.1
-  heartbeat_timeout: 0.2
-  remote_latency_threshold_warn: 0.02 # s
-  remote_latency_threshold_error: 0.1 # s

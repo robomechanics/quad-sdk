@@ -31,7 +31,6 @@ SOFTWARE.
   <arg name="software"        default="true"/>
   <arg name="controller"      default="inverse_dynamics"/>
   <arg name="live_plot"       default="false"/>
-  <arg name="mblink"          default="false"/>
   <arg name="world"           default="flat"/>
   <arg name="tail"            default="false"/>
   <arg name="tail_type"       default="0"/>
@@ -48,8 +47,9 @@ SOFTWARE.
       <arg name="live_plot" value="$(arg live_plot)"/>
     </include>
     <include file="$(find quad_utils)/launch/robot_driver.launch">
-      <arg name="mblink" value="$(arg mblink)"/>
       <arg name="controller" value="$(arg controller)"/>
+      <arg name="mocap" value="false"/>
+      <arg name="is_hw" value="false"/>
     </include>
     <!-- <include file="$(find quad_utils)/launch/planning.launch">
       <arg name="global_planner" value="$(arg global_planner)"/>

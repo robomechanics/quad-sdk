@@ -4,12 +4,12 @@
 
     <arg name="controller" default="inverse_dynamics"/>
 
-    <node name="leg_controller" pkg="leg_controller" type="leg_controller_node" output="screen">
+    <node name="robot_driver" pkg="robot_driver" type="robot_driver_node" output="screen">
         <param name="controller" value="$(arg controller)"/>
     </node>
 
     <!-- Launch the leg override-->
-    <node name="leg_overrider" pkg="leg_controller" type="leg_overrider_node" output="screen"/>
+    <node name="leg_overrider" pkg="robot_driver" type="leg_overrider_node" output="screen"/>
 
     <!-- Launch the node to publish tail control-->
     <node name="tail_controller" pkg="tail_controller" type="tail_controller_node" output="screen"/>

@@ -16,6 +16,7 @@ quadNLP::quadNLP(
     int n,
     int m,
     double dt,
+    double mu,
     double panic_weights,
     Eigen::MatrixXd Q,
     Eigen::MatrixXd R,
@@ -112,6 +113,7 @@ quadNLP::quadNLP(
    }
 
    dt_ = dt;
+   mu_ = mu;
 
    x_min_ = x_min;
    x_max_ = x_max;
@@ -174,6 +176,9 @@ quadNLP::quadNLP(
    {
       known_leg_input_ = false;
    }
+
+   // Initialize the time duration to the next plan index as dt
+   time_ahead_ = dt_;
 
    compute_nnz_jac_g();
    compute_nnz_h();
@@ -322,13 +327,37 @@ bool quadNLP::eval_f(
 
    for (int i = 0; i < N_; ++i)
    {
-      Eigen::MatrixXd uk = w.block(i * (n_ + m_), 0, m_, 1);
+      // Compute the number of contacts
+      Eigen::VectorXd u_nom(m_);
+      u_nom.setZero();
+      double num_contacts = contact_sequence_.col(i).sum();
+
+      // If there are some contacts, set the nominal input accordingly
+      if (num_contacts > 0)
+      {
+         for (int j = 0; j < contact_sequence_.rows(); j++)
+         {
+            if (contact_sequence_(j, i))
+            {
+               u_nom[3 * j + 2] = mass_ * grav_ / num_contacts;
+            }
+         }
+      }
+
+      Eigen::MatrixXd uk = w.block(i * (n_ + m_), 0, m_, 1) - u_nom;
       Eigen::MatrixXd xk = w.block(i * (n_ + m_) + m_, 0, n_, 1);
 
       xk = (xk.array() - x_reference_.block(0, i, n_, 1).array()).matrix();
 
       Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
       Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
+
+      // Scale the cost by time duration
+      if (i == 0)
+      {
+         Q_i = Q_i * time_ahead_ / dt_;
+         R_i = R_i * time_ahead_ / dt_;
+      }
 
       obj_value += (xk.transpose() * Q_i.asDiagonal() * xk / 2 + uk.transpose() * R_i.asDiagonal() * uk / 2)(0, 0);
    }
@@ -352,13 +381,37 @@ bool quadNLP::eval_grad_f(
 
    for (int i = 0; i < N_; ++i)
    {
-      Eigen::MatrixXd uk = w.block(i * (n_ + m_), 0, m_, 1);
+      // Compute the number of contacts
+      Eigen::VectorXd u_nom(m_);
+      u_nom.setZero();
+      double num_contacts = contact_sequence_.col(i).sum();
+
+      // If there are some contacts, set the nominal input accordingly
+      if (num_contacts > 0)
+      {
+         for (int j = 0; j < contact_sequence_.rows(); j++)
+         {
+            if (contact_sequence_(j, i))
+            {
+               u_nom[3 * j + 2] = mass_ * grav_ / num_contacts;
+            }
+         }
+      }
+
+      Eigen::MatrixXd uk = w.block(i * (n_ + m_), 0, m_, 1) - u_nom;
       Eigen::MatrixXd xk = w.block(i * (n_ + m_) + m_, 0, n_, 1);
 
       xk = (xk.array() - x_reference_.block(0, i, n_, 1).array()).matrix();
 
       Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
       Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
+
+      // Scale the cost by time duration
+      if (i == 0)
+      {
+         Q_i = Q_i * time_ahead_ / dt_;
+         R_i = R_i * time_ahead_ / dt_;
+      }
 
       grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_i.asDiagonal() * uk;
       grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_i.asDiagonal() * xk;
@@ -383,9 +436,17 @@ bool quadNLP::eval_g(
 
    for (int i = 0; i < N_; ++i)
    {
-      Eigen::MatrixXd pk(13, 1);
-      pk(0, 0) = dt_;
-      pk.block(1, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
+      Eigen::MatrixXd pk(14, 1);
+      if (i == 0)
+      {
+         pk(0, 0) = time_ahead_;
+      }
+      else
+      {
+         pk(0, 0) = dt_;
+      }
+      pk(1, 0) = mu_;
+      pk.block(2, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
 
       casadi_int sz_arg;
       casadi_int sz_res;
@@ -462,9 +523,17 @@ bool quadNLP::eval_jac_g(
 
       for (int i = 0; i < N_; ++i)
       {
-         Eigen::MatrixXd pk(13, 1);
-         pk(0, 0) = dt_;
-         pk.block(1, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
+         Eigen::MatrixXd pk(14, 1);
+         if (i == 0)
+         {
+            pk(0, 0) = time_ahead_;
+         }
+         else
+         {
+            pk(0, 0) = dt_;
+         }
+         pk(1, 0) = mu_;
+         pk.block(2, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
 
          casadi_int sz_arg;
          casadi_int sz_res;
@@ -646,9 +715,17 @@ bool quadNLP::eval_h(
 
       for (int i = 0; i < N_; ++i)
       {
-         Eigen::MatrixXd pk(13, 1);
-         pk(0, 0) = dt_;
-         pk.block(1, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
+         Eigen::MatrixXd pk(14, 1);
+         if (i == 0)
+         {
+            pk(0, 0) = time_ahead_;
+         }
+         else
+         {
+            pk(0, 0) = dt_;
+         }
+         pk(1, 0) = mu_;
+         pk.block(2, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
 
          casadi_int sz_arg;
          casadi_int sz_res;
@@ -702,6 +779,13 @@ bool quadNLP::eval_h(
 
          Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
          Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
+
+         // Scale the cost by time duration
+         if (i == 0)
+         {
+            Q_i = Q_i * time_ahead_ / dt_;
+            R_i = R_i * time_ahead_ / dt_;
+         }
 
          values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_i.array()).matrix();
          values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * Q_i.array()).matrix();
@@ -995,4 +1079,22 @@ void quadNLP::update_solver(
    known_leg_input_ = true;
 
    ground_height_ = ground_height.transpose();
+}
+
+void quadNLP::update_solver(
+    const Eigen::VectorXd &initial_state,
+    const Eigen::MatrixXd &ref_traj,
+    const Eigen::MatrixXd &foot_positions,
+    const std::vector<std::vector<bool>> &contact_schedule,
+    const Eigen::VectorXd &ground_height,
+    const double &time_ahead)
+{
+   time_ahead_ = time_ahead;
+
+   this->update_solver(
+       initial_state,
+       ref_traj,
+       foot_positions,
+       contact_schedule,
+       ground_height);
 }

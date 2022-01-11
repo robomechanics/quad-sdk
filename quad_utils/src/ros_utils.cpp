@@ -684,4 +684,28 @@ namespace quad_utils {
       eigen_vec(i) = vec[i];
     }
   }
+
+  void vector3MsgToEigen(const geometry_msgs::Vector3 &vec, Eigen::Vector3d &eigen_vec) {
+    eigen_vec.x() = vec.x;
+    eigen_vec.y() = vec.y;
+    eigen_vec.z() = vec.z;
+  }
+
+  void Eigen3ToVector3Msg(const Eigen::Vector3d &eigen_vec, geometry_msgs::Vector3 &vec) {
+    vec.x = eigen_vec.x();
+    vec.y = eigen_vec.y();
+    vec.z = eigen_vec.z();
+  }
+
+  void pointMsgToEigen(const geometry_msgs::Point &vec, Eigen::Vector3d &eigen_vec) {
+    eigen_vec.x() = vec.x;
+    eigen_vec.y() = vec.y;
+    eigen_vec.z() = vec.z;
+  }
+
+  void Eigen3ToPointMsg(const Eigen::Vector3d &eigen_vec, geometry_msgs::Point &vec) {
+    vec.x = eigen_vec.x();
+    vec.y = eigen_vec.y();
+    vec.z = eigen_vec.z();
+  }
 }
