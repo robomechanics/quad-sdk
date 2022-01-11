@@ -88,6 +88,7 @@ NMPCController::NMPCController(int type)
   app_->Options()->SetIntegerValue("print_level", 0);
   // app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
+  app_->Options()->SetStringValue("fixed_variable_treatment", "make_parameter_nodual");
   app_->Options()->SetNumericValue("tol", 1e-3);
   app_->Options()->SetNumericValue("warm_start_bound_push", 1e-8);
   app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-8);
@@ -109,7 +110,7 @@ NMPCController::NMPCController(int type)
   mynlp_->w0_.setZero();
   mynlp_->z_L0_.fill(1);
   mynlp_->z_U0_.fill(1);
-  mynlp_->lambda0_.setZero();
+  mynlp_->lambda0_.fill(1000);
 }
 
 bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
@@ -295,7 +296,7 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     mynlp_->w0_.setZero();
     mynlp_->z_L0_.fill(1);
     mynlp_->z_U0_.fill(1);
-    mynlp_->lambda0_.setZero();
+    mynlp_->lambda0_.fill(1000);
 
     app_->Options()->SetStringValue("warm_start_init_point", "no");
     app_->Options()->SetNumericValue("mu_init", 1e-1);
