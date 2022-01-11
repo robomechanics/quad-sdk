@@ -142,9 +142,22 @@ void TailController::publishTailCommand()
     int current_plan_index;
     double t_now = ros::Time::now().toSec();
 
-    double current_time = t_now - last_tail_plan_msg_->header.stamp.toSec();
-    current_plan_index = std::floor(current_time / dt_);
-    t_interp = std::fmod(current_time, dt_) / dt_;
+    // Interpolate the local plan to get the reference state and ff GRF
+    for (int i = 0; i < last_tail_plan_msg_->leg_commands.size() - 1; i++)
+    {
+      if ((t_now >= (last_tail_plan_msg_->leg_commands[i].header.stamp).toSec()) &&
+          (t_now < (last_tail_plan_msg_->leg_commands[i + 1].header.stamp).toSec()))
+      {
+        // Record the current plan index
+        current_plan_index = i;
+
+        t_interp = (t_now - (last_tail_plan_msg_->leg_commands[i].header.stamp).toSec()) /
+                   (last_tail_plan_msg_->leg_commands[i + 1].header.stamp.toSec() -
+                    last_tail_plan_msg_->leg_commands[i].header.stamp.toSec());
+
+        break;
+      }
+    }
 
     // If we are out of the plan interval
     if (current_plan_index + 1 > last_tail_plan_msg_->leg_commands.size() - 1)

@@ -85,6 +85,12 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
   z_des_ == std::numeric_limits<double>::max();
 
   miss_contact_leg_.resize(4);
+
+  // Initialize the time duration to the next plan index
+  time_ahead_ = dt_;
+
+  // Initialize the plan index boolean
+  same_plan_index_ = true;
 }
 
 void TailPlanner::robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg)
@@ -162,16 +168,21 @@ void TailPlanner::computeTailPlan()
     if ((t_now >= last_local_plan_msg_->states[i].header.stamp.toSec()) &&
         (t_now < last_local_plan_msg_->states[i + 1].header.stamp.toSec()))
     {
-      // Take the closer one
-      if (t_now - last_local_plan_msg_->states[i].header.stamp.toSec() <=
-          last_local_plan_msg_->states[i + 1].header.stamp.toSec() - t_now)
-      {
-        current_plan_index_ = i + last_local_plan_msg_->plan_indices[0];
-      }
-      else
-      {
-        current_plan_index_ = i + 1 + last_local_plan_msg_->plan_indices[0];
-      }
+      // // Take the closer one
+      // if (t_now - last_local_plan_msg_->states[i].header.stamp.toSec() <=
+      //     last_local_plan_msg_->states[i + 1].header.stamp.toSec() - t_now)
+      // {
+      //   current_plan_index_ = i + last_local_plan_msg_->plan_indices[0];
+      // }
+      // else
+      // {
+      //   current_plan_index_ = i + 1 + last_local_plan_msg_->plan_indices[0];
+      // }
+
+      int previous_plan_index = current_plan_index_;
+      current_plan_index_ = i + last_local_plan_msg_->plan_indices[0];
+      time_ahead_ = last_local_plan_msg_->states[i + 1].header.stamp.toSec() - t_now;
+      same_plan_index_ = previous_plan_index == current_plan_index_;
 
       break;
     }
@@ -244,6 +255,8 @@ void TailPlanner::computeTailPlan()
                                                  body_plan_,
                                                  grf_plan_,
                                                  ref_ground_height_,
+                                                 time_ahead_,
+                                                 same_plan_index_,
                                                  tail_plan_,
                                                  tail_torque_plan_))
     return;
@@ -277,8 +290,15 @@ void TailPlanner::computeTailPlan()
     tail_msg.motor_commands.at(1).vel_setpoint = tail_plan_(i, 3);
     tail_msg.motor_commands.at(1).torque_ff = tail_torque_plan_(i, 1);
 
-    // The local planner time stamp that matches tail plan, it is only used when tail plan start at the same point as local plan
-    tail_msg.header.stamp = last_local_plan_msg_->states[i].header.stamp;
+    // The first duration may vary
+    if (i == 0)
+    {
+      tail_msg.header.stamp = tail_plan_msg.header.stamp + ros::Duration(time_ahead_);
+    }
+    else
+    {
+      tail_msg.header.stamp = tail_plan_msg.header.stamp + ros::Duration(time_ahead_) + ros::Duration((i - 1) * dt_);
+    }
 
     tail_plan_msg.leg_commands.push_back(tail_msg);
   }

@@ -126,6 +126,12 @@ private:
 	ros::Time entrance_time_;
 
   	std::vector<bool> miss_contact_leg_;
+
+	/// Time duration to the next plan index
+	double time_ahead_;
+
+	/// If the current solving is duplicated in the same index
+	bool same_plan_index_;
 };
 
 #endif // TAIL_CONTROLLER_H

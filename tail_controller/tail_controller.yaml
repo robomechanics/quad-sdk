@@ -1,7 +1,7 @@
 tail_controller:
   odrive_update_rate: 400
   controller_update_rate: 500
-  planner_update_rate: 33
+  planner_update_rate: 500
   roll_kp: 10
   roll_kd: 1
   pitch_kp: 10

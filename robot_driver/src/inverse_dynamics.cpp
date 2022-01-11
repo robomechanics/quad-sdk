@@ -80,7 +80,7 @@ bool InverseDynamicsController::computeLegCommandArray(
 
     // Load current foot data
     quad_utils::multiFootStateMsgToEigen(
-        robot_state_msg->feet, current_foot_positions, current_foot_velocities, current_foot_acceleration);
+        robot_state_msg.feet, current_foot_positions, current_foot_velocities, current_foot_acceleration);
 
     // Load nominal foot data
     quad_utils::multiFootStateMsgToEigen(

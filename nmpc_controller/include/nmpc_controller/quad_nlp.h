@@ -283,6 +283,16 @@ public:
         const Eigen::MatrixXd &control_traj,
         const Eigen::VectorXd &ground_height);
 
+    virtual void update_solver(
+        const Eigen::VectorXd &initial_state,
+        const Eigen::MatrixXd &ref_traj,
+        const Eigen::MatrixXd &foot_positions,
+        const std::vector<std::vector<bool>> &contact_schedule,
+        const Eigen::MatrixXd &state_traj,
+        const Eigen::MatrixXd &control_traj,
+        const Eigen::VectorXd &ground_height,
+        const double &time_ahead);
+
     //@}
 
 private:

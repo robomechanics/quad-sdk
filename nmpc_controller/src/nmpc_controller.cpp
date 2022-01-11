@@ -216,6 +216,8 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
                                                 const Eigen::MatrixXd &state_traj,
                                                 const Eigen::MatrixXd &control_traj,
                                                 const Eigen::VectorXd &ref_ground_height,
+                                                const double &time_ahead,
+                                                const bool &same_plan_index,
                                                 Eigen::MatrixXd &tail_state_traj,
                                                 Eigen::MatrixXd &tail_control_traj)
 {
@@ -243,8 +245,13 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
       contact_schedule,
       state_traj,
       control_traj,
-      ref_ground_height.tail(N_));
-  mynlp_->shift_initial_guess();
+      ref_ground_height.tail(N_),
+      time_ahead);
+  // Only shift the warm start if we get a new plan index
+  if (!same_plan_index)
+  {
+    mynlp_->shift_initial_guess();
+  }
 
   bool success = this->computePlan(initial_state_with_tail,
                                    ref_traj_with_tail,
