@@ -6,7 +6,7 @@ grid_map_filters:
     params:
       input_layer: z
       output_layer: z_inpainted
-      radius: 0.09
+      radius: 0.19
 
   # Reduce noise with a radial blurring filter.
   - name: mean_in_radius
@@ -14,7 +14,7 @@ grid_map_filters:
     params:
       input_layer: z_inpainted
       output_layer: z_smooth
-      radius: 0.1
+      radius: 0.2
 
   # Compute surface normals.
   - name: surface_normals
@@ -22,5 +22,5 @@ grid_map_filters:
     params:
       input_layer: z_smooth
       output_layers_prefix: normal_vectors_
-      radius: 0.09
+      radius: 0.19
       normal_vector_positive_axis: z

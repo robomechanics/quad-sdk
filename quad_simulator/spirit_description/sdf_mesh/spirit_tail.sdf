@@ -1622,14 +1622,14 @@ SOFTWARE.
       <pose frame=''>0 0 0.592 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 0 0 0 -0 0</pose>
-        <mass>0.6</mass>
+        <mass>0.3</mass>
         <inertia>
-          <ixx>6e-04</ixx>
+          <ixx>3e-04</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>6e-04</iyy>
+          <iyy>3e-04</iyy>
           <iyz>0</iyz>
-          <izz>6e-04</izz>
+          <izz>3e-04</izz>
         </inertia>
       </inertial>
       <!-- <collision name='tail_mass_collision'>

@@ -128,7 +128,7 @@ quadNLP::quadNLP(
    g_max_.block(n_, 0, 16, 1).fill(0);
 
    ground_height_ = Eigen::MatrixXd(1, N_);
-   ground_height_.fill(0);
+   ground_height_.fill(-2e19);
 
    w0_ = Eigen::MatrixXd((3 * n_ + m_) * N_, 1);
    w0_.fill(0);
@@ -263,6 +263,7 @@ bool quadNLP::get_bounds_info(
       // xmin
       g_l_matrix.block(N_ * g_ + i * 2 * n_, 0, n_, 1) = x_min_;
       g_l_matrix(N_ * g_ + i * 2 * n_ + 2, 0) = ground_height_(0, i);
+      // g_l_matrix(N_ * g_ + i * 2 * n_ + 2, 0) = -2e19;
       g_u_matrix.block(N_ * g_ + i * 2 * n_, 0, n_, 1).fill(2e19);
 
       // xmax

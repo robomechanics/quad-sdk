@@ -146,7 +146,7 @@ void TailPlanner::computeTailPlan()
 
   // Define reference tail plan
   ref_tail_plan_ = Eigen::MatrixXd::Zero(N_ + 1, 4);
-  ref_tail_plan_.col(0) = Eigen::MatrixXd::Constant(N_ + 1, 1, 0.76);
+  // ref_tail_plan_.col(0) = Eigen::MatrixXd::Constant(N_ + 1, 1, 0.76);
   ref_tail_plan_.row(0) = tail_current_state_.transpose();
 
   double t_now = robot_state_msg_->header.stamp.toSec();

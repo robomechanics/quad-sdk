@@ -107,7 +107,7 @@ NMPCController::NMPCController(int type)
   mynlp_->w0_.setZero();
   mynlp_->z_L0_.fill(1);
   mynlp_->z_U0_.fill(1);
-  mynlp_->lambda0_.setZero();
+  mynlp_->lambda0_.fill(1000);
 }
 
 bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
@@ -248,6 +248,12 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
 
   tail_control_traj = control_traj_with_tail.leftCols(2);
 
+  // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+  // ROS_INFO_STREAM("initial_state_with_tail");
+  // ROS_INFO_STREAM(tail_initial_state.transpose().format(CleanFmt));
+  // ROS_INFO_STREAM("tail_state_traj");
+  // ROS_INFO_STREAM(tail_state_traj.format(CleanFmt));
+
   return success;
 }
 
@@ -290,7 +296,7 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     mynlp_->w0_.setZero();
     mynlp_->z_L0_.fill(1);
     mynlp_->z_U0_.fill(1);
-    mynlp_->lambda0_.setZero();
+    mynlp_->lambda0_.fill(1000);
 
     app_->Options()->SetStringValue("warm_start_init_point", "no");
     app_->Options()->SetNumericValue("mu_init", 1e-1);
