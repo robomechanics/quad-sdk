@@ -34,4 +34,7 @@
         <include file="$(find quad_utils)/launch/logging.launch" />
     </group>
 
+    <!-- Launch the node to publish tail control-->
+    <node name="tail_controller" pkg="tail_controller" type="tail_controller_node" output="screen"/>
+
 </launch>

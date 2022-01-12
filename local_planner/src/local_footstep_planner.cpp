@@ -217,9 +217,6 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
           body_pos_midstance = body_plan.block<1,3>(midstance,0);
           body_rpy_midstance = body_plan.block<1,3>(midstance,3);
           grf_midstance = grf_plan.block<1,3>(midstance,3*j);
-
-          quadKD_->worldToNominalHipFKWorldFrame(j, body_pos_midstance, body_rpy_midstance, 
-            hip_position_midstance);
         } else {
           body_pos_midstance = body_plan.block<1,3>(horizon_length_-1,0) +
             body_plan.block<1,3>(horizon_length_-1,6)*(midstance-(horizon_length_-1))*dt_;
@@ -240,7 +237,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         double hip_height = hip_position_midstance.z() - terrain_grid_.atPosition(
           "z_smooth",hip_position_grid_map, grid_map::InterpolationMethods::INTER_LINEAR);
         centrifugal = (hip_height/9.81)*body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
-        vel_tracking = 0.*(body_vel_touchdown - ref_body_vel_touchdown);
+        vel_tracking = 0.166*(body_vel_touchdown - ref_body_vel_touchdown);
         // foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
 
         // Combine these measures to get the nominal foot position and grab correct height

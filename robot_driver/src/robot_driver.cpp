@@ -6,7 +6,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
     // Load rosparams from parameter server
   std::string grf_topic, robot_state_topic, local_plan_topic,
     leg_command_array_topic, control_mode_topic, leg_override_topic,
-    remote_heartbeat_topic, robot_heartbeat_topic, single_joint_cmd_topic, mocap_topic;
+    remote_heartbeat_topic, robot_heartbeat_topic, single_joint_cmd_topic, mocap_topic,
+    grf_sensor_topic, contact_sensing_topic;
   quad_utils::loadROSParam(nh_,"topics/local_plan",local_plan_topic);
   quad_utils::loadROSParam(nh_,"topics/state/ground_truth",robot_state_topic);
   quad_utils::loadROSParam(nh_,"topics/heartbeat/remote",remote_heartbeat_topic);
@@ -17,6 +18,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   quad_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
   quad_utils::loadROSParam(nh_,"topics/control/single_joint_command",single_joint_cmd_topic);
   quad_utils::loadROSParam(nh_,"topics/mocap",mocap_topic);
+  quad_utils::loadROSParam(nh_,"topics/state/grfs",grf_sensor_topic);
+  quad_utils::loadROSParam(nh_,"topics/control/contact_sensing",contact_sensing_topic);
 
   quad_utils::loadROSParam(nh_,"robot_driver/is_hw", is_hw_);
   quad_utils::loadROSParam(nh_,"robot_driver/controller", controller_id_);
@@ -51,9 +54,11 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
     leg_override_topic,1,&RobotDriver::legOverrideCallback, this);
   remote_heartbeat_sub_ = nh_.subscribe(
     remote_heartbeat_topic,1,&RobotDriver::remoteHeartbeatCallback, this);
+  grf_sensor_sub_ = nh_.subscribe(grf_sensor_topic,1,&RobotDriver::grfSensorCallback,this);
   grf_pub_ = nh_.advertise<quad_msgs::GRFArray>(grf_topic,1);
   leg_command_array_pub_ = nh_.advertise<quad_msgs::LegCommandArray>(leg_command_array_topic,1);
   robot_heartbeat_pub_ = nh_.advertise<std_msgs::Header>(robot_heartbeat_topic,1);
+  contact_sensing_pub_ = nh_.advertise<std_msgs::ByteMultiArray>(contact_sensing_topic,1);
 
   // Set up pubs and subs dependent on robot layer
   if (is_hw_) {
@@ -204,6 +209,12 @@ void RobotDriver::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg)
   double t_latency = remote_heartbeat_received_time_ - remote_heartbeat_sent_time;
 
   // ROS_INFO_THROTTLE(1.0,"Remote latency (+ clock skew) = %6.4fs", t_latency);
+}
+
+void RobotDriver::grfSensorCallback(const quad_msgs::GRFArray::ConstPtr &msg)
+{
+  grf_sensor_msg_ = msg;
+  leg_controller_->updateGrfSensorMsg(msg);
 }
 
 void RobotDriver::checkMessages() {
@@ -476,11 +487,11 @@ bool RobotDriver::updateControl() {
       double fb_ratio = abs(fb_component)/(abs(fb_component) + abs(cmd.torque_ff));
 
       if (abs(cmd.torque_ff) >= torque_limits_[j]) {
-        ROS_WARN("Leg %d motor %d: ff effort = %5.3f Nm exceeds threshold of %5.3f Nm", i,j,cmd.torque_ff, torque_limits_[j]);
+        // ROS_WARN("Leg %d motor %d: ff effort = %5.3f Nm exceeds threshold of %5.3f Nm", i,j,cmd.torque_ff, torque_limits_[j]);
 
       }      
       if (abs(effort) >= torque_limits_[j]) {
-        ROS_WARN("Leg %d motor %d: total effort = %5.3f Nm exceeds threshold of %5.3f Nm", i,j,effort, torque_limits_[j]);
+        // ROS_WARN("Leg %d motor %d: total effort = %5.3f Nm exceeds threshold of %5.3f Nm", i,j,effort, torque_limits_[j]);
         effort = std::min(std::max(effort, -torque_limits_[j]), torque_limits_[j]);
       }
 
@@ -503,6 +514,8 @@ void RobotDriver::publishControl(bool is_valid) {
     leg_command_array_pub_.publish(leg_command_array_msg_);
     grf_array_msg_.header.stamp = leg_command_array_msg_.header.stamp;
     grf_pub_.publish(grf_array_msg_);
+
+    contact_sensing_pub_.publish(leg_controller_->getContactSensingMsg());
   // }
 
   // Send command to the robot

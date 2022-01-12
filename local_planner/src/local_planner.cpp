@@ -415,7 +415,7 @@ void LocalPlanner::getStateAndTwistInput() {
   // The first couple solving might fail, we want to aligh all the gait  
   if (!first_solve_success)
   {
-    initial_timestamp_ = ros::Time::now();
+    initial_timestamp_ = ros::Time::now()-ros::Duration(1e-6);
   }
 
   // Get plan index, compare with the previous one to check if this is a duplicated solve
@@ -558,14 +558,12 @@ void LocalPlanner::getStateAndTwistInput() {
       foot_positions_world_.row(i) = current_foot_positions_world_;
     }
   } else {
-    // Warm start with old solution indexed by one
-    body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
-    body_plan_.row(N_+1) = ref_body_plan_.row(N_+1);
-    // body_plan_.bottomRows(1) = ref_body_plan_.bottomRows(1);
-
     // Only shift the foot position if it's a solve for a new plan index
     if (!same_plan_index_)
     {
+      body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
+      grf_plan_.topRows(N_-1) = grf_plan_.bottomRows(N_-1);
+
       foot_positions_body_.topRows(N_-1) = foot_positions_body_.bottomRows(N_-1);
       foot_positions_world_.topRows(N_-1) = foot_positions_world_.bottomRows(N_-1);
     }
@@ -603,8 +601,14 @@ bool LocalPlanner::computeLocalPlan() {
       foot_positions_body_);
 
     // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+    // ROS_INFO_STREAM("same_plan_index_");
+    // ROS_INFO_STREAM(same_plan_index_);
+    // ROS_INFO_STREAM("time_ahead_");
+    // ROS_INFO_STREAM(time_ahead_);
     // ROS_INFO_STREAM("foot_positions_world_");
     // ROS_INFO_STREAM(foot_positions_world_.format(CleanFmt));
+    // ROS_INFO_STREAM("ref_body_plan_");
+    // ROS_INFO_STREAM(ref_body_plan_.format(CleanFmt));
     // ROS_INFO_STREAM("foot_positions_body_");
     // ROS_INFO_STREAM(foot_positions_body_.format(CleanFmt));
 
@@ -701,12 +705,12 @@ bool LocalPlanner::computeLocalPlan() {
   mean_compute_time_ = (filter_smoothing_constant_)*mean_compute_time_ +
     (1-filter_smoothing_constant_)*compute_time_;
 
-  if (compute_time_ >= 1000.0/update_rate_) {
-    ROS_WARN("LocalPlanner took %5.3fms, exceeding %5.3fms allowed",
-      compute_time_, 1000.0/update_rate_);
-  } else {
-    ROS_INFO("LocalPlanner took %5.3f ms", compute_time_);
-  };
+  // if (compute_time_ >= 1000.0/update_rate_) {
+  //   ROS_WARN("LocalPlanner took %5.3fms, exceeding %5.3fms allowed",
+  //     compute_time_, 1000.0/update_rate_);
+  // } else {
+    // ROS_INFO("LocalPlanner took %5.3f ms", compute_time_);
+  // };
 
   // Return true if made it this far
   return true;
@@ -775,6 +779,10 @@ void LocalPlanner::publishLocalPlan() {
     ros::Time state_timestamp;
     // The first duration may vary
     if (i == 0)
+    {
+      state_timestamp = local_plan_msg.header.stamp;
+    }
+    else if (i == 1)
     {
       state_timestamp = local_plan_msg.header.stamp + ros::Duration(time_ahead_);
     }

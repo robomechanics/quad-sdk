@@ -161,6 +161,9 @@ void TailPlanner::computeTailPlan()
       (t_now > last_local_plan_msg_->states.back().header.stamp.toSec()))
   {
     ROS_ERROR("Tail planner node couldn't find the correct ref state!");
+    ROS_ERROR_STREAM("t_now: " << t_now << ","
+                               << "last_local_plan_msg_->states.front().header.stamp.toSec(): " << last_local_plan_msg_->states.front().header.stamp.toSec());
+    return;
   }
 
   for (int i = 0; i < last_local_plan_msg_->states.size() - 1; i++)
@@ -264,15 +267,15 @@ void TailPlanner::computeTailPlan()
   // Record computation time and update exponential filter
   double compute_time = 1000.0 * timer.reportSilent();
 
-  if (compute_time >= 1000.0 / update_rate_)
-  {
-    ROS_WARN("TailPlanner took %5.3fms, exceeding %5.3fms allowed",
-             compute_time, 1000.0 / update_rate_);
-  }
-  else
-  {
-    ROS_INFO("TailPlanner took %5.3f ms", compute_time);
-  };
+  // if (compute_time >= 1000.0 / update_rate_)
+  // {
+  //   ROS_WARN("TailPlanner took %5.3fms, exceeding %5.3fms allowed",
+  //            compute_time, 1000.0 / update_rate_);
+  // }
+  // else
+  // {
+    // ROS_INFO("TailPlanner took %5.3f ms", compute_time);
+  // };
 
   quad_msgs::LegCommandArray tail_plan_msg;
   tail_plan_msg.header.stamp = robot_state_msg_->header.stamp;
@@ -292,6 +295,10 @@ void TailPlanner::computeTailPlan()
 
     // The first duration may vary
     if (i == 0)
+    {
+      tail_msg.header.stamp = tail_plan_msg.header.stamp;
+    }
+    else if (i == 1)
     {
       tail_msg.header.stamp = tail_plan_msg.header.stamp + ros::Duration(time_ahead_);
     }

@@ -51,7 +51,7 @@ namespace quad_utils {
   {
     double duration = getDurationSinceTime(plan_start);
     index = std::floor(duration / dt);
-    time_ahead = duration - index * dt;
+    time_ahead = (index + 1) * dt - duration;
   }
 
   /**
