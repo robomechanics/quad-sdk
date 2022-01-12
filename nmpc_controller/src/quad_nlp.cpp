@@ -355,7 +355,6 @@ bool quadNLP::eval_f(
       if (i == 0)
       {
          Q_i = Q_i * time_ahead_ / dt_;
-         R_i = R_i * time_ahead_ / dt_;
       }
 
       obj_value += (xk.transpose() * Q_i.asDiagonal() * xk / 2 + uk.transpose() * R_i.asDiagonal() * uk / 2)(0, 0);
@@ -409,7 +408,6 @@ bool quadNLP::eval_grad_f(
       if (i == 0)
       {
          Q_i = Q_i * time_ahead_ / dt_;
-         R_i = R_i * time_ahead_ / dt_;
       }
 
       grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_i.asDiagonal() * uk;
@@ -783,7 +781,6 @@ bool quadNLP::eval_h(
          if (i == 0)
          {
             Q_i = Q_i * time_ahead_ / dt_;
-            R_i = R_i * time_ahead_ / dt_;
          }
 
          values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_i.array()).matrix();

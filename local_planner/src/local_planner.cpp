@@ -263,6 +263,7 @@ void LocalPlanner::getStateAndReferencePlan() {
   local_footstep_planner_->getFootPositionsBodyFrame(current_state_, current_foot_positions_world_,
       current_foot_positions_body_);
 
+  // TODO: I don't think this is compatible with the adpative first step now. We might need to interplate it.
   // Grab the appropriate states from the body plan and convert to an Eigen matrix
   ref_body_plan_.setZero();
   for (int i = 0; i < N_+1; i++) {
@@ -290,13 +291,12 @@ void LocalPlanner::getStateAndReferencePlan() {
       foot_positions_world_.row(i) = current_foot_positions_world_;
     }
   } else {
-    // Warm start with old solution indexed by one
-    body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
-    body_plan_.row(N_+1) = ref_body_plan_.row(N_+1);
-
     // Only shift the foot position if it's a solve for a new plan index
     if (!same_plan_index_)
     {
+      body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
+      grf_plan_.topRows(N_-1) = grf_plan_.bottomRows(N_-1);
+
       foot_positions_body_.topRows(N_-1) = foot_positions_body_.bottomRows(N_-1);
       foot_positions_world_.topRows(N_-1) = foot_positions_world_.bottomRows(N_-1);
     }
@@ -445,14 +445,12 @@ void LocalPlanner::getStateAndTwistInput() {
       foot_positions_world_.row(i) = current_foot_positions_world_;
     }
   } else {
-    // Warm start with old solution indexed by one
-    body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
-    body_plan_.row(N_+1) = ref_body_plan_.row(N_+1);
-    // body_plan_.bottomRows(1) = ref_body_plan_.bottomRows(1);
-
     // Only shift the foot position if it's a solve for a new plan index
     if (!same_plan_index_)
     {
+      body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
+      grf_plan_.topRows(N_-1) = grf_plan_.bottomRows(N_-1);
+
       foot_positions_body_.topRows(N_-1) = foot_positions_body_.bottomRows(N_-1);
       foot_positions_world_.topRows(N_-1) = foot_positions_world_.bottomRows(N_-1);
     }
@@ -559,6 +557,10 @@ void LocalPlanner::publishLocalPlan() {
     ros::Time state_timestamp;
     // The first duration may vary
     if (i == 0)
+    {
+      state_timestamp = local_plan_msg.header.stamp;
+    }
+    else if (i == 1)
     {
       state_timestamp = local_plan_msg.header.stamp + ros::Duration(time_ahead_);
     }

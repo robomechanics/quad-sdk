@@ -192,9 +192,6 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
           body_pos_midstance = body_plan.block<1,3>(midstance,0);
           body_rpy_midstance = body_plan.block<1,3>(midstance,3);
           grf_midstance = grf_plan.block<1,3>(midstance,3*j);
-
-          quadKD_->worldToNominalHipFKWorldFrame(j, body_pos_midstance, body_rpy_midstance, 
-            hip_position_midstance);
         } else {
           body_pos_midstance = body_plan.block<1,3>(horizon_length_-1,0) +
             body_plan.block<1,3>(horizon_length_-1,6)*(midstance-(horizon_length_-1))*dt_;
