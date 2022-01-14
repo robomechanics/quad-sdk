@@ -40,6 +40,7 @@ GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
     vel_hist_[i].resize(median_filter_window_);
   }
 
+  joints_order_.resize(12);
   joints_order_ = {8, 0, 1, 9, 2, 3, 10, 4, 5, 11, 6, 7};
 }
 

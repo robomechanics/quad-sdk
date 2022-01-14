@@ -136,7 +136,7 @@ private:
   std::vector<std::vector<double> > vel_hist_;
 
   /// Window length for median filter
-  int median_filter_window_;
+  const int median_filter_window_ = 3;
 
   /// Linear velocity filter type
   std::string vel_filter_;

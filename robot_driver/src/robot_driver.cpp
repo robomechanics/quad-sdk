@@ -18,8 +18,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   quad_utils::loadROSParam(nh_,"topics/control/single_joint_command",single_joint_cmd_topic);
   quad_utils::loadROSParam(nh_,"topics/mocap",mocap_topic);
 
-  quad_utils::loadROSParam(nh_,"robot_driver/is_hw", is_hw_);
-  quad_utils::loadROSParam(nh_,"robot_driver/controller", controller_id_);
+  nh_.param<bool>("robot_driver/is_hw", is_hw_, true);
+  nh_.param<std::string>("robot_driver/controller", controller_id_, "inverse_dynamics");
   quad_utils::loadROSParam(nh_,"robot_driver/update_rate", update_rate_);
   quad_utils::loadROSParam(nh_,"robot_driver/publish_rate", publish_rate_);
   quad_utils::loadROSParam(nh_,"robot_driver/mocap_rate", mocap_rate_);
