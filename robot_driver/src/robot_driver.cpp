@@ -2,6 +2,8 @@
 
 RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
 	nh_ = nh;
+  argc_ = argc;
+  argv_ = argv;
 
     // Load rosparams from parameter server
   std::string grf_topic, robot_state_topic, local_plan_topic,
@@ -71,7 +73,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
 
   // Initialize mblink converter
   if (is_hw_) {
-    mblink_converter_ = std::make_shared<MBLinkConverter>(nh_, argc, argv);
+    mblink_converter_ = std::make_shared<MBLinkConverter>(nh_);
   }
 
   // Initialize leg controller object
@@ -528,6 +530,11 @@ void RobotDriver::spin() {
   
   // Initialize timing params
   ros::Rate r(update_rate_);
+
+  // Start the mblink connection
+  if (is_hw_) {
+    mblink_converter_->start(argc_, argv_);
+  }
 
   while (ros::ok()) {
 

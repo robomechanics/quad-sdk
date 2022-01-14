@@ -34,11 +34,15 @@ public:
   /**
    * @brief Constructor for MBLinkConverter
    * @param[in] nh ROS NodeHandle to publish and subscribe from
-   * @param[in] mblink Pointer to MBLink object
    * @return Constructed object of type EKFEstimator
    */
-  MBLinkConverter(ros::NodeHandle nh, int argc, char** argv);
+  MBLinkConverter(ros::NodeHandle nh);
 
+  /**
+   * @brief Start the MAVLink connection
+   */
+  void start(int argc, char** argv);
+  
   /**
    * @brief Stop the MAVLink connection
    */

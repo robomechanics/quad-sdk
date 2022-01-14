@@ -1,14 +1,8 @@
 #include "robot_driver/mblink_converter.h"
 
-MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
+MBLinkConverter::MBLinkConverter(ros::NodeHandle nh)
 {
   nh_ = nh;
-
-  /// Ghost MBLink interface class
-  mblink_.start(argc,argv);
-  mblink_.rxstart();
-  mblink_.setRetry("_UPST_ADDRESS", 255);
-  mblink_.setRetry("UPST_LOOP_DELAY", 1);
 
   // Load rosparams from parameter server
   std::string leg_control_topic, joint_encoder_topic, imu_topic, remote_heartbeat_topic, control_restart_flag_topic;
@@ -31,20 +25,17 @@ MBLinkConverter::MBLinkConverter(ros::NodeHandle nh, int argc, char** argv)
   
 }
 
-// void MBLinkConverter::updateLegCommandArray(
-//   const quad_msgs::LegCommandArray::ConstPtr& msg)
-// {
-//   last_leg_command_array_msg_ = msg;
-//   last_leg_command_time_ = msg->header.stamp.toSec();
-
-//   // double t_now = ros::Time::now().toSec();
-//   // ROS_INFO("Current time = %6.4f, msg time = %6.4f, diff = %6.4fs", t_now, last_leg_command_time_, t_now - last_leg_command_time_);
-// }
+void MBLinkConverter::start(int argc, char**argv) {
+  /// Ghost MBLink interface class
+  mblink_.start(argc,argv);
+  mblink_.rxstart();
+  mblink_.setRetry("_UPST_ADDRESS", 255);
+  mblink_.setRetry("UPST_LOOP_DELAY", 1);
+}
 
 void MBLinkConverter::stop() {
   mblink_.rxstop();
 }
-
 
 void MBLinkConverter::remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg) {
   last_heartbeat_time_ = msg->stamp.toSec();
@@ -88,13 +79,6 @@ bool MBLinkConverter::sendMBlink(const quad_msgs::LegCommandArray& last_leg_comm
       limbcmd[i].kp[j] = static_cast<short>(leg_command_heartbeat*leg_command.motor_commands.at(j).kp);
       limbcmd[i].kd[j] = static_cast<short>(leg_command_heartbeat*leg_command.motor_commands.at(j).kd);
       limbcmd[i].restart_flag = restart_flag_;
-
-      // std::cout << "Size of limbcmd[i].pos[j] = " << sizeof(limbcmd[i].pos[j]) << std::endl;
-      // std::cout << "Size of limbcmd[i].vel[j] = " << sizeof(limbcmd[i].vel[j]) << std::endl;
-      // std::cout << "Size of limbcmd[i].tau[j] = " << sizeof(limbcmd[i].tau[j]) << std::endl;
-      // std::cout << "Size of limbcmd[i].kp[j] = " << sizeof(limbcmd[i].kp[j]) << std::endl;
-      // std::cout << "Size of limbcmd[i].kd[j] = " << sizeof(limbcmd[i].kd[j]) << std::endl;
-      // std::cout << "Size of limbcmd[i].restart_flag = " << sizeof(limbcmd[i].restart_flag) << std::endl;
     }
   }
   
@@ -119,68 +103,4 @@ void MBLinkConverter::getMBlink(MBData_t &data)
     ROS_WARN_THROTTLE(0.5, "No data received from mblink");
     return;
   }
-
-  // ros::Time timestamp = ros::Time::now();
-
-  // // Declare the joint state msg and apply the timestamp
-  // sensor_msgs::JointState joint_state_msg;
-  // joint_state_msg.header.stamp = timestamp;
-
-  // // Add the data corresponding to each joint
-  // for (int i = 0; i < joint_names_.size(); i++)
-  // {
-  //   joint_state_msg.name.push_back(joint_names_[i]);
-  //   joint_state_msg.position.push_back(data["joint_position"][joint_indices_[i]]);
-  //   joint_state_msg.velocity.push_back(data["joint_velocity"][joint_indices_[i]]);
-
-  //   // Convert from current to torque
-  //   joint_state_msg.effort.push_back(kt_vec_[i]*data["joint_current"][joint_indices_[i]]);
-  // }
-
-  // // Publish the joint state message
-  // // joint_encoder_pub_.publish(joint_state_msg);
-
-  // // Declare the imu message
-  // sensor_msgs::Imu imu_msg;
-  // imu_msg.header.stamp = timestamp;
-
-  // // Transform from rpy to quaternion
-  // geometry_msgs::Quaternion orientation_msg;
-  // tf2::Quaternion quat_tf;
-  // quat_tf.setRPY(data["imu_euler"][0],data["imu_euler"][1],data["imu_euler"][2]);
-  // tf2::convert(quat_tf, orientation_msg);
-
-  // // Load the data into the imu message
-  // imu_msg.orientation = orientation_msg;
-  // imu_msg.angular_velocity.x = data["imu_angular_velocity"][0];
-  // imu_msg.angular_velocity.y = data["imu_angular_velocity"][1];
-  // imu_msg.angular_velocity.z = data["imu_angular_velocity"][2];
-  // imu_msg.linear_acceleration.x = data["imu_linear_acceleration"][0];
-  // imu_msg.linear_acceleration.y = data["imu_linear_acceleration"][1];
-  // imu_msg.linear_acceleration.z = data["imu_linear_acceleration"][2];
-
-  // Publish the imu message
-  // imu_pub_.publish(imu_msg);
 }
-
-// void MBLinkConverter::spin()
-// {
-//   ros::Rate r(update_rate_);
-//   while (ros::ok()) {
-
-//     // Collect new messages on subscriber topics
-//     ros::spinOnce(); 
-
-//     // Unset the restart flag after a timeout duration
-//     if ((ros::Time::now() - restart_flag_time_).toSec() >= 0.1) {
-//       restart_flag_ = false;
-//     }
-
-//     // Send out the most recent one over mblink
-//     this->sendMBlink();
-//     this->getMBlink();
-
-//     // Enforce update rate
-//     r.sleep();
-//   }
-// }
