@@ -124,13 +124,14 @@ class LocalFootstepPlanner {
      * @param[in] foot_positions Foot positions over the horizon
      * @param[in] current_plan_index Current index in the global plan
      * @param[in] body_plan Body plan from MPC
+     * @param[in] time_ahead Time duration to the next plan index
      * @param[out] past_footholds_msg Message for previous footholds
      * @param[out] future_footholds_msg Message for future (planned) footholds
      * @param[out] foot_plan_continuous_msg Message for continuous foot trajectories
      */
     void computeFootPlanMsgs(
       const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
-      int current_plan_index, const Eigen::MatrixXd &body_plan, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+      int current_plan_index, const Eigen::MatrixXd &body_plan, const double &time_ahead, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
       quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
       quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
 
@@ -314,7 +315,7 @@ class LocalFootstepPlanner {
     std::vector<double> phase_offsets_ = {0,0.5,0.5,0.0};
 
     /// Duty cycles for the stance duration of each foot
-    std::vector<double> duty_cycles_ = {1.0,1.0,1.0,1.0};
+    std::vector<double> duty_cycles_ = {0.5,0.5,0.5,0.5};
 
     /// Nominal contact schedule
     std::vector<std::vector<bool>> nominal_contact_schedule_;

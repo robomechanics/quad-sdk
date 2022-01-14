@@ -88,10 +88,11 @@ NMPCController::NMPCController(int type)
   app_->Options()->SetIntegerValue("print_level", 0);
   // app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
+  app_->Options()->SetStringValue("fixed_variable_treatment", "make_parameter_nodual");
   app_->Options()->SetNumericValue("tol", 1e-3);
-  app_->Options()->SetNumericValue("warm_start_bound_push", 1e-6);
-  app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
-  app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
+  app_->Options()->SetNumericValue("warm_start_bound_push", 1e-8);
+  app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-8);
+  app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-8);
 
   app_->Options()->SetNumericValue("max_wall_time", 4.0 * dt_);
   app_->Options()->SetNumericValue("max_cpu_time", 4.0 * dt_);
@@ -109,7 +110,7 @@ NMPCController::NMPCController(int type)
   mynlp_->w0_.setZero();
   mynlp_->z_L0_.fill(1);
   mynlp_->z_U0_.fill(1);
-  mynlp_->lambda0_.setZero();
+  mynlp_->lambda0_.fill(1000);
 }
 
 bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
@@ -117,6 +118,8 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
                                     const Eigen::MatrixXd &foot_positions,
                                     const std::vector<std::vector<bool>> &contact_schedule,
                                     const Eigen::VectorXd &ref_ground_height,
+                                    const double &time_ahead,
+                                    const bool &same_plan_index,
                                     Eigen::MatrixXd &state_traj,
                                     Eigen::MatrixXd &control_traj)
 {
@@ -126,8 +129,13 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
       ref_traj.bottomRows(N_),
       foot_positions,
       contact_schedule,
-      ref_ground_height.tail(N_));
-  mynlp_->shift_initial_guess();
+      ref_ground_height.tail(N_),
+      time_ahead);
+  // Only shift the warm start if we get a new plan index
+  if (!same_plan_index)
+  {
+    mynlp_->shift_initial_guess();
+  }
 
   return this->computePlan(initial_state,
                            ref_traj,
@@ -288,7 +296,7 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     mynlp_->w0_.setZero();
     mynlp_->z_L0_.fill(1);
     mynlp_->z_U0_.fill(1);
-    mynlp_->lambda0_.setZero();
+    mynlp_->lambda0_.fill(1000);
 
     app_->Options()->SetStringValue("warm_start_init_point", "no");
     app_->Options()->SetNumericValue("mu_init", 1e-1);

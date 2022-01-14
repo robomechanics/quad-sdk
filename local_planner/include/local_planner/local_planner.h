@@ -255,6 +255,12 @@ private:
 
   /// Vector for stand pose (x, y, yaw)
   Eigen::Vector3d stand_pose_;
+
+  /// Time duration to the next plan index
+  double time_ahead_;
+
+  /// If the current solving is duplicated in the same index
+  bool same_plan_index_;
 };
 
 

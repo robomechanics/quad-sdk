@@ -82,6 +82,12 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
 
   // Initialize stand pose
   stand_pose_.fill(std::numeric_limits<double>::max());
+
+  // Initialize the time duration to the next plan index
+  time_ahead_ = dt_;
+
+  // Initialize the plan index boolean
+  same_plan_index_ = true;
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -227,12 +233,12 @@ void LocalPlanner::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg
 void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg) {
 
   // Ignore non-planar components of desired twist
-  cmd_vel_[0] = cmd_vel_scale_*msg->linear.x;
-  cmd_vel_[1] = cmd_vel_scale_*msg->linear.y;
+  cmd_vel_[0] = 0.95*cmd_vel_[0]+0.05*cmd_vel_scale_*msg->linear.x;
+  cmd_vel_[1] = 0.95*cmd_vel_[1]+0.05*cmd_vel_scale_*msg->linear.y;
   cmd_vel_[2] = 0;
   cmd_vel_[3] = 0;
   cmd_vel_[4] = 0;
-  cmd_vel_[5] = cmd_vel_scale_*msg->angular.z;
+  cmd_vel_[5] = 0.95*cmd_vel_[5]+0.05*cmd_vel_scale_*msg->angular.z;
 
   // Record when this was last reached for safety
   last_cmd_vel_msg_time_ = ros::Time::now();
@@ -245,8 +251,10 @@ void LocalPlanner::getStateAndReferencePlan() {
   if (body_plan_msg_ == NULL || robot_state_msg_ == NULL)
     return;
 
-  // Get index within the global plan
-  current_plan_index_ = quad_utils::getPlanIndex(body_plan_msg_->global_plan_timestamp,dt_);
+  // Get index within the global plan, compare with the previous one to check if this is a duplicated solve
+  int previous_plan_index = current_plan_index_;
+  quad_utils::getPlanIndex(initial_timestamp_, dt_, current_plan_index_, time_ahead_);
+  same_plan_index_ = previous_plan_index == current_plan_index_;
 
   // Get the current body and foot positions into Eigen
   current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
@@ -255,6 +263,7 @@ void LocalPlanner::getStateAndReferencePlan() {
   local_footstep_planner_->getFootPositionsBodyFrame(current_state_, current_foot_positions_world_,
       current_foot_positions_body_);
 
+  // TODO: I don't think this is compatible with the adpative first step now. We might need to interplate it.
   // Grab the appropriate states from the body plan and convert to an Eigen matrix
   ref_body_plan_.setZero();
   for (int i = 0; i < N_+1; i++) {
@@ -282,13 +291,15 @@ void LocalPlanner::getStateAndReferencePlan() {
       foot_positions_world_.row(i) = current_foot_positions_world_;
     }
   } else {
-    // Warm start with old solution indexed by one
-    body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
-    body_plan_.row(N_+1) = ref_body_plan_.row(N_+1);
+    // Only shift the foot position if it's a solve for a new plan index
+    if (!same_plan_index_)
+    {
+      body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
+      grf_plan_.topRows(N_-1) = grf_plan_.bottomRows(N_-1);
 
-    // No reference for feet so last two elements will be the same
-    foot_positions_body_.topRows(N_-1) = foot_positions_body_.bottomRows(N_-1);
-    foot_positions_world_.topRows(N_-1) = foot_positions_world_.bottomRows(N_-1);
+      foot_positions_body_.topRows(N_-1) = foot_positions_body_.bottomRows(N_-1);
+      foot_positions_world_.topRows(N_-1) = foot_positions_world_.bottomRows(N_-1);
+    }
   }
 
   // Initialize with current foot and body positions
@@ -302,8 +313,10 @@ void LocalPlanner::getStateAndTwistInput() {
   if (robot_state_msg_ == NULL)
     return;
 
-  // Get index
-  current_plan_index_ = quad_utils::getPlanIndex(initial_timestamp_,dt_);
+  // Get plan index, compare with the previous one to check if this is a duplicated solve
+  int previous_plan_index = current_plan_index_;
+  quad_utils::getPlanIndex(initial_timestamp_, dt_, current_plan_index_, time_ahead_);
+  same_plan_index_ = previous_plan_index == current_plan_index_;
 
   // Initializing foot positions if not data has arrived
   if (first_plan_) {
@@ -364,12 +377,12 @@ void LocalPlanner::getStateAndTwistInput() {
     y_mean += robot_state_msg_->feet.feet[i].position.y/(num_feet_);
   }
 
-  ref_body_plan_(0,0) = 0.0;//current_state_[0];//x_mean;
-  ref_body_plan_(0,1) = 0.0;//current_state_[1];//y_mean;
+  ref_body_plan_(0,0) = current_state_[0];//x_mean;
+  ref_body_plan_(0,1) = current_state_[1];//y_mean;
   ref_body_plan_(0,2) = z_des_ + ref_ground_height_(0);
   ref_body_plan_(0,3) = 0;
   ref_body_plan_(0,4) = 0;
-  ref_body_plan_(0,5) = 0.0;//current_state_[5];
+  ref_body_plan_(0,5) = current_state_[5];
   ref_body_plan_(0,6) = cmd_vel_[0]*cos(current_state_[5]) - cmd_vel_[1]*sin(current_state_[5]);
   ref_body_plan_(0,7) = cmd_vel_[0]*sin(current_state_[5]) + cmd_vel_[1]*cos(current_state_[5]);
   ref_body_plan_(0,8) = cmd_vel_[2];
@@ -396,7 +409,14 @@ void LocalPlanner::getStateAndTwistInput() {
     current_cmd_vel[1] = cmd_vel_[0]*sin(yaw) + cmd_vel_[1]*cos(yaw);
 
     for (int j = 0; j < 6; j ++) {
-      ref_body_plan_(i,j) = ref_body_plan_(i-1,j) + current_cmd_vel[j]*dt_;
+      if (i == 1)
+      {
+        ref_body_plan_(i,j) = ref_body_plan_(i-1,j) + current_cmd_vel[j]*time_ahead_;
+      }
+      else
+      {
+        ref_body_plan_(i,j) = ref_body_plan_(i-1,j) + current_cmd_vel[j]*dt_;
+      }
       ref_body_plan_(i,j+6) = (current_cmd_vel[j]);
     }
 
@@ -425,14 +445,15 @@ void LocalPlanner::getStateAndTwistInput() {
       foot_positions_world_.row(i) = current_foot_positions_world_;
     }
   } else {
-    // Warm start with old solution indexed by one
-    body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
-    body_plan_.row(N_+1) = ref_body_plan_.row(N_+1);
-    // body_plan_.bottomRows(1) = ref_body_plan_.bottomRows(1);
+    // Only shift the foot position if it's a solve for a new plan index
+    if (!same_plan_index_)
+    {
+      body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
+      grf_plan_.topRows(N_-1) = grf_plan_.bottomRows(N_-1);
 
-    // No reference for feet so last two elements will be the same
-    foot_positions_body_.topRows(N_-1) = foot_positions_body_.bottomRows(N_-1);
-    foot_positions_world_.topRows(N_-1) = foot_positions_world_.bottomRows(N_-1);
+      foot_positions_body_.topRows(N_-1) = foot_positions_body_.bottomRows(N_-1);
+      foot_positions_world_.topRows(N_-1) = foot_positions_world_.bottomRows(N_-1);
+    }
   }
 
   // Initialize with current foot and body positions
@@ -467,7 +488,7 @@ bool LocalPlanner::computeLocalPlan() {
   // Compute body plan with MPC, return if solve fails
   if (use_nmpc_) {
     if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_,
-      foot_positions_body_, contact_schedule_, ref_ground_height_, body_plan_, grf_plan_))
+      foot_positions_body_, contact_schedule_, ref_ground_height_, time_ahead_, same_plan_index_, body_plan_, grf_plan_))
       return false;
   } else {
     if (!local_body_planner_convex_->computePlan(current_state_, ref_body_plan_,
@@ -513,7 +534,7 @@ void LocalPlanner::publishLocalPlan() {
 
   // Compute the discrete and continuous foot plan messages
   local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_world_,
-    current_plan_index_, body_plan_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
+    current_plan_index_, body_plan_, time_ahead_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
 
   // Add body, foot, joint, and grf data to the local plan message
   for (int i = 0; i < N_; i++) {
@@ -533,7 +554,20 @@ void LocalPlanner::publishLocalPlan() {
     }
     
     // Update the headers and plan indices of the messages
-    ros::Time state_timestamp = local_plan_msg.header.stamp + ros::Duration(i*dt_);
+    ros::Time state_timestamp;
+    // The first duration may vary
+    if (i == 0)
+    {
+      state_timestamp = local_plan_msg.header.stamp;
+    }
+    else if (i == 1)
+    {
+      state_timestamp = local_plan_msg.header.stamp + ros::Duration(time_ahead_);
+    }
+    else
+    {
+      state_timestamp = local_plan_msg.header.stamp + ros::Duration(time_ahead_) + ros::Duration((i - 1) * dt_);
+    }
     quad_utils::updateStateHeaders(robot_state_msg, state_timestamp, map_frame_, current_plan_index_+i);
     grf_array_msg.header = robot_state_msg.header;
     grf_array_msg.traj_index = robot_state_msg.traj_index;
