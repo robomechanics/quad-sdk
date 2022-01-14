@@ -175,13 +175,13 @@ void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_pos
     foot_velocity.z() = (basis_2*foot_position_prev.z() + basis_3*swing_apex)/
       (0.5*swing_duration*dt_);
     foot_acceleration.z() = (basis_4*foot_position_prev.z() + basis_5*swing_apex)/
-      pow(swing_duration*dt_, 2);
+      pow(0.5*swing_duration*dt_, 2);
   } else {
     foot_position.z() = basis_0*swing_apex + basis_1*foot_position_next.z();
     foot_velocity.z() = (basis_2*swing_apex + basis_3*foot_position_next.z())/
       (0.5*swing_duration*dt_);
     foot_acceleration.z() = (basis_4*swing_apex + basis_5*foot_position_next.z())/
-      pow(swing_duration*dt_, 2);
+      pow(0.5*swing_duration*dt_, 2);
   }  
 }
 
@@ -237,7 +237,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         double hip_height = hip_position_midstance.z() - terrain_grid_.atPosition(
           "z_smooth",hip_position_grid_map, grid_map::InterpolationMethods::INTER_LINEAR);
         centrifugal = (hip_height/9.81)*body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
-        vel_tracking = 0.166*(body_vel_touchdown - ref_body_vel_touchdown);
+        vel_tracking = (hip_height/9.81)*(body_vel_touchdown - ref_body_vel_touchdown);
         // foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
 
         // Combine these measures to get the nominal foot position and grab correct height

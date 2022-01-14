@@ -15,7 +15,7 @@ else
 end
 
 % Specify the path
-filepath = ['../bags/', trialName,'.bag'];
+filepath = trialName;
 if ~(exist(filepath,'file'))
     disp([filepath, ' does not exist, using UI to specify path']);
     [fileName,pathname] = uigetfile('.bag', 'Select a Bag');
@@ -79,6 +79,16 @@ else
     stateGroundTruth.jointVelocity = cell2mat(cellfun(@(m) m.Joints.Velocity.', stateGroundTruthData, 'UniformOutput', 0));
     stateGroundTruth.jointEffort = cell2mat(cellfun(@(m) m.Joints.Effort.', stateGroundTruthData, 'UniformOutput', 0));
     
+    if ~isempty(stateGroundTruthData{1}.TailJoints.Position)
+        stateGroundTruth.tailJointPosition = cell2mat(cellfun(@(m) m.TailJoints.Position.', stateGroundTruthData, 'UniformOutput', 0));
+        stateGroundTruth.tailJointVelocity = cell2mat(cellfun(@(m) m.TailJoints.Velocity.', stateGroundTruthData, 'UniformOutput', 0));
+        stateGroundTruth.tailJointEffort = cell2mat(cellfun(@(m) m.TailJoints.Effort.', stateGroundTruthData, 'UniformOutput', 0));
+    else
+        stateGroundTruth.tailJointPosition = [];
+        stateGroundTruth.tailJointVelocity = [];
+        stateGroundTruth.tailJointEffort = [];
+    end
+        
     num_feet = size(stateGroundTruthData{1}.Feet.Feet, 2);
     for i = 1:num_feet
         stateGroundTruth.footPosition{i} = cell2mat(cellfun(@(m) ...

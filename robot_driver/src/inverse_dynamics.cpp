@@ -119,13 +119,14 @@ bool InverseDynamicsController::computeLegCommandArray(
         last_contact_sensing_msg_.data.at(i) = true;
 
         // Record the joint position and hold it there
-        for (size_t j = 0; j < 3; j++)
-        {
-          joint_pos_miss_contact_(3 * i + j) = last_local_plan_msg_->states.at(current_idx).joints_nominal.position.at(3 * i + j);
-          ref_state_msg.joints.position.at(3 * i + j) = joint_pos_miss_contact_(3 * i + j);
-        }
+        // for (size_t j = 0; j < 3; j++)
+        // {
+        //   joint_pos_miss_contact_(3 * i + j) = last_local_plan_msg_->states.at(current_idx).joints_nominal.position.at(3 * i + j);
+        //   ref_state_msg.joints.position.at(3 * i + j) = joint_pos_miss_contact_(3 * i + j);
+        // }
 
         adaptive_contact_mode.at(i) = false;
+        grf_array.segment(3*i, 3) << 0, 0, 0;
       }
 
       // Miss to contact
@@ -153,12 +154,13 @@ bool InverseDynamicsController::computeLegCommandArray(
           contact_mode.at(i))
       {
         // Hold the joint position as the record
-        for (size_t j = 0; j < 3; j++)
-        {
-          ref_state_msg.joints.position.at(3 * i + j) = joint_pos_miss_contact_(3 * i + j);
-        }
+        // for (size_t j = 0; j < 3; j++)
+        // {
+        //   ref_state_msg.joints.position.at(3 * i + j) = joint_pos_miss_contact_(3 * i + j);
+        // }
 
         adaptive_contact_mode.at(i) = false;
+        grf_array.segment(3*i, 3) << 0, 0, 0;
       }
 
       // Otherwise is keep contact, keep swing, swing to contact, or contact to swing
@@ -166,7 +168,7 @@ bool InverseDynamicsController::computeLegCommandArray(
 
     // Compute joint torques
     quadKD_->computeInverseDynamics(state_positions, state_velocities, ref_foot_acceleration, grf_array,
-                                    adaptive_contact_mode, tau_array);
+                                    contact_mode, tau_array);
 
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg.leg_commands.at(i).motor_commands.resize(3);

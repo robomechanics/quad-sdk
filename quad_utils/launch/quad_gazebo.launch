@@ -34,6 +34,7 @@ SOFTWARE.
   <arg name="world"           default="flat"/>
   <arg name="tail"            default="false"/>
   <arg name="tail_type"       default="0"/>
+  <arg name="x_init"          default="6.0"/>
 
   <param name="tail_controller/tail_type" value="$(arg tail_type)"/>
 
@@ -90,7 +91,7 @@ SOFTWARE.
   </group>
 
   <!-- Spawn SDF model -->
-  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 6.0 -y 0.0 -z 0.5 -Y 1.57" output="screen"/>
+  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x $(arg x_init) -y 0.0 -z 0.5 -Y 1.57" output="screen"/>
 
   <node name="controller_spawner"
         pkg="controller_manager"

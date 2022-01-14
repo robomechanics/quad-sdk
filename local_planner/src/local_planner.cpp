@@ -28,7 +28,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   // Setup pubs and subs
   // terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1, &LocalPlanner::terrainMapCallback, this);
   body_plan_sub_ = nh_.subscribe(body_plan_topic,1, &LocalPlanner::robotPlanCallback, this);
-  robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&LocalPlanner::robotStateCallback,this);
+  robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&LocalPlanner::robotStateCallback,this,ros::TransportHints().tcpNoDelay(true));
   cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic,1,&LocalPlanner::cmdVelCallback, this);
   grf_sub_ = nh_.subscribe(grf_topic,1,&LocalPlanner::grfCallback,this);
   contact_sensing_sub_ = nh_.subscribe(contact_sensing_topic,1,&LocalPlanner::contactSensingCallback,this);
@@ -531,11 +531,11 @@ void LocalPlanner::getStateAndTwistInput() {
     // ref_body_plan_(i, 4) = local_footstep_planner_->getTerrainSlope(ref_body_plan_(i, 0), ref_body_plan_(i, 1), ref_body_plan_(i, 6), ref_body_plan_(i, 7));
     
     // Adaptive roll and pitch
-    local_footstep_planner_->getTerrainSlope(ref_body_plan_(i, 0),
-                                             ref_body_plan_(i, 1),
-                                             ref_body_plan_(i, 5),
-                                             ref_body_plan_(i, 3),
-                                             ref_body_plan_(i, 4));
+    // local_footstep_planner_->getTerrainSlope(ref_body_plan_(i, 0),
+    //                                          ref_body_plan_(i, 1),
+    //                                          ref_body_plan_(i, 5),
+    //                                          ref_body_plan_(i, 3),
+    //                                          ref_body_plan_(i, 4));
 
     ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_.row(i).segment(0, 3), ref_body_plan_.row(i).segment(3, 3));
     ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);                                 
@@ -620,7 +620,7 @@ bool LocalPlanner::computeLocalPlan() {
       {
         for (size_t j = 0; j < N_; j++)
         {
-          foot_positions_body_.block(j, i*3, 1, 3) = foot_pos_body_miss_contact_.segment(3*i, 3).transpose();
+          foot_positions_body_.block(j, i * 3, 1, 3) = foot_pos_body_miss_contact_.segment(3 * i, 3).transpose();
           adaptive_contact_schedule_.at(j).at(i) = false;
           if (!contact_schedule_.at(j).at(i) && contact_schedule_.at(j + 1).at(i))
           {

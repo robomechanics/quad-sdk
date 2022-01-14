@@ -52,7 +52,7 @@ public:
     double mu_;
 
     /// Mass of the platform (set to zero to ignore nominal ff)
-    const double mass_ = 0.0;
+    const double mass_ = 13.3;
 
     /// Gravity constant
     const double grav_ = 9.81;

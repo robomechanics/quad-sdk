@@ -17,8 +17,8 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
   // Setup pubs and subs
   tail_plan_pub_ = nh_.advertise<quad_msgs::LegCommandArray>(tail_plan_topic, 1);
   body_plan_sub_ = nh_.subscribe(body_plan_topic, 1, &TailPlanner::robotPlanCallback, this);
-  robot_state_sub_ = nh_.subscribe(robot_state_topic, 1, &TailPlanner::robotStateCallback, this);
-  local_plan_sub_ = nh_.subscribe(local_plan_topic, 1, &TailPlanner::localPlanCallback, this);
+  robot_state_sub_ = nh_.subscribe(robot_state_topic, 1, &TailPlanner::robotStateCallback, this,ros::TransportHints().tcpNoDelay(true));
+  local_plan_sub_ = nh_.subscribe(local_plan_topic, 1, &TailPlanner::localPlanCallback, this,ros::TransportHints().tcpNoDelay(true));
   cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic, 1, &TailPlanner::cmdVelCallback, this);
   grf_sub_ = nh_.subscribe(grf_topic, 1, &TailPlanner::grfCallback, this);
 
@@ -230,6 +230,7 @@ void TailPlanner::computeTailPlan()
     }
 
     body_plan_.row(i) = quad_utils::bodyStateMsgToEigen(last_local_plan_msg_->states[idx].body).transpose();
+    ref_tail_plan_.row(i) << -body_plan_(i, 3), -body_plan_(i, 4), 0, 0;
 
     ref_ground_height_(i) = last_local_plan_msg_->ground_height[idx];
 
