@@ -17,15 +17,13 @@
 using gr::MBLink;
 
 struct LimbCmd_t {
-  Eigen::Vector3f pos;
-  Eigen::Vector3f vel;
-  Eigen::Vector3f tau;
+  Eigen::Vector3f pos, vel, tau;
   short kp[3];
-  float kd[3];
+  short kd[3];
   bool restart_flag;
-};
+}; // This avoid gcc to padding the struct to align the memory
 
-typedef std::unordered_map<std::string, Eigen::VectorXf> RxData_t;
+typedef std::unordered_map<std::string, Eigen::VectorXf> MBData_t;
 
 //! Implements online conversion from ROS type to MBLink
 /*!
@@ -36,22 +34,32 @@ public:
   /**
    * @brief Constructor for MBLinkConverter
    * @param[in] nh ROS NodeHandle to publish and subscribe from
-   * @param[in] mblink Pointer to MBLink object
    * @return Constructed object of type EKFEstimator
    */
-  MBLinkConverter(ros::NodeHandle nh, int argc, char** argv);
+  MBLinkConverter(ros::NodeHandle nh);
 
   /**
-   * @brief Calls ros spinOnce and spins at set frequency
+   * @brief Start the MAVLink connection
    */
-  void spin();
+  void start(int argc, char** argv);
+  
+  /**
+   * @brief Stop the MAVLink connection
+   */
+  void stop();
+
+  /**
+   * @brief Send most recent motor command over mblink
+   * @return Boolean signaling successful mblink send
+   */
+  bool sendMBlink(const quad_msgs::LegCommandArray& last_leg_command_array_msg_);
+
+  /**
+   * @brief Get most recent data payload over mblink and process it
+   */
+  void getMBlink(MBData_t &data);
 
 private:
-  /**
-   * @brief Callback function to handle new leg command data
-   * @param[in] msg quad_msgs<LegCommandArray> containing pos, vel and torque setpoints and gains
-   */
-  void legControlCallback(const quad_msgs::LegCommandArray::ConstPtr& msg);
 
   /**
 	 * @brief Callback to handle new remote heartbeat messages
@@ -70,17 +78,6 @@ private:
    * @return Compressed float
    */
   float packFloats(float in1, float in2);
-
-  /**
-   * @brief Send most recent motor command over mblink
-   * @return Boolean signaling successful mblink send
-   */
-  bool sendMBlink();
-
-  /**
- * @brief Get most recent data payload over mblink and process it
- */
-  void publishMBlink();
 
   /// Subscriber for motor control messages
   ros::Subscriber leg_control_sub_;

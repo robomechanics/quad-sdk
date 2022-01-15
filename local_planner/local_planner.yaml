@@ -1,5 +1,5 @@
 local_planner:
-  update_rate: 33 # Hz
+  update_rate: 500 # Hz
   timestep: 0.03 # s
   horizon_length: 24 # timesteps
   iterations: 1
@@ -21,8 +21,13 @@ local_body_planner:
 local_footstep_planner:
   grf_weight: 0.5
   period: 0.36 # s
-  ground_clearance: 0.15
+  ground_clearance: 0.07
+  hip_clearance: 0.1
   standing_error_threshold: 0.03 # m
+  duty_cycles: [0.5, 0.5, 0.5, 0.5]
+  phase_offsets: [0.0, 0.5, 0.5, 0.0]
+  # duty_cycles: [0.75, 0.75, 0.75, 0.75]
+  # phase_offsets: [0.25, 0.0, 0.75, 0.5]
 
 mpc_controller:
   update_rate: 50

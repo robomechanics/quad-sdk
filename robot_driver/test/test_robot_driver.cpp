@@ -1,15 +1,17 @@
 #include <ros/ros.h>
 #include <gtest/gtest.h>
 
-#include "leg_controller/inverse_dynamics.h"
-#include "leg_controller/grf_pid_controller.h"
-#include "leg_controller/joint_controller.h"
-#include "leg_controller/leg_controller_interface.h"
+#include "robot_driver/inverse_dynamics.h"
+#include "robot_driver/grf_pid_controller.h"
+#include "robot_driver/joint_controller.h"
+#include "robot_driver/robot_driver.h"
 
+int my_argc;
+char** my_argv;
 
-TEST(LegController, testConstructorLegControllerInterface) {
+TEST(LegController, testConstructorRobotDriver) {
   ros::NodeHandle nh;
-  LegControllerInterface leg_controller(nh);
+  RobotDriver robot_driver(nh, my_argc, my_argv);
   EXPECT_EQ(1 + 1, 2);
 }
 
@@ -30,7 +32,9 @@ TEST(GrfPidController, testConstructorGrfPidController) {
 
 int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
-  ros::init(argc, argv, "leg_controller_test");
+  my_argc = argc;
+  my_argv = argv;
+  ros::init(argc, argv, "robot_driver_test");
 
   return RUN_ALL_TESTS();
 }

@@ -1,4 +1,0 @@
-mblink_converter:
-  update_rate: 500
-  remote_heartbeat_timeout: 0.2 # Not yet applied
-  leg_command_timeout: 0.2
