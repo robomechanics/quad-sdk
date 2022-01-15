@@ -29,7 +29,7 @@
           <topicName>/mcu/state/imu</topicName>
           <bodyName>link</bodyName>
           <robotNamespace>/</robotNamespace>
-          <updateRateHZ>100.0</updateRateHZ>
+          <updateRateHZ>500.0</updateRateHZ>
           <gaussianNoise>0.0</gaussianNoise>
           <xyzOffset>0 0 0</xyzOffset>
           <rpyOffset>0 0 0</rpyOffset>

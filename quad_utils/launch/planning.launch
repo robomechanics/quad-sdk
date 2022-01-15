@@ -41,22 +41,7 @@
     <node name="plan_publisher" pkg="quad_utils" type="trajectory_publisher_node" output="screen"/>
 
     <group if="$(arg logging)">
-        <node pkg="rosbag" type="record" name="rosbag_record"
-            args="record -o $(find quad_logger)/bags/quad_log 
-            /state/trajectory
-            /state/ground_truth 
-            /state/estimate 
-            /local_plan 
-            /robot_plan
-            /state/grfs 
-            /control/grfs
-            /control/joint_command 
-            /control/mode 
-            /terrain_map 
-            /body_plan_continuous
-            /body_plan_discrete
-            /foot_plan_continuous 
-            /foot_plan_discrete" />
+        <include file="$(find quad_utils)/launch/logging.launch"/>
     </group>
 
 </launch>

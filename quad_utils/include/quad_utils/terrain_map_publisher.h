@@ -122,8 +122,11 @@ private:
   /// Obstacle object
   Obstacle obstacle_;
 
-  /// Step object
-  Step step_;
+  /// Step 1 object
+  Step step1_;
+
+  /// Step 2 object
+  Step step2_;
 
 };
 

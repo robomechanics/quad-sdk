@@ -21,7 +21,7 @@ namespace gazebo{
      }
      else
      {
-       update_rate_ = 100.0;
+       update_rate_ = 500.0;
        ROS_WARN_STREAM("Ground Truth State Estimator: missing <updateRateHZ>, set to default: " << update_rate_);
      }
 

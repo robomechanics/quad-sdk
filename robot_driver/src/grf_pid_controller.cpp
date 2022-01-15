@@ -1,4 +1,4 @@
-#include "leg_controller/grf_pid_controller.h"
+#include "robot_driver/grf_pid_controller.h"
 
 GrfPidController::GrfPidController() {
   pos_error_int_.setZero();
@@ -8,7 +8,7 @@ GrfPidController::GrfPidController() {
 }
 
 bool GrfPidController::computeLegCommandArray(
-  const quad_msgs::RobotState::ConstPtr &robot_state_msg,
+  const quad_msgs::RobotState &robot_state_msg,
   quad_msgs::LegCommandArray &leg_command_array_msg,
   quad_msgs::GRFArray &grf_array_msg)
 {
@@ -16,22 +16,23 @@ bool GrfPidController::computeLegCommandArray(
 
   // Define vectors for joint positions and velocities
   Eigen::VectorXd joint_positions(3*num_feet_), joint_velocities(3*num_feet_), body_state(12);
-  quad_utils::vectorToEigen(robot_state_msg->joints.position, joint_positions);
-  quad_utils::vectorToEigen(robot_state_msg->joints.velocity, joint_velocities);
-  body_state = quad_utils::bodyStateMsgToEigen(robot_state_msg->body);
+  quad_utils::vectorToEigen(robot_state_msg.joints.position, joint_positions);
+  quad_utils::vectorToEigen(robot_state_msg.joints.velocity, joint_velocities);
+  body_state = quad_utils::bodyStateMsgToEigen(robot_state_msg.body);
 
   // Get desired x/y location
   double x_mean = 0;
   double y_mean = 0;
   for (int i = 0; i < num_feet_; i++) {
-    x_mean += robot_state_msg->feet.feet[i].position.x/(num_feet_);
-    y_mean += robot_state_msg->feet.feet[i].position.y/(num_feet_);
+    x_mean += robot_state_msg.feet.feet[i].position.x/(num_feet_);
+    y_mean += robot_state_msg.feet.feet[i].position.y/(num_feet_);
+    
   }
   pos_des_.x() = x_mean;
   pos_des_.y() = y_mean;
   pos_des_.z() = 2*0.206*sin(M_PI*0.25);
   ang_des_.setZero();
-  ang_des_ << 0, 0, body_state(5);
+  ang_des_ << 0, 0, 0;
 
   // Define vectors for state positions and velocities 
   Eigen::VectorXd state_positions(3*num_feet_+6), state_velocities(3*num_feet_+6);
@@ -48,14 +49,15 @@ bool GrfPidController::computeLegCommandArray(
   ref_foot_acceleration.setZero();
 
   // Load model and desired pos data
-  double m = 11.5;
+  double m = 13.3;
   double g = 9.81;
-  double pos_kp = 1e2;
-  double ang_kp = 1e2;
+  double mu = 0.2;
+  double pos_kp = 200;
+  double ang_kp = 100;
   double pos_ki = 0*pos_kp;
   double ang_ki = 0*ang_kp;
-  double pos_kd = 0.2*pos_kp;
-  double ang_kd = 0.2*ang_kp;
+  double pos_kd = 0.1*pos_kp;
+  double ang_kd = 0.1*ang_kp;
   Eigen::Vector3d grf_array_ff;
   grf_array_ff << 0, 0, m*g*0.25;
 
@@ -76,6 +78,9 @@ bool GrfPidController::computeLegCommandArray(
 
   t_old_ = t_now;
 
+  std::vector<double> rx_vec = {0.2263, -0.2263, 0.2263, -0.2263};
+  std::vector<double> ry_vec = {0.098, 0.098, -0.098, -0.098};
+
   for (int i = 0; i < num_feet_; i++) {
     Eigen::Vector3d ang_dir(3);
     ang_dir << ((i <= 1) ? 1 : -1), ((i % 2 == 0) ? -1 : 1), 0;
@@ -84,11 +89,19 @@ bool GrfPidController::computeLegCommandArray(
       pos_kd*vel_error.array() - pos_ki*pos_error_int_.array();
     grf_array.segment<3>(3*i).z() += -ang_kp*ang_dir.dot(ang_error) - 
       ang_kd*ang_dir.dot(ang_vel_error) - ang_ki*ang_dir.dot(ang_error_int_);
-    double yaw_fb = -ang_kp*(-ang_dir.y())*ang_error.z() - 
-      ang_kp*(-ang_dir.y())*ang_vel_error.z()- ang_ki*(-ang_dir.y())*ang_error_int_.z();
+    double yaw_fb = -ang_kp*ang_error.z() - 
+      ang_kd*ang_vel_error.z()- ang_ki*ang_error_int_.z();
+
+    double yaw_ang_dir = atan2(ry_vec[i],rx_vec[i]);
     
-    grf_array.segment<3>(3*i).x() += -yaw_fb*sin(body_state(5));
-    grf_array.segment<3>(3*i).y() += yaw_fb*cos(body_state(5));
+    grf_array.segment<3>(3*i).x() += -yaw_fb*sin(body_state(5) + yaw_ang_dir);
+    grf_array.segment<3>(3*i).y() += yaw_fb*cos(body_state(5) + yaw_ang_dir);
+
+    grf_array.segment<3>(3*i).z() = std::max(grf_array.segment<3>(3*i).z(), 0.0);
+    double f_max_lateral = grf_array.segment<3>(3*i).z()*mu;
+
+    grf_array.segment<3>(3*i).x() = std::min(std::max(grf_array.segment<3>(3*i).x(), -f_max_lateral), f_max_lateral);
+    grf_array.segment<3>(3*i).y() = std::min(std::max(grf_array.segment<3>(3*i).y(), -f_max_lateral), f_max_lateral);
   }
 
   // Load contact mode
@@ -115,7 +128,7 @@ bool GrfPidController::computeLegCommandArray(
     }
   }
 
-  quad_utils::eigenToGRFArrayMsg(grf_array, robot_state_msg->feet, grf_array_msg);
+  quad_utils::eigenToGRFArrayMsg(grf_array, robot_state_msg.feet, grf_array_msg);
 
   return true;
   

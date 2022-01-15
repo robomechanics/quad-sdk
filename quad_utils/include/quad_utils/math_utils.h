@@ -1,5 +1,5 @@
-#ifndef SPIRIT_MATH_UTILS_H
-#define SPIRIT_MATH_UTILS_H
+#ifndef QUAD_MATH_UTILS_H
+#define QUAD_MATH_UTILS_H
 
 // Just include ros to access a bunch of other functions, fuck good code
 #include <ros/ros.h>
@@ -138,4 +138,4 @@ namespace math_utils {
   Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian);
 }
 
-#endif // SPIRIT_MATH_UTILS_H
+#endif // QUAD_MATH_UTILS_H
