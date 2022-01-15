@@ -24,7 +24,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1, &LocalPlanner::terrainMapCallback, this);
   body_plan_sub_ = nh_.subscribe(body_plan_topic,1, &LocalPlanner::robotPlanCallback, this);
-  robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&LocalPlanner::robotStateCallback,this);
+  robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&LocalPlanner::robotStateCallback,this, ros::TransportHints().tcpNoDelay(true));
   cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic,1,&LocalPlanner::cmdVelCallback, this);
 
   local_plan_pub_ = nh_.advertise<quad_msgs::RobotPlan>(local_plan_topic,1);
@@ -479,6 +479,11 @@ bool LocalPlanner::computeLocalPlan() {
     
     local_footstep_planner_->computeFootPositions(body_plan_, grf_plan_,
       contact_schedule_, ref_body_plan_, foot_positions_world_);
+
+    // // For standing test we know the foot position will be constant
+    // for (int i = 0; i < N_; i++) {
+    //   foot_positions_world_.row(i) = current_foot_positions_world_;
+    // }
 
     // Transform the new foot positions into the body frame for body planning
     local_footstep_planner_->getFootPositionsBodyFrame(body_plan_, foot_positions_world_,
