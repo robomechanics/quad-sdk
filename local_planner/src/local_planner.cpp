@@ -28,7 +28,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   // Setup pubs and subs
   // terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1, &LocalPlanner::terrainMapCallback, this);
   body_plan_sub_ = nh_.subscribe(body_plan_topic,1, &LocalPlanner::robotPlanCallback, this);
-  robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&LocalPlanner::robotStateCallback,this,ros::TransportHints().tcpNoDelay(true));
+  robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&LocalPlanner::robotStateCallback,this, ros::TransportHints().tcpNoDelay(true));
   cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic,1,&LocalPlanner::cmdVelCallback, this);
   grf_sub_ = nh_.subscribe(grf_topic,1,&LocalPlanner::grfCallback,this);
   contact_sensing_sub_ = nh_.subscribe(contact_sensing_topic,1,&LocalPlanner::contactSensingCallback,this);
@@ -313,6 +313,7 @@ void LocalPlanner::getStateAndReferencePlan() {
   local_footstep_planner_->getFootPositionsBodyFrame(current_state_, current_foot_positions_world_,
       current_foot_positions_body_);
 
+  // TODO: I don't think this is compatible with the adpative first step now. We might need to interplate it.
   // Grab the appropriate states from the body plan and convert to an Eigen matrix
   ref_body_plan_.setZero();
   for (int i = 0; i < N_+1; i++) {
@@ -347,13 +348,12 @@ void LocalPlanner::getStateAndReferencePlan() {
       foot_positions_world_.row(i) = current_foot_positions_world_;
     }
   } else {
-    // Warm start with old solution indexed by one
-    body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
-    body_plan_.row(N_+1) = ref_body_plan_.row(N_+1);
-
     // Only shift the foot position if it's a solve for a new plan index
     if (!same_plan_index_)
     {
+      body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
+      grf_plan_.topRows(N_-1) = grf_plan_.bottomRows(N_-1);
+
       foot_positions_body_.topRows(N_-1) = foot_positions_body_.bottomRows(N_-1);
       foot_positions_world_.topRows(N_-1) = foot_positions_world_.bottomRows(N_-1);
     }
@@ -595,6 +595,11 @@ bool LocalPlanner::computeLocalPlan() {
     
     local_footstep_planner_->computeFootPositions(body_plan_, grf_plan_,
       contact_schedule_, ref_body_plan_, foot_positions_world_);
+
+    // // For standing test we know the foot position will be constant
+    // for (int i = 0; i < N_; i++) {
+    //   foot_positions_world_.row(i) = current_foot_positions_world_;
+    // }
 
     // Transform the new foot positions into the body frame for body planning
     local_footstep_planner_->getFootPositionsBodyFrame(body_plan_, foot_positions_world_,

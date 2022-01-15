@@ -97,8 +97,7 @@ target_link_libraries(leg_overrider_node
 
 ## Google test file for robot_driver library
 catkin_add_gtest(robot_driver_test
-  test/test_robot_driver.cpp
-  test/test_mblink_converter.cpp)
+  test/test_robot_driver.cpp)
 target_link_libraries(robot_driver_test robot_driver ${catkin_LIBRARIES})
 
 

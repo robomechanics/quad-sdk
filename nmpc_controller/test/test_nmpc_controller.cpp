@@ -67,6 +67,8 @@ TEST(NMPCTest, testTailMPC)
 
 	Eigen::MatrixXd tail_torque_plan_(N_tail_, 2);
 	tail_torque_plan_.fill(0);
+	double time_ahead = 0;
+	bool same_plan_index = false;
 
 	std::chrono::steady_clock::time_point tic, toc;
 
@@ -79,6 +81,8 @@ TEST(NMPCTest, testTailMPC)
 									 foot_positions_body_,
 									 adpative_contact_schedule_,
 									 ref_ground_height,
+									 time_ahead,
+									 same_plan_index,
 									 body_plan_,
 									 grf_plan_);
 

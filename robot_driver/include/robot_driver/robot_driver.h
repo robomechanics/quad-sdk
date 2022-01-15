@@ -46,6 +46,7 @@ class RobotDriver {
    * @return Constructed object of type RobotDriver
    */
   RobotDriver(ros::NodeHandle nh, int argc, char** argv);
+  
   /**
    * @brief Calls ros spinOnce and pubs data at set frequency
    */
@@ -373,6 +374,12 @@ class RobotDriver {
     /// Vector of kt values for each joint
     std::vector<double> kt_vec_ = {0.546,0.546,1.092,0.546,0.546,1.092,
       0.546,0.546,1.092,0.546,0.546,1.092};
+
+    /// Required for mblink converter
+    int argc_;
+
+    /// Required for mblink converter
+    char** argv_;
 
 };
 
