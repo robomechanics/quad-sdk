@@ -48,6 +48,15 @@ public:
     // Step length
     double dt_;
 
+    // Friction coefficient
+    double mu_;
+
+    /// Mass of the platform (set to zero to ignore nominal ff)
+    const double mass_ = 13.3;
+
+    /// Gravity constant
+    const double grav_ = 9.81;
+
     // State bounds, input bounds, constraint bounds
     Eigen::MatrixXd x_min_, x_max_, u_min_, u_max_, g_min_, g_max_;
 
@@ -85,6 +94,9 @@ public:
     // Penalty on panic variables
     double panic_weights_;
 
+    // Time duration to the next plan index
+    double time_ahead_;
+
     decltype(eval_g_leg_work) *eval_g_work_;
     decltype(eval_g_leg_incref) *eval_g_incref_;
     decltype(eval_g_leg_checkout) *eval_g_checkout_;
@@ -115,6 +127,7 @@ public:
         int n,
         int m,
         double dt,
+        double mu,
         double panic_weights,
         Eigen::MatrixXd Q,
         Eigen::MatrixXd R,
@@ -244,6 +257,14 @@ public:
         const Eigen::MatrixXd &foot_positions,
         const std::vector<std::vector<bool>> &contact_schedule,
         const Eigen::VectorXd &ground_height);
+
+    virtual void update_solver(
+        const Eigen::VectorXd &initial_state,
+        const Eigen::MatrixXd &ref_traj,
+        const Eigen::MatrixXd &foot_positions,
+        const std::vector<std::vector<bool>> &contact_schedule,
+        const Eigen::VectorXd &ground_height,
+        const double &time_ahead);
 
     virtual void update_solver(
         const Eigen::VectorXd &initial_state,

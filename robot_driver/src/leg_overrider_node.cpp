@@ -1,5 +1,5 @@
 #include <ros/ros.h>
-#include "leg_controller/leg_overrider.h"
+#include "robot_driver/leg_overrider.h"
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "leg_overrider_node");

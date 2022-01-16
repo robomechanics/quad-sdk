@@ -6,28 +6,31 @@ LocalFootstepPlanner::LocalFootstepPlanner() {
 
 }
 
-void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_length) {
+void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_length, 
+  const std::vector<double> &duty_cycles, const std::vector<double> &phase_offsets) {
   
   dt_ = dt;
   period_ = period;
   horizon_length_ = horizon_length;
+  duty_cycles_ = duty_cycles;
+  phase_offsets_ = phase_offsets;
 
-  nominal_contact_schedule_.resize(horizon_length_);
+  nominal_contact_schedule_.resize(period_);
 
-  for (int i = 0; i < horizon_length_; i++) { // For each finite element
+  for (int i = 0; i < period_; i++) { // For each finite element
       
     nominal_contact_schedule_.at(i).resize(num_feet_);
 
     for (int leg_idx = 0; leg_idx < num_feet_; leg_idx++) { // For each leg
 
       // If this index in the horizon is between touchdown and liftoff, set contact to true
-      if ((i % period_) >= period_*phase_offsets_[leg_idx] && 
-        (i % period_) < period_*(phase_offsets_[leg_idx] + duty_cycles_[leg_idx])) {
+      if ((i >= period_*phase_offsets_[leg_idx] && 
+        i < period_*(phase_offsets_[leg_idx] + duty_cycles_[leg_idx])) || 
+        i < period_*(phase_offsets_[leg_idx] + duty_cycles_[leg_idx] - 1.0)) {
 
         nominal_contact_schedule_.at(i).at(leg_idx) = true;
       } else {
         nominal_contact_schedule_.at(i).at(leg_idx) = false;
-        // ROS_WARN("Contact mode is fixed in full stance for testing purposes!");
       }
     }
   }
@@ -41,7 +44,7 @@ void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double hip_
   hip_clearance_ = hip_clearance;
   standing_error_threshold_ = standing_error_threshold;
   grf_weight_ = grf_weight;
-quadKD_ = kinematics;
+  quadKD_ = kinematics;
 }
 
 void LocalFootstepPlanner::updateMap(const FastTerrainMap &terrain) {
@@ -80,7 +83,7 @@ void LocalFootstepPlanner::computeStanceContactSchedule(int current_plan_index,
   for (int i = 0; i < horizon_length_; i++) { // For each finite element
     contact_schedule.at(i).resize(num_feet_);
     for (int leg_idx = 0; leg_idx < num_feet_; leg_idx++) { // For each leg
-        nominal_contact_schedule_.at(i).at(leg_idx) = true;
+      nominal_contact_schedule_.at(i).at(leg_idx) = true;
     }
   }
 }
@@ -89,10 +92,14 @@ void LocalFootstepPlanner::computeContactSchedule(int current_plan_index,
   Eigen::VectorXd current_state, Eigen::MatrixXd ref_body_plan,
   std::vector<std::vector<bool>> &contact_schedule) {
 
+  // Compute the current phase in the nominal contact schedule
   int phase = current_plan_index % period_;
-  contact_schedule = nominal_contact_schedule_;
-  std::rotate(contact_schedule.begin(), contact_schedule.begin()+phase, contact_schedule.end());
 
+  // Compute the current contact schedule by looping through the nominal starting at the phase
+  contact_schedule.resize(horizon_length_);
+  for (int i = 0; i < horizon_length_; i++) {
+    contact_schedule[i] = nominal_contact_schedule_[(i + phase) % period_];
+  }
 }
 
 void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_position_prev,
@@ -143,13 +150,13 @@ void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_pos
     foot_velocity.z() = (basis_2*foot_position_prev.z() + basis_3*swing_apex)/
       (0.5*swing_duration*dt_);
     foot_acceleration.z() = (basis_4*foot_position_prev.z() + basis_5*swing_apex)/
-      pow(swing_duration*dt_, 2);
+      pow(0.5*swing_duration*dt_, 2);
   } else {
     foot_position.z() = basis_0*swing_apex + basis_1*foot_position_next.z();
     foot_velocity.z() = (basis_2*swing_apex + basis_3*foot_position_next.z())/
       (0.5*swing_duration*dt_);
     foot_acceleration.z() = (basis_4*swing_apex + basis_5*foot_position_next.z())/
-      pow(swing_duration*dt_, 2);
+      pow(0.5*swing_duration*dt_, 2);
   }  
 }
 
@@ -177,26 +184,35 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
           body_vel_touchdown, ref_body_vel_touchdown, body_ang_vel_touchdown, 
           ref_body_ang_vel_touchdown, grf_midstance;
 
-        // Extract body and grf information
-        int midstance = std::min(i + half_duty_cycle, horizon_length_-1);
-        body_pos_midstance = body_plan.block<1,3>(midstance,0);
-        body_rpy_midstance = body_plan.block<1,3>(midstance,3);
+        // Compute the horizon index of midstance
+        int midstance = i + half_duty_cycle;
+
+        // Compute body pose at midstance from either the trajectory or Raibert heuristic directly
+        if (midstance < horizon_length_) {
+          body_pos_midstance = body_plan.block<1,3>(midstance,0);
+          body_rpy_midstance = body_plan.block<1,3>(midstance,3);
+          grf_midstance = grf_plan.block<1,3>(midstance,3*j);
+        } else {
+          body_pos_midstance = body_plan.block<1,3>(horizon_length_-1,0) +
+            body_plan.block<1,3>(horizon_length_-1,6)*(midstance-(horizon_length_-1))*dt_;
+          body_rpy_midstance = body_plan.block<1,3>(horizon_length_-1,3);
+          grf_midstance = grf_plan.block<1,3>(horizon_length_-1,3*j);
+        }
+
+        // Get touchdown information for body state
         body_vel_touchdown = body_plan.block<1,3>(i,6);
         ref_body_vel_touchdown = ref_body_plan.block<1,3>(i,6);
         body_ang_vel_touchdown = body_plan.block<1,3>(i,9);
         ref_body_ang_vel_touchdown = ref_body_plan.block<1,3>(i,9);
-        grf_midstance = grf_plan.block<1,3>(midstance,3*j);
 
         // Compute nominal foot positions for kinematic and grf-projection measures
-      quadKD_->worldToNominalHipFKWorldFrame(j, body_pos_midstance, body_rpy_midstance, 
-          hip_position_midstance);
-        // double hip_height = hip_position_midstance.z() - 
-        //   terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());
+        quadKD_->worldToNominalHipFKWorldFrame(j, body_pos_midstance, body_rpy_midstance, 
+            hip_position_midstance);
         grid_map::Position hip_position_grid_map = {hip_position_midstance.x(), hip_position_midstance.y()};
         double hip_height = hip_position_midstance.z() - terrain_grid_.atPosition(
           "z",hip_position_grid_map, grid_map::InterpolationMethods::INTER_NEAREST);
         centrifugal = (hip_height/9.81)*body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
-        vel_tracking = 0.03*(body_vel_touchdown - ref_body_vel_touchdown);
+        vel_tracking = (hip_height/9.81)*(body_vel_touchdown - ref_body_vel_touchdown);
         // foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
 
         // Combine these measures to get the nominal foot position and grab correct height
@@ -225,7 +241,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
 
 void LocalFootstepPlanner::computeFootPlanMsgs(
   const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
-  int current_plan_index, const Eigen::MatrixXd &body_plan, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+  int current_plan_index, const Eigen::MatrixXd &body_plan, const double &time_ahead, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
   quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
   quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg) {
 
@@ -304,7 +320,15 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         }
         else
         {
-          swing_phase = (i - i_liftoff)/(double)swing_duration;
+          // For the first step, it might be duplicated in the same plan index so we need to refine the phase based on the time duration to next plan index
+          if (i == 0)
+          {
+            swing_phase = (i - i_liftoff + (dt_ - time_ahead) / dt_) / (double)swing_duration;
+          }
+          else
+          {
+            swing_phase = (i - i_liftoff) / (double)swing_duration;
+          }
         }
         computeSwingFootState(foot_position_prev, foot_position_next, swing_phase, swing_duration, body_plan.row(i).transpose(), j,
           foot_position, foot_velocity, foot_acceleration);

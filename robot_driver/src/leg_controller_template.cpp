@@ -1,4 +1,4 @@
-#include "leg_controller/leg_controller_template.h"
+#include "robot_driver/leg_controller_template.h"
 
 LegControllerTemplate::LegControllerTemplate() {
   quadKD_ = std::make_shared<quad_utils::QuadKD>();

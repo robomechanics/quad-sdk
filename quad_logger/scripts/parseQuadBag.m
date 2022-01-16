@@ -147,14 +147,23 @@ if isempty(controlGRFsData)
 else
     
     controlGRFs.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, controlGRFsData, 'UniformOutput', 0));
-    num_feet = size(controlGRFsData{1}.Vectors, 2);
+    num_feet = 4;
     for i = 1:num_feet
-        controlGRFs.vectors{i} = cell2mat(cellfun(@(m) ...
-            [m.Vectors(i).X, m.Vectors(i).Y, m.Vectors(i).Z], controlGRFsData, 'UniformOutput', 0));
-        controlGRFs.points{i} = cell2mat(cellfun(@(m) ...
-            [m.Points(i).X, m.Points(i).Y, m.Points(i).Z], controlGRFsData, 'UniformOutput', 0));
-        controlGRFs.contactStates{i} = cell2mat(cellfun(@(m) ...
-            [m.ContactStates(i), m.ContactStates(i), m.ContactStates(i)], controlGRFsData, 'UniformOutput', 0));
+        try
+            controlGRFs.vectors{i} = cell2mat(cellfun(@(m) ...
+                [m.Vectors(i).X, m.Vectors(i).Y, m.Vectors(i).Z], controlGRFsData, 'UniformOutput', 0));
+            controlGRFs.points{i} = cell2mat(cellfun(@(m) ...
+                [m.Points(i).X, m.Points(i).Y, m.Points(i).Z], controlGRFsData, 'UniformOutput', 0));
+            controlGRFs.contactStates{i} = cell2mat(cellfun(@(m) ...
+                [m.ContactStates(i), m.ContactStates(i), m.ContactStates(i)], controlGRFsData, 'UniformOutput', 0));
+        catch
+            controlGRFs.vectors{i} = cell2mat(cellfun(@(m) ...
+                [0,0,0], controlGRFsData, 'UniformOutput', 0));
+            controlGRFs.points{i} = cell2mat(cellfun(@(m) ...
+                [0,0,0], controlGRFsData, 'UniformOutput', 0));
+            controlGRFs.contactStates{i} = cell2mat(cellfun(@(m) ...
+                [0,0,0], controlGRFsData, 'UniformOutput', 0));
+        end
     end
 end
 
