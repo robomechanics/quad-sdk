@@ -24,6 +24,9 @@ local_footstep_planner:
   ground_clearance: 0.07
   hip_clearance: 0.1
   standing_error_threshold: 0.03 # m
+  foothold_search_radius: 0.2
+  foothold_obj_threshold: 0.75
+  obj_fun_layer: traversability
   duty_cycles: [0.5, 0.5, 0.5, 0.5]
   phase_offsets: [0.0, 0.5, 0.5, 0.0]
   # duty_cycles: [0.75, 0.75, 0.75, 0.75]
