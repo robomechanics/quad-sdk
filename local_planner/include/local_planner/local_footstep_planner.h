@@ -52,9 +52,13 @@ class LocalFootstepPlanner {
      * @param[in] standing_error_threshold Threshold of body error from desired goal to start stepping
      * @param[in] grf_weight Weight on GRF projection (0 to 1)
      * @param[in] kinematics Kinematics class for computations
+     * @param[in] foothold_search_radius Radius to locally search for valid footholds (m)
+     * @param[in] foothold_obj_threshold Minimum objective function value for valid foothold
+     * @param[in] obj_fun_layer Terrain layer for foothold search
      */
     void setSpatialParams(double ground_clearance, double hip_clearance, double grf_weight,double standing_error_threshold,
-      std::shared_ptr<quad_utils::QuadKD> kinematics);
+      std::shared_ptr<quad_utils::QuadKD> kinematics, double foothold_search_radius, 
+      double foothold_obj_threshold, std::string obj_fun_layer);
 
     /**
      * @brief Transform a vector of foot positions from the world to the body frame
@@ -224,6 +228,13 @@ class LocalFootstepPlanner {
       Eigen::Vector3d &foot_position, Eigen::Vector3d &foot_velocity, Eigen::Vector3d &foot_acceleration);
 
     /**
+     * @brief Search locally around foothold for optimal location
+     * @param[in] foot_position_prev Foothold to optimize around
+     * @return Optimized foothold
+     */
+    Eigen::Vector3d getNearestValidFoothold(const Eigen::Vector3d &foot_position);
+
+    /**
      * @brief Extract foot data from the matrix
      */
     inline Eigen::Vector3d getFootData(const Eigen::MatrixXd &foot_state_vars,
@@ -343,6 +354,15 @@ class LocalFootstepPlanner {
 
     /// Threshold of body error from desired goal to start stepping
     double standing_error_threshold_ = 0;
+
+    /// Radius to locally search for valid footholds (m)
+    double foothold_search_radius_;
+
+    /// Minimum objective function value for valid foothold
+    double foothold_obj_threshold_;
+
+    /// Terrain layer for foothold search
+    std::string obj_fun_layer_;
 
 };
 
