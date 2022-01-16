@@ -7,7 +7,7 @@
     <arg name="logging"         default="false"/>
     <arg name="plan"            default="false"/>
     <arg name="live_plot"       default="false"/>
-    <arg name="map_input_type"  default="grid"/>
+    <arg name="map_input_type"  default="mesh"/>
     <arg name="world"           default="flat"/>
 
     <!-- Launch the mapping and visualization nodes -->
@@ -33,6 +33,10 @@
         <include file="$(find quad_utils)/launch/execute_plan.launch">
             <arg name="logging" value="$(arg logging)"/>
         </include>
+    </group>
+
+    <group if="$(arg logging)">
+        <include file="$(find quad_utils)/launch/logging.launch"/>
     </group>
 
     <!-- Start the heartbeat node -->

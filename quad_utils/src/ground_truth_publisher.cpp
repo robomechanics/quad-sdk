@@ -12,25 +12,35 @@ GroundTruthPublisher::GroundTruthPublisher(ros::NodeHandle nh) {
   quad_utils::loadROSParam(nh_,"topics/mocap",mocap_topic);
   quad_utils::loadROSParam(nh_,"topics/state/ground_truth",ground_truth_state_topic);
   quad_utils::loadROSParam(nh_,"topics/state/ground_truth_body_frame",ground_truth_state_body_frame_topic);
-  quad_utils::loadROSParam(nh_,"ground_truth_publisher/velocity_smoothing_weight",alpha_);
+  quad_utils::loadROSParam(nh_,"ground_truth_publisher/filter_time_constant",filter_time_constant_);
+  quad_utils::loadROSParam(nh_,"ground_truth_publisher/mocap_dropout_threshold",mocap_dropout_threshold_);
+  quad_utils::loadROSParam(nh_,"ground_truth_publisher/imu_dropout_threshold",imu_dropout_threshold_);
   quad_utils::loadROSParam(nh_,"ground_truth_publisher/mocap_rate",mocap_rate_);
+  quad_utils::loadROSParam(nh_,"ground_truth_publisher/imu_rate",imu_rate_);
+  quad_utils::loadROSParam(nh_,"ground_truth_publisher/update_rate",update_rate_);
 
   // Assume zero initial velocity
-  mocap_vel_estimate_.x = 0;
-  mocap_vel_estimate_.y = 0;
-  mocap_vel_estimate_.z = 0;
+  mocap_vel_estimate_.setZero();
+  imu_vel_estimate_.setZero();
 
   // Setup pubs and subs
-  joint_encoder_sub_ = nh_.subscribe(joint_encoder_topic,1,&GroundTruthPublisher::jointEncoderCallback, this);
-  imu_sub_ = nh_.subscribe(imu_topic,1,&GroundTruthPublisher::imuCallback, this);
-  vel_sub_ = nh_.subscribe(vel_topic,1,&GroundTruthPublisher::velCallback, this);
-  mocap_sub_ = nh_.subscribe(mocap_topic,1,&GroundTruthPublisher::mocapCallback, this);
+  joint_encoder_sub_ = nh_.subscribe(joint_encoder_topic,1,&GroundTruthPublisher::jointEncoderCallback, this, ros::TransportHints().tcpNoDelay(true));
+  imu_sub_ = nh_.subscribe(imu_topic,1,&GroundTruthPublisher::imuCallback, this, ros::TransportHints().tcpNoDelay(true));
+  vel_sub_ = nh_.subscribe(vel_topic,1,&GroundTruthPublisher::velCallback, this, ros::TransportHints().tcpNoDelay(true));
+  mocap_sub_ = nh_.subscribe(mocap_topic,1000,&GroundTruthPublisher::mocapCallback, this, ros::TransportHints().tcpNoDelay(true));
   ground_truth_state_pub_ = nh_.advertise<quad_msgs::RobotState>(ground_truth_state_topic,1);
   ground_truth_state_body_frame_pub_ = nh_.advertise<quad_msgs::RobotState>(ground_truth_state_body_frame_topic,1);
 
   // Convert kinematics
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
+  // Initialize vectors for velocity history
+  vel_hist_.resize(3);
+  for (int i = 0; i < vel_hist_.size(); i++) {
+    vel_hist_[i].resize(median_filter_window_);
+  }
+
+  joints_order_.resize(12);
   joints_order_ = {8, 0, 1, 9, 2, 3, 10, 4, 5, 11, 6, 7};
 }
 
@@ -39,19 +49,32 @@ void GroundTruthPublisher::mocapCallback(const geometry_msgs::PoseStamped::Const
   if (last_mocap_msg_ != NULL)
   {
     // Collect change in position for velocity update
-    double xDiff = msg->pose.position.x - last_mocap_msg_->pose.position.x;
-    double yDiff = msg->pose.position.y - last_mocap_msg_->pose.position.y;
-    double zDiff = msg->pose.position.z - last_mocap_msg_->pose.position.z;
+    Eigen::Vector3d pos_new, pos_old;
+    quad_utils::pointMsgToEigen(msg->pose.position, pos_new);
+    quad_utils::pointMsgToEigen(last_mocap_msg_->pose.position, pos_old);
 
-    // Filtered velocity estimate assuming motion capture frame rate is constant at mocap_rate_
-    // in order to avoid variable network and ROS latency that appears in the message time stamp
-    mocap_vel_estimate_.x = alpha_*mocap_vel_estimate_.x + (1-alpha_)*xDiff*mocap_rate_;
-    mocap_vel_estimate_.y = alpha_*mocap_vel_estimate_.y + (1-alpha_)*yDiff*mocap_rate_;
-    mocap_vel_estimate_.z = alpha_*mocap_vel_estimate_.z + (1-alpha_)*zDiff*mocap_rate_;
+    // Record time diff between messages
+    double t_diff_mocap_msg = (msg->header.stamp - last_mocap_msg_->header.stamp).toSec();
+
+    // Use new measurement
+    if (abs(t_diff_mocap_msg - 1.0/mocap_rate_) < mocap_dropout_threshold_) {
+      
+      // Declare vectors for vel measurement and estimate
+      Eigen::Vector3d vel_new_measured, vel_new_est;
+      vel_new_measured = (pos_new - pos_old)*mocap_rate_;
+
+      // Filtered velocity estimate assuming motion capture frame rate is constant at mocap_rate_
+      // in order to avoid variable network and ROS latency that appears in the message time stamp
+      mocap_vel_estimate_ = (1-1/mocap_rate_/filter_time_constant_)*mocap_vel_estimate_ + (1/mocap_rate_/filter_time_constant_)*vel_new_measured;
+    } else {
+      ROS_WARN("Mocap time diff exceeds max dropout threshold, hold the last value");
+      // mocap_vel_estimate_ = (pos_new - pos_old)/t_diff_mocap_msg;
+    }
   }
 
   // Update our cached mocap position
   last_mocap_msg_ = msg;
+  
 }
 
 void GroundTruthPublisher::jointEncoderCallback(const sensor_msgs::JointState::ConstPtr& msg) {
@@ -59,6 +82,54 @@ void GroundTruthPublisher::jointEncoderCallback(const sensor_msgs::JointState::C
 }
 
 void GroundTruthPublisher::imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
+  if (last_imu_msg_ != NULL)
+  {
+    // Record time diff between messages
+    double t_diff_imu_msg = (msg->header.stamp - last_imu_msg_->header.stamp).toSec();
+
+    // Use new measurement
+    if (abs(t_diff_imu_msg - 1.0/imu_rate_) < imu_dropout_threshold_) 
+    {
+      if (last_mocap_msg_ != NULL)
+      {
+        // Collect change in position for velocity update
+        Eigen::Vector3d acc;
+        quad_utils::vector3MsgToEigen(msg->linear_acceleration, acc);
+
+        // IMU uses a different coordinates
+        double acc_x = acc[1];
+        double acc_y = acc[0];
+        acc[0] = acc_x;
+        acc[1] = acc_y;
+
+        // Rotate body frame to world frame
+        Eigen::Matrix3d rot;
+        tf2::Quaternion q(last_mocap_msg_->pose.orientation.x, last_mocap_msg_->pose.orientation.y, last_mocap_msg_->pose.orientation.z, last_mocap_msg_->pose.orientation.w);
+        q.normalize();
+        tf2::Matrix3x3 m(q);
+        Eigen::Vector3d rpy;
+        m.getRPY(rpy[0], rpy[1], rpy[2]);
+        quadKD_->getRotationMatrix(rpy, rot);
+        acc = rot*acc;
+
+        // Ignore gravity
+        acc[2] += 9.81;
+
+        // Use new measurement
+        imu_vel_estimate_ = (imu_vel_estimate_+acc/imu_rate_)*(1-1/imu_rate_/filter_time_constant_);
+        // imu_vel_estimate_ = (imu_vel_estimate_+acc/imu_rate_);
+      }
+      else
+      {
+        ROS_WARN("No mocap date to reorientate IMU data");
+      }
+    }
+    else
+    {
+      ROS_WARN("IMU time diff exceeds max dropout threshold");
+    }
+  }
+
   last_imu_msg_ = msg;
 }
 
@@ -74,7 +145,7 @@ bool GroundTruthPublisher::updateStep(quad_msgs::RobotState &new_state_est) {
   {
     // new_state_est.body.pose.pose.orientation = last_imu_msg_->orientation;
     new_state_est.body.twist.angular = last_vel_msg_->twist.angular;
-    new_state_est.body.twist.linear = last_vel_msg_->twist.linear;
+    // new_state_est.body.twist.linear = last_vel_msg_->twist.linear;
   } else {
     fully_populated = false;
     ROS_WARN_THROTTLE(1, "No imu in /state/ground_truth");
@@ -83,7 +154,6 @@ bool GroundTruthPublisher::updateStep(quad_msgs::RobotState &new_state_est) {
   {
     new_state_est.body.pose.orientation = last_mocap_msg_->pose.orientation;
     new_state_est.body.pose.position = last_mocap_msg_->pose.position;
-    new_state_est.body.twist.linear = mocap_vel_estimate_;
   } else {
     fully_populated = false;
     ROS_WARN_THROTTLE(1, "No body pose (mocap) in /state/ground_truth");
@@ -95,6 +165,20 @@ bool GroundTruthPublisher::updateStep(quad_msgs::RobotState &new_state_est) {
     new_state_est.body.pose.position.x = 0;
     new_state_est.body.pose.position.y = 0;
     new_state_est.body.pose.position.z = 0;
+  }
+  if (last_mocap_msg_ != NULL && last_imu_msg_ != NULL)
+  {
+    // Complementary filter
+    quad_utils::Eigen3ToVector3Msg(mocap_vel_estimate_ + imu_vel_estimate_, new_state_est.body.twist.linear);
+  }
+  else
+  {
+    fully_populated = false;
+    ROS_WARN_THROTTLE(1, "No mocap or imu in /state/ground_truth");
+
+    new_state_est.body.twist.linear.x = 0;
+    new_state_est.body.twist.linear.y = 0;
+    new_state_est.body.twist.linear.z = 0;
   }
   if (last_joint_state_msg_ != NULL)
   {
@@ -126,7 +210,7 @@ bool GroundTruthPublisher::updateStep(quad_msgs::RobotState &new_state_est) {
 }
 
 void GroundTruthPublisher::spin() {
-  ros::Rate r(mocap_rate_);
+  ros::Rate r(update_rate_);
 
   while (ros::ok()) {
 

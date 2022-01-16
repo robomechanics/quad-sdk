@@ -54,6 +54,9 @@ TEST(NMPCTest, testTailMPC)
 	grf_plan_.col(8).fill(11.51 * 9.81 / 2);
 	grf_plan_.col(11).fill(11.51 * 9.81 / 2);
 
+	double time_ahead = 0;
+	bool same_plan_index = false;
+
 	std::chrono::steady_clock::time_point tic, toc;
 	tic = std::chrono::steady_clock::now();
 
@@ -66,6 +69,8 @@ TEST(NMPCTest, testTailMPC)
 									 foot_positions_body_,
 									 adpative_contact_schedule_,
 									 ref_ground_height,
+									 time_ahead,
+									 same_plan_index,
 									 body_plan_,
 									 grf_plan_);
 

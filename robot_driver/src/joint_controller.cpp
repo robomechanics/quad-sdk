@@ -1,14 +1,10 @@
-#include "leg_controller/joint_controller.h"
+#include "robot_driver/joint_controller.h"
 
 JointController::JointController() {
   leg_idx_ = 0;
   joint_idx_ = 0;
   joint_torque_ = 0.0;
   this->override_state_machine_ = true;
-  std::cout << "In JointController constructor, override_state_machine_ = " <<
-    this->override_state_machine_ << std::endl;
-  std::cout << "addr = " << this << std::endl;
-
 }
 
 void JointController::updateSingleJointCommand(const geometry_msgs::Vector3::ConstPtr& msg) {
@@ -18,7 +14,7 @@ void JointController::updateSingleJointCommand(const geometry_msgs::Vector3::Con
 }
 
 bool JointController::computeLegCommandArray(
-  const quad_msgs::RobotState::ConstPtr &robot_state_msg,
+  const quad_msgs::RobotState &robot_state_msg,
   quad_msgs::LegCommandArray &leg_command_array_msg,
   quad_msgs::GRFArray &grf_array_msg)
 {

@@ -31,7 +31,7 @@ for i = 1:num_feet
 end
 ylabel('X (N)')
 title('GRF Vectors')
-axis([min(control_traj.time), max(control_traj.time), -200, 200])
+axis([min(control_traj.time), max(control_traj.time), -50, 50])
 
 subplot(3,1,2)
 hold on;
@@ -40,7 +40,7 @@ for i = 1:num_feet
        'Color', controlColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('Y (N)')
-axis([min(control_traj.time), max(control_traj.time), -200, 200])
+axis([min(control_traj.time), max(control_traj.time), -50, 50])
 
 subplot(3,1,3)
 hold on;
@@ -50,7 +50,7 @@ for i = 1:num_feet
 end
 ylabel('Z (N)')
 xlabel('Time (s)')
-axis([min(control_traj.time), max(control_traj.time), -200, 200])
+axis([min(control_traj.time), max(control_traj.time), -100, 100])
 legend('FL','BL','FR','BR','location','east')
 set(GRFVectorsFig, 'Position', [100 100 800 600])
 

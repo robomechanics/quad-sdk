@@ -1,7 +1,7 @@
 #ifndef JOINT_CONTROLLER_H
 #define JOINT_CONTROLLER_H
 
-#include <leg_controller/leg_controller_template.h>
+#include <robot_driver/leg_controller_template.h>
 #include <geometry_msgs/Vector3.h>
 
 //! Implements inverse dynamics as a controller within the ROS framework.
@@ -25,7 +25,7 @@ class JointController : public LegControllerTemplate {
      * @param[out] grf_array_msg GRF command message
      */
     bool computeLegCommandArray(
-      const quad_msgs::RobotState::ConstPtr &robot_state_msg,
+      const quad_msgs::RobotState &robot_state_msg,
       quad_msgs::LegCommandArray &leg_command_array_msg,
       quad_msgs::GRFArray &grf_array_msg);
 
