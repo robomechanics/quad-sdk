@@ -228,9 +228,8 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         foot_position_nominal.z() = terrain_grid_.atPosition("z", foot_position_grid_map,
           grid_map::InterpolationMethods::INTER_NEAREST);
 
-        // (Optional) Optimize the foothold location to get the final position
+        // Optimize the foothold location to get the final position
         foot_position = getNearestValidFoothold(foot_position_nominal);
-        // foot_position = foot_position_nominal;
 
         // Store foot position in the Eigen matrix
         foot_positions.block<1,3>(i,3*j) = foot_position;    
@@ -343,7 +342,6 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
 
       // Load state data into the message
       quad_utils::eigenToFootStateMsg(foot_position, foot_velocity, foot_acceleration, foot_state_msg);
-      foot_plan_continuous_msg.states[i].feet.push_back(foot_state_msg);
 
       // If this is a touchdown event, add to the future footholds message
       if (isNewContact(contact_schedule, i, j)) {
@@ -354,6 +352,9 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
       if (i == 1 && isNewLiftoff(contact_schedule, i, j)) {
         past_footholds_msg.feet[j].footholds.push_back(foot_state_msg);
       }
+
+      // Add the message to the plan
+      foot_plan_continuous_msg.states[i].feet.push_back(foot_state_msg);
     }
   }
 }
