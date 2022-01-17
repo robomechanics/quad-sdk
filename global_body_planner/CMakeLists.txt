@@ -15,8 +15,8 @@ endif()
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
-  spirit_msgs
-  spirit_utils
+  quad_msgs
+  quad_utils
   grid_map_core
   grid_map_ros
 )
@@ -33,7 +33,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
  INCLUDE_DIRS include
 #  LIBRARIES body_planner
- CATKIN_DEPENDS roscpp std_msgs grid_map_core grid_map_ros spirit_utils
+ CATKIN_DEPENDS roscpp std_msgs grid_map_core grid_map_ros quad_utils
 #  DEPENDS system_lib
 )
 

@@ -4,19 +4,18 @@
 #include <ros/ros.h>
 #include <math.h>
 // #include <eigen3/Eigen/Eigen>
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/MultiFootPlanDiscrete.h>
-#include <spirit_msgs/GRFArray.h>
-#include <spirit_msgs/RobotState.h>
-#include <spirit_msgs/RobotStateTrajectory.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/MultiFootPlanDiscrete.h>
+#include <quad_msgs/GRFArray.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_msgs/RobotStateTrajectory.h>
 // #include <local_planner/quadruped_mpc.h>
-#include <spirit_utils/ros_utils.h>
-#include <spirit_utils/quad_kd.h>
-#include "spirit_utils/matplotlibcpp.h"
+#include <quad_utils/ros_utils.h>
+#include "quad_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <spirit_msgs/LegCommand.h>
+#include <quad_msgs/LegCommand.h>
 
-#include "nmpc_controller/spirit_nlp.h"
+#include "nmpc_controller/quad_nlp.h"
 #include "IpIpoptApplication.hpp"
 #include <Eigen/Dense>
 
@@ -42,6 +41,8 @@ public:
    * @param[in] ref_traj Matrix holding desired reference trajectory
    * @param[in] foot_positions Matrix holding foot positions
    * @param[in] contact_schedule Matrix holding the contact schedule
+   * @param[in] time_ahead Time duration to the next plan index
+   * @param[in] same_plan_index If the current solving is duplicated in the same index
    * @param[out] state_traj Optimized state trajectory output
    * @param[out] control_traj Optimized control trajectory output
    * @return good_solve
@@ -57,6 +58,9 @@ public:
                       const Eigen::MatrixXd &ref_traj,
                       const Eigen::MatrixXd &foot_positions,
                       const std::vector<std::vector<bool>> &contact_schedule,
+                      const Eigen::VectorXd &ref_ground_height,
+                      const double &time_ahead,
+                      const bool &same_plan_index,
                       Eigen::MatrixXd &state_traj,
                       Eigen::MatrixXd &control_traj);
 
@@ -88,16 +92,9 @@ private:
   /// Update rate for sending and receiving data;
   double update_rate_;
 
-  /// QuadKD class
-  std::shared_ptr<spirit_utils::QuadKD>quadKD_;
-
-  SmartPtr<spiritNLP> mynlp_;
+  SmartPtr<quadNLP> mynlp_;
 
   SmartPtr<IpoptApplication> app_;
-
-  Eigen::MatrixXd last_state_traj_;
-
-  Eigen::MatrixXd last_control_traj_;
 
   int N_;
 

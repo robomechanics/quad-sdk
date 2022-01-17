@@ -2,8 +2,8 @@
 #define OPEN_LOOP_CONTROLLER_H
 
 #include <ros/ros.h>
-#include <spirit_msgs/LegCommandArray.h>
-#include <spirit_utils/ros_utils.h>
+#include <quad_msgs/LegCommandArray.h>
+#include <quad_utils/ros_utils.h>
 #include <std_msgs/UInt8.h>
 #include <math.h>
 #include <algorithm>

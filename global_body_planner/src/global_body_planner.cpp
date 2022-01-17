@@ -9,22 +9,22 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   // Load rosparams from parameter server
   std::string body_plan_topic, discrete_body_plan_topic, body_plan_tree_topic, goal_state_topic;
 
-  spirit_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic_);
-  spirit_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic_);
-  spirit_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
-  spirit_utils::loadROSParam(nh_, "topics/global_plan_discrete", discrete_body_plan_topic);
-  spirit_utils::loadROSParam(nh_, "topics/global_plan_tree", body_plan_tree_topic);
-  spirit_utils::loadROSParam(nh_, "topics/goal_state", goal_state_topic);
-  spirit_utils::loadROSParam(nh_, "map_frame",map_frame_);
-  spirit_utils::loadROSParam(nh_, "global_body_planner/update_rate", update_rate_);
-  spirit_utils::loadROSParam(nh_, "global_body_planner/num_calls", num_calls_);
-  spirit_utils::loadROSParam(nh_, "global_body_planner/max_planning_time", max_planning_time_);
-  spirit_utils::loadROSParam(nh_, "global_body_planner/state_error_threshold", state_error_threshold_);
-  spirit_utils::loadROSParam(nh_, "global_body_planner/startup_delay", startup_delay_);
-  spirit_utils::loadROSParam(nh_, "global_body_planner/replanning", replanning_allowed_);
-  spirit_utils::loadROSParam(nh_, "local_planner/timestep", dt_);
-  spirit_utils::loadROSParam(nh_, "global_body_planner/start_state", start_state_);
-  spirit_utils::loadROSParam(nh_, "global_body_planner/goal_state", goal_state_);
+  quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic_);
+  quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic_);
+  quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
+  quad_utils::loadROSParam(nh_, "topics/global_plan_discrete", discrete_body_plan_topic);
+  quad_utils::loadROSParam(nh_, "topics/global_plan_tree", body_plan_tree_topic);
+  quad_utils::loadROSParam(nh_, "topics/goal_state", goal_state_topic);
+  quad_utils::loadROSParam(nh_, "map_frame",map_frame_);
+  quad_utils::loadROSParam(nh_, "global_body_planner/update_rate", update_rate_);
+  quad_utils::loadROSParam(nh_, "global_body_planner/num_calls", num_calls_);
+  quad_utils::loadROSParam(nh_, "global_body_planner/max_planning_time", max_planning_time_);
+  quad_utils::loadROSParam(nh_, "global_body_planner/state_error_threshold", state_error_threshold_);
+  quad_utils::loadROSParam(nh_, "global_body_planner/startup_delay", startup_delay_);
+  quad_utils::loadROSParam(nh_, "global_body_planner/replanning", replanning_allowed_);
+  quad_utils::loadROSParam(nh_, "local_planner/timestep", dt_);
+  quad_utils::loadROSParam(nh_, "global_body_planner/start_state", start_state_);
+  quad_utils::loadROSParam(nh_, "global_body_planner/goal_state", goal_state_);
 
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic_,1,&GlobalBodyPlanner::terrainMapCallback, this);
@@ -38,32 +38,32 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   current_cost_ = INFTY;
   robot_state_ = start_state_;
 
-  spirit_utils::loadROSParam(nh,"global_body_planner/H_MAX", planner_config_.H_MAX);
-  spirit_utils::loadROSParam(nh,"global_body_planner/H_MIN", planner_config_.H_MIN);
-  spirit_utils::loadROSParam(nh,"global_body_planner/H_NOM", planner_config_.H_NOM);
-  spirit_utils::loadROSParam(nh,"global_body_planner/V_MAX", planner_config_.V_MAX);
-  spirit_utils::loadROSParam(nh,"global_body_planner/V_NOM", planner_config_.V_NOM);
-  spirit_utils::loadROSParam(nh,"global_body_planner/DY_MAX", planner_config_.DY_MAX);
-  spirit_utils::loadROSParam(nh,"global_body_planner/ROBOT_L", planner_config_.ROBOT_L);
-  spirit_utils::loadROSParam(nh,"global_body_planner/ROBOT_W", planner_config_.ROBOT_W);
-  spirit_utils::loadROSParam(nh,"global_body_planner/ROBOT_W", planner_config_.ROBOT_W);
-  spirit_utils::loadROSParam(nh,"global_body_planner/M_CONST", planner_config_.M_CONST);
-  spirit_utils::loadROSParam(nh,"global_body_planner/J_CONST", planner_config_.J_CONST);
-  spirit_utils::loadROSParam(nh,"global_body_planner/G_CONST", planner_config_.G_CONST);
-  spirit_utils::loadROSParam(nh,"global_body_planner/F_MIN", planner_config_.F_MIN);
-  spirit_utils::loadROSParam(nh,"global_body_planner/F_MAX", planner_config_.F_MAX);
-  spirit_utils::loadROSParam(nh,"global_body_planner/PEAK_GRF_MIN", planner_config_.PEAK_GRF_MIN);
-  spirit_utils::loadROSParam(nh,"global_body_planner/PEAK_GRF_MAX", planner_config_.PEAK_GRF_MAX);
-  spirit_utils::loadROSParam(nh,"global_body_planner/MU", planner_config_.MU);
-  spirit_utils::loadROSParam(nh,"global_body_planner/T_S_MIN", planner_config_.T_S_MIN);
-  spirit_utils::loadROSParam(nh,"global_body_planner/T_S_MAX", planner_config_.T_S_MAX);
-  spirit_utils::loadROSParam(nh,"global_body_planner/T_F_MIN", planner_config_.T_F_MIN);
-  spirit_utils::loadROSParam(nh,"global_body_planner/T_F_MAX", planner_config_.T_F_MAX);
-  spirit_utils::loadROSParam(nh,"global_body_planner/KINEMATICS_RES", planner_config_.KINEMATICS_RES);
-  spirit_utils::loadROSParam(nh,"global_body_planner/BACKUP_TIME", planner_config_.BACKUP_TIME);
-  spirit_utils::loadROSParam(nh,"global_body_planner/BACKUP_RATIO", planner_config_.BACKUP_RATIO);
-  spirit_utils::loadROSParam(nh,"global_body_planner/NUM_GEN_STATES", planner_config_.NUM_GEN_STATES);
-  spirit_utils::loadROSParam(nh,"global_body_planner/GOAL_BOUNDS", planner_config_.GOAL_BOUNDS);
+  quad_utils::loadROSParam(nh,"global_body_planner/H_MAX", planner_config_.H_MAX);
+  quad_utils::loadROSParam(nh,"global_body_planner/H_MIN", planner_config_.H_MIN);
+  quad_utils::loadROSParam(nh,"global_body_planner/H_NOM", planner_config_.H_NOM);
+  quad_utils::loadROSParam(nh,"global_body_planner/V_MAX", planner_config_.V_MAX);
+  quad_utils::loadROSParam(nh,"global_body_planner/V_NOM", planner_config_.V_NOM);
+  quad_utils::loadROSParam(nh,"global_body_planner/DY_MAX", planner_config_.DY_MAX);
+  quad_utils::loadROSParam(nh,"global_body_planner/ROBOT_L", planner_config_.ROBOT_L);
+  quad_utils::loadROSParam(nh,"global_body_planner/ROBOT_W", planner_config_.ROBOT_W);
+  quad_utils::loadROSParam(nh,"global_body_planner/ROBOT_W", planner_config_.ROBOT_W);
+  quad_utils::loadROSParam(nh,"global_body_planner/M_CONST", planner_config_.M_CONST);
+  quad_utils::loadROSParam(nh,"global_body_planner/J_CONST", planner_config_.J_CONST);
+  quad_utils::loadROSParam(nh,"global_body_planner/G_CONST", planner_config_.G_CONST);
+  quad_utils::loadROSParam(nh,"global_body_planner/F_MIN", planner_config_.F_MIN);
+  quad_utils::loadROSParam(nh,"global_body_planner/F_MAX", planner_config_.F_MAX);
+  quad_utils::loadROSParam(nh,"global_body_planner/PEAK_GRF_MIN", planner_config_.PEAK_GRF_MIN);
+  quad_utils::loadROSParam(nh,"global_body_planner/PEAK_GRF_MAX", planner_config_.PEAK_GRF_MAX);
+  quad_utils::loadROSParam(nh,"global_body_planner/MU", planner_config_.MU);
+  quad_utils::loadROSParam(nh,"global_body_planner/T_S_MIN", planner_config_.T_S_MIN);
+  quad_utils::loadROSParam(nh,"global_body_planner/T_S_MAX", planner_config_.T_S_MAX);
+  quad_utils::loadROSParam(nh,"global_body_planner/T_F_MIN", planner_config_.T_F_MIN);
+  quad_utils::loadROSParam(nh,"global_body_planner/T_F_MAX", planner_config_.T_F_MAX);
+  quad_utils::loadROSParam(nh,"global_body_planner/KINEMATICS_RES", planner_config_.KINEMATICS_RES);
+  quad_utils::loadROSParam(nh,"global_body_planner/BACKUP_TIME", planner_config_.BACKUP_TIME);
+  quad_utils::loadROSParam(nh,"global_body_planner/BACKUP_RATIO", planner_config_.BACKUP_RATIO);
+  quad_utils::loadROSParam(nh,"global_body_planner/NUM_GEN_STATES", planner_config_.NUM_GEN_STATES);
+  quad_utils::loadROSParam(nh,"global_body_planner/GOAL_BOUNDS", planner_config_.GOAL_BOUNDS);
 
   // If replanning is prohibited, set committed horizon to zero ()
   // if (replanning_allowed_ == false && max_planning_time_ > 0) {
@@ -82,7 +82,7 @@ void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPt
   planner_config_.terrain.loadDataFromGridMap(map);
 }
 
-void GlobalBodyPlanner::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
+void GlobalBodyPlanner::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
 
   // Quick check to make sure message data has been populated and is valid
   geometry_msgs::Quaternion quat = msg->body.pose.orientation;
@@ -323,13 +323,13 @@ bool GlobalBodyPlanner::callPlanner() {
 }
 
 void GlobalBodyPlanner::addStateAndGRFToMsg(double t, int plan_index, FullState body_state, 
-  GRF grf, int primitive_id, spirit_msgs::RobotPlan& msg) {
+  GRF grf, int primitive_id, quad_msgs::RobotPlan& msg) {
 
   ROS_ASSERT(body_state.size()==12);
 
   // Represent each state as an Odometry message
-  spirit_msgs::RobotState state;
-  spirit_utils::updateStateHeaders(state, msg.header.stamp+ros::Duration(t), map_frame_,plan_index);
+  quad_msgs::RobotState state;
+  quad_utils::updateStateHeaders(state, msg.header.stamp+ros::Duration(t), map_frame_,plan_index);
 
   // Transform from RPY to quat msg
   tf2::Quaternion quat_tf;
@@ -350,7 +350,7 @@ void GlobalBodyPlanner::addStateAndGRFToMsg(double t, int plan_index, FullState 
   state.body.twist.angular.y = body_state[10];
   state.body.twist.angular.z = body_state[11];
 
-  spirit_msgs::GRFArray grf_msg;
+  quad_msgs::GRFArray grf_msg;
   geometry_msgs::Vector3 vector_msg;
   vector_msg.x = grf[0];
   vector_msg.y = grf[1];
@@ -390,8 +390,8 @@ void GlobalBodyPlanner::publishPlan() {
   // throw std::runtime_error("Stop");
 
   // Construct BodyPlan messages
-  spirit_msgs::RobotPlan robot_plan_msg;
-  spirit_msgs::RobotPlan discrete_robot_plan_msg;
+  quad_msgs::RobotPlan robot_plan_msg;
+  quad_msgs::RobotPlan discrete_robot_plan_msg;
 
   // Initialize the headers and types
   robot_plan_msg.header.stamp = plan_timestamp_;
@@ -436,10 +436,10 @@ void GlobalBodyPlanner::waitForData() {
     ros::spinOnce();
   }
 
-  boost::shared_ptr<spirit_msgs::RobotState const> shared_robot_state;
+  boost::shared_ptr<quad_msgs::RobotState const> shared_robot_state;
   while((shared_robot_state == nullptr) && ros::ok())
   {
-    shared_robot_state = ros::topic::waitForMessage<spirit_msgs::RobotState>(robot_state_topic_, nh_);
+    shared_robot_state = ros::topic::waitForMessage<quad_msgs::RobotState>(robot_state_topic_, nh_);
     ros::spinOnce();
   }
   ROS_INFO("GBP Has state and map information");

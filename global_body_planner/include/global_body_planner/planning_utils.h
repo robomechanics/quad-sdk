@@ -14,14 +14,15 @@
 #include <grid_map_core/grid_map_core.hpp>
 #include <ros/ros.h>
 #include <visualization_msgs/MarkerArray.h>
-#include <spirit_utils/fast_terrain_map.h>
-#include <spirit_utils/math_utils.h>
 #include <unistd.h>
+#include <quad_utils/fast_terrain_map.h>
+#include <quad_utils/math_utils.h>
 
 // Uncomment to add visualization features
 #define VISUALIZE_TREE
 #define VISUALIZE_ALL_CANDIDATE_ACTIONS
 // #define PLOT_TRAJECTORIES
+
 
 namespace planning_utils {
 

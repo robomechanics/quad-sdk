@@ -7,13 +7,13 @@ SillyWalkTemplate::SillyWalkTemplate(ros::NodeHandle nh) {
 
   // Get rosparams from the server
   std::string joint_command_topic,control_mode_topic;
-  spirit_utils::loadROSParam(nh_,"topics/control/joint_command",joint_command_topic);
-  spirit_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
-  spirit_utils::loadROSParam(nh_,"silly_walk_template/update_rate",update_rate_);
-  spirit_utils::loadROSParam(nh_,"silly_walk_template/stand_angles",stand_joint_angles_);
+  quad_utils::loadROSParam(nh_,"topics/control/joint_command",joint_command_topic);
+  quad_utils::loadROSParam(nh_,"topics/control/mode",control_mode_topic);
+  quad_utils::loadROSParam(nh_,"silly_walk_template/update_rate",update_rate_);
+  quad_utils::loadROSParam(nh_,"silly_walk_template/stand_angles",stand_joint_angles_);
   
   // Setup pubs and subs
-  joint_control_pub_ = nh_.advertise<spirit_msgs::LegCommandArray>(joint_command_topic,1);
+  joint_control_pub_ = nh_.advertise<quad_msgs::LegCommandArray>(joint_command_topic,1);
   control_mode_sub_ = nh_.subscribe(control_mode_topic,1,&SillyWalkTemplate::controlModeCallback, this);
 
   // Add any other class initialization goes here
@@ -36,7 +36,7 @@ void SillyWalkTemplate::computeJointControl()
   control_msg_.leg_commands.resize(num_legs_);
 
   // The QuadKD class can help do basic kinematic computations (with type Eigen::VectorXd)
-  // For example:quadKD_.legIK(leg_index, body_pos, body_rpy, foot_pos_world,joint_state);
+  // For example:quadKD_.worldToFootIKWorldFrame(leg_index, body_pos, body_rpy, foot_pos_world,joint_state);
   // See inverse_dynamics for more elaborate implementations
 
   // You can use something like this if you want a state machine
