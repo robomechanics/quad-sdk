@@ -30,20 +30,20 @@ BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
 
   // Setup pubs and subs
   #if USE_SIM == 1
-  robot_state_sub_ = nh_.subscribe("/spirit/joint_states",1,&BodyForceEstimator::robotStateCallback, this);
+  robot_state_sub_ = nh_.subscribe("/quad/joint_states",1,&BodyForceEstimator::robotStateCallback, this);
   #elif USE_SIM == 2
   robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&BodyForceEstimator::robotStateCallback, this);
   #else
   robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&BodyForceEstimator::robotStateCallback, this);
   #endif
-  body_force_pub_ = nh_.advertise<spirit_msgs::BodyForceEstimate>(body_force_topic,1);
-  toe_force_pub_ = nh_.advertise<spirit_msgs::GRFArray>(toe_force_topic,1);
+  body_force_pub_ = nh_.advertise<quad_msgs::BodyForceEstimate>(body_force_topic,1);
+  toe_force_pub_ = nh_.advertise<quad_msgs::GRFArray>(toe_force_topic,1);
 }
 
 #if USE_SIM > 0
 void BodyForceEstimator::robotStateCallback(const sensor_msgs::JointState::ConstPtr& msg) {
 #else
-void BodyForceEstimator::robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg) {
+void BodyForceEstimator::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
 #endif
   // ROS_INFO("In robotStateCallback");
   last_state_msg_ = msg;
@@ -122,8 +122,8 @@ void BodyForceEstimator::update() {
 
 void BodyForceEstimator::publishBodyForce() {
   // ROS_INFO("In BodyForce");
-  spirit_msgs::BodyForceEstimate msg;
-  spirit_msgs::GRFArray msg_toe;
+  quad_msgs::BodyForceEstimate msg;
+  quad_msgs::GRFArray msg_toe;
 
   for (int i = 0; i < 4; i++) {
     geometry_msgs::Wrench w;

@@ -1,0 +1,41 @@
+<launch>
+
+    <include file="$(find quad_utils)/launch/load_params.launch" />
+
+    <node pkg="rosbag" type="record" name="rosbag_record"
+        args="record -O $(find quad_logger)/bags/quad_log_current 
+        /state/trajectory
+        /state/ground_truth 
+        /state/estimate 
+        /local_plan 
+        /robot_plan
+        /state/grfs 
+        /control/grfs
+        /control/joint_command 
+        /control/mode 
+        /terrain_map 
+        /body_plan_continuous
+        /body_plan_discrete
+        /foot_plan_continuous 
+        /foot_plan_discrete 
+        /foot_step_hist" />
+
+    <node pkg="rosbag" type="record" name="rosbag_record_archive"
+        args="record -o $(find quad_logger)/bags/archive/quad_log 
+        /state/trajectory
+        /state/ground_truth 
+        /state/estimate 
+        /local_plan 
+        /robot_plan
+        /state/grfs 
+        /control/grfs
+        /control/joint_command 
+        /control/mode 
+        /terrain_map 
+        /body_plan_continuous
+        /body_plan_discrete
+        /foot_plan_continuous 
+        /foot_plan_discrete 
+        /foot_step_hist" />
+
+</launch>

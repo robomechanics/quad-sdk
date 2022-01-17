@@ -6,8 +6,8 @@
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/String.h>
-#include <spirit_msgs/RobotState.h>
-#include <spirit_msgs/ContactMode.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_msgs/ContactMode.h>
 
 //! Implements online EKF based state estimation 
 /*!
@@ -42,15 +42,15 @@ private:
 
   /**
    * @brief Callback function to handle new contact estimates
-   * @param[in] msg spirit_msgs::ContactMode containing new contact data
+   * @param[in] msg quad_msgs::ContactMode containing new contact data
    */
-  void contactCallback(const spirit_msgs::ContactMode::ConstPtr& msg);
+  void contactCallback(const quad_msgs::ContactMode::ConstPtr& msg);
 
   /**
    * @brief execute EKF Update step, return state estimate
    * @return state estimate of custom type RobotState
    */
-  spirit_msgs::RobotState updateStep();
+  quad_msgs::RobotState updateStep();
 
   /// Subscriber for joint encoder messages
   ros::Subscriber joint_encoder_sub_;
@@ -71,10 +71,10 @@ private:
   double update_rate_;
 
   /// Last state estimate
-  spirit_msgs::RobotState last_state_est_;
+  quad_msgs::RobotState last_state_est_;
 
   /// Last contact detection message (should be timestamped!)
-  spirit_msgs::ContactMode::ConstPtr last_contact_msg_;
+  quad_msgs::ContactMode::ConstPtr last_contact_msg_;
 
   /// Most recent IMU callback (should be timestamped!)
   sensor_msgs::Imu::ConstPtr last_imu_msg_;

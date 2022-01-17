@@ -2,9 +2,9 @@
 #define BODY_FORCE_ESTIMATOR_H
 
 #include <ros/ros.h>
-#include <spirit_msgs/RobotState.h>
-#include <spirit_msgs/BodyForceEstimate.h>
-#include <spirit_msgs/GRFArray.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_msgs/BodyForceEstimate.h>
+#include <quad_msgs/GRFArray.h>
 
 // Temporary
 #define USE_SIM 1 // 0 = intended, 1 = Gazebo hack, 2 = old bagfile hack
@@ -35,7 +35,7 @@ class BodyForceEstimator {
     #if USE_SIM > 0
     void robotStateCallback(const sensor_msgs::JointState::ConstPtr& msg);
     #else
-    void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+    void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
     #endif
 
     /**
@@ -76,7 +76,7 @@ private:
     #if USE_SIM > 0
     sensor_msgs::JointState::ConstPtr last_state_msg_;
     #else
-    spirit_msgs::RobotState::ConstPtr last_state_msg_;
+    quad_msgs::RobotState::ConstPtr last_state_msg_;
     #endif
 };
 
