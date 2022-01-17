@@ -19,10 +19,9 @@
 #include <quad_utils/math_utils.h>
 
 // Uncomment to add visualization features
-#define VISUALIZE_TREE
-#define VISUALIZE_ALL_CANDIDATE_ACTIONS
+// #define VISUALIZE_TREE
+// #define VISUALIZE_ALL_CANDIDATE_ACTIONS
 // #define PLOT_TRAJECTORIES
-
 
 namespace planning_utils {
 
