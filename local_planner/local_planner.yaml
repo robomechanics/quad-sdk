@@ -27,7 +27,7 @@ local_footstep_planner:
   foothold_search_radius: 0.2
   foothold_obj_threshold: 0.7
   obj_fun_layer: traversability
-  duty_cycles: [0.5, 0.5, 0.5, 0.5]
+  duty_cycles: [0.3, 0.3, 0.3, 0.3]
   phase_offsets: [0.0, 0.5, 0.5, 0.0]
   # duty_cycles: [0.75, 0.75, 0.75, 0.75]
   # phase_offsets: [0.25, 0.0, 0.75, 0.5]
