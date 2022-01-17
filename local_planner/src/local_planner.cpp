@@ -263,8 +263,20 @@ void LocalPlanner::getStateAndReferencePlan() {
 
   // Get index within the global plan, compare with the previous one to check if this is a duplicated solve
   int previous_plan_index = current_plan_index_;
-  quad_utils::getPlanIndex(initial_timestamp_, dt_, current_plan_index_, time_ahead_);
+  quad_utils::getPlanIndex(body_plan_msg_->global_plan_timestamp, dt_, current_plan_index_, time_ahead_);
   same_plan_index_ = previous_plan_index == current_plan_index_;
+
+  // Initializing foot positions if not data has arrived
+  if (first_plan_) {
+    first_plan_ = false;
+    past_footholds_msg_.header = robot_state_msg_->header;
+    for (int i = 0; i < num_feet_; i++) {
+      past_footholds_msg_.feet[i].footholds.clear();
+      past_footholds_msg_.feet[i].footholds.push_back(robot_state_msg_->feet.feet[i]);
+      past_footholds_msg_.feet[i].footholds.front().header = past_footholds_msg_.header;
+      past_footholds_msg_.feet[i].footholds.front().traj_index = 0;
+    }
+  }
 
   // Get the current body and foot positions into Eigen
   current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
@@ -276,6 +288,7 @@ void LocalPlanner::getStateAndReferencePlan() {
   // TODO: I don't think this is compatible with the adpative first step now. We might need to interplate it.
   // Grab the appropriate states from the body plan and convert to an Eigen matrix
   ref_body_plan_.setZero();
+
   for (int i = 0; i < N_+1; i++) {
 
     // If the horizon extends past the reference trajectory, just hold the last state
@@ -284,10 +297,8 @@ void LocalPlanner::getStateAndReferencePlan() {
     } else {
       ref_body_plan_.row(i) = quad_utils::bodyStateMsgToEigen(body_plan_msg_->states[i+current_plan_index_].body);
     }
-
     ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_(i, 0), ref_body_plan_(i, 1));
   }
-
   ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(current_state_(0), current_state_(1));
 
   // Update the body plan to use for linearization
@@ -316,6 +327,7 @@ void LocalPlanner::getStateAndReferencePlan() {
   body_plan_.row(0) = current_state_;
   foot_positions_body_.row(0) = current_foot_positions_body_;
   foot_positions_world_.row(0) = current_foot_positions_world_;
+  
 }
 
 void LocalPlanner::getStateAndTwistInput() {
@@ -500,6 +512,15 @@ bool LocalPlanner::computeLocalPlan() {
     local_footstep_planner_->getFootPositionsBodyFrame(body_plan_, foot_positions_world_,
       foot_positions_body_);
   }
+
+  // std::cout << "current_state_\n" << current_state_ << std::endl;
+  // std::cout << "ref_body_plan_\n" << ref_body_plan_ << std::endl;
+  // std::cout << "body_plan_\n" << body_plan_ << std::endl;
+  // std::cout << "foot_positions_world_\n" << foot_positions_world_ << std::endl;
+  // std::cout << "foot_positions_body_\n" << foot_positions_body_ << std::endl;
+  // std::cout << "ref_ground_height_\n" << ref_ground_height_ << std::endl;
+  // std::cout << "time_ahead_\n" << time_ahead_ << std::endl;
+  // std::cout << "same_plan_index_\n" << same_plan_index_ << std::endl;
 
   // Compute body plan with MPC, return if solve fails
   if (use_nmpc_) {
