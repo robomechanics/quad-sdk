@@ -323,11 +323,12 @@ void RVizInterface::footPlanDiscreteCallback(
   points.action = visualization_msgs::Marker::ADD;
   points.pose.orientation.w = 1.0;
   points.id = 0;
-  points.type = visualization_msgs::Marker::POINTS;
+  points.type = visualization_msgs::Marker::SPHERE_LIST;
 
   // POINTS markers use x and y scale for width/height respectively
-  points.scale.x = 0.1;
-  points.scale.y = 0.1;
+  points.scale.x = 0.05;
+  points.scale.y = 0.05;
+  points.scale.z = 0.05;
 
   // Loop through each foot
   int num_feet = msg->feet.size();
