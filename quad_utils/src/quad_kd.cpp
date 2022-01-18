@@ -595,8 +595,9 @@ void QuadKD::computeInverseDynamics(const Eigen::VectorXd &state_pos,
   blk_mat.block(6, 6, 12, 12).diagonal().fill(1);
 
   // Perform inverse dynamics
-  Eigen::VectorXd tau_swing(12), blk_sol(18);
-  blk_sol = blk_mat.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(M.block(0, 6, 18, 12) * jacobian_inv * foot_acc_q_ddot + N + tau_stance);
+  Eigen::VectorXd tau_swing(12), blk_sol(18), tau_stance_constrained(18);
+  tau_stance_constrained << tau_stance.segment(0, 6), Eigen::VectorXd::Zero(12);
+  blk_sol = blk_mat.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(M.block(0, 6, 18, 12) * jacobian_inv * foot_acc_q_ddot + N + tau_stance_constrained);
   tau_swing = blk_sol.segment(6, 12);
 
   // Convert the order back
