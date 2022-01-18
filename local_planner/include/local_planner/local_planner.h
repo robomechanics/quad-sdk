@@ -316,6 +316,8 @@ private:
 
   std::vector<bool> contact_sensing_;
 
+  std::vector<grid_map::Index> tmp_foot_hist_idx_;
+
   bool first_solve_success;
 
   /// Contact sensing results message

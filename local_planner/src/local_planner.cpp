@@ -111,6 +111,8 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   // Initialize leg contact miss states vector
   contact_sensing_.assign(4, false);
 
+  tmp_foot_hist_idx_.assign(4, Eigen::Array2i::Constant(-1));
+
   // Initialize foor position record for missing foot
   foot_pos_body_miss_contact_ = Eigen::VectorXd::Zero(12);
 
@@ -382,12 +384,30 @@ void LocalPlanner::publishFootStepHist()
   for (size_t i = 0; i < 4; i++)
   {
     // Check if it's on the ground
-    if ((grf_msg_->contact_states.at(i) && abs(grf_msg_->vectors.at(i).z) > 5) ||
-        contact_sensing_.at(i))
+    if ((grf_msg_->contact_states.at(i) && abs(grf_msg_->vectors.at(i).z) > 5))
     {
+      tmp_foot_hist_idx_.at(i) = Eigen::Array2i::Constant(-1);
+
       // Add the foot position to the history
       foot_step_hist_.atPosition("z", grid_map::Position(current_foot_positions_world_(3 * i + 0),
-                                                         current_foot_positions_world_(3 * i + 1))) = current_foot_positions_world_(3 * i + 2);
+                                                         current_foot_positions_world_(3 * i + 1))) = current_foot_positions_world_(3 * i + 2)-0.02;
+    }
+
+    if (tmp_foot_hist_idx_.at(i)(0) != -1)
+    {
+      foot_step_hist_.at("z", tmp_foot_hist_idx_.at(i)) = NAN;
+    }
+
+    // Temporary record the missing contact foot
+    if (contact_sensing_.at(i))
+    {
+      foot_step_hist_.getIndex(grid_map::Position(current_foot_positions_world_(3 * i + 0),
+                                                  current_foot_positions_world_(3 * i + 1)),
+                               tmp_foot_hist_idx_.at(i));
+
+      // Add the foot position to the history
+      foot_step_hist_.atPosition("z", grid_map::Position(current_foot_positions_world_(3 * i + 0),
+                                                         current_foot_positions_world_(3 * i + 1))) = current_foot_positions_world_(3 * i + 2)-0.02;
     }
   }
 
@@ -451,8 +471,8 @@ void LocalPlanner::getStateAndTwistInput() {
   cmd_vel_.at(1) = 0.6;
 
   // Set initial ground height
-  // ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(current_state_(0), current_state_(1));
-  ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(current_state_.segment(0, 3), current_state_.segment(3, 3));
+  ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(current_state_(0), current_state_(1));
+  // ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(current_state_.segment(0, 3), current_state_.segment(3, 3));
 
   // If it's not initialized, set to current positions
   if (stand_pose_(0) == std::numeric_limits<double>::max() && stand_pose_(1) == std::numeric_limits<double>::max() && stand_pose_(2) == std::numeric_limits<double>::max())
@@ -486,7 +506,7 @@ void LocalPlanner::getStateAndTwistInput() {
   ref_body_plan_(0,2) = z_des_ + ref_ground_height_(0);
   ref_body_plan_(0,3) = 0;
   ref_body_plan_(0,4) = 0;
-  ref_body_plan_(0,5) = current_state_[5];
+  ref_body_plan_(0,5) = 1.57;
   ref_body_plan_(0,6) = cmd_vel_[0]*cos(current_state_[5]) - cmd_vel_[1]*sin(current_state_[5]);
   ref_body_plan_(0,7) = cmd_vel_[0]*sin(current_state_[5]) + cmd_vel_[1]*cos(current_state_[5]);
   ref_body_plan_(0,8) = cmd_vel_[2];
@@ -498,11 +518,14 @@ void LocalPlanner::getStateAndTwistInput() {
   // ref_body_plan_(0, 4) = local_footstep_planner_->getTerrainSlope(current_state_(0), current_state_(1), current_state_(6), current_state_(7));
 
   // Adaptive roll and pitch
-  local_footstep_planner_->getTerrainSlope(ref_body_plan_(0, 0),
-                                           ref_body_plan_(0, 1),
-                                           ref_body_plan_(0, 5),
-                                           ref_body_plan_(0, 3),
-                                           ref_body_plan_(0, 4));
+  // local_footstep_planner_->getTerrainSlope(ref_body_plan_(0, 0),
+  //                                          ref_body_plan_(0, 1),
+  //                                          ref_body_plan_(0, 5),
+  //                                          ref_body_plan_(0, 3),
+  //                                          ref_body_plan_(0, 4));
+
+  // ref_body_plan_(0, 3) = std::min(std::max(ref_body_plan_(0, 3), -0.2), 0.2);
+  // ref_body_plan_(0, 4) = std::min(std::max(ref_body_plan_(0, 4), -0.2), 0.2);
 
   // Integrate to get full body plan (Forward Euler)
   for (int i = 1; i < N_+1; i++) {
@@ -537,8 +560,12 @@ void LocalPlanner::getStateAndTwistInput() {
     //                                          ref_body_plan_(i, 3),
     //                                          ref_body_plan_(i, 4));
 
-    ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_.row(i).segment(0, 3), ref_body_plan_.row(i).segment(3, 3));
-    ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);                                 
+    // ref_body_plan_(i, 3) = std::min(std::max(ref_body_plan_(i, 3), -0.2), 0.2);
+    // ref_body_plan_(i, 4) = std::min(std::max(ref_body_plan_(i, 4), -0.2), 0.2);
+
+    ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_(i, 0), ref_body_plan_(i, 1));
+    ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);
+    // ref_body_plan_(i, 2) = z_des_ + local_footstep_planner_->getTerrainHeight(ref_body_plan_.row(i).segment(0, 3), ref_body_plan_.row(i).segment(3, 3));                              
   }
 
   if (tail_type_ == CENTRALIZED)
@@ -866,7 +893,7 @@ void LocalPlanner::contactSensing()
       // Record foot position in body frame when missing
       Eigen::VectorXd tmp_foot_pos(12);
       quad_utils::multiFootStateMsgToEigen(future_nominal_footholds_msg_, tmp_foot_pos);
-      foot_pos_body_miss_contact_.segment(3 * i, 3) = tmp_foot_pos.segment(3 * i, 3) - body_plan_.block(0, 0, 1, 3).transpose(); // TODO: This might store some undesirable foot position
+      foot_pos_body_miss_contact_.segment(3 * i, 3) = tmp_foot_pos.segment(3 * i, 3) - body_plan_.block(0, 0, 1, 3).transpose();
     }
 
     // Miss to contact
@@ -875,7 +902,7 @@ void LocalPlanner::contactSensing()
         contact_sensing_.at(i))
     {
       ROS_WARN_STREAM("Local planner: miss to contact leg: " << i);
-
+      tmp_foot_hist_idx_.at(i) = Eigen::Array2i::Constant(-1);
       contact_sensing_.at(i) = false;
     }
 
@@ -884,7 +911,7 @@ void LocalPlanner::contactSensing()
         !contact_schedule_.at(0).at(i))
     {
       ROS_WARN_STREAM("Local planner: miss to swing leg: " << i);
-
+      // tmp_foot_hist_idx_.at(i) = Eigen::Array2i::Constant(-1);
       contact_sensing_.at(i) = false;
     }
 

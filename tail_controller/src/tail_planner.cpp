@@ -199,6 +199,7 @@ void TailPlanner::computeTailPlan()
 
       if (idx > last_local_plan_msg_->plan_indices.size() - 1)
       {
+        ROS_ERROR_STREAM("Tail planner node couldn't find the correct ref leg plan at index: " << i);
         idx = last_local_plan_msg_->plan_indices.size() - 1;
       }
 
@@ -226,11 +227,12 @@ void TailPlanner::computeTailPlan()
 
     if (idx > last_local_plan_msg_->plan_indices.size() - 1)
     {
+      ROS_ERROR_STREAM("Tail planner node couldn't find the correct ref leg plan at index: " << i);
       idx = last_local_plan_msg_->plan_indices.size() - 1;
     }
 
     body_plan_.row(i) = quad_utils::bodyStateMsgToEigen(last_local_plan_msg_->states[idx].body).transpose();
-    ref_tail_plan_.row(i) << -body_plan_(i, 3), -body_plan_(i, 4), 0, 0;
+    // ref_tail_plan_.row(i) << -body_plan_(i, 3), -body_plan_(i, 4), 0, 0;
 
     ref_ground_height_(i) = last_local_plan_msg_->ground_height[idx];
 

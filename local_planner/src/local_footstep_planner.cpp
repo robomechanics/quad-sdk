@@ -160,6 +160,7 @@ void LocalFootstepPlanner::computeSwingFootState(const Eigen::Vector3d &foot_pos
   
   // Update z to clear both footholds by the specified height under the constraints of hip height
   double swing_apex = std::min(ground_clearance_ + std::max(foot_position_prev.z(), foot_position_next.z()), g_world_legbase(2, 3) - hip_clearance_);
+  swing_apex = std::max(swing_apex, 0.05+std::max(foot_position_prev.z(), foot_position_next.z()));
   double phi_z = 2*fmod(phi, 0.5);
   phi3 = phi_z*phi_z*phi_z;
   phi2 = phi_z*phi_z;
