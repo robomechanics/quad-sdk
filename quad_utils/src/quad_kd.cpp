@@ -522,11 +522,11 @@ void QuadKD::getRotationMatrix(const Eigen::VectorXd &rpy, Eigen::Matrix3d &rot)
 }
 
 void QuadKD::computeInverseDynamics(const Eigen::VectorXd &state_pos,
-                                  const Eigen::VectorXd &state_vel,
-                                  const Eigen::VectorXd &foot_acc,
-                                  const Eigen::VectorXd &grf,
-                                  const std::vector<int> &contact_mode,
-                                  Eigen::VectorXd &tau) const
+                                    const Eigen::VectorXd &state_vel,
+                                    const Eigen::VectorXd &foot_acc,
+                                    const Eigen::VectorXd &grf,
+                                    const std::vector<int> &contact_mode,
+                                    Eigen::VectorXd &tau) const
 {
 
   // Convert q, q_dot into RBDL order
@@ -582,6 +582,21 @@ void QuadKD::computeInverseDynamics(const Eigen::VectorXd &state_pos,
     foot_acc_J_dot.segment(3 * i, 3) = RigidBodyDynamics::CalcPointAcceleration(*model_, q, q_dot, Eigen::VectorXd::Zero(18), body_id_list_.at(i), Eigen::Vector3d::Zero());
   }
 
+  // Compute constraint Jacobian A and A_dot*q_dot
+  int constraints_num = 3 * std::count(contact_mode.begin(), contact_mode.end(), true);
+  Eigen::MatrixXd A(constraints_num, 18);
+  Eigen::VectorXd A_dotq_dot(constraints_num);
+  int constraints_count = 0;
+  for (size_t i = 0; i < 4; i++)
+  {
+    if (contact_mode.at(i))
+    {
+      A.block(3 * constraints_count, 0, 3, 18) = jacobian.block(3 * i, 0, 3, 18);
+      A_dotq_dot.segment(3 * constraints_count, 3) = foot_acc_J_dot.segment(3 * i, 3);
+      constraints_count++;
+    }
+  }
+
   // Compute acceleration from J*q_ddot
   Eigen::VectorXd foot_acc_q_ddot = foot_acc - foot_acc_J_dot;
 
@@ -589,23 +604,36 @@ void QuadKD::computeInverseDynamics(const Eigen::VectorXd &state_pos,
   Eigen::MatrixXd jacobian_inv = math_utils::sdlsInv(jacobian.block(0, 6, 12, 12));
 
   // In the EOM, we know M, N, tau_grf, and a = J_b*q_ddot_b + J_l*q_ddot_l, we need to solve q_ddot_b and tau_swing
-  Eigen::MatrixXd blk_mat = Eigen::MatrixXd::Zero(18, 18);
+  Eigen::MatrixXd blk_mat = Eigen::MatrixXd::Zero(18 + constraints_num, 18 + constraints_num);
   blk_mat.block(0, 0, 6, 6) = -M.block(0, 0, 6, 6) + M.block(0, 6, 6, 12) * jacobian_inv * jacobian.block(0, 0, 12, 6);
   blk_mat.block(6, 0, 12, 6) = -M.block(6, 0, 12, 6) + M.block(6, 6, 12, 12) * jacobian_inv * jacobian.block(0, 0, 12, 6);
-  blk_mat.block(6, 6, 12, 12).diagonal().fill(1);
+  for (size_t i = 0; i < 4; i++)
+  {
+    if (!contact_mode.at(leg_idx_list_.at(i)))
+    {
+      blk_mat.block(3 * i + 6, 3 * i + 6, 3, 3).diagonal().fill(1);
+    }
+  }
+  blk_mat.block(0, 18, 18, constraints_num) = -A.transpose();
+  blk_mat.block(18, 0, constraints_num, 6) = -A.leftCols(6) + A.rightCols(12) * jacobian_inv * jacobian.block(0, 0, 12, 6);
 
   // Perform inverse dynamics
-  Eigen::VectorXd tau_swing(12), blk_sol(18), tau_stance_constrained(18);
-  tau_stance_constrained << tau_stance.segment(0, 6), Eigen::VectorXd::Zero(12);
-  blk_sol = blk_mat.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(M.block(0, 6, 18, 12) * jacobian_inv * foot_acc_q_ddot + N + tau_stance_constrained);
+  Eigen::VectorXd tau_swing(12), blk_sol(18 + constraints_num), blk_vec(18 + constraints_num);
+  blk_vec.segment(0, 6) << N.segment(0, 6) + M.block(0, 6, 6, 12) * jacobian_inv * foot_acc_q_ddot;
+  blk_vec.segment(6, 12) << N.segment(6, 12) + M.block(6, 6, 12, 12) * jacobian_inv * foot_acc_q_ddot - tau_stance.segment(6, 12);
+  blk_vec.segment(18, constraints_num) << A_dotq_dot + A.leftCols(12) * jacobian_inv * foot_acc_q_ddot;
+  blk_sol = blk_mat.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(blk_vec);
   tau_swing = blk_sol.segment(6, 12);
 
   // Convert the order back
   for (size_t i = 0; i < 4; i++)
   {
-    if (contact_mode.at(leg_idx_list_.at(i))) {
+    if (contact_mode.at(leg_idx_list_.at(i)))
+    {
       tau.segment(3 * leg_idx_list_.at(i), 3) = tau_stance.segment(6 + 3 * i, 3);
-    } else {
+    }
+    else
+    {
       tau.segment(3 * leg_idx_list_.at(i), 3) = tau_swing.segment(3 * i, 3);
       // tau.segment(3 * leg_idx_list_.at(i), 3) = Eigen::VectorXd::Zero(3);
     }
