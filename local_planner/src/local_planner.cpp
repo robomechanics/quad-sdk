@@ -285,7 +285,6 @@ void LocalPlanner::getStateAndReferencePlan() {
   local_footstep_planner_->getFootPositionsBodyFrame(current_state_, current_foot_positions_world_,
       current_foot_positions_body_);
 
-  // TODO: I don't think this is compatible with the adpative first step now. We might need to interplate it.
   // Grab the appropriate states from the body plan and convert to an Eigen matrix
   ref_body_plan_.setZero();
 
@@ -512,15 +511,6 @@ bool LocalPlanner::computeLocalPlan() {
     local_footstep_planner_->getFootPositionsBodyFrame(body_plan_, foot_positions_world_,
       foot_positions_body_);
   }
-
-  // std::cout << "current_state_\n" << current_state_ << std::endl;
-  // std::cout << "ref_body_plan_\n" << ref_body_plan_ << std::endl;
-  // std::cout << "body_plan_\n" << body_plan_ << std::endl;
-  // std::cout << "foot_positions_world_\n" << foot_positions_world_ << std::endl;
-  // std::cout << "foot_positions_body_\n" << foot_positions_body_ << std::endl;
-  // std::cout << "ref_ground_height_\n" << ref_ground_height_ << std::endl;
-  // std::cout << "time_ahead_\n" << time_ahead_ << std::endl;
-  // std::cout << "same_plan_index_\n" << same_plan_index_ << std::endl;
 
   // Compute body plan with MPC, return if solve fails
   if (use_nmpc_) {

@@ -69,6 +69,12 @@ const int LAND_STANCE = 3;
 const int FORWARD = 0;
 const int REVERSE = 1;
 
+/// Newest plan is invalid
+const int INVALID = 0;
+
+/// Newest plan is valid
+const int VALID = 1;
+
 // Define the dimensionality and types for states, actions, and pairs
 const int POSEDIM = 3;
 const int STATEDIM = 6;

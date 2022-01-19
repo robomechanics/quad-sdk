@@ -37,6 +37,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   // Initialize the current path cost to infinity to ensure the first solution is stored
   current_cost_ = INFTY;
   robot_state_ = start_state_;
+  planner_status_ = RESET;
 
   quad_utils::loadROSParam(nh,"global_body_planner/H_MAX", planner_config_.H_MAX);
   quad_utils::loadROSParam(nh,"global_body_planner/H_MIN", planner_config_.H_MIN);
@@ -459,31 +460,108 @@ void GlobalBodyPlanner::getInitialPlan() {
   }  
 }
 
+// void GlobalBodyPlanner::spin() {
+
+//   ros::Rate r(update_rate_);
+
+//   // Once we get map and state data, start planning until startup delay is up
+//   waitForData();
+//   getInitialPlan();
+
+//   // Set the timestamp for the initial plan to now and publish
+//   plan_timestamp_ = ros::Time::now();
+//   publishPlan();
+  
+//   // Enter main spin
+//   while (ros::ok()) {
+
+//     // IF allowed, continue updating and publishing the plan
+//     if (replanning_allowed_) {
+//       callPlanner();
+
+//       if (current_cost_ < INFTY)
+//         publishPlan();
+//     }
+
+//     // Process callbacks and sleep
+//     ros::spinOnce();
+//     r.sleep();
+//   }
+// }
+
+void GlobalBodyPlanner::setStartState() {
+
+  if (planner_status_ == RESET) {
+
+    ROS_INFO_THROTTLE(1,"GBP resetting from current robot state");
+    start_state_ = robot_state_;
+    replan_start_time_ = 0;
+    start_index_ = 0;
+    current_cost_ = INFTY;
+    length_plan_.clear();
+    length_plan_.push_back(0.0);
+    // planner_status_ = REFINE; // May need this
+
+  } else if (planner_status_ == REFINE) {
+
+    // Loop through t_plan_ to find the next state after the committed horizon, set as start state
+    double current_time = (ros::Time::now() - plan_timestamp_).toSec();
+    int N = t_plan_.size();
+    start_state_.clear();
+    if (t_plan_.back() <= (current_time + max_planning_time_)) {
+      start_state_ = body_plan_.back();
+      replan_start_time_ = t_plan_.back();
+      start_index_ = N-1;
+    } else {
+      for (int i = 0; i < N; i++) {
+        if (t_plan_[i] >= (current_time + max_planning_time_)) {
+          start_state_ = body_plan_[i];
+          replan_start_time_ = t_plan_[i];
+          start_index_ = i;
+
+          break;
+        }
+      }
+    }
+  } else {
+    ROS_ERROR("Invalid planning status");
+  }
+}
+
+void GlobalBodyPlanner::setGoalState() {
+
+}
+
+void GlobalBodyPlanner::callPlanner() {
+
+}
+
+bool GlobalBodyPlanner::updateActivePlan() {
+
+}
+
+void GlobalBodyPlanner::publishActivePlan() {
+
+}
+
 void GlobalBodyPlanner::spin() {
 
   ros::Rate r(update_rate_);
 
-  // Once we get map and state data, start planning until startup delay is up
+  // Wait until we get map and state data
   waitForData();
-  getInitialPlan();
 
-  // Set the timestamp for the initial plan to now and publish
-  plan_timestamp_ = ros::Time::now();
-  publishPlan();
-  
   // Enter main spin
   while (ros::ok()) {
 
-    // IF allowed, continue updating and publishing the plan
-    if (replanning_allowed_) {
-      callPlanner();
-
-      if (current_cost_ < INFTY)
-        publishPlan();
+    ros::spinOnce();
+    setStartState();
+    setGoalState();
+    callPlanner();
+    if (updateActivePlan()) {
+      publishActivePlan();
     }
 
-    // Process callbacks and sleep
-    ros::spinOnce();
     r.sleep();
   }
 }
