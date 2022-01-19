@@ -106,6 +106,29 @@ class GlobalBodyPlanner {
      */
     void getInitialPlan();
 
+
+
+
+    /**
+     * @brief Set the start state to be used by the next planning call
+     */
+    void setStartState();
+
+    /**
+     * @brief Set the goal state to be used by the next planning call
+     */
+    void setGoalState();
+
+    /**
+     * @brief Update the current plan if preconditions are satisfied
+     */
+    bool updateActivePlan();
+
+    /**
+     * @brief Publish the current plan if updated
+     */
+    void publishActivePlan();
+
     /// Subscriber for terrain map messages
     ros::Subscriber terrain_map_sub_;
 
@@ -219,6 +242,21 @@ class GlobalBodyPlanner {
 
     /// Timestep for interpolation
     double dt_;
+
+    /// ID for status of planner
+    int planner_status_;
+
+    /// Index of active plan from which to begin refinement
+    int start_index_;
+
+    /// Planning status ID for resetting (start from scratch)
+    static const int RESET = 0;
+
+    /// Planning status ID for refining (optimize active plan)
+    static const int REFINE = 1;
+
+    /// ID for status of newest plan
+    int newest_plan_status_;
 
 };
 

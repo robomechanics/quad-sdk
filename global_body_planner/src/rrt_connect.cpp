@@ -244,6 +244,7 @@ bool RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
   auto t_start_total_solve = std::chrono::steady_clock::now();
   auto t_start_current_solve = std::chrono::steady_clock::now();
   bool success = false;
+  
 
   PlannerClass Ta(FORWARD);
   PlannerClass Tb(REVERSE);
