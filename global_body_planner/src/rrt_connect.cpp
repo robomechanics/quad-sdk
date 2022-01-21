@@ -199,7 +199,9 @@ void RRTConnectClass::postProcessPath(std::vector<State> &state_sequence, std::v
   std::chrono::duration<double> processing_time = t_end - t_start;
 }
 
-void RRTConnectClass::extractPath(PlannerClass Ta, PlannerClass Tb, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, const PlannerConfig &planner_config)
+void RRTConnectClass::extractPath(PlannerClass &Ta, PlannerClass &Tb,
+  std::vector<State> &state_sequence, std::vector<Action> &action_sequence,
+  const PlannerConfig &planner_config)
 {
   // Get both paths, remove the back of path_b and reverse it to align with path a
   std::vector<int> path_a = pathFromStart(Ta, Ta.getNumVertices()-1);
@@ -236,15 +238,39 @@ void RRTConnectClass::extractPath(PlannerClass Ta, PlannerClass Tb, std::vector<
   // action_sequence.push_back(a);
 }
 
-bool RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_start,
+void RRTConnectClass::extractClosestPath(PlannerClass &Ta, const State &s_goal,
+  std::vector<State> &state_sequence, std::vector<Action> &action_sequence,
+  const PlannerConfig &planner_config) {
+
+  std::vector<int> path_a = pathFromStart(Ta, Ta.getNearestNeighbor(s_goal));
+  state_sequence = getStateSequence(Ta, path_a);
+  action_sequence = getActionSequence(Ta, path_a);
+  postProcessPath(state_sequence, action_sequence, planner_config);
+}
+
+
+int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_start,
   State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence,
-    double max_planning_time, ros::Publisher &tree_pub)
+  ros::Publisher &tree_pub)
 {
 
+  // Perform validity checking on start and goal states
+  if (!isValidState(s_start, planner_config, LEAP_STANCE)) {
+    return INVALID_START_STATE;
+  }
+  // Set goal height to nominal distance above terrain
+  s_goal[2] = planner_config.terrain.getGroundHeight(s_goal[0], s_goal[1]) + planner_config.H_NOM;
+  if (!isValidState(s_goal, planner_config, LEAP_STANCE)) {
+    return INVALID_GOAL_STATE;
+  }
+  if (stateDistance(s_start, s_goal) <= 1e-2) {
+    return INVALID_START_GOAL_EQUAL;
+  }
+
+  // Initialize timing information
   auto t_start_total_solve = std::chrono::steady_clock::now();
   auto t_start_current_solve = std::chrono::steady_clock::now();
-  bool success = false;
-  
+  int result;
 
   PlannerClass Ta(FORWARD);
   PlannerClass Tb(REVERSE);
@@ -267,13 +293,12 @@ bool RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
     
     if(current_elapsed.count() >= anytime_horizon)
     {
-      if(total_elapsed.count() >= max_planning_time)
+      if(total_elapsed.count() >= planner_config.MAX_TIME)
       {
         std::cout << "Failed, exiting" << std::endl;
         elapsed_to_first_ = total_elapsed;
-        success_ = 0;
         num_vertices_ = (Ta.getNumVertices() + Tb.getNumVertices());
-        return success;
+        break;
       }
 
       #ifndef VISUALIZE_TREE
@@ -348,9 +373,13 @@ bool RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
   if (goal_found == true)
   {
     extractPath(Ta, Tb, state_sequence, action_sequence, planner_config);
-    success = true;
+    result = VALID;
   } else {
-    std::cout << "Path not found" << std::endl;
+    extractClosestPath(Ta, s_goal, state_sequence, action_sequence, planner_config);
+    result = VALID_PARTIAL;
+    std::cout << "Extracting partial path" << std::endl;
+    printStateSequence(state_sequence);
+    printActionSequence(action_sequence);
   }
 
   auto t_end = std::chrono::steady_clock::now();
@@ -362,5 +391,5 @@ bool RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
     path_duration_ += (a[8] + a[9] + a[10]);
   }
 
-  return success;
+  return result;
 }

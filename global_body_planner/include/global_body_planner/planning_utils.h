@@ -59,6 +59,7 @@ struct PlannerConfig {
   double BACKUP_RATIO = 0.5;    // Ratio of trajectory to back up after finding an invalid state, s
   int NUM_GEN_STATES = 6;       // Number of actions computed for each extend function
   double GOAL_BOUNDS = 0.5;     // Distance threshold on reaching the goal (only used for vanilla RRT, not RRT-Connect)
+  double MAX_TIME = 2.0;        // Maximum planning time allowed
 };
 
 // Define phase variable labels
@@ -69,11 +70,13 @@ const int LAND_STANCE = 3;
 const int FORWARD = 0;
 const int REVERSE = 1;
 
-/// Newest plan is invalid
-const int INVALID = 0;
-
-/// Newest plan is valid
+// Define exit flags
+const int UNSOLVED = 0;
 const int VALID = 1;
+const int VALID_PARTIAL = 2;
+const int INVALID_START_STATE = 3;
+const int INVALID_GOAL_STATE = 4;
+const int INVALID_START_GOAL_EQUAL = 5;
 
 // Define the dimensionality and types for states, actions, and pairs
 const int POSEDIM = 3;

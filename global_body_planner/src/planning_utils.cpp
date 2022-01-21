@@ -506,8 +506,6 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
   // printStateNewline(s);
   // printActionNewline(a);
 
-  // std::cout << "In interpStateActionPair" << std::endl;
-
   int phase;
   if (t_f == 0) {
     phase = CONNECT;
@@ -519,7 +517,7 @@ void interpStateActionPair(State s, Action a,double t0,double dt,
   // Add points during stance phase
   for (double t = 0; t < t_s; t += dt)
   {
-    interp_t.push_back(t0+t);
+    interp_t.push_back(t0+t);    
     State s_next = applyStance(s,a,t,phase,planner_config);
     if (!interp_reduced_plan.empty()) {
       interp_length.push_back(interp_length.back() + poseDistance(s_next, interp_reduced_plan.back()));

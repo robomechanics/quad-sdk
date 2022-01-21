@@ -288,7 +288,7 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     app_->Options()->SetStringValue("warm_start_init_point", "yes");
     app_->Options()->SetNumericValue("mu_init", 1e-6);
 
-    ROS_INFO_STREAM(param_ns_ << " solving success");
+    // ROS_INFO_STREAM_THROTTLE(0.1,param_ns_ << " solving success");
     return true;
   }
   else
@@ -304,7 +304,7 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     app_->Options()->SetStringValue("warm_start_init_point", "no");
     app_->Options()->SetNumericValue("mu_init", 1e-1);
 
-    ROS_INFO_STREAM(param_ns_ << " solving fail");
+    ROS_INFO_STREAM_THROTTLE(0.1, param_ns_ << " solving fail");
     return false;
   }
 }

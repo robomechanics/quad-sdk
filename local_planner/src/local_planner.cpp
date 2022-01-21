@@ -529,10 +529,10 @@ bool LocalPlanner::computeLocalPlan() {
     (1-filter_smoothing_constant_)*compute_time_;
 
   if (compute_time_ >= 1000.0/update_rate_) {
-    ROS_WARN("LocalPlanner took %5.3fms, exceeding %5.3fms allowed",
-      compute_time_, 1000.0/update_rate_);
+    // ROS_WARN_THROTTLE(0.1,"LocalPlanner took %5.3fms, exceeding %5.3fms allowed",
+    //   compute_time_, 1000.0/update_rate_);
   } else {
-    ROS_INFO("LocalPlanner took %5.3f ms", compute_time_);
+    ROS_INFO_THROTTLE(0.1,"LocalPlanner took %5.3f ms", compute_time_);
   };
   
   // Return true if made it this far
