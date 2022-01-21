@@ -56,7 +56,7 @@ void TerrainMapPublisher::createMap() {
 
   // Set initial map parameters and geometry
   terrain_map_.setFrameId(map_frame_);
-  terrain_map_.setGeometry(grid_map::Length(12.0, 12.0), resolution_,
+  terrain_map_.setGeometry(grid_map::Length(24.0, 12.0), resolution_,
     grid_map::Position(-0.5*resolution_, -0.5*resolution_));
   ROS_INFO("Created map with size %f x %f m (%i x %i cells).",
     terrain_map_.getLength().x(), terrain_map_.getLength().y(),

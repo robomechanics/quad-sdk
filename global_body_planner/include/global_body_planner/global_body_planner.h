@@ -12,6 +12,7 @@
 #include <quad_utils/ros_utils.h>
 
 #include "global_body_planner/rrt_connect.h"
+#include "global_body_planner/global_body_plan.h"
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
@@ -66,9 +67,9 @@ class GlobalBodyPlanner {
     void goalStateCallback(const geometry_msgs::PointStamped::ConstPtr& msg);
 
     /**
-     * @brief Check if a restart is required
+     * @brief Trigger a reset event
      */
-    void updateRestartFlag();
+    void triggerReset();
 
     /**
      * @brief Initialize the planner by clearing out old plan data and setting the start state
@@ -120,14 +121,9 @@ class GlobalBodyPlanner {
     void setGoalState();
 
     /**
-     * @brief Update the current plan if preconditions are satisfied
-     */
-    bool updateActivePlan();
-
-    /**
      * @brief Publish the current plan if updated
      */
-    void publishActivePlan();
+    void publishCurrentPlan();
 
     /// Subscriber for terrain map messages
     ros::Subscriber terrain_map_sub_;
@@ -168,23 +164,29 @@ class GlobalBodyPlanner {
     /// Handle for the map frame
     std::string map_frame_;
 
-    /// Std vector containing the interpolated time data
-    std::vector<double> t_plan_;
+    // /// Std vector containing the interpolated time data
+    // std::vector<double> t_plan_;
 
-    /// Std vector containing the interpolated robot body plan
-    std::vector<FullState> body_plan_;
+    // /// Std vector containing the interpolated robot body plan
+    // std::vector<FullState> body_plan_;
 
-    /// Std vector containing the interpolated wrench plan
-    std::vector<GRF> grf_plan_;
+    // /// Std vector containing the interpolated wrench plan
+    // std::vector<GRF> grf_plan_;
 
-    /// Std vector containing the interpolated time data
-    std::vector<int> primitive_id_plan_;
+    // /// Std vector containing the interpolated time data
+    // std::vector<int> primitive_id_plan_;
 
-    /// Std vector containing the cumulative path length at each index of the plan
-    std::vector<double> length_plan_;
+    // /// Std vector containing the cumulative path length at each index of the plan
+    // std::vector<double> length_plan_;
 
-    /// Time stamp for the beginning of the plan
-    ros::Time plan_timestamp_;
+    // /// Time stamp for the beginning of the plan
+    // ros::Time plan_timestamp_;
+
+    /// Plan data for the most recently computed plan (may be suboptimal)
+    GlobalBodyPlan newest_plan_;
+
+    /// Plan data for the plan currently being executed
+    GlobalBodyPlan current_plan_;
 
     /// Starting state for planner call
     std::vector<double> start_state_;
@@ -217,7 +219,7 @@ class GlobalBodyPlanner {
     std::vector<Action> action_sequence_;
 
     /// Cost of the current path in path length
-    double current_cost_;
+    // double current_cost_;
 
     /// Vector of cost instances in each planning call
     std::vector<double> cost_vector_;
@@ -234,8 +236,8 @@ class GlobalBodyPlanner {
     /// Planner config
     PlannerConfig planner_config_;
 
-    /// Delay after node startup before planning and publishing
-    double startup_delay_;
+    /// Delay after plan reset before publishing and refining
+    double reset_publish_delay_;
 
     /// Boolean for whether replanning is allowed
     bool replanning_allowed_;
@@ -252,12 +254,14 @@ class GlobalBodyPlanner {
     /// Planning status ID for resetting (start from scratch)
     static const int RESET = 0;
 
-    /// Planning status ID for refining (optimize active plan)
+    /// Planning status ID for refining (optimize current plan)
     static const int REFINE = 1;
 
-    /// ID for status of newest plan
-    int newest_plan_status_;
+    ros::Time reset_time_;
 
+    bool publish_after_reset_delay_;
+
+    ros::Time global_plan_timestamp_;
 };
 
 

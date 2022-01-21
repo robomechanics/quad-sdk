@@ -21,7 +21,6 @@
     <!-- Launch the robot_proxy if specified-->
     <group if="$(arg proxy)">
         <node name="robot_proxy" pkg="quad_utils" type="robot_proxy_node" output="screen"/>
-        <include file="$(find quad_utils)/launch/mocap.launch" />
     </group>
 
     <!-- Launch the mocap node if specified-->

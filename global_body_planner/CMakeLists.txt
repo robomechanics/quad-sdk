@@ -55,6 +55,7 @@ set(MY_LIB_SOURCES
   # src/action.cpp
   # src/walk_action.cpp
   # src/leap_action.cpp
+  src/global_body_plan.cpp
   src/graph_class.cpp
   src/planner_class.cpp
   src/rrt.cpp
