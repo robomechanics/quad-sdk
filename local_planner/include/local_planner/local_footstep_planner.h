@@ -30,143 +30,106 @@
    level interface to the core algorithm
 */
 class LocalFootstepPlanner {
- public:
-  /**
-   * @brief Constructor for LocalFootstepPlanner Class
-   * @return Constructed object of type LocalFootstepPlanner
-   */
-  LocalFootstepPlanner();
+  public:
+    /**
+     * @brief Constructor for LocalFootstepPlanner Class
+     * @return Constructed object of type LocalFootstepPlanner
+     */
+    LocalFootstepPlanner();
 
-  /**
-   * @brief Set the temporal parameters of this object
-   * @param[in] dt The duration of one timestep in the plan
-   * @param[in] period The period of a gait cycle in number of timesteps
-   * @param[in] horizon_length The length of the planning horizon in number of
-   * timesteps
-   */
-  void setTemporalParams(double dt, int period, int horizon_length,
-                         const std::vector<double> &duty_cycles,
-                         const std::vector<double> &phase_offsets);
+    /**
+     * @brief Set the temporal parameters of this object
+     * @param[in] dt The duration of one timestep in the plan
+     * @param[in] period The period of a gait cycle in number of timesteps
+     * @param[in] horizon_length The length of the planning horizon in number of timesteps
+     */
+    void setTemporalParams(double dt, int period, int horizon_length, 
+      const std::vector<double> &duty_cycles, const std::vector<double> &phase_offsets);
 
-  /**
-   * @brief Set the spatial parameters of this object
-   * @param[in] ground_clearance The foot clearance over adjacent footholds in m
-   * @param[in] hip_clearance The foot clearance under hip in m
-   * @param[in] standing_error_threshold Threshold of body error from desired
-   * goal to start stepping
-   * @param[in] grf_weight Weight on GRF projection (0 to 1)
-   * @param[in] kinematics Kinematics class for computations
-   * @param[in] foothold_search_radius Radius to locally search for valid
-   * footholds (m)
-   * @param[in] foothold_obj_threshold Minimum objective function value for
-   * valid foothold
-   * @param[in] obj_fun_layer Terrain layer for foothold search
-   * @param[in] toe_radius Toe radius
-   */
-  void setSpatialParams(double ground_clearance, double hip_clearance,
-                        double grf_weight, double standing_error_threshold,
-                        std::shared_ptr<quad_utils::QuadKD> kinematics,
-                        double foothold_search_radius,
-                        double foothold_obj_threshold,
-                        std::string obj_fun_layer, double toe_radius);
+    /**
+     * @brief Set the spatial parameters of this object
+     * @param[in] ground_clearance The foot clearance over adjacent footholds in m
+     * @param[in] hip_clearance The foot clearance under hip in m
+     * @param[in] standing_error_threshold Threshold of body error from desired goal to start stepping
+     * @param[in] grf_weight Weight on GRF projection (0 to 1)
+     * @param[in] kinematics Kinematics class for computations
+     */
+    void setSpatialParams(double ground_clearance, double hip_clearance, double grf_weight,double standing_error_threshold,
+      std::shared_ptr<quad_utils::QuadKD> kinematics);
 
-  /**
-   * @brief Transform a vector of foot positions from the world to the body
-   * frame
-   * @param[in] body_plan Current body plan
-   * @param[in] foot_positions_world Foot positions in the world frame
-   * @param[out] foot_positions_body Foot positions in the body frame
-   */
-  void getFootPositionsBodyFrame(const Eigen::VectorXd &body_plan,
-                                 const Eigen::VectorXd &foot_positions_world,
-                                 Eigen::VectorXd &foot_positions_body);
+    /**
+     * @brief Transform a vector of foot positions from the world to the body frame
+     * @param[in] body_plan Current body plan
+     * @param[in] foot_positions_world Foot positions in the world frame
+     * @param[out] foot_positions_body Foot positions in the body frame
+     */
+    void getFootPositionsBodyFrame(const Eigen::VectorXd &body_plan,
+      const Eigen::VectorXd &foot_positions_world, Eigen::VectorXd &foot_positions_body);
 
-  /**
-   * @brief Transform the entire foot plan from the world to the body frame
-   * @param[in] body_plan Current body plan
-   * @param[in] foot_positions_world Foot positions in the world frame
-   * @param[out] foot_positions_body Foot positions in the body frame
-   */
-  void getFootPositionsBodyFrame(const Eigen::MatrixXd &body_plan,
-                                 const Eigen::MatrixXd &foot_positions_world,
-                                 Eigen::MatrixXd &foot_positions_body);
+    /**
+     * @brief Transform the entire foot plan from the world to the body frame
+     * @param[in] body_plan Current body plan
+     * @param[in] foot_positions_world Foot positions in the world frame
+     * @param[out] foot_positions_body Foot positions in the body frame
+     */
+    void getFootPositionsBodyFrame(const Eigen::MatrixXd &body_plan,
+      const Eigen::MatrixXd &foot_positions_world, Eigen::MatrixXd &foot_positions_body);
 
-  /**
-   * @brief Update the map of this object
-   * @param[in] terrain The map of the terrain
-   */
-  void updateMap(const FastTerrainMap &terrain);
+    /**
+     * @brief Update the map of this object
+     * @param[in] terrain The map of the terrain
+     */
+    void updateMap(const FastTerrainMap &terrain);
 
-  /**
-   * @brief Update the map of this object
-   * @param[in] terrain The map of the terrain
-   */
-  void updateMap(const grid_map::GridMap &terrain);
+    /**
+     * @brief Update the map of this object
+     * @param[in] terrain The map of the terrain
+     */
+    void updateMap(const grid_map::GridMap &terrain);
+    
+    /**
+     * @brief Compute the contact schedule based on the current phase
+     * @param[in] current_plan_index_ current index in the plan
+     * @param[out] contact_schedule 2D array of contact states
+     */
+    void computeStanceContactSchedule(int current_plan_index_, 
+      std::vector<std::vector<bool>> &contact_schedule);
 
-  /**
-   * @brief Compute the contact schedule based on the current phase
-   * @param[in] current_plan_index_ Current index in the plan
-   * @param[in] body_plan Current body plan
-   * @param[in] ref_primitive_plan_ Reference primitive plan
-   * @param[in] control_mode Control mode
-   * @param[out] contact_schedule 2D array of contact states
-   */
-  void computeContactSchedule(int current_plan_index,
-                              const Eigen::MatrixXd &body_plan,
-                              const Eigen::VectorXi &ref_primitive_plan_,
-                              int control_mode,
-                              std::vector<std::vector<bool>> &contact_schedule);
+    /**
+     * @brief Compute the contact schedule based on the current phase
+     * @param[in] current_plan_index_ Current index in the plan
+     * @param[out] contact_schedule 2D array of contact states
+     */
+    void computeContactSchedule(int current_plan_index,
+      std::vector<std::vector<bool>> &contact_schedule) ;
 
-  /**
-   * @brief Update the discrete footstep plan with the current plan
-   * @param[in] current_plan_index Current plan index
-   * @param[in] contact_schedule Current contact schedule
-   * @param[in] body_plan Current body plan
-   * @param[in] grf_plan Current grf plan
-   * @param[in] ref_body_plan Reference body plan
-   * @param[in] foot_positions_current Current foot position in the world frame
-   * @param[in] foot_velocities_current Current foot position in the world frame
-   * @param[in] first_element_duration Duration of first element of horizon (may
-   * not be dt)
-   * @param[in] past_footholds_msg Message of past footholds, used for
-   * interpolation of swing state
-   * @param[out] foot_positions Foot positions over the horizon
-   * @param[out] foot_velocities Foot velocities over the horizon
-   * @param[out] foot_accelerations Foot accelerations over the horizon
-   */
-  void computeFootPlan(int current_plan_index,
-                       const std::vector<std::vector<bool>> &contact_schedule,
-                       const Eigen::MatrixXd &body_plan,
-                       const Eigen::MatrixXd &grf_plan,
-                       const Eigen::MatrixXd &ref_body_plan,
-                       const Eigen::VectorXd &foot_positions_current,
-                       const Eigen::VectorXd &foot_velocities_current,
-                       double first_element_duration,
-                       quad_msgs::MultiFootState &past_footholds_msg,
-                       Eigen::MatrixXd &foot_positions,
-                       Eigen::MatrixXd &foot_velocities,
-                       Eigen::MatrixXd &foot_accelerations);
+    /**
+     * @brief Update the discrete footstep plan with the current plan
+     * @param[in] state Current robot state
+     * @param[in] body_plan Current body plan
+     * @param[in] grf_plan Current grf plan
+     * @param[in] contact_schedule Current contact schedule
+     * @param[in] current_state Current state of the robot body
+     * @param[out] foot_positions Foot positions over the horizon
+     */
+    void computeFootPositions(const Eigen::MatrixXd &body_plan, const Eigen::MatrixXd &grf_plan,
+      const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &ref_body_plan,
+      Eigen::MatrixXd &foot_positions);
 
-  /**
-   * @brief Convert the foot positions and contact schedule into ros messages
-   * for the foot plan
-   * @param[in] contact_schedule Current contact schedule
-   * @param[in] current_plan_index Current plan index
-   * @param[in] first_element_duration Duration of first element of horizon (may
-   * not be dt)
-   * @param[in] foot_positions Foot positions over the horizon
-   * @param[in] foot_velocities Foot velocities over the horizon
-   * @param[in] foot_accelerations Foot accelerations over the horizon
-   * @param[out] future_footholds_msg Message for future (planned) footholds
-   * @param[out] foot_plan_continuous_msg Message for continuous foot
-   * trajectories
-   */
-  void loadFootPlanMsgs(
-      const std::vector<std::vector<bool>> &contact_schedule,
-      int current_plan_index, double first_element_duration,
-      const Eigen::MatrixXd &foot_positions,
-      const Eigen::MatrixXd &foot_velocities,
-      const Eigen::MatrixXd &foot_accelerations,
+    /**
+     * @brief Convert the foot positions and contact schedule into ros messages for the foot plan
+     * @param[in] contact_schedule Current contact schedule
+     * @param[in] foot_positions Foot positions over the horizon
+     * @param[in] current_plan_index Current index in the global plan
+     * @param[in] body_plan Body plan from MPC
+     * @param[in] time_ahead Time duration to the next plan index
+     * @param[out] past_footholds_msg Message for previous footholds
+     * @param[out] future_footholds_msg Message for future (planned) footholds
+     * @param[out] foot_plan_continuous_msg Message for continuous foot trajectories
+     */
+    void computeFootPlanMsgs(
+      const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
+      int current_plan_index, const Eigen::MatrixXd &body_plan, const double &time_ahead, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
       quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
       quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
 
