@@ -2,18 +2,16 @@
 
 Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
-LocalPlanner::LocalPlanner(ros::NodeHandle nh)
-    : local_body_planner_nonlinear_(), local_footstep_planner_() {
-  nh_ = nh;
+LocalPlanner::LocalPlanner(ros::NodeHandle nh) : local_body_planner_nonlinear_(), local_footstep_planner_() {
 
+	nh_ = nh;
+  
   // Load rosparams from parameter server
-  std::string terrain_map_topic, body_plan_topic, robot_state_topic,
-      local_plan_topic, foot_plan_discrete_topic, foot_plan_continuous_topic,
-      cmd_vel_topic, control_mode_topic;
-
-  // Load system parameters from launch file (not in config file)
-  quad_utils::loadROSParam(nh_, "robot_type", robot_name_);
-  quad_utils::loadROSParam(nh_, "/topics/terrain_map", terrain_map_topic);
+  std::string terrain_map_topic, body_plan_topic, robot_state_topic, local_plan_topic,
+    foot_plan_discrete_topic, foot_plan_continuous_topic, cmd_vel_topic;
+  // quad_utils::loadROSParamDefault(nh_, "robot_type", robot_name_,
+                                  // std::string("spirit"));
+  quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
   quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
   quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
@@ -108,6 +106,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
+<<<<<<< HEAD
   // Create nmpc wrapper class
   SystemID type;
   if (robot_name_ == "spirit") {
@@ -120,6 +119,65 @@ void LocalPlanner::initLocalBodyPlanner() {
     ROS_WARN("WRONG ROBOT TYPE");
   }
   local_body_planner_nonlinear_ = std::make_shared<NMPCController>(nh_, type);
+=======
+
+    // Load MPC parameters 
+  double m,Ixx,Iyy,Izz,mu,normal_lo, normal_hi;
+  quad_utils::loadROSParam(nh_, "local_body_planner/body_mass",m);
+  quad_utils::loadROSParam(nh_, "local_body_planner/body_ixx",Ixx);
+  quad_utils::loadROSParam(nh_, "local_body_planner/body_iyy",Iyy);
+  quad_utils::loadROSParam(nh_, "local_body_planner/body_izz",Izz);
+  quad_utils::loadROSParam(nh_, "local_body_planner/friction_mu",mu);
+  quad_utils::loadROSParam(nh_, "local_body_planner/normal_lo",normal_lo);
+  quad_utils::loadROSParam(nh_, "local_body_planner/normal_hi",normal_hi);
+
+  std::vector<double> state_weights, control_weights, state_lower_bound, state_upper_bound;
+  double terminal_weight_scaling;
+  quad_utils::loadROSParam(nh_, "local_body_planner/state_weights",state_weights);
+  quad_utils::loadROSParam(nh_, "local_body_planner/terminal_weight_scaling",
+    terminal_weight_scaling);
+  quad_utils::loadROSParam(nh_, "local_body_planner/control_weights",control_weights);
+  quad_utils::loadROSParam(nh_, "local_body_planner/state_lower_bound",state_lower_bound);
+  quad_utils::loadROSParam(nh_, "local_body_planner/state_upper_bound",state_upper_bound);
+
+  // Load state weights and bounds
+  Eigen::MatrixXd Qx = Eigen::MatrixXd::Zero(Nx_, Nx_);
+  Eigen::VectorXd state_lo = Eigen::VectorXd::Zero(Nx_);
+  Eigen::VectorXd state_hi = Eigen::VectorXd::Zero(Nx_);
+  for (int i = 0; i < Nx_; ++i) {
+    Qx(i,i) = state_weights.at(i);
+    state_lo(i) = state_lower_bound.at(i);
+    state_hi(i) = state_upper_bound.at(i);
+  }
+
+  // Load control weights
+  Eigen::MatrixXd Ru = Eigen::MatrixXd::Zero(Nu_,Nu_);
+  for (int i = 0; i < 3; ++i) { // for each dimension
+    for (int j = 0; j < num_feet_; ++j) { //for each leg
+      Ru(3*j + i,3*j + i) = control_weights.at(i);
+    }
+  }
+  // Ru(Nu_-1,Nu_-1) = 1e-6; //gravity weight term
+
+  std::vector<Eigen::MatrixXd> Q_vec(N_+1);
+  std::vector<Eigen::MatrixXd> U_vec(N_);
+  for (int i = 0; i < N_+1; ++i) {
+    Q_vec.at(i) = Qx;
+    if (i == N_) {
+      Q_vec.at(i) = terminal_weight_scaling*Qx;
+    }
+  }
+  for (int i = 0; i < N_; ++i) {
+    U_vec.at(i) = Ru;
+  }
+
+  // Robot body inertia matrix
+  Eigen::Matrix3d Ib = Eigen::Matrix3d::Zero();
+  Ib.diagonal() << Ixx,Iyy,Izz;
+
+  // Create nmpc wrapper class
+  local_body_planner_nonlinear_ = std::make_shared<NMPCController>(0);
+>>>>>>> cleaned up the mpc stuff and removed dependencies
 }
 
 void LocalPlanner::initLocalFootstepPlanner() {
@@ -172,7 +230,11 @@ void LocalPlanner::initLocalFootstepPlanner() {
 }
 
 void LocalPlanner::terrainMapCallback(
+<<<<<<< HEAD
     const grid_map_msgs::GridMap::ConstPtr &msg) {
+=======
+  const grid_map_msgs::GridMap::ConstPtr& msg) {
+>>>>>>> cleaned up the mpc stuff and removed dependencies
   grid_map::GridMapRosConverter::fromMessage(*msg, terrain_grid_);
 
   // Convert to FastTerrainMap structure for faster querying
@@ -441,6 +503,7 @@ bool LocalPlanner::computeLocalPlan() {
   quad_utils::FunctionTimer timer(__FUNCTION__);
 
   // Compute the contact schedule
+<<<<<<< HEAD
   local_footstep_planner_->computeContactSchedule(
       current_plan_index_, body_plan_, ref_primitive_plan_, control_mode_,
       contact_schedule_);
@@ -489,6 +552,31 @@ bool LocalPlanner::computeLocalPlan() {
     foot_positions_world_.col(3 * i + 2) =
         foot_positions_world_.col(3 * i + 2).array() + toe_radius_;
   }
+=======
+  local_footstep_planner_->computeContactSchedule(current_plan_index_, current_state_,
+    ref_body_plan_,contact_schedule_);
+
+  // Compute the new footholds if we have a valid existing plan (i.e. if grf_plan is filled)
+  if (grf_plan_.rows() == N_) {
+    
+    local_footstep_planner_->computeFootPositions(body_plan_, grf_plan_,
+      contact_schedule_, ref_body_plan_, foot_positions_world_);
+
+    // For standing test we know the foot position will be constant
+    // for (int i = 0; i < N_; i++) {
+    //   foot_positions_world_.row(i) = current_foot_positions_world_;
+    // }
+
+    // Transform the new foot positions into the body frame for body planning
+    local_footstep_planner_->getFootPositionsBodyFrame(body_plan_, foot_positions_world_,
+      foot_positions_body_);
+  }
+
+  // Compute body plan with NMPC, return if solve fails
+    if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_,
+      foot_positions_body_, contact_schedule_, ref_ground_height_, time_ahead_, same_plan_index_, body_plan_, grf_plan_))
+      return false;
+>>>>>>> cleaned up the mpc stuff and removed dependencies
 
   // Record computation time and update exponential filter
   compute_time_ = 1000.0 * timer.reportSilent();
