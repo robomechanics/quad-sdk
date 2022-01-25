@@ -164,24 +164,6 @@ class GlobalBodyPlanner {
     /// Handle for the map frame
     std::string map_frame_;
 
-    // /// Std vector containing the interpolated time data
-    // std::vector<double> t_plan_;
-
-    // /// Std vector containing the interpolated robot body plan
-    // std::vector<FullState> body_plan_;
-
-    // /// Std vector containing the interpolated wrench plan
-    // std::vector<GRF> grf_plan_;
-
-    // /// Std vector containing the interpolated time data
-    // std::vector<int> primitive_id_plan_;
-
-    // /// Std vector containing the cumulative path length at each index of the plan
-    // std::vector<double> length_plan_;
-
-    // /// Time stamp for the beginning of the plan
-    // ros::Time plan_timestamp_;
-
     /// Plan data for the most recently computed plan (may be suboptimal)
     GlobalBodyPlan newest_plan_;
 
@@ -217,9 +199,6 @@ class GlobalBodyPlanner {
 
     /// Sequence of discrete actions in the plan
     std::vector<Action> action_sequence_;
-
-    /// Cost of the current path in path length
-    // double current_cost_;
 
     /// Vector of cost instances in each planning call
     std::vector<double> cost_vector_;
@@ -257,10 +236,13 @@ class GlobalBodyPlanner {
     /// Planning status ID for refining (optimize current plan)
     static const int REFINE = 1;
 
+    /// Time at which reset began
     ros::Time reset_time_;
 
+    /// Boolean for whether to publish the new plan after the reset delay has occured
     bool publish_after_reset_delay_;
 
+    /// Timestamp for t=0 of global plan
     ros::Time global_plan_timestamp_;
 };
 

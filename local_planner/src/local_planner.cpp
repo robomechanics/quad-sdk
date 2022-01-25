@@ -20,7 +20,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   quad_utils::loadROSParam(nh_, "topics/cmd_vel", cmd_vel_topic);
   quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
 
-
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1, &LocalPlanner::terrainMapCallback, this);
   body_plan_sub_ = nh_.subscribe(body_plan_topic,1, &LocalPlanner::robotPlanCallback, this);
