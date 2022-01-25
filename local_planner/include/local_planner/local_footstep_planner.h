@@ -97,12 +97,9 @@ class LocalFootstepPlanner {
     /**
      * @brief Compute the contact schedule based on the current phase
      * @param[in] current_plan_index_ Current index in the plan
-     * @param[in] current_state Current robot state
-     * @param[in] ref_body_plan Reference bode plan
      * @param[out] contact_schedule 2D array of contact states
      */
     void computeContactSchedule(int current_plan_index,
-      Eigen::VectorXd current_state, Eigen::MatrixXd ref_body_plan,
       std::vector<std::vector<bool>> &contact_schedule) ;
 
     /**

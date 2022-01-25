@@ -88,10 +88,7 @@ void LocalFootstepPlanner::computeStanceContactSchedule(int current_plan_index,
   }
 }
 
-void LocalFootstepPlanner::computeContactSchedule(int current_plan_index,
-  Eigen::VectorXd current_state, Eigen::MatrixXd ref_body_plan,
-  std::vector<std::vector<bool>> &contact_schedule) {
-
+void LocalFootstepPlanner::computeContactSchedule(int current_plan_index, std::vector<std::vector<bool>> &contact_schedule) {
   // Compute the current phase in the nominal contact schedule
   int phase = current_plan_index % period_;
 

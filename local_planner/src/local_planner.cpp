@@ -41,7 +41,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) : local_body_planner_nonlinear_()
     last_cmd_vel_msg_time_max_);
 
   // Load system parameters from launch file (not in config file)
-  nh.param<bool>("local_planner/use_nmpc", use_nmpc_, false);
   nh.param<bool>("local_planner/use_twist_input", use_twist_input_, false);
 
   // Convert kinematics
@@ -455,8 +454,7 @@ bool LocalPlanner::computeLocalPlan() {
   quad_utils::FunctionTimer timer(__FUNCTION__);
 
   // Compute the contact schedule
-  local_footstep_planner_->computeContactSchedule(current_plan_index_, current_state_,
-    ref_body_plan_,contact_schedule_);
+  local_footstep_planner_->computeContactSchedule(current_plan_index_,contact_schedule_);
 
   // Compute the new footholds if we have a valid existing plan (i.e. if grf_plan is filled)
   if (grf_plan_.rows() == N_) {
