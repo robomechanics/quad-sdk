@@ -8,38 +8,43 @@ RRTClass::~RRTClass() {}
 using namespace planning_utils;
 
 bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
-	const PlannerConfig &planner_config, int direction, ros::Publisher &tree_pub)
+  const PlannerConfig &planner_config, int direction, ros::Publisher &tree_pub)
 {
-	double best_so_far = stateDistance(s_near, s);
-	std::array<double, 3> surf_norm = planner_config.terrain.getSurfaceNormalFiltered(s[0], s[1]);
+  double best_so_far = stateDistance(s_near, s);
+  std::array<double, 3> surf_norm = planner_config.terrain.getSurfaceNormalFiltered(s[0], s[1]);
 
   int tree_size = tree_viz_msg_.markers.size();
 
-	// if (direction == REVERSE) {
-	// 	flipDirection(s_near);
-	// }
-	// direction = FORWARD;
+  // if (direction == REVERSE) {
+  // 	flipDirection(s_near);
+  // }
+  // direction = FORWARD;
+
+  std::cout << "Entering new config, state = ";
+  printStateNewline(s);
+  printStateNewline(s_near);
 
   bool any_valid_actions = false;
-	for (int i = 0; i < planner_config.NUM_GEN_STATES; ++i)
-	{
-		bool valid_state_found = false;
-		StateActionResult current_result;
+  for (int i = 0; i < planner_config.NUM_GEN_STATES; ++i)
+  {
+    bool valid_state_found = false;
+    StateActionResult current_result;
 
-		// Action a_test = getRandomAction(surf_norm,planner_config);
-		Action a_test = getRandomLeapAction(s_near,surf_norm,planner_config);
-		for (int j = 0; j < planner_config.NUM_GEN_STATES; ++j)
-		{
+    // Action a_test = getRandomAction(surf_norm,planner_config);
+    Action a_test = getRandomLeapAction(s_near,surf_norm,planner_config);
+    for (int j = 0; j < planner_config.NUM_GEN_STATES; ++j)
+    {
     
-			bool is_valid;
+      bool is_valid;
       is_valid = isValidStateActionPair(s_near, a_test, current_result, planner_config);
-			// if (direction == FORWARD)
-			// {
-			// 	is_valid = isValidStateActionPair(s_near, a_test, current_result, planner_config);
-			// } else if (direction == REVERSE)
-			// {
-			// 	is_valid = isValidStateActionPair(s_near, a_test, current_result, planner_config);
-			// }
+      // is_valid = findValidStateActionPair(s_near, a_test, current_result, planner_config);
+      // if (direction == FORWARD)
+      // {
+      // 	is_valid = isValidStateActionPair(s_near, a_test, current_result, planner_config);
+      // } else if (direction == REVERSE)
+      // {
+      // 	is_valid = isValidStateActionPair(s_near, a_test, current_result, planner_config);
+      // }
 
       #ifdef VISUALIZE_ALL_CANDIDATE_ACTIONS
         if (direction == FORWARD) {
@@ -51,36 +56,40 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
         }
       #endif
 
-			if (is_valid == true)
-			{
-				valid_state_found = true;
+      if (is_valid == true)
+      {
+        valid_state_found = true;
         // std::cout << "GRF 0 = " << getGRF(a_test,0,planner_config) << std::endl;
         // std::cout << "GRF 1 = " << getGRF(a_test,a_test[6],planner_config) << std::endl;
-				break;
-			} else {
-				// a_test = getRandomAction(surf_norm,planner_config);
-				a_test = getRandomLeapAction(s_near,surf_norm,planner_config);
-			}
-		}	
+        break;
+      } else {
+        // a_test = getRandomAction(surf_norm,planner_config);
+        a_test = getRandomLeapAction(s_near,surf_norm,planner_config);
+      }
+    }	
 
-		if (valid_state_found == true)
-		{
-			double current_dist = stateDistance(current_result.s_new, s);
-			if (current_dist < best_so_far)
-			{
+    if (valid_state_found == true)
+    {
+      double current_dist = stateDistance(current_result.s_new, s);
+      if (current_dist < best_so_far)
+      {
         any_valid_actions = true;
-				best_so_far = current_dist;
-				result.s_new = current_result.s_new;
-				result.a_new = current_result.a_new;
-				result.length = current_result.length;
-			}
-		}
-	}
+        best_so_far = current_dist;
+        result.s_new = current_result.s_new;
+        result.a_new = current_result.a_new;
+        result.length = current_result.length;
+      }
+    }
+  }
+
+  std::cout << "Attempting connect,  state = ";
+  printStateNewline(s);
+  printStateNewline(s_near);
 
   // Try connecting directly
   StateActionResult current_result;
-	if (attemptConnect(s_near, s, current_result, planner_config, direction) != TRAPPED) {
-		double current_dist = stateDistance(current_result.s_new, s);
+  if (attemptConnect(s_near, s, current_result, planner_config, direction) != TRAPPED) {
+    double current_dist = stateDistance(current_result.s_new, s);
 
     if (current_dist < best_so_far)
     {
@@ -89,20 +98,20 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
       result.a_new = current_result.a_new;
       result.length = current_result.length;
     }
-	}
+  }
 
 
   #ifdef VISUALIZE_ALL_CANDIDATE_ACTIONS
     tree_viz_msg_.markers.resize(tree_size);
   #endif
 
-	if (best_so_far == stateDistance(s_near, s))
-	{
-		return false;
-	} else
-	{
-		return true;
-	}
+  if (best_so_far == stateDistance(s_near, s))
+  {
+    return false;
+  } else
+  {
+    return true;
+  }
 }
 
 int RRTClass::attemptConnect(State s_existing, State s, double t_s, StateActionResult &result,
@@ -112,10 +121,10 @@ int RRTClass::attemptConnect(State s_existing, State s, double t_s, StateActionR
   if (t_s <= planner_config.KINEMATICS_RES)
     return TRAPPED;
 
-	// if (direction == REVERSE) {
-	// 	flipDirection(s_existing);
-	// }
-	// direction = FORWARD;
+  // if (direction == REVERSE) {
+  // 	flipDirection(s_existing);
+  // }
+  // direction = FORWARD;
 
   // Initialize the start and goal states depending on the direction, as well as the stance and flight times
   State s_start = (direction == FORWARD) ? s_existing : s;
@@ -192,85 +201,85 @@ int RRTClass::attemptConnect(State s_existing, State s, StateActionResult &resul
 }
 
 int RRTClass::extend(PlannerClass &T, State s, const PlannerConfig &planner_config, int direction,
-	ros::Publisher &tree_pub)
+  ros::Publisher &tree_pub)
 {
-	int s_near_index = T.getNearestNeighbor(s);
-	State s_near = T.getVertex(s_near_index);
-	StateActionResult result;
+  int s_near_index = T.getNearestNeighbor(s);
+  State s_near = T.getVertex(s_near_index);
+  StateActionResult result;
 
-	if (newConfig(s,s_near,result, planner_config, direction, tree_pub) == true)
-	{
-		int s_new_index = T.getNumVertices();
-		T.addVertex(s_new_index, result.s_new);
-		T.addEdge(s_near_index, s_new_index, result.length);
-		T.addAction(s_new_index, result.a_new);
+  if (newConfig(s,s_near,result, planner_config, direction, tree_pub) == true)
+  {
+    int s_new_index = T.getNumVertices();
+    T.addVertex(s_new_index, result.s_new);
+    T.addEdge(s_near_index, s_new_index, result.length);
+    T.addAction(s_new_index, result.a_new);
 
-		// T.updateGValue(s_new_index, T.getGValue(s_near_index) + result.length);
+    // T.updateGValue(s_new_index, T.getGValue(s_near_index) + result.length);
 
-		// if (s_new == s)
-		if (isWithinBounds(result.s_new, s,planner_config) == true)
-		{
-			return REACHED;
-		} else {
-			return ADVANCED;
-		}
-	} else {
-		return TRAPPED;
-	}
+    // if (s_new == s)
+    if (isWithinBounds(result.s_new, s,planner_config) == true)
+    {
+      return REACHED;
+    } else {
+      return ADVANCED;
+    }
+  } else {
+    return TRAPPED;
+  }
 }
 
 std::vector<int> RRTClass::pathFromStart(PlannerClass &T, int s)
 {
-	std::vector<int> path;
-	path.push_back(s);
-	while(s != 0)
-	{
-		int s_pred = T.getPredecessor(s);
-		path.push_back(s_pred);
-		s = s_pred;
-	}
-	std::reverse(path.begin(), path.end());
-	return path;
+  std::vector<int> path;
+  path.push_back(s);
+  while(s != 0)
+  {
+    int s_pred = T.getPredecessor(s);
+    path.push_back(s_pred);
+    s = s_pred;
+  }
+  std::reverse(path.begin(), path.end());
+  return path;
 }
 
 std::vector<State> RRTClass::getStateSequence(PlannerClass &T, std::vector<int> path)
 {
-	std::vector<State> state_sequence;
-	for (int i = 0; i < path.size(); ++i)
-	{
-		state_sequence.push_back(T.getVertex(path.at(i)));
-	}
-	return state_sequence;
+  std::vector<State> state_sequence;
+  for (int i = 0; i < path.size(); ++i)
+  {
+    state_sequence.push_back(T.getVertex(path.at(i)));
+  }
+  return state_sequence;
 }
 
 std::vector<Action> RRTClass::getActionSequence(PlannerClass &T, std::vector<int> path)
 {
-	// Assumes that actions are synched with the states to which they lead
-	std::vector<Action> action_sequence;
-	for (int i = 1; i < path.size(); ++i)
-	{
-		action_sequence.push_back(T.getAction(path.at(i)));
-	}
-	return action_sequence;
+  // Assumes that actions are synched with the states to which they lead
+  std::vector<Action> action_sequence;
+  for (int i = 1; i < path.size(); ++i)
+  {
+    action_sequence.push_back(T.getAction(path.at(i)));
+  }
+  return action_sequence;
 }
 
 void RRTClass::printPath(PlannerClass &T, std::vector<int> path)
 {
-	std::cout << "Printing path:";
-	for (int i = 0; i < path.size(); i++)
-	{
-		std::cout << std::endl;
-		std::cout << path.at(i) << " or ";
-		printState(T.getVertex(path.at(i)));
-		std::cout << " ->";
-	}
-	std::cout << "\b\b  " << std::endl;
+  std::cout << "Printing path:";
+  for (int i = 0; i < path.size(); i++)
+  {
+    std::cout << std::endl;
+    std::cout << path.at(i) << " or ";
+    printState(T.getVertex(path.at(i)));
+    std::cout << " ->";
+  }
+  std::cout << "\b\b  " << std::endl;
 }
 
 void RRTClass::getStatistics(double &plan_time, int &vertices_generated, double &plan_length, double& path_duration)
 {
-	plan_time = elapsed_total_.count();
-	vertices_generated = num_vertices_;
-	plan_length = path_length_;
-	path_duration = path_duration_;
+  plan_time = elapsed_total_.count();
+  vertices_generated = num_vertices_;
+  plan_length = path_length_;
+  path_duration = path_duration_;
 }

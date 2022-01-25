@@ -35,7 +35,8 @@ State PlannerClass::randomState(const PlannerConfig &planner_config)
 
     q[0] = (x_max - x_min)*(double)rand()/RAND_MAX + x_min;
     q[1] = (y_max - y_min)*(double)rand()/RAND_MAX + y_min;
-    q[2] = std::max(std::min(height_distribution(generator), z_max_rel), z_min_rel) + planner_config.terrain.getGroundHeight(q[0], q[1]);
+    // q[2] = std::max(std::min(height_distribution(generator), z_max_rel), z_min_rel) + planner_config.terrain.getGroundHeight(q[0], q[1]);
+    q[2] = planner_config.H_NOM + planner_config.terrain.getGroundHeight(q[0], q[1]);
 
 
     double phi = (2.0*MY_PI)*(double)rand()/RAND_MAX;

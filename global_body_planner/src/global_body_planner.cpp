@@ -237,6 +237,13 @@ bool GlobalBodyPlanner::callPlanner() {
       if (num_calls_ > 1) {
         continue;
       } else {
+        if (plan_status == INVALID_START_STATE) {
+          ROS_WARN_THROTTLE(1, "Invalid start state, exiting");
+        } else if (plan_status == INVALID_GOAL_STATE) {
+          ROS_WARN_THROTTLE(1, "Invalid goal state, exiting");
+        } else if (plan_status == INVALID_START_GOAL_EQUAL) {
+          ROS_WARN_THROTTLE(1, "Start is sufficiently close to goal, exiting");
+        };
         return false;
       }
     }
