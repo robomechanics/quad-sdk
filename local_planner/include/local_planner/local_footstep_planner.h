@@ -30,6 +30,9 @@
 */
 class LocalFootstepPlanner {
   public:
+    // Time difference between two calls
+    double time_diff_;
+
     /**
      * @brief Constructor for LocalFootstepPlanner Class
      * @return Constructed object of type LocalFootstepPlanner
@@ -140,18 +143,22 @@ class LocalFootstepPlanner {
      * @brief Convert the foot positions and contact schedule into ros messages for the foot plan
      * @param[in] contact_schedule Current contact schedule
      * @param[in] foot_positions Foot positions over the horizon
+     * @param[in] current_foot_position Current foot position
+     * @param[in] current_foot_velocity Current foot velocity
      * @param[in] current_plan_index Current index in the global plan
      * @param[in] body_plan Body plan from MPC
      * @param[in] time_ahead Time duration to the next plan index
      * @param[out] past_footholds_msg Message for previous footholds
      * @param[out] future_footholds_msg Message for future (planned) footholds
+     * @param[out] future_nominal_footholds_msg Message for nominal future (planned) footholds
      * @param[out] foot_plan_continuous_msg Message for continuous foot trajectories
      */
-    void computeFootPlanMsgs(
-      const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
-      int current_plan_index, const Eigen::MatrixXd &body_plan, const double &time_ahead, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
-      quad_msgs::MultiFootPlanDiscrete &future_footholds_msg, quad_msgs::MultiFootState &future_nominal_footholds_msg,
-      quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
+    void computeFootPlanMsgs(const std::vector<std::vector<bool>> &contact_schedule,
+                             const Eigen::MatrixXd &foot_positions, const Eigen::VectorXd &current_foot_position,
+                             const Eigen::VectorXd &current_foot_velocity, int current_plan_index, const Eigen::MatrixXd &body_plan,
+                             const double &time_ahead, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+                             quad_msgs::MultiFootPlanDiscrete &future_footholds_msg, quad_msgs::MultiFootState &future_nominal_footholds_msg,
+                             quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
 
     inline void printContactSchedule(const std::vector<std::vector<bool>> &contact_schedule) {
       
@@ -176,7 +183,7 @@ class LocalFootstepPlanner {
 
     inline double getTerrainHeight(Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy)
     {
-      double height = 0;
+      std::vector<double> height;
       for (size_t i = 0; i < 4; i++)
       {
         Eigen::Vector3d hip_pos;
@@ -185,11 +192,11 @@ class LocalFootstepPlanner {
         quadKD_->worldToNominalHipFKWorldFrame(i, body_pos, body_rpy, hip_pos);
         grid_map::Position hip_position_grid_map = {hip_pos.x(), hip_pos.y()};
         double hip_height = terrain_grid_.atPosition("z_smooth", hip_position_grid_map, grid_map::InterpolationMethods::INTER_LINEAR);
-
-        height += hip_height / 4;
+        height.push_back(hip_height);
       }
 
-      return height;
+      // return *std::min_element(height.begin(), height.end());
+      return std::accumulate(height.begin(), height.end(), 0.0)/4;
     }
 
     inline double getTerrainSlope(double x, double y, double dx, double dy)
@@ -253,19 +260,19 @@ class LocalFootstepPlanner {
     void updateContinuousPlan();
 
     /**
-     * @brief Compute the foot state for a swing foot as a function of the previous and next steps
-     * @param[in] foot_position_prev Previous foothold
-     * @param[in] foot_position_next Next foothold
-     * @param[in] swing_phase Phase variable for swing phase (as a fraction)
-     * @param[in] swing_duration Duration of swing (in timesteps)
-     * @param[in] body_plan Body plan of current step from MPC
-     * @param[in] leg_index Leg index
-     * @param[out] foot_position Position of swing foot
-     * @param[out] foot_velocity Velocity of swing foot
+     * @brief Compute the cubic hermite spline
+     * @param[in] pos_prev Previous position
+     * @param[in] vel_prev Previous velocity
+     * @param[in] pos_next Next position
+     * @param[in] vel_next Next velocity
+     * @param[in] phase Interplation phase
+     * @param[in] duration Interplation duration
+     * @param[out] pos Interplated position
+     * @param[out] vel Interplated velocity
+     * @param[out] acc Interplated accleration
      */
-    void computeSwingFootState(const Eigen::Vector3d &foot_position_prev,
-      const Eigen::Vector3d &foot_position_next, double swing_phase, int swing_duration, const Eigen::VectorXd &body_plan, int leg_index,
-      Eigen::Vector3d &foot_position, Eigen::Vector3d &foot_velocity, Eigen::Vector3d &foot_acceleration);
+    void cubicHermiteSpline(double pos_prev, double vel_prev, double pos_next, double vel_next, double phase, double duration,
+                            double &pos, double &vel, double &acc);
 
     /**
      * @brief Extract foot data from the matrix
@@ -388,6 +395,8 @@ class LocalFootstepPlanner {
     /// Threshold of body error from desired goal to start stepping
     double standing_error_threshold_ = 0;
 
+    /// Estimated ground height
+    double ground_height_;
 };
 
 

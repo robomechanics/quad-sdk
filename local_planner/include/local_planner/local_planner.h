@@ -184,6 +184,9 @@ private:
   // Current positions of each foot
   Eigen::VectorXd current_foot_positions_world_;
 
+  // Current velocities of each foot
+  Eigen::VectorXd current_foot_velocities_world_;
+
   // Current positions of each foot
   Eigen::VectorXd current_foot_positions_body_;
 
@@ -302,22 +305,31 @@ private:
   /// Filter chain parameters name.
   std::string filterChainParametersName_;
 
+  /// Tail controller type
   int tail_type_;
 
+  /// Current tail states
   Eigen::VectorXd tail_current_state_;
 
+  /// Reference tail states
   Eigen::MatrixXd ref_tail_plan_;
 
+  /// Tail plan
   Eigen::MatrixXd tail_plan_;
 
+  /// Tail control plan
   Eigen::MatrixXd tail_torque_plan_;
 
+  /// Tail plan publisher
   ros::Publisher tail_plan_pub_;
 
+  /// Contact sensing results boolean vector
   std::vector<bool> contact_sensing_;
 
-  std::vector<grid_map::Index> tmp_foot_hist_idx_;
+  /// Temporary index of the foothold history
+  std::vector<std::vector<grid_map::Index>> tmp_foot_hist_idx_;
 
+  /// Boolean of first solve status
   bool first_solve_success;
 
   /// Contact sensing results message
@@ -336,6 +348,12 @@ private:
 
   /// If the current solving is duplicated in the same index
   bool same_plan_index_;
+
+  /// Estimated ground height
+  double ground_height_;
+
+  /// Last call time
+  ros::Time enter_time_;
 };
 
 
