@@ -9,7 +9,6 @@
 #include <quad_msgs/GRFArray.h>
 #include <quad_msgs/RobotState.h>
 #include <quad_msgs/RobotStateTrajectory.h>
-#include <local_planner/quadruped_mpc.h>
 #include <local_planner/local_footstep_planner.h>
 #include <quad_utils/ros_utils.h>
 #include <quad_utils/quad_kd.h>
@@ -129,7 +128,6 @@ private:
 	double update_rate_;
 
   /// Local Body Planner object
-  std::shared_ptr<QuadrupedMPC> local_body_planner_convex_;
   std::shared_ptr<NMPCController> local_body_planner_nonlinear_;
 
   /// Local Footstep Planner object
