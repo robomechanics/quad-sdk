@@ -83,10 +83,25 @@ void LocalFootstepPlanner::getFootPositionsBodyFrame(
   }
 }
 
+<<<<<<< HEAD
 void LocalFootstepPlanner::computeContactSchedule(
     int current_plan_index, const Eigen::MatrixXd &body_plan,
     const Eigen::VectorXi &ref_primitive_plan, int control_mode,
     std::vector<std::vector<bool>> &contact_schedule) {
+=======
+void LocalFootstepPlanner::computeStanceContactSchedule(int current_plan_index,
+  std::vector<std::vector<bool>> &contact_schedule) {
+
+  for (int i = 0; i < horizon_length_; i++) { // For each finite element
+    contact_schedule.at(i).resize(num_feet_);
+    for (int leg_idx = 0; leg_idx < num_feet_; leg_idx++) { // For each leg
+      nominal_contact_schedule_.at(i).at(leg_idx) = true;
+    }
+  }
+}
+
+void LocalFootstepPlanner::computeContactSchedule(int current_plan_index, std::vector<std::vector<bool>> &contact_schedule) {
+>>>>>>> removed additional extra files going to write unitest for computeFootPos next
   // Compute the current phase in the nominal contact schedule
   int phase = current_plan_index % period_;
 

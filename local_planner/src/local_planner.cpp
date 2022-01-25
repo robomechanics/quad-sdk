@@ -106,7 +106,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) : local_body_planner_nonlinear_()
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
-<<<<<<< HEAD
   // Create nmpc wrapper class
   SystemID type;
   if (robot_name_ == "spirit") {
@@ -117,7 +116,6 @@ void LocalPlanner::initLocalBodyPlanner() {
     ROS_WARN("WRONG ROBOT TYPE");
   }
   local_body_planner_nonlinear_ = std::make_shared<NMPCController>(nh_, type);
-=======
 
     // Load MPC parameters 
   double m,Ixx,Iyy,Izz,mu,normal_lo, normal_hi;
@@ -175,7 +173,6 @@ void LocalPlanner::initLocalBodyPlanner() {
 
   // Create nmpc wrapper class
   local_body_planner_nonlinear_ = std::make_shared<NMPCController>(0);
->>>>>>> cleaned up the mpc stuff and removed dependencies
 }
 
 void LocalPlanner::initLocalFootstepPlanner() {
@@ -228,11 +225,7 @@ void LocalPlanner::initLocalFootstepPlanner() {
 }
 
 void LocalPlanner::terrainMapCallback(
-<<<<<<< HEAD
-    const grid_map_msgs::GridMap::ConstPtr &msg) {
-=======
   const grid_map_msgs::GridMap::ConstPtr& msg) {
->>>>>>> cleaned up the mpc stuff and removed dependencies
   grid_map::GridMapRosConverter::fromMessage(*msg, terrain_grid_);
 
   // Convert to FastTerrainMap structure for faster querying
@@ -502,6 +495,7 @@ bool LocalPlanner::computeLocalPlan() {
 
   // Compute the contact schedule
 <<<<<<< HEAD
+<<<<<<< HEAD
   local_footstep_planner_->computeContactSchedule(
       current_plan_index_, body_plan_, ref_primitive_plan_, control_mode_,
       contact_schedule_);
@@ -553,6 +547,9 @@ bool LocalPlanner::computeLocalPlan() {
 =======
   local_footstep_planner_->computeContactSchedule(current_plan_index_, current_state_,
     ref_body_plan_,contact_schedule_);
+=======
+  local_footstep_planner_->computeContactSchedule(current_plan_index_,contact_schedule_);
+>>>>>>> removed additional extra files going to write unitest for computeFootPos next
 
   // Compute the new footholds if we have a valid existing plan (i.e. if grf_plan is filled)
   if (grf_plan_.rows() == N_) {

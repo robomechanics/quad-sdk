@@ -10,12 +10,9 @@
 #include <quad_msgs/MultiFootPlanDiscrete.h>
 #include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/RobotState.h>
-<<<<<<< HEAD
-=======
 #include <quad_msgs/RobotStateTrajectory.h>
 #include <local_planner/local_footstep_planner.h>
 #include <quad_utils/ros_utils.h>
->>>>>>> cleaned up the mpc stuff and removed dependencies
 #include <quad_utils/quad_kd.h>
 #include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
