@@ -248,9 +248,6 @@ private:
   /// Boolean for using twist input instead of a global body plan
   bool use_twist_input_;
 
-  /// Boolean for using nonlinear MPC
-  bool use_nmpc_;
-
   /// Vector for stand pose (x, y, yaw)
   Eigen::Vector3d stand_pose_;
 
