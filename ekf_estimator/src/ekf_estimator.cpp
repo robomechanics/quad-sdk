@@ -43,46 +43,65 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
   bool good_imu = false;
   bool good_joint_state = false;
 
-  // Collect info from last imu message
-  if (last_imu_msg_ != NULL)
-  {
-    new_state_est.body.pose.orientation = (*last_imu_msg_).orientation;
-    good_imu = true;
-  }
-  else {
-    geometry_msgs::Quaternion quat;
-    quat.x = 0;
-    quat.y = 0;
-    quat.z = 0;
-    quat.w = 1;
-    new_state_est.body.pose.orientation = quat;
-  }
-  // Collect info from last joint state message, making sure info is not out of date
-  if (last_joint_state_msg_ != NULL)
-  {
-    new_state_est.joints = *last_joint_state_msg_;
-    double joint_state_msg_time_diff = 0;
-    if (joint_state_msg_time_diff > joint_state_msg_time_diff_max_)
-    {
-      // Don't use this info in EKF update!
-      ROS_WARN("Haven't received a recent joint state message, skipping EKF measurement step");
-    }
-    else
-    {
-      good_joint_state = true;
-    }
-  }
-  else {
-    ROS_DEBUG_THROTTLE(0.5,"Still waiting for first joint state message");
-    new_state_est.joints.header.stamp = ros::Time::now();
-    new_state_est.joints.name = {"8", "0", "1", "9","2", "3", "10", "4","5", 
+  // // Collect info from last imu message
+  // if (last_imu_msg_ != NULL)
+  // {
+  //   new_state_est.body.pose.orientation = (*last_imu_msg_).orientation;
+  //   good_imu = true;
+  // }
+  // else {
+  //   geometry_msgs::Quaternion quat;
+  //   quat.x = 0;
+  //   quat.y = 0;
+  //   quat.z = 0;
+  //   quat.w = 1;
+  //   new_state_est.body.pose.orientation = quat;
+  // }
+  // // Collect info from last joint state message, making sure info is not out of date
+  // if (last_joint_state_msg_ != NULL)
+  // {
+  //   new_state_est.joints = *last_joint_state_msg_;
+  //   double joint_state_msg_time_diff = 0;
+  //   if (joint_state_msg_time_diff > joint_state_msg_time_diff_max_)
+  //   {
+  //     // Don't use this info in EKF update!
+  //     ROS_WARN("Haven't received a recent joint state message, skipping EKF measurement step");
+  //   }
+  //   else
+  //   {
+  //     good_joint_state = true;
+  //   }
+  // }
+  // else {
+  //   ROS_DEBUG_THROTTLE(0.5,"Still waiting for first joint state message");
+  //   new_state_est.joints.header.stamp = ros::Time::now();
+  //   new_state_est.joints.name = {"8", "0", "1", "9","2", "3", "10", "4","5", 
+  //     "11", "6", "7"};
+  //     new_state_est.joints.position = {0,0,0,0,0,0,0,0,0,0,0,0};
+  //     new_state_est.joints.velocity = {0,0,0,0,0,0,0,0,0,0,0,0};
+  //     new_state_est.joints.effort = {0,0,0,0,0,0,0,0,0,0,0,0};
+  // }
+
+  new_state_est.header.stamp = ros::Time::now();
+
+  geometry_msgs::Quaternion quat;
+  quat.x = 0;
+  quat.y = 0;
+  quat.z = 0;
+  quat.w = 1;
+
+  new_state_est.body.header.stamp = ros::Time::now();
+  new_state_est.body.pose.orientation = quat;
+  new_state_est.body.pose.position.x = 1;
+  new_state_est.body.pose.position.y = 1;
+  new_state_est.body.pose.position.z = 1;
+
+  new_state_est.joints.header.stamp = ros::Time::now();
+  new_state_est.joints.name = {"8", "0", "1", "9","2", "3", "10", "4","5", 
       "11", "6", "7"};
       new_state_est.joints.position = {0,0,0,0,0,0,0,0,0,0,0,0};
       new_state_est.joints.velocity = {0,0,0,0,0,0,0,0,0,0,0,0};
       new_state_est.joints.effort = {0,0,0,0,0,0,0,0,0,0,0,0};
-  }
-
-  new_state_est.header.stamp = ros::Time::now();
   return new_state_est;
 }
 
@@ -98,6 +117,9 @@ void EKFEstimator::spin() {
 
     // Publish new state estimate
     state_estimate_pub_.publish(new_state_est);
+    
+    // std::cout<<"state published" << std::endl;
+
 
     // Store new state estimate for next iteration
     last_state_est_ = new_state_est;
