@@ -1,14 +1,12 @@
 #include "local_planner/local_planner.h"
 
-// namespace plt = matplotlibcpp;
 Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
-LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
-  local_body_planner_convex_(), local_body_planner_nonlinear_(), local_footstep_planner_() {
+LocalPlanner::LocalPlanner(ros::NodeHandle nh) : local_body_planner_nonlinear_(), local_footstep_planner_() {
 
 	nh_ = nh;
   
-    // Load rosparams from parameter server
+  // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic, local_plan_topic,
     foot_plan_discrete_topic, foot_plan_continuous_topic, cmd_vel_topic;
   quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
@@ -146,21 +144,8 @@ void LocalPlanner::initLocalBodyPlanner() {
   Eigen::Matrix3d Ib = Eigen::Matrix3d::Zero();
   Ib.diagonal() << Ixx,Iyy,Izz;
 
-  // Create mpc wrapper class
-  if (use_nmpc_)
-  {
-    local_body_planner_nonlinear_ = std::make_shared<NMPCController>(0);
-  }
-  else
-  {
-    local_body_planner_convex_ = std::make_shared<QuadrupedMPC>();
-    local_body_planner_convex_->setTimestep(dt_);
-    local_body_planner_convex_->setMassProperties(m, Ib);
-    local_body_planner_convex_->update_weights(Q_vec, U_vec);
-    local_body_planner_convex_->update_state_bounds(state_lo, state_hi);
-    local_body_planner_convex_->update_control_bounds(normal_lo, normal_hi);
-    local_body_planner_convex_->update_friction(mu);
-  }
+  // Create nmpc wrapper class
+  local_body_planner_nonlinear_ = std::make_shared<NMPCController>(0);
 }
 
 void LocalPlanner::initLocalFootstepPlanner() {
@@ -197,7 +182,6 @@ void LocalPlanner::initLocalFootstepPlanner() {
 
 void LocalPlanner::terrainMapCallback(
   const grid_map_msgs::GridMap::ConstPtr& msg) {
-  // grid_map::GridMap map;
   grid_map::GridMapRosConverter::fromMessage(*msg, terrain_grid_);
 
   // Convert to FastTerrainMap structure for faster querying
@@ -480,7 +464,7 @@ bool LocalPlanner::computeLocalPlan() {
     local_footstep_planner_->computeFootPositions(body_plan_, grf_plan_,
       contact_schedule_, ref_body_plan_, foot_positions_world_);
 
-    // // For standing test we know the foot position will be constant
+    // For standing test we know the foot position will be constant
     // for (int i = 0; i < N_; i++) {
     //   foot_positions_world_.row(i) = current_foot_positions_world_;
     // }
@@ -490,16 +474,10 @@ bool LocalPlanner::computeLocalPlan() {
       foot_positions_body_);
   }
 
-  // Compute body plan with MPC, return if solve fails
-  if (use_nmpc_) {
+  // Compute body plan with NMPC, return if solve fails
     if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_,
       foot_positions_body_, contact_schedule_, ref_ground_height_, time_ahead_, same_plan_index_, body_plan_, grf_plan_))
       return false;
-  } else {
-    if (!local_body_planner_convex_->computePlan(current_state_, ref_body_plan_,
-      foot_positions_body_, contact_schedule_, body_plan_, grf_plan_))
-      return false;
-  }
 
   // Record computation time and update exponential filter
   compute_time_ = 1000.0*timer.reportSilent();
