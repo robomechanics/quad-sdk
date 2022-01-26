@@ -28,6 +28,13 @@ public:
   void spin();
 
 private:
+
+  /**
+   * @brief Callback function to handle new ground truth data
+   * @param[in] ground_truth_msg quad_msgs<RobotState>
+   */
+  void groundtruthCallback(const quad_msgs::RobotState::ConstPtr& msg);
+
   /**
    * @brief Callback function to handle new joint encoder data
    * @param[in] joint_encoder_msg sensor_msgs<JointState> containing joint pos,vel,current
@@ -51,6 +58,13 @@ private:
    * @return state estimate of custom type RobotState
    */
   quad_msgs::RobotState updateStep();
+
+
+  /// Subscriber for joint encoder messages
+  ros::Subscriber state_ground_truth_pub_;
+
+  /// Last state ground_truth
+  quad_msgs::RobotState::ConstPtr last_state_msg_;
 
   /// Subscriber for joint encoder messages
   ros::Subscriber joint_encoder_sub_;
