@@ -39,6 +39,10 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   quad_utils::loadROSParam(nh_,"robot_driver/stand_kd", stand_kd_);
   quad_utils::loadROSParam(nh_,"robot_driver/stance_kp", stance_kp_);
   quad_utils::loadROSParam(nh_,"robot_driver/stance_kd", stance_kd_);
+  quad_utils::loadROSParam(nh_,"robot_driver/retraction_kp", retraction_kp_);
+  quad_utils::loadROSParam(nh_,"robot_driver/retraction_kd", retraction_kd_);
+  quad_utils::loadROSParam(nh_,"robot_driver/extend_kp", extend_kp_);
+  quad_utils::loadROSParam(nh_,"robot_driver/extend_kd", extend_kd_);
   quad_utils::loadROSParam(nh_,"robot_driver/swing_kp", swing_kp_);
   quad_utils::loadROSParam(nh_,"robot_driver/swing_kd", swing_kd_);
   quad_utils::loadROSParam(nh_,"robot_driver/safety_kp", safety_kp_);
@@ -92,7 +96,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
     ROS_ERROR_STREAM("Invalid controller id " << controller_id_ << ", returning nullptr");
     leg_controller_ = nullptr;
   }
-  leg_controller_->setGains(stance_kp_, stance_kd_, swing_kp_, swing_kd_);
+  leg_controller_->setGains(stance_kp_, stance_kd_, swing_kp_, swing_kd_, retraction_kp_, retraction_kd_, extend_kp_, extend_kd_);
 
   // Start sitting
   control_mode_ = SIT;

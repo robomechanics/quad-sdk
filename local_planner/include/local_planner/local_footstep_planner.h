@@ -195,8 +195,8 @@ class LocalFootstepPlanner {
         height.push_back(hip_height);
       }
 
-      // return *std::min_element(height.begin(), height.end());
-      return std::accumulate(height.begin(), height.end(), 0.0)/4;
+      return *std::min_element(height.begin(), height.end());
+      // return std::accumulate(height.begin(), height.end(), 0.0)/4;
     }
 
     inline double getTerrainSlope(double x, double y, double dx, double dy)

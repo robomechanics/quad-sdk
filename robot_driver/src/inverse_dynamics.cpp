@@ -112,7 +112,7 @@ bool InverseDynamicsController::computeLegCommandArray(
       // Swing or contact to miss
       if (contact_mode.at(i) &&
           !last_contact_sensing_msg_.data.at(i) &&
-          (current_foot_positions(3 * i + 2) - body_state(2)) < -0.32)
+          (current_foot_positions(3 * i + 2) - body_state(2)) < -0.295)
           // (current_foot_positions(3 * i + 2) - nominal_foot_positions(3 * i + 2)) < -0.1)
       {
         ROS_WARN_STREAM("Leg controller: swing or contact to miss leg: " << i);
@@ -184,10 +184,30 @@ bool InverseDynamicsController::computeLegCommandArray(
         leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).torque_ff =
             tau_array(joint_idx);
 
-        if (adaptive_contact_mode[i]) {
-          leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp = stance_kp_.at(j);
-          leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd = stance_kd_.at(j);
-        } else {
+        if (contact_mode.at(i))
+        {
+          if (adaptive_contact_mode.at(i))
+          {
+            if (last_grf_sensor_msg_->contact_states.at(i) &&
+                last_grf_sensor_msg_->vectors.at(i).z >= 5)
+            {
+              leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp = stance_kp_.at(j);
+              leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd = stance_kd_.at(j);
+            }
+            else
+            {
+              leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp = extend_kp_.at(j);
+              leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd = extend_kd_.at(j);
+            }
+          }
+          else
+          {
+            leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp = retraction_kp_.at(j);
+            leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd = retraction_kd_.at(j);
+          }
+        }
+        else
+        {
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp = swing_kp_.at(j);
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd = swing_kd_.at(j);
         }

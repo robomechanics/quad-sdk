@@ -194,5 +194,5 @@ data.controlGRFs = controlGRFs;
 
 % If prompted, return the name of the filename
 if (nargout>1)
-    varargout{1} = trialName;
+    varargout{1} = bag;
 end

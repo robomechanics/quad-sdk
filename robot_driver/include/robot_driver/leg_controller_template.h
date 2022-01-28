@@ -55,7 +55,8 @@ class LegControllerTemplate {
      * @param[in] swing_kd Swing phase derivative gains
      */
     virtual void setGains(std::vector<double> stance_kp, std::vector<double> stance_kd,
-      std::vector<double> swing_kp, std::vector<double> swing_kd);
+  std::vector<double> swing_kp, std::vector<double> swing_kd, std::vector<double> retraction_kp, 
+  std::vector<double> retraction_kd, std::vector<double> extend_kp, std::vector<double> extend_kd);
 
     /**
      * @brief Compute the leg command array message for a given current state and reference plan
@@ -100,6 +101,14 @@ class LegControllerTemplate {
     /// PD gain when foot is in swing
     std::vector<double> swing_kp_;
     std::vector<double> swing_kd_;
+
+    /// PD gain when foot is in stance
+    std::vector<double> retraction_kp_;
+    std::vector<double> retraction_kd_;
+
+    /// PD gain when foot is in stance
+    std::vector<double> extend_kp_;
+    std::vector<double> extend_kd_;
 
     /// Last local plan message
     quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;

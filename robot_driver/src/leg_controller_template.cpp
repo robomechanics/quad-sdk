@@ -35,12 +35,17 @@ void LegControllerTemplate::setGains(std::vector<double> kp, std::vector<double>
 }
 
 void LegControllerTemplate::setGains(std::vector<double> stance_kp, std::vector<double> stance_kd,
-  std::vector<double> swing_kp, std::vector<double> swing_kd) {
+  std::vector<double> swing_kp, std::vector<double> swing_kd, std::vector<double> retraction_kp, 
+  std::vector<double> retraction_kd, std::vector<double> extend_kp, std::vector<double> extend_kd) {
 
   stance_kp_ = stance_kp;
   stance_kd_ = stance_kd;
   swing_kp_ = swing_kp;
   swing_kd_ = swing_kd;
+  retraction_kp_ = retraction_kp;
+  retraction_kd_ = retraction_kd;
+  extend_kp_ = extend_kp;
+  extend_kd_ = extend_kd;
 }
 
 void LegControllerTemplate::updateGrfSensorMsg(quad_msgs::GRFArray::ConstPtr msg)
