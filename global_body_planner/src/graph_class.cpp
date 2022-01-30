@@ -92,10 +92,7 @@ Action GraphClass::getAction(int idx)
 
 void GraphClass::printVertex(State vertex)
 {
-    std::cout << "{";
-    for (int i= 0; i < vertex.size(); i++)
-        std::cout << vertex[i] << ", ";
-    std::cout << "\b\b}"; 
+    printState(vertex);
 }
 
 void GraphClass::printVertices()

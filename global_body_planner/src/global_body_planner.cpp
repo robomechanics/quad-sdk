@@ -7,6 +7,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
 
   // Load rosparams from parameter server
   std::string body_plan_topic, discrete_body_plan_topic, body_plan_tree_topic, goal_state_topic;
+  std::vector<double> start_state_vec(12), goal_state_vec(12);
 
   quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic_);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic_);
@@ -22,8 +23,9 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   quad_utils::loadROSParam(nh_, "global_body_planner/startup_delay", reset_publish_delay_);
   quad_utils::loadROSParam(nh_, "global_body_planner/replanning", replanning_allowed_);
   quad_utils::loadROSParam(nh_, "local_planner/timestep", dt_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/start_state", start_state_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/goal_state", goal_state_);
+  quad_utils::loadROSParam(nh_, "global_body_planner/start_state", start_state_vec);
+  quad_utils::loadROSParam(nh_, "global_body_planner/goal_state", goal_state_vec);
+
 
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic_,1,&GlobalBodyPlanner::terrainMapCallback, this);
@@ -33,6 +35,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   discrete_body_plan_pub_ = nh_.advertise<quad_msgs::RobotPlan>(discrete_body_plan_topic,1);
   tree_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(body_plan_tree_topic,1);
 
+  // Load planner config
   quad_utils::loadROSParam(nh,"global_body_planner/H_MAX", planner_config_.H_MAX);
   quad_utils::loadROSParam(nh,"global_body_planner/H_MIN", planner_config_.H_MIN);
   quad_utils::loadROSParam(nh,"global_body_planner/H_NOM", planner_config_.H_NOM);
@@ -60,8 +63,11 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   quad_utils::loadROSParam(nh,"global_body_planner/NUM_GEN_STATES", planner_config_.NUM_GEN_STATES);
   quad_utils::loadROSParam(nh,"global_body_planner/GOAL_BOUNDS", planner_config_.GOAL_BOUNDS);
   quad_utils::loadROSParam(nh,"global_body_planner/max_planning_time", planner_config_.MAX_TIME);
+  planner_config_.G_VEC << 0, 0, -planner_config_.G_CONST;
 
-  // Initialize the current path cost to infinity to ensure the first solution is stored
+  // Zero planning data
+  vectorToFullState(start_state_vec, start_state_);
+  vectorToFullState(goal_state_vec, goal_state_);
   robot_state_ = start_state_;
   start_index_ = 0;
   triggerReset();
@@ -77,37 +83,7 @@ void GlobalBodyPlanner::terrainMapCallback(const grid_map_msgs::GridMap::ConstPt
 }
 
 void GlobalBodyPlanner::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
-
-  // Quick check to make sure message data has been populated and is valid
-  geometry_msgs::Quaternion quat = msg->body.pose.orientation;
-  if (abs(sqrt(pow(quat.w,2) + pow(quat.x,2) + pow(quat.y,2) + pow(quat.z,2)) - 1.0) < 1e-3) {
-    // Get RPY from the state message
-    tf2::Quaternion q(quat.x, quat.y, quat.z, quat.w);
-    q.normalize();
-    tf2::Matrix3x3 m(q);
-    double roll, pitch, yaw;
-    m.getRPY(roll, pitch, yaw);
-
-    // Only need the states that will be used in planning (ignore roll and yaw)
-    robot_state_.clear();
-    robot_state_.push_back(msg->body.pose.position.x);
-    robot_state_.push_back(msg->body.pose.position.y);
-    robot_state_.push_back(msg->body.pose.position.z);
-    robot_state_.push_back(roll);
-    robot_state_.push_back(pitch);
-    robot_state_.push_back(yaw);
-    robot_state_.push_back(msg->body.twist.linear.x);
-    robot_state_.push_back(msg->body.twist.linear.y);
-    robot_state_.push_back(msg->body.twist.linear.z);
-    robot_state_.push_back(msg->body.twist.angular.x);
-    robot_state_.push_back(msg->body.twist.angular.y);
-    robot_state_.push_back(msg->body.twist.angular.z);
-
-  } else {
-    ROS_WARN_THROTTLE(1.0, "Invalid quaternion received in GlobalBodyPlanner, "
-      "returning");
-  }
-  
+  eigenToFullState(quad_utils::bodyStateMsgToEigen(msg->body), robot_state_);
 }
 
 void GlobalBodyPlanner::triggerReset() {
@@ -127,13 +103,11 @@ void GlobalBodyPlanner::goalStateCallback(const geometry_msgs::PointStamped::Con
 
   // Load the message
   goal_state_msg_ = msg;
-  goal_state_.resize(12);
-  std::fill(goal_state_.begin(), goal_state_.end(), 0);
 
   // Store the x and y locations along with the terrain height (this will be overriden)
-  goal_state_[0] = goal_state_msg_->point.x;
-  goal_state_[1] = goal_state_msg_->point.y;
-  goal_state_[2] = planner_config_.H_NOM + planner_config_.terrain.getGroundHeight(
+  goal_state_.pos[0] = goal_state_msg_->point.x;
+  goal_state_.pos[1] = goal_state_msg_->point.y;
+  goal_state_.pos[2] = planner_config_.H_NOM + planner_config_.terrain.getGroundHeight(
     goal_state_msg_->point.x, goal_state_msg_->point.y);
 
   // Invalidate the current plan to force a new one

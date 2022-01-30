@@ -9,8 +9,8 @@ TEST(GlobalBodyPlannerTest, testRotateGRF) {
   surf_norm << -1.0/sqrt(2.0), 0, 1/sqrt(2.0);
   f_test = planning_utils::rotateGRF(surf_norm, f);
 
-  std::cout << f_test << std::endl;
-  std::cout << surf_norm << std::endl;
+  // std::cout << f_test << std::endl;
+  // std::cout << surf_norm << std::endl;
 
   EXPECT_TRUE(f_test.isApprox(surf_norm));
 

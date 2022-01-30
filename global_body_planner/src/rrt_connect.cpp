@@ -259,7 +259,8 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_
     return INVALID_START_STATE;
   }
   // Set goal height to nominal distance above terrain
-  s_goal[2] = planner_config.terrain.getGroundHeight(s_goal[0], s_goal[1]) + planner_config.H_NOM;
+  s_goal.pos[2] = planner_config.terrain.getGroundHeight(s_goal.pos[0], s_goal.pos[1]) + 
+    planner_config.H_NOM;
   if (!isValidState(s_goal, planner_config, LEAP_STANCE)) {
     return INVALID_GOAL_STATE;
   }
@@ -388,7 +389,7 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_
   path_duration_ = 0.0;
   for (Action a : action_sequence)
   {
-    path_duration_ += (a[8] + a[9] + a[10]);
+    path_duration_ += (a.t_s_leap + a.t_f + a.t_s_land);
   }
 
   return result;

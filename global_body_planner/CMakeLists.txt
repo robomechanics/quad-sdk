@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(global_body_planner)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11)
+add_compile_options(-std=c++11 -ffast-math)
 
 ## Set default cmake build type to release
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
@@ -93,6 +93,8 @@ target_link_libraries(${PROJECT_NAME}_node
 # Add gtest based cpp test target and link libraries
 catkin_add_gtest(${PROJECT_NAME}-test
   test/test_global_body_planner.cpp
+  test/test_kinematics.cpp
+  test/test_performance.cpp
   test/test_action_commutation.cpp
   test/test_rotate_grf.cpp)
 target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME} ${catkin_LIBRARIES})

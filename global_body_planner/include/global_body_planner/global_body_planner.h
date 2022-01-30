@@ -171,10 +171,13 @@ class GlobalBodyPlanner {
     GlobalBodyPlan current_plan_;
 
     /// Starting state for planner call
-    std::vector<double> start_state_;
+    FullState start_state_;
 
     /// Goal state for planner
-    std::vector<double> goal_state_;
+    FullState goal_state_;
+
+    /// Current robot state
+    FullState robot_state_;
 
     /// goal_state_msg_
     geometry_msgs::PointStamped::ConstPtr goal_state_msg_;
@@ -187,9 +190,6 @@ class GlobalBodyPlanner {
 
     /// Threshold of state error to trigger replanning
     double state_error_threshold_;
-
-    /// Current robot state
-    std::vector<double> robot_state_;
 
     /// Flag to determine if the planner needs to restart planning from the robot state
     bool restart_flag_;

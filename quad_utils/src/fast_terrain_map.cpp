@@ -40,7 +40,7 @@ void FastTerrainMap::loadData(int x_size,
   nz_data_filt_ = nz_data_filt;
 }
 
-void FastTerrainMap::loadDefault(){
+void FastTerrainMap::loadFlat(){
 
   int x_size = 2;
   int y_size = 2;
@@ -53,8 +53,32 @@ void FastTerrainMap::loadDefault(){
   std::vector<std::vector<double>> ny_data = z_data;
   std::vector<std::vector<double>> nz_data = {nz_data_vec, nz_data_vec};
   std::vector<std::vector<double>> z_data_filt = z_data;
-  std::vector<std::vector<double>> nx_data_filt = z_data;
-  std::vector<std::vector<double>> ny_data_filt = z_data;
+  std::vector<std::vector<double>> nx_data_filt = nx_data;
+  std::vector<std::vector<double>> ny_data_filt = ny_data;
+  std::vector<std::vector<double>> nz_data_filt = nz_data;
+
+  this->loadData(x_size, y_size, x_data, y_data, z_data, nx_data, ny_data, nz_data,
+    z_data_filt, nx_data_filt, ny_data_filt, nz_data_filt);
+}
+
+void FastTerrainMap::loadSlope(double slope){
+
+  int x_size = 2;
+  int y_size = 2;
+  double length = 5;
+  std::vector<double> x_data = {-length, length};
+  std::vector<double> y_data = {-length, length};
+  std::vector<double> z_data_vec = {-length*atan(slope), length*atan(slope)};
+  std::vector<double> nx_data_vec = {-sin(slope), -sin(slope)};
+  std::vector<double> ny_data_vec = {0, 0};
+  std::vector<double> nz_data_vec = {cos(slope), cos(slope)};
+  std::vector<std::vector<double>> z_data = {z_data_vec, z_data_vec};
+  std::vector<std::vector<double>> nx_data = {nx_data_vec, nx_data_vec};
+  std::vector<std::vector<double>> ny_data = {ny_data_vec, ny_data_vec};
+  std::vector<std::vector<double>> nz_data = {nz_data_vec, nz_data_vec};
+  std::vector<std::vector<double>> z_data_filt = z_data;
+  std::vector<std::vector<double>> nx_data_filt = nx_data;
+  std::vector<std::vector<double>> ny_data_filt = ny_data;
   std::vector<std::vector<double>> nz_data_filt = nz_data;
 
   this->loadData(x_size, y_size, x_data, y_data, z_data, nx_data, ny_data, nz_data,
@@ -167,12 +191,7 @@ double FastTerrainMap::getGroundHeight(const double x, const double y) const {
   
   int ix = getXIndex(x);
   int iy = getYIndex(y);
-  // std::cout << "x =  " << x << std::endl;
-  // std::cout << "x0 = " << x_data_[0] << std::endl;
-  // std::cout << "x_data_.size() = " << x_data_.size() << std::endl;
-  // std::cout << "y_data_.size() = " << y_data_.size() << std::endl;
-  // std::cout << "ix = " << ix << std::endl;
-  // std::cout << "iy = " << iy << std::endl;
+  
   double x1 = x_data_[ix];
   double x2 = x_data_[ix+1];
   double y1 = y_data_[iy];
@@ -247,6 +266,40 @@ std::array<double, 3> FastTerrainMap::getSurfaceNormal(const double x, const dou
 std::array<double, 3> FastTerrainMap::getSurfaceNormalFiltered(const double x, const double y) const
 {
   std::array<double, 3> surf_norm;
+
+  int ix = getXIndex(x);
+  int iy = getYIndex(y);
+  double x1 = x_data_[ix];
+  double x2 = x_data_[ix+1];
+  double y1 = y_data_[iy];
+  double y2 = y_data_[iy+1];
+
+  double fx_x1y1 = nx_data_filt_[ix][iy];
+  double fx_x1y2 = nx_data_filt_[ix][iy+1];
+  double fx_x2y1 = nx_data_filt_[ix+1][iy];
+  double fx_x2y2 = nx_data_filt_[ix+1][iy+1];
+
+  surf_norm[0] = 1.0/((x2-x1)*(y2-y1))*(fx_x1y1*(x2-x)*(y2-y) + fx_x2y1*(x-x1)*(y2-y) + fx_x1y2*(x2-x)*(y-y1) + fx_x2y2*(x-x1)*(y-y1));
+
+  double fy_x1y1 = ny_data_filt_[ix][iy];
+  double fy_x1y2 = ny_data_filt_[ix][iy+1];
+  double fy_x2y1 = ny_data_filt_[ix+1][iy];
+  double fy_x2y2 = ny_data_filt_[ix+1][iy+1];
+
+  surf_norm[1] = 1.0/((x2-x1)*(y2-y1))*(fy_x1y1*(x2-x)*(y2-y) + fy_x2y1*(x-x1)*(y2-y) + fy_x1y2*(x2-x)*(y-y1) + fy_x2y2*(x-x1)*(y-y1));
+
+  double fz_x1y1 = nz_data_filt_[ix][iy];
+  double fz_x1y2 = nz_data_filt_[ix][iy+1];
+  double fz_x2y1 = nz_data_filt_[ix+1][iy];
+  double fz_x2y2 = nz_data_filt_[ix+1][iy+1];
+
+  surf_norm[2] = 1.0/((x2-x1)*(y2-y1))*(fz_x1y1*(x2-x)*(y2-y) + fz_x2y1*(x-x1)*(y2-y) + fz_x1y2*(x2-x)*(y-y1) + fz_x2y2*(x-x1)*(y-y1));
+  return surf_norm;
+}
+
+Eigen::Vector3d FastTerrainMap::getSurfaceNormalFilteredEigen(const double x, const double y) const
+{
+  Eigen::Vector3d surf_norm;
 
   int ix = getXIndex(x);
   int iy = getYIndex(y);
