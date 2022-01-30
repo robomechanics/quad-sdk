@@ -38,8 +38,8 @@ class RRTClass
      * @param[in] direction Direction of the dynamics (either FORWARD or REVERSE)
      * @return Int describing the result of the attempt (TRAPPED, ADVANCED, or REACHED)
      */
-    int attemptConnect(State s_existing, State s, double t_s, StateActionResult &result,
-      const PlannerConfig &planner_config, int direction);
+    int attemptConnect(const State &s_existing, const State &s, double t_s,
+      StateActionResult &result, const PlannerConfig &planner_config, int direction);
 
     /** Attempt to connect two states, and return a new state if the full connection is not possible. Internally computes stance time
      * @param[in] s The state to extend the tree towards
@@ -48,7 +48,7 @@ class RRTClass
      * @param[in] direction Direction of the dynamics (either FORWARD or REVERSE)
      * @return Int describing the result of the attempt (TRAPPED, ADVANCED, or REACHED)
      */
-    int attemptConnect(State s_existing, State s, StateActionResult &result,
+    int attemptConnect(const State &s_existing, const State &s, StateActionResult &result,
       const PlannerConfig &planner_config, int direction);
 
     /** Extend the tree towards the desired state
@@ -57,8 +57,8 @@ class RRTClass
      * @param[in] terrain Height map of the terrain
      * @param[in] direction The direction with which to peform the extension (FORWARD to go away from the root vertex, REVERSE to go towards it)
      */
-    virtual int extend(PlannerClass &T, State s, const PlannerConfig &planner_config, int direction,
-      ros::Publisher &tree_pub);
+    virtual int extend(PlannerClass &T, const State &s, const PlannerConfig &planner_config,
+      int direction, ros::Publisher &tree_pub);
 
     /**
      * @brief Get the path from the root vertex to the specified one

@@ -16,7 +16,7 @@ TEST(GlobalBodyPlannerTest, testActionCommutation) {
   // // Create planner and configuration
   // PlannerClass P(FORWARD);
   // PlannerConfig planner_config;
-  // planner_config.terrain.loadDefault();
+  // planner_config.terrain.loadFlat();
 
   // std::chrono::time_point<std::chrono::steady_clock> t_start = std::chrono::steady_clock::now();
 

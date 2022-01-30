@@ -49,7 +49,7 @@ void GlobalBodyPlan::load(int plan_status, FullState &start_state, std::vector<S
     interpStateActionPair(state_sequence[i], action_sequence[i], t0, dt, interp_reduced_plan,
       grf_plan_, t_plan_, primitive_id_plan_, length_plan_, planner_config);
 
-    t0 += (action_sequence[i][8] + action_sequence[i][9] + action_sequence[i][10]);
+    t0 += (action_sequence[i].t_s_leap + action_sequence[i].t_f + action_sequence[i].t_s_land);
   }
 
   // Add the final state in case it was missed by interp (GRF is undefined 
@@ -74,24 +74,8 @@ void GlobalBodyPlan::addStateAndGRFToMsg(double t, int plan_index, const FullSta
   quad_utils::updateStateHeaders(state, msg.header.stamp+ros::Duration(t),
     msg.header.frame_id, plan_index);
 
-  // Transform from RPY to quat msg
-  tf2::Quaternion quat_tf;
-  geometry_msgs::Quaternion quat_msg;
-  quat_tf.setRPY(body_state[3],body_state[4],body_state[5]);
-  quat_msg = tf2::toMsg(quat_tf);
-
   // Load the data into the message
-  state.body.pose.position.x = body_state[0];
-  state.body.pose.position.y = body_state[1];
-  state.body.pose.position.z = body_state[2];
-  state.body.pose.orientation = quat_msg;
-
-  state.body.twist.linear.x = body_state[6];
-  state.body.twist.linear.y = body_state[7];
-  state.body.twist.linear.z = body_state[8];
-  state.body.twist.angular.x = body_state[9];
-  state.body.twist.angular.y = body_state[10];
-  state.body.twist.angular.z = body_state[11];
+  state.body = quad_utils::eigenToBodyStateMsg(fullStateToEigen(body_state));
 
   quad_msgs::GRFArray grf_msg;
   geometry_msgs::Vector3 vector_msg;
@@ -99,9 +83,7 @@ void GlobalBodyPlan::addStateAndGRFToMsg(double t, int plan_index, const FullSta
   vector_msg.y = grf[1];
   vector_msg.z = grf[2];
   geometry_msgs::Point point_msg;
-  point_msg.x = body_state[0];
-  point_msg.y = body_state[1];
-  point_msg.z = body_state[2];
+  quad_utils::Eigen3ToPointMsg(body_state.pos, point_msg);
 
   grf_msg.header = state.header;
   grf_msg.vectors.push_back(vector_msg);
