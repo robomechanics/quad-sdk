@@ -83,12 +83,6 @@ void LocalFootstepPlanner::getFootPositionsBodyFrame(
   }
 }
 
-<<<<<<< HEAD
-void LocalFootstepPlanner::computeContactSchedule(
-    int current_plan_index, const Eigen::MatrixXd &body_plan,
-    const Eigen::VectorXi &ref_primitive_plan, int control_mode,
-    std::vector<std::vector<bool>> &contact_schedule) {
-=======
 void LocalFootstepPlanner::computeStanceContactSchedule(int current_plan_index,
   std::vector<std::vector<bool>> &contact_schedule) {
 
@@ -101,7 +95,6 @@ void LocalFootstepPlanner::computeStanceContactSchedule(int current_plan_index,
 }
 
 void LocalFootstepPlanner::computeContactSchedule(int current_plan_index, std::vector<std::vector<bool>> &contact_schedule) {
->>>>>>> removed additional extra files going to write unitest for computeFootPos next
   // Compute the current phase in the nominal contact schedule
   int phase = current_plan_index % period_;
 
@@ -195,9 +188,8 @@ void LocalFootstepPlanner::computeFootPlan(
     for (int i = 1; i < contact_schedule.size(); i++) {
       if (isNewContact(contact_schedule, i, j)) {
         // Declare foot position vectors
-        Eigen::Vector3d foot_position, foot_position_grf, foot_position_nominal,
-            hip_position_midstance, centrifugal, vel_tracking,
-            foot_position_raibert;
+        Eigen::Vector3d foot_position, foot_position_grf,
+          foot_position_nominal, hip_position_midstance, centrifugal, vel_tracking, foot_position_raibert;
 
         // Declare body and grf vectors
         Eigen::Vector3d body_pos_midstance, body_rpy_midstance,
@@ -253,58 +245,30 @@ void LocalFootstepPlanner::computeFootPlan(
         hip_position_midstance = welzlMinimumCircle(P, R);
 
         // Get touchdown information for body state
-        body_vel_touchdown = body_plan.block<1, 3>(i, 6);
-        ref_body_vel_touchdown = ref_body_plan.block<1, 3>(i, 6);
-        body_ang_vel_touchdown = body_plan.block<1, 3>(i, 9);
-        ref_body_ang_vel_touchdown = ref_body_plan.block<1, 3>(i, 9);
+        body_vel_touchdown = body_plan.block<1,3>(i,6);
+        ref_body_vel_touchdown = ref_body_plan.block<1,3>(i,6);
+        body_ang_vel_touchdown = body_plan.block<1,3>(i,9);
+        ref_body_ang_vel_touchdown = ref_body_plan.block<1,3>(i,9);
 
-        // Compute dynamic shift
-        double body_height_touchdown =
-            std::max(body_plan(i, 2) -
-                         terrain_grid_.atPosition(
-                             "z_inpainted", body_plan.row(i).segment<2>(0)),
-                     0.0);
-        // Ref: Highly Dynamic Quadruped Locomotion via Whole-Body Impulse
-        // Control and Model Predictive Control (Centrifugal force and capture
-        // point)
-        centrifugal = body_height_touchdown / 9.81 *
-                      body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
-        // Ref: MIT Cheetah 3: Design and Control of a Robust, Dynamic Quadruped
-        // Robot (Capture point)
-        vel_tracking = std::sqrt(body_height_touchdown / 9.81) *
-                       (body_vel_touchdown - ref_body_vel_touchdown);
+        // Compute nominal foot positions for kinematic and grf-projection measures
+        quadKD_->worldToNominalHipFKWorldFrame(j, body_pos_midstance, body_rpy_midstance, 
+            hip_position_midstance);
+        grid_map::Position hip_position_grid_map = {hip_position_midstance.x(), hip_position_midstance.y()};
+        auto hip_height = hip_position_midstance.z() - terrain_grid_.atPosition(
+          "z",hip_position_grid_map, grid_map::InterpolationMethods::INTER_NEAREST);
+        centrifugal = (hip_height/9.81)*body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
+        vel_tracking = (hip_height/9.81)*(body_vel_touchdown - ref_body_vel_touchdown);
+        foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
 
-        // foot_position_grf =
-        //     terrain_.projectToMap(hip_position_midstance, -1.0 *
-        //     grf_midstance);
+        // Combine these measures to get the nominal foot position and grab correct height
+        foot_position_raibert = hip_position_midstance + centrifugal + vel_tracking;
+        foot_position_nominal = grf_weight_*foot_position_grf +
+          (1-grf_weight_)*foot_position_raibert;
+        grid_map::Position foot_position_grid_map = {foot_position_nominal.x(), foot_position_nominal.y()};
+        foot_position_nominal.z() = terrain_grid_.atPosition("z", foot_position_grid_map,
+          grid_map::InterpolationMethods::INTER_NEAREST);
 
-        // Combine these measures to get the nominal foot position and grab
-        // correct height
-        foot_position_raibert =
-            hip_position_midstance + centrifugal + vel_tracking;
-        foot_position_nominal = foot_position_raibert;
-        grid_map::Position foot_position_grid_map = {foot_position_nominal.x(),
-                                                     foot_position_nominal.y()};
-
-        if (!terrain_grid_.isInside(foot_position_grid_map)) {
-          ROS_WARN(
-              "Foot position is outside the map. Steer the robot in "
-              "another direction");
-          continue;
-        }
-        // Toe has 20cm radius so we need to shift the foot height from terrain
-        foot_position_nominal.z() =
-            terrain_grid_.atPosition(
-                "z_inpainted",
-                terrain_grid_.getClosestPositionInMap(foot_position_grid_map),
-                grid_map::InterpolationMethods::INTER_NEAREST) +
-            toe_radius_;
-
-        // Optimize the foothold location to get the final position
-        Eigen::Vector3d foot_position_previous =
-            foot_positions.block<1, 3>(i, 3 * j);
-        foot_position = getNearestValidFoothold(foot_position_nominal,
-                                                foot_position_previous);
+        foot_position = foot_position_nominal;
 
         // Store foot position in the Eigen matrix
         foot_positions.block<1, 3>(i, 3 * j) = foot_position;
