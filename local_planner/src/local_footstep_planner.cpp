@@ -174,7 +174,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
       
         // Declare foot position vectors
         Eigen::Vector3d foot_position, foot_position_grf,
-          foot_position_nominal, hip_position_midstance, centrifugal, vel_tracking;
+          foot_position_nominal, hip_position_midstance, centrifugal, vel_tracking, foot_position_raibert;
 
         // Declare body and grf vectors
         Eigen::Vector3d body_pos_midstance, body_rpy_midstance, 
@@ -206,22 +206,20 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         quadKD_->worldToNominalHipFKWorldFrame(j, body_pos_midstance, body_rpy_midstance, 
             hip_position_midstance);
         grid_map::Position hip_position_grid_map = {hip_position_midstance.x(), hip_position_midstance.y()};
-        double hip_height = hip_position_midstance.z() - terrain_grid_.atPosition(
+        auto hip_height = hip_position_midstance.z() - terrain_grid_.atPosition(
           "z",hip_position_grid_map, grid_map::InterpolationMethods::INTER_NEAREST);
         centrifugal = (hip_height/9.81)*body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
         vel_tracking = (hip_height/9.81)*(body_vel_touchdown - ref_body_vel_touchdown);
-        // foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
+        foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
 
         // Combine these measures to get the nominal foot position and grab correct height
-        // foot_position_nominal = grf_weight_*foot_position_grf +
-        //   (1-grf_weight_)*(hip_position_midstance + vel_tracking);
-        foot_position_nominal = hip_position_midstance + centrifugal + vel_tracking;
+        foot_position_raibert = hip_position_midstance + centrifugal + vel_tracking;
+        foot_position_nominal = grf_weight_*foot_position_grf +
+          (1-grf_weight_)*foot_position_raibert;
         grid_map::Position foot_position_grid_map = {foot_position_nominal.x(), foot_position_nominal.y()};
         foot_position_nominal.z() = terrain_grid_.atPosition("z", foot_position_grid_map,
           grid_map::InterpolationMethods::INTER_NEAREST);
 
-        // (Optional) Optimize the foothold location to get the final position
-        // foot_position = map_search::optimizeFoothold(foot_position_nominal, stuff); // ADAM
         foot_position = foot_position_nominal;
 
         // Store foot position in the Eigen matrix
