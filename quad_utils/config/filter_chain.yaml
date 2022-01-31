@@ -146,5 +146,5 @@ grid_map_filters:
     params:
       condition_layer: traversability_mask
       output_layer: traversability_mask
-      lower_threshold: 0.7 # Note - for now must match /local_footstep_planner/foothold_obj_threshold
+      lower_threshold: 0.6 # Note - for now must match /local_footstep_planner/foothold_obj_threshold
       set_to: 0.0
