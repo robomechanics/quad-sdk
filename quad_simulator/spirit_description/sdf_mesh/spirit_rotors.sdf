@@ -32,14 +32,14 @@ SOFTWARE.
       <pose frame=''>0 0 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 0 0 0 -0 0</pose>
-        <mass>7.388</mass>
+        <mass>5.75</mass>
         <inertia>
-          <ixx>0.0642434782</ixx>
+          <ixx>0.05</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.1284869565</iyy>
+          <iyy>0.1</iyy>
           <iyz>0</iyz>
-          <izz>0.1284869565</izz>
+          <izz>0.1</izz>
         </inertia>
       </inertial>
       <collision name='body_collision'>
@@ -79,7 +79,7 @@ SOFTWARE.
     <link name='hip0'>
       <pose frame=''>0.2263 0.07 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose frame=''>0 0.03 0 0 -0 0</pose>
         <mass>0.575</mass>
         <inertia>
           <ixx>0.000669635</ixx>
@@ -149,15 +149,15 @@ SOFTWARE.
     <link name='upper0'>
       <pose frame=''>0.2263 0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.040 -0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.0676 -0.041 0 0 -0 0</pose>
         <mass>0.792</mass>
         <inertia>
           <ixx>5e-03</ixx>
-          <ixy>0</ixy>
+          <ixy>0.0010</ixy>
           <ixz>0</ixz>
-          <iyy>0.0070</iyy>
+          <iyy>0.0049</iyy>
           <iyz>0</iyz>
-          <izz>0.0070</izz>
+          <izz>0.0049</izz>
         </inertia>
       </inertial>
       <collision name='upper0_collision'>
@@ -349,7 +349,7 @@ SOFTWARE.
     <link name='hip1'>
       <pose frame=''>-0.2263 0.07 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose frame=''>0 0.03 0 0 -0 0</pose>
         <mass>0.575</mass>
         <inertia>
           <ixx>0.000669635</ixx>
@@ -419,15 +419,15 @@ SOFTWARE.
     <link name='upper1'>
       <pose frame=''>-0.2263 0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.040 -0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.0676 -0.041 0 0 -0 0</pose>
         <mass>0.792</mass>
         <inertia>
           <ixx>5e-03</ixx>
-          <ixy>0</ixy>
+          <ixy>0.0010</ixy>
           <ixz>0</ixz>
-          <iyy>0.0070</iyy>
+          <iyy>0.0049</iyy>
           <iyz>0</iyz>
-          <izz>0.0070</izz>
+          <izz>0.0049</izz>
         </inertia>
       </inertial>
       <collision name='upper1_collision'>
@@ -620,7 +620,7 @@ SOFTWARE.
     <link name='hip2'>
       <pose frame=''>0.2263 -0.07 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose frame=''>0 -0.03 0 0 -0 0</pose>
         <mass>0.575</mass>
         <inertia>
           <ixx>0.000669635</ixx>
@@ -690,15 +690,15 @@ SOFTWARE.
     <link name='upper2'>
       <pose frame=''>0.2263 -0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.040 0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.0676 0.041 0 0 -0 0</pose>
         <mass>0.792</mass>
         <inertia>
           <ixx>5e-03</ixx>
-          <ixy>0</ixy>
+          <ixy>0.0010</ixy>
           <ixz>0</ixz>
-          <iyy>0.0070</iyy>
+          <iyy>0.0049</iyy>
           <iyz>0</iyz>
-          <izz>0.0070</izz>
+          <izz>0.0049</izz>
         </inertia>
       </inertial>
       <collision name='upper2_collision'>
@@ -890,7 +890,7 @@ SOFTWARE.
     <link name='hip3'>
       <pose frame=''>-0.2263 -0.07 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose frame=''>0 -0.03 0 0 -0 0</pose>
         <mass>0.575</mass>
         <inertia>
           <ixx>0.000669635</ixx>
@@ -960,15 +960,15 @@ SOFTWARE.
     <link name='upper3'>
       <pose frame=''>-0.2263 -0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.040 0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.0676 0.041 0 0 -0 0</pose>
         <mass>0.792</mass>
         <inertia>
           <ixx>5e-03</ixx>
-          <ixy>0</ixy>
+          <ixy>0.0010</ixy>
           <ixz>0</ixz>
-          <iyy>0.0070</iyy>
+          <iyy>0.0049</iyy>
           <iyz>0</iyz>
-          <izz>0.0070</izz>
+          <izz>0.0049</izz>
         </inertia>
       </inertial>
       <collision name='upper3_collision'>
@@ -1213,14 +1213,14 @@ SOFTWARE.
       <sensor name="toe0_contact" type="contact">
         <plugin name="toe0_plugin" filename="libgazebo_ros_bumper.so">
           <alwaysOn>true</alwaysOn>
-          <updateRate>500</updateRate>
+          <updateRate>200</updateRate>
           <bumperTopicName>gazebo/toe0_contact_state</bumperTopicName>
           <frameName>world</frameName>
         </plugin>
         <contact>
           <collision>toe0_collision</collision>
         </contact>
-        <update_rate>500</update_rate>
+        <update_rate>200</update_rate>
       </sensor>
       <visual name='toe0_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -1300,14 +1300,14 @@ SOFTWARE.
       <sensor name="toe1_contact" type="contact">
         <plugin name="toe1_plugin" filename="libgazebo_ros_bumper.so">
           <alwaysOn>true</alwaysOn>
-          <updateRate>500</updateRate>
+          <updateRate>200</updateRate>
           <bumperTopicName>gazebo/toe1_contact_state</bumperTopicName>
           <frameName>world</frameName>
         </plugin>
         <contact>
           <collision>toe1_collision</collision>
         </contact>
-        <update_rate>500</update_rate>
+        <update_rate>200</update_rate>
       </sensor>
       <visual name='toe1_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -1387,14 +1387,14 @@ SOFTWARE.
       <sensor name="toe2_contact" type="contact">
         <plugin name="toe2_plugin" filename="libgazebo_ros_bumper.so">
           <alwaysOn>true</alwaysOn>
-          <updateRate>500</updateRate>
+          <updateRate>200</updateRate>
           <bumperTopicName>gazebo/toe2_contact_state</bumperTopicName>
           <frameName>world</frameName>
         </plugin>
         <contact>
           <collision>toe2_collision</collision>
         </contact>
-        <update_rate>500</update_rate>
+        <update_rate>200</update_rate>
       </sensor>
       <visual name='toe2_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -1474,14 +1474,14 @@ SOFTWARE.
       <sensor name="toe3_contact" type="contact">
         <plugin name="toe3_plugin" filename="libgazebo_ros_bumper.so">
           <alwaysOn>true</alwaysOn>
-          <updateRate>500</updateRate>
+          <updateRate>200</updateRate>
           <bumperTopicName>gazebo/toe3_contact_state</bumperTopicName>
           <frameName>world</frameName>
         </plugin>
         <contact>
           <collision>toe3_collision</collision>
         </contact>
-        <update_rate>500</update_rate>
+        <update_rate>200</update_rate>
       </sensor>
       <visual name='toe3_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -1505,6 +1505,502 @@ SOFTWARE.
       <parent>lower3</parent>
     </joint>
 
+
+<!-- Adding rotors to the SDF ################################### -->
+    <link name='abad0_rotor'>
+      <pose frame=''>0.2263 0.07 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='abad0_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.01 0.1 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='abad0_gearing' type='gearbox'>
+      <child>abad0_rotor</child>
+      <gearbox_reference_body>body</gearbox_reference_body>
+      <parent>hip0</parent>
+      <gearbox_ratio>-6</gearbox_ratio>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>1 0 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='abad0_gearbox' type='revolute'>
+      <child>abad0_rotor</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='hip0_rotor'>
+      <pose frame=''>0.2263 0.07 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='hip0_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.1 0.01 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='hip0_gearing' type='gearbox'>
+      <child>hip0_rotor</child>
+      <gearbox_reference_body>body</gearbox_reference_body>
+      <parent>upper0</parent>
+      <gearbox_ratio>-6</gearbox_ratio>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>0 1 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='hip0_gearbox' type='revolute'>
+      <child>hip0_rotor</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='knee0_rotor'>
+      <pose frame=''>0.2263 0.11 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='knee0_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.1 0.01 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='knee0_gearing' type='gearbox'>
+      <child>knee0_rotor</child>
+      <gearbox_reference_body>upper0</gearbox_reference_body>
+      <parent>lower0</parent>
+      <gearbox_ratio>-12</gearbox_ratio>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>0 1 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='knee0_gearbox' type='revolute'>
+      <child>knee0_rotor</child>
+      <parent>upper0</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='abad1_rotor'>
+      <pose frame=''>-0.2263 0.07 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='abad1_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.01 0.1 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='abad1_gearing' type='gearbox'>
+      <child>abad1_rotor</child>
+      <gearbox_reference_body>body</gearbox_reference_body>
+      <parent>hip1</parent>
+      <gearbox_ratio>-6</gearbox_ratio>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>1 0 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='abad1_gearbox' type='revolute'>
+      <child>abad1_rotor</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='hip1_rotor'>
+      <pose frame=''>-0.2263 0.07 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='hip1_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.1 0.01 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='hip1_gearing' type='gearbox'>
+      <child>hip1_rotor</child>
+      <gearbox_reference_body>body</gearbox_reference_body>
+      <parent>upper1</parent>
+      <gearbox_ratio>-6</gearbox_ratio>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>0 1 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='hip1_gearbox' type='revolute'>
+      <child>hip1_rotor</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='knee1_rotor'>
+      <pose frame=''>-0.2263 0.11 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='knee1_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.1 0.01 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='knee1_gearing' type='gearbox'>
+      <child>knee1_rotor</child>
+      <gearbox_reference_body>upper1</gearbox_reference_body>
+      <parent>lower1</parent>
+      <gearbox_ratio>-12</gearbox_ratio>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>0 1 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='knee1_gearbox' type='revolute'>
+      <child>knee1_rotor</child>
+      <parent>upper1</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='abad2_rotor'>
+      <pose frame=''>0.2263 -0.07 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='abad2_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.01 0.1 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='abad2_gearing' type='gearbox'>
+      <child>abad2_rotor</child>
+      <gearbox_reference_body>body</gearbox_reference_body>
+      <parent>hip2</parent>
+      <gearbox_ratio>-6</gearbox_ratio>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>1 0 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='abad2_gearbox' type='revolute'>
+      <child>abad2_rotor</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='hip2_rotor'>
+      <pose frame=''>0.2263 -0.07 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='hip2_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.1 0.01 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='hip2_gearing' type='gearbox'>
+      <child>hip2_rotor</child>
+      <gearbox_reference_body>body</gearbox_reference_body>
+      <parent>upper2</parent>
+      <gearbox_ratio>-6</gearbox_ratio>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>0 1 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='hip2_gearbox' type='revolute'>
+      <child>hip2_rotor</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='knee2_rotor'>
+      <pose frame=''>0.2263 -0.11 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='knee2_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.1 0.01 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='knee2_gearing' type='gearbox'>
+      <child>knee2_rotor</child>
+      <gearbox_reference_body>upper2</gearbox_reference_body>
+      <parent>lower2</parent>
+      <gearbox_ratio>-12</gearbox_ratio>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>0 1 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='knee2_gearbox' type='revolute'>
+      <child>knee2_rotor</child>
+      <parent>upper2</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='abad3_rotor'>
+      <pose frame=''>-0.2263 -0.07 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='abad0_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.01 0.1 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='abad3_gearing' type='gearbox'>
+      <child>abad3_rotor</child>
+      <gearbox_reference_body>body</gearbox_reference_body>
+      <parent>hip3</parent>
+      <gearbox_ratio>-6</gearbox_ratio>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>1 0 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='abad3_gearbox' type='revolute'>
+      <child>abad3_rotor</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='hip3_rotor'>
+      <pose frame=''>-0.2263 -0.07 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='hip3_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.1 0.01 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='hip3_gearing' type='gearbox'>
+      <child>hip3_rotor</child>
+      <gearbox_reference_body>body</gearbox_reference_body>
+      <parent>upper3</parent>
+      <gearbox_ratio>-6</gearbox_ratio>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>0 1 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='hip3_gearbox' type='revolute'>
+      <child>hip3_rotor</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='knee3_rotor'>
+      <pose frame=''>-0.2263 -0.11 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='knee3_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.1 0.01 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='knee3_gearing' type='gearbox'>
+      <child>knee3_rotor</child>
+      <gearbox_reference_body>upper3</gearbox_reference_body>
+      <parent>lower3</parent>
+      <gearbox_ratio>-12</gearbox_ratio>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>0 1 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='knee3_gearbox' type='revolute'>
+      <child>knee3_rotor</child>
+      <parent>upper3</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+  <!-- End new rotors ############################################ -->
+
     <include>
       <uri>model://cmu_text</uri>
       <pose>0 0 0 0 0 0</pose>
@@ -1527,11 +2023,10 @@ SOFTWARE.
     <!-- Setup ros control -->
     <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
       <robotNamespace>/spirit</robotNamespace>
-      <controlPeriod>0.002</controlPeriod>
     </plugin>
     <!-- Publish ground truth state data -->
     <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
-      <updateRateHZ>500.0</updateRateHZ>
+      <updateRateHZ>100.0</updateRateHZ>
     </plugin>
   </model>
 </sdf>
