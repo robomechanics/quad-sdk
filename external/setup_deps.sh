@@ -21,15 +21,6 @@ make -j8
 sudo make install
 cd ../..
 
-# Setup and build for qpOases
-cd qpOASES
-quiet_mkdir build
-cd build
-cmake ..
-make -j8
-sudo make install
-cd ../..
-
 # Setup and build for IPOPT
 cd ipopt
 sudo apt-get install -y gcc g++ gfortran git patch wget pkg-config liblapack-dev libmetis-dev file
