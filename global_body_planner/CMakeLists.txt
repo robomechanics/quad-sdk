@@ -94,7 +94,7 @@ target_link_libraries(${PROJECT_NAME}_node
 catkin_add_gtest(${PROJECT_NAME}-test
   test/test_global_body_planner.cpp
   test/test_kinematics.cpp
-  test/test_performance.cpp
+  # test/test_performance.cpp
   test/test_action_commutation.cpp
   test/test_rotate_grf.cpp)
 target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME} ${catkin_LIBRARIES})

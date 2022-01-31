@@ -7,6 +7,7 @@
 #include <quad_utils/ros_utils.h>
 
 const int N = 1000;
+const double kinematics_tol = 1e-6;
 
 TEST(GlobalBodyPlannerTest, testLeapAction) {
 
@@ -15,7 +16,6 @@ TEST(GlobalBodyPlannerTest, testLeapAction) {
   PlannerConfig planner_config;
   planner_config.G_VEC << 0, 0, -planner_config.G_CONST;
   planner_config.terrain.loadFlat();
-  const double kinematics_tol = 1e-6;
   StateActionResult result;
 
   // Generate a new state and center it above the origin
@@ -76,14 +76,13 @@ TEST(GlobalBodyPlannerTest, testLeapAction) {
   }
 }
 
-TEST(GlobalBodyPlannerTest, testConnectActionUnit) {
+TEST(GlobalBodyPlannerTest, testUnitConnectAction) {
 
   // Create planner and configuration
   PlannerClass P(FORWARD);
   PlannerConfig planner_config;
   planner_config.G_VEC << 0, 0, -planner_config.G_CONST;
   planner_config.terrain.loadFlat();
-  const double kinematics_tol = 1e-6;
 
   // Test connect
   State s1, s2;
@@ -122,7 +121,53 @@ TEST(GlobalBodyPlannerTest, testConnectActionUnit) {
   EXPECT_TRUE(s2.isApprox(s_final_2));
 }
 
-TEST(GlobalBodyPlannerTest, testConnectActionRandom) {
+TEST(GlobalBodyPlannerTest, testUnitConnectActionElevatedTerrain) {
+
+  // Create planner and configuration
+  PlannerClass P(FORWARD);
+  PlannerConfig planner_config;
+  planner_config.G_VEC << 0, 0, -planner_config.G_CONST;
+  double height = 5;
+  planner_config.terrain.loadFlatElevated(height);
+
+  // Test connect
+  State s1, s2;
+  double dist = 1.0;
+  double t_s = 2.0;
+  s1.pos << 0,0,(0.3 + height);
+  s1.vel << 0,0,0;
+  s2 = s1;
+  s2.pos[0] = s1.pos[0] + dist;
+  StateActionResult result;
+
+  RRTConnectClass rrt;
+  int connect_result = rrt.attemptConnect(s1, s2, t_s, result, planner_config, FORWARD);
+
+  // Make sure the connection is made and that the length and time match
+  EXPECT_TRUE(connect_result == REACHED);
+  EXPECT_TRUE(s2.isApprox(result.s_new));
+  EXPECT_TRUE(abs(result.length - dist) <= kinematics_tol);
+  EXPECT_TRUE(result.t_new == t_s);
+
+  // Make sure that applying this new action yields the correct state
+  double t0 = 0;
+  double dt = 0.03;
+  std::vector<State> interp_plan;
+  std::vector<GRF> interp_GRF;
+  std::vector<double> interp_t;
+  std::vector<int> interp_primitive_id;
+  std::vector<double> interp_length;
+  interp_length.push_back(0);
+
+  State s_final_1 = applyAction(s1, result.a_new, planner_config);
+  State s_final_2 = interpStateActionPair(s1, result.a_new, t0, dt, interp_plan, interp_GRF,
+    interp_t, interp_primitive_id, interp_length, planner_config);
+
+  EXPECT_TRUE(s2.isApprox(s_final_1));
+  EXPECT_TRUE(s2.isApprox(s_final_2));
+}
+
+TEST(GlobalBodyPlannerTest, testRandomConnectActions) {
 
 
   // Create planner and configuration
@@ -130,7 +175,6 @@ TEST(GlobalBodyPlannerTest, testConnectActionRandom) {
   PlannerConfig planner_config;
   planner_config.G_VEC << 0, 0, -planner_config.G_CONST;
   planner_config.terrain.loadFlat();
-  const double kinematics_tol = 1e-6;
   RRTConnectClass rrt;
   StateActionResult result;
 
@@ -146,4 +190,89 @@ TEST(GlobalBodyPlannerTest, testConnectActionRandom) {
     int connect_result = rrt.attemptConnect(s1, s2, result, planner_config, FORWARD);
     EXPECT_TRUE(connect_result != TRAPPED);
   }
+}
+
+TEST(GlobalBodyPlannerTest, testUnitConnectActionSlope) {
+
+  // Create planner and configuration
+  PlannerClass P(FORWARD);
+  PlannerConfig planner_config;
+  planner_config.G_VEC << 0, 0, -planner_config.G_CONST;
+  double grade = 0.1;
+  double slope = atan(grade);
+  planner_config.terrain.loadSlope(grade);
+
+  State s1;
+  double vel = 1.0;
+
+  s1.pos << 0,0,0.3;
+  s1.vel << 0,vel,0;
+  EXPECT_TRUE(abs(getDzFromState(s1, planner_config)) < kinematics_tol);
+
+  s1.pos << 0,0,0.3;
+  s1.vel << vel,0,0;
+  EXPECT_TRUE(abs(getDzFromState(s1, planner_config) - vel*grade) < kinematics_tol);
+
+  // Test connect
+  State s2;
+  double dist = 1.0;
+  double t_s = 2.0;
+  s1.pos << 0,0,0.3;
+  s1.vel << vel,0,0;
+  setDz(s1, planner_config);
+  s2 = s1;
+  s2.pos[0] = s1.pos[0] + dist*cos(slope);
+  s2.pos[2] = 0.3 + dist*sin(slope);
+  s2.vel[2] = 0;
+  StateActionResult result;
+
+  RRTConnectClass rrt;
+  int connect_result = rrt.attemptConnect(s1, s2, t_s, result, planner_config, FORWARD);
+
+  // // Make sure the connection is made and that the length and time match
+  EXPECT_TRUE(connect_result == REACHED);
+  EXPECT_TRUE(s2.isApprox(result.s_new));
+  EXPECT_TRUE(abs(result.length - dist) <= kinematics_tol);
+  EXPECT_TRUE(result.t_new == t_s);
+}
+
+
+TEST(GlobalBodyPlannerTest, testUnitLeapActionSlope) {
+
+  // Create planner and configuration
+  PlannerClass P(FORWARD);
+  PlannerConfig planner_config;
+  planner_config.G_VEC << 0, 0, -planner_config.G_CONST;
+  double grade = planner_config.MU;
+  double slope = atan(grade);
+  planner_config.terrain.loadSlope(grade);
+
+  // Turn off friction
+  planner_config.MU = 0;
+
+  State s;
+  s.pos << 0,0,0.3;
+  s.vel << 0.5,0,0;
+  setDz(s,planner_config);
+  EXPECT_TRUE(isValidState(s, planner_config, LEAP_STANCE));
+  EXPECT_TRUE(getPitchFromState(s,planner_config) == -slope);
+  
+  // Initialise some data
+  Eigen::Vector3d surf_norm = planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0],s.pos[1]);
+  Action a;
+  StateActionResult result;
+  
+  // Generate a specific leap action
+  a.t_s_leap = 0.15;
+  a.t_f = 0.15;
+  a.t_s_land = 0.15;
+  a.dz_0 = getDzFromState(s, planner_config);
+  a.dz_f = 0;
+  refineAction(s,a,planner_config);
+
+  // Check that the action is valid and yields a state of the correct height wrt the terrain
+  bool is_valid_forward = isValidStateActionPair(s,a,result,planner_config);
+  EXPECT_TRUE(is_valid_forward);
+  EXPECT_TRUE(abs(result.s_new.pos[2] - (result.s_new.pos[0]*grade + planner_config.H_NOM)) <
+    kinematics_tol);
 }

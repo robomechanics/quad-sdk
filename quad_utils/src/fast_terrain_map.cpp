@@ -61,25 +61,101 @@ void FastTerrainMap::loadFlat(){
     z_data_filt, nx_data_filt, ny_data_filt, nz_data_filt);
 }
 
-void FastTerrainMap::loadSlope(double slope){
+void FastTerrainMap::loadFlatElevated(double height){
 
   int x_size = 2;
   int y_size = 2;
-  double length = 5;
-  std::vector<double> x_data = {-length, length};
-  std::vector<double> y_data = {-length, length};
-  std::vector<double> z_data_vec = {-length*atan(slope), length*atan(slope)};
-  std::vector<double> nx_data_vec = {-sin(slope), -sin(slope)};
-  std::vector<double> ny_data_vec = {0, 0};
-  std::vector<double> nz_data_vec = {cos(slope), cos(slope)};
+  std::vector<double> x_data = {-5, 5};
+  std::vector<double> y_data = {-5, 5};
+  std::vector<double> z_data_vec = {height, height};
+  std::vector<double> nx_data_vec = {0, 0};
+  std::vector<double> nz_data_vec = {1, 1};
   std::vector<std::vector<double>> z_data = {z_data_vec, z_data_vec};
   std::vector<std::vector<double>> nx_data = {nx_data_vec, nx_data_vec};
-  std::vector<std::vector<double>> ny_data = {ny_data_vec, ny_data_vec};
+  std::vector<std::vector<double>> ny_data = nx_data;
   std::vector<std::vector<double>> nz_data = {nz_data_vec, nz_data_vec};
   std::vector<std::vector<double>> z_data_filt = z_data;
   std::vector<std::vector<double>> nx_data_filt = nx_data;
   std::vector<std::vector<double>> ny_data_filt = ny_data;
   std::vector<std::vector<double>> nz_data_filt = nz_data;
+
+  this->loadData(x_size, y_size, x_data, y_data, z_data, nx_data, ny_data, nz_data,
+    z_data_filt, nx_data_filt, ny_data_filt, nz_data_filt);
+}
+
+void FastTerrainMap::loadSlope(double grade){
+
+  double slope = atan(grade);
+  int x_size = 2;
+  int y_size = 2;
+  double length = 5;
+  std::vector<double> x_data = {-length, length};
+  std::vector<double> y_data = {-length, length};
+  std::vector<double> z_data_vec_1 = {-length*grade, -length*grade};
+  std::vector<double> z_data_vec_2 = {length*grade, length*grade};
+  std::vector<double> nx_data_vec = {-sin(slope), -sin(slope)};
+  std::vector<double> ny_data_vec = {0, 0};
+  std::vector<double> nz_data_vec = {cos(slope), cos(slope)};
+  std::vector<std::vector<double>> z_data = {z_data_vec_1, z_data_vec_2};
+  std::vector<std::vector<double>> nx_data = {nx_data_vec, nx_data_vec};
+  std::vector<std::vector<double>> ny_data = {ny_data_vec, ny_data_vec};
+  std::vector<std::vector<double>> nz_data = {nz_data_vec, nz_data_vec};
+  std::vector<std::vector<double>> z_data_filt = {z_data_vec_1, z_data_vec_2};
+  std::vector<std::vector<double>> nx_data_filt = {nx_data_vec, nx_data_vec};
+  std::vector<std::vector<double>> ny_data_filt = {ny_data_vec, ny_data_vec};
+  std::vector<std::vector<double>> nz_data_filt = {nz_data_vec, nz_data_vec};
+
+  this->loadData(x_size, y_size, x_data, y_data, z_data, nx_data, ny_data, nz_data,
+    z_data_filt, nx_data_filt, ny_data_filt, nz_data_filt);
+}
+
+void FastTerrainMap::loadStep(double height){
+
+  double res = 0.05;
+  double length = 2;
+  int x_size = length*2/res + 1;
+  int y_size = x_size;
+
+  std::vector<double> x_data;
+  std::vector<double> y_data;
+  std::vector<std::vector<double>> z_data(x_size);
+  std::vector<std::vector<double>> nx_data(x_size);
+  std::vector<std::vector<double>> ny_data(x_size);
+  std::vector<std::vector<double>> nz_data(x_size);
+  std::vector<std::vector<double>> z_data_filt(x_size);
+  std::vector<std::vector<double>> nx_data_filt(x_size);
+  std::vector<std::vector<double>> ny_data_filt(x_size);
+  std::vector<std::vector<double>> nz_data_filt(x_size);
+
+  for (int i = 0; i < x_size; i++) {
+
+    double x = i*res - length;
+    x_data.push_back(i*res - length);
+    y_data.push_back(i*res - length);
+
+    z_data[i].resize(y_size);
+    nx_data[i].resize(y_size);
+    ny_data[i].resize(y_size);
+    nz_data[i].resize(y_size);
+    z_data_filt[i].resize(y_size);
+    nx_data_filt[i].resize(y_size);
+    ny_data_filt[i].resize(y_size);
+    nz_data_filt[i].resize(y_size);
+
+    for (int j = 0; j < y_size; j++) {
+      double y = j*res - length;
+      z_data[i][j] = (x>0) ? height : 0;
+      nx_data[i][j] = 0;
+      ny_data[i][j] = 0;
+      nz_data[i][j] = 1;
+
+    }
+  }
+  
+  z_data_filt = z_data;
+  nx_data_filt = nx_data;
+  ny_data_filt = ny_data;
+  nz_data_filt = nz_data;
 
   this->loadData(x_size, y_size, x_data, y_data, z_data, nx_data, ny_data, nz_data,
     z_data_filt, nx_data_filt, ny_data_filt, nz_data_filt);

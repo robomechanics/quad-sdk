@@ -19,11 +19,11 @@
 #include <quad_utils/math_utils.h>
 
 // Uncomment to add visualization features
-#define VISUALIZE_TREE
-#define VISUALIZE_ALL_CANDIDATE_ACTIONS
+// #define VISUALIZE_TREE
+// #define VISUALIZE_ALL_CANDIDATE_ACTIONS
 // #define PLOT_TRAJECTORIES
 // #define DEBUG_REFINE_STATE
-#define DEBUG_INVALID_STATE
+// #define DEBUG_INVALID_STATE
 
 namespace planning_utils {
 
@@ -48,7 +48,7 @@ struct PlannerConfig {
   double F_MIN = 0;             // Minimum GRF
   double F_MAX = 600;           // Maximum GRF, N (800 for cheetah, 500 for anymal)
   double PEAK_GRF_MIN = 4.0;    // Minimum GRF in units of body weight
-  double PEAK_GRF_MAX = 6.0;    // Maximum GRF in units of body weight
+  double PEAK_GRF_MAX = 7.0;    // Maximum GRF in units of body weight
   double MU = 0.25;              // Friction coefficient (1.0 for Cheetah, 0.5 for ANYmal)
   double T_S_MIN = 0.3;         // Minimum stance time, s
   double T_S_MAX = 0.3;         // Maximum stance time, s
@@ -56,7 +56,7 @@ struct PlannerConfig {
   double T_F_MAX = 0.4;         // Maximum stance time, s
 
   // Define planning parameters
-  double KINEMATICS_RES = 0.03; // Resolution of kinematic feasibility checks, s
+  double KINEMATICS_RES = 0.03; // Resolution of kinematic feasibility checks, m
   double BACKUP_TIME = 0.3;     // Duration of backup after finding an invalid state, s
   double BACKUP_RATIO = 0.5;    // Ratio of trajectory to back up after finding an invalid state, s
   int NUM_GEN_STATES = 30;       // Number of actions computed for each extend function
@@ -160,8 +160,8 @@ void flipDirection(State &state);
 void flipDirection(Action &action);
 
 // Print statements
-void printState(State vec);
-void printFullState(State vec);
+void printState(const State &vec);
+void printFullState(const FullState &vec);
 template <typename T> void printVector(const std::vector<T> &vec){
   std::cout << "{";
   for (auto val : vec)
