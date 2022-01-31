@@ -45,9 +45,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   nh.param<bool>("local_planner/use_nmpc", use_nmpc_, false);
   nh.param<bool>("local_planner/use_twist_input", use_twist_input_, false);
 
-  nh_.param<double>("twist_body_planner/cmd_vel_scale", cmd_vel_scale_, 1);
-  nh_.param<double>("twist_body_planner/last_cmd_vel_msg_time_max",last_cmd_vel_msg_time_max_,1.0);
-
   // Convert kinematics
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
