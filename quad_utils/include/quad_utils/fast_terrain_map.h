@@ -50,9 +50,22 @@ class FastTerrainMap {
     void loadFlat();
 
     /**
-     * @brief Load in a default terrain map 10x10m, four corners with sloped terrain
+     * @brief Load in a default terrain map 10x10m, four corners with elevated terrain
+     * @param[in] height Height of elevated terrain
      */
-    void loadSlope(double slope);
+    void loadFlatElevated(double height);
+
+    /**
+     * @brief Load in a default terrain map 10x10m, four corners with sloped terrain
+     * @param[in] grade Grade of terrain data (grade = tan(slope))
+     */
+    void loadSlope(double grade);
+
+    /**
+     * @brief Load in a terrain map with a step at x = 0
+     * @param[in] height Height of step
+     */
+    void loadStep(double height);
 
     /**
      * @brief Load data from a grid_map::GridMap object into a FastTerrainMap object

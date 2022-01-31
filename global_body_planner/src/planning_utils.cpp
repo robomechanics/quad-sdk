@@ -49,7 +49,7 @@ void eigenToFullState(const Eigen::VectorXd &s_eig, FullState &s) {
 }
 
 Eigen::VectorXd fullStateToEigen(const FullState &s) {
-  Eigen::VectorXd s_eig;
+  Eigen::VectorXd s_eig(12);
   s_eig.segment(0,3) = s.pos;
   s_eig.segment(3,3) = s.ang;
   s_eig.segment(6,3) = s.vel;
@@ -98,14 +98,14 @@ void flipDirection(Action &action)
   action.t_s_land = temp_t_s;
 };
 
-void printState(State s)
+void printState(const State &s)
 {
   std::cout << "STATE: pos = " << s.pos.transpose() << ", vel = " <<  s.vel.transpose() << std::endl;
 }
-void printFullState(FullState s)
+void printFullState(const FullState &s)
 {
   std::cout << "STATE pos = " << s.pos.transpose() << ", vel = " <<  s.vel.transpose() << std::endl;
-  std::cout << "and = " << s.ang.transpose() << ", ang_vel = " <<  s.ang_vel.transpose() << std::endl;
+  std::cout << "ang = " << s.ang.transpose() << ", ang_vel = " <<  s.ang_vel.transpose() << std::endl;
 }
 void printAction(Action a)
 {
@@ -125,7 +125,7 @@ void printActionNewline(Action a)
 void printStateSequence(std::vector<State> state_sequence)
 {
   for (State s : state_sequence)
-    printStateNewline(s);
+    printState(s);
 }
 void printInterpStateSequence(std::vector<State> state_sequence, 
   std::vector<double> interp_t)
@@ -408,15 +408,15 @@ double getPitchFromState(const State &s, const PlannerConfig &planner_config) {
   Eigen::Vector3d surf_norm = planner_config.terrain.getSurfaceNormalFilteredEigen(
     s.pos[0], s.pos[1]);
 
-  double denom = s.vel.head<2>().norm();
+  // Get magnitude of lateral velociy
+  double vel = s.vel.head<2>().norm();
 
-  if (denom <= 0 || surf_norm[2] <=0) {
-    double default_pitch = 0;
-    return default_pitch;
-  } else {
+  // If velocity is zero or surf norm undefined, assume v is in +x direction
+  double v_proj = (vel == 0 || surf_norm[2] <=0) ? surf_norm[0] : 
+    s.vel.head<2>().dot(surf_norm.head<2>())/vel;
 
-    return atan2(s.vel.head<2>().dot(surf_norm.head<2>())/denom,surf_norm[2]);
-  }
+  // set pitch to angle that aligns v_proj with surface normal
+  return atan2(v_proj,surf_norm[2]);
 }
 
 double getDzFromState(const State &s, const PlannerConfig &planner_config) {
@@ -424,7 +424,7 @@ double getDzFromState(const State &s, const PlannerConfig &planner_config) {
   Eigen::Vector3d surf_norm = planner_config.terrain.getSurfaceNormalFilteredEigen(
     s.pos[0], s.pos[1]);
   
-  return ((surf_norm[2] <= 0) ? INFTY : (s.vel.head<2>().dot(surf_norm.head<2>())/surf_norm[2]));
+  return ((surf_norm[2] <= 0) ? INFTY : -(s.vel.head<2>().dot(surf_norm.head<2>())/surf_norm[2]));
 
 }
 
@@ -433,7 +433,7 @@ void setDz(State &s, const PlannerConfig &planner_config) {
   Eigen::Vector3d surf_norm = planner_config.terrain.getSurfaceNormalFilteredEigen(
     s.pos[0], s.pos[1]);
   
-  s.vel[2] = (surf_norm[2] <= 0) ? INFTY : (s.vel.head<2>().dot(surf_norm.head<2>())/surf_norm[2]);
+  s.vel[2] = (surf_norm[2] <= 0) ? INFTY : -(s.vel.head<2>().dot(surf_norm.head<2>())/surf_norm[2]);
 }
 
 void setDz(State &s, const Eigen::Vector3d &surf_norm) {
@@ -641,8 +641,8 @@ State applyStance(const State &s, const Action &a, double t, int phase,
     s_new.vel = s.vel + acc_0*t + (acc_f - acc_0)*t*t/(2.0*a.t_s_leap);
 
     // Set height based on terrain
-    s_new.pos[2] = s.pos[2] + (a.grf_f[2] - a.grf_0[2])*(t/a.t_s_leap) + 
-      getZFromState(s_new, planner_config);
+    // (interp from state 1 clearance to state 2 clearance, add terrain height)
+    s_new.pos[2] = a.grf_0[2] + (a.grf_f[2] - a.grf_0[2])*(t/a.t_s_leap) + getZFromState(s_new, planner_config);
     setDz(s_new, planner_config);
 
   } else {
@@ -740,10 +740,10 @@ bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm, Actio
 
   // Sample stance time and initial vertical velocity
   // double dz_0 = s.vel[2] + (double)rand()/RAND_MAX - 1.0;
-  a.dz_0 = s.vel[2] - 0*(double)rand()/RAND_MAX;
+  a.dz_0 = getDzFromState(s,planner_config) - (double)rand()/RAND_MAX;
   a.dz_f = 0;
-  double t_s_min = 0.12;
-  double t_s_max = 0.2;
+  double t_s_min = 0.05;
+  double t_s_max = 0.25;
   a.t_s_leap = (t_s_max-t_s_min)*(double)rand()/RAND_MAX + t_s_min;
   a.t_f = 1.0;
   a.t_s_land = (t_s_max-t_s_min)*(double)rand()/RAND_MAX + t_s_min;
@@ -760,30 +760,22 @@ bool refineAction(const State &s, Action &a, const PlannerConfig &planner_config
   double z_f_leap = planner_config.H_NOM + 0.05;
   double z_f_land = planner_config.H_NOM;
 
-  // quad_utils::FunctionTimer timer("refineAction");
   if (!refineStance(s, z_f_leap, LEAP_STANCE, a, planner_config))
     return false;
 
-  // timer.reportAndRestart();
   State s_leap = applyStance(s,a,LEAP_STANCE,planner_config);
-  // std::cout << "s_leap" << std::endl;
-  // printState(s_leap);
-  // timer.reportAndRestart();
+
   if(!refineFlight(s_leap, z_f_leap, a.t_f, planner_config)){
-    printAction(a);
     return false;
   }
-  // timer.reportAndRestart();
+
   State s_land = applyFlight(s_leap, a.t_f,planner_config);
-  // std::cout << "s_land" << std::endl;
-  // printState(s_land);
-  // timer.reportAndRestart();
+
   if(!refineStance(s_land, z_f_land, LAND_STANCE, a, planner_config))
     return false;
-  // timer.reportAndRestart();
+    
   State s_final = applyStance(s_land,a,LAND_STANCE,planner_config);
   a.dz_f = s_final.vel[2];
-  // timer.report();
 
   return true;
 }
@@ -791,6 +783,9 @@ bool refineAction(const State &s, Action &a, const PlannerConfig &planner_config
 bool refineStance(const State &s, double z_f, int phase, Action &a,
   const PlannerConfig &planner_config)
 {
+  #ifdef DEBUG_REFINE_STATE
+    std::cout << "Starting stance refine, phase = " << phase << std::endl;
+  #endif
 
   // Define parameters
   double &t_s = (phase == LEAP_STANCE) ? a.t_s_leap : a.t_s_land;
@@ -834,7 +829,7 @@ bool refineStance(const State &s, double z_f, int phase, Action &a,
     final_state_valid = ((s_final.pos[2] - planner_config.terrain.getGroundHeight(
       s_final.pos[0], s_final.pos[1])) >= planner_config.H_MIN);;
     midstance_state_valid = ((s_midstance.pos[2] - planner_config.terrain.getGroundHeight(
-      s_midstance.pos[0], s_midstance.pos[1])) >= planner_config.H_MIN);
+      s_midstance.pos[0], s_midstance.pos[1])) >= (planner_config.H_MIN + planner_config.ROBOT_H));
 
     // Exit if final state is invalid
     if (!final_state_valid){
@@ -861,7 +856,7 @@ bool refineStance(const State &s, double z_f, int phase, Action &a,
     if (!grf_valid) {
       if (!midstance_state_valid || grf_increased) {
         #ifdef DEBUG_REFINE_STATE
-          std::cout << "GRF exceeds limits and midstance is or was invalid" << std::endl;
+          std::cout << "GRF exceeds limits and midstance is or was invalid, exiting" << std::endl;
         #endif
         return false;
       }
@@ -898,6 +893,9 @@ bool refineStance(const State &s, double z_f, int phase, Action &a,
     a.dz_f = s_final.vel[2];
   }
 
+  #ifdef DEBUG_REFINE_STATE
+    std::cout << "stance refine success" << std::endl;
+  #endif
   return true;
 }
 
@@ -919,11 +917,13 @@ bool refineFlight(const State &s, double z_f, double &t_f, const PlannerConfig &
     h = s_check.pos[2] - planner_config.terrain.getGroundHeight(s_check.pos[0], s_check.pos[1]);
   }
   if (!is_valid) {
-    std::cout << "No valid flight detected" << std::endl;
-    std::cout << "t = " << t << std::endl;
-    printState(s);
     State s_test = applyFlight(s,planner_config.KINEMATICS_RES,planner_config);
-    printState(s_test);
+    #ifdef DEBUG_REFINE_STATE
+      std::cout << "No valid flight detected" << std::endl;
+      std::cout << "t = " << t << std::endl;
+      printState(s);
+      printState(s_test);
+    #endif
   }
   return is_valid;
 }
@@ -1004,7 +1004,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config, int phase
     for (double y_body : test_y)
     {
       Eigen::Vector3d s_leg = s.pos + R_mat.col(0)*x_body + R_mat.col(1)*y_body;
-      Eigen::Vector3d s_corner = s_leg + R_mat.col(3)*z_body;
+      Eigen::Vector3d s_corner = s_leg + R_mat.col(2)*z_body;
 
       double leg_height = s_leg[2] - planner_config.terrain.getGroundHeight(s_leg[0],s_leg[1]);
       double corner_height = s_corner[2] - 
@@ -1026,6 +1026,13 @@ bool isValidState(const State &s, const PlannerConfig &planner_config, int phase
           #ifdef DEBUG_INVALID_STATE
             printf("H_MAX exceeded, phase = %d\n", phase);
             printStateNewline(s);
+            std::cout << "s_leg\n" << s_leg << std::endl;
+            std::cout << "planner_config.terrain.getGroundHeight(s_leg[0],s_leg[1]) = " << planner_config.terrain.getGroundHeight(s_leg[0],s_leg[1]) << std::endl;
+            std::cout << "s.pos\n" << s.pos << std::endl;
+            std::cout << "R_mat.col(0)*x_body\n" << R_mat.col(0)*x_body << std::endl;
+            std::cout << "R_mat.col(1)*y_body\n" << R_mat.col(1)*y_body << std::endl;
+            printf("py = %5.3f, %5.3f\n", pitch, yaw);
+            std::cout << "R_mat\n" << R_mat << std::endl;
           #endif
           return false;
         }
@@ -1077,9 +1084,10 @@ bool isValidStateActionPair(const State &s_in, const Action &a, StateActionResul
 
   // LEAP (OR CONNECT) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  for (double t = 0; t <= t_s; t += planner_config.KINEMATICS_RES)
-  {
-    
+  // for (double t = 0; t <= t_s; t += planner_config.KINEMATICS_RES)
+  double t = 0;
+  while (t <= t_s)
+  { 
     // Compute state to check
     State s_next = applyStance(s,a,t,phase,planner_config);
 
@@ -1098,6 +1106,8 @@ bool isValidStateActionPair(const State &s_in, const Action &a, StateActionResul
       result.length += poseDistance(s_next, s_prev);
       s_prev = s_next;
     }
+
+    t += planner_config.KINEMATICS_RES;
   }
 
   State s_takeoff = applyStance(s, a,phase,planner_config);
@@ -1120,7 +1130,8 @@ bool isValidStateActionPair(const State &s_in, const Action &a, StateActionResul
 
   // FLIGHT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  for (double t = planner_config.KINEMATICS_RES; t < t_f; t += planner_config.KINEMATICS_RES)
+  t = planner_config.KINEMATICS_RES;
+  while (t < t_f)
   {
     State s_next = applyFlight(s_takeoff, t, planner_config);
 
@@ -1136,6 +1147,8 @@ bool isValidStateActionPair(const State &s_in, const Action &a, StateActionResul
     }
     result.length += poseDistance(s_next, s_prev);
     s_prev = s_next;
+
+    t += planner_config.KINEMATICS_RES;
   }
 
   // LANDING ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1143,7 +1156,8 @@ bool isValidStateActionPair(const State &s_in, const Action &a, StateActionResul
   if (phase != CONNECT) {
     State s_land = applyFlight(s_takeoff, t_f, planner_config);
 
-    for (double t = 0; t <= t_s_land; t += planner_config.KINEMATICS_RES)
+    t = 0;
+    while (t < t_s_land)
     {
       // Compute state to check
       State s_next = applyStance(s_land,result.a_new,t,LAND_STANCE,planner_config);
@@ -1158,6 +1172,7 @@ bool isValidStateActionPair(const State &s_in, const Action &a, StateActionResul
         result.length += poseDistance(s_next, s_prev);
         s_prev = s_next;
       }
+      t += planner_config.KINEMATICS_RES;
     }
 
     State s_final = applyStance(s_land, result.a_new,LAND_STANCE,planner_config);
@@ -1188,8 +1203,6 @@ void publishStateActionPair(const State &s, const Action &a, const State &s_goal
   // Confirm ros is ok
   if (!ros::ok())
     return;
-
-  std::cout << "In publishStateActionPair" << std::endl;
 
   // Create the marker object for the new state action pair
   visualization_msgs::Marker state_action_line;
@@ -1294,7 +1307,7 @@ void publishStateActionPair(const State &s, const Action &a, const State &s_goal
 
   // Publish the tree and wait so that RViz has time to process it
   tree_pub.publish(tree_viz_msg);
-  double freq = 20.0; // Hz
+  double freq = 5.0; // Hz
   usleep(1000000.0/freq);
 
 }

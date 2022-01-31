@@ -209,3 +209,55 @@ TEST(FastTerrainMapTest, testProjection) {
 
   EXPECT_EQ(1 + 1, 2);
 }
+
+TEST(FastTerrainMapTest, testSlope) {
+  FastTerrainMap map;
+  double grade = 0.5;
+  map.loadSlope(grade);
+
+  Eigen::Vector3d normal;
+  normal << -sin(atan(grade)), 0, cos(atan(grade));
+
+  double x = -2;
+  double y = 0;
+  double z = grade*x;
+  EXPECT_TRUE(abs(map.getGroundHeight(x,y) - z) < 1e-6);
+
+  x = 2;
+  y = 0;
+  z = grade*x;
+  EXPECT_TRUE(abs(map.getGroundHeight(x,y) - z) < 1e-6);
+
+  x = 0;
+  y = 2;
+  z = grade*x;
+  EXPECT_TRUE(abs(map.getGroundHeight(x,y) - z) < 1e-6);
+
+  EXPECT_TRUE(map.getSurfaceNormalFilteredEigen(x,y).isApprox(normal));
+}
+
+TEST(FastTerrainMapTest, testStep) {
+  FastTerrainMap map;
+  double height = 0.2;
+  map.loadStep(height);
+
+  Eigen::Vector3d normal;
+  normal << 0, 0, 1;
+
+  double x = -2;
+  double y = 0;
+  double z = (x>0) ? height : 0;
+  EXPECT_TRUE(abs(map.getGroundHeight(x,y) - z) < 1e-6);
+
+  x = 2;
+  y = 0;
+  z = (x>0) ? height : 0;
+  EXPECT_TRUE(abs(map.getGroundHeight(x,y) - z) < 1e-6);
+
+  x = 0;
+  y = 2;
+  z = (x>0) ? height : 0;
+  EXPECT_TRUE(abs(map.getGroundHeight(x,y) - z) < 1e-6);
+
+  EXPECT_TRUE(map.getSurfaceNormalFilteredEigen(x,y).isApprox(normal));
+}

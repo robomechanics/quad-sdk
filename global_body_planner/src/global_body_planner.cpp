@@ -121,7 +121,6 @@ void GlobalBodyPlanner::goalStateCallback(const geometry_msgs::PointStamped::Con
 
 void GlobalBodyPlanner::setStartState() {
 
-  std::cout << "In setStartState" << std::endl;
   // Reset if too far from plan
   if (!current_plan_.isEmpty()) {
     int current_index;
@@ -156,9 +155,6 @@ void GlobalBodyPlanner::setStartState() {
   } else {
     ROS_ERROR("Invalid planning status");
   }
-
-  std::cout << "leaving setStartState" << std::endl;
-
 }
 
 void GlobalBodyPlanner::setGoalState() {
@@ -167,8 +163,10 @@ void GlobalBodyPlanner::setGoalState() {
 
 bool GlobalBodyPlanner::callPlanner() {
 
-  if (!replanning_allowed_ && !publish_after_reset_delay_)
+  if (!replanning_allowed_ && !publish_after_reset_delay_) {
+    newest_plan_.setComputedTimestamp(ros::Time::now());
     return false;
+  }
 
   newest_plan_ = current_plan_;
 
@@ -325,6 +323,7 @@ void GlobalBodyPlanner::getInitialPlan() {
 }
 
 void GlobalBodyPlanner::publishCurrentPlan() {
+  std::cout << "In publishCurrentPlan: " <<  std::endl;
 
   // Conditions for publishing current plan:
   // 1) Plan not empty AND

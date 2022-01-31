@@ -12,6 +12,24 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 {
   double best_so_far = stateDistance(s_near, s);
 
+  // Try connecting directly
+  StateActionResult current_result;
+  int connect_result = attemptConnect(s_near, s, current_result, planner_config, direction);
+  if (connect_result != TRAPPED) {
+    double current_dist = stateDistance(current_result.s_new, s);
+
+    if (current_dist < best_so_far)
+    {
+      best_so_far = current_dist;
+      result.s_new = current_result.s_new;
+      result.a_new = current_result.a_new;
+      result.length = current_result.length;
+    }
+
+    if (connect_result == REACHED)
+      return true;
+  }
+
   Eigen::Vector3d surf_norm =
     planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0], s.pos[1]);
 
@@ -22,7 +40,6 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
   // }
   // direction = FORWARD;
 
-  std::cout << "Entering new config" << std::endl;
   int num_total_actions = 0;
   int num_valid_actions = 0;
 
@@ -30,7 +47,6 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
   for (int i = 0; i < planner_config.NUM_GEN_STATES; ++i)
   {
     bool valid_state_found = false;
-    StateActionResult current_result;
 
     // Action a_test = getRandomAction(surf_norm,planner_config);
     Action a_test;
@@ -78,26 +94,6 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
   }
 
   std::cout << "Fraction valid action = " << (double)num_valid_actions/num_total_actions << std::endl;
-  throw std::runtime_error("Stop here, viz?");
-
-  std::cout << "Attempting connect,  state = ";
-  printStateNewline(s);
-  printStateNewline(s_near);
-
-  // Try connecting directly
-  StateActionResult current_result;
-  if (attemptConnect(s_near, s, current_result, planner_config, direction) != TRAPPED) {
-    double current_dist = stateDistance(current_result.s_new, s);
-
-    if (current_dist < best_so_far)
-    {
-      best_so_far = current_dist;
-      result.s_new = current_result.s_new;
-      result.a_new = current_result.a_new;
-      result.length = current_result.length;
-    }
-  }
-
 
   #ifdef VISUALIZE_ALL_CANDIDATE_ACTIONS
     tree_viz_msg_.markers.resize(tree_size);
@@ -106,8 +102,7 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
   if (best_so_far == stateDistance(s_near, s))
   {
     return false;
-  } else
-  {
+  } else {
     return true;
   }
 }
