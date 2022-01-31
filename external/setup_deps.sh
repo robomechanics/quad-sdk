@@ -32,7 +32,7 @@ cd ../..
 
 # Setup and build for IPOPT
 cd ipopt
-sudo apt-get install -y gcc g++ gfortran git patch wget pkg-config liblapack-dev libmetis-dev
+sudo apt-get install -y gcc g++ gfortran git patch wget pkg-config liblapack-dev libmetis-dev file
 if [ -d "./coinbrew" ] 
 then
 	sudo rm -r ./coinbrew
