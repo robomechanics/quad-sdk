@@ -8,7 +8,7 @@
     <!-- Args for mesh loader -->
     <arg name="frame_id_mesh_loaded"      default="map"/>
     <arg name="grid_map_layer_name"       default="z"/>
-    <arg name="grid_map_resolution"       default="0.1"/>
+    <arg name="grid_map_resolution"       default="0.05"/>
     <arg name="latch_grid_map_pub"        default="true"/>
     <arg name="verbose"                   default="true"/>
     <arg name="world"                     default="step_20cm"/>
