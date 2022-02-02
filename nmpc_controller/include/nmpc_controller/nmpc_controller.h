@@ -11,7 +11,7 @@
 #include <quad_msgs/RobotStateTrajectory.h>
 // #include <local_planner/quadruped_mpc.h>
 #include <quad_utils/ros_utils.h>
-#include "quad_utils/matplotlibcpp.h"
+// #include <quad_utils/matplotlibcpp.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <quad_msgs/LegCommand.h>
 
@@ -61,6 +61,7 @@ public:
                       const Eigen::VectorXd &ref_ground_height,
                       const double &time_ahead,
                       const bool &same_plan_index,
+                      const Eigen::VectorXi &complexity_schedule,
                       Eigen::MatrixXd &state_traj,
                       Eigen::MatrixXd &control_traj);
 

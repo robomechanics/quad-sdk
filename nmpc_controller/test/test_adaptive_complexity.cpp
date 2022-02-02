@@ -4,7 +4,7 @@
 #include <nmpc_controller/nmpc_controller.h>
 #include <chrono>
 
-TEST(NMPCTest, testTailMPC)
+TEST(NMPCTest, testAdaptiveComplexity)
 {
 	int N_;
 	ros::param::get("/nmpc_controller/leg/horizon_length", N_);
@@ -61,7 +61,7 @@ TEST(NMPCTest, testTailMPC)
 	complexity_schedule.setZero();
 
 	std::chrono::steady_clock::time_point tic, toc;
-	tic = std::chrono::steady_clock::now();	
+	tic = std::chrono::steady_clock::now();
 
 	for (size_t i = 0; i < 10; i++)
 	{
@@ -86,12 +86,4 @@ TEST(NMPCTest, testTailMPC)
 	}
 
 	EXPECT_TRUE(true);
-}
-
-int main(int argc, char **argv)
-{
-	testing::InitGoogleTest(&argc, argv);
-	ros::init(argc, argv, "nmpc_controller_tester");
-
-	return RUN_ALL_TESTS();
 }

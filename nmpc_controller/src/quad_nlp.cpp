@@ -1072,3 +1072,23 @@ void quadNLP::update_solver(
        contact_schedule,
        ground_height);
 }
+
+void quadNLP::update_solver(
+    const Eigen::VectorXd &initial_state,
+    const Eigen::MatrixXd &ref_traj,
+    const Eigen::MatrixXd &foot_positions,
+    const std::vector<std::vector<bool>> &contact_schedule,
+    const Eigen::VectorXd &ground_height,
+    const double &time_ahead,
+    const Eigen::VectorXi &complexity_schedule)
+{
+   complexity_schedule_ = complexity_schedule;
+
+   this->update_solver(
+       initial_state,
+       ref_traj,
+       foot_positions,
+       contact_schedule,
+       ground_height,
+       time_ahead);
+}
