@@ -245,7 +245,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
 
 void LocalFootstepPlanner::computeFootPlanMsgs(
   const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
-  int current_plan_index, const Eigen::MatrixXd &body_plan, const double &time_ahead, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+  int current_plan_index, const Eigen::MatrixXd &body_plan, const double &first_element_duration, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
   quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
   quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg) {
 
@@ -327,7 +327,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
           // For the first step, it might be duplicated in the same plan index so we need to refine the phase based on the time duration to next plan index
           if (i == 0)
           {
-            swing_phase = (i - i_liftoff + (dt_ - time_ahead) / dt_) / (double)swing_duration;
+            swing_phase = (i - i_liftoff + (dt_ - first_element_duration) / dt_) / (double)swing_duration;
           }
           else
           {

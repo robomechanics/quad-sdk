@@ -118,7 +118,7 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
                                     const Eigen::MatrixXd &foot_positions,
                                     const std::vector<std::vector<bool>> &contact_schedule,
                                     const Eigen::VectorXd &ref_ground_height,
-                                    const double &time_ahead,
+                                    const double &first_element_duration,
                                     const bool &same_plan_index,
                                     const Eigen::VectorXi &complexity_schedule,
                                     Eigen::MatrixXd &state_traj,
@@ -131,8 +131,7 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
       foot_positions,
       contact_schedule,
       ref_ground_height.tail(N_),
-      time_ahead,
-      complexity_schedule);
+      first_element_duration);
   // Only shift the warm start if we get a new plan index
   if (!same_plan_index)
   {

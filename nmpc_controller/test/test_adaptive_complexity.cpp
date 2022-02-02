@@ -54,7 +54,7 @@ TEST(NMPCTest, testAdaptiveComplexity)
 	grf_plan_.col(8).fill(11.51 * 9.81 / 2);
 	grf_plan_.col(11).fill(11.51 * 9.81 / 2);
 
-	double time_ahead = 0;
+	double first_element_duration = 0;
 	bool same_plan_index = false;
 
 	Eigen::VectorXi complexity_schedule(N_);
@@ -72,7 +72,7 @@ TEST(NMPCTest, testAdaptiveComplexity)
 									 foot_positions_body_,
 									 adpative_contact_schedule_,
 									 ref_ground_height,
-									 time_ahead,
+									 first_element_duration,
 									 same_plan_index,
 									 complexity_schedule,
 									 body_plan_,

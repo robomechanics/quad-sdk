@@ -178,7 +178,7 @@ quadNLP::quadNLP(
    }
 
    // Initialize the time duration to the next plan index as dt
-   time_ahead_ = dt_;
+   first_element_duration_ = dt_;
 
    compute_nnz_jac_g();
    compute_nnz_h();
@@ -354,7 +354,7 @@ bool quadNLP::eval_f(
       // Scale the cost by time duration
       if (i == 0)
       {
-         Q_i = Q_i * time_ahead_ / dt_;
+         Q_i = Q_i * first_element_duration_ / dt_;
       }
 
       obj_value += (xk.transpose() * Q_i.asDiagonal() * xk / 2 + uk.transpose() * R_i.asDiagonal() * uk / 2)(0, 0);
@@ -407,7 +407,7 @@ bool quadNLP::eval_grad_f(
       // Scale the cost by time duration
       if (i == 0)
       {
-         Q_i = Q_i * time_ahead_ / dt_;
+         Q_i = Q_i * first_element_duration_ / dt_;
       }
 
       grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_i.asDiagonal() * uk;
@@ -436,7 +436,7 @@ bool quadNLP::eval_g(
       Eigen::MatrixXd pk(14, 1);
       if (i == 0)
       {
-         pk(0, 0) = time_ahead_;
+         pk(0, 0) = first_element_duration_;
       }
       else
       {
@@ -523,7 +523,7 @@ bool quadNLP::eval_jac_g(
          Eigen::MatrixXd pk(14, 1);
          if (i == 0)
          {
-            pk(0, 0) = time_ahead_;
+            pk(0, 0) = first_element_duration_;
          }
          else
          {
@@ -715,7 +715,7 @@ bool quadNLP::eval_h(
          Eigen::MatrixXd pk(14, 1);
          if (i == 0)
          {
-            pk(0, 0) = time_ahead_;
+            pk(0, 0) = first_element_duration_;
          }
          else
          {
@@ -780,7 +780,7 @@ bool quadNLP::eval_h(
          // Scale the cost by time duration
          if (i == 0)
          {
-            Q_i = Q_i * time_ahead_ / dt_;
+            Q_i = Q_i * first_element_duration_ / dt_;
          }
 
          values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_i.array()).matrix();
@@ -1061,9 +1061,9 @@ void quadNLP::update_solver(
     const Eigen::MatrixXd &foot_positions,
     const std::vector<std::vector<bool>> &contact_schedule,
     const Eigen::VectorXd &ground_height,
-    const double &time_ahead)
+    const double &first_element_duration)
 {
-   time_ahead_ = time_ahead;
+   first_element_duration_ = first_element_duration;
 
    this->update_solver(
        initial_state,
