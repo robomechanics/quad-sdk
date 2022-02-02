@@ -301,10 +301,7 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     app_->Options()->SetStringValue("warm_start_init_point", "no");
     app_->Options()->SetNumericValue("mu_init", 1e-1);
 
-    app_->Options()->SetStringValue("warm_start_init_point", "no");
-    app_->Options()->SetNumericValue("mu_init", 1e-1);
-
-    ROS_INFO_STREAM_THROTTLE(0.1, param_ns_ << " solving fail");
+    ROS_INFO_STREAM(param_ns_ << " solving fail");
     return false;
   }
 }
