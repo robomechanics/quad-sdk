@@ -147,7 +147,7 @@ class LocalFootstepPlanner {
      * @param[in] current_foot_velocity Current foot velocity
      * @param[in] current_plan_index Current index in the global plan
      * @param[in] body_plan Body plan from MPC
-     * @param[in] time_ahead Time duration to the next plan index
+     * @param[in] first_element_duration Time duration to the next plan index
      * @param[out] past_footholds_msg Message for previous footholds
      * @param[out] future_footholds_msg Message for future (planned) footholds
      * @param[out] future_nominal_footholds_msg Message for nominal future (planned) footholds

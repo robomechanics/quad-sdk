@@ -344,7 +344,7 @@ private:
   quad_msgs::MultiFootState future_nominal_footholds_msg_;
   
   /// Time duration to the next plan index
-  double time_ahead_;
+  double first_element_duration_;
 
   /// If the current solving is duplicated in the same index
   bool same_plan_index_;

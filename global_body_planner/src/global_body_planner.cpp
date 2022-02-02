@@ -142,11 +142,19 @@ void GlobalBodyPlanner::goalStateCallback(const geometry_msgs::PointStamped::Con
   }
 }
 
-void GlobalBodyPlanner::updateRestartFlag() {
+void GlobalBodyPlanner::setStartState() {
 
-  if (body_plan_.empty()) {
-    restart_flag_ = true;
-    return;
+  // Reset if too far from plan
+  if (!current_plan_.isEmpty()) {
+    int current_index;
+    double first_element_duration;
+    quad_utils::getPlanIndex(current_plan_.getPublishedTimestamp(), dt_, current_index, first_element_duration);
+    current_index = std::min(current_index, current_plan_.getSize()-1);
+    FullState current_state_in_plan_ = current_plan_.getState(current_index);
+    if (poseDistance(robot_state_, current_state_in_plan_) > state_error_threshold_) {
+      ROS_WARN_THROTTLE(0.5, "Too far from nominal plan, resetting");
+      triggerReset();
+    }
   }
 
   std::vector<double> current_state_in_plan_ = body_plan_.front();

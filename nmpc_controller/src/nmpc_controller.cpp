@@ -115,7 +115,7 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
                                     const Eigen::MatrixXd &foot_positions,
                                     const std::vector<std::vector<bool>> &contact_schedule,
                                     const Eigen::VectorXd &ref_ground_height,
-                                    const double &time_ahead,
+                                    const double &first_element_duration,
                                     const bool &same_plan_index,
                                     Eigen::MatrixXd &state_traj,
                                     Eigen::MatrixXd &control_traj)
@@ -127,7 +127,7 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
       foot_positions,
       contact_schedule,
       ref_ground_height.tail(N_),
-      time_ahead,
+      first_element_duration_,
       same_plan_index,
       require_init_);
   require_init_ = false;
@@ -223,7 +223,7 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
       state_traj.bottomRows(N_),
       control_traj,
       ref_ground_height.tail(N_),
-      time_ahead,
+      first_element_duration_,
       same_plan_index,
       require_init_);
   require_init_ = false;

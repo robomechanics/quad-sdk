@@ -96,7 +96,7 @@ public:
     double panic_weights_;
 
     // Time duration to the next plan index
-    double time_ahead_;
+    double first_element_duration_;
 
     decltype(eval_g_leg_work) *eval_g_work_;
     decltype(eval_g_leg_incref) *eval_g_incref_;
@@ -254,7 +254,7 @@ public:
         const Eigen::MatrixXd &state_traj,
         const Eigen::MatrixXd &control_traj,
         const Eigen::VectorXd &ground_height,
-        const double &time_ahead,
+        const double &first_element_duration_,
         const bool &same_plan_index,
         const bool &init);
 
@@ -264,7 +264,7 @@ public:
         const Eigen::MatrixXd &foot_positions,
         const std::vector<std::vector<bool>> &contact_schedule,
         const Eigen::VectorXd &ground_height,
-        const double &time_ahead,
+        const double &first_element_duration_,
         const bool &same_plan_index,
         const bool &init);
 
