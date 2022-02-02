@@ -92,10 +92,7 @@ Action GraphClass::getAction(int idx)
 
 void GraphClass::printVertex(State vertex)
 {
-    std::cout << "{";
-    for (int i= 0; i < vertex.size(); i++)
-        std::cout << vertex[i] << ", ";
-    std::cout << "\b\b}"; 
+    printState(vertex);
 }
 
 void GraphClass::printVertices()
@@ -141,7 +138,7 @@ double GraphClass::getGValue(int idx)
 double GraphClass::computeEdgeCost(int idx1, int idx2) {
     double cost = poseDistance(getVertex(idx1), getVertex(idx2));
     // Action a = getAction(idx2);
-    // double cost = a[6] + a[7];
+    // double cost = a[8] + a[9];
 
     return cost;
 }

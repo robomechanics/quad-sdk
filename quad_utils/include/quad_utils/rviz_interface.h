@@ -193,6 +193,11 @@ private:
 
   const int GLOBAL = 0;
   const int LOCAL = 1;
+
+  const int CONNECT = 0;
+  const int LEAP_STANCE = 1;
+  const int FLIGHT = 2;
+  const int LAND_STANCE = 3;
 };
 
 #endif // RVIZ_INTERFACE_H

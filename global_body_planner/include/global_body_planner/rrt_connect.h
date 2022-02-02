@@ -2,7 +2,6 @@
 #define RRTCONNECT_H
 
 #include "global_body_planner/rrt.h"
-// #include "functions.h"
 
 #define TRAPPED 0
 #define ADVANCED 1
@@ -12,7 +11,8 @@ using namespace planning_utils;
 
 //! A class that implements RRT-Connect sampling-based planning.
 /*!
-   This class inherits the RRTClass, and adds members to connect two states exactly and post process the resulting solution.
+   This class inherits the RRTClass, and adds members to connect two states exactly and post process
+   the resulting solution.
 */
 class RRTConnectClass : public RRTClass
 {
@@ -28,39 +28,20 @@ class RRTConnectClass : public RRTClass
      */
     ~RRTConnectClass();
 
-    /** Attempt to connect two states with specified stance time, and return a new state if the full connection is not possible
-     * @param[in] s_existing The state that is already in the tree and closest to the specified state
-     * @param[in] s The state to extend the tree towards
-     * @param[in] t_s The stance time for this connection
-     * @param[out] result Result of the newConfig operation
-     * @param[in] terrain Height map of the terrain
-     * @param[in] direction Direction of the dynamics (either FORWARD or REVERSE)
-     * @return Int describing the result of the attempt (TRAPPED, ADVANCED, or REACHED)
-     */
-    int attemptConnect(State s_existing, State s, double t_s, StateActionResult &result,
-      const PlannerConfig &planner_config, int direction);
-
-    /** Attempt to connect two states, and return a new state if the full connection is not possible. Internally computes stance time
-     * @param[in] s_existing The state that is already in the tree and closest to the specified state
-     * @param[in] s The state to extend the tree towards
-     * @param[out] result Result of the newConfig operation
-     * @param[in] terrain Height map of the terrain
-     * @param[in] direction Direction of the dynamics (either FORWARD or REVERSE)
-     * @return Int describing the result of the attempt (TRAPPED, ADVANCED, or REACHED)
-     */
-    int attemptConnect(State s_existing, State s, StateActionResult &result,
-      const PlannerConfig &planner_config, int direction);
-
     /** Connect the tree to the desired state
      * @param[in] T The PlannerClass instance containing the tree
      * @param[in] s The state to connect the tree towards
-     * @param[in] terrain Height map of the terrain
-     * @param[in] direction The direction with which to peform the extension (FORWARD to go away from the root vertex, REVERSE to go towards it)
+     * @param[in] planner_config Configuration parameters
+     * @param[in] direction The direction with which to peform the extension (FORWARD to go away
+     *  from the root vertex, REVERSE to go towards it)
+     * @param[in] tree_pub Publisher for broadcasting the tree visual
      */
-    int connect(PlannerClass &T, State s, const PlannerConfig &planner_config, int direction);
+    int connect(PlannerClass &T, State s, const PlannerConfig &planner_config, int direction,
+      ros::Publisher &tree_pub);
 
     /**
-     * @brief Get the actions along the specified path of vertex indices (assumes that actions are synched with the state at which they are executed)
+     * @brief Get the actions along the specified path of vertex indices (assumes that actions are 
+     *  synched with the state at which they are executed)
      * @param[in] T The PlannerClass instance containing the tree
      * @param[in] path Vector of vertices in the path
      * @return The sequence of actions in the path
@@ -71,9 +52,10 @@ class RRTConnectClass : public RRTClass
      * @brief Post process the path by removing extraneous states that can be bypassed
      * @param[in] state_sequence The sequence of states in the path
      * @param[in] action_sequence The sequence of actions in the path
-     * @param[in] terrain Height map of the terrain
+     * @param[in] planner_config Configuration parameters
      */
-    void postProcessPath(std::vector<State> &state_sequence, std::vector<Action> &action_sequence, const PlannerConfig &planner_config);
+    void postProcessPath(std::vector<State> &state_sequence, std::vector<Action> &action_sequence,
+      const PlannerConfig &planner_config);
 
     /**
      * @brief Post process the path by removing extraneous states that can be bypassed
@@ -81,20 +63,37 @@ class RRTConnectClass : public RRTClass
      * @param[in] Tb The planning tree originating from the end state
      * @param[out] state_sequence The sequence of states in the path
      * @param[out] action_sequence The sequence of actions in th  e path     
-     * @param[in] terrain Height map of the terrain
+     * @param[in] planner_config Configuration parameters
      */
-    void extractPath(PlannerClass Ta, PlannerClass Tb, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, const PlannerConfig &planner_config);
+    void extractPath(PlannerClass &Ta, PlannerClass &Tb,
+      std::vector<State> &state_sequence, std::vector<Action> &action_sequence,
+        const PlannerConfig &planner_config);
 
     /**
-     * @brief Run the full RRT-Connect planner until the goal is found or time has expired, then post process and update statistics
+     * @brief Post process the path by removing extraneous states that can be bypassed
+     * @param[in] Ta The planning tree originating from the start state
+     * @param[in] s_start The start state of the planner
+     * @param[out] state_sequence The sequence of states in the path
+     * @param[out] action_sequence The sequence of actions in th  e path     
      * @param[in] terrain Height map of the terrain
+     */
+    void extractClosestPath(PlannerClass &Ta, const State &s_goal,
+      std::vector<State> &state_sequence, std::vector<Action> &action_sequence,
+      const PlannerConfig &planner_config);
+
+    /**
+     * @brief Run the full RRT-Connect planner until the goal is found or time has expired, then 
+     *  post process and update statistics
+     * @param[in] planner_config Configuration parameters
      * @param[in] s_start The start state of the planner
      * @param[in] s_goal The goal state of the planner
      * @param[out] state_sequence The sequence of states in the final path
      * @param[out] action_sequence The sequence of actions in the final path
-     * @param[in] max_planning_time Maximum time allowed to find a plan
+     * @return Boolean for success of the planner
      */
-    void runRRTConnect(const PlannerConfig &planner_config, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double max_planning_time);
+    int runRRTConnect(const PlannerConfig &planner_config, State s_start, State s_goal,
+      std::vector<State> &state_sequence, std::vector<Action> &action_sequence,
+      ros::Publisher &tree_pub);
 
   protected:
 
@@ -108,7 +107,7 @@ class RRTConnectClass : public RRTClass
     double anytime_horizon_init;
 
     /// Factor by which horizon is increased if replanning is required
-    double horizon_expansion_factor = 1.2;
+    const double horizon_expansion_factor = 1.2;
 };
 
 #endif

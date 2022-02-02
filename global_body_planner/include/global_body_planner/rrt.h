@@ -29,13 +29,36 @@ class RRTClass
      */
     ~RRTClass();
 
+    /** Attempt to connect two states with specified stance time, and return a new state if the full connection is not possible
+     * @param[in] s_existing The state that is already in the tree and closest to the specified state
+     * @param[in] s The state to extend the tree towards
+     * @param[in] t_s The stance time for this connection
+     * @param[out] result Result of the newConfig operation
+     * @param[in] terrain Height map of the terrain
+     * @param[in] direction Direction of the dynamics (either FORWARD or REVERSE)
+     * @return Int describing the result of the attempt (TRAPPED, ADVANCED, or REACHED)
+     */
+    int attemptConnect(const State &s_existing, const State &s, double t_s,
+      StateActionResult &result, const PlannerConfig &planner_config, int direction);
+
+    /** Attempt to connect two states, and return a new state if the full connection is not possible. Internally computes stance time
+     * @param[in] s The state to extend the tree towards
+     * @param[out] result Result of the newConfig operation
+     * @param[in] terrain Height map of the terrain
+     * @param[in] direction Direction of the dynamics (either FORWARD or REVERSE)
+     * @return Int describing the result of the attempt (TRAPPED, ADVANCED, or REACHED)
+     */
+    int attemptConnect(const State &s_existing, const State &s, StateActionResult &result,
+      const PlannerConfig &planner_config, int direction);
+
     /** Extend the tree towards the desired state
      * @param[in] T The PlannerClass instance containing the tree
      * @param[in] s The state to extend the tree towards
      * @param[in] terrain Height map of the terrain
      * @param[in] direction The direction with which to peform the extension (FORWARD to go away from the root vertex, REVERSE to go towards it)
      */
-    virtual int extend(PlannerClass &T, State s, const PlannerConfig &planner_config, int direction);
+    virtual int extend(PlannerClass &T, const State &s, const PlannerConfig &planner_config,
+      int direction, ros::Publisher &tree_pub);
 
     /**
      * @brief Get the path from the root vertex to the specified one
@@ -68,8 +91,10 @@ class RRTClass
      * @param[out] vertices_generated Number of vertices generated in the tree
      * @param[out] plan_length The length of the path in meters
      * @param[out] path_duration The duration of the path in seconds
+     * @param[out] dist_to_goal Distance from the final state to the goal (0 if solved)
      */
-    void getStatistics(double &plan_time, int &vertices_generated, double &plan_length, double& path_duration);
+    void getStatistics(double &plan_time, int &vertices_generated, double &plan_length,
+      double& path_duration, double &dist_to_goal);
 
     /**
      * @brief Generate a new state that can be connected to the tree and is as close as possible to the specified state
@@ -81,7 +106,7 @@ class RRTClass
      * @return Boolean if the new state got closer to the specified state than any other in the tree
      */
     bool newConfig(State s, State s_near, StateActionResult &result,
-      const PlannerConfig &planner_config, int direction);
+      const PlannerConfig &planner_config, int direction, ros::Publisher &tree_pub);
 
     /**
      * @brief Get the states along the specified path of vertex indices
@@ -125,6 +150,11 @@ class RRTClass
     /// The duration of the path in seconds
     double path_duration_;
 
+    /// Distance from the final state to the goal (m)
+    double dist_to_goal_;
+
+    /// Message for tree visualization
+    visualization_msgs::MarkerArray tree_viz_msg_;
         
         
 };

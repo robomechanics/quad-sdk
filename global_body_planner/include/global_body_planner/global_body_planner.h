@@ -3,6 +3,7 @@
 
 #include <ros/ros.h>
 #include <nav_msgs/Path.h>
+#include <visualization_msgs/MarkerArray.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
@@ -11,6 +12,7 @@
 #include <quad_utils/ros_utils.h>
 
 #include "global_body_planner/rrt_connect.h"
+#include "global_body_planner/global_body_plan.h"
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
@@ -36,8 +38,9 @@ class GlobalBodyPlanner {
 
     /**
      * @brief Call the correct planning class and compute statistics
+     * @return Boolean for success of the planner
      */
-    void callPlanner();
+    bool callPlanner();
 
     /**
      * @brief Primary work function in class, called in node file for this component
@@ -64,9 +67,9 @@ class GlobalBodyPlanner {
     void goalStateCallback(const geometry_msgs::PointStamped::ConstPtr& msg);
 
     /**
-     * @brief Check if a restart is required
+     * @brief Trigger a reset event
      */
-    void updateRestartFlag();
+    void triggerReset();
 
     /**
      * @brief Initialize the planner by clearing out old plan data and setting the start state
@@ -104,6 +107,24 @@ class GlobalBodyPlanner {
      */
     void getInitialPlan();
 
+
+
+
+    /**
+     * @brief Set the start state to be used by the next planning call
+     */
+    void setStartState();
+
+    /**
+     * @brief Set the goal state to be used by the next planning call
+     */
+    void setGoalState();
+
+    /**
+     * @brief Publish the current plan if updated
+     */
+    void publishCurrentPlan();
+
     /// Subscriber for terrain map messages
     ros::Subscriber terrain_map_sub_;
 
@@ -118,6 +139,9 @@ class GlobalBodyPlanner {
 
     /// Publisher for discrete states in body plan messages
     ros::Publisher discrete_body_plan_pub_;
+
+    /// Publisher for the planning tree
+    ros::Publisher tree_pub_;
 
     /// Topic name for terrain map (needed to ensure data has been received)
     std::string terrain_map_topic_;
@@ -140,29 +164,20 @@ class GlobalBodyPlanner {
     /// Handle for the map frame
     std::string map_frame_;
 
-    /// Std vector containing the interpolated time data
-    std::vector<double> t_plan_;
+    /// Plan data for the most recently computed plan (may be suboptimal)
+    GlobalBodyPlan newest_plan_;
 
-    /// Std vector containing the interpolated robot body plan
-    std::vector<FullState> body_plan_;
-
-    /// Std vector containing the interpolated wrench plan
-    std::vector<GRF> grf_plan_;
-
-    /// Std vector containing the interpolated time data
-    std::vector<int> primitive_id_plan_;
-
-    /// Std vector containing the interpolated time data
-    std::vector<double> length_plan_;
-
-    /// Time stamp for the beginning of the plan
-    ros::Time plan_timestamp_;
+    /// Plan data for the plan currently being executed
+    GlobalBodyPlan current_plan_;
 
     /// Starting state for planner call
-    std::vector<double> start_state_;
+    FullState start_state_;
 
     /// Goal state for planner
-    std::vector<double> goal_state_;
+    FullState goal_state_;
+
+    /// Current robot state
+    FullState robot_state_;
 
     /// goal_state_msg_
     geometry_msgs::PointStamped::ConstPtr goal_state_msg_;
@@ -176,9 +191,6 @@ class GlobalBodyPlanner {
     /// Threshold of state error to trigger replanning
     double state_error_threshold_;
 
-    /// Current robot state
-    std::vector<double> robot_state_;
-
     /// Flag to determine if the planner needs to restart planning from the robot state
     bool restart_flag_;
     
@@ -187,9 +199,6 @@ class GlobalBodyPlanner {
 
     /// Sequence of discrete actions in the plan
     std::vector<Action> action_sequence_;
-
-    /// Cost of the current path in path length
-    double current_cost_;
 
     /// Vector of cost instances in each planning call
     std::vector<double> cost_vector_;
@@ -206,8 +215,8 @@ class GlobalBodyPlanner {
     /// Planner config
     PlannerConfig planner_config_;
 
-    /// Delay after node startup before planning and publishing
-    double startup_delay_;
+    /// Delay after plan reset before publishing and refining
+    double reset_publish_delay_;
 
     /// Boolean for whether replanning is allowed
     bool replanning_allowed_;
@@ -215,6 +224,26 @@ class GlobalBodyPlanner {
     /// Timestep for interpolation
     double dt_;
 
+    /// ID for status of planner
+    int planner_status_;
+
+    /// Index of active plan from which to begin refinement
+    int start_index_;
+
+    /// Planning status ID for resetting (start from scratch)
+    static const int RESET = 0;
+
+    /// Planning status ID for refining (optimize current plan)
+    static const int REFINE = 1;
+
+    /// Time at which reset began
+    ros::Time reset_time_;
+
+    /// Boolean for whether to publish the new plan after the reset delay has occured
+    bool publish_after_reset_delay_;
+
+    /// Timestamp for t=0 of global plan
+    ros::Time global_plan_timestamp_;
 };
 
 

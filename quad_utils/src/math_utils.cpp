@@ -135,12 +135,12 @@ namespace math_utils {
     // Check to ensure window size is an odd integer, if not add one to make it so
     if ((window_size % 2) == 0) {
       window_size += 1;
-      ROS_WARN("Filter window size is even, adding one to maintain symmetry");
+      ROS_WARN_THROTTLE(0.5,"Filter window size is even, adding one to maintain symmetry");
     }
 
     // Make sure that the window size is acceptable
     if (window_size>=N) {
-      ROS_ERROR("Filter window size is bigger than data");
+      ROS_WARN_THROTTLE(0.5,"Filter window size is bigger than data");
     }
 
     // Loop through the data
