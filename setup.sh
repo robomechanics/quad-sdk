@@ -4,7 +4,7 @@ echo "#########################"
 echo "Install base dependencies"
 echo "#########################"
 echo
-sudo apt install doxygen libeigen3-dev
+sudo apt install -y doxygen libeigen3-dev python3-catkin-tools
 
 # Install all dependencies from package setup files
 echo
@@ -28,4 +28,4 @@ echo "#######################"
 echo "Install all rosdeps"
 echo "#######################"
 echo
-rosdep install --from-paths .. --ignore-src -r -y
+rosdep install --from-paths .. --ignore-src -r -y --rosdistro melodic

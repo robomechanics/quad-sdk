@@ -16,7 +16,7 @@ EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
   joint_encoder_sub_ = nh_.subscribe(joint_encoder_topic,1,&EKFEstimator::jointEncoderCallback, this);
   imu_sub_ = nh_.subscribe(imu_topic,1,&EKFEstimator::imuCallback, this);
   contact_sub_ = nh_.subscribe(contact_topic,1,&EKFEstimator::contactCallback, this);
-  state_estimate_pub_ = nh_.advertise<spirit_msgs::RobotState>(state_estimate_topic,1);
+  state_estimate_pub_ = nh_.advertise<quad_msgs::RobotState>(state_estimate_topic,1);
 }
 
 void EKFEstimator::jointEncoderCallback(const sensor_msgs::JointState::ConstPtr& msg) {
@@ -27,17 +27,17 @@ void EKFEstimator::imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
   last_imu_msg_ = msg;
 }
 
-void EKFEstimator::contactCallback(const spirit_msgs::ContactMode::ConstPtr& msg) {
+void EKFEstimator::contactCallback(const quad_msgs::ContactMode::ConstPtr& msg) {
   last_contact_msg_ = msg;
 }
 
-spirit_msgs::RobotState EKFEstimator::updateStep() {
+quad_msgs::RobotState EKFEstimator::updateStep() {
   // Record start time of function, used in verifying messages are not out of date
   // and in timing function
   ros::Time start_time = ros::Time::now();
 
   // Create skeleton message to send out
-  spirit_msgs::RobotState new_state_est;
+  quad_msgs::RobotState new_state_est;
 
   // Record whether we have good imu and joint state data
   bool good_imu = false;
@@ -46,7 +46,7 @@ spirit_msgs::RobotState EKFEstimator::updateStep() {
   // Collect info from last imu message
   if (last_imu_msg_ != NULL)
   {
-    new_state_est.body.pose.pose.orientation = (*last_imu_msg_).orientation;
+    new_state_est.body.pose.orientation = (*last_imu_msg_).orientation;
     good_imu = true;
   }
   else {
@@ -55,7 +55,7 @@ spirit_msgs::RobotState EKFEstimator::updateStep() {
     quat.y = 0;
     quat.z = 0;
     quat.w = 1;
-    new_state_est.body.pose.pose.orientation = quat;
+    new_state_est.body.pose.orientation = quat;
   }
   // Collect info from last joint state message, making sure info is not out of date
   if (last_joint_state_msg_ != NULL)
@@ -73,7 +73,7 @@ spirit_msgs::RobotState EKFEstimator::updateStep() {
     }
   }
   else {
-    ROS_WARN_THROTTLE(0.5,"Still waiting for first joint state message");
+    ROS_DEBUG_THROTTLE(0.5,"Still waiting for first joint state message");
     new_state_est.joints.header.stamp = ros::Time::now();
     new_state_est.joints.name = {"8", "0", "1", "9","2", "3", "10", "4","5", 
       "11", "6", "7"};
@@ -94,7 +94,7 @@ void EKFEstimator::spin() {
     ros::spinOnce(); 
 
     // Compute new state estimate
-    spirit_msgs::RobotState new_state_est = this->updateStep();
+    quad_msgs::RobotState new_state_est = this->updateStep();
 
     // Publish new state estimate
     state_estimate_pub_.publish(new_state_est);

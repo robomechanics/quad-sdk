@@ -16,13 +16,13 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   sensor_msgs
-  spirit_msgs
+  quad_msgs
 )
 
 catkin_package(
     INCLUDE_DIRS include
 #  LIBRARIES contact_detection
-#  CATKIN_DEPENDS roscpp std_msgs sensor_msgs spirit_msgs
+#  CATKIN_DEPENDS roscpp std_msgs sensor_msgs quad_msgs
 #	 DEPENDS
 )
 
