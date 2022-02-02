@@ -153,6 +153,9 @@ private:
   // Current positions of each foot
   Eigen::VectorXd current_foot_positions_world_;
 
+  // Current velocities of each foot
+  Eigen::VectorXd current_foot_velocities_world_;
+
   // Current positions of each foot
   Eigen::VectorXd current_foot_positions_body_;
 
