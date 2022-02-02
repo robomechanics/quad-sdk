@@ -124,8 +124,8 @@ void GlobalBodyPlanner::setStartState() {
   // Reset if too far from plan
   if (!current_plan_.isEmpty()) {
     int current_index;
-    double time_ahead;
-    quad_utils::getPlanIndex(current_plan_.getPublishedTimestamp(), dt_, current_index, time_ahead);
+    double first_element_duration;
+    quad_utils::getPlanIndex(current_plan_.getPublishedTimestamp(), dt_, current_index, first_element_duration);
     current_index = std::min(current_index, current_plan_.getSize()-1);
     FullState current_state_in_plan_ = current_plan_.getState(current_index);
     if (poseDistance(robot_state_, current_state_in_plan_) > state_error_threshold_) {
