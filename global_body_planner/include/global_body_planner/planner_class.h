@@ -15,9 +15,10 @@ class PlannerClass : public GraphClass
   public:
     /**
      * @brief Constructor for PlannerClass
+     * @param[in] direction Direction of tree expansion
      * @return Constructed object of type PlannerClass
      */
-    PlannerClass();
+    PlannerClass(int direction);
 
     /**
      * @brief Destructor for PlannerClass
@@ -53,6 +54,9 @@ class PlannerClass : public GraphClass
      * @return Index of closest vertex
      */
     int getNearestNeighbor(State q);
+
+    /// Direction
+    int direction_ = FORWARD;
 
 };
 

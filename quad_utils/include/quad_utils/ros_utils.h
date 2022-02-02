@@ -43,15 +43,15 @@ namespace quad_utils {
   /**
    * @brief Gets the index associated with a given time
    * @param[out] index Index in plan (compared to ros::Time::now())
-   * @param[out] time_ahead Time duration to next index in plan (compared to ros::Time::now())
+   * @param[out] first_element_duration Time duration to next index in plan (compared to ros::Time::now())
    * @param[in] plan_start ROS Time to to compare to
    * @param[in] dt Timestep used to discretize the plan
    */
-  inline void getPlanIndex(ros::Time plan_start, double dt, int &index, double &time_ahead)
+  inline void getPlanIndex(ros::Time plan_start, double dt, int &index, double &first_element_duration)
   {
     double duration = getDurationSinceTime(plan_start);
     index = std::floor(duration / dt);
-    time_ahead = (index + 1) * dt - duration;
+    first_element_duration = (index + 1) * dt - duration;
   }
 
   /**
