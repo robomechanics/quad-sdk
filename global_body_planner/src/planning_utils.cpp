@@ -697,38 +697,6 @@ State applyAction(const State &s, const Action &a, const PlannerConfig &planner_
 Action getRandomAction(const Eigen::Vector3d &surf_norm, const PlannerConfig &planner_config)
 { 
   throw std::runtime_error("This function (getRandomAction) won't match with the dynamics checks!");
-  // Action a;
-
-  // // Random normal forces between 0 and planner_config.F_MAX
-  // double f_z_td = (planner_config.F_MAX-planner_config.F_MIN)*(double)rand()/RAND_MAX
-  //   + planner_config.F_MIN;
-  // double f_z_to = (planner_config.F_MAX-planner_config.F_MIN)*(double)rand()/RAND_MAX
-  //   + planner_config.F_MIN;
-
-  // // Random tangential forces between -mu*f_z and mu*f_z
-  // double f_x_td = 2*planner_config.MU*f_z_td*(double)rand()/RAND_MAX - planner_config.MU*f_z_td;
-  // double f_x_to = 2*planner_config.MU*f_z_to*(double)rand()/RAND_MAX - planner_config.MU*f_z_to;
-  // double f_y_td = 2*planner_config.MU*f_z_td*(double)rand()/RAND_MAX - planner_config.MU*f_z_td;
-  // double f_y_to = 2*planner_config.MU*f_z_to*(double)rand()/RAND_MAX - planner_config.MU*f_z_to;
-
-  // GRF grf_0, grf_f;
-  // grf_0 << f_x_td, f_y_td, f_z_td;
-  // grf_f << f_x_to, f_y_to, f_z_to;
-
-  // grf_0 = rotateGRF(surf_norm, grf_0);
-  // grf_f = rotateGRF(surf_norm, grf_f);
-
-  // // Random stance and flight times between 0 and T_MAX
-  // // double t_s = (planner_config.T_S_MAX - planner_config.T_S_MIN)*(double)rand()/RAND_MAX + planner_config.T_S_MIN;
-  // double t_s = 0.3;
-  // double t_f = (planner_config.T_F_MAX - planner_config.T_F_MIN)*(double)rand()/RAND_MAX + planner_config.T_F_MIN;
-
-  // a.grf_0 = grf_0/planner_config.M_CONST - planner_config.G_VEC;
-  // a.grf_f = grf_f/planner_config.M_CONST - planner_config.G_VEC;
-  // a.t_s_leap = t_s;
-  // a.t_f = t_f;
-
-  // return a;
 }
 
 bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm, Action &a,
