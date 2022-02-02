@@ -871,7 +871,7 @@ void LocalPlanner::publishLocalPlan() {
 
   // Compute the discrete and continuous foot plan messages
   local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_world_, current_foot_positions_world_, current_foot_velocities_world_,
-    current_plan_index_, body_plan_, first_element_duration_, past_footholds_msg_, future_footholds_msg, future_nominal_footholds_msg_, foot_plan_msg);
+    current_plan_index_, body_plan_, time_ahead_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
 
   // Add body, foot, joint, and grf data to the local plan message
   for (int i = 0; i < N_; i++) {

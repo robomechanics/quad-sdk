@@ -266,7 +266,6 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
     // Identify positions of the previous and next footholds
     Eigen::Vector3d foot_position_prev, foot_position_prev_nominal;
     quad_utils::footStateMsgToEigen(most_recent_foothold_msg, foot_position_prev);
-    quad_utils::footStateMsgToEigen(most_recent_foothold_msg, foot_position_prev_nominal);
     Eigen::Vector3d foot_velocity_prev;
     foot_velocity_prev = Eigen::Vector3d::Zero();
     Eigen::Vector3d foot_position_next = getFootData(foot_positions, i_touchdown, j);
@@ -326,7 +325,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
           foot_velocity_prev = current_foot_velocity.segment(3 * j, 3);
         }
 
-        // Compute the period index of plan and current states 
+        // Compute the period index of plan and current states
         double swing_idx;
         double swing_idx_current = 0 - i_liftoff + (dt_ - time_ahead) / dt_;
         // For the first step, it might be duplicated in the same plan index so we need to refine the phase based on the time duration to next plan index
@@ -344,7 +343,6 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         double interp_duration;
         if (swing_duration == 0)
         {
-          // This case should only happens at the last element so it's the start of a swing, set a wrong duration will cause a wrong acceleration but we will never use it so it should be fine
           interp_phase = 0;
           interp_duration = 1;
         }
@@ -381,12 +379,8 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         // Interplate z
         if (swing_duration == 0)
         {
-          // This case should only happens at the last element so it's the start of a swing, set a wrong duration will cause a wrong acceleration but we will never use it so it should be fine
           interp_phase = 0;
           interp_duration = 1;
-
-          cubicHermiteSpline(foot_position_prev.z(), foot_velocity_prev.z(), swing_apex, 0, interp_phase,
-                              interp_duration, foot_position.z(), foot_velocity.z(), foot_acceleration.z());
         }
         else
         {
@@ -442,7 +436,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
               // Swing downwards
               cubicHermiteSpline(swing_apex, 0, foot_position_next.z(), foot_velocity_next.z(), interp_phase,
                                 interp_duration, foot_position.z(), foot_velocity.z(), foot_acceleration.z());
-            } 
+            }
           }
         }
 
