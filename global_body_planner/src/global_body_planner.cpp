@@ -136,25 +136,26 @@ void GlobalBodyPlanner::setStartState() {
 
   if (planner_status_ == RESET) {
 
-    ROS_INFO("In reset mode");
+    ROS_INFO_THROTTLE(2,"In reset mode");
     start_state_ = robot_state_;
     replan_start_time_ = 0;
     start_index_ = 0;
     publish_after_reset_delay_ = true;
 
   } else if (planner_status_ == REFINE) {
-    ROS_INFO("In refine mode, status");
+    ROS_INFO_THROTTLE(2,"GBP in refine mode");
 
     start_index_ = std::floor((ros::Time::now() + ros::Duration(max_planning_time_) - 
       current_plan_.getPublishedTimestamp()).toSec()/dt_);
-    start_index_ = std::min(start_index_, current_plan_.getSize()-1);
+    start_index_ = (start_index_ + 25 >= current_plan_.getSize()-1) ? 
+      current_plan_.getSize()-1 : start_index_;
 
     start_state_ = current_plan_.getState(start_index_);
     replan_start_time_ = current_plan_.getTime(start_index_);
 
   } else {
     ROS_ERROR("Invalid planning status");
-  }
+  }  
 }
 
 void GlobalBodyPlanner::setGoalState() {
@@ -182,7 +183,7 @@ bool GlobalBodyPlanner::callPlanner() {
   
   // Initialize statistics variables
   double plan_time, path_length, path_duration, total_solve_time, total_vertices_generated,
-    total_path_length, total_path_duration;
+    total_path_length, total_path_duration, dist_to_goal;
   int vertices_generated;
 
   // Construct RRT object
@@ -206,20 +207,19 @@ bool GlobalBodyPlanner::callPlanner() {
     newest_plan_.setComputedTimestamp(ros::Time::now());
     
     if (plan_status != VALID && plan_status != VALID_PARTIAL) {
-      if (num_calls_ > 1) {
-        continue;
-      } else {
-        if (plan_status == INVALID_START_STATE) {
-          ROS_WARN_THROTTLE(1, "Invalid start state, exiting");
-        } else if (plan_status == INVALID_GOAL_STATE) {
-          ROS_WARN_THROTTLE(1, "Invalid goal state, exiting");
-        } else if (plan_status == INVALID_START_GOAL_EQUAL) {
-          ROS_WARN_THROTTLE(1, "Start is sufficiently close to goal, exiting");
-        };
-        return false;
-      }
+      if (plan_status == INVALID_START_STATE) {
+        ROS_WARN_THROTTLE(1, "Invalid start state, exiting");
+      } else if (plan_status == INVALID_GOAL_STATE) {
+        ROS_WARN_THROTTLE(1, "Invalid goal state, exiting");
+      } else if (plan_status == INVALID_START_GOAL_EQUAL) {
+        ROS_WARN_THROTTLE(1, "Start is sufficiently close to goal, exiting");
+      } else if (plan_status == UNSOLVED) {
+        ROS_WARN_THROTTLE(1, "Planner was unable to make any progress, start state likely trapped");
+      };
+      return false;
     }
-    rrt_connect_obj.getStatistics(plan_time, vertices_generated, path_length, path_duration);
+    rrt_connect_obj.getStatistics(plan_time, vertices_generated, path_length,
+      path_duration, dist_to_goal);
 
     // Add the existing path length to the new
     path_length += current_plan_.getLengthAtIndex(start_index_);
@@ -236,25 +236,27 @@ bool GlobalBodyPlanner::callPlanner() {
     solve_time_info_.push_back(plan_time);
     vertices_generated_info_.push_back(vertices_generated);
 
+
     newest_plan_.eraseAfterIndex(start_index_);
-    newest_plan_.load(plan_status, start_state_, state_sequence, action_sequence, dt_,
+    newest_plan_.load(plan_status, start_state_, dist_to_goal, state_sequence, action_sequence, dt_,
       replan_start_time_, planner_config_);
 
     // Check if this plan is better:
     // 1) If valid and shorter or previous plan not valid OR
     // 2) If partially valid and closer to the goal OR
     // 3) If goal has moved
-    double eps = 1e-2; // Require improvement over numerical tolerance
+    double eps = 0.99; // Require significant improvement
     bool is_updated = false;
     if ((plan_status == VALID) && 
-      ((newest_plan_.getLength()+eps) < current_plan_.getLength() || current_plan_.getStatus() != VALID)) {
+      ((newest_plan_.getLength()/eps) < current_plan_.getLength() || current_plan_.getStatus() != VALID)) {
       
       ROS_INFO("valid and shorter or previous plan not valid");
       is_updated = true;
       
     } else if ( (plan_status == VALID_PARTIAL) && 
-      ( poseDistance(state_sequence.back(), goal_state) <  
-        poseDistance(current_plan_.getLastState(), goal_state_)) ) {
+      (  current_plan_.getStatus() == UNSOLVED || 
+        (poseDistance(state_sequence.back(), goal_state) <  
+         current_plan_.getGoalDistance()) ) ) {
         
       ROS_INFO("partially valid and closer to the goal");
       is_updated = true;
@@ -323,7 +325,6 @@ void GlobalBodyPlanner::getInitialPlan() {
 }
 
 void GlobalBodyPlanner::publishCurrentPlan() {
-  std::cout << "In publishCurrentPlan: " <<  std::endl;
 
   // Conditions for publishing current plan:
   // 1) Plan not empty AND
@@ -367,7 +368,6 @@ void GlobalBodyPlanner::publishCurrentPlan() {
     discrete_body_plan_pub_.publish(discrete_robot_plan_msg);
 
     ROS_WARN("New plan published, stamp = %f", robot_plan_msg.global_plan_timestamp.toSec());
-
   }
 
 }

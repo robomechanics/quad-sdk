@@ -34,8 +34,9 @@ void GlobalBodyPlan::eraseAfterIndex(int start_index) {
 
 }
 
-void GlobalBodyPlan::load(int plan_status, FullState &start_state, std::vector<State> &state_sequence,
-  std::vector<Action> &action_sequence, double dt, double t0, const PlannerConfig &planner_config) {
+void GlobalBodyPlan::load(int plan_status, FullState &start_state, double dist_to_goal, 
+  std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double dt, double t0,
+  const PlannerConfig &planner_config) {
 
   plan_status_ = plan_status;
   state_sequence_ = state_sequence;
@@ -63,6 +64,8 @@ void GlobalBodyPlan::load(int plan_status, FullState &start_state, std::vector<S
 
   // Lift from reduced into full body plan
   addFullStates(start_state, interp_reduced_plan, dt, body_plan_, planner_config);
+
+  goal_distance_ = dist_to_goal;
 
 }
 

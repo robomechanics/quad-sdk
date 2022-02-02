@@ -35,7 +35,7 @@ struct PlannerConfig {
   double H_MIN = 0.125;         // Minimum ground clearance of body corners, m
   double H_NOM = 0.3;           // Nominal ground clearance of body, m
   double V_MAX = 3.0;           // Maximum robot velocity, m/s (4.0 for cheetah, 2.5 for anymal)
-  double V_NOM = 0.5;          // Nominal velocity, m/s (used during connect function)
+  double V_NOM = 0.75;          // Nominal velocity, m/s (used during connect function)
   double DY_MAX = 0;            // Maximum yaw velocity
   double ROBOT_L = 0.4;         // Length of robot body, m (0.6 cheetah, 0.554 ANYmal)
   double ROBOT_W = 0.3;         // Width of robot body, m (0.256 cheetah, 0.232 ANYmal)
@@ -240,8 +240,6 @@ bool isValidState(const State &s, const PlannerConfig &planner_config, int phase
 
 // Trajectory validity checking
 bool isValidStateActionPair(const State &s, const Action &a, StateActionResult &result, 
-  const PlannerConfig &planner_config);
-bool findValidStateActionPair(State &s, Action &a, StateActionResult &result, 
   const PlannerConfig &planner_config);
 
 // Define visualization functions

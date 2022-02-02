@@ -46,7 +46,7 @@ class GlobalBodyPlan
 
     inline FullState getState(int i) { return body_plan_.at(i);};
 
-    inline FullState getLastState() { return body_plan_.back();};
+    inline double getGoalDistance() { return goal_distance_;};
 
     inline double setComputedTimestamp(ros::Time timestamp) { computed_timestamp_ = timestamp;};
 
@@ -62,9 +62,9 @@ class GlobalBodyPlan
 
     void eraseAfterIndex(int start_index);
 
-    void load(int plan_status, FullState &start_state, std::vector<State> &state_sequence,
-      std::vector<Action> &action_sequence, double dt, double t0,
-      const PlannerConfig &planner_config);
+    void load(int plan_status, FullState &start_state, double dist_to_goal,
+      std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double dt,
+      double t0, const PlannerConfig &planner_config);
 
     void addStateAndGRFToMsg(double t, int plan_index, const FullState &body_state, 
         const GRF &grf, int primitive_id, quad_msgs::RobotPlan& msg);
@@ -101,6 +101,9 @@ class GlobalBodyPlan
 
     /// Plan status
     int plan_status_;
+
+    /// Distance to goal
+    double goal_distance_;
 
 };
 
