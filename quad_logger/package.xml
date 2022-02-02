@@ -1,0 +1,18 @@
+<package format="2">
+  <name>quad_logger</name>
+  <version>0.1.0</version>
+  <description>quad_logger</description>
+  <maintainer email="atajbakh@andrew.cmu.edu">Ardalan Tajbakhsh</maintainer>
+
+  <license>BSD</license>
+
+  <author>Sikang Liu</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>rospy</depend>
+  <depend>tf</depend>
+  <depend>python-numpy</depend>
+  <depend>python-matplotlib</depend>
+
+</package>

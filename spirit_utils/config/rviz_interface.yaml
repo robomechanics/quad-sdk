@@ -1,9 +1,0 @@
-rviz_interface:
-  update_rate: 30
-  colors: # Specify as RGB triplets [0,255]
-    front_left: [166,25,46]     # Red
-    back_left: [0,45,114]       # Blue
-    front_right: [0,132,61]     # Green
-    back_right: [242,169,0]     # Yellow
-    net_grf: [55,51,58]         # Black
-    individual_grf: [45,31,38]  # Black

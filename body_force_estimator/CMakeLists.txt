@@ -15,8 +15,8 @@ endif()
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
-  spirit_msgs
-  spirit_utils
+  quad_msgs
+  quad_utils
 )
 
 ## System dependencies are found with CMake's conventions
@@ -111,7 +111,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES body_force_estimator
-  CATKIN_DEPENDS roscpp std_msgs spirit_msgs spirit_utils
+  CATKIN_DEPENDS roscpp std_msgs quad_msgs quad_utils
 #  DEPENDS system_lib
 )
 
