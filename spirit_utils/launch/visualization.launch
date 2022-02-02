@@ -4,7 +4,8 @@
 
     <group ns="/trajectory">
         <!-- Point the robot description to this URDF -->
-        <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
+        <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit_meshes.urdf" />
+        <!-- <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" /> -->
 
         <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">

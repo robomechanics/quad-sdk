@@ -4,4 +4,4 @@ trajectory_publisher:
   playback_speed: 1.0
   traj_source: import # topic import
   pause_delay: 1.0 # time between import trajectories
-  traj_name_list_: ['JumpLeft', 'JumpReset', 'JumpLeft', 'JumpReset'] # JumpReset JumpLeft SpinJumpLeft 0_5mTrot 0_5mJump 0_5mCrawl Spirit2mCrawl FixedJumpSpin180 Squat SpinStepBackFlyingTrot SlowSpin SlowSpinBack
+  traj_name_list_: ['StandInPlace','StanceTrotSpinStepBack'] # JumpReset JumpLeft SpinJumpLeft 0_5mTrot 0_5mJump 0_5mCrawl Spirit2mCrawl FixedJumpSpin180 Squat SpinStepBackFlyingTrot SlowSpin SlowSpinBack SpiritHybridResult FlyingTrotSpinStepBack SpiritMixSpinStepBack
