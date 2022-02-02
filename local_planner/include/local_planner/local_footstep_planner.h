@@ -128,14 +128,14 @@ class LocalFootstepPlanner {
      * @param[in] foot_positions Foot positions over the horizon
      * @param[in] current_plan_index Current index in the global plan
      * @param[in] body_plan Body plan from MPC
-     * @param[in] time_ahead Time duration to the next plan index
+     * @param[in] first_element_duration Time duration to the next plan index
      * @param[out] past_footholds_msg Message for previous footholds
      * @param[out] future_footholds_msg Message for future (planned) footholds
      * @param[out] foot_plan_continuous_msg Message for continuous foot trajectories
      */
     void computeFootPlanMsgs(
       const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
-      int current_plan_index, const Eigen::MatrixXd &body_plan, const double &time_ahead, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+      int current_plan_index, const Eigen::MatrixXd &body_plan, const double &first_element_duration, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
       quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
       quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
 

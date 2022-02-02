@@ -83,7 +83,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   stand_pose_.fill(std::numeric_limits<double>::max());
 
   // Initialize the time duration to the next plan index
-  time_ahead_ = dt_;
+  first_element_duration_ = dt_;
 
   // Initialize the plan index boolean
   same_plan_index_ = true;
@@ -259,7 +259,7 @@ void LocalPlanner::getStateAndReferencePlan() {
 
   // Get index within the global plan, compare with the previous one to check if this is a duplicated solve
   int previous_plan_index = current_plan_index_;
-  quad_utils::getPlanIndex(body_plan_msg_->global_plan_timestamp, dt_, current_plan_index_, time_ahead_);
+  quad_utils::getPlanIndex(body_plan_msg_->global_plan_timestamp, dt_, current_plan_index_, first_element_duration_);
   same_plan_index_ = previous_plan_index == current_plan_index_;
 
   // Initializing foot positions if not data has arrived
@@ -332,7 +332,7 @@ void LocalPlanner::getStateAndTwistInput() {
 
   // Get plan index, compare with the previous one to check if this is a duplicated solve
   int previous_plan_index = current_plan_index_;
-  quad_utils::getPlanIndex(initial_timestamp_, dt_, current_plan_index_, time_ahead_);
+  quad_utils::getPlanIndex(initial_timestamp_, dt_, current_plan_index_, first_element_duration_);
   same_plan_index_ = previous_plan_index == current_plan_index_;
 
   // Initializing foot positions if not data has arrived
@@ -428,7 +428,7 @@ void LocalPlanner::getStateAndTwistInput() {
     for (int j = 0; j < 6; j ++) {
       if (i == 1)
       {
-        ref_body_plan_(i,j) = ref_body_plan_(i-1,j) + current_cmd_vel[j]*time_ahead_;
+        ref_body_plan_(i,j) = ref_body_plan_(i-1,j) + current_cmd_vel[j]*first_element_duration_;
       }
       else
       {
@@ -511,7 +511,7 @@ bool LocalPlanner::computeLocalPlan() {
   // Compute body plan with MPC, return if solve fails
   if (use_nmpc_) {
     if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_,
-      foot_positions_body_, contact_schedule_, ref_ground_height_, time_ahead_, same_plan_index_, body_plan_, grf_plan_))
+      foot_positions_body_, contact_schedule_, ref_ground_height_, first_element_duration_, same_plan_index_, body_plan_, grf_plan_))
       return false;
   } else {
     if (!local_body_planner_convex_->computePlan(current_state_, ref_body_plan_,
@@ -567,7 +567,7 @@ void LocalPlanner::publishLocalPlan() {
 
   // Compute the discrete and continuous foot plan messages
   local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_world_,
-    current_plan_index_, body_plan_, time_ahead_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
+    current_plan_index_, body_plan_, first_element_duration_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
 
   // Add body, foot, joint, and grf data to the local plan message
   for (int i = 0; i < N_; i++) {
@@ -595,11 +595,11 @@ void LocalPlanner::publishLocalPlan() {
     }
     else if (i == 1)
     {
-      state_timestamp = local_plan_msg.header.stamp + ros::Duration(time_ahead_);
+      state_timestamp = local_plan_msg.header.stamp + ros::Duration(first_element_duration_);
     }
     else
     {
-      state_timestamp = local_plan_msg.header.stamp + ros::Duration(time_ahead_) + ros::Duration((i - 1) * dt_);
+      state_timestamp = local_plan_msg.header.stamp + ros::Duration(first_element_duration_) + ros::Duration((i - 1) * dt_);
     }
     quad_utils::updateStateHeaders(robot_state_msg, state_timestamp, map_frame_, current_plan_index_+i);
     grf_array_msg.header = robot_state_msg.header;

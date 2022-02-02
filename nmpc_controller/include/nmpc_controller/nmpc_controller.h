@@ -41,7 +41,7 @@ public:
    * @param[in] ref_traj Matrix holding desired reference trajectory
    * @param[in] foot_positions Matrix holding foot positions
    * @param[in] contact_schedule Matrix holding the contact schedule
-   * @param[in] time_ahead Time duration to the next plan index
+   * @param[in] first_element_duration Time duration to the next plan index
    * @param[in] same_plan_index If the current solving is duplicated in the same index
    * @param[out] state_traj Optimized state trajectory output
    * @param[out] control_traj Optimized control trajectory output
@@ -59,7 +59,7 @@ public:
                       const Eigen::MatrixXd &foot_positions,
                       const std::vector<std::vector<bool>> &contact_schedule,
                       const Eigen::VectorXd &ref_ground_height,
-                      const double &time_ahead,
+                      const double &first_element_duration,
                       const bool &same_plan_index,
                       Eigen::MatrixXd &state_traj,
                       Eigen::MatrixXd &control_traj);
