@@ -26,8 +26,9 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
       result.length = current_result.length;
     }
 
-    if (connect_result == REACHED)
+    if (connect_result == REACHED) {
       return true;
+    }
   }
 
   Eigen::Vector3d surf_norm =
@@ -93,7 +94,7 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
     }
   }
 
-  std::cout << "Fraction valid action = " << (double)num_valid_actions/num_total_actions << std::endl;
+  // std::cout << "Fraction valid action = " << (double)num_valid_actions/num_total_actions << std::endl;
 
   #ifdef VISUALIZE_ALL_CANDIDATE_ACTIONS
     tree_viz_msg_.markers.resize(tree_size);
@@ -156,8 +157,9 @@ int RRTClass::attemptConnect(const State &s_existing, const State &s, double t_s
         return ADVANCED;
     }
   }
-
-  return attemptConnect(s_existing, s, t_s*2, result, planner_config, direction);
+  // std::cout << "invalid action in attemptconnect" << std::endl;
+  return TRAPPED;
+  // return attemptConnect(s_existing, s, t_s*2, result, planner_config, direction);
 }
 
 int RRTClass::attemptConnect(const State &s_existing, const State &s, StateActionResult &result,
@@ -174,9 +176,10 @@ int RRTClass::extend(PlannerClass &T, const State &s, const PlannerConfig &plann
   int s_near_index = T.getNearestNeighbor(s);
   State s_near = T.getVertex(s_near_index);
   StateActionResult result;
-
-  if (newConfig(s,s_near,result, planner_config, direction, tree_pub) == true)
+  
+  if (newConfig(s,s_near,result, planner_config, direction, tree_pub))
   {
+
     int s_new_index = T.getNumVertices();
     T.addVertex(s_new_index, result.s_new);
     T.addEdge(s_near_index, s_new_index, result.length);
@@ -185,7 +188,7 @@ int RRTClass::extend(PlannerClass &T, const State &s, const PlannerConfig &plann
     // T.updateGValue(s_new_index, T.getGValue(s_near_index) + result.length);
 
     // if (s_new == s)
-    if (isWithinBounds(result.s_new, s,planner_config) == true)
+    if (isWithinBounds(result.s_new, s,planner_config))
     {
       return REACHED;
     } else {
@@ -244,10 +247,12 @@ void RRTClass::printPath(PlannerClass &T, std::vector<int> path)
   std::cout << "\b\b  " << std::endl;
 }
 
-void RRTClass::getStatistics(double &plan_time, int &vertices_generated, double &plan_length, double& path_duration)
+void RRTClass::getStatistics(double &plan_time, int &vertices_generated, double &plan_length,
+  double& path_duration, double &dist_to_goal)
 {
   plan_time = elapsed_total_.count();
   vertices_generated = num_vertices_;
   plan_length = path_length_;
   path_duration = path_duration_;
+  dist_to_goal = dist_to_goal_;
 }

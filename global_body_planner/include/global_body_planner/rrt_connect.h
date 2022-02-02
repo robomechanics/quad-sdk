@@ -107,7 +107,7 @@ class RRTConnectClass : public RRTClass
     double anytime_horizon_init;
 
     /// Factor by which horizon is increased if replanning is required
-    double horizon_expansion_factor = 1.2;
+    const double horizon_expansion_factor = 1.2;
 };
 
 #endif

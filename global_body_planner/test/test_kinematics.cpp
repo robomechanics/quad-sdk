@@ -57,6 +57,10 @@ TEST(GlobalBodyPlannerTest, testLeapAction) {
     // Make sure propagations are equal
     EXPECT_TRUE(s_final_1.isApprox(s_final_2));
     EXPECT_TRUE(s_final_1.isApprox(result.s_new));
+    // std::cout << "Forward:" << std::endl;
+    // printState(s_final_1);
+    // printState(s_final_2);
+    // printAction(a);
 
     // Reverse the state and action
     flipDirection(s_final_1);
@@ -73,6 +77,15 @@ TEST(GlobalBodyPlannerTest, testLeapAction) {
     EXPECT_TRUE(s.isApprox(result.s_new));
     EXPECT_TRUE(s.isApprox(s_init_1));
     EXPECT_TRUE(s.isApprox(s_init_2));
+
+    if (!s.isApprox(result.s_new)) {
+      std::cout << "Reverse:" << std::endl;
+      printState(s);
+      printState(result.s_new);
+      printState(s_init_1);
+      printState(s_init_2);
+      printAction(a);
+    }
   }
 }
 
@@ -170,26 +183,26 @@ TEST(GlobalBodyPlannerTest, testUnitConnectActionElevatedTerrain) {
 TEST(GlobalBodyPlannerTest, testRandomConnectActions) {
 
 
-  // Create planner and configuration
-  PlannerClass P(FORWARD);
-  PlannerConfig planner_config;
-  planner_config.G_VEC << 0, 0, -planner_config.G_CONST;
-  planner_config.terrain.loadFlat();
-  RRTConnectClass rrt;
-  StateActionResult result;
+  // // Create planner and configuration
+  // PlannerClass P(FORWARD);
+  // PlannerConfig planner_config;
+  // planner_config.G_VEC << 0, 0, -planner_config.G_CONST;
+  // planner_config.terrain.loadFlat();
+  // RRTConnectClass rrt;
+  // StateActionResult result;
 
-  for (int i = 0; i < N; i++) {
-    State s1 = P.randomState(planner_config);
-    while (!isValidState(s1,planner_config,CONNECT))
-      s1 = P.randomState(planner_config);
+  // for (int i = 0; i < N; i++) {
+  //   State s1 = P.randomState(planner_config);
+  //   while (!isValidState(s1,planner_config,CONNECT))
+  //     s1 = P.randomState(planner_config);
 
-    State s2 = P.randomState(planner_config);
-    while (!isValidState(s2,planner_config,CONNECT))
-      s2 = P.randomState(planner_config);
+  //   State s2 = P.randomState(planner_config);
+  //   while (!isValidState(s2,planner_config,CONNECT))
+  //     s2 = P.randomState(planner_config);
 
-    int connect_result = rrt.attemptConnect(s1, s2, result, planner_config, FORWARD);
-    EXPECT_TRUE(connect_result != TRAPPED);
-  }
+  //   int connect_result = rrt.attemptConnect(s1, s2, result, planner_config, FORWARD);
+  //   EXPECT_TRUE(connect_result != TRAPPED);
+  // }
 }
 
 TEST(GlobalBodyPlannerTest, testUnitConnectActionSlope) {

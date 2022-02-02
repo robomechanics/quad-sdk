@@ -734,15 +734,15 @@ Action getRandomAction(const Eigen::Vector3d &surf_norm, const PlannerConfig &pl
 bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm, Action &a,
   const PlannerConfig &planner_config)
 { 
+
   // Declare variables;
   const double g = planner_config.G_CONST;
   const double m = planner_config.M_CONST;
 
   // Sample stance time and initial vertical velocity
-  // double dz_0 = s.vel[2] + (double)rand()/RAND_MAX - 1.0;
-  a.dz_0 = getDzFromState(s,planner_config) - (double)rand()/RAND_MAX;
+  a.dz_0 = getDzFromState(s,planner_config) - 2*(double)rand()/RAND_MAX;
   a.dz_f = 0;
-  double t_s_min = 0.05;
+  double t_s_min = 0.1;
   double t_s_max = 0.25;
   a.t_s_leap = (t_s_max-t_s_min)*(double)rand()/RAND_MAX + t_s_min;
   a.t_f = 1.0;
@@ -901,6 +901,9 @@ bool refineStance(const State &s, double z_f, int phase, Action &a,
 
 bool refineFlight(const State &s, double z_f, double &t_f, const PlannerConfig &planner_config)
 {
+  #ifdef DEBUG_REFINE_STATE
+    std::cout << "starting flight refine" << std::endl;
+  #endif
   bool is_valid = false;
   double t = 0;
   State s_check = s;
@@ -967,6 +970,7 @@ bool isValidAction(const Action &a, const PlannerConfig &planner_config)
 
 bool isValidState(const State &s, const PlannerConfig &planner_config, int phase)
 {
+
   if (planner_config.terrain.isInRange(s.pos[0], s.pos[1]) == false) {
     #ifdef DEBUG_INVALID_STATE
       printf("Out of terrain range, phase = %d\n", phase);
@@ -1065,7 +1069,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config, int phase
 bool isValidStateActionPair(const State &s_in, const Action &a, StateActionResult &result,
   const PlannerConfig &planner_config)
 {
-
+  // std::cout << "in isValidStateActionPair" << std::endl;
   // Declare stance and flight times
   double t_s = a.t_s_leap;
   double t_f = a.t_f;
@@ -1086,6 +1090,7 @@ bool isValidStateActionPair(const State &s_in, const Action &a, StateActionResul
 
   // for (double t = 0; t <= t_s; t += planner_config.KINEMATICS_RES)
   double t = 0;
+
   while (t <= t_s)
   { 
     // Compute state to check
@@ -1093,6 +1098,7 @@ bool isValidStateActionPair(const State &s_in, const Action &a, StateActionResul
 
     if ((!isValidState(s_next, planner_config, phase)) || (!isValidYawRate(s,a,t,phase,planner_config)))
     {
+
       result.t_new = (1.0-planner_config.BACKUP_RATIO)*t;
       result.s_new = applyStance(s,a,result.t_new,phase,planner_config);
       result.a_new.t_s_leap = result.t_new;
@@ -1101,6 +1107,8 @@ bool isValidStateActionPair(const State &s_in, const Action &a, StateActionResul
       #ifdef DEBUG_INVALID_STATE
         printf("Invalid leaping stance config\n");
       #endif
+      // std::cout << "leaving isValidStateActionPair" << std::endl;
+
       return false;
     } else {
       result.length += poseDistance(s_next, s_prev);
@@ -1109,6 +1117,7 @@ bool isValidStateActionPair(const State &s_in, const Action &a, StateActionResul
 
     t += planner_config.KINEMATICS_RES;
   }
+  // std::cout << "out of isValidStateActionPair loop" << std::endl;
 
   State s_takeoff = applyStance(s, a,phase,planner_config);
   
@@ -1186,13 +1195,6 @@ bool isValidStateActionPair(const State &s_in, const Action &a, StateActionResul
     result.s_new = s_final;
   }
 
-  return true;
-
-}
-
-bool findValidStateActionPair(State &s, Action &a, StateActionResult &result,
-  const PlannerConfig &planner_config)
-{
   return true;
 }
 

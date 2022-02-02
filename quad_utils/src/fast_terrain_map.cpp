@@ -264,7 +264,6 @@ bool FastTerrainMap::isInRange(const double x, const double y) const {
 
 double FastTerrainMap::getGroundHeight(const double x, const double y) const {
   // quad_utils::FunctionTimer timer(__FUNCTION__);
-  
   int ix = getXIndex(x);
   int iy = getYIndex(y);
   

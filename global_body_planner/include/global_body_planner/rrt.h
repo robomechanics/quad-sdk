@@ -91,8 +91,10 @@ class RRTClass
      * @param[out] vertices_generated Number of vertices generated in the tree
      * @param[out] plan_length The length of the path in meters
      * @param[out] path_duration The duration of the path in seconds
+     * @param[out] dist_to_goal Distance from the final state to the goal (0 if solved)
      */
-    void getStatistics(double &plan_time, int &vertices_generated, double &plan_length, double& path_duration);
+    void getStatistics(double &plan_time, int &vertices_generated, double &plan_length,
+      double& path_duration, double &dist_to_goal);
 
     /**
      * @brief Generate a new state that can be connected to the tree and is as close as possible to the specified state
@@ -147,6 +149,9 @@ class RRTClass
 
     /// The duration of the path in seconds
     double path_duration_;
+
+    /// Distance from the final state to the goal (m)
+    double dist_to_goal_;
 
     /// Message for tree visualization
     visualization_msgs::MarkerArray tree_viz_msg_;

@@ -181,7 +181,7 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_
   if (!isValidState(s_goal, planner_config, LEAP_STANCE)) {
     return INVALID_GOAL_STATE;
   }
-  if (stateDistance(s_start, s_goal) <= 1e-2) {
+  if (poseDistance(s_start, s_goal) <= 1e-1) {
     return INVALID_START_GOAL_EQUAL;
   }
 
@@ -201,26 +201,27 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_
     tree_viz_msg_.markers.resize(1);
   #endif
 
-  anytime_horizon = poseDistance(s_start, s_goal)/planning_rate_estimate;
-
+  anytime_horizon_init = 0.01;
+  anytime_horizon = std::max(poseDistance(s_start, s_goal)/
+    planning_rate_estimate, anytime_horizon_init);
 
   while(true && ros::ok())
   {
     auto t_current = std::chrono::steady_clock::now();
     std::chrono::duration<double> total_elapsed = t_current - t_start_total_solve;
     std::chrono::duration<double> current_elapsed = t_current - t_start_current_solve;
-    
-    if(current_elapsed.count() >= anytime_horizon)
-    {
+
+    #ifndef VISUALIZE_TREE
       if(total_elapsed.count() >= planner_config.MAX_TIME)
       {
-        std::cout << "Failed, exiting" << std::endl;
+        std::cout << "Failed, exiting with partial path" << std::endl;
         elapsed_to_first_ = total_elapsed;
         num_vertices_ = (Ta.getNumVertices() + Tb.getNumVertices());
         break;
       }
 
-      #ifndef VISUALIZE_TREE
+      if(current_elapsed.count() >= anytime_horizon)
+      {
         auto t_start_current_solve = std::chrono::steady_clock::now();
         anytime_horizon = anytime_horizon*horizon_expansion_factor;
         std::cout << "Failed, retrying with horizon of " << anytime_horizon << "s" << std::endl;
@@ -230,14 +231,15 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_
         Ta.init(s_start);
         Tb.init(s_goal);
         continue;
-      #endif
-    }
+      }
+    #endif
 
     // Generate random s
     State s_rand = Ta.randomState(planner_config);
 
     if (isValidState(s_rand, planner_config, LEAP_STANCE))
     {
+
       if (extend(Ta, s_rand, planner_config, FORWARD, tree_pub) != TRAPPED)
       {
         State s_new = Ta.getVertex(Ta.getNumVertices()-1);
@@ -287,6 +289,7 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_
     }
   }
 
+
   num_vertices_ = (Ta.getNumVertices() + Tb.getNumVertices());
 
   if (goal_found == true)
@@ -295,10 +298,7 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_
     result = VALID;
   } else {
     extractClosestPath(Ta, s_goal, state_sequence, action_sequence, planner_config);
-    result = VALID_PARTIAL;
-    std::cout << "Extracting partial path" << std::endl;
-    printStateSequence(state_sequence);
-    printActionSequence(action_sequence);
+    result = (state_sequence.size()>1) ? VALID_PARTIAL : UNSOLVED;
   }
 
   auto t_end = std::chrono::steady_clock::now();
@@ -309,6 +309,7 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_
   {
     path_duration_ += (a.t_s_leap + a.t_f + a.t_s_land);
   }
+  dist_to_goal_ = poseDistance(s_goal, state_sequence.back());
 
   return result;
 }
