@@ -327,11 +327,11 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
 
         // Compute the period index of plan and current states
         double swing_idx;
-        double swing_idx_current = 0 - i_liftoff + (dt_ - time_ahead) / dt_;
+        double swing_idx_current = 0 - i_liftoff + (dt_ - first_element_duration) / dt_;
         // For the first step, it might be duplicated in the same plan index so we need to refine the phase based on the time duration to next plan index
         if (i == 0)
         {
-          swing_idx = i - i_liftoff + (dt_ - time_ahead) / dt_;
+          swing_idx = i - i_liftoff + (dt_ - first_element_duration) / dt_;
         }
         else
         {
