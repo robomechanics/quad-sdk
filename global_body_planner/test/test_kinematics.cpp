@@ -80,11 +80,13 @@ TEST(GlobalBodyPlannerTest, testLeapAction) {
 
     if (!s.isApprox(result.s_new)) {
       std::cout << "Reverse:" << std::endl;
+      std::cout << "is_valid_reverse = " << ((is_valid_reverse) ? 1 : 0) << std::endl;
       printState(s);
       printState(result.s_new);
       printState(s_init_1);
       printState(s_init_2);
       printAction(a);
+      return;
     }
   }
 }

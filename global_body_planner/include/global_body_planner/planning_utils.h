@@ -255,9 +255,9 @@ bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm, Actio
 
 // Action refinement (for improved feasiblity)
 bool refineAction(const State &s, Action &a, const PlannerConfig &planner_config);
-bool refineStance(const State &s, double z_f, int phase, Action &a, 
+bool refineStance(const State &s, int phase, Action &a, 
   const PlannerConfig &planner_config);
-bool refineFlight(const State &s, double z_f, double &t_f, const PlannerConfig &planner_config);
+bool refineFlight(const State &s, double &t_f, const PlannerConfig &planner_config);
 
 // Instantaneous validity checking
 bool isValidAction(const Action &a, const PlannerConfig &planner_config);
