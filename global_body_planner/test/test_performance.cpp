@@ -14,7 +14,7 @@ TEST(GlobalBodyPlannerTest, testIsValidStateTime) {
   // Create planner and configuration
   PlannerClass P(FORWARD);
   PlannerConfig planner_config;
-  planner_config.G_VEC << 0, 0, -planner_config.G_CONST;
+  planner_config.loadVectors();
   planner_config.terrain.loadFlat();
 
   std::vector<State> state_vec(N);
@@ -38,7 +38,7 @@ TEST(GlobalBodyPlannerTest, testGetRandomLeapActionTime) {
   // Create planner and configuration
   PlannerClass P(FORWARD);
   PlannerConfig planner_config;
-  planner_config.G_VEC << 0, 0, -planner_config.G_CONST;
+  planner_config.loadVectors();
   planner_config.terrain.loadFlat();
   Eigen::Vector3d surf_norm = planner_config.terrain.getSurfaceNormalFilteredEigen(0, 0);
 
@@ -68,7 +68,7 @@ TEST(GlobalBodyPlannerTest, testIsValidStateActionPairTime) {
   // Create planner and configuration
   PlannerClass P(FORWARD);
   PlannerConfig planner_config;
-  planner_config.G_VEC << 0, 0, -planner_config.G_CONST;
+  planner_config.loadVectors();
   planner_config.terrain.loadFlat();
   Eigen::Vector3d surf_norm = planner_config.terrain.getSurfaceNormalFilteredEigen(0, 0);
 
@@ -106,7 +106,7 @@ TEST(GlobalBodyPlannerTest, testValidStateActionPairAccuracy) {
   // Create planner and configuration
   PlannerClass P(FORWARD);
   PlannerConfig planner_config;
-  planner_config.G_VEC << 0, 0, -planner_config.G_CONST;
+  planner_config.loadVectors();
   planner_config.terrain.loadFlat();
   Eigen::Vector3d surf_norm = planner_config.terrain.getSurfaceNormalFilteredEigen(0, 0);
 
@@ -161,7 +161,7 @@ TEST(GlobalBodyPlannerTest, testValidStateActionPairRate) {
   // Create planner and configuration
   PlannerClass P(FORWARD);
   PlannerConfig planner_config;
-  planner_config.G_VEC << 0, 0, -planner_config.G_CONST;
+  planner_config.loadVectors();
   planner_config.terrain.loadFlat();
   Eigen::Vector3d surf_norm;
 

@@ -214,7 +214,6 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_
     #ifndef VISUALIZE_TREE
       if(total_elapsed.count() >= planner_config.MAX_TIME)
       {
-        std::cout << "Failed, exiting with partial path" << std::endl;
         elapsed_to_first_ = total_elapsed;
         num_vertices_ = (Ta.getNumVertices() + Tb.getNumVertices());
         break;
@@ -224,7 +223,9 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_
       {
         auto t_start_current_solve = std::chrono::steady_clock::now();
         anytime_horizon = anytime_horizon*horizon_expansion_factor;
-        std::cout << "Failed, retrying with horizon of " << anytime_horizon << "s" << std::endl;
+        #ifdef DEBUG_SOLVE_RESULT
+          std::cout << "Failed, retrying with horizon of " << anytime_horizon << "s" << std::endl;
+        #endif
         Ta = PlannerClass(FORWARD);
         Tb = PlannerClass(REVERSE);
         tree_viz_msg_.markers.clear();
@@ -294,9 +295,15 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_
 
   if (goal_found == true)
   {
+    #ifdef DEBUG_SOLVE_RESULT
+      std::cout << "Succeeded, exiting with full path" << std::endl;
+    #endif
     extractPath(Ta, Tb, state_sequence, action_sequence, planner_config);
     result = VALID;
   } else {
+    #ifdef DEBUG_SOLVE_RESULT
+      std::cout << "Failed, exiting with partial path" << std::endl;
+    #endif
     extractClosestPath(Ta, s_goal, state_sequence, action_sequence, planner_config);
     result = (state_sequence.size()>1) ? VALID_PARTIAL : UNSOLVED;
   }

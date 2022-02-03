@@ -63,7 +63,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   quad_utils::loadROSParam(nh,"global_body_planner/NUM_GEN_STATES", planner_config_.NUM_GEN_STATES);
   quad_utils::loadROSParam(nh,"global_body_planner/GOAL_BOUNDS", planner_config_.GOAL_BOUNDS);
   quad_utils::loadROSParam(nh,"global_body_planner/max_planning_time", planner_config_.MAX_TIME);
-  planner_config_.G_VEC << 0, 0, -planner_config_.G_CONST;
+  planner_config_.loadVectors();
 
   // Zero planning data
   vectorToFullState(start_state_vec, start_state_);

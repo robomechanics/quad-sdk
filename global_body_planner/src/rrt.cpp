@@ -36,11 +36,6 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
 
   int tree_size = tree_viz_msg_.markers.size();
 
-  // if (direction == REVERSE) {
-  // 	flipDirection(s_near);
-  // }
-  // direction = FORWARD;
-
   int num_total_actions = 0;
   int num_valid_actions = 0;
 
@@ -59,14 +54,7 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
       bool is_valid = isValidStateActionPair(s_near, a_test, current_result, planner_config);
 
       #ifdef VISUALIZE_ALL_CANDIDATE_ACTIONS
-        if (direction == FORWARD) {
-          // publishStateActionPair(s_near,current_result.a_new, s,planner_config, tree_viz_msg_, tree_pub);
-          publishStateActionPair(s_near,a_test, s,planner_config, tree_viz_msg_, tree_pub);
-        } else if (direction == REVERSE) {
-        //   State s_reverse = applyActionReverse(s_near,a_test,planner_config);
-        //   publishStateActionPair(s_reverse, a_test, s,planner_config, tree_viz_msg_,
-        //     tree_pub);
-        }
+        publishStateActionPair(s_near,a_test, s,planner_config, tree_viz_msg_, tree_pub);
       #endif
 
       if (is_valid == true)
