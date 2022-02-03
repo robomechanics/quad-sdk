@@ -99,5 +99,17 @@ private:
   /// Maximum amount of time to still use joint state message in EKF data
   double joint_state_msg_time_diff_max_;
 
+  // state vector
+  Eigen::VectorXd x;
+
+  // old state vector
+  Eigen::VectorXd last_x;
+
+  // old time
+  ros::Time last_time;
+
+  // Gravity vector
+  Eigen::VectorXd g;
+
 };
 #endif // EKF_ESTIMATOR_H

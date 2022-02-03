@@ -1,5 +1,8 @@
 #include "ekf_estimator/ekf_estimator.h"
 
+
+const int numofStates = 6;
+
 EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
   nh_ = nh;
 
@@ -52,48 +55,42 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
   bool good_imu = false;
   bool good_joint_state = false;
 
-  // // Collect info from last imu message
-  // if (last_imu_msg_ != NULL)
-  // {
-  //   new_state_est.body.pose.orientation = (*last_imu_msg_).orientation;
-  //   good_imu = true;
-  // }
-  // else {
-  //   geometry_msgs::Quaternion quat;
-  //   quat.x = 0;
-  //   quat.y = 0;
-  //   quat.z = 0;
-  //   quat.w = 1;
-  //   new_state_est.body.pose.orientation = quat;
-  // }
-  // // Collect info from last joint state message, making sure info is not out of date
-  if (last_state_msg_ != NULL)
-  {
-    new_state_est = *last_state_msg_;
-    double joint_state_msg_time_diff = 0;
-    good_joint_state = true;
+  double dt = (start_time - last_time).toSec();
+  std::cout << dt << std::endl;
+  last_time = start_time;
 
-    std::cout << "joint encoder received" << std::endl;
-    // if (joint_state_msg_time_diff > joint_state_msg_time_diff_max_)
-    // {
-    //   // Don't use this info in EKF update!
-    //   ROS_WARN("Haven't received a recent joint state message, skipping EKF measurement step");
-    // }
-    // else
-    // {
-    //   good_joint_state = true;
-    // }
-  }
-  // else {
-  //   ROS_DEBUG_THROTTLE(0.5,"Still waiting for first joint state message");
-  //   new_state_est.joints.header.stamp = ros::Time::now();
-  //   new_state_est.joints.name = {"8", "0", "1", "9","2", "3", "10", "4","5", 
-  //     "11", "6", "7"};
-  //     new_state_est.joints.position = {0,0,0,0,0,0,0,0,0,0,0,0};
-  //     new_state_est.joints.velocity = {0,0,0,0,0,0,0,0,0,0,0,0};
-  //     new_state_est.joints.effort = {0,0,0,0,0,0,0,0,0,0,0,0};
-  // }
+  
+   // Initial linear position body (0:2)
+  Eigen::Matrix<double, 3, 1> r0 = Eigen::MatrixXd::Zero(3, 1);
+  // Initial linear velocity body (3:5)
+  Eigen::Matrix<double, 3, 1> v0 = Eigen::MatrixXd::Zero(3, 1);
+  Eigen::MatrixXd x0(r0.rows() + v0.rows(), r0.cols());
+  x = x0;
+  // Collect position and velocity info from state vector
+  Eigen::VectorXd r = last_x.block<3, 1>(0, 0);
+  Eigen::VectorXd v = last_x.block<3, 1>(3, 0);
 
+  g = Eigen::VectorXd(3,1);
+  g << 0.0,
+    0.0,
+    9.8;
+  
+  Eigen::VectorXd a = Eigen::VectorXd(3,1);
+  a << (*last_imu_msg_).linear_acceleration.x,
+    (*last_imu_msg_).linear_acceleration.y,
+    (*last_imu_msg_).linear_acceleration.z;
+  
+  a = a - g;
+
+  // Zero order hold to predict next state
+  // Hold rotation, foothold placements constant
+  x.block<3, 1>(0, 0) = r + dt * v + dt * dt * 0.5 * a;
+  x.block<3, 1>(3, 0) = v + dt * a;
+
+  last_x = x;
+
+
+  //publish new message
   new_state_est.header.stamp = ros::Time::now();
 
   geometry_msgs::Quaternion quat;
@@ -105,8 +102,12 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
   new_state_est.body.header.stamp = ros::Time::now();
   new_state_est.body.pose.orientation = quat;
   new_state_est.body.pose.position.x = new_state_est.body.pose.position.x + 1;
+  
+
+  new_state_est.joints.position = (*last_joint_state_msg_).position;
   new_state_est.joints.header.stamp = ros::Time::now();
  
+  
   return new_state_est;
 }
 
@@ -128,6 +129,7 @@ void EKFEstimator::spin() {
 
     // Store new state estimate for next iteration
     last_state_est_ = new_state_est;
+    
 
     // Enforce update rate
     r.sleep();
