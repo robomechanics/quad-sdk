@@ -28,6 +28,21 @@ public:
     // Horizon length, state dimension, input dimension, and constraints dimension
     int N_, n_, m_, g_;
 
+    /// State dimension for simple and complex models
+    int n_simple_, n_complex_;
+
+    /// Input dimension for simple and complex models
+    int m_simple_, m_complex_;
+
+    /// Constraint dimension for simple and complex models
+    int g_simple_, g_complex_;
+
+    /// Number of state variables added in complex model
+    const int n_added_ = 24;
+
+    /// Number of input variables added in complex model
+    const int m_added_ = 0;
+
     int leg_input_start_idx_;
 
     int type_;
@@ -45,6 +60,12 @@ public:
     // Feet location from feet to body COM in world frame
     Eigen::MatrixXd feet_location_;
 
+    // Foot locations in world frame
+    Eigen::MatrixXd foot_pos_world_;
+
+    // Foot velocities in world frame
+    Eigen::MatrixXd foot_vel_world_;
+
     // Step length
     double dt_;
 
@@ -59,6 +80,10 @@ public:
 
     // State bounds, input bounds, constraint bounds
     Eigen::MatrixXd x_min_, x_max_, u_min_, u_max_, g_min_, g_max_;
+
+    // State bounds, input bounds, constraint bounds
+    Eigen::MatrixXd x_min_simple_, x_max_simple_, x_min_complex_, x_max_complex_,
+        g_min_simple_, g_max_complex_;
 
     // Ground height structure for the height bounds
     Eigen::MatrixXd ground_height_;
@@ -138,6 +163,8 @@ public:
         Eigen::MatrixXd R_factor,
         Eigen::MatrixXd x_min,
         Eigen::MatrixXd x_max,
+        Eigen::MatrixXd x_min_complex,
+        Eigen::MatrixXd x_max_complex,
         Eigen::MatrixXd u_min,
         Eigen::MatrixXd u_max);
 
@@ -274,17 +301,10 @@ public:
         const Eigen::MatrixXd &ref_traj,
         const Eigen::MatrixXd &foot_positions,
         const std::vector<std::vector<bool>> &contact_schedule,
-        const Eigen::VectorXd &ground_height,
-        const double &time_ahead,
-        const Eigen::VectorXi &complexity_schedule);
-
-    virtual void update_solver(
-        const Eigen::VectorXd &initial_state,
-        const Eigen::MatrixXd &ref_traj,
-        const Eigen::MatrixXd &foot_positions,
-        const std::vector<std::vector<bool>> &contact_schedule,
         const Eigen::MatrixXd &state_traj,
         const Eigen::MatrixXd &control_traj);
+
+    void update_complexity_schedule(const Eigen::VectorXi &complexity_schedule);
 
     //@}
 

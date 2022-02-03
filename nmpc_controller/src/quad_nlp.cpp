@@ -24,6 +24,8 @@ quadNLP::quadNLP(
     Eigen::MatrixXd R_factor,
     Eigen::MatrixXd x_min,
     Eigen::MatrixXd x_max,
+    Eigen::MatrixXd x_min_complex,
+    Eigen::MatrixXd x_max_complex,
     Eigen::MatrixXd u_min,
     Eigen::MatrixXd u_max)
 // N: prediction steps
@@ -41,6 +43,13 @@ quadNLP::quadNLP(
    n_ = n;
    m_ = m;
    g_ = n_ + 16; // states dynamics plus linear friciton cone
+
+   // Load adaptive complexity parameters
+   n_simple_ = n;
+   n_complex_ = n + n_added_; 
+   m_simple_ = m + m_added_;
+   g_simple_ = g_;
+   g_complex_ = g_ + n_added_;
 
    if (type_ == NONE)
    {
@@ -107,19 +116,31 @@ quadNLP::quadNLP(
 
    // feet location initialized by nominal position
    feet_location_ = Eigen::MatrixXd(12, N_);
+   foot_pos_world_ = Eigen::MatrixXd(12, N_);
+   foot_vel_world_ = Eigen::MatrixXd(12, N_).setZero();
    for (int i = 0; i < N_; ++i)
    {
       feet_location_.block(0, i, 12, 1) << -0.2263, -0.098, 0.3, -0.2263, 0.098, 0.3, 0.2263, -0.098, 0.3, 0.2263, 0.098, 0.3;
+      foot_pos_world_.block(0, i, 12, 1) << -0.2263, -0.098, 0, -0.2263, 0.098, 0, 0.2263, -0.098, 0, 0.2263, 0.098, 0;
    }
 
+   // Load constant parameters
    dt_ = dt;
    mu_ = mu;
 
+   // Load state bounds
    x_min_ = x_min;
    x_max_ = x_max;
+   x_min_simple_ = x_min_;
+   x_max_simple_ = x_max_;
+   x_min_complex_ = x_min_complex;
+   x_max_complex_ = x_max_complex;
+
 
    u_min_ = u_min;
    u_max_ = u_max;
+
+   throw std::runtime_error("Ended here");
 
    // We have dynamics constraints first and friction cone at the end
    g_min_ = Eigen::MatrixXd(g_, 1);
@@ -1073,22 +1094,7 @@ void quadNLP::update_solver(
        ground_height);
 }
 
-void quadNLP::update_solver(
-    const Eigen::VectorXd &initial_state,
-    const Eigen::MatrixXd &ref_traj,
-    const Eigen::MatrixXd &foot_positions,
-    const std::vector<std::vector<bool>> &contact_schedule,
-    const Eigen::VectorXd &ground_height,
-    const double &time_ahead,
-    const Eigen::VectorXi &complexity_schedule)
+void quadNLP::update_complexity_schedule(const Eigen::VectorXi &complexity_schedule)
 {
-   complexity_schedule_ = complexity_schedule;
-
-   this->update_solver(
-       initial_state,
-       ref_traj,
-       foot_positions,
-       contact_schedule,
-       ground_height,
-       time_ahead);
+   this->complexity_schedule_ = complexity_schedule;
 }

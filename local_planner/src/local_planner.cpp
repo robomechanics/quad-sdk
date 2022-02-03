@@ -508,10 +508,14 @@ bool LocalPlanner::computeLocalPlan() {
       foot_positions_body_);
   }
 
+  Eigen::VectorXi complexity_schedule(N_);
+  complexity_schedule.setZero();
+
   // Compute body plan with MPC, return if solve fails
   if (use_nmpc_) {
     if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_,
-      foot_positions_body_, contact_schedule_, ref_ground_height_, first_element_duration_, same_plan_index_, body_plan_, grf_plan_))
+      foot_positions_body_, contact_schedule_, ref_ground_height_, first_element_duration_,
+      same_plan_index_, complexity_schedule, body_plan_, grf_plan_))
       return false;
   } else {
     if (!local_body_planner_convex_->computePlan(current_state_, ref_body_plan_,
