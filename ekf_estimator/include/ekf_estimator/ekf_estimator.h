@@ -108,8 +108,17 @@ private:
   // old time
   ros::Time last_time;
 
-  // Gravity vector
-  Eigen::VectorXd g;
+  // IMU bias vector
+  Eigen::VectorXd imu_bias;
+
+  // IMU bias in acc x
+  double bias_x_;
+
+  // IMU bias in acc x
+  double bias_y_;
+
+  // IMU bias in acc z
+  double bias_z_;
 
 };
 #endif // EKF_ESTIMATOR_H
