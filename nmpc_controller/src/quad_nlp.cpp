@@ -47,9 +47,14 @@ quadNLP::quadNLP(
    // Load adaptive complexity parameters
    n_simple_ = n;
    n_complex_ = n + n_added_; 
-   m_simple_ = m + m_added_;
+   m_simple_ = m;
    g_simple_ = g_;
-   g_complex_ = g_ + n_added_;
+
+   // Added constraints include all simple constraints plus:
+   //    n_added_ constraints for foot position and velocities
+   //    n_added_ constraints for pos and neg joint torques
+   //    4 constraints for knee position
+   g_complex_ = g_ + 2*n_added_ + 4;
 
    if (type_ == NONE)
    {
@@ -136,22 +141,51 @@ quadNLP::quadNLP(
    x_min_complex_ = x_min_complex;
    x_max_complex_ = x_max_complex;
 
-
    u_min_ = u_min;
    u_max_ = u_max;
 
-   throw std::runtime_error("Ended here");
+   // Initialize simple constraint bounds
+   g_min_.resize(g_);
+   g_max_.resize(g_);
 
-   // We have dynamics constraints first and friction cone at the end
-   g_min_ = Eigen::MatrixXd(g_, 1);
-   g_max_ = Eigen::MatrixXd(g_, 1);
-   g_min_.block(0, 0, n_, 1).fill(0);
-   g_min_.block(n_, 0, 16, 1).fill(-2e19);
-   g_max_.block(0, 0, n_, 1).fill(0);
-   g_max_.block(n_, 0, 16, 1).fill(0);
+   // Load dynamics constraint bounds
+   g_min_.segment(0,n_).fill(0);
+   g_max_.segment(0,n_).fill(0);
 
+   // Load friction cone constraint bounds
+   g_min_.segment(n_, 16).fill(-2e19);
+   g_max_.segment(n_, 16).fill(0);
+   g_min_simple_ = g_min_;
+   g_max_simple_ = g_max_;
+
+   // Initialize complex constraint bounds
+   g_min_complex_.resize(g_complex_);
+   g_max_complex_.resize(g_complex_);
+   int current_idx = 0;
+
+   // Load simple constraint bounds
+   g_min_complex_.segment(current_idx, g_simple_) = g_min_simple_;
+   g_max_complex_.segment(current_idx, g_simple_) = g_max_simple_;
+   current_idx += g_simple_;
+
+   // Load foot position and velocity constraint bounds
+   g_min_complex_.segment(current_idx, n_added_).fill(0);
+   g_max_complex_.segment(current_idx, n_added_).fill(0);
+   current_idx += n_added_;
+
+   // Load knee constraint bounds
+   g_min_complex_.segment(current_idx, 4).fill(0);
+   g_max_complex_.segment(current_idx, 4).fill(10);
+   current_idx += 4;
+
+   // Load motor model constraint bounds
+   g_min_complex_.segment(current_idx, n_added_).fill(-2e19);
+   g_max_complex_.segment(current_idx, n_added_).fill(0);
+
+   // Load ground height data
    ground_height_ = Eigen::MatrixXd(1, N_);
    ground_height_.fill(0);
+
 
    w0_ = Eigen::MatrixXd((3 * n_ + m_) * N_, 1);
    w0_.fill(0);
@@ -1097,4 +1131,8 @@ void quadNLP::update_solver(
 void quadNLP::update_complexity_schedule(const Eigen::VectorXi &complexity_schedule)
 {
    this->complexity_schedule_ = complexity_schedule;
+   num_complex_fe_ = 0;
+   for (int i = 0; i < complexity_schedule.size(); i++) {
+      num_complex_fe_ += complexity_schedule[i];
+   }
 }

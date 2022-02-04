@@ -40,9 +40,6 @@ public:
     /// Number of state variables added in complex model
     const int n_added_ = 24;
 
-    /// Number of input variables added in complex model
-    const int m_added_ = 0;
-
     int leg_input_start_idx_;
 
     int type_;
@@ -79,11 +76,11 @@ public:
     const double grav_ = 9.81;
 
     // State bounds, input bounds, constraint bounds
-    Eigen::MatrixXd x_min_, x_max_, u_min_, u_max_, g_min_, g_max_;
+    Eigen::VectorXd x_min_, x_max_, u_min_, u_max_, g_min_, g_max_;
 
     // State bounds, input bounds, constraint bounds
-    Eigen::MatrixXd x_min_simple_, x_max_simple_, x_min_complex_, x_max_complex_,
-        g_min_simple_, g_max_complex_;
+    Eigen::VectorXd x_min_simple_, x_max_simple_, x_min_complex_, x_max_complex_,
+        g_min_simple_, g_max_simple_, g_min_complex_, g_max_complex_;
 
     // Ground height structure for the height bounds
     Eigen::MatrixXd ground_height_;
@@ -124,6 +121,9 @@ public:
 
     /// Vector of ids for model complexity schedule
     Eigen::VectorXi complexity_schedule_;
+
+    /// Number of complex finite elements in the horizon
+    int num_complex_fe_;
 
     decltype(eval_g_leg_work) *eval_g_work_;
     decltype(eval_g_leg_incref) *eval_g_incref_;
