@@ -237,6 +237,13 @@ class LocalFootstepPlanner {
     Eigen::Vector3d getNearestValidFoothold(const Eigen::Vector3d &foot_position);
 
     /**
+     * @brief Search locally around foothold for optimal location
+     * @param[in] foot_position_prev Foothold to optimize around
+     * @return Optimized foothold
+     */
+    Eigen::Vector3d getNearestValidFoothold(const Eigen::Vector3d &foot_position);
+
+    /**
      * @brief Extract foot data from the matrix
      */
     inline Eigen::Vector3d getFootData(const Eigen::MatrixXd &foot_state_vars,
