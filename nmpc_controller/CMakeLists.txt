@@ -73,5 +73,6 @@ add_dependencies(nmpc_controller
 ## Add gtest based cpp test target and link libraries
 catkin_add_gtest(nmpc_controller-test 
   test/test_nmpc_controller.cpp
+  test/test_nlp_utils.cpp
   test/test_adaptive_complexity.cpp)
 target_link_libraries(nmpc_controller-test nmpc_controller ${catkin_LIBRARIES})

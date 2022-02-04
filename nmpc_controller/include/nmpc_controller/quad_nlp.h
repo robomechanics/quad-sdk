@@ -37,8 +37,11 @@ public:
     /// Constraint dimension for simple and complex models
     int g_simple_, g_complex_;
 
+    /// Number of variables and constraints
+    int n_vars_, n_constraints_;
+
     /// Number of state variables added in complex model
-    const int n_added_ = 24;
+    int n_null_;
 
     int leg_input_start_idx_;
 
@@ -153,6 +156,7 @@ public:
         int type,
         int N,
         int n,
+        int n_null,
         int m,
         double dt,
         double mu,
@@ -305,6 +309,34 @@ public:
         const Eigen::MatrixXd &control_traj);
 
     void update_complexity_schedule(const Eigen::VectorXi &complexity_schedule);
+
+    /**
+     * @brief Return the number of variables for this NLP
+     * @return Number of variables
+     */
+    inline int getNumVariables() const {
+        return (m_*N_ + 3*(n_simple_ * (N_ - num_complex_fe_) + n_complex_ * num_complex_fe_));
+    };
+    
+    /**
+     * @brief Return the number of constraints in this NLP
+     * @return Number of constraints
+     */
+    inline int getNumConstraints() const {
+        return (g_simple_ * (N_ - num_complex_fe_) + g_complex_ * num_complex_fe_) + 
+             2*(n_simple_ * (N_ - num_complex_fe_) + n_complex_ * num_complex_fe_);
+    };
+
+    /**
+     * @brief Return the first index of the decision variable vector corresponding to the given 
+     * finite element
+     * @param[in] i Index of requested finite element
+     * @return Index in decision variable vector corresponding to the beginning of the requested FE
+     */
+    inline int getPrimalFEIndex(int i) const {
+        int num_complex_before = complexity_schedule_.segment(0,i).sum();
+        return (i * m_ + (num_complex_before * n_complex_ + (i - num_complex_before) * n_simple_));
+    };
 
     //@}
 

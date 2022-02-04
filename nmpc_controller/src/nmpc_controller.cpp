@@ -35,6 +35,8 @@ NMPCController::NMPCController(int type)
   ros::param::get("/nmpc_controller/" + param_ns_ + "/step_length", dt_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/friction_coefficient", mu);
 
+  std::cout << "Here" << std::endl;
+
   // Load MPC cost weighting and bounds
   std::vector<double> state_weights,
       control_weights,
@@ -42,8 +44,8 @@ NMPCController::NMPCController(int type)
       control_weights_factors,
       state_lower_bound,
       state_upper_bound,
-      state_lower_bound_complex,
-      state_upper_bound_complex,
+      state_lower_bound_null,
+      state_upper_bound_null,
       control_lower_bound,
       control_upper_bound;
   double panic_weights;
@@ -54,10 +56,12 @@ NMPCController::NMPCController(int type)
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_weights_factors", control_weights_factors);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_lower_bound", state_lower_bound);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_upper_bound", state_upper_bound);
-  ros::param::get("/nmpc_controller/leg_complex/state_lower_bound", state_lower_bound_complex);
-  ros::param::get("/nmpc_controller/leg_complex/state_upper_bound", state_upper_bound_complex);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_lower_bound", control_lower_bound);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_upper_bound", control_upper_bound);
+
+  ros::param::get("/nmpc_controller/leg_complex/null_space_dimension", n_null_);
+  ros::param::get("/nmpc_controller/leg_complex/state_lower_bound", state_lower_bound_null);
+  ros::param::get("/nmpc_controller/leg_complex/state_upper_bound", state_upper_bound_null);
 
   Eigen::Map<Eigen::MatrixXd> Q(state_weights.data(), n_, 1),
       R(control_weights.data(), m_, 1),
@@ -65,15 +69,22 @@ NMPCController::NMPCController(int type)
       R_factor(control_weights_factors.data(), N_, 1),
       x_min(state_lower_bound.data(), n_, 1),
       x_max(state_upper_bound.data(), n_, 1),
-      x_min_complex(state_lower_bound_complex.data(), state_lower_bound_complex.size(), 1),
-      x_max_complex(state_upper_bound_complex.data(), state_upper_bound_complex.size(), 1),
+      x_min_null(state_lower_bound_null.data(), state_lower_bound_null.size(), 1),
+      x_max_null(state_upper_bound_null.data(), state_upper_bound_null.size(), 1),
       u_min(control_lower_bound.data(), m_, 1),
       u_max(control_upper_bound.data(), m_, 1);
+
+  Eigen::MatrixXd x_min_complex(n_+n_null_,1), x_max_complex(n_+n_null_,1);
+  x_min_complex.block(0,0,n_,1) = x_min;
+  x_min_complex.block(n_,0,n_null_,1) = x_min_null;
+  x_max_complex.block(0,0,n_,1) = x_max;
+  x_max_complex.block(n_,0,n_null_,1) = x_max_null;
 
   mynlp_ = new quadNLP(
       type_,
       N_,
       n_,
+      n_null_,
       m_,
       dt_,
       mu,
@@ -133,6 +144,8 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
                                     Eigen::MatrixXd &state_traj,
                                     Eigen::MatrixXd &control_traj)
 {
+  mynlp_->update_complexity_schedule(complexity_schedule);
+
   // Local planner will send a reference traj with N+1 rows
   mynlp_->update_solver(
       initial_state,
@@ -146,8 +159,6 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
   {
     mynlp_->shift_initial_guess();
   }
-
-  mynlp_->update_complexity_schedule(complexity_schedule);
 
   return this->computePlan(initial_state,
                            ref_traj,

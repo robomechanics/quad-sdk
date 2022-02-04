@@ -67,5 +67,6 @@ nmpc_controller:
     control_lower_bound: [-10, -10, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
     control_upper_bound: [10, 10, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
   leg_complex:
+    null_space_dimension: 24
     state_lower_bound: [-0.7, -1.57, 0.4,-0.7, -1.57, 0.4,-0.7, -1.57, 0.4,-0.7, -1.57, 0.4,-35, -35, -25,-35, -35, -25,-35, -35, -25,-35, -35, -25]
     state_upper_bound: [0.7, 3.14, 2.8,0.7, 3.14, 2.8,0.7, 3.14, 2.8,0.7, 3.14, 2.8, 35, 35, 25,35, 35, 25,35, 35, 25,35, 35, 25]

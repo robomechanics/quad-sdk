@@ -14,6 +14,7 @@ quadNLP::quadNLP(
     int type,
     int N,
     int n,
+    int n_null,
     int m,
     double dt,
     double mu,
@@ -41,20 +42,21 @@ quadNLP::quadNLP(
 
    N_ = N;
    n_ = n;
+   n_null_ = n_null;
    m_ = m;
    g_ = n_ + 16; // states dynamics plus linear friciton cone
 
    // Load adaptive complexity parameters
    n_simple_ = n;
-   n_complex_ = n + n_added_; 
+   n_complex_ = n + n_null_; 
    m_simple_ = m;
    g_simple_ = g_;
 
    // Added constraints include all simple constraints plus:
-   //    n_added_ constraints for foot position and velocities
-   //    n_added_ constraints for pos and neg joint torques
+   //    n_null_ constraints for foot position and velocities
+   //    n_null_ constraints for pos and neg joint torques
    //    4 constraints for knee position
-   g_complex_ = g_ + 2*n_added_ + 4;
+   g_complex_ = g_ + 2*n_null_ + 4;
 
    if (type_ == NONE)
    {
@@ -169,9 +171,9 @@ quadNLP::quadNLP(
    current_idx += g_simple_;
 
    // Load foot position and velocity constraint bounds
-   g_min_complex_.segment(current_idx, n_added_).fill(0);
-   g_max_complex_.segment(current_idx, n_added_).fill(0);
-   current_idx += n_added_;
+   g_min_complex_.segment(current_idx, n_null_).fill(0);
+   g_max_complex_.segment(current_idx, n_null_).fill(0);
+   current_idx += n_null_;
 
    // Load knee constraint bounds
    g_min_complex_.segment(current_idx, 4).fill(0);
@@ -179,13 +181,12 @@ quadNLP::quadNLP(
    current_idx += 4;
 
    // Load motor model constraint bounds
-   g_min_complex_.segment(current_idx, n_added_).fill(-2e19);
-   g_max_complex_.segment(current_idx, n_added_).fill(0);
+   g_min_complex_.segment(current_idx, n_null_).fill(-2e19);
+   g_max_complex_.segment(current_idx, n_null_).fill(0);
 
    // Load ground height data
    ground_height_ = Eigen::MatrixXd(1, N_);
    ground_height_.fill(0);
-
 
    w0_ = Eigen::MatrixXd((3 * n_ + m_) * N_, 1);
    w0_.fill(0);
@@ -196,12 +197,23 @@ quadNLP::quadNLP(
    lambda0_ = Eigen::MatrixXd((g_ + 2 * n_) * N_, 1);
    lambda0_.fill(0);
 
-   for (int i = 0; i < N_; ++i)
-   {
-      w0_(leg_input_start_idx_ + 2 + i * (n_ + m_), 0) = 29;
-      w0_(leg_input_start_idx_ + 5 + i * (n_ + m_), 0) = 29;
-      w0_(leg_input_start_idx_ + 8 + i * (n_ + m_), 0) = 29;
-      w0_(leg_input_start_idx_ + 11 + i * (n_ + m_), 0) = 29;
+   num_complex_fe_ = 0;
+   n_vars_ = getNumVariables();
+   n_constraints_ = getNumConstraints();
+
+   w0_ = Eigen::MatrixXd(n_vars_, 1).setZero();
+   z_L0_ = Eigen::MatrixXd(n_vars_, 1).Ones(n_vars_,1);
+   z_U0_ = Eigen::MatrixXd(n_vars_, 1).Ones(n_vars_,1);
+   lambda0_ = Eigen::MatrixXd(n_constraints_, 1).setZero();
+
+   if (m_ >= 12) {
+      for (int i = 0; i < N_; ++i)
+      {
+         w0_(leg_input_start_idx_ + 2 + i * (n_ + m_), 0) = mass_*grav_*0.25;
+         w0_(leg_input_start_idx_ + 5 + i * (n_ + m_), 0) = mass_*grav_*0.25;
+         w0_(leg_input_start_idx_ + 8 + i * (n_ + m_), 0) = mass_*grav_*0.25;
+         w0_(leg_input_start_idx_ + 11 + i * (n_ + m_), 0) = mass_*grav_*0.25;
+      }
    }
 
    x_reference_ = Eigen::MatrixXd(n_, N_);
@@ -219,12 +231,14 @@ quadNLP::quadNLP(
 
       leg_input_ = Eigen::MatrixXd(m_ - leg_input_start_idx_, N_);
       leg_input_.setZero();
-      for (int i = 0; i < N_; ++i)
-      {
-         leg_input_(2, i) = 29;
-         leg_input_(5, i) = 29;
-         leg_input_(8, i) = 29;
-         leg_input_(11, i) = 29;
+      if (m_ >= 12) {
+         for (int i = 0; i < N_; ++i)
+         {
+            leg_input_(2, i) = mass_*grav_*0.25;
+            leg_input_(5, i) = mass_*grav_*0.25;
+            leg_input_(8, i) = mass_*grav_*0.25;
+            leg_input_(11, i) = mass_*grav_*0.25;
+         }
       }
    }
    else
@@ -1135,4 +1149,12 @@ void quadNLP::update_complexity_schedule(const Eigen::VectorXi &complexity_sched
    for (int i = 0; i < complexity_schedule.size(); i++) {
       num_complex_fe_ += complexity_schedule[i];
    }
+
+   n_vars_ = getNumVariables();
+   n_constraints_ = getNumConstraints();
+
+   w0_ = Eigen::MatrixXd(n_vars_, 1).setZero();
+   z_L0_ = Eigen::MatrixXd(n_vars_, 1).Ones(n_vars_,1);
+   z_U0_ = Eigen::MatrixXd(n_vars_, 1).Ones(n_vars_,1);
+   lambda0_ = Eigen::MatrixXd(n_constraints_, 1).setZero();
 }
