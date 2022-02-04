@@ -110,6 +110,9 @@ void LocalFootstepPlanner::computeContactSchedule(int current_plan_index,
 void LocalFootstepPlanner::cubicHermiteSpline(double pos_prev, double vel_prev, double pos_next, double vel_next, double phase, double duration,
                                               double &pos, double &vel, double &acc)
 {
+  // Sometimes phase will be slightly smaller than zero due to numerical issues
+  phase = std::min(std::max(phase, 0.), 1.);
+
   double t = phase * duration;
   double t2 = t * t;
   double t3 = t * t * t;
@@ -119,6 +122,9 @@ void LocalFootstepPlanner::cubicHermiteSpline(double pos_prev, double vel_prev, 
   pos = pos_prev + vel_prev * t + (t3 * (2 * pos_prev - 2 * pos_next + duration * vel_prev + duration * vel_next)) / duration3 - (t2 * (3 * pos_prev - 3 * pos_next + 2 * duration * vel_prev + duration * vel_next)) / duration2;
   vel = vel_prev + (3 * t2 * (2 * pos_prev - 2 * pos_next + duration * vel_prev + duration * vel_next)) / duration3 - (2 * t * (3 * pos_prev - 3 * pos_next + 2 * duration * vel_prev + duration * vel_next)) / duration2;
   acc = (6 * t * (2 * pos_prev - 2 * pos_next + duration * vel_prev + duration * vel_next)) / duration3 - (2 * (3 * pos_prev - 3 * pos_next + 2 * duration * vel_prev + duration * vel_next)) / duration2;
+
+  // When the duration get shrinked, the acceleration might overshoot, hundred is a good bound, the nominal maximum acceleration should be around twenty
+  acc = std::min(std::max(acc, -5e1), 5e1);
 }
 
 void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan,
@@ -251,19 +257,21 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
       Eigen::Vector3d foot_acceleration;
 
       // Determine the foot state at this index
-      if (isContact(contact_schedule, i, j)) { // In contact
-
+      if (isContact(contact_schedule, i, j))
+      {
+        // In contact
         // Log current foot position and zero velocity
         foot_position = getFootData(foot_positions, i, j);
         foot_velocity = Eigen::VectorXd::Zero(3);
         foot_acceleration = Eigen::VectorXd::Zero(3);
         foot_state_msg.contact = true;
-
-      } else { // In swing
-
-        // If this is a new swing phase, update the swing phase variables
-        if (isNewLiftoff(contact_schedule, i, j)) {
-
+      }
+      else
+      {
+        // In swing
+        if (isNewLiftoff(contact_schedule, i, j))
+        {
+          // If this is a new swing phase, update the swing phase variables
           // Set the indices for liftoff and touchdown
           i_liftoff = i;
           i_touchdown = getNextContactIndex(contact_schedule, i, j);
@@ -302,9 +310,13 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         double interp_duration;
         if (swing_duration == 0)
         {
-          // This case should only happens at the last element so it's the start of a swing, set a wrong duration will cause a wrong acceleration but we will never use it so it should be fine
-          interp_phase = 0;
-          interp_duration = 1;
+          // This case should only happens at the last element so it's the start of a swing, set a wrong acceleration but we will never use it so it should be fine
+          foot_position.x() = foot_position_prev.x();
+          foot_position.y() = foot_position_prev.y();
+          foot_velocity.x() = foot_velocity_prev.x();
+          foot_velocity.y() = foot_velocity_prev.y();
+          foot_acceleration.x() = 0;
+          foot_acceleration.y() = 0;
         }
         else
         {
@@ -320,13 +332,13 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
             interp_phase = swing_idx / swing_duration;
             interp_duration = swing_duration * dt_;
           }
-        }
 
-        // Interplate x and y
-        cubicHermiteSpline(foot_position_prev.x(), foot_velocity_prev.x(), foot_position_next.x(), foot_velocity_next.x(), interp_phase,
-                           interp_duration, foot_position.x(), foot_velocity.x(), foot_acceleration.x());
-        cubicHermiteSpline(foot_position_prev.y(), foot_velocity_prev.y(), foot_position_next.y(), foot_velocity_next.y(), interp_phase,
-                           interp_duration, foot_position.y(), foot_velocity.y(), foot_acceleration.y());
+          // Interplate x and y
+          cubicHermiteSpline(foot_position_prev.x(), foot_velocity_prev.x(), foot_position_next.x(), foot_velocity_next.x(), interp_phase,
+                             interp_duration, foot_position.x(), foot_velocity.x(), foot_acceleration.x());
+          cubicHermiteSpline(foot_position_prev.y(), foot_velocity_prev.y(), foot_position_next.y(), foot_velocity_next.y(), interp_phase,
+                             interp_duration, foot_position.y(), foot_velocity.y(), foot_acceleration.y());
+        }
 
         // Compute hip height according to the MPC plan
         Eigen::Matrix4d g_world_legbase;
@@ -338,12 +350,10 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         // Interplate z
         if (swing_duration == 0)
         {
-          // This case should only happens at the last element so it's the start of a swing, set a wrong duration will cause a wrong acceleration but we will never use it so it should be fine
-          interp_phase = 0;
-          interp_duration = 1;
-
-          cubicHermiteSpline(foot_position_prev.z(), foot_velocity_prev.z(), swing_apex, 0, interp_phase,
-                              interp_duration, foot_position.z(), foot_velocity.z(), foot_acceleration.z());
+          // This case should only happens at the last element so it's the start of a swing, set a wrong acceleration but we will never use it so it should be fine
+          foot_position.z() = foot_position_prev.z();
+          foot_velocity.z() = foot_velocity_prev.z();
+          foot_acceleration.z() = 0;
         }
         else
         {
@@ -392,13 +402,13 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
             {
               // Swing upwards
               cubicHermiteSpline(foot_position_prev.z(), foot_velocity_prev.z(), swing_apex, 0, interp_phase,
-                                interp_duration, foot_position.z(), foot_velocity.z(), foot_acceleration.z());
+                                 interp_duration, foot_position.z(), foot_velocity.z(), foot_acceleration.z());
             }
             else
             {
               // Swing downwards
               cubicHermiteSpline(swing_apex, 0, foot_position_next.z(), foot_velocity_next.z(), interp_phase,
-                                interp_duration, foot_position.z(), foot_velocity.z(), foot_acceleration.z());
+                                 interp_duration, foot_position.z(), foot_velocity.z(), foot_acceleration.z());
             }
           }
         }
