@@ -67,6 +67,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   foot_positions_body_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
   current_foot_positions_body_ = Eigen::VectorXd::Zero(num_feet_*3);
   current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_*3);
+  current_foot_velocities_world_ = Eigen::VectorXd::Zero(num_feet_*3);
   ref_ground_height_ = Eigen::VectorXd::Zero(N_+1);
 
   // Initialize body and footstep planners
@@ -277,7 +278,7 @@ void LocalPlanner::getStateAndReferencePlan() {
   // Get the current body and foot positions into Eigen
   current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
   current_state_timestamp_ = robot_state_msg_->header.stamp;
-  quad_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
+  quad_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_, current_foot_velocities_world_);
   local_footstep_planner_->getFootPositionsBodyFrame(current_state_, current_foot_positions_world_,
       current_foot_positions_body_);
 
@@ -350,7 +351,7 @@ void LocalPlanner::getStateAndTwistInput() {
   // Get the current body and foot positions into Eigen
   current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
   current_state_timestamp_ = robot_state_msg_->header.stamp;
-  quad_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
+  quad_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_, current_foot_velocities_world_);
   local_footstep_planner_->getFootPositionsBodyFrame(current_state_, current_foot_positions_world_,
       current_foot_positions_body_);
 
@@ -570,7 +571,7 @@ void LocalPlanner::publishLocalPlan() {
   foot_plan_msg.header = local_plan_msg.header;
 
   // Compute the discrete and continuous foot plan messages
-  local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_world_,
+  local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_world_, current_foot_positions_world_, current_foot_velocities_world_,
     current_plan_index_, body_plan_, first_element_duration_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
 
   // Add body, foot, joint, and grf data to the local plan message
