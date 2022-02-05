@@ -264,6 +264,9 @@ private:
 
   /// If the current solving is duplicated in the same index
   bool same_plan_index_;
+
+  /// Toe radius
+  double toe_radius = 0.02;
 };
 
 

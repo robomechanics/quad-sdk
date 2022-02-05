@@ -509,14 +509,21 @@ bool LocalPlanner::computeLocalPlan() {
       foot_positions_body_);
   }
 
+  // Compute grf position considering the toe radius
+  Eigen::MatrixXd grf_positions_body;
+  for (size_t i = 0; i < 4; i++)
+  {
+    grf_positions_body.col(3 * i + 2) = foot_positions_body_.col(3 * i + 2).array() - toe_radius;
+  }
+
   // Compute body plan with MPC, return if solve fails
   if (use_nmpc_) {
     if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_,
-      foot_positions_body_, contact_schedule_, ref_ground_height_, first_element_duration_, same_plan_index_, body_plan_, grf_plan_))
+      grf_positions_body, contact_schedule_, ref_ground_height_, first_element_duration_, same_plan_index_, body_plan_, grf_plan_))
       return false;
   } else {
     if (!local_body_planner_convex_->computePlan(current_state_, ref_body_plan_,
-      foot_positions_body_, contact_schedule_, body_plan_, grf_plan_))
+      grf_positions_body, contact_schedule_, body_plan_, grf_plan_))
       return false;
   }
 

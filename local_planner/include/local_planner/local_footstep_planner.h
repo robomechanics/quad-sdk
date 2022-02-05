@@ -366,6 +366,8 @@ class LocalFootstepPlanner {
     /// Terrain layer for foothold search
     std::string obj_fun_layer_;
 
+    /// Toe radius
+    double toe_radius = 0.02;
 };
 
 
