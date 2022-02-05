@@ -27,7 +27,6 @@ int RRTConnectClass::connect(PlannerClass &T, State s, const PlannerConfig &plan
     #ifdef VISUALIZE_TREE
       publishStateActionPair(s_near,result.a_new, s,planner_config, tree_viz_msg_, tree_pub);
     #endif
-    // T.updateGValue(s_new_index, T.getGValue(s_near_index) + result.length);
   }
 
   return connect_result;
@@ -101,7 +100,6 @@ void RRTConnectClass::postProcessPath(std::vector<State> &state_sequence, std::v
       new_action_sequence.push_back(old_action);
 
       // Recompute path length
-      // flipDirection(old_state);
       isValidStateActionPair(old_state,old_action,result,planner_config);
       path_length_ += result.length;
       s = old_state;
@@ -143,16 +141,6 @@ void RRTConnectClass::extractPath(PlannerClass &Ta, PlannerClass &Tb,
 
   // Post process to reduce the path length
   postProcessPath(state_sequence, action_sequence, planner_config);
-
-  // // Override to specify particular state action sequence
-  // State s_start = state_sequence.front();
-  // state_sequence.clear();
-  // action_sequence.clear();
-  // Action a = {10.0,0,0,-5,0,20.0,0.3,0.3};
-  // State s_end = applyAction(s_start,a,planner_config);
-  // state_sequence.push_back(s_start);
-  // state_sequence.push_back(s_end);
-  // action_sequence.push_back(a);
 }
 
 void RRTConnectClass::extractClosestPath(PlannerClass &Ta, const State &s_goal,
@@ -214,7 +202,6 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_
     #ifndef VISUALIZE_TREE
       if(total_elapsed.count() >= planner_config.MAX_TIME)
       {
-        std::cout << "Failed, exiting with partial path" << std::endl;
         elapsed_to_first_ = total_elapsed;
         num_vertices_ = (Ta.getNumVertices() + Tb.getNumVertices());
         break;
@@ -224,7 +211,6 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_
       {
         auto t_start_current_solve = std::chrono::steady_clock::now();
         anytime_horizon = anytime_horizon*horizon_expansion_factor;
-        std::cout << "Failed, retrying with horizon of " << anytime_horizon << "s" << std::endl;
         Ta = PlannerClass(FORWARD);
         Tb = PlannerClass(REVERSE);
         tree_viz_msg_.markers.clear();
