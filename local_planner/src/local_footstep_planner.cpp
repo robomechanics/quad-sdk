@@ -142,9 +142,6 @@ void LocalFootstepPlanner::cubicHermiteSpline(double pos_prev, double vel_prev, 
   pos = pos_prev + vel_prev * t + (t3 * (2 * pos_prev - 2 * pos_next + duration * vel_prev + duration * vel_next)) / duration3 - (t2 * (3 * pos_prev - 3 * pos_next + 2 * duration * vel_prev + duration * vel_next)) / duration2;
   vel = vel_prev + (3 * t2 * (2 * pos_prev - 2 * pos_next + duration * vel_prev + duration * vel_next)) / duration3 - (2 * t * (3 * pos_prev - 3 * pos_next + 2 * duration * vel_prev + duration * vel_next)) / duration2;
   acc = (6 * t * (2 * pos_prev - 2 * pos_next + duration * vel_prev + duration * vel_next)) / duration3 - (2 * (3 * pos_prev - 3 * pos_next + 2 * duration * vel_prev + duration * vel_next)) / duration2;
-
-  // When the duration get shrinked, the acceleration might overshoot, hundred is a good bound, the nominal maximum acceleration should be around twenty
-  acc = std::min(std::max(acc, -5e1), 5e1);
 }
 
 void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan,
@@ -224,9 +221,9 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         foot_position_nominal = hip_position_midstance + centrifugal + vel_tracking;
         grid_map::Position foot_position_grid_map = {foot_position_nominal.x(), foot_position_nominal.y()};
 
-        // Use estimated terrain
+        // Toe has 20cm radius so we need to shift the foot height from terrain
         foot_position_nominal.z() = terrain_grid_.atPosition("z_smooth", foot_position_grid_map,
-                                                             grid_map::InterpolationMethods::INTER_LINEAR);
+                                                             grid_map::InterpolationMethods::INTER_LINEAR) + toe_radius;
 
         // Use flat terrain assumption
         // foot_position_nominal.z() = ground_height_;
@@ -299,18 +296,9 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
       Eigen::Vector3d foot_acceleration;
 
       // Determine the foot state at this index
-      if (isContact(contact_schedule, i, j))
+      if (!isContact(contact_schedule, i, j) || (i != 0 && isNewContact(contact_schedule, i, j)))
       {
-        // In contact
-        // Log current foot position and zero velocity
-        foot_position = getFootData(foot_positions, i, j);
-        foot_velocity = Eigen::VectorXd::Zero(3);
-        foot_acceleration = Eigen::VectorXd::Zero(3);
-        foot_state_msg.contact = true;
-      }
-      else
-      {
-        // In swing
+        // In swing (or new contact, we compute acceleration for interplation in inverse dynamics)
         if (isNewLiftoff(contact_schedule, i, j))
         {
           // If this is a new swing phase, update the swing phase variables
@@ -387,8 +375,8 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         quadKD_->worldToLegbaseFKWorldFrame(j, body_plan.row(i).segment(0, 3), body_plan.row(i).segment(3, 3), g_world_legbase);
 
         // Update z to clear both footholds by the specified height under the constraints of hip height
-        double swing_apex = std::min(ground_clearance_ + std::max(foot_position_prev_nominal.z(), foot_position_next.z()), g_world_legbase(2, 3) - hip_clearance_);
-        swing_apex = std::max(swing_apex, 0.05 + std::max(foot_position_prev_nominal.z(), foot_position_next.z()));
+        double swing_apex = std::min(ground_clearance_ - toe_radius + std::max(foot_position_prev_nominal.z(), foot_position_next.z()), g_world_legbase(2, 3) - hip_clearance_);
+        swing_apex = std::max(swing_apex, 0.05 + std::max(foot_position_prev_nominal.z(), foot_position_next.z()) - toe_radius);
 
         // Interplate z
         if (swing_duration == 0)
@@ -456,7 +444,28 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
           }
         }
 
+        if (foot_acceleration.norm() > 5e1)
+        {
+          // When the duration get shrinked, the acceleration might overshoot, hundred is a good bound, the nominal maximum acceleration should be around twenty
+          foot_acceleration = foot_acceleration.normalized() * 5e1;
+        }
+
         foot_state_msg.contact = false;
+      }
+
+      if (isContact(contact_schedule, i, j))
+      {
+        // In contact
+        // Log current foot position and zero velocity
+        foot_position = getFootData(foot_positions, i, j);
+        foot_velocity = Eigen::VectorXd::Zero(3);
+        if (!(i != 0 && isNewContact(contact_schedule, i, j)))
+        {
+        // If it's a new contact, keep the acceleration for swing ID interplation, it should not be used after contact since it will be GRF instead
+          foot_acceleration = Eigen::VectorXd::Zero(3);
+        }
+        
+        foot_state_msg.contact = true;
       }
 
       // Load state data into the message

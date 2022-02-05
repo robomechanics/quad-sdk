@@ -354,6 +354,9 @@ private:
 
   /// Last call time
   ros::Time enter_time_;
+  
+  /// Toe radius
+  double toe_radius = 0.02;
 };
 
 

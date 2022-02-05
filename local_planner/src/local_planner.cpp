@@ -784,12 +784,19 @@ bool LocalPlanner::computeLocalPlan() {
     // }
   }
 
+  // Compute grf position considering the toe radius
+  Eigen::MatrixXd grf_positions_body;
+  for (size_t i = 0; i < 4; i++)
+  {
+    grf_positions_body.col(3 * i + 2) = foot_positions_body_.col(3 * i + 2).array() - toe_radius;
+  }
+
   // Compute body plan with MPC, return if solve fails
   if (tail_type_ == CENTRALIZED)
   {
     if (!local_body_planner_nonlinear_->computeCentralizedTailPlan(current_state_,
                                                                    ref_body_plan_,
-                                                                   foot_positions_body_,
+                                                                   grf_positions_body,
                                                                    adaptive_contact_schedule_,
                                                                    tail_current_state_,
                                                                    ref_tail_plan_,
@@ -804,7 +811,7 @@ bool LocalPlanner::computeLocalPlan() {
   {
     if (!local_body_planner_nonlinear_->computeLegPlan(current_state_,
                                                        ref_body_plan_,
-                                                       foot_positions_body_,
+                                                       grf_positions_body,
                                                        adaptive_contact_schedule_,
                                                        ref_ground_height_,
                                                        first_element_duration_,
@@ -817,7 +824,7 @@ bool LocalPlanner::computeLocalPlan() {
   {
     if (!local_body_planner_convex_->computePlan(current_state_,
                                                  ref_body_plan_,
-                                                 foot_positions_body_,
+                                                 grf_positions_body,
                                                  contact_schedule_,
                                                  body_plan_,
                                                  grf_plan_))

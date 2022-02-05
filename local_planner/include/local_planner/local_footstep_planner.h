@@ -433,6 +433,9 @@ class LocalFootstepPlanner {
 
     /// Estimated ground height
     double ground_height_;
+
+    /// Toe radius
+    double toe_radius = 0.02;
 };
 
 
