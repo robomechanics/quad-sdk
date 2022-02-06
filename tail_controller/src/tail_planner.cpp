@@ -87,7 +87,7 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
   miss_contact_leg_.resize(4);
 
   // Initialize the time duration to the next plan index
-  time_ahead_ = dt_;
+  first_element_duration_ = dt_;
 
   // Initialize the plan index boolean
   same_plan_index_ = true;
@@ -184,7 +184,7 @@ void TailPlanner::computeTailPlan()
 
       int previous_plan_index = current_plan_index_;
       current_plan_index_ = i + last_local_plan_msg_->plan_indices[0];
-      time_ahead_ = dt_ - (t_now - last_local_plan_msg_->states[i].header.stamp.toSec());
+      first_element_duration_ = dt_ - (t_now - last_local_plan_msg_->states[i].header.stamp.toSec());
       same_plan_index_ = previous_plan_index == current_plan_index_;
 
       break;
@@ -262,7 +262,7 @@ void TailPlanner::computeTailPlan()
                                                  body_plan_,
                                                  grf_plan_,
                                                  ref_ground_height_,
-                                                 time_ahead_,
+                                                 first_element_duration_,
                                                  same_plan_index_,
                                                  tail_plan_,
                                                  tail_torque_plan_))
@@ -304,11 +304,11 @@ void TailPlanner::computeTailPlan()
     }
     else if (i == 1)
     {
-      tail_msg.header.stamp = tail_plan_msg.header.stamp + ros::Duration(time_ahead_);
+      tail_msg.header.stamp = tail_plan_msg.header.stamp + ros::Duration(first_element_duration_);
     }
     else
     {
-      tail_msg.header.stamp = tail_plan_msg.header.stamp + ros::Duration(time_ahead_) + ros::Duration((i - 1) * dt_);
+      tail_msg.header.stamp = tail_plan_msg.header.stamp + ros::Duration(first_element_duration_) + ros::Duration((i - 1) * dt_);
     }
 
     tail_plan_msg.leg_commands.push_back(tail_msg);

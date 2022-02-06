@@ -85,7 +85,7 @@ public:
                                   const Eigen::MatrixXd &state_traj,
                                   const Eigen::MatrixXd &control_traj,
                                   const Eigen::VectorXd &ref_ground_height,
-                                  const double &time_ahead,
+                                  const double &first_element_duration,
                                   const bool &same_plan_index,
                                   Eigen::MatrixXd &tail_state_traj,
                                   Eigen::MatrixXd &tail_control_traj);

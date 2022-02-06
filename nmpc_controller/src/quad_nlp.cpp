@@ -994,7 +994,7 @@ void quadNLP::update_solver(
     const Eigen::MatrixXd &foot_positions,
     const std::vector<std::vector<bool>> &contact_schedule,
     const Eigen::VectorXd &ground_height,
-    const double &time_ahead,
+    const double &first_element_duration,
     const bool &same_plan_index,
     const bool &init)
 {
@@ -1064,7 +1064,7 @@ void quadNLP::update_solver(
    x_reference_ = ref_traj.transpose();
 
    // Update the first finite element length
-   time_ahead_ = time_ahead;
+   first_element_duration_ = first_element_duration;
 
    // Update ground height
    ground_height_ = ground_height.transpose();
@@ -1111,7 +1111,7 @@ void quadNLP::update_solver(
     const Eigen::MatrixXd &state_traj,
     const Eigen::MatrixXd &control_traj,
     const Eigen::VectorXd &ground_height,
-    const double &first_element_duration_,
+    const double &first_element_duration,
     const bool &same_plan_index,
     const bool &init)
 {
@@ -1121,7 +1121,7 @@ void quadNLP::update_solver(
        foot_positions,
        contact_schedule,
        ground_height,
-       time_ahead,
+       first_element_duration,
        same_plan_index,
        init);
 

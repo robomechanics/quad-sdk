@@ -396,7 +396,7 @@ void LocalPlanner::publishFootStepHist()
         // If there's temporary index, replace them all with the actual contact value
         for (size_t j = 0; j < tmp_foot_hist_idx_.at(i).size(); j++)
         {
-          foot_step_hist_.at("z", tmp_foot_hist_idx_.at(i).at(j)) = current_foot_positions_world_(3 * i + 2) - 0.02;
+          foot_step_hist_.at("z", tmp_foot_hist_idx_.at(i).at(j)) = current_foot_positions_world_(3 * i + 2) - toe_radius;
         }
 
         // Clear the temporary index vector
@@ -406,12 +406,12 @@ void LocalPlanner::publishFootStepHist()
       // Add the foot position to the history
       foot_step_hist_.atPosition("z", grid_map::Position(current_foot_positions_world_(3 * i + 0),
                                                          current_foot_positions_world_(3 * i + 1))) =
-          current_foot_positions_world_(3 * i + 2) - 0.02;
+          current_foot_positions_world_(3 * i + 2) - toe_radius;
     }
     else if (terrain_grid_.exists("z_inpainted"))
     {
       // Check if the current foot is lower than the records
-      if (current_foot_positions_world_(3 * i + 2) - 0.02 <
+      if (current_foot_positions_world_(3 * i + 2) - toe_radius <
           terrain_grid_.atPosition("z_inpainted", grid_map::Position(current_foot_positions_world_(3 * i + 0), current_foot_positions_world_(3 * i + 1)),
                                    grid_map::InterpolationMethods::INTER_LINEAR))
       {
@@ -425,7 +425,7 @@ void LocalPlanner::publishFootStepHist()
         // Replace all the previous record with the latest position
         for (size_t j = 0; j < tmp_foot_hist_idx_.at(i).size(); j++)
         {
-          foot_step_hist_.at("z", tmp_foot_hist_idx_.at(i).at(j)) = current_foot_positions_world_(3 * i + 2) - 0.02;
+          foot_step_hist_.at("z", tmp_foot_hist_idx_.at(i).at(j)) = current_foot_positions_world_(3 * i + 2) - toe_radius;
         }
       }
     }
@@ -706,8 +706,8 @@ bool LocalPlanner::computeLocalPlan() {
     // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
     // ROS_INFO_STREAM("same_plan_index_");
     // ROS_INFO_STREAM(same_plan_index_);
-    // ROS_INFO_STREAM("time_ahead_");
-    // ROS_INFO_STREAM(time_ahead_);
+    // ROS_INFO_STREAM("first_element_duration_");
+    // ROS_INFO_STREAM(first_element_duration_);
     // ROS_INFO_STREAM("foot_positions_world_");
     // ROS_INFO_STREAM(foot_positions_world_.format(CleanFmt));
     // ROS_INFO_STREAM("ref_body_plan_");
@@ -878,7 +878,7 @@ void LocalPlanner::publishLocalPlan() {
 
   // Compute the discrete and continuous foot plan messages
   local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_world_, current_foot_positions_world_, current_foot_velocities_world_,
-    current_plan_index_, body_plan_, time_ahead_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
+    current_plan_index_, body_plan_, first_element_duration_, past_footholds_msg_, future_footholds_msg, future_nominal_footholds_msg_, foot_plan_msg);
 
   // Add body, foot, joint, and grf data to the local plan message
   for (int i = 0; i < N_; i++) {

@@ -127,7 +127,7 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
       foot_positions,
       contact_schedule,
       ref_ground_height.tail(N_),
-      first_element_duration_,
+      first_element_duration,
       same_plan_index,
       require_init_);
   require_init_ = false;
@@ -143,8 +143,8 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
   // ROS_INFO_STREAM(mynlp_->contact_sequence_.transpose().format(CleanFmt));
   // ROS_INFO_STREAM("ref_ground_height");
   // ROS_INFO_STREAM(mynlp_->ground_height_.transpose().format(CleanFmt));
-  // ROS_INFO_STREAM("time_ahead");
-  // ROS_INFO_STREAM(mynlp_->time_ahead_);
+  // ROS_INFO_STREAM("first_element_duration");
+  // ROS_INFO_STREAM(mynlp_->first_element_duration_);
   // ROS_INFO_STREAM("same_plan_index");
   // ROS_INFO_STREAM(same_plan_index);
   // Eigen::Map<Eigen::MatrixXd> www(mynlp_->w0_.block(0, 0, N_ * (n_ + m_), 0).data(), n_ + m_, N_);
@@ -193,7 +193,7 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
                                                 const Eigen::MatrixXd &state_traj,
                                                 const Eigen::MatrixXd &control_traj,
                                                 const Eigen::VectorXd &ref_ground_height,
-                                                const double &time_ahead,
+                                                const double &first_element_duration,
                                                 const bool &same_plan_index,
                                                 Eigen::MatrixXd &tail_state_traj,
                                                 Eigen::MatrixXd &tail_control_traj)
@@ -223,7 +223,7 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
       state_traj.bottomRows(N_),
       control_traj,
       ref_ground_height.tail(N_),
-      first_element_duration_,
+      first_element_duration,
       same_plan_index,
       require_init_);
   require_init_ = false;
@@ -243,8 +243,8 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
   // ROS_INFO_STREAM(control_traj.format(CleanFmt));
   // ROS_INFO_STREAM("ref_ground_height");
   // ROS_INFO_STREAM(mynlp_->ground_height_.transpose().format(CleanFmt));
-  // ROS_INFO_STREAM("time_ahead");
-  // ROS_INFO_STREAM(mynlp_->time_ahead_);
+  // ROS_INFO_STREAM("first_element_duration");
+  // ROS_INFO_STREAM(mynlp_->first_element_duration_);
   // ROS_INFO_STREAM("same_plan_index");
   // ROS_INFO_STREAM(same_plan_index);
   // Eigen::Map<Eigen::MatrixXd> www(mynlp_->w0_.block(0, 0, N_ * (n_ + m_), 0).data(), n_ + m_, N_);
