@@ -32,7 +32,7 @@ TerrainMapPublisher::TerrainMapPublisher(ros::NodeHandle nh)
     nh_.param<std::string>("topics/image", image_topic, "/image_publisher/image");
     nh_.param<double>("terrain_map_publisher/min_height", min_height_, 0.0);
     nh_.param<double>("terrain_map_publisher/max_height", max_height_, 1.0);
-    image_sub_ = nh_.subscribe(image_topic, 1, &TerrainMapPublisher::loadMapFromImage, this);
+    image_sub_ = nh_.subscribe(image_topic, 1, &TerrainMapPublisher::loadMapFromImage, this, ros::TransportHints().tcpNoDelay(true));
   }
 
   // Initialize the elevation layer on the terrain map

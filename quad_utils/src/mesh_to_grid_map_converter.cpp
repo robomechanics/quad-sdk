@@ -35,7 +35,7 @@ MeshToGridMapConverter::MeshToGridMapConverter(ros::NodeHandle nh,
 
 void MeshToGridMapConverter::subscribeToTopics() {
   mesh_sub_ =
-      nh_.subscribe("mesh", 10, &MeshToGridMapConverter::meshCallback, this);
+      nh_.subscribe("mesh", 10, &MeshToGridMapConverter::meshCallback, this, ros::TransportHints().tcpNoDelay(true));
 }
 
 void MeshToGridMapConverter::advertiseTopics() {

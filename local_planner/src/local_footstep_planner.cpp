@@ -127,36 +127,18 @@ void LocalFootstepPlanner::computeContactSchedule(int current_plan_index,
   }
 }
 
-void LocalFootstepPlanner::cubicHermiteSpline(double pos_prev, double vel_prev, double pos_next, double vel_next, double phase, double duration, 
-                                                 double &pos, double &vel, double &acc)
+void LocalFootstepPlanner::cubicHermiteSpline(double pos_prev, double vel_prev, double pos_next, double vel_next, double phase, double duration,
+                                              double &pos, double &vel, double &acc)
 {
-  phase = std::max(std::min(phase, 1.), 0.);
-  duration = std::max(duration, 1e-3*dt_);
+  double t = phase * duration;
+  double t2 = t * t;
+  double t3 = t * t * t;
+  double duration2 = duration * duration;
+  double duration3 = duration * duration * duration;
 
-  // Compute interpolation parameters
-  double t = phase;
-  double t2 = pow(phase, 2);
-  double t3 = pow(phase, 3);
-
-  double h00 = 2 * t3 - 3 * t2 + 1;
-  double h10 = t3 - 2 * t2 + t;
-  double h01 = -2 * t3 + 3 * t2;
-  double h11 = t3 - t2;
-
-  double dh00 = 6 * t2 - 6 * t;
-  double dh10 = 3 * t2 - 4 * t + 1;
-  double dh01 = -6 * t2 + 6 * t;
-  double dh11 = 3 * t2 - 2 * t;
-
-  double ddh00 = 12 * t - 6;
-  double ddh10 = 6 * t - 4;
-  double ddh01 = -12 * t + 6;
-  double ddh11 = 6 * t - 2;
-
-  // Perform cubic hermite interpolation, note that the velocity and acceleration is scaled into 0, 1 range and scaled back
-  pos = h00 * pos_prev + h10 * vel_prev * duration + h01 * pos_next + h11 * vel_next * duration;
-  vel = (dh00 * pos_prev + dh10 * vel_prev * duration + dh01 * pos_next + dh11 * vel_next * duration) / duration;
-  acc = (ddh00 * pos_prev + ddh10 * vel_prev * duration + ddh01 * pos_next + ddh11 * vel_next * duration) / pow(duration, 2);
+  pos = pos_prev + vel_prev * t + (t3 * (2 * pos_prev - 2 * pos_next + duration * vel_prev + duration * vel_next)) / duration3 - (t2 * (3 * pos_prev - 3 * pos_next + 2 * duration * vel_prev + duration * vel_next)) / duration2;
+  vel = vel_prev + (3 * t2 * (2 * pos_prev - 2 * pos_next + duration * vel_prev + duration * vel_next)) / duration3 - (2 * t * (3 * pos_prev - 3 * pos_next + 2 * duration * vel_prev + duration * vel_next)) / duration2;
+  acc = (6 * t * (2 * pos_prev - 2 * pos_next + duration * vel_prev + duration * vel_next)) / duration3 - (2 * (3 * pos_prev - 3 * pos_next + 2 * duration * vel_prev + duration * vel_next)) / duration2;
 }
 
 void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan,
@@ -228,7 +210,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
 
         centrifugal = (hip_height/9.81)*body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
         vel_tracking = (hip_height/9.81)*(body_vel_touchdown - ref_body_vel_touchdown);
-        // foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
+        // foot_position_grf = projectToMap(hip_position_midstance, -1.0*grf_midstance);
 
         // Combine these measures to get the nominal foot position and grab correct height
         // foot_position_nominal = grf_weight_*foot_position_grf +
@@ -282,8 +264,9 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
     double swing_duration = i_touchdown - i_liftoff;
 
     // Identify positions of the previous and next footholds
-    Eigen::Vector3d foot_position_prev;
+    Eigen::Vector3d foot_position_prev, foot_position_prev_nominal;
     quad_utils::footStateMsgToEigen(most_recent_foothold_msg, foot_position_prev);
+    quad_utils::footStateMsgToEigen(most_recent_foothold_msg, foot_position_prev_nominal);
     Eigen::Vector3d foot_velocity_prev;
     foot_velocity_prev = Eigen::Vector3d::Zero();
     Eigen::Vector3d foot_position_next = getFootData(foot_positions, i_touchdown, j);
@@ -332,6 +315,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
 
           // Loop through contact schedule to find the next touchdown, otherwise keep the default
           foot_position_prev = getFootData(foot_positions, i_liftoff, j);
+          foot_position_prev_nominal = getFootData(foot_positions, i_liftoff, j);
           foot_position_next = getFootData(foot_positions, i_touchdown, j);
           foot_velocity_prev = Eigen::Vector3d::Zero();
         }
@@ -360,6 +344,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         double interp_duration;
         if (swing_duration == 0)
         {
+          // This case should only happens at the last element so it's the start of a swing, set a wrong duration will cause a wrong acceleration but we will never use it so it should be fine
           interp_phase = 0;
           interp_duration = 1;
         }
@@ -390,14 +375,18 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         quadKD_->worldToLegbaseFKWorldFrame(j, body_plan.row(i).segment(0, 3), body_plan.row(i).segment(3, 3), g_world_legbase);
 
         // Update z to clear both footholds by the specified height under the constraints of hip height
-        double swing_apex = std::min(ground_clearance_ + std::max(foot_position_prev.z(), foot_position_next.z()), g_world_legbase(2, 3) - hip_clearance_);
-        swing_apex = std::max(swing_apex, 0.05 + std::max(foot_position_prev.z(), foot_position_next.z()));
+        double swing_apex = std::min(ground_clearance_ + std::max(foot_position_prev_nominal.z(), foot_position_next.z()), g_world_legbase(2, 3) - hip_clearance_);
+        swing_apex = std::max(swing_apex, 0.05 + std::max(foot_position_prev_nominal.z(), foot_position_next.z()));
 
         // Interplate z
         if (swing_duration == 0)
         {
+          // This case should only happens at the last element so it's the start of a swing, set a wrong duration will cause a wrong acceleration but we will never use it so it should be fine
           interp_phase = 0;
           interp_duration = 1;
+
+          cubicHermiteSpline(foot_position_prev.z(), foot_velocity_prev.z(), swing_apex, 0, interp_phase,
+                              interp_duration, foot_position.z(), foot_velocity.z(), foot_acceleration.z());
         }
         else
         {
@@ -470,8 +459,8 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
       }
 
       // If this is the end of a contact, add to the past footholds message
-      if (i == 1 && isNewLiftoff(contact_schedule, i, j)) {
-        past_footholds_msg.feet[j].footholds.push_back(foot_state_msg);
+      if (i < period_*duty_cycles_[j] && isNewLiftoff(contact_schedule, i, j)) {
+        past_footholds_msg.feet[j].footholds.back() = foot_state_msg;
       }
 
       // If this is the end of a swing, add to the future nominal footholds message

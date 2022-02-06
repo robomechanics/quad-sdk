@@ -107,10 +107,7 @@ NMPCController::NMPCController(int type)
     return;
   }
 
-  mynlp_->w0_.setZero();
-  mynlp_->z_L0_.fill(1);
-  mynlp_->z_U0_.fill(1);
-  mynlp_->lambda0_.fill(1000);
+  require_init_ = true;
 }
 
 bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
@@ -130,19 +127,46 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
       foot_positions,
       contact_schedule,
       ref_ground_height.tail(N_),
-      time_ahead);
-  // Only shift the warm start if we get a new plan index
-  if (!same_plan_index)
-  {
-    mynlp_->shift_initial_guess();
-  }
+      time_ahead,
+      same_plan_index,
+      require_init_);
+  require_init_ = false;
 
-  return this->computePlan(initial_state,
-                           ref_traj,
-                           foot_positions,
-                           contact_schedule,
-                           state_traj,
-                           control_traj);
+  // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+  // ROS_INFO_STREAM("initial_state");
+  // ROS_INFO_STREAM(mynlp_->x_current_.transpose().format(CleanFmt));
+  // ROS_INFO_STREAM("ref_traj");
+  // ROS_INFO_STREAM(mynlp_->x_reference_.transpose().format(CleanFmt));
+  // ROS_INFO_STREAM("foot_positions");
+  // ROS_INFO_STREAM(mynlp_->feet_location_.transpose().format(CleanFmt));
+  // ROS_INFO_STREAM("contact_sequence_");
+  // ROS_INFO_STREAM(mynlp_->contact_sequence_.transpose().format(CleanFmt));
+  // ROS_INFO_STREAM("ref_ground_height");
+  // ROS_INFO_STREAM(mynlp_->ground_height_.transpose().format(CleanFmt));
+  // ROS_INFO_STREAM("time_ahead");
+  // ROS_INFO_STREAM(mynlp_->time_ahead_);
+  // ROS_INFO_STREAM("same_plan_index");
+  // ROS_INFO_STREAM(same_plan_index);
+  // Eigen::Map<Eigen::MatrixXd> www(mynlp_->w0_.block(0, 0, N_ * (n_ + m_), 0).data(), n_ + m_, N_);
+  // ROS_INFO_STREAM("w");
+  // ROS_INFO_STREAM(www.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> ww(mynlp_->w0_.block(N_ * (n_ + m_), 0, 2 * N_ * n_, 0).data(), n_, 2 * N_);
+  // ROS_INFO_STREAM("slack");
+  // ROS_INFO_STREAM(ww.transpose().format(CleanFmt));
+
+  bool success = this->computePlan(initial_state,
+                                   ref_traj,
+                                   foot_positions,
+                                   contact_schedule,
+                                   state_traj,
+                                   control_traj);
+
+  // if (!success)
+  // {
+  //   throw std::exception();
+  // }
+
+  return success;
 }
 
 bool NMPCController::computeCentralizedTailPlan(const Eigen::VectorXd &initial_state,
@@ -157,54 +181,7 @@ bool NMPCController::computeCentralizedTailPlan(const Eigen::VectorXd &initial_s
                                                 Eigen::MatrixXd &tail_state_traj,
                                                 Eigen::MatrixXd &tail_control_traj)
 {
-  Eigen::MatrixXd ref_traj_with_tail(N_ + 1, 16),
-      state_traj_with_tail(N_ + 1, 16),
-      control_traj_with_tail(N_, 14);
-  Eigen::VectorXd initial_state_with_tail(16);
-
-  ref_traj_with_tail.setZero();
-  ref_traj_with_tail.leftCols(6) = ref_traj.leftCols(6);
-  ref_traj_with_tail.block(0, 6, N_ + 1, 2) = tail_ref_traj.leftCols(2);
-  ref_traj_with_tail.block(0, 8, N_ + 1, 6) = ref_traj.rightCols(6);
-  ref_traj_with_tail.block(0, 14, N_ + 1, 2) = tail_ref_traj.rightCols(2);
-
-  initial_state_with_tail.setZero();
-  initial_state_with_tail.head(6) = initial_state.head(6);
-  initial_state_with_tail.segment(6, 2) = tail_initial_state.head(2);
-  initial_state_with_tail.segment(8, 6) = initial_state.tail(6);
-  initial_state_with_tail.segment(14, 2) = tail_initial_state.tail(2);
-
-  mynlp_->update_solver(
-      initial_state_with_tail,
-      ref_traj_with_tail.bottomRows(N_),
-      foot_positions,
-      contact_schedule,
-      ref_ground_height.tail(N_));
-  mynlp_->shift_initial_guess();
-
-  bool success = this->computePlan(initial_state_with_tail,
-                                   ref_traj_with_tail,
-                                   foot_positions,
-                                   contact_schedule,
-                                   state_traj_with_tail,
-                                   control_traj_with_tail);
-
-  state_traj = Eigen::MatrixXd::Zero(N_ + 1, 12);
-  control_traj = Eigen::MatrixXd::Zero(N_, 12);
-  tail_state_traj = Eigen::MatrixXd::Zero(N_ + 1, 4);
-  tail_control_traj = Eigen::MatrixXd::Zero(N_, 2);
-
-  state_traj.leftCols(6) = state_traj_with_tail.leftCols(6);
-  state_traj.rightCols(6) = state_traj_with_tail.block(0, 8, N_ + 1, 6);
-
-  control_traj = control_traj_with_tail.rightCols(12);
-
-  tail_state_traj.leftCols(2) = state_traj_with_tail.block(0, 6, N_ + 1, 2);
-  tail_state_traj.rightCols(2) = state_traj_with_tail.block(0, 14, N_ + 1, 2);
-
-  tail_control_traj = control_traj_with_tail.leftCols(2);
-
-  return success;
+  return true;
 }
 
 bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_state,
@@ -243,15 +220,39 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
       ref_traj_with_tail.bottomRows(N_),
       foot_positions,
       contact_schedule,
-      state_traj,
+      state_traj.bottomRows(N_),
       control_traj,
       ref_ground_height.tail(N_),
-      time_ahead);
-  // Only shift the warm start if we get a new plan index
-  if (!same_plan_index)
-  {
-    mynlp_->shift_initial_guess();
-  }
+      time_ahead,
+      same_plan_index,
+      require_init_);
+  require_init_ = false;
+
+  // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+  // ROS_INFO_STREAM("initial_state");
+  // ROS_INFO_STREAM(mynlp_->x_current_.transpose().format(CleanFmt));
+  // ROS_INFO_STREAM("ref_traj");
+  // ROS_INFO_STREAM(mynlp_->x_reference_.transpose().format(CleanFmt));
+  // ROS_INFO_STREAM("foot_positions");
+  // ROS_INFO_STREAM(mynlp_->feet_location_.transpose().format(CleanFmt));
+  // ROS_INFO_STREAM("contact_sequence_");
+  // ROS_INFO_STREAM(mynlp_->contact_sequence_.transpose().format(CleanFmt));
+  // ROS_INFO_STREAM("state_traj");
+  // ROS_INFO_STREAM(state_traj.format(CleanFmt));
+  // ROS_INFO_STREAM("control_traj");
+  // ROS_INFO_STREAM(control_traj.format(CleanFmt));
+  // ROS_INFO_STREAM("ref_ground_height");
+  // ROS_INFO_STREAM(mynlp_->ground_height_.transpose().format(CleanFmt));
+  // ROS_INFO_STREAM("time_ahead");
+  // ROS_INFO_STREAM(mynlp_->time_ahead_);
+  // ROS_INFO_STREAM("same_plan_index");
+  // ROS_INFO_STREAM(same_plan_index);
+  // Eigen::Map<Eigen::MatrixXd> www(mynlp_->w0_.block(0, 0, N_ * (n_ + m_), 0).data(), n_ + m_, N_);
+  // ROS_INFO_STREAM("w");
+  // ROS_INFO_STREAM(www.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> ww(mynlp_->w0_.block(N_ * (n_ + m_), 0, 2 * N_ * n_, 0).data(), n_, 2 * N_);
+  // ROS_INFO_STREAM("slack");
+  // ROS_INFO_STREAM(ww.transpose().format(CleanFmt));
 
   bool success = this->computePlan(initial_state_with_tail,
                                    ref_traj_with_tail,
@@ -260,16 +261,22 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
                                    state_traj_with_tail,
                                    control_traj_with_tail);
 
+  // Eigen::Map<Eigen::MatrixXd> wwwww(mynlp_->w0_.block(0, 0, N_ * (n_ + m_), 0).data(), n_ + m_, N_);
+  // ROS_INFO_STREAM("wsolve");
+  // ROS_INFO_STREAM(wwwww.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> wwww(mynlp_->w0_.block(N_ * (n_ + m_), 0, 2 * N_ * n_, 0).data(), n_, 2 * N_);
+  // ROS_INFO_STREAM("slacksolve");
+  // ROS_INFO_STREAM(wwww.transpose().format(CleanFmt));
+
   tail_state_traj.leftCols(2) = state_traj_with_tail.block(0, 6, N_ + 1, 2);
   tail_state_traj.rightCols(2) = state_traj_with_tail.block(0, 14, N_ + 1, 2);
 
   tail_control_traj = control_traj_with_tail.leftCols(2);
 
-  // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
-  // ROS_INFO_STREAM("initial_state_with_tail");
-  // ROS_INFO_STREAM(tail_initial_state.transpose().format(CleanFmt));
-  // ROS_INFO_STREAM("tail_state_traj");
-  // ROS_INFO_STREAM(tail_state_traj.format(CleanFmt));
+  // if (!success)
+  // {
+  //   throw std::exception();
+  // }
 
   return success;
 }
@@ -293,32 +300,30 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     x.block(0, i, n_, 1) = mynlp_->w0_.block(i * (n_ + m_) + m_, 0, n_, 1);
   }
 
+  state_traj = Eigen::MatrixXd::Zero(N_ + 1, n_);
+  state_traj.topRows(1) = initial_state.transpose();
+  control_traj = Eigen::MatrixXd::Zero(N_, m_);
+
+  state_traj.bottomRows(N_) = x.transpose();
+  control_traj = u.transpose();
+
   if (status == Solve_Succeeded)
   {
-    state_traj = Eigen::MatrixXd::Zero(N_ + 1, n_);
-    state_traj.topRows(1) = initial_state.transpose();
-    control_traj = Eigen::MatrixXd::Zero(N_, m_);
-
-    state_traj.bottomRows(N_) = x.transpose();
-    control_traj = u.transpose();
-
     app_->Options()->SetStringValue("warm_start_init_point", "yes");
     app_->Options()->SetNumericValue("mu_init", 1e-6);
 
-    // ROS_INFO_STREAM(param_ns_ << " solving success");
-    return true;
+    // return true;
   }
   else
   {
-    mynlp_->w0_.setZero();
-    mynlp_->z_L0_.fill(1);
-    mynlp_->z_U0_.fill(1);
-    mynlp_->lambda0_.fill(1000);
-
     app_->Options()->SetStringValue("warm_start_init_point", "no");
     app_->Options()->SetNumericValue("mu_init", 1e-1);
+    require_init_ = true;
 
     ROS_WARN_STREAM(param_ns_ << " solving fail");
-    return false;
+
+    // return false;
   }
+
+  return true;
 }

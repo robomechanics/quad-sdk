@@ -44,8 +44,8 @@ TailController::TailController(ros::NodeHandle nh)
 
   // Setup pubs and subs
   tail_control_pub_ = nh_.advertise<quad_msgs::LegCommand>(tail_control_topic, 1);
-  tail_plan_sub_ = nh_.subscribe(tail_plan_topic, 1, &TailController::tailPlanCallback, this);
-  robot_state_sub_ = nh_.subscribe(robot_state_topic, 1, &TailController::robotStateCallback, this);
+  tail_plan_sub_ = nh_.subscribe(tail_plan_topic, 1, &TailController::tailPlanCallback, this, ros::TransportHints().tcpNoDelay(true));
+  robot_state_sub_ = nh_.subscribe(robot_state_topic, 1, &TailController::robotStateCallback, this, ros::TransportHints().tcpNoDelay(true));
 }
 
 void TailController::tailPlanCallback(const quad_msgs::LegCommandArray::ConstPtr &msg)

@@ -130,22 +130,12 @@ bool InverseDynamicsController::computeLegCommandArray(
         grf_array.segment(3*i, 3) << 0, 0, 0;
       }
 
-      // Miss to contact
+      // Miss to contact or swing
       if (last_contact_sensing_msg_.data.at(i) &&
-          contact_mode.at(i) &&
           last_grf_sensor_msg_->contact_states.at(i) &&
           last_grf_sensor_msg_->vectors.at(i).z >= 5)
       {
-        ROS_WARN_STREAM("Leg controller: miss to contact leg: " << i);
-
-        last_contact_sensing_msg_.data.at(i) = false;
-      }
-
-      // Miss to swing
-      if (last_contact_sensing_msg_.data.at(i) &&
-          !contact_mode.at(i))
-      {
-        ROS_WARN_STREAM("Leg controller: miss to swing leg: " << i);
+        ROS_WARN_STREAM("Leg controller: miss to contact or swing leg: " << i);
 
         last_contact_sensing_msg_.data.at(i) = false;
       }
@@ -167,9 +157,57 @@ bool InverseDynamicsController::computeLegCommandArray(
       // Otherwise is keep contact, keep swing, swing to contact, or contact to swing
     }
 
+    // Compute swing hold position
+    Eigen::VectorXd refined_foot_positions = ref_foot_positions;
+    for (size_t i = 0; i < 4; i++)
+    {
+      if (last_contact_sensing_msg_.data.at(i))
+      {
+        Eigen::Vector3d hip_pos, nominal_foot_shift;
+        quadKD_->worldToNominalHipFKWorldFrame(i, body_state.segment(0, 3), body_state.segment(3, 3), hip_pos);
+        nominal_foot_shift << 0, 0, -0.27;
+
+        Eigen::Matrix3d rotation_matrix, body_rotation_matrix;
+        double theta = 0.707;
+        double yaw = body_state(5);
+        body_rotation_matrix << cos(yaw), -sin(yaw), 0, sin(yaw), cos(yaw), 0, 0, 0, 1;
+        body_rotation_matrix = body_rotation_matrix.transpose();
+        rotation_matrix << 1, 0, 0, 0, cos(theta), -sin(theta), 0, sin(theta), cos(theta);
+        rotation_matrix = rotation_matrix.transpose();
+
+        refined_foot_positions.segment(3 * i, 3) = (body_rotation_matrix * rotation_matrix * nominal_foot_shift + hip_pos);
+      }
+    }
+
+    // Compute foot state
+    quad_msgs::RobotState refined_state_msg;
+    quad_msgs::MultiFootState refined_foot_msg;
+    refined_foot_msg.feet.resize(4);
+    for (size_t i = 0; i < 4; i++)
+    {
+      quad_utils::eigenToFootStateMsg(refined_foot_positions.segment(3 * i, 3), Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero(), refined_foot_msg.feet[i]);
+    }
+    refined_state_msg.body = quad_utils::eigenToBodyStateMsg(body_state);
+    refined_state_msg.feet = refined_foot_msg;
+    quad_utils::ikRobotState(*quadKD_, refined_state_msg);
+
     // Compute joint torques
     quadKD_->computeInverseDynamics(state_positions, state_velocities, ref_foot_acceleration, grf_array,
                                     contact_mode, tau_array);
+
+    // Copy to the ref state messsage
+    for (size_t i = 0; i < 4; i++)
+    {
+      if (last_contact_sensing_msg_.data.at(i))
+      {
+        for (size_t j = 0; j < 3; j++)
+        {
+          ref_state_msg.joints.position.at(3 * i + j) = refined_state_msg.joints.position.at(3 * i + j);
+          ref_state_msg.joints.velocity.at(3 * i + j) = 0;
+          tau_array(3 * i + j) = 0;
+        }
+      }
+    }
 
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg.leg_commands.at(i).motor_commands.resize(3);

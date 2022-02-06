@@ -26,12 +26,12 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   quad_utils::loadROSParam(nh_,"topics/control/contact_sensing",contact_sensing_topic);
 
   // Setup pubs and subs
-  // terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1, &LocalPlanner::terrainMapCallback, this);
-  body_plan_sub_ = nh_.subscribe(body_plan_topic,1, &LocalPlanner::robotPlanCallback, this);
-  robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&LocalPlanner::robotStateCallback,this, ros::TransportHints().tcpNoDelay(true));
-  cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic,1,&LocalPlanner::cmdVelCallback, this);
-  grf_sub_ = nh_.subscribe(grf_topic,1,&LocalPlanner::grfCallback,this);
-  contact_sensing_sub_ = nh_.subscribe(contact_sensing_topic,1,&LocalPlanner::contactSensingCallback,this);
+  // terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1, &LocalPlanner::terrainMapCallback, this, ros::TransportHints().tcpNoDelay(true));
+  body_plan_sub_ = nh_.subscribe(body_plan_topic, 1, &LocalPlanner::robotPlanCallback, this, ros::TransportHints().tcpNoDelay(true));
+  robot_state_sub_ = nh_.subscribe(robot_state_topic, 1, &LocalPlanner::robotStateCallback, this, ros::TransportHints().tcpNoDelay(true));
+  cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic, 1, &LocalPlanner::cmdVelCallback, this, ros::TransportHints().tcpNoDelay(true));
+  grf_sub_ = nh_.subscribe(grf_topic, 1, &LocalPlanner::grfCallback, this, ros::TransportHints().tcpNoDelay(true));
+  contact_sensing_sub_ = nh_.subscribe(contact_sensing_topic, 1, &LocalPlanner::contactSensingCallback, this, ros::TransportHints().tcpNoDelay(true));
 
   local_plan_pub_ = nh_.advertise<quad_msgs::RobotPlan>(local_plan_topic,1);
   foot_plan_discrete_pub_ = nh_.advertise<
@@ -578,7 +578,7 @@ void LocalPlanner::getStateAndTwistInput() {
   for (int i = 1; i < N_+1; i++) {
     Twist current_cmd_vel = cmd_vel_;
 
-    double yaw = ref_body_plan_(i-1,5);
+    double yaw = current_state_[5];
     current_cmd_vel[0] = cmd_vel_[0]*cos(yaw) - cmd_vel_[1]*sin(yaw);
     current_cmd_vel[1] = cmd_vel_[0]*sin(yaw) + cmd_vel_[1]*cos(yaw);
 
@@ -662,8 +662,28 @@ bool LocalPlanner::computeLocalPlan() {
   quad_utils::FunctionTimer timer(__FUNCTION__);
 
   // Compute the contact schedule
-  local_footstep_planner_->computeContactSchedule(current_plan_index_, current_state_,
-    ref_body_plan_,contact_schedule_);
+  if (grf_plan_.rows() == N_)
+  {
+    // Swap the last grf if contact schedule changed
+    std::vector<bool> contact_schedule_back_prev = contact_schedule_.back();
+    local_footstep_planner_->computeContactSchedule(current_plan_index_, current_state_,
+                                                    ref_body_plan_, contact_schedule_);
+    if (contact_schedule_back_prev != contact_schedule_.back())
+    {
+      Eigen::MatrixXd trans = Eigen::MatrixXd::Zero(12, 12);
+      trans.block(0, 3, 3, 3).diagonal() << 1, 1, 1;
+      trans.block(3, 0, 3, 3).diagonal() << 1, 1, 1;
+      trans.block(6, 9, 3, 3).diagonal() << 1, 1, 1;
+      trans.block(9, 6, 3, 3).diagonal() << 1, 1, 1;
+
+      grf_plan_.row(N_ - 1) = (trans * grf_plan_.row(N_ - 7).transpose()).transpose();
+    }
+  }
+  else
+  {
+    local_footstep_planner_->computeContactSchedule(current_plan_index_, current_state_,
+                                                    ref_body_plan_, contact_schedule_);
+  }
 
   // Start from nominal contact schedule
   adaptive_contact_schedule_ = contact_schedule_;
@@ -971,20 +991,11 @@ void LocalPlanner::contactSensing()
       foot_pos_body_miss_contact_.segment(3 * i, 3) = tmp_foot_pos.segment(3 * i, 3) - body_plan_.block(0, 0, 1, 3).transpose();
     }
 
-    // Miss to contact
-    if (contact_schedule_.at(0).at(i) &&
-        !contact_sensing_msg_->data.at(i) &&
+    // Miss to contact or swing
+    if (!contact_sensing_msg_->data.at(i) &&
         contact_sensing_.at(i))
     {
-      ROS_WARN_STREAM("Local planner: miss to contact leg: " << i);
-      contact_sensing_.at(i) = false;
-    }
-
-    // Miss to swing
-    if (contact_sensing_.at(i) &&
-        !contact_schedule_.at(0).at(i))
-    {
-      ROS_WARN_STREAM("Local planner: miss to swing leg: " << i);
+      ROS_WARN_STREAM("Local planner: miss to contact or swing leg: " << i);
       contact_sensing_.at(i) = false;
     }
 

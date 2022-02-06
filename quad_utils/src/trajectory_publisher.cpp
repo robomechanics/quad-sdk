@@ -27,11 +27,11 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
 
   // Setup subs and pubs
   body_plan_sub_ = nh_.subscribe(body_plan_topic,1,
-    &TrajectoryPublisher::robotPlanCallback, this);
+    &TrajectoryPublisher::robotPlanCallback, this, ros::TransportHints().tcpNoDelay(true));
   multi_foot_plan_continuous_sub_ = nh_.subscribe(foot_plan_continuous_topic,1,
-    &TrajectoryPublisher::multiFootPlanContinuousCallback, this);
+    &TrajectoryPublisher::multiFootPlanContinuousCallback, this, ros::TransportHints().tcpNoDelay(true));
   ground_truth_state_sub_ = nh_.subscribe(ground_truth_state_topic,1,
-    &TrajectoryPublisher::robotStateCallback, this);
+    &TrajectoryPublisher::robotStateCallback, this, ros::TransportHints().tcpNoDelay(true));
 
   trajectory_state_pub_ = nh_.advertise<quad_msgs::RobotState>
     (trajectory_state_topic,1);

@@ -16,7 +16,7 @@ RemoteHeartbeat::RemoteHeartbeat(ros::NodeHandle nh) {
   // Setup pub
   remote_heartbeat_pub_ = nh_.advertise<std_msgs::Header>(remote_heartbeat_topic,1);
   robot_heartbeat_sub_ = nh_.subscribe(robot_heartbeat_topic,1,
-    &RemoteHeartbeat::robotHeartbeatCallback, this);
+    &RemoteHeartbeat::robotHeartbeatCallback, this, ros::TransportHints().tcpNoDelay(true));
 }
 
 void RemoteHeartbeat::robotHeartbeatCallback(const std_msgs::Header::ConstPtr& msg)

@@ -111,6 +111,8 @@ private:
   int type_;
 
   std::string param_ns_;
+
+  bool require_init_;
 };
 
 #endif // MPC_CONTROLLER_H

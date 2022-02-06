@@ -15,7 +15,7 @@ RobotProxy::RobotProxy(ros::NodeHandle nh) {
 
 
   // Setup pubs and subs
-  control_input_sub_ = nh_.subscribe(control_input_topic,1,&RobotProxy::grfArrayCallback, this);
+  control_input_sub_ = nh_.subscribe(control_input_topic,1,&RobotProxy::grfArrayCallback, this, ros::TransportHints().tcpNoDelay(true));
   joint_encoder_pub_ = nh_.advertise<sensor_msgs::JointState>(joint_encoder_topic,1);
   imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic,1);
   twist_pub_ = nh_.advertise<geometry_msgs::TwistStamped>(twist_topic,1);

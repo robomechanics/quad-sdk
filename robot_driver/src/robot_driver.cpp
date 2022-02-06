@@ -53,14 +53,14 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   // Setup pubs and subs
   local_plan_sub_ = nh_.subscribe(local_plan_topic,1,&RobotDriver::localPlanCallback, this, ros::TransportHints().tcpNoDelay(true));
   control_mode_sub_ = nh_.subscribe(
-    control_mode_topic,1,&RobotDriver::controlModeCallback, this);
+    control_mode_topic,1,&RobotDriver::controlModeCallback, this, ros::TransportHints().tcpNoDelay(true));
   single_joint_cmd_sub_ = nh_.subscribe(
-    single_joint_cmd_topic,1,&RobotDriver::singleJointCommandCallback, this);
+    single_joint_cmd_topic,1,&RobotDriver::singleJointCommandCallback, this, ros::TransportHints().tcpNoDelay(true));
   leg_override_sub_ = nh_.subscribe(
-    leg_override_topic,1,&RobotDriver::legOverrideCallback, this);
+    leg_override_topic,1,&RobotDriver::legOverrideCallback, this, ros::TransportHints().tcpNoDelay(true));
   remote_heartbeat_sub_ = nh_.subscribe(
-    remote_heartbeat_topic,1,&RobotDriver::remoteHeartbeatCallback, this);
-  grf_sensor_sub_ = nh_.subscribe(grf_sensor_topic,1,&RobotDriver::grfSensorCallback,this);
+    remote_heartbeat_topic,1,&RobotDriver::remoteHeartbeatCallback, this, ros::TransportHints().tcpNoDelay(true));
+  grf_sensor_sub_ = nh_.subscribe(grf_sensor_topic,1,&RobotDriver::grfSensorCallback,this, ros::TransportHints().tcpNoDelay(true));
   grf_pub_ = nh_.advertise<quad_msgs::GRFArray>(grf_topic,1);
   leg_command_array_pub_ = nh_.advertise<quad_msgs::LegCommandArray>(leg_command_array_topic,1);
   robot_heartbeat_pub_ = nh_.advertise<std_msgs::Header>(robot_heartbeat_topic,1);

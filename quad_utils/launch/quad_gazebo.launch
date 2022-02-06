@@ -73,6 +73,7 @@ SOFTWARE.
     <arg name="gui" value="$(arg gui)"/>
     <arg name="physics" value="ode"/>
     <arg name="verbose" value="$(arg gui)"/>
+    <arg name="extra_gazebo_args" value="--seed 0"/>
   </include>
 
   <!-- Load the parameters and the sdf description -->

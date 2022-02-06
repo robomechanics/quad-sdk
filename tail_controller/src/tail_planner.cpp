@@ -16,11 +16,11 @@ TailPlanner::TailPlanner(ros::NodeHandle nh)
 
   // Setup pubs and subs
   tail_plan_pub_ = nh_.advertise<quad_msgs::LegCommandArray>(tail_plan_topic, 1);
-  body_plan_sub_ = nh_.subscribe(body_plan_topic, 1, &TailPlanner::robotPlanCallback, this);
+  body_plan_sub_ = nh_.subscribe(body_plan_topic, 1, &TailPlanner::robotPlanCallback, this, ros::TransportHints().tcpNoDelay(true));
   robot_state_sub_ = nh_.subscribe(robot_state_topic, 1, &TailPlanner::robotStateCallback, this,ros::TransportHints().tcpNoDelay(true));
   local_plan_sub_ = nh_.subscribe(local_plan_topic, 1, &TailPlanner::localPlanCallback, this,ros::TransportHints().tcpNoDelay(true));
-  cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic, 1, &TailPlanner::cmdVelCallback, this);
-  grf_sub_ = nh_.subscribe(grf_topic, 1, &TailPlanner::grfCallback, this);
+  cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic, 1, &TailPlanner::cmdVelCallback, this, ros::TransportHints().tcpNoDelay(true));
+  grf_sub_ = nh_.subscribe(grf_topic, 1, &TailPlanner::grfCallback, this, ros::TransportHints().tcpNoDelay(true));
 
   nh.param<int>("/tail_controller/tail_type", tail_type_, 0);
   nh.param<bool>("/local_planner/use_twist_input", use_twist_input_, false);
@@ -184,7 +184,7 @@ void TailPlanner::computeTailPlan()
 
       int previous_plan_index = current_plan_index_;
       current_plan_index_ = i + last_local_plan_msg_->plan_indices[0];
-      time_ahead_ = last_local_plan_msg_->states[i + 1].header.stamp.toSec() - t_now;
+      time_ahead_ = dt_ - (t_now - last_local_plan_msg_->states[i].header.stamp.toSec());
       same_plan_index_ = previous_plan_index == current_plan_index_;
 
       break;
@@ -234,7 +234,8 @@ void TailPlanner::computeTailPlan()
     body_plan_.row(i) = quad_utils::bodyStateMsgToEigen(last_local_plan_msg_->states[idx].body).transpose();
     // ref_tail_plan_.row(i) << -body_plan_(i, 3), -body_plan_(i, 4), 0, 0;
 
-    ref_ground_height_(i) = last_local_plan_msg_->ground_height[idx];
+    // Tail cannot move the body linearly so we should not use the ground height constraints here
+    ref_ground_height_(i) = 2e-19;
 
     if (i < N_)
     {

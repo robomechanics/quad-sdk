@@ -63,11 +63,11 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
     boost::bind( &RVizInterface::robotPlanCallback, this, _1, GLOBAL));
   local_plan_sub_ = nh_.subscribe<quad_msgs::RobotPlan>(local_plan_topic,1,
     boost::bind( &RVizInterface::robotPlanCallback, this, _1, LOCAL));
-  grf_sub_ = nh_.subscribe(grf_topic,1,&RVizInterface::grfCallback, this);
+  grf_sub_ = nh_.subscribe(grf_topic,1,&RVizInterface::grfCallback, this, ros::TransportHints().tcpNoDelay(true));
   foot_plan_discrete_sub_ = nh_.subscribe(foot_plan_discrete_topic,1,
-    &RVizInterface::footPlanDiscreteCallback, this);
+    &RVizInterface::footPlanDiscreteCallback, this, ros::TransportHints().tcpNoDelay(true));
   foot_plan_continuous_sub_ = nh_.subscribe(foot_plan_continuous_topic,1,
-    &RVizInterface::footPlanContinuousCallback, this);
+    &RVizInterface::footPlanContinuousCallback, this, ros::TransportHints().tcpNoDelay(true));
 
   // Setup plan visual pubs
   global_plan_viz_pub_ = nh_.advertise<nav_msgs::Path>(global_plan_viz_topic,1);

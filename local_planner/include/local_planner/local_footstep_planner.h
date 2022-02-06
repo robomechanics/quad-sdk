@@ -252,6 +252,42 @@ class LocalFootstepPlanner {
       }
     }
 
+    inline Eigen::Vector3d projectToMap(const Eigen::Vector3d &point, const Eigen::Vector3d &direction)
+    {
+      // Get project direction norm vector
+      Eigen::Vector3d direction_norm = direction;
+      direction_norm.normalize();
+
+      // Initialize project results point
+      grid_map::Position point_grid_map = {point.x(), point.y()};
+
+      // Initialize residual as target minus current
+      double residual = terrain_grid_.atPosition("z_smooth", point_grid_map, grid_map::InterpolationMethods::INTER_LINEAR) - point.z();
+
+      // Initialize result vector
+      Eigen::Vector3d result = point;
+
+      // This threshold might be too coarse
+      while (abs(residual) > 1e-3)
+      {
+        // Gradient descent
+        result.x() = result.x() + residual / direction_norm.z() * direction_norm.x();
+        result.y() = result.y() + residual / direction_norm.z() * direction_norm.y();
+
+        // Get new project point
+        grid_map::Position result_grid_map = {result.x(), result.y()};
+
+        // Compute residual
+        residual = terrain_grid_.atPosition("z_smooth", result_grid_map, grid_map::InterpolationMethods::INTER_LINEAR) -
+                   terrain_grid_.atPosition("z_smooth", point_grid_map, grid_map::InterpolationMethods::INTER_LINEAR);
+
+        // Update solution
+        point_grid_map = result_grid_map;
+      }
+
+      return result;
+    }
+
   private:
 
     /**
