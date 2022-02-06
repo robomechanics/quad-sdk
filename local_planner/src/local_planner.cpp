@@ -785,7 +785,7 @@ bool LocalPlanner::computeLocalPlan() {
   }
 
   // Compute grf position considering the toe radius
-  Eigen::MatrixXd grf_positions_body;
+  Eigen::MatrixXd grf_positions_body = foot_positions_body_;
   for (size_t i = 0; i < 4; i++)
   {
     grf_positions_body.col(3 * i + 2) = foot_positions_body_.col(3 * i + 2).array() - toe_radius;
