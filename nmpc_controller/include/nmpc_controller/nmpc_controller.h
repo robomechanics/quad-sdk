@@ -64,6 +64,17 @@ public:
                       Eigen::MatrixXd &state_traj,
                       Eigen::MatrixXd &control_traj);
 
+  bool computeLegPlan(const Eigen::VectorXd &initial_state,
+                      const Eigen::MatrixXd &ref_traj,
+                      const Eigen::MatrixXd &foot_positions,
+                      const std::vector<std::vector<bool>> &contact_schedule,
+                      const Eigen::VectorXd &ref_ground_height,
+                      const double &first_element_duration,
+                      const bool &same_plan_index,
+                      const Eigen::VectorXi &ref_primitive_id,
+                      Eigen::MatrixXd &state_traj,
+                      Eigen::MatrixXd &control_traj);
+
   bool computeCentralizedTailPlan(const Eigen::VectorXd &initial_state,
                                   const Eigen::MatrixXd &ref_traj,
                                   const Eigen::MatrixXd &foot_positions,
@@ -105,6 +116,9 @@ private:
   double dt_;
 
   int type_;
+
+  /// Weight for takeoff state
+  double takeoff_state_weight_factor_;
 
   std::string param_ns_;
 };

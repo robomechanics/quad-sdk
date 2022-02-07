@@ -462,6 +462,9 @@ void LocalPlanner::getStateAndTwistInput() {
                                              ref_body_plan_(i, 4));
   }
 
+  // Use the standard walk primitive
+  ref_primitive_plan_.setZero(N_);
+
   // Update the body plan to use for linearization
   if (body_plan_.rows() < N_+1) {
     // Cold start with reference  plan
@@ -529,7 +532,9 @@ bool LocalPlanner::computeLocalPlan() {
   // Compute body plan with MPC, return if solve fails
   if (use_nmpc_) {
     if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_,
-      grf_positions_body, contact_schedule_, ref_ground_height_, first_element_duration_, same_plan_index_, body_plan_, grf_plan_))
+      grf_positions_body, contact_schedule_, ref_ground_height_, first_element_duration_,
+      same_plan_index_, ref_primitive_plan_, body_plan_, grf_plan_))
+
       return false;
   } else {
     if (!local_body_planner_convex_->computePlan(current_state_, ref_body_plan_,

@@ -54,6 +54,7 @@ NMPCController::NMPCController(int type)
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_upper_bound", state_upper_bound);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_lower_bound", control_lower_bound);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_upper_bound", control_upper_bound);
+  ros::param::get("/nmpc_controller/takeoff_state_weight_factor", takeoff_state_weight_factor_);
   Eigen::Map<Eigen::MatrixXd> Q(state_weights.data(), n_, 1),
       R(control_weights.data(), m_, 1),
       Q_factor(state_weights_factors.data(), N_, 1),
@@ -135,6 +136,46 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
   if (!same_plan_index)
   {
     mynlp_->shift_initial_guess();
+  }
+
+  return this->computePlan(initial_state,
+                           ref_traj,
+                           foot_positions,
+                           contact_schedule,
+                           state_traj,
+                           control_traj);
+}
+
+bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
+                                    const Eigen::MatrixXd &ref_traj,
+                                    const Eigen::MatrixXd &foot_positions,
+                                    const std::vector<std::vector<bool>> &contact_schedule,
+                                    const Eigen::VectorXd &ref_ground_height,
+                                    const double &first_element_duration,
+                                    const bool &same_plan_index,
+                                    const Eigen::VectorXi &ref_primitive_id,
+                                    Eigen::MatrixXd &state_traj,
+                                    Eigen::MatrixXd &control_traj)
+{
+  // Local planner will send a reference traj with N+1 rows
+  mynlp_->update_solver(
+      initial_state,
+      ref_traj.bottomRows(N_),
+      foot_positions,
+      contact_schedule,
+      ref_ground_height.tail(N_),
+      first_element_duration);
+  // Only shift the warm start if we get a new plan index
+  if (!same_plan_index)
+  {
+    mynlp_->shift_initial_guess();
+  }
+
+  for (int i = 0; i < ref_primitive_id.size()-1; i++) {
+    if (ref_primitive_id(i,0) == 1 && ref_primitive_id(i+1,0) == 2) {
+      mynlp_->Q_factor_(i,0) = mynlp_->Q_factor_(i,0)*takeoff_state_weight_factor_;
+      ROS_WARN_THROTTLE(0.5,"leap detected, increasing weights");
+    }
   }
 
   return this->computePlan(initial_state,
