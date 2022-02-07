@@ -16,13 +16,13 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   sensor_msgs
-  spirit_msgs
-  spirit_utils
+  quad_msgs
+  quad_utils
 )
 
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp std_msgs sensor_msgs spirit_msgs spirit_utils
+  CATKIN_DEPENDS roscpp std_msgs sensor_msgs quad_msgs quad_utils
   DEPENDS 
 )
 

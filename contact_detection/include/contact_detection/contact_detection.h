@@ -5,9 +5,9 @@
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/String.h>
-#include <spirit_msgs/ContactMode.h>
+#include <quad_msgs/ContactMode.h>
 
-//! Contact detection class for spirit
+//! Contact detection class for quad
 /*!
   Contact detection module determines the probability of contact for each leg for state estimation and mpc control
 */
@@ -38,7 +38,7 @@ private:
 	 */
 	void imuCallback(const sensor_msgs::Imu::ConstPtr& msg);
 
-	spirit_msgs::ContactMode updateStep();
+	quad_msgs::ContactMode updateStep();
 
 	// ROS subscriber for joint encoder messages
 	ros::Subscriber joint_encoder_sub_;
@@ -56,7 +56,7 @@ private:
 	double update_rate_;
 
 	/// Last contact detection message
-	spirit_msgs::ContactMode last_contact_est_;
+	quad_msgs::ContactMode last_contact_est_;
 
 	/// Most recent IMU callback (should be timestamped!)
  	sensor_msgs::Imu::ConstPtr last_imu_msg_;

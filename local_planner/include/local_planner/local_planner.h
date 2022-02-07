@@ -3,17 +3,17 @@
 
 #include <ros/ros.h>
 #include <math.h>
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/MultiFootPlanDiscrete.h>
-#include <spirit_msgs/GRFArray.h>
-#include <spirit_msgs/RobotState.h>
-#include <spirit_msgs/RobotStateTrajectory.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/MultiFootPlanDiscrete.h>
+#include <quad_msgs/GRFArray.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_msgs/RobotStateTrajectory.h>
 #include <local_planner/quadruped_mpc.h>
 #include <local_planner/local_footstep_planner.h>
-#include <spirit_utils/ros_utils.h>
-#include <spirit_utils/quad_kd.h>
-#include "spirit_utils/matplotlibcpp.h"
+#include <quad_utils/ros_utils.h>
+#include <quad_utils/quad_kd.h>
+#include "quad_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <nmpc_controller/nmpc_controller.h>
 
@@ -57,13 +57,13 @@ private:
    * @brief Callback function to handle new plans
    * @param[in] msg Robot state trajectory message
    */
-  void robotPlanCallback(const spirit_msgs::RobotPlan::ConstPtr& msg);
+  void robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg);
 
   /**
    * @brief Callback function to handle new state estimates
    * @param[in] State estimate message contining position and velocity for each joint and robot body
    */
-  void robotStateCallback(const spirit_msgs::RobotState::ConstPtr& msg);
+  void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
 
   /**
    * @brief Callback function to handle new desired twist data when using twist input
@@ -136,13 +136,13 @@ private:
   std::shared_ptr<LocalFootstepPlanner> local_footstep_planner_;
 
 	/// Most recent robot plan
-	spirit_msgs::RobotPlan::ConstPtr body_plan_msg_;
+	quad_msgs::RobotPlan::ConstPtr body_plan_msg_;
 
   /// Most recent robot state
-	spirit_msgs::RobotState::ConstPtr robot_state_msg_;
+	quad_msgs::RobotState::ConstPtr robot_state_msg_;
 
   /// Past foothold locations
-	spirit_msgs::MultiFootPlanDiscrete past_footholds_msg_;
+	quad_msgs::MultiFootPlanDiscrete past_footholds_msg_;
 
   /// Timestamp of the state estimate
   ros::Time current_state_timestamp_;
@@ -152,6 +152,9 @@ private:
 
   // Current positions of each foot
   Eigen::VectorXd current_foot_positions_world_;
+
+  // Current velocities of each foot
+  Eigen::VectorXd current_foot_velocities_world_;
 
   // Current positions of each foot
   Eigen::VectorXd current_foot_positions_body_;
@@ -181,7 +184,7 @@ private:
   const double filter_smoothing_constant_ = 0.5;
 
   /// MPC Horizon length
-  const int N_ = 24;
+  int N_;
 
   /// Number of states
   const int Nx_ = 12;
@@ -226,7 +229,7 @@ private:
   Eigen::MatrixXd foot_plan_discrete_;
 
   /// QuadKD class
-  std::shared_ptr<spirit_utils::QuadKD>quadKD_;
+  std::shared_ptr<quad_utils::QuadKD>quadKD_;
 
   /// Twist input
   typedef std::vector<double> Twist;
@@ -236,7 +239,7 @@ private:
   double cmd_vel_scale_;
 
   /// Nominal robot height
-  const double z_des_ = 0.3;
+  const double z_des_ = 0.27;
 
   /// Time of the most recent cmd_vel data
   ros::Time last_cmd_vel_msg_time_;
@@ -255,6 +258,18 @@ private:
 
   /// Boolean for using nonlinear MPC
   bool use_nmpc_;
+
+  /// Vector for stand pose (x, y, yaw)
+  Eigen::Vector3d stand_pose_;
+
+  /// Time duration to the next plan index
+  double first_element_duration_;
+
+  /// If the current solving is duplicated in the same index
+  bool same_plan_index_;
+
+  /// Toe radius
+  double toe_radius = 0.02;
 };
 
 

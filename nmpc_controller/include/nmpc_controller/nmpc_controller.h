@@ -4,18 +4,18 @@
 #include <ros/ros.h>
 #include <math.h>
 // #include <eigen3/Eigen/Eigen>
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/MultiFootPlanDiscrete.h>
-#include <spirit_msgs/GRFArray.h>
-#include <spirit_msgs/RobotState.h>
-#include <spirit_msgs/RobotStateTrajectory.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/MultiFootPlanDiscrete.h>
+#include <quad_msgs/GRFArray.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_msgs/RobotStateTrajectory.h>
 // #include <local_planner/quadruped_mpc.h>
-#include <spirit_utils/ros_utils.h>
-#include "spirit_utils/matplotlibcpp.h"
+#include <quad_utils/ros_utils.h>
+#include "quad_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <spirit_msgs/LegCommand.h>
+#include <quad_msgs/LegCommand.h>
 
-#include "nmpc_controller/spirit_nlp.h"
+#include "nmpc_controller/quad_nlp.h"
 #include "IpIpoptApplication.hpp"
 #include <Eigen/Dense>
 
@@ -41,6 +41,8 @@ public:
    * @param[in] ref_traj Matrix holding desired reference trajectory
    * @param[in] foot_positions Matrix holding foot positions
    * @param[in] contact_schedule Matrix holding the contact schedule
+   * @param[in] first_element_duration Time duration to the next plan index
+   * @param[in] same_plan_index If the current solving is duplicated in the same index
    * @param[out] state_traj Optimized state trajectory output
    * @param[out] control_traj Optimized control trajectory output
    * @return good_solve
@@ -57,6 +59,8 @@ public:
                       const Eigen::MatrixXd &foot_positions,
                       const std::vector<std::vector<bool>> &contact_schedule,
                       const Eigen::VectorXd &ref_ground_height,
+                      const double &first_element_duration,
+                      const bool &same_plan_index,
                       Eigen::MatrixXd &state_traj,
                       Eigen::MatrixXd &control_traj);
 
@@ -88,7 +92,7 @@ private:
   /// Update rate for sending and receiving data;
   double update_rate_;
 
-  SmartPtr<spiritNLP> mynlp_;
+  SmartPtr<quadNLP> mynlp_;
 
   SmartPtr<IpoptApplication> app_;
 

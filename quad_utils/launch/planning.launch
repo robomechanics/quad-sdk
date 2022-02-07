@@ -1,0 +1,47 @@
+<launch>
+  
+    <include file="$(find quad_utils)/launch/load_params.launch" />
+
+    <arg name="global_planner" default="twist"/>
+    <arg name="local_planner" default="full"/>
+    <arg name="mpc_type" default="nonlinear"/>
+    <arg name="logging" default="false"/>
+
+    <!-- Launch the node to publish the global body plan -->
+    <group if="$(eval arg('global_planner') == 'fgmp')">
+        <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen" />
+    </group>
+
+    <!-- Use twist input to local plan and no global plan -->
+    <group if="$(eval arg('global_planner') == 'twist')">
+        <param name="local_planner/use_twist_input" value="true"/>
+    </group>
+
+
+    <!-- Launch the node to publish the local plan -->
+    <group if="$(eval arg('local_planner') == 'full')">
+        <node name="local_planner" pkg="local_planner" type="local_planner_node" output="screen"/>
+
+        <group if="$(eval arg('mpc_type') == 'convex')">
+            <param name="local_planner/use_nmpc" value="false"/>
+        </group>
+        <group if="$(eval arg('mpc_type') == 'nonlinear')">
+            <param name="local_planner/use_nmpc" value="true"/>
+        </group>
+    </group>
+
+    <!-- Launch the node to publish the global footstep plan and the local mpc controller -->
+    <group if="$(eval arg('local_planner') == 'body')">
+        <node name="global_footstep_planner" pkg="global_footstep_planner" type="global_footstep_planner_node" output="screen" />
+        <!-- <node name="mpc_controller" pkg="local_planner" type="mpc_controller_node" output="screen"/> -->
+        <node name="nmpc_controller" pkg="nmpc_controller" type="nmpc_controller_node" output="screen"/>
+    </group>
+
+    <!-- Launch the node to publish the local plan -->
+    <!-- <node name="plan_publisher" pkg="quad_utils" type="trajectory_publisher_node" output="screen"/> -->
+
+    <group if="$(arg logging)">
+        <include file="$(find quad_utils)/launch/logging.launch"/>
+    </group>
+
+</launch>
