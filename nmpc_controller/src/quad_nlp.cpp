@@ -198,6 +198,8 @@ quadNLP::quadNLP(
    lambda0_.fill(0);
 
    num_complex_fe_ = 0;
+   complexity_schedule_.setZero(N_);
+   this->update_complexity_schedule(complexity_schedule_);
    n_vars_ = getNumVariables();
    n_constraints_ = getNumConstraints();
 
@@ -209,10 +211,10 @@ quadNLP::quadNLP(
    if (m_ >= 12) {
       for (int i = 0; i < N_; ++i)
       {
-         w0_(leg_input_start_idx_ + 2 + i * (n_ + m_), 0) = mass_*grav_*0.25;
-         w0_(leg_input_start_idx_ + 5 + i * (n_ + m_), 0) = mass_*grav_*0.25;
-         w0_(leg_input_start_idx_ + 8 + i * (n_ + m_), 0) = mass_*grav_*0.25;
-         w0_(leg_input_start_idx_ + 11 + i * (n_ + m_), 0) = mass_*grav_*0.25;
+         w0_(getPrimalFEIndex(i) + leg_input_start_idx_ + 2) = mass_*grav_*0.25;
+         w0_(getPrimalFEIndex(i) + leg_input_start_idx_ + 5) = mass_*grav_*0.25;
+         w0_(getPrimalFEIndex(i) + leg_input_start_idx_ + 8) = mass_*grav_*0.25;
+         w0_(getPrimalFEIndex(i) + leg_input_start_idx_ + 11) = mass_*grav_*0.25;
       }
    }
 
@@ -249,8 +251,10 @@ quadNLP::quadNLP(
    // Initialize the time duration to the next plan index as dt
    first_element_duration_ = dt_;
 
-   compute_nnz_jac_g();
-   compute_nnz_h();
+   if (m_ >= 12) {
+      compute_nnz_jac_g();
+      compute_nnz_h();
+   }
 }
 
 // Destructor
@@ -670,6 +674,9 @@ bool quadNLP::eval_jac_g(
 // Return the structure of the Jacobian
 void quadNLP::compute_nnz_jac_g()
 {
+   eval_jac_g_sparsity_out_ = eval_jac_g_leg_sparsity_out;
+   // eval_jac_g_sparsity_out_ = eval_jac_g_leg_simple_sparsity_out;
+
    const casadi_int *sp_i;
    sp_i = eval_jac_g_sparsity_out_(0);
    casadi_int nrow = *sp_i++;
@@ -889,6 +896,13 @@ void quadNLP::compute_nnz_h()
    const casadi_int *colind = sp_i;
    const casadi_int *row = sp_i + ncol + 1;
    casadi_int nnz = sp_i[ncol];
+
+   std::cout << "nrow = " << nrow << std::endl;
+   std::cout << "ncol = " << ncol << std::endl;
+   std::cout << "colind = " << colind << std::endl;
+   std::cout << "row = " << row << std::endl;
+   std::cout << "nnz = " << nnz << std::endl;
+   throw std::runtime_error("Stop");
 
    Eigen::MatrixXi iRow(nnz, 1);
    Eigen::MatrixXi jCol(nnz, 1);
@@ -1149,6 +1163,9 @@ void quadNLP::update_complexity_schedule(const Eigen::VectorXi &complexity_sched
    for (int i = 0; i < complexity_schedule.size(); i++) {
       num_complex_fe_ += complexity_schedule[i];
    }
+
+   n_vec_ = n_complex_*complexity_schedule + 
+      n_simple_*(Eigen::VectorXi::Ones(N_) - complexity_schedule);
 
    n_vars_ = getNumVariables();
    n_constraints_ = getNumConstraints();

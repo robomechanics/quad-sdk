@@ -35,8 +35,6 @@ NMPCController::NMPCController(int type)
   ros::param::get("/nmpc_controller/" + param_ns_ + "/step_length", dt_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/friction_coefficient", mu);
 
-  std::cout << "Here" << std::endl;
-
   // Load MPC cost weighting and bounds
   std::vector<double> state_weights,
       control_weights,

@@ -12,10 +12,23 @@
 #include "nmpc_controller/eval_g_leg.h"
 #include "nmpc_controller/eval_jac_g_leg.h"
 #include "nmpc_controller/eval_hess_g_leg.h"
+#include "nmpc_controller/eval_g_leg_simple.h"
+#include "nmpc_controller/eval_jac_g_leg_simple.h"
+#include "nmpc_controller/eval_hess_g_leg_simple.h"
+#include "nmpc_controller/eval_g_leg_complex.h"
+#include "nmpc_controller/eval_jac_g_leg_complex.h"
+#include "nmpc_controller/eval_hess_g_leg_complex.h"
+#include "nmpc_controller/eval_g_leg_simple_to_complex.h"
+#include "nmpc_controller/eval_jac_g_leg_simple_to_complex.h"
+#include "nmpc_controller/eval_hess_g_leg_simple_to_complex.h"
+#include "nmpc_controller/eval_g_leg_complex_to_simple.h"
+#include "nmpc_controller/eval_jac_g_leg_complex_to_simple.h"
+#include "nmpc_controller/eval_hess_g_leg_complex_to_simple.h"
 #include "nmpc_controller/eval_g_tail.h"
 #include "nmpc_controller/eval_jac_g_tail.h"
 #include "nmpc_controller/eval_hess_g_tail.h"
 #include "quad_utils/tail_type.h"
+#include "quad_utils/function_timer.h"
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <vector>
@@ -30,6 +43,9 @@ public:
 
     /// State dimension for simple and complex models
     int n_simple_, n_complex_;
+
+    /// Vector of state variables for each finite element
+    Eigen::VectorXi n_vec_;
 
     /// Input dimension for simple and complex models
     int m_simple_, m_complex_;
