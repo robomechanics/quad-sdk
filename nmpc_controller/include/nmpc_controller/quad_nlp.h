@@ -35,6 +35,13 @@
 
 using namespace Ipopt;
 
+enum ComplexityMode {
+    SIMPLE,
+    COMPLEX,
+    SIMPLE_TO_COMPLEX,
+    COMPLEX_TO_SIMPLE
+};
+
 class quadNLP : public TNLP
 {
 public:
@@ -58,6 +65,9 @@ public:
 
     /// Number of state variables added in complex model
     int n_null_;
+
+    /// Declare the number of possible complexity modes
+    static const int num_complexity_modes_ = 4;
 
     int leg_input_start_idx_;
 
@@ -169,6 +179,33 @@ public:
     decltype(eval_jac_g_leg_release) *eval_jac_g_release_;
     decltype(eval_jac_g_leg_decref) *eval_jac_g_decref_;
     decltype(eval_jac_g_leg_sparsity_out) *eval_jac_g_sparsity_out_;
+
+    /// Vector of nonzero entries for constraint Jacobian and Hessian
+    std::vector<casadi_int> nnz_jac_g_vec_, nnz_h_vec_;
+
+    /// Vector of nonzero entries for constraint Jacobian and Hessian
+    std::vector<decltype(eval_g_leg_work)*> eval_g_work_vec_;
+    // decltype(eval_g_leg_incref) *eval_g_incref_;
+    // decltype(eval_g_leg_checkout) *eval_g_checkout_;
+    // decltype(eval_g_leg) *eval_g_;
+    // decltype(eval_g_leg_release) *eval_g_release_;
+    // decltype(eval_g_leg_decref) *eval_g_decref_;
+
+    // decltype(eval_hess_g_leg_work) *eval_hess_g_work_;
+    // decltype(eval_hess_g_leg_incref) *eval_hess_g_incref_;
+    // decltype(eval_hess_g_leg_checkout) *eval_hess_g_checkout_;
+    // decltype(eval_hess_g_leg) *eval_hess_g_;
+    // decltype(eval_hess_g_leg_release) *eval_hess_g_release_;
+    // decltype(eval_hess_g_leg_decref) *eval_hess_g_decref_;
+    // decltype(eval_hess_g_leg_sparsity_out) *eval_hess_g_sparsity_out_;
+
+    // decltype(eval_jac_g_leg_work) *eval_jac_g_work_;
+    // decltype(eval_jac_g_leg_incref) *eval_jac_g_incref_;
+    // decltype(eval_jac_g_leg_checkout) *eval_jac_g_checkout_;
+    // decltype(eval_jac_g_leg) *eval_jac_g_;
+    // decltype(eval_jac_g_leg_release) *eval_jac_g_release_;
+    // decltype(eval_jac_g_leg_decref) *eval_jac_g_decref_;
+    // decltype(eval_jac_g_leg_sparsity_out) *eval_jac_g_sparsity_out_;
 
     /** Default constructor */
     quadNLP(

@@ -524,6 +524,7 @@ bool LocalPlanner::computeLocalPlan() {
 
   Eigen::VectorXi complexity_schedule(N_);
   complexity_schedule.setZero();
+  
   // Compute grf position considering the toe radius
   Eigen::MatrixXd grf_positions_body = foot_positions_body_;
   for (size_t i = 0; i < 4; i++)

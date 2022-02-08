@@ -677,8 +677,8 @@ bool quadNLP::eval_jac_g(
 // Return the structure of the Jacobian
 void quadNLP::compute_nnz_jac_g()
 {
-   eval_jac_g_sparsity_out_ = eval_jac_g_leg_sparsity_out;
-   // eval_jac_g_sparsity_out_ = eval_jac_g_leg_simple_sparsity_out;
+   // eval_jac_g_sparsity_out_ = eval_jac_g_leg_sparsity_out;
+   eval_jac_g_sparsity_out_ = eval_jac_g_leg_simple_sparsity_out;
 
    const casadi_int *sp_i;
    sp_i = eval_jac_g_sparsity_out_(0);
@@ -695,6 +695,12 @@ void quadNLP::compute_nnz_jac_g()
    first_step_idx_jac_g_.reserve(nnz);
    int idx = 0;
 
+   std::cout << "nrow = " << nrow << std::endl;
+   std::cout << "ncol = " << ncol << std::endl;
+   std::cout << "colind = " << colind << std::endl;
+   std::cout << "row = " << row << std::endl;
+   std::cout << "nnz = " << nnz << std::endl;
+
    for (int i = 0; i < ncol; ++i)
    {
       for (int j = colind[i]; j < colind[i + 1]; ++j)
@@ -703,7 +709,7 @@ void quadNLP::compute_nnz_jac_g()
          jCol(idx, 0) = i;
 
          // We have the decision variable start from u_0, so we should drop the jacobian corresponding to x_0
-         if (jCol(idx, 0) >= n_)
+         if (jCol(idx, 0) >= n_simple_)
          {
             first_step_idx_jac_g_.push_back(idx);
          }
@@ -711,6 +717,10 @@ void quadNLP::compute_nnz_jac_g()
          idx += 1;
       }
    }
+
+   std::cout << "complexity_schedule_: " << complexity_schedule_.transpose() << std::endl;
+   throw std::runtime_error("Stop");
+
 
    nnz_jac_g_ = first_step_idx_jac_g_.size() + (N_ - 1) * nnz + N_ * n_ * 2 * 2;
    iRow_jac_g_ = Eigen::MatrixXi(nnz_jac_g_, 1);
@@ -899,13 +909,6 @@ void quadNLP::compute_nnz_h()
    const casadi_int *colind = sp_i;
    const casadi_int *row = sp_i + ncol + 1;
    casadi_int nnz = sp_i[ncol];
-
-   std::cout << "nrow = " << nrow << std::endl;
-   std::cout << "ncol = " << ncol << std::endl;
-   std::cout << "colind = " << colind << std::endl;
-   std::cout << "row = " << row << std::endl;
-   std::cout << "nnz = " << nnz << std::endl;
-   throw std::runtime_error("Stop");
 
    Eigen::MatrixXi iRow(nnz, 1);
    Eigen::MatrixXi jCol(nnz, 1);
