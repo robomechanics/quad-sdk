@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <root version="2.3.8">
- <tabbed_widget parent="main_window" name="Main Window">
-  <Tab containers="1" tab_name="Body">
+ <tabbed_widget name="Main Window" parent="main_window">
+  <Tab tab_name="Body" containers="1">
    <Container>
-    <DockSplitter sizes="0.500747;0.499253" count="2" orientation="-">
-     <DockSplitter sizes="0.5;0.5" count="2" orientation="|">
+    <DockSplitter sizes="0.5;0.5" orientation="-" count="2">
+     <DockSplitter sizes="0.500356;0.499644" orientation="|" count="2">
       <DockArea name="Linear Position">
        <plot style="Lines" mode="TimeSeries">
-        <range right="13.373110" bottom="-1.000000" left="8.385055" top="4.000000"/>
-        <limitY max="4" min="-1"/>
+        <range left="2.698000" bottom="-1.000000" top="4.000000" right="7.698000"/>
+        <limitY min="-1" max="4"/>
         <curve name="/state/ground_truth/body/pose/position/x" color="#1f77b4"/>
         <curve name="/state/ground_truth/body/pose/position/y" color="#d62728"/>
         <curve name="/state/ground_truth/body/pose/position/z" color="#1ac938"/>
@@ -16,7 +16,7 @@
       </DockArea>
       <DockArea name="Angular Position">
        <plot style="Lines" mode="TimeSeries">
-        <range right="13.373110" bottom="-1.022309" left="8.385055" top="0.028538"/>
+        <range left="2.698000" bottom="-0.025123" top="1.025003" right="7.698000"/>
         <limitY/>
         <curve name="/state/ground_truth/body/pose/orientation/w" color="#ff7f0e"/>
         <curve name="/state/ground_truth/body/pose/orientation/x" color="#f14cc1"/>
@@ -25,11 +25,11 @@
        </plot>
       </DockArea>
      </DockSplitter>
-     <DockSplitter sizes="0.5;0.5" count="2" orientation="|">
+     <DockSplitter sizes="0.500356;0.499644" orientation="|" count="2">
       <DockArea name="Linear Velocity">
        <plot style="Lines" mode="TimeSeries">
-        <range right="13.373110" bottom="-2.000000" left="8.385055" top="2.000000"/>
-        <limitY max="2" min="-2"/>
+        <range left="2.698000" bottom="-3.000000" top="3.000000" right="7.698000"/>
+        <limitY min="-3" max="3"/>
         <curve name="/state/ground_truth/body/twist/linear/x" color="#bcbd22"/>
         <curve name="/state/ground_truth/body/twist/linear/y" color="#1f77b4"/>
         <curve name="/state/ground_truth/body/twist/linear/z" color="#d62728"/>
@@ -37,8 +37,8 @@
       </DockArea>
       <DockArea name="Angular Velocity">
        <plot style="Lines" mode="TimeSeries">
-        <range right="13.373110" bottom="-2.000000" left="8.385055" top="2.000000"/>
-        <limitY max="2" min="-2"/>
+        <range left="2.698000" bottom="-2.000000" top="2.000000" right="7.698000"/>
+        <limitY min="-2" max="2"/>
         <curve name="/state/ground_truth/body/twist/angular/x" color="#1ac938"/>
         <curve name="/state/ground_truth/body/twist/angular/y" color="#ff7f0e"/>
         <curve name="/state/ground_truth/body/twist/angular/z" color="#f14cc1"/>
@@ -48,33 +48,33 @@
     </DockSplitter>
    </Container>
   </Tab>
-  <Tab containers="1" tab_name="Body Position XY">
+  <Tab tab_name="Body Position XY" containers="1">
    <Container>
-    <DockSplitter sizes="0.500747;0.499253" count="2" orientation="-">
+    <DockSplitter sizes="0.5;0.5" orientation="-" count="2">
      <DockArea name="Transverse Plane (m)">
       <plot style="Dots" mode="XYPlot">
-       <range right="7.370224" bottom="-2.024240" left="-8.365586" top="2.000000"/>
-       <limitY max="2" min="-2"/>
+       <range left="0.000000" bottom="0.000000" top="1.000000" right="1.000000"/>
+       <limitY min="-2" max="2"/>
       </plot>
      </DockArea>
      <DockArea name="Sagittal Plane (m)">
       <plot style="Lines" mode="XYPlot">
-       <range right="1.511829" bottom="-0.048451" left="-2.578478" top="1.000000"/>
-       <limitY max="1" min="0"/>
+       <range left="0.000000" bottom="0.000000" top="1.000000" right="1.000000"/>
+       <limitY min="0" max="1"/>
       </plot>
      </DockArea>
     </DockSplitter>
    </Container>
   </Tab>
-  <Tab containers="1" tab_name="Feet">
+  <Tab tab_name="Feet" containers="1">
    <Container>
-    <DockSplitter sizes="1" count="1" orientation="-">
-     <DockSplitter sizes="0.5;0.5" count="2" orientation="|">
-      <DockSplitter sizes="0.500747;0.499253" count="2" orientation="-">
+    <DockSplitter sizes="1" orientation="-" count="1">
+     <DockSplitter sizes="0.5;0.5" orientation="|" count="2">
+      <DockSplitter sizes="0.5;0.5" orientation="-" count="2">
        <DockArea name="...">
         <plot style="Lines" mode="TimeSeries">
-         <range right="5.002657" bottom="-0.500000" left="0.013688" top="2.000000"/>
-         <limitY max="2" min="-0.5"/>
+         <range left="-13.862000" bottom="-0.500000" top="2.000000" right="-13.298000"/>
+         <limitY min="-0.5" max="2"/>
          <curve name="/state/ground_truth/feet/feet.0/position/x" color="#a6192e"/>
          <curve name="/state/ground_truth/feet/feet.0/position/y" color="#002e72"/>
          <curve name="/state/ground_truth/feet/feet.0/position/z" color="#00843d"/>
@@ -82,19 +82,19 @@
        </DockArea>
        <DockArea name="...">
         <plot style="Lines" mode="TimeSeries">
-         <range right="5.002657" bottom="-2.000000" left="0.013688" top="2.000000"/>
-         <limitY max="2" min="-2"/>
+         <range left="-13.862000" bottom="-2.000000" top="2.000000" right="-13.298000"/>
+         <limitY min="-2" max="2"/>
          <curve name="/state/ground_truth/feet/feet.0/velocity/x" color="#a6192e"/>
          <curve name="/state/ground_truth/feet/feet.0/velocity/y" color="#002e72"/>
          <curve name="/state/ground_truth/feet/feet.0/velocity/z" color="#00843d"/>
         </plot>
        </DockArea>
       </DockSplitter>
-      <DockSplitter sizes="0.500747;0.499253" count="2" orientation="-">
+      <DockSplitter sizes="0.5;0.5" orientation="-" count="2">
        <DockArea name="...">
         <plot style="Lines" mode="TimeSeries">
-         <range right="5.002657" bottom="-0.500000" left="0.013688" top="2.000000"/>
-         <limitY max="2" min="-0.5"/>
+         <range left="-13.862000" bottom="-0.500000" top="2.000000" right="-13.298000"/>
+         <limitY min="-0.5" max="2"/>
          <curve name="/state/ground_truth/feet/feet.2/position/x" color="#a6192e"/>
          <curve name="/state/ground_truth/feet/feet.2/position/y" color="#002e72"/>
          <curve name="/state/ground_truth/feet/feet.2/position/z" color="#00843d"/>
@@ -102,8 +102,8 @@
        </DockArea>
        <DockArea name="...">
         <plot style="Lines" mode="TimeSeries">
-         <range right="5.002657" bottom="-2.000000" left="0.013688" top="2.000000"/>
-         <limitY max="2" min="-2"/>
+         <range left="-13.862000" bottom="-2.000000" top="2.000000" right="-13.298000"/>
+         <limitY min="-2" max="2"/>
          <curve name="/state/ground_truth/feet/feet.2/velocity/x" color="#a6192e"/>
          <curve name="/state/ground_truth/feet/feet.2/velocity/y" color="#002e72"/>
          <curve name="/state/ground_truth/feet/feet.2/velocity/z" color="#00843d"/>
@@ -114,13 +114,13 @@
     </DockSplitter>
    </Container>
   </Tab>
-  <Tab containers="1" tab_name="Joint Commands Leg 0">
+  <Tab tab_name="Joint Commands Leg 0" containers="1">
    <Container>
-    <DockSplitter sizes="0.350299;0.348802;0.300898" count="3" orientation="-">
+    <DockSplitter sizes="0.35;0.35;0.3" orientation="-" count="3">
      <DockArea name="Feedback Torques (Nm)">
       <plot style="Lines" mode="TimeSeries">
-       <range right="5.002657" bottom="-10.000000" left="0.013688" top="10.000000"/>
-       <limitY max="10" min="-10"/>
+       <range left="-13.862000" bottom="-10.000000" top="10.000000" right="-13.297000"/>
+       <limitY min="-10" max="10"/>
        <curve name="/control/joint_command/leg_commands.0/motor_commands.0/fb_component" color="#a6192e"/>
        <curve name="/control/joint_command/leg_commands.0/motor_commands.1/fb_component" color="#002e72"/>
        <curve name="/control/joint_command/leg_commands.0/motor_commands.2/fb_component" color="#00843d"/>
@@ -128,8 +128,8 @@
      </DockArea>
      <DockArea name="Feedforward Torques (Nm)">
       <plot style="Lines" mode="TimeSeries">
-       <range right="5.002657" bottom="-10.000000" left="0.013688" top="10.000000"/>
-       <limitY max="10" min="-10"/>
+       <range left="-13.862000" bottom="-10.000000" top="10.000000" right="-13.297000"/>
+       <limitY min="-10" max="10"/>
        <curve name="/control/joint_command/leg_commands.0/motor_commands.0/torque_ff" color="#a6192e"/>
        <curve name="/control/joint_command/leg_commands.0/motor_commands.1/torque_ff" color="#002e72"/>
        <curve name="/control/joint_command/leg_commands.0/motor_commands.2/torque_ff" color="#00843d"/>
@@ -137,8 +137,8 @@
      </DockArea>
      <DockArea name="Feedback Ratio">
       <plot style="Lines" mode="TimeSeries">
-       <range right="5.002657" bottom="0.000000" left="0.013688" top="1.000000"/>
-       <limitY max="1" min="0"/>
+       <range left="-13.862000" bottom="0.000000" top="1.000000" right="-13.297000"/>
+       <limitY min="0" max="1"/>
        <curve name="/control/joint_command/leg_commands.0/motor_commands.0/fb_ratio" color="#a6192e"/>
        <curve name="/control/joint_command/leg_commands.0/motor_commands.1/fb_ratio" color="#002e72"/>
        <curve name="/control/joint_command/leg_commands.0/motor_commands.2/fb_ratio" color="#00843d"/>
@@ -147,14 +147,14 @@
     </DockSplitter>
    </Container>
   </Tab>
-  <Tab containers="1" tab_name="GRFs">
+  <Tab tab_name="GRFs" containers="1">
    <Container>
-    <DockSplitter sizes="0.500747;0.499253" count="2" orientation="-">
-     <DockSplitter sizes="0.5;0.5" count="2" orientation="|">
+    <DockSplitter sizes="0.5;0.5" orientation="-" count="2">
+     <DockSplitter sizes="0.5;0.5" orientation="|" count="2">
       <DockArea name="Leg 0">
        <plot style="Lines" mode="TimeSeries">
-        <range right="5.002657" bottom="-150.000000" left="0.013688" top="150.000000"/>
-        <limitY max="150" min="-150"/>
+        <range left="-13.862000" bottom="-150.000000" top="150.000000" right="-13.297000"/>
+        <limitY min="-150" max="150"/>
         <curve name="/control/grfs/vectors.0/x" color="#d5929c"/>
         <curve name="/control/grfs/vectors.0/y" color="#83a3d3"/>
         <curve name="/control/grfs/vectors.0/z" color="#83b89b"/>
@@ -162,19 +162,19 @@
       </DockArea>
       <DockArea name="...">
        <plot style="Lines" mode="TimeSeries">
-        <range right="5.002657" bottom="-150.000000" left="0.013688" top="150.000000"/>
-        <limitY max="150" min="-150"/>
+        <range left="-13.862000" bottom="-150.000000" top="150.000000" right="-13.297000"/>
+        <limitY min="-150" max="150"/>
         <curve name="/control/grfs/vectors.2/x" color="#d5929c"/>
         <curve name="/control/grfs/vectors.2/y" color="#83a3d3"/>
         <curve name="/control/grfs/vectors.2/z" color="#83b89b"/>
        </plot>
       </DockArea>
      </DockSplitter>
-     <DockSplitter sizes="0.502075;0.497925" count="2" orientation="|">
+     <DockSplitter sizes="0.5;0.5" orientation="|" count="2">
       <DockArea name="...">
        <plot style="Lines" mode="TimeSeries">
-        <range right="5.002657" bottom="-150.000000" left="0.013688" top="150.000000"/>
-        <limitY max="150" min="-150"/>
+        <range left="-13.862000" bottom="-150.000000" top="150.000000" right="-13.297000"/>
+        <limitY min="-150" max="150"/>
         <curve name="/control/grfs/vectors.1/x" color="#d5929c"/>
         <curve name="/control/grfs/vectors.1/y" color="#83a3d3"/>
         <curve name="/control/grfs/vectors.1/z" color="#83b89b"/>
@@ -182,8 +182,8 @@
       </DockArea>
       <DockArea name="...">
        <plot style="Lines" mode="TimeSeries">
-        <range right="5.002657" bottom="-150.000000" left="0.013688" top="150.000000"/>
-        <limitY max="150" min="-150"/>
+        <range left="-13.862000" bottom="-150.000000" top="150.000000" right="-13.297000"/>
+        <limitY min="-150" max="150"/>
         <curve name="/control/grfs/vectors.3/x" color="#d5929c"/>
         <curve name="/control/grfs/vectors.3/y" color="#83a3d3"/>
         <curve name="/control/grfs/vectors.3/z" color="#83b89b"/>

@@ -35,12 +35,19 @@ class FunctionTimer {
     /**
      * @brief Stop the timer and report the statistics
      */
-    void report() {
-      stop_time_ = std::chrono::steady_clock::now();
-      std::chrono::duration<double> elapsed = std::chrono::duration_cast<std::chrono::duration<double>>(stop_time_ - start_time_);
-      double current_time = elapsed.count();
-
+    double report() {
+      double current_time = reportSilent();
       printf("Time spent in %s = %.2es\n", function_name_, current_time);
+      return current_time;
+    };
+
+    /**
+     * @brief Stop the timer and report the statistics
+     */
+    double report(int n) {
+      double avg_time = reportSilent()/n;
+      printf("Average time spent in %s = %.2es\n", function_name_, avg_time);
+      return avg_time;
     };
 
     void reportAndRestart() {

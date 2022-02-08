@@ -52,9 +52,13 @@ class LocalFootstepPlanner {
      * @param[in] standing_error_threshold Threshold of body error from desired goal to start stepping
      * @param[in] grf_weight Weight on GRF projection (0 to 1)
      * @param[in] kinematics Kinematics class for computations
+     * @param[in] foothold_search_radius Radius to locally search for valid footholds (m)
+     * @param[in] foothold_obj_threshold Minimum objective function value for valid foothold
+     * @param[in] obj_fun_layer Terrain layer for foothold search
      */
     void setSpatialParams(double ground_clearance, double hip_clearance, double grf_weight,double standing_error_threshold,
-      std::shared_ptr<quad_utils::QuadKD> kinematics);
+      std::shared_ptr<quad_utils::QuadKD> kinematics, double foothold_search_radius, 
+      double foothold_obj_threshold, std::string obj_fun_layer);
 
     /**
      * @brief Transform a vector of foot positions from the world to the body frame
@@ -119,18 +123,20 @@ class LocalFootstepPlanner {
      * @brief Convert the foot positions and contact schedule into ros messages for the foot plan
      * @param[in] contact_schedule Current contact schedule
      * @param[in] foot_positions Foot positions over the horizon
+     * @param[in] current_foot_position Current foot position
+     * @param[in] current_foot_velocity Current foot velocity
      * @param[in] current_plan_index Current index in the global plan
      * @param[in] body_plan Body plan from MPC
-     * @param[in] time_ahead Time duration to the next plan index
+     * @param[in] first_element_duration Time duration to the next plan index
      * @param[out] past_footholds_msg Message for previous footholds
      * @param[out] future_footholds_msg Message for future (planned) footholds
      * @param[out] foot_plan_continuous_msg Message for continuous foot trajectories
      */
-    void computeFootPlanMsgs(
-      const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
-      int current_plan_index, const Eigen::MatrixXd &body_plan, const double &time_ahead, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
-      quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
-      quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
+    void computeFootPlanMsgs(const std::vector<std::vector<bool>> &contact_schedule,
+                             const Eigen::MatrixXd &foot_positions, const Eigen::VectorXd &current_foot_position,
+                             const Eigen::VectorXd &current_foot_velocity, int current_plan_index, const Eigen::MatrixXd &body_plan,
+                             const double &first_element_duration, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+                             quad_msgs::MultiFootPlanDiscrete &future_footholds_msg, quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
 
     inline void printContactSchedule(const std::vector<std::vector<bool>> &contact_schedule) {
       
@@ -206,19 +212,26 @@ class LocalFootstepPlanner {
     void updateContinuousPlan();
 
     /**
-     * @brief Compute the foot state for a swing foot as a function of the previous and next steps
-     * @param[in] foot_position_prev Previous foothold
-     * @param[in] foot_position_next Next foothold
-     * @param[in] swing_phase Phase variable for swing phase (as a fraction)
-     * @param[in] swing_duration Duration of swing (in timesteps)
-     * @param[in] body_plan Body plan of current step from MPC
-     * @param[in] leg_index Leg index
-     * @param[out] foot_position Position of swing foot
-     * @param[out] foot_velocity Velocity of swing foot
+     * @brief Compute the cubic hermite spline
+     * @param[in] pos_prev Previous position
+     * @param[in] vel_prev Previous velocity
+     * @param[in] pos_next Next position
+     * @param[in] vel_next Next velocity
+     * @param[in] phase Interplation phase
+     * @param[in] duration Interplation duration
+     * @param[out] pos Interplated position
+     * @param[out] vel Interplated velocity
+     * @param[out] acc Interplated accleration
      */
-    void computeSwingFootState(const Eigen::Vector3d &foot_position_prev,
-      const Eigen::Vector3d &foot_position_next, double swing_phase, int swing_duration, const Eigen::VectorXd &body_plan, int leg_index,
-      Eigen::Vector3d &foot_position, Eigen::Vector3d &foot_velocity, Eigen::Vector3d &foot_acceleration);
+    void cubicHermiteSpline(double pos_prev, double vel_prev, double pos_next, double vel_next, double phase, double duration,
+                            double &pos, double &vel, double &acc);
+
+    /**
+     * @brief Search locally around foothold for optimal location
+     * @param[in] foot_position_prev Foothold to optimize around
+     * @return Optimized foothold
+     */
+    Eigen::Vector3d getNearestValidFoothold(const Eigen::Vector3d &foot_position);
 
     /**
      * @brief Extract foot data from the matrix
@@ -341,6 +354,17 @@ class LocalFootstepPlanner {
     /// Threshold of body error from desired goal to start stepping
     double standing_error_threshold_ = 0;
 
+    /// Radius to locally search for valid footholds (m)
+    double foothold_search_radius_;
+
+    /// Minimum objective function value for valid foothold
+    double foothold_obj_threshold_;
+
+    /// Terrain layer for foothold search
+    std::string obj_fun_layer_;
+
+    /// Toe radius
+    double toe_radius = 0.02;
 };
 
 

@@ -7,7 +7,9 @@
 TEST(NMPCTest, testTailMPC)
 {
 	int N_;
+	double dt_;
 	ros::param::get("/nmpc_controller/leg/horizon_length", N_);
+	ros::param::get("/nmpc_controller/leg/step_length", dt_);
 
 	std::shared_ptr<NMPCController> leg_planner_ = std::make_shared<NMPCController>(0);
 
@@ -54,7 +56,7 @@ TEST(NMPCTest, testTailMPC)
 	grf_plan_.col(8).fill(11.51 * 9.81 / 2);
 	grf_plan_.col(11).fill(11.51 * 9.81 / 2);
 
-	double time_ahead = 0;
+	double first_element_duration = dt_;
 	bool same_plan_index = false;
 
 	std::chrono::steady_clock::time_point tic, toc;
@@ -69,7 +71,7 @@ TEST(NMPCTest, testTailMPC)
 									 foot_positions_body_,
 									 adpative_contact_schedule_,
 									 ref_ground_height,
-									 time_ahead,
+									 first_element_duration,
 									 same_plan_index,
 									 body_plan_,
 									 grf_plan_);

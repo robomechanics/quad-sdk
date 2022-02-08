@@ -47,7 +47,25 @@ class FastTerrainMap {
     /**
      * @brief Load in a default terrain map 10x10m, four corners with flat terrain
      */
-    void loadDefault();
+    void loadFlat();
+
+    /**
+     * @brief Load in a default terrain map 10x10m, four corners with elevated terrain
+     * @param[in] height Height of elevated terrain
+     */
+    void loadFlatElevated(double height);
+
+    /**
+     * @brief Load in a default terrain map 10x10m, four corners with sloped terrain
+     * @param[in] grade Grade of terrain data (grade = tan(slope))
+     */
+    void loadSlope(double grade);
+
+    /**
+     * @brief Load in a terrain map with a step at x = 0
+     * @param[in] height Height of step
+     */
+    void loadStep(double height);
 
     /**
      * @brief Load data from a grid_map::GridMap object into a FastTerrainMap object
@@ -96,6 +114,14 @@ class FastTerrainMap {
     std::array<double, 3> getSurfaceNormalFiltered(const double x,const double y) const;
 
     /**
+     * @brief Return the filtered surface normal at a requested location
+     * @param[in] double x location
+     * @param[in] double y location
+     * @return std::array<double, 3> surface normal at location [x,y]
+     */
+    Eigen::Vector3d getSurfaceNormalFilteredEigen(const double x,const double y) const;
+
+    /**
      * @brief Return the (approximate) intersection of the height map and a vector. Returned point lies exactly on the map but not entirely on the vector.
      * @param[in] point The point at which the vector originates
      * @param[in] direction The direction along which to project the point
@@ -128,7 +154,7 @@ class FastTerrainMap {
      * @return X index of location
      */
     inline int getXIndex(const double x) const {
-      return std::max(std::min((int)floor((x-x_data_[0])/x_diff_),x_size_),0);
+      return std::max(std::min((int)floor((x-x_data_[0])/x_diff_),x_size_-2),0);
     };
 
     /**
@@ -137,7 +163,7 @@ class FastTerrainMap {
      * @return Y index of location
      */
     inline int getYIndex(const double y) const {
-      return std::max(std::min((int)floor((y-y_data_[0])/y_diff_),y_size_),0);
+      return std::max(std::min((int)floor((y-y_data_[0])/y_diff_),y_size_-2),0);
     };
 
     /// The number of elements in the x direction

@@ -193,28 +193,13 @@ Visualization Manager:
         {}
       Queue Size: 100
       Value: true
-    - Alpha: 1
-      Buffer Length: 1
-      Class: rviz/Path
-      Color: 166; 25; 46
+    - Class: rviz/Marker
       Enabled: true
-      Head Diameter: 0.30000001192092896
-      Head Length: 0.20000000298023224
-      Length: 0.30000001192092896
-      Line Style: Billboards
-      Line Width: 0.05000000074505806
+      Marker Topic: /visualization/global_plan
       Name: Global Plan
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Pose Color: 255; 85; 255
-      Pose Style: None
-      Radius: 0.029999999329447746
-      Shaft Diameter: 0.10000000149011612
-      Shaft Length: 0.10000000149011612
-      Topic: /visualization/global_plan
-      Unreliable: false
+      Namespaces:
+        {}
+      Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
       Enabled: true
@@ -224,10 +209,20 @@ Visualization Manager:
         {}
       Queue Size: 1
       Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualization/local_plan
+      Name: Local Plan Position
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
     - Alpha: 1
-      Buffer Length: 1
-      Class: rviz/Path
-      Color: 25; 255; 0
+      Arrow Length: 0.30000001192092896
+      Axes Length: 0.30000001192092896
+      Axes Radius: 0.009999999776482582
+      Class: rviz/PoseArray
+      Color: 255; 25; 0
       Enabled: true
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
@@ -371,6 +366,22 @@ Visualization Manager:
       Topic: /visualization/foot_3_plan_continuous
       Unreliable: false
       Value: true
+    - Class: rviz/Marker
+      Enabled: false
+      Marker Topic: /grid_map_visualization/surface_normals
+      Name: Surface Normals
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: false
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /global_plan_tree
+      Name: Global Plan Tree
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
@@ -399,25 +410,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 4.41447639465332
+      Distance: 9.732601165771484
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 1.3530219793319702
-        Y: -0.2580118775367737
-        Z: 0.2995302081108093
+        X: 3.473794460296631
+        Y: -0.27908244729042053
+        Z: -0.8033555150032043
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.3603981137275696
+      Pitch: 0.49479660391807556
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.168581008911133
+      Yaw: 4.043581008911133
     Saved: ~
 Window Geometry:
   Displays:
