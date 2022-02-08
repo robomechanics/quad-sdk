@@ -84,7 +84,7 @@ NMPCController::NMPCController(int type)
 
   // app_->Options()->SetIntegerValue("max_iter", 100);
   // app_->Options()->SetStringValue("print_timing_statistics", "yes");
-  // app_->Options()->SetStringValue("linear_solver", "ma57");
+  app_->Options()->SetStringValue("linear_solver", "ma57");
   app_->Options()->SetIntegerValue("print_level", 0);
   // app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
@@ -94,8 +94,8 @@ NMPCController::NMPCController(int type)
   app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-8);
   app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-8);
 
-  app_->Options()->SetNumericValue("max_wall_time", 4.0 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 4.0 * dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 3.0 * dt_);
+  app_->Options()->SetNumericValue("max_cpu_time", 3.0 * dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();
@@ -160,6 +160,31 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
                                    contact_schedule,
                                    state_traj,
                                    control_traj);
+
+  // Eigen::Map<Eigen::MatrixXd> wwwww(mynlp_->w0_.block(0, 0, N_ * (n_ + m_), 0).data(), n_ + m_, N_);
+  // ROS_INFO_STREAM("wsolve");
+  // ROS_INFO_STREAM(wwwww.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> wwww(mynlp_->w0_.block(N_ * (n_ + m_), 0, 2 * N_ * n_, 0).data(), n_, 2 * N_);
+  // ROS_INFO_STREAM("slacksolve");
+  // ROS_INFO_STREAM(wwww.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> zwl(mynlp_->z_L0_.block(0, 0, N_ * (n_ + m_), 0).data(), n_ + m_, N_);
+  // ROS_INFO_STREAM("zwl");
+  // ROS_INFO_STREAM(zwl.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> zsl(mynlp_->z_L0_.block(N_ * (n_ + m_), 0, 2 * N_ * n_, 0).data(), n_, 2 * N_);
+  // ROS_INFO_STREAM("zsl");
+  // ROS_INFO_STREAM(zsl.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> zwu(mynlp_->z_U0_.block(0, 0, N_ * (n_ + m_), 0).data(), n_ + m_, N_);
+  // ROS_INFO_STREAM("zwu");
+  // ROS_INFO_STREAM(zwu.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> zsu(mynlp_->z_U0_.block(N_ * (n_ + m_), 0, 2 * N_ * n_, 0).data(), n_, 2 * N_);
+  // ROS_INFO_STREAM("zsu");
+  // ROS_INFO_STREAM(zsu.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> lambdaaaa(mynlp_->lambda0_.data(), n_ + 16, N_);
+  // ROS_INFO_STREAM("lambdaaaa");
+  // ROS_INFO_STREAM(lambdaaaa.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> gggg(mynlp_->g0_.data(), n_ + 16, N_);
+  // ROS_INFO_STREAM("gggg");
+  // ROS_INFO_STREAM(gggg.transpose().format(CleanFmt));
 
   // if (!success)
   // {
@@ -289,6 +314,16 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
                                  Eigen::MatrixXd &control_traj)
 {
   ApplicationReturnStatus status;
+  app_->Options()->SetNumericValue("mu_init", mynlp_->mu0_);
+  if (mynlp_->warm_start_)
+  {
+    app_->Options()->SetStringValue("warm_start_init_point", "yes");
+  }
+  else
+  {
+    app_->Options()->SetStringValue("warm_start_init_point", "no");
+  }
+
   status = app_->OptimizeTNLP(mynlp_);
 
   Eigen::MatrixXd x(n_, N_);
@@ -309,15 +344,14 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
 
   if (status == Solve_Succeeded)
   {
-    app_->Options()->SetStringValue("warm_start_init_point", "yes");
-    app_->Options()->SetNumericValue("mu_init", 1e-6);
+    mynlp_->warm_start_ = true;
 
     // return true;
   }
   else
   {
-    app_->Options()->SetStringValue("warm_start_init_point", "no");
-    app_->Options()->SetNumericValue("mu_init", 1e-1);
+    mynlp_->mu0_ = 1e-1;
+    mynlp_->warm_start_ = false;
     require_init_ = true;
 
     ROS_WARN_STREAM(param_ns_ << " solving fail");

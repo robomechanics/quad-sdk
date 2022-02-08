@@ -1538,7 +1538,7 @@ SOFTWARE.
       <velocity_decay/>
     </link>
     <link name='tail_link_1'>
-      <pose frame=''>0 0 0.38265 0 -0 0</pose>
+      <pose frame=''>0 0 0.3873 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <mass>1e-03</mass>
@@ -1573,7 +1573,7 @@ SOFTWARE.
          <geometry>
           <cylinder>
             <radius>0.02</radius>
-            <length>0.6613</length>
+            <length>0.6706</length>
           </cylinder>
         </geometry>
         <material>
@@ -1595,7 +1595,7 @@ SOFTWARE.
       <velocity_decay/>
     </link>
     <link name='tail_mass'>
-      <pose frame=''>0 0 0.7133 0 -0 0</pose>
+      <pose frame=''>0 0 0.7226 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <mass>0.2764</mass>
@@ -1673,7 +1673,7 @@ SOFTWARE.
     <joint name='body_tail_joint_1' type='revolute'>
       <child>tail_link_1</child>
       <parent>tail_link_0</parent>
-      <pose frame=''>0 0 -0.33065 0 -0 0</pose>
+      <pose frame=''>0 0 -0.3353 0 -0 0</pose>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>

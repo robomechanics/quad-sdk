@@ -1040,9 +1040,9 @@
   </gazebo>
   <link name="tail_link_1">
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0.33065"/>
+      <origin rpy="0 0 0" xyz="0 0 0.3353"/>
       <geometry>
-        <cylinder length="0.6613" radius="0.02"/>
+        <cylinder length="0.6706" radius="0.02"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -1113,8 +1113,7 @@
   <joint name="tail_link_mass_joint" type="fixed">
     <parent link="tail_link_1"/>
     <child link="tail_mass"/>
-    <origin xyz="0 0 0.6613"/>
+    <origin xyz="0 0 0.6706"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
 </robot>
-

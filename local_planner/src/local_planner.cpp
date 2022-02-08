@@ -998,6 +998,23 @@ void LocalPlanner::contactSensing()
       foot_pos_body_miss_contact_.segment(3 * i, 3) = tmp_foot_pos.segment(3 * i, 3) - body_plan_.block(0, 0, 1, 3).transpose();
     }
 
+    // // Miss to contact
+    // if (contact_schedule_.at(0).at(i) &&
+    //     !contact_sensing_msg_->data.at(i) &&
+    //     contact_sensing_.at(i))
+    // {
+    //   ROS_WARN_STREAM("Local planner: miss to contact leg: " << i);
+    //   contact_sensing_.at(i) = false;
+    // }
+
+    // // Miss to swing
+    // if (contact_sensing_.at(i) &&
+    //     !contact_schedule_.at(0).at(i))
+    // {
+    //   ROS_WARN_STREAM("Local planner: miss to swing leg: " << i);
+    //   contact_sensing_.at(i) = false;
+    // }
+
     // Miss to contact or swing
     if (!contact_sensing_msg_->data.at(i) &&
         contact_sensing_.at(i))

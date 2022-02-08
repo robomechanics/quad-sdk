@@ -81,6 +81,7 @@ SOFTWARE.
 
   <group if="$(arg tail)">
     <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_tail.urdf" />
+    <!-- <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_meshes_tail.urdf" /> -->
     <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit_tail.sdf" />
     <rosparam file="$(find gazebo_scripts)/config/spirit_control_tail.yaml" command="load"/>
   </group>

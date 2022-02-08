@@ -140,6 +140,11 @@ quadNLP::quadNLP(
    z_U0_.fill(1);
    lambda0_ = Eigen::MatrixXd((g_ + 2 * n_) * N_, 1);
    lambda0_.fill(0);
+   g0_ = Eigen::MatrixXd(g_ * N_, 1);
+   g0_.fill(0);
+   mu0_ = 1e-1;
+
+   warm_start_ = false;
 
    for (size_t i = 0; i < N_; i++)
    {
@@ -929,6 +934,11 @@ void quadNLP::finalize_solution(
 
    Eigen::Map<const Eigen::MatrixXd> lambda_matrix(lambda, m, 1);
    lambda0_ = lambda_matrix;
+
+   Eigen::Map<const Eigen::MatrixXd> g_matrix(g, m, 1);
+   g0_ = g_matrix;
+
+   mu0_ = ip_data->curr_mu();
 }
 
 void quadNLP::shift_initial_guess()
@@ -948,10 +958,10 @@ void quadNLP::shift_initial_guess()
    }
 
    // New contact
-   if (!(contact_sequence_.col(N_ - 1) - contact_sequence_.col(N_ - 2)).isMuchSmallerThan(1e-3))
+   if ((contact_sequence_.col(N_ - 1) - contact_sequence_.col(N_ - 2)).norm() > 1e-3)
    {
       // There's a dual pair
-      if ((Eigen::MatrixXi::Ones(4, 1) - (contact_sequence_.col(N_ - 1)) - contact_sequence_.col(N_ - 2)).isMuchSmallerThan(1e-3))
+      if ((Eigen::MatrixXi::Ones(4, 1) - (contact_sequence_.col(N_ - 1)) - contact_sequence_.col(N_ - 2)).norm() < 1e-3)
       {
          Eigen::MatrixXd trans = Eigen::MatrixXd::Zero(12, 12);
          trans.block(0, 3, 3, 3).diagonal() << 1, 1, 1;
@@ -1002,49 +1012,14 @@ void quadNLP::update_solver(
    // Local planner has row as N horizon and col as position
    feet_location_ = -foot_positions.transpose();
 
+   Eigen::MatrixXi contact_sequence_prev = contact_sequence_;
+
    // Update contact sequence
    // Local planner has outer as N and inner as boolean contact
    for (size_t i = 0; i < contact_schedule.size(); i++)
    {
       for (size_t j = 0; j < contact_schedule.front().size(); j++)
       {
-         // Check if the contact sensing modify the nominal contact schedule, if so, we reinitialize the warm start guess
-         if (same_plan_index)
-         {
-            // If we are still in the same plan index, compare contact schedule and contact sequence
-            if (!((contact_schedule.at(i).at(j) && contact_sequence_(j, i) == 1) ||
-                  !(contact_schedule.at(i).at(j) || contact_sequence_(j, i) == 1)))
-            {
-               w0_.block(i * (n_ + m_) + leg_input_start_idx_ + j * 3, 0, 3, 1).fill(0);
-               z_L0_.block(i * (n_ + m_) + leg_input_start_idx_ + j * 3, 0, 3, 1).fill(1);
-               z_U0_.block(i * (n_ + m_) + leg_input_start_idx_ + j * 3, 0, 3, 1).fill(1);
-
-               if (contact_schedule.at(i).at(j))
-               {
-                  // Compute the number of contacts
-                  double num_contacts = std::accumulate(contact_schedule.at(i).begin(), contact_schedule.at(i).end(), 0.0);
-                  w0_(i * (n_ + m_) + leg_input_start_idx_ + 3 * j + 2, 0) = mass_ * grav_ / num_contacts;
-               }
-            }
-         }
-         else if (i > 0)
-         {
-            if (!((contact_schedule.at(i - 1).at(j) && contact_sequence_(j, i) == 1) ||
-                  !(contact_schedule.at(i - 1).at(j) || contact_sequence_(j, i) == 1)))
-            {
-               w0_.block(i * (n_ + m_) + leg_input_start_idx_ + j * 3, 0, 3, 1).fill(0);
-               z_L0_.block(i * (n_ + m_) + leg_input_start_idx_ + j * 3, 0, 3, 1).fill(1);
-               z_U0_.block(i * (n_ + m_) + leg_input_start_idx_ + j * 3, 0, 3, 1).fill(1);
-
-               if (contact_schedule.at(i - 1).at(j))
-               {
-                  // Compute the number of contacts
-                  double num_contacts = std::accumulate(contact_schedule.at(i - 1).begin(), contact_schedule.at(i - 1).end(), 0.0);
-                  w0_(i * (n_ + m_) + leg_input_start_idx_ + 3 * j + 2, 0) = mass_ * grav_ / num_contacts;
-               }
-            }
-         }
-
          if (contact_schedule.at(i).at(j))
          {
             contact_sequence_(j, i) = 1;
@@ -1052,6 +1027,69 @@ void quadNLP::update_solver(
          else
          {
             contact_sequence_(j, i) = 0;
+         }
+      }
+   }
+
+   for (size_t i = 0; i < N_; i++)
+   {
+      if (same_plan_index)
+      {
+         if ((contact_sequence_prev.col(i) - contact_sequence_.col(i)).norm() > 1e-3)
+         {
+            w0_.block(i * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1).fill(0);
+            z_L0_.block(i * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1).fill(1);
+            z_U0_.block(i * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1).fill(1);
+
+            // Compute the number of contacts
+            double num_contacts = contact_sequence_.col(i).sum();
+
+            // If there are some contacts, set the nominal input accordingly
+            if (num_contacts > 0)
+            {
+               for (size_t j = 0; j < 4; j++)
+               {
+                  if (contact_sequence_(j, i) == 1)
+                  {
+                     w0_(i * (n_ + m_) + leg_input_start_idx_ + 3 * j + 2, 0) = mass_ * grav_ / num_contacts;
+                  }
+               }
+            }
+
+            mu0_ = 1e-1;
+            warm_start_ = false;
+         }
+      }
+      else
+      {
+         if (i == N_ - 1)
+         {
+            continue;
+         }
+
+         if ((contact_sequence_prev.col(i + 1) - contact_sequence_.col(i)).norm() > 1e-3)
+         {
+            w0_.block((i + 1) * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1).fill(0);
+            z_L0_.block((i + 1) * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1).fill(1);
+            z_U0_.block((i + 1) * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1).fill(1);
+
+            // Compute the number of contacts
+            double num_contacts = contact_sequence_.col(i).sum();
+
+            // If there are some contacts, set the nominal input accordingly
+            if (num_contacts > 0)
+            {
+               for (size_t j = 0; j < 4; j++)
+               {
+                  if (contact_sequence_(j, i) == 1)
+                  {
+                     w0_((i + 1) * (n_ + m_) + leg_input_start_idx_ + 3 * j + 2, 0) = mass_ * grav_ / num_contacts;
+                  }
+               }
+            }
+
+            mu0_ = 1e-1;
+            warm_start_ = false;
          }
       }
    }

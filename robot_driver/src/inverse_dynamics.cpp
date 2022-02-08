@@ -130,6 +130,26 @@ bool InverseDynamicsController::computeLegCommandArray(
         grf_array.segment(3*i, 3) << 0, 0, 0;
       }
 
+      // // Miss to contact
+      // if (last_contact_sensing_msg_.data.at(i) &&
+      //     contact_mode.at(i) &&
+      //     last_grf_sensor_msg_->contact_states.at(i) &&
+      //     last_grf_sensor_msg_->vectors.at(i).z >= 5)
+      // {
+      //   ROS_WARN_STREAM("Leg controller: miss to contact leg: " << i);
+
+      //   last_contact_sensing_msg_.data.at(i) = false;
+      // }
+
+      // // Miss to swing
+      // if (last_contact_sensing_msg_.data.at(i) &&
+      //     !contact_mode.at(i))
+      // {
+      //   ROS_WARN_STREAM("Leg controller: miss to swing leg: " << i);
+
+      //   last_contact_sensing_msg_.data.at(i) = false;
+      // }
+
       // Miss to contact or swing
       if (last_contact_sensing_msg_.data.at(i) &&
           last_grf_sensor_msg_->contact_states.at(i) &&

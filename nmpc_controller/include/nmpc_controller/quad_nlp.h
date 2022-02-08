@@ -8,6 +8,7 @@
 #define __quadNLP_HPP__
 
 #include "IpTNLP.hpp"
+#include <IpIpoptData.hpp>
 
 #include "nmpc_controller/eval_g_leg.h"
 #include "nmpc_controller/eval_jac_g_leg.h"
@@ -65,7 +66,11 @@ public:
     Eigen::MatrixXd ground_height_;
 
     // Initial guess
-    Eigen::MatrixXd w0_, z_L0_, z_U0_, lambda0_;
+    Eigen::MatrixXd w0_, z_L0_, z_U0_, lambda0_, g0_;
+
+    double mu0_;
+
+    bool warm_start_;
 
     // State reference for computing cost
     Eigen::MatrixXd x_reference_;
