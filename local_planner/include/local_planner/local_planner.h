@@ -151,6 +151,9 @@ private:
   // Current positions of each foot
   Eigen::VectorXd current_foot_positions_world_;
 
+  // Current velocities of each foot
+  Eigen::VectorXd current_foot_velocities_world_;
+
   // Current positions of each foot
   Eigen::VectorXd current_foot_positions_body_;
 
@@ -252,10 +255,13 @@ private:
   Eigen::Vector3d stand_pose_;
 
   /// Time duration to the next plan index
-  double time_ahead_;
+  double first_element_duration_;
 
   /// If the current solving is duplicated in the same index
   bool same_plan_index_;
+
+  /// Toe radius
+  double toe_radius = 0.02;
 };
 
 

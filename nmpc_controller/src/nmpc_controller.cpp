@@ -118,7 +118,7 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
                                     const Eigen::MatrixXd &foot_positions,
                                     const std::vector<std::vector<bool>> &contact_schedule,
                                     const Eigen::VectorXd &ref_ground_height,
-                                    const double &time_ahead,
+                                    const double &first_element_duration,
                                     const bool &same_plan_index,
                                     Eigen::MatrixXd &state_traj,
                                     Eigen::MatrixXd &control_traj)
@@ -130,7 +130,7 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
       foot_positions,
       contact_schedule,
       ref_ground_height.tail(N_),
-      time_ahead);
+      first_element_duration);
   // Only shift the warm start if we get a new plan index
   if (!same_plan_index)
   {
@@ -288,7 +288,7 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
     app_->Options()->SetStringValue("warm_start_init_point", "yes");
     app_->Options()->SetNumericValue("mu_init", 1e-6);
 
-    ROS_INFO_STREAM(param_ns_ << " solving success");
+    // ROS_INFO_STREAM_THROTTLE(0.1,param_ns_ << " solving success");
     return true;
   }
   else

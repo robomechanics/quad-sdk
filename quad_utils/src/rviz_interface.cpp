@@ -70,9 +70,8 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
     &RVizInterface::footPlanContinuousCallback, this);
 
   // Setup plan visual pubs
-  global_plan_viz_pub_ = nh_.advertise<nav_msgs::Path>(global_plan_viz_topic,1);
-  local_plan_viz_pub_ = nh_.advertise<nav_msgs::Path>(local_plan_viz_topic,1);
-    (local_plan_grf_viz_topic,1);
+  global_plan_viz_pub_ = nh_.advertise<visualization_msgs::Marker>(global_plan_viz_topic,1);
+  local_plan_viz_pub_ = nh_.advertise<visualization_msgs::Marker>(local_plan_viz_topic,1);
   global_plan_grf_viz_pub_ = nh_.advertise<visualization_msgs::MarkerArray>
     (global_plan_grf_viz_topic,1);
   local_plan_grf_viz_pub_ = nh_.advertise<visualization_msgs::MarkerArray>
@@ -129,8 +128,15 @@ void RVizInterface::robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg,
 {
 
   // Initialize Path message to visualize body plan
-  nav_msgs::Path body_plan_viz;
+  // nav_msgs::Path body_plan_viz;
+  visualization_msgs::Marker body_plan_viz;
   body_plan_viz.header = msg->header;
+  // body_plan_viz.ns = "plan_viz";
+  body_plan_viz.action = visualization_msgs::Marker::ADD;
+  body_plan_viz.pose.orientation.w = 1;
+  body_plan_viz.id = 5;
+  body_plan_viz.type = visualization_msgs::Marker::LINE_STRIP;
+  body_plan_viz.scale.x = 0.03;
 
   // Construct MarkerArray for body plan orientation
   geometry_msgs::PoseArray body_plan_ori_viz;
@@ -146,8 +152,32 @@ void RVizInterface::robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg,
     pose_stamped.header = msg->states[i].header;
     pose_stamped.pose = msg->states[i].body.pose;
 
+    std_msgs::ColorRGBA color;
+    color.a = 1;
+    if (pub_id == LOCAL) {
+      color.g = 1.0;
+    } else {
+      if (msg->primitive_ids[i] == FLIGHT) {
+        color.r = (float) back_left_color_[0]/255.0;
+        color.g = (float) back_left_color_[1]/255.0;
+        color.b = (float) back_left_color_[2]/255.0;
+      } else if (msg->primitive_ids[i] == LEAP_STANCE || msg->primitive_ids[i] == LAND_STANCE) {
+        color.r = (float) front_right_color_[0]/255.0;
+        color.g = (float) front_right_color_[1]/255.0;
+        color.b = (float) front_right_color_[2]/255.0;
+      } else if (msg->primitive_ids[i] == CONNECT) {
+        color.r = (float) front_left_color_[0]/255.0;
+        color.g = (float) front_left_color_[1]/255.0;
+        color.b = (float) front_left_color_[2]/255.0;
+      } else {
+        ROS_WARN_THROTTLE(1, "Invalid primitive ID received in RViz interface");
+      }
+    }
+    body_plan_viz.colors.push_back(color);
+    body_plan_viz.points.push_back(msg->states[i].body.pose.position);
+
     // Add to the path message
-    body_plan_viz.poses.push_back(pose_stamped);
+    // body_plan_viz.poses.push_back(pose_stamped);
 
     // Add poses to the orientation message
     if (i % orientation_subsample_interval == 0) {
@@ -323,11 +353,12 @@ void RVizInterface::footPlanDiscreteCallback(
   points.action = visualization_msgs::Marker::ADD;
   points.pose.orientation.w = 1.0;
   points.id = 0;
-  points.type = visualization_msgs::Marker::POINTS;
+  points.type = visualization_msgs::Marker::SPHERE_LIST;
 
   // POINTS markers use x and y scale for width/height respectively
-  points.scale.x = 0.1;
-  points.scale.y = 0.1;
+  points.scale.x = 0.05;
+  points.scale.y = 0.05;
+  points.scale.z = 0.05;
 
   // Loop through each foot
   int num_feet = msg->feet.size();

@@ -40,7 +40,7 @@ void FastTerrainMap::loadData(int x_size,
   nz_data_filt_ = nz_data_filt;
 }
 
-void FastTerrainMap::loadDefault(){
+void FastTerrainMap::loadFlat(){
 
   int x_size = 2;
   int y_size = 2;
@@ -53,9 +53,109 @@ void FastTerrainMap::loadDefault(){
   std::vector<std::vector<double>> ny_data = z_data;
   std::vector<std::vector<double>> nz_data = {nz_data_vec, nz_data_vec};
   std::vector<std::vector<double>> z_data_filt = z_data;
-  std::vector<std::vector<double>> nx_data_filt = z_data;
-  std::vector<std::vector<double>> ny_data_filt = z_data;
+  std::vector<std::vector<double>> nx_data_filt = nx_data;
+  std::vector<std::vector<double>> ny_data_filt = ny_data;
   std::vector<std::vector<double>> nz_data_filt = nz_data;
+
+  this->loadData(x_size, y_size, x_data, y_data, z_data, nx_data, ny_data, nz_data,
+    z_data_filt, nx_data_filt, ny_data_filt, nz_data_filt);
+}
+
+void FastTerrainMap::loadFlatElevated(double height){
+
+  int x_size = 2;
+  int y_size = 2;
+  std::vector<double> x_data = {-5, 5};
+  std::vector<double> y_data = {-5, 5};
+  std::vector<double> z_data_vec = {height, height};
+  std::vector<double> nx_data_vec = {0, 0};
+  std::vector<double> nz_data_vec = {1, 1};
+  std::vector<std::vector<double>> z_data = {z_data_vec, z_data_vec};
+  std::vector<std::vector<double>> nx_data = {nx_data_vec, nx_data_vec};
+  std::vector<std::vector<double>> ny_data = nx_data;
+  std::vector<std::vector<double>> nz_data = {nz_data_vec, nz_data_vec};
+  std::vector<std::vector<double>> z_data_filt = z_data;
+  std::vector<std::vector<double>> nx_data_filt = nx_data;
+  std::vector<std::vector<double>> ny_data_filt = ny_data;
+  std::vector<std::vector<double>> nz_data_filt = nz_data;
+
+  this->loadData(x_size, y_size, x_data, y_data, z_data, nx_data, ny_data, nz_data,
+    z_data_filt, nx_data_filt, ny_data_filt, nz_data_filt);
+}
+
+void FastTerrainMap::loadSlope(double grade){
+
+  double slope = atan(grade);
+  int x_size = 2;
+  int y_size = 2;
+  double length = 5;
+  std::vector<double> x_data = {-length, length};
+  std::vector<double> y_data = {-length, length};
+  std::vector<double> z_data_vec_1 = {-length*grade, -length*grade};
+  std::vector<double> z_data_vec_2 = {length*grade, length*grade};
+  std::vector<double> nx_data_vec = {-sin(slope), -sin(slope)};
+  std::vector<double> ny_data_vec = {0, 0};
+  std::vector<double> nz_data_vec = {cos(slope), cos(slope)};
+  std::vector<std::vector<double>> z_data = {z_data_vec_1, z_data_vec_2};
+  std::vector<std::vector<double>> nx_data = {nx_data_vec, nx_data_vec};
+  std::vector<std::vector<double>> ny_data = {ny_data_vec, ny_data_vec};
+  std::vector<std::vector<double>> nz_data = {nz_data_vec, nz_data_vec};
+  std::vector<std::vector<double>> z_data_filt = {z_data_vec_1, z_data_vec_2};
+  std::vector<std::vector<double>> nx_data_filt = {nx_data_vec, nx_data_vec};
+  std::vector<std::vector<double>> ny_data_filt = {ny_data_vec, ny_data_vec};
+  std::vector<std::vector<double>> nz_data_filt = {nz_data_vec, nz_data_vec};
+
+  this->loadData(x_size, y_size, x_data, y_data, z_data, nx_data, ny_data, nz_data,
+    z_data_filt, nx_data_filt, ny_data_filt, nz_data_filt);
+}
+
+void FastTerrainMap::loadStep(double height){
+
+  double res = 0.05;
+  double length = 2;
+  int x_size = length*2/res + 1;
+  int y_size = x_size;
+
+  std::vector<double> x_data;
+  std::vector<double> y_data;
+  std::vector<std::vector<double>> z_data(x_size);
+  std::vector<std::vector<double>> nx_data(x_size);
+  std::vector<std::vector<double>> ny_data(x_size);
+  std::vector<std::vector<double>> nz_data(x_size);
+  std::vector<std::vector<double>> z_data_filt(x_size);
+  std::vector<std::vector<double>> nx_data_filt(x_size);
+  std::vector<std::vector<double>> ny_data_filt(x_size);
+  std::vector<std::vector<double>> nz_data_filt(x_size);
+
+  for (int i = 0; i < x_size; i++) {
+
+    double x = i*res - length;
+    x_data.push_back(i*res - length);
+    y_data.push_back(i*res - length);
+
+    z_data[i].resize(y_size);
+    nx_data[i].resize(y_size);
+    ny_data[i].resize(y_size);
+    nz_data[i].resize(y_size);
+    z_data_filt[i].resize(y_size);
+    nx_data_filt[i].resize(y_size);
+    ny_data_filt[i].resize(y_size);
+    nz_data_filt[i].resize(y_size);
+
+    for (int j = 0; j < y_size; j++) {
+      double y = j*res - length;
+      z_data[i][j] = (x>0) ? height : 0;
+      nx_data[i][j] = 0;
+      ny_data[i][j] = 0;
+      nz_data[i][j] = 1;
+
+    }
+  }
+  
+  z_data_filt = z_data;
+  nx_data_filt = nx_data;
+  ny_data_filt = ny_data;
+  nz_data_filt = nz_data;
 
   this->loadData(x_size, y_size, x_data, y_data, z_data, nx_data, ny_data, nz_data,
     z_data_filt, nx_data_filt, ny_data_filt, nz_data_filt);
@@ -164,15 +264,9 @@ bool FastTerrainMap::isInRange(const double x, const double y) const {
 
 double FastTerrainMap::getGroundHeight(const double x, const double y) const {
   // quad_utils::FunctionTimer timer(__FUNCTION__);
-  
   int ix = getXIndex(x);
   int iy = getYIndex(y);
-  // std::cout << "x =  " << x << std::endl;
-  // std::cout << "x0 = " << x_data_[0] << std::endl;
-  // std::cout << "x_data_.size() = " << x_data_.size() << std::endl;
-  // std::cout << "y_data_.size() = " << y_data_.size() << std::endl;
-  // std::cout << "ix = " << ix << std::endl;
-  // std::cout << "iy = " << iy << std::endl;
+  
   double x1 = x_data_[ix];
   double x2 = x_data_[ix+1];
   double y1 = y_data_[iy];
@@ -247,6 +341,40 @@ std::array<double, 3> FastTerrainMap::getSurfaceNormal(const double x, const dou
 std::array<double, 3> FastTerrainMap::getSurfaceNormalFiltered(const double x, const double y) const
 {
   std::array<double, 3> surf_norm;
+
+  int ix = getXIndex(x);
+  int iy = getYIndex(y);
+  double x1 = x_data_[ix];
+  double x2 = x_data_[ix+1];
+  double y1 = y_data_[iy];
+  double y2 = y_data_[iy+1];
+
+  double fx_x1y1 = nx_data_filt_[ix][iy];
+  double fx_x1y2 = nx_data_filt_[ix][iy+1];
+  double fx_x2y1 = nx_data_filt_[ix+1][iy];
+  double fx_x2y2 = nx_data_filt_[ix+1][iy+1];
+
+  surf_norm[0] = 1.0/((x2-x1)*(y2-y1))*(fx_x1y1*(x2-x)*(y2-y) + fx_x2y1*(x-x1)*(y2-y) + fx_x1y2*(x2-x)*(y-y1) + fx_x2y2*(x-x1)*(y-y1));
+
+  double fy_x1y1 = ny_data_filt_[ix][iy];
+  double fy_x1y2 = ny_data_filt_[ix][iy+1];
+  double fy_x2y1 = ny_data_filt_[ix+1][iy];
+  double fy_x2y2 = ny_data_filt_[ix+1][iy+1];
+
+  surf_norm[1] = 1.0/((x2-x1)*(y2-y1))*(fy_x1y1*(x2-x)*(y2-y) + fy_x2y1*(x-x1)*(y2-y) + fy_x1y2*(x2-x)*(y-y1) + fy_x2y2*(x-x1)*(y-y1));
+
+  double fz_x1y1 = nz_data_filt_[ix][iy];
+  double fz_x1y2 = nz_data_filt_[ix][iy+1];
+  double fz_x2y1 = nz_data_filt_[ix+1][iy];
+  double fz_x2y2 = nz_data_filt_[ix+1][iy+1];
+
+  surf_norm[2] = 1.0/((x2-x1)*(y2-y1))*(fz_x1y1*(x2-x)*(y2-y) + fz_x2y1*(x-x1)*(y2-y) + fz_x1y2*(x2-x)*(y-y1) + fz_x2y2*(x-x1)*(y-y1));
+  return surf_norm;
+}
+
+Eigen::Vector3d FastTerrainMap::getSurfaceNormalFilteredEigen(const double x, const double y) const
+{
+  Eigen::Vector3d surf_norm;
 
   int ix = getXIndex(x);
   int iy = getYIndex(y);

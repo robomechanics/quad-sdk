@@ -9,7 +9,7 @@ TerrainMapPublisher::TerrainMapPublisher(ros::NodeHandle nh)
   // Load rosparams from parameter server
   std::string terrain_map_topic, image_topic;
 
-  nh.param<std::string>("topics/terrain_map", terrain_map_topic, "/terrain_map");
+  nh.param<std::string>("topics/terrain_map_raw", terrain_map_topic, "/terrain_map_raw");
   nh.param<std::string>("map_frame",map_frame_,"map");
   nh.param<double>("terrain_map_publisher/update_rate", update_rate_, 10);
   nh.param<double>("terrain_map_publisher/obstacle_x", obstacle_.x, 2.0);
@@ -56,7 +56,7 @@ void TerrainMapPublisher::createMap() {
 
   // Set initial map parameters and geometry
   terrain_map_.setFrameId(map_frame_);
-  terrain_map_.setGeometry(grid_map::Length(12.0, 12.0), resolution_,
+  terrain_map_.setGeometry(grid_map::Length(24.0, 12.0), resolution_,
     grid_map::Position(-0.5*resolution_, -0.5*resolution_));
   ROS_INFO("Created map with size %f x %f m (%i x %i cells).",
     terrain_map_.getLength().x(), terrain_map_.getLength().y(),
