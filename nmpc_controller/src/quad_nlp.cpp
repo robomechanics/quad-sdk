@@ -117,8 +117,11 @@ quadNLP::quadNLP(
 
    Q_ = Q;
    R_ = R;
-   Q_factor_ = Q_factor;
-   R_factor_ = R_factor;
+   Q_factor_base_ = Q_factor;
+   R_factor_base_ = R_factor;
+   Q_factor_ = Q_factor_base_;
+   R_factor_ = R_factor_base_;
+   
    panic_weights_ = panic_weights;
 
    // feet location initialized by nominal position
@@ -1101,6 +1104,10 @@ void quadNLP::update_solver(
    // Update reference trajectory
    // Local planner has row as N+1 horizon and col as states
    x_reference_ = ref_traj.transpose();
+
+   // Reset the state weighting factors
+   Q_factor_ = Q_factor_base_;
+   R_factor_ = R_factor_base_;
 }
 
 void quadNLP::update_solver(

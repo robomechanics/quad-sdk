@@ -59,6 +59,7 @@ public:
                       const Eigen::VectorXd &ref_ground_height,
                       const double &first_element_duration,
                       const bool &same_plan_index,
+                      const Eigen::VectorXi &ref_primitive_id,
                       const Eigen::VectorXi &complexity_schedule,
                       Eigen::MatrixXd &state_traj,
                       Eigen::MatrixXd &control_traj);
@@ -106,6 +107,9 @@ private:
   double dt_;
 
   int type_;
+
+  /// Weight for takeoff state
+  double takeoff_state_weight_factor_;
 
   std::string param_ns_;
 };

@@ -94,7 +94,7 @@ void LocalFootstepPlanner::computeStanceContactSchedule(int current_plan_index,
 }
 
 void LocalFootstepPlanner::computeContactSchedule(int current_plan_index,
-  Eigen::VectorXd current_state, Eigen::MatrixXd ref_body_plan,
+  Eigen::VectorXd current_state, Eigen::MatrixXd ref_body_plan, Eigen::VectorXi ref_primitive_plan,
   std::vector<std::vector<bool>> &contact_schedule) {
 
   // Compute the current phase in the nominal contact schedule
@@ -104,6 +104,20 @@ void LocalFootstepPlanner::computeContactSchedule(int current_plan_index,
   contact_schedule.resize(horizon_length_);
   for (int i = 0; i < horizon_length_; i++) {
     contact_schedule[i] = nominal_contact_schedule_[(i + phase) % period_];
+  }
+  // Check the primitive plan to see if there's standing or flight phase
+  for (size_t i = 0; i < horizon_length_; i++)
+  {
+    // Leaping and landing
+    if (ref_primitive_plan(i) == 1 || ref_primitive_plan(i) == 3)
+    {
+      std::fill(contact_schedule.at(i).begin(), contact_schedule.at(i).end(), true);
+    }
+    // Flight
+    else if (ref_primitive_plan(i) == 2)
+    {
+      std::fill(contact_schedule.at(i).begin(), contact_schedule.at(i).end(), false);
+    }
   }
 }
 
@@ -122,14 +136,15 @@ void LocalFootstepPlanner::cubicHermiteSpline(double pos_prev, double vel_prev, 
   pos = pos_prev + vel_prev * t + (t3 * (2 * pos_prev - 2 * pos_next + duration * vel_prev + duration * vel_next)) / duration3 - (t2 * (3 * pos_prev - 3 * pos_next + 2 * duration * vel_prev + duration * vel_next)) / duration2;
   vel = vel_prev + (3 * t2 * (2 * pos_prev - 2 * pos_next + duration * vel_prev + duration * vel_next)) / duration3 - (2 * t * (3 * pos_prev - 3 * pos_next + 2 * duration * vel_prev + duration * vel_next)) / duration2;
   acc = (6 * t * (2 * pos_prev - 2 * pos_next + duration * vel_prev + duration * vel_next)) / duration3 - (2 * (3 * pos_prev - 3 * pos_next + 2 * duration * vel_prev + duration * vel_next)) / duration2;
-
-  // When the duration get shrinked, the acceleration might overshoot, hundred is a good bound, the nominal maximum acceleration should be around twenty
-  acc = std::min(std::max(acc, -5e1), 5e1);
 }
 
-void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan,
-  const Eigen::MatrixXd &grf_plan, const std::vector<std::vector<bool>> &contact_schedule,
-  const Eigen::MatrixXd &ref_body_plan, Eigen::MatrixXd &foot_positions) {
+void LocalFootstepPlanner::computeFootPositions(
+  const Eigen::MatrixXd &body_plan,
+  const Eigen::MatrixXd &grf_plan, 
+  const std::vector<std::vector<bool>> &contact_schedule,
+  const Eigen::MatrixXd &ref_body_plan, 
+  const Eigen::VectorXi &ref_primitive_plan_, 
+  Eigen::MatrixXd &foot_positions) {
 
   // Loop through each foot
   for (int j=0; j<num_feet_; j++) {
@@ -140,6 +155,7 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
     // Loop through the horizon to identify instances of touchdown
     for (int i = 1; i < contact_schedule.size(); i++) {
 
+      // if (isNewContact(contact_schedule, i, j) || ref_primitive_plan_(i) == 2) {
       if (isNewContact(contact_schedule, i, j)) {
       
         // Declare foot position vectors
@@ -187,11 +203,19 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         //   (1-grf_weight_)*(hip_position_midstance + vel_tracking);
         foot_position_nominal = hip_position_midstance + centrifugal + vel_tracking;
         grid_map::Position foot_position_grid_map = {foot_position_nominal.x(), foot_position_nominal.y()};
-        foot_position_nominal.z() = terrain_grid_.atPosition("z", foot_position_grid_map,
-          grid_map::InterpolationMethods::INTER_NEAREST);
+
+        // Toe has 20cm radius so we need to shift the foot height from terrain
+        foot_position_nominal.z() = terrain_grid_.atPosition("z", foot_position_grid_map, grid_map::InterpolationMethods::INTER_NEAREST) + toe_radius;
 
         // Optimize the foothold location to get the final position
         foot_position = getNearestValidFoothold(foot_position_nominal);
+
+        // TODO Check this
+        // // We compute the flight phase foot position so that it will lift its foot
+        // if (ref_primitive_plan_(i) == 0)
+        // {
+        //   foot_position(2) = std::max(body_plan(i, 2) - 0.3, 0.);
+        // }
 
         // Store foot position in the Eigen matrix
         foot_positions.block<1,3>(i,3*j) = foot_position;    
@@ -206,8 +230,11 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
 }
 
 void LocalFootstepPlanner::computeFootPlanMsgs(
-  const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions, const Eigen::VectorXd &current_foot_position, const Eigen::VectorXd &current_foot_velocity,
-  int current_plan_index, const Eigen::MatrixXd &body_plan, const double &first_element_duration, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+  const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
+  const Eigen::VectorXd &current_foot_position, const Eigen::VectorXd &current_foot_velocity,
+  int current_plan_index, const Eigen::VectorXi &ref_primitive_plan_,
+  const Eigen::MatrixXd &body_plan, const double &first_element_duration,
+  quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
   quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
   quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg) {
 
@@ -257,18 +284,9 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
       Eigen::Vector3d foot_acceleration;
 
       // Determine the foot state at this index
-      if (isContact(contact_schedule, i, j))
+      if (!isContact(contact_schedule, i, j) || (i != 0 && isNewContact(contact_schedule, i, j)))
       {
-        // In contact
-        // Log current foot position and zero velocity
-        foot_position = getFootData(foot_positions, i, j);
-        foot_velocity = Eigen::VectorXd::Zero(3);
-        foot_acceleration = Eigen::VectorXd::Zero(3);
-        foot_state_msg.contact = true;
-      }
-      else
-      {
-        // In swing
+        // In swing (or new contact, we compute acceleration for interplation in inverse dynamics)
         if (isNewLiftoff(contact_schedule, i, j))
         {
           // If this is a new swing phase, update the swing phase variables
@@ -345,7 +363,7 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
         quadKD_->worldToLegbaseFKWorldFrame(j, body_plan.row(i).segment(0, 3), body_plan.row(i).segment(3, 3), g_world_legbase);
 
         // Update z to clear both footholds by the specified height under the constraints of hip height
-        double swing_apex = std::min(ground_clearance_ + std::max(foot_position_prev_nominal.z(), foot_position_next.z()), g_world_legbase(2, 3) - hip_clearance_);
+        double swing_apex = std::min(ground_clearance_ - toe_radius + std::max(foot_position_prev_nominal.z(), foot_position_next.z()), g_world_legbase(2, 3) - hip_clearance_);
 
         // Interplate z
         if (swing_duration == 0)
@@ -413,7 +431,28 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
           }
         }
 
+        if (foot_acceleration.norm() > 5e1)
+        {
+          // When the duration get shrinked, the acceleration might overshoot, hundred is a good bound, the nominal maximum acceleration should be around twenty
+          foot_acceleration = foot_acceleration.normalized() * 5e1;
+        }
+
         foot_state_msg.contact = false;
+      }
+
+      if (isContact(contact_schedule, i, j))
+      {
+        // In contact
+        // Log current foot position and zero velocity
+        foot_position = getFootData(foot_positions, i, j);
+        foot_velocity = Eigen::VectorXd::Zero(3);
+        if (!(i != 0 && isNewContact(contact_schedule, i, j)))
+        {
+        // If it's a new contact, keep the acceleration for swing ID interplation, it should not be used after contact since it will be GRF instead
+          foot_acceleration = Eigen::VectorXd::Zero(3);
+        }
+        
+        foot_state_msg.contact = true;
       }
 
       // Load state data into the message
@@ -459,7 +498,7 @@ Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(const Eigen::Vecto
       terrain_grid_.getPosition(*iterator, pos_valid);
       pos_valid += offset;
       foot_position_valid << pos_valid.x(), pos_valid.y(), 
-        terrain_grid_.atPosition("z", pos_valid, grid_map::InterpolationMethods::INTER_LINEAR);
+        terrain_grid_.atPosition("z", pos_valid, grid_map::InterpolationMethods::INTER_LINEAR) + toe_radius;
       return foot_position_valid;
     }
   }

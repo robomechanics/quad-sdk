@@ -205,7 +205,10 @@ private:
   Eigen::MatrixXd ref_body_plan_;
 
   /// Vector of ground height along reference trajectory
-  Eigen::MatrixXd ref_ground_height_;
+  Eigen::VectorXd ref_ground_height_;
+
+  /// Vector of primitive along reference trajectory
+  Eigen::VectorXi ref_primitive_plan_;
 
   /// Matrix of grfs (N x Nu: rows correspond to individual arrays of GRFs in the horizon)
   Eigen::MatrixXd grf_plan_; 
@@ -264,6 +267,9 @@ private:
 
   /// If the current solving is duplicated in the same index
   bool same_plan_index_;
+
+  /// Toe radius
+  double toe_radius = 0.02;
 };
 
 

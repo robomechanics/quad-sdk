@@ -60,6 +60,7 @@ NMPCController::NMPCController(int type)
   ros::param::get("/nmpc_controller/leg_complex/null_space_dimension", n_null_);
   ros::param::get("/nmpc_controller/leg_complex/state_lower_bound", state_lower_bound_null);
   ros::param::get("/nmpc_controller/leg_complex/state_upper_bound", state_upper_bound_null);
+  ros::param::get("/nmpc_controller/takeoff_state_weight_factor", takeoff_state_weight_factor_);
 
   Eigen::Map<Eigen::MatrixXd> Q(state_weights.data(), n_, 1),
       R(control_weights.data(), m_, 1),
@@ -138,6 +139,7 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
                                     const Eigen::VectorXd &ref_ground_height,
                                     const double &first_element_duration,
                                     const bool &same_plan_index,
+                                    const Eigen::VectorXi &ref_primitive_id,
                                     const Eigen::VectorXi &complexity_schedule,
                                     Eigen::MatrixXd &state_traj,
                                     Eigen::MatrixXd &control_traj)
@@ -156,6 +158,13 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
   if (!same_plan_index)
   {
     mynlp_->shift_initial_guess();
+  }
+
+  for (int i = 0; i < ref_primitive_id.size()-1; i++) {
+    if (ref_primitive_id(i,0) == 1 && ref_primitive_id(i+1,0) == 2) {
+      mynlp_->Q_factor_(i,0) = mynlp_->Q_factor_(i,0)*takeoff_state_weight_factor_;
+      ROS_WARN_THROTTLE(0.5,"leap detected, increasing weights");
+    }
   }
 
   return this->computePlan(initial_state,

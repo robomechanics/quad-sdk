@@ -70,8 +70,11 @@ public:
     // State cost weighting, input cost weighting
     Eigen::MatrixXd Q_, R_;
 
-    // Scale factor for Q and R
+    // Current scale factor for Q and R (may change between iterations)
     Eigen::MatrixXd Q_factor_, R_factor_;
+
+    /// Base scale factor for Q and R (does not change between iterations)
+    Eigen::MatrixXd Q_factor_base_, R_factor_base_;
 
     // Feet location from feet to body COM in world frame
     Eigen::MatrixXd feet_location_;

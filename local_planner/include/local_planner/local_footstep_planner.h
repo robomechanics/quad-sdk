@@ -102,24 +102,32 @@ class LocalFootstepPlanner {
      * @brief Compute the contact schedule based on the current phase
      * @param[in] current_plan_index_ Current index in the plan
      * @param[in] current_state Current robot state
-     * @param[in] ref_body_plan Reference bode plan
+     * @param[in] ref_body_plan Reference body plan
+     * @param[in] ref_primitive_plan_ Reference primitive plan
      * @param[out] contact_schedule 2D array of contact states
      */
-    void computeContactSchedule(int current_plan_index,
-      Eigen::VectorXd current_state, Eigen::MatrixXd ref_body_plan,
+    void computeContactSchedule(
+      int current_plan_index,
+      Eigen::VectorXd current_state, 
+      Eigen::MatrixXd ref_body_plan, 
+      Eigen::VectorXi ref_primitive_plan_,
       std::vector<std::vector<bool>> &contact_schedule) ;
 
     /**
      * @brief Update the discrete footstep plan with the current plan
-     * @param[in] state Current robot state
      * @param[in] body_plan Current body plan
      * @param[in] grf_plan Current grf plan
      * @param[in] contact_schedule Current contact schedule
-     * @param[in] current_state Current state of the robot body
+     * @param[in] ref_body_plan Reference body plan
+     * @param[in] ref_primitive_plan_ Reference primitive plan
      * @param[out] foot_positions Foot positions over the horizon
      */
-    void computeFootPositions(const Eigen::MatrixXd &body_plan, const Eigen::MatrixXd &grf_plan,
-      const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &ref_body_plan,
+    void computeFootPositions(
+      const Eigen::MatrixXd &body_plan, 
+      const Eigen::MatrixXd &grf_plan,
+      const std::vector<std::vector<bool>> &contact_schedule, 
+      const Eigen::MatrixXd &ref_body_plan, 
+      const Eigen::VectorXi &ref_primitive_plan_,
       Eigen::MatrixXd &foot_positions);
 
     /**
@@ -129,6 +137,7 @@ class LocalFootstepPlanner {
      * @param[in] current_foot_position Current foot position
      * @param[in] current_foot_velocity Current foot velocity
      * @param[in] current_plan_index Current index in the global plan
+     * @param[in] ref_primitive_plan_ Reference primitive plan
      * @param[in] body_plan Body plan from MPC
      * @param[in] first_element_duration Time duration to the next plan index
      * @param[out] past_footholds_msg Message for previous footholds
@@ -137,7 +146,8 @@ class LocalFootstepPlanner {
      */
     void computeFootPlanMsgs(const std::vector<std::vector<bool>> &contact_schedule,
                              const Eigen::MatrixXd &foot_positions, const Eigen::VectorXd &current_foot_position,
-                             const Eigen::VectorXd &current_foot_velocity, int current_plan_index, const Eigen::MatrixXd &body_plan,
+                             const Eigen::VectorXd &current_foot_velocity, int current_plan_index, 
+                             const Eigen::VectorXi &ref_primitive_plan_, const Eigen::MatrixXd &body_plan,
                              const double &first_element_duration, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
                              quad_msgs::MultiFootPlanDiscrete &future_footholds_msg, quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
 
@@ -366,6 +376,8 @@ class LocalFootstepPlanner {
     /// Terrain layer for foothold search
     std::string obj_fun_layer_;
 
+    /// Toe radius
+    double toe_radius = 0.02;
 };
 
 

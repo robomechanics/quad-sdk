@@ -59,8 +59,9 @@ TEST(NMPCTest, testAdaptiveComplexity)
 	double first_element_duration = dt_;
 	bool same_plan_index = false;
 
-	Eigen::VectorXi complexity_schedule(N_);
+	Eigen::VectorXi complexity_schedule(N_), ref_primitive_id(N_);
 	complexity_schedule.setZero();
+	ref_primitive_id.setZero();
 
 	std::chrono::steady_clock::time_point tic, toc;
 	tic = std::chrono::steady_clock::now();	
@@ -76,6 +77,7 @@ TEST(NMPCTest, testAdaptiveComplexity)
 									 ref_ground_height,
 									 first_element_duration,
 									 same_plan_index,
+									 ref_primitive_id,
 									 complexity_schedule,
 									 body_plan_,
 									 grf_plan_);
