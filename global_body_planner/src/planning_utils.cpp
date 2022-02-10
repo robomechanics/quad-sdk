@@ -1042,8 +1042,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config, int phase
         return false;
       }
     } else if (phase == LEAP_STANCE) {
-      // if (i % 2 == 1) {
-      if (true) {
+      if (i % 2 == 1) {
         max_valid_z = std::min(max_valid_z, s.pos[2] + planner_config.H_MAX - reachability_clearance);
         if (reachability_clearance > planner_config.H_MAX) {
           #ifdef DEBUG_INVALID_STATE
@@ -1054,8 +1053,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config, int phase
         }
       }
     } else if (phase == LAND_STANCE) {
-      // if (i % 2 == 0) {
-      if (true) {
+      if (i % 2 == 0) {
         max_valid_z = std::min(max_valid_z, s.pos[2] + planner_config.H_MAX - reachability_clearance);
         if (reachability_clearance > planner_config.H_MAX) {
           #ifdef DEBUG_INVALID_STATE
