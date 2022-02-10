@@ -69,8 +69,8 @@ public:
     /// Constraint dimension for simple and complex models
     int g_simple_, g_complex_;
 
-    /// Number of variables and constraints
-    int n_vars_, n_constraints_;
+    /// Number of variables , primal variables, slack variables, and constraints
+    int n_vars_, n_vars_primal_, n_vars_slack_, n_constraints_;
 
     /// Number of state variables added in complex model
     int n_null_;
@@ -150,12 +150,15 @@ public:
     Eigen::VectorXi iRow_jac_g_, jCol_jac_g_;
 
     // Nonzero entrance number in the pure hessian matrix (exclude the side jacobian part)
-    int nnz_h_, nnz_compact_h_, nnz_step_h_;
+    int nnz_h_, nnz_compact_h_;
+
+    // Vector of nnz in each block of the NLP Hessian
+    Eigen::VectorXi nnz_step_h_;
 
     std::vector<int> first_step_idx_hess_g_;
 
     // Nonzero entrance row and column in the pure hessian matrix (exclude the side jacobian part)
-    Eigen::MatrixXi iRow_h_, jCol_h_, iRow_compact_h_, jCol_compact_h_;
+    Eigen::VectorXi iRow_h_, jCol_h_, iRow_compact_h_, jCol_compact_h_;
 
     // Penalty on panic variables
     double panic_weights_;
@@ -376,11 +379,27 @@ public:
     void update_complexity_schedule(const Eigen::VectorXi &complexity_schedule);
 
     /**
+     * @brief Return the number of primal variables for this NLP
+     * @return Number of primal variables
+     */
+    inline int getNumPrimalVariables() const {
+        return (m_*N_ + n_simple_ * (N_ - num_complex_fe_) + n_complex_ * num_complex_fe_);
+    };
+
+    /**
+     * @brief Return the number of slack variables for this NLP
+     * @return Number of slack variables
+     */
+    inline int getNumSlackVariables() const {
+        return (2*n_simple_*N_);
+    };
+    
+    /**
      * @brief Return the number of variables for this NLP
      * @return Number of variables
      */
     inline int getNumVariables() const {
-        return (m_*N_ + 3*(n_simple_ * (N_ - num_complex_fe_) + n_complex_ * num_complex_fe_));
+        return getNumPrimalVariables() + getNumSlackVariables();
     };
     
     /**
@@ -388,8 +407,7 @@ public:
      * @return Number of constraints
      */
     inline int getNumConstraints() const {
-        return (g_simple_ * (N_ - num_complex_fe_) + g_complex_ * num_complex_fe_) + 
-             2*(n_simple_ * (N_ - num_complex_fe_) + n_complex_ * num_complex_fe_);
+        return (g_simple_ * (N_ - num_complex_fe_) + g_complex_ * num_complex_fe_) + 2*n_simple_ * N_;
     };
 
     /**
@@ -401,6 +419,36 @@ public:
     inline int getPrimalFEIndex(int i) const {
         int num_complex_before = complexity_schedule_.segment(0,i).sum();
         return (i * m_ + (num_complex_before * n_complex_ + (i - num_complex_before) * n_simple_));
+    };
+
+    /**
+     * @brief Return the first index of the decision variable vector corresponding to the given 
+     * finite element's control input
+     * @param[in] i Index of requested finite element
+     * @return Index in decision variable vector corresponding to the beginning of the control input of the requested FE
+     */
+    inline int getPrimalControlFEIndex(int i) const {
+        return getPrimalFEIndex(i);
+    };
+
+    /**
+     * @brief Return the first index of the decision variable vector corresponding to the given 
+     * finite element's state
+     * @param[in] i Index of requested finite element
+     * @return Index in decision variable vector corresponding to the beginning of the state of the requested FE
+     */
+    inline int getPrimalStateFEIndex(int i) const {
+        return (getPrimalControlFEIndex(i) + m_);
+    };
+
+    /**
+     * @brief Return the first index of the decision variable vector corresponding to the slack variable for the given 
+     * finite element's state
+     * @param[in] i Index of requested finite element
+     * @return Index in decision variable vector corresponding to the slack variable of the beginning of the state of the requested FE
+     */
+    inline int getSlackStateFEIndex(int i) const {
+        return (n_vars_primal_ + 2 * i * n_);
     };
 
     /**

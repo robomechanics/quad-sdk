@@ -200,6 +200,7 @@ void quadNLP::loadCasadiFuncs() {
       jCol_mat_[sys_id][func_id].resize(nnz);
       
       int idx = 0;
+      first_step_idx_mat_(sys_id,func_id) = 0;
       for (int i = 0; i < ncol; ++i)
       {
         for (int j = colind[i]; j < colind[i + 1]; ++j)
@@ -208,7 +209,7 @@ void quadNLP::loadCasadiFuncs() {
           jCol_mat_[sys_id][func_id](idx) = i;
 
           // We have the decision variable start from u_0, so we should drop the jacobian corresponding to x_0
-          if (i == n_simple_)
+          if (i >= n_simple_ && first_step_idx_mat_(sys_id,func_id) == 0)
           {
             first_step_idx_mat_(sys_id,func_id) = idx;
           }

@@ -211,7 +211,7 @@ quadNLP::quadNLP(
 
   num_complex_fe_ = 0;
   complexity_schedule_.setZero(N_);
-  complexity_schedule_.segment<2>(4).fill(1);
+  // complexity_schedule_.segment<2>(4).fill(1);
   this->update_complexity_schedule(complexity_schedule_);
   std::cout << "n_vec\n" << n_vec_.transpose() << std::endl;
   std::cout << "g_vec\n" << g_vec_.transpose() << std::endl;
@@ -267,8 +267,10 @@ quadNLP::quadNLP(
   first_element_duration_ = dt_;
 
   if (m_ >= 12) {
+    quad_utils::FunctionTimer timer("setup");
     compute_nnz_jac_g();
     compute_nnz_h();
+    timer.report();
   }
 }
 
@@ -689,21 +691,17 @@ bool quadNLP::eval_jac_g(
 // Return the structure of the Jacobian
 void quadNLP::compute_nnz_jac_g()
 {
-
-  std::cout << "complexity_schedule_:\n" << complexity_schedule_.transpose() << std::endl;
-  std::cout << "sys_id_schedule_:\n" << sys_id_schedule_.transpose() << std::endl;
-
   // Initialize nnz
   nnz_jac_g_ = 0;
 
-  // Compute the number of nnz in the Jacobians over the horizon after the first step
+  // Compute the number of nnz in the Jacobians over the horizon
   for (int i = 0; i < N_; ++i) {
     nnz_jac_g_ += nnz_mat_(sys_id_schedule_[i],JAC);
   }
 
   // Add slack variables (only on simple model coordinates) and subtract first step vars
   int first_step_idx = first_step_idx_mat_(sys_id_schedule_[0],JAC);
-  nnz_jac_g_ = nnz_jac_g_ - first_step_idx;// + 4*n_*N_ ;
+  nnz_jac_g_ = nnz_jac_g_ - first_step_idx + 4*n_*N_;
 
   // Size the NLP constraint Jacobian sparsity structure
   iRow_jac_g_ = Eigen::VectorXi(nnz_jac_g_);
@@ -719,6 +717,7 @@ void quadNLP::compute_nnz_jac_g()
     {
       int first_step_size = iRow_mat_[sys_id][JAC].size() - first_step_idx;
       iRow_jac_g_.head(first_step_size) = iRow_mat_[sys_id][JAC].tail(first_step_size);
+      jCol_jac_g_.head(first_step_size) = (jCol_mat_[sys_id][JAC].tail(first_step_size).array() - n_).matrix();
       curr_sparse_idx += first_step_size;
     }
     else
@@ -742,32 +741,38 @@ void quadNLP::compute_nnz_jac_g()
 
   for (size_t i = 0; i < N_; i++)
   {
-    int primal_fe_idx = getPrimalFEIndex(i);
+    // Get index of the primal state vars for this finite element and define num of slack variables
+    int primal_state_fe_idx = getPrimalStateFEIndex(i);
+    int n_slack = n_;
+    
     // xmin wrt x
-    iRow_jac_g_.segment(curr_sparse_idx + i * n_ * 4, n_) = Eigen::ArrayXi::LinSpaced(n_, curr_constr_idx + 2 * i * n_, curr_constr_idx + 2 * i * n_ + n_ - 1);
-    jCol_jac_g_.segment(curr_sparse_idx + i * n_ * 4, n_) = Eigen::ArrayXi::LinSpaced(n_, primal_fe_idx + m_, primal_fe_idx + m_ + n_ - 1);
+    iRow_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(n_slack, curr_constr_idx, curr_constr_idx + n_slack - 1);
+    jCol_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(n_slack, primal_state_fe_idx, primal_state_fe_idx + n_slack - 1);
+    curr_sparse_idx += n_slack;
 
     // xmin wrt panic
-    iRow_jac_g_.segment(curr_sparse_idx + i * n_ * 4 + n_, n_) = Eigen::ArrayXi::LinSpaced(n_, curr_constr_idx + 2 * i * n_, curr_constr_idx + 2 * i * n_ + n_ - 1);
-    jCol_jac_g_.segment(curr_sparse_idx + i * n_ * 4 + n_, n_) = Eigen::ArrayXi::LinSpaced(n_, curr_var_idx + i * 2 * n_, curr_var_idx + i * 2 * n_ + n_ - 1);
+    iRow_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(n_slack, curr_constr_idx, curr_constr_idx + n_slack - 1);
+    jCol_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(n_slack, curr_var_idx, curr_var_idx + n_slack - 1);
+    curr_sparse_idx += n_slack;
+    curr_constr_idx += n_slack;
+    curr_var_idx += n_slack;
 
     // xmax wrt x
-    iRow_jac_g_.segment(curr_sparse_idx + i * n_ * 4 + 2 * n_, n_) = Eigen::ArrayXi::LinSpaced(n_, curr_constr_idx + 2 * i * n_ + n_, curr_constr_idx + 2 * i * n_ + 2 * n_ - 1);
-    jCol_jac_g_.segment(curr_sparse_idx + i * n_ * 4 + 2 * n_, n_) = Eigen::ArrayXi::LinSpaced(n_, primal_fe_idx + m_, primal_fe_idx + m_ + n_ - 1);
+    iRow_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(n_slack, curr_constr_idx, curr_constr_idx + n_slack - 1);
+    jCol_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(n_slack, primal_state_fe_idx, primal_state_fe_idx + n_slack - 1);
+    curr_sparse_idx += n_slack;
 
     // xmax wrt panic
-    iRow_jac_g_.segment(curr_sparse_idx + i * n_ * 4 + 3 * n_, n_) = Eigen::ArrayXi::LinSpaced(n_, curr_constr_idx + 2 * i * n_ + n_, curr_constr_idx + 2 * i * n_ + 2 * n_ - 1);
-    jCol_jac_g_.segment(curr_sparse_idx + i * n_ * 4 + 3 * n_, n_) = Eigen::ArrayXi::LinSpaced(n_, curr_var_idx + i * 2 * n_ + n_, curr_var_idx + i * 2 * n_ + 2 * n_ - 1);
+    iRow_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(n_slack, curr_constr_idx, curr_constr_idx + n_slack - 1);
+    jCol_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(n_slack, curr_var_idx, curr_var_idx + n_slack - 1);
+    curr_sparse_idx += n_slack;
+    curr_constr_idx += n_slack;
+    curr_var_idx += n_slack;
   }
 
-  std::cout << "nnz_jac_g_ = " << nnz_jac_g_ << std::endl;
-  std::cout << "curr_sparse_idx = " << curr_sparse_idx << std::endl;
-  if (curr_sparse_idx != nnz_jac_g_) {
-    throw std::runtime_error("Number of nonzero entries doesn't match the prediction!");
+  if ((curr_sparse_idx != nnz_jac_g_) || (curr_var_idx != n_vars_) || (curr_constr_idx != n_constraints_) ) {
+    throw std::runtime_error("Number of nonzero Jacobian entries doesn't match the prediction!");
   }
-
-  throw std::runtime_error("Stop");
-
 }
 
 // Return the structure or values of the Hessian
@@ -828,7 +833,7 @@ bool quadNLP::eval_h(
       eval_hess_g_incref_();
       int mem;
 
-      Eigen::MatrixXd tmp_arg(2 * n_ + m_, 1), tmp_res(nnz_step_h_ - n_ - m_, 1);
+      Eigen::MatrixXd tmp_arg(2 * n_ + m_, 1), tmp_res(nnz_step_h_[i] - n_ - m_, 1);
       if (i == 0)
       {
         tmp_arg.topRows(n_) = x_current_;
@@ -854,7 +859,7 @@ bool quadNLP::eval_h(
         arg[0] = w.block(i * (n_ + m_) - n_, 0, 2 * n_ + m_, 1).data();
         arg[1] = lambda_matrix.block(i * g_, 0, g_, 1).data();
         arg[2] = pk.data();
-        res[0] = values_matrix.block((i - 1) * nnz_step_h_ + n_ + m_ + first_step_idx_hess_g_.size(), 0, nnz_step_h_ - n_ - m_, 1).data();
+        res[0] = values_matrix.block((i - 1) * nnz_step_h_[i] + n_ + m_ + first_step_idx_hess_g_.size(), 0, nnz_step_h_[i] - n_ - m_, 1).data();
 
         mem = eval_hess_g_checkout_();
 
@@ -873,8 +878,8 @@ bool quadNLP::eval_h(
         Q_i = Q_i * first_element_duration_ / dt_;
       }
 
-      values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_i.array()).matrix();
-      values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * Q_i.array()).matrix();
+      values_matrix.block(i * nnz_step_h_[i] + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_i.array()).matrix();
+      values_matrix.block(i * nnz_step_h_[i] + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * Q_i.array()).matrix();
     }
 
     std::vector<Eigen::Triplet<double>> tripletList;
@@ -903,83 +908,80 @@ bool quadNLP::eval_h(
 // Return the structure of the Hessian
 void quadNLP::compute_nnz_h()
 {
-  const casadi_int* sp_i;
-  sp_i = eval_hess_g_sparsity_out_(0);
-  casadi_int nrow = *sp_i++;
-  casadi_int ncol = *sp_i++;
-  const casadi_int* colind = sp_i;
-  const casadi_int* row = sp_i + ncol + 1;
-  casadi_int nnz = sp_i[ncol];
+  // Initialize nnz
+  nnz_h_ = 0;
 
-  Eigen::MatrixXi iRow(nnz, 1);
-  Eigen::MatrixXi jCol(nnz, 1);
-  first_step_idx_hess_g_.clear();
-  first_step_idx_hess_g_.reserve(nnz);
-  int idx = 0;
-
-  for (int i = 0; i < ncol; ++i)
-  {
-    for (int j = colind[i]; j < colind[i + 1]; ++j)
-    {
-      iRow(idx, 0) = row[j];
-      jCol(idx, 0) = i;
-
-      // We have the decision variable start from u_0, so we should drop the hessian corresponding to x_0
-      if ((iRow(idx, 0) >= n_) && (jCol(idx, 0) >= n_))
-      {
-        first_step_idx_hess_g_.push_back(idx);
-      }
-
-      idx += 1;
-    }
+  // Compute the number of nnz in the Hessian over the horizon
+  for (int i = 0; i < N_; ++i) {
+    nnz_h_ += nnz_mat_(sys_id_schedule_[i],HESS);
   }
+
+  // Add cost variables (only on simple model coordinates) and subtract first step vars
+  int first_step_idx = first_step_idx_mat_(sys_id_schedule_[0],HESS);
+  nnz_h_ = nnz_h_ - first_step_idx + N_ * (n_ + m_);
+
+  // Size the NLP constraint Hessian sparsity structure
+  iRow_h_ = Eigen::VectorXi(nnz_h_);
+  jCol_h_ = Eigen::VectorXi(nnz_h_);
 
   // Hessian from cost
   Eigen::ArrayXi iRow_cost = Eigen::ArrayXi::LinSpaced(n_ + m_, 0, n_ + m_ - 1);
   Eigen::ArrayXi jCol_cost = Eigen::ArrayXi::LinSpaced(n_ + m_, 0, n_ + m_ - 1);
 
-  nnz_h_ = (N_ - 1) * nnz + first_step_idx_hess_g_.size() + N_ * (n_ + m_);
-  nnz_step_h_ = nnz + n_ + m_;
-  iRow_h_ = Eigen::MatrixXi(nnz_h_, 1);
-  jCol_h_ = Eigen::MatrixXi(nnz_h_, 1);
+  iRow_h_ = Eigen::VectorXi(nnz_h_);
+  jCol_h_ = Eigen::VectorXi(nnz_h_);
+  nnz_step_h_.resize(N_);
 
+  int curr_sparse_idx = 0;
+  int curr_var_idx = 0;
   for (int i = 0; i < N_; ++i)
   {
+    int sys_id = sys_id_schedule_[i];
+    nnz_step_h_[i] = nnz_mat_(sys_id,HESS) + n_ + m_;
+
     if (i == 0)
     {
-      // The first step only has u_0 and x_1 as decision variables
-      for (size_t j = 0; j < first_step_idx_hess_g_.size(); j++)
-      {
-        // We should shift n states corresponding to x_0
-        iRow_h_(j, 0) = iRow(first_step_idx_hess_g_.at(j), 0) - n_;
-        jCol_h_(j, 0) = jCol(first_step_idx_hess_g_.at(j), 0) - n_;
-      }
+      int first_step_size = iRow_mat_[sys_id][HESS].size() - first_step_idx;
+      iRow_h_.head(first_step_size) = (iRow_mat_[sys_id][HESS].tail(first_step_size).array() - n_).matrix();
+      jCol_h_.head(first_step_size) = (jCol_mat_[sys_id][HESS].tail(first_step_size).array() - n_).matrix();
+      curr_sparse_idx += first_step_size;
     }
     else
     {
-      // Each step we shift n states and m inputs
-      iRow_h_.block(i * nnz_step_h_ - nnz + first_step_idx_hess_g_.size(), 0, nnz, 1) = (iRow.array() + i * (n_ + m_) - n_).matrix();
-      jCol_h_.block(i * nnz_step_h_ - nnz + first_step_idx_hess_g_.size(), 0, nnz, 1) = (jCol.array() + i * (n_ + m_) - n_).matrix();
-    }
+      // Update the number of nonzeros in this block
+      int nnz = nnz_mat_(sys_id_schedule_[i],HESS);
 
+      // Each step we shift n states and m inputs
+      iRow_h_.segment(curr_sparse_idx, nnz) = (iRow_mat_[sys_id][HESS].array() + curr_var_idx - n_).matrix();
+      jCol_h_.segment(curr_sparse_idx, nnz) = (jCol_mat_[sys_id][HESS].array() + curr_var_idx - n_).matrix();
+
+      curr_sparse_idx += nnz;
+    }
     // Hessian from cost
-    iRow_h_.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, n_ + m_, 1) = (iRow_cost + i * (n_ + m_)).matrix();
-    jCol_h_.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, n_ + m_, 1) = (jCol_cost + i * (n_ + m_)).matrix();
+    iRow_h_.segment(curr_sparse_idx, n_ + m_) = (iRow_cost + curr_var_idx).matrix();
+    jCol_h_.segment(curr_sparse_idx, n_ + m_) = (jCol_cost + curr_var_idx).matrix();
+
+    curr_sparse_idx += (n_ + m_);
+    curr_var_idx += n_vec_[i] + m_;
+  }
+
+  if ((curr_sparse_idx != nnz_h_) || (curr_var_idx != n_vars_primal_) ) {
+    throw std::runtime_error("Number of Hessian nonzero entries doesn't match the prediction!");
   }
 
   std::vector<Eigen::Triplet<double>> tripletList;
   tripletList.reserve(nnz_h_);
   for (int i = 0; i < nnz_h_; ++i)
   {
-    tripletList.push_back(Eigen::Triplet<double>(iRow_h_(i, 0), jCol_h_(i, 0), 1));
+    tripletList.push_back(Eigen::Triplet<double>(iRow_h_[i], jCol_h_[i], 1));
   }
-  Eigen::SparseMatrix<double> hess(N_ * (n_ + m_), N_ * (n_ + m_));
+  Eigen::SparseMatrix<double> hess(n_vars_primal_, n_vars_primal_);
   hess.setFromTriplets(tripletList.begin(), tripletList.end());
 
   // We eliminate the overlap nonzero entrances here to get the exact nonzero number
   nnz_compact_h_ = hess.nonZeros();
-  iRow_compact_h_ = Eigen::MatrixXi(nnz_compact_h_, 1);
-  jCol_compact_h_ = Eigen::MatrixXi(nnz_compact_h_, 1);
+  iRow_compact_h_ = Eigen::VectorXi(nnz_compact_h_);
+  jCol_compact_h_ = Eigen::VectorXi(nnz_compact_h_);
 
   int idx_hess = 0;
 
@@ -987,8 +989,8 @@ void quadNLP::compute_nnz_h()
   {
     for (Eigen::SparseMatrix<double>::InnerIterator it(hess, k); it; ++it)
     {
-      iRow_compact_h_(idx_hess, 0) = it.row();
-      jCol_compact_h_(idx_hess, 0) = it.col();
+      iRow_compact_h_[idx_hess] = it.row();
+      jCol_compact_h_[idx_hess] = it.col();
       idx_hess += 1;
     }
   }
@@ -1182,7 +1184,7 @@ void quadNLP::update_complexity_schedule(const Eigen::VectorXi& complexity_sched
     num_complex_fe_ += complexity_schedule[i];
     if (i < complexity_schedule_.size()-1) {
       if (complexity_schedule[i] == 0) {
-        sys_id_schedule_[i] = (complexity_schedule[i+1] == 0) ? SIMPLE : SIMPLE_TO_COMPLEX;
+        sys_id_schedule_[i] = (complexity_schedule[i+1] == 0) ? LEG : SIMPLE_TO_COMPLEX;
       } else {
         sys_id_schedule_[i] = (complexity_schedule[i+1] == 1) ? COMPLEX : COMPLEX_TO_SIMPLE;
       }
@@ -1197,6 +1199,8 @@ void quadNLP::update_complexity_schedule(const Eigen::VectorXi& complexity_sched
   g_vec_ = g_complex_ * complexity_schedule +
     g_simple_ * (Eigen::VectorXi::Ones(N_) - complexity_schedule);
 
+  n_vars_primal_ = getNumPrimalVariables();
+  n_vars_slack_ = getNumSlackVariables();
   n_vars_ = getNumVariables();
   n_constraints_ = getNumConstraints();
 
