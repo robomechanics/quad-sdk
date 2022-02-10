@@ -7,7 +7,7 @@ Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 QuadKD::QuadKD()
 {
   std::string robot_description_string;
-  if (!ros::param::get("robot_description", robot_description_string))
+  if (!ros::param::get("/robot_description", robot_description_string))
   {
     std::cerr << "Error loading robot_description " << std::endl;
     abort();

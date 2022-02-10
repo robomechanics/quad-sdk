@@ -9,6 +9,10 @@
 #include <quad_msgs/RobotState.h>
 #include <quad_msgs/ContactMode.h>
 
+#include <quad_utils/ros_utils.h>
+#include <quad_utils/quad_kd.h>
+#include <vector>
+
 //! Implements online EKF based state estimation 
 /*!
    EKFEstimator implements all estimator logic. It should expose a constructor that does any initialization required and an update method called at some frequency.
@@ -119,6 +123,13 @@ private:
 
   // IMU bias in acc z
   double bias_z_;
+  
+  // QuadKD class
+  std::shared_ptr<quad_utils::QuadKD>quadKD_;
+
+ 
+
+
 
 };
 #endif // EKF_ESTIMATOR_H
