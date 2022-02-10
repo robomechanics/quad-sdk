@@ -67,6 +67,7 @@ add_library(nmpc_controller
   src/eval_g_leg_complex_to_simple.cpp
   src/eval_jac_g_leg_complex_to_simple.cpp
   src/eval_hess_g_leg_complex_to_simple.cpp
+  src/quad_nlp_utils.cpp
   src/quad_nlp.cpp
   src/nmpc_controller.cpp
 )

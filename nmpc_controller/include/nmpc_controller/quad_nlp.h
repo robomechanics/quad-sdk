@@ -32,14 +32,23 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <vector>
+#include <unordered_map>
 
 using namespace Ipopt;
 
-enum ComplexityMode {
+enum SystemID {
+    LEG,
+    TAIL,
     SIMPLE,
-    COMPLEX,
     SIMPLE_TO_COMPLEX,
+    COMPLEX,
     COMPLEX_TO_SIMPLE
+};
+
+enum FunctionID {
+  FUNC,
+  JAC,
+  HESS
 };
 
 class quadNLP : public TNLP
@@ -51,8 +60,8 @@ public:
     /// State dimension for simple and complex models
     int n_simple_, n_complex_;
 
-    /// Vector of state variables for each finite element
-    Eigen::VectorXi n_vec_;
+    /// Vectors of state and constraint dimension for each finite element
+    Eigen::VectorXi n_vec_, g_vec_;
 
     /// Input dimension for simple and complex models
     int m_simple_, m_complex_;
@@ -66,8 +75,11 @@ public:
     /// Number of state variables added in complex model
     int n_null_;
 
-    /// Declare the number of possible complexity modes
-    static const int num_complexity_modes_ = 4;
+    /// Declare the number of possible system ids (must match size of SystemID enum)
+    static const int num_sys_id_ = 6;
+
+    /// Declare the number of possible function ids (must match size of FunctionID enum)
+    static const int num_func_id_ = 3;
 
     int leg_input_start_idx_;
 
@@ -135,7 +147,7 @@ public:
     std::vector<int> first_step_idx_jac_g_;
 
     // Nonzero entrance row and column in the constraint jacobian matrix
-    Eigen::MatrixXi iRow_jac_g_, jCol_jac_g_;
+    Eigen::VectorXi iRow_jac_g_, jCol_jac_g_;
 
     // Nonzero entrance number in the pure hessian matrix (exclude the side jacobian part)
     int nnz_h_, nnz_compact_h_, nnz_step_h_;
@@ -153,6 +165,15 @@ public:
 
     /// Vector of ids for model complexity schedule
     Eigen::VectorXi complexity_schedule_;
+
+    /// Vector of system ids
+    Eigen::VectorXi sys_id_schedule_;
+
+    /// Matrix of function info
+    Eigen::MatrixXi nnz_mat_, nrow_mat_, ncol_mat_, first_step_idx_mat_;
+
+    /// Matrix of function sparsity data
+    std::vector<std::vector<Eigen::VectorXi> > iRow_mat_, jCol_mat_;
 
     /// Number of complex finite elements in the horizon
     int num_complex_fe_;
@@ -183,29 +204,17 @@ public:
     /// Vector of nonzero entries for constraint Jacobian and Hessian
     std::vector<casadi_int> nnz_jac_g_vec_, nnz_h_vec_;
 
-    /// Vector of nonzero entries for constraint Jacobian and Hessian
-    std::vector<decltype(eval_g_leg_work)*> eval_g_work_vec_;
-    // decltype(eval_g_leg_incref) *eval_g_incref_;
-    // decltype(eval_g_leg_checkout) *eval_g_checkout_;
-    // decltype(eval_g_leg) *eval_g_;
-    // decltype(eval_g_leg_release) *eval_g_release_;
-    // decltype(eval_g_leg_decref) *eval_g_decref_;
+    // Maps for casadi functions
+    std::vector<std::vector<decltype(eval_g_leg)*> > eval_vec_;
+    std::vector<std::vector<decltype(eval_g_leg_work)*> > eval_work_vec_;
+    std::vector<std::vector<decltype(eval_g_leg_incref)*> > eval_incref_vec_;
+    std::vector<std::vector<decltype(eval_g_leg_decref)*> > eval_decref_vec_;
+    std::vector<std::vector<decltype(eval_g_leg_checkout)*> > eval_checkout_vec_;
+    std::vector<std::vector<decltype(eval_g_leg_release)*> > eval_release_vec_;
+    std::vector<std::vector<decltype(eval_g_leg_sparsity_out)*> > eval_sparsity_vec_;
 
-    // decltype(eval_hess_g_leg_work) *eval_hess_g_work_;
-    // decltype(eval_hess_g_leg_incref) *eval_hess_g_incref_;
-    // decltype(eval_hess_g_leg_checkout) *eval_hess_g_checkout_;
-    // decltype(eval_hess_g_leg) *eval_hess_g_;
-    // decltype(eval_hess_g_leg_release) *eval_hess_g_release_;
-    // decltype(eval_hess_g_leg_decref) *eval_hess_g_decref_;
-    // decltype(eval_hess_g_leg_sparsity_out) *eval_hess_g_sparsity_out_;
-
-    // decltype(eval_jac_g_leg_work) *eval_jac_g_work_;
-    // decltype(eval_jac_g_leg_incref) *eval_jac_g_incref_;
-    // decltype(eval_jac_g_leg_checkout) *eval_jac_g_checkout_;
-    // decltype(eval_jac_g_leg) *eval_jac_g_;
-    // decltype(eval_jac_g_leg_release) *eval_jac_g_release_;
-    // decltype(eval_jac_g_leg_decref) *eval_jac_g_decref_;
-    // decltype(eval_jac_g_leg_sparsity_out) *eval_jac_g_sparsity_out_;
+    // System type 
+    int sys_type_;
 
     /** Default constructor */
     quadNLP(
@@ -393,6 +402,12 @@ public:
         int num_complex_before = complexity_schedule_.segment(0,i).sum();
         return (i * m_ + (num_complex_before * n_complex_ + (i - num_complex_before) * n_simple_));
     };
+
+    /**
+     * @brief Load the casadi function pointers into map member vars
+     */
+    void loadCasadiFuncs();
+
 
     //@}
 
