@@ -18,13 +18,12 @@ EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
   // Load IMU bias
   nh.getParam("/ekf_estimator/bias_x", bias_x_);
   nh.getParam("/ekf_estimator/bias_y", bias_y_);
-
+  nh.getParam("/ekf_estimator/bias_z", bias_z_);
   // load ground_truth state rosparams and setup subs
   std::string state_ground_truth_topic;
   nh.param<std::string>("topic/state/ground_truth", state_ground_truth_topic, "/state/ground_truth");
   state_ground_truth_pub_ = nh_.subscribe(state_ground_truth_topic,1,&EKFEstimator::groundtruthCallback,this);
 
-  
   
   // Setup pubs and subs
   joint_encoder_sub_ = nh_.subscribe(joint_encoder_topic,1,&EKFEstimator::jointEncoderCallback, this);
@@ -34,20 +33,6 @@ EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
 
   // QuadKD class
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
-
-
-  Eigen::MatrixXd foot_positions_ = Eigen::MatrixXd::Zero(num_feet_, 3);
-  // Initialize nominal footstep positions projected down from the hips
-  Eigen::Vector3d nominal_joint_state;
-  nominal_joint_state << 0, 0.78, 1.57; // Default stand angles
-  
-  for (int i = 0; i < num_feet_; i++){
-    Eigen::Vector3d toe_body_pos;
-    quadKD_->bodyToFootFKBodyFrame(i, nominal_joint_state, toe_body_pos);
-    foot_positions_.block<1,3>(i,0) = toe_body_pos;
-  }
-
- 
 }
 
 void EKFEstimator::groundtruthCallback(const quad_msgs::RobotState::ConstPtr& msg) {
@@ -78,15 +63,17 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
   bool good_imu = false;
   bool good_joint_state = false;
   bool good_ground_truth_state = false;
+
+  //calculate dt
   double dt = (start_time - last_time).toSec();
-  // std::cout << "dt " << dt << std::endl;
   last_time = start_time;
   
 
-  // Collect Data
+  /// Collect Data
 
   // IMU reading linear xyz (0-2) angular (3-5)
   Eigen::VectorXd imu_data = Eigen::VectorXd::Zero(6);
+  // IMU orientation
   geometry_msgs::Quaternion imu_ori;
   imu_ori.x = 0;
   imu_ori.y = 0;
@@ -102,7 +89,8 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
       (*last_imu_msg_).angular_velocity.z;
     imu_ori = (*last_imu_msg_).orientation;
   }
-
+  
+  // Joint data reading 3 joints * 4 legs
   std::vector<double> joints_data(12, 0);
   if (last_joint_state_msg_ != NULL)
   {
@@ -111,48 +99,55 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
       joints_data[i] = (*last_joint_state_msg_).position[i];
     } 
   }
+  else
+  {
+    good_joint_state = false;
+    joints_data = {0.767431, 1.591838, 0.804742, 1.612967, 0.721895, 1.562485, 0.729919, 1.514980, -0.012140, -0.024205, 0.050132, 0.058434};
+  }
   
   
-
-
 
   // Collect position and velocity info from previous state vector
   Eigen::VectorXd r = last_x.block<3, 1>(0, 0);
   Eigen::VectorXd v = last_x.block<3, 1>(3, 0);
 
-
+  // imu bias measured 
   imu_bias = Eigen::VectorXd(3,1);
   imu_bias << bias_x_,
     bias_y_,
-    -9.800917657;
+    bias_z_;
   
-  // acceleration
+  // calculate acceleration set z acceleration to 0 for now
   Eigen::VectorXd a = Eigen::VectorXd::Zero(3);
   a = imu_data.head(3) - imu_bias;
   a[2] = 0.0;
 
-  
 
-  
+  /// update state x and last_x
   // Zero order hold to predict next state
   // Hold rotation, foothold placements constant
   x.block<3, 1>(0, 0) = r + dt * v + dt * dt * 0.5 * a;
   x.block<3, 1>(3, 0) = v + dt * a;
 
-  // std::cout << "last_x " << last_x << std::endl;
-  // std::cout << "estimate state x" << x << std::endl;
   last_x = x;
+ 
 
-  
-  
-  
+  // Update when I have good data, otherwise stay at the origin  
+  if (last_state_msg_ != NULL){
+    good_ground_truth_state = true;
     
-  if (last_state_msg_ == NULL){
+  }else{
+    good_ground_truth_state = false;
     x = Eigen::VectorXd::Zero(6);
     last_x = Eigen::VectorXd::Zero(6); 
     a = Eigen::VectorXd::Zero(3);
-    x[2] = 0.5;
-    last_x[2] = 0.5;
+    x << - 1.457778,
+      1.004244,
+      0.308681,
+      0,
+      0,
+      0;
+    last_x = x;
   }
 
   /// publish new message
@@ -186,12 +181,12 @@ void EKFEstimator::spin() {
   // Initial linear position body (0:2)
   // Initial linear velocity body (3:5) 
   Eigen::MatrixXd x0 = Eigen::MatrixXd::Zero(6, 1);
-  x0 << 0,
-    0,
-    0.5,
-    0,
-    0,
-    0;
+  x0 << - 1.457778,
+      1.004244,
+      0.308681,
+      0,
+      0,
+      0;
   x = x0;
   last_x = x;
 

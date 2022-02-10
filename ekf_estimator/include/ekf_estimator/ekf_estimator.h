@@ -109,7 +109,7 @@ private:
   // old state vector
   Eigen::VectorXd last_x;
 
-  // old time
+  // previous time variable
   ros::Time last_time;
 
   // IMU bias vector
