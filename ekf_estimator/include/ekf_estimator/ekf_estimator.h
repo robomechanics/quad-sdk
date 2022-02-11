@@ -125,7 +125,7 @@ private:
   double bias_z_;
   
   // QuadKD class
-  std::shared_ptr<quad_utils::QuadKD>quadKD_;
+  // std::shared_ptr<quad_utils::QuadKD>quadKD_;
 
  
 
