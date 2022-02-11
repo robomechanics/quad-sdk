@@ -38,13 +38,18 @@ void LocalFootstepPlanner::setTemporalParams(double dt, int period, int horizon_
 
 
 void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double hip_clearance, double grf_weight, 
-  double standing_error_threshold, std::shared_ptr<quad_utils::QuadKD> kinematics) {
+  double standing_error_threshold, std::shared_ptr<quad_utils::QuadKD> kinematics,
+  double foothold_search_radius, double foothold_obj_threshold, std::string obj_fun_layer) {
 
   ground_clearance_ = ground_clearance;
   hip_clearance_ = hip_clearance;
   standing_error_threshold_ = standing_error_threshold;
   grf_weight_ = grf_weight;
   quadKD_ = kinematics;
+
+  foothold_search_radius_ = foothold_search_radius;
+  foothold_obj_threshold_ = foothold_obj_threshold;
+  obj_fun_layer_ = obj_fun_layer;
 }
 
 void LocalFootstepPlanner::updateMap(const FastTerrainMap &terrain) {
@@ -223,9 +228,8 @@ void LocalFootstepPlanner::computeFootPositions(const Eigen::MatrixXd &body_plan
         foot_position_nominal.z() = terrain_grid_.atPosition("z", foot_position_grid_map,
           grid_map::InterpolationMethods::INTER_NEAREST);
 
-        // (Optional) Optimize the foothold location to get the final position
-        // foot_position = map_search::optimizeFoothold(foot_position_nominal, stuff); // ADAM
-        foot_position = foot_position_nominal;
+        // Optimize the foothold location to get the final position
+        foot_position = getNearestValidFoothold(foot_position_nominal);
 
         // Store foot position in the Eigen matrix
         foot_positions.block<1,3>(i,3*j) = foot_position;    
@@ -338,7 +342,6 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
 
       // Load state data into the message
       quad_utils::eigenToFootStateMsg(foot_position, foot_velocity, foot_acceleration, foot_state_msg);
-      foot_plan_continuous_msg.states[i].feet.push_back(foot_state_msg);
 
       // If this is a touchdown event, add to the future footholds message
       if (isNewContact(contact_schedule, i, j)) {
@@ -349,6 +352,44 @@ void LocalFootstepPlanner::computeFootPlanMsgs(
       if (i == 1 && isNewLiftoff(contact_schedule, i, j)) {
         past_footholds_msg.feet[j].footholds.push_back(foot_state_msg);
       }
+
+      // Add the message to the plan
+      foot_plan_continuous_msg.states[i].feet.push_back(foot_state_msg);
     }
   }
+}
+
+Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(const Eigen::Vector3d &foot_position) {
+  
+  // Declare 
+  Eigen::Vector3d foot_position_valid = foot_position;
+  grid_map::Position pos_center, pos_center_aligned, offset, pos_valid;
+  
+  // Compute the closest index to the nominal and find the offset
+  pos_center = {foot_position.x(), foot_position.y()};
+  grid_map::Index i;
+  terrain_grid_.getIndex(pos_center, i);
+  terrain_grid_.getPosition(i, pos_center_aligned);
+  offset = pos_center - pos_center_aligned;
+
+  // Spiral outwards from the nominal until we find a valid foothold
+  for (grid_map::SpiralIterator iterator(terrain_grid_, pos_center_aligned, foothold_search_radius_);
+      !iterator.isPastEnd(); ++iterator) {
+
+    double obj = terrain_grid_.at(obj_fun_layer_, *iterator);
+    if (obj > foothold_obj_threshold_) {
+
+      // Add the offset back in and return this new foothold
+      terrain_grid_.getPosition(*iterator, pos_valid);
+      pos_valid += offset;
+      foot_position_valid << pos_valid.x(), pos_valid.y(), 
+        terrain_grid_.atPosition("z", pos_valid, grid_map::InterpolationMethods::INTER_LINEAR);
+      return foot_position_valid;
+    }
+  }
+
+  // If no foothold is found in the radius, keep the nominal and issue a warning
+  ROS_WARN_THROTTLE(0.1, "No valid foothold found in radius of nominal, returning nominal");
+  return foot_position_valid;
+
 }
