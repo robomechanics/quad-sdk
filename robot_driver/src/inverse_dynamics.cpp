@@ -185,7 +185,7 @@ bool InverseDynamicsController::computeLegCommandArray(
       {
         Eigen::Vector3d hip_pos, nominal_foot_shift;
         quadKD_->worldToNominalHipFKWorldFrame(i, body_state.segment(0, 3), body_state.segment(3, 3), hip_pos);
-        nominal_foot_shift << 0, 0, -0.27;
+        nominal_foot_shift << 0, 0, -0.35;
 
         Eigen::Matrix3d rotation_matrix, body_rotation_matrix;
         double theta = 0.707;
@@ -218,6 +218,15 @@ bool InverseDynamicsController::computeLegCommandArray(
     // Copy to the ref state messsage
     for (size_t i = 0; i < 4; i++)
     {
+      // if (contact_mode.at(i))
+      // {
+      //   for (size_t j = 0; j < 3; j++)
+      //   {
+      //     ref_state_msg.joints.position.at(3 * i + j) = refined_state_msg.joints.position.at(3 * i + j);
+      //     ref_state_msg.joints.velocity.at(3 * i + j) = refined_state_msg.joints.velocity.at(3 * i + j);
+      //   }
+      // }
+
       if (last_contact_sensing_msg_.data.at(i))
       {
         for (size_t j = 0; j < 3; j++)

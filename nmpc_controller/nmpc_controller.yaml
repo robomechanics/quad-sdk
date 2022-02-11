@@ -5,7 +5,7 @@ nmpc_controller:
     state_dimension: 12
     control_dimension: 12
     step_length: 0.03
-    friction_coefficient: 0.5
+    friction_coefficient: 0.3
     panic_weights: !!float 1e2
     state_weights: [5.0, 5.0, 25.0, 0.5, 0.5, 0.05, 0.1, 0.1, 2.0, 0.05, 0.05, 0.01]
     control_weights: [!!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5]
@@ -37,10 +37,10 @@ nmpc_controller:
     control_dimension: 14
     state_dimension: 16
     step_length: 0.03
-    friction_coefficient: 0.5
-    panic_weights: !!float 1e3
-    state_weights: [0, 0, 0, 5.0, 5.0, 0, 0.1, 0.1, 0, 0, 0, 0, 0, 0, 0.001, 0.001]
-    control_weights: [!!float 1e-3, !!float 1e-3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    friction_coefficient: 0.3
+    panic_weights: !!float 1e2
+    state_weights: [0, 0, 0, 10.0, 10.0, 0, 1.0, 1.0, 0, 0, 0, 0, 0, 0, 0.1, 0.1]
+    control_weights: [!!float 1e-2, !!float 1e-2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     state_weights_factors: [ 1.        ,  1.15      ,  1.3225    ,  1.520875  ,  1.74900625,
         2.01135719,  2.31306077,  2.66001988,  3.05902286,  3.51787629,
         4.04555774,  4.6523914 ,  5.35025011,  6.15278762,  7.07570576,

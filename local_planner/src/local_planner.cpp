@@ -727,7 +727,7 @@ bool LocalPlanner::computeLocalPlan() {
           {
             Eigen::Vector3d hip_pos_plan, nominal_foot_shift;
             quadKD_->worldToNominalHipFKWorldFrame(i, body_plan_.row(j).segment(0, 3), body_plan_.row(j).segment(3, 3), hip_pos_plan);
-            nominal_foot_shift << 0, 0, -0.27;
+            nominal_foot_shift << 0, 0, -0.35;
 
             Eigen::Matrix3d rotation_matrix, body_rotation_matrix;
             double theta = 0.707;

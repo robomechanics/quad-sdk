@@ -4,17 +4,20 @@ import numpy as np
 
 vel = 0.75
 period = 0.36
-num = 50
-time_init = 5/4*3
+num = 25
+sample = 25
+time_init = 7.5/4*3
 time_stand = 7.5/4*3
-time_walk = 32.5/4*3
-world = ['world:=step_25cm']
+time_walk = 30/4*3
+world = ['world:=step_20cm', 'world:=step_22.5cm', 'world:=step_25cm', 'world:=step_27.5cm', 'world:=step_30cm', 'world:=step_35cm']
+# world = ['world:=step_20cm']
 
 np.random.seed(0)
 
-init_pos = np.linspace(-vel*period/2, vel*period/2, num) + 6.0
-init_pos = [init_pos[i] for i in [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]]
-# init_pos = [init_pos[i] for i in [3, 4, 13]]
+init_pos = np.linspace(-vel*period/2, vel*period/2, sample, endpoint=False) + 6.0
+# init_pos = np.array([init_pos]*int(num/sample)).T.flatten()
+# init_pos = [init_pos[i] for i in [11, 11, 11]]
+# print(init_pos)
 
 for w in world:
 

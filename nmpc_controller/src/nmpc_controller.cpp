@@ -89,10 +89,13 @@ NMPCController::NMPCController(int type)
   // app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
   app_->Options()->SetStringValue("fixed_variable_treatment", "make_parameter_nodual");
-  app_->Options()->SetNumericValue("tol", 1e-3);
-  app_->Options()->SetNumericValue("warm_start_bound_push", 1e-8);
-  app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-8);
-  app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-8);
+  app_->Options()->SetNumericValue("tol", 1e-6);
+  app_->Options()->SetNumericValue("dual_inf_tol", 1e10);
+  app_->Options()->SetNumericValue("constr_viol_tol", 1e-2);
+  app_->Options()->SetNumericValue("compl_inf_tol", 1e-2);
+  app_->Options()->SetNumericValue("warm_start_bound_push", 1e-6);
+  app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
+  app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
 
   app_->Options()->SetNumericValue("max_wall_time", 3.0 * dt_);
   app_->Options()->SetNumericValue("max_cpu_time", 3.0 * dt_);
@@ -286,17 +289,35 @@ bool NMPCController::computeDistributedTailPlan(const Eigen::VectorXd &initial_s
                                    state_traj_with_tail,
                                    control_traj_with_tail);
 
+  tail_state_traj.leftCols(2) = state_traj_with_tail.block(0, 6, N_ + 1, 2);
+  tail_state_traj.rightCols(2) = state_traj_with_tail.block(0, 14, N_ + 1, 2);
+
+  tail_control_traj = control_traj_with_tail.leftCols(2);
+
   // Eigen::Map<Eigen::MatrixXd> wwwww(mynlp_->w0_.block(0, 0, N_ * (n_ + m_), 0).data(), n_ + m_, N_);
   // ROS_INFO_STREAM("wsolve");
   // ROS_INFO_STREAM(wwwww.transpose().format(CleanFmt));
   // Eigen::Map<Eigen::MatrixXd> wwww(mynlp_->w0_.block(N_ * (n_ + m_), 0, 2 * N_ * n_, 0).data(), n_, 2 * N_);
   // ROS_INFO_STREAM("slacksolve");
   // ROS_INFO_STREAM(wwww.transpose().format(CleanFmt));
-
-  tail_state_traj.leftCols(2) = state_traj_with_tail.block(0, 6, N_ + 1, 2);
-  tail_state_traj.rightCols(2) = state_traj_with_tail.block(0, 14, N_ + 1, 2);
-
-  tail_control_traj = control_traj_with_tail.leftCols(2);
+  // Eigen::Map<Eigen::MatrixXd> zwl(mynlp_->z_L0_.block(0, 0, N_ * (n_ + m_), 0).data(), n_ + m_, N_);
+  // ROS_INFO_STREAM("zwl");
+  // ROS_INFO_STREAM(zwl.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> zsl(mynlp_->z_L0_.block(N_ * (n_ + m_), 0, 2 * N_ * n_, 0).data(), n_, 2 * N_);
+  // ROS_INFO_STREAM("zsl");
+  // ROS_INFO_STREAM(zsl.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> zwu(mynlp_->z_U0_.block(0, 0, N_ * (n_ + m_), 0).data(), n_ + m_, N_);
+  // ROS_INFO_STREAM("zwu");
+  // ROS_INFO_STREAM(zwu.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> zsu(mynlp_->z_U0_.block(N_ * (n_ + m_), 0, 2 * N_ * n_, 0).data(), n_, 2 * N_);
+  // ROS_INFO_STREAM("zsu");
+  // ROS_INFO_STREAM(zsu.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> lambdaaaa(mynlp_->lambda0_.data(), n_ + 16, N_);
+  // ROS_INFO_STREAM("lambdaaaa");
+  // ROS_INFO_STREAM(lambdaaaa.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> gggg(mynlp_->g0_.data(), n_ + 16, N_);
+  // ROS_INFO_STREAM("gggg");
+  // ROS_INFO_STREAM(gggg.transpose().format(CleanFmt));
 
   // if (!success)
   // {
@@ -346,7 +367,7 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
   {
     mynlp_->warm_start_ = true;
 
-    // return true;
+    return true;
   }
   else
   {
@@ -356,8 +377,6 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
 
     ROS_WARN_STREAM(param_ns_ << " solving fail");
 
-    // return false;
+    return false;
   }
-
-  return true;
 }
