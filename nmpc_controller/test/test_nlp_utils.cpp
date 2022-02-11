@@ -6,12 +6,12 @@
 
 TEST(NMPCTest, testUtils) {
   int type = NONE;
-  int N = 10;
-  int n = 2;
-  int n_null = 1;
+  int N = 24;
+  int n = 12;
+  int n_null = 24;
   int n_complex = n + n_null;
-  int m = 1;
-  double dt = 1;
+  int m = 12;
+  double dt = 0.03;
   double mu = 1;
   double panic_weights = 1;
   Eigen::MatrixXd Q(n, 1);
@@ -52,12 +52,43 @@ TEST(NMPCTest, testUtils) {
   int n_constraints = nlp.getNumConstraints();
   EXPECT_EQ(n_vars, (n * 3 + m) * N);
 
+  std::cout << "nlp.complexity_schedule_ = " << nlp.complexity_schedule_.transpose() << std::endl;
+  std::cout << "nlp.sys_id_schedule_ = " << nlp.sys_id_schedule_.transpose() << std::endl;
+  std::cout << "nlp.nnz_jac_g_ = " << nlp.nnz_jac_g_ << std::endl;
+  std::cout << "nlp.nnz_step_jac_g_[0] = " << nlp.nnz_step_jac_g_[0] << std::endl;
+  std::cout << "nlp.first_step_idx_mat_(LEG,JAC) = " << nlp.first_step_idx_mat_(LEG,JAC) << std::endl;
+  std::cout << "nlp.iRow_jac_g_.sum() = " << nlp.iRow_jac_g_.sum() << std::endl;
+  std::cout << "nlp.jCol_jac_g_.sum() = " << nlp.jCol_jac_g_.sum() << std::endl;
+  std::cout << "nlp.nnz_h_ = " << nlp.nnz_h_ << std::endl;
+  std::cout << "nlp.nnz_compact_h_ = " << nlp.nnz_compact_h_ << std::endl;
+  std::cout << "nlp.nnz_step_h_[0] = " << nlp.nnz_step_h_[0] << std::endl;
+  std::cout << "nlp.first_step_idx_mat_(LEG,HESS) = " << nlp.first_step_idx_mat_(LEG,HESS) << std::endl;
+  std::cout << "nlp.iRow_h_.sum() = " << nlp.iRow_h_.sum() << std::endl;
+  std::cout << "nlp.jCol_h_.sum() = " << nlp.jCol_h_.sum() << std::endl;
+  std::cout << "nlp.iRow_compact_h_.sum() = " << nlp.iRow_compact_h_.sum() << std::endl;
+  std::cout << "nlp.jCol_compact_h_.sum() = " << nlp.jCol_compact_h_.sum() << std::endl;
+
+  // Check against prior implementation
+  EXPECT_TRUE(nlp.nnz_jac_g_ == 4978);
+  EXPECT_TRUE(nlp.nnz_step_jac_g_[0] == 161);
+  EXPECT_TRUE(nlp.first_step_idx_mat_(LEG,JAC) == 38);
+  EXPECT_TRUE(nlp.iRow_jac_g_.sum() == 2385295);
+  EXPECT_TRUE(nlp.jCol_jac_g_.sum() == 1755775);
+  EXPECT_TRUE(nlp.nnz_h_ == 2937);
+  EXPECT_TRUE(nlp.nnz_compact_h_ == 2543);
+  EXPECT_TRUE(nlp.nnz_step_h_[0] == 125);
+  EXPECT_TRUE(nlp.first_step_idx_mat_(LEG,HESS) == 63);
+  EXPECT_TRUE(nlp.iRow_h_.sum() == 863430);
+  EXPECT_TRUE(nlp.jCol_h_.sum() == 834003);
+  EXPECT_TRUE(nlp.iRow_compact_h_.sum() == 750935);
+  EXPECT_TRUE(nlp.jCol_compact_h_.sum() == 722543);
+
   // Check num vars when all complex elements
   complexity_schedule.fill(1);
   nlp.update_complexity_schedule(complexity_schedule);
   n_vars = nlp.getNumVariables();
   n_constraints = nlp.getNumConstraints();
-  EXPECT_EQ(n_vars, (n_complex * 3 + m) * N);
+  EXPECT_EQ(n_vars, (n_complex + n * 2 + m) * N);
 
   // Check finite element indices when no complex elements
   complexity_schedule.fill(0);

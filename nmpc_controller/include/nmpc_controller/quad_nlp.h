@@ -142,7 +142,7 @@ public:
     Eigen::MatrixXi contact_sequence_;
 
     // Nonzero entrance number in the constraint jacobian matrix
-    int nnz_jac_g_, nnz_step_jac_g_;
+    int nnz_jac_g_;
 
     std::vector<int> first_step_idx_jac_g_;
 
@@ -153,7 +153,7 @@ public:
     int nnz_h_, nnz_compact_h_;
 
     // Vector of nnz in each block of the NLP Hessian
-    Eigen::VectorXi nnz_step_h_;
+    Eigen::VectorXi nnz_step_jac_g_, nnz_step_h_;
 
     std::vector<int> first_step_idx_hess_g_;
 
@@ -165,6 +165,9 @@ public:
 
     // Time duration to the next plan index
     double first_element_duration_;
+
+    // Complexity for the current state
+    static const int x0_complexity_ = 0;
 
     /// Vector of ids for model complexity schedule
     Eigen::VectorXi complexity_schedule_;
@@ -407,7 +410,17 @@ public:
      * @return Number of constraints
      */
     inline int getNumConstraints() const {
-        return (g_simple_ * (N_ - num_complex_fe_) + g_complex_ * num_complex_fe_) + 2*n_simple_ * N_;
+        return (g_simple_ * (N_ - num_complex_fe_) + g_complex_ * num_complex_fe_) + n_vars_slack_;
+    };
+
+    /**
+     * @brief Return the first index of the constraint vector corresponding to the given finite element
+     * @param[in] i Index of requested finite element
+     * @return Index in constraint vector corresponding to the beginning of the requested FE
+     */
+    inline int getConstraintFEIndex(int i) const {
+        int num_complex_before = complexity_schedule_.segment(0,i).sum();
+        return (num_complex_before * g_complex_ + (i - num_complex_before) * g_simple_);
     };
 
     /**
