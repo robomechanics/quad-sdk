@@ -51,6 +51,7 @@ quadNLP::quadNLP(
   n_complex_ = n + n_null_;
   m_simple_ = m;
   g_simple_ = g_;
+  n0_ = (x0_complexity_ == 1) ? n_complex_ : n_simple_ ;
 
   // Added constraints include all simple constraints plus:
   //    n_null_ constraints for foot position and velocities
@@ -236,7 +237,7 @@ quadNLP::quadNLP(
   x_reference_ = Eigen::MatrixXd(n_, N_);
   x_reference_.fill(0);
 
-  x_current_ = Eigen::MatrixXd(n_, 1);
+  x_current_ = Eigen::MatrixXd(n0_, 1);
   x_current_.fill(0);
 
   contact_sequence_ = Eigen::MatrixXi(4, N_);
@@ -484,10 +485,11 @@ bool quadNLP::eval_grad_f(
   bool new_x,
   Number* grad_f)
 {
-  Eigen::Map<const Eigen::MatrixXd> w(x, n, 1);
+  Eigen::Map<const Eigen::VectorXd> w(x, n);
 
-  Eigen::Map<Eigen::MatrixXd> grad_f_matrix(grad_f, n, 1);
+  Eigen::Map<Eigen::VectorXd> grad_f_matrix(grad_f, n);
 
+  int curr_var_idx = 0;
   for (int i = 0; i < N_; ++i)
   {
     // Compute the number of contacts
@@ -502,15 +504,15 @@ bool quadNLP::eval_grad_f(
       {
         if (contact_sequence_(j, i))
         {
-          u_nom[3 * j + 2] = mass_ * grav_ / num_contacts;
+          u_nom[3 * j + 2 + leg_input_start_idx_] = mass_ * grav_ / num_contacts;
         }
       }
     }
 
-    Eigen::MatrixXd uk = w.block(i * (n_ + m_), 0, m_, 1) - u_nom;
-    Eigen::MatrixXd xk = w.block(i * (n_ + m_) + m_, 0, n_, 1);
+    Eigen::MatrixXd uk = w.segment(curr_var_idx, m_) - u_nom;
+    Eigen::MatrixXd xk = w.segment(curr_var_idx + m_, n_simple_);
 
-    xk = (xk.array() - x_reference_.block(0, i, n_, 1).array()).matrix();
+    xk = (xk.array() - x_reference_.block(0, i, n_simple_, 1).array()).matrix();
 
     Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
     Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
@@ -521,11 +523,12 @@ bool quadNLP::eval_grad_f(
       Q_i = Q_i * first_element_duration_ / dt_;
     }
 
-    grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_i.asDiagonal() * uk;
-    grad_f_matrix.block(i * (n_ + m_) + m_, 0, n_, 1) = Q_i.asDiagonal() * xk;
+    grad_f_matrix.segment(curr_var_idx, m_) = R_i.asDiagonal() * uk;
+    grad_f_matrix.segment(curr_var_idx + m_, n_simple_) = Q_i.asDiagonal() * xk;
+    curr_var_idx += m_ + n_vec_[i];
   }
 
-  grad_f_matrix.block(N_ * (n_ + m_), 0, 2 * n_ * N_, 1).fill(panic_weights_);
+  grad_f_matrix.segment(n_vars_primal_, n_vars_slack_).fill(panic_weights_);
 
   return true;
 }
@@ -538,67 +541,84 @@ bool quadNLP::eval_g(
   Index m,
   Number* g)
 {
-  Eigen::Map<const Eigen::MatrixXd> w(x, n, 1);
+  Eigen::Map<const Eigen::VectorXd> w(x, n);
+  Eigen::Map<Eigen::VectorXd> g_matrix(g, m);
 
-  Eigen::Map<Eigen::MatrixXd> g_matrix(g, m, 1);
-
+  int curr_var_idx = 0;
+  int curr_constr_idx = 0;
   for (int i = 0; i < N_; ++i)
   {
-    Eigen::MatrixXd pk(14, 1);
+    // Select the system ID
+    int sys_id = sys_id_schedule_[i];
+
+    // Load the params for this FE
+    Eigen::VectorXd pk(14);
     if (i == 0)
     {
-      pk(0, 0) = first_element_duration_;
+      pk[0] = first_element_duration_;
     }
     else
     {
-      pk(0, 0) = dt_;
+      pk[0] = dt_;
     }
-    pk(1, 0) = mu_;
-    pk.block(2, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
+    pk[1] = mu_;
+    pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
 
+    // Set up the work function
     casadi_int sz_arg;
     casadi_int sz_res;
     casadi_int sz_iw;
     casadi_int sz_w;
-    eval_g_work_(&sz_arg, &sz_res, &sz_iw, &sz_w);
+    eval_work_vec_[sys_id][FUNC](&sz_arg, &sz_res, &sz_iw, &sz_w);
 
     const double* arg[sz_arg];
     double* res[sz_res];
     casadi_int iw[sz_iw];
     double _w[sz_w];
 
-    eval_g_incref_();
+    eval_incref_vec_[sys_id][FUNC]();
 
-    Eigen::MatrixXd tmp_arg(2 * n_ + m_, 1);
+    // Declare the temp arg for the first element
+    Eigen::VectorXd tmp_arg(n0_ + m_ + n_vec_[i]);
     if (i == 0)
     {
-      tmp_arg.topRows(n_) = x_current_;
-      tmp_arg.bottomRows(n_ + m_) = w.block(0, 0, n_ + m_, 1);
+      tmp_arg.topRows(n0_) = x_current_;
+      tmp_arg.bottomRows(n_vec_[i] + m_) = w.segment(0, n_vec_[i] + m_);
       arg[0] = tmp_arg.data();
     }
     else
     {
-      arg[0] = w.block(i * (n_ + m_) - n_, 0, 2 * n_ + m_, 1).data();
+      arg[0] = w.segment(curr_var_idx - n_vec_[i-1], n_vec_[i-1] + m_ + n_vec_[i]).data();
     }
 
     arg[1] = pk.data();
-    res[0] = g_matrix.block(i * g_, 0, g_, 1).data();
+    res[0] = g_matrix.segment(curr_constr_idx, g_vec_[i]).data();
 
-    int mem = eval_g_checkout_();
+    int mem = eval_checkout_vec_[sys_id][FUNC]();
 
-    eval_g_(arg, res, iw, _w, mem);
+    eval_vec_[sys_id][FUNC](arg, res, iw, _w, mem);
 
-    eval_g_release_(mem);
-    eval_g_decref_();
+    eval_release_vec_[sys_id][FUNC](mem);
+    eval_decref_vec_[sys_id][FUNC]();
+
+    curr_var_idx += m_ + n_vec_[i];
+    curr_constr_idx += g_vec_[i];
   }
 
+  int n_slack = n_;
+  int curr_var_slack_idx = 0;
+  curr_var_idx = m_;
   for (int i = 0; i < N_; ++i)
   {
-    Eigen::MatrixXd xk = w.block(i * (n_ + m_) + m_, 0, n_, 1);
-    Eigen::MatrixXd panick = w.block(N_ * (n_ + m_) + 2 * n_ * i, 0, 2 * n_, 1);
+    Eigen::VectorXd xk = w.segment(curr_var_idx, n_slack);
+    curr_var_idx += m_ + n_vec_[i];
+    Eigen::VectorXd panick = w.segment(n_vars_primal_ + curr_var_slack_idx, 2 * n_slack);
+    curr_var_slack_idx += 2*n_slack;
 
-    g_matrix.block(N_ * g_ + 2 * i * n_, 0, n_, 1) = xk + panick.block(0, 0, n_, 1);
-    g_matrix.block(N_ * g_ + 2 * i * n_ + n_, 0, n_, 1) = xk - panick.block(n_, 0, n_, 1);
+    g_matrix.segment(curr_constr_idx, n_) = xk + panick.segment(0, n_slack);
+    curr_constr_idx += n_slack;
+    g_matrix.segment(curr_constr_idx, n_) = xk - panick.segment(n_slack, n_slack);
+    curr_constr_idx += n_slack;
   }
 
   return true;

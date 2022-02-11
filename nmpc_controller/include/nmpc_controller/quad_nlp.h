@@ -75,6 +75,9 @@ public:
     /// Number of state variables added in complex model
     int n_null_;
 
+    /// Number of state variables in the initial state
+    int n0_;
+
     /// Declare the number of possible system ids (must match size of SystemID enum)
     static const int num_sys_id_ = 6;
 
