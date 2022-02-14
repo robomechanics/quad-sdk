@@ -61,7 +61,7 @@ TEST(NMPCTest, testUtils) {
   std::cout << "nlp.jCol_jac_g_.sum() = " << nlp.jCol_jac_g_.sum() << std::endl;
   std::cout << "nlp.nnz_h_ = " << nlp.nnz_h_ << std::endl;
   std::cout << "nlp.nnz_compact_h_ = " << nlp.nnz_compact_h_ << std::endl;
-  std::cout << "nlp.nnz_step_h_[0] = " << nlp.nnz_step_h_[0] << std::endl;
+  std::cout << "nlp.nnz_step_hess_[0] = " << nlp.nnz_step_hess_[0] << std::endl;
   std::cout << "nlp.first_step_idx_mat_(LEG,HESS) = " << nlp.first_step_idx_mat_(LEG,HESS) << std::endl;
   std::cout << "nlp.iRow_h_.sum() = " << nlp.iRow_h_.sum() << std::endl;
   std::cout << "nlp.jCol_h_.sum() = " << nlp.jCol_h_.sum() << std::endl;
@@ -76,7 +76,7 @@ TEST(NMPCTest, testUtils) {
   EXPECT_TRUE(nlp.jCol_jac_g_.sum() == 1755775);
   EXPECT_TRUE(nlp.nnz_h_ == 2937);
   EXPECT_TRUE(nlp.nnz_compact_h_ == 2543);
-  EXPECT_TRUE(nlp.nnz_step_h_[0] == 125);
+  EXPECT_TRUE(nlp.nnz_step_hess_[0] == 101);
   EXPECT_TRUE(nlp.first_step_idx_mat_(LEG,HESS) == 63);
   EXPECT_TRUE(nlp.iRow_h_.sum() == 863430);
   EXPECT_TRUE(nlp.jCol_h_.sum() == 834003);

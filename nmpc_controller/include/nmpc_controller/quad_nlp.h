@@ -9,24 +9,24 @@
 
 #include "IpTNLP.hpp"
 
-#include "nmpc_controller/eval_g_leg.h"
-#include "nmpc_controller/eval_jac_g_leg.h"
-#include "nmpc_controller/eval_hess_g_leg.h"
-#include "nmpc_controller/eval_g_leg_simple.h"
-#include "nmpc_controller/eval_jac_g_leg_simple.h"
-#include "nmpc_controller/eval_hess_g_leg_simple.h"
-#include "nmpc_controller/eval_g_leg_complex.h"
-#include "nmpc_controller/eval_jac_g_leg_complex.h"
-#include "nmpc_controller/eval_hess_g_leg_complex.h"
-#include "nmpc_controller/eval_g_leg_simple_to_complex.h"
-#include "nmpc_controller/eval_jac_g_leg_simple_to_complex.h"
-#include "nmpc_controller/eval_hess_g_leg_simple_to_complex.h"
-#include "nmpc_controller/eval_g_leg_complex_to_simple.h"
-#include "nmpc_controller/eval_jac_g_leg_complex_to_simple.h"
-#include "nmpc_controller/eval_hess_g_leg_complex_to_simple.h"
-#include "nmpc_controller/eval_g_tail.h"
-#include "nmpc_controller/eval_jac_g_tail.h"
-#include "nmpc_controller/eval_hess_g_tail.h"
+#include "nmpc_controller/gen/eval_g_leg.h"
+#include "nmpc_controller/gen/eval_jac_g_leg.h"
+#include "nmpc_controller/gen/eval_hess_g_leg.h"
+#include "nmpc_controller/gen/eval_g_leg_simple.h"
+#include "nmpc_controller/gen/eval_jac_g_leg_simple.h"
+#include "nmpc_controller/gen/eval_hess_g_leg_simple.h"
+#include "nmpc_controller/gen/eval_g_leg_complex.h"
+#include "nmpc_controller/gen/eval_jac_g_leg_complex.h"
+#include "nmpc_controller/gen/eval_hess_g_leg_complex.h"
+#include "nmpc_controller/gen/eval_g_leg_simple_to_complex.h"
+#include "nmpc_controller/gen/eval_jac_g_leg_simple_to_complex.h"
+#include "nmpc_controller/gen/eval_hess_g_leg_simple_to_complex.h"
+#include "nmpc_controller/gen/eval_g_leg_complex_to_simple.h"
+#include "nmpc_controller/gen/eval_jac_g_leg_complex_to_simple.h"
+#include "nmpc_controller/gen/eval_hess_g_leg_complex_to_simple.h"
+#include "nmpc_controller/gen/eval_g_tail.h"
+#include "nmpc_controller/gen/eval_jac_g_tail.h"
+#include "nmpc_controller/gen/eval_hess_g_tail.h"
 #include "quad_utils/tail_type.h"
 #include "quad_utils/function_timer.h"
 #include <Eigen/Dense>
@@ -156,7 +156,7 @@ public:
     int nnz_h_, nnz_compact_h_;
 
     // Vector of nnz in each block of the NLP Hessian
-    Eigen::VectorXi nnz_step_jac_g_, nnz_step_h_;
+    Eigen::VectorXi nnz_step_jac_g_, nnz_step_hess_;
 
     std::vector<int> first_step_idx_hess_g_;
 

@@ -201,15 +201,6 @@ quadNLP::quadNLP(
   ground_height_ = Eigen::MatrixXd(1, N_);
   ground_height_.fill(0);
 
-  w0_ = Eigen::MatrixXd((3 * n_ + m_) * N_, 1);
-  w0_.fill(0);
-  z_L0_ = Eigen::MatrixXd((3 * n_ + m_) * N_, 1);
-  z_L0_.fill(1);
-  z_U0_ = Eigen::MatrixXd((3 * n_ + m_) * N_, 1);
-  z_U0_.fill(1);
-  lambda0_ = Eigen::MatrixXd((g_ + 2 * n_) * N_, 1);
-  lambda0_.fill(0);
-
   num_complex_fe_ = 0;
   complexity_schedule_.setZero(N_);
   // complexity_schedule_.segment<2>(4).fill(1);
@@ -553,16 +544,9 @@ bool quadNLP::eval_g(
 
     // Load the params for this FE
     Eigen::VectorXd pk(14);
-    if (i == 0)
-    {
-      pk[0] = first_element_duration_;
-    }
-    else
-    {
-      pk[0] = dt_;
-    }
+    pk[0] = (i == 0) ? first_element_duration_ : dt_;
     pk[1] = mu_;
-    pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
+    pk.segment(2, 12) = feet_location_.col(i);
 
     // Set up the work function
     casadi_int sz_arg;
@@ -583,7 +567,7 @@ bool quadNLP::eval_g(
     if (i == 0)
     {
       tmp_arg.topRows(n0_) = x_current_;
-      tmp_arg.bottomRows(n_vec_[i] + m_) = w.segment(0, n_vec_[i] + m_);
+      tmp_arg.bottomRows(m_ + n_vec_[i]) = w.head(m_ + n_vec_[i]);
       arg[0] = tmp_arg.data();
     }
     else
@@ -595,9 +579,7 @@ bool quadNLP::eval_g(
     res[0] = g_matrix.segment(curr_constr_idx, g_vec_[i]).data();
 
     int mem = eval_checkout_vec_[sys_id][FUNC]();
-
     eval_vec_[sys_id][FUNC](arg, res, iw, _w, mem);
-
     eval_release_vec_[sys_id][FUNC](mem);
     eval_decref_vec_[sys_id][FUNC]();
 
@@ -637,92 +619,104 @@ bool quadNLP::eval_jac_g(
 {
   if (values == NULL)
   {
-    Eigen::Map<Eigen::MatrixXi> iRow_matrix(iRow, nele_jac, 1);
-    Eigen::Map<Eigen::MatrixXi> jCol_matrix(jCol, nele_jac, 1);
+    Eigen::Map<Eigen::VectorXi> iRow_matrix(iRow, nele_jac);
+    Eigen::Map<Eigen::VectorXi> jCol_matrix(jCol, nele_jac);
 
     iRow_matrix = iRow_jac_g_;
     jCol_matrix = jCol_jac_g_;
   }
   else
   {
-    Eigen::Map<const Eigen::MatrixXd> w(x, n, 1);
+    Eigen::Map<const Eigen::VectorXd> w(x, n);
 
-    Eigen::Map<Eigen::MatrixXd> values_matrix(values, nele_jac, 1);
+    Eigen::Map<Eigen::VectorXd> values_matrix(values, nele_jac);
 
+    int curr_var_idx = 0;
+    int curr_sparse_idx = 0;
     for (int i = 0; i < N_; ++i)
     {
-      Eigen::MatrixXd pk(14, 1);
-      if (i == 0)
-      {
-        pk(0, 0) = first_element_duration_;
-      }
-      else
-      {
-        pk(0, 0) = dt_;
-      }
-      pk(1, 0) = mu_;
-      pk.block(2, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
+      // Select the system ID
+      int sys_id = sys_id_schedule_[i];
 
+      // Load the params for this FE
+      Eigen::VectorXd pk(14);
+      pk[0] = (i == 0) ? first_element_duration_ : dt_;
+      pk[1] = mu_;
+      pk.segment(2, 12) = feet_location_.col(i);
+
+      // Set up the work function
       casadi_int sz_arg;
       casadi_int sz_res;
       casadi_int sz_iw;
       casadi_int sz_w;
-      eval_jac_g_work_(&sz_arg, &sz_res, &sz_iw, &sz_w);
+      eval_work_vec_[sys_id][JAC](&sz_arg, &sz_res, &sz_iw, &sz_w);
 
       const double* arg[sz_arg];
       double* res[sz_res];
       casadi_int iw[sz_iw];
       double _w[sz_w];
 
-      eval_jac_g_incref_();
-      int mem;
+      eval_incref_vec_[sys_id][JAC]();
 
-      Eigen::MatrixXd tmp_arg(2 * n_ + m_, 1), tmp_res(nnz_step_jac_g_[i], 1);
+      // Declare the temp arg for the first element
+      int nnz = nnz_step_jac_g_[i];
+      Eigen::VectorXd tmp_arg(n0_ + m_ + n_vec_[i]), tmp_res(nnz_step_jac_g_[i]);
+
+      int mem;
       if (i == 0)
       {
-        tmp_arg.topRows(n_) = x_current_;
-        tmp_arg.bottomRows(n_ + m_) = w.block(0, 0, n_ + m_, 1);
+        tmp_arg.head(n0_) = x_current_;
+        tmp_arg.tail(m_ + n_vec_[i]) = w.head(m_ + n_vec_[i]);
         arg[0] = tmp_arg.data();
         arg[1] = pk.data();
         res[0] = tmp_res.data();
 
-        mem = eval_jac_g_checkout_();
+        mem = eval_checkout_vec_[sys_id][JAC]();
+        eval_vec_[sys_id][JAC](arg, res, iw, _w, mem);
 
-        eval_jac_g_(arg, res, iw, _w, mem);
-
-        for (size_t j = 0; j < first_step_idx_jac_g_.size(); j++)
-        {
-          values_matrix(j, 0) = tmp_res(first_step_idx_jac_g_.at(j), 0);
-        }
+        nnz = tmp_res.size() - first_step_idx_mat_(sys_id,JAC);
+        values_matrix.head(nnz) = tmp_res.tail(nnz);
       }
       else
       {
-        arg[0] = w.block(i * (n_ + m_) - n_, 0, 2 * n_ + m_, 1).data();
+        arg[0] = w.segment(curr_var_idx - n_vec_[i-1], n_vec_[i-1] + m_ + n_vec_[i]).data();
         arg[1] = pk.data();
-        res[0] = values_matrix.block((i - 1) * nnz_step_jac_g_[i] + first_step_idx_jac_g_.size(), 0, nnz_step_jac_g_[i], 1).data();
+        res[0] = values_matrix.segment(curr_sparse_idx, nnz).data();
 
-        mem = eval_jac_g_checkout_();
+        mem = eval_checkout_vec_[sys_id][JAC]();
+        eval_vec_[sys_id][JAC](arg, res, iw, _w, mem);
 
-        eval_jac_g_(arg, res, iw, _w, mem);
       }
 
-      eval_jac_g_release_(mem);
-      eval_jac_g_decref_();
+      eval_release_vec_[sys_id][JAC](mem);
+      eval_decref_vec_[sys_id][JAC]();
+
+      curr_var_idx += m_ + n_vec_[i];
+      curr_sparse_idx += nnz;
     }
 
+    int n_slack = n_;
     for (size_t i = 0; i < N_; i++)
     {
       // xmin wrt x
-      values_matrix.block((N_ - 1) * nnz_step_jac_g_[i] + first_step_idx_jac_g_.size() + i * n_ * 4, 0, n_, 1).fill(1);
+      values_matrix.segment(curr_sparse_idx, n_slack).fill(1);
+      curr_sparse_idx += n_slack;
 
       // xmin wrt panic
-      values_matrix.block((N_ - 1) * nnz_step_jac_g_[i] + first_step_idx_jac_g_.size() + i * n_ * 4 + n_, 0, n_, 1).fill(1);
+      values_matrix.segment(curr_sparse_idx, n_slack).fill(1);
+      curr_sparse_idx += n_slack;
 
       // xmax wrt x
-      values_matrix.block((N_ - 1) * nnz_step_jac_g_[i] + first_step_idx_jac_g_.size() + i * n_ * 4 + 2 * n_, 0, n_, 1).fill(1);
+      values_matrix.segment(curr_sparse_idx, n_slack).fill(1);
+      curr_sparse_idx += n_slack;
 
       // xmax wrt panic
-      values_matrix.block((N_ - 1) * nnz_step_jac_g_[i] + first_step_idx_jac_g_.size() + i * n_ * 4 + 3 * n_, 0, n_, 1).fill(-1);
+      values_matrix.segment(curr_sparse_idx, n_slack).fill(-1);
+      curr_sparse_idx += n_slack;
+    }
+
+    if (curr_sparse_idx != nele_jac) {
+      throw std::runtime_error("Number of nonzero Jacobian entries doesn't match the prediction in eval_jac_g!");
     }
   }
 
@@ -755,7 +749,7 @@ void quadNLP::compute_nnz_jac_g()
   for (int i = 0; i < N_; ++i)
   {
     int sys_id = sys_id_schedule_[i];
-    nnz_step_jac_g_[i] = nnz_mat_(sys_id, JAC);
+    nnz_step_jac_g_[i] = nnz_mat_(sys_id,JAC);
 
     if (i == 0)
     {
@@ -767,7 +761,7 @@ void quadNLP::compute_nnz_jac_g()
     else
     {
       // Update the number of nonzeros in this block
-      int nnz = nnz_mat_(sys_id_schedule_[i],JAC);
+      int nnz = nnz_mat_(sys_id,JAC);
 
       // Each step we shift g constraints
       iRow_jac_g_.segment(curr_sparse_idx, nnz) =
@@ -780,7 +774,7 @@ void quadNLP::compute_nnz_jac_g()
       curr_sparse_idx += nnz;
     }
     curr_constr_idx += g_vec_[i];
-    curr_var_idx += n_vec_[i] + m_;
+    curr_var_idx += m_ + n_vec_[i];
   }
 
   for (size_t i = 0; i < N_; i++)
@@ -815,7 +809,7 @@ void quadNLP::compute_nnz_jac_g()
   }
 
   if ((curr_sparse_idx != nnz_jac_g_) || (curr_var_idx != n_vars_) || (curr_constr_idx != n_constraints_) ) {
-    throw std::runtime_error("Number of nonzero Jacobian entries doesn't match the prediction!");
+    throw std::runtime_error("Number of nonzero Jacobian entries doesn't match the prediction in compute_nnz_jac_g!");
   }
 }
 
@@ -835,84 +829,90 @@ bool quadNLP::eval_h(
 {
   if (values == NULL)
   {
-    Eigen::Map<Eigen::MatrixXi> iRow_matrix(iRow, nele_hess, 1);
-    Eigen::Map<Eigen::MatrixXi> jCol_matrix(jCol, nele_hess, 1);
+    Eigen::Map<Eigen::VectorXi> iRow_matrix(iRow, nele_hess);
+    Eigen::Map<Eigen::VectorXi> jCol_matrix(jCol, nele_hess);
 
     iRow_matrix = iRow_compact_h_;
     jCol_matrix = jCol_compact_h_;
   }
   else
   {
-    Eigen::Map<const Eigen::MatrixXd> w(x, n, 1);
+    Eigen::Map<const Eigen::VectorXd> w(x, n);
 
-    Eigen::Map<Eigen::MatrixXd> values_compact_matrix(values, nele_hess, 1);
-    Eigen::Map<const Eigen::MatrixXd> lambda_matrix(lambda, m, 1);
-    Eigen::MatrixXd values_matrix(nnz_h_, 1);
+    Eigen::Map<Eigen::VectorXd> values_compact_matrix(values, nele_hess);
+    Eigen::Map<const Eigen::VectorXd> lambda_matrix(lambda, m);
+    Eigen::VectorXd values_matrix(nnz_h_);
 
+    int curr_sparse_idx = 0;
+    int curr_var_idx = 0;
+    int curr_constr_idx = 0;
     for (int i = 0; i < N_; ++i)
     {
-      Eigen::MatrixXd pk(14, 1);
-      if (i == 0)
-      {
-        pk(0, 0) = first_element_duration_;
-      }
-      else
-      {
-        pk(0, 0) = dt_;
-      }
-      pk(1, 0) = mu_;
-      pk.block(2, 0, 12, 1) = feet_location_.block(0, i, 12, 1);
+      // Select the system ID
+      int sys_id = sys_id_schedule_[i];
 
+      // Load the params for this FE
+      Eigen::VectorXd pk(14);
+      pk[0] = (i == 0) ? first_element_duration_ : dt_;
+      pk[1] = mu_;
+      pk.segment(2, 12) = feet_location_.col(i);
+
+      // Set up the work function
       casadi_int sz_arg;
       casadi_int sz_res;
       casadi_int sz_iw;
       casadi_int sz_w;
-      eval_hess_g_work_(&sz_arg, &sz_res, &sz_iw, &sz_w);
+      eval_work_vec_[sys_id][HESS](&sz_arg, &sz_res, &sz_iw, &sz_w);
 
       const double* arg[sz_arg];
       double* res[sz_res];
       casadi_int iw[sz_iw];
       double _w[sz_w];
 
-      eval_hess_g_incref_();
+      eval_incref_vec_[sys_id][HESS]();
       int mem;
 
-      Eigen::MatrixXd tmp_arg(2 * n_ + m_, 1), tmp_res(nnz_step_h_[i] - n_ - m_, 1);
+      // Declare the temp arg for the first element
+      int nnz = nnz_step_hess_[i];
+
+      Eigen::VectorXd tmp_arg(n0_ + m_ + n_vec_[i]), tmp_res(nnz);
       if (i == 0)
       {
-        tmp_arg.topRows(n_) = x_current_;
-        tmp_arg.bottomRows(n_ + m_) = w.block(0, 0, n_ + m_, 1);
+        tmp_arg.head(n0_) = x_current_;
+        tmp_arg.tail(m_ + n_vec_[i]) = w.head(m_ + n_vec_[i]);
 
         arg[0] = tmp_arg.data();
-        arg[1] = lambda_matrix.block(i * g_, 0, g_, 1).data();
+        arg[1] = lambda_matrix.segment(curr_constr_idx, g_vec_[i]).data();
         arg[2] = pk.data();
         res[0] = tmp_res.data();
 
-        mem = eval_hess_g_checkout_();
+        mem = eval_checkout_vec_[sys_id][HESS]();
+        eval_vec_[sys_id][HESS](arg, res, iw, _w, mem);
 
-        eval_hess_g_(arg, res, iw, _w, mem);
-
-        // The first step only has u_0 and x_1 as decision variables
-        for (size_t j = 0; j < first_step_idx_hess_g_.size(); j++)
-        {
-          values_matrix(j, 0) = tmp_res(first_step_idx_hess_g_.at(j), 0);
-        }
+        nnz = tmp_res.size() - first_step_idx_mat_(sys_id,HESS);
+        values_matrix.segment(curr_sparse_idx,nnz) = tmp_res.tail(nnz);
       }
       else
       {
-        arg[0] = w.block(i * (n_ + m_) - n_, 0, 2 * n_ + m_, 1).data();
-        arg[1] = lambda_matrix.block(i * g_, 0, g_, 1).data();
+        arg[0] = w.segment(curr_var_idx - n_vec_[i-1], n_vec_[i-1] + m_ + n_vec_[i]).data();
+        arg[1] = lambda_matrix.segment(curr_constr_idx, g_vec_[i]).data();
         arg[2] = pk.data();
-        res[0] = values_matrix.block((i - 1) * nnz_step_h_[i] + n_ + m_ + first_step_idx_hess_g_.size(), 0, nnz_step_h_[i] - n_ - m_, 1).data();
+        res[0] = values_matrix.segment(curr_sparse_idx, nnz).data();
 
-        mem = eval_hess_g_checkout_();
-
-        eval_hess_g_(arg, res, iw, _w, mem);
+        mem = eval_checkout_vec_[sys_id][HESS]();
+        eval_vec_[sys_id][HESS](arg, res, iw, _w, mem);
       }
 
-      eval_hess_g_release_(mem);
-      eval_hess_g_decref_();
+      // Update the iterators
+      curr_sparse_idx += nnz;
+      curr_var_idx += m_ + n_vec_[i];
+      curr_constr_idx += g_vec_[i];
 
+      // Release memory for function
+      eval_release_vec_[sys_id][HESS](mem);
+      eval_decref_vec_[sys_id][HESS]();
+
+      // Initialize Q and R weights
       Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
       Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
 
@@ -922,17 +922,29 @@ bool quadNLP::eval_h(
         Q_i = Q_i * first_element_duration_ / dt_;
       }
 
-      values_matrix.block(i * nnz_step_h_[i] + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_i.array()).matrix();
-      values_matrix.block(i * nnz_step_h_[i] + first_step_idx_hess_g_.size() + m_, 0, n_, 1) = (obj_factor * Q_i.array()).matrix();
+      // Update the values for the cost
+      values_matrix.segment(curr_sparse_idx, m_) = (obj_factor * R_i.array()).matrix();
+      curr_sparse_idx += m_;
+      values_matrix.segment(curr_sparse_idx, n_vec_[i]) = (obj_factor * Q_i.array()).matrix();
+      curr_sparse_idx += n_vec_[i];
+
+    }
+
+    if (curr_var_idx != n_vars_primal_) {
+      throw std::runtime_error("Number of Hessian vars doesn't match the number of primals!");
+    }
+
+    if (curr_sparse_idx != nnz_h_) {
+      throw std::runtime_error("Number of Hessian nonzero entries doesn't match the prediction in eval_h!");
     }
 
     std::vector<Eigen::Triplet<double>> tripletList;
     tripletList.reserve(nnz_h_);
     for (int i = 0; i < nnz_h_; ++i)
     {
-      tripletList.push_back(Eigen::Triplet<double>(iRow_h_(i, 0), jCol_h_(i, 0), values_matrix(i, 0)));
+      tripletList.push_back(Eigen::Triplet<double>(iRow_h_[i], jCol_h_[i], values_matrix[i]));
     }
-    Eigen::SparseMatrix<double> hess(N_ * (n_ + m_), N_ * (n_ + m_));
+    Eigen::SparseMatrix<double> hess(n_vars_primal_, n_vars_primal_);
     hess.setFromTriplets(tripletList.begin(), tripletList.end());
 
     int idx_hess = 0;
@@ -940,7 +952,7 @@ bool quadNLP::eval_h(
     {
       for (Eigen::SparseMatrix<double>::InnerIterator it(hess, k); it; ++it)
       {
-        values_compact_matrix(idx_hess, 0) = it.value();
+        values_compact_matrix[idx_hess] = it.value();
         idx_hess += 1;
       }
     }
@@ -962,32 +974,32 @@ void quadNLP::compute_nnz_h()
 
   // Add cost variables (only on simple model coordinates) and subtract first step vars
   int first_step_idx = first_step_idx_mat_(sys_id_schedule_[0],HESS);
-  nnz_h_ = nnz_h_ - first_step_idx + N_ * (n_ + m_);
+  nnz_h_ = nnz_h_ - first_step_idx + N_ * (n_simple_ + m_);
 
   // Size the NLP constraint Hessian sparsity structure
   iRow_h_ = Eigen::VectorXi(nnz_h_);
   jCol_h_ = Eigen::VectorXi(nnz_h_);
 
   // Hessian from cost
-  Eigen::ArrayXi iRow_cost = Eigen::ArrayXi::LinSpaced(n_ + m_, 0, n_ + m_ - 1);
-  Eigen::ArrayXi jCol_cost = Eigen::ArrayXi::LinSpaced(n_ + m_, 0, n_ + m_ - 1);
+  Eigen::ArrayXi iRow_cost = Eigen::ArrayXi::LinSpaced(n_simple_ + m_, 0, n_simple_ + m_ - 1);
+  Eigen::ArrayXi jCol_cost = Eigen::ArrayXi::LinSpaced(n_simple_ + m_, 0, n_simple_ + m_ - 1);
 
   iRow_h_ = Eigen::VectorXi(nnz_h_);
   jCol_h_ = Eigen::VectorXi(nnz_h_);
-  nnz_step_h_.resize(N_);
+  nnz_step_hess_.resize(N_);
 
   int curr_sparse_idx = 0;
   int curr_var_idx = 0;
   for (int i = 0; i < N_; ++i)
   {
     int sys_id = sys_id_schedule_[i];
-    nnz_step_h_[i] = nnz_mat_(sys_id,HESS) + n_ + m_;
+    nnz_step_hess_[i] = nnz_mat_(sys_id,HESS);
 
     if (i == 0)
     {
       int first_step_size = iRow_mat_[sys_id][HESS].size() - first_step_idx;
-      iRow_h_.head(first_step_size) = (iRow_mat_[sys_id][HESS].tail(first_step_size).array() - n_).matrix();
-      jCol_h_.head(first_step_size) = (jCol_mat_[sys_id][HESS].tail(first_step_size).array() - n_).matrix();
+      iRow_h_.head(first_step_size) = (iRow_mat_[sys_id][HESS].tail(first_step_size).array() - n_simple_).matrix();
+      jCol_h_.head(first_step_size) = (jCol_mat_[sys_id][HESS].tail(first_step_size).array() - n_simple_).matrix();
       curr_sparse_idx += first_step_size;
     }
     else
@@ -1002,10 +1014,10 @@ void quadNLP::compute_nnz_h()
       curr_sparse_idx += nnz;
     }
     // Hessian from cost
-    iRow_h_.segment(curr_sparse_idx, n_ + m_) = (iRow_cost + curr_var_idx).matrix();
-    jCol_h_.segment(curr_sparse_idx, n_ + m_) = (jCol_cost + curr_var_idx).matrix();
+    iRow_h_.segment(curr_sparse_idx, n_simple_ + m_) = (iRow_cost + curr_var_idx).matrix();
+    jCol_h_.segment(curr_sparse_idx, n_simple_ + m_) = (jCol_cost + curr_var_idx).matrix();
 
-    curr_sparse_idx += (n_ + m_);
+    curr_sparse_idx += (n_simple_ + m_);
     curr_var_idx += n_vec_[i] + m_;
   }
 
@@ -1054,32 +1066,40 @@ void quadNLP::finalize_solution(
   const IpoptData* ip_data,
   IpoptCalculatedQuantities* ip_cq)
 {
-  Eigen::Map<const Eigen::MatrixXd> w(x, n, 1);
+  Eigen::Map<const Eigen::VectorXd> w(x, n);
   w0_ = w;
 
-  Eigen::Map<const Eigen::MatrixXd> z_L_matrix(z_L, n, 1);
-  Eigen::Map<const Eigen::MatrixXd> z_U_matrix(z_L, n, 1);
+  Eigen::Map<const Eigen::VectorXd> z_L_matrix(z_L, n);
+  Eigen::Map<const Eigen::VectorXd> z_U_matrix(z_L, n);
   z_L0_ = z_L_matrix;
   z_U0_ = z_U_matrix;
 
-  Eigen::Map<const Eigen::MatrixXd> lambda_matrix(lambda, m, 1);
+  Eigen::Map<const Eigen::VectorXd> lambda_matrix(lambda, m);
   lambda0_ = lambda_matrix;
 }
 
 void quadNLP::shift_initial_guess()
 {
   // Shift decision variables for 1 time step
+  int curr_var_idx = 0;
+  int curr_constr_idx = 0;
+  int curr_slack_idx = n_vars_primal_;
+  int n_slack = n_;
   for (size_t i = 0; i < N_ - 1; i++)
   {
-    w0_.block(i * (n_ + m_), 0, (n_ + m_), 1) = w0_.block((i + 1) * (n_ + m_), 0, (n_ + m_), 1);
-    z_L0_.block(i * (n_ + m_), 0, (n_ + m_), 1) = z_L0_.block((i + 1) * (n_ + m_), 0, (n_ + m_), 1);
-    z_U0_.block(i * (n_ + m_), 0, (n_ + m_), 1) = z_U0_.block((i + 1) * (n_ + m_), 0, (n_ + m_), 1);
-    lambda0_.block(i * g_, 0, g_, 1) = lambda0_.block((i + 1) * g_, 0, g_, 1);
+    w0_.segment(curr_var_idx, m_ + n_vec_[i]) = w0_.segment(curr_var_idx + m_ + n_vec_[i+1], m_ + n_vec_[i+1]);
+    z_L0_.segment(curr_var_idx, m_ + n_vec_[i]) = z_L0_.segment(curr_var_idx + m_ + n_vec_[i+1], m_ + n_vec_[i+1]);
+    z_U0_.segment(curr_var_idx, m_ + n_vec_[i]) = z_U0_.segment(curr_var_idx + m_ + n_vec_[i+1], m_ + n_vec_[i+1]);
+    lambda0_.segment(curr_constr_idx, g_vec_[i]) = lambda0_.segment(curr_constr_idx + g_vec_[i], g_vec_[i+1]);
+    curr_var_idx += m_ + n_vec_[i];
+    curr_constr_idx += g_vec_[i];
 
-    w0_.block(N_ * (n_ + m_) + 2 * i * n_, 0, 2 * n_, 1) = w0_.block(N_ * (n_ + m_) + 2 * (i + 1) * n_, 0, 2 * n_, 1);
-    z_L0_.block(N_ * (n_ + m_) + 2 * i * n_, 0, 2 * n_, 1) = z_L0_.block(N_ * (n_ + m_) + 2 * (i + 1) * n_, 0, 2 * n_, 1);
-    z_U0_.block(N_ * (n_ + m_) + 2 * i * n_, 0, 2 * n_, 1) = z_U0_.block(N_ * (n_ + m_) + 2 * (i + 1) * n_, 0, 2 * n_, 1);
-    lambda0_.block(N_ * g_ + 2 * i * n_, 0, 2 * n_, 1) = lambda0_.block(N_ * g_ + 2 * (i + 1) * n_, 0, 2 * n_, 1);
+    w0_.segment(curr_slack_idx, 2*n_slack) = w0_.segment(curr_slack_idx + 2*n_slack, 2*n_slack);
+    z_L0_.segment(curr_slack_idx, 2*n_slack) = z_L0_.segment(curr_slack_idx + 2*n_slack, 2*n_slack);
+    z_U0_.segment(curr_slack_idx, 2*n_slack) = z_U0_.segment(curr_slack_idx + 2*n_slack, 2*n_slack);
+    lambda0_.segment(curr_constr_idx, 2*n_slack) = lambda0_.segment(curr_constr_idx + 2*n_slack, 2*n_slack);
+    curr_slack_idx += 2*n_slack;
+    curr_constr_idx += 2*n_slack;
   }
 
   // New contact
