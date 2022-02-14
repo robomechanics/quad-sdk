@@ -35,7 +35,7 @@ private:
 
   /**
    * @brief Callback function to handle new ground truth data
-   * @param[in] ground_truth_msg quad_msgs<RobotState>
+   * @param[in] msg ground_truth_msg quad_msgs<RobotState>
    */
   void groundtruthCallback(const quad_msgs::RobotState::ConstPtr& msg);
 
