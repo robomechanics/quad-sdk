@@ -496,7 +496,7 @@ bool LocalPlanner::computeLocalPlan() {
   // Compute the new footholds if we have a valid existing plan (i.e. if grf_plan is filled)
   if (grf_plan_.rows() == N_) {
     
-    local_footstep_planner_->computeFootPositions(body_plan_, grf_plan_,
+    local_footstep_planner_->computeFootPlan(body_plan_, grf_plan_,
       contact_schedule_, ref_body_plan_, foot_positions_world_);
 
     // // For standing test we know the foot position will be constant

@@ -118,7 +118,7 @@ class LocalFootstepPlanner {
      * @param[in] current_state Current state of the robot body
      * @param[out] foot_positions Foot positions over the horizon
      */
-    void computeFootPositions(const Eigen::MatrixXd &body_plan, const Eigen::MatrixXd &grf_plan,
+    void computeFootPlan(const Eigen::MatrixXd &body_plan, const Eigen::MatrixXd &grf_plan,
       const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &ref_body_plan,
       Eigen::MatrixXd &foot_positions);
 
