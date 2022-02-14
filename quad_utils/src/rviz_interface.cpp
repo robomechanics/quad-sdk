@@ -428,7 +428,6 @@ void RVizInterface::robotStateCallback(
     transformStamped.child_frame_id = "/estimate/body";
     estimate_base_tf_br_.sendTransform(transformStamped);
     estimate_joint_states_viz_pub_.publish(joint_msg);
-    // std::cout <<" published estimated joint_msg" <<std::endl;
   } else if (pub_id == GROUND_TRUTH) {
     transformStamped.child_frame_id = "/ground_truth/body";
     ground_truth_base_tf_br_.sendTransform(transformStamped);

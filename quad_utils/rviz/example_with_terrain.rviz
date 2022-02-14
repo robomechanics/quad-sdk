@@ -1,6 +1,5 @@
 Panels:
   - Class: rviz/Displays
-    Help Height: 0
     Name: Displays
     Property Tree Widget:
       Expanded:

@@ -63,8 +63,11 @@ private:
    */
   quad_msgs::RobotState updateStep();
 
+  
+  const int numofStates = 6;
+  const int num_feet_ = 4;
 
-  /// Subscriber for joint encoder messages
+  /// Subscriber for ground_truth RobotState messages
   ros::Subscriber state_ground_truth_pub_;
 
   /// Last state ground_truth
@@ -123,13 +126,6 @@ private:
 
   // IMU bias in acc z
   double bias_z_;
-  
-  // QuadKD class
-  // std::shared_ptr<quad_utils::QuadKD>quadKD_;
-
- 
-
-
 
 };
 #endif // EKF_ESTIMATOR_H

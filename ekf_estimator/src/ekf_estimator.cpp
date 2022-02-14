@@ -1,8 +1,7 @@
 #include "ekf_estimator/ekf_estimator.h"
 
 
-const int numofStates = 6;
-const int num_feet_ = 4;
+
 EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
   nh_ = nh;
 
@@ -19,6 +18,7 @@ EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
   nh.getParam("/ekf_estimator/bias_x", bias_x_);
   nh.getParam("/ekf_estimator/bias_y", bias_y_);
   nh.getParam("/ekf_estimator/bias_z", bias_z_);
+
   // load ground_truth state rosparams and setup subs
   std::string state_ground_truth_topic;
   nh.param<std::string>("topic/state/ground_truth", state_ground_truth_topic, "/state/ground_truth");
@@ -190,9 +190,6 @@ void EKFEstimator::spin() {
   x = x0;
   last_x = x;
 
-  // std::cout << "estimate state x" << x << std::endl;
-  std::cout << "bias x is" << bias_x_ << std::endl;
-  std::cout << "bias y is" << bias_y_ << std::endl;
   while (ros::ok()) {
 
     // Collect new messages on subscriber topics

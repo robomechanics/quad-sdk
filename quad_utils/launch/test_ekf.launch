@@ -20,9 +20,10 @@
         </node>
     </group>
 
+    <!-- include the estimation launch to publish state estimate messages-->
+    <include file="$(find quad_utils)/launch/estimation.launch" />
+    
     <group ns="/estimate">
-        <!-- Launch the node to publish state estimate messages-->
-        <node name="ekf_estimator" pkg="ekf_estimator" type="ekf_estimator_node" output="screen"/>
         <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
             <remap from="joint_states" to="/visualization/joint_states/estimate"/>
