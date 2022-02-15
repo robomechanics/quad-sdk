@@ -22,7 +22,7 @@ EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
   // load ground_truth state rosparams and setup subs
   std::string state_ground_truth_topic;
   nh.param<std::string>("topic/state/ground_truth", state_ground_truth_topic, "/state/ground_truth");
-  state_ground_truth_pub_ = nh_.subscribe(state_ground_truth_topic,1,&EKFEstimator::groundtruthCallback,this);
+  state_ground_truth_sub_ = nh_.subscribe(state_ground_truth_topic,1,&EKFEstimator::groundtruthCallback,this);
 
   
   // Setup pubs and subs

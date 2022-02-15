@@ -68,7 +68,7 @@ private:
   const int num_feet_ = 4;
 
   /// Subscriber for ground_truth RobotState messages
-  ros::Subscriber state_ground_truth_pub_;
+  ros::Subscriber state_ground_truth_sub_;
 
   /// Last state ground_truth
   quad_msgs::RobotState::ConstPtr last_state_msg_;
