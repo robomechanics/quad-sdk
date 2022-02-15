@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   sensor_msgs
   quad_msgs
+  quad_utils
 )
 
 ## System dependencies are found with CMake's conventions
