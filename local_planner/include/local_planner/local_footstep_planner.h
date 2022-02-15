@@ -108,29 +108,7 @@ class LocalFootstepPlanner {
     void computeContactSchedule(int current_plan_index,
       Eigen::VectorXd current_state, Eigen::MatrixXd ref_body_plan,
       std::vector<std::vector<bool>> &contact_schedule) ;
-
-    // /**
-    //  * @brief Update the discrete footstep plan with the current plan
-    //  * @param[in] current_plan_index Current plan index
-    //  * @param[in] contact_schedule Current contact schedule
-    //  * @param[in] body_plan Current body plan
-    //  * @param[in] grf_plan Current grf plan
-    //  * @param[in] ref_body_plan Reference body plan
-    //  * @param[in] foot_positions_current Current foot position in the world frame
-    //  * @param[in] foot_velocities_current Current foot position in the world frame
-    //  * @param[in] first_element_duration Duration of first element of horizon (may not be dt)
-    //  * @param[in] past_footholds Message of past footholds, used for interpolation of swing state
-    //  * @param[out] foot_positions Foot positions over the horizon
-    //  * @param[out] foot_velocities Foot velocities over the horizon
-    //  * @param[out] foot_accelerations Foot accelerations over the horizon
-    //  */
-    // void computeFootPlan(int current_plan_index, const std::vector<std::vector<bool>> &contact_schedule,
-    //   const Eigen::MatrixXd &body_plan, const Eigen::MatrixXd &grf_plan,
-    //   const Eigen::MatrixXd &ref_body_plan, const Eigen::VectorXd &foot_positions_current,
-    //   const Eigen::VectorXd &foot_velocities_current, double first_element_duration,
-    //   quad_msgs::MultiFootState &past_footholds, Eigen::MatrixXd &foot_positions,
-    //   Eigen::MatrixXd &foot_velocities, Eigen::MatrixXd &foot_accelerations);
-
+      
     /**
      * @brief Update the discrete footstep plan with the current plan
      * @param[in] current_plan_index Current plan index
@@ -141,7 +119,7 @@ class LocalFootstepPlanner {
      * @param[in] foot_positions_current Current foot position in the world frame
      * @param[in] foot_velocities_current Current foot position in the world frame
      * @param[in] first_element_duration Duration of first element of horizon (may not be dt)
-     * @param[in] past_footholds Message of past footholds, used for interpolation of swing state
+     * @param[in] past_footholds_msg Message of past footholds, used for interpolation of swing state
      * @param[out] foot_positions Foot positions over the horizon
      * @param[out] future_footholds_msg Message for future (planned) footholds
      * @param[out] foot_plan_continuous_msg Message for continuous foot trajectories
@@ -150,7 +128,7 @@ class LocalFootstepPlanner {
       const Eigen::MatrixXd &body_plan, const Eigen::MatrixXd &grf_plan,
       const Eigen::MatrixXd &ref_body_plan, const Eigen::VectorXd &foot_positions_current,
       const Eigen::VectorXd &foot_velocities_current, double first_element_duration,
-      quad_msgs::MultiFootPlanDiscrete &past_footholds_msg, Eigen::MatrixXd &foot_positions, 
+      quad_msgs::MultiFootState &past_footholds_msg, Eigen::MatrixXd &foot_positions, 
       Eigen::MatrixXd &foot_velocities, Eigen::MatrixXd &foot_accelerations);
 
     /**

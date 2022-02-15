@@ -142,7 +142,7 @@ private:
 	quad_msgs::RobotState::ConstPtr robot_state_msg_;
 
   /// Past foothold locations
-	quad_msgs::MultiFootPlanDiscrete past_footholds_msg_;
+	quad_msgs::MultiFootState past_footholds_msg_;
 
   /// Timestamp of the state estimate
   ros::Time current_state_timestamp_;
