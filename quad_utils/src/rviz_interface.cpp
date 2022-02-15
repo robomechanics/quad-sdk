@@ -431,7 +431,6 @@ void RVizInterface::footPlanContinuousCallback(
 
 void RVizInterface::robotStateCallback(
   const quad_msgs::RobotState::ConstPtr& msg, const int pub_id) {
-
   // Make a transform message for the body, populate with state estimate data
   geometry_msgs::TransformStamped transformStamped;
   transformStamped.header = msg->header;

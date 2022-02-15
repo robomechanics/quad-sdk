@@ -5,3 +5,4 @@ docs/
 *.vscode
 external/ipopt/*
 !external/ipopt/.gitkeep
+*.csv
