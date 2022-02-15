@@ -64,6 +64,8 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   // Initialize body and foot position arrays
   ref_body_plan_ = Eigen::MatrixXd::Zero(N_+1, Nx_);
   foot_positions_world_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
+  foot_velocities_world_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
+  foot_accelerations_world_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
   foot_positions_body_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
   current_foot_positions_body_ = Eigen::VectorXd::Zero(num_feet_*3);
   current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_*3);
@@ -496,8 +498,9 @@ bool LocalPlanner::computeLocalPlan() {
   // Compute the new footholds if we have a valid existing plan (i.e. if grf_plan is filled)
   if (grf_plan_.rows() == N_) {
     
-    local_footstep_planner_->computeFootPlan(body_plan_, grf_plan_,
-      contact_schedule_, ref_body_plan_, foot_positions_world_);
+    local_footstep_planner_->computeFootPlan(current_plan_index_, contact_schedule_, body_plan_, grf_plan_, ref_body_plan_,
+      current_foot_positions_world_, current_foot_velocities_world_,first_element_duration_,
+      past_footholds_msg_, foot_positions_world_, foot_velocities_world_, foot_accelerations_world_);
 
     // // For standing test we know the foot position will be constant
     // for (int i = 0; i < N_; i++) {
@@ -574,8 +577,9 @@ void LocalPlanner::publishLocalPlan() {
   foot_plan_msg.header = local_plan_msg.header;
 
   // Compute the discrete and continuous foot plan messages
-  local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_world_, current_foot_positions_world_, current_foot_velocities_world_,
-    current_plan_index_, body_plan_, first_element_duration_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
+  local_footstep_planner_->loadFootPlanMsgs(contact_schedule_, current_plan_index_,
+    foot_positions_world_, foot_velocities_world_, foot_accelerations_world_,
+    future_footholds_msg, foot_plan_msg);
 
   // Add body, foot, joint, and grf data to the local plan message
   for (int i = 0; i < N_; i++) {

@@ -213,8 +213,14 @@ private:
   /// Contact schedule
   std::vector<std::vector<bool>> contact_schedule_;
 
-  /// Matrix of continuous foot positions in world frame
+    /// Matrix of continuous foot positions in world frame
   Eigen::MatrixXd foot_positions_world_;
+
+  /// Matrix of continuous foot velocities in world frame
+  Eigen::MatrixXd foot_velocities_world_;
+
+  /// Matrix of continuous foot accelerations in world frame
+  Eigen::MatrixXd foot_accelerations_world_;
 
   /// Matrix of continuous foot positions in body frame
   Eigen::MatrixXd foot_positions_body_;
