@@ -193,7 +193,7 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_
   anytime_horizon = std::max(poseDistance(s_start, s_goal)/
     planning_rate_estimate, anytime_horizon_init);
 
-  while(true && ros::ok())
+  while(ros::ok())
   {
     auto t_current = std::chrono::steady_clock::now();
     std::chrono::duration<double> total_elapsed = t_current - t_start_total_solve;
