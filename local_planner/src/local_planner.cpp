@@ -531,29 +531,13 @@ bool LocalPlanner::computeLocalPlan() {
   compute_time_ = 1000.0*timer.reportSilent();
   mean_compute_time_ = (filter_smoothing_constant_)*mean_compute_time_ +
     (1-filter_smoothing_constant_)*compute_time_;
-
-  if (compute_time_ >= 1000.0/update_rate_) {
-    // ROS_WARN_THROTTLE(0.1,"LocalPlanner took %5.3fms, exceeding %5.3fms allowed",
-    //   compute_time_, 1000.0/update_rate_);
-  } else {
-    ROS_INFO_THROTTLE(0.1,"LocalPlanner took %5.3f ms", compute_time_);
-  };
+  ROS_INFO_THROTTLE(0.1,"LocalPlanner took %5.3f ms", compute_time_);
   
   // Return true if made it this far
   return true;
 }
 
 void LocalPlanner::publishLocalPlan() {
-
-  // if (current_plan_index_ >= 50) {
-  //   std::cout << "current_state_\n" << current_state_ << std::endl;
-  //   std::cout << "ref_body_plan_\n" << ref_body_plan_ << std::endl;
-  //   std::cout << "body_plan_\n" << body_plan_ << std::endl;
-  //   std::cout << "grf_plan_\n" << grf_plan_ << std::endl;
-  //   std::cout << "foot_positions_world_\n" << foot_positions_world_ << std::endl;
-  //   std::cout << "foot_positions_body_\n" << foot_positions_body_ << std::endl;
-  //   throw std::runtime_error("Stop");
-  // }
   
   // Create messages to publish
   quad_msgs::RobotPlan local_plan_msg;
@@ -596,19 +580,10 @@ void LocalPlanner::publishLocalPlan() {
     
     // Update the headers and plan indices of the messages
     ros::Time state_timestamp;
-    // The first duration may vary
-    if (i == 0)
-    {
-      state_timestamp = local_plan_msg.header.stamp;
-    }
-    else if (i == 1)
-    {
-      state_timestamp = local_plan_msg.header.stamp + ros::Duration(first_element_duration_);
-    }
-    else
-    {
-      state_timestamp = local_plan_msg.header.stamp + ros::Duration(first_element_duration_) + ros::Duration((i - 1) * dt_);
-    }
+    // The first duration will vary
+    state_timestamp = (i == 0) ? local_plan_msg.header.stamp :
+      local_plan_msg.header.stamp + ros::Duration(first_element_duration_) + ros::Duration((i - 1) * dt_);
+
     quad_utils::updateStateHeaders(robot_state_msg, state_timestamp, map_frame_, current_plan_index_+i);
     grf_array_msg.header = robot_state_msg.header;
     grf_array_msg.traj_index = robot_state_msg.traj_index;

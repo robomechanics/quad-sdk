@@ -5,7 +5,7 @@ GlobalBodyPlan::GlobalBodyPlan() {
   plan_status_ = UNSOLVED;
 }
 
-void GlobalBodyPlan::reset() {
+void GlobalBodyPlan::clear() {
 
   // Clear all data and reset the length of the plan
   t_plan_.clear();
