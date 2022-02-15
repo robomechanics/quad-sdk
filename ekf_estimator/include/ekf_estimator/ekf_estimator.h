@@ -127,5 +127,8 @@ private:
   // IMU bias in acc z
   double bias_z_;
 
+  /// QuadKD class
+  std::shared_ptr<quad_utils::QuadKD>quadKD_;
+
 };
 #endif // EKF_ESTIMATOR_H
