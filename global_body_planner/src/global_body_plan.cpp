@@ -34,7 +34,7 @@ void GlobalBodyPlan::eraseAfterIndex(int start_index) {
 
 }
 
-void GlobalBodyPlan::load(int plan_status, FullState &start_state, double dist_to_goal, 
+void GlobalBodyPlan::loadPlanData(int plan_status, FullState &start_state, double dist_to_goal, 
   std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double dt, double t0,
   const PlannerConfig &planner_config) {
 
@@ -101,7 +101,7 @@ void GlobalBodyPlan::addStateAndGRFToMsg(double t, int plan_index, const FullSta
   msg.primitive_ids.push_back(primitive_id);
 }
 
-void GlobalBodyPlan::toMsg(quad_msgs::RobotPlan &robot_plan_msg,
+void GlobalBodyPlan::convertToMsg(quad_msgs::RobotPlan &robot_plan_msg,
   quad_msgs::RobotPlan &discrete_robot_plan_msg) {
 
   if (getSize() <= 0)

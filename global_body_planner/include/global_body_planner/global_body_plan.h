@@ -31,14 +31,6 @@ public:
   inline bool isEmpty() const { return t_plan_.empty(); };
 
   /**
-   * @brief Check if this worse than another plan (less solved or longer)
-   * @return Relative plan quality
-   */
-  inline bool isWorseThan(int other_plan_status, double other_plan_length) const {
-    return (other_plan_status == VALID && plan_status_ != VALID);
-  };
-
-  /**
    * @brief Get the status of this plan
    * @return Plan status ID
    */
@@ -147,7 +139,7 @@ public:
    * @param[in] t0 Start time of this plan section
    * @param[in] planner_config Planning configuration parameters
    */
-  void load(int plan_status, FullState& start_state, double dist_to_goal,
+  void loadPlanData(int plan_status, FullState& start_state, double dist_to_goal,
     std::vector<State>& state_sequence,
     std::vector<Action>& action_sequence, double dt, double t0,
     const PlannerConfig& planner_config);
@@ -169,7 +161,7 @@ public:
    * @param[out] robot_plan_msg Interpolated robot plan message
    * @param[out] discrete_robot_plan_msg Discrete robot plan message
    */
-  void toMsg(quad_msgs::RobotPlan& robot_plan_msg,
+  void convertToMsg(quad_msgs::RobotPlan& robot_plan_msg,
     quad_msgs::RobotPlan& discrete_robot_plan_msg);
 
 private:
