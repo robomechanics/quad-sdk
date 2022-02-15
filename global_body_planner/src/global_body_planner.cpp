@@ -238,7 +238,7 @@ bool GlobalBodyPlanner::callPlanner() {
 
 
     newest_plan_.eraseAfterIndex(start_index_);
-    newest_plan_.load(plan_status, start_state_, dist_to_goal, state_sequence, action_sequence, dt_,
+    newest_plan_.loadPlanData(plan_status, start_state_, dist_to_goal, state_sequence, action_sequence, dt_,
       replan_start_time_, planner_config_);
 
     // Check if this plan is better:
@@ -361,7 +361,7 @@ void GlobalBodyPlanner::publishCurrentPlan() {
     discrete_robot_plan_msg.global_plan_timestamp = current_plan_.getPublishedTimestamp();
 
     // Load the plan into the messages
-    current_plan_.toMsg(robot_plan_msg, discrete_robot_plan_msg);
+    current_plan_.convertToMsg(robot_plan_msg, discrete_robot_plan_msg);
 
     // Publish both messages
     body_plan_pub_.publish(robot_plan_msg);
