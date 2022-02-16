@@ -174,6 +174,10 @@ public:
   /// Vector of ids for model complexity schedule
   Eigen::VectorXi complexity_schedule_;
 
+  /// Vector of indices for relevant quantities
+  Eigen::VectorXi fe_idxs_, u_idxs_, x_idxs_, slack_idxs_, g_idxs_,
+      g_slack_idxs_, jac_sparse_idxs_, hess_sparse_idxs_;
+
   /// Vector of system ids
   Eigen::VectorXi sys_id_schedule_;
 

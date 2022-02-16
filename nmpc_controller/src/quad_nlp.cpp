@@ -1006,19 +1006,21 @@ void quadNLP::finalize_solution(SolverReturn status, Index n, const Number *x,
 void quadNLP::shift_initial_guess() {
   // Shift decision variables for 1 time step
   int curr_var_idx = 0;
+  int next_var_idx = m_ + n_vec_[0];
   int curr_constr_idx = 0;
   int curr_slack_idx = n_vars_primal_;
   int n_slack = n_;
   for (size_t i = 0; i < N_ - 1; i++) {
     w0_.segment(curr_var_idx, m_ + n_vec_[i]) =
-        w0_.segment(curr_var_idx + m_ + n_vec_[i + 1], m_ + n_vec_[i + 1]);
+        w0_.segment(next_var_idx, m_ + n_vec_[i + 1]);
     z_L0_.segment(curr_var_idx, m_ + n_vec_[i]) =
-        z_L0_.segment(curr_var_idx + m_ + n_vec_[i + 1], m_ + n_vec_[i + 1]);
+        z_L0_.segment(next_var_idx, m_ + n_vec_[i + 1]);
     z_U0_.segment(curr_var_idx, m_ + n_vec_[i]) =
-        z_U0_.segment(curr_var_idx + m_ + n_vec_[i + 1], m_ + n_vec_[i + 1]);
+        z_U0_.segment(next_var_idx, m_ + n_vec_[i + 1]);
     lambda0_.segment(curr_constr_idx, g_vec_[i]) =
         lambda0_.segment(curr_constr_idx + g_vec_[i], g_vec_[i + 1]);
-    curr_var_idx += m_ + n_vec_[i];
+    curr_var_idx = next_var_idx;
+    next_var_idx += m_ + n_vec_[i];
     curr_constr_idx += g_vec_[i];
 
     w0_.segment(curr_slack_idx, 2 * n_slack) =
@@ -1160,38 +1162,105 @@ void quadNLP::update_complexity_schedule(
   // Update the complexity schedule
   this->complexity_schedule_ = complexity_schedule;
 
-  // Resize appropriately
+  // Resize vectors appropriately
   N_ = complexity_schedule.size();
   sys_id_schedule_.resize(N_);
   g_vec_.resize(N_);
+  n_vec_.resize(N_);
+  fe_idxs_.resize(N_);
+  u_idxs_.resize(N_);
+  x_idxs_.resize(N_);
+  slack_idxs_.resize(N_);
+  g_idxs_.resize(N_);
+  g_slack_idxs_.resize(N_);
+  jac_sparse_idxs_.resize(N_);
+  hess_sparse_idxs_.resize(N_);
 
+  // Initialize indexing veriables
   num_complex_fe_ = 0;
-  for (int i = 0; i < complexity_schedule.size(); i++) {
+  int curr_var_idx = 0;
+  int curr_constr_idx = 0;
+  int curr_j_sparse_idx = 0;
+  int curr_h_sparse_idx = 0;
+
+  // Loop through the horizon
+  for (int i = 0; i < N_; i++) {
+
+    // Update the number of complex elements
     num_complex_fe_ += complexity_schedule[i];
 
+    // Update the complexity of the prior finite element
     int prior_complexity =
         (i > 0) ? complexity_schedule[i - 1] : x0_complexity_;
 
-    if (i < complexity_schedule_.size() - 1) {
-      if (complexity_schedule[i] == 0) {
-        sys_id_schedule_[i] = (prior_complexity == 0) ? LEG : COMPLEX_TO_SIMPLE;
-      } else {
-        sys_id_schedule_[i] =
-            (prior_complexity == 1) ? COMPLEX : SIMPLE_TO_COMPLEX;
-      }
+    // Determine the system to assign to this finite element
+    if (complexity_schedule[i] == 0) {
+      sys_id_schedule_[i] = (prior_complexity == 0) ? LEG : COMPLEX_TO_SIMPLE;
+    } else {
+      sys_id_schedule_[i] =
+          (prior_complexity == 1) ? COMPLEX : SIMPLE_TO_COMPLEX;
     }
+
+    // Update the number of state vars and constraints for this FE
+    n_vec_[i] = (complexity_schedule[i] == 1) ? n_complex_ : n_simple_;
     g_vec_[i] = nrow_mat_(sys_id_schedule_[i], FUNC);
+
+    // Update the indices for the finite element, control, and state variables
+    fe_idxs_[i] = curr_var_idx;
+    u_idxs_[i] = curr_var_idx;
+    curr_var_idx += m_;
+    x_idxs_[i] = curr_var_idx;
+    curr_var_idx += n_vec_[i];
+
+    // Update the indices for the constraints
+    g_idxs_[i] = curr_constr_idx;
+    curr_constr_idx += g_vec_[i];
+
+    // Compute the offsets for the first step
+    int j_first_step_idx =
+        (i == 0) ? first_step_idx_mat_(sys_id_schedule_[i], JAC) : 0;
+    int h_first_step_idx =
+        (i == 0) ? first_step_idx_mat_(sys_id_schedule_[i], HESS) : 0;
+
+    // Update the indices for the sparsity patterns
+    jac_sparse_idxs_[i] = curr_j_sparse_idx;
+    curr_j_sparse_idx += nnz_mat_(sys_id_schedule_[i], JAC) - j_first_step_idx;
+    hess_sparse_idxs_[i] = curr_h_sparse_idx;
+    curr_h_sparse_idx += nnz_mat_(sys_id_schedule_[i], HESS) - h_first_step_idx;
   }
-  sys_id_schedule_[N_ - 1] = LEG;
-  g_vec_[N_ - 1] = nrow_mat_(sys_id_schedule_[N_ - 1], FUNC);
 
-  n_vec_ = n_complex_ * complexity_schedule +
-           n_simple_ * (Eigen::VectorXi::Ones(N_) - complexity_schedule);
-  g_vec_ = g_complex_ * complexity_schedule +
-           g_simple_ * (Eigen::VectorXi::Ones(N_) - complexity_schedule);
+  // Update the total number of primal variables
+  n_vars_primal_ = curr_var_idx;
 
-  n_vars_primal_ = getNumPrimalVariables();
-  n_vars_slack_ = getNumSlackVariables();
-  n_vars_ = getNumVariables();
-  n_constraints_ = getNumConstraints();
+  // Update the slack variable indices
+  int n_slack = n_simple_;
+  for (int i = 0; i < N_; i++) {
+    slack_idxs_[i] = curr_var_idx;
+    curr_var_idx += 2 * n_slack;
+
+    g_slack_idxs_[i] = curr_constr_idx;
+    curr_constr_idx += 2 * n_slack;
+  }
+
+  // Update the total number of vars and slack vars
+  n_vars_ = curr_var_idx;
+  n_vars_slack_ = n_vars_ - n_vars_primal_;
+
+  // Check the number of primal and slack vars for correctness
+  if (n_vars_primal_ != (m_ * N_ + n_simple_ * (N_ - num_complex_fe_) +
+                         n_complex_ * num_complex_fe_)) {
+    throw std::runtime_error("Number of primal vars is inconsistent");
+  } else if (n_vars_slack_ != (2 * n_slack * N_)) {
+    throw std::runtime_error("Number of slack vars is inconsistent");
+  }
+
+  // Update the number of constraints
+  n_constraints_ = curr_constr_idx;
+
+  // Check the number of constraints
+  if (n_constraints_ !=
+      ((g_simple_ * (N_ - num_complex_fe_) + g_complex_ * num_complex_fe_) +
+       n_vars_slack_)) {
+    throw std::runtime_error("Number of constraints is inconsistent");
+  }
 }

@@ -157,7 +157,6 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
   // Only shift the warm start if we get a new plan index
   if (!same_plan_index)
   {
-    std::cout << "Shifting guess" << std::endl;
     mynlp_->shift_initial_guess();
   }
 
