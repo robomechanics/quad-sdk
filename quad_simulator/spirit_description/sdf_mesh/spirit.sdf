@@ -259,12 +259,9 @@ SOFTWARE.
             <threshold>1e+06</threshold>
           </bounce>
           <friction>
-            <torsional>
-              <coefficient>0.3</coefficient>
-            </torsional>
             <ode>
-              <mu>100</mu>
-              <mu2>50</mu2>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
             </ode>
             <bullet>
               <rolling_friction>0.3</rolling_friction>
@@ -279,8 +276,8 @@ SOFTWARE.
               <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
             </bullet>
             <ode>
-              <kp>30000</kp>
-              <kd>1000</kd>
+              <kp>1000000</kp>
+              <kd>1</kd>
             </ode>
           </contact>
         </surface>
@@ -529,12 +526,9 @@ SOFTWARE.
             <threshold>1e+06</threshold>
           </bounce>
           <friction>
-            <torsional>
-              <coefficient>0.3</coefficient>
-            </torsional>
             <ode>
-              <mu>100</mu>
-              <mu2>50</mu2>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
             </ode>
             <bullet>
               <rolling_friction>0.3</rolling_friction>
@@ -549,8 +543,8 @@ SOFTWARE.
               <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
             </bullet>
             <ode>
-              <kp>30000</kp>
-              <kd>1000</kd>
+              <kp>1000000</kp>
+              <kd>1</kd>
             </ode>
           </contact>
         </surface>
@@ -800,12 +794,9 @@ SOFTWARE.
             <threshold>1e+06</threshold>
           </bounce>
           <friction>
-            <torsional>
-              <coefficient>0.3</coefficient>
-            </torsional>
             <ode>
-              <mu>100</mu>
-              <mu2>50</mu2>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
             </ode>
             <bullet>
               <rolling_friction>0.3</rolling_friction>
@@ -820,8 +811,8 @@ SOFTWARE.
               <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
             </bullet>
             <ode>
-              <kp>30000</kp>
-              <kd>1000</kd>
+              <kp>1000000</kp>
+              <kd>1</kd>
             </ode>
           </contact>
         </surface>
@@ -1070,12 +1061,9 @@ SOFTWARE.
             <threshold>1e+06</threshold>
           </bounce>
           <friction>
-            <torsional>
-              <coefficient>0.3</coefficient>
-            </torsional>
             <ode>
-              <mu>100</mu>
-              <mu2>50</mu2>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
             </ode>
             <bullet>
               <rolling_friction>0.3</rolling_friction>
@@ -1090,8 +1078,8 @@ SOFTWARE.
               <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
             </bullet>
             <ode>
-              <kp>30000</kp>
-              <kd>1000</kd>
+              <kp>1000000</kp>
+              <kd>1</kd>
             </ode>
           </contact>
         </surface>
@@ -1184,12 +1172,9 @@ SOFTWARE.
             <threshold>1e+06</threshold>
           </bounce>
           <friction>
-            <torsional>
-              <coefficient>0.3</coefficient>
-            </torsional>
             <ode>
-              <mu>100</mu>
-              <mu2>50</mu2>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
             </ode>
             <bullet>
               <rolling_friction>0.3</rolling_friction>
@@ -1204,8 +1189,8 @@ SOFTWARE.
               <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
             </bullet>
             <ode>
-              <kp>30000</kp>
-              <kd>1000</kd>
+              <kp>1000000</kp>
+              <kd>1</kd>
             </ode>
           </contact>
         </surface>
@@ -1271,12 +1256,9 @@ SOFTWARE.
             <threshold>1e+06</threshold>
           </bounce>
           <friction>
-            <torsional>
-              <coefficient>0.3</coefficient>
-            </torsional>
             <ode>
-              <mu>100</mu>
-              <mu2>50</mu2>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
             </ode>
             <bullet>
               <rolling_friction>0.3</rolling_friction>
@@ -1291,8 +1273,8 @@ SOFTWARE.
               <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
             </bullet>
             <ode>
-              <kp>30000</kp>
-              <kd>1000</kd>
+              <kp>1000000</kp>
+              <kd>1</kd>
             </ode>
           </contact>
         </surface>
@@ -1358,12 +1340,9 @@ SOFTWARE.
             <threshold>1e+06</threshold>
           </bounce>
           <friction>
-            <torsional>
-              <coefficient>0.3</coefficient>
-            </torsional>
             <ode>
-              <mu>100</mu>
-              <mu2>50</mu2>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
             </ode>
             <bullet>
               <rolling_friction>0.3</rolling_friction>
@@ -1378,8 +1357,8 @@ SOFTWARE.
               <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
             </bullet>
             <ode>
-              <kp>30000</kp>
-              <kd>1000</kd>
+              <kp>1000000</kp>
+              <kd>1</kd>
             </ode>
           </contact>
         </surface>
@@ -1445,12 +1424,9 @@ SOFTWARE.
             <threshold>1e+06</threshold>
           </bounce>
           <friction>
-            <torsional>
-              <coefficient>0.3</coefficient>
-            </torsional>
             <ode>
-              <mu>100</mu>
-              <mu2>50</mu2>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
             </ode>
             <bullet>
               <rolling_friction>0.3</rolling_friction>
@@ -1465,8 +1441,8 @@ SOFTWARE.
               <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
             </bullet>
             <ode>
-              <kp>30000</kp>
-              <kd>1000</kd>
+              <kp>1000000</kp>
+              <kd>1</kd>
             </ode>
           </contact>
         </surface>
