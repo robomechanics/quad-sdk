@@ -157,6 +157,7 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
   // Only shift the warm start if we get a new plan index
   if (!same_plan_index)
   {
+    std::cout << "Shifting guess" << std::endl;
     mynlp_->shift_initial_guess();
   }
 
@@ -302,8 +303,10 @@ bool NMPCController::computePlan(const Eigen::VectorXd &initial_state,
 
   for (int i = 0; i < N_; ++i)
   {
-    u.block(0, i, m_, 1) = mynlp_->w0_.block(i * (n_ + m_), 0, m_, 1);
-    x.block(0, i, n_, 1) = mynlp_->w0_.block(i * (n_ + m_) + m_, 0, n_, 1);
+    u.col(i) = mynlp_->w0_.segment(mynlp_->getPrimalControlFEIndex(i), m_);
+    x.col(i) = mynlp_->w0_.segment(mynlp_->getPrimalStateFEIndex(i),
+                                   mynlp_->n_vec_[i]);
+    
   }
 
   if (status == Solve_Succeeded)

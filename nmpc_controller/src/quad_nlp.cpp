@@ -1194,9 +1194,4 @@ void quadNLP::update_complexity_schedule(
   n_vars_slack_ = getNumSlackVariables();
   n_vars_ = getNumVariables();
   n_constraints_ = getNumConstraints();
-
-  w0_ = Eigen::MatrixXd(n_vars_, 1).setZero();
-  z_L0_ = Eigen::MatrixXd(n_vars_, 1).Ones(n_vars_, 1);
-  z_U0_ = Eigen::MatrixXd(n_vars_, 1).Ones(n_vars_, 1);
-  lambda0_ = Eigen::MatrixXd(n_constraints_, 1).setZero();
 }
