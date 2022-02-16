@@ -64,6 +64,8 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
   // Initialize body and foot position arrays
   ref_body_plan_ = Eigen::MatrixXd::Zero(N_+1, Nx_);
   foot_positions_world_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
+  foot_velocities_world_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
+  foot_accelerations_world_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
   foot_positions_body_ = Eigen::MatrixXd::Zero(N_,num_feet_*3);
   current_foot_positions_body_ = Eigen::VectorXd::Zero(num_feet_*3);
   current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_*3);
@@ -216,12 +218,12 @@ void LocalPlanner::terrainMapCallback(
 void LocalPlanner::robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg) {
   // If this is the first plan, initialize the message of past footholds with current foot positions
   if (body_plan_msg_ == NULL && robot_state_msg_ != NULL) {
+    past_footholds_msg_ = robot_state_msg_->feet;
     past_footholds_msg_.header = msg->header;
+    past_footholds_msg_.traj_index = current_plan_index_;
     for (int i = 0; i < num_feet_; i++) {
-      past_footholds_msg_.feet[i].footholds.clear();
-      past_footholds_msg_.feet[i].footholds.push_back(robot_state_msg_->feet.feet[i]);
-      past_footholds_msg_.feet[i].footholds.front().header = past_footholds_msg_.header;
-      past_footholds_msg_.feet[i].footholds.front().traj_index = 0;
+      past_footholds_msg_.feet[i].header = past_footholds_msg_.header;
+      past_footholds_msg_.feet[i].traj_index = past_footholds_msg_.traj_index;
     }
   }
 
@@ -266,12 +268,11 @@ void LocalPlanner::getStateAndReferencePlan() {
   // Initializing foot positions if not data has arrived
   if (first_plan_) {
     first_plan_ = false;
-    past_footholds_msg_.header = robot_state_msg_->header;
+    past_footholds_msg_ = robot_state_msg_->feet;
+    past_footholds_msg_.traj_index = current_plan_index_;
     for (int i = 0; i < num_feet_; i++) {
-      past_footholds_msg_.feet[i].footholds.clear();
-      past_footholds_msg_.feet[i].footholds.push_back(robot_state_msg_->feet.feet[i]);
-      past_footholds_msg_.feet[i].footholds.front().header = past_footholds_msg_.header;
-      past_footholds_msg_.feet[i].footholds.front().traj_index = 0;
+      past_footholds_msg_.feet[i].header = past_footholds_msg_.header;
+      past_footholds_msg_.feet[i].traj_index = past_footholds_msg_.traj_index;
     }
   }
 
@@ -339,12 +340,11 @@ void LocalPlanner::getStateAndTwistInput() {
   // Initializing foot positions if not data has arrived
   if (first_plan_) {
     first_plan_ = false;
-    past_footholds_msg_.header = robot_state_msg_->header;
+    past_footholds_msg_ = robot_state_msg_->feet;
+    past_footholds_msg_.traj_index = current_plan_index_;
     for (int i = 0; i < num_feet_; i++) {
-      past_footholds_msg_.feet[i].footholds.clear();
-      past_footholds_msg_.feet[i].footholds.push_back(robot_state_msg_->feet.feet[i]);
-      past_footholds_msg_.feet[i].footholds.front().header = past_footholds_msg_.header;
-      past_footholds_msg_.feet[i].footholds.front().traj_index = 0;
+      past_footholds_msg_.feet[i].header = past_footholds_msg_.header;
+      past_footholds_msg_.feet[i].traj_index = past_footholds_msg_.traj_index;
     }
   }
 
@@ -496,13 +496,9 @@ bool LocalPlanner::computeLocalPlan() {
   // Compute the new footholds if we have a valid existing plan (i.e. if grf_plan is filled)
   if (grf_plan_.rows() == N_) {
     
-    local_footstep_planner_->computeFootPositions(body_plan_, grf_plan_,
-      contact_schedule_, ref_body_plan_, foot_positions_world_);
-
-    // // For standing test we know the foot position will be constant
-    // for (int i = 0; i < N_; i++) {
-    //   foot_positions_world_.row(i) = current_foot_positions_world_;
-    // }
+    local_footstep_planner_->computeFootPlan(current_plan_index_, contact_schedule_, body_plan_, grf_plan_, ref_body_plan_,
+      current_foot_positions_world_, current_foot_velocities_world_,first_element_duration_,
+      past_footholds_msg_, foot_positions_world_, foot_velocities_world_, foot_accelerations_world_);
 
     // Transform the new foot positions into the body frame for body planning
     local_footstep_planner_->getFootPositionsBodyFrame(body_plan_, foot_positions_world_,
@@ -558,8 +554,9 @@ void LocalPlanner::publishLocalPlan() {
   foot_plan_msg.header = local_plan_msg.header;
 
   // Compute the discrete and continuous foot plan messages
-  local_footstep_planner_->computeFootPlanMsgs(contact_schedule_, foot_positions_world_, current_foot_positions_world_, current_foot_velocities_world_,
-    current_plan_index_, body_plan_, first_element_duration_, past_footholds_msg_, future_footholds_msg, foot_plan_msg);
+  local_footstep_planner_->loadFootPlanMsgs(contact_schedule_, current_plan_index_, first_element_duration_,
+    foot_positions_world_, foot_velocities_world_, foot_accelerations_world_,
+    future_footholds_msg, foot_plan_msg);
 
   // Add body, foot, joint, and grf data to the local plan message
   for (int i = 0; i < N_; i++) {
@@ -580,6 +577,7 @@ void LocalPlanner::publishLocalPlan() {
     
     // Update the headers and plan indices of the messages
     ros::Time state_timestamp;
+
     // The first duration will vary
     state_timestamp = (i == 0) ? local_plan_msg.header.stamp :
       local_plan_msg.header.stamp + ros::Duration(first_element_duration_) + ros::Duration((i - 1) * dt_);
