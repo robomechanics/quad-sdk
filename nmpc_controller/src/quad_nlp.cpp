@@ -130,7 +130,7 @@ quadNLP::quadNLP(
    g_max_.block(n_, 0, 16, 1).fill(0);
 
    ground_height_ = Eigen::MatrixXd(1, N_);
-   ground_height_.fill(0);
+   ground_height_.fill(-2e19);
 
    w0_ = Eigen::MatrixXd((3 * n_ + m_) * N_, 1);
    w0_.fill(0);
@@ -140,13 +140,18 @@ quadNLP::quadNLP(
    z_U0_.fill(1);
    lambda0_ = Eigen::MatrixXd((g_ + 2 * n_) * N_, 1);
    lambda0_.fill(0);
+   g0_ = Eigen::MatrixXd(g_ * N_, 1);
+   g0_.fill(0);
+   mu0_ = 1e-1;
 
-   for (int i = 0; i < N_; ++i)
+   warm_start_ = false;
+
+   for (size_t i = 0; i < N_; i++)
    {
-      w0_(leg_input_start_idx_ + 2 + i * (n_ + m_), 0) = 29;
-      w0_(leg_input_start_idx_ + 5 + i * (n_ + m_), 0) = 29;
-      w0_(leg_input_start_idx_ + 8 + i * (n_ + m_), 0) = 29;
-      w0_(leg_input_start_idx_ + 11 + i * (n_ + m_), 0) = 29;
+      for (size_t j = 0; j < 4; j++)
+      {
+         w0_(leg_input_start_idx_ + 2 + j * 3 + i * (n_ + m_), 0) = mass_ * grav_ / 4;
+      }
    }
 
    x_reference_ = Eigen::MatrixXd(n_, N_);
@@ -164,12 +169,12 @@ quadNLP::quadNLP(
 
       leg_input_ = Eigen::MatrixXd(m_ - leg_input_start_idx_, N_);
       leg_input_.setZero();
-      for (int i = 0; i < N_; ++i)
+      for (size_t i = 0; i < N_; i++)
       {
-         leg_input_(2, i) = 29;
-         leg_input_(5, i) = 29;
-         leg_input_(8, i) = 29;
-         leg_input_(11, i) = 29;
+         for (size_t j = 0; j < 4; j++)
+         {
+            leg_input_(j * 3 + 2, i) = mass_ * grav_ / 4;
+         }
       }
    }
    else
@@ -268,6 +273,7 @@ bool quadNLP::get_bounds_info(
       // xmin
       g_l_matrix.block(N_ * g_ + i * 2 * n_, 0, n_, 1) = x_min_;
       g_l_matrix(N_ * g_ + i * 2 * n_ + 2, 0) = ground_height_(0, i);
+      // g_l_matrix(N_ * g_ + i * 2 * n_ + 2, 0) = 0;
       g_u_matrix.block(N_ * g_ + i * 2 * n_, 0, n_, 1).fill(2e19);
 
       // xmax
@@ -336,7 +342,7 @@ bool quadNLP::eval_f(
       {
          for (int j = 0; j < contact_sequence_.rows(); j++)
          {
-            if (contact_sequence_(j, i))
+            if (contact_sequence_(j, i) == 1)
             {
                u_nom[3 * j + 2] = mass_ * grav_ / num_contacts;
             }
@@ -355,6 +361,7 @@ bool quadNLP::eval_f(
       if (i == 0)
       {
          Q_i = Q_i * first_element_duration_ / dt_;
+         R_i = R_i * first_element_duration_ / dt_;
       }
 
       obj_value += (xk.transpose() * Q_i.asDiagonal() * xk / 2 + uk.transpose() * R_i.asDiagonal() * uk / 2)(0, 0);
@@ -389,7 +396,7 @@ bool quadNLP::eval_grad_f(
       {
          for (int j = 0; j < contact_sequence_.rows(); j++)
          {
-            if (contact_sequence_(j, i))
+            if (contact_sequence_(j, i) == 1)
             {
                u_nom[3 * j + 2] = mass_ * grav_ / num_contacts;
             }
@@ -408,6 +415,7 @@ bool quadNLP::eval_grad_f(
       if (i == 0)
       {
          Q_i = Q_i * first_element_duration_ / dt_;
+         R_i = R_i * first_element_duration_ / dt_;
       }
 
       grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_i.asDiagonal() * uk;
@@ -781,6 +789,7 @@ bool quadNLP::eval_h(
          if (i == 0)
          {
             Q_i = Q_i * first_element_duration_ / dt_;
+            R_i = R_i * first_element_duration_ / dt_;
          }
 
          values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0, m_, 1) = (obj_factor * R_i.array()).matrix();
@@ -928,6 +937,11 @@ void quadNLP::finalize_solution(
 
    Eigen::Map<const Eigen::MatrixXd> lambda_matrix(lambda, m, 1);
    lambda0_ = lambda_matrix;
+
+   Eigen::Map<const Eigen::MatrixXd> g_matrix(g, m, 1);
+   g0_ = g_matrix;
+
+   mu0_ = ip_data->curr_mu();
 }
 
 void quadNLP::shift_initial_guess()
@@ -947,10 +961,10 @@ void quadNLP::shift_initial_guess()
    }
 
    // New contact
-   if (!(contact_sequence_.col(N_ - 1) - contact_sequence_.col(N_ - 2)).isMuchSmallerThan(1e-3))
+   if ((contact_sequence_.col(N_ - 1) - contact_sequence_.col(N_ - 2)).norm() > 1e-3)
    {
       // There's a dual pair
-      if ((Eigen::MatrixXi::Ones(4, 1) - (contact_sequence_.col(N_ - 1)) - contact_sequence_.col(N_ - 2)).isMuchSmallerThan(1e-3))
+      if ((Eigen::MatrixXi::Ones(4, 1) - (contact_sequence_.col(N_ - 1)) - contact_sequence_.col(N_ - 2)).norm() < 1e-3)
       {
          Eigen::MatrixXd trans = Eigen::MatrixXd::Zero(12, 12);
          trans.block(0, 3, 3, 3).diagonal() << 1, 1, 1;
@@ -969,15 +983,17 @@ void quadNLP::shift_initial_guess()
          z_L0_.block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1).fill(1);
          z_U0_.block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1).fill(1);
 
-         // If there're legs on the ground, we distribute gravity evenly
-         if (contact_sequence_.col(N_ - 1).sum() > 0.5)
+         // Compute the number of contacts
+         double num_contacts = contact_sequence_.col(N_ - 1).sum();
+
+         // If there are some contacts, set the nominal input accordingly
+         if (num_contacts > 0)
          {
-            double grf = 11.51 * 9.81 / contact_sequence_.col(N_ - 1).sum();
             for (size_t i = 0; i < 4; i++)
             {
                if (contact_sequence_(i, N_ - 1) == 1)
                {
-                  w0_((N_ - 1) * (n_ + m_) + leg_input_start_idx_ + 3 * i + 2, 0) = grf;
+                  w0_((N_ - 1) * (n_ + m_) + leg_input_start_idx_ + 3 * i + 2, 0) = mass_ * grav_ / num_contacts;
                }
             }
          }
@@ -989,11 +1005,17 @@ void quadNLP::update_solver(
     const Eigen::VectorXd &initial_state,
     const Eigen::MatrixXd &ref_traj,
     const Eigen::MatrixXd &foot_positions,
-    const std::vector<std::vector<bool>> &contact_schedule)
+    const std::vector<std::vector<bool>> &contact_schedule,
+    const Eigen::VectorXd &ground_height,
+    const double &first_element_duration,
+    const bool &same_plan_index,
+    const bool &init)
 {
    // Update foot positions
    // Local planner has row as N horizon and col as position
    feet_location_ = -foot_positions.transpose();
+
+   Eigen::MatrixXi contact_sequence_prev = contact_sequence_;
 
    // Update contact sequence
    // Local planner has outer as N and inner as boolean contact
@@ -1001,7 +1023,7 @@ void quadNLP::update_solver(
    {
       for (size_t j = 0; j < contact_schedule.front().size(); j++)
       {
-         if (bool(contact_schedule.at(i).at(j)))
+         if (contact_schedule.at(i).at(j))
          {
             contact_sequence_(j, i) = 1;
          }
@@ -1012,12 +1034,114 @@ void quadNLP::update_solver(
       }
    }
 
+   for (size_t i = 0; i < N_; i++)
+   {
+      if (same_plan_index)
+      {
+         if ((contact_sequence_prev.col(i) - contact_sequence_.col(i)).norm() > 1e-3)
+         {
+            w0_.block(i * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1).fill(0);
+            z_L0_.block(i * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1).fill(1);
+            z_U0_.block(i * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1).fill(1);
+
+            // Compute the number of contacts
+            double num_contacts = contact_sequence_.col(i).sum();
+
+            // If there are some contacts, set the nominal input accordingly
+            if (num_contacts > 0)
+            {
+               for (size_t j = 0; j < 4; j++)
+               {
+                  if (contact_sequence_(j, i) == 1)
+                  {
+                     w0_(i * (n_ + m_) + leg_input_start_idx_ + 3 * j + 2, 0) = mass_ * grav_ / num_contacts;
+                  }
+               }
+            }
+
+            mu0_ = 1e-1;
+            warm_start_ = false;
+         }
+      }
+      else
+      {
+         if (i == N_ - 1)
+         {
+            continue;
+         }
+
+         if ((contact_sequence_prev.col(i + 1) - contact_sequence_.col(i)).norm() > 1e-3)
+         {
+            w0_.block((i + 1) * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1).fill(0);
+            z_L0_.block((i + 1) * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1).fill(1);
+            z_U0_.block((i + 1) * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1).fill(1);
+
+            // Compute the number of contacts
+            double num_contacts = contact_sequence_.col(i).sum();
+
+            // If there are some contacts, set the nominal input accordingly
+            if (num_contacts > 0)
+            {
+               for (size_t j = 0; j < 4; j++)
+               {
+                  if (contact_sequence_(j, i) == 1)
+                  {
+                     w0_((i + 1) * (n_ + m_) + leg_input_start_idx_ + 3 * j + 2, 0) = mass_ * grav_ / num_contacts;
+                  }
+               }
+            }
+
+            mu0_ = 1e-1;
+            warm_start_ = false;
+         }
+      }
+   }
+
    // Update initial states
    x_current_ = initial_state.transpose();
 
    // Update reference trajectory
    // Local planner has row as N+1 horizon and col as states
    x_reference_ = ref_traj.transpose();
+
+   // Update the first finite element length
+   first_element_duration_ = first_element_duration;
+
+   // Update ground height
+   ground_height_ = ground_height.transpose();
+
+   if (init)
+   {
+      w0_.setZero();
+      z_L0_.fill(1);
+      z_U0_.fill(1);
+      lambda0_.fill(1000);
+
+      for (size_t i = 0; i < N_; i++)
+      {
+         w0_.block(i * (n_ + m_) + m_, 0, n_, 1) = x_reference_.col(i);
+
+         double num_contacts = contact_sequence_.col(i).sum();
+         if (num_contacts > 0)
+         {
+            for (size_t j = 0; j < 4; j++)
+            {
+               if (contact_schedule.at(i).at(j))
+               {
+                  w0_(leg_input_start_idx_ + 2 + j * 3 + i * (n_ + m_), 0) = mass_ * grav_ / num_contacts;
+               }
+            }
+         }
+      }
+   }
+   else
+   {
+      // Shift initial guess if it will be the next plan index
+      if (!same_plan_index)
+      {
+         shift_initial_guess();
+      }
+   }
 }
 
 void quadNLP::update_solver(
@@ -1026,49 +1150,38 @@ void quadNLP::update_solver(
     const Eigen::MatrixXd &foot_positions,
     const std::vector<std::vector<bool>> &contact_schedule,
     const Eigen::MatrixXd &state_traj,
-    const Eigen::MatrixXd &control_traj)
-{
-   this->update_solver(
-       initial_state,
-       ref_traj,
-       foot_positions,
-       contact_schedule);
-
-   leg_input_ = control_traj.transpose();
-
-   known_leg_input_ = true;
-}
-
-void quadNLP::update_solver(
-    const Eigen::VectorXd &initial_state,
-    const Eigen::MatrixXd &ref_traj,
-    const Eigen::MatrixXd &foot_positions,
-    const std::vector<std::vector<bool>> &contact_schedule,
-    const Eigen::VectorXd &ground_height)
-{
-   this->update_solver(
-       initial_state,
-       ref_traj,
-       foot_positions,
-       contact_schedule);
-
-   ground_height_ = ground_height.transpose();
-}
-
-void quadNLP::update_solver(
-    const Eigen::VectorXd &initial_state,
-    const Eigen::MatrixXd &ref_traj,
-    const Eigen::MatrixXd &foot_positions,
-    const std::vector<std::vector<bool>> &contact_schedule,
+    const Eigen::MatrixXd &control_traj,
     const Eigen::VectorXd &ground_height,
-    const double &first_element_duration)
+    const double &first_element_duration,
+    const bool &same_plan_index,
+    const bool &init)
 {
-   first_element_duration_ = first_element_duration;
-
-   this->update_solver(
+   update_solver(
        initial_state,
        ref_traj,
        foot_positions,
        contact_schedule,
-       ground_height);
+       ground_height,
+       first_element_duration,
+       same_plan_index,
+       init);
+
+   // Update known leg input
+   leg_input_ = control_traj.transpose();
+   for (size_t i = 0; i < N_; i++)
+   {
+      w0_.block(i * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1) = leg_input_.col(i);
+   }
+
+   // Update known leg input flag
+   known_leg_input_ = true;
+
+   if (init)
+   {
+      for (size_t i = 0; i < N_; i++)
+      {
+         w0_.block(i * (n_ + m_) + m_, 0, 6, 1) = state_traj.row(i).transpose().segment(0, 6);
+         w0_.block(i * (n_ + m_) + m_ + 8, 0, 6, 1) = state_traj.row(i).transpose().segment(6, 6);
+      }
+   }
 }
