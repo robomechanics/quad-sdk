@@ -281,7 +281,7 @@ void GlobalFootstepPlanner::updateDiscretePlan() {
 
   // publishDiscretePlan();
   // publishContinuousPlan();
-  // timer.report();
+  // timer.reportStatistics();
 }
 
 void GlobalFootstepPlanner::updateContinuousPlan() {
@@ -428,7 +428,7 @@ void GlobalFootstepPlanner::updateContinuousPlan() {
     multi_foot_plan_continuous_msg_.states.push_back(multi_foot_state_msg);
   }
 
-  // timer.report();
+  // timer.reportStatistics();
 }
 
 void GlobalFootstepPlanner::publishDiscretePlan() {
