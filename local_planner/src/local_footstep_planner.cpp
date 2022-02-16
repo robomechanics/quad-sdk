@@ -165,7 +165,6 @@ void LocalFootstepPlanner::computeFootPositions(
 
     // Loop through the horizon to identify instances of touchdown
     for (int i = 1; i < contact_schedule.size(); i++) {
-
       if (isNewContact(contact_schedule, i, j)) {
 
         // Declare foot position vectors
@@ -186,13 +185,13 @@ void LocalFootstepPlanner::computeFootPositions(
         if (midstance < horizon_length_) {
           body_pos_midstance = body_plan.block<1, 3>(midstance, 0);
           body_rpy_midstance = body_plan.block<1, 3>(midstance, 3);
-          grf_midstance = grf_plan.block<1, 3>(midstance, 3 * j);
+          // grf_midstance = grf_plan.block<1, 3>(midstance, 3 * j);
         } else {
           body_pos_midstance = body_plan.block<1, 3>(horizon_length_ - 1, 0) +
                                body_plan.block<1, 3>(horizon_length_ - 1, 6) *
                                    (midstance - (horizon_length_ - 1)) * dt_;
           body_rpy_midstance = body_plan.block<1, 3>(horizon_length_ - 1, 3);
-          grf_midstance = grf_plan.block<1, 3>(horizon_length_ - 1, 3 * j);
+          // grf_midstance = grf_plan.block<1, 3>(horizon_length_ - 1, 3 * j);
         }
 
         // Get touchdown information for body state
@@ -207,6 +206,7 @@ void LocalFootstepPlanner::computeFootPositions(
             j, body_pos_midstance, body_rpy_midstance, hip_position_midstance);
         grid_map::Position hip_position_grid_map = {hip_position_midstance.x(),
                                                     hip_position_midstance.y()};
+
         auto hip_height = hip_position_midstance.z() -
                           terrain_grid_.atPosition(
                               "z", hip_position_grid_map,
@@ -215,15 +215,19 @@ void LocalFootstepPlanner::computeFootPositions(
                       body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
         vel_tracking =
             (hip_height / 9.81) * (body_vel_touchdown - ref_body_vel_touchdown);
-        foot_position_grf =
-            terrain_.projectToMap(hip_position_midstance, -1.0 * grf_midstance);
+        // foot_position_grf =
+        //     terrain_.projectToMap(hip_position_midstance, -1.0 *
+        //     grf_midstance);
 
         // Combine these measures to get the nominal foot position and grab
         // correct height
+        // foot_position_raibert =
+        //     hip_position_midstance + centrifugal + vel_tracking;
+        // foot_position_nominal = grf_weight_ * foot_position_grf +
+        //                         (1 - grf_weight_) * foot_position_raibert;
         foot_position_raibert =
             hip_position_midstance + centrifugal + vel_tracking;
-        foot_position_nominal = grf_weight_ * foot_position_grf +
-                                (1 - grf_weight_) * foot_position_raibert;
+        foot_position_nominal = foot_position_raibert;
         grid_map::Position foot_position_grid_map = {foot_position_nominal.x(),
                                                      foot_position_nominal.y()};
 
@@ -243,6 +247,7 @@ void LocalFootstepPlanner::computeFootPositions(
       } else {
         // If this isn't a new contact just hold the previous position
         // Note: this should get ignored for a foot in flight
+        std::cout << "here" << std::endl;
         foot_positions.block<1, 3>(i, 3 * j) =
             getFootData(foot_positions, i - 1, j);
       }
