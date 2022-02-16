@@ -61,7 +61,7 @@ quadNLP::quadNLP(
 
   quad_utils::FunctionTimer timer("loadCasadiFuncs");
   loadCasadiFuncs();
-  timer.report();
+  timer.reportStatistics();
   std::cout << "nnz_mat_\n" << nnz_mat_ << std::endl;
 
   if (type_ == NONE)
@@ -262,7 +262,7 @@ quadNLP::quadNLP(
     quad_utils::FunctionTimer timer("setup");
     compute_nnz_jac_g();
     compute_nnz_h();
-    timer.report();
+    timer.reportStatistics();
   }
 }
 

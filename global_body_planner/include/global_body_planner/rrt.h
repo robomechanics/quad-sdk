@@ -86,18 +86,6 @@ public:
   void printPath(PlannerClass &T, std::vector<int> path);
 
   /**
-   * @brief Execute the planner by constructing the tree until a path is found
-   * @param[in] terrain Height map of the terrain
-   * @param[in] s_start The start state of the planner
-   * @param[in] s_goal The goal state of the planner
-   * @param[out] state_sequence The sequence of states in the final path
-   * @param[out] action_sequence The sequence of actions in the final path
-   */
-  // void buildRRT(const PlannerConfig &planner_config, State s_start, State
-  // s_goal, std::vector<State> &state_sequence, std::vector<Action>
-  // &action_sequence);
-
-  /**
    * @brief Get the statistics for the planner solve
    * @param[out] plan_time The total time spent in the planner
    * @param[out] vertices_generated Number of vertices generated in the tree
