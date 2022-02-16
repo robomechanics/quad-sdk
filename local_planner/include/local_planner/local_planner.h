@@ -142,7 +142,7 @@ private:
 	quad_msgs::RobotState::ConstPtr robot_state_msg_;
 
   /// Past foothold locations
-	quad_msgs::MultiFootPlanDiscrete past_footholds_msg_;
+	quad_msgs::MultiFootState past_footholds_msg_;
 
   /// Timestamp of the state estimate
   ros::Time current_state_timestamp_;
@@ -215,6 +215,12 @@ private:
 
   /// Matrix of continuous foot positions in world frame
   Eigen::MatrixXd foot_positions_world_;
+
+  /// Matrix of continuous foot velocities in world frame
+  Eigen::MatrixXd foot_velocities_world_;
+
+  /// Matrix of continuous foot accelerations in world frame
+  Eigen::MatrixXd foot_accelerations_world_;
 
   /// Matrix of continuous foot positions in body frame
   Eigen::MatrixXd foot_positions_body_;
