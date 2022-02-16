@@ -521,8 +521,11 @@ void LocalPlanner::getStateAndTwistInput() {
 bool LocalPlanner::computeLocalPlan() {
 
   if (terrain_.isEmpty() || body_plan_msg_ == NULL && !use_twist_input_ ||
-      robot_state_msg_ == NULL)
+      robot_state_msg_ == NULL) {
+    ROS_WARN_STREAM(
+        "ComputeLocalPlan function did not recieve the expected inputs");
     return false;
+  }
 
   // Start the timer
   quad_utils::FunctionTimer timer(__FUNCTION__);
@@ -556,7 +559,7 @@ bool LocalPlanner::computeLocalPlan() {
         foot_positions_body_.col(3 * i + 2).array() - toe_radius;
   }
 
-  // Compute body plan with MPC, return if solve fails
+  // Compute leg plan with MPC, return if solve fails
   if (!local_body_planner_nonlinear_->computeLegPlan(
           current_state_, ref_body_plan_, grf_positions_body, contact_schedule_,
           ref_ground_height_, first_element_duration_, same_plan_index_,
@@ -581,17 +584,6 @@ bool LocalPlanner::computeLocalPlan() {
 }
 
 void LocalPlanner::publishLocalPlan() {
-
-  // if (current_plan_index_ >= 50) {
-  //   std::cout << "current_state_\n" << current_state_ << std::endl;
-  //   std::cout << "ref_body_plan_\n" << ref_body_plan_ << std::endl;
-  //   std::cout << "body_plan_\n" << body_plan_ << std::endl;
-  //   std::cout << "grf_plan_\n" << grf_plan_ << std::endl;
-  //   std::cout << "foot_positions_world_\n" << foot_positions_world_ <<
-  //   std::endl; std::cout << "foot_positions_body_\n" << foot_positions_body_
-  //   << std::endl; throw std::runtime_error("Stop");
-  // }
-
   // Create messages to publish
   quad_msgs::RobotPlan local_plan_msg;
   quad_msgs::MultiFootPlanDiscrete future_footholds_msg;
