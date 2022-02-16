@@ -570,7 +570,7 @@ void LocalPlanner::publishLocalPlan() {
   foot_plan_msg.header = local_plan_msg.header;
 
   // Compute the discrete and continuous foot plan messages
-  local_footstep_planner_->loadFootPlanMsgs(contact_schedule_, current_plan_index_,
+  local_footstep_planner_->loadFootPlanMsgs(contact_schedule_, current_plan_index_, first_element_duration_,
     foot_positions_world_, foot_velocities_world_, foot_accelerations_world_,
     future_footholds_msg, foot_plan_msg);
 
@@ -597,10 +597,6 @@ void LocalPlanner::publishLocalPlan() {
     if (i == 0)
     {
       state_timestamp = local_plan_msg.header.stamp;
-    }
-    else if (i == 1)
-    {
-      state_timestamp = local_plan_msg.header.stamp + ros::Duration(first_element_duration_);
     }
     else
     {

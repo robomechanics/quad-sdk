@@ -135,13 +135,14 @@ class LocalFootstepPlanner {
      * @brief Convert the foot positions and contact schedule into ros messages for the foot plan
      * @param[in] contact_schedule Current contact schedule
      * @param[in] current_plan_index Current plan index
+     * @param[in] first_element_duration Duration of first element of horizon (may not be dt)
      * @param[in] foot_positions Foot positions over the horizon
      * @param[in] foot_velocities Foot velocities over the horizon
      * @param[in] foot_accelerations Foot accelerations over the horizon
      * @param[out] future_footholds_msg Message for future (planned) footholds
      * @param[out] foot_plan_continuous_msg Message for continuous foot trajectories
      */
-    void loadFootPlanMsgs(const std::vector<std::vector<bool>> &contact_schedule, int current_plan_index,
+    void loadFootPlanMsgs(const std::vector<std::vector<bool>> &contact_schedule, int current_plan_index, double first_element_duration,
       const Eigen::MatrixXd &foot_positions, const Eigen::MatrixXd &foot_velocities,
       const Eigen::MatrixXd &foot_accelerations, quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
       quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);

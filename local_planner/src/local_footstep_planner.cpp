@@ -412,7 +412,7 @@ void LocalFootstepPlanner::computeFootPlan(int current_plan_index, const std::ve
 }
 
 void LocalFootstepPlanner::loadFootPlanMsgs(
-  const std::vector<std::vector<bool>> &contact_schedule, int current_plan_index,
+  const std::vector<std::vector<bool>> &contact_schedule, int current_plan_index, double first_element_duration,
   const Eigen::MatrixXd &foot_positions, const Eigen::MatrixXd &foot_velocities,
   const Eigen::MatrixXd &foot_accelerations, quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
   quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg) {
@@ -431,8 +431,16 @@ void LocalFootstepPlanner::loadFootPlanMsgs(
       // Update header for multi foot state if first time through
       if (j == 0) {
         foot_plan_continuous_msg.states[i].header = foot_plan_continuous_msg.header;
-        foot_plan_continuous_msg.states[i].header.stamp = foot_plan_continuous_msg.header.stamp + 
-          ros::Duration(i*dt_);
+        if (i == 0)
+        {
+          foot_plan_continuous_msg.states[i].header.stamp = foot_plan_continuous_msg.header.stamp;
+        }
+        else
+        {
+          foot_plan_continuous_msg.states[i].header.stamp = foot_plan_continuous_msg.header.stamp +
+                                                            ros::Duration(first_element_duration) +
+                                                            ros::Duration((i - 1) * dt_);
+        }
         foot_plan_continuous_msg.states[i].traj_index = current_plan_index + i;
       }
 
