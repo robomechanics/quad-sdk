@@ -10,33 +10,21 @@ using namespace Ipopt;
 #endif
 
 // Class constructor
-quadNLP::quadNLP(
-  int type,
-  int N,
-  int n,
-  int n_null,
-  int m,
-  double dt,
-  double mu,
-  double panic_weights,
-  Eigen::MatrixXd Q,
-  Eigen::MatrixXd R,
-  Eigen::MatrixXd Q_factor,
-  Eigen::MatrixXd R_factor,
-  Eigen::MatrixXd x_min,
-  Eigen::MatrixXd x_max,
-  Eigen::MatrixXd x_min_complex,
-  Eigen::MatrixXd x_max_complex,
-  Eigen::MatrixXd u_min,
-  Eigen::MatrixXd u_max)
-  // N: prediction steps
-  // n: states dimension
-  // m: input dimension
-  // with_tail: system includes tail or not
-  // Q: states cost weights
-  // R: input cost weights
-  // dt: time step length
-  // panic_weights: penalty on panic variables
+quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
+                 double mu, double panic_weights, Eigen::VectorXd Q,
+                 Eigen::VectorXd R, Eigen::VectorXd Q_factor,
+                 Eigen::VectorXd R_factor, Eigen::VectorXd x_min,
+                 Eigen::VectorXd x_max, Eigen::VectorXd x_min_complex,
+                 Eigen::VectorXd x_max_complex, Eigen::VectorXd u_min,
+                 Eigen::VectorXd u_max)
+// N: prediction steps
+// n: states dimension
+// m: input dimension
+// with_tail: system includes tail or not
+// Q: states cost weights
+// R: input cost weights
+// dt: time step length
+// panic_weights: penalty on panic variables
 {
   type_ = type;
 
@@ -51,7 +39,7 @@ quadNLP::quadNLP(
   n_complex_ = n + n_null_;
   m_simple_ = m;
   g_simple_ = g_;
-  n0_ = (x0_complexity_ == 1) ? n_complex_ : n_simple_ ;
+  n0_ = (x0_complexity_ == 1) ? n_complex_ : n_simple_;
 
   // Added constraints include all simple constraints plus:
   //    n_null_ constraints for foot position and velocities
@@ -64,8 +52,7 @@ quadNLP::quadNLP(
   timer.reportStatistics();
   std::cout << "nnz_mat_\n" << nnz_mat_ << std::endl;
 
-  if (type_ == NONE)
-  {
+  if (type_ == NONE) {
     // Leg controller
     leg_input_start_idx_ = 0;
     sys_type_ = SIMPLE;
@@ -93,9 +80,7 @@ quadNLP::quadNLP(
     eval_jac_g_decref_ = eval_jac_g_leg_decref;
     eval_jac_g_sparsity_out_ = eval_jac_g_leg_sparsity_out;
 
-  }
-  else
-  {
+  } else {
     // Tail controller
     leg_input_start_idx_ = 2;
     sys_type_ = TAIL;
@@ -122,7 +107,6 @@ quadNLP::quadNLP(
     eval_jac_g_release_ = eval_jac_g_tail_release;
     eval_jac_g_decref_ = eval_jac_g_tail_decref;
     eval_jac_g_sparsity_out_ = eval_jac_g_tail_sparsity_out;
-
   }
 
   Q_ = Q;
@@ -138,10 +122,11 @@ quadNLP::quadNLP(
   feet_location_ = Eigen::MatrixXd(12, N_);
   foot_pos_world_ = Eigen::MatrixXd(12, N_);
   foot_vel_world_ = Eigen::MatrixXd(12, N_).setZero();
-  for (int i = 0; i < N_; ++i)
-  {
-    feet_location_.block(0, i, 12, 1) << -0.2263, -0.098, 0.3, -0.2263, 0.098, 0.3, 0.2263, -0.098, 0.3, 0.2263, 0.098, 0.3;
-    foot_pos_world_.block(0, i, 12, 1) << -0.2263, -0.098, 0, -0.2263, 0.098, 0, 0.2263, -0.098, 0, 0.2263, 0.098, 0;
+  for (int i = 0; i < N_; ++i) {
+    feet_location_.block(0, i, 12, 1) << -0.2263, -0.098, 0.3, -0.2263, 0.098,
+        0.3, 0.2263, -0.098, 0.3, 0.2263, 0.098, 0.3;
+    foot_pos_world_.block(0, i, 12, 1) << -0.2263, -0.098, 0, -0.2263, 0.098, 0,
+        0.2263, -0.098, 0, 0.2263, 0.098, 0;
   }
 
   // Load constant parameters
@@ -210,48 +195,47 @@ quadNLP::quadNLP(
   n_vars_ = getNumVariables();
   n_constraints_ = getNumConstraints();
 
-  w0_ = Eigen::MatrixXd(n_vars_, 1).setZero();
-  z_L0_ = Eigen::MatrixXd(n_vars_, 1).Ones(n_vars_, 1);
-  z_U0_ = Eigen::MatrixXd(n_vars_, 1).Ones(n_vars_, 1);
-  lambda0_ = Eigen::MatrixXd(n_constraints_, 1).setZero();
+  w0_ = Eigen::VectorXd(n_vars_).setZero();
+  z_L0_ = Eigen::VectorXd(n_vars_).Ones(n_vars_, 1);
+  z_U0_ = Eigen::VectorXd(n_vars_).Ones(n_vars_, 1);
+  lambda0_ = Eigen::VectorXd(n_constraints_).setZero();
 
   if (m_ >= 12) {
-    for (int i = 0; i < N_; ++i)
-    {
-      w0_(getPrimalFEIndex(i) + leg_input_start_idx_ + 2) = mass_ * grav_ * 0.25;
-      w0_(getPrimalFEIndex(i) + leg_input_start_idx_ + 5) = mass_ * grav_ * 0.25;
-      w0_(getPrimalFEIndex(i) + leg_input_start_idx_ + 8) = mass_ * grav_ * 0.25;
-      w0_(getPrimalFEIndex(i) + leg_input_start_idx_ + 11) = mass_ * grav_ * 0.25;
+    for (int i = 0; i < N_; ++i) {
+      w0_(getPrimalFEIndex(i) + leg_input_start_idx_ + 2) =
+          mass_ * grav_ * 0.25;
+      w0_(getPrimalFEIndex(i) + leg_input_start_idx_ + 5) =
+          mass_ * grav_ * 0.25;
+      w0_(getPrimalFEIndex(i) + leg_input_start_idx_ + 8) =
+          mass_ * grav_ * 0.25;
+      w0_(getPrimalFEIndex(i) + leg_input_start_idx_ + 11) =
+          mass_ * grav_ * 0.25;
     }
   }
 
   x_reference_ = Eigen::MatrixXd(n_, N_);
   x_reference_.fill(0);
 
-  x_current_ = Eigen::MatrixXd(n0_, 1);
+  x_current_ = Eigen::VectorXd(n0_);
   x_current_.fill(0);
 
   contact_sequence_ = Eigen::MatrixXi(4, N_);
   contact_sequence_.fill(1);
 
-  if (type_ == DISTRIBUTED)
-  {
+  if (type_ == DISTRIBUTED) {
     known_leg_input_ = true;
 
     leg_input_ = Eigen::MatrixXd(m_ - leg_input_start_idx_, N_);
     leg_input_.setZero();
     if (m_ >= 12) {
-      for (int i = 0; i < N_; ++i)
-      {
+      for (int i = 0; i < N_; ++i) {
         leg_input_(2, i) = mass_ * grav_ * 0.25;
         leg_input_(5, i) = mass_ * grav_ * 0.25;
         leg_input_(8, i) = mass_ * grav_ * 0.25;
         leg_input_(11, i) = mass_ * grav_ * 0.25;
       }
     }
-  }
-  else
-  {
+  } else {
     known_leg_input_ = false;
   }
 
@@ -267,18 +251,11 @@ quadNLP::quadNLP(
 }
 
 // Destructor
-quadNLP::~quadNLP()
-{
-}
+quadNLP::~quadNLP() {}
 
 // Returns the size of the problem
-bool quadNLP::get_nlp_info(
-  Index& n,
-  Index& m,
-  Index& nnz_jac_g,
-  Index& nnz_h_lag,
-  IndexStyleEnum& index_style)
-{
+bool quadNLP::get_nlp_info(Index &n, Index &m, Index &nnz_jac_g,
+                           Index &nnz_h_lag, IndexStyleEnum &index_style) {
   // Decision variables
   n = n_vars_;
 
@@ -298,14 +275,8 @@ bool quadNLP::get_nlp_info(
 }
 
 // Returns the variable bounds
-bool quadNLP::get_bounds_info(
-  Index n,
-  Number* x_l,
-  Number* x_u,
-  Index m,
-  Number* g_l,
-  Number* g_u)
-{
+bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
+                              Number *g_l, Number *g_u) {
   Eigen::Map<Eigen::VectorXd> x_l_matrix(x_l, n);
   Eigen::Map<Eigen::VectorXd> x_u_matrix(x_u, n);
   Eigen::Map<Eigen::VectorXd> g_l_matrix(g_l, m);
@@ -314,24 +285,31 @@ bool quadNLP::get_bounds_info(
   // We have the decision variables ordered as u_0, x_1, ..., u_N-1, x_N
   int curr_var_idx, curr_constr_idx;
   curr_var_idx = curr_constr_idx = 0;
-  for (int i = 0; i < N_; ++i)
-  {
+  for (int i = 0; i < N_; ++i) {
     // Inputs bound
     x_l_matrix.segment(curr_var_idx, m_) = u_min_;
     x_u_matrix.segment(curr_var_idx, m_) = u_max_;
-    if (known_leg_input_)
-    {
-      x_l_matrix.segment(curr_var_idx + leg_input_start_idx_, m_ - leg_input_start_idx_) = leg_input_.block(0, i, m_ - leg_input_start_idx_, 1);
-      x_u_matrix.segment(curr_var_idx + leg_input_start_idx_, m_ - leg_input_start_idx_) = leg_input_.block(0, i, m_ - leg_input_start_idx_, 1);
+    if (known_leg_input_) {
+      x_l_matrix.segment(curr_var_idx + leg_input_start_idx_,
+                         m_ - leg_input_start_idx_) =
+          leg_input_.block(0, i, m_ - leg_input_start_idx_, 1);
+      x_u_matrix.segment(curr_var_idx + leg_input_start_idx_,
+                         m_ - leg_input_start_idx_) =
+          leg_input_.block(0, i, m_ - leg_input_start_idx_, 1);
     }
 
     // Contact sequence
-    for (int j = 0; j < 4; ++j)
-    {
+    for (int j = 0; j < 4; ++j) {
       x_l_matrix.segment(curr_var_idx + leg_input_start_idx_ + 3 * j, 3) =
-        (x_l_matrix.segment(curr_var_idx + leg_input_start_idx_ + 3 * j, 3).array() * contact_sequence_(j, i)).matrix();
+          (x_l_matrix.segment(curr_var_idx + leg_input_start_idx_ + 3 * j, 3)
+               .array() *
+           contact_sequence_(j, i))
+              .matrix();
       x_u_matrix.segment(curr_var_idx + leg_input_start_idx_ + 3 * j, 3) =
-        (x_u_matrix.segment(curr_var_idx + leg_input_start_idx_ + 3 * j, 3).array() * contact_sequence_(j, i)).matrix();
+          (x_u_matrix.segment(curr_var_idx + leg_input_start_idx_ + 3 * j, 3)
+               .array() *
+           contact_sequence_(j, i))
+              .matrix();
     }
     curr_var_idx += m_;
 
@@ -341,8 +319,10 @@ bool quadNLP::get_bounds_info(
 
     // If this is a complex element, load the bounds (not bounded by slack vars)
     if (n_vec_[i] == n_complex_) {
-      x_l_matrix.segment(curr_var_idx + n_simple_, n_null_) = x_min_.tail(n_null_);
-      x_u_matrix.segment(curr_var_idx + n_simple_, n_null_) = x_max_.tail(n_null_);
+      x_l_matrix.segment(curr_var_idx + n_simple_, n_null_) =
+          x_min_.tail(n_null_);
+      x_u_matrix.segment(curr_var_idx + n_simple_, n_null_) =
+          x_max_.tail(n_null_);
     }
     curr_var_idx += n_vec_[i];
 
@@ -357,8 +337,7 @@ bool quadNLP::get_bounds_info(
   x_u_matrix.segment(n_vars_primal_, n_vars_slack_).fill(2e19);
 
   int n_slack = n_;
-  for (size_t i = 0; i < N_; i++)
-  {
+  for (size_t i = 0; i < N_; i++) {
     // xmin
     g_l_matrix.segment(curr_constr_idx, n_slack) = x_min_.head(n_slack);
     g_l_matrix[curr_constr_idx + 2] = ground_height_(0, i);
@@ -372,40 +351,30 @@ bool quadNLP::get_bounds_info(
   }
 
   if ((curr_var_idx != n_vars_primal_) || (curr_constr_idx != n_constraints_)) {
-    throw std::runtime_error("Number of vars and constraints in bounds doesn't match the prediction!");
+    throw std::runtime_error("Number of vars and constraints in bounds doesn't "
+                             "match the prediction!");
   }
 
   return true;
 }
 
 // Returns the initial point for the problem
-bool quadNLP::get_starting_point(
-  Index n,
-  bool init_x,
-  Number* x,
-  bool init_z,
-  Number* z_L,
-  Number* z_U,
-  Index m,
-  bool init_lambda,
-  Number* lambda)
-{
-  if (init_x)
-  {
+bool quadNLP::get_starting_point(Index n, bool init_x, Number *x, bool init_z,
+                                 Number *z_L, Number *z_U, Index m,
+                                 bool init_lambda, Number *lambda) {
+  if (init_x) {
     Eigen::Map<Eigen::VectorXd> w(x, n);
     w = w0_;
   }
 
-  if (init_z)
-  {
+  if (init_z) {
     Eigen::Map<Eigen::VectorXd> z_L_matrix(z_L, n);
     Eigen::Map<Eigen::VectorXd> z_U_matrix(z_L, n);
     z_L_matrix = z_L0_;
     z_U_matrix = z_U0_;
   }
 
-  if (init_lambda)
-  {
+  if (init_lambda) {
     Eigen::Map<Eigen::VectorXd> lambda_matrix(lambda, m);
     lambda_matrix = lambda0_;
   }
@@ -414,32 +383,24 @@ bool quadNLP::get_starting_point(
 }
 
 // Returns the value of the objective function
-bool quadNLP::eval_f(
-  Index n,
-  const Number* x,
-  bool new_x,
-  Number& obj_value)
-{
+bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
   Eigen::Map<const Eigen::VectorXd> w(x, n);
 
   obj_value = 0;
 
   int curr_var_idx = 0;
-  for (int i = 0; i < N_; ++i)
-  {
+  for (int i = 0; i < N_; ++i) {
     // Compute the number of contacts
     Eigen::VectorXd u_nom(m_);
     u_nom.setZero();
     double num_contacts = contact_sequence_.col(i).sum();
 
     // If there are some contacts, set the nominal input accordingly
-    if (num_contacts > 0)
-    {
-      for (int j = 0; j < contact_sequence_.rows(); j++)
-      {
-        if (contact_sequence_(j, i))
-        {
-          u_nom[3 * j + 2 + leg_input_start_idx_] = mass_ * grav_ / num_contacts;
+    if (num_contacts > 0) {
+      for (int j = 0; j < contact_sequence_.rows(); j++) {
+        if (contact_sequence_(j, i)) {
+          u_nom[3 * j + 2 + leg_input_start_idx_] =
+              mass_ * grav_ / num_contacts;
         }
       }
     }
@@ -455,12 +416,12 @@ bool quadNLP::eval_f(
     Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
 
     // Scale the cost by time duration
-    if (i == 0)
-    {
+    if (i == 0) {
       Q_i = Q_i * first_element_duration_ / dt_;
     }
 
-    obj_value += (xk.transpose() * Q_i.asDiagonal() * xk / 2 + uk.transpose() * R_i.asDiagonal() * uk / 2)(0, 0);
+    obj_value += (xk.transpose() * Q_i.asDiagonal() * xk / 2 +
+                  uk.transpose() * R_i.asDiagonal() * uk / 2)(0, 0);
   }
 
   Eigen::VectorXd panic = w.segment(n_vars_primal_, n_vars_slack_);
@@ -470,32 +431,25 @@ bool quadNLP::eval_f(
 }
 
 // Return the gradient of the objective function
-bool quadNLP::eval_grad_f(
-  Index n,
-  const Number* x,
-  bool new_x,
-  Number* grad_f)
-{
+bool quadNLP::eval_grad_f(Index n, const Number *x, bool new_x,
+                          Number *grad_f) {
   Eigen::Map<const Eigen::VectorXd> w(x, n);
 
   Eigen::Map<Eigen::VectorXd> grad_f_matrix(grad_f, n);
 
   int curr_var_idx = 0;
-  for (int i = 0; i < N_; ++i)
-  {
+  for (int i = 0; i < N_; ++i) {
     // Compute the number of contacts
     Eigen::VectorXd u_nom(m_);
     u_nom.setZero();
     double num_contacts = contact_sequence_.col(i).sum();
 
     // If there are some contacts, set the nominal input accordingly
-    if (num_contacts > 0)
-    {
-      for (int j = 0; j < contact_sequence_.rows(); j++)
-      {
-        if (contact_sequence_(j, i))
-        {
-          u_nom[3 * j + 2 + leg_input_start_idx_] = mass_ * grav_ / num_contacts;
+    if (num_contacts > 0) {
+      for (int j = 0; j < contact_sequence_.rows(); j++) {
+        if (contact_sequence_(j, i)) {
+          u_nom[3 * j + 2 + leg_input_start_idx_] =
+              mass_ * grav_ / num_contacts;
         }
       }
     }
@@ -509,8 +463,7 @@ bool quadNLP::eval_grad_f(
     Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
 
     // Scale the cost by time duration
-    if (i == 0)
-    {
+    if (i == 0) {
       Q_i = Q_i * first_element_duration_ / dt_;
     }
 
@@ -525,20 +478,13 @@ bool quadNLP::eval_grad_f(
 }
 
 // Return the value of the constraints
-bool quadNLP::eval_g(
-  Index n,
-  const Number* x,
-  bool new_x,
-  Index m,
-  Number* g)
-{
+bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
   Eigen::Map<const Eigen::VectorXd> w(x, n);
   Eigen::Map<Eigen::VectorXd> g_matrix(g, m);
 
   int curr_var_idx = 0;
   int curr_constr_idx = 0;
-  for (int i = 0; i < N_; ++i)
-  {
+  for (int i = 0; i < N_; ++i) {
     // Select the system ID
     int sys_id = sys_id_schedule_[i];
 
@@ -555,8 +501,8 @@ bool quadNLP::eval_g(
     casadi_int sz_w;
     eval_work_vec_[sys_id][FUNC](&sz_arg, &sz_res, &sz_iw, &sz_w);
 
-    const double* arg[sz_arg];
-    double* res[sz_res];
+    const double *arg[sz_arg];
+    double *res[sz_res];
     casadi_int iw[sz_iw];
     double _w[sz_w];
 
@@ -564,15 +510,14 @@ bool quadNLP::eval_g(
 
     // Declare the temp arg for the first element
     Eigen::VectorXd tmp_arg(n0_ + m_ + n_vec_[i]);
-    if (i == 0)
-    {
+    if (i == 0) {
       tmp_arg.topRows(n0_) = x_current_;
       tmp_arg.bottomRows(m_ + n_vec_[i]) = w.head(m_ + n_vec_[i]);
       arg[0] = tmp_arg.data();
-    }
-    else
-    {
-      arg[0] = w.segment(curr_var_idx - n_vec_[i-1], n_vec_[i-1] + m_ + n_vec_[i]).data();
+    } else {
+      arg[0] = w.segment(curr_var_idx - n_vec_[i - 1],
+                         n_vec_[i - 1] + m_ + n_vec_[i])
+                   .data();
     }
 
     arg[1] = pk.data();
@@ -590,16 +535,17 @@ bool quadNLP::eval_g(
   int n_slack = n_;
   int curr_var_slack_idx = 0;
   curr_var_idx = m_;
-  for (int i = 0; i < N_; ++i)
-  {
+  for (int i = 0; i < N_; ++i) {
     Eigen::VectorXd xk = w.segment(curr_var_idx, n_slack);
     curr_var_idx += m_ + n_vec_[i];
-    Eigen::VectorXd panick = w.segment(n_vars_primal_ + curr_var_slack_idx, 2 * n_slack);
-    curr_var_slack_idx += 2*n_slack;
+    Eigen::VectorXd panick =
+        w.segment(n_vars_primal_ + curr_var_slack_idx, 2 * n_slack);
+    curr_var_slack_idx += 2 * n_slack;
 
     g_matrix.segment(curr_constr_idx, n_) = xk + panick.segment(0, n_slack);
     curr_constr_idx += n_slack;
-    g_matrix.segment(curr_constr_idx, n_) = xk - panick.segment(n_slack, n_slack);
+    g_matrix.segment(curr_constr_idx, n_) =
+        xk - panick.segment(n_slack, n_slack);
     curr_constr_idx += n_slack;
   }
 
@@ -607,34 +553,23 @@ bool quadNLP::eval_g(
 }
 
 // Return the structure or values of the Jacobian
-bool quadNLP::eval_jac_g(
-  Index n,
-  const Number* x,
-  bool new_x,
-  Index m,
-  Index nele_jac,
-  Index* iRow,
-  Index* jCol,
-  Number* values)
-{
-  if (values == NULL)
-  {
+bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
+                         Index nele_jac, Index *iRow, Index *jCol,
+                         Number *values) {
+  if (values == NULL) {
     Eigen::Map<Eigen::VectorXi> iRow_matrix(iRow, nele_jac);
     Eigen::Map<Eigen::VectorXi> jCol_matrix(jCol, nele_jac);
 
     iRow_matrix = iRow_jac_g_;
     jCol_matrix = jCol_jac_g_;
-  }
-  else
-  {
+  } else {
     Eigen::Map<const Eigen::VectorXd> w(x, n);
 
     Eigen::Map<Eigen::VectorXd> values_matrix(values, nele_jac);
 
     int curr_var_idx = 0;
     int curr_sparse_idx = 0;
-    for (int i = 0; i < N_; ++i)
-    {
+    for (int i = 0; i < N_; ++i) {
       // Select the system ID
       int sys_id = sys_id_schedule_[i];
 
@@ -651,8 +586,8 @@ bool quadNLP::eval_jac_g(
       casadi_int sz_w;
       eval_work_vec_[sys_id][JAC](&sz_arg, &sz_res, &sz_iw, &sz_w);
 
-      const double* arg[sz_arg];
-      double* res[sz_res];
+      const double *arg[sz_arg];
+      double *res[sz_res];
       casadi_int iw[sz_iw];
       double _w[sz_w];
 
@@ -660,11 +595,11 @@ bool quadNLP::eval_jac_g(
 
       // Declare the temp arg for the first element
       int nnz = nnz_step_jac_g_[i];
-      Eigen::VectorXd tmp_arg(n0_ + m_ + n_vec_[i]), tmp_res(nnz_step_jac_g_[i]);
+      Eigen::VectorXd tmp_arg(n0_ + m_ + n_vec_[i]),
+          tmp_res(nnz_step_jac_g_[i]);
 
       int mem;
-      if (i == 0)
-      {
+      if (i == 0) {
         tmp_arg.head(n0_) = x_current_;
         tmp_arg.tail(m_ + n_vec_[i]) = w.head(m_ + n_vec_[i]);
         arg[0] = tmp_arg.data();
@@ -674,18 +609,17 @@ bool quadNLP::eval_jac_g(
         mem = eval_checkout_vec_[sys_id][JAC]();
         eval_vec_[sys_id][JAC](arg, res, iw, _w, mem);
 
-        nnz = tmp_res.size() - first_step_idx_mat_(sys_id,JAC);
+        nnz = tmp_res.size() - first_step_idx_mat_(sys_id, JAC);
         values_matrix.head(nnz) = tmp_res.tail(nnz);
-      }
-      else
-      {
-        arg[0] = w.segment(curr_var_idx - n_vec_[i-1], n_vec_[i-1] + m_ + n_vec_[i]).data();
+      } else {
+        arg[0] = w.segment(curr_var_idx - n_vec_[i - 1],
+                           n_vec_[i - 1] + m_ + n_vec_[i])
+                     .data();
         arg[1] = pk.data();
         res[0] = values_matrix.segment(curr_sparse_idx, nnz).data();
 
         mem = eval_checkout_vec_[sys_id][JAC]();
         eval_vec_[sys_id][JAC](arg, res, iw, _w, mem);
-
       }
 
       eval_release_vec_[sys_id][JAC](mem);
@@ -696,8 +630,7 @@ bool quadNLP::eval_jac_g(
     }
 
     int n_slack = n_;
-    for (size_t i = 0; i < N_; i++)
-    {
+    for (size_t i = 0; i < N_; i++) {
       // xmin wrt x
       values_matrix.segment(curr_sparse_idx, n_slack).fill(1);
       curr_sparse_idx += n_slack;
@@ -716,7 +649,8 @@ bool quadNLP::eval_jac_g(
     }
 
     if (curr_sparse_idx != nele_jac) {
-      throw std::runtime_error("Number of nonzero Jacobian entries doesn't match the prediction in eval_jac_g!");
+      throw std::runtime_error("Number of nonzero Jacobian entries doesn't "
+                               "match the prediction in eval_jac_g!");
     }
   }
 
@@ -724,19 +658,19 @@ bool quadNLP::eval_jac_g(
 }
 
 // Return the structure of the Jacobian
-void quadNLP::compute_nnz_jac_g()
-{
+void quadNLP::compute_nnz_jac_g() {
   // Initialize nnz
   nnz_jac_g_ = 0;
 
   // Compute the number of nnz in the Jacobians over the horizon
   for (int i = 0; i < N_; ++i) {
-    nnz_jac_g_ += nnz_mat_(sys_id_schedule_[i],JAC);
+    nnz_jac_g_ += nnz_mat_(sys_id_schedule_[i], JAC);
   }
 
-  // Add slack variables (only on simple model coordinates) and subtract first step vars
-  int first_step_idx = first_step_idx_mat_(sys_id_schedule_[0],JAC);
-  nnz_jac_g_ = nnz_jac_g_ - first_step_idx + 4*n_*N_;
+  // Add slack variables (only on simple model coordinates) and subtract first
+  // step vars
+  int first_step_idx = first_step_idx_mat_(sys_id_schedule_[0], JAC);
+  nnz_jac_g_ = nnz_jac_g_ - first_step_idx + 4 * n_ * N_;
   nnz_step_jac_g_.resize(N_);
 
   // Size the NLP constraint Jacobian sparsity structure
@@ -746,30 +680,28 @@ void quadNLP::compute_nnz_jac_g()
   int curr_sparse_idx = 0;
   int curr_constr_idx = 0;
   int curr_var_idx = 0;
-  for (int i = 0; i < N_; ++i)
-  {
+  for (int i = 0; i < N_; ++i) {
     int sys_id = sys_id_schedule_[i];
-    nnz_step_jac_g_[i] = nnz_mat_(sys_id,JAC);
+    nnz_step_jac_g_[i] = nnz_mat_(sys_id, JAC);
 
-    if (i == 0)
-    {
+    if (i == 0) {
       int first_step_size = iRow_mat_[sys_id][JAC].size() - first_step_idx;
-      iRow_jac_g_.head(first_step_size) = iRow_mat_[sys_id][JAC].tail(first_step_size);
-      jCol_jac_g_.head(first_step_size) = (jCol_mat_[sys_id][JAC].tail(first_step_size).array() - n_).matrix();
+      iRow_jac_g_.head(first_step_size) =
+          iRow_mat_[sys_id][JAC].tail(first_step_size);
+      jCol_jac_g_.head(first_step_size) =
+          (jCol_mat_[sys_id][JAC].tail(first_step_size).array() - n_).matrix();
       curr_sparse_idx += first_step_size;
-    }
-    else
-    {
+    } else {
       // Update the number of nonzeros in this block
-      int nnz = nnz_mat_(sys_id,JAC);
+      int nnz = nnz_mat_(sys_id, JAC);
 
       // Each step we shift g constraints
       iRow_jac_g_.segment(curr_sparse_idx, nnz) =
-        (iRow_mat_[sys_id][JAC].array() + curr_constr_idx).matrix();
+          (iRow_mat_[sys_id][JAC].array() + curr_constr_idx).matrix();
 
       // Each step we shift n states and m inputs
       jCol_jac_g_.segment(curr_sparse_idx, nnz) =
-        (jCol_mat_[sys_id][JAC].array() + curr_var_idx - n_).matrix();
+          (jCol_mat_[sys_id][JAC].array() + curr_var_idx - n_).matrix();
 
       curr_sparse_idx += nnz;
     }
@@ -777,66 +709,64 @@ void quadNLP::compute_nnz_jac_g()
     curr_var_idx += m_ + n_vec_[i];
   }
 
-  for (size_t i = 0; i < N_; i++)
-  {
-    // Get index of the primal state vars for this finite element and define num of slack variables
+  for (size_t i = 0; i < N_; i++) {
+    // Get index of the primal state vars for this finite element and define num
+    // of slack variables
     int primal_state_fe_idx = getPrimalStateFEIndex(i);
     int n_slack = n_;
-    
+
     // xmin wrt x
-    iRow_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(n_slack, curr_constr_idx, curr_constr_idx + n_slack - 1);
-    jCol_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(n_slack, primal_state_fe_idx, primal_state_fe_idx + n_slack - 1);
+    iRow_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(
+        n_slack, curr_constr_idx, curr_constr_idx + n_slack - 1);
+    jCol_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(
+        n_slack, primal_state_fe_idx, primal_state_fe_idx + n_slack - 1);
     curr_sparse_idx += n_slack;
 
     // xmin wrt panic
-    iRow_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(n_slack, curr_constr_idx, curr_constr_idx + n_slack - 1);
-    jCol_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(n_slack, curr_var_idx, curr_var_idx + n_slack - 1);
+    iRow_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(
+        n_slack, curr_constr_idx, curr_constr_idx + n_slack - 1);
+    jCol_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(
+        n_slack, curr_var_idx, curr_var_idx + n_slack - 1);
     curr_sparse_idx += n_slack;
     curr_constr_idx += n_slack;
     curr_var_idx += n_slack;
 
     // xmax wrt x
-    iRow_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(n_slack, curr_constr_idx, curr_constr_idx + n_slack - 1);
-    jCol_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(n_slack, primal_state_fe_idx, primal_state_fe_idx + n_slack - 1);
+    iRow_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(
+        n_slack, curr_constr_idx, curr_constr_idx + n_slack - 1);
+    jCol_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(
+        n_slack, primal_state_fe_idx, primal_state_fe_idx + n_slack - 1);
     curr_sparse_idx += n_slack;
 
     // xmax wrt panic
-    iRow_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(n_slack, curr_constr_idx, curr_constr_idx + n_slack - 1);
-    jCol_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(n_slack, curr_var_idx, curr_var_idx + n_slack - 1);
+    iRow_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(
+        n_slack, curr_constr_idx, curr_constr_idx + n_slack - 1);
+    jCol_jac_g_.segment(curr_sparse_idx, n_slack) = Eigen::ArrayXi::LinSpaced(
+        n_slack, curr_var_idx, curr_var_idx + n_slack - 1);
     curr_sparse_idx += n_slack;
     curr_constr_idx += n_slack;
     curr_var_idx += n_slack;
   }
 
-  if ((curr_sparse_idx != nnz_jac_g_) || (curr_var_idx != n_vars_) || (curr_constr_idx != n_constraints_) ) {
-    throw std::runtime_error("Number of nonzero Jacobian entries doesn't match the prediction in compute_nnz_jac_g!");
+  if ((curr_sparse_idx != nnz_jac_g_) || (curr_var_idx != n_vars_) ||
+      (curr_constr_idx != n_constraints_)) {
+    throw std::runtime_error("Number of nonzero Jacobian entries doesn't match "
+                             "the prediction in compute_nnz_jac_g!");
   }
 }
 
 // Return the structure or values of the Hessian
-bool quadNLP::eval_h(
-  Index n,
-  const Number* x,
-  bool new_x,
-  Number obj_factor,
-  Index m,
-  const Number* lambda,
-  bool new_lambda,
-  Index nele_hess,
-  Index* iRow,
-  Index* jCol,
-  Number* values)
-{
-  if (values == NULL)
-  {
+bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
+                     Index m, const Number *lambda, bool new_lambda,
+                     Index nele_hess, Index *iRow, Index *jCol,
+                     Number *values) {
+  if (values == NULL) {
     Eigen::Map<Eigen::VectorXi> iRow_matrix(iRow, nele_hess);
     Eigen::Map<Eigen::VectorXi> jCol_matrix(jCol, nele_hess);
 
     iRow_matrix = iRow_compact_h_;
     jCol_matrix = jCol_compact_h_;
-  }
-  else
-  {
+  } else {
     Eigen::Map<const Eigen::VectorXd> w(x, n);
 
     Eigen::Map<Eigen::VectorXd> values_compact_matrix(values, nele_hess);
@@ -846,8 +776,7 @@ bool quadNLP::eval_h(
     int curr_sparse_idx = 0;
     int curr_var_idx = 0;
     int curr_constr_idx = 0;
-    for (int i = 0; i < N_; ++i)
-    {
+    for (int i = 0; i < N_; ++i) {
       // Select the system ID
       int sys_id = sys_id_schedule_[i];
 
@@ -864,8 +793,8 @@ bool quadNLP::eval_h(
       casadi_int sz_w;
       eval_work_vec_[sys_id][HESS](&sz_arg, &sz_res, &sz_iw, &sz_w);
 
-      const double* arg[sz_arg];
-      double* res[sz_res];
+      const double *arg[sz_arg];
+      double *res[sz_res];
       casadi_int iw[sz_iw];
       double _w[sz_w];
 
@@ -876,8 +805,7 @@ bool quadNLP::eval_h(
       int nnz = nnz_step_hess_[i];
 
       Eigen::VectorXd tmp_arg(n0_ + m_ + n_vec_[i]), tmp_res(nnz);
-      if (i == 0)
-      {
+      if (i == 0) {
         tmp_arg.head(n0_) = x_current_;
         tmp_arg.tail(m_ + n_vec_[i]) = w.head(m_ + n_vec_[i]);
 
@@ -889,12 +817,12 @@ bool quadNLP::eval_h(
         mem = eval_checkout_vec_[sys_id][HESS]();
         eval_vec_[sys_id][HESS](arg, res, iw, _w, mem);
 
-        nnz = tmp_res.size() - first_step_idx_mat_(sys_id,HESS);
-        values_matrix.segment(curr_sparse_idx,nnz) = tmp_res.tail(nnz);
-      }
-      else
-      {
-        arg[0] = w.segment(curr_var_idx - n_vec_[i-1], n_vec_[i-1] + m_ + n_vec_[i]).data();
+        nnz = tmp_res.size() - first_step_idx_mat_(sys_id, HESS);
+        values_matrix.segment(curr_sparse_idx, nnz) = tmp_res.tail(nnz);
+      } else {
+        arg[0] = w.segment(curr_var_idx - n_vec_[i - 1],
+                           n_vec_[i - 1] + m_ + n_vec_[i])
+                     .data();
         arg[1] = lambda_matrix.segment(curr_constr_idx, g_vec_[i]).data();
         arg[2] = pk.data();
         res[0] = values_matrix.segment(curr_sparse_idx, nnz).data();
@@ -917,41 +845,41 @@ bool quadNLP::eval_h(
       Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
 
       // Scale the cost by time duration
-      if (i == 0)
-      {
+      if (i == 0) {
         Q_i = Q_i * first_element_duration_ / dt_;
       }
 
       // Update the values for the cost
-      values_matrix.segment(curr_sparse_idx, m_) = (obj_factor * R_i.array()).matrix();
+      values_matrix.segment(curr_sparse_idx, m_) =
+          (obj_factor * R_i.array()).matrix();
       curr_sparse_idx += m_;
-      values_matrix.segment(curr_sparse_idx, n_vec_[i]) = (obj_factor * Q_i.array()).matrix();
+      values_matrix.segment(curr_sparse_idx, n_vec_[i]) =
+          (obj_factor * Q_i.array()).matrix();
       curr_sparse_idx += n_vec_[i];
-
     }
 
     if (curr_var_idx != n_vars_primal_) {
-      throw std::runtime_error("Number of Hessian vars doesn't match the number of primals!");
+      throw std::runtime_error(
+          "Number of Hessian vars doesn't match the number of primals!");
     }
 
     if (curr_sparse_idx != nnz_h_) {
-      throw std::runtime_error("Number of Hessian nonzero entries doesn't match the prediction in eval_h!");
+      throw std::runtime_error("Number of Hessian nonzero entries doesn't "
+                               "match the prediction in eval_h!");
     }
 
     std::vector<Eigen::Triplet<double>> tripletList;
     tripletList.reserve(nnz_h_);
-    for (int i = 0; i < nnz_h_; ++i)
-    {
-      tripletList.push_back(Eigen::Triplet<double>(iRow_h_[i], jCol_h_[i], values_matrix[i]));
+    for (int i = 0; i < nnz_h_; ++i) {
+      tripletList.push_back(
+          Eigen::Triplet<double>(iRow_h_[i], jCol_h_[i], values_matrix[i]));
     }
     Eigen::SparseMatrix<double> hess(n_vars_primal_, n_vars_primal_);
     hess.setFromTriplets(tripletList.begin(), tripletList.end());
 
     int idx_hess = 0;
-    for (int k = 0; k < hess.outerSize(); ++k)
-    {
-      for (Eigen::SparseMatrix<double>::InnerIterator it(hess, k); it; ++it)
-      {
+    for (int k = 0; k < hess.outerSize(); ++k) {
+      for (Eigen::SparseMatrix<double>::InnerIterator it(hess, k); it; ++it) {
         values_compact_matrix[idx_hess] = it.value();
         idx_hess += 1;
       }
@@ -962,18 +890,18 @@ bool quadNLP::eval_h(
 }
 
 // Return the structure of the Hessian
-void quadNLP::compute_nnz_h()
-{
+void quadNLP::compute_nnz_h() {
   // Initialize nnz
   nnz_h_ = 0;
 
   // Compute the number of nnz in the Hessian over the horizon
   for (int i = 0; i < N_; ++i) {
-    nnz_h_ += nnz_mat_(sys_id_schedule_[i],HESS);
+    nnz_h_ += nnz_mat_(sys_id_schedule_[i], HESS);
   }
 
-  // Add cost variables (only on simple model coordinates) and subtract first step vars
-  int first_step_idx = first_step_idx_mat_(sys_id_schedule_[0],HESS);
+  // Add cost variables (only on simple model coordinates) and subtract first
+  // step vars
+  int first_step_idx = first_step_idx_mat_(sys_id_schedule_[0], HESS);
   nnz_h_ = nnz_h_ - first_step_idx + N_ * (n_simple_ + m_);
 
   // Size the NLP constraint Hessian sparsity structure
@@ -981,8 +909,10 @@ void quadNLP::compute_nnz_h()
   jCol_h_ = Eigen::VectorXi(nnz_h_);
 
   // Hessian from cost
-  Eigen::ArrayXi iRow_cost = Eigen::ArrayXi::LinSpaced(n_simple_ + m_, 0, n_simple_ + m_ - 1);
-  Eigen::ArrayXi jCol_cost = Eigen::ArrayXi::LinSpaced(n_simple_ + m_, 0, n_simple_ + m_ - 1);
+  Eigen::ArrayXi iRow_cost =
+      Eigen::ArrayXi::LinSpaced(n_simple_ + m_, 0, n_simple_ + m_ - 1);
+  Eigen::ArrayXi jCol_cost =
+      Eigen::ArrayXi::LinSpaced(n_simple_ + m_, 0, n_simple_ + m_ - 1);
 
   iRow_h_ = Eigen::VectorXi(nnz_h_);
   jCol_h_ = Eigen::VectorXi(nnz_h_);
@@ -990,61 +920,64 @@ void quadNLP::compute_nnz_h()
 
   int curr_sparse_idx = 0;
   int curr_var_idx = 0;
-  for (int i = 0; i < N_; ++i)
-  {
+  for (int i = 0; i < N_; ++i) {
     int sys_id = sys_id_schedule_[i];
-    nnz_step_hess_[i] = nnz_mat_(sys_id,HESS);
+    nnz_step_hess_[i] = nnz_mat_(sys_id, HESS);
 
-    if (i == 0)
-    {
+    if (i == 0) {
       int first_step_size = iRow_mat_[sys_id][HESS].size() - first_step_idx;
-      iRow_h_.head(first_step_size) = (iRow_mat_[sys_id][HESS].tail(first_step_size).array() - n_simple_).matrix();
-      jCol_h_.head(first_step_size) = (jCol_mat_[sys_id][HESS].tail(first_step_size).array() - n_simple_).matrix();
+      iRow_h_.head(first_step_size) =
+          (iRow_mat_[sys_id][HESS].tail(first_step_size).array() - n_simple_)
+              .matrix();
+      jCol_h_.head(first_step_size) =
+          (jCol_mat_[sys_id][HESS].tail(first_step_size).array() - n_simple_)
+              .matrix();
       curr_sparse_idx += first_step_size;
-    }
-    else
-    {
+    } else {
       // Update the number of nonzeros in this block
-      int nnz = nnz_mat_(sys_id_schedule_[i],HESS);
+      int nnz = nnz_mat_(sys_id_schedule_[i], HESS);
 
       // Each step we shift n states and m inputs
-      iRow_h_.segment(curr_sparse_idx, nnz) = (iRow_mat_[sys_id][HESS].array() + curr_var_idx - n_).matrix();
-      jCol_h_.segment(curr_sparse_idx, nnz) = (jCol_mat_[sys_id][HESS].array() + curr_var_idx - n_).matrix();
+      iRow_h_.segment(curr_sparse_idx, nnz) =
+          (iRow_mat_[sys_id][HESS].array() + curr_var_idx - n_).matrix();
+      jCol_h_.segment(curr_sparse_idx, nnz) =
+          (jCol_mat_[sys_id][HESS].array() + curr_var_idx - n_).matrix();
 
       curr_sparse_idx += nnz;
     }
     // Hessian from cost
-    iRow_h_.segment(curr_sparse_idx, n_simple_ + m_) = (iRow_cost + curr_var_idx).matrix();
-    jCol_h_.segment(curr_sparse_idx, n_simple_ + m_) = (jCol_cost + curr_var_idx).matrix();
+    iRow_h_.segment(curr_sparse_idx, n_simple_ + m_) =
+        (iRow_cost + curr_var_idx).matrix();
+    jCol_h_.segment(curr_sparse_idx, n_simple_ + m_) =
+        (jCol_cost + curr_var_idx).matrix();
 
     curr_sparse_idx += (n_simple_ + m_);
     curr_var_idx += n_vec_[i] + m_;
   }
 
-  if ((curr_sparse_idx != nnz_h_) || (curr_var_idx != n_vars_primal_) ) {
-    throw std::runtime_error("Number of Hessian nonzero entries doesn't match the prediction!");
+  if ((curr_sparse_idx != nnz_h_) || (curr_var_idx != n_vars_primal_)) {
+    throw std::runtime_error(
+        "Number of Hessian nonzero entries doesn't match the prediction!");
   }
 
   std::vector<Eigen::Triplet<double>> tripletList;
   tripletList.reserve(nnz_h_);
-  for (int i = 0; i < nnz_h_; ++i)
-  {
+  for (int i = 0; i < nnz_h_; ++i) {
     tripletList.push_back(Eigen::Triplet<double>(iRow_h_[i], jCol_h_[i], 1));
   }
   Eigen::SparseMatrix<double> hess(n_vars_primal_, n_vars_primal_);
   hess.setFromTriplets(tripletList.begin(), tripletList.end());
 
-  // We eliminate the overlap nonzero entrances here to get the exact nonzero number
+  // We eliminate the overlap nonzero entrances here to get the exact nonzero
+  // number
   nnz_compact_h_ = hess.nonZeros();
   iRow_compact_h_ = Eigen::VectorXi(nnz_compact_h_);
   jCol_compact_h_ = Eigen::VectorXi(nnz_compact_h_);
 
   int idx_hess = 0;
 
-  for (int k = 0; k < hess.outerSize(); ++k)
-  {
-    for (Eigen::SparseMatrix<double>::InnerIterator it(hess, k); it; ++it)
-    {
+  for (int k = 0; k < hess.outerSize(); ++k) {
+    for (Eigen::SparseMatrix<double>::InnerIterator it(hess, k); it; ++it) {
       iRow_compact_h_[idx_hess] = it.row();
       jCol_compact_h_[idx_hess] = it.col();
       idx_hess += 1;
@@ -1053,19 +986,11 @@ void quadNLP::compute_nnz_h()
 }
 
 // Return the optimization results
-void quadNLP::finalize_solution(
-  SolverReturn status,
-  Index n,
-  const Number* x,
-  const Number* z_L,
-  const Number* z_U,
-  Index m,
-  const Number* g,
-  const Number* lambda,
-  Number obj_value,
-  const IpoptData* ip_data,
-  IpoptCalculatedQuantities* ip_cq)
-{
+void quadNLP::finalize_solution(SolverReturn status, Index n, const Number *x,
+                                const Number *z_L, const Number *z_U, Index m,
+                                const Number *g, const Number *lambda,
+                                Number obj_value, const IpoptData *ip_data,
+                                IpoptCalculatedQuantities *ip_cq) {
   Eigen::Map<const Eigen::VectorXd> w(x, n);
   w0_ = w;
 
@@ -1078,62 +1003,83 @@ void quadNLP::finalize_solution(
   lambda0_ = lambda_matrix;
 }
 
-void quadNLP::shift_initial_guess()
-{
+void quadNLP::shift_initial_guess() {
   // Shift decision variables for 1 time step
   int curr_var_idx = 0;
   int curr_constr_idx = 0;
   int curr_slack_idx = n_vars_primal_;
   int n_slack = n_;
-  for (size_t i = 0; i < N_ - 1; i++)
-  {
-    w0_.segment(curr_var_idx, m_ + n_vec_[i]) = w0_.segment(curr_var_idx + m_ + n_vec_[i+1], m_ + n_vec_[i+1]);
-    z_L0_.segment(curr_var_idx, m_ + n_vec_[i]) = z_L0_.segment(curr_var_idx + m_ + n_vec_[i+1], m_ + n_vec_[i+1]);
-    z_U0_.segment(curr_var_idx, m_ + n_vec_[i]) = z_U0_.segment(curr_var_idx + m_ + n_vec_[i+1], m_ + n_vec_[i+1]);
-    lambda0_.segment(curr_constr_idx, g_vec_[i]) = lambda0_.segment(curr_constr_idx + g_vec_[i], g_vec_[i+1]);
+  for (size_t i = 0; i < N_ - 1; i++) {
+    w0_.segment(curr_var_idx, m_ + n_vec_[i]) =
+        w0_.segment(curr_var_idx + m_ + n_vec_[i + 1], m_ + n_vec_[i + 1]);
+    z_L0_.segment(curr_var_idx, m_ + n_vec_[i]) =
+        z_L0_.segment(curr_var_idx + m_ + n_vec_[i + 1], m_ + n_vec_[i + 1]);
+    z_U0_.segment(curr_var_idx, m_ + n_vec_[i]) =
+        z_U0_.segment(curr_var_idx + m_ + n_vec_[i + 1], m_ + n_vec_[i + 1]);
+    lambda0_.segment(curr_constr_idx, g_vec_[i]) =
+        lambda0_.segment(curr_constr_idx + g_vec_[i], g_vec_[i + 1]);
     curr_var_idx += m_ + n_vec_[i];
     curr_constr_idx += g_vec_[i];
 
-    w0_.segment(curr_slack_idx, 2*n_slack) = w0_.segment(curr_slack_idx + 2*n_slack, 2*n_slack);
-    z_L0_.segment(curr_slack_idx, 2*n_slack) = z_L0_.segment(curr_slack_idx + 2*n_slack, 2*n_slack);
-    z_U0_.segment(curr_slack_idx, 2*n_slack) = z_U0_.segment(curr_slack_idx + 2*n_slack, 2*n_slack);
-    lambda0_.segment(curr_constr_idx, 2*n_slack) = lambda0_.segment(curr_constr_idx + 2*n_slack, 2*n_slack);
-    curr_slack_idx += 2*n_slack;
-    curr_constr_idx += 2*n_slack;
+    w0_.segment(curr_slack_idx, 2 * n_slack) =
+        w0_.segment(curr_slack_idx + 2 * n_slack, 2 * n_slack);
+    z_L0_.segment(curr_slack_idx, 2 * n_slack) =
+        z_L0_.segment(curr_slack_idx + 2 * n_slack, 2 * n_slack);
+    z_U0_.segment(curr_slack_idx, 2 * n_slack) =
+        z_U0_.segment(curr_slack_idx + 2 * n_slack, 2 * n_slack);
+    lambda0_.segment(curr_constr_idx, 2 * n_slack) =
+        lambda0_.segment(curr_constr_idx + 2 * n_slack, 2 * n_slack);
+    curr_slack_idx += 2 * n_slack;
+    curr_constr_idx += 2 * n_slack;
   }
 
   // New contact
-  if (!(contact_sequence_.col(N_ - 1) - contact_sequence_.col(N_ - 2)).isMuchSmallerThan(1e-3))
-  {
+  if (!(contact_sequence_.col(N_ - 1) - contact_sequence_.col(N_ - 2))
+           .isMuchSmallerThan(1e-3)) {
     // There's a dual pair
-    if ((Eigen::MatrixXi::Ones(4, 1) - (contact_sequence_.col(N_ - 1)) - contact_sequence_.col(N_ - 2)).isMuchSmallerThan(1e-3))
-    {
+    if ((Eigen::MatrixXi::Ones(4, 1) - (contact_sequence_.col(N_ - 1)) -
+         contact_sequence_.col(N_ - 2))
+            .isMuchSmallerThan(1e-3)) {
       Eigen::MatrixXd trans = Eigen::MatrixXd::Zero(12, 12);
       trans.block(0, 3, 3, 3).diagonal() << 1, 1, 1;
       trans.block(3, 0, 3, 3).diagonal() << 1, 1, 1;
       trans.block(6, 9, 3, 3).diagonal() << 1, 1, 1;
       trans.block(9, 6, 3, 3).diagonal() << 1, 1, 1;
 
-      w0_.block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1) = trans * w0_.block((N_ - 7) * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1);
-      z_L0_.block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1) = trans * z_L0_.block((N_ - 7) * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1);
-      z_U0_.block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1) = trans * z_U0_.block((N_ - 7) * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1);
+      w0_.block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0,
+                m_ - leg_input_start_idx_, 1) =
+          trans * w0_.block((N_ - 7) * (n_ + m_) + leg_input_start_idx_, 0,
+                            m_ - leg_input_start_idx_, 1);
+      z_L0_.block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0,
+                  m_ - leg_input_start_idx_, 1) =
+          trans * z_L0_.block((N_ - 7) * (n_ + m_) + leg_input_start_idx_, 0,
+                              m_ - leg_input_start_idx_, 1);
+      z_U0_.block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0,
+                  m_ - leg_input_start_idx_, 1) =
+          trans * z_U0_.block((N_ - 7) * (n_ + m_) + leg_input_start_idx_, 0,
+                              m_ - leg_input_start_idx_, 1);
     }
     // New contact mode
-    else
-    {
-      w0_.block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1).fill(0);
-      z_L0_.block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1).fill(1);
-      z_U0_.block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1).fill(1);
+    else {
+      w0_.block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0,
+                m_ - leg_input_start_idx_, 1)
+          .fill(0);
+      z_L0_
+          .block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0,
+                 m_ - leg_input_start_idx_, 1)
+          .fill(1);
+      z_U0_
+          .block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0,
+                 m_ - leg_input_start_idx_, 1)
+          .fill(1);
 
       // If there're legs on the ground, we distribute gravity evenly
-      if (contact_sequence_.col(N_ - 1).sum() > 0.5)
-      {
+      if (contact_sequence_.col(N_ - 1).sum() > 0.5) {
         double grf = 11.51 * 9.81 / contact_sequence_.col(N_ - 1).sum();
-        for (size_t i = 0; i < 4; i++)
-        {
-          if (contact_sequence_(i, N_ - 1) == 1)
-          {
-            w0_((N_ - 1) * (n_ + m_) + leg_input_start_idx_ + 3 * i + 2, 0) = grf;
+        for (size_t i = 0; i < 4; i++) {
+          if (contact_sequence_(i, N_ - 1) == 1) {
+            w0_((N_ - 1) * (n_ + m_) + leg_input_start_idx_ + 3 * i + 2, 0) =
+                grf;
           }
         }
       }
@@ -1142,27 +1088,20 @@ void quadNLP::shift_initial_guess()
 }
 
 void quadNLP::update_solver(
-  const Eigen::VectorXd& initial_state,
-  const Eigen::MatrixXd& ref_traj,
-  const Eigen::MatrixXd& foot_positions,
-  const std::vector<std::vector<bool>>& contact_schedule)
-{
+    const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
+    const Eigen::MatrixXd &foot_positions,
+    const std::vector<std::vector<bool>> &contact_schedule) {
   // Update foot positions
   // Local planner has row as N horizon and col as position
   feet_location_ = -foot_positions.transpose();
 
   // Update contact sequence
   // Local planner has outer as N and inner as boolean contact
-  for (size_t i = 0; i < contact_schedule.size(); i++)
-  {
-    for (size_t j = 0; j < contact_schedule.front().size(); j++)
-    {
-      if (bool(contact_schedule.at(i).at(j)))
-      {
+  for (size_t i = 0; i < contact_schedule.size(); i++) {
+    for (size_t j = 0; j < contact_schedule.front().size(); j++) {
+      if (bool(contact_schedule.at(i).at(j))) {
         contact_sequence_(j, i) = 1;
-      }
-      else
-      {
+      } else {
         contact_sequence_(j, i) = 0;
       }
     }
@@ -1181,18 +1120,12 @@ void quadNLP::update_solver(
 }
 
 void quadNLP::update_solver(
-  const Eigen::VectorXd& initial_state,
-  const Eigen::MatrixXd& ref_traj,
-  const Eigen::MatrixXd& foot_positions,
-  const std::vector<std::vector<bool>>& contact_schedule,
-  const Eigen::MatrixXd& state_traj,
-  const Eigen::MatrixXd& control_traj)
-{
-  this->update_solver(
-    initial_state,
-    ref_traj,
-    foot_positions,
-    contact_schedule);
+    const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
+    const Eigen::MatrixXd &foot_positions,
+    const std::vector<std::vector<bool>> &contact_schedule,
+    const Eigen::MatrixXd &state_traj, const Eigen::MatrixXd &control_traj) {
+  this->update_solver(initial_state, ref_traj, foot_positions,
+                      contact_schedule);
 
   leg_input_ = control_traj.transpose();
 
@@ -1200,44 +1133,33 @@ void quadNLP::update_solver(
 }
 
 void quadNLP::update_solver(
-  const Eigen::VectorXd& initial_state,
-  const Eigen::MatrixXd& ref_traj,
-  const Eigen::MatrixXd& foot_positions,
-  const std::vector<std::vector<bool>>& contact_schedule,
-  const Eigen::VectorXd& ground_height)
-{
-  this->update_solver(
-    initial_state,
-    ref_traj,
-    foot_positions,
-    contact_schedule);
+    const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
+    const Eigen::MatrixXd &foot_positions,
+    const std::vector<std::vector<bool>> &contact_schedule,
+    const Eigen::VectorXd &ground_height) {
+  this->update_solver(initial_state, ref_traj, foot_positions,
+                      contact_schedule);
 
   ground_height_ = ground_height.transpose();
 }
 
 void quadNLP::update_solver(
-  const Eigen::VectorXd& initial_state,
-  const Eigen::MatrixXd& ref_traj,
-  const Eigen::MatrixXd& foot_positions,
-  const std::vector<std::vector<bool>>& contact_schedule,
-  const Eigen::VectorXd& ground_height,
-  const double& first_element_duration)
-{
+    const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
+    const Eigen::MatrixXd &foot_positions,
+    const std::vector<std::vector<bool>> &contact_schedule,
+    const Eigen::VectorXd &ground_height,
+    const double &first_element_duration) {
   first_element_duration_ = first_element_duration;
 
-  this->update_solver(
-    initial_state,
-    ref_traj,
-    foot_positions,
-    contact_schedule,
-    ground_height);
+  this->update_solver(initial_state, ref_traj, foot_positions, contact_schedule,
+                      ground_height);
 }
 
-void quadNLP::update_complexity_schedule(const Eigen::VectorXi& complexity_schedule)
-{
+void quadNLP::update_complexity_schedule(
+    const Eigen::VectorXi &complexity_schedule) {
   // Update the complexity schedule
   this->complexity_schedule_ = complexity_schedule;
-  
+
   // Resize appropriately
   N_ = complexity_schedule.size();
   sys_id_schedule_.resize(N_);
@@ -1247,24 +1169,26 @@ void quadNLP::update_complexity_schedule(const Eigen::VectorXi& complexity_sched
   for (int i = 0; i < complexity_schedule.size(); i++) {
     num_complex_fe_ += complexity_schedule[i];
 
-    int prior_complexity = (i > 0) ? complexity_schedule[i-1] : x0_complexity_;
+    int prior_complexity =
+        (i > 0) ? complexity_schedule[i - 1] : x0_complexity_;
 
-    if (i < complexity_schedule_.size()-1) {
+    if (i < complexity_schedule_.size() - 1) {
       if (complexity_schedule[i] == 0) {
         sys_id_schedule_[i] = (prior_complexity == 0) ? LEG : COMPLEX_TO_SIMPLE;
       } else {
-        sys_id_schedule_[i] = (prior_complexity == 1) ? COMPLEX : SIMPLE_TO_COMPLEX;
+        sys_id_schedule_[i] =
+            (prior_complexity == 1) ? COMPLEX : SIMPLE_TO_COMPLEX;
       }
     }
-    g_vec_[i] = nrow_mat_(sys_id_schedule_[i],FUNC);
+    g_vec_[i] = nrow_mat_(sys_id_schedule_[i], FUNC);
   }
-  sys_id_schedule_[N_-1] = LEG;
-  g_vec_[N_- 1] = nrow_mat_(sys_id_schedule_[N_-1],FUNC);
+  sys_id_schedule_[N_ - 1] = LEG;
+  g_vec_[N_ - 1] = nrow_mat_(sys_id_schedule_[N_ - 1], FUNC);
 
   n_vec_ = n_complex_ * complexity_schedule +
-    n_simple_ * (Eigen::VectorXi::Ones(N_) - complexity_schedule);
+           n_simple_ * (Eigen::VectorXi::Ones(N_) - complexity_schedule);
   g_vec_ = g_complex_ * complexity_schedule +
-    g_simple_ * (Eigen::VectorXi::Ones(N_) - complexity_schedule);
+           g_simple_ * (Eigen::VectorXi::Ones(N_) - complexity_schedule);
 
   n_vars_primal_ = getNumPrimalVariables();
   n_vars_slack_ = getNumSlackVariables();

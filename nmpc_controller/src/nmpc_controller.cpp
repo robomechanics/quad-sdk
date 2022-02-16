@@ -62,22 +62,22 @@ NMPCController::NMPCController(int type)
   ros::param::get("/nmpc_controller/leg_complex/state_upper_bound", state_upper_bound_null);
   ros::param::get("/nmpc_controller/takeoff_state_weight_factor", takeoff_state_weight_factor_);
 
-  Eigen::Map<Eigen::MatrixXd> Q(state_weights.data(), n_, 1),
-      R(control_weights.data(), m_, 1),
-      Q_factor(state_weights_factors.data(), N_, 1),
-      R_factor(control_weights_factors.data(), N_, 1),
-      x_min(state_lower_bound.data(), n_, 1),
-      x_max(state_upper_bound.data(), n_, 1),
-      x_min_null(state_lower_bound_null.data(), state_lower_bound_null.size(), 1),
-      x_max_null(state_upper_bound_null.data(), state_upper_bound_null.size(), 1),
-      u_min(control_lower_bound.data(), m_, 1),
-      u_max(control_upper_bound.data(), m_, 1);
+  Eigen::Map<Eigen::VectorXd> Q(state_weights.data(), n_),
+      R(control_weights.data(), m_),
+      Q_factor(state_weights_factors.data(), N_),
+      R_factor(control_weights_factors.data(), N_),
+      x_min(state_lower_bound.data(), n_),
+      x_max(state_upper_bound.data(), n_),
+      x_min_null(state_lower_bound_null.data(), state_lower_bound_null.size()),
+      x_max_null(state_upper_bound_null.data(), state_upper_bound_null.size()),
+      u_min(control_lower_bound.data(), m_),
+      u_max(control_upper_bound.data(), m_);
 
-  Eigen::MatrixXd x_min_complex(n_+n_null_,1), x_max_complex(n_+n_null_,1);
-  x_min_complex.block(0,0,n_,1) = x_min;
-  x_min_complex.block(n_,0,n_null_,1) = x_min_null;
-  x_max_complex.block(0,0,n_,1) = x_max;
-  x_max_complex.block(n_,0,n_null_,1) = x_max_null;
+  Eigen::VectorXd x_min_complex(n_+n_null_), x_max_complex(n_+n_null_);
+  x_min_complex.segment(0,n_) = x_min;
+  x_min_complex.segment(n_,n_null_) = x_min_null;
+  x_max_complex.segment(0,n_) = x_max;
+  x_max_complex.segment(n_,n_null_) = x_max_null;
 
   mynlp_ = new quadNLP(
       type_,
