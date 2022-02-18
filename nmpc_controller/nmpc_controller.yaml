@@ -1,5 +1,5 @@
 nmpc_controller:
-  takeoff_state_weight_factor: 10
+  takeoff_state_weight_factor: 100
   leg:
     update_rate: 50
     horizon_length: 24

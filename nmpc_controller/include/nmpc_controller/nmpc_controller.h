@@ -55,6 +55,7 @@ public:
   bool computeLegPlan(const Eigen::VectorXd &initial_state,
                       const Eigen::MatrixXd &ref_traj,
                       const Eigen::MatrixXd &foot_positions,
+                      const Eigen::MatrixXd &foot_velocities,
                       const std::vector<std::vector<bool>> &contact_schedule,
                       const Eigen::VectorXd &ref_ground_height,
                       const double &first_element_duration,

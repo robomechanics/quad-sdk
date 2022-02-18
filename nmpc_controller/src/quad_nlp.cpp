@@ -120,12 +120,12 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
 
   // feet location initialized by nominal position
   feet_location_ = Eigen::MatrixXd(12, N_);
-  foot_pos_world_ = Eigen::MatrixXd(12, N_);
-  foot_vel_world_ = Eigen::MatrixXd(12, N_).setZero();
+  foot_pos_world_ = Eigen::MatrixXd(N_, 12);
+  foot_vel_world_ = Eigen::MatrixXd(N_, 12).setZero();
   for (int i = 0; i < N_; ++i) {
     feet_location_.block(0, i, 12, 1) << -0.2263, -0.098, 0.3, -0.2263, 0.098,
         0.3, 0.2263, -0.098, 0.3, 0.2263, 0.098, 0.3;
-    foot_pos_world_.block(0, i, 12, 1) << -0.2263, -0.098, 0, -0.2263, 0.098, 0,
+    foot_pos_world_.row(i) << -0.2263, -0.098, 0, -0.2263, 0.098, 0,
         0.2263, -0.098, 0, 0.2263, 0.098, 0;
   }
 
@@ -192,8 +192,6 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   this->update_complexity_schedule(complexity_schedule_);
   std::cout << "n_vec\n" << n_vec_.transpose() << std::endl;
   std::cout << "g_vec\n" << g_vec_.transpose() << std::endl;
-  n_vars_ = getNumVariables();
-  n_constraints_ = getNumConstraints();
 
   w0_ = Eigen::VectorXd(n_vars_).setZero();
   z_L0_ = Eigen::VectorXd(n_vars_).Ones(n_vars_, 1);
@@ -492,7 +490,9 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     Eigen::VectorXd pk(14);
     pk[0] = (i == 0) ? first_element_duration_ : dt_;
     pk[1] = mu_;
-    pk.segment(2, 12) = feet_location_.col(i);
+    pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
+    // pk.segment(2, 12) = foot_pos_world_.row(i);
+    // pk.segment(14, 12) = foot_vel_world_.row(i);
 
     // Set up the work function
     casadi_int sz_arg;
@@ -577,7 +577,9 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
       Eigen::VectorXd pk(14);
       pk[0] = (i == 0) ? first_element_duration_ : dt_;
       pk[1] = mu_;
-      pk.segment(2, 12) = feet_location_.col(i);
+      pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
+      // pk.segment(2, 12) = foot_pos_world_.row(i);
+      // pk.segment(14, 12) = foot_vel_world_.row(i);
 
       // Set up the work function
       casadi_int sz_arg;
@@ -784,7 +786,9 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
       Eigen::VectorXd pk(14);
       pk[0] = (i == 0) ? first_element_duration_ : dt_;
       pk[1] = mu_;
-      pk.segment(2, 12) = feet_location_.col(i);
+      pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
+      // pk.segment(2, 12) = foot_pos_world_.row(i);
+      // // pk.segment(14, 12) = foot_vel_world_.row(i);
 
       // Set up the work function
       casadi_int sz_arg;
@@ -1146,7 +1150,7 @@ void quadNLP::update_solver(
 }
 
 void quadNLP::update_solver(
-    const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
+    const Eigen::VectorXd &initial_state,const Eigen::MatrixXd &ref_traj,
     const Eigen::MatrixXd &foot_positions,
     const std::vector<std::vector<bool>> &contact_schedule,
     const Eigen::VectorXd &ground_height,

@@ -1,6 +1,5 @@
 #include "local_planner/local_planner.h"
 
-// namespace plt = matplotlibcpp;
 Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
 LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
@@ -522,21 +521,22 @@ bool LocalPlanner::computeLocalPlan() {
   complexity_schedule.setZero();
   
   // Compute grf position considering the toe radius
-  Eigen::MatrixXd grf_positions_body = foot_positions_body_;
+  Eigen::MatrixXd grf_positions = foot_positions_body_;
   for (size_t i = 0; i < 4; i++)
   {
-    grf_positions_body.col(3 * i + 2) = foot_positions_body_.col(3 * i + 2).array() - toe_radius;
+    // grf_positions.col(3 * i + 2) = foot_positions_body_.col(3 * i + 2).array() - toe_radius;
+    grf_positions.col(3 * i + 2) = foot_positions_body_.col(3 * i + 2).array() - toe_radius;
   }
 
   // Compute body plan with MPC, return if solve fails
   if (use_nmpc_) {
     if (!local_body_planner_nonlinear_->computeLegPlan(current_state_, ref_body_plan_,
-      grf_positions_body, contact_schedule_, ref_ground_height_, first_element_duration_,
+      grf_positions, foot_velocities_world_, contact_schedule_, ref_ground_height_, first_element_duration_,
       same_plan_index_, ref_primitive_plan_, complexity_schedule, body_plan_, grf_plan_))
       return false;
   } else {
     if (!local_body_planner_convex_->computePlan(current_state_, ref_body_plan_,
-      grf_positions_body, contact_schedule_, body_plan_, grf_plan_))
+      grf_positions, contact_schedule_, body_plan_, grf_plan_))
       return false;
   }
 

@@ -135,6 +135,7 @@ NMPCController::NMPCController(int type)
 bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
                                     const Eigen::MatrixXd &ref_traj,
                                     const Eigen::MatrixXd &foot_positions,
+                                    const Eigen::MatrixXd &foot_velocities,
                                     const std::vector<std::vector<bool>> &contact_schedule,
                                     const Eigen::VectorXd &ref_ground_height,
                                     const double &first_element_duration,
@@ -159,11 +160,14 @@ bool NMPCController::computeLegPlan(const Eigen::VectorXd &initial_state,
   {
     mynlp_->shift_initial_guess();
   }
+  // mynlp_->feet_location_ = foot_positions;
+  mynlp_->foot_pos_world_ = foot_positions;
+  mynlp_->foot_vel_world_ = foot_velocities;
 
   for (int i = 0; i < ref_primitive_id.size()-1; i++) {
     if (ref_primitive_id(i,0) == 1 && ref_primitive_id(i+1,0) == 2) {
       mynlp_->Q_factor_(i,0) = mynlp_->Q_factor_(i,0)*takeoff_state_weight_factor_;
-      ROS_WARN_THROTTLE(0.5,"leap detected, increasing weights");
+      ROS_WARN_THROTTLE(0.5, "leap detected, increasing weights");
     }
   }
 
