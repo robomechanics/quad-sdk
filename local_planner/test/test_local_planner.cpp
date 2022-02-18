@@ -14,7 +14,8 @@ TEST(LocalPlannerTest, noInputCase) {
 
 TEST(LocalFootStepPlanner, baseCase) {
   int N;
-  ros::param::get("/nmpc_controller/leg/horizon_length", N);
+  // ros::param::get("/nmpc_controller/leg/horizon_length", N);
+  N = 14;
   double dt = 0.03;
   double period = 0.36;
   std::vector<double> duty_cycles = {0.3, 0.3, 0.3, 0.3};
@@ -72,10 +73,9 @@ TEST(LocalFootStepPlanner, baseCase) {
   footstep_planner.setTerrainMap(map);
   footstep_planner.computeFootPositions(body_plan, grf_plan, contact_schedule,
                                         ref_body_plan, foot_positions_world);
-
-  EXPECT_EQ(foot_positions_world(N, 0), -foot_positions_world(N, 3));
-  EXPECT_EQ(foot_positions_world(N, 1), foot_positions_world(N, 4));
-  EXPECT_EQ(foot_positions_world(N, 2), -foot_positions_world(N, 5));
+  std::cout << foot_positions_world << std::endl;
+  EXPECT_EQ(foot_positions_world(N - 1, 0), -foot_positions_world(N - 1, 3));
+  EXPECT_EQ(foot_positions_world(N - 1, 1), foot_positions_world(N - 1, 4));
 }
 
 int main(int argc, char **argv) {

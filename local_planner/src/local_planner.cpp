@@ -206,8 +206,7 @@ void LocalPlanner::initLocalFootstepPlanner() {
                                              phase_offsets);
   local_footstep_planner_->setSpatialParams(
       ground_clearance, hip_clearance, standing_error_threshold, grf_weight,
-      quadKD_, foothold_search_radius, foothold_obj_threshold, obj_fun_layer,
-      current_foot_positions_world_);
+      quadKD_, foothold_search_radius, foothold_obj_threshold, obj_fun_layer);
 
   past_footholds_msg_.feet.resize(num_feet_);
 }
