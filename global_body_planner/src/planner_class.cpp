@@ -37,20 +37,9 @@ State PlannerClass::randomState(const PlannerConfig &planner_config) {
 
   q.pos[0] = (x_max - x_min) * (double)rand() / RAND_MAX + x_min;
   q.pos[1] = (y_max - y_min) * (double)rand() / RAND_MAX + y_min;
-  // q[2] = std::max(std::min(height_distribution(generator), z_max_rel),
-  // z_min_rel) + planner_config.terrain.getGroundHeight(q[0], q[1]);
   q.pos[2] = planner_config.H_NOM +
              planner_config.terrain.getGroundHeight(q.pos[0], q.pos[1]);
 
-
-  // double phi = (2.0*MY_PI)*(double)rand()/RAND_MAX;
-  // double cos_theta = 2.0*(double)rand()/RAND_MAX - 1.0;
-  // double theta = acos(cos_theta);
-  // // double v = (double)rand()/RAND_MAX*planner_config.V_MAX;
-  // double v = planner_config.V_NOM;
-  // q.vel[0] = v*sin(theta)*cos(phi);
-  // q.vel[1] = v*sin(theta)*sin(phi);
-  // q.vel[2] = v*cos(theta);
 
   double phi = (2.0 * MY_PI) * (double)rand() / RAND_MAX;
   double v = planner_config.V_NOM;
@@ -61,11 +50,11 @@ State PlannerClass::randomState(const PlannerConfig &planner_config) {
   return q;
 }
 
-std::vector<int> PlannerClass::neighborhoodN(State q, int N) {
+std::vector<int> PlannerClass::neighborhoodN(State q, int N) const {
   std::priority_queue<Distance, std::vector<Distance>, std::greater<Distance>>
       closest;
 
-  std::unordered_map<int, State>::iterator itr;
+  std::unordered_map<int, State>::const_iterator itr;
   for (itr = vertices.begin(); itr != vertices.end(); itr++) {
     closest.push(std::make_pair(stateDistance(q, itr->second), itr->first));
   }
@@ -81,10 +70,10 @@ std::vector<int> PlannerClass::neighborhoodN(State q, int N) {
   return neighbors;
 }
 
-std::vector<int> PlannerClass::neighborhoodDist(State q, double dist) {
+std::vector<int> PlannerClass::neighborhoodDist(State q, double dist) const {
   std::vector<int> neighbors;
 
-  std::unordered_map<int, State>::iterator itr;
+  std::unordered_map<int, State>::const_iterator itr;
   for (itr = vertices.begin(); itr != vertices.end(); itr++) {
     if ((stateDistance(q, itr->second) <= dist) &&
         stateDistance(q, itr->second) > 0) // don't include itself
@@ -96,7 +85,7 @@ std::vector<int> PlannerClass::neighborhoodDist(State q, double dist) {
   return neighbors;
 }
 
-int PlannerClass::getNearestNeighbor(State q) {
+int PlannerClass::getNearestNeighbor(State q) const {
   std::vector<int> closest_q = neighborhoodN(q, 1);
   return closest_q.front();
 }

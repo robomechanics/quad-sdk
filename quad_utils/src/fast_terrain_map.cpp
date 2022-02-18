@@ -279,7 +279,7 @@ double FastTerrainMap::getGroundHeight(const double x, const double y) const {
                   (fx1y1 * (x2 - x) * (y2 - y) + fx2y1 * (x - x1) * (y2 - y) +
                    fx1y2 * (x2 - x) * (y - y1) + fx2y2 * (x - x1) * (y - y1));
 
-  // timer.report();
+  // timer.reportStatistics();
   return height;
 }
 
@@ -303,7 +303,7 @@ double FastTerrainMap::getGroundHeightFiltered(const double x,
                   (fx1y1 * (x2 - x) * (y2 - y) + fx2y1 * (x - x1) * (y2 - y) +
                    fx1y2 * (x2 - x) * (y - y1) + fx2y2 * (x - x1) * (y - y1));
 
-  // timer.report();
+  // timer.reportStatistics();
   return height;
 }
 
@@ -466,7 +466,7 @@ Eigen::Vector3d FastTerrainMap::projectToMap(const Eigen::Vector3d point,
   result = {old_point[0], old_point[1],
             getGroundHeight(old_point[0], old_point[1])};
 
-  // timer.report();
+  // timer.reportStatistics();
   return result;
 }
 

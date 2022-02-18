@@ -128,10 +128,8 @@ void RVizInterface::robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg,
 {
 
   // Initialize Path message to visualize body plan
-  // nav_msgs::Path body_plan_viz;
   visualization_msgs::Marker body_plan_viz;
   body_plan_viz.header = msg->header;
-  // body_plan_viz.ns = "plan_viz";
   body_plan_viz.action = visualization_msgs::Marker::ADD;
   body_plan_viz.pose.orientation.w = 1;
   body_plan_viz.id = 5;
@@ -175,9 +173,6 @@ void RVizInterface::robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg,
     }
     body_plan_viz.colors.push_back(color);
     body_plan_viz.points.push_back(msg->states[i].body.pose.position);
-
-    // Add to the path message
-    // body_plan_viz.poses.push_back(pose_stamped);
 
     // Add poses to the orientation message
     if (i % orientation_subsample_interval == 0) {

@@ -150,7 +150,7 @@ void TrajectoryPublisher::updateTrajectory() {
   }
   
 
-  // timer.report();
+  // timer.reportStatistics();
 }
 
 void TrajectoryPublisher::publishTrajectory() {
