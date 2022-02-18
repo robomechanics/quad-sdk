@@ -43,8 +43,7 @@ void LocalFootstepPlanner::setSpatialParams(
     double standing_error_threshold,
     std::shared_ptr<quad_utils::QuadKD> kinematics,
     double foothold_search_radius, double foothold_obj_threshold,
-    std::string obj_fun_layer,
-    const Eigen::VectorXd &current_foot_positions_world) {
+    std::string obj_fun_layer) {
 
   ground_clearance_ = ground_clearance;
   hip_clearance_ = hip_clearance;
@@ -55,7 +54,6 @@ void LocalFootstepPlanner::setSpatialParams(
   foothold_search_radius_ = foothold_search_radius;
   foothold_obj_threshold_ = foothold_obj_threshold;
   obj_fun_layer_ = obj_fun_layer;
-  current_foot_positions_world_ = current_foot_positions_world;
 }
 
 void LocalFootstepPlanner::updateMap(const FastTerrainMap &terrain) {
@@ -236,14 +234,14 @@ void LocalFootstepPlanner::computeFootPositions(
         foot_position_nominal = foot_position_raibert;
         grid_map::Position foot_position_grid_map = {foot_position_nominal.x(),
                                                      foot_position_nominal.y()};
-       
+
         // Toe has 20cm radius so we need to shift the foot height from terrain
         foot_position_nominal.z() =
             terrain_grid_.atPosition(
                 "z", foot_position_grid_map,
                 grid_map::InterpolationMethods::INTER_NEAREST) +
             toe_radius;
-            
+
         // Optimize the foothold location to get the final position
         foot_position = getNearestValidFoothold(foot_position_nominal);
 
@@ -255,6 +253,7 @@ void LocalFootstepPlanner::computeFootPositions(
         // Note: this should get ignored for a foot in flight
         foot_positions.block<1, 3>(i, 3 * j) =
             getFootData(foot_positions, i - 1, j);
+        current_foot_positions_world_ = foot_positions;
       }
     }
   }

@@ -67,8 +67,7 @@ public:
                         std::shared_ptr<quad_utils::QuadKD> kinematics,
                         double foothold_search_radius,
                         double foothold_obj_threshold,
-                        std::string obj_fun_layer,
-                        const Eigen::VectorXd &current_foot_positions_world);
+                        std::string obj_fun_layer);
 
   /**
    * @brief Transform a vector of foot positions from the world to the body
