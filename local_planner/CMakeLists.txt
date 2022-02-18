@@ -25,7 +25,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## System dependencies are found with CMake's conventions
 find_package(Eigen3 REQUIRED)
-find_package(OsqpEigen REQUIRED)
+# find_package(OsqpEigen REQUIRED)
 find_package(PythonLibs 2.7)
 
 set(QPOASES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/qpOASES")
