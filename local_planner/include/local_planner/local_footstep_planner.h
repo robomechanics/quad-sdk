@@ -67,7 +67,8 @@ public:
                         std::shared_ptr<quad_utils::QuadKD> kinematics,
                         double foothold_search_radius,
                         double foothold_obj_threshold,
-                        std::string obj_fun_layer);
+                        std::string obj_fun_layer,
+                        const Eigen::VectorXd &current_foot_positions_world);
 
   /**
    * @brief Transform a vector of foot positions from the world to the body
@@ -220,6 +221,10 @@ public:
     }
   }
 
+  inline void setTerrainMap(const grid_map::GridMap &grid_map) {
+    terrain_grid_ = grid_map;
+  }
+
 private:
   /**
    * @brief Update the continuous foot plan to match the discrete
@@ -263,10 +268,6 @@ private:
    */
   inline bool isContact(const std::vector<std::vector<bool>> &contact_schedule,
                         int horizon_index, int foot_index) {
-    std::cout << "horizon " << horizon_index << std::endl;
-    std::cout << "foot " << foot_index << std::endl;
-    auto check = contact_schedule.at(horizon_index).at(foot_index);
-    std::cout << check << std::endl;
     return (contact_schedule.at(horizon_index).at(foot_index));
   }
 
@@ -330,6 +331,9 @@ private:
 
   /// Current continuous footstep plan
   quad_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
+
+  /// Current footposition in the world frame
+  Eigen::MatrixXd current_foot_positions_world_;
 
   /// Number of feet
   const int num_feet_ = 4;

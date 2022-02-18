@@ -43,7 +43,8 @@ void LocalFootstepPlanner::setSpatialParams(
     double standing_error_threshold,
     std::shared_ptr<quad_utils::QuadKD> kinematics,
     double foothold_search_radius, double foothold_obj_threshold,
-    std::string obj_fun_layer) {
+    std::string obj_fun_layer,
+    const Eigen::VectorXd &current_foot_positions_world) {
 
   ground_clearance_ = ground_clearance;
   hip_clearance_ = hip_clearance;
@@ -54,6 +55,7 @@ void LocalFootstepPlanner::setSpatialParams(
   foothold_search_radius_ = foothold_search_radius;
   foothold_obj_threshold_ = foothold_obj_threshold;
   obj_fun_layer_ = obj_fun_layer;
+  current_foot_positions_world_ = current_foot_positions_world;
 }
 
 void LocalFootstepPlanner::updateMap(const FastTerrainMap &terrain) {
@@ -207,10 +209,18 @@ void LocalFootstepPlanner::computeFootPositions(
         grid_map::Position hip_position_grid_map = {hip_position_midstance.x(),
                                                     hip_position_midstance.y()};
 
+        if (!terrain_grid_.isInside(hip_position_grid_map)) {
+          ROS_WARN("Foot positions are outside of map boundaries, try steering "
+                   "the robot in another direction");
+          foot_positions = current_foot_positions_world_;
+          return;
+        }
+
         auto hip_height = hip_position_midstance.z() -
                           terrain_grid_.atPosition(
                               "z", hip_position_grid_map,
                               grid_map::InterpolationMethods::INTER_NEAREST);
+
         centrifugal = (hip_height / 9.81) *
                       body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
         vel_tracking =
@@ -221,23 +231,19 @@ void LocalFootstepPlanner::computeFootPositions(
 
         // Combine these measures to get the nominal foot position and grab
         // correct height
-        // foot_position_raibert =
-        //     hip_position_midstance + centrifugal + vel_tracking;
-        // foot_position_nominal = grf_weight_ * foot_position_grf +
-        //                         (1 - grf_weight_) * foot_position_raibert;
         foot_position_raibert =
             hip_position_midstance + centrifugal + vel_tracking;
         foot_position_nominal = foot_position_raibert;
         grid_map::Position foot_position_grid_map = {foot_position_nominal.x(),
                                                      foot_position_nominal.y()};
-
+       
         // Toe has 20cm radius so we need to shift the foot height from terrain
         foot_position_nominal.z() =
             terrain_grid_.atPosition(
                 "z", foot_position_grid_map,
                 grid_map::InterpolationMethods::INTER_NEAREST) +
             toe_radius;
-
+            
         // Optimize the foothold location to get the final position
         foot_position = getNearestValidFoothold(foot_position_nominal);
 
@@ -247,7 +253,6 @@ void LocalFootstepPlanner::computeFootPositions(
       } else {
         // If this isn't a new contact just hold the previous position
         // Note: this should get ignored for a foot in flight
-        std::cout << "here" << std::endl;
         foot_positions.block<1, 3>(i, 3 * j) =
             getFootData(foot_positions, i - 1, j);
       }

@@ -3,7 +3,7 @@
 
 #include "local_planner/local_planner.h"
 
-TEST(LocalPlannerTest, baseCase) {
+TEST(LocalPlannerTest, noInputCase) {
   ros::NodeHandle nh;
   LocalPlanner local_planner(nh);
 
@@ -13,8 +13,6 @@ TEST(LocalPlannerTest, baseCase) {
 }
 
 TEST(LocalFootStepPlanner, baseCase) {
-  LocalFootstepPlanner footstep_planner;
-
   int N;
   ros::param::get("/nmpc_controller/leg/horizon_length", N);
   double dt = 0.03;
@@ -26,10 +24,11 @@ TEST(LocalFootStepPlanner, baseCase) {
   double standing_error_threshold = 0.03;
   double foothold_search_radius = 0.2;
   double foothold_obj_threshold = 0.6;
-  double grf_weight = 0.5;
-  auto quadKD = std::make_shared<quad_utils::QuadKD>();
+  double grf_weight = 0.0;
   std::string obj_fun_layer = "traversability";
+  auto quadKD = std::make_shared<quad_utils::QuadKD>();
 
+  LocalFootstepPlanner footstep_planner;
   footstep_planner.setTemporalParams(dt, period, N, duty_cycles, phase_offsets);
   footstep_planner.setSpatialParams(
       ground_clearance, hip_clearance, standing_error_threshold, grf_weight,
@@ -55,13 +54,28 @@ TEST(LocalFootStepPlanner, baseCase) {
   }
 
   Eigen::MatrixXd grf_plan(N, 12);
-  // Fill every third column with something
-  grf_plan.fill(0);
+  grf_plan.fill(0.3);
 
   Eigen::MatrixXd foot_positions_world(N, 12);
   foot_positions_world.fill(0);
+
+  grid_map::GridMap map({"z", "traversability"});
+  map.setGeometry(grid_map::Length(10, 10), 0.01);
+
+  for (grid_map::GridMapIterator it(map); !it.isPastEnd(); ++it) {
+    grid_map::Position position;
+    map.getPosition(*it, position);
+    map.at("z", *it) = 0;
+    map.at("traversability", *it) = 1;
+  }
+
+  footstep_planner.setTerrainMap(map);
   footstep_planner.computeFootPositions(body_plan, grf_plan, contact_schedule,
                                         ref_body_plan, foot_positions_world);
+
+  EXPECT_EQ(foot_positions_world(N, 0), -foot_positions_world(N, 3));
+  EXPECT_EQ(foot_positions_world(N, 1), foot_positions_world(N, 4));
+  EXPECT_EQ(foot_positions_world(N, 2), -foot_positions_world(N, 5));
 }
 
 int main(int argc, char **argv) {

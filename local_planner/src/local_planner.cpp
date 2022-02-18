@@ -10,7 +10,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic,
       local_plan_topic, foot_plan_discrete_topic, foot_plan_continuous_topic,
-      cmd_vel_topic;
+      cmd_vel_topic, control_mode_topic;
   quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
   quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
@@ -21,6 +21,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
                            foot_plan_continuous_topic);
   quad_utils::loadROSParam(nh_, "topics/cmd_vel", cmd_vel_topic);
   quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
+  quad_utils::loadROSParam(nh_, "topics/control/mode", control_mode_topic);
 
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic, 1,
@@ -205,7 +206,8 @@ void LocalPlanner::initLocalFootstepPlanner() {
                                              phase_offsets);
   local_footstep_planner_->setSpatialParams(
       ground_clearance, hip_clearance, standing_error_threshold, grf_weight,
-      quadKD_, foothold_search_radius, foothold_obj_threshold, obj_fun_layer);
+      quadKD_, foothold_search_radius, foothold_obj_threshold, obj_fun_layer,
+      current_foot_positions_world_);
 
   past_footholds_msg_.feet.resize(num_feet_);
 }
@@ -445,9 +447,9 @@ void LocalPlanner::getStateAndTwistInput() {
   ref_body_plan_(0, 11) = cmd_vel_[5];
 
   // Only adaptive pitch
-  // ref_body_plan_(0, 4) =
-  // local_footstep_planner_->getTerrainSlope(current_state_(0),
-  // current_state_(1), current_state_(6), current_state_(7));
+  ref_body_plan_(0, 4) = local_footstep_planner_->getTerrainSlope(
+      current_state_(0), current_state_(1), current_state_(6),
+      current_state_(7));
 
   // Adaptive roll and pitch
   local_footstep_planner_->getTerrainSlope(
@@ -478,9 +480,9 @@ void LocalPlanner::getStateAndTwistInput() {
     ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);
 
     // Only adaptive pitch
-    // ref_body_plan_(i, 4) =
-    // local_footstep_planner_->getTerrainSlope(ref_body_plan_(i, 0),
-    // ref_body_plan_(i, 1), ref_body_plan_(i, 6), ref_body_plan_(i, 7));
+    ref_body_plan_(i, 4) = local_footstep_planner_->getTerrainSlope(
+        ref_body_plan_(i, 0), ref_body_plan_(i, 1), ref_body_plan_(i, 6),
+        ref_body_plan_(i, 7));
 
     // Adaptive roll and pitch
     local_footstep_planner_->getTerrainSlope(
@@ -515,7 +517,6 @@ void LocalPlanner::getStateAndTwistInput() {
   body_plan_.row(0) = current_state_;
   foot_positions_body_.row(0) = current_foot_positions_body_;
   foot_positions_world_.row(0) = current_foot_positions_world_;
-  //*/
 }
 
 bool LocalPlanner::computeLocalPlan() {
@@ -541,11 +542,6 @@ bool LocalPlanner::computeLocalPlan() {
     local_footstep_planner_->computeFootPositions(
         body_plan_, grf_plan_, contact_schedule_, ref_body_plan_,
         foot_positions_world_);
-
-    // For standing test we know the foot position will be constant
-    // for (int i = 0; i < N_; i++) {
-    //   foot_positions_world_.row(i) = current_foot_positions_world_;
-    // }
 
     // Transform the new foot positions into the body frame for body planning
     local_footstep_planner_->getFootPositionsBodyFrame(

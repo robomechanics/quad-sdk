@@ -173,11 +173,9 @@ void QuadKD::worldToNominalHipFKWorldFrame(
 
   // Compute transforms
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
-  std::cout << "after affine" << std::endl;
   // Compute transform from body to legbase but offset by l0
   Eigen::Matrix4d g_body_nominal_hip = g_body_legbases_[leg_index];
   g_body_nominal_hip(1, 3) += 1.0 * l0_vec_[leg_index];
-  std::cout << "after g_body" << std::endl;
 
   // Compute transform for offset leg base relative to the world frame
   Eigen::Matrix4d g_world_nominal_hip = g_world_body * g_body_nominal_hip;
