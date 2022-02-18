@@ -88,7 +88,7 @@ void GlobalBodyPlanner::robotStateCallback(const quad_msgs::RobotState::ConstPtr
 
 void GlobalBodyPlanner::triggerReset() {
   planner_status_ = RESET;
-  current_plan_.reset();
+  current_plan_.clear();
   reset_time_ = ros::Time::now();
 }
 
@@ -127,7 +127,7 @@ void GlobalBodyPlanner::setStartState() {
     double first_element_duration;
     quad_utils::getPlanIndex(current_plan_.getPublishedTimestamp(), dt_, current_index, first_element_duration);
     current_index = std::min(current_index, current_plan_.getSize()-1);
-    FullState current_state_in_plan_ = current_plan_.getState(current_index);
+    FullState current_state_in_plan_ = current_plan_.getStateFromIndex(current_index);
     if (poseDistance(robot_state_, current_state_in_plan_) > state_error_threshold_) {
       ROS_WARN_THROTTLE(0.5, "Too far from nominal plan, resetting");
       triggerReset();
@@ -150,7 +150,7 @@ void GlobalBodyPlanner::setStartState() {
     start_index_ = (start_index_ + 25 >= current_plan_.getSize()-1) ? 
       current_plan_.getSize()-1 : start_index_;
 
-    start_state_ = current_plan_.getState(start_index_);
+    start_state_ = current_plan_.getStateFromIndex(start_index_);
     replan_start_time_ = current_plan_.getTime(start_index_);
 
   } else {
@@ -238,7 +238,7 @@ bool GlobalBodyPlanner::callPlanner() {
 
 
     newest_plan_.eraseAfterIndex(start_index_);
-    newest_plan_.load(plan_status, start_state_, dist_to_goal, state_sequence, action_sequence, dt_,
+    newest_plan_.loadPlanData(plan_status, start_state_, dist_to_goal, state_sequence, action_sequence, dt_,
       replan_start_time_, planner_config_);
 
     // Check if this plan is better:
@@ -361,7 +361,7 @@ void GlobalBodyPlanner::publishCurrentPlan() {
     discrete_robot_plan_msg.global_plan_timestamp = current_plan_.getPublishedTimestamp();
 
     // Load the plan into the messages
-    current_plan_.toMsg(robot_plan_msg, discrete_robot_plan_msg);
+    current_plan_.convertToMsg(robot_plan_msg, discrete_robot_plan_msg);
 
     // Publish both messages
     body_plan_pub_.publish(robot_plan_msg);

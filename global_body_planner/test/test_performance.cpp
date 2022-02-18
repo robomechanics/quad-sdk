@@ -27,7 +27,7 @@ TEST(GlobalBodyPlannerTest, testIsValidStateTime) {
   for (int i = 0; i < N; i++) {
     isValidState(state_vec[i], planner_config, LEAP_STANCE);
   }
-  double avg_duration = timer.report(N);
+  double avg_duration = timer.reportStatistics(N);
 
   EXPECT_TRUE(avg_duration <= 5e-6);
 }
@@ -57,7 +57,7 @@ TEST(GlobalBodyPlannerTest, testGetRandomLeapActionTime) {
   for (int i = 0; i < N; i++) {
     getRandomLeapAction(state_vec[i], surf_norm, action_vec[i], planner_config);
   }
-  double avg_duration = timer.report(N);
+  double avg_duration = timer.reportStatistics(N);
 
   EXPECT_TRUE(avg_duration <= 5e-6);
 }
@@ -94,7 +94,7 @@ TEST(GlobalBodyPlannerTest, testIsValidStateActionPairTime) {
   for (int i = 0; i < N; i++) {
     isValidStateActionPair(state_vec[i], action_vec[i], result, planner_config);
   }
-  double avg_duration = timer.report(N);
+  double avg_duration = timer.reportStatistics(N);
 
   EXPECT_TRUE(avg_duration <= 5e-5);
 }
@@ -190,7 +190,7 @@ TEST(GlobalBodyPlannerTest, testValidStateActionPairRate) {
     }
     count_valid++;
   }
-  double avg_duration = timer.report(N);
+  double avg_duration = timer.reportStatistics(N);
 
   EXPECT_TRUE(avg_duration <= 5e-5);
 }
