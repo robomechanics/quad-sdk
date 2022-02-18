@@ -466,7 +466,7 @@ void LocalPlanner::getStateAndTwistInput() {
 
   // Update the body plan to use for linearization
   if (body_plan_.rows() < N_+1) {
-    // Cold start with reference  plan
+    // Cold start with reference plan
     body_plan_ = ref_body_plan_;
 
     // Initialize with the current foot positions
@@ -491,6 +491,43 @@ void LocalPlanner::getStateAndTwistInput() {
   foot_positions_body_.row(0) = current_foot_positions_body_;
   foot_positions_world_.row(0) = current_foot_positions_world_;
   //*/
+}
+
+Eigen::VectorXi LocalPlanner::getInvalidRegions() {
+
+  Eigen::VectorXi complexity_horizon(N_);
+  Eigen::VectorXd state_violations, control_violations;
+
+  for (int i = 0; i < N_; i++) {
+    Eigen::VectorXd joint_positions(12);
+    Eigen::VectorXd joint_velocities(12);
+    Eigen::VectorXd joint_torques(12);
+
+    bool is_state_valid = quadKD_->isValidCentroidalState(body_plan_.row(i),
+      foot_positions_world_.row(i), foot_positions_world_.row(i)*0, grf_plan_.row(i),terrain_grid_,
+      joint_positions,joint_velocities,joint_torques, state_violations, control_violations);
+
+    complexity_horizon[i] = (is_state_valid) ? 0 : 1;
+
+    if (!is_state_valid) { 
+      // std::cout << "body_plan_ = \n" << body_plan_.row(i).format(CleanFmt) << std::endl;
+      // std::cout << "foot_positions_world_ = \n" << foot_positions_world_.row(i).format(CleanFmt) << std::endl;
+      // std::cout << "grf_plan_ = \n" << grf_plan_.row(i).format(CleanFmt) << std::endl;
+      // std::cout << "joint_positions = \n" << joint_positions.transpose().format(CleanFmt) << std::endl;
+      // std::cout << "joint_velocities = \n" << joint_velocities.transpose().format(CleanFmt) << std::endl;
+      // std::cout << "joint_torques = \n" << joint_torques.transpose().format(CleanFmt) << std::endl;
+      // std::cout << "i = " << i << std::endl;
+      // std::cout << "state_violations = \n" << state_violations.transpose().format(CleanFmt) << std::endl;
+      // std::cout << "control_violations = \n" << control_violations.transpose().format(CleanFmt) << std::endl;
+    }
+  }
+  if (complexity_horizon.sum()<=0) {
+    ROS_INFO_THROTTLE(1, "All planned states are valid");
+  } else {
+    ROS_WARN("Some planned states are invalid!");
+    std::cout << "complexity_horizon = " << complexity_horizon.transpose() << std::endl;
+  }
+  return complexity_horizon;
 }
 
 bool LocalPlanner::computeLocalPlan() {
@@ -539,6 +576,8 @@ bool LocalPlanner::computeLocalPlan() {
       grf_positions, contact_schedule_, body_plan_, grf_plan_))
       return false;
   }
+
+  Eigen::VectorXi complexity_schedule_adaptive = getInvalidRegions();
 
   // Record computation time and update exponential filter
   compute_time_ = 1000.0*timer.reportSilent();
