@@ -36,7 +36,7 @@ public:
   void spin();
 
 private:
-  FRIEND_TEST(LocalPlannerTest, baseCase);
+  FRIEND_TEST(LocalPlannerTest, noInputCase);
 
   /**
    * @brief Initialize the local body planner
