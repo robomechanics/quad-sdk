@@ -931,7 +931,7 @@ void quadNLP::finalize_solution(
    w0_ = w;
 
    Eigen::Map<const Eigen::MatrixXd> z_L_matrix(z_L, n, 1);
-   Eigen::Map<const Eigen::MatrixXd> z_U_matrix(z_L, n, 1);
+   Eigen::Map<const Eigen::MatrixXd> z_U_matrix(z_U, n, 1);
    z_L0_ = z_L_matrix;
    z_U0_ = z_U_matrix;
 
