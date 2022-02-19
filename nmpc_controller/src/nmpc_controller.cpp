@@ -88,7 +88,6 @@ NMPCController::NMPCController(int type)
   app_->Options()->SetIntegerValue("print_level", 0);
   // app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
-  app_->Options()->SetStringValue("ma57_automatic_scaling", "yes");
   app_->Options()->SetStringValue("fixed_variable_treatment", "make_parameter_nodual");
   app_->Options()->SetNumericValue("tol", 1e-6);
   app_->Options()->SetNumericValue("dual_inf_tol", 1e10);
