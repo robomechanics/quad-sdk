@@ -7,7 +7,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string                 terrain_map_topic, body_plan_topic, robot_state_topic,
+  std::string terrain_map_topic, body_plan_topic, robot_state_topic,
       local_plan_topic, foot_plan_discrete_topic, foot_plan_continuous_topic,
       cmd_vel_topic, control_mode_topic;
   quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
