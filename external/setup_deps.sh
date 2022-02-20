@@ -5,14 +5,6 @@ quiet_mkdir () {
 	fi
 }
 
-cd osqp
-quiet_mkdir build
-cd build
-cmake ..
-make -j8
-sudo make install
-cd ../..
-
 cd osqp-eigen
 quiet_mkdir build
 cd build
