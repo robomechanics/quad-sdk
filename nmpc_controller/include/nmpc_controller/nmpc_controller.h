@@ -3,18 +3,15 @@
 
 #include <ros/ros.h>
 #include <math.h>
-// #include <eigen3/Eigen/Eigen>
 #include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/MultiFootPlanDiscrete.h>
 #include <quad_msgs/GRFArray.h>
 #include <quad_msgs/RobotState.h>
 #include <quad_msgs/RobotStateTrajectory.h>
-// #include <local_planner/quadruped_mpc.h>
 #include <quad_utils/ros_utils.h>
 #include "quad_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <quad_msgs/LegCommand.h>
-
 #include "nmpc_controller/quad_nlp.h"
 #include "IpIpoptApplication.hpp"
 #include <Eigen/Dense>
@@ -70,6 +67,7 @@ public:
                                   const std::vector<std::vector<bool>> &contact_schedule,
                                   const Eigen::VectorXd &tail_initial_state,
                                   const Eigen::MatrixXd &tail_ref_traj,
+                                  const Eigen::VectorXd &ref_ground_height,
                                   Eigen::MatrixXd &state_traj,
                                   Eigen::MatrixXd &control_traj,
                                   Eigen::MatrixXd &tail_state_traj,
@@ -83,6 +81,9 @@ public:
                                   const Eigen::MatrixXd &tail_ref_traj,
                                   const Eigen::MatrixXd &state_traj,
                                   const Eigen::MatrixXd &control_traj,
+                                  const Eigen::VectorXd &ref_ground_height,
+                                  const double &first_element_duration,
+                                  const bool &same_plan_index,
                                   Eigen::MatrixXd &tail_state_traj,
                                   Eigen::MatrixXd &tail_control_traj);
 
@@ -107,6 +108,8 @@ private:
   int type_;
 
   std::string param_ns_;
+
+  bool require_init_;
 };
 
 #endif // MPC_CONTROLLER_H
