@@ -9,9 +9,11 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <numeric>
 #include <vector>
 
 #include "IpTNLP.hpp"
+#include <IpIpoptData.hpp>
 #include "nmpc_controller/gen/eval_g_leg.h"
 #include "nmpc_controller/gen/eval_g_tail.h"
 #include "nmpc_controller/gen/eval_hess_g_leg.h"
@@ -63,7 +65,11 @@ class quadNLP : public TNLP {
   Eigen::MatrixXd ground_height_;
 
   // Initial guess
-  Eigen::MatrixXd w0_, z_L0_, z_U0_, lambda0_;
+  Eigen::MatrixXd w0_, z_L0_, z_U0_, lambda0_, g0_;
+
+  double mu0_;
+
+  bool warm_start_;
 
   // State reference for computing cost
   Eigen::MatrixXd x_reference_;
@@ -190,26 +196,19 @@ class quadNLP : public TNLP {
   virtual void update_solver(
       const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
       const Eigen::MatrixXd &foot_positions,
-      const std::vector<std::vector<bool>> &contact_schedule);
-
-  virtual void update_solver(
-      const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
-      const Eigen::MatrixXd &foot_positions,
       const std::vector<std::vector<bool>> &contact_schedule,
-      const Eigen::VectorXd &ground_height);
+      const Eigen::MatrixXd &state_traj, const Eigen::MatrixXd &control_traj,
+      const Eigen::VectorXd &ground_height,
+      const double &first_element_duration_, const bool &same_plan_index,
+      const bool &init);
 
   virtual void update_solver(
       const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
       const Eigen::MatrixXd &foot_positions,
       const std::vector<std::vector<bool>> &contact_schedule,
       const Eigen::VectorXd &ground_height,
-      const double &first_element_duration);
-
-  virtual void update_solver(
-      const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
-      const Eigen::MatrixXd &foot_positions,
-      const std::vector<std::vector<bool>> &contact_schedule,
-      const Eigen::MatrixXd &state_traj, const Eigen::MatrixXd &control_traj);
+      const double &first_element_duration_, const bool &same_plan_index,
+      const bool &init);
 
   //@}
 
