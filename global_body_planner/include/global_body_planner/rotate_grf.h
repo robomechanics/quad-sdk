@@ -28,7 +28,7 @@ std::array<double, 3> rotate_grf(std::array<double, 3> surface_norm,
   vskew << 0, -v[2], v[1], v[2], 0, -v[0], -v[1], v[0], 0;
 
   Eigen::Matrix3d
-      R; // Rotation matrix to rotate from contact frame to spatial frame
+      R;  // Rotation matrix to rotate from contact frame to spatial frame
   double eps = 0.000001;
   if (s < eps) {
     R = Eigen::Matrix3d::Identity();

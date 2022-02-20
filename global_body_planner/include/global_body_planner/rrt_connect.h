@@ -15,7 +15,7 @@ using namespace planning_utils;
    exactly and post process the resulting solution.
 */
 class RRTConnectClass : public RRTClass {
-public:
+ public:
   /**
    * @brief Constructor for RRTConnectClass
    * @return Constructed object of type RRTConnectClass
@@ -102,13 +102,13 @@ public:
                     std::vector<Action> &action_sequence,
                     ros::Publisher &tree_pub);
 
-protected:
+ protected:
   /// Time horizon (in seconds) the planner is allowed to search until restarted
   double anytime_horizon;
 
   /// Initial guess at how quickly the planner executes (in m/s)
   const double planning_rate_estimate =
-      16.0; // m/s (meters planned/computation time)
+      16.0;  // m/s (meters planned/computation time)
 
   /// Initial anytime horizon (in seconds)
   double anytime_horizon_init;

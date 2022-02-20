@@ -1,30 +1,31 @@
 #ifndef TRAJECTORY_PUBLISHER_H
 #define TRAJECTORY_PUBLISHER_H
 
-#include <ros/ros.h>
-#include <visualization_msgs/MarkerArray.h>
-#include <quad_msgs/RobotPlan.h>
-#include <quad_msgs/MultiFootPlanContinuous.h>
 #include <quad_msgs/FootState.h>
+#include <quad_msgs/MultiFootPlanContinuous.h>
+#include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/RobotState.h>
 #include <quad_msgs/RobotStateTrajectory.h>
-#include "quad_utils/math_utils.h"
-#include "quad_utils/ros_utils.h"
-#include "quad_utils/quad_kd.h"
-#include "quad_utils/function_timer.h"
-
+#include <ros/ros.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <visualization_msgs/MarkerArray.h>
+
 #include <eigen3/Eigen/Eigen>
+
+#include "quad_utils/function_timer.h"
+#include "quad_utils/math_utils.h"
+#include "quad_utils/quad_kd.h"
+#include "quad_utils/ros_utils.h"
 
 //! A class for interfacing between RViz and quad-software topics.
 /*!
-   TrajectoryPublisher is a container for all of the logic utilized in the 
-   template node. The implementation must provide a clean and high level 
+   TrajectoryPublisher is a container for all of the logic utilized in the
+   template node. The implementation must provide a clean and high level
    interface to the core algorithm
 */
 class TrajectoryPublisher {
-public:
+ public:
   /**
    * @brief Constructor for TrajectoryPublisher Class
    * @param[in] nh ROS NodeHandle to publish and subscribe from
@@ -37,7 +38,7 @@ public:
    */
   void spin();
 
-private:
+ private:
   /**
    * @brief Import trajectory from external source
    */
@@ -60,7 +61,7 @@ private:
    * @param[in] MultiFootPlanContinuous message containing foot plan data
    */
   void multiFootPlanContinuousCallback(
-    const quad_msgs::MultiFootPlanContinuous::ConstPtr& msg);
+      const quad_msgs::MultiFootPlanContinuous::ConstPtr& msg);
 
   /**
    * @brief Update the current trajectory
@@ -127,7 +128,6 @@ private:
 
   /// The source of the current trajectory (import or otherwise)
   std::string traj_source_;
-
 };
 
-#endif // TRAJECTORY_PUBLISHER_H
+#endif  // TRAJECTORY_PUBLISHER_H

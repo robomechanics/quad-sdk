@@ -4,11 +4,10 @@ Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
 LocalPlanner::LocalPlanner(ros::NodeHandle nh)
     : local_body_planner_nonlinear_(), local_footstep_planner_() {
-
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string terrain_map_topic, body_plan_topic, robot_state_topic,
+  std::string                 terrain_map_topic, body_plan_topic, robot_state_topic,
       local_plan_topic, foot_plan_discrete_topic, foot_plan_continuous_topic,
       cmd_vel_topic, control_mode_topic;
   quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
@@ -58,7 +57,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 
   // Initialize nominal footstep positions projected down from the hips
   Eigen::Vector3d nominal_joint_state;
-  nominal_joint_state << 0, 0.78, 1.57; // Default stand angles
+  nominal_joint_state << 0, 0.78, 1.57;  // Default stand angles
   hip_projected_foot_positions_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
 
   for (int i = 0; i < N_; ++i) {
@@ -101,7 +100,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
-
   // Load MPC parameters
   double m, Ixx, Iyy, Izz, mu, normal_lo, normal_hi;
   quad_utils::loadROSParam(nh_, "local_body_planner/body_mass", m);
@@ -138,8 +136,8 @@ void LocalPlanner::initLocalBodyPlanner() {
 
   // Load control weights
   Eigen::MatrixXd Ru = Eigen::MatrixXd::Zero(Nu_, Nu_);
-  for (int i = 0; i < 3; ++i) {           // for each dimension
-    for (int j = 0; j < num_feet_; ++j) { // for each leg
+  for (int i = 0; i < 3; ++i) {            // for each dimension
+    for (int j = 0; j < num_feet_; ++j) {  // for each leg
       Ru(3 * j + i, 3 * j + i) = control_weights.at(i);
     }
   }
@@ -166,7 +164,6 @@ void LocalPlanner::initLocalBodyPlanner() {
 }
 
 void LocalPlanner::initLocalFootstepPlanner() {
-
   // Load parameters from server
   double grf_weight, ground_clearance, hip_clearance, standing_error_threshold,
       period_d, foothold_search_radius, foothold_obj_threshold;
@@ -242,16 +239,13 @@ void LocalPlanner::robotPlanCallback(
 
 void LocalPlanner::robotStateCallback(
     const quad_msgs::RobotState::ConstPtr &msg) {
-
   // Make sure the data is actually populated
-  if (msg->feet.feet.empty() || msg->joints.position.empty())
-    return;
+  if (msg->feet.feet.empty() || msg->joints.position.empty()) return;
 
   robot_state_msg_ = msg;
 }
 
 void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg) {
-
   // Ignore non-planar components of desired twist
   cmd_vel_[0] = 0.95 * cmd_vel_[0] + 0.05 * cmd_vel_scale_ * msg->linear.x;
   cmd_vel_[1] = 0.95 * cmd_vel_[1] + 0.05 * cmd_vel_scale_ * msg->linear.y;
@@ -265,10 +259,8 @@ void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg) {
 }
 
 void LocalPlanner::getStateAndReferencePlan() {
-
   // Make sure body plan and robot state data is populated
-  if (body_plan_msg_ == NULL || robot_state_msg_ == NULL)
-    return;
+  if (body_plan_msg_ == NULL || robot_state_msg_ == NULL) return;
 
   // Get index within the global plan, compare with the previous one to check if
   // this is a duplicated solve
@@ -303,7 +295,6 @@ void LocalPlanner::getStateAndReferencePlan() {
   ref_body_plan_.setZero();
 
   for (int i = 0; i < N_ + 1; i++) {
-
     // If the horizon extends past the reference trajectory, just hold the last
     // state
     if (i + current_plan_index_ > body_plan_msg_->plan_indices.back()) {
@@ -349,9 +340,7 @@ void LocalPlanner::getStateAndReferencePlan() {
 }
 
 void LocalPlanner::getStateAndTwistInput() {
-
-  if (robot_state_msg_ == NULL)
-    return;
+  if (robot_state_msg_ == NULL) return;
 
   // Get plan index, compare with the previous one to check if this is a
   // duplicated solve
@@ -406,9 +395,8 @@ void LocalPlanner::getStateAndTwistInput() {
   // If it's going to walk, use latest states
   if (cmd_vel_[0] != 0 || cmd_vel_[1] != 0 || cmd_vel_[5] != 0) {
     stand_pose_ << current_state_[0], current_state_[1], current_state_[5];
-  }
-  // If it's standing, try to stablized the waggling
-  else {
+  } else {
+    // If it's standing, try to stablized the waggling
     Eigen::Vector3d current_stand_pose;
     current_stand_pose << current_state_[0], current_state_[1],
         current_state_[5];
@@ -424,8 +412,8 @@ void LocalPlanner::getStateAndTwistInput() {
     y_mean += robot_state_msg_->feet.feet[i].position.y / (num_feet_);
   }
 
-  ref_body_plan_(0, 0) = current_state_[0]; // x_mean;
-  ref_body_plan_(0, 1) = current_state_[1]; // y_mean;
+  ref_body_plan_(0, 0) = current_state_[0];  // x_mean;
+  ref_body_plan_(0, 1) = current_state_[1];  // y_mean;
   ref_body_plan_(0, 2) = z_des_ + ref_ground_height_(0);
   ref_body_plan_(0, 3) = 0;
   ref_body_plan_(0, 4) = 0;
@@ -513,7 +501,6 @@ void LocalPlanner::getStateAndTwistInput() {
 }
 
 bool LocalPlanner::computeLocalPlan() {
-
   if (terrain_.isEmpty() || body_plan_msg_ == NULL && !use_twist_input_ ||
       robot_state_msg_ == NULL) {
     ROS_WARN_STREAM(
@@ -531,7 +518,6 @@ bool LocalPlanner::computeLocalPlan() {
   // Compute the new footholds if we have a valid existing plan (i.e. if
   // grf_plan is filled)
   if (grf_plan_.rows() == N_) {
-
     local_footstep_planner_->computeFootPlan(
         current_plan_index_, contact_schedule_, body_plan_, grf_plan_,
         ref_body_plan_, current_foot_positions_world_,
@@ -569,7 +555,6 @@ bool LocalPlanner::computeLocalPlan() {
 }
 
 void LocalPlanner::publishLocalPlan() {
-
   // Create messages to publish
   quad_msgs::RobotPlan local_plan_msg;
   quad_msgs::MultiFootPlanDiscrete future_footholds_msg;
@@ -597,7 +582,6 @@ void LocalPlanner::publishLocalPlan() {
 
   // Add body, foot, joint, and grf data to the local plan message
   for (int i = 0; i < N_; i++) {
-
     // Add the state information
     quad_msgs::RobotState robot_state_msg;
     robot_state_msg.body = quad_utils::eigenToBodyStateMsg(body_plan_.row(i));
@@ -643,11 +627,9 @@ void LocalPlanner::publishLocalPlan() {
 }
 
 void LocalPlanner::spin() {
-
   ros::Rate r(update_rate_);
 
   while (ros::ok()) {
-
     ros::spinOnce();
 
     // Wait until all required data has been received
@@ -665,8 +647,7 @@ void LocalPlanner::spin() {
 
     // Compute the local plan and publish if it solved successfully, otherwise
     // just sleep
-    if (computeLocalPlan())
-      publishLocalPlan();
+    if (computeLocalPlan()) publishLocalPlan();
 
     r.sleep();
   }

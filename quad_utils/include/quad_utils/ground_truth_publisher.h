@@ -1,25 +1,27 @@
 #ifndef GROUND_TRUTH_PUBLISHER_H
 #define GROUND_TRUTH_PUBLISHER_H
 
-#include <ros/ros.h>
-#include <eigen3/Eigen/Eigen>
-#include <sensor_msgs/JointState.h>
-#include <sensor_msgs/Imu.h>
-#include <std_msgs/String.h>
 #include <geometry_msgs/PoseStamped.h>
-#include <geometry_msgs/Vector3.h>
 #include <geometry_msgs/TwistStamped.h>
+#include <geometry_msgs/Vector3.h>
 #include <quad_msgs/RobotState.h>
-#include <quad_utils/ros_utils.h>
 #include <quad_utils/math_utils.h>
+#include <quad_utils/ros_utils.h>
+#include <ros/ros.h>
+#include <sensor_msgs/Imu.h>
+#include <sensor_msgs/JointState.h>
+#include <std_msgs/String.h>
+
 #include <algorithm>
+#include <eigen3/Eigen/Eigen>
 
 //! Class to publish the ground truth state data
 /*!
-   GroundTruthPublisher collects all ground truth sensor data on available topics and merges them into ground truth topics
+   GroundTruthPublisher collects all ground truth sensor data on available
+   topics and merges them into ground truth topics
 */
 class GroundTruthPublisher {
-public:
+ public:
   /**
    * @brief Constructor for GroundTruthPublisher
    * @param[in] nh ROS NodeHandle to publish and subscribe from
@@ -32,15 +34,16 @@ public:
    */
   void spin();
 
-private:
+ private:
   /**
    * @brief Callback function to handle new mocap data and estimate the velocity
    * @param[in] msg containing new mocap data
    */
   void mocapCallback(const geometry_msgs::PoseStamped::ConstPtr& msg);
-    /**
+  /**
    * @brief Callback function to handle new joint encoder data
-   * @param[in] joint_encoder_msg sensor_msgs<JointState> containing joint pos,vel,current
+   * @param[in] joint_encoder_msg sensor_msgs<JointState> containing joint
+   * pos,vel,current
    */
   void jointEncoderCallback(const sensor_msgs::JointState::ConstPtr& msg);
 
@@ -61,14 +64,14 @@ private:
    * @param[in] new_state_est state estimate of custom type RobotState
    * @return bool for whether the message is fully populated
    */
-  bool updateStep(quad_msgs::RobotState &new_state_est);
+  bool updateStep(quad_msgs::RobotState& new_state_est);
 
-  inline double getMedian(const std::vector<double> &v) {
+  inline double getMedian(const std::vector<double>& v) {
     auto v_sort = v;
-    auto m = v_sort.begin() + v_sort.size()/2;
+    auto m = v_sort.begin() + v_sort.size() / 2;
     std::nth_element(v_sort.begin(), m, v_sort.end());
 
-    return v_sort[v_sort.size()/2];
+    return v_sort[v_sort.size() / 2];
   }
 
   /// Subscriber for joint encoder messages
@@ -115,18 +118,19 @@ private:
 
   /// Last mocap data
   geometry_msgs::PoseStamped::ConstPtr last_mocap_msg_;
-  
+
   /// Best estimate of velocity from mocap diff
   Eigen::Vector3d imu_vel_estimate_;
   Eigen::Vector3d mocap_vel_estimate_;
 
   /// Kinematics object
-  std::shared_ptr<quad_utils::QuadKD>quadKD_;
+  std::shared_ptr<quad_utils::QuadKD> quadKD_;
 
   /// Velocity filter time constant
   double filter_time_constant_;
 
-  /// Maximum time elapsed between mocap messages before committing to new message
+  /// Maximum time elapsed between mocap messages before committing to new
+  /// message
   double mocap_dropout_threshold_;
 
   /// Maximum time elapsed between imu messages before committing to new message
@@ -146,7 +150,6 @@ private:
 
   /// RML standard joints order
   std::vector<int> joints_order_;
-
 };
 
-#endif // GROUND_TRUTH_PUBLISHER_H
+#endif  // GROUND_TRUTH_PUBLISHER_H

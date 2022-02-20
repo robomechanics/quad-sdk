@@ -1,6 +1,8 @@
 #include "local_planner/local_footstep_planner.h"
-#include <chrono>
+
 #include <tf/tf.h>
+
+#include <chrono>
 
 LocalFootstepPlanner::LocalFootstepPlanner() {}
 
@@ -8,7 +10,6 @@ void LocalFootstepPlanner::setTemporalParams(
     double dt, int period, int horizon_length,
     const std::vector<double> &duty_cycles,
     const std::vector<double> &phase_offsets) {
-
   dt_ = dt;
   period_ = period;
   horizon_length_ = horizon_length;
@@ -17,19 +18,15 @@ void LocalFootstepPlanner::setTemporalParams(
 
   nominal_contact_schedule_.resize(period_);
 
-  for (int i = 0; i < period_; i++) { // For each finite element
-
+  for (int i = 0; i < period_; i++) {  // For each finite element
     nominal_contact_schedule_.at(i).resize(num_feet_);
-
-    for (int leg_idx = 0; leg_idx < num_feet_; leg_idx++) { // For each leg
-
+    for (int leg_idx = 0; leg_idx < num_feet_; leg_idx++) {  // For each leg
       // If this index in the horizon is between touchdown and liftoff, set
       // contact to true
       if ((i >= period_ * phase_offsets_[leg_idx] &&
            i < period_ * (phase_offsets_[leg_idx] + duty_cycles_[leg_idx])) ||
           i < period_ *
                   (phase_offsets_[leg_idx] + duty_cycles_[leg_idx] - 1.0)) {
-
         nominal_contact_schedule_.at(i).at(leg_idx) = true;
       } else {
         nominal_contact_schedule_.at(i).at(leg_idx) = false;
@@ -44,7 +41,6 @@ void LocalFootstepPlanner::setSpatialParams(
     std::shared_ptr<quad_utils::QuadKD> kinematics,
     double foothold_search_radius, double foothold_obj_threshold,
     std::string obj_fun_layer) {
-
   ground_clearance_ = ground_clearance;
   hip_clearance_ = hip_clearance;
   standing_error_threshold_ = standing_error_threshold;
@@ -68,7 +64,6 @@ void LocalFootstepPlanner::getFootPositionsBodyFrame(
     const Eigen::VectorXd &body_plan,
     const Eigen::VectorXd &foot_positions_world,
     Eigen::VectorXd &foot_positions_body) {
-
   for (int i = 0; i < num_feet_; i++) {
     foot_positions_body.segment<3>(3 * i) =
         foot_positions_world.segment<3>(3 * i) - body_plan.segment<3>(0);
@@ -79,7 +74,6 @@ void LocalFootstepPlanner::getFootPositionsBodyFrame(
     const Eigen::MatrixXd &body_plan,
     const Eigen::MatrixXd &foot_positions_world,
     Eigen::MatrixXd &foot_positions_body) {
-
   Eigen::VectorXd foot_pos = Eigen::VectorXd::Zero(3 * num_feet_);
   for (int i = 0; i < horizon_length_; i++) {
     foot_pos.setZero();
@@ -91,10 +85,9 @@ void LocalFootstepPlanner::getFootPositionsBodyFrame(
 
 void LocalFootstepPlanner::computeStanceContactSchedule(
     int current_plan_index, std::vector<std::vector<bool>> &contact_schedule) {
-
-  for (int i = 0; i < horizon_length_; i++) { // For each finite element
+  for (int i = 0; i < horizon_length_; i++) {  // For each finite element
     contact_schedule.at(i).resize(num_feet_);
-    for (int leg_idx = 0; leg_idx < num_feet_; leg_idx++) { // For each leg
+    for (int leg_idx = 0; leg_idx < num_feet_; leg_idx++) {  // For each leg
       nominal_contact_schedule_.at(i).at(leg_idx) = true;
     }
   }
@@ -163,17 +156,14 @@ void LocalFootstepPlanner::computeFootPlan(
     quad_msgs::MultiFootState &past_footholds_msg,
     Eigen::MatrixXd &foot_positions, Eigen::MatrixXd &foot_velocities,
     Eigen::MatrixXd &foot_accelerations) {
-
   // Loop through each foot to compute the new footholds
   for (int j = 0; j < num_feet_; j++) {
-
     // Compute the number of timesteps corresponding to half the stance phase
     int half_duty_cycle = (period_ * duty_cycles_[j]) / 2;
 
     // Loop through the horizon to identify instances of touchdown
     for (int i = 1; i < contact_schedule.size(); i++) {
       if (isNewContact(contact_schedule, i, j)) {
-
         // Declare foot position vectors
         Eigen::Vector3d foot_position, foot_position_grf, foot_position_nominal,
             hip_position_midstance, centrifugal, vel_tracking,
@@ -238,8 +228,9 @@ void LocalFootstepPlanner::computeFootPlan(
                                                      foot_position_nominal.y()};
 
         if (!terrain_grid_.isInside(foot_position_grid_map)) {
-          ROS_WARN("Foot position is outside the map. Steer the robot in "
-                   "another direction");
+          ROS_WARN(
+              "Foot position is outside the map. Steer the robot in "
+              "another direction");
           foot_positions = current_foot_positions_world_;
           continue;
         }
@@ -269,7 +260,6 @@ void LocalFootstepPlanner::computeFootPlan(
 
   // Loop through each foot to interpolate the swing foot states
   for (int j = 0; j < num_feet_; j++) {
-
     // Declare variables for computing initial swing foot state
     // Identify index for the liftoff and touchdown events
     quad_msgs::FootState most_recent_foothold_msg = past_footholds_msg.feet[j];
@@ -292,7 +282,6 @@ void LocalFootstepPlanner::computeFootPlan(
 
     // Loop through the horizon
     for (int i = 0; i < contact_schedule.size(); i++) {
-
       // Create the foot state message
       quad_msgs::FootState foot_state_msg;
       foot_state_msg.traj_index = current_plan_index + i;
@@ -515,18 +504,15 @@ void LocalFootstepPlanner::loadFootPlanMsgs(
     const Eigen::MatrixXd &foot_accelerations,
     quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
     quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg) {
-
   foot_plan_continuous_msg.states.resize(contact_schedule.size());
   future_footholds_msg.feet.resize(num_feet_);
 
   // Loop through each foot to construct the continuous foot plan message
   for (int j = 0; j < num_feet_; j++) {
-
     future_footholds_msg.feet[j].header = future_footholds_msg.header;
 
     // Loop through the horizon
     for (int i = 0; i < contact_schedule.size(); i++) {
-
       // Update header for multi foot state if first time through
       if (j == 0) {
         foot_plan_continuous_msg.states[i].header =
@@ -566,7 +552,6 @@ void LocalFootstepPlanner::loadFootPlanMsgs(
 
 Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
     const Eigen::Vector3d &foot_position) {
-
   // Declare
   Eigen::Vector3d foot_position_valid = foot_position;
   grid_map::Position pos_center, pos_center_aligned, offset, pos_valid;
@@ -582,10 +567,8 @@ Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
   for (grid_map::SpiralIterator iterator(terrain_grid_, pos_center_aligned,
                                          foothold_search_radius_);
        !iterator.isPastEnd(); ++iterator) {
-
     double obj = terrain_grid_.at(obj_fun_layer_, *iterator);
     if (obj > foothold_obj_threshold_) {
-
       // Add the offset back in and return this new foothold
       terrain_grid_.getPosition(*iterator, pos_valid);
       pos_valid += offset;

@@ -1,8 +1,8 @@
-#include <ros/ros.h>
 #include <gtest/gtest.h>
+#include <ros/ros.h>
 
-#include "robot_driver/inverse_dynamics.h"
 #include "robot_driver/grf_pid_controller.h"
+#include "robot_driver/inverse_dynamics.h"
 #include "robot_driver/joint_controller.h"
 #include "robot_driver/robot_driver.h"
 
