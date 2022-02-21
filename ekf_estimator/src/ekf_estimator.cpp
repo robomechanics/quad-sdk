@@ -32,7 +32,7 @@ EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
   state_estimate_pub_ = nh_.advertise<quad_msgs::RobotState>(state_estimate_topic,1);
 
   // QuadKD class
-  // quadKD_ = std::make_shared<quad_utils::QuadKD>();
+  quadKD_ = std::make_shared<quad_utils::QuadKD>();
 }
 
 void EKFEstimator::groundtruthCallback(const quad_msgs::RobotState::ConstPtr& msg) {
@@ -150,6 +150,7 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
     last_x = x;
   }
 
+  std::cout << "this is x" << x << std::endl;
   /// publish new message
   new_state_est.header.stamp = ros::Time::now();
   
