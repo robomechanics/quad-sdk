@@ -2,21 +2,20 @@
 #define GLOBAL_BODY_PLANNER_H
 
 #include <nav_msgs/Path.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <visualization_msgs/MarkerArray.h>
 
-#include <quad_msgs/RobotPlan.h>
-#include <quad_msgs/RobotState.h>
-#include <quad_utils/ros_utils.h>
-
-#include "global_body_planner/global_body_plan.h"
-#include "global_body_planner/rrt_connect.h"
-
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/GridMapRosConverter.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
+
+#include "global_body_planner/global_body_plan.h"
+#include "global_body_planner/rrt_connect.h"
 
 using namespace planning_utils;
 
@@ -29,7 +28,7 @@ using namespace planning_utils;
    planner (from which the full path is interpolated).
 */
 class GlobalBodyPlanner {
-public:
+ public:
   /**
    * @brief Constructor for GlobalBodyPlanner Class
    * @param[in] nh Node handle
@@ -49,7 +48,7 @@ public:
    */
   void spin();
 
-private:
+ private:
   /**
    * @brief Callback function to handle new terrain map data
    * @param[in] msg the message contining map data
@@ -251,4 +250,4 @@ private:
   ros::Time global_plan_timestamp_;
 };
 
-#endif // GLOBAL_BODY_PLANNER_H
+#endif  // GLOBAL_BODY_PLANNER_H

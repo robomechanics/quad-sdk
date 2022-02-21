@@ -1,7 +1,8 @@
 #include "global_body_planner/graph_class.h"
 
-#include <algorithm>
 #include <math.h>
+
+#include <algorithm>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>

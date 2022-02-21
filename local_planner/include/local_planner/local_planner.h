@@ -1,7 +1,6 @@
 #ifndef LOCAL_PLANNER_H
 #define LOCAL_PLANNER_H
 
-#include "quad_utils/matplotlibcpp.h"
 #include <gtest/gtest_prod.h>
 #include <local_planner/local_footstep_planner.h>
 #include <math.h>
@@ -16,12 +15,14 @@
 #include <ros/ros.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
+#include "quad_utils/matplotlibcpp.h"
+
 //! Local Body Planner library
 /*!
    Wrapper around Quadrupedal MPC that interfaces with our ROS architecture
 */
 class LocalPlanner {
-public:
+ public:
   /**
    * @brief Constructor for LocalPlanner
    * @param[in] nh ROS NodeHandle to publish and subscribe from
@@ -35,7 +36,7 @@ public:
    */
   void spin();
 
-private:
+ private:
   FRIEND_TEST(LocalPlannerTest, noInputCase);
 
   /**
@@ -279,4 +280,4 @@ private:
   double toe_radius = 0.02;
 };
 
-#endif // LOCAL_PLANNER_H
+#endif  // LOCAL_PLANNER_H

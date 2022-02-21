@@ -1,4 +1,5 @@
 #include "global_body_planner/rrt.h"
+
 #include <ctime>
 // constructor
 RRTClass::RRTClass() {}
@@ -48,7 +49,6 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
         getRandomLeapAction(s_near, surf_norm, a_test, planner_config);
     num_total_actions++;
     for (int j = 0; j < planner_config.NUM_GEN_STATES; ++j) {
-
       bool is_valid = isValidStateActionPair(s_near, a_test, current_result,
                                              planner_config);
 
@@ -97,8 +97,7 @@ int RRTClass::attemptConnect(const State &s_existing, const State &s,
                              int direction) {
   // Enforce stance time greater than the kinematic check resolution to ensure
   // that the action is useful
-  if (t_s <= planner_config.KINEMATICS_RES)
-    return TRAPPED;
+  if (t_s <= planner_config.KINEMATICS_RES) return TRAPPED;
 
   // Initialize the start and goal states depending on the direction, as well as
   // the stance and flight times
@@ -169,7 +168,6 @@ int RRTClass::extend(PlannerClass &T, const State &s,
   StateActionResult result;
 
   if (newConfig(s, s_near, result, planner_config, direction, tree_pub)) {
-
     int s_new_index = T.getNumVertices();
     T.addVertex(s_new_index, result.s_new);
     T.addEdge(s_near_index, s_new_index, result.length);

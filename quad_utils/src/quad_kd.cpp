@@ -81,7 +81,6 @@ QuadKD::QuadKD() {
 
 Eigen::Matrix4d QuadKD::createAffineMatrix(Eigen::Vector3d trans,
                                            Eigen::Vector3d rpy) const {
-
   Eigen::Transform<double, 3, Eigen::Affine> t;
   t = Eigen::Translation<double, 3>(trans);
   t.rotate(Eigen::AngleAxisd(rpy[2], Eigen::Vector3d::UnitZ()));
@@ -93,7 +92,6 @@ Eigen::Matrix4d QuadKD::createAffineMatrix(Eigen::Vector3d trans,
 
 Eigen::Matrix4d QuadKD::createAffineMatrix(Eigen::Vector3d trans,
                                            Eigen::AngleAxisd rot) const {
-
   Eigen::Transform<double, 3, Eigen::Affine> t;
   t = Eigen::Translation<double, 3>(trans);
   t.rotate(rot);
@@ -111,14 +109,14 @@ double QuadKD::getJointUpperLimit(int joint_index) const {
 
 double QuadKD::getLinkLength(int leg_index, int link_index) const {
   switch (link_index) {
-  case 0:
-    return l0_vec_[leg_index];
-  case 1:
-    return l1_;
-  case 2:
-    return l2_;
-  default:
-    throw std::runtime_error("Invalid link index");
+    case 0:
+      return l0_vec_[leg_index];
+    case 1:
+      return l1_;
+    case 2:
+      return l2_;
+    default:
+      throw std::runtime_error("Invalid link index");
   }
 }
 
@@ -126,7 +124,6 @@ void QuadKD::transformBodyToWorld(Eigen::Vector3d body_pos,
                                   Eigen::Vector3d body_rpy,
                                   Eigen::Matrix4d transform_body,
                                   Eigen::Matrix4d &transform_world) const {
-
   // Compute transform from world to body frame
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
 
@@ -138,7 +135,6 @@ void QuadKD::transformWorldToBody(Eigen::Vector3d body_pos,
                                   Eigen::Vector3d body_rpy,
                                   Eigen::Matrix4d transform_world,
                                   Eigen::Matrix4d &transform_body) const {
-
   // Compute transform from world to body frame
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
 
@@ -149,7 +145,6 @@ void QuadKD::transformWorldToBody(Eigen::Vector3d body_pos,
 void QuadKD::worldToLegbaseFKWorldFrame(
     int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
     Eigen::Matrix4d &g_world_legbase) const {
-
   // Compute transforms
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
 
@@ -160,7 +155,6 @@ void QuadKD::worldToLegbaseFKWorldFrame(
 void QuadKD::worldToLegbaseFKWorldFrame(
     int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
     Eigen::Vector3d &leg_base_pos_world) const {
-
   Eigen::Matrix4d g_world_legbase;
   worldToLegbaseFKWorldFrame(leg_index, body_pos, body_rpy, g_world_legbase);
 
@@ -170,7 +164,6 @@ void QuadKD::worldToLegbaseFKWorldFrame(
 void QuadKD::worldToNominalHipFKWorldFrame(
     int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
     Eigen::Vector3d &nominal_hip_pos_world) const {
-
   // Compute transforms
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
   // Compute transform from body to legbase but offset by l0
@@ -185,7 +178,6 @@ void QuadKD::worldToNominalHipFKWorldFrame(
 
 void QuadKD::bodyToFootFKBodyFrame(int leg_index, Eigen::Vector3d joint_state,
                                    Eigen::Matrix4d &g_body_foot) const {
-
   if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0) {
     throw std::runtime_error("Leg index is outside valid range");
   }
@@ -220,7 +212,6 @@ void QuadKD::bodyToFootFKBodyFrame(int leg_index, Eigen::Vector3d joint_state,
 
 void QuadKD::bodyToFootFKBodyFrame(int leg_index, Eigen::Vector3d joint_state,
                                    Eigen::Vector3d &foot_pos_body) const {
-
   Eigen::Matrix4d g_body_foot;
   QuadKD::bodyToFootFKBodyFrame(leg_index, joint_state, g_body_foot);
 
@@ -232,7 +223,6 @@ void QuadKD::worldToFootFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
                                      Eigen::Vector3d body_rpy,
                                      Eigen::Vector3d joint_state,
                                      Eigen::Matrix4d &g_world_foot) const {
-
   if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0) {
     throw std::runtime_error("Leg index is outside valid range");
   }
@@ -274,7 +264,6 @@ void QuadKD::worldToFootFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
                                      Eigen::Vector3d body_rpy,
                                      Eigen::Vector3d joint_state,
                                      Eigen::Vector3d &foot_pos_world) const {
-
   Eigen::Matrix4d g_world_foot;
   worldToFootFKWorldFrame(leg_index, body_pos, body_rpy, joint_state,
                           g_world_foot);
@@ -302,7 +291,6 @@ void QuadKD::worldToFootIKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
                                      Eigen::Vector3d body_rpy,
                                      Eigen::Vector3d foot_pos_world,
                                      Eigen::Vector3d &joint_state) const {
-
   if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0) {
     throw std::runtime_error("Leg index is outside valid range");
   }
@@ -333,7 +321,6 @@ void QuadKD::worldToFootIKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
 void QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
                                          Eigen::Vector3d foot_pos_legbase,
                                          Eigen::Vector3d &joint_state) const {
-
   // Calculate offsets
   Eigen::Vector3d legbase_offset = legbase_offsets_[leg_index];
   double l0 = l0_vec_[leg_index];
@@ -379,16 +366,18 @@ void QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
   double temp2 =
       (l1_ * l1_ + x * x + z * z - l2_ * l2_) / (2 * l1_ * sqrt(x * x + z * z));
   if (abs(temp2) > acos_eps) {
-    ROS_DEBUG_THROTTLE(0.5, "Foot location too far for hip, choosing closest"
-                            " alternative \n");
+    ROS_DEBUG_THROTTLE(0.5,
+                       "Foot location too far for hip, choosing closest"
+                       " alternative \n");
     temp2 = std::max(std::min(temp2, acos_eps), -acos_eps);
   }
 
   // Check reachibility for knee
   double temp3 = (l1_ * l1_ + l2_ * l2_ - x * x - z * z) / (2 * l1_ * l2_);
   if (temp3 > acos_eps || temp3 < -acos_eps) {
-    ROS_DEBUG_THROTTLE(0.5, "Foot location too far for knee, choosing closest"
-                            " alternative \n");
+    ROS_DEBUG_THROTTLE(0.5,
+                       "Foot location too far for knee, choosing closest"
+                       " alternative \n");
     temp3 = std::max(std::min(temp3, acos_eps), -acos_eps);
   }
 
@@ -518,7 +507,6 @@ void QuadKD::computeInverseDynamics(const Eigen::VectorXd &state_pos,
                                     const Eigen::VectorXd &grf,
                                     const std::vector<int> &contact_mode,
                                     Eigen::VectorXd &tau) const {
-
   // Convert q, q_dot into RBDL order
   Eigen::VectorXd q(19), q_dot(18);
   q.setZero();

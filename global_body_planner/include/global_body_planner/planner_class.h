@@ -13,7 +13,7 @@ using namespace planning_utils;
    planners such as RRTs or PRMs.
 */
 class PlannerClass : public GraphClass {
-public:
+ public:
   /**
    * @brief Constructor for PlannerClass
    * @param[in] direction Direction of tree expansion
@@ -41,7 +41,7 @@ public:
    * @param[in] N Number of vertices to include in the neighborhood
    * @return Vector of indices included in the neighborhood
    */
-  std::vector<int> neighborhoodN(State s, int N) const ;
+  std::vector<int> neighborhoodN(State s, int N) const;
 
   /**
    * @brief Get the vertices within the specified Euclidean distance of the
@@ -50,7 +50,7 @@ public:
    * @param[in] dist distance threshold for the neighborhood
    * @return Vector of indices included in the neighborhood
    */
-  std::vector<int> neighborhoodDist(State q, double dist) const ;
+  std::vector<int> neighborhoodDist(State q, double dist) const;
 
   /**
    * @brief Get the closest verticex to the specified state by Euclidean

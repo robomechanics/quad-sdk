@@ -1,12 +1,13 @@
 #ifndef GRAPHCLASS_H
 #define GRAPHCLASS_H
 
-#include "global_body_planner/planning_utils.h"
 #include <algorithm>
 #include <iostream>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+
+#include "global_body_planner/planning_utils.h"
 
 using namespace planning_utils;
 
@@ -21,7 +22,7 @@ using namespace planning_utils;
    associated state, action, or distance from the root vertex (g-value).
 */
 class GraphClass {
-public:
+ public:
   /**
    * @brief Constructor for GraphClass
    * @return Constructed object of type GraphClass
@@ -156,7 +157,7 @@ public:
    */
   virtual void init(State s);
 
-protected:
+ protected:
   /// Map from vertex indices to corresponding states
   std::unordered_map<int, State> vertices;
 

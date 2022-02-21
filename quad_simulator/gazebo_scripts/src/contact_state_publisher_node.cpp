@@ -1,4 +1,5 @@
 #include <ros/ros.h>
+
 #include <iostream>
 
 #include "contact_state_publisher.h"

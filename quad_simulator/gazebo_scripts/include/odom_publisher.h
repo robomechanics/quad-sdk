@@ -25,14 +25,13 @@ SOFTWARE.
 */
 
 // ROS includes
-#include <ros/ros.h>
-#include <sensor_msgs/Joy.h>
-#include <rosgraph_msgs/Clock.h>
 #include <gazebo_msgs/LinkStates.h>
 #include <nav_msgs/Odometry.h>
-#include <tf/transform_datatypes.h>
+#include <ros/ros.h>
+#include <rosgraph_msgs/Clock.h>
+#include <sensor_msgs/Joy.h>
 #include <tf/transform_broadcaster.h>
-
+#include <tf/transform_datatypes.h>
 
 // ROS node handle
 std::unique_ptr<ros::NodeHandle> rosNode;
