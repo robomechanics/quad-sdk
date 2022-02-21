@@ -7,8 +7,14 @@
 #ifndef __quadNLP_HPP__
 #define __quadNLP_HPP__
 
-#include "IpTNLP.hpp"
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
+#include <IpIpoptData.hpp>
+#include <numeric>
+#include <unordered_map>
+#include <vector>
 
+#include "IpTNLP.hpp"
 #include "nmpc_controller/gen/eval_g_leg.h"
 #include "nmpc_controller/gen/eval_g_leg_complex.h"
 #include "nmpc_controller/gen/eval_g_leg_complex_to_simple.h"
@@ -29,10 +35,6 @@
 #include "nmpc_controller/gen/eval_jac_g_tail.h"
 #include "quad_utils/function_timer.h"
 #include "quad_utils/tail_type.h"
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
-#include <unordered_map>
-#include <vector>
 
 using namespace Ipopt;
 
@@ -48,7 +50,7 @@ enum SystemID {
 enum FunctionID { FUNC, JAC, HESS };
 
 class quadNLP : public TNLP {
-public:
+ public:
   // Horizon length, state dimension, input dimension, and constraints dimension
   int N_, n_, m_, g_;
 
@@ -56,7 +58,10 @@ public:
   int n_simple_, n_complex_;
 
   /// Vectors of state and constraint dimension for each finite element
-  Eigen::VectorXi n_vec_, g_vec_;
+  Eigen::VectorXi n_vec_, n_slack_vec_, g_vec_;
+
+  /// Boolean for whether to apply panic variables for complex states
+  const bool apply_slack_to_complex_ = false;
 
   /// Input dimension for simple and complex models
   int m_simple_, m_complex_;
@@ -130,7 +135,11 @@ public:
   Eigen::MatrixXd ground_height_;
 
   // Initial guess
-  Eigen::VectorXd w0_, z_L0_, z_U0_, lambda0_;
+  Eigen::VectorXd w0_, z_L0_, z_U0_, lambda0_, g0_;
+
+  double mu0_;
+
+  bool warm_start_;
 
   // State reference for computing cost
   Eigen::MatrixXd x_reference_;
@@ -171,12 +180,16 @@ public:
   // Complexity for the current state
   static const int x0_complexity_ = 0;
 
+  // Complexity for the last state
+  static const int xN_complexity_ = 0;
+
   /// Vector of ids for model complexity schedule
   Eigen::VectorXi complexity_schedule_;
 
   /// Vector of indices for relevant quantities
   Eigen::VectorXi fe_idxs_, u_idxs_, x_idxs_, slack_idxs_, g_idxs_,
-      g_slack_idxs_, jac_sparse_idxs_, hess_sparse_idxs_;
+      g_slack_idxs_, dynamic_jac_var_idxs_, panic_jac_var_idxs_,
+      dynamic_hess_var_idxs_, cost_idxs_;
 
   /// Vector of system ids
   Eigen::VectorXi sys_id_schedule_;
@@ -296,32 +309,100 @@ public:
 
   virtual void shift_initial_guess();
 
-  virtual void
-  update_solver(const Eigen::VectorXd &initial_state,
-                const Eigen::MatrixXd &ref_traj,
-                const Eigen::MatrixXd &foot_positions,
-                const std::vector<std::vector<bool>> &contact_schedule);
-
-  virtual void
-  update_solver(const Eigen::VectorXd &initial_state,
-                const Eigen::MatrixXd &ref_traj,
-                const Eigen::MatrixXd &foot_positions,
-                const std::vector<std::vector<bool>> &contact_schedule,
-                const Eigen::VectorXd &ground_height);
-
-  virtual void
-  update_solver(const Eigen::VectorXd &initial_state,
-                const Eigen::MatrixXd &ref_traj,
-                const Eigen::MatrixXd &foot_positions,
-                const std::vector<std::vector<bool>> &contact_schedule,
-                const Eigen::VectorXd &ground_height,
-                const double &first_element_duration);
+  virtual void update_solver(
+      const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
+      const Eigen::MatrixXd &foot_positions,
+      const std::vector<std::vector<bool>> &contact_schedule,
+      const Eigen::MatrixXd &state_traj, const Eigen::MatrixXd &control_traj,
+      const Eigen::VectorXd &ground_height,
+      const double &first_element_duration_, const bool &same_plan_index,
+      const bool &init);
 
   virtual void update_solver(
       const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
       const Eigen::MatrixXd &foot_positions,
       const std::vector<std::vector<bool>> &contact_schedule,
-      const Eigen::MatrixXd &state_traj, const Eigen::MatrixXd &control_traj);
+      const Eigen::VectorXd &ground_height,
+      const double &first_element_duration_, const bool &same_plan_index,
+      const bool &init);
+
+  // Get the idx-th state variable from decision variable
+  template <typename T>
+  inline Eigen::Block<T> get_state_var(T &decision_var, const int &idx) {
+    return decision_var.block(x_idxs_[idx], 0, n_vec_[idx], 1);
+  };
+
+  // Get the idx-th control variable from decision variable
+  template <typename T>
+  inline Eigen::Block<T> get_control_var(T &decision_var, const int &idx) {
+    return decision_var.block(u_idxs_[idx], 0, m_, 1);
+  };
+
+  // Get the idx-th constraint from constraint variable
+  template <typename T>
+  inline Eigen::Block<T> get_constraint_var(T &constraint_var, const int &idx) {
+    return constraint_var.block(g_idxs_[idx], 0, g_vec_[idx], 1);
+  };
+
+  // Get the idx-th panic variable (for (idx+1)-th state variable) from decision
+  // variable
+  template <typename T>
+  inline Eigen::Block<T> get_panic_var(T &decision_var, const int &idx) {
+    return decision_var.block(slack_idxs_[idx], 0, 2 * n_slack_vec_[idx], 1);
+  };
+
+  // Get the idx-th panic constraint (for (idx+1)-th state variable) from
+  // constraint variable
+  template <typename T>
+  inline Eigen::Block<T> get_panic_constraint_var(T &constraint_var,
+                                                  const int &idx) {
+    return constraint_var.block(g_slack_idxs_[idx], 0, 2 * n_slack_vec_[idx],
+                                1);
+  };
+
+  // Get the idx-th dynamic constraint related decision variable (idx and
+  // idx+1-th state and idx-th control)
+  template <typename T>
+  inline Eigen::Block<T> get_dynamic_var(T &decision_var, const int &idx) {
+    return decision_var.block(fe_idxs_[idx], 0,
+                              n_vec[idx] + m_ + n_vec_[idx + 1], 1);
+  };
+
+  // Get the idx-th dynamic constraint related jacobian nonzero entry
+  template <typename T>
+  inline Eigen::Block<T> get_dynamic_jac_var(T &jacobian_var, const int &idx) {
+    return jacobian_var.block(dynamic_jac_var_idxs_[idx], 0,
+                              nnz_mat_(sys_id_schedule_[idx], JAC), 1);
+  };
+
+  // Get the idx-th panic constraint jacobian (for (idx+1)-th state variable)
+  // nonzero entry
+  template <typename T>
+  inline Eigen::Block<T> get_panic_jac_var(T &jacobian_var, const int &idx) {
+    return jacobian_var.block(panic_jac_var_idxs_[idx], 0,
+                              4 * n_slack_vec_[idx], 1);
+  };
+
+  // Get the idx-th dynamic constraint related hessian nonzero entry
+  template <typename T>
+  inline Eigen::Block<T> get_dynamic_hess_var(T &hessian_var, const int &idx) {
+    return hessian_var.block(dynamic_hess_var_idxs_[idx], 0,
+                             nnz_mat_(sys_id_schedule_[idx], HESS), 1);
+  };
+
+  // Get the idx-th state cost hessian nonzero entry
+  template <typename T>
+  inline Eigen::Block<T> get_state_cost_hess_var(T &hessian_var,
+                                                 const int &idx) {
+    return hessian_var.block(cost_idxs_[idx], 0, n_, 1);
+  };
+
+  // Get the idx-th control cost hessian nonzero entry
+  template <typename T>
+  inline Eigen::Block<T> get_control_cost_hess_var(T &hessian_var,
+                                                   const int &idx) {
+    return hessian_var.block(cost_idxs_[idx] + n_, 0, m_, 1);
+  };
 
   void update_complexity_schedule(const Eigen::VectorXi &complexity_schedule);
 
@@ -364,10 +445,21 @@ public:
    * @return Index in constraint vector corresponding to the beginning of the
    * requested FE
    */
-  inline int getConstraintFEIndex(int i) const {
+  inline int getPrimalConstraintFEIndex(int i) const {
     int num_complex_before = complexity_schedule_.segment(0, i).sum();
     return (num_complex_before * g_complex_ +
             (i - num_complex_before) * g_simple_);
+  };
+
+  /**
+   * @brief Return the first index of the slack constraint vector corresponding
+   * to the given finite element
+   * @param[in] i Index of requested finite element
+   * @return Index in slack constraint vector corresponding to the beginning of
+   * the requested FE
+   */
+  inline int getSlackConstraintFEIndex(int i) const {
+    return getPrimalConstraintFEIndex(N_ - 1) + 2 * n_ * i;
   };
 
   /**
@@ -423,7 +515,7 @@ public:
 
   //@}
 
-private:
+ private:
   /**@name Methods to block default compiler methods.
    *
    * The compiler automatically generates the following three methods.
