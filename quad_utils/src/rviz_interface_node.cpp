@@ -1,4 +1,5 @@
 #include <ros/ros.h>
+
 #include "quad_utils/rviz_interface.h"
 
 int main(int argc, char** argv) {
@@ -7,6 +8,6 @@ int main(int argc, char** argv) {
 
   RVizInterface rviz_interface(nh);
   rviz_interface.spin();
-  
+
   return 0;
 }
