@@ -1,6 +1,7 @@
 #ifndef LOCAL_FOOTSTEP_PLANNER_H
 #define LOCAL_FOOTSTEP_PLANNER_H
 
+#include <eigen_conversions/eigen_msg.h>
 #include <nav_msgs/Path.h>
 #include <quad_msgs/FootPlanDiscrete.h>
 #include <quad_msgs/FootState.h>
@@ -16,12 +17,10 @@
 #include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
 
+#include <eigen3/Eigen/Eigen>
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/GridMapRosConverter.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
-
-#include <eigen3/Eigen/Eigen>
-#include <eigen_conversions/eigen_msg.h>
 
 //! A local footstep planning class for quad
 /*!
@@ -30,7 +29,7 @@
    level interface to the core algorithm
 */
 class LocalFootstepPlanner {
-public:
+ public:
   /**
    * @brief Constructor for LocalFootstepPlanner Class
    * @return Constructed object of type LocalFootstepPlanner
@@ -175,9 +174,8 @@ public:
       quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
       quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
 
-  inline void
-  printContactSchedule(const std::vector<std::vector<bool>> &contact_schedule) {
-
+  inline void printContactSchedule(
+      const std::vector<std::vector<bool>> &contact_schedule) {
     for (int i = 0; i < contact_schedule.size(); i++) {
       for (int j = 0; j < contact_schedule.at(i).size(); j++) {
         if (contact_schedule[i][j]) {
@@ -242,7 +240,7 @@ public:
     terrain_grid_ = grid_map;
   }
 
-private:
+ private:
   /**
    * @brief Update the continuous foot plan to match the discrete
    */
@@ -276,7 +274,6 @@ private:
    */
   inline Eigen::Vector3d getFootData(const Eigen::MatrixXd &foot_state_vars,
                                      int horizon_index, int foot_index) {
-
     return foot_state_vars.block<1, 3>(horizon_index, 3 * foot_index);
   }
 
@@ -291,12 +288,10 @@ private:
   /**
    * @brief Check if a foot is newly in contact at a given index
    */
-  inline bool
-  isNewContact(const std::vector<std::vector<bool>> &contact_schedule,
-               int horizon_index, int foot_index) {
-
-    if (horizon_index == 0)
-      return false;
+  inline bool isNewContact(
+      const std::vector<std::vector<bool>> &contact_schedule, int horizon_index,
+      int foot_index) {
+    if (horizon_index == 0) return false;
 
     return (!isContact(contact_schedule, horizon_index - 1, foot_index) &&
             isContact(contact_schedule, horizon_index, foot_index));
@@ -305,12 +300,10 @@ private:
   /**
    * @brief Check if a foot is newly in swing at a given index
    */
-  inline bool
-  isNewLiftoff(const std::vector<std::vector<bool>> &contact_schedule,
-               int horizon_index, int foot_index) {
-
-    if (horizon_index == 0)
-      return false;
+  inline bool isNewLiftoff(
+      const std::vector<std::vector<bool>> &contact_schedule, int horizon_index,
+      int foot_index) {
+    if (horizon_index == 0) return false;
 
     return (isContact(contact_schedule, horizon_index - 1, foot_index) &&
             !isContact(contact_schedule, horizon_index, foot_index));
@@ -320,10 +313,9 @@ private:
    * @brief Compute the index of the next contact for a foot. If none exist
    * return the last.
    */
-  inline int
-  getNextContactIndex(const std::vector<std::vector<bool>> &contact_schedule,
-                      int horizon_index, int foot_index) {
-
+  inline int getNextContactIndex(
+      const std::vector<std::vector<bool>> &contact_schedule, int horizon_index,
+      int foot_index) {
     // Loop through the rest of this contact schedule, if a new contact is found
     // return its index
     for (int i_touchdown = horizon_index; i_touchdown < horizon_length_;
@@ -413,4 +405,4 @@ private:
   double toe_radius = 0.02;
 };
 
-#endif // LOCAL_FOOTSTEP_PLANNER_H
+#endif  // LOCAL_FOOTSTEP_PLANNER_H

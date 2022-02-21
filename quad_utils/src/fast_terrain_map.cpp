@@ -1,6 +1,6 @@
 #include "quad_utils/fast_terrain_map.h"
-#include <grid_map_core/grid_map_core.hpp>
 
+#include <grid_map_core/grid_map_core.hpp>
 #include <iostream>
 
 FastTerrainMap::FastTerrainMap() {}
@@ -16,7 +16,6 @@ void FastTerrainMap::loadData(int x_size, int y_size,
                               std::vector<std::vector<double>> nx_data_filt,
                               std::vector<std::vector<double>> ny_data_filt,
                               std::vector<std::vector<double>> nz_data_filt) {
-
   // Load the data into the object's private variables
   x_size_ = x_size;
   y_size_ = y_size;
@@ -38,7 +37,6 @@ void FastTerrainMap::loadData(int x_size, int y_size,
 }
 
 void FastTerrainMap::loadFlat() {
-
   int x_size = 2;
   int y_size = 2;
   std::vector<double> x_data = {-5, 5};
@@ -60,7 +58,6 @@ void FastTerrainMap::loadFlat() {
 }
 
 void FastTerrainMap::loadFlatElevated(double height) {
-
   int x_size = 2;
   int y_size = 2;
   std::vector<double> x_data = {-5, 5};
@@ -83,7 +80,6 @@ void FastTerrainMap::loadFlatElevated(double height) {
 }
 
 void FastTerrainMap::loadSlope(double grade) {
-
   double slope = atan(grade);
   int x_size = 2;
   int y_size = 2;
@@ -110,7 +106,6 @@ void FastTerrainMap::loadSlope(double grade) {
 }
 
 void FastTerrainMap::loadStep(double height) {
-
   double res = 0.05;
   double length = 2;
   int x_size = length * 2 / res + 1;
@@ -128,7 +123,6 @@ void FastTerrainMap::loadStep(double height) {
   std::vector<std::vector<double>> nz_data_filt(x_size);
 
   for (int i = 0; i < x_size; i++) {
-
     double x = i * res - length;
     x_data.push_back(i * res - length);
     y_data.push_back(i * res - length);
@@ -188,7 +182,6 @@ void FastTerrainMap::loadDataFromGridMap(const grid_map::GridMap map) {
     grid_map::Position position;
     map.getPosition(index, position);
     y_data[i] = position.y();
-    ;
   }
 
   // Loop through the map and get the height and slope info
@@ -250,7 +243,6 @@ void FastTerrainMap::loadDataFromGridMap(const grid_map::GridMap map) {
 }
 
 bool FastTerrainMap::isInRange(const double x, const double y) const {
-
   double epsilon = 0.5;
   if (((x - epsilon) >= x_data_.front()) && ((x + epsilon) <= x_data_.back()) &&
       ((y - epsilon) >= y_data_.front()) && ((y + epsilon) <= y_data_.back())) {
@@ -350,8 +342,8 @@ std::array<double, 3> FastTerrainMap::getSurfaceNormal(const double x,
   return surf_norm;
 }
 
-std::array<double, 3>
-FastTerrainMap::getSurfaceNormalFiltered(const double x, const double y) const {
+std::array<double, 3> FastTerrainMap::getSurfaceNormalFiltered(
+    const double x, const double y) const {
   std::array<double, 3> surf_norm;
 
   int ix = getXIndex(x);
@@ -393,9 +385,8 @@ FastTerrainMap::getSurfaceNormalFiltered(const double x, const double y) const {
   return surf_norm;
 }
 
-Eigen::Vector3d
-FastTerrainMap::getSurfaceNormalFilteredEigen(const double x,
-                                              const double y) const {
+Eigen::Vector3d FastTerrainMap::getSurfaceNormalFilteredEigen(
+    const double x, const double y) const {
   Eigen::Vector3d surf_norm;
 
   int ix = getXIndex(x);
