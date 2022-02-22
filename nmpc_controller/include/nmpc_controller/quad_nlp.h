@@ -365,7 +365,7 @@ class quadNLP : public TNLP {
   template <typename T>
   inline Eigen::Block<T> get_dynamic_var(T &decision_var, const int &idx) {
     return decision_var.block(fe_idxs_[idx], 0,
-                              n_vec[idx] + m_ + n_vec_[idx + 1], 1);
+                              n_vec_[idx] + m_ + n_vec_[idx + 1], 1);
   };
 
   // Get the idx-th dynamic constraint related jacobian nonzero entry
@@ -406,106 +406,101 @@ class quadNLP : public TNLP {
 
   void update_complexity_schedule(const Eigen::VectorXi &complexity_schedule);
 
-  /**
-   * @brief Return the number of primal variables for this NLP
-   * @return Number of primal variables
-   */
-  inline int getNumPrimalVariables() const {
-    return (m_ * N_ + n_simple_ * (N_ - num_complex_fe_) +
-            n_complex_ * num_complex_fe_);
-  };
+  // /**
+  //  * @brief Return the number of primal variables for this NLP
+  //  * @return Number of primal variables
+  //  */
+  // inline int getNumPrimalVariables() const {
+  //   return (m_ * N_ + n_simple_ * (N_ - num_complex_fe_) +
+  //           n_complex_ * num_complex_fe_);
+  // };
 
-  /**
-   * @brief Return the number of slack variables for this NLP
-   * @return Number of slack variables
-   */
-  inline int getNumSlackVariables() const { return (2 * n_simple_ * N_); };
+  // /**
+  //  * @brief Return the number of slack variables for this NLP
+  //  * @return Number of slack variables
+  //  */
+  // inline int getNumSlackVariables() const { return (2 * n_simple_ * N_); };
 
-  /**
-   * @brief Return the number of variables for this NLP
-   * @return Number of variables
-   */
-  inline int getNumVariables() const {
-    return getNumPrimalVariables() + getNumSlackVariables();
-  };
+  // /**
+  //  * @brief Return the number of variables for this NLP
+  //  * @return Number of variables
+  //  */
+  // inline int getNumVariables() const {
+  //   return getNumPrimalVariables() + getNumSlackVariables();
+  // };
 
-  /**
-   * @brief Return the number of constraints in this NLP
-   * @return Number of constraints
-   */
-  inline int getNumConstraints() const {
-    return (g_simple_ * (N_ - num_complex_fe_) + g_complex_ * num_complex_fe_) +
-           n_vars_slack_;
-  };
+  // /**
+  //  * @brief Return the number of constraints in this NLP
+  //  * @return Number of constraints
+  //  */
+  // inline int getNumConstraints() const {
+  //   return (g_simple_ * (N_ - num_complex_fe_) + g_complex_ *
+  //   num_complex_fe_) +
+  //          n_vars_slack_;
+  // };
 
   /**
    * @brief Return the first index of the constraint vector corresponding to the
    * given finite element
-   * @param[in] i Index of requested finite element
+   * @param[in] idx Index of requested finite element
    * @return Index in constraint vector corresponding to the beginning of the
    * requested FE
    */
-  inline int getPrimalConstraintFEIndex(int i) const {
-    int num_complex_before = complexity_schedule_.segment(0, i).sum();
-    return (num_complex_before * g_complex_ +
-            (i - num_complex_before) * g_simple_);
-  };
+  inline int getPrimalConstraintFEIndex(int idx) const { return g_idxs_[idx]; };
 
   /**
    * @brief Return the first index of the slack constraint vector corresponding
    * to the given finite element
-   * @param[in] i Index of requested finite element
+   * @param[in] idx Index of requested finite element
    * @return Index in slack constraint vector corresponding to the beginning of
    * the requested FE
    */
-  inline int getSlackConstraintFEIndex(int i) const {
-    return getPrimalConstraintFEIndex(N_ - 1) + 2 * n_ * i;
+  inline int getSlackConstraintFEIndex(int idx) const {
+    return g_slack_idxs_[idx];
   };
 
   /**
    * @brief Return the first index of the decision variable vector corresponding
    * to the given finite element
-   * @param[in] i Index of requested finite element
+   * @param[in] idx Index of requested finite element
    * @return Index in decision variable vector corresponding to the beginning of
    * the requested FE
    */
-  inline int getPrimalFEIndex(int i) const {
-    int num_complex_before = complexity_schedule_.segment(0, i).sum();
-    return (i * m_ + (num_complex_before * n_complex_ +
-                      (i - num_complex_before) * n_simple_));
+  inline int getPrimalFEIndex(int idx) const {
+    return fe_idxs_[idx];
   };
 
   /**
    * @brief Return the first index of the decision variable vector corresponding
    * to the given finite element's control input
-   * @param[in] i Index of requested finite element
+   * @param[in] idx Index of requested finite element
    * @return Index in decision variable vector corresponding to the beginning of
    * the control input of the requested FE
    */
-  inline int getPrimalControlFEIndex(int i) const {
-    return getPrimalFEIndex(i);
+  inline int getPrimalControlFEIndex(int idx) const {
+    return u_idxs_[idx];
   };
 
   /**
    * @brief Return the first index of the decision variable vector corresponding
    * to the given finite element's state
-   * @param[in] i Index of requested finite element
+   * @param[in] idx Index of requested finite element
    * @return Index in decision variable vector corresponding to the beginning of
    * the state of the requested FE
    */
-  inline int getPrimalStateFEIndex(int i) const {
-    return (getPrimalControlFEIndex(i) + m_);
+  inline int getPrimalStateFEIndex(int idx) const {
+    return x_idxs_[idx];
   };
 
   /**
    * @brief Return the first index of the decision variable vector corresponding
    * to the slack variable for the given finite element's state
-   * @param[in] i Index of requested finite element
+   * @param[in] idx Index of requested finite element
    * @return Index in decision variable vector corresponding to the slack
    * variable of the beginning of the state of the requested FE
    */
-  inline int getSlackStateFEIndex(int i) const {
-    return (n_vars_primal_ + 2 * i * n_);
+  inline int getSlackStateFEIndex(int idx) const {
+    return slack_idxs_[idx];
   };
 
   /**

@@ -262,7 +262,6 @@ bool quadNLP::get_nlp_info(Index &n, Index &m, Index &nnz_jac_g,
 // Returns the variable bounds
 bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
                               Number *g_l, Number *g_u) {
-  // TODO(jcnorby): switch matrix to vector
   Eigen::Map<Eigen::VectorXd> x_l_matrix(x_l, n);
   Eigen::Map<Eigen::VectorXd> x_u_matrix(x_u, n);
   Eigen::Map<Eigen::VectorXd> g_l_matrix(g_l, m);
@@ -340,7 +339,6 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
 bool quadNLP::get_starting_point(Index n, bool init_x, Number *x, bool init_z,
                                  Number *z_L, Number *z_U, Index m,
                                  bool init_lambda, Number *lambda) {
-  // TODO(jcnorby): switch matrix to vector
   if (init_x) {
     Eigen::Map<Eigen::VectorXd> w(x, n);
     w = w0_;
@@ -559,7 +557,6 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
     }
 
     for (size_t i = 0; i < N_; i++) {
-      // TODO(jcnorby) update to handle n_slack
       // xmin wrt x
       get_panic_jac_var(values_matrix, i).segment(0, n_slack_vec_[i]).fill(1);
 
@@ -611,39 +608,48 @@ void quadNLP::compute_nnz_jac_g() {
 
     // Each step we shift n states and m inputs
     get_dynamic_jac_var(jCol_jac_g_, i) =
-        (jCol_mat_[sys_id][JAC].array() + getPrimalStateFEIndex(i)).matrix();
+        (jCol_mat_[sys_id][JAC].array() + getPrimalFEIndex(i)).matrix();
   }
 
   for (size_t i = 0; i < N_; i++) {
-    // TODO(jcnorby) implement functions for these
+    // Declare number of slack variables for this element
+    int n_slack = n_slack_vec_[i];
+
     Eigen::ArrayXi g_xmin_idx =
-        Eigen::ArrayXi::LinSpaced(n_, getSlackConstraintFEIndex(i),
-                                  getSlackConstraintFEIndex(i) + n_ - 1);
-    Eigen::ArrayXi g_xmax_idx =
-        Eigen::ArrayXi::LinSpaced(n_, getSlackConstraintFEIndex(i) + n_,
-                                  getSlackConstraintFEIndex(i) + 2 * n_ - 1);
-    Eigen::ArrayXi x_idx = Eigen::ArrayXi::LinSpaced(
-        n_, getPrimalStateFEIndex(i), getPrimalStateFEIndex(i) + n_ - 1);
-    Eigen::ArrayXi panic_xmin_idx = Eigen::ArrayXi::LinSpaced(
-        n_, getSlackStateFEIndex(i), getSlackStateFEIndex(i) + n_ - 1);
-    Eigen::ArrayXi panic_xmax_idx = Eigen::ArrayXi::LinSpaced(
-        n_, getSlackStateFEIndex(i) + n_, getSlackStateFEIndex(i) + 2 * n_ - 1);
+        Eigen::ArrayXi::LinSpaced(n_slack, getSlackConstraintFEIndex(i),
+                                  getSlackConstraintFEIndex(i) + n_slack - 1);
+    Eigen::ArrayXi g_xmax_idx = Eigen::ArrayXi::LinSpaced(
+        n_slack, getSlackConstraintFEIndex(i) + n_slack,
+        getSlackConstraintFEIndex(i) + 2 * n_slack - 1);
+    Eigen::ArrayXi x_idx =
+        Eigen::ArrayXi::LinSpaced(n_slack, getPrimalStateFEIndex(i),
+                                  getPrimalStateFEIndex(i) + n_slack - 1);
+    Eigen::ArrayXi panic_xmin_idx =
+        Eigen::ArrayXi::LinSpaced(n_slack, getSlackStateFEIndex(i),
+                                  getSlackStateFEIndex(i) + n_slack - 1);
+    Eigen::ArrayXi panic_xmax_idx =
+        Eigen::ArrayXi::LinSpaced(n_slack, getSlackStateFEIndex(i) + n_slack,
+                                  getSlackStateFEIndex(i) + 2 * n_slack - 1);
 
     // xmin wrt x
-    get_panic_jac_var(iRow_jac_g_, i).block(0, 0, n_, 1) = g_xmin_idx;
-    get_panic_jac_var(jCol_jac_g_, i).block(0, 0, n_, 1) = x_idx;
+    get_panic_jac_var(iRow_jac_g_, i).segment(0, n_slack) = g_xmin_idx;
+    get_panic_jac_var(jCol_jac_g_, i).segment(0, n_slack) = x_idx;
 
     // xmin wrt panic
-    get_panic_jac_var(iRow_jac_g_, i).block(n_, 0, n_, 1) = g_xmin_idx;
-    get_panic_jac_var(jCol_jac_g_, i).block(n_, 0, n_, 1) = panic_xmin_idx;
+    get_panic_jac_var(iRow_jac_g_, i).segment(n_slack, n_slack) = g_xmin_idx;
+    get_panic_jac_var(jCol_jac_g_, i).segment(n_slack, n_slack) =
+        panic_xmin_idx;
 
     // xmax wrt x
-    get_panic_jac_var(iRow_jac_g_, i).block(2 * n_, 0, n_, 1) = g_xmax_idx;
-    get_panic_jac_var(jCol_jac_g_, i).block(2 * n_, 0, n_, 1) = x_idx;
+    get_panic_jac_var(iRow_jac_g_, i).segment(2 * n_slack, n_slack) =
+        g_xmax_idx;
+    get_panic_jac_var(jCol_jac_g_, i).segment(2 * n_slack, n_slack) = x_idx;
 
     // xmax wrt panic
-    get_panic_jac_var(iRow_jac_g_, i).block(3 * n_, 0, n_, 1) = g_xmax_idx;
-    get_panic_jac_var(jCol_jac_g_, i).block(3 * n_, 0, n_, 1) = panic_xmax_idx;
+    get_panic_jac_var(iRow_jac_g_, i).segment(3 * n_slack, n_slack) =
+        g_xmax_idx;
+    get_panic_jac_var(jCol_jac_g_, i).segment(3 * n_slack, n_slack) =
+        panic_xmax_idx;
   }
 }
 
@@ -759,14 +765,14 @@ void quadNLP::compute_nnz_h() {
   nnz_h_ = nnz_h_ + N_ * (n_simple_ + m_);
 
   // Size the NLP constraint Hessian sparsity structure
-  iRow_h_ = Eigen::VectorXi(nnz_h_);
-  jCol_h_ = Eigen::VectorXi(nnz_h_);
+  //   iRow_h_ = Eigen::VectorXi(nnz_h_);
+  //   jCol_h_ = Eigen::VectorXi(nnz_h_);
 
-  // Hessian from cost
-  Eigen::ArrayXi iRow_cost =
-      Eigen::ArrayXi::LinSpaced(n_simple_ + m_, 0, n_simple_ + m_ - 1);
-  Eigen::ArrayXi jCol_cost =
-      Eigen::ArrayXi::LinSpaced(n_simple_ + m_, 0, n_simple_ + m_ - 1);
+  //   // Hessian from cost
+  //   Eigen::ArrayXi iRow_cost =
+  //       Eigen::ArrayXi::LinSpaced(n_simple_ + m_, 0, n_simple_ + m_ - 1);
+  //   Eigen::ArrayXi jCol_cost =
+  //       Eigen::ArrayXi::LinSpaced(n_simple_ + m_, 0, n_simple_ + m_ - 1);
 
   iRow_h_ = Eigen::VectorXi(nnz_h_);
   jCol_h_ = Eigen::VectorXi(nnz_h_);
@@ -777,9 +783,9 @@ void quadNLP::compute_nnz_h() {
     nnz_step_hess_[i] = nnz_mat_(sys_id, HESS);
     // Each step we shift n states and m inputs
     get_dynamic_hess_var(iRow_h_, i) =
-        (iRow_mat_[sys_id][HESS].array() + getPrimalStateFEIndex(i)).matrix();
+        (iRow_mat_[sys_id][HESS].array() + getPrimalFEIndex(i)).matrix();
     get_dynamic_hess_var(jCol_h_, i) =
-        (jCol_mat_[sys_id][HESS].array() + getPrimalStateFEIndex(i)).matrix();
+        (jCol_mat_[sys_id][HESS].array() + getPrimalFEIndex(i)).matrix();
   }
 
   // Hessian from cost
@@ -841,7 +847,7 @@ void quadNLP::finalize_solution(SolverReturn status, Index n, const Number *x,
   Eigen::Map<const Eigen::VectorXd> lambda_matrix(lambda, m);
   lambda0_ = lambda_matrix;
 
-  Eigen::Map<const Eigen::MatrixXd> g_matrix(g, m, 1);
+  Eigen::Map<const Eigen::VectorXd> g_matrix(g, m);
   g0_ = g_matrix;
 
   mu0_ = ip_data->curr_mu();
@@ -875,34 +881,34 @@ void quadNLP::shift_initial_guess() {
       trans.block(6, 9, 3, 3).diagonal() << 1, 1, 1;
       trans.block(9, 6, 3, 3).diagonal() << 1, 1, 1;
 
-      w0_.block(getPrimalControlFEIndex(N_ - 1) + leg_input_start_idx_, 0,
-                m_ - leg_input_start_idx_, 1) =
+      w0_.segment(getPrimalControlFEIndex(N_ - 1) + leg_input_start_idx_,
+                  m_ - leg_input_start_idx_) =
           trans *
-          w0_.block(getPrimalControlFEIndex(N_ - 7) + leg_input_start_idx_, 0,
-                    m_ - leg_input_start_idx_, 1);
-      z_L0_.block(getPrimalControlFEIndex(N_ - 1) + leg_input_start_idx_, 0,
-                  m_ - leg_input_start_idx_, 1) =
+          w0_.segment(getPrimalControlFEIndex(N_ - 7) + leg_input_start_idx_,
+                      m_ - leg_input_start_idx_);
+      z_L0_.segment(getPrimalControlFEIndex(N_ - 1) + leg_input_start_idx_,
+                    m_ - leg_input_start_idx_) =
           trans *
-          z_L0_.block(getPrimalControlFEIndex(N_ - 7) + leg_input_start_idx_, 0,
-                      m_ - leg_input_start_idx_, 1);
-      z_U0_.block(getPrimalControlFEIndex(N_ - 1) + leg_input_start_idx_, 0,
-                  m_ - leg_input_start_idx_, 1) =
+          z_L0_.segment(getPrimalControlFEIndex(N_ - 7) + leg_input_start_idx_,
+                        m_ - leg_input_start_idx_);
+      z_U0_.segment(getPrimalControlFEIndex(N_ - 1) + leg_input_start_idx_,
+                    m_ - leg_input_start_idx_) =
           trans *
-          z_U0_.block(getPrimalControlFEIndex(N_ - 7) + leg_input_start_idx_, 0,
-                      m_ - leg_input_start_idx_, 1);
+          z_U0_.segment(getPrimalControlFEIndex(N_ - 7) + leg_input_start_idx_,
+                        m_ - leg_input_start_idx_);
     }
     // New contact mode
     else {
-      w0_.block(getPrimalControlFEIndex(N_ - 1) + leg_input_start_idx_, 0,
-                m_ - leg_input_start_idx_, 1)
+      w0_.segment(getPrimalControlFEIndex(N_ - 1) + leg_input_start_idx_,
+                  m_ - leg_input_start_idx_)
           .fill(0);
       z_L0_
-          .block(getPrimalControlFEIndex(N_ - 1) + leg_input_start_idx_, 0,
-                 m_ - leg_input_start_idx_, 1)
+          .segment(getPrimalControlFEIndex(N_ - 1) + leg_input_start_idx_,
+                   m_ - leg_input_start_idx_)
           .fill(1);
       z_U0_
-          .block(getPrimalControlFEIndex(N_ - 1) + leg_input_start_idx_, 0,
-                 m_ - leg_input_start_idx_, 1)
+          .segment(getPrimalControlFEIndex(N_ - 1) + leg_input_start_idx_,
+                   m_ - leg_input_start_idx_)
           .fill(1);
 
       // Compute the number of contacts
@@ -1073,11 +1079,11 @@ void quadNLP::update_complexity_schedule(
   this->complexity_schedule_ = complexity_schedule;
 
   // Resize vectors appropriately
-  N_ = complexity_schedule.size();
+  N_ = complexity_schedule.size() - 1;
   sys_id_schedule_.resize(N_);
   g_vec_.resize(N_);
   n_vec_.resize(N_ + 1);
-  n_slack_vec_.resize(N_ + 1);
+  n_slack_vec_.resize(N_);
   fe_idxs_.resize(N_);
   u_idxs_.resize(N_);
   x_idxs_.resize(N_ + 1);
@@ -1101,23 +1107,22 @@ void quadNLP::update_complexity_schedule(
     // Update the number of complex elements
     num_complex_fe_ += complexity_schedule[i];
 
-    // Update the complexity of the next finite element
-    int next_complexity =
-        (i + 1 < N_) ? complexity_schedule[i + 1] : xN_complexity_;
-
     // Determine the system to assign to this finite element
     if (complexity_schedule[i] == 0) {
-      sys_id_schedule_[i] = (next_complexity == 0) ? LEG : SIMPLE_TO_COMPLEX;
+      sys_id_schedule_[i] =
+          (complexity_schedule[i + 1] == 0) ? LEG : SIMPLE_TO_COMPLEX;
     } else {
       sys_id_schedule_[i] =
-          (next_complexity == 1) ? COMPLEX : COMPLEX_TO_SIMPLE;
+          (complexity_schedule[i + 1] == 1) ? COMPLEX : COMPLEX_TO_SIMPLE;
     }
 
     // Update the number of state vars and constraints for this FE
     n_vec_[i] = (complexity_schedule[i] == 1) ? n_complex_ : n_simple_;
-    n_slack_vec_[i] = (complexity_schedule[i] == 1 && apply_slack_to_complex_)
-                          ? n_complex_
-                          : n_simple_;
+
+    n_slack_vec_[i] =
+        (complexity_schedule[i + 1] == 1 && apply_slack_to_complex_)
+            ? n_complex_
+            : n_simple_;
     g_vec_[i] = nrow_mat_(sys_id_schedule_[i], FUNC);
 
     // Update the indices for the finite element, control, and state variables
@@ -1138,10 +1143,9 @@ void quadNLP::update_complexity_schedule(
     dynamic_hess_var_idx += nnz_mat_(sys_id_schedule_[i], HESS);
   }
 
+  num_complex_fe_ += complexity_schedule[N_];
+  n_vec_[N_] = (complexity_schedule[N_] == 1) ? n_complex_ : n_simple_;
   x_idxs_[N_] = curr_var_idx;
-  n_vec_[N_] = (xN_complexity_ == 1) ? n_complex_ : n_simple_;
-  n_slack_vec_[N_] =
-      (xN_complexity_ == 1 && apply_slack_to_complex_) ? n_complex_ : n_simple_;
   curr_var_idx += n_vec_[N_];
 
   // Update the total number of primal variables
@@ -1149,14 +1153,15 @@ void quadNLP::update_complexity_schedule(
 
   // Update the slack variable indices
   for (int i = 0; i < N_; i++) {
+    int n_slack = n_slack_vec_[i];
     slack_idxs_[i] = curr_var_idx;
-    curr_var_idx += 2 * n_slack_vec_[i + 1];
+    curr_var_idx += 2 * n_slack;
 
     g_slack_idxs_[i] = curr_constr_idx;
-    curr_constr_idx += 2 * n_slack_vec_[i + 1];
+    curr_constr_idx += 2 * n_slack;
 
     panic_jac_var_idxs_[i] = dynamic_jac_var_idx;
-    dynamic_jac_var_idx += 4 * n_slack_vec_[i + 1];
+    dynamic_jac_var_idx += 4 * n_slack;
 
     cost_idxs_[i] = dynamic_hess_var_idx;
     dynamic_hess_var_idx += n_simple_ + m_;
@@ -1167,9 +1172,16 @@ void quadNLP::update_complexity_schedule(
   n_vars_slack_ = n_vars_ - n_vars_primal_;
 
   // Check the number of primal and slack vars for correctness
-  if (n_vars_primal_ != (n_vec_.sum())) {
+  if (n_vars_primal_ != (n_vec_.sum() + m_ * N_)) {
+    std::cout << "n_vec_ = " << n_vec_.transpose() << std::endl;
+    std::cout << "n_vars_primal_ = " << n_vars_primal_ << std::endl;
+    std::cout << "n_vec_.sum() + m_ * N_ = " << n_vec_.sum() + m_ * N_
+              << std::endl;
     throw std::runtime_error("Number of primal vars is inconsistent");
   } else if (n_vars_slack_ != (2 * n_slack_vec_.sum())) {
+    std::cout << "n_vars_slack_ = " << n_vars_slack_ << std::endl;
+    std::cout << "2 * n_slack_vec_.sum() = " << (2 * n_slack_vec_.sum())
+              << std::endl;
     throw std::runtime_error("Number of slack vars is inconsistent");
   }
 
