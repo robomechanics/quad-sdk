@@ -50,7 +50,13 @@ TEST(NMPCTest, testUtils) {
   EXPECT_FALSE(nlp.apply_slack_to_complex_);
   nlp.update_complexity_schedule(complexity_schedule);
   EXPECT_EQ(nlp.n_vars_, (n * 3 + m) * N + n);
+  int g = n + 16;
+  EXPECT_EQ(nlp.n_constraints_, (g + 2 * n) * N);
 
+  std::cout << "nlp.n_vars_ = " << nlp.n_vars_ << std::endl;
+  std::cout << "nlp.n_vars_ target = " << (n * 3 + m) * N + n << std::endl;
+  std::cout << "nlp.n_constraints_ = " << nlp.n_constraints_ << std::endl;
+  std::cout << "nlp.n_constraints_ target = " << (g + 2 * n) * N << std::endl;
   std::cout << "nlp.complexity_schedule_ = "
             << nlp.complexity_schedule_.transpose() << std::endl;
   std::cout << "nlp.sys_id_schedule_ = " << nlp.sys_id_schedule_.transpose()
@@ -69,19 +75,6 @@ TEST(NMPCTest, testUtils) {
             << std::endl;
   std::cout << "nlp.jCol_compact_h_.sum() = " << nlp.jCol_compact_h_.sum()
             << std::endl;
-
-  // // Check against prior implementation
-  // EXPECT_TRUE(nlp.nnz_jac_g_ == 4978);
-  // EXPECT_TRUE(nlp.nnz_step_jac_g_[0] == 161);
-  // EXPECT_TRUE(nlp.iRow_jac_g_.sum() == 2385295);
-  // EXPECT_TRUE(nlp.jCol_jac_g_.sum() == 1755775);
-  // EXPECT_TRUE(nlp.nnz_h_ == 2937);
-  // EXPECT_TRUE(nlp.nnz_compact_h_ == 2543);
-  // EXPECT_TRUE(nlp.nnz_step_hess_[0] == 101);
-  // EXPECT_TRUE(nlp.iRow_h_.sum() == 863430);
-  // EXPECT_TRUE(nlp.jCol_h_.sum() == 834003);
-  // EXPECT_TRUE(nlp.iRow_compact_h_.sum() == 750935);
-  // EXPECT_TRUE(nlp.jCol_compact_h_.sum() == 722543);
 
   // // Check against prior implementation
   EXPECT_TRUE(nlp.nnz_jac_g_ == 4248);

@@ -180,7 +180,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   g_max_complex_.segment(current_idx, n_null_).fill(0);
 
   num_complex_fe_ = 0;
-  complexity_schedule_.setZero(N_);
+  complexity_schedule_.setZero(N_ + 1);
   // complexity_schedule_.segment<2>(4).fill(1);
   this->update_complexity_schedule(complexity_schedule_);
   std::cout << "n_vec\n" << n_vec_.transpose() << std::endl;
@@ -591,7 +591,7 @@ void quadNLP::compute_nnz_jac_g() {
   }
 
   // Add slack variables
-  nnz_jac_g_ = nnz_jac_g_ + 2 * n_vars_slack_;
+  nnz_jac_g_ += 2 * 2 * n_ * N_;
   nnz_step_jac_g_.resize(N_);
 
   // Size the NLP constraint Jacobian sparsity structure
@@ -622,8 +622,8 @@ void quadNLP::compute_nnz_jac_g() {
         n_slack, getSlackConstraintFEIndex(i) + n_slack,
         getSlackConstraintFEIndex(i) + 2 * n_slack - 1);
     Eigen::ArrayXi x_idx =
-        Eigen::ArrayXi::LinSpaced(n_slack, getPrimalStateFEIndex(i),
-                                  getPrimalStateFEIndex(i) + n_slack - 1);
+        Eigen::ArrayXi::LinSpaced(n_slack, getPrimalStateFEIndex(i + 1),
+                                  getPrimalStateFEIndex(i + 1) + n_slack - 1);
     Eigen::ArrayXi panic_xmin_idx =
         Eigen::ArrayXi::LinSpaced(n_slack, getSlackStateFEIndex(i),
                                   getSlackStateFEIndex(i) + n_slack - 1);
