@@ -75,6 +75,9 @@ class quadNLP : public TNLP {
   /// Number of state variables added in complex model
   int n_null_;
 
+  /// Nominal null state variables
+  Eigen::VectorXd x_null_nom_;
+
   /// Number of state variables in the initial state
   int n0_;
 
@@ -466,9 +469,7 @@ class quadNLP : public TNLP {
    * @return Index in decision variable vector corresponding to the beginning of
    * the requested FE
    */
-  inline int getPrimalFEIndex(int idx) const {
-    return fe_idxs_[idx];
-  };
+  inline int getPrimalFEIndex(int idx) const { return fe_idxs_[idx]; };
 
   /**
    * @brief Return the first index of the decision variable vector corresponding
@@ -477,9 +478,7 @@ class quadNLP : public TNLP {
    * @return Index in decision variable vector corresponding to the beginning of
    * the control input of the requested FE
    */
-  inline int getPrimalControlFEIndex(int idx) const {
-    return u_idxs_[idx];
-  };
+  inline int getPrimalControlFEIndex(int idx) const { return u_idxs_[idx]; };
 
   /**
    * @brief Return the first index of the decision variable vector corresponding
@@ -488,9 +487,7 @@ class quadNLP : public TNLP {
    * @return Index in decision variable vector corresponding to the beginning of
    * the state of the requested FE
    */
-  inline int getPrimalStateFEIndex(int idx) const {
-    return x_idxs_[idx];
-  };
+  inline int getPrimalStateFEIndex(int idx) const { return x_idxs_[idx]; };
 
   /**
    * @brief Return the first index of the decision variable vector corresponding
@@ -499,9 +496,7 @@ class quadNLP : public TNLP {
    * @return Index in decision variable vector corresponding to the slack
    * variable of the beginning of the state of the requested FE
    */
-  inline int getSlackStateFEIndex(int idx) const {
-    return slack_idxs_[idx];
-  };
+  inline int getSlackStateFEIndex(int idx) const { return slack_idxs_[idx]; };
 
   /**
    * @brief Load the casadi function pointers into map member vars

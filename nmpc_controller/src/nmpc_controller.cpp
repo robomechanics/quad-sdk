@@ -129,6 +129,7 @@ bool NMPCController::computeLegPlan(
     const Eigen::VectorXi &ref_primitive_id,
     const Eigen::VectorXi &complexity_schedule, Eigen::MatrixXd &state_traj,
     Eigen::MatrixXd &control_traj) {
+  // Update the complexity
   mynlp_->update_complexity_schedule(complexity_schedule);
 
   // Local planner will send a reference traj with N+1 rows

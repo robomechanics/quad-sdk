@@ -138,6 +138,14 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   x_min_complex_ = x_min_complex;
   x_max_complex_ = x_max_complex;
 
+  double abad_nom = 0;
+  double hip_nom = 1.57 * 0.5;
+  double knee_nom = 1.57;
+  x_null_nom_.resize(n_null_);
+  x_null_nom_ << abad_nom, hip_nom, knee_nom, abad_nom, hip_nom, knee_nom,
+      abad_nom, hip_nom, knee_nom, abad_nom, hip_nom, knee_nom, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0;
+
   u_min_ = u_min;
   u_max_ = u_max;
 
@@ -181,10 +189,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
 
   num_complex_fe_ = 0;
   complexity_schedule_.setZero(N_ + 1);
-  // complexity_schedule_.segment<2>(4).fill(1);
   this->update_complexity_schedule(complexity_schedule_);
-  std::cout << "n_vec\n" << n_vec_.transpose() << std::endl;
-  std::cout << "g_vec\n" << g_vec_.transpose() << std::endl;
 
   w0_ = Eigen::VectorXd(n_vars_).setZero();
   z_L0_ = Eigen::VectorXd(n_vars_).Ones(n_vars_, 1);
@@ -275,6 +280,7 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
     // Inputs bound
     get_control_var(x_l_matrix, i) = u_min_;
     get_control_var(x_u_matrix, i) = u_max_;
+
     if (known_leg_input_) {
       get_control_var(x_l_matrix, i)
           .segment(leg_input_start_idx_, m_ - leg_input_start_idx_) =
@@ -306,13 +312,15 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
 
     // Add bounds if not covered by panic variables
     if (n_vec_[i] > n_slack_vec_[i]) {
-      get_state_var(x_l_matrix, i + 1).tail(n_null_) = x_min_.tail(n_null_);
-      get_state_var(x_u_matrix, i + 1).tail(n_null_) = x_max_.tail(n_null_);
+      get_state_var(x_l_matrix, i + 1).tail(n_null_) =
+          x_min_complex_.tail(n_null_);
+      get_state_var(x_u_matrix, i + 1).tail(n_null_) =
+          x_max_complex_.tail(n_null_);
     }
 
     // Constraints bound
-    get_constraint_var(g_l_matrix, i) = g_min_.head(g_vec_[i]);
-    get_constraint_var(g_u_matrix, i) = g_max_.head(g_vec_[i]);
+    get_constraint_var(g_l_matrix, i) = g_min_complex_.head(g_vec_[i]);
+    get_constraint_var(g_u_matrix, i) = g_max_complex_.head(g_vec_[i]);
 
     // Panic variable bound
     get_panic_var(x_l_matrix, i).fill(0);
@@ -321,15 +329,19 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
 
   for (size_t i = 0; i < N_; i++) {
     // xmin
-    get_panic_constraint_var(g_l_matrix, i).topRows(n_) = x_min_;
+    get_panic_constraint_var(g_l_matrix, i).topRows(n_slack_vec_[i]) =
+        x_min_.head(n_slack_vec_[i]);
     get_panic_constraint_var(g_l_matrix, i)(2, 0) = ground_height_(0, i);
 
     // get_panic_constraint_var(g_l_matrix, i)(2, 0) = 0;
-    get_panic_constraint_var(g_u_matrix, i).topRows(n_).fill(2e19);
+    get_panic_constraint_var(g_u_matrix, i).topRows(n_slack_vec_[i]).fill(2e19);
 
     // xmax
-    get_panic_constraint_var(g_l_matrix, i).bottomRows(n_).fill(-2e19);
-    get_panic_constraint_var(g_u_matrix, i).bottomRows(n_) = x_max_;
+    get_panic_constraint_var(g_l_matrix, i)
+        .bottomRows(n_slack_vec_[i])
+        .fill(-2e19);
+    get_panic_constraint_var(g_u_matrix, i).bottomRows(n_slack_vec_[i]) =
+        x_max_.head(n_slack_vec_[i]);
   }
 
   return true;
@@ -461,8 +473,8 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     Eigen::VectorXd pk(14);
     pk[0] = (i == 0) ? first_element_duration_ : dt_;
     pk[1] = mu_;
-    pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
-    // pk.segment(2, 12) = foot_pos_world_.row(i);
+    // pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
+    pk.segment(2, 12) = foot_pos_world_.row(i);
     // pk.segment(14, 12) = foot_vel_world_.row(i);
 
     // Set up the work function
@@ -526,8 +538,8 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
       Eigen::VectorXd pk(14);
       pk[0] = (i == 0) ? first_element_duration_ : dt_;
       pk[1] = mu_;
-      pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
-      // pk.segment(2, 12) = foot_pos_world_.row(i);
+      // pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
+      pk.segment(2, 12) = foot_pos_world_.row(i);
       // pk.segment(14, 12) = foot_vel_world_.row(i);
 
       // Set up the work function
@@ -679,8 +691,8 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
       Eigen::VectorXd pk(14);
       pk[0] = (i == 0) ? first_element_duration_ : dt_;
       pk[1] = mu_;
-      pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
-      // pk.segment(2, 12) = foot_pos_world_.row(i);
+      // pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
+      pk.segment(2, 12) = foot_pos_world_.row(i);
       // // pk.segment(14, 12) = foot_vel_world_.row(i);
 
       // Set up the work function
@@ -1012,10 +1024,10 @@ void quadNLP::update_solver(
   ground_height_ = ground_height.transpose();
 
   if (init) {
-    w0_.setZero();
-    z_L0_.fill(1);
-    z_U0_.fill(1);
-    lambda0_.fill(1000);
+    w0_ = Eigen::VectorXd(n_vars_).setZero();
+    z_L0_ = Eigen::VectorXd(n_vars_).Ones(n_vars_, 1);
+    z_U0_ = Eigen::VectorXd(n_vars_).Ones(n_vars_, 1);
+    lambda0_ = Eigen::VectorXd(n_constraints_).setZero();
 
     get_state_var(w0_, 0) = x_reference_.col(0);
     for (size_t i = 0; i < N_; i++) {
@@ -1076,6 +1088,7 @@ void quadNLP::update_solver(
 void quadNLP::update_complexity_schedule(
     const Eigen::VectorXi &complexity_schedule) {
   // Update the complexity schedule
+  quad_utils::FunctionTimer timer(__FUNCTION__);
   this->complexity_schedule_ = complexity_schedule;
 
   // Resize vectors appropriately
@@ -1110,7 +1123,7 @@ void quadNLP::update_complexity_schedule(
     // Determine the system to assign to this finite element
     if (complexity_schedule[i] == 0) {
       sys_id_schedule_[i] =
-          (complexity_schedule[i + 1] == 0) ? LEG : SIMPLE_TO_COMPLEX;
+          (complexity_schedule[i + 1] == 0) ? SIMPLE : SIMPLE_TO_COMPLEX;
     } else {
       sys_id_schedule_[i] =
           (complexity_schedule[i + 1] == 1) ? COMPLEX : COMPLEX_TO_SIMPLE;
@@ -1192,4 +1205,7 @@ void quadNLP::update_complexity_schedule(
   if (n_constraints_ != (g_vec_.sum() + n_vars_slack_)) {
     throw std::runtime_error("Number of constraints is inconsistent");
   }
+
+  compute_nnz_jac_g();
+  compute_nnz_h();
 }
