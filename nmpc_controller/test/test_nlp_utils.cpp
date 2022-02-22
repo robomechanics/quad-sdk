@@ -73,13 +73,11 @@ TEST(NMPCTest, testUtils) {
   // // Check against prior implementation
   EXPECT_TRUE(nlp.nnz_jac_g_ == 4978);
   EXPECT_TRUE(nlp.nnz_step_jac_g_[0] == 161);
-  EXPECT_TRUE(nlp.first_step_idx_mat_(LEG, JAC) == 38);
   EXPECT_TRUE(nlp.iRow_jac_g_.sum() == 2385295);
   EXPECT_TRUE(nlp.jCol_jac_g_.sum() == 1755775);
   EXPECT_TRUE(nlp.nnz_h_ == 2937);
   EXPECT_TRUE(nlp.nnz_compact_h_ == 2543);
   EXPECT_TRUE(nlp.nnz_step_hess_[0] == 101);
-  EXPECT_TRUE(nlp.first_step_idx_mat_(LEG, HESS) == 63);
   EXPECT_TRUE(nlp.iRow_h_.sum() == 863430);
   EXPECT_TRUE(nlp.jCol_h_.sum() == 834003);
   EXPECT_TRUE(nlp.iRow_compact_h_.sum() == 750935);
