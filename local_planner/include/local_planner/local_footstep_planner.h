@@ -240,6 +240,67 @@ class LocalFootstepPlanner {
     terrain_grid_ = grid_map;
   }
 
+  // Compute swing apex by ground and hip height
+  inline double computeSwingApex(int leg_idx, const Eigen::VectorXd &body_plan,
+                                 const Eigen::Vector3d &foot_position_prev,
+                                 const Eigen::Vector3d &foot_position_next) {
+    // Compute hip height
+    Eigen::Matrix4d g_world_legbase;
+    quadKD_->worldToLegbaseFKWorldFrame(leg_idx, body_plan.segment(0, 3),
+                                        body_plan.segment(3, 3),
+                                        g_world_legbase);
+    double hip_height = g_world_legbase(2, 3);
+
+    // Compute swing apex
+    double swing_apex =
+        std::min(ground_clearance_ - toe_radius +
+                     std::max(foot_position_prev.z(), foot_position_next.z()),
+                 hip_height - hip_clearance_);
+
+    return swing_apex;
+  }
+
+  // Compute maximum acceleration by the nominal swing trajectory
+  Eigen::Vector3d computeMaximumAcceleration(
+      const Eigen::Vector3d &foot_position_prev,
+      const Eigen::Vector3d &foot_velocity_prev,
+      const Eigen::Vector3d &foot_position_next,
+      const Eigen::Vector3d &foot_velocity_next, double swing_apex,
+      double swing_duration) {
+    // Initialize vector
+    Eigen::Vector3d foot_acceleration_max;
+    double tmp;
+
+    // Compute nominal acceleration, maximum should be at the first or the end
+    cubicHermiteSpline(foot_position_prev.x(), foot_velocity_prev.x(),
+                       foot_position_next.x(), foot_velocity_next.x(), 0,
+                       swing_duration * dt_, tmp, tmp,
+                       foot_acceleration_max.x());
+    cubicHermiteSpline(foot_position_prev.y(), foot_velocity_prev.y(),
+                       foot_position_next.y(), foot_velocity_next.y(), 0,
+                       swing_duration * dt_, tmp, tmp,
+                       foot_acceleration_max.y());
+    cubicHermiteSpline(foot_position_prev.z(), foot_velocity_prev.z(),
+                       swing_apex, 0, 0, swing_duration / 2 * dt_, tmp, tmp,
+                       foot_acceleration_max.z());
+
+    return foot_acceleration_max;
+  }
+
+  // Compute future states by integrating linear states (hold orientation
+  // states)
+  Eigen::VectorXd computeFutureState(double step,
+                                     const Eigen::VectorXd &body_plan) {
+    // Initialize vector
+    Eigen::VectorXd future_body_plan = body_plan;
+
+    // Integrate the linear state
+    future_body_plan.segment(0, 3) =
+        future_body_plan.segment(0, 3) + body_plan.segment(6, 3) * step * dt_;
+
+    return future_body_plan;
+  }
+
  private:
   /**
    * @brief Update the continuous foot plan to match the discrete

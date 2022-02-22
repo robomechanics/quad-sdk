@@ -97,6 +97,9 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 
   // Initialize the plan index boolean
   same_plan_index_ = true;
+
+  // Initialize the plan index
+  current_plan_index_ = 0;
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -342,13 +345,6 @@ void LocalPlanner::getStateAndReferencePlan() {
 void LocalPlanner::getStateAndTwistInput() {
   if (robot_state_msg_ == NULL) return;
 
-  // Get plan index, compare with the previous one to check if this is a
-  // duplicated solve
-  int previous_plan_index = current_plan_index_;
-  quad_utils::getPlanIndex(initial_timestamp_, dt_, current_plan_index_,
-                           first_element_duration_);
-  same_plan_index_ = previous_plan_index == current_plan_index_;
-
   // Initializing foot positions if not data has arrived
   if (first_plan_) {
     first_plan_ = false;
@@ -358,7 +354,16 @@ void LocalPlanner::getStateAndTwistInput() {
       past_footholds_msg_.feet[i].header = past_footholds_msg_.header;
       past_footholds_msg_.feet[i].traj_index = past_footholds_msg_.traj_index;
     }
+
+    initial_timestamp_ = ros::Time::now() - ros::Duration(1e-6);
   }
+
+  // Get plan index, compare with the previous one to check if this is a
+  // duplicated solve
+  int previous_plan_index = current_plan_index_;
+  quad_utils::getPlanIndex(initial_timestamp_, dt_, current_plan_index_,
+                           first_element_duration_);
+  same_plan_index_ = previous_plan_index == current_plan_index_;
 
   // Get the current body and foot positions into Eigen
   current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
@@ -428,9 +433,9 @@ void LocalPlanner::getStateAndTwistInput() {
   ref_body_plan_(0, 11) = cmd_vel_[5];
 
   // Only adaptive pitch
-  ref_body_plan_(0, 4) = local_footstep_planner_->getTerrainSlope(
-      current_state_(0), current_state_(1), current_state_(6),
-      current_state_(7));
+  // ref_body_plan_(0, 4) = local_footstep_planner_->getTerrainSlope(
+  //     current_state_(0), current_state_(1), current_state_(6),
+  //     current_state_(7));
 
   // Adaptive roll and pitch
   local_footstep_planner_->getTerrainSlope(
@@ -461,9 +466,9 @@ void LocalPlanner::getStateAndTwistInput() {
     ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);
 
     // Only adaptive pitch
-    ref_body_plan_(i, 4) = local_footstep_planner_->getTerrainSlope(
-        ref_body_plan_(i, 0), ref_body_plan_(i, 1), ref_body_plan_(i, 6),
-        ref_body_plan_(i, 7));
+    // ref_body_plan_(i, 4) = local_footstep_planner_->getTerrainSlope(
+    //     ref_body_plan_(i, 0), ref_body_plan_(i, 1), ref_body_plan_(i, 6),
+    //     ref_body_plan_(i, 7));
 
     // Adaptive roll and pitch
     local_footstep_planner_->getTerrainSlope(

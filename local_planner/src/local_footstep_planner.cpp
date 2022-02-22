@@ -182,13 +182,14 @@ void LocalFootstepPlanner::computeFootPlan(
         if (midstance < horizon_length_) {
           body_pos_midstance = body_plan.block<1, 3>(midstance, 0);
           body_rpy_midstance = body_plan.block<1, 3>(midstance, 3);
-          // grf_midstance = grf_plan.block<1, 3>(midstance, 3 * j);
+          grf_midstance = grf_plan.block<1, 3>(midstance, 3 * j);
         } else {
-          body_pos_midstance = body_plan.block<1, 3>(horizon_length_ - 1, 0) +
-                               body_plan.block<1, 3>(horizon_length_ - 1, 6) *
-                                   (midstance - (horizon_length_ - 1)) * dt_;
-          body_rpy_midstance = body_plan.block<1, 3>(horizon_length_ - 1, 3);
-          // grf_midstance = grf_plan.block<1, 3>(horizon_length_ - 1, 3 * j);
+          Eigen::VectorXd body_plan_midstance =
+              computeFutureState(midstance - (horizon_length_ - 1),
+                                 body_plan.row(horizon_length_ - 1));
+          body_pos_midstance = body_plan_midstance.segment(0, 3);
+          body_rpy_midstance = body_plan_midstance.segment(3, 3);
+          grf_midstance = grf_plan.block<1, 3>(horizon_length_ - 1, 3 * j);
         }
 
         // Get touchdown information for body state
@@ -204,17 +205,23 @@ void LocalFootstepPlanner::computeFootPlan(
         grid_map::Position hip_position_grid_map = {hip_position_midstance.x(),
                                                     hip_position_midstance.y()};
 
-        auto hip_height =
+        double hip_height =
             hip_position_midstance.z() -
             terrain_grid_.atPosition(
                 "z",
                 terrain_grid_.getClosestPositionInMap(hip_position_grid_map),
                 grid_map::InterpolationMethods::INTER_NEAREST);
 
-        centrifugal = (hip_height / 9.81) *
+        // Ref: Highly Dynamic Quadruped Locomotion via Whole-Body Impulse
+        // Control and Model Predictive Control
+        centrifugal = std::sqrt(hip_height / 9.81) / 2 *
                       body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
-        vel_tracking =
-            (hip_height / 9.81) * (body_vel_touchdown - ref_body_vel_touchdown);
+
+        // Ref: MIT Cheetah 3: Design and Control of a Robust, Dynamic Quadruped
+        // Robot
+        vel_tracking = std::sqrt(hip_height / 9.81) *
+                       (body_vel_touchdown - ref_body_vel_touchdown);
+
         // foot_position_grf =
         //     terrain_.projectToMap(hip_position_midstance, -1.0 *
         //     grf_midstance);
@@ -231,7 +238,7 @@ void LocalFootstepPlanner::computeFootPlan(
           ROS_WARN(
               "Foot position is outside the map. Steer the robot in "
               "another direction");
-          foot_positions = current_foot_positions_world_;
+          foot_positions = foot_positions_current;
           continue;
         }
         // Toe has 20cm radius so we need to shift the foot height from terrain
@@ -253,7 +260,6 @@ void LocalFootstepPlanner::computeFootPlan(
         // Note: this should get ignored for a foot in flight
         foot_positions.block<1, 3>(i, 3 * j) =
             getFootData(foot_positions, i - 1, j);
-        current_foot_positions_world_ = foot_positions;
       }
     }
   }
@@ -279,6 +285,34 @@ void LocalFootstepPlanner::computeFootPlan(
     Eigen::Vector3d foot_position_next =
         getFootData(foot_positions, i_touchdown, j);
     Eigen::Vector3d foot_velocity_next = Eigen::Vector3d::Zero();
+
+    // Compute the midair index
+    int midair = std::round(i_liftoff + swing_duration / 2);
+
+    // Initialize variables
+    Eigen::VectorXd body_plan_midair;
+    double swing_apex;
+
+    if (midair < 0) {
+      // If the midair is something in previous, take it from the memory
+      swing_apex = most_recent_foothold_msg.velocity.z;
+    } else {
+      // Otherwise, update it using the latest plan
+      body_plan_midair = body_plan.row(midair);
+
+      // Compute the swing apex
+      swing_apex = computeSwingApex(
+          j, body_plan_midair, foot_position_prev_nominal, foot_position_next);
+
+      // Update the memory, we borrow the past_footholds_msg since its velocity
+      // is unused
+      past_footholds_msg.feet[j].velocity.z = swing_apex;
+    }
+
+    // Compute the acceleration maximum
+    Eigen::Vector3d foot_acceleration_max = computeMaximumAcceleration(
+        foot_position_prev_nominal, Eigen::Vector3d::Zero(), foot_position_next,
+        Eigen::Vector3d::Zero(), swing_apex, swing_duration);
 
     // Loop through the horizon
     for (int i = 0; i < contact_schedule.size(); i++) {
@@ -313,14 +347,14 @@ void LocalFootstepPlanner::computeFootPlan(
             swing_duration = period_ - stance_duration;
 
             // Apply basic footstep heuristic, no searching
+            Eigen::VectorXd body_plan_midstance = computeFutureState(
+                (i_liftoff + swing_duration + 0.5 * stance_duration) -
+                    (horizon_length_ - 1),
+                body_plan.row(horizon_length_ - 1));
             Eigen::Vector3d body_pos_midstance =
-                body_plan.block<1, 3>(horizon_length_ - 1, 0) +
-                body_plan.block<1, 3>(horizon_length_ - 1, 6) *
-                    ((i_liftoff + swing_duration + 0.5 * stance_duration) -
-                     (horizon_length_ - 1)) *
-                    dt_;
+                body_plan_midstance.segment(0, 3);
             Eigen::Vector3d body_rpy_midstance =
-                body_plan.block<1, 3>(horizon_length_ - 1, 3);
+                body_plan_midstance.segment(3, 3);
             quadKD_->worldToNominalHipFKWorldFrame(
                 j, body_pos_midstance, body_rpy_midstance, foot_position_next);
 
@@ -338,6 +372,28 @@ void LocalFootstepPlanner::computeFootPlan(
             foot_position_next = getFootData(foot_positions, i_touchdown, j);
             swing_duration = i_touchdown - i_liftoff;
           }
+
+          // Compute the midair index
+          midair = std::round(i_liftoff + swing_duration / 2);
+          if (midair > horizon_length_ - 1) {
+            // Apply basic footstep heuristic, no searching
+            body_plan_midair = computeFutureState(
+                (i_liftoff + swing_duration / 2) - (horizon_length_ - 1),
+                body_plan.row(horizon_length_ - 1));
+          } else {
+            body_plan_midair = body_plan.row(midair);
+          }
+
+          // Compute the swing apex
+          swing_apex =
+              computeSwingApex(j, body_plan_midair, foot_position_prev_nominal,
+                               foot_position_next);
+
+          // Compute the acceleration maximum
+          foot_acceleration_max = computeMaximumAcceleration(
+              foot_position_prev_nominal, Eigen::Vector3d::Zero(),
+              foot_position_next, Eigen::Vector3d::Zero(), swing_apex,
+              swing_duration);
         } else if (i_liftoff < 0) {
           // If the leg is currently swinging, we interplate from the current
           // states
@@ -380,20 +436,6 @@ void LocalFootstepPlanner::computeFootPlan(
                            foot_position_next.y(), foot_velocity_next.y(),
                            interp_phase, interp_duration, foot_position.y(),
                            foot_velocity.y(), foot_acceleration.y());
-
-        // Compute hip height according to the MPC plan
-        Eigen::Matrix4d g_world_legbase;
-        quadKD_->worldToLegbaseFKWorldFrame(j, body_plan.row(i).segment(0, 3),
-                                            body_plan.row(i).segment(3, 3),
-                                            g_world_legbase);
-
-        // Update z to clear both footholds by the specified height under the
-        // constraints of hip height
-        double swing_apex =
-            std::min(ground_clearance_ - toe_radius +
-                         std::max(foot_position_prev_nominal.z(),
-                                  foot_position_next.z()),
-                     g_world_legbase(2, 3) - hip_clearance_);
 
         // Interplate z
         if (i_liftoff < 0) {
@@ -455,12 +497,19 @@ void LocalFootstepPlanner::computeFootPlan(
           }
         }
 
-        if (foot_acceleration.norm() > 5e1) {
-          // When the duration get shrinked, the acceleration might overshoot,
-          // hundred is a good bound, the nominal maximum acceleration should be
-          // around twenty
-          foot_acceleration = foot_acceleration.normalized() * 5e1;
-        }
+        // Apply the acceleration bounds
+        foot_acceleration.x() =
+            std::min(std::max(foot_acceleration.x(),
+                              -std::abs(foot_acceleration_max.x())),
+                     std::abs(foot_acceleration_max.x()));
+        foot_acceleration.y() =
+            std::min(std::max(foot_acceleration.y(),
+                              -std::abs(foot_acceleration_max.y())),
+                     std::abs(foot_acceleration_max.y()));
+        foot_acceleration.z() =
+            std::min(std::max(foot_acceleration.z(),
+                              -std::abs(foot_acceleration_max.z())),
+                     std::abs(foot_acceleration_max.z()));
 
         foot_state_msg.contact = false;
       }
@@ -571,15 +620,17 @@ Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
     if (obj > foothold_obj_threshold_) {
       // Add the offset back in and return this new foothold
       terrain_grid_.getPosition(*iterator, pos_valid);
+      // Shouldn't we update it?
       pos_valid += offset;
-      foot_position_valid << pos_valid.x(), pos_valid.y();
 
       if (!terrain_grid_.isInside(pos_valid)) {
         continue;
       }
-      terrain_grid_.atPosition("z", pos_valid,
-                               grid_map::InterpolationMethods::INTER_LINEAR) +
-          toe_radius;
+
+      foot_position_valid << pos_valid.x(), pos_valid.y(),
+          terrain_grid_.atPosition(
+              "z", pos_valid, grid_map::InterpolationMethods::INTER_LINEAR) +
+              toe_radius;
       return foot_position_valid;
     }
   }
