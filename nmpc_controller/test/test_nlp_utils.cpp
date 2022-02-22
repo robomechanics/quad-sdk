@@ -71,17 +71,30 @@ TEST(NMPCTest, testUtils) {
             << std::endl;
 
   // // Check against prior implementation
-  EXPECT_TRUE(nlp.nnz_jac_g_ == 4978);
-  EXPECT_TRUE(nlp.nnz_step_jac_g_[0] == 161);
-  EXPECT_TRUE(nlp.iRow_jac_g_.sum() == 2385295);
-  EXPECT_TRUE(nlp.jCol_jac_g_.sum() == 1755775);
-  EXPECT_TRUE(nlp.nnz_h_ == 2937);
-  EXPECT_TRUE(nlp.nnz_compact_h_ == 2543);
-  EXPECT_TRUE(nlp.nnz_step_hess_[0] == 101);
-  EXPECT_TRUE(nlp.iRow_h_.sum() == 863430);
-  EXPECT_TRUE(nlp.jCol_h_.sum() == 834003);
-  EXPECT_TRUE(nlp.iRow_compact_h_.sum() == 750935);
-  EXPECT_TRUE(nlp.jCol_compact_h_.sum() == 722543);
+  // EXPECT_TRUE(nlp.nnz_jac_g_ == 4978);
+  // EXPECT_TRUE(nlp.nnz_step_jac_g_[0] == 161);
+  // EXPECT_TRUE(nlp.iRow_jac_g_.sum() == 2385295);
+  // EXPECT_TRUE(nlp.jCol_jac_g_.sum() == 1755775);
+  // EXPECT_TRUE(nlp.nnz_h_ == 2937);
+  // EXPECT_TRUE(nlp.nnz_compact_h_ == 2543);
+  // EXPECT_TRUE(nlp.nnz_step_hess_[0] == 101);
+  // EXPECT_TRUE(nlp.iRow_h_.sum() == 863430);
+  // EXPECT_TRUE(nlp.jCol_h_.sum() == 834003);
+  // EXPECT_TRUE(nlp.iRow_compact_h_.sum() == 750935);
+  // EXPECT_TRUE(nlp.jCol_compact_h_.sum() == 722543);
+
+  // // Check against prior implementation
+  EXPECT_TRUE(nlp.nnz_jac_g_ == 4248);
+  EXPECT_TRUE(nlp.nnz_step_jac_g_[0] == 129);
+  EXPECT_TRUE(nlp.iRow_jac_g_.sum() == 2134776);
+  EXPECT_TRUE(nlp.jCol_jac_g_.sum() == 1583880);
+  EXPECT_TRUE(nlp.nnz_h_ == 1608);
+  EXPECT_TRUE(nlp.nnz_compact_h_ == 1539);
+  EXPECT_TRUE(nlp.nnz_step_hess_[0] == 43);
+  EXPECT_TRUE(nlp.iRow_h_.sum() == 474240);
+  EXPECT_TRUE(nlp.jCol_h_.sum() == 462000);
+  EXPECT_TRUE(nlp.iRow_compact_h_.sum() == 454092);
+  EXPECT_TRUE(nlp.jCol_compact_h_.sum() == 441852);
 
   // Check num vars when all complex elements
   complexity_schedule.fill(1);
