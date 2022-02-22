@@ -1,6 +1,9 @@
 ekf_estimator:
   joint_state_max_time: 20 # Milliseconds until we disregard last joint state message
   update_rate: 100
-  bias_x: 0.08 # actual measurement of x is 0.083616044
-  bias_y: 0.06 # actual measurement of y is 0.060205998
-  bias_z: -9.800917657 # actual measurement of z is 0.060205998
+  bias_x: 0.08 # actual measurement of bias_acc x is 0.083616044
+  bias_y: 0.06 # actual measurement of bias_acc y is 0.060205998
+  bias_z: -9.800917657 # actual measurement of bias_acc z is 0.060205998
+  bias_r: 0.00 # actual measurement of bias_gyro r is ??
+  bias_p: 0.00 # actual measurement of bias_gyro p is ??
+  bias_y: 0.00 # actual measurement of bias_gyro y is ??
