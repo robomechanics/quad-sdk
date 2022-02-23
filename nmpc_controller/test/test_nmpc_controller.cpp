@@ -54,6 +54,9 @@ TEST(NMPCTest, testTailMPC)
 	grf_plan_.col(8).fill(11.51 * 9.81 / 2);
 	grf_plan_.col(11).fill(11.51 * 9.81 / 2);
 
+	double time_ahead = 0;
+	bool same_plan_index = false;
+
 	std::chrono::steady_clock::time_point tic, toc;
 	tic = std::chrono::steady_clock::now();
 
@@ -66,12 +69,15 @@ TEST(NMPCTest, testTailMPC)
 									 foot_positions_body_,
 									 adpative_contact_schedule_,
 									 ref_ground_height,
+									 time_ahead,
+									 same_plan_index,
 									 body_plan_,
 									 grf_plan_);
 
 		toc = std::chrono::steady_clock::now();
 		std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(toc - tic).count() << "[µs]" << std::endl;
 		
+		current_state_ = body_plan_.row(1).transpose();
 		std::rotate(adpative_contact_schedule_.begin(), adpative_contact_schedule_.begin() + 1, adpative_contact_schedule_.end());
 	}
 

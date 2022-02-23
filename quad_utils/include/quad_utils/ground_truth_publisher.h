@@ -12,6 +12,7 @@
 #include <quad_msgs/RobotState.h>
 #include <quad_utils/ros_utils.h>
 #include <quad_utils/math_utils.h>
+#include <algorithm>
 
 //! Class to publish the ground truth state data
 /*!
@@ -62,6 +63,14 @@ private:
    */
   bool updateStep(quad_msgs::RobotState &new_state_est);
 
+  inline double getMedian(const std::vector<double> &v) {
+    auto v_sort = v;
+    auto m = v_sort.begin() + v_sort.size()/2;
+    std::nth_element(v_sort.begin(), m, v_sort.end());
+
+    return v_sort[v_sort.size()/2];
+  }
+
   /// Subscriber for joint encoder messages
   ros::Subscriber joint_encoder_sub_;
 
@@ -86,6 +95,12 @@ private:
   /// Update rate of the motion capture system
   double mocap_rate_;
 
+  /// Update rate of the imu
+  double imu_rate_;
+
+  /// Update rate of the ground truth publisher node
+  double update_rate_;
+
   /// Last state estimate
   quad_msgs::RobotState last_state_est_;
 
@@ -102,13 +117,32 @@ private:
   geometry_msgs::PoseStamped::ConstPtr last_mocap_msg_;
   
   /// Best estimate of velocity from mocap diff
-  geometry_msgs::Vector3 mocap_vel_estimate_;
+  Eigen::Vector3d imu_vel_estimate_;
+  Eigen::Vector3d mocap_vel_estimate_;
 
   /// Kinematics object
   std::shared_ptr<quad_utils::QuadKD>quadKD_;
 
-  /// Velocity update weight on exponential decay filter
-  double alpha_;
+  /// Velocity filter time constant
+  double filter_time_constant_;
+
+  /// Maximum time elapsed between mocap messages before committing to new message
+  double mocap_dropout_threshold_;
+
+  /// Maximum time elapsed between imu messages before committing to new message
+  double imu_dropout_threshold_;
+
+  // Vector containing history of velocity measurements
+  std::vector<std::vector<double> > vel_hist_;
+
+  /// Window length for median filter
+  const int median_filter_window_ = 3;
+
+  /// Linear velocity filter type
+  std::string vel_filter_;
+
+  /// Time of last mocap message
+  ros::Time t_mocap_callback_;
 
   /// RML standard joints order
   std::vector<int> joints_order_;

@@ -31,8 +31,8 @@ SOFTWARE.
   <arg name="software"        default="true"/>
   <arg name="controller"      default="inverse_dynamics"/>
   <arg name="live_plot"       default="false"/>
-  <arg name="mblink"          default="false"/>
   <arg name="world"           default="flat"/>
+  <arg name="rotors"          default="false"/>
 
   <include file="$(find quad_utils)/launch/mapping.launch" >
     <arg name="input_type" value="mesh"/>
@@ -44,8 +44,9 @@ SOFTWARE.
       <arg name="live_plot" value="$(arg live_plot)"/>
     </include>
     <include file="$(find quad_utils)/launch/robot_driver.launch">
-      <arg name="mblink" value="$(arg mblink)"/>
       <arg name="controller" value="$(arg controller)"/>
+      <arg name="mocap" value="false"/>
+      <arg name="is_hw" value="false"/>
     </include>
     <!-- <include file="$(find quad_utils)/launch/planning.launch">
       <arg name="global_planner" value="$(arg global_planner)"/>
@@ -72,7 +73,14 @@ SOFTWARE.
 
   <!-- Load the parameters and the sdf description -->
   <include file="$(find quad_utils)/launch/load_params.launch" />
-  <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
+  <group if="$(arg rotors)">
+    <!-- use more accurate but slower rotor model -->
+    <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit_rotors.sdf" />
+  </group>
+  <group unless="$(arg rotors)">
+    <!-- use more accurate but slower rotor model -->
+    <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
+  </group>
 
   <!-- Spawn SDF model -->
   <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.5" output="screen"/>

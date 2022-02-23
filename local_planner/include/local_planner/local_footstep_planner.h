@@ -42,17 +42,23 @@ class LocalFootstepPlanner {
      * @param[in] period The period of a gait cycle in number of timesteps
      * @param[in] horizon_length The length of the planning horizon in number of timesteps
      */
-    void setTemporalParams(double dt, int period, int horizon_length);
+    void setTemporalParams(double dt, int period, int horizon_length, 
+      const std::vector<double> &duty_cycles, const std::vector<double> &phase_offsets);
 
     /**
      * @brief Set the spatial parameters of this object
-     * @param[in] ground_clearance The foot clearance over adjacent footholds in cm
+     * @param[in] ground_clearance The foot clearance over adjacent footholds in m
+     * @param[in] hip_clearance The foot clearance under hip in m
      * @param[in] standing_error_threshold Threshold of body error from desired goal to start stepping
      * @param[in] grf_weight Weight on GRF projection (0 to 1)
      * @param[in] kinematics Kinematics class for computations
+     * @param[in] foothold_search_radius Radius to locally search for valid footholds (m)
+     * @param[in] foothold_obj_threshold Minimum objective function value for valid foothold
+     * @param[in] obj_fun_layer Terrain layer for foothold search
      */
-    void setSpatialParams(double ground_clearance, double grf_weight,double standing_error_threshold,
-      std::shared_ptr<quad_utils::QuadKD> kinematics);
+    void setSpatialParams(double ground_clearance, double hip_clearance, double grf_weight,double standing_error_threshold,
+      std::shared_ptr<quad_utils::QuadKD> kinematics, double foothold_search_radius, 
+      double foothold_obj_threshold, std::string obj_fun_layer);
 
     /**
      * @brief Transform a vector of foot positions from the world to the body frame
@@ -121,13 +127,15 @@ class LocalFootstepPlanner {
      * @param[in] contact_schedule Current contact schedule
      * @param[in] foot_positions Foot positions over the horizon
      * @param[in] current_plan_index Current index in the global plan
+     * @param[in] body_plan Body plan from MPC
+     * @param[in] time_ahead Time duration to the next plan index
      * @param[out] past_footholds_msg Message for previous footholds
      * @param[out] future_footholds_msg Message for future (planned) footholds
      * @param[out] foot_plan_continuous_msg Message for continuous foot trajectories
      */
     void computeFootPlanMsgs(
       const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
-      int current_plan_index, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+      int current_plan_index, const Eigen::MatrixXd &body_plan, const double &time_ahead, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
       quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
       quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
 
@@ -210,12 +218,21 @@ class LocalFootstepPlanner {
      * @param[in] foot_position_next Next foothold
      * @param[in] swing_phase Phase variable for swing phase (as a fraction)
      * @param[in] swing_duration Duration of swing (in timesteps)
+     * @param[in] body_plan Body plan of current step from MPC
+     * @param[in] leg_index Leg index
      * @param[out] foot_position Position of swing foot
      * @param[out] foot_velocity Velocity of swing foot
      */
     void computeSwingFootState(const Eigen::Vector3d &foot_position_prev,
-      const Eigen::Vector3d &foot_position_next, double swing_phase, int swing_duration,
+      const Eigen::Vector3d &foot_position_next, double swing_phase, int swing_duration, const Eigen::VectorXd &body_plan, int leg_index,
       Eigen::Vector3d &foot_position, Eigen::Vector3d &foot_velocity, Eigen::Vector3d &foot_acceleration);
+
+    /**
+     * @brief Search locally around foothold for optimal location
+     * @param[in] foot_position_prev Foothold to optimize around
+     * @return Optimized foothold
+     */
+    Eigen::Vector3d getNearestValidFoothold(const Eigen::Vector3d &foot_position);
 
     /**
      * @brief Extract foot data from the matrix
@@ -306,7 +323,7 @@ class LocalFootstepPlanner {
     int horizon_length_;
 
     /// Phase offsets for the touchdown of each foot
-    std::vector<double> phase_offsets_ = {0,0.5,0.5,0};
+    std::vector<double> phase_offsets_ = {0,0.5,0.5,0.0};
 
     /// Duty cycles for the stance duration of each foot
     std::vector<double> duty_cycles_ = {0.5,0.5,0.5,0.5};
@@ -316,6 +333,9 @@ class LocalFootstepPlanner {
 
     /// Ground clearance
     double ground_clearance_;
+
+    /// Hip clearance
+    double hip_clearance_;
 
     /// Weighting on the projection of the grf
     double grf_weight_;
@@ -334,6 +354,15 @@ class LocalFootstepPlanner {
 
     /// Threshold of body error from desired goal to start stepping
     double standing_error_threshold_ = 0;
+
+    /// Radius to locally search for valid footholds (m)
+    double foothold_search_radius_;
+
+    /// Minimum objective function value for valid foothold
+    double foothold_obj_threshold_;
+
+    /// Terrain layer for foothold search
+    std::string obj_fun_layer_;
 
 };
 
