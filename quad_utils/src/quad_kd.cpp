@@ -273,12 +273,10 @@ void QuadKD::worldToFootFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
 }
 
 void QuadKD::worldToKneeFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
-                             Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state,
-                             Eigen::Matrix4d &g_world_knee) const
-{
-
-  if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0)
-  {
+                                     Eigen::Vector3d body_rpy,
+                                     Eigen::Vector3d joint_state,
+                                     Eigen::Matrix4d &g_world_knee) const {
+  if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0) {
     throw std::runtime_error("Leg index is outside valid range");
   }
 
@@ -295,40 +293,38 @@ void QuadKD::worldToKneeFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
   Eigen::Matrix4d g_world_legbase;
   worldToLegbaseFKWorldFrame(leg_index, body_pos, body_rpy, g_world_legbase);
 
-  g_legbase_abad = createAffineMatrix(abad_offset_,
-                                      Eigen::AngleAxisd(joint_state[0], Eigen::Vector3d::UnitX()));
+  g_legbase_abad = createAffineMatrix(
+      abad_offset_,
+      Eigen::AngleAxisd(joint_state[0], Eigen::Vector3d::UnitX()));
 
-  g_abad_hip = createAffineMatrix(hip_offset,
-                                  Eigen::AngleAxisd(joint_state[1], -Eigen::Vector3d::UnitY()));
+  g_abad_hip = createAffineMatrix(
+      hip_offset, Eigen::AngleAxisd(joint_state[1], -Eigen::Vector3d::UnitY()));
 
-  g_hip_knee = createAffineMatrix(knee_offset_,
-                                  Eigen::AngleAxisd(joint_state[2], Eigen::Vector3d::UnitY()));
+  g_hip_knee = createAffineMatrix(
+      knee_offset_,
+      Eigen::AngleAxisd(joint_state[2], Eigen::Vector3d::UnitY()));
 
   // Get foot transform in world frame
-  g_world_knee = g_world_legbase * g_legbase_abad *
-                 g_abad_hip * g_hip_knee;
+  g_world_knee = g_world_legbase * g_legbase_abad * g_abad_hip * g_hip_knee;
 }
 
 void QuadKD::worldToKneeFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
-                             Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state,
-                             Eigen::Vector3d &knee_pos_world) const
-{
-
+                                     Eigen::Vector3d body_rpy,
+                                     Eigen::Vector3d joint_state,
+                                     Eigen::Vector3d &knee_pos_world) const {
   Eigen::Matrix4d g_world_knee;
-  worldToKneeFKWorldFrame(leg_index, body_pos, body_rpy, joint_state, g_world_knee);
+  worldToKneeFKWorldFrame(leg_index, body_pos, body_rpy, joint_state,
+                          g_world_knee);
 
   // Extract cartesian position of foot
   knee_pos_world = g_world_knee.block<3, 1>(0, 3);
 }
 
-
 bool QuadKD::worldToFootIKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
-                             Eigen::Vector3d body_rpy, Eigen::Vector3d foot_pos_world,
-                             Eigen::Vector3d &joint_state) const
-{
-
-  if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0)
-  {
+                                     Eigen::Vector3d body_rpy,
+                                     Eigen::Vector3d foot_pos_world,
+                                     Eigen::Vector3d &joint_state) const {
+  if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0) {
     throw std::runtime_error("Leg index is outside valid range");
   }
 
@@ -355,10 +351,9 @@ bool QuadKD::worldToFootIKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
   return legbaseToFootIKLegbaseFrame(leg_index, foot_pos_legbase, joint_state);
 }
 
-bool QuadKD::legbaseToFootIKLegbaseFrame(int leg_index, Eigen::Vector3d foot_pos_legbase,
-                             Eigen::Vector3d &joint_state) const
-{
-
+bool QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
+                                         Eigen::Vector3d foot_pos_legbase,
+                                         Eigen::Vector3d &joint_state) const {
   // Initialize exact bool
   bool is_exact = true;
 
@@ -406,11 +401,12 @@ bool QuadKD::legbaseToFootIKLegbaseFrame(int leg_index, Eigen::Vector3d foot_pos
 
   // Check reachibility for hip
   double acos_eps = 1.0;
-  double temp2 = (l1_ * l1_ + x * x + z * z - l2_ * l2_) / (2 * l1_ * sqrt(x * x + z * z));
-  if (abs(temp2) > acos_eps)
-  {
-    ROS_DEBUG_THROTTLE(0.5, "Foot location too far for hip, choosing closest"
-                            " alternative \n");
+  double temp2 =
+      (l1_ * l1_ + x * x + z * z - l2_ * l2_) / (2 * l1_ * sqrt(x * x + z * z));
+  if (abs(temp2) > acos_eps) {
+    ROS_DEBUG_THROTTLE(0.5,
+                       "Foot location too far for hip, choosing closest"
+                       " alternative \n");
     is_exact = false;
     temp2 = std::max(std::min(temp2, acos_eps), -acos_eps);
   }
@@ -418,10 +414,10 @@ bool QuadKD::legbaseToFootIKLegbaseFrame(int leg_index, Eigen::Vector3d foot_pos
   // Check reachibility for knee
   double temp3 = (l1_ * l1_ + l2_ * l2_ - x * x - z * z) / (2 * l1_ * l2_);
 
-  if (temp3 > acos_eps || temp3 < -acos_eps)
-  {
-    ROS_DEBUG_THROTTLE(0.5, "Foot location too far for knee, choosing closest"
-                            " alternative \n");
+  if (temp3 > acos_eps || temp3 < -acos_eps) {
+    ROS_DEBUG_THROTTLE(0.5,
+                       "Foot location too far for knee, choosing closest"
+                       " alternative \n");
     is_exact = false;
 
     temp3 = std::max(std::min(temp3, acos_eps), -acos_eps);
@@ -689,10 +685,12 @@ void QuadKD::computeInverseDynamics(const Eigen::VectorXd &state_pos,
 }
 
 bool QuadKD::convertCentroidalToFullBody(const Eigen::VectorXd &body_state,
-  const Eigen::VectorXd &foot_positions, const Eigen::VectorXd &foot_velocities,
-  const Eigen::VectorXd &grfs, Eigen::VectorXd &joint_positions,
-  Eigen::VectorXd &joint_velocities, Eigen::VectorXd &torques) {
-
+                                         const Eigen::VectorXd &foot_positions,
+                                         const Eigen::VectorXd &foot_velocities,
+                                         const Eigen::VectorXd &grfs,
+                                         Eigen::VectorXd &joint_positions,
+                                         Eigen::VectorXd &joint_velocities,
+                                         Eigen::VectorXd &torques) {
   bool is_exact = true;
 
   // Extract kinematic quantities
@@ -703,16 +701,17 @@ bool QuadKD::convertCentroidalToFullBody(const Eigen::VectorXd &body_state,
   // Perform IK for each leg
   for (int i = 0; i < num_feet_; i++) {
     Eigen::Vector3d leg_joint_state;
-    Eigen::Vector3d foot_pos = foot_positions.segment<3>(3*i);
-    is_exact = is_exact && worldToFootIKWorldFrame(i,body_pos,body_rpy,foot_pos,leg_joint_state);
-    joint_positions.segment<3>(3*i) = leg_joint_state;
+    Eigen::Vector3d foot_pos = foot_positions.segment<3>(3 * i);
+    is_exact = is_exact && worldToFootIKWorldFrame(i, body_pos, body_rpy,
+                                                   foot_pos, leg_joint_state);
+    joint_positions.segment<3>(3 * i) = leg_joint_state;
   }
 
   auto t_ik = std::chrono::steady_clock::now();
 
   // Load state positions
   Eigen::VectorXd state_positions(18), state_velocities(18);
-  state_positions << joint_positions, body_pos, body_rpy;  
+  state_positions << joint_positions, body_pos, body_rpy;
 
   // Compute jacobian
   Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
@@ -722,21 +721,28 @@ bool QuadKD::convertCentroidalToFullBody(const Eigen::VectorXd &body_state,
 
   // Compute joint velocities
   joint_velocities = jacobian.leftCols(12).colPivHouseholderQr().solve(
-    foot_velocities - jacobian.rightCols(6)*body_state.tail(6));
+      foot_velocities - jacobian.rightCols(6) * body_state.tail(6));
   state_velocities << joint_velocities, body_state.tail(6);
 
   auto t_ik_vel = std::chrono::steady_clock::now();
 
-  torques = -jacobian.leftCols(12).transpose()*grfs;
+  torques = -jacobian.leftCols(12).transpose() * grfs;
 
-  // computeInverseDynamics(state_positions, state_velocities, foot_acc, grfs, contact_mode, torques);
+  // computeInverseDynamics(state_positions, state_velocities, foot_acc, grfs,
+  // contact_mode, torques);
 
   auto t_id = std::chrono::steady_clock::now();
 
-  std::chrono::duration<double> t_diff_ik = std::chrono::duration_cast<std::chrono::duration<double>>(t_ik - t_start);
-  std::chrono::duration<double> t_diff_jacob = std::chrono::duration_cast<std::chrono::duration<double>>(t_jacob - t_ik);
-  std::chrono::duration<double> t_diff_ik_vel = std::chrono::duration_cast<std::chrono::duration<double>>(t_ik_vel - t_jacob);
-  std::chrono::duration<double> t_diff_id = std::chrono::duration_cast<std::chrono::duration<double>>(t_id - t_ik_vel);
+  std::chrono::duration<double> t_diff_ik =
+      std::chrono::duration_cast<std::chrono::duration<double>>(t_ik - t_start);
+  std::chrono::duration<double> t_diff_jacob =
+      std::chrono::duration_cast<std::chrono::duration<double>>(t_jacob - t_ik);
+  std::chrono::duration<double> t_diff_ik_vel =
+      std::chrono::duration_cast<std::chrono::duration<double>>(t_ik_vel -
+                                                                t_jacob);
+  std::chrono::duration<double> t_diff_id =
+      std::chrono::duration_cast<std::chrono::duration<double>>(t_id -
+                                                                t_ik_vel);
 
   // std::cout << "t_diff_ik = " << t_diff_ik.count() << std::endl;
   // std::cout << "t_diff_jacob = " << t_diff_jacob.count() << std::endl;
@@ -746,51 +752,58 @@ bool QuadKD::convertCentroidalToFullBody(const Eigen::VectorXd &body_state,
   return is_exact;
 }
 
-bool QuadKD::applyMotorModel(const Eigen::VectorXd &torques, Eigen::VectorXd &constrained_torques) {
-  
+bool QuadKD::applyMotorModel(const Eigen::VectorXd &torques,
+                             Eigen::VectorXd &constrained_torques) {
   // Constrain torques to max values
-  constrained_torques.resize(torques.size());  
+  constrained_torques.resize(torques.size());
   constrained_torques = torques.cwiseMax(-tau_max_).cwiseMin(tau_max_);
 
   // Check if torques was modified
   return constrained_torques.isApprox(torques);
 }
 
-bool QuadKD::applyMotorModel(const Eigen::VectorXd &joint_torques, const Eigen::VectorXd &joint_velocities,
-  Eigen::VectorXd &constrained_joint_torques) {
-  
+bool QuadKD::applyMotorModel(const Eigen::VectorXd &joint_torques,
+                             const Eigen::VectorXd &joint_velocities,
+                             Eigen::VectorXd &constrained_joint_torques) {
   // Constrain torques to max values
-  Eigen::VectorXd constraint_violation(joint_torques.size()); 
-  constrained_joint_torques.resize(joint_torques.size());  
-  constrained_joint_torques = joint_torques.cwiseMax(-tau_max_).cwiseMin(tau_max_);
+  Eigen::VectorXd constraint_violation(joint_torques.size());
+  constrained_joint_torques.resize(joint_torques.size());
+  constrained_joint_torques =
+      joint_torques.cwiseMax(-tau_max_).cwiseMin(tau_max_);
 
   // Apply linear motor model
   Eigen::VectorXd emf = joint_velocities.cwiseProduct(mm_slope_);
-  constrained_joint_torques = constrained_joint_torques.cwiseMax(-tau_max_ - emf).cwiseMin(tau_max_ - emf);
+  constrained_joint_torques =
+      constrained_joint_torques.cwiseMax(-tau_max_ - emf)
+          .cwiseMin(tau_max_ - emf);
 
   // Check if torques were modified
   return constrained_joint_torques.isApprox(joint_torques);
 }
 
-bool QuadKD::isValidFullState(const Eigen::VectorXd &body_state, const Eigen::VectorXd &joint_state,
-  const Eigen::VectorXd &joint_torques, const grid_map::GridMap &terrain,
-  Eigen::VectorXd &state_violation, Eigen::VectorXd &control_violation) {
-
+bool QuadKD::isValidFullState(const Eigen::VectorXd &body_state,
+                              const Eigen::VectorXd &joint_state,
+                              const Eigen::VectorXd &joint_torques,
+                              const grid_map::GridMap &terrain,
+                              Eigen::VectorXd &state_violation,
+                              Eigen::VectorXd &control_violation) {
   // Check state constraints
   // Kinematics
   state_violation.setZero(num_feet_);
   for (int i = 0; i < num_feet_; i++) {
     Eigen::Vector3d knee_pos_world;
-    worldToKneeFKWorldFrame(i,body_state.segment<3>(0),body_state.segment<3>(3),
-      joint_state.segment<3>(3*i),knee_pos_world);
-    state_violation[i] = getGroundClearance(knee_pos_world,terrain);
+    worldToKneeFKWorldFrame(i, body_state.segment<3>(0),
+                            body_state.segment<3>(3),
+                            joint_state.segment<3>(3 * i), knee_pos_world);
+    state_violation[i] = getGroundClearance(knee_pos_world, terrain);
   }
   bool state_valid = (state_violation.array() >= 0).all();
 
   // Check control constraints
   // Motor model
   Eigen::VectorXd constrained_joint_torques(12);
-  bool control_valid = applyMotorModel(joint_torques, joint_state.tail(12), constrained_joint_torques);
+  bool control_valid = applyMotorModel(joint_torques, joint_state.tail(12),
+                                       constrained_joint_torques);
   control_violation.setZero(joint_torques.size());
   control_violation = -(constrained_joint_torques - joint_torques).cwiseAbs();
 
@@ -798,20 +811,21 @@ bool QuadKD::isValidFullState(const Eigen::VectorXd &body_state, const Eigen::Ve
   return (state_valid && control_valid);
 }
 
-bool QuadKD::isValidCentroidalState(const Eigen::VectorXd &body_state,
-  const Eigen::VectorXd &foot_positions, const Eigen::VectorXd &foot_velocities,
-  const Eigen::VectorXd &grfs, const grid_map::GridMap &terrain,
-  Eigen::VectorXd &joint_positions, Eigen::VectorXd &joint_velocities, Eigen::VectorXd &joint_torques,
-  Eigen::VectorXd &state_violation, Eigen::VectorXd &control_violation) {
-
+bool QuadKD::isValidCentroidalState(
+    const Eigen::VectorXd &body_state, const Eigen::VectorXd &foot_positions,
+    const Eigen::VectorXd &foot_velocities, const Eigen::VectorXd &grfs,
+    const grid_map::GridMap &terrain, Eigen::VectorXd &joint_positions,
+    Eigen::VectorXd &joint_velocities, Eigen::VectorXd &joint_torques,
+    Eigen::VectorXd &state_violation, Eigen::VectorXd &control_violation) {
   // Convert to full
-  bool is_exact = convertCentroidalToFullBody(body_state,foot_positions,foot_velocities,grfs,
-      joint_positions,joint_velocities,joint_torques);
-  
+  bool is_exact = convertCentroidalToFullBody(
+      body_state, foot_positions, foot_velocities, grfs, joint_positions,
+      joint_velocities, joint_torques);
+
   Eigen::VectorXd joint_state(24);
-  joint_state << joint_positions,joint_velocities;
-  bool is_valid = isValidFullState(body_state, joint_state, joint_torques, terrain, state_violation,
-    control_violation);
+  joint_state << joint_positions, joint_velocities;
+  bool is_valid = isValidFullState(body_state, joint_state, joint_torques,
+                                   terrain, state_violation, control_violation);
 
   return (is_exact && is_valid);
 }

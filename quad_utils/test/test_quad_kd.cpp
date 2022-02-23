@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <ros/ros.h>
 
+#include <grid_map_core/grid_map_core.hpp>
 #include "quad_utils/quad_kd.h"
 #include "quad_utils/ros_utils.h"
 
@@ -378,7 +379,6 @@ TEST(KinematicsTest, testBodyToFootFK) {
 }
 
 TEST(KinematicsTest, testMotorModel) {
-
   // Declare kinematics object
   QuadKD quad_kd;
 
@@ -387,12 +387,14 @@ TEST(KinematicsTest, testMotorModel) {
   Eigen::VectorXd invalid_input(12);
   Eigen::VectorXd constrained_input(12);
 
-  state_vel << 0,0,0,10,10,10,0,0,0,10,10,10;
-  valid_input << 10,10,10,10,10,10,-10,-10,-10,-10,-10,-10;
-  invalid_input << 40,10,10,10,10,10,-10,-10,-10,-10,-10,-10;
+  state_vel << 0, 0, 0, 10, 10, 10, 0, 0, 0, 10, 10, 10;
+  valid_input << 10, 10, 10, 10, 10, 10, -10, -10, -10, -10, -10, -10;
+  invalid_input << 40, 10, 10, 10, 10, 10, -10, -10, -10, -10, -10, -10;
 
-  bool valid_result = quad_kd.applyMotorModel(valid_input, state_vel, constrained_input);
-  bool invalid_result = quad_kd.applyMotorModel(invalid_input, state_vel, constrained_input);
+  bool valid_result =
+      quad_kd.applyMotorModel(valid_input, state_vel, constrained_input);
+  bool invalid_result =
+      quad_kd.applyMotorModel(invalid_input, state_vel, constrained_input);
 
   EXPECT_TRUE(valid_result == true);
   EXPECT_TRUE(invalid_result == false);
@@ -402,20 +404,23 @@ TEST(KinematicsTest, testMotorModel) {
   auto t_start = std::chrono::steady_clock::now();
   for (int i = 0; i < N; i++) {
     count++;
-    bool valid_result = quad_kd.applyMotorModel(valid_input, state_vel, constrained_input);
+    bool valid_result =
+        quad_kd.applyMotorModel(valid_input, state_vel, constrained_input);
   }
   auto t_end = std::chrono::steady_clock::now();
 
-  std::chrono::duration<double> t_diff = std::chrono::duration_cast<std::chrono::duration<double>>(t_end - t_start);
-  double average_time = t_diff.count()/count;
+  std::chrono::duration<double> t_diff =
+      std::chrono::duration_cast<std::chrono::duration<double>>(t_end -
+                                                                t_start);
+  double average_time = t_diff.count() / count;
 
-  std::cout << "Average applyMotorModel time = " << average_time << " s" << std::endl;
+  std::cout << "Average applyMotorModel time = " << average_time << " s"
+            << std::endl;
 
-  EXPECT_TRUE(average_time<=1e-6);
+  EXPECT_TRUE(average_time <= 1e-6);
 }
 
 TEST(KinematicsTest, testConvertCentroidalToFullBody) {
-  
   // Declare kinematics object
   QuadKD quad_kd;
 
@@ -436,7 +441,8 @@ TEST(KinematicsTest, testConvertCentroidalToFullBody) {
   // Define terrain map
   grid_map::GridMap map({"z"});
   double map_height = 0;
-  map.setGeometry(grid_map::Length(10.0, 10.0), 0.1, grid_map::Position(0.0, 0.0));
+  map.setGeometry(grid_map::Length(10.0, 10.0), 0.1,
+                  grid_map::Position(0.0, 0.0));
   for (grid_map::GridMapIterator it(map); !it.isPastEnd(); ++it) {
     grid_map::Position position;
     map.getPosition(*it, position);
@@ -445,14 +451,14 @@ TEST(KinematicsTest, testConvertCentroidalToFullBody) {
 
   int N_yaw = 10;
   for (int i = 0; i < N_yaw; i++) {
-
     // Define the nominal standing height and random x,y,yaw
     double h = 0.3;
-    double yaw = 2*M_PI*(double)rand()/RAND_MAX - M_PI;
-    double x = 2*(double)rand()/RAND_MAX - 1;
-    double y = 2*(double)rand()/RAND_MAX - 1;
-    grid_map::Position pos = {x,y};
-    body_state << x,y,h + map.atPosition("z",pos),0,0,yaw,0,0,0,0,0,0;
+    double yaw = 2 * M_PI * (double)rand() / RAND_MAX - M_PI;
+    double x = 2 * (double)rand() / RAND_MAX - 1;
+    double y = 2 * (double)rand() / RAND_MAX - 1;
+    grid_map::Position pos = {x, y};
+    body_state << x, y, h + map.atPosition("z", pos), 0, 0, yaw, 0, 0, 0, 0, 0,
+        0;
 
     // Extract components of the state
     Eigen::Vector3d body_pos = body_state.segment<3>(0);
@@ -462,16 +468,17 @@ TEST(KinematicsTest, testConvertCentroidalToFullBody) {
     // Solve FK for nominal joint angles to get foot positions
     for (int i = 0; i < 4; i++) {
       Eigen::Vector3d nominal_hip_pos_world;
-      quad_kd.worldToNominalHipFKWorldFrame(i,body_pos, body_rpy, nominal_hip_pos_world);
+      quad_kd.worldToNominalHipFKWorldFrame(i, body_pos, body_rpy,
+                                            nominal_hip_pos_world);
       nominal_hip_pos_world[2] = 0;
-      foot_positions.segment<3>(3*i) = nominal_hip_pos_world;
+      foot_positions.segment<3>(3 * i) = nominal_hip_pos_world;
     }
 
     // Define dynamic parameters for a trot
     double m = 11.5;
     double g = 9.81;
-    grfs << 0,0,0.5*m*g,0,0,0,0,0,0,0,0,0.5*m*g;
-    contact_mode = {1,0,0,1};
+    grfs << 0, 0, 0.5 * m * g, 0, 0, 0, 0, 0, 0, 0, 0, 0.5 * m * g;
+    contact_mode = {1, 0, 0, 1};
 
     // Define foot velocities (feet not in contact have upwards velocity)
     foot_velocities.setZero();
@@ -481,43 +488,45 @@ TEST(KinematicsTest, testConvertCentroidalToFullBody) {
     foot_acc.setZero();
 
     // Perform conversion
-    // quad_kd.convertCentroidalToFullBody(body_state,foot_positions,foot_velocities,
-    //   grfs, foot_acc, contact_mode,joint_positions,joint_velocities,torques);
-    bool is_exact = quad_kd.convertCentroidalToFullBody(body_state,foot_positions,foot_velocities,grfs,
-      joint_positions,joint_velocities,torques);
+    bool is_exact = quad_kd.convertCentroidalToFullBody(
+        body_state, foot_positions, foot_velocities, grfs, joint_positions,
+        joint_velocities, torques);
 
     // Compute expected joint positions
-    double l1 = quad_kd.getLinkLength(0,2);
+    double l1 = quad_kd.getLinkLength(0, 2);
     Eigen::VectorXd joint_positions_expected(12), joint_velocities_expected(12);
-    joint_positions_expected << 0,asin(0.5*h/l1),2*asin(0.5*h/l1),
-      0,asin(0.5*h/l1),2*asin(0.5*h/l1),
-      0,asin(0.5*h/l1),2*asin(0.5*h/l1),
-      0,asin(0.5*h/l1),2*asin(0.5*h/l1);
+    joint_positions_expected << 0, asin(0.5 * h / l1), 2 * asin(0.5 * h / l1),
+        0, asin(0.5 * h / l1), 2 * asin(0.5 * h / l1), 0, asin(0.5 * h / l1),
+        2 * asin(0.5 * h / l1), 0, asin(0.5 * h / l1), 2 * asin(0.5 * h / l1);
 
     // Compute expected joint velocities
-    double hip_vel_expected = -0.5*foot_vel_z/(l1*cos(joint_positions_expected[4]));
-    double knee_vel_expected = 2*hip_vel_expected;
-    joint_velocities_expected << 0,0,0,0,hip_vel_expected,knee_vel_expected,
-    0,hip_vel_expected,knee_vel_expected,0,0,0;
-    
+    double hip_vel_expected =
+        -0.5 * foot_vel_z / (l1 * cos(joint_positions_expected[4]));
+    double knee_vel_expected = 2 * hip_vel_expected;
+    joint_velocities_expected << 0, 0, 0, 0, hip_vel_expected,
+        knee_vel_expected, 0, hip_vel_expected, knee_vel_expected, 0, 0, 0;
+
     // Check joint positions and velocities match
     EXPECT_TRUE(is_exact);
     EXPECT_TRUE(joint_positions.isApprox(joint_positions_expected));
     EXPECT_TRUE(joint_velocities.isApprox(joint_velocities_expected));
 
     // Check validity
-    bool is_state_valid = quad_kd.isValidCentroidalState(body_state,foot_positions,foot_velocities,
-      grfs,map, state_violation, control_violation);
+    bool is_state_valid = quad_kd.isValidCentroidalState(
+        body_state, foot_positions, foot_velocities, grfs, map, joint_positions,
+        joint_velocities, torques, state_violation, control_violation);
     EXPECT_TRUE(is_state_valid);
 
     body_state[2] += 0.5;
-    is_exact = quad_kd.convertCentroidalToFullBody(body_state,foot_positions,foot_velocities,grfs,
-      joint_positions,joint_velocities,torques);
+    is_exact = quad_kd.convertCentroidalToFullBody(
+        body_state, foot_positions, foot_velocities, grfs, joint_positions,
+        joint_velocities, torques);
     EXPECT_FALSE(is_exact);
 
     // Check validity
-    is_state_valid = quad_kd.isValidCentroidalState(body_state,foot_positions,foot_velocities,grfs,
-      map, state_violation, control_violation);
+    is_state_valid = quad_kd.isValidCentroidalState(
+        body_state, foot_positions, foot_velocities, grfs, map, joint_positions,
+        joint_velocities, torques, state_violation, control_violation);
     EXPECT_FALSE(is_state_valid);
   }
 
@@ -532,15 +541,19 @@ TEST(KinematicsTest, testConvertCentroidalToFullBody) {
   auto t_start = std::chrono::steady_clock::now();
   for (int i = 0; i < N; i++) {
     count++;
-    quad_kd.convertCentroidalToFullBody(body_state,foot_positions,foot_velocities,grfs,
-      joint_positions,joint_velocities,torques);
+    quad_kd.convertCentroidalToFullBody(body_state, foot_positions,
+                                        foot_velocities, grfs, joint_positions,
+                                        joint_velocities, torques);
   }
   auto t_end = std::chrono::steady_clock::now();
 
-  std::chrono::duration<double> t_diff = std::chrono::duration_cast<std::chrono::duration<double>>(t_end - t_start);
-  double average_time = t_diff.count()/count;
+  std::chrono::duration<double> t_diff =
+      std::chrono::duration_cast<std::chrono::duration<double>>(t_end -
+                                                                t_start);
+  double average_time = t_diff.count() / count;
 
-  std::cout << "Average convertCentroidalToFullBody time = " << average_time << " s" << std::endl;
+  std::cout << "Average convertCentroidalToFullBody time = " << average_time
+            << " s" << std::endl;
 
   EXPECT_TRUE(average_time < 1e-4);
 }

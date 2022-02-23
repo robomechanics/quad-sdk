@@ -111,9 +111,8 @@ void LocalFootstepPlanner::computeContactSchedule(
     if (ref_primitive_plan(i) == 1 || ref_primitive_plan(i) == 3) {
       std::fill(contact_schedule.at(i).begin(), contact_schedule.at(i).end(),
                 true);
-    }
-    // Flight
-    else if (ref_primitive_plan(i) == 2) {
+    } else if (ref_primitive_plan(i) == 2) {
+      // Flight
       std::fill(contact_schedule.at(i).begin(), contact_schedule.at(i).end(),
                 false);
     }
@@ -260,7 +259,7 @@ void LocalFootstepPlanner::computeFootPlan(
         // Optimize the foothold location to get the final position
         foot_position = getNearestValidFoothold(foot_position_nominal);
 
-        // TODO Check this
+        // TODO(jcnorby) Check this
         // // We compute the flight phase foot position so that it will lift its
         // foot if (ref_primitive_plan_(i) == 0)
         // {

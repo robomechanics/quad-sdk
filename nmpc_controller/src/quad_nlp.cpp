@@ -25,7 +25,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
 // R: input cost weights
 // dt: time step length
 // panic_weights: penalty on panic variables
-{
+{  // NOLINT
   type_ = type;
 
   N_ = N;
@@ -908,9 +908,7 @@ void quadNLP::shift_initial_guess() {
           trans *
           z_U0_.segment(getPrimalControlFEIndex(N_ - 7) + leg_input_start_idx_,
                         m_ - leg_input_start_idx_);
-    }
-    // New contact mode
-    else {
+    } else {  // New contact mode
       w0_.segment(getPrimalControlFEIndex(N_ - 1) + leg_input_start_idx_,
                   m_ - leg_input_start_idx_)
           .fill(0);
