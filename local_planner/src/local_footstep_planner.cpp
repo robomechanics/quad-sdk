@@ -220,11 +220,11 @@ void LocalFootstepPlanner::computeFootPlan(
         // Compute dynamic shift
         double body_height_touchdown = body_plan(i, 2);
         // Ref: Highly Dynamic Quadruped Locomotion via Whole-Body Impulse
-        // Control and Model Predictive Control
-        centrifugal = std::sqrt(body_height_touchdown / 9.81) / 2 *
+        // Control and Model Predictive Control (Centrifugal force and capture point)
+        centrifugal = body_height_touchdown / 9.81 *
                       body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
         // Ref: MIT Cheetah 3: Design and Control of a Robust, Dynamic Quadruped
-        // Robot
+        // Robot (Capture point)
         vel_tracking = std::sqrt(body_height_touchdown / 9.81) *
                        (body_vel_touchdown - ref_body_vel_touchdown);
 
