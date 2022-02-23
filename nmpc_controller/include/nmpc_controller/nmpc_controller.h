@@ -56,10 +56,14 @@ class NMPCController {
   bool computeLegPlan(const Eigen::VectorXd &initial_state,
                       const Eigen::MatrixXd &ref_traj,
                       const Eigen::MatrixXd &foot_positions,
+                      const Eigen::MatrixXd &foot_velocities,
                       const std::vector<std::vector<bool>> &contact_schedule,
                       const Eigen::VectorXd &ref_ground_height,
                       const double &first_element_duration,
-                      const bool &same_plan_index, Eigen::MatrixXd &state_traj,
+                      const bool &same_plan_index,
+                      const Eigen::VectorXi &ref_primitive_id,
+                      const Eigen::VectorXi &complexity_schedule,
+                      Eigen::MatrixXd &state_traj,
                       Eigen::MatrixXd &control_traj);
 
   bool computeCentralizedTailPlan(
@@ -97,11 +101,16 @@ class NMPCController {
 
   int n_;
 
+  int n_null_;
+
   int m_;
 
   double dt_;
 
   int type_;
+
+  /// Weight for takeoff state
+  double takeoff_state_weight_factor_;
 
   std::string param_ns_;
 

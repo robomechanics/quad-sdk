@@ -113,11 +113,11 @@ class LocalFootstepPlanner {
   /**
    * @brief Compute the contact schedule based on the current phase
    * @param[in] current_plan_index_ Current index in the plan
-   * @param[in] current_state Current robot state
-   * @param[in] ref_body_plan Reference body plan
+   * @param[in] ref_primitive_plan_ Reference primitive plan
    * @param[out] contact_schedule 2D array of contact states
    */
   void computeContactSchedule(int current_plan_index,
+                              const Eigen::VectorXi &ref_primitive_plan_,
                               std::vector<std::vector<bool>> &contact_schedule);
 
   /**
@@ -127,6 +127,7 @@ class LocalFootstepPlanner {
    * @param[in] body_plan Current body plan
    * @param[in] grf_plan Current grf plan
    * @param[in] ref_body_plan Reference body plan
+   * @param[in] ref_primitive_plan_ Reference primitive plan
    * @param[in] foot_positions_current Current foot position in the world frame
    * @param[in] foot_velocities_current Current foot position in the world frame
    * @param[in] first_element_duration Duration of first element of horizon (may
@@ -134,15 +135,15 @@ class LocalFootstepPlanner {
    * @param[in] past_footholds_msg Message of past footholds, used for
    * interpolation of swing state
    * @param[out] foot_positions Foot positions over the horizon
-   * @param[out] future_footholds_msg Message for future (planned) footholds
-   * @param[out] foot_plan_continuous_msg Message for continuous foot
-   * trajectories
+   * @param[out] foot_velocities Foot velocities over the horizon
+   * @param[out] foot_accelerations Foot accelerations over the horizon
    */
   void computeFootPlan(int current_plan_index,
                        const std::vector<std::vector<bool>> &contact_schedule,
                        const Eigen::MatrixXd &body_plan,
                        const Eigen::MatrixXd &grf_plan,
                        const Eigen::MatrixXd &ref_body_plan,
+                       const Eigen::VectorXi &ref_primitive_plan_,
                        const Eigen::VectorXd &foot_positions_current,
                        const Eigen::VectorXd &foot_velocities_current,
                        double first_element_duration,

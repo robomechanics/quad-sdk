@@ -94,7 +94,8 @@ void LocalFootstepPlanner::computeStanceContactSchedule(
 }
 
 void LocalFootstepPlanner::computeContactSchedule(
-    int current_plan_index, std::vector<std::vector<bool>> &contact_schedule) {
+    int current_plan_index, const Eigen::VectorXi &ref_primitive_plan,
+    std::vector<std::vector<bool>> &contact_schedule) {
   // Compute the current phase in the nominal contact schedule
   int phase = current_plan_index % period_;
 
@@ -103,6 +104,18 @@ void LocalFootstepPlanner::computeContactSchedule(
   contact_schedule.resize(horizon_length_);
   for (int i = 0; i < horizon_length_; i++) {
     contact_schedule[i] = nominal_contact_schedule_[(i + phase) % period_];
+  }
+  // Check the primitive plan to see if there's standing or flight phase
+  for (size_t i = 0; i < horizon_length_; i++) {
+    // Leaping and landing
+    if (ref_primitive_plan(i) == 1 || ref_primitive_plan(i) == 3) {
+      std::fill(contact_schedule.at(i).begin(), contact_schedule.at(i).end(),
+                true);
+    } else if (ref_primitive_plan(i) == 2) {
+      // Flight
+      std::fill(contact_schedule.at(i).begin(), contact_schedule.at(i).end(),
+                false);
+    }
   }
 }
 
@@ -150,6 +163,7 @@ void LocalFootstepPlanner::computeFootPlan(
     const std::vector<std::vector<bool>> &contact_schedule,
     const Eigen::MatrixXd &body_plan, const Eigen::MatrixXd &grf_plan,
     const Eigen::MatrixXd &ref_body_plan,
+    const Eigen::VectorXi &ref_primitive_plan_,
     const Eigen::VectorXd &foot_positions_current,
     const Eigen::VectorXd &foot_velocities_current,
     double first_element_duration,
@@ -244,6 +258,13 @@ void LocalFootstepPlanner::computeFootPlan(
 
         // Optimize the foothold location to get the final position
         foot_position = getNearestValidFoothold(foot_position_nominal);
+
+        // TODO(jcnorby) Check this
+        // // We compute the flight phase foot position so that it will lift its
+        // foot if (ref_primitive_plan_(i) == 0)
+        // {
+        //   foot_position(2) = std::max(body_plan(i, 2) - 0.3, 0.);
+        // }
 
         // Store foot position in the Eigen matrix
         foot_positions.block<1, 3>(i, 3 * j) = foot_position;

@@ -88,6 +88,12 @@ class LocalPlanner {
   void getStateAndTwistInput();
 
   /**
+   * @brief Function identify indices which violate full order constraints
+   * @return Vector of indices which violate full order constraints
+   */
+  Eigen::VectorXi getInvalidRegions();
+
+  /**
    * @brief Function to compute the local plan
    * @return Boolean if local plan was found successfully
    */
@@ -212,7 +218,10 @@ class LocalPlanner {
   Eigen::MatrixXd ref_body_plan_;
 
   /// Vector of ground height along reference trajectory
-  Eigen::MatrixXd ref_ground_height_;
+  Eigen::VectorXd ref_ground_height_;
+
+  /// Vector of primitive along reference trajectory
+  Eigen::VectorXi ref_primitive_plan_;
 
   /// Matrix of grfs (N x Nu: rows correspond to individual arrays of GRFs in
   /// the horizon)

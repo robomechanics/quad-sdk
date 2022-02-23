@@ -37,7 +37,8 @@ NMPCController::NMPCController(int type) {
   // Load MPC cost weighting and bounds
   std::vector<double> state_weights, control_weights, state_weights_factors,
       control_weights_factors, state_lower_bound, state_upper_bound,
-      control_lower_bound, control_upper_bound;
+      state_lower_bound_null, state_upper_bound_null, control_lower_bound,
+      control_upper_bound;
   double panic_weights;
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_weights",
                   state_weights);
@@ -57,17 +58,33 @@ NMPCController::NMPCController(int type) {
                   control_lower_bound);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_upper_bound",
                   control_upper_bound);
-  Eigen::Map<Eigen::MatrixXd> Q(state_weights.data(), n_, 1),
-      R(control_weights.data(), m_, 1),
-      Q_factor(state_weights_factors.data(), N_, 1),
-      R_factor(control_weights_factors.data(), N_, 1),
-      x_min(state_lower_bound.data(), n_, 1),
-      x_max(state_upper_bound.data(), n_, 1),
-      u_min(control_lower_bound.data(), m_, 1),
-      u_max(control_upper_bound.data(), m_, 1);
 
-  mynlp_ = new quadNLP(type_, N_, n_, m_, dt_, mu, panic_weights, Q, R,
-                       Q_factor, R_factor, x_min, x_max, u_min, u_max);
+  ros::param::get("/nmpc_controller/leg_complex/null_space_dimension", n_null_);
+  ros::param::get("/nmpc_controller/leg_complex/state_lower_bound",
+                  state_lower_bound_null);
+  ros::param::get("/nmpc_controller/leg_complex/state_upper_bound",
+                  state_upper_bound_null);
+  ros::param::get("/nmpc_controller/takeoff_state_weight_factor",
+                  takeoff_state_weight_factor_);
+
+  Eigen::Map<Eigen::VectorXd> Q(state_weights.data(), n_),
+      R(control_weights.data(), m_), Q_factor(state_weights_factors.data(), N_),
+      R_factor(control_weights_factors.data(), N_),
+      x_min(state_lower_bound.data(), n_), x_max(state_upper_bound.data(), n_),
+      x_min_null(state_lower_bound_null.data(), state_lower_bound_null.size()),
+      x_max_null(state_upper_bound_null.data(), state_upper_bound_null.size()),
+      u_min(control_lower_bound.data(), m_),
+      u_max(control_upper_bound.data(), m_);
+
+  Eigen::VectorXd x_min_complex(n_ + n_null_), x_max_complex(n_ + n_null_);
+  x_min_complex.segment(0, n_) = x_min;
+  x_min_complex.segment(n_, n_null_) = x_min_null;
+  x_max_complex.segment(0, n_) = x_max;
+  x_max_complex.segment(n_, n_null_) = x_max_null;
+
+  mynlp_ = new quadNLP(type_, N_, n_, n_null_, m_, dt_, mu, panic_weights, Q, R,
+                       Q_factor, R_factor, x_min, x_max, x_min_complex,
+                       x_max_complex, u_min, u_max);
 
   app_ = IpoptApplicationFactory();
 
@@ -105,15 +122,33 @@ NMPCController::NMPCController(int type) {
 bool NMPCController::computeLegPlan(
     const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
     const Eigen::MatrixXd &foot_positions,
+    const Eigen::MatrixXd &foot_velocities,
     const std::vector<std::vector<bool>> &contact_schedule,
     const Eigen::VectorXd &ref_ground_height,
     const double &first_element_duration, const bool &same_plan_index,
-    Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj) {
+    const Eigen::VectorXi &ref_primitive_id,
+    const Eigen::VectorXi &complexity_schedule, Eigen::MatrixXd &state_traj,
+    Eigen::MatrixXd &control_traj) {
+  // Update the complexity
+  mynlp_->update_complexity_schedule(complexity_schedule);
+
   // Local planner will send a reference traj with N+1 rows
-  mynlp_->update_solver(initial_state, ref_traj.bottomRows(N_), foot_positions,
-                        contact_schedule, ref_ground_height.tail(N_),
+  mynlp_->update_solver(initial_state, ref_traj, foot_positions,
+                        contact_schedule, ref_ground_height,
                         first_element_duration, same_plan_index, require_init_);
   require_init_ = false;
+
+  // mynlp_->feet_location_ = foot_positions;
+  mynlp_->foot_pos_world_ = foot_positions;
+  mynlp_->foot_vel_world_ = foot_velocities;
+
+  for (int i = 0; i < ref_primitive_id.size() - 1; i++) {
+    if (ref_primitive_id(i, 0) == 1 && ref_primitive_id(i + 1, 0) == 2) {
+      mynlp_->Q_factor_(i, 0) =
+          mynlp_->Q_factor_(i, 0) * takeoff_state_weight_factor_;
+      ROS_WARN_THROTTLE(0.5, "leap detected, increasing weights");
+    }
+  }
 
   bool success = this->computePlan(initial_state, ref_traj, foot_positions,
                                    contact_schedule, state_traj, control_traj);
@@ -193,20 +228,15 @@ bool NMPCController::computePlan(
 
   status = app_->OptimizeTNLP(mynlp_);
 
-  Eigen::MatrixXd x(n_, N_);
-  Eigen::MatrixXd u(m_, N_);
-
-  for (int i = 0; i < N_; ++i) {
-    u.block(0, i, m_, 1) = mynlp_->w0_.block(i * (n_ + m_), 0, m_, 1);
-    x.block(0, i, n_, 1) = mynlp_->w0_.block(i * (n_ + m_) + m_, 0, n_, 1);
-  }
-
   state_traj = Eigen::MatrixXd::Zero(N_ + 1, n_);
-  state_traj.topRows(1) = initial_state.transpose();
   control_traj = Eigen::MatrixXd::Zero(N_, m_);
 
-  state_traj.bottomRows(N_) = x.transpose();
-  control_traj = u.transpose();
+  state_traj.row(0) = mynlp_->get_state_var(mynlp_->w0_, 0).transpose();
+  for (int i = 0; i < N_; ++i) {
+    control_traj.row(i) = mynlp_->get_control_var(mynlp_->w0_, i).transpose();
+    state_traj.row(i + 1) =
+        mynlp_->get_state_var(mynlp_->w0_, i + 1).transpose();
+  }
 
   if (status == Solve_Succeeded) {
     mynlp_->warm_start_ = true;

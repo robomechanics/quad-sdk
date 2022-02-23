@@ -78,6 +78,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_ * 3);
   current_foot_velocities_world_ = Eigen::VectorXd::Zero(num_feet_ * 3);
   ref_ground_height_ = Eigen::VectorXd::Zero(N_ + 1);
+  ref_primitive_plan_ = Eigen::VectorXi::Zero(N_);
 
   // Initialize body and footstep planners
   initLocalBodyPlanner();
@@ -293,6 +294,7 @@ void LocalPlanner::getStateAndReferencePlan() {
   // Grab the appropriate states from the body plan and convert to an Eigen
   // matrix
   ref_body_plan_.setZero();
+  ref_primitive_plan_.setZero();
 
   for (int i = 0; i < N_ + 1; i++) {
     // If the horizon extends past the reference trajectory, just hold the last
@@ -300,9 +302,16 @@ void LocalPlanner::getStateAndReferencePlan() {
     if (i + current_plan_index_ > body_plan_msg_->plan_indices.back()) {
       ref_body_plan_.row(i) =
           quad_utils::bodyStateMsgToEigen(body_plan_msg_->states.back().body);
+      if (i < N_) {
+        ref_primitive_plan_(i) = body_plan_msg_->primitive_ids.back();
+      }
     } else {
       ref_body_plan_.row(i) = quad_utils::bodyStateMsgToEigen(
           body_plan_msg_->states[i + current_plan_index_].body);
+      if (i < N_) {
+        ref_primitive_plan_(i) =
+            body_plan_msg_->primitive_ids[i + current_plan_index_];
+      }
     }
     ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(
         ref_body_plan_(i, 0), ref_body_plan_(i, 1));
@@ -471,9 +480,12 @@ void LocalPlanner::getStateAndTwistInput() {
         ref_body_plan_(i, 3), ref_body_plan_(i, 4));
   }
 
+  // Use the standard walk primitive
+  ref_primitive_plan_.setZero(N_);
+
   // Update the body plan to use for linearization
   if (body_plan_.rows() < N_ + 1) {
-    // Cold start with reference  plan
+    // Cold start with reference plan
     body_plan_ = ref_body_plan_;
 
     // Initialize with the current foot positions
@@ -500,6 +512,50 @@ void LocalPlanner::getStateAndTwistInput() {
   foot_positions_world_.row(0) = current_foot_positions_world_;
 }
 
+Eigen::VectorXi LocalPlanner::getInvalidRegions() {
+  Eigen::VectorXi complexity_horizon(N_);
+  Eigen::VectorXd state_violations, control_violations;
+
+  for (int i = 0; i < N_; i++) {
+    Eigen::VectorXd joint_positions(12);
+    Eigen::VectorXd joint_velocities(12);
+    Eigen::VectorXd joint_torques(12);
+
+    bool is_state_valid = quadKD_->isValidCentroidalState(
+        body_plan_.row(i), foot_positions_world_.row(i),
+        foot_positions_world_.row(i) * 0, grf_plan_.row(i), terrain_grid_,
+        joint_positions, joint_velocities, joint_torques, state_violations,
+        control_violations);
+
+    complexity_horizon[i] = (is_state_valid) ? 0 : 1;
+
+    if (!is_state_valid) {
+      // std::cout << "body_plan_ = \n" << body_plan_.row(i).format(CleanFmt) <<
+      // std::endl; std::cout << "foot_positions_world_ = \n" <<
+      // foot_positions_world_.row(i).format(CleanFmt) << std::endl; std::cout
+      // << "grf_plan_ = \n" << grf_plan_.row(i).format(CleanFmt) << std::endl;
+      // std::cout << "joint_positions = \n" <<
+      // joint_positions.transpose().format(CleanFmt) << std::endl; std::cout <<
+      // "joint_velocities = \n" <<
+      // joint_velocities.transpose().format(CleanFmt) << std::endl; std::cout
+      // << "joint_torques = \n" << joint_torques.transpose().format(CleanFmt)
+      // << std::endl; std::cout << "i = " << i << std::endl; std::cout <<
+      // "state_violations = \n" <<
+      // state_violations.transpose().format(CleanFmt) << std::endl; std::cout
+      // << "control_violations = \n" <<
+      // control_violations.transpose().format(CleanFmt) << std::endl;
+    }
+  }
+  if (complexity_horizon.sum() <= 0) {
+    ROS_INFO_THROTTLE(1, "All planned states are valid");
+  } else {
+    ROS_WARN("Some planned states are invalid!");
+    std::cout << "complexity_horizon = " << complexity_horizon.transpose()
+              << std::endl;
+  }
+  return complexity_horizon;
+}
+
 bool LocalPlanner::computeLocalPlan() {
   if (terrain_.isEmpty() || body_plan_msg_ == NULL && !use_twist_input_ ||
       robot_state_msg_ == NULL) {
@@ -512,15 +568,15 @@ bool LocalPlanner::computeLocalPlan() {
   quad_utils::FunctionTimer timer(__FUNCTION__);
 
   // Compute the contact schedule
-  local_footstep_planner_->computeContactSchedule(current_plan_index_,
-                                                  contact_schedule_);
+  local_footstep_planner_->computeContactSchedule(
+      current_plan_index_, ref_primitive_plan_, contact_schedule_);
 
   // Compute the new footholds if we have a valid existing plan (i.e. if
   // grf_plan is filled)
   if (grf_plan_.rows() == N_) {
     local_footstep_planner_->computeFootPlan(
         current_plan_index_, contact_schedule_, body_plan_, grf_plan_,
-        ref_body_plan_, current_foot_positions_world_,
+        ref_body_plan_, ref_primitive_plan_, current_foot_positions_world_,
         current_foot_velocities_world_, first_element_duration_,
         past_footholds_msg_, foot_positions_world_, foot_velocities_world_,
         foot_accelerations_world_);
@@ -530,19 +586,27 @@ bool LocalPlanner::computeLocalPlan() {
         body_plan_, foot_positions_world_, foot_positions_body_);
   }
 
+  Eigen::VectorXi complexity_schedule(N_ + 1);
+  complexity_schedule.fill(0);
+
   // Compute grf position considering the toe radius
-  Eigen::MatrixXd grf_positions_body = foot_positions_body_;
+  Eigen::MatrixXd grf_positions = foot_positions_world_;
   for (size_t i = 0; i < 4; i++) {
-    grf_positions_body.col(3 * i + 2) =
-        foot_positions_body_.col(3 * i + 2).array() - toe_radius;
+    // grf_positions.col(3 * i + 2) = foot_positions_body_.col(3 * i +
+    // 2).array() - toe_radius;
+    grf_positions.col(3 * i + 2) =
+        foot_positions_world_.col(3 * i + 2).array() - toe_radius;
   }
 
   // Compute leg plan with MPC, return if solve fails
   if (!local_body_planner_nonlinear_->computeLegPlan(
-          current_state_, ref_body_plan_, grf_positions_body, contact_schedule_,
-          ref_ground_height_, first_element_duration_, same_plan_index_,
-          body_plan_, grf_plan_))
+            current_state_, ref_body_plan_, grf_positions,
+            foot_velocities_world_, contact_schedule_, ref_ground_height_,
+            first_element_duration_, same_plan_index_, ref_primitive_plan_,
+            complexity_schedule, body_plan_, grf_plan_))
     return false;
+
+  Eigen::VectorXi complexity_schedule_adaptive = getInvalidRegions();
 
   // Record computation time and update exponential filter
   compute_time_ = 1000.0 * timer.reportSilent();

@@ -22,7 +22,7 @@ global_body_planner:
   F_MIN: 0.0              # Minimum GRF, N
   F_MAX: 250.0            # Maximum GRF, N (800 for cheetah, 500 for anymal)
   PEAK_GRF_MIN: 4.0       # Minimum GRF in units of body weight
-  PEAK_GRF_MAX: 7.0       # Maximum GRF in units of body weight
+  PEAK_GRF_MAX: 6.0       # Maximum GRF in units of body weight
   MU: 0.25                # Friction coefficient (1.0 for Cheetah, 0.5 for ANYmal)
   T_S_MIN: 0.3            # Minimum stance time, s
   T_S_MAX: 0.3            # Maximum stance time, s

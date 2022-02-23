@@ -55,6 +55,19 @@ add_library(nmpc_controller
   src/gen/eval_g_tail.cpp
   src/gen/eval_jac_g_tail.cpp
   src/gen/eval_hess_g_tail.cpp
+  src/gen/eval_g_leg_simple.cpp
+  src/gen/eval_jac_g_leg_simple.cpp
+  src/gen/eval_hess_g_leg_simple.cpp
+  src/gen/eval_g_leg_complex.cpp
+  src/gen/eval_jac_g_leg_complex.cpp
+  src/gen/eval_hess_g_leg_complex.cpp
+  src/gen/eval_g_leg_simple_to_complex.cpp
+  src/gen/eval_jac_g_leg_simple_to_complex.cpp
+  src/gen/eval_hess_g_leg_simple_to_complex.cpp
+  src/gen/eval_g_leg_complex_to_simple.cpp
+  src/gen/eval_jac_g_leg_complex_to_simple.cpp
+  src/gen/eval_hess_g_leg_complex_to_simple.cpp
+  src/quad_nlp_utils.cpp
   src/quad_nlp.cpp
   src/nmpc_controller.cpp
 )
@@ -72,5 +85,7 @@ add_dependencies(nmpc_controller
 
 ## Add gtest based cpp test target and link libraries
 catkin_add_gtest(nmpc_controller-test 
-  test/test_nmpc_controller.cpp)
+  test/test_nmpc_controller.cpp
+  test/test_nlp_utils.cpp
+  test/test_adaptive_complexity.cpp)
 target_link_libraries(nmpc_controller-test nmpc_controller ${catkin_LIBRARIES})

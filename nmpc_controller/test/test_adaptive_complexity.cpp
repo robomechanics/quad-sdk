@@ -5,15 +5,17 @@
 #include <chrono>
 
 TEST(NMPCTest, testAdaptiveComplexity) {
-  int N_;
+  int N_, N_tail_;
+  double dt_;
   ros::param::get("/nmpc_controller/leg/horizon_length", N_);
+  ros::param::get("/nmpc_controller/leg/step_length", dt_);
 
   std::shared_ptr<NMPCController> leg_planner_ =
       std::make_shared<NMPCController>(0);
 
   Eigen::VectorXd current_state_(12);
   current_state_.fill(0);
-  current_state_(2) = 0.3;
+  current_state_(2) = 0.25;
   current_state_(9) = 0;
 
   Eigen::MatrixXd ref_body_plan_(N_ + 1, 12);
@@ -21,9 +23,14 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   ref_body_plan_.col(2).fill(0.3);
 
   Eigen::MatrixXd foot_positions_body_(N_, 12);
+  Eigen::MatrixXd foot_positions_world_(N_, 12);
+  Eigen::MatrixXd foot_velocities_world_(N_, 12);
+  foot_velocities_world_.setZero();
   for (size_t i = 0; i < N_; i++) {
     foot_positions_body_.row(i) << 0.2263, 0.098, -0.3, 0.2263, -0.098, -0.3,
         -0.2263, 0.098, -0.3, -0.2263, -0.098, -0.3;
+    foot_positions_world_.row(i) << 0.2263, 0.098, 0, 0.2263, -0.098, 0,
+        -0.2263, 0.098, 0, -0.2263, -0.098, 0;
   }
 
   std::vector<std::vector<bool>> adpative_contact_schedule_;
@@ -37,24 +44,27 @@ TEST(NMPCTest, testAdaptiveComplexity) {
     }
   }
 
-  Eigen::VectorXd ref_ground_height(N_);
+  Eigen::VectorXd ref_ground_height(N_ + 1);
   ref_ground_height.fill(0);
 
-  Eigen::MatrixXd body_plan_(N_, 12);
+  Eigen::MatrixXd body_plan_(N_ + 1, 12);
   body_plan_.col(2).fill(0.3);
 
   Eigen::MatrixXd grf_plan_(N_, 12);
   grf_plan_.fill(0);
-  grf_plan_.col(2).fill(11.51 * 9.81 / 2);
-  grf_plan_.col(5).fill(11.51 * 9.81 / 2);
-  grf_plan_.col(8).fill(11.51 * 9.81 / 2);
-  grf_plan_.col(11).fill(11.51 * 9.81 / 2);
+  grf_plan_.col(2).fill(13.3 * 9.81 / 2);
+  grf_plan_.col(5).fill(13.3 * 9.81 / 2);
+  grf_plan_.col(8).fill(13.3 * 9.81 / 2);
+  grf_plan_.col(11).fill(13.3 * 9.81 / 2);
 
-  double first_element_duration = 0;
+  double first_element_duration = dt_;
+
   bool same_plan_index = false;
 
-  Eigen::VectorXi complexity_schedule(N_);
-  complexity_schedule.setZero();
+  Eigen::VectorXi complexity_schedule(N_ + 1), ref_primitive_id(N_ + 1);
+  complexity_schedule.fill(0);
+  // complexity_schedule.tail(2).fill(1);
+  ref_primitive_id.setZero();
 
   std::chrono::steady_clock::time_point tic, toc;
   tic = std::chrono::steady_clock::now();
@@ -63,10 +73,10 @@ TEST(NMPCTest, testAdaptiveComplexity) {
     tic = std::chrono::steady_clock::now();
 
     leg_planner_->computeLegPlan(
-        current_state_, ref_body_plan_, foot_positions_body_,
-        adpative_contact_schedule_, ref_ground_height, first_element_duration,
-        same_plan_index, complexity_schedule, body_plan_, grf_plan_);
-
+        current_state_, ref_body_plan_, foot_positions_world_,
+        foot_velocities_world_, adpative_contact_schedule_, ref_ground_height,
+        first_element_duration, same_plan_index, ref_primitive_id,
+        complexity_schedule, body_plan_, grf_plan_);
     toc = std::chrono::steady_clock::now();
     std::cout << "Time difference = "
               << std::chrono::duration_cast<std::chrono::microseconds>(toc -
@@ -74,6 +84,10 @@ TEST(NMPCTest, testAdaptiveComplexity) {
                      .count()
               << "[µs]" << std::endl;
 
+    // std::cout << "body_plan_ = \n" << body_plan_ << std::endl;
+    // std::cout << "grf_plan_ = \n" << grf_plan_ << std::endl;
+
+    // throw std::runtime_error("Stop");
     current_state_ = body_plan_.row(1).transpose();
     std::rotate(adpative_contact_schedule_.begin(),
                 adpative_contact_schedule_.begin() + 1,
