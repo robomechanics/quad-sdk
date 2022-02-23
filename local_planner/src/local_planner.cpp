@@ -3,15 +3,13 @@
 Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
 LocalPlanner::LocalPlanner(ros::NodeHandle nh)
-    : local_body_planner_convex_(),
-      local_body_planner_nonlinear_(),
-      local_footstep_planner_() {
+    : local_body_planner_nonlinear_(), local_footstep_planner_() {
   nh_ = nh;
 
   // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic,
       local_plan_topic, foot_plan_discrete_topic, foot_plan_continuous_topic,
-      cmd_vel_topic;
+      cmd_vel_topic, control_mode_topic;
   quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
   quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
@@ -22,6 +20,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
                            foot_plan_continuous_topic);
   quad_utils::loadROSParam(nh_, "topics/cmd_vel", cmd_vel_topic);
   quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
+  quad_utils::loadROSParam(nh_, "topics/control/mode", control_mode_topic);
 
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic, 1,
@@ -51,7 +50,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
                            last_cmd_vel_msg_time_max_);
 
   // Load system parameters from launch file (not in config file)
-  nh.param<bool>("local_planner/use_nmpc", use_nmpc_, false);
   nh.param<bool>("local_planner/use_twist_input", use_twist_input_, false);
 
   // Convert kinematics
@@ -162,18 +160,8 @@ void LocalPlanner::initLocalBodyPlanner() {
   Eigen::Matrix3d Ib = Eigen::Matrix3d::Zero();
   Ib.diagonal() << Ixx, Iyy, Izz;
 
-  // Create mpc wrapper class
-  if (use_nmpc_) {
-    local_body_planner_nonlinear_ = std::make_shared<NMPCController>(0);
-  } else {
-    local_body_planner_convex_ = std::make_shared<QuadrupedMPC>();
-    local_body_planner_convex_->setTimestep(dt_);
-    local_body_planner_convex_->setMassProperties(m, Ib);
-    local_body_planner_convex_->update_weights(Q_vec, U_vec);
-    local_body_planner_convex_->update_state_bounds(state_lo, state_hi);
-    local_body_planner_convex_->update_control_bounds(normal_lo, normal_hi);
-    local_body_planner_convex_->update_friction(mu);
-  }
+  // Create nmpc wrapper class
+  local_body_planner_nonlinear_ = std::make_shared<NMPCController>(0);
 }
 
 void LocalPlanner::initLocalFootstepPlanner() {
@@ -224,8 +212,7 @@ void LocalPlanner::initLocalFootstepPlanner() {
 }
 
 void LocalPlanner::terrainMapCallback(
-    const grid_map_msgs::GridMap::ConstPtr& msg) {
-  // grid_map::GridMap map;
+    const grid_map_msgs::GridMap::ConstPtr &msg) {
   grid_map::GridMapRosConverter::fromMessage(*msg, terrain_grid_);
 
   // Convert to FastTerrainMap structure for faster querying
@@ -235,7 +222,7 @@ void LocalPlanner::terrainMapCallback(
 }
 
 void LocalPlanner::robotPlanCallback(
-    const quad_msgs::RobotPlan::ConstPtr& msg) {
+    const quad_msgs::RobotPlan::ConstPtr &msg) {
   // If this is the first plan, initialize the message of past footholds with
   // current foot positions
   if (body_plan_msg_ == NULL && robot_state_msg_ != NULL) {
@@ -252,14 +239,14 @@ void LocalPlanner::robotPlanCallback(
 }
 
 void LocalPlanner::robotStateCallback(
-    const quad_msgs::RobotState::ConstPtr& msg) {
+    const quad_msgs::RobotState::ConstPtr &msg) {
   // Make sure the data is actually populated
   if (msg->feet.feet.empty() || msg->joints.position.empty()) return;
 
   robot_state_msg_ = msg;
 }
 
-void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg) {
+void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg) {
   // Ignore non-planar components of desired twist
   cmd_vel_[0] = 0.95 * cmd_vel_[0] + 0.05 * cmd_vel_scale_ * msg->linear.x;
   cmd_vel_[1] = 0.95 * cmd_vel_[1] + 0.05 * cmd_vel_scale_ * msg->linear.y;
@@ -417,9 +404,8 @@ void LocalPlanner::getStateAndTwistInput() {
   // If it's going to walk, use latest states
   if (cmd_vel_[0] != 0 || cmd_vel_[1] != 0 || cmd_vel_[5] != 0) {
     stand_pose_ << current_state_[0], current_state_[1], current_state_[5];
-  }
-  // If it's standing, try to stablized the waggling
-  else {
+  } else {
+    // If it's standing, try to stablized the waggling
     Eigen::Vector3d current_stand_pose;
     current_stand_pose << current_state_[0], current_state_[1],
         current_state_[5];
@@ -451,9 +437,9 @@ void LocalPlanner::getStateAndTwistInput() {
   ref_body_plan_(0, 11) = cmd_vel_[5];
 
   // Only adaptive pitch
-  // ref_body_plan_(0, 4) =
-  // local_footstep_planner_->getTerrainSlope(current_state_(0),
-  // current_state_(1), current_state_(6), current_state_(7));
+  ref_body_plan_(0, 4) = local_footstep_planner_->getTerrainSlope(
+      current_state_(0), current_state_(1), current_state_(6),
+      current_state_(7));
 
   // Adaptive roll and pitch
   local_footstep_planner_->getTerrainSlope(
@@ -484,9 +470,9 @@ void LocalPlanner::getStateAndTwistInput() {
     ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);
 
     // Only adaptive pitch
-    // ref_body_plan_(i, 4) =
-    // local_footstep_planner_->getTerrainSlope(ref_body_plan_(i, 0),
-    // ref_body_plan_(i, 1), ref_body_plan_(i, 6), ref_body_plan_(i, 7));
+    ref_body_plan_(i, 4) = local_footstep_planner_->getTerrainSlope(
+        ref_body_plan_(i, 0), ref_body_plan_(i, 1), ref_body_plan_(i, 6),
+        ref_body_plan_(i, 7));
 
     // Adaptive roll and pitch
     local_footstep_planner_->getTerrainSlope(
@@ -524,7 +510,6 @@ void LocalPlanner::getStateAndTwistInput() {
   body_plan_.row(0) = current_state_;
   foot_positions_body_.row(0) = current_foot_positions_body_;
   foot_positions_world_.row(0) = current_foot_positions_world_;
-  //*/
 }
 
 Eigen::VectorXi LocalPlanner::getInvalidRegions() {
@@ -573,16 +558,18 @@ Eigen::VectorXi LocalPlanner::getInvalidRegions() {
 
 bool LocalPlanner::computeLocalPlan() {
   if (terrain_.isEmpty() || body_plan_msg_ == NULL && !use_twist_input_ ||
-      robot_state_msg_ == NULL)
+      robot_state_msg_ == NULL) {
+    ROS_WARN_STREAM(
+        "ComputeLocalPlan function did not recieve the expected inputs");
     return false;
+  }
 
   // Start the timer
   quad_utils::FunctionTimer timer(__FUNCTION__);
 
   // Compute the contact schedule
   local_footstep_planner_->computeContactSchedule(
-      current_plan_index_, current_state_, ref_body_plan_, ref_primitive_plan_,
-      contact_schedule_);
+      current_plan_index_, ref_primitive_plan_, contact_schedule_);
 
   // Compute the new footholds if we have a valid existing plan (i.e. if
   // grf_plan is filled)
@@ -611,20 +598,13 @@ bool LocalPlanner::computeLocalPlan() {
         foot_positions_world_.col(3 * i + 2).array() - toe_radius;
   }
 
-  // Compute body plan with MPC, return if solve fails
-  if (use_nmpc_) {
-    if (!local_body_planner_nonlinear_->computeLegPlan(
+  // Compute leg plan with MPC, return if solve fails
+  if (!local_body_planner_nonlinear_->computeLegPlan(
             current_state_, ref_body_plan_, grf_positions,
             foot_velocities_world_, contact_schedule_, ref_ground_height_,
             first_element_duration_, same_plan_index_, ref_primitive_plan_,
             complexity_schedule, body_plan_, grf_plan_))
-      return false;
-  } else {
-    if (!local_body_planner_convex_->computePlan(
-            current_state_, ref_body_plan_, grf_positions, contact_schedule_,
-            body_plan_, grf_plan_))
-      return false;
-  }
+    return false;
 
   Eigen::VectorXi complexity_schedule_adaptive = getInvalidRegions();
 

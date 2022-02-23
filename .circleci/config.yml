@@ -30,6 +30,9 @@ jobs:
             source /opt/ros/melodic/setup.bash
             source /catkin_ws/devel/setup.bash
             catkin run_tests -j4 -l4 && catkin_test_results
+      - run:
+          name: "Run soft linting checks"
+          command: ./scripts/lint_soft.sh
 workflows:
   version: 2
   melodic-build-and-test:

@@ -1,18 +1,16 @@
 #ifndef MESH_TO_GRID_MAP_CONVERTER_H
 #define MESH_TO_GRID_MAP_CONVERTER_H
 
-#include <string>
-
-#include <ros/ros.h>
-#include <std_srvs/Empty.h>
-
+#include <grid_map_msgs/ProcessFile.h>
 #include <pcl/PolygonMesh.h>
 #include <pcl_msgs/PolygonMesh.h>
 #include <pcl_ros/point_cloud.h>
-
-#include <grid_map_msgs/ProcessFile.h>
-#include <grid_map_core/GridMap.hpp>
 #include <ros/package.h>
+#include <ros/ros.h>
+#include <std_srvs/Empty.h>
+
+#include <grid_map_core/GridMap.hpp>
+#include <string>
 
 namespace mesh_to_grid_map {
 
