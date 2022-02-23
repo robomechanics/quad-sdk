@@ -394,11 +394,6 @@ void LocalFootstepPlanner::computeFootPlan(
               foot_position_prev_nominal, Eigen::Vector3d::Zero(),
               foot_position_next, Eigen::Vector3d::Zero(), swing_apex,
               swing_duration);
-        } else if (i_liftoff < 0) {
-          // If the leg is currently swinging, we interplate from the current
-          // states
-          foot_position_prev = foot_positions_current.segment(3 * j, 3);
-          foot_velocity_prev = foot_velocities_current.segment(3 * j, 3);
         }
 
         // Compute the period index of plan and current states
@@ -415,17 +410,9 @@ void LocalFootstepPlanner::computeFootPlan(
         double interp_phase;
         double interp_duration;
 
-        if (i_liftoff < 0) {
-          // If the leg is currently swinging, we interplate from the current
-          // states
-          interp_phase = (swing_idx - swing_idx_current) /
-                         (swing_duration - swing_idx_current);
-          interp_duration = (swing_duration - swing_idx_current) * dt_;
-        } else {
-          // Otherwise we just use the plan
-          interp_phase = swing_idx / swing_duration;
-          interp_duration = swing_duration * dt_;
-        }
+        // Otherwise we just use the plan
+        interp_phase = swing_idx / swing_duration;
+        interp_duration = swing_duration * dt_;
 
         // Interplate x and y
         cubicHermiteSpline(foot_position_prev.x(), foot_velocity_prev.x(),
@@ -438,78 +425,25 @@ void LocalFootstepPlanner::computeFootPlan(
                            foot_velocity.y(), foot_acceleration.y());
 
         // Interplate z
-        if (i_liftoff < 0) {
-          // Start from current
-          if (swing_idx / swing_duration < 0.5) {
-            // Swing upwards, current should also be upwards
-            interp_phase = (swing_idx - swing_idx_current) /
-                           (swing_duration / 2 - swing_idx_current);
-            interp_duration = (swing_duration / 2 - swing_idx_current) * dt_;
+        // Start from plan
+        interp_phase = (2 * swing_idx >= swing_duration)
+                           ? (2 * swing_idx / swing_duration - 1)
+                           : (2 * swing_idx / swing_duration);
+        interp_duration = swing_duration * dt_ / 2;
 
-            cubicHermiteSpline(foot_position_prev.z(), foot_velocity_prev.z(),
-                               swing_apex, 0, interp_phase, interp_duration,
-                               foot_position.z(), foot_velocity.z(),
-                               foot_acceleration.z());
-          } else {
-            // Swing downwards
-            if (swing_idx_current / swing_duration < 0.5) {
-              // Current is upwards
-              interp_phase =
-                  (swing_idx - swing_duration / 2) / (swing_duration / 2);
-              interp_duration = swing_duration / 2 * dt_;
-
-              cubicHermiteSpline(swing_apex, 0, foot_position_next.z(),
-                                 foot_velocity_next.z(), interp_phase,
-                                 interp_duration, foot_position.z(),
-                                 foot_velocity.z(), foot_acceleration.z());
-            } else {
-              // Current is downwards
-              interp_phase = (swing_idx - swing_idx_current) /
-                             (swing_duration - swing_idx_current);
-              interp_duration = (swing_duration - swing_idx_current) * dt_;
-
-              cubicHermiteSpline(foot_position_prev.z(), foot_velocity_prev.z(),
-                                 foot_position_next.z(), foot_velocity_next.z(),
-                                 interp_phase, interp_duration,
-                                 foot_position.z(), foot_velocity.z(),
-                                 foot_acceleration.z());
-            }
-          }
+        if (swing_idx / swing_duration < 0.5) {
+          // Swing upwards
+          cubicHermiteSpline(foot_position_prev.z(), foot_velocity_prev.z(),
+                             swing_apex, 0, interp_phase, interp_duration,
+                             foot_position.z(), foot_velocity.z(),
+                             foot_acceleration.z());
         } else {
-          // Start from plan
-          interp_phase = (2 * swing_idx >= swing_duration)
-                             ? (2 * swing_idx / swing_duration - 1)
-                             : (2 * swing_idx / swing_duration);
-          interp_duration = swing_duration * dt_ / 2;
-
-          if (swing_idx / swing_duration < 0.5) {
-            // Swing upwards
-            cubicHermiteSpline(foot_position_prev.z(), foot_velocity_prev.z(),
-                               swing_apex, 0, interp_phase, interp_duration,
-                               foot_position.z(), foot_velocity.z(),
-                               foot_acceleration.z());
-          } else {
-            // Swing downwards
-            cubicHermiteSpline(swing_apex, 0, foot_position_next.z(),
-                               foot_velocity_next.z(), interp_phase,
-                               interp_duration, foot_position.z(),
-                               foot_velocity.z(), foot_acceleration.z());
-          }
+          // Swing downwards
+          cubicHermiteSpline(swing_apex, 0, foot_position_next.z(),
+                             foot_velocity_next.z(), interp_phase,
+                             interp_duration, foot_position.z(),
+                             foot_velocity.z(), foot_acceleration.z());
         }
-
-        // Apply the acceleration bounds
-        foot_acceleration.x() =
-            std::min(std::max(foot_acceleration.x(),
-                              -std::abs(foot_acceleration_max.x())),
-                     std::abs(foot_acceleration_max.x()));
-        foot_acceleration.y() =
-            std::min(std::max(foot_acceleration.y(),
-                              -std::abs(foot_acceleration_max.y())),
-                     std::abs(foot_acceleration_max.y()));
-        foot_acceleration.z() =
-            std::min(std::max(foot_acceleration.z(),
-                              -std::abs(foot_acceleration_max.z())),
-                     std::abs(foot_acceleration_max.z()));
 
         foot_state_msg.contact = false;
       }
