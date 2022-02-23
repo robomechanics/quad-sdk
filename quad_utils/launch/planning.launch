@@ -9,6 +9,7 @@
     <!-- Launch the node to publish the global body plan -->
     <group if="$(eval arg('global_planner') == 'fgmp')">
         <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen" />
+        <param name="local_planner/use_twist_input" value="false"/>
     </group>
 
     <!-- Use twist input to local plan and no global plan -->
