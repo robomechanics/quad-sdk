@@ -39,12 +39,8 @@ struct PlannerConfig {
   double H_NOM = 0.3;    // Nominal ground clearance of body, m
   double V_MAX =
       3.0;  // Maximum robot velocity, m/s (4.0 for cheetah, 2.5 for anymal)
-  double V_NOM = 0.75;   // Nominal velocity, m/s (used during connect function)
-  double DY_MAX = 0;     // Maximum yaw velocity
-  double ROBOT_L = 0.4;  // Length of robot body, m (0.6 cheetah, 0.554 ANYmal)
-  double ROBOT_W = 0.3;  // Width of robot body, m (0.256 cheetah, 0.232 ANYmal)
-  double ROBOT_H = 0.05;  // Vertical distance between leg base and bottom of
-                          // robot, m (0.1 cheetah, 0.04 ANYmal)
+  double V_NOM = 0.75;  // Nominal velocity, m/s (used during connect function)
+  double DY_MAX = 0;    // Maximum yaw velocity
 
   // Define dynamic constraint parameters
   double M_CONST =
@@ -74,6 +70,36 @@ struct PlannerConfig {
                              // used for vanilla RRT, not RRT-Connect)
   double MAX_TIME = 2.0;     // Maximum planning time allowed
   Eigen::Vector3d G_VEC;     // Maximum planning time allowed
+
+  // Define robot params and declare points used for validity checking
+  double ROBOT_L = 0.4;  // Length of robot body, m (0.6 cheetah, 0.554 ANYmal)
+  double ROBOT_W = 0.3;  // Width of robot body, m (0.256 cheetah, 0.232 ANYmal)
+  double ROBOT_H = 0.05;  // Vertical distance between leg base and bottom of
+                          // robot, m (0.1 cheetah, 0.04 ANYmal)
+  static const int num_reachability_points =
+      4;  // Number of points on body used to check reachability
+  static const int num_collision_points =
+      5;  // Number of points on body used to check for collisions
+  Eigen::Matrix<double, 3, num_reachability_points>
+      reachability_points_body;  // Positions of reachability points in the body
+                                 // frame
+  Eigen::Matrix<double, 3, num_collision_points>
+      collision_points_body;  // Positions of collision points in the body frame
+
+  void loadVectors() {
+    // Load the gravity vector
+    G_VEC << 0, 0, -G_CONST;
+
+    // Load the reachability test points
+    reachability_points_body << 0.5 * ROBOT_L, -0.5 * ROBOT_L, 0.5 * ROBOT_L,
+        -0.5 * ROBOT_L, 0.5 * ROBOT_W, 0.5 * ROBOT_W, -0.5 * ROBOT_W,
+        -0.5 * ROBOT_W, 0, 0, 0, 0;
+    // Load the collision test points
+    collision_points_body << 0.5 * ROBOT_L, -0.5 * ROBOT_L, 0.5 * ROBOT_L,
+        -0.5 * ROBOT_L, 0, 0.5 * ROBOT_W, 0.5 * ROBOT_W, -0.5 * ROBOT_W,
+        -0.5 * ROBOT_W, 0, -0.5 * ROBOT_H, -0.5 * ROBOT_H, -0.5 * ROBOT_H,
+        -0.5 * ROBOT_H, -0.5 * ROBOT_H;
+  };
 };
 
 // Define phase variable labels
@@ -180,12 +206,12 @@ void printVector(const std::vector<T> &vec) {
   std::cout << "{";
   for (auto val : vec) std::cout << val << ", ";
   std::cout << "\b\b}";
-}
+};
 template <typename T>
 void printVectorNewline(const std::vector<T> &vec) {
   printVector(vec);
   std::cout << std::endl;
-}
+};
 void printStateNewline(State vec);
 void printAction(Action a);
 void printActionNewline(Action a);
@@ -236,6 +262,9 @@ void getInterpPlan(const FullState &start_state,
 double getZFromState(const State &s, const PlannerConfig &planner_config);
 double getPitchFromState(const State &s, const PlannerConfig &planner_config);
 double getDzFromState(const State &s, const PlannerConfig &planner_config);
+double getZClearance(const Eigen::Vector3d pos,
+                     const PlannerConfig &planner_config);
+double getZClearance(const State &s, const PlannerConfig &planner_config);
 void setDz(State &s, const PlannerConfig &planner_config);
 void setDz(State &s, const Eigen::Vector3d &surf_norm);
 
@@ -262,9 +291,9 @@ bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm,
 // Action refinement (for improved feasiblity)
 bool refineAction(const State &s, Action &a,
                   const PlannerConfig &planner_config);
-bool refineStance(const State &s, double z_f, int phase, Action &a,
+bool refineStance(const State &s, int phase, Action &a,
                   const PlannerConfig &planner_config);
-bool refineFlight(const State &s, double z_f, double &t_f,
+bool refineFlight(const State &s, double &t_f,
                   const PlannerConfig &planner_config);
 
 // Instantaneous validity checking
@@ -273,6 +302,8 @@ bool isValidYawRate(const State &s, const Action &a, double t, int phase,
                     const PlannerConfig &planner_config);
 bool isValidState(const State &s, const PlannerConfig &planner_config,
                   int phase);
+bool isValidState(const State &s, const PlannerConfig &planner_config,
+                  int phase, double &max_height);
 
 // Trajectory validity checking
 bool isValidStateActionPair(const State &s, const Action &a,
