@@ -154,12 +154,12 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   g_max_.resize(g_);
 
   // Load dynamics constraint bounds
-  g_min_.segment(0, n_).fill(0);
-  g_max_.segment(0, n_).fill(0);
+  g_min_.segment(0, n_simple_).fill(0);
+  g_max_.segment(0, n_simple_).fill(0);
 
   // Load friction cone constraint bounds
-  g_min_.segment(n_, 16).fill(-2e19);
-  g_max_.segment(n_, 16).fill(0);
+  g_min_.segment(n_simple_, 16).fill(-2e19);
+  g_max_.segment(n_simple_, 16).fill(0);
   g_min_simple_ = g_min_;
   g_max_simple_ = g_max_;
 
@@ -174,18 +174,24 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   current_idx += g_simple_;
 
   // Load foot position and velocity constraint bounds
-  g_min_complex_.segment(current_idx, n_null_).fill(0);
-  g_max_complex_.segment(current_idx, n_null_).fill(0);
+  // TODO(jcnorby) : Add these back in
+  // g_min_complex_.segment(current_idx, n_null_).fill(0);
+  // g_max_complex_.segment(current_idx, n_null_).fill(0);
+  g_min_complex_.segment(current_idx, n_null_).fill(-2e19);
+  g_max_complex_.segment(current_idx, n_null_).fill(2e19);
   current_idx += n_null_;
 
   // Load knee constraint bounds
-  g_min_complex_.segment(current_idx, 4).fill(0);
-  g_max_complex_.segment(current_idx, 4).fill(10);
+  // g_min_complex_.segment(current_idx, 4).fill(0);
+  // g_max_complex_.segment(current_idx, 4).fill(10);
+  g_min_complex_.segment(current_idx, 4).fill(-2e19);
+  g_max_complex_.segment(current_idx, 4).fill(2e19);
   current_idx += 4;
 
   // Load motor model constraint bounds
   g_min_complex_.segment(current_idx, n_null_).fill(-2e19);
-  g_max_complex_.segment(current_idx, n_null_).fill(0);
+  // g_max_complex_.segment(current_idx, n_null_).fill(0);
+  g_max_complex_.segment(current_idx, n_null_).fill(2e19);
 
   num_complex_fe_ = 0;
   complexity_schedule_.setZero(N_ + 1);
@@ -207,7 +213,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
     }
   }
 
-  x_reference_ = Eigen::MatrixXd(n_, N_ + 1);
+  x_reference_ = Eigen::MatrixXd(n_simple_, N_ + 1);
   x_reference_.fill(0);
 
   ground_height_ = Eigen::VectorXd(N_ + 1);
@@ -310,13 +316,14 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
     get_state_var(x_l_matrix, i + 1).fill(-2e19);
     get_state_var(x_u_matrix, i + 1).fill(2e19);
 
+    // TODO(jcnorby) : Add these back in
     // Add bounds if not covered by panic variables
-    if (n_vec_[i] > n_slack_vec_[i]) {
-      get_state_var(x_l_matrix, i + 1).tail(n_null_) =
-          x_min_complex_.tail(n_null_);
-      get_state_var(x_u_matrix, i + 1).tail(n_null_) =
-          x_max_complex_.tail(n_null_);
-    }
+    // if (n_vec_[i] > n_slack_vec_[i]) {
+    //   get_state_var(x_l_matrix, i + 1).tail(n_null_) =
+    //       x_min_complex_.tail(n_null_);
+    //   get_state_var(x_u_matrix, i + 1).tail(n_null_) =
+    //       x_max_complex_.tail(n_null_);
+    // }
 
     // Constraints bound
     get_constraint_var(g_l_matrix, i) = g_min_complex_.head(g_vec_[i]);
@@ -394,8 +401,8 @@ bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
     }
 
     Eigen::MatrixXd uk = get_control_var(w, i) - u_nom;
-    Eigen::MatrixXd xk =
-        get_state_var(w, i + 1) - x_reference_.block(0, i + 1, n_, 1);
+    Eigen::MatrixXd xk = get_state_var(w, i + 1).head(n_simple_) -
+                         x_reference_.block(0, i + 1, n_simple_, 1);
 
     Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
     Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
@@ -440,8 +447,8 @@ bool quadNLP::eval_grad_f(Index n, const Number *x, bool new_x,
     }
 
     Eigen::MatrixXd uk = get_control_var(w, i) - u_nom;
-    Eigen::MatrixXd xk =
-        get_state_var(w, i + 1) - x_reference_.block(0, i + 1, n_, 1);
+    Eigen::MatrixXd xk = get_state_var(w, i + 1).head(n_simple_) -
+                         x_reference_.block(0, i + 1, n_simple_, 1);
 
     Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
     Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
@@ -603,7 +610,7 @@ void quadNLP::compute_nnz_jac_g() {
   }
 
   // Add slack variables
-  nnz_jac_g_ += 2 * 2 * n_ * N_;
+  nnz_jac_g_ += 2 * n_vars_slack_;
   nnz_step_jac_g_.resize(N_);
 
   // Size the NLP constraint Jacobian sparsity structure
@@ -806,8 +813,8 @@ void quadNLP::compute_nnz_h() {
         m_, getPrimalControlFEIndex(i), getPrimalControlFEIndex(i) + m_ - 1);
     Eigen::ArrayXi jCol_control_cost = iRow_control_cost;
     Eigen::ArrayXi iRow_state_cost =
-        Eigen::ArrayXi::LinSpaced(n_, getPrimalStateFEIndex(i + 1),
-                                  getPrimalStateFEIndex(i + 1) + n_ - 1);
+        Eigen::ArrayXi::LinSpaced(n_simple_, getPrimalStateFEIndex(i + 1),
+                                  getPrimalStateFEIndex(i + 1) + n_simple_ - 1);
     Eigen::ArrayXi jCol_state_cost = iRow_state_cost;
 
     get_control_cost_hess_var(iRow_h_, i) = iRow_control_cost.matrix();
@@ -866,6 +873,7 @@ void quadNLP::finalize_solution(SolverReturn status, Index n, const Number *x,
 }
 
 void quadNLP::shift_initial_guess() {
+  // TODO(jcnorby) fix this to account for different interfaces
   // Shift decision variables for 1 time step
   for (size_t i = 0; i < N_ - 1; i++) {
     get_dynamic_var(w0_, i) = get_dynamic_var(w0_, i + 1);
@@ -939,6 +947,7 @@ void quadNLP::shift_initial_guess() {
 }
 
 void quadNLP::update_solver(
+    // TODO(jcnorby) update this to account for complexity
     const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
     const Eigen::MatrixXd &foot_positions,
     const std::vector<std::vector<bool>> &contact_schedule,
@@ -1066,8 +1075,7 @@ void quadNLP::update_solver(
   // Update known leg input
   leg_input_ = control_traj.transpose();
   for (size_t i = 0; i < N_; i++) {
-    w0_.block(i * (n_ + m_) + leg_input_start_idx_, 0,
-              m_ - leg_input_start_idx_, 1) = leg_input_.col(i);
+    get_control_var(w0_, i).tail(12) = leg_input_.col(i);
   }
 
   // Update known leg input flag
