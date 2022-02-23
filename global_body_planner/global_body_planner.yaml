@@ -1,7 +1,7 @@
 global_body_planner:
   update_rate: 20
   num_calls: 1            # Number of times to call the planner
-  max_planning_time: 0.5  # Maximum amount of time to run the planner
+  max_planning_time: 0.1  # Maximum amount of time to run the planner
   start_state: [0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
   goal_state: [6.0,0.0,0.3,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
   state_error_threshold: 25 #0.25

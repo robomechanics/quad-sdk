@@ -1,20 +1,26 @@
 #ifndef EKF_ESTIMATOR_H
 #define EKF_ESTIMATOR_H
 
-#include <ros/ros.h>
-#include <eigen3/Eigen/Eigen>
-#include <sensor_msgs/JointState.h>
-#include <sensor_msgs/Imu.h>
-#include <std_msgs/String.h>
-#include <quad_msgs/RobotState.h>
 #include <quad_msgs/ContactMode.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_utils/quad_kd.h>
+#include <quad_utils/ros_utils.h>
+#include <ros/ros.h>
+#include <sensor_msgs/Imu.h>
+#include <sensor_msgs/JointState.h>
+#include <std_msgs/String.h>
 
-//! Implements online EKF based state estimation 
+#include <eigen3/Eigen/Eigen>
+#include <vector>
+
+//! Implements online EKF based state estimation
 /*!
-   EKFEstimator implements all estimator logic. It should expose a constructor that does any initialization required and an update method called at some frequency.
+   EKFEstimator implements all estimator logic. It should expose a constructor
+   that does any initialization required and an update method called at some
+   frequency.
 */
 class EKFEstimator {
-public:
+ public:
   /**
    * @brief Constructor for EKFEstimator
    * @param[in] nh ROS NodeHandle to publish and subscribe from
@@ -27,10 +33,17 @@ public:
    */
   void spin();
 
-private:
+ private:
+  /**
+   * @brief Callback function to handle new ground truth data
+   * @param[in] msg ground_truth_msg quad_msgs<RobotState>
+   */
+  void groundtruthCallback(const quad_msgs::RobotState::ConstPtr& msg);
+
   /**
    * @brief Callback function to handle new joint encoder data
-   * @param[in] joint_encoder_msg sensor_msgs<JointState> containing joint pos,vel,current
+   * @param[in] joint_encoder_msg sensor_msgs<JointState> containing joint
+   * pos,vel,current
    */
   void jointEncoderCallback(const sensor_msgs::JointState::ConstPtr& msg);
 
@@ -51,6 +64,15 @@ private:
    * @return state estimate of custom type RobotState
    */
   quad_msgs::RobotState updateStep();
+
+  const int numofStates = 6;
+  const int num_feet_ = 4;
+
+  /// Subscriber for ground_truth RobotState messages
+  ros::Subscriber state_ground_truth_sub_;
+
+  /// Last state ground_truth
+  quad_msgs::RobotState::ConstPtr last_state_msg_;
 
   /// Subscriber for joint encoder messages
   ros::Subscriber joint_encoder_sub_;
@@ -85,5 +107,25 @@ private:
   /// Maximum amount of time to still use joint state message in EKF data
   double joint_state_msg_time_diff_max_;
 
+  // state vector
+  Eigen::VectorXd x;
+
+  // old state vector
+  Eigen::VectorXd last_x;
+
+  // previous time variable
+  ros::Time last_time;
+
+  // IMU bias vector
+  Eigen::VectorXd imu_bias;
+
+  // IMU bias in acc x
+  double bias_x_;
+
+  // IMU bias in acc x
+  double bias_y_;
+
+  // IMU bias in acc z
+  double bias_z_;
 };
-#endif // EKF_ESTIMATOR_H
+#endif  // EKF_ESTIMATOR_H

@@ -25,7 +25,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## System dependencies are found with CMake's conventions
 find_package(Eigen3 REQUIRED)
-find_package(OsqpEigen REQUIRED)
+# find_package(OsqpEigen REQUIRED)
 find_package(PythonLibs 2.7)
 
 set(QPOASES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/qpOASES")
@@ -56,23 +56,12 @@ include_directories(
 )
 link_directories(/usr/local/lib)
 
-add_library(quadruped_mpc
-   src/quadruped_mpc.cpp
-)
-target_link_libraries(quadruped_mpc OsqpEigen::OsqpEigen )
-
-add_library(mpc_controller
-	src/mpc_controller.cpp
-)
-target_link_libraries(mpc_controller quadruped_mpc)
-add_dependencies(mpc_controller ${mpc_controller_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
 ## Declare a C++ library for control
 add_library(local_planner
   src/local_planner.cpp
   src/local_footstep_planner.cpp
 )
-target_link_libraries(local_planner quadruped_mpc)
+
 add_dependencies(local_planner ${local_planner_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 
@@ -80,16 +69,10 @@ add_dependencies(local_planner ${local_planner_EXPORTED_TARGETS} ${catkin_EXPORT
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(local_planner_node src/local_planner_node.cpp)
-add_executable(mpc_controller_node src/mpc_controller_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(local_planner_node
   local_planner
-  ${catkin_LIBRARIES}
-)
-
-target_link_libraries(mpc_controller_node
-  mpc_controller
   ${catkin_LIBRARIES}
 )
 
@@ -98,16 +81,11 @@ target_link_libraries(mpc_controller_node
 #############
 
 ## Google test file for local_planner library
-catkin_add_gtest(quadruped_mpc_test test/test_quadruped_mpc.cpp)
-target_link_libraries(quadruped_mpc_test quadruped_mpc ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
-
 catkin_add_gtest(local_footstep_planner_test test/test_local_footstep_planner.cpp)
 target_link_libraries(local_footstep_planner_test local_planner ${catkin_LIBRARIES})
 
 catkin_add_gtest(local_planner_test test/test_local_planner.cpp)
 target_link_libraries(local_planner_test local_planner ${catkin_LIBRARIES})
 
-catkin_add_gtest(mpc_controller_test test/test_mpc_controller.cpp)
-target_link_libraries(mpc_controller_test mpc_controller ${catkin_LIBRARIES})
 
 

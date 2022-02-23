@@ -3,7 +3,6 @@
 
 #include <eigen3/Eigen/Eigen>
 
-
 namespace math {
 /**
  * @brief Compute the Kronecker product. A composite array made of blocks of the
@@ -15,7 +14,6 @@ namespace math {
  * @return A result of the Kronecker product
  */
 Eigen::MatrixXd kron(const Eigen::MatrixXd &m1, const Eigen::MatrixXd &m2) {
-
   uint32_t m1r = m1.rows();
   uint32_t m1c = m1.cols();
   uint32_t m2r = m2.rows();
@@ -42,7 +40,6 @@ Eigen::MatrixXd kron(const Eigen::MatrixXd &m1, const Eigen::MatrixXd &m2) {
  */
 Eigen::MatrixXd block_diag(const Eigen::MatrixXd &m1,
                            const Eigen::MatrixXd &m2) {
-
   uint32_t m1r = m1.rows();
   uint32_t m1c = m1.cols();
   uint32_t m2r = m2.rows();
@@ -66,7 +63,6 @@ Eigen::MatrixXd block_diag(const Eigen::MatrixXd &m1,
  */
 Eigen::MatrixXd block_diag(const Eigen::MatrixXd &m1, const Eigen::MatrixXd &m2,
                            const Eigen::MatrixXd &m3) {
-
   uint32_t m1r = m1.rows();
   uint32_t m1c = m1.cols();
   uint32_t m2r = m2.rows();
@@ -92,10 +88,9 @@ Eigen::MatrixXd block_diag(const Eigen::MatrixXd &m1, const Eigen::MatrixXd &m2,
  * @return The new shape matrix
  */
 Eigen::MatrixXd reshape(Eigen::MatrixXd x, uint32_t r, uint32_t c) {
-
   Eigen::Map<Eigen::MatrixXd> rx(x.data(), r, c);
 
   return rx;
 }
-} // namespace math
+}  // namespace math
 #endif
