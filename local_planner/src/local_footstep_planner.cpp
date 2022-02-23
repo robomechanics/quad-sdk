@@ -158,9 +158,6 @@ void LocalFootstepPlanner::computeFootPlan(
     Eigen::MatrixXd &foot_accelerations) {
   // Loop through each foot to compute the new footholds
   for (int j = 0; j < num_feet_; j++) {
-    // Compute the number of timesteps corresponding to half the stance phase
-    int half_duty_cycle = (period_ * duty_cycles_[j]) / 2;
-
     // Loop through the horizon to identify instances of touchdown
     for (int i = 1; i < contact_schedule.size(); i++) {
       if (isNewContact(contact_schedule, i, j)) {
@@ -174,23 +171,45 @@ void LocalFootstepPlanner::computeFootPlan(
             body_vel_touchdown, ref_body_vel_touchdown, body_ang_vel_touchdown,
             ref_body_ang_vel_touchdown, grf_midstance;
 
-        // Compute the horizon index of midstance
-        int midstance = i + half_duty_cycle;
+        // Compute the number of timesteps corresponding to the end of stance
+        // phase
+        int end_of_stance = i + period_ * duty_cycles_[j];
 
-        // Compute body pose at midstance from either the trajectory or Raibert
-        // heuristic directly
-        if (midstance < horizon_length_) {
-          body_pos_midstance = body_plan.block<1, 3>(midstance, 0);
-          body_rpy_midstance = body_plan.block<1, 3>(midstance, 3);
-          grf_midstance = grf_plan.block<1, 3>(midstance, 3 * j);
+        // Compute the body plan including the stance phase
+        Eigen::MatrixXd body_plan_stance;
+        if (end_of_stance > horizon_length_ - 1) {
+          // Integrate the plan if out of the horizon
+          body_plan_stance = Eigen::MatrixXd(end_of_stance + 1, 12);
+          body_plan_stance.topRows(horizon_length_) = body_plan;
+          for (size_t k = horizon_length_; k < end_of_stance; k++) {
+            body_plan_stance.row(k) = computeFutureState(
+                k - (horizon_length_ - 1), body_plan.row(horizon_length_ - 1));
+          }
         } else {
-          Eigen::VectorXd body_plan_midstance =
-              computeFutureState(midstance - (horizon_length_ - 1),
-                                 body_plan.row(horizon_length_ - 1));
-          body_pos_midstance = body_plan_midstance.segment(0, 3);
-          body_rpy_midstance = body_plan_midstance.segment(3, 3);
-          grf_midstance = grf_plan.block<1, 3>(horizon_length_ - 1, 3 * j);
+          body_plan_stance = body_plan;
         }
+
+        // Compute the hip position during stance
+        std::vector<Eigen::Vector2d> P, R;
+        for (size_t k = i; k < end_of_stance; k++) {
+          quadKD_->worldToNominalHipFKWorldFrame(
+              j, body_plan_stance.row(k).segment(0, 3),
+              body_plan_stance.row(k).segment(3, 3), hip_position_midstance);
+
+          Eigen::Vector2d p;
+          p << hip_position_midstance.x(), hip_position_midstance.y();
+          P.push_back(p);
+        }
+
+        // Compute the minimum circle center
+        hip_position_midstance = welzlMinimumCircle(P, R);
+
+        // Get the corresponding height
+        grid_map::Position hip_position_grid_map = {hip_position_midstance.x(),
+                                                    hip_position_midstance.y()};
+        hip_position_midstance.z() = terrain_grid_.atPosition(
+            "z", terrain_grid_.getClosestPositionInMap(hip_position_grid_map),
+            grid_map::InterpolationMethods::INTER_NEAREST);
 
         // Get touchdown information for body state
         body_vel_touchdown = body_plan.block<1, 3>(i, 6);
@@ -198,28 +217,15 @@ void LocalFootstepPlanner::computeFootPlan(
         body_ang_vel_touchdown = body_plan.block<1, 3>(i, 9);
         ref_body_ang_vel_touchdown = ref_body_plan.block<1, 3>(i, 9);
 
-        // Compute nominal foot positions for kinematic and grf-projection
-        // measures
-        quadKD_->worldToNominalHipFKWorldFrame(
-            j, body_pos_midstance, body_rpy_midstance, hip_position_midstance);
-        grid_map::Position hip_position_grid_map = {hip_position_midstance.x(),
-                                                    hip_position_midstance.y()};
-
-        double hip_height =
-            hip_position_midstance.z() -
-            terrain_grid_.atPosition(
-                "z",
-                terrain_grid_.getClosestPositionInMap(hip_position_grid_map),
-                grid_map::InterpolationMethods::INTER_NEAREST);
-
+        // Compute dynamic shift
+        double body_height_touchdown = body_plan(i, 2);
         // Ref: Highly Dynamic Quadruped Locomotion via Whole-Body Impulse
         // Control and Model Predictive Control
-        centrifugal = std::sqrt(hip_height / 9.81) / 2 *
+        centrifugal = std::sqrt(body_height_touchdown / 9.81) / 2 *
                       body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
-
         // Ref: MIT Cheetah 3: Design and Control of a Robust, Dynamic Quadruped
         // Robot
-        vel_tracking = std::sqrt(hip_height / 9.81) *
+        vel_tracking = std::sqrt(body_height_touchdown / 9.81) *
                        (body_vel_touchdown - ref_body_vel_touchdown);
 
         // foot_position_grf =
