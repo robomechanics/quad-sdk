@@ -1,4 +1,5 @@
 #include <ros/ros.h>
+
 #include "quad_utils/robot_proxy.h"
 
 int main(int argc, char** argv) {
@@ -7,6 +8,6 @@ int main(int argc, char** argv) {
 
   RobotProxy robot_proxy(nh);
   robot_proxy.spin();
-  
+
   return 0;
 }

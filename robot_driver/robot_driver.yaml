@@ -12,7 +12,7 @@ robot_driver:
   stand_kp: [35, 35, 35]
   stand_kd: [1, 1, 1]
   stance_kp: [10,10,10]
-  stance_kd: [1, 1, 1]
+  stance_kd: [0.1, 0.1, 0.1]
   # stance_kp: [0, 0, 0]
   # stance_kd: [0, 0, 0]
   swing_kp: [10, 10, 10]

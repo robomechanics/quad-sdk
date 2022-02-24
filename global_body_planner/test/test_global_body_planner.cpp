@@ -1,5 +1,5 @@
-#include <ros/ros.h>
 #include <gtest/gtest.h>
+#include <ros/ros.h>
 
 #include "global_body_planner/global_body_planner.h"
 
@@ -9,7 +9,7 @@ TEST(GlobalBodyPlannerTest, testTrue) {
   EXPECT_EQ(1 + 1, 2);
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);
   ros::init(argc, argv, "global_body_planner_tester");
 

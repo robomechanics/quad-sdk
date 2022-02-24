@@ -21,7 +21,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
   quad_msgs::GRFArray &grf_array_msg)
 {
   
-  if ((last_local_plan_msg_ == NULL) || 
+  if ((last_local_plan_msg_ == NULL || last_body_force_estimate_msg_ == NULL) || 
     ((ros::Time::now() - last_local_plan_msg_->header.stamp).toSec() >= 0.1)) {
     
     return false;
