@@ -360,6 +360,20 @@ class quadNLP : public TNLP {
     return decision_var.block(slack_idxs_[idx], 0, 2 * n_slack_vec_[idx], 1);
   }
 
+  // Get the idx-th min panic variable (for (idx+1)-th state variable) from
+  // decision variable
+  template <typename T>
+  inline Eigen::Block<T> get_panic_var_min(T &decision_var, const int &idx) {
+    return get_panic_var(decision_var, idx).head(n_slack_vec_[idx]);
+  }
+
+  // Get the idx-th max panic variable (for (idx+1)-th state variable) from
+  // decision variable
+  template <typename T>
+  inline Eigen::Block<T> get_panic_var_max(T &decision_var, const int &idx) {
+    return get_panic_var(decision_var, idx).tail(n_slack_vec_[idx]);
+  }
+
   // Get the idx-th panic constraint (for (idx+1)-th state variable) from
   // constraint variable
   template <typename T>

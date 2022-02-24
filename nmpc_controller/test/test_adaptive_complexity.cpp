@@ -69,7 +69,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   std::chrono::steady_clock::time_point tic, toc;
   tic = std::chrono::steady_clock::now();
 
-  for (size_t i = 0; i < 10; i++) {
+  for (size_t i = 0; i < 2; i++) {
     tic = std::chrono::steady_clock::now();
 
     leg_planner_->computeLegPlan(

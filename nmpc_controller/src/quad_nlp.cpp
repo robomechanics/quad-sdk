@@ -247,6 +247,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
 }
 
 quadNLP::quadNLP(const quadNLP &nlp) {
+  std::cout << "In copy constructor" << std::endl;
   w0_ = nlp.w0_;
   z_L0_ = nlp.z_L0_;
   z_U0_ = nlp.z_U0_;
@@ -255,6 +256,8 @@ quadNLP::quadNLP(const quadNLP &nlp) {
   n_vec_ = nlp.n_vec_;
   g_vec_ = nlp.g_vec_;
   fe_idxs_ = nlp.fe_idxs_;
+  x_idxs_ = nlp.x_idxs_;
+  u_idxs_ = nlp.u_idxs_;
   m_ = nlp.m_;
   g_idxs_ = nlp.g_idxs_;
   slack_idxs_ = nlp.slack_idxs_;
@@ -895,17 +898,143 @@ void quadNLP::shift_initial_guess() {
   quadNLP old_nlp = *this;
 
   for (size_t i = 0; i < N_ - 1; i++) {
-    get_dynamic_var(w0_, i) = old_nlp.get_dynamic_var(old_nlp.w0_, i + 1);
-    get_dynamic_var(z_L0_, i) = old_nlp.get_dynamic_var(old_nlp.z_L0_, i + 1);
-    get_dynamic_var(z_U0_, i) = old_nlp.get_dynamic_var(old_nlp.z_U0_, i + 1);
-    get_constraint_var(lambda0_, i) =
-        old_nlp.get_constraint_var(lambda0_, i + 1);
+    std::cout << "old_nlp.get_dynamic_var(old_nlp.w0_, i + 1) = "
+              << old_nlp.get_dynamic_var(old_nlp.w0_, i + 1).transpose()
+              << std::endl;
 
-    get_panic_var(w0_, i) = old_nlp.get_panic_var(old_nlp.w0_, i + 1);
-    get_panic_var(z_L0_, i) = old_nlp.get_panic_var(old_nlp.z_L0_, i + 1);
-    get_panic_var(z_U0_, i) = old_nlp.get_panic_var(old_nlp.z_U0_, i + 1);
-    get_panic_constraint_var(lambda0_, i) =
-        old_nlp.get_panic_constraint_var(old_nlp.lambda0_, i + 1);
+    if (n_vec_[i] > old_nlp.n_vec_[i + 1]) {
+      // Update state and control for w0
+      get_state_var(w0_, i).head(old_nlp.n_vec_[i + 1]) =
+          old_nlp.get_state_var(old_nlp.w0_, i + 1);
+      get_control_var(w0_, i) = old_nlp.get_control_var(old_nlp.w0_, i + 1);
+
+      // Update state and control for z_L0_
+      get_state_var(z_L0_, i).head(old_nlp.n_vec_[i + 1]) =
+          old_nlp.get_state_var(old_nlp.z_L0_, i + 1);
+      get_control_var(z_L0_, i) = old_nlp.get_control_var(old_nlp.z_L0_, i + 1);
+
+      // Update state and control for z_U0_
+      get_state_var(z_U0_, i).head(old_nlp.n_vec_[i + 1]) =
+          old_nlp.get_state_var(old_nlp.z_U0_, i + 1);
+      get_control_var(z_U0_, i) = old_nlp.get_control_var(old_nlp.z_U0_, i + 1);
+
+      // Udate constraint variables
+      get_constraint_var(lambda0_, i).head(old_nlp.g_vec_[i + 1]) =
+          old_nlp.get_constraint_var(old_nlp.lambda0_, i + 1);
+
+      // Update panic variables
+      get_panic_var(w0_, i)
+          .head(n_slack_vec_[i])
+          .head(old_nlp.n_slack_vec_[i + 1]) =
+          old_nlp.get_panic_var(old_nlp.w0_, i + 1)
+              .head(old_nlp.n_slack_vec_[i + 1]);
+      get_panic_var(w0_, i)
+          .tail(n_slack_vec_[i])
+          .head(old_nlp.n_slack_vec_[i + 1]) =
+          old_nlp.get_panic_var(old_nlp.w0_, i + 1)
+              .tail(old_nlp.n_slack_vec_[i + 1]);
+
+      get_panic_var(z_L0_, i)
+          .head(n_slack_vec_[i])
+          .head(old_nlp.n_slack_vec_[i + 1]) =
+          old_nlp.get_panic_var(old_nlp.z_L0_, i + 1)
+              .head(old_nlp.n_slack_vec_[i + 1]);
+      get_panic_var(z_L0_, i)
+          .tail(n_slack_vec_[i])
+          .head(old_nlp.n_slack_vec_[i + 1]) =
+          old_nlp.get_panic_var(old_nlp.z_L0_, i + 1)
+              .tail(old_nlp.n_slack_vec_[i + 1]);
+
+      get_panic_var(z_U0_, i)
+          .head(n_slack_vec_[i])
+          .head(old_nlp.n_slack_vec_[i + 1]) =
+          old_nlp.get_panic_var(old_nlp.z_U0_, i + 1)
+              .head(old_nlp.n_slack_vec_[i + 1]);
+      get_panic_var(z_U0_, i)
+          .tail(n_slack_vec_[i])
+          .head(old_nlp.n_slack_vec_[i + 1]) =
+          old_nlp.get_panic_var(old_nlp.z_U0_, i + 1)
+              .tail(old_nlp.n_slack_vec_[i + 1]);
+
+      get_panic_var(lambda0_, i)
+          .head(n_slack_vec_[i])
+          .head(old_nlp.n_slack_vec_[i + 1]) =
+          old_nlp.get_panic_var(old_nlp.lambda0_, i + 1)
+              .head(old_nlp.n_slack_vec_[i + 1]);
+      get_panic_var(lambda0_, i)
+          .tail(n_slack_vec_[i])
+          .head(old_nlp.n_slack_vec_[i + 1]) =
+          old_nlp.get_panic_var(old_nlp.lambda0_, i + 1)
+              .tail(old_nlp.n_slack_vec_[i + 1]);
+
+      get_panic_var_constraint(lambda0_, i).head(n_slack_vec_[i]) =
+          old_nlp.get_panic_var_constraint(old_nlp.lambda0_, i + 1)
+              .head(old_nlp.n_slack_vec_[i])
+              .head(n_slack_vec_[i]);
+      get_panic_var_constraint(lambda0_, i).tail(n_slack_vec_[i]) =
+          old_nlp.get_panic_var_constraint(old_nlp.lambda0_, i + 1)
+              .tail(old_nlp.n_slack_vec_[i])
+              .head(n_slack_vec_[i]);
+
+    } else {
+      // Update state and control for w0
+      get_state_var(w0_, i) =
+          old_nlp.get_state_var(old_nlp.w0_, i + 1).head(n_vec_[i]);
+      get_control_var(w0_, i) = old_nlp.get_control_var(old_nlp.w0_, i + 1);
+
+      // Update state and control for z_L0_
+      get_state_var(z_L0_, i) =
+          old_nlp.get_state_var(old_nlp.z_L0_, i + 1).head(n_vec_[i]);
+      get_control_var(z_L0_, i) = old_nlp.get_control_var(old_nlp.z_L0_, i + 1);
+
+      // Update state and control for z_U0_
+      get_state_var(z_U0_, i) =
+          old_nlp.get_state_var(old_nlp.z_U0_, i + 1).head(n_vec_[i]);
+      get_control_var(z_U0_, i) = old_nlp.get_control_var(old_nlp.z_U0_, i + 1);
+
+      // Udate constraint variables
+      get_constraint_var(lambda0_, i) =
+          old_nlp.get_constraint_var(old_nlp.lambda0_, i + 1).head(g_vec_[i]);
+
+      // Update panic variables
+      get_panic_var(w0_, i).head(n_slack_vec_[i]) =
+          old_nlp.get_panic_var(old_nlp.w0_, i + 1)
+              .head(old_nlp.n_slack_vec_[i])
+              .head(n_slack_vec_[i]);
+      get_panic_var(w0_, i).tail(n_slack_vec_[i]) =
+          old_nlp.get_panic_var(old_nlp.w0_, i + 1)
+              .tail(old_nlp.n_slack_vec_[i])
+              .head(n_slack_vec_[i]);
+
+      get_panic_var(z_L0_, i).head(n_slack_vec_[i]) =
+          old_nlp.get_panic_var(old_nlp.z_L0_, i + 1)
+              .head(old_nlp.n_slack_vec_[i])
+              .head(n_slack_vec_[i]);
+      get_panic_var(z_L0_, i).tail(n_slack_vec_[i]) =
+          old_nlp.get_panic_var(old_nlp.z_L0_, i + 1)
+              .tail(old_nlp.n_slack_vec_[i])
+              .head(n_slack_vec_[i]);
+
+      get_panic_var(z_U0_, i).head(n_slack_vec_[i]) =
+          old_nlp.get_panic_var(old_nlp.z_U0_, i + 1)
+              .head(old_nlp.n_slack_vec_[i])
+              .head(n_slack_vec_[i]);
+      get_panic_var(z_U0_, i).tail(n_slack_vec_[i]) =
+          old_nlp.get_panic_var(old_nlp.z_U0_, i + 1)
+              .tail(old_nlp.n_slack_vec_[i])
+              .head(n_slack_vec_[i]);
+
+      get_panic_var_constraint(lambda0_, i).head(n_slack_vec_[i]) =
+          old_nlp.get_panic_var_constraint(old_nlp.lambda0_, i + 1)
+              .head(old_nlp.n_slack_vec_[i])
+              .head(n_slack_vec_[i]);
+      get_panic_var_constraint(lambda0_, i).tail(n_slack_vec_[i]) =
+          old_nlp.get_panic_var_constraint(old_nlp.lambda0_, i + 1)
+              .tail(old_nlp.n_slack_vec_[i])
+              .head(n_slack_vec_[i]);
+    }
+    std::cout << "get_dynamic_var(w0_, i) = "
+              << get_dynamic_var(w0_, i).transpose() << std::endl;
   }
 
   // New contact
@@ -1050,6 +1179,7 @@ void quadNLP::update_solver(
   // Update ground height
   ground_height_ = ground_height.transpose();
 
+  // TODO(jcnorby) add better warm start here for joint variables
   if (init) {
     w0_ = Eigen::VectorXd(n_vars_).setZero();
     z_L0_ = Eigen::VectorXd(n_vars_).Ones(n_vars_, 1);
