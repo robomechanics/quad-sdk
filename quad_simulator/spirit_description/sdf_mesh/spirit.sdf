@@ -260,8 +260,8 @@ SOFTWARE.
           </bounce>
           <friction>
             <ode>
-              <mu>0.2</mu>
-              <mu2>0.2</mu2>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
             </ode>
             <bullet>
               <rolling_friction>0.3</rolling_friction>
@@ -527,8 +527,8 @@ SOFTWARE.
           </bounce>
           <friction>
             <ode>
-              <mu>0.2</mu>
-              <mu2>0.2</mu2>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
             </ode>
             <bullet>
               <rolling_friction>0.3</rolling_friction>
@@ -795,8 +795,8 @@ SOFTWARE.
           </bounce>
           <friction>
             <ode>
-              <mu>0.2</mu>
-              <mu2>0.2</mu2>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
             </ode>
             <bullet>
               <rolling_friction>0.3</rolling_friction>
@@ -1062,8 +1062,8 @@ SOFTWARE.
           </bounce>
           <friction>
             <ode>
-              <mu>0.2</mu>
-              <mu2>0.2</mu2>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
             </ode>
             <bullet>
               <rolling_friction>0.3</rolling_friction>
@@ -1173,8 +1173,8 @@ SOFTWARE.
           </bounce>
           <friction>
             <ode>
-              <mu>0.2</mu>
-              <mu2>0.2</mu2>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
             </ode>
             <bullet>
               <rolling_friction>0.3</rolling_friction>
@@ -1257,8 +1257,8 @@ SOFTWARE.
           </bounce>
           <friction>
             <ode>
-              <mu>0.2</mu>
-              <mu2>0.2</mu2>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
             </ode>
             <bullet>
               <rolling_friction>0.3</rolling_friction>
@@ -1341,8 +1341,8 @@ SOFTWARE.
           </bounce>
           <friction>
             <ode>
-              <mu>0.2</mu>
-              <mu2>0.2</mu2>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
             </ode>
             <bullet>
               <rolling_friction>0.3</rolling_friction>
@@ -1425,8 +1425,8 @@ SOFTWARE.
           </bounce>
           <friction>
             <ode>
-              <mu>0.2</mu>
-              <mu2>0.2</mu2>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
             </ode>
             <bullet>
               <rolling_friction>0.3</rolling_friction>
