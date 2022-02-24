@@ -204,13 +204,6 @@ void LocalFootstepPlanner::computeFootPlan(
         // Compute the minimum circle center
         hip_position_midstance = welzlMinimumCircle(P, R);
 
-        // Get the corresponding height
-        grid_map::Position hip_position_grid_map = {hip_position_midstance.x(),
-                                                    hip_position_midstance.y()};
-        hip_position_midstance.z() = terrain_grid_.atPosition(
-            "z", terrain_grid_.getClosestPositionInMap(hip_position_grid_map),
-            grid_map::InterpolationMethods::INTER_NEAREST);
-
         // Get touchdown information for body state
         body_vel_touchdown = body_plan.block<1, 3>(i, 6);
         ref_body_vel_touchdown = ref_body_plan.block<1, 3>(i, 6);
@@ -220,7 +213,8 @@ void LocalFootstepPlanner::computeFootPlan(
         // Compute dynamic shift
         double body_height_touchdown = body_plan(i, 2);
         // Ref: Highly Dynamic Quadruped Locomotion via Whole-Body Impulse
-        // Control and Model Predictive Control (Centrifugal force and capture point)
+        // Control and Model Predictive Control (Centrifugal force and capture
+        // point)
         centrifugal = body_height_touchdown / 9.81 *
                       body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
         // Ref: MIT Cheetah 3: Design and Control of a Robust, Dynamic Quadruped
@@ -242,11 +236,10 @@ void LocalFootstepPlanner::computeFootPlan(
 
         if (!terrain_grid_.isInside(foot_position_grid_map)) {
           ROS_WARN(
-              "Foot position is outside the map. Steer the robot in "
-              "another direction");
-          foot_positions = foot_positions_current;
-          continue;
+              "computeFootPlan receives a position out of range, pick "
+              "the closest position in map!");
         }
+
         // Toe has 20cm radius so we need to shift the foot height from terrain
         foot_position_nominal.z() =
             terrain_grid_.atPosition(
@@ -366,6 +359,13 @@ void LocalFootstepPlanner::computeFootPlan(
 
             // Toe has 20cm radius so we need to shift the foot height from
             // terrain
+
+            if (!terrain_grid_.isInside(foot_position_next.head<2>())) {
+              ROS_WARN(
+                  "computeFootPlan prediction receives a position out of "
+                  "range, pick the closest position in map!");
+            }
+
             foot_position_next.z() =
                 terrain_grid_.atPosition(
                     "z",
@@ -560,16 +560,19 @@ Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
     if (obj > foothold_obj_threshold_) {
       // Add the offset back in and return this new foothold
       terrain_grid_.getPosition(*iterator, pos_valid);
-      // Shouldn't we update it?
       pos_valid += offset;
 
       if (!terrain_grid_.isInside(pos_valid)) {
+        ROS_WARN(
+            "getNearestValidFoothold receives a position out of range, pick "
+            "the closest position in map!");
+
         continue;
       }
 
       foot_position_valid << pos_valid.x(), pos_valid.y(),
           terrain_grid_.atPosition(
-              "z", pos_valid, grid_map::InterpolationMethods::INTER_LINEAR) +
+              "z", terrain_grid_.getClosestPositionInMap(pos_valid), grid_map::InterpolationMethods::INTER_LINEAR) +
               toe_radius;
       return foot_position_valid;
     }
