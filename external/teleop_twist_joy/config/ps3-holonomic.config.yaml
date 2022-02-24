@@ -3,7 +3,7 @@ axis_linear:
   y: 0
 scale_linear:
   x: 0.5
-  y: 0.5
+  y: 0.25
 scale_linear_turbo:
   x: 1.0
   y: 0.5
