@@ -253,6 +253,12 @@ class quadNLP : public TNLP {
           Eigen::VectorXd x_min_complex, Eigen::VectorXd x_max_complex,
           Eigen::VectorXd u_min, Eigen::VectorXd u_max);
 
+  /**
+   * @brief Custom deep copy constructor
+   * @param[in] nlp Object to be deep copied
+   */
+  quadNLP(const quadNLP &nlp);
+
   /** Default destructor */
   virtual ~quadNLP();
 
@@ -517,7 +523,6 @@ class quadNLP : public TNLP {
    *  knowing. (See Scott Meyers book, "Effective C++")
    */
   //@{
-  quadNLP(const quadNLP &);
 
   quadNLP &operator=(const quadNLP &);
   //@}

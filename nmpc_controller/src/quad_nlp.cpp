@@ -246,6 +246,22 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   compute_nnz_h();
 }
 
+quadNLP::quadNLP(const quadNLP &nlp) {
+  w0_ = nlp.w0_;
+  z_L0_ = nlp.z_L0_;
+  z_U0_ = nlp.z_U0_;
+  lambda0_ = nlp.lambda0_;
+  g0_ = nlp.g0_;
+  n_vec_ = nlp.n_vec_;
+  g_vec_ = nlp.g_vec_;
+  fe_idxs_ = nlp.fe_idxs_;
+  m_ = nlp.m_;
+  g_idxs_ = nlp.g_idxs_;
+  slack_idxs_ = nlp.slack_idxs_;
+  g_slack_idxs_ = nlp.g_slack_idxs_;
+  n_slack_vec_ = nlp.n_slack_vec_;
+}
+
 // Destructor
 quadNLP::~quadNLP() {}
 
@@ -875,17 +891,21 @@ void quadNLP::finalize_solution(SolverReturn status, Index n, const Number *x,
 void quadNLP::shift_initial_guess() {
   // TODO(jcnorby) fix this to account for different interfaces
   // Shift decision variables for 1 time step
-  for (size_t i = 0; i < N_ - 1; i++) {
-    get_dynamic_var(w0_, i) = get_dynamic_var(w0_, i + 1);
-    get_dynamic_var(z_L0_, i) = get_dynamic_var(z_L0_, i + 1);
-    get_dynamic_var(z_U0_, i) = get_dynamic_var(z_U0_, i + 1);
-    get_constraint_var(lambda0_, i) = get_constraint_var(lambda0_, i + 1);
 
-    get_panic_var(w0_, i) = get_panic_var(w0_, i + 1);
-    get_panic_var(z_L0_, i) = get_panic_var(z_L0_, i + 1);
-    get_panic_var(z_U0_, i) = get_panic_var(z_U0_, i + 1);
+  quadNLP old_nlp = *this;
+
+  for (size_t i = 0; i < N_ - 1; i++) {
+    get_dynamic_var(w0_, i) = old_nlp.get_dynamic_var(old_nlp.w0_, i + 1);
+    get_dynamic_var(z_L0_, i) = old_nlp.get_dynamic_var(old_nlp.z_L0_, i + 1);
+    get_dynamic_var(z_U0_, i) = old_nlp.get_dynamic_var(old_nlp.z_U0_, i + 1);
+    get_constraint_var(lambda0_, i) =
+        old_nlp.get_constraint_var(lambda0_, i + 1);
+
+    get_panic_var(w0_, i) = old_nlp.get_panic_var(old_nlp.w0_, i + 1);
+    get_panic_var(z_L0_, i) = old_nlp.get_panic_var(old_nlp.z_L0_, i + 1);
+    get_panic_var(z_U0_, i) = old_nlp.get_panic_var(old_nlp.z_U0_, i + 1);
     get_panic_constraint_var(lambda0_, i) =
-        get_panic_constraint_var(lambda0_, i + 1);
+        old_nlp.get_panic_constraint_var(old_nlp.lambda0_, i + 1);
   }
 
   // New contact
