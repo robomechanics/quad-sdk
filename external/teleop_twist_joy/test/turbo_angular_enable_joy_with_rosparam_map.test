@@ -1,0 +1,31 @@
+<launch>
+  <node pkg="teleop_twist_joy" name="teleop_twist_joy" type="teleop_node">
+    <rosparam>
+      axis_linear:
+        x: 1
+      axis_angular:
+        yaw: 0
+      scale_linear:
+        x: 1.0
+      scale_linear_turbo:
+        x: 2.0
+      scale_angular:
+        yaw: 1.0
+      scale_angular_turbo:
+        yaw: 2.0
+      enable_button: 0
+      enable_turbo_button: 1
+    </rosparam>
+  </node>
+
+  <test test-name="turbo_angular_enable_joy" pkg="teleop_twist_joy" type="test_joy_twist.py">
+    <rosparam>
+      publish_joy:
+        axes: [ 0.3, 0.4 ]
+        buttons: [ 1, 1 ]
+      expect_cmd_vel:
+        linear: { x: 0.8, y: 0, z: 0 }
+        angular: { x: 0, y: 0, z: 0.6 }
+    </rosparam>
+  </test>
+</launch>
