@@ -78,9 +78,9 @@ NMPCController::NMPCController(int type) {
 
   Eigen::VectorXd x_min_complex(n_ + n_null_), x_max_complex(n_ + n_null_);
   x_min_complex.segment(0, n_) = x_min;
-  x_min_complex.segment(n_, n_null_) = x_min_null;
+  x_min_complex.segment(n_, n_null_).fill(-2e19);  // = x_min_null;
   x_max_complex.segment(0, n_) = x_max;
-  x_max_complex.segment(n_, n_null_) = x_max_null;
+  x_max_complex.segment(n_, n_null_).fill(2e19);  // = x_max_null;
 
   mynlp_ = new quadNLP(type_, N_, n_, n_null_, m_, dt_, mu, panic_weights, Q, R,
                        Q_factor, R_factor, x_min, x_max, x_min_complex,
@@ -91,7 +91,7 @@ NMPCController::NMPCController(int type) {
   // app_->Options()->SetIntegerValue("max_iter", 100);
   // app_->Options()->SetStringValue("print_timing_statistics", "yes");
   app_->Options()->SetStringValue("linear_solver", "ma57");
-  app_->Options()->SetIntegerValue("print_level", 0);
+  app_->Options()->SetIntegerValue("print_level", 5);
   // app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
   app_->Options()->SetStringValue("fixed_variable_treatment",

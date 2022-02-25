@@ -247,7 +247,6 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
 }
 
 quadNLP::quadNLP(const quadNLP &nlp) {
-  std::cout << "In copy constructor" << std::endl;
   w0_ = nlp.w0_;
   z_L0_ = nlp.z_L0_;
   z_U0_ = nlp.z_U0_;
@@ -892,35 +891,38 @@ void quadNLP::finalize_solution(SolverReturn status, Index n, const Number *x,
 }
 
 void quadNLP::shift_initial_guess() {
-  // TODO(jcnorby) fix this to account for different interfaces
   // Shift decision variables for 1 time step
+  // quad_utils::FunctionTimer timer("shift_initial_guess");
 
   quadNLP old_nlp = *this;
 
   for (size_t i = 0; i < N_ - 1; i++) {
-    std::cout << "old_nlp.get_dynamic_var(old_nlp.w0_, i + 1) = "
-              << old_nlp.get_dynamic_var(old_nlp.w0_, i + 1).transpose()
-              << std::endl;
-
     if (n_vec_[i] > old_nlp.n_vec_[i + 1]) {
       // Update state and control for w0
       get_state_var(w0_, i).head(old_nlp.n_vec_[i + 1]) =
           old_nlp.get_state_var(old_nlp.w0_, i + 1);
+      get_state_var(w0_, i).tail(n_vec_[i] - old_nlp.n_vec_[i + 1]) =
+          x_null_nom_;
       get_control_var(w0_, i) = old_nlp.get_control_var(old_nlp.w0_, i + 1);
 
       // Update state and control for z_L0_
       get_state_var(z_L0_, i).head(old_nlp.n_vec_[i + 1]) =
           old_nlp.get_state_var(old_nlp.z_L0_, i + 1);
+      get_state_var(z_L0_, i).tail(n_vec_[i] - old_nlp.n_vec_[i + 1]).fill(1);
       get_control_var(z_L0_, i) = old_nlp.get_control_var(old_nlp.z_L0_, i + 1);
 
       // Update state and control for z_U0_
       get_state_var(z_U0_, i).head(old_nlp.n_vec_[i + 1]) =
           old_nlp.get_state_var(old_nlp.z_U0_, i + 1);
+      get_state_var(z_U0_, i).tail(n_vec_[i] - old_nlp.n_vec_[i + 1]).fill(1);
       get_control_var(z_U0_, i) = old_nlp.get_control_var(old_nlp.z_U0_, i + 1);
 
-      // Udate constraint variables
+      // Update constraint variables
       get_constraint_var(lambda0_, i).head(old_nlp.g_vec_[i + 1]) =
           old_nlp.get_constraint_var(old_nlp.lambda0_, i + 1);
+      get_constraint_var(lambda0_, i)
+          .tail(g_vec_[i] - old_nlp.g_vec_[i + 1])
+          .fill(1000);
 
       // Update panic variables
       get_panic_var(w0_, i)
@@ -967,12 +969,12 @@ void quadNLP::shift_initial_guess() {
           old_nlp.get_panic_var(old_nlp.lambda0_, i + 1)
               .tail(old_nlp.n_slack_vec_[i + 1]);
 
-      get_panic_var_constraint(lambda0_, i).head(n_slack_vec_[i]) =
-          old_nlp.get_panic_var_constraint(old_nlp.lambda0_, i + 1)
+      get_panic_constraint_var(lambda0_, i).head(n_slack_vec_[i]) =
+          old_nlp.get_panic_constraint_var(old_nlp.lambda0_, i + 1)
               .head(old_nlp.n_slack_vec_[i])
               .head(n_slack_vec_[i]);
-      get_panic_var_constraint(lambda0_, i).tail(n_slack_vec_[i]) =
-          old_nlp.get_panic_var_constraint(old_nlp.lambda0_, i + 1)
+      get_panic_constraint_var(lambda0_, i).tail(n_slack_vec_[i]) =
+          old_nlp.get_panic_constraint_var(old_nlp.lambda0_, i + 1)
               .tail(old_nlp.n_slack_vec_[i])
               .head(n_slack_vec_[i]);
 
@@ -1024,18 +1026,18 @@ void quadNLP::shift_initial_guess() {
               .tail(old_nlp.n_slack_vec_[i])
               .head(n_slack_vec_[i]);
 
-      get_panic_var_constraint(lambda0_, i).head(n_slack_vec_[i]) =
-          old_nlp.get_panic_var_constraint(old_nlp.lambda0_, i + 1)
+      get_panic_constraint_var(lambda0_, i).head(n_slack_vec_[i]) =
+          old_nlp.get_panic_constraint_var(old_nlp.lambda0_, i + 1)
               .head(old_nlp.n_slack_vec_[i])
               .head(n_slack_vec_[i]);
-      get_panic_var_constraint(lambda0_, i).tail(n_slack_vec_[i]) =
-          old_nlp.get_panic_var_constraint(old_nlp.lambda0_, i + 1)
+      get_panic_constraint_var(lambda0_, i).tail(n_slack_vec_[i]) =
+          old_nlp.get_panic_constraint_var(old_nlp.lambda0_, i + 1)
               .tail(old_nlp.n_slack_vec_[i])
               .head(n_slack_vec_[i]);
     }
-    std::cout << "get_dynamic_var(w0_, i) = "
-              << get_dynamic_var(w0_, i).transpose() << std::endl;
   }
+
+  // timer.reportStatistics();
 
   // New contact
   if ((contact_sequence_.col(N_ - 1) - contact_sequence_.col(N_ - 2)).norm() >
@@ -1179,16 +1181,19 @@ void quadNLP::update_solver(
   // Update ground height
   ground_height_ = ground_height.transpose();
 
-  // TODO(jcnorby) add better warm start here for joint variables
   if (init) {
     w0_ = Eigen::VectorXd(n_vars_).setZero();
     z_L0_ = Eigen::VectorXd(n_vars_).Ones(n_vars_, 1);
     z_U0_ = Eigen::VectorXd(n_vars_).Ones(n_vars_, 1);
-    lambda0_ = Eigen::VectorXd(n_constraints_).setZero();
+    lambda0_ = Eigen::VectorXd(n_constraints_);
+    lambda0_.fill(1000);
 
-    get_state_var(w0_, 0) = x_reference_.col(0);
+    get_state_var(w0_, 0).head(n_simple_) = x_reference_.col(0);
     for (size_t i = 0; i < N_; i++) {
-      get_state_var(w0_, i + 1) = x_reference_.col(i + 1);
+      get_state_var(w0_, i + 1).head(n_simple_) = x_reference_.col(i + 1);
+      if (complexity_schedule_[i + 1] == 1) {
+        get_state_var(w0_, i + 1).tail(n_null_) = x_null_nom_;
+      }
 
       double num_contacts = contact_sequence_.col(i).sum();
       if (num_contacts > 0) {
