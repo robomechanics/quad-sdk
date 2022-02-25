@@ -51,6 +51,7 @@ TEST(NMPCTest, testUtils) {
   nlp.update_complexity_schedule(complexity_schedule);
   EXPECT_EQ(nlp.n_vars_, (n * 3 + m) * N + n);
   int g = n + 16;
+  int g_complex = g + 2 * n_null + 4;
   EXPECT_EQ(nlp.n_constraints_, (g + 2 * n) * N);
 
   std::cout << "nlp.n_vars_ = " << nlp.n_vars_ << std::endl;
@@ -62,13 +63,14 @@ TEST(NMPCTest, testUtils) {
   std::cout << "nlp.sys_id_schedule_ = " << nlp.sys_id_schedule_.transpose()
             << std::endl;
   std::cout << "nlp.nnz_jac_g_ = " << nlp.nnz_jac_g_ << std::endl;
-  std::cout << "nlp.nnz_step_jac_g_[0] = " << nlp.nnz_step_jac_g_[0]
+  std::cout << "nlp.nnz_step_jac_g_ = " << nlp.nnz_step_jac_g_.transpose()
             << std::endl;
   std::cout << "nlp.iRow_jac_g_.sum() = " << nlp.iRow_jac_g_.sum() << std::endl;
   std::cout << "nlp.jCol_jac_g_.sum() = " << nlp.jCol_jac_g_.sum() << std::endl;
   std::cout << "nlp.nnz_h_ = " << nlp.nnz_h_ << std::endl;
   std::cout << "nlp.nnz_compact_h_ = " << nlp.nnz_compact_h_ << std::endl;
-  std::cout << "nlp.nnz_step_hess_[0] = " << nlp.nnz_step_hess_[0] << std::endl;
+  std::cout << "nlp.nnz_step_hess_ = " << nlp.nnz_step_hess_.transpose()
+            << std::endl;
   std::cout << "nlp.iRow_h_.sum() = " << nlp.iRow_h_.sum() << std::endl;
   std::cout << "nlp.jCol_h_.sum() = " << nlp.jCol_h_.sum() << std::endl;
   std::cout << "nlp.iRow_compact_h_.sum() = " << nlp.iRow_compact_h_.sum()
@@ -89,6 +91,37 @@ TEST(NMPCTest, testUtils) {
   // EXPECT_TRUE(nlp.iRow_compact_h_.sum() == 454092);
   // EXPECT_TRUE(nlp.jCol_compact_h_.sum() == 441852);
 
+  complexity_schedule.tail(1).fill(1);
+  nlp.update_complexity_schedule(complexity_schedule);
+
+  std::cout << "nlp.nlp.nnz_mat_ = " << nlp.nnz_mat_ << std::endl;
+  std::cout << "nlp.n_vars_ = " << nlp.n_vars_ << std::endl;
+  std::cout << "nlp.n_constraints_ = " << nlp.n_constraints_ << std::endl;
+  std::cout << "nlp.complexity_schedule_ = "
+            << nlp.complexity_schedule_.transpose() << std::endl;
+  std::cout << "nlp.sys_id_schedule_ = " << nlp.sys_id_schedule_.transpose()
+            << std::endl;
+  std::cout << "nlp.nnz_jac_g_ = " << nlp.nnz_jac_g_ << std::endl;
+  std::cout << "nlp.nnz_step_jac_g_ = " << nlp.nnz_step_jac_g_.transpose()
+            << std::endl;
+  std::cout << "nlp.iRow_jac_g_.sum() = " << nlp.iRow_jac_g_.sum() << std::endl;
+  std::cout << "nlp.jCol_jac_g_.sum() = " << nlp.jCol_jac_g_.sum() << std::endl;
+  std::cout << "nlp.nnz_h_ = " << nlp.nnz_h_ << std::endl;
+  std::cout << "nlp.nnz_compact_h_ = " << nlp.nnz_compact_h_ << std::endl;
+  std::cout << "nlp.nnz_step_hess_ = " << nlp.nnz_step_hess_.transpose()
+            << std::endl;
+  std::cout << "nlp.iRow_h_.sum() = " << nlp.iRow_h_.sum() << std::endl;
+  std::cout << "nlp.jCol_h_.sum() = " << nlp.jCol_h_.sum() << std::endl;
+  std::cout << "nlp.iRow_compact_h_.sum() = " << nlp.iRow_compact_h_.sum()
+            << std::endl;
+  std::cout << "nlp.jCol_compact_h_.sum() = " << nlp.jCol_compact_h_.sum()
+            << std::endl;
+
+  EXPECT_EQ(nlp.n_vars_, (n * 3 + m) * N + n_complex);
+  EXPECT_EQ(nlp.n_constraints_, g * (N - 1) + g_complex + 2 * n * N);
+  EXPECT_TRUE(nlp.nnz_jac_g_ == 4728 - 149 + 641);
+  EXPECT_TRUE(nlp.nnz_h_ == 2328 - 73 + 324);
+
   // Check num vars when all complex elements
   complexity_schedule.fill(1);
   nlp.update_complexity_schedule(complexity_schedule);
@@ -102,13 +135,14 @@ TEST(NMPCTest, testUtils) {
   std::cout << "nlp.n_vars_ = " << nlp.n_vars_ << std::endl;
   std::cout << "nlp.n_constraints_ = " << nlp.n_constraints_ << std::endl;
   std::cout << "nlp.nnz_jac_g_ = " << nlp.nnz_jac_g_ << std::endl;
-  std::cout << "nlp.nnz_step_jac_g_[0] = " << nlp.nnz_step_jac_g_[0]
+  std::cout << "nlp.nnz_step_jac_g_ = " << nlp.nnz_step_jac_g_.transpose()
             << std::endl;
   std::cout << "nlp.iRow_jac_g_.sum() = " << nlp.iRow_jac_g_.sum() << std::endl;
   std::cout << "nlp.jCol_jac_g_.sum() = " << nlp.jCol_jac_g_.sum() << std::endl;
   std::cout << "nlp.nnz_h_ = " << nlp.nnz_h_ << std::endl;
   std::cout << "nlp.nnz_compact_h_ = " << nlp.nnz_compact_h_ << std::endl;
-  std::cout << "nlp.nnz_step_hess_[0] = " << nlp.nnz_step_hess_[0] << std::endl;
+  std::cout << "nlp.nnz_step_hess_ = " << nlp.nnz_step_hess_.transpose()
+            << std::endl;
   std::cout << "nlp.iRow_h_.sum() = " << nlp.iRow_h_.sum() << std::endl;
   std::cout << "nlp.jCol_h_.sum() = " << nlp.jCol_h_.sum() << std::endl;
   std::cout << "nlp.iRow_compact_h_.sum() = " << nlp.iRow_compact_h_.sum()

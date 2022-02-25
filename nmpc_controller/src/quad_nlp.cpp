@@ -297,8 +297,8 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
   Eigen::Map<Eigen::VectorXd> g_u_matrix(g_u, m);
 
   // States bound
-  get_state_var(x_l_matrix, 0) = x_current_;
-  get_state_var(x_u_matrix, 0) = x_current_;
+  get_state_var(x_l_matrix, 0).head(n_simple_) = x_current_;
+  get_state_var(x_u_matrix, 0).head(n_simple_) = x_current_;
 
   for (int i = 0; i < N_; ++i) {
     // Inputs bound
@@ -445,6 +445,7 @@ bool quadNLP::eval_grad_f(Index n, const Number *x, bool new_x,
   Eigen::Map<const Eigen::VectorXd> w(x, n);
 
   Eigen::Map<Eigen::VectorXd> grad_f_matrix(grad_f, n);
+  grad_f_matrix.setZero();
 
   get_state_var(grad_f_matrix, 0).fill(0);
 
@@ -478,7 +479,7 @@ bool quadNLP::eval_grad_f(Index n, const Number *x, bool new_x,
     }
 
     get_control_var(grad_f_matrix, i) = R_i.asDiagonal() * uk;
-    get_state_var(grad_f_matrix, i + 1) = Q_i.asDiagonal() * xk;
+    get_state_var(grad_f_matrix, i + 1).head(n_simple_) = Q_i.asDiagonal() * xk;
     get_panic_var(grad_f_matrix, i).fill(panic_weights_);
   }
 
@@ -489,18 +490,23 @@ bool quadNLP::eval_grad_f(Index n, const Number *x, bool new_x,
 bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
   Eigen::Map<const Eigen::VectorXd> w(x, n);
   Eigen::Map<Eigen::VectorXd> g_matrix(g, m);
+  g_matrix.setZero();
+
+  // std::cout << "g_matrix.sum() before = " << g_matrix.sum() << std::endl;
+  // std::cout << "n = " << n << std::endl;
+  // std::cout << "m = " << m << std::endl;
 
   for (int i = 0; i < N_; ++i) {
     // Select the system ID
     int sys_id = sys_id_schedule_[i];
 
     // Load the params for this FE
-    Eigen::VectorXd pk(14);
+    Eigen::VectorXd pk(26);
     pk[0] = (i == 0) ? first_element_duration_ : dt_;
     pk[1] = mu_;
     // pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
     pk.segment(2, 12) = foot_pos_world_.row(i);
-    // pk.segment(14, 12) = foot_vel_world_.row(i);
+    pk.segment(14, 12) = 0 * foot_vel_world_.row(i);
 
     // Set up the work function
     casadi_int sz_arg;
@@ -525,10 +531,20 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     eval_vec_[sys_id][FUNC](arg, res, iw, _w, mem);
     eval_release_vec_[sys_id][FUNC](mem);
     eval_decref_vec_[sys_id][FUNC]();
+    // std::cout << "i = " << i << std::endl;
+    // std::cout << "g_matrix.sum() inter = " << g_matrix.sum() << std::endl;
   }
 
+  // std::cout << "g_matrix.sum() after inter, before panic = " <<
+  // g_matrix.sum()
+  //           << std::endl;
+
   for (int i = 0; i < N_; ++i) {
-    Eigen::VectorXd xk = get_state_var(w, i + 1);
+    // std::cout << "i = " << i << std::endl;
+    // std::cout << "get_state_var(w, i + 1) "
+    //           << get_state_var(w, i + 1).transpose() << std::endl;
+    // std::cout << "n_slack_vec_[i + 1] " << n_slack_vec_[i] << std::endl;
+    Eigen::VectorXd xk = get_state_var(w, i + 1).head(n_slack_vec_[i]);
     Eigen::VectorXd panick = get_panic_var(w, i);
 
     get_panic_constraint_var(g_matrix, i).topRows(n_slack_vec_[i]) =
@@ -536,7 +552,7 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     get_panic_constraint_var(g_matrix, i).bottomRows(n_slack_vec_[i]) =
         xk - panick.segment(n_slack_vec_[i], n_slack_vec_[i]);
   }
-
+  std::cout << "g_matrix.sum() after panic = " << g_matrix.sum() << std::endl;
   return true;
 }
 
@@ -554,18 +570,19 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
     Eigen::Map<const Eigen::VectorXd> w(x, n);
 
     Eigen::Map<Eigen::VectorXd> values_matrix(values, nele_jac);
+    values_matrix.setZero();
 
     for (int i = 0; i < N_; ++i) {
       // Select the system ID
       int sys_id = sys_id_schedule_[i];
 
       // Load the params for this FE
-      Eigen::VectorXd pk(14);
+      Eigen::VectorXd pk(26);
       pk[0] = (i == 0) ? first_element_duration_ : dt_;
       pk[1] = mu_;
       // pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
       pk.segment(2, 12) = foot_pos_world_.row(i);
-      // pk.segment(14, 12) = foot_vel_world_.row(i);
+      pk.segment(14, 12) = foot_vel_world_.row(i);
 
       // Set up the work function
       casadi_int sz_arg;
@@ -705,20 +722,22 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
     Eigen::Map<const Eigen::VectorXd> w(x, n);
 
     Eigen::Map<Eigen::VectorXd> values_compact_matrix(values, nele_hess);
+    values_compact_matrix.setZero();
     Eigen::Map<const Eigen::VectorXd> lambda_matrix(lambda, m);
     Eigen::VectorXd values_matrix(nnz_h_);
+    values_matrix.setZero();
 
     for (int i = 0; i < N_; ++i) {
       // Select the system ID
       int sys_id = sys_id_schedule_[i];
 
       // Load the params for this FE
-      Eigen::VectorXd pk(14);
+      Eigen::VectorXd pk(26);
       pk[0] = (i == 0) ? first_element_duration_ : dt_;
       pk[1] = mu_;
       // pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
       pk.segment(2, 12) = foot_pos_world_.row(i);
-      // // pk.segment(14, 12) = foot_vel_world_.row(i);
+      pk.segment(14, 12) = 0 * foot_vel_world_.row(i);
 
       // Set up the work function
       casadi_int sz_arg;
@@ -800,16 +819,6 @@ void quadNLP::compute_nnz_h() {
   // Add cost variables (only on simple model coordinates) and subtract first
   // step vars
   nnz_h_ = nnz_h_ + N_ * (n_simple_ + m_);
-
-  // Size the NLP constraint Hessian sparsity structure
-  //   iRow_h_ = Eigen::VectorXi(nnz_h_);
-  //   jCol_h_ = Eigen::VectorXi(nnz_h_);
-
-  //   // Hessian from cost
-  //   Eigen::ArrayXi iRow_cost =
-  //       Eigen::ArrayXi::LinSpaced(n_simple_ + m_, 0, n_simple_ + m_ - 1);
-  //   Eigen::ArrayXi jCol_cost =
-  //       Eigen::ArrayXi::LinSpaced(n_simple_ + m_, 0, n_simple_ + m_ - 1);
 
   iRow_h_ = Eigen::VectorXi(nnz_h_);
   jCol_h_ = Eigen::VectorXi(nnz_h_);
