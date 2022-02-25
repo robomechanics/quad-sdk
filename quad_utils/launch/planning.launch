@@ -5,6 +5,7 @@
     <arg name="global_planner" default="twist"/>
     <arg name="local_planner" default="full"/>
     <arg name="logging" default="false"/>
+    <arg name="terrain_estimation" default="false"/>
 
     <!-- Launch the node to publish the global body plan -->
     <group if="$(eval arg('global_planner') == 'fgmp')">
@@ -14,6 +15,15 @@
     <!-- Use twist input to local plan and no global plan -->
     <group if="$(eval arg('global_planner') == 'twist')">
         <param name="local_planner/use_twist_input" value="true"/>
+    </group>
+
+    <group if="$(arg terrain_estimation)">
+        <param name="local_planner/terrain_estimation" value="true"/>
+        <rosparam command="load" ns="local_planner" file="$(find quad_utils)/config/footstep_filters.yaml" />
+    </group>
+
+    <group unless="$(arg terrain_estimation)">
+        <param name="local_planner/terrain_estimation" value="false"/>
     </group>
 
     <node name="local_planner" pkg="local_planner" type="local_planner_node" output="screen"/>

@@ -1,6 +1,7 @@
 #ifndef LOCAL_PLANNER_H
 #define LOCAL_PLANNER_H
 
+#include <filters/filter_chain.h>
 #include <gtest/gtest_prod.h>
 #include <local_planner/local_footstep_planner.h>
 #include <math.h>
@@ -97,6 +98,11 @@ class LocalPlanner {
    * @brief Function to publish the local plan
    */
   void publishLocalPlan();
+
+  /**
+   * @brief Function to publish the footstep history
+   */
+  void publishFootStepHist();
 
   /// ROS subscriber for incoming terrain_map
   ros::Subscriber terrain_map_sub_;
@@ -278,6 +284,24 @@ class LocalPlanner {
 
   /// Toe radius
   double toe_radius = 0.02;
+
+  /// Footstep history
+  grid_map::GridMap foot_step_hist_;
+
+  /// Footstep history publisher
+  ros::Publisher foot_step_hist_pub_;
+
+  /// Filter chain.
+  filters::FilterChain<grid_map::GridMap> filterChain_;
+
+  /// Filter chain parameters name.
+  std::string filterChainParametersName_;
+
+  /// Temporary index of the foothold history
+  std::vector<std::vector<grid_map::Index>> tmp_foot_hist_idx_;
+  
+  /// Boolean of terrain estimation switch
+  bool terrain_estimation_;
 };
 
 #endif  // LOCAL_PLANNER_H

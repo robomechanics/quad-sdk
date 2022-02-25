@@ -193,12 +193,18 @@ class LocalFootstepPlanner {
     double height = this->terrain_grid_.atPosition(
         "z_smooth", terrain_grid_.getClosestPositionInMap(pos),
         grid_map::InterpolationMethods::INTER_LINEAR);
-    return (height);
+    return height;
   }
 
   inline double getTerrainSlope(double x, double y, double dx, double dy) {
-    std::array<double, 3> surf_norm =
-        this->terrain_.getSurfaceNormalFiltered(x, y);
+    grid_map::Position pos = {x, y};
+    Eigen::Vector3d surf_norm;
+    surf_norm << terrain_grid_.atPosition(
+        "normal_vectors_x", pos, grid_map::InterpolationMethods::INTER_NEAREST),
+        terrain_grid_.atPosition("normal_vectors_y", pos,
+                                 grid_map::InterpolationMethods::INTER_NEAREST),
+        terrain_grid_.atPosition("normal_vectors_z", pos,
+                                 grid_map::InterpolationMethods::INTER_NEAREST);
 
     double denom = dx * dx + dy * dy;
     if (denom <= 0 || surf_norm[2] <= 0) {
@@ -214,10 +220,15 @@ class LocalFootstepPlanner {
 
   inline void getTerrainSlope(double x, double y, double yaw, double &roll,
                               double &pitch) {
-    std::array<double, 3> surf_norm =
-        this->terrain_.getSurfaceNormalFiltered(x, y);
+    grid_map::Position pos = {x, y};
+    Eigen::Vector3d norm_vec;
+    norm_vec << terrain_grid_.atPosition(
+        "normal_vectors_x", pos, grid_map::InterpolationMethods::INTER_NEAREST),
+        terrain_grid_.atPosition("normal_vectors_y", pos,
+                                 grid_map::InterpolationMethods::INTER_NEAREST),
+        terrain_grid_.atPosition("normal_vectors_z", pos,
+                                 grid_map::InterpolationMethods::INTER_NEAREST);
 
-    Eigen::Vector3d norm_vec(surf_norm.data());
     Eigen::Vector3d axis = Eigen::Vector3d::UnitZ().cross(norm_vec);
     double ang = acos(
         std::max(std::min(Eigen::Vector3d::UnitZ().dot(norm_vec), 1.), -1.));

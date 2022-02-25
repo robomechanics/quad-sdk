@@ -3,7 +3,9 @@
 Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
 LocalPlanner::LocalPlanner(ros::NodeHandle nh)
-    : local_body_planner_nonlinear_(), local_footstep_planner_() {
+    : local_body_planner_nonlinear_(),
+      local_footstep_planner_(),
+      filterChain_("grid_map::GridMap") {
   nh_ = nh;
 
   // Load rosparams from parameter server
@@ -21,10 +23,14 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   quad_utils::loadROSParam(nh_, "topics/cmd_vel", cmd_vel_topic);
   quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
   quad_utils::loadROSParam(nh_, "topics/control/mode", control_mode_topic);
+  nh.param<bool>("local_planner/terrain_estimation", terrain_estimation_,
+                 false);
 
   // Setup pubs and subs
-  terrain_map_sub_ = nh_.subscribe(terrain_map_topic, 1,
-                                   &LocalPlanner::terrainMapCallback, this);
+  if (!terrain_estimation_) {
+    terrain_map_sub_ = nh_.subscribe(terrain_map_topic, 1,
+                                     &LocalPlanner::terrainMapCallback, this);
+  }
   body_plan_sub_ =
       nh_.subscribe(body_plan_topic, 1, &LocalPlanner::robotPlanCallback, this);
   robot_state_sub_ =
@@ -100,6 +106,29 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 
   // Initialize the plan index
   current_plan_index_ = 0;
+
+  if (terrain_estimation_) {
+    // Initialize footstep history publisher
+    foot_step_hist_pub_ =
+        nh_.advertise<grid_map_msgs::GridMap>("/foot_step_hist", 1, true);
+
+    // Initialize footstep history map
+    foot_step_hist_ = grid_map::GridMap({"z"});
+    foot_step_hist_.setFrameId("map");
+    foot_step_hist_.setGeometry(grid_map::Length(10.0, 8.0), 0.1,
+                                grid_map::Position(3.0, 0.0));
+    foot_step_hist_.clear("z");
+
+    // Initialize footstep history filter
+    filterChainParametersName_ = std::string("/local_planner/footstep_filters");
+    if (!filterChain_.configure(filterChainParametersName_, nh)) {
+      ROS_ERROR("Could not configure the filter chain!");
+      return;
+    }
+
+    // Initialize the temporary foothold index vector
+    tmp_foot_hist_idx_.resize(4);
+  }
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -261,9 +290,96 @@ void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg) {
   last_cmd_vel_msg_time_ = ros::Time::now();
 }
 
+void LocalPlanner::publishFootStepHist() {
+  if (robot_state_msg_ == NULL) return;
+
+  // Get the current body and foot positions into Eigen
+  current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
+  quad_utils::multiFootStateMsgToEigen(robot_state_msg_->feet,
+                                       current_foot_positions_world_,
+                                       current_foot_velocities_world_);
+
+  // Get plan index, compare with the previous one to check if this is a
+  // duplicated solve
+  if (first_plan_) {
+    current_plan_index_ = 0;
+  } else {
+    quad_utils::getPlanIndex(initial_timestamp_, dt_, current_plan_index_,
+                             first_element_duration_);
+  }
+
+  // Compute the contact schedule
+  local_footstep_planner_->computeContactSchedule(current_plan_index_,
+                                                  contact_schedule_);
+
+  for (size_t i = 0; i < 4; i++) {
+    // Check if it's on the ground
+    // if (contact_schedule_.at(0).at(i) &&
+    //     current_foot_velocities_world_.segment(3 * i, 3).norm() < 1e-3) {
+    if (contact_schedule_.at(0).at(i)) {
+      if (!tmp_foot_hist_idx_.at(i).empty()) {
+        // If there's temporary index, replace them all with the actual contact
+        // value
+        for (size_t j = 0; j < tmp_foot_hist_idx_.at(i).size(); j++) {
+          foot_step_hist_.at("z", tmp_foot_hist_idx_.at(i).at(j)) =
+              current_foot_positions_world_(3 * i + 2) - toe_radius;
+        }
+
+        // Clear the temporary index vector
+        tmp_foot_hist_idx_.at(i).clear();
+      }
+
+      // Add the foot position to the history
+      foot_step_hist_.atPosition(
+          "z", grid_map::Position(current_foot_positions_world_(3 * i + 0),
+                                  current_foot_positions_world_(3 * i + 1))) =
+          current_foot_positions_world_(3 * i + 2) - toe_radius;
+    } else if (terrain_grid_.exists("z_inpainted")) {
+      // Check if the current foot is lower than the records
+      if (current_foot_positions_world_(3 * i + 2) - toe_radius <
+          terrain_grid_.atPosition(
+              "z_inpainted",
+              grid_map::Position(current_foot_positions_world_(3 * i + 0),
+                                 current_foot_positions_world_(3 * i + 1)),
+              grid_map::InterpolationMethods::INTER_LINEAR)) {
+        // Temporary record the position
+        grid_map::Index tmp_idx;
+        foot_step_hist_.getIndex(
+            grid_map::Position(current_foot_positions_world_(3 * i + 0),
+                               current_foot_positions_world_(3 * i + 1)),
+            tmp_idx);
+        tmp_foot_hist_idx_.at(i).push_back(tmp_idx);
+
+        // Replace all the previous record with the latest position
+        for (size_t j = 0; j < tmp_foot_hist_idx_.at(i).size(); j++) {
+          foot_step_hist_.at("z", tmp_foot_hist_idx_.at(i).at(j)) =
+              current_foot_positions_world_(3 * i + 2) - toe_radius;
+        }
+      }
+    }
+  }
+
+  // Apply filter
+  if (!filterChain_.update(foot_step_hist_, terrain_grid_)) {
+    ROS_ERROR("Could not update the grid map filter chain!");
+    return;
+  }
+
+  // Update footstep planner
+  local_footstep_planner_->updateMap(terrain_grid_);
+
+  // Publish footstep history
+  grid_map_msgs::GridMap foot_step_hist_message;
+  grid_map::GridMapRosConverter::toMessage(terrain_grid_,
+                                           foot_step_hist_message);
+  foot_step_hist_pub_.publish(foot_step_hist_message);
+}
+
 void LocalPlanner::getStateAndReferencePlan() {
   // Make sure body plan and robot state data is populated
-  if (body_plan_msg_ == NULL || robot_state_msg_ == NULL) return;
+  if ((terrain_estimation_ && !terrain_grid_.exists("z_smooth")) ||
+      body_plan_msg_ == NULL || robot_state_msg_ == NULL)
+    return;
 
   // Get index within the global plan, compare with the previous one to check if
   // this is a duplicated solve
@@ -343,7 +459,9 @@ void LocalPlanner::getStateAndReferencePlan() {
 }
 
 void LocalPlanner::getStateAndTwistInput() {
-  if (robot_state_msg_ == NULL) return;
+  if ((terrain_estimation_ && !terrain_grid_.exists("z_smooth")) ||
+      robot_state_msg_ == NULL)
+    return;
 
   // Initializing foot positions if not data has arrived
   if (first_plan_) {
@@ -506,8 +624,8 @@ void LocalPlanner::getStateAndTwistInput() {
 }
 
 bool LocalPlanner::computeLocalPlan() {
-  if (terrain_.isEmpty() || body_plan_msg_ == NULL && !use_twist_input_ ||
-      robot_state_msg_ == NULL) {
+  if ((terrain_estimation_ && !terrain_grid_.exists("z_smooth")) ||
+      body_plan_msg_ == NULL && !use_twist_input_ || robot_state_msg_ == NULL) {
     ROS_WARN_STREAM(
         "ComputeLocalPlan function did not recieve the expected inputs");
     return false;
@@ -637,9 +755,13 @@ void LocalPlanner::spin() {
   while (ros::ok()) {
     ros::spinOnce();
 
+    if (terrain_estimation_) {
+      publishFootStepHist();
+    }
+
     // Wait until all required data has been received
-    if (terrain_.isEmpty() || body_plan_msg_ == NULL && !use_twist_input_ ||
-        robot_state_msg_ == NULL)
+    if ((terrain_estimation_ && !terrain_grid_.exists("z_smooth")) ||
+        body_plan_msg_ == NULL && !use_twist_input_ || robot_state_msg_ == NULL)
       continue;
 
     if (use_twist_input_) {

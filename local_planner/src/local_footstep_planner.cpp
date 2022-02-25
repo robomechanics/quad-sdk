@@ -208,8 +208,9 @@ void LocalFootstepPlanner::computeFootPlan(
         grid_map::Position hip_position_grid_map = {hip_position_midstance.x(),
                                                     hip_position_midstance.y()};
         hip_position_midstance.z() = terrain_grid_.atPosition(
-            "z", terrain_grid_.getClosestPositionInMap(hip_position_grid_map),
-            grid_map::InterpolationMethods::INTER_NEAREST);
+            "z_smooth",
+            terrain_grid_.getClosestPositionInMap(hip_position_grid_map),
+            grid_map::InterpolationMethods::INTER_LINEAR);
 
         // Get touchdown information for body state
         body_vel_touchdown = body_plan.block<1, 3>(i, 6);
@@ -250,9 +251,9 @@ void LocalFootstepPlanner::computeFootPlan(
         // Toe has 20cm radius so we need to shift the foot height from terrain
         foot_position_nominal.z() =
             terrain_grid_.atPosition(
-                "z",
+                "z_smooth",
                 terrain_grid_.getClosestPositionInMap(foot_position_grid_map),
-                grid_map::InterpolationMethods::INTER_NEAREST) +
+                grid_map::InterpolationMethods::INTER_LINEAR) +
             toe_radius;
 
         // Optimize the foothold location to get the final position
@@ -368,10 +369,10 @@ void LocalFootstepPlanner::computeFootPlan(
             // terrain
             foot_position_next.z() =
                 terrain_grid_.atPosition(
-                    "z",
+                    "z_smooth",
                     terrain_grid_.getClosestPositionInMap(
                         foot_position_next.head<2>()),
-                    grid_map::InterpolationMethods::INTER_NEAREST) +
+                    grid_map::InterpolationMethods::INTER_LINEAR) +
                 toe_radius;
 
           } else {
@@ -569,7 +570,8 @@ Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
 
       foot_position_valid << pos_valid.x(), pos_valid.y(),
           terrain_grid_.atPosition(
-              "z", pos_valid, grid_map::InterpolationMethods::INTER_LINEAR) +
+              "z_smooth", pos_valid,
+              grid_map::InterpolationMethods::INTER_LINEAR) +
               toe_radius;
       return foot_position_valid;
     }
