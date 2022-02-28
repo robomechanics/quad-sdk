@@ -39,7 +39,6 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   n_complex_ = n + n_null_;
   m_simple_ = m;
   g_simple_ = g_;
-  n0_ = (x0_complexity_ == 1) ? n_complex_ : n_simple_;
 
   // Added constraints include all simple constraints plus:
   //    n_null_ constraints for foot position and velocities
@@ -194,8 +193,8 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   g_max_complex_.segment(current_idx, n_null_).fill(2e19);
 
   num_complex_fe_ = 0;
-  complexity_schedule_.setZero(N_ + 1);
-  this->update_complexity_schedule(complexity_schedule_);
+  fixed_complexity_schedule_.setZero(N_ + 1);
+  this->update_complexity_schedule(fixed_complexity_schedule_);
 
   w0_ = Eigen::VectorXd(n_vars_).setZero();
   z_L0_ = Eigen::VectorXd(n_vars_).Ones(n_vars_, 1);
@@ -219,7 +218,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   ground_height_ = Eigen::VectorXd(N_ + 1);
   ground_height_.fill(-2e19);
 
-  x_current_ = Eigen::VectorXd(n0_);
+  x_current_ = Eigen::VectorXd(n_vec_[0]);
   x_current_.fill(0);
 
   contact_sequence_ = Eigen::MatrixXi(4, N_);
@@ -297,8 +296,8 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
   Eigen::Map<Eigen::VectorXd> g_u_matrix(g_u, m);
 
   // States bound
-  get_state_var(x_l_matrix, 0).head(n_simple_) = x_current_;
-  get_state_var(x_u_matrix, 0).head(n_simple_) = x_current_;
+  get_state_var(x_l_matrix, 0) = x_current_;
+  get_state_var(x_u_matrix, 0) = x_current_;
 
   for (int i = 0; i < N_; ++i) {
     // Inputs bound
@@ -336,12 +335,12 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
 
     // TODO(jcnorby) : Add these back in
     // Add bounds if not covered by panic variables
-    // if (n_vec_[i] > n_slack_vec_[i]) {
-    //   get_state_var(x_l_matrix, i + 1).tail(n_null_) =
-    //       x_min_complex_.tail(n_null_);
-    //   get_state_var(x_u_matrix, i + 1).tail(n_null_) =
-    //       x_max_complex_.tail(n_null_);
-    // }
+    if (n_vec_[i] > n_slack_vec_[i]) {
+      get_state_var(x_l_matrix, i + 1).tail(n_null_) =
+          x_min_complex_.tail(n_null_);
+      get_state_var(x_u_matrix, i + 1).tail(n_null_) =
+          x_max_complex_.tail(n_null_);
+    }
 
     // Constraints bound
     get_constraint_var(g_l_matrix, i) = g_min_complex_.head(g_vec_[i]);
@@ -506,7 +505,7 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     pk[1] = mu_;
     // pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
     pk.segment(2, 12) = foot_pos_world_.row(i);
-    pk.segment(14, 12) = 0 * foot_vel_world_.row(i);
+    pk.segment(14, 12) = foot_vel_world_.row(i);
 
     // Set up the work function
     casadi_int sz_arg;
@@ -531,13 +530,57 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     eval_vec_[sys_id][FUNC](arg, res, iw, _w, mem);
     eval_release_vec_[sys_id][FUNC](mem);
     eval_decref_vec_[sys_id][FUNC]();
-    // std::cout << "i = " << i << std::endl;
-    // std::cout << "g_matrix.sum() inter = " << g_matrix.sum() << std::endl;
-  }
 
-  // std::cout << "g_matrix.sum() after inter, before panic = " <<
-  // g_matrix.sum()
-  //           << std::endl;
+    // if (complexity_schedule_[i] == 1) {
+    //   std::cout << "get_dynamic_var(w, i) = "
+    //             << get_dynamic_var(w, i).transpose() << std::endl;
+    //   std::cout << "EOM constraint = "
+    //             << get_constraint_var(g_matrix, i).segment(0, 12).transpose()
+    //             << std::endl;
+    //   std::cout << "Friction constraint = "
+    //             << get_constraint_var(g_matrix, i).segment(12,
+    //             16).transpose()
+    //             << std::endl;
+    //   std::cout << "Foot position constraint = "
+    //             << get_constraint_var(g_matrix, i).segment(28,
+    //             12).transpose()
+    //             << std::endl;
+    //   std::cout << "Foot velocity constraint = "
+    //             << get_constraint_var(g_matrix, i).segment(40,
+    //             12).transpose()
+    //             << std::endl;
+    //   std::cout << "Knee height constraint = "
+    //             << get_constraint_var(g_matrix, i).segment(52, 4).transpose()
+    //             << std::endl;
+    //   std::cout << "Motor model pos constraint = "
+    //             << get_constraint_var(g_matrix, i).segment(56,
+    //             12).transpose()
+    //             << std::endl;
+    //   std::cout << "Motor model neg constraint = "
+    //             << get_constraint_var(g_matrix, i).segment(68,
+    //             12).transpose()
+    //             << std::endl
+    //             << std::endl;
+
+    //   Eigen::Vector3d body_pos = get_state_var(w, i + 1).segment(0, 3);
+    //   Eigen::Vector3d body_rpy = get_state_var(w, i + 1).segment(3, 6);
+    //   Eigen::Vector3d joint_state = get_state_var(w, i + 1).segment(12, 3);
+    //   Eigen::Vector3d foot_pos_world;
+    //   quad_utils::QuadKD quad_kd;
+    //   quad_kd.worldToFootFKWorldFrame(0, body_pos, body_rpy, joint_state,
+    //                                   foot_pos_world);
+    //   std::cout << "body_pos = " << body_pos.transpose() << std::endl;
+    //   std::cout << "body_rpy = " << body_rpy.transpose() << std::endl;
+    //   std::cout << "joint_state = " << joint_state.transpose() << std::endl;
+    //   std::cout << "foot_pos_world = " << foot_pos_world.transpose()
+    //             << std::endl;
+    //   std::cout << "foot_pos_world target = " << pk.segment(2, 3).transpose()
+    //             << std::endl;
+    //   std::cout << "constraint val = "
+    //             << (foot_pos_world - pk.segment(2, 3)).transpose() <<
+    //             std::endl;
+    // }
+  }
 
   for (int i = 0; i < N_; ++i) {
     // std::cout << "i = " << i << std::endl;
@@ -552,7 +595,7 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     get_panic_constraint_var(g_matrix, i).bottomRows(n_slack_vec_[i]) =
         xk - panick.segment(n_slack_vec_[i], n_slack_vec_[i]);
   }
-  std::cout << "g_matrix.sum() after panic = " << g_matrix.sum() << std::endl;
+
   return true;
 }
 
@@ -737,7 +780,7 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
       pk[1] = mu_;
       // pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
       pk.segment(2, 12) = foot_pos_world_.row(i);
-      pk.segment(14, 12) = 0 * foot_vel_world_.row(i);
+      pk.segment(14, 12) = foot_vel_world_.row(i);
 
       // Set up the work function
       casadi_int sz_arg;
@@ -816,8 +859,7 @@ void quadNLP::compute_nnz_h() {
     nnz_h_ += nnz_mat_(sys_id_schedule_[i], HESS);
   }
 
-  // Add cost variables (only on simple model coordinates) and subtract first
-  // step vars
+  // Add cost variables (only on simple model coordinates)
   nnz_h_ = nnz_h_ + N_ * (n_simple_ + m_);
 
   iRow_h_ = Eigen::VectorXi(nnz_h_);
@@ -904,6 +946,16 @@ void quadNLP::shift_initial_guess() {
   // quad_utils::FunctionTimer timer("shift_initial_guess");
 
   quadNLP old_nlp = *this;
+
+  // std::cout << "get_state_var(w0_, 0) = " << get_state_var(w0_,
+  // 0).transpose()
+  //           << std::endl;
+  // std::cout << "old_nlp.get_state_var(old_nlp.w0_, 1) = "
+  //           << old_nlp.get_state_var(old_nlp.w0_, 1).transpose() <<
+  //           std::endl;
+  // std::cout << "n_vec_[0] = " << n_vec_[0] << std::endl;
+  // std::cout << "n_vec_[1] = " << n_vec_[1] << std::endl;
+  // std::cout << "old_nlp.n_vec_[1] = " << old_nlp.n_vec_[1] << std::endl;
 
   for (size_t i = 0; i < N_ - 1; i++) {
     if (n_vec_[i] > old_nlp.n_vec_[i + 1]) {
@@ -1177,8 +1229,8 @@ void quadNLP::update_solver(
     }
   }
 
-  // Update initial states
-  x_current_ = initial_state.transpose();
+  // Update initial state
+  x_current_ = initial_state.transpose().head(n_vec_[0]);
 
   // Update reference trajectory
   // Local planner has row as N+1 horizon and col as states
@@ -1192,12 +1244,18 @@ void quadNLP::update_solver(
 
   if (init) {
     w0_ = Eigen::VectorXd(n_vars_).setZero();
-    z_L0_ = Eigen::VectorXd(n_vars_).Ones(n_vars_, 1);
-    z_U0_ = Eigen::VectorXd(n_vars_).Ones(n_vars_, 1);
+    z_L0_ = Eigen::VectorXd(n_vars_).Ones(n_vars_);
+    z_U0_ = Eigen::VectorXd(n_vars_).Ones(n_vars_);
     lambda0_ = Eigen::VectorXd(n_constraints_);
     lambda0_.fill(1000);
 
+    // Initialize current state
     get_state_var(w0_, 0).head(n_simple_) = x_reference_.col(0);
+    if (complexity_schedule_[0] == 1) {
+      get_state_var(w0_, 0).tail(n_null_) = x_null_nom_;
+    }
+
+    // Initialize future state predictions and controls
     for (size_t i = 0; i < N_; i++) {
       get_state_var(w0_, i + 1).head(n_simple_) = x_reference_.col(i + 1);
       if (complexity_schedule_[i + 1] == 1) {
@@ -1259,10 +1317,17 @@ void quadNLP::update_complexity_schedule(
     const Eigen::VectorXi &complexity_schedule) {
   // Update the complexity schedule
   quad_utils::FunctionTimer timer(__FUNCTION__);
-  this->complexity_schedule_ = complexity_schedule;
+
+  std::cout << "in update_complexity_schedule" << std::endl;
+
+  // Determine the (possibly new) size of the horizon
+  N_ = complexity_schedule.size() - 1;
+
+  // Update the complexity schedule by anding with fixed schedule
+  this->complexity_schedule_ =
+      complexity_schedule.cwiseMax(fixed_complexity_schedule_.head(N_ + 1));
 
   // Resize vectors appropriately
-  N_ = complexity_schedule.size() - 1;
   sys_id_schedule_.resize(N_);
   g_vec_.resize(N_);
   n_vec_.resize(N_ + 1);
@@ -1331,6 +1396,10 @@ void quadNLP::update_complexity_schedule(
   x_idxs_[N_] = curr_var_idx;
   curr_var_idx += n_vec_[N_];
 
+  if (n_vec_[0] != x_current_.size()) {
+    ROS_ERROR_THROTTLE(0.1, "n_vec_[0] != x_current_.size()!");
+  }
+
   // Update the total number of primal variables
   n_vars_primal_ = curr_var_idx;
 
@@ -1378,4 +1447,9 @@ void quadNLP::update_complexity_schedule(
 
   compute_nnz_jac_g();
   compute_nnz_h();
+
+  std::cout << "n_constraints_ = " << n_constraints_ << std::endl;
+  std::cout << "n_vars_ = " << n_vars_ << std::endl;
+  std::cout << "n_vars_primal_ = " << n_vars_primal_ << std::endl;
+  std::cout << "n_vars_slack_ = " << n_vars_slack_ << std::endl;
 }

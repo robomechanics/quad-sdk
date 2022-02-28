@@ -13,11 +13,6 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   std::shared_ptr<NMPCController> leg_planner_ =
       std::make_shared<NMPCController>(0);
 
-  Eigen::VectorXd current_state_(12);
-  current_state_.fill(0);
-  current_state_(2) = 0.25;
-  current_state_(9) = 0;
-
   Eigen::MatrixXd ref_body_plan_(N_ + 1, 12);
   ref_body_plan_.fill(0);
   ref_body_plan_.col(2).fill(0.3);
@@ -32,6 +27,21 @@ TEST(NMPCTest, testAdaptiveComplexity) {
     foot_positions_world_.row(i) << 0.2263, 0.098, 0, 0.2263, -0.098, 0,
         -0.2263, 0.098, 0, -0.2263, -0.098, 0;
   }
+
+  double abad_nom = 0;
+  double hip_nom = 1.57 * 0.5;
+  double knee_nom = 1.57;
+  Eigen::VectorXd x_null_nom_(24);
+  x_null_nom_ << abad_nom, hip_nom, knee_nom, abad_nom, hip_nom, knee_nom,
+      abad_nom, hip_nom, knee_nom, abad_nom, hip_nom, knee_nom, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0;
+
+  // Load the current state
+  Eigen::VectorXd current_state_(36);
+  current_state_.fill(0);
+  current_state_(2) = 0.25;
+  current_state_(9) = 0;
+  current_state_.segment(12, 24) = x_null_nom_;
 
   std::vector<std::vector<bool>> adpative_contact_schedule_;
   adpative_contact_schedule_.resize(N_);
@@ -63,15 +73,19 @@ TEST(NMPCTest, testAdaptiveComplexity) {
 
   Eigen::VectorXi complexity_schedule(N_ + 1), ref_primitive_id(N_ + 1);
   complexity_schedule.fill(0);
-  complexity_schedule.tail(5).fill(1);
-  complexity_schedule[10] = 1;
+  // complexity_schedule.tail(5).fill(1);
+  complexity_schedule.head(1).fill(1);
   ref_primitive_id.setZero();
 
   std::chrono::steady_clock::time_point tic, toc;
   tic = std::chrono::steady_clock::now();
 
-  for (size_t i = 0; i < 10; i++) {
+  for (size_t i = 0; i < 3; i++) {
     tic = std::chrono::steady_clock::now();
+
+    std::cout << "current_state_ = " << current_state_.transpose() << std::endl;
+    std::cout << "current_state_.size() = " << current_state_.size()
+              << std::endl;
 
     leg_planner_->computeLegPlan(
         current_state_, ref_body_plan_, foot_positions_world_,
@@ -89,7 +103,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
     // std::cout << "grf_plan_ = \n" << grf_plan_ << std::endl;
 
     // throw std::runtime_error("Stop");
-    current_state_ = body_plan_.row(1).transpose();
+    current_state_.head(12) = body_plan_.row(1).transpose();
     std::rotate(adpative_contact_schedule_.begin(),
                 adpative_contact_schedule_.begin() + 1,
                 adpative_contact_schedule_.end());

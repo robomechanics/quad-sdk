@@ -34,6 +34,7 @@
 #include "nmpc_controller/gen/eval_jac_g_leg_simple_to_complex.h"
 #include "nmpc_controller/gen/eval_jac_g_tail.h"
 #include "quad_utils/function_timer.h"
+#include "quad_utils/quad_kd.h"
 #include "quad_utils/tail_type.h"
 
 using namespace Ipopt;
@@ -77,9 +78,6 @@ class quadNLP : public TNLP {
 
   /// Nominal null state variables
   Eigen::VectorXd x_null_nom_;
-
-  /// Number of state variables in the initial state
-  int n0_;
 
   /// Declare the number of possible system ids (must match size of SystemID
   /// enum)
@@ -180,14 +178,11 @@ class quadNLP : public TNLP {
   // Time duration to the next plan index
   double first_element_duration_;
 
-  // Complexity for the current state
-  static const int x0_complexity_ = 0;
-
-  // Complexity for the last state
-  static const int xN_complexity_ = 0;
-
   /// Vector of ids for model complexity schedule
   Eigen::VectorXi complexity_schedule_;
+
+  /// Vector of ids for fixed model complexity schedule
+  Eigen::VectorXi fixed_complexity_schedule_;
 
   /// Vector of indices for relevant quantities
   Eigen::VectorXi fe_idxs_, u_idxs_, x_idxs_, slack_idxs_, g_idxs_,

@@ -91,7 +91,7 @@ NMPCController::NMPCController(int type) {
   // app_->Options()->SetIntegerValue("max_iter", 100);
   // app_->Options()->SetStringValue("print_timing_statistics", "yes");
   app_->Options()->SetStringValue("linear_solver", "ma57");
-  app_->Options()->SetIntegerValue("print_level", 0);
+  app_->Options()->SetIntegerValue("print_level", 5);
   // app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
   app_->Options()->SetStringValue("fixed_variable_treatment",
@@ -229,14 +229,36 @@ bool NMPCController::computePlan(
   status = app_->OptimizeTNLP(mynlp_);
 
   state_traj = Eigen::MatrixXd::Zero(N_ + 1, n_);
+  Eigen::MatrixXd state_null_traj = Eigen::MatrixXd::Zero(N_ + 1, n_null_);
   control_traj = Eigen::MatrixXd::Zero(N_, m_);
 
-  state_traj.row(0) = mynlp_->get_state_var(mynlp_->w0_, 0).transpose();
+  state_traj.row(0) =
+      mynlp_->get_state_var(mynlp_->w0_, 0).head(n_).transpose();
+
+  if (mynlp_->n_vec_[0] > n_) {
+    state_null_traj.row(0) =
+        mynlp_->get_state_var(mynlp_->w0_, 0).tail(n_null_).transpose();
+  } else {
+    state_null_traj.row(0).setZero();
+  }
+
   for (int i = 0; i < N_; ++i) {
     control_traj.row(i) = mynlp_->get_control_var(mynlp_->w0_, i).transpose();
     state_traj.row(i + 1) =
-        mynlp_->get_state_var(mynlp_->w0_, i + 1).transpose();
+        mynlp_->get_state_var(mynlp_->w0_, i + 1).head(n_).transpose();
+
+    if (mynlp_->n_vec_[i + 1] > n_) {
+      state_null_traj.row(i + 1) =
+          mynlp_->get_state_var(mynlp_->w0_, i + 1).tail(n_null_).transpose();
+    } else {
+      state_null_traj.row(i + 1).setZero();
+    }
   }
+
+  // std::cout << "state_null_traj pos = \n"
+  //           << state_null_traj.leftCols(n_null_ / 2) << std::endl;
+  // std::cout << "state_null_traj vel = \n"
+  //           << state_null_traj.rightCols(n_null_ / 2) << std::endl;
 
   if (status == Solve_Succeeded) {
     mynlp_->warm_start_ = true;

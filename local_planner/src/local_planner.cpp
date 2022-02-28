@@ -598,12 +598,19 @@ bool LocalPlanner::computeLocalPlan() {
         foot_positions_world_.col(3 * i + 2).array() - toe_radius;
   }
 
+  Eigen::VectorXd current_full_state(36), joint_pos(12), joint_vel(12);
+  current_full_state.segment(0, 12) = current_state_;
+  quad_utils::vectorToEigen(robot_state_msg_->joints.position, joint_pos);
+  quad_utils::vectorToEigen(robot_state_msg_->joints.velocity, joint_vel);
+  current_full_state.segment(12, 12) = joint_pos;
+  current_full_state.segment(24, 12) = joint_vel;
+
   // Compute leg plan with MPC, return if solve fails
   if (!local_body_planner_nonlinear_->computeLegPlan(
-            current_state_, ref_body_plan_, grf_positions,
-            foot_velocities_world_, contact_schedule_, ref_ground_height_,
-            first_element_duration_, same_plan_index_, ref_primitive_plan_,
-            complexity_schedule, body_plan_, grf_plan_))
+          current_state_, ref_body_plan_, grf_positions, foot_velocities_world_,
+          contact_schedule_, ref_ground_height_, first_element_duration_,
+          same_plan_index_, ref_primitive_plan_, complexity_schedule,
+          body_plan_, grf_plan_))
     return false;
 
   Eigen::VectorXi complexity_schedule_adaptive = getInvalidRegions();
