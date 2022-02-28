@@ -68,12 +68,11 @@ class EKFEstimator {
 
   /**
    * @brief predict quaternion k+1 from k using dt, angular velocity, and qk
-   * @param[in] dt time interval in second
    * @param[in] w Eigen::VectorXd angular velocity vector (3 * 1)
    * @param[in] q Eigen::VectorXd quaternion k vector (4 * 1)
    * @return Eigen vector of quaternion k+1 vector (4 * 1)
    */
-  Eigen::VectorXd quaternionDynamics(const double& dt, const Eigen::VectorXd& w,
+  Eigen::VectorXd quaternionDynamics(const Eigen::VectorXd& w,
                                      const Eigen::VectorXd& q);
 
   /**
@@ -99,10 +98,13 @@ class EKFEstimator {
    */
   void setNoise();
 
-  // position (3 * 1) + velocity (3 * 1) + quaternion (4 * 1) +
+  // number of states position (3 * 1) + velocity (3 * 1) + quaternion (4 * 1) +
   // feet position (12 * 1) + bias_acc (3 * 1) + bias_gyro (3 * 1)
   static const int num_state = 28;
+  // number of covariances equals number of states
   static const int num_cov = 27;
+  // measurement number equals feet positions (12)
+  static const int num_measure = 12;
   const int num_feet = 4;
 
   /// Subscriber for ground_truth RobotState messages
@@ -144,6 +146,9 @@ class EKFEstimator {
   /// Maximum amount of time to still use joint state message in EKF data
   double joint_state_msg_time_diff_max_;
 
+  /// QuadKD class
+  std::shared_ptr<quad_utils::QuadKD> quadKD_;
+
   // gravity vector (3 * 1)
   Eigen::VectorXd g;
 
@@ -174,10 +179,10 @@ class EKFEstimator {
   // process covariance matrix (27 * 27)
   Eigen::MatrixXd Q;
 
-  // measurement matrix
+  // measurement matrix (12 * 27)
   Eigen::MatrixXd H;
 
-  // measurement covariance matrix
+  // measurement covariance matrix (12 * 12)
   Eigen::MatrixXd R;
 
   // previous time variable
