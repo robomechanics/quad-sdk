@@ -74,7 +74,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   Eigen::VectorXi complexity_schedule(N_ + 1), ref_primitive_id(N_ + 1);
   complexity_schedule.fill(0);
   // complexity_schedule.tail(5).fill(1);
-  complexity_schedule.head(1).fill(1);
+  // complexity_schedule.head(3).fill(1);
   ref_primitive_id.setZero();
 
   std::chrono::steady_clock::time_point tic, toc;

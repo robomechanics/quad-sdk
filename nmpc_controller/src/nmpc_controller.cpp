@@ -76,11 +76,12 @@ NMPCController::NMPCController(int type) {
       u_min(control_lower_bound.data(), m_),
       u_max(control_upper_bound.data(), m_);
 
+  // TODO(jcnorby) add back in
   Eigen::VectorXd x_min_complex(n_ + n_null_), x_max_complex(n_ + n_null_);
   x_min_complex.segment(0, n_) = x_min;
-  x_min_complex.segment(n_, n_null_).fill(-2e19);  // = x_min_null;
+  x_min_complex.segment(n_, n_null_) = x_min_null;
   x_max_complex.segment(0, n_) = x_max;
-  x_max_complex.segment(n_, n_null_).fill(2e19);  // = x_max_null;
+  x_max_complex.segment(n_, n_null_) = x_max_null;
 
   mynlp_ = new quadNLP(type_, N_, n_, n_null_, m_, dt_, mu, panic_weights, Q, R,
                        Q_factor, R_factor, x_min, x_max, x_min_complex,
@@ -136,7 +137,7 @@ bool NMPCController::computeLegPlan(
   mynlp_->update_solver(initial_state, ref_traj, foot_positions,
                         contact_schedule, ref_ground_height,
                         first_element_duration, same_plan_index, require_init_);
-  require_init_ = false;
+  // require_init_ = false;
 
   // mynlp_->feet_location_ = foot_positions;
   mynlp_->foot_pos_world_ = foot_positions;
@@ -199,7 +200,7 @@ bool NMPCController::computeDistributedTailPlan(
                         contact_schedule, state_traj.bottomRows(N_),
                         control_traj, ref_ground_height.tail(N_),
                         first_element_duration, same_plan_index, require_init_);
-  require_init_ = false;
+  // require_init_ = false;
 
   bool success = this->computePlan(
       initial_state_with_tail, ref_traj_with_tail, foot_positions,

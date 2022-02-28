@@ -181,19 +181,23 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   current_idx += n_null_;
 
   // Load knee constraint bounds
-  // g_min_complex_.segment(current_idx, 4).fill(0);
-  // g_max_complex_.segment(current_idx, 4).fill(10);
-  g_min_complex_.segment(current_idx, 4).fill(-2e19);
-  g_max_complex_.segment(current_idx, 4).fill(2e19);
+  g_min_complex_.segment(current_idx, 4).fill(0);
+  g_max_complex_.segment(current_idx, 4).fill(10);
+  // g_min_complex_.segment(current_idx, 4).fill(-2e19);
+  // g_max_complex_.segment(current_idx, 4).fill(2e19);
   current_idx += 4;
 
   // Load motor model constraint bounds
   g_min_complex_.segment(current_idx, n_null_).fill(-2e19);
-  // g_max_complex_.segment(current_idx, n_null_).fill(0);
-  g_max_complex_.segment(current_idx, n_null_).fill(2e19);
+  g_max_complex_.segment(current_idx, n_null_).fill(0);
+  // g_max_complex_.segment(current_idx, n_null_).fill(2e19);
 
   num_complex_fe_ = 0;
   fixed_complexity_schedule_.setZero(N_ + 1);
+  fixed_complexity_schedule_[3] = 1;
+  fixed_complexity_schedule_[17] = 1;
+  // fixed_complexity_schedule_.tail(5).fill(1);
+  // fixed_complexity_schedule_.head(3).fill(1);
   this->update_complexity_schedule(fixed_complexity_schedule_);
 
   w0_ = Eigen::VectorXd(n_vars_).setZero();
@@ -333,9 +337,8 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
     get_state_var(x_l_matrix, i + 1).fill(-2e19);
     get_state_var(x_u_matrix, i + 1).fill(2e19);
 
-    // TODO(jcnorby) : Add these back in
     // Add bounds if not covered by panic variables
-    if (n_vec_[i] > n_slack_vec_[i]) {
+    if (n_vec_[i + 1] > n_slack_vec_[i]) {
       get_state_var(x_l_matrix, i + 1).tail(n_null_) =
           x_min_complex_.tail(n_null_);
       get_state_var(x_u_matrix, i + 1).tail(n_null_) =
@@ -947,6 +950,7 @@ void quadNLP::shift_initial_guess() {
 
   quadNLP old_nlp = *this;
 
+  std::cout << "In shift_initial_guess" << std::endl;
   // std::cout << "get_state_var(w0_, 0) = " << get_state_var(w0_,
   // 0).transpose()
   //           << std::endl;
@@ -1202,13 +1206,13 @@ void quadNLP::update_solver(
             .sum() > 1e-3) {
       // Contact change unexpectedly, update the warmstart info
       get_control_var(w0_, idx)
-          .block(leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1)
+          .segment(leg_input_start_idx_, m_ - leg_input_start_idx_)
           .fill(0);
       get_control_var(z_L0_, idx)
-          .block(leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1)
+          .segment(leg_input_start_idx_, m_ - leg_input_start_idx_)
           .fill(1);
       get_control_var(z_U0_, idx)
-          .block(leg_input_start_idx_, 0, m_ - leg_input_start_idx_, 1)
+          .segment(leg_input_start_idx_, m_ - leg_input_start_idx_)
           .fill(1);
 
       // Compute the number of contacts
@@ -1250,15 +1254,12 @@ void quadNLP::update_solver(
     lambda0_.fill(1000);
 
     // Initialize current state
-    get_state_var(w0_, 0).head(n_simple_) = x_reference_.col(0);
-    if (complexity_schedule_[0] == 1) {
-      get_state_var(w0_, 0).tail(n_null_) = x_null_nom_;
-    }
+    get_state_var(w0_, 0) = x_current_;
 
     // Initialize future state predictions and controls
     for (size_t i = 0; i < N_; i++) {
       get_state_var(w0_, i + 1).head(n_simple_) = x_reference_.col(i + 1);
-      if (complexity_schedule_[i + 1] == 1) {
+      if (n_vec_[i + 1] == n_complex_) {
         get_state_var(w0_, i + 1).tail(n_null_) = x_null_nom_;
       }
 
@@ -1326,6 +1327,12 @@ void quadNLP::update_complexity_schedule(
   // Update the complexity schedule by anding with fixed schedule
   this->complexity_schedule_ =
       complexity_schedule.cwiseMax(fixed_complexity_schedule_.head(N_ + 1));
+  std::cout << "complexity_schedule = " << complexity_schedule.transpose()
+            << std::endl;
+  std::cout << "fixed_complexity_schedule_ = "
+            << fixed_complexity_schedule_.transpose() << std::endl;
+  std::cout << "this->complexity_schedule_ = "
+            << this->complexity_schedule_.transpose() << std::endl;
 
   // Resize vectors appropriately
   sys_id_schedule_.resize(N_);
@@ -1353,22 +1360,22 @@ void quadNLP::update_complexity_schedule(
   // Loop through the horizon
   for (int i = 0; i < N_; i++) {
     // Update the number of complex elements
-    num_complex_fe_ += complexity_schedule[i];
+    num_complex_fe_ += complexity_schedule_[i];
 
     // Determine the system to assign to this finite element
-    if (complexity_schedule[i] == 0) {
+    if (complexity_schedule_[i] == 0) {
       sys_id_schedule_[i] =
-          (complexity_schedule[i + 1] == 0) ? SIMPLE : SIMPLE_TO_COMPLEX;
+          (complexity_schedule_[i + 1] == 0) ? SIMPLE : SIMPLE_TO_COMPLEX;
     } else {
       sys_id_schedule_[i] =
-          (complexity_schedule[i + 1] == 1) ? COMPLEX : COMPLEX_TO_SIMPLE;
+          (complexity_schedule_[i + 1] == 1) ? COMPLEX : COMPLEX_TO_SIMPLE;
     }
 
     // Update the number of state vars and constraints for this FE
-    n_vec_[i] = (complexity_schedule[i] == 1) ? n_complex_ : n_simple_;
+    n_vec_[i] = (complexity_schedule_[i] == 1) ? n_complex_ : n_simple_;
 
     n_slack_vec_[i] =
-        (complexity_schedule[i + 1] == 1 && apply_slack_to_complex_)
+        (complexity_schedule_[i + 1] == 1 && apply_slack_to_complex_)
             ? n_complex_
             : n_simple_;
     g_vec_[i] = nrow_mat_(sys_id_schedule_[i], FUNC);
@@ -1391,8 +1398,8 @@ void quadNLP::update_complexity_schedule(
     dynamic_hess_var_idx += nnz_mat_(sys_id_schedule_[i], HESS);
   }
 
-  num_complex_fe_ += complexity_schedule[N_];
-  n_vec_[N_] = (complexity_schedule[N_] == 1) ? n_complex_ : n_simple_;
+  num_complex_fe_ += complexity_schedule_[N_];
+  n_vec_[N_] = (complexity_schedule_[N_] == 1) ? n_complex_ : n_simple_;
   x_idxs_[N_] = curr_var_idx;
   curr_var_idx += n_vec_[N_];
 
@@ -1447,6 +1454,11 @@ void quadNLP::update_complexity_schedule(
 
   compute_nnz_jac_g();
   compute_nnz_h();
+
+  std::cout << "g_vec_ = " << g_vec_.transpose() << std::endl;
+  std::cout << "g_vec_.sum() = " << g_vec_.sum() << std::endl;
+  std::cout << "g_vec_.sum() + n_vars_slack_ = " << g_vec_.sum() + n_vars_slack_
+            << std::endl;
 
   std::cout << "n_constraints_ = " << n_constraints_ << std::endl;
   std::cout << "n_vars_ = " << n_vars_ << std::endl;
