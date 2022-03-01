@@ -260,33 +260,6 @@ class LocalFootstepPlanner {
     return swing_apex;
   }
 
-  // Compute maximum acceleration by the nominal swing trajectory
-  inline Eigen::Vector3d computeMaximumAcceleration(
-      const Eigen::Vector3d &foot_position_prev,
-      const Eigen::Vector3d &foot_velocity_prev,
-      const Eigen::Vector3d &foot_position_next,
-      const Eigen::Vector3d &foot_velocity_next, double swing_apex,
-      double swing_duration) {
-    // Initialize vector
-    Eigen::Vector3d foot_acceleration_max;
-    double tmp;
-
-    // Compute nominal acceleration, maximum should be at the first or the end
-    cubicHermiteSpline(foot_position_prev.x(), foot_velocity_prev.x(),
-                       foot_position_next.x(), foot_velocity_next.x(), 0,
-                       swing_duration * dt_, tmp, tmp,
-                       foot_acceleration_max.x());
-    cubicHermiteSpline(foot_position_prev.y(), foot_velocity_prev.y(),
-                       foot_position_next.y(), foot_velocity_next.y(), 0,
-                       swing_duration * dt_, tmp, tmp,
-                       foot_acceleration_max.y());
-    cubicHermiteSpline(foot_position_prev.z(), foot_velocity_prev.z(),
-                       swing_apex, 0, 0, swing_duration / 2 * dt_, tmp, tmp,
-                       foot_acceleration_max.z());
-
-    return foot_acceleration_max;
-  }
-
   // Compute future states by integrating linear states (hold orientation
   // states)
   inline Eigen::VectorXd computeFutureState(double step,

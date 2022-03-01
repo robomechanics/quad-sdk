@@ -308,11 +308,6 @@ void LocalFootstepPlanner::computeFootPlan(
       past_footholds_msg.feet[j].velocity.z = swing_apex;
     }
 
-    // Compute the acceleration maximum
-    Eigen::Vector3d foot_acceleration_max = computeMaximumAcceleration(
-        foot_position_prev_nominal, Eigen::Vector3d::Zero(), foot_position_next,
-        Eigen::Vector3d::Zero(), swing_apex, swing_duration);
-
     // Loop through the horizon
     for (int i = 0; i < contact_schedule.size(); i++) {
       // Create the foot state message
@@ -393,12 +388,6 @@ void LocalFootstepPlanner::computeFootPlan(
           swing_apex =
               computeSwingApex(j, body_plan_midair, foot_position_prev_nominal,
                                foot_position_next);
-
-          // Compute the acceleration maximum
-          foot_acceleration_max = computeMaximumAcceleration(
-              foot_position_prev_nominal, Eigen::Vector3d::Zero(),
-              foot_position_next, Eigen::Vector3d::Zero(), swing_apex,
-              swing_duration);
         }
 
         // Compute the period index of plan and current states
