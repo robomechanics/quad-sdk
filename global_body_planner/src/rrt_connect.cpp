@@ -6,88 +6,11 @@ RRTConnectClass::~RRTConnectClass() {}
 
 using namespace planning_utils;
 
-int RRTConnectClass::attemptConnect(State s_existing, State s, double t_s, StateActionResult &result,
-  const PlannerConfig &planner_config, int direction)
-{
-  // Enforce stance time greater than the kinematic check resolution to ensure that the action is useful
-  if (t_s <= planner_config.KINEMATICS_RES)
-    return TRAPPED;
-
-  // Initialize the start and goal states depending on the direction, as well as the stance and flight times
-  State s_start = (direction == FORWARD) ? s_existing : s;
-  State s_goal = (direction == FORWARD) ? s : s_existing;
-  double t_f = 0;
-  
-  // Calculate the action to connect the desired states
-  double x_td = s_start[0];
-  double y_td = s_start[1];
-  double z_td = s_start[2];
-  double dx_td = s_start[3];
-  double dy_td = s_start[4];
-  double dz_td = s_start[5];
-
-  double x_to = s_goal[0];
-  double y_to = s_goal[1];
-  double z_to = s_goal[2];
-  double dx_to = s_goal[3];
-  double dy_to = s_goal[4];
-  double dz_to = s_goal[5];
-
-  double p_td = s_start[6];
-  double dp_td = s_start[7];
-  double p_to = s_goal[6];
-  double dp_to = s_goal[7];
-
-  // result.a_new[0] = -(2.0*(3.0*x_td - 3.0*x_to + 2.0*dx_td*t_s + dx_to*t_s))/(t_s*t_s);
-  // result.a_new[1] = -(2.0*(3.0*y_td - 3.0*y_to + 2.0*dy_td*t_s + dy_to*t_s))/(t_s*t_s);
-  // result.a_new[2] = -(2.0*(3.0*z_td - 3.0*z_to + 2.0*dz_td*t_s + dz_to*t_s))/(t_s*t_s);
-  // result.a_new[3] = (2.0*(3.0*x_td - 3.0*x_to + dx_td*t_s + 2.0*dx_to*t_s))/(t_s*t_s);
-  // result.a_new[4] = (2.0*(3.0*y_td - 3.0*y_to + dy_td*t_s + 2.0*dy_to*t_s))/(t_s*t_s);
-  // result.a_new[5] = (2.0*(3.0*z_td - 3.0*z_to + dz_td*t_s + 2.0*dz_to*t_s))/(t_s*t_s);
-  // result.a_new[6] = t_s;
-  // result.a_new[7] = t_f;
-
-  result.a_new[0] = -(2.0*(3.0*x_td - 3.0*x_to + 2.0*dx_td*t_s + dx_to*t_s))/(t_s*t_s);
-  result.a_new[1] = -(2.0*(3.0*y_td - 3.0*y_to + 2.0*dy_td*t_s + dy_to*t_s))/(t_s*t_s);
-  result.a_new[2] = z_td - planner_config.terrain.getGroundHeight(x_td,y_td);
-  result.a_new[3] = (2.0*(3.0*x_td - 3.0*x_to + dx_td*t_s + 2.0*dx_to*t_s))/(t_s*t_s);
-  result.a_new[4] = (2.0*(3.0*y_td - 3.0*y_to + dy_td*t_s + 2.0*dy_to*t_s))/(t_s*t_s);
-  result.a_new[5] = z_to - planner_config.terrain.getGroundHeight(x_to,y_to);;
-  result.a_new[6] = t_s;
-  result.a_new[7] = t_f;
-
-  // If the connection results in an infeasible action, abort and return trapped
-  if (isValidAction(result.a_new,planner_config) == true)
-  {
-    // Check if the resulting state action pair is kinematically valid
-    bool isValid = (direction == FORWARD) ? (isValidStateActionPair(s_start, result.a_new, result, 
-      planner_config)) : (isValidStateActionPairReverse(s_goal,result.a_new, result, planner_config));
-
-    // If valid, great, return REACHED, otherwise try again to the valid state returned by isValidStateActionPair
-    if (isValid == true)
-      return REACHED;
-    else
-    {
-      if (attemptConnect(s_existing, result.s_new, result.t_new, result, planner_config, direction) == TRAPPED)
-        return TRAPPED;
-      else
-        return ADVANCED;
-    }
-  }
-  return TRAPPED;
-}
-
-int RRTConnectClass::attemptConnect(State s_existing, State s, StateActionResult &result,
-  const PlannerConfig &planner_config, int direction)
-{
-  // select desired stance time to enforce a nominal stance velocity
-  double t_s = poseDistance(s, s_existing)/planner_config.V_NOM;
-  return attemptConnect(s_existing, s, t_s, result, planner_config, direction);
-}
-
-int RRTConnectClass::connect(PlannerClass &T, State s, const PlannerConfig &planner_config, int direction)
+int RRTConnectClass::connect(PlannerClass &T, State s, const PlannerConfig &planner_config,
+  int direction, ros::Publisher &tree_pub)
 {
   // Find nearest neighbor
+  flipDirection(s);
   int s_near_index = T.getNearestNeighbor(s);
   State s_near = T.getVertex(s_near_index);
   StateActionResult result;
@@ -100,7 +23,10 @@ int RRTConnectClass::connect(PlannerClass &T, State s, const PlannerConfig &plan
     T.addVertex(s_new_index, result.s_new);
     T.addEdge(s_near_index, s_new_index, result.length);
     T.addAction(s_new_index, result.a_new);
-    // T.updateGValue(s_new_index, T.getGValue(s_near_index) + result.length);
+
+    #ifdef VISUALIZE_TREE
+      publishStateActionPair(s_near,result.a_new, s,planner_config, tree_viz_msg_, tree_pub);
+    #endif
   }
 
   return connect_result;
@@ -168,12 +94,13 @@ void RRTConnectClass::postProcessPath(std::vector<State> &state_sequence, std::v
       new_action_sequence.push_back(result.a_new);
       path_length_ += result.length;
       s = s_next;
+
     } else {
       new_state_sequence.push_back(old_state);
       new_action_sequence.push_back(old_action);
 
       // Recompute path length
-      isValidStateActionPairReverse(old_state,old_action,result,planner_config);
+      isValidStateActionPair(old_state,old_action,result,planner_config);
       path_length_ += result.length;
       s = old_state;
     }
@@ -187,7 +114,9 @@ void RRTConnectClass::postProcessPath(std::vector<State> &state_sequence, std::v
   std::chrono::duration<double> processing_time = t_end - t_start;
 }
 
-void RRTConnectClass::extractPath(PlannerClass Ta, PlannerClass Tb, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, const PlannerConfig &planner_config)
+void RRTConnectClass::extractPath(PlannerClass &Ta, PlannerClass &Tb,
+  std::vector<State> &state_sequence, std::vector<Action> &action_sequence,
+  const PlannerConfig &planner_config)
 {
   // Get both paths, remove the back of path_b and reverse it to align with path a
   std::vector<int> path_a = pathFromStart(Ta, Ta.getNumVertices()-1);
@@ -195,10 +124,16 @@ void RRTConnectClass::extractPath(PlannerClass Ta, PlannerClass Tb, std::vector<
 
   std::reverse(path_b.begin(), path_b.end());
   std::vector<Action> action_sequence_b = getActionSequenceReverse(Tb, path_b);
+  for (int i = 0; i < action_sequence_b.size(); i++) {
+    flipDirection(action_sequence_b[i]);
+  }
   path_b.erase(path_b.begin());
 
   state_sequence = getStateSequence(Ta, path_a);
   std::vector<State> state_sequence_b = getStateSequence(Tb, path_b);
+  for (int i = 0; i < state_sequence_b.size(); i++) {
+    flipDirection(state_sequence_b[i]);
+  }
   state_sequence.insert(state_sequence.end(), state_sequence_b.begin(), state_sequence_b.end());
 
   action_sequence = getActionSequence(Ta, path_a);
@@ -208,58 +143,100 @@ void RRTConnectClass::extractPath(PlannerClass Ta, PlannerClass Tb, std::vector<
   postProcessPath(state_sequence, action_sequence, planner_config);
 }
 
-void RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_start, State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence, double max_planning_time)
+void RRTConnectClass::extractClosestPath(PlannerClass &Ta, const State &s_goal,
+  std::vector<State> &state_sequence, std::vector<Action> &action_sequence,
+  const PlannerConfig &planner_config) {
+
+  std::vector<int> path_a = pathFromStart(Ta, Ta.getNearestNeighbor(s_goal));
+  state_sequence = getStateSequence(Ta, path_a);
+  action_sequence = getActionSequence(Ta, path_a);
+  postProcessPath(state_sequence, action_sequence, planner_config);
+}
+
+
+int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s_start,
+  State s_goal, std::vector<State> &state_sequence, std::vector<Action> &action_sequence,
+  ros::Publisher &tree_pub)
 {
 
+  // Perform validity checking on start and goal states
+  if (!isValidState(s_start, planner_config, LEAP_STANCE)) {
+    return INVALID_START_STATE;
+  }
+  // Set goal height to nominal distance above terrain
+  s_goal.pos[2] = planner_config.terrain.getGroundHeight(s_goal.pos[0], s_goal.pos[1]) + 
+    planner_config.H_NOM;
+  if (!isValidState(s_goal, planner_config, LEAP_STANCE)) {
+    return INVALID_GOAL_STATE;
+  }
+  if (poseDistance(s_start, s_goal) <= 1e-1) {
+    return INVALID_START_GOAL_EQUAL;
+  }
+
+  // Initialize timing information
   auto t_start_total_solve = std::chrono::steady_clock::now();
   auto t_start_current_solve = std::chrono::steady_clock::now();
+  int result;
 
-  PlannerClass Ta;
-  PlannerClass Tb;
+  PlannerClass Ta(FORWARD);
+  PlannerClass Tb(REVERSE);
   Ta.init(s_start);
+  flipDirection(s_goal);
   Tb.init(s_goal);
 
-  anytime_horizon = poseDistance(s_start, s_goal)/planning_rate_estimate;
+  #ifdef VISUALIZE_TREE
+    tree_viz_msg_.markers.clear();
+    tree_viz_msg_.markers.resize(1);
+  #endif
 
-  while(true)
+  anytime_horizon_init = 0.01;
+  anytime_horizon = std::max(poseDistance(s_start, s_goal)/
+    planning_rate_estimate, anytime_horizon_init);
+
+  while(true && ros::ok())
   {
     auto t_current = std::chrono::steady_clock::now();
     std::chrono::duration<double> total_elapsed = t_current - t_start_total_solve;
     std::chrono::duration<double> current_elapsed = t_current - t_start_current_solve;
-    
-    if(current_elapsed.count() >= anytime_horizon)
-    {
-      if(total_elapsed.count() >= max_planning_time)
+
+    #ifndef VISUALIZE_TREE
+      if(total_elapsed.count() >= planner_config.MAX_TIME)
       {
-        std::cout << "Failed, exiting" << std::endl;
         elapsed_to_first_ = total_elapsed;
-        success_ = 0;
         num_vertices_ = (Ta.getNumVertices() + Tb.getNumVertices());
-        return;
+        break;
       }
 
-      auto t_start_current_solve = std::chrono::steady_clock::now();
-      anytime_horizon = anytime_horizon*horizon_expansion_factor;
-      // std::cout << "Failed, retrying with horizon of " << anytime_horizon << "s" << std::endl;
-      Ta = PlannerClass();
-      Tb = PlannerClass();
-      Ta.init(s_start);
-      Tb.init(s_goal);
-      continue;
-    }
+      if(current_elapsed.count() >= anytime_horizon)
+      {
+        auto t_start_current_solve = std::chrono::steady_clock::now();
+        anytime_horizon = anytime_horizon*horizon_expansion_factor;
+        Ta = PlannerClass(FORWARD);
+        Tb = PlannerClass(REVERSE);
+        tree_viz_msg_.markers.clear();
+        Ta.init(s_start);
+        Tb.init(s_goal);
+        continue;
+      }
+    #endif
 
     // Generate random s
     State s_rand = Ta.randomState(planner_config);
 
-    static int i = 0;
-
-    if (isValidState(s_rand, planner_config, STANCE))
+    if (isValidState(s_rand, planner_config, LEAP_STANCE))
     {
-      if (extend(Ta, s_rand, planner_config, FORWARD) != TRAPPED)
+
+      if (extend(Ta, s_rand, planner_config, FORWARD, tree_pub) != TRAPPED)
       {
         State s_new = Ta.getVertex(Ta.getNumVertices()-1);
 
-        if(connect(Tb, s_new, planner_config, REVERSE) == REACHED)
+        #ifdef VISUALIZE_TREE
+          Action a_new = Ta.getAction(Ta.getNumVertices()-1);
+          State s_parent = Ta.getVertex(Ta.getPredecessor(Ta.getNumVertices()-1));
+          publishStateActionPair(s_parent,a_new, s_rand, planner_config, tree_viz_msg_, tree_pub);
+        #endif
+
+        if(connect(Tb, s_new, planner_config, FORWARD, tree_pub) == REACHED)
         {
           goal_found = true;
 
@@ -273,13 +250,19 @@ void RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
 
     s_rand = Tb.randomState(planner_config);
 
-    if (isValidState(s_rand, planner_config, STANCE))
+    if (isValidState(s_rand, planner_config, LEAP_STANCE))
     {
-      if (extend(Tb, s_rand, planner_config, REVERSE) != TRAPPED)
+      if (extend(Tb, s_rand, planner_config, FORWARD, tree_pub) != TRAPPED)
       {
         State s_new = Tb.getVertex(Tb.getNumVertices()-1);
 
-        if(connect(Ta, s_new, planner_config, FORWARD) == REACHED)
+        #ifdef VISUALIZE_TREE
+          Action a_new = Tb.getAction(Tb.getNumVertices()-1);
+          State s_parent = Tb.getVertex(Tb.getPredecessor(Tb.getNumVertices()-1));
+          publishStateActionPair(s_parent,a_new, s_rand, planner_config, tree_viz_msg_, tree_pub);
+        #endif
+
+        if(connect(Ta, s_new, planner_config, FORWARD, tree_pub) == REACHED)
         {
           goal_found = true;
 
@@ -292,13 +275,16 @@ void RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
     }
   }
 
+
   num_vertices_ = (Ta.getNumVertices() + Tb.getNumVertices());
 
   if (goal_found == true)
   {
     extractPath(Ta, Tb, state_sequence, action_sequence, planner_config);
+    result = VALID;
   } else {
-    std::cout << "Path not found" << std::endl;
+    extractClosestPath(Ta, s_goal, state_sequence, action_sequence, planner_config);
+    result = (state_sequence.size()>1) ? VALID_PARTIAL : UNSOLVED;
   }
 
   auto t_end = std::chrono::steady_clock::now();
@@ -307,6 +293,9 @@ void RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config, State s
   path_duration_ = 0.0;
   for (Action a : action_sequence)
   {
-    path_duration_ += (a[6] + a[7]);
+    path_duration_ += (a.t_s_leap + a.t_f + a.t_s_land);
   }
+  dist_to_goal_ = poseDistance(s_goal, state_sequence.back());
+
+  return result;
 }

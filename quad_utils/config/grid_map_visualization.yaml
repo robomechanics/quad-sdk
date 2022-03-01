@@ -11,3 +11,11 @@ grid_map_visualization:
        layer: z
        data_min: 0.08
        data_max: -0.16
+    - name: surface_normals
+      type: vectors
+      params:
+        layer_prefix: normal_vectors_
+        position_layer: z
+        scale: 0.06
+        line_width: 0.005
+        color: 15600153 # red

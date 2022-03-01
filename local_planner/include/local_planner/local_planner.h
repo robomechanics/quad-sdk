@@ -81,8 +81,8 @@ private:
   void grfCallback(const quad_msgs::GRFArray::ConstPtr& msg);
 
   /**
-   * @brief Callback function to handle new GRF estimates
-   * @param[in] msg the message contining GRF data
+   * @brief Callback function to handle new contact sensing information
+   * @param[in] msg the message contining contact sensing data
    */
   void contactSensingCallback(const std_msgs::ByteMultiArray::ConstPtr& msg);
 
@@ -113,7 +113,7 @@ private:
   void publishFootStepHist();
 
   /**
-   * @brief Function to publish the footstep history
+   * @brief Function to handle contact sensing
    */
   void contactSensing();
 
@@ -244,9 +244,6 @@ private:
   /// Contact schedule
   std::vector<std::vector<bool>> contact_schedule_;
 
-  /// Adaptive contact schedule
-  std::vector<std::vector<bool>> adaptive_contact_schedule_;
-
   /// Matrix of continuous foot positions in world frame
   Eigen::MatrixXd foot_positions_world_;
 
@@ -293,6 +290,21 @@ private:
   /// Vector for stand pose (x, y, yaw)
   Eigen::Vector3d stand_pose_;
 
+  /// Time duration to the next plan index
+  double first_element_duration_;
+
+  /// If the current solving is duplicated in the same index
+  bool same_plan_index_;
+
+  /// Estimated ground height
+  double ground_height_;
+
+  /// Toe radius
+  double toe_radius = 0.02;
+
+  /// Adaptive contact schedule
+  std::vector<std::vector<bool>> adaptive_contact_schedule_;
+
   /// Footstep history
   grid_map::GridMap foot_step_hist_;
 
@@ -305,32 +317,8 @@ private:
   /// Filter chain parameters name.
   std::string filterChainParametersName_;
 
-  /// Tail controller type
-  int tail_type_;
-
-  /// Current tail states
-  Eigen::VectorXd tail_current_state_;
-
-  /// Reference tail states
-  Eigen::MatrixXd ref_tail_plan_;
-
-  /// Tail plan
-  Eigen::MatrixXd tail_plan_;
-
-  /// Tail control plan
-  Eigen::MatrixXd tail_torque_plan_;
-
-  /// Tail plan publisher
-  ros::Publisher tail_plan_pub_;
-
-  /// Contact sensing results boolean vector
-  std::vector<bool> contact_sensing_;
-
   /// Temporary index of the foothold history
   std::vector<std::vector<grid_map::Index>> tmp_foot_hist_idx_;
-
-  /// Boolean of first solve status
-  bool first_solve_success;
 
   /// Contact sensing results message
   std_msgs::ByteMultiArray::ConstPtr contact_sensing_msg_;
@@ -338,25 +326,8 @@ private:
   /// Contact sensing results subscriber
   ros::Subscriber contact_sensing_sub_;
 
-  /// Foot position record for the missing foot
-  Eigen::VectorXd foot_pos_body_miss_contact_;
-
-  quad_msgs::MultiFootState future_nominal_footholds_msg_;
-  
-  /// Time duration to the next plan index
-  double first_element_duration_;
-
-  /// If the current solving is duplicated in the same index
-  bool same_plan_index_;
-
-  /// Estimated ground height
-  double ground_height_;
-
   /// Last call time
-  ros::Time enter_time_;
-  
-  /// Toe radius
-  double toe_radius = 0.02;
+  ros::Time last_call_time_;
 };
 
 

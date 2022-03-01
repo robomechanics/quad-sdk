@@ -5,4 +5,3 @@
 Header header
 
 LegCommand[] leg_commands # FL, BL, FR, BR
-bool[] miss_contact

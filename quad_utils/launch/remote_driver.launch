@@ -26,6 +26,7 @@
             <arg name="proxy" value="true" />
             <arg name="controller" value="$(arg controller)" />
             <arg name="logging" value="$(arg logging)" />
+            <arg name="is_hw" value="false" />
         </include>
     </group>
 

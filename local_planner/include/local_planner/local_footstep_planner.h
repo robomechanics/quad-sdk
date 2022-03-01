@@ -55,9 +55,13 @@ class LocalFootstepPlanner {
      * @param[in] standing_error_threshold Threshold of body error from desired goal to start stepping
      * @param[in] grf_weight Weight on GRF projection (0 to 1)
      * @param[in] kinematics Kinematics class for computations
+     * @param[in] foothold_search_radius Radius to locally search for valid footholds (m)
+     * @param[in] foothold_obj_threshold Minimum objective function value for valid foothold
+     * @param[in] obj_fun_layer Terrain layer for foothold search
      */
     void setSpatialParams(double ground_clearance, double hip_clearance, double grf_weight,double standing_error_threshold,
-      std::shared_ptr<quad_utils::QuadKD> kinematics);
+      std::shared_ptr<quad_utils::QuadKD> kinematics, double foothold_search_radius, 
+      double foothold_obj_threshold, std::string obj_fun_layer);
 
     /**
      * @brief Transform a vector of foot positions from the world to the body frame
@@ -76,24 +80,6 @@ class LocalFootstepPlanner {
      */
     void getFootPositionsBodyFrame(const Eigen::MatrixXd &body_plan,
       const Eigen::MatrixXd &foot_positions_world, Eigen::MatrixXd &foot_positions_body);
-
-    /**
-     * @brief Transform a vector of foot positions from the world to the body frame
-     * @param[in] body_plan Current body plan
-     * @param[in] foot_positions_world Foot positions in the world frame
-     * @param[out] foot_positions_body Foot positions in the body frame
-     */
-    void getFootPositionsWorldFrame(const Eigen::VectorXd &body_plan,
-      const Eigen::VectorXd &foot_positions_body, Eigen::VectorXd &foot_positions_world);
-
-    /**
-     * @brief Transform the entire foot plan from the world to the body frame
-     * @param[in] body_plan Current body plan
-     * @param[in] foot_positions_world Foot positions in the world frame
-     * @param[out] foot_positions_body Foot positions in the body frame
-     */
-    void getFootPositionsWorldFrame(const Eigen::MatrixXd &body_plan,
-      const Eigen::MatrixXd &foot_positions_body, Eigen::MatrixXd &foot_positions_world);
 
     /**
      * @brief Update the map of this object
@@ -150,15 +136,13 @@ class LocalFootstepPlanner {
      * @param[in] first_element_duration Time duration to the next plan index
      * @param[out] past_footholds_msg Message for previous footholds
      * @param[out] future_footholds_msg Message for future (planned) footholds
-     * @param[out] future_nominal_footholds_msg Message for nominal future (planned) footholds
      * @param[out] foot_plan_continuous_msg Message for continuous foot trajectories
      */
     void computeFootPlanMsgs(const std::vector<std::vector<bool>> &contact_schedule,
                              const Eigen::MatrixXd &foot_positions, const Eigen::VectorXd &current_foot_position,
                              const Eigen::VectorXd &current_foot_velocity, int current_plan_index, const Eigen::MatrixXd &body_plan,
                              const double &first_element_duration, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
-                             quad_msgs::MultiFootPlanDiscrete &future_footholds_msg, quad_msgs::MultiFootState &future_nominal_footholds_msg,
-                             quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
+                             quad_msgs::MultiFootPlanDiscrete &future_footholds_msg, quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
 
     inline void printContactSchedule(const std::vector<std::vector<bool>> &contact_schedule) {
       
@@ -178,11 +162,12 @@ class LocalFootstepPlanner {
     {
       grid_map::Position pos = {x, y};
       double height = this->terrain_grid_.atPosition("z_smooth", pos, grid_map::InterpolationMethods::INTER_LINEAR);
-      return height;
+      return (height);
     }
 
     inline double getTerrainHeight(Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy)
     {
+      // Compute terrain height based on the projection on four hip positions
       std::vector<double> height;
       for (size_t i = 0; i < 4; i++)
       {
@@ -195,12 +180,16 @@ class LocalFootstepPlanner {
         height.push_back(hip_height);
       }
 
+      // Use the minimum
       return *std::min_element(height.begin(), height.end());
+      // Use the average
       // return std::accumulate(height.begin(), height.end(), 0.0)/4;
     }
 
     inline double getTerrainSlope(double x, double y, double dx, double dy)
     {
+      // std::array<double, 3> surf_norm = this->terrain_.getSurfaceNormalFiltered(x, y);
+      // Use estimated grid map
       grid_map::Position pos = {x, y};
       Eigen::Vector3d surf_norm;
       surf_norm << terrain_grid_.atPosition("normal_vectors_x", pos, grid_map::InterpolationMethods::INTER_NEAREST),
@@ -225,6 +214,8 @@ class LocalFootstepPlanner {
 
     inline void getTerrainSlope(double x, double y, double yaw, double &roll, double &pitch)
     {
+      // std::array<double, 3> surf_norm = this->terrain_.getSurfaceNormalFiltered(x, y);
+      // Use estimated grid map
       grid_map::Position pos = {x, y};
       Eigen::Vector3d surf_norm;
       surf_norm << terrain_grid_.atPosition("normal_vectors_x", pos, grid_map::InterpolationMethods::INTER_NEAREST),
@@ -252,42 +243,6 @@ class LocalFootstepPlanner {
       }
     }
 
-    inline Eigen::Vector3d projectToMap(const Eigen::Vector3d &point, const Eigen::Vector3d &direction)
-    {
-      // Get project direction norm vector
-      Eigen::Vector3d direction_norm = direction;
-      direction_norm.normalize();
-
-      // Initialize project results point
-      grid_map::Position point_grid_map = {point.x(), point.y()};
-
-      // Initialize residual as target minus current
-      double residual = terrain_grid_.atPosition("z_smooth", point_grid_map, grid_map::InterpolationMethods::INTER_LINEAR) - point.z();
-
-      // Initialize result vector
-      Eigen::Vector3d result = point;
-
-      // This threshold might be too coarse
-      while (abs(residual) > 1e-3)
-      {
-        // Gradient descent
-        result.x() = result.x() + residual / direction_norm.z() * direction_norm.x();
-        result.y() = result.y() + residual / direction_norm.z() * direction_norm.y();
-
-        // Get new project point
-        grid_map::Position result_grid_map = {result.x(), result.y()};
-
-        // Compute residual
-        residual = terrain_grid_.atPosition("z_smooth", result_grid_map, grid_map::InterpolationMethods::INTER_LINEAR) -
-                   terrain_grid_.atPosition("z_smooth", point_grid_map, grid_map::InterpolationMethods::INTER_LINEAR);
-
-        // Update solution
-        point_grid_map = result_grid_map;
-      }
-
-      return result;
-    }
-
   private:
 
     /**
@@ -309,6 +264,13 @@ class LocalFootstepPlanner {
      */
     void cubicHermiteSpline(double pos_prev, double vel_prev, double pos_next, double vel_next, double phase, double duration,
                             double &pos, double &vel, double &acc);
+
+    /**
+     * @brief Search locally around foothold for optimal location
+     * @param[in] foot_position_prev Foothold to optimize around
+     * @return Optimized foothold
+     */
+    Eigen::Vector3d getNearestValidFoothold(const Eigen::Vector3d &foot_position);
 
     /**
      * @brief Extract foot data from the matrix
@@ -431,11 +393,20 @@ class LocalFootstepPlanner {
     /// Threshold of body error from desired goal to start stepping
     double standing_error_threshold_ = 0;
 
-    /// Estimated ground height
-    double ground_height_;
+    /// Radius to locally search for valid footholds (m)
+    double foothold_search_radius_;
+
+    /// Minimum objective function value for valid foothold
+    double foothold_obj_threshold_;
+
+    /// Terrain layer for foothold search
+    std::string obj_fun_layer_;
 
     /// Toe radius
     double toe_radius = 0.02;
+
+    /// Estimated ground height
+    double ground_height_;
 };
 
 

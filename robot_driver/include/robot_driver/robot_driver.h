@@ -292,11 +292,11 @@ class RobotDriver {
     std::vector<double> stance_kp_;
     std::vector<double> stance_kd_;
 
-    /// PD gain when foot is in stance
+    /// PD gain when foot is in retraction
     std::vector<double> retraction_kp_;
     std::vector<double> retraction_kd_;
 
-    /// PD gain when foot is in stance
+    /// PD gain when foot is in extend
     std::vector<double> extend_kp_;
     std::vector<double> extend_kd_;
 
@@ -316,18 +316,6 @@ class RobotDriver {
     /// Leg Controller template class
     std::shared_ptr<LegControllerTemplate> leg_controller_;
 
-    /// Contact sensing results message
-    std_msgs::ByteMultiArray contact_sensing_msg_;
-
-    /// Contact sensing results publisher
-    ros::Publisher contact_sensing_pub_;
-
-    /// Subscriber for GRF sensor data messages
-    ros::Subscriber grf_sensor_sub_;
-
-    /// Most recent GRF sensor data
-    quad_msgs::GRFArray::ConstPtr grf_sensor_msg_;
-    
     /// Trotting duration
     double trotting_duration_;
 
@@ -389,6 +377,17 @@ class RobotDriver {
     /// Required for mblink converter
     char** argv_;
 
+    /// Contact sensing results message
+    std_msgs::ByteMultiArray contact_sensing_msg_;
+
+    /// Contact sensing results publisher
+    ros::Publisher contact_sensing_pub_;
+
+    /// Subscriber for GRF sensor data messages
+    ros::Subscriber grf_sensor_sub_;
+
+    /// Most recent GRF sensor data
+    quad_msgs::GRFArray::ConstPtr grf_sensor_msg_;
 };
 
 

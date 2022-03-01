@@ -6,9 +6,6 @@ LegControllerTemplate::LegControllerTemplate() {
 
   // Initialize contact sensing message
   last_contact_sensing_msg_.data.assign(4, false);
-
-  // Initialize joint position record for the missing foot
-  joint_pos_miss_contact_ = Eigen::VectorXd::Zero(12);
 }
 
 void LegControllerTemplate::updateLocalPlanMsg(quad_msgs::RobotPlan::ConstPtr msg,

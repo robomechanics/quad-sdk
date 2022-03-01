@@ -32,6 +32,7 @@ SOFTWARE.
   <arg name="controller"      default="inverse_dynamics"/>
   <arg name="live_plot"       default="false"/>
   <arg name="world"           default="flat"/>
+  <arg name="rotors"          default="false"/>
   <arg name="tail"            default="false"/>
   <arg name="tail_type"       default="0"/>
   <arg name="x_init"          default="6.0"/>
@@ -79,17 +80,22 @@ SOFTWARE.
   <!-- Load the parameters and the sdf description -->
   <include file="$(find quad_utils)/launch/load_params.launch" />
 
-  <group if="$(arg tail)">
-    <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_tail.urdf" />
-    <!-- <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_meshes_tail.urdf" /> -->
-    <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit_tail.sdf" />
-    <rosparam file="$(find gazebo_scripts)/config/spirit_control_tail.yaml" command="load"/>
+  <group if="$(arg rotors)">
+    <!-- use more accurate but slower rotor model -->
+    <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit_rotors.sdf" />
   </group>
-
-  <group unless="$(arg tail)">
-    <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit.urdf" />
-    <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
-    <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
+  <group unless="$(arg rotors)">
+    <group if="$(arg tail)">
+      <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_tail.urdf" />
+      <!-- <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_meshes_tail.urdf" /> -->
+      <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit_tail.sdf" />
+      <rosparam file="$(find gazebo_scripts)/config/spirit_control_tail.yaml" command="load"/>
+    </group>
+    <group unless="$(arg tail)">
+      <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit.urdf" />
+      <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
+      <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
+    </group>
   </group>
 
   <!-- Spawn SDF model -->

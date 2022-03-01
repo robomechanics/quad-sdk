@@ -91,27 +91,37 @@ public:
                                   Eigen::MatrixXd &tail_control_traj);
 
 private:
+  // Node handler
   ros::NodeHandle nh_;
 
-  /// Update rate for sending and receiving data;
+  // Update rate for sending and receiving data;
   double update_rate_;
 
+  // NLP class
   SmartPtr<quadNLP> mynlp_;
 
+  // IPOPT class
   SmartPtr<IpoptApplication> app_;
 
+  // Horizon length
   int N_;
 
+  // State number
   int n_;
 
+  // Input number
   int m_;
 
+  // Finite element length
   double dt_;
 
+  // NMPC type
   int type_;
 
+  // Parameter namespace
   std::string param_ns_;
 
+  // Indicator of initialization
   bool require_init_;
 };
 

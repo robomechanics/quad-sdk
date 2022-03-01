@@ -68,8 +68,10 @@ public:
     // Initial guess
     Eigen::MatrixXd w0_, z_L0_, z_U0_, lambda0_, g0_;
 
+    // Initial barrier parameter
     double mu0_;
 
+    // Indicator of warm start
     bool warm_start_;
 
     // State reference for computing cost

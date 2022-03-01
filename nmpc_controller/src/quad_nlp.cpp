@@ -1056,6 +1056,7 @@ void quadNLP::update_solver(
                }
             }
 
+            // Reset warmstart since we have different contact schedule now
             mu0_ = 1e-1;
             warm_start_ = false;
          }
@@ -1088,6 +1089,7 @@ void quadNLP::update_solver(
                }
             }
 
+            // Reset warmstart since we have different contact schedule now
             mu0_ = 1e-1;
             warm_start_ = false;
          }
@@ -1107,6 +1109,7 @@ void quadNLP::update_solver(
    // Update ground height
    ground_height_ = ground_height.transpose();
 
+   // Initialize with reference trajectory
    if (init)
    {
       w0_.setZero();
@@ -1116,8 +1119,10 @@ void quadNLP::update_solver(
 
       for (size_t i = 0; i < N_; i++)
       {
+         // Set states
          w0_.block(i * (n_ + m_) + m_, 0, n_, 1) = x_reference_.col(i);
 
+         // Set inputs
          double num_contacts = contact_sequence_.col(i).sum();
          if (num_contacts > 0)
          {
@@ -1173,6 +1178,7 @@ void quadNLP::update_solver(
    // Update known leg input flag
    known_leg_input_ = true;
 
+   // Initialize with the leg solution
    if (init)
    {
       for (size_t i = 0; i < N_; i++)

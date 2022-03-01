@@ -493,11 +493,11 @@ bool RobotDriver::updateControl() {
       double fb_ratio = abs(fb_component)/(abs(fb_component) + abs(cmd.torque_ff));
 
       if (abs(cmd.torque_ff) >= torque_limits_[j]) {
-        // ROS_WARN("Leg %d motor %d: ff effort = %5.3f Nm exceeds threshold of %5.3f Nm", i,j,cmd.torque_ff, torque_limits_[j]);
+        ROS_WARN("Leg %d motor %d: ff effort = %5.3f Nm exceeds threshold of %5.3f Nm", i,j,cmd.torque_ff, torque_limits_[j]);
 
       }      
       if (abs(effort) >= torque_limits_[j]) {
-        // ROS_WARN("Leg %d motor %d: total effort = %5.3f Nm exceeds threshold of %5.3f Nm", i,j,effort, torque_limits_[j]);
+        ROS_WARN("Leg %d motor %d: total effort = %5.3f Nm exceeds threshold of %5.3f Nm", i,j,effort, torque_limits_[j]);
         effort = std::min(std::max(effort, -torque_limits_[j]), torque_limits_[j]);
       }
 

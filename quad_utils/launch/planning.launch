@@ -41,7 +41,7 @@
     </group>
 
     <!-- Launch the node to publish the local plan -->
-    <node name="plan_publisher" pkg="quad_utils" type="trajectory_publisher_node" output="screen"/>
+    <!-- <node name="plan_publisher" pkg="quad_utils" type="trajectory_publisher_node" output="screen"/> -->
 
     <!-- Launch the node to publish the tail plan -->
     <group if="$(arg tail)">

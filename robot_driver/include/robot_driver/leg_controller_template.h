@@ -53,6 +53,10 @@ class LegControllerTemplate {
      * @param[in] stance_kd Stance phase derivative gains
      * @param[in] swing_kp Swing phase proportional gains
      * @param[in] swing_kd Swing phase derivative gains
+     * @param[in] retraction_kp Retraction proportional gains
+     * @param[in] retraction_kd Retraction phase derivative gains
+     * @param[in] extend_kp Extend proportional gains
+     * @param[in] extend_kd Extend derivative gains
      */
     virtual void setGains(std::vector<double> stance_kp, std::vector<double> stance_kd,
   std::vector<double> swing_kp, std::vector<double> swing_kd, std::vector<double> retraction_kp, 
@@ -102,11 +106,11 @@ class LegControllerTemplate {
     std::vector<double> swing_kp_;
     std::vector<double> swing_kd_;
 
-    /// PD gain when foot is in stance
+    /// PD gain when foot is in retraction
     std::vector<double> retraction_kp_;
     std::vector<double> retraction_kd_;
 
-    /// PD gain when foot is in stance
+    /// PD gain when foot is in extend
     std::vector<double> extend_kp_;
     std::vector<double> extend_kd_;
 
@@ -124,9 +128,6 @@ class LegControllerTemplate {
 
     /// Most recent contact sensing data
     std_msgs::ByteMultiArray last_contact_sensing_msg_;
-
-    /// Joint position record when missing contact
-    Eigen::VectorXd joint_pos_miss_contact_;
 };
 
 

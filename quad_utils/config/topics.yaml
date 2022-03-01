@@ -8,6 +8,8 @@ topics:
   terrain_map_raw: /terrain_map_raw
   global_plan: /global_plan
   global_plan_discrete: /global_plan_discrete
+  global_plan_tree: /global_plan_tree
+  goal_state: /clicked_point
   foot_plan_continuous: /foot_plan_continuous
   foot_plan_discrete: /foot_plan_discrete
   local_plan: /local_plan
