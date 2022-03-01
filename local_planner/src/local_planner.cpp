@@ -345,16 +345,8 @@ void LocalPlanner::getStateAndReferencePlan() {
 void LocalPlanner::getStateAndTwistInput() {
   if (robot_state_msg_ == NULL) return;
 
-  // Initializing foot positions if not data has arrived
   if (first_plan_) {
-    first_plan_ = false;
-    past_footholds_msg_ = robot_state_msg_->feet;
-    past_footholds_msg_.traj_index = current_plan_index_;
-    for (int i = 0; i < num_feet_; i++) {
-      past_footholds_msg_.feet[i].header = past_footholds_msg_.header;
-      past_footholds_msg_.feet[i].traj_index = past_footholds_msg_.traj_index;
-    }
-
+    // We want to start from a full period when using twist input
     initial_timestamp_ = ros::Time::now() - ros::Duration(1e-6);
   }
 
@@ -364,6 +356,17 @@ void LocalPlanner::getStateAndTwistInput() {
   quad_utils::getPlanIndex(initial_timestamp_, dt_, current_plan_index_,
                            first_element_duration_);
   same_plan_index_ = previous_plan_index == current_plan_index_;
+
+  // Initializing foot positions if not data has arrived
+  if (first_plan_) {
+    first_plan_ = false;
+    past_footholds_msg_ = robot_state_msg_->feet;
+    past_footholds_msg_.traj_index = current_plan_index_;
+    for (int i = 0; i < num_feet_; i++) {
+      past_footholds_msg_.feet[i].header = past_footholds_msg_.header;
+      past_footholds_msg_.feet[i].traj_index = past_footholds_msg_.traj_index;
+    }
+  }
 
   // Get the current body and foot positions into Eigen
   current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
