@@ -89,7 +89,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   std::chrono::steady_clock::time_point tic, toc;
   tic = std::chrono::steady_clock::now();
 
-  for (size_t i = 0; i < 3; i++) {
+  for (size_t i = 0; i < 10; i++) {
     tic = std::chrono::steady_clock::now();
 
     std::cout << "current_state_ = " << current_state_.transpose() << std::endl;
@@ -111,10 +111,10 @@ TEST(NMPCTest, testAdaptiveComplexity) {
     // std::cout << "body_plan_ = \n" << body_plan_ << std::endl;
     // std::cout << "grf_plan_ = \n" << grf_plan_ << std::endl;
 
-    // current_state_.head(12) = body_plan_.row(1).transpose();
-    // std::rotate(adpative_contact_schedule_.begin(),
-    //             adpative_contact_schedule_.begin() + 1,
-    //             adpative_contact_schedule_.end());
+    current_state_.head(12) = body_plan_.row(1).transpose();
+    std::rotate(adpative_contact_schedule_.begin(),
+                adpative_contact_schedule_.begin() + 1,
+                adpative_contact_schedule_.end());
   }
 
   EXPECT_TRUE(true);
