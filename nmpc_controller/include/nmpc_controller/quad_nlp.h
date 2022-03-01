@@ -246,7 +246,8 @@ class quadNLP : public TNLP {
           Eigen::VectorXd Q_factor, Eigen::VectorXd R_factor,
           Eigen::VectorXd x_min, Eigen::VectorXd x_max,
           Eigen::VectorXd x_min_complex, Eigen::VectorXd x_max_complex,
-          Eigen::VectorXd u_min, Eigen::VectorXd u_max);
+          Eigen::VectorXd u_min, Eigen::VectorXd u_max,
+          Eigen::VectorXi fixed_complexity_schedule);
 
   /**
    * @brief Custom deep copy constructor

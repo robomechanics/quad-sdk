@@ -39,6 +39,7 @@ NMPCController::NMPCController(int type) {
       control_weights_factors, state_lower_bound, state_upper_bound,
       state_lower_bound_null, state_upper_bound_null, control_lower_bound,
       control_upper_bound;
+  std::vector<int> fixed_complex_idxs;
   double panic_weights;
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_weights",
                   state_weights);
@@ -59,11 +60,18 @@ NMPCController::NMPCController(int type) {
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_upper_bound",
                   control_upper_bound);
 
+  int fixed_complex_head, fixed_complex_tail;
   ros::param::get("/nmpc_controller/leg_complex/null_space_dimension", n_null_);
   ros::param::get("/nmpc_controller/leg_complex/state_lower_bound",
                   state_lower_bound_null);
   ros::param::get("/nmpc_controller/leg_complex/state_upper_bound",
                   state_upper_bound_null);
+  ros::param::get("/nmpc_controller/leg_complex/fixed_complex_idxs",
+                  fixed_complex_idxs);
+  ros::param::get("/nmpc_controller/leg_complex/fixed_complex_head",
+                  fixed_complex_head);
+  ros::param::get("/nmpc_controller/leg_complex/fixed_complex_tail",
+                  fixed_complex_tail);
   ros::param::get("/nmpc_controller/takeoff_state_weight_factor",
                   takeoff_state_weight_factor_);
 
@@ -76,6 +84,25 @@ NMPCController::NMPCController(int type) {
       u_min(control_lower_bound.data(), m_),
       u_max(control_upper_bound.data(), m_);
 
+  // Load fixed complexity schedule
+  Eigen::VectorXi fixed_complexity_schedule(N_ + 1);
+  fixed_complexity_schedule.setZero();
+  for (int idx : fixed_complex_idxs) {
+    if (idx >= 0 && idx <= N_) {
+      fixed_complexity_schedule[idx] = 1;
+    }
+  }
+  if (fixed_complex_head > 0) {
+    fixed_complexity_schedule.head(std::min(fixed_complex_head, N_ + 1))
+        .fill(1);
+  }
+  if (fixed_complex_tail > 0) {
+    fixed_complexity_schedule.tail(std::min(fixed_complex_tail, N_ + 1))
+        .fill(1);
+  }
+  std::cout << "fixed_complexity_schedule = "
+            << fixed_complexity_schedule.transpose() << std::endl;
+
   // TODO(jcnorby) add back in
   Eigen::VectorXd x_min_complex(n_ + n_null_), x_max_complex(n_ + n_null_);
   x_min_complex.segment(0, n_) = x_min;
@@ -85,7 +112,7 @@ NMPCController::NMPCController(int type) {
 
   mynlp_ = new quadNLP(type_, N_, n_, n_null_, m_, dt_, mu, panic_weights, Q, R,
                        Q_factor, R_factor, x_min, x_max, x_min_complex,
-                       x_max_complex, u_min, u_max);
+                       x_max_complex, u_min, u_max, fixed_complexity_schedule);
 
   app_ = IpoptApplicationFactory();
 
@@ -93,6 +120,7 @@ NMPCController::NMPCController(int type) {
   // app_->Options()->SetStringValue("print_timing_statistics", "yes");
   app_->Options()->SetStringValue("linear_solver", "ma57");
   app_->Options()->SetIntegerValue("print_level", 5);
+  app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   // app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
   app_->Options()->SetStringValue("fixed_variable_treatment",
@@ -137,7 +165,7 @@ bool NMPCController::computeLegPlan(
   mynlp_->update_solver(initial_state, ref_traj, foot_positions,
                         contact_schedule, ref_ground_height,
                         first_element_duration, same_plan_index, require_init_);
-  // require_init_ = false;
+  require_init_ = false;
 
   // mynlp_->feet_location_ = foot_positions;
   mynlp_->foot_pos_world_ = foot_positions;
@@ -200,7 +228,7 @@ bool NMPCController::computeDistributedTailPlan(
                         contact_schedule, state_traj.bottomRows(N_),
                         control_traj, ref_ground_height.tail(N_),
                         first_element_duration, same_plan_index, require_init_);
-  // require_init_ = false;
+  require_init_ = false;
 
   bool success = this->computePlan(
       initial_state_with_tail, ref_traj_with_tail, foot_positions,

@@ -16,7 +16,8 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
                  Eigen::VectorXd R_factor, Eigen::VectorXd x_min,
                  Eigen::VectorXd x_max, Eigen::VectorXd x_min_complex,
                  Eigen::VectorXd x_max_complex, Eigen::VectorXd u_min,
-                 Eigen::VectorXd u_max)
+                 Eigen::VectorXd u_max,
+                 Eigen::VectorXi fixed_complexity_schedule)
 // N: prediction steps
 // n: states dimension
 // m: input dimension
@@ -137,9 +138,9 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   x_min_complex_ = x_min_complex;
   x_max_complex_ = x_max_complex;
 
-  double abad_nom = 0;
-  double hip_nom = 1.57 * 0.5;
-  double knee_nom = 1.57;
+  double abad_nom = -0.248694;
+  double hip_nom = 0.760144;
+  double knee_nom = 1.52029;
   x_null_nom_.resize(n_null_);
   x_null_nom_ << abad_nom, hip_nom, knee_nom, abad_nom, hip_nom, knee_nom,
       abad_nom, hip_nom, knee_nom, abad_nom, hip_nom, knee_nom, 0, 0, 0, 0, 0,
@@ -174,10 +175,10 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
 
   // Load foot position and velocity constraint bounds
   // TODO(jcnorby) : Add these back in
-  // g_min_complex_.segment(current_idx, n_null_).fill(0);
-  // g_max_complex_.segment(current_idx, n_null_).fill(0);
-  g_min_complex_.segment(current_idx, n_null_).fill(-2e19);
-  g_max_complex_.segment(current_idx, n_null_).fill(2e19);
+  g_min_complex_.segment(current_idx, n_null_).fill(0);
+  g_max_complex_.segment(current_idx, n_null_).fill(0);
+  // g_min_complex_.segment(current_idx, n_null_).fill(-2e19);
+  // g_max_complex_.segment(current_idx, n_null_).fill(2e19);
   current_idx += n_null_;
 
   // Load knee constraint bounds
@@ -192,13 +193,8 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   g_max_complex_.segment(current_idx, n_null_).fill(0);
   // g_max_complex_.segment(current_idx, n_null_).fill(2e19);
 
-  num_complex_fe_ = 0;
-  fixed_complexity_schedule_.setZero(N_ + 1);
-  fixed_complexity_schedule_[3] = 1;
-  fixed_complexity_schedule_[17] = 1;
-  // fixed_complexity_schedule_.tail(5).fill(1);
-  // fixed_complexity_schedule_.head(3).fill(1);
-  this->update_complexity_schedule(fixed_complexity_schedule_);
+  this->fixed_complexity_schedule_ = fixed_complexity_schedule;
+  this->update_complexity_schedule(fixed_complexity_schedule);
 
   w0_ = Eigen::VectorXd(n_vars_).setZero();
   z_L0_ = Eigen::VectorXd(n_vars_).Ones(n_vars_, 1);
@@ -356,19 +352,17 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
 
   for (size_t i = 0; i < N_; i++) {
     // xmin
-    get_panic_constraint_var(g_l_matrix, i).topRows(n_slack_vec_[i]) =
-        x_min_.head(n_slack_vec_[i]);
+    get_panic_constraint_var(g_l_matrix, i).head(n_slack_vec_[i]) =
+        x_min_complex_.head(n_slack_vec_[i]);
     get_panic_constraint_var(g_l_matrix, i)(2, 0) = ground_height_(0, i);
 
     // get_panic_constraint_var(g_l_matrix, i)(2, 0) = 0;
-    get_panic_constraint_var(g_u_matrix, i).topRows(n_slack_vec_[i]).fill(2e19);
+    get_panic_constraint_var(g_u_matrix, i).head(n_slack_vec_[i]).fill(2e19);
 
     // xmax
-    get_panic_constraint_var(g_l_matrix, i)
-        .bottomRows(n_slack_vec_[i])
-        .fill(-2e19);
-    get_panic_constraint_var(g_u_matrix, i).bottomRows(n_slack_vec_[i]) =
-        x_max_.head(n_slack_vec_[i]);
+    get_panic_constraint_var(g_l_matrix, i).tail(n_slack_vec_[i]).fill(-2e19);
+    get_panic_constraint_var(g_u_matrix, i).tail(n_slack_vec_[i]) =
+        x_max_complex_.head(n_slack_vec_[i]);
   }
 
   return true;
@@ -534,8 +528,8 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     eval_release_vec_[sys_id][FUNC](mem);
     eval_decref_vec_[sys_id][FUNC]();
 
-    // if (complexity_schedule_[i] == 1) {
-    //   std::cout << "get_dynamic_var(w, i) = "
+    // if (complexity_schedule_[i + 1] == 1) {
+    //   std::cout << "\nget_dynamic_var(w, i) = "
     //             << get_dynamic_var(w, i).transpose() << std::endl;
     //   std::cout << "EOM constraint = "
     //             << get_constraint_var(g_matrix, i).segment(0, 12).transpose()
@@ -586,18 +580,27 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
   }
 
   for (int i = 0; i < N_; ++i) {
-    // std::cout << "i = " << i << std::endl;
-    // std::cout << "get_state_var(w, i + 1) "
-    //           << get_state_var(w, i + 1).transpose() << std::endl;
-    // std::cout << "n_slack_vec_[i + 1] " << n_slack_vec_[i] << std::endl;
     Eigen::VectorXd xk = get_state_var(w, i + 1).head(n_slack_vec_[i]);
     Eigen::VectorXd panick = get_panic_var(w, i);
 
-    get_panic_constraint_var(g_matrix, i).topRows(n_slack_vec_[i]) =
-        xk + panick.segment(0, n_slack_vec_[i]);
-    get_panic_constraint_var(g_matrix, i).bottomRows(n_slack_vec_[i]) =
-        xk - panick.segment(n_slack_vec_[i], n_slack_vec_[i]);
+    get_panic_constraint_var(g_matrix, i).head(n_slack_vec_[i]) =
+        xk + panick.head(n_slack_vec_[i]);
+    get_panic_constraint_var(g_matrix, i).tail(n_slack_vec_[i]) =
+        xk - panick.tail(n_slack_vec_[i]);
+
+    // std::cout << "i = " << i << std::endl;
+    // std::cout << "n_slack_vec_[i] = " << n_slack_vec_[i] << std::endl;
+    // std::cout << "get_state_var(w, i + 1) = "
+    //           << get_state_var(w, i + 1).transpose() << std::endl;
+    // std::cout << "xk = " << xk.transpose() << std::endl;
+    // std::cout << "panick = " << panick.transpose() << std::endl;
+    // std::cout << "get_panic_constraint_var(g_matrix, i) = "
+    //           << get_panic_constraint_var(g_matrix, i).transpose() <<
+    //           std::endl;
   }
+
+  // std::cout << "g_matrix max = " << g_matrix.maxCoeff() << std::endl;
+  // std::cout << "g_matrix min = " << g_matrix.minCoeff() << std::endl;
 
   return true;
 }
@@ -1327,12 +1330,6 @@ void quadNLP::update_complexity_schedule(
   // Update the complexity schedule by anding with fixed schedule
   this->complexity_schedule_ =
       complexity_schedule.cwiseMax(fixed_complexity_schedule_.head(N_ + 1));
-  std::cout << "complexity_schedule = " << complexity_schedule.transpose()
-            << std::endl;
-  std::cout << "fixed_complexity_schedule_ = "
-            << fixed_complexity_schedule_.transpose() << std::endl;
-  std::cout << "this->complexity_schedule_ = "
-            << this->complexity_schedule_.transpose() << std::endl;
 
   // Resize vectors appropriately
   sys_id_schedule_.resize(N_);
@@ -1455,7 +1452,11 @@ void quadNLP::update_complexity_schedule(
   compute_nnz_jac_g();
   compute_nnz_h();
 
-  std::cout << "g_vec_ = " << g_vec_.transpose() << std::endl;
+  std::cout << "cmplx_sch = " << complexity_schedule_.transpose() << std::endl;
+  std::cout << "sys_id_sch = " << sys_id_schedule_.transpose() << std::endl;
+  std::cout << "n_vec_ =    " << n_vec_.transpose() << std::endl;
+  std::cout << "n_slack_vec_ = " << n_slack_vec_.transpose() << std::endl;
+  std::cout << "g_vec_ =      " << g_vec_.transpose() << std::endl;
   std::cout << "g_vec_.sum() = " << g_vec_.sum() << std::endl;
   std::cout << "g_vec_.sum() + n_vars_slack_ = " << g_vec_.sum() + n_vars_slack_
             << std::endl;

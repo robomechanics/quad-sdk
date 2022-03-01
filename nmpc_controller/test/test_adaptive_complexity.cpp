@@ -24,23 +24,34 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   for (size_t i = 0; i < N_; i++) {
     foot_positions_body_.row(i) << 0.2263, 0.098, -0.3, 0.2263, -0.098, -0.3,
         -0.2263, 0.098, -0.3, -0.2263, -0.098, -0.3;
-    foot_positions_world_.row(i) << 0.2263, 0.098, 0, 0.2263, -0.098, 0,
-        -0.2263, 0.098, 0, -0.2263, -0.098, 0;
+    foot_positions_world_.row(i) << 0.2263, 0.098, 0, -0.2263, 0.098, 0, 0.2263,
+        -0.098, 0, -0.2263, -0.098, 0;
   }
-
-  double abad_nom = 0;
-  double hip_nom = 1.57 * 0.5;
-  double knee_nom = 1.57;
-  Eigen::VectorXd x_null_nom_(24);
-  x_null_nom_ << abad_nom, hip_nom, knee_nom, abad_nom, hip_nom, knee_nom,
-      abad_nom, hip_nom, knee_nom, abad_nom, hip_nom, knee_nom, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0;
 
   // Load the current state
   Eigen::VectorXd current_state_(36);
   current_state_.fill(0);
   current_state_(2) = 0.25;
   current_state_(9) = 0;
+
+  quad_utils::QuadKD quad_kd;
+  Eigen::VectorXd x_null_nom_(24);
+  x_null_nom_.setZero();
+  for (int i = 0; i < 4; i++) {
+    Eigen::Vector3d joint_state;
+    quad_kd.worldToFootIKWorldFrame(
+        i, current_state_.segment(0, 3), current_state_.segment(3, 3),
+        foot_positions_world_.row(0).segment(3 * i, 3), joint_state);
+    x_null_nom_.segment<3>(3 * i) = joint_state;
+  }
+
+  // double abad_nom = 0;
+  // double hip_nom = 1.57 * 0.5;
+  // double knee_nom = 1.57;
+  // x_null_nom_ << abad_nom, hip_nom, knee_nom, abad_nom, hip_nom, knee_nom,
+  //     abad_nom, hip_nom, knee_nom, abad_nom, hip_nom, knee_nom, 0, 0, 0, 0,
+  //     0, 0, 0, 0, 0, 0, 0, 0;
+
   current_state_.segment(12, 24) = x_null_nom_;
 
   std::vector<std::vector<bool>> adpative_contact_schedule_;
@@ -72,9 +83,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   bool same_plan_index = false;
 
   Eigen::VectorXi complexity_schedule(N_ + 1), ref_primitive_id(N_ + 1);
-  complexity_schedule.fill(0);
-  // complexity_schedule.tail(5).fill(1);
-  // complexity_schedule.head(3).fill(1);
+  complexity_schedule.setZero();
   ref_primitive_id.setZero();
 
   std::chrono::steady_clock::time_point tic, toc;
@@ -102,11 +111,10 @@ TEST(NMPCTest, testAdaptiveComplexity) {
     // std::cout << "body_plan_ = \n" << body_plan_ << std::endl;
     // std::cout << "grf_plan_ = \n" << grf_plan_ << std::endl;
 
-    // throw std::runtime_error("Stop");
-    current_state_.head(12) = body_plan_.row(1).transpose();
-    std::rotate(adpative_contact_schedule_.begin(),
-                adpative_contact_schedule_.begin() + 1,
-                adpative_contact_schedule_.end());
+    // current_state_.head(12) = body_plan_.row(1).transpose();
+    // std::rotate(adpative_contact_schedule_.begin(),
+    //             adpative_contact_schedule_.begin() + 1,
+    //             adpative_contact_schedule_.end());
   }
 
   EXPECT_TRUE(true);
