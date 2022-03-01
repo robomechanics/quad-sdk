@@ -190,13 +190,6 @@ class LocalFootstepPlanner {
 
   inline double getTerrainHeight(double x, double y) {
     grid_map::Position pos = {x, y};
-
-    if (!terrain_grid_.isInside(pos)) {
-      ROS_WARN(
-          "getTerrainHeight receives a position out of range, pick the closest "
-          "position in map!");
-    }
-
     double height = this->terrain_grid_.atPosition(
         "z_smooth", terrain_grid_.getClosestPositionInMap(pos),
         grid_map::InterpolationMethods::INTER_LINEAR);

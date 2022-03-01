@@ -236,10 +236,10 @@ void LocalFootstepPlanner::computeFootPlan(
 
         if (!terrain_grid_.isInside(foot_position_grid_map)) {
           ROS_WARN(
-              "computeFootPlan receives a position out of range, pick "
-              "the closest position in map!");
+              "Foot position is outside the map. Steer the robot in "
+              "another direction");
+          continue;
         }
-
         // Toe has 20cm radius so we need to shift the foot height from terrain
         foot_position_nominal.z() =
             terrain_grid_.atPosition(
@@ -359,21 +359,20 @@ void LocalFootstepPlanner::computeFootPlan(
 
             // Toe has 20cm radius so we need to shift the foot height from
             // terrain
-
-            if (!terrain_grid_.isInside(foot_position_next.head<2>())) {
+            grid_map::Position foot_position_next_grid_map =
+                foot_position_next.head(2);
+            if (!terrain_grid_.isInside(foot_position_next_grid_map)) {
               ROS_WARN(
                   "computeFootPlan prediction receives a position out of "
                   "range, pick the closest position in map!");
+              foot_position_next_grid_map = foot_position_prev.head(2);
+              foot_position_next = foot_position_prev.head(2);
             }
-
             foot_position_next.z() =
                 terrain_grid_.atPosition(
-                    "z",
-                    terrain_grid_.getClosestPositionInMap(
-                        foot_position_next.head<2>()),
+                    "z", foot_position_next_grid_map,
                     grid_map::InterpolationMethods::INTER_NEAREST) +
                 toe_radius;
-
           } else {
             foot_position_next = getFootData(foot_positions, i_touchdown, j);
             swing_duration = i_touchdown - i_liftoff;
@@ -563,16 +562,12 @@ Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
       pos_valid += offset;
 
       if (!terrain_grid_.isInside(pos_valid)) {
-        ROS_WARN(
-            "getNearestValidFoothold receives a position out of range, pick "
-            "the closest position in map!");
-
         continue;
       }
 
       foot_position_valid << pos_valid.x(), pos_valid.y(),
           terrain_grid_.atPosition(
-              "z", terrain_grid_.getClosestPositionInMap(pos_valid), grid_map::InterpolationMethods::INTER_LINEAR) +
+              "z", pos_valid, grid_map::InterpolationMethods::INTER_LINEAR) +
               toe_radius;
       return foot_position_valid;
     }
