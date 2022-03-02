@@ -78,6 +78,10 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_ * 3);
   current_foot_velocities_world_ = Eigen::VectorXd::Zero(num_feet_ * 3);
   ref_ground_height_ = Eigen::VectorXd::Zero(N_ + 1);
+  grf_plan_ = Eigen::MatrixXd::Zero(N_, 12);
+  for (int i = 0; i < num_feet_; i++) {
+    grf_plan_.col(3 * i + 2).fill(13 * 9.81 / num_feet_);
+  }
 
   // Initialize body and footstep planners
   initLocalBodyPlanner();
@@ -517,18 +521,16 @@ bool LocalPlanner::computeLocalPlan() {
 
   // Compute the new footholds if we have a valid existing plan (i.e. if
   // grf_plan is filled)
-  if (grf_plan_.rows() == N_) {
-    local_footstep_planner_->computeFootPlan(
-        current_plan_index_, contact_schedule_, body_plan_, grf_plan_,
-        ref_body_plan_, current_foot_positions_world_,
-        current_foot_velocities_world_, first_element_duration_,
-        past_footholds_msg_, foot_positions_world_, foot_velocities_world_,
-        foot_accelerations_world_);
+  local_footstep_planner_->computeFootPlan(
+      current_plan_index_, contact_schedule_, body_plan_, grf_plan_,
+      ref_body_plan_, current_foot_positions_world_,
+      current_foot_velocities_world_, first_element_duration_,
+      past_footholds_msg_, foot_positions_world_, foot_velocities_world_,
+      foot_accelerations_world_);
 
-    // Transform the new foot positions into the body frame for body planning
-    local_footstep_planner_->getFootPositionsBodyFrame(
-        body_plan_, foot_positions_world_, foot_positions_body_);
-  }
+  // Transform the new foot positions into the body frame for body planning
+  local_footstep_planner_->getFootPositionsBodyFrame(
+      body_plan_, foot_positions_world_, foot_positions_body_);
 
   // Compute grf position considering the toe radius
   Eigen::MatrixXd grf_positions_body = foot_positions_body_;
