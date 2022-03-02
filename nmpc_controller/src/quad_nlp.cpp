@@ -953,44 +953,64 @@ void quadNLP::shift_initial_guess() {
 
   quadNLP old_nlp = *this;
 
-  std::cout << "In shift_initial_guess" << std::endl;
-  // std::cout << "get_state_var(w0_, 0) = " << get_state_var(w0_,
-  // 0).transpose()
-  //           << std::endl;
-  // std::cout << "old_nlp.get_state_var(old_nlp.w0_, 1) = "
-  //           << old_nlp.get_state_var(old_nlp.w0_, 1).transpose() <<
-  //           std::endl;
-  // std::cout << "n_vec_[0] = " << n_vec_[0] << std::endl;
-  // std::cout << "n_vec_[1] = " << n_vec_[1] << std::endl;
-  // std::cout << "old_nlp.n_vec_[1] = " << old_nlp.n_vec_[1] << std::endl;
-
   for (size_t i = 0; i < N_ - 1; i++) {
     if (n_vec_[i] > old_nlp.n_vec_[i + 1]) {
+      std::cout << "adding state information at i = " << i << std::endl;
+
       // Update state and control for w0
       get_state_var(w0_, i).head(old_nlp.n_vec_[i + 1]) =
           old_nlp.get_state_var(old_nlp.w0_, i + 1);
-      get_state_var(w0_, i).tail(n_vec_[i] - old_nlp.n_vec_[i + 1]) =
-          x_null_nom_;
+      // get_state_var(w0_, i).tail(n_vec_[i] - old_nlp.n_vec_[i + 1]) =
+      //     x_null_nom_;
       get_control_var(w0_, i) = old_nlp.get_control_var(old_nlp.w0_, i + 1);
+
+      // std::cout << "get_state_var(w0_, i)\n"
+      //           << get_state_var(w0_, i) << std::endl
+      //           << std::endl;
+      // std::cout << "get_control_var(w0_, i)\n"
+      //           << get_control_var(w0_, i) << std::endl
+      //           << std::endl;
 
       // Update state and control for z_L0_
       get_state_var(z_L0_, i).head(old_nlp.n_vec_[i + 1]) =
           old_nlp.get_state_var(old_nlp.z_L0_, i + 1);
-      get_state_var(z_L0_, i).tail(n_vec_[i] - old_nlp.n_vec_[i + 1]).fill(1);
+      // get_state_var(z_L0_, i).tail(n_vec_[i] - old_nlp.n_vec_[i +
+      // 1]).fill(1);
       get_control_var(z_L0_, i) = old_nlp.get_control_var(old_nlp.z_L0_, i + 1);
+
+      // std::cout << "get_state_var(z_L0_, i)\n"
+      //           << get_state_var(z_L0_, i) << std::endl
+      //           << std::endl;
+      // std::cout << "get_control_var(z_L0_, i)\n"
+      //           << get_control_var(z_L0_, i) << std::endl
+      //           << std::endl;
 
       // Update state and control for z_U0_
       get_state_var(z_U0_, i).head(old_nlp.n_vec_[i + 1]) =
           old_nlp.get_state_var(old_nlp.z_U0_, i + 1);
-      get_state_var(z_U0_, i).tail(n_vec_[i] - old_nlp.n_vec_[i + 1]).fill(1);
+      // get_state_var(z_U0_, i).tail(n_vec_[i] - old_nlp.n_vec_[i +
+      // 1]).fill(1);
       get_control_var(z_U0_, i) = old_nlp.get_control_var(old_nlp.z_U0_, i + 1);
 
+      // std::cout << "get_state_var(z_U0_, i)\n"
+      //           << get_state_var(z_U0_, i) << std::endl
+      //           << std::endl;
+      // std::cout << "get_control_var(z_U0_, i)\n"
+      //           << get_control_var(z_U0_, i) << std::endl
+      //           << std::endl;
+
       // Update constraint variables
-      get_constraint_var(lambda0_, i).head(old_nlp.g_vec_[i + 1]) =
-          old_nlp.get_constraint_var(old_nlp.lambda0_, i + 1);
-      get_constraint_var(lambda0_, i)
-          .tail(g_vec_[i] - old_nlp.g_vec_[i + 1])
-          .fill(1000);
+      get_constraint_var(lambda0_, i - 1).head(old_nlp.g_vec_[i]) =
+          old_nlp.get_constraint_var(old_nlp.lambda0_, i);
+      // get_constraint_var(lambda0_, i - 1)
+      //     .tail(g_vec_[i - 1] - old_nlp.g_vec_[i])
+      //     .fill(1000);
+
+      // std::cout << "get_constraint_var(lambda0_, i-1)\n"
+      //           << get_constraint_var(lambda0_, i - 1) << std::endl
+      //           << std::endl;
+      // std::cout << "g_vec_[i-1] = " << g_vec_[i - 1] << std::endl;
+      // std::cout << "old_nlp.g_vec_[i] = " << old_nlp.g_vec_[i] << std::endl;
 
       // Update panic variables
       get_panic_var(w0_, i)
@@ -1004,6 +1024,10 @@ void quadNLP::shift_initial_guess() {
           old_nlp.get_panic_var(old_nlp.w0_, i + 1)
               .tail(old_nlp.n_slack_vec_[i + 1]);
 
+      // std::cout << "get_panic_var(w0_, i)\n"
+      //           << get_panic_var(w0_, i) << std::endl
+      //           << std::endl;
+
       get_panic_var(z_L0_, i)
           .head(n_slack_vec_[i])
           .head(old_nlp.n_slack_vec_[i + 1]) =
@@ -1014,6 +1038,10 @@ void quadNLP::shift_initial_guess() {
           .head(old_nlp.n_slack_vec_[i + 1]) =
           old_nlp.get_panic_var(old_nlp.z_L0_, i + 1)
               .tail(old_nlp.n_slack_vec_[i + 1]);
+
+      // std::cout << "get_panic_var(z_L0_, i)\n"
+      //           << get_panic_var(z_L0_, i) << std::endl
+      //           << std::endl;
 
       get_panic_var(z_U0_, i)
           .head(n_slack_vec_[i])
@@ -1026,15 +1054,19 @@ void quadNLP::shift_initial_guess() {
           old_nlp.get_panic_var(old_nlp.z_U0_, i + 1)
               .tail(old_nlp.n_slack_vec_[i + 1]);
 
-      get_panic_var(lambda0_, i)
+      // std::cout << "get_panic_var(z_U0_, i)\n"
+      //           << get_panic_var(z_U0_, i) << std::endl
+      //           << std::endl;
+
+      get_panic_constraint_var(lambda0_, i)
           .head(n_slack_vec_[i])
           .head(old_nlp.n_slack_vec_[i + 1]) =
-          old_nlp.get_panic_var(old_nlp.lambda0_, i + 1)
+          old_nlp.get_panic_constraint_var(old_nlp.lambda0_, i + 1)
               .head(old_nlp.n_slack_vec_[i + 1]);
-      get_panic_var(lambda0_, i)
+      get_panic_constraint_var(lambda0_, i)
           .tail(n_slack_vec_[i])
           .head(old_nlp.n_slack_vec_[i + 1]) =
-          old_nlp.get_panic_var(old_nlp.lambda0_, i + 1)
+          old_nlp.get_panic_constraint_var(old_nlp.lambda0_, i + 1)
               .tail(old_nlp.n_slack_vec_[i + 1]);
 
       get_panic_constraint_var(lambda0_, i).head(n_slack_vec_[i]) =
@@ -1045,6 +1077,10 @@ void quadNLP::shift_initial_guess() {
           old_nlp.get_panic_constraint_var(old_nlp.lambda0_, i + 1)
               .tail(old_nlp.n_slack_vec_[i])
               .head(n_slack_vec_[i]);
+
+      // std::cout << "get_panic_constraint_var(lambda0_, i)\n"
+      //           << get_panic_constraint_var(lambda0_, i) << std::endl
+      //           << std::endl;
 
     } else {
       // Update state and control for w0
@@ -1063,7 +1099,7 @@ void quadNLP::shift_initial_guess() {
       get_control_var(z_U0_, i) = old_nlp.get_control_var(old_nlp.z_U0_, i + 1);
 
       // Udate constraint variables
-      get_constraint_var(lambda0_, i) =
+      get_constraint_var(lambda0_, i).head(g_vec_[i]) =
           old_nlp.get_constraint_var(old_nlp.lambda0_, i + 1).head(g_vec_[i]);
 
       // Update panic variables
@@ -1456,13 +1492,14 @@ void quadNLP::update_complexity_schedule(
   std::cout << "sys_id_sch = " << sys_id_schedule_.transpose() << std::endl;
   std::cout << "n_vec_ =    " << n_vec_.transpose() << std::endl;
   std::cout << "n_slack_vec_ = " << n_slack_vec_.transpose() << std::endl;
-  std::cout << "g_vec_ =      " << g_vec_.transpose() << std::endl;
-  std::cout << "g_vec_.sum() = " << g_vec_.sum() << std::endl;
-  std::cout << "g_vec_.sum() + n_vars_slack_ = " << g_vec_.sum() + n_vars_slack_
-            << std::endl;
+  // std::cout << "g_vec_ =      " << g_vec_.transpose() << std::endl;
+  // std::cout << "g_vec_.sum() = " << g_vec_.sum() << std::endl;
+  // std::cout << "g_vec_.sum() + n_vars_slack_ = " << g_vec_.sum() +
+  // n_vars_slack_
+  //           << std::endl;
 
-  std::cout << "n_constraints_ = " << n_constraints_ << std::endl;
-  std::cout << "n_vars_ = " << n_vars_ << std::endl;
-  std::cout << "n_vars_primal_ = " << n_vars_primal_ << std::endl;
-  std::cout << "n_vars_slack_ = " << n_vars_slack_ << std::endl;
+  // std::cout << "n_constraints_ = " << n_constraints_ << std::endl;
+  // std::cout << "n_vars_ = " << n_vars_ << std::endl;
+  // std::cout << "n_vars_primal_ = " << n_vars_primal_ << std::endl;
+  // std::cout << "n_vars_slack_ = " << n_vars_slack_ << std::endl;
 }

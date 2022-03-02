@@ -31,7 +31,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   // Load the current state
   Eigen::VectorXd current_state_(36);
   current_state_.fill(0);
-  current_state_(2) = 0.25;
+  current_state_(2) = 0.3;
   current_state_(9) = 0;
 
   quad_utils::QuadKD quad_kd;
@@ -91,10 +91,6 @@ TEST(NMPCTest, testAdaptiveComplexity) {
 
   for (size_t i = 0; i < 10; i++) {
     tic = std::chrono::steady_clock::now();
-
-    std::cout << "current_state_ = " << current_state_.transpose() << std::endl;
-    std::cout << "current_state_.size() = " << current_state_.size()
-              << std::endl;
 
     leg_planner_->computeLegPlan(
         current_state_, ref_body_plan_, foot_positions_world_,

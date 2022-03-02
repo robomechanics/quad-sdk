@@ -70,7 +70,7 @@ nmpc_controller:
   leg_complex:
     null_space_dimension: 24
     fixed_complex_idxs: [] # set to [] for none
-    fixed_complex_head: 2 # set to 0 for none
+    fixed_complex_head: 5 # set to 0 for none
     fixed_complex_tail: 0 # set to 0 for none
     state_lower_bound: [-0.7, -1.57, 0.4,-0.7, -1.57, 0.4,-0.7, -1.57, 0.4,-0.7, -1.57, 0.4,-35, -35, -25,-35, -35, -25,-35, -35, -25,-35, -35, -25]
     state_upper_bound: [0.7, 3.14, 2.8,0.7, 3.14, 2.8,0.7, 3.14, 2.8,0.7, 3.14, 2.8, 35, 35, 25,35, 35, 25,35, 35, 25,35, 35, 25]
