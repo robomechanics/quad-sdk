@@ -262,8 +262,8 @@ class LocalFootstepPlanner {
 
   // Compute future states by integrating linear states (hold orientation
   // states)
-  inline Eigen::VectorXd computeFutureState(double step,
-                                            const Eigen::VectorXd &body_plan) {
+  inline Eigen::VectorXd computeFutureBodyPlan(
+      double step, const Eigen::VectorXd &body_plan) {
     // Initialize vector
     Eigen::VectorXd future_body_plan = body_plan;
 
@@ -272,95 +272,6 @@ class LocalFootstepPlanner {
         future_body_plan.segment(0, 3) + body_plan.segment(6, 3) * step * dt_;
 
     return future_body_plan;
-  }
-
-  // Compute minimum covering circle problem using Welzl's algorithm
-  inline Eigen::Vector3d welzlMinimumCircle(std::vector<Eigen::Vector2d> P,
-                                            std::vector<Eigen::Vector2d> R) {
-    if (R.size() == 3) {
-      // Circumscribed circle
-      Eigen::Vector3d D;
-      D << (0.5000 * (R.at(0).x() * R.at(0).x() * R.at(1).y() -
-                      R.at(0).x() * R.at(0).x() * R.at(2).y() -
-                      R.at(1).x() * R.at(1).x() * R.at(0).y() +
-                      R.at(1).x() * R.at(1).x() * R.at(2).y() +
-                      R.at(2).x() * R.at(2).x() * R.at(0).y() -
-                      R.at(2).x() * R.at(2).x() * R.at(1).y() +
-                      R.at(0).y() * R.at(0).y() * R.at(1).y() -
-                      R.at(0).y() * R.at(0).y() * R.at(2).y() -
-                      R.at(0).y() * R.at(1).y() * R.at(1).y() +
-                      R.at(0).y() * R.at(2).y() * R.at(2).y() +
-                      R.at(1).y() * R.at(1).y() * R.at(2).y() -
-                      R.at(1).y() * R.at(2).y() * R.at(2).y())) /
-               (R.at(0).x() * R.at(1).y() - R.at(1).x() * R.at(0).y() -
-                R.at(0).x() * R.at(2).y() + R.at(2).x() * R.at(0).y() +
-                R.at(1).x() * R.at(2).y() - R.at(2).x() * R.at(1).y()),
-          (0.5000 * (-R.at(0).x() * R.at(0).x() * R.at(1).x() +
-                     R.at(0).x() * R.at(0).x() * R.at(2).x() +
-                     R.at(0).x() * R.at(1).x() * R.at(1).x() -
-                     R.at(0).x() * R.at(2).x() * R.at(2).x() +
-                     R.at(0).x() * R.at(1).y() * R.at(1).y() -
-                     R.at(0).x() * R.at(2).y() * R.at(2).y() -
-                     R.at(1).x() * R.at(1).x() * R.at(2).x() +
-                     R.at(1).x() * R.at(2).x() * R.at(2).x() -
-                     R.at(1).x() * R.at(0).y() * R.at(0).y() +
-                     R.at(1).x() * R.at(2).y() * R.at(2).y() +
-                     R.at(2).x() * R.at(0).y() * R.at(0).y() -
-                     R.at(2).x() * R.at(1).y() * R.at(1).y())) /
-              (R.at(0).x() * R.at(1).y() - R.at(1).x() * R.at(0).y() -
-               R.at(0).x() * R.at(2).y() + R.at(2).x() * R.at(0).y() +
-               R.at(1).x() * R.at(2).y() - R.at(2).x() * R.at(1).y()),
-          (0.5000 *
-           std::sqrt(
-               (R.at(0).x() * R.at(0).x() - 2 * R.at(0).x() * R.at(1).x() +
-                R.at(1).x() * R.at(1).x() + R.at(0).y() * R.at(0).y() -
-                2 * R.at(0).y() * R.at(1).y() + R.at(1).y() * R.at(1).y()) *
-               (R.at(0).x() * R.at(0).x() - 2 * R.at(0).x() * R.at(2).x() +
-                R.at(2).x() * R.at(2).x() + R.at(0).y() * R.at(0).y() -
-                2 * R.at(0).y() * R.at(2).y() + R.at(2).y() * R.at(2).y()) *
-               (R.at(1).x() * R.at(1).x() - 2 * R.at(1).x() * R.at(2).x() +
-                R.at(2).x() * R.at(2).x() + R.at(1).y() * R.at(1).y() -
-                2 * R.at(1).y() * R.at(2).y() + R.at(2).y() * R.at(2).y()))) /
-              std::abs(R.at(0).x() * R.at(1).y() - R.at(1).x() * R.at(0).y() -
-                       R.at(0).x() * R.at(2).y() + R.at(2).x() * R.at(0).y() +
-                       R.at(1).x() * R.at(2).y() - R.at(2).x() * R.at(1).y());
-
-      return D;
-    }
-
-    if (P.empty()) {
-      // Trivial
-      Eigen::Vector3d D;
-      switch (R.size()) {
-        case 0:
-          D << 0, 0, 0;
-          break;
-        case 1:
-          D << R.at(0).x(), R.at(0).y(), 0;
-          break;
-        case 2:
-          D << (R.at(0).x() + R.at(1).x()) / 2, (R.at(0).y() + R.at(1).y()) / 2,
-              (R.at(0) - R.at(1)).norm() / 2;
-          break;
-
-        default:
-          D << 0, 0, 0;
-          break;
-      }
-
-      return D;
-    }
-
-    // Recursive
-    Eigen::Vector2d p = P.back();
-    P.pop_back();
-    Eigen::Vector3d D = welzlMinimumCircle(P, R);
-    if ((p - D.segment(0, 2)).norm() < D.z()) {
-      return D;
-    }
-
-    R.push_back(p);
-    return welzlMinimumCircle(P, R);
   }
 
  private:
@@ -391,6 +302,15 @@ class LocalFootstepPlanner {
    * @return Optimized foothold
    */
   Eigen::Vector3d getNearestValidFoothold(const Eigen::Vector3d &foot_position);
+
+  /**
+   * @brief Compute minimum covering circle problem using Welzl's algorithm
+   * @param[in] P Hip position in the plan
+   * @param[in] R Vertex storeage for the circle
+   * @return Center and radius of the circle
+   */
+  Eigen::Vector3d welzlMinimumCircle(std::vector<Eigen::Vector2d> P,
+                                     std::vector<Eigen::Vector2d> R);
 
   /**
    * @brief Extract foot data from the matrix

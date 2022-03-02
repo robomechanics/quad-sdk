@@ -416,7 +416,7 @@ void LocalPlanner::getStateAndTwistInput() {
   ref_body_plan_(0, 10) = cmd_vel_[4];
   ref_body_plan_(0, 11) = cmd_vel_[5];
 
-  // Only adaptive pitch
+  // Alternatively only adaptive pitch
   // ref_body_plan_(0, 4) = local_footstep_planner_->getTerrainSlope(
   //     current_state_(0), current_state_(1), current_state_(6),
   //     current_state_(7));
@@ -449,7 +449,7 @@ void LocalPlanner::getStateAndTwistInput() {
         ref_body_plan_(i, 0), ref_body_plan_(i, 1));
     ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);
 
-    // Only adaptive pitch
+    // Alternatively only adaptive pitch
     // ref_body_plan_(i, 4) = local_footstep_planner_->getTerrainSlope(
     //     ref_body_plan_(i, 0), ref_body_plan_(i, 1), ref_body_plan_(i, 6),
     //     ref_body_plan_(i, 7));

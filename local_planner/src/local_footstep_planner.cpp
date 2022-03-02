@@ -182,7 +182,7 @@ void LocalFootstepPlanner::computeFootPlan(
           body_plan_stance = Eigen::MatrixXd(end_of_stance + 1, 12);
           body_plan_stance.topRows(horizon_length_) = body_plan;
           for (size_t k = horizon_length_; k < end_of_stance; k++) {
-            body_plan_stance.row(k) = computeFutureState(
+            body_plan_stance.row(k) = computeFutureBodyPlan(
                 k - (horizon_length_ - 1), body_plan.row(horizon_length_ - 1));
           }
         } else {
@@ -296,22 +296,22 @@ void LocalFootstepPlanner::computeFootPlan(
     Eigen::Vector3d foot_velocity_next = Eigen::Vector3d::Zero();
 
     // Compute the midair index
-    int midair = std::round(i_liftoff + swing_duration / 2);
+    int mid_air = std::round(i_liftoff + swing_duration / 2);
 
     // Initialize variables
-    Eigen::VectorXd body_plan_midair;
+    Eigen::VectorXd body_plan_mid_air;
     double swing_apex;
 
-    if (midair < 0) {
-      // If the midair is something in previous, take it from the memory
+    if (mid_air < 0) {
+      // If the mid_air is something in previous, take it from the memory
       swing_apex = most_recent_foothold_msg.velocity.z;
     } else {
       // Otherwise, update it using the latest plan
-      body_plan_midair = body_plan.row(midair);
+      body_plan_mid_air = body_plan.row(mid_air);
 
       // Compute the swing apex
       swing_apex = computeSwingApex(
-          j, body_plan_midair, foot_position_prev_nominal, foot_position_next);
+          j, body_plan_mid_air, foot_position_prev_nominal, foot_position_next);
 
       // Update the memory, we borrow the past_footholds_msg since its velocity
       // is unused
@@ -351,7 +351,7 @@ void LocalFootstepPlanner::computeFootPlan(
             swing_duration = period_ - stance_duration;
 
             // Apply basic footstep heuristic, no searching
-            Eigen::VectorXd body_plan_midstance = computeFutureState(
+            Eigen::VectorXd body_plan_midstance = computeFutureBodyPlan(
                 (i_liftoff + swing_duration + 0.5 * stance_duration) -
                     (horizon_length_ - 1),
                 body_plan.row(horizon_length_ - 1));
@@ -384,19 +384,19 @@ void LocalFootstepPlanner::computeFootPlan(
           }
 
           // Compute the midair index
-          midair = std::round(i_liftoff + swing_duration / 2);
-          if (midair > horizon_length_ - 1) {
+          mid_air = std::round(i_liftoff + swing_duration / 2);
+          if (mid_air > horizon_length_ - 1) {
             // Apply basic footstep heuristic, no searching
-            body_plan_midair = computeFutureState(
+            body_plan_mid_air = computeFutureBodyPlan(
                 (i_liftoff + swing_duration / 2) - (horizon_length_ - 1),
                 body_plan.row(horizon_length_ - 1));
           } else {
-            body_plan_midair = body_plan.row(midair);
+            body_plan_mid_air = body_plan.row(mid_air);
           }
 
           // Compute the swing apex
           swing_apex =
-              computeSwingApex(j, body_plan_midair, foot_position_prev_nominal,
+              computeSwingApex(j, body_plan_mid_air, foot_position_prev_nominal,
                                foot_position_next);
         }
 
@@ -576,4 +576,93 @@ Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
   ROS_WARN_THROTTLE(
       0.1, "No valid foothold found in radius of nominal, returning nominal");
   return foot_position_valid;
+}
+
+// Compute minimum covering circle problem using Welzl's algorithm
+Eigen::Vector3d LocalFootstepPlanner::welzlMinimumCircle(
+    std::vector<Eigen::Vector2d> P, std::vector<Eigen::Vector2d> R) {
+  if (R.size() == 3) {
+    // Circumscribed circle
+    Eigen::Vector3d D;
+    D << (0.5000 * (R.at(0).x() * R.at(0).x() * R.at(1).y() -
+                    R.at(0).x() * R.at(0).x() * R.at(2).y() -
+                    R.at(1).x() * R.at(1).x() * R.at(0).y() +
+                    R.at(1).x() * R.at(1).x() * R.at(2).y() +
+                    R.at(2).x() * R.at(2).x() * R.at(0).y() -
+                    R.at(2).x() * R.at(2).x() * R.at(1).y() +
+                    R.at(0).y() * R.at(0).y() * R.at(1).y() -
+                    R.at(0).y() * R.at(0).y() * R.at(2).y() -
+                    R.at(0).y() * R.at(1).y() * R.at(1).y() +
+                    R.at(0).y() * R.at(2).y() * R.at(2).y() +
+                    R.at(1).y() * R.at(1).y() * R.at(2).y() -
+                    R.at(1).y() * R.at(2).y() * R.at(2).y())) /
+             (R.at(0).x() * R.at(1).y() - R.at(1).x() * R.at(0).y() -
+              R.at(0).x() * R.at(2).y() + R.at(2).x() * R.at(0).y() +
+              R.at(1).x() * R.at(2).y() - R.at(2).x() * R.at(1).y()),
+        (0.5000 * (-R.at(0).x() * R.at(0).x() * R.at(1).x() +
+                   R.at(0).x() * R.at(0).x() * R.at(2).x() +
+                   R.at(0).x() * R.at(1).x() * R.at(1).x() -
+                   R.at(0).x() * R.at(2).x() * R.at(2).x() +
+                   R.at(0).x() * R.at(1).y() * R.at(1).y() -
+                   R.at(0).x() * R.at(2).y() * R.at(2).y() -
+                   R.at(1).x() * R.at(1).x() * R.at(2).x() +
+                   R.at(1).x() * R.at(2).x() * R.at(2).x() -
+                   R.at(1).x() * R.at(0).y() * R.at(0).y() +
+                   R.at(1).x() * R.at(2).y() * R.at(2).y() +
+                   R.at(2).x() * R.at(0).y() * R.at(0).y() -
+                   R.at(2).x() * R.at(1).y() * R.at(1).y())) /
+            (R.at(0).x() * R.at(1).y() - R.at(1).x() * R.at(0).y() -
+             R.at(0).x() * R.at(2).y() + R.at(2).x() * R.at(0).y() +
+             R.at(1).x() * R.at(2).y() - R.at(2).x() * R.at(1).y()),
+        (0.5000 *
+         std::sqrt((R.at(0).x() * R.at(0).x() - 2 * R.at(0).x() * R.at(1).x() +
+                    R.at(1).x() * R.at(1).x() + R.at(0).y() * R.at(0).y() -
+                    2 * R.at(0).y() * R.at(1).y() + R.at(1).y() * R.at(1).y()) *
+                   (R.at(0).x() * R.at(0).x() - 2 * R.at(0).x() * R.at(2).x() +
+                    R.at(2).x() * R.at(2).x() + R.at(0).y() * R.at(0).y() -
+                    2 * R.at(0).y() * R.at(2).y() + R.at(2).y() * R.at(2).y()) *
+                   (R.at(1).x() * R.at(1).x() - 2 * R.at(1).x() * R.at(2).x() +
+                    R.at(2).x() * R.at(2).x() + R.at(1).y() * R.at(1).y() -
+                    2 * R.at(1).y() * R.at(2).y() +
+                    R.at(2).y() * R.at(2).y()))) /
+            std::abs(R.at(0).x() * R.at(1).y() - R.at(1).x() * R.at(0).y() -
+                     R.at(0).x() * R.at(2).y() + R.at(2).x() * R.at(0).y() +
+                     R.at(1).x() * R.at(2).y() - R.at(2).x() * R.at(1).y());
+
+    return D;
+  }
+
+  if (P.empty()) {
+    // Trivial
+    Eigen::Vector3d D;
+    switch (R.size()) {
+      case 0:
+        D << 0, 0, 0;
+        break;
+      case 1:
+        D << R.at(0).x(), R.at(0).y(), 0;
+        break;
+      case 2:
+        D << (R.at(0).x() + R.at(1).x()) / 2, (R.at(0).y() + R.at(1).y()) / 2,
+            (R.at(0) - R.at(1)).norm() / 2;
+        break;
+
+      default:
+        D << 0, 0, 0;
+        break;
+    }
+
+    return D;
+  }
+
+  // Recursive
+  Eigen::Vector2d p = P.back();
+  P.pop_back();
+  Eigen::Vector3d D = welzlMinimumCircle(P, R);
+  if ((p - D.segment(0, 2)).norm() < D.z()) {
+    return D;
+  }
+
+  R.push_back(p);
+  return welzlMinimumCircle(P, R);
 }
