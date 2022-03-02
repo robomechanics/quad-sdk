@@ -78,7 +78,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_ * 3);
   current_foot_velocities_world_ = Eigen::VectorXd::Zero(num_feet_ * 3);
   ref_ground_height_ = Eigen::VectorXd::Zero(N_ + 1);
-  grf_plan_ = Eigen::MatrixXd(N_, 12);
+  grf_plan_ = Eigen::MatrixXd::Zero(N_, 12);
   for (int i = 0; i < num_feet_; i++) {
     grf_plan_.col(3 * i + 2).fill(13 * 9.81 / num_feet_);
   }
