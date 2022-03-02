@@ -198,7 +198,17 @@ void LocalFootstepPlanner::computeFootPlan(
 
           Eigen::Vector2d p;
           p << hip_position_midstance.x(), hip_position_midstance.y();
-          P.push_back(p);
+
+          bool duplicate = false;
+          for (size_t l = 0; l < P.size(); l++) {
+            if ((P.at(l) - p).norm() < 1e-3) {
+              duplicate = true;
+              break;
+            }
+          }
+          if (!duplicate) {
+            P.push_back(p);
+          }
         }
 
         // Compute the minimum circle center

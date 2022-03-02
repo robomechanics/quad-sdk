@@ -29,7 +29,8 @@ TEST(LocalFootStepPlanner, baseCase) {
   double foothold_obj_threshold = 0.6;
   double grf_weight = 0.0;
   std::string obj_fun_layer = "traversability";
-  auto quadKD = std::make_shared<quad_utils::QuadKD>();
+  std::shared_ptr<quad_utils::QuadKD> quadKD =
+      std::make_shared<quad_utils::QuadKD>();
 
   LocalFootstepPlanner footstep_planner;
   footstep_planner.setTemporalParams(dt, period, N, duty_cycles, phase_offsets);
@@ -37,7 +38,7 @@ TEST(LocalFootStepPlanner, baseCase) {
       ground_clearance, hip_clearance, standing_error_threshold, grf_weight,
       quadKD, foothold_search_radius, foothold_obj_threshold, obj_fun_layer);
 
-  Eigen::MatrixXd body_plan(N, 12);
+  Eigen::MatrixXd body_plan(N + 1, 12);
   body_plan.fill(0);
   body_plan.col(2).fill(0.3);
 
@@ -57,7 +58,7 @@ TEST(LocalFootStepPlanner, baseCase) {
   }
 
   Eigen::MatrixXd grf_plan(N, 12);
-  grf_plan.fill(0.3);
+  grf_plan.fill(0);
 
   Eigen::MatrixXd foot_positions_world(N, 12);
   foot_positions_world.fill(0);
@@ -71,6 +72,7 @@ TEST(LocalFootStepPlanner, baseCase) {
   Eigen::VectorXd current_foot_positions_world(12);
   current_foot_positions_world << 0.2263, 0.17098, 0.02, -0.2263, 0.17098, 0.02,
       0.2263, -0.17098, 0.02, -0.2263, -0.17098, 0.02;
+  foot_positions_world.row(0) = current_foot_positions_world;
 
   Eigen::VectorXd current_foot_velocities_world(12);
   current_foot_velocities_world.fill(0);
