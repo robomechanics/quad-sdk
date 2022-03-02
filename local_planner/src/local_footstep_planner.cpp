@@ -359,7 +359,7 @@ void LocalFootstepPlanner::computeFootPlan(
             if (!terrain_grid_.isInside(foot_position_next_grid_map)) {
               ROS_WARN(
                   "computeFootPlan prediction receives a position out of "
-                  "range, pick the closest position in map!");
+                  "range, pick the previous position in map!");
               foot_position_next_grid_map = foot_position_prev.head(2);
               foot_position_next = foot_position_prev.head(2);
             }
@@ -404,7 +404,7 @@ void LocalFootstepPlanner::computeFootPlan(
         double interp_phase;
         double interp_duration;
 
-        // Otherwise we just use the plan
+        // We use the plan
         interp_phase = swing_idx / swing_duration;
         interp_duration = swing_duration * dt_;
 
