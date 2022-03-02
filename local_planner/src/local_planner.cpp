@@ -393,6 +393,25 @@ void LocalPlanner::getStateAndTwistInput() {
   ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(
       current_state_(0), current_state_(1));
 
+  // If it's not initialized, set to current positions
+  if (stand_pose_(0) == std::numeric_limits<double>::max() &&
+      stand_pose_(1) == std::numeric_limits<double>::max() &&
+      stand_pose_(2) == std::numeric_limits<double>::max()) {
+    stand_pose_ << current_state_[0], current_state_[1], current_state_[5];
+  }
+
+  // If it's going to walk, use latest states
+  if (cmd_vel_[0] != 0 || cmd_vel_[1] != 0 || cmd_vel_[5] != 0) {
+    stand_pose_ << current_state_[0], current_state_[1], current_state_[5];
+  } else {
+    // If it's standing, try to stablized the waggling
+    Eigen::Vector3d current_stand_pose;
+    current_stand_pose << current_state_[0], current_state_[1],
+        current_state_[5];
+    stand_pose_ = stand_pose_ * (1 - 1 / update_rate_) +
+                  current_stand_pose * 1 / update_rate_;
+  }
+
   // Set initial condition for forward integration
   double x_mean = 0;
   double y_mean = 0;
