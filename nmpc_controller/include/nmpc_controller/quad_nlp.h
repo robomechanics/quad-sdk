@@ -62,7 +62,7 @@ class quadNLP : public TNLP {
   Eigen::VectorXi n_vec_, n_slack_vec_, g_vec_;
 
   /// Boolean for whether to apply panic variables for complex states
-  const bool apply_slack_to_complex_ = false;
+  const bool apply_slack_to_complex_ = true;
 
   /// Input dimension for simple and complex models
   int m_simple_, m_complex_;
@@ -312,7 +312,7 @@ class quadNLP : public TNLP {
                                  Number obj_value, const IpoptData *ip_data,
                                  IpoptCalculatedQuantities *ip_cq);
 
-  virtual void shift_initial_guess();
+  virtual void update_initial_guess(const quadNLP &nlp_prev, int shift_idx);
 
   virtual void update_solver(
       const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
@@ -327,32 +327,35 @@ class quadNLP : public TNLP {
       const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
       const Eigen::MatrixXd &foot_positions,
       const std::vector<std::vector<bool>> &contact_schedule,
+      const Eigen::VectorXi &adaptive_complexity_schedule,
       const Eigen::VectorXd &ground_height,
       const double &first_element_duration_, const bool &same_plan_index,
       const bool &init);
 
   // Get the idx-th state variable from decision variable
   template <typename T>
-  inline Eigen::Block<T> get_state_var(T &decision_var, const int &idx) {
+  inline Eigen::Block<T> get_state_var(T &decision_var, const int &idx) const {
     return decision_var.block(x_idxs_[idx], 0, n_vec_[idx], 1);
   }
 
   // Get the idx-th control variable from decision variable
   template <typename T>
-  inline Eigen::Block<T> get_control_var(T &decision_var, const int &idx) {
+  inline Eigen::Block<T> get_control_var(T &decision_var,
+                                         const int &idx) const {
     return decision_var.block(u_idxs_[idx], 0, m_, 1);
   }
 
   // Get the idx-th constraint from constraint variable
   template <typename T>
-  inline Eigen::Block<T> get_constraint_var(T &constraint_var, const int &idx) {
+  inline Eigen::Block<T> get_constraint_var(T &constraint_var,
+                                            const int &idx) const {
     return constraint_var.block(g_idxs_[idx], 0, g_vec_[idx], 1);
   }
 
   // Get the idx-th panic variable (for (idx+1)-th state variable) from decision
   // variable
   template <typename T>
-  inline Eigen::Block<T> get_panic_var(T &decision_var, const int &idx) {
+  inline Eigen::Block<T> get_panic_var(T &decision_var, const int &idx) const {
     return decision_var.block(slack_idxs_[idx], 0, 2 * n_slack_vec_[idx], 1);
   }
 
@@ -360,7 +363,7 @@ class quadNLP : public TNLP {
   // constraint variable
   template <typename T>
   inline Eigen::Block<T> get_panic_constraint_var(T &constraint_var,
-                                                  const int &idx) {
+                                                  const int &idx) const {
     return constraint_var.block(g_slack_idxs_[idx], 0, 2 * n_slack_vec_[idx],
                                 1);
   }
@@ -368,14 +371,16 @@ class quadNLP : public TNLP {
   // Get the idx-th dynamic constraint related decision variable (idx and
   // idx+1-th state and idx-th control)
   template <typename T>
-  inline Eigen::Block<T> get_dynamic_var(T &decision_var, const int &idx) {
+  inline Eigen::Block<T> get_dynamic_var(T &decision_var,
+                                         const int &idx) const {
     return decision_var.block(fe_idxs_[idx], 0,
                               n_vec_[idx] + m_ + n_vec_[idx + 1], 1);
   }
 
   // Get the idx-th dynamic constraint related jacobian nonzero entry
   template <typename T>
-  inline Eigen::Block<T> get_dynamic_jac_var(T &jacobian_var, const int &idx) {
+  inline Eigen::Block<T> get_dynamic_jac_var(T &jacobian_var,
+                                             const int &idx) const {
     return jacobian_var.block(dynamic_jac_var_idxs_[idx], 0,
                               nnz_mat_(sys_id_schedule_[idx], JAC), 1);
   }
@@ -383,14 +388,16 @@ class quadNLP : public TNLP {
   // Get the idx-th panic constraint jacobian (for (idx+1)-th state variable)
   // nonzero entry
   template <typename T>
-  inline Eigen::Block<T> get_panic_jac_var(T &jacobian_var, const int &idx) {
+  inline Eigen::Block<T> get_panic_jac_var(T &jacobian_var,
+                                           const int &idx) const {
     return jacobian_var.block(panic_jac_var_idxs_[idx], 0,
                               4 * n_slack_vec_[idx], 1);
   }
 
   // Get the idx-th dynamic constraint related hessian nonzero entry
   template <typename T>
-  inline Eigen::Block<T> get_dynamic_hess_var(T &hessian_var, const int &idx) {
+  inline Eigen::Block<T> get_dynamic_hess_var(T &hessian_var,
+                                              const int &idx) const {
     return hessian_var.block(dynamic_hess_var_idxs_[idx], 0,
                              nnz_mat_(sys_id_schedule_[idx], HESS), 1);
   }
@@ -398,14 +405,14 @@ class quadNLP : public TNLP {
   // Get the idx-th state cost hessian nonzero entry
   template <typename T>
   inline Eigen::Block<T> get_state_cost_hess_var(T &hessian_var,
-                                                 const int &idx) {
+                                                 const int &idx) const {
     return hessian_var.block(cost_idxs_[idx], 0, n_, 1);
   }
 
   // Get the idx-th control cost hessian nonzero entry
   template <typename T>
   inline Eigen::Block<T> get_control_cost_hess_var(T &hessian_var,
-                                                   const int &idx) {
+                                                   const int &idx) const {
     return hessian_var.block(cost_idxs_[idx] + n_, 0, m_, 1);
   }
 

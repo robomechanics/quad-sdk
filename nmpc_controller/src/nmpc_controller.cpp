@@ -158,18 +158,16 @@ bool NMPCController::computeLegPlan(
     const Eigen::VectorXi &ref_primitive_id,
     const Eigen::VectorXi &complexity_schedule, Eigen::MatrixXd &state_traj,
     Eigen::MatrixXd &control_traj) {
-  // Update the complexity
-  mynlp_->adaptive_complexity_schedule_ = complexity_schedule;
-
   // Local planner will send a reference traj with N+1 rows
   mynlp_->update_solver(initial_state, ref_traj, foot_positions,
-                        contact_schedule, ref_ground_height,
-                        first_element_duration, same_plan_index, require_init_);
+                        contact_schedule, complexity_schedule,
+                        ref_ground_height, first_element_duration,
+                        same_plan_index, require_init_);
   require_init_ = false;
 
   // mynlp_->feet_location_ = foot_positions;
-  mynlp_->foot_pos_world_ = foot_positions;
-  mynlp_->foot_vel_world_ = foot_velocities;
+  mynlp_->foot_pos_world_ = foot_positions.bottomRows(N_);
+  mynlp_->foot_vel_world_ = foot_velocities.bottomRows(N_);
 
   for (int i = 0; i < ref_primitive_id.size() - 1; i++) {
     if (ref_primitive_id(i, 0) == 1 && ref_primitive_id(i + 1, 0) == 2) {
@@ -284,6 +282,7 @@ bool NMPCController::computePlan(
     }
   }
 
+  // std::cout << "state_traj = \n" << state_traj << std::endl;
   // std::cout << "state_null_traj pos = \n"
   //           << state_null_traj.leftCols(n_null_ / 2) << std::endl;
   // std::cout << "state_null_traj vel = \n"
