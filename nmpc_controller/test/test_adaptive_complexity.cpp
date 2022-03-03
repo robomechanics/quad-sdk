@@ -91,6 +91,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
 
   for (size_t i = 0; i < 10; i++) {
     tic = std::chrono::steady_clock::now();
+    // complexity_schedule.tail(i + 1).fill(1);
 
     leg_planner_->computeLegPlan(
         current_state_, ref_body_plan_, foot_positions_world_,

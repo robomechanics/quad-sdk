@@ -607,10 +607,10 @@ bool LocalPlanner::computeLocalPlan() {
 
   // Compute leg plan with MPC, return if solve fails
   if (!local_body_planner_nonlinear_->computeLegPlan(
-          current_state_, ref_body_plan_, grf_positions, foot_velocities_world_,
-          contact_schedule_, ref_ground_height_, first_element_duration_,
-          same_plan_index_, ref_primitive_plan_, complexity_schedule,
-          body_plan_, grf_plan_))
+          current_full_state, ref_body_plan_, grf_positions,
+          foot_velocities_world_, contact_schedule_, ref_ground_height_,
+          first_element_duration_, same_plan_index_, ref_primitive_plan_,
+          complexity_schedule, body_plan_, grf_plan_))
     return false;
 
   Eigen::VectorXi complexity_schedule_adaptive = getInvalidRegions();

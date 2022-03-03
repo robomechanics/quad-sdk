@@ -178,8 +178,8 @@ class quadNLP : public TNLP {
   // Time duration to the next plan index
   double first_element_duration_;
 
-  /// Vector of ids for model complexity schedule
-  Eigen::VectorXi complexity_schedule_;
+  /// Vector of ids for adaptive model complexity schedule
+  Eigen::VectorXi adaptive_complexity_schedule_;
 
   /// Vector of ids for fixed model complexity schedule
   Eigen::VectorXi fixed_complexity_schedule_;
@@ -409,7 +409,7 @@ class quadNLP : public TNLP {
     return hessian_var.block(cost_idxs_[idx] + n_, 0, m_, 1);
   }
 
-  void update_complexity_schedule(const Eigen::VectorXi &complexity_schedule);
+  void update_structure();
 
   // /**
   //  * @brief Return the number of primal variables for this NLP

@@ -119,7 +119,7 @@ NMPCController::NMPCController(int type) {
   // app_->Options()->SetIntegerValue("max_iter", 100);
   // app_->Options()->SetStringValue("print_timing_statistics", "yes");
   app_->Options()->SetStringValue("linear_solver", "ma57");
-  app_->Options()->SetIntegerValue("print_level", 5);
+  app_->Options()->SetIntegerValue("print_level", 0);
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   // app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
@@ -159,7 +159,7 @@ bool NMPCController::computeLegPlan(
     const Eigen::VectorXi &complexity_schedule, Eigen::MatrixXd &state_traj,
     Eigen::MatrixXd &control_traj) {
   // Update the complexity
-  mynlp_->update_complexity_schedule(complexity_schedule);
+  mynlp_->adaptive_complexity_schedule_ = complexity_schedule;
 
   // Local planner will send a reference traj with N+1 rows
   mynlp_->update_solver(initial_state, ref_traj, foot_positions,
