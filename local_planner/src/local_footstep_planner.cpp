@@ -109,8 +109,7 @@ void LocalFootstepPlanner::cubicHermiteSpline(double pos_prev, double vel_prev,
                                               double phase, double duration,
                                               double &pos, double &vel,
                                               double &acc) {
-  // Sometimes phase will be slightly smaller than zero due to numerical
-  // issues
+  // Sometimes phase will be slightly smaller than zero due to numerical issues
   phase = std::min(std::max(phase, 0.), 1.);
 
   double t = phase * duration;
@@ -176,8 +175,8 @@ void LocalFootstepPlanner::computeFootPlan(
         // Compute the horizon index of midstance
         int midstance = i + half_duty_cycle;
 
-        // Compute body pose at midstance from either the trajectory or
-        // Raibert heuristic directly
+        // Compute body pose at midstance from either the trajectory or Raibert
+        // heuristic directly
         if (midstance < horizon_length_) {
           body_pos_midstance = body_plan.block<1, 3>(midstance, 0);
           body_rpy_midstance = body_plan.block<1, 3>(midstance, 3);
@@ -233,8 +232,7 @@ void LocalFootstepPlanner::computeFootPlan(
           foot_positions = current_foot_positions_world_;
           continue;
         }
-        // Toe has 20cm radius so we need to shift the foot height from
-        // terrain
+        // Toe has 20cm radius so we need to shift the foot height from terrain
         foot_position_nominal.z() =
             terrain_grid_.atPosition(
                 "z",
@@ -293,8 +291,8 @@ void LocalFootstepPlanner::computeFootPlan(
       // Determine the foot state at this index
       if (!isContact(contact_schedule, i, j) ||
           (i != 0 && isNewContact(contact_schedule, i, j))) {
-        // In swing (or new contact, we compute acceleration for interplation
-        // in inverse dynamics)
+        // In swing (or new contact, we compute acceleration for interplation in
+        // inverse dynamics)
         if (isNewLiftoff(contact_schedule, i, j)) {
           // Set the indices and data for liftoff
           i_liftoff = i;
@@ -306,8 +304,8 @@ void LocalFootstepPlanner::computeFootPlan(
           // Set the indices and data for touchdown
           i_touchdown = getNextContactIndex(contact_schedule, i, j);
 
-          // If the touchdown index would extend past the horizon, use
-          // heuristic to compute it
+          // If the touchdown index would extend past the horizon, use heuristic
+          // to compute it
           if (!isContact(contact_schedule, i_touchdown, j)) {
             int stance_duration = period_ * (duty_cycles_[j]);
             swing_duration = period_ - stance_duration;
@@ -346,9 +344,9 @@ void LocalFootstepPlanner::computeFootPlan(
         }
 
         // Compute the period index of plan and current states
-        // For the first step, it might be duplicated in the same plan index
-        // so we need to refine the phase based on the time duration to next
-        // plan index
+        // For the first step, it might be duplicated in the same plan index so
+        // we need to refine the phase based on the time duration to next plan
+        // index
         double swing_idx =
             (i == 0) ? (i - i_liftoff + (dt_ - first_element_duration) / dt_)
                      : (i - i_liftoff);
@@ -457,8 +455,8 @@ void LocalFootstepPlanner::computeFootPlan(
 
         if (foot_acceleration.norm() > 5e1) {
           // When the duration get shrinked, the acceleration might overshoot,
-          // hundred is a good bound, the nominal maximum acceleration should
-          // be around twenty
+          // hundred is a good bound, the nominal maximum acceleration should be
+          // around twenty
           foot_acceleration = foot_acceleration.normalized() * 5e1;
         }
 
@@ -584,8 +582,7 @@ Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
     }
   }
 
-  // If no foothold is found in the radius, keep the nominal and issue a
-  // warning
+  // If no foothold is found in the radius, keep the nominal and issue a warning
   ROS_WARN_THROTTLE(
       0.1, "No valid foothold found in radius of nominal, returning nominal");
   return foot_position_valid;
