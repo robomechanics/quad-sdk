@@ -577,23 +577,9 @@ bool LocalPlanner::computeLocalPlan() {
 
   // Compute the new footholds if we have a valid existing plan (i.e. if
   // grf_plan is filled)
-<<<<<<< HEAD
-  if (grf_plan_.rows() == N_) {
-    local_footstep_planner_->computeFootPlan(
-        current_plan_index_, contact_schedule_, body_plan_, grf_plan_,
-        ref_body_plan_, ref_primitive_plan_, current_foot_positions_world_,
-        current_foot_velocities_world_, first_element_duration_,
-        past_footholds_msg_, foot_positions_world_, foot_velocities_world_,
-        foot_accelerations_world_);
-
-    // Transform the new foot positions into the body frame for body planning
-    local_footstep_planner_->getFootPositionsBodyFrame(
-        body_plan_, foot_positions_world_, foot_positions_body_);
-  }
-=======
   local_footstep_planner_->computeFootPlan(
       current_plan_index_, contact_schedule_, body_plan_, grf_plan_,
-      ref_body_plan_, current_foot_positions_world_,
+      ref_body_plan_, ref_primitive_plan_, current_foot_positions_world_,
       current_foot_velocities_world_, first_element_duration_,
       past_footholds_msg_, foot_positions_world_, foot_velocities_world_,
       foot_accelerations_world_);
@@ -601,7 +587,6 @@ bool LocalPlanner::computeLocalPlan() {
   // Transform the new foot positions into the body frame for body planning
   local_footstep_planner_->getFootPositionsBodyFrame(
       body_plan_, foot_positions_world_, foot_positions_body_);
->>>>>>> devel
 
   Eigen::VectorXi complexity_schedule(N_ + 1);
   complexity_schedule.fill(0);
