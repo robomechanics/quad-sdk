@@ -86,12 +86,12 @@ class EKFEstimator {
    * @brief calculate rodrigues incremental rotation matrix from a vector
    * @param[in] dt time in second
    * @param[in] w Eigen::VectorXd angular velocity vector (3 * 1)
-   * @param[in] i subscript
+   * @param[in] sub subscript
    * @return Eigen::MatrixXd rodrigues incremental rotation matrix matrix (3 *
    * 3)
    */
   Eigen::MatrixXd calcRodrigues(const double& dt, const Eigen::VectorXd& w,
-                                const int& i);
+                                const int& sub);
 
   /**
    * @brief set sensor noise

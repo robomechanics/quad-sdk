@@ -123,8 +123,8 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
   Eigen::VectorXd v = last_X.block<3, 1>(3, 0);
   Eigen::VectorXd q = last_X.block<4, 1>(6, 0);
   Eigen::VectorXd p = last_X.block<12, 1>(10, 0);
-  Eigen::VectorXd bf = last_X.block<1, 1>(22, 0);
-  Eigen::VectorXd bw = last_X.block<1, 1>(23, 0);
+  Eigen::VectorXd bf = last_X.block<3, 1>(22, 0);
+  Eigen::VectorXd bw = last_X.block<3, 1>(25, 0);
 
   // calculate linear acceleration set z acceleration to -9.8 for now
   // Set imu bias
@@ -137,7 +137,7 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
   w = wk - bw;
 
   /// Prediction Step
-  // Set predicted state estimate X_pre
+  // state prediction X_pre
   X_pre = Eigen::VectorXd::Zero(num_state);
   X_pre.block<3, 1>(0, 0) =
       r + dt * v + dt * dt * 0.5 * (C.transpose() * a + g);
@@ -168,7 +168,6 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
   F.block<3, 3>(3, 21) = -dt * C.transpose();
   F.block<3, 3>(6, 6) = r0.transpose();
   F.block<3, 3>(0, 24) = -1 * r1.transpose();
-  Eigen::MatrixXd Ft = F.transpose();
 
   // Discrete Process Noise Covariance Matrix
   Q = Eigen::MatrixXd::Zero(num_cov, num_cov);
@@ -195,7 +194,8 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
   Q.block<3, 3>(24, 24) = dt * bias_gyro;
 
   // Covariance update
-  P_pre = F * P * Ft + Q;
+  P = P0;
+  P_pre = F * P * F.transpose() + Q;
 
   /// Update Step
   // Collect states info from predicted state vector
@@ -242,10 +242,11 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
   H.block<3, 3>(9, 18) = C_pre;
 
   // Measurement Noise
-  R = Eigen::MatrixXd::Zero(num_measure, num_measure);
+  R = 0.001 * Eigen::MatrixXd::Identity(num_measure, num_measure);
 
-  // update Covariance
+  // update Covariance (12 * 12)
   Eigen::MatrixXd S = H * P_pre * H.transpose() + R;
+  // K (27 * 12)
   Eigen::MatrixXd K = P_pre * H.transpose() * S.inverse();
   Eigen::VectorXd delta_X = K * y;
 
@@ -256,13 +257,34 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
   X.segment(0, 6) = X_pre.segment(0, 6) + delta_X.segment(0, 6);
   Eigen::VectorXd delta_q = delta_X.segment(6, 3);
   Eigen::VectorXd q_upd = this->quaternionDynamics(delta_q, q_pre);
-  X.segment(4, 6) = q_upd;
+  X.segment(6, 4) = q_upd;
   X.segment(10, num_feet * 3) =
       X_pre.segment(10, num_feet * 3) + delta_X.segment(9, num_feet * 3);
   X.segment(22, 6) = X_pre.segment(22, 6) + delta_X.segment(21, 6);
 
-  // set current state value to previous state
+  // set current state value to previous statex
   last_X = X;
+
+  // std::cout << "this is y" << y << std::endl;
+  // std::cout << "this is P" << P << std::endl;
+  // std::cout << "this is r0" << r0 << std::endl;
+  // std::cout << "this is r1" << r1 << std::endl;
+  // std::cout << "this is r2" << r2 << std::endl;
+  // std::cout << "this is F" << F << std::endl;
+  // std::cout << "this is Q" << Q << std::endl;
+  // std::cout << "this is H" << H << std::endl;
+  // std::cout << "this is S" << S << std::endl;
+  // std::cout << "this is S inverse" << S.inverse() << std::endl;
+  // std::cout << "F nan" << F.hasNaN() << std::endl;
+  // std::cout << "Q nan" << Q.hasNaN() << std::endl;
+  // std::cout << "H nan" << H.hasNaN() << std::endl;
+  // std::cout << "S nan" << S.hasNaN() << std::endl;
+  // std::cout << "S inverse nan" << S.inverse().hasNaN() << std::endl;
+  // std::cout << "K nan" << K.hasNaN() << std::endl;
+  // std::cout << "P nan" << P.hasNaN() << std::endl;
+  // std::cout << "P pre nan" << P_pre.hasNaN() << std::endl;
+  // std::cout << "Ft nan" << Ft.hasNaN() << std::endl;
+  // std::cout << "this is x y z" << X.segment(0, 3) << std::endl;
 
   // Update when I have good data, otherwise stay at the origin
   if (last_state_msg_ != NULL) {
@@ -270,6 +292,7 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
   } else {
     good_ground_truth_state = false;
     X = X0;
+    X_pre = X0;
     last_X = X0;
     a = Eigen::VectorXd::Zero(3);
   }
@@ -279,10 +302,15 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
 
   // body
   new_state_est.body.header.stamp = ros::Time::now();
-  new_state_est.body.pose.orientation.x = qk.x();
-  new_state_est.body.pose.orientation.y = qk.y();
-  new_state_est.body.pose.orientation.z = qk.z();
-  new_state_est.body.pose.orientation.w = qk.w();
+  // new_state_est.body.pose.orientation.w = qk.w();
+  // new_state_est.body.pose.orientation.x = qk.x();
+  // new_state_est.body.pose.orientation.y = qk.y();
+  // new_state_est.body.pose.orientation.z = qk.z();
+  new_state_est.body.pose.orientation.w = X[6];
+  new_state_est.body.pose.orientation.x = X[7];
+  new_state_est.body.pose.orientation.y = X[8];
+  new_state_est.body.pose.orientation.z = X[9];
+
   new_state_est.body.pose.position.x = X[0];
   new_state_est.body.pose.position.y = X[1];
   new_state_est.body.pose.position.z = X[2];
@@ -331,7 +359,7 @@ Eigen::MatrixXd EKFEstimator::calcSkewsym(const Eigen::VectorXd& w) {
 
 Eigen::MatrixXd EKFEstimator::calcRodrigues(const double& dt,
                                             const Eigen::VectorXd& w,
-                                            const int& i) {
+                                            const int& sub) {
   Eigen::MatrixXd output = Eigen::MatrixXd::Identity(3, 3);
   Eigen::VectorXd wdt = dt * w;
   double ang = wdt.norm();
@@ -342,29 +370,40 @@ Eigen::MatrixXd EKFEstimator::calcRodrigues(const double& dt,
     axis = wdt / ang;
   }
   Eigen::MatrixXd w_cap = calcSkewsym(axis);
-  switch (i) {
+  switch (sub) {
     case 0:
       output = output + sin(ang) * w_cap + (1 - cos(ang)) * (w_cap * w_cap);
       break;
 
     case 1:
-      output = output + (1 - cos(ang)) * (w_cap / ang) +
-               (ang - sin(ang)) * (w_cap * w_cap) / ang;
-      break;
+      if (ang == 0) {
+        break;
+      } else {
+        output = output + (1 - cos(ang)) * (w_cap / ang) +
+                 (ang - sin(ang)) * (w_cap * w_cap) / ang;
+        break;
+      }
 
     case 2:
-      output = output + (ang - sin(ang)) * (w_cap / (ang * ang)) +
-               (((cos(ang) - 1) + (pow(ang, 2) / 2)) / (ang * ang)) *
-                   (w_cap * w_cap);
-      break;
+      if (ang == 0) {
+        break;
+      } else {
+        output = output + (ang - sin(ang)) * (w_cap / (ang * ang)) +
+                 (((cos(ang) - 1) + (pow(ang, 2) / 2)) / (ang * ang)) *
+                     (w_cap * w_cap);
+        break;
+      }
 
     case 3:
-      output = output +
-               (cos(ang) - 1 + (pow(ang, 2) / 2)) / (pow(ang, 3)) * w_cap +
-               ((sin(ang) - ang + (pow(ang, 3) / 6)) / (pow(ang, 3)) *
-                (w_cap * w_cap));
-      break;
-
+      if (ang == 0) {
+        break;
+      } else {
+        output = output +
+                 (cos(ang) - 1 + (pow(ang, 2) / 2)) / (pow(ang, 3)) * w_cap +
+                 ((sin(ang) - ang + (pow(ang, 3) / 6)) / (pow(ang, 3)) *
+                  (w_cap * w_cap));
+        break;
+      }
     default:
       break;
   }
@@ -386,9 +425,10 @@ void EKFEstimator::spin() {
 
   // initial state
   X0 = Eigen::VectorXd::Zero(num_state);
-  X0 << -1.457778, 1.004244, 0.308681, 0, 0, 0, 1, 0, 0, 0, 0.767431, 1.591838,
-      0.804742, 1.612967, 0.721895, 1.562485, 0.729919, 1.514980, -0.012140,
-      -0.024205, 0.050132, 0.058434, 0, 0, 0, 0, 0, 0;
+  X0 << -1.457778, 1.004244, 0.308681, 0, 0, 0, 0.998927, 0.004160, -0.003017,
+      -0.046032, 0.215211, 0.141567, -0.302079, -0.226818, 0.163752, -0.299762,
+      0.209092, -0.156341, -0.294300, -0.230508, -0.133291, -0.298209, 0, 0, 0,
+      0, 0, 0;
   X = X0;
   last_X = X0;
 
