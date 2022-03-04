@@ -4,6 +4,6 @@
 /*!
   Enum for control modes
    */
-enum LocalPlannerMode { STAND, RUN };
+enum LocalPlannerMode { STAND, STEP };
 
 #endif  // LOCAL_PLANNER_MODES_H

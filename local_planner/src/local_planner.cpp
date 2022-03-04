@@ -48,6 +48,12 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
                            last_cmd_vel_msg_time_max_);
   quad_utils::loadROSParam(nh_, "local_planner/cmd_vel_filter_const",
                            cmd_vel_filter_const_);
+  quad_utils::loadROSParam(nh_, "local_planner/stand_vel_threshold",
+                           stand_vel_threshold_);
+  quad_utils::loadROSParam(nh_, "local_planner/stand_cmd_vel_threshold",
+                           stand_cmd_vel_threshold_);
+  quad_utils::loadROSParam(nh_, "local_planner/stand_pos_error_threshold",
+                           stand_pos_error_threshold_);
 
   // Load system parameters from launch file (not in config file)
   nh.param<bool>("local_planner/use_twist_input", use_twist_input_, false);
@@ -271,7 +277,7 @@ void LocalPlanner::getStateAndReferencePlan() {
   if (body_plan_msg_ == NULL || robot_state_msg_ == NULL) return;
 
   // Tracking trajectory so enter run mode
-  control_mode_ = RUN;
+  control_mode_ = STEP;
 
   // Get index within the global plan, compare with the previous one to check if
   // this is a duplicated solve
@@ -418,11 +424,16 @@ void LocalPlanner::getStateAndTwistInput() {
         robot_state_msg_->feet.feet[i].position.y / ((double)num_feet_);
   }
 
-  // Walk if velocity commanded, current velocity exceeds threshold, or too far
+  // Step if velocity commanded, current velocity exceeds threshold, or too far
   // from center of support
-  if (cmd_vel_.norm() > 1e-1 || current_state_.segment(6, 2).norm() > 1e-1 ||
-      (support_center - current_state_.segment(0, 2)).norm() > 5e-2) {
-    control_mode_ = RUN;
+  bool is_stepping =
+      (cmd_vel_.norm() > stand_cmd_vel_threshold_ ||
+       current_state_.segment(6, 2).norm() > stand_vel_threshold_ ||
+       (support_center - current_state_.segment(0, 2)).norm() >
+           stand_pos_error_threshold_);
+
+  if (is_stepping) {
+    control_mode_ = STEP;
     stand_pose_ << current_state_[0], current_state_[1], current_state_[5];
   } else {
     // If it's standing, try to stablized the waggling

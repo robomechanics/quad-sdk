@@ -282,6 +282,15 @@ class LocalPlanner {
 
   /// Control mode
   int control_mode_;
+
+  /// Velocity threshold to enter stand mode
+  double stand_vel_threshold_;
+
+  /// Commanded velocity threshold to enter stand mode
+  double stand_cmd_vel_threshold_;
+
+  /// Position error threshold (from foot centroid) to enter stand mode
+  double stand_pos_error_threshold_;
 };
 
 #endif  // LOCAL_PLANNER_H
