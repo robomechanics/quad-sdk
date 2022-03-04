@@ -2,7 +2,12 @@ local_planner:
   update_rate: 500 # Hz
   timestep: 0.03 # s
   horizon_length: 24 # timesteps
-  iterations: 1
+  cmd_vel_filter_const: 0.10
+  cmd_vel_scale: 1.0
+  last_cmd_vel_msg_time_max: 2.0
+  stand_vel_threshold: 0.1
+  stand_cmd_vel_threshold: 0.1
+  stand_pos_error_threshold: 0.05
 
 local_body_planner:
   body_mass: 11.5

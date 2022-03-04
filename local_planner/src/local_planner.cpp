@@ -43,11 +43,17 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   quad_utils::loadROSParam(nh_, "local_planner/update_rate", update_rate_);
   quad_utils::loadROSParam(nh_, "local_planner/timestep", dt_);
   quad_utils::loadROSParam(nh_, "local_planner/horizon_length", N_);
-  quad_utils::loadROSParam(nh_, "local_planner/iterations", iterations_);
-  quad_utils::loadROSParam(nh_, "twist_body_planner/cmd_vel_scale",
-                           cmd_vel_scale_);
-  quad_utils::loadROSParam(nh_, "twist_body_planner/last_cmd_vel_msg_time_max",
+  quad_utils::loadROSParam(nh_, "local_planner/cmd_vel_scale", cmd_vel_scale_);
+  quad_utils::loadROSParam(nh_, "local_planner/last_cmd_vel_msg_time_max",
                            last_cmd_vel_msg_time_max_);
+  quad_utils::loadROSParam(nh_, "local_planner/cmd_vel_filter_const",
+                           cmd_vel_filter_const_);
+  quad_utils::loadROSParam(nh_, "local_planner/stand_vel_threshold",
+                           stand_vel_threshold_);
+  quad_utils::loadROSParam(nh_, "local_planner/stand_cmd_vel_threshold",
+                           stand_cmd_vel_threshold_);
+  quad_utils::loadROSParam(nh_, "local_planner/stand_pos_error_threshold",
+                           stand_pos_error_threshold_);
 
   // Load system parameters from launch file (not in config file)
   nh.param<bool>("local_planner/use_twist_input", use_twist_input_, false);
@@ -89,12 +95,13 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 
   // Initialize twist input variables
   cmd_vel_.resize(6);
-  std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
+  cmd_vel_.setZero();
   initial_timestamp_ = ros::Time::now();
   first_plan_ = true;
 
   // Initialize stand pose
   stand_pose_.fill(std::numeric_limits<double>::max());
+  control_mode_ = STAND;
 
   // Initialize the time duration to the next plan index
   first_element_duration_ = dt_;
@@ -251,12 +258,15 @@ void LocalPlanner::robotStateCallback(
 
 void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg) {
   // Ignore non-planar components of desired twist
-  cmd_vel_[0] = 0.95 * cmd_vel_[0] + 0.05 * cmd_vel_scale_ * msg->linear.x;
-  cmd_vel_[1] = 0.95 * cmd_vel_[1] + 0.05 * cmd_vel_scale_ * msg->linear.y;
+  cmd_vel_[0] = (1 - cmd_vel_filter_const_) * cmd_vel_[0] +
+                cmd_vel_filter_const_ * cmd_vel_scale_ * msg->linear.x;
+  cmd_vel_[1] = (1 - cmd_vel_filter_const_) * cmd_vel_[1] +
+                cmd_vel_filter_const_ * cmd_vel_scale_ * msg->linear.y;
   cmd_vel_[2] = 0;
   cmd_vel_[3] = 0;
   cmd_vel_[4] = 0;
-  cmd_vel_[5] = 0.95 * cmd_vel_[5] + 0.05 * cmd_vel_scale_ * msg->angular.z;
+  cmd_vel_[5] = (1 - cmd_vel_filter_const_) * cmd_vel_[5] +
+                cmd_vel_filter_const_ * cmd_vel_scale_ * msg->angular.z;
 
   // Record when this was last reached for safety
   last_cmd_vel_msg_time_ = ros::Time::now();
@@ -265,6 +275,9 @@ void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg) {
 void LocalPlanner::getStateAndReferencePlan() {
   // Make sure body plan and robot state data is populated
   if (body_plan_msg_ == NULL || robot_state_msg_ == NULL) return;
+
+  // Tracking trajectory so enter run mode
+  control_mode_ = STEP;
 
   // Get index within the global plan, compare with the previous one to check if
   // this is a duplicated solve
@@ -341,6 +354,12 @@ void LocalPlanner::getStateAndReferencePlan() {
   body_plan_.row(0) = current_state_;
   foot_positions_body_.row(0) = current_foot_positions_body_;
   foot_positions_world_.row(0) = current_foot_positions_world_;
+
+  // Stand if the plan has been tracked
+  if ((current_state_ - ref_body_plan_.bottomRows(1)).norm() <=
+      stand_pos_error_threshold_) {
+    control_mode_ = STAND;
+  }
 }
 
 void LocalPlanner::getStateAndTwistInput() {
@@ -381,7 +400,7 @@ void LocalPlanner::getStateAndTwistInput() {
   ros::Duration time_elapsed_since_msg =
       ros::Time::now() - last_cmd_vel_msg_time_;
   if (time_elapsed_since_msg.toSec() > last_cmd_vel_msg_time_max_) {
-    std::fill(cmd_vel_.begin(), cmd_vel_.end(), 0);
+    cmd_vel_.setZero();
     ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
   }
 
@@ -396,32 +415,43 @@ void LocalPlanner::getStateAndTwistInput() {
     stand_pose_ << current_state_[0], current_state_[1], current_state_[5];
   }
 
-  // If it's going to walk, use latest states
-  if (cmd_vel_[0] != 0 || cmd_vel_[1] != 0 || cmd_vel_[5] != 0) {
+  // Set initial condition for forward integration
+  Eigen::Vector2d support_center;
+  support_center.setZero();
+  for (int i = 0; i < num_feet_; i++) {
+    support_center.x() +=
+        robot_state_msg_->feet.feet[i].position.x / ((double)num_feet_);
+    support_center.y() +=
+        robot_state_msg_->feet.feet[i].position.y / ((double)num_feet_);
+  }
+
+  // Step if velocity commanded, current velocity exceeds threshold, or too far
+  // from center of support
+  bool is_stepping =
+      (cmd_vel_.norm() > stand_cmd_vel_threshold_ ||
+       current_state_.segment(6, 2).norm() > stand_vel_threshold_ ||
+       (support_center - current_state_.segment(0, 2)).norm() >
+           stand_pos_error_threshold_);
+
+  if (is_stepping) {
+    control_mode_ = STEP;
     stand_pose_ << current_state_[0], current_state_[1], current_state_[5];
   } else {
     // If it's standing, try to stablized the waggling
+    control_mode_ = STAND;
     Eigen::Vector3d current_stand_pose;
-    current_stand_pose << current_state_[0], current_state_[1],
+    current_stand_pose << support_center[0], support_center[1],
         current_state_[5];
     stand_pose_ = stand_pose_ * (1 - 1 / update_rate_) +
                   current_stand_pose * 1 / update_rate_;
   }
 
-  // Set initial condition for forward integration
-  double x_mean = 0;
-  double y_mean = 0;
-  for (int i = 0; i < num_feet_; i++) {
-    x_mean += robot_state_msg_->feet.feet[i].position.x / (num_feet_);
-    y_mean += robot_state_msg_->feet.feet[i].position.y / (num_feet_);
-  }
-
-  ref_body_plan_(0, 0) = current_state_[0];  // x_mean;
-  ref_body_plan_(0, 1) = current_state_[1];  // y_mean;
+  ref_body_plan_(0, 0) = stand_pose_[0];  // support_center.x();
+  ref_body_plan_(0, 1) = stand_pose_[1];  // support_center.x();
   ref_body_plan_(0, 2) = z_des_ + ref_ground_height_(0);
   ref_body_plan_(0, 3) = 0;
   ref_body_plan_(0, 4) = 0;
-  ref_body_plan_(0, 5) = current_state_[5];
+  ref_body_plan_(0, 5) = stand_pose_[2];
   ref_body_plan_(0, 6) = cmd_vel_[0] * cos(current_state_[5]) -
                          cmd_vel_[1] * sin(current_state_[5]);
   ref_body_plan_(0, 7) = cmd_vel_[0] * sin(current_state_[5]) +
@@ -516,8 +546,8 @@ bool LocalPlanner::computeLocalPlan() {
   quad_utils::FunctionTimer timer(__FUNCTION__);
 
   // Compute the contact schedule
-  local_footstep_planner_->computeContactSchedule(current_plan_index_,
-                                                  contact_schedule_);
+  local_footstep_planner_->computeContactSchedule(
+      current_plan_index_, control_mode_, contact_schedule_);
 
   // Compute the new footholds if we have a valid existing plan (i.e. if
   // grf_plan is filled)

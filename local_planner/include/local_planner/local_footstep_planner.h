@@ -2,6 +2,7 @@
 #define LOCAL_FOOTSTEP_PLANNER_H
 
 #include <eigen_conversions/eigen_msg.h>
+#include <local_planner/local_planner_modes.h>
 #include <nav_msgs/Path.h>
 #include <quad_msgs/FootPlanDiscrete.h>
 #include <quad_msgs/FootState.h>
@@ -103,21 +104,11 @@ class LocalFootstepPlanner {
 
   /**
    * @brief Compute the contact schedule based on the current phase
-   * @param[in] current_plan_index_ current index in the plan
-   * @param[out] contact_schedule 2D array of contact states
-   */
-  void computeStanceContactSchedule(
-      int current_plan_index_,
-      std::vector<std::vector<bool>> &contact_schedule);
-
-  /**
-   * @brief Compute the contact schedule based on the current phase
    * @param[in] current_plan_index_ Current index in the plan
-   * @param[in] current_state Current robot state
-   * @param[in] ref_body_plan Reference body plan
+   * @param[in] control_mode Control mode
    * @param[out] contact_schedule 2D array of contact states
    */
-  void computeContactSchedule(int current_plan_index,
+  void computeContactSchedule(int current_plan_index, int control_mode,
                               std::vector<std::vector<bool>> &contact_schedule);
 
   /**
