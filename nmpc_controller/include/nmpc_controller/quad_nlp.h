@@ -280,6 +280,13 @@ class quadNLP : public TNLP {
   virtual bool eval_grad_f(Index n, const Number *x, bool new_x,
                            Number *grad_f);
 
+  /** Method to return the constraint residual for requested data */
+  Eigen::VectorXd eval_g_single_fe(int sys_id, double dt,
+                                   const Eigen::VectorXd &x0,
+                                   const Eigen::VectorXd &u,
+                                   const Eigen::VectorXd &x1,
+                                   const Eigen::VectorXd &params);
+
   /** Method to return the constraint residuals */
   virtual bool eval_g(Index n, const Number *x, bool new_x, Index m, Number *g);
 

@@ -483,15 +483,47 @@ bool quadNLP::eval_grad_f(Index n, const Number *x, bool new_x,
   return true;
 }
 
+Eigen::VectorXd quadNLP::eval_g_single_fe(int sys_id, double dt,
+                                          const Eigen::VectorXd &x0,
+                                          const Eigen::VectorXd &u,
+                                          const Eigen::VectorXd &x1,
+                                          const Eigen::VectorXd &params) {
+  casadi_int sz_arg;
+  casadi_int sz_res;
+  casadi_int sz_iw;
+  casadi_int sz_w;
+  eval_work_vec_[sys_id][FUNC](&sz_arg, &sz_res, &sz_iw, &sz_w);
+
+  const double *arg[sz_arg];
+  double *res[sz_res];
+  casadi_int iw[sz_iw];
+  double _w[sz_w];
+
+  eval_incref_vec_[sys_id][FUNC]();
+
+  Eigen::VectorXd dynamic_var, pk;
+  dynamic_var << x0, u, x1;
+  pk << mu_, dt, params;
+
+  arg[0] = dynamic_var.data();
+  arg[1] = pk.data();
+
+  Eigen::VectorXd constr_vars(nrow_mat_(sys_id, FUNC));
+  res[0] = constr_vars.data();
+
+  int mem = eval_checkout_vec_[sys_id][FUNC]();
+  eval_vec_[sys_id][FUNC](arg, res, iw, _w, mem);
+  eval_release_vec_[sys_id][FUNC](mem);
+  eval_decref_vec_[sys_id][FUNC]();
+
+  return constr_vars;
+}
+
 // Return the value of the constraints
 bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
   Eigen::Map<const Eigen::VectorXd> w(x, n);
   Eigen::Map<Eigen::VectorXd> g_matrix(g, m);
   g_matrix.setZero();
-
-  // std::cout << "g_matrix.sum() before = " << g_matrix.sum() << std::endl;
-  // std::cout << "n = " << n << std::endl;
-  // std::cout << "m = " << m << std::endl;
 
   for (int i = 0; i < N_; ++i) {
     // Select the system ID
@@ -528,56 +560,6 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     eval_vec_[sys_id][FUNC](arg, res, iw, _w, mem);
     eval_release_vec_[sys_id][FUNC](mem);
     eval_decref_vec_[sys_id][FUNC]();
-
-    // if (complexity_schedule_[i + 1] == 1) {
-    //   std::cout << "\nget_dynamic_var(w, i) = "
-    //             << get_dynamic_var(w, i).transpose() << std::endl;
-    //   std::cout << "EOM constraint = "
-    //             << get_constraint_var(g_matrix, i).segment(0, 12).transpose()
-    //             << std::endl;
-    //   std::cout << "Friction constraint = "
-    //             << get_constraint_var(g_matrix, i).segment(12,
-    //             16).transpose()
-    //             << std::endl;
-    //   std::cout << "Foot position constraint = "
-    //             << get_constraint_var(g_matrix, i).segment(28,
-    //             12).transpose()
-    //             << std::endl;
-    //   std::cout << "Foot velocity constraint = "
-    //             << get_constraint_var(g_matrix, i).segment(40,
-    //             12).transpose()
-    //             << std::endl;
-    //   std::cout << "Knee height constraint = "
-    //             << get_constraint_var(g_matrix, i).segment(52, 4).transpose()
-    //             << std::endl;
-    //   std::cout << "Motor model pos constraint = "
-    //             << get_constraint_var(g_matrix, i).segment(56,
-    //             12).transpose()
-    //             << std::endl;
-    //   std::cout << "Motor model neg constraint = "
-    //             << get_constraint_var(g_matrix, i).segment(68,
-    //             12).transpose()
-    //             << std::endl
-    //             << std::endl;
-
-    //   Eigen::Vector3d body_pos = get_state_var(w, i + 1).segment(0, 3);
-    //   Eigen::Vector3d body_rpy = get_state_var(w, i + 1).segment(3, 6);
-    //   Eigen::Vector3d joint_state = get_state_var(w, i + 1).segment(12, 3);
-    //   Eigen::Vector3d foot_pos_world;
-    //   quad_utils::QuadKD quad_kd;
-    //   quad_kd.worldToFootFKWorldFrame(0, body_pos, body_rpy, joint_state,
-    //                                   foot_pos_world);
-    //   std::cout << "body_pos = " << body_pos.transpose() << std::endl;
-    //   std::cout << "body_rpy = " << body_rpy.transpose() << std::endl;
-    //   std::cout << "joint_state = " << joint_state.transpose() << std::endl;
-    //   std::cout << "foot_pos_world = " << foot_pos_world.transpose()
-    //             << std::endl;
-    //   std::cout << "foot_pos_world target = " << pk.segment(2, 3).transpose()
-    //             << std::endl;
-    //   std::cout << "constraint val = "
-    //             << (foot_pos_world - pk.segment(2, 3)).transpose() <<
-    //             std::endl;
-    // }
   }
 
   for (int i = 0; i < N_; ++i) {
@@ -588,20 +570,7 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
         xk + panick.head(n_slack_vec_[i]);
     get_panic_constraint_var(g_matrix, i).tail(n_slack_vec_[i]) =
         xk - panick.tail(n_slack_vec_[i]);
-
-    // std::cout << "i = " << i << std::endl;
-    // std::cout << "n_slack_vec_[i] = " << n_slack_vec_[i] << std::endl;
-    // std::cout << "get_state_var(w, i + 1) = "
-    //           << get_state_var(w, i + 1).transpose() << std::endl;
-    // std::cout << "xk = " << xk.transpose() << std::endl;
-    // std::cout << "panick = " << panick.transpose() << std::endl;
-    // std::cout << "get_panic_constraint_var(g_matrix, i) = "
-    //           << get_panic_constraint_var(g_matrix, i).transpose() <<
-    //           std::endl;
   }
-
-  // std::cout << "g_matrix max = " << g_matrix.maxCoeff() << std::endl;
-  // std::cout << "g_matrix min = " << g_matrix.minCoeff() << std::endl;
 
   return true;
 }

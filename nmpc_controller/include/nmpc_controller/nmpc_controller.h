@@ -86,6 +86,13 @@ class NMPCController {
       const double &first_element_duration, const bool &same_plan_index,
       Eigen::MatrixXd &tail_state_traj, Eigen::MatrixXd &tail_control_traj);
 
+  /** Method to return the constraint residual for requested data */
+  Eigen::VectorXd eval_g_single_fe(int sys_id, double dt,
+                                   const Eigen::VectorXd &x0,
+                                   const Eigen::VectorXd &u,
+                                   const Eigen::VectorXd &x1,
+                                   const Eigen::VectorXd &params);
+
  private:
   ros::NodeHandle nh_;
 

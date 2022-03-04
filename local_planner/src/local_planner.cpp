@@ -517,37 +517,44 @@ void LocalPlanner::getStateAndTwistInput() {
 }
 
 Eigen::VectorXi LocalPlanner::getInvalidRegions() {
-  Eigen::VectorXi complexity_horizon(N_);
+  Eigen::VectorXi complexity_horizon(N_ + 1);
+  complexity_horizon.setZero();
   Eigen::VectorXd state_violations, control_violations;
 
-  for (int i = 0; i < N_; i++) {
+  for (int i = 0; i < N_ - 1; i++) {
     Eigen::VectorXd joint_positions(12);
     Eigen::VectorXd joint_velocities(12);
     Eigen::VectorXd joint_torques(12);
 
     bool is_state_valid = quadKD_->isValidCentroidalState(
-        body_plan_.row(i), foot_positions_world_.row(i),
-        foot_positions_world_.row(i) * 0, grf_plan_.row(i), terrain_grid_,
+        body_plan_.row(i + 1), foot_positions_world_.row(i + 1),
+        foot_velocities_world_.row(i + 1), grf_plan_.row(i), terrain_grid_,
         joint_positions, joint_velocities, joint_torques, state_violations,
         control_violations);
 
     complexity_horizon[i] = (is_state_valid) ? 0 : 1;
+    int dt = (i == 0) ? first_element_duration_ : dt_;
 
     if (!is_state_valid) {
-      // std::cout << "body_plan_ = \n" << body_plan_.row(i).format(CleanFmt) <<
-      // std::endl; std::cout << "foot_positions_world_ = \n" <<
-      // foot_positions_world_.row(i).format(CleanFmt) << std::endl; std::cout
-      // << "grf_plan_ = \n" << grf_plan_.row(i).format(CleanFmt) << std::endl;
-      // std::cout << "joint_positions = \n" <<
-      // joint_positions.transpose().format(CleanFmt) << std::endl; std::cout <<
-      // "joint_velocities = \n" <<
-      // joint_velocities.transpose().format(CleanFmt) << std::endl; std::cout
-      // << "joint_torques = \n" << joint_torques.transpose().format(CleanFmt)
-      // << std::endl; std::cout << "i = " << i << std::endl; std::cout <<
-      // "state_violations = \n" <<
-      // state_violations.transpose().format(CleanFmt) << std::endl; std::cout
-      // << "control_violations = \n" <<
-      // control_violations.transpose().format(CleanFmt) << std::endl;
+      std::cout << "body_plan_ = \n"
+                << body_plan_.row(i).format(CleanFmt) << std::endl;
+      std::cout << "foot_positions_world_ = \n"
+                << foot_positions_world_.row(i).format(CleanFmt) << std::endl;
+      std::cout << "foot_velocities_world_ = \n"
+                << foot_velocities_world_.row(i).format(CleanFmt) << std::endl;
+      std::cout << "grf_plan_ = \n"
+                << grf_plan_.row(i).format(CleanFmt) << std::endl;
+      std::cout << "joint_positions = \n"
+                << joint_positions.transpose().format(CleanFmt) << std::endl;
+      std::cout << "joint_velocities = \n"
+                << joint_velocities.transpose().format(CleanFmt) << std::endl;
+      std::cout << "joint_torques = \n"
+                << joint_torques.transpose().format(CleanFmt) << std::endl;
+      std::cout << "i = " << i << std::endl;
+      std::cout << "state_violations = \n"
+                << state_violations.transpose().format(CleanFmt) << std::endl;
+      std::cout << "control_violations = \n"
+                << control_violations.transpose().format(CleanFmt) << std::endl;
     }
   }
   if (complexity_horizon.sum() <= 0) {

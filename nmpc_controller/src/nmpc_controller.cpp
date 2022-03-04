@@ -133,8 +133,8 @@ NMPCController::NMPCController(int type) {
   app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
   app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
 
-  app_->Options()->SetNumericValue("max_wall_time", 10.0 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 10.0 * dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 2.0 * dt_);
+  app_->Options()->SetNumericValue("max_cpu_time", 2.0 * dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();
@@ -303,4 +303,12 @@ bool NMPCController::computePlan(
 
     return false;
   }
+}
+
+Eigen::VectorXd NMPCController::evalConstraint(int sys_id, double dt,
+                                               const Eigen::VectorXd &x0,
+                                               const Eigen::VectorXd &u,
+                                               const Eigen::VectorXd &x1,
+                                               const Eigen::VectorXd &params) {
+  return mynlp_->eval_g_single_fe(sys_id, dt, x0, u, x1, params);
 }
