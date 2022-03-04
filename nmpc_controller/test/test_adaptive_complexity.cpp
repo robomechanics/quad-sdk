@@ -91,9 +91,10 @@ TEST(NMPCTest, testAdaptiveComplexity) {
 
   Eigen::VectorXd joint_positions(12), joint_velocities(12), torques(12);
 
-  for (size_t i = 0; i < 3; i++) {
+  for (int i = 0; i < 5; i++) {
     tic = std::chrono::steady_clock::now();
-    // complexity_schedule.tail(i + 1).fill(1);
+    complexity_schedule.tail(2 * i + 1).fill(1);
+    complexity_schedule.head(2 * i + 1).fill(1);
 
     // std::cout << "current state = " << current_state_.transpose() <<
     // std::endl;

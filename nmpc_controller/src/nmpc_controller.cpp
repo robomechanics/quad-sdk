@@ -248,8 +248,10 @@ bool NMPCController::computePlan(
   ApplicationReturnStatus status;
   app_->Options()->SetNumericValue("mu_init", mynlp_->mu0_);
   if (mynlp_->warm_start_) {
+    // std::cout << "Warm start on" << std::endl;
     app_->Options()->SetStringValue("warm_start_init_point", "yes");
   } else {
+    // std::cout << "Warm start off" << std::endl;
     app_->Options()->SetStringValue("warm_start_init_point", "no");
   }
 
@@ -295,7 +297,7 @@ bool NMPCController::computePlan(
   } else {
     mynlp_->mu0_ = 1e-1;
     mynlp_->warm_start_ = false;
-    // require_init_ = true;
+    require_init_ = true;
 
     ROS_WARN_STREAM(param_ns_ << " solving fail");
 

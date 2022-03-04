@@ -62,7 +62,7 @@ class quadNLP : public TNLP {
   Eigen::VectorXi n_vec_, n_slack_vec_, g_vec_;
 
   /// Boolean for whether to apply panic variables for complex states
-  const bool apply_slack_to_complex_ = true;
+  const bool apply_slack_to_complex_ = false;
 
   /// Input dimension for simple and complex models
   int m_simple_, m_complex_;
