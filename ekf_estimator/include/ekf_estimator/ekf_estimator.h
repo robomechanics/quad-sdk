@@ -64,7 +64,44 @@ class EKFEstimator {
    * @brief execute EKF Update step, return state estimate
    * @return state estimate of custom type RobotState
    */
-  quad_msgs::RobotState updateStep();
+  quad_msgs::RobotState StepOnce();
+
+  /**
+   * @brief EKF prediction step
+   * @param[in] dt double time interval
+   * @param[in] fk Eigen::VectorXd linear acceleration data (3 * 1)
+   * @param[in] wk Eigen::VectorXd angular acceleration data (3 * 1)
+   * @param[in] qk Eigen::Quaterniond orientation in quaternion
+   */
+  void predict(const double& dt, const Eigen::VectorXd& fk,
+               const Eigen::VectorXd& wk, const Eigen::Quaterniond& qk);
+
+  /**
+   * @brief EKF update step
+   * @param[in] jk Eigen::VectorXd joint encoder data (12 * 1)
+   */
+  void update(const Eigen::VectorXd& jk);
+
+  /**
+   * @brief read IMU data
+   * @param[in] last_imu_msg_ sensor_msgs::Imu::ConstPtr imu sensor message
+   * @param[out] fk Eigen::VectorXd linear acceleration (3 * 1)
+   * @param[out] wk Eigen::VectorXd angular acceleration (3 * 1)
+   * @param[out] qk Eigen::Quaterniond orientation in quaternion
+   */
+  void readIMU(const sensor_msgs::Imu::ConstPtr& last_imu_msg_,
+               Eigen::VectorXd& fk, Eigen::VectorXd& wk,
+               Eigen::Quaterniond& qk);
+
+  /**
+   * @brief read joint encoder data
+   * @param[in] last_joint_state_msg_ sensor_msgs::JointState::ConstPtr joint
+   * state sensor message
+   * @param[out] jk Eigen::VectorXd jointstate (12 * 1)
+   */
+  void readJointEncoder(
+      const sensor_msgs::JointState::ConstPtr& last_joint_state_msg_,
+      Eigen::VectorXd& jk);
 
   /**
    * @brief predict quaternion k+1 from k using dt, angular velocity, and qk
@@ -101,10 +138,13 @@ class EKFEstimator {
   // number of states position (3 * 1) + velocity (3 * 1) + quaternion (4 * 1) +
   // feet position (12 * 1) + bias_acc (3 * 1) + bias_gyro (3 * 1)
   static const int num_state = 28;
+
   // number of covariances equals number of states
   static const int num_cov = 27;
+
   // measurement number equals feet positions (12)
   static const int num_measure = 12;
+
   const int num_feet = 4;
 
   /// Subscriber for ground_truth RobotState messages
@@ -209,22 +249,9 @@ class EKFEstimator {
   // noise at encoder
   double noise_encoder;
 
-  //   // IMU bias in acc x
-  //   double bias_x_;
-
-  //   // IMU bias in acc x
-  //   double bias_y_;
-
-  //   // IMU bias in acc z
-  //   double bias_z_;
-
-  //   // IMU bias in gyro x
-  //   double bias_roll_;
-
-  //   // IMU bias in gyro y
-  //   double bias_pitch_;
-
-  //   // IMU bias in gyro z
-  //   double bias_yaw_;
+  // Record whether we have good imu and joint state data
+  bool good_imu = false;
+  bool good_joint_state = false;
+  bool good_ground_truth_state = false;
 };
 #endif  // EKF_ESTIMATOR_H

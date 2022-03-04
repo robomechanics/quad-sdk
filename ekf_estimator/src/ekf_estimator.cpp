@@ -60,18 +60,13 @@ void EKFEstimator::contactCallback(
   last_contact_msg_ = msg;
 }
 
-quad_msgs::RobotState EKFEstimator::updateStep() {
+quad_msgs::RobotState EKFEstimator::StepOnce() {
   // Record start time of function, used in verifying messages are not out of
   // date and in timing function
   ros::Time start_time = ros::Time::now();
 
   // Create skeleton message to send out
   quad_msgs::RobotState new_state_est;
-
-  // Record whether we have good imu and joint state data
-  bool good_imu = false;
-  bool good_joint_state = false;
-  bool good_ground_truth_state = false;
 
   // calculate dt
   double dt = (start_time - last_time).toSec();
@@ -85,36 +80,59 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
   // IMU orientation (w, x, y, z)
   Eigen::Quaterniond qk(1, 0, 0, 0);
   // if there is good imu data: read data from bag file
-  if (last_imu_msg_ != NULL) {
-    good_imu = true;
-    fk << (*last_imu_msg_).linear_acceleration.x,
-        (*last_imu_msg_).linear_acceleration.y,
-        (*last_imu_msg_).linear_acceleration.z;
-    wk << (*last_imu_msg_).angular_velocity.x,
-        (*last_imu_msg_).angular_velocity.y,
-        (*last_imu_msg_).angular_velocity.z;
-
-    qk.w() = (*last_imu_msg_).orientation.w;
-    qk.x() = (*last_imu_msg_).orientation.x;
-    qk.y() = (*last_imu_msg_).orientation.y;
-    qk.z() = (*last_imu_msg_).orientation.z;
-    qk.normalize();
-  }
+  this->readIMU(last_imu_msg_, fk, wk, qk);
 
   // Joint data reading 3 joints * 4 legs
-  std::vector<double> jk(12, 0);
-  if (last_joint_state_msg_ != NULL) {
-    good_joint_state = true;
-    for (int i = 0; i < 12; i++) {
-      jk[i] = (*last_joint_state_msg_).position[i];
-    }
+  Eigen::VectorXd jk = Eigen::VectorXd::Zero(12);
+  this->readJointEncoder(last_joint_state_msg_, jk);
+  std::vector<double> jkVector(jk.data(), jk.data() + jk.rows() * jk.cols());
+
+  /// Prediction Step
+  this->predict(dt, fk, wk, qk);
+
+  /// Update Step
+  this->update(jk);
+
+  // Update when I have good data, otherwise stay at the origin
+  if (last_state_msg_ != NULL) {
+    good_ground_truth_state = true;
   } else {
-    good_joint_state = false;
-    // nominal joint encoder values
-    jk = {0.767431, 1.591838, 0.804742,  1.612967,  0.721895, 1.562485,
-          0.729919, 1.514980, -0.012140, -0.024205, 0.050132, 0.058434};
+    good_ground_truth_state = false;
+    X = X0;
+    X_pre = X0;
+    last_X = X0;
+    P = P0;
+    P_pre = P0;
   }
 
+  /// publish new message
+  new_state_est.header.stamp = ros::Time::now();
+
+  // body
+  new_state_est.body.header.stamp = ros::Time::now();
+  new_state_est.body.pose.orientation.w = X[6];
+  new_state_est.body.pose.orientation.x = X[7];
+  new_state_est.body.pose.orientation.y = X[8];
+  new_state_est.body.pose.orientation.z = X[9];
+
+  new_state_est.body.pose.position.x = X[0];
+  new_state_est.body.pose.position.y = X[1];
+  new_state_est.body.pose.position.z = X[2];
+
+  // joint
+  new_state_est.joints.header.stamp = ros::Time::now();
+  new_state_est.joints.name = {"0", "1", "2", "3", "4",  "5",
+                               "6", "7", "8", "9", "10", "11"};
+  new_state_est.joints.position = jkVector;
+  new_state_est.joints.velocity = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  new_state_est.joints.effort = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+  return new_state_est;
+}
+
+void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
+                           const Eigen::VectorXd& wk,
+                           const Eigen::Quaterniond& qk) {
   // calculate rotational matrix from world frame to body frame
   Eigen::Matrix3d C = qk.toRotationMatrix();
 
@@ -142,10 +160,12 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
   X_pre.block<3, 1>(0, 0) =
       r + dt * v + dt * dt * 0.5 * (C.transpose() * a + g);
   X_pre.block<3, 1>(3, 0) = v + dt * (C.transpose() * a + g);
+
+  // fix az for now
+  X_pre[5] = 0;
   // quaternion updates
   Eigen::VectorXd wdt = dt * w;
   Eigen::VectorXd q_pre = this->quaternionDynamics(wdt, q);
-  // std::cout << "this is qk+1" << q_pre << std::endl;
   X_pre.block<4, 1>(6, 0) = q_pre;
   X_pre.block<12, 1>(10, 0) = X.block<12, 1>(10, 0);
   X_pre.block<6, 1>(22, 0) = X.block<6, 1>(22, 0);
@@ -196,14 +216,16 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
   // Covariance update
   P = P0;
   P_pre = F * P * F.transpose() + Q;
+}
 
-  /// Update Step
+void EKFEstimator::update(const Eigen::VectorXd& jk) {
   // Collect states info from predicted state vector
   Eigen::VectorXd r_pre = X_pre.block<3, 1>(0, 0);
   Eigen::VectorXd v_pre = X_pre.block<3, 1>(3, 0);
+  Eigen::VectorXd q_pre = X_pre.block<3, 1>(6, 0);
   Eigen::VectorXd p_pre = X_pre.block<12, 1>(10, 0);
-  Eigen::VectorXd bf_pre = X_pre.block<1, 1>(22, 0);
-  Eigen::VectorXd bw_pre = X_pre.block<1, 1>(23, 0);
+  Eigen::VectorXd bf_pre = X_pre.block<3, 1>(22, 0);
+  Eigen::VectorXd bw_pre = X_pre.block<3, 1>(25, 0);
 
   Eigen::Quaterniond quaternion_pre(q_pre[0], q_pre[1], q_pre[2], q_pre[3]);
   quaternion_pre.normalize();
@@ -213,25 +235,26 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
   Eigen::VectorXd s = Eigen::MatrixXd::Zero(3 * num_feet, 1);
   for (int i = 0; i < num_feet; i++) {
     // foot index i:(0 = FL, 1 = BL, 2 = FR, 3 = BR)
+    // FL: 8 0 1, BL: 9 2 3, FR: 10 4 5, BR: 11 6 7
     Eigen::Vector3d joint_state_i;
-    joint_state_i << X_pre[10 + i * 3], X_pre[10 + i * 3 + 1],
-        X_pre[10 + i * 3 + 2];
+    joint_state_i << jk[8 + i], jk[0 + i], jk[1 + i];
     Eigen::Vector3d toe_body_pos;
     quadKD_->bodyToFootFKBodyFrame(i, joint_state_i, toe_body_pos);
     s.segment(i * 3, 3) = toe_body_pos;
   }
+
   // std::cout << "foot positions" << s << std::endl;
 
-  // measurement residual
+  // measurement residual (12 * 1)
   Eigen::VectorXd y = Eigen::VectorXd::Zero(num_measure);
   for (int i = 0; i < num_feet; i++) {
     y.segment(i * 3, 3) =
         s.segment(i * 3, 3) - (C_pre * (p_pre.segment(i * 3, 3) - r_pre));
   }
 
-  // Measurement jacobian
+  // Measurement jacobian (12 * 27)
   H = Eigen::MatrixXd::Zero(num_measure, num_cov);
-  H.block<18, 3>(0, 0) = -C_pre.replicate(6, 1);
+  H.block<12, 3>(0, 0) = -C_pre.replicate(6, 1);
   for (int i = 0; i < num_feet; i++) {
     Eigen::VectorXd vtemp = C_pre * (p_pre.segment(i * 3, 3) - r_pre);
     H.block<3, 3>(i * 3, 6) = this->calcSkewsym(vtemp);
@@ -285,68 +308,65 @@ quad_msgs::RobotState EKFEstimator::updateStep() {
   // std::cout << "P pre nan" << P_pre.hasNaN() << std::endl;
   // std::cout << "Ft nan" << Ft.hasNaN() << std::endl;
   // std::cout << "this is x y z" << X.segment(0, 3) << std::endl;
+}
 
-  // Update when I have good data, otherwise stay at the origin
-  if (last_state_msg_ != NULL) {
-    good_ground_truth_state = true;
-  } else {
-    good_ground_truth_state = false;
-    X = X0;
-    X_pre = X0;
-    last_X = X0;
-    a = Eigen::VectorXd::Zero(3);
+void EKFEstimator::readIMU(const sensor_msgs::Imu::ConstPtr& last_imu_msg_,
+                           Eigen::VectorXd& fk, Eigen::VectorXd& wk,
+                           Eigen::Quaterniond& qk) {
+  if (last_imu_msg_ != NULL) {
+    fk << (*last_imu_msg_).linear_acceleration.x,
+        (*last_imu_msg_).linear_acceleration.y,
+        (*last_imu_msg_).linear_acceleration.z;
+    // I think the angular velocity is opposite to the reading values
+    wk << -(*last_imu_msg_).angular_velocity.x,
+        -(*last_imu_msg_).angular_velocity.y,
+        -(*last_imu_msg_).angular_velocity.z;
+
+    qk.w() = (*last_imu_msg_).orientation.w;
+    qk.x() = (*last_imu_msg_).orientation.x;
+    qk.y() = (*last_imu_msg_).orientation.y;
+    qk.z() = (*last_imu_msg_).orientation.z;
+    qk.normalize();
   }
+}
 
-  /// publish new message
-  new_state_est.header.stamp = ros::Time::now();
-
-  // body
-  new_state_est.body.header.stamp = ros::Time::now();
-  // new_state_est.body.pose.orientation.w = qk.w();
-  // new_state_est.body.pose.orientation.x = qk.x();
-  // new_state_est.body.pose.orientation.y = qk.y();
-  // new_state_est.body.pose.orientation.z = qk.z();
-  new_state_est.body.pose.orientation.w = X[6];
-  new_state_est.body.pose.orientation.x = X[7];
-  new_state_est.body.pose.orientation.y = X[8];
-  new_state_est.body.pose.orientation.z = X[9];
-
-  new_state_est.body.pose.position.x = X[0];
-  new_state_est.body.pose.position.y = X[1];
-  new_state_est.body.pose.position.z = X[2];
-
-  // joint
-  new_state_est.joints.header.stamp = ros::Time::now();
-  new_state_est.joints.name = {"0", "1", "2", "3", "4",  "5",
-                               "6", "7", "8", "9", "10", "11"};
-  new_state_est.joints.position = jk;
-  new_state_est.joints.velocity = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  new_state_est.joints.effort = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-  return new_state_est;
+void EKFEstimator::readJointEncoder(
+    const sensor_msgs::JointState::ConstPtr& last_joint_state_msg_,
+    Eigen::VectorXd& jk) {
+  if (last_joint_state_msg_ != NULL) {
+    for (int i = 0; i < 12; i++) {
+      jk[i] = (*last_joint_state_msg_).position[i];
+    }
+  } else {
+    // nominal joint encoder values
+    jk << 0.767431, 1.591838, 0.804742, 1.612967, 0.721895, 1.562485, 0.729919,
+        1.514980, -0.012140, -0.024205, 0.050132, 0.058434;
+  }
 }
 
 Eigen::VectorXd EKFEstimator::quaternionDynamics(const Eigen::VectorXd& wdt,
                                                  const Eigen::VectorXd& q2v) {
   Eigen::VectorXd output = Eigen::VectorXd::Zero(4);
 
-  double v = wdt.norm();
-  Eigen::Vector3d q_xyz;
-  if (v == 0) {
-    q_xyz = Eigen::VectorXd::Zero(3);
+  double angle = wdt.norm();
+  Eigen::Vector3d axis;
+  if (angle == 0) {
+    axis = Eigen::VectorXd::Zero(3);
   } else {
-    q_xyz = sin(v / 2) * (wdt / v);
+    axis = wdt / angle;
   }
-  double q_w = cos(v / 2);
+  Eigen::Vector3d q_xyz = sin(angle / 2) * axis;
+  double q_w = cos(angle / 2);
   Eigen::Quaterniond q1(q_w, q_xyz[0], q_xyz[1], q_xyz[2]);
+
   Eigen::Quaterniond q2(q2v[0], q2v[1], q2v[2], q2v[3]);
-  q1.normalize();
-  q2.normalize();
+  // q1.normalize();
+  // q2.normalize();
   Eigen::Quaterniond q3;
   q3.setIdentity();
   q3.w() = q1.w() * q2.w() - q1.vec().dot(q2.vec());
   q3.vec() = q1.w() * q2.vec() + q2.w() * q1.vec() + q1.vec().cross(q2.vec());
-  q3.normalize();
+  // q3.normalize();
   output << q3.w(), q3.x(), q3.y(), q3.z();
   return output;
 }
@@ -416,7 +436,7 @@ void EKFEstimator::setNoise() {
   bias_acc = 0.001 * Eigen::MatrixXd::Identity(3, 3);
   bias_gyro = 0.001 * Eigen::MatrixXd::Identity(3, 3);
   noise_feet = 0.01 * Eigen::MatrixXd::Identity(3, 3);
-  noise_fk = 0.01 * Eigen::MatrixXd::Identity(3, 3);
+  noise_fk = 0.001 * Eigen::MatrixXd::Identity(3, 3);
   noise_encoder = 0.01;
 }
 
@@ -448,7 +468,7 @@ void EKFEstimator::spin() {
     ros::spinOnce();
 
     // Compute new state estimate
-    quad_msgs::RobotState new_state_est = this->updateStep();
+    quad_msgs::RobotState new_state_est = this->StepOnce();
 
     // Publish new state estimate
     state_estimate_pub_.publish(new_state_est);
