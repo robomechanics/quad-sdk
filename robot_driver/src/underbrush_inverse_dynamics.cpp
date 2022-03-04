@@ -15,6 +15,17 @@ void UnderbrushInverseDynamicsController::updateBodyForceEstimate(const quad_msg
   last_body_force_estimate_msg_ = msg;
 }
 
+void UnderbrushInverseDynamicsController::setUnderbrushParams(
+    double retract_vel, double tau_push, double tau_contact_start,
+    double tau_contact_end, double min_switch, double t_down) {
+  retract_vel_ = retract_vel;
+  tau_push_ = tau_push;
+  tau_contact_start_ = tau_contact_start;
+  tau_contact_end_ = tau_contact_end;
+  min_switch_ = min_switch;
+  t_down_ = t_down;
+}
+
 bool UnderbrushInverseDynamicsController::computeLegCommandArray(
   const quad_msgs::RobotState &robot_state_msg,
   quad_msgs::LegCommandArray &leg_command_array_msg,
@@ -191,18 +202,22 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
       } else {
         // Swing phase
 
+        /*
         ROS_INFO("C %u, t %f, hip %2.3f, knee %2.3f", force_mode_.at(i),
           t_now2 - t_switch_.at(i),
           last_body_force_estimate_msg_->body_wrenches.at(i).torque.y,
           last_body_force_estimate_msg_->body_wrenches.at(i).torque.z);
+        */
+
+        ROS_INFO("%1.3f, %1.3f, %1.3f, %1.3f, %1.3f, %1.3f", retract_vel_, tau_push_, tau_contact_start_, tau_contact_end_, min_switch_, t_down_);
 
         // Switch swing modes
-        if (force_mode_.at(i) && (t_now2 - t_switch_.at(i) > 0.08) &&//0.05) && //JYTODO: make a parameter
+        if (force_mode_.at(i) && (t_now2 - t_switch_.at(i) > min_switch_) &&
             (last_body_force_estimate_msg_->body_wrenches.at(i).torque.z < 0.25) &&
             t_TD_.at(i) - t_now2 >= 0.08) { //JYTODO: make a parameter
           force_mode_.at(i) = 0;
           t_switch_.at(i) = t_now2;
-        } else if (!force_mode_.at(i) && (t_now2 - t_switch_.at(i) > 0.08) &&//0.05) && 
+        } else if (!force_mode_.at(i) && (t_now2 - t_switch_.at(i) > min_switch_) &&
               (last_body_force_estimate_msg_->body_wrenches.at(i).torque.z > 1.0 ||
                 last_body_force_estimate_msg_->body_wrenches.at(i).torque.y > 1.0 &&
                 t_now2 - t_LO_.at(i) > 0.1)) {
@@ -243,11 +258,11 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
             ref_state_msg.joints.velocity.at(3*i+0);
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(0).kp = swing_kp_.at(0);
 
-          leg_command_array_msg.leg_commands.at(i).motor_commands.at(1).vel_setpoint = -15;//-20; // JYTODO: make parameter
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(1).vel_setpoint = -retract_vel_;
 
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).vel_setpoint = 0;
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).kd = 0;
-          leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).torque_ff = -1.5;//-1.0;//-0.5; // JYTODO: make parameter
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).torque_ff = -tau_push_;
         }
       }
     }
