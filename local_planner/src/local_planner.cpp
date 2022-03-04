@@ -356,7 +356,8 @@ void LocalPlanner::getStateAndReferencePlan() {
   foot_positions_world_.row(0) = current_foot_positions_world_;
 
   // Stand if the plan has been tracked
-  if ((current_state_ - ref_body_plan_.bottomRows(1)).norm() <= 5e-2) {
+  if ((current_state_ - ref_body_plan_.bottomRows(1)).norm() <=
+      stand_pos_error_threshold_) {
     control_mode_ = STAND;
   }
 }
@@ -444,7 +445,8 @@ void LocalPlanner::getStateAndTwistInput() {
     stand_pose_ = stand_pose_ * (1 - 1 / update_rate_) +
                   current_stand_pose * 1 / update_rate_;
   }
-
+#duty_cycles : [0.75, 0.75, 0.75, 0.75]
+#phase_offsets : [0.25, 0.0, 0.75, 0.5]
   ref_body_plan_(0, 0) = stand_pose_[0];  // support_center.x();
   ref_body_plan_(0, 1) = stand_pose_[1];  // support_center.x();
   ref_body_plan_(0, 2) = z_des_ + ref_ground_height_(0);
