@@ -240,26 +240,6 @@ class LocalFootstepPlanner {
     terrain_grid_ = grid_map;
   }
 
-  // Compute swing apex by ground and hip height
-  inline double computeSwingApex(int leg_idx, const Eigen::VectorXd &body_plan,
-                                 const Eigen::Vector3d &foot_position_prev,
-                                 const Eigen::Vector3d &foot_position_next) {
-    // Compute hip height
-    Eigen::Matrix4d g_world_legbase;
-    quadKD_->worldToLegbaseFKWorldFrame(leg_idx, body_plan.segment(0, 3),
-                                        body_plan.segment(3, 3),
-                                        g_world_legbase);
-    double hip_height = g_world_legbase(2, 3);
-
-    // Compute swing apex
-    double swing_apex =
-        std::min(ground_clearance_ - toe_radius +
-                     std::max(foot_position_prev.z(), foot_position_next.z()),
-                 hip_height - hip_clearance_);
-
-    return swing_apex;
-  }
-
   // Compute future states by integrating linear states (hold orientation
   // states)
   inline Eigen::VectorXd computeFutureBodyPlan(
@@ -311,6 +291,18 @@ class LocalFootstepPlanner {
    */
   Eigen::Vector3d welzlMinimumCircle(std::vector<Eigen::Vector2d> P,
                                      std::vector<Eigen::Vector2d> R);
+
+  /**
+   * @brief Compute swing apex height
+   * @param[in] leg_idx Leg index
+   * @param[in] body_plan Body plan in the mid air index
+   * @param[in] foot_position_prev Position of the previous foothold
+   * @param[in] foot_position_next Position of the next foothold
+   * @return Apex height
+   */
+  double computeSwingApex(int leg_idx, const Eigen::VectorXd &body_plan,
+                          const Eigen::Vector3d &foot_position_prev,
+                          const Eigen::Vector3d &foot_position_next);
 
   /**
    * @brief Extract foot data from the matrix
@@ -365,6 +357,26 @@ class LocalFootstepPlanner {
          i_touchdown++) {
       if (isNewContact(contact_schedule, i_touchdown, foot_index)) {
         return i_touchdown;
+      }
+    }
+
+    // If no contact is found, return the last index in the horizon
+    return (horizon_length_ - 1);
+  }
+
+  /**
+   * @brief Compute the index of the next liftoff for a foot. If none exist
+   * return the last.
+   */
+  inline int getNextLiftoffIndex(
+      const std::vector<std::vector<bool>> &contact_schedule, int horizon_index,
+      int foot_index) {
+    // Loop through the rest of this contact schedule, if a new liftoff is found
+    // return its index
+    for (int i_liftoff = horizon_index; i_liftoff < horizon_length_;
+         i_liftoff++) {
+      if (isNewLiftoff(contact_schedule, i_liftoff, foot_index)) {
+        return i_liftoff;
       }
     }
 

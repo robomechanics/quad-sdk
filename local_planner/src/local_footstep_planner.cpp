@@ -173,11 +173,15 @@ void LocalFootstepPlanner::computeFootPlan(
 
         // Compute the number of timesteps corresponding to the end of stance
         // phase
-        int end_of_stance = i + period_ * duty_cycles_[j];
+        int end_of_stance = getNextLiftoffIndex(contact_schedule, i, j);
 
         // Compute the body plan including the stance phase
         Eigen::MatrixXd body_plan_stance;
-        if (end_of_stance > horizon_length_ - 1) {
+        if (isContact(contact_schedule, end_of_stance, j)) {
+          // Means we get to the end of horizon, so we should use the nominal
+          // period
+          end_of_stance = i + period_ * duty_cycles_[j];
+
           // Integrate the plan if out of the horizon
           body_plan_stance = Eigen::MatrixXd(end_of_stance + 1, 12);
           body_plan_stance.topRows(horizon_length_) = body_plan;
@@ -665,4 +669,24 @@ Eigen::Vector3d LocalFootstepPlanner::welzlMinimumCircle(
 
   R.push_back(p);
   return welzlMinimumCircle(P, R);
+}
+
+// Compute swing apex by ground and hip height
+double LocalFootstepPlanner::computeSwingApex(
+    int leg_idx, const Eigen::VectorXd &body_plan,
+    const Eigen::Vector3d &foot_position_prev,
+    const Eigen::Vector3d &foot_position_next) {
+  // Compute hip height
+  Eigen::Matrix4d g_world_legbase;
+  quadKD_->worldToLegbaseFKWorldFrame(leg_idx, body_plan.segment(0, 3),
+                                      body_plan.segment(3, 3), g_world_legbase);
+  double hip_height = g_world_legbase(2, 3);
+
+  // Compute swing apex
+  double swing_apex =
+      std::min(ground_clearance_ - toe_radius +
+                   std::max(foot_position_prev.z(), foot_position_next.z()),
+               hip_height - hip_clearance_);
+
+  return swing_apex;
 }
