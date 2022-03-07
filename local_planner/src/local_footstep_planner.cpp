@@ -83,18 +83,9 @@ void LocalFootstepPlanner::getFootPositionsBodyFrame(
   }
 }
 
-void LocalFootstepPlanner::computeStanceContactSchedule(
-    int current_plan_index, std::vector<std::vector<bool>> &contact_schedule) {
-  for (int i = 0; i < horizon_length_; i++) {  // For each finite element
-    contact_schedule.at(i).resize(num_feet_);
-    for (int leg_idx = 0; leg_idx < num_feet_; leg_idx++) {  // For each leg
-      nominal_contact_schedule_.at(i).at(leg_idx) = true;
-    }
-  }
-}
-
 void LocalFootstepPlanner::computeContactSchedule(
-    int current_plan_index, std::vector<std::vector<bool>> &contact_schedule) {
+    int current_plan_index, int control_mode,
+    std::vector<std::vector<bool>> &contact_schedule) {
   // Compute the current phase in the nominal contact schedule
   int phase = current_plan_index % period_;
 
@@ -102,7 +93,14 @@ void LocalFootstepPlanner::computeContactSchedule(
   // starting at the phase
   contact_schedule.resize(horizon_length_);
   for (int i = 0; i < horizon_length_; i++) {
-    contact_schedule[i] = nominal_contact_schedule_[(i + phase) % period_];
+    contact_schedule[i].resize(num_feet_);
+    if (control_mode == LocalPlannerMode::STAND) {
+      for (int j = 0; j < contact_schedule[i].size(); j++) {
+        contact_schedule[i][j] = true;
+      }
+    } else {
+      contact_schedule[i] = nominal_contact_schedule_[(i + phase) % period_];
+    }
   }
 }
 
