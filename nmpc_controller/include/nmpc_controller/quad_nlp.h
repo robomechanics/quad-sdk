@@ -70,6 +70,9 @@ class quadNLP : public TNLP {
   /// Constraint dimension for simple and complex models
   int g_simple_, g_complex_;
 
+  /// Map for constraint names
+  std::vector<std::vector<std::string>> constr_names_;
+
   /// Number of variables , primal variables, slack variables, and constraints
   int n_vars_, n_vars_primal_, n_vars_slack_, n_constraints_;
 
@@ -518,6 +521,11 @@ class quadNLP : public TNLP {
    * @brief Load the casadi function pointers into map member vars
    */
   void loadCasadiFuncs();
+
+  /**
+   * @brief Load the constraint names for debugging
+   */
+  void loadConstraintNames();
 
   //@}
 

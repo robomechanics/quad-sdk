@@ -241,3 +241,83 @@ void quadNLP::loadCasadiFuncs() {
     }
   }
 }
+
+void quadNLP::loadConstraintNames() {
+  // Clear the name map
+  constr_names_.clear();
+  constr_names_.resize(num_sys_id_);
+
+  std::vector<std::string> constr_names;
+  constr_names.resize(nrow_mat_(COMPLEX, FUNC));
+
+  // Define number of variables to make looping easier
+  int n_simple = 12;
+  int n_null = 24;
+  int n_complex = n_simple + n_null;
+
+  int curr_constr = 0;
+  for (int i = 0; i < n_simple; i++) {
+    constr_names[curr_constr] = "eom_state_" + std::to_string(i);
+    curr_constr++;
+  }
+
+  int num_feet = 4;
+  for (int i = 0; i < num_feet; i++) {
+    constr_names[curr_constr] = "friction_x_pos_foot_" + std::to_string(i);
+    curr_constr++;
+
+    constr_names[curr_constr] = "friction_x_neg_foot_" + std::to_string(i);
+    curr_constr++;
+
+    constr_names[curr_constr] = "friction_y_pos_foot_" + std::to_string(i);
+    curr_constr++;
+
+    constr_names[curr_constr] = "friction_y_neg_foot_" + std::to_string(i);
+    curr_constr++;
+  }
+
+  for (int i = 0; i < num_feet; i++) {
+    constr_names[curr_constr] = "fk_pos_x_foot_" + std::to_string(i);
+    curr_constr++;
+
+    constr_names[curr_constr] = "fk_pos_y_foot_" + std::to_string(i);
+    curr_constr++;
+
+    constr_names[curr_constr] = "fk_pos_z_foot_" + std::to_string(i);
+    curr_constr++;
+  }
+
+  for (int i = 0; i < num_feet; i++) {
+    constr_names[curr_constr] = "fk_vel_x_foot_" + std::to_string(i);
+    curr_constr++;
+
+    constr_names[curr_constr] = "fk_vel_y_foot_" + std::to_string(i);
+    curr_constr++;
+
+    constr_names[curr_constr] = "fk_vel_z_foot_" + std::to_string(i);
+    curr_constr++;
+  }
+
+  for (int i = 0; i < num_feet; i++) {
+    constr_names[curr_constr] = "knee_height_leg_" + std::to_string(i);
+    curr_constr++;
+  }
+
+  for (int i = 0; i < n_null / 2; i++) {
+    constr_names[curr_constr] = "motor_model_pos_joint_" + std::to_string(i);
+    curr_constr++;
+  }
+
+  for (int i = 0; i < n_null / 2; i++) {
+    constr_names[curr_constr] = "motor_model_neg_joint_" + std::to_string(i);
+    curr_constr++;
+  }
+
+  // Load the correct slice of the constraint names into the veector
+  // TODO(yanhaoy) update for tails
+  for (int i = 0; i < num_sys_id_; i++) {
+    int num_constr = nrow_mat_(i, FUNC);
+    constr_names_[i] = std::vector<std::string>(
+        constr_names.begin(), constr_names.begin() + num_constr - 1);
+  }
+}

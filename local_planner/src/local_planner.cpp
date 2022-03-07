@@ -661,7 +661,7 @@ bool LocalPlanner::computeLocalPlan() {
           complexity_schedule, body_plan_, grf_plan_))
     return false;
 
-  Eigen::VectorXi complexity_schedule_adaptive = getInvalidRegions();
+  // Eigen::VectorXi complexity_schedule_adaptive = getInvalidRegions();
 
   // Record computation time and update exponential filter
   compute_time_ = 1000.0 * timer.reportSilent();

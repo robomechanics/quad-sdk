@@ -48,6 +48,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   g_complex_ = g_ + 2 * n_null_ + 4;
 
   loadCasadiFuncs();
+  loadConstraintNames();
 
   if (type_ == NONE) {
     // Leg controller
@@ -501,9 +502,19 @@ Eigen::VectorXd quadNLP::eval_g_single_fe(int sys_id, double dt,
 
   eval_incref_vec_[sys_id][FUNC]();
 
-  Eigen::VectorXd dynamic_var, pk;
+  Eigen::VectorXd dynamic_var(x0.size() + u.size() + x1.size()),
+      pk(2 + params.size());
+
+  if (dynamic_var.size() != ncol_mat_(sys_id, JAC)) {
+    printf("Expected %d vars, got %d instead.\n", ncol_mat_(sys_id, JAC),
+           (int)dynamic_var.size());
+    throw std::runtime_error(
+        "Number of decision variables does not match that expected by "
+        "constraints");
+  }
+
   dynamic_var << x0, u, x1;
-  pk << mu_, dt, params;
+  pk << dt, mu_, params;
 
   arg[0] = dynamic_var.data();
   arg[1] = pk.data();
