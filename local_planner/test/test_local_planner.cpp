@@ -20,8 +20,10 @@ TEST(LocalFootStepPlanner, baseCase) {
   double first_element_duration = dt;
   int period = 12;
   int num_feet = 4;
-  std::vector<double> duty_cycles = {0.3, 0.3, 0.3, 0.3};
-  std::vector<double> phase_offsets = {0.0, 0.5, 0.5, 0.0};
+  std::vector<double> duty_cycles;
+  ros::param::get("/local_footstep_planner/duty_cycles", duty_cycles);
+  std::vector<double> phase_offsets;
+  ros::param::get("/local_footstep_planner/phase_offsets", phase_offsets);
   double ground_clearance = 0.07;
   double hip_clearance = 0.1;
   double standing_error_threshold = 0.03;
