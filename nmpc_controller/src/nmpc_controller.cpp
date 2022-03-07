@@ -325,7 +325,6 @@ bool NMPCController::computePlan(
   //           << state_null_traj.rightCols(n_null_ / 2) -
   //                  state_null_traj_lift.rightCols(n_null_ / 2)
   //           << std::endl;
-
   if (status == Solve_Succeeded) {
     mynlp_->warm_start_ = true;
 
