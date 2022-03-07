@@ -142,40 +142,39 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   Eigen::Matrix3d C = qk.toRotationMatrix();
 
   // Collect states info from previous state vector
-  Eigen::VectorXd r = last_X.block<3, 1>(0, 0);
-  Eigen::VectorXd v = last_X.block<3, 1>(3, 0);
-  Eigen::VectorXd q = last_X.block<4, 1>(6, 0);
-  Eigen::VectorXd p = last_X.block<12, 1>(10, 0);
-  Eigen::VectorXd bf = last_X.block<3, 1>(22, 0);
-  Eigen::VectorXd bw = last_X.block<3, 1>(25, 0);
+  Eigen::VectorXd r = last_X.segment(0, 3);
+  Eigen::VectorXd v = last_X.segment(3, 3);
+  Eigen::VectorXd q = last_X.segment(6, 4);
+  Eigen::VectorXd p = last_X.segment(10, 12);
+  Eigen::VectorXd bf = last_X.segment(22, 3);
+  Eigen::VectorXd bw = last_X.segment(25, 3);
 
   // calculate linear acceleration set z acceleration to -9.8 for now
   // Set imu bias
   Eigen::VectorXd a = Eigen::VectorXd::Zero(3);
   a = fk - bf;
   a[2] = -9.8;
+
   // calculate angular acceleration
   // Set imu bias
   Eigen::VectorXd w = Eigen::VectorXd::Zero(3);
   w = wk - bw;
 
-  /// Prediction Step
   // state prediction X_pre
   X_pre = Eigen::VectorXd::Zero(num_state);
-  X_pre.block<3, 1>(0, 0) =
-      r + dt * v + dt * dt * 0.5 * (C.transpose() * a + g);
-  X_pre.block<3, 1>(3, 0) = v + dt * (C.transpose() * a + g);
+  X_pre.segment(0, 3) = r + dt * v + dt * dt * 0.5 * (C.transpose() * a + g);
+  X_pre.segment(3, 3) = v + dt * (C.transpose() * a + g);
 
-  // fix az for now
-  // X_pre[5] = 0;
   // quaternion updates
   Eigen::VectorXd wdt = dt * w;
   Eigen::VectorXd q_pre = this->quaternionDynamics(wdt, q);
-  X_pre.block<4, 1>(6, 0) = q_pre;
-  X_pre.block<12, 1>(10, 0) = X.block<12, 1>(10, 0);
-  X_pre.block<6, 1>(22, 0) = X.block<6, 1>(22, 0);
 
-  // Linearized dynamics matrix
+  X_pre.segment(6, 4) = q_pre;
+  X_pre.segment(10, 12) = p;
+  X_pre.segment(22, 3) = bf;
+  X_pre.segment(25, 3) = bw;
+
+  // Linearized Dynamics Matrix
   F = Eigen::MatrixXd::Identity(num_cov, num_cov);
   F(0, 3) = dt;
   F(1, 4) = dt;
@@ -207,11 +206,15 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   Q.block<3, 3>(3, 21) = -1 * (pow(dt, 2) / 2) * C.transpose() * bias_acc;
   Q.block<3, 3>(6, 6) = dt * noise_gyro + r3 + r3.transpose() * bias_gyro;
   Q.block<3, 3>(6, 24) = -r2.transpose() * bias_gyro;
-  // will change based on contact
-  Q.block<3, 3>(9, 9) = dt * C.transpose() * noise_feet * C;
-  Q.block<3, 3>(12, 12) = dt * C.transpose() * noise_feet * C;
-  Q.block<3, 3>(15, 15) = dt * C.transpose() * noise_feet * C;
-  Q.block<3, 3>(18, 18) = dt * C.transpose() * noise_feet * C;
+  // determine foot contact
+  for (int i = 0; i < num_feet; i++) {
+    if (p[i * 3 + 2] < 0.02) {
+      Q.block<3, 3>(9 + i * 3, 9 + i * 3) = dt * C.transpose() * noise_feet * C;
+    } else {
+      Q.block<3, 3>(9 + i * 3, 9 + i * 3) =
+          1000 * dt * C.transpose() * noise_feet * C;
+    }
+  }
   Q.block<3, 3>(21, 0) = -1 * (pow(dt, 3) / 6) * bias_acc * C;
   Q.block<3, 3>(21, 3) = -1 * (pow(dt, 2) / 2) * bias_acc * C;
   Q.block<3, 3>(21, 21) = dt * bias_acc;
@@ -219,18 +222,17 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   Q.block<3, 3>(24, 24) = dt * bias_gyro;
 
   // Covariance update
-  // P = P0;
   P_pre = F * P * F.transpose() + Q;
 }
 
 void EKFEstimator::update(const Eigen::VectorXd& jk) {
   // Collect states info from predicted state vector
-  Eigen::VectorXd r_pre = X_pre.block<3, 1>(0, 0);
-  Eigen::VectorXd v_pre = X_pre.block<3, 1>(3, 0);
-  Eigen::VectorXd q_pre = X_pre.block<4, 1>(6, 0);
-  Eigen::VectorXd p_pre = X_pre.block<12, 1>(10, 0);
-  Eigen::VectorXd bf_pre = X_pre.block<3, 1>(22, 0);
-  Eigen::VectorXd bw_pre = X_pre.block<3, 1>(25, 0);
+  Eigen::VectorXd r_pre = X_pre.segment(0, 3);
+  Eigen::VectorXd v_pre = X_pre.segment(3, 3);
+  Eigen::VectorXd q_pre = X_pre.segment(6, 4);
+  Eigen::VectorXd p_pre = X_pre.segment(10, 12);
+  Eigen::VectorXd bf_pre = X_pre.segment(22, 3);
+  Eigen::VectorXd bw_pre = X_pre.segment(25, 3);
 
   Eigen::Quaterniond quaternion_pre(q_pre[0], q_pre[1], q_pre[2], q_pre[3]);
   quaternion_pre.normalize();
@@ -240,7 +242,7 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   // std::cout << "this is the C_pre " << C_pre << std::endl;
 
   // Measured feet positions in the body frame
-  Eigen::VectorXd s = Eigen::MatrixXd::Zero(3 * num_feet, 1);
+  Eigen::VectorXd s = Eigen::VectorXd::Zero(3 * num_feet);
   for (int i = 0; i < num_feet; i++) {
     // foot index i:(0 = FL, 1 = BL, 2 = FR, 3 = BR)
     // FL: 8 0 1, BL: 9 2 3, FR: 10 4 5, BR: 11 6 7
@@ -270,8 +272,23 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
     H.block<3, 3>(i * 3, 6) = this->calcSkewsym(vtemp);
     H.block<3, 3>(i * 3, 9 + i * 3) = C_pre;
   }
-  // Measurement Noise
+
+  // Measurement Noise Matrix (27 * 27)
   R = 0.001 * Eigen::MatrixXd::Identity(num_measure, num_measure);
+
+  // Define vectors for state positions
+  Eigen::VectorXd state_positions(18);
+  // Load state positions
+  state_positions << jk, r_pre, v_pre;
+  // Compute jacobian
+  Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
+  quadKD_->getJacobianBodyAngVel(state_positions, jacobian);
+
+  for (int i = 0; i < num_feet; i++) {
+    Eigen::MatrixXd jtemp = jacobian.block<3, 3>(i * 3, i * 3);
+    R.block<3, 3>(i * 3, i * 3) =
+        noise_fk + jtemp * noise_encoder * jtemp.transpose();
+  }
 
   // update Covariance (12 * 12)
   Eigen::MatrixXd S = H * P_pre * H.transpose() + R;
@@ -437,11 +454,11 @@ Eigen::MatrixXd EKFEstimator::calcRodrigues(const double& dt,
 }
 
 void EKFEstimator::setNoise() {
-  noise_acc = 0.01 * Eigen::MatrixXd::Identity(3, 3);
-  noise_gyro = 0.01 * Eigen::MatrixXd::Identity(3, 3);
+  noise_acc = 0.05 * Eigen::MatrixXd::Identity(3, 3);
+  noise_gyro = 0.05 * Eigen::MatrixXd::Identity(3, 3);
   bias_acc = 0.001 * Eigen::MatrixXd::Identity(3, 3);
   bias_gyro = 0.001 * Eigen::MatrixXd::Identity(3, 3);
-  noise_feet = 0.01 * Eigen::MatrixXd::Identity(3, 3);
+  noise_feet = 0.03 * Eigen::MatrixXd::Identity(3, 3);
   noise_fk = 0.001 * Eigen::MatrixXd::Identity(3, 3);
   noise_encoder = 0.01;
 }
