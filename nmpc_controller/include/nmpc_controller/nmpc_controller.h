@@ -87,11 +87,11 @@ class NMPCController {
       Eigen::MatrixXd &tail_state_traj, Eigen::MatrixXd &tail_control_traj);
 
   /** Method to return the constraint residual for requested data */
-  Eigen::VectorXd eval_g_single_fe(int sys_id, double dt,
-                                   const Eigen::VectorXd &x0,
-                                   const Eigen::VectorXd &u,
-                                   const Eigen::VectorXd &x1,
-                                   const Eigen::VectorXd &params);
+  Eigen::VectorXd evalConstraint(int sys_id, double dt,
+                                 const Eigen::VectorXd &x0,
+                                 const Eigen::VectorXd &u,
+                                 const Eigen::VectorXd &x1,
+                                 const Eigen::VectorXd &params);
 
  private:
   ros::NodeHandle nh_;
@@ -102,6 +102,8 @@ class NMPCController {
   SmartPtr<quadNLP> mynlp_;
 
   SmartPtr<IpoptApplication> app_;
+
+  std::shared_ptr<quad_utils::QuadKD> quadKD_;
 
   int N_;
 

@@ -17,11 +17,11 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   ref_body_plan_.fill(0);
   ref_body_plan_.col(2).fill(0.3);
 
-  Eigen::MatrixXd foot_positions_body_(N_, 12);
-  Eigen::MatrixXd foot_positions_world_(N_, 12);
-  Eigen::MatrixXd foot_velocities_world_(N_, 12);
+  Eigen::MatrixXd foot_positions_body_(N_ + 1, 12);
+  Eigen::MatrixXd foot_positions_world_(N_ + 1, 12);
+  Eigen::MatrixXd foot_velocities_world_(N_ + 1, 12);
   foot_velocities_world_.setZero();
-  for (size_t i = 0; i < N_; i++) {
+  for (size_t i = 0; i < N_ + 1; i++) {
     foot_positions_body_.row(i) << 0.2263, 0.098, -0.3, 0.2263, -0.098, -0.3,
         -0.2263, 0.098, -0.3, -0.2263, -0.098, -0.3;
     foot_positions_world_.row(i) << 0.2263, 0.098, 0, -0.2263, 0.098, 0, 0.2263,
@@ -91,10 +91,10 @@ TEST(NMPCTest, testAdaptiveComplexity) {
 
   Eigen::VectorXd joint_positions(12), joint_velocities(12), torques(12);
 
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 10; i++) {
     tic = std::chrono::steady_clock::now();
-    complexity_schedule.tail(2 * i + 1).fill(1);
-    complexity_schedule.head(2 * i + 1).fill(1);
+    // complexity_schedule.tail(2 * i + 1).fill(1);
+    // complexity_schedule.head(2 * i + 1).fill(1);
 
     // std::cout << "current state = " << current_state_.transpose() <<
     // std::endl;

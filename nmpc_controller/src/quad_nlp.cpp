@@ -116,10 +116,10 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   panic_weights_ = panic_weights;
 
   // feet location initialized by nominal position
-  feet_location_ = Eigen::MatrixXd(12, N_);
-  foot_pos_world_ = Eigen::MatrixXd(N_, 12);
-  foot_vel_world_ = Eigen::MatrixXd(N_, 12).setZero();
-  for (int i = 0; i < N_; ++i) {
+  feet_location_ = Eigen::MatrixXd(12, N_ + 1);
+  foot_pos_world_ = Eigen::MatrixXd(N_ + 1, 12);
+  foot_vel_world_ = Eigen::MatrixXd(N_ + 1, 12).setZero();
+  for (int i = 0; i < N_ + 1; ++i) {
     feet_location_.block(0, i, 12, 1) << -0.2263, -0.098, 0.3, -0.2263, 0.098,
         0.3, 0.2263, -0.098, 0.3, 0.2263, 0.098, 0.3;
     foot_pos_world_.row(i) << -0.2263, -0.098, 0, -0.2263, 0.098, 0, 0.2263,
@@ -534,8 +534,8 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     pk[0] = (i == 0) ? first_element_duration_ : dt_;
     pk[1] = mu_;
     // pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
-    pk.segment(2, 12) = foot_pos_world_.row(i);
-    pk.segment(14, 12) = foot_vel_world_.row(i);
+    pk.segment(2, 12) = foot_pos_world_.row(i + 1);
+    pk.segment(14, 12) = foot_vel_world_.row(i + 1);
 
     // Set up the work function
     casadi_int sz_arg;
@@ -600,8 +600,8 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
       pk[0] = (i == 0) ? first_element_duration_ : dt_;
       pk[1] = mu_;
       // pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
-      pk.segment(2, 12) = foot_pos_world_.row(i);
-      pk.segment(14, 12) = foot_vel_world_.row(i);
+      pk.segment(2, 12) = foot_pos_world_.row(i + 1);
+      pk.segment(14, 12) = foot_vel_world_.row(i + 1);
 
       // Set up the work function
       casadi_int sz_arg;
@@ -755,8 +755,8 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
       pk[0] = (i == 0) ? first_element_duration_ : dt_;
       pk[1] = mu_;
       // pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
-      pk.segment(2, 12) = foot_pos_world_.row(i);
-      pk.segment(14, 12) = foot_vel_world_.row(i);
+      pk.segment(2, 12) = foot_pos_world_.row(i + 1);
+      pk.segment(14, 12) = foot_vel_world_.row(i + 1);
 
       // Set up the work function
       casadi_int sz_arg;

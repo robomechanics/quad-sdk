@@ -146,6 +146,8 @@ NMPCController::NMPCController(int type) {
   }
 
   require_init_ = true;
+
+  quadKD_ = std::make_shared<quad_utils::QuadKD>();
 }
 
 bool NMPCController::computeLegPlan(
@@ -166,8 +168,8 @@ bool NMPCController::computeLegPlan(
   require_init_ = false;
 
   // mynlp_->feet_location_ = foot_positions;
-  mynlp_->foot_pos_world_ = foot_positions.bottomRows(N_);
-  mynlp_->foot_vel_world_ = foot_velocities.bottomRows(N_);
+  mynlp_->foot_pos_world_ = foot_positions;
+  mynlp_->foot_vel_world_ = foot_velocities;
 
   for (int i = 0; i < ref_primitive_id.size() - 1; i++) {
     if (ref_primitive_id(i, 0) == 1 && ref_primitive_id(i + 1, 0) == 2) {
@@ -259,17 +261,23 @@ bool NMPCController::computePlan(
 
   state_traj = Eigen::MatrixXd::Zero(N_ + 1, n_);
   Eigen::MatrixXd state_null_traj = Eigen::MatrixXd::Zero(N_ + 1, n_null_);
+  Eigen::MatrixXd state_null_traj_lift = Eigen::MatrixXd::Zero(N_ + 1, n_null_);
   control_traj = Eigen::MatrixXd::Zero(N_, m_);
 
   state_traj.row(0) =
       mynlp_->get_state_var(mynlp_->w0_, 0).head(n_).transpose();
 
-  if (mynlp_->n_vec_[0] > n_) {
-    state_null_traj.row(0) =
-        mynlp_->get_state_var(mynlp_->w0_, 0).tail(n_null_).transpose();
-  } else {
-    state_null_traj.row(0).setZero();
-  }
+  state_null_traj.row(0) =
+      mynlp_->get_state_var(mynlp_->w0_, 0).tail(n_null_).transpose();
+
+  Eigen::VectorXd joint_positions(12), joint_velocities(12), joint_torques(12);
+
+  quadKD_->convertCentroidalToFullBody(
+      state_traj.row(0), foot_positions.row(0), mynlp_->foot_vel_world_.row(0),
+      control_traj.row(0), joint_positions, joint_velocities, joint_torques);
+
+  state_null_traj_lift.row(0).head(12) = joint_positions;
+  state_null_traj_lift.row(0).tail(12) = joint_velocities;
 
   for (int i = 0; i < N_; ++i) {
     control_traj.row(i) = mynlp_->get_control_var(mynlp_->w0_, i).transpose();
@@ -280,8 +288,22 @@ bool NMPCController::computePlan(
       state_null_traj.row(i + 1) =
           mynlp_->get_state_var(mynlp_->w0_, i + 1).tail(n_null_).transpose();
     } else {
-      state_null_traj.row(i + 1).setZero();
+      quadKD_->convertCentroidalToFullBody(
+          state_traj.row(i + 1), foot_positions.row(i + 1),
+          mynlp_->foot_vel_world_.row(i + 1), control_traj.row(i),
+          joint_positions, joint_velocities, joint_torques);
+
+      state_null_traj.row(i + 1).head(12) = joint_positions;
+      state_null_traj.row(i + 1).tail(12) = joint_velocities;
     }
+
+    quadKD_->convertCentroidalToFullBody(
+        state_traj.row(i + 1), mynlp_->foot_pos_world_.row(i + 1),
+        mynlp_->foot_vel_world_.row(i + 1), control_traj.row(i),
+        joint_positions, joint_velocities, joint_torques);
+
+    state_null_traj_lift.row(i + 1).head(12) = joint_positions;
+    state_null_traj_lift.row(i + 1).tail(12) = joint_velocities;
   }
 
   // std::cout << "state_traj = \n" << state_traj << std::endl;
@@ -289,6 +311,20 @@ bool NMPCController::computePlan(
   //           << state_null_traj.leftCols(n_null_ / 2) << std::endl;
   // std::cout << "state_null_traj vel = \n"
   //           << state_null_traj.rightCols(n_null_ / 2) << std::endl;
+  // std::cout << "state_null_traj_lift pos = \n"
+  //           << state_null_traj_lift.leftCols(n_null_ / 2) << std::endl;
+  // std::cout << "state_null_traj_lift vel = \n"
+  //           << state_null_traj_lift.rightCols(n_null_ / 2) << std::endl;
+
+  // std::cout << "state_null_traj pos diff = \n"
+  //           << state_null_traj.leftCols(n_null_ / 2) -
+  //                  state_null_traj_lift.leftCols(n_null_ / 2)
+  //           << std::endl;
+
+  // std::cout << "state_null_traj vel diff = \n"
+  //           << state_null_traj.rightCols(n_null_ / 2) -
+  //                  state_null_traj_lift.rightCols(n_null_ / 2)
+  //           << std::endl;
 
   if (status == Solve_Succeeded) {
     mynlp_->warm_start_ = true;
