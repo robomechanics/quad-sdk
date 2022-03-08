@@ -73,14 +73,12 @@ bool MBLinkConverter::sendMBlink(
   // }
 
   LimbCmd_t limbcmd[4];
-  for (int i = 0; i < 4; ++i)  // For each leg
-  {
+  for (int i = 0; i < 4; ++i) {  // For each leg
     // std::cout << "leg = " << i << std::endl;
     quad_msgs::LegCommand leg_command =
         last_leg_command_array_msg.leg_commands.at(i);
 
-    for (int j = 0; j < 3; ++j)  // For each joint
-    {
+    for (int j = 0; j < 3; ++j) {  // For each joint
       // std::cout << "joint = " << j << std::endl;
       limbcmd[i].pos[j] =
           leg_command_heartbeat * leg_command.motor_commands.at(j).pos_setpoint;

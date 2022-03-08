@@ -44,7 +44,6 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
   for (int i = 0; i < planner_config.NUM_GEN_STATES; ++i) {
     bool valid_state_found = false;
 
-    // Action a_test = getRandomAction(surf_norm,planner_config);
     Action a_test;
     bool is_valid_initial =
         getRandomLeapAction(s_near, surf_norm, a_test, planner_config);
@@ -174,7 +173,6 @@ int RRTClass::extend(PlannerClass &T, const State &s,
     T.addEdge(s_near_index, s_new_index, result.length);
     T.addAction(s_new_index, result.a_new);
 
-    // if (s_new == s)
     if (isWithinBounds(result.s_new, s, planner_config)) {
       return REACHED;
     } else {

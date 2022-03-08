@@ -153,7 +153,7 @@ void TrajectoryPublisher::updateTrajectory() {
     traj_msg_.states.push_back(state);
   }
 
-  // timer.report();
+  // timer.reportStatistics();
 }
 
 void TrajectoryPublisher::publishTrajectory() {

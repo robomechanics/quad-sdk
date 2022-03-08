@@ -212,12 +212,11 @@ void SpiritController::enforceJointLimits(double& command, unsigned int index) {
   // Check that this joint has applicable limits
   if (joint_urdfs_[index]->type == urdf::Joint::REVOLUTE ||
       joint_urdfs_[index]->type == urdf::Joint::PRISMATIC) {
-    if (command > joint_urdfs_[index]->limits->upper)  // above upper limnit
-    {
+    // above upper limnit
+    if (command > joint_urdfs_[index]->limits->upper) {
       command = joint_urdfs_[index]->limits->upper;
-    } else if (command <
-               joint_urdfs_[index]->limits->lower)  // below lower limit
-    {
+    } else if (command < joint_urdfs_[index]->limits->lower) {
+      // below lower limit
       command = joint_urdfs_[index]->limits->lower;
     }
   }

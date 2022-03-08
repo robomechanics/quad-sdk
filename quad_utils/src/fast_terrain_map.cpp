@@ -182,7 +182,6 @@ void FastTerrainMap::loadDataFromGridMap(const grid_map::GridMap map) {
     grid_map::Position position;
     map.getPosition(index, position);
     y_data[i] = position.y();
-    ;
   }
 
   // Loop through the map and get the height and slope info
@@ -272,7 +271,7 @@ double FastTerrainMap::getGroundHeight(const double x, const double y) const {
                   (fx1y1 * (x2 - x) * (y2 - y) + fx2y1 * (x - x1) * (y2 - y) +
                    fx1y2 * (x2 - x) * (y - y1) + fx2y2 * (x - x1) * (y - y1));
 
-  // timer.report();
+  // timer.reportStatistics();
   return height;
 }
 
@@ -296,7 +295,7 @@ double FastTerrainMap::getGroundHeightFiltered(const double x,
                   (fx1y1 * (x2 - x) * (y2 - y) + fx2y1 * (x - x1) * (y2 - y) +
                    fx1y2 * (x2 - x) * (y - y1) + fx2y2 * (x - x1) * (y - y1));
 
-  // timer.report();
+  // timer.reportStatistics();
   return height;
 }
 
@@ -438,7 +437,6 @@ Eigen::Vector3d FastTerrainMap::projectToMap(const Eigen::Vector3d point,
   Eigen::Vector3d result = point;
   Eigen::Vector3d new_point = point;
   Eigen::Vector3d old_point = point;
-
   double step_size = 0.01;
   double clearance = 0;
   while (clearance >= 0) {
@@ -458,9 +456,8 @@ Eigen::Vector3d FastTerrainMap::projectToMap(const Eigen::Vector3d point,
 
   result = {old_point[0], old_point[1],
             getGroundHeight(old_point[0], old_point[1])};
-  // double error = old_point[2] - result[2];
 
-  // timer.report();
+  // timer.reportStatistics();
   return result;
 }
 

@@ -403,7 +403,7 @@ bool plot(const std::vector<Numeric>& x, const std::vector<Numeric>& y,
   return res;
 }
 
-// TODO - it should be possible to make this work by implementing
+// TODO(any) - it should be possible to make this work by implementing
 // a non-numpy alternative for `get_2darray()`.
 #ifndef WITHOUT_NUMPY
 template <typename Numeric>
@@ -710,8 +710,7 @@ void imshow(const cv::Mat& image,
 
 template <typename NumericX, typename NumericY>
 bool scatter(const std::vector<NumericX>& x, const std::vector<NumericY>& y,
-             const double s = 1.0)  // The marker size in points**2
-{
+             const double s = 1.0) {  // The marker size in points**2
   assert(x.size() == y.size());
 
   PyObject* xarray = get_array(x);
@@ -1194,11 +1193,11 @@ void text(Numeric x, Numeric y, const std::string& s = "") {
 
 inline long figure(long number = -1) {
   PyObject* res;
-  if (number == -1)
+  if (number == -1) {
     res = PyObject_CallObject(
         detail::_interpreter::get().s_python_function_figure,
         detail::_interpreter::get().s_python_empty_tuple);
-  else {
+  } else {
     assert(number > 0);
 
     // Make sure interpreter is initialised

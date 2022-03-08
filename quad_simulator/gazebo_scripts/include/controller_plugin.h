@@ -58,7 +58,6 @@ class SpiritController : public controller_interface::Controller<
   void commandCB(const quad_msgs::LegCommandArrayConstPtr& msg);
   void tailCommandCB(const quad_msgs::LegCommandConstPtr& msg);
   void enforceJointLimits(double& command, unsigned int index);
-
 };  // class
 
 }  // namespace effort_controllers

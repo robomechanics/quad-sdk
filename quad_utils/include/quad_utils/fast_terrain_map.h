@@ -167,7 +167,7 @@ class FastTerrainMap {
   inline int getXIndex(const double x) const {
     return std::max(
         std::min((int)floor((x - x_data_[0]) / x_diff_), x_size_ - 2), 0);
-  };
+  }
 
   /**
    * @brief Return the y index
@@ -177,7 +177,7 @@ class FastTerrainMap {
   inline int getYIndex(const double y) const {
     return std::max(
         std::min((int)floor((y - y_data_[0]) / y_diff_), y_size_ - 2), 0);
-  };
+  }
 
   /// The number of elements in the x direction
   int x_size_ = 0;

@@ -41,7 +41,7 @@ class PlannerClass : public GraphClass {
    * @param[in] N Number of vertices to include in the neighborhood
    * @return Vector of indices included in the neighborhood
    */
-  std::vector<int> neighborhoodN(State s, int N);
+  std::vector<int> neighborhoodN(State s, int N) const;
 
   /**
    * @brief Get the vertices within the specified Euclidean distance of the
@@ -50,7 +50,7 @@ class PlannerClass : public GraphClass {
    * @param[in] dist distance threshold for the neighborhood
    * @return Vector of indices included in the neighborhood
    */
-  std::vector<int> neighborhoodDist(State q, double dist);
+  std::vector<int> neighborhoodDist(State q, double dist) const;
 
   /**
    * @brief Get the closest verticex to the specified state by Euclidean
@@ -58,7 +58,7 @@ class PlannerClass : public GraphClass {
    * @param[in] s State to query the neighborhood
    * @return Index of closest vertex
    */
-  int getNearestNeighbor(State q);
+  int getNearestNeighbor(State q) const;
 
   /// Direction
   int direction_ = FORWARD;

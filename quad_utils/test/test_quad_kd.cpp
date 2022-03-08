@@ -75,7 +75,7 @@ TEST(KinematicsTest, testFootForces) {
   QuadKD kinematics;
 
   // Length parameters from URDF
-  // TODO: load these from parameters rather than hard-coding
+  // TODO(yanhaoy): load these from parameters rather than hard-coding
   Eigen::MatrixXd ls(4, 3);
   ls << 0.2263, 0.07, 0.0,  // abad from body
       0.0, 0.10098, 0.0,    // hip from abad

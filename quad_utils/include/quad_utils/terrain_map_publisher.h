@@ -9,7 +9,7 @@
 #include <grid_map_ros/GridMapRosConverter.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
 #include <iostream>  // cout
-#include <sstream>   //istringstream
+#include <sstream>   // istringstream
 #include <string>
 #include <vector>
 

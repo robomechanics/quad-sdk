@@ -23,7 +23,7 @@ quadNLP::quadNLP(int type, int N, int n, int m, double dt, double mu,
 // R: input cost weights
 // dt: time step length
 // panic_weights: penalty on panic variables
-{
+{  // NOLINT
   type_ = type;
 
   N_ = N;
@@ -270,7 +270,7 @@ bool quadNLP::get_starting_point(Index n, bool init_x, Number *x, bool init_z,
 
   if (init_z) {
     Eigen::Map<Eigen::MatrixXd> z_L_matrix(z_L, n, 1);
-    Eigen::Map<Eigen::MatrixXd> z_U_matrix(z_L, n, 1);
+    Eigen::Map<Eigen::MatrixXd> z_U_matrix(z_U, n, 1);
     z_L_matrix = z_L0_;
     z_U_matrix = z_U0_;
   }
@@ -315,6 +315,7 @@ bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
     // Scale the cost by time duration
     if (i == 0) {
       Q_i = Q_i * first_element_duration_ / dt_;
+      R_i = R_i * first_element_duration_ / dt_;
     }
 
     obj_value += (xk.transpose() * Q_i.asDiagonal() * xk / 2 +
@@ -360,6 +361,7 @@ bool quadNLP::eval_grad_f(Index n, const Number *x, bool new_x,
     // Scale the cost by time duration
     if (i == 0) {
       Q_i = Q_i * first_element_duration_ / dt_;
+      R_i = R_i * first_element_duration_ / dt_;
     }
 
     grad_f_matrix.block(i * (n_ + m_), 0, m_, 1) = R_i.asDiagonal() * uk;
@@ -724,6 +726,7 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
       // Scale the cost by time duration
       if (i == 0) {
         Q_i = Q_i * first_element_duration_ / dt_;
+        R_i = R_i * first_element_duration_ / dt_;
       }
 
       values_matrix.block(i * nnz_step_h_ + first_step_idx_hess_g_.size(), 0,
@@ -852,7 +855,7 @@ void quadNLP::finalize_solution(SolverReturn status, Index n, const Number *x,
   w0_ = w;
 
   Eigen::Map<const Eigen::MatrixXd> z_L_matrix(z_L, n, 1);
-  Eigen::Map<const Eigen::MatrixXd> z_U_matrix(z_L, n, 1);
+  Eigen::Map<const Eigen::MatrixXd> z_U_matrix(z_U, n, 1);
   z_L0_ = z_L_matrix;
   z_U0_ = z_U_matrix;
 
@@ -911,9 +914,8 @@ void quadNLP::shift_initial_guess() {
                   m_ - leg_input_start_idx_, 1) =
           trans * z_U0_.block((N_ - 7) * (n_ + m_) + leg_input_start_idx_, 0,
                               m_ - leg_input_start_idx_, 1);
-    }
-    // New contact mode
-    else {
+    } else {
+      // New contact mode
       w0_.block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0,
                 m_ - leg_input_start_idx_, 1)
           .fill(0);

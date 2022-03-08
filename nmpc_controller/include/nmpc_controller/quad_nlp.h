@@ -14,12 +14,12 @@
 #include <vector>
 
 #include "IpTNLP.hpp"
-#include "nmpc_controller/eval_g_leg.h"
-#include "nmpc_controller/eval_g_tail.h"
-#include "nmpc_controller/eval_hess_g_leg.h"
-#include "nmpc_controller/eval_hess_g_tail.h"
-#include "nmpc_controller/eval_jac_g_leg.h"
-#include "nmpc_controller/eval_jac_g_tail.h"
+#include "nmpc_controller/gen/eval_g_leg.h"
+#include "nmpc_controller/gen/eval_g_tail.h"
+#include "nmpc_controller/gen/eval_hess_g_leg.h"
+#include "nmpc_controller/gen/eval_hess_g_tail.h"
+#include "nmpc_controller/gen/eval_jac_g_leg.h"
+#include "nmpc_controller/gen/eval_jac_g_tail.h"
 #include "quad_utils/tail_type.h"
 
 using namespace Ipopt;

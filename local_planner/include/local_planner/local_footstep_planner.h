@@ -117,50 +117,63 @@ class LocalFootstepPlanner {
    * @brief Compute the contact schedule based on the current phase
    * @param[in] current_plan_index_ Current index in the plan
    * @param[in] current_state Current robot state
-   * @param[in] ref_body_plan Reference bode plan
+   * @param[in] ref_body_plan Reference body plan
    * @param[out] contact_schedule 2D array of contact states
    */
   void computeContactSchedule(int current_plan_index,
-                              Eigen::VectorXd current_state,
-                              Eigen::MatrixXd ref_body_plan,
                               std::vector<std::vector<bool>> &contact_schedule);
 
   /**
    * @brief Update the discrete footstep plan with the current plan
-   * @param[in] state Current robot state
+   * @param[in] current_plan_index Current plan index
+   * @param[in] contact_schedule Current contact schedule
    * @param[in] body_plan Current body plan
    * @param[in] grf_plan Current grf plan
-   * @param[in] contact_schedule Current contact schedule
-   * @param[in] current_state Current state of the robot body
+   * @param[in] ref_body_plan Reference body plan
+   * @param[in] foot_positions_current Current foot position in the world frame
+   * @param[in] foot_velocities_current Current foot position in the world frame
+   * @param[in] first_element_duration Duration of first element of horizon (may
+   * not be dt)
+   * @param[in] past_footholds_msg Message of past footholds, used for
+   * interpolation of swing state
    * @param[out] foot_positions Foot positions over the horizon
+   * @param[out] future_footholds_msg Message for future (planned) footholds
+   * @param[out] foot_plan_continuous_msg Message for continuous foot
+   * trajectories
    */
-  void computeFootPositions(
-      const Eigen::MatrixXd &body_plan, const Eigen::MatrixXd &grf_plan,
-      const std::vector<std::vector<bool>> &contact_schedule,
-      const Eigen::MatrixXd &ref_body_plan, Eigen::MatrixXd &foot_positions);
+  void computeFootPlan(int current_plan_index,
+                       const std::vector<std::vector<bool>> &contact_schedule,
+                       const Eigen::MatrixXd &body_plan,
+                       const Eigen::MatrixXd &grf_plan,
+                       const Eigen::MatrixXd &ref_body_plan,
+                       const Eigen::VectorXd &foot_positions_current,
+                       const Eigen::VectorXd &foot_velocities_current,
+                       double first_element_duration,
+                       quad_msgs::MultiFootState &past_footholds_msg,
+                       Eigen::MatrixXd &foot_positions,
+                       Eigen::MatrixXd &foot_velocities,
+                       Eigen::MatrixXd &foot_accelerations);
 
   /**
    * @brief Convert the foot positions and contact schedule into ros messages
    * for the foot plan
    * @param[in] contact_schedule Current contact schedule
+   * @param[in] current_plan_index Current plan index
+   * @param[in] first_element_duration Duration of first element of horizon (may
+   * not be dt)
    * @param[in] foot_positions Foot positions over the horizon
-   * @param[in] current_foot_position Current foot position
-   * @param[in] current_foot_velocity Current foot velocity
-   * @param[in] current_plan_index Current index in the global plan
-   * @param[in] body_plan Body plan from MPC
-   * @param[in] first_element_duration Time duration to the next plan index
-   * @param[out] past_footholds_msg Message for previous footholds
+   * @param[in] foot_velocities Foot velocities over the horizon
+   * @param[in] foot_accelerations Foot accelerations over the horizon
    * @param[out] future_footholds_msg Message for future (planned) footholds
    * @param[out] foot_plan_continuous_msg Message for continuous foot
    * trajectories
    */
-  void computeFootPlanMsgs(
+  void loadFootPlanMsgs(
       const std::vector<std::vector<bool>> &contact_schedule,
+      int current_plan_index, double first_element_duration,
       const Eigen::MatrixXd &foot_positions,
-      const Eigen::VectorXd &current_foot_position,
-      const Eigen::VectorXd &current_foot_velocity, int current_plan_index,
-      const Eigen::MatrixXd &body_plan, const double &first_element_duration,
-      quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+      const Eigen::MatrixXd &foot_velocities,
+      const Eigen::MatrixXd &foot_accelerations,
       quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
       quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
 
@@ -174,14 +187,15 @@ class LocalFootstepPlanner {
           printf("0 ");
         }
       }
-      printf("\n");
     }
+    printf("\n");
   }
 
   inline double getTerrainHeight(double x, double y) {
     grid_map::Position pos = {x, y};
     double height = this->terrain_grid_.atPosition(
-        "z_smooth", pos, grid_map::InterpolationMethods::INTER_LINEAR);
+        "z_smooth", terrain_grid_.getClosestPositionInMap(pos),
+        grid_map::InterpolationMethods::INTER_LINEAR);
     return (height);
   }
 
@@ -264,6 +278,24 @@ class LocalFootstepPlanner {
     }
   }
 
+  inline void setTerrainMap(const grid_map::GridMap &grid_map) {
+    terrain_grid_ = grid_map;
+  }
+
+  // Compute future states by integrating linear states (hold orientation
+  // states)
+  inline Eigen::VectorXd computeFutureBodyPlan(
+      double step, const Eigen::VectorXd &body_plan) {
+    // Initialize vector
+    Eigen::VectorXd future_body_plan = body_plan;
+
+    // Integrate the linear state
+    future_body_plan.segment(0, 3) =
+        future_body_plan.segment(0, 3) + body_plan.segment(6, 3) * step * dt_;
+
+    return future_body_plan;
+  }
+
  private:
   /**
    * @brief Update the continuous foot plan to match the discrete
@@ -292,6 +324,27 @@ class LocalFootstepPlanner {
    * @return Optimized foothold
    */
   Eigen::Vector3d getNearestValidFoothold(const Eigen::Vector3d &foot_position);
+
+  /**
+   * @brief Compute minimum covering circle problem using Welzl's algorithm
+   * @param[in] P Hip position in the plan
+   * @param[in] R Vertex storeage for the circle
+   * @return Center and radius of the circle
+   */
+  Eigen::Vector3d welzlMinimumCircle(std::vector<Eigen::Vector2d> P,
+                                     std::vector<Eigen::Vector2d> R);
+
+  /**
+   * @brief Compute swing apex height
+   * @param[in] leg_idx Leg index
+   * @param[in] body_plan Body plan in the mid air index
+   * @param[in] foot_position_prev Position of the previous foothold
+   * @param[in] foot_position_next Position of the next foothold
+   * @return Apex height
+   */
+  double computeSwingApex(int leg_idx, const Eigen::VectorXd &body_plan,
+                          const Eigen::Vector3d &foot_position_prev,
+                          const Eigen::Vector3d &foot_position_next);
 
   /**
    * @brief Extract foot data from the matrix
@@ -353,6 +406,26 @@ class LocalFootstepPlanner {
     return (horizon_length_ - 1);
   }
 
+  /**
+   * @brief Compute the index of the next liftoff for a foot. If none exist
+   * return the last.
+   */
+  inline int getNextLiftoffIndex(
+      const std::vector<std::vector<bool>> &contact_schedule, int horizon_index,
+      int foot_index) {
+    // Loop through the rest of this contact schedule, if a new liftoff is found
+    // return its index
+    for (int i_liftoff = horizon_index; i_liftoff < horizon_length_;
+         i_liftoff++) {
+      if (isNewLiftoff(contact_schedule, i_liftoff, foot_index)) {
+        return i_liftoff;
+      }
+    }
+
+    // If no contact is found, return the last index in the horizon
+    return (horizon_length_ - 1);
+  }
+
   /// Handle for the map frame
   std::string map_frame_;
 
@@ -364,6 +437,9 @@ class LocalFootstepPlanner {
 
   /// Current continuous footstep plan
   quad_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
+
+  /// Current footposition in the world frame
+  Eigen::MatrixXd current_foot_positions_world_;
 
   /// Number of feet
   const int num_feet_ = 4;

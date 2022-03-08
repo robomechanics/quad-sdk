@@ -180,29 +180,6 @@ TEST(GlobalBodyPlannerTest, testUnitConnectActionElevatedTerrain) {
   EXPECT_TRUE(s2.isApprox(s_final_2));
 }
 
-TEST(GlobalBodyPlannerTest, testRandomConnectActions) {
-  // // Create planner and configuration
-  // PlannerClass P(FORWARD);
-  // PlannerConfig planner_config;
-  // planner_config.G_VEC << 0, 0, -planner_config.G_CONST;
-  // planner_config.terrain.loadFlat();
-  // RRTConnectClass rrt;
-  // StateActionResult result;
-
-  // for (int i = 0; i < N; i++) {
-  //   State s1 = P.randomState(planner_config);
-  //   while (!isValidState(s1,planner_config,CONNECT))
-  //     s1 = P.randomState(planner_config);
-
-  //   State s2 = P.randomState(planner_config);
-  //   while (!isValidState(s2,planner_config,CONNECT))
-  //     s2 = P.randomState(planner_config);
-
-  //   int connect_result = rrt.attemptConnect(s1, s2, result, planner_config,
-  //   FORWARD); EXPECT_TRUE(connect_result != TRAPPED);
-  // }
-}
-
 TEST(GlobalBodyPlannerTest, testUnitConnectActionSlope) {
   // Create planner and configuration
   PlannerClass P(FORWARD);

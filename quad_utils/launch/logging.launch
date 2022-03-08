@@ -7,9 +7,9 @@
         /state/trajectory
         /state/ground_truth 
         /state/estimate 
-        /local_plan 
-        /robot_plan
         /state/grfs 
+        /global_plan
+        /local_plan 
         /control/grfs
         /control/joint_command 
         /control/mode 
@@ -25,9 +25,9 @@
         /state/trajectory
         /state/ground_truth 
         /state/estimate 
-        /local_plan 
-        /robot_plan
         /state/grfs 
+        /global_plan
+        /local_plan 
         /control/grfs
         /control/joint_command 
         /control/mode 

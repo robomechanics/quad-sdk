@@ -2,8 +2,8 @@
 #define LOCAL_PLANNER_H
 
 #include <filters/filter_chain.h>
+#include <gtest/gtest_prod.h>
 #include <local_planner/local_footstep_planner.h>
-#include <local_planner/quadruped_mpc.h>
 #include <math.h>
 #include <nmpc_controller/nmpc_controller.h>
 #include <quad_msgs/GRFArray.h>
@@ -41,6 +41,9 @@ class LocalPlanner {
   void spin();
 
  private:
+  FRIEND_TEST(LocalPlannerTest, noInputCase);
+
+ private:
   /**
    * @brief Initialize the local body planner
    */
@@ -55,39 +58,39 @@ class LocalPlanner {
    * @brief Callback function to handle new terrain map data
    * @param[in] grid_map_msgs::GridMap contining map data
    */
-  void terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg);
+  void terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr &msg);
 
   /**
    * @brief Callback function to handle new plans
    * @param[in] msg Robot state trajectory message
    */
-  void robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg);
+  void robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg);
 
   /**
    * @brief Callback function to handle new state estimates
    * @param[in] State estimate message contining position and velocity for each
    * joint and robot body
    */
-  void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
+  void robotStateCallback(const quad_msgs::RobotState::ConstPtr &msg);
 
   /**
    * @brief Callback function to handle new desired twist data when using twist
    * input
    * @param[in] msg the message contining twist data
    */
-  void cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg);
+  void cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg);
 
   /**
    * @brief Callback function to handle new GRF estimates
    * @param[in] msg the message contining GRF data
    */
-  void grfCallback(const quad_msgs::GRFArray::ConstPtr& msg);
+  void grfCallback(const quad_msgs::GRFArray::ConstPtr &msg);
 
   /**
    * @brief Callback function to handle new contact sensing information
    * @param[in] msg the message contining contact sensing data
    */
-  void contactSensingCallback(const std_msgs::ByteMultiArray::ConstPtr& msg);
+  void contactSensingCallback(const std_msgs::ByteMultiArray::ConstPtr &msg);
 
   /**
    * @brief Function to pre-process the body plan and robot state messages into
@@ -162,7 +165,6 @@ class LocalPlanner {
   double update_rate_;
 
   /// Local Body Planner object
-  std::shared_ptr<QuadrupedMPC> local_body_planner_convex_;
   std::shared_ptr<NMPCController> local_body_planner_nonlinear_;
 
   /// Local Footstep Planner object
@@ -175,7 +177,7 @@ class LocalPlanner {
   quad_msgs::RobotState::ConstPtr robot_state_msg_;
 
   /// Past foothold locations
-  quad_msgs::MultiFootPlanDiscrete past_footholds_msg_;
+  quad_msgs::MultiFootState past_footholds_msg_;
 
   /// Most recent GRF
   quad_msgs::GRFArray::ConstPtr grf_msg_;
@@ -255,6 +257,12 @@ class LocalPlanner {
   /// Matrix of continuous foot positions in world frame
   Eigen::MatrixXd foot_positions_world_;
 
+  /// Matrix of continuous foot velocities in world frame
+  Eigen::MatrixXd foot_velocities_world_;
+
+  /// Matrix of continuous foot accelerations in world frame
+  Eigen::MatrixXd foot_accelerations_world_;
+
   /// Matrix of continuous foot positions in body frame
   Eigen::MatrixXd foot_positions_body_;
 
@@ -291,9 +299,6 @@ class LocalPlanner {
 
   /// Boolean for using twist input instead of a global body plan
   bool use_twist_input_;
-
-  /// Boolean for using nonlinear MPC
-  bool use_nmpc_;
 
   /// Vector for stand pose (x, y, yaw)
   Eigen::Vector3d stand_pose_;

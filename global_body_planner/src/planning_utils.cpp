@@ -74,7 +74,7 @@ void vectorToFullState(const std::vector<double> v, FullState &s) {
   s.ang_vel[2] = v[11];
 }
 
-void flipDirection(State &state) { state.vel = -state.vel; };
+void flipDirection(State &state) { state.vel = -state.vel; }
 
 void flipDirection(Action &action) {
   // Reverse ground reaction forces (works if GRF is symmetric)
@@ -91,7 +91,7 @@ void flipDirection(Action &action) {
   double temp_t_s = action.t_s_leap;
   action.t_s_leap = action.t_s_land;
   action.t_s_land = temp_t_s;
-};
+}
 
 void printState(const State &s) {
   std::cout << "STATE: pos = " << s.pos.transpose()
@@ -791,7 +791,7 @@ bool refineStance(const State &s, double z_f, int phase, Action &a,
         ((s_final.pos[2] - planner_config.terrain.getGroundHeight(
                                s_final.pos[0], s_final.pos[1])) >=
          planner_config.H_MIN);
-    ;
+
     midstance_state_valid =
         ((s_midstance.pos[2] - planner_config.terrain.getGroundHeight(
                                    s_midstance.pos[0], s_midstance.pos[1])) >=
@@ -998,8 +998,8 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
         return false;
       }
 
-      // TODO: allow alternative gaits, bound for leap, check region around foot
-      // location Check for reachability
+      // TODO(jcnorby): allow alternative gaits, bound for leap, check region
+      // around foot location Check for reachability
       if (phase == CONNECT) {
         if (leg_height > planner_config.H_MAX) {
 #ifdef DEBUG_INVALID_STATE

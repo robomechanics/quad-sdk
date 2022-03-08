@@ -5,7 +5,7 @@ GlobalBodyPlan::GlobalBodyPlan() {
   plan_status_ = UNSOLVED;
 }
 
-void GlobalBodyPlan::reset() {
+void GlobalBodyPlan::clear() {
   // Clear all data and reset the length of the plan
   t_plan_.clear();
   body_plan_.clear();
@@ -32,11 +32,12 @@ void GlobalBodyPlan::eraseAfterIndex(int start_index) {
                      length_plan_.end());
 }
 
-void GlobalBodyPlan::load(int plan_status, FullState &start_state,
-                          double dist_to_goal,
-                          std::vector<State> &state_sequence,
-                          std::vector<Action> &action_sequence, double dt,
-                          double t0, const PlannerConfig &planner_config) {
+void GlobalBodyPlan::loadPlanData(int plan_status, FullState &start_state,
+                                  double dist_to_goal,
+                                  std::vector<State> &state_sequence,
+                                  std::vector<Action> &action_sequence,
+                                  double dt, double t0,
+                                  const PlannerConfig &planner_config) {
   plan_status_ = plan_status;
   state_sequence_ = state_sequence;
   action_sequence_ = action_sequence;
@@ -103,8 +104,9 @@ void GlobalBodyPlan::addStateAndGRFToMsg(double t, int plan_index,
   msg.primitive_ids.push_back(primitive_id);
 }
 
-void GlobalBodyPlan::toMsg(quad_msgs::RobotPlan &robot_plan_msg,
-                           quad_msgs::RobotPlan &discrete_robot_plan_msg) {
+void GlobalBodyPlan::convertToMsg(
+    quad_msgs::RobotPlan &robot_plan_msg,
+    quad_msgs::RobotPlan &discrete_robot_plan_msg) {
   if (getSize() <= 0) return;
 
   // Loop through the interpolated body plan and add to message

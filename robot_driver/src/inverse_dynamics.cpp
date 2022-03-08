@@ -118,10 +118,7 @@ bool InverseDynamicsController::computeLegCommandArray(
     for (size_t i = 0; i < num_feet_; i++) {
       // Swing or contact to miss
       if (contact_mode.at(i) && !last_contact_sensing_msg_.data.at(i) &&
-          (current_foot_positions(3 * i + 2) - body_state(2)) < -0.295)
-      // (current_foot_positions(3 * i + 2) - nominal_foot_positions(3 * i + 2))
-      // < -0.1)
-      {
+          (current_foot_positions(3 * i + 2) - body_state(2)) < -0.295) {
         ROS_WARN_STREAM("Leg controller: swing or contact to miss leg: " << i);
 
         last_contact_sensing_msg_.data.at(i) = true;

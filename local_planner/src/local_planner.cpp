@@ -1,11 +1,9 @@
 #include "local_planner/local_planner.h"
 
-// namespace plt = matplotlibcpp;
 Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
 LocalPlanner::LocalPlanner(ros::NodeHandle nh)
-    : local_body_planner_convex_(),
-      local_body_planner_nonlinear_(),
+    : local_body_planner_nonlinear_(),
       local_footstep_planner_(),
       filterChain_("grid_map::GridMap") {
   nh_ = nh;
@@ -13,7 +11,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic,
       local_plan_topic, foot_plan_discrete_topic, foot_plan_continuous_topic,
-      cmd_vel_topic, grf_topic, contact_sensing_topic;
+      cmd_vel_topic, control_mode_topic, grf_topic, contact_sensing_topic;
   quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
   quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
@@ -24,6 +22,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
                            foot_plan_continuous_topic);
   quad_utils::loadROSParam(nh_, "topics/cmd_vel", cmd_vel_topic);
   quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
+  quad_utils::loadROSParam(nh_, "topics/control/mode", control_mode_topic);
 
   // GRF and contact sensing topics
   quad_utils::loadROSParam(nh_, "/topics/state/grfs", grf_topic);
@@ -66,7 +65,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
                            last_cmd_vel_msg_time_max_);
 
   // Load system parameters from launch file (not in config file)
-  nh.param<bool>("local_planner/use_nmpc", use_nmpc_, false);
   nh.param<bool>("local_planner/use_twist_input", use_twist_input_, false);
 
   // Convert kinematics
@@ -88,11 +86,17 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   // Initialize body and foot position arrays
   ref_body_plan_ = Eigen::MatrixXd::Zero(N_ + 1, Nx_);
   foot_positions_world_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
+  foot_velocities_world_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
+  foot_accelerations_world_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
   foot_positions_body_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
   current_foot_positions_body_ = Eigen::VectorXd::Zero(num_feet_ * 3);
   current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_ * 3);
   current_foot_velocities_world_ = Eigen::VectorXd::Zero(num_feet_ * 3);
   ref_ground_height_ = Eigen::VectorXd::Zero(N_ + 1);
+  grf_plan_ = Eigen::MatrixXd::Zero(N_, 12);
+  for (int i = 0; i < num_feet_; i++) {
+    grf_plan_.col(3 * i + 2).fill(13 * 9.81 / num_feet_);
+  }
 
   // Initialize body and footstep planners
   initLocalBodyPlanner();
@@ -137,6 +141,9 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 
   // Initialize the temporary foothold index vector
   tmp_foot_hist_idx_.resize(4);
+
+  // Initialize the plan index
+  current_plan_index_ = 0;
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -199,18 +206,8 @@ void LocalPlanner::initLocalBodyPlanner() {
   Eigen::Matrix3d Ib = Eigen::Matrix3d::Zero();
   Ib.diagonal() << Ixx, Iyy, Izz;
 
-  // Create mpc wrapper class
-  if (use_nmpc_) {
-    local_body_planner_nonlinear_ = std::make_shared<NMPCController>(0);
-  } else {
-    local_body_planner_convex_ = std::make_shared<QuadrupedMPC>();
-    local_body_planner_convex_->setTimestep(dt_);
-    local_body_planner_convex_->setMassProperties(m, Ib);
-    local_body_planner_convex_->update_weights(Q_vec, U_vec);
-    local_body_planner_convex_->update_state_bounds(state_lo, state_hi);
-    local_body_planner_convex_->update_control_bounds(normal_lo, normal_hi);
-    local_body_planner_convex_->update_friction(mu);
-  }
+  // Create nmpc wrapper class
+  local_body_planner_nonlinear_ = std::make_shared<NMPCController>(0);
 }
 
 void LocalPlanner::initLocalFootstepPlanner() {
@@ -261,8 +258,7 @@ void LocalPlanner::initLocalFootstepPlanner() {
 }
 
 void LocalPlanner::terrainMapCallback(
-    const grid_map_msgs::GridMap::ConstPtr& msg) {
-  // grid_map::GridMap map;
+    const grid_map_msgs::GridMap::ConstPtr &msg) {
   grid_map::GridMapRosConverter::fromMessage(*msg, terrain_grid_);
 
   // Convert to FastTerrainMap structure for faster querying
@@ -272,18 +268,16 @@ void LocalPlanner::terrainMapCallback(
 }
 
 void LocalPlanner::robotPlanCallback(
-    const quad_msgs::RobotPlan::ConstPtr& msg) {
+    const quad_msgs::RobotPlan::ConstPtr &msg) {
   // If this is the first plan, initialize the message of past footholds with
   // current foot positions
   if (body_plan_msg_ == NULL && robot_state_msg_ != NULL) {
+    past_footholds_msg_ = robot_state_msg_->feet;
     past_footholds_msg_.header = msg->header;
+    past_footholds_msg_.traj_index = current_plan_index_;
     for (int i = 0; i < num_feet_; i++) {
-      past_footholds_msg_.feet[i].footholds.clear();
-      past_footholds_msg_.feet[i].footholds.push_back(
-          robot_state_msg_->feet.feet[i]);
-      past_footholds_msg_.feet[i].footholds.front().header =
-          past_footholds_msg_.header;
-      past_footholds_msg_.feet[i].footholds.front().traj_index = 0;
+      past_footholds_msg_.feet[i].header = past_footholds_msg_.header;
+      past_footholds_msg_.feet[i].traj_index = past_footholds_msg_.traj_index;
     }
   }
 
@@ -291,14 +285,14 @@ void LocalPlanner::robotPlanCallback(
 }
 
 void LocalPlanner::robotStateCallback(
-    const quad_msgs::RobotState::ConstPtr& msg) {
+    const quad_msgs::RobotState::ConstPtr &msg) {
   // Make sure the data is actually populated
   if (msg->feet.feet.empty() || msg->joints.position.empty()) return;
 
   robot_state_msg_ = msg;
 }
 
-void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg) {
+void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg) {
   // Ignore non-planar components of desired twist
   cmd_vel_[0] = 0.95 * cmd_vel_[0] + 0.05 * cmd_vel_scale_ * msg->linear.x;
   cmd_vel_[1] = 0.95 * cmd_vel_[1] + 0.05 * cmd_vel_scale_ * msg->linear.y;
@@ -311,13 +305,13 @@ void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg) {
   last_cmd_vel_msg_time_ = ros::Time::now();
 }
 
-void LocalPlanner::grfCallback(const quad_msgs::GRFArray::ConstPtr& msg) {
+void LocalPlanner::grfCallback(const quad_msgs::GRFArray::ConstPtr &msg) {
   // GRF callback
   grf_msg_ = msg;
 }
 
 void LocalPlanner::contactSensingCallback(
-    const std_msgs::ByteMultiArray::ConstPtr& msg) {
+    const std_msgs::ByteMultiArray::ConstPtr &msg) {
   // Contact sensing callback
   contact_sensing_msg_ = msg;
 }
@@ -336,14 +330,11 @@ void LocalPlanner::getStateAndReferencePlan() {
   // Initializing foot positions if not data has arrived
   if (first_plan_) {
     first_plan_ = false;
-    past_footholds_msg_.header = robot_state_msg_->header;
+    past_footholds_msg_ = robot_state_msg_->feet;
+    past_footholds_msg_.traj_index = current_plan_index_;
     for (int i = 0; i < num_feet_; i++) {
-      past_footholds_msg_.feet[i].footholds.clear();
-      past_footholds_msg_.feet[i].footholds.push_back(
-          robot_state_msg_->feet.feet[i]);
-      past_footholds_msg_.feet[i].footholds.front().header =
-          past_footholds_msg_.header;
-      past_footholds_msg_.feet[i].footholds.front().traj_index = 0;
+      past_footholds_msg_.feet[i].header = past_footholds_msg_.header;
+      past_footholds_msg_.feet[i].traj_index = past_footholds_msg_.traj_index;
     }
   }
 
@@ -496,14 +487,11 @@ void LocalPlanner::getStateAndTwistInput() {
   // Initializing foot positions if not data has arrived
   if (first_plan_) {
     first_plan_ = false;
-    past_footholds_msg_.header = robot_state_msg_->header;
+    past_footholds_msg_ = robot_state_msg_->feet;
+    past_footholds_msg_.traj_index = current_plan_index_;
     for (int i = 0; i < num_feet_; i++) {
-      past_footholds_msg_.feet[i].footholds.clear();
-      past_footholds_msg_.feet[i].footholds.push_back(
-          robot_state_msg_->feet.feet[i]);
-      past_footholds_msg_.feet[i].footholds.front().header =
-          past_footholds_msg_.header;
-      past_footholds_msg_.feet[i].footholds.front().traj_index = 0;
+      past_footholds_msg_.feet[i].header = past_footholds_msg_.header;
+      past_footholds_msg_.feet[i].traj_index = past_footholds_msg_.traj_index;
     }
   }
 
@@ -576,9 +564,8 @@ void LocalPlanner::getStateAndTwistInput() {
   // If it's going to walk, use latest states
   if (cmd_vel_[0] != 0 || cmd_vel_[1] != 0 || cmd_vel_[5] != 0) {
     stand_pose_ << current_state_[0], current_state_[1], current_state_[5];
-  }
-  // If it's standing, try to stablized the waggling
-  else {
+  } else {
+    // If it's standing, try to stablized the waggling
     Eigen::Vector3d current_stand_pose;
     current_stand_pose << current_state_[0], current_state_[1],
         current_state_[5];
@@ -699,33 +686,37 @@ void LocalPlanner::getStateAndTwistInput() {
 
 bool LocalPlanner::computeLocalPlan() {
   if (!terrain_grid_.exists("z_smooth") ||
-      body_plan_msg_ == NULL && !use_twist_input_ || robot_state_msg_ == NULL)
+      body_plan_msg_ == NULL && !use_twist_input_ || robot_state_msg_ == NULL) {
+    ROS_WARN_STREAM(
+        "ComputeLocalPlan function did not recieve the expected inputs");
     return false;
+  }
 
   // Start the timer
   quad_utils::FunctionTimer timer(__FUNCTION__);
 
   // Compute the contact schedule
-  local_footstep_planner_->computeContactSchedule(
-      current_plan_index_, current_state_, ref_body_plan_, contact_schedule_);
+  local_footstep_planner_->computeContactSchedule(current_plan_index_,
+                                                  contact_schedule_);
 
   // Compute the new footholds if we have a valid existing plan (i.e. if
   // grf_plan is filled)
-  if (grf_plan_.rows() == N_) {
-    local_footstep_planner_->computeFootPositions(
-        body_plan_, grf_plan_, contact_schedule_, ref_body_plan_,
-        foot_positions_world_);
+  local_footstep_planner_->computeFootPlan(
+      current_plan_index_, contact_schedule_, body_plan_, grf_plan_,
+      ref_body_plan_, current_foot_positions_world_,
+      current_foot_velocities_world_, first_element_duration_,
+      past_footholds_msg_, foot_positions_world_, foot_velocities_world_,
+      foot_accelerations_world_);
 
-    // // For standing test we know the foot position will be constant
-    // for (int i = 0; i < N_; i++) {
-    //   foot_positions_world_.row(i) = current_foot_positions_world_;
-    // }
+  // Transform the new foot positions into the body frame for body planning
+  local_footstep_planner_->getFootPositionsBodyFrame(
+      body_plan_, foot_positions_world_, foot_positions_body_);
 
-    // Transform the new foot positions into the body frame for body planning
-    local_footstep_planner_->getFootPositionsBodyFrame(
-        body_plan_, foot_positions_world_, foot_positions_body_);
+  // Start from nominal contact schedule
+  adaptive_contact_schedule_ = contact_schedule_;
 
-    // Contact sensing
+  // Contact sensing
+  if (contact_sensing_msg_ != NULL) {
     for (size_t i = 0; i < 4; i++) {
       if (contact_sensing_msg_->data.at(i)) {
         for (size_t j = 0; j < N_; j++) {
@@ -750,32 +741,18 @@ bool LocalPlanner::computeLocalPlan() {
         foot_positions_body_.col(3 * i + 2).array() - toe_radius;
   }
 
-  // Compute body plan with MPC, return if solve fails
-  if (use_nmpc_) {
-    if (!local_body_planner_nonlinear_->computeLegPlan(
-            current_state_, ref_body_plan_, grf_positions_body,
-            contact_schedule_, ref_ground_height_, first_element_duration_,
-            same_plan_index_, body_plan_, grf_plan_))
-      return false;
-  } else {
-    if (!local_body_planner_convex_->computePlan(
-            current_state_, ref_body_plan_, grf_positions_body,
-            contact_schedule_, body_plan_, grf_plan_))
-      return false;
-  }
+  // Compute leg plan with MPC, return if solve fails
+  if (!local_body_planner_nonlinear_->computeLegPlan(
+          current_state_, ref_body_plan_, grf_positions_body, adaptive_contact_schedule_,
+          ref_ground_height_, first_element_duration_, same_plan_index_,
+          body_plan_, grf_plan_))
+    return false;
 
   // Record computation time and update exponential filter
   compute_time_ = 1000.0 * timer.reportSilent();
   mean_compute_time_ = (filter_smoothing_constant_)*mean_compute_time_ +
                        (1 - filter_smoothing_constant_) * compute_time_;
-
-  if (compute_time_ >= 1000.0 / update_rate_) {
-    // ROS_WARN_THROTTLE(0.1,"LocalPlanner took %5.3fms, exceeding %5.3fms
-    // allowed",
-    //   compute_time_, 1000.0/update_rate_);
-  } else {
-    ROS_INFO_THROTTLE(0.1, "LocalPlanner took %5.3f ms", compute_time_);
-  };
+  ROS_INFO_THROTTLE(0.1, "LocalPlanner took %5.3f ms", compute_time_);
 
   // Return true if made it this far
   return true;
@@ -802,11 +779,10 @@ void LocalPlanner::publishLocalPlan() {
   foot_plan_msg.header = local_plan_msg.header;
 
   // Compute the discrete and continuous foot plan messages
-  local_footstep_planner_->computeFootPlanMsgs(
-      contact_schedule_, foot_positions_world_, current_foot_positions_world_,
-      current_foot_velocities_world_, current_plan_index_, body_plan_,
-      first_element_duration_, past_footholds_msg_, future_footholds_msg,
-      foot_plan_msg);
+  local_footstep_planner_->loadFootPlanMsgs(
+      contact_schedule_, current_plan_index_, first_element_duration_,
+      foot_positions_world_, foot_velocities_world_, foot_accelerations_world_,
+      future_footholds_msg, foot_plan_msg);
 
   // Add body, foot, joint, and grf data to the local plan message
   for (int i = 0; i < N_; i++) {
@@ -827,17 +803,13 @@ void LocalPlanner::publishLocalPlan() {
 
     // Update the headers and plan indices of the messages
     ros::Time state_timestamp;
-    // The first duration may vary
-    if (i == 0) {
-      state_timestamp = local_plan_msg.header.stamp;
-    } else if (i == 1) {
-      state_timestamp =
-          local_plan_msg.header.stamp + ros::Duration(first_element_duration_);
-    } else {
-      state_timestamp = local_plan_msg.header.stamp +
-                        ros::Duration(first_element_duration_) +
-                        ros::Duration((i - 1) * dt_);
-    }
+
+    // The first duration will vary
+    state_timestamp = (i == 0) ? local_plan_msg.header.stamp
+                               : local_plan_msg.header.stamp +
+                                     ros::Duration(first_element_duration_) +
+                                     ros::Duration((i - 1) * dt_);
+
     quad_utils::updateStateHeaders(robot_state_msg, state_timestamp, map_frame_,
                                    current_plan_index_ + i);
     grf_array_msg.header = robot_state_msg.header;

@@ -312,28 +312,27 @@ bool NMPCController::computePlan(
 
   status = app_->OptimizeTNLP(mynlp_);
 
-  // Grab solution
-  Eigen::MatrixXd x(n_, N_);
-  Eigen::MatrixXd u(m_, N_);
-  for (int i = 0; i < N_; ++i) {
-    u.block(0, i, m_, 1) = mynlp_->w0_.block(i * (n_ + m_), 0, m_, 1);
-    x.block(0, i, n_, 1) = mynlp_->w0_.block(i * (n_ + m_) + m_, 0, n_, 1);
-  }
-
-  // Convert solution back to local planner structure
-  state_traj = Eigen::MatrixXd::Zero(N_ + 1, n_);
-  state_traj.topRows(1) = initial_state.transpose();
-  control_traj = Eigen::MatrixXd::Zero(N_, m_);
-  state_traj.bottomRows(N_) = x.transpose();
-  control_traj = u.transpose();
-
   if (status == Solve_Succeeded) {
-    // If solve succeeded, turn on warm start
     mynlp_->warm_start_ = true;
+
+    Eigen::MatrixXd x(n_, N_);
+    Eigen::MatrixXd u(m_, N_);
+
+    for (int i = 0; i < N_; ++i) {
+      u.block(0, i, m_, 1) = mynlp_->w0_.block(i * (n_ + m_), 0, m_, 1);
+      x.block(0, i, n_, 1) = mynlp_->w0_.block(i * (n_ + m_) + m_, 0, n_, 1);
+    }
+
+    // Convert solution back to local planner structure
+    state_traj = Eigen::MatrixXd::Zero(N_ + 1, n_);
+    state_traj.topRows(1) = initial_state.transpose();
+    control_traj = Eigen::MatrixXd::Zero(N_, m_);
+    
+    state_traj.bottomRows(N_) = x.transpose();
+    control_traj = u.transpose();
 
     return true;
   } else {
-    // If solve failed, turn off warm start and reset barrier parameter
     mynlp_->mu0_ = 1e-1;
     mynlp_->warm_start_ = false;
     require_init_ = true;

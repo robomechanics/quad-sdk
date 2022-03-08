@@ -178,12 +178,12 @@ void printVector(const std::vector<T> &vec) {
   std::cout << "{";
   for (auto val : vec) std::cout << val << ", ";
   std::cout << "\b\b}";
-};
+}
 template <typename T>
 void printVectorNewline(const std::vector<T> &vec) {
   printVector(vec);
   std::cout << std::endl;
-};
+}
 void printStateNewline(State vec);
 void printAction(Action a);
 void printActionNewline(Action a);
