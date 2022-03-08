@@ -114,65 +114,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
-  // Load MPC parameters
-  double m, Ixx, Iyy, Izz, mu, normal_lo, normal_hi;
-  quad_utils::loadROSParam(nh_, "local_body_planner/body_mass", m);
-  quad_utils::loadROSParam(nh_, "local_body_planner/body_ixx", Ixx);
-  quad_utils::loadROSParam(nh_, "local_body_planner/body_iyy", Iyy);
-  quad_utils::loadROSParam(nh_, "local_body_planner/body_izz", Izz);
-  quad_utils::loadROSParam(nh_, "local_body_planner/friction_mu", mu);
-  quad_utils::loadROSParam(nh_, "local_body_planner/normal_lo", normal_lo);
-  quad_utils::loadROSParam(nh_, "local_body_planner/normal_hi", normal_hi);
-
-  std::vector<double> state_weights, control_weights, state_lower_bound,
-      state_upper_bound;
-  double terminal_weight_scaling;
-  quad_utils::loadROSParam(nh_, "local_body_planner/state_weights",
-                           state_weights);
-  quad_utils::loadROSParam(nh_, "local_body_planner/terminal_weight_scaling",
-                           terminal_weight_scaling);
-  quad_utils::loadROSParam(nh_, "local_body_planner/control_weights",
-                           control_weights);
-  quad_utils::loadROSParam(nh_, "local_body_planner/state_lower_bound",
-                           state_lower_bound);
-  quad_utils::loadROSParam(nh_, "local_body_planner/state_upper_bound",
-                           state_upper_bound);
-
-  // Load state weights and bounds
-  Eigen::MatrixXd Qx = Eigen::MatrixXd::Zero(Nx_, Nx_);
-  Eigen::VectorXd state_lo = Eigen::VectorXd::Zero(Nx_);
-  Eigen::VectorXd state_hi = Eigen::VectorXd::Zero(Nx_);
-  for (int i = 0; i < Nx_; ++i) {
-    Qx(i, i) = state_weights.at(i);
-    state_lo(i) = state_lower_bound.at(i);
-    state_hi(i) = state_upper_bound.at(i);
-  }
-
-  // Load control weights
-  Eigen::MatrixXd Ru = Eigen::MatrixXd::Zero(Nu_, Nu_);
-  for (int i = 0; i < 3; ++i) {            // for each dimension
-    for (int j = 0; j < num_feet_; ++j) {  // for each leg
-      Ru(3 * j + i, 3 * j + i) = control_weights.at(i);
-    }
-  }
-  // Ru(Nu_-1,Nu_-1) = 1e-6; //gravity weight term
-
-  std::vector<Eigen::MatrixXd> Q_vec(N_ + 1);
-  std::vector<Eigen::MatrixXd> U_vec(N_);
-  for (int i = 0; i < N_ + 1; ++i) {
-    Q_vec.at(i) = Qx;
-    if (i == N_) {
-      Q_vec.at(i) = terminal_weight_scaling * Qx;
-    }
-  }
-  for (int i = 0; i < N_; ++i) {
-    U_vec.at(i) = Ru;
-  }
-
-  // Robot body inertia matrix
-  Eigen::Matrix3d Ib = Eigen::Matrix3d::Zero();
-  Ib.diagonal() << Ixx, Iyy, Izz;
-
   // Create nmpc wrapper class
   local_body_planner_nonlinear_ = std::make_shared<NMPCController>(0);
 }

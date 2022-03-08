@@ -27,10 +27,15 @@ NMPCController::NMPCController(int type) {
 
   // Load MPC/system parameters
   double mu;
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/horizon_length", N_);
+  if (param_ns_ == "leg") {
+    ros::param::get("/local_planner/horizon_length", N_);
+    ros::param::get("/local_planner/timestep", dt_);
+  } else {
+    ros::param::get("/nmpc_controller/" + param_ns_ + "/horizon_length", N_);
+    ros::param::get("/nmpc_controller/" + param_ns_ + "/step_length", dt_);
+  }
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_dimension", n_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_dimension", m_);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/step_length", dt_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/friction_coefficient",
                   mu);
 
