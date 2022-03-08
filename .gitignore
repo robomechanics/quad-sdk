@@ -6,3 +6,4 @@ docs/
 external/ipopt/*
 !external/ipopt/.gitkeep
 *.csv
+ekf_estimator/data/*

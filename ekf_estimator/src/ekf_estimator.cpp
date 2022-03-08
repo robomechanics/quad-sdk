@@ -120,9 +120,13 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   new_state_est.body.pose.orientation.y = X[8];
   new_state_est.body.pose.orientation.z = X[9];
 
-  new_state_est.body.pose.position.x = X[0];
-  new_state_est.body.pose.position.y = X[1];
+  new_state_est.body.pose.position.x = X[1];
+  new_state_est.body.pose.position.y = X[0];
   new_state_est.body.pose.position.z = X[2];
+
+  new_state_est.body.twist.linear.x = X[3];
+  new_state_est.body.twist.linear.y = X[4];
+  new_state_est.body.twist.linear.z = X[5];
 
   // joint
   new_state_est.joints.header.stamp = ros::Time::now();
@@ -140,6 +144,9 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
                            const Eigen::Quaterniond& qk) {
   // calculate rotational matrix from world frame to body frame
   Eigen::Matrix3d C = qk.toRotationMatrix();
+  // Eigen::Matrix3d r90;
+  // r90 << 0, 1, 0, -1, 0, 0, 0, 0, 1;
+  // C = r90 * C;
 
   // Collect states info from previous state vector
   Eigen::VectorXd r = last_X.segment(0, 3);
@@ -222,7 +229,9 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   Q.block<3, 3>(24, 24) = dt * bias_gyro;
 
   // Covariance update
+
   P_pre = F * P * F.transpose() + Q;
+  // std::cout << "this is P_pre " << P_pre << std::endl;
 }
 
 void EKFEstimator::update(const Eigen::VectorXd& jk) {
@@ -237,7 +246,9 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   Eigen::Quaterniond quaternion_pre(q_pre[0], q_pre[1], q_pre[2], q_pre[3]);
   quaternion_pre.normalize();
   Eigen::Matrix3d C_pre = quaternion_pre.toRotationMatrix();
-
+  // Eigen::Matrix3d r90;
+  // r90 << 0, 1, 0, -1, 0, 0, 0, 0, 1;
+  // C_pre = r90 * C_pre;
   // std::cout << "this is the q_pre " << q_pre << std::endl;
   // std::cout << "this is the C_pre " << C_pre << std::endl;
 
@@ -262,7 +273,8 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
     y.segment(i * 3, 3) =
         s.segment(i * 3, 3) - (C_pre * (p_pre.segment(i * 3, 3) - r_pre));
   }
-  // std::cout << "this is the residual " << y << std::endl;
+  // std::cout << "this is the residual " << std::endl;
+  // std::cout << y << std::endl;
 
   // Measurement jacobian (12 * 27)
   H = Eigen::MatrixXd::Zero(num_measure, num_cov);
@@ -297,7 +309,9 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   Eigen::VectorXd delta_X = K * y;
 
   Eigen::MatrixXd I = Eigen::MatrixXd::Identity(num_cov, num_cov);
+
   P = (I - K * H) * P_pre;
+  // std::cout << "this is P " << P << std::endl;
 
   // update state
   X.segment(0, 6) = X_pre.segment(0, 6) + delta_X.segment(0, 6);
@@ -468,9 +482,15 @@ void EKFEstimator::spin() {
 
   // initial state
   X0 = Eigen::VectorXd::Zero(num_state);
-  X0 << -1.457778, 1.004244, 0.308681, 0, 0, 0, 0.998927, 0.004160, -0.003017,
-      -0.046032, -1.251841, 1.185387, 0.012734, -1.695057, 1.148678, 0.007092,
-      -1.236598, 0.861900, 0.016119, -1.678741, 0.831065, 0.020651, 0, 0, 0, 0,
+  // X0 << -1.457778, 1.004244, 0.308681, 0, 0, 0, 0.998927, 0.004160,
+  // -0.003017,
+  //     -0.046032, -1.251841, 1.185387, 0.012734, -1.695057, 1.148678,
+  //     0.007092, -1.236598, 0.861900, 0.016119, -1.678741, 0.831065, 0.020651,
+  //     0, 0, 0, 0, 0, 0;
+  // flip x, y for now
+  X0 << 1.004244, -1.457778, 0.308681, 0, 0, 0, 0.998927, 0.004160, -0.003017,
+      -0.046032, 1.185387, -1.251841, 0.012734, 1.148678, -1.695057, 0.007092,
+      0.861900, -1.236598, 0.016119, 0.831065, -1.678741, 0.020651, 0, 0, 0, 0,
       0, 0;
   X = X0;
   last_X = X0;

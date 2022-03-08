@@ -211,7 +211,7 @@ class EKFEstimator {
   Eigen::MatrixXd P;
 
   // prediction state covariance matrix (27 * 27)
-  Eigen::VectorXd P_pre;
+  Eigen::MatrixXd P_pre;
 
   // state transition matrix (27 * 27)
   Eigen::MatrixXd F;
