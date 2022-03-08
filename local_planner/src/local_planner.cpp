@@ -641,7 +641,7 @@ void LocalPlanner::publishLocalPlan() {
       future_footholds_msg, foot_plan_msg);
 
   // Add body, foot, joint, and grf data to the local plan message
-  for (int i = 0; i < N_; i++) {
+  for (int i = 0; i < N_ - 1; i++) {
     // Add the state information
     quad_msgs::RobotState robot_state_msg;
     robot_state_msg.body = quad_utils::eigenToBodyStateMsg(body_plan_.row(i));

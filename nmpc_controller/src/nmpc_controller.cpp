@@ -82,7 +82,7 @@ NMPCController::NMPCController(int type) {
 
   Eigen::Map<Eigen::VectorXd> Q(state_weights.data(), n_),
       R(control_weights.data(), m_), Q_factor(state_weights_factors.data(), N_),
-      R_factor(control_weights_factors.data(), N_),
+      R_factor(control_weights_factors.data(), N_ - 1),
       x_min(state_lower_bound.data(), n_), x_max(state_upper_bound.data(), n_),
       x_min_null(state_lower_bound_null.data(), state_lower_bound_null.size()),
       x_max_null(state_upper_bound_null.data(), state_upper_bound_null.size()),
@@ -90,7 +90,7 @@ NMPCController::NMPCController(int type) {
       u_max(control_upper_bound.data(), m_);
 
   // Load fixed complexity schedule
-  Eigen::VectorXi fixed_complexity_schedule(N_ + 1);
+  Eigen::VectorXi fixed_complexity_schedule(N_);
   fixed_complexity_schedule.setZero();
   for (int idx : fixed_complex_idxs) {
     if (idx >= 0 && idx <= N_) {
@@ -98,12 +98,10 @@ NMPCController::NMPCController(int type) {
     }
   }
   if (fixed_complex_head > 0) {
-    fixed_complexity_schedule.head(std::min(fixed_complex_head, N_ + 1))
-        .fill(1);
+    fixed_complexity_schedule.head(std::min(fixed_complex_head, N_)).fill(1);
   }
   if (fixed_complex_tail > 0) {
-    fixed_complexity_schedule.tail(std::min(fixed_complex_tail, N_ + 1))
-        .fill(1);
+    fixed_complexity_schedule.tail(std::min(fixed_complex_tail, N_)).fill(1);
   }
   std::cout << "fixed_complexity_schedule = "
             << fixed_complexity_schedule.transpose() << std::endl;
@@ -175,8 +173,6 @@ bool NMPCController::computeLegPlan(
   // mynlp_->feet_location_ = foot_positions;
   mynlp_->foot_pos_world_ = foot_positions;
   mynlp_->foot_vel_world_ = foot_velocities;
-  std::cout << "foot_positions\n" << mynlp_->foot_pos_world_ << std::endl;
-  std::cout << "foot_velocities\n" << mynlp_->foot_vel_world_ << std::endl;
 
   for (int i = 0; i < ref_primitive_id.size() - 1; i++) {
     if (ref_primitive_id(i, 0) == 1 && ref_primitive_id(i + 1, 0) == 2) {
@@ -188,6 +184,32 @@ bool NMPCController::computeLegPlan(
 
   bool success = this->computePlan(initial_state, ref_traj, foot_positions,
                                    contact_schedule, state_traj, control_traj);
+
+  // std::cout << "New solve" << std::endl;
+  // std::cout << "ref_traj.size = " << ref_traj.rows() << ", " <<
+  // ref_traj.cols()
+  //           << std::endl;
+  // std::cout << "ref_traj = \n" << ref_traj << std::endl;
+  // std::cout << "mynlp_->foot_pos_world_.size = "
+  //           << mynlp_->foot_pos_world_.rows() << ", "
+  //           << mynlp_->foot_pos_world_.cols() << std::endl;
+  // std::cout << "mynlp_->foot_pos_world_ = \n"
+  //           << mynlp_->foot_pos_world_ << std::endl;
+  // std::cout << "mynlp_->foot_vel_world_.size = "
+  //           << mynlp_->foot_vel_world_.rows() << ", "
+  //           << mynlp_->foot_vel_world_.cols() << std::endl;
+  // std::cout << "mynlp_->foot_vel_world_ = \n"
+  //           << mynlp_->foot_vel_world_ << std::endl;
+  // std::cout << "state_traj.size = " << state_traj.rows() << ", "
+  //           << state_traj.cols() << std::endl;
+  // std::cout << "state_traj = \n" << state_traj << std::endl;
+  // std::cout << "control_traj.size = " << control_traj.rows() << ", "
+  //           << control_traj.cols() << std::endl;
+  // std::cout << "control_traj = \n" << control_traj << std::endl;
+
+  // if (!success) {
+  //   throw std::runtime_error("solving fail, stopping");
+  // }
 
   return success;
 }
@@ -266,10 +288,10 @@ bool NMPCController::computePlan(
 
   status = app_->OptimizeTNLP(mynlp_);
 
-  state_traj = Eigen::MatrixXd::Zero(N_ + 1, n_);
-  Eigen::MatrixXd state_null_traj = Eigen::MatrixXd::Zero(N_ + 1, n_null_);
-  Eigen::MatrixXd state_null_traj_lift = Eigen::MatrixXd::Zero(N_ + 1, n_null_);
-  control_traj = Eigen::MatrixXd::Zero(N_, m_);
+  state_traj = Eigen::MatrixXd::Zero(N_, n_);
+  Eigen::MatrixXd state_null_traj = Eigen::MatrixXd::Zero(N_, n_null_);
+  Eigen::MatrixXd state_null_traj_lift = Eigen::MatrixXd::Zero(N_, n_null_);
+  control_traj = Eigen::MatrixXd::Zero(N_ - 1, m_);
 
   state_traj.row(0) =
       mynlp_->get_state_var(mynlp_->w0_, 0).head(n_).transpose();
@@ -288,10 +310,11 @@ bool NMPCController::computePlan(
   // state_null_traj_lift.row(0).head(12) = joint_positions;
   // state_null_traj_lift.row(0).tail(12) = joint_velocities;
 
-  for (int i = 0; i < N_; ++i) {
-    control_traj.row(i) = mynlp_->get_control_var(mynlp_->w0_, i).transpose();
-    state_traj.row(i + 1) =
-        mynlp_->get_state_var(mynlp_->w0_, i + 1).head(n_).transpose();
+  for (int i = 1; i < N_; ++i) {
+    control_traj.row(i - 1) =
+        mynlp_->get_control_var(mynlp_->w0_, i - 1).transpose();
+    state_traj.row(i) =
+        mynlp_->get_state_var(mynlp_->w0_, i).head(n_).transpose();
 
     // if (mynlp_->n_vec_[i + 1] > n_) {
     //   state_null_traj.row(i + 1) =
@@ -317,6 +340,7 @@ bool NMPCController::computePlan(
   }
 
   // std::cout << "state_traj = \n" << state_traj << std::endl;
+  // std::cout << "control_traj = \n" << control_traj << std::endl;
   // std::cout << "state_null_traj pos = \n"
   //           << state_null_traj.leftCols(n_null_ / 2) << std::endl;
   // std::cout << "state_null_traj vel = \n"
@@ -346,7 +370,6 @@ bool NMPCController::computePlan(
     require_init_ = true;
 
     ROS_WARN_STREAM(param_ns_ << " solving fail");
-
     return false;
   }
 }
@@ -373,23 +396,22 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
   }
 
   // Loop through trajectory, lifting as needed and evaluating constraints
-  for (int i = 0; i < N_ - 1; i++) {
-    u = mynlp_->get_control_var(mynlp_->w0_, i);
-    x1 = mynlp_->get_state_var(mynlp_->w0_, i + 1);
+  for (int i = 1; i < N_; i++) {
+    u = mynlp_->get_control_var(mynlp_->w0_, i - 1);
+    x1 = mynlp_->get_state_var(mynlp_->w0_, i);
 
     if (x1.size() < mynlp_->n_complex_) {
       quadKD_->convertCentroidalToFullBody(
-          x1, mynlp_->foot_pos_world_.row(i + 1),
-          mynlp_->foot_vel_world_.row(i + 1), u, joint_positions,
-          joint_velocities, joint_torques);
+          x1, mynlp_->foot_pos_world_.row(i), mynlp_->foot_vel_world_.row(i), u,
+          joint_positions, joint_velocities, joint_torques);
       x1.conservativeResize(mynlp_->n_complex_);
       x1.segment(12, 12) = joint_positions;
       x1.segment(24, 12) = joint_velocities;
     }
 
     double dt = (i == 0) ? mynlp_->first_element_duration_ : dt_;
-    params.head(12) = mynlp_->foot_pos_world_.row(i + 1);
-    params.tail(12) = mynlp_->foot_vel_world_.row(i + 1);
+    params.head(12) = mynlp_->foot_pos_world_.row(i);
+    params.tail(12) = mynlp_->foot_vel_world_.row(i);
 
     constr_vars = mynlp_->eval_g_single_fe(COMPLEX, dt, x0, u, x1, params);
     lb_violation = mynlp_->g_min_complex_ - constr_vars;
@@ -402,11 +424,11 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
 
     for (int j = 0; j < constr_vars.size(); j++) {
       if ((lb_violation[j] > tol || ub_violation[j] > tol) &&
-          mynlp_->n_vec_[i + 1] == mynlp_->n_complex_) {
+          mynlp_->n_vec_[i] == mynlp_->n_complex_) {
         printf(
             "Constraint %s violated in FE %d: %5.3f <= %5.3f <= "
             "%5.3f\n",
-            mynlp_->constr_names_[COMPLEX][j].c_str(), i,
+            mynlp_->constr_names_[COMPLEX][j].c_str(), i - 1,
             mynlp_->g_min_complex_[j] - tol, constr_vars[j],
             mynlp_->g_max_complex_[j] + tol);
 
@@ -422,11 +444,12 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
     for (int j = 0; j < x1.size(); j++) {
       if ((x1[j] < mynlp_->x_min_complex_[j] ||
            x1[j] > mynlp_->x_max_complex_[j]) &&
-          mynlp_->n_vec_[i + 1] == mynlp_->n_complex_) {
+          mynlp_->n_vec_[i] == mynlp_->n_complex_) {
         printf(
             "Var bound %d violated in FE %d: %5.3f <= %5.3f <= "
             "%5.3f\n",
-            j, i, mynlp_->x_min_complex_[j], x1[j], mynlp_->x_max_complex_[j]);
+            j, i - 1, mynlp_->x_min_complex_[j], x1[j],
+            mynlp_->x_max_complex_[j]);
 
         valid = false;
       }
