@@ -75,7 +75,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   }
 
   // Initialize body and foot position arrays
-  ref_body_plan_ = Eigen::MatrixXd::Zero(N_ + 1, Nx_);
+  ref_body_plan_ = Eigen::MatrixXd::Zero(N_, Nx_);
   foot_positions_world_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
   foot_velocities_world_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
   foot_accelerations_world_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
@@ -83,8 +83,8 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   current_foot_positions_body_ = Eigen::VectorXd::Zero(num_feet_ * 3);
   current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_ * 3);
   current_foot_velocities_world_ = Eigen::VectorXd::Zero(num_feet_ * 3);
-  ref_ground_height_ = Eigen::VectorXd::Zero(N_ + 1);
-  grf_plan_ = Eigen::MatrixXd::Zero(N_, 12);
+  ref_ground_height_ = Eigen::VectorXd::Zero(N_);
+  grf_plan_ = Eigen::MatrixXd::Zero(N_ - 1, 12);
   for (int i = 0; i < num_feet_; i++) {
     grf_plan_.col(3 * i + 2).fill(13 * 9.81 / num_feet_);
   }
@@ -255,7 +255,7 @@ void LocalPlanner::getStateAndReferencePlan() {
   // matrix
   ref_body_plan_.setZero();
 
-  for (int i = 0; i < N_ + 1; i++) {
+  for (int i = 0; i < N_; i++) {
     // If the horizon extends past the reference trajectory, just hold the last
     // state
     if (i + current_plan_index_ > body_plan_msg_->plan_indices.back()) {
@@ -272,7 +272,7 @@ void LocalPlanner::getStateAndReferencePlan() {
       current_state_(0), current_state_(1));
 
   // Update the body plan to use for linearization
-  if (body_plan_.rows() < N_ + 1) {
+  if (body_plan_.rows() < N_) {
     // Cold start with reference  plan
     body_plan_ = ref_body_plan_;
 
@@ -284,8 +284,8 @@ void LocalPlanner::getStateAndReferencePlan() {
   } else {
     // Only shift the foot position if it's a solve for a new plan index
     if (!same_plan_index_) {
-      body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
-      grf_plan_.topRows(N_ - 1) = grf_plan_.bottomRows(N_ - 1);
+      body_plan_.topRows(N_ - 1) = body_plan_.bottomRows(N_ - 1);
+      grf_plan_.topRows(N_ - 2) = grf_plan_.bottomRows(N_ - 2);
 
       foot_positions_body_.topRows(N_ - 1) =
           foot_positions_body_.bottomRows(N_ - 1);
@@ -421,7 +421,7 @@ void LocalPlanner::getStateAndTwistInput() {
       ref_body_plan_(0, 3), ref_body_plan_(0, 4));
 
   // Integrate to get full body plan (Forward Euler)
-  for (int i = 1; i < N_ + 1; i++) {
+  for (int i = 1; i < N_; i++) {
     Twist current_cmd_vel = cmd_vel_;
 
     double yaw = ref_body_plan_(i - 1, 5);
@@ -455,7 +455,7 @@ void LocalPlanner::getStateAndTwistInput() {
   }
 
   // Update the body plan to use for linearization
-  if (body_plan_.rows() < N_ + 1) {
+  if (body_plan_.rows() < N_) {
     // Cold start with reference  plan
     body_plan_ = ref_body_plan_;
 
@@ -467,8 +467,8 @@ void LocalPlanner::getStateAndTwistInput() {
   } else {
     // Only shift the foot position if it's a solve for a new plan index
     if (!same_plan_index_) {
-      body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
-      grf_plan_.topRows(N_ - 1) = grf_plan_.bottomRows(N_ - 1);
+      body_plan_.topRows(N_ - 1) = body_plan_.bottomRows(N_ - 1);
+      grf_plan_.topRows(N_ - 2) = grf_plan_.bottomRows(N_ - 2);
 
       foot_positions_body_.topRows(N_ - 1) =
           foot_positions_body_.bottomRows(N_ - 1);
