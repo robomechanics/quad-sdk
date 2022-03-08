@@ -209,25 +209,25 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
           last_body_force_estimate_msg_->body_wrenches.at(i).torque.z);
         */
 
-        ROS_INFO("%1.3f, %1.3f, %1.3f, %1.3f, %1.3f, %1.3f", retract_vel_, tau_push_, tau_contact_start_, tau_contact_end_, min_switch_, t_down_);
+        //ROS_INFO("%1.3f, %1.3f, %1.3f, %1.3f, %1.3f, %1.3f", retract_vel_, tau_push_, tau_contact_start_, tau_contact_end_, min_switch_, t_down_);
 
         // Switch swing modes
         if (force_mode_.at(i) && (t_now2 - t_switch_.at(i) > min_switch_) &&
-            (last_body_force_estimate_msg_->body_wrenches.at(i).torque.z < 0.25) &&
-            t_TD_.at(i) - t_now2 >= 0.08) { //JYTODO: make a parameter
+            (last_body_force_estimate_msg_->body_wrenches.at(i).torque.z < tau_contact_end_) &&
+            t_TD_.at(i) - t_now2 >= t_down_) {
           force_mode_.at(i) = 0;
           t_switch_.at(i) = t_now2;
         } else if (!force_mode_.at(i) && (t_now2 - t_switch_.at(i) > min_switch_) &&
-              (last_body_force_estimate_msg_->body_wrenches.at(i).torque.z > 1.0 ||
-                last_body_force_estimate_msg_->body_wrenches.at(i).torque.y > 1.0 &&
-                t_now2 - t_LO_.at(i) > 0.1)) {
+              (last_body_force_estimate_msg_->body_wrenches.at(i).torque.z > tau_contact_start_ ||
+                last_body_force_estimate_msg_->body_wrenches.at(i).torque.y > tau_contact_start_ &&
+                t_now2 - t_LO_.at(i) > 0.15)) {
           force_mode_.at(i) = 1;
           t_switch_.at(i) = t_now2;
           ROS_INFO_STREAM("OBSTRUCTION DETECTED");
         }
         //force_mode_.at(i) = 0;
 
-        if (!force_mode_.at(i) || t_TD_.at(i) - t_now2 < 0.1) { // insufficient time left in stance; put the foot down JYTODO: parameter
+        if (!force_mode_.at(i) || t_TD_.at(i) - t_now2 < t_down_) { // insufficient time left in stance; put the foot down
           // Usual swing mode
           for (int j = 0; j < 3; ++j) {
 
@@ -259,6 +259,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(0).kp = swing_kp_.at(0);
 
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(1).vel_setpoint = -retract_vel_;
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(1).torque_ff = 0;
 
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).vel_setpoint = 0;
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).kd = 0;
