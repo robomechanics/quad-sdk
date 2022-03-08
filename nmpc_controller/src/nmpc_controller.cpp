@@ -122,7 +122,7 @@ NMPCController::NMPCController(int type) {
   // app_->Options()->SetIntegerValue("max_iter", 100);
   // app_->Options()->SetStringValue("print_timing_statistics", "yes");
   app_->Options()->SetStringValue("linear_solver", "ma57");
-  app_->Options()->SetIntegerValue("print_level", 0);
+  app_->Options()->SetIntegerValue("print_level", 5);
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   // app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
@@ -136,8 +136,8 @@ NMPCController::NMPCController(int type) {
   app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
   app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
 
-  app_->Options()->SetNumericValue("max_wall_time", 2.0 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 2.0 * dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 3.0 * dt_);
+  app_->Options()->SetNumericValue("max_cpu_time", 3.0 * dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();
@@ -168,7 +168,7 @@ bool NMPCController::computeLegPlan(
                         contact_schedule, complexity_schedule,
                         ref_ground_height, first_element_duration,
                         same_plan_index, require_init_);
-  require_init_ = false;
+  // require_init_ = false;
 
   // mynlp_->feet_location_ = foot_positions;
   mynlp_->foot_pos_world_ = foot_positions;
@@ -277,6 +277,8 @@ bool NMPCController::computePlan(
     const std::vector<std::vector<bool>> &contact_schedule,
     Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj) {
   ApplicationReturnStatus status;
+  mynlp_->mu0_ = 0.1;
+  mynlp_->warm_start_ = false;
   app_->Options()->SetNumericValue("mu_init", mynlp_->mu0_);
   if (mynlp_->warm_start_) {
     // std::cout << "Warm start on" << std::endl;
@@ -361,7 +363,7 @@ bool NMPCController::computePlan(
   //           << std::endl;
   if (status == Solve_Succeeded) {
     mynlp_->warm_start_ = true;
-    // Eigen::VectorXd constr_vars = evalLiftedTrajectoryConstraints();
+    Eigen::VectorXd constr_vars = evalLiftedTrajectoryConstraints();
 
     return true;
   } else {
@@ -370,18 +372,35 @@ bool NMPCController::computePlan(
     require_init_ = true;
 
     ROS_WARN_STREAM(param_ns_ << " solving fail");
+    std::cout << "current body state = \n"
+              << mynlp_->x_current_.segment(0, 12).transpose() << std::endl;
+    std::cout << "current joint pos = \n"
+              << mynlp_->x_current_.segment(12, 12).transpose() << std::endl;
+    std::cout << "current joint vel = \n"
+              << mynlp_->x_current_.segment(24, 12).transpose() << std::endl;
+    std::cout << "x_reference_ = \n"
+              << mynlp_->x_reference_.transpose() << std::endl;
+    std::cout << "state_traj = \n" << state_traj << std::endl;
+    std::cout << "control_traj = \n" << control_traj << std::endl;
+    std::cout << "foot_positions = \n" << mynlp_->foot_pos_world_ << std::endl;
+    std::cout << "foot_velocities = \n" << mynlp_->foot_vel_world_ << std::endl;
+
+    throw std::runtime_error("Solve failed, exiting for debug");
     return false;
   }
 }
 
 Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
-  quad_utils::FunctionTimer timer(__FUNCTION__);
+  // quad_utils::FunctionTimer timer(__FUNCTION__);
 
   // Declare decision and constraint vars
+  Eigen::VectorXi adaptive_complexity_horizon(N_);
+  adaptive_complexity_horizon.setZero();
   Eigen::VectorXd x0, u, x1;
   Eigen::VectorXd joint_positions(12), joint_velocities(12), joint_torques(12);
   Eigen::VectorXd constr_vars, params(24), lb_violation, ub_violation;
-  bool valid = true;
+  bool valid_solve = true;
+  bool valid_lift = true;
 
   // Load current state data
   x0 = mynlp_->get_state_var(mynlp_->w0_, 0);
@@ -394,24 +413,28 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
     x0.segment(12, 12) = joint_positions;
     x0.segment(24, 12) = joint_velocities;
   }
+  double var_tol, constr_tol;
+  app_->Options()->GetNumericValue("tol", var_tol, "");
+  app_->Options()->GetNumericValue("constr_viol_tol", constr_tol, "");
 
   // Loop through trajectory, lifting as needed and evaluating constraints
-  for (int i = 1; i < N_; i++) {
-    u = mynlp_->get_control_var(mynlp_->w0_, i - 1);
-    x1 = mynlp_->get_state_var(mynlp_->w0_, i);
+  for (int i = 0; i < N_ - 1; i++) {
+    u = mynlp_->get_control_var(mynlp_->w0_, i);
+    x1 = mynlp_->get_state_var(mynlp_->w0_, i + 1);
 
     if (x1.size() < mynlp_->n_complex_) {
       quadKD_->convertCentroidalToFullBody(
-          x1, mynlp_->foot_pos_world_.row(i), mynlp_->foot_vel_world_.row(i), u,
-          joint_positions, joint_velocities, joint_torques);
+          x1, mynlp_->foot_pos_world_.row(i + 1),
+          mynlp_->foot_vel_world_.row(i + 1), u, joint_positions,
+          joint_velocities, joint_torques);
       x1.conservativeResize(mynlp_->n_complex_);
       x1.segment(12, 12) = joint_positions;
       x1.segment(24, 12) = joint_velocities;
     }
 
     double dt = (i == 0) ? mynlp_->first_element_duration_ : dt_;
-    params.head(12) = mynlp_->foot_pos_world_.row(i);
-    params.tail(12) = mynlp_->foot_vel_world_.row(i);
+    params.head(12) = mynlp_->foot_pos_world_.row(i + 1);
+    params.tail(12) = mynlp_->foot_vel_world_.row(i + 1);
 
     constr_vars = mynlp_->eval_g_single_fe(COMPLEX, dt, x0, u, x1, params);
     lb_violation = mynlp_->g_min_complex_ - constr_vars;
@@ -419,48 +442,54 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
     // std::cout << "lb violation = " << lb_violation << std::endl;
     // std::cout << "ub violation = " << ub_violation << std::endl;
 
-    double tol;
-    app_->Options()->GetNumericValue("constr_viol_tol", tol, "");
-
     for (int j = 0; j < constr_vars.size(); j++) {
-      if ((lb_violation[j] > tol || ub_violation[j] > tol) &&
-          mynlp_->n_vec_[i] == mynlp_->n_complex_) {
-        printf(
-            "Constraint %s violated in FE %d: %5.3f <= %5.3f <= "
-            "%5.3f\n",
-            mynlp_->constr_names_[COMPLEX][j].c_str(), i - 1,
-            mynlp_->g_min_complex_[j] - tol, constr_vars[j],
-            mynlp_->g_max_complex_[j] + tol);
-
-        valid = false;
-
-        // std::cout << "x0 = \n" << x0 << std::endl;
-        // std::cout << "u = \n" << u << std::endl;
-        // std::cout << "x1 = \n" << x1 << std::endl;
-        // std::cout << "constr_vars = \n" << constr_vars << std::endl;
+      if (lb_violation[j] > constr_tol || ub_violation[j] > constr_tol) {
+        if (mynlp_->n_vec_[i + 1] == mynlp_->n_complex_) {
+          printf(
+              "Constraint %s violated in FE %d: %5.3f <= %5.3f <= "
+              "%5.3f\n",
+              mynlp_->constr_names_[COMPLEX][j].c_str(), i,
+              mynlp_->g_min_complex_[j] - constr_tol, constr_vars[j],
+              mynlp_->g_max_complex_[j] + constr_tol);
+          // std::cout << "x0 = \n" << x0 << std::endl;
+          // std::cout << "u = \n" << u << std::endl;
+          // std::cout << "x1 = \n" << x1 << std::endl;
+          // std::cout << "constr_vars = \n" << constr_vars << std::endl;
+          valid_solve = false;
+        } else {
+          valid_lift = false;
+        }
+        adaptive_complexity_horizon[i + 1] = 1;
       }
     }
 
     for (int j = 0; j < x1.size(); j++) {
-      if ((x1[j] < mynlp_->x_min_complex_[j] ||
-           x1[j] > mynlp_->x_max_complex_[j]) &&
-          mynlp_->n_vec_[i] == mynlp_->n_complex_) {
-        printf(
-            "Var bound %d violated in FE %d: %5.3f <= %5.3f <= "
-            "%5.3f\n",
-            j, i - 1, mynlp_->x_min_complex_[j], x1[j],
-            mynlp_->x_max_complex_[j]);
+      if (x1[j] < mynlp_->x_min_complex_[j] - var_tol ||
+          x1[j] > mynlp_->x_max_complex_[j] + var_tol) {
+        if (mynlp_->n_vec_[i + 1] == mynlp_->n_complex_) {
+          printf(
+              "Var bound %d violated in FE %d: %5.3f <= %5.3f <= "
+              "%5.3f\n",
+              j, i, mynlp_->x_min_complex_[j], x1[j] - var_tol,
+              mynlp_->x_max_complex_[j] + var_tol);
 
-        valid = false;
+          valid_solve = false;
+        } else {
+          valid_lift = false;
+        }
       }
     }
-    if (!valid) {
+    if (!valid_solve) {
       throw std::runtime_error(
-          "Invalid region detected where there shouldnt be");
+          "Invalid region detected where there shouldnt be, exiting.");
     }
     x0 = x1;
   }
 
-  timer.reportStatistics();
+  if (!valid_lift) {
+    std::cout << adaptive_complexity_horizon.transpose() << std::endl;
+  }
+
+  // timer.reportStatistics();
   return constr_vars;
 }
