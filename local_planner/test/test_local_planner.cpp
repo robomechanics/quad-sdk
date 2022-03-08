@@ -14,7 +14,7 @@ TEST(LocalPlannerTest, noInputCase) {
 
 TEST(LocalFootStepPlanner, baseCase) {
   int N;
-  ros::param::get("/nmpc_controller/leg/horizon_length", N);
+  ros::param::get("/local_planner/horizon_length", N);
   int current_plan_index = 0;
   double dt = 0.03;
   double first_element_duration = dt;
