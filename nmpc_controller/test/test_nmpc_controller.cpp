@@ -8,9 +8,10 @@
 TEST(NMPCTest, testTailMPC) {
   // int N_, N_tail_;
   // double dt_;
-  // ros::param::get("/nmpc_controller/leg/horizon_length", N_);
+  // ros::param::get("/local_planner/horizon_length", N_);
+  // ros::param::get("/local_planner/timestep", dt_);
   // ros::param::get("/nmpc_controller/distributed_tail/horizon_length",
-  // N_tail_); ros::param::get("/nmpc_controller/leg/step_length", dt_);
+  // N_tail_);
 
   // std::shared_ptr<NMPCController> leg_planner_ =
   //     std::make_shared<NMPCController>(0);

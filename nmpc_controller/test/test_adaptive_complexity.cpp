@@ -5,23 +5,23 @@
 #include <chrono>
 
 TEST(NMPCTest, testAdaptiveComplexity) {
-  int N_, N_tail_;
+  int N_;
   double dt_;
-  ros::param::get("/nmpc_controller/leg/horizon_length", N_);
-  ros::param::get("/nmpc_controller/leg/step_length", dt_);
+  ros::param::get("/local_planner/horizon_length", N_);
+  ros::param::get("/local_planner/timestep", dt_);
 
   std::shared_ptr<NMPCController> leg_planner_ =
       std::make_shared<NMPCController>(0);
 
-  Eigen::MatrixXd ref_body_plan_(N_ + 1, 12);
+  Eigen::MatrixXd ref_body_plan_(N_, 12);
   ref_body_plan_.fill(0);
   ref_body_plan_.col(2).fill(0.3);
 
-  Eigen::MatrixXd foot_positions_body_(N_ + 1, 12);
-  Eigen::MatrixXd foot_positions_world_(N_ + 1, 12);
-  Eigen::MatrixXd foot_velocities_world_(N_ + 1, 12);
+  Eigen::MatrixXd foot_positions_body_(N_, 12);
+  Eigen::MatrixXd foot_positions_world_(N_, 12);
+  Eigen::MatrixXd foot_velocities_world_(N_, 12);
   foot_velocities_world_.setZero();
-  for (size_t i = 0; i < N_ + 1; i++) {
+  for (size_t i = 0; i < N_; i++) {
     foot_positions_body_.row(i) << 0.2263, 0.098, -0.3, 0.2263, -0.098, -0.3,
         -0.2263, 0.098, -0.3, -0.2263, -0.098, -0.3;
     foot_positions_world_.row(i) << 0.2263, 0.098, 0, -0.2263, 0.098, 0, 0.2263,
@@ -65,13 +65,13 @@ TEST(NMPCTest, testAdaptiveComplexity) {
     }
   }
 
-  Eigen::VectorXd ref_ground_height(N_ + 1);
+  Eigen::VectorXd ref_ground_height(N_);
   ref_ground_height.fill(0);
 
-  Eigen::MatrixXd body_plan_(N_ + 1, 12);
+  Eigen::MatrixXd body_plan_(N_, 12);
   body_plan_.col(2).fill(0.3);
 
-  Eigen::MatrixXd grf_plan_(N_, 12);
+  Eigen::MatrixXd grf_plan_(N_ - 1, 12);
   grf_plan_.fill(0);
   grf_plan_.col(2).fill(13.3 * 9.81 / 2);
   grf_plan_.col(5).fill(13.3 * 9.81 / 2);
@@ -82,7 +82,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
 
   bool same_plan_index = false;
 
-  Eigen::VectorXi complexity_schedule(N_ + 1), ref_primitive_id(N_ + 1);
+  Eigen::VectorXi complexity_schedule(N_), ref_primitive_id(N_);
   complexity_schedule.setZero();
   ref_primitive_id.setZero();
 

@@ -75,7 +75,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   }
 
   // Initialize body and foot position arrays
-  ref_body_plan_ = Eigen::MatrixXd::Zero(N_ + 1, Nx_);
+  ref_body_plan_ = Eigen::MatrixXd::Zero(N_, Nx_);
   foot_positions_world_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
   foot_velocities_world_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
   foot_accelerations_world_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
@@ -83,9 +83,9 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   current_foot_positions_body_ = Eigen::VectorXd::Zero(num_feet_ * 3);
   current_foot_positions_world_ = Eigen::VectorXd::Zero(num_feet_ * 3);
   current_foot_velocities_world_ = Eigen::VectorXd::Zero(num_feet_ * 3);
-  ref_ground_height_ = Eigen::VectorXd::Zero(N_ + 1);
   ref_primitive_plan_ = Eigen::VectorXi::Zero(N_);
-  grf_plan_ = Eigen::MatrixXd::Zero(N_, 12);
+  ref_ground_height_ = Eigen::VectorXd::Zero(N_);
+  grf_plan_ = Eigen::MatrixXd::Zero(N_ - 1, 12);
   for (int i = 0; i < num_feet_; i++) {
     grf_plan_.col(3 * i + 2).fill(13 * 9.81 / num_feet_);
   }
@@ -115,65 +115,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
-  // Load MPC parameters
-  double m, Ixx, Iyy, Izz, mu, normal_lo, normal_hi;
-  quad_utils::loadROSParam(nh_, "local_body_planner/body_mass", m);
-  quad_utils::loadROSParam(nh_, "local_body_planner/body_ixx", Ixx);
-  quad_utils::loadROSParam(nh_, "local_body_planner/body_iyy", Iyy);
-  quad_utils::loadROSParam(nh_, "local_body_planner/body_izz", Izz);
-  quad_utils::loadROSParam(nh_, "local_body_planner/friction_mu", mu);
-  quad_utils::loadROSParam(nh_, "local_body_planner/normal_lo", normal_lo);
-  quad_utils::loadROSParam(nh_, "local_body_planner/normal_hi", normal_hi);
-
-  std::vector<double> state_weights, control_weights, state_lower_bound,
-      state_upper_bound;
-  double terminal_weight_scaling;
-  quad_utils::loadROSParam(nh_, "local_body_planner/state_weights",
-                           state_weights);
-  quad_utils::loadROSParam(nh_, "local_body_planner/terminal_weight_scaling",
-                           terminal_weight_scaling);
-  quad_utils::loadROSParam(nh_, "local_body_planner/control_weights",
-                           control_weights);
-  quad_utils::loadROSParam(nh_, "local_body_planner/state_lower_bound",
-                           state_lower_bound);
-  quad_utils::loadROSParam(nh_, "local_body_planner/state_upper_bound",
-                           state_upper_bound);
-
-  // Load state weights and bounds
-  Eigen::MatrixXd Qx = Eigen::MatrixXd::Zero(Nx_, Nx_);
-  Eigen::VectorXd state_lo = Eigen::VectorXd::Zero(Nx_);
-  Eigen::VectorXd state_hi = Eigen::VectorXd::Zero(Nx_);
-  for (int i = 0; i < Nx_; ++i) {
-    Qx(i, i) = state_weights.at(i);
-    state_lo(i) = state_lower_bound.at(i);
-    state_hi(i) = state_upper_bound.at(i);
-  }
-
-  // Load control weights
-  Eigen::MatrixXd Ru = Eigen::MatrixXd::Zero(Nu_, Nu_);
-  for (int i = 0; i < 3; ++i) {            // for each dimension
-    for (int j = 0; j < num_feet_; ++j) {  // for each leg
-      Ru(3 * j + i, 3 * j + i) = control_weights.at(i);
-    }
-  }
-  // Ru(Nu_-1,Nu_-1) = 1e-6; //gravity weight term
-
-  std::vector<Eigen::MatrixXd> Q_vec(N_ + 1);
-  std::vector<Eigen::MatrixXd> U_vec(N_);
-  for (int i = 0; i < N_ + 1; ++i) {
-    Q_vec.at(i) = Qx;
-    if (i == N_) {
-      Q_vec.at(i) = terminal_weight_scaling * Qx;
-    }
-  }
-  for (int i = 0; i < N_; ++i) {
-    U_vec.at(i) = Ru;
-  }
-
-  // Robot body inertia matrix
-  Eigen::Matrix3d Ib = Eigen::Matrix3d::Zero();
-  Ib.diagonal() << Ixx, Iyy, Izz;
-
   // Create nmpc wrapper class
   local_body_planner_nonlinear_ = std::make_shared<NMPCController>(0);
 }
@@ -316,7 +257,7 @@ void LocalPlanner::getStateAndReferencePlan() {
   ref_body_plan_.setZero();
   ref_primitive_plan_.setZero();
 
-  for (int i = 0; i < N_ + 1; i++) {
+  for (int i = 0; i < N_; i++) {
     // If the horizon extends past the reference trajectory, just hold the last
     // state
     if (i + current_plan_index_ > body_plan_msg_->plan_indices.back()) {
@@ -340,7 +281,7 @@ void LocalPlanner::getStateAndReferencePlan() {
       current_state_(0), current_state_(1));
 
   // Update the body plan to use for linearization
-  if (body_plan_.rows() < N_ + 1) {
+  if (body_plan_.rows() < N_) {
     // Cold start with reference  plan
     body_plan_ = ref_body_plan_;
 
@@ -352,8 +293,8 @@ void LocalPlanner::getStateAndReferencePlan() {
   } else {
     // Only shift the foot position if it's a solve for a new plan index
     if (!same_plan_index_) {
-      body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
-      grf_plan_.topRows(N_ - 1) = grf_plan_.bottomRows(N_ - 1);
+      body_plan_.topRows(N_ - 1) = body_plan_.bottomRows(N_ - 1);
+      grf_plan_.topRows(N_ - 2) = grf_plan_.bottomRows(N_ - 2);
 
       foot_positions_body_.topRows(N_ - 1) =
           foot_positions_body_.bottomRows(N_ - 1);
@@ -489,7 +430,7 @@ void LocalPlanner::getStateAndTwistInput() {
       ref_body_plan_(0, 3), ref_body_plan_(0, 4));
 
   // Integrate to get full body plan (Forward Euler)
-  for (int i = 1; i < N_ + 1; i++) {
+  for (int i = 1; i < N_; i++) {
     Twist current_cmd_vel = cmd_vel_;
 
     double yaw = ref_body_plan_(i - 1, 5);
@@ -526,8 +467,8 @@ void LocalPlanner::getStateAndTwistInput() {
   ref_primitive_plan_.setZero(N_);
 
   // Update the body plan to use for linearization
-  if (body_plan_.rows() < N_ + 1) {
-    // Cold start with reference plan
+  if (body_plan_.rows() < N_) {
+    // Cold start with reference  plan
     body_plan_ = ref_body_plan_;
 
     // Initialize with the current foot positions
@@ -538,8 +479,8 @@ void LocalPlanner::getStateAndTwistInput() {
   } else {
     // Only shift the foot position if it's a solve for a new plan index
     if (!same_plan_index_) {
-      body_plan_.topRows(N_) = body_plan_.bottomRows(N_);
-      grf_plan_.topRows(N_ - 1) = grf_plan_.bottomRows(N_ - 1);
+      body_plan_.topRows(N_ - 1) = body_plan_.bottomRows(N_ - 1);
+      grf_plan_.topRows(N_ - 2) = grf_plan_.bottomRows(N_ - 2);
 
       foot_positions_body_.topRows(N_ - 1) =
           foot_positions_body_.bottomRows(N_ - 1);
