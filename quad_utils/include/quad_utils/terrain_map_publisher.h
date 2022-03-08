@@ -1,17 +1,17 @@
 #ifndef TERRAIN_MAP_PUBLISHER_H
 #define TERRAIN_MAP_PUBLISHER_H
 
-#include <ros/ros.h>
-#include <grid_map_core/grid_map_core.hpp>
-#include <grid_map_ros/grid_map_ros.hpp>
-#include <grid_map_ros/GridMapRosConverter.hpp>
 #include <ros/package.h>
+#include <ros/ros.h>
 
+#include <fstream>  // ifstream
+#include <grid_map_core/grid_map_core.hpp>
+#include <grid_map_ros/GridMapRosConverter.hpp>
+#include <grid_map_ros/grid_map_ros.hpp>
+#include <iostream>  // cout
+#include <sstream>   //istringstream
 #include <string>
 #include <vector>
-#include <sstream> //istringstream
-#include <iostream> // cout
-#include <fstream> // ifstream
 
 struct Obstacle {
   double x;
@@ -27,10 +27,11 @@ struct Step {
 
 //! A terrain map publishing class
 /*!
-   TerrainMapPublisher is a class for publishing terrain maps from a variety of sources, including from scratch.
+   TerrainMapPublisher is a class for publishing terrain maps from a variety of
+   sources, including from scratch.
 */
 class TerrainMapPublisher {
-public:
+ public:
   /**
    * @brief Constructor for TerrainMapPublisher Class
    * @param[in] nh ROS NodeHandle to publish and subscribe from
@@ -54,7 +55,8 @@ public:
   void updateMap();
 
   /**
-   * @brief Loads data from a specified CSV file into a nested std::vector structure
+   * @brief Loads data from a specified CSV file into a nested std::vector
+   * structure
    * @param[in] filename Path to the CSV file
    * @return Data from the CSV in vector structure
    */
@@ -81,8 +83,7 @@ public:
    */
   void spin();
 
-private:
-
+ private:
   /// ROS Subscriber for image data
   ros::Subscriber image_sub_;
 
@@ -92,7 +93,8 @@ private:
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
 
-  /// Update rate for sending and receiving data, unused since pubs are called in callbacks
+  /// Update rate for sending and receiving data, unused since pubs are called
+  /// in callbacks
   double update_rate_;
 
   /// Handle for the map frame
@@ -127,7 +129,6 @@ private:
 
   /// Step 2 object
   Step step2_;
-
 };
 
-#endif // TERRAIN_MAP_PUBLISHER_H
+#endif  // TERRAIN_MAP_PUBLISHER_H

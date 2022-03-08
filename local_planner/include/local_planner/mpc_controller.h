@@ -1,64 +1,70 @@
 #ifndef MPC_CONTROLLER_H
 #define MPC_CONTROLLER_H
 
-#include <ros/ros.h>
+#include <local_planner/quadruped_mpc.h>
 #include <math.h>
-#include <eigen3/Eigen/Eigen>
-#include <quad_msgs/RobotPlan.h>
-#include <quad_msgs/MultiFootPlanDiscrete.h>
 #include <quad_msgs/GRFArray.h>
+#include <quad_msgs/MultiFootPlanDiscrete.h>
+#include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/RobotState.h>
 #include <quad_msgs/RobotStateTrajectory.h>
-#include <local_planner/quadruped_mpc.h>
-#include <quad_utils/ros_utils.h>
 #include <quad_utils/quad_kd.h>
-#include "quad_utils/matplotlibcpp.h"
+#include <quad_utils/ros_utils.h>
+#include <ros/ros.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
+#include <eigen3/Eigen/Eigen>
+
+#include "quad_utils/matplotlibcpp.h"
 
 //! MPC controller ROS node
 /*!
    Wrapper around Quadrupedal MPC that interfaces with our ROS architecture
 */
 class MPCController {
-  public:
-	/**
-	 * @brief Constructor for MPCController
-	 * @param[in] nh ROS NodeHandle to publish and subscribe from
-	 * @return Constructed object of type MPCController
-	 */
-	MPCController(ros::NodeHandle nh);
+ public:
+  /**
+   * @brief Constructor for MPCController
+   * @param[in] nh ROS NodeHandle to publish and subscribe from
+   * @return Constructed object of type MPCController
+   */
+  MPCController(ros::NodeHandle nh);
 
-	/**
-	 * @brief Calls ros spinOnce and pubs data at set frequency
-	 */
-	void spin();
-  
-private:
-	/**
+  /**
+   * @brief Calls ros spinOnce and pubs data at set frequency
+   */
+  void spin();
+
+ private:
+  /**
    * @brief Callback function to handle new plans
    * @param[in] msg Robot state trajectory message
    */
-  void robotPlanCallback(const quad_msgs::RobotStateTrajectory::ConstPtr& msg);
+  void robotPlanCallback(const quad_msgs::RobotStateTrajectory::ConstPtr &msg);
 
   /**
    * @brief Callback function to handle new state estimates
-   * @param[in] State estimate message contining position and velocity for each joint and robot body
+   * @param[in] State estimate message contining position and velocity for each
+   * joint and robot body
    */
-  void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
+  void robotStateCallback(const quad_msgs::RobotState::ConstPtr &msg);
 
-  
-  Eigen::VectorXd state_to_eigen(quad_msgs::RobotState robot_state, bool zero_vel=false);
+  Eigen::VectorXd state_to_eigen(quad_msgs::RobotState robot_state,
+                                 bool zero_vel = false);
 
   /**
    * @brief Internal function to convert robot state trajectory into MPC useful
-   * @param[out] start_idx Index into plan corresponding to start of MPC trajectory
-   * @param[out] contact_sequences Vector of boolean vectors declaring which feet are on the ground at each step
-   * @param[out] foot_positions N x 12 matrix of foot positions in body frame (x0,y0,z0,x1,..)
+   * @param[out] start_idx Index into plan corresponding to start of MPC
+   *trajectory
+   * @param[out] contact_sequences Vector of boolean vectors declaring which
+   *feet are on the ground at each step
+   * @param[out] foot_positions N x 12 matrix of foot positions in body frame
+   *(x0,y0,z0,x1,..)
    * @param[out] ref_traj (N+1) x Nx matrix of state reference trajectory
    **/
   void extractMPCTrajectory(int start_idx,
                             std::vector<std::vector<bool>> &contact_sequences,
-                            Eigen::MatrixXd &foot_positions, 
+                            Eigen::MatrixXd &foot_positions,
                             Eigen::MatrixXd &ref_traj);
 
   /**
@@ -66,32 +72,32 @@ private:
    */
   void publishGRFArray();
 
-	/// ROS subscriber for incoming plans
-	ros::Subscriber robot_state_traj_sub_;
+  /// ROS subscriber for incoming plans
+  ros::Subscriber robot_state_traj_sub_;
 
   /// ROS Subscriber for incoming states
   ros::Subscriber robot_state_sub_;
 
-	/// ROS publisher for grf output
-	ros::Publisher grf_array_pub_;
+  /// ROS publisher for grf output
+  ros::Publisher grf_array_pub_;
 
   /// ROS publisher for trajectory output
   ros::Publisher traj_pub_;
 
-	/// Define map frame
-	std::string map_frame_;
+  /// Define map frame
+  std::string map_frame_;
 
-	/// Nodehandle to pub to and sub from
-	ros::NodeHandle nh_;
+  /// Nodehandle to pub to and sub from
+  ros::NodeHandle nh_;
 
-	/// Update rate for sending and receiving data;
-	double update_rate_;
+  /// Update rate for sending and receiving data;
+  double update_rate_;
 
   /// Quadruped MPC object
   std::shared_ptr<QuadrupedMPC> quad_mpc_;
 
-	/// Most recent robot plan
-	quad_msgs::RobotStateTrajectory::ConstPtr last_plan_msg_;
+  /// Most recent robot plan
+  quad_msgs::RobotStateTrajectory::ConstPtr last_plan_msg_;
 
   /// Current state (ground truth or estimate)
   Eigen::VectorXd cur_state_;
@@ -121,9 +127,7 @@ private:
   const int num_joints_per_leg_ = 3;
 
   /// QuadKD class
-  std::shared_ptr<quad_utils::QuadKD>quadKD_;
-
+  std::shared_ptr<quad_utils::QuadKD> quadKD_;
 };
 
-
-#endif // MPC_CONTROLLER_H
+#endif  // MPC_CONTROLLER_H

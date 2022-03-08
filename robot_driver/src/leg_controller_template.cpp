@@ -8,9 +8,8 @@ LegControllerTemplate::LegControllerTemplate() {
   last_contact_sensing_msg_.data.assign(4, false);
 }
 
-void LegControllerTemplate::updateLocalPlanMsg(quad_msgs::RobotPlan::ConstPtr msg,
-  const ros::Time &t_msg) {
-
+void LegControllerTemplate::updateLocalPlanMsg(
+    quad_msgs::RobotPlan::ConstPtr msg, const ros::Time &t_msg) {
   last_local_plan_msg_ = msg;
   last_local_plan_time_ = t_msg;
 }
@@ -24,17 +23,19 @@ void LegControllerTemplate::setGains(double kp, double kd) {
   swing_kd_ = kd_vec;
 }
 
-void LegControllerTemplate::setGains(std::vector<double> kp, std::vector<double> kd) {
+void LegControllerTemplate::setGains(std::vector<double> kp,
+                                     std::vector<double> kd) {
   stance_kp_ = kp;
   stance_kd_ = kd;
   swing_kp_ = kp;
   swing_kd_ = kd;
 }
 
-void LegControllerTemplate::setGains(std::vector<double> stance_kp, std::vector<double> stance_kd,
-  std::vector<double> swing_kp, std::vector<double> swing_kd, std::vector<double> retraction_kp, 
-  std::vector<double> retraction_kd, std::vector<double> extend_kp, std::vector<double> extend_kd) {
-
+void LegControllerTemplate::setGains(
+    std::vector<double> stance_kp, std::vector<double> stance_kd,
+    std::vector<double> swing_kp, std::vector<double> swing_kd,
+    std::vector<double> retraction_kp, std::vector<double> retraction_kd,
+    std::vector<double> extend_kp, std::vector<double> extend_kd) {
   stance_kp_ = stance_kp;
   stance_kd_ = stance_kd;
   swing_kp_ = swing_kp;
@@ -45,12 +46,11 @@ void LegControllerTemplate::setGains(std::vector<double> stance_kp, std::vector<
   extend_kd_ = extend_kd;
 }
 
-void LegControllerTemplate::updateGrfSensorMsg(quad_msgs::GRFArray::ConstPtr msg)
-{
+void LegControllerTemplate::updateGrfSensorMsg(
+    quad_msgs::GRFArray::ConstPtr msg) {
   last_grf_sensor_msg_ = msg;
 }
 
-std_msgs::ByteMultiArray LegControllerTemplate::getContactSensingMsg()
-{
+std_msgs::ByteMultiArray LegControllerTemplate::getContactSensingMsg() {
   return last_contact_sensing_msg_;
 }

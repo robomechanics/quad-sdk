@@ -1,8 +1,9 @@
 #ifndef GLOBAL_BODY_PLAN_H
 #define GLOBAL_BODY_PLAN_H
 
-#include "global_body_planner/planning_utils.h"
 #include <quad_utils/ros_utils.h>
+
+#include "global_body_planner/planning_utils.h"
 
 using namespace planning_utils;
 
@@ -13,7 +14,7 @@ using namespace planning_utils;
    planners such as RRTs or PRMs.
 */
 class GlobalBodyPlan {
-public:
+ public:
   /**
    * @brief Constructor for GlobalBodyPlan
    * @return Constructed object of type GlobalBodyPlan
@@ -78,7 +79,7 @@ public:
   void toMsg(quad_msgs::RobotPlan &robot_plan_msg,
              quad_msgs::RobotPlan &discrete_robot_plan_msg);
 
-private:
+ private:
   /// Time stamp for when plan was computed (unique)
   ros::Time computed_timestamp_;
 
@@ -113,4 +114,4 @@ private:
   double goal_distance_;
 };
 
-#endif // GLOBAL_BODY_PLAN_H
+#endif  // GLOBAL_BODY_PLAN_H

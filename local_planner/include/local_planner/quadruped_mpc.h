@@ -3,21 +3,20 @@
 
 #include "OsqpEigen/OsqpEigen.h"
 // #include <eigen3/Eigen/Eigen>
+#include <assert.h>
+#include <quad_utils/quad_kd.h>
+
 #include <Eigen/Core>
 #include <Eigen/Dense>
-#include <quad_utils/quad_kd.h>
-#include <assert.h>
 
 //! Implements online MPC for quadrupedal MPC
 /*!
    MPCController implements a convex QP approach to legged robot control.
    The robot is treated as a floating body in 3D space and our control authority
-   is modeled as a series of ground reaction forces at all four toes. 
-*/  
+   is modeled as a series of ground reaction forces at all four toes.
+*/
 class QuadrupedMPC {
-
-public:
-
+ public:
   /**
    * @brief Construct an MPC object
    */
@@ -41,7 +40,8 @@ public:
   /**
    * @brief Update our MPC weights on state deviation error and control error
    * @param[in] Q vector of matrices of state costs at each step in the horizon
-   * @param[in] R vector of matrices of control costs at each step in the horizon
+   * @param[in] R vector of matrices of control costs at each step in the
+   * horizon
    */
   void update_weights(const std::vector<Eigen::MatrixXd> &Q,
                       const std::vector<Eigen::MatrixXd> &R);
@@ -49,27 +49,28 @@ public:
   /**
    * @brief Update our dynamics (linearized about reference yaw and footsteps)
    * @param[in] ref_traj Matrix holding desired reference trajectory (nx x N+1)
-   * @param[in] foot_positions Vector foot positions (fx1 fy1 fz1 fx2 ...) at each tstep
+   * @param[in] foot_positions Vector foot positions (fx1 fy1 fz1 fx2 ...) at
+   * each tstep
    */
   void update_dynamics(const Eigen::MatrixXd &ref_traj,
                        const Eigen::MatrixXd &foot_positions);
 
   /**
-   * @brief Update our dynamics (linearized about reference yaw and footsteps projected underneath hip)
+   * @brief Update our dynamics (linearized about reference yaw and footsteps
+   * projected underneath hip)
    * @param[in] ref_traj Matrix holding desired reference trajectory (nx x N+1)
    */
   void update_dynamics_hip_projected_feet(const Eigen::MatrixXd &ref_traj);
 
-   /**
-   * @brief Update the footstep contact sequence and normal force bounds
-   * @param[in] contact_sequence Vector(N) of vectors(4) holding 
-                boolean contact status for each foot at each timesteo
-   * @param[in] fmin Minimum allowable normal force in contact phase
-   * @param[in] fmax Maximum allowable normal force in contact phase
-   */
-  void update_contact(const std::vector<std::vector<bool> > contact_sequence,
-                      const double fmin,
-                      const double fmax);
+  /**
+  * @brief Update the footstep contact sequence and normal force bounds
+  * @param[in] contact_sequence Vector(N) of vectors(4) holding
+               boolean contact status for each foot at each timesteo
+  * @param[in] fmin Minimum allowable normal force in contact phase
+  * @param[in] fmax Maximum allowable normal force in contact phase
+  */
+  void update_contact(const std::vector<std::vector<bool>> contact_sequence,
+                      const double fmin, const double fmax);
 
   /**
    * @brief Update hard constraints on state bounds
@@ -94,7 +95,7 @@ public:
 
   /**
    * @brief Constructs the quadratic cost function of the form
-   * 
+   *
    * @param[in] ref_traj Reference trajectory
    * @param[out] f Linear component of cost
    */
@@ -107,10 +108,8 @@ public:
    * @param[out] control_traj Optimized control trajectory (Nu x N)
    * @param[out] f_val Cost function value
    */
-  void get_output(const Eigen::MatrixXd &x_out,
-                        Eigen::MatrixXd &opt_traj,
-                        Eigen::MatrixXd &control_traj,
-                        double &f_val);
+  void get_output(const Eigen::MatrixXd &x_out, Eigen::MatrixXd &opt_traj,
+                  Eigen::MatrixXd &control_traj, double &f_val);
 
   /**
    * @brief Collect matrices into specific type for solver and solve
@@ -120,12 +119,11 @@ public:
    * @return good_solve
    */
   bool solve(const Eigen::VectorXd &initial_state,
-             const Eigen::MatrixXd &ref_traj,
-             Eigen::MatrixXd &x_out
-             );
+             const Eigen::MatrixXd &ref_traj, Eigen::MatrixXd &x_out);
 
   /**
-   * @brief Update the contact and dynamic matrices, solve, and return the output
+   * @brief Update the contact and dynamic matrices, solve, and return the
+   * output
    * @param[in] initial_state Vector with initial state
    * @param[in] ref_traj Matrix holding desired reference trajectory
    * @param[in] foot_positions Matrix holding foot positions
@@ -134,13 +132,13 @@ public:
    * @param[out] control_traj Optimized control trajectory output
    * @return good_solve
    */
-  bool computePlan(const Eigen::VectorXd &initial_state, 
-    const Eigen::MatrixXd &ref_traj, const Eigen::MatrixXd &foot_positions,
-    const std::vector<std::vector<bool>> &contact_schedule,
-    Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj);
+  bool computePlan(const Eigen::VectorXd &initial_state,
+                   const Eigen::MatrixXd &ref_traj,
+                   const Eigen::MatrixXd &foot_positions,
+                   const std::vector<std::vector<bool>> &contact_schedule,
+                   Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj);
 
-private:
-
+ private:
   /// Number of timesteps in horizon
   const int N_ = 24;
 
@@ -208,7 +206,7 @@ private:
   Eigen::MatrixXd H_;
 
   // Precomputed matrix for linear cost vector construction
-  Eigen::MatrixXd H_f_; 
+  Eigen::MatrixXd H_f_;
 
   /// Dynamics constraint matrix
   Eigen::MatrixXd A_dyn_dense_;
@@ -246,8 +244,7 @@ private:
   OsqpEigen::Solver solver_;
 
   /// QuadKD class
-  std::shared_ptr<quad_utils::QuadKD>quadKD_;
+  std::shared_ptr<quad_utils::QuadKD> quadKD_;
 };
-
 
 #endif

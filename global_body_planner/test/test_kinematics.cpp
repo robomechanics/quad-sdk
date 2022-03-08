@@ -1,16 +1,15 @@
 #include <gtest/gtest.h>
+#include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
 
 #include "global_body_planner/planner_class.h"
 #include "global_body_planner/planning_utils.h"
 #include "global_body_planner/rrt_connect.h"
-#include <quad_utils/ros_utils.h>
 
 const int N = 1000;
 const double kinematics_tol = 1e-6;
 
 TEST(GlobalBodyPlannerTest, testLeapAction) {
-
   // Create planner and configuration
   PlannerClass P(FORWARD);
   PlannerConfig planner_config;
@@ -29,7 +28,6 @@ TEST(GlobalBodyPlannerTest, testLeapAction) {
   Action a;
 
   for (int i = 0; i < N; i++) {
-
     bool is_valid_forward = false;
     while (!is_valid_forward) {
       if (getRandomLeapAction(s, surf_norm, a, planner_config)) {
@@ -90,7 +88,6 @@ TEST(GlobalBodyPlannerTest, testLeapAction) {
 }
 
 TEST(GlobalBodyPlannerTest, testUnitConnectAction) {
-
   // Create planner and configuration
   PlannerClass P(FORWARD);
   PlannerConfig planner_config;
@@ -137,7 +134,6 @@ TEST(GlobalBodyPlannerTest, testUnitConnectAction) {
 }
 
 TEST(GlobalBodyPlannerTest, testUnitConnectActionElevatedTerrain) {
-
   // Create planner and configuration
   PlannerClass P(FORWARD);
   PlannerConfig planner_config;
@@ -185,7 +181,6 @@ TEST(GlobalBodyPlannerTest, testUnitConnectActionElevatedTerrain) {
 }
 
 TEST(GlobalBodyPlannerTest, testRandomConnectActions) {
-
   // // Create planner and configuration
   // PlannerClass P(FORWARD);
   // PlannerConfig planner_config;
@@ -209,7 +204,6 @@ TEST(GlobalBodyPlannerTest, testRandomConnectActions) {
 }
 
 TEST(GlobalBodyPlannerTest, testUnitConnectActionSlope) {
-
   // Create planner and configuration
   PlannerClass P(FORWARD);
   PlannerConfig planner_config;
@@ -255,7 +249,6 @@ TEST(GlobalBodyPlannerTest, testUnitConnectActionSlope) {
 }
 
 TEST(GlobalBodyPlannerTest, testUnitLeapActionSlope) {
-
   // Create planner and configuration
   PlannerClass P(FORWARD);
   PlannerConfig planner_config;

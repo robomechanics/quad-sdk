@@ -1,20 +1,23 @@
 #ifndef EKF_ESTIMATOR_H
 #define EKF_ESTIMATOR_H
 
-#include <ros/ros.h>
-#include <eigen3/Eigen/Eigen>
-#include <sensor_msgs/JointState.h>
-#include <sensor_msgs/Imu.h>
-#include <std_msgs/String.h>
-#include <quad_msgs/RobotState.h>
 #include <quad_msgs/ContactMode.h>
+#include <quad_msgs/RobotState.h>
+#include <ros/ros.h>
+#include <sensor_msgs/Imu.h>
+#include <sensor_msgs/JointState.h>
+#include <std_msgs/String.h>
 
-//! Implements online EKF based state estimation 
+#include <eigen3/Eigen/Eigen>
+
+//! Implements online EKF based state estimation
 /*!
-   EKFEstimator implements all estimator logic. It should expose a constructor that does any initialization required and an update method called at some frequency.
+   EKFEstimator implements all estimator logic. It should expose a constructor
+   that does any initialization required and an update method called at some
+   frequency.
 */
 class EKFEstimator {
-public:
+ public:
   /**
    * @brief Constructor for EKFEstimator
    * @param[in] nh ROS NodeHandle to publish and subscribe from
@@ -27,10 +30,11 @@ public:
    */
   void spin();
 
-private:
+ private:
   /**
    * @brief Callback function to handle new joint encoder data
-   * @param[in] joint_encoder_msg sensor_msgs<JointState> containing joint pos,vel,current
+   * @param[in] joint_encoder_msg sensor_msgs<JointState> containing joint
+   * pos,vel,current
    */
   void jointEncoderCallback(const sensor_msgs::JointState::ConstPtr& msg);
 
@@ -84,6 +88,5 @@ private:
 
   /// Maximum amount of time to still use joint state message in EKF data
   double joint_state_msg_time_diff_max_;
-
 };
-#endif // EKF_ESTIMATOR_H
+#endif  // EKF_ESTIMATOR_H

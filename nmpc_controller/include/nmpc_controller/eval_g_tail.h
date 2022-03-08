@@ -8,7 +8,8 @@
 #define casadi_int long long int
 #endif
 
-extern "C" int eval_g_tail(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem);
+extern "C" int eval_g_tail(const casadi_real** arg, casadi_real** res,
+                           casadi_int* iw, casadi_real* w, int mem);
 extern "C" int eval_g_tail_alloc_mem(void);
 extern "C" int eval_g_tail_init_mem(int mem);
 extern "C" void eval_g_tail_free_mem(int mem);
@@ -23,4 +24,5 @@ extern "C" const char* eval_g_tail_name_in(casadi_int i);
 extern "C" const char* eval_g_tail_name_out(casadi_int i);
 extern "C" const casadi_int* eval_g_tail_sparsity_in(casadi_int i);
 extern "C" const casadi_int* eval_g_tail_sparsity_out(casadi_int i);
-extern "C" int eval_g_tail_work(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casadi_int *sz_w);
+extern "C" int eval_g_tail_work(casadi_int* sz_arg, casadi_int* sz_res,
+                                casadi_int* sz_iw, casadi_int* sz_w);

@@ -1,5 +1,5 @@
-#include <ros/ros.h>
 #include <gtest/gtest.h>
+#include <ros/ros.h>
 
 #include "global_footstep_planner/global_footstep_planner.h"
 

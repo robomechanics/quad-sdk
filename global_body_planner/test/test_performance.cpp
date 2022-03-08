@@ -1,16 +1,15 @@
 #include <gtest/gtest.h>
+#include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
 
 #include "global_body_planner/planner_class.h"
 #include "global_body_planner/planning_utils.h"
 #include "global_body_planner/rrt_connect.h"
-#include <quad_utils/ros_utils.h>
 
 const int N = 1000;
 const double kinematics_tol = 1e-6;
 
 TEST(GlobalBodyPlannerTest, testIsValidStateTime) {
-
   // Create planner and configuration
   PlannerClass P(FORWARD);
   PlannerConfig planner_config;
@@ -33,7 +32,6 @@ TEST(GlobalBodyPlannerTest, testIsValidStateTime) {
 }
 
 TEST(GlobalBodyPlannerTest, testGetRandomLeapActionTime) {
-
   // Create planner and configuration
   PlannerClass P(FORWARD);
   PlannerConfig planner_config;
@@ -63,7 +61,6 @@ TEST(GlobalBodyPlannerTest, testGetRandomLeapActionTime) {
 }
 
 TEST(GlobalBodyPlannerTest, testIsValidStateActionPairTime) {
-
   // Create planner and configuration
   PlannerClass P(FORWARD);
   PlannerConfig planner_config;
@@ -100,7 +97,6 @@ TEST(GlobalBodyPlannerTest, testIsValidStateActionPairTime) {
 }
 
 TEST(GlobalBodyPlannerTest, testValidStateActionPairAccuracy) {
-
   // Create planner and configuration
   PlannerClass P(FORWARD);
   PlannerConfig planner_config;
@@ -163,7 +159,6 @@ TEST(GlobalBodyPlannerTest, testValidStateActionPairAccuracy) {
 }
 
 TEST(GlobalBodyPlannerTest, testValidStateActionPairRate) {
-
   // Create planner and configuration
   PlannerClass P(FORWARD);
   PlannerConfig planner_config;

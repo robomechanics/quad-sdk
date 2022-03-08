@@ -13,7 +13,7 @@ using namespace planning_utils;
    planners such as RRTs or PRMs.
 */
 class PlannerClass : public GraphClass {
-public:
+ public:
   /**
    * @brief Constructor for PlannerClass
    * @param[in] direction Direction of tree expansion

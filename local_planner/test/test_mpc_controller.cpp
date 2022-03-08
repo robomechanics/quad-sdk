@@ -1,5 +1,5 @@
-#include <ros/ros.h>
 #include <gtest/gtest.h>
+#include <ros/ros.h>
 
 #include "local_planner/mpc_controller.h"
 

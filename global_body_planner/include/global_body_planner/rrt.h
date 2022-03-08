@@ -1,8 +1,9 @@
 #ifndef RRT_H
 #define RRT_H
 
-#include "global_body_planner/planner_class.h"
 #include <chrono>
+
+#include "global_body_planner/planner_class.h"
 
 #define TRAPPED 0
 #define ADVANCED 1
@@ -17,7 +18,7 @@ using namespace planning_utils;
    well as utility methods to process and debug.
 */
 class RRTClass {
-public:
+ public:
   /**
    * @brief Constructor for RRTClass
    * @return Constructed object of type RRTClass
@@ -142,7 +143,7 @@ public:
    */
   std::vector<Action> getActionSequence(PlannerClass &T, std::vector<int> path);
 
-protected:
+ protected:
   /// Probability with which the goal is sampled (if running vanilla RRT)
   const double prob_goal_thresh = 0.05;
 

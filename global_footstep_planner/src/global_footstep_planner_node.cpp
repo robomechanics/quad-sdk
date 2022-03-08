@@ -1,4 +1,5 @@
 #include <ros/ros.h>
+
 #include "global_footstep_planner/global_footstep_planner.h"
 
 int main(int argc, char** argv) {

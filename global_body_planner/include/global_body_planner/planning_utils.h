@@ -1,22 +1,23 @@
 #ifndef PLANNING_UTILS_H
 #define PLANNING_UTILS_H
 
+#include <math.h>
+#include <quad_utils/fast_terrain_map.h>
+#include <quad_utils/math_utils.h>
+#include <ros/ros.h>
+#include <unistd.h>
+#include <visualization_msgs/MarkerArray.h>
+
 #include <algorithm>
 #include <chrono>
 #include <eigen3/Eigen/Eigen>
 #include <grid_map_core/grid_map_core.hpp>
 #include <iostream>
 #include <limits>
-#include <math.h>
-#include <quad_utils/fast_terrain_map.h>
-#include <quad_utils/math_utils.h>
 #include <random>
-#include <ros/ros.h>
-#include <unistd.h>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include <visualization_msgs/MarkerArray.h>
 
 // Uncomment to add visualization features
 // #define VISUALIZE_TREE
@@ -31,45 +32,46 @@ struct PlannerConfig {
   FastTerrainMap terrain;
 
   // Define kinematic constraint parameters
-  double H_MAX = 0.375; // Maximum height of leg base, m
-  double H_MIN = 0.125; // Minimum ground clearance of body corners, m
-  double H_NOM = 0.3;   // Nominal ground clearance of body, m
+  double H_MAX = 0.375;  // Maximum height of leg base, m
+  double H_MIN = 0.125;  // Minimum ground clearance of body corners, m
+  double H_NOM = 0.3;    // Nominal ground clearance of body, m
   double V_MAX =
-      3.0; // Maximum robot velocity, m/s (4.0 for cheetah, 2.5 for anymal)
+      3.0;  // Maximum robot velocity, m/s (4.0 for cheetah, 2.5 for anymal)
   double V_NOM = 0.75;   // Nominal velocity, m/s (used during connect function)
   double DY_MAX = 0;     // Maximum yaw velocity
   double ROBOT_L = 0.4;  // Length of robot body, m (0.6 cheetah, 0.554 ANYmal)
   double ROBOT_W = 0.3;  // Width of robot body, m (0.256 cheetah, 0.232 ANYmal)
-  double ROBOT_H = 0.05; // Vertical distance between leg base and bottom of
-                         // robot, m (0.1 cheetah, 0.04 ANYmal)
+  double ROBOT_H = 0.05;  // Vertical distance between leg base and bottom of
+                          // robot, m (0.1 cheetah, 0.04 ANYmal)
 
   // Define dynamic constraint parameters
   double M_CONST =
-      13; // Robot mass, kg (12 for spirit, 43 for cheetah, 30 for anymal)
-  double J_CONST = 1.0;  // Moment of inertia about the robot's y axis (pitch)
-  double G_CONST = 9.81; // Gravity constant, m/s^2
-  double F_MIN = 0;      // Minimum GRF
-  double F_MAX = 600;    // Maximum GRF, N (800 for cheetah, 500 for anymal)
-  double PEAK_GRF_MIN = 4.0; // Minimum GRF in units of body weight
-  double PEAK_GRF_MAX = 7.0; // Maximum GRF in units of body weight
-  double MU = 0.25; // Friction coefficient (1.0 for Cheetah, 0.5 for ANYmal)
-  double T_S_MIN = 0.3; // Minimum stance time, s
-  double T_S_MAX = 0.3; // Maximum stance time, s
-  double T_F_MIN = 0.1; // Minimum flight time, s
-  double T_F_MAX = 0.4; // Maximum stance time, s
+      13;  // Robot mass, kg (12 for spirit, 43 for cheetah, 30 for anymal)
+  double J_CONST = 1.0;   // Moment of inertia about the robot's y axis (pitch)
+  double G_CONST = 9.81;  // Gravity constant, m/s^2
+  double F_MIN = 0;       // Minimum GRF
+  double F_MAX = 600;     // Maximum GRF, N (800 for cheetah, 500 for anymal)
+  double PEAK_GRF_MIN = 4.0;  // Minimum GRF in units of body weight
+  double PEAK_GRF_MAX = 7.0;  // Maximum GRF in units of body weight
+  double MU = 0.25;  // Friction coefficient (1.0 for Cheetah, 0.5 for ANYmal)
+  double T_S_MIN = 0.3;  // Minimum stance time, s
+  double T_S_MAX = 0.3;  // Maximum stance time, s
+  double T_F_MIN = 0.1;  // Minimum flight time, s
+  double T_F_MAX = 0.4;  // Maximum stance time, s
 
   // Define planning parameters
-  double KINEMATICS_RES = 0.03; // Resolution of kinematic feasibility checks, m
+  double KINEMATICS_RES =
+      0.03;  // Resolution of kinematic feasibility checks, m
   double BACKUP_TIME =
-      0.3; // Duration of backup after finding an invalid state, s
+      0.3;  // Duration of backup after finding an invalid state, s
   double BACKUP_RATIO =
-      0.5; // Ratio of trajectory to back up after finding an invalid state, s
+      0.5;  // Ratio of trajectory to back up after finding an invalid state, s
   int NUM_GEN_STATES =
-      30; // Number of actions computed for each extend function
-  double GOAL_BOUNDS = 0.5; // Distance threshold on reaching the goal (only
-                            // used for vanilla RRT, not RRT-Connect)
-  double MAX_TIME = 2.0;    // Maximum planning time allowed
-  Eigen::Vector3d G_VEC;    // Maximum planning time allowed
+      30;  // Number of actions computed for each extend function
+  double GOAL_BOUNDS = 0.5;  // Distance threshold on reaching the goal (only
+                             // used for vanilla RRT, not RRT-Connect)
+  double MAX_TIME = 2.0;     // Maximum planning time allowed
+  Eigen::Vector3d G_VEC;     // Maximum planning time allowed
 };
 
 // Define phase variable labels
@@ -171,13 +173,14 @@ void flipDirection(Action &action);
 // Print statements
 void printState(const State &vec);
 void printFullState(const FullState &vec);
-template <typename T> void printVector(const std::vector<T> &vec) {
+template <typename T>
+void printVector(const std::vector<T> &vec) {
   std::cout << "{";
-  for (auto val : vec)
-    std::cout << val << ", ";
+  for (auto val : vec) std::cout << val << ", ";
   std::cout << "\b\b}";
 };
-template <typename T> void printVectorNewline(const std::vector<T> &vec) {
+template <typename T>
+void printVectorNewline(const std::vector<T> &vec) {
   printVector(vec);
   std::cout << std::endl;
 };
@@ -280,6 +283,6 @@ void publishStateActionPair(const State &s, const Action &a,
                             const PlannerConfig &planner_config,
                             visualization_msgs::MarkerArray &tree_viz_msg,
                             ros::Publisher &tree_pub);
-} // namespace planning_utils
+}  // namespace planning_utils
 
 #endif
