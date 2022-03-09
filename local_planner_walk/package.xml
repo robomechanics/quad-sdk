@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>local_planner</name>
+  <name>local_planner_walk</name>
   <version>0.0.0</version>
-  <description>The local_planner package for standing</description>
+  <description>The local_planner package for walking</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->

@@ -1,17 +1,17 @@
 #include <ros/ros.h>
 #include <gtest/gtest.h>
 
-#include "local_planner/local_planner.h"
+#include "local_planner/mpc_controller.h"
 
-TEST(LocalPlannerTest, testTrue) {
+TEST(MPCController, testTrue) {
   ros::NodeHandle nh;
-  LocalPlanner local_planner(nh);
+  MPCController mpc_controller(nh);
   EXPECT_EQ(1 + 1, 2);
 }
 
 int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
-  ros::init(argc, argv, "local_planner_tester");
+  ros::init(argc, argv, "mpc_controller_tester");
 
   return RUN_ALL_TESTS();
 }

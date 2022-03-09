@@ -1,0 +1,26 @@
+<launch>
+  
+    <include file="$(find quad_utils)/launch/load_params.launch" />
+
+    <arg name="global_planner" default="twist"/>
+    <arg name="local_planner" default="full"/>
+    <arg name="logging" default="false"/>
+
+    <!-- Launch the node to publish the global body plan -->
+    <group if="$(eval arg('global_planner') == 'fgmp')">
+        <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen" />
+        <param name="local_planner_walk/use_twist_input" value="false"/>
+    </group>
+
+    <!-- Use twist input to local plan and no global plan -->
+    <group if="$(eval arg('global_planner') == 'twist')">
+        <param name="local_planner_walk/use_twist_input" value="true"/>
+    </group>
+
+    <node name="local_planner_walk" pkg="local_planner_walk" type="local_planner_walk_node" output="screen"/>
+
+    <group if="$(arg logging)">
+        <include file="$(find quad_utils)/launch/logging.launch"/>
+    </group>
+
+</launch>
