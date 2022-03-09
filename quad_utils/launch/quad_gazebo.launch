@@ -48,19 +48,6 @@ SOFTWARE.
       <arg name="mocap" value="false"/>
       <arg name="is_hw" value="false"/>
     </include>
-    <!-- <include file="$(find quad_utils)/launch/planning.launch">
-      <arg name="global_planner" value="$(arg global_planner)"/>
-    </include>
-
-    <group if="$(eval global_planner == 'twist')">
-      <node name="twist_key_controller"
-        pkg="quad_utils"
-        type="twist_key_controller.py"
-        respawn="false"
-        output="screen">
-      </node>
-    </group> -->
-  </group>
 
   <!-- Launch the Quad world with specific physics parameters -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
