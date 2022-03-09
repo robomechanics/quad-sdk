@@ -1,0 +1,42 @@
+<launch>
+  <!-- No namespace here as we will share this description. 
+       Access with slash at the beginning -->
+  <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
+  
+  <!-- BEGIN ROBOT 1-->
+  <group ns="robot1">
+    <param name="tf_prefix" value="robot1_tf" />
+    <include file="$(find quad_utils)/launch/single_robot.launch" >
+      <arg name="init_pose" value="-x 0.0 -y 0.0 -z 0.5" />
+      <arg name="robot_name"  value="Robot1" />
+    </include>
+  </group>
+
+  <!-- BEGIN ROBOT 2-->
+  <group ns="robot2">
+    <param name="tf_prefix" value="robot2_tf" />
+    <include file="$(find quad_utils)/launch/single_robot.launch">
+      <arg name="init_pose" value="-x 2.0 -y 0 -z 0.5" />
+      <arg name="robot_name"  value="Robot2" />
+    </include>
+  </group>
+
+  <!-- BEGIN ROBOT 3-->
+  <group ns="robot3">
+    <param name="tf_prefix" value="robot3_tf" />
+    <include file="$(find quad_utils)/launch/single_robot.launch">
+      <arg name="init_pose" value="-x 4.0 -y 0 -z 0.5" />
+      <arg name="robot_name"  value="Robot3" />
+    </include>
+  </group>
+
+  <!-- BEGIN ROBOT 4-->
+  <group ns="robot4">
+    <param name="tf_prefix" value="robot4_tf" />
+    <include file="$(find quad_utils)/launch/single_robot.launch">
+      <arg name="init_pose" value="-x 6.0 -y 0 -z 0.5" />
+      <arg name="robot_name"  value="Robot4" />
+    </include>
+  </group>
+
+</launch>
