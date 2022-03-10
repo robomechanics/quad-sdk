@@ -16,7 +16,6 @@
 
 #include "IpIpoptApplication.hpp"
 #include "nmpc_controller/quad_nlp.h"
-#include "quad_utils/matplotlibcpp.h"
 
 //! NMPC controller ROS node
 /*!
@@ -87,6 +86,9 @@ class NMPCController {
       const double &first_element_duration, const bool &same_plan_index,
       Eigen::MatrixXd &tail_state_traj, Eigen::MatrixXd &tail_control_traj);
 
+  /** Method to return the constraint residual for requested data */
+  Eigen::VectorXd evalLiftedTrajectoryConstraints();
+
  private:
   ros::NodeHandle nh_;
 
@@ -96,6 +98,8 @@ class NMPCController {
   SmartPtr<quadNLP> mynlp_;
 
   SmartPtr<IpoptApplication> app_;
+
+  std::shared_ptr<quad_utils::QuadKD> quadKD_;
 
   int N_;
 

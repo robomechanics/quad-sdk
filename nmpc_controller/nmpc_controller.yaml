@@ -1,23 +1,19 @@
 nmpc_controller:
   takeoff_state_weight_factor: 100
   leg:
-    update_rate: 50
-    horizon_length: 24
     state_dimension: 12
     control_dimension: 12
-    step_length: 0.03
-    friction_coefficient: 0.2
+    friction_coefficient: 0.4
     panic_weights: !!float 1e3
     state_weights: [5.0, 5.0, 25.0, 0.5, 0.5, 0.5, 0.1, 0.1, 0.5, 0.05, 0.05, 0.01]
     control_weights: [!!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5]
-    state_weights_factors: [1., 1.1125, 1.23765625, 1.37689258, 1.53179299, 1.7041197, 1.89583317, 2.1091144, 2.34638977, 2.61035862, 2.90402397, 3.23072667, 3.59418341, 3.99852905, 4.44836357, 4.94880447, 5.50554497, 6.12491878, 6.81397214, 7.58054401, 8.43335521, 9.38210767, 10.43759478, 11.6118242]
+    state_weights_factors: [1., 1.1125, 1.23765625, 1.37689258, 1.53179299, 1.7041197, 1.89583317, 2.1091144, 2.34638977, 2.61035862, 2.90402397, 3.23072667, 3.59418341, 3.99852905, 4.44836357, 4.94880447, 5.50554497, 6.12491878, 6.81397214, 7.58054401, 8.43335521, 9.38210767, 10.43759478, 11.6118242, 11.6118242]
     control_weights_factors: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    state_lower_bound: [!!float -2e19, !!float -2e19, 0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
-    state_upper_bound: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+    state_lower_bound: [!!float -2e19, !!float -2e19, 0, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    state_upper_bound: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
     control_lower_bound: [!!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10]
     control_upper_bound: [!!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250]
   centralized_tail:
-    update_rate: 33
     horizon_length: 24
     control_dimension: 14
     state_dimension: 16
@@ -33,7 +29,6 @@ nmpc_controller:
     control_lower_bound: [-10, -10, !!float -2e19, !!float -2e19, 0, !!float -2e19, !!float -2e19, 0, !!float -2e19, !!float -2e19, 0, !!float -2e19, !!float -2e19, 0]
     control_upper_bound: [10, 10, !!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250]
   distributed_tail:
-    update_rate: 33
     horizon_length: 18
     control_dimension: 14
     state_dimension: 16
@@ -52,7 +47,6 @@ nmpc_controller:
     control_lower_bound: [-10, -10, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
     control_upper_bound: [10, 10, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
   decentralized_tail:
-    update_rate: 33
     horizon_length: 24
     control_dimension: 14
     state_dimension: 16
@@ -69,5 +63,8 @@ nmpc_controller:
     control_upper_bound: [10, 10, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
   leg_complex:
     null_space_dimension: 24
-    state_lower_bound: [-0.7, -1.57, 0.4,-0.7, -1.57, 0.4,-0.7, -1.57, 0.4,-0.7, -1.57, 0.4,-35, -35, -25,-35, -35, -25,-35, -35, -25,-35, -35, -25]
-    state_upper_bound: [0.7, 3.14, 2.8,0.7, 3.14, 2.8,0.7, 3.14, 2.8,0.7, 3.14, 2.8, 35, 35, 25,35, 35, 25,35, 35, 25,35, 35, 25]
+    fixed_complex_idxs: [] # set to [] for none
+    fixed_complex_head: 12 # set to 0 for none
+    fixed_complex_tail: 0 # set to 0 for none
+    state_lower_bound: [-0.707, -1.57, 0.4,-0.707, -1.57, 0.4,-0.707, -1.57, 0.4,-0.707, -1.57, 0.4,-35, -35, -25,-35, -35, -25,-35, -35, -25,-35, -35, -25]
+    state_upper_bound: [0.707, 3.14, 2.8,0.707, 3.14, 2.8,0.707, 3.14, 2.8,0.707, 3.14, 2.8, 35, 35, 25,35, 35, 25,35, 35, 25,35, 35, 25]

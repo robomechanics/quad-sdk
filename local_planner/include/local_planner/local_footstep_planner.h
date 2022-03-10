@@ -2,6 +2,7 @@
 #define LOCAL_FOOTSTEP_PLANNER_H
 
 #include <eigen_conversions/eigen_msg.h>
+#include <local_planner/local_planner_modes.h>
 #include <nav_msgs/Path.h>
 #include <quad_msgs/FootPlanDiscrete.h>
 #include <quad_msgs/FootState.h>
@@ -103,21 +104,14 @@ class LocalFootstepPlanner {
 
   /**
    * @brief Compute the contact schedule based on the current phase
-   * @param[in] current_plan_index_ current index in the plan
-   * @param[out] contact_schedule 2D array of contact states
-   */
-  void computeStanceContactSchedule(
-      int current_plan_index_,
-      std::vector<std::vector<bool>> &contact_schedule);
-
-  /**
-   * @brief Compute the contact schedule based on the current phase
    * @param[in] current_plan_index_ Current index in the plan
    * @param[in] ref_primitive_plan_ Reference primitive plan
+   * @param[in] control_mode Control mode
    * @param[out] contact_schedule 2D array of contact states
    */
   void computeContactSchedule(int current_plan_index,
                               const Eigen::VectorXi &ref_primitive_plan_,
+                              int control_mode,
                               std::vector<std::vector<bool>> &contact_schedule);
 
   /**
@@ -241,6 +235,20 @@ class LocalFootstepPlanner {
     terrain_grid_ = grid_map;
   }
 
+  // Compute future states by integrating linear states (hold orientation
+  // states)
+  inline Eigen::VectorXd computeFutureBodyPlan(
+      double step, const Eigen::VectorXd &body_plan) {
+    // Initialize vector
+    Eigen::VectorXd future_body_plan = body_plan;
+
+    // Integrate the linear state
+    future_body_plan.segment(0, 3) =
+        future_body_plan.segment(0, 3) + body_plan.segment(6, 3) * step * dt_;
+
+    return future_body_plan;
+  }
+
  private:
   /**
    * @brief Update the continuous foot plan to match the discrete
@@ -269,6 +277,27 @@ class LocalFootstepPlanner {
    * @return Optimized foothold
    */
   Eigen::Vector3d getNearestValidFoothold(const Eigen::Vector3d &foot_position);
+
+  /**
+   * @brief Compute minimum covering circle problem using Welzl's algorithm
+   * @param[in] P Hip position in the plan
+   * @param[in] R Vertex storeage for the circle
+   * @return Center and radius of the circle
+   */
+  Eigen::Vector3d welzlMinimumCircle(std::vector<Eigen::Vector2d> P,
+                                     std::vector<Eigen::Vector2d> R);
+
+  /**
+   * @brief Compute swing apex height
+   * @param[in] leg_idx Leg index
+   * @param[in] body_plan Body plan in the mid air index
+   * @param[in] foot_position_prev Position of the previous foothold
+   * @param[in] foot_position_next Position of the next foothold
+   * @return Apex height
+   */
+  double computeSwingApex(int leg_idx, const Eigen::VectorXd &body_plan,
+                          const Eigen::Vector3d &foot_position_prev,
+                          const Eigen::Vector3d &foot_position_next);
 
   /**
    * @brief Extract foot data from the matrix
@@ -323,6 +352,26 @@ class LocalFootstepPlanner {
          i_touchdown++) {
       if (isNewContact(contact_schedule, i_touchdown, foot_index)) {
         return i_touchdown;
+      }
+    }
+
+    // If no contact is found, return the last index in the horizon
+    return (horizon_length_ - 1);
+  }
+
+  /**
+   * @brief Compute the index of the next liftoff for a foot. If none exist
+   * return the last.
+   */
+  inline int getNextLiftoffIndex(
+      const std::vector<std::vector<bool>> &contact_schedule, int horizon_index,
+      int foot_index) {
+    // Loop through the rest of this contact schedule, if a new liftoff is found
+    // return its index
+    for (int i_liftoff = horizon_index; i_liftoff < horizon_length_;
+         i_liftoff++) {
+      if (isNewLiftoff(contact_schedule, i_liftoff, foot_index)) {
+        return i_liftoff;
       }
     }
 

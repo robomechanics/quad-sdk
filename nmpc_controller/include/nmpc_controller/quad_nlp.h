@@ -34,6 +34,7 @@
 #include "nmpc_controller/gen/eval_jac_g_leg_simple_to_complex.h"
 #include "nmpc_controller/gen/eval_jac_g_tail.h"
 #include "quad_utils/function_timer.h"
+#include "quad_utils/quad_kd.h"
 #include "quad_utils/tail_type.h"
 
 using namespace Ipopt;
@@ -61,13 +62,16 @@ class quadNLP : public TNLP {
   Eigen::VectorXi n_vec_, n_slack_vec_, g_vec_;
 
   /// Boolean for whether to apply panic variables for complex states
-  const bool apply_slack_to_complex_ = false;
+  const bool apply_slack_to_complex_ = true;
 
   /// Input dimension for simple and complex models
   int m_simple_, m_complex_;
 
   /// Constraint dimension for simple and complex models
   int g_simple_, g_complex_;
+
+  /// Map for constraint names
+  std::vector<std::vector<std::string>> constr_names_;
 
   /// Number of variables , primal variables, slack variables, and constraints
   int n_vars_, n_vars_primal_, n_vars_slack_, n_constraints_;
@@ -77,9 +81,6 @@ class quadNLP : public TNLP {
 
   /// Nominal null state variables
   Eigen::VectorXd x_null_nom_;
-
-  /// Number of state variables in the initial state
-  int n0_;
 
   /// Declare the number of possible system ids (must match size of SystemID
   /// enum)
@@ -180,14 +181,11 @@ class quadNLP : public TNLP {
   // Time duration to the next plan index
   double first_element_duration_;
 
-  // Complexity for the current state
-  static const int x0_complexity_ = 0;
+  /// Vector of ids for adaptive model complexity schedule
+  Eigen::VectorXi adaptive_complexity_schedule_;
 
-  // Complexity for the last state
-  static const int xN_complexity_ = 0;
-
-  /// Vector of ids for model complexity schedule
-  Eigen::VectorXi complexity_schedule_;
+  /// Vector of ids for fixed model complexity schedule
+  Eigen::VectorXi fixed_complexity_schedule_;
 
   /// Vector of indices for relevant quantities
   Eigen::VectorXi fe_idxs_, u_idxs_, x_idxs_, slack_idxs_, g_idxs_,
@@ -251,7 +249,14 @@ class quadNLP : public TNLP {
           Eigen::VectorXd Q_factor, Eigen::VectorXd R_factor,
           Eigen::VectorXd x_min, Eigen::VectorXd x_max,
           Eigen::VectorXd x_min_complex, Eigen::VectorXd x_max_complex,
-          Eigen::VectorXd u_min, Eigen::VectorXd u_max);
+          Eigen::VectorXd u_min, Eigen::VectorXd u_max,
+          Eigen::VectorXi fixed_complexity_schedule);
+
+  /**
+   * @brief Custom deep copy constructor
+   * @param[in] nlp Object to be deep copied
+   */
+  quadNLP(const quadNLP &nlp);
 
   /** Default destructor */
   virtual ~quadNLP();
@@ -277,6 +282,13 @@ class quadNLP : public TNLP {
   /** Method to return the gradient of the objective */
   virtual bool eval_grad_f(Index n, const Number *x, bool new_x,
                            Number *grad_f);
+
+  /** Method to return the constraint residual for requested data */
+  Eigen::VectorXd eval_g_single_fe(int sys_id, double dt,
+                                   const Eigen::VectorXd &x0,
+                                   const Eigen::VectorXd &u,
+                                   const Eigen::VectorXd &x1,
+                                   const Eigen::VectorXd &params);
 
   /** Method to return the constraint residuals */
   virtual bool eval_g(Index n, const Number *x, bool new_x, Index m, Number *g);
@@ -310,7 +322,7 @@ class quadNLP : public TNLP {
                                  Number obj_value, const IpoptData *ip_data,
                                  IpoptCalculatedQuantities *ip_cq);
 
-  virtual void shift_initial_guess();
+  virtual void update_initial_guess(const quadNLP &nlp_prev, int shift_idx);
 
   virtual void update_solver(
       const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
@@ -325,32 +337,35 @@ class quadNLP : public TNLP {
       const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
       const Eigen::MatrixXd &foot_positions,
       const std::vector<std::vector<bool>> &contact_schedule,
+      const Eigen::VectorXi &adaptive_complexity_schedule,
       const Eigen::VectorXd &ground_height,
       const double &first_element_duration_, const bool &same_plan_index,
       const bool &init);
 
   // Get the idx-th state variable from decision variable
   template <typename T>
-  inline Eigen::Block<T> get_state_var(T &decision_var, const int &idx) {
+  inline Eigen::Block<T> get_state_var(T &decision_var, const int &idx) const {
     return decision_var.block(x_idxs_[idx], 0, n_vec_[idx], 1);
   }
 
   // Get the idx-th control variable from decision variable
   template <typename T>
-  inline Eigen::Block<T> get_control_var(T &decision_var, const int &idx) {
+  inline Eigen::Block<T> get_control_var(T &decision_var,
+                                         const int &idx) const {
     return decision_var.block(u_idxs_[idx], 0, m_, 1);
   }
 
   // Get the idx-th constraint from constraint variable
   template <typename T>
-  inline Eigen::Block<T> get_constraint_var(T &constraint_var, const int &idx) {
+  inline Eigen::Block<T> get_constraint_var(T &constraint_var,
+                                            const int &idx) const {
     return constraint_var.block(g_idxs_[idx], 0, g_vec_[idx], 1);
   }
 
   // Get the idx-th panic variable (for (idx+1)-th state variable) from decision
   // variable
   template <typename T>
-  inline Eigen::Block<T> get_panic_var(T &decision_var, const int &idx) {
+  inline Eigen::Block<T> get_panic_var(T &decision_var, const int &idx) const {
     return decision_var.block(slack_idxs_[idx], 0, 2 * n_slack_vec_[idx], 1);
   }
 
@@ -358,7 +373,7 @@ class quadNLP : public TNLP {
   // constraint variable
   template <typename T>
   inline Eigen::Block<T> get_panic_constraint_var(T &constraint_var,
-                                                  const int &idx) {
+                                                  const int &idx) const {
     return constraint_var.block(g_slack_idxs_[idx], 0, 2 * n_slack_vec_[idx],
                                 1);
   }
@@ -366,14 +381,16 @@ class quadNLP : public TNLP {
   // Get the idx-th dynamic constraint related decision variable (idx and
   // idx+1-th state and idx-th control)
   template <typename T>
-  inline Eigen::Block<T> get_dynamic_var(T &decision_var, const int &idx) {
+  inline Eigen::Block<T> get_dynamic_var(T &decision_var,
+                                         const int &idx) const {
     return decision_var.block(fe_idxs_[idx], 0,
                               n_vec_[idx] + m_ + n_vec_[idx + 1], 1);
   }
 
   // Get the idx-th dynamic constraint related jacobian nonzero entry
   template <typename T>
-  inline Eigen::Block<T> get_dynamic_jac_var(T &jacobian_var, const int &idx) {
+  inline Eigen::Block<T> get_dynamic_jac_var(T &jacobian_var,
+                                             const int &idx) const {
     return jacobian_var.block(dynamic_jac_var_idxs_[idx], 0,
                               nnz_mat_(sys_id_schedule_[idx], JAC), 1);
   }
@@ -381,14 +398,16 @@ class quadNLP : public TNLP {
   // Get the idx-th panic constraint jacobian (for (idx+1)-th state variable)
   // nonzero entry
   template <typename T>
-  inline Eigen::Block<T> get_panic_jac_var(T &jacobian_var, const int &idx) {
+  inline Eigen::Block<T> get_panic_jac_var(T &jacobian_var,
+                                           const int &idx) const {
     return jacobian_var.block(panic_jac_var_idxs_[idx], 0,
                               4 * n_slack_vec_[idx], 1);
   }
 
   // Get the idx-th dynamic constraint related hessian nonzero entry
   template <typename T>
-  inline Eigen::Block<T> get_dynamic_hess_var(T &hessian_var, const int &idx) {
+  inline Eigen::Block<T> get_dynamic_hess_var(T &hessian_var,
+                                              const int &idx) const {
     return hessian_var.block(dynamic_hess_var_idxs_[idx], 0,
                              nnz_mat_(sys_id_schedule_[idx], HESS), 1);
   }
@@ -396,18 +415,18 @@ class quadNLP : public TNLP {
   // Get the idx-th state cost hessian nonzero entry
   template <typename T>
   inline Eigen::Block<T> get_state_cost_hess_var(T &hessian_var,
-                                                 const int &idx) {
+                                                 const int &idx) const {
     return hessian_var.block(cost_idxs_[idx], 0, n_, 1);
   }
 
   // Get the idx-th control cost hessian nonzero entry
   template <typename T>
   inline Eigen::Block<T> get_control_cost_hess_var(T &hessian_var,
-                                                   const int &idx) {
+                                                   const int &idx) const {
     return hessian_var.block(cost_idxs_[idx] + n_, 0, m_, 1);
   }
 
-  void update_complexity_schedule(const Eigen::VectorXi &complexity_schedule);
+  void update_structure();
 
   // /**
   //  * @brief Return the number of primal variables for this NLP
@@ -503,6 +522,11 @@ class quadNLP : public TNLP {
    */
   void loadCasadiFuncs();
 
+  /**
+   * @brief Load the constraint names for debugging
+   */
+  void loadConstraintNames();
+
   //@}
 
  private:
@@ -517,7 +541,6 @@ class quadNLP : public TNLP {
    *  knowing. (See Scott Meyers book, "Effective C++")
    */
   //@{
-  quadNLP(const quadNLP &);
 
   quadNLP &operator=(const quadNLP &);
   //@}
