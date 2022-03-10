@@ -178,7 +178,8 @@ void LocalFootstepPlanner::computeFootPlan(
         if (isContact(contact_schedule, end_of_stance, j)) {
           // Means we get to the end of horizon, so we should use the nominal
           // period
-          end_of_stance = i + period_ * duty_cycles_[j];
+          end_of_stance =
+              std::max(i + int(period_ * duty_cycles_[j]), end_of_stance);
 
           // Integrate the plan if out of the horizon
           body_plan_stance = Eigen::MatrixXd(end_of_stance + 1, 12);
