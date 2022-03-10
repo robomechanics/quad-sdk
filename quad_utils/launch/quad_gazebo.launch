@@ -31,6 +31,7 @@ SOFTWARE.
   <arg name="software"        default="true"/>
   <arg name="controller"      default="inverse_dynamics"/>
   <arg name="live_plot"       default="false"/>
+  <arg name="dash"            default="false"/>
   <arg name="world"           default="flat"/>
   <arg name="rotors"          default="false"/>
 
@@ -42,6 +43,7 @@ SOFTWARE.
   <group if="$(arg software)">
     <include file="$(find quad_utils)/launch/visualization.launch">
       <arg name="live_plot" value="$(arg live_plot)"/>
+      <arg name="dash" value="$(arg dash)"/>
     </include>
     <include file="$(find quad_utils)/launch/robot_driver.launch">
       <arg name="controller" value="$(arg controller)"/>
