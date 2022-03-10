@@ -179,8 +179,8 @@ class LocalFootstepPlanner {
           printf("0 ");
         }
       }
+      printf("\n");
     }
-    printf("\n");
   }
 
   inline double getTerrainHeight(double x, double y) {

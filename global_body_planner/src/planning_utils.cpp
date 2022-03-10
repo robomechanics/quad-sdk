@@ -714,10 +714,10 @@ bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm,
   const double m = planner_config.M_CONST;
 
   // Sample stance time and initial vertical velocity
-  a.dz_0 = getDzFromState(s, planner_config) - 1.5 * (double)rand() / RAND_MAX;
+  a.dz_0 = getDzFromState(s, planner_config) - 2.0 * (double)rand() / RAND_MAX;
   a.dz_f = 0;
-  double t_s_min = 0.10;
-  double t_s_max = 0.15;
+  double t_s_min = 0.15;
+  double t_s_max = 0.25;
   a.t_s_leap = (t_s_max - t_s_min) * (double)rand() / RAND_MAX + t_s_min;
   a.t_f = 1e-6;
   a.t_s_land = (t_s_max - t_s_min) * (double)rand() / RAND_MAX + t_s_min;

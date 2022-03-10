@@ -122,7 +122,7 @@ NMPCController::NMPCController(int type) {
   // app_->Options()->SetIntegerValue("max_iter", 100);
   // app_->Options()->SetStringValue("print_timing_statistics", "yes");
   app_->Options()->SetStringValue("linear_solver", "ma57");
-  app_->Options()->SetIntegerValue("print_level", 5);
+  app_->Options()->SetIntegerValue("print_level", 0);
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   // app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
@@ -363,7 +363,7 @@ bool NMPCController::computePlan(
   //           << std::endl;
   if (status == Solve_Succeeded) {
     mynlp_->warm_start_ = true;
-    Eigen::VectorXd constr_vars = evalLiftedTrajectoryConstraints();
+    // Eigen::VectorXd constr_vars = evalLiftedTrajectoryConstraints();
 
     return true;
   } else {
@@ -371,21 +371,22 @@ bool NMPCController::computePlan(
     mynlp_->warm_start_ = false;
     require_init_ = true;
 
-    ROS_WARN_STREAM(param_ns_ << " solving fail");
-    std::cout << "current body state = \n"
-              << mynlp_->x_current_.segment(0, 12).transpose() << std::endl;
-    std::cout << "current joint pos = \n"
-              << mynlp_->x_current_.segment(12, 12).transpose() << std::endl;
-    std::cout << "current joint vel = \n"
-              << mynlp_->x_current_.segment(24, 12).transpose() << std::endl;
-    std::cout << "x_reference_ = \n"
-              << mynlp_->x_reference_.transpose() << std::endl;
-    std::cout << "state_traj = \n" << state_traj << std::endl;
-    std::cout << "control_traj = \n" << control_traj << std::endl;
-    std::cout << "foot_positions = \n" << mynlp_->foot_pos_world_ << std::endl;
-    std::cout << "foot_velocities = \n" << mynlp_->foot_vel_world_ << std::endl;
+    // ROS_WARN_STREAM(param_ns_ << " solving fail");
+    // std::cout << "current body state = \n"
+    //           << mynlp_->x_current_.segment(0, 12).transpose() << std::endl;
+    // std::cout << "current joint pos = \n"
+    //           << mynlp_->x_current_.segment(12, 12).transpose() << std::endl;
+    // std::cout << "current joint vel = \n"
+    //           << mynlp_->x_current_.segment(24, 12).transpose() << std::endl;
+    // std::cout << "x_reference_ = \n"
+    //           << mynlp_->x_reference_.transpose() << std::endl;
+    // std::cout << "state_traj = \n" << state_traj << std::endl;
+    // std::cout << "control_traj = \n" << control_traj << std::endl;
+    // std::cout << "foot_positions = \n" << mynlp_->foot_pos_world_ <<
+    // std::endl; std::cout << "foot_velocities = \n" << mynlp_->foot_vel_world_
+    // << std::endl;
 
-    throw std::runtime_error("Solve failed, exiting for debug");
+    // throw std::runtime_error("Solve failed, exiting for debug");
     return false;
   }
 }
