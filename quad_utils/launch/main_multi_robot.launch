@@ -1,15 +1,12 @@
 <launch>
   <param name="/use_sim_time" value="true" />
-  <arg name="gui"             default="false"/>
+  <arg name="gui"             default="true"/>
   <arg name="paused"          default="false"/>
   <arg name="world"           default="flat"/>
 
   <include file="$(find quad_utils)/launch/mapping.launch" >
     <arg name="input_type" value="mesh"/>
     <arg name="world" value="$(arg world)"/>
-  </include>
-  
-  <include file="$(find quad_utils)/launch/visualization.launch">
   </include>
 
   <!-- start world -->
