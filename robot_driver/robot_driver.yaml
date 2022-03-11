@@ -23,10 +23,10 @@ robot_driver:
   sit_joint_angles: [0.0,0.0,0.0]
 
 underbrush_swing:
-  retract_vel: 20 # 15 # rad/s
+  retract_vel: 15 # 20 # rad/s
   tau_push: 1.5 # N m
   tau_contact_start: 2.0 # N m
-  tau_contact_end: 0.25 # N m
+  tau_contact_end: 0.5 # N m
   min_switch: 0.1 # s
-  t_down: 0.1 # s
+  t_down: 0.12 # s
   t_up: 0.1 # s

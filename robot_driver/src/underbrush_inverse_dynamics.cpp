@@ -286,7 +286,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).kd = 0;
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).torque_ff = 
             -tau_push_
-            + (robot_state_msg.joints.position.at(3*i+2) < 0.2 ? 2*tau_push_*(0.2-robot_state_msg.joints.position.at(3*i+2)) : 0);
+            + (robot_state_msg.joints.position.at(3*i+2) < 0.2 ? tau_push_*(0.2-robot_state_msg.joints.position.at(3*i+2))/0.2 : 0);
         }
       }
     }
