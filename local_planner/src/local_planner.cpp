@@ -599,7 +599,7 @@ void LocalPlanner::publishLocalPlan() {
 
   // Update timestamps to reflect when these messages were published
   local_plan_msg.state_timestamp = current_state_timestamp_;
-  ros::Time t_publish = ros::Time::now();
+  auto t_publish = ros::Time::now();
   local_plan_msg.header.stamp = t_publish;
   future_footholds_msg.header.stamp = t_publish;
   foot_plan_msg.header.stamp = t_publish;
