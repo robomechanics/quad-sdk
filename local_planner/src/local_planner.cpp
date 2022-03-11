@@ -542,8 +542,7 @@ void LocalPlanner::publishLocalPlan() {
   quad_msgs::MultiFootPlanContinuous foot_plan_msg;
 
   // Update the headers of all messages
-  ros::Time timestamp = robot_state_msg_->header.stamp;
-  local_plan_msg.header.stamp = timestamp;
+  local_plan_msg.header.stamp = current_state_timestamp_;
   local_plan_msg.header.frame_id = map_frame_;
   if (!use_twist_input_) {
     local_plan_msg.global_plan_timestamp =
@@ -582,8 +581,8 @@ void LocalPlanner::publishLocalPlan() {
     ros::Time state_timestamp;
 
     // The first duration will vary
-    state_timestamp = (i == 0) ? local_plan_msg.header.stamp
-                               : local_plan_msg.header.stamp +
+    state_timestamp = (i == 0) ? current_state_timestamp_
+                               : current_state_timestamp_ +
                                      ros::Duration(first_element_duration_) +
                                      ros::Duration((i - 1) * dt_);
 
@@ -598,8 +597,14 @@ void LocalPlanner::publishLocalPlan() {
     local_plan_msg.primitive_ids.push_back(2);
   }
 
-  // Publish
+  // Update timestamps to reflect when these messages were published
   local_plan_msg.state_timestamp = current_state_timestamp_;
+  ros::Time t_publish = ros::Time::now();
+  local_plan_msg.header.stamp = t_publish;
+  future_footholds_msg.header.stamp = t_publish;
+  foot_plan_msg.header.stamp = t_publish;
+
+  // Publish
   local_plan_pub_.publish(local_plan_msg);
   foot_plan_discrete_pub_.publish(future_footholds_msg);
   foot_plan_continuous_pub_.publish(foot_plan_msg);

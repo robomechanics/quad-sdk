@@ -132,11 +132,6 @@ void SpiritController::update(const ros::Time& time,
     double torque_command = std::min(
         std::max(torque_feedback + torque_ff, -torque_lim), torque_lim);
 
-    // std::cout << "Joint " << i << ": " << "FF Torque: " << torque_ff << " FF
-    // Torque %: " << torque_ff/torque_command << " FB Torque: " <<
-    // torque_feedback << " FB Torque %: " << torque_feedback/torque_command <<
-    // " Total Torque: " << torque_command << std::endl;
-
     // Update joint torque
     joints_.at(i).setCommand(torque_command);
   }
