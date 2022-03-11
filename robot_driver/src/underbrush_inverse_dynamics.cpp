@@ -4,6 +4,7 @@ UnderbrushInverseDynamicsController::UnderbrushInverseDynamicsController() {
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
   force_mode_ = {0, 0, 0, 0};
+  last_mode_ = {0, 0, 0, 0};
 
   double t_now = ros::Time::now().toSec();
   t_switch_ = {t_now, t_now, t_now, t_now};
@@ -17,13 +18,14 @@ void UnderbrushInverseDynamicsController::updateBodyForceEstimate(const quad_msg
 
 void UnderbrushInverseDynamicsController::setUnderbrushParams(
     double retract_vel, double tau_push, double tau_contact_start,
-    double tau_contact_end, double min_switch, double t_down) {
+    double tau_contact_end, double min_switch, double t_down, double t_up) {
   retract_vel_ = retract_vel;
   tau_push_ = tau_push;
   tau_contact_start_ = tau_contact_start;
   tau_contact_end_ = tau_contact_end;
   min_switch_ = min_switch;
   t_down_ = t_down;
+  t_up_ = t_up;
 }
 
 bool UnderbrushInverseDynamicsController::computeLegCommandArray(
@@ -220,14 +222,31 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
         } else if (!force_mode_.at(i) && (t_now2 - t_switch_.at(i) > min_switch_) &&
               (last_body_force_estimate_msg_->body_wrenches.at(i).torque.z > tau_contact_start_ ||
                 last_body_force_estimate_msg_->body_wrenches.at(i).torque.y > tau_contact_start_ &&
-                t_now2 - t_LO_.at(i) > 0.15)) {
+                t_now2 - t_LO_.at(i) > t_up_)) {
           force_mode_.at(i) = 1;
           t_switch_.at(i) = t_now2;
-          ROS_INFO_STREAM("OBSTRUCTION DETECTED");
+          //ROS_INFO_STREAM("OBSTRUCTION DETECTED");
         }
         //force_mode_.at(i) = 0;
 
-        if (!force_mode_.at(i) || t_TD_.at(i) - t_now2 < t_down_) { // insufficient time left in stance; put the foot down
+        if (force_mode_.at(i) && t_TD_.at(i) - t_now2 < t_down_) { // insufficient time left in stance; put the foot down)
+          force_mode_.at(i) = 0;
+          t_switch_.at(i) = t_now2;
+          last_mode_.at(i) = 1;
+          ROS_INFO("Leg %u stuck at end",i);
+        }
+
+        if (t_now2 - t_LO_.at(i) < t_up_) {
+          if (last_mode_.at(i)) {
+            force_mode_.at(i) = 1; // retain previous mode
+            t_switch_.at(i) = t_now2;
+            ROS_INFO("Leg %u was stuck at end",i);
+          }
+          last_mode_.at(i) = 0; // reset previous mode state
+        }
+
+
+        if (!force_mode_.at(i)) { 
           // Usual swing mode
           for (int j = 0; j < 3; ++j) {
 
@@ -244,7 +263,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
           }
         } else{
           // Obstructed swing mode
-          ROS_INFO_THROTTLE(0.01, "Attempting circumvention");
+          //ROS_INFO_THROTTLE(0.01, "Attempting circumvention");
           for (int j = 0; j < 3; ++j) {
             leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).pos_setpoint = 0;
             leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).torque_ff = 0;
@@ -258,12 +277,16 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
             ref_state_msg.joints.velocity.at(3*i+0);
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(0).kp = swing_kp_.at(0);
 
-          leg_command_array_msg.leg_commands.at(i).motor_commands.at(1).vel_setpoint = -retract_vel_;
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(1).vel_setpoint = 
+            -retract_vel_
+             + (robot_state_msg.joints.position.at(3*i+1) < 0 ? -retract_vel_*robot_state_msg.joints.position.at(3*i+1) : 0);
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(1).torque_ff = 0;
 
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).vel_setpoint = 0;
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).kd = 0;
-          leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).torque_ff = -tau_push_;
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).torque_ff = 
+            -tau_push_
+            + (robot_state_msg.joints.position.at(3*i+2) < 0.2 ? 2*tau_push_*(0.2-robot_state_msg.joints.position.at(3*i+2)) : 0);
         }
       }
     }

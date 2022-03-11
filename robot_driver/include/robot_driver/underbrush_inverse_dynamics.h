@@ -36,7 +36,7 @@ class UnderbrushInverseDynamicsController : public LegControllerTemplate {
    */
   void setUnderbrushParams(double retract_vel, double tau_push,
                            double tau_contact_start, double tau_contact_end,
-                           double min_switch, double t_down);
+                           double min_switch, double t_down, double t_up);
 
   /**
    * @brief Compute the leg command array message for a given current state and
@@ -62,6 +62,7 @@ class UnderbrushInverseDynamicsController : public LegControllerTemplate {
 
   /// Leg swing mode logic
   std::vector<int> force_mode_;
+  std::vector<int> last_mode_;
   std::vector<double> t_switch_;
   std::vector<double> t_LO_;
   std::vector<double> t_TD_;
@@ -73,6 +74,7 @@ class UnderbrushInverseDynamicsController : public LegControllerTemplate {
   double tau_contact_end_;
   double min_switch_;
   double t_down_;
+  double t_up_;
 };
 
 #endif  // UNDERBRUSH_INVERSE_DYNAMICS_H

@@ -1,10 +1,7 @@
 nmpc_controller:
   leg:
-    update_rate: 50
-    horizon_length: 24
     state_dimension: 12
     control_dimension: 12
-    step_length: 0.03
     friction_coefficient: 0.5
     panic_weights: !!float 1e3
     state_weights: [5.0, 5.0, 5.0, 0.5, 0.5, 0.5, 0.1, 0.1, 0.2, 0.05, 0.05, 0.01]
@@ -16,7 +13,6 @@ nmpc_controller:
     control_lower_bound: [!!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10]
     control_upper_bound: [!!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150]
   centralized_tail:
-    update_rate: 33
     horizon_length: 24
     control_dimension: 14
     state_dimension: 16
@@ -32,7 +28,6 @@ nmpc_controller:
     control_lower_bound: [-10, -10, !!float -2e19, !!float -2e19, 0, !!float -2e19, !!float -2e19, 0, !!float -2e19, !!float -2e19, 0, !!float -2e19, !!float -2e19, 0]
     control_upper_bound: [10, 10, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150]
   distributed_tail:
-    update_rate: 33
     horizon_length: 18
     control_dimension: 14
     state_dimension: 16
@@ -51,7 +46,6 @@ nmpc_controller:
     control_lower_bound: [-10, -10, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
     control_upper_bound: [10, 10, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
   decentralized_tail:
-    update_rate: 33
     horizon_length: 24
     control_dimension: 14
     state_dimension: 16

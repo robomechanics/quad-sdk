@@ -112,7 +112,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   } else if (controller_id_ == "underbrush") {
     leg_controller_ = std::make_shared<UnderbrushInverseDynamicsController>();
     double retract_vel, tau_push, tau_contact_start, tau_contact_end, min_switch,
-        t_down;
+        t_down, t_up;
     quad_utils::loadROSParam(nh_, "underbrush_swing/retract_vel", retract_vel);
     quad_utils::loadROSParam(nh_, "underbrush_swing/tau_push", tau_push);
     quad_utils::loadROSParam(nh_, "underbrush_swing/tau_contact_start",
@@ -121,11 +121,12 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
                              tau_contact_end);
     quad_utils::loadROSParam(nh_, "underbrush_swing/min_switch", min_switch);
     quad_utils::loadROSParam(nh_, "underbrush_swing/t_down", t_down);
+    quad_utils::loadROSParam(nh_, "underbrush_swing/t_up", t_up);
     UnderbrushInverseDynamicsController* c =
         dynamic_cast<UnderbrushInverseDynamicsController*>(
             leg_controller_.get());
     c->setUnderbrushParams(retract_vel, tau_push, tau_contact_start,
-                           tau_contact_end, min_switch, t_down);
+                           tau_contact_end, min_switch, t_down, t_up);
   } else {
     ROS_ERROR_STREAM("Invalid controller id " << controller_id_
                                               << ", returning nullptr");

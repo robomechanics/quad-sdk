@@ -27,10 +27,15 @@ NMPCController::NMPCController(int type) {
 
   // Load MPC/system parameters
   double mu;
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/horizon_length", N_);
+  if (param_ns_ == "leg") {
+    ros::param::get("/local_planner/horizon_length", N_);
+    ros::param::get("/local_planner/timestep", dt_);
+  } else {
+    ros::param::get("/nmpc_controller/" + param_ns_ + "/horizon_length", N_);
+    ros::param::get("/nmpc_controller/" + param_ns_ + "/step_length", dt_);
+  }
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_dimension", n_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_dimension", m_);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/step_length", dt_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/friction_coefficient",
                   mu);
 
@@ -193,23 +198,23 @@ bool NMPCController::computePlan(
 
   status = app_->OptimizeTNLP(mynlp_);
 
-  Eigen::MatrixXd x(n_, N_);
-  Eigen::MatrixXd u(m_, N_);
-
-  for (int i = 0; i < N_; ++i) {
-    u.block(0, i, m_, 1) = mynlp_->w0_.block(i * (n_ + m_), 0, m_, 1);
-    x.block(0, i, n_, 1) = mynlp_->w0_.block(i * (n_ + m_) + m_, 0, n_, 1);
-  }
-
-  state_traj = Eigen::MatrixXd::Zero(N_ + 1, n_);
-  state_traj.topRows(1) = initial_state.transpose();
-  control_traj = Eigen::MatrixXd::Zero(N_, m_);
-
-  state_traj.bottomRows(N_) = x.transpose();
-  control_traj = u.transpose();
-
   if (status == Solve_Succeeded) {
     mynlp_->warm_start_ = true;
+
+    Eigen::MatrixXd x(n_, N_);
+    Eigen::MatrixXd u(m_, N_);
+
+    for (int i = 0; i < N_; ++i) {
+      u.block(0, i, m_, 1) = mynlp_->w0_.block(i * (n_ + m_), 0, m_, 1);
+      x.block(0, i, n_, 1) = mynlp_->w0_.block(i * (n_ + m_) + m_, 0, n_, 1);
+    }
+
+    state_traj = Eigen::MatrixXd::Zero(N_ + 1, n_);
+    state_traj.topRows(1) = initial_state.transpose();
+    control_traj = Eigen::MatrixXd::Zero(N_, m_);
+
+    state_traj.bottomRows(N_) = x.transpose();
+    control_traj = u.transpose();
 
     return true;
   } else {
