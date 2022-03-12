@@ -262,6 +262,7 @@ quadNLP::quadNLP(const quadNLP &nlp) {
   g_idxs_ = nlp.g_idxs_;
   slack_idxs_ = nlp.slack_idxs_;
   g_slack_idxs_ = nlp.g_slack_idxs_;
+  n_g_slack_vec_ = nlp.n_g_slack_vec_;
   n_slack_vec_ = nlp.n_slack_vec_;
 }
 
@@ -354,16 +355,16 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
 
   for (size_t i = 0; i < N_ - 1; i++) {
     // xmin
-    get_panic_constraint_var(g_l_matrix, i).head(n_slack_vec_[i]) =
+    get_panic_constraint_val(g_l_matrix, i).head(n_slack_vec_[i]) =
         x_min_complex_.head(n_slack_vec_[i]);
-    get_panic_constraint_var(g_l_matrix, i)(2, 0) = ground_height_(0, i);
+    get_panic_constraint_val(g_l_matrix, i)(2, 0) = ground_height_(0, i);
 
-    // get_panic_constraint_var(g_l_matrix, i)(2, 0) = 0;
-    get_panic_constraint_var(g_u_matrix, i).head(n_slack_vec_[i]).fill(2e19);
+    // get_panic_constraint_val(g_l_matrix, i)(2, 0) = 0;
+    get_panic_constraint_val(g_u_matrix, i).head(n_slack_vec_[i]).fill(2e19);
 
     // xmax
-    get_panic_constraint_var(g_l_matrix, i).tail(n_slack_vec_[i]).fill(-2e19);
-    get_panic_constraint_var(g_u_matrix, i).tail(n_slack_vec_[i]) =
+    get_panic_constraint_val(g_l_matrix, i).tail(n_slack_vec_[i]).fill(-2e19);
+    get_panic_constraint_val(g_u_matrix, i).tail(n_slack_vec_[i]) =
         x_max_complex_.head(n_slack_vec_[i]);
   }
 
@@ -577,9 +578,9 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     Eigen::VectorXd xk = get_state_var(w, i + 1).head(n_slack_vec_[i]);
     Eigen::VectorXd panick = get_panic_var(w, i);
 
-    get_panic_constraint_var(g_matrix, i).head(n_slack_vec_[i]) =
+    get_panic_constraint_val(g_matrix, i).head(n_slack_vec_[i]) =
         xk + panick.head(n_slack_vec_[i]);
-    get_panic_constraint_var(g_matrix, i).tail(n_slack_vec_[i]) =
+    get_panic_constraint_val(g_matrix, i).tail(n_slack_vec_[i]) =
         xk - panick.tail(n_slack_vec_[i]);
   }
 
@@ -1017,13 +1018,13 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
             .tail(nlp_prev.n_slack_vec_[i_prev])
             .head(n_slack_shared);
 
-    get_panic_constraint_var(lambda0_, i).segment(0, n_slack_shared) =
-        nlp_prev.get_panic_constraint_var(nlp_prev.lambda0_, i_prev)
+    get_panic_constraint_val(lambda0_, i).segment(0, n_slack_shared) =
+        nlp_prev.get_panic_constraint_val(nlp_prev.lambda0_, i_prev)
             .head(nlp_prev.n_slack_vec_[i_prev])
             .head(n_slack_shared);
-    get_panic_constraint_var(lambda0_, i)
+    get_panic_constraint_val(lambda0_, i)
         .segment(n_slack_vec_[i], n_slack_shared) =
-        nlp_prev.get_panic_constraint_var(nlp_prev.lambda0_, i_prev)
+        nlp_prev.get_panic_constraint_val(nlp_prev.lambda0_, i_prev)
             .tail(nlp_prev.n_slack_vec_[i_prev])
             .head(n_slack_shared);
 
@@ -1050,7 +1051,7 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
           get_panic_var(z_L0_, i).tail(n_slack_vec_[i]).tail(n_null_).fill(1);
           get_panic_var(z_U0_, i).head(n_slack_vec_[i]).tail(n_null_).fill(1);
           get_panic_var(z_U0_, i).tail(n_slack_vec_[i]).tail(n_null_).fill(1);
-          get_panic_constraint_var(lambda0_, i)
+          get_panic_constraint_val(lambda0_, i)
               .head(n_slack_vec_[i])
               .tail(n_null_)
               .fill(1000);
@@ -1326,6 +1327,7 @@ void quadNLP::update_structure() {
   // Resize vectors appropriately
   sys_id_schedule_.resize(N_ - 1);
   g_vec_.resize(N_ - 1);
+  n_g_slack_vec_.resize(N_ - 1);
   n_vec_.resize(N_);
   n_slack_vec_.resize(N_ - 1);
   fe_idxs_.resize(N_ - 1);
@@ -1362,12 +1364,15 @@ void quadNLP::update_structure() {
 
     // Update the number of state vars and constraints for this FE
     n_vec_[i] = (complexity_schedule[i] == 1) ? n_complex_ : n_simple_;
-
     n_slack_vec_[i] =
-        (complexity_schedule[i + 1] == 1 && apply_slack_to_complex_)
+        (complexity_schedule[i + 1] == 1 && apply_slack_to_complex_states_)
             ? n_complex_
             : n_simple_;
+
     g_vec_[i] = nrow_mat_(sys_id_schedule_[i], FUNC);
+    n_g_slack_vec_[i] =
+        (complexity_schedule[i + 1] == 1 && apply_slack_to_complex_constr_) ? 4
+                                                                            : 0;
 
     // Update the indices for the finite element, control, and state variables
     fe_idxs_[i] = curr_var_idx;
@@ -1398,8 +1403,9 @@ void quadNLP::update_structure() {
   // Update the slack variable indices
   for (int i = 0; i < N_ - 1; i++) {
     int n_slack = n_slack_vec_[i];
+    int g_slack = n_g_slack_vec_[i];
     slack_idxs_[i] = curr_var_idx;
-    curr_var_idx += 2 * n_slack;
+    curr_var_idx += 2 * n_slack + g_slack;
 
     g_slack_idxs_[i] = curr_constr_idx;
     curr_constr_idx += 2 * n_slack;

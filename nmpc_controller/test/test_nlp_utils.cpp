@@ -47,7 +47,7 @@ TEST(NMPCTest, testUtils) {
 
   // // Check num vars when no complex elements
   // complexity_schedule.setZero();
-  // EXPECT_FALSE(nlp.apply_slack_to_complex_);
+  // EXPECT_FALSE(nlp.apply_slack_to_complex_states_);
   // nlp.update_complexity_schedule(complexity_schedule);
   // EXPECT_EQ(nlp.n_vars_, (n * 3 + m) * N + n);
   // int g = n + 16;

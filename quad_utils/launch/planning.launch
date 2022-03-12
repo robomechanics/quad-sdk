@@ -2,9 +2,9 @@
 
     <include file="$(find quad_utils)/launch/load_params.launch" />
 
-    <arg name="global_planner" default="twist" />
+    <arg name="global_planner" default="fgmp" />
     <arg name="local_planner" default="full" />
-    <arg name="logging" default="false" />
+    <arg name="logging" default="true" />
     <arg name="twist_input" default="none" />
 
     <!-- Launch the node to publish the global body plan -->
