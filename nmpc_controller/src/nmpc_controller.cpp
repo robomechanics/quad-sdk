@@ -122,7 +122,7 @@ NMPCController::NMPCController(int type) {
   // app_->Options()->SetIntegerValue("max_iter", 100);
   // app_->Options()->SetStringValue("print_timing_statistics", "yes");
   app_->Options()->SetStringValue("linear_solver", "ma57");
-  app_->Options()->SetIntegerValue("print_level", 5);
+  app_->Options()->SetIntegerValue("print_level", 0);
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   // app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
@@ -296,74 +296,21 @@ bool NMPCController::computePlan(
   control_traj = Eigen::MatrixXd::Zero(N_ - 1, m_);
 
   state_traj.row(0) =
-      mynlp_->get_state_var(mynlp_->w0_, 0).head(n_).transpose();
-
-  // state_null_traj.row(0) =
-  //     mynlp_->get_state_var(mynlp_->w0_, 0).tail(n_null_).transpose();
-
-  // Eigen::VectorXd joint_positions(12), joint_velocities(12),
-  // joint_torques(12);
-
-  // quadKD_->convertCentroidalToFullBody(
-  //     state_traj.row(0), foot_positions.row(0),
-  //     mynlp_->foot_vel_world_.row(0), control_traj.row(0), joint_positions,
-  //     joint_velocities, joint_torques);
-
-  // state_null_traj_lift.row(0).head(12) = joint_positions;
-  // state_null_traj_lift.row(0).tail(12) = joint_velocities;
+      mynlp_->get_primal_state_var(mynlp_->w0_, 0).head(n_).transpose();
 
   for (int i = 1; i < N_; ++i) {
     control_traj.row(i - 1) =
-        mynlp_->get_control_var(mynlp_->w0_, i - 1).transpose();
+        mynlp_->get_primal_control_var(mynlp_->w0_, i - 1).transpose();
     state_traj.row(i) =
-        mynlp_->get_state_var(mynlp_->w0_, i).head(n_).transpose();
-
-    // if (mynlp_->n_vec_[i + 1] > n_) {
-    //   state_null_traj.row(i + 1) =
-    //       mynlp_->get_state_var(mynlp_->w0_, i +
-    //       1).tail(n_null_).transpose();
-    // } else {
-    //   quadKD_->convertCentroidalToFullBody(
-    //       state_traj.row(i + 1), foot_positions.row(i + 1),
-    //       mynlp_->foot_vel_world_.row(i + 1), control_traj.row(i),
-    //       joint_positions, joint_velocities, joint_torques);
-
-    //   state_null_traj.row(i + 1).head(12) = joint_positions;
-    //   state_null_traj.row(i + 1).tail(12) = joint_velocities;
-    // }
-
-    // quadKD_->convertCentroidalToFullBody(
-    //     state_traj.row(i + 1), mynlp_->foot_pos_world_.row(i + 1),
-    //     mynlp_->foot_vel_world_.row(i + 1), control_traj.row(i),
-    //     joint_positions, joint_velocities, joint_torques);
-
-    // state_null_traj_lift.row(i + 1).head(12) = joint_positions;
-    // state_null_traj_lift.row(i + 1).tail(12) = joint_velocities;
+        mynlp_->get_primal_state_var(mynlp_->w0_, i).head(n_).transpose();
   }
 
   // std::cout << "state_traj = \n" << state_traj << std::endl;
   // std::cout << "control_traj = \n" << control_traj << std::endl;
-  // std::cout << "state_null_traj pos = \n"
-  //           << state_null_traj.leftCols(n_null_ / 2) << std::endl;
-  // std::cout << "state_null_traj vel = \n"
-  //           << state_null_traj.rightCols(n_null_ / 2) << std::endl;
-  // std::cout << "state_null_traj_lift pos = \n"
-  //           << state_null_traj_lift.leftCols(n_null_ / 2) << std::endl;
-  // std::cout << "state_null_traj_lift vel = \n"
-  //           << state_null_traj_lift.rightCols(n_null_ / 2) << std::endl;
 
-  // std::cout << "state_null_traj pos diff = \n"
-  //           << state_null_traj.leftCols(n_null_ / 2) -
-  //                  state_null_traj_lift.leftCols(n_null_ / 2)
-  //           << std::endl;
-
-  // std::cout << "state_null_traj vel diff = \n"
-  //           << state_null_traj.rightCols(n_null_ / 2) -
-  //                  state_null_traj_lift.rightCols(n_null_ / 2)
-  //           << std::endl;
   if (status == Solve_Succeeded) {
     mynlp_->warm_start_ = true;
-    Eigen::VectorXd constr_vars = evalLiftedTrajectoryConstraints();
+    Eigen::VectorXd constr_vals = evalLiftedTrajectoryConstraints();
 
     return true;
   } else {
@@ -398,16 +345,16 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
   adaptive_complexity_horizon.setZero();
   Eigen::VectorXd x0, u, x1;
   Eigen::VectorXd joint_positions(12), joint_velocities(12), joint_torques(12);
-  Eigen::VectorXd constr_vars, params(24), lb_violation, ub_violation;
+  Eigen::VectorXd constr_vals, params(24), lb_violation, ub_violation;
   bool valid_solve = true;
   bool valid_lift = true;
 
   // Load current state data
-  x0 = mynlp_->get_state_var(mynlp_->w0_, 0);
+  x0 = mynlp_->get_primal_state_var(mynlp_->w0_, 0);
   if (x0.size() < mynlp_->n_complex_) {
     quadKD_->convertCentroidalToFullBody(
         x0, mynlp_->foot_pos_world_.row(0), mynlp_->foot_vel_world_.row(0),
-        mynlp_->get_control_var(mynlp_->w0_, 0), joint_positions,
+        mynlp_->get_primal_control_var(mynlp_->w0_, 0), joint_positions,
         joint_velocities, joint_torques);
     x0.conservativeResize(mynlp_->n_complex_);
     x0.segment(12, 12) = joint_positions;
@@ -419,8 +366,8 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
 
   // Loop through trajectory, lifting as needed and evaluating constraints
   for (int i = 0; i < N_ - 1; i++) {
-    u = mynlp_->get_control_var(mynlp_->w0_, i);
-    x1 = mynlp_->get_state_var(mynlp_->w0_, i + 1);
+    u = mynlp_->get_primal_control_var(mynlp_->w0_, i);
+    x1 = mynlp_->get_primal_state_var(mynlp_->w0_, i + 1);
 
     if (x1.size() < mynlp_->n_complex_) {
       quadKD_->convertCentroidalToFullBody(
@@ -436,25 +383,27 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
     params.head(12) = mynlp_->foot_pos_world_.row(i + 1);
     params.tail(12) = mynlp_->foot_vel_world_.row(i + 1);
 
-    constr_vars = mynlp_->eval_g_single_fe(COMPLEX, dt, x0, u, x1, params);
-    lb_violation = mynlp_->g_min_complex_ - constr_vars;
-    ub_violation = constr_vars - mynlp_->g_max_complex_;
+    constr_vals = mynlp_->eval_g_single_fe(COMPLEX, dt, x0, u, x1, params);
+    lb_violation = mynlp_->g_min_complex_ - constr_vals;
+    ub_violation = constr_vals - mynlp_->g_max_complex_;
     // std::cout << "lb violation = " << lb_violation << std::endl;
     // std::cout << "ub violation = " << ub_violation << std::endl;
 
-    for (int j = 0; j < constr_vars.size(); j++) {
+    for (int j = 0; j < constr_vals.size(); j++) {
       if (lb_violation[j] > constr_tol || ub_violation[j] > constr_tol) {
         if (mynlp_->n_vec_[i + 1] == mynlp_->n_complex_) {
           printf(
               "Constraint %s violated in FE %d: %5.3f <= %5.3f <= "
               "%5.3f\n",
               mynlp_->constr_names_[COMPLEX][j].c_str(), i,
-              mynlp_->g_min_complex_[j] - constr_tol, constr_vars[j],
+              mynlp_->g_min_complex_[j] - constr_tol, constr_vals[j],
               mynlp_->g_max_complex_[j] + constr_tol);
+
           // std::cout << "x0 = \n" << x0 << std::endl;
           // std::cout << "u = \n" << u << std::endl;
           // std::cout << "x1 = \n" << x1 << std::endl;
-          // std::cout << "constr_vars = \n" << constr_vars << std::endl;
+          // std::cout << "constr_vals = \n" << constr_vals << std::endl;
+
           valid_solve = false;
         } else {
           valid_lift = false;
@@ -487,9 +436,10 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
   }
 
   if (!valid_lift) {
-    std::cout << adaptive_complexity_horizon.transpose() << std::endl;
+    std::cout << "Invalid: " << adaptive_complexity_horizon.transpose()
+              << std::endl;
   }
 
   // timer.reportStatistics();
-  return constr_vars;
+  return constr_vals;
 }
