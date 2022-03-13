@@ -72,6 +72,8 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   double dt = (start_time - last_time).toSec();
   last_time = start_time;
 
+  // dt = 0.025;
+
   /// Collect and Process Data
   // IMU reading linear acceleration
   Eigen::VectorXd fk = Eigen::VectorXd::Zero(3);
@@ -157,13 +159,13 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   Eigen::VectorXd bw = last_X.segment(25, 3);
 
   // calculate linear acceleration set z acceleration to -9.8 for now
-  // Set imu bias
+  // a is the corrected IMU linear acceleration (fk hat)
   Eigen::VectorXd a = Eigen::VectorXd::Zero(3);
   a = fk - bf;
   a[2] = -9.8;
 
   // calculate angular acceleration
-  // Set imu bias
+  // w is the corrected IMU angular acceleration (wk hat)
   Eigen::VectorXd w = Eigen::VectorXd::Zero(3);
   w = wk - bw;
 
@@ -181,6 +183,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   X_pre.segment(22, 3) = bf;
   X_pre.segment(25, 3) = bw;
 
+  // std::cout << "this is X_pre " << X_pre << std::endl;
   // Linearized Dynamics Matrix
   F = Eigen::MatrixXd::Identity(num_cov, num_cov);
   F(0, 3) = dt;
@@ -193,8 +196,8 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   Eigen::MatrixXd r2 = this->calcRodrigues(dt, w, 2);
   Eigen::MatrixXd r3 = this->calcRodrigues(dt, w, 3);
 
-  F.block<3, 3>(0, 6) = -(pow(dt, 2) / 2) * C.transpose() * fkskew;
-  F.block<3, 3>(0, 21) = -(pow(dt, 2) / 2) * C.transpose();
+  F.block<3, 3>(0, 6) = -(dt * dt / 2) * C.transpose() * fkskew;
+  F.block<3, 3>(0, 21) = -(dt * dt / 2) * C.transpose();
   F.block<3, 3>(3, 6) = -dt * C.transpose() * fkskew;
   F.block<3, 3>(3, 21) = -dt * C.transpose();
   F.block<3, 3>(6, 6) = r0.transpose();
@@ -211,9 +214,9 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
       (pow(dt, 2) / 2) * noise_acc + (pow(dt, 4) / 8) * bias_acc;
   Q.block<3, 3>(3, 3) = dt * noise_acc + (pow(dt, 3) / 3) * bias_acc;
   Q.block<3, 3>(3, 21) = -1 * (pow(dt, 2) / 2) * C.transpose() * bias_acc;
-  Q.block<3, 3>(6, 6) = dt * noise_gyro + r3 + r3.transpose() * bias_gyro;
+  Q.block<3, 3>(6, 6) = dt * noise_gyro + (r3 + r3.transpose()) * bias_gyro;
   Q.block<3, 3>(6, 24) = -r2.transpose() * bias_gyro;
-  // determine foot contact
+  // determine foot contact and set noise
   for (int i = 0; i < num_feet; i++) {
     if (p[i * 3 + 2] < 0.02) {
       Q.block<3, 3>(9 + i * 3, 9 + i * 3) = dt * C.transpose() * noise_feet * C;
@@ -231,6 +234,8 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   // Covariance update
 
   P_pre = F * P * F.transpose() + Q;
+
+  // std::cout << "this is Q " << Q << std::endl;
   // std::cout << "this is P_pre " << P_pre << std::endl;
 }
 
@@ -278,7 +283,11 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
 
   // Measurement jacobian (12 * 27)
   H = Eigen::MatrixXd::Zero(num_measure, num_cov);
-  H.block<12, 3>(0, 0) = -C_pre.replicate(6, 1);
+  H.block<3, 3>(0, 0) = -C_pre;
+  H.block<3, 3>(3, 0) = -C_pre;
+  H.block<3, 3>(6, 0) = -C_pre;
+  H.block<3, 3>(9, 0) = -C_pre;
+
   for (int i = 0; i < num_feet; i++) {
     Eigen::VectorXd vtemp = C_pre * (p_pre.segment(i * 3, 3) - r_pre);
     H.block<3, 3>(i * 3, 6) = this->calcSkewsym(vtemp);
@@ -314,19 +323,21 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   // std::cout << "this is P " << P << std::endl;
 
   // update state
-  X.segment(0, 6) = X_pre.segment(0, 6) + delta_X.segment(0, 6);
+  X.segment(0, 3) = r_pre + delta_X.segment(0, 3);
+  X.segment(3, 3) = v_pre + delta_X.segment(3, 3);
   Eigen::VectorXd delta_q = delta_X.segment(6, 3);
   Eigen::VectorXd q_upd = this->quaternionDynamics(delta_q, q_pre);
   X.segment(6, 4) = q_upd;
-  X.segment(10, num_feet * 3) =
-      X_pre.segment(10, num_feet * 3) + delta_X.segment(9, num_feet * 3);
-  X.segment(22, 6) = X_pre.segment(22, 6) + delta_X.segment(21, 6);
+  X.segment(10, num_feet * 3) = p_pre + delta_X.segment(9, num_feet * 3);
+  X.segment(22, 3) = bf_pre + delta_X.segment(21, 3);
+  X.segment(25, 3) = bw_pre + delta_X.segment(24, 3);
 
   // set current state value to previous statex
   last_X = X;
 
   // std::cout << "this is y" << y << std::endl;
-  // std::cout << "this is P" << P << std::endl;
+  // std::cout << "this is P  after the measurement" << P << std::endl;
+  // std::cout << "this is X after the measurement " << X << std::endl;
   // std::cout << "this is r0" << r0 << std::endl;
   // std::cout << "this is r1" << r1 << std::endl;
   // std::cout << "this is r2" << r2 << std::endl;

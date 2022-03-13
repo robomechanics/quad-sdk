@@ -1,6 +1,7 @@
 #ifndef EKF_ESTIMATOR_H
 #define EKF_ESTIMATOR_H
 
+#include <gtest/gtest.h>
 #include <quad_msgs/ContactMode.h>
 #include <quad_msgs/RobotState.h>
 #include <quad_utils/quad_kd.h>
@@ -66,6 +67,7 @@ class EKFEstimator {
    */
   quad_msgs::RobotState StepOnce();
 
+  FRIEND_TEST(EKFEstimator, basicTestCase);
   /**
    * @brief EKF prediction step
    * @param[in] dt double time interval
@@ -195,6 +197,7 @@ class EKFEstimator {
   // initial state vector (28 * 1)
   Eigen::VectorXd X0;
 
+  FRIEND_TEST(EKFEstimator, basicTestCase);
   // state vector (28 * 1)
   Eigen::VectorXd X;
 
