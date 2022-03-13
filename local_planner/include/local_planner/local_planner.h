@@ -341,6 +341,9 @@ class LocalPlanner {
 
   /// Last call time
   ros::Time last_call_time_;
+
+  /// Ground reaction force position in body frame
+  Eigen::MatrixXd grf_positions_body_;
 };
 
 #endif  // LOCAL_PLANNER_H

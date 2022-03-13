@@ -81,7 +81,9 @@ NMPCController::NMPCController(int type) {
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
   app_->Options()->SetStringValue("fixed_variable_treatment",
                                   "make_parameter_nodual");
-  app_->Options()->SetNumericValue("tol", 1e-6);
+  app_->Options()->SetNumericValue("first_hessian_perturbation", 1);
+  app_->Options()->SetNumericValue("ma57_pre_alloc", 2.0);
+  app_->Options()->SetNumericValue("tol", 1e-3);
   app_->Options()->SetNumericValue("dual_inf_tol", 1e10);
   app_->Options()->SetNumericValue("constr_viol_tol", 1e-2);
   app_->Options()->SetNumericValue("compl_inf_tol", 1e-2);
@@ -100,9 +102,6 @@ NMPCController::NMPCController(int type) {
               << "*** Error during NMPC initialization!" << std::endl;
     return;
   }
-
-  // First time running requires initialization
-  require_init_ = true;
 }
 
 bool NMPCController::computeLegPlan(
@@ -115,10 +114,10 @@ bool NMPCController::computeLegPlan(
   // Local planner will send a reference traj with N+1 rows
   mynlp_->update_solver(initial_state, ref_traj.bottomRows(N_), foot_positions,
                         contact_schedule, ref_ground_height.tail(N_),
-                        first_element_duration, same_plan_index, require_init_);
+                        first_element_duration, same_plan_index);
 
   // Once update, the initialization is done
-  require_init_ = false;
+  mynlp_->require_init_ = false;
 
   // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
   // ROS_INFO_STREAM("initial_state");
@@ -216,14 +215,13 @@ bool NMPCController::computeDistributedTailPlan(
   initial_state_with_tail.segment(8, 6) = initial_state.tail(6);
   initial_state_with_tail.segment(14, 2) = tail_initial_state.tail(2);
 
-  mynlp_->update_solver(initial_state_with_tail,
-                        ref_traj_with_tail.bottomRows(N_), foot_positions,
-                        contact_schedule, state_traj.bottomRows(N_),
-                        control_traj, ref_ground_height.tail(N_),
-                        first_element_duration, same_plan_index, require_init_);
+  mynlp_->update_solver(
+      initial_state_with_tail, ref_traj_with_tail.bottomRows(N_),
+      foot_positions, contact_schedule, state_traj.bottomRows(N_), control_traj,
+      ref_ground_height.tail(N_), first_element_duration, same_plan_index);
 
   // Once update, the initialization is done
-  require_init_ = false;
+  mynlp_->require_init_ = false;
 
   // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
   // ROS_INFO_STREAM("initial_state");
@@ -327,7 +325,7 @@ bool NMPCController::computePlan(
     state_traj = Eigen::MatrixXd::Zero(N_ + 1, n_);
     state_traj.topRows(1) = initial_state.transpose();
     control_traj = Eigen::MatrixXd::Zero(N_, m_);
-    
+
     state_traj.bottomRows(N_) = x.transpose();
     control_traj = u.transpose();
 
@@ -335,7 +333,7 @@ bool NMPCController::computePlan(
   } else {
     mynlp_->mu0_ = 1e-1;
     mynlp_->warm_start_ = false;
-    require_init_ = true;
+    mynlp_->require_init_ = true;
 
     ROS_WARN_STREAM(param_ns_ << " solving fail");
 

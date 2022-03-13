@@ -221,6 +221,17 @@ void LocalFootstepPlanner::computeFootPlan(
         // Compute the minimum circle center
         hip_position_midstance = welzlMinimumCircle(P, R);
 
+        // Toe has 20cm radius so we need to shift the foot height from terrain
+        // Use flat terrain assumption
+        // double ground_height_midstance = ground_height_;
+
+        // Use estimated terrain
+        double ground_height_midstance = terrain_grid_.atPosition(
+            "z_smooth",
+            terrain_grid_.getClosestPositionInMap(
+                hip_position_midstance.head(2)),
+            grid_map::InterpolationMethods::INTER_LINEAR);
+
         // Get touchdown information for body state
         body_vel_touchdown = body_plan.block<1, 3>(i, 6);
         ref_body_vel_touchdown = ref_body_plan.block<1, 3>(i, 6);
@@ -228,7 +239,8 @@ void LocalFootstepPlanner::computeFootPlan(
         ref_body_ang_vel_touchdown = ref_body_plan.block<1, 3>(i, 9);
 
         // Compute dynamic shift
-        double body_height_touchdown = body_plan(i, 2);
+        double body_height_touchdown =
+            std::max(0., body_plan(i, 2) - ground_height_midstance);
         // Ref: Highly Dynamic Quadruped Locomotion via Whole-Body Impulse
         // Control and Model Predictive Control (Centrifugal force and capture
         // point)

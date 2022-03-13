@@ -251,14 +251,11 @@ void TailPlanner::computeTailPlan() {
 
       Eigen::VectorXd foot_positions(12);
       quad_utils::multiFootStateMsgToEigen(
-          last_local_plan_msg_->states[idx].feet, foot_positions);
+          last_local_plan_msg_->states[idx].feet_body, foot_positions);
+      foot_positions_body_.row(i) = foot_positions.transpose();
       for (size_t j = 0; j < 4; j++) {
         contact_schedule_[i][j] =
             bool(last_local_plan_msg_->grfs[idx].contact_states[j]);
-
-        quad_utils::multiFootStateMsgToEigen(
-            last_local_plan_msg_->states[idx].feet_body, foot_positions);
-        foot_positions_body_.row(i) = foot_positions.transpose();
       }
     }
   }
@@ -298,17 +295,12 @@ void TailPlanner::computeTailPlan() {
     tail_msg.motor_commands.at(1).vel_setpoint = tail_plan_(i, 3);
     tail_msg.motor_commands.at(1).torque_ff = tail_torque_plan_(i, 1);
 
-    // The first duration may vary
-    if (i == 0) {
-      tail_msg.header.stamp = tail_plan_msg.header.stamp;
-    } else if (i == 1) {
-      tail_msg.header.stamp =
-          tail_plan_msg.header.stamp + ros::Duration(first_element_duration_);
-    } else {
-      tail_msg.header.stamp = tail_plan_msg.header.stamp +
-                              ros::Duration(first_element_duration_) +
-                              ros::Duration((i - 1) * dt_);
-    }
+    // The first duration will vary
+    tail_msg.header.stamp = (i == 0)
+                                ? tail_plan_msg.header.stamp
+                                : tail_plan_msg.header.stamp +
+                                      ros::Duration(first_element_duration_) +
+                                      ros::Duration((i - 1) * dt_);
 
     tail_plan_msg.leg_commands.push_back(tail_msg);
   }

@@ -55,6 +55,12 @@ class quadNLP : public TNLP {
   /// Mass of the platform (set to zero to ignore nominal ff)
   const double mass_ = 13.3;
 
+  /// Mass of the tail
+  const double tail_mass_ = 0.2764;
+
+  /// Mass of the tail
+  const double tail_length_ = 0.6706;
+
   /// Gravity constant
   const double grav_ = 9.81;
 
@@ -72,6 +78,9 @@ class quadNLP : public TNLP {
 
   // Indicator of warm start
   bool warm_start_;
+
+  // Indicator of initialization
+  bool require_init_;
 
   // State reference for computing cost
   Eigen::MatrixXd x_reference_;
@@ -201,16 +210,14 @@ class quadNLP : public TNLP {
       const std::vector<std::vector<bool>> &contact_schedule,
       const Eigen::MatrixXd &state_traj, const Eigen::MatrixXd &control_traj,
       const Eigen::VectorXd &ground_height,
-      const double &first_element_duration_, const bool &same_plan_index,
-      const bool &init);
+      const double &first_element_duration_, const bool &same_plan_index);
 
   virtual void update_solver(
       const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
       const Eigen::MatrixXd &foot_positions,
       const std::vector<std::vector<bool>> &contact_schedule,
       const Eigen::VectorXd &ground_height,
-      const double &first_element_duration_, const bool &same_plan_index,
-      const bool &init);
+      const double &first_element_duration_, const bool &same_plan_index);
 
   //@}
 

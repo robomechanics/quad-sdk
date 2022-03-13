@@ -614,7 +614,8 @@ void LocalPlanner::getStateAndTwistInput() {
   for (int i = 1; i < N_ + 1; i++) {
     Twist current_cmd_vel = cmd_vel_;
 
-    double yaw = ref_body_plan_(i - 1, 5);
+    // double yaw = ref_body_plan_(i - 1, 5);
+    double yaw = current_state_[5];
     current_cmd_vel[0] = cmd_vel_[0] * cos(yaw) - cmd_vel_[1] * sin(yaw);
     current_cmd_vel[1] = cmd_vel_[0] * sin(yaw) + cmd_vel_[1] * cos(yaw);
 
@@ -735,24 +736,24 @@ bool LocalPlanner::computeLocalPlan() {
   }
 
   // Compute grf position considering the toe radius
-  Eigen::MatrixXd grf_positions_body = foot_positions_body_;
+  grf_positions_body_ = foot_positions_body_;
   for (size_t i = 0; i < 4; i++) {
-    grf_positions_body.col(3 * i + 2) =
+    grf_positions_body_.col(3 * i + 2) =
         foot_positions_body_.col(3 * i + 2).array() - toe_radius;
   }
 
   // Compute leg plan with MPC, return if solve fails
   if (!local_body_planner_nonlinear_->computeLegPlan(
-          current_state_, ref_body_plan_, grf_positions_body, adaptive_contact_schedule_,
-          ref_ground_height_, first_element_duration_, same_plan_index_,
-          body_plan_, grf_plan_))
+          current_state_, ref_body_plan_, grf_positions_body_,
+          adaptive_contact_schedule_, ref_ground_height_,
+          first_element_duration_, same_plan_index_, body_plan_, grf_plan_))
     return false;
 
   // Record computation time and update exponential filter
   compute_time_ = 1000.0 * timer.reportSilent();
   mean_compute_time_ = (filter_smoothing_constant_)*mean_compute_time_ +
                        (1 - filter_smoothing_constant_) * compute_time_;
-  ROS_INFO_THROTTLE(0.1, "LocalPlanner took %5.3f ms", compute_time_);
+  // ROS_INFO_THROTTLE(0.1, "LocalPlanner took %5.3f ms", compute_time_);
 
   // Return true if made it this far
   return true;
@@ -798,7 +799,9 @@ void LocalPlanner::publishLocalPlan() {
                                    grf_array_msg);
     grf_array_msg.contact_states.resize(num_feet_);
     for (int j = 0; j < num_feet_; j++) {
-      grf_array_msg.contact_states[j] = contact_schedule_[i][j];
+      // Looks like robot driver uses the contact states in robot states, so
+      // tail planner use this one for the adaptive contact states
+      grf_array_msg.contact_states[j] = adaptive_contact_schedule_[i][j];
     }
 
     // Update the headers and plan indices of the messages
@@ -829,7 +832,7 @@ void LocalPlanner::publishLocalPlan() {
     for (size_t j = 0; j < 4; j++) {
       quad_msgs::FootState foot_state_msg;
       quad_utils::eigenToFootStateMsg(
-          foot_positions_body_.block(i, 3 * j, 1, 3).transpose(),
+          grf_positions_body_.block(i, 3 * j, 1, 3).transpose(),
           Eigen::Vector3d::Zero(3), Eigen::Vector3d::Zero(3), foot_state_msg);
       foot_state_msg_body.feet.push_back(foot_state_msg);
     }

@@ -113,9 +113,6 @@ class NMPCController {
 
   // Parameter namespace
   std::string param_ns_;
-
-  // Indicator of initialization
-  bool require_init_;
 };
 
 #endif  // MPC_CONTROLLER_H

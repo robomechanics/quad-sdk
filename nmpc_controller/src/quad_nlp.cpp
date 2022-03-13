@@ -132,6 +132,8 @@ quadNLP::quadNLP(int type, int N, int n, int m, double dt, double mu,
 
   warm_start_ = false;
 
+  require_init_ = true;
+
   for (size_t i = 0; i < N_; i++) {
     for (size_t j = 0; j < 4; j++) {
       w0_(leg_input_start_idx_ + 2 + j * 3 + i * (n_ + m_), 0) =
@@ -299,9 +301,15 @@ bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
     if (num_contacts > 0) {
       for (int j = 0; j < contact_sequence_.rows(); j++) {
         if (contact_sequence_(j, i) == 1) {
-          u_nom[3 * j + 2] = mass_ * grav_ / num_contacts;
+          u_nom[leg_input_start_idx_ + 3 * j + 2] =
+              mass_ * grav_ / num_contacts;
         }
       }
+    }
+
+    if (type_ == DISTRIBUTED) {
+      u_nom[0] =
+          -tail_mass_ * grav_ * tail_length_ * std::sin(x_reference_(6, i));
     }
 
     Eigen::MatrixXd uk = w.block(i * (n_ + m_), 0, m_, 1) - u_nom;
@@ -345,9 +353,15 @@ bool quadNLP::eval_grad_f(Index n, const Number *x, bool new_x,
     if (num_contacts > 0) {
       for (int j = 0; j < contact_sequence_.rows(); j++) {
         if (contact_sequence_(j, i) == 1) {
-          u_nom[3 * j + 2] = mass_ * grav_ / num_contacts;
+          u_nom[leg_input_start_idx_ + 3 * j + 2] =
+              mass_ * grav_ / num_contacts;
         }
       }
+    }
+
+    if (type_ == DISTRIBUTED) {
+      u_nom[0] =
+          -tail_mass_ * grav_ * tail_length_ * std::sin(x_reference_(6, i));
     }
 
     Eigen::MatrixXd uk = w.block(i * (n_ + m_), 0, m_, 1) - u_nom;
@@ -949,7 +963,7 @@ void quadNLP::update_solver(
     const Eigen::MatrixXd &foot_positions,
     const std::vector<std::vector<bool>> &contact_schedule,
     const Eigen::VectorXd &ground_height, const double &first_element_duration,
-    const bool &same_plan_index, const bool &init) {
+    const bool &same_plan_index) {
   // Update foot positions
   // Local planner has row as N horizon and col as position
   feet_location_ = -foot_positions.transpose();
@@ -1054,7 +1068,7 @@ void quadNLP::update_solver(
   ground_height_ = ground_height.transpose();
 
   // Initialize with reference trajectory
-  if (init) {
+  if (require_init_) {
     w0_.setZero();
     z_L0_.fill(1);
     z_U0_.fill(1);
@@ -1063,6 +1077,12 @@ void quadNLP::update_solver(
     for (size_t i = 0; i < N_; i++) {
       // Set states
       w0_.block(i * (n_ + m_) + m_, 0, n_, 1) = x_reference_.col(i);
+
+      // Set tail inputs
+      if (type_ == DISTRIBUTED) {
+        w0_(i * (n_ + m_), 0) =
+            -tail_mass_ * grav_ * tail_length_ * std::sin(x_reference_(6, i));
+      }
 
       // Set inputs
       double num_contacts = contact_sequence_.col(i).sum();
@@ -1089,9 +1109,9 @@ void quadNLP::update_solver(
     const std::vector<std::vector<bool>> &contact_schedule,
     const Eigen::MatrixXd &state_traj, const Eigen::MatrixXd &control_traj,
     const Eigen::VectorXd &ground_height, const double &first_element_duration,
-    const bool &same_plan_index, const bool &init) {
+    const bool &same_plan_index) {
   update_solver(initial_state, ref_traj, foot_positions, contact_schedule,
-                ground_height, first_element_duration, same_plan_index, init);
+                ground_height, first_element_duration, same_plan_index);
 
   // Update known leg input
   leg_input_ = control_traj.transpose();
@@ -1103,13 +1123,13 @@ void quadNLP::update_solver(
   // Update known leg input flag
   known_leg_input_ = true;
 
-  // Initialize with the leg solution
-  if (init) {
-    for (size_t i = 0; i < N_; i++) {
-      w0_.block(i * (n_ + m_) + m_, 0, 6, 1) =
-          state_traj.row(i).transpose().segment(0, 6);
-      w0_.block(i * (n_ + m_) + m_ + 8, 0, 6, 1) =
-          state_traj.row(i).transpose().segment(6, 6);
-    }
-  }
+  // Initialize with the leg solution, seems it's a bad idea
+  // if (require_init_) {
+  //   for (size_t i = 0; i < N_; i++) {
+  //     w0_.block(i * (n_ + m_) + m_, 0, 6, 1) =
+  //         state_traj.row(i + 1).transpose().segment(0, 6);
+  //     w0_.block(i * (n_ + m_) + m_ + 8, 0, 6, 1) =
+  //         state_traj.row(i + 1).transpose().segment(6, 6);
+  //   }
+  // }
 }
