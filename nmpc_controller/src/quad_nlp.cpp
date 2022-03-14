@@ -15,8 +15,10 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
                  double constraint_panic_weights, Eigen::VectorXd Q,
                  Eigen::VectorXd R, Eigen::VectorXd Q_factor,
                  Eigen::VectorXd R_factor, Eigen::VectorXd x_min,
-                 Eigen::VectorXd x_max, Eigen::VectorXd x_min_complex,
-                 Eigen::VectorXd x_max_complex, Eigen::VectorXd u_min,
+                 Eigen::VectorXd x_max, Eigen::VectorXd x_min_complex_hard,
+                 Eigen::VectorXd x_max_complex_hard,
+                 Eigen::VectorXd x_min_complex_soft,
+                 Eigen::VectorXd x_max_complex_soft, Eigen::VectorXd u_min,
                  Eigen::VectorXd u_max,
                  Eigen::VectorXi fixed_complexity_schedule)
 // N: prediction steps
@@ -138,8 +140,10 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   x_max_ = x_max;
   x_min_simple_ = x_min_;
   x_max_simple_ = x_max_;
-  x_min_complex_ = x_min_complex;
-  x_max_complex_ = x_max_complex;
+  x_min_complex_hard_ = x_min_complex_hard;
+  x_max_complex_hard_ = x_max_complex_hard;
+  x_min_complex_soft_ = x_min_complex_soft;
+  x_max_complex_soft_ = x_max_complex_soft;
 
   double abad_nom = -0.248694;
   double hip_nom = 0.760144;
@@ -167,35 +171,35 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   g_max_simple_ = g_max_;
 
   // Initialize complex constraint bounds
-  g_min_complex_.resize(g_complex_);
-  g_max_complex_.resize(g_complex_);
+  g_min_complex_hard_.resize(g_complex_);
+  g_max_complex_hard_.resize(g_complex_);
   int current_idx = 0;
   int constraint_size;
 
   // Load simple constraint bounds
   constraint_size = g_simple_;
-  g_min_complex_.segment(current_idx, constraint_size) = g_min_simple_;
-  g_max_complex_.segment(current_idx, constraint_size) = g_max_simple_;
+  g_min_complex_hard_.segment(current_idx, constraint_size) = g_min_simple_;
+  g_max_complex_hard_.segment(current_idx, constraint_size) = g_max_simple_;
   current_idx += constraint_size;
 
   // Load foot position and velocity constraint bounds
   constraint_size = n_null_;
-  g_min_complex_.segment(current_idx, constraint_size).fill(0);
-  g_max_complex_.segment(current_idx, constraint_size).fill(0);
+  g_min_complex_hard_.segment(current_idx, constraint_size).fill(0);
+  g_max_complex_hard_.segment(current_idx, constraint_size).fill(0);
   current_idx += constraint_size;
 
   // Load knee constraint bounds
   constraint_size = num_feet_;
-  g_min_complex_.segment(current_idx, constraint_size).fill(-2e19);
-  g_max_complex_.segment(current_idx, constraint_size).fill(0.1);
+  g_min_complex_hard_.segment(current_idx, constraint_size).fill(-2e19);
+  g_max_complex_hard_.segment(current_idx, constraint_size).fill(0.0);
   relaxed_primal_constraint_idxs_in_fe_ = Eigen::ArrayXi::LinSpaced(
       constraint_size, current_idx, current_idx + constraint_size - 1);
   current_idx += constraint_size;
 
   // Load motor model constraint bounds
   constraint_size = n_null_;
-  g_min_complex_.segment(current_idx, constraint_size).fill(-2e19);
-  g_max_complex_.segment(current_idx, constraint_size).fill(0);
+  g_min_complex_hard_.segment(current_idx, constraint_size).fill(-2e19);
+  g_max_complex_hard_.segment(current_idx, constraint_size).fill(0);
   current_idx += constraint_size;
 
   std::cout << "relaxed_primal_constraint_idxs_in_fe_ = "
@@ -351,14 +355,16 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
     // Add bounds if not covered by panic variables
     if (n_vec_[i + 1] > n_slack_vec_[i]) {
       get_primal_state_var(x_l_matrix, i + 1).tail(n_null_) =
-          x_min_complex_.tail(n_null_);
+          x_min_complex_hard_.tail(n_null_);
       get_primal_state_var(x_u_matrix, i + 1).tail(n_null_) =
-          x_max_complex_.tail(n_null_);
+          x_max_complex_hard_.tail(n_null_);
     }
 
     // Constraints bound
-    get_primal_constraint_vals(g_l_matrix, i) = g_min_complex_.head(g_vec_[i]);
-    get_primal_constraint_vals(g_u_matrix, i) = g_max_complex_.head(g_vec_[i]);
+    get_primal_constraint_vals(g_l_matrix, i) =
+        g_min_complex_hard_.head(g_vec_[i]);
+    get_primal_constraint_vals(g_u_matrix, i) =
+        g_max_complex_hard_.head(g_vec_[i]);
 
     // Relaxed constraints bound
     // get_relaxed_primal_constraint_vals(g_l_matrix, i).fill(-2e19);
@@ -374,7 +380,7 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
   for (size_t i = 0; i < N_ - 1; i++) {
     // xmin
     get_slack_constraint_vals(g_l_matrix, i).head(n_slack_vec_[i]) =
-        x_min_complex_.head(n_slack_vec_[i]);
+        x_min_complex_hard_.head(n_slack_vec_[i]);
     get_slack_constraint_vals(g_l_matrix, i)(2, 0) = ground_height_(0, i);
 
     // get_slack_constraint_vals(g_l_matrix, i)(2, 0) = 0;
@@ -383,7 +389,7 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
     // xmax
     get_slack_constraint_vals(g_l_matrix, i).tail(n_slack_vec_[i]).fill(-2e19);
     get_slack_constraint_vals(g_u_matrix, i).tail(n_slack_vec_[i]) =
-        x_max_complex_.head(n_slack_vec_[i]);
+        x_max_complex_hard_.head(n_slack_vec_[i]);
   }
 
   return true;
@@ -453,6 +459,17 @@ bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
     obj_value +=
         panic_weights_ * get_slack_state_var(w, i).sum() +
         constraint_panic_weights_ * get_slack_constraint_var(w, i).sum();
+
+    // std::cout << "var cost = "
+    //           << panic_weights_ * get_slack_state_var(w, i).sum() <<
+    //           std::endl;
+
+    // std::cout << "constraint_panic_weights_ = " << constraint_panic_weights_
+    //           << std::endl;
+    // std::cout << "constraint cost = "
+    //           << constraint_panic_weights_ *
+    //                  get_slack_constraint_var(w, i).sum()
+    //           << std::endl;
   }
 
   return true;
@@ -658,13 +675,6 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
       // pk.segment(2, 12) = feet_location_.block(0, i, 12, 1);
       pk.segment(2, 12) = foot_pos_world_.row(i + 1);
       pk.segment(14, 12) = foot_vel_world_.row(i + 1);
-      // std::cout << "i = " << i << std::endl;
-      // std::cout << "foot_pos_world_.row(i + 1) = " << foot_pos_world_.row(i +
-      // 1)
-      //           << std::endl;
-      // std::cout << "foot_vel_world_.row(i + 1) = " << foot_vel_world_.row(i +
-      // 1)
-      //           << std::endl;
 
       // Set up the work function
       casadi_int sz_arg;
@@ -1007,34 +1017,41 @@ void quadNLP::finalize_solution(SolverReturn status, Index n, const Number *x,
 
   mu0_ = ip_data->curr_mu();
 
+  // double total_slack_var_cost = 0;
+  // double total_slack_constraint_cost = 0;
+  // Eigen::ArrayXi nonzero_slack_var(N_ - 1), nonzero_constraint_var(N_ - 1);
+  // nonzero_slack_var.setZero();
+  // nonzero_constraint_var.setZero();
   // for (int i = 0; i < N_ - 1; i++) {
-  //   std::cout << "get_slack_constraint_var(w0_, " << i
-  //             << ") = " << get_slack_constraint_var(w0_, i) << std::endl;
-  //   std::cout << "get_primal_constraint_vals(g0_, " << i
-  //             << ") = " << get_primal_constraint_vals(g0_, i) << std::endl;
-  //   std::cout << "get_relaxed_primal_constraint_vals(g0_, " << i
-  //             << ") = " << get_relaxed_primal_constraint_vals(g0_, i)
-  //             << std::endl
+  //   total_slack_var_cost += panic_weights_ * get_slack_state_var(w, i).sum();
+  //   total_slack_constraint_cost +=
+  //       constraint_panic_weights_ * get_slack_constraint_var(w, i).sum();
+
+  //   if (get_slack_state_var(w, i).sum() >= 1e-4) {
+  //     nonzero_slack_var[i] = 1;
+  //   }
+  //   if (get_slack_constraint_var(w, i).sum() >= 1e-4) {
+  //     nonzero_constraint_var[i] = 1;
+  //     std::cout << "get_slack_constraint_var(w, i).sum() = "
+  //               << get_slack_constraint_var(w, i).sum() << std::endl;
+  //   }
+  // }
+
+  // if (total_slack_var_cost > 1e-2 || total_slack_constraint_cost > 1e-2) {
+  //   std::cout << "total_slack_var_cost = " << total_slack_var_cost <<
+  //   std::endl; std::cout << "total_slack_constraint_cost = " <<
+  //   total_slack_constraint_cost
   //             << std::endl;
+  //   std::cout << "nonzero_slack_var = " << nonzero_slack_var.transpose()
+  //             << std::endl;
+  //   std::cout << "nonzero_constraint_var = "
+  //             << nonzero_constraint_var.transpose() << std::endl;
   // }
 }
 
 void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
   // Shift decision variables for 1 time step
   // quad_utils::FunctionTimer timer("shift_initial_guess");
-
-  // if (shift_idx > 0) {
-  //   std::cout << "Updating initial guess because index shifted" << std::endl;
-  // } else {
-  //   std::cout << "Updating initial guess because structure changed"
-  //             << std::endl;
-  // }
-
-  // std::cout << "nlp_prev.n_vec_ = " << nlp_prev.n_vec_.transpose() <<
-  // std::endl; std::cout << "n_vec_          = " << n_vec_.transpose() <<
-  // std::endl;
-
-  // TODO(jcnorby) update this!!!
 
   w0_.conservativeResize(n_vars_);
   z_L0_.conservativeResize(n_vars_);
@@ -1187,8 +1204,8 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
     // std::cout << "get_slack_state_var(w0_, i).size() = "
     //           << get_slack_state_var(w0_, i).size() << std::endl
     //           << std::endl;
-    // std::cout << "get_slack_state_var(w0_, i) = " << get_slack_state_var(w0_,
-    // i).transpose()
+    // std::cout << "get_slack_state_var(w0_, i) = " <<
+    // get_slack_state_var(w0_, i).transpose()
     //           << std::endl;
     // std::cout << "get_primal_constraint_vals(lambda0_, i) = "
     //           << get_primal_constraint_vals(lambda0_, i).transpose() <<
@@ -1251,15 +1268,6 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
       }
     }
   }
-
-  // std::cout << "w0_ after = \n" << w0_ << std::endl;
-  // std::cout << "lambda0_ after = \n" << lambda0_ << std::endl;
-  // throw std::runtime_error("Stop");
-
-  // std::cout << "w0_.size() after = \n" << w0_.size() << std::endl;
-  // std::cout << "lambda0_.size() after = \n" << lambda0_.size() << std::endl;
-  // std::cout << "n_vars_ = " << n_vars_ << std::endl;
-  // std::cout << "n_constraints_ = " << n_constraints_ << std::endl;
 
   if (w0_.size() != n_vars_) {
     throw std::runtime_error("w0_.size() != n_vars_!");
@@ -1532,9 +1540,9 @@ void quadNLP::update_structure() {
     int n_slack = n_slack_vec_[i];
     int g_slack = g_slack_vec_[i];
 
-    // Log the index of first slack var in finite element and update the current
-    // variable pointer with the number of state slack vars in this fe (xmin,
-    // xmax)
+    // Log the index of first slack var in finite element and update the
+    // current variable pointer with the number of state slack vars in this fe
+    // (xmin, xmax)
     slack_state_var_idxs_[i] = curr_var_idx;
     curr_var_idx += 2 * n_slack;
 
@@ -1585,15 +1593,16 @@ void quadNLP::update_structure() {
   compute_nnz_jac_g();
   compute_nnz_h();
 
-  // std::cout << "complexity_schedule.size() = " << complexity_schedule.size()
+  // std::cout << "complexity_schedule.size() = " <<
+  // complexity_schedule.size()
   //           << std::endl;
   // std::cout << "N_ = " << N_ << std::endl;
   // std::cout << "cmplx_sch = " << complexity_schedule.transpose() <<
-  // std::endl; std::cout << "sys_id_sch = " << sys_id_schedule_.transpose() <<
-  // std::endl; std::cout << "n_vec_ =    " << n_vec_.transpose() << std::endl;
-  // std::cout << "n_slack_vec_ = " << n_slack_vec_.transpose() << std::endl;
-  // std::cout << "g_vec_ =      " << g_vec_.transpose() << std::endl;
-  // std::cout << "g_vec_.sum() = " << g_vec_.sum() << std::endl;
+  // std::endl; std::cout << "sys_id_sch = " << sys_id_schedule_.transpose()
+  // << std::endl; std::cout << "n_vec_ =    " << n_vec_.transpose() <<
+  // std::endl; std::cout << "n_slack_vec_ = " << n_slack_vec_.transpose() <<
+  // std::endl; std::cout << "g_vec_ =      " << g_vec_.transpose() <<
+  // std::endl; std::cout << "g_vec_.sum() = " << g_vec_.sum() << std::endl;
   // std::cout << "g_vec_.sum() + n_vars_slack_ = " << g_vec_.sum() +
   // n_vars_slack_
   //           << std::endl;

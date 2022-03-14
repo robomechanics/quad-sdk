@@ -42,8 +42,7 @@ NMPCController::NMPCController(int type) {
   // Load MPC cost weighting and bounds
   std::vector<double> state_weights, control_weights, state_weights_factors,
       control_weights_factors, state_lower_bound, state_upper_bound,
-      state_lower_bound_null, state_upper_bound_null, control_lower_bound,
-      control_upper_bound;
+      control_lower_bound, control_upper_bound;
   std::vector<int> fixed_complex_idxs;
   double panic_weights, constraint_panic_weights;
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_weights",
@@ -68,11 +67,17 @@ NMPCController::NMPCController(int type) {
                   control_upper_bound);
 
   int fixed_complex_head, fixed_complex_tail;
+  std::vector<double> state_lower_bound_null_hard, state_upper_bound_null_hard,
+      state_lower_bound_null_soft, state_upper_bound_null_soft;
   ros::param::get("/nmpc_controller/leg_complex/null_space_dimension", n_null_);
-  ros::param::get("/nmpc_controller/leg_complex/state_lower_bound",
-                  state_lower_bound_null);
-  ros::param::get("/nmpc_controller/leg_complex/state_upper_bound",
-                  state_upper_bound_null);
+  ros::param::get("/nmpc_controller/leg_complex/state_lower_bound_hard",
+                  state_lower_bound_null_hard);
+  ros::param::get("/nmpc_controller/leg_complex/state_upper_bound_hard",
+                  state_upper_bound_null_hard);
+  ros::param::get("/nmpc_controller/leg_complex/state_lower_bound_soft",
+                  state_lower_bound_null_soft);
+  ros::param::get("/nmpc_controller/leg_complex/state_upper_bound_soft",
+                  state_upper_bound_null_soft);
   ros::param::get("/nmpc_controller/leg_complex/fixed_complex_idxs",
                   fixed_complex_idxs);
   ros::param::get("/nmpc_controller/leg_complex/fixed_complex_head",
@@ -86,8 +91,14 @@ NMPCController::NMPCController(int type) {
       R(control_weights.data(), m_), Q_factor(state_weights_factors.data(), N_),
       R_factor(control_weights_factors.data(), N_ - 1),
       x_min(state_lower_bound.data(), n_), x_max(state_upper_bound.data(), n_),
-      x_min_null(state_lower_bound_null.data(), state_lower_bound_null.size()),
-      x_max_null(state_upper_bound_null.data(), state_upper_bound_null.size()),
+      x_min_null_hard(state_lower_bound_null_hard.data(),
+                      state_lower_bound_null_hard.size()),
+      x_max_null_hard(state_upper_bound_null_hard.data(),
+                      state_upper_bound_null_hard.size()),
+      x_min_null_soft(state_lower_bound_null_soft.data(),
+                      state_lower_bound_null_soft.size()),
+      x_max_null_soft(state_upper_bound_null_soft.data(),
+                      state_upper_bound_null_soft.size()),
       u_min(control_lower_bound.data(), m_),
       u_max(control_upper_bound.data(), m_);
 
@@ -108,16 +119,22 @@ NMPCController::NMPCController(int type) {
   std::cout << "fixed_complexity_schedule = "
             << fixed_complexity_schedule.transpose() << std::endl;
 
-  // TODO(jcnorby) add back in
-  Eigen::VectorXd x_min_complex(n_ + n_null_), x_max_complex(n_ + n_null_);
-  x_min_complex.segment(0, n_) = x_min;
-  x_min_complex.segment(n_, n_null_) = x_min_null;
-  x_max_complex.segment(0, n_) = x_max;
-  x_max_complex.segment(n_, n_null_) = x_max_null;
+  Eigen::VectorXd x_min_complex_hard(n_ + n_null_),
+      x_max_complex_hard(n_ + n_null_), x_min_complex_soft(n_ + n_null_),
+      x_max_complex_soft(n_ + n_null_);
+  x_min_complex_hard.segment(0, n_) = x_min;
+  x_min_complex_hard.segment(n_, n_null_) = x_min_null_hard;
+  x_max_complex_hard.segment(0, n_) = x_max;
+  x_max_complex_hard.segment(n_, n_null_) = x_max_null_hard;
+  x_min_complex_soft.segment(0, n_) = x_min;
+  x_min_complex_soft.segment(n_, n_null_) = x_min_null_soft;
+  x_max_complex_soft.segment(0, n_) = x_max;
+  x_max_complex_soft.segment(n_, n_null_) = x_max_null_soft;
 
   mynlp_ = new quadNLP(type_, N_, n_, n_null_, m_, dt_, mu, panic_weights,
                        constraint_panic_weights, Q, R, Q_factor, R_factor,
-                       x_min, x_max, x_min_complex, x_max_complex, u_min, u_max,
+                       x_min, x_max, x_min_complex_hard, x_max_complex_hard,
+                       x_min_complex_soft, x_max_complex_soft, u_min, u_max,
                        fixed_complexity_schedule);
 
   app_ = IpoptApplicationFactory();
@@ -187,32 +204,6 @@ bool NMPCController::computeLegPlan(
 
   bool success = this->computePlan(initial_state, ref_traj, foot_positions,
                                    contact_schedule, state_traj, control_traj);
-
-  // std::cout << "New solve" << std::endl;
-  // std::cout << "ref_traj.size = " << ref_traj.rows() << ", " <<
-  // ref_traj.cols()
-  //           << std::endl;
-  // std::cout << "ref_traj = \n" << ref_traj << std::endl;
-  // std::cout << "mynlp_->foot_pos_world_.size = "
-  //           << mynlp_->foot_pos_world_.rows() << ", "
-  //           << mynlp_->foot_pos_world_.cols() << std::endl;
-  // std::cout << "mynlp_->foot_pos_world_ = \n"
-  //           << mynlp_->foot_pos_world_ << std::endl;
-  // std::cout << "mynlp_->foot_vel_world_.size = "
-  //           << mynlp_->foot_vel_world_.rows() << ", "
-  //           << mynlp_->foot_vel_world_.cols() << std::endl;
-  // std::cout << "mynlp_->foot_vel_world_ = \n"
-  //           << mynlp_->foot_vel_world_ << std::endl;
-  // std::cout << "state_traj.size = " << state_traj.rows() << ", "
-  //           << state_traj.cols() << std::endl;
-  // std::cout << "state_traj = \n" << state_traj << std::endl;
-  // std::cout << "control_traj.size = " << control_traj.rows() << ", "
-  //           << control_traj.cols() << std::endl;
-  // std::cout << "control_traj = \n" << control_traj << std::endl;
-
-  // if (!success) {
-  //   throw std::runtime_error("solving fail, stopping");
-  // }
 
   return success;
 }
@@ -344,6 +335,8 @@ bool NMPCController::computePlan(
                 << std::endl;
     }
 
+    Eigen::VectorXd constr_vals = evalLiftedTrajectoryConstraints();
+
     throw std::runtime_error("Solve failed, exiting for debug");
     return false;
   }
@@ -396,8 +389,8 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
     params.tail(12) = mynlp_->foot_vel_world_.row(i + 1);
 
     constr_vals = mynlp_->eval_g_single_fe(COMPLEX, dt, x0, u, x1, params);
-    lb_violation = mynlp_->g_min_complex_ - constr_vals;
-    ub_violation = constr_vals - mynlp_->g_max_complex_;
+    lb_violation = mynlp_->g_min_complex_hard_ - constr_vals;
+    ub_violation = constr_vals - mynlp_->g_max_complex_hard_;
     // std::cout << "lb violation = " << lb_violation << std::endl;
     // std::cout << "ub violation = " << ub_violation << std::endl;
 
@@ -408,8 +401,8 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
               "Constraint %s violated in FE %d: %5.3f <= %5.3f <= "
               "%5.3f\n",
               mynlp_->constr_names_[COMPLEX][j].c_str(), i,
-              mynlp_->g_min_complex_[j] - constr_tol, constr_vals[j],
-              mynlp_->g_max_complex_[j] + constr_tol);
+              mynlp_->g_min_complex_hard_[j] - constr_tol, constr_vals[j],
+              mynlp_->g_max_complex_hard_[j] + constr_tol);
 
           // std::cout << "x0 = \n" << x0 << std::endl;
           // std::cout << "u = \n" << u << std::endl;
@@ -425,24 +418,21 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
     }
 
     for (int j = 0; j < x1.size(); j++) {
-      if (x1[j] < mynlp_->x_min_complex_[j] - var_tol ||
-          x1[j] > mynlp_->x_max_complex_[j] + var_tol) {
+      if (x1[j] < mynlp_->x_min_complex_hard_[j] - var_tol ||
+          x1[j] > mynlp_->x_max_complex_hard_[j] + var_tol) {
         if (mynlp_->n_vec_[i + 1] == mynlp_->n_complex_) {
           printf(
               "Var bound %d violated in FE %d: %5.3f <= %5.3f <= "
               "%5.3f\n",
-              j, i, mynlp_->x_min_complex_[j], x1[j] - var_tol,
-              mynlp_->x_max_complex_[j] + var_tol);
+              j, i, mynlp_->x_min_complex_hard_[j], x1[j] - var_tol,
+              mynlp_->x_max_complex_hard_[j] + var_tol);
 
           valid_solve = false;
         } else {
           valid_lift = false;
         }
+        adaptive_complexity_horizon[i + 1] = 1;
       }
-    }
-    if (!valid_solve) {
-      throw std::runtime_error(
-          "Invalid region detected where there shouldnt be, exiting.");
     }
     x0 = x1;
   }
@@ -450,6 +440,15 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
   if (!valid_lift) {
     std::cout << "Invalid: " << adaptive_complexity_horizon.transpose()
               << std::endl;
+    // mynlp_->warm_start_ = false;
+    // mynlp_->mu0_ = 1e-1;
+  }
+  if (!valid_solve) {
+    ROS_WARN(
+        "Invalid region detected where there shouldnt be (possibly due to "
+        "constraint relaxation).");
+    // throw std::runtime_error(
+    //     "Invalid region detected where there shouldnt be, exiting.");
   }
 
   // timer.reportStatistics();

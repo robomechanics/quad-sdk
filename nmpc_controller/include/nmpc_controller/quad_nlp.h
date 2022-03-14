@@ -138,8 +138,10 @@ class quadNLP : public TNLP {
   Eigen::VectorXd x_min_, x_max_, u_min_, u_max_, g_min_, g_max_;
 
   // State bounds, input bounds, constraint bounds
-  Eigen::VectorXd x_min_simple_, x_max_simple_, x_min_complex_, x_max_complex_,
-      g_min_simple_, g_max_simple_, g_min_complex_, g_max_complex_;
+  Eigen::VectorXd x_min_simple_, x_max_simple_, x_min_complex_hard_,
+      x_max_complex_hard_, g_min_simple_, g_max_simple_, g_min_complex_hard_,
+      g_max_complex_hard_, x_min_complex_soft_, x_max_complex_soft_,
+      g_min_complex_soft_, g_max_complex_soft_;
 
   // Ground height structure for the height bounds
   Eigen::MatrixXd ground_height_;
@@ -257,8 +259,10 @@ class quadNLP : public TNLP {
           double panic_weights, double constraint_panic_weights,
           Eigen::VectorXd Q, Eigen::VectorXd R, Eigen::VectorXd Q_factor,
           Eigen::VectorXd R_factor, Eigen::VectorXd x_min,
-          Eigen::VectorXd x_max, Eigen::VectorXd x_min_complex,
-          Eigen::VectorXd x_max_complex, Eigen::VectorXd u_min,
+          Eigen::VectorXd x_max, Eigen::VectorXd x_min_complex_hard,
+          Eigen::VectorXd x_max_complex_hard,
+          Eigen::VectorXd x_min_complex_soft,
+          Eigen::VectorXd x_max_complex_soft, Eigen::VectorXd u_min,
           Eigen::VectorXd u_max, Eigen::VectorXi fixed_complexity_schedule);
 
   /**
