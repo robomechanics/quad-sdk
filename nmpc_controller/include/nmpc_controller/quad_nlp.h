@@ -181,8 +181,8 @@ class quadNLP : public TNLP {
   // side jacobian part)
   Eigen::VectorXi iRow_h_, jCol_h_, iRow_compact_h_, jCol_compact_h_;
 
-  // Penalty on panic variables
-  double panic_weights_;
+  // Penalty on panic variables and constraints
+  double panic_weights_, constraint_panic_weights_;
 
   // Time duration to the next plan index
   double first_element_duration_;
@@ -254,12 +254,12 @@ class quadNLP : public TNLP {
 
   /** Default constructor */
   quadNLP(int type, int N, int n, int n_null, int m, double dt, double mu,
-          double panic_weights, Eigen::VectorXd Q, Eigen::VectorXd R,
-          Eigen::VectorXd Q_factor, Eigen::VectorXd R_factor,
-          Eigen::VectorXd x_min, Eigen::VectorXd x_max,
-          Eigen::VectorXd x_min_complex, Eigen::VectorXd x_max_complex,
-          Eigen::VectorXd u_min, Eigen::VectorXd u_max,
-          Eigen::VectorXi fixed_complexity_schedule);
+          double panic_weights, double constraint_panic_weights,
+          Eigen::VectorXd Q, Eigen::VectorXd R, Eigen::VectorXd Q_factor,
+          Eigen::VectorXd R_factor, Eigen::VectorXd x_min,
+          Eigen::VectorXd x_max, Eigen::VectorXd x_min_complex,
+          Eigen::VectorXd x_max_complex, Eigen::VectorXd u_min,
+          Eigen::VectorXd u_max, Eigen::VectorXi fixed_complexity_schedule);
 
   /**
    * @brief Custom deep copy constructor
@@ -384,45 +384,6 @@ class quadNLP : public TNLP {
     return decision_var.block(slack_constraint_var_idxs_[idx], 0,
                               g_slack_vec_[idx], 1);
   }
-
-  // // Get the idx-th constraint from constraint variable
-  // template <typename T>
-  // inline Eigen::Block<T> get_relaxed_constraint_vals(T &constraint_vals,
-  //                                                   const int &idx) const {
-  //   return constraint_vals.block(primal_constraint_idxs_[idx], 0,
-  //   g_vec_[idx], 1);
-  // }
-
-  // // Get the idx-th panic variables (for (idx+1)-th state variable min bound)
-  // // from decision variable
-  // template <typename T>
-  // inline Eigen::Block<T> get_slack_state_var_state_min(T &decision_var,
-  //                                                      const int &idx) const
-  //                                                      {
-  //   return decision_var.block(slack_state_var_idxs_[idx], 0,
-  //   n_slack_vec_[idx], 1);
-  // }
-
-  // // Get the idx-th panic variables (for (idx+1)-th state variable max bound)
-  // // from decision variable
-  // template <typename T>
-  // inline Eigen::Block<T> get_slack_state_var_state_max(T &decision_var,
-  //                                                      const int &idx) const
-  //                                                      {
-  //   return decision_var.block(slack_state_var_idxs_[idx] + n_slack_vec_[idx],
-  //   0,
-  //                             n_slack_vec_[idx], 1);
-  // }
-
-  // // Get the idx-th panic variables (for (idx+1)-th constraint variable max
-  // // bound) from decision variable
-  // template <typename T>
-  // inline Eigen::Block<T> get_slack_constraint_var_max(T &decision_var,
-  //                                                     const int &idx) const {
-  //   return decision_var.block(
-  //       slack_state_var_idxs_[idx] + 2 * n_slack_vec_[idx], 0,
-  //       g_slack_vec_[idx], 1);
-  // }
 
   // Get the idx-th constraint from constraint values
   template <typename T>

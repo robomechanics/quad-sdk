@@ -45,13 +45,15 @@ NMPCController::NMPCController(int type) {
       state_lower_bound_null, state_upper_bound_null, control_lower_bound,
       control_upper_bound;
   std::vector<int> fixed_complex_idxs;
-  double panic_weights;
+  double panic_weights, constraint_panic_weights;
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_weights",
                   state_weights);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_weights",
                   control_weights);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/panic_weights",
                   panic_weights);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/constraint_panic_weights",
+                  constraint_panic_weights);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_weights_factors",
                   state_weights_factors);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_weights_factors",
@@ -113,9 +115,10 @@ NMPCController::NMPCController(int type) {
   x_max_complex.segment(0, n_) = x_max;
   x_max_complex.segment(n_, n_null_) = x_max_null;
 
-  mynlp_ = new quadNLP(type_, N_, n_, n_null_, m_, dt_, mu, panic_weights, Q, R,
-                       Q_factor, R_factor, x_min, x_max, x_min_complex,
-                       x_max_complex, u_min, u_max, fixed_complexity_schedule);
+  mynlp_ = new quadNLP(type_, N_, n_, n_null_, m_, dt_, mu, panic_weights,
+                       constraint_panic_weights, Q, R, Q_factor, R_factor,
+                       x_min, x_max, x_min_complex, x_max_complex, u_min, u_max,
+                       fixed_complexity_schedule);
 
   app_ = IpoptApplicationFactory();
 
@@ -331,6 +334,15 @@ bool NMPCController::computePlan(
     std::cout << "control_traj = \n" << control_traj << std::endl;
     std::cout << "foot_positions = \n" << mynlp_->foot_pos_world_ << std::endl;
     std::cout << "foot_velocities = \n" << mynlp_->foot_vel_world_ << std::endl;
+
+    for (int i = 0; i < N_ - 1; i++) {
+      std::cout << "Relaxed constraint vals = \n"
+                << mynlp_->get_relaxed_primal_constraint_vals(mynlp_->g0_, i)
+                << std::endl;
+      std::cout << "Slack constraint vars = \n"
+                << mynlp_->get_slack_constraint_var(mynlp_->w0_, i)
+                << std::endl;
+    }
 
     throw std::runtime_error("Solve failed, exiting for debug");
     return false;

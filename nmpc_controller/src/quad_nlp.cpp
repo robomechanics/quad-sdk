@@ -11,7 +11,8 @@ using namespace Ipopt;
 
 // Class constructor
 quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
-                 double mu, double panic_weights, Eigen::VectorXd Q,
+                 double mu, double panic_weights,
+                 double constraint_panic_weights, Eigen::VectorXd Q,
                  Eigen::VectorXd R, Eigen::VectorXd Q_factor,
                  Eigen::VectorXd R_factor, Eigen::VectorXd x_min,
                  Eigen::VectorXd x_max, Eigen::VectorXd x_min_complex,
@@ -115,6 +116,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   R_factor_ = R_factor_base_;
 
   panic_weights_ = panic_weights;
+  constraint_panic_weights_ = constraint_panic_weights;
 
   // feet location initialized by nominal position
   feet_location_ = Eigen::MatrixXd(12, N_);
@@ -185,7 +187,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   // Load knee constraint bounds
   constraint_size = num_feet_;
   g_min_complex_.segment(current_idx, constraint_size).fill(-2e19);
-  g_max_complex_.segment(current_idx, constraint_size).fill(0);
+  g_max_complex_.segment(current_idx, constraint_size).fill(0.1);
   relaxed_primal_constraint_idxs_in_fe_ = Eigen::ArrayXi::LinSpaced(
       constraint_size, current_idx, current_idx + constraint_size - 1);
   current_idx += constraint_size;
@@ -359,8 +361,8 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
     get_primal_constraint_vals(g_u_matrix, i) = g_max_complex_.head(g_vec_[i]);
 
     // Relaxed constraints bound
-    get_relaxed_primal_constraint_vals(g_l_matrix, i).fill(-2e19);
-    get_relaxed_primal_constraint_vals(g_u_matrix, i).fill(0);
+    // get_relaxed_primal_constraint_vals(g_l_matrix, i).fill(-2e19);
+    // get_relaxed_primal_constraint_vals(g_u_matrix, i).fill(0);
 
     // Panic variable bound
     get_slack_state_var(x_l_matrix, i).fill(0);
@@ -448,8 +450,9 @@ bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
 
     obj_value += (xk.transpose() * Q_i.asDiagonal() * xk / 2 +
                   uk.transpose() * R_i.asDiagonal() * uk / 2)(0, 0);
-    obj_value += panic_weights_ * (get_slack_state_var(w, i).sum() +
-                                   get_slack_constraint_var(w, i).sum());
+    obj_value +=
+        panic_weights_ * get_slack_state_var(w, i).sum() +
+        constraint_panic_weights_ * get_slack_constraint_var(w, i).sum();
   }
 
   return true;
@@ -499,7 +502,7 @@ bool quadNLP::eval_grad_f(Index n, const Number *x, bool new_x,
         Q_i.asDiagonal() * xk;
     get_slack_state_var(grad_f_matrix, i).fill(panic_weights_);
 
-    get_slack_constraint_var(grad_f_matrix, i).fill(panic_weights_);
+    get_slack_constraint_var(grad_f_matrix, i).fill(constraint_panic_weights_);
   }
 
   return true;
