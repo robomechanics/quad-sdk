@@ -197,7 +197,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   g_min_complex_soft_.resize(constraint_size);
   g_max_complex_soft_.resize(constraint_size);
   g_min_complex_soft_.fill(-2e19);
-  g_max_complex_soft_.fill(-0.03);
+  g_max_complex_soft_.fill(-0.15);
 
   // Load motor model constraint bounds
   constraint_size = n_null_;
@@ -373,13 +373,13 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
     if (g_slack_vec_[i] > 0) {
       get_relaxed_primal_constraint_vals(g_l_matrix, i) = g_min_complex_soft_;
       get_relaxed_primal_constraint_vals(g_u_matrix, i) = g_max_complex_soft_;
+      get_slack_constraint_var(x_l_matrix, i).fill(0);
+      get_slack_constraint_var(x_u_matrix, i).fill(2e19);
     }
 
     // Panic variable bound
     get_slack_state_var(x_l_matrix, i).fill(0);
     get_slack_state_var(x_u_matrix, i).fill(2e19);
-    get_slack_constraint_var(x_l_matrix, i).fill(0);
-    get_slack_constraint_var(x_u_matrix, i).fill(2e19);
   }
 
   for (size_t i = 0; i < N_ - 1; i++) {
@@ -1629,7 +1629,7 @@ void quadNLP::update_structure() {
       curr_var_idx += g_slack;
 
       relaxed_dynamic_jac_var_idxs_[i] = curr_jac_var_idx;
-      curr_jac_var_idx += relaxed_nnz_mat_(sys_id_schedule_[i], JAC);
+      curr_jac_var_idx += relaxed_nnz_mat_(sys_id_schedule_[i], JAC) + g_slack;
     }
   }
 
@@ -1683,7 +1683,7 @@ void quadNLP::update_structure() {
   // std::cout << "n_slack_vec_ = " << n_slack_vec_.transpose() << std::endl;
   // std::cout << "g_vec_ =      " << g_vec_.transpose() << std::endl;
   // std::cout << "g_vec_.sum() = " << g_vec_.sum() << std::endl;
-  // std::cout << "g_slack_vec_.sum() = " << g_slack_vec_.sum() << std::endl;
+  std::cout << "g_slack_vec_ = " << g_slack_vec_.transpose() << std::endl;
   // std::cout << "g_vec_.sum() + n_vars_slack_ = " << g_vec_.sum() +
   // n_vars_slack_
   //           << std::endl;
