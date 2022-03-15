@@ -31,7 +31,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   // Load the current state
   Eigen::VectorXd current_state_(36);
   current_state_.fill(0);
-  current_state_(2) = 0.2;
+  current_state_(2) = 0.3;
   current_state_(9) = 0;
 
   quad_utils::QuadKD quad_kd;
@@ -91,7 +91,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
 
   Eigen::VectorXd joint_positions(12), joint_velocities(12), torques(12);
 
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 10; i++) {
     tic = std::chrono::steady_clock::now();
     // complexity_schedule.tail(2 * i + 1).fill(1);
     // complexity_schedule.head(2 * i + 1).fill(1);

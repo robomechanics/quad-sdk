@@ -198,21 +198,23 @@ class quadNLP : public TNLP {
   /// Vector of indices for relevant quantities
   Eigen::VectorXi fe_idxs_, u_idxs_, x_idxs_, slack_state_var_idxs_,
       slack_constraint_var_idxs_, primal_constraint_idxs_,
-      slack_var_constraint_idxs_, dynamic_jac_var_idxs_, panic_jac_var_idxs_,
-      dynamic_hess_var_idxs_, cost_idxs_, slack_constraint_constraint_idxs_;
+      slack_var_constraint_idxs_, dynamic_jac_var_idxs_,
+      relaxed_dynamic_jac_var_idxs_, panic_jac_var_idxs_,
+      dynamic_hess_var_idxs_, cost_idxs_, relaxed_constraint_idxs_;
 
-  Eigen::ArrayXi relaxed_primal_constraint_idxs_in_fe_;
+  Eigen::ArrayXi relaxed_primal_constraint_idxs_in_element_;
 
   /// Vector of system ids
   Eigen::VectorXi sys_id_schedule_;
 
   /// Matrix of function info
-  Eigen::MatrixXi nnz_mat_, nrow_mat_, ncol_mat_, first_step_idx_mat_;
+  Eigen::MatrixXi nnz_mat_, nrow_mat_, ncol_mat_, first_step_idx_mat_,
+      relaxed_nnz_mat_;
 
   /// Matrix of function sparsity data
   std::vector<std::vector<Eigen::VectorXi>> iRow_mat_, jCol_mat_;
   std::vector<std::vector<Eigen::VectorXi>> iRow_mat_relaxed_,
-      jCol_mat_relaxed_;
+      jCol_mat_relaxed_, relaxed_idx_in_full_sparse_;
 
   /// Number of complex finite elements in the horizon
   int num_complex_fe_;
@@ -403,7 +405,7 @@ class quadNLP : public TNLP {
   template <typename T>
   inline Eigen::Block<T> get_relaxed_primal_constraint_vals(
       T &constraint_vals, const int &idx) const {
-    return constraint_vals.block(slack_constraint_constraint_idxs_[idx], 0,
+    return constraint_vals.block(relaxed_constraint_idxs_[idx], 0,
                                  g_slack_vec_[idx], 1);
   }
 
@@ -433,13 +435,22 @@ class quadNLP : public TNLP {
                               nnz_mat_(sys_id_schedule_[idx], JAC), 1);
   }
 
+  // Get the idx-th dynamic constraint related jacobian nonzero entry
+  template <typename T>
+  inline Eigen::Block<T> get_relaxed_dynamic_jac_var(T &jacobian_var,
+                                                     const int &idx) const {
+    return jacobian_var.block(
+        relaxed_dynamic_jac_var_idxs_[idx], 0,
+        relaxed_nnz_mat_(sys_id_schedule_[idx], JAC) + g_slack_vec_[idx], 1);
+  }
+
   // Get the idx-th panic constraint jacobian (for (idx+1)-th state variable)
   // nonzero entry
   template <typename T>
   inline Eigen::Block<T> get_slack_jac_var(T &jacobian_var,
                                            const int &idx) const {
     return jacobian_var.block(panic_jac_var_idxs_[idx], 0,
-                              4 * n_slack_vec_[idx] + g_slack_vec_[idx], 1);
+                              4 * n_slack_vec_[idx], 1);
   }
 
   // Get the idx-th dynamic constraint related hessian nonzero entry
@@ -487,6 +498,17 @@ class quadNLP : public TNLP {
   }
 
   /**
+   * @brief Return the first index of the slack constraint vector corresponding
+   * to the given finite element
+   * @param[in] idx Index of requested finite element
+   * @return Index in slack constraint vector corresponding to the beginning of
+   * the requested fe
+   */
+  inline int get_relaxed_constraint_idx(int idx) const {
+    return relaxed_constraint_idxs_[idx];
+  }
+
+  /**
    * @brief Return the first index of the decision variable vector corresponding
    * to the given finite element
    * @param[in] idx Index of requested finite element
@@ -522,6 +544,17 @@ class quadNLP : public TNLP {
    */
   inline int get_slack_state_idx(int idx) const {
     return slack_state_var_idxs_[idx];
+  }
+
+  /**
+   * @brief Return the first index of the decision variable vector corresponding
+   * to the slack variable for the given finite element's state
+   * @param[in] idx Index of requested finite element
+   * @return Index in decision variable vector corresponding to the slack
+   * variable of the beginning of the state of the requested fe
+   */
+  inline int get_slack_constraint_var_idx(int idx) const {
+    return slack_constraint_var_idxs_[idx];
   }
 
   /**

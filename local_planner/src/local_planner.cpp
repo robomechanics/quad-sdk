@@ -496,7 +496,7 @@ void LocalPlanner::getStateAndTwistInput() {
 }
 
 Eigen::VectorXi LocalPlanner::getInvalidRegions() {
-  Eigen::VectorXi complexity_horizon(N_ + 1);
+  Eigen::VectorXi complexity_horizon(N_);
   complexity_horizon.setZero();
   Eigen::VectorXd state_violations, control_violations;
 
@@ -575,7 +575,7 @@ bool LocalPlanner::computeLocalPlan() {
   local_footstep_planner_->getFootPositionsBodyFrame(
       body_plan_, foot_positions_world_, foot_positions_body_);
 
-  Eigen::VectorXi complexity_schedule(N_ + 1);
+  Eigen::VectorXi complexity_schedule(N_);
   complexity_schedule.fill(0);
 
   // Compute grf position considering the toe radius
