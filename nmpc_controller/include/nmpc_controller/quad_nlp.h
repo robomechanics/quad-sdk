@@ -53,7 +53,7 @@ enum FunctionID { FUNC, JAC, HESS };
 class quadNLP : public TNLP {
  public:
   // Horizon length, state dimension, input dimension, and constraints dimension
-  int N_, n_, m_, g_;
+  int N_, n_, m_, g_, g_relaxed_;
 
   /// State dimension for simple and complex models
   int n_simple_, n_complex_;
@@ -198,8 +198,8 @@ class quadNLP : public TNLP {
   /// Vector of indices for relevant quantities
   Eigen::VectorXi fe_idxs_, u_idxs_, x_idxs_, slack_state_var_idxs_,
       slack_constraint_var_idxs_, primal_constraint_idxs_,
-      slack_constraint_idxs_, dynamic_jac_var_idxs_, panic_jac_var_idxs_,
-      dynamic_hess_var_idxs_, cost_idxs_;
+      slack_var_constraint_idxs_, dynamic_jac_var_idxs_, panic_jac_var_idxs_,
+      dynamic_hess_var_idxs_, cost_idxs_, slack_constraint_constraint_idxs_;
 
   Eigen::ArrayXi relaxed_primal_constraint_idxs_in_fe_;
 
@@ -211,6 +211,8 @@ class quadNLP : public TNLP {
 
   /// Matrix of function sparsity data
   std::vector<std::vector<Eigen::VectorXi>> iRow_mat_, jCol_mat_;
+  std::vector<std::vector<Eigen::VectorXi>> iRow_mat_relaxed_,
+      jCol_mat_relaxed_;
 
   /// Number of complex finite elements in the horizon
   int num_complex_fe_;
@@ -401,9 +403,8 @@ class quadNLP : public TNLP {
   template <typename T>
   inline Eigen::Block<T> get_relaxed_primal_constraint_vals(
       T &constraint_vals, const int &idx) const {
-    return constraint_vals.block(
-        primal_constraint_idxs_[idx] + relaxed_primal_constraint_idxs_in_fe_[0],
-        0, g_slack_vec_[idx], 1);
+    return constraint_vals.block(slack_constraint_constraint_idxs_[idx], 0,
+                                 g_slack_vec_[idx], 1);
   }
 
   // Get the idx-th panic constraint (for (idx+1)-th state variable) from
@@ -411,7 +412,7 @@ class quadNLP : public TNLP {
   template <typename T>
   inline Eigen::Block<T> get_slack_constraint_vals(T &constraint_vals,
                                                    const int &idx) const {
-    return constraint_vals.block(slack_constraint_idxs_[idx], 0,
+    return constraint_vals.block(slack_var_constraint_idxs_[idx], 0,
                                  2 * n_slack_vec_[idx], 1);
   }
 
@@ -481,8 +482,8 @@ class quadNLP : public TNLP {
    * @return Index in slack constraint vector corresponding to the beginning of
    * the requested fe
    */
-  inline int get_slack_constraint_idx(int idx) const {
-    return slack_constraint_idxs_[idx];
+  inline int get_slack_var_constraint_idx(int idx) const {
+    return slack_var_constraint_idxs_[idx];
   }
 
   /**
