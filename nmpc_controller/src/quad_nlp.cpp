@@ -188,7 +188,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   // Load knee constraint bounds
   constraint_size = num_feet_;
   g_min_complex_hard_.segment(current_idx, constraint_size).fill(-2e19);
-  g_max_complex_hard_.segment(current_idx, constraint_size).fill(0.0);
+  g_max_complex_hard_.segment(current_idx, constraint_size).fill(0.20);
   relaxed_primal_constraint_idxs_in_element_ = Eigen::ArrayXi::LinSpaced(
       constraint_size, current_idx, current_idx + constraint_size - 1);
   g_relaxed_ = relaxed_primal_constraint_idxs_in_element_.size();
@@ -197,7 +197,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   g_min_complex_soft_.resize(constraint_size);
   g_max_complex_soft_.resize(constraint_size);
   g_min_complex_soft_.fill(-2e19);
-  g_max_complex_soft_.fill(-0.15);
+  g_max_complex_soft_.fill(-0.10);
 
   // Load motor model constraint bounds
   constraint_size = n_null_;
@@ -728,11 +728,6 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
           .fill(-1);
 
       if (g_slack_vec_[i] > 0) {
-        // gmax wrt panic
-        get_slack_jac_var(values_matrix, i)
-            .segment(4 * n_slack_vec_[i], g_slack_vec_[i])
-            .fill(-1);
-
         int nnz_relaxed = relaxed_nnz_mat_(sys_id, JAC);
 
         for (int j = 0; j < nnz_relaxed; j++) {
@@ -1070,36 +1065,33 @@ void quadNLP::finalize_solution(SolverReturn status, Index n, const Number *x,
 
   mu0_ = ip_data->curr_mu();
 
-  // double total_slack_var_cost = 0;
-  // double total_slack_constraint_cost = 0;
-  // Eigen::ArrayXi nonzero_slack_var(N_ - 1), nonzero_constraint_var(N_ - 1);
-  // nonzero_slack_var.setZero();
-  // nonzero_constraint_var.setZero();
-  // for (int i = 0; i < N_ - 1; i++) {
-  //   total_slack_var_cost += panic_weights_ * get_slack_state_var(w, i).sum();
-  //   total_slack_constraint_cost +=
-  //       constraint_panic_weights_ * get_slack_constraint_var(w, i).sum();
+  double total_slack_var_cost = 0;
+  double total_slack_constraint_cost = 0;
+  Eigen::ArrayXd nonzero_slack_element_sum(N_ - 1),
+      nonzero_constraint_element_sum(N_ - 1);
+  nonzero_slack_element_sum.setZero();
+  nonzero_constraint_element_sum.setZero();
+  for (int i = 0; i < N_ - 1; i++) {
+    total_slack_var_cost += panic_weights_ * get_slack_state_var(w, i).sum();
+    total_slack_constraint_cost +=
+        constraint_panic_weights_ * get_slack_constraint_var(w, i).sum();
 
-  //   if (get_slack_state_var(w, i).sum() >= 1e-4) {
-  //     nonzero_slack_var[i] = 1;
-  //   }
-  //   if (get_slack_constraint_var(w, i).sum() >= 1e-4) {
-  //     nonzero_constraint_var[i] = 1;
-  //     std::cout << "get_slack_constraint_var(w, i).sum() = "
-  //               << get_slack_constraint_var(w, i).sum() << std::endl;
-  //   }
-  // }
+    nonzero_slack_element_sum[i] = get_slack_state_var(w, i).sum();
+    nonzero_constraint_element_sum[i] = get_slack_constraint_var(w, i).sum();
+  }
 
-  // if (total_slack_var_cost > 1e-2 || total_slack_constraint_cost > 1e-2) {
-  //   std::cout << "total_slack_var_cost = " << total_slack_var_cost <<
-  //   std::endl; std::cout << "total_slack_constraint_cost = " <<
-  //   total_slack_constraint_cost
-  //             << std::endl;
-  //   std::cout << "nonzero_slack_var = " << nonzero_slack_var.transpose()
-  //             << std::endl;
-  //   std::cout << "nonzero_constraint_var = "
-  //             << nonzero_constraint_var.transpose() << std::endl;
-  // }
+  std::cout << "nonzero_slack_element_sum = "
+            << nonzero_slack_element_sum.transpose() << std::endl;
+  std::cout << "nonzero_constraint_element_sum = "
+            << nonzero_constraint_element_sum.transpose() << std::endl;
+
+  if (total_slack_var_cost > 1e-4 || total_slack_constraint_cost > 1e-4) {
+    std::cout << "total_slack_var_cost = " << total_slack_var_cost << std::endl;
+    std::cout << "total_slack_constraint_cost = " << total_slack_constraint_cost
+              << std::endl;
+  } else {
+    std::cout << "No slack cost" << std::endl;
+  }
 }
 
 void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {

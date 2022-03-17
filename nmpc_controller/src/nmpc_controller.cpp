@@ -369,6 +369,14 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
   app_->Options()->GetNumericValue("tol", var_tol, "");
   app_->Options()->GetNumericValue("constr_viol_tol", constr_tol, "");
 
+  u = mynlp_->get_primal_control_var(mynlp_->w0_, 0);
+  params.head(12) = mynlp_->foot_pos_world_.row(0);
+  params.tail(12) = mynlp_->foot_vel_world_.row(0);
+  constr_vals = mynlp_->eval_g_single_fe(
+      COMPLEX, mynlp_->first_element_duration_, x0, u, x0, params);
+  std::cout << "constr_vals = " << constr_vals.tail(constr_vals.size() - 28)
+            << std::endl;
+
   // Loop through trajectory, lifting as needed and evaluating constraints
   for (int i = 0; i < N_ - 1; i++) {
     u = mynlp_->get_primal_control_var(mynlp_->w0_, i);
