@@ -181,14 +181,18 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
 
   // Load foot position and velocity constraint bounds
   constraint_size = n_null_;
-  g_min_complex_hard_.segment(current_idx, constraint_size).fill(0);
-  g_max_complex_hard_.segment(current_idx, constraint_size).fill(0);
+  // g_min_complex_hard_.segment(current_idx, constraint_size).fill(0);
+  // g_max_complex_hard_.segment(current_idx, constraint_size).fill(0);
+  g_min_complex_hard_.segment(current_idx, constraint_size).head(12).fill(0);
+  g_max_complex_hard_.segment(current_idx, constraint_size).head(12).fill(0);
+  g_min_complex_hard_.segment(current_idx, constraint_size).tail(12).fill(-10);
+  g_max_complex_hard_.segment(current_idx, constraint_size).tail(12).fill(10);
   current_idx += constraint_size;
 
   // Load knee constraint bounds
   constraint_size = num_feet_;
   g_min_complex_hard_.segment(current_idx, constraint_size).fill(-2e19);
-  g_max_complex_hard_.segment(current_idx, constraint_size).fill(0.20);
+  g_max_complex_hard_.segment(current_idx, constraint_size).fill(0.0);
   relaxed_primal_constraint_idxs_in_element_ = Eigen::ArrayXi::LinSpaced(
       constraint_size, current_idx, current_idx + constraint_size - 1);
   g_relaxed_ = relaxed_primal_constraint_idxs_in_element_.size();
@@ -356,7 +360,7 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
     get_primal_state_var(x_u_matrix, i + 1).fill(2e19);
 
     // Add bounds if not covered by panic variables
-    if (n_vec_[i + 1] > n_slack_vec_[i]) {
+    if (n_vec_[i + 1] > n_simple_) {
       get_primal_state_var(x_l_matrix, i + 1).tail(n_null_) =
           x_min_complex_hard_.tail(n_null_);
       get_primal_state_var(x_u_matrix, i + 1).tail(n_null_) =

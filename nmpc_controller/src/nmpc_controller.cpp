@@ -156,8 +156,8 @@ NMPCController::NMPCController(int type) {
   app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
   app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
 
-  app_->Options()->SetNumericValue("max_wall_time", 4.0 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 4.0 * dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 40.0 * dt_);
+  app_->Options()->SetNumericValue("max_cpu_time", 40.0 * dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();
@@ -369,20 +369,33 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
   app_->Options()->GetNumericValue("tol", var_tol, "");
   app_->Options()->GetNumericValue("constr_viol_tol", constr_tol, "");
 
-  u = mynlp_->get_primal_control_var(mynlp_->w0_, 0);
-  params.head(12) = mynlp_->foot_pos_world_.row(0);
-  params.tail(12) = mynlp_->foot_vel_world_.row(0);
-  constr_vals = mynlp_->eval_g_single_fe(
-      COMPLEX, mynlp_->first_element_duration_, x0, u, x0, params);
-  std::cout << "constr_vals = " << constr_vals.tail(constr_vals.size() - 28)
-            << std::endl;
+  // u = mynlp_->get_primal_control_var(mynlp_->w0_, 0);
+  // params.head(12) = mynlp_->foot_pos_world_.row(0);
+  // params.tail(12) = mynlp_->foot_vel_world_.row(0);
+  // constr_vals = mynlp_->eval_g_single_fe(
+  //     COMPLEX, mynlp_->first_element_duration_, x0, u, x0, params);
+  // for (int i = 0; i <
+  // mynlp_->relaxed_primal_constraint_idxs_in_element_.size();
+  //      i++) {
+  //   std::cout
+  //       << "knee " << i << " height = "
+  //       <<
+  //       -constr_vals[mynlp_->relaxed_primal_constraint_idxs_in_element_[i]]
+  //       << std::endl;
+  // }
+  // std::cout << "constr_vals = " << constr_vals.tail(constr_vals.size() - 28)
+  //           << std::endl;
 
   // Loop through trajectory, lifting as needed and evaluating constraints
   for (int i = 0; i < N_ - 1; i++) {
+    std::cout << "FE " << i << ", sys_id = " << mynlp_->sys_id_schedule_[i]
+              << std::endl;
+
     u = mynlp_->get_primal_control_var(mynlp_->w0_, i);
     x1 = mynlp_->get_primal_state_var(mynlp_->w0_, i + 1);
 
     if (x1.size() < mynlp_->n_complex_) {
+      std::cout << "state is lifted" << std::endl;
       quadKD_->convertCentroidalToFullBody(
           x1, mynlp_->foot_pos_world_.row(i + 1),
           mynlp_->foot_vel_world_.row(i + 1), u, joint_positions,
@@ -399,8 +412,23 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
     constr_vals = mynlp_->eval_g_single_fe(COMPLEX, dt, x0, u, x1, params);
     lb_violation = mynlp_->g_min_complex_hard_ - constr_vals;
     ub_violation = constr_vals - mynlp_->g_max_complex_hard_;
-    // std::cout << "lb violation = " << lb_violation << std::endl;
-    // std::cout << "ub violation = " << ub_violation << std::endl;
+    for (int j = 0;
+         j < mynlp_->relaxed_primal_constraint_idxs_in_element_.size(); j++) {
+      std::cout
+          << "knee " << j << " height:"
+          << -constr_vals[mynlp_->relaxed_primal_constraint_idxs_in_element_[j]]
+          << std::endl;
+    }
+    std::cout << "body pos = " << x1.segment(0, 12).transpose() << std::endl;
+    std::cout << "joint pos = " << x1.segment(12, 12).transpose() << std::endl;
+    std::cout << "joint vel = " << x1.segment(24, 12).transpose() << std::endl;
+    std::cout << "foot_pos = " << mynlp_->foot_pos_world_.row(i + 1)
+              << std::endl;
+    std::cout << "foot_vel = " << mynlp_->foot_vel_world_.row(i + 1)
+              << std::endl;
+    std::cout << "grfs = " << u.transpose() << std::endl;
+    std::cout << "lb violation = " << lb_violation << std::endl;
+    std::cout << "ub violation = " << ub_violation << std::endl;
 
     for (int j = 0; j < constr_vals.size(); j++) {
       if (lb_violation[j] > constr_tol || ub_violation[j] > constr_tol) {
