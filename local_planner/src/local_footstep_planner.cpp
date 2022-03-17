@@ -189,7 +189,6 @@ void LocalFootstepPlanner::computeFootPlan(
         // Compute the body plan including the stance phase
         Eigen::MatrixXd body_plan_stance;
         if (isContact(contact_schedule, end_of_stance, j)) {
-
           // Compute the index of the end of the stance phase using the nominal
           // stance duration (make sure not smaller than horizon)
           end_of_stance =

@@ -1078,17 +1078,17 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
         }
       }
     } else if (phase == LAND_STANCE) {
-      if (i % 2 == 0) {
-        max_valid_z = std::min(max_valid_z, s.pos[2] + planner_config.H_MAX -
-                                                reachability_clearance);
-        if (reachability_clearance > planner_config.H_MAX) {
+      // if (i % 2 == 0) {
+      max_valid_z = std::min(max_valid_z, s.pos[2] + planner_config.H_MAX -
+                                              reachability_clearance);
+      if (reachability_clearance > planner_config.H_MAX) {
 #ifdef DEBUG_INVALID_STATE
-          printf("H_MAX exceeded, phase = %d\n", phase);
-          printStateNewline(s);
+        printf("H_MAX exceeded, phase = %d\n", phase);
+        printStateNewline(s);
 #endif
-          return false;
-        }
+        return false;
       }
+      // }
     }
   }
 

@@ -1,5 +1,5 @@
 nmpc_controller:
-  takeoff_state_weight_factor: 200
+  takeoff_state_weight_factor: 1
   leg:
     state_dimension: 12
     control_dimension: 12
