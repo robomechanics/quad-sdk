@@ -6,11 +6,11 @@ vel = 0.75
 period = 0.36
 num = 25
 sample = 25
-time_init = 7.5/4*3
-time_stand = 7.5/4*3
-time_walk = 30/4*3
-world = ['world:=step_20cm', 'world:=step_22.5cm', 'world:=step_25cm', 'world:=step_27.5cm', 'world:=step_30cm', 'world:=step_35cm']
-# world = ['world:=step_20cm']
+time_init = 7.5/4*10
+time_stand = 7.5/4*10
+time_walk = 30/4*10
+world = ['world:=step_20cm', 'world:=step_25cm', 'world:=step_30cm', 'world:=step_35cm', 'world:=step_40cm']
+# world = ['world:=step_40cm']
 
 np.random.seed(0)
 

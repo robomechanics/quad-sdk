@@ -83,6 +83,18 @@ class NMPCController {
       const double &first_element_duration, const bool &same_plan_index,
       Eigen::MatrixXd &tail_state_traj, Eigen::MatrixXd &tail_control_traj);
 
+  // This is only used for test
+  bool computeDistributedTailFullPlan(
+      const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
+      const Eigen::MatrixXd &foot_positions,
+      const std::vector<std::vector<bool>> &contact_schedule,
+      const Eigen::VectorXd &tail_initial_state,
+      const Eigen::MatrixXd &tail_ref_traj, const Eigen::MatrixXd &state_traj,
+      const Eigen::MatrixXd &control_traj,
+      const Eigen::VectorXd &ref_ground_height,
+      const double &first_element_duration, const bool &same_plan_index,
+      Eigen::MatrixXd &tail_state_traj, Eigen::MatrixXd &tail_control_traj);
+
  private:
   // Node handler
   ros::NodeHandle nh_;

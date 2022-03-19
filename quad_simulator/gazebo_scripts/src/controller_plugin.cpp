@@ -92,7 +92,8 @@ bool SpiritController::init(hardware_interface::EffortJointInterface* hw,
                            joint_command_topic);
 
   sub_command_ = n.subscribe<quad_msgs::LegCommandArray>(
-      joint_command_topic, 1, &SpiritController::commandCB, this);
+      joint_command_topic, 1, &SpiritController::commandCB, this,
+      ros::TransportHints().tcpNoDelay(true));
 
   int num_tail_motors = 2;
   tail_commands_buffer_.writeFromNonRT(TailBufferType(num_tail_motors));
@@ -102,7 +103,8 @@ bool SpiritController::init(hardware_interface::EffortJointInterface* hw,
                            tail_command_topic);
 
   tail_sub_command_ = n.subscribe<quad_msgs::LegCommand>(
-      tail_command_topic, 1, &SpiritController::tailCommandCB, this);
+      tail_command_topic, 1, &SpiritController::tailCommandCB, this,
+      ros::TransportHints().tcpNoDelay(true));
 
   n.param<int>("/tail_controller/tail_type", tail_type_, 0);
 

@@ -91,8 +91,8 @@ NMPCController::NMPCController(int type) {
   app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
   app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
 
-  app_->Options()->SetNumericValue("max_wall_time", 3.0 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 3.0 * dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 10.0 * dt_);
+  app_->Options()->SetNumericValue("max_cpu_time", 10.0 * dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();
@@ -261,6 +261,108 @@ bool NMPCController::computeDistributedTailPlan(
   // Eigen::Map<Eigen::MatrixXd> wwwww(mynlp_->w0_.block(0, 0, N_ * (n_ + m_),
   // 0).data(), n_ + m_, N_); ROS_INFO_STREAM("wsolve");
   // ROS_INFO_STREAM(wwwww.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> wwww(mynlp_->w0_.block(N_ * (n_ + m_), 0, 2 *
+  // N_ * n_, 0).data(), n_, 2 * N_); ROS_INFO_STREAM("slacksolve");
+  // ROS_INFO_STREAM(wwww.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> zwl(mynlp_->z_L0_.block(0, 0, N_ * (n_ + m_),
+  // 0).data(), n_ + m_, N_); ROS_INFO_STREAM("zwl");
+  // ROS_INFO_STREAM(zwl.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> zsl(mynlp_->z_L0_.block(N_ * (n_ + m_), 0, 2 *
+  // N_ * n_, 0).data(), n_, 2 * N_); ROS_INFO_STREAM("zsl");
+  // ROS_INFO_STREAM(zsl.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> zwu(mynlp_->z_U0_.block(0, 0, N_ * (n_ + m_),
+  // 0).data(), n_ + m_, N_); ROS_INFO_STREAM("zwu");
+  // ROS_INFO_STREAM(zwu.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> zsu(mynlp_->z_U0_.block(N_ * (n_ + m_), 0, 2 *
+  // N_ * n_, 0).data(), n_, 2 * N_); ROS_INFO_STREAM("zsu");
+  // ROS_INFO_STREAM(zsu.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> lambdaaaa(mynlp_->lambda0_.data(), n_ + 16,
+  // N_); ROS_INFO_STREAM("lambdaaaa");
+  // ROS_INFO_STREAM(lambdaaaa.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> gggg(mynlp_->g0_.data(), n_ + 16, N_);
+  // ROS_INFO_STREAM("gggg");
+  // ROS_INFO_STREAM(gggg.transpose().format(CleanFmt));
+
+  // if (!success)
+  // {
+  //   throw std::exception();
+  // }
+
+  return success;
+}
+
+// This is only used for test
+bool NMPCController::computeDistributedTailFullPlan(
+    const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
+    const Eigen::MatrixXd &foot_positions,
+    const std::vector<std::vector<bool>> &contact_schedule,
+    const Eigen::VectorXd &tail_initial_state,
+    const Eigen::MatrixXd &tail_ref_traj, const Eigen::MatrixXd &state_traj,
+    const Eigen::MatrixXd &control_traj,
+    const Eigen::VectorXd &ref_ground_height,
+    const double &first_element_duration, const bool &same_plan_index,
+    Eigen::MatrixXd &tail_state_traj, Eigen::MatrixXd &tail_control_traj) {
+  Eigen::MatrixXd ref_traj_with_tail(N_ + 1, 16), state_traj_with_tail(N_, 16),
+      control_traj_with_tail(N_, 14);
+  Eigen::VectorXd initial_state_with_tail(16);
+
+  ref_traj_with_tail.setZero();
+  ref_traj_with_tail.leftCols(6) = ref_traj.leftCols(6);
+  ref_traj_with_tail.block(0, 6, N_ + 1, 2) = tail_ref_traj.leftCols(2);
+  ref_traj_with_tail.block(0, 8, N_ + 1, 6) = ref_traj.rightCols(6);
+  ref_traj_with_tail.block(0, 14, N_ + 1, 2) = tail_ref_traj.rightCols(2);
+
+  initial_state_with_tail.setZero();
+  initial_state_with_tail.head(6) = initial_state.head(6);
+  initial_state_with_tail.segment(6, 2) = tail_initial_state.head(2);
+  initial_state_with_tail.segment(8, 6) = initial_state.tail(6);
+  initial_state_with_tail.segment(14, 2) = tail_initial_state.tail(2);
+
+  mynlp_->update_solver(
+      initial_state_with_tail, ref_traj_with_tail.bottomRows(N_),
+      foot_positions, contact_schedule, state_traj.bottomRows(N_), control_traj,
+      ref_ground_height.tail(N_), first_element_duration, same_plan_index);
+
+  // Once update, the initialization is done
+  mynlp_->require_init_ = false;
+
+  Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+  ROS_INFO_STREAM("initial_state");
+  ROS_INFO_STREAM(mynlp_->x_current_.transpose().format(CleanFmt));
+  ROS_INFO_STREAM("ref_traj");
+  ROS_INFO_STREAM(mynlp_->x_reference_.transpose().format(CleanFmt));
+  ROS_INFO_STREAM("foot_positions");
+  ROS_INFO_STREAM(mynlp_->feet_location_.transpose().format(CleanFmt));
+  ROS_INFO_STREAM("contact_sequence_");
+  ROS_INFO_STREAM(mynlp_->contact_sequence_.transpose().format(CleanFmt));
+  ROS_INFO_STREAM("state_traj");
+  ROS_INFO_STREAM(state_traj.format(CleanFmt));
+  ROS_INFO_STREAM("control_traj");
+  ROS_INFO_STREAM(control_traj.format(CleanFmt));
+  // ROS_INFO_STREAM("ref_ground_height");
+  // ROS_INFO_STREAM(mynlp_->ground_height_.transpose().format(CleanFmt));
+  // ROS_INFO_STREAM("first_element_duration");
+  // ROS_INFO_STREAM(mynlp_->first_element_duration_);
+  // ROS_INFO_STREAM("same_plan_index");
+  // ROS_INFO_STREAM(same_plan_index);
+  // Eigen::Map<Eigen::MatrixXd> www(mynlp_->w0_.block(0, 0, N_ * (n_ + m_),
+  // 0).data(), n_ + m_, N_); ROS_INFO_STREAM("w");
+  // ROS_INFO_STREAM(www.transpose().format(CleanFmt));
+  // Eigen::Map<Eigen::MatrixXd> ww(mynlp_->w0_.block(N_ * (n_ + m_), 0, 2 * N_
+  // * n_, 0).data(), n_, 2 * N_); ROS_INFO_STREAM("slack");
+  // ROS_INFO_STREAM(ww.transpose().format(CleanFmt));
+
+  bool success = this->computePlan(
+      initial_state_with_tail, ref_traj_with_tail, foot_positions,
+      contact_schedule, state_traj_with_tail, control_traj_with_tail);
+
+  tail_state_traj = state_traj_with_tail;
+  tail_control_traj = control_traj_with_tail;
+
+  Eigen::Map<Eigen::MatrixXd> wwwww(
+      mynlp_->w0_.block(0, 0, N_ * (n_ + m_), 0).data(), n_ + m_, N_);
+  ROS_INFO_STREAM("wsolve");
+  ROS_INFO_STREAM(wwwww.transpose().format(CleanFmt));
   // Eigen::Map<Eigen::MatrixXd> wwww(mynlp_->w0_.block(N_ * (n_ + m_), 0, 2 *
   // N_ * n_, 0).data(), n_, 2 * N_); ROS_INFO_STREAM("slacksolve");
   // ROS_INFO_STREAM(wwww.transpose().format(CleanFmt));

@@ -125,6 +125,7 @@ bool InverseDynamicsController::computeLegCommandArray(
 
         adaptive_contact_mode.at(i) = false;
         grf_array.segment(3 * i, 3) << 0, 0, 0;
+        get_new_plan_after_recovering_.at(i) = false;
       }
 
       // Miss to contact or swing
@@ -139,6 +140,14 @@ bool InverseDynamicsController::computeLegCommandArray(
 
       // Keep miss
       if (last_contact_sensing_msg_.data.at(i) && contact_mode.at(i)) {
+        adaptive_contact_mode.at(i) = false;
+        grf_array.segment(3 * i, 3) << 0, 0, 0;
+        get_new_plan_after_recovering_.at(i) = false;
+      }
+
+      // Not yet receive new plan after recovering
+      if (!get_new_plan_after_recovering_.at(i))
+      {
         adaptive_contact_mode.at(i) = false;
         grf_array.segment(3 * i, 3) << 0, 0, 0;
       }

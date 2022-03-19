@@ -6,12 +6,24 @@ LegControllerTemplate::LegControllerTemplate() {
 
   // Initialize contact sensing message
   last_contact_sensing_msg_.data.assign(4, false);
+
+  // Initialize new plan check vector
+  get_new_plan_after_recovering_.assign(4, false);
 }
 
 void LegControllerTemplate::updateLocalPlanMsg(
     quad_msgs::RobotPlan::ConstPtr msg, const ros::Time &t_msg) {
   last_local_plan_msg_ = msg;
   last_local_plan_time_ = t_msg;
+
+  for (size_t i = 0; i < 4; i++)
+  {
+    // If we recover from contact missing and receive a new plan
+    if (!last_contact_sensing_msg_.data.at(i))
+    {
+      get_new_plan_after_recovering_.at(i) = true;
+    }
+  }
 }
 
 void LegControllerTemplate::setGains(double kp, double kd) {

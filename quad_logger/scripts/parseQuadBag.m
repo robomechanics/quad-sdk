@@ -177,6 +177,22 @@ else
     end
 end
 
+% Read the contact sensing data
+contactSensingData = readMessages(select(bag,'Topic','/control/contact_sensing'),'DataFormat','struct');
+contactSensingTime = select(bag, Topic='/control/contact_sensing');
+contactSensingTime = contactSensingTime.MessageList.Time;
+contactSensing = struct;
+if isempty(controlGRFsData)
+    warning('Warning, no data on contact sensing topic');
+    contactSensing.time = [];
+    contactSensing.contactStates = [];
+else
+    
+    contactSensing.time = contactSensingTime;
+    contactSensing.contactStates=cell2mat(cellfun(@(m) ...
+        [m.Data(1), m.Data(2), m.Data(3), m.Data(4)], contactSensingData, 'UniformOutput', 0));
+end
+
 % Localize time to the first message
 % startTime = min([stateGroundTruth.time(1), stateEstimate.time(1), stateTrajectory.time(1)]);
 startTime = stateGroundTruth.time(1);
@@ -184,6 +200,7 @@ startTime = stateGroundTruth.time(1);
 stateGroundTruth.time = stateGroundTruth.time - startTime;
 stateTrajectory.time = stateTrajectory.time - startTime;
 controlGRFs.time = controlGRFs.time - startTime;
+contactSensing.time = contactSensing.time - startTime;
 
 % Pack data into a struct for namespace purPoses
 data = struct;
@@ -191,6 +208,7 @@ data.stateEstimate = [];% stateEstimate;
 data.stateGroundTruth = stateGroundTruth;
 data.stateTrajectory = stateTrajectory;
 data.controlGRFs = controlGRFs;
+data.contactSensing = contactSensing;
 
 % If prompted, return the name of the filename
 if (nargout>1)

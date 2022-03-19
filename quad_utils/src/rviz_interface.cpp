@@ -80,7 +80,8 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
       boost::bind(&RVizInterface::robotPlanCallback, this, _1, GLOBAL));
   local_plan_sub_ = nh_.subscribe<quad_msgs::RobotPlan>(
       local_plan_topic, 1,
-      boost::bind(&RVizInterface::robotPlanCallback, this, _1, LOCAL));
+      boost::bind(&RVizInterface::robotPlanCallback, this, _1, LOCAL),
+      ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay(true));
   grf_sub_ = nh_.subscribe(grf_topic, 1, &RVizInterface::grfCallback, this,
                            ros::TransportHints().tcpNoDelay(true));
   foot_plan_discrete_sub_ = nh_.subscribe(
@@ -111,13 +112,16 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   // Setup state subs to call the same callback but with pub ID included
   state_estimate_sub_ = nh_.subscribe<quad_msgs::RobotState>(
       state_estimate_topic, 1,
-      boost::bind(&RVizInterface::robotStateCallback, this, _1, ESTIMATE));
+      boost::bind(&RVizInterface::robotStateCallback, this, _1, ESTIMATE),
+      ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay(true));
   ground_truth_state_sub_ = nh_.subscribe<quad_msgs::RobotState>(
       ground_truth_state_topic, 1,
-      boost::bind(&RVizInterface::robotStateCallback, this, _1, GROUND_TRUTH));
+      boost::bind(&RVizInterface::robotStateCallback, this, _1, GROUND_TRUTH),
+      ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay(true));
   trajectory_state_sub_ = nh_.subscribe<quad_msgs::RobotState>(
       trajectory_state_topic, 1,
-      boost::bind(&RVizInterface::robotStateCallback, this, _1, TRAJECTORY));
+      boost::bind(&RVizInterface::robotStateCallback, this, _1, TRAJECTORY),
+      ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay(true));
 
   // Setup state visual pubs
   estimate_joint_states_viz_pub_ = nh_.advertise<sensor_msgs::JointState>(

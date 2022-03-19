@@ -133,6 +133,9 @@ class LegControllerTemplate {
 
   /// Most recent contact sensing data
   std_msgs::ByteMultiArray last_contact_sensing_msg_;
+
+  /// If get new plan after recover from contact missing
+  std::vector<bool> get_new_plan_after_recovering_;
 };
 
 #endif  // MPC_CONTROLLER_H

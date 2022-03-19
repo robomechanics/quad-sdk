@@ -23,16 +23,20 @@ ContactStatePublisher::ContactStatePublisher(ros::NodeHandle nh)
   // Setup pubs and subs
   toe0_contact_state_sub = nh_.subscribe<gazebo_msgs::ContactsState>(
       toe0_contact_state_topic, 1,
-      boost::bind(&ContactStatePublisher::contactStateCallback, this, _1, 0));
+      boost::bind(&ContactStatePublisher::contactStateCallback, this, _1, 0),
+      ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay(true));
   toe1_contact_state_sub = nh_.subscribe<gazebo_msgs::ContactsState>(
       toe1_contact_state_topic, 1,
-      boost::bind(&ContactStatePublisher::contactStateCallback, this, _1, 1));
+      boost::bind(&ContactStatePublisher::contactStateCallback, this, _1, 1),
+      ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay(true));
   toe2_contact_state_sub = nh_.subscribe<gazebo_msgs::ContactsState>(
       toe2_contact_state_topic, 1,
-      boost::bind(&ContactStatePublisher::contactStateCallback, this, _1, 2));
+      boost::bind(&ContactStatePublisher::contactStateCallback, this, _1, 2),
+      ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay(true));
   toe3_contact_state_sub = nh_.subscribe<gazebo_msgs::ContactsState>(
       toe3_contact_state_topic, 1,
-      boost::bind(&ContactStatePublisher::contactStateCallback, this, _1, 3));
+      boost::bind(&ContactStatePublisher::contactStateCallback, this, _1, 3),
+      ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay(true));
 
   grf_pub_ = nh_.advertise<quad_msgs::GRFArray>(grf_topic, 1);
 

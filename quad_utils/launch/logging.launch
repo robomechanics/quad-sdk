@@ -2,34 +2,40 @@
 
     <include file="$(find quad_utils)/launch/load_params.launch" />
 
-    <node pkg="rosbag" type="record" name="rosbag_record"
-        args="record -O $(find quad_logger)/bags/quad_log_current 
+    <!-- <node pkg="rosbag" type="record" name="rosbag_record"
+        args="record -O $(find quad_logger)/bags/quad_log_current
         /state/trajectory
         /state/ground_truth 
         /state/estimate 
         /state/grfs 
         /global_plan
         /local_plan 
+        /control/tail_plan
         /control/grfs
         /control/joint_command 
+        /control/tail_command
+        /control/contact_sensing
         /control/mode 
         /terrain_map 
         /body_plan_continuous
         /body_plan_discrete
         /foot_plan_continuous 
         /foot_plan_discrete 
-        /foot_step_hist" />
+        /foot_step_hist" /> -->
 
     <node pkg="rosbag" type="record" name="rosbag_record_archive"
-        args="record -o $(find quad_logger)/bags/archive/quad_log 
+        args="record -o $(find quad_logger)/bags/archive/quad_log --tcpnodelay
         /state/trajectory
         /state/ground_truth 
         /state/estimate 
         /state/grfs 
         /global_plan
         /local_plan 
+        /control/tail_plan
         /control/grfs
         /control/joint_command 
+        /control/tail_command
+        /control/contact_sensing
         /control/mode 
         /terrain_map 
         /body_plan_continuous

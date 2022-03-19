@@ -34,12 +34,13 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   // terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1,
   // &LocalPlanner::terrainMapCallback, this);
   body_plan_sub_ =
-      nh_.subscribe(body_plan_topic, 1, &LocalPlanner::robotPlanCallback, this);
+      nh_.subscribe(body_plan_topic, 1, &LocalPlanner::robotPlanCallback, this,
+                    ros::TransportHints().tcpNoDelay(true));
   robot_state_sub_ =
       nh_.subscribe(robot_state_topic, 1, &LocalPlanner::robotStateCallback,
                     this, ros::TransportHints().tcpNoDelay(true));
-  cmd_vel_sub_ =
-      nh_.subscribe(cmd_vel_topic, 1, &LocalPlanner::cmdVelCallback, this);
+  cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic, 1, &LocalPlanner::cmdVelCallback,
+                               this, ros::TransportHints().tcpNoDelay(true));
 
   // GRF and contact sensing subscribers
   grf_sub_ = nh_.subscribe(grf_topic, 1, &LocalPlanner::grfCallback, this,
