@@ -52,7 +52,7 @@ grid_map_filters:
     params:
       input_layer: z_inpainted
       output_layers_prefix: normal_vectors_
-      radius: 0.10
+      radius: 0.2
       normal_vector_positive_axis: z
 
   # Compute smooth surface normals.

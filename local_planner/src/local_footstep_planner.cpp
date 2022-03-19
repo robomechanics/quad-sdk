@@ -472,6 +472,13 @@ void LocalFootstepPlanner::computeFootPlan(
                              foot_velocity.z(), foot_acceleration.z());
         }
 
+        // Ensure above the terrain
+        foot_position.z() =
+            std::max(foot_position.z(),
+                     0.01 + terrain_grid_.atPosition(
+                                "z", foot_position.head<2>(),
+                                grid_map::InterpolationMethods::INTER_LINEAR));
+
         foot_state_msg.contact = false;
       }
 
