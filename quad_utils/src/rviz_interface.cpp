@@ -30,7 +30,8 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
       local_plan_grf_viz_topic, current_grf_viz_topic,
       discrete_body_plan_viz_topic, foot_plan_discrete_viz_topic,
       estimate_joint_states_viz_topic, ground_truth_joint_states_viz_topic,
-      trajectory_joint_states_viz_topic;
+      trajectory_joint_states_viz_topic, state_estimate_trace_viz_topic,
+      ground_truth_trace_viz_topic, trajectory_state_trace_viz_topic;
 
   quad_utils::loadROSParam(nh_, "topics/visualization/global_plan",
                            global_plan_viz_topic);
@@ -55,6 +56,12 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
                            ground_truth_joint_states_viz_topic);
   quad_utils::loadROSParam(nh_, "topics/visualization/joint_states/trajectory",
                            trajectory_joint_states_viz_topic);
+  quad_utils::loadROSParam(nh_, "topics/visualization/state/estimate_trace",
+                           state_estimate_trace_viz_topic);
+  quad_utils::loadROSParam(nh_, "topics/visualization/state/ground_truth_trace",
+                           ground_truth_trace_viz_topic);
+  quad_utils::loadROSParam(nh_, "topics/visualization/state/trajectory_trace",
+                           trajectory_state_trace_viz_topic);
 
   // Setup rviz_interface parameters
   quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
@@ -107,6 +114,14 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   local_plan_ori_viz_pub_ =
       nh_.advertise<geometry_msgs::PoseArray>(local_plan_ori_viz_topic, 1);
 
+  // Setup publishers for state traces
+  state_estimate_trace_pub_ = nh_.advertise<visualization_msgs::Marker>(
+      state_estimate_trace_viz_topic, 1);
+  ground_truth_state_trace_pub_ = nh_.advertise<visualization_msgs::Marker>(
+      ground_truth_trace_viz_topic, 1);
+  trajectory_state_trace_pub_ = nh_.advertise<visualization_msgs::Marker>(
+      trajectory_state_trace_viz_topic, 1);
+
   // Setup state subs to call the same callback but with pub ID included
   state_estimate_sub_ = nh_.subscribe<quad_msgs::RobotState>(
       state_estimate_topic, 1,
@@ -147,6 +162,36 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
       nh_.advertise<nav_msgs::Path>(foot_2_plan_continuous_viz_topic, 1);
   foot_3_plan_continuous_viz_pub_ =
       nh_.advertise<nav_msgs::Path>(foot_3_plan_continuous_viz_topic, 1);
+
+  // Initialize Path message to visualize body plan
+  state_estimate_trace_msg_.action = visualization_msgs::Marker::ADD;
+  state_estimate_trace_msg_.pose.orientation.w = 1;
+  state_estimate_trace_msg_.type = visualization_msgs::Marker::LINE_STRIP;
+  state_estimate_trace_msg_.scale.x = 0.02;
+  state_estimate_trace_msg_.header.frame_id = map_frame_;
+  geometry_msgs::Point dummy_point;
+  state_estimate_trace_msg_.points.push_back(dummy_point);
+  ground_truth_state_trace_msg_ = state_estimate_trace_msg_;
+  trajectory_state_trace_msg_ = state_estimate_trace_msg_;
+
+  // Define visual properties for traces
+  state_estimate_trace_msg_.id = 5;
+  state_estimate_trace_msg_.color.a = 1.0;
+  state_estimate_trace_msg_.color.r = (float)front_left_color_[0] / 255.0;
+  state_estimate_trace_msg_.color.g = (float)front_left_color_[1] / 255.0;
+  state_estimate_trace_msg_.color.b = (float)front_left_color_[2] / 255.0;
+
+  ground_truth_state_trace_msg_.id = 6;
+  ground_truth_state_trace_msg_.color.a = 1.0;
+  ground_truth_state_trace_msg_.color.r = (float)back_left_color_[0] / 255.0;
+  ground_truth_state_trace_msg_.color.g = (float)back_left_color_[1] / 255.0;
+  ground_truth_state_trace_msg_.color.b = (float)back_left_color_[2] / 255.0;
+
+  trajectory_state_trace_msg_.id = 7;
+  trajectory_state_trace_msg_.color.a = 1.0;
+  trajectory_state_trace_msg_.color.r = (float)front_right_color_[0] / 255.0;
+  trajectory_state_trace_msg_.color.g = (float)front_right_color_[1] / 255.0;
+  trajectory_state_trace_msg_.color.b = (float)front_right_color_[2] / 255.0;
 }
 
 void RVizInterface::robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg,
@@ -462,18 +507,70 @@ void RVizInterface::robotStateCallback(
   joint_msg.header = msg->header;
   joint_msg.header.stamp = ros::Time::now();
 
+  Eigen::Vector3d current_pos, last_pos;
+  quad_utils::pointMsgToEigen(msg->body.pose.position, current_pos);
+
   if (pub_id == ESTIMATE) {
     transformStamped.child_frame_id = "/estimate/body";
     estimate_base_tf_br_.sendTransform(transformStamped);
     estimate_joint_states_viz_pub_.publish(joint_msg);
+
+    quad_utils::pointMsgToEigen(state_estimate_trace_msg_.points.back(),
+                                last_pos);
+
+    // Erase trace if state displacement exceeds threshold, otherwise show
+    if ((current_pos - last_pos).norm() >= trace_reset_threshold_) {
+      state_estimate_trace_msg_.action = visualization_msgs::Marker::DELETEALL;
+      state_estimate_trace_msg_.points.clear();
+    } else {
+      state_estimate_trace_msg_.action = visualization_msgs::Marker::ADD;
+    }
+
+    state_estimate_trace_msg_.points.push_back(msg->body.pose.position);
+    state_estimate_trace_msg_.header.stamp = joint_msg.header.stamp;
+    state_estimate_trace_pub_.publish(state_estimate_trace_msg_);
+
   } else if (pub_id == GROUND_TRUTH) {
     transformStamped.child_frame_id = "/ground_truth/body";
     ground_truth_base_tf_br_.sendTransform(transformStamped);
     ground_truth_joint_states_viz_pub_.publish(joint_msg);
+
+    quad_utils::pointMsgToEigen(ground_truth_state_trace_msg_.points.back(),
+                                last_pos);
+
+    // Erase trace if state displacement exceeds threshold, otherwise show
+    if ((current_pos - last_pos).norm() >= trace_reset_threshold_) {
+      ground_truth_state_trace_msg_.action =
+          visualization_msgs::Marker::DELETEALL;
+      ground_truth_state_trace_msg_.points.clear();
+    } else {
+      ground_truth_state_trace_msg_.action = visualization_msgs::Marker::ADD;
+    }
+
+    ground_truth_state_trace_msg_.points.push_back(msg->body.pose.position);
+    ground_truth_state_trace_msg_.header.stamp = joint_msg.header.stamp;
+    ground_truth_state_trace_pub_.publish(ground_truth_state_trace_msg_);
+
   } else if (pub_id == TRAJECTORY) {
     transformStamped.child_frame_id = "/trajectory/body";
     trajectory_base_tf_br_.sendTransform(transformStamped);
     trajectory_joint_states_viz_pub_.publish(joint_msg);
+
+    quad_utils::pointMsgToEigen(trajectory_state_trace_msg_.points.back(),
+                                last_pos);
+
+    // Erase trace if state displacement exceeds threshold, otherwise show
+    if ((current_pos - last_pos).norm() >= trace_reset_threshold_) {
+      trajectory_state_trace_msg_.action =
+          visualization_msgs::Marker::DELETEALL;
+      trajectory_state_trace_msg_.points.clear();
+    } else {
+      trajectory_state_trace_msg_.action = visualization_msgs::Marker::ADD;
+    }
+
+    trajectory_state_trace_msg_.points.push_back(msg->body.pose.position);
+    trajectory_state_trace_msg_.header.stamp = joint_msg.header.stamp;
+    trajectory_state_trace_pub_.publish(trajectory_state_trace_msg_);
   } else {
     ROS_WARN_THROTTLE(
         0.5, "Invalid publisher id, not publishing robot state to rviz");
