@@ -23,8 +23,7 @@ TEST(GlobalBodyPlannerTest, testLeapAction) {
   s.vel << 1.0, 0, 0;
 
   // Generate a random action
-  Eigen::Vector3d surf_norm =
-      planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0], s.pos[1]);
+  Eigen::Vector3d surf_norm = getSurfaceNormalFiltered(s, planner_config);
   Action a;
 
   for (int i = 0; i < N; i++) {
@@ -78,7 +77,8 @@ TEST(GlobalBodyPlannerTest, testLeapAction) {
 
     if (!s.isApprox(result.s_new)) {
       std::cout << "Reverse:" << std::endl;
-      std::cout << "is_valid_reverse = " << ((is_valid_reverse) ? 1 : 0) << std::endl;
+      std::cout << "is_valid_reverse = " << ((is_valid_reverse) ? 1 : 0)
+                << std::endl;
       printState(s);
       printState(result.s_new);
       printState(s_init_1);
@@ -247,8 +247,7 @@ TEST(GlobalBodyPlannerTest, testUnitLeapActionSlope) {
   EXPECT_TRUE(getPitchFromState(s, planner_config) == -slope);
 
   // Initialise some data
-  Eigen::Vector3d surf_norm =
-      planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0], s.pos[1]);
+  Eigen::Vector3d surf_norm = getSurfaceNormalFiltered(s, planner_config);
   Action a;
   StateActionResult result;
 

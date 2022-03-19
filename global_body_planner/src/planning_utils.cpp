@@ -397,8 +397,7 @@ bool isValidYawRate(const State &s, const Action &a, double t, int phase,
 }
 
 double getPitchFromState(const State &s, const PlannerConfig &planner_config) {
-  Eigen::Vector3d surf_norm =
-      planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0], s.pos[1]);
+  Eigen::Vector3d surf_norm = getSurfaceNormalFiltered(s, planner_config);
 
   // Get magnitude of lateral velociy
   double vel = s.vel.head<2>().norm();
@@ -413,8 +412,7 @@ double getPitchFromState(const State &s, const PlannerConfig &planner_config) {
 }
 
 double getDzFromState(const State &s, const PlannerConfig &planner_config) {
-  Eigen::Vector3d surf_norm =
-      planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0], s.pos[1]);
+  Eigen::Vector3d surf_norm = getSurfaceNormalFiltered(s, planner_config);
 
   return ((surf_norm[2] <= 0)
               ? INFTY
@@ -422,8 +420,7 @@ double getDzFromState(const State &s, const PlannerConfig &planner_config) {
 }
 
 void setDz(State &s, const PlannerConfig &planner_config) {
-  Eigen::Vector3d surf_norm =
-      planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0], s.pos[1]);
+  Eigen::Vector3d surf_norm = getSurfaceNormalFiltered(s, planner_config);
 
   s.vel[2] = (surf_norm[2] <= 0)
                  ? INFTY
@@ -434,20 +431,6 @@ void setDz(State &s, const Eigen::Vector3d &surf_norm) {
   s.vel[2] = (surf_norm[2] <= 0)
                  ? INFTY
                  : (s.vel.head<2>().dot(surf_norm.head<2>()) / surf_norm[2]);
-}
-
-double getZFromState(const State &s, const PlannerConfig &planner_config) {
-  return (planner_config.terrain.getGroundHeightFiltered(s.pos[0], s.pos[1]));
-  // return (planner_config.terrain.getGroundHeight(s[0], s[1]));
-}
-
-double getZClearance(const State &s, const PlannerConfig &planner_config) {
-  return getZClearance(s.pos, planner_config);
-}
-
-double getZClearance(const Eigen::Vector3d pos,
-                     const PlannerConfig &planner_config) {
-  return (pos[2] - planner_config.terrain.getGroundHeight(pos[0], pos[1]));
 }
 
 State interpStateActionPair(const State &s_in, const Action &a, double t0,
@@ -647,7 +630,7 @@ State applyStance(const State &s, const Action &a, double t, int phase,
     // Set height based on terrain
     // (interp from state 1 clearance to state 2 clearance, add terrain height)
     s_new.pos[2] = a.grf_0[2] + (a.grf_f[2] - a.grf_0[2]) * (t / a.t_s_leap) +
-                   getZFromState(s_new, planner_config);
+                   getTerrainZFilteredFromState(s_new, planner_config);
     setDz(s_new, planner_config);
 
   } else {
@@ -787,6 +770,9 @@ bool refineStance(const State &s, int phase, Action &a,
   while (!(grf_valid && friction_cone_valid && final_state_valid &&
            midstance_state_valid)) {
     s_final = applyStance(s, a, t_s, phase, planner_config);
+    if (!isInMap(s_final, planner_config)) {
+      return false;
+    }
     pos_f = s_final.pos;
 
     double buffer = 1e-2;
@@ -794,15 +780,12 @@ bool refineStance(const State &s, int phase, Action &a,
       isValidState(s_final, planner_config, phase, pos_f[2]);
       pos_f[2] -= buffer;
     } else {
-      pos_f[2] = planner_config.H_NOM +
-                 planner_config.terrain.getGroundHeight(pos_f[0], pos_f[1]);
-      ;
+      pos_f[2] = planner_config.H_NOM + getTerrainZ(pos_f, planner_config);
     }
 
     // Get takeoff position
     // pos_f = s.pos+s.vel*t_s+(g*grf_stance*(t_s*t_s))/3.0;
-    // pos_f[2] = z_f + planner_config.terrain.getGroundHeight(pos_f[0],
-    // pos_f[1]);
+    // pos_f[2] = z_f + getTerrainZ(pos_f, planner_config)
 
     // Compute final GRF
     grf_stance[2] =
@@ -823,13 +806,11 @@ bool refineStance(const State &s, int phase, Action &a,
 
     final_state_valid = isValidState(s_final, planner_config, phase);
     midstance_state_valid = isValidState(s_midstance, planner_config, phase);
-    // final_state_valid = ((s_final.pos[2] -
-    // planner_config.terrain.getGroundHeight(
-    //   s_final.pos[0], s_final.pos[1])) >= planner_config.H_MIN);
-    // midstance_state_valid = ((s_midstance.pos[2] -
-    // planner_config.terrain.getGroundHeight(
-    //   s_midstance.pos[0], s_midstance.pos[1])) >= (planner_config.H_MIN +
-    //   planner_config.ROBOT_H));
+    // final_state_valid = (getZRelToTerrain(s_final, planner_config)) >=
+    // planner_config.H_MIN);
+    // midstance_state_valid = (getZRelToTerrain(s_midstance, planner_config))
+    // >=
+    //                         (planner_config.H_MIN + planner_config.ROBOT_H);
 
     // Exit if final state is invalid
     if (!final_state_valid) {
@@ -911,8 +892,8 @@ bool refineFlight(const State &s, double &t_f,
   double t = 0;
   double z_f = planner_config.H_NOM + 0.065;
   State s_check = s;
-  double h = s_check.pos[2] - planner_config.terrain.getGroundHeight(
-                                  s_check.pos[0], s_check.pos[1]);
+  double h = getZRelToTerrain(s_check, planner_config);
+
   double h_last = h;
   while (h >= planner_config.H_MIN) {
     if ((h <= z_f) && (h_last > z_f)) {
@@ -921,9 +902,11 @@ bool refineFlight(const State &s, double &t_f,
     }
     t += planner_config.KINEMATICS_RES;
     s_check = applyFlight(s, t, planner_config);
+    if (!isInMap(s_check, planner_config)) {
+      break;
+    }
     h_last = h;
-    h = s_check.pos[2] -
-        planner_config.terrain.getGroundHeight(s_check.pos[0], s_check.pos[1]);
+    h = getZRelToTerrain(s_check, planner_config);
   }
   if (!is_valid) {
     State s_test =
@@ -982,7 +965,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
 bool isValidState(const State &s, const PlannerConfig &planner_config,
                   int phase, double &max_valid_z) {
   // Check elevation independent constraints first (out of range, velocity)
-  if (planner_config.terrain.isInRange(s.pos[0], s.pos[1]) == false) {
+  if (!isInMap(s, planner_config)) {
 #ifdef DEBUG_INVALID_STATE
     printf("Out of terrain range, phase = %d\n", phase);
     printStateNewline(s);
@@ -1022,10 +1005,12 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
   // Check each of the four corners of the robot
   for (int i = 0; i < planner_config.num_collision_points; i++) {
     Eigen::Vector3d collision_point = collision_points_world.col(i);
+    if (!isInMap(collision_point, planner_config)) {
+      return false;
+    }
 
     double collision_clearance =
-        collision_point[2] - planner_config.terrain.getGroundHeight(
-                                 collision_point[0], collision_point[1]);
+        getZRelToTerrain(collision_point, planner_config);
 
     // Check for collision
     if (collision_clearance < planner_config.H_MIN) {
@@ -1049,11 +1034,12 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
   // TODO: allow alternative gaits, check region around foot location
   for (int i = 0; i < planner_config.num_reachability_points; i++) {
     Eigen::Vector3d reachability_point = reachability_points_world.col(i);
+    if (!isInMap(reachability_point, planner_config)) {
+      return false;
+    }
 
     double reachability_clearance =
-        reachability_point[2] -
-        planner_config.terrain.getGroundHeight(reachability_point[0],
-                                               reachability_point[1]);
+        getZRelToTerrain(reachability_point, planner_config);
 
     // Check for reachability
     if (phase == CONNECT) {
@@ -1091,18 +1077,6 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
       // }
     }
   }
-
-  // // Check the center of the underside of the robot for penetration
-  // double height = (s.pos[2] + R_mat(2,2)*z_body) -
-  // planner_config.terrain.getGroundHeight(s.pos[0] +
-  //   R_mat(0,2)*z_body,s.pos[1] + R_mat(1,2)*z_body);
-  // if (height < planner_config.H_MIN) {
-  //   #ifdef DEBUG_INVALID_STATE
-  //     printf("H_MIN exceeded for body center, phase = %d\n", phase);
-  //     printStateNewline(s);
-  //   #endif
-  //   return false;
-  // }
 
   return true;
 }

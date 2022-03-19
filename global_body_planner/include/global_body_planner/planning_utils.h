@@ -32,6 +32,7 @@ namespace planning_utils {
 struct PlannerConfig {
   // Declare the terrain map object
   FastTerrainMap terrain;
+  grid_map::GridMap terrain_gm;
 
   // Define kinematic constraint parameters
   double H_MAX = 0.375;  // Maximum height of leg base, m
@@ -117,6 +118,9 @@ const int VALID_PARTIAL = 2;
 const int INVALID_START_STATE = 3;
 const int INVALID_GOAL_STATE = 4;
 const int INVALID_START_GOAL_EQUAL = 5;
+
+const grid_map::InterpolationMethods INTERP_TYPE =
+    grid_map::InterpolationMethods::INTER_LINEAR;
 
 typedef Eigen::Vector3d GRF;
 
@@ -259,14 +263,66 @@ void getInterpPlan(const FullState &start_state,
                    const PlannerConfig &planner_config);
 
 // Terrain-based heuristics
-double getZFromState(const State &s, const PlannerConfig &planner_config);
 double getPitchFromState(const State &s, const PlannerConfig &planner_config);
 double getDzFromState(const State &s, const PlannerConfig &planner_config);
-double getZClearance(const Eigen::Vector3d pos,
-                     const PlannerConfig &planner_config);
-double getZClearance(const State &s, const PlannerConfig &planner_config);
 void setDz(State &s, const PlannerConfig &planner_config);
 void setDz(State &s, const Eigen::Vector3d &surf_norm);
+inline bool isInMap(const Eigen::Vector3d &pos,
+                    const PlannerConfig &planner_config) {
+  return planner_config.terrain_gm.isInside(pos.head<2>());
+  // return planner_config.terrain.isInRange(pos[0], pos[1]);
+};
+inline bool isInMap(const State &s, const PlannerConfig &planner_config) {
+  return isInMap(s.pos, planner_config);
+};
+inline double getTerrainZ(const Eigen::Vector3d &pos,
+                          const PlannerConfig &planner_config) {
+  return planner_config.terrain_gm.atPosition("z", pos.head<2>(), INTERP_TYPE);
+  // return (planner_config.terrain.getGroundHeight(pos[0], pos[1]));
+};
+inline double getTerrainZFiltered(const Eigen::Vector3d &pos,
+                                  const PlannerConfig &planner_config) {
+  return planner_config.terrain_gm.atPosition("z_smooth", pos.head<2>(),
+                                              INTERP_TYPE);
+  // return (planner_config.terrain.getGroundHeightFiltered(pos[0], pos[1]));
+};
+inline double getTerrainZFromState(const State &s,
+                                   const PlannerConfig &planner_config) {
+  return getTerrainZ(s.pos, planner_config);
+};
+inline double getTerrainZFilteredFromState(
+    const State &s, const PlannerConfig &planner_config) {
+  return getTerrainZFiltered(s.pos, planner_config);
+};
+inline double getZRelToTerrain(const Eigen::Vector3d pos,
+                               const PlannerConfig &planner_config) {
+  return (pos[2] - getTerrainZ(pos, planner_config));
+};
+inline double getZRelToTerrain(const State &s,
+                               const PlannerConfig &planner_config) {
+  return getZRelToTerrain(s.pos, planner_config);
+};
+inline double getZRelToTerrainFiltered(const Eigen::Vector3d pos,
+                                       const PlannerConfig &planner_config) {
+  return (pos[2] - getTerrainZFiltered(pos, planner_config));
+};
+inline double getZRelToTerrainFiltered(const State &s,
+                                       const PlannerConfig &planner_config) {
+  return getZRelToTerrainFiltered(s.pos, planner_config);
+};
+inline Eigen::Vector3d getSurfaceNormalFiltered(
+    const State &s, const PlannerConfig &planner_config) {
+  return planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0],
+                                                              s.pos[1]);
+};
+inline void getMapBounds(const PlannerConfig &planner_config, double &x_min,
+                         double &x_max, double &y_min, double &y_max) {
+  double eps = 1;
+  x_min = planner_config.terrain.getXData().front() + eps;
+  x_max = planner_config.terrain.getXData().back() - eps;
+  y_min = planner_config.terrain.getYData().front() + eps;
+  y_max = planner_config.terrain.getYData().back() - eps;
+};
 
 // Kinematics
 State applyStance(const State &s, const Action &a, double t, int phase,

@@ -32,8 +32,7 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
     }
   }
 
-  Eigen::Vector3d surf_norm =
-      planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0], s.pos[1]);
+  Eigen::Vector3d surf_norm = getSurfaceNormalFiltered(s, planner_config);
 
   int tree_size = tree_viz_msg_.markers.size();
 
@@ -124,8 +123,9 @@ int RRTClass::attemptConnect(const State &s_existing, const State &s,
 
   // Set the vertical component of accel to contain height above terrain
   result.a_new.grf_0[2] =
-      s_start.pos[2] - getZFromState(s_start, planner_config);
-  result.a_new.grf_f[2] = s_goal.pos[2] - getZFromState(s_goal, planner_config);
+      s_start.pos[2] - getTerrainZFilteredFromState(s_start, planner_config);
+  result.a_new.grf_f[2] =
+      s_goal.pos[2] - getTerrainZFilteredFromState(s_goal, planner_config);
 
   result.a_new.t_s_leap = t_s;
   result.a_new.t_f = 0;

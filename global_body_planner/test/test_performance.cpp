@@ -37,8 +37,10 @@ TEST(GlobalBodyPlannerTest, testGetRandomLeapActionTime) {
   PlannerConfig planner_config;
   planner_config.loadVectors();
   planner_config.terrain.loadFlat();
+  State s_origin;
+  s_origin.pos.setZero();
   Eigen::Vector3d surf_norm =
-      planner_config.terrain.getSurfaceNormalFilteredEigen(0, 0);
+      getSurfaceNormalFiltered(s_origin, planner_config);
 
   std::vector<State> state_vec(N);
   std::vector<Action> action_vec(N);
@@ -66,8 +68,10 @@ TEST(GlobalBodyPlannerTest, testIsValidStateActionPairTime) {
   PlannerConfig planner_config;
   planner_config.loadVectors();
   planner_config.terrain.loadFlat();
+  State s_origin;
+  s_origin.pos.setZero();
   Eigen::Vector3d surf_norm =
-      planner_config.terrain.getSurfaceNormalFilteredEigen(0, 0);
+      getSurfaceNormalFiltered(s_origin, planner_config);
 
   std::vector<State> state_vec(N);
   std::vector<Action> action_vec(N);
@@ -102,8 +106,10 @@ TEST(GlobalBodyPlannerTest, testValidStateActionPairAccuracy) {
   PlannerConfig planner_config;
   planner_config.loadVectors();
   planner_config.terrain.loadFlat();
+  State s_origin;
+  s_origin.pos.setZero();
   Eigen::Vector3d surf_norm =
-      planner_config.terrain.getSurfaceNormalFilteredEigen(0, 0);
+      getSurfaceNormalFiltered(s_origin, planner_config);
 
   std::vector<State> state_vec(N);
   std::vector<Action> action_vec(N);
@@ -175,8 +181,7 @@ TEST(GlobalBodyPlannerTest, testValidStateActionPairRate) {
   quad_utils::FunctionTimer timer("testValidStateActionPairRate");
   while (count_valid < N) {
     State s = P.randomState(planner_config);
-    surf_norm = planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0],
-                                                                     s.pos[1]);
+    surf_norm = getSurfaceNormalFiltered(s, planner_config);
     bool is_valid_forward = false;
     while (!is_valid_forward) {
       if (getRandomLeapAction(s, surf_norm, a, planner_config)) {

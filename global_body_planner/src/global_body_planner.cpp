@@ -121,7 +121,8 @@ void GlobalBodyPlanner::terrainMapCallback(
   grid_map::GridMapRosConverter::fromMessage(*msg, map);
 
   // Convert to FastTerrainMap structure for faster querying
-  planner_config_.terrain.loadDataFromGridMap(map);
+  planner_config_.terrain.loadDataFromGridMap(map);  // Takes ~10ms
+  planner_config_.terrain_gm = map;                  // Takes ~0.1ms
 }
 
 void GlobalBodyPlanner::robotStateCallback(

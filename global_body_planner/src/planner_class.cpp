@@ -15,10 +15,8 @@ PlannerClass::~PlannerClass() {}
 
 State PlannerClass::randomState(const PlannerConfig &planner_config) {
   double eps = 1;
-  double x_min = planner_config.terrain.getXData().front() + eps;
-  double x_max = planner_config.terrain.getXData().back() - eps;
-  double y_min = planner_config.terrain.getYData().front() + eps;
-  double y_max = planner_config.terrain.getYData().back() - eps;
+  double x_min, x_max, y_min, y_max;
+  getMapBounds(planner_config, x_min, x_max, y_min, y_max);
 
   double z_min_rel = planner_config.H_MIN + planner_config.ROBOT_H;
   double z_max_rel = planner_config.H_MAX + planner_config.ROBOT_H;
@@ -36,8 +34,7 @@ State PlannerClass::randomState(const PlannerConfig &planner_config) {
 
   q.pos[0] = (x_max - x_min) * (double)rand() / RAND_MAX + x_min;
   q.pos[1] = (y_max - y_min) * (double)rand() / RAND_MAX + y_min;
-  q.pos[2] = planner_config.H_NOM +
-             planner_config.terrain.getGroundHeight(q.pos[0], q.pos[1]);
+  q.pos[2] = planner_config.H_NOM + getTerrainZFromState(q, planner_config);
 
   double phi = (2.0 * MY_PI) * (double)rand() / RAND_MAX;
   double v = planner_config.V_NOM;
