@@ -69,6 +69,8 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
                            planner_config_.ROBOT_W);
   quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_W",
                            planner_config_.ROBOT_W);
+  quad_utils::loadROSParam(nh, "global_body_planner/TRAVERSABILITY_THRESHOLD",
+                           planner_config_.traversability_threshold);
   quad_utils::loadROSParam(nh, "global_body_planner/M_CONST",
                            planner_config_.M_CONST);
   quad_utils::loadROSParam(nh, "global_body_planner/J_CONST",

@@ -77,10 +77,14 @@ struct PlannerConfig {
   double ROBOT_W = 0.3;  // Width of robot body, m (0.256 cheetah, 0.232 ANYmal)
   double ROBOT_H = 0.05;  // Vertical distance between leg base and bottom of
                           // robot, m (0.1 cheetah, 0.04 ANYmal)
+
+  double traversability_threshold = 0.6;
+
   static const int num_reachability_points =
       4;  // Number of points on body used to check reachability
   static const int num_collision_points =
       5;  // Number of points on body used to check for collisions
+
   Eigen::Matrix<double, 3, num_reachability_points>
       reachability_points_body;  // Positions of reachability points in the body
                                  // frame
@@ -119,7 +123,7 @@ const int INVALID_START_STATE = 3;
 const int INVALID_GOAL_STATE = 4;
 const int INVALID_START_GOAL_EQUAL = 5;
 
-const grid_map::InterpolationMethods INTERP_TYPE =
+const grid_map::InterpolationMethods INTER_TYPE =
     grid_map::InterpolationMethods::INTER_LINEAR;
 
 typedef Eigen::Vector3d GRF;
@@ -277,14 +281,27 @@ inline bool isInMap(const State &s, const PlannerConfig &planner_config) {
 };
 inline double getTerrainZ(const Eigen::Vector3d &pos,
                           const PlannerConfig &planner_config) {
-  return planner_config.terrain_gm.atPosition("z", pos.head<2>(), INTERP_TYPE);
+  return planner_config.terrain_gm.atPosition("z_inpainted", pos.head<2>(),
+                                              INTER_TYPE);
   // return (planner_config.terrain.getGroundHeight(pos[0], pos[1]));
 };
 inline double getTerrainZFiltered(const Eigen::Vector3d &pos,
                                   const PlannerConfig &planner_config) {
   return planner_config.terrain_gm.atPosition("z_smooth", pos.head<2>(),
-                                              INTERP_TYPE);
+                                              INTER_TYPE);
   // return (planner_config.terrain.getGroundHeightFiltered(pos[0], pos[1]));
+};
+inline double getTraversability(const Eigen::Vector3d &pos,
+                                const PlannerConfig &planner_config) {
+  return planner_config.terrain_gm.atPosition("traversability", pos.head<2>(),
+                                              INTER_TYPE);
+  // return 1.0;
+};
+inline bool isTraversable(const Eigen::Vector3d &pos,
+                          const PlannerConfig &planner_config) {
+  return (getTraversability(pos, planner_config) >=
+          planner_config.traversability_threshold);
+  // return true;
 };
 inline double getTerrainZFromState(const State &s,
                                    const PlannerConfig &planner_config) {
@@ -294,7 +311,7 @@ inline double getTerrainZFilteredFromState(
     const State &s, const PlannerConfig &planner_config) {
   return getTerrainZFiltered(s.pos, planner_config);
 };
-inline double getZRelToTerrain(const Eigen::Vector3d pos,
+inline double getZRelToTerrain(const Eigen::Vector3d &pos,
                                const PlannerConfig &planner_config) {
   return (pos[2] - getTerrainZ(pos, planner_config));
 };
@@ -302,7 +319,7 @@ inline double getZRelToTerrain(const State &s,
                                const PlannerConfig &planner_config) {
   return getZRelToTerrain(s.pos, planner_config);
 };
-inline double getZRelToTerrainFiltered(const Eigen::Vector3d pos,
+inline double getZRelToTerrainFiltered(const Eigen::Vector3d &pos,
                                        const PlannerConfig &planner_config) {
   return (pos[2] - getTerrainZFiltered(pos, planner_config));
 };

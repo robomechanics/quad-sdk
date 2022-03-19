@@ -87,10 +87,12 @@ void flipDirection(Action &action) {
   action.dz_0 = -action.dz_f;
   action.dz_f = -temp_dz;
 
-  // Reverse stance times for landing and leaping
-  double temp_t_s = action.t_s_leap;
-  action.t_s_leap = action.t_s_land;
-  action.t_s_land = temp_t_s;
+  // Reverse stance times for landing and leaping if this is an actual leap
+  if (action.t_f > 0) {
+    double temp_t_s = action.t_s_leap;
+    action.t_s_leap = action.t_s_land;
+    action.t_s_land = temp_t_s;
+  }
 };
 
 void printState(const State &s) {
@@ -970,6 +972,10 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
     printf("Out of terrain range, phase = %d\n", phase);
     printStateNewline(s);
 #endif
+    return false;
+  }
+
+  if (!isTraversable(s.pos, planner_config) && phase != FLIGHT) {
     return false;
   }
 
