@@ -105,6 +105,7 @@ NMPCController::NMPCController(int type) {
   // Load fixed complexity schedule
   Eigen::VectorXi fixed_complexity_schedule(N_);
   fixed_complexity_schedule.setZero();
+  adaptive_complexity_schedule_ = fixed_complexity_schedule;
   for (int idx : fixed_complex_idxs) {
     if (idx >= 0 && idx <= N_) {
       fixed_complexity_schedule[idx] = 1;
@@ -142,7 +143,7 @@ NMPCController::NMPCController(int type) {
   // app_->Options()->SetIntegerValue("max_iter", 100);
   // app_->Options()->SetStringValue("print_timing_statistics", "yes");
   app_->Options()->SetStringValue("linear_solver", "ma57");
-  app_->Options()->SetIntegerValue("print_level", 5);
+  app_->Options()->SetIntegerValue("print_level", 0);
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   // app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
@@ -185,7 +186,7 @@ bool NMPCController::computeLegPlan(
     Eigen::MatrixXd &control_traj) {
   // Local planner will send a reference traj with N+1 rows
   mynlp_->update_solver(initial_state, ref_traj, foot_positions,
-                        contact_schedule, complexity_schedule,
+                        contact_schedule, adaptive_complexity_schedule_,
                         ref_ground_height, first_element_duration,
                         same_plan_index, require_init_);
   require_init_ = false;
@@ -304,7 +305,8 @@ bool NMPCController::computePlan(
 
   if (status == Solve_Succeeded) {
     mynlp_->warm_start_ = true;
-    Eigen::VectorXd constr_vals = evalLiftedTrajectoryConstraints();
+    Eigen::VectorXi constr_vals = evalLiftedTrajectoryConstraints();
+    // adaptive_complexity_schedule_ = constr_vals;
 
     return true;
   } else {
@@ -335,19 +337,26 @@ bool NMPCController::computePlan(
                 << std::endl;
     }
 
-    Eigen::VectorXd constr_vals = evalLiftedTrajectoryConstraints();
+    Eigen::VectorXi constr_vals = evalLiftedTrajectoryConstraints();
 
     throw std::runtime_error("Solve failed, exiting for debug");
     return false;
   }
 }
 
-Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
+Eigen::VectorXi NMPCController::evalLiftedTrajectoryConstraints() {
   // quad_utils::FunctionTimer timer(__FUNCTION__);
 
   // Declare decision and constraint vars
-  Eigen::VectorXi adaptive_complexity_horizon(N_);
-  adaptive_complexity_horizon.setZero();
+  Eigen::VectorXi adaptive_complexity_schedule(N_);
+  adaptive_complexity_schedule.setZero();
+
+  Eigen::VectorXd max_constraint_violation(N_);
+  max_constraint_violation.fill(-2e19);
+  double max_constraint_violation_val = -2e19;
+  int max_constraint_violation_fe = -1;
+  int max_constraint_violation_index = -1;
+
   Eigen::VectorXd x0, u, x1;
   Eigen::VectorXd joint_positions(12), joint_velocities(12), joint_torques(12);
   Eigen::VectorXd constr_vals, params(24), lb_violation, ub_violation;
@@ -369,33 +378,16 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
   app_->Options()->GetNumericValue("tol", var_tol, "");
   app_->Options()->GetNumericValue("constr_viol_tol", constr_tol, "");
 
-  // u = mynlp_->get_primal_control_var(mynlp_->w0_, 0);
-  // params.head(12) = mynlp_->foot_pos_world_.row(0);
-  // params.tail(12) = mynlp_->foot_vel_world_.row(0);
-  // constr_vals = mynlp_->eval_g_single_fe(
-  //     COMPLEX, mynlp_->first_element_duration_, x0, u, x0, params);
-  // for (int i = 0; i <
-  // mynlp_->relaxed_primal_constraint_idxs_in_element_.size();
-  //      i++) {
-  //   std::cout
-  //       << "knee " << i << " height = "
-  //       <<
-  //       -constr_vals[mynlp_->relaxed_primal_constraint_idxs_in_element_[i]]
-  //       << std::endl;
-  // }
-  // std::cout << "constr_vals = " << constr_vals.tail(constr_vals.size() - 28)
-  //           << std::endl;
-
   // Loop through trajectory, lifting as needed and evaluating constraints
   for (int i = 0; i < N_ - 1; i++) {
-    std::cout << "FE " << i << ", sys_id = " << mynlp_->sys_id_schedule_[i]
-              << std::endl;
+    // std::cout << "FE " << i << ", sys_id = " << mynlp_->sys_id_schedule_[i]
+    //           << std::endl;
 
     u = mynlp_->get_primal_control_var(mynlp_->w0_, i);
     x1 = mynlp_->get_primal_state_var(mynlp_->w0_, i + 1);
 
     if (x1.size() < mynlp_->n_complex_) {
-      std::cout << "state is lifted" << std::endl;
+      // std::cout << "state is lifted" << std::endl;
       quadKD_->convertCentroidalToFullBody(
           x1, mynlp_->foot_pos_world_.row(i + 1),
           mynlp_->foot_vel_world_.row(i + 1), u, joint_positions,
@@ -412,26 +404,41 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
     constr_vals = mynlp_->eval_g_single_fe(COMPLEX, dt, x0, u, x1, params);
     lb_violation = mynlp_->g_min_complex_hard_ - constr_vals;
     ub_violation = constr_vals - mynlp_->g_max_complex_hard_;
-    for (int j = 0;
-         j < mynlp_->relaxed_primal_constraint_idxs_in_element_.size(); j++) {
-      std::cout
-          << "knee " << j << " height:"
-          << -constr_vals[mynlp_->relaxed_primal_constraint_idxs_in_element_[j]]
-          << std::endl;
-    }
-    std::cout << "body pos = " << x1.segment(0, 12).transpose() << std::endl;
-    std::cout << "joint pos = " << x1.segment(12, 12).transpose() << std::endl;
-    std::cout << "joint vel = " << x1.segment(24, 12).transpose() << std::endl;
-    std::cout << "foot_pos = " << mynlp_->foot_pos_world_.row(i + 1)
-              << std::endl;
-    std::cout << "foot_vel = " << mynlp_->foot_vel_world_.row(i + 1)
-              << std::endl;
-    std::cout << "grfs = " << u.transpose() << std::endl;
-    std::cout << "lb violation = " << lb_violation << std::endl;
-    std::cout << "ub violation = " << ub_violation << std::endl;
+
+    max_constraint_violation[i + 1] =
+        (lb_violation.cwiseMax(ub_violation)).maxCoeff();
+    // for (int j = 0;
+    //      j < mynlp_->relaxed_primal_constraint_idxs_in_element_.size(); j++)
+    //      {
+    //   std::cout
+    //       << "knee " << j << " height:"
+    //       <<
+    //       -constr_vals[mynlp_->relaxed_primal_constraint_idxs_in_element_[j]]
+    //       << std::endl;
+    // }
+    // std::cout << "body pos = " << x1.segment(0, 12).transpose() << std::endl;
+    // std::cout << "joint pos = " << x1.segment(12, 12).transpose() <<
+    // std::endl; std::cout << "joint vel = " << x1.segment(24, 12).transpose()
+    // << std::endl; std::cout << "foot_pos = " << mynlp_->foot_pos_world_.row(i
+    // + 1)
+    //           << std::endl;
+    // std::cout << "foot_vel = " << mynlp_->foot_vel_world_.row(i + 1)
+    //           << std::endl;
+    // std::cout << "grfs = " << u.transpose() << std::endl;
+    // std::cout << "lb violation = " << lb_violation << std::endl;
+    // std::cout << "ub violation = " << ub_violation << std::endl;
 
     for (int j = 0; j < constr_vals.size(); j++) {
-      if (lb_violation[j] > constr_tol || ub_violation[j] > constr_tol) {
+      double current_constraint_violation =
+          std::max(lb_violation[j], ub_violation[j]);
+
+      if (current_constraint_violation > max_constraint_violation_val) {
+        max_constraint_violation_val = current_constraint_violation;
+        max_constraint_violation_fe = i + 1;
+        max_constraint_violation_index = j;
+      }
+
+      if (current_constraint_violation > constr_tol) {
         if (mynlp_->n_vec_[i + 1] == mynlp_->n_complex_) {
           printf(
               "Constraint %s violated in FE %d: %5.3f <= %5.3f <= "
@@ -449,7 +456,7 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
         } else {
           valid_lift = false;
         }
-        adaptive_complexity_horizon[i + 1] = 1;
+        adaptive_complexity_schedule[i + 1] = 1;
       }
     }
 
@@ -467,14 +474,14 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
         } else {
           valid_lift = false;
         }
-        adaptive_complexity_horizon[i + 1] = 1;
+        adaptive_complexity_schedule[i + 1] = 1;
       }
     }
     x0 = x1;
   }
 
   if (!valid_lift) {
-    std::cout << "Invalid: " << adaptive_complexity_horizon.transpose()
+    std::cout << "Invalid: " << adaptive_complexity_schedule.transpose()
               << std::endl;
     // mynlp_->warm_start_ = false;
     // mynlp_->mu0_ = 1e-1;
@@ -487,6 +494,15 @@ Eigen::VectorXd NMPCController::evalLiftedTrajectoryConstraints() {
     //     "Invalid region detected where there shouldnt be, exiting.");
   }
 
+  if (max_constraint_violation_val >= constr_tol) {
+    std::cout << "Max violation vector = "
+              << max_constraint_violation.transpose() << std::endl;
+    std::cout << "Max violation is constraint "
+              << mynlp_->constr_names_[COMPLEX][max_constraint_violation_index]
+              << " at FE " << max_constraint_violation_fe
+              << " with val = " << max_constraint_violation_val << std::endl;
+  }
   // timer.reportStatistics();
-  return constr_vals;
+  // return constr_vals;
+  return adaptive_complexity_schedule;
 }

@@ -185,8 +185,8 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   // g_max_complex_hard_.segment(current_idx, constraint_size).fill(0);
   g_min_complex_hard_.segment(current_idx, constraint_size).head(12).fill(0);
   g_max_complex_hard_.segment(current_idx, constraint_size).head(12).fill(0);
-  g_min_complex_hard_.segment(current_idx, constraint_size).tail(12).fill(-10);
-  g_max_complex_hard_.segment(current_idx, constraint_size).tail(12).fill(10);
+  g_min_complex_hard_.segment(current_idx, constraint_size).tail(12).fill(-100);
+  g_max_complex_hard_.segment(current_idx, constraint_size).tail(12).fill(100);
   current_idx += constraint_size;
 
   // Load knee constraint bounds
@@ -198,15 +198,15 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   g_relaxed_ = relaxed_primal_constraint_idxs_in_element_.size();
   current_idx += constraint_size;
 
-  g_min_complex_soft_.resize(constraint_size);
-  g_max_complex_soft_.resize(constraint_size);
+  g_min_complex_soft_.resize(g_relaxed_);
+  g_max_complex_soft_.resize(g_relaxed_);
   g_min_complex_soft_.fill(-2e19);
   g_max_complex_soft_.fill(-0.10);
 
   // Load motor model constraint bounds
   constraint_size = n_null_;
   g_min_complex_hard_.segment(current_idx, constraint_size).fill(-2e19);
-  g_max_complex_hard_.segment(current_idx, constraint_size).fill(0);
+  g_max_complex_hard_.segment(current_idx, constraint_size).fill(500);
   current_idx += constraint_size;
 
   loadCasadiFuncs();
@@ -1084,18 +1084,19 @@ void quadNLP::finalize_solution(SolverReturn status, Index n, const Number *x,
     nonzero_constraint_element_sum[i] = get_slack_constraint_var(w, i).sum();
   }
 
-  std::cout << "nonzero_slack_element_sum = "
-            << nonzero_slack_element_sum.transpose() << std::endl;
-  std::cout << "nonzero_constraint_element_sum = "
-            << nonzero_constraint_element_sum.transpose() << std::endl;
+  // std::cout << "nonzero_slack_element_sum = "
+  //           << nonzero_slack_element_sum.transpose() << std::endl;
+  // std::cout << "nonzero_constraint_element_sum = "
+  //           << nonzero_constraint_element_sum.transpose() << std::endl;
 
-  if (total_slack_var_cost > 1e-4 || total_slack_constraint_cost > 1e-4) {
-    std::cout << "total_slack_var_cost = " << total_slack_var_cost << std::endl;
-    std::cout << "total_slack_constraint_cost = " << total_slack_constraint_cost
-              << std::endl;
-  } else {
-    std::cout << "No slack cost" << std::endl;
-  }
+  // if (total_slack_var_cost > 1e-4 || total_slack_constraint_cost > 1e-4) {
+  //   std::cout << "total_slack_var_cost = " << total_slack_var_cost <<
+  //   std::endl; std::cout << "total_slack_constraint_cost = " <<
+  //   total_slack_constraint_cost
+  //             << std::endl;
+  // } else {
+  //   std::cout << "No slack cost" << std::endl;
+  // }
 }
 
 void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
@@ -1203,6 +1204,7 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
       std::cout << "Complexity at i = " << i
                 << " increased, disabling warm start" << std::endl;
       warm_start_ = false;
+      // mu0_ = 1e-1;
 
       if (n_vec_[i + 1] > n_shared) {
         std::cout << "No null data from prev solve, using nominal" << std::endl;
@@ -1673,13 +1675,13 @@ void quadNLP::update_structure() {
   // std::cout << "complexity_schedule.size() = " << complexity_schedule.size()
   //           << std::endl;
   // std::cout << "N_ = " << N_ << std::endl;
-  // std::cout << "cmplx_sch = " << complexity_schedule.transpose() <<
-  // std::endl; std::cout << "sys_id_sch = " << sys_id_schedule_.transpose() <<
+  std::cout << "cmplx_sch = " << complexity_schedule.transpose() << std::endl;
+  // std::cout << "sys_id_sch = " << sys_id_schedule_.transpose() <<
   // std::endl; std::cout << "n_vec_ =    " << n_vec_.transpose() << std::endl;
   // std::cout << "n_slack_vec_ = " << n_slack_vec_.transpose() << std::endl;
   // std::cout << "g_vec_ =      " << g_vec_.transpose() << std::endl;
   // std::cout << "g_vec_.sum() = " << g_vec_.sum() << std::endl;
-  std::cout << "g_slack_vec_ = " << g_slack_vec_.transpose() << std::endl;
+  // std::cout << "g_slack_vec_ = " << g_slack_vec_.transpose() << std::endl;
   // std::cout << "g_vec_.sum() + n_vars_slack_ = " << g_vec_.sum() +
   // n_vars_slack_
   //           << std::endl;
