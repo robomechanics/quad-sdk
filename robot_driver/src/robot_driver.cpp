@@ -1,6 +1,6 @@
 #include "robot_driver/robot_driver.h"
 
-RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
+RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   nh_ = nh;
   argc_ = argc;
   argv_ = argv;
@@ -121,7 +121,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
 
   // Not allow to trot at first
   double gait_period;
-  quad_utils::loadROSParam(nh_, "/local_footstep_planner/period", gait_period);
+  quad_utils::loadROSParam(nh_, "local_footstep_planner/period", gait_period);
   trotting_duration_ = gait_period * 2 * update_rate_;
   trotting_count_ = trotting_duration_++;
 
@@ -143,33 +143,33 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   grf_array_msg_.header.frame_id = "map";
 }
 
-void RobotDriver::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
+void RobotDriver::controlModeCallback(const std_msgs::UInt8::ConstPtr &msg) {
   // Wait if transitioning
   if ((control_mode_ == SIT_TO_READY) || (control_mode_ == READY_TO_SIT))
     return;
   if ((msg->data == READY) &&
-      (control_mode_ == SIT)) {  // Stand if previously sitting
+      (control_mode_ == SIT)) { // Stand if previously sitting
     control_mode_ = SIT_TO_READY;
     transition_timestamp_ = ros::Time::now();
   } else if ((msg->data == SIT) &&
-             (control_mode_ == READY)) {  // Sit if previously standing
+             (control_mode_ == READY)) { // Sit if previously standing
     control_mode_ = READY_TO_SIT;
     transition_timestamp_ = ros::Time::now();
   } else if (msg->data == SIT ||
-             (msg->data == SAFETY)) {  // Allow sit or safety modes
+             (msg->data == SAFETY)) { // Allow sit or safety modes
     control_mode_ = msg->data;
   }
 }
 
 void RobotDriver::singleJointCommandCallback(
-    const geometry_msgs::Vector3::ConstPtr& msg) {
-  if (JointController* c =
-          dynamic_cast<JointController*>(leg_controller_.get())) {
+    const geometry_msgs::Vector3::ConstPtr &msg) {
+  if (JointController *c =
+          dynamic_cast<JointController *>(leg_controller_.get())) {
     c->updateSingleJointCommand(msg);
   }
 }
 
-void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg) {
+void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg) {
   last_local_plan_msg_ = msg;
 
   ros::Time t_now = ros::Time::now();
@@ -182,7 +182,7 @@ void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg) {
 }
 
 void RobotDriver::mocapCallback(
-    const geometry_msgs::PoseStamped::ConstPtr& msg) {
+    const geometry_msgs::PoseStamped::ConstPtr &msg) {
   if (last_mocap_msg_ != NULL) {
     // Collect change in position for velocity update
     Eigen::Vector3d pos_new, pos_old;
@@ -221,17 +221,17 @@ void RobotDriver::mocapCallback(
 }
 
 void RobotDriver::robotStateCallback(
-    const quad_msgs::RobotState::ConstPtr& msg) {
+    const quad_msgs::RobotState::ConstPtr &msg) {
   last_robot_state_msg_ = *msg;
 }
 
 void RobotDriver::legOverrideCallback(
-    const quad_msgs::LegOverride::ConstPtr& msg) {
+    const quad_msgs::LegOverride::ConstPtr &msg) {
   last_leg_override_msg_ = *msg;
 }
 
 void RobotDriver::remoteHeartbeatCallback(
-    const std_msgs::Header::ConstPtr& msg) {
+    const std_msgs::Header::ConstPtr &msg) {
   // Get the current time and compare to the message time
   double remote_heartbeat_sent_time = msg->stamp.toSec();
   remote_heartbeat_received_time_ = ros::Time::now().toSec();
@@ -243,7 +243,8 @@ void RobotDriver::remoteHeartbeatCallback(
 
 void RobotDriver::checkMessages() {
   // Do nothing if already in safety mode
-  if (control_mode_ == SAFETY) return;
+  if (control_mode_ == SAFETY)
+    return;
 
   // Check the remote heartbeat for timeout
   // (this adds extra safety if no heartbeat messages are arriving)
@@ -251,9 +252,8 @@ void RobotDriver::checkMessages() {
           heartbeat_timeout_ &&
       remote_heartbeat_received_time_ != std::numeric_limits<double>::max()) {
     control_mode_ = SAFETY;
-    ROS_WARN_THROTTLE(1,
-                      "Remote heartbeat lost or late to robot driver node, "
-                      "entering safety mode");
+    ROS_WARN_THROTTLE(1, "Remote heartbeat lost or late to robot driver node, "
+                         "entering safety mode");
   }
 
   // Check the state message latency
@@ -507,9 +507,8 @@ bool RobotDriver::updateControl() {
       }
     }
   } else {
-    ROS_WARN_THROTTLE(0.5,
-                      "Invalid control mode set in ID node, "
-                      "exiting updateControl()");
+    ROS_WARN_THROTTLE(0.5, "Invalid control mode set in ID node, "
+                           "exiting updateControl()");
     return false;
   }
 

@@ -24,7 +24,8 @@ void QuadEstimatorGroundTruth::Load(physics::ModelPtr _parent,
   }
 
   // Setup state estimate publisher
-  ros::NodeHandle nh;
+  auto robot_ns = model_->GetName();
+  ros::NodeHandle nh(robot_ns);
 
   // Load rosparams from parameter server
   std::string ground_truth_state_topic, ground_truth_state_body_frame_topic;
@@ -48,7 +49,7 @@ void QuadEstimatorGroundTruth::OnUpdate() {
   common::Time current_time = model_->GetWorld()->SimTime();
 
   if (update_rate_ > 0 && (current_time - last_time_).Double() <
-                              1.0 / update_rate_)  // update rate check
+                              1.0 / update_rate_) // update rate check
     return;
 
   // Extract all relevant information from simulator
@@ -125,8 +126,8 @@ void QuadEstimatorGroundTruth::OnUpdate() {
 
     physics::JointPtr joint = joint_vec[i];
     // physics::JointWrench wrench = joint->GetForceTorque(0);
-    double torque = 0;  // wrench.body1Torque.Z(); // Note that this doesn't
-                        // seem to work but at least will populate with zeros
+    double torque = 0; // wrench.body1Torque.Z(); // Note that this doesn't
+                       // seem to work but at least will populate with zeros
 
     state.joints.position.push_back(joint->Position());
     state.joints.velocity.push_back(joint->GetVelocity(0));
@@ -141,45 +142,45 @@ void QuadEstimatorGroundTruth::OnUpdate() {
 
   for (int i = 0; i < num_feet; i++) {
     switch (i) {
-      case 0:
-        state.feet.feet[i].position.x = toe0_pos.X();
-        state.feet.feet[i].position.y = toe0_pos.Y();
-        state.feet.feet[i].position.z = toe0_pos.Z();
+    case 0:
+      state.feet.feet[i].position.x = toe0_pos.X();
+      state.feet.feet[i].position.y = toe0_pos.Y();
+      state.feet.feet[i].position.z = toe0_pos.Z();
 
-        state.feet.feet[i].velocity.x = toe0_vel.X();
-        state.feet.feet[i].velocity.y = toe0_vel.Y();
-        state.feet.feet[i].velocity.z = toe0_vel.Z();
-        break;
+      state.feet.feet[i].velocity.x = toe0_vel.X();
+      state.feet.feet[i].velocity.y = toe0_vel.Y();
+      state.feet.feet[i].velocity.z = toe0_vel.Z();
+      break;
 
-      case 1:
-        state.feet.feet[i].position.x = toe1_pos.X();
-        state.feet.feet[i].position.y = toe1_pos.Y();
-        state.feet.feet[i].position.z = toe1_pos.Z();
+    case 1:
+      state.feet.feet[i].position.x = toe1_pos.X();
+      state.feet.feet[i].position.y = toe1_pos.Y();
+      state.feet.feet[i].position.z = toe1_pos.Z();
 
-        state.feet.feet[i].velocity.x = toe1_vel.X();
-        state.feet.feet[i].velocity.y = toe1_vel.Y();
-        state.feet.feet[i].velocity.z = toe1_vel.Z();
-        break;
+      state.feet.feet[i].velocity.x = toe1_vel.X();
+      state.feet.feet[i].velocity.y = toe1_vel.Y();
+      state.feet.feet[i].velocity.z = toe1_vel.Z();
+      break;
 
-      case 2:
-        state.feet.feet[i].position.x = toe2_pos.X();
-        state.feet.feet[i].position.y = toe2_pos.Y();
-        state.feet.feet[i].position.z = toe2_pos.Z();
+    case 2:
+      state.feet.feet[i].position.x = toe2_pos.X();
+      state.feet.feet[i].position.y = toe2_pos.Y();
+      state.feet.feet[i].position.z = toe2_pos.Z();
 
-        state.feet.feet[i].velocity.x = toe2_vel.X();
-        state.feet.feet[i].velocity.y = toe2_vel.Y();
-        state.feet.feet[i].velocity.z = toe2_vel.Z();
-        break;
+      state.feet.feet[i].velocity.x = toe2_vel.X();
+      state.feet.feet[i].velocity.y = toe2_vel.Y();
+      state.feet.feet[i].velocity.z = toe2_vel.Z();
+      break;
 
-      case 3:
-        state.feet.feet[i].position.x = toe3_pos.X();
-        state.feet.feet[i].position.y = toe3_pos.Y();
-        state.feet.feet[i].position.z = toe3_pos.Z();
+    case 3:
+      state.feet.feet[i].position.x = toe3_pos.X();
+      state.feet.feet[i].position.y = toe3_pos.Y();
+      state.feet.feet[i].position.z = toe3_pos.Z();
 
-        state.feet.feet[i].velocity.x = toe3_vel.X();
-        state.feet.feet[i].velocity.y = toe3_vel.Y();
-        state.feet.feet[i].velocity.z = toe3_vel.Z();
-        break;
+      state.feet.feet[i].velocity.x = toe3_vel.X();
+      state.feet.feet[i].velocity.y = toe3_vel.Y();
+      state.feet.feet[i].velocity.z = toe3_vel.Z();
+      break;
     }
   }
 
@@ -198,4 +199,4 @@ void QuadEstimatorGroundTruth::OnUpdate() {
 
   last_time_ = current_time;
 }
-}  // namespace gazebo
+} // namespace gazebo
