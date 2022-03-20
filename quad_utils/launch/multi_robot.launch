@@ -1,26 +1,40 @@
 <launch>
-  <!-- No namespace here as we will share this description. 
-       Access with slash at the beginning -->
- 
-  
-  <!-- BEGIN ROBOT 1-->
+  <param name="/use_sim_time" value="true" />
+  <arg name="gui"             default="true"/>
+  <arg name="paused"          default="false"/>
+  <arg name="world"           default="flat"/>
+  <arg name="controller"      default="inverse_dynamics"/>
+
+
+  <!-- start world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="world_name" value="$(find gazebo_scripts)/worlds/$(arg world)/$(arg world).world"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="physics" value="ode"/>
+    <arg name="verbose" value="$(arg gui)"/>
+  </include>
+
+<include file="$(find quad_utils)/launch/load_params.launch" />
+
+<include file="$(find quad_utils)/launch/mapping.launch" >
+      <arg name="input_type" value="mesh"/>
+      <arg name="world" value="$(arg world)"/>
+</include>
+
+   <!-- BEGIN ROBOT 1-->
   <group ns="robot1">
-   <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
-    <param name="tf_prefix" value="robot1_tf" />
-    <include file="$(find quad_utils)/launch/single_robot.launch" >
-      <arg name="init_pose" value="-x 0.0 -y 0.0 -z 0.5" />
-      <arg name="robot_name"  value="Robot1" />
+    <include file="$(find quad_utils)/launch/robot.launch" >
+    <arg name="robot_name" value="robot1" />
+    <arg name="init_pose" value="-x 0.0 -y 0.0 -z 0.5" />
     </include>
   </group>
 
   <!-- BEGIN ROBOT 2-->
-  <group ns="robot2">
-   <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
-    <param name="tf_prefix" value="robot2_tf" />
-    <include file="$(find quad_utils)/launch/single_robot.launch">
+  <!-- <group ns="robot2">
+   <arg name="robot_namespace" value="robot2" />
+   <include file="$(find quad_utils)/launch/spawn_multi_robot.launch">
       <arg name="init_pose" value="-x 2.0 -y 0 -z 0.5" />
-      <arg name="robot_name"  value="Robot2" />
     </include>
-  </group>
-
+  </group> -->
 </launch>

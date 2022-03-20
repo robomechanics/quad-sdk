@@ -25,7 +25,6 @@ SOFTWARE.
 -->
 
 <launch>
-
   <arg name="gui"             default="false"/>
   <arg name="paused"          default="false"/>
   <arg name="software"        default="true"/>
@@ -34,6 +33,19 @@ SOFTWARE.
   <arg name="world"           default="flat"/>
   <arg name="rotors"          default="false"/>
 
+    <!-- Load the parameters and the sdf description -->
+  <include file="$(find quad_utils)/launch/load_params.launch" />
+
+<!-- Launch the Quad world with specific physics parameters -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="world_name" value="$(find gazebo_scripts)/worlds/$(arg world)/$(arg world).world"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="physics" value="ode"/>
+    <arg name="verbose" value="$(arg gui)"/>
+  </include>
+  
+<group ns="robot_1">
   <include file="$(find quad_utils)/launch/mapping.launch" >
     <arg name="input_type" value="mesh"/>
     <arg name="world" value="$(arg world)"/>
@@ -48,18 +60,8 @@ SOFTWARE.
       <arg name="mocap" value="false"/>
       <arg name="is_hw" value="false"/>
     </include>
+  </group>
 
-  <!-- Launch the Quad world with specific physics parameters -->
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="paused" value="$(arg paused)"/>
-    <arg name="world_name" value="$(find gazebo_scripts)/worlds/$(arg world)/$(arg world).world"/>
-    <arg name="gui" value="$(arg gui)"/>
-    <arg name="physics" value="ode"/>
-    <arg name="verbose" value="$(arg gui)"/>
-  </include>
-
-  <!-- Load the parameters and the sdf description -->
-  <include file="$(find quad_utils)/launch/load_params.launch" />
   <group if="$(arg rotors)">
     <!-- use more accurate but slower rotor model -->
     <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit_rotors.sdf" />
@@ -70,7 +72,7 @@ SOFTWARE.
   </group>
 
   <!-- Spawn SDF model -->
-  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.5" output="screen"/>
+  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model robot_1 -x 0.0 -y 0.0 -z 0.5" output="screen"/>
 
   <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
 
@@ -79,11 +81,10 @@ SOFTWARE.
         type="spawner"
         respawn="false"
         output="screen"
-        ns="/spirit"
         args="joint_controller joint_state_controller">
   </node>
 
   <!-- Load the contact state publisher -->
   <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
-  
+</group>
 </launch>
