@@ -143,7 +143,7 @@ NMPCController::NMPCController(int type) {
   // app_->Options()->SetIntegerValue("max_iter", 100);
   // app_->Options()->SetStringValue("print_timing_statistics", "yes");
   app_->Options()->SetStringValue("linear_solver", "ma57");
-  app_->Options()->SetIntegerValue("print_level", 0);
+  app_->Options()->SetIntegerValue("print_level", 5);
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   // app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
@@ -157,8 +157,8 @@ NMPCController::NMPCController(int type) {
   app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
   app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
 
-  app_->Options()->SetNumericValue("max_wall_time", 40.0 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 40.0 * dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 100.0 * dt_);
+  app_->Options()->SetNumericValue("max_cpu_time", 100.0 * dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();

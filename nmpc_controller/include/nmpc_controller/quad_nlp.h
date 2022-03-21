@@ -202,7 +202,9 @@ class quadNLP : public TNLP {
       relaxed_dynamic_jac_var_idxs_, panic_jac_var_idxs_,
       dynamic_hess_var_idxs_, cost_idxs_, relaxed_constraint_idxs_;
 
-  Eigen::ArrayXi relaxed_primal_constraint_idxs_in_element_;
+  /// Indices of relaxed constraints
+  Eigen::ArrayXi relaxed_primal_constraint_idxs_in_element_,
+      constraint_panic_weights_vec_;
 
   /// Vector of system ids
   Eigen::VectorXi sys_id_schedule_;

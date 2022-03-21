@@ -48,7 +48,8 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   //    n_null_ constraints for foot position and velocities
   //    n_null_ constraints for pos and neg joint torques
   //    4 constraints for knee position
-  g_complex_ = g_ + 2 * n_null_ + 4;
+  int g_null = 2 * n_null_ + 4;
+  g_complex_ = g_ + g_null;
 
   if (type_ == NONE) {
     // Leg controller
@@ -171,6 +172,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   g_min_complex_hard_.resize(g_complex_);
   g_max_complex_hard_.resize(g_complex_);
   int current_idx = 0;
+  int current_null_idx = 0;
   int constraint_size;
 
   // Load simple constraint bounds
@@ -179,35 +181,65 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   g_max_complex_hard_.segment(current_idx, constraint_size) = g_max_simple_;
   current_idx += constraint_size;
 
+  // Define which constraints will be relaxed
+  g_relaxed_ = n_null_ + 4;  // Change this to match the constraints to relax
+  relaxed_primal_constraint_idxs_in_element_ = Eigen::ArrayXi::LinSpaced(
+      g_relaxed_, current_idx, current_idx + g_relaxed_ - 1);
+  g_min_complex_soft_.resize(g_relaxed_);
+  g_max_complex_soft_.resize(g_relaxed_);
+  constraint_panic_weights_vec_.resize(g_relaxed_);
+
   // Load foot position and velocity constraint bounds
   constraint_size = n_null_;
-  // g_min_complex_hard_.segment(current_idx, constraint_size).fill(0);
-  // g_max_complex_hard_.segment(current_idx, constraint_size).fill(0);
-  g_min_complex_hard_.segment(current_idx, constraint_size).head(12).fill(0);
-  g_max_complex_hard_.segment(current_idx, constraint_size).head(12).fill(0);
-  g_min_complex_hard_.segment(current_idx, constraint_size).tail(12).fill(-100);
-  g_max_complex_hard_.segment(current_idx, constraint_size).tail(12).fill(100);
+  g_min_complex_hard_.segment(current_idx, constraint_size).fill(0);
+  g_max_complex_hard_.segment(current_idx, constraint_size).fill(0);
+  // g_min_complex_soft_.segment(current_null_idx, constraint_size).fill(-2e19);
+  // g_max_complex_soft_.segment(current_null_idx, constraint_size).fill(2e19);
   current_idx += constraint_size;
+  // current_null_idx += constraint_size;
 
   // Load knee constraint bounds
   constraint_size = num_feet_;
   g_min_complex_hard_.segment(current_idx, constraint_size).fill(-2e19);
-  g_max_complex_hard_.segment(current_idx, constraint_size).fill(0.0);
-  relaxed_primal_constraint_idxs_in_element_ = Eigen::ArrayXi::LinSpaced(
-      constraint_size, current_idx, current_idx + constraint_size - 1);
-  g_relaxed_ = relaxed_primal_constraint_idxs_in_element_.size();
+  g_max_complex_hard_.segment(current_idx, constraint_size).fill(2e19);
+  g_min_complex_soft_.segment(current_null_idx, constraint_size).fill(-2e19);
+  // g_max_complex_soft_.segment(current_null_idx, constraint_size).fill(0.0);
+  g_max_complex_soft_.segment(current_null_idx, constraint_size).fill(2e19);
   current_idx += constraint_size;
-
-  g_min_complex_soft_.resize(g_relaxed_);
-  g_max_complex_soft_.resize(g_relaxed_);
-  g_min_complex_soft_.fill(-2e19);
-  g_max_complex_soft_.fill(-0.10);
+  current_null_idx += constraint_size;
 
   // Load motor model constraint bounds
   constraint_size = n_null_;
   g_min_complex_hard_.segment(current_idx, constraint_size).fill(-2e19);
-  g_max_complex_hard_.segment(current_idx, constraint_size).fill(500);
+  g_max_complex_hard_.segment(current_idx, constraint_size).fill(2e19);
+  g_min_complex_soft_.segment(current_null_idx, constraint_size).fill(-2e19);
+  // g_max_complex_soft_.segment(current_null_idx, constraint_size).fill(0.0);
+  g_max_complex_soft_.segment(current_null_idx, constraint_size).fill(2e19);
   current_idx += constraint_size;
+  current_null_idx += constraint_size;
+
+  // Update soft constraints
+  constraint_panic_weights_vec_.resize(g_relaxed_);
+  constraint_panic_weights_vec_.fill(constraint_panic_weights_);
+
+  // std::cout << "g_min_complex_hard_.size() = " << g_min_complex_hard_.size()
+  //           << std::endl;
+  // std::cout << "g_min_complex_hard_ = " << g_min_complex_hard_ << std::endl;
+  // std::cout << "g_max_complex_hard_.size() = " << g_max_complex_hard_.size()
+  //           << std::endl;
+  // std::cout << "g_max_complex_hard_ = " << g_max_complex_hard_ << std::endl;
+  // std::cout << "g_min_complex_soft_.size() = " << g_min_complex_soft_.size()
+  //           << std::endl;
+  // std::cout << "g_min_complex_soft_ = " << g_min_complex_soft_ << std::endl;
+  // std::cout << "g_max_complex_soft_.size() = " << g_max_complex_soft_.size()
+  //           << std::endl;
+  // std::cout << "g_max_complex_soft_ = " << g_max_complex_soft_ << std::endl;
+  // std::cout << "relaxed_primal_constraint_idxs_in_element_.size() = "
+  //           << relaxed_primal_constraint_idxs_in_element_.size() <<
+  //           std::endl;
+  // std::cout << "relaxed_primal_constraint_idxs_in_element_ = "
+  //           << relaxed_primal_constraint_idxs_in_element_ << std::endl;
+  // throw std::runtime_error("Stop");
 
   loadCasadiFuncs();
   loadConstraintNames();
