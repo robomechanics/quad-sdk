@@ -1,32 +1,25 @@
 <launch>
+  <arg name="live_plot"/>
+  <arg name="software"/>
+  <arg name="controller"/>
+  <arg name="rotors"/>
 
-  <param name="/use_sim_time" value="true" />
-  <arg name="gui"             default="true"/>
-  <arg name="paused"          default="false"/>
-  <arg name="world"           default="flat"/>
-  <arg name="controller"      default="inverse_dynamics"/>
-
-
-  <!-- start world -->
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="paused" value="$(arg paused)"/>
-    <arg name="world_name" value="$(find gazebo_scripts)/worlds/$(arg world)/$(arg world).world"/>
-    <arg name="gui" value="$(arg gui)"/>
-    <arg name="physics" value="ode"/>
-    <arg name="verbose" value="$(arg gui)"/>
-  </include>
-
-<include file="$(find quad_utils)/launch/load_params.launch" />
-
-<include file="$(find quad_utils)/launch/mapping.launch" >
-      <arg name="input_type" value="mesh"/>
-      <arg name="world" value="$(arg world)"/>
-</include>
 
 <group ns="/robot_1">
-    <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
-
+  <group if="$(arg rotors)">
+    <!-- use more accurate but slower rotor model -->
+    <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit_rotors.sdf" />
+  </group>
+  <group unless="$(arg rotors)">
+    <!-- use more accurate but slower rotor model -->
     <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
+  </group>
+
+  <group if="$(arg software)">
+    <include file="$(find quad_utils)/launch/visualization.launch">
+      <arg name="live_plot" value="$(arg live_plot)"/>
+    </include>
+
     <!-- Spawn SDF model -->
     <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model robot_1 -x 0.0 -y 0.0 -z 0.5" output="screen"/>
     
@@ -39,52 +32,21 @@
       <arg name="is_hw" value="false"/>
     </include>
 
+    <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
+  
     <node name="controller_spawner"
         pkg="controller_manager"
         type="spawner"
         respawn="false"
         output="screen"
-        args="joint_controller joint_state_controller">
-        <!-- <remap from="joint_controller/control/joint_command" to="control/joint_command" /> -->
-  </node>
-  <include file="$(find quad_utils)/launch/visualization.launch">
-  </include>
+        args="joint_controller joint_state_controller"/>
 
-  <!-- Load the contact state publisher -->
-  <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
+    <!-- Load the contact state publisher -->
+    <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
+
+    <include file="$(find quad_utils)/launch/planning.launch">
+    </include>
+  </group>
 </group>
 
-
-<!-- <group ns="/robot_2">
-    <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
-
-    <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" /> -->
-    <!-- Spawn SDF model -->
-    <!-- <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model robot_2 -x 0.0 -y 3.0 -z 0.5" output="screen"/>
- 
-    <node pkg="robot_state_publisher" type="robot_state_publisher" 
-          name="robot_state_publisher" output="screen"/>
-    
-    <include file="$(find quad_utils)/launch/robot_driver.launch">
-      <arg name="controller" value="$(arg controller)"/>
-      <arg name="mocap" value="false"/>
-      <arg name="is_hw" value="false"/>
-    </include>
-
-    <node name="controller_spawner"
-        pkg="controller_manager"
-        type="spawner"
-        respawn="false"
-        output="screen"
-        args="joint_controller joint_state_controller"> -->
-        <!-- <remap from="joint_controller/control/joint_command" to="control/joint_command" /> -->
-    <!-- </node> 
-    <include file="$(find quad_utils)/launch/visualization.launch">
-    </include>
-   -->
-  <!-- Load the contact state publisher -->
-  <!-- <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
-</group> -->
-
-<node name="rviz" pkg="rviz" type="rviz" args="-d $(find quad_utils)/rviz/example_with_terrain.rviz"/>
 </launch>
