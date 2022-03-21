@@ -6,6 +6,8 @@
 
 
 <group ns="/robot_1">
+  <param name="tf_prefix" value="robot1_tf" />
+  
   <group if="$(arg rotors)">
     <!-- use more accurate but slower rotor model -->
     <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit_rotors.sdf" />
@@ -16,15 +18,12 @@
   </group>
 
   <group if="$(arg software)">
-    <include file="$(find quad_utils)/launch/visualization.launch">
-      <arg name="live_plot" value="$(arg live_plot)"/>
-    </include>
-
     <!-- Spawn SDF model -->
     <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model robot_1 -x 0.0 -y 0.0 -z 0.5" output="screen"/>
     
     <node pkg="robot_state_publisher" type="robot_state_publisher" 
-          name="robot_state_publisher" output="screen"/> 
+          name="robot_state_publisher" output="screen">
+    </node> 
     
     <include file="$(find quad_utils)/launch/robot_driver.launch">
       <arg name="controller" value="$(arg controller)"/>
@@ -45,6 +44,10 @@
     <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
 
     <include file="$(find quad_utils)/launch/planning.launch">
+    </include>
+
+    <include file="$(find quad_utils)/launch/visualization.launch">
+      <arg name="live_plot" value="$(arg live_plot)"/>
     </include>
   </group>
 </group>

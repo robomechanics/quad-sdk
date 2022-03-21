@@ -1,6 +1,6 @@
 <launch>
   
-    <include file="$(find quad_utils)/launch/load_params.launch" />
+    <!-- <include file="$(find quad_utils)/launch/load_params.launch" /> -->
 
     <arg name="live_plot" default="false"/>
 
