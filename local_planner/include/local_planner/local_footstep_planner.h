@@ -427,14 +427,17 @@ class LocalFootstepPlanner {
   /// Weighting on the projection of the grf
   double grf_weight_;
 
-  /// Primitive ids - FLIGHT
-  const int FLIGHT = 0;
-
-  /// Primitive ids - STANCE
-  const int STANCE = 1;
-
   /// Primitive ids - CONNECT_STANCE
-  const int CONNECT_STANCE = 2;
+  const int CONNECT_STANCE = 0;
+
+  /// Primitive ids - LEAP_STANCE
+  const int LEAP_STANCE = 1;
+
+  /// Primitive ids - FLIGHT
+  const int FLIGHT = 2;
+
+  /// Primitive ids - LAND_STANCE
+  const int LAND_STANCE = 3;
 
   /// QuadKD class
   std::shared_ptr<quad_utils::QuadKD> quadKD_;

@@ -273,23 +273,23 @@ void setDz(State &s, const PlannerConfig &planner_config);
 void setDz(State &s, const Eigen::Vector3d &surf_norm);
 inline bool isInMap(const Eigen::Vector3d &pos,
                     const PlannerConfig &planner_config) {
-  return planner_config.terrain_gm.isInside(pos.head<2>());
-  // return planner_config.terrain.isInRange(pos[0], pos[1]);
+  // return planner_config.terrain_gm.isInside(pos.head<2>());
+  return planner_config.terrain.isInRange(pos[0], pos[1]);
 };
 inline bool isInMap(const State &s, const PlannerConfig &planner_config) {
   return isInMap(s.pos, planner_config);
 };
 inline double getTerrainZ(const Eigen::Vector3d &pos,
                           const PlannerConfig &planner_config) {
-  return planner_config.terrain_gm.atPosition("z_inpainted", pos.head<2>(),
-                                              INTER_TYPE);
-  // return (planner_config.terrain.getGroundHeight(pos[0], pos[1]));
+  // return planner_config.terrain_gm.atPosition("z_inpainted", pos.head<2>(),
+  //                                             INTER_TYPE);
+  return (planner_config.terrain.getGroundHeight(pos[0], pos[1]));
 };
 inline double getTerrainZFiltered(const Eigen::Vector3d &pos,
                                   const PlannerConfig &planner_config) {
-  return planner_config.terrain_gm.atPosition("z_smooth", pos.head<2>(),
-                                              INTER_TYPE);
-  // return (planner_config.terrain.getGroundHeightFiltered(pos[0], pos[1]));
+  // return planner_config.terrain_gm.atPosition("z_smooth", pos.head<2>(),
+  //                                             INTER_TYPE);
+  return (planner_config.terrain.getGroundHeightFiltered(pos[0], pos[1]));
 };
 inline double getTraversability(const Eigen::Vector3d &pos,
                                 const PlannerConfig &planner_config) {
@@ -302,6 +302,11 @@ inline bool isTraversable(const Eigen::Vector3d &pos,
   return (getTraversability(pos, planner_config) >=
           planner_config.traversability_threshold);
   // return true;
+};
+inline Eigen::Vector3d getSurfaceNormalFiltered(
+    const State &s, const PlannerConfig &planner_config) {
+  return planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0],
+                                                              s.pos[1]);
 };
 inline double getTerrainZFromState(const State &s,
                                    const PlannerConfig &planner_config) {
@@ -326,11 +331,6 @@ inline double getZRelToTerrainFiltered(const Eigen::Vector3d &pos,
 inline double getZRelToTerrainFiltered(const State &s,
                                        const PlannerConfig &planner_config) {
   return getZRelToTerrainFiltered(s.pos, planner_config);
-};
-inline Eigen::Vector3d getSurfaceNormalFiltered(
-    const State &s, const PlannerConfig &planner_config) {
-  return planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0],
-                                                              s.pos[1]);
 };
 inline void getMapBounds(const PlannerConfig &planner_config, double &x_min,
                          double &x_max, double &y_min, double &y_max) {

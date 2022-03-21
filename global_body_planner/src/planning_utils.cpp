@@ -777,7 +777,7 @@ bool refineStance(const State &s, int phase, Action &a,
     }
     pos_f = s_final.pos;
 
-    double buffer = 1e-2;
+    double buffer = 3e-2;
     if (phase == LEAP_STANCE) {
       isValidState(s_final, planner_config, phase, pos_f[2]);
       pos_f[2] -= buffer;

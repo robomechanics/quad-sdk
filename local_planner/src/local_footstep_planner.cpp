@@ -103,17 +103,32 @@ void LocalFootstepPlanner::computeContactSchedule(
     }
   }
   // Check the primitive plan to see if there's standing or flight phase
-  for (size_t i = 0; i < horizon_length_; i++) {
+  for (int i = 0; i < horizon_length_; i++) {
     // Leaping and landing
-    if (ref_primitive_plan(i) == 1 || ref_primitive_plan(i) == 3) {
-      std::fill(contact_schedule.at(i).begin(), contact_schedule.at(i).end(),
-                true);
-    } else if (ref_primitive_plan(i) == 2) {
+    if (ref_primitive_plan(i) == LEAP_STANCE) {
+      // std::fill(contact_schedule.at(i).begin(), contact_schedule.at(i).end(),
+      //           true);
+      int leading_leg_liftoff_period = 1;
+      int leading_leg_liftoff_idx =
+          std::min(i + leading_leg_liftoff_period, horizon_length_ - 1);
+
+      if (ref_primitive_plan(leading_leg_liftoff_idx) == FLIGHT) {
+        contact_schedule.at(i) = {false, true, false, true};
+      } else {
+        contact_schedule.at(i) = {true, true, true, true};
+      }
+    } else if (ref_primitive_plan(i) == FLIGHT) {
       // Flight
       std::fill(contact_schedule.at(i).begin(), contact_schedule.at(i).end(),
                 false);
+    } else if (ref_primitive_plan(i) == LAND_STANCE) {
+      contact_schedule.at(i) = {true, true, true, true};
     }
   }
+
+  std::cout << "current_plan_index = " << current_plan_index << std::endl;
+  printContactSchedule(contact_schedule);
+  std::cout << std::endl;
 }
 
 void LocalFootstepPlanner::cubicHermiteSpline(double pos_prev, double vel_prev,
@@ -472,13 +487,6 @@ void LocalFootstepPlanner::computeFootPlan(
                              foot_velocity.z(), foot_acceleration.z());
         }
 
-        // Ensure above the terrain
-        foot_position.z() =
-            std::max(foot_position.z(),
-                     0.01 + terrain_grid_.atPosition(
-                                "z", foot_position.head<2>(),
-                                grid_map::InterpolationMethods::INTER_LINEAR));
-
         foot_state_msg.contact = false;
       }
 
@@ -507,6 +515,7 @@ void LocalFootstepPlanner::computeFootPlan(
       // If this is the end of a contact, add to the past footholds message
       if (i < period_ * duty_cycles_[j] &&
           isNewLiftoff(contact_schedule, i, j)) {
+        std::cout << "new contact at index " << i << std::endl;
         past_footholds_msg.feet[j] = foot_state_msg;
       }
     }
