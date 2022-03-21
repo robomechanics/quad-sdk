@@ -89,7 +89,8 @@ bool SpiritController::init(hardware_interface::EffortJointInterface* hw,
                            joint_command_topic);
 
   sub_command_ = n.subscribe<quad_msgs::LegCommandArray>(
-      joint_command_topic, 1, &SpiritController::commandCB, this);
+      joint_command_topic, 1, &SpiritController::commandCB, this,
+      ros::TransportHints().tcpNoDelay());
   return true;
 }
 
