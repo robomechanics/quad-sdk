@@ -27,6 +27,13 @@ SOFTWARE.
 <launch>
   <arg name="gui"             default="true"/>
   <arg name="paused"          default="false"/>
+<<<<<<< HEAD
+=======
+  <arg name="software"        default="true"/>
+  <arg name="controller"      default="inverse_dynamics"/>
+  <arg name="live_plot"       default="false"/>
+  <arg name="dash"            default="false"/>
+>>>>>>> devel
   <arg name="world"           default="flat"/>
   <param name="/use_sim_time" value="true" />
 
