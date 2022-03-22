@@ -1,9 +1,7 @@
 <launch>
-  <arg name="live_plot"/>
   <arg name="software"/>
   <arg name="controller"/>
   <arg name="rotors"/>
-  <arg name="dash"/>
   <arg name="namespace" default="robot_1" />
   <arg name="init_pose"/>
   
@@ -49,7 +47,6 @@
     </include>
 
     <include file="$(find quad_utils)/launch/visualization.launch">
-      <arg name="live_plot" value="$(arg live_plot)"/>
       <arg name="namespace" value="$(arg namespace)"/>
     </include>
   </group>

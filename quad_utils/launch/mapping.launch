@@ -1,6 +1,6 @@
 <launch>
   
-    <include file="$(find quad_utils)/launch/load_params.launch" />
+    <!-- <include file="$(find quad_utils)/launch/load_params.launch" /> -->
 
     <!-- Specify the type of input (grid, mesh, cloud) -->
     <arg name="input_type"                default="grid"/>

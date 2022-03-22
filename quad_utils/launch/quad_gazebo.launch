@@ -47,31 +47,48 @@ SOFTWARE.
     <arg name="verbose" value="$(arg gui)"/>
   </include>
   
-  <include file="$(find quad_utils)/launch/mapping.launch" >
-    <arg name="input_type" value="mesh"/>
-    <arg name="world" value="$(arg world)"/>
-  </include>
 
   <group ns="/robot_1">
   <include file="$(find quad_utils)/launch/robot.launch">
   <arg name="rotors"          default="false"/>
-  <arg name="live_plot"       default="false"/>
   <arg name="software"        default="true"/>
   <arg name="controller"      default="inverse_dynamics"/>
   <arg name="init_pose" value="-x 0.0 -y 0.0 -z 0.5" />
   <arg name="namespace" value="robot_1" />
+  </include>
+
+  <include file="$(find quad_utils)/launch/mapping.launch" >
+    <arg name="input_type" value="mesh"/>
+    <arg name="world" value="$(arg world)"/>
   </include>
   </group>
 
   <group ns="/robot_2">
   <include file="$(find quad_utils)/launch/robot.launch">
   <arg name="rotors"          default="false"/>
-  <arg name="live_plot"       default="false"/>
   <arg name="software"        default="true"/>
   <arg name="controller"      default="inverse_dynamics"/>
   <arg name="init_pose" value="-x 0.0 -y 3.0 -z 0.5" />
   <arg name="namespace" value="robot_2" />
   </include>
+
+  <include file="$(find quad_utils)/launch/mapping.launch" >
+    <arg name="input_type" value="mesh"/>
+    <arg name="world" value="$(arg world)"/>
+  </include>
+  </group>
+
+   <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find quad_utils)/rviz/example_with_terrain.rviz"/>
+
+  <group if="$(arg live_plot)">
+    <node name="plotjuggler" pkg="plotjuggler" type="plotjuggler" 
+            args="--layout $(find quad_utils)/config/plotjuggler_config.xml" />
+    </group>
+
+  <group if="$(arg dash)">
+        <node name = "rqt_dashboard" pkg = "rqt_gui" type = "rqt_gui" respawn = 
+        "false" output = "screen" args = "--perspective-file $(find quad_utils)/config/dashboard.perspective"/>
   </group>
   
 </launch>
