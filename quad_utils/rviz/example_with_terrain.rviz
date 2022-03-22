@@ -131,6 +131,16 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        text_left:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        text_right:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         toe0:
           Alpha: 1
           Show Axes: false
@@ -177,12 +187,20 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
+    - Class: rviz/Marker
+      Enabled: false
+      Marker Topic: /visualization/state/ground_truth_trace
+      Name: Ground Truth State Trace
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: false
     - Class: rviz/MarkerArray
       Enabled: true
       Marker Topic: /visualization/current_grf
       Name: Desired GRFs
       Namespaces:
-        {}
+        "": true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -224,21 +242,12 @@ Visualization Manager:
       Class: rviz/PoseArray
       Color: 255; 25; 0
       Enabled: true
-      Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
-      Length: 0.30000001192092896
-      Line Style: Billboards
-      Line Width: 0.029999999329447746
+      Head Radius: 0.029999999329447746
       Name: Local Plan Position
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Pose Color: 255; 85; 255
-      Pose Style: None
-      Radius: 0.029999999329447746
-      Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
+      Shaft Radius: 0.009999999776482582
+      Shape: Arrow (Flat)
       Topic: /visualization/local_plan
       Unreliable: false
       Value: true
@@ -446,5 +455,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1440
-  X: 1854
-  Y: 27
+  X: 1920
+  Y: 0
