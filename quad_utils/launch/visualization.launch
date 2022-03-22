@@ -3,8 +3,9 @@
     <!-- <include file="$(find quad_utils)/launch/load_params.launch" /> -->
 
     <arg name="live_plot" default="false"/>
+    <arg name="namespace" default="robot_1" />
 
-    <group ns="trajectory">
+    <group ns="$(arg namespace)/trajectory">
         <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
             <remap from="joint_states" to="visualization/joint_states/trajectory"/>
@@ -12,7 +13,7 @@
         </node>
     </group>
 
-    <group ns="ground_truth">
+    <group ns="$(arg namespace)/ground_truth">
         <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
             <remap from="joint_states" to="visualization/joint_states/ground_truth"/>
@@ -24,7 +25,7 @@
     <node name="rviz_interface" pkg="quad_utils" type="rviz_interface_node" output="screen"/>
 
     <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
-    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find quad_utils)/rviz/example_with_terrain.rviz"/> -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find quad_utils)/rviz/example_with_terrain.rviz"/>
 
     <group if="$(arg live_plot)">
         <node name="plotjuggler" pkg="plotjuggler" type="plotjuggler" 

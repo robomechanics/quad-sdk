@@ -48,10 +48,26 @@ SOFTWARE.
     <arg name="world" value="$(arg world)"/>
   </include>
 
+  <group ns="/robot_1">
   <include file="$(find quad_utils)/launch/robot.launch">
   <arg name="rotors"          default="false"/>
   <arg name="live_plot"       default="false"/>
   <arg name="software"        default="true"/>
   <arg name="controller"      default="inverse_dynamics"/>
+  <arg name="init_pose" value="-x 0.0 -y 0.0 -z 0.5" />
+  <arg name="namespace" value="robot_1" />
   </include>
+  </group>
+
+  <group ns="/robot_2">
+  <include file="$(find quad_utils)/launch/robot.launch">
+  <arg name="rotors"          default="false"/>
+  <arg name="live_plot"       default="false"/>
+  <arg name="software"        default="true"/>
+  <arg name="controller"      default="inverse_dynamics"/>
+  <arg name="init_pose" value="-x 0.0 -y 3.0 -z 0.5" />
+  <arg name="namespace" value="robot_2" />
+  </include>
+  </group>
+  
 </launch>
