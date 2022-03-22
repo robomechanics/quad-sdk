@@ -31,7 +31,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   // Load the current state
   Eigen::VectorXd current_state_(36);
   current_state_.fill(0);
-  current_state_(2) = 0.3;
+  current_state_(2) = 0.2;
   current_state_(9) = 0;
 
   quad_utils::QuadKD quad_kd;
@@ -53,6 +53,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   //     0, 0, 0, 0, 0, 0, 0, 0;
 
   current_state_.segment(12, 24) = x_null_nom_;
+  std::cout << "x_null_nom_ = \n" << x_null_nom_ << std::endl;
 
   std::vector<std::vector<bool>> adpative_contact_schedule_;
   adpative_contact_schedule_.resize(N_);

@@ -143,7 +143,7 @@ NMPCController::NMPCController(int type) {
   // app_->Options()->SetIntegerValue("max_iter", 100);
   // app_->Options()->SetStringValue("print_timing_statistics", "yes");
   app_->Options()->SetStringValue("linear_solver", "ma57");
-  app_->Options()->SetIntegerValue("print_level", 5);
+  app_->Options()->SetIntegerValue("print_level", 0);
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   // app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
@@ -495,8 +495,8 @@ Eigen::VectorXi NMPCController::evalLiftedTrajectoryConstraints() {
   }
 
   if (max_constraint_violation_val >= constr_tol) {
-    std::cout << "Max violation vector = "
-              << max_constraint_violation.transpose() << std::endl;
+    // std::cout << "Max violation vector = "
+    //           << max_constraint_violation.transpose() << std::endl;
     std::cout << "Max violation is constraint "
               << mynlp_->constr_names_[COMPLEX][max_constraint_violation_index]
               << " at FE " << max_constraint_violation_fe

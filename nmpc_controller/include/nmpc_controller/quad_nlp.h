@@ -7,6 +7,8 @@
 #ifndef __quadNLP_HPP__
 #define __quadNLP_HPP__
 
+#include <sys/resource.h>
+
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <IpIpoptData.hpp>
@@ -392,7 +394,7 @@ class quadNLP : public TNLP {
   inline Eigen::Block<T> get_slack_constraint_var(T &decision_var,
                                                   const int &idx) const {
     return decision_var.block(slack_constraint_var_idxs_[idx], 0,
-                              g_slack_vec_[idx], 1);
+                              2 * g_slack_vec_[idx], 1);
   }
 
   // Get the idx-th constraint from constraint values
@@ -408,7 +410,7 @@ class quadNLP : public TNLP {
   inline Eigen::Block<T> get_relaxed_primal_constraint_vals(
       T &constraint_vals, const int &idx) const {
     return constraint_vals.block(relaxed_constraint_idxs_[idx], 0,
-                                 g_slack_vec_[idx], 1);
+                                 2 * g_slack_vec_[idx], 1);
   }
 
   // Get the idx-th panic constraint (for (idx+1)-th state variable) from
@@ -443,7 +445,8 @@ class quadNLP : public TNLP {
                                                      const int &idx) const {
     return jacobian_var.block(
         relaxed_dynamic_jac_var_idxs_[idx], 0,
-        relaxed_nnz_mat_(sys_id_schedule_[idx], JAC) + g_slack_vec_[idx], 1);
+        2 * (relaxed_nnz_mat_(sys_id_schedule_[idx], JAC) + g_slack_vec_[idx]),
+        1);
   }
 
   // Get the idx-th panic constraint jacobian (for (idx+1)-th state variable)

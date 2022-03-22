@@ -182,9 +182,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   current_idx += constraint_size;
 
   // Define which constraints will be relaxed
-  g_relaxed_ = n_null_ + 4;  // Change this to match the constraints to relax
-  relaxed_primal_constraint_idxs_in_element_ = Eigen::ArrayXi::LinSpaced(
-      g_relaxed_, current_idx, current_idx + g_relaxed_ - 1);
+  g_relaxed_ = 0 * n_null_ + num_feet_;
   g_min_complex_soft_.resize(g_relaxed_);
   g_max_complex_soft_.resize(g_relaxed_);
   constraint_panic_weights_vec_.resize(g_relaxed_);
@@ -193,18 +191,21 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   constraint_size = n_null_;
   g_min_complex_hard_.segment(current_idx, constraint_size).fill(0);
   g_max_complex_hard_.segment(current_idx, constraint_size).fill(0);
-  // g_min_complex_soft_.segment(current_null_idx, constraint_size).fill(-2e19);
-  // g_max_complex_soft_.segment(current_null_idx, constraint_size).fill(2e19);
+  // g_min_complex_soft_.segment(current_null_idx, constraint_size).fill(0);
+  // g_max_complex_soft_.segment(current_null_idx, constraint_size).fill(0);
   current_idx += constraint_size;
   // current_null_idx += constraint_size;
+
+  // Start relaxed constraints here
+  relaxed_primal_constraint_idxs_in_element_ = Eigen::ArrayXi::LinSpaced(
+      g_relaxed_, current_idx, current_idx + g_relaxed_ - 1);
 
   // Load knee constraint bounds
   constraint_size = num_feet_;
   g_min_complex_hard_.segment(current_idx, constraint_size).fill(-2e19);
-  g_max_complex_hard_.segment(current_idx, constraint_size).fill(2e19);
+  g_max_complex_hard_.segment(current_idx, constraint_size).fill(0);
   g_min_complex_soft_.segment(current_null_idx, constraint_size).fill(-2e19);
-  // g_max_complex_soft_.segment(current_null_idx, constraint_size).fill(0.0);
-  g_max_complex_soft_.segment(current_null_idx, constraint_size).fill(2e19);
+  g_max_complex_soft_.segment(current_null_idx, constraint_size).fill(-0.05);
   current_idx += constraint_size;
   current_null_idx += constraint_size;
 
@@ -212,11 +213,10 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   constraint_size = n_null_;
   g_min_complex_hard_.segment(current_idx, constraint_size).fill(-2e19);
   g_max_complex_hard_.segment(current_idx, constraint_size).fill(2e19);
-  g_min_complex_soft_.segment(current_null_idx, constraint_size).fill(-2e19);
+  // g_min_complex_soft_.segment(current_null_idx, constraint_size).fill(-2e19);
   // g_max_complex_soft_.segment(current_null_idx, constraint_size).fill(0.0);
-  g_max_complex_soft_.segment(current_null_idx, constraint_size).fill(2e19);
   current_idx += constraint_size;
-  current_null_idx += constraint_size;
+  // current_null_idx += constraint_size;
 
   // Update soft constraints
   constraint_panic_weights_vec_.resize(g_relaxed_);
@@ -399,23 +399,21 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
           x_max_complex_hard_.tail(n_null_);
     }
 
-    // Constraints bound
+    // Constraints bound - leave to enforce hard constraints
     get_primal_constraint_vals(g_l_matrix, i) =
         g_min_complex_hard_.head(g_vec_[i]);
     get_primal_constraint_vals(g_u_matrix, i) =
         g_max_complex_hard_.head(g_vec_[i]);
 
-    // Relaxed constraints bound
-    if (g_slack_vec_[i] > 0) {
-      get_relaxed_primal_constraint_vals(g_l_matrix, i) = g_min_complex_soft_;
-      get_relaxed_primal_constraint_vals(g_u_matrix, i) = g_max_complex_soft_;
-      get_slack_constraint_var(x_l_matrix, i).fill(0);
-      get_slack_constraint_var(x_u_matrix, i).fill(2e19);
-    }
-
     // Panic variable bound
     get_slack_state_var(x_l_matrix, i).fill(0);
     get_slack_state_var(x_u_matrix, i).fill(2e19);
+
+    // Relaxed constraints slack variables
+    if (g_slack_vec_[i] > 0) {
+      get_slack_constraint_var(x_l_matrix, i).fill(0);
+      get_slack_constraint_var(x_u_matrix, i).fill(2e19);
+    }
   }
 
   for (size_t i = 0; i < N_ - 1; i++) {
@@ -423,14 +421,39 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
     get_slack_constraint_vals(g_l_matrix, i).head(n_slack_vec_[i]) =
         x_min_complex_soft_.head(n_slack_vec_[i]);
     get_slack_constraint_vals(g_l_matrix, i)(2, 0) = ground_height_(0, i);
-
-    // get_slack_constraint_vals(g_l_matrix, i)(2, 0) = 0;
     get_slack_constraint_vals(g_u_matrix, i).head(n_slack_vec_[i]).fill(2e19);
 
     // xmax
     get_slack_constraint_vals(g_l_matrix, i).tail(n_slack_vec_[i]).fill(-2e19);
     get_slack_constraint_vals(g_u_matrix, i).tail(n_slack_vec_[i]) =
         x_max_complex_soft_.head(n_slack_vec_[i]);
+
+    // Relaxed constraints bound
+    if (g_slack_vec_[i] > 0) {
+      // Remove bounds on relaxed constraints
+      get_primal_constraint_vals(g_l_matrix, i)
+          .segment(relaxed_primal_constraint_idxs_in_element_(0),
+                   g_slack_vec_[i])
+          .fill(-2e19);
+      get_primal_constraint_vals(g_u_matrix, i)
+          .segment(relaxed_primal_constraint_idxs_in_element_(0),
+                   g_slack_vec_[i])
+          .fill(2e19);
+
+      // Add relaxed minimum constraint bounds
+      get_relaxed_primal_constraint_vals(g_l_matrix, i).head(g_slack_vec_[i]) =
+          g_min_complex_soft_;
+      get_relaxed_primal_constraint_vals(g_u_matrix, i)
+          .head(g_slack_vec_[i])
+          .fill(2e19);
+
+      // Add relaxed maximum constraint bounds
+      get_relaxed_primal_constraint_vals(g_l_matrix, i)
+          .tail(g_slack_vec_[i])
+          .fill(-2e19);
+      get_relaxed_primal_constraint_vals(g_u_matrix, i).tail(g_slack_vec_[i]) =
+          g_max_complex_soft_;
+    }
   }
 
   return true;
@@ -673,11 +696,17 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
       // std::cout << "get_slack_constraint_var(w, i) = "
       //           << get_slack_constraint_var(w, i) << std::endl;
 
-      get_relaxed_primal_constraint_vals(g_matrix, i) =
+      Eigen::VectorXd gk =
           get_primal_constraint_vals(g_matrix, i)
               .segment(relaxed_primal_constraint_idxs_in_element_[0],
-                       g_relaxed_) -
-          get_slack_constraint_var(w, i);
+                       g_slack_vec_[i]);
+      Eigen::VectorXd gk_panic = get_slack_constraint_var(w, i);
+
+      get_relaxed_primal_constraint_vals(g_matrix, i).head(g_slack_vec_[i]) =
+          gk + gk_panic.head(g_slack_vec_[i]);
+
+      get_relaxed_primal_constraint_vals(g_matrix, i).tail(g_slack_vec_[i]) =
+          gk - gk_panic.tail(g_slack_vec_[i]);
 
       // std::cout << "get_relaxed_primal_constraint_vals(g_matrix, i) = "
       //           << get_relaxed_primal_constraint_vals(g_matrix, i) <<
@@ -744,6 +773,7 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
 
     for (size_t i = 0; i < N_ - 1; i++) {
       int sys_id = sys_id_schedule_[i];
+      int g_slack = g_slack_vec_[i];
 
       // xmin wrt x
       get_slack_jac_var(values_matrix, i).segment(0, n_slack_vec_[i]).fill(1);
@@ -755,21 +785,22 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
 
       // xmax wrt x
       get_slack_jac_var(values_matrix, i)
-          .block(2 * n_slack_vec_[i], 0, n_slack_vec_[i], 1)
+          .segment(2 * n_slack_vec_[i], n_slack_vec_[i])
           .fill(1);
 
       // xmax wrt panic
       get_slack_jac_var(values_matrix, i)
-          .block(3 * n_slack_vec_[i], 0, n_slack_vec_[i], 1)
+          .segment(3 * n_slack_vec_[i], n_slack_vec_[i])
           .fill(-1);
 
-      if (g_slack_vec_[i] > 0) {
+      if (g_slack > 0) {
         int nnz_relaxed = relaxed_nnz_mat_(sys_id, JAC);
 
+        // g_min wrt x
         for (int j = 0; j < nnz_relaxed; j++) {
-          get_relaxed_dynamic_jac_var(values_matrix, i)(j, 0) =
-              get_dynamic_jac_var(values_matrix, i)(
-                  relaxed_idx_in_full_sparse_[sys_id][JAC][j], 0);
+          get_relaxed_dynamic_jac_var(values_matrix, i)
+              .segment(0, nnz_relaxed)(j, 0) = get_dynamic_jac_var(
+              values_matrix, i)(relaxed_idx_in_full_sparse_[sys_id][JAC][j], 0);
         }
         // std::cout << "relaxed_idx_in_full_sparse_[sys_id][JAC] = "
         //           << relaxed_idx_in_full_sparse_[sys_id][JAC] << std::endl;
@@ -780,8 +811,22 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
         // std::cout << "jCol_mat_relaxed_[sys_id][JAC] = "
         //           << jCol_mat_relaxed_[sys_id][JAC] << std::endl;
 
+        // g_min wrt slack
         get_relaxed_dynamic_jac_var(values_matrix, i)
-            .tail(g_slack_vec_[i])
+            .segment(nnz_relaxed, g_slack)
+            .fill(1);
+
+        // g_max wrt x
+        for (int j = 0; j < nnz_relaxed; j++) {
+          get_relaxed_dynamic_jac_var(values_matrix, i)
+              .segment(nnz_relaxed + g_slack, nnz_relaxed)(j, 0) =
+              get_dynamic_jac_var(values_matrix, i)(
+                  relaxed_idx_in_full_sparse_[sys_id][JAC][j], 0);
+        }
+
+        // g_max wrt slack
+        get_relaxed_dynamic_jac_var(values_matrix, i)
+            .segment(2 * nnz_relaxed + g_slack, g_slack)
             .fill(-1);
         // std::cout << "get_relaxed_dynamic_jac_var(values_matrix) = "
         //           << get_relaxed_dynamic_jac_var(values_matrix, i) <<
@@ -803,8 +848,8 @@ void quadNLP::compute_nnz_jac_g() {
     nnz_jac_g_ += nnz_mat_(sys_id_schedule_[i], JAC);
     nnz_jac_g_ += 4 * n_slack_vec_[i];
     if (g_slack_vec_[i] > 0) {
-      nnz_jac_g_ += relaxed_nnz_mat_(sys_id_schedule_[i], JAC);
-      nnz_jac_g_ += g_slack_vec_[i];
+      nnz_jac_g_ += 2 * relaxed_nnz_mat_(sys_id_schedule_[i], JAC);
+      nnz_jac_g_ += 2 * g_slack_vec_[i];
     }
   }
 
@@ -882,32 +927,62 @@ void quadNLP::compute_nnz_jac_g() {
     // Each step we shift by g_slack constraints (iRow_mat_relaxed_ must be
     // relative to the relaxed constraint Jacobian)
     if (g_slack > 0) {
-      get_relaxed_dynamic_jac_var(iRow_jac_g_, i).head(nnz_relaxed) =
+      // Indices of relaxed constraint min wrt dynamic vars x (repeated)
+      Eigen::ArrayXi g_min_idx_sparse =
           (iRow_mat_relaxed_[sys_id][JAC].array() +
            get_relaxed_constraint_idx(i))
               .matrix();
+      // Indices of relaxed constraint min wrt slack vars (unique)
+      Eigen::ArrayXi g_min_idx = Eigen::ArrayXi::LinSpaced(
+          g_slack, get_relaxed_constraint_idx(i),
+          get_relaxed_constraint_idx(i) + g_slack - 1);
+      // Indices of relaxed constraint max wrt dynamic vars x (repeated)
+      Eigen::ArrayXi g_max_idx_sparse =
+          (iRow_mat_relaxed_[sys_id][JAC].array() +
+           get_relaxed_constraint_idx(i) + g_slack)
+              .matrix();
+      // Indices of relaxed constraint max wrt slack vars (unique)
+      Eigen::ArrayXi g_max_idx = Eigen::ArrayXi::LinSpaced(
+          g_slack, get_relaxed_constraint_idx(i) + g_slack,
+          get_relaxed_constraint_idx(i) + 2 * g_slack - 1);
 
-      // Each step we shift by n + m variables
-      get_relaxed_dynamic_jac_var(jCol_jac_g_, i).head(nnz_relaxed) =
+      // Indices of dynamic vars
+      Eigen::ArrayXi g_var_idx =
           (jCol_mat_relaxed_[sys_id][JAC].array() + get_primal_idx(i)).matrix();
 
-      // Add slack variable data (row = constraint)
-      get_relaxed_dynamic_jac_var(iRow_jac_g_, i).tail(g_slack) =
-          Eigen::ArrayXi::LinSpaced(
-              g_slack, get_relaxed_constraint_idx(i),
-              get_relaxed_constraint_idx(i) + g_slack - 1);
+      // Indices of slack vars for constraint min
+      Eigen::ArrayXi g_slack_var_min_idx = Eigen::ArrayXi::LinSpaced(
+          g_slack, get_slack_constraint_var_idx(i),
+          get_slack_constraint_var_idx(i) + g_slack - 1);
+      // Indices of slack vars for constraint max
+      Eigen::ArrayXi g_slack_var_max_idx = Eigen::ArrayXi::LinSpaced(
+          g_slack, get_slack_constraint_var_idx(i) + g_slack,
+          get_slack_constraint_var_idx(i) + 2 * g_slack - 1);
 
-      // Add slack variable data (column = slack var index)
-      get_relaxed_dynamic_jac_var(jCol_jac_g_, i).tail(g_slack) =
-          Eigen::ArrayXi::LinSpaced(
-              g_slack, get_slack_constraint_var_idx(i),
-              get_slack_constraint_var_idx(i) + g_slack - 1);
+      // g_min wrt x, row = constraint, column = var
+      get_relaxed_dynamic_jac_var(iRow_jac_g_, i).segment(0, nnz_relaxed) =
+          g_min_idx_sparse;
+      get_relaxed_dynamic_jac_var(jCol_jac_g_, i).segment(0, nnz_relaxed) =
+          g_var_idx;
+
+      // g_min wrt slack
+      get_relaxed_dynamic_jac_var(iRow_jac_g_, i)
+          .segment(nnz_relaxed, g_slack) = g_min_idx;
+      get_relaxed_dynamic_jac_var(jCol_jac_g_, i)
+          .segment(nnz_relaxed, g_slack) = g_slack_var_min_idx;
+
+      // g_max wrt x, row = constraint, column = var
+      get_relaxed_dynamic_jac_var(iRow_jac_g_, i)
+          .segment(nnz_relaxed + g_slack, nnz_relaxed) = g_max_idx_sparse;
+      get_relaxed_dynamic_jac_var(jCol_jac_g_, i)
+          .segment(nnz_relaxed + g_slack, nnz_relaxed) = g_var_idx;
+
+      // g_max wrt slack
+      get_relaxed_dynamic_jac_var(iRow_jac_g_, i)
+          .segment(2 * nnz_relaxed + g_slack, g_slack) = g_max_idx;
+      get_relaxed_dynamic_jac_var(jCol_jac_g_, i)
+          .segment(2 * nnz_relaxed + g_slack, g_slack) = g_slack_var_max_idx;
     }
-
-    // std::cout << "get_relaxed_dynamic_jac_var(iRow_jac_g_, i) = "
-    //           << get_relaxed_dynamic_jac_var(iRow_jac_g_, i) << std::endl;
-    // std::cout << "get_relaxed_dynamic_jac_var(jCol_jac_g_, i) = "
-    //           << get_relaxed_dynamic_jac_var(jCol_jac_g_, i) << std::endl;
   }
 }
 
@@ -1189,9 +1264,9 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
         nlp_prev.get_slack_state_var(nlp_prev.w0_, i_prev)
             .tail(nlp_prev.n_slack_vec_[i_prev])
             .head(n_slack_shared);
-    get_slack_constraint_var(w0_, i).head(g_slack_shared) =
+    get_slack_constraint_var(w0_, i).head(2 * g_slack_shared) =
         nlp_prev.get_slack_constraint_var(nlp_prev.w0_, i_prev)
-            .head(g_slack_shared);
+            .head(2 * g_slack_shared);
 
     get_slack_state_var(z_L0_, i).segment(0, n_slack_shared) =
         nlp_prev.get_slack_state_var(nlp_prev.z_L0_, i_prev)
@@ -1201,9 +1276,9 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
         nlp_prev.get_slack_state_var(nlp_prev.z_L0_, i_prev)
             .tail(nlp_prev.n_slack_vec_[i_prev])
             .head(n_slack_shared);
-    get_slack_constraint_var(z_L0_, i).head(g_slack_shared) =
+    get_slack_constraint_var(z_L0_, i).head(2 * g_slack_shared) =
         nlp_prev.get_slack_constraint_var(nlp_prev.z_L0_, i_prev)
-            .head(g_slack_shared);
+            .head(2 * g_slack_shared);
 
     get_slack_state_var(z_U0_, i).segment(0, n_slack_shared) =
         nlp_prev.get_slack_state_var(nlp_prev.z_U0_, i_prev)
@@ -1213,9 +1288,9 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
         nlp_prev.get_slack_state_var(nlp_prev.z_U0_, i_prev)
             .tail(nlp_prev.n_slack_vec_[i_prev])
             .head(n_slack_shared);
-    get_slack_constraint_var(z_U0_, i).head(g_slack_shared) =
+    get_slack_constraint_var(z_U0_, i).head(2 * g_slack_shared) =
         nlp_prev.get_slack_constraint_var(nlp_prev.z_U0_, i_prev)
-            .head(g_slack_shared);
+            .head(2 * g_slack_shared);
 
     get_slack_constraint_vals(lambda0_, i).segment(0, n_slack_shared) =
         nlp_prev.get_slack_constraint_vals(nlp_prev.lambda0_, i_prev)
@@ -1226,9 +1301,9 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
         nlp_prev.get_slack_constraint_vals(nlp_prev.lambda0_, i_prev)
             .tail(nlp_prev.n_slack_vec_[i_prev])
             .head(n_slack_shared);
-    get_relaxed_primal_constraint_vals(lambda0_, i).head(g_slack_shared) =
+    get_relaxed_primal_constraint_vals(lambda0_, i).head(2 * g_slack_shared) =
         nlp_prev.get_relaxed_primal_constraint_vals(nlp_prev.lambda0_, i_prev)
-            .head(g_slack_shared);
+            .head(2 * g_slack_shared);
 
     // If this element is newly lifted, update with nominal otherwise leave
     // unchanged (may be one timestep old)
@@ -1653,13 +1728,14 @@ void quadNLP::update_structure() {
 
     if (g_slack > 0) {
       relaxed_constraint_idxs_[i] = curr_constr_idx;
-      curr_constr_idx += g_slack;
+      curr_constr_idx += 2 * g_slack;
 
       slack_constraint_var_idxs_[i] = curr_var_idx;
-      curr_var_idx += g_slack;
+      curr_var_idx += 2 * g_slack;
 
       relaxed_dynamic_jac_var_idxs_[i] = curr_jac_var_idx;
-      curr_jac_var_idx += relaxed_nnz_mat_(sys_id_schedule_[i], JAC) + g_slack;
+      curr_jac_var_idx +=
+          2 * (relaxed_nnz_mat_(sys_id_schedule_[i], JAC) + g_slack);
     }
   }
 
@@ -1674,11 +1750,13 @@ void quadNLP::update_structure() {
     std::cout << "n_vec_.sum() + m_ * (N_ - 1) = "
               << n_vec_.sum() + m_ * (N_ - 1) << std::endl;
     throw std::runtime_error("Number of primal vars is inconsistent");
-  } else if (n_vars_slack_ != (2 * n_slack_vec_.sum() + g_slack_vec_.sum())) {
+  } else if (n_vars_slack_ !=
+             (2 * n_slack_vec_.sum() + 2 * g_slack_vec_.sum())) {
     std::cout << "n_vars_slack_ = " << n_vars_slack_ << std::endl;
     std::cout << "2 * n_slack_vec_.sum() = " << (2 * n_slack_vec_.sum())
               << std::endl;
-    std::cout << "g_slack_vec_.sum() = " << (g_slack_vec_.sum()) << std::endl;
+    std::cout << "2 * g_slack_vec_.sum() = " << (2 * g_slack_vec_.sum())
+              << std::endl;
     throw std::runtime_error("Number of slack vars is inconsistent");
   }
 
@@ -1687,7 +1765,7 @@ void quadNLP::update_structure() {
 
   // Check the number of constraints
   if (n_constraints_ !=
-      (g_vec_.sum() + 2 * n_slack_vec_.sum() + g_slack_vec_.sum())) {
+      (g_vec_.sum() + 2 * n_slack_vec_.sum() + 2 * g_slack_vec_.sum())) {
     throw std::runtime_error("Number of constraints is inconsistent");
   }
 

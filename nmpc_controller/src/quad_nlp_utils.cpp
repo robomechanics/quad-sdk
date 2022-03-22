@@ -346,6 +346,6 @@ void quadNLP::loadConstraintNames() {
   for (int i = 0; i < num_sys_id_; i++) {
     int num_constr = nrow_mat_(i, FUNC);
     constr_names_[i] = std::vector<std::string>(
-        constr_names.begin(), constr_names.begin() + num_constr - 1);
+        constr_names.begin(), constr_names.begin() + num_constr);
   }
 }
