@@ -3,6 +3,7 @@
   <arg name="software"/>
   <arg name="controller"/>
   <arg name="rotors"/>
+  <arg name="dash"/>
   <arg name="namespace" default="robot_1" />
   <arg name="init_pose"/>
   
