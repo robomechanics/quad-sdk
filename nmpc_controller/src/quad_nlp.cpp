@@ -249,7 +249,11 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
   for (size_t i = 0; i < N_; i++) {
     // xmin
     g_l_matrix.block(N_ * g_ + i * 2 * n_, 0, n_, 1) = x_min_;
-    g_l_matrix(N_ * g_ + i * 2 * n_ + 2, 0) = ground_height_(0, i);
+    if (type_ == DISTRIBUTED) {
+      g_l_matrix(N_ * g_ + i * 2 * n_ + 2, 0) = -2e19;
+    } else {
+      g_l_matrix(N_ * g_ + i * 2 * n_ + 2, 0) = ground_height_(0, i) + 0.2;
+    }
     // g_l_matrix(N_ * g_ + i * 2 * n_ + 2, 0) = 0;
     g_u_matrix.block(N_ * g_ + i * 2 * n_, 0, n_, 1).fill(2e19);
 
@@ -307,10 +311,10 @@ bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
       }
     }
 
-    if (type_ == DISTRIBUTED) {
-      u_nom[0] =
-          -tail_mass_ * grav_ * tail_length_ * std::sin(x_reference_(6, i));
-    }
+    // if (type_ == DISTRIBUTED) {
+    //   u_nom[0] =
+    //       -tail_mass_ * grav_ * tail_length_ * std::sin(x_reference_(6, i));
+    // }
 
     Eigen::MatrixXd uk = w.block(i * (n_ + m_), 0, m_, 1) - u_nom;
     Eigen::MatrixXd xk = w.block(i * (n_ + m_) + m_, 0, n_, 1);
@@ -359,10 +363,10 @@ bool quadNLP::eval_grad_f(Index n, const Number *x, bool new_x,
       }
     }
 
-    if (type_ == DISTRIBUTED) {
-      u_nom[0] =
-          -tail_mass_ * grav_ * tail_length_ * std::sin(x_reference_(6, i));
-    }
+    // if (type_ == DISTRIBUTED) {
+    //   u_nom[0] =
+    //       -tail_mass_ * grav_ * tail_length_ * std::sin(x_reference_(6, i));
+    // }
 
     Eigen::MatrixXd uk = w.block(i * (n_ + m_), 0, m_, 1) - u_nom;
     Eigen::MatrixXd xk = w.block(i * (n_ + m_) + m_, 0, n_, 1);

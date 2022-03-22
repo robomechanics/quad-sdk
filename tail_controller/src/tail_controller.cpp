@@ -164,6 +164,8 @@ void TailController::publishTailCommand() {
 
     // If we are out of the plan interval
     if (current_plan_index + 1 > last_tail_plan_msg_->leg_commands.size() - 1) {
+      ROS_ERROR("Tail controller node couldn't find the correct ref state!");
+      
       msg.motor_commands.at(0).pos_setpoint =
           last_tail_plan_msg_->leg_commands.back()
               .motor_commands[0]

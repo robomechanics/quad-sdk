@@ -2,13 +2,13 @@ import roslaunch
 import rospy
 import numpy as np
 
-vel = 0.75
+vel = 1.0
 period = 0.36
 num = 25
 sample = 25
-time_init = 7.5/4*10
+time_init = 3.5/4*10
 time_stand = 7.5/4*10
-time_walk = 30/4*10
+time_walk = 30/4*10*0.75/1
 world = ['world:=step_20cm', 'world:=step_25cm', 'world:=step_30cm', 'world:=step_35cm', 'world:=step_40cm']
 # world = ['world:=step_40cm']
 
@@ -16,7 +16,7 @@ np.random.seed(0)
 
 init_pos = np.linspace(-vel*period/2, vel*period/2, sample, endpoint=False) + 6.0
 # init_pos = np.array([init_pos]*int(num/sample)).T.flatten()
-# init_pos = [init_pos[i] for i in [11, 11, 11]]
+# init_pos = [init_pos[i] for i in [6, 7, 8]]
 # print(init_pos)
 
 for w in world:

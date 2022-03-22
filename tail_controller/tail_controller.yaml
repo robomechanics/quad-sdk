@@ -3,7 +3,7 @@ tail_controller:
   controller_update_rate: 500
   planner_update_rate: 500
   roll_kp: 10
-  roll_kd: 1
+  roll_kd: 0.1
   pitch_kp: 10
-  pitch_kd: 1
+  pitch_kd: 0.1
   gear_ratio: 50

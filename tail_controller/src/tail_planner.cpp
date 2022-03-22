@@ -238,7 +238,7 @@ void TailPlanner::computeTailPlan() {
     body_plan_.row(i) =
         quad_utils::bodyStateMsgToEigen(last_local_plan_msg_->states[idx].body)
             .transpose();
-    // ref_tail_plan_.row(i) << -body_plan_(i, 3), -body_plan_(i, 4), 0, 0;
+    ref_tail_plan_.row(i) << -body_plan_(i, 3), -body_plan_(i, 4), 0, 0;
 
     // Tail cannot move the body linearly so we should not use the ground height
     // constraints here
