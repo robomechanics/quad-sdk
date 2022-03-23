@@ -31,7 +31,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   // Load the current state
   Eigen::VectorXd current_state_(36);
   current_state_.fill(0);
-  current_state_(2) = 0.2;
+  current_state_(2) = 0.3;
   current_state_(9) = 0;
 
   quad_utils::QuadKD quad_kd;

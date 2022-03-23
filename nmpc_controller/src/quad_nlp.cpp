@@ -143,11 +143,11 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   x_min_complex_soft_ = x_min_complex_soft;
   x_max_complex_soft_ = x_max_complex_soft;
 
-  double abad_nom = -0.248694;
+  double abad_nom = 0.248694;
   double hip_nom = 0.760144;
   double knee_nom = 1.52029;
   x_null_nom_.resize(n_null_);
-  x_null_nom_ << abad_nom, hip_nom, knee_nom, abad_nom, hip_nom, knee_nom,
+  x_null_nom_ << -abad_nom, hip_nom, knee_nom, -abad_nom, hip_nom, knee_nom,
       abad_nom, hip_nom, knee_nom, abad_nom, hip_nom, knee_nom, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0;
 
@@ -769,6 +769,37 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
 
       eval_release_vec_[sys_id][JAC](mem);
       eval_decref_vec_[sys_id][JAC]();
+
+      // std::cout << "get_dynamic_jac_var(values_matrix, i) = \n"
+      //           << get_dynamic_jac_var(values_matrix, i) << std::endl;
+      // int nnz = nnz_mat_(sys_id, JAC);
+      // int col_width = std::min(24, ncol_mat_(sys_id, JAC));
+      // int col_start = std::min(48, ncol_mat_(sys_id, JAC));
+      // std::cout << "nnz = " << nnz << std::endl;
+      // std::cout << "nrow = " << nrow_mat_(sys_id, JAC) << std::endl;
+      // std::cout << "ncol = " << ncol_mat_(sys_id, JAC) << std::endl;
+
+      // std::vector<Eigen::Triplet<double>> tripletList;
+      // tripletList.reserve(nnz);
+      // Eigen::VectorXi row_idx = iRow_mat_[sys_id][JAC].array();
+      // Eigen::VectorXi col_idx = jCol_mat_[sys_id][JAC].array();
+
+      // for (int j = 0; j < nnz; ++j) {
+      //   if ((col_idx[j] >= col_start) &&
+      //       (col_idx[j] < (col_start + col_width))) {
+      //     tripletList.push_back(Eigen::Triplet<double>(
+      //         row_idx[j], col_idx[j] - col_start,
+      //         get_dynamic_jac_var(values_matrix, i)(j, 0)));
+      //   }
+      // }
+      // Eigen::SparseMatrix<double> jac_element(nrow_mat_(sys_id, JAC),
+      //                                         col_width);
+      // jac_element.setFromTriplets(tripletList.begin(), tripletList.end());
+      // std::cout << "get_dynamic_var(w, i) = " << get_dynamic_var(w, i)
+      //           << std::endl;
+      // std::cout << "jac_element = \n"
+      //           << Eigen::MatrixXd(jac_element) << std::endl;
+      // throw std::runtime_error("Stop");
     }
 
     for (size_t i = 0; i < N_ - 1; i++) {
@@ -831,6 +862,7 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
         // std::cout << "get_relaxed_dynamic_jac_var(values_matrix) = "
         //           << get_relaxed_dynamic_jac_var(values_matrix, i) <<
         //           std::endl;
+        // throw std::runtime_error("stop");
       }
     }
   }
