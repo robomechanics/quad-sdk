@@ -63,7 +63,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 
   // Initialize nominal footstep positions projected down from the hips
   Eigen::Vector3d nominal_joint_state;
-  nominal_joint_state << 0, 0.78, 1.57;  // Default stand angles
+  nominal_joint_state << 0, 0.78, 1.57; // Default stand angles
   hip_projected_foot_positions_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
 
   for (int i = 0; i < N_; ++i) {
@@ -195,7 +195,8 @@ void LocalPlanner::robotPlanCallback(
 void LocalPlanner::robotStateCallback(
     const quad_msgs::RobotState::ConstPtr &msg) {
   // Make sure the data is actually populated
-  if (msg->feet.feet.empty() || msg->joints.position.empty()) return;
+  if (msg->feet.feet.empty() || msg->joints.position.empty())
+    return;
 
   robot_state_msg_ = msg;
 }
@@ -218,7 +219,8 @@ void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg) {
 
 void LocalPlanner::getStateAndReferencePlan() {
   // Make sure body plan and robot state data is populated
-  if (body_plan_msg_ == NULL || robot_state_msg_ == NULL) return;
+  if (body_plan_msg_ == NULL || robot_state_msg_ == NULL)
+    return;
 
   // Tracking trajectory so enter run mode
   control_mode_ = STEP;
@@ -307,7 +309,8 @@ void LocalPlanner::getStateAndReferencePlan() {
 }
 
 void LocalPlanner::getStateAndTwistInput() {
-  if (robot_state_msg_ == NULL) return;
+  if (robot_state_msg_ == NULL)
+    return;
 
   if (first_plan_) {
     // We want to start from a full period when using twist input
@@ -395,8 +398,8 @@ void LocalPlanner::getStateAndTwistInput() {
                   current_stand_pose * 1 / update_rate_;
   }
 
-  ref_body_plan_(0, 0) = stand_pose_[0];  // support_center.x();
-  ref_body_plan_(0, 1) = stand_pose_[1];  // support_center.x();
+  ref_body_plan_(0, 0) = stand_pose_[0]; // support_center.x();
+  ref_body_plan_(0, 1) = stand_pose_[1]; // support_center.x();
   ref_body_plan_(0, 2) = z_des_ + ref_ground_height_(0);
   ref_body_plan_(0, 3) = 0;
   ref_body_plan_(0, 4) = 0;
@@ -633,7 +636,8 @@ void LocalPlanner::spin() {
 
     // Compute the local plan and publish if it solved successfully, otherwise
     // just sleep
-    if (computeLocalPlan()) publishLocalPlan();
+    if (computeLocalPlan())
+      publishLocalPlan();
 
     r.sleep();
   }

@@ -37,9 +37,9 @@
     <!-- Launch the grid map filters demo node. -->
     <node pkg="grid_map_demos" type="filters_demo" name="grid_map_filter_node">
         <!-- Input topic -->
-        <param name="input_topic" value="/terrain_map_raw" />
+        <param name="input_topic" value="terrain_map_raw" />
         <!-- Output topic -->
-        <param name="output_topic" value="/terrain_map" />
+        <param name="output_topic" value="terrain_map" />
         <!-- Load grid map filter chain configuration -->
         <rosparam command="load" file="$(find quad_utils)/config/filter_chain.yaml" />
     </node>

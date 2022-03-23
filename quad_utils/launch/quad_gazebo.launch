@@ -63,7 +63,7 @@ SOFTWARE.
   </include>
   </group>
 
-  <group ns="/robot_2">
+  <!-- <group ns="/robot_2">
   <include file="$(find quad_utils)/launch/robot.launch">
   <arg name="rotors"          default="false"/>
   <arg name="software"        default="true"/>
@@ -76,15 +76,15 @@ SOFTWARE.
     <arg name="input_type" value="mesh"/>
     <arg name="world" value="$(arg world)"/>
   </include>
-  </group>
+  </group> -->
 
    <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find quad_utils)/rviz/example_with_terrain.rviz"/>
+  <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find quad_utils)/rviz/example_with_terrain.rviz"/> -->
 
   <group if="$(arg live_plot)">
     <node name="plotjuggler" pkg="plotjuggler" type="plotjuggler" 
             args="--layout $(find quad_utils)/config/plotjuggler_config.xml" />
-    </group>
+  </group>
 
   <group if="$(arg dash)">
         <node name = "rqt_dashboard" pkg = "rqt_gui" type = "rqt_gui" respawn = 
