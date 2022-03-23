@@ -25,7 +25,7 @@ SOFTWARE.
 -->
 
 <launch>
-  <arg name="gui"             default="true"/>
+  <arg name="gui"             default="false"/>
   <arg name="paused"          default="false"/>
   <arg name="software"        default="true"/>
   <arg name="controller"      default="inverse_dynamics"/>
@@ -35,7 +35,7 @@ SOFTWARE.
   <param name="/use_sim_time" value="true" />
 
 
-    <!-- Load the parameters and the sdf description -->
+  <!-- Load the parameters and the sdf description -->
   <include file="$(find quad_utils)/launch/load_params.launch" />
 
 <!-- Launch the Quad world with specific physics parameters -->
@@ -60,6 +60,7 @@ SOFTWARE.
   <include file="$(find quad_utils)/launch/mapping.launch" >
     <arg name="input_type" value="mesh"/>
     <arg name="world" value="$(arg world)"/>
+    <arg name="namespace" value="robot_1" />
   </include>
   </group>
 
@@ -75,11 +76,12 @@ SOFTWARE.
   <include file="$(find quad_utils)/launch/mapping.launch" >
     <arg name="input_type" value="mesh"/>
     <arg name="world" value="$(arg world)"/>
+    <arg name="namespace" value="robot_2" />
   </include>
   </group> -->
 
    <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
-  <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find quad_utils)/rviz/example_with_terrain.rviz"/> -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find quad_utils)/rviz/example_with_terrain.rviz"/>
 
   <group if="$(arg live_plot)">
     <node name="plotjuggler" pkg="plotjuggler" type="plotjuggler" 
