@@ -33,6 +33,12 @@ class InverseDynamicsController : public LegControllerTemplate {
   /// Prior grf_array
   Eigen::VectorXd last_grf_array_;
 
+  /// Swing leg kp in Cartesian frame for all legs
+  Eigen::VectorXd swing_kp_cart_vec_;
+
+  /// Swing leg kd in Cartesian frame for all legs
+  Eigen::VectorXd swing_kd_cart_vec_;
+
   /// GRF exponential filter constant
   const double grf_exp_filter_const_ = 1.0;  // 1.0 = no filtering
 };

@@ -289,6 +289,10 @@ class RobotDriver {
   std::vector<double> swing_kp_;
   std::vector<double> swing_kd_;
 
+  /// PD gain when foot is in swing (Cartesian)
+  std::vector<double> swing_kp_cart_;
+  std::vector<double> swing_kd_cart_;
+
   /// Define standing joint angles
   std::vector<double> stand_joint_angles_;
 
