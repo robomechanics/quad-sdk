@@ -46,7 +46,8 @@ class LegControllerTemplate {
    * @param[in] kp Proportional gains
    * @param[in] kd Derivative gains
    */
-  virtual void setGains(std::vector<double> kp, std::vector<double> kd);
+  virtual void setGains(const std::vector<double> &kp,
+                        const std::vector<double> &kd);
 
   /**
    * @brief Set the desired stance and swing proportional and derivative gains
@@ -55,10 +56,12 @@ class LegControllerTemplate {
    * @param[in] swing_kp Swing phase proportional gains
    * @param[in] swing_kd Swing phase derivative gains
    */
-  virtual void setGains(std::vector<double> stance_kp,
-                        std::vector<double> stance_kd,
-                        std::vector<double> swing_kp,
-                        std::vector<double> swing_kd);
+  virtual void setGains(const std::vector<double> &stance_kp,
+                        const std::vector<double> &stance_kd,
+                        const std::vector<double> &swing_kp,
+                        const std::vector<double> &swing_kd,
+                        const std::vector<double> &swing_kp_cart,
+                        const std::vector<double> &swing_kd_cart);
 
   /**
    * @brief Compute the leg command array message for a given current state and
@@ -92,6 +95,10 @@ class LegControllerTemplate {
   /// PD gain when foot is in swing
   std::vector<double> swing_kp_;
   std::vector<double> swing_kd_;
+
+  /// PD gain when foot is in swing (Cartesian)
+  std::vector<double> swing_kp_cart_;
+  std::vector<double> swing_kd_cart_;
 
   /// Last local plan message
   quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
