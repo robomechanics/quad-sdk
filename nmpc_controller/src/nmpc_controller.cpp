@@ -157,8 +157,8 @@ NMPCController::NMPCController(int type) {
   app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
   app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
 
-  app_->Options()->SetNumericValue("max_wall_time", 100.0 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 100.0 * dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 10.0 * dt_);
+  app_->Options()->SetNumericValue("max_cpu_time", 10.0 * dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();
@@ -416,11 +416,15 @@ Eigen::VectorXi NMPCController::evalLiftedTrajectoryConstraints() {
     //       -constr_vals[mynlp_->relaxed_primal_constraint_idxs_in_element_[j]]
     //       << std::endl;
     // }
-    // std::cout << "body pos = " << x1.segment(0, 12).transpose() << std::endl;
-    // std::cout << "joint pos = " << x1.segment(12, 12).transpose() <<
-    // std::endl; std::cout << "joint vel = " << x1.segment(24, 12).transpose()
-    // << std::endl; std::cout << "foot_pos = " << mynlp_->foot_pos_world_.row(i
-    // + 1)
+    if (i + 1 >= 11 && i + 1 <= 13) {
+      std::cout << "i = " << i + 1 << std::endl;
+      std::cout << "body pos = " << x1.segment(0, 12).transpose() << std::endl;
+      std::cout << "joint pos = " << x1.segment(12, 12).transpose()
+                << std::endl;
+      std::cout << "joint vel = " << x1.segment(24, 12).transpose()
+                << std::endl;
+    }
+    // std::cout << "foot_pos = " << mynlp_->foot_pos_world_.row(i + 1)
     //           << std::endl;
     // std::cout << "foot_vel = " << mynlp_->foot_vel_world_.row(i + 1)
     //           << std::endl;

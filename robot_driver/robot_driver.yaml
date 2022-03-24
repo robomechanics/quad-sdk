@@ -4,7 +4,7 @@ robot_driver:
   mocap_rate: 360.0 # This must match the mocap frame rate or velocity estimates will be mis-scaled
   mocap_dropout_threshold: 0.027 # s
   filter_time_constant: 0.05 # s
-  input_timeout: 0.1
+  input_timeout: 0.2
   state_timeout: 0.1
   heartbeat_timeout: 0.2
   sit_kp: [10, 10, 10]
@@ -13,9 +13,9 @@ robot_driver:
   stand_kd: [1, 1, 1]
   stance_kp: [10, 10, 10]
   stance_kd: [1, 1, 1]
-  swing_kp: [10, 10, 10]
-  swing_kd: [1, 1, 1]
-  swing_kp_cart: [200, 200, 200] # N/m
+  swing_kp: [0, 0, 0]
+  swing_kd: [0, 0, 0]
+  swing_kp_cart: [300, 300, 300] # N/m
   swing_kd_cart: [5, 5, 5]       # N/m
   safety_kp: [0, 0, 0]
   safety_kd: [2, 2, 2]

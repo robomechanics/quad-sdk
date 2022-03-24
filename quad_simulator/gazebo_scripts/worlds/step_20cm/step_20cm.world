@@ -2,8 +2,8 @@
   <world name='default'>
     <physics type="ode">
     <max_step_size>0.001</max_step_size>
-    <real_time_factor>1</real_time_factor>
-    <real_time_update_rate>1000</real_time_update_rate>
+    <real_time_factor>0.2</real_time_factor>
+    <real_time_update_rate>200</real_time_update_rate>
         <ode>
             <solver>
             <type>quick</type>  
@@ -26,7 +26,7 @@
       <uri>model://custom_sun</uri>
     </include>
     <model name="mesh_terrain">
-      <pose>-2 -4 -0.1  0 0 0</pose>
+      <pose>-1.975 -4 -0.1  0 0 0</pose>
       <static>true</static>
       <link name="body">
         <visual name="visual">
