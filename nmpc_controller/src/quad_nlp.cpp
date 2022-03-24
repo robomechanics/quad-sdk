@@ -252,7 +252,7 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
     if (type_ == DISTRIBUTED) {
       g_l_matrix(N_ * g_ + i * 2 * n_ + 2, 0) = -2e19;
     } else {
-      g_l_matrix(N_ * g_ + i * 2 * n_ + 2, 0) = ground_height_(0, i) + 0.2;
+      g_l_matrix(N_ * g_ + i * 2 * n_ + 2, 0) = ground_height_(0, i);
     }
     // g_l_matrix(N_ * g_ + i * 2 * n_ + 2, 0) = 0;
     g_u_matrix.block(N_ * g_ + i * 2 * n_, 0, n_, 1).fill(2e19);

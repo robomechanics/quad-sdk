@@ -344,6 +344,12 @@ class LocalPlanner {
 
   /// Ground reaction force position in body frame
   Eigen::MatrixXd grf_positions_body_;
+
+  /// Indicator that if a leg should be early release or not
+  std::vector<bool> early_release_;
+
+  /// Contact sensing record
+  std::vector<bool> contact_sensing_record_;
 };
 
 #endif  // LOCAL_PLANNER_H

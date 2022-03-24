@@ -145,6 +145,12 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 
   // Initialize the plan index
   current_plan_index_ = 0;
+
+  // Initialize the early release indicator
+  early_release_.assign(4, false);
+
+  // Initialize contact sensing record
+  contact_sensing_record_.assign(4, false);
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -701,6 +707,95 @@ bool LocalPlanner::computeLocalPlan() {
   local_footstep_planner_->computeContactSchedule(current_plan_index_,
                                                   contact_schedule_);
 
+  // Joint limit checking - now we only care about abad - probably only active
+  // when missing contact
+  // if (contact_sensing_msg_ != NULL &&
+  //     (contact_sensing_msg_->data.at(0) || contact_sensing_msg_->data.at(1)
+  //     ||
+  //      contact_sensing_msg_->data.at(2) || contact_sensing_msg_->data.at(3)))
+  //      {
+  if (contact_sensing_msg_ != NULL) {
+    for (size_t i = 0; i < 4; i++) {
+      // If the leg is swinging by the clock we can clear the early release flag
+      if (!contact_schedule_.at(0).at(i)) {
+        early_release_.at(i) = false;
+      }
+
+      // If the leg is in contact and near the joint limit, release it
+      if ((contact_schedule_.at(0).at(i) &&
+           robot_state_msg_->joints.position.at(3 * i) < -0.362885109) ||
+          early_release_.at(i)) {
+        // Record a early release flag
+        early_release_.at(i) = true;
+
+        ROS_INFO("hit joint limit");
+
+        // Switch to swing
+        for (size_t j = 0; j < N_; j++) {
+          if (contact_schedule_.at(j).at(i)) {
+            contact_schedule_.at(j).at(i) = false;
+          } else {
+            // Just switch the current period
+            if (contact_schedule_.at(j + 1).at(i)) {
+              break;
+            }
+          }
+        }
+
+        // Record foot position for swing computation
+        past_footholds_msg_.feet[i] = robot_state_msg_->feet.feet.at(i);
+        past_footholds_msg_.feet[i].traj_index = current_plan_index_;
+      }
+    }
+  }
+
+  // Contact sensing recover - stand for a while when hit the ground
+  if (contact_sensing_msg_ != NULL) {
+    for (size_t i = 0; i < 4; i++) {
+      // If the clock assigns a swing but we just hit the ground, stand for a
+      // while
+      if (!contact_sensing_msg_->data.at(i) && contact_sensing_record_.at(i) &&
+          !contact_schedule_.at(0).at(i)) {
+        for (size_t j = 0; j < N_; j++) {
+          if (!contact_schedule_.at(j).at(i)) {
+            // Assign stand
+            contact_schedule_.at(j).at(i) = true;
+
+            // Only modify a period
+            if (contact_schedule_.at(j + 1).at(i)) {
+              break;
+            }
+          }
+        }
+      }
+
+      // Record the contact sensing
+      contact_sensing_record_.at(i) = contact_sensing_msg_->data.at(i);
+    }
+  }
+
+  // Start from the nominal contact schedule
+  adaptive_contact_schedule_ = contact_schedule_;
+
+  // Contact sensing
+  if (contact_sensing_msg_ != NULL) {
+    for (size_t i = 0; i < 4; i++) {
+      if (contact_sensing_msg_->data.at(i) && contact_schedule_.at(0).at(i)) {
+        for (size_t j = 0; j < N_; j++) {
+          if (contact_schedule_.at(j).at(i)) {
+            // Assign miss
+            adaptive_contact_schedule_.at(j).at(i) = false;
+          }
+
+          // Only modify a period
+          if (!contact_schedule_.at(j + 1).at(i)) {
+            break;
+          }
+        }
+      }
+    }
+  }
+
   // Compute the new footholds if we have a valid existing plan (i.e. if
   // grf_plan is filled)
   local_footstep_planner_->computeFootPlan(
@@ -713,28 +808,6 @@ bool LocalPlanner::computeLocalPlan() {
   // Transform the new foot positions into the body frame for body planning
   local_footstep_planner_->getFootPositionsBodyFrame(
       body_plan_, foot_positions_world_, foot_positions_body_);
-
-  // Start from nominal contact schedule
-  adaptive_contact_schedule_ = contact_schedule_;
-
-  // Contact sensing
-  if (contact_sensing_msg_ != NULL) {
-    for (size_t i = 0; i < 4; i++) {
-      if (contact_sensing_msg_->data.at(i)) {
-        for (size_t j = 0; j < N_; j++) {
-          if (contact_schedule_.at(j).at(i)) {
-            // Refine contact schedule
-            adaptive_contact_schedule_.at(j).at(i) = false;
-          }
-
-          if (!contact_schedule_.at(j).at(i) &&
-              contact_schedule_.at(j + 1).at(i)) {
-            break;
-          }
-        }
-      }
-    }
-  }
 
   // Compute grf position considering the toe radius
   grf_positions_body_ = foot_positions_body_;
@@ -820,15 +893,15 @@ void LocalPlanner::publishLocalPlan() {
     grf_array_msg.traj_index = robot_state_msg.traj_index;
 
     // Add refernce trajectory information, it is required for tail, it's
-    // shorter than the actual plan, but since tail use a even shorter one so it
-    // should be fine
+    // shorter than the actual plan, but since tail use a even shorter one so
+    // it should be fine
     quad_msgs::RobotState robot_ref_state_msg;
     robot_ref_state_msg.body =
         quad_utils::eigenToBodyStateMsg(ref_body_plan_.row(i));
 
-    // Add foot position plan in body frame, it is required for tail, since the
-    // body plan might varied, we can directly compute it from the world frame
-    // one
+    // Add foot position plan in body frame, it is required for tail, since
+    // the body plan might varied, we can directly compute it from the world
+    // frame one
     quad_msgs::MultiFootState foot_state_msg_body;
     for (size_t j = 0; j < 4; j++) {
       quad_msgs::FootState foot_state_msg;
@@ -872,7 +945,8 @@ void LocalPlanner::spin() {
       // Get twist commands
       getStateAndTwistInput();
     } else {
-      // Get the reference plan and robot state into the desired data structures
+      // Get the reference plan and robot state into the desired data
+      // structures
       getStateAndReferencePlan();
     }
 
