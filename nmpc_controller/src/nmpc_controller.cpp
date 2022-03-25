@@ -67,6 +67,9 @@ NMPCController::NMPCController(int type) {
       u_min(control_lower_bound.data(), m_, 1),
       u_max(control_upper_bound.data(), m_, 1);
 
+  Q_temporal_factor = std::pow(Q_temporal_factor, 1.0 / (N_ - 1));
+  R_temporal_factor = std::pow(R_temporal_factor, 1.0 / (N_ - 1));
+
   mynlp_ = new quadNLP(type_, N_, n_, m_, dt_, mu, panic_weights, Q, R,
                        Q_temporal_factor, R_temporal_factor, x_min, x_max,
                        u_min, u_max);
