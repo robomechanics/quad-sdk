@@ -74,7 +74,8 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
     }
   }
 
-  // Initialize body and foot position arrays
+  // Initialize body and foot position arrays (grf_plan horizon is one index
+  // shorter since control after last state is not in the horizon)
   ref_body_plan_ = Eigen::MatrixXd::Zero(N_, Nx_);
   foot_positions_world_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
   foot_velocities_world_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
