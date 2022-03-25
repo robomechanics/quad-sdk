@@ -40,20 +40,19 @@ NMPCController::NMPCController(int type) {
                   mu);
 
   // Load MPC cost weighting and bounds
-  std::vector<double> state_weights, control_weights, state_weights_factors,
-      control_weights_factors, state_lower_bound, state_upper_bound,
-      control_lower_bound, control_upper_bound;
-  double panic_weights;
+  std::vector<double> state_weights, control_weights, state_lower_bound,
+      state_upper_bound, control_lower_bound, control_upper_bound;
+  double panic_weights, Q_temporal_factor, R_temporal_factor;
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_weights",
                   state_weights);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_weights",
                   control_weights);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/panic_weights",
                   panic_weights);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/state_weights_factors",
-                  state_weights_factors);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/control_weights_factors",
-                  control_weights_factors);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/Q_temporal_factor",
+                  Q_temporal_factor);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/R_temporal_factor",
+                  R_temporal_factor);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_lower_bound",
                   state_lower_bound);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_upper_bound",
@@ -63,16 +62,14 @@ NMPCController::NMPCController(int type) {
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_upper_bound",
                   control_upper_bound);
   Eigen::Map<Eigen::MatrixXd> Q(state_weights.data(), n_, 1),
-      R(control_weights.data(), m_, 1),
-      Q_factor(state_weights_factors.data(), N_, 1),
-      R_factor(control_weights_factors.data(), N_, 1),
-      x_min(state_lower_bound.data(), n_, 1),
+      R(control_weights.data(), m_, 1), x_min(state_lower_bound.data(), n_, 1),
       x_max(state_upper_bound.data(), n_, 1),
       u_min(control_lower_bound.data(), m_, 1),
       u_max(control_upper_bound.data(), m_, 1);
 
   mynlp_ = new quadNLP(type_, N_, n_, m_, dt_, mu, panic_weights, Q, R,
-                       Q_factor, R_factor, x_min, x_max, u_min, u_max);
+                       Q_temporal_factor, R_temporal_factor, x_min, x_max,
+                       u_min, u_max);
 
   app_ = IpoptApplicationFactory();
 
