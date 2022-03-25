@@ -237,7 +237,10 @@ void LocalFootstepPlanner::computeFootPlan(
         ref_body_ang_vel_touchdown = ref_body_plan.block<1, 3>(i, 9);
 
         // Compute dynamic shift
-        double body_height_touchdown = body_plan(i, 2);
+        double body_height_touchdown =
+            std::max(body_plan(i, 2) - terrain_grid_.atPosition(
+                                           "z", body_plan.row(i).segment<2>(0)),
+                     0.0);
         // Ref: Highly Dynamic Quadruped Locomotion via Whole-Body Impulse
         // Control and Model Predictive Control (Centrifugal force and capture
         // point)

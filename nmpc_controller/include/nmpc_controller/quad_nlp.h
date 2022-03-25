@@ -106,11 +106,8 @@ class quadNLP : public TNLP {
   // State cost weighting, input cost weighting
   Eigen::VectorXd Q_, R_;
 
-  // Current scale factor for Q and R (may change between iterations)
-  Eigen::VectorXd Q_factor_, R_factor_;
-
-  /// Base scale factor for Q and R (does not change between iterations)
-  Eigen::VectorXd Q_factor_base_, R_factor_base_;
+  // Scale factor for Q and R
+  double Q_temporal_factor_, R_temporal_factor_;
 
   // Feet location from feet to body COM in world frame
   Eigen::MatrixXd feet_location_;
@@ -265,8 +262,8 @@ class quadNLP : public TNLP {
   /** Default constructor */
   quadNLP(int type, int N, int n, int n_null, int m, double dt, double mu,
           double panic_weights, double constraint_panic_weights,
-          Eigen::VectorXd Q, Eigen::VectorXd R, Eigen::VectorXd Q_factor,
-          Eigen::VectorXd R_factor, Eigen::VectorXd x_min,
+          Eigen::VectorXd Q, Eigen::VectorXd R, double Q_temporal_factor,
+          double R_temporal_factor, Eigen::VectorXd x_min,
           Eigen::VectorXd x_max, Eigen::VectorXd x_min_complex_hard,
           Eigen::VectorXd x_max_complex_hard,
           Eigen::VectorXd x_min_complex_soft,

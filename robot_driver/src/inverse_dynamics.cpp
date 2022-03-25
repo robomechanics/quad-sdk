@@ -89,7 +89,6 @@ bool InverseDynamicsController::computeLegCommandArray(
         ref_foot_acceleration(3 * num_feet_);
 
     // Load plan and state data from messages
-    ref_body_state = quad_utils::bodyStateMsgToEigen(ref_state_msg.body);
     quad_utils::multiFootStateMsgToEigen(ref_state_msg.feet, ref_foot_positions,
                                          ref_foot_velocities,
                                          ref_foot_acceleration);

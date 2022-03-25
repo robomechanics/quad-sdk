@@ -13,8 +13,8 @@ using namespace Ipopt;
 quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
                  double mu, double panic_weights,
                  double constraint_panic_weights, Eigen::VectorXd Q,
-                 Eigen::VectorXd R, Eigen::VectorXd Q_factor,
-                 Eigen::VectorXd R_factor, Eigen::VectorXd x_min,
+                 Eigen::VectorXd R, double Q_temporal_factor,
+                 double R_temporal_factor, Eigen::VectorXd x_min,
                  Eigen::VectorXd x_max, Eigen::VectorXd x_min_complex_hard,
                  Eigen::VectorXd x_max_complex_hard,
                  Eigen::VectorXd x_min_complex_soft,
@@ -110,11 +110,8 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
 
   Q_ = Q;
   R_ = R;
-  Q_factor_base_ = Q_factor;
-  R_factor_base_ = R_factor;
-  Q_factor_ = Q_factor_base_;
-  R_factor_ = R_factor_base_;
-
+  Q_temporal_factor_ = Q_temporal_factor;
+  R_temporal_factor_ = R_temporal_factor;
   panic_weights_ = panic_weights;
   constraint_panic_weights_ = constraint_panic_weights;
 
@@ -513,8 +510,8 @@ bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
     Eigen::MatrixXd xk = get_primal_state_var(w, i + 1).head(n_simple_) -
                          x_reference_.block(0, i + 1, n_simple_, 1);
 
-    Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
-    Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
+    Eigen::MatrixXd Q_i = Q_ * std::pow(Q_temporal_factor_, i);
+    Eigen::MatrixXd R_i = R_ * std::pow(R_temporal_factor_, i);
 
     // Scale the cost by time duration
     if (i == 0) {
@@ -573,8 +570,8 @@ bool quadNLP::eval_grad_f(Index n, const Number *x, bool new_x,
     Eigen::MatrixXd xk = get_primal_state_var(w, i + 1).head(n_simple_) -
                          x_reference_.block(0, i + 1, n_simple_, 1);
 
-    Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
-    Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
+    Eigen::MatrixXd Q_i = Q_ * std::pow(Q_temporal_factor_, i);
+    Eigen::MatrixXd R_i = R_ * std::pow(R_temporal_factor_, i);
 
     // Scale the cost by time duration
     if (i == 0) {
@@ -1085,8 +1082,8 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
     // Initialize Q and R weights
     // Hessian from cost
     for (size_t i = 0; i < N_ - 1; i++) {
-      Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
-      Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
+      Eigen::MatrixXd Q_i = Q_ * std::pow(Q_temporal_factor_, i);
+      Eigen::MatrixXd R_i = R_ * std::pow(R_temporal_factor_, i);
 
       // Scale the cost by time duration
       if (i == 0) {
@@ -1605,10 +1602,6 @@ void quadNLP::update_solver(
       update_initial_guess(nlp_prev, shift_idx);
     }
   }
-
-  // Reset the state weighting factors
-  Q_factor_ = Q_factor_base_;
-  R_factor_ = R_factor_base_;
 }
 
 void quadNLP::update_solver(
