@@ -7,6 +7,7 @@
     <arg name="logging"         default="false"/>
     <arg name="plan"            default="false"/>
     <arg name="live_plot"       default="false"/>
+    <arg name="dash"            default="false"/>
     <arg name="map_input_type"  default="mesh"/>
     <arg name="world"           default="flat"/>
 
@@ -18,6 +19,7 @@
 
     <include file="$(find quad_utils)/launch/visualization.launch">
         <arg name="live_plot" value="$(arg live_plot)"/>
+        <arg name="dash" value="$(arg dash)"/>
     </include>
 
     <!-- Launch the robot_proxy if specified-->
