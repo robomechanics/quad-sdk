@@ -60,6 +60,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   quad_utils::loadROSParam(nh_, "local_planner/timestep", dt_);
   quad_utils::loadROSParam(nh_, "local_planner/horizon_length", N_);
   quad_utils::loadROSParam(nh_, "local_planner/iterations", iterations_);
+  quad_utils::loadROSParam(nh_, "local_planner/roll_desired", roll_desired_);
   quad_utils::loadROSParam(nh_, "twist_body_planner/cmd_vel_scale",
                            cmd_vel_scale_);
   quad_utils::loadROSParam(nh_, "twist_body_planner/last_cmd_vel_msg_time_max",
@@ -599,7 +600,7 @@ void LocalPlanner::getStateAndTwistInput() {
   ref_body_plan_(0, 0) = current_state_[0];  // x_mean;
   ref_body_plan_(0, 1) = current_state_[1];  // y_mean;
   ref_body_plan_(0, 2) = z_des_ + ref_ground_height_(0);
-  ref_body_plan_(0, 3) = 0;
+  ref_body_plan_(0, 3) = roll_desired_;
   ref_body_plan_(0, 4) = 0;
   // Assign a constant walking direction
   ref_body_plan_(0, 5) = 1.57;
@@ -807,6 +808,7 @@ bool LocalPlanner::computeLocalPlan() {
   if (contact_sensing_msg_ != NULL) {
     for (size_t i = 0; i < 4; i++) {
       if (contact_sensing_msg_->data.at(i) && contact_schedule_.at(0).at(i)) {
+        roll_desired_ = 0;
         for (size_t j = 0; j < N_; j++) {
           if (contact_schedule_.at(j).at(i)) {
             // Assign miss

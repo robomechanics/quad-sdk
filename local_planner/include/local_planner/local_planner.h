@@ -359,6 +359,9 @@ class LocalPlanner {
 
   /// Abad joint limit for early release
   double abad_joint_limit_;
+
+  /// Desired roll
+  double roll_desired_;
 };
 
 #endif  // LOCAL_PLANNER_H

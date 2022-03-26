@@ -3,6 +3,7 @@ local_planner:
   timestep: 0.03 # s
   horizon_length: 24 # timesteps
   iterations: 1
+  roll_desired: -0.26179938779
 
 local_body_planner:
   body_mass: 11.5
