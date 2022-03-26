@@ -5,7 +5,7 @@ nmpc_controller:
     state_dimension: 12
     control_dimension: 12
     step_length: 0.03
-    friction_coefficient: 0.5
+    friction_coefficient: 0.3
     # It seems larger panic panic_weights make it much slower
     panic_weights: !!float 1e2
     state_weights: [!!float 1e5, !!float 1e5, !!float 5e5, !!float 1e4, !!float 1e4, !!float 1e3, !!float 2e3, !!float 2e3, !!float 4e4, !!float 1e3, !!float 1e3, !!float 2e2]
@@ -38,7 +38,7 @@ nmpc_controller:
     control_dimension: 14
     state_dimension: 16
     step_length: 0.03
-    friction_coefficient: 0.5
+    friction_coefficient: 0.3
     panic_weights: !!float 1e2
     state_weights: [0, 0, 0, 750, 0, 0, 1250, 1250, 0, 0, 0, 0, 0, 0, 5, 5]
     control_weights: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]

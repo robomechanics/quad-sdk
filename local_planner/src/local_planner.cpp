@@ -149,6 +149,12 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   // Initialize the early release indicator
   early_release_.assign(4, false);
 
+  // Initialize the early release index
+  early_release_idx_.assign(4, 0);
+
+  // Initialize the miss recovery indicator
+  miss_recovery_.assign(4, false);
+
   // Initialize contact sensing record
   contact_sensing_record_.assign(4, false);
 }
@@ -244,6 +250,8 @@ void LocalPlanner::initLocalFootstepPlanner() {
                            duty_cycles);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/phase_offsets",
                            phase_offsets);
+  quad_utils::loadROSParam(nh_, "local_footstep_planner/abad_joint_limit",
+                           abad_joint_limit_);
 
   period = period_d / dt_;
 
@@ -709,57 +717,73 @@ bool LocalPlanner::computeLocalPlan() {
 
   // Joint limit checking - now we only care about abad - probably only active
   // when missing contact
-  // if (contact_sensing_msg_ != NULL &&
-  //     (contact_sensing_msg_->data.at(0) || contact_sensing_msg_->data.at(1)
-  //     ||
-  //      contact_sensing_msg_->data.at(2) || contact_sensing_msg_->data.at(3)))
-  //      {
-  if (contact_sensing_msg_ != NULL) {
-    for (size_t i = 0; i < 4; i++) {
-      // If the leg is swinging by the clock we can clear the early release flag
-      if (!contact_schedule_.at(0).at(i)) {
-        early_release_.at(i) = false;
-      }
+  std::vector<std::vector<bool>> contact_schedule_joint_limit =
+      contact_schedule_;
 
-      // If the leg is in contact and near the joint limit, release it
-      if ((contact_schedule_.at(0).at(i) &&
-           robot_state_msg_->joints.position.at(3 * i) < -0.362885109) ||
-          early_release_.at(i)) {
-        // Record a early release flag
-        early_release_.at(i) = true;
+  for (size_t i = 0; i < 4; i++) {
+    // If the leg is standing now by the clock we can clear the early release
+    // flag
+    if (contact_schedule_.at(0).at(i) && contact_schedule_.at(5).at(i)) {
+      early_release_.at(i) = false;
+    }
 
-        ROS_INFO("hit joint limit");
+    // If the leg is in contact and near the joint limit, release it
+    if (!early_release_.at(i) && contact_sensing_msg_ != NULL &&
+        (contact_sensing_msg_->data.at(0) || contact_sensing_msg_->data.at(1) ||
+         contact_sensing_msg_->data.at(2) ||
+         contact_sensing_msg_->data.at(3)) &&
+        contact_schedule_.at(0).at(i) &&
+        robot_state_msg_->joints.position.at(3 * i) < abad_joint_limit_) {
+      // Record a early release flag
+      early_release_.at(i) = true;
+      early_release_idx_.at(i) = current_plan_index_;
 
-        // Switch to swing
-        for (size_t j = 0; j < N_; j++) {
-          if (contact_schedule_.at(j).at(i)) {
-            contact_schedule_.at(j).at(i) = false;
-          } else {
-            // Just switch the current period
-            if (contact_schedule_.at(j + 1).at(i)) {
-              break;
-            }
-          }
+      // Record foot position for swing computation
+      past_footholds_msg_.feet[i] = robot_state_msg_->feet.feet.at(i);
+      past_footholds_msg_.feet[i].traj_index = current_plan_index_;
+    }
+
+    // Switch to swing
+    if (early_release_.at(i)) {
+      for (size_t j = 0; j < N_; j++) {
+        if (current_plan_index_ + j < early_release_idx_.at(i) + 6) {
+          contact_schedule_joint_limit.at(j).at(i) = false;
+        } else {
+          contact_schedule_joint_limit.at(j).at(i) = true;
         }
 
-        // Record foot position for swing computation
-        past_footholds_msg_.feet[i] = robot_state_msg_->feet.feet.at(i);
-        past_footholds_msg_.feet[i].traj_index = current_plan_index_;
+        if (!contact_schedule_.at(j).at(i) &&
+            contact_schedule_.at(j + 1).at(i)) {
+          break;
+        }
       }
     }
   }
 
+  contact_schedule_ = contact_schedule_joint_limit;
+
   // Contact sensing recover - stand for a while when hit the ground
+  std::vector<std::vector<bool>> contact_schedule_recover = contact_schedule_;
+
   if (contact_sensing_msg_ != NULL) {
     for (size_t i = 0; i < 4; i++) {
+      // If the leg is standing by the clock we can clear the early release flag
+      if (contact_schedule_.at(0).at(i)) {
+        miss_recovery_.at(i) = false;
+      }
+
       // If the clock assigns a swing but we just hit the ground, stand for a
       // while
-      if (!contact_sensing_msg_->data.at(i) && contact_sensing_record_.at(i) &&
-          !contact_schedule_.at(0).at(i)) {
+      if (!miss_recovery_.at(i) && !contact_sensing_msg_->data.at(i) &&
+          contact_sensing_record_.at(i) && !contact_schedule_.at(0).at(i)) {
+        miss_recovery_.at(i) = true;
+      }
+
+      if (miss_recovery_.at(i)) {
         for (size_t j = 0; j < N_; j++) {
           if (!contact_schedule_.at(j).at(i)) {
             // Assign stand
-            contact_schedule_.at(j).at(i) = true;
+            contact_schedule_recover.at(j).at(i) = true;
 
             // Only modify a period
             if (contact_schedule_.at(j + 1).at(i)) {
@@ -773,6 +797,8 @@ bool LocalPlanner::computeLocalPlan() {
       contact_sensing_record_.at(i) = contact_sensing_msg_->data.at(i);
     }
   }
+
+  contact_schedule_ = contact_schedule_recover;
 
   // Start from the nominal contact schedule
   adaptive_contact_schedule_ = contact_schedule_;

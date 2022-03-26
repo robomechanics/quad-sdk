@@ -348,8 +348,17 @@ class LocalPlanner {
   /// Indicator that if a leg should be early release or not
   std::vector<bool> early_release_;
 
+  /// Leg early release index
+  std::vector<int> early_release_idx_;
+
+  /// Indicator that if a leg recover from missing
+  std::vector<bool> miss_recovery_;
+
   /// Contact sensing record
   std::vector<bool> contact_sensing_record_;
+
+  /// Abad joint limit for early release
+  double abad_joint_limit_;
 };
 
 #endif  // LOCAL_PLANNER_H

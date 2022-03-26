@@ -187,6 +187,7 @@ class LocalFootstepPlanner {
           printf("0 ");
         }
       }
+      printf(", ");
     }
     printf("\n");
   }

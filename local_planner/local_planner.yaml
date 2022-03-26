@@ -32,3 +32,4 @@ local_footstep_planner:
   phase_offsets: [0.0, 0.5, 0.5, 0.0]
   # duty_cycles: [0.75, 0.75, 0.75, 0.75]
   # phase_offsets: [0.25, 0.0, 0.75, 0.5]
+  abad_joint_limit: -0.338866987

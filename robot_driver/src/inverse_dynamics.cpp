@@ -146,8 +146,7 @@ bool InverseDynamicsController::computeLegCommandArray(
       }
 
       // Not yet receive new plan after recovering
-      if (!get_new_plan_after_recovering_.at(i))
-      {
+      if (!get_new_plan_after_recovering_.at(i)) {
         adaptive_contact_mode.at(i) = false;
         grf_array.segment(3 * i, 3) << 0, 0, 0;
       }
@@ -180,14 +179,15 @@ bool InverseDynamicsController::computeLegCommandArray(
 
     // Compute foot state
     quad_msgs::RobotState refined_state_msg;
-    quad_msgs::MultiFootState refined_foot_msg;
-    refined_foot_msg.feet.resize(4);
+    quad_msgs::MultiFootState refined_foot_msg = ref_state_msg.feet;
     for (size_t i = 0; i < 4; i++) {
-      quad_utils::eigenToFootStateMsg(
-          refined_foot_positions.segment(3 * i, 3), Eigen::Vector3d::Zero(),
-          Eigen::Vector3d::Zero(), refined_foot_msg.feet[i]);
+      if (last_contact_sensing_msg_.data.at(i)) {
+        quad_utils::eigenToFootStateMsg(
+            refined_foot_positions.segment(3 * i, 3), Eigen::Vector3d::Zero(),
+            Eigen::Vector3d::Zero(), refined_foot_msg.feet[i]);
+      }
     }
-    refined_state_msg.body = quad_utils::eigenToBodyStateMsg(body_state);
+    refined_state_msg.body = robot_state_msg.body;
     refined_state_msg.feet = refined_foot_msg;
     quad_utils::ikRobotState(*quadKD_, refined_state_msg);
 
@@ -198,21 +198,12 @@ bool InverseDynamicsController::computeLegCommandArray(
 
     // Copy to the ref state messsage
     for (size_t i = 0; i < 4; i++) {
-      // if (contact_mode.at(i))
-      // {
-      //   for (size_t j = 0; j < 3; j++)
-      //   {
-      //     ref_state_msg.joints.position.at(3 * i + j) =
-      //     refined_state_msg.joints.position.at(3 * i + j);
-      //     ref_state_msg.joints.velocity.at(3 * i + j) =
-      //     refined_state_msg.joints.velocity.at(3 * i + j);
-      //   }
-      // }
-
-      if (last_contact_sensing_msg_.data.at(i)) {
-        for (size_t j = 0; j < 3; j++) {
-          ref_state_msg.joints.position.at(3 * i + j) =
-              refined_state_msg.joints.position.at(3 * i + j);
+      for (size_t j = 0; j < 3; j++) {
+        ref_state_msg.joints.position.at(3 * i + j) =
+            refined_state_msg.joints.position.at(3 * i + j);
+        ref_state_msg.joints.velocity.at(3 * i + j) =
+            refined_state_msg.joints.velocity.at(3 * i + j);
+        if (last_contact_sensing_msg_.data.at(i)) {
           ref_state_msg.joints.velocity.at(3 * i + j) = 0;
           tau_array(3 * i + j) = 0;
         }
