@@ -7,6 +7,8 @@
 #ifndef __quadNLP_HPP__
 #define __quadNLP_HPP__
 
+#include <sys/resource.h>
+
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <IpIpoptData.hpp>
@@ -53,16 +55,19 @@ enum FunctionID { FUNC, JAC, HESS };
 class quadNLP : public TNLP {
  public:
   // Horizon length, state dimension, input dimension, and constraints dimension
-  int N_, n_, m_, g_;
+  int N_, n_, m_, g_, g_relaxed_;
 
   /// State dimension for simple and complex models
   int n_simple_, n_complex_;
 
   /// Vectors of state and constraint dimension for each finite element
-  Eigen::VectorXi n_vec_, n_slack_vec_, g_vec_;
+  Eigen::VectorXi n_vec_, n_slack_vec_, g_vec_, g_slack_vec_;
 
   /// Boolean for whether to apply panic variables for complex states
-  const bool apply_slack_to_complex_ = true;
+  const bool apply_slack_to_complex_states_ = true;
+
+  /// Boolean for whether to apply panic variables for complex constraints
+  const bool apply_slack_to_complex_constr_ = true;
 
   /// Input dimension for simple and complex models
   int m_simple_, m_complex_;
@@ -101,11 +106,8 @@ class quadNLP : public TNLP {
   // State cost weighting, input cost weighting
   Eigen::VectorXd Q_, R_;
 
-  // Current scale factor for Q and R (may change between iterations)
-  Eigen::VectorXd Q_factor_, R_factor_;
-
-  /// Base scale factor for Q and R (does not change between iterations)
-  Eigen::VectorXd Q_factor_base_, R_factor_base_;
+  // Scale factor for Q and R
+  double Q_temporal_factor_, R_temporal_factor_;
 
   // Feet location from feet to body COM in world frame
   Eigen::MatrixXd feet_location_;
@@ -128,12 +130,17 @@ class quadNLP : public TNLP {
   /// Gravity constant
   const double grav_ = 9.81;
 
+  /// Number of feet
+  const int num_feet_ = 4;
+
   // State bounds, input bounds, constraint bounds
   Eigen::VectorXd x_min_, x_max_, u_min_, u_max_, g_min_, g_max_;
 
   // State bounds, input bounds, constraint bounds
-  Eigen::VectorXd x_min_simple_, x_max_simple_, x_min_complex_, x_max_complex_,
-      g_min_simple_, g_max_simple_, g_min_complex_, g_max_complex_;
+  Eigen::VectorXd x_min_simple_, x_max_simple_, x_min_complex_hard_,
+      x_max_complex_hard_, g_min_simple_, g_max_simple_, g_min_complex_hard_,
+      g_max_complex_hard_, x_min_complex_soft_, x_max_complex_soft_,
+      g_min_complex_soft_, g_max_complex_soft_;
 
   // Ground height structure for the height bounds
   Eigen::MatrixXd ground_height_;
@@ -175,8 +182,8 @@ class quadNLP : public TNLP {
   // side jacobian part)
   Eigen::VectorXi iRow_h_, jCol_h_, iRow_compact_h_, jCol_compact_h_;
 
-  // Penalty on panic variables
-  double panic_weights_;
+  // Penalty on panic variables and constraints
+  double panic_weights_, constraint_panic_weights_;
 
   // Time duration to the next plan index
   double first_element_duration_;
@@ -188,18 +195,27 @@ class quadNLP : public TNLP {
   Eigen::VectorXi fixed_complexity_schedule_;
 
   /// Vector of indices for relevant quantities
-  Eigen::VectorXi fe_idxs_, u_idxs_, x_idxs_, slack_idxs_, g_idxs_,
-      g_slack_idxs_, dynamic_jac_var_idxs_, panic_jac_var_idxs_,
-      dynamic_hess_var_idxs_, cost_idxs_;
+  Eigen::VectorXi fe_idxs_, u_idxs_, x_idxs_, slack_state_var_idxs_,
+      slack_constraint_var_idxs_, primal_constraint_idxs_,
+      slack_var_constraint_idxs_, dynamic_jac_var_idxs_,
+      relaxed_dynamic_jac_var_idxs_, panic_jac_var_idxs_,
+      dynamic_hess_var_idxs_, cost_idxs_, relaxed_constraint_idxs_;
+
+  /// Indices of relaxed constraints
+  Eigen::ArrayXi relaxed_primal_constraint_idxs_in_element_,
+      constraint_panic_weights_vec_;
 
   /// Vector of system ids
   Eigen::VectorXi sys_id_schedule_;
 
   /// Matrix of function info
-  Eigen::MatrixXi nnz_mat_, nrow_mat_, ncol_mat_, first_step_idx_mat_;
+  Eigen::MatrixXi nnz_mat_, nrow_mat_, ncol_mat_, first_step_idx_mat_,
+      relaxed_nnz_mat_;
 
   /// Matrix of function sparsity data
   std::vector<std::vector<Eigen::VectorXi>> iRow_mat_, jCol_mat_;
+  std::vector<std::vector<Eigen::VectorXi>> iRow_mat_relaxed_,
+      jCol_mat_relaxed_, relaxed_idx_in_full_sparse_;
 
   /// Number of complex finite elements in the horizon
   int num_complex_fe_;
@@ -245,12 +261,14 @@ class quadNLP : public TNLP {
 
   /** Default constructor */
   quadNLP(int type, int N, int n, int n_null, int m, double dt, double mu,
-          double panic_weights, Eigen::VectorXd Q, Eigen::VectorXd R,
-          Eigen::VectorXd Q_factor, Eigen::VectorXd R_factor,
-          Eigen::VectorXd x_min, Eigen::VectorXd x_max,
-          Eigen::VectorXd x_min_complex, Eigen::VectorXd x_max_complex,
-          Eigen::VectorXd u_min, Eigen::VectorXd u_max,
-          Eigen::VectorXi fixed_complexity_schedule);
+          double panic_weights, double constraint_panic_weights,
+          Eigen::VectorXd Q, Eigen::VectorXd R, double Q_temporal_factor,
+          double R_temporal_factor, Eigen::VectorXd x_min,
+          Eigen::VectorXd x_max, Eigen::VectorXd x_min_complex_hard,
+          Eigen::VectorXd x_max_complex_hard,
+          Eigen::VectorXd x_min_complex_soft,
+          Eigen::VectorXd x_max_complex_soft, Eigen::VectorXd u_min,
+          Eigen::VectorXd u_max, Eigen::VectorXi fixed_complexity_schedule);
 
   /**
    * @brief Custom deep copy constructor
@@ -342,40 +360,63 @@ class quadNLP : public TNLP {
       const double &first_element_duration_, const bool &same_plan_index,
       const bool &init);
 
+  void update_structure();
+
   // Get the idx-th state variable from decision variable
   template <typename T>
-  inline Eigen::Block<T> get_state_var(T &decision_var, const int &idx) const {
+  inline Eigen::Block<T> get_primal_state_var(T &decision_var,
+                                              const int &idx) const {
     return decision_var.block(x_idxs_[idx], 0, n_vec_[idx], 1);
   }
 
   // Get the idx-th control variable from decision variable
   template <typename T>
-  inline Eigen::Block<T> get_control_var(T &decision_var,
-                                         const int &idx) const {
+  inline Eigen::Block<T> get_primal_control_var(T &decision_var,
+                                                const int &idx) const {
     return decision_var.block(u_idxs_[idx], 0, m_, 1);
-  }
-
-  // Get the idx-th constraint from constraint variable
-  template <typename T>
-  inline Eigen::Block<T> get_constraint_var(T &constraint_var,
-                                            const int &idx) const {
-    return constraint_var.block(g_idxs_[idx], 0, g_vec_[idx], 1);
   }
 
   // Get the idx-th panic variable (for (idx+1)-th state variable) from decision
   // variable
   template <typename T>
-  inline Eigen::Block<T> get_panic_var(T &decision_var, const int &idx) const {
-    return decision_var.block(slack_idxs_[idx], 0, 2 * n_slack_vec_[idx], 1);
+  inline Eigen::Block<T> get_slack_state_var(T &decision_var,
+                                             const int &idx) const {
+    return decision_var.block(slack_state_var_idxs_[idx], 0,
+                              2 * n_slack_vec_[idx], 1);
+  }
+
+  // Get the idx-th panic variable (for (idx+1)-th constraint) from decision
+  // variable
+  template <typename T>
+  inline Eigen::Block<T> get_slack_constraint_var(T &decision_var,
+                                                  const int &idx) const {
+    return decision_var.block(slack_constraint_var_idxs_[idx], 0,
+                              2 * g_slack_vec_[idx], 1);
+  }
+
+  // Get the idx-th constraint from constraint values
+  template <typename T>
+  inline Eigen::Block<T> get_primal_constraint_vals(T &constraint_vals,
+                                                    const int &idx) const {
+    return constraint_vals.block(primal_constraint_idxs_[idx], 0, g_vec_[idx],
+                                 1);
+  }
+
+  // Get the idx-th relaxed constraints from constraint values
+  template <typename T>
+  inline Eigen::Block<T> get_relaxed_primal_constraint_vals(
+      T &constraint_vals, const int &idx) const {
+    return constraint_vals.block(relaxed_constraint_idxs_[idx], 0,
+                                 2 * g_slack_vec_[idx], 1);
   }
 
   // Get the idx-th panic constraint (for (idx+1)-th state variable) from
   // constraint variable
   template <typename T>
-  inline Eigen::Block<T> get_panic_constraint_var(T &constraint_var,
-                                                  const int &idx) const {
-    return constraint_var.block(g_slack_idxs_[idx], 0, 2 * n_slack_vec_[idx],
-                                1);
+  inline Eigen::Block<T> get_slack_constraint_vals(T &constraint_vals,
+                                                   const int &idx) const {
+    return constraint_vals.block(slack_var_constraint_idxs_[idx], 0,
+                                 2 * n_slack_vec_[idx], 1);
   }
 
   // Get the idx-th dynamic constraint related decision variable (idx and
@@ -395,10 +436,20 @@ class quadNLP : public TNLP {
                               nnz_mat_(sys_id_schedule_[idx], JAC), 1);
   }
 
+  // Get the idx-th dynamic constraint related jacobian nonzero entry
+  template <typename T>
+  inline Eigen::Block<T> get_relaxed_dynamic_jac_var(T &jacobian_var,
+                                                     const int &idx) const {
+    return jacobian_var.block(
+        relaxed_dynamic_jac_var_idxs_[idx], 0,
+        2 * (relaxed_nnz_mat_(sys_id_schedule_[idx], JAC) + g_slack_vec_[idx]),
+        1);
+  }
+
   // Get the idx-th panic constraint jacobian (for (idx+1)-th state variable)
   // nonzero entry
   template <typename T>
-  inline Eigen::Block<T> get_panic_jac_var(T &jacobian_var,
+  inline Eigen::Block<T> get_slack_jac_var(T &jacobian_var,
                                            const int &idx) const {
     return jacobian_var.block(panic_jac_var_idxs_[idx], 0,
                               4 * n_slack_vec_[idx], 1);
@@ -426,59 +477,37 @@ class quadNLP : public TNLP {
     return hessian_var.block(cost_idxs_[idx] + n_, 0, m_, 1);
   }
 
-  void update_structure();
-
-  // /**
-  //  * @brief Return the number of primal variables for this NLP
-  //  * @return Number of primal variables
-  //  */
-  // inline int getNumPrimalVariables() const {
-  //   return (m_ * N_ + n_simple_ * (N_ - num_complex_fe_) +
-  //           n_complex_ * num_complex_fe_);
-  // }
-
-  // /**
-  //  * @brief Return the number of slack variables for this NLP
-  //  * @return Number of slack variables
-  //  */
-  // inline int getNumSlackVariables() const { return (2 * n_simple_ * N_); }
-
-  // /**
-  //  * @brief Return the number of variables for this NLP
-  //  * @return Number of variables
-  //  */
-  // inline int getNumVariables() const {
-  //   return getNumPrimalVariables() + getNumSlackVariables();
-  // }
-
-  // /**
-  //  * @brief Return the number of constraints in this NLP
-  //  * @return Number of constraints
-  //  */
-  // inline int getNumConstraints() const {
-  //   return (g_simple_ * (N_ - num_complex_fe_) + g_complex_ *
-  //   num_complex_fe_) +
-  //          n_vars_slack_;
-  // }
-
   /**
    * @brief Return the first index of the constraint vector corresponding to the
    * given finite element
    * @param[in] idx Index of requested finite element
    * @return Index in constraint vector corresponding to the beginning of the
-   * requested FE
+   * requested fe
    */
-  inline int getPrimalConstraintFEIndex(int idx) const { return g_idxs_[idx]; }
+  inline int get_primal_constraint_idx(int idx) const {
+    return primal_constraint_idxs_[idx];
+  }
 
   /**
    * @brief Return the first index of the slack constraint vector corresponding
    * to the given finite element
    * @param[in] idx Index of requested finite element
    * @return Index in slack constraint vector corresponding to the beginning of
-   * the requested FE
+   * the requested fe
    */
-  inline int getSlackConstraintFEIndex(int idx) const {
-    return g_slack_idxs_[idx];
+  inline int get_slack_var_constraint_idx(int idx) const {
+    return slack_var_constraint_idxs_[idx];
+  }
+
+  /**
+   * @brief Return the first index of the slack constraint vector corresponding
+   * to the given finite element
+   * @param[in] idx Index of requested finite element
+   * @return Index in slack constraint vector corresponding to the beginning of
+   * the requested fe
+   */
+  inline int get_relaxed_constraint_idx(int idx) const {
+    return relaxed_constraint_idxs_[idx];
   }
 
   /**
@@ -486,36 +515,49 @@ class quadNLP : public TNLP {
    * to the given finite element
    * @param[in] idx Index of requested finite element
    * @return Index in decision variable vector corresponding to the beginning of
-   * the requested FE
+   * the requested fe
    */
-  inline int getPrimalFEIndex(int idx) const { return fe_idxs_[idx]; }
-
-  /**
-   * @brief Return the first index of the decision variable vector corresponding
-   * to the given finite element's control input
-   * @param[in] idx Index of requested finite element
-   * @return Index in decision variable vector corresponding to the beginning of
-   * the control input of the requested FE
-   */
-  inline int getPrimalControlFEIndex(int idx) const { return u_idxs_[idx]; }
+  inline int get_primal_idx(int idx) const { return fe_idxs_[idx]; }
 
   /**
    * @brief Return the first index of the decision variable vector corresponding
    * to the given finite element's state
    * @param[in] idx Index of requested finite element
    * @return Index in decision variable vector corresponding to the beginning of
-   * the state of the requested FE
+   * the state of the requested fe
    */
-  inline int getPrimalStateFEIndex(int idx) const { return x_idxs_[idx]; }
+  inline int get_primal_state_idx(int idx) const { return x_idxs_[idx]; }
+
+  /**
+   * @brief Return the first index of the decision variable vector corresponding
+   * to the given finite element's control input
+   * @param[in] idx Index of requested finite element
+   * @return Index in decision variable vector corresponding to the beginning of
+   * the control input of the requested fe
+   */
+  inline int get_primal_control_idx(int idx) const { return u_idxs_[idx]; }
 
   /**
    * @brief Return the first index of the decision variable vector corresponding
    * to the slack variable for the given finite element's state
    * @param[in] idx Index of requested finite element
    * @return Index in decision variable vector corresponding to the slack
-   * variable of the beginning of the state of the requested FE
+   * variable of the beginning of the state of the requested fe
    */
-  inline int getSlackStateFEIndex(int idx) const { return slack_idxs_[idx]; }
+  inline int get_slack_state_idx(int idx) const {
+    return slack_state_var_idxs_[idx];
+  }
+
+  /**
+   * @brief Return the first index of the decision variable vector corresponding
+   * to the slack variable for the given finite element's state
+   * @param[in] idx Index of requested finite element
+   * @return Index in decision variable vector corresponding to the slack
+   * variable of the beginning of the state of the requested fe
+   */
+  inline int get_slack_constraint_var_idx(int idx) const {
+    return slack_constraint_var_idxs_[idx];
+  }
 
   /**
    * @brief Load the casadi function pointers into map member vars

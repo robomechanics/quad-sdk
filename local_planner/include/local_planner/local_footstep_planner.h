@@ -273,10 +273,13 @@ class LocalFootstepPlanner {
 
   /**
    * @brief Search locally around foothold for optimal location
-   * @param[in] foot_position_prev Foothold to optimize around
+   * @param[in] foot_position Foothold to optimize around
+   * @param[in] foot_position_prev_solve Foothold in prior solve
    * @return Optimized foothold
    */
-  Eigen::Vector3d getNearestValidFoothold(const Eigen::Vector3d &foot_position);
+  Eigen::Vector3d getNearestValidFoothold(
+      const Eigen::Vector3d &foot_position,
+      const Eigen::Vector3d &foot_position_prev_solve);
 
   /**
    * @brief Compute minimum covering circle problem using Welzl's algorithm

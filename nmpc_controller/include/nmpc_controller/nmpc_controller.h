@@ -87,7 +87,7 @@ class NMPCController {
       Eigen::MatrixXd &tail_state_traj, Eigen::MatrixXd &tail_control_traj);
 
   /** Method to return the constraint residual for requested data */
-  Eigen::VectorXd evalLiftedTrajectoryConstraints();
+  Eigen::VectorXi evalLiftedTrajectoryConstraints();
 
  private:
   ros::NodeHandle nh_;
@@ -119,6 +119,9 @@ class NMPCController {
   std::string param_ns_;
 
   bool require_init_;
+
+  /// Adaptive complexity schedule
+  Eigen::VectorXi adaptive_complexity_schedule_;
 };
 
 #endif  // MPC_CONTROLLER_H

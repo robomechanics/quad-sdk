@@ -202,16 +202,23 @@ void quadNLP::loadCasadiFuncs() {
 
   // Resize containers
   nnz_mat_.resize(num_sys_id_, num_func_id_);
+  relaxed_nnz_mat_.resize(num_sys_id_, num_func_id_);
   nrow_mat_.resize(num_sys_id_, num_func_id_);
   ncol_mat_.resize(num_sys_id_, num_func_id_);
   iRow_mat_.resize(num_sys_id_);
   jCol_mat_.resize(num_sys_id_);
+  iRow_mat_relaxed_.resize(num_sys_id_);
+  jCol_mat_relaxed_.resize(num_sys_id_);
+  relaxed_idx_in_full_sparse_.resize(num_sys_id_);
 
   // Iterate through all functions and compute metadata
   for (int sys_id = 0; sys_id < num_sys_id_; sys_id++) {
     // Resize vector data
     iRow_mat_[sys_id].resize(num_func_id_);
     jCol_mat_[sys_id].resize(num_func_id_);
+    iRow_mat_relaxed_[sys_id].resize(num_func_id_);
+    jCol_mat_relaxed_[sys_id].resize(num_func_id_);
+    relaxed_idx_in_full_sparse_[sys_id].resize(num_func_id_);
 
     for (int func_id = 0; func_id < num_func_id_; func_id++) {
       // Extract data
@@ -228,16 +235,37 @@ void quadNLP::loadCasadiFuncs() {
       ncol_mat_(sys_id, func_id) = ncol;
       iRow_mat_[sys_id][func_id].resize(nnz);
       jCol_mat_[sys_id][func_id].resize(nnz);
+      iRow_mat_relaxed_[sys_id][func_id].resize(nnz);
+      jCol_mat_relaxed_[sys_id][func_id].resize(nnz);
+      relaxed_idx_in_full_sparse_[sys_id][func_id].resize(nnz);
 
       int idx = 0;
+      int idx_relaxed = 0;
       for (int i = 0; i < ncol; ++i) {
         for (int j = colind[i]; j < colind[i + 1]; ++j) {
           iRow_mat_[sys_id][func_id](idx) = row[j];
           jCol_mat_[sys_id][func_id](idx) = i;
 
+          if ((func_id == JAC) &&
+              (row[j] >= relaxed_primal_constraint_idxs_in_element_(0)) &&
+              (row[j] <=
+               relaxed_primal_constraint_idxs_in_element_[g_relaxed_ - 1])) {
+            iRow_mat_relaxed_[sys_id][func_id](idx_relaxed) =
+                row[j] - relaxed_primal_constraint_idxs_in_element_(0);
+            jCol_mat_relaxed_[sys_id][func_id](idx_relaxed) = i;
+            relaxed_idx_in_full_sparse_[sys_id][func_id](idx_relaxed) = idx;
+            idx_relaxed++;
+          }
+
           idx += 1;
         }
       }
+
+      iRow_mat_relaxed_[sys_id][func_id].conservativeResize(idx_relaxed);
+      jCol_mat_relaxed_[sys_id][func_id].conservativeResize(idx_relaxed);
+      relaxed_idx_in_full_sparse_[sys_id][func_id].conservativeResize(
+          idx_relaxed);
+      relaxed_nnz_mat_(sys_id, func_id) = idx_relaxed;
     }
   }
 }
@@ -318,6 +346,6 @@ void quadNLP::loadConstraintNames() {
   for (int i = 0; i < num_sys_id_; i++) {
     int num_constr = nrow_mat_(i, FUNC);
     constr_names_[i] = std::vector<std::string>(
-        constr_names.begin(), constr_names.begin() + num_constr - 1);
+        constr_names.begin(), constr_names.begin() + num_constr);
   }
 }

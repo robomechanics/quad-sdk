@@ -66,8 +66,6 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   // Setup rviz_interface parameters
   quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
   nh.param<double>("rviz_interface/update_rate", update_rate_, 10);
-  nh.param<int>("rviz_interface/orientation_subsample_num",
-                orientation_subsample_num_, 3);
   nh.param<std::vector<int> >("rviz_interface/colors/front_left",
                               front_left_color_, {0, 255, 0});
   nh.param<std::vector<int> >("rviz_interface/colors/back_left",
@@ -80,6 +78,11 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
                               {255, 0, 0});
   nh.param<std::vector<int> >("rviz_interface/colors/individual_grf",
                               individual_grf_color_, {255, 0, 0});
+
+  double period, dt;
+  quad_utils::loadROSParam(nh_, "local_footstep_planner/period", period);
+  quad_utils::loadROSParam(nh_, "local_planner/timestep", dt);
+  orientation_subsample_interval_ = int(period / dt);
 
   // Setup plan subs
   global_plan_sub_ = nh_.subscribe<quad_msgs::RobotPlan>(
@@ -211,8 +214,6 @@ void RVizInterface::robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg,
 
   // Loop through the BodyPlan message to get the state info
   int length = msg->states.size();
-  int orientation_subsample_interval =
-      round(length / orientation_subsample_num_);
   for (int i = 0; i < length; i++) {
     // Load in the pose data directly from the Odometry message
     geometry_msgs::PoseStamped pose_stamped;
@@ -245,7 +246,7 @@ void RVizInterface::robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg,
     body_plan_viz.points.push_back(msg->states[i].body.pose.position);
 
     // Add poses to the orientation message
-    if (i % orientation_subsample_interval == 0) {
+    if (i % orientation_subsample_interval_ == 0) {
       body_plan_ori_viz.poses.push_back(pose_stamped.pose);
     }
   }

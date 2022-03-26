@@ -47,7 +47,7 @@ TEST(NMPCTest, testUtils) {
 
   // // Check num vars when no complex elements
   // complexity_schedule.setZero();
-  // EXPECT_FALSE(nlp.apply_slack_to_complex_);
+  // EXPECT_FALSE(nlp.apply_slack_to_complex_states_);
   // nlp.update_complexity_schedule(complexity_schedule);
   // EXPECT_EQ(nlp.n_vars_, (n * 3 + m) * N + n);
   // int g = n + 16;
@@ -154,13 +154,13 @@ TEST(NMPCTest, testUtils) {
   // complexity_schedule.fill(0);
   // nlp.update_complexity_schedule(complexity_schedule);
   // for (int i = 0; i < N; i++) {
-  //   EXPECT_EQ(nlp.getPrimalFEIndex(i), i * (n + m));
+  //   EXPECT_EQ(nlp.get_primal_idx(i), i * (n + m));
   // }
 
   // // Check finite element indices when all complex elements
   // complexity_schedule.fill(1);
   // nlp.update_complexity_schedule(complexity_schedule);
   // for (int i = 0; i < N; i++) {
-  //   EXPECT_EQ(nlp.getPrimalFEIndex(i), i * (n_complex + m));
+  //   EXPECT_EQ(nlp.get_primal_idx(i), i * (n_complex + m));
   // }
 }

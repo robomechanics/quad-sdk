@@ -48,6 +48,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   quad_utils::loadROSParam(nh_, "robot_driver/stance_kd", stance_kd_);
   quad_utils::loadROSParam(nh_, "robot_driver/swing_kp", swing_kp_);
   quad_utils::loadROSParam(nh_, "robot_driver/swing_kd", swing_kd_);
+  quad_utils::loadROSParam(nh_, "robot_driver/swing_kp_cart", swing_kp_cart_);
+  quad_utils::loadROSParam(nh_, "robot_driver/swing_kd_cart", swing_kd_cart_);
   quad_utils::loadROSParam(nh_, "robot_driver/safety_kp", safety_kp_);
   quad_utils::loadROSParam(nh_, "robot_driver/safety_kd", safety_kd_);
   quad_utils::loadROSParam(nh_, "robot_driver/stand_joint_angles",
@@ -109,7 +111,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
                                               << ", returning nullptr");
     leg_controller_ = nullptr;
   }
-  leg_controller_->setGains(stance_kp_, stance_kd_, swing_kp_, swing_kd_);
+  leg_controller_->setGains(stance_kp_, stance_kd_, swing_kp_, swing_kd_,
+                            swing_kp_cart_, swing_kd_cart_);
 
   // Start sitting
   control_mode_ = SIT;
