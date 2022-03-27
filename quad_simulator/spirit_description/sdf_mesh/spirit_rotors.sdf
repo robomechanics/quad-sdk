@@ -133,8 +133,8 @@ SOFTWARE.
         <limit>
           <lower>-0.707</lower>
           <upper>0.707</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <effort>21</effort>
+          <velocity>37.7</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -200,10 +200,10 @@ SOFTWARE.
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-6.28319</lower>
-          <upper>6.28319</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <lower>-1.57</lower>
+          <upper>3.14</upper>
+          <effort>21</effort>
+          <velocity>37.7</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -328,10 +328,10 @@ SOFTWARE.
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>0</lower>
-          <upper>3.14159</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <lower>-6.28</lower>
+          <upper>6.28</upper>
+          <effort>32</effort>
+          <velocity>25.1</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -400,8 +400,8 @@ SOFTWARE.
         <limit>
           <lower>-0.707</lower>
           <upper>0.707</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <effort>21</effort>
+          <velocity>37.7</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -467,10 +467,10 @@ SOFTWARE.
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-6.28319</lower>
-          <upper>6.28319</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <lower>-3.14</lower>
+          <upper>1.57</upper>
+          <effort>21</effort>
+          <velocity>37.7</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -595,10 +595,10 @@ SOFTWARE.
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>0</lower>
-          <upper>3.14159</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <lower>-6.28</lower>
+          <upper>6.28</upper>
+          <effort>32</effort>
+          <velocity>25.1</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -668,8 +668,8 @@ SOFTWARE.
         <limit>
           <lower>-0.707</lower>
           <upper>0.707</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <effort>21</effort>
+          <velocity>37.7</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -735,10 +735,10 @@ SOFTWARE.
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-6.28319</lower>
-          <upper>6.28319</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <lower>-1.57</lower>
+          <upper>3.14</upper>
+          <effort>21</effort>
+          <velocity>37.7</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -863,10 +863,10 @@ SOFTWARE.
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>0</lower>
-          <upper>3.14159</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <lower>-6.28</lower>
+          <upper>6.28</upper>
+          <effort>32</effort>
+          <velocity>25.1</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -935,8 +935,8 @@ SOFTWARE.
         <limit>
           <lower>-0.707</lower>
           <upper>0.707</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <effort>21</effort>
+          <velocity>37.7</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -1002,10 +1002,10 @@ SOFTWARE.
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-6.28319</lower>
-          <upper>6.28319</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <lower>-3.14</lower>
+          <upper>1.57</upper>
+          <effort>21</effort>
+          <velocity>37.7</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -1130,10 +1130,10 @@ SOFTWARE.
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>0</lower>
-          <upper>3.14159</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <lower>-6.28</lower>
+          <upper>6.28</upper>
+          <effort>32</effort>
+          <velocity>25.1</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
