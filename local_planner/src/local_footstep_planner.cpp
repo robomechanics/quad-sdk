@@ -718,5 +718,11 @@ double LocalFootstepPlanner::computeSwingApex(
                    std::max(foot_position_prev.z(), foot_position_next.z()),
                hip_height - hip_clearance_);
 
+  // Update apex so that it's still higher than the ground
+  swing_apex =
+      std::max(swing_apex,
+               std::max(foot_position_prev.z(), foot_position_next.z()) -
+                   toe_radius);
+
   return swing_apex;
 }

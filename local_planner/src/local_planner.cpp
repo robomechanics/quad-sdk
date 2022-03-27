@@ -769,14 +769,15 @@ bool LocalPlanner::computeLocalPlan() {
   if (contact_sensing_msg_ != NULL) {
     for (size_t i = 0; i < 4; i++) {
       // If the leg is standing by the clock we can clear the early release flag
-      if (contact_schedule_.at(0).at(i)) {
+      if (contact_schedule_.at(0).at(i) && contact_schedule_.at(5).at(i)) {
         miss_recovery_.at(i) = false;
       }
 
       // If the clock assigns a swing but we just hit the ground, stand for a
       // while
-      if (!miss_recovery_.at(i) && !contact_sensing_msg_->data.at(i) &&
-          contact_sensing_record_.at(i) && !contact_schedule_.at(0).at(i)) {
+      if (!(contact_schedule_.at(0).at(i) && contact_schedule_.at(2).at(i)) &&
+          !miss_recovery_.at(i) && !contact_sensing_msg_->data.at(i) &&
+          contact_sensing_record_.at(i)) {
         miss_recovery_.at(i) = true;
       }
 
