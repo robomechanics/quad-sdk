@@ -115,6 +115,17 @@ grid_map_filters:
       output_layer: traversability
       expression: 0.5 * (1.0 - (slope / 0.3)) + 0.5 * (1.0 - (roughness / 0.4))
 
+    # Compute traversability as normalized weighted sum of slope and roughness.
+  - name: traversability_user_mask
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: traversability
+      expression: ( (0.5 - 0.5 * (x - 3.0) ./ (sqrt((x - 3.0).^2))) + 
+                    (0.5 + 0.5 * (x - 3.2) ./ (sqrt((x - 3.2).^2))) + 
+                    (0.5 - 0.5 * (y + 1.0) ./ (sqrt((y + 1.0).^2))) + 
+                    (0.5 + 0.5 * (y - 1.0) ./ (sqrt((y - 1.0).^2))))
+                  .* traversability
+
   # Set lower threshold on traversability.
   - name: traversability_lower_threshold
     type: gridMapFilters/ThresholdFilter
