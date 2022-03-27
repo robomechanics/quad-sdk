@@ -340,13 +340,6 @@ void LocalFootstepPlanner::computeFootPlan(
       swing_apex = computeSwingApex(
           j, body_plan_mid_air, foot_position_prev_nominal, foot_position_next);
 
-      // Update apex so that it's still higher than the ground
-      swing_apex = std::max(
-          swing_apex,
-          0.05 +
-              std::max(foot_position_prev_nominal.z(), foot_position_next.z()) -
-              toe_radius);
-
       // Update the memory, we borrow the past_footholds_msg since its velocity
       // is unused
       past_footholds_msg.feet[j].velocity.z = swing_apex;
