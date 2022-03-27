@@ -208,6 +208,8 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
     // Inputs bound
     x_l_matrix.block(i * (n_ + m_), 0, m_, 1) = u_min_;
     x_u_matrix.block(i * (n_ + m_), 0, m_, 1) = u_max_;
+
+    // Contact sequence
     if (known_leg_input_) {
       x_l_matrix.block(i * (n_ + m_) + leg_input_start_idx_, 0,
                        m_ - leg_input_start_idx_, 1) =
@@ -215,22 +217,23 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
       x_u_matrix.block(i * (n_ + m_) + leg_input_start_idx_, 0,
                        m_ - leg_input_start_idx_, 1) =
           leg_input_.block(0, i, m_ - leg_input_start_idx_, 1);
-    }
-
-    // Contact sequence
-    for (int j = 0; j < 4; ++j) {
-      x_l_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1) =
-          (x_l_matrix
-               .block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1)
-               .array() *
-           contact_sequence_(j, i))
-              .matrix();
-      x_u_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1) =
-          (x_u_matrix
-               .block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1)
-               .array() *
-           contact_sequence_(j, i))
-              .matrix();
+    } else {
+      for (int j = 0; j < 4; ++j) {
+        x_l_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3,
+                         1) =
+            (x_l_matrix
+                 .block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1)
+                 .array() *
+             contact_sequence_(j, i))
+                .matrix();
+        x_u_matrix.block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3,
+                         1) =
+            (x_u_matrix
+                 .block(i * (n_ + m_) + leg_input_start_idx_ + 3 * j, 0, 3, 1)
+                 .array() *
+             contact_sequence_(j, i))
+                .matrix();
+      }
     }
 
     // States bound

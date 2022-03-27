@@ -16,7 +16,7 @@ np.random.seed(0)
 
 init_pos = np.linspace(-vel*period/2, vel*period/2, sample, endpoint=False) + 6.0
 # init_pos = np.array([init_pos]*int(num/sample)).T.flatten()
-# init_pos = [init_pos[i] for i in [23, 9]]
+# init_pos = [init_pos[i] for i in [19, 10]]
 # print(init_pos)
 
 for w in world:
