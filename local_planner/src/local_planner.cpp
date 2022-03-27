@@ -545,7 +545,6 @@ void LocalPlanner::getStateAndTwistInput() {
 
   // Compute time diff for the filter
   double time_diff = (ros::Time::now() - last_call_time_).toSec();
-  local_footstep_planner_->time_diff_ = time_diff;
   last_call_time_ = ros::Time::now();
 
   // Estimate the ground height using flat assumption
@@ -559,16 +558,20 @@ void LocalPlanner::getStateAndTwistInput() {
                      0.0) +
         time_diff / 0.04 * ground_height_;
   }
+  local_footstep_planner_->ground_height_ = ground_height_;
 
   // Set initial ground height
   // Use estimated terrain
-  ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(
-      current_state_(0), current_state_(1));
+  // ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(
+  //     current_state_(0), current_state_(1));
+
   // Use average of the estimated terrain
   // ref_ground_height_(0) =
   // local_footstep_planner_->getTerrainHeight(current_state_.segment(0, 3),
-  // current_state_.segment(3, 3)); Use flat terrain assumption
-  // ref_ground_height_(0) = ground_height_;
+  // current_state_.segment(3, 3));
+
+  // Use flat terrain assumption
+  ref_ground_height_(0) = ground_height_;
 
   // If it's not initialized, set to current positions
   if (stand_pose_(0) == std::numeric_limits<double>::max() &&
@@ -649,14 +652,20 @@ void LocalPlanner::getStateAndTwistInput() {
     // We don't have the accurate terrain map
     // ref_ground_height_(i) =
     // local_footstep_planner_->getTerrainHeight(ref_body_plan_(i, 0),
-    // ref_body_plan_(i, 1)); Use flat terrain assumption ref_ground_height_(i)
-    // = ground_height_; Use average of the estimated terrain
+    // ref_body_plan_(i, 1));
+
+    // Use flat terrain assumption
+    ref_ground_height_(i) = ground_height_;
+
+    // Use average of the estimated terrain
     // ref_ground_height_(i) =
     // local_footstep_planner_->getTerrainHeight(ref_body_plan_.row(i).segment(0,
-    // 3), ref_body_plan_.row(i).segment(3, 3)); Use estimated terrain
-    ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(
-        ref_body_plan_(i, 0), ref_body_plan_(i, 1));
-    ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);
+    // 3), ref_body_plan_.row(i).segment(3, 3));
+
+    // Use estimated terrain
+    // ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(
+    //     ref_body_plan_(i, 0), ref_body_plan_(i, 1));
+    // ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);
 
     // Only adaptive pitch
     // ref_body_plan_(i, 4) =
@@ -718,112 +727,117 @@ bool LocalPlanner::computeLocalPlan() {
 
   // Joint limit checking - now we only care about abad - probably only active
   // when missing contact
-  std::vector<std::vector<bool>> contact_schedule_joint_limit =
-      contact_schedule_;
+  // std::vector<std::vector<bool>> contact_schedule_joint_limit =
+  //     contact_schedule_;
 
-  for (size_t i = 0; i < 4; i++) {
-    // If the leg is standing now by the clock we can clear the early release
-    // flag
-    if (contact_schedule_.at(0).at(i) && contact_schedule_.at(5).at(i)) {
-      early_release_.at(i) = false;
-    }
+  // for (size_t i = 0; i < 4; i++) {
+  //   // If the leg is standing now by the clock we can clear the early release
+  //   // flag
+  //   if (contact_schedule_.at(0).at(i) && contact_schedule_.at(5).at(i)) {
+  //     early_release_.at(i) = false;
+  //   }
 
-    // If the leg is in contact and near the joint limit, release it
-    if (!early_release_.at(i) && contact_sensing_msg_ != NULL &&
-        (contact_sensing_msg_->data.at(0) || contact_sensing_msg_->data.at(1) ||
-         contact_sensing_msg_->data.at(2) ||
-         contact_sensing_msg_->data.at(3)) &&
-        contact_schedule_.at(0).at(i) &&
-        robot_state_msg_->joints.position.at(3 * i) < abad_joint_limit_) {
-      // Record a early release flag
-      early_release_.at(i) = true;
-      early_release_idx_.at(i) = current_plan_index_;
+  //   // If the leg is in contact and near the joint limit, release it
+  //   if (!early_release_.at(i) && contact_sensing_msg_ != NULL &&
+  //       (contact_sensing_msg_->data.at(0) || contact_sensing_msg_->data.at(1)
+  //       ||
+  //        contact_sensing_msg_->data.at(2) ||
+  //        contact_sensing_msg_->data.at(3)) &&
+  //       contact_schedule_.at(0).at(i) &&
+  //       robot_state_msg_->joints.position.at(3 * i) < abad_joint_limit_) {
+  //     // Record a early release flag
+  //     early_release_.at(i) = true;
+  //     early_release_idx_.at(i) = current_plan_index_;
 
-      // Record foot position for swing computation
-      past_footholds_msg_.feet[i] = robot_state_msg_->feet.feet.at(i);
-      past_footholds_msg_.feet[i].traj_index = current_plan_index_;
-    }
+  //     // Record foot position for swing computation
+  //     past_footholds_msg_.feet[i] = robot_state_msg_->feet.feet.at(i);
+  //     past_footholds_msg_.feet[i].traj_index = current_plan_index_;
+  //   }
 
-    // Switch to swing
-    if (early_release_.at(i)) {
-      for (size_t j = 0; j < N_; j++) {
-        if (current_plan_index_ + j < early_release_idx_.at(i) + 6) {
-          contact_schedule_joint_limit.at(j).at(i) = false;
-        } else {
-          contact_schedule_joint_limit.at(j).at(i) = true;
-        }
+  //   // Switch to swing
+  //   if (early_release_.at(i)) {
+  //     for (size_t j = 0; j < N_; j++) {
+  //       if (current_plan_index_ + j < early_release_idx_.at(i) + 6) {
+  //         contact_schedule_joint_limit.at(j).at(i) = false;
+  //       } else {
+  //         contact_schedule_joint_limit.at(j).at(i) = true;
+  //       }
 
-        if (!contact_schedule_.at(j).at(i) &&
-            contact_schedule_.at(j + 1).at(i)) {
-          break;
-        }
-      }
-    }
-  }
+  //       if (!contact_schedule_.at(j).at(i) &&
+  //           contact_schedule_.at(j + 1).at(i)) {
+  //         break;
+  //       }
+  //     }
+  //   }
+  // }
 
-  contact_schedule_ = contact_schedule_joint_limit;
+  // contact_schedule_ = contact_schedule_joint_limit;
 
-  // Contact sensing recover - stand for a while when hit the ground
-  std::vector<std::vector<bool>> contact_schedule_recover = contact_schedule_;
+  // // Contact sensing recover - stand for a while when hit the ground
+  // std::vector<std::vector<bool>> contact_schedule_recover =
+  // contact_schedule_;
 
-  if (contact_sensing_msg_ != NULL) {
-    for (size_t i = 0; i < 4; i++) {
-      // If the leg is standing by the clock we can clear the early release flag
-      if (contact_schedule_.at(0).at(i) && contact_schedule_.at(5).at(i)) {
-        miss_recovery_.at(i) = false;
-      }
+  // if (contact_sensing_msg_ != NULL) {
+  //   for (size_t i = 0; i < 4; i++) {
+  //     // If the leg is standing by the clock we can clear the early release
+  //     flag if (contact_schedule_.at(0).at(i) &&
+  //     contact_schedule_.at(5).at(i)) {
+  //       miss_recovery_.at(i) = false;
+  //     }
 
-      // If the clock assigns a swing but we just hit the ground, stand for a
-      // while
-      if (!(contact_schedule_.at(0).at(i) && contact_schedule_.at(2).at(i)) &&
-          !miss_recovery_.at(i) && !contact_sensing_msg_->data.at(i) &&
-          contact_sensing_record_.at(i)) {
-        miss_recovery_.at(i) = true;
-      }
+  //     // If the clock assigns a swing but we just hit the ground, stand for a
+  //     // while
+  //     if (!(contact_schedule_.at(0).at(i) && contact_schedule_.at(2).at(i))
+  //     &&
+  //         !miss_recovery_.at(i) && !contact_sensing_msg_->data.at(i) &&
+  //         contact_sensing_record_.at(i)) {
+  //       miss_recovery_.at(i) = true;
+  //     }
 
-      if (miss_recovery_.at(i)) {
-        for (size_t j = 0; j < N_; j++) {
-          if (!contact_schedule_.at(j).at(i)) {
-            // Assign stand
-            contact_schedule_recover.at(j).at(i) = true;
+  //     if (miss_recovery_.at(i)) {
+  //       for (size_t j = 0; j < N_; j++) {
+  //         if (!contact_schedule_.at(j).at(i)) {
+  //           // Assign stand
+  //           contact_schedule_recover.at(j).at(i) = true;
 
-            // Only modify a period
-            if (contact_schedule_.at(j + 1).at(i)) {
-              break;
-            }
-          }
-        }
-      }
+  //           // Only modify a period
+  //           if (contact_schedule_.at(j + 1).at(i)) {
+  //             break;
+  //           }
+  //         }
+  //       }
+  //     }
 
-      // Record the contact sensing
-      contact_sensing_record_.at(i) = contact_sensing_msg_->data.at(i);
-    }
-  }
+  //     // Record the contact sensing
+  //     contact_sensing_record_.at(i) = contact_sensing_msg_->data.at(i);
+  //   }
+  // }
 
-  contact_schedule_ = contact_schedule_recover;
+  // contact_schedule_ = contact_schedule_recover;
 
   // Start from the nominal contact schedule
   adaptive_contact_schedule_ = contact_schedule_;
 
-  // Contact sensing
-  if (contact_sensing_msg_ != NULL) {
-    for (size_t i = 0; i < 4; i++) {
-      if (contact_sensing_msg_->data.at(i) && contact_schedule_.at(0).at(i)) {
-        roll_desired_ = 0;
-        for (size_t j = 0; j < N_; j++) {
-          if (contact_schedule_.at(j).at(i)) {
-            // Assign miss
-            adaptive_contact_schedule_.at(j).at(i) = false;
-          }
+  // // Contact sensing
+  // if (contact_sensing_msg_ != NULL) {
+  //   for (size_t i = 0; i < 4; i++) {
+  //     if (contact_sensing_msg_->data.at(i) && contact_schedule_.at(0).at(i))
+  //     {
+  //       roll_desired_ = 0;
+  //       for (size_t j = 0; j < N_; j++) {
+  //         if (contact_schedule_.at(j).at(i)) {
+  //           // Assign miss
+  //           adaptive_contact_schedule_.at(j).at(i) = false;
+  //         }
 
-          // Only modify a period
-          if (!contact_schedule_.at(j + 1).at(i)) {
-            break;
-          }
-        }
-      }
-    }
-  }
+  //         // Only modify a period
+  //         if (!contact_schedule_.at(j + 1).at(i)) {
+  //           break;
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   // Compute the new footholds if we have a valid existing plan (i.e. if
   // grf_plan is filled)

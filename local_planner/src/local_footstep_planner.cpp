@@ -223,14 +223,14 @@ void LocalFootstepPlanner::computeFootPlan(
 
         // Toe has 20cm radius so we need to shift the foot height from terrain
         // Use flat terrain assumption
-        // double ground_height_midstance = ground_height_;
+        double ground_height_midstance = ground_height_;
 
         // Use estimated terrain
-        double ground_height_midstance = terrain_grid_.atPosition(
-            "z_smooth",
-            terrain_grid_.getClosestPositionInMap(
-                hip_position_midstance.head(2)),
-            grid_map::InterpolationMethods::INTER_LINEAR);
+        // double ground_height_midstance = terrain_grid_.atPosition(
+        //     "z_smooth",
+        //     terrain_grid_.getClosestPositionInMap(
+        //         hip_position_midstance.head(2)),
+        //     grid_map::InterpolationMethods::INTER_LINEAR);
 
         // Get touchdown information for body state
         body_vel_touchdown = body_plan.block<1, 3>(i, 6);
@@ -272,15 +272,15 @@ void LocalFootstepPlanner::computeFootPlan(
 
         // Toe has 20cm radius so we need to shift the foot height from terrain
         // Use flat terrain assumption
-        // foot_position_nominal.z() = ground_height_;
+        foot_position_nominal.z() = ground_height_ + toe_radius;
 
         // Use estimated terrain
-        foot_position_nominal.z() =
-            terrain_grid_.atPosition(
-                "z_smooth",
-                terrain_grid_.getClosestPositionInMap(foot_position_grid_map),
-                grid_map::InterpolationMethods::INTER_LINEAR) +
-            toe_radius;
+        // foot_position_nominal.z() =
+        //     terrain_grid_.atPosition(
+        //         "z_smooth",
+        //         terrain_grid_.getClosestPositionInMap(foot_position_grid_map),
+        //         grid_map::InterpolationMethods::INTER_LINEAR) +
+        //     toe_radius;
 
         // Optimize the foothold location to get the final position
         // foot_position = getNearestValidFoothold(foot_position_nominal);
@@ -400,11 +400,15 @@ void LocalFootstepPlanner::computeFootPlan(
               foot_position_next_grid_map = foot_position_prev.head(2);
               foot_position_next = foot_position_prev.head(2);
             }
-            foot_position_next.z() =
-                terrain_grid_.atPosition(
-                    "z_smooth", foot_position_next_grid_map,
-                    grid_map::InterpolationMethods::INTER_LINEAR) +
-                toe_radius;
+            // Use flat terrain assumption
+            foot_position_next.z() = ground_height_ + toe_radius;
+
+            // Use estimated terrain
+            // foot_position_next.z() =
+            //     terrain_grid_.atPosition(
+            //         "z_smooth", foot_position_next_grid_map,
+            //         grid_map::InterpolationMethods::INTER_LINEAR) +
+            //     toe_radius;
           } else {
             foot_position_next = getFootData(foot_positions, i_touchdown, j);
             swing_duration = i_touchdown - i_liftoff;

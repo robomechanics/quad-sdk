@@ -114,79 +114,79 @@ bool InverseDynamicsController::computeLegCommandArray(
     // Start from nominal contact schedule
     std::vector<int> adaptive_contact_mode = contact_mode;
 
-    for (size_t i = 0; i < num_feet_; i++) {
-      // Swing or contact to miss
-      if (contact_mode.at(i) && !last_contact_sensing_msg_.data.at(i) &&
-          (current_foot_positions(3 * i + 2) - body_state(2)) < -0.295) {
-        // ROS_WARN_STREAM("Leg controller: swing or contact to miss leg: " <<
-        // i);
+    // for (size_t i = 0; i < num_feet_; i++) {
+    //   // Swing or contact to miss
+    //   if (contact_mode.at(i) && !last_contact_sensing_msg_.data.at(i) &&
+    //       (current_foot_positions(3 * i + 2) - body_state(2)) < -0.295) {
+    //     // ROS_WARN_STREAM("Leg controller: swing or contact to miss leg: " <<
+    //     // i);
 
-        last_contact_sensing_msg_.data.at(i) = true;
+    //     last_contact_sensing_msg_.data.at(i) = true;
 
-        adaptive_contact_mode.at(i) = false;
-        grf_array.segment(3 * i, 3) << 0, 0, 0;
-        get_new_plan_after_recovering_.at(i) = false;
-      }
+    //     adaptive_contact_mode.at(i) = false;
+    //     grf_array.segment(3 * i, 3) << 0, 0, 0;
+    //     get_new_plan_after_recovering_.at(i) = false;
+    //   }
 
-      // Miss to contact or swing
-      if (last_contact_sensing_msg_.data.at(i) &&
-          last_grf_sensor_msg_->contact_states.at(i) &&
-          last_grf_sensor_msg_->vectors.at(i).z >= 5) {
-        // ROS_WARN_STREAM("Leg controller: miss to contact or swing leg: " <<
-        // i);
+    //   // Miss to contact or swing
+    //   if (last_contact_sensing_msg_.data.at(i) &&
+    //       last_grf_sensor_msg_->contact_states.at(i) &&
+    //       last_grf_sensor_msg_->vectors.at(i).z >= 5) {
+    //     // ROS_WARN_STREAM("Leg controller: miss to contact or swing leg: " <<
+    //     // i);
 
-        last_contact_sensing_msg_.data.at(i) = false;
-      }
+    //     last_contact_sensing_msg_.data.at(i) = false;
+    //   }
 
-      // Keep miss
-      if (last_contact_sensing_msg_.data.at(i) && contact_mode.at(i)) {
-        adaptive_contact_mode.at(i) = false;
-        grf_array.segment(3 * i, 3) << 0, 0, 0;
-        get_new_plan_after_recovering_.at(i) = false;
-      }
+    //   // Keep miss
+    //   if (last_contact_sensing_msg_.data.at(i) && contact_mode.at(i)) {
+    //     adaptive_contact_mode.at(i) = false;
+    //     grf_array.segment(3 * i, 3) << 0, 0, 0;
+    //     get_new_plan_after_recovering_.at(i) = false;
+    //   }
 
-      // Not yet receive new plan after recovering
-      if (!get_new_plan_after_recovering_.at(i)) {
-        adaptive_contact_mode.at(i) = false;
-        grf_array.segment(3 * i, 3) << 0, 0, 0;
-      }
-    }
+    //   // Not yet receive new plan after recovering
+    //   if (!get_new_plan_after_recovering_.at(i)) {
+    //     adaptive_contact_mode.at(i) = false;
+    //     grf_array.segment(3 * i, 3) << 0, 0, 0;
+    //   }
+    // }
 
     // Compute swing hold position
     Eigen::VectorXd refined_foot_positions = ref_foot_positions;
-    for (size_t i = 0; i < 4; i++) {
-      if (last_contact_sensing_msg_.data.at(i)) {
-        Eigen::Vector3d hip_pos, nominal_foot_shift;
-        quadKD_->worldToNominalHipFKWorldFrame(
-            i, body_state.segment(0, 3), body_state.segment(3, 3), hip_pos);
-        nominal_foot_shift << 0, 0, -0.35;
+    // for (size_t i = 0; i < 4; i++) {
+    //   if (last_contact_sensing_msg_.data.at(i)) {
+    //     Eigen::Vector3d hip_pos, nominal_foot_shift;
+    //     quadKD_->worldToNominalHipFKWorldFrame(
+    //         i, body_state.segment(0, 3), body_state.segment(3, 3), hip_pos);
+    //     nominal_foot_shift << 0, 0, -0.35;
 
-        Eigen::Matrix3d rotation_matrix, body_rotation_matrix;
-        double theta = 0.707;
-        double yaw = body_state(5);
-        body_rotation_matrix << cos(yaw), -sin(yaw), 0, sin(yaw), cos(yaw), 0,
-            0, 0, 1;
-        body_rotation_matrix = body_rotation_matrix.transpose();
-        rotation_matrix << 1, 0, 0, 0, cos(theta), -sin(theta), 0, sin(theta),
-            cos(theta);
-        rotation_matrix = rotation_matrix.transpose();
+    //     Eigen::Matrix3d rotation_matrix, body_rotation_matrix;
+    //     double theta = 0.707;
+    //     double yaw = body_state(5);
+    //     body_rotation_matrix << cos(yaw), -sin(yaw), 0, sin(yaw), cos(yaw), 0,
+    //         0, 0, 1;
+    //     body_rotation_matrix = body_rotation_matrix.transpose();
+    //     rotation_matrix << 1, 0, 0, 0, cos(theta), -sin(theta), 0, sin(theta),
+    //         cos(theta);
+    //     rotation_matrix = rotation_matrix.transpose();
 
-        refined_foot_positions.segment(3 * i, 3) =
-            (body_rotation_matrix * rotation_matrix * nominal_foot_shift +
-             hip_pos);
-      }
-    }
+    //     refined_foot_positions.segment(3 * i, 3) =
+    //         (body_rotation_matrix * rotation_matrix * nominal_foot_shift +
+    //          hip_pos);
+    //   }
+    // }
 
     // Compute foot state
     quad_msgs::RobotState refined_state_msg;
     quad_msgs::MultiFootState refined_foot_msg = ref_state_msg.feet;
-    for (size_t i = 0; i < 4; i++) {
-      if (last_contact_sensing_msg_.data.at(i)) {
-        quad_utils::eigenToFootStateMsg(
-            refined_foot_positions.segment(3 * i, 3), Eigen::Vector3d::Zero(),
-            Eigen::Vector3d::Zero(), refined_foot_msg.feet[i]);
-      }
-    }
+    // for (size_t i = 0; i < 4; i++) {
+    //   if (last_contact_sensing_msg_.data.at(i)) {
+    //     quad_utils::eigenToFootStateMsg(
+    //         refined_foot_positions.segment(3 * i, 3), Eigen::Vector3d::Zero(),
+    //         Eigen::Vector3d::Zero(), refined_foot_msg.feet[i]);
+    //   }
+    // }
     refined_state_msg.body = robot_state_msg.body;
     refined_state_msg.feet = refined_foot_msg;
     quad_utils::ikRobotState(*quadKD_, refined_state_msg);
@@ -203,10 +203,10 @@ bool InverseDynamicsController::computeLegCommandArray(
             refined_state_msg.joints.position.at(3 * i + j);
         ref_state_msg.joints.velocity.at(3 * i + j) =
             refined_state_msg.joints.velocity.at(3 * i + j);
-        if (last_contact_sensing_msg_.data.at(i)) {
-          ref_state_msg.joints.velocity.at(3 * i + j) = 0;
-          tau_array(3 * i + j) = 0;
-        }
+        // if (last_contact_sensing_msg_.data.at(i)) {
+        //   ref_state_msg.joints.velocity.at(3 * i + j) = 0;
+        //   tau_array(3 * i + j) = 0;
+        // }
       }
     }
 
@@ -226,28 +226,28 @@ bool InverseDynamicsController::computeLegCommandArray(
             .torque_ff = tau_array(joint_idx);
 
         if (contact_mode.at(i)) {
-          if (adaptive_contact_mode.at(i)) {
-            if (last_grf_sensor_msg_->contact_states.at(i) &&
-                last_grf_sensor_msg_->vectors.at(i).z >= 5) {
+          // if (adaptive_contact_mode.at(i)) {
+          //   if (last_grf_sensor_msg_->contact_states.at(i) &&
+          //       last_grf_sensor_msg_->vectors.at(i).z >= 5) {
               // It's actually in contact
               leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
                   stance_kp_.at(j);
               leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
                   stance_kd_.at(j);
-            } else {
-              // It's extending
-              leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
-                  extend_kp_.at(j);
-              leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
-                  extend_kd_.at(j);
-            }
-          } else {
-            // It's retracting
-            leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
-                retraction_kp_.at(j);
-            leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
-                retraction_kd_.at(j);
-          }
+          //   } else {
+          //     // It's extending
+          //     leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
+          //         extend_kp_.at(j);
+          //     leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
+          //         extend_kd_.at(j);
+          //   }
+          // } else {
+          //   // It's retracting
+          //   leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
+          //       retraction_kp_.at(j);
+          //   leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
+          //       retraction_kd_.at(j);
+          // }
         } else {
           // It's swinging
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =

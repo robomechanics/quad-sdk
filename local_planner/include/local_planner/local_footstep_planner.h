@@ -30,8 +30,8 @@
 */
 class LocalFootstepPlanner {
  public:
-  // Time difference between two calls
-  double time_diff_;
+  /// Estimated ground height
+  double ground_height_;
 
   /**
    * @brief Constructor for LocalFootstepPlanner Class
@@ -501,9 +501,6 @@ class LocalFootstepPlanner {
 
   /// Toe radius
   double toe_radius = 0.02;
-
-  /// Estimated ground height
-  double ground_height_;
 };
 
 #endif  // LOCAL_FOOTSTEP_PLANNER_H
