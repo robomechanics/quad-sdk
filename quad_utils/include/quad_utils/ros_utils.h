@@ -399,6 +399,39 @@ void Eigen3ToPointMsg(const Eigen::Vector3d &eigen_vec,
  */
 void pointMsgToEigen(const geometry_msgs::Point &vec,
                      Eigen::Vector3d &eigen_vec);
+
+template <typename T>
+void contactScheduleToEigen(
+    const std::vector<std::vector<bool>> &contact_schedule,
+    T &contact_schedule_eigen) {
+  contact_schedule_eigen =
+      T::Zero(contact_schedule.front().size(), contact_schedule.size());
+  for (size_t i = 0; i < contact_schedule.size(); i++) {
+    for (size_t j = 0; j < contact_schedule.front().size(); j++) {
+      if (contact_schedule.at(i).at(j)) {
+        contact_schedule_eigen(j, i) = 1;
+      } else {
+        contact_schedule_eigen(j, i) = 0;
+      }
+    }
+  }
+};
+
+template <typename T>
+void eigenToContactSchedule(const T &contact_schedule_eigen,
+                            std::vector<std::vector<bool>> &contact_schedule) {
+  contact_schedule.resize(contact_schedule_eigen.cols());
+  for (size_t i = 0; i < contact_schedule.size(); i++) {
+    contact_schedule.at(i).resize(contact_schedule_eigen.rows());
+    for (size_t j = 0; j < contact_schedule.front().size(); j++) {
+      if (contact_schedule_eigen(j, i) >= 0.5) {
+        contact_schedule.at(i).at(j) = true;
+      } else {
+        contact_schedule.at(i).at(j) = false;
+      }
+    }
+  }
+};
 }  // namespace quad_utils
 
 #endif
