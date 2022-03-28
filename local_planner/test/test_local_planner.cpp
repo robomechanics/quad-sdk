@@ -90,13 +90,13 @@ TEST(LocalFootStepPlanner, baseCase) {
     past_footholds_msg.feet[i].traj_index = past_footholds_msg.traj_index;
   }
 
-  grid_map::GridMap map({"z", "traversability"});
+  grid_map::GridMap map({"z_inpainted", "traversability"});
   map.setGeometry(grid_map::Length(10, 10), 0.01);
 
   for (grid_map::GridMapIterator it(map); !it.isPastEnd(); ++it) {
     grid_map::Position position;
     map.getPosition(*it, position);
-    map.at("z", *it) = 0;
+    map.at("z_inpainted", *it) = 0;
     map.at("traversability", *it) = 1;
   }
 
