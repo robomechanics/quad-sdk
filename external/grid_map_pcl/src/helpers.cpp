@@ -7,21 +7,21 @@
  */
 
 #include "grid_map_pcl/helpers.hpp"
-#include "grid_map_core/GridMap.hpp"
-#include "grid_map_pcl/GridMapPclLoader.hpp"
-#include "grid_map_ros/GridMapRosConverter.hpp"
-
-#include <cstdlib>
-#include <memory>
 
 #include <pcl/common/common.h>
 #include <pcl/common/transforms.h>
 #include <pcl/conversions.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
-
 #include <ros/console.h>
 #include <ros/package.h>
+
+#include <cstdlib>
+#include <memory>
+
+#include "grid_map_core/GridMap.hpp"
+#include "grid_map_pcl/GridMapPclLoader.hpp"
+#include "grid_map_ros/GridMapRosConverter.hpp"
 
 namespace grid_map {
 namespace grid_map_pcl {
@@ -129,20 +129,20 @@ Eigen::Affine3f getRigidBodyTransform(const Eigen::Vector3d &translation,
 Eigen::Matrix3f getRotationMatrix(double angle, XYZ axis) {
   Eigen::Matrix3f rotationMatrix = Eigen::Matrix3f::Identity();
   switch (axis) {
-  case XYZ::X: {
-    rotationMatrix = Eigen::AngleAxisf(angle, Eigen::Vector3f::UnitX());
-    break;
-  }
-  case XYZ::Y: {
-    rotationMatrix = Eigen::AngleAxisf(angle, Eigen::Vector3f::UnitY());
-    break;
-  }
-  case XYZ::Z: {
-    rotationMatrix = Eigen::AngleAxisf(angle, Eigen::Vector3f::UnitZ());
-    break;
-  }
-  default:
-    ROS_ERROR("Unknown axis while trying to rotate the pointcloud");
+    case XYZ::X: {
+      rotationMatrix = Eigen::AngleAxisf(angle, Eigen::Vector3f::UnitX());
+      break;
+    }
+    case XYZ::Y: {
+      rotationMatrix = Eigen::AngleAxisf(angle, Eigen::Vector3f::UnitY());
+      break;
+    }
+    case XYZ::Z: {
+      rotationMatrix = Eigen::AngleAxisf(angle, Eigen::Vector3f::UnitZ());
+      break;
+    }
+    default:
+      ROS_ERROR("Unknown axis while trying to rotate the pointcloud");
   }
   return rotationMatrix;
 }
