@@ -201,8 +201,8 @@ private:
   /// in callbacks
   double update_rate_;
 
-  /// Number for showing orientation of plan
-  int orientation_subsample_num_;
+  /// Interval for showing orientation of plan
+  int orientation_subsample_interval_;
 
   /// Handle for the map frame
   std::string map_frame_;

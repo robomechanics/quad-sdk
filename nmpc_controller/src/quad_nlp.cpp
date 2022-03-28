@@ -12,7 +12,7 @@ using namespace Ipopt;
 // Class constructor
 quadNLP::quadNLP(int type, int N, int n, int m, double dt, double mu,
                  double panic_weights, Eigen::MatrixXd Q, Eigen::MatrixXd R,
-                 Eigen::MatrixXd Q_factor, Eigen::MatrixXd R_factor,
+                 double Q_temporal_factor, double R_temporal_factor,
                  Eigen::MatrixXd x_min, Eigen::MatrixXd x_max,
                  Eigen::MatrixXd u_min, Eigen::MatrixXd u_max)
 // N: prediction steps
@@ -87,8 +87,8 @@ quadNLP::quadNLP(int type, int N, int n, int m, double dt, double mu,
 
   Q_ = Q;
   R_ = R;
-  Q_factor_ = Q_factor;
-  R_factor_ = R_factor;
+  Q_temporal_factor_ = Q_temporal_factor;
+  R_temporal_factor_ = R_temporal_factor;
   panic_weights_ = panic_weights;
 
   // feet location initialized by nominal position
@@ -309,8 +309,8 @@ bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
 
     xk = (xk.array() - x_reference_.block(0, i, n_, 1).array()).matrix();
 
-    Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
-    Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
+    Eigen::MatrixXd Q_i = Q_ * std::pow(Q_temporal_factor_, i);
+    Eigen::MatrixXd R_i = R_ * std::pow(R_temporal_factor_, i);
 
     // Scale the cost by time duration
     if (i == 0) {
@@ -355,8 +355,8 @@ bool quadNLP::eval_grad_f(Index n, const Number *x, bool new_x,
 
     xk = (xk.array() - x_reference_.block(0, i, n_, 1).array()).matrix();
 
-    Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
-    Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
+    Eigen::MatrixXd Q_i = Q_ * std::pow(Q_temporal_factor_, i);
+    Eigen::MatrixXd R_i = R_ * std::pow(R_temporal_factor_, i);
 
     // Scale the cost by time duration
     if (i == 0) {
@@ -720,8 +720,8 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
       eval_hess_g_release_(mem);
       eval_hess_g_decref_();
 
-      Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
-      Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
+      Eigen::MatrixXd Q_i = Q_ * std::pow(Q_temporal_factor_, i);
+      Eigen::MatrixXd R_i = R_ * std::pow(R_temporal_factor_, i);
 
       // Scale the cost by time duration
       if (i == 0) {

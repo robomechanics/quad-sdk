@@ -40,11 +40,11 @@ TEST(LocalFootStepPlanner, baseCase) {
       ground_clearance, hip_clearance, standing_error_threshold, grf_weight,
       quadKD, foothold_search_radius, foothold_obj_threshold, obj_fun_layer);
 
-  Eigen::MatrixXd body_plan(N + 1, 12);
+  Eigen::MatrixXd body_plan(N, 12);
   body_plan.fill(0);
   body_plan.col(2).fill(0.3);
 
-  Eigen::MatrixXd ref_body_plan(N + 1, 12);
+  Eigen::MatrixXd ref_body_plan(N, 12);
   ref_body_plan.fill(0);
   ref_body_plan.col(2).fill(0.3);
 
@@ -59,7 +59,7 @@ TEST(LocalFootStepPlanner, baseCase) {
     }
   }
 
-  Eigen::MatrixXd grf_plan(N, 12);
+  Eigen::MatrixXd grf_plan(N - 1, 12);
   grf_plan.fill(0);
 
   Eigen::MatrixXd foot_positions_world(N, 12);

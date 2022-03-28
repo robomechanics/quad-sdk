@@ -9,11 +9,11 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <IpIpoptData.hpp>
 #include <numeric>
 #include <vector>
 
 #include "IpTNLP.hpp"
-#include <IpIpoptData.hpp>
 #include "nmpc_controller/gen/eval_g_leg.h"
 #include "nmpc_controller/gen/eval_g_tail.h"
 #include "nmpc_controller/gen/eval_hess_g_leg.h"
@@ -41,7 +41,7 @@ class quadNLP : public TNLP {
   Eigen::MatrixXd Q_, R_;
 
   // Scale factor for Q and R
-  Eigen::MatrixXd Q_factor_, R_factor_;
+  double Q_temporal_factor_, R_temporal_factor_;
 
   // Feet location from feet to body COM in world frame
   Eigen::MatrixXd feet_location_;
@@ -130,7 +130,7 @@ class quadNLP : public TNLP {
   /** Default constructor */
   quadNLP(int type, int N, int n, int m, double dt, double mu,
           double panic_weights, Eigen::MatrixXd Q, Eigen::MatrixXd R,
-          Eigen::MatrixXd Q_factor, Eigen::MatrixXd R_factor,
+          double Q_temporal_factor, double R_temporal_factor,
           Eigen::MatrixXd x_min, Eigen::MatrixXd x_max, Eigen::MatrixXd u_min,
           Eigen::MatrixXd u_max);
 
