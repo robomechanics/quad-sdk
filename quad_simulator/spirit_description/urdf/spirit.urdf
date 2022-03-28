@@ -23,6 +23,9 @@
   <material name="red">
     <color rgba="0.8 0.0 0.2 1.0"/>
   </material>
+  <material name="scots-rose">
+    <color rgba="0.937 0.2 0.251 1.0"/>
+  </material>
   <!-- Body -->
   <link name="body">
     <visual>
@@ -224,14 +227,14 @@
       <surface>
         <friction>
           <ode>
-            <mu>100000</mu>
-            <mu2>100000</mu2>
+            <mu>0.2</mu>
+            <mu2>0.2</mu2>
           </ode>
         </friction>
         <contact>
           <ode>
-            <kp>30000.0</kp>
-            <kd>1000.0</kd>
+            <kp>1000000.0</kp>
+            <kd>1.0</kd>
           </ode>
         </contact>
       </surface>
@@ -251,12 +254,9 @@
           <threshold>1e+06</threshold>
         </bounce>
         <friction>
-          <torsional>
-            <coefficient>0.3</coefficient>
-          </torsional>
           <ode>
-            <mu>100.0</mu>
-            <mu2>50.0</mu2>
+            <mu>0.2</mu>
+            <mu2>0.2</mu2>
           </ode>
           <bullet>
             <rolling_friction>0.3</rolling_friction>
@@ -269,8 +269,8 @@
             <kd>1000.0</kd>
           </bullet>
           <ode>
-            <kp>30000.0</kp>
-            <kd>1000.0</kd>
+            <kp>1000000.0</kp>
+            <kd>1.0</kd>
           </ode>
         </contact>
       </surface>
@@ -441,14 +441,14 @@
       <surface>
         <friction>
           <ode>
-            <mu>100000</mu>
-            <mu2>100000</mu2>
+            <mu>0.2</mu>
+            <mu2>0.2</mu2>
           </ode>
         </friction>
         <contact>
           <ode>
-            <kp>30000.0</kp>
-            <kd>1000.0</kd>
+            <kp>1000000.0</kp>
+            <kd>1.0</kd>
           </ode>
         </contact>
       </surface>
@@ -468,12 +468,9 @@
           <threshold>1e+06</threshold>
         </bounce>
         <friction>
-          <torsional>
-            <coefficient>0.3</coefficient>
-          </torsional>
           <ode>
-            <mu>100.0</mu>
-            <mu2>50.0</mu2>
+            <mu>0.2</mu>
+            <mu2>0.2</mu2>
           </ode>
           <bullet>
             <rolling_friction>0.3</rolling_friction>
@@ -486,8 +483,8 @@
             <kd>1000.0</kd>
           </bullet>
           <ode>
-            <kp>30000.0</kp>
-            <kd>1000.0</kd>
+            <kp>1000000.0</kp>
+            <kd>1.0</kd>
           </ode>
         </contact>
       </surface>
@@ -658,14 +655,14 @@
       <surface>
         <friction>
           <ode>
-            <mu>100000</mu>
-            <mu2>100000</mu2>
+            <mu>0.2</mu>
+            <mu2>0.2</mu2>
           </ode>
         </friction>
         <contact>
           <ode>
-            <kp>30000.0</kp>
-            <kd>1000.0</kd>
+            <kp>1000000.0</kp>
+            <kd>1.0</kd>
           </ode>
         </contact>
       </surface>
@@ -685,12 +682,9 @@
           <threshold>1e+06</threshold>
         </bounce>
         <friction>
-          <torsional>
-            <coefficient>0.3</coefficient>
-          </torsional>
           <ode>
-            <mu>100.0</mu>
-            <mu2>50.0</mu2>
+            <mu>0.2</mu>
+            <mu2>0.2</mu2>
           </ode>
           <bullet>
             <rolling_friction>0.3</rolling_friction>
@@ -703,8 +697,8 @@
             <kd>1000.0</kd>
           </bullet>
           <ode>
-            <kp>30000.0</kp>
-            <kd>1000.0</kd>
+            <kp>1000000.0</kp>
+            <kd>1.0</kd>
           </ode>
         </contact>
       </surface>
@@ -875,14 +869,14 @@
       <surface>
         <friction>
           <ode>
-            <mu>100000</mu>
-            <mu2>100000</mu2>
+            <mu>0.2</mu>
+            <mu2>0.2</mu2>
           </ode>
         </friction>
         <contact>
           <ode>
-            <kp>30000.0</kp>
-            <kd>1000.0</kd>
+            <kp>1000000.0</kp>
+            <kd>1.0</kd>
           </ode>
         </contact>
       </surface>
@@ -902,12 +896,9 @@
           <threshold>1e+06</threshold>
         </bounce>
         <friction>
-          <torsional>
-            <coefficient>0.3</coefficient>
-          </torsional>
           <ode>
-            <mu>100.0</mu>
-            <mu2>50.0</mu2>
+            <mu>0.2</mu>
+            <mu2>0.2</mu2>
           </ode>
           <bullet>
             <rolling_friction>0.3</rolling_friction>
@@ -920,8 +911,8 @@
             <kd>1000.0</kd>
           </bullet>
           <ode>
-            <kp>30000.0</kp>
-            <kd>1000.0</kd>
+            <kp>1000000.0</kp>
+            <kd>1.0</kd>
           </ode>
         </contact>
       </surface>
@@ -933,5 +924,42 @@
     <origin xyz="0.206 0 -0.0"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
+  <link name="text_right">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://spirit_description/meshes/Spirit40_CMU_Text_transformed.stl" scale="1.3 1 1.3"/>
+      </geometry>
+      <material name="scots-rose"/>
+    </visual>
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.00" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <joint name="cmu_text_right" type="fixed">
+    <parent link="body"/>
+    <child link="text_right"/>
+    <origin xyz="0.04 0 -0.005"/>
+  </joint>
+  <link name="text_left">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://spirit_description/meshes/Spirit40_CMU_Text_transformed.stl" scale="1.3 1 1.3"/>
+      </geometry>
+      <material name="scots-rose"/>
+    </visual>
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.00" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <joint name="cmu_text_left" type="fixed">
+    <parent link="body"/>
+    <child link="text_left"/>
+    <origin xyz="-0.04 0 -0.005" rpy="0 0 3.14159"/>
+  </joint>
+  
 </robot>
 

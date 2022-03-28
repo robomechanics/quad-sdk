@@ -1,25 +1,23 @@
 <launch>
 
-    <rosparam command="load" file="$(find quad_utils)/config/topics.yaml"/>
-    <rosparam command="load" file="$(find quad_utils)/config/teleop_twist_keyboard.yaml"/>
-    <rosparam command="load" file="$(find quad_utils)/config/ground_truth_publisher.yaml"/>
-    <rosparam command="load" file="$(find quad_utils)/config/terrain_map_publisher.yaml"/>
-    <rosparam command="load" file="$(find quad_utils)/config/grid_map_visualization.yaml"/>
-    <rosparam command="load" file="$(find quad_utils)/config/robot_proxy.yaml"/>
-    <rosparam command="load" file="$(find quad_utils)/config/rviz_interface.yaml"/>
-    <rosparam command="load" file="$(find quad_utils)/config/trajectory_publisher.yaml"/>
-    <rosparam command="load" file="$(find quad_utils)/config/remote_heartbeat.yaml"/>
+    <rosparam command="load" file="$(find quad_utils)/config/topics.yaml" />
+    <rosparam command="load" file="$(find quad_utils)/config/teleop_twist_keyboard.yaml" />
+    <rosparam command="load" file="$(find quad_utils)/config/ground_truth_publisher.yaml" />
+    <rosparam command="load" file="$(find quad_utils)/config/terrain_map_publisher.yaml" />
+    <rosparam command="load" file="$(find quad_utils)/config/grid_map_visualization.yaml" />
+    <rosparam command="load" file="$(find quad_utils)/config/robot_proxy.yaml" />
+    <rosparam command="load" file="$(find quad_utils)/config/rviz_interface.yaml" />
+    <rosparam command="load" file="$(find quad_utils)/config/trajectory_publisher.yaml" />
+    <rosparam command="load" file="$(find quad_utils)/config/remote_heartbeat.yaml" />
 
-    <rosparam command="load" file="$(find ekf_estimator)/ekf_estimator.yaml"/>
-    <rosparam command="load" file="$(find global_body_planner)/global_body_planner.yaml"/>
-    <rosparam command="load" file="$(find twist_body_planner)/twist_body_planner.yaml"/>
-    <rosparam command="load" file="$(find local_planner)/local_planner.yaml"/>
-    <rosparam command="load" file="$(find global_footstep_planner)/global_footstep_planner.yaml"/>
-    <rosparam command="load" file="$(find robot_driver)/robot_driver.yaml"/>
-    <rosparam command="load" file="$(find contact_detection)/contact_detection.yaml"/>
-    <rosparam command="load" file="$(find body_force_estimator)/body_force_estimator.yaml"/>
-    <rosparam command="load" file="$(find open_loop_controller)/open_loop_controller.yaml"/>
-    <rosparam command="load" file="$(find nmpc_controller)/nmpc_controller.yaml"/>
+    <rosparam command="load" file="$(find ekf_estimator)/ekf_estimator.yaml" />
+    <rosparam command="load" file="$(find global_body_planner)/global_body_planner.yaml" />
+    <rosparam command="load" file="$(find local_planner)/local_planner.yaml" />
+    <rosparam command="load" file="$(find robot_driver)/robot_driver.yaml" />
+    <rosparam command="load" file="$(find contact_detection)/contact_detection.yaml" />
+    <rosparam command="load" file="$(find body_force_estimator)/body_force_estimator.yaml" />
+    <rosparam command="load" file="$(find open_loop_controller)/open_loop_controller.yaml" />
+    <rosparam command="load" file="$(find nmpc_controller)/nmpc_controller.yaml" />
 
     <param name="enable_statistics" type="bool" value="true" />
 

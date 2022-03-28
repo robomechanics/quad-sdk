@@ -1,24 +1,26 @@
 #ifndef EKF_ESTIMATOR_H
 #define EKF_ESTIMATOR_H
 
-#include <ros/ros.h>
-#include <eigen3/Eigen/Eigen>
-#include <sensor_msgs/JointState.h>
-#include <sensor_msgs/Imu.h>
-#include <std_msgs/String.h>
-#include <quad_msgs/RobotState.h>
 #include <quad_msgs/ContactMode.h>
-
-#include <quad_utils/ros_utils.h>
+#include <quad_msgs/RobotState.h>
 #include <quad_utils/quad_kd.h>
+#include <quad_utils/ros_utils.h>
+#include <ros/ros.h>
+#include <sensor_msgs/Imu.h>
+#include <sensor_msgs/JointState.h>
+#include <std_msgs/String.h>
+
+#include <eigen3/Eigen/Eigen>
 #include <vector>
 
-//! Implements online EKF based state estimation 
+//! Implements online EKF based state estimation
 /*!
-   EKFEstimator implements all estimator logic. It should expose a constructor that does any initialization required and an update method called at some frequency.
+   EKFEstimator implements all estimator logic. It should expose a constructor
+   that does any initialization required and an update method called at some
+   frequency.
 */
 class EKFEstimator {
-public:
+ public:
   /**
    * @brief Constructor for EKFEstimator
    * @param[in] nh ROS NodeHandle to publish and subscribe from
@@ -31,8 +33,7 @@ public:
    */
   void spin();
 
-private:
-
+ private:
   /**
    * @brief Callback function to handle new ground truth data
    * @param[in] msg ground_truth_msg quad_msgs<RobotState>
@@ -41,7 +42,8 @@ private:
 
   /**
    * @brief Callback function to handle new joint encoder data
-   * @param[in] joint_encoder_msg sensor_msgs<JointState> containing joint pos,vel,current
+   * @param[in] joint_encoder_msg sensor_msgs<JointState> containing joint
+   * pos,vel,current
    */
   void jointEncoderCallback(const sensor_msgs::JointState::ConstPtr& msg);
 
@@ -63,7 +65,6 @@ private:
    */
   quad_msgs::RobotState updateStep();
 
-  
   const int numofStates = 6;
   const int num_feet_ = 4;
 
@@ -126,6 +127,5 @@ private:
 
   // IMU bias in acc z
   double bias_z_;
-
 };
-#endif // EKF_ESTIMATOR_H
+#endif  // EKF_ESTIMATOR_H

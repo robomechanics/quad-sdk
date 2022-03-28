@@ -1,0 +1,18 @@
+<launch>
+  <arg name="joy_config" default="ps3" />
+  <arg name="joy_dev" default="/dev/input/js0" />
+  <arg name="config_filepath" default="$(find teleop_twist_joy)/config/$(arg joy_config).config.yaml" />
+  <arg name="joy_topic" default="joy" />
+  
+  <node pkg="joy" type="joy_node" name="joy_node">
+    <param name="dev" value="$(arg joy_dev)" />
+    <param name="deadzone" value="0.3" />
+    <param name="autorepeat_rate" value="20" />
+    <remap from="joy" to="$(arg joy_topic)" />
+  </node>
+
+  <node pkg="teleop_twist_joy" name="teleop_twist_joy" type="teleop_node" output="screen">
+    <rosparam command="load" file="$(arg config_filepath)" />
+    <remap from="joy" to="$(arg joy_topic)" />
+  </node>
+</launch>

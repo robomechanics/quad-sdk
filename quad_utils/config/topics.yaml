@@ -7,6 +7,8 @@ topics:
   terrain_map_raw: /terrain_map_raw
   global_plan: /global_plan
   global_plan_discrete: /global_plan_discrete
+  global_plan_tree: /global_plan_tree
+  goal_state: /clicked_point
   foot_plan_continuous: /foot_plan_continuous
   foot_plan_discrete: /foot_plan_discrete
   local_plan: /local_plan
@@ -45,6 +47,10 @@ topics:
       estimate: /visualization/joint_states/estimate
       ground_truth: /visualization/joint_states/ground_truth
       trajectory: /visualization/joint_states/trajectory
+    state:
+      estimate_trace: visualization/state/estimate_trace
+      ground_truth_trace: visualization/state/ground_truth_trace
+      trajectory_trace: visualization/state/trajectory_trace
     foot_0_plan_continuous: /visualization/foot_0_plan_continuous
     foot_1_plan_continuous: /visualization/foot_1_plan_continuous
     foot_2_plan_continuous: /visualization/foot_2_plan_continuous

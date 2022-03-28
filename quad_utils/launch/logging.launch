@@ -3,13 +3,13 @@
     <include file="$(find quad_utils)/launch/load_params.launch" />
 
     <node pkg="rosbag" type="record" name="rosbag_record"
-        args="record -O $(find quad_logger)/bags/quad_log_current 
+        args="record -O $(find quad_logger)/bags/quad_log_current --tcpnodelay
         /state/trajectory
         /state/ground_truth 
         /state/estimate 
-        /local_plan 
-        /robot_plan
         /state/grfs 
+        /global_plan
+        /local_plan 
         /control/grfs
         /control/joint_command 
         /control/mode 
@@ -21,13 +21,13 @@
         /foot_step_hist" />
 
     <node pkg="rosbag" type="record" name="rosbag_record_archive"
-        args="record -o $(find quad_logger)/bags/archive/quad_log 
+        args="record -o $(find quad_logger)/bags/archive/quad_log --tcpnodelay
         /state/trajectory
         /state/ground_truth 
         /state/estimate 
-        /local_plan 
-        /robot_plan
         /state/grfs 
+        /global_plan
+        /local_plan 
         /control/grfs
         /control/joint_command 
         /control/mode 
