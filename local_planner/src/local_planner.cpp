@@ -63,7 +63,8 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 
   // Initialize nominal footstep positions projected down from the hips
   Eigen::Vector3d nominal_joint_state;
-  nominal_joint_state << 0, 0.78, 1.57; // Default stand angles
+  // Default stand angles
+  nominal_joint_state << 0, 0.78, 1.57;
   hip_projected_foot_positions_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
 
   for (int i = 0; i < N_; ++i) {
@@ -398,9 +399,10 @@ void LocalPlanner::getStateAndTwistInput() {
     stand_pose_ = stand_pose_ * (1 - 1 / update_rate_) +
                   current_stand_pose * 1 / update_rate_;
   }
-
-  ref_body_plan_(0, 0) = stand_pose_[0]; // support_center.x();
-  ref_body_plan_(0, 1) = stand_pose_[1]; // support_center.x();
+  // support_center.x();
+  ref_body_plan_(0, 0) = stand_pose_[0];
+  // support_center.x();
+  ref_body_plan_(0, 1) = stand_pose_[1];
   ref_body_plan_(0, 2) = z_des_ + ref_ground_height_(0);
   ref_body_plan_(0, 3) = 0;
   ref_body_plan_(0, 4) = 0;

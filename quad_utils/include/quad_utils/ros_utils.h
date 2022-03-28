@@ -193,8 +193,8 @@ void interpRobotPlan(quad_msgs::RobotPlan msg, double t,
  * too large)
  * @return MultiFootState message
  */
-quad_msgs::MultiFootState
-interpMultiFootPlanContinuous(quad_msgs::MultiFootPlanContinuous msg, double t);
+quad_msgs::MultiFootState interpMultiFootPlanContinuous(
+    quad_msgs::MultiFootPlanContinuous msg, double t);
 
 /**
  * @brief Interpolate data from a robot state trajectory message.
@@ -392,6 +392,6 @@ void Eigen3ToPointMsg(const Eigen::Vector3d &eigen_vec,
  */
 void pointMsgToEigen(const geometry_msgs::Point &vec,
                      Eigen::Vector3d &eigen_vec);
-} // namespace quad_utils
+}  // namespace quad_utils
 
 #endif

@@ -148,15 +148,15 @@ void RobotDriver::controlModeCallback(const std_msgs::UInt8::ConstPtr &msg) {
   if ((control_mode_ == SIT_TO_READY) || (control_mode_ == READY_TO_SIT))
     return;
   if ((msg->data == READY) &&
-      (control_mode_ == SIT)) { // Stand if previously sitting
+      (control_mode_ == SIT)) {  // Stand if previously sitting
     control_mode_ = SIT_TO_READY;
     transition_timestamp_ = ros::Time::now();
   } else if ((msg->data == SIT) &&
-             (control_mode_ == READY)) { // Sit if previously standing
+             (control_mode_ == READY)) {  // Sit if previously standing
     control_mode_ = READY_TO_SIT;
     transition_timestamp_ = ros::Time::now();
   } else if (msg->data == SIT ||
-             (msg->data == SAFETY)) { // Allow sit or safety modes
+             (msg->data == SAFETY)) {  // Allow sit or safety modes
     control_mode_ = msg->data;
   }
 }
@@ -243,8 +243,7 @@ void RobotDriver::remoteHeartbeatCallback(
 
 void RobotDriver::checkMessages() {
   // Do nothing if already in safety mode
-  if (control_mode_ == SAFETY)
-    return;
+  if (control_mode_ == SAFETY) return;
 
   // Check the remote heartbeat for timeout
   // (this adds extra safety if no heartbeat messages are arriving)
@@ -252,8 +251,9 @@ void RobotDriver::checkMessages() {
           heartbeat_timeout_ &&
       remote_heartbeat_received_time_ != std::numeric_limits<double>::max()) {
     control_mode_ = SAFETY;
-    ROS_WARN_THROTTLE(1, "Remote heartbeat lost or late to robot driver node, "
-                         "entering safety mode");
+    ROS_WARN_THROTTLE(1,
+                      "Remote heartbeat lost or late to robot driver node, "
+                      "entering safety mode");
   }
 
   // Check the state message latency
@@ -507,8 +507,9 @@ bool RobotDriver::updateControl() {
       }
     }
   } else {
-    ROS_WARN_THROTTLE(0.5, "Invalid control mode set in ID node, "
-                           "exiting updateControl()");
+    ROS_WARN_THROTTLE(0.5,
+                      "Invalid control mode set in ID node, "
+                      "exiting updateControl()");
     return false;
   }
 
