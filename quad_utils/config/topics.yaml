@@ -3,8 +3,8 @@ topics:
   imu: mcu/state/imu
   vel: mcu/state/vel
   mocap: mocap_node/quad/pose
-  terrain_map: terrain_map
-  terrain_map_raw: terrain_map_raw
+  terrain_map: /terrain_map
+  terrain_map_raw: /terrain_map_raw
   global_plan: global_plan
   global_plan_discrete: global_plan_discrete
   global_plan_tree: global_plan_tree

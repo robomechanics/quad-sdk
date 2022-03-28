@@ -2,11 +2,12 @@
   <arg name="software"/>
   <arg name="controller"/>
   <arg name="rotors"/>
-  <arg name="namespace" default="robot_1" />
   <arg name="init_pose"/>
-  
-  <param name="tf_prefix" value="$(arg namespace)_tf" />
+  <arg name="planning"/>
+  <arg name="visualization" value="false"/>
 
+  <arg name="namespace"   default="robot_1" />
+  <param name="tf_prefix" value="$(arg namespace)_tf" />
 
   <group if="$(arg rotors)">
     <!-- use more accurate but slower rotor model -->
@@ -43,11 +44,18 @@
     <!-- Load the contact state publisher -->
     <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
 
+    <group if="$(arg planning)">
     <include file="$(find quad_utils)/launch/planning.launch">
+    <arg name="namespace" value="$(arg namespace)"/>
     </include>
-
+    </group>
+    
+    <!-- Launch the node to publish the visual topics for the plans -->
+    <node name="rviz_interface" pkg="quad_utils" type="rviz_interface_node" output="screen"/>
+    
     <include file="$(find quad_utils)/launch/visualization.launch">
       <arg name="namespace" value="$(arg namespace)"/>
+      <arg name="visualization" value="$(arg visualization)"/>
     </include>
   </group>
 

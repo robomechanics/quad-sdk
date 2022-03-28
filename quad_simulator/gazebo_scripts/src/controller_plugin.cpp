@@ -88,6 +88,8 @@ bool SpiritController::init(hardware_interface::EffortJointInterface *hw,
   quad_utils::loadROSParam(n, "/topics/control/joint_command",
                            joint_command_topic);
 
+  // Necessary to override the topic naming for multi-robot use cases. Gazebo
+  // plugins do not automatically inherit namespace
   auto ns = n.getNamespace();
   std::string private_ns = "joint_controller";
   ns.resize(ns.size() - private_ns.size());

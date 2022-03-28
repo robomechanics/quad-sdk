@@ -5,7 +5,9 @@
     <arg name="local_planner" default="full" />
     <arg name="logging" default="false" />
     <arg name="twist_input" default="none" />
+    <arg name="namespace" default="robot_1" />
 
+    <group ns="/$(arg namespace)">
     <!-- Launch the node to publish the global body plan -->
     <group if="$(eval arg('global_planner') == 'fgmp')">
         <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen" />
@@ -31,5 +33,7 @@
 
     <group if="$(arg logging)">
         <include file="$(find quad_utils)/launch/logging.launch" />
+    </group>
+    
     </group>
 </launch>
