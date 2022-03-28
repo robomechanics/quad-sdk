@@ -1,31 +1,11 @@
 grid_map_filters:
-  - name: first
-    type: gridMapFilters/MockFilter
-    params:
-      processing_time: 100
-  - name: buffer_normalizer
-    type: gridMapFilters/BufferNormalizerFilter
-
-  # # Duplicate layer.
-  # - name: duplicate
-  #   type: gridMapFilters/DuplicationFilter
-  #   params:
-  #     input_layer: ...
-  #     output_layer: ...
-
-  # # Delete color layer.
-  # - name: delete_original_layers
-  #   type: gridMapFilters/DeletionFilter
-  #   params:
-  #     layers: [color] # List of layers.
-
   # Fill holes in the map with inpainting.
   - name: inpaint
     type: gridMapCv/InpaintFilter
     params:
       input_layer: z
       output_layer: z_inpainted
-      radius: 0.2
+      radius: 0.4
 
   # Reduce noise with a radial blurring filter.
   - name: mean_in_radius
@@ -34,17 +14,6 @@ grid_map_filters:
       input_layer: z_inpainted
       output_layer: z_smooth
       radius: 0.2
-
-  # Boxblur as an alternative to the inpaint and radial blurring filter above.
-  # - name: boxblur
-  #   type: gridMapFilters/SlidingWindowMathExpressionFilter
-  #   params:
-  #     input_layer: z
-  #     output_layer: z_smooth
-  #     expression: meanOfFinites(z)
-  #     compute_empty_cells: true
-  #     edge_handling: crop # options: inside, crop, empty, mean
-  #     window_size: 5 # optional
 
   # Compute surface normals.
   - name: surface_normals
@@ -96,18 +65,6 @@ grid_map_filters:
       edge_handling: crop # options: inside, crop, empty, mean
       window_length: 0.2
 
-  # # Edge detection on z layer with convolution filter as alternative to filter above.
-  # - name: edge_detection
-  #   type: gridMapFilters/SlidingWindowMathExpressionFilter
-  #   params:
-  #     input_layer: z_inpainted
-  #     output_layer: edges
-  #     expression: 'sumOfFinites([0,1,0;1,-4,1;0,1,0].*z_inpainted)' # Edge detection.
-  #     # expression: 'sumOfFinites([0,-1,0;-1,5,-1;0,-1,0].*z_inpainted)' # Sharpen.
-  #     compute_empty_cells: false
-  #     edge_handling: mean # options: inside, crop, empty, mean
-  #     window_size: 3 # Make sure to make this compatible with the kernel matrix.
-
   # Compute traversability as normalized weighted sum of slope and roughness.
   - name: traversability
     type: gridMapFilters/MathExpressionFilter
@@ -115,16 +72,23 @@ grid_map_filters:
       output_layer: traversability
       expression: 0.5 * (1.0 - (slope / 0.3)) + 0.5 * (1.0 - (roughness / 0.4))
 
-    # Compute traversability as normalized weighted sum of slope and roughness.
+  #   # Compute traversability as normalized weighted sum of slope and roughness.
+  # - name: traversability_user_mask
+  #   type: gridMapFilters/MathExpressionFilter
+  #   params:
+  #     output_layer: traversability
+  #     expression: ( (0.5 - 0.5 * (x - 3.0) ./ (sqrt((x - 3.0).^2))) + 
+  #                   (0.5 + 0.5 * (x - 3.2) ./ (sqrt((x - 3.2).^2))) + 
+  #                   (0.5 - 0.5 * (y + 1.0) ./ (sqrt((y + 1.0).^2))) + 
+  #                   (0.5 + 0.5 * (y - 1.0) ./ (sqrt((y - 1.0).^2))))
+  #                 .* traversability
+
+  # Compute traversability as normalized weighted sum of slope and roughness.
   - name: traversability_user_mask
     type: gridMapFilters/MathExpressionFilter
     params:
       output_layer: traversability
-      expression: ( (0.5 - 0.5 * (x - 3.0) ./ (sqrt((x - 3.0).^2))) + 
-                    (0.5 + 0.5 * (x - 3.2) ./ (sqrt((x - 3.2).^2))) + 
-                    (0.5 - 0.5 * (y + 1.0) ./ (sqrt((y + 1.0).^2))) + 
-                    (0.5 + 0.5 * (y - 1.0) ./ (sqrt((y - 1.0).^2))))
-                  .* traversability
+      expression: (1 - abs(z - z_inpainted)) .* traversability
 
   # Set lower threshold on traversability.
   - name: traversability_lower_threshold
