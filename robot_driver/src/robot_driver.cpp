@@ -516,9 +516,20 @@ bool RobotDriver::updateControl() {
     return false;
   }
 
+  const int knee_idx = 2;
+  const int knee_soft_ub = 3.14;
+
   for (int i = 0; i < num_feet_; ++i) {
     for (int j = 0; j < 3; ++j) {
       int joint_idx = 3 * i + j;
+
+      // Add soft joint limit for knees
+      if (j == knee_idx && joint_positions(joint_idx) > knee_soft_ub) {
+        leg_command_array_msg_.leg_commands.at(i)
+            .motor_commands.at(j)
+            .torque_ff = -torque_limits_[j];
+      }
+
       quad_msgs::MotorCommand cmd =
           leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j);
       double pos_component =
