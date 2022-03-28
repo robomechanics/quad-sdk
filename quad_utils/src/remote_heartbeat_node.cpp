@@ -1,4 +1,5 @@
 #include <ros/ros.h>
+
 #include "quad_utils/remote_heartbeat.h"
 
 int main(int argc, char** argv) {
@@ -7,6 +8,6 @@ int main(int argc, char** argv) {
 
   RemoteHeartbeat remote_heartbeat(nh);
   remote_heartbeat.spin();
-  
+
   return 0;
 }

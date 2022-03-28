@@ -5,14 +5,6 @@ quiet_mkdir () {
 	fi
 }
 
-cd osqp
-quiet_mkdir build
-cd build
-cmake ..
-make -j8
-sudo make install
-cd ../..
-
 cd osqp-eigen
 quiet_mkdir build
 cd build
@@ -28,10 +20,10 @@ if [ -d "./coinbrew" ]
 then
 	sudo rm -r ./coinbrew
 fi
-git clone --branch v1.0 https://www.github.com/coin-or/coinbrew
+git clone https://www.github.com/coin-or/coinbrew
 cd coinbrew
 chmod u+x coinbrew
-./coinbrew fetch Ipopt@3.14 --no-prompt
+./coinbrew fetch Ipopt --latest-release --no-prompt
 cd ..
 if [ -d "./coinhsl" ] 
 then
@@ -41,7 +33,7 @@ else
     echo "Warning: HSL not found."
 fi
 cd coinbrew
-sudo ./coinbrew build Ipopt --prefix=/usr/local --no-prompt --parallel-jobs=8
+sudo ./coinbrew build Ipopt --tests none --prefix=/usr/local --no-prompt --parallel-jobs=8
 cd ../..
 
 # Setup and build for rbdl
@@ -53,3 +45,6 @@ cmake -D CMAKE_BUILD_TYPE=Release -D RBDL_BUILD_ADDON_URDFREADER=ON ..
 make -j8
 sudo make install
 cd ../..
+
+# Setup for teleop_twist_joy to get dependencies installed
+sudo apt install -y ros-melodic-teleop-twist-joy
