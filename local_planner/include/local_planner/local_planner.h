@@ -351,6 +351,9 @@ class LocalPlanner {
   /// Leg early release index
   std::vector<int> early_release_idx_;
 
+  /// Leg early release terminate index
+  std::vector<int> early_release_terminate_idx_;
+
   /// Indicator that if a leg recover from missing
   std::vector<bool> miss_recovery_;
 
@@ -362,6 +365,16 @@ class LocalPlanner {
 
   /// Desired roll
   double roll_desired_;
+
+  struct gait_mixture {
+    double gait_init_idx;
+    double mixture_idx;
+    double mixture_period;
+  };
+
+  std::vector<std::vector<gait_mixture>> gait_mixture_vec_;
+
+  int mixture_period_;
 };
 
 #endif  // LOCAL_PLANNER_H

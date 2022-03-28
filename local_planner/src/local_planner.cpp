@@ -153,11 +153,16 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   // Initialize the early release index
   early_release_idx_.assign(4, 0);
 
+  // Initialize the early release terminate index
+  early_release_terminate_idx_.assign(4, 0);
+
   // Initialize the miss recovery indicator
   miss_recovery_.assign(4, false);
 
   // Initialize contact sensing record
   contact_sensing_record_.assign(4, false);
+
+  gait_mixture_vec_.resize(4);
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -253,6 +258,8 @@ void LocalPlanner::initLocalFootstepPlanner() {
                            phase_offsets);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/abad_joint_limit",
                            abad_joint_limit_);
+  quad_utils::loadROSParam(nh_, "local_footstep_planner/mixture_period",
+                           mixture_period_);
 
   period = period_d / dt_;
 
@@ -716,83 +723,21 @@ bool LocalPlanner::computeLocalPlan() {
   local_footstep_planner_->computeContactSchedule(current_plan_index_,
                                                   contact_schedule_);
 
-  // Joint limit checking - now we only care about abad - probably only active
-  // when missing contact
-  std::vector<std::vector<bool>> contact_schedule_joint_limit =
-      contact_schedule_;
-
-  for (size_t i = 0; i < 4; i++) {
-    // If the leg is standing now by the clock we can clear the early release
-    // flag
-    if (contact_schedule_.at(0).at(i) && contact_schedule_.at(5).at(i)) {
-      early_release_.at(i) = false;
-    }
-
-    // If the leg is in contact and near the joint limit, release it
-    if (!early_release_.at(i) && contact_sensing_msg_ != NULL &&
-        (contact_sensing_msg_->data.at(0) || contact_sensing_msg_->data.at(1) ||
-         contact_sensing_msg_->data.at(2) ||
-         contact_sensing_msg_->data.at(3)) &&
-        contact_schedule_.at(0).at(i) &&
-        robot_state_msg_->joints.position.at(3 * i) < abad_joint_limit_) {
-      // Record a early release flag
-      early_release_.at(i) = true;
-      early_release_idx_.at(i) = current_plan_index_;
-
-      // Record foot position for swing computation
-      past_footholds_msg_.feet[i] = robot_state_msg_->feet.feet.at(i);
-      past_footholds_msg_.feet[i].traj_index = current_plan_index_;
-    }
-
-    // Switch to swing
-    if (early_release_.at(i)) {
-      for (size_t j = 0; j < N_; j++) {
-        if (current_plan_index_ + j < early_release_idx_.at(i) + 6) {
-          contact_schedule_joint_limit.at(j).at(i) = false;
-        } else {
-          contact_schedule_joint_limit.at(j).at(i) = true;
-        }
-
-        if (!contact_schedule_.at(j).at(i) &&
-            contact_schedule_.at(j + 1).at(i)) {
-          break;
-        }
-      }
-    }
-  }
-
-  contact_schedule_ = contact_schedule_joint_limit;
-
-  // Contact sensing recover - stand for a while when hit the ground
-  std::vector<std::vector<bool>> contact_schedule_recover = contact_schedule_;
-
+  // Contact sensing recover - stand for a while when landing
   if (contact_sensing_msg_ != NULL) {
     for (size_t i = 0; i < 4; i++) {
-      // If the leg is standing by the clock we can clear the early release flag
-      if (contact_schedule_.at(0).at(i) && contact_schedule_.at(5).at(i)) {
-        miss_recovery_.at(i) = false;
-      }
-
-      // If the clock assigns a swing but we just hit the ground, stand for a
-      // while
-      if (!(contact_schedule_.at(0).at(i) && contact_schedule_.at(2).at(i)) &&
-          !miss_recovery_.at(i) && !contact_sensing_msg_->data.at(i) &&
-          contact_sensing_record_.at(i)) {
-        miss_recovery_.at(i) = true;
-      }
-
-      if (miss_recovery_.at(i)) {
-        for (size_t j = 0; j < N_; j++) {
-          if (!contact_schedule_.at(j).at(i)) {
-            // Assign stand
-            contact_schedule_recover.at(j).at(i) = true;
-
-            // Only modify a period
-            if (contact_schedule_.at(j + 1).at(i)) {
-              break;
-            }
-          }
-        }
+      // If the clock assigns a swing or a too short stance (idx smaller than 3)
+      // but we just landing, stand for a while
+      if (!(contact_schedule_.at(i).at(0) && contact_schedule_.at(i).at(2)) &&
+          gait_mixture_vec_.at(i).empty() &&
+          !contact_sensing_msg_->data.at(i) && contact_sensing_record_.at(i)) {
+        // Record a early release flag
+        gait_mixture landing_gait = {
+            current_plan_index_ - 3 -
+                local_footstep_planner_->period_ *
+                    local_footstep_planner_->phase_offsets_[i],
+            current_plan_index_, mixture_period_};
+        gait_mixture_vec_.at(i).push_back(landing_gait);
       }
 
       // Record the contact sensing
@@ -800,7 +745,76 @@ bool LocalPlanner::computeLocalPlan() {
     }
   }
 
-  contact_schedule_ = contact_schedule_recover;
+  // Joint limit checking - now we only care about abad
+  for (size_t i = 0; i < 4; i++) {
+    // If the leg is in contact and near the joint limit, release it
+    if (gait_mixture_vec_.at(i).empty() && contact_sensing_msg_ != NULL &&
+        (contact_sensing_msg_->data.at(0) || contact_sensing_msg_->data.at(1) ||
+         contact_sensing_msg_->data.at(2) ||
+         contact_sensing_msg_->data.at(3)) &&
+        contact_schedule_.at(0).at(i) &&
+        robot_state_msg_->joints.position.at(3 * i) < abad_joint_limit_) {
+      // Record a early release flag
+      gait_mixture early_release_gait = {
+          current_plan_index_ -
+              local_footstep_planner_->period_ *
+                  (local_footstep_planner_->phase_offsets_[i] +
+                   local_footstep_planner_->duty_cycles_[i]),
+          current_plan_index_, mixture_period_};
+      gait_mixture_vec_.at(i).push_back(early_release_gait);
+
+      // Record foot position for swing computation
+      past_footholds_msg_.feet[i] = robot_state_msg_->feet.feet.at(i);
+      past_footholds_msg_.feet[i].traj_index = current_plan_index_;
+    }
+  }
+
+  for (size_t i = 0; i < 4; i++) {
+    if (!gait_mixture_vec_.at(i).empty()) {
+      for (size_t j = 0; j < gait_mixture_vec_.at(i).size(); j++) {
+        // Compute the contact schedule
+        std::vector<std::vector<bool>> new_contact_schedule,
+            mix_contact_schedule;
+        local_footstep_planner_->computeContactSchedule(
+            current_plan_index_ - gait_mixture_vec_.at(i).at(j).gait_init_idx,
+            new_contact_schedule);
+
+        Eigen::ArrayXd weight =
+            (Eigen::ArrayXd::LinSpaced(N_, 0, N_ - 1) + current_plan_index_ -
+             gait_mixture_vec_.at(i).at(j).mixture_idx) /
+            gait_mixture_vec_.at(i).at(j).mixture_period;
+        for (size_t k = 0; k < N_; k++) {
+          if (weight(k) > 1.) {
+            weight(k) = 1.;
+          }
+        }
+
+        if (weight(0) == 1.) {
+          gait_mixture_vec_.at(i).erase(gait_mixture_vec_.at(i).begin() + j);
+          j--;
+          continue;
+        }
+
+        Eigen::MatrixXd contact_schedule_eigen, new_contact_schedule_eigen,
+            mix_contact_schedule_eigen;
+
+        quad_utils::contactScheduleToEigen(contact_schedule_,
+                                           contact_schedule_eigen);
+        quad_utils::contactScheduleToEigen(new_contact_schedule,
+                                           new_contact_schedule_eigen);
+
+        mix_contact_schedule_eigen = contact_schedule_eigen;
+        mix_contact_schedule_eigen.row(i) =
+            (contact_schedule_eigen.row(i).array() * weight.transpose() +
+             new_contact_schedule_eigen.row(i).array() *
+                 (1. - weight.transpose()))
+                .matrix();
+
+        quad_utils::eigenToContactSchedule(mix_contact_schedule_eigen,
+                                           contact_schedule_);
+      }
+    }
+  }
 
   // Start from the nominal contact schedule
   adaptive_contact_schedule_ = contact_schedule_;
@@ -808,8 +822,10 @@ bool LocalPlanner::computeLocalPlan() {
   // Contact sensing
   if (contact_sensing_msg_ != NULL) {
     for (size_t i = 0; i < 4; i++) {
-      if (contact_sensing_msg_->data.at(i) && contact_schedule_.at(0).at(i)) {
+      if (contact_sensing_msg_->data.at(i)) {
         roll_desired_ = 0;
+      }
+      if (contact_sensing_msg_->data.at(i) && contact_schedule_.at(0).at(i)) {
         for (size_t j = 0; j < N_; j++) {
           if (contact_schedule_.at(j).at(i)) {
             // Assign miss

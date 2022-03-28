@@ -33,6 +33,15 @@ class LocalFootstepPlanner {
   // Time difference between two calls
   double time_diff_;
 
+  /// Gait period in timesteps
+  int period_;
+
+  /// Phase offsets for the touchdown of each foot
+  std::vector<double> phase_offsets_ = {0, 0.5, 0.5, 0.0};
+
+  /// Duty cycles for the stance duration of each foot
+  std::vector<double> duty_cycles_ = {0.5, 0.5, 0.5, 0.5};
+
   /**
    * @brief Constructor for LocalFootstepPlanner Class
    * @return Constructed object of type LocalFootstepPlanner
@@ -451,17 +460,8 @@ class LocalFootstepPlanner {
   /// Timestep for one finite element
   double dt_;
 
-  /// Gait period in timesteps
-  int period_;
-
   /// Horizon length in timesteps
   int horizon_length_;
-
-  /// Phase offsets for the touchdown of each foot
-  std::vector<double> phase_offsets_ = {0, 0.5, 0.5, 0.0};
-
-  /// Duty cycles for the stance duration of each foot
-  std::vector<double> duty_cycles_ = {0.5, 0.5, 0.5, 0.5};
 
   /// Nominal contact schedule
   std::vector<std::vector<bool>> nominal_contact_schedule_;

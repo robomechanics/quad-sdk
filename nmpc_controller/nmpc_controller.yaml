@@ -34,13 +34,13 @@ nmpc_controller:
     control_upper_bound: [10, 10, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150]
   distributed_tail:
     update_rate: 33
-    horizon_length: 18
+    horizon_length: 12
     control_dimension: 14
     state_dimension: 16
     step_length: 0.03
     friction_coefficient: 0.3
     panic_weights: !!float 1e2
-    state_weights: [0, 0, 0, 1500, 0, 0, 750, 750, 0, 0, 0, 0, 0, 0, 2.5, 2.5]
+    state_weights: [0, 0, 0, 2500, 2500, 0, 750, 750, 0, 0, 0, 0, 0, 0, 2.5, 2.5]
     control_weights: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     state_weights_factors: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     control_weights_factors: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
