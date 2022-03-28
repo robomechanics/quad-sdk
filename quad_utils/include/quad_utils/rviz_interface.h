@@ -26,7 +26,7 @@
    core algorithm
 */
 class RVizInterface {
-public:
+ public:
   /**
    * @brief Constructor for RVizInterface Class
    * @param[in] nh ROS NodeHandle to publish and subscribe from
@@ -39,7 +39,7 @@ public:
    */
   void spin();
 
-private:
+ private:
   /**
    * @brief Callback function to handle new body plan data
    * @param[in] msg plan message contining interpolated output of body planner
@@ -232,4 +232,4 @@ private:
   const int LAND_STANCE = 3;
 };
 
-#endif // RVIZ_INTERFACE_H
+#endif  // RVIZ_INTERFACE_H
