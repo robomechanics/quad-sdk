@@ -65,7 +65,7 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
                            trajectory_state_trace_viz_topic);
 
   // Setup rviz_interface parameters
-  quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
+  quad_utils::loadROSParam(nh_, "/map_frame", map_frame_);
   nh.param<double>("rviz_interface/update_rate", update_rate_, 10);
   nh.param<int>("rviz_interface/orientation_subsample_num",
                 orientation_subsample_num_, 3);

@@ -17,7 +17,7 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
   nh.param<std::string>("topics/state/ground_truth", ground_truth_state_topic,
                         "/state/ground_truth");
 
-  nh.param<std::string>("map_frame", map_frame_, "map");
+  nh.param<std::string>("/map_frame", map_frame_, "map");
   nh.param<std::string>("trajectory_publisher/traj_source", traj_source_,
                         "topic");
   nh.param<double>("trajectory_publisher/update_rate", update_rate_, 30);
@@ -52,19 +52,19 @@ void TrajectoryPublisher::importTrajectory() {
 }
 
 void TrajectoryPublisher::robotPlanCallback(
-    const quad_msgs::RobotPlan::ConstPtr& msg) {
+    const quad_msgs::RobotPlan::ConstPtr &msg) {
   // Save the most recent body plan
   body_plan_msg_ = (*msg);
 }
 
 void TrajectoryPublisher::robotStateCallback(
-    const quad_msgs::RobotState::ConstPtr& msg) {
+    const quad_msgs::RobotState::ConstPtr &msg) {
   // Save the most recent robot state
   robot_state_msg_ = msg;
 }
 
 void TrajectoryPublisher::multiFootPlanContinuousCallback(
-    const quad_msgs::MultiFootPlanContinuous::ConstPtr& msg) {
+    const quad_msgs::MultiFootPlanContinuous::ConstPtr &msg) {
   if (msg->header.stamp != multi_foot_plan_continuous_msg_.header.stamp &&
       (msg->states.front().traj_index == 0)) {
     // Save the most recent foot plan
@@ -93,9 +93,8 @@ void TrajectoryPublisher::updateTrajectory() {
 
   if (t_body_plan < t_foot_plan) {
     ROS_DEBUG_THROTTLE(
-        1,
-        "Foot plan duration is longer than body plan, traj prublisher "
-        "will wait");
+        1, "Foot plan duration is longer than body plan, traj prublisher "
+           "will wait");
     return;
   }
 

@@ -19,7 +19,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   quad_utils::loadROSParam(nh_, "topics/foot_plan_continuous",
                            foot_plan_continuous_topic);
   quad_utils::loadROSParam(nh_, "topics/cmd_vel", cmd_vel_topic);
-  quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
+  quad_utils::loadROSParam(nh_, "/map_frame", map_frame_);
   quad_utils::loadROSParam(nh_, "topics/control/mode", control_mode_topic);
 
   // Setup pubs and subs
