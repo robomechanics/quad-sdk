@@ -93,8 +93,9 @@ void TrajectoryPublisher::updateTrajectory() {
 
   if (t_body_plan < t_foot_plan) {
     ROS_DEBUG_THROTTLE(
-        1, "Foot plan duration is longer than body plan, traj prublisher "
-           "will wait");
+        1,
+        "Foot plan duration is longer than body plan, traj prublisher "
+        "will wait");
     return;
   }
 

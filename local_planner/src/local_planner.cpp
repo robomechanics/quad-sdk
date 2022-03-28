@@ -197,8 +197,7 @@ void LocalPlanner::robotPlanCallback(
 void LocalPlanner::robotStateCallback(
     const quad_msgs::RobotState::ConstPtr &msg) {
   // Make sure the data is actually populated
-  if (msg->feet.feet.empty() || msg->joints.position.empty())
-    return;
+  if (msg->feet.feet.empty() || msg->joints.position.empty()) return;
 
   robot_state_msg_ = msg;
 }
@@ -221,8 +220,7 @@ void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg) {
 
 void LocalPlanner::getStateAndReferencePlan() {
   // Make sure body plan and robot state data is populated
-  if (body_plan_msg_ == NULL || robot_state_msg_ == NULL)
-    return;
+  if (body_plan_msg_ == NULL || robot_state_msg_ == NULL) return;
 
   // Tracking trajectory so enter run mode
   control_mode_ = STEP;
@@ -311,8 +309,7 @@ void LocalPlanner::getStateAndReferencePlan() {
 }
 
 void LocalPlanner::getStateAndTwistInput() {
-  if (robot_state_msg_ == NULL)
-    return;
+  if (robot_state_msg_ == NULL) return;
 
   if (first_plan_) {
     // We want to start from a full period when using twist input
@@ -639,8 +636,7 @@ void LocalPlanner::spin() {
 
     // Compute the local plan and publish if it solved successfully, otherwise
     // just sleep
-    if (computeLocalPlan())
-      publishLocalPlan();
+    if (computeLocalPlan()) publishLocalPlan();
 
     r.sleep();
   }
