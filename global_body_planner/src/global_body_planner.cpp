@@ -201,9 +201,17 @@ void GlobalBodyPlanner::setStartState() {
                     current_plan_.getPublishedTimestamp())
                        .toSec() /
                    dt_);
+
+    // Ensure start index is not too close to goal
     start_index_ = (start_index_ + 25 >= current_plan_.getSize() - 1)
                        ? current_plan_.getSize() - 1
                        : start_index_;
+
+    // Iterate until start_index is in a connect phase
+    while (current_plan_.getPrimitiveFromIndex(start_index_) != CONNECT &&
+           start_index_ < current_plan_.getSize() - 1) {
+      start_index_++;
+    }
 
     start_state_ = current_plan_.getStateFromIndex(start_index_);
     replan_start_time_ = current_plan_.getTime(start_index_);

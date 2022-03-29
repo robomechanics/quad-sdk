@@ -188,10 +188,11 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   constraint_size = n_null_;
   g_min_complex_hard_.segment(current_idx, constraint_size).fill(0);
   g_max_complex_hard_.segment(current_idx, constraint_size).fill(0);
-  g_min_complex_hard_.segment(current_idx, constraint_size)
-      .tail(12)
-      .fill(-2e19);
-  g_max_complex_hard_.segment(current_idx, constraint_size).tail(12).fill(2e19);
+  // g_min_complex_hard_.segment(current_idx, constraint_size)
+  //     .tail(12)
+  //     .fill(-2e19);
+  // g_max_complex_hard_.segment(current_idx,
+  // constraint_size).tail(12).fill(2e19);
   // g_min_complex_soft_.segment(current_null_idx, constraint_size).fill(0);
   // g_max_complex_soft_.segment(current_null_idx, constraint_size).fill(0);
   current_idx += constraint_size;
@@ -213,7 +214,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   // Load motor model constraint bounds
   constraint_size = n_null_;
   g_min_complex_hard_.segment(current_idx, constraint_size).fill(-2e19);
-  g_max_complex_hard_.segment(current_idx, constraint_size).fill(2e19);
+  g_max_complex_hard_.segment(current_idx, constraint_size).fill(0);
   // g_min_complex_soft_.segment(current_null_idx, constraint_size).fill(-2e19);
   // g_max_complex_soft_.segment(current_null_idx, constraint_size).fill(0.0);
   current_idx += constraint_size;

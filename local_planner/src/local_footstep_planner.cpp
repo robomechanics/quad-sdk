@@ -108,7 +108,7 @@ void LocalFootstepPlanner::computeContactSchedule(
     if (ref_primitive_plan(i) == LEAP_STANCE) {
       // std::fill(contact_schedule.at(i).begin(), contact_schedule.at(i).end(),
       //           true);
-      int leading_leg_liftoff_period = 1;
+      int leading_leg_liftoff_period = 0;
       int leading_leg_liftoff_idx =
           std::min(i + leading_leg_liftoff_period, horizon_length_ - 1);
 
@@ -125,10 +125,6 @@ void LocalFootstepPlanner::computeContactSchedule(
       contact_schedule.at(i) = {true, true, true, true};
     }
   }
-
-  std::cout << "current_plan_index = " << current_plan_index << std::endl;
-  printContactSchedule(contact_schedule);
-  std::cout << std::endl;
 }
 
 void LocalFootstepPlanner::cubicHermiteSpline(double pos_prev, double vel_prev,
@@ -522,7 +518,6 @@ void LocalFootstepPlanner::computeFootPlan(
       // If this is the end of a contact, add to the past footholds message
       if (i < period_ * duty_cycles_[j] &&
           isNewLiftoff(contact_schedule, i, j)) {
-        std::cout << "new contact at index " << i << std::endl;
         past_footholds_msg.feet[j] = foot_state_msg;
       }
     }
@@ -734,10 +729,13 @@ double LocalFootstepPlanner::computeSwingApex(
   quadKD_->worldToLegbaseFKWorldFrame(leg_idx, body_plan.segment(0, 3),
                                       body_plan.segment(3, 3), g_world_legbase);
   double hip_height = g_world_legbase(2, 3);
+  double max_extension = 0.35;
 
   // Compute swing apex
-  double swing_apex = ground_clearance_ - toe_radius +
-                      std::max(foot_position_prev.z(), foot_position_next.z());
+  double swing_apex =
+      std::max(ground_clearance_ - toe_radius +
+                   std::max(foot_position_prev.z(), foot_position_next.z()),
+               hip_height - max_extension);
   // std::min(ground_clearance_ - toe_radius +
   //              std::max(foot_position_prev.z(), foot_position_next.z()),
   //          hip_height - hip_clearance_);

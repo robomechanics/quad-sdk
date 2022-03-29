@@ -30,14 +30,26 @@ State PlannerClass::randomState(const PlannerConfig &planner_config) {
       0.5 * (z_max_rel + z_min_rel),
       (z_max_rel - z_min_rel) *
           (1.0 / (2 * 3.0)));  // std is such that the max and min are 3 std
-                               // away from mean
+  // away from mean
 
   q.pos[0] = (x_max - x_min) * (double)rand() / RAND_MAX + x_min;
   q.pos[1] = (y_max - y_min) * (double)rand() / RAND_MAX + y_min;
   q.pos[2] = planner_config.H_NOM + getTerrainZFromState(q, planner_config);
 
+  double vel_mean = planner_config.V_NOM;
+  double vel_sigma = (planner_config.V_MAX - planner_config.V_NOM) / 3.0;
+  double vel_mean_log =
+      std::log(vel_mean * vel_mean /
+               std::sqrt(vel_mean * vel_mean + vel_sigma * vel_sigma));
+  double vel_sigma_log =
+      std::sqrt(std::log(1 + (vel_sigma * vel_sigma) / (vel_mean * vel_mean)));
+  std::lognormal_distribution<double> vel_distribution(vel_mean_log,
+                                                       vel_sigma_log);
+
   double phi = (2.0 * MY_PI) * (double)rand() / RAND_MAX;
-  double v = planner_config.V_NOM;
+  // double v = planner_config.V_NOM;
+  double v = vel_distribution(generator);
+  v = std::min(std::max(v, 0.0), planner_config.V_MAX);
   q.vel[0] = v * cos(phi);
   q.vel[1] = v * sin(phi);
   q.vel[2] = getDzFromState(q, planner_config);
