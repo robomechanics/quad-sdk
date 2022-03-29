@@ -1,4 +1,11 @@
 grid_map_filters:
+    # Duplicate layer.
+  - name: duplicate_z
+    type: gridMapFilters/DuplicationFilter
+    params:
+      input_layer: z
+      output_layer: z_finite
+
   # Fill holes in the map with inpainting.
   - name: inpaint
     type: gridMapCv/InpaintFilter
@@ -21,7 +28,7 @@ grid_map_filters:
     params:
       input_layer: z_inpainted
       output_layers_prefix: normal_vectors_
-      radius: 0.2
+      radius: 0.15
       normal_vector_positive_axis: z
 
   # Compute smooth surface normals.
@@ -54,22 +61,23 @@ grid_map_filters:
       output_layer: roughness
       expression: abs(z_inpainted - z_smooth)
 
-  # Edge detection by computing the standard deviation from slope.
-  - name: edge_detection
-    type: gridMapFilters/SlidingWindowMathExpressionFilter
-    params:
-      input_layer: slope
-      output_layer: edges
-      expression: sqrt(sumOfFinites(square(slope - meanOfFinites(slope))) ./ numberOfFinites(slope)) # Standard deviation
-      compute_empty_cells: false
-      edge_handling: crop # options: inside, crop, empty, mean
-      window_length: 0.2
+  # # Uncomment to use edges
+  # # Edge detection by computing the standard deviation from slope.
+  # - name: edge_detection
+  #   type: gridMapFilters/SlidingWindowMathExpressionFilter
+  #   params:
+  #     input_layer: slope
+  #     output_layer: edges
+  #     expression: sqrt(sumOfFinites(square(slope - meanOfFinites(slope))) ./ numberOfFinites(slope)) # Standard deviation
+  #     compute_empty_cells: false
+  #     edge_handling: crop # options: inside, crop, empty, mean
+  #     window_length: 0.2
 
   # Compute traversability as normalized weighted sum of slope and roughness.
   - name: traversability
     type: gridMapFilters/MathExpressionFilter
     params:
-      output_layer: traversability
+      output_layer: traversability_raw
       expression: 0.5 * (1.0 - (slope / 0.3)) + 0.5 * (1.0 - (roughness / 0.4))
 
   #   # Compute traversability as normalized weighted sum of slope and roughness.
@@ -83,12 +91,34 @@ grid_map_filters:
   #                   (0.5 + 0.5 * (y - 1.0) ./ (sqrt((y - 1.0).^2))))
   #                 .* traversability
 
+  # Set lower threshold on traversability.
+  - name: z_finite_threshold
+    type: gridMapFilters/ThresholdFilter
+    params:
+      condition_layer: z
+      output_layer: z_finite
+      lower_threshold: -1000.0
+      set_to: -1000.0
+
   # Compute traversability as normalized weighted sum of slope and roughness.
   - name: traversability_user_mask
     type: gridMapFilters/MathExpressionFilter
     params:
+      output_layer: traversability_raw
+      expression: (1 - abs(z_finite - z_inpainted)) .* traversability_raw
+
+  - name: traversability_filter
+    type: gridMapFilters/MeanInRadiusFilter
+    params:
+      input_layer: traversability_raw
       output_layer: traversability
-      expression: (1 - abs(z - z_inpainted)) .* traversability
+      radius: 0.05
+
+  # Delete layers.
+  - name: delete
+    type: gridMapFilters/DeletionFilter
+    params:
+      layers: [traversability_raw, z_finite]
 
   # Set lower threshold on traversability.
   - name: traversability_lower_threshold
