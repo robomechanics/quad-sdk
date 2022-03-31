@@ -4,12 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Desired GRFs1
-        - /Global Plan1
-        - /Local Plan Position1
-        - /Local Plan Position2
-        - /Discrete Foot Plan1
-        - /Foot 01
+        - /Discrete Foot Plan1/Status1
       Splitter Ratio: 0.6114649772644043
     Tree Height: 806
   - Class: rviz/Selection
@@ -194,21 +189,21 @@ Visualization Manager:
       Value: true
       Visual Enabled: true
     - Class: rviz/Marker
-      Enabled: false
-      Marker Topic: /visualization/state/ground_truth_trace
-      Name: Ground Truth State Trace
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: false
-    - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /robot_1/visualization/current_grf
-      Name: Desired GRFs
+      Marker Topic: /robot_1/visualization/state/ground_truth_trace
+      Name: Ground Truth State Trace
       Namespaces:
         "": true
       Queue Size: 100
       Value: true
+    - Class: rviz/MarkerArray
+      Enabled: false
+      Marker Topic: /robot_1/visualization/current_grf
+      Name: Desired GRFs
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: false
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /robot_1/visualization/global_plan_discrete
@@ -247,7 +242,7 @@ Visualization Manager:
       Axes Radius: 0.009999999776482582
       Class: rviz/PoseArray
       Color: 255; 25; 0
-      Enabled: true
+      Enabled: false
       Head Length: 0.20000000298023224
       Head Radius: 0.029999999329447746
       Name: Local Plan Position
@@ -256,7 +251,7 @@ Visualization Manager:
       Shape: Arrow (Flat)
       Topic: /robot_1/visualization/local_plan_ori
       Unreliable: false
-      Value: true
+      Value: false
     - Alpha: 1
       Arrow Length: 0.30000001192092896
       Axes Length: 0.30000001192092896

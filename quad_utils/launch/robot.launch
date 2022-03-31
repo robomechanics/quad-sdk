@@ -4,17 +4,16 @@
   <arg name="rotors"/>
   <arg name="init_pose"/>
   <arg name="planning"/>
+  <arg name="logging"/>
   <arg name="visualization" value="false"/>
-
-  <arg name="namespace"   default="robot_1" />
-  <param name="tf_prefix" value="$(arg namespace)_tf" />
+  <arg name="namespace"     default="robot_1"/>
+  <param name="tf_prefix"   value="$(arg namespace)_tf" />
 
   <group if="$(arg rotors)">
     <!-- use more accurate but slower rotor model -->
     <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit_rotors.sdf" />
   </group>
   <group unless="$(arg rotors)">
-    <!-- use more accurate but slower rotor model -->
     <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
   </group>
 
@@ -46,6 +45,7 @@
 
     <group if="$(arg planning)">
     <include file="$(find quad_utils)/launch/planning.launch">
+    <arg name="logging" value="$(arg logging)"/>
     <arg name="namespace" value="$(arg namespace)"/>
     </include>
     </group>
