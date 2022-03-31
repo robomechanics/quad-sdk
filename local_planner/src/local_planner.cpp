@@ -828,27 +828,27 @@ bool LocalPlanner::computeLocalPlan() {
   // Start from the nominal contact schedule
   adaptive_contact_schedule_ = contact_schedule_;
 
-  // // Contact sensing
-  // if (contact_sensing_msg_ != NULL) {
-  //   for (size_t i = 0; i < 4; i++) {
-  //     if (contact_sensing_msg_->data.at(i)) {
-  //       roll_desired_ = 0;
-  //     }
-  //     if (contact_sensing_msg_->data.at(i) && contact_schedule_.at(0).at(i)) {
-  //       for (size_t j = 0; j < N_; j++) {
-  //         if (contact_schedule_.at(j).at(i)) {
-  //           // Assign miss
-  //           adaptive_contact_schedule_.at(j).at(i) = false;
-  //         }
+  // Contact sensing
+  if (contact_sensing_msg_ != NULL) {
+    for (size_t i = 0; i < 4; i++) {
+      if (contact_sensing_msg_->data.at(i)) {
+        roll_desired_ = 0;
+      }
+      // if (contact_sensing_msg_->data.at(i) && contact_schedule_.at(0).at(i)) {
+      //   for (size_t j = 0; j < N_; j++) {
+      //     if (contact_schedule_.at(j).at(i)) {
+      //       // Assign miss
+      //       adaptive_contact_schedule_.at(j).at(i) = false;
+      //     }
 
-  //         // Only modify a period
-  //         if (!contact_schedule_.at(j + 1).at(i)) {
-  //           break;
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
+      //     // Only modify a period
+      //     if (!contact_schedule_.at(j + 1).at(i)) {
+      //       break;
+      //     }
+      //   }
+      // }
+    }
+  }
 
   // Compute the new footholds if we have a valid existing plan (i.e. if
   // grf_plan is filled)

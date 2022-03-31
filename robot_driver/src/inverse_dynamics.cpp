@@ -114,43 +114,43 @@ bool InverseDynamicsController::computeLegCommandArray(
     // Start from nominal contact schedule
     std::vector<int> adaptive_contact_mode = contact_mode;
 
-    // for (size_t i = 0; i < num_feet_; i++) {
-    //   // Swing or contact to miss
-    //   if (contact_mode.at(i) && !last_contact_sensing_msg_.data.at(i) &&
-    //       (current_foot_positions(3 * i + 2) - body_state(2)) < -0.295) {
-    //     // ROS_WARN_STREAM("Leg controller: swing or contact to miss leg: " <<
-    //     // i);
+    for (size_t i = 0; i < num_feet_; i++) {
+      // Swing or contact to miss
+      if (contact_mode.at(i) && !last_contact_sensing_msg_.data.at(i) &&
+          (current_foot_positions(3 * i + 2) - body_state(2)) < -0.295) {
+        // ROS_WARN_STREAM("Leg controller: swing or contact to miss leg: " <<
+        // i);
 
-    //     last_contact_sensing_msg_.data.at(i) = true;
+        last_contact_sensing_msg_.data.at(i) = true;
 
-    //     adaptive_contact_mode.at(i) = false;
-    //     grf_array.segment(3 * i, 3) << 0, 0, 0;
-    //     get_new_plan_after_recovering_.at(i) = false;
-    //   }
+        // adaptive_contact_mode.at(i) = false;
+        // grf_array.segment(3 * i, 3) << 0, 0, 0;
+        // get_new_plan_after_recovering_.at(i) = false;
+      }
 
-    //   // Miss to contact or swing
-    //   if (last_contact_sensing_msg_.data.at(i) &&
-    //       last_grf_sensor_msg_->contact_states.at(i) &&
-    //       last_grf_sensor_msg_->vectors.at(i).z >= 5) {
-    //     // ROS_WARN_STREAM("Leg controller: miss to contact or swing leg: " <<
-    //     // i);
+      // Miss to contact or swing
+      if (last_contact_sensing_msg_.data.at(i) &&
+          last_grf_sensor_msg_->contact_states.at(i) &&
+          last_grf_sensor_msg_->vectors.at(i).z >= 5) {
+        // ROS_WARN_STREAM("Leg controller: miss to contact or swing leg: " <<
+        // i);
 
-    //     last_contact_sensing_msg_.data.at(i) = false;
-    //   }
+        last_contact_sensing_msg_.data.at(i) = false;
+      }
 
-    //   // Keep miss
-    //   if (last_contact_sensing_msg_.data.at(i) && contact_mode.at(i)) {
-    //     adaptive_contact_mode.at(i) = false;
-    //     grf_array.segment(3 * i, 3) << 0, 0, 0;
-    //     get_new_plan_after_recovering_.at(i) = false;
-    //   }
+      // // Keep miss
+      // if (last_contact_sensing_msg_.data.at(i) && contact_mode.at(i)) {
+      //   adaptive_contact_mode.at(i) = false;
+      //   grf_array.segment(3 * i, 3) << 0, 0, 0;
+      //   get_new_plan_after_recovering_.at(i) = false;
+      // }
 
-    //   // Not yet receive new plan after recovering
-    //   if (!get_new_plan_after_recovering_.at(i)) {
-    //     adaptive_contact_mode.at(i) = false;
-    //     grf_array.segment(3 * i, 3) << 0, 0, 0;
-    //   }
-    // }
+      // // Not yet receive new plan after recovering
+      // if (!get_new_plan_after_recovering_.at(i)) {
+      //   adaptive_contact_mode.at(i) = false;
+      //   grf_array.segment(3 * i, 3) << 0, 0, 0;
+      // }
+    }
 
     // Compute swing hold position
     Eigen::VectorXd refined_foot_positions = ref_foot_positions;
