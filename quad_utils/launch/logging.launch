@@ -1,9 +1,10 @@
 <launch>
-
+    <arg name="namespace" default="robot_1"/>
+    
     <include file="$(find quad_utils)/launch/load_params.launch" />
 
     <node pkg="rosbag" type="record" name="rosbag_record"
-        args="record -O $(find quad_logger)/bags/quad_log_current --tcpnodelay
+        args="record -O $(find quad_logger)/bags/$(arg namespace)_quad_log_current --tcpnodelay
         /state/trajectory
         /state/ground_truth 
         /state/estimate 
@@ -21,7 +22,7 @@
         /foot_step_hist" />
 
     <node pkg="rosbag" type="record" name="rosbag_record_archive"
-        args="record -o $(find quad_logger)/bags/archive/quad_log --tcpnodelay
+        args="record -o $(find quad_logger)/bags/archive/$(arg namespace)_quad_log --tcpnodelay
         /state/trajectory
         /state/ground_truth 
         /state/estimate 

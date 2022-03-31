@@ -1,11 +1,11 @@
 <launch>
     <!-- <include file="$(find quad_utils)/launch/load_params.launch" /> -->
 
-    <arg name="global_planner" default="twist" />
-    <arg name="local_planner" default="full" />
-    <arg name="logging" default="false" />
-    <arg name="twist_input" default="none" />
-    <arg name="namespace" default="robot_1" />
+    <arg name="global_planner"  default="twist" />
+    <arg name="local_planner"   default="full" />
+    <arg name="logging"         default="false" />
+    <arg name="twist_input"     default="none" />
+    <arg name="namespace"       default="robot_1" />
 
     <group ns="/$(arg namespace)">
     <!-- Launch the node to publish the global body plan -->
