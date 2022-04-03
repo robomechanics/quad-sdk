@@ -366,14 +366,22 @@ class LocalPlanner {
   /// Desired roll
   double roll_desired_;
 
+  /// Struct for a gait mixture
   struct gait_mixture {
+    // The index where the gait should start that define the gait phase
     double gait_init_idx;
+
+    // The index where the gait start to mix into
     double mixture_idx;
+
+    // The index period for the mixture
     double mixture_period;
   };
 
+  /// The gait mixture list for each leg
   std::vector<std::vector<gait_mixture>> gait_mixture_vec_;
 
+  /// Nominal gait mixture peroid length
   int mixture_period_;
 };
 

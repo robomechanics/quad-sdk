@@ -162,6 +162,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   // Initialize contact sensing record
   contact_sensing_record_.assign(4, false);
 
+  // Initialize gait mixture list
   gait_mixture_vec_.resize(4);
 }
 
@@ -727,11 +728,12 @@ bool LocalPlanner::computeLocalPlan() {
   if (contact_sensing_msg_ != NULL) {
     for (size_t i = 0; i < 4; i++) {
       // If the clock assigns a swing or a too short stance (idx smaller than 3)
-      // but we just landing, stand for a while
+      // but we just landing, stand for a while, zeno existing so we also check
+      // if there's already a mixture or not
       if (!(contact_schedule_.at(i).at(0) && contact_schedule_.at(i).at(2)) &&
           gait_mixture_vec_.at(i).empty() &&
           !contact_sensing_msg_->data.at(i) && contact_sensing_record_.at(i)) {
-        // Record a early release flag
+        // Guarantee a 3 steps stance and mixture into the schedule
         gait_mixture landing_gait = {
             current_plan_index_ - 3 -
                 local_footstep_planner_->period_ *
@@ -754,7 +756,7 @@ bool LocalPlanner::computeLocalPlan() {
          contact_sensing_msg_->data.at(3)) &&
         contact_schedule_.at(0).at(i) &&
         robot_state_msg_->joints.position.at(3 * i) < abad_joint_limit_) {
-      // Record a early release flag
+      // Mix a gait start to swing now
       gait_mixture early_release_gait = {
           current_plan_index_ -
               local_footstep_planner_->period_ *
@@ -769,6 +771,7 @@ bool LocalPlanner::computeLocalPlan() {
     }
   }
 
+  // Apply gait mixture
   for (size_t i = 0; i < 4; i++) {
     if (!gait_mixture_vec_.at(i).empty()) {
       for (size_t j = 0; j < gait_mixture_vec_.at(i).size(); j++) {
@@ -779,6 +782,7 @@ bool LocalPlanner::computeLocalPlan() {
             current_plan_index_ - gait_mixture_vec_.at(i).at(j).gait_init_idx,
             new_contact_schedule);
 
+        // Compute linear weight
         Eigen::ArrayXd weight =
             (Eigen::ArrayXd::LinSpaced(N_, 0, N_ - 1) + current_plan_index_ -
              gait_mixture_vec_.at(i).at(j).mixture_idx) /
@@ -789,6 +793,7 @@ bool LocalPlanner::computeLocalPlan() {
           }
         }
 
+        // Check if it fully converges to one gait
         if (weight(0) == 1.) {
           gait_mixture_vec_.at(i).erase(gait_mixture_vec_.at(i).begin() + j);
           j--;
@@ -798,11 +803,13 @@ bool LocalPlanner::computeLocalPlan() {
         Eigen::MatrixXd contact_schedule_eigen, new_contact_schedule_eigen,
             mix_contact_schedule_eigen;
 
+        // Convert vector to Eigen
         quad_utils::contactScheduleToEigen(contact_schedule_,
                                            contact_schedule_eigen);
         quad_utils::contactScheduleToEigen(new_contact_schedule,
                                            new_contact_schedule_eigen);
 
+        // Apply weighted sum
         mix_contact_schedule_eigen = contact_schedule_eigen;
         mix_contact_schedule_eigen.row(i) =
             (contact_schedule_eigen.row(i).array() * weight.transpose() +
@@ -810,6 +817,7 @@ bool LocalPlanner::computeLocalPlan() {
                  (1. - weight.transpose()))
                 .matrix();
 
+        // Convert back
         quad_utils::eigenToContactSchedule(mix_contact_schedule_eigen,
                                            contact_schedule_);
       }
