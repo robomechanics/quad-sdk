@@ -188,7 +188,7 @@ void FastTerrainMap::loadDataFromGridMap(const grid_map::GridMap map) {
   for (int i = 0; i < x_size; i++) {
     for (int j = 0; j < y_size; j++) {
       grid_map::Index index = {(x_size - 1) - i, (y_size - 1) - j};
-      double height = (double)map.at("z", index);
+      double height = (double)map.at("z_inpainted", index);
       z_data[i].push_back(height);
 
       if (map.exists("normal_vectors_x") == true) {

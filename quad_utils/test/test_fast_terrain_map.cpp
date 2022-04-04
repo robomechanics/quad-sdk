@@ -14,8 +14,8 @@ TEST(FastTerrainMapTest, testSpeedComparison) {
   double y_origin = y_center - 0.5 * y_length;
 
   // Create GridMap
-  grid_map::GridMap grid_map_obj(
-      {"z", "nx", "ny", "nz", "z_filt", "nx_filt", "ny_filt", "nz_filt"});
+  grid_map::GridMap grid_map_obj({"z", "z_inpainted", "nx", "ny", "nz",
+                                  "z_filt", "nx_filt", "ny_filt", "nz_filt"});
   // grid_map_obj.setBasicLayers({"z","nx","ny","nz","z_filt","nx_filt","ny_filt","nz_filt"});
   grid_map_obj.setFrameId("map");
   grid_map_obj.setGeometry(grid_map::Length(x_length, y_length), res,
@@ -29,6 +29,7 @@ TEST(FastTerrainMapTest, testSpeedComparison) {
   // Load grid map with random noise
   for (grid_map::GridMapIterator it(grid_map_obj); !it.isPastEnd(); ++it) {
     grid_map_obj.at("z", *it) = 0.1 * ((double)rand() / RAND_MAX);
+    grid_map_obj.at("z_inpainted", *it) = grid_map_obj.at("z", *it);
     grid_map_obj.at("z_filt", *it) = grid_map_obj.at("z", *it);
 
     grid_map_obj.at("nx", *it) = 0.0;
