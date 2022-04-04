@@ -35,7 +35,45 @@ class EKFEstimator {
    */
   void spin();
 
- private:
+  /**
+   * @brief set X as Xin
+   */
+  void setX(Eigen::VectorXd Xin);
+
+  /**
+   * @brief set P as Pin
+   */
+  void setP(Eigen::MatrixXd Pin);
+  /**
+   * @brief set lastX as Xin
+   */
+  void setlast_X(Eigen::VectorXd Xin);
+
+  /**
+   * @brief return the value of X
+   * @return return X
+   */
+  Eigen::VectorXd getX();
+
+  /**
+   * @brief return the value of last_X
+   * @return return last_X
+   */
+  Eigen::VectorXd getlastX();
+
+  /**
+   * @brief return the value of X_pre
+   * @return return X_pre
+   */
+  Eigen::VectorXd getX_pre();
+
+  /**
+   * @brief return the value of X
+   * @return return X
+   */
+  Eigen::VectorXd getStates();
+
+  //  private:
   /**
    * @brief Callback function to handle new ground truth data
    * @param[in] msg ground_truth_msg quad_msgs<RobotState>
@@ -105,6 +143,7 @@ class EKFEstimator {
       const sensor_msgs::JointState::ConstPtr& last_joint_state_msg_,
       Eigen::VectorXd& jk);
 
+  FRIEND_TEST(EKFEstimator, basicTestCase);
   /**
    * @brief predict quaternion k+1 from k using dt, angular velocity, and qk
    * @param[in] w Eigen::VectorXd angular velocity vector (3 * 1)
@@ -114,6 +153,7 @@ class EKFEstimator {
   Eigen::VectorXd quaternionDynamics(const Eigen::VectorXd& w,
                                      const Eigen::VectorXd& q);
 
+  FRIEND_TEST(EKFEstimator, basicTestCase);
   /**
    * @brief calculate skew-symmetric matrix from a vector
    * @param[in] w Eigen::VectorXd angular velocity vector (3 * 1)
@@ -121,6 +161,7 @@ class EKFEstimator {
    */
   Eigen::MatrixXd calcSkewsym(const Eigen::VectorXd& w);
 
+  FRIEND_TEST(EKFEstimator, basicTestCase);
   /**
    * @brief calculate rodrigues incremental rotation matrix from a vector
    * @param[in] dt time in second
@@ -132,6 +173,7 @@ class EKFEstimator {
   Eigen::MatrixXd calcRodrigues(const double& dt, const Eigen::VectorXd& w,
                                 const int& sub);
 
+  FRIEND_TEST(EKFEstimator, basicTestCase);
   /**
    * @brief set sensor noise
    */
@@ -188,6 +230,7 @@ class EKFEstimator {
   /// Maximum amount of time to still use joint state message in EKF data
   double joint_state_msg_time_diff_max_;
 
+  FRIEND_TEST(EKFEstimator, basicTestCase);
   /// QuadKD class
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
 
@@ -201,6 +244,7 @@ class EKFEstimator {
   // state vector (28 * 1)
   Eigen::VectorXd X;
 
+  FRIEND_TEST(EKFEstimator, basicTestCase);
   // last state vector (28 * 1)
   Eigen::VectorXd last_X;
 
@@ -210,6 +254,7 @@ class EKFEstimator {
   // initial covariance matrix (27 * 27)
   Eigen::MatrixXd P0;
 
+  FRIEND_TEST(EKFEstimator, basicTestCase);
   // state covariance matrix (27 * 27)
   Eigen::MatrixXd P;
 
@@ -231,24 +276,25 @@ class EKFEstimator {
   // previous time variable
   ros::Time last_time;
 
+  FRIEND_TEST(EKFEstimator, basicTestCase);
   // IMU linear acceleration bias (3*3)
   Eigen::MatrixXd bias_acc;
-
+  FRIEND_TEST(EKFEstimator, basicTestCase);
   // IMU linear acceleration noise (3*3)
   Eigen::MatrixXd noise_acc;
-
+  FRIEND_TEST(EKFEstimator, basicTestCase);
   // IMU augular acceleration bias (3*3)
   Eigen::MatrixXd bias_gyro;
-
+  FRIEND_TEST(EKFEstimator, basicTestCase);
   // IMU augular acceleration noise (3*3)
   Eigen::MatrixXd noise_gyro;
-
+  FRIEND_TEST(EKFEstimator, basicTestCase);
   // individual noise at feet (3*3)
   Eigen::MatrixXd noise_feet;
-
+  FRIEND_TEST(EKFEstimator, basicTestCase);
   // noise at feet (3*3)
   Eigen::MatrixXd noise_fk;
-
+  FRIEND_TEST(EKFEstimator, basicTestCase);
   // noise at encoder
   double noise_encoder;
 

@@ -63,4 +63,4 @@ target_link_libraries(ekf_estimator_node
 
 ## Google test file for ekf_estimator library
 catkin_add_gtest(ekf_estimator_test test/test_ekf_estimator.cpp)
-target_link_libraries(ekf_estimator_test ${catkin_LIBRARIES} ekf_estimator)
+target_link_libraries(ekf_estimator_test ekf_estimator ${catkin_LIBRARIES})
