@@ -131,6 +131,15 @@ class RVizInterface {
   /// ROS Publisher for the footstep plan visualization
   ros::Publisher foot_plan_discrete_viz_pub_;
 
+  /// ROS Publisher for the state estimate body trace
+  ros::Publisher state_estimate_trace_pub_;
+
+  /// ROS Publisher for the ground truth state body trace
+  ros::Publisher ground_truth_state_trace_pub_;
+
+  /// ROS Publisher for the trajectory state body trace
+  ros::Publisher trajectory_state_trace_pub_;
+
   /// ROS Publisher for the swing leg 0 visualization
   ros::Publisher foot_0_plan_continuous_viz_pub_;
 
@@ -173,6 +182,18 @@ class RVizInterface {
   /// link
   tf2_ros::TransformBroadcaster trajectory_base_tf_br_;
 
+  /// Message for state estimate trace
+  visualization_msgs::Marker state_estimate_trace_msg_;
+
+  /// Message for ground truth state trace
+  visualization_msgs::Marker ground_truth_state_trace_msg_;
+
+  /// Message for trajectory state trace
+  visualization_msgs::Marker trajectory_state_trace_msg_;
+
+  /// Distance threshold for resetting the state traces
+  const double trace_reset_threshold_ = 0.2;
+
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
 
@@ -180,8 +201,8 @@ class RVizInterface {
   /// in callbacks
   double update_rate_;
 
-  /// Number for showing orientation of plan
-  int orientation_subsample_num_;
+  /// Interval for showing orientation of plan
+  int orientation_subsample_interval_;
 
   /// Handle for the map frame
   std::string map_frame_;

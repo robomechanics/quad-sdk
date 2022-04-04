@@ -176,9 +176,10 @@ void LocalFootstepPlanner::computeFootPlan(
         // Compute the body plan including the stance phase
         Eigen::MatrixXd body_plan_stance;
         if (isContact(contact_schedule, end_of_stance, j)) {
-          // Means we get to the end of horizon, so we should use the nominal
-          // period
-          end_of_stance = i + period_ * duty_cycles_[j];
+          // Compute the index of the end of the stance phase using the nominal
+          // stance duration (make sure not smaller than horizon)
+          end_of_stance =
+              std::max(i + int(period_ * duty_cycles_[j]), end_of_stance);
 
           // Integrate the plan if out of the horizon
           body_plan_stance = Eigen::MatrixXd(end_of_stance + 1, 12);
@@ -223,7 +224,10 @@ void LocalFootstepPlanner::computeFootPlan(
         ref_body_ang_vel_touchdown = ref_body_plan.block<1, 3>(i, 9);
 
         // Compute dynamic shift
-        double body_height_touchdown = body_plan(i, 2);
+        double body_height_touchdown =
+            std::max(body_plan(i, 2) - terrain_grid_.atPosition(
+                                           "z", body_plan.row(i).segment<2>(0)),
+                     0.0);
         // Ref: Highly Dynamic Quadruped Locomotion via Whole-Body Impulse
         // Control and Model Predictive Control (Centrifugal force and capture
         // point)
