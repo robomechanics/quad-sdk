@@ -153,9 +153,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   // Initialize the early release index
   early_release_idx_.assign(4, 0);
 
-  // Initialize the early release terminate index
-  early_release_terminate_idx_.assign(4, 0);
-
   // Initialize the miss recovery indicator
   miss_recovery_.assign(4, false);
 
@@ -164,6 +161,15 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 
   // Initialize gait mixture list
   gait_mixture_vec_.resize(4);
+
+  // Initialize gait mixture for each leg
+  for (size_t i = 0; i < 4; i++) {
+    // We have landing and early release for mixtrue now
+    gait_mixture_vec_.at(i).resize(2);
+    for (size_t j = 0; j < 2; j++) {
+      gait_mixture_vec_.at(i).at(j).active = false;
+    }
+  }
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -727,19 +733,28 @@ bool LocalPlanner::computeLocalPlan() {
   // Contact sensing recover - stand for a while when landing
   if (contact_sensing_msg_ != NULL) {
     for (size_t i = 0; i < 4; i++) {
-      // If the clock assigns a swing or a too short stance (idx smaller than 3)
-      // but we just landing, stand for a while, zeno existing so we also check
-      // if there's already a mixture or not
-      if (!(contact_schedule_.at(i).at(0) && contact_schedule_.at(i).at(2)) &&
-          gait_mixture_vec_.at(i).empty() &&
+      // If the clock assigns a swing or too short but we just landing, stand
+      // for a while, zeno existing so we also check if there's already a
+      // mixture or not
+      if (!(contact_schedule_.at(0).at(i) &&
+            contact_schedule_
+                .at(int(local_footstep_planner_->duty_cycles_[i] *
+                        local_footstep_planner_->period_ / 2) -
+                    1)
+                .at(i)) &&
+          !gait_mixture_vec_.at(i).at(0).active &&
           !contact_sensing_msg_->data.at(i) && contact_sensing_record_.at(i)) {
+        // Compute gait init index
+        int gait_init_idx = local_footstep_planner_->computeNearestPlanIndex(
+            current_plan_index_,
+            int(local_footstep_planner_->duty_cycles_[i] *
+                local_footstep_planner_->period_ / 2),
+            i);
+
         // Guarantee a 3 steps stance and mixture into the schedule
-        gait_mixture landing_gait = {
-            current_plan_index_ - 3 -
-                local_footstep_planner_->period_ *
-                    local_footstep_planner_->phase_offsets_[i],
-            current_plan_index_, mixture_period_};
-        gait_mixture_vec_.at(i).push_back(landing_gait);
+        gait_mixture landing_gait = {true, gait_init_idx, current_plan_index_,
+                                     mixture_period_};
+        gait_mixture_vec_.at(i).at(0) = landing_gait;
       }
 
       // Record the contact sensing
@@ -750,20 +765,23 @@ bool LocalPlanner::computeLocalPlan() {
   // Joint limit checking - now we only care about abad
   for (size_t i = 0; i < 4; i++) {
     // If the leg is in contact and near the joint limit, release it
-    if (gait_mixture_vec_.at(i).empty() && contact_sensing_msg_ != NULL &&
+    if (!gait_mixture_vec_.at(i).at(1).active && contact_sensing_msg_ != NULL &&
         (contact_sensing_msg_->data.at(0) || contact_sensing_msg_->data.at(1) ||
          contact_sensing_msg_->data.at(2) ||
          contact_sensing_msg_->data.at(3)) &&
         contact_schedule_.at(0).at(i) &&
         robot_state_msg_->joints.position.at(3 * i) < abad_joint_limit_) {
+      // Compute gait init index
+      int gait_init_idx = local_footstep_planner_->computeNearestPlanIndex(
+          current_plan_index_,
+          int(local_footstep_planner_->duty_cycles_[i] *
+              local_footstep_planner_->period_),
+          i);
+
       // Mix a gait start to swing now
-      gait_mixture early_release_gait = {
-          current_plan_index_ -
-              local_footstep_planner_->period_ *
-                  (local_footstep_planner_->phase_offsets_[i] +
-                   local_footstep_planner_->duty_cycles_[i]),
-          current_plan_index_, mixture_period_};
-      gait_mixture_vec_.at(i).push_back(early_release_gait);
+      gait_mixture early_release_gait = {true, gait_init_idx,
+                                         current_plan_index_, mixture_period_};
+      gait_mixture_vec_.at(i).at(1) = early_release_gait;
 
       // Record foot position for swing computation
       past_footholds_msg_.feet[i] = robot_state_msg_->feet.feet.at(i);
@@ -773,14 +791,19 @@ bool LocalPlanner::computeLocalPlan() {
 
   // Apply gait mixture
   for (size_t i = 0; i < 4; i++) {
-    if (!gait_mixture_vec_.at(i).empty()) {
-      for (size_t j = 0; j < gait_mixture_vec_.at(i).size(); j++) {
-        // Compute the contact schedule
-        std::vector<std::vector<bool>> new_contact_schedule,
-            mix_contact_schedule;
-        local_footstep_planner_->computeContactSchedule(
-            current_plan_index_ - gait_mixture_vec_.at(i).at(j).gait_init_idx,
-            new_contact_schedule);
+    for (size_t j = 0; j < gait_mixture_vec_.at(i).size(); j++) {
+      if (gait_mixture_vec_.at(i).at(j).active) {
+        // Initialize index list
+        Eigen::ArrayXd current_plan_index_list, new_plan_index_list,
+            mix_plan_index_list;
+
+        // Compute list
+        current_plan_index_list =
+            current_plan_index_ + Eigen::ArrayXd::LinSpaced(N_, 0, N_ - 1);
+        new_plan_index_list = gait_mixture_vec_.at(i).at(j).gait_init_idx +
+                              current_plan_index_ -
+                              gait_mixture_vec_.at(i).at(j).mixture_idx +
+                              Eigen::ArrayXd::LinSpaced(N_, 0, N_ - 1);
 
         // Compute linear weight
         Eigen::ArrayXd weight =
@@ -795,31 +818,21 @@ bool LocalPlanner::computeLocalPlan() {
 
         // Check if it fully converges to one gait
         if (weight(0) == 1.) {
-          gait_mixture_vec_.at(i).erase(gait_mixture_vec_.at(i).begin() + j);
-          j--;
+          gait_mixture_vec_.at(i).at(j).active = false;
           continue;
         }
 
-        Eigen::MatrixXd contact_schedule_eigen, new_contact_schedule_eigen,
-            mix_contact_schedule_eigen;
+        // Mix index
+        mix_plan_index_list = current_plan_index_list * weight +
+                              new_plan_index_list * (1. - weight);
+        mix_plan_index_list = mix_plan_index_list.round();
 
-        // Convert vector to Eigen
-        quad_utils::contactScheduleToEigen(contact_schedule_,
-                                           contact_schedule_eigen);
-        quad_utils::contactScheduleToEigen(new_contact_schedule,
-                                           new_contact_schedule_eigen);
-
-        // Apply weighted sum
-        mix_contact_schedule_eigen = contact_schedule_eigen;
-        mix_contact_schedule_eigen.row(i) =
-            (contact_schedule_eigen.row(i).array() * weight.transpose() +
-             new_contact_schedule_eigen.row(i).array() *
-                 (1. - weight.transpose()))
-                .matrix();
-
-        // Convert back
-        quad_utils::eigenToContactSchedule(mix_contact_schedule_eigen,
-                                           contact_schedule_);
+        // Compute contact states
+        for (size_t k = 0; k < N_; k++) {
+          contact_schedule_.at(k).at(i) =
+              local_footstep_planner_->computeContactState(
+                  int(mix_plan_index_list(k)), i);
+        }
       }
     }
   }

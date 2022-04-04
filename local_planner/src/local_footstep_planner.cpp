@@ -109,6 +109,38 @@ void LocalFootstepPlanner::computeContactSchedule(
   }
 }
 
+bool LocalFootstepPlanner::computeContactState(int plan_index, int leg_idx) {
+  // Compute the current phase in the nominal contact schedule
+  int phase = plan_index % period_;
+
+  // Compute the current contact state
+  return nominal_contact_schedule_[phase][leg_idx];
+}
+
+int LocalFootstepPlanner::computeNearestPlanIndex(int current_plan_index,
+                                                  int desired_phase,
+                                                  int leg_idx) {
+  // Compute the current phase in the nominal contact schedule
+  int phase = current_plan_index % period_;
+
+  // Compute phase diffrentce
+  int desired_plan_index;
+  int diff =
+      std::fmod(desired_phase + period_ * phase_offsets_[leg_idx], period_) -
+      phase;
+
+  // Wrap to get the closest one
+  if (diff > period_ / 2) {
+    desired_plan_index = current_plan_index + (diff - period_);
+  } else if (diff < -period_ / 2) {
+    desired_plan_index = current_plan_index + (diff + period_);
+  } else {
+    desired_plan_index = current_plan_index + diff;
+  }
+
+  return desired_plan_index;
+}
+
 void LocalFootstepPlanner::cubicHermiteSpline(double pos_prev, double vel_prev,
                                               double pos_next, double vel_next,
                                               double phase, double duration,
@@ -712,10 +744,9 @@ double LocalFootstepPlanner::computeSwingApex(
                hip_height - hip_clearance_);
 
   // Update apex so that it's still higher than the ground
-  swing_apex =
-      std::max(swing_apex,
-               std::max(foot_position_prev.z(), foot_position_next.z()) -
-                   toe_radius);
+  swing_apex = std::max(
+      swing_apex,
+      std::max(foot_position_prev.z(), foot_position_next.z()) - toe_radius);
 
   return swing_apex;
 }

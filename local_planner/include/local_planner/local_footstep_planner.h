@@ -133,6 +133,24 @@ class LocalFootstepPlanner {
                               std::vector<std::vector<bool>> &contact_schedule);
 
   /**
+   * @brief Compute the contact state given phase and leg index
+   * @param[in] plan_index Current index
+   * @param[in] leg_idx Leg index
+   * @return Contact state
+   */
+  bool computeContactState(int plan_index, int leg_idx);
+
+  /**
+   * @brief Compute the nearest plan index given desired phase
+   * @param[in] current_plan_index Current index in the plan
+   * @param[in] desired_phase Desired gait phase
+   * @param[in] leg_idx Leg index
+   * @return Contact state
+   */
+  int computeNearestPlanIndex(int current_plan_index, int desired_phase,
+                              int leg_idx);
+
+  /**
    * @brief Update the discrete footstep plan with the current plan
    * @param[in] current_plan_index Current plan index
    * @param[in] contact_schedule Current contact schedule

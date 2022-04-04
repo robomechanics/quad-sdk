@@ -34,4 +34,4 @@ local_footstep_planner:
   # duty_cycles: [0.75, 0.75, 0.75, 0.75]
   # phase_offsets: [0.25, 0.0, 0.75, 0.5]
   abad_joint_limit: -0.338866987
-  mixture_period: 23
+  mixture_period: 24
