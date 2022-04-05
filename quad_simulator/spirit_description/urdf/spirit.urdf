@@ -233,8 +233,8 @@
         </friction>
         <contact>
           <ode>
-            <kp>1000000.0</kp>
-            <kd>1.0</kd>
+            <kp>30000</kp>
+            <kd>1000</kd>
           </ode>
         </contact>
       </surface>
@@ -447,8 +447,8 @@
         </friction>
         <contact>
           <ode>
-            <kp>1000000.0</kp>
-            <kd>1.0</kd>
+            <kp>30000</kp>
+            <kd>1000</kd>
           </ode>
         </contact>
       </surface>
@@ -661,8 +661,8 @@
         </friction>
         <contact>
           <ode>
-            <kp>1000000.0</kp>
-            <kd>1.0</kd>
+            <kp>30000</kp>
+            <kd>1000</kd>
           </ode>
         </contact>
       </surface>
@@ -875,8 +875,8 @@
         </friction>
         <contact>
           <ode>
-            <kp>1000000.0</kp>
-            <kd>1.0</kd>
+            <kp>30000</kp>
+            <kd>1000</kd>
           </ode>
         </contact>
       </surface>
