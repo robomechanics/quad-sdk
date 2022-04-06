@@ -8,7 +8,7 @@
 #include <quad_msgs/LegCommandArray.h>
 #include <quad_msgs/MotorCommand.h>
 #include <quad_utils/ros_utils.h>
-#include <quad_utils/tail_type.h>
+#include <quad_utils/enum_type.h>
 #include <realtime_tools/realtime_buffer.h>
 #include <realtime_tools/realtime_publisher.h>
 #include <ros/node_handle.h>

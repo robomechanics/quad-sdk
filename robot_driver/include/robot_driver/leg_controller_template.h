@@ -10,12 +10,12 @@
 #include <quad_msgs/MultiFootPlanContinuous.h>
 #include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/RobotState.h>
+#include <quad_utils/enum_type.h>
 #include <quad_utils/math_utils.h>
 #include <quad_utils/ros_utils.h>
 #include <robot_driver/mblink_converter.h>
 #include <ros/ros.h>
-#include <std_msgs/ByteMultiArray.h>
-#include <std_msgs/UInt8.h>
+#include <std_msgs/UInt8MultiArray.h>
 
 #include <cmath>
 #include <eigen3/Eigen/Eigen>
@@ -81,10 +81,10 @@ class LegControllerTemplate {
   void updateGrfSensorMsg(quad_msgs::GRFArray::ConstPtr msg);
 
   /**
-   * @brief Get contact sensing message
-   * @param[in] msg Message of the local referance plan
+   * @brief Get contact state machine message
+   * @param[in] msg Message of the contact state machine
    */
-  std_msgs::ByteMultiArray getContactSensingMsg();
+  std_msgs::UInt8MultiArray getcontactStateMachine();
 
   /**
    * @brief Compute the leg command array message
@@ -131,8 +131,8 @@ class LegControllerTemplate {
   /// Most recent GRF sensor data
   quad_msgs::GRFArray::ConstPtr last_grf_sensor_msg_;
 
-  /// Most recent contact sensing data
-  std_msgs::ByteMultiArray last_contact_sensing_msg_;
+  /// Most recent contact state machine data
+  std_msgs::UInt8MultiArray contact_state_machine_;
 
   /// If get new plan after recover from contact missing
   std::vector<bool> get_new_plan_after_recovering_;

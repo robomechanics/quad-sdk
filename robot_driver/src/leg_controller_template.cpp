@@ -4,11 +4,11 @@ LegControllerTemplate::LegControllerTemplate() {
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
   override_state_machine_ = false;
 
-  // Initialize contact sensing message
-  last_contact_sensing_msg_.data.assign(4, false);
+  // Initialize contact state machine message
+  contact_state_machine_.data.assign(4, STANCE);
 
   // Initialize new plan check vector
-  get_new_plan_after_recovering_.assign(4, false);
+  get_new_plan_after_recovering_.assign(4, true);
 }
 
 void LegControllerTemplate::updateLocalPlanMsg(
@@ -16,11 +16,9 @@ void LegControllerTemplate::updateLocalPlanMsg(
   last_local_plan_msg_ = msg;
   last_local_plan_time_ = t_msg;
 
-  for (size_t i = 0; i < 4; i++)
-  {
-    // If we recover from contact missing and receive a new plan
-    if (!last_contact_sensing_msg_.data.at(i))
-    {
+  for (size_t i = 0; i < 4; i++) {
+    // If we recover from retraction and receive a new plan
+    if (contact_state_machine_.data.at(i) == STANCE) {
       get_new_plan_after_recovering_.at(i) = true;
     }
   }
@@ -63,6 +61,6 @@ void LegControllerTemplate::updateGrfSensorMsg(
   last_grf_sensor_msg_ = msg;
 }
 
-std_msgs::ByteMultiArray LegControllerTemplate::getContactSensingMsg() {
-  return last_contact_sensing_msg_;
+std_msgs::UInt8MultiArray LegControllerTemplate::getcontactStateMachine() {
+  return contact_state_machine_;
 }

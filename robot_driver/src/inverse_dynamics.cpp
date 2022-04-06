@@ -110,107 +110,130 @@ bool InverseDynamicsController::computeLegCommandArray(
       contact_mode[i] = ref_state_msg.feet.feet[i].contact;
     }
 
-    // Contact sensing
-    // Start from nominal contact schedule
-    std::vector<int> adaptive_contact_mode = contact_mode;
-
-    for (size_t i = 0; i < num_feet_; i++) {
-      // Swing or contact to miss
-      if (contact_mode.at(i) && !last_contact_sensing_msg_.data.at(i) &&
-          (current_foot_positions(3 * i + 2) - body_state(2)) < -0.295) {
-        // ROS_WARN_STREAM("Leg controller: swing or contact to miss leg: " <<
-        // i);
-
-        last_contact_sensing_msg_.data.at(i) = true;
-
-        adaptive_contact_mode.at(i) = false;
-        grf_array.segment(3 * i, 3) << 0, 0, 0;
-        get_new_plan_after_recovering_.at(i) = false;
-      }
-
-      // Miss to contact or swing
-      if (last_contact_sensing_msg_.data.at(i) &&
-          last_grf_sensor_msg_->contact_states.at(i) &&
-          last_grf_sensor_msg_->vectors.at(i).z >= 5) {
-        // ROS_WARN_STREAM("Leg controller: miss to contact or swing leg: " <<
-        // i);
-
-        last_contact_sensing_msg_.data.at(i) = false;
-      }
-
-      // Keep miss
-      if (last_contact_sensing_msg_.data.at(i) && contact_mode.at(i)) {
-        adaptive_contact_mode.at(i) = false;
-        grf_array.segment(3 * i, 3) << 0, 0, 0;
-        get_new_plan_after_recovering_.at(i) = false;
-      }
-
-      // Not yet receive new plan after recovering
-      if (!get_new_plan_after_recovering_.at(i)) {
-        adaptive_contact_mode.at(i) = false;
-        grf_array.segment(3 * i, 3) << 0, 0, 0;
-      }
-    }
-
-    // Compute swing hold position
-    Eigen::VectorXd refined_foot_positions = ref_foot_positions;
-    for (size_t i = 0; i < 4; i++) {
-      if (last_contact_sensing_msg_.data.at(i)) {
-        Eigen::Vector3d hip_pos, nominal_foot_shift;
-        quadKD_->worldToNominalHipFKWorldFrame(
-            i, body_state.segment(0, 3), body_state.segment(3, 3), hip_pos);
-        nominal_foot_shift << 0, 0, -0.35;
-
-        Eigen::Matrix3d rotation_matrix, body_rotation_matrix;
-        double theta = 0.707;
-        double yaw = body_state(5);
-        body_rotation_matrix << cos(yaw), -sin(yaw), 0, sin(yaw), cos(yaw), 0,
-            0, 0, 1;
-        body_rotation_matrix = body_rotation_matrix.transpose();
-        rotation_matrix << 1, 0, 0, 0, cos(theta), -sin(theta), 0, sin(theta),
-            cos(theta);
-        rotation_matrix = rotation_matrix.transpose();
-
-        refined_foot_positions.segment(3 * i, 3) =
-            (body_rotation_matrix * rotation_matrix * nominal_foot_shift +
-             hip_pos);
-      }
-    }
-
-    // Compute foot state
-    quad_msgs::RobotState refined_state_msg;
-    quad_msgs::MultiFootState refined_foot_msg = ref_state_msg.feet;
-    for (size_t i = 0; i < 4; i++) {
-      if (last_contact_sensing_msg_.data.at(i)) {
-        quad_utils::eigenToFootStateMsg(
-            refined_foot_positions.segment(3 * i, 3), Eigen::Vector3d::Zero(),
-            Eigen::Vector3d::Zero(), refined_foot_msg.feet[i]);
-      }
-    }
-    refined_state_msg.body = robot_state_msg.body;
-    refined_state_msg.feet = refined_foot_msg;
-    quad_utils::ikRobotState(*quadKD_, refined_state_msg);
+    // Update foot IK
+    ref_state_msg.body = robot_state_msg.body;
+    quad_utils::ikRobotState(*quadKD_, ref_state_msg);
 
     // Compute joint torques
     quadKD_->computeInverseDynamics(state_positions, state_velocities,
                                     ref_foot_acceleration, grf_array,
                                     contact_mode, tau_array);
 
-    // Copy to the ref state messsage
     for (size_t i = 0; i < 4; i++) {
-      for (size_t j = 0; j < 3; j++) {
-        ref_state_msg.joints.position.at(3 * i + j) =
-            refined_state_msg.joints.position.at(3 * i + j);
-        ref_state_msg.joints.velocity.at(3 * i + j) =
-            refined_state_msg.joints.velocity.at(3 * i + j);
-        if (last_contact_sensing_msg_.data.at(i)) {
-          ref_state_msg.joints.velocity.at(3 * i + j) = 0;
-          tau_array(3 * i + j) = 0;
+      // Define state machine running state
+      bool contact_state_machine_done = false;
+
+      // Define pd gain list
+      std::vector<double> kp_list, kd_list;
+
+      while (!contact_state_machine_done) {
+        switch (contact_state_machine_.data.at(i)) {
+          case STANCE:
+            if (!contact_mode[i]) {
+              // Switch to swing
+              contact_state_machine_.data.at(i) = SWING;
+              break;
+            }
+
+            if (!get_new_plan_after_recovering_.at(i)) {
+              // Still do retraction if we've not yet receive the latest plan
+              // Assign retraction position
+              ref_state_msg.joints.position.at(3 * i + 0) = 0.707;
+              ref_state_msg.joints.position.at(3 * i + 1) = 1.4137;
+              ref_state_msg.joints.position.at(3 * i + 2) = 2 * 1.4137;
+
+              // Assign retraction velocity
+              for (size_t j = 0; j < 3; j++) {
+                ref_state_msg.joints.velocity.at(3 * i + j) = 0;
+              }
+
+              // Zero feedforward torque
+              tau_array.segment(3 * i, 3) << 0, 0, 0;
+
+              // Apply gains
+              kp_list = retraction_kp_;
+              kd_list = retraction_kd_;
+            } else {
+              // Apply gains
+              kp_list = stance_kp_;
+              kd_list = stance_kd_;
+            }
+
+            contact_state_machine_done = true;
+            break;
+
+          case SWING:
+            if (contact_mode[i]) {
+              // Clock switch to stance, extend first
+              contact_state_machine_.data.at(i) = EXTEND;
+              break;
+            }
+
+            // Apply gains
+            kp_list = swing_kp_;
+            kd_list = swing_kd_;
+
+            contact_state_machine_done = true;
+            break;
+
+          case EXTEND:
+            if (last_grf_sensor_msg_->contact_states.at(i) &&
+                last_grf_sensor_msg_->vectors.at(i).z >= 5) {
+              // Switch to stance if contact sensor reports it
+              contact_state_machine_.data.at(i) = STANCE;
+              break;
+            }
+
+            // Compute foot height relative to body
+            if (current_foot_positions(3 * i + 2) - body_state(2) < -0.295) {
+              // Switch to retraction if foot getting too far
+              contact_state_machine_.data.at(i) = RETRACTION;
+              break;
+            }
+
+            // Apply gains
+            kp_list = extend_kp_;
+            kd_list = extend_kd_;
+
+            contact_state_machine_done = true;
+            break;
+
+          case RETRACTION:
+            if (last_grf_sensor_msg_->contact_states.at(i) &&
+                last_grf_sensor_msg_->vectors.at(i).z >= 5) {
+              // Switch to stance if contact sensor reports it
+              contact_state_machine_.data.at(i) = STANCE;
+              break;
+            }
+
+            // Assign retraction position
+            ref_state_msg.joints.position.at(3 * i + 0) = 0.707;
+            ref_state_msg.joints.position.at(3 * i + 1) = 1.4137;
+            ref_state_msg.joints.position.at(3 * i + 2) = 2 * 1.4137;
+
+            // Assign retraction velocity
+            for (size_t j = 0; j < 3; j++) {
+              ref_state_msg.joints.velocity.at(3 * i + j) = 0;
+            }
+
+            // Clear new plan flag
+            get_new_plan_after_recovering_.at(i) = false;
+
+            // Zero feedforward torque
+            tau_array.segment(3 * i, 3) << 0, 0, 0;
+
+            // Apply gains
+            kp_list = retraction_kp_;
+            kd_list = retraction_kd_;
+
+            contact_state_machine_done = true;
+            break;
+
+          default:
+            break;
         }
       }
-    }
 
-    for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg.leg_commands.at(i).motor_commands.resize(3);
       for (int j = 0; j < 3; ++j) {
         int joint_idx = 3 * i + j;
@@ -225,36 +248,10 @@ bool InverseDynamicsController::computeLegCommandArray(
             .motor_commands.at(j)
             .torque_ff = tau_array(joint_idx);
 
-        if (contact_mode.at(i)) {
-          if (adaptive_contact_mode.at(i)) {
-            if (last_grf_sensor_msg_->contact_states.at(i) &&
-                last_grf_sensor_msg_->vectors.at(i).z >= 5) {
-              // It's actually in contact
-              leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
-                  stance_kp_.at(j);
-              leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
-                  stance_kd_.at(j);
-            } else {
-              // It's extending
-              leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
-                  extend_kp_.at(j);
-              leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
-                  extend_kd_.at(j);
-            }
-          } else {
-            // It's retracting
-            leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
-                retraction_kp_.at(j);
-            leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
-                retraction_kd_.at(j);
-          }
-        } else {
-          // It's swinging
-          leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
-              swing_kp_.at(j);
-          leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
-              swing_kd_.at(j);
-        }
+        leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
+            kp_list.at(j);
+        leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
+            kd_list.at(j);
       }
     }
 
