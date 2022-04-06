@@ -13,7 +13,7 @@
 #include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/RobotState.h>
 #include <quad_utils/ros_utils.h>
-#include <quad_utils/tail_type.h>
+#include <quad_utils/enum_type.h>
 #include <ros/ros.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>

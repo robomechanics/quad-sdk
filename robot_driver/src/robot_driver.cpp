@@ -9,7 +9,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   std::string grf_topic, robot_state_topic, local_plan_topic,
       leg_command_array_topic, control_mode_topic, leg_override_topic,
       remote_heartbeat_topic, robot_heartbeat_topic, single_joint_cmd_topic,
-      mocap_topic, grf_sensor_topic, contact_sensing_topic;
+      mocap_topic, grf_sensor_topic, contact_state_machine_topic;
   quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
   quad_utils::loadROSParam(nh_, "topics/heartbeat/remote",
@@ -26,8 +26,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
                            single_joint_cmd_topic);
   quad_utils::loadROSParam(nh_, "topics/mocap", mocap_topic);
   quad_utils::loadROSParam(nh_, "topics/state/grfs", grf_sensor_topic);
-  quad_utils::loadROSParam(nh_, "topics/control/contact_sensing",
-                           contact_sensing_topic);
+  quad_utils::loadROSParam(nh_, "topics/control/contact_state_machine",
+                           contact_state_machine_topic);
 
   nh_.param<bool>("robot_driver/is_hw", is_hw_, true);
   nh_.param<std::string>("robot_driver/controller", controller_id_,
@@ -86,8 +86,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
       nh_.advertise<quad_msgs::LegCommandArray>(leg_command_array_topic, 1);
   robot_heartbeat_pub_ =
       nh_.advertise<std_msgs::Header>(robot_heartbeat_topic, 1);
-  contact_sensing_pub_ =
-      nh_.advertise<std_msgs::ByteMultiArray>(contact_sensing_topic, 1);
+  contact_state_machine_pub_ =
+      nh_.advertise<std_msgs::UInt8MultiArray>(contact_state_machine_topic, 1);
 
   // Set up pubs and subs dependent on robot layer
   if (is_hw_) {
@@ -591,7 +591,7 @@ void RobotDriver::publishControl(bool is_valid) {
   grf_array_msg_.header.stamp = leg_command_array_msg_.header.stamp;
   grf_pub_.publish(grf_array_msg_);
 
-  contact_sensing_pub_.publish(leg_controller_->getContactSensingMsg());
+  contact_state_machine_pub_.publish(leg_controller_->getcontactStateMachine());
   // }
 
   // Send command to the robot

@@ -4,7 +4,7 @@
 #include <math.h>
 #include <quad_msgs/LegCommandArray.h>
 #include <quad_utils/ros_utils.h>
-#include <quad_utils/tail_type.h>
+#include <quad_utils/enum_type.h>
 #include <ros/ros.h>
 #include <std_msgs/UInt8.h>
 

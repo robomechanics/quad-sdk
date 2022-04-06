@@ -379,11 +379,8 @@ class RobotDriver {
   /// Required for mblink converter
   char** argv_;
 
-  /// Contact sensing results message
-  std_msgs::ByteMultiArray contact_sensing_msg_;
-
-  /// Contact sensing results publisher
-  ros::Publisher contact_sensing_pub_;
+  /// Contact state machine publisher
+  ros::Publisher contact_state_machine_pub_;
 
   /// Subscriber for GRF sensor data messages
   ros::Subscriber grf_sensor_sub_;

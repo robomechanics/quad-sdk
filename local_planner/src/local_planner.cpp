@@ -11,7 +11,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic,
       local_plan_topic, foot_plan_discrete_topic, foot_plan_continuous_topic,
-      cmd_vel_topic, control_mode_topic, grf_topic, contact_sensing_topic;
+      cmd_vel_topic, control_mode_topic, contact_state_machine_topic;
   quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
   quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
@@ -24,10 +24,9 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
   quad_utils::loadROSParam(nh_, "topics/control/mode", control_mode_topic);
 
-  // GRF and contact sensing topics
-  quad_utils::loadROSParam(nh_, "/topics/state/grfs", grf_topic);
-  quad_utils::loadROSParam(nh_, "topics/control/contact_sensing",
-                           contact_sensing_topic);
+  // Contact state machine topic
+  quad_utils::loadROSParam(nh_, "topics/control/contact_state_machine",
+                           contact_state_machine_topic);
 
   // Setup pubs and subs
   // We don't subscribe the terrain map, instead we estimate it
@@ -42,12 +41,11 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic, 1, &LocalPlanner::cmdVelCallback,
                                this, ros::TransportHints().tcpNoDelay(true));
 
-  // GRF and contact sensing subscribers
-  grf_sub_ = nh_.subscribe(grf_topic, 1, &LocalPlanner::grfCallback, this,
-                           ros::TransportHints().tcpNoDelay(true));
-  contact_sensing_sub_ = nh_.subscribe(
-      contact_sensing_topic, 1, &LocalPlanner::contactSensingCallback, this,
-      ros::TransportHints().tcpNoDelay(true));
+  // Contact state machine subscriber
+  contact_state_machine_sub_ =
+      nh_.subscribe(contact_state_machine_topic, 1,
+                    &LocalPlanner::contactStateMachineCallback, this,
+                    ros::TransportHints().tcpNoDelay(true));
 
   local_plan_pub_ = nh_.advertise<quad_msgs::RobotPlan>(local_plan_topic, 1);
   foot_plan_discrete_pub_ = nh_.advertise<quad_msgs::MultiFootPlanDiscrete>(
@@ -146,18 +144,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 
   // Initialize the plan index
   current_plan_index_ = 0;
-
-  // Initialize the early release indicator
-  early_release_.assign(4, false);
-
-  // Initialize the early release index
-  early_release_idx_.assign(4, 0);
-
-  // Initialize the miss recovery indicator
-  miss_recovery_.assign(4, false);
-
-  // Initialize contact sensing record
-  contact_sensing_record_.assign(4, false);
 
   // Initialize gait mixture list
   gait_mixture_vec_.resize(4);
@@ -335,21 +321,18 @@ void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg) {
   last_cmd_vel_msg_time_ = ros::Time::now();
 }
 
-void LocalPlanner::grfCallback(const quad_msgs::GRFArray::ConstPtr &msg) {
-  // GRF callback
-  grf_msg_ = msg;
-}
+void LocalPlanner::contactStateMachineCallback(
+    const std_msgs::UInt8MultiArray::ConstPtr &msg) {
+  // Contact state machine callback
+  if (contact_state_machine_msg_ == NULL) {
+    // Initialize contact state machine record if needed
+    contact_state_machine_msg_record_ = *msg;
+  }
 
-void LocalPlanner::contactSensingCallback(
-    const std_msgs::ByteMultiArray::ConstPtr &msg) {
-  // Contact sensing callback
-  contact_sensing_msg_ = msg;
+  contact_state_machine_msg_ = msg;
 }
 
 void LocalPlanner::getStateAndReferencePlan() {
-  // Make sure body plan and robot state data is populated
-  if (body_plan_msg_ == NULL || robot_state_msg_ == NULL) return;
-
   // Get index within the global plan, compare with the previous one to check if
   // this is a duplicated solve
   int previous_plan_index = current_plan_index_;
@@ -429,7 +412,7 @@ void LocalPlanner::getStateAndReferencePlan() {
 
 void LocalPlanner::publishFootStepHist() {
   // Publish foot step history
-  if (robot_state_msg_ == NULL || grf_msg_ == NULL) return;
+  if (robot_state_msg_ == NULL || contact_state_machine_msg_ == NULL) return;
 
   // Get the current body and foot positions into Eigen
   current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
@@ -437,9 +420,8 @@ void LocalPlanner::publishFootStepHist() {
                                        current_foot_positions_world_);
 
   for (size_t i = 0; i < 4; i++) {
-    // Check if it's on the ground
-    if ((grf_msg_->contact_states.at(i) &&
-         abs(grf_msg_->vectors.at(i).z) > 5)) {
+    // Check if it's stance
+    if (contact_state_machine_msg_->data.at(i) == STANCE) {
       if (!tmp_foot_hist_idx_.at(i).empty()) {
         // If there's temporary index, replace them all with the actual contact
         // value
@@ -499,9 +481,6 @@ void LocalPlanner::publishFootStepHist() {
 }
 
 void LocalPlanner::getStateAndTwistInput() {
-  // We need the estimated terrain first
-  if (!terrain_grid_.exists("z_smooth") || robot_state_msg_ == NULL) return;
-
   // The first couple solving might fail, we want to aligh all the gait
   if (first_plan_) {
     initial_timestamp_ = ros::Time::now() - ros::Duration(1e-6);
@@ -716,13 +695,6 @@ void LocalPlanner::getStateAndTwistInput() {
 }
 
 bool LocalPlanner::computeLocalPlan() {
-  if (!terrain_grid_.exists("z_smooth") ||
-      body_plan_msg_ == NULL && !use_twist_input_ || robot_state_msg_ == NULL) {
-    ROS_WARN_STREAM(
-        "ComputeLocalPlan function did not recieve the expected inputs");
-    return false;
-  }
-
   // Start the timer
   quad_utils::FunctionTimer timer(__FUNCTION__);
 
@@ -730,45 +702,46 @@ bool LocalPlanner::computeLocalPlan() {
   local_footstep_planner_->computeContactSchedule(current_plan_index_,
                                                   contact_schedule_);
 
-  // Contact sensing recover - stand for a while when landing
-  if (contact_sensing_msg_ != NULL) {
-    for (size_t i = 0; i < 4; i++) {
-      // If the clock assigns a swing or too short but we just landing, stand
-      // for a while, zeno existing so we also check if there's already a
-      // mixture or not
-      if (!(contact_schedule_.at(0).at(i) &&
-            contact_schedule_
-                .at(int(local_footstep_planner_->duty_cycles_[i] *
-                        local_footstep_planner_->period_ / 2) -
-                    1)
-                .at(i)) &&
-          !gait_mixture_vec_.at(i).at(0).active &&
-          !contact_sensing_msg_->data.at(i) && contact_sensing_record_.at(i)) {
-        // Compute gait init index
-        int gait_init_idx = local_footstep_planner_->computeNearestPlanIndex(
-            current_plan_index_,
-            int(local_footstep_planner_->duty_cycles_[i] *
-                local_footstep_planner_->period_ / 2),
-            i);
+  // Contact recover - stand for a while when landing
+  for (size_t i = 0; i < 4; i++) {
+    // If the clock assigns a swing or too short but we just landing, stand
+    // for a while, zeno existing so we also check if there's already a
+    // mixture or not
+    if (!(contact_schedule_.at(0).at(i) &&
+          contact_schedule_
+              .at(int(local_footstep_planner_->duty_cycles_[i] *
+                      local_footstep_planner_->period_ / 2) -
+                  1)
+              .at(i)) &&
+        !gait_mixture_vec_.at(i).at(0).active &&
+        contact_state_machine_msg_->data.at(i) == STANCE &&
+        contact_state_machine_msg_record_.data.at(i) == RETRACTION) {
+      // Compute gait init index
+      int gait_init_idx = local_footstep_planner_->computeNearestPlanIndex(
+          current_plan_index_,
+          int(local_footstep_planner_->duty_cycles_[i] *
+              local_footstep_planner_->period_ / 2),
+          i);
 
-        // Guarantee a 3 steps stance and mixture into the schedule
-        gait_mixture landing_gait = {true, gait_init_idx, current_plan_index_,
-                                     mixture_period_};
-        gait_mixture_vec_.at(i).at(0) = landing_gait;
-      }
-
-      // Record the contact sensing
-      contact_sensing_record_.at(i) = contact_sensing_msg_->data.at(i);
+      // Guarantee a 3 steps stance and mixture into the schedule
+      gait_mixture landing_gait = {true, gait_init_idx, current_plan_index_,
+                                   mixture_period_};
+      gait_mixture_vec_.at(i).at(0) = landing_gait;
     }
   }
+
+  // Record the contact state machine
+  contact_state_machine_msg_record_ = *contact_state_machine_msg_;
 
   // Joint limit checking - now we only care about abad
   for (size_t i = 0; i < 4; i++) {
     // If the leg is in contact and near the joint limit, release it
-    if (!gait_mixture_vec_.at(i).at(1).active && contact_sensing_msg_ != NULL &&
-        (contact_sensing_msg_->data.at(0) || contact_sensing_msg_->data.at(1) ||
-         contact_sensing_msg_->data.at(2) ||
-         contact_sensing_msg_->data.at(3)) &&
+    if (!gait_mixture_vec_.at(i).at(1).active &&
+        contact_state_machine_msg_ != NULL &&
+        (contact_state_machine_msg_->data.at(0) == RETRACTION ||
+         contact_state_machine_msg_->data.at(1) == RETRACTION ||
+         contact_state_machine_msg_->data.at(2) == RETRACTION ||
+         contact_state_machine_msg_->data.at(3) == RETRACTION) &&
         contact_schedule_.at(0).at(i) &&
         robot_state_msg_->joints.position.at(3 * i) < abad_joint_limit_) {
       // Compute gait init index
@@ -840,23 +813,22 @@ bool LocalPlanner::computeLocalPlan() {
   // Start from the nominal contact schedule
   adaptive_contact_schedule_ = contact_schedule_;
 
-  // Contact sensing
-  if (contact_sensing_msg_ != NULL) {
-    for (size_t i = 0; i < 4; i++) {
-      if (contact_sensing_msg_->data.at(i)) {
-        roll_desired_ = 0;
-      }
-      if (contact_sensing_msg_->data.at(i) && contact_schedule_.at(0).at(i)) {
-        for (size_t j = 0; j < N_; j++) {
-          if (contact_schedule_.at(j).at(i)) {
-            // Assign miss
-            adaptive_contact_schedule_.at(j).at(i) = false;
-          }
+  // Contact state machine for retraction
+  for (size_t i = 0; i < 4; i++) {
+    if (contact_state_machine_msg_->data.at(i) == RETRACTION) {
+      roll_desired_ = 0;
+    }
+    if (contact_state_machine_msg_->data.at(i) == RETRACTION &&
+        contact_schedule_.at(0).at(i)) {
+      for (size_t j = 0; j < N_; j++) {
+        if (contact_schedule_.at(j).at(i)) {
+          // Assign miss
+          adaptive_contact_schedule_.at(j).at(i) = false;
+        }
 
-          // Only modify a period
-          if (!contact_schedule_.at(j + 1).at(i)) {
-            break;
-          }
+        // Only modify a period
+        if (!contact_schedule_.at(j + 1).at(i)) {
+          break;
         }
       }
     }
@@ -1004,7 +976,8 @@ void LocalPlanner::spin() {
 
     // Wait until all required data has been received
     if (!terrain_grid_.exists("z_smooth") ||
-        body_plan_msg_ == NULL && !use_twist_input_ || robot_state_msg_ == NULL)
+        body_plan_msg_ == NULL && !use_twist_input_ ||
+        robot_state_msg_ == NULL || contact_state_machine_msg_ == NULL)
       continue;
 
     if (use_twist_input_) {

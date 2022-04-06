@@ -12,11 +12,11 @@
 #include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/RobotState.h>
 #include <quad_msgs/RobotStateTrajectory.h>
+#include <quad_utils/enum_type.h>
 #include <quad_utils/quad_kd.h>
 #include <quad_utils/ros_utils.h>
-#include <quad_utils/tail_type.h>
 #include <ros/ros.h>
-#include <std_msgs/ByteMultiArray.h>
+#include <std_msgs/UInt8MultiArray.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include "quad_utils/matplotlibcpp.h"
@@ -81,16 +81,11 @@ class LocalPlanner {
   void cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg);
 
   /**
-   * @brief Callback function to handle new GRF estimates
-   * @param[in] msg the message contining GRF data
+   * @brief Callback function to handle new contact state machine information
+   * @param[in] msg the message contining contact state machine data
    */
-  void grfCallback(const quad_msgs::GRFArray::ConstPtr &msg);
-
-  /**
-   * @brief Callback function to handle new contact sensing information
-   * @param[in] msg the message contining contact sensing data
-   */
-  void contactSensingCallback(const std_msgs::ByteMultiArray::ConstPtr &msg);
+  void contactStateMachineCallback(
+      const std_msgs::UInt8MultiArray::ConstPtr &msg);
 
   /**
    * @brief Function to pre-process the body plan and robot state messages into
@@ -137,9 +132,6 @@ class LocalPlanner {
   /// Subscriber for twist input messages
   ros::Subscriber cmd_vel_sub_;
 
-  /// Subscriber for GRF messages
-  ros::Subscriber grf_sub_;
-
   /// ROS publisher for local plan output
   ros::Publisher local_plan_pub_;
 
@@ -178,9 +170,6 @@ class LocalPlanner {
 
   /// Past foothold locations
   quad_msgs::MultiFootState past_footholds_msg_;
-
-  /// Most recent GRF
-  quad_msgs::GRFArray::ConstPtr grf_msg_;
 
   /// Timestamp of the state estimate
   ros::Time current_state_timestamp_;
@@ -333,11 +322,11 @@ class LocalPlanner {
   /// Temporary index of the foothold history
   std::vector<std::vector<grid_map::Index>> tmp_foot_hist_idx_;
 
-  /// Contact sensing results message
-  std_msgs::ByteMultiArray::ConstPtr contact_sensing_msg_;
+  /// Contact state machine message
+  std_msgs::UInt8MultiArray::ConstPtr contact_state_machine_msg_;
 
-  /// Contact sensing results subscriber
-  ros::Subscriber contact_sensing_sub_;
+  /// Contact state machine subscriber
+  ros::Subscriber contact_state_machine_sub_;
 
   /// Last call time
   ros::Time last_call_time_;
@@ -354,8 +343,8 @@ class LocalPlanner {
   /// Indicator that if a leg recover from missing
   std::vector<bool> miss_recovery_;
 
-  /// Contact sensing record
-  std::vector<bool> contact_sensing_record_;
+  /// Contact state machine record
+  std_msgs::UInt8MultiArray contact_state_machine_msg_record_;
 
   /// Abad joint limit for early release
   double abad_joint_limit_;

@@ -16,7 +16,7 @@
         /control/grfs
         /control/joint_command 
         /control/tail_command
-        /control/contact_sensing
+        /control/contact_state_machine
         /control/mode 
         /terrain_map 
         /body_plan_continuous
@@ -37,7 +37,7 @@
         /control/grfs
         /control/joint_command 
         /control/tail_command
-        /control/contact_sensing
+        /control/contact_state_machine
         /control/mode 
         /terrain_map 
         /body_plan_continuous
