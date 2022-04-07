@@ -23,12 +23,12 @@
       <link name="body">
         <visual name="visual">
           <geometry>
-            <mesh><uri>model:///parkour_local_min/parkour_local_min.stl</uri></mesh>
+            <mesh><uri>model:///slope_20/slope_20.stl</uri></mesh>
           </geometry>
         </visual>
         <collision name="collision">
           <geometry>
-            <mesh><uri>model:///parkour_local_min/parkour_local_min.stl</uri></mesh>
+            <mesh><uri>model:///slope_20/slope_20.stl</uri></mesh>
           </geometry>
           <surface>
             <friction>

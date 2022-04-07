@@ -18,7 +18,7 @@
       <uri>model://custom_sun</uri>
     </include>
     <model name="mesh_terrain">
-      <pose>-1.975 -4 -0.1  0 0 0</pose>
+      <pose>-2 -2 -0.1  0 0 0</pose>
       <static>true</static>
       <link name="body">
         <visual name="visual">
