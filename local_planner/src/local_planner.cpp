@@ -737,7 +737,6 @@ bool LocalPlanner::computeLocalPlan() {
   for (size_t i = 0; i < 4; i++) {
     // If the leg is in contact and near the joint limit, release it
     if (!gait_mixture_vec_.at(i).at(1).active &&
-        contact_state_machine_msg_ != NULL &&
         (contact_state_machine_msg_->data.at(0) == RETRACTION ||
          contact_state_machine_msg_->data.at(1) == RETRACTION ||
          contact_state_machine_msg_->data.at(2) == RETRACTION ||

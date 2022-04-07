@@ -114,17 +114,14 @@ bool InverseDynamicsController::computeLegCommandArray(
     ref_state_msg.body = robot_state_msg.body;
     quad_utils::ikRobotState(*quadKD_, ref_state_msg);
 
-    // Compute joint torques
-    quadKD_->computeInverseDynamics(state_positions, state_velocities,
-                                    ref_foot_acceleration, grf_array,
-                                    contact_mode, tau_array);
+    // Define pd gain list
+    std::vector<std::vector<double>> kp_list, kd_list;
+    kp_list.resize(4);
+    kd_list.resize(4);
 
     for (size_t i = 0; i < 4; i++) {
       // Define state machine running state
       bool contact_state_machine_done = false;
-
-      // Define pd gain list
-      std::vector<double> kp_list, kd_list;
 
       while (!contact_state_machine_done) {
         switch (contact_state_machine_.data.at(i)) {
@@ -147,16 +144,16 @@ bool InverseDynamicsController::computeLegCommandArray(
                 ref_state_msg.joints.velocity.at(3 * i + j) = 0;
               }
 
-              // Zero feedforward torque
-              tau_array.segment(3 * i, 3) << 0, 0, 0;
+              // Zero feedforward grf
+              grf_array.segment(3 * i, 3) << 0, 0, 0;
 
               // Apply gains
-              kp_list = retraction_kp_;
-              kd_list = retraction_kd_;
+              kp_list.at(i) = retraction_kp_;
+              kd_list.at(i) = retraction_kd_;
             } else {
               // Apply gains
-              kp_list = stance_kp_;
-              kd_list = stance_kd_;
+              kp_list.at(i) = stance_kp_;
+              kd_list.at(i) = stance_kd_;
             }
 
             contact_state_machine_done = true;
@@ -170,8 +167,8 @@ bool InverseDynamicsController::computeLegCommandArray(
             }
 
             // Apply gains
-            kp_list = swing_kp_;
-            kd_list = swing_kd_;
+            kp_list.at(i) = swing_kp_;
+            kd_list.at(i) = swing_kd_;
 
             contact_state_machine_done = true;
             break;
@@ -192,8 +189,8 @@ bool InverseDynamicsController::computeLegCommandArray(
             }
 
             // Apply gains
-            kp_list = extend_kp_;
-            kd_list = extend_kd_;
+            kp_list.at(i) = extend_kp_;
+            kd_list.at(i) = extend_kd_;
 
             contact_state_machine_done = true;
             break;
@@ -219,12 +216,12 @@ bool InverseDynamicsController::computeLegCommandArray(
             // Clear new plan flag
             get_new_plan_after_recovering_.at(i) = false;
 
-            // Zero feedforward torque
-            tau_array.segment(3 * i, 3) << 0, 0, 0;
+            // Zero feedforward grf
+            grf_array.segment(3 * i, 3) << 0, 0, 0;
 
             // Apply gains
-            kp_list = retraction_kp_;
-            kd_list = retraction_kd_;
+            kp_list.at(i) = retraction_kp_;
+            kd_list.at(i) = retraction_kd_;
 
             contact_state_machine_done = true;
             break;
@@ -232,6 +229,17 @@ bool InverseDynamicsController::computeLegCommandArray(
           default:
             break;
         }
+      }
+    }
+
+    // Compute joint torques
+    quadKD_->computeInverseDynamics(state_positions, state_velocities,
+                                    ref_foot_acceleration, grf_array,
+                                    contact_mode, tau_array);
+
+    for (size_t i = 0; i < 4; i++) {
+      if (contact_state_machine_.data.at(i) == RETRACTION) {
+        tau_array.segment(3 * i, 3) << 0, 0, 0;
       }
 
       leg_command_array_msg.leg_commands.at(i).motor_commands.resize(3);
@@ -247,11 +255,10 @@ bool InverseDynamicsController::computeLegCommandArray(
         leg_command_array_msg.leg_commands.at(i)
             .motor_commands.at(j)
             .torque_ff = tau_array(joint_idx);
-
         leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
-            kp_list.at(j);
+            kp_list.at(i).at(j);
         leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
-            kd_list.at(j);
+            kd_list.at(i).at(j);
       }
     }
 
