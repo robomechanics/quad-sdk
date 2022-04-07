@@ -777,7 +777,7 @@ bool refineStance(const State &s, int phase, Action &a,
     }
     pos_f = s_final.pos;
 
-    double buffer = 4e-2;
+    double buffer = 3e-2;
     if (phase == LEAP_STANCE) {
       isValidState(s_final, planner_config, phase, pos_f[2]);
       pos_f[2] -= buffer;
@@ -1037,7 +1037,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
           R_mat * planner_config.reachability_points_body +
           s.pos.replicate(1, planner_config.num_reachability_points);
 
-  // TODO: allow alternative gaits, check region around foot location
+  // TODO(jcnorby): allow alternative gaits, check region around foot location
   for (int i = 0; i < planner_config.num_reachability_points; i++) {
     Eigen::Vector3d reachability_point = reachability_points_world.col(i);
     if (!isInMap(reachability_point, planner_config)) {
