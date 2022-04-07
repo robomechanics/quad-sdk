@@ -959,6 +959,7 @@ void LocalPlanner::publishLocalPlan() {
   }
 
   // Publish
+  local_plan_msg.contact_state_machine = *contact_state_machine_msg_;
   local_plan_msg.state_timestamp = current_state_timestamp_;
   local_plan_pub_.publish(local_plan_msg);
   foot_plan_discrete_pub_.publish(future_footholds_msg);

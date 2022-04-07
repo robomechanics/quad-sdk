@@ -14,3 +14,4 @@ uint32[] plan_indices
 uint32[] primitive_ids
 float64 compute_time
 float64[] ground_height
+std_msgs/UInt8MultiArray contact_state_machine
