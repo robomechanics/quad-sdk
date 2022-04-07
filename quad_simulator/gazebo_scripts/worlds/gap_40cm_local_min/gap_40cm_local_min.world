@@ -31,12 +31,12 @@
       <link name="body">
         <visual name="visual">
           <geometry>
-            <mesh><uri>model:///flat/flat.stl</uri></mesh>
+            <mesh><uri>model:///gap_40cm_local_min/gap_40cm_local_min.stl</uri></mesh>
           </geometry>
         </visual>
         <collision name="collision">
           <geometry>
-            <mesh><uri>model:///flat/flat.stl</uri></mesh>
+            <mesh><uri>model:///gap_40cm_local_min/gap_40cm_local_min.stl</uri></mesh>
           </geometry>
           <surface>
             <friction>
