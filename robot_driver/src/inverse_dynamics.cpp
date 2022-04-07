@@ -120,18 +120,18 @@ bool InverseDynamicsController::computeLegCommandArray(
     kd_list.resize(4);
 
     for (size_t i = 0; i < 4; i++) {
+      // If we recover from retraction and receive a new plan
+      if (contact_state_machine_.data.at(i) == STANCE &&
+          last_local_plan_msg_->contact_state_machine.data.at(i) == STANCE) {
+        get_new_plan_after_recovering_.at(i) = true;
+      }
+
       // Define state machine running state
       bool contact_state_machine_done = false;
 
       while (!contact_state_machine_done) {
         switch (contact_state_machine_.data.at(i)) {
           case STANCE:
-            if (!contact_mode[i]) {
-              // Switch to swing
-              contact_state_machine_.data.at(i) = SWING;
-              break;
-            }
-
             if (!get_new_plan_after_recovering_.at(i)) {
               // Still do retraction if we've not yet receive the latest plan
               // Assign retraction position
@@ -151,6 +151,12 @@ bool InverseDynamicsController::computeLegCommandArray(
               kp_list.at(i) = retraction_kp_;
               kd_list.at(i) = retraction_kd_;
             } else {
+              if (!contact_mode[i]) {
+                // Switch to swing
+                contact_state_machine_.data.at(i) = SWING;
+                break;
+              }
+
               // Apply gains
               kp_list.at(i) = stance_kp_;
               kd_list.at(i) = stance_kd_;

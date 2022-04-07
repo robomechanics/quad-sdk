@@ -15,13 +15,6 @@ void LegControllerTemplate::updateLocalPlanMsg(
     quad_msgs::RobotPlan::ConstPtr msg, const ros::Time &t_msg) {
   last_local_plan_msg_ = msg;
   last_local_plan_time_ = t_msg;
-
-  for (size_t i = 0; i < 4; i++) {
-    // If we recover from retraction and receive a new plan
-    if (contact_state_machine_.data.at(i) == STANCE) {
-      get_new_plan_after_recovering_.at(i) = true;
-    }
-  }
 }
 
 void LegControllerTemplate::setGains(double kp, double kd) {
