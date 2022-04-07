@@ -73,11 +73,11 @@ class ContactStatePublisher {
   /// Number of feet
   const int num_feet_ = 4;
 
-  /// Vector of toe frame transforms
-  std::vector<geometry_msgs::TransformStamped> transformsStamped_;
-
   /// Most recent local plan
   quad_msgs::GRFArray grf_array_msg_;
+
+  /// Publish ready indicator
+  bool ready_to_publish_;
 };
 
 #endif  // CONTACT_STATE_PUBLISHER_H
