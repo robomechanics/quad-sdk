@@ -14,16 +14,17 @@
 #include <quad_utils/math_utils.h>
 #include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
+#include <std_msgs/Bool.h>
 #include <std_msgs/UInt8.h>
 
 #include <cmath>
 #include <eigen3/Eigen/Eigen>
 
-#include "robot_driver/grf_pid_controller.h"
-#include "robot_driver/inverse_dynamics.h"
-#include "robot_driver/joint_controller.h"
-#include "robot_driver/leg_controller_template.h"
-#include "robot_driver/mblink_converter.h"
+#include "robot_driver/controllers/grf_pid_controller.h"
+#include "robot_driver/controllers/inverse_dynamics_controller.h"
+#include "robot_driver/controllers/joint_controller.h"
+#include "robot_driver/controllers/leg_controller.h"
+#include "robot_driver/hardware_interfaces/spirit_interface.h"
 #include "robot_driver/robot_driver_utils.h"
 #define MATH_PI 3.141592
 
@@ -85,13 +86,12 @@ class RobotDriver {
    * @brief Callback to handle new leg override commands
    * @param[in] msg Leg override commands
    */
-  void legOverrideCallback(const quad_msgs::LegOverride::ConstPtr& msg);
+  void singleJointCommandCallback(const geometry_msgs::Vector3::ConstPtr& msg);
 
   /**
-   * @brief Callback to handle new leg override commands
-   * @param[in] msg Leg override commands
+   * @brief Callback to handle control restart flag messages
    */
-  void singleJointCommandCallback(const geometry_msgs::Vector3::ConstPtr& msg);
+  void controlRestartFlagCallback(const std_msgs::Bool::ConstPtr& msg);
 
   /**
    * @brief Callback to handle new remote heartbeat messages
@@ -102,7 +102,7 @@ class RobotDriver {
   /**
    * @brief Check to make sure required messages are fresh
    */
-  void checkMessages();
+  void checkMessagesForSafety();
 
   /**
    * @brief Update the most recent state message with the given data
@@ -146,11 +146,11 @@ class RobotDriver {
   /// ROS subscriber for state estimate
   ros::Subscriber robot_state_sub_;
 
+  /// ROS subscriber for control restart flag
+  ros::Subscriber control_restart_flag_sub_;
+
   /// ROS publisher for state estimate
   ros::Publisher robot_state_pub_;
-
-  /// ROS subscriber for leg override commands
-  ros::Subscriber leg_override_sub_;
 
   /// ROS subscriber for remote heartbeat
   ros::Subscriber remote_heartbeat_sub_;
@@ -174,7 +174,10 @@ class RobotDriver {
   ros::NodeHandle nh_;
 
   /// Boolean for whether robot layer is hardware (else sim)
-  bool is_hw_;
+  bool is_hardware_;
+
+  /// Robot name
+  std::string robot_name_;
 
   /// Controller type
   std::string controller_id_;
@@ -227,9 +230,6 @@ class RobotDriver {
   /// Most recent local plan
   quad_msgs::GRFArray::ConstPtr last_grf_array_msg_;
 
-  /// Most recent leg override
-  quad_msgs::LegOverride last_leg_override_msg_;
-
   /// Most recent remote  heartbeat
   std_msgs::Header::ConstPtr last_remote_heartbeat_msg_;
 
@@ -266,6 +266,9 @@ class RobotDriver {
   /// Message for leg command array
   quad_msgs::GRFArray grf_array_msg_;
 
+  /// User data
+  Eigen::VectorXd user_data_;
+
   /// Time at which to start transition
   ros::Time transition_timestamp_;
 
@@ -299,7 +302,7 @@ class RobotDriver {
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
 
   /// Leg Controller template class
-  std::shared_ptr<LegControllerTemplate> leg_controller_;
+  std::shared_ptr<LegController> leg_controller_;
 
   /// Trotting duration
   double trotting_duration_;
@@ -308,7 +311,7 @@ class RobotDriver {
   double trotting_count_;
 
   /// Mblink converter object
-  std::shared_ptr<MBLinkConverter> mblink_converter_;
+  std::shared_ptr<HardwareInterface> hardware_interface_;
 
   /// Last mocap data
   geometry_msgs::PoseStamped::ConstPtr last_mocap_msg_;
@@ -334,9 +337,6 @@ class RobotDriver {
 
   /// Update rate of the motion capture system
   double mocap_rate_;
-
-  /// Mainboard data
-  MBData_t mbdata_;
 
   /// Last mainboard time
   double last_mainboard_time_;

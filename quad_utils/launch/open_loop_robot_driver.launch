@@ -5,6 +5,6 @@
     <node name="open_loop_controller" pkg="open_loop_controller" type="open_loop_controller_node" output="screen"/>
 
     <!-- Launch the mblink converter-->
-    <node name="mblink_converter" pkg="mblink_converter" type="mblink_converter_node" output="screen"/>
+    <node name="mblink_converter" pkg="mblink_converter" type="robot_interfacenode" output="screen"/>
     
 </launch>

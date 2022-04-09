@@ -1,7 +1,6 @@
 <launch>
     <include file="$(find quad_utils)/launch/load_params.launch" />
 
-    <arg name="proxy" default="false"/>
     <arg name="mocap" default="true"/>
     <arg name="logging" default="false"/>
     <arg name="controller" default="inverse_dynamics"/>
@@ -12,16 +11,6 @@
         <param name="controller" value="$(arg controller)"/>
         <param name="is_hw" value="$(arg is_hw)"/>
     </node>
-
-    <!-- Launch the leg overrider -->
-    <node name="leg_overrider" pkg="robot_driver" type="leg_overrider_node" output="screen"/>
-
-    <!-- <include file="$(find quad_utils)/launch/estimation.launch" /> -->
-
-    <!-- Launch the robot_proxy if specified-->
-    <group if="$(arg proxy)">
-        <node name="robot_proxy" pkg="quad_utils" type="robot_proxy_node" output="screen"/>
-    </group>
 
     <!-- Launch the mocap node if specified-->
     <group if="$(arg mocap)">
