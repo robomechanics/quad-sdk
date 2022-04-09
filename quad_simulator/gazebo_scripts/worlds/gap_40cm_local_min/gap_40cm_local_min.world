@@ -18,17 +18,17 @@
       <uri>model://custom_sun</uri>
     </include>
     <model name="mesh_terrain">
-      <pose>-2 -4 -10.1  0 0 0</pose>
+      <pose>-2 -2 -0.1  0 0 0</pose>
       <static>true</static>
       <link name="body">
         <visual name="visual">
           <geometry>
-            <mesh><uri>model:///pit_40cm/pit_40cm.stl</uri></mesh>
+            <mesh><uri>model:///gap_40cm_local_min/gap_40cm_local_min.stl</uri></mesh>
           </geometry>
         </visual>
         <collision name="collision">
           <geometry>
-            <mesh><uri>model:///pit_40cm/pit_40cm.stl</uri></mesh>
+            <mesh><uri>model:///gap_40cm_local_min/gap_40cm_local_min.stl</uri></mesh>
           </geometry>
           <surface>
             <friction>
