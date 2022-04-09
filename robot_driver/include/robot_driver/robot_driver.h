@@ -1,11 +1,10 @@
-#ifndef ROBOT_DRIVER_INTERFACE_H
-#define ROBOT_DRIVER_INTERFACE_H
+#ifndef ROBOT_DRIVER_H
+#define ROBOT_DRIVER_H
 
 #include <eigen_conversions/eigen_msg.h>
 #include <quad_msgs/GRFArray.h>
 #include <quad_msgs/LegCommand.h>
 #include <quad_msgs/LegCommandArray.h>
-#include <quad_msgs/LegOverride.h>
 #include <quad_msgs/MotorCommand.h>
 #include <quad_msgs/MultiFootPlanContinuous.h>
 #include <quad_msgs/RobotPlan.h>
@@ -28,14 +27,13 @@
 #include "robot_driver/robot_driver_utils.h"
 #define MATH_PI 3.141592
 
-using gr::MBLink;
-
-//! ROS Wrapper for a leg controller class
+//! ROS-based driver to handle computation and interfacing for state and
+//! control.
 /*!
-   RobotDriver implements a class to generate leg commands to be sent to either
-   the robot or a simulator. It may subscribe to any number of topics to
-   determine the leg control, but will always publish a LegCommandArray message
-   to control the robot's legs.
+   RobotDriver implements a class to retrieve state information and generate leg
+   commands to be sent to either the robot or a simulator. It may subscribe to
+   any number of topics to determine the leg control, but will always publish a
+   LegCommandArray message to control the robot's legs.
 */
 class RobotDriver {
  public:
@@ -304,12 +302,6 @@ class RobotDriver {
   /// Leg Controller template class
   std::shared_ptr<LegController> leg_controller_;
 
-  /// Trotting duration
-  double trotting_duration_;
-
-  /// Trotting count
-  double trotting_count_;
-
   /// Mblink converter object
   std::shared_ptr<HardwareInterface> hardware_interface_;
 
@@ -347,22 +339,11 @@ class RobotDriver {
   /// Time of last publishing
   ros::Time t_pub_;
 
-  /// Vector of joint names
-  std::vector<std::string> joint_names_ = {"8",  "0", "1", "9",  "2", "3",
-                                           "10", "4", "5", "11", "6", "7"};
-
-  /// Vector denoting joint indices
-  std::vector<int> joint_indices_ = {8, 0, 1, 9, 2, 3, 10, 4, 5, 11, 6, 7};
-
-  /// Vector of kt values for each joint
-  std::vector<double> kt_vec_ = {0.546, 0.546, 1.092, 0.546, 0.546, 1.092,
-                                 0.546, 0.546, 1.092, 0.546, 0.546, 1.092};
-
-  /// Required for mblink converter
+  /// Required for some hardware interfaces
   int argc_;
 
-  /// Required for mblink converter
+  /// Required for some hardware interfaces
   char** argv_;
 };
 
-#endif  // ROBOT_DRIVER_INTERFACE_H
+#endif  // ROBOT_DRIVER_H

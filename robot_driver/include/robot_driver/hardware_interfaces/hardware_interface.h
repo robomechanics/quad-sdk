@@ -5,7 +5,6 @@
 #include <quad_msgs/GRFArray.h>
 #include <quad_msgs/LegCommand.h>
 #include <quad_msgs/LegCommandArray.h>
-#include <quad_msgs/LegOverride.h>
 #include <quad_msgs/MotorCommand.h>
 #include <quad_msgs/MultiFootPlanContinuous.h>
 #include <quad_msgs/RobotPlan.h>
@@ -24,7 +23,7 @@
 //! Implements an abstract class for robot hardware interfaces.
 /*!
    HardwareInterface provides an abstract robot hardware interface class. The
-   virtual functions defined here must be
+   virtual functions declared here must be implemented by the derived class.
 */
 class HardwareInterface {
  public:
@@ -56,7 +55,7 @@ class HardwareInterface {
                     const Eigen::VectorXd& user_data) = 0;
 
   /**
-   * @brief Send commands to the robot
+   * @brief Recieve data from the robot
    * @param[out] joint_state_msg Message containing joint state information
    * @param[out] imu_msg Message containing imu information
    */

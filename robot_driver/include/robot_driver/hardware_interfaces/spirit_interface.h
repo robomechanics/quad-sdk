@@ -22,10 +22,10 @@ struct LimbCmd_t {
 
 typedef std::unordered_map<std::string, Eigen::VectorXf> MBData_t;
 
-//! Hardware interface for the Spirit40 quadruped from Ghost Robotics
+//! Hardware interface for the Spirit40 quadruped from Ghost Robotics.
 /*!
    SpiritInterface listens for joint control messages and outputs low level
-   commands to the mainboard over mblink
+   commands to the mainboard over mblink.
 */
 class SpiritInterface : public HardwareInterface {
  public:
@@ -48,7 +48,7 @@ class SpiritInterface : public HardwareInterface {
   virtual void unloadInterface();
 
   /**
-   * @brief Send commands to the robot
+   * @brief Send commands to the robot via the mblink protocol
    * @param[in] leg_command_array_msg Message containing leg commands
    * @param[in] user_data Vector containing user data
    * @return boolean indicating success of transmission
@@ -57,7 +57,7 @@ class SpiritInterface : public HardwareInterface {
                     const Eigen::VectorXd& user_data);
 
   /**
-   * @brief Send commands to the robot via the mblink protocol
+   * @brief Recieve data from the robot via the mblink protocol
    * @param[out] joint_state_msg Message containing joint state information
    * @param[out] imu_msg Message containing imu information
    * @return Boolean for whether data was successfully received
@@ -65,8 +65,7 @@ class SpiritInterface : public HardwareInterface {
   virtual bool recv(sensor_msgs::JointState& joint_state_msg,
                     sensor_msgs::Imu& imu_msg);
 
-  /// Pointer to MBLink object (constructor wants argc and argv, so instantiated
-  /// in main)
+  /// Pointer to MBLink object
   MBLink mblink_;
 
   /// Mainboard data

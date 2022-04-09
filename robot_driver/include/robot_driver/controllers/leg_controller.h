@@ -1,11 +1,10 @@
-#ifndef leg_controller_H
-#define leg_controller_H
+#ifndef LEG_CONTORLLER_H
+#define LEG_CONTORLLER_H
 
 #include <eigen_conversions/eigen_msg.h>
 #include <quad_msgs/GRFArray.h>
 #include <quad_msgs/LegCommand.h>
 #include <quad_msgs/LegCommandArray.h>
-#include <quad_msgs/LegOverride.h>
 #include <quad_msgs/MotorCommand.h>
 #include <quad_msgs/MultiFootPlanContinuous.h>
 #include <quad_msgs/RobotPlan.h>
@@ -103,4 +102,4 @@ class LegController {
   bool override_state_machine_;
 };
 
-#endif  // MPC_CONTROLLER_H
+#endif  // LEG_CONTORLLER_H
