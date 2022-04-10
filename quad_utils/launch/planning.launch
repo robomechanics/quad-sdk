@@ -6,6 +6,7 @@
     <arg name="local_planner" default="full" />
     <arg name="tail" default="false"/>
     <arg name="logging" default="false" />
+    <arg name="parallel_index" default="0" />
     <arg name="twist_input" default="none" />
 
     <!-- Launch the node to publish the global body plan -->
@@ -39,7 +40,9 @@
     </group>
 
     <group if="$(arg logging)">
-        <include file="$(find quad_utils)/launch/logging.launch" />
+        <include file="$(find quad_utils)/launch/logging.launch">
+            <arg name="parallel_index" value="$(arg parallel_index)" />
+        </include>
     </group>
 
 </launch>
