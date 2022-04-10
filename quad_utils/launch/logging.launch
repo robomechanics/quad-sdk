@@ -18,7 +18,9 @@
         /body_plan_discrete
         /foot_plan_continuous 
         /foot_plan_discrete 
-        /foot_step_hist" />
+        /foot_step_hist
+        /body_force/joint_torques
+        /body_force/toe_forces" />
 
     <node pkg="rosbag" type="record" name="rosbag_record_archive"
         args="record -o $(find quad_logger)/bags/archive/quad_log 
@@ -36,6 +38,8 @@
         /body_plan_discrete
         /foot_plan_continuous 
         /foot_plan_discrete 
-        /foot_step_hist" />
+        /foot_step_hist
+        /body_force/joint_torques
+        /body_force/toe_forces" />
 
 </launch>

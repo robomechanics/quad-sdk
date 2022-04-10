@@ -278,15 +278,21 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(0).kp = swing_kp_.at(0);
 
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(1).vel_setpoint = 
-            -retract_vel_
-             + (robot_state_msg.joints.position.at(3*i+1) < 0 ? -retract_vel_*robot_state_msg.joints.position.at(3*i+1) : 0);
-          leg_command_array_msg.leg_commands.at(i).motor_commands.at(1).torque_ff = 0;
+            -retract_vel_;
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(1).torque_ff = 
+            robot_state_msg.joints.position.at(3*i+1) < -0.8 ? 
+            -10*retract_vel_*(robot_state_msg.joints.position.at(3*i+1) - -0.8)
+            -2*robot_state_msg.joints.velocity.at(3*i+1) :
+            0;
 
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).vel_setpoint = 0;
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).kd = 0;
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).torque_ff = 
             -tau_push_
-            + (robot_state_msg.joints.position.at(3*i+2) < 0.2 ? 2*tau_push_*(0.2-robot_state_msg.joints.position.at(3*i+2)) : 0);
+            + (robot_state_msg.joints.position.at(3*i+2) < 0.2 ? 
+            -2*tau_push_*(robot_state_msg.joints.position.at(3*i+2)-0.2)
+            -2*robot_state_msg.joints.velocity.at(3*i+2) :
+            0);
         }
       }
     }
