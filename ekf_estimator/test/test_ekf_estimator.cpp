@@ -28,6 +28,9 @@ TEST(EKFEstimator, basicTestCase) {
   Eigen::VectorXd wk = Eigen::VectorXd::Zero(3);
   // IMU orientation (w, x, y, z)
   Eigen::Quaterniond qk(1, 0, 0, 0);
+  Eigen::VectorXd jk = Eigen::VectorXd::Zero(12);
+  jk << 0.767431, 1.591838, 0.804742, 1.612967, 0.721895, 1.562485, 0.729919,
+      1.514980, -0.012140, -0.024205, 0.050132, 0.058434;
 
   Eigen::VectorXd X0 = Eigen::VectorXd::Zero(28);
   X0 << -1.457778, 1.004244, 0.308681, 0, 0, 0, 0.998927, 0.004160, -0.003017,
@@ -51,16 +54,30 @@ TEST(EKFEstimator, basicTestCase) {
   EXPECT_NEAR(Xtemp[1], X0[1], 0.001);
   EXPECT_NEAR(Xtemp[2], X0[2], 0.001);
 
-  Eigen::VectorXd jk = Eigen::VectorXd::Zero(12);
-
   ekf_estimator.update(jk);
 
   Eigen::VectorXd X_updated = ekf_estimator.getX();
 
-  EXPECT_NEAR(Xtemp[0], X0[0], 0.001);
-  EXPECT_NEAR(Xtemp[1], X0[1], 0.001);
-  EXPECT_NEAR(Xtemp[2], X0[2], 0.001);
+  EXPECT_NEAR(X_updated[0], X0[0], 0.001);
+  EXPECT_NEAR(X_updated[1], X0[1], 0.001);
+  EXPECT_NEAR(X_updated[2], X0[2], 0.001);
 
+  // multi run
+  ekf_estimator.setX(X0);
+  ekf_estimator.setlast_X(X0);
+  ekf_estimator.setP(P0);
+  int count = 0;
+  while (count <= 3) {
+    // std::cout << "Iteration " << count << std::endl;
+    ekf_estimator.predict(dt, fk, wk, qk);
+    ekf_estimator.update(fk);
+    count++;
+  }
+
+  X_updated = ekf_estimator.getX();
+  EXPECT_NEAR(X_updated[0], X0[0], 0.001);
+  EXPECT_NEAR(X_updated[1], X0[1], 0.001);
+  EXPECT_NEAR(X_updated[2], X0[2], 0.001);
   // std::cout << "x" << Xtemp[0] << std::endl;
   // std::cout << "y" << Xtemp[1] << std::endl;
   // std::cout << "z" << Xtemp[2] << std::endl;

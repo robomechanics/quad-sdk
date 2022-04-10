@@ -34,8 +34,9 @@ stateTrajectory = data.stateTrajectory;
 
 % Plot the state
 [figArray] = plotState(stateGroundTruth,'-');
-GRFVectorsFig = plotControl(data.controlGRFs,'-');
-figArray = [figArray, GRFVectorsFig];
+[figEstimateArray] = plotState(stateEstimate,'-');
+% GRFVectorsFig = plotControl(data.controlGRFs,'-');
+figArray = [figArray, figEstimateArray];
 % [figArray] = plotState(stateTrajectory, ':', figArray);
 % plotState(stateEstimate);
 

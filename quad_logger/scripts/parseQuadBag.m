@@ -52,6 +52,12 @@ else
     stateEstimate.jointPosition = cell2mat(cellfun(@(m) m.Joints.Position.', stateEstimateData, 'UniformOutput', 0));
     stateEstimate.jointVelocity = cell2mat(cellfun(@(m) m.Joints.Velocity.', stateEstimateData, 'UniformOutput', 0));
     stateEstimate.jointEffort = cell2mat(cellfun(@(m) m.Joints.Effort.', stateEstimateData, 'UniformOutput', 0));
+    for i = 1:4
+        stateEstimate.footPosition{i} = cell2mat(cellfun(@(m) ...
+            [0, 0, 0], stateEstimateData, 'UniformOutput', 0));
+        stateEstimate.footVelocity{i} = cell2mat(cellfun(@(m) ...
+            [0, 0, 0], stateEstimateData, 'UniformOutput', 0));
+    end
 end
 
 % Read the ground truth data
@@ -177,7 +183,7 @@ controlGRFs.time = controlGRFs.time - startTime;
 
 % Pack data into a struct for namespace purPoses
 data = struct;
-data.stateEstimate = [];% stateEstimate;
+data.stateEstimate = stateEstimate; 
 data.stateGroundTruth = stateGroundTruth;
 data.stateTrajectory = stateTrajectory;
 data.controlGRFs = controlGRFs;

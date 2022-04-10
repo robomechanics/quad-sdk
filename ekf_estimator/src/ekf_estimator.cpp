@@ -16,11 +16,6 @@ EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
   nh.param<double>("ekf_estimator/joint_state_max_time",
                    joint_state_msg_time_diff_max_, 20);
 
-  // // Load IMU bias
-  // nh.getParam("/ekf_estimator/bias_x", bias_x_);
-  // nh.getParam("/ekf_estimator/bias_y", bias_y_);
-  // nh.getParam("/ekf_estimator/bias_z", bias_z_);
-
   // load ground_truth state rosparams and setup subs
   std::string state_ground_truth_topic;
   nh.param<std::string>("topic/state/ground_truth", state_ground_truth_topic,
@@ -106,12 +101,12 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   this->predict(dt, fk, wk, qk);
 
   // for testing prediction step
-  // X = X_pre;
-  // P = P_pre;
-  // last_X = X;
+  X = X_pre;
+  P = P_pre;
+  last_X = X;
 
   /// Update Step
-  this->update(jk);
+  // this->update(jk);
 
   // Update when I have good data, otherwise stay at the origin
   if (last_state_msg_ != NULL) {
@@ -152,10 +147,6 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   new_state_est.joints.effort = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   // feet
-  // new_state_est.feet.header.stamp = ros::Time::now();
-  // for (int i = 0; i < num_feet; i++) {
-  //   new_state_est.feet.feet[i].position =
-  // }
 
   return new_state_est;
 }
@@ -251,7 +242,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   Q.block<3, 3>(21, 21) = dt * bias_acc;
   Q.block<3, 3>(24, 6) = -1 * bias_gyro * r2;
   Q.block<3, 3>(24, 24) = dt * bias_gyro;
-
+  Q = Eigen::MatrixXd::Zero(num_cov, num_cov);
   // Covariance update
 
   P_pre = (F * P * F.transpose()) + Q;
@@ -300,10 +291,10 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
 
   // Measurement jacobian (12 * 27)
   H = Eigen::MatrixXd::Zero(num_measure, num_cov);
-  H.block<3, 3>(0, 0) = -C_pre;
-  H.block<3, 3>(3, 0) = -C_pre;
-  H.block<3, 3>(6, 0) = -C_pre;
-  H.block<3, 3>(9, 0) = -C_pre;
+  H.block<3, 3>(0, 0) = C_pre;
+  H.block<3, 3>(3, 0) = C_pre;
+  H.block<3, 3>(6, 0) = C_pre;
+  H.block<3, 3>(9, 0) = C_pre;
 
   for (int i = 0; i < num_feet; i++) {
     Eigen::VectorXd vtemp = C_pre * (p_pre.segment(i * 3, 3) - r_pre);
@@ -312,7 +303,7 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   }
 
   // Measurement Noise Matrix (12 * 12)
-  R = 0.0001 * Eigen::MatrixXd::Identity(num_measure, num_measure);
+  R = 0.0000 * Eigen::MatrixXd::Identity(num_measure, num_measure);
 
   // // Define vectors for state positions
   // Eigen::VectorXd state_positions(18);
@@ -334,10 +325,10 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   Eigen::MatrixXd K = P_pre * H.transpose() * S.inverse();
   Eigen::VectorXd delta_X = K * y;
 
+  // std::cout << "kalmin gain " << K << std::endl;
   Eigen::MatrixXd I = Eigen::MatrixXd::Identity(num_cov, num_cov);
 
   P = (I - K * H) * P_pre;
-  // std::cout << "this is P " << P << std::endl;
 
   // update state
   X.segment(0, 3) = r_pre + delta_X.segment(0, 3);
@@ -365,15 +356,6 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   // std::cout << "this is deltaX" << delta_X << std::endl;
   // std::cout << "this is S" << S << std::endl;
   // std::cout << "this is S inverse" << S.inverse() << std::endl;
-  // std::cout << "F nan" << F.hasNaN() << std::endl;
-  // std::cout << "Q nan" << Q.hasNaN() << std::endl;
-  // std::cout << "H nan" << H.hasNaN() << std::endl;
-  // std::cout << "S nan" << S.hasNaN() << std::endl;
-  // std::cout << "S inverse nan" << S.inverse().hasNaN() << std::endl;
-  // std::cout << "K nan" << K.hasNaN() << std::endl;
-  // std::cout << "P nan" << P.hasNaN() << std::endl;
-  // std::cout << "P pre nan" << P_pre.hasNaN() << std::endl;
-  // std::cout << "Ft nan" << Ft.hasNaN() << std::endl;
   // std::cout << "this is x y z" << X.segment(0, 3) << std::endl;
 }
 
@@ -440,6 +422,7 @@ Eigen::VectorXd EKFEstimator::quaternionDynamics(const Eigen::VectorXd& wdt,
 
 Eigen::MatrixXd EKFEstimator::calcSkewsym(const Eigen::VectorXd& w) {
   Eigen::MatrixXd output = Eigen::MatrixXd::Zero(3, 3);
+
   output << 0, -w(2), w(1), w(2), 0, -w(0), -w(1), w(0), 0;
   return output;
 }
@@ -518,12 +501,6 @@ void EKFEstimator::spin() {
       -1.236598, 0.861900, 0.016119, -1.678741, 0.831065, 0.020651, 0, 0, 0, 0,
       0, 0;
 
-  // flip x, y for now
-  // X0 << 1.004244, -1.457778, 0.308681, 0, 0, 0, 0.998927, 0.004160,
-  // -0.003017,
-  //     -0.046032, 1.185387, -1.251841, 0.012734, 1.148678, -1.695057,
-  //     0.007092, 0.861900, -1.236598, 0.016119, 0.831065, -1.678741, 0.020651,
-  //     0, 0, 0, 0, 0, 0;
   X = X0;
   last_X = X0;
 
