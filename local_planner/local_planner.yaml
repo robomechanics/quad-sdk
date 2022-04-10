@@ -1,9 +1,9 @@
 local_planner:
   update_rate: 500 # Hz
-  #timestep: 0.03 # 0.09 # s
-  #horizon_length: 24 # timesteps
-  timestep: 0.09 # s
+  timestep: 0.03 # 0.09 # s
   horizon_length: 24 # timesteps
+  #timestep: 0.09 # s
+  #horizon_length: 24 # timesteps
   cmd_vel_filter_const: 0.10
   cmd_vel_scale: 1.0
   last_cmd_vel_msg_time_max: 2.0
@@ -19,9 +19,9 @@ local_footstep_planner:
   foothold_search_radius: 0.2
   foothold_obj_threshold: 0.6 # Note: For now must match /grid_map_filters/traversability_mask_lower_threshold/lower_threshold
   obj_fun_layer: traversability
-  #period: 0.54 # 0.36 # s
-  #duty_cycles: [0.5, 0.5, 0.5, 0.5]
-  #phase_offsets: [0.0, 0.5, 0.5, 0.0]
-  period: 1.62 # 0.36 # s
-  duty_cycles: [0.75, 0.75, 0.75, 0.75]
-  phase_offsets: [0.25, 0.0, 0.75, 0.5]
+  period: 0.54 # 0.36 # s
+  duty_cycles: [0.5, 0.5, 0.5, 0.5]
+  phase_offsets: [0.0, 0.5, 0.5, 0.0]
+  #period: 1.62 # 0.36 # s
+  #duty_cycles: [0.75, 0.75, 0.75, 0.75]
+  #phase_offsets: [0.25, 0.0, 0.75, 0.5]
