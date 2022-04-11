@@ -54,7 +54,7 @@ class SpiritInterface : public HardwareInterface {
    * @return boolean indicating success of transmission
    */
   virtual bool send(const quad_msgs::LegCommandArray& leg_command_array_msg,
-                    const Eigen::VectorXd& user_data);
+                    const Eigen::VectorXd& user_tx_data);
 
   /**
    * @brief Recieve data from the robot via the mblink protocol
@@ -64,7 +64,7 @@ class SpiritInterface : public HardwareInterface {
    * @return Boolean for whether data was successfully received
    */
   virtual bool recv(sensor_msgs::JointState& joint_state_msg,
-                    sensor_msgs::Imu& imu_msg, Eigen::VectorXd& user_data);
+                    sensor_msgs::Imu& imu_msg, Eigen::VectorXd& user_rx_data);
 
   /// Pointer to MBLink object
   MBLink mblink_;

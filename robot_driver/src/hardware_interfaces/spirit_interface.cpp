@@ -14,10 +14,10 @@ void SpiritInterface::unloadInterface() { mblink_.rxstop(); }
 
 bool SpiritInterface::send(
     const quad_msgs::LegCommandArray& last_leg_command_array_msg,
-    const Eigen::VectorXd& user_data) {
+    const Eigen::VectorXd& user_tx_data) {
   int leg_command_heartbeat = 1;
 
-  bool restart_flag = (user_data[0] == 1);
+  bool restart_flag = (user_tx_data[0] == 1);
 
   LimbCmd_t limbcmd[4];
   for (int i = 0; i < 4; ++i) {  // For each leg
@@ -50,7 +50,7 @@ bool SpiritInterface::send(
 
 bool SpiritInterface::recv(sensor_msgs::JointState& joint_state_msg,
                            sensor_msgs::Imu& imu_msg,
-                           Eigen::VectorXd& user_data) {
+                           Eigen::VectorXd& user_rx_data) {
   // Get the data and appropriate timestamp (this may be blocking)
   MBData_t mbdata = mblink_.get();
 
