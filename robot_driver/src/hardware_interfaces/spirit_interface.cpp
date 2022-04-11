@@ -49,11 +49,12 @@ bool SpiritInterface::send(
 }
 
 bool SpiritInterface::recv(sensor_msgs::JointState& joint_state_msg,
-                           sensor_msgs::Imu& imu_msg) {
+                           sensor_msgs::Imu& imu_msg,
+                           Eigen::VectorXd& user_data) {
   // Get the data and appropriate timestamp (this may be blocking)
-  MBData_t mbdata;
-  mbdata = mblink_.get();
+  MBData_t mbdata = mblink_.get();
 
+  // Check if data exists
   if (mbdata.empty()) {
     return false;
   }

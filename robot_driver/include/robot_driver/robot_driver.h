@@ -265,8 +265,11 @@ class RobotDriver {
   /// Message for leg command array
   quad_msgs::GRFArray grf_array_msg_;
 
-  /// User data
-  Eigen::VectorXd user_data_;
+  /// User transmission data
+  Eigen::VectorXd user_tx_data_;
+
+  /// User recieved data
+  Eigen::VectorXd user_rx_data_;
 
   /// Time at which to start transition
   ros::Time transition_timestamp_;

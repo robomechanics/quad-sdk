@@ -58,9 +58,11 @@ class HardwareInterface {
    * @brief Recieve data from the robot
    * @param[out] joint_state_msg Message containing joint state information
    * @param[out] imu_msg Message containing imu information
+   * @param[out] user_data Vector containing user data
+   * @return Boolean for whether data was successfully received
    */
   virtual bool recv(sensor_msgs::JointState& joint_state_msg,
-                    sensor_msgs::Imu& imu_msg) = 0;
+                    sensor_msgs::Imu& imu_msg, Eigen::VectorXd& user_data) = 0;
 
  protected:
 };

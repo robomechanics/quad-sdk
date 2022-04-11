@@ -26,7 +26,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
                            control_restart_flag_topic);
   quad_utils::loadROSParam(nh_, "topics/mocap", mocap_topic);
 
-  nh_.param<bool>("robot_driver/is_hw", is_hardware_, true);
+  nh_.param<bool>("robot_driver/is_hardware", is_hardware_, true);
   nh_.param<std::string>("robot_driver/robot_name", robot_name_, "spirit");
   nh_.param<std::string>("robot_driver/controller", controller_id_,
                          "inverse_dynamics");
@@ -78,7 +78,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
 
   // Set up pubs and subs dependent on robot layer
   if (is_hardware_) {
-    ROS_INFO("Loading hw robot driver");
+    ROS_INFO("Loading hardware robot driver");
     mocap_sub_ = nh_.subscribe(mocap_topic, 1000, &RobotDriver::mocapCallback,
                                this, ros::TransportHints().tcpNoDelay(true));
     robot_state_pub_ =
@@ -142,7 +142,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   grf_array_msg_.points.resize(4);
   grf_array_msg_.contact_states.resize(4);
   grf_array_msg_.header.frame_id = "map";
-  user_data_.resize(1);
+  user_tx_data_.resize(1);
 }
 
 void RobotDriver::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
@@ -173,7 +173,7 @@ void RobotDriver::singleJointCommandCallback(
 
 void RobotDriver::controlRestartFlagCallback(
     const std_msgs::Bool::ConstPtr& msg) {
-  user_data_[0] = (msg->data) ? 1 : 0;
+  user_tx_data_[0] = (msg->data) ? 1 : 0;
 }
 
 void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg) {
@@ -272,8 +272,8 @@ void RobotDriver::checkMessagesForSafety() {
 bool RobotDriver::updateState() {
   if (is_hardware_) {
     // Get the newest data from the robot (BLOCKING)
-    bool fully_populated =
-        hardware_interface_->recv(last_joint_state_msg_, last_imu_msg_);
+    bool fully_populated = hardware_interface_->recv(
+        last_joint_state_msg_, last_imu_msg_, user_rx_data_);
 
     ros::Time state_timestamp = ros::Time::now();
 
@@ -528,7 +528,7 @@ void RobotDriver::publishControl(bool is_valid) {
   // Send command to the robot
   if (is_hardware_ && is_valid) {
     ros::Time t_start = ros::Time::now();
-    hardware_interface_->send(leg_command_array_msg_, user_data_);
+    hardware_interface_->send(leg_command_array_msg_, user_tx_data_);
     ros::Time t_end = ros::Time::now();
 
     ROS_INFO_THROTTLE(1.0, "t_diff_mb_send = %6.4f", (t_end - t_start).toSec());
