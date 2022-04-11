@@ -73,7 +73,7 @@ TEST(NMPCTest, testTailMPC) {
 
   std::chrono::steady_clock::time_point tic, toc;
 
-  for (size_t i = 0; i < 6; i++) {
+  for (size_t i = 0; i < 12; i++) {
     tic = std::chrono::steady_clock::now();
 
     leg_planner_->computeLegPlan(
@@ -109,8 +109,10 @@ TEST(NMPCTest, testTailMPC) {
 
     current_state_.segment(0, 6) = tail_plan_.block(1, 0, 1, 6).transpose();
     current_state_.segment(6, 6) = tail_plan_.block(1, 8, 1, 6).transpose();
-    tail_current_state_.segment(0, 2) = tail_plan_.block(1, 6, 1, 2).transpose();
-    tail_current_state_.segment(2, 2) = tail_plan_.block(1, 14, 1, 2).transpose();
+    tail_current_state_.segment(0, 2) =
+        tail_plan_.block(1, 6, 1, 2).transpose();
+    tail_current_state_.segment(2, 2) =
+        tail_plan_.block(1, 14, 1, 2).transpose();
 
     ref_body_plan_.topRows(N_) = ref_body_plan_.bottomRows(N_);
     ref_body_plan_(N_, 0) =
@@ -121,11 +123,70 @@ TEST(NMPCTest, testTailMPC) {
                 adpative_contact_schedule_.end());
   }
 
-  for (size_t i = 0; i < 6; i++) {
-    adpative_contact_schedule_.at(i) = {false, false, true, false};
+  for (size_t i = 0; i < 15; i++) {
+    std::vector<std::vector<bool>> adpative_contact_schedule_2 =
+        adpative_contact_schedule_;
+    if (i < 6) {
+      for (size_t j = 0; j < 6 - i; j++) {
+        adpative_contact_schedule_2.at(j) = {false, false, false, true};
+      }
+    }
+    if (i > 11) {
+      for (size_t j = 0; j < 18 - i; j++) {
+        adpative_contact_schedule_2.at(j) = {false, false, false, true};
+      }
+    }
+
+    tic = std::chrono::steady_clock::now();
+
+    leg_planner_->computeLegPlan(
+        current_state_, ref_body_plan_, foot_positions_body_,
+        adpative_contact_schedule_2, ref_ground_height, first_element_duration,
+        same_plan_index, body_plan_, grf_plan_);
+
+    toc = std::chrono::steady_clock::now();
+    std::cout << "Leg time difference = "
+              << std::chrono::duration_cast<std::chrono::microseconds>(toc -
+                                                                       tic)
+                     .count()
+              << "[µs]" << std::endl;
+
+    tic = std::chrono::steady_clock::now();
+
+    distributed_tail_planner_->computeDistributedTailFullPlan(
+        current_state_, ref_body_plan_.topRows(N_tail_ + 1),
+        foot_positions_body_.topRows(N_tail_),
+        std::vector<std::vector<bool>>(
+            adpative_contact_schedule_2.begin(),
+            adpative_contact_schedule_2.begin() + N_tail_),
+        tail_current_state_, ref_tail_plan_, body_plan_.topRows(N_tail_ + 1),
+        grf_plan_.topRows(N_tail_), ref_ground_height.topRows(N_tail_ + 1),
+        first_element_duration, same_plan_index, tail_plan_, tail_torque_plan_);
+
+    toc = std::chrono::steady_clock::now();
+    std::cout << "Tail time difference = "
+              << std::chrono::duration_cast<std::chrono::microseconds>(toc -
+                                                                       tic)
+                     .count()
+              << "[µs]" << std::endl;
+
+    current_state_.segment(0, 6) = tail_plan_.block(1, 0, 1, 6).transpose();
+    current_state_.segment(6, 6) = tail_plan_.block(1, 8, 1, 6).transpose();
+    tail_current_state_.segment(0, 2) =
+        tail_plan_.block(1, 6, 1, 2).transpose();
+    tail_current_state_.segment(2, 2) =
+        tail_plan_.block(1, 14, 1, 2).transpose();
+
+    ref_body_plan_.topRows(N_) = ref_body_plan_.bottomRows(N_);
+    ref_body_plan_(N_, 0) =
+        ref_body_plan_(N_ - 1, 0) + dt_ * ref_body_plan_(N_ - 1, 6);
+
+    std::rotate(adpative_contact_schedule_.begin(),
+                adpative_contact_schedule_.begin() + 1,
+                adpative_contact_schedule_.end());
   }
 
-  for (size_t i = 0; i < 6; i++) {
+  for (size_t i = 0; i < 12; i++) {
     tic = std::chrono::steady_clock::now();
 
     leg_planner_->computeLegPlan(
@@ -161,8 +222,10 @@ TEST(NMPCTest, testTailMPC) {
 
     current_state_.segment(0, 6) = tail_plan_.block(1, 0, 1, 6).transpose();
     current_state_.segment(6, 6) = tail_plan_.block(1, 8, 1, 6).transpose();
-    tail_current_state_.segment(0, 2) = tail_plan_.block(1, 6, 1, 2).transpose();
-    tail_current_state_.segment(2, 2) = tail_plan_.block(1, 14, 1, 2).transpose();
+    tail_current_state_.segment(0, 2) =
+        tail_plan_.block(1, 6, 1, 2).transpose();
+    tail_current_state_.segment(2, 2) =
+        tail_plan_.block(1, 14, 1, 2).transpose();
 
     ref_body_plan_.topRows(N_) = ref_body_plan_.bottomRows(N_);
     ref_body_plan_(N_, 0) =

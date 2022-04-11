@@ -21,6 +21,7 @@
 #include "nmpc_controller/gen/eval_jac_g_leg.h"
 #include "nmpc_controller/gen/eval_jac_g_tail.h"
 #include "quad_utils/enum_type.h"
+#include "quad_utils/ros_utils.h"
 
 using namespace Ipopt;
 

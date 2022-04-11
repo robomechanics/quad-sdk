@@ -131,7 +131,7 @@ bool InverseDynamicsController::computeLegCommandArray(
 
       while (!contact_state_machine_done) {
         switch (contact_state_machine_.data.at(i)) {
-          case STANCE:
+          case STANCE: {
             if (!get_new_plan_after_recovering_.at(i)) {
               // Still do retraction if we've not yet receive the latest plan
               // Assign retraction position
@@ -164,8 +164,9 @@ bool InverseDynamicsController::computeLegCommandArray(
 
             contact_state_machine_done = true;
             break;
+          }
 
-          case SWING:
+          case SWING: {
             if (contact_mode[i]) {
               // Clock switch to stance, extend first
               contact_state_machine_.data.at(i) = EXTEND;
@@ -178,8 +179,9 @@ bool InverseDynamicsController::computeLegCommandArray(
 
             contact_state_machine_done = true;
             break;
+          }
 
-          case EXTEND:
+          case EXTEND: {
             if (last_grf_sensor_msg_->contact_states.at(i) &&
                 last_grf_sensor_msg_->vectors.at(i).z >= 5) {
               // Switch to stance if contact sensor reports it
@@ -200,8 +202,9 @@ bool InverseDynamicsController::computeLegCommandArray(
 
             contact_state_machine_done = true;
             break;
+          }
 
-          case RETRACTION:
+          case RETRACTION: {
             if (last_grf_sensor_msg_->contact_states.at(i) &&
                 last_grf_sensor_msg_->vectors.at(i).z >= 5) {
               // Switch to stance if contact sensor reports it
@@ -231,9 +234,11 @@ bool InverseDynamicsController::computeLegCommandArray(
 
             contact_state_machine_done = true;
             break;
+          }
 
-          default:
+          default: {
             break;
+          }
         }
       }
     }
@@ -244,7 +249,9 @@ bool InverseDynamicsController::computeLegCommandArray(
                                     contact_mode, tau_array);
 
     for (size_t i = 0; i < 4; i++) {
-      if (contact_state_machine_.data.at(i) == RETRACTION) {
+      if (contact_state_machine_.data.at(i) == RETRACTION ||
+          (contact_state_machine_.data.at(i) == STANCE &&
+           !get_new_plan_after_recovering_.at(i))) {
         tau_array.segment(3 * i, 3) << 0, 0, 0;
       }
 

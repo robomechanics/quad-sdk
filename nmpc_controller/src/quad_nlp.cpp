@@ -913,52 +913,28 @@ void quadNLP::shift_initial_guess() {
   // New contact
   if ((contact_sequence_.col(N_ - 1) - contact_sequence_.col(N_ - 2)).norm() >
       1e-3) {
-    // There's a dual pair
-    if ((Eigen::MatrixXi::Ones(4, 1) - (contact_sequence_.col(N_ - 1)) -
-         contact_sequence_.col(N_ - 2))
-            .norm() < 1e-3) {
-      Eigen::MatrixXd trans = Eigen::MatrixXd::Zero(12, 12);
-      trans.block(0, 3, 3, 3).diagonal() << 1, 1, 1;
-      trans.block(3, 0, 3, 3).diagonal() << 1, 1, 1;
-      trans.block(6, 9, 3, 3).diagonal() << 1, 1, 1;
-      trans.block(9, 6, 3, 3).diagonal() << 1, 1, 1;
+    w0_.block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0,
+              m_ - leg_input_start_idx_, 1)
+        .fill(0);
+    z_L0_
+        .block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0,
+               m_ - leg_input_start_idx_, 1)
+        .fill(1);
+    z_U0_
+        .block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0,
+               m_ - leg_input_start_idx_, 1)
+        .fill(1);
+    lambda0_.block((N_ - 1) * g_, 0, g_, 1).fill(1000);
 
-      w0_.block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0,
-                m_ - leg_input_start_idx_, 1) =
-          trans * w0_.block((N_ - 7) * (n_ + m_) + leg_input_start_idx_, 0,
-                            m_ - leg_input_start_idx_, 1);
-      z_L0_.block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0,
-                  m_ - leg_input_start_idx_, 1) =
-          trans * z_L0_.block((N_ - 7) * (n_ + m_) + leg_input_start_idx_, 0,
-                              m_ - leg_input_start_idx_, 1);
-      z_U0_.block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0,
-                  m_ - leg_input_start_idx_, 1) =
-          trans * z_U0_.block((N_ - 7) * (n_ + m_) + leg_input_start_idx_, 0,
-                              m_ - leg_input_start_idx_, 1);
-    } else {
-      // New contact mode
-      w0_.block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0,
-                m_ - leg_input_start_idx_, 1)
-          .fill(0);
-      z_L0_
-          .block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0,
-                 m_ - leg_input_start_idx_, 1)
-          .fill(1);
-      z_U0_
-          .block((N_ - 1) * (n_ + m_) + leg_input_start_idx_, 0,
-                 m_ - leg_input_start_idx_, 1)
-          .fill(1);
+    // Compute the number of contacts
+    double num_contacts = contact_sequence_.col(N_ - 1).sum();
 
-      // Compute the number of contacts
-      double num_contacts = contact_sequence_.col(N_ - 1).sum();
-
-      // If there are some contacts, set the nominal input accordingly
-      if (num_contacts > 0) {
-        for (size_t i = 0; i < 4; i++) {
-          if (contact_sequence_(i, N_ - 1) == 1) {
-            w0_((N_ - 1) * (n_ + m_) + leg_input_start_idx_ + 3 * i + 2, 0) =
-                mass_ * grav_ / num_contacts;
-          }
+    // If there are some contacts, set the nominal input accordingly
+    if (num_contacts > 0) {
+      for (size_t i = 0; i < 4; i++) {
+        if (contact_sequence_(i, N_ - 1) == 1) {
+          w0_((N_ - 1) * (n_ + m_) + leg_input_start_idx_ + 3 * i + 2, 0) =
+              mass_ * grav_ / num_contacts;
         }
       }
     }
@@ -979,86 +955,53 @@ void quadNLP::update_solver(
 
   // Update contact sequence
   // Local planner has outer as N and inner as boolean contact
-  for (size_t i = 0; i < contact_schedule.size(); i++) {
-    for (size_t j = 0; j < contact_schedule.front().size(); j++) {
-      if (contact_schedule.at(i).at(j)) {
-        contact_sequence_(j, i) = 1;
-      } else {
-        contact_sequence_(j, i) = 0;
-      }
-    }
+  quad_utils::contactScheduleToEigen(contact_schedule, contact_sequence_);
+
+  // Check if contact schedule modified
+  int shift;
+  if (same_plan_index) {
+    shift = 0;
+  } else {
+    shift = 1;
   }
 
   for (size_t i = 0; i < N_; i++) {
-    if (same_plan_index) {
-      if ((contact_sequence_prev.col(i) - contact_sequence_.col(i)).norm() >
-          1e-3) {
-        w0_.block(i * (n_ + m_) + leg_input_start_idx_, 0,
-                  m_ - leg_input_start_idx_, 1)
-            .fill(0);
-        z_L0_
-            .block(i * (n_ + m_) + leg_input_start_idx_, 0,
-                   m_ - leg_input_start_idx_, 1)
-            .fill(1);
-        z_U0_
-            .block(i * (n_ + m_) + leg_input_start_idx_, 0,
-                   m_ - leg_input_start_idx_, 1)
-            .fill(1);
+    if (i == N_ - 1 && !same_plan_index) {
+      continue;
+    }
 
-        // Compute the number of contacts
-        double num_contacts = contact_sequence_.col(i).sum();
+    if ((contact_sequence_prev.col(i + shift) - contact_sequence_.col(i))
+            .norm() > 1e-3) {
+      w0_.block(i * (n_ + m_) + leg_input_start_idx_, 0,
+                m_ - leg_input_start_idx_, 1)
+          .fill(0);
+      z_L0_
+          .block(i * (n_ + m_) + leg_input_start_idx_, 0,
+                 m_ - leg_input_start_idx_, 1)
+          .fill(1);
+      z_U0_
+          .block(i * (n_ + m_) + leg_input_start_idx_, 0,
+                 m_ - leg_input_start_idx_, 1)
+          .fill(1);
+      lambda0_.block(i * g_, 0, g_, 1).fill(1000);
 
-        // If there are some contacts, set the nominal input accordingly
-        if (num_contacts > 0) {
-          for (size_t j = 0; j < 4; j++) {
-            if (contact_sequence_(j, i) == 1) {
-              w0_(i * (n_ + m_) + leg_input_start_idx_ + 3 * j + 2, 0) =
-                  mass_ * grav_ / num_contacts;
-            }
+      // Compute the number of contacts
+      double num_contacts = contact_sequence_.col(i).sum();
+
+      // If there are some contacts, set the nominal input accordingly
+      if (num_contacts > 0) {
+        for (size_t j = 0; j < 4; j++) {
+          if (contact_sequence_(j, i) == 1) {
+            w0_(i * (n_ + m_) + leg_input_start_idx_ + 3 * j + 2, 0) =
+                mass_ * grav_ / num_contacts;
           }
         }
-
-        // Reset warmstart since we have different contact schedule now
-        mu0_ = 1e-1;
-        warm_start_ = false;
-      }
-    } else {
-      if (i == N_ - 1) {
-        continue;
-      }
-
-      if ((contact_sequence_prev.col(i + 1) - contact_sequence_.col(i)).norm() >
-          1e-3) {
-        w0_.block((i + 1) * (n_ + m_) + leg_input_start_idx_, 0,
-                  m_ - leg_input_start_idx_, 1)
-            .fill(0);
-        z_L0_
-            .block((i + 1) * (n_ + m_) + leg_input_start_idx_, 0,
-                   m_ - leg_input_start_idx_, 1)
-            .fill(1);
-        z_U0_
-            .block((i + 1) * (n_ + m_) + leg_input_start_idx_, 0,
-                   m_ - leg_input_start_idx_, 1)
-            .fill(1);
-
-        // Compute the number of contacts
-        double num_contacts = contact_sequence_.col(i).sum();
-
-        // If there are some contacts, set the nominal input accordingly
-        if (num_contacts > 0) {
-          for (size_t j = 0; j < 4; j++) {
-            if (contact_sequence_(j, i) == 1) {
-              w0_((i + 1) * (n_ + m_) + leg_input_start_idx_ + 3 * j + 2, 0) =
-                  mass_ * grav_ / num_contacts;
-            }
-          }
-        }
-
-        // Reset warmstart since we have different contact schedule now
-        mu0_ = 1e-1;
-        warm_start_ = false;
       }
     }
+
+    // Reset warmstart since we have different contact schedule now
+    mu0_ = 1e-1;
+    warm_start_ = false;
   }
 
   // Update initial states
@@ -1129,14 +1072,4 @@ void quadNLP::update_solver(
 
   // Update known leg input flag
   known_leg_input_ = true;
-
-  // Initialize with the leg solution, seems it's a bad idea
-  // if (require_init_) {
-  //   for (size_t i = 0; i < N_; i++) {
-  //     w0_.block(i * (n_ + m_) + m_, 0, 6, 1) =
-  //         state_traj.row(i + 1).transpose().segment(0, 6);
-  //     w0_.block(i * (n_ + m_) + m_ + 8, 0, 6, 1) =
-  //         state_traj.row(i + 1).transpose().segment(6, 6);
-  //   }
-  // }
 }
