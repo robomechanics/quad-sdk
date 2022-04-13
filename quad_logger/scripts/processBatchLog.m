@@ -10,8 +10,8 @@ bagPath = '../bags/archive/';
 bagNameList = dir(strcat(bagPath, '*.bag'));
 bAnimate = false;
 bSave = false;
-bSampleNum = 25;
-bTypeNum = 2;
+bSampleNum = 24;
+bTypeNum = 1;
 
 maxError = [];
 sucList = [];
@@ -25,7 +25,7 @@ contactSensing = {};
 for j = 1:size(bagNameList, 1)/bSampleNum/bTypeNum
 
     for i = 1:bSampleNum*bTypeNum
-        
+
         % Load bag files
         trialName = strcat(bagPath, bagNameList(i + (j - 1)*bSampleNum*bTypeNum).name);
 
@@ -67,7 +67,7 @@ for j = 1:size(bagNameList, 1)/bSampleNum/bTypeNum
 
         % Analyse the orientation error
         maxError(end+1) = max(abs(wrapToPi(data.stateGroundTruth.axisAngleRP(:, 4))));
-        
+
         if maxError((j - 1)*bSampleNum*bTypeNum + i) < pi/3
             sucList((j - 1)*bSampleNum*bTypeNum + i) = true;
         else
@@ -76,10 +76,10 @@ for j = 1:size(bagNameList, 1)/bSampleNum/bTypeNum
 
     end
 
-    fprintf('Tail success: %d, Leg success: %d, total: %d \n', ...
-        sum(sucList((j - 1)*bSampleNum*bTypeNum + 1:(j - 1)*bSampleNum*bTypeNum + bSampleNum)), ...
-        sum(sucList((j - 1)*bSampleNum*bTypeNum + bSampleNum + 1:j*bSampleNum*bTypeNum)), ...
-        bSampleNum);
+    %     fprintf('Tail success: %d, Leg success: %d, total: %d \n', ...
+    %         sum(sucList((j - 1)*bSampleNum*bTypeNum + 1:(j - 1)*bSampleNum*bTypeNum + bSampleNum)), ...
+    %         sum(sucList((j - 1)*bSampleNum*bTypeNum + bSampleNum + 1:j*bSampleNum*bTypeNum)), ...
+    %         bSampleNum);
 
     for k=1:bTypeNum
         figure()
