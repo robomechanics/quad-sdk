@@ -13,7 +13,7 @@ robot_driver:
   stand_kd: [1, 1, 1]
   stance_kp: [25, 25, 25]
   stance_kd: [1, 1, 1]
-  retraction_kp: [10, 35, 35]
+  retraction_kp: [35, 35, 35]
   retraction_kd: [1, 1, 1]
   extend_kp: [10, 10, 10]
   extend_kd: [0.1, 0.1, 0.1]

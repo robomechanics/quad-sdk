@@ -178,8 +178,8 @@ else
 end
 
 % Read the contact sensing data
-contactSensingData = readMessages(select(bag,'Topic','/control/contact_sensing'),'DataFormat','struct');
-contactSensingTime = select(bag, Topic='/control/contact_sensing');
+contactSensingData = readMessages(select(bag,'Topic','/control/contact_state_machine'),'DataFormat','struct');
+contactSensingTime = select(bag, Topic='/control/contact_state_machine');
 contactSensingTime = contactSensingTime.MessageList.Time;
 contactSensing = struct;
 if isempty(controlGRFsData)

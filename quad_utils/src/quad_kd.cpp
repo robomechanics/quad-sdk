@@ -334,11 +334,11 @@ void QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
   double q2;
 
   double temp = l0 / std::sqrt(z * z + y * y);
-  if (std::abs(temp) > 1) {
-    // If the toe is too close to the hip, clamp it
-    q0 = std::atan2(z, y);
+  temp = std::max(std::min(temp, 1.0), -1.0);
+
+  if (z > 0) {
+    q0 = -std::acos(temp) + std::atan2(z, y);
   } else {
-    // We assume toe is always lower than the hip
     q0 = std::acos(temp) + std::atan2(z, y);
   }
 
@@ -349,27 +349,21 @@ void QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
   // Clamp abad
   q0 = std::max(std::min(q0, joint_max_[0]), joint_min_[0]);
 
-  if (x * x + z * z > (l2_ + l1_) * (l2_ + l1_)) {
-    // If leg over extend, set to the closest point
-    q1 = std::atan2(z, x) - M_PI;
-    q2 = M_PI;
-  } else {
-    q2 = std::acos((l1_ * l1_ + l2_ * l2_ - (x * x + z * z)) / (2 * l1_ * l2_));
-    if (q2 < 0.136) {
-      // If the toe is too close to hip, don't do dramatic motion
-      q1 = 0;
-    } else {
-      // We assume toe is always lower than the hip
-      q1 = M_PI + std::atan2(z, x) -
-           std::acos((l1_ * l1_ - l2_ * l2_ + (x * x + z * z)) /
-                     (2 * l1_ * std::sqrt(x * x + z * z)));
-    }
-    // Try to wrap the hip angle
-    if (q1 > M_PI) {
-      q1 -= 2 * M_PI;
-    } else if (q1 < -M_PI) {
-      q1 += 2 * M_PI;
-    }
+  double temp2 = (l1_ * l1_ + x * x + z * z - l2_ * l2_) /
+                 (2 * l1_ * std::sqrt(x * x + z * z));
+  double temp3 = (l1_ * l1_ + l2_ * l2_ - x * x - z * z) / (2 * l1_ * l2_);
+  temp2 = std::max(std::min(temp2, 1.0), -1.0);
+  temp3 = std::max(std::min(temp3, 1.0), -1.0);
+
+  // We assume toe is always lower than the hip
+  q1 = 0.5 * M_PI + atan2(x, -z) - acos(temp2);
+  q2 = acos(temp3);
+
+  // Try to wrap the hip angle
+  if (q1 > M_PI) {
+    q1 -= 2 * M_PI;
+  } else if (q1 < -M_PI) {
+    q1 += 2 * M_PI;
   }
 
   // Clamp hip and knee
