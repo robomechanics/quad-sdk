@@ -6,10 +6,12 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   argv_ = argv;
 
   // Load rosparams from parameter server
-  std::string grf_topic, robot_state_topic, local_plan_topic,
-      leg_command_array_topic, control_mode_topic, remote_heartbeat_topic,
-      robot_heartbeat_topic, single_joint_cmd_topic, mocap_topic,
-      control_restart_flag_topic;
+  std::string imu_topic, joint_state_topic, grf_topic, robot_state_topic,
+      local_plan_topic, leg_command_array_topic, control_mode_topic,
+      remote_heartbeat_topic, robot_heartbeat_topic, single_joint_cmd_topic,
+      mocap_topic, control_restart_flag_topic;
+  quad_utils::loadROSParam(nh_, "topics/state/imu", imu_topic);
+  quad_utils::loadROSParam(nh_, "topics/state/joints", joint_state_topic);
   quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
   quad_utils::loadROSParam(nh_, "topics/heartbeat/remote",
@@ -83,8 +85,9 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
                                this, ros::TransportHints().tcpNoDelay(true));
     robot_state_pub_ =
         nh_.advertise<quad_msgs::RobotState>(robot_state_topic, 1);
-    imu_pub_ = nh_.advertise<sensor_msgs::Imu>("/state/imu", 1);
-    joint_state_pub_ = nh_.advertise<sensor_msgs::JointState>("/state/joints", 1);
+    imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic, 1);
+    joint_state_pub_ =
+        nh_.advertise<sensor_msgs::JointState>(joint_state_topic, 1);
   } else {
     ROS_INFO("Loading sim robot driver");
     robot_state_sub_ =
