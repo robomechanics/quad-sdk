@@ -1,18 +1,17 @@
-#ifndef LEG_CONTROLLER_TEMPLATE_H
-#define LEG_CONTROLLER_TEMPLATE_H
+#ifndef LEG_CONTORLLER_H
+#define LEG_CONTORLLER_H
 
 #include <eigen_conversions/eigen_msg.h>
 #include <quad_msgs/GRFArray.h>
 #include <quad_msgs/LegCommand.h>
 #include <quad_msgs/LegCommandArray.h>
-#include <quad_msgs/LegOverride.h>
 #include <quad_msgs/MotorCommand.h>
 #include <quad_msgs/MultiFootPlanContinuous.h>
 #include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/RobotState.h>
 #include <quad_utils/math_utils.h>
 #include <quad_utils/ros_utils.h>
-#include <robot_driver/mblink_converter.h>
+#include <robot_driver/hardware_interfaces/spirit_interface.h>
 #include <ros/ros.h>
 #include <std_msgs/UInt8.h>
 
@@ -22,17 +21,17 @@
 
 //! Implements an abstract class for leg controllers.
 /*!
-   LegControllerTemplate provides an abstract leg controller class. It contains
+   LegController provides an abstract leg controller class. It contains
    pure virtual methods for computing motor commands for each leg to be sent to
    the robot.
 */
-class LegControllerTemplate {
+class LegController {
  public:
   /**
-   * @brief Constructor for LegControllerTemplate
-   * @return Constructed object of type LegControllerTemplate
+   * @brief Constructor for LegController
+   * @return Constructed object of type LegController
    */
-  LegControllerTemplate();
+  LegController();
 
   /**
    * @brief Set the desired proportional and derivative gains for all legs
@@ -103,4 +102,4 @@ class LegControllerTemplate {
   bool override_state_machine_;
 };
 
-#endif  // MPC_CONTROLLER_H
+#endif  // LEG_CONTORLLER_H

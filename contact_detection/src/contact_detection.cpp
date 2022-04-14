@@ -8,11 +8,11 @@ ContactDetection::ContactDetection(ros::NodeHandle nh) {
   nh.param<double>(
       "contact_detection/update_rate", update_rate_,
       200);  // add a param for your package instead of using the estimator one
-  nh.param<std::string>("topics/joint_encoder", joint_encoder_topic,
-                        "/joint_encoder");
-  nh.param<std::string>("topics/imu", imu_topic, "/imu");
+  nh.param<std::string>("topics/state/joints", joint_encoder_topic,
+                        "state/joints");
+  nh.param<std::string>("topics/state/imu", imu_topic, "state/imu");
   nh.param<std::string>("topics/contact_mode", contact_mode_topic,
-                        "/contact_mode");
+                        "contact_mode");
 
   // Setup pubs and subs here
   joint_encoder_sub_ = nh_.subscribe(

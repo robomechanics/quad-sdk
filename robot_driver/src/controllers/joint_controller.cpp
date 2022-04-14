@@ -1,4 +1,4 @@
-#include "robot_driver/joint_controller.h"
+#include "robot_driver/controllers/joint_controller.h"
 
 JointController::JointController() {
   leg_idx_ = 0;
