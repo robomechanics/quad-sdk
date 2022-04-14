@@ -1,4 +1,4 @@
-#include "robot_driver/grf_pid_controller.h"
+#include "robot_driver/controllers/grf_pid_controller.h"
 
 GrfPidController::GrfPidController() {
   pos_error_int_.setZero();
