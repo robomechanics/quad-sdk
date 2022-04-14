@@ -169,6 +169,9 @@ class RobotDriver {
   /// ROS publisher for imu data
   ros::Publisher imu_pub_;
 
+  /// ROS publisher for joint data
+  ros::Publisher joint_state_pub_;
+
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
 

@@ -84,6 +84,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
     robot_state_pub_ =
         nh_.advertise<quad_msgs::RobotState>(robot_state_topic, 1);
     imu_pub_ = nh_.advertise<sensor_msgs::Imu>("/state/imu", 1);
+    joint_state_pub_ = nh_.advertise<sensor_msgs::JointState>("/state/joints", 1);
   } else {
     ROS_INFO("Loading sim robot driver");
     robot_state_sub_ =
@@ -291,8 +292,8 @@ bool RobotDriver::updateState() {
     if (last_mocap_msg_ != NULL) {
       // IMU uses different coordinates
       Eigen::Vector3d acc;
-      acc << last_imu_msg_.linear_acceleration.y,
-          last_imu_msg_.linear_acceleration.x,
+      acc << last_imu_msg_.linear_acceleration.x,
+          last_imu_msg_.linear_acceleration.y,
           last_imu_msg_.linear_acceleration.z;
 
       Eigen::Matrix3d rot;
@@ -343,6 +344,7 @@ bool RobotDriver::updateState() {
 void RobotDriver::publishState() {
   if (is_hardware_) {
     imu_pub_.publish(last_imu_msg_);
+    joint_state_pub_.publish(last_joint_state_msg_);
     robot_state_pub_.publish(last_robot_state_msg_);
   }
 }
