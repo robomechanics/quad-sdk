@@ -3,8 +3,7 @@ Panels:
     Help Height: 0
     Name: Displays
     Property Tree Widget:
-      Expanded:
-        - /Discrete Foot Plan1/Status1
+      Expanded: ~
       Splitter Ratio: 0.6114649772644043
     Tree Height: 806
   - Class: rviz/Selection
@@ -189,13 +188,13 @@ Visualization Manager:
       Value: true
       Visual Enabled: true
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /robot_1/visualization/state/ground_truth_trace
       Name: Ground Truth State Trace
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
-      Value: true
+      Value: false
     - Class: rviz/MarkerArray
       Enabled: false
       Marker Topic: /robot_1/visualization/current_grf
@@ -214,10 +213,10 @@ Visualization Manager:
       Value: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /visualization/global_plan
+      Marker Topic: /robot_1/visualization/global_plan
       Name: Global Plan
       Namespaces:
-        {}
+        "": true
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -415,7 +414,12 @@ Visualization Manager:
       Topic: /move_base_simple/goal
     - Class: rviz/PublishPoint
       Single click: true
-      Topic: /clicked_point
+      Topic: /robot_1/clicked_point
+    
+    - Class: rviz/PublishPoint
+      Single click: true
+      Topic: /robot_2/clicked_point
+      
   Value: true
   Views:
     Current:
