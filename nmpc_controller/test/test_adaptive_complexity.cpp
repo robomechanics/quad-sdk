@@ -11,9 +11,9 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   ros::param::get("/local_planner/timestep", dt_);
 
   std::shared_ptr<NMPCController> leg_planner_ =
-      std::make_shared<NMPCController>(0);
+      std::make_shared<NMPCController>(1);
 
-  Eigen::MatrixXd ref_body_plan_(N_, 12);
+  Eigen::MatrixXd ref_body_plan_(N_, 36);
   ref_body_plan_.fill(0);
   ref_body_plan_.col(2).fill(0.3);
 
@@ -28,11 +28,16 @@ TEST(NMPCTest, testAdaptiveComplexity) {
         -0.098, 0, -0.2263, -0.098, 0;
   }
 
+  ref_body_plan_.middleCols(12, 12) = foot_positions_world_;
+  ref_body_plan_.rightCols(12) = foot_velocities_world_;
+
   // Load the current state
-  Eigen::VectorXd current_state_(36);
+  Eigen::VectorXd current_state_(60);
   current_state_.fill(0);
-  current_state_(2) = 0.3;
+  current_state_(2) = 0.2;
   current_state_(9) = 0;
+  current_state_.segment(12, 12) = foot_positions_world_.row(0);
+  current_state_.segment(24, 12) = foot_velocities_world_.row(0);
 
   quad_utils::QuadKD quad_kd;
   Eigen::VectorXd x_null_nom_(24);
@@ -52,8 +57,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   //     abad_nom, hip_nom, knee_nom, abad_nom, hip_nom, knee_nom, 0, 0, 0, 0,
   //     0, 0, 0, 0, 0, 0, 0, 0;
 
-  current_state_.segment(12, 24) = x_null_nom_;
-  std::cout << "x_null_nom_ = \n" << x_null_nom_ << std::endl;
+  current_state_.segment(36, 24) = x_null_nom_;
 
   std::vector<std::vector<bool>> adpative_contact_schedule_;
   adpative_contact_schedule_.resize(N_);
@@ -69,8 +73,10 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   Eigen::VectorXd ref_ground_height(N_);
   ref_ground_height.fill(0);
 
-  Eigen::MatrixXd body_plan_(N_, 12);
+  Eigen::MatrixXd body_plan_(N_, 36);
   body_plan_.col(2).fill(0.3);
+  body_plan_.middleCols(12, 12) = foot_positions_world_;
+  body_plan_.rightCols(12) = foot_velocities_world_;
 
   Eigen::MatrixXd grf_plan_(N_ - 1, 12);
   grf_plan_.fill(0);
@@ -94,11 +100,14 @@ TEST(NMPCTest, testAdaptiveComplexity) {
 
   for (int i = 0; i < 10; i++) {
     tic = std::chrono::steady_clock::now();
-    // complexity_schedule.tail(2 * i + 1).fill(1);
-    // complexity_schedule.head(2 * i + 1).fill(1);
 
-    // std::cout << "current state = " << current_state_.transpose() <<
-    // std::endl;
+    // std::cout << "Starting solve" << std::endl;
+    // std::cout << "current_state_ = \n" << current_state_ << std::endl;
+    // std::cout << "ref_body_plan_ = \n" << ref_body_plan_ << std::endl;
+    // std::cout << "foot_positions_world_ = \n"
+    //           << foot_positions_world_ << std::endl;
+    // std::cout << "foot_velocities_world_ = \n"
+    //           << foot_velocities_world_ << std::endl;
 
     leg_planner_->computeLegPlan(
         current_state_, ref_body_plan_, foot_positions_world_,
@@ -112,14 +121,14 @@ TEST(NMPCTest, testAdaptiveComplexity) {
                      .count()
               << "[µs]" << std::endl;
 
-    current_state_.head(12) = body_plan_.row(1).transpose();
+    current_state_.head(12) = body_plan_.block(1, 0, 1, 12).transpose();
 
     quad_kd.convertCentroidalToFullBody(
         current_state_.head(12), foot_positions_world_.row(i),
-        foot_velocities_world_.row(i), grf_plan_.row(1), joint_positions,
+        foot_velocities_world_.row(i), grf_plan_.row(0), joint_positions,
         joint_velocities, torques);
-    current_state_.segment(12, 12) = joint_positions;
-    current_state_.segment(24, 12) = joint_velocities;
+    current_state_.segment(36, 12) = joint_positions;
+    current_state_.segment(48, 12) = joint_velocities;
 
     std::rotate(adpative_contact_schedule_.begin(),
                 adpative_contact_schedule_.begin() + 1,

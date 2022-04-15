@@ -117,7 +117,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 
 void LocalPlanner::initLocalBodyPlanner() {
   // Create nmpc wrapper class
-  local_body_planner_nonlinear_ = std::make_shared<NMPCController>(0);
+  local_body_planner_nonlinear_ = std::make_shared<NMPCController>(1);
 }
 
 void LocalPlanner::initLocalFootstepPlanner() {
@@ -599,11 +599,20 @@ bool LocalPlanner::computeLocalPlan() {
   if (!local_body_planner_nonlinear_->computeLegPlan(
           current_full_state, ref_body_plan_, grf_positions,
           foot_velocities_world_, contact_schedule_, ref_ground_height_,
-          first_element_duration_, same_plan_index_, ref_primitive_plan_,
-          complexity_schedule, body_plan_, grf_plan_))
+          first_element_duration_, same_plan_index_, terrain_grid_, body_plan_,
+          grf_plan_))
     return false;
 
-  // Eigen::VectorXi complexity_schedule_adaptive = getInvalidRegions();
+  foot_positions_world_ = grf_positions;
+  for (size_t i = 0; i < 4; i++) {
+    foot_positions_world_.col(3 * i + 2) =
+        foot_positions_world_.col(3 * i + 2).array() + toe_radius;
+  }
+
+  // std::cout << "foot_positions_world_ = \n"
+  //           << foot_positions_world_ << std::endl;
+  // std::cout << "foot_velocities_world_ = \n"
+  //           << foot_velocities_world_ << std::endl;
 
   // Record computation time and update exponential filter
   compute_time_ = 1000.0 * timer.reportSilent();

@@ -48,7 +48,7 @@ SOFTWARE.
     <include file="$(find quad_utils)/launch/robot_driver.launch">
       <arg name="controller" value="$(arg controller)" />
       <arg name="mocap" value="false" />
-      <arg name="is_hw" value="false" />
+      <arg name="is_hardware" value="false" />
     </include>
     <!-- <include file="$(find quad_utils)/launch/planning.launch">
       <arg name="global_planner" value="$(arg global_planner)"/>

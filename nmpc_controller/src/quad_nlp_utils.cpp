@@ -305,6 +305,28 @@ void quadNLP::loadConstraintNames() {
   }
 
   for (int i = 0; i < num_feet; i++) {
+    constr_names[curr_constr] = "eom_x_pos_foot_" + std::to_string(i);
+    curr_constr++;
+
+    constr_names[curr_constr] = "eom_y_pos_foot_" + std::to_string(i);
+    curr_constr++;
+
+    constr_names[curr_constr] = "eom_z_pos_foot_" + std::to_string(i);
+    curr_constr++;
+  }
+
+  for (int i = 0; i < num_feet; i++) {
+    constr_names[curr_constr] = "eom_dx_pos_foot_" + std::to_string(i);
+    curr_constr++;
+
+    constr_names[curr_constr] = "eom_dy_pos_foot_" + std::to_string(i);
+    curr_constr++;
+
+    constr_names[curr_constr] = "eom_dz_pos_foot_" + std::to_string(i);
+    curr_constr++;
+  }
+
+  for (int i = 0; i < num_feet; i++) {
     constr_names[curr_constr] = "fk_pos_x_foot_" + std::to_string(i);
     curr_constr++;
 

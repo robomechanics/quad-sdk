@@ -12,6 +12,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <IpIpoptData.hpp>
+#include <grid_map_core/grid_map_core.hpp>
 #include <numeric>
 #include <unordered_map>
 #include <vector>
@@ -57,6 +58,9 @@ class quadNLP : public TNLP {
   // Horizon length, state dimension, input dimension, and constraints dimension
   int N_, n_, m_, g_, g_relaxed_;
 
+  // Number of states in different components
+  int n_body_, n_foot_, n_joints_, n_tail_, m_body_, m_foot_, m_tail_;
+
   /// State dimension for simple and complex models
   int n_simple_, n_complex_;
 
@@ -68,6 +72,9 @@ class quadNLP : public TNLP {
 
   /// Boolean for whether to apply panic variables for complex constraints
   const bool apply_slack_to_complex_constr_ = true;
+
+  /// Boolean for whether to allow modifications of foot trajectory
+  const bool allow_foot_traj_modification = true;
 
   /// Input dimension for simple and complex models
   int m_simple_, m_complex_;
@@ -132,6 +139,9 @@ class quadNLP : public TNLP {
 
   /// Number of feet
   const int num_feet_ = 4;
+
+  /// Terrain map
+  grid_map::GridMap terrain_;
 
   // State bounds, input bounds, constraint bounds
   Eigen::VectorXd x_min_, x_max_, u_min_, u_max_, g_min_, g_max_;
@@ -216,9 +226,6 @@ class quadNLP : public TNLP {
   std::vector<std::vector<Eigen::VectorXi>> iRow_mat_, jCol_mat_;
   std::vector<std::vector<Eigen::VectorXi>> iRow_mat_relaxed_,
       jCol_mat_relaxed_, relaxed_idx_in_full_sparse_;
-
-  /// Number of complex finite elements in the horizon
-  int num_complex_fe_;
 
   decltype(eval_g_leg_work) *eval_g_work_;
   decltype(eval_g_leg_incref) *eval_g_incref_;
@@ -369,11 +376,39 @@ class quadNLP : public TNLP {
     return decision_var.block(x_idxs_[idx], 0, n_vec_[idx], 1);
   }
 
+  // Get the idx-th body state variable from decision variable
+  template <typename T>
+  inline Eigen::Block<T> get_primal_body_state_var(T &decision_var,
+                                                   const int &idx) const {
+    return decision_var.block(x_idxs_[idx], 0, n_body_, 1);
+  }
+
+  // Get the idx-th foot state variable from decision variable
+  template <typename T>
+  inline Eigen::Block<T> get_primal_foot_state_var(T &decision_var,
+                                                   const int &idx) const {
+    return decision_var.block(x_idxs_[idx] + n_body_, 0, n_foot_, 1);
+  }
+
   // Get the idx-th control variable from decision variable
   template <typename T>
   inline Eigen::Block<T> get_primal_control_var(T &decision_var,
                                                 const int &idx) const {
     return decision_var.block(u_idxs_[idx], 0, m_, 1);
+  }
+
+  // Get the idx-th body control variable from decision variable
+  template <typename T>
+  inline Eigen::Block<T> get_primal_body_control_var(T &decision_var,
+                                                     const int &idx) const {
+    return decision_var.block(u_idxs_[idx], 0, m_body_, 1);
+  }
+
+  // Get the idx-th foot control variable from decision variable
+  template <typename T>
+  inline Eigen::Block<T> get_primal_foot_control_var(T &decision_var,
+                                                     const int &idx) const {
+    return decision_var.block(u_idxs_[idx] + m_body_, 0, m_foot_, 1);
   }
 
   // Get the idx-th panic variable (for (idx+1)-th state variable) from decision

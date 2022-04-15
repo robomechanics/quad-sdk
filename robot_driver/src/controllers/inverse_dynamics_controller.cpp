@@ -1,4 +1,4 @@
-#include "robot_driver/inverse_dynamics.h"
+#include "robot_driver/controllers/inverse_dynamics_controller.h"
 
 InverseDynamicsController::InverseDynamicsController() {}
 

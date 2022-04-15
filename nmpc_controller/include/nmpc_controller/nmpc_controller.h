@@ -52,18 +52,14 @@ class NMPCController {
                    const std::vector<std::vector<bool>> &contact_schedule,
                    Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj);
 
-  bool computeLegPlan(const Eigen::VectorXd &initial_state,
-                      const Eigen::MatrixXd &ref_traj,
-                      const Eigen::MatrixXd &foot_positions,
-                      const Eigen::MatrixXd &foot_velocities,
-                      const std::vector<std::vector<bool>> &contact_schedule,
-                      const Eigen::VectorXd &ref_ground_height,
-                      const double &first_element_duration,
-                      const bool &same_plan_index,
-                      const Eigen::VectorXi &ref_primitive_id,
-                      const Eigen::VectorXi &complexity_schedule,
-                      Eigen::MatrixXd &state_traj,
-                      Eigen::MatrixXd &control_traj);
+  bool computeLegPlan(
+      const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
+      Eigen::MatrixXd &foot_positions, Eigen::MatrixXd &foot_velocities,
+      const std::vector<std::vector<bool>> &contact_schedule,
+      const Eigen::VectorXd &ref_ground_height,
+      const double &first_element_duration, const bool &same_plan_index,
+      const grid_map::GridMap &terrain, Eigen::MatrixXd &state_traj,
+      Eigen::MatrixXd &control_traj);
 
   bool computeCentralizedTailPlan(
       const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
@@ -87,7 +83,8 @@ class NMPCController {
       Eigen::MatrixXd &tail_state_traj, Eigen::MatrixXd &tail_control_traj);
 
   /** Method to return the constraint residual for requested data */
-  Eigen::VectorXi evalLiftedTrajectoryConstraints();
+  Eigen::VectorXi evalLiftedTrajectoryConstraints(
+      Eigen::MatrixXd &state_null_traj);
 
  private:
   ros::NodeHandle nh_;

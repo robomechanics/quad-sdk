@@ -1,7 +1,7 @@
 #ifndef INVERSE_DYNAMICS_H
 #define INVERSE_DYNAMICS_H
 
-#include <robot_driver/leg_controller_template.h>
+#include <robot_driver/controllers/leg_controller.h>
 
 //! Implements inverse dynamics as a controller within the ROS framework.
 /*!
@@ -9,7 +9,7 @@
    a constructor that does any initialization required and an update method
    called at some frequency.
 */
-class InverseDynamicsController : public LegControllerTemplate {
+class InverseDynamicsController : public LegController {
  public:
   /**
    * @brief Constructor for InverseDynamicsController
