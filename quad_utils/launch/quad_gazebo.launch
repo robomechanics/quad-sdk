@@ -33,7 +33,6 @@ SOFTWARE.
   <arg name="dash"            default="false"/>
   <arg name="world"           default="flat"/>
   <arg name="rotors"          default="false"/>
-  <arg name="planning"        default="true"/>
   <arg name="logging"         default="false"/>
   <param name="/use_sim_time" value="true"/>
 
@@ -60,7 +59,6 @@ SOFTWARE.
   <arg name="rotors"          default="$(arg rotors)"/>
   <arg name="software"        default="$(arg software)"/>
   <arg name="controller"      default="$(arg controller)"/>
-  <arg name="planning"        default="$(arg planning)"/>
   <arg name="logging"         value="$(arg logging)"/>
   <arg name="init_pose" value="-x 0.0 -y 0.0 -z 0.5" />
   <arg name="namespace" value="robot_1" />
@@ -71,7 +69,6 @@ SOFTWARE.
   <include file="$(find quad_utils)/launch/robot.launch">
   <arg name="rotors"          default="$(arg rotors)"/>
   <arg name="software"        default="$(arg software)"/>
-  <arg name="planning"        default="$(arg planning)"/>
   <arg name="logging"         value="$(arg logging)"/>
   <arg name="controller"      default="$(arg controller)"/>
   <arg name="init_pose" value="-x 0.0 -y 3.0 -z 0.5" />
