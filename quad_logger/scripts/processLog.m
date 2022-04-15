@@ -11,7 +11,7 @@ if nargin>0
 else
     % Specify the trial name and settings
     trialName = '';
-    bAnimate = true;
+    bAnimate = false;
     bSave = true;
 end
 
