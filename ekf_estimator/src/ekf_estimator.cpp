@@ -6,9 +6,9 @@ EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
   // Load rosparams from parameter server
   std::string joint_encoder_topic, imu_topic, contact_topic,
       state_estimate_topic;
-  nh.param<std::string>("topics/mcu/state/jointURDF", joint_encoder_topic,
-                        "/mcu/state/jointURDF");
-  nh.param<std::string>("topics/mcu/state/imu", imu_topic, "/mcu/state/imu");
+  nh.param<std::string>("topics/state/joints", joint_encoder_topic,
+                        "/state/joints");
+  nh.param<std::string>("topics/state/imu", imu_topic, "/state/imu");
   nh.param<std::string>("topics/state/estimate", state_estimate_topic,
                         "/state/estimate");
   nh.param<std::string>("topics/contact_mode", contact_topic, "/contact_mode");
@@ -101,12 +101,12 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   this->predict(dt, fk, wk, qk);
 
   // for testing prediction step
-  X = X_pre;
-  P = P_pre;
-  last_X = X;
+  // X = X_pre;
+  // P = P_pre;
+  // last_X = X;
 
   /// Update Step
-  // this->update(jk);
+  this->update(jk);
 
   // Update when I have good data, otherwise stay at the origin
   if (last_state_msg_ != NULL) {
@@ -140,8 +140,9 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
 
   // joint
   new_state_est.joints.header.stamp = ros::Time::now();
-  new_state_est.joints.name = {"0", "1", "2", "3", "4",  "5",
-                               "6", "7", "8", "9", "10", "11"};
+  // '8', '0', '1', '9', '2', '3', '10', '4', '5', '11', '6', '7'
+  new_state_est.joints.name = {"8",  "0", "1", "9",  "2", "3",
+                               "10", "4", "5", "11", "6", "7"};
   new_state_est.joints.position = jkVector;
   new_state_est.joints.velocity = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   new_state_est.joints.effort = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -269,10 +270,11 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   for (int i = 0; i < num_feet; i++) {
     // foot index i:(0 = FL, 1 = BL, 2 = FR, 3 = BR)
     // FL: 8 0 1, BL: 9 2 3, FR: 10 4 5, BR: 11 6 7
+    // joint_state_i << jk[8 + i], jk[i * 2], jk[i * 2 + 1];
     // FL: 0 1 2 , BL: 3 4 5, FR: 6 7 8, BR: 11 6 7
     Eigen::Vector3d joint_state_i;
-    // joint_state_i = jk.segment(3 * i, 3);
-    joint_state_i << jk[8 + i], jk[i * 2], jk[i * 2 + 1];
+    joint_state_i = jk.segment(3 * i, 3);
+
     Eigen::Vector3d toe_body_pos;
     quadKD_->bodyToFootFKBodyFrame(i, joint_state_i, toe_body_pos);
     s.segment(i * 3, 3) = toe_body_pos;
@@ -286,8 +288,8 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
     y.segment(i * 3, 3) =
         s.segment(i * 3, 3) - (C_pre * (p_pre.segment(i * 3, 3) - r_pre));
   }
-  // std::cout << "this is the residual " << std::endl;
-  // std::cout << y << std::endl;
+  std::cout << "this is the residual " << std::endl;
+  std::cout << y << std::endl;
 
   // Measurement jacobian (12 * 27)
   H = Eigen::MatrixXd::Zero(num_measure, num_cov);
@@ -388,8 +390,14 @@ void EKFEstimator::readJointEncoder(
     }
   } else {
     // nominal joint encoder values
-    jk << 0.767431, 1.591838, 0.804742, 1.612967, 0.721895, 1.562485, 0.729919,
-        1.514980, -0.012140, -0.024205, 0.050132, 0.058434;
+    // initial value for spirit_walking_005.bag
+    jk << -0.085515, 0.068447, 0.050970, -0.090167, 0.067919, 0.041212,
+        0.074548, 0.035950, 0.043139, 0.085534, 0.062638, 0.057826;
+
+    // initial value for spirit_walking_002.bag
+    // jk << 0.767431, 1.591838, 0.804742, 1.612967, 0.721895, 1.562485,
+    // 0.729919,
+    //     1.514980, -0.012140, -0.024205, 0.050132, 0.058434;
   }
 }
 
@@ -496,11 +504,18 @@ void EKFEstimator::spin() {
 
   // initial state
   X0 = Eigen::VectorXd::Zero(num_state);
-  X0 << -1.457778, 1.004244, 0.308681, 0, 0, 0, 0.998927, 0.004160, -0.003017,
-      -0.046032, -1.251841, 1.185387, 0.012734, -1.695057, 1.148678, 0.007092,
-      -1.236598, 0.861900, 0.016119, -1.678741, 0.831065, 0.020651, 0, 0, 0, 0,
-      0, 0;
+  // initial state for spirit_walking_002.bag
+  X0 << 2.731990, 0.037111, 0.063524, -0.002654, 0.013438, 0.005384, -0.999192,
+      -0.023452, 0.000798, -0.032635, 2.947184, 0.221952, 0.053124, 2.495493,
+      0.192468, 0.053249, 2.969032, -0.116851, 0.039909, 2.517641, -0.145698,
+      0.034415, 0, 0, 0, 0, 0, 0;
 
+  // initial state for spirit_walking_002.bag
+  // X0 << -1.457778, 1.004244, 0.308681, 0, 0, 0, 0.998927, 0.004160,
+  // -0.003017,
+  //     -0.046032, -1.251841, 1.185387, 0.012734, -1.695057, 1.148678,
+  //     0.007092, -1.236598, 0.861900, 0.016119, -1.678741, 0.831065, 0.020651,
+  //     0, 0, 0, 0, 0, 0;
   X = X0;
   last_X = X0;
 
