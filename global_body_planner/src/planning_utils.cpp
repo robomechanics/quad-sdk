@@ -1082,10 +1082,10 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
       }
       // }
     }
-    if ((getTraversability(reachability_point, planner_config) <= 1e-2) &&
-        phase != FLIGHT) {
-      return false;
-    }
+    // if ((getTraversability(reachability_point, planner_config) <= 1e-1) &&
+    //     phase != FLIGHT) {
+    //   return false;
+    // }
   }
 
   return true;

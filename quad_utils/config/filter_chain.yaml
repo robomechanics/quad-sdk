@@ -112,7 +112,7 @@ grid_map_filters:
     params:
       input_layer: traversability_raw
       output_layer: traversability
-      radius: 0.10
+      radius: 0.15
 
   # Delete layers.
   - name: delete
