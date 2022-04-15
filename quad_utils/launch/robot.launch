@@ -28,7 +28,7 @@
     <include file="$(find quad_utils)/launch/robot_driver.launch">
       <arg name="controller" value="$(arg controller)"/>
       <arg name="mocap" value="false"/>
-      <arg name="is_hw" value="false"/>
+      <arg name="is_hardware" value="false"/>
     </include>
 
     <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>

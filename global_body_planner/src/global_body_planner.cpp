@@ -168,7 +168,7 @@ void GlobalBodyPlanner::goalStateCallback(
 
 void GlobalBodyPlanner::setStartState() {
   // Reset if too far from plan
-  if (!current_plan_.isEmpty()) {
+  if (!current_plan_.isEmpty() && !publish_after_reset_delay_) {
     int current_index;
     double first_element_duration;
     quad_utils::getPlanIndex(current_plan_.getPublishedTimestamp(), dt_,

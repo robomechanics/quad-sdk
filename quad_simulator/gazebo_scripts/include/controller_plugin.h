@@ -48,6 +48,7 @@ class SpiritController : public controller_interface::Controller<
 
   /// Torque limits for each motor
   std::vector<double> torque_lims_;
+  std::vector<double> speed_lims_;
 
   void commandCB(const quad_msgs::LegCommandArrayConstPtr& msg);
   void enforceJointLimits(double& command, unsigned int index);
