@@ -20,8 +20,8 @@ BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
   // Load rosparams from parameter server
   std::string robot_state_topic, body_force_topic, toe_force_topic;
 #if USE_SIM == 2
-  nh.param<std::string>("topics/joint_encoder", robot_state_topic,
-                        "/joint_encoder");
+  nh.param<std::string>("topics/state/joints", robot_state_topic,
+                        "state/joints");
 #else
   nh.param<std::string>("topics/state/ground_truth", robot_state_topic,
                         "/state/ground_truth");
