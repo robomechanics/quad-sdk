@@ -421,6 +421,8 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
         get_primal_constraint_vals(g_u_matrix, i)
             .segment(g_simple_ - n_foot_ + n_foot_ / 2 + 3 * j, 3)
             .fill(2e19);
+        get_primal_foot_control_var(x_l_matrix, i).fill(0);
+        get_primal_foot_control_var(x_u_matrix, i).fill(0);
       }
 
       if (constrain_feet) {
@@ -562,17 +564,6 @@ bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
     obj_value +=
         panic_weights_ * get_slack_state_var(w, i).sum() +
         constraint_panic_weights_ * get_slack_constraint_var(w, i).sum();
-
-    // std::cout << "var cost = "
-    //           << panic_weights_ * get_slack_state_var(w, i).sum() <<
-    //           std::endl;
-
-    // std::cout << "get_slack_constraint_var(w, " << i
-    //           << ") = " << get_slack_constraint_var(w, i) << std::endl;
-    // std::cout << "constraint cost = "
-    //           << constraint_panic_weights_ *
-    //                  get_slack_constraint_var(w, i).sum()
-    //           << std::endl;
   }
 
   return true;
@@ -726,13 +717,6 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
         xk - panick.tail(n_slack_vec_[i]);
 
     if (g_slack_vec_[i] > 0) {
-      // std::cout << "get_primal_constraint_vals(g_matrix, "
-      //              "i).segment(relaxed_primal_constraint_idxs_in_element_[0],g_"
-      //              "relaxed_) = "
-      //           << get_primal_constraint_vals(g_matrix, i) << std::endl;
-      // std::cout << "get_slack_constraint_var(w, i) = "
-      //           << get_slack_constraint_var(w, i) << std::endl;
-
       Eigen::VectorXd gk =
           get_primal_constraint_vals(g_matrix, i)
               .segment(relaxed_primal_constraint_idxs_in_element_[0],
@@ -744,10 +728,6 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
 
       get_relaxed_primal_constraint_vals(g_matrix, i).tail(g_slack_vec_[i]) =
           gk - gk_panic.tail(g_slack_vec_[i]);
-
-      // std::cout << "get_relaxed_primal_constraint_vals(g_matrix, i) = "
-      //           << get_relaxed_primal_constraint_vals(g_matrix, i) <<
-      //           std::endl;
     }
   }
 
@@ -804,37 +784,6 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
 
       eval_release_vec_[sys_id][JAC](mem);
       eval_decref_vec_[sys_id][JAC]();
-
-      // std::cout << "get_dynamic_jac_var(values_matrix, i) = \n"
-      //           << get_dynamic_jac_var(values_matrix, i) << std::endl;
-      // int nnz = nnz_mat_(sys_id, JAC);
-      // int col_width = std::min(24, ncol_mat_(sys_id, JAC));
-      // int col_start = std::min(48, ncol_mat_(sys_id, JAC));
-      // std::cout << "nnz = " << nnz << std::endl;
-      // std::cout << "nrow = " << nrow_mat_(sys_id, JAC) << std::endl;
-      // std::cout << "ncol = " << ncol_mat_(sys_id, JAC) << std::endl;
-
-      // std::vector<Eigen::Triplet<double>> tripletList;
-      // tripletList.reserve(nnz);
-      // Eigen::VectorXi row_idx = iRow_mat_[sys_id][JAC].array();
-      // Eigen::VectorXi col_idx = jCol_mat_[sys_id][JAC].array();
-
-      // for (int j = 0; j < nnz; ++j) {
-      //   if ((col_idx[j] >= col_start) &&
-      //       (col_idx[j] < (col_start + col_width))) {
-      //     tripletList.push_back(Eigen::Triplet<double>(
-      //         row_idx[j], col_idx[j] - col_start,
-      //         get_dynamic_jac_var(values_matrix, i)(j, 0)));
-      //   }
-      // }
-      // Eigen::SparseMatrix<double> jac_element(nrow_mat_(sys_id, JAC),
-      //                                         col_width);
-      // jac_element.setFromTriplets(tripletList.begin(), tripletList.end());
-      // std::cout << "get_dynamic_var(w, i) = " << get_dynamic_var(w, i)
-      //           << std::endl;
-      // std::cout << "jac_element = \n"
-      //           << Eigen::MatrixXd(jac_element) << std::endl;
-      // throw std::runtime_error("Stop");
     }
 
     for (size_t i = 0; i < N_ - 1; i++) {
@@ -868,14 +817,6 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
               .segment(0, nnz_relaxed)(j, 0) = get_dynamic_jac_var(
               values_matrix, i)(relaxed_idx_in_full_sparse_[sys_id][JAC][j], 0);
         }
-        // std::cout << "relaxed_idx_in_full_sparse_[sys_id][JAC] = "
-        //           << relaxed_idx_in_full_sparse_[sys_id][JAC] << std::endl;
-
-        // std::cout << "iRow_mat_relaxed_[sys_id][JAC] = "
-        //           << iRow_mat_relaxed_[sys_id][JAC] << std::endl;
-
-        // std::cout << "jCol_mat_relaxed_[sys_id][JAC] = "
-        //           << jCol_mat_relaxed_[sys_id][JAC] << std::endl;
 
         // g_min wrt slack
         get_relaxed_dynamic_jac_var(values_matrix, i)
@@ -894,10 +835,6 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
         get_relaxed_dynamic_jac_var(values_matrix, i)
             .segment(2 * nnz_relaxed + g_slack, g_slack)
             .fill(-1);
-        // std::cout << "get_relaxed_dynamic_jac_var(values_matrix) = "
-        //           << get_relaxed_dynamic_jac_var(values_matrix, i) <<
-        //           std::endl;
-        // throw std::runtime_error("stop");
       }
     }
   }
@@ -1255,20 +1192,6 @@ void quadNLP::finalize_solution(SolverReturn status, Index n, const Number *x,
     nonzero_slack_element_sum[i] = get_slack_state_var(w, i).sum();
     nonzero_constraint_element_sum[i] = get_slack_constraint_var(w, i).sum();
   }
-
-  // std::cout << "nonzero_slack_element_sum = "
-  //           << nonzero_slack_element_sum.transpose() << std::endl;
-  // std::cout << "nonzero_constraint_element_sum = "
-  //           << nonzero_constraint_element_sum.transpose() << std::endl;
-
-  // if (total_slack_var_cost > 1e-4 || total_slack_constraint_cost > 1e-4) {
-  //   std::cout << "total_slack_var_cost = " << total_slack_var_cost <<
-  //   std::endl; std::cout << "total_slack_constraint_cost = " <<
-  //   total_slack_constraint_cost
-  //             << std::endl;
-  // } else {
-  //   std::cout << "No slack cost" << std::endl;
-  // }
 }
 
 void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
@@ -1427,18 +1350,6 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
         }
       }
     }
-
-    // std::cout << "get_primal_state_var(w0_,i+1).size() = "
-    //           << get_primal_state_var(w0_, i + 1).size() << std::endl;
-    // std::cout << "get_slack_state_var(w0_, i).size() = "
-    //           << get_slack_state_var(w0_, i).size() << std::endl
-    //           << std::endl;
-    // std::cout << "get_slack_state_var(w0_, i) = " <<
-    // get_slack_state_var(w0_, i).transpose()
-    //           << std::endl;
-    // std::cout << "get_primal_constraint_vals(lambda0_, i) = "
-    //           << get_primal_constraint_vals(lambda0_, i).transpose() <<
-    //           std::endl;
   }
   // New contact
   double contact_sequence_diff =
@@ -1449,7 +1360,7 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
                 m_body_ - leg_input_start_idx_)
         .fill(0);
     z_L0_
-        .segment(get_primal_control_idx(N_ - 8) + leg_input_start_idx_,
+        .segment(get_primal_control_idx(N_ - 2) + leg_input_start_idx_,
                  m_body_ - leg_input_start_idx_)
         .fill(1);
     z_U0_
