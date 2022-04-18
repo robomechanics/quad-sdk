@@ -56,6 +56,7 @@ add_library(nmpc_controller
   src/gen/eval_jac_g_tail.cpp
   src/gen/eval_hess_g_tail.cpp
   src/quad_nlp.cpp
+  src/quad_nlp_utils.cpp
   src/nmpc_controller.cpp
 )
 target_link_libraries(nmpc_controller 

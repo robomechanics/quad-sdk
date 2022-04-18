@@ -34,55 +34,12 @@ quadNLP::quadNLP(int type, int N, int n, int m, double dt, double mu,
   if (type_ == NONE) {
     // Leg controller
     leg_input_start_idx_ = 0;
+    sys_id_ = LEG;
 
-    eval_g_work_ = eval_g_leg_work;
-    eval_g_incref_ = eval_g_leg_incref;
-    eval_g_checkout_ = eval_g_leg_checkout;
-    eval_g_ = eval_g_leg;
-    eval_g_release_ = eval_g_leg_release;
-    eval_g_decref_ = eval_g_leg_decref;
-
-    eval_hess_g_work_ = eval_hess_g_leg_work;
-    eval_hess_g_incref_ = eval_hess_g_leg_incref;
-    eval_hess_g_checkout_ = eval_hess_g_leg_checkout;
-    eval_hess_g_ = eval_hess_g_leg;
-    eval_hess_g_release_ = eval_hess_g_leg_release;
-    eval_hess_g_decref_ = eval_hess_g_leg_decref;
-    eval_hess_g_sparsity_out_ = eval_hess_g_leg_sparsity_out;
-
-    eval_jac_g_work_ = eval_jac_g_leg_work;
-    eval_jac_g_incref_ = eval_jac_g_leg_incref;
-    eval_jac_g_checkout_ = eval_jac_g_leg_checkout;
-    eval_jac_g_ = eval_jac_g_leg;
-    eval_jac_g_release_ = eval_jac_g_leg_release;
-    eval_jac_g_decref_ = eval_jac_g_leg_decref;
-    eval_jac_g_sparsity_out_ = eval_jac_g_leg_sparsity_out;
   } else {
     // Tail controller
     leg_input_start_idx_ = 2;
-
-    eval_g_work_ = eval_g_tail_work;
-    eval_g_incref_ = eval_g_tail_incref;
-    eval_g_checkout_ = eval_g_tail_checkout;
-    eval_g_ = eval_g_tail;
-    eval_g_release_ = eval_g_tail_release;
-    eval_g_decref_ = eval_g_tail_decref;
-
-    eval_hess_g_work_ = eval_hess_g_tail_work;
-    eval_hess_g_incref_ = eval_hess_g_tail_incref;
-    eval_hess_g_checkout_ = eval_hess_g_tail_checkout;
-    eval_hess_g_ = eval_hess_g_tail;
-    eval_hess_g_release_ = eval_hess_g_tail_release;
-    eval_hess_g_decref_ = eval_hess_g_tail_decref;
-    eval_hess_g_sparsity_out_ = eval_hess_g_tail_sparsity_out;
-
-    eval_jac_g_work_ = eval_jac_g_tail_work;
-    eval_jac_g_incref_ = eval_jac_g_tail_incref;
-    eval_jac_g_checkout_ = eval_jac_g_tail_checkout;
-    eval_jac_g_ = eval_jac_g_tail;
-    eval_jac_g_release_ = eval_jac_g_tail_release;
-    eval_jac_g_decref_ = eval_jac_g_tail_decref;
-    eval_jac_g_sparsity_out_ = eval_jac_g_tail_sparsity_out;
+    sys_id_ = TAIL;
   }
 
   Q_ = Q;
@@ -165,6 +122,7 @@ quadNLP::quadNLP(int type, int N, int n, int m, double dt, double mu,
   // Initialize the time duration to the next plan index as dt
   first_element_duration_ = dt_;
 
+  loadCasadiFuncs();
   compute_nnz_jac_g();
   compute_nnz_h();
 }
@@ -393,14 +351,14 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     casadi_int sz_res;
     casadi_int sz_iw;
     casadi_int sz_w;
-    eval_g_work_(&sz_arg, &sz_res, &sz_iw, &sz_w);
+    eval_work_vec_[sys_id_][FUNC](&sz_arg, &sz_res, &sz_iw, &sz_w);
 
     const double *arg[sz_arg];
     double *res[sz_res];
     casadi_int iw[sz_iw];
     double _w[sz_w];
 
-    eval_g_incref_();
+    eval_incref_vec_[sys_id_][FUNC]();
 
     Eigen::MatrixXd tmp_arg(2 * n_ + m_, 1);
     if (i == 0) {
@@ -414,12 +372,10 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     arg[1] = pk.data();
     res[0] = g_matrix.block(i * g_, 0, g_, 1).data();
 
-    int mem = eval_g_checkout_();
-
-    eval_g_(arg, res, iw, _w, mem);
-
-    eval_g_release_(mem);
-    eval_g_decref_();
+    int mem = eval_checkout_vec_[sys_id_][FUNC]();
+    eval_vec_[sys_id_][FUNC](arg, res, iw, _w, mem);
+    eval_release_vec_[sys_id_][FUNC](mem);
+    eval_decref_vec_[sys_id_][FUNC]();
   }
 
   for (int i = 0; i < N_; ++i) {
@@ -464,14 +420,14 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
       casadi_int sz_res;
       casadi_int sz_iw;
       casadi_int sz_w;
-      eval_jac_g_work_(&sz_arg, &sz_res, &sz_iw, &sz_w);
+      eval_work_vec_[sys_id_][JAC](&sz_arg, &sz_res, &sz_iw, &sz_w);
 
       const double *arg[sz_arg];
       double *res[sz_res];
       casadi_int iw[sz_iw];
       double _w[sz_w];
 
-      eval_jac_g_incref_();
+      eval_incref_vec_[sys_id_][JAC]();
       int mem;
 
       Eigen::MatrixXd tmp_arg(2 * n_ + m_, 1), tmp_res(nnz_step_jac_g_, 1);
@@ -482,9 +438,9 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
         arg[1] = pk.data();
         res[0] = tmp_res.data();
 
-        mem = eval_jac_g_checkout_();
+        mem = eval_checkout_vec_[sys_id_][JAC]();
 
-        eval_jac_g_(arg, res, iw, _w, mem);
+        eval_vec_[sys_id_][JAC](arg, res, iw, _w, mem);
 
         for (size_t j = 0; j < first_step_idx_jac_g_.size(); j++) {
           values_matrix(j, 0) = tmp_res(first_step_idx_jac_g_.at(j), 0);
@@ -498,13 +454,13 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
                        0, nnz_step_jac_g_, 1)
                 .data();
 
-        mem = eval_jac_g_checkout_();
+        mem = eval_checkout_vec_[sys_id_][JAC]();
 
-        eval_jac_g_(arg, res, iw, _w, mem);
+        eval_vec_[sys_id_][JAC](arg, res, iw, _w, mem);
       }
 
-      eval_jac_g_release_(mem);
-      eval_jac_g_decref_();
+      eval_release_vec_[sys_id_][JAC](mem);
+      eval_decref_vec_[sys_id_][JAC]();
     }
 
     for (size_t i = 0; i < N_; i++) {
@@ -544,7 +500,7 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
 // Return the structure of the Jacobian
 void quadNLP::compute_nnz_jac_g() {
   const casadi_int *sp_i;
-  sp_i = eval_jac_g_sparsity_out_(0);
+  sp_i = eval_sparsity_vec_[sys_id_][JAC](0);
   casadi_int nrow = *sp_i++;
   casadi_int ncol = *sp_i++;
   const casadi_int *colind = sp_i;
@@ -673,14 +629,14 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
       casadi_int sz_res;
       casadi_int sz_iw;
       casadi_int sz_w;
-      eval_hess_g_work_(&sz_arg, &sz_res, &sz_iw, &sz_w);
+      eval_work_vec_[sys_id_][HESS](&sz_arg, &sz_res, &sz_iw, &sz_w);
 
       const double *arg[sz_arg];
       double *res[sz_res];
       casadi_int iw[sz_iw];
       double _w[sz_w];
 
-      eval_hess_g_incref_();
+      eval_incref_vec_[sys_id_][HESS]();
       int mem;
 
       Eigen::MatrixXd tmp_arg(2 * n_ + m_, 1),
@@ -694,9 +650,9 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
         arg[2] = pk.data();
         res[0] = tmp_res.data();
 
-        mem = eval_hess_g_checkout_();
+        mem = eval_checkout_vec_[sys_id_][HESS]();
 
-        eval_hess_g_(arg, res, iw, _w, mem);
+        eval_vec_[sys_id_][HESS](arg, res, iw, _w, mem);
 
         // The first step only has u_0 and x_1 as decision variables
         for (size_t j = 0; j < first_step_idx_hess_g_.size(); j++) {
@@ -712,13 +668,13 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
                             0, nnz_step_h_ - n_ - m_, 1)
                      .data();
 
-        mem = eval_hess_g_checkout_();
+        mem = eval_checkout_vec_[sys_id_][HESS]();
 
-        eval_hess_g_(arg, res, iw, _w, mem);
+        eval_vec_[sys_id_][HESS](arg, res, iw, _w, mem);
       }
 
-      eval_hess_g_release_(mem);
-      eval_hess_g_decref_();
+      eval_release_vec_[sys_id_][HESS](mem);
+      eval_decref_vec_[sys_id_][HESS]();
 
       Eigen::MatrixXd Q_i = Q_ * std::pow(Q_temporal_factor_, i);
       Eigen::MatrixXd R_i = R_ * std::pow(R_temporal_factor_, i);
@@ -759,7 +715,7 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
 // Return the structure of the Hessian
 void quadNLP::compute_nnz_h() {
   const casadi_int *sp_i;
-  sp_i = eval_hess_g_sparsity_out_(0);
+  sp_i = eval_sparsity_vec_[sys_id_][HESS](0);
   casadi_int nrow = *sp_i++;
   casadi_int ncol = *sp_i++;
   const casadi_int *colind = sp_i;
