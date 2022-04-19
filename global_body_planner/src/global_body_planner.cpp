@@ -51,6 +51,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
       nh_.advertise<visualization_msgs::MarkerArray>(body_plan_tree_topic, 1);
 
   // Load planner config
+  bool enable_leaping;
   quad_utils::loadROSParam(nh, "global_body_planner/H_MAX",
                            planner_config_.H_MAX);
   quad_utils::loadROSParam(nh, "global_body_planner/H_MIN",
@@ -100,12 +101,18 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
                            planner_config_.BACKUP_TIME);
   quad_utils::loadROSParam(nh, "global_body_planner/BACKUP_RATIO",
                            planner_config_.BACKUP_RATIO);
-  quad_utils::loadROSParam(nh, "global_body_planner/NUM_GEN_STATES",
-                           planner_config_.NUM_GEN_STATES);
+  quad_utils::loadROSParam(nh, "global_body_planner/NUM_LEAP_SAMPLES",
+                           planner_config_.NUM_LEAP_SAMPLES);
   quad_utils::loadROSParam(nh, "global_body_planner/GOAL_BOUNDS",
                            planner_config_.GOAL_BOUNDS);
   quad_utils::loadROSParam(nh, "global_body_planner/max_planning_time",
                            planner_config_.MAX_TIME);
+  nh_.param<bool>("global_body_planner/enable_leaping", enable_leaping, true);
+  if (!enable_leaping) {
+    planner_config_.NUM_LEAP_SAMPLES = 0;
+    planner_config_.H_MIN = 0;
+    planner_config_.H_MAX = 0.5;
+  }
   planner_config_.loadVectors();
 
   // Zero planning data

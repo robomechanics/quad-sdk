@@ -65,7 +65,7 @@ struct PlannerConfig {
       0.3;  // Duration of backup after finding an invalid state, s
   double BACKUP_RATIO =
       0.5;  // Ratio of trajectory to back up after finding an invalid state, s
-  int NUM_GEN_STATES =
+  int NUM_LEAP_SAMPLES =
       30;  // Number of actions computed for each extend function
   double GOAL_BOUNDS = 0.5;  // Distance threshold on reaching the goal (only
                              // used for vanilla RRT, not RRT-Connect)

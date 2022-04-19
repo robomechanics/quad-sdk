@@ -40,14 +40,14 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
   int num_valid_actions = 0;
 
   bool any_valid_actions = false;
-  for (int i = 0; i < planner_config.NUM_GEN_STATES; ++i) {
+  for (int i = 0; i < planner_config.NUM_LEAP_SAMPLES; ++i) {
     bool valid_state_found = false;
 
     Action a_test;
     bool is_valid_initial =
         getRandomLeapAction(s_near, surf_norm, a_test, planner_config);
     num_total_actions++;
-    for (int j = 0; j < planner_config.NUM_GEN_STATES; ++j) {
+    for (int j = 0; j < planner_config.NUM_LEAP_SAMPLES; ++j) {
       bool is_valid = isValidStateActionPair(s_near, a_test, current_result,
                                              planner_config);
 

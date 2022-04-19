@@ -89,8 +89,6 @@ NMPCController::NMPCController(int type) {
                   fixed_complex_head);
   ros::param::get("/nmpc_controller/leg_complex/fixed_complex_tail",
                   fixed_complex_tail);
-  ros::param::get("/nmpc_controller/takeoff_state_weight_factor",
-                  takeoff_state_weight_factor_);
 
   Q_temporal_factor = std::pow(Q_temporal_factor, 1.0 / (N_ - 2));
   R_temporal_factor = std::pow(R_temporal_factor, 1.0 / (N_ - 2));
@@ -110,22 +108,28 @@ NMPCController::NMPCController(int type) {
       u_max(control_upper_bound.data(), m_);
 
   // Load fixed complexity schedule
+  bool enable_adaptive_complexity = false;
+  ros::param::get("nmpc_controller/enable_adaptive_complexity",
+                  enable_adaptive_complexity);
+
   Eigen::VectorXi fixed_complexity_schedule(N_);
   fixed_complexity_schedule.setZero();
   adaptive_complexity_schedule_ = fixed_complexity_schedule;
-  for (int idx : fixed_complex_idxs) {
-    if (idx >= 0 && idx <= N_) {
-      fixed_complexity_schedule[idx] = 1;
+  if (enable_adaptive_complexity) {
+    for (int idx : fixed_complex_idxs) {
+      if (idx >= 0 && idx <= N_) {
+        fixed_complexity_schedule[idx] = 1;
+      }
     }
+    if (fixed_complex_head > 0) {
+      fixed_complexity_schedule.head(std::min(fixed_complex_head, N_)).fill(1);
+    }
+    if (fixed_complex_tail > 0) {
+      fixed_complexity_schedule.tail(std::min(fixed_complex_tail, N_)).fill(1);
+    }
+    std::cout << "Adaptive complexity enabled, fixed schedule = "
+              << fixed_complexity_schedule.transpose() << std::endl;
   }
-  if (fixed_complex_head > 0) {
-    fixed_complexity_schedule.head(std::min(fixed_complex_head, N_)).fill(1);
-  }
-  if (fixed_complex_tail > 0) {
-    fixed_complexity_schedule.tail(std::min(fixed_complex_tail, N_)).fill(1);
-  }
-  std::cout << "fixed_complexity_schedule = "
-            << fixed_complexity_schedule.transpose() << std::endl;
 
   Eigen::VectorXd x_min_complex_hard(n_ + n_null_),
       x_max_complex_hard(n_ + n_null_), x_min_complex_soft(n_ + n_null_),
