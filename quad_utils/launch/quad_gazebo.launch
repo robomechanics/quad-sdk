@@ -34,6 +34,7 @@ SOFTWARE.
   <arg name="dash"            default="false"/>
   <arg name="world"           default="flat"/>
   <arg name="rotors"          default="false"/>
+  <arg name="robot"           default="a1"/>
 
   <include file="$(find quad_utils)/launch/mapping.launch" >
     <arg name="input_type" value="mesh"/>
@@ -75,13 +76,22 @@ SOFTWARE.
 
   <!-- Load the parameters and the sdf description -->
   <include file="$(find quad_utils)/launch/load_params.launch" />
-  <group if="$(arg rotors)">
+  <!-- <group if="$(arg rotors)"> -->
     <!-- use more accurate but slower rotor model -->
-    <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit_rotors.sdf" />
+    <!-- <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit_rotors.sdf" />
   </group>
-  <group unless="$(arg rotors)">
+  <group unless="$(arg rotors)"> -->
     <!-- use more accurate but slower rotor model -->
+    <!-- <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
+  </group> -->
+
+  <group if="$(eval arg('robot') == 'spirit')">
     <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
+    <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
+  </group>
+   <group if="$(eval arg('robot') == 'a1')">
+    <param name="robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1_new.sdf" />
+    <param name="robot_description" command="cat $(find a1_description)/urdf/a1_new.urdf" />
   </group>
 
   <!-- Spawn SDF model -->
