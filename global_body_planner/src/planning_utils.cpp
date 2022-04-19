@@ -699,7 +699,8 @@ bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm,
   const double m = planner_config.M_CONST;
 
   // Sample stance time and initial vertical velocity
-  a.dz_0 = getDzFromState(s, planner_config) - 2.0 * (double)rand() / RAND_MAX;
+  a.dz_0 =
+      getDzFromState(s, planner_config) - (0.5 + (double)rand() / RAND_MAX);
   a.dz_f = 0;
   double t_s_min = 0.15;
   double t_s_max = 0.25;
@@ -892,7 +893,7 @@ bool refineFlight(const State &s, double &t_f,
 #endif
   bool is_valid = false;
   double t = 0;
-  double z_f = planner_config.H_NOM + 0.065;
+  double z_f = planner_config.H_NOM;
   State s_check = s;
   double h = getZRelToTerrain(s_check, planner_config);
 

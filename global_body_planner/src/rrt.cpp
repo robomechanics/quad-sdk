@@ -96,7 +96,7 @@ int RRTClass::attemptConnect(const State &s_existing, const State &s,
                              int direction) {
   // Enforce stance time greater than the kinematic check resolution to ensure
   // that the action is useful
-  if (t_s <= planner_config.KINEMATICS_RES) return TRAPPED;
+  if (t_s <= 4 * planner_config.KINEMATICS_RES) return TRAPPED;
 
   // Initialize the start and goal states depending on the direction, as well as
   // the stance and flight times

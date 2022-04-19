@@ -20,11 +20,11 @@
 #include <vector>
 
 // Uncomment to add visualization features
-// #define VISUALIZE_TREE
+#define VISUALIZE_TREE
 // #define VISUALIZE_ALL_CANDIDATE_ACTIONS
 // #define PLOT_TRAJECTORIES
-// #define DEBUG_REFINE_STATE
-// #define DEBUG_INVALID_STATE
+#define DEBUG_REFINE_STATE
+#define DEBUG_INVALID_STATE
 // #define DEBUG_SOLVE_RESULT
 
 namespace planning_utils {
