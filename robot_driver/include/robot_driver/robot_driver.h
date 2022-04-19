@@ -130,6 +130,9 @@ class RobotDriver {
    */
   void publishHeartbeat();
 
+  /// Robot type: A1 or Spirit
+  std::string robot_;
+
   /// Subscriber for control mode
   ros::Subscriber control_mode_sub_;
 
