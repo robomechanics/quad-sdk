@@ -78,7 +78,7 @@ grid_map_filters:
     type: gridMapFilters/MathExpressionFilter
     params:
       output_layer: traversability_raw
-      expression: 0 * (1.0 - (slope / 0.3)) + 1.0 * (1.0 - (roughness / 0.4))
+      expression: 0.5 * (1.0 - (slope / 0.3)) + 0.5 * (1.0 - (roughness / 0.4))
 
   #   # Compute traversability as normalized weighted sum of slope and roughness.
   # - name: traversability_user_mask
@@ -112,7 +112,7 @@ grid_map_filters:
     params:
       input_layer: traversability_raw
       output_layer: traversability
-      radius: 0.15
+      radius: 0.05
 
   # Delete layers.
   - name: delete

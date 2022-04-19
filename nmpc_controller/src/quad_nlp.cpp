@@ -421,8 +421,6 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
         get_primal_constraint_vals(g_u_matrix, i)
             .segment(g_simple_ - n_foot_ + n_foot_ / 2 + 3 * j, 3)
             .fill(2e19);
-        get_primal_foot_control_var(x_l_matrix, i).fill(0);
-        get_primal_foot_control_var(x_u_matrix, i).fill(0);
       }
 
       if (constrain_feet) {
