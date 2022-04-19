@@ -975,7 +975,15 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
     return false;
   }
 
-  if (!isTraversable(s.pos, planner_config) && phase != FLIGHT) {
+  // Ensure body is over terrain unless in flight
+  if (!isBodyTraversable(s.pos, planner_config) && phase != FLIGHT) {
+    return false;
+  }
+
+  // Ensure body is over traversable terrain unless in flight or leaping
+  // disabled
+  if (!isContactTraversable(s.pos, planner_config) && phase != FLIGHT &&
+      planner_config.enable_leaping) {
     return false;
   }
 

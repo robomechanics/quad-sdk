@@ -16,7 +16,8 @@ global_body_planner:
   ROBOT_L: 0.4            # Length of robot body, m (0.6 cheetah, 0.554 ANYmal)
   ROBOT_W: 0.3            # Width of robot body, m (0.256 cheetah, 0.232 ANYmal)
   ROBOT_H: 0.05           # Vertical distance between leg base and bottom of robot, m (0.1 cheetah, 0.04 ANYmal)
-  TRAVERSABILITY_THRESHOLD: 0.0 # Reachability threshold as defined by the terrain
+  BODY_TRAVERSABILITY_THRESHOLD: 0.01 # Traversability threshold for valid body state
+  CONTACT_TRAVERSABILITY_THRESHOLD: 0.5 # Traversability threshold for valid contact location
   M_CONST: 13.0           # Robot mass, kg (12 for spirit, 43 for cheetah, 30 for anymal)
   J_CONST: 1.0            # Moment of inertia about the robot's y axis (pitch)
   G_CONST: 9.81           # Gravity constant, m/s^2

@@ -70,8 +70,12 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
                            planner_config_.ROBOT_W);
   quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_W",
                            planner_config_.ROBOT_W);
-  quad_utils::loadROSParam(nh, "global_body_planner/TRAVERSABILITY_THRESHOLD",
-                           planner_config_.traversability_threshold);
+  quad_utils::loadROSParam(nh,
+                           "global_body_planner/BODY_TRAVERSABILITY_THRESHOLD",
+                           planner_config_.body_traversability_threshold);
+  quad_utils::loadROSParam(
+      nh, "global_body_planner/CONTACT_TRAVERSABILITY_THRESHOLD",
+      planner_config_.contact_traversability_threshold);
   quad_utils::loadROSParam(nh, "global_body_planner/M_CONST",
                            planner_config_.M_CONST);
   quad_utils::loadROSParam(nh, "global_body_planner/J_CONST",
@@ -109,6 +113,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
                            planner_config_.MAX_TIME);
   nh_.param<bool>("global_body_planner/enable_leaping", enable_leaping, true);
   if (!enable_leaping) {
+    planner_config_.enable_leaping = false;
     planner_config_.NUM_LEAP_SAMPLES = 0;
     planner_config_.H_MIN = 0;
     planner_config_.H_MAX = 0.5;

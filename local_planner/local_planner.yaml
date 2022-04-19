@@ -16,7 +16,7 @@ local_footstep_planner:
   hip_clearance: 0.075
   standing_error_threshold: 0.03 # m
   foothold_search_radius: 0.25
-  foothold_obj_threshold: 0.6 # Note: For now must match /grid_map_filters/traversability_mask_lower_threshold/lower_threshold
+  foothold_obj_threshold: 0.5 # Note: For now must match /grid_map_filters/traversability_mask_lower_threshold/lower_threshold
   obj_fun_layer: traversability
   duty_cycles: [0.5, 0.5, 0.5, 0.5]
   phase_offsets: [0.0, 0.5, 0.5, 0.0]

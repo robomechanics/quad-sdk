@@ -78,7 +78,9 @@ struct PlannerConfig {
   double ROBOT_H = 0.05;  // Vertical distance between leg base and bottom of
                           // robot, m (0.1 cheetah, 0.04 ANYmal)
 
-  double traversability_threshold = 0.6;
+  double body_traversability_threshold = 0.01;
+  double contact_traversability_threshold = 0.5;
+  bool enable_leaping = true;
 
   static const int num_reachability_points =
       4;  // Number of points on body used to check reachability
@@ -297,10 +299,16 @@ inline double getTraversability(const Eigen::Vector3d &pos,
                                               INTER_TYPE);
   // return 1.0;
 };
-inline bool isTraversable(const Eigen::Vector3d &pos,
-                          const PlannerConfig &planner_config) {
+inline bool isBodyTraversable(const Eigen::Vector3d &pos,
+                              const PlannerConfig &planner_config) {
   return (getTraversability(pos, planner_config) >=
-          planner_config.traversability_threshold);
+          planner_config.body_traversability_threshold);
+  // return true;
+};
+inline bool isContactTraversable(const Eigen::Vector3d &pos,
+                                 const PlannerConfig &planner_config) {
+  return (getTraversability(pos, planner_config) >=
+          planner_config.contact_traversability_threshold);
   // return true;
 };
 inline Eigen::Vector3d getSurfaceNormalFiltered(
