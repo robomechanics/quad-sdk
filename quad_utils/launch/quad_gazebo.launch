@@ -27,6 +27,7 @@ SOFTWARE.
 <launch>
 
   <arg name="gui"             default="false"/>
+  <arg name="rviz_gui"        default="true"/>
   <arg name="paused"          default="false"/>
   <arg name="software"        default="true"/>
   <arg name="controller"      default="inverse_dynamics"/>
@@ -47,6 +48,7 @@ SOFTWARE.
   <group if="$(arg software)">
     <include file="$(find quad_utils)/launch/visualization.launch">
       <arg name="live_plot" value="$(arg live_plot)"/>
+      <arg name="rviz_gui" value="$(arg rviz_gui)"/>
     </include>
     <include file="$(find quad_utils)/launch/robot_driver.launch">
       <arg name="controller" value="$(arg controller)"/>

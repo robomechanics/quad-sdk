@@ -351,9 +351,6 @@ class LocalPlanner {
   /// Leg early release index
   std::vector<int> early_release_idx_;
 
-  /// Leg early release terminate index
-  std::vector<int> early_release_terminate_idx_;
-
   /// Indicator that if a leg recover from missing
   std::vector<bool> miss_recovery_;
 
@@ -366,14 +363,26 @@ class LocalPlanner {
   /// Desired roll
   double roll_desired_;
 
+  /// Struct for a gait mixture
   struct gait_mixture {
-    double gait_init_idx;
-    double mixture_idx;
-    double mixture_period;
+    // Boolean indicates if this mixture is on or not
+    bool active;
+
+    // The index where the gait should start that define the gait phase
+    int gait_init_idx;
+
+    // The index where the gait start to mix into
+    int mixture_idx;
+
+    // The index period for the mixture
+    int mixture_period;
   };
 
+  /// The gait mixture list for each leg, first is landing, second is early
+  /// release
   std::vector<std::vector<gait_mixture>> gait_mixture_vec_;
 
+  /// Nominal gait mixture peroid length
   int mixture_period_;
 };
 
