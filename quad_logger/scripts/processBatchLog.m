@@ -10,91 +10,91 @@ bagPath = '../bags/archive/';
 bagNameList = dir(strcat(bagPath, '*.bag'));
 bAnimate = false;
 bSave = false;
-bSampleNum = 24;
-bTypeNum = 1;
+bSampleNum = 100;
+bTypeNum = 2;
 
-maxError = [];
-sucList = [];
-bagList = {};
-stateEstimate = {};
-stateGroundTruth = {};
-controlGRFs = {};
-contactSensing = {};
+bagNameList = struct2table(bagNameList); % convert the struct array to a table
+bagNameList = sortrows(bagNameList, 'date'); % sort the table by 'DOB'
+bagNameList = table2struct(bagNameList); % change it back to struct array if necessary
+
+maxError = zeros(size(bagNameList));
+sucList = zeros(size(bagNameList));
+stateEstimate = cell(size(bagNameList));
+stateGroundTruth = cell(size(bagNameList));
+controlGRFs = cell(size(bagNameList));
+contactSensing = cell(size(bagNameList));
+
+% parpool(4);
 
 % Loop all bags
-for j = 1:size(bagNameList, 1)/bSampleNum/bTypeNum
+parfor i = 1:size(bagNameList, 1)
 
-    for i = 1:bSampleNum*bTypeNum
+    % Load bag files
+    trialName = strcat(bagPath, bagNameList(i).name);
 
-        % Load bag files
-        trialName = strcat(bagPath, bagNameList(i + (j - 1)*bSampleNum*bTypeNum).name);
+    % Import URDF
+    %         spirit40 = importrobot('../../quad_simulator/spirit_description/urdf/spirit.urdf');
+    %figure
+    % homeConfig = homeConfiguration(spirit40);
+    % show(spirit40,homeConfig);
 
-        % Import URDF
-        %         spirit40 = importrobot('../../quad_simulator/spirit_description/urdf/spirit.urdf');
-        %figure
-        % homeConfig = homeConfiguration(spirit40);
-        % show(spirit40,homeConfig);
+    % Load the data
+    data = parseQuadBag(trialName);
+    data.stateGroundTruth.axisAngleRP = rotm2axang(eul2rotm([zeros(size(data.stateGroundTruth.orientationRPY, 1), 1), fliplr(data.stateGroundTruth.orientationRPY(:, 1:2))]));
 
-        % Load the data
-        [data, bagList{end + 1}] = parseQuadBag(trialName);
-        data.stateGroundTruth.axisAngleRP = rotm2axang(eul2rotm([zeros(size(data.stateGroundTruth.orientationRPY, 1), 1), fliplr(data.stateGroundTruth.orientationRPY(:, 1:2))]));
+    data.contactSensing.missTime = find(sum(data.contactSensing.contactStates, 2), 1, 'first');
+    data.contactSensing.missTime = data.contactSensing.time(data.contactSensing.missTime);
+    data.stateGroundTruth.syncTime = data.stateGroundTruth.time - data.contactSensing.missTime;
 
-        data.contactSensing.missTime = find(sum(data.contactSensing.contactStates, 2), 1, 'first');
-        data.contactSensing.missTime = data.contactSensing.time(data.contactSensing.missTime);
-        data.stateGroundTruth.syncTime = data.stateGroundTruth.time - data.contactSensing.missTime;
+    stateEstimate{i} = data.stateEstimate;
+    stateGroundTruth{i} = data.stateGroundTruth;
+    controlGRFs{i} = data.controlGRFs;
+    contactSensing{i} = data.contactSensing;
 
-        stateEstimate{end + 1} = data.stateEstimate;
-        stateGroundTruth{end + 1} = data.stateGroundTruth;
-        controlGRFs{end + 1} = data.controlGRFs;
-        contactSensing{end + 1} = data.contactSensing;
+    % Plot the state
+    % [figArray] = plotState(stateGroundTruth,'-');
+    % GRFVectorsFig = plotControl(data.controlGRFs,'-');
+    % figArray = [figArray, GRFVectorsFig];
 
-        % Plot the state
-        % [figArray] = plotState(stateGroundTruth,'-');
-        % GRFVectorsFig = plotControl(data.controlGRFs,'-');
-        % figArray = [figArray, GRFVectorsFig];
-
-        % Save the data if desired
-        logDir = [];
-        if bSave
-            logDir = saveLog(trialName, figArray);
-        end
-
-        % Animate and save if desired
-        if bAnimate
-            videosDir = fullfile(logDir,'videos/');
-            animateData(spirit40,stateGroundTruth, fullfile(videosDir, trialName), bSave);
-        end
-
-        % Analyse the orientation error
-        maxError(end+1) = max(abs(wrapToPi(data.stateGroundTruth.axisAngleRP(:, 4))));
-
-        if maxError((j - 1)*bSampleNum*bTypeNum + i) < pi/3
-            sucList((j - 1)*bSampleNum*bTypeNum + i) = true;
-        else
-            sucList((j - 1)*bSampleNum*bTypeNum + i) = false;
-        end
-
+    % Save the data if desired
+    logDir = [];
+    if bSave
+        logDir = saveLog(trialName, figArray);
     end
 
-    %     fprintf('Tail success: %d, Leg success: %d, total: %d \n', ...
-    %         sum(sucList((j - 1)*bSampleNum*bTypeNum + 1:(j - 1)*bSampleNum*bTypeNum + bSampleNum)), ...
-    %         sum(sucList((j - 1)*bSampleNum*bTypeNum + bSampleNum + 1:j*bSampleNum*bTypeNum)), ...
-    %         bSampleNum);
-
-    for k=1:bTypeNum
-        figure()
-        ylim([0, pi/3])
-        hold on
-        for i=1:bSampleNum
-            if sucList((j - 1)*bSampleNum*bTypeNum + (k-1)*bSampleNum + i)
-                h = plot(stateGroundTruth{(j - 1)*bSampleNum*bTypeNum + (k-1)*bSampleNum + i}.syncTime, ...
-                    abs(wrapToPi(stateGroundTruth{(j - 1)*bSampleNum*bTypeNum + (k-1)*bSampleNum + i}.axisAngleRP(:, 4))), ...
-                    ':k');
-                h.Color(4) = 0.5;
-            end
-        end
-        hold off
+    % Animate and save if desired
+    if bAnimate
+        videosDir = fullfile(logDir,'videos/');
+        %         animateData(spirit40,stateGroundTruth, fullfile(videosDir, trialName), bSave);
     end
+
+    % Analyse the orientation error
+    maxError(i) = max(abs(wrapToPi(data.stateGroundTruth.axisAngleRP(:, 4))));
+
+    if maxError(i) < pi/3
+        sucList(i) = true;
+    else
+        sucList(i) = false;
+    end
+
+%         fprintf('Success: %d, total: %d \n', ...
+%             sum(sucList((i - 1)*bSampleNum + 1:(i - 1)*bSampleNum + bSampleNum)), ...
+%             bSampleNum);
+
+    %     for k=1:bTypeNum
+    %         figure()
+    %         ylim([0, pi/3])
+    %         hold on
+    %         for i=1:bSampleNum
+    %             if sucList((j - 1)*bSampleNum*bTypeNum + (k-1)*bSampleNum + i)
+    %                 h = plot(stateGroundTruth{(j - 1)*bSampleNum*bTypeNum + (k-1)*bSampleNum + i}.syncTime, ...
+    %                     abs(wrapToPi(stateGroundTruth{(j - 1)*bSampleNum*bTypeNum + (k-1)*bSampleNum + i}.axisAngleRP(:, 4))), ...
+    %                     ':k');
+    %                 h.Color(4) = 0.5;
+    %             end
+    %         end
+    %         hold off
+    %     end
 end
 
 %{

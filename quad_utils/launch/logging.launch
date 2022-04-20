@@ -26,7 +26,7 @@
         /foot_step_hist" /> -->
 
     <node pkg="rosbag" type="record" name="rosbag_record_archive"
-        args="record -o $(find quad_logger)/bags/archive/quad_log_$(arg parallel_index) --tcpnodelay
+        args="record -o $(find quad_logger)/bags/archive/quad_log_$(arg parallel_index) --tcpnodelay --lz4
         /state/trajectory
         /state/ground_truth 
         /state/estimate 
