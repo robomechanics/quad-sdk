@@ -699,14 +699,14 @@ bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm,
   const double m = planner_config.M_CONST;
 
   // Sample stance time and initial vertical velocity
-  a.dz_0 =
-      getDzFromState(s, planner_config) - (0.5 + (double)rand() / RAND_MAX);
-  a.dz_f = 0;
+  double dz_impulse = 0.5 + (double)rand() / RAND_MAX;
+  a.dz_0 = getDzFromState(s, planner_config) - dz_impulse;
+  a.dz_f = dz_impulse;
   double t_s_min = 0.15;
-  double t_s_max = 0.25;
+  double t_s_max = 0.20;
   a.t_s_leap = (t_s_max - t_s_min) * (double)rand() / RAND_MAX + t_s_min;
   a.t_f = 1e-6;
-  a.t_s_land = (t_s_max - t_s_min) * (double)rand() / RAND_MAX + t_s_min;
+  a.t_s_land = a.t_s_leap;
   a.grf_0.setZero();
   a.grf_f.setZero();
 
@@ -749,6 +749,9 @@ bool refineStance(const State &s, int phase, Action &a,
   GRF &grf_stance = (phase == LEAP_STANCE) ? a.grf_0 : a.grf_f;
   double dz_0 = (phase == LEAP_STANCE) ? a.dz_0 : s.vel[2];
   double g = planner_config.G_CONST;
+#ifdef DEBUG_REFINE_STATE
+  std::cout << "dz_0 = " << dz_0 << std::endl;
+#endif
 
   // Declare booleans for validity checking
   bool grf_valid, friction_cone_valid, final_state_valid, midstance_state_valid,
@@ -786,10 +789,6 @@ bool refineStance(const State &s, int phase, Action &a,
       pos_f[2] = planner_config.H_NOM + getTerrainZ(pos_f, planner_config);
     }
 
-    // Get takeoff position
-    // pos_f = s.pos+s.vel*t_s+(g*grf_stance*(t_s*t_s))/3.0;
-    // pos_f[2] = z_f + getTerrainZ(pos_f, planner_config)
-
     // Compute final GRF
     grf_stance[2] =
         (1.0 / (t_s * t_s) *
@@ -798,7 +797,8 @@ bool refineStance(const State &s, int phase, Action &a,
         g;
     s_final = applyStance(s, a, t_s, phase, planner_config);
     s_midstance = applyStance(s, a, 0.5 * t_s, phase, planner_config);
-    s_midstance.pos[2] -= buffer;
+    s_midstance.pos[2] -=
+        0.01;  // Make sure validity is robust to discretization
 
     // Compute validity checks
     // TODO: sample surface normal from ground projection (non-filtered)
@@ -866,9 +866,11 @@ bool refineStance(const State &s, int phase, Action &a,
     // Decrease t_s or dz0 (increase GRF) if midstance is infeasible
     if (!midstance_state_valid) {
 #ifdef DEBUG_REFINE_STATE
-      std::cout << "Midstance state invalid, reducing stance time" << std::endl;
+      std::cout << "Midstance state invalid, reducing stance time from " << t_s
+                << " to " << t_s / 1.2 << std::endl;
 #endif
       t_s = t_s / 1.1;
+      // dz_0 -= 0.2;
 
       grf_increased = true;
       continue;
@@ -893,7 +895,7 @@ bool refineFlight(const State &s, double &t_f,
 #endif
   bool is_valid = false;
   double t = 0;
-  double z_f = planner_config.H_NOM;
+  double z_f = planner_config.H_NOM + 0.05;
   State s_check = s;
   double h = getZRelToTerrain(s_check, planner_config);
 
@@ -978,6 +980,10 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
 
   // Ensure body is over terrain unless in flight
   if (!isBodyTraversable(s.pos, planner_config) && phase != FLIGHT) {
+#ifdef DEBUG_INVALID_STATE
+    printf("!isBodyTraversable, phase = %d\n", phase);
+    printStateNewline(s);
+#endif
     return false;
   }
 
@@ -985,6 +991,10 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
   // disabled
   if (!isContactTraversable(s.pos, planner_config) && phase != FLIGHT &&
       planner_config.enable_leaping) {
+#ifdef DEBUG_INVALID_STATE
+    printf("!isContactTraversable, phase = %d\n", phase);
+    printStateNewline(s);
+#endif
     return false;
   }
 
@@ -1021,6 +1031,10 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
   for (int i = 0; i < planner_config.num_collision_points; i++) {
     Eigen::Vector3d collision_point = collision_points_world.col(i);
     if (!isInMap(collision_point, planner_config)) {
+#ifdef DEBUG_INVALID_STATE
+      printf("collision_point not in map, phase = %d\n", phase);
+      printStateNewline(s);
+#endif
       return false;
     }
 
@@ -1050,6 +1064,9 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
   for (int i = 0; i < planner_config.num_reachability_points; i++) {
     Eigen::Vector3d reachability_point = reachability_points_world.col(i);
     if (!isInMap(reachability_point, planner_config)) {
+#ifdef DEBUG_INVALID_STATE
+      printf("reachability_point not in map, phase = %d\n", phase);
+#endif
       return false;
     }
 

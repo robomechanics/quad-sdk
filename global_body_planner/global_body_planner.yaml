@@ -8,7 +8,7 @@ global_body_planner:
   startup_delay: 1.5      # Time to delay after starting node before planning
   replanning: true        # Boolean to determine if replanning is allowed
   H_MAX: 0.375            # Maximum height of leg base, m
-  H_MIN: 0.100            # Minimum ground clearance of body corners, m
+  H_MIN: 0.1              # Minimum ground clearance of body corners, m
   H_NOM: 0.3              # Nominal ground clearance of body, m
   V_MAX: 2.0              # Maximum robot velocity, m/s (4.0 for cheetah, 2.5 for anymal)
   V_NOM: 0.5              # Nominal velocity, m/s (used during connect function)
@@ -17,7 +17,7 @@ global_body_planner:
   ROBOT_W: 0.3            # Width of robot body, m (0.256 cheetah, 0.232 ANYmal)
   ROBOT_H: 0.05           # Vertical distance between leg base and bottom of robot, m (0.1 cheetah, 0.04 ANYmal)
   BODY_TRAVERSABILITY_THRESHOLD: 0.01 # Traversability threshold for valid body state
-  CONTACT_TRAVERSABILITY_THRESHOLD: 0.5 # Traversability threshold for valid contact location
+  CONTACT_TRAVERSABILITY_THRESHOLD: 0.75 # Traversability threshold for valid contact location
   M_CONST: 13.0           # Robot mass, kg (12 for spirit, 43 for cheetah, 30 for anymal)
   J_CONST: 1.0            # Moment of inertia about the robot's y axis (pitch)
   G_CONST: 9.81           # Gravity constant, m/s^2

@@ -20,11 +20,11 @@
 #include <vector>
 
 // Uncomment to add visualization features
-#define VISUALIZE_TREE
+// #define VISUALIZE_TREE
 // #define VISUALIZE_ALL_CANDIDATE_ACTIONS
 // #define PLOT_TRAJECTORIES
-#define DEBUG_REFINE_STATE
-#define DEBUG_INVALID_STATE
+// #define DEBUG_REFINE_STATE
+// #define DEBUG_INVALID_STATE
 // #define DEBUG_SOLVE_RESULT
 
 namespace planning_utils {
@@ -36,7 +36,7 @@ struct PlannerConfig {
 
   // Define kinematic constraint parameters
   double H_MAX = 0.375;  // Maximum height of leg base, m
-  double H_MIN = 0.125;  // Minimum ground clearance of body corners, m
+  double H_MIN = 0.1;    // Minimum ground clearance of body corners, m
   double H_NOM = 0.3;    // Nominal ground clearance of body, m
   double V_MAX =
       3.0;  // Maximum robot velocity, m/s (4.0 for cheetah, 2.5 for anymal)
@@ -126,7 +126,7 @@ const int INVALID_GOAL_STATE = 4;
 const int INVALID_START_GOAL_EQUAL = 5;
 
 const grid_map::InterpolationMethods INTER_TYPE =
-    grid_map::InterpolationMethods::INTER_LINEAR;
+    grid_map::InterpolationMethods::INTER_NEAREST;
 
 typedef Eigen::Vector3d GRF;
 
@@ -313,6 +313,14 @@ inline bool isContactTraversable(const Eigen::Vector3d &pos,
 };
 inline Eigen::Vector3d getSurfaceNormalFiltered(
     const State &s, const PlannerConfig &planner_config) {
+  // Eigen::Vector3d surf_norm;
+  // surf_norm.x() = planner_config.terrain_gm.atPosition(
+  //     "normal_vectors_x", s.pos.head<2>(), INTER_TYPE);
+  // surf_norm.y() = planner_config.terrain_gm.atPosition(
+  //     "normal_vectors_y", s.pos.head<2>(), INTER_TYPE);
+  // surf_norm.z() = planner_config.terrain_gm.atPosition(
+  //     "normal_vectors_z", s.pos.head<2>(), INTER_TYPE);
+  // return surf_norm;
   return planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0],
                                                               s.pos[1]);
 };

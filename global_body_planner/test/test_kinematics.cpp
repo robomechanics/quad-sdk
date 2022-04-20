@@ -80,6 +80,7 @@ TEST_F(GlobalBodyPlannerTestFixture, testLeapAction) {
       printState(result.s_new);
       printState(s_init_1);
       printState(s_init_2);
+      printState(s_final_1);
       printAction(a);
       return;
     }
@@ -228,7 +229,6 @@ TEST_F(GlobalBodyPlannerTestFixture, testUnitLeapActionSlope) {
 
   // Initialise some data
   Eigen::Vector3d surf_norm = getSurfaceNormalFiltered(s, planner_config_);
-  std::cout << "surf_norm =  " << surf_norm << std::endl;
   Action a;
   StateActionResult result;
 
@@ -249,10 +249,4 @@ TEST_F(GlobalBodyPlannerTestFixture, testUnitLeapActionSlope) {
   EXPECT_TRUE(abs(result.s_new.pos[2] -
                   (result.s_new.pos[0] * grade + planner_config_.H_NOM)) <
               kinematics_tol);
-
-  std::cout << "result.s_new.pos[2] = " << result.s_new.pos[2] << std::endl;
-  std::cout << "result.s_new.pos[0] = " << result.s_new.pos[0] << std::endl;
-  std::cout << "(result.s_new.pos[0] * grade + planner_config_.H_NOM) = "
-            << (result.s_new.pos[0] * grade + planner_config_.H_NOM)
-            << std::endl;
 }
