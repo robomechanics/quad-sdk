@@ -113,7 +113,7 @@ ylabel('Position (m)')
 if titles
     title('Linear States')
 end
-legend('X','Y','Z','location','best')
+legend('X','Y','Z','location','East')
 axis tight
 
 subplot(2,1,2); hold on
@@ -139,7 +139,7 @@ ylabel('Ang. Pos. (rad)')
 if titles
     title('Angular States')
 end
-legend('Roll','Pitch','Yaw','location','best')
+legend('Roll','Pitch','Yaw','location','East')
 axis([min(stateTraj.time), max(stateTraj.time), -pi, pi])
 
 subplot(2,1,2); hold on
@@ -160,6 +160,9 @@ align_Ylabels(angularStateFig);
 abIndex = [1:3:12];
 hipIndex = [2:3:12];
 kneeIndex = [3:3:12];
+abadLim = [-1, 1];
+hipLim = [-pi/2, pi];
+kneeLim = [0, pi];
 
 % Plot joint positions
 jointPositionFig = figure(jointPositionFig);
@@ -172,7 +175,7 @@ ylabel('Ab/Ad (rad)')
 if titles
     title('Joint Angles')
 end
-axis([min(stateTraj.time), max(stateTraj.time), -1, 1])
+axis([min(stateTraj.time), max(stateTraj.time), abadLim(1), abadLim(2)])
 
 subplot(3,1,2); hold on;
 for i = 1:num_feet
@@ -180,8 +183,8 @@ for i = 1:num_feet
        'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('Hip (rad)')
-legend('FL','BL','FR','BR','location','best')
-axis([min(stateTraj.time), max(stateTraj.time), -pi/2, pi])
+legend('FL','BL','FR','BR','location','East')
+axis([min(stateTraj.time), max(stateTraj.time), hipLim(1), hipLim(2)])
 
 subplot(3,1,3); hold on;
 for i = 1:num_feet
@@ -190,12 +193,16 @@ for i = 1:num_feet
 end
 ylabel('Knee (rad)')
 xlabel('Time (s)')
-axis([min(stateTraj.time), max(stateTraj.time), 0, pi])
-set(jointPositionFig, 'Position', [100 100 1200 600])
+axis([min(stateTraj.time), max(stateTraj.time), kneeLim(1), kneeLim(2)])
+set(jointPositionFig, 'Position', [100 100 1200 900])
 
 align_Ylabels(jointPositionFig);
 
 %% Plot joint velocities
+abadVelLim = [-37.7, 37.7];
+hipVelLim = [-37.7, 37.7];
+kneeVelLim = [-25, 25];
+
 jointVelocityFig = figure(jointVelocityFig);
 subplot(3,1,1); hold on;
 for i = 1:num_feet
@@ -206,7 +213,7 @@ ylabel('Ab/Ad (rad/s)')
 if titles
     title('Joint Velocities')
 end
-axis([min(stateTraj.time), max(stateTraj.time), -38, 38])
+axis([min(stateTraj.time), max(stateTraj.time), abadVelLim(1), abadVelLim(2)])
 
 subplot(3,1,2); hold on;
 for i = 1:num_feet
@@ -214,8 +221,8 @@ for i = 1:num_feet
        'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('Hip (rad/s)')
-legend('FL','BL','FR','BR','location','best')
-axis([min(stateTraj.time), max(stateTraj.time), -38, 38])
+legend('FL','BL','FR','BR','location','East')
+axis([min(stateTraj.time), max(stateTraj.time), hipVelLim(1), hipVelLim(2)])
 
 subplot(3,1,3); hold on;
 for i = 1:num_feet
@@ -224,12 +231,16 @@ for i = 1:num_feet
 end
 ylabel('Knee (rad/s)')
 xlabel('Time (s)')
-axis([min(stateTraj.time), max(stateTraj.time), -25, 25])
-set(jointVelocityFig, 'Position', [100 100 1200 600])
+axis([min(stateTraj.time), max(stateTraj.time), kneeVelLim(1), kneeVelLim(2)])
+set(jointVelocityFig, 'Position', [100 100 1200 900])
 
 align_Ylabels(jointVelocityFig);
 
 %% Plot estimate joint effort
+abadEffLim = [-21, 21];
+hipEffLim = [-21, 21];
+kneeEffLim = [-32, 32];
+
 jointEffortFig = figure(jointEffortFig);
 subplot(3,1,1); hold on;
 for i = 1:num_feet
@@ -240,7 +251,7 @@ ylabel('Ab/Ad (A)')
 if titles
     title('Joint Effort')
 end
-axis([min(stateTraj.time), max(stateTraj.time), -21, 21])
+axis([min(stateTraj.time), max(stateTraj.time), abadEffLim(1), abadEffLim(2)])
 
 subplot(3,1,2); hold on;
 for i = 1:num_feet
@@ -248,8 +259,8 @@ for i = 1:num_feet
        'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('Hip (A)')
-legend('FL','BL','FR','BR','location','best')
-axis([min(stateTraj.time), max(stateTraj.time), -21, 21])
+legend('FL','BL','FR','BR','location','East')
+axis([min(stateTraj.time), max(stateTraj.time), hipEffLim(1), hipEffLim(2)])
 
 subplot(3,1,3); hold on;
 for i = 1:num_feet
@@ -258,8 +269,8 @@ for i = 1:num_feet
 end
 ylabel('Knee (A)')
 xlabel('Time (s)')
-axis([min(stateTraj.time), max(stateTraj.time), -32, 32])
-set(jointEffortFig, 'Position', [100 100 1200 600])
+axis([min(stateTraj.time), max(stateTraj.time), kneeEffLim(1), kneeEffLim(2)])
+set(jointEffortFig, 'Position', [100 100 1200 900])
 
 align_Ylabels(jointEffortFig);
 
@@ -275,7 +286,8 @@ ylabel('X (m)')
 if titles
     title('Foot Positions')
 end
-axis([min(stateTraj.time), max(stateTraj.time), -1, 4])
+% axis([min(stateTraj.time), max(stateTraj.time), -1, 4])
+axis tight
 
 subplot(3,1,2)
 hold on;
@@ -284,7 +296,9 @@ for i = 1:num_feet
        'Color', footColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('Y (m)')
-axis([min(stateTraj.time), max(stateTraj.time), -2 2])
+% axis([min(stateTraj.time), max(stateTraj.time), -2 2])
+axis tight
+legend('FL','BL','FR','BR','location','East')
 
 subplot(3,1,3)
 hold on;
@@ -294,15 +308,18 @@ for i = 1:num_feet
 end
 ylabel('Z (m)')
 xlabel('Time (s)')
-axis([min(stateTraj.time), max(stateTraj.time), 0, 0.3])
-legend('FL','BL','FR','BR','location','east')
-set(footPositionFig, 'Position', [100 100 1200 600])
+% axis([min(stateTraj.time), max(stateTraj.time), 0, 0.3])
+axis tight
+set(footPositionFig, 'Position', [100 100 1200 900])
 
 align_Ylabels(footPositionFig);
 
 %% Plot foot velocities
 footVelocityFig = figure(footVelocityFig);
-vel_axis = 2;
+vel_axis = max(abs(cell2mat(stateTraj.footVelocity)), [], 'all');
+if ~isempty(footVelocityFig.CurrentAxes)
+    vel_axis = max(vel_axis, max(abs(footVelocityFig.CurrentAxes.YLim)));
+end
 subplot(3,1,1)
 hold on;
 for i = 1:num_feet
@@ -323,6 +340,7 @@ for i = 1:num_feet
 end
 ylabel('Y (m/s)')
 axis([min(stateTraj.time), max(stateTraj.time), -vel_axis, vel_axis])
+legend('FL','BL','FR','BR','location','East')
 
 subplot(3,1,3)
 hold on;
@@ -333,8 +351,7 @@ end
 ylabel('Z (m/s)')
 xlabel('Time (s)')
 axis([min(stateTraj.time), max(stateTraj.time), -vel_axis, vel_axis])
-legend('FL','BL','FR','BR','location','east')
-set(footVelocityFig, 'Position', [100 100 1200 600])
+set(footVelocityFig, 'Position', [100 100 1200 900])
 
 align_Ylabels(footVelocityFig);
 
