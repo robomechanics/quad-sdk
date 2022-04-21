@@ -200,7 +200,7 @@ class RobotDriver {
   int control_mode_;
 
   /// Torque limits
-  Eigen::Vector3d torque_limits_;
+  std::vector<double> torque_limits_;
 
   /// Define ids for control modes: Sit
   const int SIT = 0;

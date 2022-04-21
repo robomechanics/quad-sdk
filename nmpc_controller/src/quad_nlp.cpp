@@ -31,15 +31,15 @@ quadNLP::quadNLP(int type, int N, int n, int m, double dt, double mu,
   m_ = m;
   g_ = n_ + 16;  // states dynamics plus linear friciton cone
 
-  if (type_ == NONE) {
+  if (type_ == 0) {
     // Leg controller
     leg_input_start_idx_ = 0;
-    sys_id_ = LEG;
+    sys_id_ = SPIRIT;
 
-  } else {
+  } else if(type_ == 1) {
     // Tail controller
-    leg_input_start_idx_ = 2;
-    sys_id_ = TAIL;
+    leg_input_start_idx_ = 0; //2
+    sys_id_ = A1;
   }
 
   Q_ = Q;

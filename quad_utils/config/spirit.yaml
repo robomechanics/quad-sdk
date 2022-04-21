@@ -24,7 +24,7 @@ spirit:
     F_MAX: 250.0            # Maximum GRF, N (800 for cheetah, 500 for anymal)
     PEAK_GRF_MIN: 4.0       # Minimum GRF in units of body weight
     PEAK_GRF_MAX: 7.0       # Maximum GRF in units of body weight
-    MU: 0.25                # Friction coefficient (1.0 for Cheetah, 0.5 for ANYmal)
+    MU: 0.5                # Friction coefficient (1.0 for Cheetah, 0.5 for ANYmal)
     T_S_MIN: 0.3            # Minimum stance time, s
     T_S_MAX: 0.3            # Maximum stance time, s
     T_F_MIN: 0.1            # Minimum flight time, s
@@ -60,19 +60,18 @@ spirit:
     phase_offsets: [0.0, 0.5, 0.5, 0.0]
 
   nmpc_controller:
-    leg:
-      state_dimension: 12
-      control_dimension: 12
-      friction_coefficient: 0.2
-      panic_weights: !!float 1e3
-      state_weights: [5.0, 5.0, 5.0, 0.5, 0.5, 0.5, 0.1, 0.1, 0.2, 0.05, 0.05, 0.01]
-      control_weights: [!!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5]
-      Q_temporal_factor: 10.0
-      R_temporal_factor: 1
-      state_lower_bound: [!!float -2e19, !!float -2e19, 0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
-      state_upper_bound: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
-      control_lower_bound: [!!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10]
-      control_upper_bound: [!!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150]
+    state_dimension: 12
+    control_dimension: 12
+    friction_coefficient: 0.5
+    panic_weights: !!float 1e3
+    state_weights: [5.0, 5.0, 5.0, 0.5, 0.5, 0.5, 0.1, 0.1, 0.2, 0.05, 0.05, 0.01]
+    control_weights: [!!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5]
+    Q_temporal_factor: 10.0
+    R_temporal_factor: 1
+    state_lower_bound: [!!float -2e19, !!float -2e19, 0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    state_upper_bound: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+    control_lower_bound: [!!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10]
+    control_upper_bound: [!!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150]
 
   robot_driver:
     update_rate: 500
@@ -95,3 +94,4 @@ spirit:
     safety_kd: [2, 2, 2]
     stand_joint_angles: [0.0, 0.76, 1.52]
     sit_joint_angles: [0.0, 0.0, 0.0]
+    torque_limit: [21, 21, 32]

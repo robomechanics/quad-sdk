@@ -6,7 +6,7 @@
   #define _CASADI_NAMESPACE_CONCAT(NS, ID) NS ## ID
   #define CASADI_PREFIX(ID) CASADI_NAMESPACE_CONCAT(CODEGEN_PREFIX, ID)
 #else
-  #define CASADI_PREFIX(ID) eval_jac_g_leg_ ## ID
+  #define CASADI_PREFIX(ID) eval_jac_g_spirit_ ## ID
 #endif
 
 #include <math.h>
@@ -44,7 +44,7 @@ static const casadi_int casadi_s0[40] = {36, 1, 0, 36, 0, 1, 2, 3, 4, 5, 6, 7, 8
 static const casadi_int casadi_s1[18] = {14, 1, 0, 14, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
 static const casadi_int casadi_s2[168] = {28, 36, 0, 1, 2, 3, 8, 13, 16, 18, 20, 22, 26, 32, 38, 44, 50, 57, 63, 69, 76, 82, 88, 95, 101, 107, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 125, 127, 129, 0, 1, 2, 3, 4, 5, 10, 11, 3, 4, 5, 9, 11, 5, 9, 10, 0, 6, 1, 7, 2, 8, 3, 9, 10, 11, 3, 4, 5, 9, 10, 11, 3, 4, 5, 9, 10, 11, 6, 9, 10, 11, 12, 13, 7, 9, 10, 11, 14, 15, 8, 9, 10, 12, 13, 14, 15, 6, 9, 10, 11, 16, 17, 7, 9, 10, 11, 18, 19, 8, 9, 10, 16, 17, 18, 19, 6, 9, 10, 11, 20, 21, 7, 9, 10, 11, 22, 23, 8, 9, 10, 20, 21, 22, 23, 6, 9, 10, 11, 24, 25, 7, 9, 10, 11, 26, 27, 8, 9, 10, 24, 25, 26, 27, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 10, 11, 10, 11};
 
-/* eval_jac_g_leg:(w[36],p[14])->(jac_g[28x36,129nz]) */
+/* eval_jac_g_spirit:(w[36],p[14])->(jac_g[28x36,129nz]) */
 static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem) {
   casadi_real a0, a1, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a2, a20, a21, a22, a23, a24, a25, a26, a27, a28, a29, a3, a30, a31, a32, a33, a34, a35, a36, a37, a38, a39, a4, a40, a41, a42, a43, a44, a45, a46, a47, a48, a49, a5, a50, a51, a52, a53, a54, a55, a56, a57, a58, a59, a6, a60, a61, a62, a63, a64, a65, a66, a67, a68, a69, a7, a70, a71, a72, a73, a74, a75, a8, a9;
   a0=-1.;
@@ -663,45 +663,45 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   return 0;
 }
 
-extern "C" CASADI_SYMBOL_EXPORT int eval_jac_g_leg(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem){
+extern "C" CASADI_SYMBOL_EXPORT int eval_jac_g_spirit(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem){
   return casadi_f0(arg, res, iw, w, mem);
 }
 
-extern "C" CASADI_SYMBOL_EXPORT int eval_jac_g_leg_alloc_mem(void) {
+extern "C" CASADI_SYMBOL_EXPORT int eval_jac_g_spirit_alloc_mem(void) {
   return 0;
 }
 
-extern "C" CASADI_SYMBOL_EXPORT int eval_jac_g_leg_init_mem(int mem) {
+extern "C" CASADI_SYMBOL_EXPORT int eval_jac_g_spirit_init_mem(int mem) {
   return 0;
 }
 
-extern "C" CASADI_SYMBOL_EXPORT void eval_jac_g_leg_free_mem(int mem) {
+extern "C" CASADI_SYMBOL_EXPORT void eval_jac_g_spirit_free_mem(int mem) {
 }
 
-extern "C" CASADI_SYMBOL_EXPORT int eval_jac_g_leg_checkout(void) {
+extern "C" CASADI_SYMBOL_EXPORT int eval_jac_g_spirit_checkout(void) {
   return 0;
 }
 
-extern "C" CASADI_SYMBOL_EXPORT void eval_jac_g_leg_release(int mem) {
+extern "C" CASADI_SYMBOL_EXPORT void eval_jac_g_spirit_release(int mem) {
 }
 
-extern "C" CASADI_SYMBOL_EXPORT void eval_jac_g_leg_incref(void) {
+extern "C" CASADI_SYMBOL_EXPORT void eval_jac_g_spirit_incref(void) {
 }
 
-extern "C" CASADI_SYMBOL_EXPORT void eval_jac_g_leg_decref(void) {
+extern "C" CASADI_SYMBOL_EXPORT void eval_jac_g_spirit_decref(void) {
 }
 
-extern "C" CASADI_SYMBOL_EXPORT casadi_int eval_jac_g_leg_n_in(void) { return 2;}
+extern "C" CASADI_SYMBOL_EXPORT casadi_int eval_jac_g_spirit_n_in(void) { return 2;}
 
-extern "C" CASADI_SYMBOL_EXPORT casadi_int eval_jac_g_leg_n_out(void) { return 1;}
+extern "C" CASADI_SYMBOL_EXPORT casadi_int eval_jac_g_spirit_n_out(void) { return 1;}
 
-extern "C" CASADI_SYMBOL_EXPORT casadi_real eval_jac_g_leg_default_in(casadi_int i){
+extern "C" CASADI_SYMBOL_EXPORT casadi_real eval_jac_g_spirit_default_in(casadi_int i){
   switch (i) {
     default: return 0;
   }
 }
 
-extern "C" CASADI_SYMBOL_EXPORT const char* eval_jac_g_leg_name_in(casadi_int i){
+extern "C" CASADI_SYMBOL_EXPORT const char* eval_jac_g_spirit_name_in(casadi_int i){
   switch (i) {
     case 0: return "w";
     case 1: return "p";
@@ -709,14 +709,14 @@ extern "C" CASADI_SYMBOL_EXPORT const char* eval_jac_g_leg_name_in(casadi_int i)
   }
 }
 
-extern "C" CASADI_SYMBOL_EXPORT const char* eval_jac_g_leg_name_out(casadi_int i){
+extern "C" CASADI_SYMBOL_EXPORT const char* eval_jac_g_spirit_name_out(casadi_int i){
   switch (i) {
     case 0: return "jac_g";
     default: return 0;
   }
 }
 
-extern "C" CASADI_SYMBOL_EXPORT const casadi_int* eval_jac_g_leg_sparsity_in(casadi_int i) {
+extern "C" CASADI_SYMBOL_EXPORT const casadi_int* eval_jac_g_spirit_sparsity_in(casadi_int i) {
   switch (i) {
     case 0: return casadi_s0;
     case 1: return casadi_s1;
@@ -724,14 +724,14 @@ extern "C" CASADI_SYMBOL_EXPORT const casadi_int* eval_jac_g_leg_sparsity_in(cas
   }
 }
 
-extern "C" CASADI_SYMBOL_EXPORT const casadi_int* eval_jac_g_leg_sparsity_out(casadi_int i) {
+extern "C" CASADI_SYMBOL_EXPORT const casadi_int* eval_jac_g_spirit_sparsity_out(casadi_int i) {
   switch (i) {
     case 0: return casadi_s2;
     default: return 0;
   }
 }
 
-extern "C" CASADI_SYMBOL_EXPORT int eval_jac_g_leg_work(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casadi_int *sz_w) {
+extern "C" CASADI_SYMBOL_EXPORT int eval_jac_g_spirit_work(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casadi_int *sz_w) {
   if (sz_arg) *sz_arg = 2;
   if (sz_res) *sz_res = 1;
   if (sz_iw) *sz_iw = 0;

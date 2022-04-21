@@ -5,61 +5,46 @@ NMPCController::NMPCController(int type) {
 
   switch (type_) {
     case 0:
-      // Leg controller
-      param_ns_ = "leg";
+      param_ns_ = "spirit";
       break;
     case 1:
-      // Centralized tail controller
-      param_ns_ = "centralized_tail";
-      break;
-    case 2:
-      // Distributed tail controller
-      param_ns_ = "distributed_tail";
-      break;
-    case 3:
-      // Decentralized tail controller
-      param_ns_ = "decentralized_tail";
+      param_ns_ = "a1";
       break;
     default:
-      param_ns_ = "leg";
+      param_ns_ = "a1";
       break;
   }
 
   // Load MPC/system parameters
   double mu;
-  if (param_ns_ == "leg") {
-    ros::param::get("/local_planner/horizon_length", N_);
-    ros::param::get("/local_planner/timestep", dt_);
-  } else {
-    ros::param::get("/nmpc_controller/" + param_ns_ + "/horizon_length", N_);
-    ros::param::get("/nmpc_controller/" + param_ns_ + "/step_length", dt_);
-  }
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/state_dimension", n_);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/control_dimension", m_);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/friction_coefficient",
+  ros::param::get("/local_planner/horizon_length", N_);
+  ros::param::get("/local_planner/timestep", dt_);
+  ros::param::get(param_ns_ + "/nmpc_controller/state_dimension", n_);
+  ros::param::get(param_ns_ + "/nmpc_controller/control_dimension", m_);
+  ros::param::get(param_ns_ + "/nmpc_controller/friction_coefficient",
                   mu);
 
   // Load MPC cost weighting and bounds
   std::vector<double> state_weights, control_weights, state_lower_bound,
       state_upper_bound, control_lower_bound, control_upper_bound;
   double panic_weights, Q_temporal_factor, R_temporal_factor;
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/state_weights",
+  ros::param::get(param_ns_ + "/nmpc_controller/state_weights",
                   state_weights);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/control_weights",
+  ros::param::get(param_ns_ + "/nmpc_controller/control_weights",
                   control_weights);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/panic_weights",
+  ros::param::get(param_ns_ + "/nmpc_controller/panic_weights",
                   panic_weights);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/Q_temporal_factor",
+  ros::param::get(param_ns_ + "/nmpc_controller/Q_temporal_factor",
                   Q_temporal_factor);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/R_temporal_factor",
+  ros::param::get(param_ns_ + "/nmpc_controller/R_temporal_factor",
                   R_temporal_factor);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/state_lower_bound",
+  ros::param::get(param_ns_ + "/nmpc_controller/state_lower_bound",
                   state_lower_bound);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/state_upper_bound",
+  ros::param::get(param_ns_ + "/nmpc_controller/state_upper_bound",
                   state_upper_bound);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/control_lower_bound",
+  ros::param::get(param_ns_ + "/nmpc_controller/control_lower_bound",
                   control_lower_bound);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/control_upper_bound",
+  ros::param::get(param_ns_ + "/nmpc_controller/control_upper_bound",
                   control_upper_bound);
   Eigen::Map<Eigen::MatrixXd> Q(state_weights.data(), n_, 1),
       R(control_weights.data(), m_, 1), x_min(state_lower_bound.data(), n_, 1),

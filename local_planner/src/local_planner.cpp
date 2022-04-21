@@ -119,7 +119,17 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 
 void LocalPlanner::initLocalBodyPlanner() {
   // Create nmpc wrapper class
-  local_body_planner_nonlinear_ = std::make_shared<NMPCController>(0);
+  int type;
+  if (robot_ == "spirit") {
+    type = 0;
+  }
+  else if(robot_ == "a1"){
+    type = 1;
+  }
+  else{
+     ROS_WARN("WRONG ROBOT TYPE");
+  }
+  local_body_planner_nonlinear_ = std::make_shared<NMPCController>(type);
 }
 
 void LocalPlanner::initLocalFootstepPlanner() {

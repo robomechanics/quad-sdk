@@ -22,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-spirit:
+a1:
   # Publish all joint states -----------------------------------
   joint_state_controller:
     type: joint_state_controller/JointStateController
