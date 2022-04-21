@@ -466,7 +466,7 @@ bool RobotDriver::updateControl() {
 
   const int knee_idx = 2;
   const int knee_soft_ub = 3.0;
-  const int knee_soft_ub_kd = 300.0;
+  const int knee_soft_ub_kd = 30.0;
 
   for (int i = 0; i < num_feet_; ++i) {
     for (int j = 0; j < 3; ++j) {

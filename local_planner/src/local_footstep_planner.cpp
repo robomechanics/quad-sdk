@@ -108,7 +108,7 @@ void LocalFootstepPlanner::computeContactSchedule(
     if (ref_primitive_plan(i) == LEAP_STANCE) {
       // std::fill(contact_schedule.at(i).begin(), contact_schedule.at(i).end(),
       //           true);
-      int leading_leg_liftoff_period = 0;
+      int leading_leg_liftoff_period = 1;
       int leading_leg_liftoff_idx =
           std::min(i + leading_leg_liftoff_period, horizon_length_ - 1);
 
