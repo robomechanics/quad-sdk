@@ -1,29 +1,81 @@
-function varargout = plotState(state_traj,varargin)
+function varargout = plotState(stateTraj,tWindow,varargin)
+% plotState Plot state data for a trajectory.
+%   plotState(stateTraj, tWindow) generates plots for each component of
+%   the state message -- COM position, velocity, orientation, angular
+%   velocity, joint states, and foot states -- for each time t =
+%   [tWindow(1), tWindow(2)]. If tWindow = [], all data points are
+%   displayed.
+%
+%   plotState(stateTraj, tWindow, lineStyle) plots all data with the line
+%   style specified by lineStyle.
+% 
+%   plotState(stateTraj, tWindow, lineStyle, titles) adds figure titles if
+%   titles == true.
+%
+%   plotState(stateTraj, tWindow, lineStyle, titles, figArray) plots data
+%   from stateTraj on existing figure handles specified by figArray.
+%
+%   figArray = plotState(___) returns the handles of each figure contained
+%   within figArray
 
-if (length(varargin)>=2)
-    COMTrajFig = varargin{2}(1);
-    linearStateFig = varargin{2}(2);
-    angularStateFig = varargin{2}(3);
-    jointPositionFig = varargin{2}(4);
-    jointVelocityFig = varargin{2}(5);
-    jointEffortFig = varargin{2}(6);
-    footPositionFig = varargin{2}(7);
-    footVelocityFig = varargin{2}(8);
+% Use existing figure handles if requested
+if (length(varargin)>=3)
+    COMTrajFig = varargin{3}(1);
+    linearStateFig = varargin{3}(2);
+    angularStateFig = varargin{3}(3);
+    jointPositionFig = varargin{3}(4);
+    jointVelocityFig = varargin{3}(5);
+    jointEffortFig = varargin{3}(6);
+    footPositionFig = varargin{3}(7);
+    footVelocityFig = varargin{3}(8);
 else
-    COMTrajFig = 1;
-    linearStateFig = 2;
-    angularStateFig = 3;
-    jointPositionFig = 4;
-    jointVelocityFig = 5;
-    jointEffortFig = 6;
-    footPositionFig = 7;
-    footVelocityFig = 8;
+    h =  findobj('type','figure');
+    n = length(h);
+    
+    COMTrajFig = n+1;
+    linearStateFig = n+2;
+    angularStateFig = n+3;
+    jointPositionFig = n+4;
+    jointVelocityFig = n+5;
+    jointEffortFig = n+6;
+    footPositionFig = n+7;
+    footVelocityFig = n+8;
 end
 
+% Turn off the plot titles if requested
+if (length(varargin)>=2)
+    titles = varargin{2};
+else
+    titles = true;
+end
+
+% Set the line style if specified
 if (length(varargin)>=1)
     lineStyle = varargin{1};
 else
     lineStyle = '-';
+end
+
+% Set the time window if specified
+if isempty(tWindow)
+    traj_idx = 1:length(stateTraj.time);
+else
+    traj_idx = find(stateTraj.time>= tWindow(1) & stateTraj.time<= tWindow(2));
+end
+
+% Trim the data based on the requested window
+stateTraj.time = stateTraj.time(traj_idx);
+stateTraj.position = stateTraj.position(traj_idx,:);
+stateTraj.velocity = stateTraj.velocity(traj_idx,:);
+stateTraj.orientationRPY = stateTraj.orientationRPY(traj_idx,:);
+stateTraj.orientationQuat = stateTraj.orientationQuat(traj_idx,:);
+stateTraj.angularVelocity = stateTraj.angularVelocity(traj_idx,:);
+stateTraj.jointPosition = stateTraj.jointPosition(traj_idx,:);
+stateTraj.jointVelocity = stateTraj.jointVelocity(traj_idx,:);
+stateTraj.jointEffort = stateTraj.jointEffort(traj_idx,:);
+for i = 1:length(stateTraj.footPosition)
+    stateTraj.footPosition{i} = stateTraj.footPosition{i}(traj_idx,:);
+    stateTraj.footVelocity{i} = stateTraj.footVelocity{i}(traj_idx,:);
 end
 
 footColorVector = {[166,25,46]/255, [0,45,114]/255, [0,132,61]/255, [242,169,0]/255};
@@ -35,62 +87,72 @@ num_feet = 4;
 %% Plot spatial trajectory
 COMTrajFig = figure(COMTrajFig);
 hold on; view(3);
-plot3(state_traj.position(:,1), state_traj.position(:,2), state_traj.position(:,3), ...
-    'Color', cmuColor('red-web'), 'LineWidth', 4, 'LineStyle', lineStyle);
+plot3(stateTraj.position(:,1), stateTraj.position(:,2), stateTraj.position(:,3), ...
+    'Color', cmuColor('red-web'), 'LineStyle', lineStyle);
 for i = 1:num_feet
-   plot3(state_traj.footPosition{i}(:,1), state_traj.footPosition{i}(:,2), ...
-       state_traj.footPosition{i}(:,3), 'Color', footColorVector{i}, 'LineWidth', 4, ...
+   plot3(stateTraj.footPosition{i}(:,1), stateTraj.footPosition{i}(:,2), ...
+       stateTraj.footPosition{i}(:,3), 'Color', footColorVector{i}, ...
        'LineStyle', lineStyle);
 end
 xlabel('X (m)')
 ylabel('Y (m)')
 zlabel('Z (m)')
-title('Body and Foot Trajectories')
+if titles
+    title('Body and Foot Trajectories')
+end
 axis equal
 
 %% Plot linear state data
 linearStateFig = figure(linearStateFig);
 subplot(2,1,1); hold on
 for i = 1:3
-    plot(state_traj.time, state_traj.position(:,i), 'Color', bodyColorVector{i},...
+    plot(stateTraj.time, stateTraj.position(:,i), 'Color', bodyColorVector{i},...
         'LineStyle', lineStyle);
 end
 ylabel('Position (m)')
-title('Linear States')
+if titles
+    title('Linear States')
+end
 legend('X','Y','Z','location','best')
 axis tight
 
 subplot(2,1,2); hold on
 for i = 1:3
-    plot(state_traj.time, state_traj.velocity(:,i), 'Color', bodyColorVector{i},...
+    plot(stateTraj.time, stateTraj.velocity(:,i), 'Color', bodyColorVector{i},...
         'LineStyle', lineStyle);
 end
 ylabel('Velocity (m/s)')
 xlabel('Time (s)')
 axis tight
-set(linearStateFig, 'Position', [100 100 800 600])
+set(linearStateFig, 'Position', [100 100 1200 600])
+
+align_Ylabels(linearStateFig);
 
 %% Plot angular state data
 angularStateFig = figure(angularStateFig);
 subplot(2,1,1); hold on
 for i = 1:3
-    plot(state_traj.time, state_traj.orientationRPY(:,i), 'Color', bodyColorVector{i},...
+    plot(stateTraj.time, stateTraj.orientationRPY(:,i), 'Color', bodyColorVector{i},...
         'LineStyle', lineStyle);
 end
 ylabel('Ang. Pos. (rad)')
-title('Angular States')
+if titles
+    title('Angular States')
+end
 legend('Roll','Pitch','Yaw','location','best')
-axis([min(state_traj.time), max(state_traj.time), -pi, pi])
+axis([min(stateTraj.time), max(stateTraj.time), -pi, pi])
 
 subplot(2,1,2); hold on
 for i = 1:3
-    plot(state_traj.time, state_traj.angularVelocity(:,i), 'Color', bodyColorVector{i},...
+    plot(stateTraj.time, stateTraj.angularVelocity(:,i), 'Color', bodyColorVector{i},...
         'LineStyle', lineStyle);
 end
 ylabel('Ang. Vel. (rad/s)')
 xlabel('Time (s)')
 axis tight
-set(angularStateFig, 'Position', [100 100 800 600])
+set(angularStateFig, 'Position', [100 100 1200 600])
+
+align_Ylabels(angularStateFig);
 
 %% Plot joint positions
 
@@ -103,125 +165,140 @@ kneeIndex = [3:3:12];
 jointPositionFig = figure(jointPositionFig);
 subplot(3,1,1); hold on;
 for i = 1:num_feet
-   plot(state_traj.time, state_traj.jointPosition(:,abIndex(i)), ...
+   plot(stateTraj.time, stateTraj.jointPosition(:,abIndex(i)), ...
        'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('Ab/Ad (rad)')
-title('Joint Angles')
-axis([min(state_traj.time), max(state_traj.time), -1, 1])
+if titles
+    title('Joint Angles')
+end
+axis([min(stateTraj.time), max(stateTraj.time), -1, 1])
 
 subplot(3,1,2); hold on;
 for i = 1:num_feet
-   plot(state_traj.time, state_traj.jointPosition(:,hipIndex(i)), ...
+   plot(stateTraj.time, stateTraj.jointPosition(:,hipIndex(i)), ...
        'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('Hip (rad)')
 legend('FL','BL','FR','BR','location','best')
-axis([min(state_traj.time), max(state_traj.time), -pi/2, pi])
+axis([min(stateTraj.time), max(stateTraj.time), -pi/2, pi])
 
 subplot(3,1,3); hold on;
 for i = 1:num_feet
-   plot(state_traj.time, state_traj.jointPosition(:,kneeIndex(i)), ...
+   plot(stateTraj.time, stateTraj.jointPosition(:,kneeIndex(i)), ...
        'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('Knee (rad)')
 xlabel('Time (s)')
-axis([min(state_traj.time), max(state_traj.time), 0, pi])
-set(jointPositionFig, 'Position', [100 100 800 600])
+axis([min(stateTraj.time), max(stateTraj.time), 0, pi])
+set(jointPositionFig, 'Position', [100 100 1200 600])
+
+align_Ylabels(jointPositionFig);
 
 %% Plot joint velocities
 jointVelocityFig = figure(jointVelocityFig);
 subplot(3,1,1); hold on;
 for i = 1:num_feet
-   plot(state_traj.time, state_traj.jointVelocity(:,abIndex(i)), ...
+   plot(stateTraj.time, stateTraj.jointVelocity(:,abIndex(i)), ...
        'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('Ab/Ad (rad/s)')
-title('Joint Velocities')
-axis([min(state_traj.time), max(state_traj.time), -38, 38])
+if titles
+    title('Joint Velocities')
+end
+axis([min(stateTraj.time), max(stateTraj.time), -38, 38])
 
 subplot(3,1,2); hold on;
 for i = 1:num_feet
-   plot(state_traj.time, state_traj.jointVelocity(:,hipIndex(i)), ...
+   plot(stateTraj.time, stateTraj.jointVelocity(:,hipIndex(i)), ...
        'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('Hip (rad/s)')
 legend('FL','BL','FR','BR','location','best')
-axis([min(state_traj.time), max(state_traj.time), -38, 38])
+axis([min(stateTraj.time), max(stateTraj.time), -38, 38])
 
 subplot(3,1,3); hold on;
 for i = 1:num_feet
-   plot(state_traj.time, state_traj.jointVelocity(:,kneeIndex(i)), ...
+   plot(stateTraj.time, stateTraj.jointVelocity(:,kneeIndex(i)), ...
        'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('Knee (rad/s)')
 xlabel('Time (s)')
-axis([min(state_traj.time), max(state_traj.time), -25, 25])
-set(jointVelocityFig, 'Position', [100 100 800 600])
+axis([min(stateTraj.time), max(stateTraj.time), -25, 25])
+set(jointVelocityFig, 'Position', [100 100 1200 600])
+
+align_Ylabels(jointVelocityFig);
 
 %% Plot estimate joint effort
 jointEffortFig = figure(jointEffortFig);
 subplot(3,1,1); hold on;
 for i = 1:num_feet
-   plot(state_traj.time, state_traj.jointEffort(:,abIndex(i)), ...
+   plot(stateTraj.time, stateTraj.jointEffort(:,abIndex(i)), ...
        'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('Ab/Ad (A)')
-title('Joint Effort')
-axis([min(state_traj.time), max(state_traj.time), -21, 21])
+if titles
+    title('Joint Effort')
+end
+axis([min(stateTraj.time), max(stateTraj.time), -21, 21])
 
 subplot(3,1,2); hold on;
 for i = 1:num_feet
-   plot(state_traj.time, state_traj.jointEffort(:,hipIndex(i)), ...
+   plot(stateTraj.time, stateTraj.jointEffort(:,hipIndex(i)), ...
        'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('Hip (A)')
 legend('FL','BL','FR','BR','location','best')
-axis([min(state_traj.time), max(state_traj.time), -21, 21])
+axis([min(stateTraj.time), max(stateTraj.time), -21, 21])
 
 subplot(3,1,3); hold on;
 for i = 1:num_feet
-   plot(state_traj.time, state_traj.jointEffort(:,kneeIndex(i)), ...
+   plot(stateTraj.time, stateTraj.jointEffort(:,kneeIndex(i)), ...
        'Color', jointColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('Knee (A)')
 xlabel('Time (s)')
-axis([min(state_traj.time), max(state_traj.time), -32, 32])
-set(jointEffortFig, 'Position', [100 100 800 600])
+axis([min(stateTraj.time), max(stateTraj.time), -32, 32])
+set(jointEffortFig, 'Position', [100 100 1200 600])
 
+align_Ylabels(jointEffortFig);
 
 %% Plot foot positions
 footPositionFig = figure(footPositionFig);
 subplot(3,1,1)
 hold on;
 for i = 1:num_feet
-   plot(state_traj.time, state_traj.footPosition{i}(:,1), ...
+   plot(stateTraj.time, stateTraj.footPosition{i}(:,1), ...
        'Color', footColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('X (m)')
-title('Foot Positions')
-axis([min(state_traj.time), max(state_traj.time), -1, 4])
+if titles
+    title('Foot Positions')
+end
+axis([min(stateTraj.time), max(stateTraj.time), -1, 4])
 
 subplot(3,1,2)
 hold on;
 for i = 1:num_feet
-   plot(state_traj.time, state_traj.footPosition{i}(:,2), ...
+   plot(stateTraj.time, stateTraj.footPosition{i}(:,2), ...
        'Color', footColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('Y (m)')
-axis([min(state_traj.time), max(state_traj.time), -2 2])
+axis([min(stateTraj.time), max(stateTraj.time), -2 2])
 
 subplot(3,1,3)
 hold on;
 for i = 1:num_feet
-   plot(state_traj.time, state_traj.footPosition{i}(:,3), ...
+   plot(stateTraj.time, stateTraj.footPosition{i}(:,3), ...
        'Color', footColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('Z (m)')
 xlabel('Time (s)')
-axis([min(state_traj.time), max(state_traj.time), 0, 0.3])
+axis([min(stateTraj.time), max(stateTraj.time), 0, 0.3])
 legend('FL','BL','FR','BR','location','east')
-set(footPositionFig, 'Position', [100 100 800 600])
+set(footPositionFig, 'Position', [100 100 1200 600])
+
+align_Ylabels(footPositionFig);
 
 %% Plot foot velocities
 footVelocityFig = figure(footVelocityFig);
@@ -229,34 +306,37 @@ vel_axis = 2;
 subplot(3,1,1)
 hold on;
 for i = 1:num_feet
-   plot(state_traj.time, state_traj.footVelocity{i}(:,1), ...
+   plot(stateTraj.time, stateTraj.footVelocity{i}(:,1), ...
        'Color', footColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('X (m/s)')
-title('Foot Velocities')
-axis([min(state_traj.time), max(state_traj.time), -vel_axis, vel_axis])
+if titles
+    title('Foot Velocities')
+end
+axis([min(stateTraj.time), max(stateTraj.time), -vel_axis, vel_axis])
 
 subplot(3,1,2)
 hold on;
 for i = 1:num_feet
-   plot(state_traj.time, state_traj.footVelocity{i}(:,2), ...
+   plot(stateTraj.time, stateTraj.footVelocity{i}(:,2), ...
        'Color', footColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('Y (m/s)')
-axis([min(state_traj.time), max(state_traj.time), -vel_axis, vel_axis])
+axis([min(stateTraj.time), max(stateTraj.time), -vel_axis, vel_axis])
 
 subplot(3,1,3)
 hold on;
 for i = 1:num_feet
-   plot(state_traj.time, state_traj.footVelocity{i}(:,3), ...
+   plot(stateTraj.time, stateTraj.footVelocity{i}(:,3), ...
        'Color', footColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
 end
 ylabel('Z (m/s)')
 xlabel('Time (s)')
-axis([min(state_traj.time), max(state_traj.time), -vel_axis, vel_axis])
+axis([min(stateTraj.time), max(stateTraj.time), -vel_axis, vel_axis])
 legend('FL','BL','FR','BR','location','east')
-set(footPositionFig, 'Position', [100 100 800 600])
+set(footVelocityFig, 'Position', [100 100 1200 600])
 
+align_Ylabels(footVelocityFig);
 
 %% Export
 
