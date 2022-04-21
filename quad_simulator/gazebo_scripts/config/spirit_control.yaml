@@ -30,7 +30,7 @@ spirit:
 
 # Position Controllers ---------------------------------------
   joint_controller:
-    type: effort_controllers/SpiritController
+    type: effort_controllers/QuadController
     joints: ['0','1','2','3','4','5','6','7','8','9','10','11']
 
 contact_state_publisher:

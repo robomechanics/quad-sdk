@@ -20,7 +20,7 @@
 
     <param name="enable_statistics" type="bool" value="true" />
 
-    <!-- <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
-    <param name="robot_description" command="cat $(find a1_description)/urdf/a1_new.urdf" /> -->
+    <!-- <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" /> -->
+    <!-- <param name="robot_description" command="cat $(find a1_description)/urdf/a1_new.urdf" /> -->
 
 </launch>

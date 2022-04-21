@@ -123,7 +123,7 @@ void QuadEstimatorGroundTruth::OnUpdate() {
     // std::cout << joint->Position() << std::endl;
     // std::cout << joint->GetVelocity(0) << std::endl;
 
-    physics::JointPtr joint = joint_vec[i];
+    physics::JointPtr joint = model_-> GetJoint(state.joints.name[i]);
     // physics::JointWrench wrench = joint->GetForceTorque(0);
     double torque = 0;  // wrench.body1Torque.Z(); // Note that this doesn't
                         // seem to work but at least will populate with zeros

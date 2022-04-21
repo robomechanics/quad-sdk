@@ -88,25 +88,40 @@ SOFTWARE.
   <group if="$(eval arg('robot') == 'spirit')">
     <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
     <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
-  </group>
-   <group if="$(eval arg('robot') == 'a1')">
-    <param name="robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1_new.sdf" />
-    <param name="robot_description" command="cat $(find a1_description)/urdf/a1_new.urdf" />
-  </group>
 
-  <!-- Spawn SDF model -->
-  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.5" output="screen"/>
+    <!-- Spawn SDF model -->
+    <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.5" output="screen"/>
 
-  <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
+    <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
 
-  <node name="controller_spawner"
+    <node name="controller_spawner"
         pkg="controller_manager"
         type="spawner"
         respawn="false"
         output="screen"
         ns="/spirit"
         args="joint_controller joint_state_controller">
-  </node>
+    </node>
+  </group>
+  
+  <group if="$(eval arg('robot') == 'a1')">
+    <param name="robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1_new.sdf" />
+    <param name="robot_description" command="cat $(find a1_description)/urdf/a1_new.urdf" />
+
+    <!-- Spawn SDF model -->
+    <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model a1 -x 0.0 -y 0.0 -z 0.5" output="screen"/>
+
+    <rosparam file="$(find gazebo_scripts)/config/a1_control.yaml" command="load"/>
+
+    <node name="controller_spawner"
+        pkg="controller_manager"
+        type="spawner"
+        respawn="false"
+        output="screen"
+        ns="/a1"
+        args="joint_controller joint_state_controller">
+    </node>
+  </group>
 
   <!-- Load the contact state publisher -->
   <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>

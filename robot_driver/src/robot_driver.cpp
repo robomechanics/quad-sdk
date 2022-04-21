@@ -5,6 +5,9 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   argc_ = argc;
   argv_ = argv;
 
+  // Load system parameters from launch file (not in config file)
+  nh.param<std::string>("robot_type", robot_, "a1");
+
   // Load rosparams from parameter server
   std::string imu_topic, joint_state_topic, grf_topic, robot_state_topic,
       local_plan_topic, leg_command_array_topic, control_mode_topic,
@@ -57,6 +60,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
                            stand_joint_angles_);
   quad_utils::loadROSParam(nh_, robot_+"/robot_driver/sit_joint_angles",
                            sit_joint_angles_);
+  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/torque_limit",
+                           torque_limits_);
 
   // Setup pubs and subs
   local_plan_sub_ =
@@ -129,7 +134,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   last_state_time_ = std::numeric_limits<double>::max();
 
   // Set joint torque limits
-  torque_limits_ << 21, 21, 32;
+  // torque_limits_ << 21, 21, 32;
 
   // Initialize timing
   last_robot_state_msg_.header.stamp = ros::Time::now();

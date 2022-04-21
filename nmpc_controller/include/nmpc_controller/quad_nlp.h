@@ -14,19 +14,19 @@
 #include <vector>
 
 #include "IpTNLP.hpp"
-#include "nmpc_controller/gen/eval_g_leg.h"
-#include "nmpc_controller/gen/eval_g_tail.h"
-#include "nmpc_controller/gen/eval_hess_g_leg.h"
-#include "nmpc_controller/gen/eval_hess_g_tail.h"
-#include "nmpc_controller/gen/eval_jac_g_leg.h"
-#include "nmpc_controller/gen/eval_jac_g_tail.h"
+#include "nmpc_controller/gen/eval_g_a1.h"
+#include "nmpc_controller/gen/eval_g_spirit.h"
+#include "nmpc_controller/gen/eval_hess_g_a1.h"
+#include "nmpc_controller/gen/eval_hess_g_spirit.h"
+#include "nmpc_controller/gen/eval_jac_g_a1.h"
+#include "nmpc_controller/gen/eval_jac_g_spirit.h"
 #include "quad_utils/tail_type.h"
 
 using namespace Ipopt;
 
 enum SystemID {
-  LEG,
-  TAIL,
+  SPIRIT,
+  A1,
 };
 
 enum FunctionID { FUNC, JAC, HESS };
@@ -123,13 +123,13 @@ class quadNLP : public TNLP {
   int sys_id_;
 
   // Maps for casadi functions
-  std::vector<std::vector<decltype(eval_g_leg) *>> eval_vec_;
-  std::vector<std::vector<decltype(eval_g_leg_work) *>> eval_work_vec_;
-  std::vector<std::vector<decltype(eval_g_leg_incref) *>> eval_incref_vec_;
-  std::vector<std::vector<decltype(eval_g_leg_decref) *>> eval_decref_vec_;
-  std::vector<std::vector<decltype(eval_g_leg_checkout) *>> eval_checkout_vec_;
-  std::vector<std::vector<decltype(eval_g_leg_release) *>> eval_release_vec_;
-  std::vector<std::vector<decltype(eval_g_leg_sparsity_out) *>>
+  std::vector<std::vector<decltype(eval_g_spirit) *>> eval_vec_;
+  std::vector<std::vector<decltype(eval_g_spirit_work) *>> eval_work_vec_;
+  std::vector<std::vector<decltype(eval_g_spirit_incref) *>> eval_incref_vec_;
+  std::vector<std::vector<decltype(eval_g_spirit_decref) *>> eval_decref_vec_;
+  std::vector<std::vector<decltype(eval_g_spirit_checkout) *>> eval_checkout_vec_;
+  std::vector<std::vector<decltype(eval_g_spirit_release) *>> eval_release_vec_;
+  std::vector<std::vector<decltype(eval_g_spirit_sparsity_out) *>>
       eval_sparsity_vec_;
 
   /** Default constructor */
