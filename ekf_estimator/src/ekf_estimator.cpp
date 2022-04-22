@@ -101,12 +101,12 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   this->predict(dt, fk, wk, qk);
 
   // for testing prediction step
-  X = X_pre;
-  P = P_pre;
-  last_X = X;
+  // X = X_pre;
+  // P = P_pre;
+  // last_X = X;
 
   /// Update Step
-  // this->update(jk);
+  this->update(jk);
 
   // Update when I have good data, otherwise stay at the origin
   if (last_state_msg_ != NULL) {
@@ -308,18 +308,18 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   R = 0.0000 * Eigen::MatrixXd::Identity(num_measure, num_measure);
 
   // // Define vectors for state positions
-  // Eigen::VectorXd state_positions(18);
-  // // Load state positions
-  // state_positions << jk, r_pre, v_pre;
-  // // Compute jacobian
-  // Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
-  // quadKD_->getJacobianBodyAngVel(state_positions, jacobian);
+  Eigen::VectorXd state_positions(18);
+  // Load state positions
+  state_positions << jk, r_pre, v_pre;
+  // Compute jacobian
+  Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
+  quadKD_->getJacobianBodyAngVel(state_positions, jacobian);
 
-  // for (int i = 0; i < num_feet; i++) {
-  //   Eigen::MatrixXd jtemp = jacobian.block<3, 3>(i * 3, i * 3);
-  //   R.block<3, 3>(i * 3, i * 3) =
-  //       noise_fk + jtemp * noise_encoder * jtemp.transpose();
-  // }
+  for (int i = 0; i < num_feet; i++) {
+    Eigen::MatrixXd jtemp = jacobian.block<3, 3>(i * 3, i * 3);
+    R.block<3, 3>(i * 3, i * 3) =
+        noise_fk + jtemp * noise_encoder * jtemp.transpose();
+  }
 
   // update Covariance (12 * 12)
   Eigen::MatrixXd S = H * P_pre * H.transpose() + R;
