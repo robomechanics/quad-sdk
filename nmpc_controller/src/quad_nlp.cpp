@@ -177,8 +177,8 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
 
   // Load dynamics constraint bounds for feet
   constraint_size = n_foot_;
-  g_min_.segment(current_idx, constraint_size).fill(0);
-  g_max_.segment(current_idx, constraint_size).fill(0);
+  g_min_.segment(current_idx, constraint_size).fill(-2e19);
+  g_max_.segment(current_idx, constraint_size).fill(2e19);
   current_idx += constraint_size;
   g_min_simple_ = g_min_;
   g_max_simple_ = g_max_;
@@ -380,13 +380,13 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
               .matrix();
     }
 
-    // Add bounds if not covered by panic variables
-    if (n_vec_[i + 1] > n_simple_) {
-      get_primal_state_var(x_l_matrix, i + 1).tail(n_null_) =
-          x_min_complex_hard_.tail(n_null_);
-      get_primal_state_var(x_u_matrix, i + 1).tail(n_null_) =
-          x_max_complex_hard_.tail(n_null_);
-    }
+    // Add bounds if not covered by panic variables - JN Changes
+    // if (n_vec_[i + 1] > n_simple_) {
+    //   get_primal_state_var(x_l_matrix, i + 1).tail(n_null_) =
+    //       x_min_complex_hard_.tail(n_null_);
+    //   get_primal_state_var(x_u_matrix, i + 1).tail(n_null_) =
+    //       x_max_complex_hard_.tail(n_null_);
+    // }
 
     // Constraints bound - leave to enforce hard constraints
     get_primal_constraint_vals(g_l_matrix, i) =
@@ -437,6 +437,7 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
               foot_vel_world_.block<1, 3>(i + 1, 3 * j);
         }
       } else {
+        std::cout << "foot not constrained somehow, fix!" << std::endl;
         get_primal_foot_state_var(x_l_matrix, i + 1)(3 * j + 2, 0) =
             terrain_.atPosition("z_inpainted",
                                 foot_pos_world_.block<1, 2>(i + 1, 3 * j));
@@ -446,7 +447,14 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
     // Panic variable bound
     get_slack_state_var(x_l_matrix, i).fill(0);
     get_slack_state_var(x_u_matrix, i).fill(2e19);
-    get_slack_state_var(x_u_matrix, i).head(n_simple_).fill(0);
+    get_slack_state_var(x_u_matrix, i).fill(0);
+
+    // Completely disable foot modifications
+    if (~allow_foot_traj_modification) {
+      get_slack_state_var(x_u_matrix, i).tail(n_foot_).fill(0);
+      get_primal_foot_control_var(x_l_matrix, i).fill(0);
+      get_primal_foot_control_var(x_u_matrix, i).fill(0);
+    }
 
     // Relaxed constraints slack variables
     if (g_slack_vec_[i] > 0) {
@@ -1641,7 +1649,6 @@ void quadNLP::update_structure() {
   }
 
   n_vec_[N_ - 1] = (complexity_schedule[N_ - 1] == 1) ? n_complex_ : n_simple_;
-  fe_idxs_[N_ - 1] = curr_var_idx;
   x_idxs_[N_ - 1] = curr_var_idx;
   curr_var_idx += n_vec_[N_ - 1];
 

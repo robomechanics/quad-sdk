@@ -603,16 +603,11 @@ bool LocalPlanner::computeLocalPlan() {
           grf_plan_))
     return false;
 
-  foot_positions_world_ = grf_positions;
-  for (size_t i = 0; i < 4; i++) {
-    foot_positions_world_.col(3 * i + 2) =
-        foot_positions_world_.col(3 * i + 2).array() + toe_radius;
-  }
-
-  // std::cout << "foot_positions_world_ = \n"
-  //           << foot_positions_world_ << std::endl;
-  // std::cout << "foot_velocities_world_ = \n"
-  //           << foot_velocities_world_ << std::endl;
+  // foot_positions_world_ = grf_positions;
+  // for (size_t i = 0; i < 4; i++) {
+  //   foot_positions_world_.col(3 * i + 2) =
+  //       foot_positions_world_.col(3 * i + 2).array() + toe_radius;
+  // }
 
   // Record computation time and update exponential filter
   compute_time_ = 1000.0 * timer.reportSilent();

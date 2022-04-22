@@ -154,7 +154,7 @@ NMPCController::NMPCController(int type) {
   // app_->Options()->SetIntegerValue("max_iter", 100);
   // app_->Options()->SetStringValue("print_timing_statistics", "yes");
   app_->Options()->SetStringValue("linear_solver", "ma57");
-  app_->Options()->SetIntegerValue("print_level", 5);
+  app_->Options()->SetIntegerValue("print_level", 0);
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   // app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
@@ -168,8 +168,8 @@ NMPCController::NMPCController(int type) {
   app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
   app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
 
-  app_->Options()->SetNumericValue("max_wall_time", 40.0 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 40.0 * dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 4.0 * dt_);
+  app_->Options()->SetNumericValue("max_cpu_time", 4.0 * dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();
@@ -364,56 +364,58 @@ bool NMPCController::computePlan(
     require_init_ = true;
 
     ROS_WARN_STREAM(param_ns_ << " solving fail");
-    if (t_solve >= 5.0 * dt_) {
-      ROS_WARN_STREAM("timeout");
-    }
+    // if (t_solve >= 5.0 * dt_) {
+    //   ROS_WARN_STREAM("timeout");
+    // }
 
-    Eigen::VectorXi constr_vals =
-        evalLiftedTrajectoryConstraints(state_null_traj);
+    // Eigen::VectorXi constr_vals =
+    //     evalLiftedTrajectoryConstraints(state_null_traj);
 
-    std::cout << "current body state = \n"
-              << mynlp_->x_current_.segment(0, n_).transpose() << std::endl;
-    std::cout << "current joint pos = \n"
-              << mynlp_->x_current_.segment(n_, n_null_ / 2).transpose()
-              << std::endl;
-    std::cout
-        << "current joint vel = \n"
-        << mynlp_->x_current_.segment(N_ + n_null_ / 2, n_null_ / 2).transpose()
-        << std::endl;
-    std::cout << "x_reference_ = \n"
-              << mynlp_->x_reference_.transpose() << std::endl;
-    std::cout << "state_traj body = \n"
-              << state_traj.leftCols(mynlp_->n_body_) << std::endl;
+    // std::cout << "current body state = \n"
+    //           << mynlp_->x_current_.segment(0, n_).transpose() << std::endl;
+    // std::cout << "current joint pos = \n"
+    //           << mynlp_->x_current_.segment(n_, n_null_ / 2).transpose()
+    //           << std::endl;
+    // std::cout
+    //     << "current joint vel = \n"
+    //     << mynlp_->x_current_.segment(N_ + n_null_ / 2, n_null_ /
+    //     2).transpose()
+    //     << std::endl;
+    // std::cout << "x_reference_ = \n"
+    //           << mynlp_->x_reference_.transpose() << std::endl;
+    // std::cout << "state_traj body = \n"
+    //           << state_traj.leftCols(mynlp_->n_body_) << std::endl;
 
-    std::cout << "state_traj foot pos = \n"
-              << state_traj.middleCols(mynlp_->n_body_, mynlp_->n_foot_ / 2)
-              << std::endl;
-    std::cout << "state_traj foot vel = \n"
-              << state_traj.rightCols(mynlp_->n_foot_ / 2) << std::endl;
+    // std::cout << "state_traj foot pos = \n"
+    //           << state_traj.middleCols(mynlp_->n_body_, mynlp_->n_foot_ / 2)
+    //           << std::endl;
+    // std::cout << "state_traj foot vel = \n"
+    //           << state_traj.rightCols(mynlp_->n_foot_ / 2) << std::endl;
 
-    std::cout << "control_traj body = \n"
-              << control_traj.leftCols(mynlp_->m_body_) << std::endl;
-    std::cout << "control_traj foot = \n"
-              << control_traj.rightCols(mynlp_->m_foot_) << std::endl;
+    // std::cout << "control_traj body = \n"
+    //           << control_traj.leftCols(mynlp_->m_body_) << std::endl;
+    // std::cout << "control_traj foot = \n"
+    //           << control_traj.rightCols(mynlp_->m_foot_) << std::endl;
 
-    std::cout << "foot_positions = \n" << mynlp_->foot_pos_world_ << std::endl;
-    std::cout << "foot_velocities = \n" << mynlp_->foot_vel_world_ << std::endl;
-    std::cout << "foot_pos error = \n"
-              << (state_traj.middleCols(mynlp_->n_body_, mynlp_->n_foot_ / 2) -
-                  mynlp_->foot_pos_world_)
-              << std::endl;
-    std::cout << "foot_vel error = \n"
-              << (state_traj.rightCols(mynlp_->n_foot_ / 2) -
-                  mynlp_->foot_vel_world_)
-              << std::endl
-              << std::endl;
+    // std::cout << "foot_positions = \n" << mynlp_->foot_pos_world_ <<
+    // std::endl; std::cout << "foot_velocities = \n" << mynlp_->foot_vel_world_
+    // << std::endl; std::cout << "foot_pos error = \n"
+    //           << (state_traj.middleCols(mynlp_->n_body_, mynlp_->n_foot_ / 2)
+    //           -
+    //               mynlp_->foot_pos_world_)
+    //           << std::endl;
+    // std::cout << "foot_vel error = \n"
+    //           << (state_traj.rightCols(mynlp_->n_foot_ / 2) -
+    //               mynlp_->foot_vel_world_)
+    //           << std::endl
+    //           << std::endl;
 
-    std::cout << "joint_positions = \n"
-              << state_null_traj.leftCols(n_null_ / 2) << std::endl;
-    std::cout << "joint_velocities = \n"
-              << state_null_traj.rightCols(n_null_ / 2) << std::endl;
+    // std::cout << "joint_positions = \n"
+    //           << state_null_traj.leftCols(n_null_ / 2) << std::endl;
+    // std::cout << "joint_velocities = \n"
+    //           << state_null_traj.rightCols(n_null_ / 2) << std::endl;
 
-    throw std::runtime_error("Solve failed, exiting for debug");
+    // throw std::runtime_error("Solve failed, exiting for debug");
     return false;
   }
 }
