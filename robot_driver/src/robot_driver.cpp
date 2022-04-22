@@ -7,13 +7,15 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
 
   // Load rosparams from parameter server
   std::string imu_topic, joint_state_topic, grf_topic, robot_state_topic,
-      local_plan_topic, leg_command_array_topic, control_mode_topic,
-      remote_heartbeat_topic, robot_heartbeat_topic, single_joint_cmd_topic,
-      mocap_topic, control_restart_flag_topic;
+      trajectory_state_topic, local_plan_topic, leg_command_array_topic,
+      control_mode_topic, remote_heartbeat_topic, robot_heartbeat_topic,
+      single_joint_cmd_topic, mocap_topic, control_restart_flag_topic;
   quad_utils::loadROSParam(nh_, "topics/state/imu", imu_topic);
   quad_utils::loadROSParam(nh_, "topics/state/joints", joint_state_topic);
   quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
+  quad_utils::loadROSParam(nh_, "topics/state/trajectory",
+                           trajectory_state_topic);
   quad_utils::loadROSParam(nh_, "topics/heartbeat/remote",
                            remote_heartbeat_topic);
   quad_utils::loadROSParam(nh_, "topics/heartbeat/robot",
@@ -79,6 +81,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
       nh_.advertise<quad_msgs::LegCommandArray>(leg_command_array_topic, 1);
   robot_heartbeat_pub_ =
       nh_.advertise<std_msgs::Header>(robot_heartbeat_topic, 1);
+  trajectry_robot_state_pub_ =
+      nh_.advertise<quad_msgs::RobotState>(trajectory_state_topic, 1);
 
   // Set up pubs and subs dependent on robot layer
   if (is_hardware_) {
@@ -416,6 +420,12 @@ bool RobotDriver::updateControl() {
               leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j));
         }
       }
+    } else {
+      if (InverseDynamicsController* p =
+              dynamic_cast<InverseDynamicsController*>(leg_controller_.get())) {
+        quad_msgs::RobotState ref_state_msg = p->getReferenceState();
+        trajectry_robot_state_pub_.publish(ref_state_msg);
+      }
     }
   } else if (control_mode_ == SIT_TO_READY) {
     ros::Duration duration = ros::Time::now() - transition_timestamp_;
@@ -466,7 +476,7 @@ bool RobotDriver::updateControl() {
 
   const int knee_idx = 2;
   const int knee_soft_ub = 3.0;
-  const int knee_soft_ub_kd = 30.0;
+  const int knee_soft_ub_kd = 50.0;
 
   for (int i = 0; i < num_feet_; ++i) {
     for (int j = 0; j < 3; ++j) {

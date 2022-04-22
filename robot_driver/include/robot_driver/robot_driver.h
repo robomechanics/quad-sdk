@@ -148,8 +148,11 @@ class RobotDriver {
   /// ROS subscriber for control restart flag
   ros::Subscriber control_restart_flag_sub_;
 
-  /// ROS publisher for state estimate
+  /// ROS publisher for ground truth state
   ros::Publisher robot_state_pub_;
+
+  // ROS publisher for state estimate
+  ros::Publisher trajectry_robot_state_pub_;
 
   /// ROS subscriber for remote heartbeat
   ros::Subscriber remote_heartbeat_sub_;

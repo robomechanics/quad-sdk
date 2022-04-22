@@ -29,9 +29,18 @@ class InverseDynamicsController : public LegController {
                               quad_msgs::LegCommandArray &leg_command_array_msg,
                               quad_msgs::GRFArray &grf_array_msg);
 
+  /**
+   * @brief Return the reference state used for current tracking
+   * @return Reference state
+   */
+  inline quad_msgs::RobotState getReferenceState() { return ref_state_msg_; };
+
  private:
   /// Prior grf_array
   Eigen::VectorXd last_grf_array_;
+
+  /// Reference state for tracking
+  quad_msgs::RobotState ref_state_msg_;
 
   /// GRF exponential filter constant
   const double grf_exp_filter_const_ = 1.0;  // 1.0 = no filtering

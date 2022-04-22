@@ -38,4 +38,7 @@
         <include file="$(find quad_utils)/launch/logging.launch" />
     </group>
 
+    <!-- Launch the node to publish the local plan -->
+    <!-- <node name="plan_publisher" pkg="quad_utils" type="trajectory_publisher_node" output="screen"/> -->
+
 </launch>

@@ -31,7 +31,6 @@ bool InverseDynamicsController::computeLegCommandArray(
     state_velocities << joint_velocities, body_state.tail(6);
 
     // Initialize variables for ff and fb
-    quad_msgs::RobotState ref_state_msg;
     Eigen::VectorXd tau_array(3 * num_feet_),
         tau_swing_leg_array(3 * num_feet_);
 
@@ -70,7 +69,7 @@ bool InverseDynamicsController::computeLegCommandArray(
         // Linearly interpolate between states
         quad_utils::interpRobotState(last_local_plan_msg_->states[i],
                                      last_local_plan_msg_->states[i + 1],
-                                     t_interp, ref_state_msg);
+                                     t_interp, ref_state_msg_);
 
         // // Linearly interpolate between GRFs, uncomment if MPC uses dircol
         // quad_utils::interpGRFArray(last_local_plan_msg_->grfs[i],
@@ -89,21 +88,21 @@ bool InverseDynamicsController::computeLegCommandArray(
         ref_foot_acceleration(3 * num_feet_);
 
     // Load plan and state data from messages
-    quad_utils::multiFootStateMsgToEigen(ref_state_msg.feet, ref_foot_positions,
-                                         ref_foot_velocities,
-                                         ref_foot_acceleration);
+    quad_utils::multiFootStateMsgToEigen(
+        ref_state_msg_.feet, ref_foot_positions, ref_foot_velocities,
+        ref_foot_acceleration);
     grf_array = quad_utils::grfArrayMsgToEigen(grf_array_msg);
     if (last_grf_array_.norm() >= 1e-3) {
       grf_array = grf_exp_filter_const_ * grf_array.array() +
                   (1 - grf_exp_filter_const_) * last_grf_array_.array();
-      quad_utils::eigenToGRFArrayMsg(grf_array, ref_state_msg.feet,
+      quad_utils::eigenToGRFArrayMsg(grf_array, ref_state_msg_.feet,
                                      grf_array_msg);
     }
 
     // Load contact mode
     std::vector<int> contact_mode(num_feet_);
     for (int i = 0; i < num_feet_; i++) {
-      contact_mode[i] = ref_state_msg.feet.feet[i].contact;
+      contact_mode[i] = ref_state_msg_.feet.feet[i].contact;
     }
 
     // Compute joint torques
@@ -137,10 +136,10 @@ bool InverseDynamicsController::computeLegCommandArray(
 
         leg_command_array_msg.leg_commands.at(i)
             .motor_commands.at(j)
-            .pos_setpoint = ref_state_msg.joints.position.at(joint_idx);
+            .pos_setpoint = ref_state_msg_.joints.position.at(joint_idx);
         leg_command_array_msg.leg_commands.at(i)
             .motor_commands.at(j)
-            .vel_setpoint = ref_state_msg.joints.velocity.at(joint_idx);
+            .vel_setpoint = ref_state_msg_.joints.velocity.at(joint_idx);
         leg_command_array_msg.leg_commands.at(i)
             .motor_commands.at(j)
             .torque_ff = tau_array(joint_idx);
