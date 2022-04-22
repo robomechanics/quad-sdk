@@ -77,6 +77,19 @@ QuadKD::QuadKD() {
         createAffineMatrix(legbase_offsets_[leg_index],
                            Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()));
   }
+
+  joint_min_.resize(num_feet_);
+  joint_max_.resize(num_feet_);
+
+  std::vector<double> joint_min_front = {-0.707, -M_PI * 0.5, 0};
+  std::vector<double> joint_min_back = {-0.707, -M_PI, 0};
+  std::vector<double> joint_max_front = {0.707, M_PI, M_PI};
+  std::vector<double> joint_max_back = {0.707, M_PI * 0.5, M_PI};
+
+  joint_min_ = {joint_min_front, joint_min_back, joint_min_front,
+                joint_min_back};
+  joint_max_ = {joint_max_front, joint_max_back, joint_max_front,
+                joint_max_back};
 }
 
 Eigen::Matrix4d QuadKD::createAffineMatrix(Eigen::Vector3d trans,
@@ -99,12 +112,12 @@ Eigen::Matrix4d QuadKD::createAffineMatrix(Eigen::Vector3d trans,
   return t.matrix();
 }
 
-double QuadKD::getJointLowerLimit(int joint_index) const {
-  return joint_min_[joint_index];
+double QuadKD::getJointLowerLimit(int leg_index, int joint_index) const {
+  return joint_min_[leg_index][joint_index];
 }
 
-double QuadKD::getJointUpperLimit(int joint_index) const {
-  return joint_max_[joint_index];
+double QuadKD::getJointUpperLimit(int leg_index, int joint_index) const {
+  return joint_max_[leg_index][joint_index];
 }
 
 double QuadKD::getLinkLength(int leg_index, int link_index) const {
@@ -379,18 +392,16 @@ bool QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
 
   // Compute both solutions of q0, use hip-above-knee if z<0 (preferred)
   // Store the inverted solution in case hip limits are exceeded
-  double q0_inverted;
   if (z > 0) {
     q0 = -acos(temp) + atan2(z, y);
-    q0_inverted = acos(temp) + atan2(z, y);
   } else {
     q0 = acos(temp) + atan2(z, y);
-    q0_inverted = -acos(temp) + atan2(z, y);
   }
 
   // Make sure abad is within joint limits, clamp otherwise
-  if (q0 > joint_max_[0] || q0 < joint_min_[0]) {
-    q0 = std::max(std::min(q0, joint_max_[0]), joint_min_[0]);
+  if (q0 > joint_max_[leg_index][0] || q0 < joint_min_[leg_index][0]) {
+    q0 = std::max(std::min(q0, joint_max_[leg_index][0]),
+                  joint_min_[leg_index][0]);
     is_exact = false;
     ROS_DEBUG_THROTTLE(0.5, "Abad limits exceeded, clamping to %5.3f \n", q0);
   }
@@ -425,27 +436,26 @@ bool QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
 
   // Compute joint angles
   q1 = 0.5 * M_PI + atan2(x, -z) - acos(temp2);
-  q2 = acos(temp3);
 
-  // Make sure hip is within joint limits (try other direction if fails)
-  if (q1 > joint_max_[1] || q1 < joint_min_[1]) {
-    ROS_DEBUG_THROTTLE(0.5, "Hip limits exceeded, using inverted config\n");
-
-    q0 = q0_inverted;
-    z = -sin(q0) * y + cos(q0) * z_body_frame;
-    q1 = 0.5 * M_PI + atan2(x, -z) - acos(temp2);
-    q2 = acos(temp3);
-
-    if (q1 > joint_max_[1] || q1 < joint_min_[1]) {
-      q1 = std::max(std::min(q1, joint_max_[1]), joint_min_[1]);
-      is_exact = false;
-      ROS_DEBUG_THROTTLE(0.5, "Hip limits exceeded, clamping to %5.3f \n", q1);
-    }
+  // Make sure hip is within joint limits
+  if (q1 > joint_max_[leg_index][1] || q1 < joint_min_[leg_index][1]) {
+    q1 = std::max(std::min(q1, joint_max_[leg_index][1]),
+                  joint_min_[leg_index][1]);
+    is_exact = false;
+    ROS_DEBUG_THROTTLE(0.5, "Hip limits exceeded, clamping to %5.3f \n", q1);
   }
 
+  // Compute knee val to get closest toe position in the plane
+  Eigen::Vector2d knee_pos, toe_pos, toe_offset;
+  knee_pos << -l1_ * cos(q1), -l1_ * sin(q1);
+  toe_pos << x, z;
+  toe_offset = toe_pos - knee_pos;
+  q2 = atan2(-toe_offset(1), toe_offset(0)) + q1;
+
   // Make sure knee is within joint limits
-  if (q2 > joint_max_[2] || q2 < joint_min_[2]) {
-    q2 = std::max(std::min(q2, joint_max_[2]), joint_min_[2]);
+  if (q2 > joint_max_[leg_index][2] || q2 < joint_min_[leg_index][2]) {
+    q2 = std::max(std::min(q2, joint_max_[leg_index][2]),
+                  joint_min_[leg_index][2]);
     is_exact = false;
     ROS_DEBUG_THROTTLE(0.5, "Knee limit exceeded, clamping to %5.3f \n", q2);
   }

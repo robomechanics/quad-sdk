@@ -176,17 +176,19 @@ class QuadKD {
 
   /**
    * @brief Get the lower joint limit of a particular joint
+   * @param[in] leg_index Quad leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
    * @param[in] joint_index Index for joint (0 = abad, 1 = hip, 2 = knee)
    * @return Requested joint limit
    */
-  double getJointLowerLimit(int joint_index) const;
+  double getJointLowerLimit(int leg_index, int joint_index) const;
 
   /**
    * @brief Get the upper joint limit of a particular joint
+   * @param[in] leg_index Quad leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
    * @param[in] joint_index Index for joint (0 = abad, 1 = hip, 2 = knee)
    * @return Requested joint limit
    */
-  double getJointUpperLimit(int joint_index) const;
+  double getJointUpperLimit(int leg_index, int joint_index) const;
 
   /**
    * @brief Get the upper joint limit of a particular joint
@@ -390,12 +392,10 @@ class QuadKD {
   const double joint_eps = 0.1;
 
   /// Vector of the joint lower limits
-  const std::vector<double> joint_min_ = {-1 + joint_eps,
-                                          -0.5 * M_PI + joint_eps, joint_eps};
+  std::vector<std::vector<double>> joint_min_;
 
   /// Vector of the joint upper limits
-  const std::vector<double> joint_max_ = {1 - joint_eps, M_PI - joint_eps,
-                                          M_PI - joint_eps};
+  std::vector<std::vector<double>> joint_max_;
 
   RigidBodyDynamics::Model *model_;
 

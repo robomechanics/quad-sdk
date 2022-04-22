@@ -2,6 +2,7 @@
 #include <ros/ros.h>
 
 #include <grid_map_core/grid_map_core.hpp>
+
 #include "quad_utils/quad_kd.h"
 #include "quad_utils/ros_utils.h"
 
@@ -221,7 +222,6 @@ TEST(KinematicsTest, testFKIKFeasibleConfigurations) {
   // Set up problem variables
   Eigen::Vector3d body_pos = {0, 0, 0};
   Eigen::Vector3d body_rpy = {0, 0, 0};
-  Eigen::Vector3d joint_state = {0.7, -0.3 * M_PI, 0 * M_PI};
   Eigen::Vector3d foot_pos_world;
   Eigen::Vector3d joint_state_test;
   Eigen::Vector3d foot_pos_world_test;
@@ -229,20 +229,22 @@ TEST(KinematicsTest, testFKIKFeasibleConfigurations) {
   // Compute the kinematics
   int N = 10000;
   for (int config = 0; config < N; config++) {
-    // Generate valid joint configurations
-    Eigen::Vector3d joint_state = {
-        (quad.getJointUpperLimit(0) - quad.getJointLowerLimit(0)) *
-                (double)rand() / RAND_MAX +
-            quad.getJointLowerLimit(0),
-        (quad.getJointUpperLimit(1) - quad.getJointLowerLimit(1)) *
-                (double)rand() / RAND_MAX +
-            quad.getJointLowerLimit(1),
-        (quad.getJointUpperLimit(2) - quad.getJointLowerLimit(2)) *
-                (double)rand() / RAND_MAX +
-            quad.getJointLowerLimit(2)};
-
     for (int i = 0; i < 4; i++) {
       int leg_index = i;
+
+      // Generate valid joint configurations
+      Eigen::Vector3d joint_state = {(quad.getJointUpperLimit(leg_index, 0) -
+                                      quad.getJointLowerLimit(leg_index, 0)) *
+                                             (double)rand() / RAND_MAX +
+                                         quad.getJointLowerLimit(leg_index, 0),
+                                     (quad.getJointUpperLimit(leg_index, 1) -
+                                      quad.getJointLowerLimit(leg_index, 1)) *
+                                             (double)rand() / RAND_MAX +
+                                         quad.getJointLowerLimit(leg_index, 1),
+                                     (quad.getJointUpperLimit(leg_index, 2) -
+                                      quad.getJointLowerLimit(leg_index, 2)) *
+                                             (double)rand() / RAND_MAX +
+                                         quad.getJointLowerLimit(leg_index, 2)};
 
       // Compute foot positions in this configuration
       quad.worldToFootFKWorldFrame(leg_index, body_pos, body_rpy, joint_state,
@@ -253,12 +255,16 @@ TEST(KinematicsTest, testFKIKFeasibleConfigurations) {
       // otherwise ambiguous.
       quad.worldToFootIKWorldFrame(leg_index, body_pos, body_rpy,
                                    foot_pos_world, joint_state_test);
+
+      // Skip if original configuration was in an alternate configuration
+      if (!joint_state_test.isApprox(joint_state)) continue;
+
       quad.worldToFootFKWorldFrame(leg_index, body_pos, body_rpy,
                                    joint_state_test, foot_pos_world_test);
 
       // Check the answers
       Eigen::Vector3d error = (foot_pos_world - foot_pos_world_test);
-      EXPECT_TRUE(error.norm() <= kinematics_tol);
+      EXPECT_LE(error.norm(), kinematics_tol);
     }
   }
 }
@@ -276,8 +282,7 @@ TEST(KinematicsTest, testFKIKInfeasibleConfigurations) {
   Eigen::Vector3d joint_state_test;
 
   // Define arbitrary maximum foot offset for IK testing
-  double max_offset = abs(quad.getJointLowerLimit(0)) +
-                      quad.getJointLowerLimit(1) + quad.getJointLowerLimit(2);
+  double max_offset = 2.0;
 
   // Test random foot positions to make sure nothing breaks
   int N = 10000;
@@ -334,18 +339,6 @@ TEST(KinematicsTest, testBodyToFootFK) {
   // Compute the kinematics
   int N = 10000;
   for (int config = 0; config < N; config++) {
-    // Generate valid joint configurations
-    Eigen::Vector3d joint_state = {
-        (quad.getJointUpperLimit(0) - quad.getJointLowerLimit(0)) *
-                (double)rand() / RAND_MAX +
-            quad.getJointLowerLimit(0),
-        (quad.getJointUpperLimit(1) - quad.getJointLowerLimit(1)) *
-                (double)rand() / RAND_MAX +
-            quad.getJointLowerLimit(1),
-        (quad.getJointUpperLimit(2) - quad.getJointLowerLimit(2)) *
-                (double)rand() / RAND_MAX +
-            quad.getJointLowerLimit(2)};
-
     // Generate valid body orientations
     Eigen::Vector3d body_pos = {
         (pos_max - pos_min) * rand() / RAND_MAX + pos_min,
@@ -360,6 +353,20 @@ TEST(KinematicsTest, testBodyToFootFK) {
     Eigen::Matrix4d g_world_body = quad.createAffineMatrix(body_pos, body_rpy);
 
     for (int leg_index = 0; leg_index < 4; leg_index++) {
+      // Generate valid joint configurations
+      Eigen::Vector3d joint_state = {(quad.getJointUpperLimit(leg_index, 0) -
+                                      quad.getJointLowerLimit(leg_index, 0)) *
+                                             (double)rand() / RAND_MAX +
+                                         quad.getJointLowerLimit(leg_index, 0),
+                                     (quad.getJointUpperLimit(leg_index, 1) -
+                                      quad.getJointLowerLimit(leg_index, 1)) *
+                                             (double)rand() / RAND_MAX +
+                                         quad.getJointLowerLimit(leg_index, 1),
+                                     (quad.getJointUpperLimit(leg_index, 2) -
+                                      quad.getJointLowerLimit(leg_index, 2)) *
+                                             (double)rand() / RAND_MAX +
+                                         quad.getJointLowerLimit(leg_index, 2)};
+
       // Compute the foot position in world frame with FK then tranform into
       // body frame
       quad.worldToFootFKWorldFrame(leg_index, body_pos, body_rpy, joint_state,
