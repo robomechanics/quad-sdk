@@ -101,12 +101,12 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   this->predict(dt, fk, wk, qk);
 
   // for testing prediction step
-  // X = X_pre;
-  // P = P_pre;
-  // last_X = X;
+  X = X_pre;
+  P = P_pre;
+  last_X = X;
 
   /// Update Step
-  this->update(jk);
+  // this->update(jk);
 
   // Update when I have good data, otherwise stay at the origin
   if (last_state_msg_ != NULL) {
@@ -210,7 +210,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   F.block<3, 3>(3, 6) = -dt * C.transpose() * fkskew;
   F.block<3, 3>(3, 21) = -dt * C.transpose();
   F.block<3, 3>(6, 6) = r0.transpose();
-  F.block<3, 3>(0, 24) = -1 * r1.transpose();
+  F.block<3, 3>(6, 24) = -1 * r1.transpose();
 
   // Discrete Process Noise Covariance Matrix
   Q = Eigen::MatrixXd::Zero(num_cov, num_cov);
@@ -249,7 +249,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   P_pre = (F * P * F.transpose()) + Q;
 
   // std::cout << "this is Q " << Q << std::endl;
-  // std::cout << "this is P_pre " << P_pre << std::endl;
+  std::cout << "this is P_pre " << P_pre << std::endl;
 }
 
 void EKFEstimator::update(const Eigen::VectorXd& jk) {
@@ -368,10 +368,10 @@ void EKFEstimator::readIMU(const sensor_msgs::Imu::ConstPtr& last_imu_msg_,
     fk << (*last_imu_msg_).linear_acceleration.x,
         (*last_imu_msg_).linear_acceleration.y,
         (*last_imu_msg_).linear_acceleration.z;
-    // I think the angular velocity is opposite to the reading values
-    wk << -(*last_imu_msg_).angular_velocity.x,
-        -(*last_imu_msg_).angular_velocity.y,
-        -(*last_imu_msg_).angular_velocity.z;
+
+    wk << (*last_imu_msg_).angular_velocity.x,
+        (*last_imu_msg_).angular_velocity.y,
+        (*last_imu_msg_).angular_velocity.z;
 
     qk.w() = (*last_imu_msg_).orientation.w;
     qk.x() = (*last_imu_msg_).orientation.x;
@@ -417,13 +417,13 @@ Eigen::VectorXd EKFEstimator::quaternionDynamics(const Eigen::VectorXd& wdt,
   Eigen::Quaterniond q1(q_w, q_xyz[0], q_xyz[1], q_xyz[2]);
 
   Eigen::Quaterniond q2(q2v[0], q2v[1], q2v[2], q2v[3]);
-  // q1.normalize();
-  // q2.normalize();
+  q1.normalize();
+  q2.normalize();
   Eigen::Quaterniond q3;
   q3.setIdentity();
   q3.w() = q1.w() * q2.w() - q1.vec().dot(q2.vec());
   q3.vec() = q1.w() * q2.vec() + q2.w() * q1.vec() + q1.vec().cross(q2.vec());
-  // q3.normalize();
+  q3.normalize();
   output << q3.w(), q3.x(), q3.y(), q3.z();
   return output;
 }
@@ -504,11 +504,11 @@ void EKFEstimator::spin() {
 
   // initial state
   X0 = Eigen::VectorXd::Zero(num_state);
-  // initial state for spirit_walking_002.bag
+  // initial state for spirit_walking_005.bag
   X0 << 2.731990, 0.037111, 0.063524, -0.002654, 0.013438, 0.005384, -0.999192,
       -0.023452, 0.000798, -0.032635, 2.947184, 0.221952, 0.053124, 2.495493,
       0.192468, 0.053249, 2.969032, -0.116851, 0.039909, 2.517641, -0.145698,
-      0.034415, 0, 0, 0, 0, 0, 0;
+      0.034415, -0.08, -0.06, 0, 0, 0, 0;
 
   // initial state for spirit_walking_002.bag
   // X0 << -1.457778, 1.004244, 0.308681, 0, 0, 0, 0.998927, 0.004160,
