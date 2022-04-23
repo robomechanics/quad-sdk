@@ -131,7 +131,7 @@ class RobotDriver {
   void publishHeartbeat();
 
   /// Robot type: A1 or Spirit
-  std::string robot_;
+  std::string robot_name_;
 
   /// Subscriber for control mode
   ros::Subscriber control_mode_sub_;
@@ -180,9 +180,6 @@ class RobotDriver {
 
   /// Boolean for whether robot layer is hardware (else sim)
   bool is_hardware_;
-
-  /// Robot name
-  std::string robot_name_;
 
   /// Controller type
   std::string controller_id_;
