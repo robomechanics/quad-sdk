@@ -11,7 +11,7 @@ NMPCController::NMPCController(int type) {
       param_ns_ = "a1";
       break;
     default:
-      param_ns_ = "a1";
+      param_ns_ = "spirit";
       break;
   }
 

@@ -63,7 +63,7 @@ QuadKD::QuadKD() {
     // uses the magnitute of it)
     tform =
         model_->GetJointFrame(model_->GetBodyId(toe_name_list.at(i).c_str()));
-    l2_ = tform.r.cwiseAbs().maxCoeff(); 
+    l2_ = tform.r.cwiseAbs().maxCoeff();
     foot_offset_ = tform.r;
   }
 

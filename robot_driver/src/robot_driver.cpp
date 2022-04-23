@@ -6,7 +6,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   argv_ = argv;
 
   // Load system parameters from launch file (not in config file)
-  nh.param<std::string>("robot_type", robot_, "a1");
+  nh.param<std::string>("robot_type", robot_name_, "a1");
 
   // Load rosparams from parameter server
   std::string imu_topic, joint_state_topic, grf_topic, robot_state_topic,
@@ -35,32 +35,48 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   nh_.param<std::string>("robot_driver/robot_name", robot_name_, "spirit");
   nh_.param<std::string>("robot_driver/controller", controller_id_,
                          "inverse_dynamics");
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/update_rate", update_rate_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/publish_rate", publish_rate_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/mocap_rate", mocap_rate_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/mocap_dropout_threshold",
-                           mocap_dropout_threshold_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/filter_time_constant",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/robot_driver/update_rate",
+                           update_rate_);
+  quad_utils::loadROSParam(nh_, robot_name_ + "/robot_driver/publish_rate",
+                           publish_rate_);
+  quad_utils::loadROSParam(nh_, robot_name_ + "/robot_driver/mocap_rate",
+                           mocap_rate_);
+  quad_utils::loadROSParam(
+      nh_, robot_name_ + "/robot_driver/mocap_dropout_threshold",
+      mocap_dropout_threshold_);
+  quad_utils::loadROSParam(nh_,
+                           robot_name_ + "/robot_driver/filter_time_constant",
                            filter_time_constant_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/input_timeout", input_timeout_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/state_timeout", state_timeout_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/heartbeat_timeout",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/robot_driver/input_timeout",
+                           input_timeout_);
+  quad_utils::loadROSParam(nh_, robot_name_ + "/robot_driver/state_timeout",
+                           state_timeout_);
+  quad_utils::loadROSParam(nh_, robot_name_ + "/robot_driver/heartbeat_timeout",
                            heartbeat_timeout_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/sit_kp", sit_kp_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/sit_kd", sit_kd_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/stand_kp", stand_kp_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/stand_kd", stand_kd_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/stance_kp", stance_kp_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/stance_kd", stance_kd_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/swing_kp", swing_kp_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/swing_kd", swing_kd_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/safety_kp", safety_kp_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/safety_kd", safety_kd_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/stand_joint_angles",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/robot_driver/sit_kp", sit_kp_);
+  quad_utils::loadROSParam(nh_, robot_name_ + "/robot_driver/sit_kd", sit_kd_);
+  quad_utils::loadROSParam(nh_, robot_name_ + "/robot_driver/stand_kp",
+                           stand_kp_);
+  quad_utils::loadROSParam(nh_, robot_name_ + "/robot_driver/stand_kd",
+                           stand_kd_);
+  quad_utils::loadROSParam(nh_, robot_name_ + "/robot_driver/stance_kp",
+                           stance_kp_);
+  quad_utils::loadROSParam(nh_, robot_name_ + "/robot_driver/stance_kd",
+                           stance_kd_);
+  quad_utils::loadROSParam(nh_, robot_name_ + "/robot_driver/swing_kp",
+                           swing_kp_);
+  quad_utils::loadROSParam(nh_, robot_name_ + "/robot_driver/swing_kd",
+                           swing_kd_);
+  quad_utils::loadROSParam(nh_, robot_name_ + "/robot_driver/safety_kp",
+                           safety_kp_);
+  quad_utils::loadROSParam(nh_, robot_name_ + "/robot_driver/safety_kd",
+                           safety_kd_);
+  quad_utils::loadROSParam(nh_,
+                           robot_name_ + "/robot_driver/stand_joint_angles",
                            stand_joint_angles_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/sit_joint_angles",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/robot_driver/sit_joint_angles",
                            sit_joint_angles_);
-  quad_utils::loadROSParam(nh_, robot_+"/robot_driver/torque_limit",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/robot_driver/torque_limit",
                            torque_limits_);
 
   // Setup pubs and subs
