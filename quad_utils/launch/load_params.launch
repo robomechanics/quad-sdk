@@ -1,4 +1,5 @@
 <launch>
+    <arg name="robot"           default="spirit"/>
 
     <rosparam command="load" file="$(find quad_utils)/config/topics.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/teleop_twist_keyboard.yaml" />
@@ -19,8 +20,16 @@
     <rosparam command="load" file="$(find nmpc_controller)/nmpc_controller.yaml" />
 
     <param name="enable_statistics" type="bool" value="true" />
+    
+    <group if="$(eval robot == 'spirit')">
+        <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
+        <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
+    </group>
 
-    <!-- <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" /> -->
-    <!-- <param name="robot_description" command="cat $(find a1_description)/urdf/a1_new.urdf" /> -->
+    <group if="$(eval robot == 'a1')">
+        <param name="robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1.sdf" />
+        <param name="robot_description" command="cat $(find a1_description)/urdf/a1.urdf" />
+    </group>
+    
 
 </launch>

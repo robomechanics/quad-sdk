@@ -34,7 +34,7 @@ SOFTWARE.
   <arg name="dash"            default="false"/>
   <arg name="world"           default="flat"/>
   <arg name="rotors"          default="false"/>
-  <arg name="robot"           default="a1"/>
+  <arg name="robot"           default="spirit"/>
 
   <include file="$(find quad_utils)/launch/mapping.launch" >
     <arg name="input_type" value="mesh"/>
@@ -75,53 +75,23 @@ SOFTWARE.
   </include>
 
   <!-- Load the parameters and the sdf description -->
-  <include file="$(find quad_utils)/launch/load_params.launch" />
-  <!-- <group if="$(arg rotors)"> -->
-    <!-- use more accurate but slower rotor model -->
-    <!-- <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit_rotors.sdf" />
-  </group>
-  <group unless="$(arg rotors)"> -->
-    <!-- use more accurate but slower rotor model -->
-    <!-- <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
-  </group> -->
+  <include file="$(find quad_utils)/launch/load_params.launch">
+    <arg name="robot" value="$(arg robot)"/>
+  </include>
 
-  <group if="$(eval arg('robot') == 'spirit')">
-    <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
-    <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
+  <!-- Spawn SDF model -->
+  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model $(arg robot) -x 0.0 -y 0.3 -z 0.5" output="screen"/>
 
-    <!-- Spawn SDF model -->
-    <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.5" output="screen"/>
-
-    <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
+    <rosparam file="$(find gazebo_scripts)/config/$(arg robot)_control.yaml" command="load"/>
 
     <node name="controller_spawner"
         pkg="controller_manager"
         type="spawner"
         respawn="false"
         output="screen"
-        ns="/spirit"
+        ns="/$(arg robot)"
         args="joint_controller joint_state_controller">
     </node>
-  </group>
-  
-  <group if="$(eval arg('robot') == 'a1')">
-    <param name="robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1_new.sdf" />
-    <param name="robot_description" command="cat $(find a1_description)/urdf/a1_new.urdf" />
-
-    <!-- Spawn SDF model -->
-    <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model a1 -x 0.0 -y 0.0 -z 0.5" output="screen"/>
-
-    <rosparam file="$(find gazebo_scripts)/config/a1_control.yaml" command="load"/>
-
-    <node name="controller_spawner"
-        pkg="controller_manager"
-        type="spawner"
-        respawn="false"
-        output="screen"
-        ns="/a1"
-        args="joint_controller joint_state_controller">
-    </node>
-  </group>
 
   <!-- Load the contact state publisher -->
   <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
