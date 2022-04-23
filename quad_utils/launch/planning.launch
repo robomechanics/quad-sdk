@@ -1,12 +1,14 @@
 <launch>
 
-    <include file="$(find quad_utils)/launch/load_params.launch" />
-
     <arg name="global_planner" default="twist" />
     <arg name="local_planner" default="full" />
     <arg name="logging" default="false" />
     <arg name="twist_input" default="none" />
-    <arg name="robot" default="a1"/>
+    <arg name="robot" default="spirit"/>
+
+    <include file="$(find quad_utils)/launch/load_params.launch">
+        <arg name="robot" value="$(arg robot)"/>
+    </include>
 
     <!-- Launch the node to publish the global body plan -->
     <group if="$(eval arg('global_planner') == 'fgmp')">
@@ -30,8 +32,7 @@
     </group>
 
     <!-- Identify the robot type -->
-    <param name="robot_type" value="a1" type="str" if="$(eval arg('robot') == 'a1')" />
-    <param name="robot_type" value="spirit" type="str" unless="$(eval arg('robot') == 'a1')" />
+    <param name="robot_type" value="$(arg robot)" type="str"/>
 
     <node name="local_planner" pkg="local_planner" type="local_planner_node" output="screen" />
 
