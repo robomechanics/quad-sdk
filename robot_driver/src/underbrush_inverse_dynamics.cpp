@@ -151,8 +151,8 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
       ref_underbrush_msg.joints.position.at(knee_idx) +=
         -0.7*std::abs(state_positions[hip_idx] - ref_underbrush_msg.joints.position.at(hip_idx))
         -0.5*std::abs(state_positions[abad_idx] - ref_underbrush_msg.joints.position.at(abad_idx));
-      if (ref_underbrush_msg.joints.position.at(knee_idx) < 0.3) {
-        ref_underbrush_msg.joints.position.at(knee_idx) = 0.3;
+      if (ref_underbrush_msg.joints.position.at(knee_idx) < 0.2) {
+        ref_underbrush_msg.joints.position.at(knee_idx) = 0.2;
       }
     }
     ref_state_msg = ref_underbrush_msg;
@@ -289,8 +289,8 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).kd = 0;
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(2).torque_ff = 
             -tau_push_
-            + (robot_state_msg.joints.position.at(3*i+2) < 0.2 ? 
-            -2*tau_push_*(robot_state_msg.joints.position.at(3*i+2)-0.2)
+            + (robot_state_msg.joints.position.at(3*i+2) < 0.1 ? 
+            -2*tau_push_*(robot_state_msg.joints.position.at(3*i+2)-0.1)
             -2*robot_state_msg.joints.velocity.at(3*i+2) :
             0);
         }

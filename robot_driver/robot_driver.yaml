@@ -15,18 +15,18 @@ robot_driver:
   stance_kd: [1, 1, 1]
   # stance_kp: [0, 0, 0]
   # stance_kd: [0, 0, 0]
-  swing_kp: [10, 5, 5]
-  swing_kd: [1, 0.5, 0.5]
+  swing_kp: [15, 8, 5]
+  swing_kd: [0.3, 0.8, 0.3]
   safety_kp: [0, 0, 0]
   safety_kd: [2, 2, 2]
   stand_joint_angles: [0.0,0.76,1.52]
   sit_joint_angles: [0.0,0.0,0.0]
 
 underbrush_swing:
-  retract_vel: 12 # 15 # rad/s retraction speed at proximal link
-  tau_push: 1.5 # N m forward torque at distal link
+  retract_vel: 15 # 15 # rad/s retraction speed at proximal link
+  tau_push: 2.0 # N m forward torque at distal link
   tau_contact_start: 2.0 # N m contact initiation detection threshold
-  tau_contact_end: 0.25 # N m contact break detection threshold
+  tau_contact_end: 0.5 # N m contact break detection threshold
   min_switch: 0.1 # s minimum time between switching
   t_down: 0.12 # s time before requiring leg extension
   t_up: 0.12 # s time before allowing contact initiation detection
