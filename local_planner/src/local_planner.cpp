@@ -242,11 +242,11 @@ void LocalPlanner::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg
 void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg) {
 
   // Ignore non-planar components of desired twist
-  cmd_vel_[0] = 0.95*cmd_vel_[0]+0.05*cmd_vel_scale_*msg->linear.x;
-  cmd_vel_[1] = 0.95*cmd_vel_[1]+0.05*cmd_vel_scale_*msg->linear.y;
+  cmd_vel_[0] = 0;
+  cmd_vel_[1] = 0;
   cmd_vel_[2] = 0;
-  cmd_vel_[3] = 0;
-  cmd_vel_[4] = 0;
+  cmd_vel_[3] = 0.95*cmd_vel_[3]+0.05*cmd_vel_scale_*msg->angular.x;
+  cmd_vel_[4] = 0.95*cmd_vel_[4]+0.05*cmd_vel_scale_*msg->angular.y;
   cmd_vel_[5] = 0.95*cmd_vel_[5]+0.05*cmd_vel_scale_*msg->angular.z;
 
   // Record when this was last reached for safety
@@ -395,11 +395,14 @@ void LocalPlanner::getStateAndTwistInput() {
     y_mean += robot_state_msg_->feet.feet[i].position.y/(num_feet_);
   }
 
+  // ref_body_plan_(0,0) = x_mean;
+  // ref_body_plan_(0,1) = y_mean;
+  // ref_body_plan_(0,2) = z_des_ + ref_ground_height_(0);
   ref_body_plan_(0,0) = x_mean;
   ref_body_plan_(0,1) = y_mean;
   ref_body_plan_(0,2) = z_des_ + ref_ground_height_(0);
-  ref_body_plan_(0,3) = -cmd_vel_[1];
-  ref_body_plan_(0,4) = cmd_vel_[0];
+  ref_body_plan_(0,3) = -cmd_vel_[3];
+  ref_body_plan_(0,4) = cmd_vel_[4];
   ref_body_plan_(0,5) = cmd_vel_[5];
   ref_body_plan_(0,6) = 0;
   ref_body_plan_(0,7) = 0;
@@ -423,8 +426,13 @@ void LocalPlanner::getStateAndTwistInput() {
     Twist current_cmd_vel = cmd_vel_;
 
     double yaw = ref_body_plan_(i-1,5);
-    current_cmd_vel[0] = cmd_vel_[0]*cos(yaw) - cmd_vel_[1]*sin(yaw);
-    current_cmd_vel[1] = cmd_vel_[0]*sin(yaw) + cmd_vel_[1]*cos(yaw);
+
+  // current_cmd_vel[0] = cmd_vel_[0]*cos(yaw) - cmd_vel_[1]*sin(yaw);
+  // current_cmd_vel[1] = cmd_vel_[0]*sin(yaw) + cmd_vel_[1]*cos(yaw);
+
+    current_cmd_vel[3] = cmd_vel_[3]*cos(yaw) - cmd_vel_[4]*sin(yaw);
+    current_cmd_vel[4] = cmd_vel_[3]*sin(yaw) + cmd_vel_[4]*cos(yaw);
+
 
     for (int j = 0; j < 6; j ++) {
       if (i == 1)
