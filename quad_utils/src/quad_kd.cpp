@@ -333,48 +333,91 @@ void QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
   double q1;
   double q2;
 
-  double temp = l0 / std::sqrt(z * z + y * y);
-  if (std::abs(temp) > 1) {
-    // If the toe is too close to the hip, clamp it
-    q0 = std::atan2(z, y);
-  } else {
-    // We assume toe is always lower than the hip
-    q0 = std::acos(temp) + std::atan2(z, y);
+  // Start IK, check foot pos is at least l0 away from leg base, clamp otherwise
+  double temp = l0 / sqrt(z * z + y * y);
+  if (abs(temp) > 1) {
+    ROS_DEBUG_THROTTLE(0.5, "Foot too close, choosing closest alternative\n");
+    temp = std::max(std::min(temp, 1.0), -1.0);
   }
 
-  // Compute the original leg extension before clamping the abad angle
+  // Compute both solutions of q0, use hip-above-knee if z<0 (preferred)
+  // Store the inverted solution in case hip limits are exceeded
+  double q0_inverted;
+  if (z > 0) {
+    q0 = -acos(temp) + atan2(z, y);
+    q0_inverted = acos(temp) + atan2(z, y);
+  } else {
+    q0 = acos(temp) + atan2(z, y);
+    q0_inverted = -acos(temp) + atan2(z, y);
+  }
+
+  // Make sure abad is within joint limits, clamp otherwise
+  if (q0 > joint_max_[0] || q0 < joint_min_[0]) {
+    q0 = std::max(std::min(q0, joint_max_[0]), joint_min_[0]);
+    ROS_DEBUG_THROTTLE(0.5, "Abad limits exceeded, clamping to %5.3f \n", q0);
+  }
+
+  // Rotate to ab-ad fixed frame
   double z_body_frame = z;
   z = -sin(q0) * y + cos(q0) * z_body_frame;
 
-  // Clamp abad
-  q0 = std::max(std::min(q0, joint_max_[0]), joint_min_[0]);
+  // Check reachibility for hip
+  double acos_eps = 1.0;
+  double temp2 =
+      (l1_ * l1_ + x * x + z * z - l2_ * l2_) / (2 * l1_ * sqrt(x * x + z * z));
+  if (abs(temp2) > acos_eps) {
+    ROS_DEBUG_THROTTLE(0.5,
+                       "Foot location too far for hip, choosing closest"
+                       " alternative \n");
+    temp2 = std::max(std::min(temp2, acos_eps), -acos_eps);
+  }
 
-  if (x * x + z * z > (l2_ + l1_) * (l2_ + l1_)) {
-    // If leg over extend, set to the closest point
-    q1 = std::atan2(z, x) - M_PI;
-    q2 = M_PI;
-  } else {
-    q2 = std::acos((l1_ * l1_ + l2_ * l2_ - (x * x + z * z)) / (2 * l1_ * l2_));
-    if (q2 < 0.136) {
-      // If the toe is too close to hip, don't do dramatic motion
-      q1 = 0;
-    } else {
-      // We assume toe is always lower than the hip
-      q1 = M_PI + std::atan2(z, x) -
-           std::acos((l1_ * l1_ - l2_ * l2_ + (x * x + z * z)) /
-                     (2 * l1_ * std::sqrt(x * x + z * z)));
-    }
-    // Try to wrap the hip angle
-    if (q1 > M_PI) {
-      q1 -= 2 * M_PI;
-    } else if (q1 < -M_PI) {
-      q1 += 2 * M_PI;
+  // Check reachibility for knee
+  double temp3 = (l1_ * l1_ + l2_ * l2_ - x * x - z * z) / (2 * l1_ * l2_);
+  if (temp3 > acos_eps || temp3 < -acos_eps) {
+    ROS_DEBUG_THROTTLE(0.5,
+                       "Foot location too far for knee, choosing closest"
+                       " alternative \n");
+    temp3 = std::max(std::min(temp3, acos_eps), -acos_eps);
+  }
+
+  // Compute joint angles
+  q1 = 0.5 * M_PI + atan2(x, -z) - acos(temp2);
+  q2 = acos(temp3);
+
+  // Make sure hip is within joint limits (try other direction if fails)
+  if (q1 > joint_max_[1] || q1 < joint_min_[1]) {
+    ROS_DEBUG_THROTTLE(0.5, "Hip limits exceeded, using inverted config\n");
+
+    q0 = q0_inverted;
+    z = -sin(q0) * y + cos(q0) * z_body_frame;
+    q1 = 0.5 * M_PI + atan2(x, -z) - acos(temp2);
+    q2 = acos(temp3);
+
+    if (q1 > joint_max_[1] || q1 < joint_min_[1]) {
+      q1 = std::max(std::min(q1, joint_max_[1]), joint_min_[1]);
+      ROS_DEBUG_THROTTLE(0.5, "Hip limits exceeded, clamping to %5.3f \n", q1);
     }
   }
 
-  // Clamp hip and knee
-  q1 = std::max(std::min(q1, joint_max_[1]), joint_min_[1]);
-  q2 = std::max(std::min(q2, joint_max_[2]), joint_min_[2]);
+  // Make sure knee is within joint limits
+  if (q2 > joint_max_[2] || q2 < joint_min_[2]) {
+    q2 = std::max(std::min(q2, joint_max_[2]), joint_min_[2]);
+    ROS_DEBUG_THROTTLE(0.5, "Knee limit exceeded, clamping to %5.3f \n", q2);
+  }
+
+  // q1 is undefined if q2=0, resolve this
+  if (q2 == 0) {
+    q1 = 0;
+    ROS_DEBUG_THROTTLE(0.5,
+                       "Hip value undefined (in singularity), setting to"
+                       " %5.3f \n",
+                       q1);
+  }
+
+  if (z_body_frame - l0 * sin(q0) > 0) {
+    ROS_DEBUG_THROTTLE(0.5, "IK solution is in hip-inverted region! Beware!\n");
+  }
 
   joint_state = {q0, q1, q2};
 }

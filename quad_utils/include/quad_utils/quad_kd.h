@@ -279,10 +279,12 @@ class QuadKD {
   const double joint_eps = 0.1;
 
   /// Vector of the joint lower limits
-  const std::vector<double> joint_min_ = {-0.707, -M_PI, 0};
+  const std::vector<double> joint_min_ = {-1 + joint_eps,
+                                          -0.5 * M_PI + joint_eps, joint_eps};
 
   /// Vector of the joint upper limits
-  const std::vector<double> joint_max_ = {0.707, M_PI, M_PI};
+  const std::vector<double> joint_max_ = {1 - joint_eps, M_PI - joint_eps,
+                                          M_PI - joint_eps};
 
   RigidBodyDynamics::Model *model_;
 

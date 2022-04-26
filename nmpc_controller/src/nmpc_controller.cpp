@@ -326,19 +326,19 @@ bool NMPCController::computeDistributedTailFullPlan(
   // Once update, the initialization is done
   mynlp_->require_init_ = false;
 
-  // Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
-  // ROS_INFO_STREAM("initial_state");
-  // ROS_INFO_STREAM(mynlp_->x_current_.transpose().format(CleanFmt));
-  // ROS_INFO_STREAM("ref_traj");
-  // ROS_INFO_STREAM(mynlp_->x_reference_.transpose().format(CleanFmt));
-  // ROS_INFO_STREAM("foot_positions");
-  // ROS_INFO_STREAM(mynlp_->feet_location_.transpose().format(CleanFmt));
-  // ROS_INFO_STREAM("contact_sequence_");
-  // ROS_INFO_STREAM(mynlp_->contact_sequence_.transpose().format(CleanFmt));
-  // ROS_INFO_STREAM("state_traj");
-  // ROS_INFO_STREAM(state_traj.format(CleanFmt));
-  // ROS_INFO_STREAM("control_traj");
-  // ROS_INFO_STREAM(control_traj.format(CleanFmt));
+  Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+  ROS_INFO_STREAM("initial_state");
+  ROS_INFO_STREAM(mynlp_->x_current_.transpose().format(CleanFmt));
+  ROS_INFO_STREAM("ref_traj");
+  ROS_INFO_STREAM(mynlp_->x_reference_.transpose().format(CleanFmt));
+  ROS_INFO_STREAM("foot_positions");
+  ROS_INFO_STREAM(mynlp_->feet_location_.transpose().format(CleanFmt));
+  ROS_INFO_STREAM("contact_sequence_");
+  ROS_INFO_STREAM(mynlp_->contact_sequence_.transpose().format(CleanFmt));
+  ROS_INFO_STREAM("state_traj");
+  ROS_INFO_STREAM(state_traj.format(CleanFmt));
+  ROS_INFO_STREAM("control_traj");
+  ROS_INFO_STREAM(control_traj.format(CleanFmt));
   // ROS_INFO_STREAM("ref_ground_height");
   // ROS_INFO_STREAM(mynlp_->ground_height_.transpose().format(CleanFmt));
   // ROS_INFO_STREAM("first_element_duration");
@@ -359,10 +359,10 @@ bool NMPCController::computeDistributedTailFullPlan(
   tail_state_traj = state_traj_with_tail;
   tail_control_traj = control_traj_with_tail;
 
-  // Eigen::Map<Eigen::MatrixXd> wwwww(
-  //     mynlp_->w0_.block(0, 0, N_ * (n_ + m_), 0).data(), n_ + m_, N_);
-  // ROS_INFO_STREAM("wsolve");
-  // ROS_INFO_STREAM(wwwww.transpose().format(CleanFmt));
+  Eigen::Map<Eigen::MatrixXd> wwwww(
+      mynlp_->w0_.block(0, 0, N_ * (n_ + m_), 0).data(), n_ + m_, N_);
+  ROS_INFO_STREAM("wsolve");
+  ROS_INFO_STREAM(wwwww.transpose().format(CleanFmt));
   // Eigen::Map<Eigen::MatrixXd> wwww(mynlp_->w0_.block(N_ * (n_ + m_), 0, 2 *
   // N_ * n_, 0).data(), n_, 2 * N_); ROS_INFO_STREAM("slacksolve");
   // ROS_INFO_STREAM(wwww.transpose().format(CleanFmt));
