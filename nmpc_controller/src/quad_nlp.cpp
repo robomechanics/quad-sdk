@@ -177,8 +177,8 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
 
   // Load dynamics constraint bounds for feet
   constraint_size = n_foot_;
-  g_min_.segment(current_idx, constraint_size).fill(-2e19);
-  g_max_.segment(current_idx, constraint_size).fill(2e19);
+  g_min_.segment(current_idx, constraint_size).fill(0);
+  g_max_.segment(current_idx, constraint_size).fill(0);
   current_idx += constraint_size;
   g_min_simple_ = g_min_;
   g_max_simple_ = g_max_;
@@ -214,7 +214,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   // Load knee constraint bounds
   constraint_size = num_feet_;
   g_min_complex_hard_.segment(current_idx, constraint_size).fill(-2e19);
-  g_max_complex_hard_.segment(current_idx, constraint_size).fill(0.1);
+  g_max_complex_hard_.segment(current_idx, constraint_size).fill(0.05);
   g_min_complex_soft_.segment(current_null_idx, constraint_size).fill(-2e19);
   g_max_complex_soft_.segment(current_null_idx, constraint_size).fill(-0.05);
   current_idx += constraint_size;
@@ -421,6 +421,8 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
         get_primal_constraint_vals(g_u_matrix, i)
             .segment(g_simple_ - n_foot_ + n_foot_ / 2 + 3 * j, 3)
             .fill(2e19);
+        get_primal_foot_control_var(x_l_matrix, i).segment(3 * j, 3).fill(0);
+        get_primal_foot_control_var(x_u_matrix, i).segment(3 * j, 3).fill(0);
       }
 
       if (constrain_feet) {
@@ -437,7 +439,6 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
               foot_vel_world_.block<1, 3>(i + 1, 3 * j);
         }
       } else {
-        std::cout << "foot not constrained somehow, fix!" << std::endl;
         get_primal_foot_state_var(x_l_matrix, i + 1)(3 * j + 2, 0) =
             terrain_.atPosition("z_inpainted",
                                 foot_pos_world_.block<1, 2>(i + 1, 3 * j));
@@ -447,11 +448,11 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
     // Panic variable bound
     get_slack_state_var(x_l_matrix, i).fill(0);
     get_slack_state_var(x_u_matrix, i).fill(2e19);
-    get_slack_state_var(x_u_matrix, i).fill(0);
+    get_slack_state_var(x_u_matrix, i).head(n_simple_).fill(0);
 
     // Completely disable foot modifications
-    if (~allow_foot_traj_modification) {
-      get_slack_state_var(x_u_matrix, i).tail(n_foot_).fill(0);
+    if (!allow_foot_traj_modification) {
+      get_slack_state_var(x_u_matrix, i).segment(n_body_, n_foot_).fill(0);
       get_primal_foot_control_var(x_l_matrix, i).fill(0);
       get_primal_foot_control_var(x_u_matrix, i).fill(0);
     }

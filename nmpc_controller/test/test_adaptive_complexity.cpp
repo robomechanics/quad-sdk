@@ -98,6 +98,16 @@ TEST(NMPCTest, testAdaptiveComplexity) {
 
   Eigen::VectorXd joint_positions(12), joint_velocities(12), torques(12);
 
+  grid_map::GridMap map({"z_inpainted", "traversability"});
+  map.setGeometry(grid_map::Length(10, 10), 0.01);
+
+  for (grid_map::GridMapIterator it(map); !it.isPastEnd(); ++it) {
+    grid_map::Position position;
+    map.getPosition(*it, position);
+    map.at("z_inpainted", *it) = 0;
+    map.at("traversability", *it) = 1;
+  }
+
   for (int i = 0; i < 10; i++) {
     tic = std::chrono::steady_clock::now();
 
@@ -112,8 +122,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
     leg_planner_->computeLegPlan(
         current_state_, ref_body_plan_, foot_positions_world_,
         foot_velocities_world_, adpative_contact_schedule_, ref_ground_height,
-        first_element_duration, same_plan_index, ref_primitive_id,
-        complexity_schedule, body_plan_, grf_plan_);
+        first_element_duration, same_plan_index, map, body_plan_, grf_plan_);
     toc = std::chrono::steady_clock::now();
     std::cout << "Time difference = "
               << std::chrono::duration_cast<std::chrono::microseconds>(toc -

@@ -74,7 +74,7 @@ class quadNLP : public TNLP {
   const bool apply_slack_to_complex_constr_ = true;
 
   /// Boolean for whether to allow modifications of foot trajectory
-  const bool allow_foot_traj_modification = false;
+  const bool allow_foot_traj_modification = true;
 
   /// Input dimension for simple and complex models
   int m_simple_, m_complex_;
