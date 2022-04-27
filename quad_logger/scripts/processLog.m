@@ -11,8 +11,8 @@ function processLog(varargin)
 close all;clc;
 
 % Check that this is the right current directory otherwise paths won't work
-if ~endsWith(pwd, 'quad-software/quad_logger/scripts')
-    error('This script must be run from quad-software/quad_logger/scripts/');
+if ~endsWith(pwd, '/quad_logger/scripts')
+    error('This script must be run from quad_logger/scripts/');
 end
 
 %% Select rosbag to parse
@@ -45,26 +45,28 @@ controlGRFs = data.controlGRFs;
 %% Plot the data
 
 % Plot the state
+stateFigs = [];
 if ~isempty(stateGroundTruth)
-    [figArray] = plotState(stateGroundTruth,tWindowStates,'-', bTitles);
+    [stateFigs] = plotState(stateGroundTruth,tWindowStates,'-', bTitles, stateFigs);
 end
 if ~isempty(stateTrajectory)
-    [figArray] = plotState(stateTrajectory,tWindowStates, ':', bTitles, figArray);
+    [stateFigs] = plotState(stateTrajectory,tWindowStates, ':', bTitles, stateFigs);
 end
 if ~isempty(stateEstimate)
-    [figArray] = plotState(stateEstimate,tWindowStates, '--', bTitles, figArray);
+    [stateFigs] = plotState(stateEstimate,tWindowStates, '--', bTitles, stateFigs);
 end
 
 % Plot the control
+controlFigs = [];
 if ~isempty(stateGRFs)
-    GRFVectorsFig = plotControl(stateGRFs,tWindowControl,'-', bTitles);
+    controlFigs = plotControl(stateGRFs,tWindowControl,'-', bTitles, controlFigs);
 end
 if ~isempty(controlGRFs)
-    GRFVectorsFig = plotControl(controlGRFs,tWindowControl,':', bTitles,GRFVectorsFig);
+    controlFigs = plotControl(controlGRFs,tWindowControl,':', bTitles,controlFigs);
 end
 
 % Add figures to array
-figArray = [figArray, GRFVectorsFig];
+figArray = [stateFigs, controlFigs];
 
 %% Save the logs and figures in one directory
 logDir = [];
@@ -75,7 +77,8 @@ end
 %% Animate and save
 
 if bAnimate
-    robot = importrobot('../../quad_simulator/spirit_description/urdf/spirit.urdf');
+    robot_path = '../../quad_simulator/spirit_description/urdf/spirit.urdf';
+    robot = importrobot(robot_path);
     videosDir = fullfile(logDir,'videos/');
     animateData(robot,stateGroundTruth, fullfile(videosDir, trialName), bSave);
 end
