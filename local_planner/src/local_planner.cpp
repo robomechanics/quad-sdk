@@ -242,9 +242,9 @@ void LocalPlanner::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg
 void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg) {
 
   // Ignore non-planar components of desired twist
-  cmd_vel_[0] = 0;
-  cmd_vel_[1] = 0;
-  cmd_vel_[2] = 0;
+  cmd_vel_[0] = 0.95 * cmd_vel_[0] + 0.05 * cmd_vel_scale_ * msg->linear.x;
+  cmd_vel_[1] = 0.95 * cmd_vel_[1] + 0.05 * cmd_vel_scale_ * msg->linear.y;
+  cmd_vel_[2] = 0.95 * cmd_vel_[2] + 0.05 * cmd_vel_scale_ * msg->linear.z;
   cmd_vel_[3] = 0.95*cmd_vel_[3]+0.05*cmd_vel_scale_*msg->angular.x;
   cmd_vel_[4] = 0.95*cmd_vel_[4]+0.05*cmd_vel_scale_*msg->angular.y;
   cmd_vel_[5] = 0.95*cmd_vel_[5]+0.05*cmd_vel_scale_*msg->angular.z;
@@ -398,12 +398,16 @@ void LocalPlanner::getStateAndTwistInput() {
   // ref_body_plan_(0,0) = x_mean;
   // ref_body_plan_(0,1) = y_mean;
   // ref_body_plan_(0,2) = z_des_ + ref_ground_height_(0);
-  ref_body_plan_(0,0) = x_mean;
-  ref_body_plan_(0,1) = y_mean;
-  ref_body_plan_(0,2) = z_des_ + ref_ground_height_(0);
-  ref_body_plan_(0,3) = -cmd_vel_[3];
+  // ref_body_plan_(0,3) = 0;
+  // ref_body_plan_(0,4) = 0;
+  // ref_body_plan_(0,5) = 0;
+  ref_body_plan_(0,0) = x_mean + cmd_vel_[0];
+  ref_body_plan_(0,1) = y_mean + cmd_vel_[1];
+  ref_body_plan_(0,2) = z_des_ + ref_ground_height_(0)+ cmd_vel_[2];
+  ref_body_plan_(0,3) = -1*cmd_vel_[3];
   ref_body_plan_(0,4) = cmd_vel_[4];
   ref_body_plan_(0,5) = cmd_vel_[5];
+
   ref_body_plan_(0,6) = 0;
   ref_body_plan_(0,7) = 0;
   ref_body_plan_(0,8) = 0;
@@ -447,7 +451,9 @@ void LocalPlanner::getStateAndTwistInput() {
     }
 
     ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_(i, 0), ref_body_plan_(i, 1));
-    ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);
+    // ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i); // fixed height
+
+    ref_body_plan_(i, 2) = ref_body_plan_(i-1,2)+current_cmd_vel[2]*5*dt_;
 
     // Only adaptive pitch
     // ref_body_plan_(i, 4) = local_footstep_planner_->getTerrainSlope(ref_body_plan_(i, 0), ref_body_plan_(i, 1), ref_body_plan_(i, 6), ref_body_plan_(i, 7));
