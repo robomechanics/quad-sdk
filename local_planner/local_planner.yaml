@@ -11,7 +11,7 @@ local_planner:
 
 local_footstep_planner:
   grf_weight: 0.5
-  period: 0.48 # s
+  period: 0.36 # s
   ground_clearance: 0.07
   hip_clearance: 0.075
   standing_error_threshold: 0.03 # m
