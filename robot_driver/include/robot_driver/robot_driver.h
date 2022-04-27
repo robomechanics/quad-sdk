@@ -321,6 +321,9 @@ class RobotDriver {
   /// Most recent joint data
   sensor_msgs::JointState last_joint_state_msg_;
 
+  /// Best estimate of velocity
+  Eigen::Vector3d vel_estimate_;
+
   /// Best estimate of velocity from mocap diff
   Eigen::Vector3d mocap_vel_estimate_;
 
@@ -329,6 +332,9 @@ class RobotDriver {
 
   /// Velocity filter time constant
   double filter_time_constant_;
+
+  /// Velocity filter weight
+  double filter_weight_;
 
   /// Maximum time elapsed between mocap messages before committing to new
   /// message
