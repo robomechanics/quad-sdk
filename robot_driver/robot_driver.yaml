@@ -3,7 +3,7 @@ robot_driver:
   publish_rate: 500
   mocap_rate: 360.0 # This must match the mocap frame rate or velocity estimates will be mis-scaled
   mocap_dropout_threshold: 0.027 # s
-  filter_time_constant: 0.05 # s
+  filter_time_constant: 0.01 # s
   input_timeout: 0.2
   state_timeout: 0.1
   heartbeat_timeout: 0.2
