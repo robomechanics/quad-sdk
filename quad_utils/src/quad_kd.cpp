@@ -353,12 +353,16 @@ void QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
     temp = std::max(std::min(temp, 1.0), -1.0);
   }
 
-  // Compute both solutions of q0, use hip-above-knee if z<0 (preferred)
-  // Store the inverted solution in case hip limits are exceeded
-  if (z > 0) {
-    q0 = -acos(temp) + atan2(z, y);
-  } else {
-    q0 = acos(temp) + atan2(z, y);
+  // We assume the toe is always higher than the hip in the hip-knee plane
+  q0 = acos(temp) + atan2(z, y);
+
+  // Wrap to +-pi
+  if (abs(q0) > M_PI) {
+    if (q0 > 0) {
+      q0 -= 2 * M_PI;
+    } else {
+      q0 += 2 * M_PI;
+    }
   }
 
   // Make sure abad is within joint limits, clamp otherwise
@@ -368,9 +372,10 @@ void QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
     ROS_DEBUG_THROTTLE(0.5, "Abad limits exceeded, clamping to %5.3f \n", q0);
   }
 
-  // Rotate to ab-ad fixed frame
+  // Rotate to ab-ad fixed frame, we want to keep the same z even if we are
+  // hitting the abad limit
   double z_body_frame = z;
-  z = -sin(q0) * y + cos(q0) * z_body_frame;
+  z = -l0 * tan(q0) + z / cos(q0);
 
   // Check reachibility for hip
   double acos_eps = 1.0;
@@ -383,31 +388,62 @@ void QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
     temp2 = std::max(std::min(temp2, acos_eps), -acos_eps);
   }
 
-  // Check reachibility for knee
-  double temp3 = (l1_ * l1_ + l2_ * l2_ - x * x - z * z) / (2 * l1_ * l2_);
-  if (temp3 > acos_eps || temp3 < -acos_eps) {
-    ROS_DEBUG_THROTTLE(0.5,
-                       "Foot location too far for knee, choosing closest"
-                       " alternative \n");
-    temp3 = std::max(std::min(temp3, acos_eps), -acos_eps);
-  }
-
   // Compute joint angles
   q1 = 0.5 * M_PI + atan2(x, -z) - acos(temp2);
 
+  // Wrap to +-pi
+  if (abs(q1) > M_PI) {
+    if (q1 > 0) {
+      q1 -= 2 * M_PI;
+    } else {
+      q1 += 2 * M_PI;
+    }
+  }
+
   // Make sure hip is within joint limits
-  if (q1 > joint_max_[leg_index][1] || q1 < joint_min_[leg_index][1]) {
-    q1 = std::max(std::min(q1, joint_max_[leg_index][1]),
-                  joint_min_[leg_index][1]);
-    ROS_DEBUG_THROTTLE(0.5, "Hip limits exceeded, clamping to %5.3f \n", q1);
+  if (q1 > joint_max_[leg_index][1]) {
+    if (abs(q1 - joint_max_[leg_index][1]) >
+        abs(q1 - 2 * M_PI - joint_min_[leg_index][1])) {
+      q1 = joint_min_[leg_index][1];
+    } else {
+      q1 = joint_max_[leg_index][1];
+    }
+  } else if (q1 < joint_min_[leg_index][1]) {
+    if (abs(q1 - joint_min_[leg_index][1]) >
+        abs(q1 + 2 * M_PI - joint_max_[leg_index][1])) {
+      q1 = joint_max_[leg_index][1];
+    } else {
+      q1 = joint_min_[leg_index][1];
+    }
   }
 
   // Compute knee val to get closest toe position in the plane
-  Eigen::Vector2d knee_pos, toe_pos, toe_offset;
+  Eigen::Vector2d knee_pos, toe_pos, toe_offset, lower_leg_offset;
   knee_pos << -l1_ * cos(q1), -l1_ * sin(q1);
   toe_pos << x, z;
   toe_offset = toe_pos - knee_pos;
   q2 = atan2(-toe_offset(1), toe_offset(0)) + q1;
+
+  // Fix -pi problem
+  if (q2 < 0) {
+    q2 += 2 * M_PI;
+  }
+
+  // Check if there's a better configuration to match the desired z
+  lower_leg_offset << l2_ * cos(q1 - q2), l2_ * sin(q1 - q2);
+  if (lower_leg_offset[1] < 0 && toe_offset.norm() < l2_) {
+    toe_pos << knee_pos[0] +
+                   sqrt(
+                       std::max(l2_ * l2_ - toe_offset[1] * toe_offset[1], 0.)),
+        z;
+    toe_offset = toe_pos - knee_pos;
+    q2 = atan2(-toe_offset(1), toe_offset(0)) + q1;
+  }
+
+  // Fix -pi problem
+  if (q2 < 0) {
+    q2 += 2 * M_PI;
+  }
 
   // Make sure knee is within joint limits
   if (q2 > joint_max_[leg_index][2] || q2 < joint_min_[leg_index][2]) {
@@ -423,10 +459,6 @@ void QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
                        "Hip value undefined (in singularity), setting to"
                        " %5.3f \n",
                        q1);
-  }
-
-  if (z_body_frame - l0 * sin(q0) > 0) {
-    ROS_DEBUG_THROTTLE(0.5, "IK solution is in hip-inverted region! Beware!\n");
   }
 
   joint_state = {q0, q1, q2};
