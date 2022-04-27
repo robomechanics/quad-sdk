@@ -334,6 +334,9 @@ class RobotDriver {
   /// Best estimate of imu velocity
   Eigen::Vector3d imu_vel_estimate_;
 
+  /// Best estimate of linear velocity
+  Eigen::Vector3d vel_estimate_;
+
   /// Velocity filter time constant
   double filter_time_constant_;
 

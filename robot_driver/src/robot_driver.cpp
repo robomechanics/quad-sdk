@@ -143,6 +143,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   t_pub_ = ros::Time::now();
 
   // Initialize state and control data structures
+  vel_estimate_.setZero();
   mocap_vel_estimate_.setZero();
   imu_vel_estimate_.setZero();
   last_joint_state_msg_.name.resize(12);
@@ -223,9 +224,10 @@ void RobotDriver::mocapCallback(
       // Filtered velocity estimate assuming motion capture frame rate is
       // constant at mocap_rate_ in order to avoid variable network and ROS
       // latency that appears in the message time stamp
-      mocap_vel_estimate_ =
-          (1 - 1 / mocap_rate_ / filter_time_constant_) * mocap_vel_estimate_ +
-          (1 / mocap_rate_ / filter_time_constant_) * vel_new_measured;
+      // mocap_vel_estimate_ =
+      //     (1 - 1 / mocap_rate_ / filter_time_constant_) * mocap_vel_estimate_ +
+      //     (1 / mocap_rate_ / filter_time_constant_) * vel_new_measured;
+      mocap_vel_estimate_ = vel_new_measured;
     } else {
       ROS_WARN_THROTTLE(
           0.1,
@@ -321,17 +323,23 @@ bool RobotDriver::updateState() {
       // Ignore gravity
       acc[2] += 9.81;
 
-      // Use new measurement
-      imu_vel_estimate_ = (imu_vel_estimate_ + acc / update_rate_) *
-                          (1 - 1 / update_rate_ / filter_time_constant_);
-
       last_robot_state_msg_.body.pose.orientation =
           last_mocap_msg_->pose.orientation;
       last_robot_state_msg_.body.pose.position = last_mocap_msg_->pose.position;
 
+      // Integrate IMU acc to get high pass filter
+      imu_vel_estimate_ = (vel_estimate_ + acc / update_rate_);
+
       // Complementary filter
-      quad_utils::Eigen3ToVector3Msg(mocap_vel_estimate_ + imu_vel_estimate_,
+      double dt = 1.0 / update_rate_;
+      double a = 1 - filter_time_constant_ / (filter_time_constant_ + dt);
+      vel_estimate_ = a * mocap_vel_estimate_ + (1 - a) * imu_vel_estimate_;
+      quad_utils::Eigen3ToVector3Msg(vel_estimate_,
                                      last_robot_state_msg_.body.twist.linear);
+
+      ROS_INFO_THROTTLE(0.05,"w = %5.3f, imu: %8.4f, mocap: %8.4f: total: %8.4f", a, 
+        imu_vel_estimate_.x(), mocap_vel_estimate_.x(),
+        vel_estimate_.x()); 
 
     } else {
       ROS_WARN_THROTTLE(1, "No body pose (mocap) recieved");
