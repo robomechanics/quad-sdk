@@ -112,7 +112,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   same_plan_index_ = true;
 
   // Initialize the plan index
-  current_plan_index_ = 0;
+  current_plan_index_ = -1;
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
