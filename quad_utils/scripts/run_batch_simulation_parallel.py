@@ -31,7 +31,7 @@ class Worker(mp.Process):
 if __name__ == "__main__":
 
     for l in range(0, type_num):
-        for i in range(world_num):
+        for i in range(0, world_num):
             for j in range(batch_num/worker_num):
                 # initializing some shared values between process
                 world_index = mp.Value('i', 0)

@@ -2,7 +2,7 @@
 close all;clc;
 
 % Check that this is the right current directory otherwise paths won't work
-if ~endsWith(pwd, 'quad-software/quad_logger/scripts')
+if ~endsWith(pwd, 'quad-sdk/quad_logger/scripts')
     error('This script must be run from quad-software/quad_logger/scripts/');
 end
 
@@ -42,8 +42,8 @@ parfor i = 1:size(bagNameList, 1)
     data = parseQuadBag(trialName);
     data.stateGroundTruth.axisAngleRP = rotm2axang(eul2rotm([zeros(size(data.stateGroundTruth.orientationRPY, 1), 1), fliplr(data.stateGroundTruth.orientationRPY(:, 1:2))]));
 
-    data.contactSensing.missTime = find(sum(data.contactSensing.contactStates, 2), 1, 'first');
-    data.contactSensing.missTime = data.contactSensing.time(data.contactSensing.missTime);
+    [row, col] = find(data.contactSensing.contactStates == 3, 1, 'first');
+    data.contactSensing.missTime = data.contactSensing.time(row);
     data.stateGroundTruth.syncTime = data.stateGroundTruth.time - data.contactSensing.missTime;
 
     stateEstimate{i} = data.stateEstimate;
