@@ -45,7 +45,8 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   n_ = n_body_ + n_foot_ + n_tail_;
   n_null_ = n_null;
   m_ = m_body_ + m_foot_ + m_tail_;
-  g_ = n_ + 16;  // states dynamics plus linear fricton cone
+  g_ =
+      n_ + 16 + 4;  // states dynamics plus linear fricton cone plus foot height
 
   // Load adaptive complexity parameters
   n_simple_ = n_;
@@ -180,6 +181,13 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   g_min_.segment(current_idx, constraint_size).fill(0);
   g_max_.segment(current_idx, constraint_size).fill(0);
   current_idx += constraint_size;
+
+  // Load foot height constraints
+  constraint_size = 4;
+  g_min_.segment(current_idx, constraint_size).fill(-2e19);
+  g_max_.segment(current_idx, constraint_size).fill(2e19);
+  current_idx += constraint_size;
+
   g_min_simple_ = g_min_;
   g_max_simple_ = g_max_;
 
@@ -410,16 +418,16 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
 
       if (remove_foot_dynamics) {
         get_primal_constraint_vals(g_l_matrix, i)
-            .segment(g_simple_ - n_foot_ + 3 * j, 3)
+            .segment(g_simple_ - n_foot_ - 4 + 3 * j, 3)
             .fill(-2e19);
         get_primal_constraint_vals(g_u_matrix, i)
-            .segment(g_simple_ - n_foot_ + 3 * j, 3)
+            .segment(g_simple_ - n_foot_ - 4 + 3 * j, 3)
             .fill(2e19);
         get_primal_constraint_vals(g_l_matrix, i)
-            .segment(g_simple_ - n_foot_ + n_foot_ / 2 + 3 * j, 3)
+            .segment(g_simple_ - n_foot_ - 4 + n_foot_ / 2 + 3 * j, 3)
             .fill(-2e19);
         get_primal_constraint_vals(g_u_matrix, i)
-            .segment(g_simple_ - n_foot_ + n_foot_ / 2 + 3 * j, 3)
+            .segment(g_simple_ - n_foot_ - 4 + n_foot_ / 2 + 3 * j, 3)
             .fill(2e19);
         get_primal_foot_control_var(x_l_matrix, i).segment(3 * j, 3).fill(0);
         get_primal_foot_control_var(x_u_matrix, i).segment(3 * j, 3).fill(0);
@@ -683,10 +691,12 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     int sys_id = sys_id_schedule_[i];
 
     // Load the params for this fe
-    Eigen::VectorXd pk(14);
+    Eigen::VectorXd pk(30);
     pk[0] = (i == 0) ? first_element_duration_ : dt_;
     pk[1] = mu_;
     pk.segment(2, 12) = foot_pos_world_.row(i + 1);
+    pk.segment(14, 4).fill(0);
+    pk.segment(18, 12).fill(1);
 
     // Set up the work function
     casadi_int sz_arg;
@@ -762,10 +772,12 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
       int sys_id = sys_id_schedule_[i];
 
       // Load the params for this fe
-      Eigen::VectorXd pk(14);
+      Eigen::VectorXd pk(30);
       pk[0] = (i == 0) ? first_element_duration_ : dt_;
       pk[1] = mu_;
       pk.segment(2, 12) = foot_pos_world_.row(i + 1);
+      pk.segment(14, 4).fill(0);
+      pk.segment(18, 12).fill(1);
 
       // Set up the work function
       casadi_int sz_arg;
@@ -1022,10 +1034,12 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
       int sys_id = sys_id_schedule_[i];
 
       // Load the params for this fe
-      Eigen::VectorXd pk(14);
+      Eigen::VectorXd pk(30);
       pk[0] = (i == 0) ? first_element_duration_ : dt_;
       pk[1] = mu_;
       pk.segment(2, 12) = foot_pos_world_.row(i + 1);
+      pk.segment(14, 4).fill(0);
+      pk.segment(18, 12).fill(1);
 
       // Set up the work function
       casadi_int sz_arg;
@@ -1735,7 +1749,7 @@ void quadNLP::update_structure() {
   //           << iRow_mat_relaxed_[COMPLEX][JAC].size() << std::endl;
   // std::cout << "jCol_mat_relaxed_[sys_id][JAC].size() = "
   //           << jCol_mat_relaxed_[COMPLEX][JAC].size() << std::endl;
-  // std::cout << "nnz_mat_ = " << nnz_mat_ << std::endl;
+  std::cout << "nnz_mat_ = " << nnz_mat_ << std::endl;
 
   compute_nnz_jac_g();
   compute_nnz_h();
@@ -1747,9 +1761,9 @@ void quadNLP::update_structure() {
   // std::cout << "sys_id_sch = " << sys_id_schedule_.transpose() <<
   // std::endl; std::cout << "n_vec_ =    " << n_vec_.transpose() << std::endl;
   // std::cout << "n_slack_vec_ = " << n_slack_vec_.transpose() << std::endl;
-  // std::cout << "g_vec_ =      " << g_vec_.transpose() << std::endl;
+  std::cout << "g_vec_ =      " << g_vec_.transpose() << std::endl;
   // std::cout << "g_vec_.sum() = " << g_vec_.sum() << std::endl;
-  // std::cout << "g_slack_vec_ = " << g_slack_vec_.transpose() << std::endl;
+  std::cout << "g_slack_vec_ = " << g_slack_vec_.transpose() << std::endl;
   // std::cout << "g_vec_.sum() + n_vars_slack_ = " << g_vec_.sum() +
   // n_vars_slack_
   //           << std::endl;
