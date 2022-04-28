@@ -24,6 +24,13 @@
 
 using namespace Ipopt;
 
+enum SystemID {
+  LEG,
+  TAIL,
+};
+
+enum FunctionID { FUNC, JAC, HESS };
+
 class quadNLP : public TNLP {
  public:
   // Horizon length, state dimension, input dimension, and constraints dimension
@@ -104,28 +111,26 @@ class quadNLP : public TNLP {
   // Time duration to the next plan index
   double first_element_duration_;
 
-  decltype(eval_g_leg_work) *eval_g_work_;
-  decltype(eval_g_leg_incref) *eval_g_incref_;
-  decltype(eval_g_leg_checkout) *eval_g_checkout_;
-  decltype(eval_g_leg) *eval_g_;
-  decltype(eval_g_leg_release) *eval_g_release_;
-  decltype(eval_g_leg_decref) *eval_g_decref_;
+  /// Declare the number of possible system ids (must match size of SystemID
+  /// enum)
+  static const int num_sys_id_ = 2;
 
-  decltype(eval_hess_g_leg_work) *eval_hess_g_work_;
-  decltype(eval_hess_g_leg_incref) *eval_hess_g_incref_;
-  decltype(eval_hess_g_leg_checkout) *eval_hess_g_checkout_;
-  decltype(eval_hess_g_leg) *eval_hess_g_;
-  decltype(eval_hess_g_leg_release) *eval_hess_g_release_;
-  decltype(eval_hess_g_leg_decref) *eval_hess_g_decref_;
-  decltype(eval_hess_g_leg_sparsity_out) *eval_hess_g_sparsity_out_;
+  /// Declare the number of possible function ids (must match size of FunctionID
+  /// enum)
+  static const int num_func_id_ = 3;
 
-  decltype(eval_jac_g_leg_work) *eval_jac_g_work_;
-  decltype(eval_jac_g_leg_incref) *eval_jac_g_incref_;
-  decltype(eval_jac_g_leg_checkout) *eval_jac_g_checkout_;
-  decltype(eval_jac_g_leg) *eval_jac_g_;
-  decltype(eval_jac_g_leg_release) *eval_jac_g_release_;
-  decltype(eval_jac_g_leg_decref) *eval_jac_g_decref_;
-  decltype(eval_jac_g_leg_sparsity_out) *eval_jac_g_sparsity_out_;
+  /// System type id for indexing casadi functions
+  int sys_id_;
+
+  // Maps for casadi functions
+  std::vector<std::vector<decltype(eval_g_leg) *>> eval_vec_;
+  std::vector<std::vector<decltype(eval_g_leg_work) *>> eval_work_vec_;
+  std::vector<std::vector<decltype(eval_g_leg_incref) *>> eval_incref_vec_;
+  std::vector<std::vector<decltype(eval_g_leg_decref) *>> eval_decref_vec_;
+  std::vector<std::vector<decltype(eval_g_leg_checkout) *>> eval_checkout_vec_;
+  std::vector<std::vector<decltype(eval_g_leg_release) *>> eval_release_vec_;
+  std::vector<std::vector<decltype(eval_g_leg_sparsity_out) *>>
+      eval_sparsity_vec_;
 
   /** Default constructor */
   quadNLP(int type, int N, int n, int m, double dt, double mu,
@@ -209,6 +214,11 @@ class quadNLP : public TNLP {
       const Eigen::VectorXd &ground_height,
       const double &first_element_duration_, const bool &same_plan_index,
       const bool &init);
+
+  /**
+   * @brief Load the casadi function pointers into map member vars
+   */
+  void loadCasadiFuncs();
 
   //@}
 
