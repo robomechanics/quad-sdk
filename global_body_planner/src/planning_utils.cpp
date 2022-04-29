@@ -1,10 +1,5 @@
 #include "global_body_planner/planning_utils.h"
-
-#include "quad_utils/matplotlibcpp.h"
-
 namespace planning_utils {
-
-namespace plt = matplotlibcpp;
 
 State fullStateToState(const FullState &full_state) {
   State state;
@@ -142,14 +137,14 @@ void plotYaw(std::vector<double> interp_t,
   }
 
   // plt::clf();
-  plt::ion();
-  plt::named_plot("yaw", interp_t, yaw);
-  plt::named_plot("yaw rate", interp_t, yaw_rate);
-  plt::xlabel("t");
-  plt::ylabel("yaw");
-  plt::legend();
-  plt::show();
-  plt::pause(0.001);
+  // plt::ion();
+  // plt::named_plot("yaw", interp_t, yaw);
+  // plt::named_plot("yaw rate", interp_t, yaw_rate);
+  // plt::xlabel("t");
+  // plt::ylabel("yaw");
+  // plt::legend();
+  // plt::show();
+  // plt::pause(0.001);
 }
 
 double poseDistance(const State &s1, const State &s2) {

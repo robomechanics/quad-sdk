@@ -16,7 +16,6 @@
 
 #include "IpIpoptApplication.hpp"
 #include "nmpc_controller/quad_nlp.h"
-#include "quad_utils/matplotlibcpp.h"
 
 //! NMPC controller ROS node
 /*!
