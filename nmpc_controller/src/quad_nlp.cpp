@@ -222,7 +222,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   // Load knee constraint bounds
   constraint_size = num_feet_;
   g_min_complex_hard_.segment(current_idx, constraint_size).fill(-2e19);
-  g_max_complex_hard_.segment(current_idx, constraint_size).fill(0.05);
+  g_max_complex_hard_.segment(current_idx, constraint_size).fill(0.1);
   g_min_complex_soft_.segment(current_null_idx, constraint_size).fill(-2e19);
   g_max_complex_soft_.segment(current_null_idx, constraint_size).fill(-0.05);
   current_idx += constraint_size;
@@ -414,7 +414,8 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
 
       bool add_terrain_height_constraint = false;
       if (i >= 1 && i < N_ - 2) {
-        add_terrain_height_constraint = !constrain_feet &&
+        add_terrain_height_constraint = use_terrain_constraint &&
+                                        !constrain_feet &&
                                         contact_sequence_(j, i + 2) == 0 &&
                                         contact_sequence_(j, i - 1) == 0;
       }
@@ -455,6 +456,13 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
         get_primal_constraint_vals(g_u_matrix, i)(g_simple_ - 4 + j, 0) = -0.02;
       }
     }
+
+    std::cout << "i = " << i << std::endl;
+    std::cout << "Contact schedule = " << contact_sequence_.col(i) << std::endl;
+    std::cout << "get_primal_constraint_vals(g_l_matrix, i) = "
+              << get_primal_constraint_vals(g_l_matrix, i) << std::endl;
+    std::cout << "get_primal_constraint_vals(g_u_matrix, i) = "
+              << get_primal_constraint_vals(g_u_matrix, i) << std::endl;
 
     // Panic variable bound
     get_slack_state_var(x_l_matrix, i).fill(0);

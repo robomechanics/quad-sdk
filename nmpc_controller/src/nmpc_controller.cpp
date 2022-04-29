@@ -154,7 +154,7 @@ NMPCController::NMPCController(int type) {
   // app_->Options()->SetIntegerValue("max_iter", 100);
   // app_->Options()->SetStringValue("print_timing_statistics", "yes");
   app_->Options()->SetStringValue("linear_solver", "ma57");
-  app_->Options()->SetIntegerValue("print_level", 0);
+  app_->Options()->SetIntegerValue("print_level", 5);
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   // app_->Options()->SetStringValue("mu_strategy", "adaptive");
   // app_->Options()->SetStringValue("nlp_scaling_method", "none");
@@ -426,6 +426,7 @@ bool NMPCController::computePlan(
         }
       }
     }
+    std::cout << "Done evaluating constraints" << std::endl;
 
     std::cout << "Evaluating lifted trajectory" << std::endl;
     Eigen::VectorXi constr_vals =
