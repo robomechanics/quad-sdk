@@ -385,7 +385,7 @@ void RVizInterface::footPlanContinuousCallback(
     foot_paths[j].header.frame_id = map_frame_;
 
     for (int i = 0; i < msg->states.size(); i++) {
-    
+      
       geometry_msgs::PoseStamped foot;
       foot.pose.position.x = msg->states[i].feet[j].position.x;
       foot.pose.position.y = msg->states[i].feet[j].position.y;

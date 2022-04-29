@@ -17,9 +17,9 @@ TerrainMapPublisher::TerrainMapPublisher(ros::NodeHandle nh)
   nh.param<double>("terrain_map_publisher/obstacle_height", obstacle_.height, 0.5);
   nh.param<double>("terrain_map_publisher/obstacle_radius", obstacle_.radius, 1.0);
   nh.param<double>("terrain_map_publisher/step1_x", step1_.x, 4.0);
-  nh.param<double>("terrain_map_publisher/step1_height", step1_.height, 0.3);
+  nh.param<double>("terrain_map_publisher/step1_height", step1_.height, 0.0);
   nh.param<double>("terrain_map_publisher/step2_x", step2_.x, 4.0);
-  nh.param<double>("terrain_map_publisher/step2_height", step2_.height, 0.3);
+  nh.param<double>("terrain_map_publisher/step2_height", step2_.height, 0.0);
   nh.param<double>("terrain_map_publisher/resolution", resolution_, 0.2);
   nh.param<double>("terrain_map_publisher/update_rate", update_rate_, 10);
   nh.param<std::string>("terrain_map_publisher/map_data_source", map_data_source_, "internal");
@@ -47,9 +47,9 @@ void TerrainMapPublisher::updateParams() {
   nh_.param<double>("terrain_map_publisher/obstacle_height", obstacle_.height, 0.5);
   nh_.param<double>("terrain_map_publisher/obstacle_radius", obstacle_.radius, 1.0);
   nh_.param<double>("terrain_map_publisher/step1_x", step1_.x, 4.0);
-  nh_.param<double>("terrain_map_publisher/step1_height", step1_.height, 0.3);
+  nh_.param<double>("terrain_map_publisher/step1_height", step1_.height, 0.0);
   nh_.param<double>("terrain_map_publisher/step2_x", step2_.x, 6.0);
-  nh_.param<double>("terrain_map_publisher/step2_height", step2_.height, -0.3);
+  nh_.param<double>("terrain_map_publisher/step2_height", step2_.height, 0.0);
 }
 
 void TerrainMapPublisher::createMap() {

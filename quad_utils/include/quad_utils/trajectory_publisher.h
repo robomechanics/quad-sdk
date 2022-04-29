@@ -5,6 +5,7 @@
 #include <visualization_msgs/MarkerArray.h>
 #include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/MultiFootPlanContinuous.h>
+#include <quad_msgs/MultiFootPlanDiscrete.h>
 #include <quad_msgs/FootState.h>
 #include <quad_msgs/RobotState.h>
 #include <quad_msgs/RobotStateTrajectory.h>
@@ -98,6 +99,12 @@ private:
   /// ROS subscriber for the swing leg plan
   ros::Subscriber multi_foot_plan_continuous_sub_;
 
+  /// ROS subscriber for the swing leg plan
+  ros::Publisher multi_foot_plan_continuous_pub_;
+
+  /// ROS subscriber for the swing leg plan
+  ros::Publisher multi_foot_plan_discrete_pub_;
+
   /// ROS subscriber for the robot state data
   ros::Subscriber ground_truth_state_sub_;
 
@@ -113,7 +120,10 @@ private:
   /// Vector of body states to store the body plan
   quad_msgs::RobotPlan body_plan_msg_;
 
-  /// Vector of body states to store the body plan
+  /// Vector of foot states to store the foot plan
+  quad_msgs::MultiFootPlanDiscrete multi_foot_plan_discrete_msg_;
+
+  /// Vector of foot states to store the foot plan
   quad_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
 
   /// Vector of times corresponding to the trajectory states
@@ -155,6 +165,8 @@ private:
   /// Flag for beginning of publishing trajectory messages
 
   ros::Time start_time_;
+
+  quad_msgs::MultiFootState foot_state_temp_;
 
 };
 

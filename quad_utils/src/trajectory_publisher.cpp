@@ -4,13 +4,15 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string body_plan_topic, foot_plan_continuous_topic, 
+  std::string body_plan_topic, foot_plan_continuous_topic, foot_plan_discrete_topic,
     trajectory_topic, trajectory_state_topic, ground_truth_state_topic;
 
   nh.param<std::string>("topics/global_plan", 
     body_plan_topic, "/body_plan");
   nh.param<std::string>("topics/foot_plan_continuous", 
     foot_plan_continuous_topic, "/foot_plan_continuous");
+  nh.param<std::string>("topics/foot_plan_discrete", 
+    foot_plan_discrete_topic, "/foot_plan_discrete");
 
   nh.param<std::string>("topics/state/trajectory", 
     trajectory_state_topic, "/state/trajectory");
@@ -30,8 +32,8 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
   // Setup subs and pubs
   body_plan_sub_ = nh_.subscribe(body_plan_topic,1,
     &TrajectoryPublisher::robotPlanCallback, this);
-  multi_foot_plan_continuous_sub_ = nh_.subscribe(foot_plan_continuous_topic,1,
-    &TrajectoryPublisher::multiFootPlanContinuousCallback, this);
+  // multi_foot_plan_continuous_sub_ = nh_.subscribe(foot_plan_continuous_topic,1,
+  //   &TrajectoryPublisher::multiFootPlanContinuousCallback, this);
   ground_truth_state_sub_ = nh_.subscribe(ground_truth_state_topic,1,
     &TrajectoryPublisher::robotStateCallback, this);
 
@@ -40,8 +42,16 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
   trajectory_pub_ = nh_.advertise<quad_msgs::RobotStateTrajectory>
     (trajectory_topic,1);
 
+  multi_foot_plan_continuous_pub_ = nh_.advertise<quad_msgs::MultiFootPlanContinuous>
+    (foot_plan_continuous_topic,1);
+
+  multi_foot_plan_discrete_pub_ = nh_.advertise<quad_msgs::MultiFootPlanDiscrete>
+    (foot_plan_discrete_topic,1);
+
   import_traj_ = false;
   update_flag_ = true;
+
+  foot_state_temp_.feet.resize(4);
 
   start_time_ = ros::Time::now();
 }
@@ -94,19 +104,14 @@ void TrajectoryPublisher::importTrajectory() {
   traj_msg_.header.stamp = ros::Time::now();
 
   // Load the desired values into traj_msg;
-  std::string package_path = ros::package::getPath("spirit_utils");
+  std::string package_path = ros::package::getPath("quad_utils");
   std::vector<std::vector<double> > trajectory_data_;
   std::vector<std::vector<double> > temp_trajectory_data_;
 
   for (int i = 0; i < traj_name_list_.size(); i++) {
 
     std::cout << traj_name_list_.at(i) << std::endl;
-// x = m.M[15]
-// y = m.M[16]
-// z = m.M[17]
-// X = m.M[18]
-// Y = m.M[19]
-// Z = m.M[20]
+
     if (i == 0) {
       trajectory_data_ = loadCSV(package_path + "/data/TrajectoryData/" + traj_name_list_.at(i) + ".csv");
     } else {
@@ -131,34 +136,43 @@ void TrajectoryPublisher::importTrajectory() {
   }
 
   t_traj_ = trajectory_data_.at(1);
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  for (int ii = 0; ii < t_traj_.size(); ii++) {
+    t_traj_[ii] = t_traj_[ii]*10.0;
+  }
+
+  quad_utils::QuadKD kinematics;
+  tf2::Quaternion q2;
+  multi_foot_plan_continuous_msg_.states.resize(t_traj_.size());
+  multi_foot_plan_discrete_msg_.feet.resize(4);
+
+  multi_foot_plan_discrete_msg_.header.frame_id = map_frame_;
+  multi_foot_plan_discrete_msg_.header.stamp = ros::Time::now();
 
   // Add states to the traj message
   for (int i = 0; i < t_traj_.size(); i++) {
 
     // Declare new state message and set timestamp localized to first message
-    spirit_msgs::RobotState state;
+    quad_msgs::RobotState state;
     state.header.frame_id = map_frame_;
     state.header.stamp = traj_msg_.header.stamp + ros::Duration(t_traj_[i]);
 
-    state.full_trajectory = true;
-
-    tf2::Quaternion q2;
     q2.setRPY(trajectory_data_.at(18).at(i), trajectory_data_.at(19).at(i), trajectory_data_.at(20).at(i));
     q2.normalize();
 
-    state.body.pose.pose.position.x = trajectory_data_.at(15).at(i);
-    state.body.pose.pose.position.y = trajectory_data_.at(16).at(i);
-    state.body.pose.pose.position.z = trajectory_data_.at(17).at(i);
-    state.body.pose.pose.orientation.w = q2.w();
-    state.body.pose.pose.orientation.x = q2.x();
-    state.body.pose.pose.orientation.y = q2.y();
-    state.body.pose.pose.orientation.z = q2.z();
-    state.body.twist.twist.linear.x = trajectory_data_.at(33).at(i);
-    state.body.twist.twist.linear.y = trajectory_data_.at(34).at(i);
-    state.body.twist.twist.linear.z = trajectory_data_.at(35).at(i);
-    state.body.twist.twist.angular.x = trajectory_data_.at(36).at(i);
-    state.body.twist.twist.angular.y = trajectory_data_.at(37).at(i);
-    state.body.twist.twist.angular.z = trajectory_data_.at(38).at(i);
+    state.body.pose.position.x = trajectory_data_.at(15).at(i);
+    state.body.pose.position.y = trajectory_data_.at(16).at(i);
+    state.body.pose.position.z = trajectory_data_.at(17).at(i);
+    state.body.pose.orientation.w = q2.w();
+    state.body.pose.orientation.x = q2.x();
+    state.body.pose.orientation.y = q2.y();
+    state.body.pose.orientation.z = q2.z();
+    state.body.twist.linear.x = trajectory_data_.at(33).at(i);
+    state.body.twist.linear.y = trajectory_data_.at(34).at(i);
+    state.body.twist.linear.z = trajectory_data_.at(35).at(i);
+    state.body.twist.angular.x = trajectory_data_.at(36).at(i);
+    state.body.twist.angular.y = trajectory_data_.at(37).at(i);
+    state.body.twist.angular.z = trajectory_data_.at(38).at(i);
 
     state.joints.name = {"8", "0", "1", "9","2","3","10","4","5","11","6","7"};
 
@@ -169,10 +183,53 @@ void TrajectoryPublisher::importTrajectory() {
       state.joints.effort.push_back(trajectory_data_.at(57 + j).at(i));
     }
 
-    // Add this state to the message
-    traj_msg_.states.push_back(state);
+    // get foot data from joints
+    quad_utils::fkRobotState(kinematics,state);
 
+    for (int k = 0; k<4; k++) {
+      // std::cout << sqrt(pow(trajectory_data_.at(93 + k*3).at(i),2.0) + pow(trajectory_data_.at(94 + k*3).at(i),2.0) + pow(trajectory_data_.at(95 + k*3).at(i),2.0)) << std::endl;
+      if (sqrt(pow(trajectory_data_.at(93 + k*3).at(i),2.0) + pow(trajectory_data_.at(94 + k*3).at(i),2.0) + pow(trajectory_data_.at(95 + k*3).at(i),2.0)) < 1e-3) {
+        // std::cout << "state.feet" << std::endl;
+        state.feet.feet[k].contact = false;
+      } else {
+        state.feet.feet[k].contact = true;
+      }
+
+      // std::cout << "Foot Contact States" << std::endl;
+
+      // std::cout << state.feet << std::endl;
+    }
+
+    traj_msg_.states.push_back(state);
+    
+    if (i == 0) {
+      multi_foot_plan_continuous_msg_.states[i].header = multi_foot_plan_continuous_msg_.header;
+      multi_foot_plan_continuous_msg_.states[i].header.stamp = multi_foot_plan_continuous_msg_.header.stamp;
+      multi_foot_plan_continuous_msg_.states[i].traj_index = i;
+    } 
+
+    for (int k = 0; k<4; k++) {
+      quad_msgs::FootState foot_state_msg;
+
+      foot_state_msg.header = multi_foot_plan_continuous_msg_.header;
+      foot_state_msg.traj_index = multi_foot_plan_continuous_msg_.states[i].traj_index;
+      foot_state_msg.position = state.feet.feet[k].position;
+
+      foot_state_msg.velocity.x = trajectory_data_.at(81 + k*3).at(i);
+      foot_state_msg.velocity.y = trajectory_data_.at(82 + k*3).at(i);
+      foot_state_msg.velocity.z = trajectory_data_.at(83 + k*3).at(i);
+
+      // std::cout << sqrt(pow(foot_state_msg.velocity.x,2.0) + pow(foot_state_msg.velocity.y,2.0) + pow(foot_state_msg.velocity.z,2.0)) << std::endl;
+      if (sqrt(pow(foot_state_msg.velocity.x,2.0) + pow(foot_state_msg.velocity.y,2.0) + pow(foot_state_msg.velocity.z,2.0)) < 1e-3) {
+        multi_foot_plan_discrete_msg_.feet[k].footholds.push_back(foot_state_msg);
+      } 
+
+      multi_foot_plan_continuous_msg_.states[i].feet.push_back(foot_state_msg);
+    }
   }
+
+  std::cout << multi_foot_plan_discrete_msg_.feet.size() << std::endl;
+  std::cout << multi_foot_plan_discrete_msg_.feet[0].footholds.size() << std::endl;
 
   import_traj_ = true;
   update_flag_ = true;
@@ -241,7 +298,6 @@ void TrajectoryPublisher::updateTrajectory() {
   traj_msg_.header.stamp = body_plan_msg_.header.stamp;
 
   quad_utils::QuadKD kinematics;
-  
 
   // Add states to the traj message
   for (int i = 0; i < t_traj_.size(); i++) {
@@ -275,7 +331,6 @@ void TrajectoryPublisher::updateTrajectory() {
     traj_msg_.states.push_back(state);
 
   }
-  
 
   // timer.report();
 }
@@ -294,31 +349,321 @@ void TrajectoryPublisher::publishTrajectoryState() {
     return;
   }
     
-  // Get the current duration since the beginning of the plan
-  // ros::Duration t_duration = ros::Time::now() - body_plan_msg_.header.stamp;
+  // Get the current duration since the beginning of the plan  quad_utils::QuadKD kinematics;
+  
+  // get foot data from joints
+  // quad_utils::fkRobotState(kinematics,state);g_.header.stamp;
 
   ros::Duration t_duration = ros::Time::now() - start_time_;
 
   // Mod by trajectory duration
   double t = playback_speed_*t_duration.toSec();
   double t_mod = fmod(t, t_traj_.back()); 
-  
-  // Interpolate to get the correct state and publish it
-  quad_msgs::RobotState interp_state = quad_utils::interpRobotStateTraj(traj_msg_,t);
-  // quad_msgs::RobotState interp_state = quad_utils::interpRobotStateTraj(traj_msg_,t_mod);
 
-  // If importing trajectory, need to set flag
-  if (traj_source_.compare("import")==0) {
-    if (t_duration.toSec() <= t_traj_.back()) {
-      interp_state.full_trajectory = true;
-    }
-    // interp_state.full_trajectory = true;
+  bool loop_flag = true;
+
+  double window_size;
+  double time_start = 0;
+  double time_end = 0;
+
+  quad_msgs::RobotState interp_state;
+
+  // Interpolate to get the correct state and publish it
+  if (loop_flag == false) {
+    time_start = t;
+    time_end = t_traj_.back();
+
+    interp_state = quad_utils::interpRobotStateTraj(traj_msg_,t);
+  } else {
+    time_start = t_mod; // - (time_window/window_size);
+    time_end = t_traj_.back();
+    interp_state = quad_utils::interpRobotStateTraj(traj_msg_,t_mod);
   }
 
   trajectory_state_pub_.publish(interp_state);
 
-}
+  quad_utils::QuadKD kinematics;
 
+  quad_utils::fkRobotState(kinematics,interp_state);
+
+  // Only do swing legs...
+
+  // double window_dt = 0.01;
+  // int window_count[4];
+  
+  // for (int i = 0; i < 4; i++) {
+  //   window_count[i] = -1;
+  // }
+
+  // double time_current;
+
+  // for (int k = 0; k<4; k++) {
+
+  //   bool contact = false;
+
+  //   time_current = time_start;
+
+  //   while (contact == false) {
+  //     window_count[k]++;
+  //     time_current = time_current + window_dt;
+
+  //     quad_msgs::RobotState interp_state_temp = quad_utils::interpRobotStateTraj(traj_msg_,time_current);
+  //     quad_utils::fkRobotState(kinematics,interp_state_temp);
+
+  //     contact = interp_state_temp.feet.feet[k].contact;
+  //   }
+  // }
+
+  // int max_count = 0;
+  // for (int i = 0; i < 4; i++) {
+  //   if (window_count[i] > max_count) {
+  //     max_count = window_count[i];
+  //   }
+  // }
+
+  // window_size = max_count;
+
+  // if (window_size == 0) {
+  //   window_size = 1;
+  // } 
+
+  // for (int i = 0; i < 4; i++) {
+  //   if (window_count[i] == 0) {
+  //     window_count[i] = 1;
+  //   }
+  // }
+
+  // multi_foot_plan_continuous_msg_.states.resize(window_size);
+
+  // time_current = 0;
+
+  // // // Update header for multi foot state if first time through
+  // for (int i = 0; i < window_size; i++) {
+  //   time_current = time_start + i*window_dt;
+
+  //   if (i == 0) {
+  //     multi_foot_plan_continuous_msg_.states[i].header = multi_foot_plan_continuous_msg_.header;  // quad_utils::QuadKD kinematics;
+  //     multi_foot_plan_continuous_msg_.states[i].header.stamp = multi_foot_plan_continuous_msg_.header.stamp;
+  //     multi_foot_plan_continuous_msg_.states[i].traj_index = i;
+  //   } 
+
+  //   multi_foot_plan_continuous_msg_.states[i].feet.clear();
+
+  //   quad_msgs::RobotState interp_state_temp = quad_utils::interpRobotStateTraj(traj_msg_,time_current);
+  //   quad_utils::fkRobotState(kinematics,interp_state_temp);
+
+  //   for (int k = 0; k<4; k++) {
+  //     if (i <= window_count[k]) {
+
+  //       quad_msgs::FootState foot_state_msg;
+
+  //       foot_state_msg.header = multi_foot_plan_continuous_msg_.header;
+  //       foot_state_msg.traj_index = multi_foot_plan_continuous_msg_.states[i].traj_index;
+
+  //       foot_state_msg.position = interp_state_temp.feet.feet[k].position;
+
+  //       multi_foot_plan_continuous_msg_.states[i].feet.push_back(foot_state_msg);
+
+  //       foot_state_temp_.feet[k] = foot_state_msg;
+
+  //     } else {
+
+  //       multi_foot_plan_continuous_msg_.states[i].feet.push_back(foot_state_temp_.feet[k]);
+
+  //     }
+  //   }
+  // }
+
+
+
+
+
+
+
+
+
+
+  // Do continuous for a time window...
+
+  // // Interpolate to get the correct state and publish it
+  // if (loop_flag == false) {
+  //   time_start = t;
+  //   time_end = t + (time_window/window_size);
+
+  //   if (time_end > t_traj_.back()) {
+  //     time_end = t_traj_.back();
+  //     time_start = t_traj_.back() - time_window;
+  //   }
+  //   interp_state = quad_utils::interpRobotStateTraj(traj_msg_,t);
+  // } else {
+  //   time_start = t_mod; // - (time_window/window_size);
+  //   time_end = t_mod + (time_window/window_size);
+  //   interp_state = quad_utils::interpRobotStateTraj(traj_msg_,t_mod);
+  // }
+
+  // trajectory_state_pub_.publish(interp_state);
+
+  // quad_utils::QuadKD kinematics;
+
+  // multi_foot_plan_continuous_msg_.states.resize(window_size);
+
+  // double time_current = 0;
+
+  // // // Update header for multi foot state if first time through
+  // for (int i = 0; i < window_size; i++) {
+  //   time_current = time_start + i*(time_window/window_size);
+
+  //   if (i == 0) {
+  //     multi_foot_plan_continuous_msg_.states[i].header = multi_foot_plan_continuous_msg_.header;  // quad_utils::QuadKD kinematics;
+  //     multi_foot_plan_continuous_msg_.states[i].header.stamp = multi_foot_plan_continuous_msg_.header.stamp;
+  //     multi_foot_plan_continuous_msg_.states[i].traj_index = i;
+  //   } 
+
+  //   multi_foot_plan_continuous_msg_.states[i].feet.clear();
+
+  //   quad_msgs::RobotState interp_state_temp = quad_utils::interpRobotStateTraj(traj_msg_,time_current);
+  //   quad_utils::fkRobotState(kinematics,interp_state_temp);
+
+  //   for (int k = 0; k<4; k++) {
+  //     quad_msgs::FootState foot_state_msg;
+
+  //     foot_state_msg.header = multi_foot_plan_continuous_msg_.header;
+  //     foot_state_msg.traj_index = multi_foot_plan_continuous_msg_.states[i].traj_index;
+
+  //     foot_state_msg.position = interp_state_temp.feet.feet[k].position;
+
+  //     multi_foot_plan_continuous_msg_.states[i].feet.push_back(foot_state_msg);
+  //   }
+  // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // std::cout << multi_foot_plan_continuous_msg_.states.size() << std::endl;
+
+  // // multi_foot_plan_continuous_msg_.states.resize(0);
+
+  // // multi_foot_plan_continuous_msg_.states.clear();
+
+  // double time_current = 0;
+
+  // for (int k = 0; k<4; k++) {
+  //   bool grf = false;
+  //   int count = -1;
+  //   double step = 0.01;
+
+  //   time_current = time_start - step;
+
+  //   while (grf == false) {
+  //     count++;
+  //     time_current += step;
+  //     if (time_current >= time_end) {
+  //       break;
+  //     }
+
+  //     quad_msgs::RobotState interp_state_temp = quad_utils::interpRobotStateTraj(traj_msg_,time_current);
+  //     quad_utils::fkRobotState(kinematics,interp_state_temp);
+
+  //     grf = interp_state_temp.feet.feet[k].contact;
+
+  //     if (grf == true) {
+  //       break;
+  //     }
+
+  //     quad_msgs::MultiFootState tempFootState;
+  //     tempFootState.feet.resize(4);
+
+  //     if (count == 0 && k == 0) {
+  //       tempFootState.header = multi_foot_plan_continuous_msg_.header;  // quad_utils::QuadKD kinematics;
+  //       tempFootState.header.stamp = multi_foot_plan_continuous_msg_.header.stamp;
+  //       tempFootState.traj_index = count;
+  //     } 
+
+  //     // std::cout << "testing..." << std::endl;
+  //     // std::cout << count << std::endl;
+  //     // std::cout << multi_foot_plan_continuous_msg_ << std::endl;
+
+  //     if (multi_foot_plan_continuous_msg_.states.size() < count) {
+  //       // std::cout << "appending new states" << std::endl;
+  //       // std::cout << count << k << multi_foot_plan_continuous_msg_.states.size() << std::endl;
+
+  //       tempFootState.feet[k].position = interp_state_temp.feet.feet[k].position;
+
+  //       multi_foot_plan_continuous_msg_.states.push_back(tempFootState);
+  //       // std::cout << count << k << multi_foot_plan_continuous_msg_.states.size() << std::endl;
+  //     } 
+  //     // else {
+  //     //   std::cout << "writing to current states" << std::endl;
+  //     //   std::cout << count << k << multi_foot_plan_continuous_msg_.states.size() << std::endl;
+
+  //     //   multi_foot_plan_continuous_msg_.states[count].feet[k].position = interp_state_temp.feet.feet[k].position;
+  //     //   std::cout << count << k << multi_foot_plan_continuous_msg_.states.size() << std::endl;
+  //     // }
+
+  //     // multi_foot_plan_continuous_msg_.states[count].feet[k].position = interp_state_temp.feet.feet[k].position;
+
+
+  //     // try {
+  //     //   std::cout << "trying to set array index..." << std::endl;
+  //     //   multi_foot_plan_continuous_msg_.states[count].feet[k].position = interp_state_temp.feet.feet[k].position;
+  //     //   std::cout << multi_foot_plan_continuous_msg_.states[count].feet[k].position << std::endl;
+  //     // } catch (...) {
+  //     //   std::cout << "failed to set array index..." << std::endl;
+  //     //   tempFootState.feet[k].position = interp_state_temp.feet.feet[k].position;
+  //     //   multi_foot_plan_continuous_msg_.states.push_back(tempFootState);
+  //     //   std::cout << "added new array val..." << std::endl;
+  //     // }
+
+  //   }
+
+  // }
+
+
+  // // // Update header for multi foot state if first time through
+  // while (int i = 0; i < window_size; i++) {
+  //   time_current = time_start + i*(time_window/window_size);
+
+  //   if (i == 0) {
+  //     multi_foot_plan_continuous_msg_.states[i].header = multi_foot_plan_continuous_msg_.header;  // quad_utils::QuadKD kinematics;
+  //     multi_foot_plan_continuous_msg_.states[i].header.stamp = multi_foot_plan_continuous_msg_.header.stamp;
+  //     multi_foot_plan_continuous_msg_.states[i].traj_index = i;
+  //   } 
+
+  //   multi_foot_plan_continuous_msg_.states[i].feet.clear();
+
+  //   quad_msgs::RobotState interp_state_temp = quad_utils::interpRobotStateTraj(traj_msg_,time_current);
+  //   quad_utils::fkRobotState(kinematics,interp_state_temp);
+
+  //   for (int k = 0; k<4; k++) {
+  //     quad_msgs::FootState foot_state_msg;
+
+  //     foot_state_msg.header = multi_foot_plan_continuous_msg_.header;
+  //     foot_state_msg.traj_index = multi_foot_plan_continuous_msg_.states[i].traj_index;
+
+  //     foot_state_msg.position = interp_state_temp.feet.feet[k].position;
+
+  //     multi_foot_plan_continuous_msg_.states[i].feet.push_back(foot_state_msg);
+  //   }
+  // }
+
+
+  multi_foot_plan_continuous_pub_.publish(multi_foot_plan_continuous_msg_);
+
+  multi_foot_plan_discrete_pub_.publish(multi_foot_plan_discrete_msg_);
+
+}
 
 void TrajectoryPublisher::spin() {
   ros::Rate r(update_rate_);
