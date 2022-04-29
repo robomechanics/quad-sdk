@@ -1,4 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classGraphClass.html" title="A general directed graph class. " alt="" coords="5,5,101,32"/>
-<area shape="rect" id="node2" href="$classPlannerClass.html" title="A directed graph class with supplemental methods to aid in sample&#45;based planning. ..." alt="" coords="149,5,256,32"/>
+<area shape="rect" id="node1" href="$classHardwareInterface.html" title="Implements an abstract class for robot hardware interfaces." alt="" coords="5,5,135,32"/>
+<area shape="rect" id="node2" href="$classSpiritInterface.html" title="Hardware interface for the Spirit40 quadruped from Ghost Robotics." alt="" coords="183,5,285,32"/>
 </map>

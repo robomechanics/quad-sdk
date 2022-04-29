@@ -1,3 +1,4 @@
 <map id="LocalFootstepPlanner" name="LocalFootstepPlanner">
-<area shape="rect" id="node2" href="$classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling. " alt="" coords="25,5,147,32"/>
+<area shape="rect" id="node1" title="A local footstep planning class for quad." alt="" coords="5,95,155,121"/>
+<area shape="rect" id="node2" href="$classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling." alt="" coords="23,5,137,32"/>
 </map>

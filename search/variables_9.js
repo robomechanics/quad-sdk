@@ -1,14 +1,14 @@
 var searchData=
 [
-  ['joint_5fcontrol_5fpub_5f',['joint_control_pub_',['../classOpenLoopController.html#ab0abbe74918bd5a469e58bb134505e1b',1,'OpenLoopController']]],
-  ['joint_5fencoder_5fpub_5f',['joint_encoder_pub_',['../classMBLinkConverter.html#abbbe172e7eef31255f3014f765cf53b9',1,'MBLinkConverter::joint_encoder_pub_()'],['../classRobotProxy.html#a0d26cc0efbfd234dad1c09e5122196d5',1,'RobotProxy::joint_encoder_pub_()']]],
-  ['joint_5fencoder_5fsub_5f',['joint_encoder_sub_',['../classEKFEstimator.html#abea00262d71be9a3d1e8d57e87101490',1,'EKFEstimator::joint_encoder_sub_()'],['../classGroundTruthPublisher.html#adc83552aafbbd17689ff733087aecd64',1,'GroundTruthPublisher::joint_encoder_sub_()']]],
-  ['joint_5feps',['joint_eps',['../classspirit__utils_1_1SpiritKinematics.html#a4ddab2a65cea03eea9ef1d248232d58c',1,'spirit_utils::SpiritKinematics']]],
-  ['joint_5findices_5f',['joint_indices_',['../classMBLinkConverter.html#ac2eb5b25968826f1ec50d04409affe31',1,'MBLinkConverter']]],
-  ['joint_5fmax_5f',['joint_max_',['../classspirit__utils_1_1SpiritKinematics.html#acc11bdb27637f55385ed9b56cf113cac',1,'spirit_utils::SpiritKinematics']]],
-  ['joint_5fmin_5f',['joint_min_',['../classspirit__utils_1_1SpiritKinematics.html#ab1c8075eca4126baa6ff99534b81613a',1,'spirit_utils::SpiritKinematics']]],
-  ['joint_5fnames_5f',['joint_names_',['../classMBLinkConverter.html#aba592a4e42922af47933d01413825b39',1,'MBLinkConverter']]],
-  ['joint_5fstate_5fmsg_5ftime_5fdiff_5fmax_5f',['joint_state_msg_time_diff_max_',['../classEKFEstimator.html#aa78129153d7bcc537c5813693d35c4f7',1,'EKFEstimator']]],
-  ['joint_5furdfs_5f',['joint_urdfs_',['../classeffort__controllers_1_1SpiritController.html#ab6fe316aa79e3c5c67119b8041e8c29a',1,'effort_controllers::SpiritController']]],
-  ['joints_5forder_5f',['joints_order_',['../classGroundTruthPublisher.html#ad89e7fa1414b64f8f7751fe97d12e063',1,'GroundTruthPublisher']]]
+  ['joint_5fencoder_5fsub_5f_0',['joint_encoder_sub_',['../classEKFEstimator.html#abea00262d71be9a3d1e8d57e87101490',1,'EKFEstimator']]],
+  ['joint_5feps_1',['joint_eps',['../classquad__utils_1_1QuadKD.html#ae54823e6b42995d893a4daa68307cdde',1,'quad_utils::QuadKD']]],
+  ['joint_5fidx_5f_2',['joint_idx_',['../classJointController.html#a439e1f89345fd23a8d6ef1986f0146b8',1,'JointController']]],
+  ['joint_5findices_5f_3',['joint_indices_',['../classSpiritInterface.html#ad8e122a03a22e13d47ec5021ed7881a8',1,'SpiritInterface']]],
+  ['joint_5fmax_5f_4',['joint_max_',['../classquad__utils_1_1QuadKD.html#a18c9bb048b1b85c17df5b450e48397c7',1,'quad_utils::QuadKD']]],
+  ['joint_5fmin_5f_5',['joint_min_',['../classquad__utils_1_1QuadKD.html#a7ec3074f64da77b9025886cf2eb15e0a',1,'quad_utils::QuadKD']]],
+  ['joint_5fnames_5f_6',['joint_names_',['../classSpiritInterface.html#a95a65eacf059977d430ca905a309a70a',1,'SpiritInterface']]],
+  ['joint_5fstate_5fmsg_5ftime_5fdiff_5fmax_5f_7',['joint_state_msg_time_diff_max_',['../classEKFEstimator.html#aa78129153d7bcc537c5813693d35c4f7',1,'EKFEstimator']]],
+  ['joint_5fstate_5fpub_5f_8',['joint_state_pub_',['../classRobotDriver.html#a1e0e334f25d0d2c171d370f9b50da985',1,'RobotDriver']]],
+  ['joint_5ftorque_5f_9',['joint_torque_',['../classJointController.html#a2174736c91bede614e9aaca242937000',1,'JointController']]],
+  ['joint_5furdfs_5f_10',['joint_urdfs_',['../classeffort__controllers_1_1SpiritController.html#ab6fe316aa79e3c5c67119b8041e8c29a',1,'effort_controllers::SpiritController']]]
 ];

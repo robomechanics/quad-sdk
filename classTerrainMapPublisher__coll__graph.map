@@ -1,4 +1,5 @@
 <map id="TerrainMapPublisher" name="TerrainMapPublisher">
-<area shape="rect" id="node2" href="$structStep.html" title="Step" alt="" coords="13,5,64,32"/>
-<area shape="rect" id="node3" href="$structObstacle.html" title="Obstacle" alt="" coords="89,5,167,32"/>
+<area shape="rect" id="node1" title="A terrain map publishing class." alt="" coords="17,109,159,136"/>
+<area shape="rect" id="node2" href="$structObstacle.html" title=" " alt="" coords="5,5,80,32"/>
+<area shape="rect" id="node3" href="$structStep.html" title=" " alt="" coords="109,5,158,32"/>
 </map>

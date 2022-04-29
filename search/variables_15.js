@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['vel_5fsub_5f',['vel_sub_',['../classGroundTruthPublisher.html#a5370254745a47f131ff1576e321bc14f',1,'GroundTruthPublisher']]],
-  ['vertices',['vertices',['../classGraphClass.html#a4ce5071e5d6f7f58965d0babf0c05cba',1,'GraphClass']]],
-  ['vertices_5fgenerated_5finfo_5f',['vertices_generated_info_',['../classGlobalBodyPlanner.html#adfbd439f7eeadbf40694ba90bcd566e4',1,'GlobalBodyPlanner']]]
+  ['vertices_0',['vertices',['../classGraphClass.html#afa8940f27e5e92df7878ce8dc0cbb717',1,'GraphClass']]],
+  ['vertices_5fgenerated_5finfo_5f_1',['vertices_generated_info_',['../classGlobalBodyPlanner.html#adfbd439f7eeadbf40694ba90bcd566e4',1,'GlobalBodyPlanner']]]
 ];

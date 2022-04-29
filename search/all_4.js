@@ -1,12 +1,19 @@
 var searchData=
 [
-  ['derived',['Derived',['../structmatplotlibcpp_1_1detail_1_1is__callable__impl_3_01true_00_01T_01_4_1_1Derived.html',1,'matplotlibcpp::detail::is_callable_impl&lt; true, T &gt;']]],
-  ['discrete_5fbody_5fplan_5fpub_5f',['discrete_body_plan_pub_',['../classGlobalBodyPlanner.html#a9ea26e9a8e1c02818d9e84484565e267',1,'GlobalBodyPlanner']]],
-  ['discrete_5fbody_5fplan_5fsub_5f',['discrete_body_plan_sub_',['../classRVizInterface.html#a089f421ffd1885d3cc0dffc5cd8c5101',1,'RVizInterface']]],
-  ['discrete_5fbody_5fplan_5fviz_5fpub_5f',['discrete_body_plan_viz_pub_',['../classRVizInterface.html#a3d72b1323a242092c51c9e6ff08ede68',1,'RVizInterface']]],
-  ['discretebodyplancallback',['discreteBodyPlanCallback',['../classRVizInterface.html#a75caed0d4cb0419865704d05cc3af389',1,'RVizInterface']]],
-  ['dt_5f',['dt_',['../classGlobalBodyPlanner.html#aac85cd31171ed85023194ca018f256c3',1,'GlobalBodyPlanner::dt_()'],['../classInverseDynamics.html#aab0556cd474371ac9e2f0d06a4d01a7c',1,'InverseDynamics::dt_()'],['../classLocalFootstepPlanner.html#a3042d5de896f54fd9fd05f8df2617fad',1,'LocalFootstepPlanner::dt_()'],['../classLocalPlanner.html#a9c2ea984eab9f4f3237818a5ef0ab79d',1,'LocalPlanner::dt_()'],['../classMPCController.html#a402ed932ccdd1e9d8180b2dd3fe0183d',1,'MPCController::dt_()'],['../classQuadrupedMPC.html#a896532da376ed2fbd8b6691233755e93',1,'QuadrupedMPC::dt_()'],['../classTwistBodyPlanner.html#aa92998215c45c665e93739763994686f',1,'TwistBodyPlanner::dt_()']]],
-  ['dt_5fset_5f',['dt_set_',['../classQuadrupedMPC.html#ac964d0ddfb256bd73285655cd31889bd',1,'QuadrupedMPC']]],
-  ['dt_5fvec_5f',['dt_vec_',['../classQuadrupedMPC.html#a517203a974c570b109d20075d5426149',1,'QuadrupedMPC']]],
-  ['duty_5fcycles_5f',['duty_cycles_',['../classLocalFootstepPlanner.html#a6a7c20eda1edb6c9dc0d57b0c83c38a3',1,'LocalFootstepPlanner']]]
+  ['edges_0',['edges',['../classGraphClass.html#ab931f0784548afda6c934ac3b097cebd',1,'GraphClass']]],
+  ['ekfestimator_1',['EKFEstimator',['../classEKFEstimator.html',1,'EKFEstimator'],['../classEKFEstimator.html#acd7780ea743da4d88a1747e93df63c06',1,'EKFEstimator::EKFEstimator()']]],
+  ['elapsed_5ftotal_5f_2',['elapsed_total_',['../classRRTClass.html#a99c35415e1d65f84e87a8580ed893c65',1,'RRTClass']]],
+  ['eraseafterindex_3',['eraseAfterIndex',['../classGlobalBodyPlan.html#ad4afd45dcf69c1e9281e3d8814792207',1,'GlobalBodyPlan']]],
+  ['estimate_4',['ESTIMATE',['../classRVizInterface.html#a516b8c7675b132c0a3eb867f88f0d3e8',1,'RVizInterface']]],
+  ['estimate_5fbase_5ftf_5fbr_5f_5',['estimate_base_tf_br_',['../classRVizInterface.html#a4d63133ef60884854fc7ba7d4524f33f',1,'RVizInterface']]],
+  ['estimate_5fjoint_5fstates_5fviz_5fpub_5f_6',['estimate_joint_states_viz_pub_',['../classRVizInterface.html#a81204196af5c568247d22175d6824085',1,'RVizInterface']]],
+  ['eval_5ff_7',['eval_f',['../classquadNLP.html#a2aacbce070d98135f14dc9aa25ea7ac8',1,'quadNLP']]],
+  ['eval_5fg_8',['eval_g',['../classquadNLP.html#a2e4bbd10c5e43aefe6f011e48d04651e',1,'quadNLP']]],
+  ['eval_5fgrad_5ff_9',['eval_grad_f',['../classquadNLP.html#a08514913d00a4d482bc53ca180d8df8b',1,'quadNLP']]],
+  ['eval_5fh_10',['eval_h',['../classquadNLP.html#a205f57c88151e57dff0116d536b3a865',1,'quadNLP']]],
+  ['eval_5fjac_5fg_11',['eval_jac_g',['../classquadNLP.html#a6dc64d38088a2248d2dc9faa17a65ac4',1,'quadNLP']]],
+  ['example_12',['Example',['../classread__bag_1_1Example.html',1,'read_bag']]],
+  ['extend_13',['extend',['../classRRTClass.html#ac79092cec187c959d438b571c1059231',1,'RRTClass']]],
+  ['extractclosestpath_14',['extractClosestPath',['../classRRTConnectClass.html#a9b813306c86e1c8b4e6c12f14a363a5d',1,'RRTConnectClass']]],
+  ['extractpath_15',['extractPath',['../classRRTConnectClass.html#a781372149f3cc26e030a714cc348e030',1,'RRTConnectClass']]]
 ];

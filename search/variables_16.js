@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['walk_5fkd_5f',['walk_kd_',['../classOpenLoopController.html#a8ac4dee7d882b817f29bdba6c38538ee',1,'OpenLoopController']]],
-  ['walk_5fkp_5f',['walk_kp_',['../classOpenLoopController.html#a258cc55af4aede5b1a94a17df3160243',1,'OpenLoopController']]]
+  ['x_5fdata_5f_0',['x_data_',['../classFastTerrainMap.html#aa7ab9b4b21f4971ec64e00a936345b29',1,'FastTerrainMap']]],
+  ['x_5fdiff_5f_1',['x_diff_',['../classFastTerrainMap.html#ab79ece3d1ccd2394a63a76bde3703c74',1,'FastTerrainMap']]],
+  ['x_5fsize_5f_2',['x_size_',['../classFastTerrainMap.html#ab0320569ffaa039ea09b3d136aef5856',1,'FastTerrainMap']]]
 ];
