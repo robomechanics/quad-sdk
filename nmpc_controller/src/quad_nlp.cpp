@@ -231,7 +231,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   // Load motor model constraint bounds
   constraint_size = n_null_;
   g_min_complex_hard_.segment(current_idx, constraint_size).fill(-2e19);
-  g_max_complex_hard_.segment(current_idx, constraint_size).fill(0);
+  g_max_complex_hard_.segment(current_idx, constraint_size).fill(2e19);
   current_idx += constraint_size;
 
   // Update soft constraints
@@ -348,10 +348,6 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
   Eigen::Map<Eigen::VectorXd> g_l_matrix(g_l, m);
   Eigen::Map<Eigen::VectorXd> g_u_matrix(g_u, m);
 
-  // Current state bound
-  get_primal_state_var(x_l_matrix, 0) = x_current_;
-  get_primal_state_var(x_u_matrix, 0) = x_current_;
-
   for (int i = 0; i < N_ - 1; ++i) {
     // Inputs bound
     get_primal_control_var(x_l_matrix, i) = u_min_;
@@ -389,12 +385,12 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
     }
 
     // Add bounds if not covered by panic variables - JN Changes
-    // if (n_vec_[i + 1] > n_simple_) {
-    //   get_primal_state_var(x_l_matrix, i + 1).tail(n_null_) =
-    //       x_min_complex_hard_.tail(n_null_);
-    //   get_primal_state_var(x_u_matrix, i + 1).tail(n_null_) =
-    //       x_max_complex_hard_.tail(n_null_);
-    // }
+    if (n_vec_[i + 1] > n_simple_) {
+      get_primal_state_var(x_l_matrix, i + 1).tail(n_null_) =
+          x_min_complex_hard_.tail(n_null_);
+      get_primal_state_var(x_u_matrix, i + 1).tail(n_null_) =
+          x_max_complex_hard_.tail(n_null_);
+    }
 
     // Constraints bound - leave to enforce hard constraints
     get_primal_constraint_vals(g_l_matrix, i) =
@@ -415,6 +411,13 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
       bool remove_foot_dynamics =
           (!allow_foot_traj_modification) ||
           (sys_id_schedule_[i] == SIMPLE || contact_sequence_(j, i) == 1);
+
+      bool add_terrain_height_constraint = false;
+      if (i >= 1 && i < N_ - 2) {
+        add_terrain_height_constraint = !constrain_feet &&
+                                        contact_sequence_(j, i + 2) == 0 &&
+                                        contact_sequence_(j, i - 1) == 0;
+      }
 
       if (remove_foot_dynamics) {
         get_primal_constraint_vals(g_l_matrix, i)
@@ -446,10 +449,10 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
               .segment(3 * j + n_foot_ / 2, 3) =
               foot_vel_world_.block<1, 3>(i + 1, 3 * j);
         }
-      } else {
-        get_primal_foot_state_var(x_l_matrix, i + 1)(3 * j + 2, 0) =
-            terrain_.atPosition("z_inpainted",
-                                foot_pos_world_.block<1, 2>(i + 1, 3 * j));
+      }
+
+      if (add_terrain_height_constraint) {
+        get_primal_constraint_vals(g_u_matrix, i)(g_simple_ - 4 + j, 0) = -0.02;
       }
     }
 
@@ -471,6 +474,10 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
       get_slack_constraint_var(x_u_matrix, i).fill(2e19);
     }
   }
+
+  // Current state bound
+  get_primal_state_var(x_l_matrix, 0) = x_current_;
+  get_primal_state_var(x_u_matrix, 0) = x_current_;
 
   for (size_t i = 0; i < N_ - 1; i++) {
     // xmin
@@ -695,8 +702,24 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     pk[0] = (i == 0) ? first_element_duration_ : dt_;
     pk[1] = mu_;
     pk.segment(2, 12) = foot_pos_world_.row(i + 1);
-    pk.segment(14, 4).fill(0);
-    pk.segment(18, 12).fill(1);
+    if (use_terrain_constraint) {
+      for (int j = 0; j < num_feet_; j++) {
+        Eigen::Vector3d foot_pos =
+            get_primal_foot_state_var(w, i + 1).segment(3 * j, 3);
+
+        pk(14 + j) = terrain_.atPosition("z_inpainted", foot_pos.head<2>(),
+                                         interp_type_);
+        pk(18 + 3 * j) = terrain_.atPosition("normal_vectors_x",
+                                             foot_pos.head<2>(), interp_type_);
+        pk(19 + 3 * j) = terrain_.atPosition("normal_vectors_y",
+                                             foot_pos.head<2>(), interp_type_);
+        pk(20 + 3 * j) = terrain_.atPosition("normal_vectors_z",
+                                             foot_pos.head<2>(), interp_type_);
+      }
+    } else {
+      pk.segment(14, 4).fill(0);
+      pk.segment(18, 12).fill(1);
+    }
 
     // Set up the work function
     casadi_int sz_arg;
@@ -776,8 +799,24 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
       pk[0] = (i == 0) ? first_element_duration_ : dt_;
       pk[1] = mu_;
       pk.segment(2, 12) = foot_pos_world_.row(i + 1);
-      pk.segment(14, 4).fill(0);
-      pk.segment(18, 12).fill(1);
+      if (use_terrain_constraint) {
+        for (int j = 0; j < num_feet_; j++) {
+          Eigen::Vector3d foot_pos =
+              get_primal_foot_state_var(w, i + 1).segment(3 * j, 3);
+
+          pk(14 + j) = terrain_.atPosition("z_inpainted", foot_pos.head<2>(),
+                                           interp_type_);
+          pk(18 + 3 * j) = terrain_.atPosition(
+              "normal_vectors_x", foot_pos.head<2>(), interp_type_);
+          pk(19 + 3 * j) = terrain_.atPosition(
+              "normal_vectors_y", foot_pos.head<2>(), interp_type_);
+          pk(20 + 3 * j) = terrain_.atPosition(
+              "normal_vectors_z", foot_pos.head<2>(), interp_type_);
+        }
+      } else {
+        pk.segment(14, 4).fill(0);
+        pk.segment(18, 12).fill(1);
+      }
 
       // Set up the work function
       casadi_int sz_arg;
@@ -1038,8 +1077,24 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
       pk[0] = (i == 0) ? first_element_duration_ : dt_;
       pk[1] = mu_;
       pk.segment(2, 12) = foot_pos_world_.row(i + 1);
-      pk.segment(14, 4).fill(0);
-      pk.segment(18, 12).fill(1);
+      if (use_terrain_constraint) {
+        for (int j = 0; j < num_feet_; j++) {
+          Eigen::Vector3d foot_pos =
+              get_primal_foot_state_var(w, i + 1).segment(3 * j, 3);
+
+          pk(14 + j) = terrain_.atPosition("z_inpainted", foot_pos.head<2>(),
+                                           interp_type_);
+          pk(18 + 3 * j) = terrain_.atPosition(
+              "normal_vectors_x", foot_pos.head<2>(), interp_type_);
+          pk(19 + 3 * j) = terrain_.atPosition(
+              "normal_vectors_y", foot_pos.head<2>(), interp_type_);
+          pk(20 + 3 * j) = terrain_.atPosition(
+              "normal_vectors_z", foot_pos.head<2>(), interp_type_);
+        }
+      } else {
+        pk.segment(14, 4).fill(0);
+        pk.segment(18, 12).fill(1);
+      }
 
       // Set up the work function
       casadi_int sz_arg;

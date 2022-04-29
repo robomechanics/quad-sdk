@@ -76,6 +76,12 @@ class quadNLP : public TNLP {
   /// Boolean for whether to allow modifications of foot trajectory
   const bool allow_foot_traj_modification = true;
 
+  /// Boolean for whether to include the terrain in the foot height constraint
+  const bool use_terrain_constraint = true;
+
+  const grid_map::InterpolationMethods interp_type_ =
+      grid_map::InterpolationMethods::INTER_NEAREST;
+
   /// Input dimension for simple and complex models
   int m_simple_, m_complex_;
 
