@@ -16,7 +16,7 @@ function varargout = plotControl(controlTraj,tTindow,varargin)
 %   figArray = plotControl(___) returns the handles of each figure contained
 %   within figArray
 
-if (length(varargin)>=3)
+if (length(varargin)>=3) && ~isempty(varargin{3})
     GRFVectorsFig = varargin{3}(1);
 else
     h =  findobj('type','figure');

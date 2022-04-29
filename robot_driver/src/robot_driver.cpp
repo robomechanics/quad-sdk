@@ -226,7 +226,7 @@ void RobotDriver::mocapCallback(
       // latency that appears in the message time stamp
       double dt = 1.0 / mocap_rate_;
       double a = 1 - dt / filter_time_constant_;
-      vel_estimate_ =  a * vel_estimate_ + (1 - a) * mocap_vel_estimate_;
+      vel_estimate_ = a * vel_estimate_ + (1 - a) * mocap_vel_estimate_;
       // mocap_vel_estimate_ = vel_new_measured;
     } else {
       ROS_WARN_THROTTLE(
@@ -337,9 +337,9 @@ bool RobotDriver::updateState() {
       quad_utils::Eigen3ToVector3Msg(vel_estimate_,
                                      last_robot_state_msg_.body.twist.linear);
 
-      ROS_INFO_THROTTLE(0.05,"a = %5.3f, imu: %8.4f, mocap: %8.4f: total: %8.4f", a, 
-        imu_vel_estimate_.x(), mocap_vel_estimate_.x(),
-        vel_estimate_.x()); 
+      ROS_INFO_THROTTLE(
+          0.05, "a = %5.3f, imu: %8.4f, mocap: %8.4f: total: %8.4f", a,
+          imu_vel_estimate_.x(), mocap_vel_estimate_.x(), vel_estimate_.x());
 
     } else {
       ROS_WARN_THROTTLE(1, "No body pose (mocap) recieved");

@@ -290,6 +290,7 @@ quadNLP::quadNLP(int type, int N, int n, int n_null, int m, double dt,
   // Initialize the time duration to the next plan index as dt
   first_element_duration_ = dt_;
 
+  loadCasadiFuncs();
   compute_nnz_jac_g();
   compute_nnz_h();
 }

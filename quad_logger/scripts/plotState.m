@@ -19,7 +19,7 @@ function varargout = plotState(stateTraj,tWindow,varargin)
 %   within figArray
 
 % Use existing figure handles if requested
-if (length(varargin)>=3)
+if (length(varargin)>=3) && ~isempty(varargin{3})
     COMTrajFig = varargin{3}(1);
     linearStateFig = varargin{3}(2);
     angularStateFig = varargin{3}(3);

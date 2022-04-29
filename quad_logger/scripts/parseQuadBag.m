@@ -92,17 +92,6 @@ stateTrajectoryData = readMessages(select(bag,'Topic','/state/trajectory'),'Data
 stateTrajectory = struct;
 if isempty(stateTrajectoryData)
     warning('No data on trajectory topic');
-    stateTrajectory.time = [];
-    stateTrajectory.position = [];
-    stateTrajectory.velocity = [];
-    stateTrajectory.orientationRPY = [];
-    stateTrajectory.orientationQuat = [];
-    stateTrajectory.angularVelocity = [];
-    stateTrajectory.jointPosition = [];
-    stateTrajectory.jointVelocity = [];
-    stateTrajectory.jointEffort = [];
-    stateTrajectory.footPosition = [];
-    stateTrajectory.footVelocity = [];
 else
     
     stateTrajectory.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, stateTrajectoryData, 'UniformOutput', 0));
@@ -145,10 +134,6 @@ controlGRFsData = readMessages(select(bag,'Topic','/control/grfs'),'DataFormat',
 controlGRFs = struct;
 if isempty(controlGRFsData)
     warning('No data on grf control topic');
-    controlGRFs.time = [];
-    controlGRFs.vectors = [];
-    controlGRFs.points = [];
-    controlGRFs.contactStates = [];
 else
     
     controlGRFs.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, controlGRFsData, 'UniformOutput', 0));
@@ -177,10 +162,6 @@ stateGRFsData = readMessages(select(bag,'Topic','/state/grfs'),'DataFormat','str
 stateGRFs = struct;
 if isempty(stateGRFsData)
     warning('No data on grf state topic');
-    stateGRFs.time = [];
-    stateGRFs.vectors = [];
-    stateGRFs.points = [];
-    stateGRFs.contactStates = [];
 else
     
     stateGRFs.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, stateGRFsData, 'UniformOutput', 0));
