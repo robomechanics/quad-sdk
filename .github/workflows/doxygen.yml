@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - devel
       - melodic_devel_gh_pages_doxygen_updates
   pull_request:
     branches:
