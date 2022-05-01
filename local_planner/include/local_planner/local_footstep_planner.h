@@ -121,7 +121,6 @@ class LocalFootstepPlanner {
    * @param[in] body_plan Current body plan
    * @param[in] grf_plan Current grf plan
    * @param[in] ref_body_plan Reference body plan
-   * @param[in] ref_primitive_plan_ Reference primitive plan
    * @param[in] foot_positions_current Current foot position in the world frame
    * @param[in] foot_velocities_current Current foot position in the world frame
    * @param[in] first_element_duration Duration of first element of horizon (may
@@ -137,7 +136,6 @@ class LocalFootstepPlanner {
                        const Eigen::MatrixXd &body_plan,
                        const Eigen::MatrixXd &grf_plan,
                        const Eigen::MatrixXd &ref_body_plan,
-                       const Eigen::VectorXi &ref_primitive_plan_,
                        const Eigen::VectorXd &foot_positions_current,
                        const Eigen::VectorXd &foot_velocities_current,
                        double first_element_duration,

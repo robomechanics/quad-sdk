@@ -11,7 +11,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   ros::param::get("/local_planner/timestep", dt_);
 
   std::shared_ptr<NMPCController> leg_planner_ =
-      std::make_shared<NMPCController>(1);
+      std::make_shared<NMPCController>();
 
   Eigen::MatrixXd ref_body_plan_(N_, 36);
   ref_body_plan_.fill(0);
@@ -120,15 +120,20 @@ TEST(NMPCTest, testAdaptiveComplexity) {
     //           << foot_velocities_world_ << std::endl;
 
     leg_planner_->computeLegPlan(
-        current_state_, ref_body_plan_, foot_positions_world_,
-        foot_velocities_world_, adpative_contact_schedule_, ref_ground_height,
-        first_element_duration, same_plan_index, map, body_plan_, grf_plan_);
+        current_state_, ref_body_plan_, foot_positions_body_,
+        foot_positions_world_, foot_velocities_world_,
+        adpative_contact_schedule_, ref_ground_height, first_element_duration,
+        same_plan_index, map, body_plan_, grf_plan_);
+    std::cout << "made it out of computeLegPlan" << std::endl;
     toc = std::chrono::steady_clock::now();
     std::cout << "Time difference = "
               << std::chrono::duration_cast<std::chrono::microseconds>(toc -
                                                                        tic)
                      .count()
               << "[µs]" << std::endl;
+
+    std::cout << "body_plan_ = \n" << body_plan_ << std::endl;
+    std::cout << "grf_plan_ = \n" << grf_plan_ << std::endl;
 
     current_state_.head(12) = body_plan_.block(1, 0, 1, 12).transpose();
 

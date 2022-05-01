@@ -1,89 +1,49 @@
 nmpc_controller:
-  takeoff_state_weight_factor: 1
   enable_adaptive_complexity: true
-  leg:
-    state_dimension: 12
-    control_dimension: 12
-    friction_coefficient: 0.3
-    panic_weights: 200.0
-    constraint_panic_weights: 20.0
-    state_weights: [5.0, 5.0, 25.0, 0.5, 0.5, 0.5, 0.1, 0.1, 5.0, 0.05, 0.05, 0.01]
-    control_weights: [!!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5]
-    Q_temporal_factor: 10.0
-    R_temporal_factor: 1
-    state_lower_bound: [!!float -2e19, !!float -2e19, 0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
-    state_upper_bound: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
-    control_lower_bound: [!!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10]
-    control_upper_bound: [!!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250]
-  leg_with_feet:
-    state_dimension: 36
-    control_dimension: 24
-    friction_coefficient: 0.3
-    panic_weights: 200.0
-    constraint_panic_weights: 20.0
-    state_weights: [5.0, 5.0, 5.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.05, 0.05, 0.01, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111]
-    control_weights: [!!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5]
-    Q_temporal_factor: 10.0
-    R_temporal_factor: 1
-    state_lower_bound: [!!float -2e19, !!float -2e19, 0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
-    state_upper_bound: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
-    control_lower_bound: [!!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9]
-    control_upper_bound: [!!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9]
-  centralized_tail:
-    horizon_length: 24
-    control_dimension: 14
-    state_dimension: 16
-    step_length: 0.03
-    friction_coefficient: 0.2
-    panic_weights: !!float 1e3
-    state_weights: [5, 5, 50, 2.5, 2.5, 10, 0.1, 0.1, 0.25, 0.25, 0.1, 0, 0, 0.3, 0.001, 0.001]
-    control_weights: [!!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6, !!float 5e-6]
-    Q_temporal_factor: 1.0
-    R_temporal_factor: 1.0
-    state_lower_bound: [!!float -2e19, !!float -2e19, 0, -3.14159, -3.14159, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
-    state_upper_bound: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
-    control_lower_bound: [-10, -10, !!float -2e19, !!float -2e19, 0, !!float -2e19, !!float -2e19, 0, !!float -2e19, !!float -2e19, 0, !!float -2e19, !!float -2e19, 0]
-    control_upper_bound: [10, 10, !!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250]
-  distributed_tail:
-    horizon_length: 18
-    control_dimension: 14
-    state_dimension: 16
-    step_length: 0.03
-    friction_coefficient: 0.2
-    panic_weights: !!float 1e3
-    state_weights: [0, 0, 0, 2.5, 2.5, 0, 0.25, 0.25, 0, 0, 0, 0, 0, 0, 0, 0]
-    control_weights: [!!float 1e-3, !!float 1e-3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    Q_temporal_factor: 10.0
-    R_temporal_factor: 1
-    state_lower_bound: [!!float -2e19, !!float -2e19, 0, -3.14159, -3.14159, -3.14159, -1.57, -1.57, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
-    state_upper_bound: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, 1.57, 1.57, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
-    control_lower_bound: [-10, -10, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
-    control_upper_bound: [10, 10, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
-  decentralized_tail:
-    horizon_length: 24
-    control_dimension: 14
-    state_dimension: 16
-    step_length: 0.03
-    friction_coefficient: 0.2
-    panic_weights: !!float 1e3
-    state_weights: [0, 0, 0, 2.5, 2.5, 0, 0.25, 0.25, 0, 0, 0, 0, 0, 0, 0.001, 0.001]
-    control_weights: [!!float 5e-6, !!float 5e-6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    Q_temporal_factor: 1.0
-    R_temporal_factor: 1.0
-    state_lower_bound: [!!float -2e19, !!float -2e19, !!float -2e19, -3.14159, -3.14159, !!float -2e19, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
-    state_upper_bound: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, !!float 2e19, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
-    control_lower_bound: [-10, -10, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
-    control_upper_bound: [10, 10, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
-  leg_complex:
-    null_space_dimension: 24
-    fixed_complex_idxs: [] # set to [] for none
-    fixed_complex_head: 16 # set to 0 for none
-    fixed_complex_tail: 0 # set to 0 for none
-    # state_lower_bound_hard: [-0.707, -1.57, 0.001, -0.707, -1.57, 0.001, -0.707, -1.57, 0.001, -0.707, -1.57, 0.001, -37.7, -37.7, -25.1,-37.7, -37.7, -25.1,-37.7, -37.7, -25.1,-37.7, -37.7, -25.1]
-    # state_upper_bound_hard: [ 0.707,  3.14,  3.14,  0.707,  3.14,  3.14,  0.707,  3.14,  3.14,  0.707,  3.14,  3.14,  37.7,  37.7,  25.1, 37.7,  37.7,  25.1, 37.7,  37.7,  25.1, 37.7,  37.7,  25.1]
-    state_lower_bound_hard: [-0.707, -1.57, 0.001, -0.707, -1.57, 0.001, -0.707, -1.57, 0.001, -0.707, -1.57, 0.001, -37.71, -37.71, -25.11,-37.71, -37.71, -25.11,-37.71, -37.71, -25.11,-37.71, -37.71, -25.11]
-    state_upper_bound_hard: [ 0.707,  3.14,  3.14,  0.707,  3.14,  3.14,  0.707,  3.14,  3.14,  0.707,  3.14,  3.14,  37.71,  37.71,  25.11, 37.71,  37.71,  25.11, 37.71,  37.71,  25.11, 37.71,  37.71,  25.11]
-    state_lower_bound_soft: [  -0.5, -1.57,   0.4,   -0.5, -1.57,   0.4,   -0.5, -1.57,   0.4,   -0.5, -1.57,   0.4, -35.0, -35.0, -20.0,-35.0, -35.0, -20.0,-35.0, -35.0, -20.0,-35.0, -35.0, -20.0]
-    state_upper_bound_soft: [   0.5,  3.14,   2.6,    0.5,  3.14,   2.6,    0.5,  3.14,   2.6,    0.5,  3.14,   2.6,  35.0,  35.0,  20.0, 35.0,  35.0,  20.0, 35.0,  35.0,  20.0, 35.0,  35.0,  20.0]
-    # state_lower_bound_soft: [  -0.6, -1.57,   0.4,   -0.6, -1.57,   0.4,   -0.6, -1.57,   0.4,   -0.6, -1.57,   0.4, -350.0, -350.0, -230.0,-350.0, -350.0, -230.0,-350.0, -350.0, -230.0,-350.0, -350.0, -230.0]
-    # state_upper_bound_soft: [   0.6,  3.14,   2.6,    0.6,  3.14,   2.6,    0.6,  3.14,   2.6,    0.6,  3.14,   2.6,  350.0,  350.0,  230.0, 350.0,  350.0,  230.0, 350.0,  350.0,  230.0, 350.0,  350.0,  230.0]
+  feet_in_simple: false
+  panic_weights: 200.0
+  constraint_panic_weights: 20.0
+  Q_temporal_factor: 10.0
+  R_temporal_factor: 1
+  friction_coefficient: 0.3
+  fixed_complex_idxs: [] # set to [] for none
+  fixed_complex_head: 0 # set to 0 for none
+  fixed_complex_tail: 0 # set to 0 for none
+  body:
+    x_dim: 12
+    u_dim: 12
+    g_dim: 28
+    x_weights: [5.0, 5.0, 5.0, 0.5, 0.5, 0.5, 0.1, 0.1, 5.0, 0.05, 0.05, 0.01]
+    u_weights: [!!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5]
+    x_lb: [!!float -2e19, !!float -2e19, 0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    x_ub: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+    u_lb: [!!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10]
+    u_ub: [!!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250]
+    g_lb: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    g_ub: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  feet:
+    x_dim: 24
+    u_dim: 12
+    g_dim: 28
+    x_weights: [1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111]
+    u_weights: [!!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5]
+    x_lb: [!!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    x_ub: [!!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+    u_lb: [-99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9]
+    u_ub: [99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9]
+    g_lb: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19]
+    g_ub: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+  joints:
+    x_dim: 24
+    u_dim: 0
+    g_dim: 52
+    x_weights: []
+    u_weights: []
+    x_lb: [-0.707, -1.57, 0.001, -0.707, -1.57, 0.001, -0.707, -1.57, 0.001, -0.707, -1.57, 0.001, -37.71, -37.71, -25.11,-37.71, -37.71, -25.11,-37.71, -37.71, -25.11,-37.71, -37.71, -25.11]
+    x_ub: [ 0.707,  3.14,  3.14,  0.707,  3.14,  3.14,  0.707,  3.14,  3.14,  0.707,  3.14,  3.14,  37.71,  37.71,  25.11, 37.71,  37.71,  25.11, 37.71,  37.71,  25.11, 37.71,  37.71,  25.11]
+    u_lb: []
+    u_ub: []
+    x_lb_soft: [  -0.5, -1.57,   0.4,   -0.5, -1.57,   0.4,   -0.5, -1.57,   0.4,   -0.5, -1.57,   0.4, -35.0, -35.0, -20.0,-35.0, -35.0, -20.0,-35.0, -35.0, -20.0,-35.0, -35.0, -20.0]
+    x_ub_soft: [   0.5,  3.14,   2.6,    0.5,  3.14,   2.6,    0.5,  3.14,   2.6,    0.5,  3.14,   2.6,  35.0,  35.0,  20.0, 35.0,  35.0,  20.0, 35.0,  35.0,  20.0, 35.0,  35.0,  20.0]
+    g_lb: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    g_ub: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]

@@ -56,16 +56,26 @@ enum FunctionID { FUNC, JAC, HESS };
 class quadNLP : public TNLP {
  public:
   // Horizon length, state dimension, input dimension, and constraints dimension
-  int N_, n_, m_, g_, g_relaxed_;
+  int N_, g_relaxed_;
 
   // Number of states in different components
-  int n_body_, n_foot_, n_joints_, n_tail_, m_body_, m_foot_, m_tail_;
+  static const int n_body_ = 12, n_foot_ = 24, n_joints_ = 24, n_tail_ = 4,
+                   m_body_ = 12, m_foot_ = 12, m_tail_ = 2;
 
   /// State dimension for simple and complex models
   int n_simple_, n_complex_;
 
+  /// Input dimension for simple and complex models
+  int m_simple_, m_complex_;
+
+  /// Constraint dimension for simple and complex models
+  int g_simple_, g_complex_;
+
   /// Vectors of state and constraint dimension for each finite element
-  Eigen::VectorXi n_vec_, n_slack_vec_, g_vec_, g_slack_vec_;
+  Eigen::VectorXi n_vec_, n_slack_vec_, m_vec_, g_vec_, g_slack_vec_;
+
+  /// Boolean for whether to allow modifications of foot trajectory
+  bool feet_in_simple_;
 
   /// Boolean for whether to apply panic variables for complex states
   const bool apply_slack_to_complex_states_ = true;
@@ -77,16 +87,10 @@ class quadNLP : public TNLP {
   const bool allow_foot_traj_modification = true;
 
   /// Boolean for whether to include the terrain in the foot height constraint
-  const bool use_terrain_constraint = true;
+  const bool use_terrain_constraint = false;
 
   const grid_map::InterpolationMethods interp_type_ =
       grid_map::InterpolationMethods::INTER_NEAREST;
-
-  /// Input dimension for simple and complex models
-  int m_simple_, m_complex_;
-
-  /// Constraint dimension for simple and complex models
-  int g_simple_, g_complex_;
 
   /// Map for constraint names
   std::vector<std::vector<std::string>> constr_names_;
@@ -108,22 +112,14 @@ class quadNLP : public TNLP {
   /// enum)
   static const int num_func_id_ = 3;
 
-  int leg_input_start_idx_;
-
-  int type_;
-
-  bool known_leg_input_;
-
-  Eigen::MatrixXd leg_input_;
-
   // State cost weighting, input cost weighting
-  Eigen::VectorXd Q_, R_;
+  Eigen::VectorXd Q_simple_, R_simple_;
 
   // Scale factor for Q and R
   double Q_temporal_factor_, R_temporal_factor_;
 
   // Feet location from feet to body COM in world frame
-  Eigen::MatrixXd feet_location_;
+  Eigen::MatrixXd foot_pos_body_;
 
   // Foot locations in world frame
   Eigen::MatrixXd foot_pos_world_;
@@ -150,13 +146,12 @@ class quadNLP : public TNLP {
   grid_map::GridMap terrain_;
 
   // State bounds, input bounds, constraint bounds
-  Eigen::VectorXd x_min_, x_max_, u_min_, u_max_, g_min_, g_max_;
+  Eigen::VectorXd x_min_simple_, x_max_simple_, x_min_complex_, x_max_complex_,
+      u_min_simple_, u_max_simple_, u_min_complex_, u_max_complex_,
+      g_min_simple_, g_max_simple_, g_min_complex_, g_max_complex_;
 
-  // State bounds, input bounds, constraint bounds
-  Eigen::VectorXd x_min_simple_, x_max_simple_, x_min_complex_hard_,
-      x_max_complex_hard_, g_min_simple_, g_max_simple_, g_min_complex_hard_,
-      g_max_complex_hard_, x_min_complex_soft_, x_max_complex_soft_,
-      g_min_complex_soft_, g_max_complex_soft_;
+  Eigen::VectorXd x_min_complex_soft_, x_max_complex_soft_, g_min_complex_soft_,
+      g_max_complex_soft_;
 
   // Ground height structure for the height bounds
   Eigen::MatrixXd ground_height_;
@@ -233,29 +228,6 @@ class quadNLP : public TNLP {
   std::vector<std::vector<Eigen::VectorXi>> iRow_mat_relaxed_,
       jCol_mat_relaxed_, relaxed_idx_in_full_sparse_;
 
-  decltype(eval_g_leg_work) *eval_g_work_;
-  decltype(eval_g_leg_incref) *eval_g_incref_;
-  decltype(eval_g_leg_checkout) *eval_g_checkout_;
-  decltype(eval_g_leg) *eval_g_;
-  decltype(eval_g_leg_release) *eval_g_release_;
-  decltype(eval_g_leg_decref) *eval_g_decref_;
-
-  decltype(eval_hess_g_leg_work) *eval_hess_g_work_;
-  decltype(eval_hess_g_leg_incref) *eval_hess_g_incref_;
-  decltype(eval_hess_g_leg_checkout) *eval_hess_g_checkout_;
-  decltype(eval_hess_g_leg) *eval_hess_g_;
-  decltype(eval_hess_g_leg_release) *eval_hess_g_release_;
-  decltype(eval_hess_g_leg_decref) *eval_hess_g_decref_;
-  decltype(eval_hess_g_leg_sparsity_out) *eval_hess_g_sparsity_out_;
-
-  decltype(eval_jac_g_leg_work) *eval_jac_g_work_;
-  decltype(eval_jac_g_leg_incref) *eval_jac_g_incref_;
-  decltype(eval_jac_g_leg_checkout) *eval_jac_g_checkout_;
-  decltype(eval_jac_g_leg) *eval_jac_g_;
-  decltype(eval_jac_g_leg_release) *eval_jac_g_release_;
-  decltype(eval_jac_g_leg_decref) *eval_jac_g_decref_;
-  decltype(eval_jac_g_leg_sparsity_out) *eval_jac_g_sparsity_out_;
-
   /// Vector of nonzero entries for constraint Jacobian and Hessian
   std::vector<casadi_int> nnz_jac_g_vec_, nnz_h_vec_;
 
@@ -269,19 +241,20 @@ class quadNLP : public TNLP {
   std::vector<std::vector<decltype(eval_g_leg_sparsity_out) *>>
       eval_sparsity_vec_;
 
-  // System type
-  int sys_type_;
-
   /** Default constructor */
-  quadNLP(int type, int N, int n, int n_null, int m, double dt, double mu,
-          double panic_weights, double constraint_panic_weights,
-          Eigen::VectorXd Q, Eigen::VectorXd R, double Q_temporal_factor,
-          double R_temporal_factor, Eigen::VectorXd x_min,
-          Eigen::VectorXd x_max, Eigen::VectorXd x_min_complex_hard,
-          Eigen::VectorXd x_max_complex_hard,
-          Eigen::VectorXd x_min_complex_soft,
-          Eigen::VectorXd x_max_complex_soft, Eigen::VectorXd u_min,
-          Eigen::VectorXd u_max, Eigen::VectorXi fixed_complexity_schedule);
+  quadNLP(int N, double dt, double mu, double panic_weights,
+          double constraint_panic_weights, double Q_temporal_factor,
+          double R_temporal_factor, bool feet_in_simple, int n_simple,
+          int n_complex, int m_simple, int m_complex, int g_simple,
+          int g_complex, const Eigen::VectorXd &Q_complex,
+          const Eigen::VectorXd &R_complex,
+          const Eigen::VectorXd &x_min_complex,
+          const Eigen::VectorXd &x_max_complex,
+          const Eigen::VectorXd &u_min_complex,
+          const Eigen::VectorXd &u_max_complex,
+          const Eigen::VectorXd &g_min_complex,
+          const Eigen::VectorXd &g_max_complex,
+          const Eigen::VectorXi &fixed_complexity_schedule);
 
   /**
    * @brief Custom deep copy constructor
@@ -359,15 +332,6 @@ class quadNLP : public TNLP {
       const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
       const Eigen::MatrixXd &foot_positions,
       const std::vector<std::vector<bool>> &contact_schedule,
-      const Eigen::MatrixXd &state_traj, const Eigen::MatrixXd &control_traj,
-      const Eigen::VectorXd &ground_height,
-      const double &first_element_duration_, const bool &same_plan_index,
-      const bool &init);
-
-  virtual void update_solver(
-      const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
-      const Eigen::MatrixXd &foot_positions,
-      const std::vector<std::vector<bool>> &contact_schedule,
       const Eigen::VectorXi &adaptive_complexity_schedule,
       const Eigen::VectorXd &ground_height,
       const double &first_element_duration_, const bool &same_plan_index,
@@ -400,7 +364,7 @@ class quadNLP : public TNLP {
   template <typename T>
   inline Eigen::Block<T> get_primal_control_var(T &decision_var,
                                                 const int &idx) const {
-    return decision_var.block(u_idxs_[idx], 0, m_, 1);
+    return decision_var.block(u_idxs_[idx], 0, m_vec_[idx], 1);
   }
 
   // Get the idx-th body control variable from decision variable
@@ -466,7 +430,7 @@ class quadNLP : public TNLP {
   inline Eigen::Block<T> get_dynamic_var(T &decision_var,
                                          const int &idx) const {
     return decision_var.block(fe_idxs_[idx], 0,
-                              n_vec_[idx] + m_ + n_vec_[idx + 1], 1);
+                              n_vec_[idx] + m_vec_[idx] + n_vec_[idx + 1], 1);
   }
 
   // Get the idx-th dynamic constraint related jacobian nonzero entry
@@ -508,14 +472,14 @@ class quadNLP : public TNLP {
   template <typename T>
   inline Eigen::Block<T> get_state_cost_hess_var(T &hessian_var,
                                                  const int &idx) const {
-    return hessian_var.block(cost_idxs_[idx], 0, n_, 1);
+    return hessian_var.block(cost_idxs_[idx], 0, n_simple_, 1);
   }
 
   // Get the idx-th control cost hessian nonzero entry
   template <typename T>
   inline Eigen::Block<T> get_control_cost_hess_var(T &hessian_var,
                                                    const int &idx) const {
-    return hessian_var.block(cost_idxs_[idx] + n_, 0, m_, 1);
+    return hessian_var.block(cost_idxs_[idx] + n_simple_, 0, m_simple_, 1);
   }
 
   /**

@@ -112,12 +112,12 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   same_plan_index_ = true;
 
   // Initialize the plan index
-  current_plan_index_ = -1;
+  current_plan_index_ = 0;
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
   // Create nmpc wrapper class
-  local_body_planner_nonlinear_ = std::make_shared<NMPCController>(1);
+  local_body_planner_nonlinear_ = std::make_shared<NMPCController>();
 }
 
 void LocalPlanner::initLocalFootstepPlanner() {
@@ -496,57 +496,6 @@ void LocalPlanner::getStateAndTwistInput() {
   foot_positions_world_.row(0) = current_foot_positions_world_;
 }
 
-Eigen::VectorXi LocalPlanner::getInvalidRegions() {
-  Eigen::VectorXi complexity_horizon(N_);
-  complexity_horizon.setZero();
-  Eigen::VectorXd state_violations, control_violations;
-
-  for (int i = 0; i < N_ - 1; i++) {
-    Eigen::VectorXd joint_positions(12);
-    Eigen::VectorXd joint_velocities(12);
-    Eigen::VectorXd joint_torques(12);
-
-    bool is_state_valid = quadKD_->isValidCentroidalState(
-        body_plan_.row(i + 1), foot_positions_world_.row(i + 1),
-        foot_velocities_world_.row(i + 1), grf_plan_.row(i), terrain_grid_,
-        joint_positions, joint_velocities, joint_torques, state_violations,
-        control_violations);
-
-    complexity_horizon[i] = (is_state_valid) ? 0 : 1;
-    int dt = (i == 0) ? first_element_duration_ : dt_;
-
-    if (!is_state_valid) {
-      std::cout << "body_plan_ = \n"
-                << body_plan_.row(i).format(CleanFmt) << std::endl;
-      std::cout << "foot_positions_world_ = \n"
-                << foot_positions_world_.row(i).format(CleanFmt) << std::endl;
-      std::cout << "foot_velocities_world_ = \n"
-                << foot_velocities_world_.row(i).format(CleanFmt) << std::endl;
-      std::cout << "grf_plan_ = \n"
-                << grf_plan_.row(i).format(CleanFmt) << std::endl;
-      std::cout << "joint_positions = \n"
-                << joint_positions.transpose().format(CleanFmt) << std::endl;
-      std::cout << "joint_velocities = \n"
-                << joint_velocities.transpose().format(CleanFmt) << std::endl;
-      std::cout << "joint_torques = \n"
-                << joint_torques.transpose().format(CleanFmt) << std::endl;
-      std::cout << "i = " << i << std::endl;
-      std::cout << "state_violations = \n"
-                << state_violations.transpose().format(CleanFmt) << std::endl;
-      std::cout << "control_violations = \n"
-                << control_violations.transpose().format(CleanFmt) << std::endl;
-    }
-  }
-  if (complexity_horizon.sum() <= 0) {
-    ROS_INFO_THROTTLE(1, "All planned states are valid");
-  } else {
-    ROS_WARN("Some planned states are invalid!");
-    std::cout << "complexity_horizon = " << complexity_horizon.transpose()
-              << std::endl;
-  }
-  return complexity_horizon;
-}
-
 bool LocalPlanner::computeLocalPlan() {
   if (terrain_.isEmpty() || body_plan_msg_ == NULL && !use_twist_input_ ||
       robot_state_msg_ == NULL) {
@@ -567,7 +516,7 @@ bool LocalPlanner::computeLocalPlan() {
   // grf_plan is filled)
   local_footstep_planner_->computeFootPlan(
       current_plan_index_, contact_schedule_, body_plan_, grf_plan_,
-      ref_body_plan_, ref_primitive_plan_, current_foot_positions_world_,
+      ref_body_plan_, current_foot_positions_world_,
       current_foot_velocities_world_, first_element_duration_,
       past_footholds_msg_, foot_positions_world_, foot_velocities_world_,
       foot_accelerations_world_);
@@ -576,15 +525,13 @@ bool LocalPlanner::computeLocalPlan() {
   local_footstep_planner_->getFootPositionsBodyFrame(
       body_plan_, foot_positions_world_, foot_positions_body_);
 
-  Eigen::VectorXi complexity_schedule(N_);
-  complexity_schedule.fill(0);
-
   // Compute grf position considering the toe radius
-  Eigen::MatrixXd grf_positions = foot_positions_world_;
+  Eigen::MatrixXd grf_positions_body = foot_positions_body_;
+  Eigen::MatrixXd grf_positions_world = foot_positions_world_;
   for (size_t i = 0; i < 4; i++) {
-    // grf_positions.col(3 * i + 2) = foot_positions_body_.col(3 * i +
-    // 2).array() - toe_radius;
-    grf_positions.col(3 * i + 2) =
+    grf_positions_body.col(3 * i + 2) =
+        foot_positions_body_.col(3 * i + 2).array() - toe_radius;
+    grf_positions_world.col(3 * i + 2) =
         foot_positions_world_.col(3 * i + 2).array() - toe_radius;
   }
 
@@ -597,13 +544,13 @@ bool LocalPlanner::computeLocalPlan() {
 
   // Compute leg plan with MPC, return if solve fails
   if (!local_body_planner_nonlinear_->computeLegPlan(
-          current_full_state, ref_body_plan_, grf_positions,
-          foot_velocities_world_, contact_schedule_, ref_ground_height_,
-          first_element_duration_, same_plan_index_, terrain_grid_, body_plan_,
-          grf_plan_))
+          current_full_state, ref_body_plan_, grf_positions_body,
+          grf_positions_world, foot_velocities_world_, contact_schedule_,
+          ref_ground_height_, first_element_duration_, same_plan_index_,
+          terrain_grid_, body_plan_, grf_plan_))
     return false;
 
-  foot_positions_world_ = grf_positions;
+  foot_positions_world_ = grf_positions_world;
   for (size_t i = 0; i < 4; i++) {
     foot_positions_world_.col(3 * i + 2) =
         foot_positions_world_.col(3 * i + 2).array() + toe_radius;
@@ -678,7 +625,7 @@ void LocalPlanner::publishLocalPlan() {
     local_plan_msg.states.push_back(robot_state_msg);
     local_plan_msg.grfs.push_back(grf_array_msg);
     local_plan_msg.plan_indices.push_back(current_plan_index_ + i);
-    local_plan_msg.primitive_ids.push_back(2);
+    local_plan_msg.primitive_ids.push_back(ref_primitive_plan_(i));
   }
 
   // Update timestamps to reflect when these messages were published

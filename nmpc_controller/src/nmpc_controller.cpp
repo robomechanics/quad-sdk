@@ -1,117 +1,119 @@
 #include "nmpc_controller/nmpc_controller.h"
 
-NMPCController::NMPCController(int type) {
-  type_ = type;
+NMPCController::NMPCController() {
+  // Load parameters set by local planner
+  ros::param::get("/local_planner/horizon_length", N_);
+  ros::param::get("/local_planner/timestep", dt_);
 
-  switch (type_) {
-    case 0:
-      // Leg controller
-      param_ns_ = "leg";
-      break;
-    case 1:
-      // Leg controller
-      param_ns_ = "leg_with_feet";
-      break;
-    case 2:
-      // Centralized tail controller
-      param_ns_ = "centralized_tail";
-      break;
-    case 3:
-      // Distributed tail controller
-      param_ns_ = "distributed_tail";
-      break;
-    case 4:
-      // Decentralized tail controller
-      param_ns_ = "decentralized_tail";
-      break;
-    default:
-      param_ns_ = "leg";
-      break;
-  }
-
-  // Load MPC/system parameters
-  double mu;
-  if (param_ns_ == "leg" || param_ns_ == "leg_with_feet") {
-    ros::param::get("/local_planner/horizon_length", N_);
-    ros::param::get("/local_planner/timestep", dt_);
-  } else {
-    ros::param::get("/nmpc_controller/" + param_ns_ + "/horizon_length", N_);
-    ros::param::get("/nmpc_controller/" + param_ns_ + "/step_length", dt_);
-  }
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/state_dimension", n_);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/control_dimension", m_);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/friction_coefficient",
-                  mu);
-
-  // Load MPC cost weighting and bounds
-  std::vector<double> state_weights, control_weights, state_lower_bound,
-      state_upper_bound, control_lower_bound, control_upper_bound;
-  std::vector<int> fixed_complex_idxs;
-  double panic_weights, constraint_panic_weights, Q_temporal_factor,
+  // Load system parameters
+  double mu, panic_weights, constraint_panic_weights, Q_temporal_factor,
       R_temporal_factor;
-  ;
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/state_weights",
-                  state_weights);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/control_weights",
-                  control_weights);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/panic_weights",
-                  panic_weights);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/constraint_panic_weights",
+  ros::param::get("/nmpc_controller/friction_coefficient", mu);
+  ros::param::get("/nmpc_controller/panic_weights", panic_weights);
+  ros::param::get("/nmpc_controller/constraint_panic_weights",
                   constraint_panic_weights);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/Q_temporal_factor",
-                  Q_temporal_factor);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/R_temporal_factor",
-                  R_temporal_factor);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/state_lower_bound",
-                  state_lower_bound);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/state_upper_bound",
-                  state_upper_bound);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/control_lower_bound",
-                  control_lower_bound);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/control_upper_bound",
-                  control_upper_bound);
-
-  int fixed_complex_head, fixed_complex_tail;
-  std::vector<double> state_lower_bound_null_hard, state_upper_bound_null_hard,
-      state_lower_bound_null_soft, state_upper_bound_null_soft;
-  ros::param::get("/nmpc_controller/leg_complex/null_space_dimension", n_null_);
-  ros::param::get("/nmpc_controller/leg_complex/state_lower_bound_hard",
-                  state_lower_bound_null_hard);
-  ros::param::get("/nmpc_controller/leg_complex/state_upper_bound_hard",
-                  state_upper_bound_null_hard);
-  ros::param::get("/nmpc_controller/leg_complex/state_lower_bound_soft",
-                  state_lower_bound_null_soft);
-  ros::param::get("/nmpc_controller/leg_complex/state_upper_bound_soft",
-                  state_upper_bound_null_soft);
-  ros::param::get("/nmpc_controller/leg_complex/fixed_complex_idxs",
-                  fixed_complex_idxs);
-  ros::param::get("/nmpc_controller/leg_complex/fixed_complex_head",
-                  fixed_complex_head);
-  ros::param::get("/nmpc_controller/leg_complex/fixed_complex_tail",
-                  fixed_complex_tail);
-
+  ros::param::get("/nmpc_controller/Q_temporal_factor", Q_temporal_factor);
+  ros::param::get("/nmpc_controller/R_temporal_factor", R_temporal_factor);
   Q_temporal_factor = std::pow(Q_temporal_factor, 1.0 / (N_ - 2));
   R_temporal_factor = std::pow(R_temporal_factor, 1.0 / (N_ - 2));
 
-  Eigen::Map<Eigen::VectorXd> Q(state_weights.data(), n_),
-      R(control_weights.data(), m_), x_min(state_lower_bound.data(), n_),
-      x_max(state_upper_bound.data(), n_),
-      x_min_null_hard(state_lower_bound_null_hard.data(),
-                      state_lower_bound_null_hard.size()),
-      x_max_null_hard(state_upper_bound_null_hard.data(),
-                      state_upper_bound_null_hard.size()),
-      x_min_null_soft(state_lower_bound_null_soft.data(),
-                      state_lower_bound_null_soft.size()),
-      x_max_null_soft(state_upper_bound_null_soft.data(),
-                      state_upper_bound_null_soft.size()),
-      u_min(control_lower_bound.data(), m_),
-      u_max(control_upper_bound.data(), m_);
+  // Define the components, their order, and which are simple
+  ros::param::get("/nmpc_controller/feet_in_simple", feet_in_simple_);
+  std::vector<std::string> components = {"body", "feet", "joints"};
+  std::vector<bool> components_in_simple = {true, feet_in_simple_, false};
+  std::vector<bool> components_in_complex = {true, true, true};
+  std::vector<bool> components_in_cost = {true, false, false};
 
-  // Load fixed complexity schedule
+  x_dim_simple_ = u_dim_simple_ = g_dim_simple_ = x_dim_cost_simple_ =
+      u_dim_cost_simple_ = x_dim_complex_ = u_dim_complex_ = g_dim_complex_ =
+          x_dim_cost_complex_ = u_dim_cost_complex_ = 0;
+  std::vector<double> x_weights_complex, u_weights_complex, x_lb_complex,
+      x_ub_complex, u_lb_complex, u_ub_complex, g_lb_complex, g_ub_complex;
+
+  // Loop through each system component and read parameters
+  for (int i = 0; i < components.size(); i++) {
+    double x_dim, u_dim, g_dim;
+    std::vector<double> x_weights, u_weights, x_lb, x_ub, u_lb, u_ub, g_lb,
+        g_ub;
+
+    // Read component parameters
+    std::string component = components[i];
+    ros::param::get("/nmpc_controller/" + component + "/x_dim", x_dim);
+    ros::param::get("/nmpc_controller/" + component + "/u_dim", u_dim);
+    ros::param::get("/nmpc_controller/" + component + "/g_dim", g_dim);
+    ros::param::get("/nmpc_controller/" + component + "/x_lb", x_lb);
+    ros::param::get("/nmpc_controller/" + component + "/x_ub", x_ub);
+    ros::param::get("/nmpc_controller/" + component + "/u_lb", u_lb);
+    ros::param::get("/nmpc_controller/" + component + "/u_ub", u_ub);
+    ros::param::get("/nmpc_controller/" + component + "/g_lb", g_lb);
+    ros::param::get("/nmpc_controller/" + component + "/g_ub", g_ub);
+    ros::param::get("/nmpc_controller/" + component + "/x_weights", x_weights);
+    ros::param::get("/nmpc_controller/" + component + "/u_weights", u_weights);
+
+    // Make sure the bounds are the correct size
+    if (x_dim != x_lb.size()) throw std::runtime_error("x_lb wrong size");
+    if (x_dim != x_ub.size()) throw std::runtime_error("x_ub wrong size");
+    if (u_dim != u_lb.size()) throw std::runtime_error("u_lb wrong size");
+    if (u_dim != u_ub.size()) throw std::runtime_error("u_ub wrong size");
+    if (g_dim != g_lb.size()) throw std::runtime_error("g_lb wrong size");
+    if (g_dim != g_ub.size()) throw std::runtime_error("g_ub wrong size");
+
+    // Add to simple if specified
+    if (components_in_simple[i]) {
+      assert(components_in_complex[i]);
+      assert(components_in_cost[i]);
+      x_dim_simple_ += x_dim;
+      u_dim_simple_ += u_dim;
+      g_dim_simple_ += g_dim;
+    }
+
+    // Add to complex if specified
+    if (components_in_complex[i]) {
+      x_dim_complex_ += x_dim;
+      u_dim_complex_ += u_dim;
+      g_dim_complex_ += g_dim;
+      x_lb_complex.insert(x_lb_complex.end(), x_lb.begin(), x_lb.end());
+      x_ub_complex.insert(x_ub_complex.end(), x_ub.begin(), x_ub.end());
+      u_lb_complex.insert(u_lb_complex.end(), u_lb.begin(), u_lb.end());
+      u_ub_complex.insert(u_ub_complex.end(), u_ub.begin(), u_ub.end());
+      g_lb_complex.insert(g_lb_complex.end(), g_lb.begin(), g_lb.end());
+      g_ub_complex.insert(g_ub_complex.end(), g_ub.begin(), g_ub.end());
+    }
+
+    // Add to cost if specified
+    if (components_in_cost[i]) {
+      x_dim_cost_complex_ += x_dim;
+      u_dim_cost_complex_ += u_dim;
+      x_weights_complex.insert(x_weights_complex.end(), x_weights.begin(),
+                               x_weights.end());
+      u_weights_complex.insert(u_weights_complex.end(), u_weights.begin(),
+                               u_weights.end());
+    }
+  }
+  x_dim_null_ = x_dim_complex_ - x_dim_simple_;
+
+  Eigen::Map<Eigen::VectorXd> Q_complex(x_weights_complex.data(),
+                                        x_dim_cost_complex_),
+      R_complex(u_weights_complex.data(), u_dim_cost_complex_),
+      x_min_complex(x_lb_complex.data(), x_dim_complex_),
+      x_max_complex(x_ub_complex.data(), x_dim_complex_),
+      u_min_complex(u_lb_complex.data(), u_dim_complex_),
+      u_max_complex(u_ub_complex.data(), u_dim_complex_),
+      g_min_complex(g_lb_complex.data(), g_dim_complex_),
+      g_max_complex(g_ub_complex.data(), g_dim_complex_);
+
+  // Define and load adaptive complexity parameters
+  std::vector<int> fixed_complex_idxs;
+  int fixed_complex_head, fixed_complex_tail;
   bool enable_adaptive_complexity = false;
+
   ros::param::get("nmpc_controller/enable_adaptive_complexity",
                   enable_adaptive_complexity);
+  ros::param::get("nmpc_controller/fixed_complex_idxs", fixed_complex_idxs);
+  ros::param::get("nmpc_controller/fixed_complex_head", fixed_complex_head);
+  ros::param::get("nmpc_controller/fixed_complex_tail", fixed_complex_tail);
 
+  // Construct fixed and adaptive complexity schedules
   Eigen::VectorXi fixed_complexity_schedule(N_);
   fixed_complexity_schedule.setZero();
   adaptive_complexity_schedule_ = fixed_complexity_schedule;
@@ -131,23 +133,12 @@ NMPCController::NMPCController(int type) {
               << fixed_complexity_schedule.transpose() << std::endl;
   }
 
-  Eigen::VectorXd x_min_complex_hard(n_ + n_null_),
-      x_max_complex_hard(n_ + n_null_), x_min_complex_soft(n_ + n_null_),
-      x_max_complex_soft(n_ + n_null_);
-  x_min_complex_hard.segment(0, n_) = x_min;
-  x_min_complex_hard.segment(n_, n_null_) = x_min_null_hard;
-  x_max_complex_hard.segment(0, n_) = x_max;
-  x_max_complex_hard.segment(n_, n_null_) = x_max_null_hard;
-  x_min_complex_soft.segment(0, n_) = x_min;
-  x_min_complex_soft.segment(n_, n_null_) = x_min_null_soft;
-  x_max_complex_soft.segment(0, n_) = x_max;
-  x_max_complex_soft.segment(n_, n_null_) = x_max_null_soft;
-
   mynlp_ = new quadNLP(
-      type_, N_, n_, n_null_, m_, dt_, mu, panic_weights,
-      constraint_panic_weights, Q, R, Q_temporal_factor, R_temporal_factor,
-      x_min, x_max, x_min_complex_hard, x_max_complex_hard, x_min_complex_soft,
-      x_max_complex_soft, u_min, u_max, fixed_complexity_schedule);
+      N_, dt_, mu, panic_weights, constraint_panic_weights, Q_temporal_factor,
+      R_temporal_factor, feet_in_simple_, x_dim_simple_, x_dim_complex_,
+      u_dim_simple_, u_dim_complex_, g_dim_simple_, g_dim_complex_, Q_complex,
+      R_complex, x_min_complex, x_max_complex, u_min_complex, u_max_complex,
+      g_min_complex, g_max_complex, fixed_complexity_schedule);
 
   app_ = IpoptApplicationFactory();
 
@@ -187,85 +178,34 @@ NMPCController::NMPCController(int type) {
 
 bool NMPCController::computeLegPlan(
     const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
-    Eigen::MatrixXd &foot_positions, Eigen::MatrixXd &foot_velocities,
+    const Eigen::MatrixXd &foot_positions_body,
+    Eigen::MatrixXd &foot_positions_world, Eigen::MatrixXd &foot_velocities,
     const std::vector<std::vector<bool>> &contact_schedule,
     const Eigen::VectorXd &ref_ground_height,
     const double &first_element_duration, const bool &same_plan_index,
     const grid_map::GridMap &terrain, Eigen::MatrixXd &state_traj,
     Eigen::MatrixXd &control_traj) {
   // Local planner will send a reference traj with N+1 rows
-  mynlp_->foot_pos_world_ = foot_positions;
+  mynlp_->foot_pos_body_ = -foot_positions_body;
+  mynlp_->foot_pos_world_ = foot_positions_world;
   mynlp_->foot_vel_world_ = foot_velocities;
   mynlp_->terrain_ = terrain;
-  mynlp_->update_solver(initial_state, ref_traj, foot_positions,
+  mynlp_->update_solver(initial_state, ref_traj, foot_positions_body,
                         contact_schedule, adaptive_complexity_schedule_,
                         ref_ground_height, first_element_duration,
                         same_plan_index, require_init_);
   require_init_ = false;
 
-  bool success = this->computePlan(initial_state, ref_traj, foot_positions,
-                                   contact_schedule, state_traj, control_traj);
+  bool success =
+      this->computePlan(initial_state, ref_traj, foot_positions_world,
+                        contact_schedule, state_traj, control_traj);
 
-  foot_positions = state_traj.middleCols(mynlp_->n_body_, mynlp_->n_foot_ / 2);
-  foot_velocities = state_traj.rightCols(mynlp_->n_foot_ / 2);
+  if (feet_in_simple_) {
+    foot_positions_world =
+        state_traj.middleCols(mynlp_->n_body_, mynlp_->n_foot_ / 2);
+    foot_velocities = state_traj.rightCols(mynlp_->n_foot_ / 2);
+  }
   state_traj.conservativeResize(N_, mynlp_->n_body_);
-
-  return success;
-}
-
-bool NMPCController::computeCentralizedTailPlan(
-    const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
-    const Eigen::MatrixXd &foot_positions,
-    const std::vector<std::vector<bool>> &contact_schedule,
-    const Eigen::VectorXd &tail_initial_state,
-    const Eigen::MatrixXd &tail_ref_traj,
-    const Eigen::VectorXd &ref_ground_height, Eigen::MatrixXd &state_traj,
-    Eigen::MatrixXd &control_traj, Eigen::MatrixXd &tail_state_traj,
-    Eigen::MatrixXd &tail_control_traj) {
-  return true;
-}
-
-bool NMPCController::computeDistributedTailPlan(
-    const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
-    const Eigen::MatrixXd &foot_positions,
-    const std::vector<std::vector<bool>> &contact_schedule,
-    const Eigen::VectorXd &tail_initial_state,
-    const Eigen::MatrixXd &tail_ref_traj, const Eigen::MatrixXd &state_traj,
-    const Eigen::MatrixXd &control_traj,
-    const Eigen::VectorXd &ref_ground_height,
-    const double &first_element_duration, const bool &same_plan_index,
-    Eigen::MatrixXd &tail_state_traj, Eigen::MatrixXd &tail_control_traj) {
-  Eigen::MatrixXd ref_traj_with_tail(N_ + 1, 16), state_traj_with_tail(N_, 16),
-      control_traj_with_tail(N_, 14);
-  Eigen::VectorXd initial_state_with_tail(16);
-
-  ref_traj_with_tail.setZero();
-  ref_traj_with_tail.leftCols(6) = ref_traj.leftCols(6);
-  ref_traj_with_tail.block(0, 6, N_ + 1, 2) = tail_ref_traj.leftCols(2);
-  ref_traj_with_tail.block(0, 8, N_ + 1, 6) = ref_traj.rightCols(6);
-  ref_traj_with_tail.block(0, 14, N_ + 1, 2) = tail_ref_traj.rightCols(2);
-
-  initial_state_with_tail.setZero();
-  initial_state_with_tail.head(6) = initial_state.head(6);
-  initial_state_with_tail.segment(6, 2) = tail_initial_state.head(2);
-  initial_state_with_tail.segment(8, 6) = initial_state.tail(6);
-  initial_state_with_tail.segment(14, 2) = tail_initial_state.tail(2);
-
-  mynlp_->update_solver(initial_state_with_tail,
-                        ref_traj_with_tail.bottomRows(N_), foot_positions,
-                        contact_schedule, state_traj.bottomRows(N_),
-                        control_traj, ref_ground_height.tail(N_),
-                        first_element_duration, same_plan_index, require_init_);
-  require_init_ = false;
-
-  bool success = this->computePlan(
-      initial_state_with_tail, ref_traj_with_tail, foot_positions,
-      contact_schedule, state_traj_with_tail, control_traj_with_tail);
-
-  tail_state_traj.leftCols(2) = state_traj_with_tail.block(0, 6, N_ + 1, 2);
-  tail_state_traj.rightCols(2) = state_traj_with_tail.block(0, 14, N_ + 1, 2);
-
-  tail_control_traj = control_traj_with_tail.leftCols(2);
 
   return success;
 }
@@ -276,34 +216,31 @@ bool NMPCController::computePlan(
     const std::vector<std::vector<bool>> &contact_schedule,
     Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj) {
   ApplicationReturnStatus status;
-  // mynlp_->mu0_ = 0.1;
-  // mynlp_->warm_start_ = false;
   app_->Options()->SetNumericValue("mu_init", mynlp_->mu0_);
   if (mynlp_->warm_start_) {
-    // std::cout << "Warm start on" << std::endl;
     app_->Options()->SetStringValue("warm_start_init_point", "yes");
   } else {
-    // std::cout << "Warm start off" << std::endl;
     app_->Options()->SetStringValue("warm_start_init_point", "no");
   }
 
-  quad_utils::FunctionTimer timer("solve");
   status = app_->OptimizeTNLP(mynlp_);
-  double t_solve = timer.reportSilent();
 
-  state_traj = Eigen::MatrixXd::Zero(N_, n_);
-  Eigen::MatrixXd state_null_traj = Eigen::MatrixXd::Zero(N_, n_null_);
-  Eigen::MatrixXd state_null_traj_lift = Eigen::MatrixXd::Zero(N_, n_null_);
-  control_traj = Eigen::MatrixXd::Zero(N_ - 1, m_);
+  state_traj = Eigen::MatrixXd::Zero(N_, x_dim_simple_);
+  Eigen::MatrixXd state_null_traj = Eigen::MatrixXd::Zero(N_, x_dim_null_);
+  Eigen::MatrixXd state_null_traj_lift = Eigen::MatrixXd::Zero(N_, x_dim_null_);
+  control_traj = Eigen::MatrixXd::Zero(N_ - 1, u_dim_simple_);
 
-  state_traj.row(0) =
-      mynlp_->get_primal_state_var(mynlp_->w0_, 0).head(n_).transpose();
+  state_traj.row(0) = mynlp_->get_primal_state_var(mynlp_->w0_, 0)
+                          .head(x_dim_simple_)
+                          .transpose();
 
   for (int i = 1; i < N_; ++i) {
-    control_traj.row(i - 1) =
-        mynlp_->get_primal_control_var(mynlp_->w0_, i - 1).transpose();
-    state_traj.row(i) =
-        mynlp_->get_primal_state_var(mynlp_->w0_, i).head(n_).transpose();
+    control_traj.row(i - 1) = mynlp_->get_primal_control_var(mynlp_->w0_, i - 1)
+                                  .head(u_dim_simple_)
+                                  .transpose();
+    state_traj.row(i) = mynlp_->get_primal_state_var(mynlp_->w0_, i)
+                            .head(x_dim_simple_)
+                            .transpose();
   }
 
   // if (status == Solve_Succeeded && t_solve < 5.0 * dt_) {
@@ -363,7 +300,7 @@ bool NMPCController::computePlan(
     mynlp_->warm_start_ = false;
     require_init_ = true;
 
-    ROS_WARN_STREAM(param_ns_ << " solving fail");
+    ROS_WARN_STREAM("NMPC solving fail");
 
     // Get solution and bounds
     double var_tol, constr_tol;
@@ -433,14 +370,15 @@ bool NMPCController::computePlan(
         evalLiftedTrajectoryConstraints(state_null_traj);
 
     std::cout << "current body state = \n"
-              << mynlp_->x_current_.segment(0, n_).transpose() << std::endl;
-    std::cout << "current joint pos = \n"
-              << mynlp_->x_current_.segment(n_, n_null_ / 2).transpose()
+              << mynlp_->x_current_.segment(0, n_body_).transpose()
               << std::endl;
-    std::cout
-        << "current joint vel = \n"
-        << mynlp_->x_current_.segment(N_ + n_null_ / 2, n_null_ / 2).transpose()
-        << std::endl;
+    std::cout << "current joint pos = \n"
+              << mynlp_->x_current_.segment(n_body_ + n_foot_, n_joints_ / 2)
+                     .transpose()
+              << std::endl;
+    std::cout << "current joint vel = \n"
+              << mynlp_->x_current_.tail(n_joints_ / 2).transpose()
+              << std::endl;
 
     std::cout << "body_reference = \n"
               << mynlp_->x_reference_.transpose().leftCols(mynlp_->n_body_)
@@ -474,9 +412,9 @@ bool NMPCController::computePlan(
               << control_traj.rightCols(mynlp_->m_foot_) << std::endl;
 
     std::cout << "joint_positions = \n"
-              << state_null_traj.leftCols(n_null_ / 2) << std::endl;
+              << state_null_traj.leftCols(n_joints_ / 2) << std::endl;
     std::cout << "joint_velocities = \n"
-              << state_null_traj.rightCols(n_null_ / 2) << std::endl;
+              << state_null_traj.rightCols(n_joints_ / 2) << std::endl;
 
     throw std::runtime_error("Solve failed, exiting for debug");
     return false;
@@ -509,16 +447,17 @@ Eigen::VectorXi NMPCController::evalLiftedTrajectoryConstraints(
   Eigen::VectorXd x0_body, u_body;
   x0_body = x0.head(mynlp_->n_body_);
 
-  if (x0.size() < mynlp_->n_complex_) {
+  if (x0.size() < x_dim_complex_) {
     quadKD_->convertCentroidalToFullBody(
         x0_body, mynlp_->foot_pos_world_.row(0), mynlp_->foot_vel_world_.row(0),
         mynlp_->get_primal_body_control_var(mynlp_->w0_, 0), joint_positions,
         joint_velocities, joint_torques);
     x0.conservativeResize(mynlp_->n_complex_);
-    x0.segment(n_, n_null_ / 2) = joint_positions;
-    x0.segment(n_ + n_null_ / 2, n_null_ / 2) = joint_velocities;
+    x0.segment(n_body_ + n_foot_, n_joints_ / 2) = joint_positions;
+    x0.segment(n_body_ + n_foot_ + n_joints_ / 2, n_joints_ / 2) =
+        joint_velocities;
   }
-  state_null_traj.row(0) = x0.segment(n_, n_null_);
+  state_null_traj.row(0) = x0.segment(x_dim_simple_, x_dim_null_);
 
   double var_tol, constr_tol;
   app_->Options()->GetNumericValue("tol", var_tol, "");
@@ -539,18 +478,19 @@ Eigen::VectorXi NMPCController::evalLiftedTrajectoryConstraints(
           mynlp_->foot_vel_world_.row(i + 1), u.head(mynlp_->n_body_),
           joint_positions, joint_velocities, joint_torques);
       x1.conservativeResize(mynlp_->n_complex_);
-      x1.segment(n_, n_null_ / 2) = joint_positions;
-      x1.segment(n_ + n_null_ / 2, n_null_ / 2) = joint_velocities;
+      x1.segment(n_body_ + n_foot_, n_joints_ / 2) = joint_positions;
+      x1.segment(n_body_ + n_foot_ + n_joints_ / 2, n_joints_ / 2) =
+          joint_velocities;
     }
 
-    state_null_traj.row(i + 1) = x1.segment(n_, n_null_);
+    state_null_traj.row(i + 1) = x1.segment(x_dim_simple_, x_dim_null_);
 
     double dt = (i == 0) ? mynlp_->first_element_duration_ : dt_;
     params = mynlp_->foot_pos_world_.row(i + 1);
 
     constr_vals = mynlp_->eval_g_single_fe(COMPLEX, dt, x0, u, x1, params);
-    lb_violation = mynlp_->g_min_complex_hard_ - constr_vals;
-    ub_violation = constr_vals - mynlp_->g_max_complex_hard_;
+    lb_violation = mynlp_->g_min_complex_ - constr_vals;
+    ub_violation = constr_vals - mynlp_->g_max_complex_;
 
     max_constraint_violation[i + 1] =
         (lb_violation.cwiseMax(ub_violation)).maxCoeff();
@@ -596,8 +536,8 @@ Eigen::VectorXi NMPCController::evalLiftedTrajectoryConstraints(
               "Constraint %s violated in FE %d: %5.3f <= %5.3f <= "
               "%5.3f\n",
               mynlp_->constr_names_[COMPLEX][j].c_str(), i,
-              mynlp_->g_min_complex_hard_[j] - constr_tol, constr_vals[j],
-              mynlp_->g_max_complex_hard_[j] + constr_tol);
+              mynlp_->g_min_complex_[j] - constr_tol, constr_vals[j],
+              mynlp_->g_max_complex_[j] + constr_tol);
 
           // std::cout << "x0 = \n" << x0 << std::endl;
           // std::cout << "u = \n" << u << std::endl;
@@ -613,14 +553,14 @@ Eigen::VectorXi NMPCController::evalLiftedTrajectoryConstraints(
     }
 
     for (int j = 0; j < x1.size(); j++) {
-      if (x1[j] < mynlp_->x_min_complex_hard_[j] - var_tol ||
-          x1[j] > mynlp_->x_max_complex_hard_[j] + var_tol) {
+      if (x1[j] < mynlp_->x_min_complex_[j] - var_tol ||
+          x1[j] > mynlp_->x_max_complex_[j] + var_tol) {
         if (mynlp_->n_vec_[i + 1] == mynlp_->n_complex_) {
           printf(
               "Var bound %d violated in FE %d: %5.3f <= %5.3f <= "
               "%5.3f\n",
-              j, i, mynlp_->x_min_complex_hard_[j], x1[j] - var_tol,
-              mynlp_->x_max_complex_hard_[j] + var_tol);
+              j, i, mynlp_->x_min_complex_[j], x1[j] - var_tol,
+              mynlp_->x_max_complex_[j] + var_tol);
 
           valid_solve = false;
         } else {

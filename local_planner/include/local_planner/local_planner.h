@@ -89,12 +89,6 @@ class LocalPlanner {
   void getStateAndTwistInput();
 
   /**
-   * @brief Function identify indices which violate full order constraints
-   * @return Vector of indices which violate full order constraints
-   */
-  Eigen::VectorXi getInvalidRegions();
-
-  /**
    * @brief Function to compute the local plan
    * @return Boolean if local plan was found successfully
    */
