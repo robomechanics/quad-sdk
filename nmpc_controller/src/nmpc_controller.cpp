@@ -65,6 +65,8 @@ NMPCController::NMPCController() {
       x_dim_simple_ += x_dim;
       u_dim_simple_ += u_dim;
       g_dim_simple_ += g_dim;
+      x_dim_cost_simple_ += x_dim;
+      u_dim_cost_simple_ += u_dim;
     }
 
     // Add to complex if specified
@@ -78,16 +80,16 @@ NMPCController::NMPCController() {
       u_ub_complex.insert(u_ub_complex.end(), u_ub.begin(), u_ub.end());
       g_lb_complex.insert(g_lb_complex.end(), g_lb.begin(), g_lb.end());
       g_ub_complex.insert(g_ub_complex.end(), g_ub.begin(), g_ub.end());
-    }
 
-    // Add to cost if specified
-    if (components_in_cost[i]) {
-      x_dim_cost_complex_ += x_dim;
-      u_dim_cost_complex_ += u_dim;
-      x_weights_complex.insert(x_weights_complex.end(), x_weights.begin(),
-                               x_weights.end());
-      u_weights_complex.insert(u_weights_complex.end(), u_weights.begin(),
-                               u_weights.end());
+      // Add to cost if specified
+      if (components_in_cost[i]) {
+        x_dim_cost_complex_ += x_dim;
+        u_dim_cost_complex_ += u_dim;
+        x_weights_complex.insert(x_weights_complex.end(), x_weights.begin(),
+                                 x_weights.end());
+        u_weights_complex.insert(u_weights_complex.end(), u_weights.begin(),
+                                 u_weights.end());
+      }
     }
   }
   x_dim_null_ = x_dim_complex_ - x_dim_simple_;
@@ -136,14 +138,16 @@ NMPCController::NMPCController() {
   mynlp_ = new quadNLP(
       N_, dt_, mu, panic_weights, constraint_panic_weights, Q_temporal_factor,
       R_temporal_factor, feet_in_simple_, x_dim_simple_, x_dim_complex_,
-      u_dim_simple_, u_dim_complex_, g_dim_simple_, g_dim_complex_, Q_complex,
-      R_complex, x_min_complex, x_max_complex, u_min_complex, u_max_complex,
-      g_min_complex, g_max_complex, fixed_complexity_schedule);
+      u_dim_simple_, u_dim_complex_, g_dim_simple_, g_dim_complex_,
+      x_dim_cost_simple_, x_dim_cost_complex_, u_dim_cost_simple_,
+      u_dim_cost_complex_, Q_complex, R_complex, x_min_complex, x_max_complex,
+      u_min_complex, u_max_complex, g_min_complex, g_max_complex,
+      fixed_complexity_schedule);
 
   app_ = IpoptApplicationFactory();
 
   // app_->Options()->SetIntegerValue("max_iter", 100);
-  // app_->Options()->SetStringValue("print_timing_statistics", "yes");
+  app_->Options()->SetStringValue("print_timing_statistics", "yes");
   app_->Options()->SetStringValue("linear_solver", "ma57");
   app_->Options()->SetIntegerValue("print_level", 5);
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);

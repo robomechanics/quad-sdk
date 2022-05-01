@@ -71,8 +71,15 @@ class quadNLP : public TNLP {
   /// Constraint dimension for simple and complex models
   int g_simple_, g_complex_;
 
+  /// State dimension for cost
+  int n_cost_simple_, n_cost_complex_;
+
+  /// Control dimension for cost
+  int m_cost_simple_, m_cost_complex_;
+
   /// Vectors of state and constraint dimension for each finite element
-  Eigen::VectorXi n_vec_, n_slack_vec_, m_vec_, g_vec_, g_slack_vec_;
+  Eigen::VectorXi n_vec_, n_slack_vec_, m_vec_, g_vec_, g_slack_vec_,
+      n_cost_vec_, m_cost_vec_;
 
   /// Boolean for whether to allow modifications of foot trajectory
   bool feet_in_simple_;
@@ -113,7 +120,7 @@ class quadNLP : public TNLP {
   static const int num_func_id_ = 3;
 
   // State cost weighting, input cost weighting
-  Eigen::VectorXd Q_simple_, R_simple_;
+  Eigen::VectorXd Q_simple_, R_simple_, Q_complex_, R_complex_;
 
   // Scale factor for Q and R
   double Q_temporal_factor_, R_temporal_factor_;
@@ -246,8 +253,9 @@ class quadNLP : public TNLP {
           double constraint_panic_weights, double Q_temporal_factor,
           double R_temporal_factor, bool feet_in_simple, int n_simple,
           int n_complex, int m_simple, int m_complex, int g_simple,
-          int g_complex, const Eigen::VectorXd &Q_complex,
-          const Eigen::VectorXd &R_complex,
+          int g_complex, int x_dim_cost_simple, int x_dim_cost_complex,
+          int u_dim_cost_simple, int u_dim_cost_complex,
+          const Eigen::VectorXd &Q_complex, const Eigen::VectorXd &R_complex,
           const Eigen::VectorXd &x_min_complex,
           const Eigen::VectorXd &x_max_complex,
           const Eigen::VectorXd &u_min_complex,
@@ -472,14 +480,15 @@ class quadNLP : public TNLP {
   template <typename T>
   inline Eigen::Block<T> get_state_cost_hess_var(T &hessian_var,
                                                  const int &idx) const {
-    return hessian_var.block(cost_idxs_[idx], 0, n_simple_, 1);
+    return hessian_var.block(cost_idxs_[idx], 0, n_cost_vec_[idx], 1);
   }
 
   // Get the idx-th control cost hessian nonzero entry
   template <typename T>
   inline Eigen::Block<T> get_control_cost_hess_var(T &hessian_var,
                                                    const int &idx) const {
-    return hessian_var.block(cost_idxs_[idx] + n_simple_, 0, m_simple_, 1);
+    return hessian_var.block(cost_idxs_[idx] + n_cost_vec_[idx], 0,
+                             m_cost_vec_[idx], 1);
   }
 
   /**

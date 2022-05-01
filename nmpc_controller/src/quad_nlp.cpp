@@ -14,7 +14,8 @@ quadNLP::quadNLP(
     int N, double dt, double mu, double panic_weights,
     double constraint_panic_weights, double Q_temporal_factor,
     double R_temporal_factor, bool feet_in_simple, int n_simple, int n_complex,
-    int m_simple, int m_complex, int g_simple, int g_complex,
+    int m_simple, int m_complex, int g_simple, int g_complex, int n_cost_simple,
+    int n_cost_complex, int m_cost_simple, int m_cost_complex,
     const Eigen::VectorXd &Q_complex, const Eigen::VectorXd &R_complex,
     const Eigen::VectorXd &x_min_complex, const Eigen::VectorXd &x_max_complex,
     const Eigen::VectorXd &u_min_complex, const Eigen::VectorXd &u_max_complex,
@@ -38,9 +39,20 @@ quadNLP::quadNLP(
   m_complex_ = m_complex;
   g_simple_ = g_simple;
   g_complex_ = g_complex;
+  n_cost_simple_ = n_cost_simple;
+  n_cost_complex_ = n_cost_complex;
+  m_cost_simple_ = m_cost_simple;
+  m_cost_complex_ = m_cost_complex;
 
-  Q_simple_ = Q_complex.head(n_simple);
-  R_simple_ = R_complex.head(m_simple);
+  Q_complex_ = Q_complex;
+  R_complex_ = R_complex;
+
+  std::cout << "n_cost_simple_ = " << n_cost_simple_ << std::endl;
+  std::cout << "n_cost_complex_ = " << n_cost_complex_ << std::endl;
+  std::cout << "m_cost_simple_ = " << m_cost_simple_ << std::endl;
+  std::cout << "m_cost_complex_ = " << m_cost_complex_ << std::endl;
+  std::cout << "Q_complex_ = " << Q_complex_ << std::endl;
+  std::cout << "R_complex_ = " << R_complex_ << std::endl;
 
   // feet location initialized by nominal position
   foot_pos_body_ = Eigen::MatrixXd(N_, 12);
@@ -147,6 +159,8 @@ quadNLP::quadNLP(const quadNLP &nlp) {
   n_vec_ = nlp.n_vec_;
   m_vec_ = nlp.m_vec_;
   g_vec_ = nlp.g_vec_;
+  n_cost_vec_ = nlp.n_cost_vec_;
+  m_cost_vec_ = nlp.m_cost_vec_;
   fe_idxs_ = nlp.fe_idxs_;
   x_idxs_ = nlp.x_idxs_;
   u_idxs_ = nlp.u_idxs_;
@@ -390,7 +404,7 @@ bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
 
   for (int i = 0; i < N_ - 1; ++i) {
     // Compute the number of contacts
-    Eigen::VectorXd u_nom(m_vec_[i]);
+    Eigen::VectorXd u_nom(m_cost_vec_[i]);
     u_nom.setZero();
     double num_contacts = contact_sequence_.col(i).sum();
 
@@ -403,12 +417,15 @@ bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
       }
     }
 
-    Eigen::VectorXd uk = get_primal_control_var(w, i) - u_nom;
-    Eigen::VectorXd xk = get_primal_state_var(w, i + 1).head(n_simple_) -
-                         x_reference_.block(0, i + 1, n_simple_, 1);
+    Eigen::VectorXd uk =
+        get_primal_control_var(w, i).head(m_cost_vec_[i]) - u_nom;
+    Eigen::VectorXd xk = get_primal_state_var(w, i + 1).head(n_cost_vec_[i]) -
+                         x_reference_.block(0, i + 1, n_cost_vec_[i], 1);
 
-    Eigen::VectorXd Q_i = Q_simple_ * std::pow(Q_temporal_factor_, i);
-    Eigen::VectorXd R_i = R_simple_ * std::pow(R_temporal_factor_, i);
+    Eigen::VectorXd Q_i =
+        (Q_complex_ * std::pow(Q_temporal_factor_, i)).head(n_cost_vec_[i]);
+    Eigen::VectorXd R_i =
+        (R_complex_ * std::pow(R_temporal_factor_, i)).head(m_cost_vec_[i]);
 
     // Scale the cost by time duration
     if (i == 0) {
@@ -438,7 +455,7 @@ bool quadNLP::eval_grad_f(Index n, const Number *x, bool new_x,
 
   for (int i = 0; i < N_ - 1; ++i) {
     // Compute the number of contacts
-    Eigen::VectorXd u_nom(m_vec_[i]);
+    Eigen::VectorXd u_nom(m_cost_vec_[i]);
     u_nom.setZero();
     double num_contacts = contact_sequence_.col(i).sum();
 
@@ -451,12 +468,15 @@ bool quadNLP::eval_grad_f(Index n, const Number *x, bool new_x,
       }
     }
 
-    Eigen::MatrixXd uk = get_primal_control_var(w, i) - u_nom;
-    Eigen::MatrixXd xk = get_primal_state_var(w, i + 1).head(n_simple_) -
-                         x_reference_.block(0, i + 1, n_simple_, 1);
+    Eigen::VectorXd uk =
+        get_primal_control_var(w, i).head(m_cost_vec_[i]) - u_nom;
+    Eigen::VectorXd xk = get_primal_state_var(w, i + 1).head(n_cost_vec_[i]) -
+                         x_reference_.block(0, i + 1, n_cost_vec_[i], 1);
 
-    Eigen::MatrixXd Q_i = Q_simple_ * std::pow(Q_temporal_factor_, i);
-    Eigen::MatrixXd R_i = R_simple_ * std::pow(R_temporal_factor_, i);
+    Eigen::VectorXd Q_i =
+        (Q_complex_ * std::pow(Q_temporal_factor_, i)).head(n_cost_vec_[i]);
+    Eigen::VectorXd R_i =
+        (R_complex_ * std::pow(R_temporal_factor_, i)).head(m_cost_vec_[i]);
 
     // Scale the cost by time duration
     if (i == 0) {
@@ -961,8 +981,10 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
     // Initialize Q and R weights
     // Hessian from cost
     for (size_t i = 0; i < N_ - 1; i++) {
-      Eigen::MatrixXd Q_i = Q_simple_ * std::pow(Q_temporal_factor_, i);
-      Eigen::MatrixXd R_i = R_simple_ * std::pow(R_temporal_factor_, i);
+      Eigen::VectorXd Q_i =
+          (Q_complex_ * std::pow(Q_temporal_factor_, i)).head(n_cost_vec_[i]);
+      Eigen::VectorXd R_i =
+          (R_complex_ * std::pow(R_temporal_factor_, i)).head(m_cost_vec_[i]);
 
       // Scale the cost by time duration
       if (i == 0) {
@@ -1007,8 +1029,8 @@ void quadNLP::compute_nnz_h() {
     nnz_h_ += nnz_mat_(sys_id_schedule_[i], HESS);
   }
 
-  // Add cost variables (only on simple model coordinates)
-  nnz_h_ = nnz_h_ + (N_ - 1) * (n_simple_ + m_simple_);
+  // Add cost variables
+  nnz_h_ = nnz_h_ + n_cost_vec_.sum() + m_cost_vec_.sum();
 
   iRow_h_ = Eigen::VectorXi(nnz_h_);
   jCol_h_ = Eigen::VectorXi(nnz_h_);
@@ -1026,13 +1048,13 @@ void quadNLP::compute_nnz_h() {
 
   // Hessian from cost
   for (size_t i = 0; i < N_ - 1; i++) {
-    Eigen::ArrayXi iRow_control_cost =
-        Eigen::ArrayXi::LinSpaced(m_simple_, get_primal_control_idx(i),
-                                  get_primal_control_idx(i) + m_simple_ - 1);
+    Eigen::ArrayXi iRow_control_cost = Eigen::ArrayXi::LinSpaced(
+        m_cost_vec_[i], get_primal_control_idx(i),
+        get_primal_control_idx(i) + m_cost_vec_[i] - 1);
     Eigen::ArrayXi jCol_control_cost = iRow_control_cost;
-    Eigen::ArrayXi iRow_state_cost =
-        Eigen::ArrayXi::LinSpaced(n_simple_, get_primal_state_idx(i + 1),
-                                  get_primal_state_idx(i + 1) + n_simple_ - 1);
+    Eigen::ArrayXi iRow_state_cost = Eigen::ArrayXi::LinSpaced(
+        n_cost_vec_[i], get_primal_state_idx(i + 1),
+        get_primal_state_idx(i + 1) + n_cost_vec_[i] - 1);
     Eigen::ArrayXi jCol_state_cost = iRow_state_cost;
 
     get_control_cost_hess_var(iRow_h_, i) = iRow_control_cost.matrix();
@@ -1088,21 +1110,6 @@ void quadNLP::finalize_solution(SolverReturn status, Index n, const Number *x,
   g0_ = g_matrix;
 
   mu0_ = ip_data->curr_mu();
-
-  double total_slack_var_cost = 0;
-  double total_slack_constraint_cost = 0;
-  Eigen::ArrayXd nonzero_slack_element_sum(N_ - 1),
-      nonzero_constraint_element_sum(N_ - 1);
-  nonzero_slack_element_sum.setZero();
-  nonzero_constraint_element_sum.setZero();
-  for (int i = 0; i < N_ - 1; i++) {
-    total_slack_var_cost += panic_weights_ * get_slack_state_var(w, i).sum();
-    total_slack_constraint_cost +=
-        constraint_panic_weights_ * get_slack_constraint_var(w, i).sum();
-
-    nonzero_slack_element_sum[i] = get_slack_state_var(w, i).sum();
-    nonzero_constraint_element_sum[i] = get_slack_constraint_var(w, i).sum();
-  }
 }
 
 void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
@@ -1344,18 +1351,7 @@ void quadNLP::update_solver(
       get_primal_body_control_var(z_L0_, idx).fill(1);
       get_primal_body_control_var(z_U0_, idx).fill(1);
 
-      // Compute the number of contacts
-      double num_contacts = contact_sequence_.col(i).sum();
-
-      // If there are some contacts, set the nominal input accordingly
-      if (num_contacts > 0) {
-        for (size_t j = 0; j < 4; j++) {
-          if (contact_sequence_(j, i) == 1) {
-            get_primal_control_var(w0_, idx)(3 * j + 2, 0) =
-                mass_ * grav_ / num_contacts;
-          }
-        }
-      }
+      // Compute the number of contactscontact_sequence_
 
       mu0_ = 1e-1;
       warm_start_ = false;
@@ -1452,6 +1448,8 @@ void quadNLP::update_structure() {
   sys_id_schedule_.resize(N_ - 1);
   n_vec_.resize(N_);
   m_vec_.resize(N_ - 1);
+  n_cost_vec_.resize(N_ - 1);
+  m_cost_vec_.resize(N_ - 1);
   n_slack_vec_.resize(N_ - 1);
   g_vec_.resize(N_ - 1);
   g_slack_vec_.resize(N_ - 1);
@@ -1489,6 +1487,10 @@ void quadNLP::update_structure() {
     // Update the number of state vars and constraints for this fe
     n_vec_[i] = (complexity_schedule[i] == 1) ? n_complex_ : n_simple_;
     m_vec_[i] = (complexity_schedule[i] == 1) ? m_complex_ : m_simple_;
+    n_cost_vec_[i] =
+        (complexity_schedule[i + 1] == 1) ? n_cost_complex_ : n_cost_simple_;
+    m_cost_vec_[i] =
+        (complexity_schedule[i] == 1) ? m_cost_complex_ : m_cost_simple_;
     n_slack_vec_[i] =
         (complexity_schedule[i + 1] == 1 && apply_slack_to_complex_states_)
             ? n_complex_
@@ -1546,7 +1548,7 @@ void quadNLP::update_structure() {
     curr_jac_var_idx += 4 * n_slack;
 
     cost_idxs_[i] = curr_hess_var_idx;
-    curr_hess_var_idx += n_simple_ + m_simple_;
+    curr_hess_var_idx += n_cost_vec_[i] + m_cost_vec_[i];
   }
 
   // Add the relaxed jacobian information at the end
@@ -1618,6 +1620,8 @@ void quadNLP::update_structure() {
   // std::cout << "sys_id_sch = " << sys_id_schedule_.transpose() <<
   std::cout << "n_vec_ =    " << n_vec_.transpose() << std::endl;
   std::cout << "m_vec_ =    " << m_vec_.transpose() << std::endl;
+  std::cout << "n_cost_vec_ =    " << n_cost_vec_.transpose() << std::endl;
+  std::cout << "m_cost_vec_ =    " << m_cost_vec_.transpose() << std::endl;
   // std::cout << "n_slack_vec_ = " << n_slack_vec_.transpose() << std::endl;
   std::cout << "g_vec_ =      " << g_vec_.transpose() << std::endl;
   // std::cout << "g_vec_.sum() = " << g_vec_.sum() << std::endl;
