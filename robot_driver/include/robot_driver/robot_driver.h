@@ -357,6 +357,28 @@ class RobotDriver {
 
   /// Required for some hardware interfaces
   char** argv_;
+
+  /// Struct of second-order low/high pass filter with derivative/intergral
+  struct Filter {
+    // State space model
+    Eigen::Matrix<double, 2, 2> A;
+    Eigen::Matrix<double, 2, 1> B;
+    Eigen::Matrix<double, 1, 2> C;
+    Eigen::Matrix<double, 1, 1> D;
+
+    // Filter states
+    std::vector<Eigen::Matrix<double, 2, 1>> x;
+    bool init;
+  };
+
+  /// Struct of complementray filter with low and high pass filters
+  struct ComplementaryFilter {
+    Filter low_pass_filter;
+    Filter high_pass_filter;
+  };
+
+  /// Complementray filter
+  ComplementaryFilter complementary_filter_;
 };
 
 #endif  // ROBOT_DRIVER_H
