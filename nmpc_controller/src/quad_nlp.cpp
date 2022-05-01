@@ -552,22 +552,24 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     int sys_id = sys_id_schedule_[i];
 
     // Load the params for this fe
-    Eigen::VectorXd pk(14);
+    Eigen::VectorXd pk(54);
     pk[0] = (i == 0) ? first_element_duration_ : dt_;
     pk[1] = mu_;
     pk.segment(2, 12) = foot_pos_body_.row(i + 1);
+    pk.segment(14, 12) = foot_pos_world_.row(i + 1);
+    pk.segment(26, 12) = foot_vel_world_.row(i + 1);
     if (use_terrain_constraint) {
       for (int j = 0; j < num_feet_; j++) {
         Eigen::Vector3d foot_pos =
             get_primal_foot_state_var(w, i + 1).segment(3 * j, 3);
 
-        pk(14 + j) = terrain_.atPosition("z_inpainted", foot_pos.head<2>(),
+        pk(38 + j) = terrain_.atPosition("z_inpainted", foot_pos.head<2>(),
                                          interp_type_);
-        pk(18 + 3 * j) = terrain_.atPosition("normal_vectors_x",
+        pk(42 + 3 * j) = terrain_.atPosition("normal_vectors_x",
                                              foot_pos.head<2>(), interp_type_);
-        pk(19 + 3 * j) = terrain_.atPosition("normal_vectors_y",
+        pk(42 + 3 * j) = terrain_.atPosition("normal_vectors_y",
                                              foot_pos.head<2>(), interp_type_);
-        pk(20 + 3 * j) = terrain_.atPosition("normal_vectors_z",
+        pk(42 + 3 * j) = terrain_.atPosition("normal_vectors_z",
                                              foot_pos.head<2>(), interp_type_);
       }
     } else {
@@ -649,22 +651,24 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
       int sys_id = sys_id_schedule_[i];
 
       // Load the params for this fe
-      Eigen::VectorXd pk(14);
+      Eigen::VectorXd pk(54);
       pk[0] = (i == 0) ? first_element_duration_ : dt_;
       pk[1] = mu_;
       pk.segment(2, 12) = foot_pos_body_.row(i + 1);
+      pk.segment(14, 12) = foot_pos_world_.row(i + 1);
+      pk.segment(26, 12) = foot_vel_world_.row(i + 1);
       if (use_terrain_constraint) {
         for (int j = 0; j < num_feet_; j++) {
           Eigen::Vector3d foot_pos =
               get_primal_foot_state_var(w, i + 1).segment(3 * j, 3);
 
-          pk(14 + j) = terrain_.atPosition("z_inpainted", foot_pos.head<2>(),
+          pk(38 + j) = terrain_.atPosition("z_inpainted", foot_pos.head<2>(),
                                            interp_type_);
-          pk(18 + 3 * j) = terrain_.atPosition(
+          pk(42 + 3 * j) = terrain_.atPosition(
               "normal_vectors_x", foot_pos.head<2>(), interp_type_);
-          pk(19 + 3 * j) = terrain_.atPosition(
+          pk(42 + 3 * j) = terrain_.atPosition(
               "normal_vectors_y", foot_pos.head<2>(), interp_type_);
-          pk(20 + 3 * j) = terrain_.atPosition(
+          pk(42 + 3 * j) = terrain_.atPosition(
               "normal_vectors_z", foot_pos.head<2>(), interp_type_);
         }
       } else {
@@ -927,22 +931,24 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
       int sys_id = sys_id_schedule_[i];
 
       // Load the params for this fe
-      Eigen::VectorXd pk(14);
+      Eigen::VectorXd pk(54);
       pk[0] = (i == 0) ? first_element_duration_ : dt_;
       pk[1] = mu_;
       pk.segment(2, 12) = foot_pos_body_.row(i + 1);
+      pk.segment(14, 12) = foot_pos_world_.row(i + 1);
+      pk.segment(26, 12) = foot_vel_world_.row(i + 1);
       if (use_terrain_constraint) {
         for (int j = 0; j < num_feet_; j++) {
           Eigen::Vector3d foot_pos =
               get_primal_foot_state_var(w, i + 1).segment(3 * j, 3);
 
-          pk(14 + j) = terrain_.atPosition("z_inpainted", foot_pos.head<2>(),
+          pk(38 + j) = terrain_.atPosition("z_inpainted", foot_pos.head<2>(),
                                            interp_type_);
-          pk(18 + 3 * j) = terrain_.atPosition(
+          pk(42 + 3 * j) = terrain_.atPosition(
               "normal_vectors_x", foot_pos.head<2>(), interp_type_);
-          pk(19 + 3 * j) = terrain_.atPosition(
+          pk(42 + 3 * j) = terrain_.atPosition(
               "normal_vectors_y", foot_pos.head<2>(), interp_type_);
-          pk(20 + 3 * j) = terrain_.atPosition(
+          pk(42 + 3 * j) = terrain_.atPosition(
               "normal_vectors_z", foot_pos.head<2>(), interp_type_);
         }
       } else {
@@ -1478,7 +1484,7 @@ void quadNLP::update_structure() {
     // Determine the system to assign to this finite element
     if (complexity_schedule[i] == 0) {
       sys_id_schedule_[i] =
-          (complexity_schedule[i + 1] == 0) ? LEG : SIMPLE_TO_COMPLEX;
+          (complexity_schedule[i + 1] == 0) ? SIMPLE : SIMPLE_TO_COMPLEX;
     } else {
       sys_id_schedule_[i] =
           (complexity_schedule[i + 1] == 1) ? COMPLEX : COMPLEX_TO_SIMPLE;
