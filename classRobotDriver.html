@@ -63,6 +63,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
@@ -72,7 +73,26 @@ $(function() {
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="robot__driver_8h_source.html">robot_driver.h</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for RobotDriver:</div>
+<div class="dyncontent">
+<div class="center"><img src="classRobotDriver__coll__graph.png" border="0" usemap="#aRobotDriver_coll__map" alt="Collaboration graph"/></div>
+<map name="aRobotDriver_coll__map" id="aRobotDriver_coll__map">
+<area shape="rect" title=" " alt="" coords="53,213,144,240"/>
+<area shape="rect" href="structRobotDriver_1_1ComplementaryFilter.html" title="Struct of complementray filter with low and high pass filters." alt="" coords="5,109,192,151"/>
+<area shape="rect" href="structRobotDriver_1_1Filter.html" title="Struct of second&#45;order low/high pass filter with derivative/intergral." alt="" coords="36,5,161,32"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRobotDriver_1_1ComplementaryFilter.html">ComplementaryFilter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Struct of complementray filter with low and high pass filters.  <a href="structRobotDriver_1_1ComplementaryFilter.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRobotDriver_1_1Filter.html">Filter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Struct of second-order low/high pass filter with derivative/intergral.  <a href="structRobotDriver_1_1Filter.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aeb68a7b2239f95650ba0ea5c36438767"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobotDriver.html#aeb68a7b2239f95650ba0ea5c36438767">RobotDriver</a> (ros::NodeHandle nh, int argc, char **argv)</td></tr>
@@ -397,6 +417,10 @@ sensor_msgs::Imu&#160;</td><td class="memItemRight" valign="bottom"><b>last_imu_
 sensor_msgs::JointState&#160;</td><td class="memItemRight" valign="bottom"><b>last_joint_state_msg_</b></td></tr>
 <tr class="memdesc:a84e0c15a5b7af75706397ce740a0ac4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Most recent joint data. <br /></td></tr>
 <tr class="separator:a84e0c15a5b7af75706397ce740a0ac4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f05acc8a059097b0340d7ff44cfc80e"><td class="memItemLeft" align="right" valign="top"><a id="a2f05acc8a059097b0340d7ff44cfc80e" name="a2f05acc8a059097b0340d7ff44cfc80e"></a>
+Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><b>vel_estimate_</b></td></tr>
+<tr class="memdesc:a2f05acc8a059097b0340d7ff44cfc80e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Best estimate of velocity. <br /></td></tr>
+<tr class="separator:a2f05acc8a059097b0340d7ff44cfc80e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7438d3eed4a4fe4960fb7b5d6b6fa119"><td class="memItemLeft" align="right" valign="top"><a id="a7438d3eed4a4fe4960fb7b5d6b6fa119" name="a7438d3eed4a4fe4960fb7b5d6b6fa119"></a>
 Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><b>mocap_vel_estimate_</b></td></tr>
 <tr class="memdesc:a7438d3eed4a4fe4960fb7b5d6b6fa119"><td class="mdescLeft">&#160;</td><td class="mdescRight">Best estimate of velocity from mocap diff. <br /></td></tr>
@@ -409,6 +433,10 @@ Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><b>imu_vel_es
 double&#160;</td><td class="memItemRight" valign="bottom"><b>filter_time_constant_</b></td></tr>
 <tr class="memdesc:aeb438bcd18c496572a847525a2b53dce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Velocity filter time constant. <br /></td></tr>
 <tr class="separator:aeb438bcd18c496572a847525a2b53dce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb4d56e49b306b6a1c87cc8059e09117"><td class="memItemLeft" align="right" valign="top"><a id="adb4d56e49b306b6a1c87cc8059e09117" name="adb4d56e49b306b6a1c87cc8059e09117"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>filter_weight_</b></td></tr>
+<tr class="memdesc:adb4d56e49b306b6a1c87cc8059e09117"><td class="mdescLeft">&#160;</td><td class="mdescRight">Velocity filter weight. <br /></td></tr>
+<tr class="separator:adb4d56e49b306b6a1c87cc8059e09117"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86ad7c48cda0f738120a47ea3258e1e2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobotDriver.html#a86ad7c48cda0f738120a47ea3258e1e2">mocap_dropout_threshold_</a></td></tr>
 <tr class="separator:a86ad7c48cda0f738120a47ea3258e1e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3643a0456b6a3040785740f47c9bd719"><td class="memItemLeft" align="right" valign="top"><a id="a3643a0456b6a3040785740f47c9bd719" name="a3643a0456b6a3040785740f47c9bd719"></a>
@@ -435,6 +463,10 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>argc_</b></td></tr>
 char **&#160;</td><td class="memItemRight" valign="bottom"><b>argv_</b></td></tr>
 <tr class="memdesc:aed742be33c57b3accac92fe3a0078b86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Required for some hardware interfaces. <br /></td></tr>
 <tr class="separator:aed742be33c57b3accac92fe3a0078b86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a602214dc659005effb2d63e7f36fa863"><td class="memItemLeft" align="right" valign="top"><a id="a602214dc659005effb2d63e7f36fa863" name="a602214dc659005effb2d63e7f36fa863"></a>
+<a class="el" href="structRobotDriver_1_1ComplementaryFilter.html">ComplementaryFilter</a>&#160;</td><td class="memItemRight" valign="bottom"><b>complementary_filter_</b></td></tr>
+<tr class="memdesc:a602214dc659005effb2d63e7f36fa863"><td class="mdescLeft">&#160;</td><td class="mdescRight">Complementray filter. <br /></td></tr>
+<tr class="separator:a602214dc659005effb2d63e7f36fa863"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >ROS-based driver to handle computation and interfacing for state and control.</p>
