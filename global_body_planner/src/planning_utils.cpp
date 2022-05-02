@@ -135,16 +135,6 @@ void plotYaw(std::vector<double> interp_t,
     yaw.push_back(full_state.ang[2]);
     yaw_rate.push_back(full_state.ang_vel[2]);
   }
-
-  // plt::clf();
-  // plt::ion();
-  // plt::named_plot("yaw", interp_t, yaw);
-  // plt::named_plot("yaw rate", interp_t, yaw_rate);
-  // plt::xlabel("t");
-  // plt::ylabel("yaw");
-  // plt::legend();
-  // plt::show();
-  // plt::pause(0.001);
 }
 
 double poseDistance(const State &s1, const State &s2) {
@@ -263,19 +253,6 @@ void addFullStates(const FullState &start_state,
   wrapped_yaw = math_utils::wrapToPi(unwrapped_yaw);
   filtered_yaw = math_utils::wrapToPi(filtered_yaw);
 
-  // plt::clf();
-  // plt::ion();
-  // // plt::named_plot("unwrapped yaw", interp_t, unwrapped_yaw);
-  // plt::named_plot("wrapped yaw", interp_t, wrapped_yaw);
-  // plt::named_plot("filtered yaw", interp_t, filtered_yaw);
-  // plt::named_plot("yaw rate", interp_t, yaw_rate);
-  // plt::named_plot("filtered yaw rate", interp_t, filtered_yaw_rate);
-  // plt::xlabel("t");
-  // plt::ylabel("z");
-  // plt::legend();
-  // plt::show();
-  // plt::pause(0.001);
-
   // Add full state data into the array
   std::vector<double> x_vec, y_vec, z_vec;
   for (int i = 0; i < num_states; i++) {
@@ -291,44 +268,6 @@ void addFullStates(const FullState &start_state,
     y_vec.push_back(body_state.pos[1]);
     z_vec.push_back(body_state.pos[2]);
   }
-
-// Plot the trajectories for debugging
-#ifdef PLOT_TRAJECTORIES
-  plt::clf();
-  plt::ion();
-  plt::named_plot("z", interp_t, z);
-  plt::named_plot("filtered z", interp_t, filtered_z);
-  plt::named_plot("z rate", interp_t, z_rate);
-  plt::named_plot("filtered z rate", interp_t, filtered_z_rate);
-  plt::xlabel("t");
-  plt::ylabel("z");
-  plt::legend();
-  plt::show();
-  plt::pause(0.001);
-
-  plt::clf();
-  plt::ion();
-  // plt::named_plot("unwrapped yaw", interp_t, unwrapped_yaw);
-  plt::named_plot("wrapped yaw", interp_t, wrapped_yaw);
-  plt::named_plot("filtered yaw", interp_t, filtered_yaw);
-  plt::named_plot("yaw rate", interp_t, yaw_rate);
-  plt::named_plot("filtered yaw rate", interp_t, filtered_yaw_rate);
-  plt::xlabel("t");
-  plt::ylabel("z");
-  plt::legend();
-  plt::show();
-
-  plt::clf();
-  plt::ion();
-  plt::named_plot("x", interp_t, x_vec);
-  plt::named_plot("y", interp_t, y_vec);
-  plt::named_plot("z", interp_t, z_vec);
-  plt::xlabel("t");
-  plt::ylabel("data");
-  plt::legend();
-  plt::show();
-  plt::pause(0.001);
-#endif
 }
 
 GRF getGRF(const Action &a, double t, int phase,
