@@ -2,15 +2,15 @@
 
     <include file="$(find quad_utils)/launch/load_params.launch" />
 
-    <arg name="global_planner" default="fgmp" />
+    <arg name="global_planner" default="twist" />
     <arg name="leaping" default="true" />
     <arg name="ac" default="false" />
-    <arg name="logging" default="true" />
+    <arg name="logging" default="false" />
     <arg name="twist_input" default="none" />
 
     <!-- Launch the node to publish the global body plan -->
     <group if="$(eval arg('global_planner') == 'fgmp')">
-        <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen"> 
+        <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen">
             <param name="enable_leaping" value="$(arg leaping)" />
         </node>
         <param name="local_planner/use_twist_input" value="false" />
@@ -32,8 +32,8 @@
     </group>
 
     <param name="nmpc_controller/enable_adaptive_complexity" value="$(arg ac)" />
-    <node name="local_planner" pkg="local_planner" type="local_planner_node" output="screen"/>
-        
+    <node name="local_planner" pkg="local_planner" type="local_planner_node" output="screen" />
+
     <group if="$(arg logging)">
         <include file="$(find quad_utils)/launch/logging.launch" />
     </group>

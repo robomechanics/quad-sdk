@@ -26,24 +26,24 @@ SOFTWARE.
 
 <launch>
 
-  <arg name="gui" default="false" />
-  <arg name="paused" default="false" />
-  <arg name="software" default="true" />
-  <arg name="controller" default="inverse_dynamics" />
-  <arg name="live_plot" default="false" />
-  <arg name="dash" default="false" />
-  <arg name="world" default="flat" />
-  <arg name="rotors" default="false" />
+  <arg name="gui"             default="false"/>
+  <arg name="paused"          default="false"/>
+  <arg name="software"        default="true"/>
+  <arg name="controller"      default="inverse_dynamics"/>
+  <arg name="live_plot"       default="false"/>
+  <arg name="dash"            default="false"/>
+  <arg name="world"           default="flat"/>
+  <arg name="rotors"          default="false"/>
 
-  <include file="$(find quad_utils)/launch/mapping.launch">
-    <arg name="input_type" value="mesh" />
-    <arg name="world" value="$(arg world)" />
+  <include file="$(find quad_utils)/launch/mapping.launch" >
+    <arg name="input_type" value="mesh"/>
+    <arg name="world" value="$(arg world)"/>
   </include>
 
   <group if="$(arg software)">
     <include file="$(find quad_utils)/launch/visualization.launch">
-      <arg name="live_plot" value="$(arg live_plot)" />
-      <arg name="dash" value="$(arg dash)" />
+      <arg name="live_plot" value="$(arg live_plot)"/>
+      <arg name="dash" value="$(arg dash)"/>
     </include>
     <include file="$(find quad_utils)/launch/robot_driver.launch">
       <arg name="controller" value="$(arg controller)"/>
@@ -66,11 +66,11 @@ SOFTWARE.
 
   <!-- Launch the Quad world with specific physics parameters -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="paused" value="$(arg paused)" />
-    <arg name="world_name" value="$(find gazebo_scripts)/worlds/$(arg world)/$(arg world).world" />
-    <arg name="gui" value="$(arg gui)" />
-    <arg name="physics" value="ode" />
-    <arg name="verbose" value="$(arg gui)" />
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="world_name" value="$(find gazebo_scripts)/worlds/$(arg world)/$(arg world).world"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="physics" value="ode"/>
+    <arg name="verbose" value="$(arg gui)"/>
   </include>
 
   <!-- Load the parameters and the sdf description -->
@@ -85,13 +85,20 @@ SOFTWARE.
   </group>
 
   <!-- Spawn SDF model -->
-  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0 -y 0.0 -z 0.5" output="screen" />
+  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.5" output="screen"/>
 
-  <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load" />
+  <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
 
-  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/spirit" args="joint_controller joint_state_controller"></node>
+  <node name="controller_spawner"
+        pkg="controller_manager"
+        type="spawner"
+        respawn="false"
+        output="screen"
+        ns="/spirit"
+        args="joint_controller joint_state_controller">
+  </node>
 
   <!-- Load the contact state publisher -->
-  <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen" />
-
+  <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
+  
 </launch>
