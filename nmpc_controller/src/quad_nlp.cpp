@@ -371,7 +371,6 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
           g_max_complex_soft_;
     }
   }
-
   return true;
 }
 
@@ -442,7 +441,6 @@ bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
         panic_weights_ * get_slack_state_var(w, i).sum() +
         constraint_panic_weights_ * get_slack_constraint_var(w, i).sum();
   }
-
   // std::cout << "Stop and check cost" << std::endl;
   // throw std::runtime_error("Stop");
   return true;
@@ -632,8 +630,6 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     }
   }
 
-  // std::cout << "Stop and check constraints" << std::endl;
-  // throw std::runtime_error("Stop");
   return true;
 }
 
@@ -1288,8 +1284,8 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
 
   if (contact_sequence_diff > 1e-3) {  // New contact mode
     w0_.segment(get_primal_control_idx(N_ - 2), m_body_).fill(0);
-    z_L0_.segment(get_primal_control_idx(N_ - 2), m_body_).fill(1);
-    z_U0_.segment(get_primal_control_idx(N_ - 2), m_body_).fill(1);
+    z_L0_.segment(get_primal_control_idx(N_ - 2), m_body_).fill(0);
+    z_U0_.segment(get_primal_control_idx(N_ - 2), m_body_).fill(0);
 
     // Compute the number of contacts
     double num_contacts = contact_sequence_.col(N_ - 2).sum();

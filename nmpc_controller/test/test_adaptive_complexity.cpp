@@ -112,6 +112,17 @@ TEST(NMPCTest, testAdaptiveComplexity) {
     tic = std::chrono::steady_clock::now();
 
     std::cout << "Starting solve" << std::endl;
+    for (int j = 0; j < adpative_contact_schedule_.size(); j++) {
+      std::cout << "i = N_ - " << N_ - j << ": ";
+      for (int k = 0; k < adpative_contact_schedule_[j].size(); k++) {
+        if (adpative_contact_schedule_[j][k]) {
+          std::cout << "1 ";
+        } else {
+          std::cout << "0 ";
+        }
+      }
+      std::cout << std::endl;
+    }
     // std::cout << "current_state_ = \n" << current_state_ << std::endl;
     // std::cout << "ref_body_plan_ = \n" << ref_body_plan_ << std::endl;
     // std::cout << "foot_positions_world_ = \n"

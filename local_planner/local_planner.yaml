@@ -1,5 +1,5 @@
 local_planner:
-  update_rate: 100 # Hz
+  update_rate: 300 # Hz
   timestep: 0.03 # s
   horizon_length: 26 # timesteps
   cmd_vel_filter_const: 0.10
