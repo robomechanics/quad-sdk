@@ -328,6 +328,9 @@ class RobotDriver {
   /// Most recent joint data
   sensor_msgs::JointState last_joint_state_msg_;
 
+  /// Best estimate of velocity
+  Eigen::Vector3d vel_estimate_;
+
   /// Best estimate of velocity from mocap diff
   Eigen::Vector3d mocap_vel_estimate_;
 
@@ -336,6 +339,9 @@ class RobotDriver {
 
   /// Velocity filter time constant
   double filter_time_constant_;
+
+  /// Velocity filter weight
+  double filter_weight_;
 
   /// Maximum time elapsed between mocap messages before committing to new
   /// message
@@ -358,6 +364,28 @@ class RobotDriver {
 
   /// Required for some hardware interfaces
   char** argv_;
+
+  /// Struct of second-order low/high pass filter with derivative/intergral
+  struct Filter {
+    // State space model
+    Eigen::Matrix<double, 2, 2> A;
+    Eigen::Matrix<double, 2, 1> B;
+    Eigen::Matrix<double, 1, 2> C;
+    Eigen::Matrix<double, 1, 1> D;
+
+    // Filter states
+    std::vector<Eigen::Matrix<double, 2, 1>> x;
+    bool init;
+  };
+
+  /// Struct of complementray filter with low and high pass filters
+  struct ComplementaryFilter {
+    Filter low_pass_filter;
+    Filter high_pass_filter;
+  };
+
+  /// Complementray filter
+  ComplementaryFilter complementary_filter_;
 };
 
 #endif  // ROBOT_DRIVER_H

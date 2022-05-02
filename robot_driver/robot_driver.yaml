@@ -3,7 +3,7 @@ robot_driver:
   publish_rate: 500
   mocap_rate: 360.0 # This must match the mocap frame rate or velocity estimates will be mis-scaled
   mocap_dropout_threshold: 0.027 # s
-  filter_time_constant: 0.05 # s
+  filter_time_constant: 0.01 # s
   input_timeout: 0.2
   state_timeout: 0.1
   heartbeat_timeout: 0.2
@@ -21,3 +21,12 @@ robot_driver:
   safety_kd: [2, 2, 2]
   stand_joint_angles: [0.0, 0.76, 1.52]
   sit_joint_angles: [0.0, 0.0, 0.0]
+
+  low_pass_a: [1.982396167082734, -0.982698133946662, 1, 0]
+  low_pass_b: [0.500000000000000, 0]
+  low_pass_c: [0.215496896615299, -0.215529818338719]
+  low_pass_d: [0.054512145789988]
+  high_pass_a: [1.987355332976037, -0.987512256523656, 1, 0]
+  high_pass_b: [0.062500000000000, 0]
+  high_pass_c: [0.031997068153116, -0.031599976364264]
+  high_pass_d: [9.999868736007029e-04]
