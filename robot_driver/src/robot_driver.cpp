@@ -152,51 +152,37 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   grf_array_msg_.header.frame_id = "map";
   user_tx_data_.resize(1);
 
-  std::vector<double> high_pass_a(
-      complementary_filter_.high_pass_filter.A.data(),
-      complementary_filter_.high_pass_filter.A.data() +
-          complementary_filter_.high_pass_filter.A.size());
-  std::vector<double> high_pass_b(
-      complementary_filter_.high_pass_filter.B.data(),
-      complementary_filter_.high_pass_filter.B.data() +
-          complementary_filter_.high_pass_filter.B.size());
-  std::vector<double> high_pass_c(
-      complementary_filter_.high_pass_filter.C.data(),
-      complementary_filter_.high_pass_filter.C.data() +
-          complementary_filter_.high_pass_filter.C.size());
-  std::vector<double> high_pass_d(
-      complementary_filter_.high_pass_filter.D.data(),
-      complementary_filter_.high_pass_filter.D.data() +
-          complementary_filter_.high_pass_filter.D.size());
+  std::vector<double> high_pass_a, high_pass_b, high_pass_c, high_pass_d;
   quad_utils::loadROSParam(nh_, "robot_driver/high_pass_a", high_pass_a);
   quad_utils::loadROSParam(nh_, "robot_driver/high_pass_b", high_pass_b);
   quad_utils::loadROSParam(nh_, "robot_driver/high_pass_c", high_pass_c);
   quad_utils::loadROSParam(nh_, "robot_driver/high_pass_d", high_pass_d);
   complementary_filter_.high_pass_filter.x.resize(3);
   complementary_filter_.high_pass_filter.init = false;
+  complementary_filter_.high_pass_filter.A =
+      Eigen::Map<Eigen::Matrix<double, 2, 2> >(high_pass_a.data()).transpose();
+  complementary_filter_.high_pass_filter.B =
+      Eigen::Map<Eigen::Matrix<double, 1, 2> >(high_pass_b.data()).transpose();
+  complementary_filter_.high_pass_filter.C =
+      Eigen::Map<Eigen::Matrix<double, 2, 1> >(high_pass_c.data()).transpose();
+  complementary_filter_.high_pass_filter.D =
+      Eigen::Map<Eigen::Matrix<double, 1, 1> >(high_pass_d.data()).transpose();
 
-  std::vector<double> low_pass_a(
-      complementary_filter_.low_pass_filter.A.data(),
-      complementary_filter_.low_pass_filter.A.data() +
-          complementary_filter_.low_pass_filter.A.size());
-  std::vector<double> low_pass_b(
-      complementary_filter_.low_pass_filter.B.data(),
-      complementary_filter_.low_pass_filter.B.data() +
-          complementary_filter_.low_pass_filter.B.size());
-  std::vector<double> low_pass_c(
-      complementary_filter_.low_pass_filter.C.data(),
-      complementary_filter_.low_pass_filter.C.data() +
-          complementary_filter_.low_pass_filter.C.size());
-  std::vector<double> low_pass_d(
-      complementary_filter_.low_pass_filter.D.data(),
-      complementary_filter_.low_pass_filter.D.data() +
-          complementary_filter_.low_pass_filter.D.size());
+  std::vector<double> low_pass_a, low_pass_b, low_pass_c, low_pass_d;
   quad_utils::loadROSParam(nh_, "robot_driver/low_pass_a", low_pass_a);
   quad_utils::loadROSParam(nh_, "robot_driver/low_pass_b", low_pass_b);
   quad_utils::loadROSParam(nh_, "robot_driver/low_pass_c", low_pass_c);
   quad_utils::loadROSParam(nh_, "robot_driver/low_pass_d", low_pass_d);
   complementary_filter_.low_pass_filter.x.resize(3);
   complementary_filter_.low_pass_filter.init = false;
+  complementary_filter_.low_pass_filter.A =
+      Eigen::Map<Eigen::Matrix<double, 2, 2> >(low_pass_a.data()).transpose();
+  complementary_filter_.low_pass_filter.B =
+      Eigen::Map<Eigen::Matrix<double, 1, 2> >(low_pass_b.data()).transpose();
+  complementary_filter_.low_pass_filter.C =
+      Eigen::Map<Eigen::Matrix<double, 2, 1> >(low_pass_c.data()).transpose();
+  complementary_filter_.low_pass_filter.D =
+      Eigen::Map<Eigen::Matrix<double, 1, 1> >(low_pass_d.data()).transpose();
 }
 
 void RobotDriver::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
@@ -391,19 +377,8 @@ bool RobotDriver::updateState() {
 
       if (!complementary_filter_.high_pass_filter.init) {
         // Init filter
-        Eigen::Matrix<double, 3, 2> left;
-        left.topRows(2) = complementary_filter_.high_pass_filter.A -
-                          Eigen::Matrix2d::Identity();
-        left.bottomRows(1) = complementary_filter_.high_pass_filter.C;
-
-        Eigen::Matrix<double, 3, 1> right;
-        right.topRows(2) = -complementary_filter_.high_pass_filter.B;
-        right.bottomRows(1) = -complementary_filter_.high_pass_filter.D;
-
         for (size_t i = 0; i < 3; i++) {
-          complementary_filter_.high_pass_filter.x.at(i) =
-              left.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV)
-                  .solve(right * acc(i));
+          complementary_filter_.high_pass_filter.x.at(i) << 0, 0;
         }
 
         complementary_filter_.high_pass_filter.init = true;
