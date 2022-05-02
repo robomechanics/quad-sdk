@@ -50,13 +50,6 @@ TEST(NMPCTest, testAdaptiveComplexity) {
     x_null_nom_.segment<3>(3 * i) = joint_state;
   }
 
-  // double abad_nom = 0;
-  // double hip_nom = 1.57 * 0.5;
-  // double knee_nom = 1.57;
-  // x_null_nom_ << abad_nom, hip_nom, knee_nom, abad_nom, hip_nom, knee_nom,
-  //     abad_nom, hip_nom, knee_nom, abad_nom, hip_nom, knee_nom, 0, 0, 0, 0,
-  //     0, 0, 0, 0, 0, 0, 0, 0;
-
   current_state_.segment(36, 24) = x_null_nom_;
 
   std::vector<std::vector<bool>> adpative_contact_schedule_;
@@ -111,25 +104,6 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   for (int i = 0; i < 10; i++) {
     tic = std::chrono::steady_clock::now();
 
-    std::cout << "Starting solve" << std::endl;
-    for (int j = 0; j < adpative_contact_schedule_.size(); j++) {
-      std::cout << "i = N_ - " << N_ - j << ": ";
-      for (int k = 0; k < adpative_contact_schedule_[j].size(); k++) {
-        if (adpative_contact_schedule_[j][k]) {
-          std::cout << "1 ";
-        } else {
-          std::cout << "0 ";
-        }
-      }
-      std::cout << std::endl;
-    }
-    // std::cout << "current_state_ = \n" << current_state_ << std::endl;
-    // std::cout << "ref_body_plan_ = \n" << ref_body_plan_ << std::endl;
-    // std::cout << "foot_positions_world_ = \n"
-    //           << foot_positions_world_ << std::endl;
-    // std::cout << "foot_velocities_world_ = \n"
-    //           << foot_velocities_world_ << std::endl;
-
     leg_planner_->computeLegPlan(
         current_state_, ref_body_plan_, foot_positions_body_,
         foot_positions_world_, foot_velocities_world_,
@@ -141,9 +115,6 @@ TEST(NMPCTest, testAdaptiveComplexity) {
                                                                        tic)
                      .count()
               << "[µs]" << std::endl;
-
-    std::cout << "body_plan_ = \n" << body_plan_ << std::endl;
-    std::cout << "grf_plan_ = \n" << grf_plan_ << std::endl;
 
     current_state_.head(12) = body_plan_.block(1, 0, 1, 12).transpose();
 

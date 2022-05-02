@@ -46,13 +46,6 @@ quadNLP::quadNLP(
   Q_complex_ = Q_complex;
   R_complex_ = R_complex;
 
-  std::cout << "n_cost_simple_ = " << n_cost_simple_ << std::endl;
-  std::cout << "n_cost_complex_ = " << n_cost_complex_ << std::endl;
-  std::cout << "m_cost_simple_ = " << m_cost_simple_ << std::endl;
-  std::cout << "m_cost_complex_ = " << m_cost_complex_ << std::endl;
-  std::cout << "Q_complex_ = " << Q_complex_ << std::endl;
-  std::cout << "R_complex_ = " << R_complex_ << std::endl;
-
   // feet location initialized by nominal position
   foot_pos_body_ = Eigen::MatrixXd(N_, 12);
   foot_pos_world_ = Eigen::MatrixXd(N_, 12);
@@ -85,13 +78,6 @@ quadNLP::quadNLP(
   x_null_nom_ << -abad_nom, hip_nom, knee_nom, -abad_nom, hip_nom, knee_nom,
       abad_nom, hip_nom, knee_nom, abad_nom, hip_nom, knee_nom, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0;
-
-  std::cout << "n_complex_ = " << n_complex_ << std::endl;
-  std::cout << "n_simple_ = " << n_simple_ << std::endl;
-  std::cout << "m_complex_ = " << m_complex_ << std::endl;
-  std::cout << "m_simple_ = " << m_simple_ << std::endl;
-  std::cout << "g_complex_ = " << g_complex_ << std::endl;
-  std::cout << "g_simple_ = " << g_simple_ << std::endl;
 
   // Define which constraints will be relaxed
   g_relaxed_ = num_feet_;
@@ -1604,6 +1590,7 @@ void quadNLP::update_structure() {
     throw std::runtime_error("Number of constraints is inconsistent");
   }
 
+  // Uncomment to check relaxed constraint nnz
   // std::cout << "iRow_mat_relaxed_[sys_id][JAC] = "
   //           << iRow_mat_relaxed_[COMPLEX][JAC] << std::endl;
   // std::cout << "jCol_mat_relaxed_[sys_id][JAC] = "
@@ -1612,30 +1599,31 @@ void quadNLP::update_structure() {
   //           << iRow_mat_relaxed_[COMPLEX][JAC].size() << std::endl;
   // std::cout << "jCol_mat_relaxed_[sys_id][JAC].size() = "
   //           << jCol_mat_relaxed_[COMPLEX][JAC].size() << std::endl;
-  std::cout << "nnz_mat_ = " << nnz_mat_ << std::endl;
+  // std::cout << "nnz_mat_ = " << nnz_mat_ << std::endl;
 
   compute_nnz_jac_g();
   compute_nnz_h();
 
+  // Uncomment to check NLP variables
   // std::cout << "complexity_schedule.size() = " << complexity_schedule.size()
   //           << std::endl;
   // std::cout << "N_ = " << N_ << std::endl;
-  std::cout << "cmplx_sch = " << complexity_schedule.transpose() << std::endl;
-  // std::cout << "sys_id_sch = " << sys_id_schedule_.transpose() <<
-  std::cout << "n_vec_ =    " << n_vec_.transpose() << std::endl;
-  std::cout << "m_vec_ =    " << m_vec_.transpose() << std::endl;
-  std::cout << "n_cost_vec_ =    " << n_cost_vec_.transpose() << std::endl;
-  std::cout << "m_cost_vec_ =    " << m_cost_vec_.transpose() << std::endl;
+  // std::cout << "cmplx_sch = " << complexity_schedule.transpose() <<
+  // std::endl; std::cout << "sys_id_sch = " << sys_id_schedule_.transpose() <<
+  // std::cout << "n_vec_ =    " << n_vec_.transpose() << std::endl;
+  // std::cout << "m_vec_ =    " << m_vec_.transpose() << std::endl;
+  // std::cout << "n_cost_vec_ =    " << n_cost_vec_.transpose() << std::endl;
+  // std::cout << "m_cost_vec_ =    " << m_cost_vec_.transpose() << std::endl;
   // std::cout << "n_slack_vec_ = " << n_slack_vec_.transpose() << std::endl;
-  std::cout << "g_vec_ =      " << g_vec_.transpose() << std::endl;
+  // std::cout << "g_vec_ =      " << g_vec_.transpose() << std::endl;
   // std::cout << "g_vec_.sum() = " << g_vec_.sum() << std::endl;
-  std::cout << "g_slack_vec_ = " << g_slack_vec_.transpose() << std::endl;
+  // std::cout << "g_slack_vec_ = " << g_slack_vec_.transpose() << std::endl;
   // std::cout << "g_vec_.sum() + n_vars_slack_ = " << g_vec_.sum() +
   // n_vars_slack_
   //           << std::endl;
 
-  std::cout << "n_constraints_ = " << n_constraints_ << std::endl;
-  std::cout << "n_vars_ = " << n_vars_ << std::endl;
-  std::cout << "n_vars_primal_ = " << n_vars_primal_ << std::endl;
-  std::cout << "n_vars_slack_ = " << n_vars_slack_ << std::endl;
+  // std::cout << "n_constraints_ = " << n_constraints_ << std::endl;
+  // std::cout << "n_vars_ = " << n_vars_ << std::endl;
+  // std::cout << "n_vars_primal_ = " << n_vars_primal_ << std::endl;
+  // std::cout << "n_vars_slack_ = " << n_vars_slack_ << std::endl;
 }
