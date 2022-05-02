@@ -16,8 +16,6 @@
 #include <ros/ros.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-#include "quad_utils/matplotlibcpp.h"
-
 //! Local Body Planner library
 /*!
    Wrapper around Quadrupedal MPC that interfaces with our ROS architecture
