@@ -41,7 +41,7 @@ class GlobalBodyPlannerTestFixture : public ::testing::Test {
 
     // Create planner and configuration
     planner_config_.loadVectors();
-  };
+  }
 
   /**
    * @brief Constructor for GlobalBodyPlannerTestFixture Class

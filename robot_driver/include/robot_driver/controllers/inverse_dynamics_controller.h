@@ -33,7 +33,7 @@ class InverseDynamicsController : public LegController {
    * @brief Return the reference state used for current tracking
    * @return Reference state
    */
-  inline quad_msgs::RobotState getReferenceState() { return ref_state_msg_; };
+  inline quad_msgs::RobotState getReferenceState() { return ref_state_msg_; }
 
  private:
   /// Prior grf_array

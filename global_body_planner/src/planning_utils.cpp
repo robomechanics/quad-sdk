@@ -69,7 +69,7 @@ void vectorToFullState(const std::vector<double> v, FullState &s) {
   s.ang_vel[2] = v[11];
 }
 
-void flipDirection(State &state) { state.vel = -state.vel; };
+void flipDirection(State &state) { state.vel = -state.vel; }
 
 void flipDirection(Action &action) {
   // Reverse ground reaction forces (works if GRF is symmetric)
@@ -88,7 +88,7 @@ void flipDirection(Action &action) {
     action.t_s_leap = action.t_s_land;
     action.t_s_land = temp_t_s;
   }
-};
+}
 
 void printState(const State &s) {
   std::cout << "STATE: pos = " << s.pos.transpose()
@@ -735,7 +735,8 @@ bool refineStance(const State &s, int phase, Action &a,
         0.01;  // Make sure validity is robust to discretization
 
     // Compute validity checks
-    // TODO: sample surface normal from ground projection (non-filtered)
+    // TODO(jcnorby): sample surface normal from ground projection
+    // (non-filtered)
     grf_valid = (grf_stance.norm() <= planner_config.PEAK_GRF_MAX) &&
                 (grf_stance[2] >= 1);
     friction_cone_valid =
@@ -943,7 +944,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
   }
 
   // Find yaw, pitch, and their sines and cosines
-  // TODO: Add getRollFromState
+  // TODO(jcnorby): Add getRollFromState
   double yaw = atan2(s.vel[1], s.vel[0]);
   double cy = cos(yaw);
   double sy = sin(yaw);
