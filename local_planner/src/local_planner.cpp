@@ -310,7 +310,7 @@ void LocalPlanner::getStateAndReferencePlan() {
   foot_positions_world_.row(0) = current_foot_positions_world_;
 
   // Stand if the plan has been tracked
-  if ((current_state_ - ref_body_plan_.bottomRows(1)).norm() <=
+  if ((current_state_ - ref_body_plan_.bottomRows(1).transpose()).norm() <=
       stand_pos_error_threshold_) {
     control_mode_ = STAND;
   }

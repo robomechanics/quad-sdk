@@ -13,8 +13,8 @@ using namespace Ipopt;
 quadNLP::quadNLP(
     int N, double dt, double mu, double panic_weights,
     double constraint_panic_weights, double Q_temporal_factor,
-    double R_temporal_factor, bool feet_in_simple, int n_simple, int n_complex,
-    int m_simple, int m_complex, int g_simple, int g_complex, int n_cost_simple,
+    double R_temporal_factor, int n_simple, int n_complex, int m_simple,
+    int m_complex, int g_simple, int g_complex, int n_cost_simple,
     int n_cost_complex, int m_cost_simple, int m_cost_complex,
     const Eigen::VectorXd &Q_complex, const Eigen::VectorXd &R_complex,
     const Eigen::VectorXd &x_min_complex, const Eigen::VectorXd &x_max_complex,
@@ -29,7 +29,6 @@ quadNLP::quadNLP(
   R_temporal_factor_ = R_temporal_factor;
   panic_weights_ = panic_weights;
   constraint_panic_weights_ = constraint_panic_weights;
-  feet_in_simple_ = feet_in_simple;
 
   // Load dimension parameters
   n_simple_ = n_simple;
@@ -131,7 +130,7 @@ quadNLP::quadNLP(
     }
   }
 
-  x_reference_ = Eigen::MatrixXd(n_simple_, N_);
+  x_reference_ = Eigen::MatrixXd(n_body_ + n_foot_, N_);
   x_reference_.fill(0);
 
   ground_height_ = Eigen::VectorXd(N_);
@@ -243,21 +242,24 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
     get_primal_constraint_vals(g_l_matrix, i) = g_min_complex_.head(g_vec_[i]);
     get_primal_constraint_vals(g_u_matrix, i) = g_max_complex_.head(g_vec_[i]);
 
-    if (feet_in_simple_ || n_vec_[i + 1] > n_simple_) {
-      for (int j = 0; j < num_feet_; ++j) {
-        bool constrain_feet =
-            (!allow_foot_traj_modification) ||
-            (sys_id_schedule_[i] == SIMPLE) ||
-            (contact_sequence_(j, i + 1) == 1) ||
-            (contact_sequence_(j, i + 1) == 0 && contact_sequence_(j, i) == 1);
+    bool modify_foot_constraints = (sys_id_schedule_[i] == COMPLEX ||
+                                    sys_id_schedule_[i] == COMPLEX_TO_SIMPLE);
 
-        bool relax_touchdown_foot_vel =
-            allow_foot_traj_modification &&
+    if (modify_foot_constraints) {
+      for (int j = 0; j < num_feet_; ++j) {
+        bool require_nominal_foot_state =
+            !allow_foot_traj_modification || sys_id_schedule_[i] != COMPLEX;
+        bool is_stance = contact_sequence_(j, i + 1) == 1;
+        bool is_liftoff =
+            (contact_sequence_(j, i + 1) == 0 && contact_sequence_(j, i) == 1);
+        bool is_touchdown =
             (contact_sequence_(j, i + 1) == 1 && contact_sequence_(j, i) == 0);
 
-        bool remove_foot_dynamics =
-            (!allow_foot_traj_modification) ||
-            (sys_id_schedule_[i] == SIMPLE || contact_sequence_(j, i) == 1);
+        bool constrain_feet =
+            require_nominal_foot_state || is_stance || is_liftoff;
+
+        bool remove_foot_dynamics = constrain_feet && !is_touchdown &&
+                                    !sys_id_schedule_[i] != COMPLEX_TO_SIMPLE;
 
         bool add_terrain_height_constraint = false;
         if (i >= 1 && i < N_ - 2) {
@@ -268,17 +270,18 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
         }
 
         if (remove_foot_dynamics) {
+          int g_foot_eom_idx = n_body_ + 16;
           get_primal_constraint_vals(g_l_matrix, i)
-              .segment(g_simple_ - n_foot_ - 4 + 3 * j, 3)
+              .segment(g_foot_eom_idx + 3 * j, 3)
               .fill(-2e19);
           get_primal_constraint_vals(g_u_matrix, i)
-              .segment(g_simple_ - n_foot_ - 4 + 3 * j, 3)
+              .segment(g_foot_eom_idx + 3 * j, 3)
               .fill(2e19);
           get_primal_constraint_vals(g_l_matrix, i)
-              .segment(g_simple_ - n_foot_ - 4 + n_foot_ / 2 + 3 * j, 3)
+              .segment(g_foot_eom_idx + n_foot_ / 2 + 3 * j, 3)
               .fill(-2e19);
           get_primal_constraint_vals(g_u_matrix, i)
-              .segment(g_simple_ - n_foot_ - 4 + n_foot_ / 2 + 3 * j, 3)
+              .segment(g_foot_eom_idx + n_foot_ / 2 + 3 * j, 3)
               .fill(2e19);
           get_primal_foot_control_var(x_l_matrix, i).segment(3 * j, 3).fill(0);
           get_primal_foot_control_var(x_u_matrix, i).segment(3 * j, 3).fill(0);
@@ -289,7 +292,7 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
               foot_pos_world_.block<1, 3>(i + 1, 3 * j);
           get_primal_foot_state_var(x_u_matrix, i + 1).segment(3 * j, 3) =
               foot_pos_world_.block<1, 3>(i + 1, 3 * j);
-          if (!relax_touchdown_foot_vel) {
+          if (!is_touchdown) {
             get_primal_foot_state_var(x_l_matrix, i + 1)
                 .segment(3 * j + n_foot_ / 2, 3) =
                 foot_vel_world_.block<1, 3>(i + 1, 3 * j);
@@ -440,6 +443,8 @@ bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
         constraint_panic_weights_ * get_slack_constraint_var(w, i).sum();
   }
 
+  // std::cout << "Stop and check cost" << std::endl;
+  // throw std::runtime_error("Stop");
   return true;
 }
 
@@ -627,6 +632,8 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     }
   }
 
+  // std::cout << "Stop and check constraints" << std::endl;
+  // throw std::runtime_error("Stop");
   return true;
 }
 
@@ -1305,7 +1312,7 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
   }
   // Update the last state
 
-  if (feet_in_simple_ || n_vec_[N_ - 1] > n_simple_) {
+  if (n_vec_[N_ - 1] > n_simple_) {
     get_primal_foot_state_var(w0_, N_ - 1).head(n_foot_ / 2) =
         foot_pos_world_.row(N_ - 1);
     get_primal_foot_state_var(w0_, N_ - 1).tail(n_foot_ / 2) =
@@ -1372,10 +1379,9 @@ void quadNLP::update_solver(
     this->adaptive_complexity_schedule_ = adaptive_complexity_schedule;
     this->update_structure();
   }
-
   // Update initial state
   x_current_.segment(0, n_body_) = initial_state.head(n_body_);
-  if (feet_in_simple_ || n_vec_[0] > n_simple_) {
+  if (n_vec_[0] > n_simple_) {
     x_current_.segment(n_body_, n_foot_ / 2) = foot_pos_world_.row(0);
     x_current_.segment(n_body_ + n_foot_ / 2, n_foot_ / 2) =
         foot_vel_world_.row(0);
@@ -1387,10 +1393,8 @@ void quadNLP::update_solver(
   // Update reference trajectory
   // Local planner has row as N+1 horizon and col as states
   x_reference_.topRows(n_body_) = ref_traj.transpose().topRows(n_body_);
-  if (feet_in_simple_) {
-    x_reference_.middleRows(n_body_, n_foot_ / 2) = foot_pos_world_.transpose();
-    x_reference_.bottomRows(n_foot_ / 2) = foot_vel_world_.transpose();
-  }
+  x_reference_.middleRows(n_body_, n_foot_ / 2) = foot_pos_world_.transpose();
+  x_reference_.bottomRows(n_foot_ / 2) = foot_vel_world_.transpose();
 
   // Update the first finite element length
   first_element_duration_ = first_element_duration;
@@ -1411,7 +1415,7 @@ void quadNLP::update_solver(
     // Initialize future state predictions and controls
     for (size_t i = 0; i < N_ - 1; i++) {
       get_primal_state_var(w0_, i + 1).head(n_simple_) =
-          x_reference_.col(i + 1);
+          x_reference_.col(i + 1).head(n_simple_);
       if (n_vec_[i + 1] == n_complex_) {
         get_primal_state_var(w0_, i + 1).tail(n_null_) = x_null_nom_;
       }
@@ -1498,9 +1502,7 @@ void quadNLP::update_structure() {
     m_cost_vec_[i] =
         (complexity_schedule[i] == 1) ? m_cost_complex_ : m_cost_simple_;
     n_slack_vec_[i] =
-        (complexity_schedule[i + 1] == 1 && apply_slack_to_complex_states_)
-            ? n_complex_
-            : n_simple_;
+        (complexity_schedule[i + 1] == 1) ? n_complex_ : n_simple_;
 
     g_vec_[i] = nrow_mat_(sys_id_schedule_[i], FUNC);
     g_slack_vec_[i] =

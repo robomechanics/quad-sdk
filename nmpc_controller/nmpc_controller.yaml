@@ -5,7 +5,6 @@ nmpc_controller:
   R_temporal_factor: 1
   friction_coefficient: 0.3
   enable_adaptive_complexity: true
-  feet_in_simple: false
   fixed_complex_idxs: [] # set to [] for none
   fixed_complex_head: 0 # set to 0 for none
   fixed_complex_tail: 0 # set to 0 for none

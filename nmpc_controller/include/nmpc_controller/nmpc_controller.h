@@ -94,9 +94,6 @@ class NMPCController {
 
   /// Adaptive complexity schedule
   Eigen::VectorXi adaptive_complexity_schedule_;
-
-  /// Include foot state information in the simple system
-  bool feet_in_simple_;
 };
 
 #endif  // MPC_CONTROLLER_H

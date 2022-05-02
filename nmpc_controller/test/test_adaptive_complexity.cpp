@@ -111,7 +111,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   for (int i = 0; i < 10; i++) {
     tic = std::chrono::steady_clock::now();
 
-    // std::cout << "Starting solve" << std::endl;
+    std::cout << "Starting solve" << std::endl;
     // std::cout << "current_state_ = \n" << current_state_ << std::endl;
     // std::cout << "ref_body_plan_ = \n" << ref_body_plan_ << std::endl;
     // std::cout << "foot_positions_world_ = \n"
@@ -124,7 +124,6 @@ TEST(NMPCTest, testAdaptiveComplexity) {
         foot_positions_world_, foot_velocities_world_,
         adpative_contact_schedule_, ref_ground_height, first_element_duration,
         same_plan_index, map, body_plan_, grf_plan_);
-    std::cout << "made it out of computeLegPlan" << std::endl;
     toc = std::chrono::steady_clock::now();
     std::cout << "Time difference = "
               << std::chrono::duration_cast<std::chrono::microseconds>(toc -

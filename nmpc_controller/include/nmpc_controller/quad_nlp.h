@@ -81,17 +81,11 @@ class quadNLP : public TNLP {
   Eigen::VectorXi n_vec_, n_slack_vec_, m_vec_, g_vec_, g_slack_vec_,
       n_cost_vec_, m_cost_vec_;
 
-  /// Boolean for whether to allow modifications of foot trajectory
-  bool feet_in_simple_;
-
-  /// Boolean for whether to apply panic variables for complex states
-  const bool apply_slack_to_complex_states_ = true;
-
   /// Boolean for whether to apply panic variables for complex constraints
   const bool apply_slack_to_complex_constr_ = true;
 
   /// Boolean for whether to allow modifications of foot trajectory
-  const bool allow_foot_traj_modification = true;
+  const bool allow_foot_traj_modification = false;
 
   /// Boolean for whether to include the terrain in the foot height constraint
   const bool use_terrain_constraint = false;
@@ -251,10 +245,9 @@ class quadNLP : public TNLP {
   /** Default constructor */
   quadNLP(int N, double dt, double mu, double panic_weights,
           double constraint_panic_weights, double Q_temporal_factor,
-          double R_temporal_factor, bool feet_in_simple, int n_simple,
-          int n_complex, int m_simple, int m_complex, int g_simple,
-          int g_complex, int x_dim_cost_simple, int x_dim_cost_complex,
-          int u_dim_cost_simple, int u_dim_cost_complex,
+          double R_temporal_factor, int n_simple, int n_complex, int m_simple,
+          int m_complex, int g_simple, int g_complex, int x_dim_cost_simple,
+          int x_dim_cost_complex, int u_dim_cost_simple, int u_dim_cost_complex,
           const Eigen::VectorXd &Q_complex, const Eigen::VectorXd &R_complex,
           const Eigen::VectorXd &x_min_complex,
           const Eigen::VectorXd &x_max_complex,
