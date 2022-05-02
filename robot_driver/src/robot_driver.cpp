@@ -372,10 +372,7 @@ bool RobotDriver::updateState() {
       acc = rot * acc;
 
       // Ignore gravity
-      acc[2] += 9.81;
-
-      // I guess the acceleration is negative
-      acc = -acc;
+      acc[2] -= 9.81;
 
       if (!complementary_filter_.high_pass_filter.init) {
         // Init filter, we want to make sure that if the input is zero, the
