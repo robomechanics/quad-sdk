@@ -42,7 +42,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) :
     last_cmd_vel_msg_time_max_);
 
   // Load system parameters from launch file (not in config file)
-  nh.param<bool>("local_planner/use_nmpc", use_nmpc_, false);
+  nh.param<bool>("local_planner/use_nmpc", use_nmpc_, true);
   nh.param<bool>("local_planner/use_twist_input", use_twist_input_, false);
 
   // Convert kinematics
@@ -242,6 +242,14 @@ void LocalPlanner::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg
 void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg) {
 
   // Ignore non-planar components of desired twist
+  // cmd_vel_[0] = 0.95 * cmd_vel_[0] + 0.05 * cmd_vel_scale_ * msg->linear.x;
+  // cmd_vel_[1] = 0.95 * cmd_vel_[1] + 0.05 * cmd_vel_scale_ * msg->linear.y;
+  // cmd_vel_[2] = 0;
+  // cmd_vel_[3] = 0;
+  // cmd_vel_[4] = 0;
+  // cmd_vel_[5] = 0.95 * cmd_vel_[5] + 0.05 * cmd_vel_scale_ * msg->angular.z;
+
+
   cmd_vel_[0] = 0.95 * cmd_vel_[0] + 0.05 * cmd_vel_scale_ * msg->linear.x;
   cmd_vel_[1] = 0.95 * cmd_vel_[1] + 0.05 * cmd_vel_scale_ * msg->linear.y;
   cmd_vel_[2] = 0.95 * cmd_vel_[2] + 0.05 * cmd_vel_scale_ * msg->linear.z;
@@ -401,12 +409,22 @@ void LocalPlanner::getStateAndTwistInput() {
   // ref_body_plan_(0,3) = 0;
   // ref_body_plan_(0,4) = 0;
   // ref_body_plan_(0,5) = 0;
+
+  // ref_body_plan_(0,6) = cmd_vel_[0];
+  // ref_body_plan_(0,7) = cmd_vel_[1];
+  // ref_body_plan_(0,8) = cmd_vel_[2];
+  // ref_body_plan_(0,9) = cmd_vel_[3];
+  // ref_body_plan_(0,10) = cmd_vel_[4];
+  // ref_body_plan_(0,11) = cmd_vel_[5];
+
   ref_body_plan_(0,0) = x_mean + cmd_vel_[0];
   ref_body_plan_(0,1) = y_mean + cmd_vel_[1];
   ref_body_plan_(0,2) = z_des_ + ref_ground_height_(0)+ cmd_vel_[2];
   ref_body_plan_(0,3) = -1*cmd_vel_[3];
   ref_body_plan_(0,4) = cmd_vel_[4];
   ref_body_plan_(0,5) = cmd_vel_[5];
+
+
 
   ref_body_plan_(0,6) = 0;
   ref_body_plan_(0,7) = 0;
