@@ -71,10 +71,6 @@ bool InverseDynamicsController::computeLegCommandArray(
                                      last_local_plan_msg_->states[i + 1],
                                      t_interp, ref_state_msg_);
 
-        // // Linearly interpolate between GRFs, uncomment if MPC uses dircol
-        // quad_utils::interpGRFArray(last_local_plan_msg_->grfs[i],
-        //   last_local_plan_msg_->grfs[i+1], t_interp, grf_array_msg);
-
         // ZOH on GRFs
         grf_array_msg = last_local_plan_msg_->grfs[i];
 

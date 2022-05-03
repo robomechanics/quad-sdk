@@ -277,7 +277,7 @@ class LocalFootstepPlanner {
    */
   Eigen::Vector3d getNearestValidFoothold(
       const Eigen::Vector3d &foot_position,
-      const Eigen::Vector3d &foot_position_prev_solve);
+      const Eigen::Vector3d &foot_position_prev_solve) const;
 
   /**
    * @brief Compute minimum covering circle problem using Welzl's algorithm

@@ -5,6 +5,7 @@
 #include <chrono>
 
 TEST(NMPCTest, testAdaptiveComplexity) {
+  // Load external params
   int N_;
   double dt_;
   ros::param::get("/local_planner/horizon_length", N_);
@@ -13,10 +14,12 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   std::shared_ptr<NMPCController> leg_planner_ =
       std::make_shared<NMPCController>();
 
+  // Define reterence plan
   Eigen::MatrixXd ref_body_plan_(N_, 36);
   ref_body_plan_.fill(0);
   ref_body_plan_.col(2).fill(0.3);
 
+  // Define foot positions
   Eigen::MatrixXd foot_positions_body_(N_, 12);
   Eigen::MatrixXd foot_positions_world_(N_, 12);
   Eigen::MatrixXd foot_velocities_world_(N_, 12);
@@ -39,6 +42,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   current_state_.segment(12, 12) = foot_positions_world_.row(0);
   current_state_.segment(24, 12) = foot_velocities_world_.row(0);
 
+  // Compute initial joint information
   quad_utils::QuadKD quad_kd;
   Eigen::VectorXd x_null_nom_(24);
   x_null_nom_.setZero();
@@ -52,6 +56,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
 
   current_state_.segment(36, 24) = x_null_nom_;
 
+  // Define the contact schedule
   std::vector<std::vector<bool>> adpative_contact_schedule_;
   adpative_contact_schedule_.resize(N_);
   for (size_t i = 0; i < N_; i++) {
@@ -66,6 +71,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   Eigen::VectorXd ref_ground_height(N_);
   ref_ground_height.fill(0);
 
+  // Define the initial guess
   Eigen::MatrixXd body_plan_(N_, 36);
   body_plan_.col(2).fill(0.3);
   body_plan_.middleCols(12, 12) = foot_positions_world_;
@@ -78,19 +84,20 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   grf_plan_.col(8).fill(13.3 * 9.81 / 2);
   grf_plan_.col(11).fill(13.3 * 9.81 / 2);
 
+  // Define initial timing params
   double first_element_duration = dt_;
-
   bool same_plan_index = false;
 
-  Eigen::VectorXi complexity_schedule(N_), ref_primitive_id(N_);
+  // Define initial complexity schedule
+  Eigen::VectorXi complexity_schedule(N_);
   complexity_schedule.setZero();
-  ref_primitive_id.setZero();
 
   std::chrono::steady_clock::time_point tic, toc;
   tic = std::chrono::steady_clock::now();
 
   Eigen::VectorXd joint_positions(12), joint_velocities(12), torques(12);
 
+  // Define terrain
   grid_map::GridMap map({"z_inpainted", "traversability"});
   map.setGeometry(grid_map::Length(10, 10), 0.01);
 
@@ -101,9 +108,11 @@ TEST(NMPCTest, testAdaptiveComplexity) {
     map.at("traversability", *it) = 1;
   }
 
+  // Solve multiple times
   for (int i = 0; i < 10; i++) {
     tic = std::chrono::steady_clock::now();
 
+    // Call the planner
     leg_planner_->computeLegPlan(
         current_state_, ref_body_plan_, foot_positions_body_,
         foot_positions_world_, foot_velocities_world_,
@@ -116,6 +125,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
                      .count()
               << "[µs]" << std::endl;
 
+    // Update the initial condition
     current_state_.head(12) = body_plan_.block(1, 0, 1, 12).transpose();
 
     quad_kd.convertCentroidalToFullBody(
@@ -125,6 +135,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
     current_state_.segment(36, 12) = joint_positions;
     current_state_.segment(48, 12) = joint_velocities;
 
+    // Update the contact schedule
     std::rotate(adpative_contact_schedule_.begin(),
                 adpative_contact_schedule_.begin() + 1,
                 adpative_contact_schedule_.end());

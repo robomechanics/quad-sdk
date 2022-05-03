@@ -307,6 +307,7 @@ Eigen::Vector3d getAcceleration(const Action &a, double t, int phase,
 bool isValidYawRate(const State &s, const Action &a, double t, int phase,
                     const PlannerConfig &planner_config) {
   return true;
+  // Uncomment to apply yaw rate constraint
   // Eigen::Vector3d acc = getAcceleration(s, a, t, phase);
   // State s_next = applyStance(s,a,t,phase,planner_config);
 
@@ -398,26 +399,10 @@ State interpStateActionPair(const State &s_in, const Action &a, double t0,
     interp_reduced_plan.push_back(s_next);
     interp_GRF.push_back(getGRF(a, t, phase, planner_config));
 
-    if (!isValidYawRate(s, a, t, phase, planner_config)) {
-      // std::cout << "Invalid yaw detected!" << std::endl;
-      // printStateNewline(s);
-      // printActionNewline(a);
-      // std::cout << "t = " << t<< std::endl;
-      // std::cout << "t_f = " << t_f<< std::endl;
-    }
-
     interp_primitive_id.push_back(phase);
   }
 
   State s_takeoff = applyStance(s, a, phase, planner_config);
-
-  // // Include the exact moment of liftoff if flight phase exists
-  // if (t_f>0) {
-  //   interp_t.push_back(t0+t_s);
-  //   interp_reduced_plan.push_back(s_takeoff);
-  //   interp_GRF.push_back(getGRF(a,t_s,planner_config));
-  //   interp_primitive_id.push_back(LEAP_STANCE);
-  // }
 
   // Include the remainder of the flight phase (double count takeoff state to
   // get discontinuous dropoff in grf when interpolating)
@@ -450,20 +435,10 @@ State interpStateActionPair(const State &s_in, const Action &a, double t0,
       interp_reduced_plan.push_back(s_next);
       interp_GRF.push_back(getGRF(a, t, phase, planner_config));
 
-      if (!isValidYawRate(s, a, t, phase, planner_config)) {
-        // std::cout << "Invalid yaw detected!" << std::endl;
-        // printStateNewline(s);
-        // printActionNewline(a);
-        // std::cout << "t = " << t<< std::endl;
-        // std::cout << "t_f = " << t_f<< std::endl;
-      }
-
       interp_primitive_id.push_back(phase);
     }
     s_final = applyStance(s_land, a, t_s_land, phase, planner_config);
   }
-  // std::cout << "In interpStateActionPair, finished landing, exiting" <<
-  // std::endl;
   return s_final;
 }
 
@@ -508,7 +483,6 @@ Eigen::Vector3d rotateGRF(const Eigen::Vector3d &surface_norm_eig,
   Zs << 0, 0, 1;
 
   // Normalize surface normal
-
   surface_norm_unit_eig = surface_norm_eig.normalized();
 
   // Compute priors
@@ -651,9 +625,6 @@ bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm,
 
 bool refineAction(const State &s, Action &a,
                   const PlannerConfig &planner_config) {
-  // double z_f_leap = planner_config.H_MAX - 0.025;
-  // double z_f_land = planner_config.H_NOM;
-
   if (!refineStance(s, LEAP_STANCE, a, planner_config)) return false;
 
   State s_leap = applyStance(s, a, LEAP_STANCE, planner_config);
@@ -744,11 +715,6 @@ bool refineStance(const State &s, int phase, Action &a,
 
     final_state_valid = isValidState(s_final, planner_config, phase);
     midstance_state_valid = isValidState(s_midstance, planner_config, phase);
-    // final_state_valid = (getZRelToTerrain(s_final, planner_config)) >=
-    // planner_config.H_MIN);
-    // midstance_state_valid = (getZRelToTerrain(s_midstance, planner_config))
-    // >=
-    //                         (planner_config.H_MIN + planner_config.ROBOT_H);
 
     // Exit if final state is invalid
     if (!final_state_valid) {
@@ -1008,6 +974,8 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
     double reachability_clearance =
         getZRelToTerrain(reachability_point, planner_config);
 
+    bool is_rear_leg = (i % 2 == 1);
+
     // Check for reachability
     if (phase == CONNECT) {
       max_valid_z = std::min(max_valid_z, s.pos[2] + planner_config.H_MAX -
@@ -1019,7 +987,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
         return false;
       }
     } else if (phase == LEAP_STANCE) {
-      if (i % 2 == 1) {
+      if (is_rear_leg) {
         max_valid_z = std::min(max_valid_z, s.pos[2] + planner_config.H_MAX -
                                                 reachability_clearance);
         if (reachability_clearance > planner_config.H_MAX) {
@@ -1031,7 +999,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
         }
       }
     } else if (phase == LAND_STANCE) {
-      // if (i % 2 == 0) {
+      // if (!is_rear_leg) {
       max_valid_z = std::min(max_valid_z, s.pos[2] + planner_config.H_MAX -
                                               reachability_clearance);
       if (reachability_clearance > planner_config.H_MAX) {
@@ -1041,12 +1009,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
 #endif
         return false;
       }
-      // }
     }
-    // if ((getTraversability(reachability_point, planner_config) <= 1e-1) &&
-    //     phase != FLIGHT) {
-    //   return false;
-    // }
   }
 
   return true;
@@ -1055,7 +1018,6 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
 bool isValidStateActionPair(const State &s_in, const Action &a,
                             StateActionResult &result,
                             const PlannerConfig &planner_config) {
-  // std::cout << "in isValidStateActionPair" << std::endl;
   // Declare stance and flight times
   double t_s = a.t_s_leap;
   double t_f = a.t_f;
@@ -1075,7 +1037,6 @@ bool isValidStateActionPair(const State &s_in, const Action &a,
 
   // LEAP (OR CONNECT) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  // for (double t = 0; t <= t_s; t += planner_config.KINEMATICS_RES)
   double t = 0;
 
   while (t <= t_s) {
@@ -1092,7 +1053,6 @@ bool isValidStateActionPair(const State &s_in, const Action &a,
 #ifdef DEBUG_INVALID_STATE
       printf("Invalid leaping stance config\n");
 #endif
-      // std::cout << "leaving isValidStateActionPair" << std::endl;
 
       return false;
     } else {
@@ -1102,7 +1062,6 @@ bool isValidStateActionPair(const State &s_in, const Action &a,
 
     t += planner_config.KINEMATICS_RES;
   }
-  // std::cout << "out of isValidStateActionPair loop" << std::endl;
 
   State s_takeoff = applyStance(s, a, phase, planner_config);
 

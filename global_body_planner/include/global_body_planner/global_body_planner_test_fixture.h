@@ -34,13 +34,13 @@ class GlobalBodyPlannerTestFixture : public ::testing::Test {
                            "smooth_normal_vectors_x", "smooth_normal_vectors_y",
                            "smooth_normal_vectors_z", "traversability"});
     map.setGeometry(grid_map::Length(10, 10), 0.05);
-    terrain_gm_ = map;
+    terrain_grid_map_ = map;
 
     double slope = 0;
     updateTerrainSlope(slope);
 
     // Create planner and configuration
-    planner_config_.loadVectors();
+    planner_config_.loadEigenVectorsFromParams();
   }
 
   /**
@@ -52,23 +52,25 @@ class GlobalBodyPlannerTestFixture : public ::testing::Test {
     Eigen::Vector3d normal_vec;
     normal_vec << -sin(slope), 0, cos(slope);
 
-    for (grid_map::GridMapIterator it(terrain_gm_); !it.isPastEnd(); ++it) {
+    for (grid_map::GridMapIterator it(terrain_grid_map_); !it.isPastEnd();
+         ++it) {
       grid_map::Position position;
-      terrain_gm_.getPosition(*it, position);
-      terrain_gm_.at("z_inpainted", *it) = position.x() * grade;
-      terrain_gm_.at("z_smooth", *it) = terrain_gm_.at("z_inpainted", *it);
-      terrain_gm_.at("normal_vectors_x", *it) = normal_vec.x();
-      terrain_gm_.at("normal_vectors_y", *it) = normal_vec.y();
-      terrain_gm_.at("normal_vectors_z", *it) = normal_vec.z();
-      terrain_gm_.at("smooth_normal_vectors_x", *it) = normal_vec.x();
-      terrain_gm_.at("smooth_normal_vectors_y", *it) = normal_vec.y();
-      terrain_gm_.at("smooth_normal_vectors_z", *it) = normal_vec.z();
-      terrain_gm_.at("traversability", *it) = 1.0;
+      terrain_grid_map_.getPosition(*it, position);
+      terrain_grid_map_.at("z_inpainted", *it) = position.x() * grade;
+      terrain_grid_map_.at("z_smooth", *it) =
+          terrain_grid_map_.at("z_inpainted", *it);
+      terrain_grid_map_.at("normal_vectors_x", *it) = normal_vec.x();
+      terrain_grid_map_.at("normal_vectors_y", *it) = normal_vec.y();
+      terrain_grid_map_.at("normal_vectors_z", *it) = normal_vec.z();
+      terrain_grid_map_.at("smooth_normal_vectors_x", *it) = normal_vec.x();
+      terrain_grid_map_.at("smooth_normal_vectors_y", *it) = normal_vec.y();
+      terrain_grid_map_.at("smooth_normal_vectors_z", *it) = normal_vec.z();
+      terrain_grid_map_.at("traversability", *it) = 1.0;
     }
 
-    terrain_.loadDataFromGridMap(terrain_gm_);
+    terrain_.loadDataFromGridMap(terrain_grid_map_);
     planner_config_.terrain = terrain_;
-    planner_config_.terrain_gm = terrain_gm_;
+    planner_config_.terrain_grid_map = terrain_grid_map_;
   }
 
   /**
@@ -79,23 +81,25 @@ class GlobalBodyPlannerTestFixture : public ::testing::Test {
     Eigen::Vector3d normal_vec;
     normal_vec << 0, 0, 0;
 
-    for (grid_map::GridMapIterator it(terrain_gm_); !it.isPastEnd(); ++it) {
+    for (grid_map::GridMapIterator it(terrain_grid_map_); !it.isPastEnd();
+         ++it) {
       grid_map::Position position;
-      terrain_gm_.getPosition(*it, position);
-      terrain_gm_.at("z_inpainted", *it) = height;
-      terrain_gm_.at("z_smooth", *it) = terrain_gm_.at("z_inpainted", *it);
-      terrain_gm_.at("normal_vectors_x", *it) = normal_vec.x();
-      terrain_gm_.at("normal_vectors_y", *it) = normal_vec.y();
-      terrain_gm_.at("normal_vectors_z", *it) = normal_vec.z();
-      terrain_gm_.at("smooth_normal_vectors_x", *it) = normal_vec.x();
-      terrain_gm_.at("smooth_normal_vectors_y", *it) = normal_vec.y();
-      terrain_gm_.at("smooth_normal_vectors_z", *it) = normal_vec.z();
-      terrain_gm_.at("traversability", *it) = 1.0;
+      terrain_grid_map_.getPosition(*it, position);
+      terrain_grid_map_.at("z_inpainted", *it) = height;
+      terrain_grid_map_.at("z_smooth", *it) =
+          terrain_grid_map_.at("z_inpainted", *it);
+      terrain_grid_map_.at("normal_vectors_x", *it) = normal_vec.x();
+      terrain_grid_map_.at("normal_vectors_y", *it) = normal_vec.y();
+      terrain_grid_map_.at("normal_vectors_z", *it) = normal_vec.z();
+      terrain_grid_map_.at("smooth_normal_vectors_x", *it) = normal_vec.x();
+      terrain_grid_map_.at("smooth_normal_vectors_y", *it) = normal_vec.y();
+      terrain_grid_map_.at("smooth_normal_vectors_z", *it) = normal_vec.z();
+      terrain_grid_map_.at("traversability", *it) = 1.0;
     }
 
-    terrain_.loadDataFromGridMap(terrain_gm_);
+    terrain_.loadDataFromGridMap(terrain_grid_map_);
     planner_config_.terrain = terrain_;
-    planner_config_.terrain_gm = terrain_gm_;
+    planner_config_.terrain_grid_map = terrain_grid_map_;
   }
 
   /// Planner class
@@ -105,7 +109,7 @@ class GlobalBodyPlannerTestFixture : public ::testing::Test {
   PlannerConfig planner_config_;
 
   /// Flat terrain map
-  grid_map::GridMap terrain_gm_;
+  grid_map::GridMap terrain_grid_map_;
 
   /// Sloped terrain map
   FastTerrainMap terrain_;
