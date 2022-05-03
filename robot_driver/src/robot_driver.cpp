@@ -152,13 +152,12 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   grf_array_msg_.header.frame_id = "map";
   user_tx_data_.resize(1);
 
+  // Load complementary filter coefficients
   std::vector<double> high_pass_a, high_pass_b, high_pass_c, high_pass_d;
   quad_utils::loadROSParam(nh_, "robot_driver/high_pass_a", high_pass_a);
   quad_utils::loadROSParam(nh_, "robot_driver/high_pass_b", high_pass_b);
   quad_utils::loadROSParam(nh_, "robot_driver/high_pass_c", high_pass_c);
   quad_utils::loadROSParam(nh_, "robot_driver/high_pass_d", high_pass_d);
-  complementary_filter_.high_pass_filter.x.resize(3);
-  complementary_filter_.high_pass_filter.init = false;
   complementary_filter_.high_pass_filter.A =
       Eigen::Map<Eigen::Matrix<double, 2, 2> >(high_pass_a.data()).transpose();
   complementary_filter_.high_pass_filter.B =
@@ -167,14 +166,14 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
       Eigen::Map<Eigen::Matrix<double, 2, 1> >(high_pass_c.data()).transpose();
   complementary_filter_.high_pass_filter.D =
       Eigen::Map<Eigen::Matrix<double, 1, 1> >(high_pass_d.data()).transpose();
+  complementary_filter_.high_pass_filter.x.resize(3);
+  complementary_filter_.high_pass_filter.init = false;
 
   std::vector<double> low_pass_a, low_pass_b, low_pass_c, low_pass_d;
   quad_utils::loadROSParam(nh_, "robot_driver/low_pass_a", low_pass_a);
   quad_utils::loadROSParam(nh_, "robot_driver/low_pass_b", low_pass_b);
   quad_utils::loadROSParam(nh_, "robot_driver/low_pass_c", low_pass_c);
   quad_utils::loadROSParam(nh_, "robot_driver/low_pass_d", low_pass_d);
-  complementary_filter_.low_pass_filter.x.resize(3);
-  complementary_filter_.low_pass_filter.init = false;
   complementary_filter_.low_pass_filter.A =
       Eigen::Map<Eigen::Matrix<double, 2, 2> >(low_pass_a.data()).transpose();
   complementary_filter_.low_pass_filter.B =
@@ -183,6 +182,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
       Eigen::Map<Eigen::Matrix<double, 2, 1> >(low_pass_c.data()).transpose();
   complementary_filter_.low_pass_filter.D =
       Eigen::Map<Eigen::Matrix<double, 1, 1> >(low_pass_d.data()).transpose();
+  complementary_filter_.low_pass_filter.x.resize(3);
+  complementary_filter_.low_pass_filter.init = false;
 }
 
 void RobotDriver::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
@@ -228,7 +229,7 @@ void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg) {
 
 void RobotDriver::mocapCallback(
     const geometry_msgs::PoseStamped::ConstPtr& msg) {
-  // Collect position reading
+  // Collect position readings
   Eigen::Vector3d pos;
   quad_utils::pointMsgToEigen(msg->pose.position, pos);
 
@@ -261,7 +262,8 @@ void RobotDriver::mocapCallback(
           "Mocap time diff exceeds max dropout threshold, hold the last value");
     }
   } else {
-    // Init filter
+    // Init filter, we want to ensure that if the next reading is the same, the
+    // output speed should be zero and the filter state remains the same
     Eigen::Matrix<double, 3, 2> left;
     left.topRows(2) =
         complementary_filter_.low_pass_filter.A - Eigen::Matrix2d::Identity();
@@ -370,13 +372,11 @@ bool RobotDriver::updateState() {
       acc = rot * acc;
 
       // Ignore gravity
-      acc[2] += 9.81;
-
-      // I guess the acceleration is negative
-      acc = -acc;
+      acc[2] -= 9.81;
 
       if (!complementary_filter_.high_pass_filter.init) {
-        // Init filter
+        // Init filter, we want to make sure that if the input is zero, the
+        // output velocity is zero and the state remains the same
         for (size_t i = 0; i < 3; i++) {
           complementary_filter_.high_pass_filter.x.at(i) << 0, 0;
         }

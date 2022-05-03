@@ -83,9 +83,11 @@ bool SpiritInterface::recv(sensor_msgs::JointState& joint_state_msg,
   imu_msg.angular_velocity.x = mbdata["imu_angular_velocity"][0];
   imu_msg.angular_velocity.y = mbdata["imu_angular_velocity"][1];
   imu_msg.angular_velocity.z = mbdata["imu_angular_velocity"][2];
-  imu_msg.linear_acceleration.x = mbdata["imu_linear_acceleration"][0];
-  imu_msg.linear_acceleration.y = mbdata["imu_linear_acceleration"][1];
-  imu_msg.linear_acceleration.z = mbdata["imu_linear_acceleration"][2];
+
+  // I guess the acceleration is opposite
+  imu_msg.linear_acceleration.x = -mbdata["imu_linear_acceleration"][0];
+  imu_msg.linear_acceleration.y = -mbdata["imu_linear_acceleration"][1];
+  imu_msg.linear_acceleration.z = -mbdata["imu_linear_acceleration"][2];
 
   return true;
 }
