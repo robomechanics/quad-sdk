@@ -52,67 +52,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
 
   // Load planner config
   bool enable_leaping;
-  quad_utils::loadROSParam(nh, "global_body_planner/H_MAX",
-                           planner_config_.H_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/H_MIN",
-                           planner_config_.H_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/H_NOM",
-                           planner_config_.H_NOM);
-  quad_utils::loadROSParam(nh, "global_body_planner/V_MAX",
-                           planner_config_.V_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/V_NOM",
-                           planner_config_.V_NOM);
-  quad_utils::loadROSParam(nh, "global_body_planner/DY_MAX",
-                           planner_config_.DY_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_L",
-                           planner_config_.ROBOT_L);
-  quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_W",
-                           planner_config_.ROBOT_W);
-  quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_W",
-                           planner_config_.ROBOT_W);
-  quad_utils::loadROSParam(nh,
-                           "global_body_planner/BODY_TRAVERSABILITY_THRESHOLD",
-                           planner_config_.body_traversability_threshold);
-  quad_utils::loadROSParam(
-      nh, "global_body_planner/CONTACT_TRAVERSABILITY_THRESHOLD",
-      planner_config_.contact_traversability_threshold);
-  quad_utils::loadROSParam(nh, "global_body_planner/M_CONST",
-                           planner_config_.M_CONST);
-  quad_utils::loadROSParam(nh, "global_body_planner/J_CONST",
-                           planner_config_.J_CONST);
-  quad_utils::loadROSParam(nh, "global_body_planner/G_CONST",
-                           planner_config_.G_CONST);
-  quad_utils::loadROSParam(nh, "global_body_planner/F_MIN",
-                           planner_config_.F_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/F_MAX",
-                           planner_config_.F_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/PEAK_GRF_MIN",
-                           planner_config_.PEAK_GRF_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/PEAK_GRF_MAX",
-                           planner_config_.PEAK_GRF_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/MU", planner_config_.MU);
-  quad_utils::loadROSParam(nh, "global_body_planner/T_S_MIN",
-                           planner_config_.T_S_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/T_S_MAX",
-                           planner_config_.T_S_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/T_F_MIN",
-                           planner_config_.T_F_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/T_F_MAX",
-                           planner_config_.T_F_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/KINEMATICS_RES",
-                           planner_config_.KINEMATICS_RES);
-  quad_utils::loadROSParam(nh, "global_body_planner/BACKUP_TIME",
-                           planner_config_.BACKUP_TIME);
-  quad_utils::loadROSParam(nh, "global_body_planner/BACKUP_RATIO",
-                           planner_config_.BACKUP_RATIO);
-  quad_utils::loadROSParam(nh, "global_body_planner/TRAPPED_BUFFER_FACTOR",
-                           planner_config_.TRAPPED_BUFFER_FACTOR);
-  quad_utils::loadROSParam(nh, "global_body_planner/NUM_LEAP_SAMPLES",
-                           planner_config_.NUM_LEAP_SAMPLES);
-  quad_utils::loadROSParam(nh, "global_body_planner/GOAL_BOUNDS",
-                           planner_config_.GOAL_BOUNDS);
-  quad_utils::loadROSParam(nh, "global_body_planner/max_planning_time",
-                           planner_config_.MAX_TIME);
+  planner_config_.loadParamsFromServer(nh);
   nh_.param<bool>("global_body_planner/enable_leaping", enable_leaping, true);
   if (!enable_leaping) {
     planner_config_.enable_leaping = false;
@@ -120,7 +60,6 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
     planner_config_.H_MIN = 0;
     planner_config_.H_MAX = 0.5;
   }
-  planner_config_.loadEigenVectorsFromParams();
 
   // Zero planning data
   vectorToFullState(start_state_vec, start_state_);
