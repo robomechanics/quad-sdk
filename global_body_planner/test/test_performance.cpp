@@ -50,7 +50,6 @@ TEST_F(GlobalBodyPlannerTestFixture, testGetRandomLeapActionTime) {
   }
   double avg_duration = timer.reportStatistics(N);
 
-  // EXPECT_TRUE(avg_duration <= 5e-6);
   EXPECT_LE(avg_duration, 5e-6);
 }
 
@@ -147,6 +146,7 @@ TEST_F(GlobalBodyPlannerTestFixture, testValidStateActionPairAccuracy) {
   EXPECT_GE((double)count_valid / count_valid_coarse, 0.8);
 }
 
+// TODO(jcnorby): Add this back in when its ready
 // TEST_F(GlobalBodyPlannerTestFixture, testValidStateActionPairRate) {
 //   Eigen::Vector3d surf_norm;
 

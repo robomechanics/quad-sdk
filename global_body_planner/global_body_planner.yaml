@@ -31,6 +31,7 @@ global_body_planner:
   T_F_MIN: 0.1            # Minimum flight time, s
   T_F_MAX: 0.4            # Maximum stance time, s
   KINEMATICS_RES: 0.03    # Resolution of kinematic feasibility checks, m
+  TRAPPED_BUFFER_FACTOR: 4  #  Number of feasibility that must pass to not consider a state trapped
   BACKUP_TIME: 0.3        # Duration of backup after finding an invalid state, s
   BACKUP_RATIO: 0.5       # Ratio of trajectory to back up after finding an invalid state, s
   NUM_LEAP_SAMPLES: 10     # Number of actions computed for each extend function

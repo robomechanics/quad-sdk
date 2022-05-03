@@ -105,6 +105,8 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
                            planner_config_.BACKUP_TIME);
   quad_utils::loadROSParam(nh, "global_body_planner/BACKUP_RATIO",
                            planner_config_.BACKUP_RATIO);
+  quad_utils::loadROSParam(nh, "global_body_planner/TRAPPED_BUFFER_FACTOR",
+                           planner_config_.TRAPPED_BUFFER_FACTOR);
   quad_utils::loadROSParam(nh, "global_body_planner/NUM_LEAP_SAMPLES",
                            planner_config_.NUM_LEAP_SAMPLES);
   quad_utils::loadROSParam(nh, "global_body_planner/GOAL_BOUNDS",
@@ -118,7 +120,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
     planner_config_.H_MIN = 0;
     planner_config_.H_MAX = 0.5;
   }
-  planner_config_.loadVectors();
+  planner_config_.loadEigenVectorsFromParams();
 
   // Zero planning data
   vectorToFullState(start_state_vec, start_state_);
@@ -136,7 +138,7 @@ void GlobalBodyPlanner::terrainMapCallback(
 
   // Convert to FastTerrainMap structure for faster querying
   planner_config_.terrain.loadDataFromGridMap(map);  // Takes ~10ms
-  planner_config_.terrain_gm = map;                  // Takes ~0.1ms
+  planner_config_.terrain_grid_map = map;            // Takes ~0.1ms
 }
 
 void GlobalBodyPlanner::robotStateCallback(
