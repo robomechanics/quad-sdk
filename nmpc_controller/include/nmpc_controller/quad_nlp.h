@@ -85,7 +85,7 @@ class quadNLP : public TNLP {
   const bool apply_slack_to_complex_constr_ = true;
 
   /// Boolean for whether to allow modifications of foot trajectory
-  const bool allow_foot_traj_modification = false;
+  const bool allow_foot_traj_modification = true;
 
   /// Boolean for whether to include the terrain in the foot height constraint
   const bool use_terrain_constraint = false;
@@ -359,6 +359,14 @@ class quadNLP : public TNLP {
   inline Eigen::Block<T> get_primal_foot_state_var(T &decision_var,
                                                    const int &idx) const {
     return decision_var.block(x_idxs_[idx] + n_body_, 0, n_foot_, 1);
+  }
+
+  // Get the idx-th joint state variable from decision variable
+  template <typename T>
+  inline Eigen::Block<T> get_primal_joint_state_var(T &decision_var,
+                                                    const int &idx) const {
+    return decision_var.block(x_idxs_[idx] + n_body_ + n_foot_, 0, n_joints_,
+                              1);
   }
 
   // Get the idx-th control variable from decision variable

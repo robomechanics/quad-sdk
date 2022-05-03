@@ -62,7 +62,7 @@ class NMPCController {
 
   /** Method to return the constraint residual for requested data */
   Eigen::VectorXi evalLiftedTrajectoryConstraints(
-      Eigen::MatrixXd &state_null_traj);
+      Eigen::MatrixXd &state_null_traj, Eigen::MatrixXd &control_null_traj);
 
  private:
   ros::NodeHandle nh_;
@@ -86,7 +86,7 @@ class NMPCController {
   static const int n_body_ = 12, n_foot_ = 24, n_joints_ = 24, n_tail_ = 4,
                    m_body_ = 12, m_foot_ = 12, m_tail_ = 2;
 
-  int x_dim_null_;
+  int x_dim_null_, u_dim_null_;
 
   double dt_;
 
