@@ -649,7 +649,7 @@ bool refineStance(const State &s, int phase, Action &a,
   std::cout << "Starting stance refine, phase = " << phase << std::endl;
 #endif
 
-  // Load parameters
+  // Load parameters (use references for action params that may change)
   double &t_s = (phase == LEAP_STANCE) ? a.t_s_leap : a.t_s_land;
   GRF &grf_stance = (phase == LEAP_STANCE) ? a.grf_0 : a.grf_f;
   double dz_0 = (phase == LEAP_STANCE) ? a.dz_0 : s.vel[2];
