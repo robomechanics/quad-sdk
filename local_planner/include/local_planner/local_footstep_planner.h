@@ -428,7 +428,7 @@ class LocalFootstepPlanner {
   /// Weighting on the projection of the grf
   double grf_weight_;
 
-  /// Primitive ids - CONNECT_STANCE
+  /// Primitive ids - CONNECT_STANCE TODO(yanhaoy, astutt) make these enums
   const int CONNECT_STANCE = 0;
 
   /// Primitive ids - LEAP_STANCE
