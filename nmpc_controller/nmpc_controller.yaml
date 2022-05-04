@@ -6,7 +6,7 @@ nmpc_controller:
   friction_coefficient: 0.3
   enable_adaptive_complexity: true
   fixed_complex_idxs: [] # set to [] for none
-  fixed_complex_head: 8 # set to 0 for none
+  fixed_complex_head: 0 # set to 0 for none
   fixed_complex_tail: 0 # set to 0 for none
   body:
     x_dim: 12

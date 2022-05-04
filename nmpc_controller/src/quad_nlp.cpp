@@ -1173,6 +1173,19 @@ void quadNLP::finalize_solution(SolverReturn status, Index n, const Number *x,
   g0_ = g_matrix;
 
   mu0_ = ip_data->curr_mu();
+
+  // Update the diagnostics information
+  diagnostics_.cost = obj_value;
+  diagnostics_.iterations = ip_data->iter_count();
+  diagnostics_.horizon_length = N_;
+  diagnostics_.complexity_schedule =
+      adaptive_complexity_schedule_.head(N_).cwiseMax(
+          fixed_complexity_schedule_.head(N_));
+  diagnostics_.element_times.resize(N_);
+  for (int i = 0; i < N_; i++) {
+    diagnostics_.element_times[i] =
+        (i > 0) ? (first_element_duration_ + dt_ * (i - 1)) : 0;
+  }
 }
 
 void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {

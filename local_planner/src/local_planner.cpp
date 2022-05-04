@@ -582,6 +582,8 @@ void LocalPlanner::publishLocalPlan() {
     local_plan_msg.global_plan_timestamp = initial_timestamp_;
   }
   local_plan_msg.compute_time = compute_time_;
+  local_body_planner_nonlinear_->getNLPDiagnostics().loadDiagnosticsMsg(
+      local_plan_msg.diagnostics);
   future_footholds_msg.header = local_plan_msg.header;
   foot_plan_msg.header = local_plan_msg.header;
 

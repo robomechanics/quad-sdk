@@ -100,7 +100,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
   }
 
   // Solve multiple times
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 1; i++) {
     tic = std::chrono::steady_clock::now();
 
     // Call the planner

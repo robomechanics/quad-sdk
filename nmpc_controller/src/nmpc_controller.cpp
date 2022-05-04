@@ -196,9 +196,12 @@ bool NMPCController::computeLegPlan(
                         same_plan_index, require_init_);
   require_init_ = false;
 
+  quad_utils::FunctionTimer timer("nlp_solver");
   bool success =
       this->computePlan(initial_state, ref_traj, foot_positions_world,
                         contact_schedule, state_traj, control_traj);
+  diagnostics_ = mynlp_->diagnostics_;
+  diagnostics_.compute_time = timer.reportSilent();
 
   state_traj.conservativeResize(N_, mynlp_->n_body_);
 

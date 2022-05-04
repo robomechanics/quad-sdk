@@ -185,6 +185,21 @@ else
     end
 end
 
+% Read the local plan data
+localPlanData = readMessages(select(bag,'Topic','/local_plan'),'DataFormat','struct');
+localPlan = struct;
+if isempty(localPlanData)
+    warning('No data on local plan topic');
+else
+    localPlan.time = cell2mat(cellfun(@(m) double(m.StateTimestamp.Sec) + double(m.StateTimestamp.Nsec)*1E-9, localPlanData, 'UniformOutput', 0));
+    localPlan.elementTimes = cell2mat(cellfun(@(m) double(m.Diagnostics.ElementTimes'), localPlanData, 'UniformOutput', 0));
+    localPlan.solveTime = cell2mat(cellfun(@(m) m.Diagnostics.ComputeTime, localPlanData, 'UniformOutput', 0));
+    localPlan.cost = cell2mat(cellfun(@(m) m.Diagnostics.Cost, localPlanData, 'UniformOutput', 0));
+    localPlan.iterations = cell2mat(cellfun(@(m) m.Diagnostics.Iterations, localPlanData, 'UniformOutput', 0));
+    localPlan.horizonLength = cell2mat(cellfun(@(m) m.Diagnostics.HorizonLength, localPlanData, 'UniformOutput', 0));
+    localPlan.complexitySchedule = cell2mat(cellfun(@(m) double(m.Diagnostics.ComplexitySchedule'), localPlanData, 'UniformOutput', 0));
+end
+
 % Localize time to the first message
 startTime = stateGroundTruth.time(1);
 data = struct;
@@ -223,6 +238,14 @@ if ~isempty(fieldnames(stateGRFs))
     data.stateGRFs = stateGRFs;
 else
     data.stateGRFs = [];
+end
+
+if ~isempty(fieldnames(localPlan))
+    localPlan.time = localPlan.time - startTime;
+    localPlan.elementTimes = localPlan.elementTimes + localPlan.time;
+    data.localPlan = localPlan;
+else
+    data.localPlan = [];
 end
 
 % If prompted, return the name of the filename
