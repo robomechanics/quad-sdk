@@ -40,7 +40,8 @@ class GlobalBodyPlannerTestFixture : public ::testing::Test {
     updateTerrainSlope(slope);
 
     // Create planner and configuration
-    planner_config_.loadParamsFromServer(nh_);
+    ros::NodeHandle nh;
+    planner_config_.loadParamsFromServer(nh);
   }
 
   /**
@@ -101,9 +102,6 @@ class GlobalBodyPlannerTestFixture : public ::testing::Test {
     planner_config_.terrain = terrain_;
     planner_config_.terrain_grid_map = terrain_grid_map_;
   }
-
-  /// ROS Node handle for loading parameters
-  ros::NodeHandle nh_;
 
   /// Planner class
   PlannerClass planner_;
