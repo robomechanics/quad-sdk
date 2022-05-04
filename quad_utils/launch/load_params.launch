@@ -1,23 +1,28 @@
 <launch>
+    <arg name="robot_type" default="spirit"/>
+
     <rosparam command="load" file="$(find quad_utils)/config/terrain_map_publisher.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/grid_map_visualization.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/remote_heartbeat.yaml" />
-    <param name="enable_statistics" type="bool" value="true" />
-
     <rosparam command="load" file="$(find quad_utils)/config/topics.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/teleop_twist_keyboard.yaml" />
-    <rosparam command="load" file="$(find quad_utils)/config/terrain_map_publisher.yaml" />
-    <rosparam command="load" file="$(find quad_utils)/config/grid_map_visualization.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/rviz_interface.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/trajectory_publisher.yaml" />
-    <rosparam command="load" file="$(find ekf_estimator)/ekf_estimator.yaml" />
-    <rosparam command="load" file="$(find global_body_planner)/global_body_planner.yaml" />
     <rosparam command="load" file="$(find local_planner)/local_planner.yaml" />
-    <rosparam command="load" file="$(find robot_driver)/robot_driver.yaml" />
-    <rosparam command="load" file="$(find contact_detection)/contact_detection.yaml" />
-    <rosparam command="load" file="$(find body_force_estimator)/body_force_estimator.yaml" />
-    <rosparam command="load" file="$(find nmpc_controller)/nmpc_controller.yaml" />
-    
-    <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
+    <rosparam command="load" file="$(find quad_utils)/config/a1.yaml" />
+    <rosparam command="load" file="$(find quad_utils)/config/spirit.yaml" />
+
+    <param name="enable_statistics" type="bool" value="true" />
+
+    <group if="$(eval arg('robot_type') == 'spirit')">
+        <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
+        <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
+    </group>
+
+    <group if="$(eval arg('robot_type') == 'a1')">
+        <param name="robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1.sdf" />
+        <param name="robot_description" command="cat $(find a1_description)/urdf/a1.urdf" />
+    </group>
+
 
 </launch>

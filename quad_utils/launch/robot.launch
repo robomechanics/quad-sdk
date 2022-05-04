@@ -1,25 +1,25 @@
 <launch>
   <arg name="software"/>
   <arg name="controller"/>
-  <arg name="rotors"/>
   <arg name="init_pose"/>
   <arg name="planning"/>
   <arg name="logging"/>
   <arg name="visualization" value="false"/>
   <arg name="namespace"     default="robot_1"/>
+  <arg name="robot_type"/>
   <param name="tf_prefix"   value="$(arg namespace)_tf" />
 
-  <group if="$(arg rotors)">
-    <!-- use more accurate but slower rotor model -->
-    <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit_rotors.sdf" />
+  <group if="$(eval robot_type == 'spirit')">
+  <param name="$(arg robot_type)_robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
   </group>
-  <group unless="$(arg rotors)">
-    <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
+
+  <group if="$(eval robot_type == 'a1')">
+  <param name="$(arg robot_type)_robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1.sdf" />
   </group>
 
   <group if="$(arg software)">
     <!-- Spawn SDF model -->
-    <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model $(arg namespace) $(arg init_pose)" output="screen"/>
+    <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param $(arg robot_type)_robot_description_sdf -model $(arg namespace) $(arg init_pose)" output="screen"/> -->
     
     <node pkg="robot_state_publisher" type="robot_state_publisher" 
           name="robot_state_publisher" output="screen">
@@ -31,7 +31,7 @@
       <arg name="is_hardware" value="false"/>
     </include>
 
-    <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
+    <rosparam file="$(find gazebo_scripts)/config/quad_control.yaml" command="load"/>
   
     <node name="controller_spawner"
         pkg="controller_manager"
@@ -44,12 +44,12 @@
     <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
     
     <!-- Launch the node to publish the visual topics for the plans -->
-    <node name="rviz_interface" pkg="quad_utils" type="rviz_interface_node" output="screen"/>
+    <node name="rviz_interface" pkg="quad_utils" type="rviz_interface_node" output="screen"/> 
     
     <include file="$(find quad_utils)/launch/visualization.launch">
       <arg name="namespace" value="$(arg namespace)"/>
       <arg name="visualization" value="$(arg visualization)"/>
     </include>
-  </group>
+  </group> 
 
 </launch>

@@ -3,7 +3,8 @@ Panels:
     Help Height: 0
     Name: Displays
     Property Tree Widget:
-      Expanded: ~
+      Expanded:
+        - /Ground Truth State3
       Splitter Ratio: 0.6114649772644043
     Tree Height: 806
   - Class: rviz/Selection
@@ -111,6 +112,11 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         lower0:
           Alpha: 1
           Show Axes: false
@@ -131,12 +137,22 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        text_left:
+        thigh_shoulder0:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        text_right:
+        thigh_shoulder1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        thigh_shoulder2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        thigh_shoulder3:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -157,6 +173,11 @@ Visualization Manager:
           Show Trail: false
           Value: true
         toe3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        trunk:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -216,7 +237,7 @@ Visualization Manager:
       Marker Topic: /robot_1/visualization/global_plan
       Name: Global Plan
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -280,7 +301,7 @@ Visualization Manager:
       Marker Topic: /robot_1/visualization/foot_plan_discrete
       Name: Discrete Foot Plan
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -391,6 +412,476 @@ Visualization Manager:
         {}
       Queue Size: 100
       Value: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        body:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        thigh_shoulder0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        thigh_shoulder1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        thigh_shoulder2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        thigh_shoulder3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        trunk:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+      Name: Ground Truth State
+      Robot Description: robot_description
+      TF Prefix: /robot_2_tf
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /robot_2/visualization/foot_plan_discrete
+      Name: Discrete Foot Plan
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 166; 25; 46
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Billboards
+      Line Width: 0.019999999552965164
+      Name: Foot 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /robot_2/visualization/foot_0_plan_continuous
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 0; 45; 114
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Billboards
+      Line Width: 0.019999999552965164
+      Name: Foot 1
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /robot_2/visualization/foot_1_plan_continuous
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 0; 132; 61
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Billboards
+      Line Width: 0.019999999552965164
+      Name: Foot 2
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /robot_2/visualization/foot_2_plan_continuous
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 242; 169; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Billboards
+      Line Width: 0.019999999552965164
+      Name: Foot 3
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /robot_2/visualization/foot_3_plan_continuous
+      Unreliable: false
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /robot_2/visualization/global_plan
+      Name: Global Plan
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /robot_3/visualization/global_plan
+      Name: Global Plan
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 166; 25; 46
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Billboards
+      Line Width: 0.019999999552965164
+      Name: Foot 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /robot_3/visualization/foot_0_plan_continuous
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 0; 45; 114
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Billboards
+      Line Width: 0.019999999552965164
+      Name: Foot 1
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /robot_3/visualization/foot_1_plan_continuous
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 0; 132; 61
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Billboards
+      Line Width: 0.019999999552965164
+      Name: Foot 2
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /robot_3/visualization/foot_2_plan_continuous
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 242; 169; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Billboards
+      Line Width: 0.019999999552965164
+      Name: Foot 3
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /robot_3/visualization/foot_3_plan_continuous
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        body:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        thigh_shoulder0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        thigh_shoulder1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        thigh_shoulder2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        thigh_shoulder3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        trunk:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+      Name: Ground Truth State
+      Robot Description: robot_description
+      TF Prefix: /robot_3_tf
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
@@ -415,11 +906,9 @@ Visualization Manager:
     - Class: rviz/PublishPoint
       Single click: true
       Topic: /robot_1/clicked_point
-    
     - Class: rviz/PublishPoint
       Single click: true
       Topic: /robot_2/clicked_point
-      
   Value: true
   Views:
     Current:

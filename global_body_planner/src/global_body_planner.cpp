@@ -5,6 +5,9 @@ using namespace planning_utils;
 GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh_ = nh;
 
+  // Load system parameters from launch file (not in config file)
+  nh.param<std::string>("robot_type", robot_name_, "a1");
+
   // Load rosparams from parameter server
   std::string body_plan_topic, discrete_body_plan_topic, body_plan_tree_topic,
       goal_state_topic;
@@ -20,21 +23,25 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
                            body_plan_tree_topic);
   quad_utils::loadROSParam(nh_, "topics/goal_state", goal_state_topic);
   quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/update_rate",
-                           update_rate_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/num_calls", num_calls_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/max_planning_time",
-                           max_planning_time_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/state_error_threshold",
-                           state_error_threshold_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/startup_delay",
+  quad_utils::loadROSParam(
+      nh_, robot_name_ + "/global_body_planner/update_rate", update_rate_);
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/num_calls",
+                           num_calls_);
+  quad_utils::loadROSParam(
+      nh_, robot_name_ + "/global_body_planner/max_planning_time",
+      max_planning_time_);
+  quad_utils::loadROSParam(
+      nh_, robot_name_ + "/global_body_planner/state_error_threshold",
+      state_error_threshold_);
+  quad_utils::loadROSParam(nh_,
+                           robot_name_ + "/global_body_planner/startup_delay",
                            reset_publish_delay_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/replanning",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/replanning",
                            replanning_allowed_);
   quad_utils::loadROSParam(nh_, "local_planner/timestep", dt_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/start_state",
-                           start_state_vec);
-  quad_utils::loadROSParam(nh_, "global_body_planner/goal_state",
+  quad_utils::loadROSParam(
+      nh_, robot_name_ + "/global_body_planner/start_state", start_state_vec);
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/goal_state",
                            goal_state_vec);
 
   // Setup pubs and subs
@@ -51,59 +58,68 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
       nh_.advertise<visualization_msgs::MarkerArray>(body_plan_tree_topic, 1);
 
   // Load planner config
-  quad_utils::loadROSParam(nh, "global_body_planner/H_MAX",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/H_MAX",
                            planner_config_.H_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/H_MIN",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/H_MIN",
                            planner_config_.H_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/H_NOM",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/H_NOM",
                            planner_config_.H_NOM);
-  quad_utils::loadROSParam(nh, "global_body_planner/V_MAX",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/V_MAX",
                            planner_config_.V_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/V_NOM",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/V_NOM",
                            planner_config_.V_NOM);
-  quad_utils::loadROSParam(nh, "global_body_planner/DY_MAX",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/DY_MAX",
                            planner_config_.DY_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_L",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/ROBOT_L",
                            planner_config_.ROBOT_L);
-  quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_W",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/ROBOT_W",
                            planner_config_.ROBOT_W);
-  quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_W",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/ROBOT_W",
                            planner_config_.ROBOT_W);
-  quad_utils::loadROSParam(nh, "global_body_planner/M_CONST",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/M_CONST",
                            planner_config_.M_CONST);
-  quad_utils::loadROSParam(nh, "global_body_planner/J_CONST",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/J_CONST",
                            planner_config_.J_CONST);
-  quad_utils::loadROSParam(nh, "global_body_planner/G_CONST",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/G_CONST",
                            planner_config_.G_CONST);
-  quad_utils::loadROSParam(nh, "global_body_planner/F_MIN",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/F_MIN",
                            planner_config_.F_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/F_MAX",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/F_MAX",
                            planner_config_.F_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/PEAK_GRF_MIN",
+  quad_utils::loadROSParam(nh_,
+                           robot_name_ + "/global_body_planner/PEAK_GRF_MIN",
                            planner_config_.PEAK_GRF_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/PEAK_GRF_MAX",
+  quad_utils::loadROSParam(nh_,
+                           robot_name_ + "/global_body_planner/PEAK_GRF_MAX",
                            planner_config_.PEAK_GRF_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/MU", planner_config_.MU);
-  quad_utils::loadROSParam(nh, "global_body_planner/T_S_MIN",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/MU",
+                           planner_config_.MU);
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/T_S_MIN",
                            planner_config_.T_S_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/T_S_MAX",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/T_S_MAX",
                            planner_config_.T_S_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/T_F_MIN",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/T_F_MIN",
                            planner_config_.T_F_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/T_F_MAX",
+  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/T_F_MAX",
                            planner_config_.T_F_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/KINEMATICS_RES",
+  quad_utils::loadROSParam(nh_,
+                           robot_name_ + "/global_body_planner/KINEMATICS_RES",
                            planner_config_.KINEMATICS_RES);
-  quad_utils::loadROSParam(nh, "global_body_planner/BACKUP_TIME",
+  quad_utils::loadROSParam(nh_,
+                           robot_name_ + "/global_body_planner/BACKUP_TIME",
                            planner_config_.BACKUP_TIME);
-  quad_utils::loadROSParam(nh, "global_body_planner/BACKUP_RATIO",
+  quad_utils::loadROSParam(nh_,
+                           robot_name_ + "/global_body_planner/BACKUP_RATIO",
                            planner_config_.BACKUP_RATIO);
-  quad_utils::loadROSParam(nh, "global_body_planner/NUM_GEN_STATES",
+  quad_utils::loadROSParam(nh_,
+                           robot_name_ + "/global_body_planner/NUM_GEN_STATES",
                            planner_config_.NUM_GEN_STATES);
-  quad_utils::loadROSParam(nh, "global_body_planner/GOAL_BOUNDS",
+  quad_utils::loadROSParam(nh_,
+                           robot_name_ + "/global_body_planner/GOAL_BOUNDS",
                            planner_config_.GOAL_BOUNDS);
-  quad_utils::loadROSParam(nh, "global_body_planner/max_planning_time",
-                           planner_config_.MAX_TIME);
+  quad_utils::loadROSParam(
+      nh_, robot_name_ + "/global_body_planner/max_planning_time",
+      planner_config_.MAX_TIME);
   planner_config_.G_VEC << 0, 0, -planner_config_.G_CONST;
 
   // Zero planning data
