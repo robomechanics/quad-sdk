@@ -4,6 +4,7 @@
 #include <math.h>
 #include <quad_utils/fast_terrain_map.h>
 #include <quad_utils/math_utils.h>
+#include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
 #include <unistd.h>
 #include <visualization_msgs/MarkerArray.h>
@@ -35,51 +36,48 @@ struct PlannerConfig {
   grid_map::GridMap terrain_grid_map;
 
   // Define kinematic constraint parameters
-  double H_MAX = 0.375;  // Maximum height of leg base, m
-  double H_MIN = 0.1;    // Minimum ground clearance of body corners, m
-  double H_NOM = 0.3;    // Nominal ground clearance of body, m
-  double V_MAX = 3.0;    // Maximum robot velocity, m/s
-  double V_NOM = 0.75;   // Nominal velocity, m/s (used during connect function)
-  double DY_MAX = 0;     // Maximum yaw velocity
+  double H_MAX;   // Maximum height of leg base, m
+  double H_MIN;   // Minimum ground clearance of body corners, m
+  double H_NOM;   // Nominal ground clearance of body, m
+  double V_MAX;   // Maximum robot velocity, m/s
+  double V_NOM;   // Nominal velocity, m/s (used during connect function)
+  double DY_MAX;  // Maximum yaw velocity
 
   // Define dynamic constraint parameters
-  double M_CONST = 13;    // Robot mass, kg
-  double J_CONST = 1.0;   // Moment of inertia about the robot's y axis (pitch)
-  double G_CONST = 9.81;  // Gravity constant, m/s^2
-  double F_MIN = 0;       // Minimum GRF
-  double F_MAX = 600;     // Maximum GRF, N
-  double PEAK_GRF_MIN = 4.0;  // Minimum GRF in units of body weight
-  double PEAK_GRF_MAX = 7.0;  // Maximum GRF in units of body weight
-  double MU = 0.25;           // Friction coefficient
-  double T_S_MIN = 0.3;       // Minimum stance time, s
-  double T_S_MAX = 0.3;       // Maximum stance time, s
-  double T_F_MIN = 0.1;       // Minimum flight time, s
-  double T_F_MAX = 0.4;       // Maximum stance time, s
+  double M_CONST;       // Robot mass, kg
+  double J_CONST;       // Moment of inertia about the robot's y axis (pitch)
+  double G_CONST;       // Gravity constant, m/s^2
+  double F_MIN;         // Minimum GRF
+  double F_MAX;         // Maximum GRF, N
+  double PEAK_GRF_MIN;  // Minimum GRF in units of body weight
+  double PEAK_GRF_MAX;  // Maximum GRF in units of body weight
+  double MU;            // Friction coefficient
+  double T_S_MIN;       // Minimum stance time, s
+  double T_S_MAX;       // Maximum stance time, s
+  double T_F_MIN;       // Minimum flight time, s
+  double T_F_MAX;       // Maximum stance time, s
 
   // Define planning parameters
-  double KINEMATICS_RES =
-      0.03;  // Resolution of kinematic feasibility checks, m
-  int TRAPPED_BUFFER_FACTOR = 4;  // Number of feasibility that must pass to not
-                                  // consider a state trapped
-  double BACKUP_TIME =
-      0.3;  // Duration of backup after finding an invalid state, s
-  double BACKUP_RATIO =
-      0.5;  // Ratio of trajectory to back up after finding an invalid state, s
-  int NUM_LEAP_SAMPLES =
-      30;  // Number of actions computed for each extend function
-  double GOAL_BOUNDS = 0.5;  // Distance threshold on reaching the goal (only
-                             // used for vanilla RRT, not RRT-Connect)
-  double MAX_TIME = 2.0;     // Maximum planning time allowed
-  Eigen::Vector3d G_VEC;     // Maximum planning time allowed
+  double KINEMATICS_RES;      // Resolution of kinematic feasibility checks, m
+  int TRAPPED_BUFFER_FACTOR;  // Number of feasibility that must pass to not
+                              // consider a state trapped
+  double BACKUP_TIME;    // Duration of backup after finding an invalid state, s
+  double BACKUP_RATIO;   // Ratio of trajectory to back up after finding an
+                         // invalid state, s
+  int NUM_LEAP_SAMPLES;  // Number of actions computed for each extend function
+  double GOAL_BOUNDS;    // Distance threshold on reaching the goal (only
+                         // used for vanilla RRT, not RRT-Connect)
+  double MAX_TIME;       // Maximum planning time allowed
+  Eigen::Vector3d G_VEC;  // Maximum planning time allowed
 
   // Define robot params and declare points used for validity checking
-  double ROBOT_L = 0.4;   // Length of robot body, m
-  double ROBOT_W = 0.3;   // Width of robot body, m
-  double ROBOT_H = 0.05;  // Vertical distance between leg base and bottom of
-                          // robot, m
+  double ROBOT_L;  // Length of robot body, m
+  double ROBOT_W;  // Width of robot body, m
+  double ROBOT_H;  // Vertical distance between leg base and bottom of
+                   // robot, m
 
-  double body_traversability_threshold = 0.01;
-  double contact_traversability_threshold = 0.5;
+  double body_traversability_threshold;
+  double contact_traversability_threshold;
   bool enable_leaping = true;
 
   static const int num_reachability_points =
@@ -106,6 +104,55 @@ struct PlannerConfig {
         -0.5 * ROBOT_L, 0, 0.5 * ROBOT_W, 0.5 * ROBOT_W, -0.5 * ROBOT_W,
         -0.5 * ROBOT_W, 0, -0.5 * ROBOT_H, -0.5 * ROBOT_H, -0.5 * ROBOT_H,
         -0.5 * ROBOT_H, -0.5 * ROBOT_H;
+  }
+
+  void loadParamsFromServer(ros::NodeHandle nh) {
+    quad_utils::loadROSParam(nh, "global_body_planner/H_MAX", H_MAX);
+    quad_utils::loadROSParam(nh, "global_body_planner/H_MIN", H_MIN);
+    quad_utils::loadROSParam(nh, "global_body_planner/H_NOM", H_NOM);
+    quad_utils::loadROSParam(nh, "global_body_planner/V_MAX", V_MAX);
+    quad_utils::loadROSParam(nh, "global_body_planner/V_NOM", V_NOM);
+    quad_utils::loadROSParam(nh, "global_body_planner/DY_MAX", DY_MAX);
+    quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_L", ROBOT_L);
+    quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_W", ROBOT_W);
+    quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_W", ROBOT_W);
+    quad_utils::loadROSParam(
+        nh, "global_body_planner/BODY_TRAVERSABILITY_THRESHOLD",
+        body_traversability_threshold);
+    quad_utils::loadROSParam(
+        nh, "global_body_planner/CONTACT_TRAVERSABILITY_THRESHOLD",
+        contact_traversability_threshold);
+    quad_utils::loadROSParam(nh, "global_body_planner/M_CONST", M_CONST);
+    quad_utils::loadROSParam(nh, "global_body_planner/J_CONST", J_CONST);
+    quad_utils::loadROSParam(nh, "global_body_planner/G_CONST", G_CONST);
+    quad_utils::loadROSParam(nh, "global_body_planner/F_MIN", F_MIN);
+    quad_utils::loadROSParam(nh, "global_body_planner/F_MAX", F_MAX);
+    quad_utils::loadROSParam(nh, "global_body_planner/PEAK_GRF_MIN",
+                             PEAK_GRF_MIN);
+    quad_utils::loadROSParam(nh, "global_body_planner/PEAK_GRF_MAX",
+                             PEAK_GRF_MAX);
+    quad_utils::loadROSParam(nh, "global_body_planner/MU", MU);
+    quad_utils::loadROSParam(nh, "global_body_planner/T_S_MIN", T_S_MIN);
+    quad_utils::loadROSParam(nh, "global_body_planner/T_S_MAX", T_S_MAX);
+    quad_utils::loadROSParam(nh, "global_body_planner/T_F_MIN", T_F_MIN);
+    quad_utils::loadROSParam(nh, "global_body_planner/T_F_MAX", T_F_MAX);
+    quad_utils::loadROSParam(nh, "global_body_planner/KINEMATICS_RES",
+                             KINEMATICS_RES);
+    quad_utils::loadROSParam(nh, "global_body_planner/BACKUP_TIME",
+                             BACKUP_TIME);
+    quad_utils::loadROSParam(nh, "global_body_planner/BACKUP_RATIO",
+                             BACKUP_RATIO);
+    quad_utils::loadROSParam(nh, "global_body_planner/TRAPPED_BUFFER_FACTOR",
+                             TRAPPED_BUFFER_FACTOR);
+    quad_utils::loadROSParam(nh, "global_body_planner/NUM_LEAP_SAMPLES",
+                             NUM_LEAP_SAMPLES);
+    quad_utils::loadROSParam(nh, "global_body_planner/GOAL_BOUNDS",
+                             GOAL_BOUNDS);
+    quad_utils::loadROSParam(nh, "global_body_planner/max_planning_time",
+                             MAX_TIME);
+
+    // Load the scalar parameters into Eigen vectors
+    loadEigenVectorsFromParams();
   }
 };
 

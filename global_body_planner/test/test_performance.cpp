@@ -50,7 +50,7 @@ TEST_F(GlobalBodyPlannerTestFixture, testGetRandomLeapActionTime) {
   }
   double avg_duration = timer.reportStatistics(N);
 
-  EXPECT_LE(avg_duration, 5e-6);
+  EXPECT_LE(avg_duration, 5e-5);
 }
 
 TEST_F(GlobalBodyPlannerTestFixture, testIsValidStateActionPairTime) {
@@ -84,7 +84,7 @@ TEST_F(GlobalBodyPlannerTestFixture, testIsValidStateActionPairTime) {
   }
   double avg_duration = timer.reportStatistics(N);
 
-  EXPECT_LE(avg_duration, 5e-5);
+  EXPECT_LE(avg_duration, 1e-4);
 }
 
 TEST_F(GlobalBodyPlannerTestFixture, testValidStateActionPairAccuracy) {
@@ -158,17 +158,13 @@ TEST_F(GlobalBodyPlannerTestFixture, testValidStateActionPairAccuracy) {
 //   // Find valid state action pair
 //   quad_utils::FunctionTimer timer("testValidStateActionPairRate");
 //   while (count_valid < N) {
-//     std::cout << "count_valid = " << count_valid << std::endl;
 //     State s = planner_.randomState(planner_config_);
-//     printState(s);
 //     if (!isValidState(s, planner_config_, LEAP_STANCE)) {
 //       continue;
 //     }
 //     surf_norm = getSurfaceNormalFiltered(s, planner_config_);
 //     bool is_valid_forward = false;
 //     while (!is_valid_forward) {
-//       std::cout << "In is_valid_forward" << std::endl;
-//       printState(s);
 //       if (getRandomLeapAction(s, surf_norm, a, planner_config_)) {
 //         is_valid_forward =
 //             isValidStateActionPair(s, a, result, planner_config_);

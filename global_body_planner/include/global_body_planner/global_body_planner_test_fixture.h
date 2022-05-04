@@ -40,7 +40,8 @@ class GlobalBodyPlannerTestFixture : public ::testing::Test {
     updateTerrainSlope(slope);
 
     // Create planner and configuration
-    planner_config_.loadEigenVectorsFromParams();
+    ros::NodeHandle nh;
+    planner_config_.loadParamsFromServer(nh);
   }
 
   /**
