@@ -20,7 +20,7 @@ namespace effort_controllers {
  * Subscribes to:
  * - \b command (std_msgs::Float64MultiArray) : The joint efforts to apply
  */
-SpiritController::SpiritController() {
+QuadController::QuadController() {
   // Setup joint map
   leg_map_[0] = std::make_pair(0, 1);   // hip0
   leg_map_[1] = std::make_pair(0, 2);   // knee0
@@ -39,10 +39,10 @@ SpiritController::SpiritController() {
   torque_lims_ = {21, 21, 32};
   speed_lims_ = {37.7, 37.7, 25.1};
 }
-SpiritController::~SpiritController() { sub_command_.shutdown(); }
+QuadController::~QuadController() { sub_command_.shutdown(); }
 
-bool SpiritController::init(hardware_interface::EffortJointInterface *hw,
-                            ros::NodeHandle &n) {
+bool QuadController::init(hardware_interface::EffortJointInterface* hw,
+                            ros::NodeHandle& n) {
   // List of controlled joints
   std::string param_name = "joints";
   if (!n.getParam(param_name, joint_names_)) {
@@ -57,7 +57,7 @@ bool SpiritController::init(hardware_interface::EffortJointInterface *hw,
     return false;
   }
 
-  // Get URDF
+  // Get URDF  
   urdf::Model urdf;
   if (!urdf.initParam("robot_description")) {
     ROS_ERROR("Failed to parse urdf file");
@@ -97,14 +97,14 @@ bool SpiritController::init(hardware_interface::EffortJointInterface *hw,
   joint_command_topic = "/" + ns + "/" + joint_command_topic;
 
   sub_command_ = n.subscribe<quad_msgs::LegCommandArray>(
-      joint_command_topic, 1, &SpiritController::commandCB, this,
+      joint_command_topic, 1, &QuadController::commandCB, this,
       ros::TransportHints().tcpNoDelay());
   return true;
 }
 
-void SpiritController::update(const ros::Time &time,
-                              const ros::Duration &period) {
-  BufferType &commands = *commands_buffer_.readFromRT();
+void QuadController::update(const ros::Time& time,
+                              const ros::Duration& period) {
+  BufferType& commands = *commands_buffer_.readFromRT();
 
   // Check if message is populated
   if (commands.empty() || commands.front().motor_commands.empty()) {
@@ -152,12 +152,12 @@ void SpiritController::update(const ros::Time &time,
   }
 }
 
-void SpiritController::commandCB(
-    const quad_msgs::LegCommandArrayConstPtr &msg) {
+void QuadController::commandCB(
+    const quad_msgs::LegCommandArrayConstPtr& msg) {
   commands_buffer_.writeFromNonRT(msg->leg_commands);
 }
 
-void SpiritController::enforceJointLimits(double &command, unsigned int index) {
+void QuadController::enforceJointLimits(double& command, unsigned int index) {
   // Check that this joint has applicable limits
   if (joint_urdfs_[index]->type == urdf::Joint::REVOLUTE ||
       joint_urdfs_[index]->type == urdf::Joint::PRISMATIC) {
@@ -173,5 +173,5 @@ void SpiritController::enforceJointLimits(double &command, unsigned int index) {
 
 }  // namespace effort_controllers
 
-PLUGINLIB_EXPORT_CLASS(effort_controllers::SpiritController,
+PLUGINLIB_EXPORT_CLASS(effort_controllers::QuadController,
                        controller_interface::ControllerBase)

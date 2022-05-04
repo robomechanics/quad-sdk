@@ -6,6 +6,7 @@ Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
 QuadKD::QuadKD() {
   std::string robot_description_string;
+
   if (!ros::param::get("robot_description", robot_description_string)) {
     std::cerr << "Error loading robot_description " << std::endl;
     abort();
@@ -56,14 +57,14 @@ QuadKD::QuadKD() {
     // uses the magnitute of it)
     tform =
         model_->GetJointFrame(model_->GetBodyId(lower_name_list.at(i).c_str()));
-    l1_ = abs(tform.r(0));
+    l1_ = tform.r.cwiseAbs().maxCoeff();
     knee_offset_ = tform.r;
 
     // From knee to toe (we know they should be the same and the equation in IK
     // uses the magnitute of it)
     tform =
         model_->GetJointFrame(model_->GetBodyId(toe_name_list.at(i).c_str()));
-    l2_ = abs(tform.r(0));
+    l2_ = tform.r.cwiseAbs().maxCoeff();
     foot_offset_ = tform.r;
   }
 

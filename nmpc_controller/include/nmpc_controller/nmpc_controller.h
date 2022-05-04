@@ -86,6 +86,9 @@ class NMPCController {
  private:
   ros::NodeHandle nh_;
 
+  /// Robot type: A1 or Spirit
+  std::string robot_;
+
   /// Update rate for sending and receiving data;
   double update_rate_;
 
