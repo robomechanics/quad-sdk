@@ -89,6 +89,25 @@ bool MeshToGridMapConverter::meshToGridMap(
   grid_map::GridMapPclConverter::addLayerFromPolygonMesh(polygon_mesh,
                                                          layer_name, map);
 
+  // Setup x and y matrices for loading
+  grid_map::Size map_size = map.getSize();
+  Eigen::MatrixXf x_data(map_size(0), map_size(1)),
+      y_data(map_size(0), map_size(1));
+
+  // Iterate through map to retrieve x and y data and save to data matrices
+  for (grid_map::GridMapIterator iterator(map); !iterator.isPastEnd();
+       ++iterator) {
+    const grid_map::Index index(*iterator);
+    grid_map::Position pos;
+    map.getPosition(index, pos);
+    x_data(index(0), index(1)) = pos(0);
+    y_data(index(0), index(1)) = pos(1);
+  }
+
+  // Add x and y layers to map
+  map.add("x", x_data);
+  map.add("y", y_data);
+
   // Printing some debug info about the mesh and the map
   if (verbose_) {
     ROS_INFO_STREAM("Number of polygons: " << polygon_mesh.polygons.size());

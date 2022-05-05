@@ -7,9 +7,9 @@
 TEST(NMPCTest, testTailMPC) {
   int N_, N_tail_;
   double dt_;
-  ros::param::get("/nmpc_controller/leg/horizon_length", N_);
+  ros::param::get("/local_planner/horizon_length", N_);
+  ros::param::get("/local_planner/timestep", dt_);
   ros::param::get("/nmpc_controller/distributed_tail/horizon_length", N_tail_);
-  ros::param::get("/nmpc_controller/leg/step_length", dt_);
 
   std::shared_ptr<NMPCController> leg_planner_ =
       std::make_shared<NMPCController>(0);
@@ -42,13 +42,13 @@ TEST(NMPCTest, testTailMPC) {
     }
   }
 
-  Eigen::VectorXd ref_ground_height(N_ + 1);
+  Eigen::VectorXd ref_ground_height(N_);
   ref_ground_height.fill(0);
 
-  Eigen::MatrixXd body_plan_(N_ + 1, 12);
+  Eigen::MatrixXd body_plan_(N_, 12);
   body_plan_.col(2).fill(0.3);
 
-  Eigen::MatrixXd grf_plan_(N_, 12);
+  Eigen::MatrixXd grf_plan_(N_ - 1, 12);
   grf_plan_.fill(0);
   grf_plan_.col(2).fill(13.3 * 9.81 / 2);
   grf_plan_.col(5).fill(13.3 * 9.81 / 2);
@@ -59,11 +59,11 @@ TEST(NMPCTest, testTailMPC) {
   tail_current_state_.fill(0);
   tail_current_state_(0) = 0.76;
 
-  Eigen::MatrixXd ref_tail_plan_(N_tail_ + 1, 4);
+  Eigen::MatrixXd ref_tail_plan_(N_tail_, 4);
   ref_tail_plan_.fill(0);
   ref_tail_plan_.col(0).fill(0.76);
 
-  Eigen::MatrixXd tail_plan_(N_tail_ + 1, 4);
+  Eigen::MatrixXd tail_plan_(N_tail_, 4);
   tail_plan_.fill(0);
 
   Eigen::MatrixXd tail_torque_plan_(N_tail_, 2);

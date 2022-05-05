@@ -1,6 +1,7 @@
 local_planner:
   update_rate: 500 # Hz
   timestep: 0.03 # s
+<<<<<<< HEAD
   horizon_length: 24 # timesteps
   iterations: 1
 
@@ -17,6 +18,15 @@ local_body_planner:
   friction_mu: 0.5
   normal_lo: 5
   normal_hi: 150
+=======
+  horizon_length: 25 # timesteps
+  cmd_vel_filter_const: 0.10
+  cmd_vel_scale: 1.0
+  last_cmd_vel_msg_time_max: 2.0
+  stand_vel_threshold: 0.1
+  stand_cmd_vel_threshold: 0.1
+  stand_pos_error_threshold: 0.05
+>>>>>>> devel
 
 local_footstep_planner:
   grf_weight: 0.5
@@ -24,10 +34,11 @@ local_footstep_planner:
   ground_clearance: 0.07
   hip_clearance: 0.1
   standing_error_threshold: 0.03 # m
-  foothold_search_radius: 0.2
+  foothold_search_radius: 0.25
   foothold_obj_threshold: 0.6 # Note: For now must match /grid_map_filters/traversability_mask_lower_threshold/lower_threshold
   obj_fun_layer: traversability
   # duty_cycles: [0.3, 0.3, 0.3, 0.3]
+<<<<<<< HEAD
   duty_cycles: [1.0, 1.0, 1.0, 1.0]
   phase_offsets: [0.0, 0.0, 0.0, 0.0]
   # duty_cycles: [0.75, 0.75, 0.75, 0.75]
@@ -48,3 +59,7 @@ mpc_controller:
   friction_mu: 0.4
   normal_lo: 3
   normal_hi: 70
+=======
+  duty_cycles: [0.5, 0.5, 0.5, 0.5]
+  phase_offsets: [0.0, 0.5, 0.5, 0.0]
+>>>>>>> devel

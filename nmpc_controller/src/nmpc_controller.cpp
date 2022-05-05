@@ -27,28 +27,32 @@ NMPCController::NMPCController(int type) {
 
   // Load MPC/system parameters
   double mu;
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/horizon_length", N_);
+  if (param_ns_ == "leg") {
+    ros::param::get("/local_planner/horizon_length", N_);
+    ros::param::get("/local_planner/timestep", dt_);
+  } else {
+    ros::param::get("/nmpc_controller/" + param_ns_ + "/horizon_length", N_);
+    ros::param::get("/nmpc_controller/" + param_ns_ + "/step_length", dt_);
+  }
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_dimension", n_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_dimension", m_);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/step_length", dt_);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/friction_coefficient",
                   mu);
 
   // Load MPC cost weighting and bounds
-  std::vector<double> state_weights, control_weights, state_weights_factors,
-      control_weights_factors, state_lower_bound, state_upper_bound,
-      control_lower_bound, control_upper_bound;
-  double panic_weights;
+  std::vector<double> state_weights, control_weights, state_lower_bound,
+      state_upper_bound, control_lower_bound, control_upper_bound;
+  double panic_weights, Q_temporal_factor, R_temporal_factor;
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_weights",
                   state_weights);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_weights",
                   control_weights);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/panic_weights",
                   panic_weights);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/state_weights_factors",
-                  state_weights_factors);
-  ros::param::get("/nmpc_controller/" + param_ns_ + "/control_weights_factors",
-                  control_weights_factors);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/Q_temporal_factor",
+                  Q_temporal_factor);
+  ros::param::get("/nmpc_controller/" + param_ns_ + "/R_temporal_factor",
+                  R_temporal_factor);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_lower_bound",
                   state_lower_bound);
   ros::param::get("/nmpc_controller/" + param_ns_ + "/state_upper_bound",
@@ -58,16 +62,17 @@ NMPCController::NMPCController(int type) {
   ros::param::get("/nmpc_controller/" + param_ns_ + "/control_upper_bound",
                   control_upper_bound);
   Eigen::Map<Eigen::MatrixXd> Q(state_weights.data(), n_, 1),
-      R(control_weights.data(), m_, 1),
-      Q_factor(state_weights_factors.data(), N_, 1),
-      R_factor(control_weights_factors.data(), N_, 1),
-      x_min(state_lower_bound.data(), n_, 1),
+      R(control_weights.data(), m_, 1), x_min(state_lower_bound.data(), n_, 1),
       x_max(state_upper_bound.data(), n_, 1),
       u_min(control_lower_bound.data(), m_, 1),
       u_max(control_upper_bound.data(), m_, 1);
 
+  Q_temporal_factor = std::pow(Q_temporal_factor, 1.0 / (N_ - 1));
+  R_temporal_factor = std::pow(R_temporal_factor, 1.0 / (N_ - 1));
+
   mynlp_ = new quadNLP(type_, N_, n_, m_, dt_, mu, panic_weights, Q, R,
-                       Q_factor, R_factor, x_min, x_max, u_min, u_max);
+                       Q_temporal_factor, R_temporal_factor, x_min, x_max,
+                       u_min, u_max);
 
   app_ = IpoptApplicationFactory();
 
@@ -193,23 +198,23 @@ bool NMPCController::computePlan(
 
   status = app_->OptimizeTNLP(mynlp_);
 
-  Eigen::MatrixXd x(n_, N_);
-  Eigen::MatrixXd u(m_, N_);
-
-  for (int i = 0; i < N_; ++i) {
-    u.block(0, i, m_, 1) = mynlp_->w0_.block(i * (n_ + m_), 0, m_, 1);
-    x.block(0, i, n_, 1) = mynlp_->w0_.block(i * (n_ + m_) + m_, 0, n_, 1);
-  }
-
-  state_traj = Eigen::MatrixXd::Zero(N_ + 1, n_);
-  state_traj.topRows(1) = initial_state.transpose();
-  control_traj = Eigen::MatrixXd::Zero(N_, m_);
-
-  state_traj.bottomRows(N_) = x.transpose();
-  control_traj = u.transpose();
-
   if (status == Solve_Succeeded) {
     mynlp_->warm_start_ = true;
+
+    Eigen::MatrixXd x(n_, N_);
+    Eigen::MatrixXd u(m_, N_);
+
+    for (int i = 0; i < N_; ++i) {
+      u.block(0, i, m_, 1) = mynlp_->w0_.block(i * (n_ + m_), 0, m_, 1);
+      x.block(0, i, n_, 1) = mynlp_->w0_.block(i * (n_ + m_) + m_, 0, n_, 1);
+    }
+
+    state_traj = Eigen::MatrixXd::Zero(N_ + 1, n_);
+    state_traj.topRows(1) = initial_state.transpose();
+    control_traj = Eigen::MatrixXd::Zero(N_, m_);
+
+    state_traj.bottomRows(N_) = x.transpose();
+    control_traj = u.transpose();
 
     return true;
   } else {

@@ -1,7 +1,13 @@
 #ifndef LOCAL_PLANNER_H
 #define LOCAL_PLANNER_H
 
+<<<<<<< HEAD
 #include <ros/ros.h>
+=======
+#include <gtest/gtest_prod.h>
+#include <local_planner/local_footstep_planner.h>
+#include <local_planner/local_planner_modes.h>
+>>>>>>> devel
 #include <math.h>
 #include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/RobotPlan.h>
@@ -12,10 +18,15 @@
 #include <local_planner/quadruped_mpc.h>
 #include <local_planner/local_footstep_planner.h>
 #include <quad_utils/ros_utils.h>
+<<<<<<< HEAD
 #include <quad_utils/quad_kd.h>
 #include "quad_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <nmpc_controller/nmpc_controller.h>
+=======
+#include <ros/ros.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+>>>>>>> devel
 
 //! Local Body Planner library
 /*!
@@ -168,9 +179,6 @@ private:
   /// Maximum normal force in contact phase
   double normal_hi_;
 
-  /// Number of iterations between body and footstep planners
-  int iterations_;
-
   /// local planner timestep (seconds)
   double dt_;
 
@@ -235,8 +243,11 @@ private:
   std::shared_ptr<quad_utils::QuadKD>quadKD_;
 
   /// Twist input
-  typedef std::vector<double> Twist;
+  typedef Eigen::VectorXd Twist;
   Twist cmd_vel_;
+
+  /// Commanded velocity filter constant
+  double cmd_vel_filter_const_;
 
   /// Scale for twist cmd_val
   double cmd_vel_scale_;
@@ -273,6 +284,18 @@ private:
 
   /// Toe radius
   double toe_radius = 0.02;
+
+  /// Control mode
+  int control_mode_;
+
+  /// Velocity threshold to enter stand mode
+  double stand_vel_threshold_;
+
+  /// Commanded velocity threshold to enter stand mode
+  double stand_cmd_vel_threshold_;
+
+  /// Position error threshold (from foot centroid) to enter stand mode
+  double stand_pos_error_threshold_;
 };
 
 

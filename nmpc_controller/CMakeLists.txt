@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(nmpc_controller)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11)
+add_compile_options(-std=c++11 -ffast-math)
   
 ## Set default cmake build type to release
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
@@ -56,6 +56,7 @@ add_library(nmpc_controller
   src/gen/eval_jac_g_tail.cpp
   src/gen/eval_hess_g_tail.cpp
   src/quad_nlp.cpp
+  src/quad_nlp_utils.cpp
   src/nmpc_controller.cpp
 )
 target_link_libraries(nmpc_controller 

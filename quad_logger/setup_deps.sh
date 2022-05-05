@@ -1,1 +1,0 @@
-chmod +x scripts/read_bag.py

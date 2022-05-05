@@ -1,7 +1,4 @@
 topics:
-  joint_encoder: /mcu/state/jointURDF
-  imu: /mcu/state/imu
-  vel: /mcu/state/vel
   mocap: /mocap_node/quad/pose
   terrain_map: /terrain_map
   terrain_map_raw: /terrain_map_raw
@@ -17,6 +14,8 @@ topics:
     toe_forces: /body_force/toe_forces
   trajectory: /robot_plan
   state: # These should not change for the remapping to work in some launch files
+    joints: /state/joints
+    imu: /state/imu
     ground_truth: /state/ground_truth
     ground_truth_body_frame: /state/ground_truth_body_frame
     estimate: /state/estimate
@@ -47,6 +46,10 @@ topics:
       estimate: /visualization/joint_states/estimate
       ground_truth: /visualization/joint_states/ground_truth
       trajectory: /visualization/joint_states/trajectory
+    state:
+      estimate_trace: visualization/state/estimate_trace
+      ground_truth_trace: visualization/state/ground_truth_trace
+      trajectory_trace: visualization/state/trajectory_trace
     foot_0_plan_continuous: /visualization/foot_0_plan_continuous
     foot_1_plan_continuous: /visualization/foot_1_plan_continuous
     foot_2_plan_continuous: /visualization/foot_2_plan_continuous
