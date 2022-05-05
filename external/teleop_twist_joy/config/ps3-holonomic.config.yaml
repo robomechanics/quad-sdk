@@ -1,20 +1,13 @@
-axis_linear:
-  x: 1
-  y: 0
-scale_linear:
-  x: 0.5
-  y: 0.5
-scale_linear_turbo:
-  x: 1.0
-  y: 0.5
-axis_angular:
-  yaw: 2
-scale_angular:
-  yaw: 1.0
-scale_angular_turbo:
-  yaw: 1.0
-enable_button: 8
-enable_turbo_button: 7
-stand_button: 1
-sit_button: 2
-safety_button: 3
+axis_linear1: 1
+axis_linear2: 0
+axis_linear3: 7
+scale_linear: 0.7
+scale_linear_turbo: 1.5
+
+axis_angular1: 4
+axis_angular2: 3
+axis_angular3: 6
+scale_angular: 0.4
+
+enable_button: 4  # L2 shoulder button
+enable_turbo_button: 5  # L1 shoulder button

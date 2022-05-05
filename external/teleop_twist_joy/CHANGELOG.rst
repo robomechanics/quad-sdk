@@ -2,15 +2,6 @@
 Changelog for package teleop_twist_joy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.1.3 (2019-01-21)
-------------------
-* Use industrial ci
-* Don't crash with invalid axes.
-* Make sure to not crash when the Joy message buttons is too small.
-* Don't get the axis twice.
-* Add ROS Wiki link (`#26 <https://github.com/ros-teleop/teleop_twist_joy/issues/26>`_)
-* Contributors: Chris Lalancette, Julian Gaal, Rousseau Vincent, vincentrou
-
 0.1.2 (2016-08-31)
 ------------------
 * Fixed incorrect key. (`#21 <https://github.com/ros-teleop/teleop_twist_joy/issues/21>`_)
