@@ -32,8 +32,7 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
     }
   }
 
-  Eigen::Vector3d surf_norm =
-      planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0], s.pos[1]);
+  Eigen::Vector3d surf_norm = getSurfaceNormalFiltered(s, planner_config);
 
   int tree_size = tree_viz_msg_.markers.size();
 
@@ -41,14 +40,14 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
   int num_valid_actions = 0;
 
   bool any_valid_actions = false;
-  for (int i = 0; i < planner_config.NUM_GEN_STATES; ++i) {
+  for (int i = 0; i < planner_config.NUM_LEAP_SAMPLES; ++i) {
     bool valid_state_found = false;
 
     Action a_test;
     bool is_valid_initial =
         getRandomLeapAction(s_near, surf_norm, a_test, planner_config);
     num_total_actions++;
-    for (int j = 0; j < planner_config.NUM_GEN_STATES; ++j) {
+    for (int j = 0; j < planner_config.NUM_LEAP_SAMPLES; ++j) {
       bool is_valid = isValidStateActionPair(s_near, a_test, current_result,
                                              planner_config);
 
@@ -97,7 +96,9 @@ int RRTClass::attemptConnect(const State &s_existing, const State &s,
                              int direction) {
   // Enforce stance time greater than the kinematic check resolution to ensure
   // that the action is useful
-  if (t_s <= planner_config.KINEMATICS_RES) return TRAPPED;
+  if (t_s <=
+      planner_config.TRAPPED_BUFFER_FACTOR * planner_config.KINEMATICS_RES)
+    return TRAPPED;
 
   // Initialize the start and goal states depending on the direction, as well as
   // the stance and flight times
@@ -124,8 +125,9 @@ int RRTClass::attemptConnect(const State &s_existing, const State &s,
 
   // Set the vertical component of accel to contain height above terrain
   result.a_new.grf_0[2] =
-      s_start.pos[2] - getZFromState(s_start, planner_config);
-  result.a_new.grf_f[2] = s_goal.pos[2] - getZFromState(s_goal, planner_config);
+      s_start.pos[2] - getTerrainZFilteredFromState(s_start, planner_config);
+  result.a_new.grf_f[2] =
+      s_goal.pos[2] - getTerrainZFilteredFromState(s_goal, planner_config);
 
   result.a_new.t_s_leap = t_s;
   result.a_new.t_f = 0;

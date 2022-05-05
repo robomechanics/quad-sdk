@@ -137,8 +137,11 @@ void SpiritController::update(const ros::Time& time,
                             (1.0 - current_vel / speed_lims_[ind.second]);
     double torque_command = std::min(
         std::max(torque_feedback + torque_ff, -torque_lim), torque_lim);
+    bool apply_motor_model = false;
     torque_command =
-        std::min(std::max(torque_command, motor_model_lb), motor_model_ub);
+        (apply_motor_model)
+            ? std::min(std::max(torque_command, motor_model_lb), motor_model_ub)
+            : torque_command;
 
     // Update joint torque
     joints_.at(i).setCommand(torque_command);

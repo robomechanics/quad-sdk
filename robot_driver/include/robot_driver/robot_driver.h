@@ -148,8 +148,11 @@ class RobotDriver {
   /// ROS subscriber for control restart flag
   ros::Subscriber control_restart_flag_sub_;
 
-  /// ROS publisher for state estimate
+  /// ROS publisher for ground truth state
   ros::Publisher robot_state_pub_;
+
+  // ROS publisher for state estimate
+  ros::Publisher trajectry_robot_state_pub_;
 
   /// ROS subscriber for remote heartbeat
   ros::Subscriber remote_heartbeat_sub_;
@@ -296,6 +299,10 @@ class RobotDriver {
   /// PD gain when foot is in swing
   std::vector<double> swing_kp_;
   std::vector<double> swing_kd_;
+
+  /// PD gain when foot is in swing (Cartesian)
+  std::vector<double> swing_kp_cart_;
+  std::vector<double> swing_kd_cart_;
 
   /// Define standing joint angles
   std::vector<double> stand_joint_angles_;

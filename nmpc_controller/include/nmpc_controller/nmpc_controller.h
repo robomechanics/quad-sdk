@@ -30,8 +30,6 @@ class NMPCController {
    */
   NMPCController();
 
-  NMPCController(int type);
-
   /**
    * @brief Update the contact and dynamic matrices, solve, and return the
    * output
@@ -52,35 +50,19 @@ class NMPCController {
                    const std::vector<std::vector<bool>> &contact_schedule,
                    Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj);
 
-  bool computeLegPlan(const Eigen::VectorXd &initial_state,
-                      const Eigen::MatrixXd &ref_traj,
-                      const Eigen::MatrixXd &foot_positions,
-                      const std::vector<std::vector<bool>> &contact_schedule,
-                      const Eigen::VectorXd &ref_ground_height,
-                      const double &first_element_duration,
-                      const bool &same_plan_index, Eigen::MatrixXd &state_traj,
-                      Eigen::MatrixXd &control_traj);
-
-  bool computeCentralizedTailPlan(
+  bool computeLegPlan(
       const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
-      const Eigen::MatrixXd &foot_positions,
+      const Eigen::MatrixXd &foot_positions_body,
+      Eigen::MatrixXd &foot_positions_world, Eigen::MatrixXd &foot_velocities,
       const std::vector<std::vector<bool>> &contact_schedule,
-      const Eigen::VectorXd &tail_initial_state,
-      const Eigen::MatrixXd &tail_ref_traj,
-      const Eigen::VectorXd &ref_ground_height, Eigen::MatrixXd &state_traj,
-      Eigen::MatrixXd &control_traj, Eigen::MatrixXd &tail_state_traj,
-      Eigen::MatrixXd &tail_control_traj);
-
-  bool computeDistributedTailPlan(
-      const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
-      const Eigen::MatrixXd &foot_positions,
-      const std::vector<std::vector<bool>> &contact_schedule,
-      const Eigen::VectorXd &tail_initial_state,
-      const Eigen::MatrixXd &tail_ref_traj, const Eigen::MatrixXd &state_traj,
-      const Eigen::MatrixXd &control_traj,
       const Eigen::VectorXd &ref_ground_height,
       const double &first_element_duration, const bool &same_plan_index,
-      Eigen::MatrixXd &tail_state_traj, Eigen::MatrixXd &tail_control_traj);
+      const grid_map::GridMap &terrain, Eigen::MatrixXd &state_traj,
+      Eigen::MatrixXd &control_traj);
+
+  /** Method to return the constraint residual for requested data */
+  Eigen::VectorXi evalLiftedTrajectoryConstraints(
+      Eigen::MatrixXd &state_null_traj);
 
  private:
   ros::NodeHandle nh_;
@@ -92,19 +74,26 @@ class NMPCController {
 
   SmartPtr<IpoptApplication> app_;
 
+  std::shared_ptr<quad_utils::QuadKD> quadKD_;
+
   int N_;
 
-  int n_;
+  int x_dim_simple_, x_dim_cost_simple_, u_dim_simple_, u_dim_cost_simple_,
+      g_dim_simple_, x_dim_complex_, x_dim_cost_complex_, u_dim_complex_,
+      u_dim_cost_complex_, g_dim_complex_;
 
-  int m_;
+  // Number of states in different components
+  static const int n_body_ = 12, n_foot_ = 24, n_joints_ = 24, n_tail_ = 4,
+                   m_body_ = 12, m_foot_ = 12, m_tail_ = 2;
+
+  int x_dim_null_;
 
   double dt_;
 
-  int type_;
-
-  std::string param_ns_;
-
   bool require_init_;
+
+  /// Adaptive complexity schedule
+  Eigen::VectorXi adaptive_complexity_schedule_;
 };
 
 #endif  // MPC_CONTROLLER_H
