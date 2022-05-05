@@ -7,6 +7,7 @@
 #ifndef __quadNLP_HPP__
 #define __quadNLP_HPP__
 
+#include <quad_msgs/RobotPlanDiagnostics.h>
 #include <sys/resource.h>
 
 #include <Eigen/Dense>
@@ -53,8 +54,33 @@ enum SystemID {
 
 enum FunctionID { FUNC, JAC, HESS };
 
+// Struct for storing diagnostic information
+struct NLPDiagnostics {
+  double compute_time, cost;
+  int iterations, horizon_length;
+  Eigen::VectorXi complexity_schedule;
+  Eigen::VectorXd element_times;
+
+  void loadDiagnosticsMsg(quad_msgs::RobotPlanDiagnostics &msg) {
+    msg.compute_time = compute_time;
+    msg.cost = cost;
+    msg.iterations = iterations;
+    msg.horizon_length = horizon_length;
+
+    msg.complexity_schedule.resize(complexity_schedule.size());
+    msg.element_times.resize(element_times.size());
+    for (int i = 0; i < complexity_schedule.size(); i++) {
+      msg.complexity_schedule.at(i) = complexity_schedule[i];
+      msg.element_times.at(i) = element_times[i];
+    }
+  }
+};
+
 class quadNLP : public TNLP {
  public:
+  /// Diagnostics struct for gathering metadata
+  NLPDiagnostics diagnostics_;
+
   // Horizon length, state dimension, input dimension, and constraints dimension
   int N_, g_relaxed_;
 
@@ -85,10 +111,10 @@ class quadNLP : public TNLP {
   const bool apply_slack_to_complex_constr_ = true;
 
   /// Boolean for whether to allow modifications of foot trajectory
-  const bool allow_foot_traj_modification = true;
+  const bool always_constrain_feet_ = false;
 
   /// Boolean for whether to include the terrain in the foot height constraint
-  const bool use_terrain_constraint = false;
+  const bool use_terrain_constraint_ = false;
 
   const grid_map::InterpolationMethods interp_type_ =
       grid_map::InterpolationMethods::INTER_NEAREST;

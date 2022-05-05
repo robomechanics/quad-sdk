@@ -21,7 +21,7 @@ end
 if nargin>0
     trialName = varargin{1};
 else
-    trialName = ''; % Set to '' to load via GUI
+    trialName = 'quad_log_current'; % Set to '' to load via GUI
 end
 
 %% Set parameters
@@ -29,8 +29,10 @@ end
 bSave = true;                       % Save the figures/videos
 bAnimate = false;                   % Animate the trajectory (no translation)
 bTitles = true;                     % Turn on figure titles
+bPlotLocalPlanInfo = true;          % Turn on to plot local plan information
 tWindowStates = [];                 % Specify time window for state (use [] for no clipping)
 tWindowControl = [];                % Specify time window for control (use [] for no clipping)
+tWindowLocalPlan = [];              % Specify time window for local plan (use [] for no clipping)
 
 %% Load the data
 
@@ -41,6 +43,7 @@ stateGroundTruth = data.stateGroundTruth;
 stateTrajectory = data.stateTrajectory;
 stateGRFs = data.stateGRFs;
 controlGRFs = data.controlGRFs;
+localPlan = data.localPlan;
 
 %% Plot the data
 
@@ -65,8 +68,14 @@ if ~isempty(controlGRFs)
     controlFigs = plotControl(controlGRFs,tWindowControl,':', bTitles,controlFigs);
 end
 
+% Plot local plan information if desired
+localPlanFigs = [];
+if bPlotLocalPlanInfo && ~isempty(localPlan)
+    localPlanFigs = plotLocalPlan(localPlan,tWindowLocalPlan,'-', bTitles,localPlanFigs);
+end
+
 % Add figures to array
-figArray = [stateFigs, controlFigs];
+figArray = [stateFigs, controlFigs, localPlanFigs];
 
 %% Save the logs and figures in one directory
 logDir = [];

@@ -64,6 +64,12 @@ class NMPCController {
   Eigen::VectorXi evalLiftedTrajectoryConstraints(
       Eigen::MatrixXd &state_null_traj, Eigen::MatrixXd &control_null_traj);
 
+  /**
+   * @brief Return the NLP diagnostics
+   * @return NLP diagnostics with most recent meta-data
+   */
+  inline NLPDiagnostics getNLPDiagnostics() const { return diagnostics_; };
+
  private:
   ros::NodeHandle nh_;
 
@@ -94,6 +100,9 @@ class NMPCController {
 
   /// Adaptive complexity schedule
   Eigen::VectorXi adaptive_complexity_schedule_;
+
+  /// Diagnostics struct for gathering metadata
+  NLPDiagnostics diagnostics_;
 };
 
 #endif  // MPC_CONTROLLER_H
