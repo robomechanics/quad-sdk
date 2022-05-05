@@ -971,6 +971,10 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
       return false;
     }
 
+    if (!isBodyTraversable(reachability_point, planner_config) && phase != FLIGHT) {
+      return false;
+    }
+
     double reachability_clearance =
         getZRelToTerrain(reachability_point, planner_config);
 
