@@ -158,8 +158,8 @@ NMPCController::NMPCController() {
   app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
   app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
 
-  app_->Options()->SetNumericValue("max_wall_time", 10.0 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 10.0 * dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 3.0 * dt_);
+  app_->Options()->SetNumericValue("max_cpu_time", 3.0 * dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();
