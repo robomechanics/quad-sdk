@@ -7,13 +7,15 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
 
   // Load rosparams from parameter server
   std::string imu_topic, joint_state_topic, grf_topic, robot_state_topic,
-      local_plan_topic, leg_command_array_topic, control_mode_topic,
-      remote_heartbeat_topic, robot_heartbeat_topic, single_joint_cmd_topic,
-      mocap_topic, control_restart_flag_topic;
+      trajectory_state_topic, local_plan_topic, leg_command_array_topic,
+      control_mode_topic, remote_heartbeat_topic, robot_heartbeat_topic,
+      single_joint_cmd_topic, mocap_topic, control_restart_flag_topic;
   quad_utils::loadROSParam(nh_, "topics/state/imu", imu_topic);
   quad_utils::loadROSParam(nh_, "topics/state/joints", joint_state_topic);
   quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
+  quad_utils::loadROSParam(nh_, "topics/state/trajectory",
+                           trajectory_state_topic);
   quad_utils::loadROSParam(nh_, "topics/heartbeat/remote",
                            remote_heartbeat_topic);
   quad_utils::loadROSParam(nh_, "topics/heartbeat/robot",
@@ -51,6 +53,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   quad_utils::loadROSParam(nh_, "robot_driver/stance_kd", stance_kd_);
   quad_utils::loadROSParam(nh_, "robot_driver/swing_kp", swing_kp_);
   quad_utils::loadROSParam(nh_, "robot_driver/swing_kd", swing_kd_);
+  quad_utils::loadROSParam(nh_, "robot_driver/swing_kp_cart", swing_kp_cart_);
+  quad_utils::loadROSParam(nh_, "robot_driver/swing_kd_cart", swing_kd_cart_);
   quad_utils::loadROSParam(nh_, "robot_driver/safety_kp", safety_kp_);
   quad_utils::loadROSParam(nh_, "robot_driver/safety_kd", safety_kd_);
   quad_utils::loadROSParam(nh_, "robot_driver/stand_joint_angles",
@@ -77,6 +81,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
       nh_.advertise<quad_msgs::LegCommandArray>(leg_command_array_topic, 1);
   robot_heartbeat_pub_ =
       nh_.advertise<std_msgs::Header>(robot_heartbeat_topic, 1);
+  trajectry_robot_state_pub_ =
+      nh_.advertise<quad_msgs::RobotState>(trajectory_state_topic, 1);
 
   // Set up pubs and subs dependent on robot layer
   if (is_hardware_) {
@@ -121,7 +127,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
                                               << ", returning nullptr");
     leg_controller_ = nullptr;
   }
-  leg_controller_->setGains(stance_kp_, stance_kd_, swing_kp_, swing_kd_);
+  leg_controller_->setGains(stance_kp_, stance_kd_, swing_kp_, swing_kd_,
+                            swing_kp_cart_, swing_kd_cart_);
 
   // Start sitting
   control_mode_ = SIT;
@@ -491,6 +498,13 @@ bool RobotDriver::updateControl() {
               leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j));
         }
       }
+    } else {
+      if (InverseDynamicsController* p =
+              dynamic_cast<InverseDynamicsController*>(leg_controller_.get())) {
+        // Uncomment to publish trajectory reference state
+        // quad_msgs::RobotState ref_state_msg = p->getReferenceState();
+        // trajectry_robot_state_pub_.publish(ref_state_msg);
+      }
     }
   } else if (control_mode_ == SIT_TO_READY) {
     ros::Duration duration = ros::Time::now() - transition_timestamp_;
@@ -540,7 +554,8 @@ bool RobotDriver::updateControl() {
   }
 
   const int knee_idx = 2;
-  const int knee_soft_ub = 3.14;
+  const int knee_soft_ub = 3.0;
+  const int knee_soft_ub_kd = 50.0;
 
   for (int i = 0; i < num_feet_; ++i) {
     for (int j = 0; j < 3; ++j) {
@@ -550,7 +565,12 @@ bool RobotDriver::updateControl() {
       if (j == knee_idx && joint_positions(joint_idx) > knee_soft_ub) {
         leg_command_array_msg_.leg_commands.at(i)
             .motor_commands.at(j)
-            .torque_ff = -torque_limits_[j];
+            .torque_ff = std::max(
+            leg_command_array_msg_.leg_commands.at(i)
+                    .motor_commands.at(j)
+                    .torque_ff -
+                knee_soft_ub_kd * (joint_positions(joint_idx) - knee_soft_ub),
+            -torque_limits_[j]);
       }
 
       quad_msgs::MotorCommand cmd =

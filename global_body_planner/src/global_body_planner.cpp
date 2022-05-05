@@ -51,60 +51,15 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
       nh_.advertise<visualization_msgs::MarkerArray>(body_plan_tree_topic, 1);
 
   // Load planner config
-  quad_utils::loadROSParam(nh, "global_body_planner/H_MAX",
-                           planner_config_.H_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/H_MIN",
-                           planner_config_.H_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/H_NOM",
-                           planner_config_.H_NOM);
-  quad_utils::loadROSParam(nh, "global_body_planner/V_MAX",
-                           planner_config_.V_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/V_NOM",
-                           planner_config_.V_NOM);
-  quad_utils::loadROSParam(nh, "global_body_planner/DY_MAX",
-                           planner_config_.DY_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_L",
-                           planner_config_.ROBOT_L);
-  quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_W",
-                           planner_config_.ROBOT_W);
-  quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_W",
-                           planner_config_.ROBOT_W);
-  quad_utils::loadROSParam(nh, "global_body_planner/M_CONST",
-                           planner_config_.M_CONST);
-  quad_utils::loadROSParam(nh, "global_body_planner/J_CONST",
-                           planner_config_.J_CONST);
-  quad_utils::loadROSParam(nh, "global_body_planner/G_CONST",
-                           planner_config_.G_CONST);
-  quad_utils::loadROSParam(nh, "global_body_planner/F_MIN",
-                           planner_config_.F_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/F_MAX",
-                           planner_config_.F_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/PEAK_GRF_MIN",
-                           planner_config_.PEAK_GRF_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/PEAK_GRF_MAX",
-                           planner_config_.PEAK_GRF_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/MU", planner_config_.MU);
-  quad_utils::loadROSParam(nh, "global_body_planner/T_S_MIN",
-                           planner_config_.T_S_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/T_S_MAX",
-                           planner_config_.T_S_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/T_F_MIN",
-                           planner_config_.T_F_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/T_F_MAX",
-                           planner_config_.T_F_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/KINEMATICS_RES",
-                           planner_config_.KINEMATICS_RES);
-  quad_utils::loadROSParam(nh, "global_body_planner/BACKUP_TIME",
-                           planner_config_.BACKUP_TIME);
-  quad_utils::loadROSParam(nh, "global_body_planner/BACKUP_RATIO",
-                           planner_config_.BACKUP_RATIO);
-  quad_utils::loadROSParam(nh, "global_body_planner/NUM_GEN_STATES",
-                           planner_config_.NUM_GEN_STATES);
-  quad_utils::loadROSParam(nh, "global_body_planner/GOAL_BOUNDS",
-                           planner_config_.GOAL_BOUNDS);
-  quad_utils::loadROSParam(nh, "global_body_planner/max_planning_time",
-                           planner_config_.MAX_TIME);
-  planner_config_.G_VEC << 0, 0, -planner_config_.G_CONST;
+  bool enable_leaping;
+  planner_config_.loadParamsFromServer(nh);
+  nh_.param<bool>("global_body_planner/enable_leaping", enable_leaping, true);
+  if (!enable_leaping) {
+    planner_config_.enable_leaping = false;
+    planner_config_.NUM_LEAP_SAMPLES = 0;
+    planner_config_.H_MIN = 0;
+    planner_config_.H_MAX = 0.5;
+  }
 
   // Zero planning data
   vectorToFullState(start_state_vec, start_state_);
@@ -121,7 +76,8 @@ void GlobalBodyPlanner::terrainMapCallback(
   grid_map::GridMapRosConverter::fromMessage(*msg, map);
 
   // Convert to FastTerrainMap structure for faster querying
-  planner_config_.terrain.loadDataFromGridMap(map);
+  planner_config_.terrain.loadDataFromGridMap(map);  // Takes ~10ms
+  planner_config_.terrain_grid_map = map;            // Takes ~0.1ms
 }
 
 void GlobalBodyPlanner::robotStateCallback(
@@ -198,9 +154,17 @@ void GlobalBodyPlanner::setStartState() {
                     current_plan_.getPublishedTimestamp())
                        .toSec() /
                    dt_);
+
+    // Ensure start index is not too close to goal
     start_index_ = (start_index_ + 25 >= current_plan_.getSize() - 1)
                        ? current_plan_.getSize() - 1
                        : start_index_;
+
+    // Iterate until start_index is in a connect phase
+    while (current_plan_.getPrimitiveFromIndex(start_index_) != CONNECT &&
+           start_index_ < current_plan_.getSize() - 1) {
+      start_index_++;
+    }
 
     start_state_ = current_plan_.getStateFromIndex(start_index_);
     replan_start_time_ = current_plan_.getTime(start_index_);
