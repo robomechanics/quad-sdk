@@ -110,6 +110,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (<a cl
 <tr class="memitem:af556d83dddc308dc5ac1a06d9d5c7b48"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structplanning__utils_1_1FullStateEigen.html">FullState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlan.html#af556d83dddc308dc5ac1a06d9d5c7b48">getStateFromIndex</a> (int i) const</td></tr>
 <tr class="memdesc:af556d83dddc308dc5ac1a06d9d5c7b48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a particular state from the plan.  <a href="classGlobalBodyPlan.html#af556d83dddc308dc5ac1a06d9d5c7b48">More...</a><br /></td></tr>
 <tr class="separator:af556d83dddc308dc5ac1a06d9d5c7b48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0badfafde280c0106b3ecde1730f5bd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlan.html#ad0badfafde280c0106b3ecde1730f5bd">getPrimitiveFromIndex</a> (int i) const</td></tr>
+<tr class="memdesc:ad0badfafde280c0106b3ecde1730f5bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the motion primitive from the plan.  <a href="classGlobalBodyPlan.html#ad0badfafde280c0106b3ecde1730f5bd">More...</a><br /></td></tr>
+<tr class="separator:ad0badfafde280c0106b3ecde1730f5bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc42d587fcfb0c0869f8a4ff2411af6c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlan.html#afc42d587fcfb0c0869f8a4ff2411af6c">getGoalDistance</a> () const</td></tr>
 <tr class="memdesc:afc42d587fcfb0c0869f8a4ff2411af6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the distance of the plan end to the goal (retrieves member variable, does not compute)  <a href="classGlobalBodyPlan.html#afc42d587fcfb0c0869f8a4ff2411af6c">More...</a><br /></td></tr>
 <tr class="separator:afc42d587fcfb0c0869f8a4ff2411af6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -483,6 +486,35 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>goal_distance_</b><
 
 <p>Get the length of the plan at a particular index in meters. </p>
 <dl class="section return"><dt>Returns</dt><dd>Plan length at index </dd></dl>
+
+</div>
+</div>
+<a id="ad0badfafde280c0106b3ecde1730f5bd" name="ad0badfafde280c0106b3ecde1730f5bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0badfafde280c0106b3ecde1730f5bd">&#9670;&nbsp;</a></span>getPrimitiveFromIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int GlobalBodyPlan::getPrimitiveFromIndex </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the motion primitive from the plan. </p>
+<dl class="section return"><dt>Returns</dt><dd>Primitive at index i </dd></dl>
 
 </div>
 </div>

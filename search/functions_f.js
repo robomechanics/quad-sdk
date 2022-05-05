@@ -2,5 +2,5 @@ var searchData=
 [
   ['quadestimatorgroundtruth_0',['QuadEstimatorGroundTruth',['../classgazebo_1_1QuadEstimatorGroundTruth.html#addfccfc34a079eacc4a196ecf65104d9',1,'gazebo::QuadEstimatorGroundTruth']]],
   ['quadkd_1',['QuadKD',['../classquad__utils_1_1QuadKD.html#ad5c66251f82944d751e8d3905f7c66ac',1,'quad_utils::QuadKD']]],
-  ['quadnlp_2',['quadNLP',['../classquadNLP.html#aea7af4fc21bbeca28185b1b8a1bbd59d',1,'quadNLP']]]
+  ['quadnlp_2',['quadNLP',['../classquadNLP.html#aa4c486c6e36a4a8ef25aa2cc020e51dd',1,'quadNLP::quadNLP(int N, double dt, double mu, double panic_weights, double constraint_panic_weights, double Q_temporal_factor, double R_temporal_factor, int n_simple, int n_complex, int m_simple, int m_complex, int g_simple, int g_complex, int x_dim_cost_simple, int x_dim_cost_complex, int u_dim_cost_simple, int u_dim_cost_complex, const Eigen::VectorXd &amp;Q_complex, const Eigen::VectorXd &amp;R_complex, const Eigen::VectorXd &amp;x_min_complex, const Eigen::VectorXd &amp;x_max_complex, const Eigen::VectorXd &amp;u_min_complex, const Eigen::VectorXd &amp;u_max_complex, const Eigen::VectorXd &amp;g_min_complex, const Eigen::VectorXd &amp;g_max_complex, const Eigen::VectorXi &amp;fixed_complexity_schedule)'],['../classquadNLP.html#ae1ae3c78bb297d6a4318b56a1f8609d0',1,'quadNLP::quadNLP(const quadNLP &amp;nlp)']]]
 ];

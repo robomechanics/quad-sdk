@@ -101,6 +101,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a82539662b5757de97194076174bc5bf3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamicsController.html#a82539662b5757de97194076174bc5bf3">computeLegCommandArray</a> (const quad_msgs::RobotState &amp;robot_state_msg, quad_msgs::LegCommandArray &amp;leg_command_array_msg, quad_msgs::GRFArray &amp;grf_array_msg)</td></tr>
 <tr class="memdesc:a82539662b5757de97194076174bc5bf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the leg command array message for a given current state and reference plan.  <a href="classInverseDynamicsController.html#a82539662b5757de97194076174bc5bf3">More...</a><br /></td></tr>
 <tr class="separator:a82539662b5757de97194076174bc5bf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0280ae514c88722dc2e0635f3117f564"><td class="memItemLeft" align="right" valign="top">quad_msgs::RobotState&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInverseDynamicsController.html#a0280ae514c88722dc2e0635f3117f564">getReferenceState</a> ()</td></tr>
+<tr class="memdesc:a0280ae514c88722dc2e0635f3117f564"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the reference state used for current tracking.  <a href="classInverseDynamicsController.html#a0280ae514c88722dc2e0635f3117f564">More...</a><br /></td></tr>
+<tr class="separator:a0280ae514c88722dc2e0635f3117f564"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classLegController"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classLegController')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classLegController.html">LegController</a></td></tr>
 <tr class="memitem:a43d9c5ab90cb2ea4c2242ea7e1795c00 inherit pub_methods_classLegController"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLegController.html#a43d9c5ab90cb2ea4c2242ea7e1795c00">LegController</a> ()</td></tr>
 <tr class="memdesc:a43d9c5ab90cb2ea4c2242ea7e1795c00 inherit pub_methods_classLegController"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classLegController.html" title="Implements an abstract class for leg controllers.">LegController</a>.  <a href="classLegController.html#a43d9c5ab90cb2ea4c2242ea7e1795c00">More...</a><br /></td></tr>
@@ -108,12 +111,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a513be1445a05353fa801ca427e2d2cd7 inherit pub_methods_classLegController"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLegController.html#a513be1445a05353fa801ca427e2d2cd7">setGains</a> (double kp, double kd)</td></tr>
 <tr class="memdesc:a513be1445a05353fa801ca427e2d2cd7 inherit pub_methods_classLegController"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the desired proportional and derivative gains for all legs.  <a href="classLegController.html#a513be1445a05353fa801ca427e2d2cd7">More...</a><br /></td></tr>
 <tr class="separator:a513be1445a05353fa801ca427e2d2cd7 inherit pub_methods_classLegController"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67fd93796c671cbcfb7046845f8f2561 inherit pub_methods_classLegController"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLegController.html#a67fd93796c671cbcfb7046845f8f2561">setGains</a> (std::vector&lt; double &gt; kp, std::vector&lt; double &gt; kd)</td></tr>
-<tr class="memdesc:a67fd93796c671cbcfb7046845f8f2561 inherit pub_methods_classLegController"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the desired proportional and derivative gains for each leg.  <a href="classLegController.html#a67fd93796c671cbcfb7046845f8f2561">More...</a><br /></td></tr>
-<tr class="separator:a67fd93796c671cbcfb7046845f8f2561 inherit pub_methods_classLegController"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1a6ef52783c4708e687629e31dcf541 inherit pub_methods_classLegController"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLegController.html#ad1a6ef52783c4708e687629e31dcf541">setGains</a> (std::vector&lt; double &gt; stance_kp, std::vector&lt; double &gt; stance_kd, std::vector&lt; double &gt; swing_kp, std::vector&lt; double &gt; swing_kd)</td></tr>
-<tr class="memdesc:ad1a6ef52783c4708e687629e31dcf541 inherit pub_methods_classLegController"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the desired stance and swing proportional and derivative gains.  <a href="classLegController.html#ad1a6ef52783c4708e687629e31dcf541">More...</a><br /></td></tr>
-<tr class="separator:ad1a6ef52783c4708e687629e31dcf541 inherit pub_methods_classLegController"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a399af81c449b888d019025e244d4a256 inherit pub_methods_classLegController"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLegController.html#a399af81c449b888d019025e244d4a256">setGains</a> (const std::vector&lt; double &gt; &amp;kp, const std::vector&lt; double &gt; &amp;kd)</td></tr>
+<tr class="memdesc:a399af81c449b888d019025e244d4a256 inherit pub_methods_classLegController"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the desired proportional and derivative gains for each leg.  <a href="classLegController.html#a399af81c449b888d019025e244d4a256">More...</a><br /></td></tr>
+<tr class="separator:a399af81c449b888d019025e244d4a256 inherit pub_methods_classLegController"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadd5bd1611b699f9179f4cefc09ea1f0 inherit pub_methods_classLegController"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLegController.html#aadd5bd1611b699f9179f4cefc09ea1f0">setGains</a> (const std::vector&lt; double &gt; &amp;stance_kp, const std::vector&lt; double &gt; &amp;stance_kd, const std::vector&lt; double &gt; &amp;swing_kp, const std::vector&lt; double &gt; &amp;swing_kd, const std::vector&lt; double &gt; &amp;swing_kp_cart, const std::vector&lt; double &gt; &amp;swing_kd_cart)</td></tr>
+<tr class="memdesc:aadd5bd1611b699f9179f4cefc09ea1f0 inherit pub_methods_classLegController"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the desired stance and swing proportional and derivative gains.  <a href="classLegController.html#aadd5bd1611b699f9179f4cefc09ea1f0">More...</a><br /></td></tr>
+<tr class="separator:aadd5bd1611b699f9179f4cefc09ea1f0 inherit pub_methods_classLegController"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe3a543a56691536aa58902ad8ca0008 inherit pub_methods_classLegController"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLegController.html#afe3a543a56691536aa58902ad8ca0008">updateLocalPlanMsg</a> (quad_msgs::RobotPlan::ConstPtr msg, const ros::Time &amp;t_msg)</td></tr>
 <tr class="memdesc:afe3a543a56691536aa58902ad8ca0008 inherit pub_methods_classLegController"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the leg command array message for a given current state and reference plan.  <a href="classLegController.html#afe3a543a56691536aa58902ad8ca0008">More...</a><br /></td></tr>
 <tr class="separator:afe3a543a56691536aa58902ad8ca0008 inherit pub_methods_classLegController"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -130,6 +133,10 @@ Private Attributes</h2></td></tr>
 Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>last_grf_array_</b></td></tr>
 <tr class="memdesc:a51e5b8672f338e761ed3e8a3c03f7d83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prior grf_array. <br /></td></tr>
 <tr class="separator:a51e5b8672f338e761ed3e8a3c03f7d83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affac76bbc5abb88ff3f4390ab18aba99"><td class="memItemLeft" align="right" valign="top"><a id="affac76bbc5abb88ff3f4390ab18aba99" name="affac76bbc5abb88ff3f4390ab18aba99"></a>
+quad_msgs::RobotState&#160;</td><td class="memItemRight" valign="bottom"><b>ref_state_msg_</b></td></tr>
+<tr class="memdesc:affac76bbc5abb88ff3f4390ab18aba99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference state for tracking. <br /></td></tr>
+<tr class="separator:affac76bbc5abb88ff3f4390ab18aba99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43b886094c04d0f4e7cda0e100360b3c"><td class="memItemLeft" align="right" valign="top"><a id="a43b886094c04d0f4e7cda0e100360b3c" name="a43b886094c04d0f4e7cda0e100360b3c"></a>
 const double&#160;</td><td class="memItemRight" valign="bottom"><b>grf_exp_filter_const_</b> = 1.0</td></tr>
 <tr class="memdesc:a43b886094c04d0f4e7cda0e100360b3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">GRF exponential filter constant. <br /></td></tr>
@@ -160,6 +167,13 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <tr class="memitem:ae4bfb4fdcfdf9c837ea898abb23a166e inherit pro_attribs_classLegController"><td class="memItemLeft" align="right" valign="top"><a id="ae4bfb4fdcfdf9c837ea898abb23a166e" name="ae4bfb4fdcfdf9c837ea898abb23a166e"></a>
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>swing_kd_</b></td></tr>
 <tr class="separator:ae4bfb4fdcfdf9c837ea898abb23a166e inherit pro_attribs_classLegController"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7025c3ab1296ae0ac9b4de24a2ee30f1 inherit pro_attribs_classLegController"><td class="memItemLeft" align="right" valign="top"><a id="a7025c3ab1296ae0ac9b4de24a2ee30f1" name="a7025c3ab1296ae0ac9b4de24a2ee30f1"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>swing_kp_cart_</b></td></tr>
+<tr class="memdesc:a7025c3ab1296ae0ac9b4de24a2ee30f1 inherit pro_attribs_classLegController"><td class="mdescLeft">&#160;</td><td class="mdescRight">PD gain when foot is in swing (Cartesian) <br /></td></tr>
+<tr class="separator:a7025c3ab1296ae0ac9b4de24a2ee30f1 inherit pro_attribs_classLegController"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b20bf1363546ac3e930d46281cb47a4 inherit pro_attribs_classLegController"><td class="memItemLeft" align="right" valign="top"><a id="a7b20bf1363546ac3e930d46281cb47a4" name="a7b20bf1363546ac3e930d46281cb47a4"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>swing_kd_cart_</b></td></tr>
+<tr class="separator:a7b20bf1363546ac3e930d46281cb47a4 inherit pro_attribs_classLegController"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a633ce0735ab8e0f89b0a12281fe14292 inherit pro_attribs_classLegController"><td class="memItemLeft" align="right" valign="top"><a id="a633ce0735ab8e0f89b0a12281fe14292" name="a633ce0735ab8e0f89b0a12281fe14292"></a>
 quad_msgs::RobotPlan::ConstPtr&#160;</td><td class="memItemRight" valign="bottom"><b>last_local_plan_msg_</b></td></tr>
 <tr class="memdesc:a633ce0735ab8e0f89b0a12281fe14292 inherit pro_attribs_classLegController"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last local plan message. <br /></td></tr>
@@ -249,6 +263,34 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>override_state_machin
 </dl>
 
 <p>Implements <a class="el" href="classLegController.html#a4a67268b07b5f5131c1baffe5f8d837d">LegController</a>.</p>
+
+</div>
+</div>
+<a id="a0280ae514c88722dc2e0635f3117f564" name="a0280ae514c88722dc2e0635f3117f564"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0280ae514c88722dc2e0635f3117f564">&#9670;&nbsp;</a></span>getReferenceState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">quad_msgs::RobotState InverseDynamicsController::getReferenceState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the reference state used for current tracking. </p>
+<dl class="section return"><dt>Returns</dt><dd>Reference state </dd></dl>
 
 </div>
 </div>

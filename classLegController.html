@@ -94,12 +94,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a513be1445a05353fa801ca427e2d2cd7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLegController.html#a513be1445a05353fa801ca427e2d2cd7">setGains</a> (double kp, double kd)</td></tr>
 <tr class="memdesc:a513be1445a05353fa801ca427e2d2cd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the desired proportional and derivative gains for all legs.  <a href="classLegController.html#a513be1445a05353fa801ca427e2d2cd7">More...</a><br /></td></tr>
 <tr class="separator:a513be1445a05353fa801ca427e2d2cd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67fd93796c671cbcfb7046845f8f2561"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLegController.html#a67fd93796c671cbcfb7046845f8f2561">setGains</a> (std::vector&lt; double &gt; kp, std::vector&lt; double &gt; kd)</td></tr>
-<tr class="memdesc:a67fd93796c671cbcfb7046845f8f2561"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the desired proportional and derivative gains for each leg.  <a href="classLegController.html#a67fd93796c671cbcfb7046845f8f2561">More...</a><br /></td></tr>
-<tr class="separator:a67fd93796c671cbcfb7046845f8f2561"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1a6ef52783c4708e687629e31dcf541"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLegController.html#ad1a6ef52783c4708e687629e31dcf541">setGains</a> (std::vector&lt; double &gt; stance_kp, std::vector&lt; double &gt; stance_kd, std::vector&lt; double &gt; swing_kp, std::vector&lt; double &gt; swing_kd)</td></tr>
-<tr class="memdesc:ad1a6ef52783c4708e687629e31dcf541"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the desired stance and swing proportional and derivative gains.  <a href="classLegController.html#ad1a6ef52783c4708e687629e31dcf541">More...</a><br /></td></tr>
-<tr class="separator:ad1a6ef52783c4708e687629e31dcf541"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a399af81c449b888d019025e244d4a256"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLegController.html#a399af81c449b888d019025e244d4a256">setGains</a> (const std::vector&lt; double &gt; &amp;kp, const std::vector&lt; double &gt; &amp;kd)</td></tr>
+<tr class="memdesc:a399af81c449b888d019025e244d4a256"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the desired proportional and derivative gains for each leg.  <a href="classLegController.html#a399af81c449b888d019025e244d4a256">More...</a><br /></td></tr>
+<tr class="separator:a399af81c449b888d019025e244d4a256"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadd5bd1611b699f9179f4cefc09ea1f0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLegController.html#aadd5bd1611b699f9179f4cefc09ea1f0">setGains</a> (const std::vector&lt; double &gt; &amp;stance_kp, const std::vector&lt; double &gt; &amp;stance_kd, const std::vector&lt; double &gt; &amp;swing_kp, const std::vector&lt; double &gt; &amp;swing_kd, const std::vector&lt; double &gt; &amp;swing_kp_cart, const std::vector&lt; double &gt; &amp;swing_kd_cart)</td></tr>
+<tr class="memdesc:aadd5bd1611b699f9179f4cefc09ea1f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the desired stance and swing proportional and derivative gains.  <a href="classLegController.html#aadd5bd1611b699f9179f4cefc09ea1f0">More...</a><br /></td></tr>
+<tr class="separator:aadd5bd1611b699f9179f4cefc09ea1f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe3a543a56691536aa58902ad8ca0008"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLegController.html#afe3a543a56691536aa58902ad8ca0008">updateLocalPlanMsg</a> (quad_msgs::RobotPlan::ConstPtr msg, const ros::Time &amp;t_msg)</td></tr>
 <tr class="memdesc:afe3a543a56691536aa58902ad8ca0008"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the leg command array message for a given current state and reference plan.  <a href="classLegController.html#afe3a543a56691536aa58902ad8ca0008">More...</a><br /></td></tr>
 <tr class="separator:afe3a543a56691536aa58902ad8ca0008"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -134,6 +134,13 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <tr class="memitem:ae4bfb4fdcfdf9c837ea898abb23a166e"><td class="memItemLeft" align="right" valign="top"><a id="ae4bfb4fdcfdf9c837ea898abb23a166e" name="ae4bfb4fdcfdf9c837ea898abb23a166e"></a>
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>swing_kd_</b></td></tr>
 <tr class="separator:ae4bfb4fdcfdf9c837ea898abb23a166e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7025c3ab1296ae0ac9b4de24a2ee30f1"><td class="memItemLeft" align="right" valign="top"><a id="a7025c3ab1296ae0ac9b4de24a2ee30f1" name="a7025c3ab1296ae0ac9b4de24a2ee30f1"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>swing_kp_cart_</b></td></tr>
+<tr class="memdesc:a7025c3ab1296ae0ac9b4de24a2ee30f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">PD gain when foot is in swing (Cartesian) <br /></td></tr>
+<tr class="separator:a7025c3ab1296ae0ac9b4de24a2ee30f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b20bf1363546ac3e930d46281cb47a4"><td class="memItemLeft" align="right" valign="top"><a id="a7b20bf1363546ac3e930d46281cb47a4" name="a7b20bf1363546ac3e930d46281cb47a4"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>swing_kd_cart_</b></td></tr>
+<tr class="separator:a7b20bf1363546ac3e930d46281cb47a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a633ce0735ab8e0f89b0a12281fe14292"><td class="memItemLeft" align="right" valign="top"><a id="a633ce0735ab8e0f89b0a12281fe14292" name="a633ce0735ab8e0f89b0a12281fe14292"></a>
 quad_msgs::RobotPlan::ConstPtr&#160;</td><td class="memItemRight" valign="bottom"><b>last_local_plan_msg_</b></td></tr>
 <tr class="memdesc:a633ce0735ab8e0f89b0a12281fe14292"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last local plan message. <br /></td></tr>
@@ -218,8 +225,124 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>override_state_machin
 
 </div>
 </div>
+<a id="a399af81c449b888d019025e244d4a256" name="a399af81c449b888d019025e244d4a256"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a399af81c449b888d019025e244d4a256">&#9670;&nbsp;</a></span>setGains() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LegController::setGains </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>kp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>kd</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the desired proportional and derivative gains for each leg. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">kp</td><td>Proportional gains </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">kd</td><td>Derivative gains </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aadd5bd1611b699f9179f4cefc09ea1f0" name="aadd5bd1611b699f9179f4cefc09ea1f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadd5bd1611b699f9179f4cefc09ea1f0">&#9670;&nbsp;</a></span>setGains() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LegController::setGains </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>stance_kp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>stance_kd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>swing_kp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>swing_kd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>swing_kp_cart</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>swing_kd_cart</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the desired stance and swing proportional and derivative gains. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">stance_kp</td><td>Stance phase proportional gains </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">stance_kd</td><td>Stance phase derivative gains </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">swing_kp</td><td>Swing phase proportional gains </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">swing_kd</td><td>Swing phase derivative gains </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a513be1445a05353fa801ca427e2d2cd7" name="a513be1445a05353fa801ca427e2d2cd7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a513be1445a05353fa801ca427e2d2cd7">&#9670;&nbsp;</a></span>setGains() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a513be1445a05353fa801ca427e2d2cd7">&#9670;&nbsp;</a></span>setGains() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -257,110 +380,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>override_state_machin
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">kp</td><td>Proportional gains </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">kd</td><td>Derivative gains </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a67fd93796c671cbcfb7046845f8f2561" name="a67fd93796c671cbcfb7046845f8f2561"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a67fd93796c671cbcfb7046845f8f2561">&#9670;&nbsp;</a></span>setGains() <span class="overload">[2/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void LegController::setGains </td>
-          <td>(</td>
-          <td class="paramtype">std::vector&lt; double &gt;&#160;</td>
-          <td class="paramname"><em>kp</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; double &gt;&#160;</td>
-          <td class="paramname"><em>kd</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Set the desired proportional and derivative gains for each leg. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">kp</td><td>Proportional gains </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">kd</td><td>Derivative gains </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ad1a6ef52783c4708e687629e31dcf541" name="ad1a6ef52783c4708e687629e31dcf541"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad1a6ef52783c4708e687629e31dcf541">&#9670;&nbsp;</a></span>setGains() <span class="overload">[3/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void LegController::setGains </td>
-          <td>(</td>
-          <td class="paramtype">std::vector&lt; double &gt;&#160;</td>
-          <td class="paramname"><em>stance_kp</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; double &gt;&#160;</td>
-          <td class="paramname"><em>stance_kd</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; double &gt;&#160;</td>
-          <td class="paramname"><em>swing_kp</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; double &gt;&#160;</td>
-          <td class="paramname"><em>swing_kd</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Set the desired stance and swing proportional and derivative gains. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">stance_kp</td><td>Stance phase proportional gains </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">stance_kd</td><td>Stance phase derivative gains </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">swing_kp</td><td>Swing phase proportional gains </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">swing_kd</td><td>Swing phase derivative gains </td></tr>
   </table>
   </dd>
 </dl>

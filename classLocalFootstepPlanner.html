@@ -108,9 +108,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a01dd97f2dce74cc1461dc0192b08949f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a01dd97f2dce74cc1461dc0192b08949f">updateMap</a> (const grid_map::GridMap &amp;terrain)</td></tr>
 <tr class="memdesc:a01dd97f2dce74cc1461dc0192b08949f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the map of this object.  <a href="classLocalFootstepPlanner.html#a01dd97f2dce74cc1461dc0192b08949f">More...</a><br /></td></tr>
 <tr class="separator:a01dd97f2dce74cc1461dc0192b08949f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8a0c84b71e7f864076c5ced77f3ff94"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aa8a0c84b71e7f864076c5ced77f3ff94">computeContactSchedule</a> (int current_plan_index, int control_mode, std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule)</td></tr>
-<tr class="memdesc:aa8a0c84b71e7f864076c5ced77f3ff94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the contact schedule based on the current phase.  <a href="classLocalFootstepPlanner.html#aa8a0c84b71e7f864076c5ced77f3ff94">More...</a><br /></td></tr>
-<tr class="separator:aa8a0c84b71e7f864076c5ced77f3ff94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acca7caa921a1ee783b18a856db1d680c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#acca7caa921a1ee783b18a856db1d680c">computeContactSchedule</a> (int current_plan_index, const Eigen::VectorXi &amp;ref_primitive_plan_, int control_mode, std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule)</td></tr>
+<tr class="memdesc:acca7caa921a1ee783b18a856db1d680c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the contact schedule based on the current phase.  <a href="classLocalFootstepPlanner.html#acca7caa921a1ee783b18a856db1d680c">More...</a><br /></td></tr>
+<tr class="separator:acca7caa921a1ee783b18a856db1d680c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a588dff96f74e2271d7b613cc826807a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a588dff96f74e2271d7b613cc826807a5">computeFootPlan</a> (int current_plan_index, const std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule, const Eigen::MatrixXd &amp;body_plan, const Eigen::MatrixXd &amp;grf_plan, const Eigen::MatrixXd &amp;ref_body_plan, const Eigen::VectorXd &amp;foot_positions_current, const Eigen::VectorXd &amp;foot_velocities_current, double first_element_duration, quad_msgs::MultiFootState &amp;past_footholds_msg, Eigen::MatrixXd &amp;foot_positions, Eigen::MatrixXd &amp;foot_velocities, Eigen::MatrixXd &amp;foot_accelerations)</td></tr>
 <tr class="memdesc:a588dff96f74e2271d7b613cc826807a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the discrete footstep plan with the current plan.  <a href="classLocalFootstepPlanner.html#a588dff96f74e2271d7b613cc826807a5">More...</a><br /></td></tr>
 <tr class="separator:a588dff96f74e2271d7b613cc826807a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -145,9 +145,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>updateContinuousPlan<
 <tr class="memitem:ad52f51f3ac56f3d40eb2b4cd6c85154f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#ad52f51f3ac56f3d40eb2b4cd6c85154f">cubicHermiteSpline</a> (double pos_prev, double vel_prev, double pos_next, double vel_next, double phase, double duration, double &amp;pos, double &amp;vel, double &amp;acc)</td></tr>
 <tr class="memdesc:ad52f51f3ac56f3d40eb2b4cd6c85154f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the cubic hermite spline.  <a href="classLocalFootstepPlanner.html#ad52f51f3ac56f3d40eb2b4cd6c85154f">More...</a><br /></td></tr>
 <tr class="separator:ad52f51f3ac56f3d40eb2b4cd6c85154f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a565ee44f135255683d69cc7e4b3b8b4c"><td class="memItemLeft" align="right" valign="top">Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a565ee44f135255683d69cc7e4b3b8b4c">getNearestValidFoothold</a> (const Eigen::Vector3d &amp;foot_position)</td></tr>
-<tr class="memdesc:a565ee44f135255683d69cc7e4b3b8b4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Search locally around foothold for optimal location.  <a href="classLocalFootstepPlanner.html#a565ee44f135255683d69cc7e4b3b8b4c">More...</a><br /></td></tr>
-<tr class="separator:a565ee44f135255683d69cc7e4b3b8b4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d1a8f3e774fd22a4ed3cb34a83aa592"><td class="memItemLeft" align="right" valign="top">Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a8d1a8f3e774fd22a4ed3cb34a83aa592">getNearestValidFoothold</a> (const Eigen::Vector3d &amp;foot_position, const Eigen::Vector3d &amp;foot_position_prev_solve) const</td></tr>
+<tr class="memdesc:a8d1a8f3e774fd22a4ed3cb34a83aa592"><td class="mdescLeft">&#160;</td><td class="mdescRight">Search locally around foothold for optimal location.  <a href="classLocalFootstepPlanner.html#a8d1a8f3e774fd22a4ed3cb34a83aa592">More...</a><br /></td></tr>
+<tr class="separator:a8d1a8f3e774fd22a4ed3cb34a83aa592"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a143ba96f4a36ad24a779e4a078421542"><td class="memItemLeft" align="right" valign="top">Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a143ba96f4a36ad24a779e4a078421542">welzlMinimumCircle</a> (std::vector&lt; Eigen::Vector2d &gt; P, std::vector&lt; Eigen::Vector2d &gt; R)</td></tr>
 <tr class="memdesc:a143ba96f4a36ad24a779e4a078421542"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute minimum covering circle problem using Welzl's algorithm.  <a href="classLocalFootstepPlanner.html#a143ba96f4a36ad24a779e4a078421542">More...</a><br /></td></tr>
 <tr class="separator:a143ba96f4a36ad24a779e4a078421542"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -245,18 +245,22 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>hip_clearance_</b><
 double&#160;</td><td class="memItemRight" valign="bottom"><b>grf_weight_</b></td></tr>
 <tr class="memdesc:a3deb73bb001ce3174b140dcec995d35f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Weighting on the projection of the grf. <br /></td></tr>
 <tr class="separator:a3deb73bb001ce3174b140dcec995d35f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa09d542cb363662eb771cc1a8942b97"><td class="memItemLeft" align="right" valign="top"><a id="afa09d542cb363662eb771cc1a8942b97" name="afa09d542cb363662eb771cc1a8942b97"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><b>CONNECT_STANCE</b> = 0</td></tr>
+<tr class="memdesc:afa09d542cb363662eb771cc1a8942b97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primitive ids - CONNECT_STANCE TODO(yanhaoy, astutt) make these enums. <br /></td></tr>
+<tr class="separator:afa09d542cb363662eb771cc1a8942b97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1de2b1948bc0c990e9f4b6acae281a53"><td class="memItemLeft" align="right" valign="top"><a id="a1de2b1948bc0c990e9f4b6acae281a53" name="a1de2b1948bc0c990e9f4b6acae281a53"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><b>LEAP_STANCE</b> = 1</td></tr>
+<tr class="memdesc:a1de2b1948bc0c990e9f4b6acae281a53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primitive ids - LEAP_STANCE. <br /></td></tr>
+<tr class="separator:a1de2b1948bc0c990e9f4b6acae281a53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d80952c1299bc54c08fafbe4b695b1b"><td class="memItemLeft" align="right" valign="top"><a id="a4d80952c1299bc54c08fafbe4b695b1b" name="a4d80952c1299bc54c08fafbe4b695b1b"></a>
-const int&#160;</td><td class="memItemRight" valign="bottom"><b>FLIGHT</b> = 0</td></tr>
+const int&#160;</td><td class="memItemRight" valign="bottom"><b>FLIGHT</b> = 2</td></tr>
 <tr class="memdesc:a4d80952c1299bc54c08fafbe4b695b1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primitive ids - FLIGHT. <br /></td></tr>
 <tr class="separator:a4d80952c1299bc54c08fafbe4b695b1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65d7ce39eeecb63432af83dc9184677a"><td class="memItemLeft" align="right" valign="top"><a id="a65d7ce39eeecb63432af83dc9184677a" name="a65d7ce39eeecb63432af83dc9184677a"></a>
-const int&#160;</td><td class="memItemRight" valign="bottom"><b>STANCE</b> = 1</td></tr>
-<tr class="memdesc:a65d7ce39eeecb63432af83dc9184677a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primitive ids - STANCE. <br /></td></tr>
-<tr class="separator:a65d7ce39eeecb63432af83dc9184677a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa09d542cb363662eb771cc1a8942b97"><td class="memItemLeft" align="right" valign="top"><a id="afa09d542cb363662eb771cc1a8942b97" name="afa09d542cb363662eb771cc1a8942b97"></a>
-const int&#160;</td><td class="memItemRight" valign="bottom"><b>CONNECT_STANCE</b> = 2</td></tr>
-<tr class="memdesc:afa09d542cb363662eb771cc1a8942b97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primitive ids - CONNECT_STANCE. <br /></td></tr>
-<tr class="separator:afa09d542cb363662eb771cc1a8942b97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa39692bb7fdcf0b8a0c5d57495111891"><td class="memItemLeft" align="right" valign="top"><a id="aa39692bb7fdcf0b8a0c5d57495111891" name="aa39692bb7fdcf0b8a0c5d57495111891"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><b>LAND_STANCE</b> = 3</td></tr>
+<tr class="memdesc:aa39692bb7fdcf0b8a0c5d57495111891"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primitive ids - LAND_STANCE. <br /></td></tr>
+<tr class="separator:aa39692bb7fdcf0b8a0c5d57495111891"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae51f1560d14cfbdf07b8b253d1f26e06"><td class="memItemLeft" align="right" valign="top"><a id="ae51f1560d14cfbdf07b8b253d1f26e06" name="ae51f1560d14cfbdf07b8b253d1f26e06"></a>
 std::shared_ptr&lt; <a class="el" href="classquad__utils_1_1QuadKD.html">quad_utils::QuadKD</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>quadKD_</b></td></tr>
 <tr class="memdesc:ae51f1560d14cfbdf07b8b253d1f26e06"><td class="mdescLeft">&#160;</td><td class="mdescRight">QuadKD class. <br /></td></tr>
@@ -307,8 +311,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>toe_radius</b> = 0.
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="aa8a0c84b71e7f864076c5ced77f3ff94" name="aa8a0c84b71e7f864076c5ced77f3ff94"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa8a0c84b71e7f864076c5ced77f3ff94">&#9670;&nbsp;</a></span>computeContactSchedule()</h2>
+<a id="acca7caa921a1ee783b18a856db1d680c" name="acca7caa921a1ee783b18a856db1d680c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acca7caa921a1ee783b18a856db1d680c">&#9670;&nbsp;</a></span>computeContactSchedule()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -318,6 +322,12 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>toe_radius</b> = 0.
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>current_plan_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXi &amp;&#160;</td>
+          <td class="paramname"><em>ref_primitive_plan_</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -343,6 +353,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>toe_radius</b> = 0.
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">current_plan_index_</td><td>Current index in the plan </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ref_primitive_plan_</td><td>Reference primitive plan </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">control_mode</td><td>Control mode </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">contact_schedule</td><td>2D array of contact states </td></tr>
   </table>
@@ -450,8 +461,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>toe_radius</b> = 0.
     <tr><td class="paramdir">[in]</td><td class="paramname">first_element_duration</td><td>Duration of first element of horizon (may not be dt) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">past_footholds_msg</td><td>Message of past footholds, used for interpolation of swing state </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">foot_positions</td><td>Foot positions over the horizon </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">future_footholds_msg</td><td>Message for future (planned) footholds </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">foot_plan_continuous_msg</td><td>Message for continuous foot trajectories </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">foot_velocities</td><td>Foot velocities over the horizon </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">foot_accelerations</td><td>Foot accelerations over the horizon </td></tr>
   </table>
   </dd>
 </dl>
@@ -700,8 +711,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>toe_radius</b> = 0.
 
 </div>
 </div>
-<a id="a565ee44f135255683d69cc7e4b3b8b4c" name="a565ee44f135255683d69cc7e4b3b8b4c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a565ee44f135255683d69cc7e4b3b8b4c">&#9670;&nbsp;</a></span>getNearestValidFoothold()</h2>
+<a id="a8d1a8f3e774fd22a4ed3cb34a83aa592" name="a8d1a8f3e774fd22a4ed3cb34a83aa592"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d1a8f3e774fd22a4ed3cb34a83aa592">&#9670;&nbsp;</a></span>getNearestValidFoothold()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -713,8 +724,18 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>toe_radius</b> = 0.
           <td class="memname">Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold </td>
           <td>(</td>
           <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
-          <td class="paramname"><em>foot_position</em></td><td>)</td>
+          <td class="paramname"><em>foot_position</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>foot_position_prev_solve</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
   </td>
@@ -727,7 +748,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>toe_radius</b> = 0.
 <p>Search locally around foothold for optimal location. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">foot_position_prev</td><td>Foothold to optimize around </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">foot_position</td><td>Foothold to optimize around </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">foot_position_prev_solve</td><td>Foothold in prior solve </td></tr>
   </table>
   </dd>
 </dl>

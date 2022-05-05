@@ -65,6 +65,7 @@ $(function() {
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="#pri-static-attribs">Static Private Attributes</a> &#124;
 <a href="classNMPCController-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">NMPCController Class Reference</div></div>
 </div><!--header-->
@@ -80,21 +81,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afe3c7a7a5a4ea663d9bcd4fb86e2b5a8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNMPCController.html#afe3c7a7a5a4ea663d9bcd4fb86e2b5a8">NMPCController</a> ()</td></tr>
 <tr class="memdesc:afe3c7a7a5a4ea663d9bcd4fb86e2b5a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for MPCController.  <a href="classNMPCController.html#afe3c7a7a5a4ea663d9bcd4fb86e2b5a8">More...</a><br /></td></tr>
 <tr class="separator:afe3c7a7a5a4ea663d9bcd4fb86e2b5a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f39eef6bcbfd048dcdd7e4176424cce"><td class="memItemLeft" align="right" valign="top"><a id="a8f39eef6bcbfd048dcdd7e4176424cce" name="a8f39eef6bcbfd048dcdd7e4176424cce"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>NMPCController</b> (int type)</td></tr>
-<tr class="separator:a8f39eef6bcbfd048dcdd7e4176424cce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7b1921bdf476565d1a40b086aaae17b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNMPCController.html#ac7b1921bdf476565d1a40b086aaae17b">computePlan</a> (const Eigen::VectorXd &amp;initial_state, const Eigen::MatrixXd &amp;ref_traj, const Eigen::MatrixXd &amp;foot_positions, const std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule, Eigen::MatrixXd &amp;state_traj, Eigen::MatrixXd &amp;control_traj)</td></tr>
 <tr class="memdesc:ac7b1921bdf476565d1a40b086aaae17b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the contact and dynamic matrices, solve, and return the output.  <a href="classNMPCController.html#ac7b1921bdf476565d1a40b086aaae17b">More...</a><br /></td></tr>
 <tr class="separator:ac7b1921bdf476565d1a40b086aaae17b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e15765f51b99ccc0950608409a050b6"><td class="memItemLeft" align="right" valign="top"><a id="a3e15765f51b99ccc0950608409a050b6" name="a3e15765f51b99ccc0950608409a050b6"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>computeLegPlan</b> (const Eigen::VectorXd &amp;initial_state, const Eigen::MatrixXd &amp;ref_traj, const Eigen::MatrixXd &amp;foot_positions, const std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule, const Eigen::VectorXd &amp;ref_ground_height, const double &amp;first_element_duration, const bool &amp;same_plan_index, Eigen::MatrixXd &amp;state_traj, Eigen::MatrixXd &amp;control_traj)</td></tr>
-<tr class="separator:a3e15765f51b99ccc0950608409a050b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a235f0375808392b534f063b0afa8e55e"><td class="memItemLeft" align="right" valign="top"><a id="a235f0375808392b534f063b0afa8e55e" name="a235f0375808392b534f063b0afa8e55e"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>computeCentralizedTailPlan</b> (const Eigen::VectorXd &amp;initial_state, const Eigen::MatrixXd &amp;ref_traj, const Eigen::MatrixXd &amp;foot_positions, const std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule, const Eigen::VectorXd &amp;tail_initial_state, const Eigen::MatrixXd &amp;tail_ref_traj, const Eigen::VectorXd &amp;ref_ground_height, Eigen::MatrixXd &amp;state_traj, Eigen::MatrixXd &amp;control_traj, Eigen::MatrixXd &amp;tail_state_traj, Eigen::MatrixXd &amp;tail_control_traj)</td></tr>
-<tr class="separator:a235f0375808392b534f063b0afa8e55e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab84dc909f2bf2b5e1392d2dce260035f"><td class="memItemLeft" align="right" valign="top"><a id="ab84dc909f2bf2b5e1392d2dce260035f" name="ab84dc909f2bf2b5e1392d2dce260035f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>computeDistributedTailPlan</b> (const Eigen::VectorXd &amp;initial_state, const Eigen::MatrixXd &amp;ref_traj, const Eigen::MatrixXd &amp;foot_positions, const std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule, const Eigen::VectorXd &amp;tail_initial_state, const Eigen::MatrixXd &amp;tail_ref_traj, const Eigen::MatrixXd &amp;state_traj, const Eigen::MatrixXd &amp;control_traj, const Eigen::VectorXd &amp;ref_ground_height, const double &amp;first_element_duration, const bool &amp;same_plan_index, Eigen::MatrixXd &amp;tail_state_traj, Eigen::MatrixXd &amp;tail_control_traj)</td></tr>
-<tr class="separator:ab84dc909f2bf2b5e1392d2dce260035f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5776815bce1d851555ff87221472a81"><td class="memItemLeft" align="right" valign="top"><a id="ae5776815bce1d851555ff87221472a81" name="ae5776815bce1d851555ff87221472a81"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>computeLegPlan</b> (const Eigen::VectorXd &amp;initial_state, const Eigen::MatrixXd &amp;ref_traj, const Eigen::MatrixXd &amp;foot_positions_body, Eigen::MatrixXd &amp;foot_positions_world, Eigen::MatrixXd &amp;foot_velocities, const std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule, const Eigen::VectorXd &amp;ref_ground_height, const double &amp;first_element_duration, const bool &amp;same_plan_index, const grid_map::GridMap &amp;terrain, Eigen::MatrixXd &amp;state_traj, Eigen::MatrixXd &amp;control_traj)</td></tr>
+<tr class="separator:ae5776815bce1d851555ff87221472a81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a924c86c64c74db202c24d463f2f46678"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNMPCController.html#a924c86c64c74db202c24d463f2f46678">evalLiftedTrajectoryConstraints</a> (Eigen::MatrixXd &amp;state_null_traj)</td></tr>
+<tr class="separator:a924c86c64c74db202c24d463f2f46678"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -111,27 +105,79 @@ SmartPtr&lt; <a class="el" href="classquadNLP.html">quadNLP</a> &gt;&#160;</td><
 <tr class="memitem:a0206264d7fd2b7654f793f7cf92204d1"><td class="memItemLeft" align="right" valign="top"><a id="a0206264d7fd2b7654f793f7cf92204d1" name="a0206264d7fd2b7654f793f7cf92204d1"></a>
 SmartPtr&lt; IpoptApplication &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>app_</b></td></tr>
 <tr class="separator:a0206264d7fd2b7654f793f7cf92204d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a0caa68902b56f7d4f86c98a23913e6"><td class="memItemLeft" align="right" valign="top"><a id="a5a0caa68902b56f7d4f86c98a23913e6" name="a5a0caa68902b56f7d4f86c98a23913e6"></a>
+std::shared_ptr&lt; <a class="el" href="classquad__utils_1_1QuadKD.html">quad_utils::QuadKD</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>quadKD_</b></td></tr>
+<tr class="separator:a5a0caa68902b56f7d4f86c98a23913e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a295260b4669bf5cb83b949599720cef0"><td class="memItemLeft" align="right" valign="top"><a id="a295260b4669bf5cb83b949599720cef0" name="a295260b4669bf5cb83b949599720cef0"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>N_</b></td></tr>
 <tr class="separator:a295260b4669bf5cb83b949599720cef0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa75bcf70515ccc6ea6b2c37aaec3801e"><td class="memItemLeft" align="right" valign="top"><a id="aa75bcf70515ccc6ea6b2c37aaec3801e" name="aa75bcf70515ccc6ea6b2c37aaec3801e"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>n_</b></td></tr>
-<tr class="separator:aa75bcf70515ccc6ea6b2c37aaec3801e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a43b30363c94223593552a3e802376c27"><td class="memItemLeft" align="right" valign="top"><a id="a43b30363c94223593552a3e802376c27" name="a43b30363c94223593552a3e802376c27"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>m_</b></td></tr>
-<tr class="separator:a43b30363c94223593552a3e802376c27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc1d7728c4f9aaf6180d9096dc81100d"><td class="memItemLeft" align="right" valign="top"><a id="adc1d7728c4f9aaf6180d9096dc81100d" name="adc1d7728c4f9aaf6180d9096dc81100d"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>x_dim_simple_</b></td></tr>
+<tr class="separator:adc1d7728c4f9aaf6180d9096dc81100d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a493a37fc5e10966e13cdef492d4d7222"><td class="memItemLeft" align="right" valign="top"><a id="a493a37fc5e10966e13cdef492d4d7222" name="a493a37fc5e10966e13cdef492d4d7222"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>x_dim_cost_simple_</b></td></tr>
+<tr class="separator:a493a37fc5e10966e13cdef492d4d7222"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59ab97d645cd67301235cdae8d01360e"><td class="memItemLeft" align="right" valign="top"><a id="a59ab97d645cd67301235cdae8d01360e" name="a59ab97d645cd67301235cdae8d01360e"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>u_dim_simple_</b></td></tr>
+<tr class="separator:a59ab97d645cd67301235cdae8d01360e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10734ba0a1642847a5dc5228de91ec86"><td class="memItemLeft" align="right" valign="top"><a id="a10734ba0a1642847a5dc5228de91ec86" name="a10734ba0a1642847a5dc5228de91ec86"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>u_dim_cost_simple_</b></td></tr>
+<tr class="separator:a10734ba0a1642847a5dc5228de91ec86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a004fd8990db9ff590603bf08a9c3e324"><td class="memItemLeft" align="right" valign="top"><a id="a004fd8990db9ff590603bf08a9c3e324" name="a004fd8990db9ff590603bf08a9c3e324"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>g_dim_simple_</b></td></tr>
+<tr class="separator:a004fd8990db9ff590603bf08a9c3e324"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d8410fe51e957c5fb026a279786a34a"><td class="memItemLeft" align="right" valign="top"><a id="a9d8410fe51e957c5fb026a279786a34a" name="a9d8410fe51e957c5fb026a279786a34a"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>x_dim_complex_</b></td></tr>
+<tr class="separator:a9d8410fe51e957c5fb026a279786a34a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b94d3364bf92b1ea137efd025df2105"><td class="memItemLeft" align="right" valign="top"><a id="a8b94d3364bf92b1ea137efd025df2105" name="a8b94d3364bf92b1ea137efd025df2105"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>x_dim_cost_complex_</b></td></tr>
+<tr class="separator:a8b94d3364bf92b1ea137efd025df2105"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6243aa7415bf6b1c396de81c1a520eb0"><td class="memItemLeft" align="right" valign="top"><a id="a6243aa7415bf6b1c396de81c1a520eb0" name="a6243aa7415bf6b1c396de81c1a520eb0"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>u_dim_complex_</b></td></tr>
+<tr class="separator:a6243aa7415bf6b1c396de81c1a520eb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e2b0ea82a5c6f93b6a91599c9dabbab"><td class="memItemLeft" align="right" valign="top"><a id="a6e2b0ea82a5c6f93b6a91599c9dabbab" name="a6e2b0ea82a5c6f93b6a91599c9dabbab"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>u_dim_cost_complex_</b></td></tr>
+<tr class="separator:a6e2b0ea82a5c6f93b6a91599c9dabbab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0c75d41ccccdab65f69ec0f65dfad2c"><td class="memItemLeft" align="right" valign="top"><a id="ac0c75d41ccccdab65f69ec0f65dfad2c" name="ac0c75d41ccccdab65f69ec0f65dfad2c"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>g_dim_complex_</b></td></tr>
+<tr class="separator:ac0c75d41ccccdab65f69ec0f65dfad2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fda67e28d0e938df784ec8d5b274b6b"><td class="memItemLeft" align="right" valign="top"><a id="a6fda67e28d0e938df784ec8d5b274b6b" name="a6fda67e28d0e938df784ec8d5b274b6b"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>x_dim_null_</b></td></tr>
+<tr class="separator:a6fda67e28d0e938df784ec8d5b274b6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc0a559a29bf71b6c9460234c75b99df"><td class="memItemLeft" align="right" valign="top"><a id="acc0a559a29bf71b6c9460234c75b99df" name="acc0a559a29bf71b6c9460234c75b99df"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>dt_</b></td></tr>
 <tr class="separator:acc0a559a29bf71b6c9460234c75b99df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e22eb9180a559f5bfc98f1761fe91bc"><td class="memItemLeft" align="right" valign="top"><a id="a3e22eb9180a559f5bfc98f1761fe91bc" name="a3e22eb9180a559f5bfc98f1761fe91bc"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>type_</b></td></tr>
-<tr class="separator:a3e22eb9180a559f5bfc98f1761fe91bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a932f04aebfcf71354815116298d18095"><td class="memItemLeft" align="right" valign="top"><a id="a932f04aebfcf71354815116298d18095" name="a932f04aebfcf71354815116298d18095"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>param_ns_</b></td></tr>
-<tr class="separator:a932f04aebfcf71354815116298d18095"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b0fb966ee489290568740a19f4cbe49"><td class="memItemLeft" align="right" valign="top"><a id="a0b0fb966ee489290568740a19f4cbe49" name="a0b0fb966ee489290568740a19f4cbe49"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>require_init_</b></td></tr>
 <tr class="separator:a0b0fb966ee489290568740a19f4cbe49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd94c9ab7e145e01bc4597c08fbd8218"><td class="memItemLeft" align="right" valign="top"><a id="acd94c9ab7e145e01bc4597c08fbd8218" name="acd94c9ab7e145e01bc4597c08fbd8218"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>adaptive_complexity_schedule_</b></td></tr>
+<tr class="memdesc:acd94c9ab7e145e01bc4597c08fbd8218"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adaptive complexity schedule. <br /></td></tr>
+<tr class="separator:acd94c9ab7e145e01bc4597c08fbd8218"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-static-attribs" name="pri-static-attribs"></a>
+Static Private Attributes</h2></td></tr>
+<tr class="memitem:a94fda9b6c492c008ec73c026219538c4"><td class="memItemLeft" align="right" valign="top"><a id="a94fda9b6c492c008ec73c026219538c4" name="a94fda9b6c492c008ec73c026219538c4"></a>
+static const int&#160;</td><td class="memItemRight" valign="bottom"><b>n_body_</b> = 12</td></tr>
+<tr class="separator:a94fda9b6c492c008ec73c026219538c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc74b3f5963ea80894102f89c69f24c8"><td class="memItemLeft" align="right" valign="top"><a id="acc74b3f5963ea80894102f89c69f24c8" name="acc74b3f5963ea80894102f89c69f24c8"></a>
+static const int&#160;</td><td class="memItemRight" valign="bottom"><b>n_foot_</b> = 24</td></tr>
+<tr class="separator:acc74b3f5963ea80894102f89c69f24c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bcef0ebecdd5f83f0e0cec26be4c051"><td class="memItemLeft" align="right" valign="top"><a id="a6bcef0ebecdd5f83f0e0cec26be4c051" name="a6bcef0ebecdd5f83f0e0cec26be4c051"></a>
+static const int&#160;</td><td class="memItemRight" valign="bottom"><b>n_joints_</b> = 24</td></tr>
+<tr class="separator:a6bcef0ebecdd5f83f0e0cec26be4c051"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacd52c2e268f622e8e132584639885f5"><td class="memItemLeft" align="right" valign="top"><a id="aacd52c2e268f622e8e132584639885f5" name="aacd52c2e268f622e8e132584639885f5"></a>
+static const int&#160;</td><td class="memItemRight" valign="bottom"><b>n_tail_</b> = 4</td></tr>
+<tr class="separator:aacd52c2e268f622e8e132584639885f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b9077ad67c0acb4fa98995786428c5"><td class="memItemLeft" align="right" valign="top"><a id="ac9b9077ad67c0acb4fa98995786428c5" name="ac9b9077ad67c0acb4fa98995786428c5"></a>
+static const int&#160;</td><td class="memItemRight" valign="bottom"><b>m_body_</b> = 12</td></tr>
+<tr class="separator:ac9b9077ad67c0acb4fa98995786428c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c8bca5066d216457463e48995b5ae87"><td class="memItemLeft" align="right" valign="top"><a id="a8c8bca5066d216457463e48995b5ae87" name="a8c8bca5066d216457463e48995b5ae87"></a>
+static const int&#160;</td><td class="memItemRight" valign="bottom"><b>m_foot_</b> = 12</td></tr>
+<tr class="separator:a8c8bca5066d216457463e48995b5ae87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3505bb00586afcc3b07dacbd48ce6b1"><td class="memItemLeft" align="right" valign="top"><a id="ae3505bb00586afcc3b07dacbd48ce6b1" name="ae3505bb00586afcc3b07dacbd48ce6b1"></a>
+static const int&#160;</td><td class="memItemRight" valign="bottom"><b>m_tail_</b> = 2</td></tr>
+<tr class="separator:ae3505bb00586afcc3b07dacbd48ce6b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >NMPC controller ROS node. </p>
@@ -229,6 +275,25 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>require_init_</b></td
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>good_solve </dd></dl>
+
+</div>
+</div>
+<a id="a924c86c64c74db202c24d463f2f46678" name="a924c86c64c74db202c24d463f2f46678"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a924c86c64c74db202c24d463f2f46678">&#9670;&nbsp;</a></span>evalLiftedTrajectoryConstraints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXi NMPCController::evalLiftedTrajectoryConstraints </td>
+          <td>(</td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>state_null_traj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Method to return the constraint residual for requested data </p>
 
 </div>
 </div>

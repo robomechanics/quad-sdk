@@ -5,7 +5,7 @@ var searchData=
   ['clear_2',['clear',['../classGlobalBodyPlan.html#a38639b566ca2ee744e38c0470f89a981',1,'GlobalBodyPlan']]],
   ['clearplan_3',['clearPlan',['../classGlobalBodyPlanner.html#a2eb81f4bee8cec49686f963cd0251b51',1,'GlobalBodyPlanner']]],
   ['cmdvelcallback_4',['cmdVelCallback',['../classLocalPlanner.html#a8ceeeee51bc6bba61bb85e6232e20d9d',1,'LocalPlanner']]],
-  ['computecontactschedule_5',['computeContactSchedule',['../classLocalFootstepPlanner.html#aa8a0c84b71e7f864076c5ced77f3ff94',1,'LocalFootstepPlanner']]],
+  ['computecontactschedule_5',['computeContactSchedule',['../classLocalFootstepPlanner.html#acca7caa921a1ee783b18a856db1d680c',1,'LocalFootstepPlanner']]],
   ['computeedgecost_6',['computeEdgeCost',['../classGraphClass.html#a1a9aed65a29957ba414ade41ac46e73c',1,'GraphClass']]],
   ['computefootplan_7',['computeFootPlan',['../classLocalFootstepPlanner.html#a588dff96f74e2271d7b613cc826807a5',1,'LocalFootstepPlanner']]],
   ['computeinversedynamics_8',['computeInverseDynamics',['../classquad__utils_1_1QuadKD.html#a9494c8c13a837309f2bd285f33fbe5dd',1,'quad_utils::QuadKD']]],
@@ -21,8 +21,9 @@ var searchData=
   ['contactstatepublisher_18',['ContactStatePublisher',['../classContactStatePublisher.html#a0c3480b93a5b03c50a800b027afa4428',1,'ContactStatePublisher']]],
   ['controlmodecallback_19',['controlModeCallback',['../classRobotDriver.html#a33d27f44735dbce283422f8850cca22f',1,'RobotDriver']]],
   ['controlrestartflagcallback_20',['controlRestartFlagCallback',['../classRobotDriver.html#a921074ae4355d197024a813a42c7e9d4',1,'RobotDriver']]],
-  ['converttomsg_21',['convertToMsg',['../classGlobalBodyPlan.html#a6bca62005cc6f230ce2bdbb2a21c10e8',1,'GlobalBodyPlan']]],
-  ['createaffinematrix_22',['createAffineMatrix',['../classquad__utils_1_1QuadKD.html#a947969ec117052e19a7c415447c0137d',1,'quad_utils::QuadKD::createAffineMatrix(Eigen::Vector3d trans, Eigen::Vector3d rpy) const'],['../classquad__utils_1_1QuadKD.html#a19ad95aedd20b180a6c23f4d0ecb43cd',1,'quad_utils::QuadKD::createAffineMatrix(Eigen::Vector3d trans, Eigen::AngleAxisd rot) const']]],
-  ['createmap_23',['createMap',['../classTerrainMapPublisher.html#a295ac03389590d98c589d2d58990b64e',1,'TerrainMapPublisher']]],
-  ['cubichermitespline_24',['cubicHermiteSpline',['../classLocalFootstepPlanner.html#ad52f51f3ac56f3d40eb2b4cd6c85154f',1,'LocalFootstepPlanner']]]
+  ['convertcentroidaltofullbody_21',['convertCentroidalToFullBody',['../classquad__utils_1_1QuadKD.html#ad29e8941bf5fa1c6233317c440f5c650',1,'quad_utils::QuadKD']]],
+  ['converttomsg_22',['convertToMsg',['../classGlobalBodyPlan.html#a6bca62005cc6f230ce2bdbb2a21c10e8',1,'GlobalBodyPlan']]],
+  ['createaffinematrix_23',['createAffineMatrix',['../classquad__utils_1_1QuadKD.html#a947969ec117052e19a7c415447c0137d',1,'quad_utils::QuadKD::createAffineMatrix(Eigen::Vector3d trans, Eigen::Vector3d rpy) const'],['../classquad__utils_1_1QuadKD.html#a19ad95aedd20b180a6c23f4d0ecb43cd',1,'quad_utils::QuadKD::createAffineMatrix(Eigen::Vector3d trans, Eigen::AngleAxisd rot) const']]],
+  ['createmap_24',['createMap',['../classTerrainMapPublisher.html#a295ac03389590d98c589d2d58990b64e',1,'TerrainMapPublisher']]],
+  ['cubichermitespline_25',['cubicHermiteSpline',['../classLocalFootstepPlanner.html#ad52f51f3ac56f3d40eb2b4cd6c85154f',1,'LocalFootstepPlanner']]]
 ];

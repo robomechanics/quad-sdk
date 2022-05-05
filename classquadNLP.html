@@ -91,8 +91,11 @@ Collaboration diagram for quadNLP:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aea7af4fc21bbeca28185b1b8a1bbd59d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#aea7af4fc21bbeca28185b1b8a1bbd59d">quadNLP</a> (int type, int N, int n, int m, double dt, double mu, double panic_weights, Eigen::MatrixXd Q, Eigen::MatrixXd R, double Q_temporal_factor, double R_temporal_factor, Eigen::MatrixXd x_min, Eigen::MatrixXd x_max, Eigen::MatrixXd u_min, Eigen::MatrixXd u_max)</td></tr>
-<tr class="separator:aea7af4fc21bbeca28185b1b8a1bbd59d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4c486c6e36a4a8ef25aa2cc020e51dd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#aa4c486c6e36a4a8ef25aa2cc020e51dd">quadNLP</a> (int N, double dt, double mu, double panic_weights, double constraint_panic_weights, double Q_temporal_factor, double R_temporal_factor, int n_simple, int n_complex, int m_simple, int m_complex, int g_simple, int g_complex, int x_dim_cost_simple, int x_dim_cost_complex, int u_dim_cost_simple, int u_dim_cost_complex, const Eigen::VectorXd &amp;Q_complex, const Eigen::VectorXd &amp;R_complex, const Eigen::VectorXd &amp;x_min_complex, const Eigen::VectorXd &amp;x_max_complex, const Eigen::VectorXd &amp;u_min_complex, const Eigen::VectorXd &amp;u_max_complex, const Eigen::VectorXd &amp;g_min_complex, const Eigen::VectorXd &amp;g_max_complex, const Eigen::VectorXi &amp;fixed_complexity_schedule)</td></tr>
+<tr class="separator:aa4c486c6e36a4a8ef25aa2cc020e51dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1ae3c78bb297d6a4318b56a1f8609d0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#ae1ae3c78bb297d6a4318b56a1f8609d0">quadNLP</a> (const <a class="el" href="classquadNLP.html">quadNLP</a> &amp;nlp)</td></tr>
+<tr class="memdesc:ae1ae3c78bb297d6a4318b56a1f8609d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom deep copy constructor.  <a href="classquadNLP.html#ae1ae3c78bb297d6a4318b56a1f8609d0">More...</a><br /></td></tr>
+<tr class="separator:ae1ae3c78bb297d6a4318b56a1f8609d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a026390e9bc50e7910e12ed11e1f4fc7e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a026390e9bc50e7910e12ed11e1f4fc7e">~quadNLP</a> ()</td></tr>
 <tr class="separator:a026390e9bc50e7910e12ed11e1f4fc7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Overloaded from TNLP</div></td></tr>
@@ -106,6 +109,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2aacbce070d98135f14dc9aa25ea7ac8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08514913d00a4d482bc53ca180d8df8b"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a08514913d00a4d482bc53ca180d8df8b">eval_grad_f</a> (Index n, const Number *x, bool new_x, Number *grad_f)</td></tr>
 <tr class="separator:a08514913d00a4d482bc53ca180d8df8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b82666aff0b0309b12227c3e7b30815"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a3b82666aff0b0309b12227c3e7b30815">eval_g_single_fe</a> (int sys_id, double dt, const Eigen::VectorXd &amp;x0, const Eigen::VectorXd &amp;u, const Eigen::VectorXd &amp;x1, const Eigen::VectorXd &amp;params)</td></tr>
+<tr class="separator:a3b82666aff0b0309b12227c3e7b30815"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e4bbd10c5e43aefe6f011e48d04651e"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a2e4bbd10c5e43aefe6f011e48d04651e">eval_g</a> (Index n, const Number *x, bool new_x, Index m, Number *g)</td></tr>
 <tr class="separator:a2e4bbd10c5e43aefe6f011e48d04651e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6dc64d38088a2248d2dc9faa17a65ac4"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a6dc64d38088a2248d2dc9faa17a65ac4">eval_jac_g</a> (Index n, const Number *x, bool new_x, Index m, Index nele_jac, Index *iRow, Index *jCol, Number *values)</td></tr>
@@ -120,61 +125,251 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>compute_nnz_h
 <tr class="separator:a33d8fd8b095d29fe10a4682effd4fb2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a997dc07f78cfdf0cd5b4c52a52ff2c1f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a997dc07f78cfdf0cd5b4c52a52ff2c1f">finalize_solution</a> (SolverReturn status, Index n, const Number *x, const Number *z_L, const Number *z_U, Index m, const Number *g, const Number *lambda, Number obj_value, const IpoptData *ip_data, IpoptCalculatedQuantities *ip_cq)</td></tr>
 <tr class="separator:a997dc07f78cfdf0cd5b4c52a52ff2c1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ca63954d50d32b532db28e209f52b90"><td class="memItemLeft" align="right" valign="top"><a id="a1ca63954d50d32b532db28e209f52b90" name="a1ca63954d50d32b532db28e209f52b90"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>shift_initial_guess</b> ()</td></tr>
-<tr class="separator:a1ca63954d50d32b532db28e209f52b90"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad15868ba7f8ce30383f0d3102da7e7d8"><td class="memItemLeft" align="right" valign="top"><a id="ad15868ba7f8ce30383f0d3102da7e7d8" name="ad15868ba7f8ce30383f0d3102da7e7d8"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>update_solver</b> (const Eigen::VectorXd &amp;initial_state, const Eigen::MatrixXd &amp;ref_traj, const Eigen::MatrixXd &amp;foot_positions, const std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule, const Eigen::MatrixXd &amp;state_traj, const Eigen::MatrixXd &amp;control_traj, const Eigen::VectorXd &amp;ground_height, const double &amp;first_element_duration_, const bool &amp;same_plan_index, const bool &amp;init)</td></tr>
-<tr class="separator:ad15868ba7f8ce30383f0d3102da7e7d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a332e87a30f6e3eb7d7a84b5302e35606"><td class="memItemLeft" align="right" valign="top"><a id="a332e87a30f6e3eb7d7a84b5302e35606" name="a332e87a30f6e3eb7d7a84b5302e35606"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>update_solver</b> (const Eigen::VectorXd &amp;initial_state, const Eigen::MatrixXd &amp;ref_traj, const Eigen::MatrixXd &amp;foot_positions, const std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule, const Eigen::VectorXd &amp;ground_height, const double &amp;first_element_duration_, const bool &amp;same_plan_index, const bool &amp;init)</td></tr>
-<tr class="separator:a332e87a30f6e3eb7d7a84b5302e35606"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47cfee18652ce4653315769faf8d7f81"><td class="memItemLeft" align="right" valign="top"><a id="a47cfee18652ce4653315769faf8d7f81" name="a47cfee18652ce4653315769faf8d7f81"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>update_initial_guess</b> (const <a class="el" href="classquadNLP.html">quadNLP</a> &amp;nlp_prev, int shift_idx)</td></tr>
+<tr class="separator:a47cfee18652ce4653315769faf8d7f81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08016405c6cf65472d5036240370768a"><td class="memItemLeft" align="right" valign="top"><a id="a08016405c6cf65472d5036240370768a" name="a08016405c6cf65472d5036240370768a"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>update_solver</b> (const Eigen::VectorXd &amp;initial_state, const Eigen::MatrixXd &amp;ref_traj, const Eigen::MatrixXd &amp;foot_positions, const std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule, const Eigen::VectorXi &amp;adaptive_complexity_schedule, const Eigen::VectorXd &amp;ground_height, const double &amp;first_element_duration_, const bool &amp;same_plan_index, const bool &amp;init)</td></tr>
+<tr class="separator:a08016405c6cf65472d5036240370768a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bfbd66e6562f67fa737718fd41506a8"><td class="memItemLeft" align="right" valign="top"><a id="a9bfbd66e6562f67fa737718fd41506a8" name="a9bfbd66e6562f67fa737718fd41506a8"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>update_structure</b> ()</td></tr>
+<tr class="separator:a9bfbd66e6562f67fa737718fd41506a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0002205aaae0afa5a21a68b1daf5c26"><td class="memTemplParams" colspan="2"><a id="ac0002205aaae0afa5a21a68b1daf5c26" name="ac0002205aaae0afa5a21a68b1daf5c26"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ac0002205aaae0afa5a21a68b1daf5c26"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_primal_state_var</b> (T &amp;decision_var, const int &amp;idx) const</td></tr>
+<tr class="separator:ac0002205aaae0afa5a21a68b1daf5c26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bfb1a125f93c2f79cddf2eaea8bd404"><td class="memTemplParams" colspan="2"><a id="a8bfb1a125f93c2f79cddf2eaea8bd404" name="a8bfb1a125f93c2f79cddf2eaea8bd404"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a8bfb1a125f93c2f79cddf2eaea8bd404"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_primal_body_state_var</b> (T &amp;decision_var, const int &amp;idx) const</td></tr>
+<tr class="separator:a8bfb1a125f93c2f79cddf2eaea8bd404"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1529a6dc9eb947967ad5e684297eb78e"><td class="memTemplParams" colspan="2"><a id="a1529a6dc9eb947967ad5e684297eb78e" name="a1529a6dc9eb947967ad5e684297eb78e"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a1529a6dc9eb947967ad5e684297eb78e"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_primal_foot_state_var</b> (T &amp;decision_var, const int &amp;idx) const</td></tr>
+<tr class="separator:a1529a6dc9eb947967ad5e684297eb78e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4af1ab6d2d9c6e1e431b53ada057059a"><td class="memTemplParams" colspan="2"><a id="a4af1ab6d2d9c6e1e431b53ada057059a" name="a4af1ab6d2d9c6e1e431b53ada057059a"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a4af1ab6d2d9c6e1e431b53ada057059a"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_primal_control_var</b> (T &amp;decision_var, const int &amp;idx) const</td></tr>
+<tr class="separator:a4af1ab6d2d9c6e1e431b53ada057059a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f998032745846d46f64bc419ade26e7"><td class="memTemplParams" colspan="2"><a id="a3f998032745846d46f64bc419ade26e7" name="a3f998032745846d46f64bc419ade26e7"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a3f998032745846d46f64bc419ade26e7"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_primal_body_control_var</b> (T &amp;decision_var, const int &amp;idx) const</td></tr>
+<tr class="separator:a3f998032745846d46f64bc419ade26e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66769d6077f9dae6ed87d546f683e63c"><td class="memTemplParams" colspan="2"><a id="a66769d6077f9dae6ed87d546f683e63c" name="a66769d6077f9dae6ed87d546f683e63c"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a66769d6077f9dae6ed87d546f683e63c"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_primal_foot_control_var</b> (T &amp;decision_var, const int &amp;idx) const</td></tr>
+<tr class="separator:a66769d6077f9dae6ed87d546f683e63c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af16410c6ae7caae266c6782c70e42b95"><td class="memTemplParams" colspan="2"><a id="af16410c6ae7caae266c6782c70e42b95" name="af16410c6ae7caae266c6782c70e42b95"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:af16410c6ae7caae266c6782c70e42b95"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_slack_state_var</b> (T &amp;decision_var, const int &amp;idx) const</td></tr>
+<tr class="separator:af16410c6ae7caae266c6782c70e42b95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d5498b61de57a6fbee050ab52f479d3"><td class="memTemplParams" colspan="2"><a id="a9d5498b61de57a6fbee050ab52f479d3" name="a9d5498b61de57a6fbee050ab52f479d3"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a9d5498b61de57a6fbee050ab52f479d3"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_slack_constraint_var</b> (T &amp;decision_var, const int &amp;idx) const</td></tr>
+<tr class="separator:a9d5498b61de57a6fbee050ab52f479d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1cb74609889d944867d11ba90afa0de"><td class="memTemplParams" colspan="2"><a id="af1cb74609889d944867d11ba90afa0de" name="af1cb74609889d944867d11ba90afa0de"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:af1cb74609889d944867d11ba90afa0de"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_primal_constraint_vals</b> (T &amp;constraint_vals, const int &amp;idx) const</td></tr>
+<tr class="separator:af1cb74609889d944867d11ba90afa0de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee6dad5db3aab49f8613fee81c9ccd08"><td class="memTemplParams" colspan="2"><a id="aee6dad5db3aab49f8613fee81c9ccd08" name="aee6dad5db3aab49f8613fee81c9ccd08"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:aee6dad5db3aab49f8613fee81c9ccd08"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_relaxed_primal_constraint_vals</b> (T &amp;constraint_vals, const int &amp;idx) const</td></tr>
+<tr class="separator:aee6dad5db3aab49f8613fee81c9ccd08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8322aaa6cbfbe21f19f9a1276ba9a78"><td class="memTemplParams" colspan="2"><a id="af8322aaa6cbfbe21f19f9a1276ba9a78" name="af8322aaa6cbfbe21f19f9a1276ba9a78"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:af8322aaa6cbfbe21f19f9a1276ba9a78"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_slack_constraint_vals</b> (T &amp;constraint_vals, const int &amp;idx) const</td></tr>
+<tr class="separator:af8322aaa6cbfbe21f19f9a1276ba9a78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc09afec56c35c4b621b3d7f8e95e1f6"><td class="memTemplParams" colspan="2"><a id="afc09afec56c35c4b621b3d7f8e95e1f6" name="afc09afec56c35c4b621b3d7f8e95e1f6"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:afc09afec56c35c4b621b3d7f8e95e1f6"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_dynamic_var</b> (T &amp;decision_var, const int &amp;idx) const</td></tr>
+<tr class="separator:afc09afec56c35c4b621b3d7f8e95e1f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3568483aa0e65140631d422891a7ed94"><td class="memTemplParams" colspan="2"><a id="a3568483aa0e65140631d422891a7ed94" name="a3568483aa0e65140631d422891a7ed94"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a3568483aa0e65140631d422891a7ed94"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_dynamic_jac_var</b> (T &amp;jacobian_var, const int &amp;idx) const</td></tr>
+<tr class="separator:a3568483aa0e65140631d422891a7ed94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97ed0812fd440c4f99a76f6891a1769a"><td class="memTemplParams" colspan="2"><a id="a97ed0812fd440c4f99a76f6891a1769a" name="a97ed0812fd440c4f99a76f6891a1769a"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a97ed0812fd440c4f99a76f6891a1769a"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_relaxed_dynamic_jac_var</b> (T &amp;jacobian_var, const int &amp;idx) const</td></tr>
+<tr class="separator:a97ed0812fd440c4f99a76f6891a1769a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d085a6487b79310ecf97a421019a2aa"><td class="memTemplParams" colspan="2"><a id="a1d085a6487b79310ecf97a421019a2aa" name="a1d085a6487b79310ecf97a421019a2aa"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a1d085a6487b79310ecf97a421019a2aa"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_slack_jac_var</b> (T &amp;jacobian_var, const int &amp;idx) const</td></tr>
+<tr class="separator:a1d085a6487b79310ecf97a421019a2aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77f10277d0b6e1d4b0b08587bc02f9a2"><td class="memTemplParams" colspan="2"><a id="a77f10277d0b6e1d4b0b08587bc02f9a2" name="a77f10277d0b6e1d4b0b08587bc02f9a2"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a77f10277d0b6e1d4b0b08587bc02f9a2"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_dynamic_hess_var</b> (T &amp;hessian_var, const int &amp;idx) const</td></tr>
+<tr class="separator:a77f10277d0b6e1d4b0b08587bc02f9a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e52a518a4f581099012712cdebcc8b0"><td class="memTemplParams" colspan="2"><a id="a0e52a518a4f581099012712cdebcc8b0" name="a0e52a518a4f581099012712cdebcc8b0"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a0e52a518a4f581099012712cdebcc8b0"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_state_cost_hess_var</b> (T &amp;hessian_var, const int &amp;idx) const</td></tr>
+<tr class="separator:a0e52a518a4f581099012712cdebcc8b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd30d107be6ebbdd6cb445d36c50965d"><td class="memTemplParams" colspan="2"><a id="acd30d107be6ebbdd6cb445d36c50965d" name="acd30d107be6ebbdd6cb445d36c50965d"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:acd30d107be6ebbdd6cb445d36c50965d"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_control_cost_hess_var</b> (T &amp;hessian_var, const int &amp;idx) const</td></tr>
+<tr class="separator:acd30d107be6ebbdd6cb445d36c50965d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81b229caef1d0105acbe178eba16a9a0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a81b229caef1d0105acbe178eba16a9a0">get_primal_constraint_idx</a> (int idx) const</td></tr>
+<tr class="memdesc:a81b229caef1d0105acbe178eba16a9a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the first index of the constraint vector corresponding to the given finite element.  <a href="classquadNLP.html#a81b229caef1d0105acbe178eba16a9a0">More...</a><br /></td></tr>
+<tr class="separator:a81b229caef1d0105acbe178eba16a9a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f38c8504e37c5a893ca86be4eae2043"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a4f38c8504e37c5a893ca86be4eae2043">get_slack_var_constraint_idx</a> (int idx) const</td></tr>
+<tr class="memdesc:a4f38c8504e37c5a893ca86be4eae2043"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the first index of the slack constraint vector corresponding to the given finite element.  <a href="classquadNLP.html#a4f38c8504e37c5a893ca86be4eae2043">More...</a><br /></td></tr>
+<tr class="separator:a4f38c8504e37c5a893ca86be4eae2043"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6676993c9861a1f635d8b8647a94fcb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#ad6676993c9861a1f635d8b8647a94fcb">get_relaxed_constraint_idx</a> (int idx) const</td></tr>
+<tr class="memdesc:ad6676993c9861a1f635d8b8647a94fcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the first index of the slack constraint vector corresponding to the given finite element.  <a href="classquadNLP.html#ad6676993c9861a1f635d8b8647a94fcb">More...</a><br /></td></tr>
+<tr class="separator:ad6676993c9861a1f635d8b8647a94fcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6794faaed960936feb23ddbb3508feab"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a6794faaed960936feb23ddbb3508feab">get_primal_idx</a> (int idx) const</td></tr>
+<tr class="memdesc:a6794faaed960936feb23ddbb3508feab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the first index of the decision variable vector corresponding to the given finite element.  <a href="classquadNLP.html#a6794faaed960936feb23ddbb3508feab">More...</a><br /></td></tr>
+<tr class="separator:a6794faaed960936feb23ddbb3508feab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a050bea8002d9329c7c2271bfc4772087"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a050bea8002d9329c7c2271bfc4772087">get_primal_state_idx</a> (int idx) const</td></tr>
+<tr class="memdesc:a050bea8002d9329c7c2271bfc4772087"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the first index of the decision variable vector corresponding to the given finite element's state.  <a href="classquadNLP.html#a050bea8002d9329c7c2271bfc4772087">More...</a><br /></td></tr>
+<tr class="separator:a050bea8002d9329c7c2271bfc4772087"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca41249d7b8a7f9b925a027855d61921"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#aca41249d7b8a7f9b925a027855d61921">get_primal_control_idx</a> (int idx) const</td></tr>
+<tr class="memdesc:aca41249d7b8a7f9b925a027855d61921"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the first index of the decision variable vector corresponding to the given finite element's control input.  <a href="classquadNLP.html#aca41249d7b8a7f9b925a027855d61921">More...</a><br /></td></tr>
+<tr class="separator:aca41249d7b8a7f9b925a027855d61921"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8678389b95d4ee0a94de8a92fecd0d4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#aa8678389b95d4ee0a94de8a92fecd0d4">get_slack_state_idx</a> (int idx) const</td></tr>
+<tr class="memdesc:aa8678389b95d4ee0a94de8a92fecd0d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the first index of the decision variable vector corresponding to the slack variable for the given finite element's state.  <a href="classquadNLP.html#aa8678389b95d4ee0a94de8a92fecd0d4">More...</a><br /></td></tr>
+<tr class="separator:aa8678389b95d4ee0a94de8a92fecd0d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a660350cd07a5c5594294a82956c4ece4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a660350cd07a5c5594294a82956c4ece4">get_slack_constraint_var_idx</a> (int idx) const</td></tr>
+<tr class="memdesc:a660350cd07a5c5594294a82956c4ece4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the first index of the decision variable vector corresponding to the slack variable for the given finite element's state.  <a href="classquadNLP.html#a660350cd07a5c5594294a82956c4ece4">More...</a><br /></td></tr>
+<tr class="separator:a660350cd07a5c5594294a82956c4ece4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b9997c66fb689f66b3e96a760f07bb1"><td class="memItemLeft" align="right" valign="top"><a id="a5b9997c66fb689f66b3e96a760f07bb1" name="a5b9997c66fb689f66b3e96a760f07bb1"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>loadCasadiFuncs</b> ()</td></tr>
 <tr class="memdesc:a5b9997c66fb689f66b3e96a760f07bb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load the casadi function pointers into map member vars. <br /></td></tr>
 <tr class="separator:a5b9997c66fb689f66b3e96a760f07bb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5c1167184ffff7fd7535c9315b945fb"><td class="memItemLeft" align="right" valign="top"><a id="ad5c1167184ffff7fd7535c9315b945fb" name="ad5c1167184ffff7fd7535c9315b945fb"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>loadConstraintNames</b> ()</td></tr>
+<tr class="memdesc:ad5c1167184ffff7fd7535c9315b945fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load the constraint names for debugging. <br /></td></tr>
+<tr class="separator:ad5c1167184ffff7fd7535c9315b945fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:aded11c23164e73c7702aa065e909c0ba"><td class="memItemLeft" align="right" valign="top"><a id="aded11c23164e73c7702aa065e909c0ba" name="aded11c23164e73c7702aa065e909c0ba"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>N_</b></td></tr>
 <tr class="separator:aded11c23164e73c7702aa065e909c0ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24b9ea5b2a241fb5230c910129b07b32"><td class="memItemLeft" align="right" valign="top"><a id="a24b9ea5b2a241fb5230c910129b07b32" name="a24b9ea5b2a241fb5230c910129b07b32"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>n_</b></td></tr>
-<tr class="separator:a24b9ea5b2a241fb5230c910129b07b32"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9493b4bc6f1c6e01d10cf590e819c196"><td class="memItemLeft" align="right" valign="top"><a id="a9493b4bc6f1c6e01d10cf590e819c196" name="a9493b4bc6f1c6e01d10cf590e819c196"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>m_</b></td></tr>
-<tr class="separator:a9493b4bc6f1c6e01d10cf590e819c196"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9d7d1903f33de7dce5cb0a6293aff9aa"><td class="memItemLeft" align="right" valign="top"><a id="a9d7d1903f33de7dce5cb0a6293aff9aa" name="a9d7d1903f33de7dce5cb0a6293aff9aa"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>g_</b></td></tr>
-<tr class="separator:a9d7d1903f33de7dce5cb0a6293aff9aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3b1b26fb2319650f644a1239286a4df"><td class="memItemLeft" align="right" valign="top"><a id="ae3b1b26fb2319650f644a1239286a4df" name="ae3b1b26fb2319650f644a1239286a4df"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>leg_input_start_idx_</b></td></tr>
-<tr class="separator:ae3b1b26fb2319650f644a1239286a4df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9d11937792dc07cd9a05350f874cb125"><td class="memItemLeft" align="right" valign="top"><a id="a9d11937792dc07cd9a05350f874cb125" name="a9d11937792dc07cd9a05350f874cb125"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>type_</b></td></tr>
-<tr class="separator:a9d11937792dc07cd9a05350f874cb125"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a70f491ead845800d66720b29327064"><td class="memItemLeft" align="right" valign="top"><a id="a9a70f491ead845800d66720b29327064" name="a9a70f491ead845800d66720b29327064"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>known_leg_input_</b></td></tr>
-<tr class="separator:a9a70f491ead845800d66720b29327064"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4cddf6890ed2364cabe4bc737fb2c7d7"><td class="memItemLeft" align="right" valign="top"><a id="a4cddf6890ed2364cabe4bc737fb2c7d7" name="a4cddf6890ed2364cabe4bc737fb2c7d7"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>leg_input_</b></td></tr>
-<tr class="separator:a4cddf6890ed2364cabe4bc737fb2c7d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c7e78cfb21fbb4dc571a291c8fdf9f6"><td class="memItemLeft" align="right" valign="top"><a id="a2c7e78cfb21fbb4dc571a291c8fdf9f6" name="a2c7e78cfb21fbb4dc571a291c8fdf9f6"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>Q_</b></td></tr>
-<tr class="separator:a2c7e78cfb21fbb4dc571a291c8fdf9f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a019f54c253bd643d70bed17fe0b9a369"><td class="memItemLeft" align="right" valign="top"><a id="a019f54c253bd643d70bed17fe0b9a369" name="a019f54c253bd643d70bed17fe0b9a369"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>R_</b></td></tr>
-<tr class="separator:a019f54c253bd643d70bed17fe0b9a369"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89704d0fe52d1879f79d05efb647a1d8"><td class="memItemLeft" align="right" valign="top"><a id="a89704d0fe52d1879f79d05efb647a1d8" name="a89704d0fe52d1879f79d05efb647a1d8"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>g_relaxed_</b></td></tr>
+<tr class="separator:a89704d0fe52d1879f79d05efb647a1d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8c189816b171d4ff4379d1c64cec89b"><td class="memItemLeft" align="right" valign="top"><a id="ab8c189816b171d4ff4379d1c64cec89b" name="ab8c189816b171d4ff4379d1c64cec89b"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>n_simple_</b></td></tr>
+<tr class="memdesc:ab8c189816b171d4ff4379d1c64cec89b"><td class="mdescLeft">&#160;</td><td class="mdescRight">State dimension for simple and complex models. <br /></td></tr>
+<tr class="separator:ab8c189816b171d4ff4379d1c64cec89b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a380383cff4e52f33abe607845777618b"><td class="memItemLeft" align="right" valign="top"><a id="a380383cff4e52f33abe607845777618b" name="a380383cff4e52f33abe607845777618b"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>n_complex_</b></td></tr>
+<tr class="separator:a380383cff4e52f33abe607845777618b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab12fae74891b81620b4572571afec1a2"><td class="memItemLeft" align="right" valign="top"><a id="ab12fae74891b81620b4572571afec1a2" name="ab12fae74891b81620b4572571afec1a2"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>m_simple_</b></td></tr>
+<tr class="memdesc:ab12fae74891b81620b4572571afec1a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Input dimension for simple and complex models. <br /></td></tr>
+<tr class="separator:ab12fae74891b81620b4572571afec1a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a772d9f4be502611f1bf625ed10ab4c87"><td class="memItemLeft" align="right" valign="top"><a id="a772d9f4be502611f1bf625ed10ab4c87" name="a772d9f4be502611f1bf625ed10ab4c87"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>m_complex_</b></td></tr>
+<tr class="separator:a772d9f4be502611f1bf625ed10ab4c87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af30cca5e0732014b94f9de09a0c1d3e1"><td class="memItemLeft" align="right" valign="top"><a id="af30cca5e0732014b94f9de09a0c1d3e1" name="af30cca5e0732014b94f9de09a0c1d3e1"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>g_simple_</b></td></tr>
+<tr class="memdesc:af30cca5e0732014b94f9de09a0c1d3e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constraint dimension for simple and complex models. <br /></td></tr>
+<tr class="separator:af30cca5e0732014b94f9de09a0c1d3e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdee7065eadd85315fb5dc7f0215e521"><td class="memItemLeft" align="right" valign="top"><a id="afdee7065eadd85315fb5dc7f0215e521" name="afdee7065eadd85315fb5dc7f0215e521"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>g_complex_</b></td></tr>
+<tr class="separator:afdee7065eadd85315fb5dc7f0215e521"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f5fda366e93652d754429dd391ea85b"><td class="memItemLeft" align="right" valign="top"><a id="a4f5fda366e93652d754429dd391ea85b" name="a4f5fda366e93652d754429dd391ea85b"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>n_cost_simple_</b></td></tr>
+<tr class="memdesc:a4f5fda366e93652d754429dd391ea85b"><td class="mdescLeft">&#160;</td><td class="mdescRight">State dimension for cost. <br /></td></tr>
+<tr class="separator:a4f5fda366e93652d754429dd391ea85b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae49f4c3c8d39caa043121a6581b85fd1"><td class="memItemLeft" align="right" valign="top"><a id="ae49f4c3c8d39caa043121a6581b85fd1" name="ae49f4c3c8d39caa043121a6581b85fd1"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>n_cost_complex_</b></td></tr>
+<tr class="separator:ae49f4c3c8d39caa043121a6581b85fd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80614a57f437a00cd5afddc2b9baba22"><td class="memItemLeft" align="right" valign="top"><a id="a80614a57f437a00cd5afddc2b9baba22" name="a80614a57f437a00cd5afddc2b9baba22"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>m_cost_simple_</b></td></tr>
+<tr class="memdesc:a80614a57f437a00cd5afddc2b9baba22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Control dimension for cost. <br /></td></tr>
+<tr class="separator:a80614a57f437a00cd5afddc2b9baba22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa613e8934bb5cb6e1831481f97318eb1"><td class="memItemLeft" align="right" valign="top"><a id="aa613e8934bb5cb6e1831481f97318eb1" name="aa613e8934bb5cb6e1831481f97318eb1"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>m_cost_complex_</b></td></tr>
+<tr class="separator:aa613e8934bb5cb6e1831481f97318eb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8833e0287b960361cc7f84c4d111ab42"><td class="memItemLeft" align="right" valign="top"><a id="a8833e0287b960361cc7f84c4d111ab42" name="a8833e0287b960361cc7f84c4d111ab42"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>n_vec_</b></td></tr>
+<tr class="memdesc:a8833e0287b960361cc7f84c4d111ab42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vectors of state and constraint dimension for each finite element. <br /></td></tr>
+<tr class="separator:a8833e0287b960361cc7f84c4d111ab42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a409d69c67879fb2815079f43516a07d0"><td class="memItemLeft" align="right" valign="top"><a id="a409d69c67879fb2815079f43516a07d0" name="a409d69c67879fb2815079f43516a07d0"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>n_slack_vec_</b></td></tr>
+<tr class="separator:a409d69c67879fb2815079f43516a07d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0d24c0e2d78dae396240c88db546cac"><td class="memItemLeft" align="right" valign="top"><a id="af0d24c0e2d78dae396240c88db546cac" name="af0d24c0e2d78dae396240c88db546cac"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>m_vec_</b></td></tr>
+<tr class="separator:af0d24c0e2d78dae396240c88db546cac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53f578cb268e031c76e0b8deee37b3be"><td class="memItemLeft" align="right" valign="top"><a id="a53f578cb268e031c76e0b8deee37b3be" name="a53f578cb268e031c76e0b8deee37b3be"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>g_vec_</b></td></tr>
+<tr class="separator:a53f578cb268e031c76e0b8deee37b3be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98b7c8649488581613029247233a5482"><td class="memItemLeft" align="right" valign="top"><a id="a98b7c8649488581613029247233a5482" name="a98b7c8649488581613029247233a5482"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>g_slack_vec_</b></td></tr>
+<tr class="separator:a98b7c8649488581613029247233a5482"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7d0d614608019606d99e5f1ac8cd5ca"><td class="memItemLeft" align="right" valign="top"><a id="ac7d0d614608019606d99e5f1ac8cd5ca" name="ac7d0d614608019606d99e5f1ac8cd5ca"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>n_cost_vec_</b></td></tr>
+<tr class="separator:ac7d0d614608019606d99e5f1ac8cd5ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87bb5c698751815cea809e4e12619c4f"><td class="memItemLeft" align="right" valign="top"><a id="a87bb5c698751815cea809e4e12619c4f" name="a87bb5c698751815cea809e4e12619c4f"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>m_cost_vec_</b></td></tr>
+<tr class="separator:a87bb5c698751815cea809e4e12619c4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4de5eff180b361a0039cad7264991364"><td class="memItemLeft" align="right" valign="top"><a id="a4de5eff180b361a0039cad7264991364" name="a4de5eff180b361a0039cad7264991364"></a>
+const bool&#160;</td><td class="memItemRight" valign="bottom"><b>apply_slack_to_complex_constr_</b> = true</td></tr>
+<tr class="memdesc:a4de5eff180b361a0039cad7264991364"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean for whether to apply panic variables for complex constraints. <br /></td></tr>
+<tr class="separator:a4de5eff180b361a0039cad7264991364"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac095d13e9b37ce6487617ead18fa1b4a"><td class="memItemLeft" align="right" valign="top"><a id="ac095d13e9b37ce6487617ead18fa1b4a" name="ac095d13e9b37ce6487617ead18fa1b4a"></a>
+const bool&#160;</td><td class="memItemRight" valign="bottom"><b>allow_foot_traj_modification</b> = false</td></tr>
+<tr class="memdesc:ac095d13e9b37ce6487617ead18fa1b4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean for whether to allow modifications of foot trajectory. <br /></td></tr>
+<tr class="separator:ac095d13e9b37ce6487617ead18fa1b4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0a1d681e50c01c780c9d978fde89f80"><td class="memItemLeft" align="right" valign="top"><a id="ac0a1d681e50c01c780c9d978fde89f80" name="ac0a1d681e50c01c780c9d978fde89f80"></a>
+const bool&#160;</td><td class="memItemRight" valign="bottom"><b>use_terrain_constraint</b> = false</td></tr>
+<tr class="memdesc:ac0a1d681e50c01c780c9d978fde89f80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean for whether to include the terrain in the foot height constraint. <br /></td></tr>
+<tr class="separator:ac0a1d681e50c01c780c9d978fde89f80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7aac32283c445e2a0220ac3b4fcb8461"><td class="memItemLeft" align="right" valign="top">const grid_map::InterpolationMethods&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a7aac32283c445e2a0220ac3b4fcb8461">interp_type_</a></td></tr>
+<tr class="separator:a7aac32283c445e2a0220ac3b4fcb8461"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5dcbaee806d1ecdc5ab9635f377e3b0"><td class="memItemLeft" align="right" valign="top"><a id="ac5dcbaee806d1ecdc5ab9635f377e3b0" name="ac5dcbaee806d1ecdc5ab9635f377e3b0"></a>
+std::vector&lt; std::vector&lt; std::string &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>constr_names_</b></td></tr>
+<tr class="memdesc:ac5dcbaee806d1ecdc5ab9635f377e3b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map for constraint names. <br /></td></tr>
+<tr class="separator:ac5dcbaee806d1ecdc5ab9635f377e3b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a310719dc2f142ee59720b870ee097a20"><td class="memItemLeft" align="right" valign="top"><a id="a310719dc2f142ee59720b870ee097a20" name="a310719dc2f142ee59720b870ee097a20"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>n_vars_</b></td></tr>
+<tr class="memdesc:a310719dc2f142ee59720b870ee097a20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of variables , primal variables, slack variables, and constraints. <br /></td></tr>
+<tr class="separator:a310719dc2f142ee59720b870ee097a20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd22a786826383bd97e7b0e5d61ef09b"><td class="memItemLeft" align="right" valign="top"><a id="abd22a786826383bd97e7b0e5d61ef09b" name="abd22a786826383bd97e7b0e5d61ef09b"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>n_vars_primal_</b></td></tr>
+<tr class="separator:abd22a786826383bd97e7b0e5d61ef09b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7babd54d26e36c1d639917eb2374a6b"><td class="memItemLeft" align="right" valign="top"><a id="ac7babd54d26e36c1d639917eb2374a6b" name="ac7babd54d26e36c1d639917eb2374a6b"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>n_vars_slack_</b></td></tr>
+<tr class="separator:ac7babd54d26e36c1d639917eb2374a6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32b22ac3c30620a468ea951c6e98b724"><td class="memItemLeft" align="right" valign="top"><a id="a32b22ac3c30620a468ea951c6e98b724" name="a32b22ac3c30620a468ea951c6e98b724"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>n_constraints_</b></td></tr>
+<tr class="separator:a32b22ac3c30620a468ea951c6e98b724"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7274e94c93d9b551710c11670540cd8b"><td class="memItemLeft" align="right" valign="top"><a id="a7274e94c93d9b551710c11670540cd8b" name="a7274e94c93d9b551710c11670540cd8b"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>n_null_</b></td></tr>
+<tr class="memdesc:a7274e94c93d9b551710c11670540cd8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of state variables added in complex model. <br /></td></tr>
+<tr class="separator:a7274e94c93d9b551710c11670540cd8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7eb59b6a01b12df5e47af6cd0c93568b"><td class="memItemLeft" align="right" valign="top"><a id="a7eb59b6a01b12df5e47af6cd0c93568b" name="a7eb59b6a01b12df5e47af6cd0c93568b"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>x_null_nom_</b></td></tr>
+<tr class="memdesc:a7eb59b6a01b12df5e47af6cd0c93568b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nominal null state variables. <br /></td></tr>
+<tr class="separator:a7eb59b6a01b12df5e47af6cd0c93568b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abad867b5f66f210e42c578a6a5e3b125"><td class="memItemLeft" align="right" valign="top"><a id="abad867b5f66f210e42c578a6a5e3b125" name="abad867b5f66f210e42c578a6a5e3b125"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>Q_simple_</b></td></tr>
+<tr class="separator:abad867b5f66f210e42c578a6a5e3b125"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7b48657c4164bb6eb2ff5d006228d1c"><td class="memItemLeft" align="right" valign="top"><a id="ae7b48657c4164bb6eb2ff5d006228d1c" name="ae7b48657c4164bb6eb2ff5d006228d1c"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>R_simple_</b></td></tr>
+<tr class="separator:ae7b48657c4164bb6eb2ff5d006228d1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f99670ebadf1b115061a26a11889d67"><td class="memItemLeft" align="right" valign="top"><a id="a2f99670ebadf1b115061a26a11889d67" name="a2f99670ebadf1b115061a26a11889d67"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>Q_complex_</b></td></tr>
+<tr class="separator:a2f99670ebadf1b115061a26a11889d67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa43b9dc8f901d0a1eab3f3fcdf96dc1e"><td class="memItemLeft" align="right" valign="top"><a id="aa43b9dc8f901d0a1eab3f3fcdf96dc1e" name="aa43b9dc8f901d0a1eab3f3fcdf96dc1e"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>R_complex_</b></td></tr>
+<tr class="separator:aa43b9dc8f901d0a1eab3f3fcdf96dc1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a9bc436690349c65cce4815239cea26"><td class="memItemLeft" align="right" valign="top"><a id="a2a9bc436690349c65cce4815239cea26" name="a2a9bc436690349c65cce4815239cea26"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>Q_temporal_factor_</b></td></tr>
 <tr class="separator:a2a9bc436690349c65cce4815239cea26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d1ceb25d8bab27b3df1a54ba9d8103b"><td class="memItemLeft" align="right" valign="top"><a id="a0d1ceb25d8bab27b3df1a54ba9d8103b" name="a0d1ceb25d8bab27b3df1a54ba9d8103b"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>R_temporal_factor_</b></td></tr>
 <tr class="separator:a0d1ceb25d8bab27b3df1a54ba9d8103b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8e12c37f9df2f59eb650cadf069e14d"><td class="memItemLeft" align="right" valign="top"><a id="aa8e12c37f9df2f59eb650cadf069e14d" name="aa8e12c37f9df2f59eb650cadf069e14d"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>feet_location_</b></td></tr>
-<tr class="separator:aa8e12c37f9df2f59eb650cadf069e14d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8e693916b6a4c37cbaa1e8586446231"><td class="memItemLeft" align="right" valign="top"><a id="aa8e693916b6a4c37cbaa1e8586446231" name="aa8e693916b6a4c37cbaa1e8586446231"></a>
+Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>foot_pos_body_</b></td></tr>
+<tr class="separator:aa8e693916b6a4c37cbaa1e8586446231"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b574455319d131528a2e7a4d7669e92"><td class="memItemLeft" align="right" valign="top"><a id="a8b574455319d131528a2e7a4d7669e92" name="a8b574455319d131528a2e7a4d7669e92"></a>
+Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>foot_pos_world_</b></td></tr>
+<tr class="separator:a8b574455319d131528a2e7a4d7669e92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec3a662dfa79f57f595bf88338846e9a"><td class="memItemLeft" align="right" valign="top"><a id="aec3a662dfa79f57f595bf88338846e9a" name="aec3a662dfa79f57f595bf88338846e9a"></a>
+Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>foot_vel_world_</b></td></tr>
+<tr class="separator:aec3a662dfa79f57f595bf88338846e9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a698faa361f44f6c927de19dc29ceac80"><td class="memItemLeft" align="right" valign="top"><a id="a698faa361f44f6c927de19dc29ceac80" name="a698faa361f44f6c927de19dc29ceac80"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>dt_</b></td></tr>
 <tr class="separator:a698faa361f44f6c927de19dc29ceac80"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -189,42 +384,80 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><b>mass_</b> = 1
 const double&#160;</td><td class="memItemRight" valign="bottom"><b>grav_</b> = 9.81</td></tr>
 <tr class="memdesc:a9d9ad328f97eccde48c2d91bc2cda5f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gravity constant. <br /></td></tr>
 <tr class="separator:a9d9ad328f97eccde48c2d91bc2cda5f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af2bcee3c054e62056cfd88e5f0cfec04"><td class="memItemLeft" align="right" valign="top"><a id="af2bcee3c054e62056cfd88e5f0cfec04" name="af2bcee3c054e62056cfd88e5f0cfec04"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>x_min_</b></td></tr>
-<tr class="separator:af2bcee3c054e62056cfd88e5f0cfec04"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb03fb604f6ebb02a73067167738764b"><td class="memItemLeft" align="right" valign="top"><a id="aeb03fb604f6ebb02a73067167738764b" name="aeb03fb604f6ebb02a73067167738764b"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>x_max_</b></td></tr>
-<tr class="separator:aeb03fb604f6ebb02a73067167738764b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00b6602ef83e086654a88cd7f5305742"><td class="memItemLeft" align="right" valign="top"><a id="a00b6602ef83e086654a88cd7f5305742" name="a00b6602ef83e086654a88cd7f5305742"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>u_min_</b></td></tr>
-<tr class="separator:a00b6602ef83e086654a88cd7f5305742"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62d95d787e09a6a27db04c3618761036"><td class="memItemLeft" align="right" valign="top"><a id="a62d95d787e09a6a27db04c3618761036" name="a62d95d787e09a6a27db04c3618761036"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>u_max_</b></td></tr>
-<tr class="separator:a62d95d787e09a6a27db04c3618761036"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae7d097e61f911e063fcf1bb6492e52ff"><td class="memItemLeft" align="right" valign="top"><a id="ae7d097e61f911e063fcf1bb6492e52ff" name="ae7d097e61f911e063fcf1bb6492e52ff"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>g_min_</b></td></tr>
-<tr class="separator:ae7d097e61f911e063fcf1bb6492e52ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8253ac750a05cf8461817e283dbbdac0"><td class="memItemLeft" align="right" valign="top"><a id="a8253ac750a05cf8461817e283dbbdac0" name="a8253ac750a05cf8461817e283dbbdac0"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>g_max_</b></td></tr>
-<tr class="separator:a8253ac750a05cf8461817e283dbbdac0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4926a9311ea9cfb2f97bc70b09e5c7d3"><td class="memItemLeft" align="right" valign="top"><a id="a4926a9311ea9cfb2f97bc70b09e5c7d3" name="a4926a9311ea9cfb2f97bc70b09e5c7d3"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><b>num_feet_</b> = 4</td></tr>
+<tr class="memdesc:a4926a9311ea9cfb2f97bc70b09e5c7d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of feet. <br /></td></tr>
+<tr class="separator:a4926a9311ea9cfb2f97bc70b09e5c7d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86d85250e6779f69164b0f02fcac7221"><td class="memItemLeft" align="right" valign="top"><a id="a86d85250e6779f69164b0f02fcac7221" name="a86d85250e6779f69164b0f02fcac7221"></a>
+grid_map::GridMap&#160;</td><td class="memItemRight" valign="bottom"><b>terrain_</b></td></tr>
+<tr class="memdesc:a86d85250e6779f69164b0f02fcac7221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terrain map. <br /></td></tr>
+<tr class="separator:a86d85250e6779f69164b0f02fcac7221"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07000d303708be4c82ed363f690bd451"><td class="memItemLeft" align="right" valign="top"><a id="a07000d303708be4c82ed363f690bd451" name="a07000d303708be4c82ed363f690bd451"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>x_min_simple_</b></td></tr>
+<tr class="separator:a07000d303708be4c82ed363f690bd451"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05fff20b1c6339151fdbd44a738abb7b"><td class="memItemLeft" align="right" valign="top"><a id="a05fff20b1c6339151fdbd44a738abb7b" name="a05fff20b1c6339151fdbd44a738abb7b"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>x_max_simple_</b></td></tr>
+<tr class="separator:a05fff20b1c6339151fdbd44a738abb7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af06c04d5284e68e9e133f6d16d87ee23"><td class="memItemLeft" align="right" valign="top"><a id="af06c04d5284e68e9e133f6d16d87ee23" name="af06c04d5284e68e9e133f6d16d87ee23"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>x_min_complex_</b></td></tr>
+<tr class="separator:af06c04d5284e68e9e133f6d16d87ee23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae619d010e2038633dece2ed1c8dbac4e"><td class="memItemLeft" align="right" valign="top"><a id="ae619d010e2038633dece2ed1c8dbac4e" name="ae619d010e2038633dece2ed1c8dbac4e"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>x_max_complex_</b></td></tr>
+<tr class="separator:ae619d010e2038633dece2ed1c8dbac4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7f55cc4de17fe9c752886f5f95a2b67"><td class="memItemLeft" align="right" valign="top"><a id="af7f55cc4de17fe9c752886f5f95a2b67" name="af7f55cc4de17fe9c752886f5f95a2b67"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>u_min_simple_</b></td></tr>
+<tr class="separator:af7f55cc4de17fe9c752886f5f95a2b67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af12211c39f0771acee848accad6106d5"><td class="memItemLeft" align="right" valign="top"><a id="af12211c39f0771acee848accad6106d5" name="af12211c39f0771acee848accad6106d5"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>u_max_simple_</b></td></tr>
+<tr class="separator:af12211c39f0771acee848accad6106d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b1c2fe40d07202eccaa07aa2ed754a5"><td class="memItemLeft" align="right" valign="top"><a id="a2b1c2fe40d07202eccaa07aa2ed754a5" name="a2b1c2fe40d07202eccaa07aa2ed754a5"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>u_min_complex_</b></td></tr>
+<tr class="separator:a2b1c2fe40d07202eccaa07aa2ed754a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5e0e2771a4686e721120aadbb359efb"><td class="memItemLeft" align="right" valign="top"><a id="ad5e0e2771a4686e721120aadbb359efb" name="ad5e0e2771a4686e721120aadbb359efb"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>u_max_complex_</b></td></tr>
+<tr class="separator:ad5e0e2771a4686e721120aadbb359efb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85cfc444c91a97cc2a21cfeaf7329fc5"><td class="memItemLeft" align="right" valign="top"><a id="a85cfc444c91a97cc2a21cfeaf7329fc5" name="a85cfc444c91a97cc2a21cfeaf7329fc5"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>g_min_simple_</b></td></tr>
+<tr class="separator:a85cfc444c91a97cc2a21cfeaf7329fc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac11997608ac7a84fdc60a16d778a815f"><td class="memItemLeft" align="right" valign="top"><a id="ac11997608ac7a84fdc60a16d778a815f" name="ac11997608ac7a84fdc60a16d778a815f"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>g_max_simple_</b></td></tr>
+<tr class="separator:ac11997608ac7a84fdc60a16d778a815f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57ef878d0c087b9e4dad06a27d0297b2"><td class="memItemLeft" align="right" valign="top"><a id="a57ef878d0c087b9e4dad06a27d0297b2" name="a57ef878d0c087b9e4dad06a27d0297b2"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>g_min_complex_</b></td></tr>
+<tr class="separator:a57ef878d0c087b9e4dad06a27d0297b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a084f9ed6737105557b3fa5b5b4bb6527"><td class="memItemLeft" align="right" valign="top"><a id="a084f9ed6737105557b3fa5b5b4bb6527" name="a084f9ed6737105557b3fa5b5b4bb6527"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>g_max_complex_</b></td></tr>
+<tr class="separator:a084f9ed6737105557b3fa5b5b4bb6527"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27fed1ad74752efc31c5bfaa2b8ecff5"><td class="memItemLeft" align="right" valign="top"><a id="a27fed1ad74752efc31c5bfaa2b8ecff5" name="a27fed1ad74752efc31c5bfaa2b8ecff5"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>x_min_complex_soft_</b></td></tr>
+<tr class="separator:a27fed1ad74752efc31c5bfaa2b8ecff5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed222fa768ec7df4198c411ae69815b7"><td class="memItemLeft" align="right" valign="top"><a id="aed222fa768ec7df4198c411ae69815b7" name="aed222fa768ec7df4198c411ae69815b7"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>x_max_complex_soft_</b></td></tr>
+<tr class="separator:aed222fa768ec7df4198c411ae69815b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acff64b01ecbfc803ebe95f7b4426bd78"><td class="memItemLeft" align="right" valign="top"><a id="acff64b01ecbfc803ebe95f7b4426bd78" name="acff64b01ecbfc803ebe95f7b4426bd78"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>g_min_complex_soft_</b></td></tr>
+<tr class="separator:acff64b01ecbfc803ebe95f7b4426bd78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2018840381828a47d8d965f2a390740e"><td class="memItemLeft" align="right" valign="top"><a id="a2018840381828a47d8d965f2a390740e" name="a2018840381828a47d8d965f2a390740e"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>g_max_complex_soft_</b></td></tr>
+<tr class="separator:a2018840381828a47d8d965f2a390740e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab528c9eb717807c536bce6982e97e554"><td class="memItemLeft" align="right" valign="top"><a id="ab528c9eb717807c536bce6982e97e554" name="ab528c9eb717807c536bce6982e97e554"></a>
 Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>ground_height_</b></td></tr>
 <tr class="separator:ab528c9eb717807c536bce6982e97e554"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a864e6ea1cc849e28ea6700637a66e8a0"><td class="memItemLeft" align="right" valign="top"><a id="a864e6ea1cc849e28ea6700637a66e8a0" name="a864e6ea1cc849e28ea6700637a66e8a0"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>w0_</b></td></tr>
-<tr class="separator:a864e6ea1cc849e28ea6700637a66e8a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a34e70bca9b77ae1ac1a933b47f3522b2"><td class="memItemLeft" align="right" valign="top"><a id="a34e70bca9b77ae1ac1a933b47f3522b2" name="a34e70bca9b77ae1ac1a933b47f3522b2"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>z_L0_</b></td></tr>
-<tr class="separator:a34e70bca9b77ae1ac1a933b47f3522b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc7cdfa490e6a589c7d7296c6dfacf0f"><td class="memItemLeft" align="right" valign="top"><a id="acc7cdfa490e6a589c7d7296c6dfacf0f" name="acc7cdfa490e6a589c7d7296c6dfacf0f"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>z_U0_</b></td></tr>
-<tr class="separator:acc7cdfa490e6a589c7d7296c6dfacf0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa83fb288722d5594f6a2ea4e7fd63988"><td class="memItemLeft" align="right" valign="top"><a id="aa83fb288722d5594f6a2ea4e7fd63988" name="aa83fb288722d5594f6a2ea4e7fd63988"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>lambda0_</b></td></tr>
-<tr class="separator:aa83fb288722d5594f6a2ea4e7fd63988"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f26c81184847b49d26d4a82ce965271"><td class="memItemLeft" align="right" valign="top"><a id="a6f26c81184847b49d26d4a82ce965271" name="a6f26c81184847b49d26d4a82ce965271"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>g0_</b></td></tr>
-<tr class="separator:a6f26c81184847b49d26d4a82ce965271"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab93aa0fee7e1a326b413fa5068a1f8a0"><td class="memItemLeft" align="right" valign="top"><a id="ab93aa0fee7e1a326b413fa5068a1f8a0" name="ab93aa0fee7e1a326b413fa5068a1f8a0"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>w0_</b></td></tr>
+<tr class="separator:ab93aa0fee7e1a326b413fa5068a1f8a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bd53ecab33000a49d66f752ec049351"><td class="memItemLeft" align="right" valign="top"><a id="a8bd53ecab33000a49d66f752ec049351" name="a8bd53ecab33000a49d66f752ec049351"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>z_L0_</b></td></tr>
+<tr class="separator:a8bd53ecab33000a49d66f752ec049351"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af14e7ffa72fe5ccdcc35d4c9dce5b17c"><td class="memItemLeft" align="right" valign="top"><a id="af14e7ffa72fe5ccdcc35d4c9dce5b17c" name="af14e7ffa72fe5ccdcc35d4c9dce5b17c"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>z_U0_</b></td></tr>
+<tr class="separator:af14e7ffa72fe5ccdcc35d4c9dce5b17c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ad7c379f63906ab872391a3d741d67f"><td class="memItemLeft" align="right" valign="top"><a id="a4ad7c379f63906ab872391a3d741d67f" name="a4ad7c379f63906ab872391a3d741d67f"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>lambda0_</b></td></tr>
+<tr class="separator:a4ad7c379f63906ab872391a3d741d67f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10251383653c3d560d20bf8698f356af"><td class="memItemLeft" align="right" valign="top"><a id="a10251383653c3d560d20bf8698f356af" name="a10251383653c3d560d20bf8698f356af"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>g0_</b></td></tr>
+<tr class="separator:a10251383653c3d560d20bf8698f356af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ffaf7ca79e75357f3dbc7e1680a5044"><td class="memItemLeft" align="right" valign="top"><a id="a1ffaf7ca79e75357f3dbc7e1680a5044" name="a1ffaf7ca79e75357f3dbc7e1680a5044"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>mu0_</b></td></tr>
 <tr class="separator:a1ffaf7ca79e75357f3dbc7e1680a5044"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -234,61 +467,158 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>warm_start_</b></td><
 <tr class="memitem:a083a2798148d16b8f0a8018600ec6fa3"><td class="memItemLeft" align="right" valign="top"><a id="a083a2798148d16b8f0a8018600ec6fa3" name="a083a2798148d16b8f0a8018600ec6fa3"></a>
 Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>x_reference_</b></td></tr>
 <tr class="separator:a083a2798148d16b8f0a8018600ec6fa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a5c212178301b3c4183a58e1f30f2b2"><td class="memItemLeft" align="right" valign="top"><a id="a1a5c212178301b3c4183a58e1f30f2b2" name="a1a5c212178301b3c4183a58e1f30f2b2"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>x_current_</b></td></tr>
-<tr class="separator:a1a5c212178301b3c4183a58e1f30f2b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afad8fd9040fbf64529df05e3aef49d74"><td class="memItemLeft" align="right" valign="top"><a id="afad8fd9040fbf64529df05e3aef49d74" name="afad8fd9040fbf64529df05e3aef49d74"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>x_current_</b></td></tr>
+<tr class="separator:afad8fd9040fbf64529df05e3aef49d74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3ec696db830e7cdd8f3252335ce4724"><td class="memItemLeft" align="right" valign="top"><a id="ab3ec696db830e7cdd8f3252335ce4724" name="ab3ec696db830e7cdd8f3252335ce4724"></a>
 Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>contact_sequence_</b></td></tr>
 <tr class="separator:ab3ec696db830e7cdd8f3252335ce4724"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a64f43d6673a9f99cdc5116c6f3cb56e1"><td class="memItemLeft" align="right" valign="top"><a id="a64f43d6673a9f99cdc5116c6f3cb56e1" name="a64f43d6673a9f99cdc5116c6f3cb56e1"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>nnz_jac_g_</b></td></tr>
 <tr class="separator:a64f43d6673a9f99cdc5116c6f3cb56e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7fb1be8a6b25b979e53a8305f79e47e8"><td class="memItemLeft" align="right" valign="top"><a id="a7fb1be8a6b25b979e53a8305f79e47e8" name="a7fb1be8a6b25b979e53a8305f79e47e8"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nnz_step_jac_g_</b></td></tr>
-<tr class="separator:a7fb1be8a6b25b979e53a8305f79e47e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afed950f277d2d27c72e2cbb8badb3e97"><td class="memItemLeft" align="right" valign="top"><a id="afed950f277d2d27c72e2cbb8badb3e97" name="afed950f277d2d27c72e2cbb8badb3e97"></a>
 std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>first_step_idx_jac_g_</b></td></tr>
 <tr class="separator:afed950f277d2d27c72e2cbb8badb3e97"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6162f02b8d9c5bfdc74a5e913625d1f"><td class="memItemLeft" align="right" valign="top"><a id="af6162f02b8d9c5bfdc74a5e913625d1f" name="af6162f02b8d9c5bfdc74a5e913625d1f"></a>
-Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>iRow_jac_g_</b></td></tr>
-<tr class="separator:af6162f02b8d9c5bfdc74a5e913625d1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a939e8f3be2dbd1a6d63de4eb37c3ad70"><td class="memItemLeft" align="right" valign="top"><a id="a939e8f3be2dbd1a6d63de4eb37c3ad70" name="a939e8f3be2dbd1a6d63de4eb37c3ad70"></a>
-Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>jCol_jac_g_</b></td></tr>
-<tr class="separator:a939e8f3be2dbd1a6d63de4eb37c3ad70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ed90be1480558b55acb5673b14015a1"><td class="memItemLeft" align="right" valign="top"><a id="a7ed90be1480558b55acb5673b14015a1" name="a7ed90be1480558b55acb5673b14015a1"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>iRow_jac_g_</b></td></tr>
+<tr class="separator:a7ed90be1480558b55acb5673b14015a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8037c7d1360eba58ca515cbf3c468e91"><td class="memItemLeft" align="right" valign="top"><a id="a8037c7d1360eba58ca515cbf3c468e91" name="a8037c7d1360eba58ca515cbf3c468e91"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>jCol_jac_g_</b></td></tr>
+<tr class="separator:a8037c7d1360eba58ca515cbf3c468e91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6757c55addd0aca6a246ecd556b2865"><td class="memItemLeft" align="right" valign="top"><a id="ab6757c55addd0aca6a246ecd556b2865" name="ab6757c55addd0aca6a246ecd556b2865"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>nnz_h_</b></td></tr>
 <tr class="separator:ab6757c55addd0aca6a246ecd556b2865"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4da533a2f30f073914960a763092c004"><td class="memItemLeft" align="right" valign="top"><a id="a4da533a2f30f073914960a763092c004" name="a4da533a2f30f073914960a763092c004"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>nnz_compact_h_</b></td></tr>
 <tr class="separator:a4da533a2f30f073914960a763092c004"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d61f2b45e3f5644dc2931d0ded608c2"><td class="memItemLeft" align="right" valign="top"><a id="a0d61f2b45e3f5644dc2931d0ded608c2" name="a0d61f2b45e3f5644dc2931d0ded608c2"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nnz_step_h_</b></td></tr>
-<tr class="separator:a0d61f2b45e3f5644dc2931d0ded608c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15a0cfef3ec8b34b2389bb1d831b92d0"><td class="memItemLeft" align="right" valign="top"><a id="a15a0cfef3ec8b34b2389bb1d831b92d0" name="a15a0cfef3ec8b34b2389bb1d831b92d0"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>nnz_step_jac_g_</b></td></tr>
+<tr class="separator:a15a0cfef3ec8b34b2389bb1d831b92d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f89c08a9352276aabc509bcef3c773f"><td class="memItemLeft" align="right" valign="top"><a id="a9f89c08a9352276aabc509bcef3c773f" name="a9f89c08a9352276aabc509bcef3c773f"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>nnz_step_hess_</b></td></tr>
+<tr class="separator:a9f89c08a9352276aabc509bcef3c773f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac1e11abbcd0b647b4d5b20cb2e45ee51"><td class="memItemLeft" align="right" valign="top"><a id="ac1e11abbcd0b647b4d5b20cb2e45ee51" name="ac1e11abbcd0b647b4d5b20cb2e45ee51"></a>
 std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>first_step_idx_hess_g_</b></td></tr>
 <tr class="separator:ac1e11abbcd0b647b4d5b20cb2e45ee51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad20f8d846f2ae6a9b005b39ffaa328e3"><td class="memItemLeft" align="right" valign="top"><a id="ad20f8d846f2ae6a9b005b39ffaa328e3" name="ad20f8d846f2ae6a9b005b39ffaa328e3"></a>
-Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>iRow_h_</b></td></tr>
-<tr class="separator:ad20f8d846f2ae6a9b005b39ffaa328e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac8072240810e6e0ec6fc3a0195cc7b01"><td class="memItemLeft" align="right" valign="top"><a id="ac8072240810e6e0ec6fc3a0195cc7b01" name="ac8072240810e6e0ec6fc3a0195cc7b01"></a>
-Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>jCol_h_</b></td></tr>
-<tr class="separator:ac8072240810e6e0ec6fc3a0195cc7b01"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1372c139d60a3dc29fcb5edd767a724c"><td class="memItemLeft" align="right" valign="top"><a id="a1372c139d60a3dc29fcb5edd767a724c" name="a1372c139d60a3dc29fcb5edd767a724c"></a>
-Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>iRow_compact_h_</b></td></tr>
-<tr class="separator:a1372c139d60a3dc29fcb5edd767a724c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a910a9a27ff1553d7820f4097d7bcf0fa"><td class="memItemLeft" align="right" valign="top"><a id="a910a9a27ff1553d7820f4097d7bcf0fa" name="a910a9a27ff1553d7820f4097d7bcf0fa"></a>
-Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>jCol_compact_h_</b></td></tr>
-<tr class="separator:a910a9a27ff1553d7820f4097d7bcf0fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5beb458adb6a252388e40850f500ed10"><td class="memItemLeft" align="right" valign="top"><a id="a5beb458adb6a252388e40850f500ed10" name="a5beb458adb6a252388e40850f500ed10"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>iRow_h_</b></td></tr>
+<tr class="separator:a5beb458adb6a252388e40850f500ed10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedda1340d284c4b87250fc345273525c"><td class="memItemLeft" align="right" valign="top"><a id="aedda1340d284c4b87250fc345273525c" name="aedda1340d284c4b87250fc345273525c"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>jCol_h_</b></td></tr>
+<tr class="separator:aedda1340d284c4b87250fc345273525c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad02f3d122e05c7ab9d31bd444f5c4c93"><td class="memItemLeft" align="right" valign="top"><a id="ad02f3d122e05c7ab9d31bd444f5c4c93" name="ad02f3d122e05c7ab9d31bd444f5c4c93"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>iRow_compact_h_</b></td></tr>
+<tr class="separator:ad02f3d122e05c7ab9d31bd444f5c4c93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3722256637ecf66cfe813b3b0854d75f"><td class="memItemLeft" align="right" valign="top"><a id="a3722256637ecf66cfe813b3b0854d75f" name="a3722256637ecf66cfe813b3b0854d75f"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>jCol_compact_h_</b></td></tr>
+<tr class="separator:a3722256637ecf66cfe813b3b0854d75f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f73e39e854e0adf1aa3fb0ab3c5e3f1"><td class="memItemLeft" align="right" valign="top"><a id="a6f73e39e854e0adf1aa3fb0ab3c5e3f1" name="a6f73e39e854e0adf1aa3fb0ab3c5e3f1"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>panic_weights_</b></td></tr>
 <tr class="separator:a6f73e39e854e0adf1aa3fb0ab3c5e3f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5751bc6554723c6012bedd11121f5f3"><td class="memItemLeft" align="right" valign="top"><a id="aa5751bc6554723c6012bedd11121f5f3" name="aa5751bc6554723c6012bedd11121f5f3"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>constraint_panic_weights_</b></td></tr>
+<tr class="separator:aa5751bc6554723c6012bedd11121f5f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93feeeb02851819173ebbdf5012fd6e8"><td class="memItemLeft" align="right" valign="top"><a id="a93feeeb02851819173ebbdf5012fd6e8" name="a93feeeb02851819173ebbdf5012fd6e8"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>first_element_duration_</b></td></tr>
 <tr class="separator:a93feeeb02851819173ebbdf5012fd6e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1698048402b32d0635945b0d37d29feb"><td class="memItemLeft" align="right" valign="top"><a id="a1698048402b32d0635945b0d37d29feb" name="a1698048402b32d0635945b0d37d29feb"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>sys_id_</b></td></tr>
-<tr class="memdesc:a1698048402b32d0635945b0d37d29feb"><td class="mdescLeft">&#160;</td><td class="mdescRight">System type id for indexing casadi functions. <br /></td></tr>
-<tr class="separator:a1698048402b32d0635945b0d37d29feb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68b3f996f8aab932c66bdc0816325eb0"><td class="memItemLeft" align="right" valign="top"><a id="a68b3f996f8aab932c66bdc0816325eb0" name="a68b3f996f8aab932c66bdc0816325eb0"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>adaptive_complexity_schedule_</b></td></tr>
+<tr class="memdesc:a68b3f996f8aab932c66bdc0816325eb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of ids for adaptive model complexity schedule. <br /></td></tr>
+<tr class="separator:a68b3f996f8aab932c66bdc0816325eb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcf5867d97c2516a9f86106d0965f4b8"><td class="memItemLeft" align="right" valign="top"><a id="afcf5867d97c2516a9f86106d0965f4b8" name="afcf5867d97c2516a9f86106d0965f4b8"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>fixed_complexity_schedule_</b></td></tr>
+<tr class="memdesc:afcf5867d97c2516a9f86106d0965f4b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of ids for fixed model complexity schedule. <br /></td></tr>
+<tr class="separator:afcf5867d97c2516a9f86106d0965f4b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f1510355a278b410ab6acff10e618f9"><td class="memItemLeft" align="right" valign="top"><a id="a6f1510355a278b410ab6acff10e618f9" name="a6f1510355a278b410ab6acff10e618f9"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>fe_idxs_</b></td></tr>
+<tr class="memdesc:a6f1510355a278b410ab6acff10e618f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of indices for relevant quantities. <br /></td></tr>
+<tr class="separator:a6f1510355a278b410ab6acff10e618f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52a923d7bebb717c96aaf65d0adbf923"><td class="memItemLeft" align="right" valign="top"><a id="a52a923d7bebb717c96aaf65d0adbf923" name="a52a923d7bebb717c96aaf65d0adbf923"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>u_idxs_</b></td></tr>
+<tr class="separator:a52a923d7bebb717c96aaf65d0adbf923"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41a1b58e1f9d2260ea61603b278b952f"><td class="memItemLeft" align="right" valign="top"><a id="a41a1b58e1f9d2260ea61603b278b952f" name="a41a1b58e1f9d2260ea61603b278b952f"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>x_idxs_</b></td></tr>
+<tr class="separator:a41a1b58e1f9d2260ea61603b278b952f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0d5d34b7b4d4a9b5dda25e75c60d1b0"><td class="memItemLeft" align="right" valign="top"><a id="ad0d5d34b7b4d4a9b5dda25e75c60d1b0" name="ad0d5d34b7b4d4a9b5dda25e75c60d1b0"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>slack_state_var_idxs_</b></td></tr>
+<tr class="separator:ad0d5d34b7b4d4a9b5dda25e75c60d1b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92d6ae36ffd2d9e7c01c8e12b1768550"><td class="memItemLeft" align="right" valign="top"><a id="a92d6ae36ffd2d9e7c01c8e12b1768550" name="a92d6ae36ffd2d9e7c01c8e12b1768550"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>slack_constraint_var_idxs_</b></td></tr>
+<tr class="separator:a92d6ae36ffd2d9e7c01c8e12b1768550"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa860b192f015beacc144413cfebdcb64"><td class="memItemLeft" align="right" valign="top"><a id="aa860b192f015beacc144413cfebdcb64" name="aa860b192f015beacc144413cfebdcb64"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>primal_constraint_idxs_</b></td></tr>
+<tr class="separator:aa860b192f015beacc144413cfebdcb64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4361e00380d09e2eb7e45579fc13616"><td class="memItemLeft" align="right" valign="top"><a id="aa4361e00380d09e2eb7e45579fc13616" name="aa4361e00380d09e2eb7e45579fc13616"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>slack_var_constraint_idxs_</b></td></tr>
+<tr class="separator:aa4361e00380d09e2eb7e45579fc13616"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fc831e597244344637a94d533385450"><td class="memItemLeft" align="right" valign="top"><a id="a7fc831e597244344637a94d533385450" name="a7fc831e597244344637a94d533385450"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>dynamic_jac_var_idxs_</b></td></tr>
+<tr class="separator:a7fc831e597244344637a94d533385450"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae64af9033387024dd8fa9060832d6814"><td class="memItemLeft" align="right" valign="top"><a id="ae64af9033387024dd8fa9060832d6814" name="ae64af9033387024dd8fa9060832d6814"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>relaxed_dynamic_jac_var_idxs_</b></td></tr>
+<tr class="separator:ae64af9033387024dd8fa9060832d6814"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee0d5a49fda37b2e4a8896f829210896"><td class="memItemLeft" align="right" valign="top"><a id="aee0d5a49fda37b2e4a8896f829210896" name="aee0d5a49fda37b2e4a8896f829210896"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>panic_jac_var_idxs_</b></td></tr>
+<tr class="separator:aee0d5a49fda37b2e4a8896f829210896"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b76c99f85ebba36fa9d2f1829a9712e"><td class="memItemLeft" align="right" valign="top"><a id="a7b76c99f85ebba36fa9d2f1829a9712e" name="a7b76c99f85ebba36fa9d2f1829a9712e"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>dynamic_hess_var_idxs_</b></td></tr>
+<tr class="separator:a7b76c99f85ebba36fa9d2f1829a9712e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49c8f63b48409ed8aecba1f30d2929e7"><td class="memItemLeft" align="right" valign="top"><a id="a49c8f63b48409ed8aecba1f30d2929e7" name="a49c8f63b48409ed8aecba1f30d2929e7"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>cost_idxs_</b></td></tr>
+<tr class="separator:a49c8f63b48409ed8aecba1f30d2929e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bb6c5647cd5f1e64775db9689596657"><td class="memItemLeft" align="right" valign="top"><a id="a3bb6c5647cd5f1e64775db9689596657" name="a3bb6c5647cd5f1e64775db9689596657"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>relaxed_constraint_idxs_</b></td></tr>
+<tr class="separator:a3bb6c5647cd5f1e64775db9689596657"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d55fbdbd54072001fc279119a3d6eb2"><td class="memItemLeft" align="right" valign="top"><a id="a9d55fbdbd54072001fc279119a3d6eb2" name="a9d55fbdbd54072001fc279119a3d6eb2"></a>
+Eigen::ArrayXi&#160;</td><td class="memItemRight" valign="bottom"><b>relaxed_primal_constraint_idxs_in_element_</b></td></tr>
+<tr class="memdesc:a9d55fbdbd54072001fc279119a3d6eb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indices of relaxed constraints. <br /></td></tr>
+<tr class="separator:a9d55fbdbd54072001fc279119a3d6eb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dd4dbc7aa718d47f226855c2c69168d"><td class="memItemLeft" align="right" valign="top"><a id="a9dd4dbc7aa718d47f226855c2c69168d" name="a9dd4dbc7aa718d47f226855c2c69168d"></a>
+Eigen::ArrayXi&#160;</td><td class="memItemRight" valign="bottom"><b>constraint_panic_weights_vec_</b></td></tr>
+<tr class="separator:a9dd4dbc7aa718d47f226855c2c69168d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab006ef94cfc10cbfa51a67c300b10de4"><td class="memItemLeft" align="right" valign="top"><a id="ab006ef94cfc10cbfa51a67c300b10de4" name="ab006ef94cfc10cbfa51a67c300b10de4"></a>
+Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>sys_id_schedule_</b></td></tr>
+<tr class="memdesc:ab006ef94cfc10cbfa51a67c300b10de4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of system ids. <br /></td></tr>
+<tr class="separator:ab006ef94cfc10cbfa51a67c300b10de4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46a2866ca656ee9eb52d6700291d3063"><td class="memItemLeft" align="right" valign="top"><a id="a46a2866ca656ee9eb52d6700291d3063" name="a46a2866ca656ee9eb52d6700291d3063"></a>
+Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>nnz_mat_</b></td></tr>
+<tr class="memdesc:a46a2866ca656ee9eb52d6700291d3063"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matrix of function info. <br /></td></tr>
+<tr class="separator:a46a2866ca656ee9eb52d6700291d3063"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff76a5ef60dad9104e013b85ac8a76c8"><td class="memItemLeft" align="right" valign="top"><a id="aff76a5ef60dad9104e013b85ac8a76c8" name="aff76a5ef60dad9104e013b85ac8a76c8"></a>
+Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>nrow_mat_</b></td></tr>
+<tr class="separator:aff76a5ef60dad9104e013b85ac8a76c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3fe16d119320e113897448acc607c08"><td class="memItemLeft" align="right" valign="top"><a id="ad3fe16d119320e113897448acc607c08" name="ad3fe16d119320e113897448acc607c08"></a>
+Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>ncol_mat_</b></td></tr>
+<tr class="separator:ad3fe16d119320e113897448acc607c08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee67075d02e747b6ee08242ead11cf8d"><td class="memItemLeft" align="right" valign="top"><a id="aee67075d02e747b6ee08242ead11cf8d" name="aee67075d02e747b6ee08242ead11cf8d"></a>
+Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>first_step_idx_mat_</b></td></tr>
+<tr class="separator:aee67075d02e747b6ee08242ead11cf8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1fc246bf2a6154c1a070ea8b067ff96"><td class="memItemLeft" align="right" valign="top"><a id="ae1fc246bf2a6154c1a070ea8b067ff96" name="ae1fc246bf2a6154c1a070ea8b067ff96"></a>
+Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><b>relaxed_nnz_mat_</b></td></tr>
+<tr class="separator:ae1fc246bf2a6154c1a070ea8b067ff96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a40b0fc5b9aa85f841975f54e3b647a"><td class="memItemLeft" align="right" valign="top"><a id="a6a40b0fc5b9aa85f841975f54e3b647a" name="a6a40b0fc5b9aa85f841975f54e3b647a"></a>
+std::vector&lt; std::vector&lt; Eigen::VectorXi &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>iRow_mat_</b></td></tr>
+<tr class="memdesc:a6a40b0fc5b9aa85f841975f54e3b647a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matrix of function sparsity data. <br /></td></tr>
+<tr class="separator:a6a40b0fc5b9aa85f841975f54e3b647a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a617b2d99a3a7145a038a6724c8cb721c"><td class="memItemLeft" align="right" valign="top"><a id="a617b2d99a3a7145a038a6724c8cb721c" name="a617b2d99a3a7145a038a6724c8cb721c"></a>
+std::vector&lt; std::vector&lt; Eigen::VectorXi &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>jCol_mat_</b></td></tr>
+<tr class="separator:a617b2d99a3a7145a038a6724c8cb721c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93d94a751b58f3fbed513a4e679b0bfa"><td class="memItemLeft" align="right" valign="top"><a id="a93d94a751b58f3fbed513a4e679b0bfa" name="a93d94a751b58f3fbed513a4e679b0bfa"></a>
+std::vector&lt; std::vector&lt; Eigen::VectorXi &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>iRow_mat_relaxed_</b></td></tr>
+<tr class="separator:a93d94a751b58f3fbed513a4e679b0bfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a1f76973ff06b9395a4ee201eb722f3"><td class="memItemLeft" align="right" valign="top"><a id="a0a1f76973ff06b9395a4ee201eb722f3" name="a0a1f76973ff06b9395a4ee201eb722f3"></a>
+std::vector&lt; std::vector&lt; Eigen::VectorXi &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>jCol_mat_relaxed_</b></td></tr>
+<tr class="separator:a0a1f76973ff06b9395a4ee201eb722f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a062264e645a37c99108a3700ca22ea"><td class="memItemLeft" align="right" valign="top"><a id="a7a062264e645a37c99108a3700ca22ea" name="a7a062264e645a37c99108a3700ca22ea"></a>
+std::vector&lt; std::vector&lt; Eigen::VectorXi &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>relaxed_idx_in_full_sparse_</b></td></tr>
+<tr class="separator:a7a062264e645a37c99108a3700ca22ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3622aedb5928cfa229ccfbbde6ba7cdc"><td class="memItemLeft" align="right" valign="top"><a id="a3622aedb5928cfa229ccfbbde6ba7cdc" name="a3622aedb5928cfa229ccfbbde6ba7cdc"></a>
+std::vector&lt; casadi_int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>nnz_jac_g_vec_</b></td></tr>
+<tr class="memdesc:a3622aedb5928cfa229ccfbbde6ba7cdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of nonzero entries for constraint Jacobian and Hessian. <br /></td></tr>
+<tr class="separator:a3622aedb5928cfa229ccfbbde6ba7cdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5390dee8952d015708bbc571ffeea3b2"><td class="memItemLeft" align="right" valign="top"><a id="a5390dee8952d015708bbc571ffeea3b2" name="a5390dee8952d015708bbc571ffeea3b2"></a>
+std::vector&lt; casadi_int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>nnz_h_vec_</b></td></tr>
+<tr class="separator:a5390dee8952d015708bbc571ffeea3b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa11b43289d60f52f9318f22ca39d7e7"><td class="memItemLeft" align="right" valign="top"><a id="aaa11b43289d60f52f9318f22ca39d7e7" name="aaa11b43289d60f52f9318f22ca39d7e7"></a>
 std::vector&lt; std::vector&lt; decltype(eval_g_leg) * &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>eval_vec_</b></td></tr>
 <tr class="separator:aaa11b43289d60f52f9318f22ca39d7e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -313,7 +643,28 @@ std::vector&lt; std::vector&lt; decltype(eval_g_leg_sparsity_out) * &gt; &gt;&#1
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a201f523832569f0219333621b506aa49"><td class="memItemLeft" align="right" valign="top">static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a201f523832569f0219333621b506aa49">num_sys_id_</a> = 2</td></tr>
+<tr class="memitem:a0893020cf5980d18d4c64c2edffddc8c"><td class="memItemLeft" align="right" valign="top"><a id="a0893020cf5980d18d4c64c2edffddc8c" name="a0893020cf5980d18d4c64c2edffddc8c"></a>
+static const int&#160;</td><td class="memItemRight" valign="bottom"><b>n_body_</b> = 12</td></tr>
+<tr class="separator:a0893020cf5980d18d4c64c2edffddc8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9d3ead6d8a2cd62c38eb786b18f3d01"><td class="memItemLeft" align="right" valign="top"><a id="af9d3ead6d8a2cd62c38eb786b18f3d01" name="af9d3ead6d8a2cd62c38eb786b18f3d01"></a>
+static const int&#160;</td><td class="memItemRight" valign="bottom"><b>n_foot_</b> = 24</td></tr>
+<tr class="separator:af9d3ead6d8a2cd62c38eb786b18f3d01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a380c800945eee2fc9aecc8c70b58b117"><td class="memItemLeft" align="right" valign="top"><a id="a380c800945eee2fc9aecc8c70b58b117" name="a380c800945eee2fc9aecc8c70b58b117"></a>
+static const int&#160;</td><td class="memItemRight" valign="bottom"><b>n_joints_</b> = 24</td></tr>
+<tr class="separator:a380c800945eee2fc9aecc8c70b58b117"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8305d2cbad54f5ffdf13eec09c63aeb"><td class="memItemLeft" align="right" valign="top"><a id="ac8305d2cbad54f5ffdf13eec09c63aeb" name="ac8305d2cbad54f5ffdf13eec09c63aeb"></a>
+static const int&#160;</td><td class="memItemRight" valign="bottom"><b>n_tail_</b> = 4</td></tr>
+<tr class="separator:ac8305d2cbad54f5ffdf13eec09c63aeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06d95514be84c6fec94e0ead7b9b67f6"><td class="memItemLeft" align="right" valign="top"><a id="a06d95514be84c6fec94e0ead7b9b67f6" name="a06d95514be84c6fec94e0ead7b9b67f6"></a>
+static const int&#160;</td><td class="memItemRight" valign="bottom"><b>m_body_</b> = 12</td></tr>
+<tr class="separator:a06d95514be84c6fec94e0ead7b9b67f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d5b39319efc8fd4a24b6b31159c0af6"><td class="memItemLeft" align="right" valign="top"><a id="a5d5b39319efc8fd4a24b6b31159c0af6" name="a5d5b39319efc8fd4a24b6b31159c0af6"></a>
+static const int&#160;</td><td class="memItemRight" valign="bottom"><b>m_foot_</b> = 12</td></tr>
+<tr class="separator:a5d5b39319efc8fd4a24b6b31159c0af6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad24b6fba6bfff7cf74cc1194100e2c50"><td class="memItemLeft" align="right" valign="top"><a id="ad24b6fba6bfff7cf74cc1194100e2c50" name="ad24b6fba6bfff7cf74cc1194100e2c50"></a>
+static const int&#160;</td><td class="memItemRight" valign="bottom"><b>m_tail_</b> = 2</td></tr>
+<tr class="separator:ad24b6fba6bfff7cf74cc1194100e2c50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a201f523832569f0219333621b506aa49"><td class="memItemLeft" align="right" valign="top">static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a201f523832569f0219333621b506aa49">num_sys_id_</a> = 6</td></tr>
 <tr class="separator:a201f523832569f0219333621b506aa49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff9de88d6269f28987262c6c9ecac03c"><td class="memItemLeft" align="right" valign="top">static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#aff9de88d6269f28987262c6c9ecac03c">num_func_id_</a> = 3</td></tr>
 <tr class="separator:aff9de88d6269f28987262c6c9ecac03c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -323,16 +674,13 @@ Private Member Functions</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader">Methods to block default compiler methods.</div></td></tr>
 <tr><td colspan="2"><div class="groupText"><p >The compiler automatically generates the following three methods. Since the default compiler implementation is generally not what you want (for all but the most simple classes), we usually put the declarations of these methods in the private section and never implement them. This prevents the compiler from implementing an incorrect "default" behavior without us knowing. (See Scott Meyers book, "Effective C++") </p>
 </div></td></tr>
-<tr class="memitem:a3b79db4eb599904b09763b2ddd77c6d4"><td class="memItemLeft" align="right" valign="top"><a id="a3b79db4eb599904b09763b2ddd77c6d4" name="a3b79db4eb599904b09763b2ddd77c6d4"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>quadNLP</b> (const <a class="el" href="classquadNLP.html">quadNLP</a> &amp;)</td></tr>
-<tr class="separator:a3b79db4eb599904b09763b2ddd77c6d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af52a9ca6db6bd12d8ac3d744b6cc4057"><td class="memItemLeft" align="right" valign="top"><a id="af52a9ca6db6bd12d8ac3d744b6cc4057" name="af52a9ca6db6bd12d8ac3d744b6cc4057"></a>
 <a class="el" href="classquadNLP.html">quadNLP</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classquadNLP.html">quadNLP</a> &amp;)</td></tr>
 <tr class="separator:af52a9ca6db6bd12d8ac3d744b6cc4057"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aea7af4fc21bbeca28185b1b8a1bbd59d" name="aea7af4fc21bbeca28185b1b8a1bbd59d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aea7af4fc21bbeca28185b1b8a1bbd59d">&#9670;&nbsp;</a></span>quadNLP()</h2>
+<a id="aa4c486c6e36a4a8ef25aa2cc020e51dd" name="aa4c486c6e36a4a8ef25aa2cc020e51dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4c486c6e36a4a8ef25aa2cc020e51dd">&#9670;&nbsp;</a></span>quadNLP() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -341,25 +689,7 @@ Private Member Functions</h2></td></tr>
           <td class="memname">quadNLP::quadNLP </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>type</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>N</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>n</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>m</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -382,14 +712,8 @@ Private Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::MatrixXd&#160;</td>
-          <td class="paramname"><em>Q</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Eigen::MatrixXd&#160;</td>
-          <td class="paramname"><em>R</em>, </td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>constraint_panic_weights</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -406,26 +730,116 @@ Private Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::MatrixXd&#160;</td>
-          <td class="paramname"><em>x_min</em>, </td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n_simple</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::MatrixXd&#160;</td>
-          <td class="paramname"><em>x_max</em>, </td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n_complex</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::MatrixXd&#160;</td>
-          <td class="paramname"><em>u_min</em>, </td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>m_simple</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::MatrixXd&#160;</td>
-          <td class="paramname"><em>u_max</em>&#160;</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>m_complex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>g_simple</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>g_complex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x_dim_cost_simple</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x_dim_cost_complex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>u_dim_cost_simple</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>u_dim_cost_complex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>Q_complex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>R_complex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>x_min_complex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>x_max_complex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>u_min_complex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>u_max_complex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>g_min_complex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>g_max_complex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXi &amp;&#160;</td>
+          <td class="paramname"><em>fixed_complexity_schedule</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -435,6 +849,32 @@ Private Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p >Default constructor </p>
+
+</div>
+</div>
+<a id="ae1ae3c78bb297d6a4318b56a1f8609d0" name="ae1ae3c78bb297d6a4318b56a1f8609d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1ae3c78bb297d6a4318b56a1f8609d0">&#9670;&nbsp;</a></span>quadNLP() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">quadNLP::quadNLP </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classquadNLP.html">quadNLP</a> &amp;&#160;</td>
+          <td class="paramname"><em>nlp</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Custom deep copy constructor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">nlp</td><td>Object to be deep copied </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -566,6 +1006,59 @@ Private Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p >Method to return the constraint residuals </p>
+
+</div>
+</div>
+<a id="a3b82666aff0b0309b12227c3e7b30815" name="a3b82666aff0b0309b12227c3e7b30815"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b82666aff0b0309b12227c3e7b30815">&#9670;&nbsp;</a></span>eval_g_single_fe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd quadNLP::eval_g_single_fe </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sys_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>x0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>x1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Method to return the constraint residual for requested data </p>
 
 </div>
 </div>
@@ -989,6 +1482,286 @@ Private Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a81b229caef1d0105acbe178eba16a9a0" name="a81b229caef1d0105acbe178eba16a9a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81b229caef1d0105acbe178eba16a9a0">&#9670;&nbsp;</a></span>get_primal_constraint_idx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int quadNLP::get_primal_constraint_idx </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the first index of the constraint vector corresponding to the given finite element. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>Index of requested finite element </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Index in constraint vector corresponding to the beginning of the requested fe </dd></dl>
+
+</div>
+</div>
+<a id="aca41249d7b8a7f9b925a027855d61921" name="aca41249d7b8a7f9b925a027855d61921"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca41249d7b8a7f9b925a027855d61921">&#9670;&nbsp;</a></span>get_primal_control_idx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int quadNLP::get_primal_control_idx </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the first index of the decision variable vector corresponding to the given finite element's control input. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>Index of requested finite element </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Index in decision variable vector corresponding to the beginning of the control input of the requested fe </dd></dl>
+
+</div>
+</div>
+<a id="a6794faaed960936feb23ddbb3508feab" name="a6794faaed960936feb23ddbb3508feab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6794faaed960936feb23ddbb3508feab">&#9670;&nbsp;</a></span>get_primal_idx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int quadNLP::get_primal_idx </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the first index of the decision variable vector corresponding to the given finite element. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>Index of requested finite element </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Index in decision variable vector corresponding to the beginning of the requested fe </dd></dl>
+
+</div>
+</div>
+<a id="a050bea8002d9329c7c2271bfc4772087" name="a050bea8002d9329c7c2271bfc4772087"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a050bea8002d9329c7c2271bfc4772087">&#9670;&nbsp;</a></span>get_primal_state_idx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int quadNLP::get_primal_state_idx </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the first index of the decision variable vector corresponding to the given finite element's state. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>Index of requested finite element </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Index in decision variable vector corresponding to the beginning of the state of the requested fe </dd></dl>
+
+</div>
+</div>
+<a id="ad6676993c9861a1f635d8b8647a94fcb" name="ad6676993c9861a1f635d8b8647a94fcb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6676993c9861a1f635d8b8647a94fcb">&#9670;&nbsp;</a></span>get_relaxed_constraint_idx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int quadNLP::get_relaxed_constraint_idx </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the first index of the slack constraint vector corresponding to the given finite element. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>Index of requested finite element </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Index in slack constraint vector corresponding to the beginning of the requested fe </dd></dl>
+
+</div>
+</div>
+<a id="a660350cd07a5c5594294a82956c4ece4" name="a660350cd07a5c5594294a82956c4ece4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a660350cd07a5c5594294a82956c4ece4">&#9670;&nbsp;</a></span>get_slack_constraint_var_idx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int quadNLP::get_slack_constraint_var_idx </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the first index of the decision variable vector corresponding to the slack variable for the given finite element's state. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>Index of requested finite element </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Index in decision variable vector corresponding to the slack variable of the beginning of the state of the requested fe </dd></dl>
+
+</div>
+</div>
+<a id="aa8678389b95d4ee0a94de8a92fecd0d4" name="aa8678389b95d4ee0a94de8a92fecd0d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8678389b95d4ee0a94de8a92fecd0d4">&#9670;&nbsp;</a></span>get_slack_state_idx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int quadNLP::get_slack_state_idx </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the first index of the decision variable vector corresponding to the slack variable for the given finite element's state. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>Index of requested finite element </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Index in decision variable vector corresponding to the slack variable of the beginning of the state of the requested fe </dd></dl>
+
+</div>
+</div>
+<a id="a4f38c8504e37c5a893ca86be4eae2043" name="a4f38c8504e37c5a893ca86be4eae2043"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f38c8504e37c5a893ca86be4eae2043">&#9670;&nbsp;</a></span>get_slack_var_constraint_idx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int quadNLP::get_slack_var_constraint_idx </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the first index of the slack constraint vector corresponding to the given finite element. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>Index of requested finite element </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Index in slack constraint vector corresponding to the beginning of the requested fe </dd></dl>
+
+</div>
+</div>
 <a id="a101a0b1ed715fa67afca973e20ecc861" name="a101a0b1ed715fa67afca973e20ecc861"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a101a0b1ed715fa67afca973e20ecc861">&#9670;&nbsp;</a></span>get_starting_point()</h2>
 
@@ -1069,6 +1842,22 @@ Private Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="a7aac32283c445e2a0220ac3b4fcb8461" name="a7aac32283c445e2a0220ac3b4fcb8461"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7aac32283c445e2a0220ac3b4fcb8461">&#9670;&nbsp;</a></span>interp_type_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const grid_map::InterpolationMethods quadNLP::interp_type_</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">      grid_map::InterpolationMethods::INTER_NEAREST</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="aff9de88d6269f28987262c6c9ecac03c" name="aff9de88d6269f28987262c6c9ecac03c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aff9de88d6269f28987262c6c9ecac03c">&#9670;&nbsp;</a></span>num_func_id_</h2>
 
@@ -1102,7 +1891,7 @@ Private Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const int quadNLP::num_sys_id_ = 2</td>
+          <td class="memname">const int quadNLP::num_sys_id_ = 6</td>
         </tr>
       </table>
   </td>

@@ -182,8 +182,11 @@ ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><b>control_re
 <tr class="separator:ac92c0ffbfc9836efd6421811bc4003f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeaceb50239e5e67eb52c743763c663f6"><td class="memItemLeft" align="right" valign="top"><a id="aeaceb50239e5e67eb52c743763c663f6" name="aeaceb50239e5e67eb52c743763c663f6"></a>
 ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><b>robot_state_pub_</b></td></tr>
-<tr class="memdesc:aeaceb50239e5e67eb52c743763c663f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS publisher for state estimate. <br /></td></tr>
+<tr class="memdesc:aeaceb50239e5e67eb52c743763c663f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS publisher for ground truth state. <br /></td></tr>
 <tr class="separator:aeaceb50239e5e67eb52c743763c663f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1ee69f5f9e3b1416e6041d618ec4c42"><td class="memItemLeft" align="right" valign="top"><a id="ae1ee69f5f9e3b1416e6041d618ec4c42" name="ae1ee69f5f9e3b1416e6041d618ec4c42"></a>
+ros::Publisher&#160;</td><td class="memItemRight" valign="bottom"><b>trajectry_robot_state_pub_</b></td></tr>
+<tr class="separator:ae1ee69f5f9e3b1416e6041d618ec4c42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5265e1ab6f202012407f565093191215"><td class="memItemLeft" align="right" valign="top"><a id="a5265e1ab6f202012407f565093191215" name="a5265e1ab6f202012407f565093191215"></a>
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><b>remote_heartbeat_sub_</b></td></tr>
 <tr class="memdesc:a5265e1ab6f202012407f565093191215"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for remote heartbeat. <br /></td></tr>
@@ -385,6 +388,13 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <tr class="memitem:a828a89211090b216eccaf22dd2f9d8e6"><td class="memItemLeft" align="right" valign="top"><a id="a828a89211090b216eccaf22dd2f9d8e6" name="a828a89211090b216eccaf22dd2f9d8e6"></a>
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>swing_kd_</b></td></tr>
 <tr class="separator:a828a89211090b216eccaf22dd2f9d8e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab318583e279218a94550207df50450c6"><td class="memItemLeft" align="right" valign="top"><a id="ab318583e279218a94550207df50450c6" name="ab318583e279218a94550207df50450c6"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>swing_kp_cart_</b></td></tr>
+<tr class="memdesc:ab318583e279218a94550207df50450c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">PD gain when foot is in swing (Cartesian) <br /></td></tr>
+<tr class="separator:ab318583e279218a94550207df50450c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a729c56ff5d68bcbe89c02d914fe61eef"><td class="memItemLeft" align="right" valign="top"><a id="a729c56ff5d68bcbe89c02d914fe61eef" name="a729c56ff5d68bcbe89c02d914fe61eef"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>swing_kd_cart_</b></td></tr>
+<tr class="separator:a729c56ff5d68bcbe89c02d914fe61eef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a437b32b34bbef848f0de6c066b1c4549"><td class="memItemLeft" align="right" valign="top"><a id="a437b32b34bbef848f0de6c066b1c4549" name="a437b32b34bbef848f0de6c066b1c4549"></a>
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>stand_joint_angles_</b></td></tr>
 <tr class="memdesc:a437b32b34bbef848f0de6c066b1c4549"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define standing joint angles. <br /></td></tr>

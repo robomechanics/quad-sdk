@@ -9,5 +9,7 @@ var searchData=
   ['updatemap_6',['updateMap',['../classLocalFootstepPlanner.html#ac6e2f701d80dcf807582e84478a49b35',1,'LocalFootstepPlanner::updateMap(const FastTerrainMap &amp;terrain)'],['../classLocalFootstepPlanner.html#a01dd97f2dce74cc1461dc0192b08949f',1,'LocalFootstepPlanner::updateMap(const grid_map::GridMap &amp;terrain)'],['../classTerrainMapPublisher.html#a23ff09b7adb01ba0a256c4ae5eb5865f',1,'TerrainMapPublisher::updateMap()']]],
   ['updateparams_7',['updateParams',['../classTerrainMapPublisher.html#ac0e9d8d230df9fe17208038f7edc3677',1,'TerrainMapPublisher']]],
   ['updatestate_8',['updateState',['../classRobotDriver.html#a0b2a5da3c02a06beadf110c44f91fdeb',1,'RobotDriver']]],
-  ['updatestep_9',['updateStep',['../classEKFEstimator.html#ada53e73729aeec4a23069482996383f2',1,'EKFEstimator']]]
+  ['updatestep_9',['updateStep',['../classEKFEstimator.html#ada53e73729aeec4a23069482996383f2',1,'EKFEstimator']]],
+  ['updateterrainheight_10',['updateTerrainHeight',['../classGlobalBodyPlannerTestFixture.html#aaccca983bcfb29f916b835426217def1',1,'GlobalBodyPlannerTestFixture']]],
+  ['updateterrainslope_11',['updateTerrainSlope',['../classGlobalBodyPlannerTestFixture.html#a799d7684f11ecc501b8b2a369f197aaf',1,'GlobalBodyPlannerTestFixture']]]
 ];
