@@ -203,7 +203,7 @@ bool NMPCController::computeLegPlan(
   diagnostics_ = mynlp_->diagnostics_;
   diagnostics_.compute_time = timer.reportSilent();
 
-  state_traj.conservativeResize(N_, mynlp_->n_body_);
+  state_traj.conservativeResize(N_, n_body_);
 
   return success;
 }
@@ -437,14 +437,14 @@ Eigen::VectorXi NMPCController::evalLiftedTrajectoryConstraints(
   x0 = mynlp_->get_primal_state_var(mynlp_->w0_, 0);
 
   Eigen::VectorXd x0_body, u_body;
-  x0_body = x0.head(mynlp_->n_body_);
+  x0_body = x0.head(n_body_);
 
   if (x0.size() < x_dim_complex_) {
     quadKD_->convertCentroidalToFullBody(
         x0_body, mynlp_->foot_pos_world_.row(0), mynlp_->foot_vel_world_.row(0),
         mynlp_->get_primal_body_control_var(mynlp_->w0_, 0), joint_positions,
         joint_velocities, joint_torques);
-    x0.conservativeResize(mynlp_->n_complex_);
+    x0.conservativeResize(x_dim_complex_);
     x0.segment(n_body_, n_foot_ / 2) = mynlp_->foot_pos_world_.row(0);
     x0.segment(n_body_ + n_foot_ / 2, n_foot_ / 2) =
         mynlp_->foot_vel_world_.row(0);
@@ -466,12 +466,12 @@ Eigen::VectorXi NMPCController::evalLiftedTrajectoryConstraints(
     u = mynlp_->get_primal_control_var(mynlp_->w0_, i);
     x1 = mynlp_->get_primal_state_var(mynlp_->w0_, i + 1);
 
-    if (x1.size() < mynlp_->n_complex_) {
+    if (x1.size() < x_dim_complex_) {
       quadKD_->convertCentroidalToFullBody(
-          x1.head(mynlp_->n_body_), mynlp_->foot_pos_world_.row(i + 1),
-          mynlp_->foot_vel_world_.row(i + 1), u.head(mynlp_->n_body_),
-          joint_positions, joint_velocities, joint_torques);
-      x1.conservativeResize(mynlp_->n_complex_);
+          x1.head(n_body_), mynlp_->foot_pos_world_.row(i + 1),
+          mynlp_->foot_vel_world_.row(i + 1), u.head(n_body_), joint_positions,
+          joint_velocities, joint_torques);
+      x1.conservativeResize(x_dim_complex_);
       x1.segment(n_body_, n_foot_ / 2) = mynlp_->foot_pos_world_.row(i + 1);
       x1.segment(n_body_ + n_foot_ / 2, n_foot_ / 2) =
           mynlp_->foot_vel_world_.row(i + 1);
@@ -534,7 +534,7 @@ Eigen::VectorXi NMPCController::evalLiftedTrajectoryConstraints(
       }
 
       if (current_constraint_violation > constr_tol) {
-        if (mynlp_->n_vec_[i + 1] == mynlp_->n_complex_) {
+        if (mynlp_->n_vec_[i + 1] == x_dim_complex_) {
           printf(
               "Constraint %s violated in FE %d: %5.3f <= %5.3f <= "
               "%5.3f\n",
@@ -558,7 +558,7 @@ Eigen::VectorXi NMPCController::evalLiftedTrajectoryConstraints(
     for (int j = 0; j < x1.size(); j++) {
       if (x1[j] < mynlp_->x_min_complex_[j] - var_tol ||
           x1[j] > mynlp_->x_max_complex_[j] + var_tol) {
-        if (mynlp_->n_vec_[i + 1] == mynlp_->n_complex_) {
+        if (mynlp_->n_vec_[i + 1] == x_dim_complex_) {
           printf(
               "Var bound %d violated in FE %d: %5.3f <= %5.3f <= "
               "%5.3f\n",

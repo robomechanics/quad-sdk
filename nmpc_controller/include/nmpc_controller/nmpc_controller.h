@@ -89,8 +89,8 @@ class NMPCController {
       u_dim_cost_complex_, g_dim_complex_;
 
   // Number of states in different components
-  static const int n_body_ = 12, n_foot_ = 24, n_joints_ = 24, n_tail_ = 4,
-                   m_body_ = 12, m_foot_ = 12, m_tail_ = 2;
+  const int n_body_ = 12, n_foot_ = 24, n_joints_ = 24, n_tail_ = 4,
+            m_body_ = 12, m_foot_ = 24, m_tail_ = 2;
 
   int x_dim_null_, u_dim_null_;
 

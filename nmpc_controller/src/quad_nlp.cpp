@@ -192,12 +192,13 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
   Eigen::Map<Eigen::VectorXd> g_u_matrix(g_u, m);
 
   for (int i = 0; i < N_ - 1; ++i) {
-    std::cout << "i = " << i << std::endl;
-    std::cout << "sys_id = " << sys_id_schedule_[i] << std::endl;
-    std::cout << "contact mode now  = " << contact_sequence_.col(i).transpose()
-              << std::endl;
-    std::cout << "contact mode next = "
-              << contact_sequence_.col(i + 1).transpose() << std::endl;
+    // std::cout << "i = " << i << std::endl;
+    // std::cout << "sys_id = " << sys_id_schedule_[i] << std::endl;
+    // std::cout << "contact mode now  = " <<
+    // contact_sequence_.col(i).transpose()
+    //           << std::endl;
+    // std::cout << "contact mode next = "
+    //           << contact_sequence_.col(i + 1).transpose() << std::endl;
 
     // Inputs bound
     get_primal_control_var(x_l_matrix, i) = u_min_complex_.head(m_vec_[i]);
@@ -235,10 +236,9 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
     get_primal_constraint_vals(g_l_matrix, i) = g_min_complex_.head(g_vec_[i]);
     get_primal_constraint_vals(g_u_matrix, i) = g_max_complex_.head(g_vec_[i]);
 
-    if (sys_id_schedule_[i] != SIMPLE) {
+    if (sys_id_schedule_[i] == SIMPLE_TO_COMPLEX ||
+        sys_id_schedule_[i] == COMPLEX) {
       for (int j = 0; j < num_feet_; ++j) {
-        bool foot_constraints_allowed =
-            !always_constrain_feet_ && sys_id_schedule_[i] != COMPLEX_TO_SIMPLE;
         bool is_stance = contact_sequence_(j, i) == 1;
         bool will_touch_down =
             (contact_sequence_(j, i + 1) == 1 && contact_sequence_(j, i) == 0);
@@ -246,51 +246,27 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
             contact_sequence_(j, std::min(i + 1, N_ - 1)) == 0 &&
             contact_sequence_(j, std::max(i - 2, 0)) == 0;
 
-        bool constrain_next_foot_pos =
-            foot_constraints_allowed && (is_stance || will_touch_down);
-
-        bool constrain_next_foot_vel = foot_constraints_allowed && is_stance;
-
-        bool constrain_foot_pos_dynamics =
-            !always_constrain_feet_ && !is_stance &&
-            sys_id_schedule_[i] != SIMPLE_TO_COMPLEX;
-
-        bool constrain_foot_vel_dynamics =
-            constrain_foot_pos_dynamics && sys_id_schedule_[i] == COMPLEX;
+        bool constrain_next_foot_state =
+            always_constrain_feet_ || (is_stance || will_touch_down);
 
         bool add_terrain_height_constraint = use_terrain_constraint_ &&
-                                             !constrain_next_foot_pos &&
+                                             !constrain_next_foot_state &&
                                              in_flight_interior;
 
-        std::cout << "foot = " << j << std::endl;
-        std::cout << "foot_constraints_allowed = "
-                  << ((foot_constraints_allowed) ? "true" : "false")
-                  << std::endl;
-        std::cout << "is_stance = " << ((is_stance) ? "true" : "false")
-                  << std::endl;
-        std::cout << "will_touch_down = "
-                  << ((will_touch_down) ? "true" : "false") << std::endl;
-        std::cout << "constrain_next_foot_pos = "
-                  << ((constrain_next_foot_pos) ? "true" : "false")
-                  << std::endl;
-        std::cout << "constrain_next_foot_vel = "
-                  << ((constrain_next_foot_vel) ? "true" : "false")
-                  << std::endl;
-        std::cout << "constrain_foot_pos_dynamics = "
-                  << ((constrain_foot_pos_dynamics) ? "true" : "false")
-                  << std::endl;
-        std::cout << "constrain_foot_vel_dynamics = "
-                  << ((constrain_foot_vel_dynamics) ? "true" : "false")
-                  << std::endl;
+        // std::cout << "foot = " << j << std::endl;
+        // std::cout << "is_stance = " << ((is_stance) ? "true" : "false")
+        //           << std::endl;
+        // std::cout << "will_touch_down = "
+        //           << ((will_touch_down) ? "true" : "false") << std::endl;
+        // std::cout << "constrain_next_foot_state = "
+        //           << ((constrain_next_foot_state) ? "true" : "false")
+        //           << std::endl;
 
-        if (constrain_next_foot_pos) {
+        if (constrain_next_foot_state) {
           get_primal_foot_state_var(x_l_matrix, i + 1).segment(3 * j, 3) =
               foot_pos_world_.block<1, 3>(i + 1, 3 * j);
           get_primal_foot_state_var(x_u_matrix, i + 1).segment(3 * j, 3) =
               foot_pos_world_.block<1, 3>(i + 1, 3 * j);
-        }
-
-        if (constrain_next_foot_vel) {
           get_primal_foot_state_var(x_l_matrix, i + 1)
               .segment(3 * j + n_foot_ / 2, 3) =
               foot_vel_world_.block<1, 3>(i + 1, 3 * j);
@@ -303,29 +279,6 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
           int g_foot_height_idx = n_body_ + 16 + n_foot_;
           get_primal_constraint_vals(g_u_matrix, i)(g_foot_height_idx + j, 0) =
               -0.02;
-        }
-
-        if (constrain_foot_pos_dynamics) {
-          int g_foot_pos_eom_idx = n_body_ + 16;
-          get_primal_constraint_vals(g_l_matrix, i)
-              .segment(g_foot_pos_eom_idx + 3 * j, 3)
-              .fill(0);
-          get_primal_constraint_vals(g_u_matrix, i)
-              .segment(g_foot_pos_eom_idx + 3 * j, 3)
-              .fill(0);
-        } else {
-          get_primal_foot_control_var(x_l_matrix, i).segment(3 * j, 3).fill(0);
-          get_primal_foot_control_var(x_u_matrix, i).segment(3 * j, 3).fill(0);
-        }
-
-        if (constrain_foot_vel_dynamics) {
-          int g_foot_vel_eom_idx = n_body_ + 16 + n_foot_ / 2;
-          get_primal_constraint_vals(g_l_matrix, i)
-              .segment(g_foot_vel_eom_idx + 3 * j, 3)
-              .fill(0);
-          get_primal_constraint_vals(g_u_matrix, i)
-              .segment(g_foot_vel_eom_idx + 3 * j, 3)
-              .fill(0);
         }
       }
     }
@@ -341,55 +294,59 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
       get_slack_constraint_var(x_u_matrix, i).fill(2e19);
     }
 
-    if (g_vec_[i] > g_simple_) {
-      std::cout << "next foot state lb =\n"
-                << get_primal_foot_state_var(x_l_matrix, i + 1) << std::endl;
-      std::cout << "next foot state ub =\n"
-                << get_primal_foot_state_var(x_u_matrix, i + 1) << std::endl;
+    // if (g_vec_[i] > g_simple_) {
+    //   std::cout << "next foot state lb =\n"
+    //             << get_primal_foot_state_var(x_l_matrix, i + 1) << std::endl;
+    //   std::cout << "next foot state ub =\n"
+    //             << get_primal_foot_state_var(x_u_matrix, i + 1) << std::endl;
 
-      std::cout << "foot control lb =\n"
-                << get_primal_foot_control_var(x_l_matrix, i) << std::endl;
-      std::cout << "foot control ub =\n"
-                << get_primal_foot_control_var(x_u_matrix, i) << std::endl;
+    //   std::cout << "foot control lb =\n"
+    //             << get_primal_foot_control_var(x_l_matrix, i) << std::endl;
+    //   std::cout << "foot control ub =\n"
+    //             << get_primal_foot_control_var(x_u_matrix, i) << std::endl;
 
-      std::cout << "foot dyn lb =\n"
-                << get_primal_constraint_vals(g_l_matrix, i).segment(28, 24)
-                << std::endl;
-      std::cout << "foot dyn ub =\n"
-                << get_primal_constraint_vals(g_u_matrix, i).segment(28, 24)
-                << std::endl;
+    //   std::cout << "foot dyn lb =\n"
+    //             << get_primal_constraint_vals(g_l_matrix, i).segment(28, 24)
+    //             << std::endl;
+    //   std::cout << "foot dyn ub =\n"
+    //             << get_primal_constraint_vals(g_u_matrix, i).segment(28, 24)
+    //             << std::endl;
 
-      if (g_vec_[i] > 52) {
-        std::cout << "foot height lb =\n"
-                  << get_primal_constraint_vals(g_l_matrix, i).segment(52, 4)
-                  << std::endl;
-        std::cout << "foot height ub =\n"
-                  << get_primal_constraint_vals(g_u_matrix, i).segment(52, 4)
-                  << std::endl;
+    //   if (g_vec_[i] > 52) {
+    //     std::cout << "foot height lb =\n"
+    //               << get_primal_constraint_vals(g_l_matrix, i).segment(52, 4)
+    //               << std::endl;
+    //     std::cout << "foot height ub =\n"
+    //               << get_primal_constraint_vals(g_u_matrix, i).segment(52, 4)
+    //               << std::endl;
 
-        std::cout << "fk lb =\n"
-                  << get_primal_constraint_vals(g_l_matrix, i).segment(56, 24)
-                  << std::endl;
-        std::cout << "fk ub =\n"
-                  << get_primal_constraint_vals(g_u_matrix, i).segment(56, 24)
-                  << std::endl;
+    //     std::cout << "fk lb =\n"
+    //               << get_primal_constraint_vals(g_l_matrix, i).segment(56,
+    //               24)
+    //               << std::endl;
+    //     std::cout << "fk ub =\n"
+    //               << get_primal_constraint_vals(g_u_matrix, i).segment(56,
+    //               24)
+    //               << std::endl;
 
-        std::cout << "knee height lb =\n"
-                  << get_primal_constraint_vals(g_l_matrix, i).segment(80, 4)
-                  << std::endl;
-        std::cout << "knee height ub =\n"
-                  << get_primal_constraint_vals(g_u_matrix, i).segment(80, 4)
-                  << std::endl;
+    //     std::cout << "knee height lb =\n"
+    //               << get_primal_constraint_vals(g_l_matrix, i).segment(80, 4)
+    //               << std::endl;
+    //     std::cout << "knee height ub =\n"
+    //               << get_primal_constraint_vals(g_u_matrix, i).segment(80, 4)
+    //               << std::endl;
 
-        std::cout << "mm lb =\n"
-                  << get_primal_constraint_vals(g_l_matrix, i).segment(84, 24)
-                  << std::endl;
-        std::cout << "mm ub =\n"
-                  << get_primal_constraint_vals(g_u_matrix, i).segment(84, 24)
-                  << std::endl
-                  << std::endl;
-      }
-    }
+    //     std::cout << "mm lb =\n"
+    //               << get_primal_constraint_vals(g_l_matrix, i).segment(84,
+    //               24)
+    //               << std::endl;
+    //     std::cout << "mm ub =\n"
+    //               << get_primal_constraint_vals(g_u_matrix, i).segment(84,
+    //               24)
+    //               << std::endl
+    //               << std::endl;
+    //   }
+    // }
   }
 
   // Current state bound
@@ -508,13 +465,21 @@ bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
       R_i = R_i * first_element_duration_ / dt_;
     }
 
-    std::cout << "i = " << i << std::endl;
-    std::cout << "n_cost_vec_[i] = " << n_cost_vec_[i] << std::endl;
-    std::cout << "m_cost_vec_[i] = " << m_cost_vec_[i] << std::endl;
-    std::cout << "x_nom = " << x_nom << std::endl;
-    std::cout << "u_nom = " << u_nom << std::endl;
-    std::cout << "Q_i = " << Q_i << std::endl;
-    std::cout << "R_i = " << R_i << std::endl;
+    // std::cout << "i = " << i << std::endl;
+    // std::cout << "sys_id_schedule_[i] = " << sys_id_schedule_[i] <<
+    // std::endl; std::cout << "n_cost_vec_[i] = " << n_cost_vec_[i] <<
+    // std::endl; std::cout << "m_cost_vec_[i] = " << m_cost_vec_[i] <<
+    // std::endl; std::cout << "x = " << get_primal_state_var(w, i +
+    // 1).head(n_cost_vec_[i])
+    //           << std::endl;
+    // std::cout << "u = " << get_primal_control_var(w, i).head(m_cost_vec_[i])
+    //           << std::endl;
+    // std::cout << "x_nom = " << x_nom << std::endl;
+    // std::cout << "u_nom = " << u_nom << std::endl;
+    // std::cout << "xk = " << xk << std::endl;
+    // std::cout << "uk = " << uk << std::endl;
+    // std::cout << "Q_i = " << Q_i << std::endl;
+    // std::cout << "R_i = " << R_i << std::endl;
 
     obj_value += (xk.transpose() * Q_i.asDiagonal() * xk / 2 +
                   uk.transpose() * R_i.asDiagonal() * uk / 2)(0, 0);
@@ -576,8 +541,9 @@ bool quadNLP::eval_grad_f(Index n, const Number *x, bool new_x,
       R_i = R_i * first_element_duration_ / dt_;
     }
 
-    get_primal_control_var(grad_f_matrix, i) = R_i.asDiagonal() * uk;
-    get_primal_state_var(grad_f_matrix, i + 1).head(n_simple_) =
+    get_primal_control_var(grad_f_matrix, i).head(m_cost_vec_[i]) =
+        R_i.asDiagonal() * uk;
+    get_primal_state_var(grad_f_matrix, i + 1).head(n_cost_vec_[i]) =
         Q_i.asDiagonal() * xk;
     get_slack_state_var(grad_f_matrix, i).fill(panic_weights_);
 
@@ -1746,8 +1712,8 @@ void quadNLP::update_structure() {
   // n_vars_slack_
   //           << std::endl;
 
-  // std::cout << "n_constraints_ = " << n_constraints_ << std::endl;
-  // std::cout << "n_vars_ = " << n_vars_ << std::endl;
-  // std::cout << "n_vars_primal_ = " << n_vars_primal_ << std::endl;
-  // std::cout << "n_vars_slack_ = " << n_vars_slack_ << std::endl;
+  std::cout << "n_constraints_ = " << n_constraints_ << std::endl;
+  std::cout << "n_vars_ = " << n_vars_ << std::endl;
+  std::cout << "n_vars_primal_ = " << n_vars_primal_ << std::endl;
+  std::cout << "n_vars_slack_ = " << n_vars_slack_ << std::endl;
 }
