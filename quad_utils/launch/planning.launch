@@ -1,48 +1,47 @@
 <launch>
-    <!-- <include file="$(find quad_utils)/launch/load_params.launch" /> -->
-
     <arg name="global_planner"  default="twist" />
-    <arg name="local_planner"   default="full" />
+    <arg name="leaping" default="true" />
+    <arg name="ac" default="false" />
     <arg name="logging"         default="false" />
     <arg name="twist_input"     default="none" />
     <arg name="namespace"       default="robot_1" />
-    <arg name="robot" default="spirit"/>
+    <arg name="robot_type" default="spirit"/>
 
     <include file="$(find quad_utils)/launch/load_params.launch">
-        <arg name="robot" value="$(arg robot)"/>
+        <arg name="robot_type" value="$(arg robot_type)"/>
     </include>
 
     <group ns="/$(arg namespace)">
-    <!-- Launch the node to publish the global body plan -->
-    <group if="$(eval arg('global_planner') == 'fgmp')">
-        <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen" />
-        <param name="local_planner/use_twist_input" value="false" />
-    </group>
-
-    <!-- Use twist input to local plan and no global plan -->
-    <group if="$(eval arg('global_planner') == 'twist')">
-        <param name="local_planner/use_twist_input" value="true" />
-
-        <group if="$(eval arg('twist_input') == 'keyboard')">
-            <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" />
+        <!-- Launch the node to publish the global body plan -->
+        <group if="$(eval arg('global_planner') == 'fgmp')">
+            <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen">
+                <param name="enable_leaping" value="$(arg leaping)" />
+            </node>
+            <param name="local_planner/use_twist_input" value="false" />
         </group>
 
-        <group if="$(eval arg('twist_input') == 'joy')">
-            <include file="$(find teleop_twist_joy)/launch/teleop.launch">
-                <arg name="joy_config" value="ps3-holonomic" />
-            </include>
+        <!-- Use twist input to local plan and no global plan -->
+        <group if="$(eval arg('global_planner') == 'twist')">
+            <param name="local_planner/use_twist_input" value="true" />
+
+            <group if="$(eval arg('twist_input') == 'keyboard')">
+                <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" />
+            </group>
+
+            <group if="$(eval arg('twist_input') == 'joy')">
+                <include file="$(find teleop_twist_joy)/launch/teleop.launch">
+                    <arg name="joy_config" value="ps3-holonomic" />
+                </include>
+            </group>
         </group>
+
+        <param name="nmpc_controller/enable_adaptive_complexity" value="$(arg ac)" />
+        <node name="local_planner" pkg="local_planner" type="local_planner_node" output="screen" />
+
+        <group if="$(arg logging)">
+            <include file="$(find quad_utils)/launch/logging.launch" />
+        </group>
+
+        <node name="plan_publisher" pkg="quad_utils" type="trajectory_publisher_node" output="screen" />
     </group>
-
-    <!-- Identify the robot type -->
-    <param name="robot_type" value="$(arg robot)" type="str"/>
-
-    <node name="local_planner" pkg="local_planner" type="local_planner_node" output="screen" />
-
-    <group if="$(arg logging)">
-        <include file="$(find quad_utils)/launch/logging.launch" />
-    </group>
-
-    <node name="plan_publisher" pkg="quad_utils" type="trajectory_publisher_node" output="screen" />
-
 </launch>
