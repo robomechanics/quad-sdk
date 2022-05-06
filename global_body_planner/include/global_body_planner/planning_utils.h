@@ -356,8 +356,8 @@ void setDz(State &s, const Eigen::Vector3d &surf_norm);
 inline bool isInMap(const Eigen::Vector3d &pos,
                     const PlannerConfig &planner_config) {
   // Uncomment to use grid_map
-  // return planner_config.terrain_grid_map.isInside(pos.head<2>());
-  return planner_config.terrain.isInRange(pos[0], pos[1]);
+  return planner_config.terrain_grid_map.isInside(pos.head<2>());
+  // return planner_config.terrain.isInRange(pos[0], pos[1]);
 }
 
 inline bool isInMap(const State &s, const PlannerConfig &planner_config) {
