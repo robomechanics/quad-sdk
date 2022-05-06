@@ -278,7 +278,7 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
         if (add_terrain_height_constraint) {
           int g_foot_height_idx = n_body_ + 16 + n_foot_;
           get_primal_constraint_vals(g_u_matrix, i)(g_foot_height_idx + j, 0) =
-              -0.02;
+              0;
         }
       }
     }
@@ -605,6 +605,18 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
   Eigen::Map<Eigen::VectorXd> g_matrix(g, m);
   g_matrix.setZero();
 
+  Eigen::Vector2d pos;
+  pos << 0.237107, 0.175883;
+  double nx = terrain_.atPosition(
+      "normal_vectors_x", pos, grid_map::InterpolationMethods::INTER_NEAREST);
+  double ny = terrain_.atPosition(
+      "normal_vectors_y", pos, grid_map::InterpolationMethods::INTER_NEAREST);
+  double nz = terrain_.atPosition(
+      "normal_vectors_z", pos, grid_map::InterpolationMethods::INTER_NEAREST);
+  std::cout << "nx = " << nx << std::endl;
+  std::cout << "ny = " << ny << std::endl;
+  std::cout << "nz = " << nz << std::endl;
+
   for (int i = 0; i < N_ - 1; ++i) {
     // Select the system ID
     int sys_id = sys_id_schedule_[i];
@@ -621,14 +633,20 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
         Eigen::Vector3d foot_pos =
             get_primal_foot_state_var(w, i + 1).segment(3 * j, 3);
 
-        pk(38 + j) = terrain_.atPosition("z_inpainted", foot_pos.head<2>(),
-                                         interp_type_);
-        pk(42 + 3 * j) = terrain_.atPosition("normal_vectors_x",
-                                             foot_pos.head<2>(), interp_type_);
-        pk(42 + 3 * j) = terrain_.atPosition("normal_vectors_y",
-                                             foot_pos.head<2>(), interp_type_);
-        pk(42 + 3 * j) = terrain_.atPosition("normal_vectors_z",
-                                             foot_pos.head<2>(), interp_type_);
+        std::cout << "foot_pos = \n" << foot_pos << std::endl;
+
+        pk(38 + j) =
+            terrain_.atPosition("z_inpainted", foot_pos.head<2>(),
+                                grid_map::InterpolationMethods::INTER_NEAREST);
+        pk(42 + 3 * j) =
+            terrain_.atPosition("normal_vectors_x", foot_pos.head<2>(),
+                                grid_map::InterpolationMethods::INTER_NEAREST);
+        pk(42 + 3 * j) =
+            terrain_.atPosition("normal_vectors_y", foot_pos.head<2>(),
+                                grid_map::InterpolationMethods::INTER_NEAREST);
+        pk(42 + 3 * j) =
+            terrain_.atPosition("normal_vectors_z", foot_pos.head<2>(),
+                                grid_map::InterpolationMethods::INTER_NEAREST);
       }
     } else {
       pk.segment(38, 4).fill(0);
@@ -658,6 +676,11 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     eval_vec_[sys_id][FUNC](arg, res, iw, _w, mem);
     eval_release_vec_[sys_id][FUNC](mem);
     eval_decref_vec_[sys_id][FUNC]();
+
+    std::cout << "i = " << i << std::endl;
+    std::cout << "pk = \n" << pk << std::endl;
+    std::cout << "get_primal_constraint_vals(g_matrix, i) = \n"
+              << get_primal_constraint_vals(g_matrix, i) << std::endl;
   }
 
   // Evaluate relaxed state and constraint bounds
