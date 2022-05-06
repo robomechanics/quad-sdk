@@ -879,15 +879,6 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
     return false;
   }
 
-  // Ensure body is over terrain unless in flight
-  if (!isBodyTraversable(s.pos, planner_config) && phase != FLIGHT) {
-#ifdef DEBUG_INVALID_STATE
-    printf("!isBodyTraversable, phase = %d\n", phase);
-    printStateNewline(s);
-#endif
-    return false;
-  }
-
   // Ensure body is over traversable terrain unless in flight or leaping
   // disabled
   if (!isBodyTraversable(s.pos, planner_config) && phase != FLIGHT &&
