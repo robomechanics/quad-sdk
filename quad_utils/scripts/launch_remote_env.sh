@@ -2,7 +2,7 @@
 
 echo "Make sure you sourced this file (not ./)"
 echo "Sourcing environment and setting IPs"
-source ~/catkin_ws/src/quad-software/quad_utils/scripts/init_remote.sh
+source ~/catkin_ws/src/quad-sdk/quad_utils/scripts/init_remote.sh
    
 echo "Launch remote driver? [y/n]"
 read input

@@ -15,10 +15,13 @@ bool InverseDynamicsController::computeLegCommandArray(
 
     // Define vectors for joint positions and velocities
     Eigen::VectorXd joint_positions(3 * num_feet_),
-        joint_velocities(3 * num_feet_), body_state(12);
+        joint_velocities(3 * num_feet_), foot_positions(3 * num_feet_),
+        foot_velocities(3 * num_feet_), body_state(12);
     quad_utils::vectorToEigen(robot_state_msg.joints.position, joint_positions);
     quad_utils::vectorToEigen(robot_state_msg.joints.velocity,
                               joint_velocities);
+    quad_utils::multiFootStateMsgToEigen(robot_state_msg.feet, foot_positions,
+                                         foot_velocities);
     body_state = quad_utils::bodyStateMsgToEigen(robot_state_msg.body);
 
     // Define vectors for state positions and velocities
@@ -28,7 +31,6 @@ bool InverseDynamicsController::computeLegCommandArray(
     state_velocities << joint_velocities, body_state.tail(6);
 
     // Initialize variables for ff and fb
-    quad_msgs::RobotState ref_state_msg;
     Eigen::VectorXd tau_array(3 * num_feet_),
         tau_swing_leg_array(3 * num_feet_);
 
@@ -64,14 +66,12 @@ bool InverseDynamicsController::computeLegCommandArray(
             (last_local_plan_msg_->states[i + 1].header.stamp.toSec() -
              last_local_plan_msg_->states[i].header.stamp.toSec());
 
+        // Linearly interpolate between states
         quad_utils::interpRobotState(last_local_plan_msg_->states[i],
                                      last_local_plan_msg_->states[i + 1],
-                                     t_interp, ref_state_msg);
+                                     t_interp, ref_state_msg_);
 
-        // quad_utils::interpGRFArray(last_local_plan_msg_->grfs[i],
-        //   last_local_plan_msg_->grfs[i+1], t_interp, grf_array_msg);
-
-        // ref_state_msg = last_local_plan_msg_->states[i];
+        // ZOH on GRFs
         grf_array_msg = last_local_plan_msg_->grfs[i];
 
         break;
@@ -84,28 +84,46 @@ bool InverseDynamicsController::computeLegCommandArray(
         ref_foot_acceleration(3 * num_feet_);
 
     // Load plan and state data from messages
-    ref_body_state = quad_utils::bodyStateMsgToEigen(ref_state_msg.body);
-    quad_utils::multiFootStateMsgToEigen(ref_state_msg.feet, ref_foot_positions,
-                                         ref_foot_velocities,
-                                         ref_foot_acceleration);
+    quad_utils::multiFootStateMsgToEigen(
+        ref_state_msg_.feet, ref_foot_positions, ref_foot_velocities,
+        ref_foot_acceleration);
     grf_array = quad_utils::grfArrayMsgToEigen(grf_array_msg);
     if (last_grf_array_.norm() >= 1e-3) {
       grf_array = grf_exp_filter_const_ * grf_array.array() +
                   (1 - grf_exp_filter_const_) * last_grf_array_.array();
-      quad_utils::eigenToGRFArrayMsg(grf_array, ref_state_msg.feet,
+      quad_utils::eigenToGRFArrayMsg(grf_array, ref_state_msg_.feet,
                                      grf_array_msg);
     }
 
     // Load contact mode
     std::vector<int> contact_mode(num_feet_);
     for (int i = 0; i < num_feet_; i++) {
-      contact_mode[i] = ref_state_msg.feet.feet[i].contact;
+      contact_mode[i] = ref_state_msg_.feet.feet[i].contact;
     }
 
     // Compute joint torques
     quadKD_->computeInverseDynamics(state_positions, state_velocities,
                                     ref_foot_acceleration, grf_array,
                                     contact_mode, tau_array);
+
+    // Convert gains to eigen vectors for easier math
+    Eigen::VectorXd swing_kp_cart_eig, swing_kd_cart_eig,
+        swing_cart_fb(3 * num_feet_);
+    quad_utils::vectorToEigen(swing_kp_cart_, swing_kp_cart_eig);
+    quad_utils::vectorToEigen(swing_kd_cart_, swing_kd_cart_eig);
+
+    // Compute PD feedback in cartesian space
+    Eigen::MatrixXd jacobian(3 * num_feet_, state_positions.size());
+    swing_cart_fb = swing_kp_cart_eig.replicate<4, 1>().cwiseProduct(
+                        ref_foot_positions - foot_positions) +
+                    swing_kd_cart_eig.replicate<4, 1>().cwiseProduct(
+                        ref_foot_velocities - foot_velocities);
+
+    // Transform PD into joint space
+    quadKD_->getJacobianBodyAngVel(state_positions, jacobian);
+    swing_cart_fb =
+        jacobian.block(0, 0, 3 * num_feet_, 3 * num_feet_).transpose() *
+        swing_cart_fb;
 
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg.leg_commands.at(i).motor_commands.resize(3);
@@ -114,10 +132,10 @@ bool InverseDynamicsController::computeLegCommandArray(
 
         leg_command_array_msg.leg_commands.at(i)
             .motor_commands.at(j)
-            .pos_setpoint = ref_state_msg.joints.position.at(joint_idx);
+            .pos_setpoint = ref_state_msg_.joints.position.at(joint_idx);
         leg_command_array_msg.leg_commands.at(i)
             .motor_commands.at(j)
-            .vel_setpoint = ref_state_msg.joints.velocity.at(joint_idx);
+            .vel_setpoint = ref_state_msg_.joints.velocity.at(joint_idx);
         leg_command_array_msg.leg_commands.at(i)
             .motor_commands.at(j)
             .torque_ff = tau_array(joint_idx);
@@ -128,6 +146,9 @@ bool InverseDynamicsController::computeLegCommandArray(
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
               stance_kd_.at(j);
         } else {
+          leg_command_array_msg.leg_commands.at(i)
+              .motor_commands.at(j)
+              .torque_ff += swing_cart_fb(joint_idx);
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
               swing_kp_.at(j);
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =

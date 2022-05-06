@@ -19,7 +19,7 @@
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 
-//! A class for interfacing between RViz and quad-software topics.
+//! A class for interfacing between RViz and quad-sdk topics.
 /*!
    RVizInterface is a container for all of the logic utilized in the template
    node. The implementation must provide a clean and high level interface to the

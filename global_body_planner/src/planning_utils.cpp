@@ -82,10 +82,12 @@ void flipDirection(Action &action) {
   action.dz_0 = -action.dz_f;
   action.dz_f = -temp_dz;
 
-  // Reverse stance times for landing and leaping
-  double temp_t_s = action.t_s_leap;
-  action.t_s_leap = action.t_s_land;
-  action.t_s_land = temp_t_s;
+  // Reverse stance times for landing and leaping if this is an actual leap
+  if (action.t_f > 0) {
+    double temp_t_s = action.t_s_leap;
+    action.t_s_leap = action.t_s_land;
+    action.t_s_land = temp_t_s;
+  }
 }
 
 void printState(const State &s) {
@@ -305,6 +307,7 @@ Eigen::Vector3d getAcceleration(const Action &a, double t, int phase,
 bool isValidYawRate(const State &s, const Action &a, double t, int phase,
                     const PlannerConfig &planner_config) {
   return true;
+  // Uncomment to apply yaw rate constraint
   // Eigen::Vector3d acc = getAcceleration(s, a, t, phase);
   // State s_next = applyStance(s,a,t,phase,planner_config);
 
@@ -331,8 +334,7 @@ bool isValidYawRate(const State &s, const Action &a, double t, int phase,
 }
 
 double getPitchFromState(const State &s, const PlannerConfig &planner_config) {
-  Eigen::Vector3d surf_norm =
-      planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0], s.pos[1]);
+  Eigen::Vector3d surf_norm = getSurfaceNormalFiltered(s, planner_config);
 
   // Get magnitude of lateral velociy
   double vel = s.vel.head<2>().norm();
@@ -347,8 +349,7 @@ double getPitchFromState(const State &s, const PlannerConfig &planner_config) {
 }
 
 double getDzFromState(const State &s, const PlannerConfig &planner_config) {
-  Eigen::Vector3d surf_norm =
-      planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0], s.pos[1]);
+  Eigen::Vector3d surf_norm = getSurfaceNormalFiltered(s, planner_config);
 
   return ((surf_norm[2] <= 0)
               ? INFTY
@@ -356,8 +357,7 @@ double getDzFromState(const State &s, const PlannerConfig &planner_config) {
 }
 
 void setDz(State &s, const PlannerConfig &planner_config) {
-  Eigen::Vector3d surf_norm =
-      planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0], s.pos[1]);
+  Eigen::Vector3d surf_norm = getSurfaceNormalFiltered(s, planner_config);
 
   s.vel[2] = (surf_norm[2] <= 0)
                  ? INFTY
@@ -368,11 +368,6 @@ void setDz(State &s, const Eigen::Vector3d &surf_norm) {
   s.vel[2] = (surf_norm[2] <= 0)
                  ? INFTY
                  : (s.vel.head<2>().dot(surf_norm.head<2>()) / surf_norm[2]);
-}
-
-double getZFromState(const State &s, const PlannerConfig &planner_config) {
-  return (planner_config.terrain.getGroundHeightFiltered(s.pos[0], s.pos[1]));
-  // return (planner_config.terrain.getGroundHeight(s[0], s[1]));
 }
 
 State interpStateActionPair(const State &s_in, const Action &a, double t0,
@@ -403,14 +398,6 @@ State interpStateActionPair(const State &s_in, const Action &a, double t0,
     }
     interp_reduced_plan.push_back(s_next);
     interp_GRF.push_back(getGRF(a, t, phase, planner_config));
-
-    if (!isValidYawRate(s, a, t, phase, planner_config)) {
-      std::cout << "Invalid yaw detected!" << std::endl;
-      printStateNewline(s);
-      printActionNewline(a);
-      std::cout << "t = " << t << std::endl;
-      std::cout << "t_f = " << t_f << std::endl;
-    }
 
     interp_primitive_id.push_back(phase);
   }
@@ -448,19 +435,10 @@ State interpStateActionPair(const State &s_in, const Action &a, double t0,
       interp_reduced_plan.push_back(s_next);
       interp_GRF.push_back(getGRF(a, t, phase, planner_config));
 
-      if (!isValidYawRate(s, a, t, phase, planner_config)) {
-        std::cout << "Invalid yaw detected!" << std::endl;
-        printStateNewline(s);
-        printActionNewline(a);
-        std::cout << "t = " << t << std::endl;
-        std::cout << "t_f = " << t_f << std::endl;
-      }
-
       interp_primitive_id.push_back(phase);
     }
     s_final = applyStance(s_land, a, t_s_land, phase, planner_config);
   }
-
   return s_final;
 }
 
@@ -562,7 +540,7 @@ State applyStance(const State &s, const Action &a, double t, int phase,
     // Set height based on terrain
     // (interp from state 1 clearance to state 2 clearance, add terrain height)
     s_new.pos[2] = a.grf_0[2] + (a.grf_f[2] - a.grf_0[2]) * (t / a.t_s_leap) +
-                   getZFromState(s_new, planner_config);
+                   getTerrainZFilteredFromState(s_new, planner_config);
     setDz(s_new, planner_config);
 
   } else {
@@ -629,13 +607,14 @@ bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm,
   const double m = planner_config.M_CONST;
 
   // Sample stance time and initial vertical velocity
-  a.dz_0 = getDzFromState(s, planner_config) - 2 * (double)rand() / RAND_MAX;
-  a.dz_f = 0;
-  double t_s_min = 0.1;
-  double t_s_max = 0.25;
+  double dz_impulse = 0.5 + (double)rand() / RAND_MAX;
+  a.dz_0 = getDzFromState(s, planner_config) - dz_impulse;
+  a.dz_f = dz_impulse;
+  double t_s_min = 0.15;
+  double t_s_max = 0.20;
   a.t_s_leap = (t_s_max - t_s_min) * (double)rand() / RAND_MAX + t_s_min;
-  a.t_f = 1.0;
-  a.t_s_land = (t_s_max - t_s_min) * (double)rand() / RAND_MAX + t_s_min;
+  a.t_f = 1e-6;
+  a.t_s_land = a.t_s_leap;
   a.grf_0.setZero();
   a.grf_f.setZero();
 
@@ -646,21 +625,17 @@ bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm,
 
 bool refineAction(const State &s, Action &a,
                   const PlannerConfig &planner_config) {
-  double z_f_leap = planner_config.H_NOM + 0.05;
-  double z_f_land = planner_config.H_NOM;
-
-  if (!refineStance(s, z_f_leap, LEAP_STANCE, a, planner_config)) return false;
+  if (!refineStance(s, LEAP_STANCE, a, planner_config)) return false;
 
   State s_leap = applyStance(s, a, LEAP_STANCE, planner_config);
 
-  if (!refineFlight(s_leap, z_f_leap, a.t_f, planner_config)) {
+  if (!refineFlight(s_leap, a.t_f, planner_config)) {
     return false;
   }
 
   State s_land = applyFlight(s_leap, a.t_f, planner_config);
 
-  if (!refineStance(s_land, z_f_land, LAND_STANCE, a, planner_config))
-    return false;
+  if (!refineStance(s_land, LAND_STANCE, a, planner_config)) return false;
 
   State s_final = applyStance(s_land, a, LAND_STANCE, planner_config);
   a.dz_f = s_final.vel[2];
@@ -668,21 +643,26 @@ bool refineAction(const State &s, Action &a,
   return true;
 }
 
-bool refineStance(const State &s, double z_f, int phase, Action &a,
+bool refineStance(const State &s, int phase, Action &a,
                   const PlannerConfig &planner_config) {
 #ifdef DEBUG_REFINE_STATE
   std::cout << "Starting stance refine, phase = " << phase << std::endl;
 #endif
 
-  // Define parameters
+  // Load parameters (use references for action params that may change)
   double &t_s = (phase == LEAP_STANCE) ? a.t_s_leap : a.t_s_land;
   GRF &grf_stance = (phase == LEAP_STANCE) ? a.grf_0 : a.grf_f;
   double dz_0 = (phase == LEAP_STANCE) ? a.dz_0 : s.vel[2];
   double g = planner_config.G_CONST;
-  bool grf_valid, friction_cone_valid, final_state_valid, midstance_state_valid;
+#ifdef DEBUG_REFINE_STATE
+  std::cout << "dz_0 = " << dz_0 << std::endl;
+#endif
+
+  // Declare booleans for validity checking
+  bool grf_valid, friction_cone_valid, final_state_valid, midstance_state_valid,
+      grf_increased;
   grf_valid = friction_cone_valid = final_state_valid = midstance_state_valid =
-      false;
-  bool grf_increased = false;
+      grf_increased = false;
   State s_final, s_midstance;
 
   // Compute nominal z force (corresponds to zero net height displacement over
@@ -700,9 +680,19 @@ bool refineStance(const State &s, double z_f, int phase, Action &a,
 
   while (!(grf_valid && friction_cone_valid && final_state_valid &&
            midstance_state_valid)) {
-    // Get takeoff position
-    pos_f = s.pos + s.vel * t_s + (g * grf_stance * (t_s * t_s)) / 3.0;
-    pos_f[2] = z_f + planner_config.terrain.getGroundHeight(pos_f[0], pos_f[1]);
+    s_final = applyStance(s, a, t_s, phase, planner_config);
+    if (!isInMap(s_final, planner_config)) {
+      return false;
+    }
+    pos_f = s_final.pos;
+
+    double buffer = 3e-2;
+    if (phase == LEAP_STANCE) {
+      isValidState(s_final, planner_config, phase, pos_f[2]);
+      pos_f[2] -= buffer;
+    } else {
+      pos_f[2] = planner_config.H_NOM + getTerrainZ(pos_f, planner_config);
+    }
 
     // Compute final GRF
     grf_stance[2] =
@@ -712,24 +702,19 @@ bool refineStance(const State &s, double z_f, int phase, Action &a,
         g;
     s_final = applyStance(s, a, t_s, phase, planner_config);
     s_midstance = applyStance(s, a, 0.5 * t_s, phase, planner_config);
+    s_midstance.pos[2] -=
+        0.01;  // Make sure validity is robust to discretization
 
     // Compute validity checks
+    // TODO(jcnorby): sample surface normal from ground projection
+    // (non-filtered)
     grf_valid = (grf_stance.norm() <= planner_config.PEAK_GRF_MAX) &&
                 (grf_stance[2] >= 1);
     friction_cone_valid =
         (grf_stance.head<2>().norm() <= abs(grf_stance[2] * planner_config.MU));
 
-    // final_state_valid = isValidState(s_final, planner_config, phase);
-    // midstance_state_valid = isValidState(s_midstance, planner_config, phase);
-    final_state_valid =
-        ((s_final.pos[2] - planner_config.terrain.getGroundHeight(
-                               s_final.pos[0], s_final.pos[1])) >=
-         planner_config.H_MIN);
-
-    midstance_state_valid =
-        ((s_midstance.pos[2] - planner_config.terrain.getGroundHeight(
-                                   s_midstance.pos[0], s_midstance.pos[1])) >=
-         (planner_config.H_MIN + planner_config.ROBOT_H + 0.02));
+    final_state_valid = isValidState(s_final, planner_config, phase);
+    midstance_state_valid = isValidState(s_midstance, planner_config, phase);
 
     // Exit if final state is invalid
     if (!final_state_valid) {
@@ -782,9 +767,11 @@ bool refineStance(const State &s, double z_f, int phase, Action &a,
     // Decrease t_s or dz0 (increase GRF) if midstance is infeasible
     if (!midstance_state_valid) {
 #ifdef DEBUG_REFINE_STATE
-      std::cout << "Midstance state invalid, reducing stance time" << std::endl;
+      std::cout << "Midstance state invalid, reducing stance time from " << t_s
+                << " to " << t_s / 1.2 << std::endl;
 #endif
       t_s = t_s / 1.1;
+      // dz_0 -= 0.2;
 
       grf_increased = true;
       continue;
@@ -802,16 +789,17 @@ bool refineStance(const State &s, double z_f, int phase, Action &a,
   return true;
 }
 
-bool refineFlight(const State &s, double z_f, double &t_f,
+bool refineFlight(const State &s, double &t_f,
                   const PlannerConfig &planner_config) {
 #ifdef DEBUG_REFINE_STATE
   std::cout << "starting flight refine" << std::endl;
 #endif
   bool is_valid = false;
   double t = 0;
+  double z_f = planner_config.H_NOM + 0.05;
   State s_check = s;
-  double h = s_check.pos[2] - planner_config.terrain.getGroundHeight(
-                                  s_check.pos[0], s_check.pos[1]);
+  double h = getZRelToTerrain(s_check, planner_config);
+
   double h_last = h;
   while (h >= planner_config.H_MIN) {
     if ((h <= z_f) && (h_last > z_f)) {
@@ -820,9 +808,11 @@ bool refineFlight(const State &s, double z_f, double &t_f,
     }
     t += planner_config.KINEMATICS_RES;
     s_check = applyFlight(s, t, planner_config);
+    if (!isInMap(s_check, planner_config)) {
+      break;
+    }
     h_last = h;
-    h = s_check.pos[2] -
-        planner_config.terrain.getGroundHeight(s_check.pos[0], s_check.pos[1]);
+    h = getZRelToTerrain(s_check, planner_config);
   }
   if (!is_valid) {
     State s_test =
@@ -874,9 +864,27 @@ bool isValidAction(const Action &a, const PlannerConfig &planner_config) {
 
 bool isValidState(const State &s, const PlannerConfig &planner_config,
                   int phase) {
-  if (planner_config.terrain.isInRange(s.pos[0], s.pos[1]) == false) {
+  double dummy_max_valid_z = 0;
+  return isValidState(s, planner_config, phase, dummy_max_valid_z);
+}
+
+bool isValidState(const State &s, const PlannerConfig &planner_config,
+                  int phase, double &max_valid_z) {
+  // Check elevation independent constraints first (out of range, velocity)
+  if (!isInMap(s, planner_config)) {
 #ifdef DEBUG_INVALID_STATE
     printf("Out of terrain range, phase = %d\n", phase);
+    printStateNewline(s);
+#endif
+    return false;
+  }
+
+  // Ensure body is over traversable terrain unless in flight or leaping
+  // disabled
+  if (!isBodyTraversable(s.pos, planner_config) && phase != FLIGHT &&
+      planner_config.enable_leaping) {
+#ifdef DEBUG_INVALID_STATE
+    printf("!isContactTraversable, phase = %d\n", phase);
     printStateNewline(s);
 #endif
     return false;
@@ -893,6 +901,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
   }
 
   // Find yaw, pitch, and their sines and cosines
+  // TODO(jcnorby): Add getRollFromState
   double yaw = atan2(s.vel[1], s.vel[0]);
   double cy = cos(yaw);
   double sy = sin(yaw);
@@ -904,79 +913,100 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
   Eigen::Matrix3d R_mat;
   R_mat << cy * cp, -sy, cy * sp, sy * cp, cy, sy * sp, -sp, 0, cp;
 
-  std::array<double, 2> test_x = {-0.5 * planner_config.ROBOT_L,
-                                  0.5 * planner_config.ROBOT_L};
-  std::array<double, 2> test_y = {-0.5 * planner_config.ROBOT_W,
-                                  0.5 * planner_config.ROBOT_W};
-  double z_body = -planner_config.ROBOT_H;
+  // Compute the collision points in the world frame
+  Eigen::Matrix<double, 3, planner_config.num_collision_points>
+      collision_points_world =
+          R_mat * planner_config.collision_points_body +
+          s.pos.replicate(1, planner_config.num_collision_points);
 
   // Check each of the four corners of the robot
-  for (double x_body : test_x) {
-    for (double y_body : test_y) {
-      Eigen::Vector3d s_leg =
-          s.pos + R_mat.col(0) * x_body + R_mat.col(1) * y_body;
-      Eigen::Vector3d s_corner = s_leg + R_mat.col(2) * z_body;
-
-      double leg_height =
-          s_leg[2] - planner_config.terrain.getGroundHeight(s_leg[0], s_leg[1]);
-      double corner_height =
-          s_corner[2] -
-          planner_config.terrain.getGroundHeight(s_corner[0], s_corner[1]);
-
-      // Check for collision
-      if (corner_height < planner_config.H_MIN) {
+  for (int i = 0; i < planner_config.num_collision_points; i++) {
+    Eigen::Vector3d collision_point = collision_points_world.col(i);
+    if (!isInMap(collision_point, planner_config)) {
 #ifdef DEBUG_INVALID_STATE
-        printf("H_MIN exceeded for leg, phase = %d\n", phase);
+      printf("collision_point not in map, phase = %d\n", phase);
+      printStateNewline(s);
+#endif
+      return false;
+    }
+
+    double collision_clearance =
+        getZRelToTerrain(collision_point, planner_config);
+
+    // Check for collision
+    if (collision_clearance < planner_config.H_MIN) {
+#ifdef DEBUG_INVALID_STATE
+      printf("H_MIN exceeded for leg, phase = %d\n", phase);
+      printStateNewline(s);
+#endif
+      return false;
+    }
+  }
+
+  // Initialize max_valid_z to infinity (ensures that update will overwrite it)
+  max_valid_z = INFTY;
+
+  // Compute the reachability points in the world frame
+  Eigen::Matrix<double, 3, planner_config.num_reachability_points>
+      reachability_points_world =
+          R_mat * planner_config.reachability_points_body +
+          s.pos.replicate(1, planner_config.num_reachability_points);
+
+  // TODO(jcnorby): allow alternative gaits, check region around foot location
+  for (int i = 0; i < planner_config.num_reachability_points; i++) {
+    Eigen::Vector3d reachability_point = reachability_points_world.col(i);
+    if (!isInMap(reachability_point, planner_config)) {
+#ifdef DEBUG_INVALID_STATE
+      printf("reachability_point not in map, phase = %d\n", phase);
+#endif
+      return false;
+    }
+
+    // Make sure legs are over a valid region of the terrain
+    if (!isContactTraversable(reachability_point, planner_config) &&
+        phase != FLIGHT) {
+      return false;
+    }
+
+    double reachability_clearance =
+        getZRelToTerrain(reachability_point, planner_config);
+
+    bool is_rear_leg = (i % 2 == 1);
+
+    // Check for reachability
+    if (phase == CONNECT) {
+      max_valid_z = std::min(max_valid_z, s.pos[2] + planner_config.H_MAX -
+                                              reachability_clearance);
+      if (reachability_clearance > planner_config.H_MAX) {
+#ifdef DEBUG_INVALID_STATE
+        printf("H_MAX exceeded, phase = %d\n", phase);
+#endif
+        return false;
+      }
+    } else if (phase == LEAP_STANCE) {
+      if (is_rear_leg) {
+        max_valid_z = std::min(max_valid_z, s.pos[2] + planner_config.H_MAX -
+                                                reachability_clearance);
+        if (reachability_clearance > planner_config.H_MAX) {
+#ifdef DEBUG_INVALID_STATE
+          printf("H_MAX exceeded, phase = %d\n", phase);
+          printStateNewline(s);
+#endif
+          return false;
+        }
+      }
+    } else if (phase == LAND_STANCE) {
+      // if (!is_rear_leg) {
+      max_valid_z = std::min(max_valid_z, s.pos[2] + planner_config.H_MAX -
+                                              reachability_clearance);
+      if (reachability_clearance > planner_config.H_MAX) {
+#ifdef DEBUG_INVALID_STATE
+        printf("H_MAX exceeded, phase = %d\n", phase);
         printStateNewline(s);
 #endif
         return false;
       }
-
-      // TODO(jcnorby): allow alternative gaits, bound for leap, check region
-      // around foot location Check for reachability
-      if (phase == CONNECT) {
-        if (leg_height > planner_config.H_MAX) {
-#ifdef DEBUG_INVALID_STATE
-          printf("H_MAX exceeded, phase = %d\n", phase);
-          printStateNewline(s);
-          std::cout << "s_leg\n" << s_leg << std::endl;
-          std::cout
-              << "planner_config.terrain.getGroundHeight(s_leg[0],s_leg[1]) = "
-              << planner_config.terrain.getGroundHeight(s_leg[0], s_leg[1])
-              << std::endl;
-          std::cout << "s.pos\n" << s.pos << std::endl;
-          std::cout << "R_mat.col(0)*x_body\n"
-                    << R_mat.col(0) * x_body << std::endl;
-          std::cout << "R_mat.col(1)*y_body\n"
-                    << R_mat.col(1) * y_body << std::endl;
-          printf("py = %5.3f, %5.3f\n", pitch, yaw);
-          std::cout << "R_mat\n" << R_mat << std::endl;
-#endif
-          return false;
-        }
-      } else if (phase == LEAP_STANCE || phase == LAND_STANCE) {
-        if (leg_height > planner_config.H_MAX) {
-#ifdef DEBUG_INVALID_STATE
-          printf("H_MAX exceeded, phase = %d\n", phase);
-          printStateNewline(s);
-#endif
-          return false;
-        }
-      }
     }
-  }
-
-  // Check the center of the underside of the robot for penetration
-  double height =
-      (s.pos[2] + R_mat(2, 2) * z_body) -
-      planner_config.terrain.getGroundHeight(s.pos[0] + R_mat(0, 2) * z_body,
-                                             s.pos[1] + R_mat(1, 2) * z_body);
-  if (height < planner_config.H_MIN) {
-#ifdef DEBUG_INVALID_STATE
-    printf("H_MIN exceeded for body center, phase = %d\n", phase);
-    printStateNewline(s);
-#endif
-    return false;
   }
 
   return true;
@@ -1004,7 +1034,6 @@ bool isValidStateActionPair(const State &s_in, const Action &a,
 
   // LEAP (OR CONNECT) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  // for (double t = 0; t <= t_s; t += planner_config.KINEMATICS_RES)
   double t = 0;
 
   while (t <= t_s) {
@@ -1017,6 +1046,7 @@ bool isValidStateActionPair(const State &s_in, const Action &a,
       result.s_new = applyStance(s, a, result.t_new, phase, planner_config);
       result.a_new.t_s_leap = result.t_new;
       result.a_new.t_s_land = std::min(0.001, result.a_new.t_s_land);
+// s_new = applyStance(s,a,(t - planner_config.BACKUP_TIME));
 #ifdef DEBUG_INVALID_STATE
       printf("Invalid leaping stance config\n");
 #endif
@@ -1061,6 +1091,7 @@ bool isValidStateActionPair(const State &s_in, const Action &a,
       std::cout << "t = " << t << std::endl;
       std::cout << "t_f = " << t_f << std::endl;
 #endif
+      result.s_new = s_next;
       return false;
     }
     result.length += poseDistance(s_next, s_prev);
@@ -1085,6 +1116,7 @@ bool isValidStateActionPair(const State &s_in, const Action &a,
 #ifdef DEBUG_INVALID_STATE
         printf("Invalid landing stance config\n");
 #endif
+        result.s_new = s_next;
         return false;
       } else {
         result.length += poseDistance(s_next, s_prev);

@@ -355,7 +355,7 @@ void eigenToFootStateMsg(Eigen::VectorXd foot_position,
 void eigenToVector(const Eigen::VectorXd &eigen_vec, std::vector<double> &vec);
 
 /**
- * @brief Convert eigen vector to stl vector
+ * @brief Convert stl vector to eigen vector
  * @param[in] vec stl vector
  * @param[out] eigen_vec Eigen vector with data
  */
