@@ -1,0 +1,28 @@
+name: Documentation
+
+on:
+  push:
+    branches:
+      - main
+      - devel
+      - melodic_devel_gh_pages_doxygen_updates
+  pull_request:
+    branches:
+      - main
+  page_build:
+
+jobs:
+  doxygen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build documentation
+        uses: mattnotmitt/doxygen-action@v1
+        with:
+          doxyfile-path: ./Doxyfile
+      - name: Deploy documentation
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          commit_message: '[ci skip] ${{ github.event.head_commit.message }}'
