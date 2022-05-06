@@ -2,6 +2,7 @@
     <arg name="robot_type" default="spirit"/>
 
     <rosparam command="load" file="$(find quad_utils)/config/terrain_map_publisher.yaml" />
+    <rosparam command="load" file="$(find robot_driver)/robot_driver.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/grid_map_visualization.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/remote_heartbeat.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/topics.yaml" />

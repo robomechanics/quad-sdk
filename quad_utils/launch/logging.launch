@@ -10,6 +10,7 @@
         /state/ground_truth 
         /state/estimate 
         /state/grfs 
+        /mocap_node/quad/pose
         /global_plan
         /local_plan 
         /control/grfs
@@ -29,6 +30,7 @@
         /state/ground_truth 
         /state/estimate 
         /state/grfs 
+        /mocap_node/quad/pose
         /global_plan
         /local_plan 
         /control/grfs
