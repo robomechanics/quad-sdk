@@ -3,8 +3,8 @@ robot_driver:
   publish_rate: 500
   mocap_rate: 360.0 # This must match the mocap frame rate or velocity estimates will be mis-scaled
   mocap_dropout_threshold: 0.027 # s
-  filter_time_constant: 0.05 # s
-  input_timeout: 0.1
+  filter_time_constant: 0.01 # s
+  input_timeout: 0.2
   state_timeout: 0.1
   heartbeat_timeout: 0.2
   sit_kp: [10, 10, 10]
@@ -19,3 +19,15 @@ robot_driver:
   safety_kd: [2, 2, 2]
   stand_joint_angles: [0.0, 0.76, 1.52]
   sit_joint_angles: [0.0, 0.0, 0.0]
+
+  # Complementary filter coefficients in state-space form, 
+  # which can be computed by c2d(1/s*(1-G(s))) and c2d(s*G(s)), 
+  # where G(s) is a second-order low-pass filter
+  low_pass_a: [1.863081589528582, -0.871860350323577, 1, 0]
+  low_pass_b: [2, 0]
+  low_pass_c: [1.469526956982712, -1.476621472298373]
+  low_pass_d: [1.616290836790004]
+  high_pass_a: [1.901347508294054, -0.905986628426631, 1, 0]
+  high_pass_b: [0.062500000000000, 0]
+  high_pass_c: [0.031912805108981, -0.028979795079613]
+  high_pass_d: [0.0009996017974875904]

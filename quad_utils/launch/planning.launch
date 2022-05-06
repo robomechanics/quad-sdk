@@ -42,6 +42,7 @@
     <group if="$(arg logging)">
         <include file="$(find quad_utils)/launch/logging.launch" />
     </group>
-    
-    </group>
+
+    <node name="plan_publisher" pkg="quad_utils" type="trajectory_publisher_node" output="screen" />
+
 </launch>

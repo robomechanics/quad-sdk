@@ -6,7 +6,7 @@
   <arg name="logging"/>
   <arg name="visualization" value="false"/>
   <arg name="namespace"     default="robot_1"/>
-  <arg name="robot_type"/>
+  <arg name="robot_type"    default="spirit"/>
   <param name="tf_prefix"   value="$(arg namespace)_tf" />
 
   <group if="$(eval robot_type == 'spirit')">
@@ -26,6 +26,7 @@
     </node> 
     
     <include file="$(find quad_utils)/launch/robot_driver.launch">
+      <arg name="robot_type" value="$(arg robot_type)"/>
       <arg name="controller" value="$(arg controller)"/>
       <arg name="mocap" value="false"/>
       <arg name="is_hardware" value="false"/>
