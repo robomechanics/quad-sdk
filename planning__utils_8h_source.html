@@ -427,8 +427,8 @@ $(function() {
 <div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span><span class="keyword">inline</span> <span class="keywordtype">bool</span> isInMap(<span class="keyword">const</span> Eigen::Vector3d &amp;pos,</div>
 <div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>                    <span class="keyword">const</span> PlannerConfig &amp;planner_config) {</div>
 <div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>  <span class="comment">// Uncomment to use grid_map</span></div>
-<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>  <span class="comment">// return planner_config.terrain_grid_map.isInside(pos.head&lt;2&gt;());</span></div>
-<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>  <span class="keywordflow">return</span> planner_config.terrain.isInRange(pos[0], pos[1]);</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>  <span class="keywordflow">return</span> planner_config.terrain_grid_map.isInside(pos.head&lt;2&gt;());</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>  <span class="comment">// return planner_config.terrain.isInRange(pos[0], pos[1]);</span></div>
 <div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>}</div>
 <div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span> </div>
 <div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span><span class="keyword">inline</span> <span class="keywordtype">bool</span> isInMap(<span class="keyword">const</span> State &amp;s, <span class="keyword">const</span> PlannerConfig &amp;planner_config) {</div>
