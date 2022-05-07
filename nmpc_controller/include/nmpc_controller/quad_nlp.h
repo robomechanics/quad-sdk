@@ -111,13 +111,13 @@ class quadNLP : public TNLP {
   const bool apply_slack_to_complex_constr_ = true;
 
   /// Boolean for whether to allow modifications of foot trajectory
-  const bool always_constrain_feet_ = false;
+  const bool always_constrain_feet_ = true;
 
   /// Boolean for whether to include the terrain in the foot height constraint
   const bool use_terrain_constraint_ = true;
 
   const grid_map::InterpolationMethods interp_type_ =
-      grid_map::InterpolationMethods::INTER_NEAREST;
+      grid_map::InterpolationMethods::INTER_LINEAR;
 
   /// Map for constraint names
   std::vector<std::vector<std::string>> constr_names_;
@@ -125,8 +125,8 @@ class quadNLP : public TNLP {
   /// Number of variables , primal variables, slack variables, and constraints
   int n_vars_, n_vars_primal_, n_vars_slack_, n_constraints_;
 
-  /// Number of state variables added in complex model
-  int n_null_;
+  /// Number of state and control variables added in complex model
+  int n_null_, m_null_;
 
   /// Nominal null state variables
   Eigen::VectorXd x_null_nom_;
@@ -173,9 +173,8 @@ class quadNLP : public TNLP {
   grid_map::GridMap terrain_;
 
   // State bounds, input bounds, constraint bounds
-  Eigen::VectorXd x_min_simple_, x_max_simple_, x_min_complex_, x_max_complex_,
-      u_min_simple_, u_max_simple_, u_min_complex_, u_max_complex_,
-      g_min_simple_, g_max_simple_, g_min_complex_, g_max_complex_;
+  Eigen::VectorXd x_min_complex_, x_max_complex_, u_min_complex_,
+      u_max_complex_, g_min_complex_, g_max_complex_;
 
   Eigen::VectorXd x_min_complex_soft_, x_max_complex_soft_, g_min_complex_soft_,
       g_max_complex_soft_;
@@ -277,6 +276,8 @@ class quadNLP : public TNLP {
           const Eigen::VectorXd &Q_complex, const Eigen::VectorXd &R_complex,
           const Eigen::VectorXd &x_min_complex,
           const Eigen::VectorXd &x_max_complex,
+          const Eigen::VectorXd &x_min_complex_soft,
+          const Eigen::VectorXd &x_max_complex_soft,
           const Eigen::VectorXd &u_min_complex,
           const Eigen::VectorXd &u_max_complex,
           const Eigen::VectorXd &g_min_complex,

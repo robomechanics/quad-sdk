@@ -35,8 +35,9 @@ class NMPCController {
    * output
    * @param[in] initial_state Vector with initial state
    * @param[in] ref_traj Matrix holding desired reference trajectory
-   * @param[in] foot_positions Matrix holding foot positions
    * @param[in] contact_schedule Matrix holding the contact schedule
+   * @param[in] foot_positions Matrix holding foot positions
+   * @param[in] foot_velocities Matrix holding foot velocities
    * @param[in] first_element_duration Time duration to the next plan index
    * @param[in] same_plan_index If the current solving is duplicated in the same
    * index
@@ -46,8 +47,9 @@ class NMPCController {
    */
   bool computePlan(const Eigen::VectorXd &initial_state,
                    const Eigen::MatrixXd &ref_traj,
-                   const Eigen::MatrixXd &foot_positions,
                    const std::vector<std::vector<bool>> &contact_schedule,
+                   Eigen::MatrixXd &foot_positions,
+                   Eigen::MatrixXd &foot_velocities,
                    Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj);
 
   bool computeLegPlan(

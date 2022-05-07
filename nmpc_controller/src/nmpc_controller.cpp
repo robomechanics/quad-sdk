@@ -27,27 +27,30 @@ NMPCController::NMPCController() {
       u_dim_cost_simple_ = x_dim_complex_ = u_dim_complex_ = g_dim_complex_ =
           x_dim_cost_complex_ = u_dim_cost_complex_ = 0;
   std::vector<double> x_weights_complex, u_weights_complex, x_lb_complex,
-      x_ub_complex, u_lb_complex, u_ub_complex, g_lb_complex, g_ub_complex;
+      x_ub_complex, x_lb_complex_soft, x_ub_complex_soft, u_lb_complex,
+      u_ub_complex, g_lb_complex, g_ub_complex;
 
   // Loop through each system component and read parameters
   for (int i = 0; i < components.size(); i++) {
     double x_dim, u_dim, g_dim;
     std::vector<double> x_weights, u_weights, x_lb, x_ub, u_lb, u_ub, g_lb,
-        g_ub;
+        g_ub, x_lb_soft, x_ub_soft;
 
     // Read component parameters
     std::string component = components[i];
     ros::param::get("/nmpc_controller/" + component + "/x_dim", x_dim);
     ros::param::get("/nmpc_controller/" + component + "/u_dim", u_dim);
     ros::param::get("/nmpc_controller/" + component + "/g_dim", g_dim);
+    ros::param::get("/nmpc_controller/" + component + "/x_weights", x_weights);
+    ros::param::get("/nmpc_controller/" + component + "/u_weights", u_weights);
     ros::param::get("/nmpc_controller/" + component + "/x_lb", x_lb);
     ros::param::get("/nmpc_controller/" + component + "/x_ub", x_ub);
+    ros::param::get("/nmpc_controller/" + component + "/x_lb_soft", x_lb_soft);
+    ros::param::get("/nmpc_controller/" + component + "/x_ub_soft", x_ub_soft);
     ros::param::get("/nmpc_controller/" + component + "/u_lb", u_lb);
     ros::param::get("/nmpc_controller/" + component + "/u_ub", u_ub);
     ros::param::get("/nmpc_controller/" + component + "/g_lb", g_lb);
     ros::param::get("/nmpc_controller/" + component + "/g_ub", g_ub);
-    ros::param::get("/nmpc_controller/" + component + "/x_weights", x_weights);
-    ros::param::get("/nmpc_controller/" + component + "/u_weights", u_weights);
 
     // Make sure the bounds are the correct size
     if (x_dim != x_lb.size()) throw std::runtime_error("x_lb wrong size");
@@ -75,6 +78,10 @@ NMPCController::NMPCController() {
       g_dim_complex_ += g_dim;
       x_lb_complex.insert(x_lb_complex.end(), x_lb.begin(), x_lb.end());
       x_ub_complex.insert(x_ub_complex.end(), x_ub.begin(), x_ub.end());
+      x_lb_complex_soft.insert(x_lb_complex_soft.end(), x_lb_soft.begin(),
+                               x_lb_soft.end());
+      x_ub_complex_soft.insert(x_ub_complex_soft.end(), x_ub_soft.begin(),
+                               x_ub_soft.end());
       u_lb_complex.insert(u_lb_complex.end(), u_lb.begin(), u_lb.end());
       u_ub_complex.insert(u_ub_complex.end(), u_ub.begin(), u_ub.end());
       g_lb_complex.insert(g_lb_complex.end(), g_lb.begin(), g_lb.end());
@@ -99,6 +106,8 @@ NMPCController::NMPCController() {
       R_complex(u_weights_complex.data(), u_dim_cost_complex_),
       x_min_complex(x_lb_complex.data(), x_dim_complex_),
       x_max_complex(x_ub_complex.data(), x_dim_complex_),
+      x_min_complex_soft(x_lb_complex_soft.data(), x_dim_complex_),
+      x_max_complex_soft(x_ub_complex_soft.data(), x_dim_complex_),
       u_min_complex(u_lb_complex.data(), u_dim_complex_),
       u_max_complex(u_ub_complex.data(), u_dim_complex_),
       g_min_complex(g_lb_complex.data(), g_dim_complex_),
@@ -140,8 +149,9 @@ NMPCController::NMPCController() {
       R_temporal_factor, x_dim_simple_, x_dim_complex_, u_dim_simple_,
       u_dim_complex_, g_dim_simple_, g_dim_complex_, x_dim_cost_simple_,
       x_dim_cost_complex_, u_dim_cost_simple_, u_dim_cost_complex_, Q_complex,
-      R_complex, x_min_complex, x_max_complex, u_min_complex, u_max_complex,
-      g_min_complex, g_max_complex, fixed_complexity_schedule);
+      R_complex, x_min_complex, x_max_complex, x_min_complex_soft,
+      x_max_complex_soft, u_min_complex, u_max_complex, g_min_complex,
+      g_max_complex, fixed_complexity_schedule);
 
   app_ = IpoptApplicationFactory();
 
@@ -151,7 +161,7 @@ NMPCController::NMPCController() {
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   app_->Options()->SetStringValue("fixed_variable_treatment",
                                   "make_parameter_nodual");
-  app_->Options()->SetNumericValue("tol", 1e-6);
+  app_->Options()->SetNumericValue("tol", 1e-3);
   app_->Options()->SetNumericValue("dual_inf_tol", 1e10);
   app_->Options()->SetNumericValue("constr_viol_tol", 1e-2);
   app_->Options()->SetNumericValue("compl_inf_tol", 1e-2);
@@ -159,8 +169,8 @@ NMPCController::NMPCController() {
   app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
   app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
 
-  app_->Options()->SetNumericValue("max_wall_time", 10.0 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 10.0 * dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 40.0 * dt_);
+  app_->Options()->SetNumericValue("max_cpu_time", 40.0 * dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();
@@ -179,7 +189,8 @@ NMPCController::NMPCController() {
 bool NMPCController::computeLegPlan(
     const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
     const Eigen::MatrixXd &foot_positions_body,
-    Eigen::MatrixXd &foot_positions_world, Eigen::MatrixXd &foot_velocities,
+    Eigen::MatrixXd &foot_positions_world,
+    Eigen::MatrixXd &foot_velocities_world,
     const std::vector<std::vector<bool>> &contact_schedule,
     const Eigen::VectorXd &ref_ground_height,
     const double &first_element_duration, const bool &same_plan_index,
@@ -188,7 +199,7 @@ bool NMPCController::computeLegPlan(
   // Local planner will send a reference traj with N+1 rows
   mynlp_->foot_pos_body_ = -foot_positions_body;
   mynlp_->foot_pos_world_ = foot_positions_world;
-  mynlp_->foot_vel_world_ = foot_velocities;
+  mynlp_->foot_vel_world_ = foot_velocities_world;
   mynlp_->terrain_ = terrain;
   mynlp_->update_solver(initial_state, ref_traj, foot_positions_body,
                         contact_schedule, adaptive_complexity_schedule_,
@@ -197,9 +208,9 @@ bool NMPCController::computeLegPlan(
   require_init_ = false;
 
   quad_utils::FunctionTimer timer("nlp_solver");
-  bool success =
-      this->computePlan(initial_state, ref_traj, foot_positions_world,
-                        contact_schedule, state_traj, control_traj);
+  bool success = this->computePlan(initial_state, ref_traj, contact_schedule,
+                                   foot_positions_world, foot_velocities_world,
+                                   state_traj, control_traj);
   diagnostics_ = mynlp_->diagnostics_;
   diagnostics_.compute_time = timer.reportSilent();
 
@@ -210,8 +221,8 @@ bool NMPCController::computeLegPlan(
 
 bool NMPCController::computePlan(
     const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
-    const Eigen::MatrixXd &foot_positions,
     const std::vector<std::vector<bool>> &contact_schedule,
+    Eigen::MatrixXd &foot_positions, Eigen::MatrixXd &foot_velocities,
     Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj) {
   ApplicationReturnStatus status;
   app_->Options()->SetNumericValue("mu_init", mynlp_->mu0_);
@@ -248,6 +259,9 @@ bool NMPCController::computePlan(
 
     Eigen::VectorXi constr_vals =
         evalLiftedTrajectoryConstraints(state_null_traj, control_null_traj);
+
+    foot_positions = state_null_traj.leftCols(n_foot_ / 2);
+    foot_velocities = state_null_traj.middleCols(n_foot_ / 2, n_foot_ / 2);
 
     // std::cout << "current body state = \n"
     //           << mynlp_->x_current_.segment(0, n_body_).transpose()
@@ -488,90 +502,91 @@ Eigen::VectorXi NMPCController::evalLiftedTrajectoryConstraints(
     state_null_traj.row(i + 1) = x1.segment(x_dim_simple_, x_dim_null_);
     control_null_traj.row(i + 1) = u.segment(u_dim_simple_, u_dim_null_);
 
-    double dt = (i == 0) ? mynlp_->first_element_duration_ : dt_;
-    params = mynlp_->foot_pos_world_.row(i + 1);
+    // double dt = (i == 0) ? mynlp_->first_element_duration_ : dt_;
+    // params = mynlp_->foot_pos_world_.row(i + 1);
 
-    constr_vals = mynlp_->eval_g_single_fe(COMPLEX, dt, x0, u, x1, params);
-    lb_violation = mynlp_->g_min_complex_ - constr_vals;
-    ub_violation = constr_vals - mynlp_->g_max_complex_;
+    // constr_vals = mynlp_->eval_g_single_fe(COMPLEX, dt, x0, u, x1, params);
+    // lb_violation = mynlp_->g_min_complex_ - constr_vals;
+    // ub_violation = constr_vals - mynlp_->g_max_complex_;
 
-    max_constraint_violation[i + 1] =
-        (lb_violation.cwiseMax(ub_violation)).maxCoeff();
-    // for (int j = 0;
-    //      j < mynlp_->relaxed_primal_constraint_idxs_in_element_.size(); j++)
-    //      {
-    //   std::cout
-    //       << "knee " << j << " height:"
-    //       <<
-    //       -constr_vals[mynlp_->relaxed_primal_constraint_idxs_in_element_[j]]
-    //       << std::endl;
+    // max_constraint_violation[i + 1] =
+    //     (lb_violation.cwiseMax(ub_violation)).maxCoeff();
+    // // for (int j = 0;
+    // //      j < mynlp_->relaxed_primal_constraint_idxs_in_element_.size();
+    // j++)
+    // //      {
+    // //   std::cout
+    // //       << "knee " << j << " height:"
+    // //       <<
+    // // -constr_vals[mynlp_->relaxed_primal_constraint_idxs_in_element_[j]]
+    // //       << std::endl;
+    // // }
+    // // if (i + 1 >= 11 && i + 1 <= 13) {
+    // //   std::cout << "i = " << i + 1 << std::endl;
+    // //   std::cout << "body pos = " << x1.segment(0, 12).transpose() <<
+    // //   std::endl; std::cout << "joint pos = " << x1.segment(12,
+    // //   12).transpose()
+    // //             << std::endl;
+    // //   std::cout << "joint vel = " << x1.segment(24, 12).transpose()
+    // //             << std::endl;
+    // // }
+    // // std::cout << "foot_pos = " << mynlp_->foot_pos_world_.row(i + 1)
+    // //           << std::endl;
+    // // std::cout << "foot_vel = " << mynlp_->foot_vel_world_.row(i + 1)
+    // //           << std::endl;
+    // // std::cout << "grfs = " << u.transpose() << std::endl;
+    // // std::cout << "lb violation = " << lb_violation << std::endl;
+    // // std::cout << "ub violation = " << ub_violation << std::endl;
+
+    // for (int j = 0; j < constr_vals.size(); j++) {
+    //   double current_constraint_violation =
+    //       std::max(lb_violation[j], ub_violation[j]);
+
+    //   if (current_constraint_violation > max_constraint_violation_val) {
+    //     max_constraint_violation_val = current_constraint_violation;
+    //     max_constraint_violation_fe = i + 1;
+    //     max_constraint_violation_index = j;
+    //   }
+
+    //   if (current_constraint_violation > constr_tol) {
+    //     if (mynlp_->n_vec_[i + 1] == x_dim_complex_) {
+    //       printf(
+    //           "Constraint %s violated in FE %d: %5.3f <= %5.3f <= "
+    //           "%5.3f\n",
+    //           mynlp_->constr_names_[COMPLEX][j].c_str(), i,
+    //           mynlp_->g_min_complex_[j] - constr_tol, constr_vals[j],
+    //           mynlp_->g_max_complex_[j] + constr_tol);
+
+    //       // std::cout << "x0 = \n" << x0 << std::endl;
+    //       // std::cout << "u = \n" << u << std::endl;
+    //       // std::cout << "x1 = \n" << x1 << std::endl;
+    //       // std::cout << "constr_vals = \n" << constr_vals << std::endl;
+
+    //       valid_solve = false;
+    //     } else {
+    //       valid_lift = false;
+    //     }
+    //     adaptive_complexity_schedule[i + 1] = 1;
+    //   }
     // }
-    // if (i + 1 >= 11 && i + 1 <= 13) {
-    //   std::cout << "i = " << i + 1 << std::endl;
-    //   std::cout << "body pos = " << x1.segment(0, 12).transpose() <<
-    //   std::endl; std::cout << "joint pos = " << x1.segment(12,
-    //   12).transpose()
-    //             << std::endl;
-    //   std::cout << "joint vel = " << x1.segment(24, 12).transpose()
-    //             << std::endl;
+
+    // for (int j = 0; j < x1.size(); j++) {
+    //   if (x1[j] < mynlp_->x_min_complex_[j] - var_tol ||
+    //       x1[j] > mynlp_->x_max_complex_[j] + var_tol) {
+    //     if (mynlp_->n_vec_[i + 1] == x_dim_complex_) {
+    //       printf(
+    //           "Var bound %d violated in FE %d: %5.3f <= %5.3f <= "
+    //           "%5.3f\n",
+    //           j, i, mynlp_->x_min_complex_[j], x1[j] - var_tol,
+    //           mynlp_->x_max_complex_[j] + var_tol);
+
+    //       valid_solve = false;
+    //     } else {
+    //       valid_lift = false;
+    //     }
+    //     adaptive_complexity_schedule[i + 1] = 1;
+    //   }
     // }
-    // std::cout << "foot_pos = " << mynlp_->foot_pos_world_.row(i + 1)
-    //           << std::endl;
-    // std::cout << "foot_vel = " << mynlp_->foot_vel_world_.row(i + 1)
-    //           << std::endl;
-    // std::cout << "grfs = " << u.transpose() << std::endl;
-    // std::cout << "lb violation = " << lb_violation << std::endl;
-    // std::cout << "ub violation = " << ub_violation << std::endl;
-
-    for (int j = 0; j < constr_vals.size(); j++) {
-      double current_constraint_violation =
-          std::max(lb_violation[j], ub_violation[j]);
-
-      if (current_constraint_violation > max_constraint_violation_val) {
-        max_constraint_violation_val = current_constraint_violation;
-        max_constraint_violation_fe = i + 1;
-        max_constraint_violation_index = j;
-      }
-
-      if (current_constraint_violation > constr_tol) {
-        if (mynlp_->n_vec_[i + 1] == x_dim_complex_) {
-          printf(
-              "Constraint %s violated in FE %d: %5.3f <= %5.3f <= "
-              "%5.3f\n",
-              mynlp_->constr_names_[COMPLEX][j].c_str(), i,
-              mynlp_->g_min_complex_[j] - constr_tol, constr_vals[j],
-              mynlp_->g_max_complex_[j] + constr_tol);
-
-          // std::cout << "x0 = \n" << x0 << std::endl;
-          // std::cout << "u = \n" << u << std::endl;
-          // std::cout << "x1 = \n" << x1 << std::endl;
-          // std::cout << "constr_vals = \n" << constr_vals << std::endl;
-
-          valid_solve = false;
-        } else {
-          valid_lift = false;
-        }
-        adaptive_complexity_schedule[i + 1] = 1;
-      }
-    }
-
-    for (int j = 0; j < x1.size(); j++) {
-      if (x1[j] < mynlp_->x_min_complex_[j] - var_tol ||
-          x1[j] > mynlp_->x_max_complex_[j] + var_tol) {
-        if (mynlp_->n_vec_[i + 1] == x_dim_complex_) {
-          printf(
-              "Var bound %d violated in FE %d: %5.3f <= %5.3f <= "
-              "%5.3f\n",
-              j, i, mynlp_->x_min_complex_[j], x1[j] - var_tol,
-              mynlp_->x_max_complex_[j] + var_tol);
-
-          valid_solve = false;
-        } else {
-          valid_lift = false;
-        }
-        adaptive_complexity_schedule[i + 1] = 1;
-      }
-    }
     x0 = x1;
   }
 
