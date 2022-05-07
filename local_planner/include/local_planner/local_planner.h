@@ -6,6 +6,7 @@
 #include <local_planner/local_footstep_planner.h>
 #include <math.h>
 #include <nmpc_controller/nmpc_controller.h>
+#include <quad_msgs/ContactSensing.h>
 #include <quad_msgs/GRFArray.h>
 #include <quad_msgs/LegCommandArray.h>
 #include <quad_msgs/MultiFootPlanDiscrete.h>
@@ -16,7 +17,6 @@
 #include <quad_utils/ros_utils.h>
 #include <quad_utils/tail_type.h>
 #include <ros/ros.h>
-#include <std_msgs/ByteMultiArray.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include "quad_utils/matplotlibcpp.h"
@@ -90,7 +90,7 @@ class LocalPlanner {
    * @brief Callback function to handle new contact sensing information
    * @param[in] msg the message contining contact sensing data
    */
-  void contactSensingCallback(const std_msgs::ByteMultiArray::ConstPtr &msg);
+  void contactSensingCallback(const quad_msgs::ContactSensing::ConstPtr &msg);
 
   /**
    * @brief Function to pre-process the body plan and robot state messages into
@@ -319,7 +319,7 @@ class LocalPlanner {
   std::vector<std::vector<bool>> adaptive_contact_schedule_;
 
   /// Contact sensing results message
-  std_msgs::ByteMultiArray::ConstPtr contact_sensing_msg_;
+  quad_msgs::ContactSensing::ConstPtr contact_sensing_msg_;
 
   /// Contact sensing results subscriber
   ros::Subscriber contact_sensing_sub_;

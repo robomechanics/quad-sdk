@@ -293,6 +293,10 @@ class RobotDriver {
   std::vector<double> stance_kd_;
 
   /// PD gain when foot is in retraction
+  std::vector<double> landing_kp_;
+  std::vector<double> landing_kd_;
+
+  /// PD gain when foot is in retraction
   std::vector<double> retraction_kp_;
   std::vector<double> retraction_kd_;
 

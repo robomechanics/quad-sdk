@@ -322,7 +322,7 @@ void LocalPlanner::grfCallback(const quad_msgs::GRFArray::ConstPtr &msg) {
 }
 
 void LocalPlanner::contactSensingCallback(
-    const std_msgs::ByteMultiArray::ConstPtr &msg) {
+    const quad_msgs::ContactSensing::ConstPtr &msg) {
   // Contact sensing callback
   contact_sensing_msg_ = msg;
 }
@@ -653,7 +653,8 @@ bool LocalPlanner::computeLocalPlan() {
                     1)
                 .at(i)) &&
           !gait_mixture_vec_.at(i).at(0).active &&
-          !contact_sensing_msg_->data.at(i) && contact_sensing_record_.at(i)) {
+          !contact_sensing_msg_->contact_sensing.at(i) &&
+          contact_sensing_record_.at(i)) {
         // Compute gait init index
         int gait_init_idx = local_footstep_planner_->computeNearestPlanIndex(
             current_plan_index_,
@@ -668,7 +669,8 @@ bool LocalPlanner::computeLocalPlan() {
       }
 
       // Record the contact sensing
-      contact_sensing_record_.at(i) = contact_sensing_msg_->data.at(i);
+      contact_sensing_record_.at(i) =
+          contact_sensing_msg_->contact_sensing.at(i);
     }
   }
 
@@ -676,9 +678,10 @@ bool LocalPlanner::computeLocalPlan() {
   for (size_t i = 0; i < 4; i++) {
     // If the leg is in contact and near the joint limit, release it
     if (!gait_mixture_vec_.at(i).at(1).active && contact_sensing_msg_ != NULL &&
-        (contact_sensing_msg_->data.at(0) || contact_sensing_msg_->data.at(1) ||
-         contact_sensing_msg_->data.at(2) ||
-         contact_sensing_msg_->data.at(3)) &&
+        (contact_sensing_msg_->contact_sensing.at(0) ||
+         contact_sensing_msg_->contact_sensing.at(1) ||
+         contact_sensing_msg_->contact_sensing.at(2) ||
+         contact_sensing_msg_->contact_sensing.at(3)) &&
         contact_schedule_.at(0).at(i) &&
         robot_state_msg_->joints.position.at(3 * i) < abad_joint_limit_) {
       // Compute gait init index
@@ -753,10 +756,11 @@ bool LocalPlanner::computeLocalPlan() {
   // Contact sensing
   if (contact_sensing_msg_ != NULL) {
     for (size_t i = 0; i < 4; i++) {
-      if (contact_sensing_msg_->data.at(i)) {
+      if (contact_sensing_msg_->contact_sensing.at(i)) {
         roll_desired_ = 0;
       }
-      if (contact_sensing_msg_->data.at(i) && contact_schedule_.at(0).at(i)) {
+      if (contact_sensing_msg_->contact_sensing.at(i) &&
+          contact_schedule_.at(0).at(i)) {
         for (size_t j = 0; j < N_; j++) {
           if (contact_schedule_.at(j).at(i)) {
             // Assign miss
@@ -897,6 +901,9 @@ void LocalPlanner::publishLocalPlan() {
     local_plan_msg.ground_height.push_back(ref_ground_height_(i));
   }
 
+  // Add the received contact sensing results
+  local_plan_msg.contact_sensing = *contact_sensing_msg_;
+
   // Publish
   local_plan_msg.state_timestamp = current_state_timestamp_;
   local_plan_pub_.publish(local_plan_msg);
@@ -912,7 +919,8 @@ void LocalPlanner::spin() {
 
     // Wait until all required data has been received
     if (!terrain_grid_.exists("z_smooth") ||
-        body_plan_msg_ == NULL && !use_twist_input_ || robot_state_msg_ == NULL)
+        body_plan_msg_ == NULL && !use_twist_input_ ||
+        robot_state_msg_ == NULL || contact_sensing_msg_ == NULL)
       continue;
 
     if (use_twist_input_) {
