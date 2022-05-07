@@ -318,21 +318,6 @@ class LocalPlanner {
   /// Adaptive contact schedule
   std::vector<std::vector<bool>> adaptive_contact_schedule_;
 
-  /// Footstep history
-  grid_map::GridMap foot_step_hist_;
-
-  /// Footstep history publisher
-  ros::Publisher foot_step_hist_pub_;
-
-  /// Filter chain.
-  filters::FilterChain<grid_map::GridMap> filterChain_;
-
-  /// Filter chain parameters name.
-  std::string filterChainParametersName_;
-
-  /// Temporary index of the foothold history
-  std::vector<std::vector<grid_map::Index>> tmp_foot_hist_idx_;
-
   /// Contact sensing results message
   std_msgs::ByteMultiArray::ConstPtr contact_sensing_msg_;
 

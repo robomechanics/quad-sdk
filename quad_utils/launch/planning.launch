@@ -30,9 +30,11 @@
         </group>
     </group>
 
-    <node name="local_planner" pkg="local_planner" type="local_planner_node" output="screen">
+    <node name="terrain_estimation" pkg="quad_utils" type="terrain_estimation_node" output="screen">
         <rosparam command="load" file="$(find quad_utils)/config/footstep_filter.yaml" />
     </node>
+
+    <node name="local_planner" pkg="local_planner" type="local_planner_node" output="screen" />
 
     <!-- Launch the node to publish the tail plan -->
     <group if="$(arg tail)">
