@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include <ros/ros.h>
 
+#include <grid_map_core/grid_map_core.hpp>
+
 #include "quad_utils/quad_kd.h"
 #include "quad_utils/ros_utils.h"
 
@@ -220,7 +222,6 @@ TEST(KinematicsTest, testFKIKFeasibleConfigurations) {
   // Set up problem variables
   Eigen::Vector3d body_pos = {0, 0, 0};
   Eigen::Vector3d body_rpy = {0, 0, 0};
-  Eigen::Vector3d joint_state = {0.7, -0.3 * M_PI, 0 * M_PI};
   Eigen::Vector3d foot_pos_world;
   Eigen::Vector3d joint_state_test;
   Eigen::Vector3d foot_pos_world_test;
@@ -228,20 +229,22 @@ TEST(KinematicsTest, testFKIKFeasibleConfigurations) {
   // Compute the kinematics
   int N = 10000;
   for (int config = 0; config < N; config++) {
-    // Generate valid joint configurations
-    Eigen::Vector3d joint_state = {
-        (quad.getJointUpperLimit(0) - quad.getJointLowerLimit(0)) *
-                (double)rand() / RAND_MAX +
-            quad.getJointLowerLimit(0),
-        (quad.getJointUpperLimit(1) - quad.getJointLowerLimit(1)) *
-                (double)rand() / RAND_MAX +
-            quad.getJointLowerLimit(1),
-        (quad.getJointUpperLimit(2) - quad.getJointLowerLimit(2)) *
-                (double)rand() / RAND_MAX +
-            quad.getJointLowerLimit(2)};
-
     for (int i = 0; i < 4; i++) {
       int leg_index = i;
+
+      // Generate valid joint configurations
+      Eigen::Vector3d joint_state = {(quad.getJointUpperLimit(leg_index, 0) -
+                                      quad.getJointLowerLimit(leg_index, 0)) *
+                                             (double)rand() / RAND_MAX +
+                                         quad.getJointLowerLimit(leg_index, 0),
+                                     (quad.getJointUpperLimit(leg_index, 1) -
+                                      quad.getJointLowerLimit(leg_index, 1)) *
+                                             (double)rand() / RAND_MAX +
+                                         quad.getJointLowerLimit(leg_index, 1),
+                                     (quad.getJointUpperLimit(leg_index, 2) -
+                                      quad.getJointLowerLimit(leg_index, 2)) *
+                                             (double)rand() / RAND_MAX +
+                                         quad.getJointLowerLimit(leg_index, 2)};
 
       // Compute foot positions in this configuration
       quad.worldToFootFKWorldFrame(leg_index, body_pos, body_rpy, joint_state,
@@ -252,12 +255,16 @@ TEST(KinematicsTest, testFKIKFeasibleConfigurations) {
       // otherwise ambiguous.
       quad.worldToFootIKWorldFrame(leg_index, body_pos, body_rpy,
                                    foot_pos_world, joint_state_test);
+
+      // Skip if original configuration was in an alternate configuration
+      if (!joint_state_test.isApprox(joint_state)) continue;
+
       quad.worldToFootFKWorldFrame(leg_index, body_pos, body_rpy,
                                    joint_state_test, foot_pos_world_test);
 
       // Check the answers
       Eigen::Vector3d error = (foot_pos_world - foot_pos_world_test);
-      EXPECT_TRUE(error.norm() <= kinematics_tol);
+      EXPECT_LE(error.norm(), kinematics_tol);
     }
   }
 }
@@ -275,8 +282,7 @@ TEST(KinematicsTest, testFKIKInfeasibleConfigurations) {
   Eigen::Vector3d joint_state_test;
 
   // Define arbitrary maximum foot offset for IK testing
-  double max_offset = abs(quad.getJointLowerLimit(0)) +
-                      quad.getJointLowerLimit(1) + quad.getJointLowerLimit(2);
+  double max_offset = 2.0;
 
   // Test random foot positions to make sure nothing breaks
   int N = 10000;
@@ -333,18 +339,6 @@ TEST(KinematicsTest, testBodyToFootFK) {
   // Compute the kinematics
   int N = 10000;
   for (int config = 0; config < N; config++) {
-    // Generate valid joint configurations
-    Eigen::Vector3d joint_state = {
-        (quad.getJointUpperLimit(0) - quad.getJointLowerLimit(0)) *
-                (double)rand() / RAND_MAX +
-            quad.getJointLowerLimit(0),
-        (quad.getJointUpperLimit(1) - quad.getJointLowerLimit(1)) *
-                (double)rand() / RAND_MAX +
-            quad.getJointLowerLimit(1),
-        (quad.getJointUpperLimit(2) - quad.getJointLowerLimit(2)) *
-                (double)rand() / RAND_MAX +
-            quad.getJointLowerLimit(2)};
-
     // Generate valid body orientations
     Eigen::Vector3d body_pos = {
         (pos_max - pos_min) * rand() / RAND_MAX + pos_min,
@@ -359,6 +353,20 @@ TEST(KinematicsTest, testBodyToFootFK) {
     Eigen::Matrix4d g_world_body = quad.createAffineMatrix(body_pos, body_rpy);
 
     for (int leg_index = 0; leg_index < 4; leg_index++) {
+      // Generate valid joint configurations
+      Eigen::Vector3d joint_state = {(quad.getJointUpperLimit(leg_index, 0) -
+                                      quad.getJointLowerLimit(leg_index, 0)) *
+                                             (double)rand() / RAND_MAX +
+                                         quad.getJointLowerLimit(leg_index, 0),
+                                     (quad.getJointUpperLimit(leg_index, 1) -
+                                      quad.getJointLowerLimit(leg_index, 1)) *
+                                             (double)rand() / RAND_MAX +
+                                         quad.getJointLowerLimit(leg_index, 1),
+                                     (quad.getJointUpperLimit(leg_index, 2) -
+                                      quad.getJointLowerLimit(leg_index, 2)) *
+                                             (double)rand() / RAND_MAX +
+                                         quad.getJointLowerLimit(leg_index, 2)};
+
       // Compute the foot position in world frame with FK then tranform into
       // body frame
       quad.worldToFootFKWorldFrame(leg_index, body_pos, body_rpy, joint_state,
@@ -375,4 +383,184 @@ TEST(KinematicsTest, testBodyToFootFK) {
       EXPECT_TRUE(g_body_foot_test.isApprox(g_body_foot));
     }
   }
+}
+
+TEST(KinematicsTest, testMotorModel) {
+  // Declare kinematics object
+  QuadKD quad_kd;
+
+  Eigen::VectorXd state_vel(12);
+  Eigen::VectorXd valid_input(12);
+  Eigen::VectorXd invalid_input(12);
+  Eigen::VectorXd constrained_input(12);
+
+  state_vel << 0, 0, 0, 10, 10, 10, 0, 0, 0, 10, 10, 10;
+  valid_input << 10, 10, 10, 10, 10, 10, -10, -10, -10, -10, -10, -10;
+  invalid_input << 40, 10, 10, 10, 10, 10, -10, -10, -10, -10, -10, -10;
+
+  bool valid_result =
+      quad_kd.applyMotorModel(valid_input, state_vel, constrained_input);
+  bool invalid_result =
+      quad_kd.applyMotorModel(invalid_input, state_vel, constrained_input);
+
+  EXPECT_TRUE(valid_result == true);
+  EXPECT_TRUE(invalid_result == false);
+
+  int N = 1000;
+  int count = 0;
+  auto t_start = std::chrono::steady_clock::now();
+  for (int i = 0; i < N; i++) {
+    count++;
+    bool valid_result =
+        quad_kd.applyMotorModel(valid_input, state_vel, constrained_input);
+  }
+  auto t_end = std::chrono::steady_clock::now();
+
+  std::chrono::duration<double> t_diff =
+      std::chrono::duration_cast<std::chrono::duration<double>>(t_end -
+                                                                t_start);
+  double average_time = t_diff.count() / count;
+
+  std::cout << "Average applyMotorModel time = " << average_time << " s"
+            << std::endl;
+
+  EXPECT_TRUE(average_time <= 1e-6);
+}
+
+TEST(KinematicsTest, testConvertCentroidalToFullBody) {
+  // Declare kinematics object
+  QuadKD quad_kd;
+
+  // Declare known variables
+  Eigen::VectorXd body_state(12);
+  Eigen::VectorXd foot_positions(12);
+  Eigen::VectorXd foot_velocities(12);
+  Eigen::VectorXd foot_acc(12);
+  Eigen::VectorXd grfs(12);
+  std::vector<int> contact_mode;
+
+  // Declare unknown variables
+  Eigen::VectorXd joint_positions(12);
+  Eigen::VectorXd joint_velocities(12);
+  Eigen::VectorXd torques(12);
+  Eigen::VectorXd state_violation, control_violation;
+
+  // Define terrain map
+  grid_map::GridMap map({"z"});
+  double map_height = 0;
+  map.setGeometry(grid_map::Length(10.0, 10.0), 0.1,
+                  grid_map::Position(0.0, 0.0));
+  for (grid_map::GridMapIterator it(map); !it.isPastEnd(); ++it) {
+    grid_map::Position position;
+    map.getPosition(*it, position);
+    map.at("z", *it) = map_height;
+  }
+
+  int N_yaw = 10;
+  for (int i = 0; i < N_yaw; i++) {
+    // Define the nominal standing height and random x,y,yaw
+    double h = 0.3;
+    double yaw = 2 * M_PI * (double)rand() / RAND_MAX - M_PI;
+    double x = 2 * (double)rand() / RAND_MAX - 1;
+    double y = 2 * (double)rand() / RAND_MAX - 1;
+    grid_map::Position pos = {x, y};
+    body_state << x, y, h + map.atPosition("z", pos), 0, 0, yaw, 0, 0, 0, 0, 0,
+        0;
+
+    // Extract components of the state
+    Eigen::Vector3d body_pos = body_state.segment<3>(0);
+    Eigen::Vector3d body_rpy = body_state.segment<3>(3);
+    Eigen::VectorXd body_vel = body_state.tail(6);
+
+    // Solve FK for nominal joint angles to get foot positions
+    for (int i = 0; i < 4; i++) {
+      Eigen::Vector3d nominal_hip_pos_world;
+      quad_kd.worldToNominalHipFKWorldFrame(i, body_pos, body_rpy,
+                                            nominal_hip_pos_world);
+      nominal_hip_pos_world[2] = 0;
+      foot_positions.segment<3>(3 * i) = nominal_hip_pos_world;
+    }
+
+    // Define dynamic parameters for a trot
+    double m = 11.5;
+    double g = 9.81;
+    grfs << 0, 0, 0.5 * m * g, 0, 0, 0, 0, 0, 0, 0, 0, 0.5 * m * g;
+    contact_mode = {1, 0, 0, 1};
+
+    // Define foot velocities (feet not in contact have upwards velocity)
+    foot_velocities.setZero();
+    double foot_vel_z = 1.0;
+    foot_velocities[5] = foot_vel_z;
+    foot_velocities[8] = foot_vel_z;
+    foot_acc.setZero();
+
+    // Perform conversion
+    bool is_exact = quad_kd.convertCentroidalToFullBody(
+        body_state, foot_positions, foot_velocities, grfs, joint_positions,
+        joint_velocities, torques);
+
+    // Compute expected joint positions
+    double l1 = quad_kd.getLinkLength(0, 2);
+    Eigen::VectorXd joint_positions_expected(12), joint_velocities_expected(12);
+    joint_positions_expected << 0, asin(0.5 * h / l1), 2 * asin(0.5 * h / l1),
+        0, asin(0.5 * h / l1), 2 * asin(0.5 * h / l1), 0, asin(0.5 * h / l1),
+        2 * asin(0.5 * h / l1), 0, asin(0.5 * h / l1), 2 * asin(0.5 * h / l1);
+
+    // Compute expected joint velocities
+    double hip_vel_expected =
+        -0.5 * foot_vel_z / (l1 * cos(joint_positions_expected[4]));
+    double knee_vel_expected = 2 * hip_vel_expected;
+    joint_velocities_expected << 0, 0, 0, 0, hip_vel_expected,
+        knee_vel_expected, 0, hip_vel_expected, knee_vel_expected, 0, 0, 0;
+
+    // Check joint positions and velocities match
+    EXPECT_TRUE(is_exact);
+    EXPECT_TRUE(joint_positions.isApprox(joint_positions_expected));
+    EXPECT_TRUE(joint_velocities.isApprox(joint_velocities_expected));
+
+    // Check validity
+    bool is_state_valid = quad_kd.isValidCentroidalState(
+        body_state, foot_positions, foot_velocities, grfs, map, joint_positions,
+        joint_velocities, torques, state_violation, control_violation);
+    EXPECT_TRUE(is_state_valid);
+
+    body_state[2] += 0.5;
+    is_exact = quad_kd.convertCentroidalToFullBody(
+        body_state, foot_positions, foot_velocities, grfs, joint_positions,
+        joint_velocities, torques);
+    EXPECT_FALSE(is_exact);
+
+    // Check validity
+    is_state_valid = quad_kd.isValidCentroidalState(
+        body_state, foot_positions, foot_velocities, grfs, map, joint_positions,
+        joint_velocities, torques, state_violation, control_violation);
+    EXPECT_FALSE(is_state_valid);
+  }
+
+  // Print results if desired
+  // std::cout << "joint_positions\n" << joint_positions << std::endl;
+  // std::cout << "joint_velocities\n" << joint_velocities << std::endl;
+  // std::cout << "torques\n" << torques << std::endl;
+
+  // Check timing characteristics
+  int N = 1000;
+  int count = 0;
+  auto t_start = std::chrono::steady_clock::now();
+  for (int i = 0; i < N; i++) {
+    count++;
+    quad_kd.convertCentroidalToFullBody(body_state, foot_positions,
+                                        foot_velocities, grfs, joint_positions,
+                                        joint_velocities, torques);
+  }
+  auto t_end = std::chrono::steady_clock::now();
+
+  std::chrono::duration<double> t_diff =
+      std::chrono::duration_cast<std::chrono::duration<double>>(t_end -
+                                                                t_start);
+  double average_time = t_diff.count() / count;
+
+  std::cout << "Average convertCentroidalToFullBody time = " << average_time
+            << " s" << std::endl;
+
+  EXPECT_TRUE(average_time < 1e-4);
 }
