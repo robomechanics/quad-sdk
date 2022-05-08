@@ -84,7 +84,7 @@ class NMPCController {
 
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
 
-  int N_;
+  int N_, N_max_, N_min_;
 
   // Number of states in different components
   const int n_body_ = 12, n_foot_ = 24, n_joints_ = 24, n_tail_ = 4,

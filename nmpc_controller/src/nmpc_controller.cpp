@@ -5,6 +5,9 @@ NMPCController::NMPCController() {
   ros::param::get("/local_planner/horizon_length", N_);
   ros::param::get("/local_planner/timestep", dt_);
 
+  N_max_ = N_;
+  N_min_ = 10;
+
   // Load system parameters
   double mu, panic_weights, constraint_panic_weights, Q_temporal_factor,
       R_temporal_factor;
@@ -171,8 +174,8 @@ NMPCController::NMPCController() {
   app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
   app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
 
-  app_->Options()->SetNumericValue("max_wall_time", 40.0 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 40.0 * dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 3.0 * dt_);
+  app_->Options()->SetNumericValue("max_cpu_time", 3.0 * dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();
@@ -203,6 +206,10 @@ bool NMPCController::computeLegPlan(
   mynlp_->foot_pos_world_ = foot_positions_world;
   mynlp_->foot_vel_world_ = foot_velocities_world;
   mynlp_->terrain_ = terrain;
+
+  adaptive_complexity_schedule_.resize(N_);
+  adaptive_complexity_schedule_.setZero();
+
   mynlp_->update_solver(initial_state, ref_traj, foot_positions_body,
                         contact_schedule, adaptive_complexity_schedule_,
                         ref_ground_height, first_element_duration,
@@ -217,6 +224,22 @@ bool NMPCController::computeLegPlan(
   diagnostics_.compute_time = timer.reportSilent();
 
   state_traj.conservativeResize(N_, n_body_);
+
+  // if (N_ % 2 == 0) {
+  //   N_ += 3;
+  // } else {
+  //   N_ -= 3;
+  // }
+  // N_ = 20 + std::floor(5 * cos(M_PI * ros::Time::now().toSec()));
+
+  if (diagnostics_.compute_time > dt_) {
+    N_ =
+        std::max(N_ - (int)std::floor(diagnostics_.compute_time / dt_), N_min_);
+  } else {
+    N_ = std::min(N_ + 1, N_max_);
+  }
+
+  std::cout << "N_ = " << N_ << std::endl;
 
   return success;
 }
@@ -265,8 +288,8 @@ bool NMPCController::computePlan(
   Eigen::VectorXi complexity_schedule =
       updateAdaptiveComplexitySchedule(state_traj_lifted, control_traj_lifted);
 
-  std::cout << "complexity_schedule = " << complexity_schedule.transpose()
-            << std::endl;
+  // std::cout << "complexity_schedule = " << complexity_schedule.transpose()
+  //           << std::endl;
 
   if (status == Solve_Succeeded) {
     mynlp_->warm_start_ = true;

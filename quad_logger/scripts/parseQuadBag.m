@@ -192,12 +192,12 @@ if isempty(localPlanData)
     warning('No data on local plan topic');
 else
     localPlan.time = cell2mat(cellfun(@(m) double(m.StateTimestamp.Sec) + double(m.StateTimestamp.Nsec)*1E-9, localPlanData, 'UniformOutput', 0));
-    localPlan.elementTimes = cell2mat(cellfun(@(m) double(m.Diagnostics.ElementTimes'), localPlanData, 'UniformOutput', 0));
+    localPlan.elementTimes = cellfun(@(m) double(m.Diagnostics.ElementTimes'), localPlanData, 'UniformOutput', 0);
     localPlan.solveTime = cell2mat(cellfun(@(m) m.Diagnostics.ComputeTime, localPlanData, 'UniformOutput', 0));
     localPlan.cost = cell2mat(cellfun(@(m) m.Diagnostics.Cost, localPlanData, 'UniformOutput', 0));
     localPlan.iterations = cell2mat(cellfun(@(m) m.Diagnostics.Iterations, localPlanData, 'UniformOutput', 0));
     localPlan.horizonLength = cell2mat(cellfun(@(m) m.Diagnostics.HorizonLength, localPlanData, 'UniformOutput', 0));
-    localPlan.complexitySchedule = cell2mat(cellfun(@(m) double(m.Diagnostics.ComplexitySchedule'), localPlanData, 'UniformOutput', 0));
+    localPlan.complexitySchedule = cellfun(@(m) double(m.Diagnostics.ComplexitySchedule'), localPlanData, 'UniformOutput', 0);
 end
 
 % Localize time to the first message
@@ -242,7 +242,10 @@ end
 
 if ~isempty(fieldnames(localPlan))
     localPlan.time = localPlan.time - startTime;
-    localPlan.elementTimes = localPlan.elementTimes + localPlan.time;
+    for i = 1:length(localPlan.elementTimes)
+        shiftedElementTimes = localPlan.elementTimes{i} + localPlan.time(i);
+        localPlan.elementTimes{i} = shiftedElementTimes;
+    end
     data.localPlan = localPlan;
 else
     data.localPlan = [];

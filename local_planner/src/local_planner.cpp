@@ -281,26 +281,17 @@ void LocalPlanner::getStateAndReferencePlan() {
   ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(
       current_state_(0), current_state_(1));
 
-  // Update the body plan to use for linearization
-  if (body_plan_.rows() < N_) {
+  // Update the body plan to use for foot planning
+  int N_current_plan = body_plan_.rows();
+  if (N_current_plan < N_) {
     // Cold start with reference  plan
-    body_plan_ = ref_body_plan_;
+    body_plan_.conservativeResize(N_, 12);
 
     // Initialize with the current foot positions
-    for (int i = 0; i < N_; i++) {
+    for (int i = N_current_plan; i < N_; i++) {
+      body_plan_.row(i) = ref_body_plan_.row(i);
       foot_positions_body_.row(i) = current_foot_positions_body_;
       foot_positions_world_.row(i) = current_foot_positions_world_;
-    }
-  } else {
-    // Only shift the foot position if it's a solve for a new plan index
-    if (!same_plan_index_) {
-      body_plan_.topRows(N_ - 1) = body_plan_.bottomRows(N_ - 1);
-      grf_plan_.topRows(N_ - 2) = grf_plan_.bottomRows(N_ - 2);
-
-      foot_positions_body_.topRows(N_ - 1) =
-          foot_positions_body_.bottomRows(N_ - 1);
-      foot_positions_world_.topRows(N_ - 1) =
-          foot_positions_world_.bottomRows(N_ - 1);
     }
   }
 
@@ -467,26 +458,17 @@ void LocalPlanner::getStateAndTwistInput() {
   // Use the standard walk primitive
   ref_primitive_plan_.setZero(N_);
 
-  // Update the body plan to use for linearization
-  if (body_plan_.rows() < N_) {
+  // Update the body plan to use for foot planning
+  int N_current_plan = body_plan_.rows();
+  if (N_current_plan < N_) {
     // Cold start with reference  plan
-    body_plan_ = ref_body_plan_;
+    body_plan_.conservativeResize(N_, 12);
 
     // Initialize with the current foot positions
-    for (int i = 0; i < N_; i++) {
+    for (int i = N_current_plan; i < N_; i++) {
+      body_plan_.row(i) = ref_body_plan_.row(i);
       foot_positions_body_.row(i) = current_foot_positions_body_;
       foot_positions_world_.row(i) = current_foot_positions_world_;
-    }
-  } else {
-    // Only shift the foot position if it's a solve for a new plan index
-    if (!same_plan_index_) {
-      body_plan_.topRows(N_ - 1) = body_plan_.bottomRows(N_ - 1);
-      grf_plan_.topRows(N_ - 2) = grf_plan_.bottomRows(N_ - 2);
-
-      foot_positions_body_.topRows(N_ - 1) =
-          foot_positions_body_.bottomRows(N_ - 1);
-      foot_positions_world_.topRows(N_ - 1) =
-          foot_positions_world_.bottomRows(N_ - 1);
     }
   }
 
@@ -550,6 +532,7 @@ bool LocalPlanner::computeLocalPlan() {
           terrain_grid_, body_plan_, grf_plan_))
     return false;
 
+  N_current_ = body_plan_.rows();
   foot_positions_world_ = grf_positions_world;
   for (size_t i = 0; i < 4; i++) {
     foot_positions_world_.col(3 * i + 2) =
@@ -596,7 +579,7 @@ void LocalPlanner::publishLocalPlan() {
       future_footholds_msg, foot_plan_msg);
 
   // Add body, foot, joint, and grf data to the local plan message
-  for (int i = 0; i < N_ - 1; i++) {
+  for (int i = 0; i < N_current_ - 1; i++) {
     // Add the state information
     quad_msgs::RobotState robot_state_msg;
     robot_state_msg.body = quad_utils::eigenToBodyStateMsg(body_plan_.row(i));

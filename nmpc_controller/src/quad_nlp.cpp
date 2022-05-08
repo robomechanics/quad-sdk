@@ -130,6 +130,7 @@ quadNLP::quadNLP(int N, double dt, double mu, double panic_weights,
 }
 
 quadNLP::quadNLP(const quadNLP &nlp) {
+  N_ = nlp.N_;
   w0_ = nlp.w0_;
   z_L0_ = nlp.z_L0_;
   z_U0_ = nlp.z_U0_;
@@ -1133,7 +1134,7 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
   get_primal_state_var(z_U0_, 0).fill(0);
 
   for (int i = 0; i < N_ - 1; i++) {
-    i_prev = std::min(i + shift_idx, N_ - 2);
+    i_prev = std::min(i + shift_idx, nlp_prev.N_ - 2);
 
     n_shared = std::min(n_vec_[i + 1], nlp_prev.n_vec_[i_prev + 1]);
     m_shared = std::min(m_vec_[i], nlp_prev.m_vec_[i_prev]);
@@ -1219,8 +1220,8 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
     // If this element is newly lifted, update with nominal otherwise leave
     // unchanged (may be one timestep old)
     if (n_vec_[i + 1] > nlp_prev.n_vec_[i + 1]) {
-      std::cout << "Complexity at i = " << i
-                << " increased, disabling warm start" << std::endl;
+      // std::cout << "Complexity at i = " << i
+      //           << " increased, disabling warm start" << std::endl;
       warm_start_ = false;
 
       if (n_vec_[i + 1] > n_shared) {
@@ -1368,9 +1369,13 @@ void quadNLP::update_solver(
     }
   }
 
+  // warm_start_ = false;
+
   // If the complexity schedule has changed, update the problem structure
   bool new_structure =
-      adaptive_complexity_schedule != this->adaptive_complexity_schedule_;
+      (adaptive_complexity_schedule != this->adaptive_complexity_schedule_) ||
+      adaptive_complexity_schedule.size() !=
+          this->adaptive_complexity_schedule_.size();
 
   if (new_structure) {
     this->adaptive_complexity_schedule_ = adaptive_complexity_schedule;
@@ -1633,24 +1638,24 @@ void quadNLP::update_structure() {
   // std::cout << "complexity_schedule.size() = " << complexity_schedule.size()
   //           << std::endl;
   // std::cout << "N_ = " << N_ << std::endl;
-  std::cout << "cmplx_sch = " << complexity_schedule.transpose() << std::endl;
-  std::cout << "sys_id_sch = " << sys_id_schedule_.transpose() << std::endl;
-  std::cout << "n_vec_ =    " << n_vec_.transpose() << std::endl;
-  std::cout << "m_vec_ =    " << m_vec_.transpose() << std::endl;
-  std::cout << "n_cost_vec_ =    " << n_cost_vec_.transpose() << std::endl;
-  std::cout << "m_cost_vec_ =    " << m_cost_vec_.transpose() << std::endl;
-  std::cout << "n_slack_vec_ = " << n_slack_vec_.transpose() << std::endl;
-  std::cout << "g_vec_ =      " << g_vec_.transpose() << std::endl;
+  // std::cout << "cmplx_sch = " << complexity_schedule.transpose() <<
+  // std::endl; std::cout << "sys_id_sch = " << sys_id_schedule_.transpose() <<
+  // std::endl; std::cout << "n_vec_ =    " << n_vec_.transpose() << std::endl;
+  // std::cout << "m_vec_ =    " << m_vec_.transpose() << std::endl;
+  // std::cout << "n_cost_vec_ =    " << n_cost_vec_.transpose() << std::endl;
+  // std::cout << "m_cost_vec_ =    " << m_cost_vec_.transpose() << std::endl;
+  // std::cout << "n_slack_vec_ = " << n_slack_vec_.transpose() << std::endl;
+  // std::cout << "g_vec_ =      " << g_vec_.transpose() << std::endl;
   // std::cout << "g_vec_.sum() = " << g_vec_.sum() << std::endl;
-  std::cout << "g_slack_vec_ = " << g_slack_vec_.transpose() << std::endl;
+  // std::cout << "g_slack_vec_ = " << g_slack_vec_.transpose() << std::endl;
   // std::cout << "g_vec_.sum() + n_vars_slack_ = " << g_vec_.sum() +
   // n_vars_slack_
   //           << std::endl;
 
-  std::cout << "n_constraints_ = " << n_constraints_ << std::endl;
-  std::cout << "n_vars_ = " << n_vars_ << std::endl;
-  std::cout << "n_vars_primal_ = " << n_vars_primal_ << std::endl;
-  std::cout << "n_vars_slack_ = " << n_vars_slack_ << std::endl;
+  // std::cout << "n_constraints_ = " << n_constraints_ << std::endl;
+  // std::cout << "n_vars_ = " << n_vars_ << std::endl;
+  // std::cout << "n_vars_primal_ = " << n_vars_primal_ << std::endl;
+  // std::cout << "n_vars_slack_ = " << n_vars_slack_ << std::endl;
 }
 
 void quadNLP::get_lifted_trajectory(Eigen::MatrixXd &state_traj_lifted,

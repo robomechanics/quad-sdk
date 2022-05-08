@@ -99,10 +99,15 @@ markerSizeSimple = 3;
 markerSizeComplex = 6;
 
 % Extract times into vectors
-trajTimes = repmat(localPlan.time,1,size(localPlan.elementTimes,2));
-trajTimesVec = trajTimes(:);
-elementTimesVec = localPlan.elementTimes(:);
-complexityScheduleVec = localPlan.complexitySchedule(:);
+elementTimesVec = [];
+complexityScheduleVec = [];
+trajTimesVec = [];
+for i = 1:length(localPlan.elementTimes)
+    horizonLength = localPlan.horizonLength(i);
+    trajTimesVec = [trajTimesVec; localPlan.time(i)*ones(horizonLength,1)];
+    elementTimesVec = [elementTimesVec; localPlan.elementTimes{i}'];
+    complexityScheduleVec = [complexityScheduleVec; localPlan.complexitySchedule{i}'];
+end
 
 % Sort into simple and complex sets
 simpleIdx = find(complexityScheduleVec==0);
@@ -125,7 +130,7 @@ end
 xlabel('Current Time, $i$ (s)');
 ylabel('Predicted Time, $k$ (s)');
 axis equal
-axis([0, max(localPlan.time), 0, max(localPlan.elementTimes, [], 'all')])
+axis([0, max(localPlan.time), 0, max(localPlan.time, [], 'all')])
 set(predictionHorizonFig, 'Position', [100 100 600 600])
 
 %% Export
