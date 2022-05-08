@@ -10,19 +10,11 @@ using namespace Ipopt;
 #endif
 
 // Class constructor
-quadNLP::quadNLP(
-    int N, double dt, double mu, double panic_weights,
-    double constraint_panic_weights, double Q_temporal_factor,
-    double R_temporal_factor, int n_simple, int n_complex, int m_simple,
-    int m_complex, int g_simple, int g_complex, int n_cost_simple,
-    int n_cost_complex, int m_cost_simple, int m_cost_complex,
-    const Eigen::VectorXd &Q_complex, const Eigen::VectorXd &R_complex,
-    const Eigen::VectorXd &x_min_complex, const Eigen::VectorXd &x_max_complex,
-    const Eigen::VectorXd &x_min_complex_soft,
-    const Eigen::VectorXd &x_max_complex_soft,
-    const Eigen::VectorXd &u_min_complex, const Eigen::VectorXd &u_max_complex,
-    const Eigen::VectorXd &g_min_complex, const Eigen::VectorXd &g_max_complex,
-    const Eigen::VectorXi &fixed_complexity_schedule) {
+quadNLP::quadNLP(int N, double dt, double mu, double panic_weights,
+                 double constraint_panic_weights, double Q_temporal_factor,
+                 double R_temporal_factor,
+                 const Eigen::VectorXi &fixed_complexity_schedule,
+                 const NLPConfig &config) {
   // Load constant parameters
   dt_ = dt;
   mu_ = mu;
@@ -33,21 +25,24 @@ quadNLP::quadNLP(
   constraint_panic_weights_ = constraint_panic_weights;
 
   // Load dimension parameters
-  n_simple_ = n_simple;
-  n_complex_ = n_complex;
-  n_null_ = n_complex - n_simple;
-  m_simple_ = m_simple;
-  m_complex_ = m_complex;
-  m_null_ = m_complex - m_simple;
-  g_simple_ = g_simple;
-  g_complex_ = g_complex;
-  n_cost_simple_ = n_cost_simple;
-  n_cost_complex_ = n_cost_complex;
-  m_cost_simple_ = m_cost_simple;
-  m_cost_complex_ = m_cost_complex;
+  config_ = config;
 
-  Q_complex_ = Q_complex;
-  R_complex_ = R_complex;
+  std::cout << "config_.x_dim_complex = " << config_.x_dim_complex << std::endl;
+  std::cout << "config_.x_dim_cost_complex = " << config_.x_dim_cost_complex
+            << std::endl;
+  std::cout << "config_.u_dim_complex = " << config_.u_dim_complex << std::endl;
+  std::cout << "config_.u_dim_cost_complex = " << config_.u_dim_cost_complex
+            << std::endl;
+  std::cout << "config_.g_dim_complex = " << config_.g_dim_complex << std::endl;
+  std::cout << "config_.x_dim_simple = " << config_.x_dim_simple << std::endl;
+  std::cout << "config_.x_dim_cost_simple = " << config_.x_dim_cost_simple
+            << std::endl;
+  std::cout << "config_.u_dim_simple = " << config_.u_dim_simple << std::endl;
+  std::cout << "config_.u_dim_cost_simple = " << config_.u_dim_cost_simple
+            << std::endl;
+  std::cout << "config_.g_dim_simple = " << config_.g_dim_simple << std::endl;
+  std::cout << "config_.Q_complex = " << config_.Q_complex << std::endl;
+  std::cout << "config_.R_complex = " << config_.R_complex << std::endl;
 
   // feet location initialized by nominal position
   foot_pos_body_ = Eigen::MatrixXd(N_, 12);
@@ -60,43 +55,38 @@ quadNLP::quadNLP(
         -0.098, 0, 0.2263, 0.098, 0;
   }
 
-  // Load state and control bounds
-  x_min_complex_ = x_min_complex;
-  x_max_complex_ = x_max_complex;
-  x_min_complex_soft_ = x_min_complex_soft;
-  x_max_complex_soft_ = x_max_complex_soft;
-  u_min_complex_ = u_min_complex;
-  u_max_complex_ = u_max_complex;
-  g_min_complex_ = g_min_complex;
-  g_max_complex_ = g_max_complex;
+  // Compute initial kinematics information
+  quadKD_ = std::make_shared<quad_utils::QuadKD>();
+  Eigen::VectorXd initial_state(12);
+  initial_state.fill(0);
+  initial_state(2) = 0.2;
+  x_null_nom_.resize(24);
+  x_null_nom_.setZero();
+  for (int i = 0; i < 4; i++) {
+    Eigen::Vector3d joint_state;
+    quadKD_->worldToFootIKWorldFrame(
+        i, initial_state.segment(0, 3), initial_state.segment(3, 3),
+        foot_pos_world_.row(0).segment(3 * i, 3), joint_state);
+    x_null_nom_.segment<3>(3 * i) = joint_state;
+  }
 
-  double abad_nom = 0.248694;
-  double hip_nom = 0.760144;
-  double knee_nom = 1.52029;
-  x_null_nom_.resize(n_joints_);
-  x_null_nom_ << -abad_nom, hip_nom, knee_nom, -abad_nom, hip_nom, knee_nom,
-      abad_nom, hip_nom, knee_nom, abad_nom, hip_nom, knee_nom, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0;
-
-  // Define which constraints will be relaxed
+  // Define which constraints will be relaxed - hardcoded for now but could be
+  // loaded from parameters
   g_relaxed_ = 2 * num_feet_;
-  int g_relaxed_idx = 52;
+  int g_relaxed_first_idx = 52;
   g_min_complex_soft_.resize(g_relaxed_);
   g_max_complex_soft_.resize(g_relaxed_);
   constraint_panic_weights_vec_.resize(g_relaxed_);
 
-  // Start relaxed constraints here
+  // Determine indices of relaxed constraints
   relaxed_primal_constraint_idxs_in_element_ = Eigen::ArrayXi::LinSpaced(
-      g_relaxed_, g_relaxed_idx, g_relaxed_idx + g_relaxed_ - 1);
+      g_relaxed_, g_relaxed_first_idx, g_relaxed_first_idx + g_relaxed_ - 1);
 
-  // Load knee constraint bounds
+  // Load relaxed constraint bounds
   g_min_complex_soft_.head(num_feet_).fill(-2e19);
-  g_max_complex_soft_.head(num_feet_).fill(-0.02);
+  g_max_complex_soft_.head(num_feet_).fill(0);
   g_min_complex_soft_.tail(num_feet_).fill(-2e19);
   g_max_complex_soft_.tail(num_feet_).fill(-0.05);
-
-  // std::cout << "g_max_complex_soft_ = " << g_max_complex_soft_ << std::endl;
-  // std::cout << "g_max_complex_ = " << g_max_complex_ << std::endl;
 
   loadCasadiFuncs();
   loadConstraintNames();
@@ -197,8 +187,10 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
 
   for (int i = 0; i < N_ - 1; ++i) {
     // Inputs bound
-    get_primal_control_var(x_l_matrix, i) = u_min_complex_.head(m_vec_[i]);
-    get_primal_control_var(x_u_matrix, i) = u_max_complex_.head(m_vec_[i]);
+    get_primal_control_var(x_l_matrix, i) =
+        config_.u_min_complex.head(m_vec_[i]);
+    get_primal_control_var(x_u_matrix, i) =
+        config_.u_max_complex.head(m_vec_[i]);
 
     // States bound
     get_primal_state_var(x_l_matrix, i + 1).fill(-2e19);
@@ -220,27 +212,20 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
               .matrix();
     }
 
-    // Add bounds if not covered by panic variables - JN Changes
-    // if (n_vec_[i + 1] > n_simple_) {
-    //   get_primal_state_var(x_l_matrix, i + 1).tail(n_null_) =
-    //       x_min_complex_.tail(n_null_);
-    //   get_primal_state_var(x_u_matrix, i + 1).tail(n_null_) =
-    //       x_max_complex_.tail(n_null_);
-    // }
-
     // Constraints bound - leave to enforce hard constraints
-    get_primal_constraint_vals(g_l_matrix, i) = g_min_complex_.head(g_vec_[i]);
-    get_primal_constraint_vals(g_u_matrix, i) = g_max_complex_.head(g_vec_[i]);
+    get_primal_constraint_vals(g_l_matrix, i) =
+        config_.g_min_complex.head(g_vec_[i]);
+    get_primal_constraint_vals(g_u_matrix, i) =
+        config_.g_max_complex.head(g_vec_[i]);
 
     // Panic variable bound
     get_slack_state_var(x_l_matrix, i).fill(0);
     get_slack_state_var(x_u_matrix, i).fill(2e19);
-    // get_slack_state_var(x_u_matrix, i).head(n_simple_).fill(0);
 
     if (n_slack_vec_[i] > 0) {
       // xmin
       get_slack_constraint_vals(g_l_matrix, i).head(n_slack_vec_[i]) =
-          x_min_complex_soft_.head(n_slack_vec_[i]);
+          config_.x_min_complex_soft.head(n_slack_vec_[i]);
       get_slack_constraint_vals(g_l_matrix, i)(2, 0) = ground_height_(0, i);
       get_slack_constraint_vals(g_u_matrix, i).head(n_slack_vec_[i]).fill(2e19);
 
@@ -249,7 +234,7 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
           .tail(n_slack_vec_[i])
           .fill(-2e19);
       get_slack_constraint_vals(g_u_matrix, i).tail(n_slack_vec_[i]) =
-          x_max_complex_soft_.head(n_slack_vec_[i]);
+          config_.x_max_complex_soft.head(n_slack_vec_[i]);
     }
 
     // Relaxed constraints bound
@@ -388,10 +373,10 @@ bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
     Eigen::VectorXd xk =
         get_primal_state_var(w, i + 1).head(n_cost_vec_[i]) - x_nom;
 
-    Eigen::VectorXd Q_i =
-        (Q_complex_ * std::pow(Q_temporal_factor_, i)).head(n_cost_vec_[i]);
-    Eigen::VectorXd R_i =
-        (R_complex_ * std::pow(R_temporal_factor_, i)).head(m_cost_vec_[i]);
+    Eigen::VectorXd Q_i = (config_.Q_complex * std::pow(Q_temporal_factor_, i))
+                              .head(n_cost_vec_[i]);
+    Eigen::VectorXd R_i = (config_.R_complex * std::pow(R_temporal_factor_, i))
+                              .head(m_cost_vec_[i]);
 
     // Scale the cost by time duration
     if (i == 0) {
@@ -399,30 +384,12 @@ bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
       R_i = R_i * first_element_duration_ / dt_;
     }
 
-    // std::cout << "i = " << i << std::endl;
-    // std::cout << "sys_id_schedule_[i] = " << sys_id_schedule_[i] <<
-    // std::endl; std::cout << "n_cost_vec_[i] = " << n_cost_vec_[i] <<
-    // std::endl; std::cout << "m_cost_vec_[i] = " << m_cost_vec_[i] <<
-    // std::endl; std::cout << "x = " << get_primal_state_var(w, i +
-    // 1).head(n_cost_vec_[i])
-    //           << std::endl;
-    // std::cout << "u = " << get_primal_control_var(w, i).head(m_cost_vec_[i])
-    //           << std::endl;
-    // std::cout << "x_nom = " << x_nom << std::endl;
-    // std::cout << "u_nom = " << u_nom << std::endl;
-    // std::cout << "xk = " << xk << std::endl;
-    // std::cout << "uk = " << uk << std::endl;
-    // std::cout << "Q_i = " << Q_i << std::endl;
-    // std::cout << "R_i = " << R_i << std::endl;
-
     obj_value += (xk.transpose() * Q_i.asDiagonal() * xk / 2 +
                   uk.transpose() * R_i.asDiagonal() * uk / 2)(0, 0);
     obj_value +=
         panic_weights_ * get_slack_state_var(w, i).sum() +
         constraint_panic_weights_ * get_slack_constraint_var(w, i).sum();
   }
-  // std::cout << "Stop and check cost" << std::endl;
-  // throw std::runtime_error("Stop");
   return true;
 }
 
@@ -464,10 +431,10 @@ bool quadNLP::eval_grad_f(Index n, const Number *x, bool new_x,
     Eigen::VectorXd xk =
         get_primal_state_var(w, i + 1).head(n_cost_vec_[i]) - x_nom;
 
-    Eigen::VectorXd Q_i =
-        (Q_complex_ * std::pow(Q_temporal_factor_, i)).head(n_cost_vec_[i]);
-    Eigen::VectorXd R_i =
-        (R_complex_ * std::pow(R_temporal_factor_, i)).head(m_cost_vec_[i]);
+    Eigen::VectorXd Q_i = (config_.Q_complex * std::pow(Q_temporal_factor_, i))
+                              .head(n_cost_vec_[i]);
+    Eigen::VectorXd R_i = (config_.R_complex * std::pow(R_temporal_factor_, i))
+                              .head(m_cost_vec_[i]);
 
     // Scale the cost by time duration
     if (i == 0) {
@@ -487,11 +454,51 @@ bool quadNLP::eval_grad_f(Index n, const Number *x, bool new_x,
   return true;
 }
 
-Eigen::VectorXd quadNLP::eval_g_single_fe(int sys_id, double dt,
-                                          const Eigen::VectorXd &x0,
-                                          const Eigen::VectorXd &u,
-                                          const Eigen::VectorXd &x1,
-                                          const Eigen::VectorXd &params) {
+Eigen::VectorXd quadNLP::eval_g_single_complex_fe(int i,
+                                                  const Eigen::VectorXd &x0,
+                                                  const Eigen::VectorXd &u,
+                                                  const Eigen::VectorXd &x1) {
+  Eigen::VectorXd dynamic_var(x0.size() + u.size() + x1.size());
+
+  if (dynamic_var.size() != ncol_mat_(COMPLEX, JAC)) {
+    printf("Expected %d vars, got %d instead.\n", ncol_mat_(COMPLEX, JAC),
+           (int)dynamic_var.size());
+    throw std::runtime_error(
+        "Number of decision variables does not match that expected by "
+        "constraints");
+  }
+
+  dynamic_var << x0, u, x1;
+
+  // Select the system ID
+  int sys_id = COMPLEX;
+
+  // Load the params for this fe
+  Eigen::VectorXd pk(54);
+  pk[0] = (i == 0) ? first_element_duration_ : dt_;
+  pk[1] = mu_;
+  pk.segment(2, 12) = foot_pos_body_.row(i + 1);
+  pk.segment(14, 12) = foot_pos_world_.row(i + 1);
+  pk.segment(26, 12) = foot_vel_world_.row(i + 1);
+  if (use_terrain_constraint_ && sys_id_schedule_[i] == COMPLEX) {
+    for (int j = 0; j < num_feet_; j++) {
+      Eigen::Vector3d foot_pos = x1.segment(n_body_ + 3 * j, 3);
+
+      pk(38 + j) =
+          terrain_.atPosition("z_inpainted", foot_pos.head<2>(), interp_type_);
+      pk(42 + 3 * j) = terrain_.atPosition("normal_vectors_x",
+                                           foot_pos.head<2>(), interp_type_);
+      pk(43 + 3 * j) = terrain_.atPosition("normal_vectors_y",
+                                           foot_pos.head<2>(), interp_type_);
+      pk(44 + 3 * j) = terrain_.atPosition("normal_vectors_z",
+                                           foot_pos.head<2>(), interp_type_);
+    }
+  } else {
+    pk.segment(38, 4).fill(-10);
+    pk.segment(42, 12).fill(1);
+  }
+
+  // Set up the work function
   casadi_int sz_arg;
   casadi_int sz_res;
   casadi_int sz_iw;
@@ -505,24 +512,10 @@ Eigen::VectorXd quadNLP::eval_g_single_fe(int sys_id, double dt,
 
   eval_incref_vec_[sys_id][FUNC]();
 
-  Eigen::VectorXd dynamic_var(x0.size() + u.size() + x1.size()),
-      pk(2 + params.size());
-
-  if (dynamic_var.size() != ncol_mat_(sys_id, JAC)) {
-    printf("Expected %d vars, got %d instead.\n", ncol_mat_(sys_id, JAC),
-           (int)dynamic_var.size());
-    throw std::runtime_error(
-        "Number of decision variables does not match that expected by "
-        "constraints");
-  }
-
-  dynamic_var << x0, u, x1;
-  pk << dt, mu_, params;
-
   arg[0] = dynamic_var.data();
-  arg[1] = pk.data();
 
-  Eigen::VectorXd constr_vars(nrow_mat_(sys_id, FUNC));
+  arg[1] = pk.data();
+  Eigen::VectorXd constr_vars(nrow_mat_(COMPLEX, FUNC));
   res[0] = constr_vars.data();
 
   int mem = eval_checkout_vec_[sys_id][FUNC]();
@@ -592,11 +585,6 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     eval_vec_[sys_id][FUNC](arg, res, iw, _w, mem);
     eval_release_vec_[sys_id][FUNC](mem);
     eval_decref_vec_[sys_id][FUNC]();
-
-    // std::cout << "i = " << i << std::endl;
-    // std::cout << "pk = \n" << pk << std::endl;
-    // std::cout << "get_primal_constraint_vals(g_matrix, i) = \n"
-    //           << get_primal_constraint_vals(g_matrix, i) << std::endl;
   }
 
   // Evaluate relaxed state and constraint bounds
@@ -623,9 +611,6 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
           gk - gk_panic.tail(g_slack_vec_[i]);
     }
   }
-
-  // std::cout << "g_matrix = \n" << g_matrix << std::endl;
-
   return true;
 }
 
@@ -987,9 +972,11 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
     // Hessian from cost
     for (size_t i = 0; i < N_ - 1; i++) {
       Eigen::VectorXd Q_i =
-          (Q_complex_ * std::pow(Q_temporal_factor_, i)).head(n_cost_vec_[i]);
+          (config_.Q_complex * std::pow(Q_temporal_factor_, i))
+              .head(n_cost_vec_[i]);
       Eigen::VectorXd R_i =
-          (R_complex_ * std::pow(R_temporal_factor_, i)).head(m_cost_vec_[i]);
+          (config_.R_complex * std::pow(R_temporal_factor_, i))
+              .head(m_cost_vec_[i]);
 
       // Scale the cost by time duration
       if (i == 0) {
@@ -1132,7 +1119,6 @@ void quadNLP::finalize_solution(SolverReturn status, Index n, const Number *x,
 
 void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
   // Shift decision variables for 1 time step
-  // quad_utils::FunctionTimer timer("shift_initial_guess");
 
   w0_.conservativeResize(n_vars_);
   z_L0_.conservativeResize(n_vars_);
@@ -1236,7 +1222,6 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
       std::cout << "Complexity at i = " << i
                 << " increased, disabling warm start" << std::endl;
       warm_start_ = false;
-      // mu0_ = 1e-1;
 
       if (n_vec_[i + 1] > n_shared) {
         std::cout << "No null data from prev solve, using nominal" << std::endl;
@@ -1324,7 +1309,7 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
   }
   // Update the last state
 
-  if (n_vec_[N_ - 1] > n_simple_) {
+  if (n_vec_[N_ - 1] > config_.x_dim_simple) {
     get_primal_foot_state_var(w0_, N_ - 1).head(n_foot_ / 2) =
         foot_pos_world_.row(N_ - 1);
     get_primal_foot_state_var(w0_, N_ - 1).tail(n_foot_ / 2) =
@@ -1393,7 +1378,7 @@ void quadNLP::update_solver(
   }
   // Update initial state
   x_current_.segment(0, n_body_) = initial_state.head(n_body_);
-  if (n_vec_[0] > n_simple_) {
+  if (n_vec_[0] > config_.x_dim_simple) {
     x_current_.segment(n_body_, n_foot_ / 2) = foot_pos_world_.row(0);
     x_current_.segment(n_body_ + n_foot_ / 2, n_foot_ / 2) =
         foot_vel_world_.row(0);
@@ -1419,7 +1404,7 @@ void quadNLP::update_solver(
 
     // Initialize current state
     get_primal_body_state_var(w0_, 0) = x_current_.head(n_body_);
-    if (n_vec_[0] > n_simple_) {
+    if (n_vec_[0] > config_.x_dim_simple) {
       get_primal_foot_state_var(w0_, 0).head(n_foot_ / 2) =
           foot_pos_world_.row(0);
       get_primal_foot_state_var(w0_, 0).tail(n_foot_ / 2) =
@@ -1430,7 +1415,7 @@ void quadNLP::update_solver(
     // Initialize future state predictions and controls
     for (size_t i = 0; i < N_ - 1; i++) {
       get_primal_body_state_var(w0_, i + 1) = x_reference_.col(i + 1);
-      if (n_vec_[i + 1] == n_complex_) {
+      if (n_vec_[i + 1] == config_.x_dim_complex) {
         get_primal_foot_state_var(w0_, i + 1).head(n_foot_ / 2) =
             foot_pos_world_.row(i + 1);
         get_primal_foot_state_var(w0_, i + 1).tail(n_foot_ / 2) =
@@ -1513,14 +1498,17 @@ void quadNLP::update_structure() {
     }
 
     // Update the number of state vars and constraints for this fe
-    n_vec_[i] = (complexity_schedule[i] == 1) ? n_complex_ : n_simple_;
-    m_vec_[i] = (complexity_schedule[i] == 1) ? m_complex_ : m_simple_;
-    n_cost_vec_[i] =
-        (complexity_schedule[i + 1] == 1) ? n_cost_complex_ : n_cost_simple_;
-    m_cost_vec_[i] =
-        (complexity_schedule[i] == 1) ? m_cost_complex_ : m_cost_simple_;
-    n_slack_vec_[i] =
-        (complexity_schedule[i + 1] == 1) ? n_complex_ : n_simple_;
+    n_vec_[i] = (complexity_schedule[i] == 1) ? config_.x_dim_complex
+                                              : config_.x_dim_simple;
+    m_vec_[i] = (complexity_schedule[i] == 1) ? config_.u_dim_complex
+                                              : config_.u_dim_simple;
+    n_cost_vec_[i] = (complexity_schedule[i + 1] == 1)
+                         ? config_.x_dim_cost_complex
+                         : config_.x_dim_cost_simple;
+    m_cost_vec_[i] = (complexity_schedule[i] == 1) ? config_.u_dim_cost_complex
+                                                   : config_.u_dim_cost_simple;
+    n_slack_vec_[i] = (complexity_schedule[i + 1] == 1) ? config_.x_dim_complex
+                                                        : config_.x_dim_simple;
 
     g_vec_[i] = nrow_mat_(sys_id_schedule_[i], FUNC);
     g_slack_vec_[i] =
@@ -1546,7 +1534,8 @@ void quadNLP::update_structure() {
     curr_hess_var_idx += nnz_mat_(sys_id_schedule_[i], HESS);
   }
 
-  n_vec_[N_ - 1] = (complexity_schedule[N_ - 1] == 1) ? n_complex_ : n_simple_;
+  n_vec_[N_ - 1] = (complexity_schedule[N_ - 1] == 1) ? config_.x_dim_complex
+                                                      : config_.x_dim_simple;
   x_idxs_[N_ - 1] = curr_var_idx;
   curr_var_idx += n_vec_[N_ - 1];
 
@@ -1627,15 +1616,15 @@ void quadNLP::update_structure() {
   }
 
   // Uncomment to check relaxed constraint nnz
-  std::cout << "iRow_mat_relaxed_[sys_id][JAC] = "
-            << iRow_mat_relaxed_[COMPLEX][JAC] << std::endl;
-  std::cout << "jCol_mat_relaxed_[sys_id][JAC] = "
-            << jCol_mat_relaxed_[COMPLEX][JAC] << std::endl;
-  std::cout << "iRow_mat_relaxed_[sys_id][JAC].size() = "
-            << iRow_mat_relaxed_[COMPLEX][JAC].size() << std::endl;
-  std::cout << "jCol_mat_relaxed_[sys_id][JAC].size() = "
-            << jCol_mat_relaxed_[COMPLEX][JAC].size() << std::endl;
-  std::cout << "nnz_mat_ = " << nnz_mat_ << std::endl;
+  // std::cout << "iRow_mat_relaxed_[sys_id][JAC] = "
+  //           << iRow_mat_relaxed_[COMPLEX][JAC] << std::endl;
+  // std::cout << "jCol_mat_relaxed_[sys_id][JAC] = "
+  //           << jCol_mat_relaxed_[COMPLEX][JAC] << std::endl;
+  // std::cout << "iRow_mat_relaxed_[sys_id][JAC].size() = "
+  //           << iRow_mat_relaxed_[COMPLEX][JAC].size() << std::endl;
+  // std::cout << "jCol_mat_relaxed_[sys_id][JAC].size() = "
+  //           << jCol_mat_relaxed_[COMPLEX][JAC].size() << std::endl;
+  // std::cout << "nnz_mat_ = " << nnz_mat_ << std::endl;
 
   compute_nnz_jac_g();
   compute_nnz_h();
@@ -1662,4 +1651,77 @@ void quadNLP::update_structure() {
   std::cout << "n_vars_ = " << n_vars_ << std::endl;
   std::cout << "n_vars_primal_ = " << n_vars_primal_ << std::endl;
   std::cout << "n_vars_slack_ = " << n_vars_slack_ << std::endl;
+}
+
+void quadNLP::get_lifted_trajectory(Eigen::MatrixXd &state_traj_lifted,
+                                    Eigen::MatrixXd &control_traj_lifted) {
+  Eigen::VectorXd x0, u, x1;
+  Eigen::VectorXd joint_positions(12), joint_velocities(12), joint_torques(12);
+
+  // Load current state data
+  x0 = get_primal_state_var(w0_, 0);
+
+  // Lift the current state if simple
+  if (x0.size() < config_.x_dim_complex) {
+    quadKD_->convertCentroidalToFullBody(
+        x0.head(n_body_), foot_pos_world_.row(0), foot_vel_world_.row(0),
+        get_primal_body_control_var(w0_, 0), joint_positions, joint_velocities,
+        joint_torques);
+    x0.conservativeResize(config_.x_dim_complex);
+    x0.segment(n_body_, n_foot_ / 2) = foot_pos_world_.row(0);
+    x0.segment(n_body_ + n_foot_ / 2, n_foot_ / 2) = foot_vel_world_.row(0);
+    x0.segment(n_body_ + n_foot_, n_joints_ / 2) = joint_positions;
+    x0.segment(n_body_ + n_foot_ + n_joints_ / 2, n_joints_ / 2) =
+        joint_velocities;
+  }
+  state_traj_lifted.row(0) = x0;
+
+  // Loop through trajectory, lifting as needed and evaluating constraints
+  for (int i = 0; i < N_ - 1; i++) {
+    // Get control and next state from decision vars
+    u = get_primal_control_var(w0_, i);
+    x1 = get_primal_state_var(w0_, i + 1);
+
+    // Lift state if in simple system
+    if (x1.size() < config_.x_dim_complex) {
+      quadKD_->convertCentroidalToFullBody(
+          x1.head(n_body_), foot_pos_world_.row(i + 1),
+          foot_vel_world_.row(i + 1), u.head(n_body_), joint_positions,
+          joint_velocities, joint_torques);
+      x1.conservativeResize(config_.x_dim_complex);
+      x1.segment(n_body_, n_foot_ / 2) = foot_pos_world_.row(i + 1);
+      x1.segment(n_body_ + n_foot_ / 2, n_foot_ / 2) =
+          foot_vel_world_.row(i + 1);
+      x1.segment(n_body_ + n_foot_, n_joints_ / 2) = joint_positions;
+      x1.segment(n_body_ + n_foot_ + n_joints_ / 2, n_joints_ / 2) =
+          joint_velocities;
+    }
+
+    // Inverse dynamics on foot dynamics for simple states (cubic interpolation)
+    if (u.size() < config_.u_dim_complex) {
+      u.conservativeResize(config_.u_dim_complex);
+
+      double dt = (i == 0) ? first_element_duration_ : dt_;
+
+      Eigen::VectorXd acc_0 =
+          (6 * (foot_pos_world_.row(i + 1) - foot_pos_world_.row(i)) -
+           dt * 2 * (foot_vel_world_.row(i + 1) + foot_vel_world_.row(i) * 2)) /
+          (dt * dt);
+
+      Eigen::VectorXd acc_1 =
+          (6 * (-foot_pos_world_.row(i + 1) + foot_pos_world_.row(i)) +
+           dt * 2 * (2 * foot_vel_world_.row(i + 1) + foot_vel_world_.row(i))) /
+          (dt * dt);
+
+      u.tail(config_.u_dim_null).head(m_foot_ / 2) = foot_mass_ * acc_0;
+      u.tail(config_.u_dim_null).tail(m_foot_ / 2) = foot_mass_ * acc_1;
+    }
+
+    // Update state and control trajectories
+    state_traj_lifted.row(i + 1) = x1;
+    control_traj_lifted.row(i) = u;
+
+    // Update prior state
+    x0 = x1;
+  }
 }

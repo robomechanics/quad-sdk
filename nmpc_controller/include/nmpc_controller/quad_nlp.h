@@ -54,6 +54,33 @@ enum SystemID {
 
 enum FunctionID { FUNC, JAC, HESS };
 
+// Struct for storing parameter information
+struct NLPConfig {
+  int x_dim_complex = 0;
+  int u_dim_complex = 0;
+  int g_dim_complex = 0;
+  int x_dim_cost_complex = 0;
+  int u_dim_cost_complex = 0;
+  int x_dim_simple = 0;
+  int u_dim_simple = 0;
+  int g_dim_simple = 0;
+  int x_dim_cost_simple = 0;
+  int u_dim_cost_simple = 0;
+  int x_dim_null = 0;
+  int u_dim_null = 0;
+
+  Eigen::VectorXd Q_complex;
+  Eigen::VectorXd R_complex;
+  Eigen::VectorXd x_min_complex;
+  Eigen::VectorXd x_max_complex;
+  Eigen::VectorXd x_min_complex_soft;
+  Eigen::VectorXd x_max_complex_soft;
+  Eigen::VectorXd u_min_complex;
+  Eigen::VectorXd u_max_complex;
+  Eigen::VectorXd g_min_complex;
+  Eigen::VectorXd g_max_complex;
+};
+
 // Struct for storing diagnostic information
 struct NLPDiagnostics {
   double compute_time, cost;
@@ -81,27 +108,18 @@ class quadNLP : public TNLP {
   /// Diagnostics struct for gathering metadata
   NLPDiagnostics diagnostics_;
 
+  /// Config struct for storing meta parameters
+  NLPConfig config_;
+
+  // QuadKD object for kinematics calculations
+  std::shared_ptr<quad_utils::QuadKD> quadKD_;
+
   // Horizon length, state dimension, input dimension, and constraints dimension
   int N_, g_relaxed_;
 
   // Number of states in different components
   const int n_body_ = 12, n_foot_ = 24, n_joints_ = 24, n_tail_ = 4,
             m_body_ = 12, m_foot_ = 24, m_tail_ = 2;
-
-  /// State dimension for simple and complex models
-  int n_simple_, n_complex_;
-
-  /// Input dimension for simple and complex models
-  int m_simple_, m_complex_;
-
-  /// Constraint dimension for simple and complex models
-  int g_simple_, g_complex_;
-
-  /// State dimension for cost
-  int n_cost_simple_, n_cost_complex_;
-
-  /// Control dimension for cost
-  int m_cost_simple_, m_cost_complex_;
 
   /// Vectors of state and constraint dimension for each finite element
   Eigen::VectorXi n_vec_, n_slack_vec_, m_vec_, g_vec_, g_slack_vec_,
@@ -114,7 +132,7 @@ class quadNLP : public TNLP {
   const bool always_constrain_feet_ = true;
 
   /// Boolean for whether to include the terrain in the foot height constraint
-  const bool use_terrain_constraint_ = true;
+  const bool use_terrain_constraint_ = false;
 
   const grid_map::InterpolationMethods interp_type_ =
       grid_map::InterpolationMethods::INTER_LINEAR;
@@ -139,9 +157,6 @@ class quadNLP : public TNLP {
   /// enum)
   static const int num_func_id_ = 3;
 
-  // State cost weighting, input cost weighting
-  Eigen::VectorXd Q_simple_, R_simple_, Q_complex_, R_complex_;
-
   // Scale factor for Q and R
   double Q_temporal_factor_, R_temporal_factor_;
 
@@ -163,6 +178,9 @@ class quadNLP : public TNLP {
   /// Mass of the platform (set to zero to ignore nominal ff)
   const double mass_ = 13.3;
 
+  /// Mass of the feet (as modeled in casadi)
+  const double foot_mass_ = 0.01;
+
   /// Gravity constant
   const double grav_ = 9.81;
 
@@ -172,12 +190,7 @@ class quadNLP : public TNLP {
   /// Terrain map
   grid_map::GridMap terrain_;
 
-  // State bounds, input bounds, constraint bounds
-  Eigen::VectorXd x_min_complex_, x_max_complex_, u_min_complex_,
-      u_max_complex_, g_min_complex_, g_max_complex_;
-
-  Eigen::VectorXd x_min_complex_soft_, x_max_complex_soft_, g_min_complex_soft_,
-      g_max_complex_soft_;
+  Eigen::VectorXd g_min_complex_soft_, g_max_complex_soft_;
 
   // Ground height structure for the height bounds
   Eigen::MatrixXd ground_height_;
@@ -270,19 +283,9 @@ class quadNLP : public TNLP {
   /** Default constructor */
   quadNLP(int N, double dt, double mu, double panic_weights,
           double constraint_panic_weights, double Q_temporal_factor,
-          double R_temporal_factor, int n_simple, int n_complex, int m_simple,
-          int m_complex, int g_simple, int g_complex, int x_dim_cost_simple,
-          int x_dim_cost_complex, int u_dim_cost_simple, int u_dim_cost_complex,
-          const Eigen::VectorXd &Q_complex, const Eigen::VectorXd &R_complex,
-          const Eigen::VectorXd &x_min_complex,
-          const Eigen::VectorXd &x_max_complex,
-          const Eigen::VectorXd &x_min_complex_soft,
-          const Eigen::VectorXd &x_max_complex_soft,
-          const Eigen::VectorXd &u_min_complex,
-          const Eigen::VectorXd &u_max_complex,
-          const Eigen::VectorXd &g_min_complex,
-          const Eigen::VectorXd &g_max_complex,
-          const Eigen::VectorXi &fixed_complexity_schedule);
+          double R_temporal_factor,
+          const Eigen::VectorXi &fixed_complexity_schedule,
+          const NLPConfig &config);
 
   /**
    * @brief Custom deep copy constructor
@@ -316,11 +319,9 @@ class quadNLP : public TNLP {
                            Number *grad_f);
 
   /** Method to return the constraint residual for requested data */
-  Eigen::VectorXd eval_g_single_fe(int sys_id, double dt,
-                                   const Eigen::VectorXd &x0,
-                                   const Eigen::VectorXd &u,
-                                   const Eigen::VectorXd &x1,
-                                   const Eigen::VectorXd &params);
+  Eigen::VectorXd eval_g_single_complex_fe(int i, const Eigen::VectorXd &x0,
+                                           const Eigen::VectorXd &u,
+                                           const Eigen::VectorXd &x1);
 
   /** Method to return the constraint residuals */
   virtual bool eval_g(Index n, const Number *x, bool new_x, Index m, Number *g);
@@ -366,6 +367,9 @@ class quadNLP : public TNLP {
       const bool &init);
 
   void update_structure();
+
+  void get_lifted_trajectory(Eigen::MatrixXd &state_traj_lifted,
+                             Eigen::MatrixXd &control_traj_lifted);
 
   // Get the idx-th state variable from decision variable
   template <typename T>

@@ -63,8 +63,8 @@ class NMPCController {
       Eigen::MatrixXd &control_traj);
 
   /** Method to return the constraint residual for requested data */
-  Eigen::VectorXi evalLiftedTrajectoryConstraints(
-      Eigen::MatrixXd &state_null_traj, Eigen::MatrixXd &control_null_traj);
+  Eigen::VectorXi updateAdaptiveComplexitySchedule(
+      Eigen::MatrixXd &state_traj_lifted, Eigen::MatrixXd &control_traj_lifted);
 
   /**
    * @brief Return the NLP diagnostics
@@ -86,15 +86,9 @@ class NMPCController {
 
   int N_;
 
-  int x_dim_simple_, x_dim_cost_simple_, u_dim_simple_, u_dim_cost_simple_,
-      g_dim_simple_, x_dim_complex_, x_dim_cost_complex_, u_dim_complex_,
-      u_dim_cost_complex_, g_dim_complex_;
-
   // Number of states in different components
   const int n_body_ = 12, n_foot_ = 24, n_joints_ = 24, n_tail_ = 4,
             m_body_ = 12, m_foot_ = 24, m_tail_ = 2;
-
-  int x_dim_null_, u_dim_null_;
 
   double dt_;
 
@@ -105,6 +99,9 @@ class NMPCController {
 
   /// Diagnostics struct for gathering metadata
   NLPDiagnostics diagnostics_;
+
+  /// Config struct for storing meta parameters
+  NLPConfig config_;
 };
 
 #endif  // MPC_CONTROLLER_H

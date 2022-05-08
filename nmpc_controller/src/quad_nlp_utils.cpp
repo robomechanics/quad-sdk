@@ -332,6 +332,11 @@ void quadNLP::loadConstraintNames() {
   }
 
   for (int i = 0; i < num_feet; i++) {
+    constr_names[curr_constr] = "knee_height_leg_" + std::to_string(i);
+    curr_constr++;
+  }
+
+  for (int i = 0; i < num_feet; i++) {
     constr_names[curr_constr] = "fk_pos_x_foot_" + std::to_string(i);
     curr_constr++;
 
@@ -350,11 +355,6 @@ void quadNLP::loadConstraintNames() {
     curr_constr++;
 
     constr_names[curr_constr] = "fk_vel_z_foot_" + std::to_string(i);
-    curr_constr++;
-  }
-
-  for (int i = 0; i < num_feet; i++) {
-    constr_names[curr_constr] = "knee_height_leg_" + std::to_string(i);
     curr_constr++;
   }
 
