@@ -124,23 +124,31 @@ bool InverseDynamicsController::computeLegCommandArray(
 
     // Contact sensing
     for (size_t i = 0; i < num_feet_; i++) {
-      if (last_contact_sensing_msg_.contact_sensing.at(i)) {
-        if (last_grf_sensor_msg_->contact_states.at(i) &&
-            last_grf_sensor_msg_->vectors.at(i).z >= 5) {
-          last_contact_sensing_msg_.contact_sensing.at(i) = false;
-        }
-      } else {
-        if (last_contact_sensing_msg_.get_new_plan_after_recovering.at(i)) {
-          if (contact_mode.at(i)) {
-            if ((current_foot_positions(3 * i + 2) - body_state(2)) < -0.295) {
-              if (!(last_grf_sensor_msg_->contact_states.at(i) &&
-                    last_grf_sensor_msg_->vectors.at(i).z >= 5)) {
-                last_contact_sensing_msg_.contact_sensing.at(i) = true;
-                last_contact_sensing_msg_.get_new_plan_after_recovering.at(i) =
-                    false;
-              }
-            }
+      bool clear = false;
+      while (!clear) {
+        if (last_contact_sensing_msg_.contact_sensing.at(i)) {
+          if (last_grf_sensor_msg_->contact_states.at(i) &&
+              last_grf_sensor_msg_->vectors.at(i).z >= 5) {
+            last_contact_sensing_msg_.contact_sensing.at(i) = false;
+            continue;
           }
+          clear = true;
+        } else if (!last_contact_sensing_msg_.contact_sensing.at(i) &&
+                   !last_contact_sensing_msg_.get_new_plan_after_recovering.at(
+                       i)) {
+          clear = true;
+        } else if (contact_mode.at(i)) {
+          if (current_foot_positions(3 * i + 2) - body_state(2) < -0.295 &&
+              !(last_grf_sensor_msg_->contact_states.at(i) &&
+                last_grf_sensor_msg_->vectors.at(i).z >= 5)) {
+            last_contact_sensing_msg_.contact_sensing.at(i) = true;
+            last_contact_sensing_msg_.get_new_plan_after_recovering.at(i) =
+                false;
+            continue;
+          }
+          clear = true;
+        } else {
+          clear = true;
         }
       }
     }
@@ -197,22 +205,19 @@ bool InverseDynamicsController::computeLegCommandArray(
             .motor_commands.at(j)
             .torque_ff = tau_array(joint_idx);
 
-        if (last_contact_sensing_msg_.contact_sensing.at(i) ||
-            !last_contact_sensing_msg_.get_new_plan_after_recovering.at(i)) {
-          if (last_grf_sensor_msg_->contact_states.at(i) &&
-              last_grf_sensor_msg_->vectors.at(i).z >= 5) {
-            // It's landing
-            leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
-                landing_kp_.at(j);
-            leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
-                landing_kd_.at(j);
-          } else {
-            // It's retraction
-            leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
-                retraction_kp_.at(j);
-            leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
-                retraction_kd_.at(j);
-          }
+        if (last_contact_sensing_msg_.contact_sensing.at(i)) {
+          // It's retraction
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
+              retraction_kp_.at(j);
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
+              retraction_kd_.at(j);
+        } else if (!last_contact_sensing_msg_.get_new_plan_after_recovering.at(
+                       i)) {
+          // It's landing
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
+              landing_kp_.at(j);
+          leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
+              landing_kd_.at(j);
         } else {
           if (contact_mode.at(i)) {
             if (last_grf_sensor_msg_->contact_states.at(i) &&

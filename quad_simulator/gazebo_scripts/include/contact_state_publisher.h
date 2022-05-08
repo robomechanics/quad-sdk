@@ -78,6 +78,12 @@ class ContactStatePublisher {
 
   /// Publish ready indicator
   bool ready_to_publish_;
+
+  // Low pass filter states
+  std::vector<double> filter_state_;
+
+  // Filter time constant
+  double filter_time_constant_;
 };
 
 #endif  // CONTACT_STATE_PUBLISHER_H
