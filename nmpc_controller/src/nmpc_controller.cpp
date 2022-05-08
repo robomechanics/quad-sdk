@@ -5,9 +5,6 @@ NMPCController::NMPCController() {
   ros::param::get("/local_planner/horizon_length", N_);
   ros::param::get("/local_planner/timestep", dt_);
 
-  N_max_ = N_;
-  N_min_ = 10;
-
   // Load system parameters
   double mu, panic_weights, constraint_panic_weights, Q_temporal_factor,
       R_temporal_factor;
@@ -19,6 +16,12 @@ NMPCController::NMPCController() {
   ros::param::get("/nmpc_controller/R_temporal_factor", R_temporal_factor);
   Q_temporal_factor = std::pow(Q_temporal_factor, 1.0 / (N_ - 2));
   R_temporal_factor = std::pow(R_temporal_factor, 1.0 / (N_ - 2));
+
+  // Determine whether to let horizon length vary or not
+  ros::param::get("/nmpc_controller/enable_variable_horizon",
+                  enable_variable_horizon_);
+  ros::param::get("/nmpc_controller/min_horizon_length", N_min_);
+  N_max_ = N_;
 
   // Define the components, their order, and which are simple
   std::vector<std::string> components = {"body", "feet", "joints"};
@@ -162,7 +165,7 @@ NMPCController::NMPCController() {
 
   app_->Options()->SetStringValue("print_timing_statistics", "no");
   app_->Options()->SetStringValue("linear_solver", "ma57");
-  app_->Options()->SetIntegerValue("print_level", 0);
+  app_->Options()->SetIntegerValue("print_level", 5);
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   app_->Options()->SetStringValue("fixed_variable_treatment",
                                   "make_parameter_nodual");
@@ -174,8 +177,8 @@ NMPCController::NMPCController() {
   app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
   app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
 
-  app_->Options()->SetNumericValue("max_wall_time", 3.0 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 3.0 * dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 4.0 * dt_);
+  app_->Options()->SetNumericValue("max_cpu_time", 4.0 * dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();
@@ -225,21 +228,7 @@ bool NMPCController::computeLegPlan(
 
   state_traj.conservativeResize(N_, n_body_);
 
-  // if (N_ % 2 == 0) {
-  //   N_ += 3;
-  // } else {
-  //   N_ -= 3;
-  // }
-  // N_ = 20 + std::floor(5 * cos(M_PI * ros::Time::now().toSec()));
-
-  if (diagnostics_.compute_time > dt_) {
-    N_ =
-        std::max(N_ - (int)std::floor(diagnostics_.compute_time / dt_), N_min_);
-  } else {
-    N_ = std::min(N_ + 1, N_max_);
-  }
-
-  std::cout << "N_ = " << N_ << std::endl;
+  if (enable_variable_horizon_) updateHorizonLength();
 
   return success;
 }
@@ -275,30 +264,28 @@ bool NMPCController::computePlan(
                                 .transpose();
   }
 
-  Eigen::MatrixXd state_null_traj =
-      Eigen::MatrixXd::Zero(N_, config_.x_dim_null);
-  Eigen::MatrixXd state_null_traj_lift =
-      Eigen::MatrixXd::Zero(N_, config_.x_dim_null);
-  Eigen::MatrixXd control_null_traj =
-      Eigen::MatrixXd::Zero(N_ - 1, config_.u_dim_null);
-
   Eigen::MatrixXd state_traj_lifted(N_, config_.x_dim_complex);
   Eigen::MatrixXd control_traj_lifted(N_ - 1, config_.u_dim_complex);
   mynlp_->get_lifted_trajectory(state_traj_lifted, control_traj_lifted);
   Eigen::VectorXi complexity_schedule =
       updateAdaptiveComplexitySchedule(state_traj_lifted, control_traj_lifted);
 
+  foot_positions = state_traj_lifted.middleCols(n_body_, n_foot_ / 2);
+  foot_velocities =
+      state_traj_lifted.middleCols(n_body_ + n_foot_ / 2, n_foot_ / 2);
+
+  Eigen::MatrixXd foot_control, joint_positions, joint_velocities;
+  foot_control = control_traj_lifted.rightCols(m_foot_);
+  joint_positions =
+      state_traj_lifted.middleCols(n_body_ + n_foot_, n_joints_ / 2);
+  joint_velocities = state_traj_lifted.middleCols(
+      n_body_ + n_foot_ + n_joints_ / 2, n_joints_ / 2);
+
   // std::cout << "complexity_schedule = " << complexity_schedule.transpose()
   //           << std::endl;
 
   if (status == Solve_Succeeded) {
     mynlp_->warm_start_ = true;
-
-    // Eigen::VectorXi constr_vals =
-    //     computeLiftedTrajectory(state_null_traj, control_null_traj);
-
-    // foot_positions = state_null_traj.leftCols(n_foot_ / 2);
-    // foot_velocities = state_null_traj.middleCols(n_foot_ / 2, n_foot_ / 2);
 
     // std::cout << "current body state = \n"
     //           << mynlp_->x_current_.segment(0, n_body_).transpose()
@@ -318,29 +305,19 @@ bool NMPCController::computePlan(
     //           << state_traj - mynlp_->x_reference_.transpose() << std::endl;
     // std::cout << "control_traj body = \n" << control_traj << std::endl;
 
-    // std::cout << "foot pos = \n"
-    //           << state_null_traj.leftCols(n_foot_ / 2) << std::endl;
-    // std::cout << "foot vel = \n"
-    //           << state_null_traj.middleCols(n_foot_ / 2, n_foot_ / 2)
-    //           << std::endl;
+    // std::cout << "foot pos = \n" << foot_positions << std::endl;
+    // std::cout << "foot vel = \n" << foot_velocities << std::endl;
     // std::cout << "foot pos ref = \n" << mynlp_->foot_pos_world_ << std::endl;
     // std::cout << "foot vel ref = \n" << mynlp_->foot_vel_world_ << std::endl;
     // std::cout << "foot pos error = \n"
-    //           << state_null_traj.leftCols(n_foot_ / 2) -
-    //           mynlp_->foot_pos_world_
-    //           << std::endl;
+    //           << foot_positions - mynlp_->foot_pos_world_ << std::endl;
     // std::cout << "foot vel error = \n"
-    //           << state_null_traj.middleCols(n_foot_ / 2, n_foot_ / 2) -
-    //                  mynlp_->foot_vel_world_
-    //           << std::endl
+    //           << foot_velocities - mynlp_->foot_vel_world_ << std::endl
     //           << std::endl;
-    // std::cout << "control_traj foot = \n" << control_null_traj << std::endl;
+    // std::cout << "control_traj foot = \n" << foot_control << std::endl;
 
-    // std::cout << "joint_positions = \n"
-    //           << state_null_traj.middleCols(n_foot_, n_joints_ / 2)
-    //           << std::endl;
-    // std::cout << "joint_velocities = \n"
-    //           << state_null_traj.rightCols(n_joints_ / 2) << std::endl;
+    // std::cout << "joint_positions = \n" << joint_positions << std::endl;
+    // std::cout << "joint_velocities = \n" << joint_velocities << std::endl;
     // throw std::runtime_error("Solve succeeded! Exiting for debug");
 
     return true;
@@ -414,53 +391,38 @@ bool NMPCController::computePlan(
     }
     std::cout << "Done evaluating constraints" << std::endl;
 
-    // std::cout << "Evaluating lifted trajectory" << std::endl;
-    // Eigen::VectorXi constr_vals =
-    //     computeLiftedTrajectory(state_null_traj, control_null_traj);
+    std::cout << "current body state = \n"
+              << mynlp_->x_current_.segment(0, n_body_).transpose()
+              << std::endl;
+    std::cout << "current joint pos = \n"
+              << mynlp_->x_current_.segment(n_body_ + n_foot_, n_joints_ / 2)
+                     .transpose()
+              << std::endl;
+    std::cout << "current joint vel = \n"
+              << mynlp_->x_current_.tail(n_joints_ / 2).transpose()
+              << std::endl;
 
-    // std::cout << "current body state = \n"
-    //           << mynlp_->x_current_.segment(0, n_body_).transpose()
-    //           << std::endl;
-    // std::cout << "current joint pos = \n"
-    //           << mynlp_->x_current_.segment(n_body_ + n_foot_, n_joints_ / 2)
-    //                  .transpose()
-    //           << std::endl;
-    // std::cout << "current joint vel = \n"
-    //           << mynlp_->x_current_.tail(n_joints_ / 2).transpose()
-    //           << std::endl;
+    std::cout << "body_reference = \n"
+              << mynlp_->x_reference_.transpose() << std::endl;
+    std::cout << "body_traj = \n" << state_traj << std::endl;
+    std::cout << "body error = \n"
+              << state_traj - mynlp_->x_reference_.transpose() << std::endl;
+    std::cout << "control_traj body = \n" << control_traj << std::endl;
 
-    // std::cout << "body_reference = \n"
-    //           << mynlp_->x_reference_.transpose() << std::endl;
-    // std::cout << "body_traj = \n" << state_traj << std::endl;
-    // std::cout << "body error = \n"
-    //           << state_traj - mynlp_->x_reference_.transpose() << std::endl;
-    // std::cout << "control_traj body = \n" << control_traj << std::endl;
+    std::cout << "foot pos = \n" << foot_positions << std::endl;
+    std::cout << "foot vel = \n" << foot_velocities << std::endl;
+    std::cout << "foot pos ref = \n" << mynlp_->foot_pos_world_ << std::endl;
+    std::cout << "foot vel ref = \n" << mynlp_->foot_vel_world_ << std::endl;
+    std::cout << "foot pos error = \n"
+              << foot_positions - mynlp_->foot_pos_world_ << std::endl;
+    std::cout << "foot vel error = \n"
+              << foot_velocities - mynlp_->foot_vel_world_ << std::endl
+              << std::endl;
+    std::cout << "control_traj foot = \n" << foot_control << std::endl;
 
-    // std::cout << "foot pos = \n"
-    //           << state_null_traj.leftCols(n_foot_ / 2) << std::endl;
-    // std::cout << "foot vel = \n"
-    //           << state_null_traj.middleCols(n_foot_ / 2, n_foot_ / 2)
-    //           << std::endl;
-    // std::cout << "foot pos ref = \n" << mynlp_->foot_pos_world_ << std::endl;
-    // std::cout << "foot vel ref = \n" << mynlp_->foot_vel_world_ << std::endl;
-    // std::cout << "foot pos error = \n"
-    //           << state_null_traj.leftCols(n_foot_ / 2) -
-    //           mynlp_->foot_pos_world_
-    //           << std::endl;
-    // std::cout << "foot vel error = \n"
-    //           << state_null_traj.middleCols(n_foot_ / 2, n_foot_ / 2) -
-    //                  mynlp_->foot_vel_world_
-    //           << std::endl
-    //           << std::endl;
-    // std::cout << "control_traj foot = \n" << control_null_traj << std::endl;
-
-    // std::cout << "joint_positions = \n"
-    //           << state_null_traj.middleCols(n_foot_, n_joints_ / 2)
-    //           << std::endl;
-    // std::cout << "joint_velocities = \n"
-    //           << state_null_traj.rightCols(n_joints_ / 2) << std::endl;
-
-    // throw std::runtime_error("Solve failed, exiting for debug");
+    std::cout << "joint_positions = \n" << joint_positions << std::endl;
+    std::cout << "joint_velocities = \n" << joint_velocities << std::endl;
+    throw std::runtime_error("Solve failed, exiting for debug");
     return false;
   }
 }
@@ -583,4 +545,24 @@ Eigen::VectorXi NMPCController::updateAdaptiveComplexitySchedule(
   if (max_constraint_violation_fe >= 0)
     adaptive_complexity_schedule[max_constraint_violation_fe] = 8;
   return adaptive_complexity_schedule;
+}
+
+void NMPCController::updateHorizonLength() {
+  // if (N_ % 2 == 0) {
+  //   N_ += 3;
+  // } else {
+  //   N_ -= 3;
+  // }
+  N_ = 20 + std::floor(5 * cos(M_PI * ros::Time::now().toSec()));
+
+  // if (diagnostics_.compute_time > dt_) {
+  //   N_ =
+  //       std::max(N_ - (int)std::floor(diagnostics_.compute_time / dt_),
+  //       N_min_);
+  // } else {
+  //   N_ = std::min(N_ + 1, N_max_);
+  // }
+
+  N_ = std::max(std::min(N_, N_max_), N_min_);
+  std::cout << "N_ = " << N_ << std::endl;
 }

@@ -66,6 +66,9 @@ class NMPCController {
   Eigen::VectorXi updateAdaptiveComplexitySchedule(
       Eigen::MatrixXd &state_traj_lifted, Eigen::MatrixXd &control_traj_lifted);
 
+  /** Method to update the prediction horizon length */
+  void updateHorizonLength();
+
   /**
    * @brief Return the NLP diagnostics
    * @return NLP diagnostics with most recent meta-data
@@ -83,6 +86,8 @@ class NMPCController {
   SmartPtr<IpoptApplication> app_;
 
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
+
+  bool enable_variable_horizon_;
 
   int N_, N_max_, N_min_;
 

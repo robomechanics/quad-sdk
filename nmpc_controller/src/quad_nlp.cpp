@@ -27,23 +27,6 @@ quadNLP::quadNLP(int N, double dt, double mu, double panic_weights,
   // Load dimension parameters
   config_ = config;
 
-  std::cout << "config_.x_dim_complex = " << config_.x_dim_complex << std::endl;
-  std::cout << "config_.x_dim_cost_complex = " << config_.x_dim_cost_complex
-            << std::endl;
-  std::cout << "config_.u_dim_complex = " << config_.u_dim_complex << std::endl;
-  std::cout << "config_.u_dim_cost_complex = " << config_.u_dim_cost_complex
-            << std::endl;
-  std::cout << "config_.g_dim_complex = " << config_.g_dim_complex << std::endl;
-  std::cout << "config_.x_dim_simple = " << config_.x_dim_simple << std::endl;
-  std::cout << "config_.x_dim_cost_simple = " << config_.x_dim_cost_simple
-            << std::endl;
-  std::cout << "config_.u_dim_simple = " << config_.u_dim_simple << std::endl;
-  std::cout << "config_.u_dim_cost_simple = " << config_.u_dim_cost_simple
-            << std::endl;
-  std::cout << "config_.g_dim_simple = " << config_.g_dim_simple << std::endl;
-  std::cout << "config_.Q_complex = " << config_.Q_complex << std::endl;
-  std::cout << "config_.R_complex = " << config_.R_complex << std::endl;
-
   // feet location initialized by nominal position
   foot_pos_body_ = Eigen::MatrixXd(N_, 12);
   foot_pos_world_ = Eigen::MatrixXd(N_, 12);
@@ -51,8 +34,8 @@ quadNLP::quadNLP(int N, double dt, double mu, double panic_weights,
   for (int i = 0; i < N_; ++i) {
     foot_pos_body_.row(i) << -0.2263, -0.098, -0.3, -0.2263, 0.098, -0.3,
         0.2263, -0.098, -0.3, 0.2263, 0.098, -0.3;
-    foot_pos_world_.row(i) << -0.2263, -0.098, 0, -0.2263, 0.098, 0, 0.2263,
-        -0.098, 0, 0.2263, 0.098, 0;
+    foot_pos_world_.row(i) << 0.2263, 0.098, 0, -0.2263, 0.098, 0, 0.2263,
+        -0.098, 0, -0.2263, -0.098, 0;
   }
 
   // Compute initial kinematics information
@@ -295,6 +278,7 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
             use_terrain_constraint_ && !constrain_next_foot_state;
 
         if (add_terrain_height_constraint) {
+          int g_foot_height_idx = 52;
           double min_clearance_to_vel_ratio = 0.01;
           double foot_vel_transverse =
               foot_vel_world_.block<1, 2>(i + 1, 3 * j).norm();
@@ -302,7 +286,8 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
               foot_vel_transverse * min_clearance_to_vel_ratio;
           get_relaxed_primal_constraint_vals(g_u_matrix, i)
               .tail(g_slack_vec_[i])(j, 0) = -min_terrain_clearance;
-          // get_primal_constraint_vals(g_u_matrix, i)(52 + j, 0) =
+          // get_primal_constraint_vals(g_u_matrix, i)(g_foot_height_idx + j, 0)
+          // =
           //     -min_terrain_clearance;
         }
       }
@@ -1220,8 +1205,8 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
     // If this element is newly lifted, update with nominal otherwise leave
     // unchanged (may be one timestep old)
     if (n_vec_[i + 1] > nlp_prev.n_vec_[i + 1]) {
-      // std::cout << "Complexity at i = " << i
-      //           << " increased, disabling warm start" << std::endl;
+      std::cout << "Complexity at i = " << i
+                << " increased, disabling warm start" << std::endl;
       warm_start_ = false;
 
       if (n_vec_[i + 1] > n_shared) {

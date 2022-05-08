@@ -129,10 +129,10 @@ class quadNLP : public TNLP {
   const bool apply_slack_to_complex_constr_ = true;
 
   /// Boolean for whether to allow modifications of foot trajectory
-  const bool always_constrain_feet_ = true;
+  const bool always_constrain_feet_ = false;
 
   /// Boolean for whether to include the terrain in the foot height constraint
-  const bool use_terrain_constraint_ = false;
+  const bool use_terrain_constraint_ = true;
 
   const grid_map::InterpolationMethods interp_type_ =
       grid_map::InterpolationMethods::INTER_LINEAR;
