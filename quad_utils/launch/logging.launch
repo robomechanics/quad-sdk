@@ -19,6 +19,7 @@
         /control/contact_sensing
         /control/mode 
         /terrain_map 
+        /terrain_estimation
         /body_plan_continuous
         /body_plan_discrete
         /foot_plan_continuous 
@@ -40,6 +41,7 @@
         /control/contact_sensing
         /control/mode 
         /terrain_map 
+        /terrain_estimation
         /body_plan_continuous
         /body_plan_discrete
         /foot_plan_continuous 
