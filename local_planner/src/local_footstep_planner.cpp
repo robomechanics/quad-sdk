@@ -571,7 +571,7 @@ void LocalFootstepPlanner::loadFootPlanMsgs(
 Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
     const Eigen::Vector3d &foot_position,
     const Eigen::Vector3d &foot_position_prev_solve) const {
-  Eigen::Vector3d foot_position_valid = foot_position;
+  Eigen::Vector3d foot_position_best = foot_position;
   grid_map::Position pos_center, pos_center_aligned, offset, pos_valid;
 
   // Compute the closest index to the nominal and find the offset
@@ -603,11 +603,7 @@ Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
     // Compare to threshold and best so far, accept if valid and better
     if (traversability > foothold_obj_threshold_ &&
         (kin_cost < best_kin_cost)) {
-      foot_position_valid << pos_valid.x(), pos_valid.y(),
-          terrain_grid_.atPosition(
-              "z_inpainted", pos_valid,
-              grid_map::InterpolationMethods::INTER_LINEAR) +
-              toe_radius;
+      foot_position_best.head<2>() = pos_valid;
       best_kin_cost = kin_cost;
     }
   }
@@ -617,7 +613,14 @@ Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
     ROS_WARN_THROTTLE(
         0.1, "No valid foothold found in radius of nominal, returning nominal");
   }
-  return foot_position_valid;
+  double lpf_coeff = 0.5;
+  foot_position_best = lpf_coeff * foot_position_best +
+                       (1 - lpf_coeff) * foot_position_prev_solve;
+  foot_position_best.z() =
+      terrain_grid_.atPosition("z_inpainted", foot_position_best.head<2>(),
+                               grid_map::InterpolationMethods::INTER_LINEAR) +
+      toe_radius;
+  return foot_position_best;
 }
 
 // Compute minimum covering circle problem using Welzl's algorithm
