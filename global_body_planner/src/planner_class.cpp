@@ -47,7 +47,6 @@ State PlannerClass::randomState(const PlannerConfig &planner_config) {
                                                        vel_sigma_log);
 
   double phi = (2.0 * MY_PI) * (double)rand() / RAND_MAX;
-  // double v = planner_config.V_NOM;
   double v = vel_distribution(generator);
   v = std::min(std::max(v, 0.0), planner_config.V_MAX);
   q.vel[0] = v * cos(phi);

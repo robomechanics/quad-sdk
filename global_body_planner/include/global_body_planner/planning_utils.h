@@ -30,6 +30,7 @@
 
 namespace planning_utils {
 
+// TODO(anyone): Format all of these for Doxygen
 struct PlannerConfig {
   // Declare the terrain map object
   FastTerrainMap terrain;
@@ -76,8 +77,12 @@ struct PlannerConfig {
   double ROBOT_H;  // Vertical distance between leg base and bottom of
                    // robot, m
 
-  double body_traversability_threshold;
-  double contact_traversability_threshold;
+  double body_traversability_threshold;  // Min traversability for body
+                                         // (requires the body to not be over a
+                                         // hole unless leaping)
+  double contact_traversability_threshold;  // Min traversability for contact
+                                            // location cannot step on rough
+                                            // surfaces unless leaping
   bool enable_leaping = true;
 
   static const int num_reachability_points =
@@ -246,49 +251,71 @@ const double MY_PI = 3.14159;
 
 // State data structure conversions
 State fullStateToState(const FullState &full_state);
+
 FullState stateToFullState(const State &state, double roll, double pitch,
                            double yaw, double roll_rate, double pitch_rate,
                            double yaw_rate);
+
 void eigenToFullState(const Eigen::VectorXd &s_eig, FullState &s);
+
 Eigen::VectorXd fullStateToEigen(const FullState &s);
+
 void vectorToFullState(const std::vector<double> v, FullState &s);
+
 void flipDirection(State &state);
+
 void flipDirection(Action &action);
 
 // Print statements
 void printState(const State &vec);
+
 void printFullState(const FullState &vec);
+
 template <typename T>
 void printVector(const std::vector<T> &vec) {
   std::cout << "{";
   for (auto val : vec) std::cout << val << ", ";
   std::cout << "\b\b}";
 }
+
 template <typename T>
 void printVectorNewline(const std::vector<T> &vec) {
   printVector(vec);
   std::cout << std::endl;
 }
+
 void printStateNewline(State vec);
+
 void printAction(Action a);
+
 void printActionNewline(Action a);
+
 void printStateSequence(std::vector<State> state_sequence);
+
 void printInterpStateSequence(std::vector<State> state_sequence,
                               std::vector<double> interp_t);
+
 void printActionSequence(std::vector<Action> action_sequence);
+
 void plotYaw(std::vector<double> interp_t,
              std::vector<FullState> interp_full_path);
 
 // Define some utility functions
 double poseDistance(const State &q1, const State &q2);
+
 double poseDistance(const FullState &q1, const FullState &q2);
+
 double stateDistance(const State &q1, const State &q2);
+
 double poseDistance(const std::vector<double> &v1,
                     const std::vector<double> &v2);
+
 bool isWithinBounds(const State &s1, const State &s2,
                     const PlannerConfig &planner_config);
+
 std::array<double, 3> rotateGRF(const std::array<double, 3> &surface_norm,
                                 const std::array<double, 3> &grf);
+
 Eigen::Vector3d rotateGRF(const Eigen::Vector3d &surface_norm,
                           const Eigen::Vector3d &grf);
 
@@ -299,6 +326,7 @@ void addFullStates(const FullState &start_state,
                    std::vector<State> interp_reduced_path, double dt,
                    std::vector<FullState> &interp_full_path,
                    const PlannerConfig &planner_config);
+
 State interpStateActionPair(const State &s, const Action &a, double t0,
                             double dt, std::vector<State> &interp_plan,
                             std::vector<GRF> &interp_GRF,
@@ -306,6 +334,7 @@ State interpStateActionPair(const State &s, const Action &a, double t0,
                             std::vector<int> &interp_primitive_id,
                             std::vector<double> &interp_length,
                             const PlannerConfig &planner_config);
+
 void getInterpPlan(const FullState &start_state,
                    const std::vector<State> &state_sequence,
                    const std::vector<Action> &action_sequence, double dt,
@@ -317,18 +346,24 @@ void getInterpPlan(const FullState &start_state,
 
 // Terrain-based heuristics
 double getPitchFromState(const State &s, const PlannerConfig &planner_config);
+
 double getDzFromState(const State &s, const PlannerConfig &planner_config);
+
 void setDz(State &s, const PlannerConfig &planner_config);
+
 void setDz(State &s, const Eigen::Vector3d &surf_norm);
+
 inline bool isInMap(const Eigen::Vector3d &pos,
                     const PlannerConfig &planner_config) {
   // Uncomment to use grid_map
-  // return planner_config.terrain_grid_map.isInside(pos.head<2>());
-  return planner_config.terrain.isInRange(pos[0], pos[1]);
+  return planner_config.terrain_grid_map.isInside(pos.head<2>());
+  // return planner_config.terrain.isInRange(pos[0], pos[1]);
 }
+
 inline bool isInMap(const State &s, const PlannerConfig &planner_config) {
   return isInMap(s.pos, planner_config);
 }
+
 inline double getTerrainZ(const Eigen::Vector3d &pos,
                           const PlannerConfig &planner_config) {
   // Uncomment to use grid_map
@@ -337,6 +372,7 @@ inline double getTerrainZ(const Eigen::Vector3d &pos,
   //                                             INTER_TYPE);
   return (planner_config.terrain.getGroundHeight(pos[0], pos[1]));
 }
+
 inline double getTerrainZFiltered(const Eigen::Vector3d &pos,
                                   const PlannerConfig &planner_config) {
   // Uncomment to use grid_map
@@ -345,21 +381,25 @@ inline double getTerrainZFiltered(const Eigen::Vector3d &pos,
   //                                             INTER_TYPE);
   return (planner_config.terrain.getGroundHeightFiltered(pos[0], pos[1]));
 }
+
 inline double getTraversability(const Eigen::Vector3d &pos,
                                 const PlannerConfig &planner_config) {
   return planner_config.terrain_grid_map.atPosition("traversability",
                                                     pos.head<2>(), INTER_TYPE);
 }
+
 inline bool isBodyTraversable(const Eigen::Vector3d &pos,
                               const PlannerConfig &planner_config) {
   return (getTraversability(pos, planner_config) >=
           planner_config.body_traversability_threshold);
 }
+
 inline bool isContactTraversable(const Eigen::Vector3d &pos,
                                  const PlannerConfig &planner_config) {
   return (getTraversability(pos, planner_config) >=
           planner_config.contact_traversability_threshold);
 }
+
 inline Eigen::Vector3d getSurfaceNormalFiltered(
     const State &s, const PlannerConfig &planner_config) {
   // Uncomment to use grid_map
@@ -374,30 +414,37 @@ inline Eigen::Vector3d getSurfaceNormalFiltered(
   return planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0],
                                                               s.pos[1]);
 }
+
 inline double getTerrainZFromState(const State &s,
                                    const PlannerConfig &planner_config) {
   return getTerrainZ(s.pos, planner_config);
 }
+
 inline double getTerrainZFilteredFromState(
     const State &s, const PlannerConfig &planner_config) {
   return getTerrainZFiltered(s.pos, planner_config);
 }
+
 inline double getZRelToTerrain(const Eigen::Vector3d &pos,
                                const PlannerConfig &planner_config) {
   return (pos[2] - getTerrainZ(pos, planner_config));
 }
+
 inline double getZRelToTerrain(const State &s,
                                const PlannerConfig &planner_config) {
   return getZRelToTerrain(s.pos, planner_config);
 }
+
 inline double getZRelToTerrainFiltered(const Eigen::Vector3d &pos,
                                        const PlannerConfig &planner_config) {
   return (pos[2] - getTerrainZFiltered(pos, planner_config));
 }
+
 inline double getZRelToTerrainFiltered(const State &s,
                                        const PlannerConfig &planner_config) {
   return getZRelToTerrainFiltered(s.pos, planner_config);
 }
+
 inline void getMapBounds(const PlannerConfig &planner_config, double &x_min,
                          double &x_max, double &y_min, double &y_max) {
   double eps = 1;
@@ -410,37 +457,48 @@ inline void getMapBounds(const PlannerConfig &planner_config, double &x_min,
 // Kinematics
 State applyStance(const State &s, const Action &a, double t, int phase,
                   const PlannerConfig &planner_config);
+
 State applyStance(const State &s, const Action &a, int phase,
                   const PlannerConfig &planner_config);
+
 State applyFlight(const State &s, double t_f,
                   const PlannerConfig &planner_config);
+
 State applyAction(const State &s, const Action &a,
                   const PlannerConfig &planner_config);
+
 GRF getGRF(const Action &a, double t, int phase,
            const PlannerConfig &planner_config);
+
 Eigen::Vector3d getAcceleration(const Action &a, double t, int phase,
                                 const PlannerConfig &planner_config);
 
 // Action sampling
 Action getRandomAction(const std::array<double, 3> &surf_norm,
                        const PlannerConfig &planner_config);
+
 bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm,
                          Action &a, const PlannerConfig &planner_config);
 
 // Action refinement (for improved feasiblity)
 bool refineAction(const State &s, Action &a,
                   const PlannerConfig &planner_config);
+
 bool refineStance(const State &s, int phase, Action &a,
                   const PlannerConfig &planner_config);
+
 bool refineFlight(const State &s, double &t_f,
                   const PlannerConfig &planner_config);
 
 // Instantaneous validity checking
 bool isValidAction(const Action &a, const PlannerConfig &planner_config);
+
 bool isValidYawRate(const State &s, const Action &a, double t, int phase,
                     const PlannerConfig &planner_config);
+
 bool isValidState(const State &s, const PlannerConfig &planner_config,
                   int phase);
+
 bool isValidState(const State &s, const PlannerConfig &planner_config,
                   int phase, double &max_height);
 

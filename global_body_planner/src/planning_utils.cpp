@@ -649,7 +649,7 @@ bool refineStance(const State &s, int phase, Action &a,
   std::cout << "Starting stance refine, phase = " << phase << std::endl;
 #endif
 
-  // Load parameters
+  // Load parameters (use references for action params that may change)
   double &t_s = (phase == LEAP_STANCE) ? a.t_s_leap : a.t_s_land;
   GRF &grf_stance = (phase == LEAP_STANCE) ? a.grf_0 : a.grf_f;
   double dz_0 = (phase == LEAP_STANCE) ? a.dz_0 : s.vel[2];
@@ -879,18 +879,9 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
     return false;
   }
 
-  // Ensure body is over terrain unless in flight
-  if (!isBodyTraversable(s.pos, planner_config) && phase != FLIGHT) {
-#ifdef DEBUG_INVALID_STATE
-    printf("!isBodyTraversable, phase = %d\n", phase);
-    printStateNewline(s);
-#endif
-    return false;
-  }
-
   // Ensure body is over traversable terrain unless in flight or leaping
   // disabled
-  if (!isContactTraversable(s.pos, planner_config) && phase != FLIGHT &&
+  if (!isBodyTraversable(s.pos, planner_config) && phase != FLIGHT &&
       planner_config.enable_leaping) {
 #ifdef DEBUG_INVALID_STATE
     printf("!isContactTraversable, phase = %d\n", phase);
@@ -968,6 +959,12 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
 #ifdef DEBUG_INVALID_STATE
       printf("reachability_point not in map, phase = %d\n", phase);
 #endif
+      return false;
+    }
+
+    // Make sure legs are over a valid region of the terrain
+    if (!isContactTraversable(reachability_point, planner_config) &&
+        phase != FLIGHT) {
       return false;
     }
 

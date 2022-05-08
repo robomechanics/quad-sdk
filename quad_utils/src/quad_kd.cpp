@@ -701,6 +701,7 @@ bool QuadKD::convertCentroidalToFullBody(const Eigen::VectorXd &body_state,
                                          Eigen::VectorXd &joint_positions,
                                          Eigen::VectorXd &joint_velocities,
                                          Eigen::VectorXd &torques) {
+  // Assume the conversion is exact unless a check below fails
   bool is_exact = true;
 
   // Extract kinematic quantities

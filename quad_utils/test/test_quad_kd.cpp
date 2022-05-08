@@ -537,7 +537,7 @@ TEST(KinematicsTest, testConvertCentroidalToFullBody) {
     EXPECT_FALSE(is_state_valid);
   }
 
-  // // Print results if desired
+  // Print results if desired
   // std::cout << "joint_positions\n" << joint_positions << std::endl;
   // std::cout << "joint_velocities\n" << joint_velocities << std::endl;
   // std::cout << "torques\n" << torques << std::endl;

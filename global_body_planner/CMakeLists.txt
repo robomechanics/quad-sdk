@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(global_body_planner)
 
-## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11 -ffast-math)
+## Compile as C++14, supported in ROS Melodic and newer
+add_compile_options(-std=c++14 -ffast-math)
 
 ## Set default cmake build type to release
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)

@@ -8,7 +8,7 @@ echo "Restarting ghost service to use correct IP"
 sudo service ghost restart
 
 echo "Sourcing quad_utils/scripts/init_robot.sh to source env and setup IPs"
-source ~/catkin_ws/src/quad-software/quad_utils/scripts/init_robot.sh
+source ~/catkin_ws/src/quad-sdk/quad_utils/scripts/init_robot.sh
 
 echo "Launch robot_driver.launch with inverse dynamics controller? (y/n)"
 read input

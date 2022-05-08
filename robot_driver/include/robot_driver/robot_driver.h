@@ -367,7 +367,7 @@ class RobotDriver {
 
   /// Struct of second-order low/high pass filter with derivative/intergral
   struct Filter {
-    // State space model
+    // State-space model
     Eigen::Matrix<double, 2, 2> A;
     Eigen::Matrix<double, 2, 1> B;
     Eigen::Matrix<double, 1, 2> C;
@@ -375,6 +375,8 @@ class RobotDriver {
 
     // Filter states
     std::vector<Eigen::Matrix<double, 2, 1>> x;
+
+    // Filter initialization indicator
     bool init;
   };
 
