@@ -81,6 +81,7 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   // calculate dt
   double dt = (start_time - last_time).toSec();
   last_time = start_time;
+  // std::cout << "this is dt" << dt << std::endl;
 
   /// Collect and Process Data
   // IMU reading linear acceleration
@@ -170,7 +171,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   // a is the corrected IMU linear acceleration (fk hat)
   Eigen::VectorXd a = Eigen::VectorXd::Zero(3);
   a = fk - bf;
-  a[2] = -9.8;
+  // a[2] = -9.8;
 
   g = Eigen::VectorXd::Zero(3);
   g[2] = 9.8;
@@ -337,7 +338,7 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   X.segment(3, 3) = v_pre + delta_X.segment(3, 3);
   Eigen::VectorXd delta_q = delta_X.segment(6, 3);
   Eigen::VectorXd q_upd = this->quaternionDynamics(delta_q, q_pre);
-  X.segment(6, 4) = q_pre;
+  X.segment(6, 4) = q_upd;
   X.segment(10, num_feet * 3) = p_pre + delta_X.segment(9, num_feet * 3);
   X.segment(22, 3) = bf_pre + delta_X.segment(21, 3);
   X.segment(25, 3) = bw_pre + delta_X.segment(24, 3);
@@ -485,6 +486,7 @@ Eigen::MatrixXd EKFEstimator::calcRodrigues(const double& dt,
     default:
       break;
   }
+  output = pow(dt, sub) * output;
   return output;
 }
 
