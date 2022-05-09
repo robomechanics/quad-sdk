@@ -2,10 +2,8 @@
 
     <rosparam command="load" file="$(find quad_utils)/config/topics.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/teleop_twist_keyboard.yaml" />
-    <rosparam command="load" file="$(find quad_utils)/config/ground_truth_publisher.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/terrain_map_publisher.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/grid_map_visualization.yaml" />
-    <rosparam command="load" file="$(find quad_utils)/config/robot_proxy.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/rviz_interface.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/trajectory_publisher.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/remote_heartbeat.yaml" />
@@ -16,7 +14,6 @@
     <rosparam command="load" file="$(find robot_driver)/robot_driver.yaml" />
     <rosparam command="load" file="$(find contact_detection)/contact_detection.yaml" />
     <rosparam command="load" file="$(find body_force_estimator)/body_force_estimator.yaml" />
-    <rosparam command="load" file="$(find open_loop_controller)/open_loop_controller.yaml" />
     <rosparam command="load" file="$(find nmpc_controller)/nmpc_controller.yaml" />
 
     <param name="enable_statistics" type="bool" value="true" />

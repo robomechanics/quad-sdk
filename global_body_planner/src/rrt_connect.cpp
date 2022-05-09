@@ -170,8 +170,7 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config,
   }
   // Set goal height to nominal distance above terrain
   s_goal.pos[2] =
-      planner_config.terrain.getGroundHeight(s_goal.pos[0], s_goal.pos[1]) +
-      planner_config.H_NOM;
+      getTerrainZFromState(s_goal, planner_config) + planner_config.H_NOM;
   if (!isValidState(s_goal, planner_config, LEAP_STANCE)) {
     return INVALID_GOAL_STATE;
   }

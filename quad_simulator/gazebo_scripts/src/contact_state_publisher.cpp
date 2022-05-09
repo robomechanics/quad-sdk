@@ -20,7 +20,7 @@ ContactStatePublisher::ContactStatePublisher(ros::NodeHandle nh)
   quad_utils::loadROSParam(nh_, "contact_state_publisher/update_rate",
                            update_rate_);
 
-  // Setup pubs and subs
+  // Setup subs
   toe0_contact_state_sub = nh_.subscribe<gazebo_msgs::ContactsState>(
       toe0_contact_state_topic, 1,
       boost::bind(&ContactStatePublisher::contactStateCallback, this, _1, 0),
@@ -38,30 +38,47 @@ ContactStatePublisher::ContactStatePublisher(ros::NodeHandle nh)
       boost::bind(&ContactStatePublisher::contactStateCallback, this, _1, 3),
       ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay());
 
+  // Setup pubs
   grf_pub_ = nh_.advertise<quad_msgs::GRFArray>(grf_topic, 1);
 
+  // Init messgaes
   grf_array_msg_.vectors.resize(num_feet_);
   grf_array_msg_.points.resize(num_feet_);
   grf_array_msg_.contact_states.resize(num_feet_);
-  transformsStamped_.resize(num_feet_);
+
+  // Init indicator
+  ready_to_publish_ = false;
 }
 
 void ContactStatePublisher::contactStateCallback(
     const gazebo_msgs::ContactsState::ConstPtr& msg, const int toe_idx) {
+  // Link names for search
   std::string terrain_name = "mesh_terrain";
   std::string toe_collision_names[4] = {"toe0_collision", "toe1_collision",
                                         "toe2_collision", "toe3_collision"};
   std::string toe_string = toe_collision_names[toe_idx];
 
-  int count = 0;
+  // Toe frame names
+  std::string toe_transform_names[4] = {
+      "ground_truth/toe0", "ground_truth/toe1", "ground_truth/toe2",
+      "ground_truth/toe3"};
 
+  // Init grf
   grf_array_msg_.vectors[toe_idx].x = 0.0;
   grf_array_msg_.vectors[toe_idx].y = 0.0;
   grf_array_msg_.vectors[toe_idx].z = 0.0;
 
+  // Init contact position
+  grf_array_msg_.points[toe_idx].x = 0.0;
+  grf_array_msg_.points[toe_idx].y = 0.0;
+  grf_array_msg_.points[toe_idx].z = 0.0;
+
+  // Init contact state
   grf_array_msg_.contact_states[toe_idx] = false;
 
+  // Loop through contact pairs to find the contact with ground
   for (int i = 0; i < msg->states.size(); i++) {
+    // Search desired contact pair
     std::string str_toe = msg->states[i].collision1_name;
     std::string str_terrain = msg->states[i].collision2_name;
     std::size_t found_toe = str_toe.find(toe_string);
@@ -69,35 +86,58 @@ void ContactStatePublisher::contactStateCallback(
 
     if ((found_toe != std::string::npos) &&
         (found_terrain != std::string::npos)) {
-      grf_array_msg_.vectors[toe_idx].x +=
-          msg->states[i].wrenches[0].force.x / msg->states.size();
-      grf_array_msg_.vectors[toe_idx].y +=
-          msg->states[i].wrenches[0].force.y / msg->states.size();
-      grf_array_msg_.vectors[toe_idx].z +=
-          msg->states[i].wrenches[0].force.z / msg->states.size();
+      // Get total wrench
+      grf_array_msg_.vectors[toe_idx].x = msg->states[i].total_wrench.force.x;
+      grf_array_msg_.vectors[toe_idx].y = msg->states[i].total_wrench.force.y;
+      grf_array_msg_.vectors[toe_idx].z = msg->states[i].total_wrench.force.z;
 
-      grf_array_msg_.points[toe_idx].x +=
-          msg->states[i].contact_positions[0].x / msg->states.size();
-      grf_array_msg_.points[toe_idx].y +=
-          msg->states[i].contact_positions[0].y / msg->states.size();
-      grf_array_msg_.points[toe_idx].z +=
-          msg->states[i].contact_positions[0].z / msg->states.size();
+      // Add up position - there might be multiple contact points for one
+      // contact pair
+      for (size_t j = 0; j < msg->states[i].contact_positions.size(); j++) {
+        grf_array_msg_.points[toe_idx].x +=
+            msg->states[i].contact_positions[j].x;
+        grf_array_msg_.points[toe_idx].y +=
+            msg->states[i].contact_positions[j].y;
+        grf_array_msg_.points[toe_idx].z +=
+            msg->states[i].contact_positions[j].z;
+      }
 
+      // Compute averaged contact position
+      grf_array_msg_.points[toe_idx].x /=
+          msg->states[i].contact_positions.size();
+      grf_array_msg_.points[toe_idx].y /=
+          msg->states[i].contact_positions.size();
+      grf_array_msg_.points[toe_idx].z /=
+          msg->states[i].contact_positions.size();
+
+      // Assign contact state
       grf_array_msg_.contact_states[toe_idx] = true;
-      count++;
+
+      // We only want the contact pair with ground
+      break;
     }
   }
 
-  // Rotate into the world frame
-  tf2::doTransform(grf_array_msg_.vectors[toe_idx],
-                   grf_array_msg_.vectors[toe_idx],
-                   transformsStamped_[toe_idx]);
-
-  if (count != msg->states.size()) {
-    ROS_WARN(
-        "Contacts with objects other than terrain detected, force readings "
-        "inaccurate!");
+  // Get the toe frame transforms
+  geometry_msgs::TransformStamped transformsStamped;
+  try {
+    transformsStamped = buffer_.lookupTransform(
+        "map", toe_transform_names[toe_idx], ros::Time(0));
+  } catch (tf2::TransformException& ex) {
+    ROS_WARN_THROTTLE(1, "%s", ex.what());
+    ready_to_publish_ = false;
+    return;
   }
+
+  // Set tranformation to pure rotation
+  transformsStamped.transform.translation.x = 0;
+  transformsStamped.transform.translation.y = 0;
+  transformsStamped.transform.translation.z = 0;
+
+  // Rotate into the world frame (the bumper source codes said it's in world
+  // frame but actually in body frame)
+  tf2::doTransform(grf_array_msg_.vectors[toe_idx],
+                   grf_array_msg_.vectors[toe_idx], transformsStamped);
 }
 
 void ContactStatePublisher::publishContactState() {
@@ -111,23 +151,12 @@ void ContactStatePublisher::spin() {
     // Collect new messages on subscriber topics
     ros::spinOnce();
 
-    // Get the new toe frame transforms
-    try {
-      transformsStamped_[0] =
-          buffer_.lookupTransform("map", "ground_truth/toe0", ros::Time(0));
-      transformsStamped_[1] =
-          buffer_.lookupTransform("map", "ground_truth/toe1", ros::Time(0));
-      transformsStamped_[2] =
-          buffer_.lookupTransform("map", "ground_truth/toe2", ros::Time(0));
-      transformsStamped_[3] =
-          buffer_.lookupTransform("map", "ground_truth/toe3", ros::Time(0));
-    } catch (tf2::TransformException& ex) {
-      ROS_WARN_THROTTLE(1, "%s", ex.what());
-      continue;
+    // Publish the contact state
+    if (ready_to_publish_) {
+      publishContactState();
     }
 
-    // Publish the contact state
-    publishContactState();
+    ready_to_publish_ = true;
 
     // Enforce update rate
     r.sleep();

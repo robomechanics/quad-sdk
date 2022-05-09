@@ -84,8 +84,8 @@ void LocalFootstepPlanner::getFootPositionsBodyFrame(
 }
 
 void LocalFootstepPlanner::computeContactSchedule(
-    int current_plan_index, int control_mode,
-    std::vector<std::vector<bool>> &contact_schedule) {
+    int current_plan_index, const Eigen::VectorXi &ref_primitive_plan,
+    int control_mode, std::vector<std::vector<bool>> &contact_schedule) {
   // Compute the current phase in the nominal contact schedule
   int phase = current_plan_index % period_;
 
@@ -100,6 +100,27 @@ void LocalFootstepPlanner::computeContactSchedule(
       }
     } else {
       contact_schedule[i] = nominal_contact_schedule_[(i + phase) % period_];
+    }
+  }
+  // Check the primitive plan to see if there's standing or flight phase
+  for (int i = 0; i < horizon_length_; i++) {
+    // Leaping and landing
+    if (ref_primitive_plan(i) == LEAP_STANCE) {
+      int leading_leg_liftoff_period = 0;
+      int leading_leg_liftoff_idx =
+          std::min(i + leading_leg_liftoff_period, horizon_length_ - 1);
+
+      if (ref_primitive_plan(leading_leg_liftoff_idx) == FLIGHT) {
+        contact_schedule.at(i) = {false, true, false, true};
+      } else {
+        contact_schedule.at(i) = {true, true, true, true};
+      }
+    } else if (ref_primitive_plan(i) == FLIGHT) {
+      // Flight
+      std::fill(contact_schedule.at(i).begin(), contact_schedule.at(i).end(),
+                false);
+    } else if (ref_primitive_plan(i) == LAND_STANCE) {
+      contact_schedule.at(i) = {true, true, true, true};
     }
   }
 }
@@ -225,8 +246,9 @@ void LocalFootstepPlanner::computeFootPlan(
 
         // Compute dynamic shift
         double body_height_touchdown =
-            std::max(body_plan(i, 2) - terrain_grid_.atPosition(
-                                           "z", body_plan.row(i).segment<2>(0)),
+            std::max(body_plan(i, 2) -
+                         terrain_grid_.atPosition(
+                             "z_inpainted", body_plan.row(i).segment<2>(0)),
                      0.0);
         // Ref: Highly Dynamic Quadruped Locomotion via Whole-Body Impulse
         // Control and Model Predictive Control (Centrifugal force and capture
@@ -259,13 +281,16 @@ void LocalFootstepPlanner::computeFootPlan(
         // Toe has 20cm radius so we need to shift the foot height from terrain
         foot_position_nominal.z() =
             terrain_grid_.atPosition(
-                "z",
+                "z_inpainted",
                 terrain_grid_.getClosestPositionInMap(foot_position_grid_map),
                 grid_map::InterpolationMethods::INTER_NEAREST) +
             toe_radius;
 
         // Optimize the foothold location to get the final position
-        foot_position = getNearestValidFoothold(foot_position_nominal);
+        Eigen::Vector3d foot_position_previous =
+            foot_positions.block<1, 3>(i, 3 * j);
+        foot_position = getNearestValidFoothold(foot_position_nominal,
+                                                foot_position_previous);
 
         // Store foot position in the Eigen matrix
         foot_positions.block<1, 3>(i, 3 * j) = foot_position;
@@ -381,7 +406,7 @@ void LocalFootstepPlanner::computeFootPlan(
             }
             foot_position_next.z() =
                 terrain_grid_.atPosition(
-                    "z", foot_position_next_grid_map,
+                    "z_inpainted", foot_position_next_grid_map,
                     grid_map::InterpolationMethods::INTER_NEAREST) +
                 toe_radius;
           } else {
@@ -544,16 +569,16 @@ void LocalFootstepPlanner::loadFootPlanMsgs(
 }
 
 Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
-    const Eigen::Vector3d &foot_position) {
-  // Declare
+    const Eigen::Vector3d &foot_position,
+    const Eigen::Vector3d &foot_position_prev_solve) const {
   Eigen::Vector3d foot_position_valid = foot_position;
   grid_map::Position pos_center, pos_center_aligned, offset, pos_valid;
 
   // Compute the closest index to the nominal and find the offset
-  pos_center = {foot_position.x(), foot_position.y()};
-  grid_map::Index i;
-  terrain_grid_.getIndex(pos_center, i);
-  terrain_grid_.getPosition(i, pos_center_aligned);
+  pos_center = foot_position.head<2>();
+  grid_map::Index idx;
+  terrain_grid_.getIndex(pos_center, idx);
+  terrain_grid_.getPosition(idx, pos_center_aligned);
   offset = pos_center - pos_center_aligned;
 
   // Spiral outwards from the nominal until we find a valid foothold
@@ -572,7 +597,8 @@ Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
 
       foot_position_valid << pos_valid.x(), pos_valid.y(),
           terrain_grid_.atPosition(
-              "z", pos_valid, grid_map::InterpolationMethods::INTER_LINEAR) +
+              "z_inpainted", pos_valid,
+              grid_map::InterpolationMethods::INTER_LINEAR) +
               toe_radius;
       return foot_position_valid;
     }
@@ -683,12 +709,14 @@ double LocalFootstepPlanner::computeSwingApex(
   quadKD_->worldToLegbaseFKWorldFrame(leg_idx, body_plan.segment(0, 3),
                                       body_plan.segment(3, 3), g_world_legbase);
   double hip_height = g_world_legbase(2, 3);
+  double max_extension = 0.35;
 
   // Compute swing apex
   double swing_apex =
       std::min(ground_clearance_ - toe_radius +
                    std::max(foot_position_prev.z(), foot_position_next.z()),
                hip_height - hip_clearance_);
+  swing_apex = std::max(swing_apex, hip_height - max_extension);
 
   return swing_apex;
 }

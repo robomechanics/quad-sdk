@@ -34,7 +34,6 @@ add_message_files(
   MotorCommand.msg
   LegCommand.msg
   LegCommandArray.msg
-  LegOverride.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
