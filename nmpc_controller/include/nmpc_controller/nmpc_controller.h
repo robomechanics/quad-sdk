@@ -73,7 +73,7 @@ class NMPCController {
    * @brief Return the NLP diagnostics
    * @return NLP diagnostics with most recent meta-data
    */
-  inline NLPDiagnostics getNLPDiagnostics() const { return diagnostics_; };
+  inline NLPDiagnostics getNLPDiagnostics() const { return diagnostics_; }
 
  private:
   ros::NodeHandle nh_;
