@@ -16,8 +16,6 @@
 #include <ros/ros.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-#include "quad_utils/matplotlibcpp.h"
-
 //! Local Body Planner library
 /*!
    Wrapper around Quadrupedal MPC that interfaces with our ROS architecture
@@ -210,7 +208,10 @@ class LocalPlanner {
   Eigen::MatrixXd ref_body_plan_;
 
   /// Vector of ground height along reference trajectory
-  Eigen::MatrixXd ref_ground_height_;
+  Eigen::VectorXd ref_ground_height_;
+
+  /// Vector of primitive along reference trajectory
+  Eigen::VectorXi ref_primitive_plan_;
 
   /// Matrix of grfs (N x Nu: rows correspond to individual arrays of GRFs in
   /// the horizon)

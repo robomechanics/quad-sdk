@@ -2,47 +2,36 @@
 
     <include file="$(find quad_utils)/launch/load_params.launch" />
 
-    <arg name="proxy"           default="false"/>
-    <arg name="controller"      default="inverse_dynamics"/>
-    <arg name="logging"         default="false"/>
-    <arg name="plan"            default="false"/>
-    <arg name="live_plot"       default="false"/>
-    <arg name="dash"            default="false"/>
-    <arg name="map_input_type"  default="mesh"/>
-    <arg name="world"           default="flat"/>
+    <arg name="controller" default="inverse_dynamics" />
+    <arg name="logging" default="false" />
+    <arg name="plan" default="false" />
+    <arg name="live_plot" default="false" />
+    <arg name="dash" default="false" />
+    <arg name="map_input_type" default="mesh" />
+    <arg name="world" default="flat" />
 
     <!-- Launch the mapping and visualization nodes -->
-    <include file="$(find quad_utils)/launch/mapping.launch" >
+    <include file="$(find quad_utils)/launch/mapping.launch">
         <arg name="input_type" value="$(arg map_input_type)" />
         <arg name="world" value="$(arg world)" />
     </include>
 
     <include file="$(find quad_utils)/launch/visualization.launch">
-        <arg name="live_plot" value="$(arg live_plot)"/>
-        <arg name="dash" value="$(arg dash)"/>
+        <arg name="live_plot" value="$(arg live_plot)" />
+        <arg name="dash" value="$(arg dash)" />
     </include>
-
-    <!-- Launch the robot_proxy if specified-->
-    <group if="$(arg proxy)">
-        <include file="$(find quad_utils)/launch/robot_driver.launch">
-            <arg name="proxy" value="true" />
-            <arg name="controller" value="$(arg controller)" />
-            <arg name="logging" value="$(arg logging)" />
-            <arg name="is_hw" value="false" />
-        </include>
-    </group>
 
     <group if="$(arg plan)">
         <include file="$(find quad_utils)/launch/execute_plan.launch">
-            <arg name="logging" value="$(arg logging)"/>
+            <arg name="logging" value="$(arg logging)" />
         </include>
     </group>
 
     <group if="$(arg logging)">
-        <include file="$(find quad_utils)/launch/logging.launch"/>
+        <include file="$(find quad_utils)/launch/logging.launch" />
     </group>
 
     <!-- Start the heartbeat node -->
-    <node name="remote_heartbeat" pkg="quad_utils" type="remote_heartbeat_node" output="screen"/>
+    <node name="remote_heartbeat" pkg="quad_utils" type="remote_heartbeat_node" output="screen" />
 
 </launch>

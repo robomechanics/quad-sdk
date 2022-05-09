@@ -1,11 +1,10 @@
-#ifndef ROBOT_DRIVER_INTERFACE_H
-#define ROBOT_DRIVER_INTERFACE_H
+#ifndef ROBOT_DRIVER_H
+#define ROBOT_DRIVER_H
 
 #include <eigen_conversions/eigen_msg.h>
 #include <quad_msgs/GRFArray.h>
 #include <quad_msgs/LegCommand.h>
 #include <quad_msgs/LegCommandArray.h>
-#include <quad_msgs/LegOverride.h>
 #include <quad_msgs/MotorCommand.h>
 #include <quad_msgs/MultiFootPlanContinuous.h>
 #include <quad_msgs/RobotPlan.h>
@@ -14,27 +13,28 @@
 #include <quad_utils/math_utils.h>
 #include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
+#include <std_msgs/Bool.h>
 #include <std_msgs/UInt8.h>
 
 #include <cmath>
 #include <eigen3/Eigen/Eigen>
 
-#include "robot_driver/grf_pid_controller.h"
-#include "robot_driver/inverse_dynamics.h"
-#include "robot_driver/joint_controller.h"
-#include "robot_driver/leg_controller_template.h"
-#include "robot_driver/mblink_converter.h"
+#include "robot_driver/controllers/grf_pid_controller.h"
+#include "robot_driver/controllers/inverse_dynamics_controller.h"
+#include "robot_driver/controllers/joint_controller.h"
+#include "robot_driver/controllers/leg_controller.h"
+#include "robot_driver/hardware_interfaces/hardware_interface.h"
+#include "robot_driver/hardware_interfaces/spirit_interface.h"
 #include "robot_driver/robot_driver_utils.h"
 #define MATH_PI 3.141592
 
-using gr::MBLink;
-
-//! ROS Wrapper for a leg controller class
+//! ROS-based driver to handle computation and interfacing for state and
+//! control.
 /*!
-   RobotDriver implements a class to generate leg commands to be sent to either
-   the robot or a simulator. It may subscribe to any number of topics to
-   determine the leg control, but will always publish a LegCommandArray message
-   to control the robot's legs.
+   RobotDriver implements a class to retrieve state information and generate leg
+   commands to be sent to either the robot or a simulator. It may subscribe to
+   any number of topics to determine the leg control, but will always publish a
+   LegCommandArray message to control the robot's legs.
 */
 class RobotDriver {
  public:
@@ -85,13 +85,12 @@ class RobotDriver {
    * @brief Callback to handle new leg override commands
    * @param[in] msg Leg override commands
    */
-  void legOverrideCallback(const quad_msgs::LegOverride::ConstPtr& msg);
+  void singleJointCommandCallback(const geometry_msgs::Vector3::ConstPtr& msg);
 
   /**
-   * @brief Callback to handle new leg override commands
-   * @param[in] msg Leg override commands
+   * @brief Callback to handle control restart flag messages
    */
-  void singleJointCommandCallback(const geometry_msgs::Vector3::ConstPtr& msg);
+  void controlRestartFlagCallback(const std_msgs::Bool::ConstPtr& msg);
 
   /**
    * @brief Callback to handle new remote heartbeat messages
@@ -102,7 +101,7 @@ class RobotDriver {
   /**
    * @brief Check to make sure required messages are fresh
    */
-  void checkMessages();
+  void checkMessagesForSafety();
 
   /**
    * @brief Update the most recent state message with the given data
@@ -146,11 +145,14 @@ class RobotDriver {
   /// ROS subscriber for state estimate
   ros::Subscriber robot_state_sub_;
 
-  /// ROS publisher for state estimate
+  /// ROS subscriber for control restart flag
+  ros::Subscriber control_restart_flag_sub_;
+
+  /// ROS publisher for ground truth state
   ros::Publisher robot_state_pub_;
 
-  /// ROS subscriber for leg override commands
-  ros::Subscriber leg_override_sub_;
+  // ROS publisher for state estimate
+  ros::Publisher trajectry_robot_state_pub_;
 
   /// ROS subscriber for remote heartbeat
   ros::Subscriber remote_heartbeat_sub_;
@@ -170,11 +172,17 @@ class RobotDriver {
   /// ROS publisher for imu data
   ros::Publisher imu_pub_;
 
+  /// ROS publisher for joint data
+  ros::Publisher joint_state_pub_;
+
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
 
   /// Boolean for whether robot layer is hardware (else sim)
-  bool is_hw_;
+  bool is_hardware_;
+
+  /// Robot name
+  std::string robot_name_;
 
   /// Controller type
   std::string controller_id_;
@@ -227,9 +235,6 @@ class RobotDriver {
   /// Most recent local plan
   quad_msgs::GRFArray::ConstPtr last_grf_array_msg_;
 
-  /// Most recent leg override
-  quad_msgs::LegOverride last_leg_override_msg_;
-
   /// Most recent remote  heartbeat
   std_msgs::Header::ConstPtr last_remote_heartbeat_msg_;
 
@@ -266,6 +271,12 @@ class RobotDriver {
   /// Message for leg command array
   quad_msgs::GRFArray grf_array_msg_;
 
+  /// User transmission data
+  Eigen::VectorXd user_tx_data_;
+
+  /// User recieved data
+  Eigen::VectorXd user_rx_data_;
+
   /// Time at which to start transition
   ros::Time transition_timestamp_;
 
@@ -289,6 +300,10 @@ class RobotDriver {
   std::vector<double> swing_kp_;
   std::vector<double> swing_kd_;
 
+  /// PD gain when foot is in swing (Cartesian)
+  std::vector<double> swing_kp_cart_;
+  std::vector<double> swing_kd_cart_;
+
   /// Define standing joint angles
   std::vector<double> stand_joint_angles_;
 
@@ -299,16 +314,10 @@ class RobotDriver {
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
 
   /// Leg Controller template class
-  std::shared_ptr<LegControllerTemplate> leg_controller_;
-
-  /// Trotting duration
-  double trotting_duration_;
-
-  /// Trotting count
-  double trotting_count_;
+  std::shared_ptr<LegController> leg_controller_;
 
   /// Mblink converter object
-  std::shared_ptr<MBLinkConverter> mblink_converter_;
+  std::shared_ptr<HardwareInterface> hardware_interface_;
 
   /// Last mocap data
   geometry_msgs::PoseStamped::ConstPtr last_mocap_msg_;
@@ -319,6 +328,9 @@ class RobotDriver {
   /// Most recent joint data
   sensor_msgs::JointState last_joint_state_msg_;
 
+  /// Best estimate of velocity
+  Eigen::Vector3d vel_estimate_;
+
   /// Best estimate of velocity from mocap diff
   Eigen::Vector3d mocap_vel_estimate_;
 
@@ -328,15 +340,15 @@ class RobotDriver {
   /// Velocity filter time constant
   double filter_time_constant_;
 
+  /// Velocity filter weight
+  double filter_weight_;
+
   /// Maximum time elapsed between mocap messages before committing to new
   /// message
   double mocap_dropout_threshold_;
 
   /// Update rate of the motion capture system
   double mocap_rate_;
-
-  /// Mainboard data
-  MBData_t mbdata_;
 
   /// Last mainboard time
   double last_mainboard_time_;
@@ -347,22 +359,35 @@ class RobotDriver {
   /// Time of last publishing
   ros::Time t_pub_;
 
-  /// Vector of joint names
-  std::vector<std::string> joint_names_ = {"8",  "0", "1", "9",  "2", "3",
-                                           "10", "4", "5", "11", "6", "7"};
-
-  /// Vector denoting joint indices
-  std::vector<int> joint_indices_ = {8, 0, 1, 9, 2, 3, 10, 4, 5, 11, 6, 7};
-
-  /// Vector of kt values for each joint
-  std::vector<double> kt_vec_ = {0.546, 0.546, 1.092, 0.546, 0.546, 1.092,
-                                 0.546, 0.546, 1.092, 0.546, 0.546, 1.092};
-
-  /// Required for mblink converter
+  /// Required for some hardware interfaces
   int argc_;
 
-  /// Required for mblink converter
+  /// Required for some hardware interfaces
   char** argv_;
+
+  /// Struct of second-order low/high pass filter with derivative/intergral
+  struct Filter {
+    // State-space model
+    Eigen::Matrix<double, 2, 2> A;
+    Eigen::Matrix<double, 2, 1> B;
+    Eigen::Matrix<double, 1, 2> C;
+    Eigen::Matrix<double, 1, 1> D;
+
+    // Filter states
+    std::vector<Eigen::Matrix<double, 2, 1>> x;
+
+    // Filter initialization indicator
+    bool init;
+  };
+
+  /// Struct of complementray filter with low and high pass filters
+  struct ComplementaryFilter {
+    Filter low_pass_filter;
+    Filter high_pass_filter;
+  };
+
+  /// Complementray filter
+  ComplementaryFilter complementary_filter_;
 };
 
-#endif  // ROBOT_DRIVER_INTERFACE_H
+#endif  // ROBOT_DRIVER_H

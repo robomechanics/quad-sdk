@@ -37,6 +37,7 @@ SpiritController::SpiritController() {
 
   // Torque saturation (could change to linear model in future)
   torque_lims_ = {21, 21, 32};
+  speed_lims_ = {37.7, 37.7, 25.1};
 }
 SpiritController::~SpiritController() { sub_command_.shutdown(); }
 
@@ -130,8 +131,17 @@ void SpiritController::update(const ros::Time& time,
     // Collect feedback
     double torque_feedback = kp * pos_error + kd * vel_error;
     double torque_lim = torque_lims_[ind.second];
+    double motor_model_ub = torque_lims_[ind.second] *
+                            (1.0 - current_vel / speed_lims_[ind.second]);
+    double motor_model_lb = -torque_lims_[ind.second] *
+                            (1.0 - current_vel / speed_lims_[ind.second]);
     double torque_command = std::min(
         std::max(torque_feedback + torque_ff, -torque_lim), torque_lim);
+    bool apply_motor_model = false;
+    torque_command =
+        (apply_motor_model)
+            ? std::min(std::max(torque_command, motor_model_lb), motor_model_ub)
+            : torque_command;
 
     // Update joint torque
     joints_.at(i).setCommand(torque_command);

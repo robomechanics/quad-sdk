@@ -6,9 +6,9 @@ EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
   // Load rosparams from parameter server
   std::string joint_encoder_topic, imu_topic, contact_topic,
       state_estimate_topic;
-  nh.param<std::string>("topics/mcu/state/jointURDF", joint_encoder_topic,
-                        "/mcu/state/jointURDF");
-  nh.param<std::string>("topics/mcu/state/imu", imu_topic, "/mcu/state/imu");
+  nh.param<std::string>("topics/state/joints", joint_encoder_topic,
+                        "/state/joints");
+  nh.param<std::string>("topics/state/imu", imu_topic, "/state/imu");
   nh.param<std::string>("topics/state/estimate", state_estimate_topic,
                         "/state/estimate");
   nh.param<std::string>("topics/contact_mode", contact_topic, "/contact_mode");

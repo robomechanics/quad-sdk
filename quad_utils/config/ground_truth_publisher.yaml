@@ -1,7 +1,0 @@
-ground_truth_publisher:
-  update_rate: 200.0
-  mocap_rate: 100.0 # This must match the mocap frame rate or velocity estimates will be mis-scaled
-  imu_rate: 50.0 # This must match the mocap frame rate or velocity estimates will be mis-scaled
-  filter_time_constant: 0.03 # s
-  mocap_dropout_threshold: 0.1 # s
-  imu_dropout_threshold: 0.2 # s

@@ -1,4 +1,4 @@
-<?xml version="1.0" ?>
+<?xml version="1.0"?>
 <sdf version="1.6">
   <model name="imu">
     <link name="link">
@@ -26,7 +26,7 @@
         <visualize>true</visualize>
         <topic>__default_topic__</topic>
         <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
-          <topicName>/mcu/state/imu</topicName>
+          <topicName>/state/imu</topicName>
           <bodyName>link</bodyName>
           <robotNamespace>/</robotNamespace>
           <updateRateHZ>500.0</updateRateHZ>
