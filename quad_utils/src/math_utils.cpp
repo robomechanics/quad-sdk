@@ -199,7 +199,7 @@ std::vector<double> unwrap(std::vector<double> data) {
   return data_unwrapped;
 }
 
-Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian) {
+Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian, double ratio) {
   Eigen::JacobiSVD<Eigen::MatrixXd> svd(
       jacobian, Eigen::ComputeThinU | Eigen::ComputeThinV);
 
@@ -207,12 +207,16 @@ Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian) {
   Eigen::VectorXd sig_inv = sig;
 
   for (size_t i = 0; i < sig.size(); i++) {
-    sig_inv(i) = std::min(1 / sig(i), 1 / (1e-1 * sig.maxCoeff()));
+    sig_inv(i) = std::min(1 / sig(i), 1 / (ratio * sig.maxCoeff()));
   }
 
   Eigen::MatrixXd jacobian_inv =
       svd.matrixV() * sig_inv.asDiagonal() * svd.matrixU().transpose();
 
   return jacobian_inv;
+}
+
+Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian) {
+  return sdlsInv(jacobian, 1e-1);
 }
 }  // namespace math_utils
