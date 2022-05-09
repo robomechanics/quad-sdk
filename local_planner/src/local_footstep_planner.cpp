@@ -613,9 +613,6 @@ Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
     ROS_WARN_THROTTLE(
         0.1, "No valid foothold found in radius of nominal, returning nominal");
   }
-  double lpf_coeff = 0.5;
-  foot_position_best = lpf_coeff * foot_position_best +
-                       (1 - lpf_coeff) * foot_position_prev_solve;
   foot_position_best.z() =
       terrain_grid_.atPosition("z_inpainted", foot_position_best.head<2>(),
                                grid_map::InterpolationMethods::INTER_LINEAR) +
