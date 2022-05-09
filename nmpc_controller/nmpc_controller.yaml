@@ -6,9 +6,9 @@ nmpc_controller:
   friction_coefficient: 0.3
   enable_variable_horizon: false
   min_horizon_length: 10
-  enable_adaptive_complexity: true
+  enable_adaptive_complexity: false
   fixed_complex_idxs: [] # set to [] for none
-  fixed_complex_head: 8 # set to 0 for none
+  fixed_complex_head: 0 # set to 0 for none
   fixed_complex_tail: 0 # set to 0 for none
   body:
     x_dim: 12
