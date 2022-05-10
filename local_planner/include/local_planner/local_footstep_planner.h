@@ -105,10 +105,13 @@ class LocalFootstepPlanner {
   /**
    * @brief Compute the contact schedule based on the current phase
    * @param[in] current_plan_index_ Current index in the plan
+   * @param[in] ref_primitive_plan_ Reference primitive plan
    * @param[in] control_mode Control mode
    * @param[out] contact_schedule 2D array of contact states
    */
-  void computeContactSchedule(int current_plan_index, int control_mode,
+  void computeContactSchedule(int current_plan_index,
+                              const Eigen::VectorXi &ref_primitive_plan_,
+                              int control_mode,
                               std::vector<std::vector<bool>> &contact_schedule);
 
   /**
@@ -125,9 +128,8 @@ class LocalFootstepPlanner {
    * @param[in] past_footholds_msg Message of past footholds, used for
    * interpolation of swing state
    * @param[out] foot_positions Foot positions over the horizon
-   * @param[out] future_footholds_msg Message for future (planned) footholds
-   * @param[out] foot_plan_continuous_msg Message for continuous foot
-   * trajectories
+   * @param[out] foot_velocities Foot velocities over the horizon
+   * @param[out] foot_accelerations Foot accelerations over the horizon
    */
   void computeFootPlan(int current_plan_index,
                        const std::vector<std::vector<bool>> &contact_schedule,
@@ -175,8 +177,8 @@ class LocalFootstepPlanner {
           printf("0 ");
         }
       }
+      printf("\n");
     }
-    printf("\n");
   }
 
   inline double getTerrainHeight(double x, double y) {
@@ -269,10 +271,13 @@ class LocalFootstepPlanner {
 
   /**
    * @brief Search locally around foothold for optimal location
-   * @param[in] foot_position_prev Foothold to optimize around
+   * @param[in] foot_position Foothold to optimize around
+   * @param[in] foot_position_prev_solve Foothold in prior solve
    * @return Optimized foothold
    */
-  Eigen::Vector3d getNearestValidFoothold(const Eigen::Vector3d &foot_position);
+  Eigen::Vector3d getNearestValidFoothold(
+      const Eigen::Vector3d &foot_position,
+      const Eigen::Vector3d &foot_position_prev_solve) const;
 
   /**
    * @brief Compute minimum covering circle problem using Welzl's algorithm
@@ -423,14 +428,17 @@ class LocalFootstepPlanner {
   /// Weighting on the projection of the grf
   double grf_weight_;
 
+  /// Primitive ids - CONNECT_STANCE TODO(yanhaoy, astutt) make these enums
+  const int CONNECT_STANCE = 0;
+
+  /// Primitive ids - LEAP_STANCE
+  const int LEAP_STANCE = 1;
+
   /// Primitive ids - FLIGHT
-  const int FLIGHT = 0;
+  const int FLIGHT = 2;
 
-  /// Primitive ids - STANCE
-  const int STANCE = 1;
-
-  /// Primitive ids - CONNECT_STANCE
-  const int CONNECT_STANCE = 2;
+  /// Primitive ids - LAND_STANCE
+  const int LAND_STANCE = 3;
 
   /// QuadKD class
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
