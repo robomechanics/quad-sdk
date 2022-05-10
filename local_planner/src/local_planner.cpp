@@ -284,7 +284,7 @@ void LocalPlanner::getStateAndReferencePlan() {
   // Update the body plan to use for foot planning
   int N_current_plan = body_plan_.rows();
   if (N_current_plan < N_) {
-    // Cold start with reference  plan
+    // Cold start with reference plan
     body_plan_.conservativeResize(N_, 12);
 
     // Initialize with the current foot positions
@@ -296,6 +296,9 @@ void LocalPlanner::getStateAndReferencePlan() {
   } else {
     // Only shift the foot position if it's a solve for a new plan index
     if (!same_plan_index_) {
+      body_plan_.topRows(N_ - 1) = body_plan_.bottomRows(N_ - 1);
+      grf_plan_.topRows(N_ - 2) = grf_plan_.bottomRows(N_ - 2);
+
       foot_positions_body_.topRows(N_ - 1) =
           foot_positions_body_.bottomRows(N_ - 1);
       foot_positions_world_.topRows(N_ - 1) =
@@ -469,7 +472,7 @@ void LocalPlanner::getStateAndTwistInput() {
   // Update the body plan to use for foot planning
   int N_current_plan = body_plan_.rows();
   if (N_current_plan < N_) {
-    // Cold start with reference  plan
+    // Cold start with reference plan
     body_plan_.conservativeResize(N_, 12);
 
     // Initialize with the current foot positions
@@ -481,6 +484,9 @@ void LocalPlanner::getStateAndTwistInput() {
   } else {
     // Only shift the foot position if it's a solve for a new plan index
     if (!same_plan_index_) {
+      body_plan_.topRows(N_ - 1) = body_plan_.bottomRows(N_ - 1);
+      grf_plan_.topRows(N_ - 2) = grf_plan_.bottomRows(N_ - 2);
+
       foot_positions_body_.topRows(N_ - 1) =
           foot_positions_body_.bottomRows(N_ - 1);
       foot_positions_world_.topRows(N_ - 1) =
