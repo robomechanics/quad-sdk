@@ -105,7 +105,6 @@ class EKFEstimator {
    */
   quad_msgs::RobotState StepOnce();
 
-
   /**
    * @brief EKF prediction step
    * @param[in] dt double time interval
@@ -143,7 +142,6 @@ class EKFEstimator {
       const sensor_msgs::JointState::ConstPtr& last_joint_state_msg_,
       Eigen::VectorXd& jk);
 
-
   /**
    * @brief predict quaternion k+1 from k using dt, angular velocity, and qk
    * @param[in] w Eigen::VectorXd angular velocity vector (3 * 1)
@@ -171,11 +169,15 @@ class EKFEstimator {
   Eigen::MatrixXd calcRodrigues(const double& dt, const Eigen::VectorXd& w,
                                 const int& sub);
 
-  
   /**
    * @brief set sensor noise
    */
   void setNoise();
+
+  /**
+   * @brief set initial state variable
+   */
+  void setInitialState();
 
   // number of states position (3 * 1) + velocity (3 * 1) + quaternion (4 * 1) +
   // feet position (12 * 1) + bias_acc (3 * 1) + bias_gyro (3 * 1)
@@ -272,24 +274,27 @@ class EKFEstimator {
 
   // IMU linear acceleration bias (3*3)
   Eigen::MatrixXd bias_acc;
- 
+
   // IMU linear acceleration noise (3*3)
   Eigen::MatrixXd noise_acc;
-  
+
   // IMU augular acceleration bias (3*3)
   Eigen::MatrixXd bias_gyro;
-  
+
   // IMU augular acceleration noise (3*3)
   Eigen::MatrixXd noise_gyro;
-  
+
   // individual noise at feet (3*3)
   Eigen::MatrixXd noise_feet;
-  
+
   // noise at feet (3*3)
   Eigen::MatrixXd noise_fk;
-  
+
   // noise at encoder
   double noise_encoder;
+
+  // initialized the estimator
+  bool initialized = false;
 
   // Record whether we have good imu and joint state data
   bool good_imu = false;

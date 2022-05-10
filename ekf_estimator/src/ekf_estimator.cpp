@@ -81,6 +81,7 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   // calculate dt
   double dt = (start_time - last_time).toSec();
   last_time = start_time;
+
   // std::cout << "this is dt" << dt << std::endl;
 
   /// Collect and Process Data
@@ -97,10 +98,10 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   Eigen::VectorXd jk = Eigen::VectorXd::Zero(12);
   this->readJointEncoder(last_joint_state_msg_, jk);
   std::vector<double> jkVector(jk.data(), jk.data() + jk.rows() * jk.cols());
-
+  // std::cout << "this is X before" << X.transpose() << std::endl;
   /// Prediction Step
   this->predict(dt, fk, wk, qk);
-
+  // std::cout << "this is X predict" << X.transpose() << std::endl;
   // for testing prediction step
   // X = X_pre;
   // P = P_pre;
@@ -108,18 +109,7 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
 
   /// Update Step
   this->update(jk);
-
-  // Update when I have good data, otherwise stay at the origin
-  if (last_state_msg_ != NULL) {
-    good_ground_truth_state = true;
-  } else {
-    good_ground_truth_state = false;
-    X = X0;
-    X_pre = X0;
-    last_X = X0;
-    P = P0;
-    P_pre = P0;
-  }
+  // std::cout << "this is X update" << X.transpose() << std::endl;
 
   /// publish new message
   new_state_est.header.stamp = ros::Time::now();
@@ -166,7 +156,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   Eigen::VectorXd p = last_X.segment(10, 12);
   Eigen::VectorXd bf = last_X.segment(22, 3);
   Eigen::VectorXd bw = last_X.segment(25, 3);
-
+  std::cout << "this is last_X " << last_X << std::endl;
   // calculate linear acceleration set z acceleration to -9.8 for now
   // a is the corrected IMU linear acceleration (fk hat)
   Eigen::VectorXd a = Eigen::VectorXd::Zero(3);
@@ -193,7 +183,6 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   X_pre.segment(22, 3) = bf;
   X_pre.segment(25, 3) = bw;
 
-  // std::cout << "this is X_pre " << X_pre << std::endl;
   // Linearized Dynamics Matrix
   F = Eigen::MatrixXd::Identity(num_cov, num_cov);
   F(0, 3) = dt;
@@ -245,12 +234,12 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   Q.block<3, 3>(24, 6) = -1 * bias_gyro * r2;
   Q.block<3, 3>(24, 24) = dt * bias_gyro;
   Q = Eigen::MatrixXd::Zero(num_cov, num_cov);
-  // Covariance update
 
+  // Covariance update
   P_pre = (F * P * F.transpose()) + Q;
 
   // std::cout << "this is Q " << Q << std::endl;
-  std::cout << "this is P_pre " << P_pre << std::endl;
+  // std::cout << "this is P_pre " << P_pre << std::endl;
 }
 
 void EKFEstimator::update(const Eigen::VectorXd& jk) {
@@ -281,23 +270,27 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
     s.segment(i * 3, 3) = toe_body_pos;
   }
 
-  // std::cout << "foot positions" << s << std::endl;
+  std::cout << "measured foot positions" << s << std::endl;
 
+  std::cout << "C_pre" << C_pre << std::endl;
+  std::cout << "p_pre" << p_pre << std::endl;
+  std::cout << "r_pre" << r_pre << std::endl;
   // measurement residual (12 * 1)
   Eigen::VectorXd y = Eigen::VectorXd::Zero(num_measure);
   for (int i = 0; i < num_feet; i++) {
-    y.segment(i * 3, 3) =
-        s.segment(i * 3, 3) - (C_pre * (p_pre.segment(i * 3, 3) - r_pre));
+    // predicted value of the foot positions
+    Eigen::VectorXd foot_temp = (C_pre * (p_pre.segment(i * 3, 3) - r_pre));
+    y.segment(i * 3, 3) = s.segment(i * 3, 3) - foot_temp;
   }
-  std::cout << "this is the residual " << std::endl;
-  std::cout << y << std::endl;
+  // std::cout << "this is the residual " << std::endl;
+  // std::cout << y.transpose() << std::endl;
 
   // Measurement jacobian (12 * 27)
   H = Eigen::MatrixXd::Zero(num_measure, num_cov);
-  H.block<3, 3>(0, 0) = C_pre;
-  H.block<3, 3>(3, 0) = C_pre;
-  H.block<3, 3>(6, 0) = C_pre;
-  H.block<3, 3>(9, 0) = C_pre;
+  H.block<3, 3>(0, 0) = -C_pre;
+  H.block<3, 3>(3, 0) = -C_pre;
+  H.block<3, 3>(6, 0) = -C_pre;
+  H.block<3, 3>(9, 0) = -C_pre;
 
   for (int i = 0; i < num_feet; i++) {
     Eigen::VectorXd vtemp = C_pre * (p_pre.segment(i * 3, 3) - r_pre);
@@ -306,9 +299,9 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   }
 
   // Measurement Noise Matrix (12 * 12)
-  R = 0.0000 * Eigen::MatrixXd::Identity(num_measure, num_measure);
+  R = 0.000 * Eigen::MatrixXd::Identity(num_measure, num_measure);
 
-  // // Define vectors for state positions
+  // Define vectors for state positions
   Eigen::VectorXd state_positions(18);
   // Load state positions
   state_positions << jk, r_pre, v_pre;
@@ -329,6 +322,7 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   Eigen::VectorXd delta_X = K * y;
 
   // std::cout << "kalmin gain " << K << std::endl;
+  // std::cout << "delta x " << delta_X.transpose() << std::endl;
   Eigen::MatrixXd I = Eigen::MatrixXd::Identity(num_cov, num_cov);
 
   P = (I - K * H) * P_pre;
@@ -507,10 +501,11 @@ void EKFEstimator::spin() {
   // initial state
   X0 = Eigen::VectorXd::Zero(num_state);
   // initial state for spirit_walking_005.bag
-  X0 << 2.731990, 0.037111, 0.063524, -0.002654, 0.013438, 0.005384, -0.999192,
-      -0.023452, 0.000798, -0.032635, 2.947184, 0.221952, 0.053124, 2.495493,
-      0.192468, 0.053249, 2.969032, -0.116851, 0.039909, 2.517641, -0.145698,
-      0.034415, -0.08, -0.06, 0, 0, 0, 0;
+  // X0 << 2.731990, 0.037111, 0.063524, -0.002654, 0.013438, 0.005384,
+  // -0.999192,
+  //     -0.023452, 0.000798, -0.032635, 2.947184, 0.221952, 0.053124, 2.495493,
+  //     0.192468, 0.053249, 2.969032, -0.116851, 0.039909, 2.517641, -0.145698,
+  //     0.034415, -0.08, -0.06, 0, 0, 0, 0;
 
   // initial state for spirit_walking_002.bag
   // X0 << -1.457778, 1.004244, 0.308681, 0, 0, 0, 0.998927, 0.004160,
@@ -520,6 +515,7 @@ void EKFEstimator::spin() {
   //     0, 0, 0, 0, 0, 0;
   X = X0;
   last_X = X0;
+  X_pre = X0;
 
   // initial state covariance matrix
   P0 = 0.01 * Eigen::MatrixXd::Identity(num_cov, num_cov);
@@ -532,9 +528,45 @@ void EKFEstimator::spin() {
   g = Eigen::VectorXd::Zero(3);
   g[2] = 9.8;
 
+  // initialize time
+  last_time = ros::Time::now();
   while (ros::ok()) {
     // Collect new messages on subscriber topics
     ros::spinOnce();
+
+    if (last_joint_state_msg_ == NULL || last_imu_msg_ == NULL ||
+        last_state_msg_ == NULL) {
+      continue;
+    }
+
+    if (initialized == false && last_state_msg_ != NULL) {
+      X0 << (*last_state_msg_).body.pose.position.x,
+          (*last_state_msg_).body.pose.position.y,
+          (*last_state_msg_).body.pose.position.z,
+          (*last_state_msg_).body.twist.linear.x,
+          (*last_state_msg_).body.twist.linear.y,
+          (*last_state_msg_).body.twist.linear.z,
+          (*last_state_msg_).body.pose.orientation.w,
+          (*last_state_msg_).body.pose.orientation.x,
+          (*last_state_msg_).body.pose.orientation.y,
+          (*last_state_msg_).body.pose.orientation.z,
+          (*last_state_msg_).feet.feet[0].position.x,
+          (*last_state_msg_).feet.feet[0].position.y,
+          (*last_state_msg_).feet.feet[0].position.z,
+          (*last_state_msg_).feet.feet[1].position.x,
+          (*last_state_msg_).feet.feet[1].position.y,
+          (*last_state_msg_).feet.feet[1].position.z,
+          (*last_state_msg_).feet.feet[2].position.x,
+          (*last_state_msg_).feet.feet[2].position.y,
+          (*last_state_msg_).feet.feet[2].position.z,
+          (*last_state_msg_).feet.feet[3].position.x,
+          (*last_state_msg_).feet.feet[3].position.y,
+          (*last_state_msg_).feet.feet[3].position.z, -0.08, -0.06, 0, 0, 0, 0;
+      X = X0;
+      last_X = X0;
+      P = P0;
+      initialized = true;
+    }
 
     // Compute new state estimate
     quad_msgs::RobotState new_state_est = this->StepOnce();
