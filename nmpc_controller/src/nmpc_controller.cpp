@@ -270,8 +270,9 @@ bool NMPCController::computePlan(
   Eigen::VectorXi complexity_schedule =
       updateAdaptiveComplexitySchedule(state_traj_lifted, control_traj_lifted);
 
-  foot_positions = state_traj_lifted.middleCols(n_body_, n_foot_ / 2);
-  foot_velocities =
+  foot_positions.topRows(state_traj_lifted.rows()) =
+      state_traj_lifted.middleCols(n_body_, n_foot_ / 2);
+  foot_velocities.topRows(state_traj_lifted.rows()) =
       state_traj_lifted.middleCols(n_body_ + n_foot_ / 2, n_foot_ / 2);
 
   Eigen::MatrixXd foot_control, joint_positions, joint_velocities;

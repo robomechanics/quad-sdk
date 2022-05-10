@@ -1204,7 +1204,7 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
 
     // If this element is newly lifted, update with nominal otherwise leave
     // unchanged (may be one timestep old)
-    if (n_vec_[i + 1] > nlp_prev.n_vec_[i + 1]) {
+    if (n_vec_[i + 1] > nlp_prev.n_vec_[i_prev + 1]) {
       std::cout << "Complexity at i = " << i
                 << " increased, disabling warm start" << std::endl;
       warm_start_ = false;
@@ -1357,10 +1357,13 @@ void quadNLP::update_solver(
   // warm_start_ = false;
 
   // If the complexity schedule has changed, update the problem structure
-  bool new_structure =
-      (adaptive_complexity_schedule != this->adaptive_complexity_schedule_) ||
-      adaptive_complexity_schedule.size() !=
-          this->adaptive_complexity_schedule_.size();
+  bool new_structure = adaptive_complexity_schedule.size() !=
+                       this->adaptive_complexity_schedule_.size();
+
+  if (!new_structure) {
+    new_structure =
+        (adaptive_complexity_schedule != this->adaptive_complexity_schedule_);
+  }
 
   if (new_structure) {
     this->adaptive_complexity_schedule_ = adaptive_complexity_schedule;

@@ -293,6 +293,14 @@ void LocalPlanner::getStateAndReferencePlan() {
       foot_positions_body_.row(i) = current_foot_positions_body_;
       foot_positions_world_.row(i) = current_foot_positions_world_;
     }
+  } else {
+    // Only shift the foot position if it's a solve for a new plan index
+    if (!same_plan_index_) {
+      foot_positions_body_.topRows(N_ - 1) =
+          foot_positions_body_.bottomRows(N_ - 1);
+      foot_positions_world_.topRows(N_ - 1) =
+          foot_positions_world_.bottomRows(N_ - 1);
+    }
   }
 
   // Initialize with current foot and body positions
@@ -469,6 +477,14 @@ void LocalPlanner::getStateAndTwistInput() {
       body_plan_.row(i) = ref_body_plan_.row(i);
       foot_positions_body_.row(i) = current_foot_positions_body_;
       foot_positions_world_.row(i) = current_foot_positions_world_;
+    }
+  } else {
+    // Only shift the foot position if it's a solve for a new plan index
+    if (!same_plan_index_) {
+      foot_positions_body_.topRows(N_ - 1) =
+          foot_positions_body_.bottomRows(N_ - 1);
+      foot_positions_world_.topRows(N_ - 1) =
+          foot_positions_world_.bottomRows(N_ - 1);
     }
   }
 
