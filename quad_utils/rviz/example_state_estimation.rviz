@@ -39,7 +39,7 @@ Visualization Manager:
       Radius: 0.009999999776482582
       Reference Frame: <Fixed Frame>
       Value: false
-    - Alpha: 1
+    - Alpha: 0.5
       Autocompute Intensity Bounds: true
       Class: grid_map_rviz_plugin/GridMap
       Color: 200; 200; 200
@@ -76,7 +76,7 @@ Visualization Manager:
       Update Interval: 0
       Value: false
       Visual Enabled: true
-    - Alpha: 1
+    - Alpha: 0.5
       Class: rviz/RobotModel
       Collision Enabled: false
       Enabled: true
