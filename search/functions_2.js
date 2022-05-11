@@ -11,7 +11,7 @@ var searchData=
   ['computeinversedynamics_8',['computeInverseDynamics',['../classquad__utils_1_1QuadKD.html#a9494c8c13a837309f2bd285f33fbe5dd',1,'quad_utils::QuadKD']]],
   ['computelegcommandarray_9',['computeLegCommandArray',['../classGrfPidController.html#a2b3057d7c70f99a6128499fa547c5c4d',1,'GrfPidController::computeLegCommandArray()'],['../classInverseDynamicsController.html#a82539662b5757de97194076174bc5bf3',1,'InverseDynamicsController::computeLegCommandArray()'],['../classJointController.html#a3f4d9c2f84a4d91e6c9af75040e8478e',1,'JointController::computeLegCommandArray()'],['../classLegController.html#a4a67268b07b5f5131c1baffe5f8d837d',1,'LegController::computeLegCommandArray()']]],
   ['computelocalplan_10',['computeLocalPlan',['../classLocalPlanner.html#a72ba8fe6eaf69bc3c452e0492d857779',1,'LocalPlanner']]],
-  ['computeplan_11',['computePlan',['../classNMPCController.html#ac7b1921bdf476565d1a40b086aaae17b',1,'NMPCController']]],
+  ['computeplan_11',['computePlan',['../classNMPCController.html#af62bfa794c99178b3b71471b38933eab',1,'NMPCController']]],
   ['computeswingapex_12',['computeSwingApex',['../classLocalFootstepPlanner.html#a45ab0661f47d4149648e397fef14365b',1,'LocalFootstepPlanner']]],
   ['connect_13',['connect',['../classRRTConnectClass.html#a7319ee958c35226face6f05283480e1b',1,'RRTConnectClass']]],
   ['contactcallback_14',['contactCallback',['../classEKFEstimator.html#a72ad38d9a3f2231745f791c11d141fba',1,'EKFEstimator']]],

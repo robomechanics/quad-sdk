@@ -1,4 +1,6 @@
 <map id="quadNLP" name="quadNLP">
-<area shape="rect" id="node1" title=" " alt="" coords="5,80,83,107"/>
-<area shape="rect" id="node2" title=" " alt="" coords="15,5,73,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="107,95,185,121"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,5,63,32"/>
+<area shape="rect" id="node3" href="$structNLPDiagnostics.html" title=" " alt="" coords="87,5,205,32"/>
+<area shape="rect" id="node4" href="$structNLPConfig.html" title=" " alt="" coords="229,5,314,32"/>
 </map>

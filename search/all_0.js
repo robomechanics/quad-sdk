@@ -11,7 +11,7 @@ var searchData=
   ['addedge_8',['addEdge',['../classGraphClass.html#ac9d39ec62febc8b866c596f6672f5423',1,'GraphClass::addEdge(int idx1, int idx2)'],['../classGraphClass.html#abf9dcf5cee3197141fe3695ce26a04b1',1,'GraphClass::addEdge(int idx1, int idx2, double edge_cost)']]],
   ['addstateandgrftomsg_9',['addStateAndGRFToMsg',['../classGlobalBodyPlanner.html#ad557f47aee5a108585c7940c97f9dfea',1,'GlobalBodyPlanner::addStateAndGRFToMsg()'],['../classGlobalBodyPlan.html#a31555fa6c35d0302f5cab71bf1e5b9d8',1,'GlobalBodyPlan::addStateAndGRFToMsg()']]],
   ['addvertex_10',['addVertex',['../classGraphClass.html#a14de7afdfc42f444e9dc60f860a3c8bf',1,'GraphClass']]],
-  ['allow_5ffoot_5ftraj_5fmodification_11',['allow_foot_traj_modification',['../classquadNLP.html#ac095d13e9b37ce6487617ead18fa1b4a',1,'quadNLP']]],
+  ['always_5fconstrain_5ffeet_5f_11',['always_constrain_feet_',['../classquadNLP.html#ac3d203c7c697b2fe6f054e4317f5cf89',1,'quadNLP']]],
   ['ang_5fdes_5f_12',['ang_des_',['../classGrfPidController.html#a4bc7ed0338463848122ea183f7ffeeb2',1,'GrfPidController']]],
   ['ang_5ferror_5fint_5f_13',['ang_error_int_',['../classGrfPidController.html#a6cd55647b6452fb0417eae73a0fb8147',1,'GrfPidController']]],
   ['anytime_5fhorizon_14',['anytime_horizon',['../classRRTConnectClass.html#a9a0b075d5562560dcbdde72e00c733f0',1,'RRTConnectClass']]],
