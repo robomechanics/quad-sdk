@@ -1,0 +1,5 @@
+<launch>
+
+  <node pkg="rostopic" type="rostopic" name="standing_publisher" args="pub /control/mode std_msgs/UInt8 1" output="screen"/>
+  
+</launch>
