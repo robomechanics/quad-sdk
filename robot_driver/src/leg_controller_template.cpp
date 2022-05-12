@@ -9,6 +9,8 @@ LegControllerTemplate::LegControllerTemplate() {
 
   // Initialize new plan check vector
   last_contact_sensing_msg_.get_new_plan_after_recovering.assign(4, true);
+
+  last_contact_sensing_msg_.recover.assign(4, false);
 }
 
 void LegControllerTemplate::updateLocalPlanMsg(

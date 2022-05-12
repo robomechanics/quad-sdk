@@ -207,7 +207,7 @@ Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian, double ratio) {
   Eigen::VectorXd sig_inv = sig;
 
   for (size_t i = 0; i < sig.size(); i++) {
-    sig_inv(i) = std::min(1 / sig(i), 1 / (ratio * sig.maxCoeff()));
+    sig_inv(i) = std::min(1 / sig(i), 1 / 5e-2);
   }
 
   Eigen::MatrixXd jacobian_inv =

@@ -130,6 +130,7 @@ bool InverseDynamicsController::computeLegCommandArray(
           if (last_grf_sensor_msg_->contact_states.at(i) &&
               last_grf_sensor_msg_->vectors.at(i).z >= 5) {
             last_contact_sensing_msg_.contact_sensing.at(i) = false;
+            last_contact_sensing_msg_.recover.at(i) = true;
             continue;
           }
           clear = true;
@@ -140,7 +141,9 @@ bool InverseDynamicsController::computeLegCommandArray(
         } else if (contact_mode.at(i)) {
           if (current_foot_positions(3 * i + 2) - body_state(2) < -0.295 &&
               !(last_grf_sensor_msg_->contact_states.at(i) &&
-                last_grf_sensor_msg_->vectors.at(i).z >= 5)) {
+                last_grf_sensor_msg_->vectors.at(i).z >=
+                    grf_array(3 * i + 2) / 10) &&
+              !last_contact_sensing_msg_.recover.at(i)) {
             last_contact_sensing_msg_.contact_sensing.at(i) = true;
             last_contact_sensing_msg_.get_new_plan_after_recovering.at(i) =
                 false;
@@ -149,6 +152,7 @@ bool InverseDynamicsController::computeLegCommandArray(
           clear = true;
         } else {
           clear = true;
+          last_contact_sensing_msg_.recover.at(i) = false;
         }
       }
     }
@@ -221,7 +225,8 @@ bool InverseDynamicsController::computeLegCommandArray(
         } else {
           if (contact_mode.at(i)) {
             if (last_grf_sensor_msg_->contact_states.at(i) &&
-                last_grf_sensor_msg_->vectors.at(i).z >= 5) {
+                last_grf_sensor_msg_->vectors.at(i).z >=
+                    grf_array(3 * i + 2) / 10) {
               // It's stance
               leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
                   stance_kp_.at(j);

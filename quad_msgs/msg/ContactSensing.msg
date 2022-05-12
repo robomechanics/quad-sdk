@@ -5,3 +5,4 @@
 Header header
 bool[] contact_sensing
 bool[] get_new_plan_after_recovering
+bool[] recover
