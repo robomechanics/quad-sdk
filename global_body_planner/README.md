@@ -41,7 +41,7 @@ Publishes global plans to guide lower layers towards the goal state. The node ma
 2. The current plan gets closer to the goal than the previous plan
 3. A new goal state has been set since the previous plan was constructed
 
-Internally the node alternates between two states to promote high-quality and feasible plans. Upon recieving a new goal state the node enters the `RESET` mode, which pauses and replans from the current state for a set amount of time (determined by `max_planning_time`), after which it publishes the best plan and enters the `REFINE` mode. While in `REFINE`, it continuously replans from a point on the current plan `max_planning_time` seconds into the future to ensure the new plan will be valid.
+Internally the node alternates between two states to promote high-quality and feasible plans. Upon recieving a new goal state the node enters the `RESET` mode, which pauses and replans from the current state for a set amount of time (determined by `startup_delay`), after which it publishes the best plan and enters the `REFINE` mode. While in `REFINE`, it continuously replans from a point on the current plan `max_planning_time` seconds into the future to ensure the new plan will be valid.
 
 #### Subscribed Topics
 
