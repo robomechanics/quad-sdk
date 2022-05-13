@@ -42,7 +42,7 @@ QuadController::QuadController() {
 QuadController::~QuadController() { sub_command_.shutdown(); }
 
 bool QuadController::init(hardware_interface::EffortJointInterface* hw,
-                            ros::NodeHandle& n) {
+                          ros::NodeHandle& n) {
   // List of controlled joints
   std::string param_name = "joints";
   if (!n.getParam(param_name, joint_names_)) {
@@ -57,7 +57,7 @@ bool QuadController::init(hardware_interface::EffortJointInterface* hw,
     return false;
   }
 
-  // Get URDF  
+  // Get URDF
   urdf::Model urdf;
   if (!urdf.initParam("robot_description")) {
     ROS_ERROR("Failed to parse urdf file");
@@ -65,11 +65,11 @@ bool QuadController::init(hardware_interface::EffortJointInterface* hw,
   }
 
   for (unsigned int i = 0; i < n_joints_; i++) {
-    const auto &joint_name = joint_names_[i];
+    const auto& joint_name = joint_names_[i];
 
     try {
       joints_.push_back(hw->getHandle(joint_name));
-    } catch (const hardware_interface::HardwareInterfaceException &e) {
+    } catch (const hardware_interface::HardwareInterfaceException& e) {
       ROS_ERROR_STREAM("Exception thrown: " << e.what());
       return false;
     }
@@ -103,7 +103,7 @@ bool QuadController::init(hardware_interface::EffortJointInterface* hw,
 }
 
 void QuadController::update(const ros::Time& time,
-                              const ros::Duration& period) {
+                            const ros::Duration& period) {
   BufferType& commands = *commands_buffer_.readFromRT();
 
   // Check if message is populated
@@ -155,8 +155,7 @@ void QuadController::update(const ros::Time& time,
   }
 }
 
-void QuadController::commandCB(
-    const quad_msgs::LegCommandArrayConstPtr& msg) {
+void QuadController::commandCB(const quad_msgs::LegCommandArrayConstPtr& msg) {
   commands_buffer_.writeFromNonRT(msg->leg_commands);
 }
 
