@@ -171,21 +171,21 @@ const grid_map::InterpolationMethods INTER_TYPE =
 typedef Eigen::Vector3d GRF;
 
 // Define state with Eigen data
-struct StateEigen {
+struct State {
   Eigen::Vector3d pos;
   Eigen::Vector3d vel;
 
-  bool operator==(const StateEigen rhs) const {
+  bool operator==(const State rhs) const {
     // Z velocity is overridden by action
     return ((pos == rhs.pos) && (vel.head<2>() == rhs.vel.head<2>()));
   }
 
-  bool operator!=(const StateEigen rhs) const {
+  bool operator!=(const State rhs) const {
     // Z velocity is overridden by action
     return ((pos != rhs.pos) || (vel.head<2>() != rhs.vel.head<2>()));
   }
 
-  bool isApprox(const StateEigen rhs) const {
+  bool isApprox(const State rhs) const {
     // Z velocity is overridden by action
     return ((pos.isApprox(rhs.pos)) &&
             (vel.head<2>().isApprox(rhs.vel.head<2>())));
@@ -193,7 +193,7 @@ struct StateEigen {
 };
 
 // Define full state with Eigen data
-struct FullStateEigen {
+struct FullState {
   Eigen::Vector3d pos;
   Eigen::Vector3d vel;
   Eigen::Vector3d ang;
@@ -201,7 +201,7 @@ struct FullStateEigen {
 };
 
 // Define action with Eigen data
-struct ActionEigen {
+struct Action {
   GRF grf_0;
   GRF grf_f;
   double t_s_leap;
@@ -211,31 +211,12 @@ struct ActionEigen {
   double dz_f;
 };
 
-// Define the dimensionality and types for states, actions, and pairs
-const int POSEDIM = 3;
-const int STATEDIM = 6;
-const int FULLSTATEDIM = 12;
-const int ACTIONDIM = 11;
-typedef std::array<double, STATEDIM> StateVec;
-typedef std::array<double, ACTIONDIM> ActionVec;
-typedef std::vector<double> FullStateVec;
-
-typedef StateEigen State;
-typedef ActionEigen Action;
-typedef FullStateEigen FullState;
-
-typedef std::pair<State, Action> StateActionPair;
-
 struct StateActionResult {
   State s_new;
   Action a_new;
   double t_new = 0;
   double length = 0;
 };
-
-// Define math parameters
-const double INFTY = std::numeric_limits<double>::max();
-const double MY_PI = 3.14159;
 
 // State data structure conversions
 State fullStateToState(const FullState &full_state);
@@ -259,19 +240,6 @@ void printState(const State &vec);
 
 void printFullState(const FullState &vec);
 
-template <typename T>
-void printVector(const std::vector<T> &vec) {
-  std::cout << "{";
-  for (auto val : vec) std::cout << val << ", ";
-  std::cout << "\b\b}";
-}
-
-template <typename T>
-void printVectorNewline(const std::vector<T> &vec) {
-  printVector(vec);
-  std::cout << std::endl;
-}
-
 void printStateNewline(State vec);
 
 void printAction(Action a);
@@ -285,9 +253,6 @@ void printInterpStateSequence(std::vector<State> state_sequence,
 
 void printActionSequence(std::vector<Action> action_sequence);
 
-void plotYaw(std::vector<double> interp_t,
-             std::vector<FullState> interp_full_path);
-
 // Define some utility functions
 double poseDistance(const State &q1, const State &q2);
 
@@ -297,9 +262,6 @@ double stateDistance(const State &q1, const State &q2);
 
 double poseDistance(const std::vector<double> &v1,
                     const std::vector<double> &v2);
-
-std::array<double, 3> rotateGRF(const std::array<double, 3> &surface_norm,
-                                const std::array<double, 3> &grf);
 
 Eigen::Vector3d rotateGRF(const Eigen::Vector3d &surface_norm,
                           const Eigen::Vector3d &grf);
@@ -459,9 +421,6 @@ Eigen::Vector3d getAcceleration(const Action &a, double t, int phase,
                                 const PlannerConfig &planner_config);
 
 // Action sampling
-Action getRandomAction(const std::array<double, 3> &surf_norm,
-                       const PlannerConfig &planner_config);
-
 bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm,
                          Action &a, const PlannerConfig &planner_config);
 
@@ -477,9 +436,6 @@ bool refineFlight(const State &s, double &t_f,
 
 // Instantaneous validity checking
 bool isValidAction(const Action &a, const PlannerConfig &planner_config);
-
-bool isValidYawRate(const State &s, const Action &a, double t, int phase,
-                    const PlannerConfig &planner_config);
 
 bool isValidState(const State &s, const PlannerConfig &planner_config,
                   int phase);
