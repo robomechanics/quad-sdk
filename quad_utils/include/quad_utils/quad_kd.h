@@ -45,7 +45,7 @@ class QuadKD {
    * @param[in] ns Namespace
    */
   void initModel(std::string ns);
-  
+
   /**
    * @brief Create an Eigen Eigen::Matrix4d containing a homogeneous transform
    * from a specified translation and a roll, pitch, and yaw vector

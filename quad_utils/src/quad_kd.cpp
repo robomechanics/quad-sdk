@@ -4,13 +4,9 @@ using namespace quad_utils;
 
 Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
-QuadKD::QuadKD(){
-  initModel("");
-}
+QuadKD::QuadKD() { initModel(""); }
 
-QuadKD::QuadKD(std::string ns){
-  initModel("/"+ns+"/");
-}
+QuadKD::QuadKD(std::string ns) { initModel("/" + ns + "/"); }
 
 void QuadKD::initModel(std::string ns) {
   std::string robot_description_string;

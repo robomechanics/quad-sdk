@@ -19,23 +19,23 @@
 
 #include "IpTNLP.hpp"
 #include "nmpc_controller/gen/eval_g_a1.h"
-#include "nmpc_controller/gen/eval_g_spirit.h"
-#include "nmpc_controller/gen/eval_hess_g_a1.h"
-#include "nmpc_controller/gen/eval_hess_g_spirit.h"
-#include "nmpc_controller/gen/eval_jac_g_a1.h"
-#include "nmpc_controller/gen/eval_jac_g_spirit.h"
 #include "nmpc_controller/gen/eval_g_leg_complex.h"
 #include "nmpc_controller/gen/eval_g_leg_complex_to_simple.h"
 #include "nmpc_controller/gen/eval_g_leg_simple.h"
 #include "nmpc_controller/gen/eval_g_leg_simple_to_complex.h"
+#include "nmpc_controller/gen/eval_g_spirit.h"
+#include "nmpc_controller/gen/eval_hess_g_a1.h"
 #include "nmpc_controller/gen/eval_hess_g_leg_complex.h"
 #include "nmpc_controller/gen/eval_hess_g_leg_complex_to_simple.h"
 #include "nmpc_controller/gen/eval_hess_g_leg_simple.h"
 #include "nmpc_controller/gen/eval_hess_g_leg_simple_to_complex.h"
+#include "nmpc_controller/gen/eval_hess_g_spirit.h"
+#include "nmpc_controller/gen/eval_jac_g_a1.h"
 #include "nmpc_controller/gen/eval_jac_g_leg_complex.h"
 #include "nmpc_controller/gen/eval_jac_g_leg_complex_to_simple.h"
 #include "nmpc_controller/gen/eval_jac_g_leg_simple.h"
 #include "nmpc_controller/gen/eval_jac_g_leg_simple_to_complex.h"
+#include "nmpc_controller/gen/eval_jac_g_spirit.h"
 #include "quad_utils/function_timer.h"
 #include "quad_utils/quad_kd.h"
 
@@ -54,7 +54,7 @@ enum FunctionID { FUNC, JAC, HESS };
 
 class quadNLP : public TNLP {
  public:
-  SystemID default_system_; 
+  SystemID default_system_;
 
   // Horizon length, state dimension, input dimension, and constraints dimension
   int N_, g_relaxed_;
@@ -238,17 +238,19 @@ class quadNLP : public TNLP {
   std::vector<std::vector<decltype(eval_g_spirit_work) *>> eval_work_vec_;
   std::vector<std::vector<decltype(eval_g_spirit_incref) *>> eval_incref_vec_;
   std::vector<std::vector<decltype(eval_g_spirit_decref) *>> eval_decref_vec_;
-  std::vector<std::vector<decltype(eval_g_spirit_checkout) *>> eval_checkout_vec_;
+  std::vector<std::vector<decltype(eval_g_spirit_checkout) *>>
+      eval_checkout_vec_;
   std::vector<std::vector<decltype(eval_g_spirit_release) *>> eval_release_vec_;
   std::vector<std::vector<decltype(eval_g_spirit_sparsity_out) *>>
       eval_sparsity_vec_;
 
   /** Default constructor */
-  quadNLP(SystemID default_system, int N, double dt, double mu, double panic_weights,
-          double constraint_panic_weights, double Q_temporal_factor,
-          double R_temporal_factor, int n_simple, int n_complex, int m_simple,
-          int m_complex, int g_simple, int g_complex, int x_dim_cost_simple,
-          int x_dim_cost_complex, int u_dim_cost_simple, int u_dim_cost_complex,
+  quadNLP(SystemID default_system, int N, double dt, double mu,
+          double panic_weights, double constraint_panic_weights,
+          double Q_temporal_factor, double R_temporal_factor, int n_simple,
+          int n_complex, int m_simple, int m_complex, int g_simple,
+          int g_complex, int x_dim_cost_simple, int x_dim_cost_complex,
+          int u_dim_cost_simple, int u_dim_cost_complex,
           const Eigen::VectorXd &Q_complex, const Eigen::VectorXd &R_complex,
           const Eigen::VectorXd &x_min_complex,
           const Eigen::VectorXd &x_max_complex,
