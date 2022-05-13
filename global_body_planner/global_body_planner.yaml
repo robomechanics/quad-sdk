@@ -1,38 +1,34 @@
 global_body_planner:
   update_rate: 20
-  num_calls: 1            # Number of times to call the planner
-  max_planning_time: 0.25  # Maximum amount of time to run the planner
-  start_state: [0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
-  goal_state: [6.0,0.0,0.3,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
-  state_error_threshold: 25 #0.25
-  startup_delay: 1.5      # Time to delay after starting node before planning
-  replanning: true        # Boolean to determine if replanning is allowed
-  H_MAX: 0.375            # Maximum height of leg base, m
-  H_MIN: 0.1              # Minimum ground clearance of body corners, m
-  H_NOM: 0.3              # Nominal ground clearance of body, m
-  V_MAX: 2.0              # Maximum robot velocity, m/s (4.0 for cheetah, 2.5 for anymal)
-  V_NOM: 0.5              # Nominal velocity, m/s (used during connect function)
-  DY_MAX: 2.0             # Maximum yaw rate
-  ROBOT_L: 0.4            # Length of robot body, m (0.6 cheetah, 0.554 ANYmal)
-  ROBOT_W: 0.3            # Width of robot body, m (0.256 cheetah, 0.232 ANYmal)
-  ROBOT_H: 0.05           # Vertical distance between leg base and bottom of robot, m (0.1 cheetah, 0.04 ANYmal)
-  BODY_TRAVERSABILITY_THRESHOLD: 0.75 # Traversability threshold for valid body state
-  CONTACT_TRAVERSABILITY_THRESHOLD: 0.01 # Traversability threshold for valid contact location
-  M_CONST: 13.0           # Robot mass, kg (12 for spirit, 43 for cheetah, 30 for anymal)
-  J_CONST: 1.0            # Moment of inertia about the robot's y axis (pitch)
-  G_CONST: 9.81           # Gravity constant, m/s^2
-  F_MIN: 0.0              # Minimum GRF, N
-  F_MAX: 250.0            # Maximum GRF, N (800 for cheetah, 500 for anymal)
-  PEAK_GRF_MIN: 4.0       # Minimum GRF in units of body weight
-  PEAK_GRF_MAX: 7.0       # Maximum GRF in units of body weight
-  MU: 0.25                # Friction coefficient (1.0 for Cheetah, 0.5 for ANYmal)
-  T_S_MIN: 0.3            # Minimum stance time, s
-  T_S_MAX: 0.3            # Maximum stance time, s
-  T_F_MIN: 0.1            # Minimum flight time, s
-  T_F_MAX: 0.4            # Maximum stance time, s
-  KINEMATICS_RES: 0.03    # Resolution of kinematic feasibility checks, m
-  TRAPPED_BUFFER_FACTOR: 4  #  Number of feasibility that must pass to not consider a state trapped
-  BACKUP_TIME: 0.3        # Duration of backup after finding an invalid state, s
-  BACKUP_RATIO: 0.5       # Ratio of trajectory to back up after finding an invalid state, s
-  NUM_LEAP_SAMPLES: 10     # Number of actions computed for each extend function
-  GOAL_BOUNDS: 0.5        # Distance threshold on reaching the goal (only used for vanilla RRT, not RRT-Connect)
+  num_calls: 1              # Number of times to call the planner
+  max_planning_time: 0.25   # Maximum amount of time to run the planner
+  goal_state: [6.0,0.0,0.3,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0] # Nominal goal state
+  state_error_threshold: 25 # Error from planned state to trigger reset
+  startup_delay: 1.5        # Time to delay after starting node before planning
+  replanning: true          # Boolean to determine if replanning is allowed
+  dt: 0.03                  # Resolution of kinematic feasibility checks, m
+  trapped_buffer_factor: 4  # Number of feasibility that must pass to not consider a state trapped
+  backup_ratio: 0.5         # Ratio of trajectory to back up after finding an invalid state, s
+  num_leap_samples: 10      # Number of leap actions computed for each extend function
+  body_traversability_threshold: 0.75 # Traversability threshold for valid body state
+  contact_traversability_threshold: 0.01 # Traversability threshold for valid contact location
+  mu: 0.25                  # Friction coefficient
+  g: 9.81                   # Gravity constant, m/s^2
+  t_s_min: 0.3              # Minimum stance time, s
+  t_s_max: 0.3              # Maximum stance time, s
+  t_f_min: 0.1              # Minimum flight time, s
+  t_f_max: 0.4              # Maximum stance time, s
+  h_max: 0.375              # Maximum height of leg base, m
+  h_min: 0.1                # Minimum ground clearance of body corners, m
+  h_nom: 0.3                # Nominal ground clearance of body, m
+  v_max: 2.0                # Maximum robot velocity, m/s
+  v_nom: 0.5                # Nominal velocity, m/s (used during connect function)
+  dy_max: 2.0               # Maximum yaw rate
+  robot_l: 0.4              # Length of robot body, m
+  robot_w: 0.3              # Width of robot body, m
+  robot_h: 0.05             # Vertical distance between leg base and bottom of robot, m
+  mass: 13.0                # Robot mass, kg
+  f_min: 0.0                # Minimum GRF, N
+  f_max: 250.0              # Maximum GRF, N
+  grf_min: 4.0              # Minimum GRF in units of body weight
+  grf_max: 6.0              # Maximum GRF in units of body weight

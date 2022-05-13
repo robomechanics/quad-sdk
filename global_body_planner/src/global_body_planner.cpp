@@ -8,17 +8,16 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   // Load rosparams from parameter server
   std::string body_plan_topic, discrete_body_plan_topic, body_plan_tree_topic,
       goal_state_topic;
-  std::vector<double> start_state_vec(12), goal_state_vec(12);
+  std::vector<double> goal_state_vec(12);
 
+  quad_utils::loadROSParam(nh_, "topics/start_state", robot_state_topic_);
+  quad_utils::loadROSParam(nh_, "topics/goal_state", goal_state_topic);
   quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic_);
-  quad_utils::loadROSParam(nh_, "topics/state/ground_truth",
-                           robot_state_topic_);
   quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/global_plan_discrete",
                            discrete_body_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/global_plan_tree",
                            body_plan_tree_topic);
-  quad_utils::loadROSParam(nh_, "topics/goal_state", goal_state_topic);
   quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
   quad_utils::loadROSParam(nh_, "global_body_planner/update_rate",
                            update_rate_);
@@ -32,8 +31,6 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   quad_utils::loadROSParam(nh_, "global_body_planner/replanning",
                            replanning_allowed_);
   quad_utils::loadROSParam(nh_, "local_planner/timestep", dt_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/start_state",
-                           start_state_vec);
   quad_utils::loadROSParam(nh_, "global_body_planner/goal_state",
                            goal_state_vec);
 
@@ -56,15 +53,13 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh_.param<bool>("global_body_planner/enable_leaping", enable_leaping, true);
   if (!enable_leaping) {
     planner_config_.enable_leaping = false;
-    planner_config_.NUM_LEAP_SAMPLES = 0;
-    planner_config_.H_MIN = 0;
-    planner_config_.H_MAX = 0.5;
+    planner_config_.num_leap_samples = 0;
+    planner_config_.h_min = 0;
+    planner_config_.h_max = 0.5;
   }
 
   // Zero planning data
-  vectorToFullState(start_state_vec, start_state_);
   vectorToFullState(goal_state_vec, goal_state_);
-  robot_state_ = start_state_;
   start_index_ = 0;
   triggerReset();
 }
@@ -107,7 +102,7 @@ void GlobalBodyPlanner::goalStateCallback(
   // overriden)
   goal_state_.pos[0] = goal_state_msg_->point.x;
   goal_state_.pos[1] = goal_state_msg_->point.y;
-  goal_state_.pos[2] = planner_config_.H_NOM +
+  goal_state_.pos[2] = planner_config_.h_nom +
                        planner_config_.terrain.getGroundHeight(
                            goal_state_msg_->point.x, goal_state_msg_->point.y);
 

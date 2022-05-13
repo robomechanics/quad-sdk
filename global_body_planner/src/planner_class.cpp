@@ -18,8 +18,8 @@ State PlannerClass::randomState(const PlannerConfig &planner_config) {
   double x_min, x_max, y_min, y_max;
   getMapBounds(planner_config, x_min, x_max, y_min, y_max);
 
-  double z_min_rel = planner_config.H_MIN + planner_config.ROBOT_H;
-  double z_max_rel = planner_config.H_MAX + planner_config.ROBOT_H;
+  double z_min_rel = planner_config.h_min + planner_config.robot_h;
+  double z_max_rel = planner_config.h_max + planner_config.robot_h;
 
   State q;
 
@@ -34,10 +34,10 @@ State PlannerClass::randomState(const PlannerConfig &planner_config) {
 
   q.pos[0] = (x_max - x_min) * (double)rand() / RAND_MAX + x_min;
   q.pos[1] = (y_max - y_min) * (double)rand() / RAND_MAX + y_min;
-  q.pos[2] = planner_config.H_NOM + getTerrainZFromState(q, planner_config);
+  q.pos[2] = planner_config.h_nom + getTerrainZFromState(q, planner_config);
 
-  double vel_mean = planner_config.V_NOM;
-  double vel_sigma = (planner_config.V_MAX - planner_config.V_NOM) / 3.0;
+  double vel_mean = planner_config.v_nom;
+  double vel_sigma = (planner_config.v_max - planner_config.v_nom) / 3.0;
   double vel_mean_log =
       std::log(vel_mean * vel_mean /
                std::sqrt(vel_mean * vel_mean + vel_sigma * vel_sigma));
@@ -48,7 +48,7 @@ State PlannerClass::randomState(const PlannerConfig &planner_config) {
 
   double phi = (2.0 * MY_PI) * (double)rand() / RAND_MAX;
   double v = vel_distribution(generator);
-  v = std::min(std::max(v, 0.0), planner_config.V_MAX);
+  v = std::min(std::max(v, 0.0), planner_config.v_max);
   q.vel[0] = v * cos(phi);
   q.vel[1] = v * sin(phi);
   q.vel[2] = getDzFromState(q, planner_config);

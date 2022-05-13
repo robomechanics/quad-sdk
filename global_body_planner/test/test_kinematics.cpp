@@ -213,12 +213,12 @@ TEST_F(GlobalBodyPlannerTestFixture, testUnitConnectActionSlope) {
 }
 
 TEST_F(GlobalBodyPlannerTestFixture, testUnitLeapActionSlope) {
-  double grade = planner_config_.MU;
+  double grade = planner_config_.mu;
   double slope = atan(grade);
   updateTerrainSlope(grade);
 
   // Turn off friction
-  planner_config_.MU = 0;
+  planner_config_.mu = 0;
 
   State s;
   s.pos << 0, 0, 0.3;
@@ -247,6 +247,6 @@ TEST_F(GlobalBodyPlannerTestFixture, testUnitLeapActionSlope) {
   bool is_valid_forward = isValidStateActionPair(s, a, result, planner_config_);
   EXPECT_TRUE(is_valid_forward);
   EXPECT_TRUE(abs(result.s_new.pos[2] -
-                  (result.s_new.pos[0] * grade + planner_config_.H_NOM)) <
+                  (result.s_new.pos[0] * grade + planner_config_.h_nom)) <
               kinematics_tol);
 }

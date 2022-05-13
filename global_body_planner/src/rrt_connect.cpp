@@ -170,7 +170,7 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config,
   }
   // Set goal height to nominal distance above terrain
   s_goal.pos[2] =
-      getTerrainZFromState(s_goal, planner_config) + planner_config.H_NOM;
+      getTerrainZFromState(s_goal, planner_config) + planner_config.h_nom;
   if (!isValidState(s_goal, planner_config, LEAP_STANCE)) {
     return INVALID_GOAL_STATE;
   }
@@ -207,7 +207,7 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config,
         t_current - t_start_current_solve;
 
 #ifndef VISUALIZE_TREE
-    if (total_elapsed.count() >= planner_config.MAX_TIME) {
+    if (total_elapsed.count() >= planner_config.max_planning_time) {
       elapsed_to_first_ = total_elapsed;
       num_vertices_ = (Ta.getNumVertices() + Tb.getNumVertices());
       break;
