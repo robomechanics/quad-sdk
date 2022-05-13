@@ -102,6 +102,19 @@ class RRTConnectClass : public RRTClass {
                     std::vector<Action> &action_sequence,
                     ros::Publisher &tree_pub);
 
+  /**
+   * @brief Get a hardcoded plan for consistent testing
+   * @param[in] planner_config Configuration parameters
+   * @param[in] s_start The start state of the planner
+   * @param[in] s_goal The goal state of the planner
+   * @param[out] state_sequence The sequence of states in the final path
+   * @param[out] action_sequence The sequence of actions in the final path
+   * @return Boolean for success of the planner
+   */
+  int getTestPlan(const PlannerConfig &planner_config, State s_start,
+                  State s_goal, std::vector<State> &state_sequence,
+                  std::vector<Action> &action_sequence);
+
  protected:
   /// Time horizon (in seconds) the planner is allowed to search until restarted
   double anytime_horizon;

@@ -84,8 +84,9 @@ void LocalFootstepPlanner::getFootPositionsBodyFrame(
 }
 
 void LocalFootstepPlanner::computeContactSchedule(
-    int current_plan_index, const Eigen::VectorXi &ref_primitive_plan,
-    int control_mode, std::vector<std::vector<bool>> &contact_schedule) {
+    int current_plan_index, const Eigen::MatrixXd &body_plan,
+    const Eigen::VectorXi &ref_primitive_plan, int control_mode,
+    std::vector<std::vector<bool>> &contact_schedule) {
   // Compute the current phase in the nominal contact schedule
   int phase = current_plan_index % period_;
 
@@ -116,9 +117,18 @@ void LocalFootstepPlanner::computeContactSchedule(
         contact_schedule.at(i) = {true, true, true, true};
       }
     } else if (ref_primitive_plan(i) == FLIGHT) {
-      // Flight
-      std::fill(contact_schedule.at(i).begin(), contact_schedule.at(i).end(),
-                false);
+      // Flight, check that min landing height is exceeded
+      double min_landing_height = 0.3;
+      double current_height =
+          body_plan(i, 2) - terrain_grid_.atPosition(
+                                "z_inpainted", body_plan.row(i).head<2>(),
+                                grid_map::InterpolationMethods::INTER_NEAREST);
+      if (current_height < min_landing_height && body_plan(i, 8) < 0) {
+        ROS_ERROR("Contact Schedule Changed at i = %d!!!!!!!!!!!!!!!", i);
+        contact_schedule.at(i) = {true, true, true, true};
+      } else {
+        contact_schedule.at(i) = {false, false, false, false};
+      }
     } else if (ref_primitive_plan(i) == LAND_STANCE) {
       contact_schedule.at(i) = {true, true, true, true};
     }

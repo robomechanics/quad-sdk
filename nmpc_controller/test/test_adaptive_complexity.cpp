@@ -77,7 +77,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
 
   // Define initial timing params
   double first_element_duration = dt_;
-  bool same_plan_index = false;
+  int plan_index_diff = false;
 
   // Define initial complexity schedule
   Eigen::VectorXi complexity_schedule(N_);
@@ -108,7 +108,7 @@ TEST(NMPCTest, testAdaptiveComplexity) {
         current_state_, ref_body_plan_, foot_positions_body_,
         foot_positions_world_, foot_velocities_world_,
         adpative_contact_schedule_, ref_ground_height, first_element_duration,
-        same_plan_index, map, body_plan_, grf_plan_);
+        plan_index_diff, map, body_plan_, grf_plan_);
     toc = std::chrono::steady_clock::now();
     std::cout << "Time difference = "
               << std::chrono::duration_cast<std::chrono::microseconds>(toc -

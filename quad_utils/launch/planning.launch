@@ -4,7 +4,6 @@
 
     <arg name="global_planner" default="twist" />
     <arg name="leaping" default="true" />
-    <arg name="ac" default="false" />
     <arg name="logging" default="false" />
     <arg name="twist_input" default="none" />
 
@@ -31,13 +30,12 @@
         </group>
     </group>
 
-    <param name="nmpc_controller/enable_adaptive_complexity" value="$(arg ac)" />
     <node name="local_planner" pkg="local_planner" type="local_planner_node" output="screen" />
 
     <group if="$(arg logging)">
         <include file="$(find quad_utils)/launch/logging.launch" />
     </group>
 
-    <node name="plan_publisher" pkg="quad_utils" type="trajectory_publisher_node" output="screen" />
+    <!-- <node name="plan_publisher" pkg="quad_utils" type="trajectory_publisher_node" output="screen" /> -->
 
 </launch>

@@ -39,7 +39,7 @@ class NMPCController {
    * @param[in] foot_positions Matrix holding foot positions
    * @param[in] foot_velocities Matrix holding foot velocities
    * @param[in] first_element_duration Time duration to the next plan index
-   * @param[in] same_plan_index If the current solving is duplicated in the same
+   * @param[in] plan_index_diff If the current solving is duplicated in the same
    * index
    * @param[out] state_traj Optimized state trajectory output
    * @param[out] control_traj Optimized control trajectory output
@@ -52,19 +52,24 @@ class NMPCController {
                    Eigen::MatrixXd &foot_velocities,
                    Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj);
 
-  bool computeLegPlan(
-      const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
-      const Eigen::MatrixXd &foot_positions_body,
-      Eigen::MatrixXd &foot_positions_world, Eigen::MatrixXd &foot_velocities,
-      const std::vector<std::vector<bool>> &contact_schedule,
-      const Eigen::VectorXd &ref_ground_height,
-      const double &first_element_duration, const bool &same_plan_index,
-      const grid_map::GridMap &terrain, Eigen::MatrixXd &state_traj,
-      Eigen::MatrixXd &control_traj);
+  bool computeLegPlan(const Eigen::VectorXd &initial_state,
+                      const Eigen::MatrixXd &ref_traj,
+                      const Eigen::MatrixXd &foot_positions_body,
+                      Eigen::MatrixXd &foot_positions_world,
+                      Eigen::MatrixXd &foot_velocities,
+                      const std::vector<std::vector<bool>> &contact_schedule,
+                      const Eigen::VectorXd &ref_ground_height,
+                      const double &first_element_duration, int plan_index_diff,
+                      const grid_map::GridMap &terrain,
+                      Eigen::MatrixXd &state_traj,
+                      Eigen::MatrixXd &control_traj);
 
   /** Method to return the constraint residual for requested data */
   Eigen::VectorXi updateAdaptiveComplexitySchedule(
-      Eigen::MatrixXd &state_traj_lifted, Eigen::MatrixXd &control_traj_lifted);
+      const Eigen::MatrixXd &state_traj_heuristic,
+      const Eigen::MatrixXd &control_traj_heuristic,
+      const Eigen::MatrixXd &state_traj_lifted,
+      const Eigen::MatrixXd &control_traj_lifted);
 
   /** Method to update the prediction horizon length */
   void updateHorizonLength();
@@ -88,6 +93,12 @@ class NMPCController {
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
 
   bool enable_variable_horizon_;
+
+  bool enable_adaptive_complexity_;
+
+  bool allow_new_interior_complexity_;
+
+  bool is_adaptive_complexity_sparse_;
 
   int N_, N_max_, N_min_;
 

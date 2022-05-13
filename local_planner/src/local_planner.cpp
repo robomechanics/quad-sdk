@@ -108,8 +108,8 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   // Initialize the time duration to the next plan index
   first_element_duration_ = dt_;
 
-  // Initialize the plan index boolean
-  same_plan_index_ = true;
+  // Initialize the plan index diff
+  plan_index_diff_ = 0;
 
   // Initialize the plan index
   current_plan_index_ = 0;
@@ -230,7 +230,7 @@ void LocalPlanner::getStateAndReferencePlan() {
   int previous_plan_index = current_plan_index_;
   quad_utils::getPlanIndex(body_plan_msg_->global_plan_timestamp, dt_,
                            current_plan_index_, first_element_duration_);
-  same_plan_index_ = previous_plan_index == current_plan_index_;
+  plan_index_diff_ = current_plan_index_ - previous_plan_index;
 
   // Initializing foot positions if not data has arrived
   if (first_plan_) {
@@ -295,7 +295,7 @@ void LocalPlanner::getStateAndReferencePlan() {
     }
   } else {
     // Only shift the foot position if it's a solve for a new plan index
-    if (!same_plan_index_) {
+    if (plan_index_diff_ > 0) {
       body_plan_.topRows(N_ - 1) = body_plan_.bottomRows(N_ - 1);
       grf_plan_.topRows(N_ - 2) = grf_plan_.bottomRows(N_ - 2);
 
@@ -331,7 +331,7 @@ void LocalPlanner::getStateAndTwistInput() {
   int previous_plan_index = current_plan_index_;
   quad_utils::getPlanIndex(initial_timestamp_, dt_, current_plan_index_,
                            first_element_duration_);
-  same_plan_index_ = previous_plan_index == current_plan_index_;
+  plan_index_diff_ = current_plan_index_ - previous_plan_index;
 
   // Initializing foot positions if not data has arrived
   if (first_plan_) {
@@ -483,7 +483,7 @@ void LocalPlanner::getStateAndTwistInput() {
     }
   } else {
     // Only shift the foot position if it's a solve for a new plan index
-    if (!same_plan_index_) {
+    if (plan_index_diff_ > 0) {
       body_plan_.topRows(N_ - 1) = body_plan_.bottomRows(N_ - 1);
       grf_plan_.topRows(N_ - 2) = grf_plan_.bottomRows(N_ - 2);
 
@@ -513,7 +513,7 @@ bool LocalPlanner::computeLocalPlan() {
 
   // Compute the contact schedule
   local_footstep_planner_->computeContactSchedule(
-      current_plan_index_, ref_primitive_plan_, control_mode_,
+      current_plan_index_, body_plan_, ref_primitive_plan_, control_mode_,
       contact_schedule_);
 
   // Compute the new footholds if we have a valid existing plan (i.e. if
@@ -550,7 +550,7 @@ bool LocalPlanner::computeLocalPlan() {
   if (!local_body_planner_nonlinear_->computeLegPlan(
           current_full_state, ref_body_plan_, grf_positions_body,
           grf_positions_world, foot_velocities_world_, contact_schedule_,
-          ref_ground_height_, first_element_duration_, same_plan_index_,
+          ref_ground_height_, first_element_duration_, plan_index_diff_,
           terrain_grid_, body_plan_, grf_plan_))
     return false;
 

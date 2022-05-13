@@ -75,7 +75,9 @@ struct PlannerConfig {
   double ROBOT_L;  // Length of robot body, m
   double ROBOT_W;  // Width of robot body, m
   double ROBOT_H;  // Vertical distance between leg base and bottom of
-                   // robot, m
+  // robot, m
+  double MAX_REACHABLE_DISTANCE;  // Maximum distance to check for more feasible
+                                  // reachable locations
 
   double body_traversability_threshold;  // Min traversability for body
                                          // (requires the body to not be over a
@@ -121,6 +123,8 @@ struct PlannerConfig {
     quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_L", ROBOT_L);
     quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_W", ROBOT_W);
     quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_W", ROBOT_W);
+    quad_utils::loadROSParam(nh, "global_body_planner/MAX_REACHABLE_DISTANCE",
+                             MAX_REACHABLE_DISTANCE);
     quad_utils::loadROSParam(
         nh, "global_body_planner/BODY_TRAVERSABILITY_THRESHOLD",
         body_traversability_threshold);
@@ -492,9 +496,6 @@ bool refineFlight(const State &s, double &t_f,
 
 // Instantaneous validity checking
 bool isValidAction(const Action &a, const PlannerConfig &planner_config);
-
-bool isValidYawRate(const State &s, const Action &a, double t, int phase,
-                    const PlannerConfig &planner_config);
 
 bool isValidState(const State &s, const PlannerConfig &planner_config,
                   int phase);

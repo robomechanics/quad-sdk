@@ -304,35 +304,6 @@ Eigen::Vector3d getAcceleration(const Action &a, double t, int phase,
           planner_config.G_VEC);
 }
 
-bool isValidYawRate(const State &s, const Action &a, double t, int phase,
-                    const PlannerConfig &planner_config) {
-  return true;
-  // Uncomment to apply yaw rate constraint
-  // Eigen::Vector3d acc = getAcceleration(s, a, t, phase);
-  // State s_next = applyStance(s,a,t,phase,planner_config);
-
-  // double dy = s_next[4];
-  // double dx = s_next[3];
-  // double ddy = acc.y();
-  // double ddx = acc.x();
-  // double d_yaw;
-
-  // // Don't limit if moving slowly
-  // if ((dx*dx + dy*dy) <= 0.25)
-  // {
-  //     d_yaw = 0;
-  // } else {
-  //     d_yaw = (dy*ddx - dx*ddy)/(dx*dx + dy*dy);
-  // }
-
-  // if (abs(d_yaw) > planner_config.DY_MAX)
-  // {
-  //     return false;
-  // } else {
-  //     return true;
-  // }
-}
-
 double getPitchFromState(const State &s, const PlannerConfig &planner_config) {
   Eigen::Vector3d surf_norm = getSurfaceNormalFiltered(s, planner_config);
 
@@ -346,6 +317,7 @@ double getPitchFromState(const State &s, const PlannerConfig &planner_config) {
 
   // set pitch to angle that aligns v_proj with surface normal
   return atan2(v_proj, surf_norm[2]);
+  // return 0;
 }
 
 double getDzFromState(const State &s, const PlannerConfig &planner_config) {
@@ -607,11 +579,11 @@ bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm,
   const double m = planner_config.M_CONST;
 
   // Sample stance time and initial vertical velocity
-  double dz_impulse = 0.5 + (double)rand() / RAND_MAX;
+  double dz_impulse = 0.5 + 1.5 * (double)rand() / RAND_MAX;
   a.dz_0 = getDzFromState(s, planner_config) - dz_impulse;
   a.dz_f = dz_impulse;
   double t_s_min = 0.15;
-  double t_s_max = 0.20;
+  double t_s_max = 0.25;
   a.t_s_leap = (t_s_max - t_s_min) * (double)rand() / RAND_MAX + t_s_min;
   a.t_f = 1e-6;
   a.t_s_land = a.t_s_leap;
@@ -686,7 +658,7 @@ bool refineStance(const State &s, int phase, Action &a,
     }
     pos_f = s_final.pos;
 
-    double buffer = 3e-2;
+    double buffer = 4e-2;
     if (phase == LEAP_STANCE) {
       isValidState(s_final, planner_config, phase, pos_f[2]);
       pos_f[2] -= buffer;
@@ -770,8 +742,8 @@ bool refineStance(const State &s, int phase, Action &a,
       std::cout << "Midstance state invalid, reducing stance time from " << t_s
                 << " to " << t_s / 1.2 << std::endl;
 #endif
-      t_s = t_s / 1.1;
-      // dz_0 -= 0.2;
+      // t_s = t_s / 1.1;
+      dz_0 -= 0.2;
 
       grf_increased = true;
       continue;
@@ -962,16 +934,14 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
       return false;
     }
 
-    // Make sure legs are over a valid region of the terrain
-    if (!isContactTraversable(reachability_point, planner_config) &&
-        phase != FLIGHT) {
-      return false;
-    }
+    // // Make sure legs are over a valid region of the terrain
+    // if (!isContactTraversable(reachability_point, planner_config) &&
+    //     phase != FLIGHT) {
+    //   return false;
+    // }
 
     double reachability_clearance =
         getZRelToTerrain(reachability_point, planner_config);
-
-    bool is_rear_leg = (i % 2 == 1);
 
     // Check for reachability
     if (phase == CONNECT) {
@@ -984,19 +954,16 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
         return false;
       }
     } else if (phase == LEAP_STANCE) {
-      if (is_rear_leg) {
-        max_valid_z = std::min(max_valid_z, s.pos[2] + planner_config.H_MAX -
-                                                reachability_clearance);
-        if (reachability_clearance > planner_config.H_MAX) {
+      max_valid_z = std::min(max_valid_z, s.pos[2] + planner_config.H_MAX -
+                                              reachability_clearance);
+      if (reachability_clearance > planner_config.H_MAX) {
 #ifdef DEBUG_INVALID_STATE
-          printf("H_MAX exceeded, phase = %d\n", phase);
-          printStateNewline(s);
+        printf("H_MAX exceeded, phase = %d\n", phase);
+        printStateNewline(s);
 #endif
-          return false;
-        }
+        return false;
       }
     } else if (phase == LAND_STANCE) {
-      // if (!is_rear_leg) {
       max_valid_z = std::min(max_valid_z, s.pos[2] + planner_config.H_MAX -
                                               reachability_clearance);
       if (reachability_clearance > planner_config.H_MAX) {
@@ -1040,8 +1007,7 @@ bool isValidStateActionPair(const State &s_in, const Action &a,
     // Compute state to check
     State s_next = applyStance(s, a, t, phase, planner_config);
 
-    if ((!isValidState(s_next, planner_config, phase)) ||
-        (!isValidYawRate(s, a, t, phase, planner_config))) {
+    if ((!isValidState(s_next, planner_config, phase))) {
       result.t_new = (1.0 - planner_config.BACKUP_RATIO) * t;
       result.s_new = applyStance(s, a, result.t_new, phase, planner_config);
       result.a_new.t_s_leap = result.t_new;
@@ -1111,8 +1077,7 @@ bool isValidStateActionPair(const State &s_in, const Action &a,
       State s_next =
           applyStance(s_land, result.a_new, t, LAND_STANCE, planner_config);
 
-      if (isValidState(s_next, planner_config, LAND_STANCE) == false ||
-          (!isValidYawRate(s, result.a_new, t, phase, planner_config))) {
+      if (isValidState(s_next, planner_config, LAND_STANCE) == false) {
 #ifdef DEBUG_INVALID_STATE
         printf("Invalid landing stance config\n");
 #endif
@@ -1251,7 +1216,7 @@ void publishStateActionPair(const State &s, const Action &a,
 
   // Publish the tree and wait so that RViz has time to process it
   tree_pub.publish(tree_viz_msg);
-  double freq = 5.0;  // Hz
+  double freq = 20.0;  // Hz
   usleep(1000000.0 / freq);
 }
 

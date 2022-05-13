@@ -283,12 +283,23 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
           double foot_vel_transverse =
               foot_vel_world_.block<1, 2>(i + 1, 3 * j).norm();
           double min_terrain_clearance =
-              foot_vel_transverse * min_clearance_to_vel_ratio;
+              std::min(foot_vel_transverse * min_clearance_to_vel_ratio, 0.04);
           get_relaxed_primal_constraint_vals(g_u_matrix, i)
               .tail(g_slack_vec_[i])(j, 0) = -min_terrain_clearance;
-          // get_primal_constraint_vals(g_u_matrix, i)(g_foot_height_idx + j, 0)
-          // =
-          //     -min_terrain_clearance;
+          get_primal_constraint_vals(g_u_matrix, i)(g_foot_height_idx + j, 0) =
+              0;
+        }
+
+        bool remove_motor_model_in_swing =
+            sys_id_schedule_[i] == COMPLEX && contact_sequence_(j, i) == 0;
+        if (remove_motor_model_in_swing) {
+          int g_mm_idx = 84;
+          get_primal_constraint_vals(g_u_matrix, i)
+              .segment(g_mm_idx + 3 * j, 3)
+              .fill(2e19);
+          get_primal_constraint_vals(g_u_matrix, i)
+              .segment(g_mm_idx + n_joints_ / 2 + 3 * j, 3)
+              .fill(2e19);
         }
       }
     }
@@ -365,6 +376,7 @@ bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
                               .head(m_cost_vec_[i]);
 
     // Scale the cost by time duration
+    double panic_weights, constraint_panic_weights;
     if (i == 0) {
       Q_i = Q_i * first_element_duration_ / dt_;
       R_i = R_i * first_element_duration_ / dt_;
@@ -1090,7 +1102,6 @@ void quadNLP::finalize_solution(SolverReturn status, Index n, const Number *x,
   mu0_ = ip_data->curr_mu();
 
   // Update the diagnostics information
-  diagnostics_.cost = obj_value;
   diagnostics_.iterations = ip_data->iter_count();
   diagnostics_.horizon_length = N_;
   diagnostics_.complexity_schedule =
@@ -1101,6 +1112,53 @@ void quadNLP::finalize_solution(SolverReturn status, Index n, const Number *x,
     diagnostics_.element_times[i] =
         (i > 0) ? (first_element_duration_ + dt_ * (i - 1)) : 0;
   }
+
+  // Compute cost without slack penalties
+  double obj_value_primal = 0;
+
+  for (int i = 0; i < N_ - 1; ++i) {
+    // Compute the number of contacts
+    Eigen::VectorXd u_nom(m_cost_vec_[i]);
+    u_nom.setZero();
+    double num_contacts = contact_sequence_.col(i).sum();
+
+    // If there are some contacts, set the nominal input accordingly
+    if (num_contacts > 0) {
+      for (int j = 0; j < contact_sequence_.rows(); j++) {
+        if (contact_sequence_(j, i) == 1) {
+          u_nom[3 * j + 2] = mass_ * grav_ / num_contacts;
+        }
+      }
+    }
+
+    Eigen::VectorXd x_nom(n_cost_vec_[i]);
+    x_nom.head(n_body_) = x_reference_.col(i + 1);
+    if (n_cost_vec_[i] > n_body_) {
+      x_nom.segment(n_body_, n_foot_ / 2) = foot_pos_world_.row(i + 1);
+      x_nom.segment(n_body_ + n_foot_ / 2, n_foot_ / 2) =
+          foot_vel_world_.row(i + 1);
+    }
+
+    Eigen::VectorXd uk =
+        get_primal_control_var(w, i).head(m_cost_vec_[i]) - u_nom;
+    Eigen::VectorXd xk =
+        get_primal_state_var(w, i + 1).head(n_cost_vec_[i]) - x_nom;
+
+    Eigen::VectorXd Q_i = (config_.Q_complex * std::pow(Q_temporal_factor_, i))
+                              .head(n_cost_vec_[i]);
+    Eigen::VectorXd R_i = (config_.R_complex * std::pow(R_temporal_factor_, i))
+                              .head(m_cost_vec_[i]);
+
+    // Scale the cost by time duration
+    if (i == 0) {
+      Q_i = Q_i * first_element_duration_ / dt_;
+      R_i = R_i * first_element_duration_ / dt_;
+    }
+
+    obj_value_primal += (xk.transpose() * Q_i.asDiagonal() * xk / 2 +
+                         uk.transpose() * R_i.asDiagonal() * uk / 2)(0, 0);
+  }
+  diagnostics_.cost = obj_value_primal;
 }
 
 void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
@@ -1204,14 +1262,18 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
 
     // If this element is newly lifted, update with nominal otherwise leave
     // unchanged (may be one timestep old)
-    if (n_vec_[i + 1] > nlp_prev.n_vec_[i_prev + 1]) {
+    if (n_vec_[i + 1] > nlp_prev.n_vec_[std::min(i + 1, nlp_prev.N_ - 1)]) {
       std::cout << "Complexity at i = " << i
                 << " increased, disabling warm start" << std::endl;
       warm_start_ = false;
 
       if (n_vec_[i + 1] > n_shared) {
         std::cout << "No null data from prev solve, using nominal" << std::endl;
-        std::cout << "Todo - calculate nominal foot positions" << std::endl;
+        get_primal_state_var(w0_, i + 1).segment(n_body_, n_foot_ / 2) =
+            foot_pos_world_.row(i + 1);
+        get_primal_state_var(w0_, i + 1)
+            .segment(n_body_ + n_foot_ / 2, n_foot_ / 2) =
+            foot_vel_world_.row(i + 1);
         get_primal_state_var(w0_, i + 1).tail(n_joints_) = x_null_nom_;
         get_primal_state_var(z_L0_, i + 1).tail(n_null_).fill(1);
         get_primal_state_var(z_U0_, i + 1).tail(n_null_).fill(1);
@@ -1309,7 +1371,7 @@ void quadNLP::update_solver(
     const std::vector<std::vector<bool>> &contact_schedule,
     const Eigen::VectorXi &adaptive_complexity_schedule,
     const Eigen::VectorXd &ground_height, const double &first_element_duration,
-    const bool &same_plan_index, const bool &init) {
+    int plan_index_diff, const bool &init) {
   // Copy the previous contact sequence and nlp data for comparison
   Eigen::MatrixXi contact_sequence_prev = contact_sequence_;
   quadNLP nlp_prev = *this;
@@ -1327,22 +1389,22 @@ void quadNLP::update_solver(
   }
 
   for (size_t i = 0; i < N_ - 1; i++) {
-    int idx;
-
-    if (same_plan_index) {
-      idx = i;
-    } else {
-      if (i == N_ - 2) {
-        continue;
-      }
-
-      idx = i + 1;
+    int idx = i + plan_index_diff;
+    if (i >= N_ - 2) {
+      continue;
     }
 
     if ((contact_sequence_prev.col(idx) - contact_sequence_.col(i))
             .cwiseAbs()
             .sum() > 1e-3) {
       // Contact change unexpectedly, update the warmstart info
+      std::cout << "Contact change unexpectedly, warm start off" << std::endl;
+      std::cout << "i = " << i << std::endl;
+      std::cout << "idx = " << idx << std::endl;
+      std::cout << "contact_sequence_prev.col(idx) = "
+                << contact_sequence_prev.col(idx) << std::endl;
+      std::cout << "contact_sequence_.col(i) = " << contact_sequence_.col(i)
+                << std::endl;
       get_primal_body_control_var(w0_, idx).fill(0);
       get_primal_body_control_var(z_L0_, idx).fill(1);
       get_primal_body_control_var(z_U0_, idx).fill(1);
@@ -1427,12 +1489,9 @@ void quadNLP::update_solver(
       }
     }
   } else {
-    // Determine how much to shift the initial guess
-    int shift_idx = (same_plan_index) ? 0 : 1;
-
     // Update the initial guess if something has changed
-    if (!same_plan_index || new_structure) {
-      update_initial_guess(nlp_prev, shift_idx);
+    if ((plan_index_diff > 0) || new_structure) {
+      update_initial_guess(nlp_prev, plan_index_diff);
     }
   }
 }
@@ -1713,6 +1772,74 @@ void quadNLP::get_lifted_trajectory(Eigen::MatrixXd &state_traj_lifted,
     // Update state and control trajectories
     state_traj_lifted.row(i + 1) = x1;
     control_traj_lifted.row(i) = u;
+
+    // Update prior state
+    x0 = x1;
+  }
+}
+
+void quadNLP::get_heuristic_trajectory(
+    Eigen::MatrixXd &state_traj_heuristic,
+    Eigen::MatrixXd &control_traj_heuristic) {
+  Eigen::VectorXd x0, u, x1;
+  Eigen::VectorXd joint_positions(12), joint_velocities(12), joint_torques(12);
+
+  // Load current state data
+  x0 = get_primal_state_var(w0_, 0).head(n_body_);
+
+  // Lift the current state if simple
+  quadKD_->convertCentroidalToFullBody(
+      x0, foot_pos_world_.row(0), foot_vel_world_.row(0),
+      get_primal_body_control_var(w0_, 0), joint_positions, joint_velocities,
+      joint_torques);
+  x0.conservativeResize(config_.x_dim_complex);
+  x0.segment(n_body_, n_foot_ / 2) = foot_pos_world_.row(0);
+  x0.segment(n_body_ + n_foot_ / 2, n_foot_ / 2) = foot_vel_world_.row(0);
+  x0.segment(n_body_ + n_foot_, n_joints_ / 2) = joint_positions;
+  x0.segment(n_body_ + n_foot_ + n_joints_ / 2, n_joints_ / 2) =
+      joint_velocities;
+
+  state_traj_heuristic.row(0) = x0;
+
+  // Loop through trajectory, lifting as needed and evaluating constraints
+  for (int i = 0; i < N_ - 1; i++) {
+    // Get control and next state from decision vars
+    u = get_primal_control_var(w0_, i).head(m_body_);
+    x1 = get_primal_state_var(w0_, i + 1).head(n_body_);
+
+    // Lift state if in simple system
+    quadKD_->convertCentroidalToFullBody(
+        x1, foot_pos_world_.row(i + 1), foot_vel_world_.row(i + 1), u,
+        joint_positions, joint_velocities, joint_torques);
+    x1.conservativeResize(config_.x_dim_complex);
+    x1.segment(n_body_, n_foot_ / 2) = foot_pos_world_.row(i + 1);
+    x1.segment(n_body_ + n_foot_ / 2, n_foot_ / 2) = foot_vel_world_.row(i + 1);
+    x1.segment(n_body_ + n_foot_, n_joints_ / 2) = joint_positions;
+    x1.segment(n_body_ + n_foot_ + n_joints_ / 2, n_joints_ / 2) =
+        joint_velocities;
+
+    // Inverse dynamics on foot dynamics for simple states (cubic interpolation)
+    u.conservativeResize(config_.u_dim_complex);
+
+    double dt = (i == 0) ? first_element_duration_ : dt_;
+
+    Eigen::VectorXd acc_0 =
+        (6 * (foot_pos_world_.row(i + 1) - foot_pos_world_.row(i)) -
+         dt * 2 * (foot_vel_world_.row(i + 1) + foot_vel_world_.row(i) * 2)) /
+        (dt * dt);
+
+    Eigen::VectorXd acc_1 =
+        (6 * (-foot_pos_world_.row(i + 1) + foot_pos_world_.row(i)) +
+         dt * 2 * (2 * foot_vel_world_.row(i + 1) + foot_vel_world_.row(i))) /
+        (dt * dt);
+
+    u.tail(config_.u_dim_null).setZero();
+    u.tail(config_.u_dim_null).head(m_foot_ / 2) = foot_mass_ * acc_0;
+    u.tail(config_.u_dim_null).tail(m_foot_ / 2) = foot_mass_ * acc_1;
+
+    // Update state and control trajectories
+    state_traj_heuristic.row(i + 1) = x1;
+    control_traj_heuristic.row(i) = u;
 
     // Update prior state
     x0 = x1;

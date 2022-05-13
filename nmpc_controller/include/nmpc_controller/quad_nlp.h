@@ -132,7 +132,7 @@ class quadNLP : public TNLP {
   const bool always_constrain_feet_ = false;
 
   /// Boolean for whether to include the terrain in the foot height constraint
-  const bool use_terrain_constraint_ = true;
+  const bool use_terrain_constraint_ = false;
 
   const grid_map::InterpolationMethods interp_type_ =
       grid_map::InterpolationMethods::INTER_LINEAR;
@@ -363,13 +363,16 @@ class quadNLP : public TNLP {
       const std::vector<std::vector<bool>> &contact_schedule,
       const Eigen::VectorXi &adaptive_complexity_schedule,
       const Eigen::VectorXd &ground_height,
-      const double &first_element_duration_, const bool &same_plan_index,
+      const double &first_element_duration_, int plan_index_diff,
       const bool &init);
 
   void update_structure();
 
   void get_lifted_trajectory(Eigen::MatrixXd &state_traj_lifted,
                              Eigen::MatrixXd &control_traj_lifted);
+
+  void get_heuristic_trajectory(Eigen::MatrixXd &state_traj_heuristic,
+                                Eigen::MatrixXd &control_traj_heuristic);
 
   // Get the idx-th state variable from decision variable
   template <typename T>

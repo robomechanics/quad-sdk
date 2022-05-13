@@ -215,9 +215,12 @@ bool GlobalBodyPlanner::callPlanner() {
     std::vector<Action> action_sequence;
 
     // Call the planner method
-    int plan_status = rrt_connect_obj.runRRTConnect(
-        planner_config_, start_state, goal_state, state_sequence,
-        action_sequence, tree_pub_);
+    // int plan_status = rrt_connect_obj.runRRTConnect(
+    //     planner_config_, start_state, goal_state, state_sequence,
+    //     action_sequence, tree_pub_);
+    int plan_status =
+        rrt_connect_obj.getTestPlan(planner_config_, start_state, goal_state,
+                                    state_sequence, action_sequence);
     newest_plan_.setComputedTimestamp(ros::Time::now());
 
     if (plan_status != VALID && plan_status != VALID_PARTIAL) {
