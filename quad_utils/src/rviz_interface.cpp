@@ -513,7 +513,7 @@ void RVizInterface::robotStateCallback(
   quad_utils::pointMsgToEigen(msg->body.pose.position, current_pos);
 
   if (pub_id == ESTIMATE) {
-    transformStamped.child_frame_id = tf_prefix_ + "/estimate/body";
+    transformStamped.child_frame_id = tf_prefix_ + "_estimate/body";
     estimate_base_tf_br_.sendTransform(transformStamped);
     estimate_joint_states_viz_pub_.publish(joint_msg);
 
@@ -533,7 +533,8 @@ void RVizInterface::robotStateCallback(
     state_estimate_trace_pub_.publish(state_estimate_trace_msg_);
 
   } else if (pub_id == GROUND_TRUTH) {
-    transformStamped.child_frame_id = tf_prefix_ + "/body";
+    transformStamped.child_frame_id = tf_prefix_ + "_ground_truth/body";
+
     ground_truth_base_tf_br_.sendTransform(transformStamped);
     ground_truth_joint_states_viz_pub_.publish(joint_msg);
 
@@ -554,7 +555,7 @@ void RVizInterface::robotStateCallback(
     ground_truth_state_trace_pub_.publish(ground_truth_state_trace_msg_);
 
   } else if (pub_id == TRAJECTORY) {
-    transformStamped.child_frame_id = tf_prefix_ + "/trajectory/body";
+    transformStamped.child_frame_id = tf_prefix_ + "_trajectory/body";
     trajectory_base_tf_br_.sendTransform(transformStamped);
     trajectory_joint_states_viz_pub_.publish(joint_msg);
 

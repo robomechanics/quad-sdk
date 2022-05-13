@@ -35,42 +35,40 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   quad_utils::loadROSParam(nh_, "topics/mocap", mocap_topic);
 
   quad_utils::loadROSParamDefault(nh_, "robot_driver/is_hardware", is_hardware_,
-                           true);
+                                  true);
   quad_utils::loadROSParamDefault(nh_, "robot_driver/robot_name", robot_name_,
-                           std::string("spirit"));
-  quad_utils::loadROSParamDefault(nh_, "robot_driver/controller", controller_id_,
-                           std::string("inverse_dynamics"));
+                                  std::string("spirit"));
+  quad_utils::loadROSParamDefault(nh_, "robot_driver/controller",
+                                  controller_id_,
+                                  std::string("inverse_dynamics"));
   quad_utils::loadROSParam(nh_, "robot_driver/update_rate", update_rate_);
-  quad_utils::loadROSParam(nh_, "robot_driver/publish_rate",
-                           publish_rate_);
+  quad_utils::loadROSParam(nh_, "robot_driver/publish_rate", publish_rate_);
   quad_utils::loadROSParam(nh_, "robot_driver/mocap_rate", mocap_rate_);
   quad_utils::loadROSParam(nh_, "robot_driver/mocap_dropout_threshold",
                            mocap_dropout_threshold_);
   quad_utils::loadROSParam(nh_, "robot_driver/filter_time_constant",
                            filter_time_constant_);
-  quad_utils::loadROSParam(nh_, "robot_driver/input_timeout",
-                           input_timeout_);
-  quad_utils::loadROSParam(nh_, "robot_driver/state_timeout",
-                           state_timeout_);
+  quad_utils::loadROSParam(nh_, "robot_driver/input_timeout", input_timeout_);
+  quad_utils::loadROSParam(nh_, "robot_driver/state_timeout", state_timeout_);
   quad_utils::loadROSParam(nh_, "robot_driver/heartbeat_timeout",
                            heartbeat_timeout_);
   quad_utils::loadROSParam(nh_, "robot_driver/sit_kp", sit_kp_);
   quad_utils::loadROSParam(nh_, "robot_driver/sit_kd", sit_kd_);
+  quad_utils::loadROSParam(nh_, "robot_driver/stand_kp", stand_kp_);
+  quad_utils::loadROSParam(nh_, "robot_driver/stand_kd", stand_kd_);
+  quad_utils::loadROSParam(nh_, "robot_driver/stance_kp", stance_kp_);
   quad_utils::loadROSParam(nh_, "robot_driver/stance_kd", stance_kd_);
   quad_utils::loadROSParam(nh_, "robot_driver/swing_kp", swing_kp_);
   quad_utils::loadROSParam(nh_, "robot_driver/swing_kd", swing_kd_);
-  quad_utils::loadROSParam(nh_, "robot_driver/swing_kp_cart",
-                           swing_kp_cart_);
-  quad_utils::loadROSParam(nh_, "robot_driver/swing_kd_cart",
-                           swing_kd_cart_);
+  quad_utils::loadROSParam(nh_, "robot_driver/swing_kp_cart", swing_kp_cart_);
+  quad_utils::loadROSParam(nh_, "robot_driver/swing_kd_cart", swing_kd_cart_);
   quad_utils::loadROSParam(nh_, "robot_driver/safety_kp", safety_kp_);
   quad_utils::loadROSParam(nh_, "robot_driver/safety_kd", safety_kd_);
   quad_utils::loadROSParam(nh_, "robot_driver/stand_joint_angles",
                            stand_joint_angles_);
   quad_utils::loadROSParam(nh_, "robot_driver/sit_joint_angles",
                            sit_joint_angles_);
-  quad_utils::loadROSParam(nh_, "robot_driver/torque_limit",
-                           torque_limits_);
+  quad_utils::loadROSParam(nh_, "robot_driver/torque_limit", torque_limits_);
 
   // Setup pubs and subs
   local_plan_sub_ =
@@ -230,11 +228,11 @@ void RobotDriver::singleJointCommandCallback(
 }
 
 void RobotDriver::controlRestartFlagCallback(
-    const std_msgs::Bool::ConstPtr& msg) {
+    const std_msgs::Bool::ConstPtr &msg) {
   user_tx_data_[0] = (msg->data) ? 1 : 0;
 }
 
-void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg) {
+void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg) {
   last_local_plan_msg_ = msg;
 
   ros::Time t_now = ros::Time::now();
@@ -245,7 +243,7 @@ void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg) {
 }
 
 void RobotDriver::mocapCallback(
-    const geometry_msgs::PoseStamped::ConstPtr& msg) {
+    const geometry_msgs::PoseStamped::ConstPtr &msg) {
   // Collect position readings
   Eigen::Vector3d pos;
   quad_utils::pointMsgToEigen(msg->pose.position, pos);
@@ -509,8 +507,9 @@ bool RobotDriver::updateControl() {
         }
       }
     } else {
-      if (InverseDynamicsController* p =
-              dynamic_cast<InverseDynamicsController*>(leg_controller_.get())) {
+      if (InverseDynamicsController *p =
+              dynamic_cast<InverseDynamicsController *>(
+                  leg_controller_.get())) {
         // Uncomment to publish trajectory reference state
         // quad_msgs::RobotState ref_state_msg = p->getReferenceState();
         // trajectry_robot_state_pub_.publish(ref_state_msg);

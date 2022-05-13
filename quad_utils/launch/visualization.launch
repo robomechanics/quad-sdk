@@ -7,16 +7,16 @@
     <group ns="trajectory">
         <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
-            <remap from="joint_states" to="visualization/joint_states/trajectory"/>
-            <param name="tf_prefix" value="trajectory"/>
+            <remap from="joint_states" to="visualization/joint_states"/>
+            <param name="tf_prefix" value="$(arg namespace)_trajectory"/>
         </node>
     </group>
 
     <group ns="ground_truth">
         <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
-            <remap from="joint_states" to="visualization/joint_states/ground_truth"/>
-            <param name="tf_prefix" value="ground_truth"/>
+            <remap from="joint_states" to="visualization/joint_states"/>
+            <param name="tf_prefix" value="$(arg namespace)_ground_truth"/>
         </node>
     </group>
 

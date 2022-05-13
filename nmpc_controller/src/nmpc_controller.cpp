@@ -16,11 +16,11 @@ NMPCController::NMPCController(ros::NodeHandle nh, int robot_id) {
       break;
     default:
       robot_ns_ = "spirit";
-      default_system = SPIRIT;  
+      default_system = SPIRIT;
       break;
   }
 
-  default_system = SIMPLE;  
+  default_system = SIMPLE;
 
   // Load parameters set by local planner
   quad_utils::loadROSParam(nh_, "local_planner/horizon_length", N_);
@@ -29,7 +29,7 @@ NMPCController::NMPCController(ros::NodeHandle nh, int robot_id) {
   // Load system parameters
   double mu, panic_weights, constraint_panic_weights, Q_temporal_factor,
       R_temporal_factor;
-   quad_utils::loadROSParam(nh_, "nmpc_controller/friction_coefficient", mu);
+  quad_utils::loadROSParam(nh_, "nmpc_controller/friction_coefficient", mu);
   quad_utils::loadROSParam(nh_, "nmpc_controller/panic_weights", panic_weights);
   quad_utils::loadROSParam(nh_, "nmpc_controller/constraint_panic_weights",
                            constraint_panic_weights);
@@ -62,12 +62,12 @@ NMPCController::NMPCController(ros::NodeHandle nh, int robot_id) {
     std::string component = components[i];
     quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/x_dim",
                              x_dim);
-    quad_utils::loadROSParam(
-        nh_, "nmpc_controller/" + component + "/u_dim", u_dim);
+    quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/u_dim",
+                             u_dim);
     quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/g_dim",
                              g_dim);
-    quad_utils::loadROSParam(
-        nh_, "nmpc_controller/" + component + "/x_lb", x_lb);
+    quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/x_lb",
+                             x_lb);
     quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/x_ub",
                              x_ub);
     quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/u_lb",
@@ -152,7 +152,7 @@ NMPCController::NMPCController(ros::NodeHandle nh, int robot_id) {
                            fixed_complex_tail);
 
   // Adaptive complexity is only supported for Spirit
-  if(robot_ns_ != "spirit") enable_adaptive_complexity =  false;
+  if (robot_ns_ != "spirit") enable_adaptive_complexity = false;
 
   // Construct fixed and adaptive complexity schedules
   Eigen::VectorXi fixed_complexity_schedule(N_);
@@ -176,18 +176,19 @@ NMPCController::NMPCController(ros::NodeHandle nh, int robot_id) {
   }
 
   mynlp_ = new quadNLP(
-      default_system, N_, dt_, mu, panic_weights, constraint_panic_weights, Q_temporal_factor,
-      R_temporal_factor, x_dim_simple_, x_dim_complex_, u_dim_simple_,
-      u_dim_complex_, g_dim_simple_, g_dim_complex_, x_dim_cost_simple_,
-      x_dim_cost_complex_, u_dim_cost_simple_, u_dim_cost_complex_, Q_complex,
-      R_complex, x_min_complex, x_max_complex, u_min_complex, u_max_complex,
-      g_min_complex, g_max_complex, fixed_complexity_schedule);
+      default_system, N_, dt_, mu, panic_weights, constraint_panic_weights,
+      Q_temporal_factor, R_temporal_factor, x_dim_simple_, x_dim_complex_,
+      u_dim_simple_, u_dim_complex_, g_dim_simple_, g_dim_complex_,
+      x_dim_cost_simple_, x_dim_cost_complex_, u_dim_cost_simple_,
+      u_dim_cost_complex_, Q_complex, R_complex, x_min_complex, x_max_complex,
+      u_min_complex, u_max_complex, g_min_complex, g_max_complex,
+      fixed_complexity_schedule);
 
   app_ = IpoptApplicationFactory();
 
   app_->Options()->SetStringValue("print_timing_statistics", "no");
   app_->Options()->SetStringValue("linear_solver", "ma57");
-  app_->Options()->SetIntegerValue("print_level", 5);
+  app_->Options()->SetIntegerValue("print_level", 0);
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   app_->Options()->SetStringValue("fixed_variable_treatment",
                                   "make_parameter_nodual");
@@ -225,7 +226,6 @@ bool NMPCController::computeLegPlan(
     const double &first_element_duration, const bool &same_plan_index,
     const grid_map::GridMap &terrain, Eigen::MatrixXd &state_traj,
     Eigen::MatrixXd &control_traj) {
-      std::cout << initial_state << std::endl;
   // Local planner will send a reference traj with N+1 rows
   mynlp_->foot_pos_body_ = -foot_positions_body;
   mynlp_->foot_pos_world_ = foot_positions_world;
