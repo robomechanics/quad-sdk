@@ -51,7 +51,7 @@ SOFTWARE.
     <arg name="robot_type" value="$(arg robot_type)"/>
   </include>
 
-  <group ns="/robot_1">
+  <group ns="robot_1">
     <!-- Load the parameters and the sdf description -->
     <include file="$(find quad_utils)/launch/load_params.launch">
       <arg name="robot_type" value="$(arg robot_type)"/>
@@ -67,9 +67,9 @@ SOFTWARE.
     </include> 
   </group>
 
-  <!-- <group ns="/robot_2"> -->
+  <group ns="robot_2">
     <!-- Load the parameters and the sdf description -->
-    <!-- <include file="$(find quad_utils)/launch/load_params.launch"> 
+    <include file="$(find quad_utils)/launch/load_params.launch"> 
       <arg name="robot_type" value="$(arg robot_type)"/>
     </include>
     <rosparam file="$(find gazebo_scripts)/config/quad_control.yaml" command="load"/>
@@ -81,7 +81,7 @@ SOFTWARE.
       <arg name="init_pose" value="-x 0.0 -y 1.0 -z 0.5" />
       <arg name="namespace" value="robot_2" />
     </include>
-  </group>  -->
+  </group> 
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find quad_utils)/rviz/example_with_terrain.rviz"/>
 

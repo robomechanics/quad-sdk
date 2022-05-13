@@ -4,7 +4,15 @@ using namespace quad_utils;
 
 Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
-QuadKD::QuadKD() {
+QuadKD::QuadKD(){
+  initModel("");
+}
+
+QuadKD::QuadKD(std::string ns){
+  initModel("/"+ns+"/");
+}
+
+void QuadKD::initModel(std::string ns) {
   std::string robot_description_string;
 
   if (!ros::param::get("robot_description", robot_description_string)) {

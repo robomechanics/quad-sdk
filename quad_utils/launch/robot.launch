@@ -9,17 +9,17 @@
   <arg name="robot_type"    default="spirit"/>
   <param name="tf_prefix"   value="$(arg namespace)_tf" />
 
-  <group if="$(eval robot_type == 'spirit')">
+  <!-- <group if="$(eval robot_type == 'spirit')">
   <param name="$(arg robot_type)_robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
   </group>
 
   <group if="$(eval robot_type == 'a1')">
   <param name="$(arg robot_type)_robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1.sdf" />
-  </group>
+  </group> -->
 
   <group if="$(arg software)">
     <!-- Spawn SDF model -->
-    <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param $(arg robot_type)_robot_description_sdf -model $(arg namespace) $(arg init_pose)" output="screen"/> -->
+    <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model $(arg namespace) $(arg init_pose)" output="screen"/> -->
     
     <node pkg="robot_state_publisher" type="robot_state_publisher" 
           name="robot_state_publisher" output="screen">
@@ -32,7 +32,7 @@
       <arg name="is_hardware" value="false"/>
     </include>
 
-    <rosparam file="$(find gazebo_scripts)/config/quad_control.yaml" command="load"/>
+    <!-- <rosparam file="$(find gazebo_scripts)/config/quad_control.yaml" command="load"/> -->
   
     <node name="controller_spawner"
         pkg="controller_manager"
