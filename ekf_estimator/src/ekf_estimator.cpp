@@ -102,12 +102,12 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   // std::cout << "this is X predict" << X.transpose() << std::endl;
 
   // for testing prediction step
-  // X = X_pre;
-  // P = P_pre;
-  // last_X = X;
+  X = X_pre;
+  P = P_pre;
+  last_X = X;
 
   /// Update Step
-  this->update(jk);
+  // this->update(jk);
   // std::cout << "this is X update" << X.transpose() << std::endl;
 
   /// publish new message
@@ -159,7 +159,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   // a is the corrected IMU linear acceleration (fk hat)
   Eigen::VectorXd a = Eigen::VectorXd::Zero(3);
   a = fk - bf;
-  // a[2] = -9.8;
+  a[2] = -9.8;
 
   g = Eigen::VectorXd::Zero(3);
   g[2] = 9.81;

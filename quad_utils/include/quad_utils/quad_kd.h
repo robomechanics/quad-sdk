@@ -91,7 +91,7 @@ class QuadKD {
    * @brief Compute forward kinematics for a specified leg from the body COM
    * @param[in] leg_index Quad leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
    * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
-   * @param[out] foot_pos_world Position of the specified foot in world frame
+   * @param[out] foot_pos_body Position of the specified foot in body frame
    */
   void bodyToFootFKBodyFrame(int leg_index, Eigen::Vector3d joint_state,
                              Eigen::Vector3d &foot_pos_body) const;
