@@ -44,21 +44,8 @@ quadNLP::quadNLP(
   m_cost_simple_ = m_cost_simple;
   m_cost_complex_ = m_cost_complex;
 
-  std::cout << "default system:" << default_system_ << std::endl;
-  std::cout << "N:" << N_ << std::endl;
-  std::cout << "n_simple:" << n_simple_ << std::endl;
-  std::cout << "n_complex:" << n_complex_ << std::endl;
-  std::cout << "m_simple:" << m_simple_ << std::endl;
-  std::cout << "m_complex:" << m_complex_ << std::endl; 
-  std::cout << "g_simple:" << g_simple_ << std::endl;
-  std::cout << "g_complex:" << g_complex_ << std::endl;
- 
-
-
   Q_complex_ = Q_complex;
   R_complex_ = R_complex;
-  std::cout << "Q_complex:" << Q_complex_ << std::endl;
-  std::cout << "R_complex:" << R_complex_ << std::endl;
 
   // feet location initialized by nominal position
   foot_pos_body_ = Eigen::MatrixXd(N_, 12);
@@ -1483,8 +1470,9 @@ void quadNLP::update_structure() {
   for (int i = 0; i < N_ - 1; i++) {
     // Determine the system to assign to this finite element
     if (complexity_schedule[i] == 0) {
-      sys_id_schedule_[i] =
-          (complexity_schedule[i + 1] == 0) ? default_system_ : SIMPLE_TO_COMPLEX;
+      sys_id_schedule_[i] = (complexity_schedule[i + 1] == 0)
+                                ? default_system_
+                                : SIMPLE_TO_COMPLEX;
     } else {
       sys_id_schedule_[i] =
           (complexity_schedule[i + 1] == 1) ? COMPLEX : COMPLEX_TO_SIMPLE;

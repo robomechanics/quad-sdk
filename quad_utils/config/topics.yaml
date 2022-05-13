@@ -43,9 +43,9 @@ topics:
     global_plan_discrete: visualization/global_plan_discrete
     foot_plan_discrete: visualization/foot_plan_discrete
     joint_states:
-      estimate: visualization/joint_states/estimate
-      ground_truth: visualization/joint_states/ground_truth
-      trajectory: visualization/joint_states/trajectory
+      estimate: estimate/visualization/joint_states
+      ground_truth: ground_truth/visualization/joint_states
+      trajectory: trajectory/visualization/joint_states
     state:
       estimate_trace: visualization/state/estimate_trace
       ground_truth_trace: visualization/state/ground_truth_trace
