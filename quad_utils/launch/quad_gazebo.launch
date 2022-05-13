@@ -25,7 +25,9 @@ SOFTWARE.
 -->
 
 <launch>
-  <arg name="robot_type" default="spirit"/>
+  <!-- temporarily only robot_type_1 is used -->
+  <arg name="robot_type_1" default="spirit"/>
+  <arg name="robot_type_2" default="spirit"/> 
   <arg name="gui" default="false"/>
   <arg name="paused" default="false"/>
   <arg name="software" default="true"/>
@@ -35,6 +37,8 @@ SOFTWARE.
   <arg name="world" default="flat"/>
   <arg name="logging" default="false"/>
   <param name="/use_sim_time" value="true"/>
+
+  <include file="$(find quad_utils)/launch/load_global_params.launch" />
 
   <!-- Launch the Quad world with specific physics parameters -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -48,17 +52,22 @@ SOFTWARE.
   <include file="$(find quad_utils)/launch/mapping.launch">
     <arg name="input_type" value="mesh"/>
     <arg name="world" value="$(arg world)"/>
-    <arg name="robot_type" value="$(arg robot_type)"/>
+  </include>
+
+  <include file="$(find quad_utils)/launch/load_robot_params.launch">
+      <arg name="robot_type" value="$(arg robot_type_1)"/>
   </include>
 
   <group ns="/robot_1">
     <!-- Load the parameters and the sdf description -->
-    <include file="$(find quad_utils)/launch/load_params.launch">
-      <arg name="robot_type" value="$(arg robot_type)"/>
+    <param name="robot_type" value="$(arg robot_type_1)"/>
+    <include file="$(find quad_utils)/launch/load_robot_params.launch">
+      <arg name="robot_type" value="$(arg robot_type_1)"/>
+      <arg name="ns" value="robot_1"/>
     </include>
     <rosparam file="$(find gazebo_scripts)/config/quad_control.yaml" command="load"/>
     <include file="$(find quad_utils)/launch/robot.launch">
-      <arg name="robot_type" value="$(arg robot_type)"/>
+      <arg name="robot_type" value="$(arg robot_type_1)"/>
       <arg name="software" default="$(arg software)"/>
       <arg name="controller" default="$(arg controller)"/>
       <arg name="logging" value="$(arg logging)"/>
@@ -67,21 +76,23 @@ SOFTWARE.
     </include> 
   </group>
 
-  <!-- <group ns="/robot_2"> -->
+  <group ns="/robot_2">
     <!-- Load the parameters and the sdf description -->
-    <!-- <include file="$(find quad_utils)/launch/load_params.launch"> 
-      <arg name="robot_type" value="$(arg robot_type)"/>
+    <param name="robot_type" value="$(arg robot_type_2)"/>
+    <include file="$(find quad_utils)/launch/load_robot_params.launch"> 
+      <arg name="robot_type" value="$(arg robot_type_2)"/>
+      <arg name="ns" value="robot_2"/>
     </include>
     <rosparam file="$(find gazebo_scripts)/config/quad_control.yaml" command="load"/>
     <include file="$(find quad_utils)/launch/robot.launch">
-      <arg name="robot_type" value="$(arg robot_type)"/>
+      <arg name="robot_type" value="$(arg robot_type_2)"/>
       <arg name="software" default="$(arg software)"/>
       <arg name="logging" value="$(arg logging)"/>
       <arg name="controller" default="$(arg controller)"/>
       <arg name="init_pose" value="-x 0.0 -y 1.0 -z 0.5" />
       <arg name="namespace" value="robot_2" />
     </include>
-  </group>  -->
+  </group> 
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find quad_utils)/rviz/example_with_terrain.rviz"/>
 

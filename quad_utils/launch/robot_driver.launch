@@ -1,8 +1,10 @@
 <launch>
     <arg name="robot_type"/>
+    <arg name="namespace" default="robot_1"/>
 
-    <include file="$(find quad_utils)/launch/load_params.launch">
+    <include file="$(find quad_utils)/launch/load_robot_params.launch">
       <arg name="robot_type" value="$(arg robot_type)"/>
+      <arg name="ns" value="$(arg namespace)"/>
     </include>
     
     <arg name="mocap" default="true" />

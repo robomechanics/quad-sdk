@@ -28,7 +28,7 @@ class NMPCController {
    * @param[in] nh ROS NodeHandle to publish and subscribe from
    * @return Constructed object of type MPCController
    */
-  NMPCController(int type);
+  NMPCController(ros::NodeHandle nh, int type);
 
   /**
    * @brief Update the contact and dynamic matrices, solve, and return the

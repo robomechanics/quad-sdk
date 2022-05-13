@@ -127,8 +127,11 @@ class GlobalBodyPlanner {
    */
   void publishCurrentPlan();
 
-  /// Robot type: A1 or Spirit
-  std::string robot_name_;
+//   /// Robot type: A1 or Spirit
+//   std::string robot_name_;
+
+//   /// Namespace, defualt "/"
+//   std::string ns_;
 
   /// Subscriber for terrain map messages
   ros::Subscriber terrain_map_sub_;

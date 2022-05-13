@@ -1,0 +1,11 @@
+<launch>
+    <!-- load robot independent params -->
+    <rosparam command="load" file="$(find quad_utils)/config/terrain_map_publisher.yaml" ns="/"/>
+    <rosparam command="load" file="$(find robot_driver)/robot_driver.yaml" ns="/" />
+    <rosparam command="load" file="$(find quad_utils)/config/grid_map_visualization.yaml" ns="/" /> 
+    <rosparam command="load" file="$(find quad_utils)/config/remote_heartbeat.yaml" ns="/" /> 
+    <rosparam command="load" file="$(find quad_utils)/config/teleop_twist_keyboard.yaml" ns="/" /> 
+    <rosparam command="load" file="$(find quad_utils)/config/rviz_interface.yaml" ns="/" /> 
+    <rosparam command="load" file="$(find quad_utils)/config/trajectory_publisher.yaml" ns="/" /> 
+    <rosparam command="load" file="$(find local_planner)/local_planner.yaml" ns="/" /> 
+</launch>

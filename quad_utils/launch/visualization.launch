@@ -1,22 +1,23 @@
 <launch>
-  
     <arg name="namespace" default="robot_1" />
     <arg name="live_plot" default="false"/>
     <arg name="dash"      default="false"/>
     <arg name="visualization" default="true"/>
     
-    <group ns="$(arg namespace)/trajectory">
+    <group ns="trajectory">
         <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
             <remap from="joint_states" to="visualization/joint_states/trajectory"/>
+            <!-- <remap from="/robot_description" to="/$(arg namespace)/robot_description"/> -->
             <param name="tf_prefix" value="trajectory"/>
         </node>
     </group>
 
-    <group ns="$(arg namespace)/ground_truth">
+    <group ns="ground_truth">
         <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
             <remap from="joint_states" to="visualization/joint_states/ground_truth"/>
+            <!-- <remap from="/robot_description" to="/$(arg namespace)/robot_description"/> -->
             <param name="tf_prefix" value="ground_truth"/>
         </node>
     </group>

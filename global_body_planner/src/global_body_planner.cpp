@@ -6,7 +6,8 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load system parameters from launch file (not in config file)
-  nh.param<std::string>("robot_type", robot_name_, "a1");
+  // nh.param<std::string>("robot_type", robot_name_, "spirit");
+  // nh.param<std::string>("ns", ns_, "/");
 
   // Load rosparams from parameter server
   std::string body_plan_topic, discrete_body_plan_topic, body_plan_tree_topic,
@@ -24,24 +25,24 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   quad_utils::loadROSParam(nh_, "topics/goal_state", goal_state_topic);
   quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
   quad_utils::loadROSParam(
-      nh_, robot_name_ + "/global_body_planner/update_rate", update_rate_);
-  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/num_calls",
+      nh_, "global_body_planner/update_rate", update_rate_);
+  quad_utils::loadROSParam(nh_, "global_body_planner/num_calls",
                            num_calls_);
   quad_utils::loadROSParam(
-      nh_, robot_name_ + "/global_body_planner/max_planning_time",
+      nh_, "global_body_planner/max_planning_time",
       max_planning_time_);
   quad_utils::loadROSParam(
-      nh_, robot_name_ + "/global_body_planner/state_error_threshold",
+      nh_, "global_body_planner/state_error_threshold",
       state_error_threshold_);
   quad_utils::loadROSParam(nh_,
-                           robot_name_ + "/global_body_planner/startup_delay",
+                           "global_body_planner/startup_delay",
                            reset_publish_delay_);
-  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/replanning",
+  quad_utils::loadROSParam(nh_, "global_body_planner/replanning",
                            replanning_allowed_);
   quad_utils::loadROSParam(nh_, "local_planner/timestep", dt_);
   quad_utils::loadROSParam(
-      nh_, robot_name_ + "/global_body_planner/start_state", start_state_vec);
-  quad_utils::loadROSParam(nh_, robot_name_ + "/global_body_planner/goal_state",
+      nh_, "global_body_planner/start_state", start_state_vec);
+  quad_utils::loadROSParam(nh_, "global_body_planner/goal_state",
                            goal_state_vec);
 
   // Setup pubs and subs
