@@ -46,8 +46,6 @@ struct PlannerConfig {
   // Define dynamic constraint parameters
   double mass;     // Robot mass, kg
   double g;        // Gravity constant, m/s^2
-  double f_min;    // Minimum GRF
-  double f_max;    // Maximum GRF, N
   double grf_min;  // Minimum GRF in units of body weight
   double grf_max;  // Maximum GRF in units of body weight
   double mu;       // Friction coefficient
@@ -123,8 +121,6 @@ struct PlannerConfig {
         contact_traversability_threshold);
     quad_utils::loadROSParam(nh, "global_body_planner/mass", mass);
     quad_utils::loadROSParam(nh, "global_body_planner/g", g);
-    quad_utils::loadROSParam(nh, "global_body_planner/f_min", f_min);
-    quad_utils::loadROSParam(nh, "global_body_planner/f_max", f_max);
     quad_utils::loadROSParam(nh, "global_body_planner/grf_min", grf_min);
     quad_utils::loadROSParam(nh, "global_body_planner/grf_max", grf_max);
     quad_utils::loadROSParam(nh, "global_body_planner/mu", mu);

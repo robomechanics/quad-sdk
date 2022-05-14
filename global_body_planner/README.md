@@ -100,7 +100,7 @@ Internally the node alternates between two states to promote high-quality and fe
 
 	The maximum time (in s) the planner is allowed to search in one call, after which the path closest to the goal is returned.
   
-* **`goal_state`** (vector, default: [6.0, 0.0])
+* **`goal_state`** (vector, default: [5.0, 0.0])
 
 	The nominal goal state (in x/y world frame coordinates) to be planned if none is provided via the topic. Assumes a desired final velocity of zero.
   
@@ -132,13 +132,13 @@ Internally the node alternates between two states to promote high-quality and fe
 
 	Number of leaps sampled per extend function call.
   
-* **`body_traversability_threshold`** (double, default: 0.75)
+* **`body_traversability_threshold`** (double, default: 0.4)
 
-	Traversability threshold for a feasible body state to avoid regions of poor traversability. Set to zero to disable.
+	Traversability threshold for a feasible body state to avoid large regions of poor traversability. Making this smaller will make the robot more optimistic about regions it can traverse without leaping. Set to zero to disable.
   
-* **`contact_traversability_threshold`** (double, default: 0.75)
+* **`contact_traversability_threshold`** (double, default: 0.3)
 
-	Traversability threshold for a feasible estimated contact location to avoid regions of poor traversability. Set to zero to disable.
+	Traversability threshold for a feasible estimated contact location to avoid small regions of poor traversability. Making this smaller will make the robot more optimistic about regions it can step without leaping. It is recommended that this be lower than `body_traversability_threshold` as the region may permit alternate contact locations than the one checked. Set to zero to disable.
   
 * **`mu`** (double, default: 0.25)
 
