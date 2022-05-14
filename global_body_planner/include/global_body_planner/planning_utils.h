@@ -394,7 +394,7 @@ inline double getZRelToTerrainFiltered(const State &s,
 
 inline void getMapBounds(const PlannerConfig &planner_config, double &x_min,
                          double &x_max, double &y_min, double &y_max) {
-  double eps = 1;
+  double eps = 0.5;
   x_min = planner_config.terrain.getXData().front() + eps;
   x_max = planner_config.terrain.getXData().back() - eps;
   y_min = planner_config.terrain.getYData().front() + eps;
