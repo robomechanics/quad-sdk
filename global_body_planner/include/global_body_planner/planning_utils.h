@@ -37,12 +37,11 @@ struct PlannerConfig {
   grid_map::GridMap terrain_grid_map;
 
   // Define kinematic constraint parameters
-  double h_max;   // Maximum height of leg base, m
-  double h_min;   // Minimum ground clearance of body corners, m
-  double h_nom;   // Nominal ground clearance of body, m
-  double v_max;   // Maximum robot velocity, m/s
-  double v_nom;   // Nominal velocity, m/s (used during connect function)
-  double dy_max;  // Maximum yaw velocity
+  double h_max;  // Maximum height of leg base, m
+  double h_min;  // Minimum ground clearance of body corners, m
+  double h_nom;  // Nominal ground clearance of body, m
+  double v_max;  // Maximum robot velocity, m/s
+  double v_nom;  // Nominal velocity, m/s (used during connect function)
 
   // Define dynamic constraint parameters
   double mass;     // Robot mass, kg
@@ -113,7 +112,6 @@ struct PlannerConfig {
     quad_utils::loadROSParam(nh, "global_body_planner/h_nom", h_nom);
     quad_utils::loadROSParam(nh, "global_body_planner/v_max", v_max);
     quad_utils::loadROSParam(nh, "global_body_planner/v_nom", v_nom);
-    quad_utils::loadROSParam(nh, "global_body_planner/dy_max", dy_max);
     quad_utils::loadROSParam(nh, "global_body_planner/robot_l", robot_l);
     quad_utils::loadROSParam(nh, "global_body_planner/robot_w", robot_w);
     quad_utils::loadROSParam(nh, "global_body_planner/robot_h", robot_h);

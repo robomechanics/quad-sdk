@@ -191,7 +191,7 @@ class GlobalBodyPlanner {
   double committed_horizon_;
 
   /// Threshold of state error to trigger replanning
-  double state_error_threshold_;
+  double pos_error_threshold_;
 
   /// Flag to determine if the planner needs to restart planning from the robot
   /// state

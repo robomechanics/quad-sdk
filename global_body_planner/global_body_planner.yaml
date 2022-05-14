@@ -2,8 +2,8 @@ global_body_planner:
   update_rate: 20
   num_calls: 1              # Number of times to call the planner
   max_planning_time: 0.25   # Maximum amount of time to run the planner
-  goal_state: [6.0,0.0,0.3,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0] # Nominal goal state
-  state_error_threshold: 25 # Error from planned state to trigger reset
+  goal_state: [6.0, 0.0]    # Nominal goal state (x/y coordinates)
+  pos_error_threshold: 25   # Error from planned state to trigger reset
   startup_delay: 1.5        # Time to delay after starting node before planning
   replanning: true          # Boolean to determine if replanning is allowed
   dt: 0.03                  # Resolution of kinematic feasibility checks, m
@@ -23,7 +23,6 @@ global_body_planner:
   h_nom: 0.3                # Nominal ground clearance of body, m
   v_max: 2.0                # Maximum robot velocity, m/s
   v_nom: 1.0                # Nominal velocity, m/s (used during connect function)
-  dy_max: 2.0               # Maximum yaw rate
   robot_l: 0.3              # Length of robot body, m
   robot_w: 0.3              # Width of robot body, m
   robot_h: 0.05             # Vertical distance between leg base and bottom of robot, m

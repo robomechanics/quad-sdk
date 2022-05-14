@@ -8,7 +8,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   // Load rosparams from parameter server
   std::string body_plan_topic, discrete_body_plan_topic, body_plan_tree_topic,
       goal_state_topic;
-  std::vector<double> goal_state_vec(12);
+  std::vector<double> goal_state_vec(2);
 
   quad_utils::loadROSParam(nh_, "topics/start_state", robot_state_topic_);
   quad_utils::loadROSParam(nh_, "topics/goal_state", goal_state_topic);
@@ -24,8 +24,8 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   quad_utils::loadROSParam(nh_, "global_body_planner/num_calls", num_calls_);
   quad_utils::loadROSParam(nh_, "global_body_planner/max_planning_time",
                            max_planning_time_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/state_error_threshold",
-                           state_error_threshold_);
+  quad_utils::loadROSParam(nh_, "global_body_planner/pos_error_threshold",
+                           pos_error_threshold_);
   quad_utils::loadROSParam(nh_, "global_body_planner/startup_delay",
                            reset_publish_delay_);
   quad_utils::loadROSParam(nh_, "global_body_planner/replanning",
@@ -58,8 +58,11 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
     planner_config_.h_max = 0.5;
   }
 
-  // Zero planning data
+  // Fill in the goal state information
+  goal_state_vec.resize(12, 0);
   vectorToFullState(goal_state_vec, goal_state_);
+
+  // Zero planning data
   start_index_ = 0;
   triggerReset();
 }
@@ -73,6 +76,11 @@ void GlobalBodyPlanner::terrainMapCallback(
   // Convert to FastTerrainMap structure for faster querying
   planner_config_.terrain.loadDataFromGridMap(map);  // Takes ~10ms
   planner_config_.terrain_grid_map = map;            // Takes ~0.1ms
+
+  // Uodate the goal state of the planner
+  goal_state_.pos[2] =
+      planner_config_.h_nom + planner_config_.terrain.getGroundHeight(
+                                  goal_state_.pos[0], goal_state_.pos[1]);
 }
 
 void GlobalBodyPlanner::robotStateCallback(
@@ -128,7 +136,7 @@ void GlobalBodyPlanner::setStartState() {
     FullState current_state_in_plan_ =
         current_plan_.getStateFromIndex(current_index);
     if (poseDistance(robot_state_, current_state_in_plan_) >
-        state_error_threshold_) {
+        pos_error_threshold_) {
       ROS_WARN_THROTTLE(0.5, "Too far from nominal plan, resetting");
       triggerReset();
     }
