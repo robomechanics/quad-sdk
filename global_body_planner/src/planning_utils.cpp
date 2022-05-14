@@ -900,12 +900,16 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
 #ifdef DEBUG_INVALID_STATE
       printf("reachability_point not in map, phase = %d\n", phase);
 #endif
+      max_valid_z = s.pos[2] + planner_config.h_max -
+                    getZRelToTerrain(reachability_point, planner_config);
       return false;
     }
 
     // Make sure legs are over a valid region of the terrain
     if (!isContactTraversable(reachability_point, planner_config) &&
         phase != FLIGHT) {
+      max_valid_z = s.pos[2] + planner_config.h_max -
+                    getZRelToTerrain(reachability_point, planner_config);
       return false;
     }
 

@@ -19,7 +19,7 @@ global_body_planner:
   dz0_min: 1.0              # Minimum vertical velocity impulse, m/s
   dz0_max: 2.0              # Maximum vertical velocity impulse, m/s
   h_max: 0.375              # Maximum height of leg base, m
-  h_min: 0.1                # Minimum ground clearance of body corners, m
+  h_min: 0.075                # Minimum ground clearance of body corners, m
   h_nom: 0.3                # Nominal ground clearance of body, m
   v_max: 2.0                # Maximum robot velocity, m/s
   v_nom: 0.5                # Nominal velocity, m/s (used during connect function)

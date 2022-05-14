@@ -106,7 +106,8 @@ TEST_F(GlobalBodyPlannerTestFixture, testValidStateActionPairAccuracy) {
   // Sample states
   for (int i = 0; i < N; i++) {
     state_vec[i] = planner_->randomState(planner_config_);
-    state_valid[i] = isValidState(state_vec[i], planner_config_, LEAP_STANCE);
+    state_valid[i] = isValidState(state_vec[i], planner_config_,
+    LEAP_STANCE);
   }
 
   // Get random leaps
@@ -131,7 +132,8 @@ TEST_F(GlobalBodyPlannerTestFixture, testValidStateActionPairAccuracy) {
     }
   }
 
-  std::cout << "Valid states/sampled states = " << (double)count_valid_state / N
+  std::cout << "Valid states/sampled states = " << (double)count_valid_state
+  / N
             << std::endl;
   std::cout << "Valid coarse pairs/sampled states = "
             << (double)count_valid_coarse / N << std::endl;

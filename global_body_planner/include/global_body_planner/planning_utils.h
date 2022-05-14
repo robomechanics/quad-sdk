@@ -132,6 +132,8 @@ struct PlannerConfig {
     quad_utils::loadROSParam(nh, "global_body_planner/mu", mu);
     quad_utils::loadROSParam(nh, "global_body_planner/t_s_min", t_s_min);
     quad_utils::loadROSParam(nh, "global_body_planner/t_s_max", t_s_max);
+    quad_utils::loadROSParam(nh, "global_body_planner/dz0_min", dz0_min);
+    quad_utils::loadROSParam(nh, "global_body_planner/dz0_max", dz0_max);
     quad_utils::loadROSParam(nh, "global_body_planner/dt", dt);
     quad_utils::loadROSParam(nh, "global_body_planner/backup_ratio",
                              backup_ratio);

@@ -2,7 +2,7 @@
 
     <include file="$(find quad_utils)/launch/load_params.launch" />
 
-    <arg name="global_planner" default="twist" />
+    <arg name="global_planner" default="fgmp" />
     <arg name="leaping" default="true" />
     <arg name="ac" default="false" />
     <arg name="logging" default="false" />
