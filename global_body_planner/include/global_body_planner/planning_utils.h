@@ -54,8 +54,8 @@ struct PlannerConfig {
   double mu;       // Friction coefficient
   double t_s_min;  // Minimum stance time, s
   double t_s_max;  // Maximum stance time, s
-  double t_f_min;  // Minimum flight time, s
-  double t_f_max;  // Maximum stance time, s
+  double dz0_min;  // Minimum vertical velocity impulse, m/s
+  double dz0_max;  // Maximum vertical velocity impulse, m/s
 
   // Define planning parameters
   double dt;                  // Resolution of kinematic feasibility checks, m
@@ -132,8 +132,6 @@ struct PlannerConfig {
     quad_utils::loadROSParam(nh, "global_body_planner/mu", mu);
     quad_utils::loadROSParam(nh, "global_body_planner/t_s_min", t_s_min);
     quad_utils::loadROSParam(nh, "global_body_planner/t_s_max", t_s_max);
-    quad_utils::loadROSParam(nh, "global_body_planner/t_f_min", t_f_min);
-    quad_utils::loadROSParam(nh, "global_body_planner/t_f_max", t_f_max);
     quad_utils::loadROSParam(nh, "global_body_planner/dt", dt);
     quad_utils::loadROSParam(nh, "global_body_planner/backup_ratio",
                              backup_ratio);

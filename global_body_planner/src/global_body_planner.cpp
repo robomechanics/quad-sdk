@@ -196,7 +196,7 @@ bool GlobalBodyPlanner::callPlanner() {
   int vertices_generated;
 
   // Construct RRT object
-  RRTConnectClass rrt_connect_obj;
+  FastGlobalMotionPlanner fast_global_motion_planner;
 
   // Loop through num_calls_ planner calls
   for (int i = 0; i < num_calls_; ++i) {
@@ -210,7 +210,7 @@ bool GlobalBodyPlanner::callPlanner() {
     std::vector<Action> action_sequence;
 
     // Call the planner method
-    int plan_status = rrt_connect_obj.runRRTConnect(
+    int plan_status = fast_global_motion_planner.findPlan(
         planner_config_, start_state, goal_state, state_sequence,
         action_sequence, tree_pub_);
     newest_plan_.setComputedTimestamp(ros::Time::now());
@@ -229,8 +229,9 @@ bool GlobalBodyPlanner::callPlanner() {
       }
       return false;
     }
-    rrt_connect_obj.getStatistics(plan_time, vertices_generated, path_length,
-                                  path_duration, dist_to_goal);
+    fast_global_motion_planner.getStatistics(plan_time, vertices_generated,
+                                             path_length, path_duration,
+                                             dist_to_goal);
 
     // Add the existing path length to the new
     path_length += current_plan_.getLengthAtIndex(start_index_);

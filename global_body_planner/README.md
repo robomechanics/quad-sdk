@@ -126,6 +126,22 @@ Internally the node alternates between two states to promote high-quality and fe
 
 	Gravity acceleration.
 
+* **`t_s_min`** (double, default: 0.1)
+
+	Minimum leaping stance time.
+
+* **`t_s_max`** (double, default: 0.25)
+
+	Maximum leaping stance time.
+
+* **`dz0_min`** (double, default: 1.0)
+
+	Minimum vertical velocity impulse (in m/s) applied at the beginning of a leaping phase.
+
+* **`dz0_max`** (double, default: 2.0)
+
+	Maximum vertical velocity impulse (in m/s) applied at the beginning of a leaping phase.
+
 
 ## Bugs & Feature Requests
 

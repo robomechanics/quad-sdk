@@ -2,10 +2,10 @@
 #include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
 
+#include "global_body_planner/fast_global_motion_planner.h"
 #include "global_body_planner/global_body_planner_test_fixture.h"
 #include "global_body_planner/planner_class.h"
 #include "global_body_planner/planning_utils.h"
-#include "global_body_planner/rrt_connect.h"
 
 const int N = 1000;
 const double kinematics_tol = 1e-6;
@@ -14,7 +14,7 @@ TEST_F(GlobalBodyPlannerTestFixture, testIsValidStateTime) {
   std::vector<State> state_vec(N);
 
   for (int i = 0; i < N; i++) {
-    state_vec[i] = planner_.randomState(planner_config_);
+    state_vec[i] = planner_->randomState(planner_config_);
   }
 
   quad_utils::FunctionTimer timer("isValidState()");
@@ -36,9 +36,9 @@ TEST_F(GlobalBodyPlannerTestFixture, testGetRandomLeapActionTime) {
   std::vector<Action> action_vec(N);
 
   for (int i = 0; i < N; i++) {
-    State s = planner_.randomState(planner_config_);
+    State s = planner_->randomState(planner_config_);
     while (!isValidState(s, planner_config_, LEAP_STANCE))
-      s = planner_.randomState(planner_config_);
+      s = planner_->randomState(planner_config_);
 
     state_vec[i] = s;
   }
@@ -65,11 +65,11 @@ TEST_F(GlobalBodyPlannerTestFixture, testIsValidStateActionPairTime) {
 
   for (int i = 0; i < N; i++) {
     Action a;
-    State s = planner_.randomState(planner_config_);
+    State s = planner_->randomState(planner_config_);
     bool is_valid = getRandomLeapAction(s, surf_norm, a, planner_config_);
 
     while (!is_valid || !isValidState(s, planner_config_, LEAP_STANCE)) {
-      s = planner_.randomState(planner_config_);
+      s = planner_->randomState(planner_config_);
       is_valid = getRandomLeapAction(s, surf_norm, a, planner_config_);
     }
 
@@ -105,7 +105,7 @@ TEST_F(GlobalBodyPlannerTestFixture, testValidStateActionPairAccuracy) {
 
   // Sample states
   for (int i = 0; i < N; i++) {
-    state_vec[i] = planner_.randomState(planner_config_);
+    state_vec[i] = planner_->randomState(planner_config_);
     state_valid[i] = isValidState(state_vec[i], planner_config_, LEAP_STANCE);
   }
 
@@ -158,7 +158,7 @@ TEST_F(GlobalBodyPlannerTestFixture, testValidStateActionPairAccuracy) {
 //   // Find valid state action pair
 //   quad_utils::FunctionTimer timer("testValidStateActionPairRate");
 //   while (count_valid < N) {
-//     State s = planner_.randomState(planner_config_);
+//     State s = planner_->randomState(planner_config_);
 //     if (!isValidState(s, planner_config_, LEAP_STANCE)) {
 //       continue;
 //     }

@@ -549,12 +549,14 @@ bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm,
   const double m = planner_config.mass;
 
   // Sample stance time and initial vertical velocity
-  double dz_impulse = 0.5 + (double)rand() / RAND_MAX;
+  double dz_impulse = (planner_config.dz0_max - planner_config.dz0_min) *
+                          (double)rand() / RAND_MAX +
+                      planner_config.dz0_min;
   a.dz_0 = getDzFromState(s, planner_config) - dz_impulse;
   a.dz_f = dz_impulse;
-  double t_s_min = 0.15;
-  double t_s_max = 0.20;
-  a.t_s_leap = (t_s_max - t_s_min) * (double)rand() / RAND_MAX + t_s_min;
+  a.t_s_leap = (planner_config.t_s_max - planner_config.t_s_min) *
+                   (double)rand() / RAND_MAX +
+               planner_config.t_s_min;
   a.t_f = 1e-6;
   a.t_s_land = a.t_s_leap;
   a.grf_0.setZero();
@@ -712,8 +714,8 @@ bool refineStance(const State &s, int phase, Action &a,
       std::cout << "Midstance state invalid, reducing stance time from " << t_s
                 << " to " << t_s / 1.2 << std::endl;
 #endif
-      t_s = t_s / 1.1;
-      // dz_0 -= 0.2;
+      // t_s = t_s / 1.1;
+      dz_0 -= 0.2;
 
       grf_increased = true;
       continue;

@@ -14,10 +14,10 @@ global_body_planner:
   contact_traversability_threshold: 0.01 # Traversability threshold for valid contact location
   mu: 0.25                  # Friction coefficient
   g: 9.81                   # Gravity constant, m/s^2
-  t_s_min: 0.3              # Minimum stance time, s
-  t_s_max: 0.3              # Maximum stance time, s
-  t_f_min: 0.1              # Minimum flight time, s
-  t_f_max: 0.4              # Maximum stance time, s
+  t_s_min: 0.12             # Minimum stance time, s
+  t_s_max: 0.25             # Maximum stance time, s
+  dz0_min: 1.0              # Minimum vertical velocity impulse, m/s
+  dz0_max: 2.0              # Maximum vertical velocity impulse, m/s
   h_max: 0.375              # Maximum height of leg base, m
   h_min: 0.1                # Minimum ground clearance of body corners, m
   h_nom: 0.3                # Nominal ground clearance of body, m
