@@ -157,7 +157,9 @@ int RRTClass::attemptConnect(const State &s_existing, const State &s,
                              const PlannerConfig &planner_config,
                              int direction) {
   // select desired stance time to enforce a nominal stance velocity
-  double t_s = poseDistance(s, s_existing) / planner_config.v_nom;
+  double t_s =
+      6.0 * poseDistance(s, s_existing) /
+      (s.vel.norm() + s_existing.vel.norm() + 4.0 * planner_config.v_nom);
   return attemptConnect(s_existing, s, t_s, result, planner_config, direction);
 }
 
