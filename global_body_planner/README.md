@@ -2,7 +2,7 @@
 
 ## Overview
 
-This package implements global planning algorithms for agile quadrupedal navigation. The package produces point-to-point plans which guide the robot from its current state to the goal given a map of the terrain. The primary navigation algorithm is an RRT-Connect planner which uses motion primitives to produce long-horizon plans that include flight phases. See the [paper](https://www.andrew.cmu.edu/user/amj1/papers/IROS2020_Fast_Global_Motion_Planning.pdf) for more details on the algorithm.
+This package implements global planning algorithms for agile quadrupedal navigation. The package produces point-to-point plans which guide the robot from its current state to the goal given a map of the terrain. The primary navigation algorithm is an RRT-Connect planner which uses motion primitives to produce long-horizon plans that include flight phases. See the [paper] for more details on the algorithm.
 
 ### License
 
@@ -15,6 +15,22 @@ Maintainer: Joe Norby, jnorby@andrew.cmu.edu**
 The Global Body Planner package has been tested under [ROS] Melodic 18.04.
 This is research code, expect that it changes often and any fitness for a particular purpose is disclaimed.
 
+### Publications
+
+If you use this work in an academic context, please cite the following publication(s):
+
+* J. Norby and A. M. Johnson, “Fast global motion planning for dynamic legged robots,” in 2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS). IEEE, 2020, pp. 3829–3836. ([paper])
+
+        @inproceedings{Norby2020,
+	  	title={Fast global motion planning for dynamic legged robots},
+	  	author={Norby, Joseph and Johnson, Aaron M},
+	  	booktitle={2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+	  	pages={3829--3836},
+	  	year={2020},
+	  	organization={IEEE}
+		}
+
+
 ### Unit Tests
 
 Run the unit tests with
@@ -26,6 +42,8 @@ Run the unit tests with
 Run the main node with
 
 	roslaunch quad_utils planning.launch global_planner:=fgmp
+	
+Leaping can be disabled with the optional argument `leaping:=false`, which internally skips the leap action sampling procedure and relaxes the kinematics bounds on collision checking.
 
 ## Config files
 
@@ -82,13 +100,17 @@ Internally the node alternates between two states to promote high-quality and fe
 
 	The maximum time (in s) the planner is allowed to search in one call, after which the path closest to the goal is returned.
   
+* **`goal_state`** (vector, default: [6.0, 0.0])
+
+	The nominal goal state (in x/y world frame coordinates) to be planned if none is provided via the topic. Assumes a desired final velocity of zero.
+  
+* **`state_error_threshold`** (double, default: 25)
+
+	The position error (in m) between the current state and reference state which triggers `RESET` mode. Setting this to a sufficiently high value disables this feature.
+  
 * **`startup_delay`** (double, default: 1.5)
 
 	The time (in s) spent replanning while in `RESET` mode before publishing a plan for execution.
-  
-* **`replanning`** (boolean, default: true)
-
-	Enable or disable replanning.
   
 * **`replanning`** (boolean, default: true)
 
@@ -98,7 +120,7 @@ Internally the node alternates between two states to promote high-quality and fe
 
 	Timestep (in s) used for kinematics checks and interpolation.
   
-* **`trapped_buffer_factor`** (int, default: 4)
+* **`trapped_buffer_factor`** (int, default: 7)
 
 	Number of timesteps that must be valid for a state-action pair to not be considered trapped.
   
@@ -114,7 +136,7 @@ Internally the node alternates between two states to promote high-quality and fe
 
 	Traversability threshold for a feasible body state to avoid regions of poor traversability. Set to zero to disable.
   
-* **`contact_traversability_threshold`** (double, default: 0.01)
+* **`contact_traversability_threshold`** (double, default: 0.75)
 
 	Traversability threshold for a feasible estimated contact location to avoid regions of poor traversability. Set to zero to disable.
   
@@ -148,6 +170,7 @@ Internally the node alternates between two states to promote high-quality and fe
 Please report bugs and request features using the [Issue Tracker](https://github.com/robomechanics/quad-sdk/issues).
 
 
+[paper]: https://www.andrew.cmu.edu/user/amj1/papers/IROS2020_Fast_Global_Motion_Planning.pdf
 [ROS]: http://www.ros.org
 [rviz]: http://wiki.ros.org/rviz
 [Eigen]: http://eigen.tuxfamily.org
