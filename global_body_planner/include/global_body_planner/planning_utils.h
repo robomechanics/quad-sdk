@@ -37,47 +37,38 @@ struct PlannerConfig {
   grid_map::GridMap terrain_grid_map;
 
   // Define kinematic constraint parameters
-  double H_MAX;   // Maximum height of leg base, m
-  double H_MIN;   // Minimum ground clearance of body corners, m
-  double H_NOM;   // Nominal ground clearance of body, m
-  double V_MAX;   // Maximum robot velocity, m/s
-  double V_NOM;   // Nominal velocity, m/s (used during connect function)
-  double DY_MAX;  // Maximum yaw velocity
+  double h_max;  // Maximum height of leg base, m
+  double h_min;  // Minimum ground clearance of body corners, m
+  double h_nom;  // Nominal ground clearance of body, m
+  double v_max;  // Maximum robot velocity, m/s
+  double v_nom;  // Nominal velocity, m/s (used during connect function)
 
   // Define dynamic constraint parameters
-  double M_CONST;       // Robot mass, kg
-  double J_CONST;       // Moment of inertia about the robot's y axis (pitch)
-  double G_CONST;       // Gravity constant, m/s^2
-  double F_MIN;         // Minimum GRF
-  double F_MAX;         // Maximum GRF, N
-  double PEAK_GRF_MIN;  // Minimum GRF in units of body weight
-  double PEAK_GRF_MAX;  // Maximum GRF in units of body weight
-  double MU;            // Friction coefficient
-  double T_S_MIN;       // Minimum stance time, s
-  double T_S_MAX;       // Maximum stance time, s
-  double T_F_MIN;       // Minimum flight time, s
-  double T_F_MAX;       // Maximum stance time, s
+  double mass;     // Robot mass, kg
+  double g;        // Gravity constant, m/s^2
+  double grf_min;  // Minimum GRF in units of body weight
+  double grf_max;  // Maximum GRF in units of body weight
+  double mu;       // Friction coefficient
+  double t_s_min;  // Minimum stance time, s
+  double t_s_max;  // Maximum stance time, s
+  double dz0_min;  // Minimum vertical velocity impulse, m/s
+  double dz0_max;  // Maximum vertical velocity impulse, m/s
 
   // Define planning parameters
-  double KINEMATICS_RES;      // Resolution of kinematic feasibility checks, m
-  int TRAPPED_BUFFER_FACTOR;  // Number of feasibility that must pass to not
+  double dt;                  // Resolution of kinematic feasibility checks, m
+  int trapped_buffer_factor;  // Number of feasibility that must pass to not
                               // consider a state trapped
-  double BACKUP_TIME;    // Duration of backup after finding an invalid state, s
-  double BACKUP_RATIO;   // Ratio of trajectory to back up after finding an
-                         // invalid state, s
-  int NUM_LEAP_SAMPLES;  // Number of actions computed for each extend function
-  double GOAL_BOUNDS;    // Distance threshold on reaching the goal (only
-                         // used for vanilla RRT, not RRT-Connect)
-  double MAX_TIME;       // Maximum planning time allowed
-  Eigen::Vector3d G_VEC;  // Maximum planning time allowed
+  double backup_ratio;        // Ratio of trajectory to back up after finding an
+                              // invalid state, s
+  int num_leap_samples;  // Number of actions computed for each extend function
+  double max_planning_time;  // Maximum planning time allowed
+  Eigen::Vector3d g_vec;     // Maximum planning time allowed
 
   // Define robot params and declare points used for validity checking
-  double ROBOT_L;  // Length of robot body, m
-  double ROBOT_W;  // Width of robot body, m
-  double ROBOT_H;  // Vertical distance between leg base and bottom of
-  // robot, m
-  double MAX_REACHABLE_DISTANCE;  // Maximum distance to check for more feasible
-                                  // reachable locations
+  double robot_l;  // Length of robot body, m
+  double robot_w;  // Width of robot body, m
+  double robot_h;  // Vertical distance between leg base and bottom of
+                   // robot, m
 
   double body_traversability_threshold;  // Min traversability for body
                                          // (requires the body to not be over a
@@ -100,65 +91,52 @@ struct PlannerConfig {
 
   void loadEigenVectorsFromParams() {
     // Load the gravity vector
-    G_VEC << 0, 0, -G_CONST;
+    g_vec << 0, 0, -g;
 
     // Load the reachability test points
-    reachability_points_body << 0.5 * ROBOT_L, -0.5 * ROBOT_L, 0.5 * ROBOT_L,
-        -0.5 * ROBOT_L, 0.5 * ROBOT_W, 0.5 * ROBOT_W, -0.5 * ROBOT_W,
-        -0.5 * ROBOT_W, 0, 0, 0, 0;
+    reachability_points_body << 0.5 * robot_l, -0.5 * robot_l, 0.5 * robot_l,
+        -0.5 * robot_l, 0.5 * robot_w, 0.5 * robot_w, -0.5 * robot_w,
+        -0.5 * robot_w, 0, 0, 0, 0;
     // Load the collision test points
-    collision_points_body << 0.5 * ROBOT_L, -0.5 * ROBOT_L, 0.5 * ROBOT_L,
-        -0.5 * ROBOT_L, 0, 0.5 * ROBOT_W, 0.5 * ROBOT_W, -0.5 * ROBOT_W,
-        -0.5 * ROBOT_W, 0, -0.5 * ROBOT_H, -0.5 * ROBOT_H, -0.5 * ROBOT_H,
-        -0.5 * ROBOT_H, -0.5 * ROBOT_H;
+    collision_points_body << 0.5 * robot_l, -0.5 * robot_l, 0.5 * robot_l,
+        -0.5 * robot_l, 0, 0.5 * robot_w, 0.5 * robot_w, -0.5 * robot_w,
+        -0.5 * robot_w, 0, -0.5 * robot_h, -0.5 * robot_h, -0.5 * robot_h,
+        -0.5 * robot_h, -0.5 * robot_h;
   }
 
   void loadParamsFromServer(ros::NodeHandle nh) {
-    quad_utils::loadROSParam(nh, "global_body_planner/H_MAX", H_MAX);
-    quad_utils::loadROSParam(nh, "global_body_planner/H_MIN", H_MIN);
-    quad_utils::loadROSParam(nh, "global_body_planner/H_NOM", H_NOM);
-    quad_utils::loadROSParam(nh, "global_body_planner/V_MAX", V_MAX);
-    quad_utils::loadROSParam(nh, "global_body_planner/V_NOM", V_NOM);
-    quad_utils::loadROSParam(nh, "global_body_planner/DY_MAX", DY_MAX);
-    quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_L", ROBOT_L);
-    quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_W", ROBOT_W);
-    quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_W", ROBOT_W);
-    quad_utils::loadROSParam(nh, "global_body_planner/MAX_REACHABLE_DISTANCE",
-                             MAX_REACHABLE_DISTANCE);
+    quad_utils::loadROSParam(nh, "global_body_planner/h_max", h_max);
+    quad_utils::loadROSParam(nh, "global_body_planner/h_min", h_min);
+    quad_utils::loadROSParam(nh, "global_body_planner/h_nom", h_nom);
+    quad_utils::loadROSParam(nh, "global_body_planner/v_max", v_max);
+    quad_utils::loadROSParam(nh, "global_body_planner/v_nom", v_nom);
+    quad_utils::loadROSParam(nh, "global_body_planner/robot_l", robot_l);
+    quad_utils::loadROSParam(nh, "global_body_planner/robot_w", robot_w);
+    quad_utils::loadROSParam(nh, "global_body_planner/robot_h", robot_h);
     quad_utils::loadROSParam(
-        nh, "global_body_planner/BODY_TRAVERSABILITY_THRESHOLD",
+        nh, "global_body_planner/body_traversability_threshold",
         body_traversability_threshold);
     quad_utils::loadROSParam(
-        nh, "global_body_planner/CONTACT_TRAVERSABILITY_THRESHOLD",
+        nh, "global_body_planner/contact_traversability_threshold",
         contact_traversability_threshold);
-    quad_utils::loadROSParam(nh, "global_body_planner/M_CONST", M_CONST);
-    quad_utils::loadROSParam(nh, "global_body_planner/J_CONST", J_CONST);
-    quad_utils::loadROSParam(nh, "global_body_planner/G_CONST", G_CONST);
-    quad_utils::loadROSParam(nh, "global_body_planner/F_MIN", F_MIN);
-    quad_utils::loadROSParam(nh, "global_body_planner/F_MAX", F_MAX);
-    quad_utils::loadROSParam(nh, "global_body_planner/PEAK_GRF_MIN",
-                             PEAK_GRF_MIN);
-    quad_utils::loadROSParam(nh, "global_body_planner/PEAK_GRF_MAX",
-                             PEAK_GRF_MAX);
-    quad_utils::loadROSParam(nh, "global_body_planner/MU", MU);
-    quad_utils::loadROSParam(nh, "global_body_planner/T_S_MIN", T_S_MIN);
-    quad_utils::loadROSParam(nh, "global_body_planner/T_S_MAX", T_S_MAX);
-    quad_utils::loadROSParam(nh, "global_body_planner/T_F_MIN", T_F_MIN);
-    quad_utils::loadROSParam(nh, "global_body_planner/T_F_MAX", T_F_MAX);
-    quad_utils::loadROSParam(nh, "global_body_planner/KINEMATICS_RES",
-                             KINEMATICS_RES);
-    quad_utils::loadROSParam(nh, "global_body_planner/BACKUP_TIME",
-                             BACKUP_TIME);
-    quad_utils::loadROSParam(nh, "global_body_planner/BACKUP_RATIO",
-                             BACKUP_RATIO);
-    quad_utils::loadROSParam(nh, "global_body_planner/TRAPPED_BUFFER_FACTOR",
-                             TRAPPED_BUFFER_FACTOR);
-    quad_utils::loadROSParam(nh, "global_body_planner/NUM_LEAP_SAMPLES",
-                             NUM_LEAP_SAMPLES);
-    quad_utils::loadROSParam(nh, "global_body_planner/GOAL_BOUNDS",
-                             GOAL_BOUNDS);
+    quad_utils::loadROSParam(nh, "global_body_planner/mass", mass);
+    quad_utils::loadROSParam(nh, "global_body_planner/g", g);
+    quad_utils::loadROSParam(nh, "global_body_planner/grf_min", grf_min);
+    quad_utils::loadROSParam(nh, "global_body_planner/grf_max", grf_max);
+    quad_utils::loadROSParam(nh, "global_body_planner/mu", mu);
+    quad_utils::loadROSParam(nh, "global_body_planner/t_s_min", t_s_min);
+    quad_utils::loadROSParam(nh, "global_body_planner/t_s_max", t_s_max);
+    quad_utils::loadROSParam(nh, "global_body_planner/dz0_min", dz0_min);
+    quad_utils::loadROSParam(nh, "global_body_planner/dz0_max", dz0_max);
+    quad_utils::loadROSParam(nh, "global_body_planner/dt", dt);
+    quad_utils::loadROSParam(nh, "global_body_planner/backup_ratio",
+                             backup_ratio);
+    quad_utils::loadROSParam(nh, "global_body_planner/trapped_buffer_factor",
+                             trapped_buffer_factor);
+    quad_utils::loadROSParam(nh, "global_body_planner/num_leap_samples",
+                             num_leap_samples);
     quad_utils::loadROSParam(nh, "global_body_planner/max_planning_time",
-                             MAX_TIME);
+                             max_planning_time);
 
     // Load the scalar parameters into Eigen vectors
     loadEigenVectorsFromParams();
@@ -187,21 +165,21 @@ const grid_map::InterpolationMethods INTER_TYPE =
 typedef Eigen::Vector3d GRF;
 
 // Define state with Eigen data
-struct StateEigen {
+struct State {
   Eigen::Vector3d pos;
   Eigen::Vector3d vel;
 
-  bool operator==(const StateEigen rhs) const {
+  bool operator==(const State rhs) const {
     // Z velocity is overridden by action
     return ((pos == rhs.pos) && (vel.head<2>() == rhs.vel.head<2>()));
   }
 
-  bool operator!=(const StateEigen rhs) const {
+  bool operator!=(const State rhs) const {
     // Z velocity is overridden by action
     return ((pos != rhs.pos) || (vel.head<2>() != rhs.vel.head<2>()));
   }
 
-  bool isApprox(const StateEigen rhs) const {
+  bool isApprox(const State rhs) const {
     // Z velocity is overridden by action
     return ((pos.isApprox(rhs.pos)) &&
             (vel.head<2>().isApprox(rhs.vel.head<2>())));
@@ -209,7 +187,7 @@ struct StateEigen {
 };
 
 // Define full state with Eigen data
-struct FullStateEigen {
+struct FullState {
   Eigen::Vector3d pos;
   Eigen::Vector3d vel;
   Eigen::Vector3d ang;
@@ -217,7 +195,7 @@ struct FullStateEigen {
 };
 
 // Define action with Eigen data
-struct ActionEigen {
+struct Action {
   GRF grf_0;
   GRF grf_f;
   double t_s_leap;
@@ -227,31 +205,12 @@ struct ActionEigen {
   double dz_f;
 };
 
-// Define the dimensionality and types for states, actions, and pairs
-const int POSEDIM = 3;
-const int STATEDIM = 6;
-const int FULLSTATEDIM = 12;
-const int ACTIONDIM = 11;
-typedef std::array<double, STATEDIM> StateVec;
-typedef std::array<double, ACTIONDIM> ActionVec;
-typedef std::vector<double> FullStateVec;
-
-typedef StateEigen State;
-typedef ActionEigen Action;
-typedef FullStateEigen FullState;
-
-typedef std::pair<State, Action> StateActionPair;
-
 struct StateActionResult {
   State s_new;
   Action a_new;
   double t_new = 0;
   double length = 0;
 };
-
-// Define math parameters
-const double INFTY = std::numeric_limits<double>::max();
-const double MY_PI = 3.14159;
 
 // State data structure conversions
 State fullStateToState(const FullState &full_state);
@@ -275,19 +234,6 @@ void printState(const State &vec);
 
 void printFullState(const FullState &vec);
 
-template <typename T>
-void printVector(const std::vector<T> &vec) {
-  std::cout << "{";
-  for (auto val : vec) std::cout << val << ", ";
-  std::cout << "\b\b}";
-}
-
-template <typename T>
-void printVectorNewline(const std::vector<T> &vec) {
-  printVector(vec);
-  std::cout << std::endl;
-}
-
 void printStateNewline(State vec);
 
 void printAction(Action a);
@@ -301,9 +247,6 @@ void printInterpStateSequence(std::vector<State> state_sequence,
 
 void printActionSequence(std::vector<Action> action_sequence);
 
-void plotYaw(std::vector<double> interp_t,
-             std::vector<FullState> interp_full_path);
-
 // Define some utility functions
 double poseDistance(const State &q1, const State &q2);
 
@@ -313,12 +256,6 @@ double stateDistance(const State &q1, const State &q2);
 
 double poseDistance(const std::vector<double> &v1,
                     const std::vector<double> &v2);
-
-bool isWithinBounds(const State &s1, const State &s2,
-                    const PlannerConfig &planner_config);
-
-std::array<double, 3> rotateGRF(const std::array<double, 3> &surface_norm,
-                                const std::array<double, 3> &grf);
 
 Eigen::Vector3d rotateGRF(const Eigen::Vector3d &surface_norm,
                           const Eigen::Vector3d &grf);
@@ -451,7 +388,7 @@ inline double getZRelToTerrainFiltered(const State &s,
 
 inline void getMapBounds(const PlannerConfig &planner_config, double &x_min,
                          double &x_max, double &y_min, double &y_max) {
-  double eps = 1;
+  double eps = 0.5;
   x_min = planner_config.terrain.getXData().front() + eps;
   x_max = planner_config.terrain.getXData().back() - eps;
   y_min = planner_config.terrain.getYData().front() + eps;
@@ -478,9 +415,6 @@ Eigen::Vector3d getAcceleration(const Action &a, double t, int phase,
                                 const PlannerConfig &planner_config);
 
 // Action sampling
-Action getRandomAction(const std::array<double, 3> &surf_norm,
-                       const PlannerConfig &planner_config);
-
 bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm,
                          Action &a, const PlannerConfig &planner_config);
 

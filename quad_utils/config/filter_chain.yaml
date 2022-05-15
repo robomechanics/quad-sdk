@@ -106,7 +106,7 @@ grid_map_filters:
       output_layer: traversability
       expression: ( 0.5 * (1.0 - (roughness / 0.1)) +
                     0.5 * (1.0 - (slope / 0.4) ) )
-
+                    
   # Set lower threshold on traversability.
   - name: traversability_lower_threshold
     type: gridMapFilters/ThresholdFilter

@@ -40,14 +40,14 @@ bool RRTClass::newConfig(State s, State s_near, StateActionResult &result,
   int num_valid_actions = 0;
 
   bool any_valid_actions = false;
-  for (int i = 0; i < planner_config.NUM_LEAP_SAMPLES; ++i) {
+  for (int i = 0; i < planner_config.num_leap_samples; ++i) {
     bool valid_state_found = false;
 
     Action a_test;
     bool is_valid_initial =
         getRandomLeapAction(s_near, surf_norm, a_test, planner_config);
     num_total_actions++;
-    for (int j = 0; j < planner_config.NUM_LEAP_SAMPLES; ++j) {
+    for (int j = 0; j < planner_config.num_leap_samples; ++j) {
       bool is_valid = isValidStateActionPair(s_near, a_test, current_result,
                                              planner_config);
 
@@ -96,8 +96,7 @@ int RRTClass::attemptConnect(const State &s_existing, const State &s,
                              int direction) {
   // Enforce stance time greater than the kinematic check resolution to ensure
   // that the action is useful
-  if (t_s <=
-      planner_config.TRAPPED_BUFFER_FACTOR * planner_config.KINEMATICS_RES)
+  if (t_s <= planner_config.trapped_buffer_factor * planner_config.dt)
     return TRAPPED;
 
   // Initialize the start and goal states depending on the direction, as well as
@@ -120,8 +119,8 @@ int RRTClass::attemptConnect(const State &s_existing, const State &s,
                           (t_s * t_s);
 
   // Transform from accelerations to body weight grfs
-  result.a_new.grf_0 = (acc_0 - planner_config.G_VEC) / planner_config.G_CONST;
-  result.a_new.grf_f = (acc_f - planner_config.G_VEC) / planner_config.G_CONST;
+  result.a_new.grf_0 = (acc_0 - planner_config.g_vec) / planner_config.g;
+  result.a_new.grf_f = (acc_f - planner_config.g_vec) / planner_config.g;
 
   // Set the vertical component of accel to contain height above terrain
   result.a_new.grf_0[2] =
@@ -158,7 +157,9 @@ int RRTClass::attemptConnect(const State &s_existing, const State &s,
                              const PlannerConfig &planner_config,
                              int direction) {
   // select desired stance time to enforce a nominal stance velocity
-  double t_s = poseDistance(s, s_existing) / planner_config.V_NOM;
+  double t_s = 6.0 * poseDistance(s, s_existing) /
+               ((s_existing.vel + s.vel).norm() + 4.0 * planner_config.v_nom);
+
   return attemptConnect(s_existing, s, t_s, result, planner_config, direction);
 }
 
@@ -175,11 +176,7 @@ int RRTClass::extend(PlannerClass &T, const State &s,
     T.addEdge(s_near_index, s_new_index, result.length);
     T.addAction(s_new_index, result.a_new);
 
-    if (isWithinBounds(result.s_new, s, planner_config)) {
-      return REACHED;
-    } else {
-      return ADVANCED;
-    }
+    return ADVANCED;
   } else {
     return TRAPPED;
   }
