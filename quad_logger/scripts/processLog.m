@@ -21,7 +21,7 @@ end
 if nargin>0
     trialName = varargin{1};
 else
-    trialName = 'quad_log'; % Set to '' to load via GUI
+    trialName = ''; % Set to '' to load via GUI
 end
 
 %% Set parameters

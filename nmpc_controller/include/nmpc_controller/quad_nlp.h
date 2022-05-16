@@ -134,6 +134,9 @@ class quadNLP : public TNLP {
   /// Boolean for whether to include the terrain in the foot height constraint
   const bool use_terrain_constraint_ = false;
 
+  /// Boolean for whether to include the terrain in the foot height constraint
+  const bool remember_complex_elements_ = true;
+
   const grid_map::InterpolationMethods interp_type_ =
       grid_map::InterpolationMethods::INTER_LINEAR;
 
@@ -301,6 +304,14 @@ class quadNLP : public TNLP {
   /** Method to return some info about the NLP */
   virtual bool get_nlp_info(Index &n, Index &m, Index &nnz_jac_g,
                             Index &nnz_h_lag, IndexStyleEnum &index_style);
+
+  /** Method to return the bounds for my problem */
+  bool get_bounds_info_single_complex_fe(int i, Eigen::VectorXd &x_lb,
+                                         Eigen::VectorXd &x_ub,
+                                         Eigen::VectorXd &u_lb,
+                                         Eigen::VectorXd &u_ub,
+                                         Eigen::VectorXd &g_l,
+                                         Eigen::VectorXd &g_u);
 
   /** Method to return the bounds for my problem */
   virtual bool get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,

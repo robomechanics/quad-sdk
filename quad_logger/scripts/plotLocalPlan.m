@@ -130,7 +130,7 @@ end
 xlabel('Current Time, $i$ (s)');
 ylabel('Predicted Time, $k$ (s)');
 axis equal
-axis([0, max(localPlan.time), 0, max(localPlan.time, [], 'all')])
+axis([0, max(localPlan.time), 0, max(localPlan.time, [], 'all')+0.03*max(localPlan.horizonLength)])
 set(predictionHorizonFig, 'Position', [100 100 600 600])
 
 %% Export

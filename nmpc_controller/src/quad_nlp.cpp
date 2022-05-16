@@ -161,6 +161,61 @@ bool quadNLP::get_nlp_info(Index &n, Index &m, Index &nnz_jac_g,
   return true;
 }
 
+bool quadNLP::get_bounds_info_single_complex_fe(
+    int i, Eigen::VectorXd &x_lb, Eigen::VectorXd &x_ub, Eigen::VectorXd &u_lb,
+    Eigen::VectorXd &u_ub, Eigen::VectorXd &g_lb, Eigen::VectorXd &g_ub) {
+  // Load default constraint bounds
+  x_lb = config_.x_min_complex;
+  x_ub = config_.x_max_complex;
+  u_lb = config_.u_min_complex;
+  u_ub = config_.u_max_complex;
+  g_lb = config_.g_min_complex;
+  g_ub = config_.g_max_complex;
+
+  // Apply contact sequence
+  for (int j = 0; j < num_feet_; ++j) {
+    u_lb.segment(3 * j, 3) =
+        (u_lb.segment(3 * j, 3).array() * contact_sequence_(j, i)).matrix();
+    u_ub.segment(3 * j, 3) =
+        (u_ub.segment(3 * j, 3).array() * contact_sequence_(j, i)).matrix();
+  }
+
+  // Apply foot constraints
+  for (int j = 0; j < num_feet_; ++j) {
+    bool is_stance =
+        contact_sequence_(j, i) == 1 || contact_sequence_(j, i + 1) == 1;
+
+    bool constrain_next_foot_state = always_constrain_feet_ || is_stance;
+
+    if (constrain_next_foot_state) {
+      x_lb.segment(n_body_ + 3 * j, 3) =
+          foot_pos_world_.block<1, 3>(i + 1, 3 * j);
+      x_ub.segment(n_body_ + 3 * j, 3) =
+          foot_pos_world_.block<1, 3>(i + 1, 3 * j);
+      x_lb.segment(n_body_ + 3 * j + n_foot_ / 2, 3) =
+          foot_vel_world_.block<1, 3>(i + 1, 3 * j);
+      x_ub.segment(n_body_ + 3 * j + n_foot_ / 2, 3) =
+          foot_vel_world_.block<1, 3>(i + 1, 3 * j);
+    }
+
+    bool add_terrain_height_constraint =
+        use_terrain_constraint_ && !constrain_next_foot_state;
+
+    if (add_terrain_height_constraint) {
+      int g_foot_height_idx = 52;
+      g_ub(g_foot_height_idx + j, 0) = 0;
+    }
+
+    bool remove_motor_model_in_swing = contact_sequence_(j, i) == 0;
+
+    if (remove_motor_model_in_swing) {
+      int g_mm_idx = 84;
+      g_ub.segment(g_mm_idx + 3 * j, 3).fill(2e19);
+      g_ub.segment(g_mm_idx + n_joints_ / 2 + 3 * j, 3).fill(2e19);
+    }
+  }
+}
+
 // Returns the variable bounds
 bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
                               Number *g_l, Number *g_u) {
@@ -272,6 +327,26 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
           get_primal_foot_state_var(x_u_matrix, i + 1)
               .segment(3 * j + n_foot_ / 2, 3) =
               foot_vel_world_.block<1, 3>(i + 1, 3 * j);
+
+          // int g_foot_height_idx = 52;
+          // get_primal_constraint_vals(g_l_matrix, i)(g_foot_height_idx + j, 0)
+          // =
+          //     0;
+          // get_primal_constraint_vals(g_u_matrix, i)(g_foot_height_idx + j, 0)
+          // =
+          //     0;
+          // get_primal_foot_control_var(g_l_matrix, i).segment(3 * j,
+          // 3).fill(0); get_primal_foot_control_var(g_l_matrix, i)
+          //     .segment(3 * j + m_foot_ / 2, 3)
+          //     .fill(0);
+          // if (i > 0) {
+          //   get_primal_foot_control_var(g_u_matrix, i)
+          //       .segment(3 * j, 3)
+          //       .fill(0);
+          //   get_primal_foot_control_var(g_u_matrix, i)
+          //       .segment(3 * j + m_foot_ / 2, 3)
+          //       .fill(0);
+          // }
         }
 
         bool add_terrain_height_constraint =
@@ -1262,9 +1337,10 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
 
     // If this element is newly lifted, update with nominal otherwise leave
     // unchanged (may be one timestep old)
-    if (n_vec_[i + 1] > nlp_prev.n_vec_[std::min(i + 1, nlp_prev.N_ - 1)]) {
-      std::cout << "Complexity at i = " << i
-                << " increased, disabling warm start" << std::endl;
+    if (n_vec_[i + 1] >
+        nlp_prev.n_vec_[std::min(i_prev + 1, nlp_prev.N_ - 1)]) {
+      std::cout << "Complexity at i = " << i << " (i_prev = " << i_prev
+                << ") increased, disabling warm start" << std::endl;
       warm_start_ = false;
 
       if (n_vec_[i + 1] > n_shared) {
@@ -1390,7 +1466,7 @@ void quadNLP::update_solver(
 
   for (size_t i = 0; i < N_ - 1; i++) {
     int idx = i + plan_index_diff;
-    if (i >= N_ - 2) {
+    if (idx >= N_ - 1) {
       continue;
     }
 
@@ -1398,7 +1474,7 @@ void quadNLP::update_solver(
             .cwiseAbs()
             .sum() > 1e-3) {
       // Contact change unexpectedly, update the warmstart info
-      std::cout << "Contact change unexpectedly, warm start off" << std::endl;
+      ROS_WARN("Contact change unexpectedly, warm start off");
       std::cout << "i = " << i << std::endl;
       std::cout << "idx = " << idx << std::endl;
       std::cout << "contact_sequence_prev.col(idx) = "
@@ -1409,7 +1485,15 @@ void quadNLP::update_solver(
       get_primal_body_control_var(z_L0_, idx).fill(1);
       get_primal_body_control_var(z_U0_, idx).fill(1);
 
-      // Compute the number of contactscontact_sequence_
+      double num_contacts = contact_sequence_.col(i).sum();
+      if (num_contacts > 0) {
+        for (size_t j = 0; j < 4; j++) {
+          if (contact_schedule.at(i).at(j)) {
+            get_primal_control_var(w0_, i)(2 + j * 3, 0) =
+                mass_ * grav_ / num_contacts;
+          }
+        }
+      }
 
       mu0_ = 1e-1;
       warm_start_ = false;
@@ -1421,16 +1505,40 @@ void quadNLP::update_solver(
   // If the complexity schedule has changed, update the problem structure
   bool new_structure = adaptive_complexity_schedule.size() !=
                        this->adaptive_complexity_schedule_.size();
-
   if (!new_structure) {
     new_structure =
-        (adaptive_complexity_schedule != this->adaptive_complexity_schedule_);
+        (adaptive_complexity_schedule != this->adaptive_complexity_schedule_) ||
+        (plan_index_diff > 0 && adaptive_complexity_schedule.sum() > 0);
   }
 
+  // If structure has changed either update to new or add new with old, then
+  // shift in time
   if (new_structure) {
-    this->adaptive_complexity_schedule_ = adaptive_complexity_schedule;
+    if (remember_complex_elements_) {
+      this->adaptive_complexity_schedule_ =
+          adaptive_complexity_schedule.cwiseMax(
+              this->adaptive_complexity_schedule_);
+    } else {
+      this->adaptive_complexity_schedule_ = adaptive_complexity_schedule;
+    }
+
+    if (plan_index_diff > 0) {
+      std::cout << "plan_index_diff = " << plan_index_diff << std::endl;
+      adaptive_complexity_schedule_.topRows(N_ - plan_index_diff) =
+          adaptive_complexity_schedule_.bottomRows(N_ - plan_index_diff);
+      adaptive_complexity_schedule_.bottomRows(plan_index_diff).fill(0);
+    }
+
     this->update_structure();
   }
+
+  Eigen::VectorXi complexity_schedule =
+      adaptive_complexity_schedule_.head(N_).cwiseMax(
+          fixed_complexity_schedule_.head(N_));
+
+  std::cout << "current complexity_schedule   = "
+            << complexity_schedule.transpose() << std::endl;
+
   // Update initial state
   x_current_.segment(0, n_body_) = initial_state.head(n_body_);
   if (n_vec_[0] > config_.x_dim_simple) {

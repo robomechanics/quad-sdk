@@ -124,7 +124,7 @@ void LocalFootstepPlanner::computeContactSchedule(
                                 "z_inpainted", body_plan.row(i).head<2>(),
                                 grid_map::InterpolationMethods::INTER_NEAREST);
       if (current_height < min_landing_height && body_plan(i, 8) < 0) {
-        ROS_ERROR("Contact Schedule Changed at i = %d!!!!!!!!!!!!!!!", i);
+        ROS_WARN("Contact schedule changed at i = %d!!!!!!!!!!!!!!!", i);
         contact_schedule.at(i) = {true, true, true, true};
       } else {
         contact_schedule.at(i) = {false, false, false, false};
