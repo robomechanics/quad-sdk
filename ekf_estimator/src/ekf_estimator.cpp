@@ -216,13 +216,12 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
     Q.block<3, 3>(9 + i * 3, 9 + i * 3) = dt * C.transpose() * noise_feet * C;
     // determine foot contact and set noise
 
-    // if (p[i * 3 + 2] < 0.02) {
-    //   Q.block<3, 3>(9 + i * 3, 9 + i * 3) = dt * C.transpose() * noise_feet *
-    //   C;
-    // } else {
-    //   Q.block<3, 3>(9 + i * 3, 9 + i * 3) =
-    //       1000 * dt * C.transpose() * noise_feet * C;
-    // }
+    if (p[i * 3 + 2] < 0.02) {
+      Q.block<3, 3>(9 + i * 3, 9 + i * 3) = dt * C.transpose() * noise_feet * C;
+    } else {
+      Q.block<3, 3>(9 + i * 3, 9 + i * 3) =
+          1000 * dt * C.transpose() * noise_feet * C;
+    }
   }
 
   Q.block<3, 3>(21, 0) = -1 * (pow(dt, 3) / 6) * bias_acc * C;
@@ -236,7 +235,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   P_pre = (F * P * F.transpose()) + Q;
 
   // std::cout << "this is Q " << Q << std::endl;
-  std::cout << "this is P_pre " << P_pre << std::endl;
+  // std::cout << "this is P_pre " << P_pre << std::endl;
 }
 
 void EKFEstimator::update(const Eigen::VectorXd& jk) {
@@ -283,7 +282,7 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   // Measured feet positions in the body frame
   Eigen::VectorXd s = Eigen::VectorXd::Zero(3 * num_feet);
   // foot index i:(0 = FL, 1 = BL, 2 = FR, 3 = BR)
-  std::cout << "this is jk value " << jk << std::endl;
+  // std::cout << "this is jk value " << jk << std::endl;
   // throw std::runtime_error(" runtime error STOP");
   for (int i = 0; i < num_feet; i++) {
     Eigen::Vector3d joint_state_i;
@@ -295,7 +294,7 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
     s.segment(i * 3, 3) = toe_body_pos;
   }
 
-  std::cout << "measured fo ot positions" << s << std::endl;
+  // std::cout << "measured foot positions" << s << std::endl;
 
   // std::cout << "C_pre" << C_pre << std::endl;
   // std::cout << "p_pre" << p_pre << std::endl;
@@ -308,7 +307,7 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
     y.segment(i * 3, 3) = s.segment(i * 3, 3) - foot_temp;
   }
   // std::cout << "this is the residual " << y.transpose() << std::endl;
-  std::cout << "maxium residual is " << y.maxCoeff() << std::endl;
+  // std::cout << "maxium residual is " << y.maxCoeff() << std::endl;
 
   // Measurement jacobian (12 * 27)
   H = Eigen::MatrixXd::Zero(num_measure, num_cov);
@@ -324,21 +323,21 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   }
 
   // Measurement Noise Matrix (12 * 12)
-  R = 0.0001 * Eigen::MatrixXd::Identity(num_measure, num_measure);
+  R = Eigen::MatrixXd::Identity(num_measure, num_measure);
 
-  // // Define vectors for state positions
-  // Eigen::VectorXd state_positions(18);
-  // // Load state positions
-  // state_positions << jk, r_pre, v_pre;
-  // // Compute jacobian
-  // Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
-  // quadKD_->getJacobianBodyAngVel(state_positions, jacobian);
+  // Define vectors for state positions
+  Eigen::VectorXd state_positions(18);
+  // Load state positions
+  state_positions << jk, r_pre, v_pre;
+  // Compute jacobian
+  Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
+  quadKD_->getJacobianBodyAngVel(state_positions, jacobian);
 
-  // for (int i = 0; i < num_feet; i++) {
-  //   Eigen::MatrixXd jtemp = jacobian.block<3, 3>(i * 3, i * 3);
-  //   R.block<3, 3>(i * 3, i * 3) =
-  //       noise_fk + jtemp * noise_encoder * jtemp.transpose();
-  // }
+  for (int i = 0; i < num_feet; i++) {
+    Eigen::MatrixXd jtemp = jacobian.block<3, 3>(i * 3, i * 3);
+    R.block<3, 3>(i * 3, i * 3) =
+        noise_fk + jtemp * noise_encoder * jtemp.transpose();
+  }
 
   // update Covariance (12 * 12)
   Eigen::MatrixXd S = H * P_pre * H.transpose() + R;
@@ -360,7 +359,6 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   X.segment(10, num_feet * 3) = p_pre + delta_X.segment(9, num_feet * 3);
   X.segment(22, 3) = bf_pre + delta_X.segment(21, 3);
   X.segment(25, 3) = bw_pre + delta_X.segment(24, 3);
-  // std::cout << "this is P after the measurement" << P << std::endl;
   // set current state value to previous statex
   last_X = X;
 
@@ -436,10 +434,7 @@ Eigen::VectorXd EKFEstimator::quaternionDynamics(const Eigen::VectorXd& wdt,
   Eigen::Quaterniond q2(q2v[0], q2v[1], q2v[2], q2v[3]);
   q1.normalize();
   q2.normalize();
-  Eigen::Quaterniond q3;
-  q3.setIdentity();
-  q3.w() = q1.w() * q2.w() - q1.vec().dot(q2.vec());
-  q3.vec() = q1.w() * q2.vec() + q2.w() * q1.vec() + q1.vec().cross(q2.vec());
+  Eigen::Quaterniond q3 = q1 * q2;
   q3.normalize();
   output << q3.w(), q3.x(), q3.y(), q3.z();
   return output;
@@ -539,7 +534,7 @@ void EKFEstimator::spin() {
   X_pre = X0;
 
   // initial state covariance matrix
-  P0 = 0.01 * Eigen::MatrixXd::Identity(num_cov, num_cov);
+  P0 = 0.001 * Eigen::MatrixXd::Identity(num_cov, num_cov);
   P = P0;
 
   // set noise
@@ -586,7 +581,8 @@ void EKFEstimator::spin() {
           (*last_state_msg_).feet.feet[2].position.z,
           (*last_state_msg_).feet.feet[3].position.x,
           (*last_state_msg_).feet.feet[3].position.y,
-          (*last_state_msg_).feet.feet[3].position.z, 0, 0, 0, 0, 0, 0;
+          (*last_state_msg_).feet.feet[3].position.z, -0.03, -0.02, -0.0, 0, 0,
+          0;
 
       X = X0;
       last_X = X0;
