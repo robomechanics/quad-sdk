@@ -202,7 +202,7 @@ struct FullState {
 struct Action {
   GRF grf_0;
   GRF grf_f;
-  double t_s_leap;
+  double t_s_leap; //
   double t_f;
   double t_s_land;
   double dz_0;
@@ -241,7 +241,7 @@ FullState stateToFullState(const State &state, double roll, double pitch,
 /**
  * @brief Get FullState from Eigen vector
  * @param[in] s_eig FullState in Eigen vector form
- * @return FullState
+ * @param[out] s FullState
  */
 void eigenToFullState(const Eigen::VectorXd &s_eig, FullState &s);
 
@@ -672,13 +672,24 @@ State applyStance(const State &s, const Action &a, int phase,
 /**
  * @brief Obtain new State height after applying new flight
  * @param[in] s State
+ * @param[in] t_f
+ * @param[in] planner_config Configuration parameters
+ * @return New State after Flight phase
  */
 State applyFlight(const State &s, double t_f,
                   const PlannerConfig &planner_config);
 
+
 State applyAction(const State &s, const Action &a,
                   const PlannerConfig &planner_config);
 
+/**
+ * @brief Obtain new State height after applying new flight
+ * @param[in] s State
+ * @param[in] t_f
+ * @param[in] planner_config Configuration parameters
+ * @return New State after Flight phase
+ */
 GRF getGRF(const Action &a, double t, int phase,
            const PlannerConfig &planner_config);
 
