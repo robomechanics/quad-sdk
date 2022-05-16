@@ -11,7 +11,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
       leg_command_array_topic, control_mode_topic, remote_heartbeat_topic,
       robot_heartbeat_topic, single_joint_cmd_topic, mocap_topic,
       control_restart_flag_topic;
-  quad_utils::loadROSParam(nh_, "robot_type", robot_name);
+  quad_utils::loadROSParamDefault(nh_, "robot_type", robot_name, std::string("spirit"));
   quad_utils::loadROSParam(nh_, "topics/state/imu", imu_topic);
   quad_utils::loadROSParam(nh_, "topics/state/joints", joint_state_topic);
   quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);

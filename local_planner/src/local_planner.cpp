@@ -12,7 +12,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
       cmd_vel_topic, control_mode_topic;
 
   // Load system parameters from launch file (not in config file)
-  quad_utils::loadROSParam(nh_, "robot_type", robot_name_);
+  quad_utils::loadROSParamDefault(nh_, "robot_type", robot_name_, std::string("spirit"));
   quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
   quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
@@ -293,13 +293,15 @@ void LocalPlanner::getStateAndReferencePlan() {
   ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(
       current_state_(0), current_state_(1));
 
-  // Update the body plan to use for linearization
-  if (body_plan_.rows() < N_) {
-    // Cold start with reference  plan
-    body_plan_ = ref_body_plan_;
+  // Update the body plan to use for foot planning
+  int N_current_plan = body_plan_.rows();
+  if (N_current_plan < N_) {
+    // Cold start with reference plan
+    body_plan_.conservativeResize(N_, 12);
 
     // Initialize with the current foot positions
-    for (int i = 0; i < N_; i++) {
+    for (int i = N_current_plan; i < N_; i++) {
+      body_plan_.row(i) = ref_body_plan_.row(i);
       foot_positions_body_.row(i) = current_foot_positions_body_;
       foot_positions_world_.row(i) = current_foot_positions_world_;
     }
@@ -480,13 +482,15 @@ void LocalPlanner::getStateAndTwistInput() {
   // Use the standard walk primitive
   ref_primitive_plan_.setZero(N_);
 
-  // Update the body plan to use for linearization
-  if (body_plan_.rows() < N_) {
-    // Cold start with reference  plan
-    body_plan_ = ref_body_plan_;
+  // Update the body plan to use for foot planning
+  int N_current_plan = body_plan_.rows();
+  if (N_current_plan < N_) {
+    // Cold start with reference plan
+    body_plan_.conservativeResize(N_, 12);
 
     // Initialize with the current foot positions
-    for (int i = 0; i < N_; i++) {
+    for (int i = N_current_plan; i < N_; i++) {
+      body_plan_.row(i) = ref_body_plan_.row(i);
       foot_positions_body_.row(i) = current_foot_positions_body_;
       foot_positions_world_.row(i) = current_foot_positions_world_;
     }
@@ -563,6 +567,7 @@ bool LocalPlanner::computeLocalPlan() {
           terrain_grid_, body_plan_, grf_plan_))
     return false;
 
+  N_current_ = body_plan_.rows();
   foot_positions_world_ = grf_positions_world;
   for (size_t i = 0; i < 4; i++) {
     foot_positions_world_.col(3 * i + 2) =
@@ -598,6 +603,10 @@ void LocalPlanner::publishLocalPlan() {
   future_footholds_msg.header = local_plan_msg.header;
   foot_plan_msg.header = local_plan_msg.header;
 
+  // Add NLP diagnostic information
+  local_body_planner_nonlinear_->getNLPDiagnostics().loadDiagnosticsMsg(
+      local_plan_msg.diagnostics);
+
   // Compute the discrete and continuous foot plan messages
   local_footstep_planner_->loadFootPlanMsgs(
       contact_schedule_, current_plan_index_, first_element_duration_,
@@ -605,7 +614,7 @@ void LocalPlanner::publishLocalPlan() {
       future_footholds_msg, foot_plan_msg);
 
   // Add body, foot, joint, and grf data to the local plan message
-  for (int i = 0; i < N_ - 1; i++) {
+  for (int i = 0; i < N_current_ - 1; i++) {
     // Add the state information
     quad_msgs::RobotState robot_state_msg;
     robot_state_msg.body = quad_utils::eigenToBodyStateMsg(body_plan_.row(i));

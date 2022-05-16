@@ -24,7 +24,7 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
                            ground_truth_state_topic);
   quad_utils::loadROSParam(nh_, "topics/state/trajectory",
                            trajectory_state_topic);
-  quad_utils::loadROSParam(nh_, "tf_prefix", tf_prefix_);
+  quad_utils::loadROSParamDefault(nh_, "tf_prefix", tf_prefix_, std::string(""));
 
   std::string global_plan_viz_topic, local_plan_viz_topic,
       local_plan_ori_viz_topic, global_plan_grf_viz_topic,
