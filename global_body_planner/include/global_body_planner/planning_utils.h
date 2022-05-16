@@ -144,20 +144,24 @@ struct PlannerConfig {
 };
 
 // Define phase variable labels
-const int CONNECT = 0;
-const int LEAP_STANCE = 1;
-const int FLIGHT = 2;
-const int LAND_STANCE = 3;
+enum Phase{
+  CONNECT,
+  LEAP_STANCE,
+  FLIGHT,
+  LAND_STANCE
+};
 const int FORWARD = 0;
 const int REVERSE = 1;
 
 // Define exit flags
-const int UNSOLVED = 0;
-const int VALID = 1;
-const int VALID_PARTIAL = 2;
-const int INVALID_START_STATE = 3;
-const int INVALID_GOAL_STATE = 4;
-const int INVALID_START_GOAL_EQUAL = 5;
+enum ExitFlag{
+  UNSOLVED,
+  VALID,
+  ALID_PARTIAL,
+  INVALID_START_STATE,
+  INVALID_GOAL_STATE,
+  INVALID_START_GOAL_EQUAL
+};
 
 const grid_map::InterpolationMethods INTER_TYPE =
     grid_map::InterpolationMethods::INTER_NEAREST;
@@ -212,62 +216,184 @@ struct StateActionResult {
   double length = 0;
 };
 
-// State data structure conversions
+/**
+ * @brief Truncate FullState to State
+ * @param[in] full_state FullState
+ * @return State
+ */
 State fullStateToState(const FullState &full_state);
 
+/**
+ * @brief Extend State to FullState, adding body orientation and angular speed
+ * @param[in] state State
+ * @param[in] roll roll
+ * @param[in] pitch pitch
+ * @param[in] yaw yaw
+ * @param[in] roll_rate roll_rate
+ * @param[in] pitch pitch_rate
+ * @param[in] yaw yaw_rate
+ * @return FullState
+ */
 FullState stateToFullState(const State &state, double roll, double pitch,
                            double yaw, double roll_rate, double pitch_rate,
                            double yaw_rate);
 
+/**
+ * @brief Get FullState from Eigen vector
+ * @param[in] s_eig FullState in Eigen vector form
+ * @return FullState
+ */
 void eigenToFullState(const Eigen::VectorXd &s_eig, FullState &s);
 
+/**
+ * @brief Turn FullState to Eigen vector form
+ * @param[in] s FullState
+ * @return FullState in Eigen vector form
+ */
 Eigen::VectorXd fullStateToEigen(const FullState &s);
 
+/**
+ * @brief Get FullState from std vector form
+ * @param[in] v FullState in std vector form
+ * @param[in] s FullState
+ */
 void vectorToFullState(const std::vector<double> v, FullState &s);
 
+/**
+ * @brief Reverse State velocity direction
+ */
 void flipDirection(State &state);
 
+/**
+ * @brief Reverse Action GRF, vertical velocities, 
+ * and stance times for landing and leaping if this is an actual leap
+ */
 void flipDirection(Action &action);
 
-// Print statements
-void printState(const State &vec);
+/**
+ * @brief Print State
+ * @param[in] s State
+ */
+void printState(const State &s);
 
-void printFullState(const FullState &vec);
+/**
+ * @brief Print FullState
+ * @param[in] s FullState
+ */
+void printFullState(const FullState &s);
 
-void printStateNewline(State vec);
+/**
+ * @brief Print FullState with a separate line
+ * @param[in] s FullState
+ */
+void printStateNewline(State &s);
 
-void printAction(Action a);
+/**
+ * @brief Print Action
+ * @param[in] a Action
+ */
+void printAction(Action &a);
 
-void printActionNewline(Action a);
+/**
+ * @brief Print Action with a separate line
+ * @param[in] a Action
+ */
+void printActionNewline(Action &a);
 
-void printStateSequence(std::vector<State> state_sequence);
+/**
+ * @brief Print a sequence of State
+ * @param[in] state_sequence A sequence of State
+ */
+void printStateSequence(std::vector<State> &state_sequence);
 
-void printInterpStateSequence(std::vector<State> state_sequence,
+/**
+ * @brief Print a sequence of State
+ * @param[in] state_sequence A sequence of State
+ * @param[in] state_sequence A sequence of time at which particular 
+ * interpolated States occur
+ */
+void printInterpStateSequence(std::vector<State> &state_sequence,
                               std::vector<double> interp_t);
 
+/**
+ * @brief Print a sequence of Action
+ * @param[in] state_sequence A sequence of Action
+ */
 void printActionSequence(std::vector<Action> action_sequence);
 
-// Define some utility functions
+/**
+ * @brief Calculate the distance between two State positions
+ * @param[in] q1 State 1
+ * @param[in] q2 State 2
+ */
 double poseDistance(const State &q1, const State &q2);
 
+/**
+ * @brief Calculate the distance between two FullState positions
+ * @param[in] q1 FullState 1
+ * @param[in] q2 FullState 2
+ */
 double poseDistance(const FullState &q1, const FullState &q2);
 
-double stateDistance(const State &q1, const State &q2);
-
+/**
+ * @brief Calculate the distance between two positions in std vector form
+ * @param[in] q1 Vector 1
+ * @param[in] q2 Vector 2
+ */
 double poseDistance(const std::vector<double> &v1,
                     const std::vector<double> &v2);
 
+/**
+ * @brief Calculate the position and veocity distance between two States
+ * @param[in] q1 State 1
+ * @param[in] q2 State 2
+ */
+double stateDistance(const State &q1, const State &q2);
+
+/**
+ * @brief Rotate GRF from contact frame to spatial frame
+ * @param[in] surface_norm Contact point surface normal
+ * @param[in] grf Ground reaction force in contact frame
+ * @return Ground reaction force in spatial fram
+ */
 Eigen::Vector3d rotateGRF(const Eigen::Vector3d &surface_norm,
                           const Eigen::Vector3d &grf);
 
+/**
+ * @brief Inline function to get State speed
+ * @param[in] s State
+ * @return State speed
+ */
 inline double getSpeed(const State &s) { return s.vel.norm(); }
 
-// Define functions for obtaining full state/path information
+/**
+ * @brief Obtain full state/path information
+ * @param[in] start_state Initial FullState
+ * @param[in] interp_reduced_path A sequence of interpolated State 
+ * @param[in] dt  sequence of time at which particular interpolated 
+ * States occur
+ * @param[in] interp_full_path A sequence of interpolated FullState 
+ * @param[in] planner_config planner config
+ */
 void addFullStates(const FullState &start_state,
                    std::vector<State> interp_reduced_path, double dt,
                    std::vector<FullState> &interp_full_path,
                    const PlannerConfig &planner_config);
 
+/**
+ * @brief Interpolate State and Action Pair
+ * @param[in] s State
+ * @param[in] a Action
+ * @param[in] t0 The initial timestep
+ * @param[in] dt 
+ * @param[in] interp_plan
+ * @param[in] inter_GRF
+ * @param[in] interp_t
+ * @param[in] interp_primitive_id
+ * @param[in] interp_length
+ * @param[in] planner_config Configuration parameters
+ * @return 
+ */
 State interpStateActionPair(const State &s, const Action &a, double t0,
                             double dt, std::vector<State> &interp_plan,
                             std::vector<GRF> &interp_GRF,
@@ -276,6 +402,21 @@ State interpStateActionPair(const State &s, const Action &a, double t0,
                             std::vector<double> &interp_length,
                             const PlannerConfig &planner_config);
 
+/**
+ * @brief Interpolate State and Action Pair
+ * @param[in] start_state The start state of the planner
+ * @param[in] state_sequence The sequence of states in the path
+ * @param[in] action_sequence The sequence of actions in the path
+ * @param[in] dt Time interval for interpolation
+ * @param[in] t0 The initial timestep
+ * @param[in] inter_full_plan Interpolated FullState
+ * @param[in] interp_GRF Interpolated ground reaction force
+ * @param[in] interp_t Interpolated timestep
+ * @param[in] interp_primitive_id
+ * @param[in] interp_length The distance of interpolated
+ * @param[in] planner_config
+ * @return 
+ */
 void getInterpPlan(const FullState &start_state,
                    const std::vector<State> &state_sequence,
                    const std::vector<Action> &action_sequence, double dt,
@@ -285,15 +426,34 @@ void getInterpPlan(const FullState &start_state,
                    std::vector<double> &interp_length,
                    const PlannerConfig &planner_config);
 
-// Terrain-based heuristics
+/**
+ * @brief Obtain body pitch from State
+ * @param[in] s State
+ * @param[in] planner_config Configuration parameters
+ * @return Pitch of current State
+ */
 double getPitchFromState(const State &s, const PlannerConfig &planner_config);
 
+/**
+ * @brief Align lateral velocity along surface normal
+ * @param[in] s State
+ * @param[in] planner_config Configuration parameters
+ * @return delta z
+ */
 double getDzFromState(const State &s, const PlannerConfig &planner_config);
+
 
 void setDz(State &s, const PlannerConfig &planner_config);
 
 void setDz(State &s, const Eigen::Vector3d &surf_norm);
 
+/**
+ * @brief Inline function to check if State pos is inside 
+ * map range or not
+ * @param[in] pos State pos in Eigen vector
+ * @param[in] planner_config Configuration parameters
+ * @return Whether the State pos is inside map
+ */
 inline bool isInMap(const Eigen::Vector3d &pos,
                     const PlannerConfig &planner_config) {
   // Uncomment to use grid_map
@@ -301,10 +461,22 @@ inline bool isInMap(const Eigen::Vector3d &pos,
   // return planner_config.terrain.isInRange(pos[0], pos[1]);
 }
 
+/**
+ * @brief Inline function to check if State pos is inside map range or not
+ * @param[in] s State
+ * @param[in] planner_config Configuration parameters
+ * @return Whether the State pos is inside map
+ */
 inline bool isInMap(const State &s, const PlannerConfig &planner_config) {
   return isInMap(s.pos, planner_config);
 }
 
+/**
+ * @brief Inline function to get the terrain height at a point
+ * @param[in] pos location to check height
+ * @param[in] planner_config Configuration parameters
+ * @return Terrain height at the location
+ */
 inline double getTerrainZ(const Eigen::Vector3d &pos,
                           const PlannerConfig &planner_config) {
   // Uncomment to use grid_map
@@ -314,6 +486,12 @@ inline double getTerrainZ(const Eigen::Vector3d &pos,
   return (planner_config.terrain.getGroundHeight(pos[0], pos[1]));
 }
 
+/**
+ * @brief Inline function to get the filtered terrain height at a point
+ * @param[in] pos location to check height
+ * @param[in] planner_config Configuration parameters
+ * @return Filtered terrain height at the location
+ */
 inline double getTerrainZFiltered(const Eigen::Vector3d &pos,
                                   const PlannerConfig &planner_config) {
   // Uncomment to use grid_map
@@ -323,24 +501,48 @@ inline double getTerrainZFiltered(const Eigen::Vector3d &pos,
   return (planner_config.terrain.getGroundHeightFiltered(pos[0], pos[1]));
 }
 
+/**
+ * @brief Inline function to get the traversability at a point
+ * @param[in] pos location to check height
+ * @param[in] planner_config Configuration parameters
+ * @return Filtered terrain height at the location
+ */
 inline double getTraversability(const Eigen::Vector3d &pos,
                                 const PlannerConfig &planner_config) {
   return planner_config.terrain_grid_map.atPosition("traversability",
                                                     pos.head<2>(), INTER_TYPE);
 }
 
+/**
+ * @brief Inline function to check whether body is traversable above a threshold
+ * @param[in] pos location to check height
+ * @param[in] planner_config Configuration parameters
+ * @return Whether body is traversable
+ */
 inline bool isBodyTraversable(const Eigen::Vector3d &pos,
                               const PlannerConfig &planner_config) {
   return (getTraversability(pos, planner_config) >=
           planner_config.body_traversability_threshold);
 }
 
+/**
+ * @brief Inline function to check whether contact is traversable above a threshold
+ * @param[in] pos location to check height
+ * @param[in] planner_config Configuration parameters
+ * @return Whether body is traversable
+ */
 inline bool isContactTraversable(const Eigen::Vector3d &pos,
                                  const PlannerConfig &planner_config) {
   return (getTraversability(pos, planner_config) >=
           planner_config.contact_traversability_threshold);
 }
 
+/**
+ * @brief Inline function to obtain the surface normal filter
+ * @param[in] pos location to check height
+ * @param[in] planner_config Configuration parameters
+ * @return Whether body is traversable
+ */
 inline Eigen::Vector3d getSurfaceNormalFiltered(
     const State &s, const PlannerConfig &planner_config) {
   // Uncomment to use grid_map
@@ -356,36 +558,85 @@ inline Eigen::Vector3d getSurfaceNormalFiltered(
                                                               s.pos[1]);
 }
 
+/**
+ * @brief Inline function to get the terrain height of State pos
+ * @param[in] s State
+ * @param[in] planner_config Configuration parameters
+ * @return Terrain height at the State pos
+ */
 inline double getTerrainZFromState(const State &s,
                                    const PlannerConfig &planner_config) {
   return getTerrainZ(s.pos, planner_config);
 }
 
+/**
+ * @brief Inline function to get the filtered terrain height at a point
+ * @param[in] pos location to check height
+ * @param[in] planner_config Configuration parameters
+ * @return Filtered terrain height at the location
+ */
 inline double getTerrainZFilteredFromState(
     const State &s, const PlannerConfig &planner_config) {
   return getTerrainZFiltered(s.pos, planner_config);
 }
 
+/**
+ * @brief Inline function to get the relative difference between 
+ *  terrain height and body pos
+ * @param[in] pos location in Eigen vector to check height
+ * @param[in] planner_config Configuration parameters
+ * @return The relative difference between terrain height and body pos
+ */
 inline double getZRelToTerrain(const Eigen::Vector3d &pos,
                                const PlannerConfig &planner_config) {
   return (pos[2] - getTerrainZ(pos, planner_config));
 }
 
+/**
+ * @brief Inline function to get the relative difference between 
+ * terrain height and body pos
+ * @param[in] s State
+ * @param[in] planner_config Configuration parameters
+ * @return The relative difference between terrain height and body pos
+ */
 inline double getZRelToTerrain(const State &s,
                                const PlannerConfig &planner_config) {
   return getZRelToTerrain(s.pos, planner_config);
 }
 
+/**
+ * @brief Inline function to get the relative difference between 
+ * filtered terrain height and body pos
+ * @param[in] pos location to check height
+ * @param[in] planner_config Configuration parameters
+ * @return Filtered terrain height at the location
+ */
 inline double getZRelToTerrainFiltered(const Eigen::Vector3d &pos,
                                        const PlannerConfig &planner_config) {
   return (pos[2] - getTerrainZFiltered(pos, planner_config));
 }
 
+/**
+ * @brief Inline function to get the relative difference between 
+ * filtered terrain height and body pos
+ * @param[in] s State
+ * @param[in] planner_config Configuration parameters
+ * @return Filtered terrain height at the location
+ */
 inline double getZRelToTerrainFiltered(const State &s,
                                        const PlannerConfig &planner_config) {
   return getZRelToTerrainFiltered(s.pos, planner_config);
 }
 
+/**
+ * @brief Inline function to get the map boundary
+ * filtered terrain height and body pos
+ * @param[in] planner_config Configuration parameters
+ * @param[in] x_min The minimal x bounday
+ * @param[in] x_max The maximal x bounday
+ * @param[in] y_min The minimal y bounday
+ * @param[in] y_max The maximal x bounday
+ */
 inline void getMapBounds(const PlannerConfig &planner_config, double &x_min,
                          double &x_max, double &y_min, double &y_max) {
   double eps = 0.5;
@@ -395,13 +646,33 @@ inline void getMapBounds(const PlannerConfig &planner_config, double &x_min,
   y_max = planner_config.terrain.getYData().back() - eps;
 }
 
-// Kinematics
+/**
+ * @brief Obtain new State height after applying the ground reaction force
+ * in Action
+ * @param[in] s State
+ * @param[in] a Action
+ * @param[in] t 
+ * @param[in] phase Phase variable, CONNECT or others？
+ * @param[in] planner_config Configuration parameters
+ */ 
 State applyStance(const State &s, const Action &a, double t, int phase,
                   const PlannerConfig &planner_config);
 
+/**
+ * @brief Obtain new State height after applying the ground reaction force
+ * in Action
+ * @param[in] s State
+ * @param[in] a Action
+ * @param[in] phase Phase variable, CONNECT or others？
+ * @param[in] planner_config Configuration parameters
+ */ 
 State applyStance(const State &s, const Action &a, int phase,
                   const PlannerConfig &planner_config);
 
+/**
+ * @brief Obtain new State height after applying new flight
+ * @param[in] s State
+ */
 State applyFlight(const State &s, double t_f,
                   const PlannerConfig &planner_config);
 
