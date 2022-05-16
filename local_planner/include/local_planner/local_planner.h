@@ -187,8 +187,11 @@ class LocalPlanner {
   /// Exponential filter smoothing constant (higher updates slower)
   const double filter_smoothing_constant_ = 0.5;
 
-  /// MPC Horizon length
+  /// Standard MPC horizon length
   int N_;
+
+  /// Current MPC horizon length
+  int N_current_;
 
   /// Number of states
   const int Nx_ = 12;

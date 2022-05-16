@@ -571,7 +571,7 @@ void LocalFootstepPlanner::loadFootPlanMsgs(
 Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
     const Eigen::Vector3d &foot_position,
     const Eigen::Vector3d &foot_position_prev_solve) const {
-  Eigen::Vector3d foot_position_valid = foot_position;
+  Eigen::Vector3d foot_position_best = foot_position;
   grid_map::Position pos_center, pos_center_aligned, offset, pos_valid;
 
   // Compute the closest index to the nominal and find the offset
@@ -580,34 +580,44 @@ Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
   terrain_grid_.getIndex(pos_center, idx);
   terrain_grid_.getPosition(idx, pos_center_aligned);
   offset = pos_center - pos_center_aligned;
+  double best_kin_cost = std::numeric_limits<double>::max();
 
   // Spiral outwards from the nominal until we find a valid foothold
   for (grid_map::SpiralIterator iterator(terrain_grid_, pos_center_aligned,
                                          foothold_search_radius_);
        !iterator.isPastEnd(); ++iterator) {
-    double obj = terrain_grid_.at(obj_fun_layer_, *iterator);
-    if (obj > foothold_obj_threshold_) {
-      // Add the offset back in and return this new foothold
-      terrain_grid_.getPosition(*iterator, pos_valid);
-      pos_valid += offset;
+    // Apply the offset to realign with the nominal foot position
+    terrain_grid_.getPosition(*iterator, pos_valid);
+    pos_valid += offset;
 
-      if (!terrain_grid_.isInside(pos_valid)) {
-        continue;
-      }
+    if (!terrain_grid_.isInside(pos_valid)) {
+      continue;
+    }
 
-      foot_position_valid << pos_valid.x(), pos_valid.y(),
-          terrain_grid_.atPosition(
-              "z_inpainted", pos_valid,
-              grid_map::InterpolationMethods::INTER_LINEAR) +
-              toe_radius;
-      return foot_position_valid;
+    // Get objective function and kinematic cost
+    double traversability = terrain_grid_.atPosition(obj_fun_layer_, pos_valid);
+    double kin_cost =
+        (pos_valid - foot_position.head<2>()).norm() +
+        0.5 * (pos_valid - foot_position_prev_solve.head<2>()).norm();
+
+    // Compare to threshold and best so far, accept if valid and better
+    if (traversability > foothold_obj_threshold_ &&
+        (kin_cost < best_kin_cost)) {
+      foot_position_best.head<2>() = pos_valid;
+      best_kin_cost = kin_cost;
     }
   }
 
   // If no foothold is found in the radius, keep the nominal and issue a warning
-  ROS_WARN_THROTTLE(
-      0.1, "No valid foothold found in radius of nominal, returning nominal");
-  return foot_position_valid;
+  if (best_kin_cost == std::numeric_limits<double>::max()) {
+    ROS_WARN_THROTTLE(
+        0.1, "No valid foothold found in radius of nominal, returning nominal");
+  }
+  foot_position_best.z() =
+      terrain_grid_.atPosition("z_inpainted", foot_position_best.head<2>(),
+                               grid_map::InterpolationMethods::INTER_LINEAR) +
+      toe_radius;
+  return foot_position_best;
 }
 
 // Compute minimum covering circle problem using Welzl's algorithm

@@ -95,6 +95,8 @@ controlColorVector = {[166,25,46]/255, [0,45,114]/255, [0,132,61]/255, [242,169,
 leg_idx = 4;
 
 GRFVectorsFig = figure(GRFVectorsFig);
+GRFVectorsFig.Name = "grfs";
+
 hold on;
 plot(controlTraj.time, controlTraj.vectors{leg_idx}(:,1), ...
     'Color', controlColorVector{1}, 'LineWidth', 2, 'LineStyle', lineStyle);

@@ -86,6 +86,8 @@ num_feet = 4;
 
 %% Plot spatial trajectory
 COMTrajFig = figure(COMTrajFig);
+COMTrajFig.Name = "com_trajectory";
+
 hold on; view(3);
 plot3(stateTraj.position(:,1), stateTraj.position(:,2), stateTraj.position(:,3), ...
     'Color', cmuColor('red-web'), 'LineStyle', lineStyle);
@@ -104,6 +106,8 @@ axis equal
 
 %% Plot linear state data
 linearStateFig = figure(linearStateFig);
+linearStateFig.Name = "linear_states";
+
 subplot(2,1,1); hold on
 for i = 1:3
     plot(stateTraj.time, stateTraj.position(:,i), 'Color', bodyColorVector{i},...
@@ -130,6 +134,8 @@ align_Ylabels(linearStateFig);
 
 %% Plot angular state data
 angularStateFig = figure(angularStateFig);
+angularStateFig.Name = "angular_states";
+
 subplot(2,1,1); hold on
 for i = 1:3
     plot(stateTraj.time, stateTraj.orientationRPY(:,i), 'Color', bodyColorVector{i},...
@@ -166,6 +172,8 @@ kneeLim = [0, pi];
 
 % Plot joint positions
 jointPositionFig = figure(jointPositionFig);
+jointPositionFig.Name = "joint_positions";
+
 subplot(3,1,1); hold on;
 for i = 1:num_feet
    plot(stateTraj.time, stateTraj.jointPosition(:,abIndex(i)), ...
@@ -204,6 +212,8 @@ hipVelLim = [-37.7, 37.7];
 kneeVelLim = [-25, 25];
 
 jointVelocityFig = figure(jointVelocityFig);
+jointVelocityFig.Name = "joint_velocities";
+
 subplot(3,1,1); hold on;
 for i = 1:num_feet
    plot(stateTraj.time, stateTraj.jointVelocity(:,abIndex(i)), ...
@@ -242,6 +252,8 @@ hipEffLim = [-21, 21];
 kneeEffLim = [-32, 32];
 
 jointEffortFig = figure(jointEffortFig);
+jointEffortFig.Name = "joint_effort";
+
 subplot(3,1,1); hold on;
 for i = 1:num_feet
    plot(stateTraj.time, stateTraj.jointEffort(:,abIndex(i)), ...
@@ -276,6 +288,8 @@ align_Ylabels(jointEffortFig);
 
 %% Plot foot positions
 footPositionFig = figure(footPositionFig);
+footPositionFig.Name = "foot_positions";
+
 subplot(3,1,1)
 hold on;
 for i = 1:num_feet
@@ -316,6 +330,8 @@ align_Ylabels(footPositionFig);
 
 %% Plot foot velocities
 footVelocityFig = figure(footVelocityFig);
+footVelocityFig.Name = "foot_velocities";
+
 vel_axis = max(abs(cell2mat(stateTraj.footVelocity)), [], 'all');
 if ~isempty(footVelocityFig.CurrentAxes)
     vel_axis = max(vel_axis, max(abs(footVelocityFig.CurrentAxes.YLim)));
