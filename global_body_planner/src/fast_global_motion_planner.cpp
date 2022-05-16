@@ -322,16 +322,16 @@ int FastGlobalMotionPlanner::getTestPlan(const PlannerConfig &planner_config,
   // a_leap.grf_f << 0, 0, 8;
   // a_leap.dz_f = 3.5;
 
-  // // Define desired leap parameters - 40cm gap, good
-  // double leap_start_x = 2.65;
-  // double leap_start_dx = 1.5;
-  // a_leap.dz_0 = -1.5;
-  // a_leap.t_s_leap = 0.1586;
-  // a_leap.t_f = 0.4344;
-  // a_leap.t_s_land = 0.1586;
-  // a_leap.grf_0 << 0, 0, 5;
-  // a_leap.grf_f << 0, 0, 5;
-  // a_leap.dz_f = 2.0;
+  // Define desired leap parameters - 40cm gap, good
+  double leap_start_x = 2.65;
+  double leap_start_dx = 1.5;
+  a_leap.dz_0 = -1.5;
+  a_leap.t_s_leap = 0.1586;
+  a_leap.t_f = 0.4344;
+  a_leap.t_s_land = 0.1586;
+  a_leap.grf_0 << 0, 0, 5;
+  a_leap.grf_f << 0, 0, 5;
+  a_leap.dz_f = 2.0;
 
   // // Define desired leap parameters - 20cm gap, good
   // double leap_start_x = 2.7;
@@ -355,16 +355,16 @@ int FastGlobalMotionPlanner::getTestPlan(const PlannerConfig &planner_config,
   // a_leap.grf_f << -0.75, 0, 5;
   // a_leap.dz_f = 0.25;
 
-  // Define desired leap parameters - 40cm gap, hits motor model
-  double leap_start_x = 2.65;
-  double leap_start_dx = 1.25;
-  a_leap.dz_0 = -0.25;
-  a_leap.t_s_leap = 0.1050;
-  a_leap.t_f = 0.4392;
-  a_leap.t_s_land = 0.1050;
-  a_leap.grf_0 << 0.6, 0, 5;
-  a_leap.grf_f << -0.6, 0, 5;
-  a_leap.dz_f = 0.25;
+  // // Define desired leap parameters - 40cm gap, hits motor model
+  // double leap_start_x = 2.65;
+  // double leap_start_dx = 1.25;
+  // a_leap.dz_0 = -0.25;
+  // a_leap.t_s_leap = 0.1050;
+  // a_leap.t_f = 0.4392;
+  // a_leap.t_s_land = 0.1050;
+  // a_leap.grf_0 << 0.6, 0, 5;
+  // a_leap.grf_f << -0.6, 0, 5;
+  // a_leap.dz_f = 0.25;
 
   // // Define desired leap parameters - 40cm gap, bad
   // double leap_start_x = 2.65;
@@ -402,8 +402,9 @@ int FastGlobalMotionPlanner::getTestPlan(const PlannerConfig &planner_config,
   state_sequence.push_back(s_land);
 
   // Connect land to goal
-  t_s = 3.0;
+  t_s = 2.5;
   s_goal.vel.setZero();
+  s_goal.vel.x() = 1e-2;
   if (!attemptConnect(s_land, s_goal, t_s, result, planner_config, FORWARD)) {
     throw ::std::runtime_error("Failed to connect land to goal");
   }

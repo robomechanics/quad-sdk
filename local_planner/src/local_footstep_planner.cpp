@@ -104,17 +104,13 @@ void LocalFootstepPlanner::computeContactSchedule(
     }
   }
   // Check the primitive plan to see if there's standing or flight phase
+  int leap_idx = -1;
   for (int i = 0; i < horizon_length_; i++) {
     // Leaping and landing
     if (ref_primitive_plan(i) == LEAP_STANCE) {
-      int leading_leg_liftoff_period = 0;
-      int leading_leg_liftoff_idx =
-          std::min(i + leading_leg_liftoff_period, horizon_length_ - 1);
-
-      if (ref_primitive_plan(leading_leg_liftoff_idx) == FLIGHT) {
-        contact_schedule.at(i) = {false, true, false, true};
-      } else {
-        contact_schedule.at(i) = {true, true, true, true};
+      contact_schedule.at(i) = {true, true, true, true};
+      if (i > 0 && ref_primitive_plan(i - 1) != LEAP_STANCE) {
+        leap_idx = i;
       }
     } else if (ref_primitive_plan(i) == FLIGHT) {
       // Flight, check that min landing height is exceeded
@@ -131,6 +127,20 @@ void LocalFootstepPlanner::computeContactSchedule(
       }
     } else if (ref_primitive_plan(i) == LAND_STANCE) {
       contact_schedule.at(i) = {true, true, true, true};
+    }
+  }
+
+  int min_swing_duration = 4;
+  if (leap_idx > 0) {
+    for (int i = 0; i < leap_idx; i++) {
+      for (int j = 0; j < num_feet_; j++) {
+        bool extend_flight_phase =
+            isNewContact(contact_schedule, leap_idx, j) &&
+            (i + min_swing_duration >= leap_idx);
+        if (extend_flight_phase) {
+          contact_schedule.at(i).at(j) = false;
+        }
+      }
     }
   }
 }

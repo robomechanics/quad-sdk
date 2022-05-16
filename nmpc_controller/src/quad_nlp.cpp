@@ -1536,8 +1536,8 @@ void quadNLP::update_solver(
       adaptive_complexity_schedule_.head(N_).cwiseMax(
           fixed_complexity_schedule_.head(N_));
 
-  std::cout << "current complexity_schedule   = "
-            << complexity_schedule.transpose() << std::endl;
+  // std::cout << "current complexity_schedule   = "
+  //           << complexity_schedule.transpose() << std::endl;
 
   // Update initial state
   x_current_.segment(0, n_body_) = initial_state.head(n_body_);

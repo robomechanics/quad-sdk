@@ -299,10 +299,10 @@ bool NMPCController::computePlan(
     gait_phase[i] = (mynlp_->contact_sequence_.col(i).sum() > 0) ? 1 : 0;
   }
 
-  std::cout << "adaptive_complexity_schedule_ = "
-            << adaptive_complexity_schedule_.transpose() << std::endl;
-  std::cout << "contact phase_                = " << gait_phase.transpose()
-            << std::endl;
+  // std::cout << "adaptive_complexity_schedule_ = "
+  //           << adaptive_complexity_schedule_.transpose() << std::endl;
+  // std::cout << "contact phase_                = " << gait_phase.transpose()
+  //           << std::endl;
 
   if (status == Solve_Succeeded) {
     mynlp_->warm_start_ = true;
@@ -367,7 +367,7 @@ bool NMPCController::computePlan(
                             g_ub.data());
 
     // Loop though finite elements and check feasibility to see what failed
-    std::cout << "Evaluating constraints" << std::endl;
+    // std::cout << "Evaluating constraints" << std::endl;
     for (int i = 0; i < N_; ++i) {
       Eigen::VectorXd x_i = mynlp_->get_primal_state_var(mynlp_->w0_, i);
       Eigen::VectorXd x_i_lb = mynlp_->get_primal_state_var(x_lb, i);
@@ -415,44 +415,44 @@ bool NMPCController::computePlan(
         }
       }
     }
-    std::cout << "Done evaluating constraints" << std::endl;
+    // std::cout << "Done evaluating constraints" << std::endl;
 
-    std::cout << "first_element_duration_ = \n"
-              << mynlp_->first_element_duration_ << std::endl;
-    std::cout << "current body state = \n"
-              << mynlp_->x_current_.segment(0, n_body_).transpose()
-              << std::endl;
-    std::cout << "current joint pos = \n"
-              << mynlp_->x_current_.segment(n_body_ + n_foot_, n_joints_ / 2)
-                     .transpose()
-              << std::endl;
-    std::cout << "current joint vel = \n"
-              << mynlp_->x_current_.tail(n_joints_ / 2).transpose()
-              << std::endl;
-    std::cout << "contact sequence = \n"
-              << mynlp_->contact_sequence_ << std::endl;
+    // std::cout << "first_element_duration_ = \n"
+    //           << mynlp_->first_element_duration_ << std::endl;
+    // std::cout << "current body state = \n"
+    //           << mynlp_->x_current_.segment(0, n_body_).transpose()
+    //           << std::endl;
+    // std::cout << "current joint pos = \n"
+    //           << mynlp_->x_current_.segment(n_body_ + n_foot_, n_joints_ / 2)
+    //                  .transpose()
+    //           << std::endl;
+    // std::cout << "current joint vel = \n"
+    //           << mynlp_->x_current_.tail(n_joints_ / 2).transpose()
+    //           << std::endl;
+    // std::cout << "contact sequence = \n"
+    //           << mynlp_->contact_sequence_ << std::endl;
 
-    std::cout << "body_reference = \n"
-              << mynlp_->x_reference_.transpose() << std::endl;
-    std::cout << "body_traj = \n" << state_traj << std::endl;
-    std::cout << "body error = \n"
-              << state_traj - mynlp_->x_reference_.transpose() << std::endl;
-    std::cout << "control_traj body = \n" << control_traj << std::endl;
+    // std::cout << "body_reference = \n"
+    //           << mynlp_->x_reference_.transpose() << std::endl;
+    // std::cout << "body_traj = \n" << state_traj << std::endl;
+    // std::cout << "body error = \n"
+    //           << state_traj - mynlp_->x_reference_.transpose() << std::endl;
+    // std::cout << "control_traj body = \n" << control_traj << std::endl;
 
-    std::cout << "foot pos = \n" << foot_positions << std::endl;
-    std::cout << "foot vel = \n" << foot_velocities << std::endl;
-    std::cout << "foot pos ref = \n" << mynlp_->foot_pos_world_ << std::endl;
-    std::cout << "foot vel ref = \n" << mynlp_->foot_vel_world_ << std::endl;
-    std::cout << "foot pos error = \n"
-              << foot_positions - mynlp_->foot_pos_world_ << std::endl;
-    std::cout << "foot vel error = \n"
-              << foot_velocities - mynlp_->foot_vel_world_ << std::endl
-              << std::endl;
-    std::cout << "control_traj foot = \n" << foot_control << std::endl;
+    // std::cout << "foot pos = \n" << foot_positions << std::endl;
+    // std::cout << "foot vel = \n" << foot_velocities << std::endl;
+    // std::cout << "foot pos ref = \n" << mynlp_->foot_pos_world_ << std::endl;
+    // std::cout << "foot vel ref = \n" << mynlp_->foot_vel_world_ << std::endl;
+    // std::cout << "foot pos error = \n"
+    //           << foot_positions - mynlp_->foot_pos_world_ << std::endl;
+    // std::cout << "foot vel error = \n"
+    //           << foot_velocities - mynlp_->foot_vel_world_ << std::endl
+    //           << std::endl;
+    // std::cout << "control_traj foot = \n" << foot_control << std::endl;
 
-    std::cout << "joint_positions = \n" << joint_positions << std::endl;
-    std::cout << "joint_velocities = \n" << joint_velocities << std::endl;
-    throw std::runtime_error("Solve failed, exiting for debug");
+    // std::cout << "joint_positions = \n" << joint_positions << std::endl;
+    // std::cout << "joint_velocities = \n" << joint_velocities << std::endl;
+    // throw std::runtime_error("Solve failed, exiting for debug");
     return false;
   }
 }

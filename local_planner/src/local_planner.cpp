@@ -565,7 +565,7 @@ bool LocalPlanner::computeLocalPlan() {
   compute_time_ = 1000.0 * timer.reportSilent();
   mean_compute_time_ = (filter_smoothing_constant_)*mean_compute_time_ +
                        (1 - filter_smoothing_constant_) * compute_time_;
-  ROS_INFO("LocalPlanner took %5.3f ms\n", compute_time_);
+  ROS_INFO_THROTTLE(0.1, "LocalPlanner took %5.3f ms", compute_time_);
 
   // Return true if made it this far
   return true;
