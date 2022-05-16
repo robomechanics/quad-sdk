@@ -26,173 +26,154 @@ void quadNLP::loadCasadiFuncs() {
     eval_sparsity_vec_[i].resize(num_func_id_);
   }
 
-  // Load function map
+  // Load basic leg controller functions
   eval_vec_[LEG][FUNC] = eval_g_leg;
   eval_vec_[LEG][JAC] = eval_jac_g_leg;
   eval_vec_[LEG][HESS] = eval_hess_g_leg;
-  eval_vec_[TAIL][FUNC] = eval_g_tail;
-  eval_vec_[TAIL][JAC] = eval_jac_g_tail;
-  eval_vec_[TAIL][HESS] = eval_hess_g_tail;
-  eval_vec_[SIMPLE][FUNC] = eval_g_leg_simple;
-  eval_vec_[SIMPLE][JAC] = eval_jac_g_leg_simple;
-  eval_vec_[SIMPLE][HESS] = eval_hess_g_leg_simple;
-  eval_vec_[COMPLEX][FUNC] = eval_g_leg_complex;
-  eval_vec_[COMPLEX][JAC] = eval_jac_g_leg_complex;
-  eval_vec_[COMPLEX][HESS] = eval_hess_g_leg_complex;
-  eval_vec_[SIMPLE_TO_COMPLEX][FUNC] = eval_g_leg_simple_to_complex;
-  eval_vec_[SIMPLE_TO_COMPLEX][JAC] = eval_jac_g_leg_simple_to_complex;
-  eval_vec_[SIMPLE_TO_COMPLEX][HESS] = eval_hess_g_leg_simple_to_complex;
-  eval_vec_[COMPLEX_TO_SIMPLE][FUNC] = eval_g_leg_complex_to_simple;
-  eval_vec_[COMPLEX_TO_SIMPLE][JAC] = eval_jac_g_leg_complex_to_simple;
-  eval_vec_[COMPLEX_TO_SIMPLE][HESS] = eval_hess_g_leg_complex_to_simple;
-
-  // Load work map
   eval_work_vec_[LEG][FUNC] = eval_g_leg_work;
   eval_work_vec_[LEG][JAC] = eval_jac_g_leg_work;
   eval_work_vec_[LEG][HESS] = eval_hess_g_leg_work;
-  eval_work_vec_[TAIL][FUNC] = eval_g_tail_work;
-  eval_work_vec_[TAIL][JAC] = eval_jac_g_tail_work;
-  eval_work_vec_[TAIL][HESS] = eval_hess_g_tail_work;
-  eval_work_vec_[SIMPLE][FUNC] = eval_g_leg_simple_work;
-  eval_work_vec_[SIMPLE][JAC] = eval_jac_g_leg_simple_work;
-  eval_work_vec_[SIMPLE][HESS] = eval_hess_g_leg_simple_work;
-  eval_work_vec_[COMPLEX][FUNC] = eval_g_leg_complex_work;
-  eval_work_vec_[COMPLEX][JAC] = eval_jac_g_leg_complex_work;
-  eval_work_vec_[COMPLEX][HESS] = eval_hess_g_leg_complex_work;
+  eval_incref_vec_[LEG][FUNC] = eval_g_leg_incref;
+  eval_incref_vec_[LEG][JAC] = eval_jac_g_leg_incref;
+  eval_incref_vec_[LEG][HESS] = eval_hess_g_leg_incref;
+  eval_decref_vec_[LEG][FUNC] = eval_g_leg_decref;
+  eval_decref_vec_[LEG][JAC] = eval_jac_g_leg_decref;
+  eval_decref_vec_[LEG][HESS] = eval_hess_g_leg_decref;
+  eval_checkout_vec_[LEG][FUNC] = eval_g_leg_checkout;
+  eval_checkout_vec_[LEG][JAC] = eval_jac_g_leg_checkout;
+  eval_checkout_vec_[LEG][HESS] = eval_hess_g_leg_checkout;
+  eval_release_vec_[LEG][FUNC] = eval_g_leg_release;
+  eval_release_vec_[LEG][JAC] = eval_jac_g_leg_release;
+  eval_release_vec_[LEG][HESS] = eval_hess_g_leg_release;
+  eval_sparsity_vec_[LEG][FUNC] = eval_g_leg_sparsity_out;
+  eval_sparsity_vec_[LEG][JAC] = eval_jac_g_leg_sparsity_out;
+  eval_sparsity_vec_[LEG][HESS] = eval_hess_g_leg_sparsity_out;
+
+  // Load simple to simple functions - for adaptive complexity
+  eval_vec_[SIMPLE_TO_SIMPLE][FUNC] = eval_g_leg_simple;
+  eval_vec_[SIMPLE_TO_SIMPLE][JAC] = eval_jac_g_leg_simple;
+  eval_vec_[SIMPLE_TO_SIMPLE][HESS] = eval_hess_g_leg_simple;
+  eval_work_vec_[SIMPLE_TO_SIMPLE][FUNC] = eval_g_leg_simple_work;
+  eval_work_vec_[SIMPLE_TO_SIMPLE][JAC] = eval_jac_g_leg_simple_work;
+  eval_work_vec_[SIMPLE_TO_SIMPLE][HESS] = eval_hess_g_leg_simple_work;
+  eval_incref_vec_[SIMPLE_TO_SIMPLE][FUNC] = eval_g_leg_simple_incref;
+  eval_incref_vec_[SIMPLE_TO_SIMPLE][JAC] = eval_jac_g_leg_simple_incref;
+  eval_incref_vec_[SIMPLE_TO_SIMPLE][HESS] = eval_hess_g_leg_simple_incref;
+  eval_decref_vec_[SIMPLE_TO_SIMPLE][FUNC] = eval_g_leg_simple_decref;
+  eval_decref_vec_[SIMPLE_TO_SIMPLE][JAC] = eval_jac_g_leg_simple_decref;
+  eval_decref_vec_[SIMPLE_TO_SIMPLE][HESS] = eval_hess_g_leg_simple_decref;
+  eval_checkout_vec_[SIMPLE_TO_SIMPLE][FUNC] = eval_g_leg_simple_checkout;
+  eval_checkout_vec_[SIMPLE_TO_SIMPLE][JAC] = eval_jac_g_leg_simple_checkout;
+  eval_checkout_vec_[SIMPLE_TO_SIMPLE][HESS] = eval_hess_g_leg_simple_checkout;
+  eval_release_vec_[SIMPLE_TO_SIMPLE][FUNC] = eval_g_leg_simple_release;
+  eval_release_vec_[SIMPLE_TO_SIMPLE][JAC] = eval_jac_g_leg_simple_release;
+  eval_release_vec_[SIMPLE_TO_SIMPLE][HESS] = eval_hess_g_leg_simple_release;
+  eval_sparsity_vec_[SIMPLE_TO_SIMPLE][FUNC] = eval_g_leg_simple_sparsity_out;
+  eval_sparsity_vec_[SIMPLE_TO_SIMPLE][JAC] =
+      eval_jac_g_leg_simple_sparsity_out;
+  eval_sparsity_vec_[SIMPLE_TO_SIMPLE][HESS] =
+      eval_hess_g_leg_simple_sparsity_out;
+
+  // Load complex to complex functions - for adaptive complexity
+  eval_vec_[COMPLEX_TO_COMPLEX][FUNC] = eval_g_leg_complex;
+  eval_vec_[COMPLEX_TO_COMPLEX][JAC] = eval_jac_g_leg_complex;
+  eval_vec_[COMPLEX_TO_COMPLEX][HESS] = eval_hess_g_leg_complex;
+  eval_work_vec_[COMPLEX_TO_COMPLEX][FUNC] = eval_g_leg_complex_work;
+  eval_work_vec_[COMPLEX_TO_COMPLEX][JAC] = eval_jac_g_leg_complex_work;
+  eval_work_vec_[COMPLEX_TO_COMPLEX][HESS] = eval_hess_g_leg_complex_work;
+  eval_incref_vec_[COMPLEX_TO_COMPLEX][FUNC] = eval_g_leg_complex_incref;
+  eval_incref_vec_[COMPLEX_TO_COMPLEX][JAC] = eval_jac_g_leg_complex_incref;
+  eval_incref_vec_[COMPLEX_TO_COMPLEX][HESS] = eval_hess_g_leg_complex_incref;
+  eval_decref_vec_[COMPLEX_TO_COMPLEX][FUNC] = eval_g_leg_complex_decref;
+  eval_decref_vec_[COMPLEX_TO_COMPLEX][JAC] = eval_jac_g_leg_complex_decref;
+  eval_decref_vec_[COMPLEX_TO_COMPLEX][HESS] = eval_hess_g_leg_complex_decref;
+  eval_checkout_vec_[COMPLEX_TO_COMPLEX][FUNC] = eval_g_leg_complex_checkout;
+  eval_checkout_vec_[COMPLEX_TO_COMPLEX][JAC] = eval_jac_g_leg_complex_checkout;
+  eval_checkout_vec_[COMPLEX_TO_COMPLEX][HESS] =
+      eval_hess_g_leg_complex_checkout;
+  eval_release_vec_[COMPLEX_TO_COMPLEX][FUNC] = eval_g_leg_complex_release;
+  eval_release_vec_[COMPLEX_TO_COMPLEX][JAC] = eval_jac_g_leg_complex_release;
+  eval_release_vec_[COMPLEX_TO_COMPLEX][HESS] = eval_hess_g_leg_complex_release;
+  eval_sparsity_vec_[COMPLEX_TO_COMPLEX][FUNC] =
+      eval_g_leg_complex_sparsity_out;
+  eval_sparsity_vec_[COMPLEX_TO_COMPLEX][JAC] =
+      eval_jac_g_leg_complex_sparsity_out;
+  eval_sparsity_vec_[COMPLEX_TO_COMPLEX][HESS] =
+      eval_hess_g_leg_complex_sparsity_out;
+
+  // Load simple to complex functions - for adaptive complexity
+  eval_vec_[SIMPLE_TO_COMPLEX][FUNC] = eval_g_leg_simple_to_complex;
+  eval_vec_[SIMPLE_TO_COMPLEX][JAC] = eval_jac_g_leg_simple_to_complex;
+  eval_vec_[SIMPLE_TO_COMPLEX][HESS] = eval_hess_g_leg_simple_to_complex;
   eval_work_vec_[SIMPLE_TO_COMPLEX][FUNC] = eval_g_leg_simple_to_complex_work;
   eval_work_vec_[SIMPLE_TO_COMPLEX][JAC] =
       eval_jac_g_leg_simple_to_complex_work;
   eval_work_vec_[SIMPLE_TO_COMPLEX][HESS] =
       eval_hess_g_leg_simple_to_complex_work;
-  eval_work_vec_[COMPLEX_TO_SIMPLE][FUNC] = eval_g_leg_complex_to_simple_work;
-  eval_work_vec_[COMPLEX_TO_SIMPLE][JAC] =
-      eval_jac_g_leg_complex_to_simple_work;
-  eval_work_vec_[COMPLEX_TO_SIMPLE][HESS] =
-      eval_hess_g_leg_complex_to_simple_work;
-
-  // Load incref map
-  eval_incref_vec_[LEG][FUNC] = eval_g_leg_incref;
-  eval_incref_vec_[LEG][JAC] = eval_jac_g_leg_incref;
-  eval_incref_vec_[LEG][HESS] = eval_hess_g_leg_incref;
-  eval_incref_vec_[TAIL][FUNC] = eval_g_tail_incref;
-  eval_incref_vec_[TAIL][JAC] = eval_jac_g_tail_incref;
-  eval_incref_vec_[TAIL][HESS] = eval_hess_g_tail_incref;
-  eval_incref_vec_[SIMPLE][FUNC] = eval_g_leg_simple_incref;
-  eval_incref_vec_[SIMPLE][JAC] = eval_jac_g_leg_simple_incref;
-  eval_incref_vec_[SIMPLE][HESS] = eval_hess_g_leg_simple_incref;
-  eval_incref_vec_[COMPLEX][FUNC] = eval_g_leg_complex_incref;
-  eval_incref_vec_[COMPLEX][JAC] = eval_jac_g_leg_complex_incref;
-  eval_incref_vec_[COMPLEX][HESS] = eval_hess_g_leg_complex_incref;
   eval_incref_vec_[SIMPLE_TO_COMPLEX][FUNC] =
       eval_g_leg_simple_to_complex_incref;
   eval_incref_vec_[SIMPLE_TO_COMPLEX][JAC] =
       eval_jac_g_leg_simple_to_complex_incref;
   eval_incref_vec_[SIMPLE_TO_COMPLEX][HESS] =
       eval_hess_g_leg_simple_to_complex_incref;
-  eval_incref_vec_[COMPLEX_TO_SIMPLE][FUNC] =
-      eval_g_leg_complex_to_simple_incref;
-  eval_incref_vec_[COMPLEX_TO_SIMPLE][JAC] =
-      eval_jac_g_leg_complex_to_simple_incref;
-  eval_incref_vec_[COMPLEX_TO_SIMPLE][HESS] =
-      eval_hess_g_leg_complex_to_simple_incref;
-
-  // Load decref map
-  eval_decref_vec_[LEG][FUNC] = eval_g_leg_decref;
-  eval_decref_vec_[LEG][JAC] = eval_jac_g_leg_decref;
-  eval_decref_vec_[LEG][HESS] = eval_hess_g_leg_decref;
-  eval_decref_vec_[TAIL][FUNC] = eval_g_tail_decref;
-  eval_decref_vec_[TAIL][JAC] = eval_jac_g_tail_decref;
-  eval_decref_vec_[TAIL][HESS] = eval_hess_g_tail_decref;
-  eval_decref_vec_[SIMPLE][FUNC] = eval_g_leg_simple_decref;
-  eval_decref_vec_[SIMPLE][JAC] = eval_jac_g_leg_simple_decref;
-  eval_decref_vec_[SIMPLE][HESS] = eval_hess_g_leg_simple_decref;
-  eval_decref_vec_[COMPLEX][FUNC] = eval_g_leg_complex_decref;
-  eval_decref_vec_[COMPLEX][JAC] = eval_jac_g_leg_complex_decref;
-  eval_decref_vec_[COMPLEX][HESS] = eval_hess_g_leg_complex_decref;
   eval_decref_vec_[SIMPLE_TO_COMPLEX][FUNC] =
       eval_g_leg_simple_to_complex_decref;
   eval_decref_vec_[SIMPLE_TO_COMPLEX][JAC] =
       eval_jac_g_leg_simple_to_complex_decref;
   eval_decref_vec_[SIMPLE_TO_COMPLEX][HESS] =
       eval_hess_g_leg_simple_to_complex_decref;
-  eval_decref_vec_[COMPLEX_TO_SIMPLE][FUNC] =
-      eval_g_leg_complex_to_simple_decref;
-  eval_decref_vec_[COMPLEX_TO_SIMPLE][JAC] =
-      eval_jac_g_leg_complex_to_simple_decref;
-  eval_decref_vec_[COMPLEX_TO_SIMPLE][HESS] =
-      eval_hess_g_leg_complex_to_simple_decref;
-
-  // Load checkout map
-  eval_checkout_vec_[LEG][FUNC] = eval_g_leg_checkout;
-  eval_checkout_vec_[LEG][JAC] = eval_jac_g_leg_checkout;
-  eval_checkout_vec_[LEG][HESS] = eval_hess_g_leg_checkout;
-  eval_checkout_vec_[TAIL][FUNC] = eval_g_tail_checkout;
-  eval_checkout_vec_[TAIL][JAC] = eval_jac_g_tail_checkout;
-  eval_checkout_vec_[TAIL][HESS] = eval_hess_g_tail_checkout;
-  eval_checkout_vec_[SIMPLE][FUNC] = eval_g_leg_simple_checkout;
-  eval_checkout_vec_[SIMPLE][JAC] = eval_jac_g_leg_simple_checkout;
-  eval_checkout_vec_[SIMPLE][HESS] = eval_hess_g_leg_simple_checkout;
-  eval_checkout_vec_[COMPLEX][FUNC] = eval_g_leg_complex_checkout;
-  eval_checkout_vec_[COMPLEX][JAC] = eval_jac_g_leg_complex_checkout;
-  eval_checkout_vec_[COMPLEX][HESS] = eval_hess_g_leg_complex_checkout;
   eval_checkout_vec_[SIMPLE_TO_COMPLEX][FUNC] =
       eval_g_leg_simple_to_complex_checkout;
   eval_checkout_vec_[SIMPLE_TO_COMPLEX][JAC] =
       eval_jac_g_leg_simple_to_complex_checkout;
   eval_checkout_vec_[SIMPLE_TO_COMPLEX][HESS] =
       eval_hess_g_leg_simple_to_complex_checkout;
-  eval_checkout_vec_[COMPLEX_TO_SIMPLE][FUNC] =
-      eval_g_leg_complex_to_simple_checkout;
-  eval_checkout_vec_[COMPLEX_TO_SIMPLE][JAC] =
-      eval_jac_g_leg_complex_to_simple_checkout;
-  eval_checkout_vec_[COMPLEX_TO_SIMPLE][HESS] =
-      eval_hess_g_leg_complex_to_simple_checkout;
-
-  // Load release map
-  eval_release_vec_[LEG][FUNC] = eval_g_leg_release;
-  eval_release_vec_[LEG][JAC] = eval_jac_g_leg_release;
-  eval_release_vec_[LEG][HESS] = eval_hess_g_leg_release;
-  eval_release_vec_[TAIL][FUNC] = eval_g_tail_release;
-  eval_release_vec_[TAIL][JAC] = eval_jac_g_tail_release;
-  eval_release_vec_[TAIL][HESS] = eval_hess_g_tail_release;
-  eval_release_vec_[SIMPLE][FUNC] = eval_g_leg_simple_release;
-  eval_release_vec_[SIMPLE][JAC] = eval_jac_g_leg_simple_release;
-  eval_release_vec_[SIMPLE][HESS] = eval_hess_g_leg_simple_release;
-  eval_release_vec_[COMPLEX][FUNC] = eval_g_leg_complex_release;
-  eval_release_vec_[COMPLEX][JAC] = eval_jac_g_leg_complex_release;
-  eval_release_vec_[COMPLEX][HESS] = eval_hess_g_leg_complex_release;
   eval_release_vec_[SIMPLE_TO_COMPLEX][FUNC] =
       eval_g_leg_simple_to_complex_release;
   eval_release_vec_[SIMPLE_TO_COMPLEX][JAC] =
       eval_jac_g_leg_simple_to_complex_release;
   eval_release_vec_[SIMPLE_TO_COMPLEX][HESS] =
       eval_hess_g_leg_simple_to_complex_release;
-  eval_release_vec_[COMPLEX_TO_SIMPLE][FUNC] =
-      eval_g_leg_complex_to_simple_release;
-  eval_release_vec_[COMPLEX_TO_SIMPLE][JAC] =
-      eval_jac_g_leg_complex_to_simple_release;
-  eval_release_vec_[COMPLEX_TO_SIMPLE][HESS] =
-      eval_hess_g_leg_complex_to_simple_release;
-
-  // Load sparsity map
-  eval_sparsity_vec_[LEG][FUNC] = eval_g_leg_sparsity_out;
-  eval_sparsity_vec_[LEG][JAC] = eval_jac_g_leg_sparsity_out;
-  eval_sparsity_vec_[LEG][HESS] = eval_hess_g_leg_sparsity_out;
-  eval_sparsity_vec_[TAIL][FUNC] = eval_g_tail_sparsity_out;
-  eval_sparsity_vec_[TAIL][JAC] = eval_jac_g_tail_sparsity_out;
-  eval_sparsity_vec_[TAIL][HESS] = eval_hess_g_tail_sparsity_out;
-  eval_sparsity_vec_[SIMPLE][FUNC] = eval_g_leg_simple_sparsity_out;
-  eval_sparsity_vec_[SIMPLE][JAC] = eval_jac_g_leg_simple_sparsity_out;
-  eval_sparsity_vec_[SIMPLE][HESS] = eval_hess_g_leg_simple_sparsity_out;
-  eval_sparsity_vec_[COMPLEX][FUNC] = eval_g_leg_complex_sparsity_out;
-  eval_sparsity_vec_[COMPLEX][JAC] = eval_jac_g_leg_complex_sparsity_out;
-  eval_sparsity_vec_[COMPLEX][HESS] = eval_hess_g_leg_complex_sparsity_out;
   eval_sparsity_vec_[SIMPLE_TO_COMPLEX][FUNC] =
       eval_g_leg_simple_to_complex_sparsity_out;
   eval_sparsity_vec_[SIMPLE_TO_COMPLEX][JAC] =
       eval_jac_g_leg_simple_to_complex_sparsity_out;
   eval_sparsity_vec_[SIMPLE_TO_COMPLEX][HESS] =
       eval_hess_g_leg_simple_to_complex_sparsity_out;
+
+  // Load complex to simple functions - for adaptive complexity
+  eval_vec_[COMPLEX_TO_SIMPLE][FUNC] = eval_g_leg_complex_to_simple;
+  eval_vec_[COMPLEX_TO_SIMPLE][JAC] = eval_jac_g_leg_complex_to_simple;
+  eval_vec_[COMPLEX_TO_SIMPLE][HESS] = eval_hess_g_leg_complex_to_simple;
+  eval_work_vec_[COMPLEX_TO_SIMPLE][FUNC] = eval_g_leg_complex_to_simple_work;
+  eval_work_vec_[COMPLEX_TO_SIMPLE][JAC] =
+      eval_jac_g_leg_complex_to_simple_work;
+  eval_work_vec_[COMPLEX_TO_SIMPLE][HESS] =
+      eval_hess_g_leg_complex_to_simple_work;
+  eval_incref_vec_[COMPLEX_TO_SIMPLE][FUNC] =
+      eval_g_leg_complex_to_simple_incref;
+  eval_incref_vec_[COMPLEX_TO_SIMPLE][JAC] =
+      eval_jac_g_leg_complex_to_simple_incref;
+  eval_incref_vec_[COMPLEX_TO_SIMPLE][HESS] =
+      eval_hess_g_leg_complex_to_simple_incref;
+  eval_decref_vec_[COMPLEX_TO_SIMPLE][FUNC] =
+      eval_g_leg_complex_to_simple_decref;
+  eval_decref_vec_[COMPLEX_TO_SIMPLE][JAC] =
+      eval_jac_g_leg_complex_to_simple_decref;
+  eval_decref_vec_[COMPLEX_TO_SIMPLE][HESS] =
+      eval_hess_g_leg_complex_to_simple_decref;
+  eval_checkout_vec_[COMPLEX_TO_SIMPLE][FUNC] =
+      eval_g_leg_complex_to_simple_checkout;
+  eval_checkout_vec_[COMPLEX_TO_SIMPLE][JAC] =
+      eval_jac_g_leg_complex_to_simple_checkout;
+  eval_checkout_vec_[COMPLEX_TO_SIMPLE][HESS] =
+      eval_hess_g_leg_complex_to_simple_checkout;
+  eval_release_vec_[COMPLEX_TO_SIMPLE][FUNC] =
+      eval_g_leg_complex_to_simple_release;
+  eval_release_vec_[COMPLEX_TO_SIMPLE][JAC] =
+      eval_jac_g_leg_complex_to_simple_release;
+  eval_release_vec_[COMPLEX_TO_SIMPLE][HESS] =
+      eval_hess_g_leg_complex_to_simple_release;
   eval_sparsity_vec_[COMPLEX_TO_SIMPLE][FUNC] =
       eval_g_leg_complex_to_simple_sparsity_out;
   eval_sparsity_vec_[COMPLEX_TO_SIMPLE][JAC] =
@@ -276,7 +257,7 @@ void quadNLP::loadConstraintNames() {
   constr_names_.resize(num_sys_id_);
 
   std::vector<std::string> constr_names;
-  constr_names.resize(nrow_mat_(COMPLEX, FUNC));
+  constr_names.resize(nrow_mat_(COMPLEX_TO_COMPLEX, FUNC));
 
   // Define number of variables to make looping easier
   int n_simple = 12;
@@ -369,7 +350,6 @@ void quadNLP::loadConstraintNames() {
   }
 
   // Load the correct slice of the constraint names into the veector
-  // TODO(yanhaoy) update for tails
   for (int i = 0; i < num_sys_id_; i++) {
     int num_constr = nrow_mat_(i, FUNC);
     constr_names_[i] = std::vector<std::string>(

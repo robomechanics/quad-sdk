@@ -307,7 +307,7 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
     }
 
     if (sys_id_schedule_[i] == SIMPLE_TO_COMPLEX ||
-        sys_id_schedule_[i] == COMPLEX) {
+        sys_id_schedule_[i] == COMPLEX_TO_COMPLEX) {
       for (int j = 0; j < num_feet_; ++j) {
         bool is_stance =
             contact_sequence_(j, i) == 1 || contact_sequence_(j, i + 1) == 1;
@@ -327,26 +327,6 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
           get_primal_foot_state_var(x_u_matrix, i + 1)
               .segment(3 * j + n_foot_ / 2, 3) =
               foot_vel_world_.block<1, 3>(i + 1, 3 * j);
-
-          // int g_foot_height_idx = 52;
-          // get_primal_constraint_vals(g_l_matrix, i)(g_foot_height_idx + j, 0)
-          // =
-          //     0;
-          // get_primal_constraint_vals(g_u_matrix, i)(g_foot_height_idx + j, 0)
-          // =
-          //     0;
-          // get_primal_foot_control_var(g_l_matrix, i).segment(3 * j,
-          // 3).fill(0); get_primal_foot_control_var(g_l_matrix, i)
-          //     .segment(3 * j + m_foot_ / 2, 3)
-          //     .fill(0);
-          // if (i > 0) {
-          //   get_primal_foot_control_var(g_u_matrix, i)
-          //       .segment(3 * j, 3)
-          //       .fill(0);
-          //   get_primal_foot_control_var(g_u_matrix, i)
-          //       .segment(3 * j + m_foot_ / 2, 3)
-          //       .fill(0);
-          // }
         }
 
         bool add_terrain_height_constraint =
@@ -366,7 +346,8 @@ bool quadNLP::get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
         }
 
         bool remove_motor_model_in_swing =
-            sys_id_schedule_[i] == COMPLEX && contact_sequence_(j, i) == 0;
+            sys_id_schedule_[i] == COMPLEX_TO_COMPLEX &&
+            contact_sequence_(j, i) == 0;
         if (remove_motor_model_in_swing) {
           int g_mm_idx = 84;
           get_primal_constraint_vals(g_u_matrix, i)
@@ -533,9 +514,9 @@ Eigen::VectorXd quadNLP::eval_g_single_complex_fe(int i,
                                                   const Eigen::VectorXd &x1) {
   Eigen::VectorXd dynamic_var(x0.size() + u.size() + x1.size());
 
-  if (dynamic_var.size() != ncol_mat_(COMPLEX, JAC)) {
-    printf("Expected %d vars, got %d instead.\n", ncol_mat_(COMPLEX, JAC),
-           (int)dynamic_var.size());
+  if (dynamic_var.size() != ncol_mat_(COMPLEX_TO_COMPLEX, JAC)) {
+    printf("Expected %d vars, got %d instead.\n",
+           ncol_mat_(COMPLEX_TO_COMPLEX, JAC), (int)dynamic_var.size());
     throw std::runtime_error(
         "Number of decision variables does not match that expected by "
         "constraints");
@@ -544,7 +525,7 @@ Eigen::VectorXd quadNLP::eval_g_single_complex_fe(int i,
   dynamic_var << x0, u, x1;
 
   // Select the system ID
-  int sys_id = COMPLEX;
+  int sys_id = COMPLEX_TO_COMPLEX;
 
   // Load the params for this fe
   Eigen::VectorXd pk(54);
@@ -553,7 +534,7 @@ Eigen::VectorXd quadNLP::eval_g_single_complex_fe(int i,
   pk.segment(2, 12) = foot_pos_body_.row(i + 1);
   pk.segment(14, 12) = foot_pos_world_.row(i + 1);
   pk.segment(26, 12) = foot_vel_world_.row(i + 1);
-  if (use_terrain_constraint_ && sys_id_schedule_[i] == COMPLEX) {
+  if (use_terrain_constraint_ && sys_id_schedule_[i] == COMPLEX_TO_COMPLEX) {
     for (int j = 0; j < num_feet_; j++) {
       Eigen::Vector3d foot_pos = x1.segment(n_body_ + 3 * j, 3);
 
@@ -588,7 +569,7 @@ Eigen::VectorXd quadNLP::eval_g_single_complex_fe(int i,
   arg[0] = dynamic_var.data();
 
   arg[1] = pk.data();
-  Eigen::VectorXd constr_vars(nrow_mat_(COMPLEX, FUNC));
+  Eigen::VectorXd constr_vars(nrow_mat_(COMPLEX_TO_COMPLEX, FUNC));
   res[0] = constr_vars.data();
 
   int mem = eval_checkout_vec_[sys_id][FUNC]();
@@ -616,7 +597,7 @@ bool quadNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     pk.segment(2, 12) = foot_pos_body_.row(i + 1);
     pk.segment(14, 12) = foot_pos_world_.row(i + 1);
     pk.segment(26, 12) = foot_vel_world_.row(i + 1);
-    if (use_terrain_constraint_ && sys_id_schedule_[i] == COMPLEX) {
+    if (use_terrain_constraint_ && sys_id_schedule_[i] == COMPLEX_TO_COMPLEX) {
       for (int j = 0; j < num_feet_; j++) {
         Eigen::Vector3d foot_pos =
             get_primal_foot_state_var(w, i + 1).segment(3 * j, 3);
@@ -714,7 +695,8 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
       pk.segment(2, 12) = foot_pos_body_.row(i + 1);
       pk.segment(14, 12) = foot_pos_world_.row(i + 1);
       pk.segment(26, 12) = foot_vel_world_.row(i + 1);
-      if (use_terrain_constraint_ && sys_id_schedule_[i] == COMPLEX) {
+      if (use_terrain_constraint_ &&
+          sys_id_schedule_[i] == COMPLEX_TO_COMPLEX) {
         for (int j = 0; j < num_feet_; j++) {
           Eigen::Vector3d foot_pos =
               get_primal_foot_state_var(w, i + 1).segment(3 * j, 3);
@@ -994,7 +976,8 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
       pk.segment(2, 12) = foot_pos_body_.row(i + 1);
       pk.segment(14, 12) = foot_pos_world_.row(i + 1);
       pk.segment(26, 12) = foot_vel_world_.row(i + 1);
-      if (use_terrain_constraint_ && sys_id_schedule_[i] == COMPLEX) {
+      if (use_terrain_constraint_ &&
+          sys_id_schedule_[i] == COMPLEX_TO_COMPLEX) {
         for (int j = 0; j < num_feet_; j++) {
           Eigen::Vector3d foot_pos =
               get_primal_foot_state_var(w, i + 1).segment(3 * j, 3);
@@ -1500,8 +1483,6 @@ void quadNLP::update_solver(
     }
   }
 
-  // warm_start_ = false;
-
   // If the complexity schedule has changed, update the problem structure
   bool new_structure = adaptive_complexity_schedule.size() !=
                        this->adaptive_complexity_schedule_.size();
@@ -1650,11 +1631,13 @@ void quadNLP::update_structure() {
   for (int i = 0; i < N_ - 1; i++) {
     // Determine the system to assign to this finite element
     if (complexity_schedule[i] == 0) {
-      sys_id_schedule_[i] =
-          (complexity_schedule[i + 1] == 0) ? SIMPLE : SIMPLE_TO_COMPLEX;
+      sys_id_schedule_[i] = (complexity_schedule[i + 1] == 0)
+                                ? SIMPLE_TO_SIMPLE
+                                : SIMPLE_TO_COMPLEX;
     } else {
-      sys_id_schedule_[i] =
-          (complexity_schedule[i + 1] == 1) ? COMPLEX : COMPLEX_TO_SIMPLE;
+      sys_id_schedule_[i] = (complexity_schedule[i + 1] == 1)
+                                ? COMPLEX_TO_COMPLEX
+                                : COMPLEX_TO_SIMPLE;
     }
 
     // Update the number of state vars and constraints for this fe
@@ -1775,42 +1758,8 @@ void quadNLP::update_structure() {
     throw std::runtime_error("Number of constraints is inconsistent");
   }
 
-  // Uncomment to check relaxed constraint nnz
-  // std::cout << "iRow_mat_relaxed_[sys_id][JAC] = "
-  //           << iRow_mat_relaxed_[COMPLEX][JAC] << std::endl;
-  // std::cout << "jCol_mat_relaxed_[sys_id][JAC] = "
-  //           << jCol_mat_relaxed_[COMPLEX][JAC] << std::endl;
-  // std::cout << "iRow_mat_relaxed_[sys_id][JAC].size() = "
-  //           << iRow_mat_relaxed_[COMPLEX][JAC].size() << std::endl;
-  // std::cout << "jCol_mat_relaxed_[sys_id][JAC].size() = "
-  //           << jCol_mat_relaxed_[COMPLEX][JAC].size() << std::endl;
-  // std::cout << "nnz_mat_ = " << nnz_mat_ << std::endl;
-
   compute_nnz_jac_g();
   compute_nnz_h();
-
-  // Uncomment to check NLP variables
-  // std::cout << "complexity_schedule.size() = " << complexity_schedule.size()
-  //           << std::endl;
-  // std::cout << "N_ = " << N_ << std::endl;
-  // std::cout << "cmplx_sch = " << complexity_schedule.transpose() <<
-  // std::endl; std::cout << "sys_id_sch = " << sys_id_schedule_.transpose() <<
-  // std::endl; std::cout << "n_vec_ =    " << n_vec_.transpose() << std::endl;
-  // std::cout << "m_vec_ =    " << m_vec_.transpose() << std::endl;
-  // std::cout << "n_cost_vec_ =    " << n_cost_vec_.transpose() << std::endl;
-  // std::cout << "m_cost_vec_ =    " << m_cost_vec_.transpose() << std::endl;
-  // std::cout << "n_slack_vec_ = " << n_slack_vec_.transpose() << std::endl;
-  // std::cout << "g_vec_ =      " << g_vec_.transpose() << std::endl;
-  // std::cout << "g_vec_.sum() = " << g_vec_.sum() << std::endl;
-  // std::cout << "g_slack_vec_ = " << g_slack_vec_.transpose() << std::endl;
-  // std::cout << "g_vec_.sum() + n_vars_slack_ = " << g_vec_.sum() +
-  // n_vars_slack_
-  //           << std::endl;
-
-  // std::cout << "n_constraints_ = " << n_constraints_ << std::endl;
-  // std::cout << "n_vars_ = " << n_vars_ << std::endl;
-  // std::cout << "n_vars_primal_ = " << n_vars_primal_ << std::endl;
-  // std::cout << "n_vars_slack_ = " << n_vars_slack_ << std::endl;
 }
 
 void quadNLP::get_lifted_trajectory(Eigen::MatrixXd &state_traj_lifted,
