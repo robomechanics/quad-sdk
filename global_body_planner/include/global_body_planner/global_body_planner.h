@@ -127,9 +127,6 @@ class GlobalBodyPlanner {
    */
   void publishCurrentPlan();
 
-  /// Robot type: A1 or Spirit
-  std::string robot_name_;
-
   /// Subscriber for terrain map messages
   ros::Subscriber terrain_map_sub_;
 

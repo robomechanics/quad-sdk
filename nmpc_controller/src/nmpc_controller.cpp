@@ -1,6 +1,6 @@
 #include "nmpc_controller/nmpc_controller.h"
 
-NMPCController::NMPCController(ros::NodeHandle nh, int robot_id) {
+NMPCController::NMPCController(ros::NodeHandle &nh, int robot_id) {
   nh_ = nh;
   robot_id_ = robot_id;
   SystemID default_system;
