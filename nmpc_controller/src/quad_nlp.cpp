@@ -12,9 +12,9 @@ using namespace Ipopt;
 // Class constructor
 quadNLP::quadNLP(int type, int N, int n, int m, double dt, double mu,
                  double panic_weights, Eigen::MatrixXd Q, Eigen::MatrixXd R,
-                 Eigen::MatrixXd Q_factor, Eigen::MatrixXd R_factor,
-                 Eigen::MatrixXd x_min, Eigen::MatrixXd x_max,
-                 Eigen::MatrixXd u_min, Eigen::MatrixXd u_max)
+                 double Q_factor, double R_factor, Eigen::MatrixXd x_min,
+                 Eigen::MatrixXd x_max, Eigen::MatrixXd u_min,
+                 Eigen::MatrixXd u_max)
 // N: prediction steps
 // n: states dimension
 // m: input dimension
@@ -324,8 +324,8 @@ bool quadNLP::eval_f(Index n, const Number *x, bool new_x, Number &obj_value) {
 
     xk = (xk.array() - x_reference_.block(0, i, n_, 1).array()).matrix();
 
-    Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
-    Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
+    Eigen::MatrixXd Q_i = Q_ * std::pow(Q_factor_, i);
+    Eigen::MatrixXd R_i = R_ * std::pow(R_factor_, i);
 
     // Scale the cost by time duration
     if (i == 0) {
@@ -376,8 +376,8 @@ bool quadNLP::eval_grad_f(Index n, const Number *x, bool new_x,
 
     xk = (xk.array() - x_reference_.block(0, i, n_, 1).array()).matrix();
 
-    Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
-    Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
+    Eigen::MatrixXd Q_i = Q_ * std::pow(Q_factor_, i);
+    Eigen::MatrixXd R_i = R_ * std::pow(R_factor_, i);
 
     // Scale the cost by time duration
     if (i == 0) {
@@ -741,8 +741,8 @@ bool quadNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
       eval_hess_g_release_(mem);
       eval_hess_g_decref_();
 
-      Eigen::MatrixXd Q_i = Q_ * Q_factor_(i, 0);
-      Eigen::MatrixXd R_i = R_ * R_factor_(i, 0);
+      Eigen::MatrixXd Q_i = Q_ * std::pow(Q_factor_, i);
+      Eigen::MatrixXd R_i = R_ * std::pow(R_factor_, i);
 
       // Scale the cost by time duration
       if (i == 0) {
@@ -1086,7 +1086,7 @@ void quadNLP::update_solver(
       w0_.block(i * (n_ + m_) + m_, 0, n_, 1) = x_reference_.col(i);
 
       // Set tail inputs
-      if (type_ == DISTRIBUTED) {
+      if (type_ != NONE) {
         w0_(i * (n_ + m_), 0) =
             -tail_mass_ * grav_ * tail_length_ * std::sin(x_reference_(6, i));
       }
@@ -1126,9 +1126,6 @@ void quadNLP::update_solver(
     w0_.block(i * (n_ + m_) + leg_input_start_idx_, 0,
               m_ - leg_input_start_idx_, 1) = leg_input_.col(i);
   }
-
-  // Update known leg input flag
-  known_leg_input_ = true;
 
   // Initialize with the leg solution, seems it's a bad idea
   // if (require_init_) {
