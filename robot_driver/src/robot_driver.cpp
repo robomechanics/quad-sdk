@@ -5,15 +5,13 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   argc_ = argc;
   argv_ = argv;
 
-  // Load system parameters from launch file (not in config file)
-  nh.param<std::string>("robot_type", robot_name_, "spirit");
-  // nh.param<std::string>("ns", ns_, "/");
-
   // Load rosparams from parameter server
-  std::string imu_topic, joint_state_topic, grf_topic, robot_state_topic,
-      trajectory_state_topic, local_plan_topic, leg_command_array_topic,
-      control_mode_topic, remote_heartbeat_topic, robot_heartbeat_topic,
-      single_joint_cmd_topic, mocap_topic, control_restart_flag_topic;
+  std::string robot_name, imu_topic, joint_state_topic, grf_topic,
+      robot_state_topic, trajectory_state_topic, local_plan_topic,
+      leg_command_array_topic, control_mode_topic, remote_heartbeat_topic,
+      robot_heartbeat_topic, single_joint_cmd_topic, mocap_topic,
+      control_restart_flag_topic;
+  quad_utils::loadROSParam(nh_, "robot_type", robot_name);
   quad_utils::loadROSParam(nh_, "topics/state/imu", imu_topic);
   quad_utils::loadROSParam(nh_, "topics/state/joints", joint_state_topic);
   quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
@@ -36,8 +34,6 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
 
   quad_utils::loadROSParamDefault(nh_, "robot_driver/is_hardware", is_hardware_,
                                   true);
-  quad_utils::loadROSParamDefault(nh_, "robot_driver/robot_name", robot_name_,
-                                  std::string("spirit"));
   quad_utils::loadROSParamDefault(nh_, "robot_driver/controller",
                                   controller_id_,
                                   std::string("inverse_dynamics"));
@@ -114,10 +110,10 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
 
   // Initialize hardware interface
   if (is_hardware_) {
-    if (robot_name_ == "spirit") {
+    if (robot_name == "spirit") {
       hardware_interface_ = std::make_shared<SpiritInterface>();
     } else {
-      ROS_ERROR_STREAM("Invalid robot name " << robot_name_
+      ROS_ERROR_STREAM("Invalid robot name " << robot_name
                                              << ", returning nullptr");
       hardware_interface_ = nullptr;
     }
@@ -142,9 +138,6 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   control_mode_ = SIT;
   remote_heartbeat_received_time_ = std::numeric_limits<double>::max();
   last_state_time_ = std::numeric_limits<double>::max();
-
-  // Set joint torque limits
-  // torque_limits_ << 21, 21, 32;
 
   // Initialize timing
   last_robot_state_msg_.header.stamp = ros::Time::now();

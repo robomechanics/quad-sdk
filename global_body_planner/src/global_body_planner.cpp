@@ -5,9 +5,6 @@ using namespace planning_utils;
 GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   nh_ = nh;
 
-  // Load system parameters from launch file (not in config file)
-  nh.param<std::string>("robot_type", robot_name_, "spirit");
-
   // Load rosparams from parameter server
   std::string body_plan_topic, discrete_body_plan_topic, body_plan_tree_topic,
       goal_state_topic;
