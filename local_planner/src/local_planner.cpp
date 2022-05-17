@@ -12,7 +12,8 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
       cmd_vel_topic, control_mode_topic;
 
   // Load system parameters from launch file (not in config file)
-  quad_utils::loadROSParamDefault(nh_, "robot_type", robot_name_, std::string("spirit"));
+  quad_utils::loadROSParamDefault(nh_, "robot_type", robot_name_,
+                                  std::string("spirit"));
   quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
   quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);

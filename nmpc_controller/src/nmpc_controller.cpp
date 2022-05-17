@@ -41,9 +41,9 @@ NMPCController::NMPCController(ros::NodeHandle &nh, int robot_id) {
   R_temporal_factor = std::pow(R_temporal_factor, 1.0 / (N_ - 2));
 
   // Determine whether to let horizon length vary or not
-  ros::param::get("/nmpc_controller/enable_variable_horizon",
-                  enable_variable_horizon_);
-  ros::param::get("/nmpc_controller/min_horizon_length", N_min_);
+  quad_utils::loadROSParam(nh_, "nmpc_controller/enable_variable_horizon",
+                           enable_variable_horizon_);
+  quad_utils::loadROSParam(nh_, "nmpc_controller/min_horizon_length", N_min_);
   N_max_ = N_;
 
   // Define the components, their order, and which are simple
@@ -74,6 +74,10 @@ NMPCController::NMPCController(ros::NodeHandle &nh, int robot_id) {
                              x_lb);
     quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/x_ub",
                              x_ub);
+    quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/x_lb_soft",
+                             x_lb_soft);
+    quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/x_ub_soft",
+                             x_ub_soft);
     quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/u_lb",
                              u_lb);
     quad_utils::loadROSParam(nh_, "nmpc_controller/" + component + "/u_ub",
