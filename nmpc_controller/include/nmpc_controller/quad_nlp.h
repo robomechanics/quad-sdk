@@ -24,31 +24,26 @@
 #include "nmpc_controller/gen/eval_g_leg_complex_to_simple.h"
 #include "nmpc_controller/gen/eval_g_leg_simple.h"
 #include "nmpc_controller/gen/eval_g_leg_simple_to_complex.h"
-#include "nmpc_controller/gen/eval_g_tail.h"
 #include "nmpc_controller/gen/eval_hess_g_leg.h"
 #include "nmpc_controller/gen/eval_hess_g_leg_complex.h"
 #include "nmpc_controller/gen/eval_hess_g_leg_complex_to_simple.h"
 #include "nmpc_controller/gen/eval_hess_g_leg_simple.h"
 #include "nmpc_controller/gen/eval_hess_g_leg_simple_to_complex.h"
-#include "nmpc_controller/gen/eval_hess_g_tail.h"
 #include "nmpc_controller/gen/eval_jac_g_leg.h"
 #include "nmpc_controller/gen/eval_jac_g_leg_complex.h"
 #include "nmpc_controller/gen/eval_jac_g_leg_complex_to_simple.h"
 #include "nmpc_controller/gen/eval_jac_g_leg_simple.h"
 #include "nmpc_controller/gen/eval_jac_g_leg_simple_to_complex.h"
-#include "nmpc_controller/gen/eval_jac_g_tail.h"
 #include "quad_utils/function_timer.h"
 #include "quad_utils/quad_kd.h"
-#include "quad_utils/tail_type.h"
 
 using namespace Ipopt;
 
 enum SystemID {
   LEG,
-  TAIL,
-  SIMPLE,
+  SIMPLE_TO_SIMPLE,
   SIMPLE_TO_COMPLEX,
-  COMPLEX,
+  COMPLEX_TO_COMPLEX,
   COMPLEX_TO_SIMPLE
 };
 
@@ -132,7 +127,10 @@ class quadNLP : public TNLP {
   const bool always_constrain_feet_ = false;
 
   /// Boolean for whether to include the terrain in the foot height constraint
-  const bool use_terrain_constraint_ = true;
+  const bool use_terrain_constraint_ = false;
+
+  /// Boolean for whether to include the terrain in the foot height constraint
+  const bool remember_complex_elements_ = true;
 
   const grid_map::InterpolationMethods interp_type_ =
       grid_map::InterpolationMethods::INTER_LINEAR;
@@ -151,7 +149,7 @@ class quadNLP : public TNLP {
 
   /// Declare the number of possible system ids (must match size of SystemID
   /// enum)
-  static const int num_sys_id_ = 6;
+  static const int num_sys_id_ = 5;
 
   /// Declare the number of possible function ids (must match size of FunctionID
   /// enum)
@@ -303,6 +301,14 @@ class quadNLP : public TNLP {
                             Index &nnz_h_lag, IndexStyleEnum &index_style);
 
   /** Method to return the bounds for my problem */
+  bool get_bounds_info_single_complex_fe(int i, Eigen::VectorXd &x_lb,
+                                         Eigen::VectorXd &x_ub,
+                                         Eigen::VectorXd &u_lb,
+                                         Eigen::VectorXd &u_ub,
+                                         Eigen::VectorXd &g_l,
+                                         Eigen::VectorXd &g_u);
+
+  /** Method to return the bounds for my problem */
   virtual bool get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
                                Number *g_l, Number *g_u);
 
@@ -363,13 +369,16 @@ class quadNLP : public TNLP {
       const std::vector<std::vector<bool>> &contact_schedule,
       const Eigen::VectorXi &adaptive_complexity_schedule,
       const Eigen::VectorXd &ground_height,
-      const double &first_element_duration_, const bool &same_plan_index,
+      const double &first_element_duration_, int plan_index_diff,
       const bool &init);
 
   void update_structure();
 
   void get_lifted_trajectory(Eigen::MatrixXd &state_traj_lifted,
                              Eigen::MatrixXd &control_traj_lifted);
+
+  void get_heuristic_trajectory(Eigen::MatrixXd &state_traj_heuristic,
+                                Eigen::MatrixXd &control_traj_heuristic);
 
   // Get the idx-th state variable from decision variable
   template <typename T>

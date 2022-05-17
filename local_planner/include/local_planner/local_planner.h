@@ -278,8 +278,8 @@ class LocalPlanner {
   /// Time duration to the next plan index
   double first_element_duration_;
 
-  /// If the current solving is duplicated in the same index
-  bool same_plan_index_;
+  /// Difference in plan index from last solve
+  int plan_index_diff_;
 
   /// Toe radius
   double toe_radius = 0.02;
