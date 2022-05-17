@@ -97,3 +97,40 @@ elif type_index == 1:
     launch.shutdown()
     launch_2.shutdown()
     launch_3.shutdown()
+elif type_index == 2:
+    # Feedback Tail
+    uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
+    roslaunch.configure_logging(uuid)
+
+    launch_args = ['quad_utils', 'quad_gazebo.launch', 'paused:=false', 'rviz_gui:=true', 
+                world[world_index], 'tail:=true', 'tail_type:=3', 'x_init:='+str(init_pos[batch_index])]
+    launch_pars = [(roslaunch.rlutil.resolve_launch_arguments(
+        launch_args)[0], launch_args[2:])]
+    launch = roslaunch.parent.ROSLaunchParent(uuid, launch_pars)
+    launch.start()
+    rospy.loginfo('Gazebo running')
+
+    rospy.sleep(time_init)
+
+    launch_args = ['quad_utils', 'standing.launch']
+    launch_pars = [(roslaunch.rlutil.resolve_launch_arguments(
+        launch_args)[0], launch_args[2:])]
+    launch_2 = roslaunch.parent.ROSLaunchParent(uuid, launch_pars)
+    launch_2.start()
+    rospy.loginfo('Standing')
+
+    rospy.sleep(time_stand)
+
+    launch_args = ['quad_utils', 'planning.launch',
+                'logging:=true', 'tail:=false', 'parallel_index:='+str(batch_index)]
+    launch_pars = [(roslaunch.rlutil.resolve_launch_arguments(
+        launch_args)[0], launch_args[2:])]
+    launch_3 = roslaunch.parent.ROSLaunchParent(uuid, launch_pars)
+    launch_3.start()
+    rospy.loginfo('MPC running')
+
+    rospy.sleep(time_walk)
+
+    launch.shutdown()
+    launch_2.shutdown()
+    launch_3.shutdown()
