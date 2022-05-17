@@ -1322,12 +1322,21 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
     // unchanged (may be one timestep old)
     if (n_vec_[i + 1] >
         nlp_prev.n_vec_[std::min(i_prev + 1, nlp_prev.N_ - 1)]) {
-      std::cout << "Complexity at i = " << i << " (i_prev = " << i_prev
-                << ") increased, disabling warm start" << std::endl;
-      warm_start_ = false;
+      ROS_DEBUG("Complexity at i + 1 = %d increased (i_prev + 1 = %d)", i + 1,
+                i_prev + 1);
 
-      if (n_vec_[i + 1] > n_shared) {
-        std::cout << "No null data from prev solve, using nominal" << std::endl;
+      // Load foot state information
+      get_primal_state_var(w0_, i + 1).segment(n_body_, n_foot_ / 2) =
+          foot_pos_world_.row(i + 1);
+      get_primal_state_var(w0_, i + 1)
+          .segment(n_body_ + n_foot_ / 2, n_foot_ / 2) =
+          foot_vel_world_.row(i + 1);
+
+      if (n_vec_[i + 1] > nlp_prev.n_vec_[std::min(i + 1, nlp_prev.N_ - 1)]) {
+        ROS_DEBUG(
+            "No null data from prev solve, using nominal and disabling warm "
+            "start");
+        warm_start_ = false;
         get_primal_state_var(w0_, i + 1).segment(n_body_, n_foot_ / 2) =
             foot_pos_world_.row(i + 1);
         get_primal_state_var(w0_, i + 1)
@@ -1457,13 +1466,6 @@ void quadNLP::update_solver(
             .cwiseAbs()
             .sum() > 1e-3) {
       // Contact change unexpectedly, update the warmstart info
-      ROS_WARN("Contact change unexpectedly, warm start off");
-      std::cout << "i = " << i << std::endl;
-      std::cout << "idx = " << idx << std::endl;
-      std::cout << "contact_sequence_prev.col(idx) = "
-                << contact_sequence_prev.col(idx) << std::endl;
-      std::cout << "contact_sequence_.col(i) = " << contact_sequence_.col(i)
-                << std::endl;
       get_primal_body_control_var(w0_, idx).fill(0);
       get_primal_body_control_var(z_L0_, idx).fill(1);
       get_primal_body_control_var(z_U0_, idx).fill(1);
@@ -1504,7 +1506,6 @@ void quadNLP::update_solver(
     }
 
     if (plan_index_diff > 0) {
-      std::cout << "plan_index_diff = " << plan_index_diff << std::endl;
       adaptive_complexity_schedule_.topRows(N_ - plan_index_diff) =
           adaptive_complexity_schedule_.bottomRows(N_ - plan_index_diff);
       adaptive_complexity_schedule_.bottomRows(plan_index_diff).fill(0);
@@ -1516,9 +1517,6 @@ void quadNLP::update_solver(
   Eigen::VectorXi complexity_schedule =
       adaptive_complexity_schedule_.head(N_).cwiseMax(
           fixed_complexity_schedule_.head(N_));
-
-  std::cout << "current complexity_schedule   = "
-            << complexity_schedule.transpose() << std::endl;
 
   // Update initial state
   x_current_.segment(0, n_body_) = initial_state.head(n_body_);

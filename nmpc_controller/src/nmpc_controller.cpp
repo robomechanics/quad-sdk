@@ -126,28 +126,24 @@ NMPCController::NMPCController() {
   config_.g_max_complex =
       Eigen::Map<Eigen::VectorXd>(g_ub_complex.data(), config_.g_dim_complex);
 
-  // Define and load adaptive complexity parameters
-  std::vector<int> fixed_complex_idxs;
-  int fixed_complex_head, fixed_complex_tail;
-  bool enable_mixed_complexity = false;
-
-  ros::param::get("nmpc_controller/enable_mixed_complexity",
-                  enable_mixed_complexity);
-  ros::param::get("nmpc_controller/fixed_complex_idxs", fixed_complex_idxs);
-  ros::param::get("nmpc_controller/fixed_complex_head", fixed_complex_head);
-  ros::param::get("nmpc_controller/fixed_complex_tail", fixed_complex_tail);
-
   // Construct fixed and adaptive complexity schedules
   Eigen::VectorXi fixed_complexity_schedule(N_);
   fixed_complexity_schedule.setZero();
   adaptive_complexity_schedule_ = fixed_complexity_schedule;
-  if (enable_mixed_complexity) {
+
+  // If mixed complexity is enabled, load the desired structures
+  if (enable_mixed_complexity_) {
     ros::param::get("nmpc_controller/enable_adaptive_complexity",
                     enable_adaptive_complexity_);
-    ros::param::get("nmpc_controller/is_adaptive_complexity_sparse",
-                    is_adaptive_complexity_sparse_);
-    ros::param::get("nmpc_controller/allow_new_interior_complexity",
-                    allow_new_interior_complexity_);
+    // Define and load adaptive complexity parameters
+    std::vector<int> fixed_complex_idxs;
+    int fixed_complex_head, fixed_complex_tail;
+
+    ros::param::get("nmpc_controller/enable_mixed_complexity",
+                    enable_mixed_complexity_);
+    ros::param::get("nmpc_controller/fixed_complex_idxs", fixed_complex_idxs);
+    ros::param::get("nmpc_controller/fixed_complex_head", fixed_complex_head);
+    ros::param::get("nmpc_controller/fixed_complex_tail", fixed_complex_tail);
     for (int idx : fixed_complex_idxs) {
       if (idx >= 0 && idx <= N_) {
         fixed_complexity_schedule[idx] = 1;
@@ -183,8 +179,8 @@ NMPCController::NMPCController() {
   app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
   app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
 
-  app_->Options()->SetNumericValue("max_wall_time", 40.0 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 40.0 * dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 4.0 * dt_);
+  app_->Options()->SetNumericValue("max_cpu_time", 4.0 * dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();
@@ -210,7 +206,6 @@ bool NMPCController::computeLegPlan(
     const double &first_element_duration, int plan_index_diff,
     const grid_map::GridMap &terrain, Eigen::MatrixXd &state_traj,
     Eigen::MatrixXd &control_traj) {
-  // Local planner will send a reference traj with N+1 rows
   mynlp_->foot_pos_body_ = -foot_positions_body;
   mynlp_->foot_pos_world_ = foot_positions_world;
   mynlp_->foot_vel_world_ = foot_velocities_world;
@@ -226,8 +221,6 @@ bool NMPCController::computeLegPlan(
                                    foot_positions_world, foot_velocities_world,
                                    state_traj, control_traj);
 
-  state_traj.conservativeResize(N_, n_body_);
-
   if (enable_variable_horizon_) updateHorizonLength();
 
   return success;
@@ -238,22 +231,21 @@ bool NMPCController::computePlan(
     const std::vector<std::vector<bool>> &contact_schedule,
     Eigen::MatrixXd &foot_positions, Eigen::MatrixXd &foot_velocities,
     Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj) {
+  // Update solver settings
   ApplicationReturnStatus status;
   app_->Options()->SetNumericValue("mu_init", mynlp_->mu0_);
-  if (mynlp_->warm_start_) {
-    app_->Options()->SetStringValue("warm_start_init_point", "yes");
-  } else {
-    app_->Options()->SetStringValue("warm_start_init_point", "no");
-  }
+  app_->Options()->SetStringValue("warm_start_init_point",
+                                  ((mynlp_->warm_start_) ? "yes" : "no"));
 
+  // Start timer for diagnostics and solve
   quad_utils::FunctionTimer timer("nlp_solver");
   status = app_->OptimizeTNLP(mynlp_);
   diagnostics_ = mynlp_->diagnostics_;
   diagnostics_.compute_time = timer.reportSilent();
 
+  // Load the state and control trajectories
   state_traj = Eigen::MatrixXd::Zero(N_, config_.x_dim_simple);
   control_traj = Eigen::MatrixXd::Zero(N_ - 1, config_.u_dim_simple);
-
   state_traj.row(0) = mynlp_->get_primal_state_var(mynlp_->w0_, 0)
                           .head(config_.x_dim_simple)
                           .transpose();
@@ -267,192 +259,39 @@ bool NMPCController::computePlan(
                                 .transpose();
   }
 
-  Eigen::MatrixXd state_traj_heuristic(N_, config_.x_dim_complex);
-  Eigen::MatrixXd control_traj_heuristic(N_ - 1, config_.u_dim_complex);
-  mynlp_->get_heuristic_trajectory(state_traj_heuristic,
-                                   control_traj_heuristic);
+  // If mixed complexity is enabled, retrieve the lifted and heuristic
+  // trajectories
+  if (enable_mixed_complexity_) {
+    Eigen::MatrixXd state_traj_heuristic(N_, config_.x_dim_complex);
+    Eigen::MatrixXd control_traj_heuristic(N_ - 1, config_.u_dim_complex);
+    mynlp_->get_heuristic_trajectory(state_traj_heuristic,
+                                     control_traj_heuristic);
 
-  Eigen::MatrixXd state_traj_lifted(N_, config_.x_dim_complex);
-  Eigen::MatrixXd control_traj_lifted(N_ - 1, config_.u_dim_complex);
-  mynlp_->get_lifted_trajectory(state_traj_lifted, control_traj_lifted);
+    Eigen::MatrixXd state_traj_lifted(N_, config_.x_dim_complex);
+    Eigen::MatrixXd control_traj_lifted(N_ - 1, config_.u_dim_complex);
+    mynlp_->get_lifted_trajectory(state_traj_lifted, control_traj_lifted);
 
-  if (enable_adaptive_complexity_) {
-    adaptive_complexity_schedule_ = updateAdaptiveComplexitySchedule(
-        state_traj_heuristic, control_traj_heuristic, state_traj_lifted,
-        control_traj_lifted);
+    if (enable_adaptive_complexity_) {
+      adaptive_complexity_schedule_ = updateAdaptiveComplexitySchedule(
+          state_traj_heuristic, control_traj_heuristic, state_traj_lifted,
+          control_traj_lifted);
+    }
+
+    foot_positions.topRows(state_traj_lifted.rows()) =
+        state_traj_lifted.middleCols(n_body_, n_foot_ / 2);
+    foot_velocities.topRows(state_traj_lifted.rows()) =
+        state_traj_lifted.middleCols(n_body_ + n_foot_ / 2, n_foot_ / 2);
   }
 
-  foot_positions.topRows(state_traj_lifted.rows()) =
-      state_traj_lifted.middleCols(n_body_, n_foot_ / 2);
-  foot_velocities.topRows(state_traj_lifted.rows()) =
-      state_traj_lifted.middleCols(n_body_ + n_foot_ / 2, n_foot_ / 2);
-
-  Eigen::MatrixXd foot_control, joint_positions, joint_velocities;
-  foot_control = control_traj_lifted.rightCols(m_foot_);
-  joint_positions =
-      state_traj_lifted.middleCols(n_body_ + n_foot_, n_joints_ / 2);
-  joint_velocities = state_traj_lifted.middleCols(
-      n_body_ + n_foot_ + n_joints_ / 2, n_joints_ / 2);
-
-  Eigen::VectorXi gait_phase(mynlp_->contact_sequence_.cols());
-  for (int i = 0; i < mynlp_->contact_sequence_.cols(); i++) {
-    gait_phase[i] = (mynlp_->contact_sequence_.col(i).sum() > 0) ? 1 : 0;
-  }
-
-  std::cout << "adaptive_complexity_schedule_ = "
-            << adaptive_complexity_schedule_.transpose() << std::endl;
-  std::cout << "contact phase_                = " << gait_phase.transpose()
-            << std::endl;
-
+  // Update warm start info based on solve status
   if (status == Solve_Succeeded) {
     mynlp_->warm_start_ = true;
-
-    // std::cout << "first_element_duration_ = \n"
-    //           << mynlp_->first_element_duration_ << std::endl;
-    // std::cout << "current body state = \n"
-    //           << mynlp_->x_current_.segment(0, n_body_).transpose()
-    //           << std::endl;
-    // std::cout << "current joint pos = \n"
-    //           << mynlp_->x_current_.segment(n_body_ + n_foot_, n_joints_ /
-    //           2)
-    //                  .transpose()
-    //           << std::endl;
-    // std::cout << "current joint vel = \n"
-    //           << mynlp_->x_current_.tail(n_joints_ / 2).transpose()
-    //           << std::endl;
-    // std::cout << "contact sequence = \n"
-    //           << mynlp_->contact_sequence_ << std::endl;
-
-    // std::cout << "body_reference = \n"
-    //           << mynlp_->x_reference_.transpose() << std::endl;
-    // std::cout << "body_traj = \n" << state_traj << std::endl;
-    // std::cout << "body error = \n"
-    //           << state_traj - mynlp_->x_reference_.transpose() <<
-    //           std::endl;
-    // std::cout << "control_traj body = \n" << control_traj << std::endl;
-
-    // std::cout << "foot pos = \n" << foot_positions << std::endl;
-    // std::cout << "foot vel = \n" << foot_velocities << std::endl;
-    // std::cout << "foot pos ref = \n" << mynlp_->foot_pos_world_ <<
-    // std::endl; std::cout << "foot vel ref = \n" << mynlp_->foot_vel_world_
-    // << std::endl; std::cout << "foot pos error = \n"
-    //           << foot_positions - mynlp_->foot_pos_world_ << std::endl;
-    // std::cout << "foot vel error = \n"
-    //           << foot_velocities - mynlp_->foot_vel_world_ << std::endl
-    //           << std::endl;
-    // std::cout << "control_traj foot = \n" << foot_control << std::endl;
-
-    // std::cout << "joint_positions = \n" << joint_positions << std::endl;
-    // std::cout << "joint_velocities = \n" << joint_velocities << std::endl;
-    // throw std::runtime_error("Solve succeeded! Exiting for debug");
-
     return true;
   } else {
     mynlp_->mu0_ = 1e-1;
     mynlp_->warm_start_ = false;
     require_init_ = true;
-
     ROS_WARN_STREAM("NMPC solving fail");
-
-    // Get solution and bounds
-    double var_tol, constr_tol;
-    app_->Options()->GetNumericValue("tol", var_tol, "");
-    app_->Options()->GetNumericValue("constr_viol_tol", constr_tol, "");
-    int n, m;
-    n = mynlp_->n_vars_;
-    m = mynlp_->n_constraints_;
-    Eigen::VectorXd x_lb(n), x_ub(n);
-    Eigen::VectorXd g_lb(m), g_ub(m);
-    mynlp_->get_bounds_info(n, x_lb.data(), x_ub.data(), m, g_lb.data(),
-                            g_ub.data());
-
-    // Loop though finite elements and check feasibility to see what failed
-    std::cout << "Evaluating constraints" << std::endl;
-    for (int i = 0; i < N_; ++i) {
-      Eigen::VectorXd x_i = mynlp_->get_primal_state_var(mynlp_->w0_, i);
-      Eigen::VectorXd x_i_lb = mynlp_->get_primal_state_var(x_lb, i);
-      Eigen::VectorXd x_i_ub = mynlp_->get_primal_state_var(x_ub, i);
-
-      for (int j = 0; j < x_i.size(); j++) {
-        if ((x_i(j) < (x_i_lb(j) - var_tol)) ||
-            (x_i(j) > (x_i_ub(j) + var_tol))) {
-          printf(
-              "State bound %d violated in FE %d: %5.3f <= %5.3f <= "
-              "%5.3f\n",
-              j, i, x_i_lb[j] - var_tol, x_i[j], x_i_ub[j] + var_tol);
-        }
-      }
-
-      if (i < N_ - 1) {
-        Eigen::VectorXd u_i = mynlp_->get_primal_control_var(mynlp_->w0_, i);
-        Eigen::VectorXd u_i_lb = mynlp_->get_primal_control_var(x_lb, i);
-        Eigen::VectorXd u_i_ub = mynlp_->get_primal_control_var(x_ub, i);
-
-        for (int j = 0; j < u_i.size(); j++) {
-          if ((u_i(j) < (u_i_lb(j) - var_tol)) ||
-              (u_i(j) > (u_i_ub(j) + var_tol))) {
-            printf(
-                "Control bound %d violated in FE %d: %5.3f <= %5.3f <= "
-                "%5.3f\n",
-                j, i, u_i_lb[j] - var_tol, u_i[j], u_i_ub[j] + var_tol);
-          }
-        }
-
-        Eigen::VectorXd g_i =
-            mynlp_->get_primal_constraint_vals(mynlp_->g0_, i);
-        Eigen::VectorXd g_i_lb = mynlp_->get_primal_constraint_vals(g_lb, i);
-        Eigen::VectorXd g_i_ub = mynlp_->get_primal_constraint_vals(g_ub, i);
-
-        for (int j = 0; j < g_i.size(); j++) {
-          if ((g_i(j) < (g_i_lb(j) - constr_tol)) ||
-              (g_i(j) > (g_i_ub(j) + constr_tol))) {
-            printf(
-                "Constraint bound %s violated in FE %d: %5.3f <= %5.3f <= "
-                "%5.3f\n",
-                mynlp_->constr_names_[COMPLEX_TO_COMPLEX][j].c_str(), i,
-                g_i_lb[j] - constr_tol, g_i[j], g_i_ub[j] + constr_tol);
-          }
-        }
-      }
-    }
-    std::cout << "Done evaluating constraints" << std::endl;
-
-    std::cout << "first_element_duration_ = \n"
-              << mynlp_->first_element_duration_ << std::endl;
-    std::cout << "current body state = \n"
-              << mynlp_->x_current_.segment(0, n_body_).transpose()
-              << std::endl;
-    std::cout << "current joint pos = \n"
-              << mynlp_->x_current_.segment(n_body_ + n_foot_, n_joints_ / 2)
-                     .transpose()
-              << std::endl;
-    std::cout << "current joint vel = \n"
-              << mynlp_->x_current_.tail(n_joints_ / 2).transpose()
-              << std::endl;
-    std::cout << "contact sequence = \n"
-              << mynlp_->contact_sequence_ << std::endl;
-
-    std::cout << "body_reference = \n"
-              << mynlp_->x_reference_.transpose() << std::endl;
-    std::cout << "body_traj = \n" << state_traj << std::endl;
-    std::cout << "body error = \n"
-              << state_traj - mynlp_->x_reference_.transpose() << std::endl;
-    std::cout << "control_traj body = \n" << control_traj << std::endl;
-
-    std::cout << "foot pos = \n" << foot_positions << std::endl;
-    std::cout << "foot vel = \n" << foot_velocities << std::endl;
-    std::cout << "foot pos ref = \n" << mynlp_->foot_pos_world_ << std::endl;
-    std::cout << "foot vel ref = \n" << mynlp_->foot_vel_world_ << std::endl;
-    std::cout << "foot pos error = \n"
-              << foot_positions - mynlp_->foot_pos_world_ << std::endl;
-    std::cout << "foot vel error = \n"
-              << foot_velocities - mynlp_->foot_vel_world_ << std::endl
-              << std::endl;
-    std::cout << "control_traj foot = \n" << foot_control << std::endl;
-
-    std::cout << "joint_positions = \n" << joint_positions << std::endl;
-    std::cout << "joint_velocities = \n" << joint_velocities << std::endl;
-    throw std::runtime_error("Solve failed, exiting for debug");
     return false;
   }
 }

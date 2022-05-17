@@ -94,7 +94,9 @@ class NMPCController {
 
   bool enable_variable_horizon_;
 
-  bool enable_adaptive_complexity_;
+  bool enable_mixed_complexity_ = false;
+
+  bool enable_adaptive_complexity_ = false;
 
   bool allow_new_interior_complexity_;
 
