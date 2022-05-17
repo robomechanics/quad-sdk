@@ -166,7 +166,7 @@ TEST_F(GlobalBodyPlannerTestFixture, testValidStateActionPairRate) {
     if (getRandomLeapAction(s, surf_norm, a, planner_config_)) {
       if (isValidStateActionPair(s, a, result, planner_config_)) {
         count_valid++;
-      };
+      }
     }
   }
   double avg_duration = timer.reportStatistics(N);
