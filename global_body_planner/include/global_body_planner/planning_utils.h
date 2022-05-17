@@ -30,65 +30,73 @@
 
 namespace planning_utils {
 
-// TODO(anyone): Format all of these for Doxygen
+/**
+ * @brief Planner Configuration
+ */
 struct PlannerConfig {
   // Declare the terrain map object
-  FastTerrainMap terrain;
-  grid_map::GridMap terrain_grid_map;
+  FastTerrainMap terrain;             /**< Terrain in FastTerrainMap format */
+  grid_map::GridMap terrain_grid_map; /**< Terrain in grid_map format */
 
   // Define kinematic constraint parameters
-  double h_max;  // Maximum height of leg base, m
-  double h_min;  // Minimum ground clearance of body corners, m
-  double h_nom;  // Nominal ground clearance of body, m
-  double v_max;  // Maximum robot velocity, m/s
-  double v_nom;  // Nominal velocity, m/s (used during connect function)
+  double h_max; /**< Maximum height of leg base, m */
+  double h_min; /**< Minimum ground clearance of body corners, m */
+  double h_nom; /**< Nominal ground clearance of body, m */
+  double v_max; /**< Maximum robot velocity, m/s */
+  double v_nom; /**< Nominal velocity, m/s (used during connect function) */
 
   // Define dynamic constraint parameters
-  double mass;     // Robot mass, kg
-  double g;        // Gravity constant, m/s^2
-  double grf_min;  // Minimum GRF in units of body weight
-  double grf_max;  // Maximum GRF in units of body weight
-  double mu;       // Friction coefficient
-  double t_s_min;  // Minimum stance time, s
-  double t_s_max;  // Maximum stance time, s
-  double dz0_min;  // Minimum vertical velocity impulse, m/s
-  double dz0_max;  // Maximum vertical velocity impulse, m/s
+  double mass;    /**< Robot mass, kg */
+  double g;       /**< Gravity constant, m/s^2 */
+  double grf_min; /**< Minimum GRF in units of body weight */
+  double grf_max; /**< Maximum GRF in units of body weight */
+  double mu;      /**< Friction coefficient */
+  double t_s_min; /**< Minimum stance time, s */
+  double t_s_max; /**<  Maximum stance time, s */
+  double dz0_min; /**<  Minimum vertical velocity impulse, m/s */
+  double dz0_max; /**<  Maximum vertical velocity impulse, m/s */
 
   // Define planning parameters
-  double dt;                  // Resolution of kinematic feasibility checks, m
-  int trapped_buffer_factor;  // Number of feasibility that must pass to not
-                              // consider a state trapped
-  double backup_ratio;        // Ratio of trajectory to back up after finding an
-                              // invalid state, s
-  int num_leap_samples;  // Number of actions computed for each extend function
-  double max_planning_time;  // Maximum planning time allowed
-  Eigen::Vector3d g_vec;     // Maximum planning time allowed
+  double dt; /**<  Resolution of kinematic feasibility checks, m */
+  int trapped_buffer_factor; /**<  Number of feasibility that must pass to not a
+                                state trapped */
+  double backup_ratio;  /**<  Ratio of trajectory to back up after finding an
+                           invalid state, s */
+  int num_leap_samples; /**<  Number of actions computed for each extend
+                           function */
+  double max_planning_time; /**<  Maximum planning time allowed */
+  Eigen::Vector3d g_vec;    /**<  Maximum planning time allowed */
 
   // Define robot params and declare points used for validity checking
-  double robot_l;  // Length of robot body, m
-  double robot_w;  // Width of robot body, m
-  double robot_h;  // Vertical distance between leg base and bottom of
-                   // robot, m
+  double robot_l; /**<  Length of robot body, m */
+  double robot_w; /**<  Width of robot body, m  */
+  double robot_h; /**<  Vertical distance between leg base and bottom of robot,
+                     m */
 
-  double body_traversability_threshold;  // Min traversability for body
-                                         // (requires the body to not be over a
-                                         // hole unless leaping)
-  double contact_traversability_threshold;  // Min traversability for contact
-                                            // location cannot step on rough
-                                            // surfaces unless leaping
-  bool enable_leaping = true;
+  double body_traversability_threshold;    /**<  Min traversability for body
+                                              (requires the body to not be over a
+                                              hole unless leaping) */
+  double contact_traversability_threshold; /**< Min traversability for contact
+                                              location cannot step on rough
+                                              surfaces unless leaping */
+  bool enable_leaping = true;              /**< Leaping mode switch */
 
   static const int num_reachability_points =
-      4;  // Number of points on body used to check reachability
+      4; /**< Number of points on body used to check reachability */
   static const int num_collision_points =
-      5;  // Number of points on body used to check for collisions
+      5; /**< Number of points on body used to check for collisions */
 
   Eigen::Matrix<double, 3, num_reachability_points>
-      reachability_points_body;  // Positions of reachability points in the body
-                                 // frame
+      reachability_points_body; /**< Positions of reachability points in the
+                                   body frame */
   Eigen::Matrix<double, 3, num_collision_points>
-      collision_points_body;  // Positions of collision points in the body frame
+      collision_points_body; /**< Positions of collision points in the body
+                                frame */
 
+  /**
+   * Load the vector of reachability test points and collision test
+   * points in robot frame
+   */
   void loadEigenVectorsFromParams() {
     // Load the gravity vector
     g_vec << 0, 0, -g;
@@ -104,6 +112,9 @@ struct PlannerConfig {
         -0.5 * robot_h, -0.5 * robot_h;
   }
 
+  /**
+   * @brief Load the Global Body Planner parameters from ROS server
+   */
   void loadParamsFromServer(ros::NodeHandle nh) {
     quad_utils::loadROSParam(nh, "global_body_planner/h_max", h_max);
     quad_utils::loadROSParam(nh, "global_body_planner/h_min", h_min);
@@ -143,18 +154,21 @@ struct PlannerConfig {
   }
 };
 
-// Define phase variable labels
-enum Phase{
-  CONNECT,
-  LEAP_STANCE,
-  FLIGHT,
-  LAND_STANCE
-};
-const int FORWARD = 0;
-const int REVERSE = 1;
+/**
+ * @brief Define phase labels
+ */
+enum Phase { CONNECT, LEAP_STANCE, FLIGHT, LAND_STANCE };
 
-// Define exit flags
-enum ExitFlag{
+/**
+ * @brief Define tree growing direction labels 
+ * (FORWARD to go away from the root vertex, REVERSE to go towards it)
+ */
+enum TreeDirection { FORWARD, REVERSE };
+
+/**
+ * @brief Define exit flags
+ */
+enum ExitFlag {
   UNSOLVED,
   VALID,
   ALID_PARTIAL,
@@ -163,12 +177,16 @@ enum ExitFlag{
   INVALID_START_GOAL_EQUAL
 };
 
+/// Interpolation typ
 const grid_map::InterpolationMethods INTER_TYPE =
     grid_map::InterpolationMethods::INTER_NEAREST;
 
+/// Ground reaction force
 typedef Eigen::Vector3d GRF;
 
-// Define state with Eigen data
+/**
+ * @brief Define state with Eigen data
+ */
 struct State {
   Eigen::Vector3d pos;
   Eigen::Vector3d vel;
@@ -190,85 +208,91 @@ struct State {
   }
 };
 
-// Define full state with Eigen data
+/**
+ * @brief Define full state with Eigen data
+ */
 struct FullState {
-  Eigen::Vector3d pos;
-  Eigen::Vector3d vel;
-  Eigen::Vector3d ang;
-  Eigen::Vector3d ang_vel;
+  Eigen::Vector3d pos;     /**< Position */
+  Eigen::Vector3d vel;     /**< Velocity */
+  Eigen::Vector3d ang;     /**< Linear Velocity */
+  Eigen::Vector3d ang_vel; /**< Angular Velocity */
 };
 
-// Define action with Eigen data
+/**
+ * @brief Define action with Eigen data
+ */
 struct Action {
-  GRF grf_0;
-  GRF grf_f;
-  double t_s_leap; //
-  double t_f;
-  double t_s_land;
-  double dz_0;
-  double dz_f;
+  GRF grf_0; /**< Ground reaction force at the beginning of leaping phase */
+  GRF grf_f; /**< Ground reaction froce at the end of landing phase */
+  double t_s_leap; /**< Time length of leaping phase */
+  double t_f;      /**< Time length of flight phase */
+  double t_s_land; /**< Time length of landing phase */
+  double dz_0;     /**< Velocity at the beginning of leaping phase */
+  double dz_f;     /**< Velocity at the end of landing phase */
 };
 
 struct StateActionResult {
-  State s_new;
-  Action a_new;
-  double t_new = 0;
-  double length = 0;
+  State s_new;       /**< New State */
+  Action a_new;      /**< New Action */
+  double t_new = 0;  /**< !!! */
+  double length = 0; /**< Distance between new State and previous State */
 };
 
 /**
  * @brief Truncate FullState to State
  * @param[in] full_state FullState
- * @return State
+ * @return State after truncation
  */
 State fullStateToState(const FullState &full_state);
 
 /**
  * @brief Extend State to FullState, adding body orientation and angular speed
  * @param[in] state State
- * @param[in] roll roll
- * @param[in] pitch pitch
- * @param[in] yaw yaw
- * @param[in] roll_rate roll_rate
- * @param[in] pitch pitch_rate
- * @param[in] yaw yaw_rate
- * @return FullState
+ * @param[in] roll Roll
+ * @param[in] pitch Pitch
+ * @param[in] yaw Yaw
+ * @param[in] roll_rate Change rate of roll
+ * @param[in] pitch Change rate of Pitch
+ * @param[in] yaw Change rate of Yaw
+ * @return FullState after extension
  */
 FullState stateToFullState(const State &state, double roll, double pitch,
                            double yaw, double roll_rate, double pitch_rate,
                            double yaw_rate);
 
 /**
- * @brief Get FullState from Eigen vector
- * @param[in] s_eig FullState in Eigen vector form
- * @param[out] s FullState
+ * @brief Reformat Eigen vector to FullState
+ * @param[in] s_eig Eigen vector
+ * @param[out] s FullState obtained from Eigen vector
  */
 void eigenToFullState(const Eigen::VectorXd &s_eig, FullState &s);
 
 /**
- * @brief Turn FullState to Eigen vector form
+ * @brief Reformat FullState to Eigen vector
  * @param[in] s FullState
- * @return FullState in Eigen vector form
+ * @return Eigen vector obtained from FullState
  */
 Eigen::VectorXd fullStateToEigen(const FullState &s);
 
 /**
- * @brief Get FullState from std vector form
- * @param[in] v FullState in std vector form
- * @param[in] s FullState
+ * @brief Refromat STL vector to FulState
+ * @param[in] v STL vector
+ * @param[out] s FullState obtained from STL vector
  */
-void vectorToFullState(const std::vector<double> v, FullState &s);
+void vectorToFullState(const std::vector<double> &v, FullState &s);
 
 /**
  * @brief Reverse State velocity direction
+ * @param[out] s State
  */
-void flipDirection(State &state);
+void flipDirection(State &s);
 
 /**
- * @brief Reverse Action GRF, vertical velocities, 
- * and stance times for landing and leaping if this is an actual leap
+ * @brief Reverse GRF, vertical velocities,and stance times of landing and
+ * leaping if there is an actual leap
+ * @param[out] a Action
  */
-void flipDirection(Action &action);
+void flipDirection(Action &a);
 
 /**
  * @brief Print State
@@ -283,97 +307,103 @@ void printState(const State &s);
 void printFullState(const FullState &s);
 
 /**
- * @brief Print FullState with a separate line
+ * @brief Print FullState along with a separate line
  * @param[in] s FullState
  */
-void printStateNewline(State &s);
+void printStateNewline(const State &s);
 
 /**
  * @brief Print Action
  * @param[in] a Action
  */
-void printAction(Action &a);
+void printAction(const Action &a);
 
 /**
- * @brief Print Action with a separate line
+ * @brief Print Action along with a separate line
  * @param[in] a Action
  */
-void printActionNewline(Action &a);
+void printActionNewline(const Action &a);
 
 /**
- * @brief Print a sequence of State
- * @param[in] state_sequence A sequence of State
+ * @brief Print The sequence of States
+ * @param[in] state_sequence The sequence of States
  */
-void printStateSequence(std::vector<State> &state_sequence);
+void printStateSequence(const std::vector<State> &state_sequence);
 
 /**
- * @brief Print a sequence of State
- * @param[in] state_sequence A sequence of State
- * @param[in] state_sequence A sequence of time at which particular 
+ * @brief Print The sequence of States along with corresponding timesteps
+ * @param[in] state_sequence The sequence of State
+ * @param[in] state_sequence The sequence of timestep at which particular
  * interpolated States occur
  */
-void printInterpStateSequence(std::vector<State> &state_sequence,
-                              std::vector<double> interp_t);
+void printInterpStateSequence(const std::vector<State> &state_sequence,
+                              const std::vector<double> &interp_t);
 
 /**
- * @brief Print a sequence of Action
- * @param[in] state_sequence A sequence of Action
+ * @brief Print The sequence of Actions
+ * @param[in] state_sequence The sequence of Actions
  */
-void printActionSequence(std::vector<Action> action_sequence);
+void printActionSequence(const std::vector<Action> &action_sequence);
 
 /**
- * @brief Calculate the distance between two State positions
+ * @brief Calculate the distance between two State' positions
  * @param[in] q1 State 1
  * @param[in] q2 State 2
+ * @return The distance between two State' positions
  */
 double poseDistance(const State &q1, const State &q2);
 
 /**
- * @brief Calculate the distance between two FullState positions
+ * @brief Calculate the distance between two State' positions
  * @param[in] q1 FullState 1
  * @param[in] q2 FullState 2
+ * @return The distance between two State' positions
  */
 double poseDistance(const FullState &q1, const FullState &q2);
 
 /**
- * @brief Calculate the distance between two positions in std vector form
- * @param[in] q1 Vector 1
- * @param[in] q2 Vector 2
+ * @brief Calculate the Euclidean distance between two positions in STL vector
+ * form
+ * @param[in] q1 STL vector 1
+ * @param[in] q2 STL vector 2
+ * @return The Euclidean distance between two positions in std vectorform
  */
 double poseDistance(const std::vector<double> &v1,
                     const std::vector<double> &v2);
 
 /**
- * @brief Calculate the position and veocity distance between two States
+ * @brief Calculate the Euclidean distance between positions plus Euclidean
+ * distance between velocity vectors of two States
  * @param[in] q1 State 1
  * @param[in] q2 State 2
+ * @return The Euclidean distance between positions plus Euclidean
+ * distance between velocity vectors of two States
  */
 double stateDistance(const State &q1, const State &q2);
 
 /**
- * @brief Rotate GRF from contact frame to spatial frame
- * @param[in] surface_norm Contact point surface normal
- * @param[in] grf Ground reaction force in contact frame
- * @return Ground reaction force in spatial fram
+ * @brief Transform GRF from contact frame to spatial frame
+ * @param[in] surface_norm Surface normal vector at contact point
+ * @param[in] grf Ground reaction force at contact point
+ * @return Ground reaction force in spatial frame
  */
 Eigen::Vector3d rotateGRF(const Eigen::Vector3d &surface_norm,
                           const Eigen::Vector3d &grf);
 
 /**
- * @brief Inline function to get State speed
+ * @brief Inline function to get State speed (scalar)
  * @param[in] s State
- * @return State speed
+ * @return State speed (scalar)
  */
 inline double getSpeed(const State &s) { return s.vel.norm(); }
 
 /**
- * @brief Obtain full state/path information
- * @param[in] start_state Initial FullState
- * @param[in] interp_reduced_path A sequence of interpolated State 
- * @param[in] dt  sequence of time at which particular interpolated 
- * States occur
- * @param[in] interp_full_path A sequence of interpolated FullState 
- * @param[in] planner_config planner config
+ * @brief Append FullState to State and FullState arrays
+ * @param[in] start_state FullState to be appended
+ * @param[out] interp_reduced_path The sequence of States to be appended upon
+ * @param[in] dt Time resolution
+ * @param[out] interp_full_path The sequence of FullStates to be appended upon
+ * @param[in] planner_config Configuration parameters
  */
 void addFullStates(const FullState &start_state,
                    std::vector<State> interp_reduced_path, double dt,
@@ -381,18 +411,22 @@ void addFullStates(const FullState &start_state,
                    const PlannerConfig &planner_config);
 
 /**
- * @brief Interpolate State and Action Pair
- * @param[in] s State
- * @param[in] a Action
+ * @brief Interpolating States based on Action
+ * @param[in] s The initial State
+ * @param[in] a Action to be applied on States
  * @param[in] t0 The initial timestep
- * @param[in] dt 
- * @param[in] interp_plan
- * @param[in] inter_GRF
- * @param[in] interp_t
- * @param[in] interp_primitive_id
- * @param[in] interp_length
+ * @param[in] dt Time resolution
+ * @param[out] interp_plan The sequence of interpolated States on timesteps
+ * throughout stance-flight-stance phases
+ * @param[out] inter_GRF The sequence of ground reaction force on interpolated
+ * States
+ * @param[out] interp_t The sequence of timesteps on interpolated States
+ * @param[out] interp_primitive_id The sequence of corresponding Phase label on
+ * interpolated States
+ * @param[out] interp_length The sequence of accumulated distances from inital
+ * State to each interpolated State position
  * @param[in] planner_config Configuration parameters
- * @return 
+ * @return
  */
 State interpStateActionPair(const State &s, const Action &a, double t0,
                             double dt, std::vector<State> &interp_plan,
@@ -404,18 +438,18 @@ State interpStateActionPair(const State &s, const Action &a, double t0,
 
 /**
  * @brief Interpolate State and Action Pair
- * @param[in] start_state The start state of the planner
+ * @param[in] start_state The initial State
  * @param[in] state_sequence The sequence of states in the path
  * @param[in] action_sequence The sequence of actions in the path
- * @param[in] dt Time interval for interpolation
+ * @param[in] dt Time resolution
  * @param[in] t0 The initial timestep
- * @param[in] inter_full_plan Interpolated FullState
- * @param[in] interp_GRF Interpolated ground reaction force
- * @param[in] interp_t Interpolated timestep
- * @param[in] interp_primitive_id
- * @param[in] interp_length The distance of interpolated
+ * @param[out] inter_full_plan Interpolated FullState
+ * @param[out] interp_GRF Interpolated ground reaction force
+ * @param[out] interp_t Interpolated timestep
+ * @param[out] interp_primitive_id
+ * @param[out] interp_length The distance of interpolated
  * @param[in] planner_config
- * @return 
+ * @return
  */
 void getInterpPlan(const FullState &start_state,
                    const std::vector<State> &state_sequence,
@@ -442,13 +476,12 @@ double getPitchFromState(const State &s, const PlannerConfig &planner_config);
  */
 double getDzFromState(const State &s, const PlannerConfig &planner_config);
 
-
 void setDz(State &s, const PlannerConfig &planner_config);
 
 void setDz(State &s, const Eigen::Vector3d &surf_norm);
 
 /**
- * @brief Inline function to check if State pos is inside 
+ * @brief Inline function to check if State pos is inside
  * map range or not
  * @param[in] pos State pos in Eigen vector
  * @param[in] planner_config Configuration parameters
@@ -526,7 +559,8 @@ inline bool isBodyTraversable(const Eigen::Vector3d &pos,
 }
 
 /**
- * @brief Inline function to check whether contact is traversable above a threshold
+ * @brief Inline function to check whether contact is traversable above a
+ * threshold
  * @param[in] pos location to check height
  * @param[in] planner_config Configuration parameters
  * @return Whether body is traversable
@@ -581,7 +615,7 @@ inline double getTerrainZFilteredFromState(
 }
 
 /**
- * @brief Inline function to get the relative difference between 
+ * @brief Inline function to get the relative difference between
  *  terrain height and body pos
  * @param[in] pos location in Eigen vector to check height
  * @param[in] planner_config Configuration parameters
@@ -593,7 +627,7 @@ inline double getZRelToTerrain(const Eigen::Vector3d &pos,
 }
 
 /**
- * @brief Inline function to get the relative difference between 
+ * @brief Inline function to get the relative difference between
  * terrain height and body pos
  * @param[in] s State
  * @param[in] planner_config Configuration parameters
@@ -605,7 +639,7 @@ inline double getZRelToTerrain(const State &s,
 }
 
 /**
- * @brief Inline function to get the relative difference between 
+ * @brief Inline function to get the relative difference between
  * filtered terrain height and body pos
  * @param[in] pos location to check height
  * @param[in] planner_config Configuration parameters
@@ -617,7 +651,7 @@ inline double getZRelToTerrainFiltered(const Eigen::Vector3d &pos,
 }
 
 /**
- * @brief Inline function to get the relative difference between 
+ * @brief Inline function to get the relative difference between
  * filtered terrain height and body pos
  * @param[in] s State
  * @param[in] planner_config Configuration parameters
@@ -651,10 +685,10 @@ inline void getMapBounds(const PlannerConfig &planner_config, double &x_min,
  * in Action
  * @param[in] s State
  * @param[in] a Action
- * @param[in] t 
+ * @param[in] t
  * @param[in] phase Phase variable, CONNECT or others？
  * @param[in] planner_config Configuration parameters
- */ 
+ */
 State applyStance(const State &s, const Action &a, double t, int phase,
                   const PlannerConfig &planner_config);
 
@@ -665,7 +699,7 @@ State applyStance(const State &s, const Action &a, double t, int phase,
  * @param[in] a Action
  * @param[in] phase Phase variable, CONNECT or others？
  * @param[in] planner_config Configuration parameters
- */ 
+ */
 State applyStance(const State &s, const Action &a, int phase,
                   const PlannerConfig &planner_config);
 
@@ -678,7 +712,6 @@ State applyStance(const State &s, const Action &a, int phase,
  */
 State applyFlight(const State &s, double t_f,
                   const PlannerConfig &planner_config);
-
 
 State applyAction(const State &s, const Action &a,
                   const PlannerConfig &planner_config);

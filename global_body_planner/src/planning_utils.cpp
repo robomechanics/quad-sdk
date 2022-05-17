@@ -51,7 +51,7 @@ Eigen::VectorXd fullStateToEigen(const FullState &s) {
   return s_eig;
 }
 
-void vectorToFullState(const std::vector<double> v, FullState &s) {
+void vectorToFullState(const std::vector<double> &v, FullState &s) {
   if (v.size() != 12) {
     ROS_ERROR("std::vector<double> is incorrect size");
   }
@@ -110,29 +110,29 @@ void printAction(Action &a) {
   std::cout << "Terminal velocities: " << a.dz_0 << ", " << a.dz_f << std::endl;
 }
 
-void printStateNewline(State &s) {
+void printStateNewline(const State &s) {
   printState(s);
   std::cout << std::endl;
 }
 
-void printActionNewline(Action &a) {
+void printActionNewline(const Action &a) {
   printAction(a);
   std::cout << std::endl;
 }
 
-void printStateSequence(std::vector<State> &state_sequence) {
+void printStateSequence(const std::vector<State> &state_sequence) {
   for (State s : state_sequence) printState(s);
 }
 
-void printInterpStateSequence(std::vector<State> &state_sequence,
-                              std::vector<double> interp_t) {
+void printInterpStateSequence(const std::vector<State> &state_sequence,
+                              std::vector<double> &interp_t) {
   for (int i = 0; i < state_sequence.size(); i++) {
     std::cout << interp_t[i] << "\t";
     printStateNewline(state_sequence[i]);
   }
 }
 
-void printActionSequence(std::vector<Action> &action_sequence) {
+void printActionSequence(const std::vector<Action> &action_sequence) {
   for (Action a : action_sequence) printActionNewline(a);
 }
 
