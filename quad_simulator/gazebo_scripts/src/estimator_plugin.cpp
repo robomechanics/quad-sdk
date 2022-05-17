@@ -98,16 +98,33 @@ void QuadEstimatorGroundTruth::OnUpdate() {
 
   // Update and publish state estimate message
   quad_msgs::RobotState state;
-  state.body.pose.position.x = lin_pos.X();
-  state.body.pose.position.y = lin_pos.Y();
-  state.body.pose.position.z = lin_pos.Z();
+
+  double mean = 0;
+  double pos_std_dev = 0.00;
+  double vel_std_dev = 0.0;
+  std::normal_distribution<double> pos_noise_distribution(mean, pos_std_dev);
+  std::normal_distribution<double> vel_noise_distribution(mean, vel_std_dev);
+  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+  std::default_random_engine generator(seed);
+
+  Eigen::Vector3d pos_disturbance, vel_disturbance;
+  pos_disturbance << (double)rand() / RAND_MAX - 0.5,
+      (double)rand() / RAND_MAX - 0.5, (double)rand() / RAND_MAX - 0.5;
+  pos_disturbance =
+      pos_noise_distribution(generator) * pos_disturbance.normalized();
+  vel_disturbance =
+      vel_noise_distribution(generator) * pos_disturbance.normalized();
+
+  state.body.pose.position.x = lin_pos.X() + pos_disturbance.x();
+  state.body.pose.position.y = lin_pos.Y() + pos_disturbance.y();
+  state.body.pose.position.z = lin_pos.Z() + pos_disturbance.z();
   state.body.pose.orientation.w = ang_pos.W();
   state.body.pose.orientation.x = ang_pos.X();
   state.body.pose.orientation.y = ang_pos.Y();
   state.body.pose.orientation.z = ang_pos.Z();
-  state.body.twist.linear.x = lin_vel.X();
-  state.body.twist.linear.y = lin_vel.Y();
-  state.body.twist.linear.z = lin_vel.Z();
+  state.body.twist.linear.x = lin_vel.X() + vel_disturbance.x();
+  state.body.twist.linear.y = lin_vel.Y() + vel_disturbance.y();
+  state.body.twist.linear.z = lin_vel.Z() + vel_disturbance.z();
   state.body.twist.angular.x = ang_vel.X();
   state.body.twist.angular.y = ang_vel.Y();
   state.body.twist.angular.z = ang_vel.Z();

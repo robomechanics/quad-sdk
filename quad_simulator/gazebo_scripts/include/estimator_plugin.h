@@ -13,6 +13,7 @@
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
 #include <ignition/math/Vector3.hh>
+#include <random>
 
 namespace gazebo {
 class QuadEstimatorGroundTruth : public ModelPlugin {
