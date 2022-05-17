@@ -116,19 +116,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   }
 
   // Initialize leg controller object
-  if (controller_id_ == "inverse_dynamics") {
-    leg_controller_ = std::make_shared<InverseDynamicsController>();
-  } else if (controller_id_ == "grf_pid") {
-    leg_controller_ = std::make_shared<GrfPidController>();
-  } else if (controller_id_ == "joint") {
-    leg_controller_ = std::make_shared<JointController>();
-  } else {
-    ROS_ERROR_STREAM("Invalid controller id " << controller_id_
-                                              << ", returning nullptr");
-    leg_controller_ = nullptr;
-  }
-  leg_controller_->setGains(stance_kp_, stance_kd_, swing_kp_, swing_kd_,
-                            swing_kp_cart_, swing_kd_cart_);
+  initLegController();
 
   // Start sitting
   control_mode_ = SIT;
@@ -146,6 +134,30 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   double dt = 1.0 / mocap_rate_;
   filter_weight_ = 1.0 - dt / filter_time_constant_;
 
+  // Initialize state and control strucutres
+  initStateControlStructs();
+
+  // Load complementary filter coefficients
+  loadCompFilterParams();
+}
+
+void RobotDriver::initLegController() {
+  if (controller_id_ == "inverse_dynamics") {
+    leg_controller_ = std::make_shared<InverseDynamicsController>();
+  } else if (controller_id_ == "grf_pid") {
+    leg_controller_ = std::make_shared<GrfPidController>();
+  } else if (controller_id_ == "joint") {
+    leg_controller_ = std::make_shared<JointController>();
+  } else {
+    ROS_ERROR_STREAM("Invalid controller id " << controller_id_
+                                              << ", returning nullptr");
+    leg_controller_ = nullptr;
+  }
+  leg_controller_->setGains(stance_kp_, stance_kd_, swing_kp_, swing_kd_,
+                            swing_kp_cart_, swing_kd_cart_);
+}
+
+void RobotDriver::initStateControlStructs() {
   vel_estimate_.setZero();
   mocap_vel_estimate_.setZero();
   imu_vel_estimate_.setZero();
@@ -158,8 +170,9 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   grf_array_msg_.contact_states.resize(4);
   grf_array_msg_.header.frame_id = "map";
   user_tx_data_.resize(1);
+}
 
-  // Load complementary filter coefficients
+void RobotDriver::loadCompFilterParams() {
   std::vector<double> high_pass_a, high_pass_b, high_pass_c, high_pass_d;
   quad_utils::loadROSParam(nh_, "robot_driver/high_pass_a", high_pass_a);
   quad_utils::loadROSParam(nh_, "robot_driver/high_pass_b", high_pass_b);

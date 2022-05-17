@@ -52,6 +52,21 @@ class RobotDriver {
 
  private:
   /**
+   * @brief Initializes leg controller object
+   */
+  void initLegController();
+
+  /**
+  * @brief Initializes states and controls structures
+  */
+  void initStateControlStructs();
+  
+  /**
+  * @brief Loads general ros parameters 
+  */
+  void loadCompFilterParams();
+
+  /**
    * @brief Verifies and updates new control mode
    * @param[in] msg New control mode
    */
