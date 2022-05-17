@@ -1,7 +1,7 @@
 global_body_planner:
   update_rate: 20
   num_calls: 1            # Number of times to call the planner
-  max_planning_time: 0.1  # Maximum amount of time to run the planner
+  max_planning_time: 0.25  # Maximum amount of time to run the planner
   start_state: [0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
   goal_state: [6.0,0.0,0.3,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
   state_error_threshold: 25 #0.25
@@ -67,7 +67,9 @@ nmpc_controller:
   Q_temporal_factor: 10.0
   R_temporal_factor: 1
   friction_coefficient: 0.3
-  enable_adaptive_complexity: true
+  enable_variable_horizon: false
+  min_horizon_length: 10
+  enable_adaptive_complexity: false
   fixed_complex_idxs: [] # set to [] for none
   fixed_complex_head: 0 # set to 0 for none
   fixed_complex_tail: 0 # set to 0 for none
@@ -79,20 +81,24 @@ nmpc_controller:
     u_weights: [!!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5]
     x_lb: [!!float -2e19, !!float -2e19, 0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
     x_ub: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+    x_lb_soft: [!!float -2e19, !!float -2e19, 0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    x_ub_soft: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
     u_lb: [!!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10]
     u_ub: [!!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250, !!float 2e19, !!float 2e19, 250]
     g_lb: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
     g_ub: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   feet:
     x_dim: 24
-    u_dim: 12
+    u_dim: 24
     g_dim: 28
-    x_weights: [1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 1.23, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111]
-    u_weights: [!!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5]
+    x_weights: [7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111]
+    u_weights: [!!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5]
     x_lb: [!!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
     x_ub: [!!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
-    u_lb: [-99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9]
-    u_ub: [99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9]
+    x_lb_soft: [!!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    x_ub_soft: [!!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+    u_lb: [-99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9]
+    u_ub: [99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9]
     g_lb: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19]
     g_ub: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
   joints:
@@ -103,13 +109,13 @@ nmpc_controller:
     u_weights: []
     x_lb: [-0.707, -1.57, 0.001, -0.707, -1.57, 0.001, -0.707, -1.57, 0.001, -0.707, -1.57, 0.001, -37.71, -37.71, -25.11,-37.71, -37.71, -25.11,-37.71, -37.71, -25.11,-37.71, -37.71, -25.11]
     x_ub: [ 0.707,  3.14,  3.14,  0.707,  3.14,  3.14,  0.707,  3.14,  3.14,  0.707,  3.14,  3.14,  37.71,  37.71,  25.11, 37.71,  37.71,  25.11, 37.71,  37.71,  25.11, 37.71,  37.71,  25.11]
+    x_lb_soft: [  -0.5, -1.57,   0.2,   -0.5, -1.57,   0.2,   -0.5, -1.57,   0.2,   -0.5, -1.57,   0.2, -35.0, -35.0, -24.0,-35.0, -35.0, -24.0,-35.0, -35.0, -24.0,-35.0, -35.0, -24.0]
+    x_ub_soft: [   0.5,  3.14,   2.8,    0.5,  3.14,   2.8,    0.5,  3.14,   2.8,    0.5,  3.14,   2.8,  35.0,  35.0,  24.0, 35.0,  35.0,  24.0, 35.0,  35.0,  24.0, 35.0,  35.0,  24.0]
     u_lb: []
     u_ub: []
-    x_lb_soft: [  -0.5, -1.57,   0.4,   -0.5, -1.57,   0.4,   -0.5, -1.57,   0.4,   -0.5, -1.57,   0.4, -35.0, -35.0, -20.0,-35.0, -35.0, -20.0,-35.0, -35.0, -20.0,-35.0, -35.0, -20.0]
-    x_ub_soft: [   0.5,  3.14,   2.6,    0.5,  3.14,   2.6,    0.5,  3.14,   2.6,    0.5,  3.14,   2.6,  35.0,  35.0,  20.0, 35.0,  35.0,  20.0, 35.0,  35.0,  20.0, 35.0,  35.0,  20.0]
-    g_lb: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
-    g_ub: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
+    g_lb: [!!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    g_ub: [!!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, !!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19, !!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19,  !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+    
 robot_driver:
   update_rate: 500
   publish_rate: 500
