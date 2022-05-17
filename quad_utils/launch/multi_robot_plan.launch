@@ -1,69 +1,35 @@
 <launch>
 
     <arg name="global_planner" default="fgmp" />
-    <arg name="local_planner" default="full" />
     <arg name="logging" default="false" />
     <arg name="twist_input" default="none" />
+    <arg name="leaping" default="true" />
+    <arg name="ac" default="false" />
+    <arg name="robot_type" default="spirit"/>
 
-    <group ns="/robot_1">
-        <!-- Launch the node to publish the global body plan -->
-        <group if="$(eval arg('global_planner') == 'fgmp')">
-            <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen" />
-            <param name="local_planner/use_twist_input" value="false" />
-        </group>
+    <!-- Define namespaces for each robot -->
+    <arg name="namespace_1" default="robot_1"/>
+    <arg name="namespace_2" default="robot_2"/>
 
-        <!-- Use twist input to local plan and no global plan -->
-        <group if="$(eval arg('global_planner') == 'twist')">
-            <param name="local_planner/use_twist_input" value="true" />
-
-            <group if="$(eval arg('twist_input') == 'keyboard')">
-                <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" />
-            </group>
-
-            <group if="$(eval arg('twist_input') == 'joy')">
-                <include file="$(find teleop_twist_joy)/launch/teleop.launch">
-                    <arg name="joy_config" value="ps3-holonomic" />
-                </include>
-            </group>
-        </group>
-
-        <node name="local_planner" pkg="local_planner" type="local_planner_node" output="screen" />
-
-        <group if="$(arg logging)">
-            <include file="$(find quad_utils)/launch/logging.launch" />
-        </group>
-
-        <node name="plan_publisher" pkg="quad_utils" type="trajectory_publisher_node" output="screen" />
+    <group ns="$(arg namespace_1)">
+        <include file="$(find quad_utils)/launch/planning.launch">
+            <arg name="global_planner" value="$(arg global_planner)" />
+            <arg name="logging" value="$(arg logging)" />
+            <arg name="leaping" value="$(arg leaping)" />
+            <arg name="ac" value="$(arg ac)" />
+            <arg name="robot_type" value="$(arg robot_type)" />
+            <arg name="namespace" value="$(arg namespace_1)" />
+        </include>
     </group>
 
-    <group ns="/robot_2">
-        <!-- Launch the node to publish the global body plan -->
-        <group if="$(eval arg('global_planner') == 'fgmp')">
-            <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen" />
-            <param name="local_planner/use_twist_input" value="false" />
-        </group>
-
-        <!-- Use twist input to local plan and no global plan -->
-        <group if="$(eval arg('global_planner') == 'twist')">
-            <param name="local_planner/use_twist_input" value="true" />
-
-            <group if="$(eval arg('twist_input') == 'keyboard')">
-                <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" />
-            </group>
-
-            <group if="$(eval arg('twist_input') == 'joy')">
-                <include file="$(find teleop_twist_joy)/launch/teleop.launch">
-                    <arg name="joy_config" value="ps3-holonomic" />
-                </include>
-            </group>
-        </group>
-
-        <node name="local_planner" pkg="local_planner" type="local_planner_node" output="screen" />
-
-        <group if="$(arg logging)">
-            <include file="$(find quad_utils)/launch/logging.launch" />
-        </group>
-
-        <node name="plan_publisher" pkg="quad_utils" type="trajectory_publisher_node" output="screen" />
+    <group ns="$(arg namespace_2)">
+        <include file="$(find quad_utils)/launch/planning.launch">
+            <arg name="global_planner" value="$(arg global_planner)" />
+            <arg name="logging" value="$(arg logging)" />
+            <arg name="leaping" value="$(arg leaping)" />
+            <arg name="ac" value="$(arg ac)" />
+            <arg name="robot_type" value="$(arg robot_type)" />
+            <arg name="namespace" value="$(arg namespace_2)" />
+        </include>
     </group>
 </launch>
