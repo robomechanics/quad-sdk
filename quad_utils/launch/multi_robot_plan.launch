@@ -36,7 +36,6 @@
         <node name="plan_publisher" pkg="quad_utils" type="trajectory_publisher_node" output="screen" />
     </group>
 
-
     <group ns="/robot_2">
         <!-- Launch the node to publish the global body plan -->
         <group if="$(eval arg('global_planner') == 'fgmp')">
