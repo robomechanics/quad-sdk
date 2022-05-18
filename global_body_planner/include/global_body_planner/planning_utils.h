@@ -743,7 +743,7 @@ State applyAction(const State &s, const Action &a,
 /**
  * @brief Obtain new State height after applying new flight
  * @param[in] s State
- * @param[in] t 
+ * @param[in] t
  * @param[in] phase The phase the State is under
  * @param[in] planner_config Configuration parameters
  * @return The ground reaction force
@@ -753,7 +753,7 @@ GRF getGRF(const Action &a, double t, int phase,
 
 /**
  * @brief Get the acceleration after applying the Action
- * @param[in] t 
+ * @param[in] t
  * @param[in] phase The phase the State is under
  * @param[in] planner_config Configuration parameters
  * @return The acceleration
@@ -805,7 +805,8 @@ bool refineFlight(const State &s, double &t_f,
 
 // Instantaneous validity checking
 /**
- * @brief Check the Action is valid or not in terms of force limits and friction cone 
+ * @brief Check the Action is valid or not in terms of force limits and friction
+ * cone
  * @param[in] a The Action to be checked
  * @param[in] planner_config Configuration parameters
  * @return Whether the Action is valid or not
@@ -813,7 +814,8 @@ bool refineFlight(const State &s, double &t_f,
 bool isValidAction(const Action &a, const PlannerConfig &planner_config);
 
 /**
- * @brief Check the State is valid or not in terms of traversability, reachability, collision, etc. 
+ * @brief Check the State is valid or not in terms of traversability,
+ * reachability, collision, etc.
  * @param[in] s The State to be checked
  * @param[in] planner_config Configuration parameters
  * @param[in] phase The phase the State is under
@@ -824,7 +826,8 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
                   int phase);
 
 /**
- * @brief Check the State is valid or not in terms of traversability, reachability, collision, etc. 
+ * @brief Check the State is valid or not in terms of traversability,
+ * reachability, collision, etc.
  * @param[in] s The State to be checked
  * @param[in] planner_config Configuration parameters
  * @param[in] phase The phase the State is under
