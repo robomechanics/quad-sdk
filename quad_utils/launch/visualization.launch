@@ -1,9 +1,14 @@
 <launch>
     <arg name="namespace" default="robot_1" />
+    <arg name="robot_type" default="spirit"/>
     <arg name="live_plot" default="false"/>
-    <arg name="dash"      default="false"/>
+    <arg name="dash" default="false"/>
     <arg name="visualization" default="true"/>
-    
+
+    <include file="$(find quad_utils)/launch/load_params.launch">
+        <arg name="robot_type" value="$(arg robot_type)"/>
+    </include>
+
     <group ns="trajectory">
         <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
@@ -21,20 +26,19 @@
     </group>
 
     <group if="$(arg visualization)">
-    <!-- Launch the node to publish the visual topics for the plans -->
-    <node name="rviz_interface" pkg="quad_utils" type="rviz_interface_node" output="screen"/>
+        <!-- Launch the node to publish the visual topics for the plans -->
+        <node name="rviz_interface" pkg="quad_utils" type="rviz_interface_node" output="screen"/>
 
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find quad_utils)/rviz/example_with_terrain.rviz"/>
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find quad_utils)/rviz/example_with_terrain.rviz"/>
 
-    <group if="$(arg live_plot)">
-        <node name="plotjuggler" pkg="plotjuggler" type="plotjuggler" 
-            args="--layout $(find quad_utils)/config/plotjuggler_config.xml" />
-    </group>
+        <group if="$(arg live_plot)">
+            <node name="plotjuggler" pkg="plotjuggler" type="plotjuggler" args="--layout $(find quad_utils)/config/plotjuggler_config.xml" />
+        </group>
 
-    <group if="$(arg dash)">
-        <node name = "rqt_dashboard" pkg = "rqt_gui" type = "rqt_gui" respawn = 
+        <group if="$(arg dash)">
+            <node name = "rqt_dashboard" pkg = "rqt_gui" type = "rqt_gui" respawn = 
         "false" output = "screen" args = "--perspective-file $(find quad_utils)/config/dashboard.perspective"/>
-    </group>
+        </group>
     </group>
 
 </launch>
