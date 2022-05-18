@@ -1,9 +1,16 @@
 ekf_estimator:
   joint_state_max_time: 20 # Milliseconds until we disregard last joint state message
   update_rate: 100
-  bias_x: 0.18 # actual measurement of bias_acc x is 0.083616044
-  bias_y: 0.07 # actual measurement of bias_acc y is 0.060205998
-  bias_z: -9.800917657 # actual measurement of bias_acc z is 0.060205998
-  bias_r: 0.00009 # actual measurement of bias_gyro r is ??
-  bias_p: 0.00003 # actual measurement of bias_gyro p is ??
-  bias_y: 0.00002 # actual measurement of bias_gyro y is ??
+  bias_x: 0.10 # actual measurement of bias_acc x is 0.083616044
+  bias_y: -0.156 # actual measurement of bias_acc y is 0.060205998
+  bias_z: 0.0 # actual measurement of bias_acc z is 0.00
+  bias_r: 0.00000 # actual measurement of bias_gyro r is 0.00009
+  bias_p: 0.00000 # actual measurement of bias_gyro p is 0.00003
+  bias_w: 0.00000 # actual measurement of bias_gyro y is 0.00002
+  na: 0.001 # noise in accelerometer
+  ng: 0.001 # noise in gyro
+  ba: 0.001 # bias in accelerometer
+  bg: 0.00001 # bias in gyro
+  nf: 0.001 # noise in feet
+  nfk: 0.001 # noise in forward kinematics
+  ne: 0.001 # noise in encoder

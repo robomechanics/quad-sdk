@@ -293,6 +293,35 @@ class EKFEstimator {
   // noise at encoder
   double noise_encoder;
 
+  // imu bias
+  double bias_x_;
+
+  double bias_y_;
+
+  double bias_z_;
+
+  double bias_r_;
+
+  double bias_p_;
+
+  double bias_w_;
+
+  // noise term
+  // noise in accelerometer
+  double na_;
+  // noise in gyro
+  double ng_;
+  // bias in accelerometer
+  double ba_;
+  // bias in gyro
+  double bg_;
+  // noise in feet
+  double nf_;
+  // noise in forward kinematics
+  double nfk_;
+  // noise in encoder
+  double ne_;
+
   // initialized the estimator
   bool initialized = false;
 
