@@ -37,6 +37,7 @@
     
     <include file="$(find quad_utils)/launch/visualization.launch">
       <arg name="namespace" value="$(arg namespace)"/>
+      <arg name="robot_type"    default="$(arg robot_type)"/>
       <arg name="visualization" value="$(arg visualization)"/>
     </include>
   </group> 
