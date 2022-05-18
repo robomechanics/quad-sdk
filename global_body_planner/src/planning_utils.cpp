@@ -102,7 +102,7 @@ void printFullState(const FullState &s) {
             << ", ang_vel = " << s.ang_vel.transpose() << std::endl;
 }
 
-void printAction(Action &a) {
+void printAction(const Action &a) {
   std::cout << "ACTION: grf_0 = " << a.grf_0.transpose()
             << ", grf_f = " << a.grf_f.transpose() << std::endl;
   std::cout << "Phase durations = " << a.t_s_leap << ", " << a.t_f << ", "
@@ -271,15 +271,15 @@ GRF getGRF(const Action &a, double t, int phase,
 
   GRF grf;
 
-  if (phase ==  Phase::LEAP_STANCE) {
+  if (phase ==  LEAP_STANCE) {
     grf = m * g * a.grf_0 * t * 1.0 / (a.t_s_leap * a.t_s_leap) *
           (t - a.t_s_leap) * -4.0;
-  } else if (phase ==  Phase::FLIGHT) {
+  } else if (phase ==  FLIGHT) {
     grf.setZero();
-  } else if (phase ==  Phase::LAND_STANCE) {
+  } else if (phase ==  LAND_STANCE) {
     grf = m * g * a.grf_f * t * 1.0 / (a.t_s_land * a.t_s_land) *
           (t - a.t_s_land) * -4.0;
-  } else if (phase == Phase::CONNECT) {
+  } else if (phase == CONNECT) {
     grf = m * (a.grf_0 + (a.grf_f - a.grf_0) * t / a.t_s_leap -
                planner_config.g_vec);
     grf[2] = m * g;
@@ -346,8 +346,8 @@ State interpStateActionPair(const State &s_in, const Action &a, double t0,
 
   State s = s_in;
 
-  int phase = (t_f == 0) ? Phase::CONNECT : Phase::LEAP_STANCE;
-  if (phase == Phase::LEAP_STANCE) {
+  int phase = (t_f == 0) ? CONNECT : LEAP_STANCE;
+  if (phase == LEAP_STANCE) {
     s.vel[2] = a.dz_0;
   }
 
@@ -383,8 +383,8 @@ State interpStateActionPair(const State &s_in, const Action &a, double t0,
   State s_land = applyFlight(s_takeoff, t_f, planner_config);
   State s_final = s_land;
 
-  if (phase != Phase::CONNECT) {
-    phase = Phase::LAND_STANCE;
+  if (phase != CONNECT) {
+    phase = LAND_STANCE;
 
     // Add points during stance phase
     for (double t = 0; t < t_s_land; t += dt) {
@@ -432,7 +432,7 @@ void getInterpPlan(FullState start_state,
       poseDistance(state_sequence.back(), interp_reduced_plan.back()));
   interp_reduced_plan.push_back(state_sequence.back());
   interp_GRF.push_back(interp_GRF.back());
-  interp_primitive_id.push_back( Phase::LEAP_STANCE);
+  interp_primitive_id.push_back( LEAP_STANCE);
 
   // Lift from reduced into full body plan
   addFullStates(start_state, interp_reduced_plan, dt, interp_full_plan,
@@ -475,7 +475,7 @@ State applyStance(const State &s, const Action &a, double t, int phase,
   double g = planner_config.g;
   State s_new = s;
 
-  if (phase == Phase::CONNECT) {
+  if (phase == CONNECT) {
     Eigen::Vector3d acc_0 = a.grf_0 * g + planner_config.g_vec;
     Eigen::Vector3d acc_f = a.grf_f * g + planner_config.g_vec;
 
@@ -492,9 +492,9 @@ State applyStance(const State &s, const Action &a, double t, int phase,
     setDz(s_new, planner_config);
 
   } else {
-    GRF peak_grf = (phase ==  Phase::LEAP_STANCE) ? a.grf_0 : a.grf_f;
-    double t_s = (phase ==  Phase::LEAP_STANCE) ? a.t_s_leap : a.t_s_land;
-    s_new.vel[2] = (phase ==  Phase::LEAP_STANCE) ? a.dz_0 : s_new.vel[2];
+    GRF peak_grf = (phase ==  LEAP_STANCE) ? a.grf_0 : a.grf_f;
+    double t_s = (phase ==  LEAP_STANCE) ? a.t_s_leap : a.t_s_land;
+    s_new.vel[2] = (phase ==  LEAP_STANCE) ? a.dz_0 : s_new.vel[2];
 
     s_new.pos = s_new.pos -
                 1.0 / (t_s * t_s) *
@@ -514,7 +514,7 @@ State applyStance(const State &s, const Action &a, double t, int phase,
 State applyStance(const State &s, const Action &a, int phase,
                   const PlannerConfig &planner_config) {
   double t_s =
-      (phase == Phase::CONNECT || phase == Phase::LEAP_STANCE) ? a.t_s_leap : a.t_s_land;
+      (phase == CONNECT || phase == LEAP_STANCE) ? a.t_s_leap : a.t_s_land;
   return applyStance(s, a, t_s, phase, planner_config);
 }
 
@@ -532,11 +532,11 @@ State applyAction(const State &s, const Action &a,
   State s_new;
 
   if (a.t_f == 0) {
-    s_new = applyStance(s, a, Phase::CONNECT, planner_config);
+    s_new = applyStance(s, a, CONNECT, planner_config);
   } else {
-    State s_to = applyStance(s, a,  Phase::LEAP_STANCE, planner_config);
+    State s_to = applyStance(s, a,  LEAP_STANCE, planner_config);
     State s_land = applyFlight(s_to, a.t_f, planner_config);
-    s_new = applyStance(s_land, a,  Phase::LAND_STANCE, planner_config);
+    s_new = applyStance(s_land, a,  LAND_STANCE, planner_config);
   }
 
   return s_new;
@@ -569,9 +569,9 @@ bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm,
 
 bool refineAction(const State &s, Action &a,
                   const PlannerConfig &planner_config) {
-  if (!refineStance(s,  Phase::LEAP_STANCE, a, planner_config)) return false;
+  if (!refineStance(s,  LEAP_STANCE, a, planner_config)) return false;
 
-  State s_leap = applyStance(s, a,  Phase::LEAP_STANCE, planner_config);
+  State s_leap = applyStance(s, a,  LEAP_STANCE, planner_config);
 
   if (!refineFlight(s_leap, a.t_f, planner_config)) {
     return false;
@@ -579,9 +579,9 @@ bool refineAction(const State &s, Action &a,
 
   State s_land = applyFlight(s_leap, a.t_f, planner_config);
 
-  if (!refineStance(s_land,  Phase::LAND_STANCE, a, planner_config)) return false;
+  if (!refineStance(s_land,  LAND_STANCE, a, planner_config)) return false;
 
-  State s_final = applyStance(s_land, a,  Phase::LAND_STANCE, planner_config);
+  State s_final = applyStance(s_land, a,  LAND_STANCE, planner_config);
   a.dz_f = s_final.vel[2];
 
   return true;
@@ -594,9 +594,9 @@ bool refineStance(const State &s, int phase, Action &a,
 #endif
 
   // Load parameters (use references for action params that may change)
-  double &t_s = (phase ==  Phase::LEAP_STANCE) ? a.t_s_leap : a.t_s_land;
-  GRF &grf_stance = (phase ==  Phase::LEAP_STANCE) ? a.grf_0 : a.grf_f;
-  double dz_0 = (phase ==  Phase::LEAP_STANCE) ? a.dz_0 : s.vel[2];
+  double &t_s = (phase ==  LEAP_STANCE) ? a.t_s_leap : a.t_s_land;
+  GRF &grf_stance = (phase ==  LEAP_STANCE) ? a.grf_0 : a.grf_f;
+  double dz_0 = (phase ==  LEAP_STANCE) ? a.dz_0 : s.vel[2];
   double g = planner_config.g;
 #ifdef DEBUG_REFINE_STATE
   std::cout << "dz_0 = " << dz_0 << std::endl;
@@ -631,7 +631,7 @@ bool refineStance(const State &s, int phase, Action &a,
     pos_f = s_final.pos;
 
     double buffer = 3e-2;
-    if (phase ==  Phase::LEAP_STANCE) {
+    if (phase ==  LEAP_STANCE) {
       isValidState(s_final, planner_config, phase, pos_f[2]);
       pos_f[2] -= buffer;
     } else {
@@ -693,7 +693,7 @@ bool refineStance(const State &s, int phase, Action &a,
         return false;
       }
 
-      if (phase ==  Phase::LEAP_STANCE) {
+      if (phase ==  LEAP_STANCE) {
         dz_0 += 0.2;
 #ifdef DEBUG_REFINE_STATE
         std::cout << "GRF exceeds limits, reducing initial downwards velocity"
@@ -721,7 +721,7 @@ bool refineStance(const State &s, int phase, Action &a,
       continue;
     }
   }
-  if (phase ==  Phase::LEAP_STANCE) {
+  if (phase ==  LEAP_STANCE) {
     a.dz_0 = dz_0;
   } else {
     a.dz_f = s_final.vel[2];
@@ -822,7 +822,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
 
   // Ensure body is over traversable terrain unless in flight or leaping
   // disabled
-  if (!isBodyTraversable(s.pos, planner_config) && phase !=  Phase::FLIGHT &&
+  if (!isBodyTraversable(s.pos, planner_config) && phase !=  FLIGHT &&
       planner_config.enable_leaping) {
 #ifdef DEBUG_INVALID_STATE
     printf("!isContactTraversable, phase = %d\n", phase);
@@ -907,7 +907,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
 
     // Make sure legs are over a valid region of the terrain
     if (!isContactTraversable(reachability_point, planner_config) &&
-        phase !=  Phase::FLIGHT) {
+        phase !=  FLIGHT) {
       max_valid_z = s.pos[2] + planner_config.h_max -
                     getZRelToTerrain(reachability_point, planner_config);
       return false;
@@ -919,7 +919,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
     bool is_rear_leg = (i % 2 == 1);
 
     // Check for reachability
-    if (phase == Phase::CONNECT) {
+    if (phase == CONNECT) {
       max_valid_z = std::min(max_valid_z, s.pos[2] + planner_config.h_max -
                                               reachability_clearance);
       if (reachability_clearance > planner_config.h_max) {
@@ -928,7 +928,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
 #endif
         return false;
       }
-    } else if (phase ==  Phase::LEAP_STANCE) {
+    } else if (phase ==  LEAP_STANCE) {
       if (is_rear_leg) {
         max_valid_z = std::min(max_valid_z, s.pos[2] + planner_config.h_max -
                                                 reachability_clearance);
@@ -940,7 +940,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
           return false;
         }
       }
-    } else if (phase ==  Phase::LAND_STANCE) {
+    } else if (phase ==  LAND_STANCE) {
       // if (!is_rear_leg) {
       max_valid_z = std::min(max_valid_z, s.pos[2] + planner_config.h_max -
                                               reachability_clearance);
@@ -975,7 +975,7 @@ bool isValidStateActionPair(const State &s_in, const Action &a,
   result.a_new = a;
 
   // Initialize phase
-  int phase = (t_f == 0) ? Phase::CONNECT :  Phase::LEAP_STANCE;
+  int phase = (t_f == 0) ? CONNECT :  LEAP_STANCE;
 
   // LEAP (OR CONNECT) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1027,7 +1027,7 @@ bool isValidStateActionPair(const State &s_in, const Action &a,
     State s_next = applyFlight(s_takeoff, t, planner_config);
 
     // Check collision in flight
-    if (!isValidState(s_next, planner_config,  Phase::FLIGHT)) {
+    if (!isValidState(s_next, planner_config,  FLIGHT)) {
 #ifdef DEBUG_INVALID_STATE
       printf("Flight collision, exiting\n");
       printState(s_next);
@@ -1045,16 +1045,16 @@ bool isValidStateActionPair(const State &s_in, const Action &a,
 
   // LANDING ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  if (phase != Phase::CONNECT) {
+  if (phase != CONNECT) {
     State s_land = applyFlight(s_takeoff, t_f, planner_config);
 
     t = 0;
     while (t < t_s_land) {
       // Compute state to check
       State s_next =
-          applyStance(s_land, result.a_new, t,  Phase::LAND_STANCE, planner_config);
+          applyStance(s_land, result.a_new, t,  LAND_STANCE, planner_config);
 
-      if (!isValidState(s_next, planner_config,  Phase::LAND_STANCE)) {
+      if (!isValidState(s_next, planner_config,  LAND_STANCE)) {
 #ifdef DEBUG_INVALID_STATE
         printf("Invalid landing stance config\n");
 #endif
@@ -1068,9 +1068,9 @@ bool isValidStateActionPair(const State &s_in, const Action &a,
     }
 
     State s_final =
-        applyStance(s_land, result.a_new,  Phase::LAND_STANCE, planner_config);
+        applyStance(s_land, result.a_new,  LAND_STANCE, planner_config);
 
-    if (!isValidState(s_final, planner_config,  Phase::LAND_STANCE)) {
+    if (!isValidState(s_final, planner_config,  LAND_STANCE)) {
 #ifdef DEBUG_INVALID_STATE
       printf("Invalid s_final config");
 #endif
@@ -1130,19 +1130,19 @@ void publishStateActionPair(const State &s, const Action &a,
     // Set the color of the line strip according to the motion primitive
     std_msgs::ColorRGBA color;
     color.a = 1;
-    if (interp_primitive_id[i] ==  Phase::FLIGHT) {
+    if (interp_primitive_id[i] ==  FLIGHT) {
       color.r = 0 / 255.0;
       color.g = 45.0 / 255.0;
       color.b = 144.0 / 255.0;
-    } else if (interp_primitive_id[i] ==  Phase::LEAP_STANCE) {
+    } else if (interp_primitive_id[i] ==  LEAP_STANCE) {
       color.r = 0 / 255.0;
       color.g = 132.0 / 255.0;
       color.b = 61.0 / 255.0;
-    } else if (interp_primitive_id[i] ==  Phase::LAND_STANCE) {
+    } else if (interp_primitive_id[i] ==  LAND_STANCE) {
       color.r = 0 / 255.0;
       color.g = 200.0 / 255.0;
       color.b = 100.0 / 255.0;
-    } else if (interp_primitive_id[i] == Phase::CONNECT) {
+    } else if (interp_primitive_id[i] == CONNECT) {
       color.r = 166.0 / 255.0;
       color.g = 25.0 / 255.0;
       color.b = 46.0 / 255.0;

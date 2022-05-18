@@ -160,7 +160,7 @@ struct PlannerConfig {
 enum Phase { CONNECT, LEAP_STANCE, FLIGHT, LAND_STANCE };
 
 /**
- * @brief Define tree growing direction labels 
+ * @brief Define tree growing direction labels
  * (FORWARD to go away from the root vertex, REVERSE to go towards it)
  */
 enum TreeDirection { FORWARD, REVERSE };
@@ -171,7 +171,7 @@ enum TreeDirection { FORWARD, REVERSE };
 enum ExitFlag {
   UNSOLVED,
   VALID,
-  ALID_PARTIAL,
+  VALID_PARTIAL,
   INVALID_START_STATE,
   INVALID_GOAL_STATE,
   INVALID_START_GOAL_EQUAL
@@ -418,15 +418,14 @@ void addFullStates(const FullState &start_state,
  * @param[in] dt Time resolution
  * @param[out] interp_plan The sequence of interpolated States on timesteps
  * throughout stance-flight-stance phases
- * @param[out] inter_GRF The sequence of ground reaction force on interpolated
- * States
- * @param[out] interp_t The sequence of timesteps on interpolated States
- * @param[out] interp_primitive_id The sequence of corresponding Phase label on
- * interpolated States
+ * @param[out] inter_GRF The sequence of ground reaction force along the path
+ * @param[out] interp_t The sequence of timesteps along the path
+ * @param[out] interp_primitive_id The sequence of corresponding Phase label
+ * along the path
  * @param[out] interp_length The sequence of accumulated distances from inital
  * State to each interpolated State position
  * @param[in] planner_config Configuration parameters
- * @return
+ * @return The final State along the path
  */
 State interpStateActionPair(const State &s, const Action &a, double t0,
                             double dt, std::vector<State> &interp_plan,
@@ -437,19 +436,20 @@ State interpStateActionPair(const State &s, const Action &a, double t0,
                             const PlannerConfig &planner_config);
 
 /**
- * @brief Interpolate State and Action Pair
+ * @brief Retrieve the path of FullState by interpolating States based on Action
  * @param[in] start_state The initial State
  * @param[in] state_sequence The sequence of states in the path
  * @param[in] action_sequence The sequence of actions in the path
  * @param[in] dt Time resolution
  * @param[in] t0 The initial timestep
- * @param[out] inter_full_plan Interpolated FullState
- * @param[out] interp_GRF Interpolated ground reaction force
- * @param[out] interp_t Interpolated timestep
- * @param[out] interp_primitive_id
- * @param[out] interp_length The distance of interpolated
- * @param[in] planner_config
- * @return
+ * @param[out] inter_full_plan The interpolated FullStates along the path
+ * @param[out] interp_GRF The sequence of ground reaction force along the path
+ * @param[out] interp_t The sequence of timesteps along the path
+ * @param[out] interp_primitive_id The sequence of corresponding Phase label
+ * along the path
+ * @param[out] interp_length The sequence of accumulated distances from inital
+ * State to each interpolated State position
+ * @param[in] planner_config Configuration parameters
  */
 void getInterpPlan(const FullState &start_state,
                    const std::vector<State> &state_sequence,
@@ -461,7 +461,7 @@ void getInterpPlan(const FullState &start_state,
                    const PlannerConfig &planner_config);
 
 /**
- * @brief Obtain body pitch from State
+ * @brief Get body pitch from State
  * @param[in] s State
  * @param[in] planner_config Configuration parameters
  * @return Pitch of current State
@@ -469,21 +469,33 @@ void getInterpPlan(const FullState &start_state,
 double getPitchFromState(const State &s, const PlannerConfig &planner_config);
 
 /**
- * @brief Align lateral velocity along surface normal
+ * @brief Align lateral velocity along surface normal of filtered map
  * @param[in] s State
  * @param[in] planner_config Configuration parameters
  * @return delta z
  */
 double getDzFromState(const State &s, const PlannerConfig &planner_config);
 
+/**
+ * @brief Align lateral velocity along surface normal of filtered map
+ * @param[out] s State
+ * @param[in] planner_config Configuration parameters
+ * @return delta z
+ */
 void setDz(State &s, const PlannerConfig &planner_config);
 
+/**
+ * @brief Align lateral velocity along surface normal of filtered map
+ * @param[out] s State
+ * @param[in] planner_config Configuration parameters
+ * @return delta z
+ */
 void setDz(State &s, const Eigen::Vector3d &surf_norm);
 
 /**
  * @brief Inline function to check if State pos is inside
  * map range or not
- * @param[in] pos State pos in Eigen vector
+ * @param[in] pos State pos in Eigen vector form
  * @param[in] planner_config Configuration parameters
  * @return Whether the State pos is inside map
  */
@@ -505,10 +517,10 @@ inline bool isInMap(const State &s, const PlannerConfig &planner_config) {
 }
 
 /**
- * @brief Inline function to get the terrain height at a point
- * @param[in] pos location to check height
+ * @brief Inline function to get the terrain height at State position
+ * @param[in] pos State position
  * @param[in] planner_config Configuration parameters
- * @return Terrain height at the location
+ * @return The terrain height at State position
  */
 inline double getTerrainZ(const Eigen::Vector3d &pos,
                           const PlannerConfig &planner_config) {
@@ -520,10 +532,10 @@ inline double getTerrainZ(const Eigen::Vector3d &pos,
 }
 
 /**
- * @brief Inline function to get the filtered terrain height at a point
- * @param[in] pos location to check height
+ * @brief Inline function to get the filtered terrain height at State position
+ * @param[in] pos State position
  * @param[in] planner_config Configuration parameters
- * @return Filtered terrain height at the location
+ * @return The filtered terrain height at State position
  */
 inline double getTerrainZFiltered(const Eigen::Vector3d &pos,
                                   const PlannerConfig &planner_config) {
@@ -535,10 +547,10 @@ inline double getTerrainZFiltered(const Eigen::Vector3d &pos,
 }
 
 /**
- * @brief Inline function to get the traversability at a point
- * @param[in] pos location to check height
+ * @brief Inline function to get the traversability at State position
+ * @param[in] pos State position
  * @param[in] planner_config Configuration parameters
- * @return Filtered terrain height at the location
+ * @return The traversability at State position
  */
 inline double getTraversability(const Eigen::Vector3d &pos,
                                 const PlannerConfig &planner_config) {
@@ -547,10 +559,11 @@ inline double getTraversability(const Eigen::Vector3d &pos,
 }
 
 /**
- * @brief Inline function to check whether body is traversable above a threshold
- * @param[in] pos location to check height
+ * @brief Inline function to check whether State position is traversable above a
+ * threshold
+ * @param[in] pos State position
  * @param[in] planner_config Configuration parameters
- * @return Whether body is traversable
+ * @return Whether State positon is traversable at State position on map
  */
 inline bool isBodyTraversable(const Eigen::Vector3d &pos,
                               const PlannerConfig &planner_config) {
@@ -559,11 +572,13 @@ inline bool isBodyTraversable(const Eigen::Vector3d &pos,
 }
 
 /**
- * @brief Inline function to check whether contact is traversable above a
- * threshold
- * @param[in] pos location to check height
+ * @brief Inline function to check whether contact position is traversable above
+ * a threshold
+ * @param[in] pos Contact position (Note the difference from State position:
+ * contact position is at the four corners of rectangular body while State
+ * position is at the center of the rectangular body)
  * @param[in] planner_config Configuration parameters
- * @return Whether body is traversable
+ * @return Whether contact position is traversable
  */
 inline bool isContactTraversable(const Eigen::Vector3d &pos,
                                  const PlannerConfig &planner_config) {
@@ -593,10 +608,10 @@ inline Eigen::Vector3d getSurfaceNormalFiltered(
 }
 
 /**
- * @brief Inline function to get the terrain height of State pos
+ * @brief Inline function to get the terrain height of State position
  * @param[in] s State
  * @param[in] planner_config Configuration parameters
- * @return Terrain height at the State pos
+ * @return Terrain height at the State position
  */
 inline double getTerrainZFromState(const State &s,
                                    const PlannerConfig &planner_config) {
@@ -616,10 +631,10 @@ inline double getTerrainZFilteredFromState(
 
 /**
  * @brief Inline function to get the relative difference between
- *  terrain height and body pos
- * @param[in] pos location in Eigen vector to check height
+ *  terrain height and  State +z position
+ * @param[in] pos State position in Eigen vector form
  * @param[in] planner_config Configuration parameters
- * @return The relative difference between terrain height and body pos
+ * @return The relative difference between terrain height and  State +z position
  */
 inline double getZRelToTerrain(const Eigen::Vector3d &pos,
                                const PlannerConfig &planner_config) {
@@ -628,10 +643,10 @@ inline double getZRelToTerrain(const Eigen::Vector3d &pos,
 
 /**
  * @brief Inline function to get the relative difference between
- * terrain height and body pos
+ * terrain height and State +z position
  * @param[in] s State
  * @param[in] planner_config Configuration parameters
- * @return The relative difference between terrain height and body pos
+ * @return The relative difference between terrain height and State +z position
  */
 inline double getZRelToTerrain(const State &s,
                                const PlannerConfig &planner_config) {
@@ -640,10 +655,11 @@ inline double getZRelToTerrain(const State &s,
 
 /**
  * @brief Inline function to get the relative difference between
- * filtered terrain height and body pos
- * @param[in] pos location to check height
+ * filtered terrain height and State +z position
+ * @param[in] pos State position
  * @param[in] planner_config Configuration parameters
- * @return Filtered terrain height at the location
+ * @return the relative difference between filtered terrain height and State +z
+ * position
  */
 inline double getZRelToTerrainFiltered(const Eigen::Vector3d &pos,
                                        const PlannerConfig &planner_config) {
@@ -652,7 +668,7 @@ inline double getZRelToTerrainFiltered(const Eigen::Vector3d &pos,
 
 /**
  * @brief Inline function to get the relative difference between
- * filtered terrain height and body pos
+ * filtered terrain height and State position
  * @param[in] s State
  * @param[in] planner_config Configuration parameters
  * @return Filtered terrain height at the location
@@ -664,12 +680,11 @@ inline double getZRelToTerrainFiltered(const State &s,
 
 /**
  * @brief Inline function to get the map boundary
- * filtered terrain height and body pos
  * @param[in] planner_config Configuration parameters
- * @param[in] x_min The minimal x bounday
- * @param[in] x_max The maximal x bounday
- * @param[in] y_min The minimal y bounday
- * @param[in] y_max The maximal x bounday
+ * @param[in] x_min The minimal x
+ * @param[in] x_max The maximal x
+ * @param[in] y_min The minimal y
+ * @param[in] y_max The maximal x
  */
 inline void getMapBounds(const PlannerConfig &planner_config, double &x_min,
                          double &x_max, double &y_min, double &y_max) {
@@ -681,83 +696,166 @@ inline void getMapBounds(const PlannerConfig &planner_config, double &x_min,
 }
 
 /**
- * @brief Obtain new State height after applying the ground reaction force
- * in Action
- * @param[in] s State
- * @param[in] a Action
- * @param[in] t
- * @param[in] phase Phase variable, CONNECT or others？
+ * @brief Obtain new State after applying Action
+ * @param[in] s The initial State
+ * @param[in] a The Action applied
+ * @param[in] t time last for Action
+ * @param[in] phase Phase variable which the State is under, CONNECT or others？
  * @param[in] planner_config Configuration parameters
+ * @return New State after Action appiled for the period of time
  */
 State applyStance(const State &s, const Action &a, double t, int phase,
                   const PlannerConfig &planner_config);
 
 /**
- * @brief Obtain new State height after applying the ground reaction force
- * in Action
- * @param[in] s State
- * @param[in] a Action
- * @param[in] phase Phase variable, CONNECT or others？
+ * @brief Obtain new State after applying Action during the leaping and landing
+ * phase
+ * @param[in] s The initial State
+ * @param[in] a The Action applied
+ * @param[in] phase Phase variable which the State is under, CONNECT or
+ * LEAP_STANCE？
  * @param[in] planner_config Configuration parameters
+ * @return New State after Action appiled for the period of time
  */
 State applyStance(const State &s, const Action &a, int phase,
                   const PlannerConfig &planner_config);
 
 /**
- * @brief Obtain new State height after applying new flight
- * @param[in] s State
- * @param[in] t_f
+ * @brief Obtain new State after the flight phase
+ * @param[in] s The initial State
+ * @param[in] t_f Time last in the flight phase
  * @param[in] planner_config Configuration parameters
- * @return New State after Flight phase
+ * @return New State after the flight phase
  */
 State applyFlight(const State &s, double t_f,
                   const PlannerConfig &planner_config);
 
+/**
+ * @brief Obtain new State by applying Action
+ * @param[in] s The initial State
+ * @param[in] t_f Time last in the flight phase
+ * @param[in] planner_config Configuration parameters
+ * @return New State after the flight phase
+ */
 State applyAction(const State &s, const Action &a,
                   const PlannerConfig &planner_config);
 
 /**
  * @brief Obtain new State height after applying new flight
  * @param[in] s State
- * @param[in] t_f
+ * @param[in] t 
+ * @param[in] phase The phase the State is under
  * @param[in] planner_config Configuration parameters
- * @return New State after Flight phase
+ * @return The ground reaction force
  */
 GRF getGRF(const Action &a, double t, int phase,
            const PlannerConfig &planner_config);
 
+/**
+ * @brief Get the acceleration after applying the Action
+ * @param[in] t 
+ * @param[in] phase The phase the State is under
+ * @param[in] planner_config Configuration parameters
+ * @return The acceleration
+ */
 Eigen::Vector3d getAcceleration(const Action &a, double t, int phase,
                                 const PlannerConfig &planner_config);
 
 // Action sampling
+/**
+ * @brief Obtain new State height after applying new flight
+ * @param[in] s The State
+ * @param[in] surf_norm Surface normal
+ * @param[in] a The Action
+ * @param[in] planner_config Configuration parameters
+ */
 bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm,
                          Action &a, const PlannerConfig &planner_config);
 
 // Action refinement (for improved feasiblity)
+/**
+ * @brief Refine Action throughout all phases
+ * @param[in] s State
+ * @param[out] a Action to be refined
+ * @param[in] planner_config Configuration parameters
+ * @return Whether refinement is successfuls or not
+ */
 bool refineAction(const State &s, Action &a,
                   const PlannerConfig &planner_config);
-
+/**
+ * @brief Refine stance Action to validify ground reaction force, friction cone,
+ * final state and midstance state
+ * @param[in] s The initial State
+ * @param[in] phase LEAP_STANCE or LAND_STANCE
+ * @param[out] a Action in the stance phase to be refined
+ * @param[in] planner_config Configuration parameters
+ * @return Whether refinement is successful or not
+ */
 bool refineStance(const State &s, int phase, Action &a,
                   const PlannerConfig &planner_config);
-
+/**
+ * @brief Refine flight Action by extending the flight phase length
+ * @param[in] s The initial State
+ * @param[out] t_f Time last in the flight phase
+ * @param[in] planner_config Configuration parameters
+ * @return Whether refinement is successful or not
+ */
 bool refineFlight(const State &s, double &t_f,
                   const PlannerConfig &planner_config);
 
 // Instantaneous validity checking
+/**
+ * @brief Check the Action is valid or not in terms of force limits and friction cone 
+ * @param[in] a The Action to be checked
+ * @param[in] planner_config Configuration parameters
+ * @return Whether the Action is valid or not
+ */
 bool isValidAction(const Action &a, const PlannerConfig &planner_config);
 
+/**
+ * @brief Check the State is valid or not in terms of traversability, reachability, collision, etc. 
+ * @param[in] s The State to be checked
+ * @param[in] planner_config Configuration parameters
+ * @param[in] phase The phase the State is under
+ * @param[in] max_height Maximum height
+ * @return Whether the State is valid or not
+ */
 bool isValidState(const State &s, const PlannerConfig &planner_config,
                   int phase);
 
+/**
+ * @brief Check the State is valid or not in terms of traversability, reachability, collision, etc. 
+ * @param[in] s The State to be checked
+ * @param[in] planner_config Configuration parameters
+ * @param[in] phase The phase the State is under
+ * @param[in] max_height Maximum height
+ * @return Whether the State is valid or not
+ */
 bool isValidState(const State &s, const PlannerConfig &planner_config,
                   int phase, double &max_height);
 
 // Trajectory validity checking
+/**
+ * @brief Check the validity of the whole trajectory
+ * @param[in] s The State to be checked
+ * @param[in] a The Action to be checked
+ * @param[in] result The StateActionResult of the trajeccotry
+ * @param[in] planner_config Configuration parameters
+ * @return Whether the StateActionPair is valid or not
+ */
 bool isValidStateActionPair(const State &s, const Action &a,
                             StateActionResult &result,
                             const PlannerConfig &planner_config);
 
 // Define visualization functions
+/**
+ * @brief Publish StateAction Pair
+ * @param[in] s The State to be checked
+ * @param[in] a The Action to be checked
+ * @param[in] result The StateActionResult of the trajeccotry
+ * @param[in] planner_config Configuration parameters
+ * @return Whether the StateActionPair is valid or not
+ */
 void publishStateActionPair(const State &s, const Action &a,
                             const State &s_goal,
                             const PlannerConfig &planner_config,
