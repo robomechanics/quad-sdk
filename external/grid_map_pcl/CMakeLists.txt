@@ -28,6 +28,7 @@ if (OpenMP_FOUND)
 endif()
 
 ## Find catkin macros and libraries
+find_package(yaml-cpp REQUIRED)
 find_package(catkin REQUIRED 
   COMPONENTS
     ${CATKIN_PACKAGE_DEPENDENCIES}

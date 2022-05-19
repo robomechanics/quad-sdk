@@ -136,6 +136,14 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
       trajectory_state_topic, 1,
       boost::bind(&RVizInterface::robotStateCallback, this, _1, TRAJECTORY));
 
+  /// Setup camera pos sub and pub
+  std::string camera_odom_sample_topic, camera_trace_viz_topic;
+  quad_utils::loadROSParam(nh_, "topics/camera_odom_sample", camera_odom_sample_topic);
+  quad_utils::loadROSParam(nh_, "topics/visualization/camera_trace", camera_trace_viz_topic);
+  camera_pos_sub_ = nh_.subscribe(camera_odom_sample_topic, 1,
+                    &RVizInterface::cameraPoseCallback, this);
+  camera_trace_pub_ = nh_.advertise<visualization_msgs::Marker>(camera_trace_viz_topic,1);
+
   // Setup state visual pubs
   estimate_joint_states_viz_pub_ = nh_.advertise<sensor_msgs::JointState>(
       estimate_joint_states_viz_topic, 1);
@@ -576,6 +584,13 @@ void RVizInterface::robotStateCallback(
     ROS_WARN_THROTTLE(
         0.5, "Invalid publisher id, not publishing robot state to rviz");
   }
+}
+
+void RVizInterface::cameraPoseCallback(const nav_msgs::Odometry::ConstPtr & msg){
+  camera_trace_msg_.action = visualization_msgs::Marker::ADD;
+  camera_trace_msg_.points.push_back(msg->pose.pose.position);
+  camera_trace_msg_.header = msg->header;
+  camera_trace_pub_.publish(camera_trace_msg_);
 }
 
 void RVizInterface::spin() {
