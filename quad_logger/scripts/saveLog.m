@@ -22,16 +22,10 @@ end
 % Copy the bag
 copyfile(['../bags/', trialName, '.bag'],logDir)
 
-% Specifiy the name of each figure
-figNameArray = {'_com_trajectory', '_linear_states', '_angular_states', ...
-    '_joint_positions', '_joint_velocities', '_joint_efforts', ...
-    '_foot_positions', '_foot_velocities', '_grfs'};
-
-assert(length(figNameArray) == length(figArray));
-
 % Save the figures
 for i = 1:length(figArray)
-    saveas(figArray(i), [figuresDir, trialName, figNameArray{i}], 'fig');
-    exportgraphics(figArray(i), [figuresDir, trialName, figNameArray{i}, '.png']);
-    exportgraphics(figArray(i), [figuresDir, trialName, figNameArray{i}, '.pdf']);
+    figFullFile = [figuresDir, trialName, '_', figArray(i).Name];
+    saveas(figArray(i), [figFullFile, '.fig']);
+    exportgraphics(figArray(i), [figFullFile, '.png']);
+    exportgraphics(figArray(i), [figFullFile, '.pdf']);
 end

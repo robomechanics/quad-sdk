@@ -156,7 +156,7 @@ void quadNLP::loadCasadiFuncs() {
   eval_release_vec_[TAIL][JAC] = eval_jac_g_tail_release;
   eval_release_vec_[TAIL][HESS] = eval_hess_g_tail_release;
   eval_release_vec_[SIMPLE][FUNC] = eval_g_leg_simple_release;
-  eval_release_vec_[SIMPLE][JAC] = eval_jac_g_leg_release;
+  eval_release_vec_[SIMPLE][JAC] = eval_jac_g_leg_simple_release;
   eval_release_vec_[SIMPLE][HESS] = eval_hess_g_leg_simple_release;
   eval_release_vec_[COMPLEX][FUNC] = eval_g_leg_complex_release;
   eval_release_vec_[COMPLEX][JAC] = eval_jac_g_leg_complex_release;
@@ -332,6 +332,11 @@ void quadNLP::loadConstraintNames() {
   }
 
   for (int i = 0; i < num_feet; i++) {
+    constr_names[curr_constr] = "knee_height_leg_" + std::to_string(i);
+    curr_constr++;
+  }
+
+  for (int i = 0; i < num_feet; i++) {
     constr_names[curr_constr] = "fk_pos_x_foot_" + std::to_string(i);
     curr_constr++;
 
@@ -350,11 +355,6 @@ void quadNLP::loadConstraintNames() {
     curr_constr++;
 
     constr_names[curr_constr] = "fk_vel_z_foot_" + std::to_string(i);
-    curr_constr++;
-  }
-
-  for (int i = 0; i < num_feet; i++) {
-    constr_names[curr_constr] = "knee_height_leg_" + std::to_string(i);
     curr_constr++;
   }
 
