@@ -141,6 +141,18 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   loadCompFilterParams();
 }
 
+void RobotDriver::initStateEstimator() {
+  if (estimator_id_ == "comp_filter") {
+    state_estimator_ = std::make_shared<CompFilterEstimator>();
+  } else if (estimator_id_ == "ekf_filter") {
+    state_estimator_ = std::make_shared<EKFFilterEstimator>();
+  } else {
+    ROS_ERROR_STREAM("Invalid estimator id " << estimator_id_ << ", returning nullptr");
+
+    state_estimator_ = nullptr;
+  }
+}
+
 void RobotDriver::initLegController() {
   if (controller_id_ == "inverse_dynamics") {
     leg_controller_ = std::make_shared<InverseDynamicsController>();

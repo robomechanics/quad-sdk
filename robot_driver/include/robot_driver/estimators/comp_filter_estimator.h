@@ -15,8 +15,5 @@ class CompFilterEstimator : public StateEstimator {
   void init();
 
   quad_msgs::RobotState updateState();
-
-
 };
-
 #endif  // COMP_FILTER_H
