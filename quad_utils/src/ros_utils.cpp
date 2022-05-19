@@ -257,48 +257,49 @@ quad_msgs::MultiFootState interpMultiFootPlanContinuous(
   return interp_state;
 }
 
-quad_msgs::RobotState interpRobotStateTraj(quad_msgs::RobotStateTrajectory msg,
-                                           double t) {
-  // Define some useful timing parameters
-  ros::Time t0_ros = msg.states.front().header.stamp;
-  ros::Time tf_ros = msg.states.back().header.stamp;
-  ros::Duration traj_duration = tf_ros - t0_ros;
+// quad_msgs::RobotState interpRobotStateTraj(quad_msgs::RobotStateTrajectory
+// msg,
+//                                            double t) {
+//   // Define some useful timing parameters
+//   ros::Time t0_ros = msg.states.front().header.stamp;
+//   ros::Time tf_ros = msg.states.back().header.stamp;
+//   ros::Duration traj_duration = tf_ros - t0_ros;
 
-  t = std::max(std::min(t, traj_duration.toSec()), 0.0);
-  ros::Time t_ros = t0_ros + ros::Duration(t);
+//   t = std::max(std::min(t, traj_duration.toSec()), 0.0);
+//   ros::Time t_ros = t0_ros + ros::Duration(t);
 
-  // Declare variables for interpolating between, both for input and output data
-  quad_msgs::RobotState state_1, state_2, interp_state;
+//   // Declare variables for interpolating between, both for input and output
+//   data quad_msgs::RobotState state_1, state_2, interp_state;
 
-  // Find the correct index for interp (return the first index if t < 0)
-  int index = 0;
-  if (t >= 0) {
-    for (int i = 0; i < msg.states.size() - 1; i++) {
-      index = i;
-      if (msg.states[i].header.stamp <= t_ros &&
-          t_ros < msg.states[i + 1].header.stamp) {
-        break;
-      }
-    }
-  }
+//   // Find the correct index for interp (return the first index if t < 0)
+//   int index = 0;
+//   if (t >= 0) {
+//     for (int i = 0; i < msg.states.size() - 1; i++) {
+//       index = i;
+//       if (msg.states[i].header.stamp <= t_ros &&
+//           t_ros < msg.states[i + 1].header.stamp) {
+//         break;
+//       }
+//     }
+//   }
 
-  // Extract correct states
-  state_1 = msg.states[index];
-  state_2 = msg.states[index + 1];
+//   // Extract correct states
+//   state_1 = msg.states[index];
+//   state_2 = msg.states[index + 1];
 
-  // Compute t_interp = [0,1]
-  double t1, t2;
-  ros::Duration t1_ros = state_1.header.stamp - t0_ros;
-  t1 = t1_ros.toSec();
-  ros::Duration t2_ros = state_2.header.stamp - t0_ros;
-  t2 = t2_ros.toSec();
-  double t_interp = (t - t1) / (t2 - t1);
+//   // Compute t_interp = [0,1]
+//   double t1, t2;
+//   ros::Duration t1_ros = state_1.header.stamp - t0_ros;
+//   t1 = t1_ros.toSec();
+//   ros::Duration t2_ros = state_2.header.stamp - t0_ros;
+//   t2 = t2_ros.toSec();
+//   double t_interp = (t - t1) / (t2 - t1);
 
-  // Compute interpolation
-  interpRobotState(state_1, state_2, t_interp, interp_state);
+//   // Compute interpolation
+//   interpRobotState(state_1, state_2, t_interp, interp_state);
 
-  return interp_state;
-}
+//   return interp_state;
+// }
 
 void ikRobotState(const quad_utils::QuadKD &kinematics,
                   quad_msgs::BodyState body_state,
