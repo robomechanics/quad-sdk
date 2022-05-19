@@ -2,7 +2,8 @@
 
 ## Overview
 
-This package implements a collection of utility functions to aid quad kinematic calculations, interfacing between RViz and quad-sdk topics, remote heartbeat function, and various launch files. The detail functionalities can be found in section:
+This package implements a collection of utility functions to aid quad kinematic calculations, interfacing between RViz and quad-sdk topics, remote heartbeat function, and various launch files.
+The detail functionalities of different classes can be found in [Classes and Functions](#classes-and-functions) section. Methods to use various launch files are explained in [Launch Files](#launch-files) section.
 
 ### License
 
@@ -17,17 +18,27 @@ This is research code, expect that it changes often and any fitness for a partic
 
 ## Classes and Functions
 
-- `quad_kd.cpp` - A class includes several functions and classes to aid in quad kinematic calculations. It relies on Eigen, as well as some MATLAB codegen for more complicated computations that would be a pain to write out by hand.
+- `quad_kd.cpp` - QuadKD is our kinematics and dynamics library to aid in performing those types of calculations. Some methods are written by hand, others implement RBDL as a backend (mostly for Jacobian and inverse dynamics computation).
 
-### Example of using a quad_kd function:
+### QuadKD guide
 
-Here is an example to compute rotation matrix given roll pitch and yaw using `getRotationMatrix` in `quad_kd.cpp`:
+The general naming convention for coordinate transformations is
 
 ```cpp
-// make a shared pointer to QuadKD class in header file
+QuadKD::proximallinkToDistallinkFK/IKCoordFrame();
+```
+
+So for example `QuadKD::worldToFootFKWorldFrame();` would give the coordinates of the foot frame origin relative to the world frame origin expressed the world frame for a given set of body and joint positions , while `QuadKD::legbaseToFootIKLegbaseFrame();` would give the joint positions corresponding to a given foot location specified in the legbase frame.
+
+### Alternative way to use a quad_kd function:
+
+Here is another example of computing rotation matrix given roll pitch and yaw using `getRotationMatrix` in `quad_kd.cpp`:
+
+```cpp
+// initialize a shared pointer to QuadKD class in header file
 std::shared_ptr<quad_utils::QuadKD> quadKD_;
 
-// Initialize kinematics object in the cpp file
+// make a kinematics object in the cpp file
 quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
 // call the function
