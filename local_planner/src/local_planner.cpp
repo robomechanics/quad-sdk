@@ -9,7 +9,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic,
       local_plan_topic, foot_plan_discrete_topic, foot_plan_continuous_topic,
-      cmd_vel_topic, control_mode_topic;
+      cmd_vel_topic;
   quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
   quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
@@ -20,7 +20,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
                            foot_plan_continuous_topic);
   quad_utils::loadROSParam(nh_, "topics/cmd_vel", cmd_vel_topic);
   quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
-  quad_utils::loadROSParam(nh_, "topics/control/mode", control_mode_topic);
 
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic, 1,
@@ -43,6 +42,8 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   quad_utils::loadROSParam(nh_, "local_planner/update_rate", update_rate_);
   quad_utils::loadROSParam(nh_, "local_planner/timestep", dt_);
   quad_utils::loadROSParam(nh_, "local_planner/horizon_length", N_);
+  quad_utils::loadROSParam(nh_, "local_planner/desired_height", z_des_);
+  quad_utils::loadROSParam(nh_, "local_planner/toe_radius", toe_radius_);
   quad_utils::loadROSParam(nh_, "local_planner/cmd_vel_scale", cmd_vel_scale_);
   quad_utils::loadROSParam(nh_, "local_planner/last_cmd_vel_msg_time_max",
                            last_cmd_vel_msg_time_max_);
@@ -61,19 +62,6 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   // Convert kinematics
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
-  // Initialize nominal footstep positions projected down from the hips
-  Eigen::Vector3d nominal_joint_state;
-  nominal_joint_state << 0, 0.78, 1.57;  // Default stand angles
-  hip_projected_foot_positions_ = Eigen::MatrixXd::Zero(N_, num_feet_ * 3);
-
-  for (int i = 0; i < N_; ++i) {
-    for (int j = 0; j < num_feet_; ++j) {
-      Eigen::Vector3d toe_body_pos;
-      quadKD_->bodyToFootFKBodyFrame(j, nominal_joint_state, toe_body_pos);
-      hip_projected_foot_positions_.block<1, 3>(i, j * 3) = toe_body_pos;
-    }
-  }
-
   // Initialize body and foot position arrays (grf_plan horizon is one index
   // shorter since control after last state is not in the horizon)
   ref_body_plan_ = Eigen::MatrixXd::Zero(N_, Nx_);
@@ -88,7 +76,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   ref_ground_height_ = Eigen::VectorXd::Zero(N_);
   grf_plan_ = Eigen::MatrixXd::Zero(N_ - 1, 12);
   for (int i = 0; i < num_feet_; i++) {
-    grf_plan_.col(3 * i + 2).fill(13 * 9.81 / num_feet_);
+    grf_plan_.col(3 * i + 2).fill(13.3 * 9.81 / num_feet_);
   }
 
   // Initialize body and footstep planners
@@ -162,7 +150,8 @@ void LocalPlanner::initLocalFootstepPlanner() {
                                              phase_offsets);
   local_footstep_planner_->setSpatialParams(
       ground_clearance, hip_clearance, standing_error_threshold, grf_weight,
-      quadKD_, foothold_search_radius, foothold_obj_threshold, obj_fun_layer);
+      quadKD_, foothold_search_radius, foothold_obj_threshold, obj_fun_layer,
+      toe_radius_);
 
   past_footholds_msg_.feet.resize(num_feet_);
 }
@@ -179,18 +168,6 @@ void LocalPlanner::terrainMapCallback(
 
 void LocalPlanner::robotPlanCallback(
     const quad_msgs::RobotPlan::ConstPtr &msg) {
-  // If this is the first plan, initialize the message of past footholds with
-  // current foot positions
-  if (body_plan_msg_ == NULL && robot_state_msg_ != NULL) {
-    past_footholds_msg_ = robot_state_msg_->feet;
-    past_footholds_msg_.header = msg->header;
-    past_footholds_msg_.traj_index = current_plan_index_;
-    for (int i = 0; i < num_feet_; i++) {
-      past_footholds_msg_.feet[i].header = past_footholds_msg_.header;
-      past_footholds_msg_.feet[i].traj_index = past_footholds_msg_.traj_index;
-    }
-  }
-
   body_plan_msg_ = msg;
 }
 
@@ -218,21 +195,7 @@ void LocalPlanner::cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg) {
   last_cmd_vel_msg_time_ = ros::Time::now();
 }
 
-void LocalPlanner::getStateAndReferencePlan() {
-  // Make sure body plan and robot state data is populated
-  if (body_plan_msg_ == NULL || robot_state_msg_ == NULL) return;
-
-  // Tracking trajectory so enter run mode
-  control_mode_ = STEP;
-
-  // Get index within the global plan, compare with the previous one to check if
-  // this is a duplicated solve
-  int previous_plan_index = current_plan_index_;
-  quad_utils::getPlanIndex(body_plan_msg_->global_plan_timestamp, dt_,
-                           current_plan_index_, first_element_duration_);
-  same_plan_index_ = previous_plan_index == current_plan_index_;
-
-  // Initializing foot positions if not data has arrived
+void LocalPlanner::getReference() {
   if (first_plan_) {
     first_plan_ = false;
     past_footholds_msg_ = robot_state_msg_->feet;
@@ -241,7 +204,22 @@ void LocalPlanner::getStateAndReferencePlan() {
       past_footholds_msg_.feet[i].header = past_footholds_msg_.header;
       past_footholds_msg_.feet[i].traj_index = past_footholds_msg_.traj_index;
     }
+
+    // We want to start from a full period when using twist input
+    if (use_twist_input_) {
+      initial_timestamp_ = ros::Time::now() - ros::Duration(1e-6);
+    }
   }
+
+  // Tracking trajectory so enter run mode
+  control_mode_ = STEP;
+
+  // Get plan index, compare with the previous one to check if this is a
+  // duplicated solve
+  int previous_plan_index = current_plan_index_;
+  quad_utils::getPlanIndex(initial_timestamp_, dt_, current_plan_index_,
+                           first_element_duration_);
+  same_plan_index_ = previous_plan_index == current_plan_index_;
 
   // Get the current body and foot positions into Eigen
   current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
@@ -258,216 +236,147 @@ void LocalPlanner::getStateAndReferencePlan() {
   ref_body_plan_.setZero();
   ref_primitive_plan_.setZero();
 
-  for (int i = 0; i < N_; i++) {
-    // If the horizon extends past the reference trajectory, just hold the last
-    // state
-    if (i + current_plan_index_ > body_plan_msg_->plan_indices.back()) {
-      ref_body_plan_.row(i) =
-          quad_utils::bodyStateMsgToEigen(body_plan_msg_->states.back().body);
-      if (i < N_) {
-        ref_primitive_plan_(i) = body_plan_msg_->primitive_ids.back();
-      }
-    } else {
-      ref_body_plan_.row(i) = quad_utils::bodyStateMsgToEigen(
-          body_plan_msg_->states[i + current_plan_index_].body);
-      if (i < N_) {
-        ref_primitive_plan_(i) =
-            body_plan_msg_->primitive_ids[i + current_plan_index_];
-      }
+  if (use_twist_input_) {
+    // Use twist planner
+    // Check that we have recent twist data, otherwise set cmd_vel to zero
+    ros::Duration time_elapsed_since_msg =
+        ros::Time::now() - last_cmd_vel_msg_time_;
+    if (time_elapsed_since_msg.toSec() > last_cmd_vel_msg_time_max_) {
+      cmd_vel_.setZero();
+      ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
     }
-    ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(
-        ref_body_plan_(i, 0), ref_body_plan_(i, 1));
-  }
-  ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(
-      current_state_(0), current_state_(1));
 
-  // Update the body plan to use for foot planning
-  int N_current_plan = body_plan_.rows();
-  if (N_current_plan < N_) {
-    // Cold start with reference plan
-    body_plan_.conservativeResize(N_, 12);
+    // Set initial ground height
+    ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(
+        current_state_(0), current_state_(1));
 
-    // Initialize with the current foot positions
-    for (int i = N_current_plan; i < N_; i++) {
-      body_plan_.row(i) = ref_body_plan_.row(i);
-      foot_positions_body_.row(i) = current_foot_positions_body_;
-      foot_positions_world_.row(i) = current_foot_positions_world_;
+    // If it's not initialized, set to current positions
+    if (stand_pose_(0) == std::numeric_limits<double>::max() &&
+        stand_pose_(1) == std::numeric_limits<double>::max() &&
+        stand_pose_(2) == std::numeric_limits<double>::max()) {
+      stand_pose_ << current_state_[0], current_state_[1], current_state_[5];
     }
-  } else {
-    // Only shift the foot position if it's a solve for a new plan index
-    if (!same_plan_index_) {
-      body_plan_.topRows(N_ - 1) = body_plan_.bottomRows(N_ - 1);
-      grf_plan_.topRows(N_ - 2) = grf_plan_.bottomRows(N_ - 2);
 
-      foot_positions_body_.topRows(N_ - 1) =
-          foot_positions_body_.bottomRows(N_ - 1);
-      foot_positions_world_.topRows(N_ - 1) =
-          foot_positions_world_.bottomRows(N_ - 1);
-    }
-  }
-
-  // Initialize with current foot and body positions
-  body_plan_.row(0) = current_state_;
-  foot_positions_body_.row(0) = current_foot_positions_body_;
-  foot_positions_world_.row(0) = current_foot_positions_world_;
-
-  // Stand if the plan has been tracked
-  if ((current_state_ - ref_body_plan_.bottomRows(1).transpose()).norm() <=
-      stand_pos_error_threshold_) {
-    control_mode_ = STAND;
-  }
-}
-
-void LocalPlanner::getStateAndTwistInput() {
-  if (robot_state_msg_ == NULL) return;
-
-  if (first_plan_) {
-    // We want to start from a full period when using twist input
-    initial_timestamp_ = ros::Time::now() - ros::Duration(1e-6);
-  }
-
-  // Get plan index, compare with the previous one to check if this is a
-  // duplicated solve
-  int previous_plan_index = current_plan_index_;
-  quad_utils::getPlanIndex(initial_timestamp_, dt_, current_plan_index_,
-                           first_element_duration_);
-  same_plan_index_ = previous_plan_index == current_plan_index_;
-
-  // Initializing foot positions if not data has arrived
-  if (first_plan_) {
-    first_plan_ = false;
-    past_footholds_msg_ = robot_state_msg_->feet;
-    past_footholds_msg_.traj_index = current_plan_index_;
+    // Set initial condition for forward integration
+    Eigen::Vector2d support_center;
+    support_center.setZero();
     for (int i = 0; i < num_feet_; i++) {
-      past_footholds_msg_.feet[i].header = past_footholds_msg_.header;
-      past_footholds_msg_.feet[i].traj_index = past_footholds_msg_.traj_index;
-    }
-  }
-
-  // Get the current body and foot positions into Eigen
-  current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
-  current_state_timestamp_ = robot_state_msg_->header.stamp;
-  quad_utils::multiFootStateMsgToEigen(robot_state_msg_->feet,
-                                       current_foot_positions_world_,
-                                       current_foot_velocities_world_);
-  local_footstep_planner_->getFootPositionsBodyFrame(
-      current_state_, current_foot_positions_world_,
-      current_foot_positions_body_);
-
-  // Clear any old reference plans
-  ref_body_plan_.setZero();
-
-  // Check that we have recent twist data, otherwise set cmd_vel to zero
-  ros::Duration time_elapsed_since_msg =
-      ros::Time::now() - last_cmd_vel_msg_time_;
-  if (time_elapsed_since_msg.toSec() > last_cmd_vel_msg_time_max_) {
-    cmd_vel_.setZero();
-    ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
-  }
-
-  // Set initial ground height
-  ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(
-      current_state_(0), current_state_(1));
-
-  // If it's not initialized, set to current positions
-  if (stand_pose_(0) == std::numeric_limits<double>::max() &&
-      stand_pose_(1) == std::numeric_limits<double>::max() &&
-      stand_pose_(2) == std::numeric_limits<double>::max()) {
-    stand_pose_ << current_state_[0], current_state_[1], current_state_[5];
-  }
-
-  // Set initial condition for forward integration
-  Eigen::Vector2d support_center;
-  support_center.setZero();
-  for (int i = 0; i < num_feet_; i++) {
-    support_center.x() +=
-        robot_state_msg_->feet.feet[i].position.x / ((double)num_feet_);
-    support_center.y() +=
-        robot_state_msg_->feet.feet[i].position.y / ((double)num_feet_);
-  }
-
-  // Step if velocity commanded, current velocity exceeds threshold, or too far
-  // from center of support
-  bool is_stepping =
-      (cmd_vel_.norm() > stand_cmd_vel_threshold_ ||
-       current_state_.segment(6, 2).norm() > stand_vel_threshold_ ||
-       (support_center - current_state_.segment(0, 2)).norm() >
-           stand_pos_error_threshold_);
-
-  if (is_stepping) {
-    control_mode_ = STEP;
-    stand_pose_ << current_state_[0], current_state_[1], current_state_[5];
-  } else {
-    // If it's standing, try to stablized the waggling
-    control_mode_ = STAND;
-    Eigen::Vector3d current_stand_pose;
-    current_stand_pose << support_center[0], support_center[1],
-        current_state_[5];
-    stand_pose_ = stand_pose_ * (1 - 1 / update_rate_) +
-                  current_stand_pose * 1 / update_rate_;
-  }
-
-  ref_body_plan_(0, 0) = stand_pose_[0];  // support_center.x();
-  ref_body_plan_(0, 1) = stand_pose_[1];  // support_center.x();
-  ref_body_plan_(0, 2) = z_des_ + ref_ground_height_(0);
-  ref_body_plan_(0, 3) = 0;
-  ref_body_plan_(0, 4) = 0;
-  ref_body_plan_(0, 5) = stand_pose_[2];
-  ref_body_plan_(0, 6) = cmd_vel_[0] * cos(current_state_[5]) -
-                         cmd_vel_[1] * sin(current_state_[5]);
-  ref_body_plan_(0, 7) = cmd_vel_[0] * sin(current_state_[5]) +
-                         cmd_vel_[1] * cos(current_state_[5]);
-  ref_body_plan_(0, 8) = cmd_vel_[2];
-  ref_body_plan_(0, 9) = cmd_vel_[3];
-  ref_body_plan_(0, 10) = cmd_vel_[4];
-  ref_body_plan_(0, 11) = cmd_vel_[5];
-
-  // Alternatively only adaptive pitch
-  // ref_body_plan_(0, 4) = local_footstep_planner_->getTerrainSlope(
-  //     current_state_(0), current_state_(1), current_state_(6),
-  //     current_state_(7));
-
-  // Adaptive roll and pitch
-  local_footstep_planner_->getTerrainSlope(
-      ref_body_plan_(0, 0), ref_body_plan_(0, 1), ref_body_plan_(0, 5),
-      ref_body_plan_(0, 3), ref_body_plan_(0, 4));
-
-  // Integrate to get full body plan (Forward Euler)
-  for (int i = 1; i < N_; i++) {
-    Twist current_cmd_vel = cmd_vel_;
-
-    double yaw = ref_body_plan_(i - 1, 5);
-    current_cmd_vel[0] = cmd_vel_[0] * cos(yaw) - cmd_vel_[1] * sin(yaw);
-    current_cmd_vel[1] = cmd_vel_[0] * sin(yaw) + cmd_vel_[1] * cos(yaw);
-
-    for (int j = 0; j < 6; j++) {
-      if (i == 1) {
-        ref_body_plan_(i, j) = ref_body_plan_(i - 1, j) +
-                               current_cmd_vel[j] * first_element_duration_;
-      } else {
-        ref_body_plan_(i, j) =
-            ref_body_plan_(i - 1, j) + current_cmd_vel[j] * dt_;
-      }
-      ref_body_plan_(i, j + 6) = (current_cmd_vel[j]);
+      support_center.x() +=
+          robot_state_msg_->feet.feet[i].position.x / ((double)num_feet_);
+      support_center.y() +=
+          robot_state_msg_->feet.feet[i].position.y / ((double)num_feet_);
     }
 
-    ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(
-        ref_body_plan_(i, 0), ref_body_plan_(i, 1));
-    ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);
+    // Step if velocity commanded, current velocity exceeds threshold, or too
+    // far from center of support
+    bool is_stepping =
+        (cmd_vel_.norm() > stand_cmd_vel_threshold_ ||
+         current_state_.segment(6, 2).norm() > stand_vel_threshold_ ||
+         (support_center - current_state_.segment(0, 2)).norm() >
+             stand_pos_error_threshold_);
+
+    if (is_stepping) {
+      control_mode_ = STEP;
+      stand_pose_ << current_state_[0], current_state_[1], current_state_[5];
+    } else {
+      // If it's standing, try to stablized the waggling
+      control_mode_ = STAND;
+      Eigen::Vector3d current_stand_pose;
+      current_stand_pose << support_center[0], support_center[1],
+          current_state_[5];
+      stand_pose_ = stand_pose_ * (1 - 1 / update_rate_) +
+                    current_stand_pose * 1 / update_rate_;
+    }
+
+    ref_body_plan_(0, 0) = stand_pose_[0];  // support_center.x();
+    ref_body_plan_(0, 1) = stand_pose_[1];  // support_center.x();
+    ref_body_plan_(0, 2) = z_des_ + ref_ground_height_(0);
+    ref_body_plan_(0, 3) = 0;
+    ref_body_plan_(0, 4) = 0;
+    ref_body_plan_(0, 5) = stand_pose_[2];
+    ref_body_plan_(0, 6) = cmd_vel_[0] * cos(current_state_[5]) -
+                           cmd_vel_[1] * sin(current_state_[5]);
+    ref_body_plan_(0, 7) = cmd_vel_[0] * sin(current_state_[5]) +
+                           cmd_vel_[1] * cos(current_state_[5]);
+    ref_body_plan_(0, 8) = cmd_vel_[2];
+    ref_body_plan_(0, 9) = cmd_vel_[3];
+    ref_body_plan_(0, 10) = cmd_vel_[4];
+    ref_body_plan_(0, 11) = cmd_vel_[5];
 
     // Alternatively only adaptive pitch
-    // ref_body_plan_(i, 4) = local_footstep_planner_->getTerrainSlope(
-    //     ref_body_plan_(i, 0), ref_body_plan_(i, 1), ref_body_plan_(i, 6),
-    //     ref_body_plan_(i, 7));
+    // ref_body_plan_(0, 4) = local_footstep_planner_->getTerrainSlope(
+    //     current_state_(0), current_state_(1), current_state_(6),
+    //     current_state_(7));
 
     // Adaptive roll and pitch
     local_footstep_planner_->getTerrainSlope(
-        ref_body_plan_(i, 0), ref_body_plan_(i, 1), ref_body_plan_(i, 5),
-        ref_body_plan_(i, 3), ref_body_plan_(i, 4));
-  }
+        ref_body_plan_(0, 0), ref_body_plan_(0, 1), ref_body_plan_(0, 5),
+        ref_body_plan_(0, 3), ref_body_plan_(0, 4));
 
-  // Use the standard walk primitive
-  ref_primitive_plan_.setZero(N_);
+    // Integrate to get full body plan (Forward Euler)
+    for (int i = 1; i < N_; i++) {
+      Eigen::VectorXd current_cmd_vel = cmd_vel_;
+
+      double yaw = ref_body_plan_(i - 1, 5);
+      current_cmd_vel[0] = cmd_vel_[0] * cos(yaw) - cmd_vel_[1] * sin(yaw);
+      current_cmd_vel[1] = cmd_vel_[0] * sin(yaw) + cmd_vel_[1] * cos(yaw);
+
+      for (int j = 0; j < 6; j++) {
+        if (i == 1) {
+          ref_body_plan_(i, j) = ref_body_plan_(i - 1, j) +
+                                 current_cmd_vel[j] * first_element_duration_;
+        } else {
+          ref_body_plan_(i, j) =
+              ref_body_plan_(i - 1, j) + current_cmd_vel[j] * dt_;
+        }
+        ref_body_plan_(i, j + 6) = (current_cmd_vel[j]);
+      }
+
+      ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(
+          ref_body_plan_(i, 0), ref_body_plan_(i, 1));
+      ref_body_plan_(i, 2) = z_des_ + ref_ground_height_(i);
+
+      // Alternatively only adaptive pitch
+      // ref_body_plan_(i, 4) = local_footstep_planner_->getTerrainSlope(
+      //     ref_body_plan_(i, 0), ref_body_plan_(i, 1), ref_body_plan_(i, 6),
+      //     ref_body_plan_(i, 7));
+
+      // Adaptive roll and pitch
+      local_footstep_planner_->getTerrainSlope(
+          ref_body_plan_(i, 0), ref_body_plan_(i, 1), ref_body_plan_(i, 5),
+          ref_body_plan_(i, 3), ref_body_plan_(i, 4));
+    }
+  } else {
+    // Use global plan
+    for (int i = 0; i < N_; i++) {
+      // If the horizon extends past the reference trajectory, just hold the
+      // last state
+      if (i + current_plan_index_ > body_plan_msg_->plan_indices.back()) {
+        ref_body_plan_.row(i) =
+            quad_utils::bodyStateMsgToEigen(body_plan_msg_->states.back().body);
+        if (i < N_) {
+          ref_primitive_plan_(i) = body_plan_msg_->primitive_ids.back();
+        }
+      } else {
+        ref_body_plan_.row(i) = quad_utils::bodyStateMsgToEigen(
+            body_plan_msg_->states[i + current_plan_index_].body);
+        if (i < N_) {
+          ref_primitive_plan_(i) =
+              body_plan_msg_->primitive_ids[i + current_plan_index_];
+        }
+      }
+      ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(
+          ref_body_plan_(i, 0), ref_body_plan_(i, 1));
+    }
+    ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(
+        current_state_(0), current_state_(1));
+
+    // Stand if the plan has been tracked
+    if ((current_state_ - ref_body_plan_.bottomRows(1).transpose()).norm() <=
+        stand_pos_error_threshold_) {
+      control_mode_ = STAND;
+    }
+  }
 
   // Update the body plan to use for foot planning
   int N_current_plan = body_plan_.rows();
@@ -534,9 +443,9 @@ bool LocalPlanner::computeLocalPlan() {
   Eigen::MatrixXd grf_positions_world = foot_positions_world_;
   for (size_t i = 0; i < 4; i++) {
     grf_positions_body.col(3 * i + 2) =
-        foot_positions_body_.col(3 * i + 2).array() - toe_radius;
+        foot_positions_body_.col(3 * i + 2).array() - toe_radius_;
     grf_positions_world.col(3 * i + 2) =
-        foot_positions_world_.col(3 * i + 2).array() - toe_radius;
+        foot_positions_world_.col(3 * i + 2).array() - toe_radius_;
   }
 
   Eigen::VectorXd current_full_state(36), joint_pos(12), joint_vel(12);
@@ -558,7 +467,7 @@ bool LocalPlanner::computeLocalPlan() {
   foot_positions_world_ = grf_positions_world;
   for (size_t i = 0; i < 4; i++) {
     foot_positions_world_.col(3 * i + 2) =
-        foot_positions_world_.col(3 * i + 2).array() + toe_radius;
+        foot_positions_world_.col(3 * i + 2).array() + toe_radius_;
   }
 
   // Record computation time and update exponential filter
@@ -648,8 +557,6 @@ void LocalPlanner::publishLocalPlan() {
   local_plan_pub_.publish(local_plan_msg);
   foot_plan_discrete_pub_.publish(future_footholds_msg);
   foot_plan_continuous_pub_.publish(foot_plan_msg);
-
-  // std::cout << foot_plan_msg << std::endl;
 }
 
 void LocalPlanner::spin() {
@@ -659,17 +566,12 @@ void LocalPlanner::spin() {
     ros::spinOnce();
 
     // Wait until all required data has been received
-    if (terrain_.isEmpty() || body_plan_msg_ == NULL && !use_twist_input_ ||
+    if (terrain_.isEmpty() || (body_plan_msg_ == NULL && !use_twist_input_) ||
         robot_state_msg_ == NULL)
       continue;
 
-    if (use_twist_input_) {
-      // Get twist commands
-      getStateAndTwistInput();
-    } else {
-      // Get the reference plan and robot state into the desired data structures
-      getStateAndReferencePlan();
-    }
+    // Get the reference plan and robot state into the desired data structures
+    getReference();
 
     // Compute the local plan and publish if it solved successfully, otherwise
     // just sleep
