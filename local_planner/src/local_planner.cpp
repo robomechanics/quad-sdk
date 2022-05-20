@@ -150,7 +150,8 @@ void LocalPlanner::initLocalFootstepPlanner() {
                                              phase_offsets);
   local_footstep_planner_->setSpatialParams(
       ground_clearance, hip_clearance, standing_error_threshold, grf_weight,
-      quadKD_, foothold_search_radius, foothold_obj_threshold, obj_fun_layer, toe_radius_);
+      quadKD_, foothold_search_radius, foothold_obj_threshold, obj_fun_layer,
+      toe_radius_);
 
   past_footholds_msg_.feet.resize(num_feet_);
 }
@@ -236,6 +237,7 @@ void LocalPlanner::getReference() {
   ref_primitive_plan_.setZero();
 
   if (use_twist_input_) {
+    // Use twist planner
     // Check that we have recent twist data, otherwise set cmd_vel to zero
     ros::Duration time_elapsed_since_msg =
         ros::Time::now() - last_cmd_vel_msg_time_;
@@ -345,6 +347,7 @@ void LocalPlanner::getReference() {
           ref_body_plan_(i, 3), ref_body_plan_(i, 4));
     }
   } else {
+    // Use global plan
     for (int i = 0; i < N_; i++) {
       // If the horizon extends past the reference trajectory, just hold the
       // last state
@@ -413,7 +416,7 @@ bool LocalPlanner::computeLocalPlan() {
         "ComputeLocalPlan function did not recieve the expected inputs");
     return false;
   }
-  
+
   // Start the timer
   quad_utils::FunctionTimer timer(__FUNCTION__);
 
@@ -567,6 +570,7 @@ void LocalPlanner::spin() {
         robot_state_msg_ == NULL)
       continue;
 
+    // Get the reference plan and robot state into the desired data structures
     getReference();
 
     // Compute the local plan and publish if it solved successfully, otherwise
