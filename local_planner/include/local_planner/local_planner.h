@@ -10,7 +10,6 @@
 #include <quad_msgs/MultiFootPlanDiscrete.h>
 #include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/RobotState.h>
-#include <quad_msgs/RobotStateTrajectory.h>
 #include <quad_utils/quad_kd.h>
 #include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
