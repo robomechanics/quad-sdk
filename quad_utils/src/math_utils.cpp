@@ -66,7 +66,8 @@ Eigen::Vector3d interpVector3d(const std::vector<double> input_vec,
 
 std::vector<Eigen::Vector3d> interpMatVector3d(
     const std::vector<double> input_vec,
-    const std::vector<std::vector<Eigen::Vector3d>> output_mat, const double query_point) {
+    const std::vector<std::vector<Eigen::Vector3d>> output_mat,
+    const double query_point) {
   // Check bounds, throw an error if invalid since this shouldn't ever happen
   if ((query_point < input_vec.front()) || (query_point > input_vec.back())) {
     throw std::runtime_error("Tried to interp out of bounds");

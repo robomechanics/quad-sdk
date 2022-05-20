@@ -103,7 +103,8 @@ Eigen::Vector3d interpVector3d(const std::vector<double> input_vec,
  */
 std::vector<Eigen::Vector3d> interpMatVector3d(
     const std::vector<double> input_vec,
-    const std::vector<std::vector<Eigen::Vector3d>> output_mat, const double query_point);
+    const std::vector<std::vector<Eigen::Vector3d>> output_mat,
+    const double query_point);
 
 /**
  * @brief Obtain the correct int within a parameterized vector of ints
