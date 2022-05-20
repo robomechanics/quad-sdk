@@ -407,6 +407,13 @@ void LocalPlanner::getReference() {
 }
 
 bool LocalPlanner::computeLocalPlan() {
+  if (terrain_.isEmpty() || body_plan_msg_ == NULL && !use_twist_input_ ||
+      robot_state_msg_ == NULL) {
+    ROS_WARN_STREAM(
+        "ComputeLocalPlan function did not recieve the expected inputs");
+    return false;
+  }
+  
   // Start the timer
   quad_utils::FunctionTimer timer(__FUNCTION__);
 
