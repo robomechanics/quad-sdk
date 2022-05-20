@@ -19,8 +19,6 @@
       <arg name="mocap" value="false"/>
       <arg name="is_hardware" value="false"/>
     </include>
-
-    <!-- <rosparam file="$(find gazebo_scripts)/config/quad_control.yaml" command="load"/> -->
   
     <node name="controller_spawner"
         pkg="controller_manager"
@@ -30,7 +28,7 @@
         args="joint_controller joint_state_controller"/>
 
     <!-- Load the contact state publisher -->
-    <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
+    <!-- <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/> -->
     
     <!-- Launch the node to publish the visual topics for the plans -->
     <node name="rviz_interface" pkg="quad_utils" type="rviz_interface_node" output="screen"/> 

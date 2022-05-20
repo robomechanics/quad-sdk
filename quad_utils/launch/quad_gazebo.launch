@@ -86,6 +86,23 @@ SOFTWARE.
       </include>
       <param name="robot_type" value="$(arg robot_type)"/>
     </group>
+
+    <group ns="robot_3">
+      <!-- Load the parameters and the sdf description -->
+      <include file="$(find quad_utils)/launch/load_params.launch">
+        <arg name="robot_type" value="$(arg robot_type)"/>
+      </include>
+      <rosparam file="$(find gazebo_scripts)/config/quad_control.yaml" command="load"/>
+      <include file="$(find quad_utils)/launch/robot.launch">
+        <arg name="robot_type" value="$(arg robot_type)"/>
+        <arg name="software" default="$(arg software)"/>
+        <arg name="logging" value="$(arg logging)"/>
+        <arg name="controller" default="$(arg controller)"/>
+        <arg name="init_pose" value="-x 0.0 -y -1.0 -z 0.5" />
+        <arg name="namespace" value="robot_3" />
+      </include>
+      <param name="robot_type" value="$(arg robot_type)"/>
+    </group>
   </group>
 
   <!-- Readers can add more robots here -->
