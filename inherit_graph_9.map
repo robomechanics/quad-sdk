@@ -1,4 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classGraphClass.html" title="A general directed graph class." alt="" coords="5,5,96,32"/>
-<area shape="rect" id="node2" href="$classPlannerClass.html" title=" " alt="" coords="144,5,243,32"/>
+<area shape="rect" id="node1" href="$classLegController.html" title="Implements an abstract class for leg controllers." alt="" coords="5,56,104,83"/>
+<area shape="rect" id="node2" href="$classGrfPidController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="183,5,298,32"/>
+<area shape="rect" id="node3" href="$classInverseDynamicsController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="152,56,329,83"/>
+<area shape="rect" id="node4" href="$classJointController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="188,107,293,133"/>
 </map>

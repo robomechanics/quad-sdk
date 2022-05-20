@@ -26,8 +26,8 @@ var searchData=
   ['robot_5flatency_5fthreshold_5fwarn_5f_23',['robot_latency_threshold_warn_',['../classRemoteHeartbeat.html#a8c5503fd15c7d192f89997aa6115c65d',1,'RemoteHeartbeat']]],
   ['robot_5fname_5f_24',['robot_name_',['../classRobotDriver.html#ad2fde03e117df5e23123a951c6eb1823',1,'RobotDriver']]],
   ['robot_5fstate_5f_25',['robot_state_',['../classGlobalBodyPlanner.html#a9298676facc5be7794d9dbb20609949f',1,'GlobalBodyPlanner']]],
-  ['robot_5fstate_5fmsg_5f_26',['robot_state_msg_',['../classLocalPlanner.html#adb16c4aad1940609497f3902b2bff7ad',1,'LocalPlanner::robot_state_msg_()'],['../classTrajectoryPublisher.html#ae959a2aef95407072c3cc5b5870d68f4',1,'TrajectoryPublisher::robot_state_msg_()']]],
+  ['robot_5fstate_5fmsg_5f_26',['robot_state_msg_',['../classLocalPlanner.html#adb16c4aad1940609497f3902b2bff7ad',1,'LocalPlanner']]],
   ['robot_5fstate_5fpub_5f_27',['robot_state_pub_',['../classRobotDriver.html#aeaceb50239e5e67eb52c743763c663f6',1,'RobotDriver']]],
-  ['robot_5fstate_5fsub_5f_28',['robot_state_sub_',['../classBodyForceEstimator.html#a1e4f6ba0afd26410269c175e3efe7840',1,'BodyForceEstimator::robot_state_sub_()'],['../classGlobalBodyPlanner.html#a80448be2f451be21bed0a7591df36669',1,'GlobalBodyPlanner::robot_state_sub_()'],['../classLocalPlanner.html#a11dd212621f0a17591d34b341206018a',1,'LocalPlanner::robot_state_sub_()'],['../classRobotDriver.html#a93a724650f5e4b9ba6950e44504a6092',1,'RobotDriver::robot_state_sub_()']]],
+  ['robot_5fstate_5fsub_5f_28',['robot_state_sub_',['../classGlobalBodyPlanner.html#a80448be2f451be21bed0a7591df36669',1,'GlobalBodyPlanner::robot_state_sub_()'],['../classLocalPlanner.html#a11dd212621f0a17591d34b341206018a',1,'LocalPlanner::robot_state_sub_()'],['../classRobotDriver.html#a93a724650f5e4b9ba6950e44504a6092',1,'RobotDriver::robot_state_sub_()']]],
   ['robot_5fstate_5ftopic_5f_29',['robot_state_topic_',['../classGlobalBodyPlanner.html#a900c6a4ca90285c91fcc6032256dd451',1,'GlobalBodyPlanner']]]
 ];

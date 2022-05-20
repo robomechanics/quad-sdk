@@ -162,78 +162,86 @@ $(function() {
 <div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>quad_msgs::MultiFootState interpMultiFootPlanContinuous(</div>
 <div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    quad_msgs::MultiFootPlanContinuous msg, <span class="keywordtype">double</span> t);</div>
 <div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>quad_msgs::RobotState interpRobotStateTraj(quad_msgs::RobotStateTrajectory msg,</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>                                           <span class="keywordtype">double</span> t);</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span><span class="keywordtype">void</span> ikRobotState(<span class="keyword">const</span> <a class="code hl_class" href="classquad__utils_1_1QuadKD.html">quad_utils::QuadKD</a> &amp;kinematics,</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>                  quad_msgs::BodyState body_state,</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>                  quad_msgs::MultiFootState multi_foot_state,</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>                  sensor_msgs::JointState &amp;joint_state);</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span> </div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span><span class="keywordtype">void</span> ikRobotState(<span class="keyword">const</span> <a class="code hl_class" href="classquad__utils_1_1QuadKD.html">quad_utils::QuadKD</a> &amp;kinematics,</div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>                  quad_msgs::RobotState &amp;state);</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span> </div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span><span class="keywordtype">void</span> fkRobotState(<span class="keyword">const</span> <a class="code hl_class" href="classquad__utils_1_1QuadKD.html">quad_utils::QuadKD</a> &amp;kinematics,</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>                  quad_msgs::BodyState body_state,</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>                  sensor_msgs::JointState joint_state,</div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>                  quad_msgs::MultiFootState &amp;multi_foot_state);</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span><span class="keywordtype">void</span> fkRobotState(<span class="keyword">const</span> <a class="code hl_class" href="classquad__utils_1_1QuadKD.html">quad_utils::QuadKD</a> &amp;kinematics,</div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>                  quad_msgs::RobotState &amp;state);</div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span> </div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>quad_msgs::BodyState eigenToBodyStateMsg(<span class="keyword">const</span> Eigen::VectorXd &amp;state);</div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>Eigen::VectorXd bodyStateMsgToEigen(<span class="keyword">const</span> quad_msgs::BodyState &amp;body);</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span> </div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span><span class="keywordtype">void</span> eigenToGRFArrayMsg(Eigen::VectorXd grf_array,</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>                        quad_msgs::MultiFootState multi_foot_state_msg,</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>                        quad_msgs::GRFArray &amp;grf_msg);</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span> </div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>Eigen::VectorXd grfArrayMsgToEigen(<span class="keyword">const</span> quad_msgs::GRFArray &amp;grf_array_msg_);</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span> </div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span><span class="keywordtype">void</span> footStateMsgToEigen(<span class="keyword">const</span> quad_msgs::FootState &amp;foot_state_msg,</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>                         Eigen::Vector3d &amp;foot_position);</div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span> </div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span><span class="keywordtype">void</span> multiFootStateMsgToEigen(</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    <span class="keyword">const</span> quad_msgs::MultiFootState &amp;multi_foot_state_msg,</div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    Eigen::VectorXd &amp;foot_positions);</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span> </div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span><span class="keywordtype">void</span> multiFootStateMsgToEigen(</div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    <span class="keyword">const</span> quad_msgs::MultiFootState &amp;multi_foot_state_msg,</div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    Eigen::VectorXd &amp;foot_positions, Eigen::VectorXd &amp;foot_velocities);</div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span> </div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span><span class="keywordtype">void</span> multiFootStateMsgToEigen(</div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    <span class="keyword">const</span> quad_msgs::MultiFootState &amp;multi_foot_state_msg,</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    Eigen::VectorXd &amp;foot_positions, Eigen::VectorXd &amp;foot_velocities,</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>    Eigen::VectorXd &amp;foot_acceleration);</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span> </div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span><span class="keywordtype">void</span> eigenToFootStateMsg(Eigen::VectorXd foot_position,</div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>                         Eigen::VectorXd foot_velocity,</div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>                         quad_msgs::FootState &amp;foot_state_msg);</div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span> </div>
-<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span><span class="keywordtype">void</span> eigenToFootStateMsg(Eigen::VectorXd foot_position,</div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>                         Eigen::VectorXd foot_velocity,</div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>                         Eigen::VectorXd foot_acceleration,</div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>                         quad_msgs::FootState &amp;foot_state_msg);</div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span> </div>
-<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span><span class="keywordtype">void</span> eigenToVector(<span class="keyword">const</span> Eigen::VectorXd &amp;eigen_vec, std::vector&lt;double&gt; &amp;vec);</div>
-<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span> </div>
-<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span><span class="keywordtype">void</span> vectorToEigen(<span class="keyword">const</span> std::vector&lt;double&gt; &amp;vec, Eigen::VectorXd &amp;eigen_vec);</div>
-<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span> </div>
-<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span><span class="keywordtype">void</span> Eigen3ToVector3Msg(<span class="keyword">const</span> Eigen::Vector3d &amp;eigen_vec,</div>
-<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>                        geometry_msgs::Vector3 &amp;vec);</div>
-<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span> </div>
-<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span><span class="keywordtype">void</span> vector3MsgToEigen(<span class="keyword">const</span> geometry_msgs::Vector3 &amp;vec,</div>
-<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>                       Eigen::Vector3d &amp;eigen_vec);</div>
-<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span> </div>
-<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span><span class="keywordtype">void</span> Eigen3ToPointMsg(<span class="keyword">const</span> Eigen::Vector3d &amp;eigen_vec,</div>
-<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>                      geometry_msgs::Point &amp;vec);</div>
-<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span> </div>
-<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span><span class="keywordtype">void</span> pointMsgToEigen(<span class="keyword">const</span> geometry_msgs::Point &amp;vec,</div>
-<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>                     Eigen::Vector3d &amp;eigen_vec);</div>
-<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>}  <span class="comment">// namespace quad_utils</span></div>
-<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span> </div>
-<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span><span class="comment">// /**</span></div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span><span class="comment">//  * @brief Interpolate data from a robot state trajectory message.</span></div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span><span class="comment">//  * @param[in] msg robot state trajectory message</span></div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span><span class="comment">//  * @param[in] t Time since beginning of trajectory (will return last state if</span></div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span><span class="comment">//  * too large)</span></div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span><span class="comment">//  * @return Robot state message</span></div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span><span class="comment">//  */</span></div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span><span class="comment">// quad_msgs::RobotState interpRobotStateTraj(quad_msgs::RobotStateTrajectory</span></div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span><span class="comment">// msg,</span></div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span><span class="comment">//                                            double t);</span></div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span><span class="keywordtype">void</span> ikRobotState(<span class="keyword">const</span> <a class="code hl_class" href="classquad__utils_1_1QuadKD.html">quad_utils::QuadKD</a> &amp;kinematics,</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>                  quad_msgs::BodyState body_state,</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>                  quad_msgs::MultiFootState multi_foot_state,</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>                  sensor_msgs::JointState &amp;joint_state);</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span> </div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span><span class="keywordtype">void</span> ikRobotState(<span class="keyword">const</span> <a class="code hl_class" href="classquad__utils_1_1QuadKD.html">quad_utils::QuadKD</a> &amp;kinematics,</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>                  quad_msgs::RobotState &amp;state);</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span> </div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span><span class="keywordtype">void</span> fkRobotState(<span class="keyword">const</span> <a class="code hl_class" href="classquad__utils_1_1QuadKD.html">quad_utils::QuadKD</a> &amp;kinematics,</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>                  quad_msgs::BodyState body_state,</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>                  sensor_msgs::JointState joint_state,</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>                  quad_msgs::MultiFootState &amp;multi_foot_state);</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span> </div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span><span class="keywordtype">void</span> fkRobotState(<span class="keyword">const</span> <a class="code hl_class" href="classquad__utils_1_1QuadKD.html">quad_utils::QuadKD</a> &amp;kinematics,</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>                  quad_msgs::RobotState &amp;state);</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span> </div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>quad_msgs::BodyState eigenToBodyStateMsg(<span class="keyword">const</span> Eigen::VectorXd &amp;state);</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span> </div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>Eigen::VectorXd bodyStateMsgToEigen(<span class="keyword">const</span> quad_msgs::BodyState &amp;body);</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span><span class="keywordtype">void</span> eigenToGRFArrayMsg(Eigen::VectorXd grf_array,</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>                        quad_msgs::MultiFootState multi_foot_state_msg,</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>                        quad_msgs::GRFArray &amp;grf_msg);</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span> </div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>Eigen::VectorXd grfArrayMsgToEigen(<span class="keyword">const</span> quad_msgs::GRFArray &amp;grf_array_msg_);</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span> </div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span><span class="keywordtype">void</span> footStateMsgToEigen(<span class="keyword">const</span> quad_msgs::FootState &amp;foot_state_msg,</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>                         Eigen::Vector3d &amp;foot_position);</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span> </div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span><span class="keywordtype">void</span> multiFootStateMsgToEigen(</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    <span class="keyword">const</span> quad_msgs::MultiFootState &amp;multi_foot_state_msg,</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>    Eigen::VectorXd &amp;foot_positions);</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span> </div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span><span class="keywordtype">void</span> multiFootStateMsgToEigen(</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    <span class="keyword">const</span> quad_msgs::MultiFootState &amp;multi_foot_state_msg,</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    Eigen::VectorXd &amp;foot_positions, Eigen::VectorXd &amp;foot_velocities);</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span> </div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span><span class="keywordtype">void</span> multiFootStateMsgToEigen(</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    <span class="keyword">const</span> quad_msgs::MultiFootState &amp;multi_foot_state_msg,</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>    Eigen::VectorXd &amp;foot_positions, Eigen::VectorXd &amp;foot_velocities,</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    Eigen::VectorXd &amp;foot_acceleration);</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span> </div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span><span class="keywordtype">void</span> eigenToFootStateMsg(Eigen::VectorXd foot_position,</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>                         Eigen::VectorXd foot_velocity,</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>                         quad_msgs::FootState &amp;foot_state_msg);</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span> </div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span><span class="keywordtype">void</span> eigenToFootStateMsg(Eigen::VectorXd foot_position,</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>                         Eigen::VectorXd foot_velocity,</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>                         Eigen::VectorXd foot_acceleration,</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>                         quad_msgs::FootState &amp;foot_state_msg);</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span> </div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span><span class="keywordtype">void</span> eigenToVector(<span class="keyword">const</span> Eigen::VectorXd &amp;eigen_vec, std::vector&lt;double&gt; &amp;vec);</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span> </div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span><span class="keywordtype">void</span> vectorToEigen(<span class="keyword">const</span> std::vector&lt;double&gt; &amp;vec, Eigen::VectorXd &amp;eigen_vec);</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span> </div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span><span class="keywordtype">void</span> Eigen3ToVector3Msg(<span class="keyword">const</span> Eigen::Vector3d &amp;eigen_vec,</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>                        geometry_msgs::Vector3 &amp;vec);</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span> </div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span><span class="keywordtype">void</span> vector3MsgToEigen(<span class="keyword">const</span> geometry_msgs::Vector3 &amp;vec,</div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>                       Eigen::Vector3d &amp;eigen_vec);</div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span> </div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span><span class="keywordtype">void</span> Eigen3ToPointMsg(<span class="keyword">const</span> Eigen::Vector3d &amp;eigen_vec,</div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>                      geometry_msgs::Point &amp;vec);</div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span> </div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span><span class="keywordtype">void</span> pointMsgToEigen(<span class="keyword">const</span> geometry_msgs::Point &amp;vec,</div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>                     Eigen::Vector3d &amp;eigen_vec);</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>}  <span class="comment">// namespace quad_utils</span></div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span> </div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassquad__utils_1_1QuadKD_html"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html">quad_utils::QuadKD</a></div><div class="ttdoc">A lightweight library for quad kinematic functions.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:28</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

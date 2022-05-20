@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['inversedynamicscontroller_0',['InverseDynamicsController',['../classInverseDynamicsController.html',1,'']]]
+  ['jointcontroller_0',['JointController',['../classJointController.html',1,'']]]
 ];

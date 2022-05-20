@@ -11,5 +11,5 @@ var searchData=
   ['joint_5fstate_5fpub_5f_8',['joint_state_pub_',['../classRobotDriver.html#a1e0e334f25d0d2c171d370f9b50da985',1,'RobotDriver']]],
   ['joint_5ftorque_5f_9',['joint_torque_',['../classJointController.html#a2174736c91bede614e9aaca242937000',1,'JointController']]],
   ['jointcontroller_10',['JointController',['../classJointController.html',1,'JointController'],['../classJointController.html#a631714afbcbd9325d41d63cb9e0ee094',1,'JointController::JointController()']]],
-  ['jointencodercallback_11',['jointEncoderCallback',['../classContactDetection.html#a7d95daa52f7bc969bf539a57e69eb48a',1,'ContactDetection::jointEncoderCallback()'],['../classEKFEstimator.html#a884681643b3f3e9075f0ffab0dc5c3e0',1,'EKFEstimator::jointEncoderCallback()']]]
+  ['jointencodercallback_11',['jointEncoderCallback',['../classEKFEstimator.html#a884681643b3f3e9075f0ffab0dc5c3e0',1,'EKFEstimator']]]
 ];
