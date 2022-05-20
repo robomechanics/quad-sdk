@@ -96,24 +96,14 @@ list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 add_library(contact SHARED src/contact_plugin.cpp)
 add_dependencies(contact ${catkin_EXPORTED_TARGETS})
 
-add_library(controller SHARED src/controller_plugin.cpp)
-add_dependencies(controller ${catkin_EXPORTED_TARGETS})
-
-add_library(ground_truth_estimator SHARED src/estimator_plugin.cpp)
-add_dependencies(ground_truth_estimator ${catkin_EXPORTED_TARGETS})
-
 add_library(contact_state_publisher SHARED src/contact_state_publisher.cpp)
 add_dependencies(contact_state_publisher ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(odom_publisher src/odom_publisher.cpp)
 add_executable(contact_state_publisher_node src/contact_state_publisher_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(contact ${GAZEBO_LIBRARIES})
-target_link_libraries(controller ${GAZEBO_LIBRARIES})
-target_link_libraries(ground_truth_estimator ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 target_link_libraries(contact_state_publisher_node contact_state_publisher ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
-target_link_libraries(odom_publisher ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
