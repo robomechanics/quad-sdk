@@ -8,7 +8,7 @@ This package determines the contact timing, locations, and forces, to execute a 
 
 The source code is released under a [MIT License](quad-sdk/LICENSE).
 
-**Author: Joe Norby<br />
+**Author: Joe Norby, Yanhao Yang<br />
 Affiliation: [Robomechanics Lab](https://www.cmu.edu/me/robomechanicslab/)<br />
 Maintainers: Yanhao Yang (yanhaoy@andrew.cmu.edu) and Alex Stutt (astutt@andrew.cmu.edu)**
 
