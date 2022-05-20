@@ -30,6 +30,7 @@ TEST(LocalFootStepPlanner, baseCase) {
   double foothold_search_radius = 0.2;
   double foothold_obj_threshold = 0.6;
   double grf_weight = 0.0;
+  double toe_radius = 0.02;
   std::string obj_fun_layer = "traversability";
   std::shared_ptr<quad_utils::QuadKD> quadKD =
       std::make_shared<quad_utils::QuadKD>();
@@ -38,7 +39,7 @@ TEST(LocalFootStepPlanner, baseCase) {
   footstep_planner.setTemporalParams(dt, period, N, duty_cycles, phase_offsets);
   footstep_planner.setSpatialParams(
       ground_clearance, hip_clearance, standing_error_threshold, grf_weight,
-      quadKD, foothold_search_radius, foothold_obj_threshold, obj_fun_layer);
+      quadKD, foothold_search_radius, foothold_obj_threshold, obj_fun_layer, toe_radius);
 
   Eigen::MatrixXd body_plan(N, 12);
   body_plan.fill(0);
