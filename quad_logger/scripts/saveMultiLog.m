@@ -1,4 +1,4 @@
-function logDir = saveLog(trialName,figArray)
+function logDir = saveMultiLog(envName,configNames,figArray)
 % saveLog Save the bag data and figures into a generated log file
 %   saveLog(trialName, figArray) generates a new directory named trialName
 %   located in ../logs/ if one does not already exist, copies the bag to
@@ -6,7 +6,7 @@ function logDir = saveLog(trialName,figArray)
 %   the figures included in figArray into trialName/figures.
 
 % If they don't already exist, make the log directories for this trial
-logDir = fullfile('../logs/',trialName);
+logDir = fullfile('../logs/',envName);
 if ~exist(logDir, 'dir')
     mkdir(logDir);
 end
@@ -21,11 +21,14 @@ end
 
 % Save the figures
 for i = 1:length(figArray)
-    figFullFile = [figuresDir, trialName, '_', figArray(i).Name];
+    figFullFile = [figuresDir, envName, '_', figArray(i).Name];
     saveas(figArray(i), [figFullFile, '.fig']);
     exportgraphics(figArray(i), [figFullFile, '.png']);
     exportgraphics(figArray(i), [figFullFile, '.pdf']);
 end
 
 % Copy the bag
-copyfile(['../bags/', trialName, '.bag'],logDir)
+for i = 1:length(configNames)
+    trialName = [envName, '_', lower(configNames{i})];
+    copyfile(['../bags/', trialName, '.bag'],logDir)
+end

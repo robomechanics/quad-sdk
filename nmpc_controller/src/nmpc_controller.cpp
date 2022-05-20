@@ -132,6 +132,8 @@ NMPCController::NMPCController() {
   adaptive_complexity_schedule_ = fixed_complexity_schedule;
 
   // If mixed complexity is enabled, load the desired structures
+  ros::param::get("nmpc_controller/enable_mixed_complexity",
+                  enable_mixed_complexity_);
   if (enable_mixed_complexity_) {
     ros::param::get("nmpc_controller/enable_adaptive_complexity",
                     enable_adaptive_complexity_);
@@ -139,8 +141,6 @@ NMPCController::NMPCController() {
     std::vector<int> fixed_complex_idxs;
     int fixed_complex_head, fixed_complex_tail;
 
-    ros::param::get("nmpc_controller/enable_mixed_complexity",
-                    enable_mixed_complexity_);
     ros::param::get("nmpc_controller/fixed_complex_idxs", fixed_complex_idxs);
     ros::param::get("nmpc_controller/fixed_complex_head", fixed_complex_head);
     ros::param::get("nmpc_controller/fixed_complex_tail", fixed_complex_tail);

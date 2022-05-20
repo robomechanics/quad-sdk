@@ -96,7 +96,7 @@ hold on;
 
 % Declare sizes
 markerSizeSimple = 3;
-markerSizeComplex = 6;
+markerSizeComplex = 3;
 
 % Extract times into vectors
 elementTimesVec = [];

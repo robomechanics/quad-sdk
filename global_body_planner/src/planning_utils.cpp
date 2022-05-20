@@ -308,7 +308,8 @@ double getPitchFromState(const State &s, const PlannerConfig &planner_config) {
                       : s.vel.head<2>().dot(surf_norm.head<2>()) / vel;
 
   // set pitch to angle that aligns v_proj with surface normal
-  return atan2(v_proj, surf_norm[2]);
+  // return atan2(v_proj, surf_norm[2]);
+  return 0;
 }
 
 double getDzFromState(const State &s, const PlannerConfig &planner_config) {
@@ -907,7 +908,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
 
     // Make sure legs are over a valid region of the terrain
     if (!isContactTraversable(reachability_point, planner_config) &&
-        phase != FLIGHT) {
+        phase != FLIGHT && planner_config.enable_leaping) {
       max_valid_z = s.pos[2] + planner_config.h_max -
                     getZRelToTerrain(reachability_point, planner_config);
       return false;

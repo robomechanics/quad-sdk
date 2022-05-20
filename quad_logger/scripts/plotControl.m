@@ -55,67 +55,67 @@ controlColorVector = {[166,25,46]/255, [0,45,114]/255, [0,132,61]/255, [242,169,
 
 %% Plot GRF Vectors (By XYZ components, all legs)
 
-num_feet = 4;
-GRFVectorsFig = figure(GRFVectorsFig);
-GRFVectorsFig.Name = "grfs";
-subplot(3,1,1)
-hold on;
-for i = 1:num_feet
-   plot(controlTraj.time, controlTraj.vectors{i}(:,1), ...
-       'Color', controlColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
-end
-ylabel('X (N)');
-if titles
-    title('GRF Vectors')
-end
-axis([min(controlTraj.time), max(controlTraj.time), -50, 50])
-
-subplot(3,1,2)
-hold on;
-for i = 1:num_feet
-   plot(controlTraj.time, controlTraj.vectors{i}(:,2), ...
-       'Color', controlColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
-end
-ylabel('Y (N)');
-axis([min(controlTraj.time), max(controlTraj.time), -50, 50])
-
-subplot(3,1,3)
-hold on;
-for i = 1:num_feet
-   plot(controlTraj.time, controlTraj.vectors{i}(:,3), ...
-       'Color', controlColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
-end
-ylabel('Z (N)');
-xlabel('Time (s)')
-axis([min(controlTraj.time), max(controlTraj.time), 0, 250])
-legend('FL','BL','FR','BR','location','east')
-set(GRFVectorsFig, 'Position', [100 100 800 600])
-
-%% Plot GRF Vectors (One leg, all XYZ components)
-
-% leg_idx = 4;
-% 
+% num_feet = 4;
 % GRFVectorsFig = figure(GRFVectorsFig);
 % GRFVectorsFig.Name = "grfs";
-% 
+% subplot(3,1,1)
 % hold on;
-% plot(controlTraj.time, controlTraj.vectors{leg_idx}(:,1), ...
-%     'Color', controlColorVector{1}, 'LineWidth', 2, 'LineStyle', lineStyle);
-% hold on;
-% plot(controlTraj.time, controlTraj.vectors{leg_idx}(:,2), ...
-%     'Color', controlColorVector{2}, 'LineWidth', 2, 'LineStyle', lineStyle);
-% hold on;
-% plot(controlTraj.time, controlTraj.vectors{leg_idx}(:,3), ...
-%     'Color', controlColorVector{3}, 'LineWidth', 2, 'LineStyle', lineStyle);
-% 
+% for i = 1:num_feet
+%    plot(controlTraj.time, controlTraj.vectors{i}(:,1), ...
+%        'Color', controlColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
+% end
+% ylabel('X (N)');
 % if titles
 %     title('GRF Vectors')
 % end
-% xlabel('Time (s)');
-% yl = ylabel('GRF (N)');
-% axis([min(controlTraj.time), max(controlTraj.time), -200, 200])
-% legend('X','Y','Z','location','east')
-% set(GRFVectorsFig, 'Position', [100 100 1200 400])
+% axis([min(controlTraj.time), max(controlTraj.time), -50, 50])
+% 
+% subplot(3,1,2)
+% hold on;
+% for i = 1:num_feet
+%    plot(controlTraj.time, controlTraj.vectors{i}(:,2), ...
+%        'Color', controlColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
+% end
+% ylabel('Y (N)');
+% axis([min(controlTraj.time), max(controlTraj.time), -50, 50])
+% 
+% subplot(3,1,3)
+% hold on;
+% for i = 1:num_feet
+%    plot(controlTraj.time, controlTraj.vectors{i}(:,3), ...
+%        'Color', controlColorVector{i}, 'LineWidth', 2, 'LineStyle', lineStyle);
+% end
+% ylabel('Z (N)');
+% xlabel('Time (s)')
+% axis([min(controlTraj.time), max(controlTraj.time), 0, 250])
+% legend('FL','BL','FR','BR','location','east')
+% set(GRFVectorsFig, 'Position', [100 100 800 600])
+
+%% Plot GRF Vectors (One leg, all XYZ components)
+
+leg_idx = 4;
+
+GRFVectorsFig = figure(GRFVectorsFig);
+GRFVectorsFig.Name = "grfs";
+
+hold on;
+plot(controlTraj.time, controlTraj.vectors{leg_idx}(:,1), ...
+    'Color', controlColorVector{1}, 'LineWidth', 2, 'LineStyle', lineStyle);
+hold on;
+plot(controlTraj.time, controlTraj.vectors{leg_idx}(:,2), ...
+    'Color', controlColorVector{2}, 'LineWidth', 2, 'LineStyle', lineStyle);
+hold on;
+plot(controlTraj.time, controlTraj.vectors{leg_idx}(:,3), ...
+    'Color', controlColorVector{3}, 'LineWidth', 2, 'LineStyle', lineStyle);
+
+if titles
+    title('GRF Vectors')
+end
+xlabel('Time (s)');
+yl = ylabel('GRF (N)');
+axis([min(controlTraj.time), max(controlTraj.time), -200, 200])
+legend('X','Y','Z','location','east')
+set(GRFVectorsFig, 'Position', [100 100 1200 400])
 
 %% Export
 

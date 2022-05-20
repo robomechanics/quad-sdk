@@ -28,7 +28,7 @@ end
 
 bSave = true;                       % Save the figures/videos
 bAnimate = false;                   % Animate the trajectory (no translation)
-bTitles = true;                     % Turn on figure titles
+bTitles = false;                     % Turn on figure titles
 bPlotLocalPlanInfo = true;          % Turn on to plot local plan information
 tWindowStates = [];                 % Specify time window for state (use [] for no clipping)
 tWindowControl = [];                % Specify time window for control (use [] for no clipping)

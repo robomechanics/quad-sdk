@@ -127,7 +127,7 @@ class quadNLP : public TNLP {
   const bool always_constrain_feet_ = false;
 
   /// Boolean for whether to include the terrain in the foot height constraint
-  const bool use_terrain_constraint_ = false;
+  const bool use_terrain_constraint_ = true;
 
   /// Boolean for whether to include the terrain in the foot height constraint
   const bool remember_complex_elements_ = true;
