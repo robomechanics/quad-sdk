@@ -235,7 +235,7 @@ class LocalPlanner {
   /// Commanded velocity filter constant
   double cmd_vel_filter_const_;
 
-  /// Scale for twist cmd_val
+  /// Scale for twist cmd_vel
   double cmd_vel_scale_;
 
   /// Nominal robot height
