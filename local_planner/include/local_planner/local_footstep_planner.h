@@ -61,13 +61,14 @@ class LocalFootstepPlanner {
    * @param[in] foothold_obj_threshold Minimum objective function value for
    * valid foothold
    * @param[in] obj_fun_layer Terrain layer for foothold search
+   * @param[in] toe_radius Toe radius
    */
   void setSpatialParams(double ground_clearance, double hip_clearance,
                         double grf_weight, double standing_error_threshold,
                         std::shared_ptr<quad_utils::QuadKD> kinematics,
                         double foothold_search_radius,
                         double foothold_obj_threshold,
-                        std::string obj_fun_layer);
+                        std::string obj_fun_layer, double toe_radius);
 
   /**
    * @brief Transform a vector of foot positions from the world to the body
@@ -380,26 +381,14 @@ class LocalFootstepPlanner {
     return (horizon_length_ - 1);
   }
 
-  /// Handle for the map frame
-  std::string map_frame_;
-
   /// Struct for terrain map data
   FastTerrainMap terrain_;
 
   /// GridMap for terrain map data
   grid_map::GridMap terrain_grid_;
 
-  /// Current continuous footstep plan
-  quad_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
-
-  /// Current footposition in the world frame
-  Eigen::MatrixXd current_foot_positions_world_;
-
   /// Number of feet
   const int num_feet_ = 4;
-
-  /// Number of cycles to plan
-  int num_cycles_;
 
   /// Timestep for one finite element
   double dt_;
@@ -456,7 +445,7 @@ class LocalFootstepPlanner {
   std::string obj_fun_layer_;
 
   /// Toe radius
-  double toe_radius = 0.02;
+  double toe_radius_;
 };
 
 #endif  // LOCAL_FOOTSTEP_PLANNER_H
