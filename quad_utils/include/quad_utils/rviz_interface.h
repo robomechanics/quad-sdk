@@ -3,6 +3,7 @@
 
 #include <geometry_msgs/PoseArray.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
 #include <quad_msgs/FootPlanDiscrete.h>
 #include <quad_msgs/FootState.h>
@@ -18,8 +19,6 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
-
-#include <nav_msgs/Odometry.h>
 
 //! A class for interfacing between RViz and quad-sdk topics.
 /*!
@@ -196,6 +195,9 @@ class RVizInterface {
   /// link
   tf2_ros::TransformBroadcaster trajectory_base_tf_br_;
 
+  /// ROS Transform Broadcaster to publish the camera odom transform
+  tf2_ros::TransformBroadcaster camera_odom_tf_br_;
+
   /// Message for state estimate trace
   visualization_msgs::Marker state_estimate_trace_msg_;
 
@@ -204,9 +206,15 @@ class RVizInterface {
 
   /// Message for trajectory state trace
   visualization_msgs::Marker trajectory_state_trace_msg_;
-  
+
   /// Message for camera trace
   visualization_msgs::Marker camera_trace_msg_;
+
+  /// Init body position to align the camera with world frame
+  Eigen::Vector3d init_body_pos;
+
+  /// Init body orientation to align the camera with world frame
+  Eigen::Vector4d init_body_orientation;
 
   /// Distance threshold for resetting the state traces
   const double trace_reset_threshold_ = 0.2;
