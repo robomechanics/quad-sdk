@@ -8,7 +8,7 @@ var searchData=
   ['setgains_5',['setGains',['../classLegController.html#a513be1445a05353fa801ca427e2d2cd7',1,'LegController::setGains(double kp, double kd)'],['../classLegController.html#a399af81c449b888d019025e244d4a256',1,'LegController::setGains(const std::vector&lt; double &gt; &amp;kp, const std::vector&lt; double &gt; &amp;kd)'],['../classLegController.html#aadd5bd1611b699f9179f4cefc09ea1f0',1,'LegController::setGains(const std::vector&lt; double &gt; &amp;stance_kp, const std::vector&lt; double &gt; &amp;stance_kd, const std::vector&lt; double &gt; &amp;swing_kp, const std::vector&lt; double &gt; &amp;swing_kd, const std::vector&lt; double &gt; &amp;swing_kp_cart, const std::vector&lt; double &gt; &amp;swing_kd_cart)']]],
   ['setgoalstate_6',['setGoalState',['../classGlobalBodyPlanner.html#a013c9e1ba7553f4f76f7f7ba0fdd4098',1,'GlobalBodyPlanner']]],
   ['setpublishedtimestamp_7',['setPublishedTimestamp',['../classGlobalBodyPlan.html#a0049613cf98e77dd6b9f098c2a6e49ca',1,'GlobalBodyPlan']]],
-  ['setspatialparams_8',['setSpatialParams',['../classLocalFootstepPlanner.html#a653bc52076f818222afb65efaa582cbe',1,'LocalFootstepPlanner']]],
+  ['setspatialparams_8',['setSpatialParams',['../classLocalFootstepPlanner.html#aa4a1875a7cb22e9c6b9d0b96c5ba0b36',1,'LocalFootstepPlanner']]],
   ['setstartstate_9',['setStartState',['../classGlobalBodyPlanner.html#a74868d93a1e89deb790634dff7dc2538',1,'GlobalBodyPlanner']]],
   ['setstatus_10',['setStatus',['../classGlobalBodyPlan.html#a098af074e7453468e4dc0b8a97c9ef6d',1,'GlobalBodyPlan']]],
   ['settemporalparams_11',['setTemporalParams',['../classLocalFootstepPlanner.html#a1f631d9113d8db46b22d279e3ac13bb9',1,'LocalFootstepPlanner']]],

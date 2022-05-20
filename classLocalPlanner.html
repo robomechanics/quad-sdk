@@ -64,7 +64,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pri-types">Private Types</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classLocalPlanner-members.html">List of all members</a>  </div>
@@ -96,13 +95,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>spin</b> ()</td></tr>
 <tr class="memdesc:a6a432060f73742e5a3815172a0721dc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primary work function in class, called in node file for this component. <br /></td></tr>
 <tr class="separator:a6a432060f73742e5a3815172a0721dc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-types" name="pri-types"></a>
-Private Types</h2></td></tr>
-<tr class="memitem:a3c4e60a88af470bf8ec538038147d70e"><td class="memItemLeft" align="right" valign="top"><a id="a3c4e60a88af470bf8ec538038147d70e" name="a3c4e60a88af470bf8ec538038147d70e"></a>
-typedef Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>Twist</b></td></tr>
-<tr class="memdesc:a3c4e60a88af470bf8ec538038147d70e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Twist input. <br /></td></tr>
-<tr class="separator:a3c4e60a88af470bf8ec538038147d70e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:ad33edced52b1d7ee9dc909b21cce2808"><td class="memItemLeft" align="right" valign="top"><a id="ad33edced52b1d7ee9dc909b21cce2808" name="ad33edced52b1d7ee9dc909b21cce2808"></a>
@@ -128,14 +120,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>initLocalFootstepPlan
 <tr class="memitem:a8ceeeee51bc6bba61bb85e6232e20d9d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a8ceeeee51bc6bba61bb85e6232e20d9d">cmdVelCallback</a> (const geometry_msgs::Twist::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a8ceeeee51bc6bba61bb85e6232e20d9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function to handle new desired twist data when using twist input.  <a href="classLocalPlanner.html#a8ceeeee51bc6bba61bb85e6232e20d9d">More...</a><br /></td></tr>
 <tr class="separator:a8ceeeee51bc6bba61bb85e6232e20d9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5093d5715cb4bbafb9190c0ceeda5283"><td class="memItemLeft" align="right" valign="top"><a id="a5093d5715cb4bbafb9190c0ceeda5283" name="a5093d5715cb4bbafb9190c0ceeda5283"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>getStateAndReferencePlan</b> ()</td></tr>
-<tr class="memdesc:a5093d5715cb4bbafb9190c0ceeda5283"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to pre-process the body plan and robot state messages into Eigen arrays. <br /></td></tr>
-<tr class="separator:a5093d5715cb4bbafb9190c0ceeda5283"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aece16b71dfb6520d7b2d82b4883ae696"><td class="memItemLeft" align="right" valign="top"><a id="aece16b71dfb6520d7b2d82b4883ae696" name="aece16b71dfb6520d7b2d82b4883ae696"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>getStateAndTwistInput</b> ()</td></tr>
-<tr class="memdesc:aece16b71dfb6520d7b2d82b4883ae696"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to read robot state and twist command messages into Eigen arrays. <br /></td></tr>
-<tr class="separator:aece16b71dfb6520d7b2d82b4883ae696"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a431a0209d1e14704435e7785a8dd2eea"><td class="memItemLeft" align="right" valign="top"><a id="a431a0209d1e14704435e7785a8dd2eea" name="a431a0209d1e14704435e7785a8dd2eea"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>getReference</b> ()</td></tr>
+<tr class="memdesc:a431a0209d1e14704435e7785a8dd2eea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to compute reference trajectory from twist command or global plan. <br /></td></tr>
+<tr class="separator:a431a0209d1e14704435e7785a8dd2eea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a72ba8fe6eaf69bc3c452e0492d857779"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalPlanner.html#a72ba8fe6eaf69bc3c452e0492d857779">computeLocalPlan</a> ()</td></tr>
 <tr class="memdesc:a72ba8fe6eaf69bc3c452e0492d857779"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to compute the local plan.  <a href="classLocalPlanner.html#a72ba8fe6eaf69bc3c452e0492d857779">More...</a><br /></td></tr>
 <tr class="separator:a72ba8fe6eaf69bc3c452e0492d857779"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -235,14 +223,6 @@ Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>current_fo
 int&#160;</td><td class="memItemRight" valign="bottom"><b>current_plan_index_</b></td></tr>
 <tr class="memdesc:aa443def11dac297395fdc590cad1eaed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current index in the global plan. <br /></td></tr>
 <tr class="separator:aa443def11dac297395fdc590cad1eaed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a492df0b436ab47c6f5b47cb6d7e2a6"><td class="memItemLeft" align="right" valign="top"><a id="a5a492df0b436ab47c6f5b47cb6d7e2a6" name="a5a492df0b436ab47c6f5b47cb6d7e2a6"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>normal_lo_</b></td></tr>
-<tr class="memdesc:a5a492df0b436ab47c6f5b47cb6d7e2a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum normal force in contact phase. <br /></td></tr>
-<tr class="separator:a5a492df0b436ab47c6f5b47cb6d7e2a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae26dcf0a256a264f154d2247dfc66e2e"><td class="memItemLeft" align="right" valign="top"><a id="ae26dcf0a256a264f154d2247dfc66e2e" name="ae26dcf0a256a264f154d2247dfc66e2e"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>normal_hi_</b></td></tr>
-<tr class="memdesc:ae26dcf0a256a264f154d2247dfc66e2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum normal force in contact phase. <br /></td></tr>
-<tr class="separator:ae26dcf0a256a264f154d2247dfc66e2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c2ea984eab9f4f3237818a5ef0ab79d"><td class="memItemLeft" align="right" valign="top"><a id="a9c2ea984eab9f4f3237818a5ef0ab79d" name="a9c2ea984eab9f4f3237818a5ef0ab79d"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>dt_</b></td></tr>
 <tr class="memdesc:a9c2ea984eab9f4f3237818a5ef0ab79d"><td class="mdescLeft">&#160;</td><td class="mdescRight">local planner timestep (seconds) <br /></td></tr>
@@ -317,10 +297,6 @@ Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>foot_accel
 Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>foot_positions_body_</b></td></tr>
 <tr class="memdesc:a16af79e9b99a37ff2d8de63b36a38363"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matrix of continuous foot positions in body frame. <br /></td></tr>
 <tr class="separator:a16af79e9b99a37ff2d8de63b36a38363"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65633d0dacf2d1042669e576c8e3cb23"><td class="memItemLeft" align="right" valign="top"><a id="a65633d0dacf2d1042669e576c8e3cb23" name="a65633d0dacf2d1042669e576c8e3cb23"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>hip_projected_foot_positions_</b></td></tr>
-<tr class="memdesc:a65633d0dacf2d1042669e576c8e3cb23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matrix of continuous foot positions projected underneath the hips. <br /></td></tr>
-<tr class="separator:a65633d0dacf2d1042669e576c8e3cb23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d5cea21a957ae347990e1c28925e264"><td class="memItemLeft" align="right" valign="top"><a id="a0d5cea21a957ae347990e1c28925e264" name="a0d5cea21a957ae347990e1c28925e264"></a>
 Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>foot_plan_discrete_</b></td></tr>
 <tr class="memdesc:a0d5cea21a957ae347990e1c28925e264"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matrix of foot contact locations (number of contacts x num_legs_) <br /></td></tr>
@@ -329,21 +305,22 @@ Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>foot_plan_
 std::shared_ptr&lt; <a class="el" href="classquad__utils_1_1QuadKD.html">quad_utils::QuadKD</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>quadKD_</b></td></tr>
 <tr class="memdesc:a149af3c9d2d9ea5018a227ecd3c94fe6"><td class="mdescLeft">&#160;</td><td class="mdescRight">QuadKD class. <br /></td></tr>
 <tr class="separator:a149af3c9d2d9ea5018a227ecd3c94fe6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a79d0679cf31514b5732416aaf0fdabd3"><td class="memItemLeft" align="right" valign="top"><a id="a79d0679cf31514b5732416aaf0fdabd3" name="a79d0679cf31514b5732416aaf0fdabd3"></a>
-<a class="el" href="classLocalPlanner.html#a3c4e60a88af470bf8ec538038147d70e">Twist</a>&#160;</td><td class="memItemRight" valign="bottom"><b>cmd_vel_</b></td></tr>
-<tr class="separator:a79d0679cf31514b5732416aaf0fdabd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18ee168a32b0a9f6827df6759d69c34a"><td class="memItemLeft" align="right" valign="top"><a id="a18ee168a32b0a9f6827df6759d69c34a" name="a18ee168a32b0a9f6827df6759d69c34a"></a>
+Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>cmd_vel_</b></td></tr>
+<tr class="memdesc:a18ee168a32b0a9f6827df6759d69c34a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Twist input. <br /></td></tr>
+<tr class="separator:a18ee168a32b0a9f6827df6759d69c34a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a503c0e83b76f59ee8f5535ce56660af9"><td class="memItemLeft" align="right" valign="top"><a id="a503c0e83b76f59ee8f5535ce56660af9" name="a503c0e83b76f59ee8f5535ce56660af9"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>cmd_vel_filter_const_</b></td></tr>
 <tr class="memdesc:a503c0e83b76f59ee8f5535ce56660af9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Commanded velocity filter constant. <br /></td></tr>
 <tr class="separator:a503c0e83b76f59ee8f5535ce56660af9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad99dbc39df819137699ffa260ff766a3"><td class="memItemLeft" align="right" valign="top"><a id="ad99dbc39df819137699ffa260ff766a3" name="ad99dbc39df819137699ffa260ff766a3"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>cmd_vel_scale_</b></td></tr>
-<tr class="memdesc:ad99dbc39df819137699ffa260ff766a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scale for twist cmd_val. <br /></td></tr>
+<tr class="memdesc:ad99dbc39df819137699ffa260ff766a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scale for twist cmd_vel. <br /></td></tr>
 <tr class="separator:ad99dbc39df819137699ffa260ff766a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a211859d86ceeec95dfbd5705467cc4db"><td class="memItemLeft" align="right" valign="top"><a id="a211859d86ceeec95dfbd5705467cc4db" name="a211859d86ceeec95dfbd5705467cc4db"></a>
-const double&#160;</td><td class="memItemRight" valign="bottom"><b>z_des_</b> = 0.27</td></tr>
-<tr class="memdesc:a211859d86ceeec95dfbd5705467cc4db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nominal robot height. <br /></td></tr>
-<tr class="separator:a211859d86ceeec95dfbd5705467cc4db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae553763efe01071c199e813b12b46045"><td class="memItemLeft" align="right" valign="top"><a id="ae553763efe01071c199e813b12b46045" name="ae553763efe01071c199e813b12b46045"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>z_des_</b></td></tr>
+<tr class="memdesc:ae553763efe01071c199e813b12b46045"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nominal robot height. <br /></td></tr>
+<tr class="separator:ae553763efe01071c199e813b12b46045"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ae22dedc490d6e8b2eb012b2bffb963"><td class="memItemLeft" align="right" valign="top"><a id="a8ae22dedc490d6e8b2eb012b2bffb963" name="a8ae22dedc490d6e8b2eb012b2bffb963"></a>
 ros::Time&#160;</td><td class="memItemRight" valign="bottom"><b>last_cmd_vel_msg_time_</b></td></tr>
 <tr class="memdesc:a8ae22dedc490d6e8b2eb012b2bffb963"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time of the most recent cmd_vel data. <br /></td></tr>
@@ -376,10 +353,10 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>first_element_durat
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>same_plan_index_</b></td></tr>
 <tr class="memdesc:aab35e5bb1d71781efefe7ee7f85a4a03"><td class="mdescLeft">&#160;</td><td class="mdescRight">If the current solving is duplicated in the same index. <br /></td></tr>
 <tr class="separator:aab35e5bb1d71781efefe7ee7f85a4a03"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8aa981167edf9fd33eab8958c3063aca"><td class="memItemLeft" align="right" valign="top"><a id="a8aa981167edf9fd33eab8958c3063aca" name="a8aa981167edf9fd33eab8958c3063aca"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>toe_radius</b> = 0.02</td></tr>
-<tr class="memdesc:a8aa981167edf9fd33eab8958c3063aca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toe radius. <br /></td></tr>
-<tr class="separator:a8aa981167edf9fd33eab8958c3063aca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3a4d55ca153952561e776ea88c334ed"><td class="memItemLeft" align="right" valign="top"><a id="aa3a4d55ca153952561e776ea88c334ed" name="aa3a4d55ca153952561e776ea88c334ed"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>toe_radius_</b></td></tr>
+<tr class="memdesc:aa3a4d55ca153952561e776ea88c334ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toe radius. <br /></td></tr>
+<tr class="separator:aa3a4d55ca153952561e776ea88c334ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26b60431def64becac1bcaea59d2a96d"><td class="memItemLeft" align="right" valign="top"><a id="a26b60431def64becac1bcaea59d2a96d" name="a26b60431def64becac1bcaea59d2a96d"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>control_mode_</b></td></tr>
 <tr class="memdesc:a26b60431def64becac1bcaea59d2a96d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Control mode. <br /></td></tr>

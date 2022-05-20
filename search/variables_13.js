@@ -16,7 +16,7 @@ var searchData=
   ['toe1_5fcontact_5fstate_5fsub_13',['toe1_contact_state_sub',['../classContactStatePublisher.html#a595dc3c8bd901f72aa07f4b0fe68479b',1,'ContactStatePublisher']]],
   ['toe2_5fcontact_5fstate_5fsub_14',['toe2_contact_state_sub',['../classContactStatePublisher.html#a7ecb15078fa045201dabdee145142d2d',1,'ContactStatePublisher']]],
   ['toe3_5fcontact_5fstate_5fsub_15',['toe3_contact_state_sub',['../classContactStatePublisher.html#a52979559c64bcce5d9f4c6a8c7f59b91',1,'ContactStatePublisher']]],
-  ['toe_5fradius_16',['toe_radius',['../classLocalFootstepPlanner.html#a260d9032be8beedc6d36a6fffb85e8e2',1,'LocalFootstepPlanner::toe_radius()'],['../classLocalPlanner.html#a8aa981167edf9fd33eab8958c3063aca',1,'LocalPlanner::toe_radius()']]],
+  ['toe_5fradius_5f_16',['toe_radius_',['../classLocalFootstepPlanner.html#ae795132a8c10c87af16715360d43be3b',1,'LocalFootstepPlanner::toe_radius_()'],['../classLocalPlanner.html#aa3a4d55ca153952561e776ea88c334ed',1,'LocalPlanner::toe_radius_()']]],
   ['torque_5flimits_5f_17',['torque_limits_',['../classRobotDriver.html#adc5e3cdedf2d802421a41ca8c163b64e',1,'RobotDriver']]],
   ['trace_5freset_5fthreshold_5f_18',['trace_reset_threshold_',['../classRVizInterface.html#a0a1a412729e753638cab02623f621274',1,'RVizInterface']]],
   ['trajectory_5fbase_5ftf_5fbr_5f_19',['trajectory_base_tf_br_',['../classRVizInterface.html#a329e8c9e5b61a5cc795b124ad636dc1b',1,'RVizInterface']]],

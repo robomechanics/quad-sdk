@@ -93,9 +93,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1f631d9113d8db46b22d279e3ac13bb9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a1f631d9113d8db46b22d279e3ac13bb9">setTemporalParams</a> (double dt, int period, int horizon_length, const std::vector&lt; double &gt; &amp;duty_cycles, const std::vector&lt; double &gt; &amp;phase_offsets)</td></tr>
 <tr class="memdesc:a1f631d9113d8db46b22d279e3ac13bb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the temporal parameters of this object.  <a href="classLocalFootstepPlanner.html#a1f631d9113d8db46b22d279e3ac13bb9">More...</a><br /></td></tr>
 <tr class="separator:a1f631d9113d8db46b22d279e3ac13bb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a653bc52076f818222afb65efaa582cbe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a653bc52076f818222afb65efaa582cbe">setSpatialParams</a> (double ground_clearance, double hip_clearance, double grf_weight, double standing_error_threshold, std::shared_ptr&lt; <a class="el" href="classquad__utils_1_1QuadKD.html">quad_utils::QuadKD</a> &gt; kinematics, double foothold_search_radius, double foothold_obj_threshold, std::string obj_fun_layer)</td></tr>
-<tr class="memdesc:a653bc52076f818222afb65efaa582cbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the spatial parameters of this object.  <a href="classLocalFootstepPlanner.html#a653bc52076f818222afb65efaa582cbe">More...</a><br /></td></tr>
-<tr class="separator:a653bc52076f818222afb65efaa582cbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4a1875a7cb22e9c6b9d0b96c5ba0b36"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#aa4a1875a7cb22e9c6b9d0b96c5ba0b36">setSpatialParams</a> (double ground_clearance, double hip_clearance, double grf_weight, double standing_error_threshold, std::shared_ptr&lt; <a class="el" href="classquad__utils_1_1QuadKD.html">quad_utils::QuadKD</a> &gt; kinematics, double foothold_search_radius, double foothold_obj_threshold, std::string obj_fun_layer, double toe_radius)</td></tr>
+<tr class="memdesc:aa4a1875a7cb22e9c6b9d0b96c5ba0b36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the spatial parameters of this object.  <a href="classLocalFootstepPlanner.html#aa4a1875a7cb22e9c6b9d0b96c5ba0b36">More...</a><br /></td></tr>
+<tr class="separator:aa4a1875a7cb22e9c6b9d0b96c5ba0b36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16b85e5b2f86141a5ddea246923b8610"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a16b85e5b2f86141a5ddea246923b8610">getFootPositionsBodyFrame</a> (const Eigen::VectorXd &amp;body_plan, const Eigen::VectorXd &amp;foot_positions_world, Eigen::VectorXd &amp;foot_positions_body)</td></tr>
 <tr class="memdesc:a16b85e5b2f86141a5ddea246923b8610"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transform a vector of foot positions from the world to the body frame.  <a href="classLocalFootstepPlanner.html#a16b85e5b2f86141a5ddea246923b8610">More...</a><br /></td></tr>
 <tr class="separator:a16b85e5b2f86141a5ddea246923b8610"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -181,10 +181,6 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>getNextLiftoffIndex</b
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:aa25b6b2f38279436f5922165841da9ad"><td class="memItemLeft" align="right" valign="top"><a id="aa25b6b2f38279436f5922165841da9ad" name="aa25b6b2f38279436f5922165841da9ad"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>map_frame_</b></td></tr>
-<tr class="memdesc:aa25b6b2f38279436f5922165841da9ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle for the map frame. <br /></td></tr>
-<tr class="separator:aa25b6b2f38279436f5922165841da9ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52b5418ea40c08a0808bdac219aaf035"><td class="memItemLeft" align="right" valign="top"><a id="a52b5418ea40c08a0808bdac219aaf035" name="a52b5418ea40c08a0808bdac219aaf035"></a>
 <a class="el" href="classFastTerrainMap.html">FastTerrainMap</a>&#160;</td><td class="memItemRight" valign="bottom"><b>terrain_</b></td></tr>
 <tr class="memdesc:a52b5418ea40c08a0808bdac219aaf035"><td class="mdescLeft">&#160;</td><td class="mdescRight">Struct for terrain map data. <br /></td></tr>
@@ -193,22 +189,10 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>map_frame_</b>
 grid_map::GridMap&#160;</td><td class="memItemRight" valign="bottom"><b>terrain_grid_</b></td></tr>
 <tr class="memdesc:a3350128a30d8d846dcb768007d448491"><td class="mdescLeft">&#160;</td><td class="mdescRight">GridMap for terrain map data. <br /></td></tr>
 <tr class="separator:a3350128a30d8d846dcb768007d448491"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7539687a14eccd6e0bf6110461960006"><td class="memItemLeft" align="right" valign="top"><a id="a7539687a14eccd6e0bf6110461960006" name="a7539687a14eccd6e0bf6110461960006"></a>
-quad_msgs::MultiFootPlanContinuous&#160;</td><td class="memItemRight" valign="bottom"><b>multi_foot_plan_continuous_msg_</b></td></tr>
-<tr class="memdesc:a7539687a14eccd6e0bf6110461960006"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current continuous footstep plan. <br /></td></tr>
-<tr class="separator:a7539687a14eccd6e0bf6110461960006"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51831f300475ae8544ef2ed8ca23ff75"><td class="memItemLeft" align="right" valign="top"><a id="a51831f300475ae8544ef2ed8ca23ff75" name="a51831f300475ae8544ef2ed8ca23ff75"></a>
-Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>current_foot_positions_world_</b></td></tr>
-<tr class="memdesc:a51831f300475ae8544ef2ed8ca23ff75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current footposition in the world frame. <br /></td></tr>
-<tr class="separator:a51831f300475ae8544ef2ed8ca23ff75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85ec156b75d085bdf14b2de9ed53cfbc"><td class="memItemLeft" align="right" valign="top"><a id="a85ec156b75d085bdf14b2de9ed53cfbc" name="a85ec156b75d085bdf14b2de9ed53cfbc"></a>
 const int&#160;</td><td class="memItemRight" valign="bottom"><b>num_feet_</b> = 4</td></tr>
 <tr class="memdesc:a85ec156b75d085bdf14b2de9ed53cfbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of feet. <br /></td></tr>
 <tr class="separator:a85ec156b75d085bdf14b2de9ed53cfbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3cc4edbe957162aa66b83b6544c897c6"><td class="memItemLeft" align="right" valign="top"><a id="a3cc4edbe957162aa66b83b6544c897c6" name="a3cc4edbe957162aa66b83b6544c897c6"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>num_cycles_</b></td></tr>
-<tr class="memdesc:a3cc4edbe957162aa66b83b6544c897c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of cycles to plan. <br /></td></tr>
-<tr class="separator:a3cc4edbe957162aa66b83b6544c897c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3042d5de896f54fd9fd05f8df2617fad"><td class="memItemLeft" align="right" valign="top"><a id="a3042d5de896f54fd9fd05f8df2617fad" name="a3042d5de896f54fd9fd05f8df2617fad"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>dt_</b></td></tr>
 <tr class="memdesc:a3042d5de896f54fd9fd05f8df2617fad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timestep for one finite element. <br /></td></tr>
@@ -281,10 +265,10 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>foothold_obj_thresh
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>obj_fun_layer_</b></td></tr>
 <tr class="memdesc:afe760d5a51fda871bedd08af58bd2673"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terrain layer for foothold search. <br /></td></tr>
 <tr class="separator:afe760d5a51fda871bedd08af58bd2673"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a260d9032be8beedc6d36a6fffb85e8e2"><td class="memItemLeft" align="right" valign="top"><a id="a260d9032be8beedc6d36a6fffb85e8e2" name="a260d9032be8beedc6d36a6fffb85e8e2"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>toe_radius</b> = 0.02</td></tr>
-<tr class="memdesc:a260d9032be8beedc6d36a6fffb85e8e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toe radius. <br /></td></tr>
-<tr class="separator:a260d9032be8beedc6d36a6fffb85e8e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae795132a8c10c87af16715360d43be3b"><td class="memItemLeft" align="right" valign="top"><a id="ae795132a8c10c87af16715360d43be3b" name="ae795132a8c10c87af16715360d43be3b"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>toe_radius_</b></td></tr>
+<tr class="memdesc:ae795132a8c10c87af16715360d43be3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toe radius. <br /></td></tr>
+<tr class="separator:ae795132a8c10c87af16715360d43be3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >A local footstep planning class for quad. </p>
@@ -836,8 +820,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>toe_radius</b> = 0.
 
 </div>
 </div>
-<a id="a653bc52076f818222afb65efaa582cbe" name="a653bc52076f818222afb65efaa582cbe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a653bc52076f818222afb65efaa582cbe">&#9670;&nbsp;</a></span>setSpatialParams()</h2>
+<a id="aa4a1875a7cb22e9c6b9d0b96c5ba0b36" name="aa4a1875a7cb22e9c6b9d0b96c5ba0b36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4a1875a7cb22e9c6b9d0b96c5ba0b36">&#9670;&nbsp;</a></span>setSpatialParams()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -888,7 +872,13 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>toe_radius</b> = 0.
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::string&#160;</td>
-          <td class="paramname"><em>obj_fun_layer</em>&#160;</td>
+          <td class="paramname"><em>obj_fun_layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>toe_radius</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -909,6 +899,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>toe_radius</b> = 0.
     <tr><td class="paramdir">[in]</td><td class="paramname">foothold_search_radius</td><td>Radius to locally search for valid footholds (m) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">foothold_obj_threshold</td><td>Minimum objective function value for valid foothold </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">obj_fun_layer</td><td>Terrain layer for foothold search </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">toe_radius</td><td>Toe radius </td></tr>
   </table>
   </dd>
 </dl>
