@@ -2,12 +2,10 @@
 
 ## Overview
 
-This package simulates a quadruped robot in Gazebo.  It is heavily based on the [kodlab_gazebo](https://github.com/KodlabPenn/kodlab_gazebo).
-This ROS package can be used in conjunction with the Ghost Robotics SDK artifacts, which are independently distributed by Ghost Robotics.
-
+This package simulates a quadruped robot in Gazebo.  It is heavily based on the [kodlab_gazebo](https://github.com/KodlabPenn/kodlab_gazebo) package.
 The included Spirit40 robot model was originally created by Ghost Robotics.  Spirit40 can be simulated either with realistic motor rotor inertia or with rotor inertia neglected.
 
-Important fiction parameters for the foot contact with the ground can be found in the URDF and xacro files.
+Important fiction parameters for the foot contact with the ground can be found in the URDF files. xacro file support is a work in progress.
 
 ### License
 
@@ -16,8 +14,7 @@ The source code is released under a [MIT License](quad-sdk/LICENSE).
 **Original [kodlab_gazebo] Author: Vasileios Vasilopoulos**
 
 **Maintainer: Justin Yim, jkyim@andrew.cmu.edu<br />
-Affiliation: [Robomechanics Lab](https://www.cmu.edu/me/robomechanicslab/)
-**
+Affiliation: [Robomechanics Lab](https://www.cmu.edu/me/robomechanicslab/)**
 
 The Quad Simulator package has been tested under [ROS] Melodic 18.04.
 This is research code, expect that it changes often and any fitness for a particular purpose is disclaimed.
