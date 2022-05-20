@@ -14,8 +14,7 @@ using namespace planning_utils;
 //! A class that implements RRT sampling-based planning.
 /*!
    This class builds an RRT using the PlannerClass as a data structure to
-   maintain the tree. Methods to run the standard RRT algorithm are included, as
-   well as utility methods to process and debug.
+   maintain the tree as well as utility methods to process and debug.
 */
 class RRTClass {
  public:
