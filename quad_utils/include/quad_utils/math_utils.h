@@ -75,9 +75,9 @@ inline std::vector<double> wrapToPi(std::vector<double> data) {
  * @param[in] input_val Query point
  * @return Vector of interpolated values
  */
-std::vector<double> interpMat(std::vector<double> input_vec,
-                              std::vector<std::vector<double>> output_mat,
-                              double query_point);
+std::vector<double> interpMat(const std::vector<double> input_vec,
+                              const std::vector<std::vector<double>> output_mat,
+                              const double query_point);
 
 /**
  * @brief Interpolate data from column vectors contained in a matrix (vector of
@@ -88,9 +88,9 @@ std::vector<double> interpMat(std::vector<double> input_vec,
  * @param[in] input_val Query point
  * @return Vector of interpolated values
  */
-Eigen::Vector3d interpVector3d(std::vector<double> input_vec,
-                               std::vector<Eigen::Vector3d> output_mat,
-                               double query_point);
+Eigen::Vector3d interpVector3d(const std::vector<double> input_vec,
+                               const std::vector<Eigen::Vector3d> output_mat,
+                               const double query_point);
 
 /**
  * @brief Interpolate data from Eigen::Vector3d contained in a matrix (vector of
@@ -102,8 +102,8 @@ Eigen::Vector3d interpVector3d(std::vector<double> input_vec,
  * @return Vector of interpolated values
  */
 std::vector<Eigen::Vector3d> interpMatVector3d(
-    std::vector<double> input_vec,
-    std::vector<std::vector<Eigen::Vector3d>> output_mat, double query_point);
+    const std::vector<double> input_vec,
+    const std::vector<std::vector<Eigen::Vector3d>> output_mat, const double query_point);
 
 /**
  * @brief Obtain the correct int within a parameterized vector of ints
@@ -112,8 +112,8 @@ std::vector<Eigen::Vector3d> interpMatVector3d(
  * @param[in] input_val Query point
  * @return Correct output int corresponsing to the query point
  */
-int interpInt(std::vector<double> input_vec, std::vector<int> output_vec,
-              double query_point);
+int interpInt(const std::vector<double> input_vec, std::vector<int> output_vec,
+              const double query_point);
 
 /**
  * @brief Filter a stl vector with a moving average window.
