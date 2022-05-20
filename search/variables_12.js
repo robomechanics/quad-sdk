@@ -31,10 +31,9 @@ var searchData=
   ['step1_5f_28',['step1_',['../classTerrainMapPublisher.html#a2f00504173e8c5a28086d49bbcaf7cab',1,'TerrainMapPublisher']]],
   ['step2_5f_29',['step2_',['../classTerrainMapPublisher.html#a47e7ef579a01dfb7381f1295b32ef983',1,'TerrainMapPublisher']]],
   ['stop_5ftime_5f_30',['stop_time_',['../classquad__utils_1_1FunctionTimer.html#a37e1b5679da09c6d35b51bf5995c100f',1,'quad_utils::FunctionTimer']]],
-  ['sub_5fcommand_5f_31',['sub_command_',['../classeffort__controllers_1_1SpiritController.html#a94f81d7ea734641cb8e10345ddf1cb8a',1,'effort_controllers::SpiritController']]],
-  ['success_5f_32',['success_',['../classRRTClass.html#a7cddb22b09f2be69b1d93eb337963d03',1,'RRTClass']]],
-  ['successors_33',['successors',['../classGraphClass.html#a2e6c5c4d16682dafe430d71b0f8678a5',1,'GraphClass']]],
-  ['swing_5fkp_5f_34',['swing_kp_',['../classLegController.html#ac258def697db9798d10346700e5a02ae',1,'LegController::swing_kp_()'],['../classRobotDriver.html#a4130164497f840604b0b1bade17a6e67',1,'RobotDriver::swing_kp_()']]],
-  ['swing_5fkp_5fcart_5f_35',['swing_kp_cart_',['../classLegController.html#a7025c3ab1296ae0ac9b4de24a2ee30f1',1,'LegController::swing_kp_cart_()'],['../classRobotDriver.html#ab318583e279218a94550207df50450c6',1,'RobotDriver::swing_kp_cart_()']]],
-  ['sys_5fid_5fschedule_5f_36',['sys_id_schedule_',['../classquadNLP.html#ab006ef94cfc10cbfa51a67c300b10de4',1,'quadNLP']]]
+  ['success_5f_31',['success_',['../classRRTClass.html#a7cddb22b09f2be69b1d93eb337963d03',1,'RRTClass']]],
+  ['successors_32',['successors',['../classGraphClass.html#a2e6c5c4d16682dafe430d71b0f8678a5',1,'GraphClass']]],
+  ['swing_5fkp_5f_33',['swing_kp_',['../classLegController.html#ac258def697db9798d10346700e5a02ae',1,'LegController::swing_kp_()'],['../classRobotDriver.html#a4130164497f840604b0b1bade17a6e67',1,'RobotDriver::swing_kp_()']]],
+  ['swing_5fkp_5fcart_5f_34',['swing_kp_cart_',['../classLegController.html#a7025c3ab1296ae0ac9b4de24a2ee30f1',1,'LegController::swing_kp_cart_()'],['../classRobotDriver.html#ab318583e279218a94550207df50450c6',1,'RobotDriver::swing_kp_cart_()']]],
+  ['sys_5fid_5fschedule_5f_35',['sys_id_schedule_',['../classquadNLP.html#ab006ef94cfc10cbfa51a67c300b10de4',1,'quadNLP']]]
 ];
