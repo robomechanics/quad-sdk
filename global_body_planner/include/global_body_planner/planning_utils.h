@@ -35,63 +35,60 @@ namespace planning_utils {
  */
 struct PlannerConfig {
   // Declare the terrain map object
-  FastTerrainMap terrain;             /**< Terrain in FastTerrainMap format */
-  grid_map::GridMap terrain_grid_map; /**< Terrain in grid_map format */
+  FastTerrainMap terrain;              // Terrain in FastTerrainMap format
+  grid_map::GridMap terrain_grid_map;  // Terrain in grid_map format
 
   // Define kinematic constraint parameters
-  double h_max; /**< Maximum height of leg base, m */
-  double h_min; /**< Minimum ground clearance of body corners, m */
-  double h_nom; /**< Nominal ground clearance of body, m */
-  double v_max; /**< Maximum robot velocity, m/s */
-  double v_nom; /**< Nominal velocity, m/s (used during connect function) */
+  double h_max;  // Maximum height of leg base, m
+  double h_min;  // Minimum ground clearance of body corners, m
+  double h_nom;  // Nominal ground clearance of body, m
+  double v_max;  // Maximum robot velocity, m/s
+  double v_nom;  // Nominal velocity, m/s (used during connect function)
 
   // Define dynamic constraint parameters
-  double mass;    /**< Robot mass, kg */
-  double g;       /**< Gravity constant, m/s^2 */
-  double grf_min; /**< Minimum GRF in units of body weight */
-  double grf_max; /**< Maximum GRF in units of body weight */
-  double mu;      /**< Friction coefficient */
-  double t_s_min; /**< Minimum stance time, s */
-  double t_s_max; /**<  Maximum stance time, s */
-  double dz0_min; /**<  Minimum vertical velocity impulse, m/s */
-  double dz0_max; /**<  Maximum vertical velocity impulse, m/s */
+  double mass;     // Robot mass, kg
+  double g;        // Gravity constant, m/s^2
+  double grf_min;  // Minimum GRF in units of body weight
+  double grf_max;  // Maximum GRF in units of body weight
+  double mu;       // Friction coefficient
+  double t_s_min;  // Minimum stance time, s
+  double t_s_max;  //  Maximum stance time, s
+  double dz0_min;  //  Minimum vertical velocity impulse, m/s
+  double dz0_max;  //  Maximum vertical velocity impulse, m/s
 
   // Define planning parameters
-  double dt; /**<  Resolution of kinematic feasibility checks, m */
-  int trapped_buffer_factor; /**<  Number of feasibility that must pass to not a
-                                state trapped */
-  double backup_ratio;  /**<  Ratio of trajectory to back up after finding an
-                           invalid state, s */
-  int num_leap_samples; /**<  Number of actions computed for each extend
-                           function */
-  double max_planning_time; /**<  Maximum planning time allowed */
-  Eigen::Vector3d g_vec;    /**<  Maximum planning time allowed */
+  double dt;                  //  Resolution of kinematic feasibility checks, m
+  int trapped_buffer_factor;  //  Number of feasibility that must pass to not a
+                              //  state trapped
+  double backup_ratio;   //  Ratio of trajectory to back up after finding an
+                         //  invalid state, s
+  int num_leap_samples;  //  Number of actions computed for each extend function
+  double max_planning_time;  //  Maximum planning time allowed
+  Eigen::Vector3d g_vec;     //  Maximum planning time allowed
 
   // Define robot params and declare points used for validity checking
-  double robot_l; /**<  Length of robot body, m */
-  double robot_w; /**<  Width of robot body, m  */
-  double robot_h; /**<  Vertical distance between leg base and bottom of robot,
-                     m */
+  double robot_l;  //  Length of robot body, m
+  double robot_w;  //  Width of robot body, m
+  double robot_h;  //  Vertical distance between leg base and bottom of robot, m
 
-  double body_traversability_threshold;    /**<  Min traversability for body
-                                              (requires the body to not be over a
-                                              hole unless leaping) */
-  double contact_traversability_threshold; /**< Min traversability for contact
-                                              location cannot step on rough
-                                              surfaces unless leaping */
-  bool enable_leaping = true;              /**< Leaping mode switch */
+  double body_traversability_threshold;  //  Min traversability for body
+                                         //  (requires the body to not be over a
+                                         //  hole unless leaping)
+  double contact_traversability_threshold;  // Min traversability for
+                                            // contactlocation cannot step on
+                                            // roughsurfaces unless leaping
+  bool enable_leaping = true;               // Leaping mode switch
 
   static const int num_reachability_points =
-      4; /**< Number of points on body used to check reachability */
+      4;  // Number of points on body used to check reachability
   static const int num_collision_points =
-      5; /**< Number of points on body used to check for collisions */
+      5;  // Number of points on body used to check for collisions
 
   Eigen::Matrix<double, 3, num_reachability_points>
-      reachability_points_body; /**< Positions of reachability points in the
-                                   body frame */
+      reachability_points_body;  // Positions of reachability points in thebody
+                                 // frame
   Eigen::Matrix<double, 3, num_collision_points>
-      collision_points_body; /**< Positions of collision points in the body
-                                frame */
+      collision_points_body;  // Positions of collision points in the bodyframe
 
   /**
    * Load the vector of reachability test points and collision test
@@ -212,30 +209,30 @@ struct State {
  * @brief Define full state with Eigen data
  */
 struct FullState {
-  Eigen::Vector3d pos;     /**< Position */
-  Eigen::Vector3d vel;     /**< Velocity */
-  Eigen::Vector3d ang;     /**< Linear Velocity */
-  Eigen::Vector3d ang_vel; /**< Angular Velocity */
+  Eigen::Vector3d pos;      // Position
+  Eigen::Vector3d vel;      // Velocity
+  Eigen::Vector3d ang;      // Linear Velocity
+  Eigen::Vector3d ang_vel;  // Angular Velocity
 };
 
 /**
  * @brief Define action with Eigen data
  */
 struct Action {
-  GRF grf_0; /**< Ground reaction force at the beginning of leaping phase */
-  GRF grf_f; /**< Ground reaction froce at the end of landing phase */
-  double t_s_leap; /**< Time length of leaping phase */
-  double t_f;      /**< Time length of flight phase */
-  double t_s_land; /**< Time length of landing phase */
-  double dz_0;     /**< Velocity at the beginning of leaping phase */
-  double dz_f;     /**< Velocity at the end of landing phase */
+  GRF grf_0;        // Ground reaction force at the beginning of leaping phase
+  GRF grf_f;        // Ground reaction froce at the end of landing phase
+  double t_s_leap;  // Time length of leaping phase
+  double t_f;       // Time length of flight phase
+  double t_s_land;  // Time length of landing phase
+  double dz_0;      // Velocity at the beginning of leaping phase
+  double dz_f;      // Velocity at the end of landing phase
 };
 
 struct StateActionResult {
-  State s_new;       /**< New State */
-  Action a_new;      /**< New Action */
-  double t_new = 0;  /**< !!! */
-  double length = 0; /**< Distance between new State and previous State */
+  State s_new;        // New State
+  Action a_new;       // New Action
+  double t_new = 0;   // !!!
+  double length = 0;  // Distance between new State and previous State
 };
 
 /**
