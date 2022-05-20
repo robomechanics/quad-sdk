@@ -1,0 +1,35 @@
+<launch>
+    <arg name="namespace" default="robot_1" />
+    <arg name="robot_type" default="spirit"/>
+    <arg name="live_plot" default="false"/>
+    <arg name="dash" default="false"/>
+    <arg name="visualization" default="true"/>
+
+    <include file="$(find quad_utils)/launch/load_params.launch">
+        <arg name="robot_type" value="$(arg robot_type)"/>
+    </include>
+
+    <arg name="namespace_1" default="robot_1"/>
+    <arg name="namespace_2" default="robot_2"/>
+
+    <group ns = "$(arg namespace_1)">
+        <param name="tf_prefix" value="$(arg namespace)" />
+
+        <include file="$(find quad_utils)/launch/visualization.launch">
+            <arg name="namespace" value="$(arg namespace)"/>
+            <arg name="robot_type" default="$(arg robot_type)"/>
+            <arg name="visualization" value="$(arg visualization)"/>
+        </include>
+    </group>
+
+    <group ns = "$(arg namespace_2)">
+        <param name="tf_prefix" value="$(arg namespace)" />
+
+        <include file="$(find quad_utils)/launch/visualization.launch">
+            <arg name="namespace" value="$(arg namespace)"/>
+            <arg name="robot_type" default="$(arg robot_type)"/>
+            <arg name="visualization" value="$(arg visualization)"/>
+        </include>
+    </group>
+
+</launch>
