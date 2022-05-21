@@ -52,17 +52,19 @@ class NMPCController {
                    Eigen::MatrixXd &foot_velocities,
                    Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj);
   /**
-   * @brief Interface to Local Planner to update the contact and dynamic matrices, solve, and return the
-   * output
+   * @brief Interface to Local Planner to update the contact and dynamic
+   * matrices, solve, and return the output
    * @param initial_state Vector with initial state
    * @param ref_traj Matrix holding desired reference trajectory
    * @param foot_positions_body Matrix holding foot positions in body frame
    * @param foot_positions_world Matrix holding foot positions in world frame
    * @param foot_velocities Matrix holding foot velocities
-   * @param contact_schedule A vector of sequence of contact  
-   * @param ref_ground_height  Matrix holding ground height at reference footholds
+   * @param contact_schedule A vector of sequence of contact
+   * @param ref_ground_height  Matrix holding ground height at reference
+   * footholds
    * @param first_element_duration Time duration to the next plan index
-   * @param plan_index_diff Plan index difference of the last solve and the current solve
+   * @param plan_index_diff Plan index difference of the last solve and the
+   * current solve
    * @param terrain Gridmap holding terrain height
    * @param state_traj Matrix holding output state trajectory
    * @param control_traj Matrix holding output control trajectory
@@ -97,13 +99,12 @@ class NMPCController {
   inline NLPDiagnostics getNLPDiagnostics() const { return diagnostics_; }
 
  private:
-
   /// ROS node handler
   ros::NodeHandle nh_;
 
   /// Update rate for sending and receiving data;
   double update_rate_;
-  
+
   /// Pointer to nlp formulation
   SmartPtr<quadNLP> mynlp_;
 
@@ -112,13 +113,13 @@ class NMPCController {
 
   /// Pointer to robot kinematics
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
-  
+
   /// Whether enable variable horizon
   bool enable_variable_horizon_;
 
   /// Whether enable mixed complexity
   bool enable_mixed_complexity_ = false;
-  
+
   /// Whether enable adaptive complexity
   bool enable_adaptive_complexity_ = false;
 
@@ -132,10 +133,10 @@ class NMPCController {
   /// Number of states in different components
   const int n_body_ = 12, n_foot_ = 24, n_joints_ = 24, m_body_ = 12,
             m_foot_ = 24;
-  
+
   /// Time resolution
   double dt_;
-  
+
   /// Whether warm start is needed
   bool require_init_;
 
@@ -151,4 +152,4 @@ class NMPCController {
 
 #endif  // MPC_CONTROLLER_H
 
-  /// Whether enable mixed complexity
+/// Whether enable mixed complexity
