@@ -81,10 +81,10 @@ Collaboration diagram for GlobalBodyPlanner:</div>
 <div class="dyncontent">
 <div class="center"><img src="classGlobalBodyPlanner__coll__graph.png" border="0" usemap="#aGlobalBodyPlanner_coll__map" alt="Collaboration graph"/></div>
 <map name="aGlobalBodyPlanner_coll__map" id="aGlobalBodyPlanner_coll__map">
-<area shape="rect" title="A global body planning class for legged robots." alt="" coords="158,228,290,255"/>
-<area shape="rect" href="classGlobalBodyPlan.html" title="A class to contain global plan data along with helper functions." alt="" coords="5,102,120,129"/>
-<area shape="rect" href="structplanning__utils_1_1FullStateEigen.html" title=" " alt="" coords="145,95,303,136"/>
-<area shape="rect" href="structplanning__utils_1_1PlannerConfig.html" title=" " alt="" coords="328,102,515,129"/>
+<area shape="rect" title="A global body planning class for legged robots." alt="" coords="158,213,290,240"/>
+<area shape="rect" href="classGlobalBodyPlan.html" title="A class to contain global plan data along with helper functions." alt="" coords="5,95,120,121"/>
+<area shape="rect" href="structplanning__utils_1_1FullState.html" title="Define full state with Eigen data." alt="" coords="145,95,303,121"/>
+<area shape="rect" href="structplanning__utils_1_1PlannerConfig.html" title="Planner Configuration." alt="" coords="328,95,515,121"/>
 <area shape="rect" href="classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling." alt="" coords="365,5,478,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
@@ -124,7 +124,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>triggerReset</b> ()</
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clearPlan</b> ()</td></tr>
 <tr class="memdesc:a2eb81f4bee8cec49686f963cd0251b51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear all data in plan member variables. <br /></td></tr>
 <tr class="separator:a2eb81f4bee8cec49686f963cd0251b51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad557f47aee5a108585c7940c97f9dfea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#ad557f47aee5a108585c7940c97f9dfea">addStateAndGRFToMsg</a> (double t, int plan_index, <a class="el" href="structplanning__utils_1_1FullStateEigen.html">FullState</a> body_state, GRF grf, int primitive_id, quad_msgs::RobotPlan &amp;body_plan_msg)</td></tr>
+<tr class="memitem:ad557f47aee5a108585c7940c97f9dfea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#ad557f47aee5a108585c7940c97f9dfea">addStateAndGRFToMsg</a> (double t, int plan_index, <a class="el" href="structplanning__utils_1_1FullState.html">FullState</a> body_state, GRF grf, int primitive_id, quad_msgs::RobotPlan &amp;body_plan_msg)</td></tr>
 <tr class="memdesc:ad557f47aee5a108585c7940c97f9dfea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the body plan with the current plan.  <a href="classGlobalBodyPlanner.html#ad557f47aee5a108585c7940c97f9dfea">More...</a><br /></td></tr>
 <tr class="separator:ad557f47aee5a108585c7940c97f9dfea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ef31af306895c311faee09a7023896b"><td class="memItemLeft" align="right" valign="top"><a id="a7ef31af306895c311faee09a7023896b" name="a7ef31af306895c311faee09a7023896b"></a>
@@ -215,15 +215,15 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>map_frame_</b>
 <tr class="memdesc:acdc789ecdd04ac229f9d8bea6f8c558c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan data for the plan currently being executed. <br /></td></tr>
 <tr class="separator:acdc789ecdd04ac229f9d8bea6f8c558c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a766a4b1586eb63df1e209fe238a2cfeb"><td class="memItemLeft" align="right" valign="top"><a id="a766a4b1586eb63df1e209fe238a2cfeb" name="a766a4b1586eb63df1e209fe238a2cfeb"></a>
-<a class="el" href="structplanning__utils_1_1FullStateEigen.html">FullState</a>&#160;</td><td class="memItemRight" valign="bottom"><b>start_state_</b></td></tr>
+<a class="el" href="structplanning__utils_1_1FullState.html">FullState</a>&#160;</td><td class="memItemRight" valign="bottom"><b>start_state_</b></td></tr>
 <tr class="memdesc:a766a4b1586eb63df1e209fe238a2cfeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starting state for planner call. <br /></td></tr>
 <tr class="separator:a766a4b1586eb63df1e209fe238a2cfeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d54c767aa5ca1c0ab98ebdfa93bc34f"><td class="memItemLeft" align="right" valign="top"><a id="a7d54c767aa5ca1c0ab98ebdfa93bc34f" name="a7d54c767aa5ca1c0ab98ebdfa93bc34f"></a>
-<a class="el" href="structplanning__utils_1_1FullStateEigen.html">FullState</a>&#160;</td><td class="memItemRight" valign="bottom"><b>goal_state_</b></td></tr>
+<a class="el" href="structplanning__utils_1_1FullState.html">FullState</a>&#160;</td><td class="memItemRight" valign="bottom"><b>goal_state_</b></td></tr>
 <tr class="memdesc:a7d54c767aa5ca1c0ab98ebdfa93bc34f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Goal state for planner. <br /></td></tr>
 <tr class="separator:a7d54c767aa5ca1c0ab98ebdfa93bc34f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9298676facc5be7794d9dbb20609949f"><td class="memItemLeft" align="right" valign="top"><a id="a9298676facc5be7794d9dbb20609949f" name="a9298676facc5be7794d9dbb20609949f"></a>
-<a class="el" href="structplanning__utils_1_1FullStateEigen.html">FullState</a>&#160;</td><td class="memItemRight" valign="bottom"><b>robot_state_</b></td></tr>
+<a class="el" href="structplanning__utils_1_1FullState.html">FullState</a>&#160;</td><td class="memItemRight" valign="bottom"><b>robot_state_</b></td></tr>
 <tr class="memdesc:a9298676facc5be7794d9dbb20609949f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current robot state. <br /></td></tr>
 <tr class="separator:a9298676facc5be7794d9dbb20609949f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1c0845b59c7f16afaf13d27e4f48659"><td class="memItemLeft" align="right" valign="top"><a id="aa1c0845b59c7f16afaf13d27e4f48659" name="aa1c0845b59c7f16afaf13d27e4f48659"></a>
@@ -238,18 +238,18 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>replan_start_time_<
 double&#160;</td><td class="memItemRight" valign="bottom"><b>committed_horizon_</b></td></tr>
 <tr class="memdesc:a374758b62509d9be6fb6afdfadb8fa81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Horizon to commit to (replan from the next state after this horizon) <br /></td></tr>
 <tr class="separator:a374758b62509d9be6fb6afdfadb8fa81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae29c7264b2b9bba67ae9cc223952dd6b"><td class="memItemLeft" align="right" valign="top"><a id="ae29c7264b2b9bba67ae9cc223952dd6b" name="ae29c7264b2b9bba67ae9cc223952dd6b"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>state_error_threshold_</b></td></tr>
-<tr class="memdesc:ae29c7264b2b9bba67ae9cc223952dd6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Threshold of state error to trigger replanning. <br /></td></tr>
-<tr class="separator:ae29c7264b2b9bba67ae9cc223952dd6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2d4b728fa668ce1961c5591ad175506"><td class="memItemLeft" align="right" valign="top"><a id="af2d4b728fa668ce1961c5591ad175506" name="af2d4b728fa668ce1961c5591ad175506"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>pos_error_threshold_</b></td></tr>
+<tr class="memdesc:af2d4b728fa668ce1961c5591ad175506"><td class="mdescLeft">&#160;</td><td class="mdescRight">Threshold of state error to trigger replanning. <br /></td></tr>
+<tr class="separator:af2d4b728fa668ce1961c5591ad175506"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a820945098694648a2523219e44e938d6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlanner.html#a820945098694648a2523219e44e938d6">restart_flag_</a></td></tr>
 <tr class="separator:a820945098694648a2523219e44e938d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50df2ef4bdaca844a07ece58a468de64"><td class="memItemLeft" align="right" valign="top"><a id="a50df2ef4bdaca844a07ece58a468de64" name="a50df2ef4bdaca844a07ece58a468de64"></a>
-std::vector&lt; <a class="el" href="structplanning__utils_1_1StateEigen.html">State</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>state_sequence_</b></td></tr>
+std::vector&lt; <a class="el" href="structplanning__utils_1_1State.html">State</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>state_sequence_</b></td></tr>
 <tr class="memdesc:a50df2ef4bdaca844a07ece58a468de64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sequence of discrete states in the plan. <br /></td></tr>
 <tr class="separator:a50df2ef4bdaca844a07ece58a468de64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66b5df244875b0209ceb2c634d93c050"><td class="memItemLeft" align="right" valign="top"><a id="a66b5df244875b0209ceb2c634d93c050" name="a66b5df244875b0209ceb2c634d93c050"></a>
-std::vector&lt; <a class="el" href="structplanning__utils_1_1ActionEigen.html">Action</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>action_sequence_</b></td></tr>
+std::vector&lt; <a class="el" href="structplanning__utils_1_1Action.html">Action</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>action_sequence_</b></td></tr>
 <tr class="memdesc:a66b5df244875b0209ceb2c634d93c050"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sequence of discrete actions in the plan. <br /></td></tr>
 <tr class="separator:a66b5df244875b0209ceb2c634d93c050"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a050614c41be6492d587fd4fd7fb66304"><td class="memItemLeft" align="right" valign="top"><a id="a050614c41be6492d587fd4fd7fb66304" name="a050614c41be6492d587fd4fd7fb66304"></a>
@@ -370,7 +370,7 @@ static const int&#160;</td><td class="memItemRight" valign="bottom"><b>REFINE</b
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structplanning__utils_1_1FullStateEigen.html">FullState</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structplanning__utils_1_1FullState.html">FullState</a>&#160;</td>
           <td class="paramname"><em>body_state</em>, </td>
         </tr>
         <tr>

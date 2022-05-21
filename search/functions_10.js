@@ -13,7 +13,5 @@ var searchData=
   ['robotplancallback_10',['robotPlanCallback',['../classLocalPlanner.html#a87b5cb3bcfa71d51ad3c5895f2e87f0a',1,'LocalPlanner::robotPlanCallback()'],['../classRVizInterface.html#ac39f41c6b26700bcc8acd14e5bc95ffd',1,'RVizInterface::robotPlanCallback()']]],
   ['robotstatecallback_11',['robotStateCallback',['../classGlobalBodyPlanner.html#aaa7aece6fc8562e6d7c4a905bfa84cca',1,'GlobalBodyPlanner::robotStateCallback()'],['../classLocalPlanner.html#a10407bd080248a3f921b59f63dac2db2',1,'LocalPlanner::robotStateCallback()'],['../classRVizInterface.html#af4eac71d7ad6c3daaac7aab1a2ab7abd',1,'RVizInterface::robotStateCallback()'],['../classRobotDriver.html#a539056b99374dd28603332093903dfb2',1,'RobotDriver::robotStateCallback()']]],
   ['rrtclass_12',['RRTClass',['../classRRTClass.html#a9cac25f207d3e58646e560d829d51e25',1,'RRTClass']]],
-  ['rrtconnectclass_13',['RRTConnectClass',['../classRRTConnectClass.html#a88d3109ab10bc529bae82194bfe92f04',1,'RRTConnectClass']]],
-  ['runrrtconnect_14',['runRRTConnect',['../classRRTConnectClass.html#ac41dcee74cb551369fc8273099054651',1,'RRTConnectClass']]],
-  ['rvizinterface_15',['RVizInterface',['../classRVizInterface.html#aa28dae09fa5285f8570181ca119717d2',1,'RVizInterface']]]
+  ['rvizinterface_13',['RVizInterface',['../classRVizInterface.html#aa28dae09fa5285f8570181ca119717d2',1,'RVizInterface']]]
 ];

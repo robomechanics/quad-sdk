@@ -1,4 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
 <area shape="rect" id="node1" href="$classRRTClass.html" title="A class that implements RRT sampling&#45;based planning." alt="" coords="5,5,87,32"/>
-<area shape="rect" id="node2" href="$classRRTConnectClass.html" title="A class that implements RRT&#45;Connect sampling&#45;based planning." alt="" coords="135,5,264,32"/>
+<area shape="rect" id="node2" href="$classFastGlobalMotionPlanner.html" title="A class that implements RRT&#45;Connect sampling&#45;based planning." alt="" coords="135,5,303,32"/>
 </map>

@@ -107,7 +107,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (<a cl
 <tr class="memitem:a3a4ebb39a889695a6b974795b1cd3d6c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlan.html#a3a4ebb39a889695a6b974795b1cd3d6c">getTime</a> (int i) const</td></tr>
 <tr class="memdesc:a3a4ebb39a889695a6b974795b1cd3d6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the time of the plan at a particular index in seconds.  <a href="classGlobalBodyPlan.html#a3a4ebb39a889695a6b974795b1cd3d6c">More...</a><br /></td></tr>
 <tr class="separator:a3a4ebb39a889695a6b974795b1cd3d6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af556d83dddc308dc5ac1a06d9d5c7b48"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structplanning__utils_1_1FullStateEigen.html">FullState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlan.html#af556d83dddc308dc5ac1a06d9d5c7b48">getStateFromIndex</a> (int i) const</td></tr>
+<tr class="memitem:af556d83dddc308dc5ac1a06d9d5c7b48"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structplanning__utils_1_1FullState.html">FullState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlan.html#af556d83dddc308dc5ac1a06d9d5c7b48">getStateFromIndex</a> (int i) const</td></tr>
 <tr class="memdesc:af556d83dddc308dc5ac1a06d9d5c7b48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a particular state from the plan.  <a href="classGlobalBodyPlan.html#af556d83dddc308dc5ac1a06d9d5c7b48">More...</a><br /></td></tr>
 <tr class="separator:af556d83dddc308dc5ac1a06d9d5c7b48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0badfafde280c0106b3ecde1730f5bd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlan.html#ad0badfafde280c0106b3ecde1730f5bd">getPrimitiveFromIndex</a> (int i) const</td></tr>
@@ -139,10 +139,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>invalidate</b> ()</td
 <tr class="memitem:ad4afd45dcf69c1e9281e3d8814792207"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlan.html#ad4afd45dcf69c1e9281e3d8814792207">eraseAfterIndex</a> (int start_index)</td></tr>
 <tr class="memdesc:ad4afd45dcf69c1e9281e3d8814792207"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the plan after a particular index (used for replanning segments)  <a href="classGlobalBodyPlan.html#ad4afd45dcf69c1e9281e3d8814792207">More...</a><br /></td></tr>
 <tr class="separator:ad4afd45dcf69c1e9281e3d8814792207"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd1fa8fdcd770a2e39caebcde8dcf3bd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlan.html#afd1fa8fdcd770a2e39caebcde8dcf3bd">loadPlanData</a> (int plan_status, <a class="el" href="structplanning__utils_1_1FullStateEigen.html">FullState</a> &amp;start_state, double dist_to_goal, std::vector&lt; <a class="el" href="structplanning__utils_1_1StateEigen.html">State</a> &gt; &amp;state_sequence, std::vector&lt; <a class="el" href="structplanning__utils_1_1ActionEigen.html">Action</a> &gt; &amp;action_sequence, double dt, double t0, const <a class="el" href="structplanning__utils_1_1PlannerConfig.html">PlannerConfig</a> &amp;planner_config)</td></tr>
+<tr class="memitem:afd1fa8fdcd770a2e39caebcde8dcf3bd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlan.html#afd1fa8fdcd770a2e39caebcde8dcf3bd">loadPlanData</a> (int plan_status, <a class="el" href="structplanning__utils_1_1FullState.html">FullState</a> &amp;start_state, double dist_to_goal, std::vector&lt; <a class="el" href="structplanning__utils_1_1State.html">State</a> &gt; &amp;state_sequence, std::vector&lt; <a class="el" href="structplanning__utils_1_1Action.html">Action</a> &gt; &amp;action_sequence, double dt, double t0, const <a class="el" href="structplanning__utils_1_1PlannerConfig.html">PlannerConfig</a> &amp;planner_config)</td></tr>
 <tr class="memdesc:afd1fa8fdcd770a2e39caebcde8dcf3bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load the interpolated plan data and metadata.  <a href="classGlobalBodyPlan.html#afd1fa8fdcd770a2e39caebcde8dcf3bd">More...</a><br /></td></tr>
 <tr class="separator:afd1fa8fdcd770a2e39caebcde8dcf3bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31555fa6c35d0302f5cab71bf1e5b9d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlan.html#a31555fa6c35d0302f5cab71bf1e5b9d8">addStateAndGRFToMsg</a> (double t, int plan_index, const <a class="el" href="structplanning__utils_1_1FullStateEigen.html">FullState</a> &amp;body_state, const GRF &amp;grf, int primitive_id, quad_msgs::RobotPlan &amp;msg)</td></tr>
+<tr class="memitem:a31555fa6c35d0302f5cab71bf1e5b9d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlan.html#a31555fa6c35d0302f5cab71bf1e5b9d8">addStateAndGRFToMsg</a> (double t, int plan_index, const <a class="el" href="structplanning__utils_1_1FullState.html">FullState</a> &amp;body_state, const GRF &amp;grf, int primitive_id, quad_msgs::RobotPlan &amp;msg)</td></tr>
 <tr class="memdesc:a31555fa6c35d0302f5cab71bf1e5b9d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load a semgent of interpolated plan data into a plan message.  <a href="classGlobalBodyPlan.html#a31555fa6c35d0302f5cab71bf1e5b9d8">More...</a><br /></td></tr>
 <tr class="separator:a31555fa6c35d0302f5cab71bf1e5b9d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6bca62005cc6f230ce2bdbb2a21c10e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGlobalBodyPlan.html#a6bca62005cc6f230ce2bdbb2a21c10e8">convertToMsg</a> (quad_msgs::RobotPlan &amp;robot_plan_msg, quad_msgs::RobotPlan &amp;discrete_robot_plan_msg)</td></tr>
@@ -164,7 +164,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <tr class="memdesc:a5a6a1b39f1aefd32ced060e5e0765cb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing the interpolated time data. <br /></td></tr>
 <tr class="separator:a5a6a1b39f1aefd32ced060e5e0765cb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac82080284d05382a22e1a252e24619da"><td class="memItemLeft" align="right" valign="top"><a id="ac82080284d05382a22e1a252e24619da" name="ac82080284d05382a22e1a252e24619da"></a>
-std::vector&lt; <a class="el" href="structplanning__utils_1_1FullStateEigen.html">FullState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>body_plan_</b></td></tr>
+std::vector&lt; <a class="el" href="structplanning__utils_1_1FullState.html">FullState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>body_plan_</b></td></tr>
 <tr class="memdesc:ac82080284d05382a22e1a252e24619da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing the interpolated robot body plan. <br /></td></tr>
 <tr class="separator:ac82080284d05382a22e1a252e24619da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa30a7cd29e15e67b8133603d3f981d86"><td class="memItemLeft" align="right" valign="top"><a id="aa30a7cd29e15e67b8133603d3f981d86" name="aa30a7cd29e15e67b8133603d3f981d86"></a>
@@ -180,11 +180,11 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <tr class="memdesc:a9f8fc92d976e1ea70b8dbe246a48abc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Std vector containing the cumulative path length at each index of the plan. <br /></td></tr>
 <tr class="separator:a9f8fc92d976e1ea70b8dbe246a48abc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a872ce36ac5bae1ae8368a67f4745b2c3"><td class="memItemLeft" align="right" valign="top"><a id="a872ce36ac5bae1ae8368a67f4745b2c3" name="a872ce36ac5bae1ae8368a67f4745b2c3"></a>
-std::vector&lt; <a class="el" href="structplanning__utils_1_1StateEigen.html">State</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>state_sequence_</b></td></tr>
+std::vector&lt; <a class="el" href="structplanning__utils_1_1State.html">State</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>state_sequence_</b></td></tr>
 <tr class="memdesc:a872ce36ac5bae1ae8368a67f4745b2c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sequence of discrete states in the plan. <br /></td></tr>
 <tr class="separator:a872ce36ac5bae1ae8368a67f4745b2c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b9f697d51ddf95d1271ef015b80a815"><td class="memItemLeft" align="right" valign="top"><a id="a6b9f697d51ddf95d1271ef015b80a815" name="a6b9f697d51ddf95d1271ef015b80a815"></a>
-std::vector&lt; <a class="el" href="structplanning__utils_1_1ActionEigen.html">Action</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>action_sequence_</b></td></tr>
+std::vector&lt; <a class="el" href="structplanning__utils_1_1Action.html">Action</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>action_sequence_</b></td></tr>
 <tr class="memdesc:a6b9f697d51ddf95d1271ef015b80a815"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sequence of discrete actions in the plan. <br /></td></tr>
 <tr class="separator:a6b9f697d51ddf95d1271ef015b80a815"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9176e687a146dbf70d6ce455c7528ab"><td class="memItemLeft" align="right" valign="top"><a id="ac9176e687a146dbf70d6ce455c7528ab" name="ac9176e687a146dbf70d6ce455c7528ab"></a>
@@ -242,7 +242,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>goal_distance_</b><
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structplanning__utils_1_1FullStateEigen.html">FullState</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="structplanning__utils_1_1FullState.html">FullState</a> &amp;&#160;</td>
           <td class="paramname"><em>body_state</em>, </td>
         </tr>
         <tr>
@@ -584,7 +584,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>goal_distance_</b><
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structplanning__utils_1_1FullStateEigen.html">FullState</a> GlobalBodyPlan::getStateFromIndex </td>
+          <td class="memname"><a class="el" href="structplanning__utils_1_1FullState.html">FullState</a> GlobalBodyPlan::getStateFromIndex </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>i</em></td><td>)</td>
@@ -703,7 +703,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>goal_distance_</b><
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structplanning__utils_1_1FullStateEigen.html">FullState</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structplanning__utils_1_1FullState.html">FullState</a> &amp;&#160;</td>
           <td class="paramname"><em>start_state</em>, </td>
         </tr>
         <tr>
@@ -715,13 +715,13 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>goal_distance_</b><
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="structplanning__utils_1_1StateEigen.html">State</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structplanning__utils_1_1State.html">State</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>state_sequence</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="structplanning__utils_1_1ActionEigen.html">Action</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structplanning__utils_1_1Action.html">Action</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>action_sequence</em>, </td>
         </tr>
         <tr>

@@ -1,5 +1,5 @@
 <map id="planning_utils::StateActionResult" name="planning_utils::StateActionResult">
-<area shape="rect" id="node1" title=" " alt="" coords="102,95,277,136"/>
-<area shape="rect" id="node2" href="$structplanning__utils_1_1StateEigen.html" title=" " alt="" coords="5,5,176,32"/>
-<area shape="rect" id="node3" href="$structplanning__utils_1_1ActionEigen.html" title=" " alt="" coords="200,5,376,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="70,95,245,136"/>
+<area shape="rect" id="node2" href="$structplanning__utils_1_1State.html" title="Define state with Eigen data." alt="" coords="5,5,144,32"/>
+<area shape="rect" id="node3" href="$structplanning__utils_1_1Action.html" title="Define action with Eigen data." alt="" coords="168,5,312,32"/>
 </map>

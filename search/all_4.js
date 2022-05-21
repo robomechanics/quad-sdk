@@ -15,6 +15,6 @@ var searchData=
   ['eval_5fjac_5fg_12',['eval_jac_g',['../classquadNLP.html#a6dc64d38088a2248d2dc9faa17a65ac4',1,'quadNLP']]],
   ['example_13',['Example',['../classread__bag_1_1Example.html',1,'read_bag']]],
   ['extend_14',['extend',['../classRRTClass.html#ac79092cec187c959d438b571c1059231',1,'RRTClass']]],
-  ['extractclosestpath_15',['extractClosestPath',['../classRRTConnectClass.html#a9b813306c86e1c8b4e6c12f14a363a5d',1,'RRTConnectClass']]],
-  ['extractpath_16',['extractPath',['../classRRTConnectClass.html#a781372149f3cc26e030a714cc348e030',1,'RRTConnectClass']]]
+  ['extractclosestpath_15',['extractClosestPath',['../classFastGlobalMotionPlanner.html#a4058c5c52f6e5edbe25ca582de2e722c',1,'FastGlobalMotionPlanner']]],
+  ['extractpath_16',['extractPath',['../classFastGlobalMotionPlanner.html#a767f43b17e20c89b32b73961aed1d113',1,'FastGlobalMotionPlanner']]]
 ];

@@ -1,8 +1,8 @@
 var searchData=
 [
   ['pathfromstart_0',['pathFromStart',['../classRRTClass.html#a4acffd50e173aaeb9074248ea29032e9',1,'RRTClass']]],
-  ['plannerclass_1',['PlannerClass',['../classPlannerClass.html#a38559e9bae2bf20c9eaccc822aaa4851',1,'PlannerClass']]],
-  ['postprocesspath_2',['postProcessPath',['../classRRTConnectClass.html#ae6e94145cd7ababafac2bc95eb9adc7b',1,'RRTConnectClass']]],
+  ['plannerclass_1',['PlannerClass',['../classPlannerClass.html#aebb301132bea030a1e542f474b9037b0',1,'PlannerClass']]],
+  ['postprocesspath_2',['postProcessPath',['../classFastGlobalMotionPlanner.html#a388f7dfa0273616dd09cbd273f8cb28e',1,'FastGlobalMotionPlanner']]],
   ['printedges_3',['printEdges',['../classGraphClass.html#a48810d79a69b01ea94a03b87ed7f02fd',1,'GraphClass']]],
   ['printincomingedges_4',['printIncomingEdges',['../classGraphClass.html#a5d85a75ccf6cf96e903031945fb485a2',1,'GraphClass']]],
   ['printpath_5',['printPath',['../classRRTClass.html#a25d0142127211e5911b3a29e7dce5dfb',1,'RRTClass']]],

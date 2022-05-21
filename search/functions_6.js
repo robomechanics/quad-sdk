@@ -13,7 +13,7 @@ var searchData=
   ['get_5fstarting_5fpoint_10',['get_starting_point',['../classquadNLP.html#a101a0b1ed715fa67afca973e20ecc861',1,'quadNLP']]],
   ['getaction_11',['getAction',['../classGraphClass.html#a3aba9c56f1bd8db4c0977a24af090fae',1,'GraphClass']]],
   ['getactionsequence_12',['getActionSequence',['../classRRTClass.html#af9ffdb926909423196f8a8f5a48f08ed',1,'RRTClass']]],
-  ['getactionsequencereverse_13',['getActionSequenceReverse',['../classRRTConnectClass.html#aa51d87a720f78efa8005ab48a1fcd438',1,'RRTConnectClass']]],
+  ['getactionsequencereverse_13',['getActionSequenceReverse',['../classFastGlobalMotionPlanner.html#a1f5679f9ef5c6ae7bf9dbea53559192b',1,'FastGlobalMotionPlanner']]],
   ['getcomputedtimestamp_14',['getComputedTimestamp',['../classGlobalBodyPlan.html#a8d98e24fe2a7c47b580aab65acc08e54',1,'GlobalBodyPlan']]],
   ['getduration_15',['getDuration',['../classGlobalBodyPlan.html#a4a1a545c59c77a24d95980c10a8dae98',1,'GlobalBodyPlan']]],
   ['getfootdata_16',['getFootData',['../classLocalFootstepPlanner.html#a6abeea71032808566b14e33fd58addf4',1,'LocalFootstepPlanner']]],
