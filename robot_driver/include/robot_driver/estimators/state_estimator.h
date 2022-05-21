@@ -10,7 +10,7 @@
 #include <sensor_msgs/JointState.h>
 #include <std_msgs/String.h>
 
-//! Implements an abstract class for state estimator. 
+//! Implements an abstract class for state estimator.
 //! This class provides an interface for different types of estimators
 /*!
    StateEstimator provides an abstract state estimator class
@@ -30,7 +30,7 @@ class StateEstimator {
 
   /**
    * @brief Pure virtual function for performing state estimate update
-   * 
+   *
    */
   virtual quad_msgs::RobotState updateState() = 0;
 
@@ -54,8 +54,6 @@ class StateEstimator {
   void readJointEncoder(
       const sensor_msgs::JointState::ConstPtr& last_joint_state_msg_,
       Eigen::VectorXd& jk);
-
-  
 
  protected:
   /// Last state estimate

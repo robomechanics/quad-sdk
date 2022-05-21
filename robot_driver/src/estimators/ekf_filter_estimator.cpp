@@ -2,10 +2,10 @@
 
 EKFFilterEstimator::EKFFilterEstimator() {}
 
-  void EKFFilterEstimator::init() {}
+void EKFFilterEstimator::init() {}
 
-  quad_msgs::RobotState EKFFilterEstimator::updateState() {
-      quad_msgs::RobotState state_est;
+quad_msgs::RobotState EKFFilterEstimator::updateState() {
+  quad_msgs::RobotState state_est;
 
-      return state_est;
-  }
+  return state_est;
+}
