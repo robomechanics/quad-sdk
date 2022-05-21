@@ -195,9 +195,11 @@ class quadNLP : public TNLP {
 
   // Initial guess
   Eigen::VectorXd w0_, z_L0_, z_U0_, lambda0_, g0_;
-
+  
+  /// Friction coefficient
   double mu0_;
 
+  /// Whether warm start
   bool warm_start_;
 
   // State reference for computing cost
