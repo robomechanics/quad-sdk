@@ -1,14 +1,12 @@
-#include "global_body_planner/rrt_connect.h"
-// constructor
-RRTConnectClass::RRTConnectClass() {}
-// destructor
-RRTConnectClass::~RRTConnectClass() {}
+#include "global_body_planner/fast_global_motion_planner.h"
 
 using namespace planning_utils;
 
-int RRTConnectClass::connect(PlannerClass &T, State s,
-                             const PlannerConfig &planner_config, int direction,
-                             ros::Publisher &tree_pub) {
+FastGlobalMotionPlanner::FastGlobalMotionPlanner() {}
+
+int FastGlobalMotionPlanner::connect(PlannerClass &T, State s,
+                                     const PlannerConfig &planner_config,
+                                     int direction, ros::Publisher &tree_pub) {
   // Find nearest neighbor
   flipDirection(s);
   int s_near_index = T.getNearestNeighbor(s);
@@ -33,7 +31,7 @@ int RRTConnectClass::connect(PlannerClass &T, State s,
   return connect_result;
 }
 
-std::vector<Action> RRTConnectClass::getActionSequenceReverse(
+std::vector<Action> FastGlobalMotionPlanner::getActionSequenceReverse(
     PlannerClass &T, std::vector<int> path) {
   // Assumes that actions are synched with the states at which they are executed
   // (opposite of the definition in RRTClass)
@@ -44,9 +42,9 @@ std::vector<Action> RRTConnectClass::getActionSequenceReverse(
   return action_sequence;
 }
 
-void RRTConnectClass::postProcessPath(std::vector<State> &state_sequence,
-                                      std::vector<Action> &action_sequence,
-                                      const PlannerConfig &planner_config) {
+void FastGlobalMotionPlanner::postProcessPath(
+    std::vector<State> &state_sequence, std::vector<Action> &action_sequence,
+    const PlannerConfig &planner_config) {
   auto t_start = std::chrono::steady_clock::now();
 
   // Initialize first and last states
@@ -117,10 +115,10 @@ void RRTConnectClass::postProcessPath(std::vector<State> &state_sequence,
   std::chrono::duration<double> processing_time = t_end - t_start;
 }
 
-void RRTConnectClass::extractPath(PlannerClass &Ta, PlannerClass &Tb,
-                                  std::vector<State> &state_sequence,
-                                  std::vector<Action> &action_sequence,
-                                  const PlannerConfig &planner_config) {
+void FastGlobalMotionPlanner::extractPath(PlannerClass &Ta, PlannerClass &Tb,
+                                          std::vector<State> &state_sequence,
+                                          std::vector<Action> &action_sequence,
+                                          const PlannerConfig &planner_config) {
   // Get both paths, remove the back of path_b and reverse it to align with path
   // a
   std::vector<int> path_a = pathFromStart(Ta, Ta.getNumVertices() - 1);
@@ -149,28 +147,27 @@ void RRTConnectClass::extractPath(PlannerClass &Ta, PlannerClass &Tb,
   postProcessPath(state_sequence, action_sequence, planner_config);
 }
 
-void RRTConnectClass::extractClosestPath(PlannerClass &Ta, const State &s_goal,
-                                         std::vector<State> &state_sequence,
-                                         std::vector<Action> &action_sequence,
-                                         const PlannerConfig &planner_config) {
+void FastGlobalMotionPlanner::extractClosestPath(
+    PlannerClass &Ta, const State &s_goal, std::vector<State> &state_sequence,
+    std::vector<Action> &action_sequence, const PlannerConfig &planner_config) {
   std::vector<int> path_a = pathFromStart(Ta, Ta.getNearestNeighbor(s_goal));
   state_sequence = getStateSequence(Ta, path_a);
   action_sequence = getActionSequence(Ta, path_a);
   postProcessPath(state_sequence, action_sequence, planner_config);
 }
 
-int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config,
-                                   State s_start, State s_goal,
-                                   std::vector<State> &state_sequence,
-                                   std::vector<Action> &action_sequence,
-                                   ros::Publisher &tree_pub) {
+int FastGlobalMotionPlanner::findPlan(const PlannerConfig &planner_config,
+                                      State s_start, State s_goal,
+                                      std::vector<State> &state_sequence,
+                                      std::vector<Action> &action_sequence,
+                                      ros::Publisher &tree_pub) {
   // Perform validity checking on start and goal states
   if (!isValidState(s_start, planner_config, LEAP_STANCE)) {
     return INVALID_START_STATE;
   }
   // Set goal height to nominal distance above terrain
   s_goal.pos[2] =
-      getTerrainZFromState(s_goal, planner_config) + planner_config.H_NOM;
+      getTerrainZFromState(s_goal, planner_config) + planner_config.h_nom;
   if (!isValidState(s_goal, planner_config, LEAP_STANCE)) {
     return INVALID_GOAL_STATE;
   }
@@ -183,8 +180,8 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config,
   auto t_start_current_solve = std::chrono::steady_clock::now();
   int result;
 
-  PlannerClass Ta(FORWARD);
-  PlannerClass Tb(REVERSE);
+  PlannerClass Ta(FORWARD, planner_config);
+  PlannerClass Tb(REVERSE, planner_config);
   Ta.init(s_start);
   flipDirection(s_goal);
   Tb.init(s_goal);
@@ -207,7 +204,7 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config,
         t_current - t_start_current_solve;
 
 #ifndef VISUALIZE_TREE
-    if (total_elapsed.count() >= planner_config.MAX_TIME) {
+    if (total_elapsed.count() >= planner_config.max_planning_time) {
       elapsed_to_first_ = total_elapsed;
       num_vertices_ = (Ta.getNumVertices() + Tb.getNumVertices());
       break;
@@ -216,8 +213,8 @@ int RRTConnectClass::runRRTConnect(const PlannerConfig &planner_config,
     if (current_elapsed.count() >= anytime_horizon) {
       auto t_start_current_solve = std::chrono::steady_clock::now();
       anytime_horizon = anytime_horizon * horizon_expansion_factor;
-      Ta = PlannerClass(FORWARD);
-      Tb = PlannerClass(REVERSE);
+      Ta = PlannerClass(FORWARD, planner_config);
+      Tb = PlannerClass(REVERSE, planner_config);
       tree_viz_msg_.markers.clear();
       Ta.init(s_start);
       Tb.init(s_goal);

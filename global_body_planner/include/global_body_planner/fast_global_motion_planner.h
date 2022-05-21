@@ -1,5 +1,5 @@
-#ifndef RRTCONNECT_H
-#define RRTCONNECT_H
+#ifndef FAST_GLOBAL_MOTION_PLANNER_H
+#define FAST_GLOBAL_MOTION_PLANNER_H
 
 #include "global_body_planner/rrt.h"
 
@@ -14,18 +14,13 @@ using namespace planning_utils;
    This class inherits the RRTClass, and adds members to connect two states
    exactly and post process the resulting solution.
 */
-class RRTConnectClass : public RRTClass {
+class FastGlobalMotionPlanner : public RRTClass {
  public:
   /**
-   * @brief Constructor for RRTConnectClass
-   * @return Constructed object of type RRTConnectClass
+   * @brief Constructor for FastGlobalMotionPlanner
+   * @return Constructed object of type FastGlobalMotionPlanner
    */
-  RRTConnectClass();
-
-  /**
-   * @brief Destructor for RRTConnectClass
-   */
-  ~RRTConnectClass();
+  FastGlobalMotionPlanner();
 
   /** Connect the tree to the desired state
    * @param[in] T The PlannerClass instance containing the tree
@@ -97,10 +92,9 @@ class RRTConnectClass : public RRTClass {
    * @param[out] action_sequence The sequence of actions in the final path
    * @return Boolean for success of the planner
    */
-  int runRRTConnect(const PlannerConfig &planner_config, State s_start,
-                    State s_goal, std::vector<State> &state_sequence,
-                    std::vector<Action> &action_sequence,
-                    ros::Publisher &tree_pub);
+  int findPlan(const PlannerConfig &planner_config, State s_start, State s_goal,
+               std::vector<State> &state_sequence,
+               std::vector<Action> &action_sequence, ros::Publisher &tree_pub);
 
  protected:
   /// Time horizon (in seconds) the planner is allowed to search until restarted
@@ -117,4 +111,4 @@ class RRTConnectClass : public RRTClass {
   const double horizon_expansion_factor = 1.2;
 };
 
-#endif
+#endif  // FAST_GLOBAL_MOTION_PLANNER_H
