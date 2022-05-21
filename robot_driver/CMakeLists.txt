@@ -65,6 +65,9 @@ add_library(robot_driver
 	src/controllers/inverse_dynamics_controller.cpp
 	src/controllers/grf_pid_controller.cpp
 	src/controllers/joint_controller.cpp
+  src/estimators/state_estimator.cpp
+  src/estimators/comp_filter_estimator.cpp
+  src/estimators/ekf_filter_estimator.cpp
   src/hardware_interfaces/hardware_interface.cpp
   src/hardware_interfaces/spirit_interface.cpp
 )
