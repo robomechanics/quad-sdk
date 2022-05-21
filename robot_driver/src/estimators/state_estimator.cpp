@@ -5,8 +5,8 @@ StateEstimator::StateEstimator() {
 }
 
 void StateEstimator::readIMU(const sensor_msgs::Imu::ConstPtr& last_imu_msg_,
-                           Eigen::VectorXd& fk, Eigen::VectorXd& wk,
-                           Eigen::Quaterniond& qk) {
+                             Eigen::VectorXd& fk, Eigen::VectorXd& wk,
+                             Eigen::Quaterniond& qk) {
   if (last_imu_msg_ != NULL) {
     fk << (*last_imu_msg_).linear_acceleration.x,
         (*last_imu_msg_).linear_acceleration.y,

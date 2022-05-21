@@ -5,7 +5,7 @@ CompFilterEstimator::CompFilterEstimator() {}
 void CompFilterEstimator::init() {}
 
 quad_msgs::RobotState CompFilterEstimator::updateState() {
-    quad_msgs::RobotState state_est;
+  quad_msgs::RobotState state_est;
 
-    return state_est;
+  return state_est;
 }
