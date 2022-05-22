@@ -24,7 +24,7 @@ This is research code, expect that it changes often and any fitness for a partic
 
 ### Publications
 
-If you use this work in an academic context, please cite the following publications:
+If you use this work in an academic context, please cite the following publications as relevant:
 
 * Repository: J. Norby, Y. Yang, A. Tajbakhsh, J. Ren, J. K. Yim, A. Stutt, Q. Yu, and A. M. Johnson. Quad-
 SDK: Full stack software framework for agile quadrupedal locomotion. In ICRA Workshop on
