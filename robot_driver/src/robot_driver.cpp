@@ -163,10 +163,10 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
 
   // Load complementary filter coefficients
   std::vector<double> high_pass_a, high_pass_b, high_pass_c, high_pass_d;
-  quad_utils::loadROSParam(nh_, "robot_driver/high_pass_a", high_pass_a);
-  quad_utils::loadROSParam(nh_, "robot_driver/high_pass_b", high_pass_b);
-  quad_utils::loadROSParam(nh_, "robot_driver/high_pass_c", high_pass_c);
-  quad_utils::loadROSParam(nh_, "robot_driver/high_pass_d", high_pass_d);
+  quad_utils::loadROSParam(nh_, "/robot_driver/high_pass_a", high_pass_a);
+  quad_utils::loadROSParam(nh_, "/robot_driver/high_pass_b", high_pass_b);
+  quad_utils::loadROSParam(nh_, "/robot_driver/high_pass_c", high_pass_c);
+  quad_utils::loadROSParam(nh_, "/robot_driver/high_pass_d", high_pass_d);
   complementary_filter_.high_pass_filter.A =
       Eigen::Map<Eigen::Matrix<double, 2, 2> >(high_pass_a.data()).transpose();
   complementary_filter_.high_pass_filter.B =
@@ -179,10 +179,10 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   complementary_filter_.high_pass_filter.init = false;
 
   std::vector<double> low_pass_a, low_pass_b, low_pass_c, low_pass_d;
-  quad_utils::loadROSParam(nh_, "robot_driver/low_pass_a", low_pass_a);
-  quad_utils::loadROSParam(nh_, "robot_driver/low_pass_b", low_pass_b);
-  quad_utils::loadROSParam(nh_, "robot_driver/low_pass_c", low_pass_c);
-  quad_utils::loadROSParam(nh_, "robot_driver/low_pass_d", low_pass_d);
+  quad_utils::loadROSParam(nh_, "/robot_driver/low_pass_a", low_pass_a);
+  quad_utils::loadROSParam(nh_, "/robot_driver/low_pass_b", low_pass_b);
+  quad_utils::loadROSParam(nh_, "/robot_driver/low_pass_c", low_pass_c);
+  quad_utils::loadROSParam(nh_, "/robot_driver/low_pass_d", low_pass_d);
   complementary_filter_.low_pass_filter.A =
       Eigen::Map<Eigen::Matrix<double, 2, 2> >(low_pass_a.data()).transpose();
   complementary_filter_.low_pass_filter.B =

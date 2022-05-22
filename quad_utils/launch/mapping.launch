@@ -1,9 +1,9 @@
 <launch>
-    <arg name="robot_type"/>
+    <arg name="robot_type" default="spirit"/>
     <!-- Specify the type of input (grid, mesh, cloud) -->
     <arg name="input_type" default="grid"/>
 
-    <include file="$(find quad_utils)/launch/load_params.launch">
+    <include file="$(find quad_utils)/launch/load_global_params.launch">
         <arg name="robot_type" value="$(arg robot_type)"/>
     </include>
 

@@ -4,7 +4,7 @@
     <arg name="live_plot" default="false"/>
     <arg name="dash" default="false"/>
 
-    <include file="$(find quad_utils)/launch/load_params.launch">
+    <include file="$(find quad_utils)/launch/load_global_params.launch">
         <arg name="robot_type" value="$(arg robot_type)"/>
     </include>
 
