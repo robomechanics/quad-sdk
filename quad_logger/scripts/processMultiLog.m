@@ -17,10 +17,12 @@ end
 
 %% Select rosbag to parse
 
-envName = 'leap_gap_40cm_01realtime';
+% envName = 'leap_gap_40cm_01realtime';    tWindow = [3, 6];
+envName = 'step_20cm_05realtime';     tWindow = [2, 5];
 configNames = {'Simple', 'Complex', 'Mixed', 'Adaptive'};
 configLinestyles = {'-', '--', ':', '-.'};
 configColors = {[0,45,114]/255, [166,25,46]/255, [242,169,0]/255,  [0,132,61]/255};
+lineWidth = 4;
 
 %% Set parameters
 
@@ -57,37 +59,58 @@ for i = 1:length(configNames)
     maxTime = max(maxTime, max(localPlan{i}.time));
     
     %% Plot the data
-    
+        
     % Plot the state
     linearStateFig = figure(linearStateFig);
     linearStateFig.Name = "linear_states";
+%     traj_idx = find(stateGroundTruth{i}.time>= tWindow(1) & stateGroundTruth{i}.time<= tWindow(2));
+    traj_idx = 1:length(stateGroundTruth{i}.time);
     
+    % z state
     subplot(2,2,1); hold on
-    plot(stateGroundTruth{i}.time, stateGroundTruth{i}.position(:,3), 'Color', configColors{i});
+    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.position(traj_idx,3), 'Color', configColors{i}, 'LineWidth', lineWidth);
     ylabel('Z Position (m)')
     axis tight
     
     subplot(2,2,3); hold on
-    plot(stateGroundTruth{i}.time, stateGroundTruth{i}.velocity(:,3), 'Color', configColors{i});
+    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.velocity(traj_idx,3), 'Color', configColors{i}, 'LineWidth', lineWidth);
     ylabel('Z Velocity (m/s)')
     xlabel('Time (s)')
     axis tight
     
+    % x state
     subplot(2,2,2); hold on
-    plot(stateGroundTruth{i}.time, stateGroundTruth{i}.orientationRPY(:,3), 'Color', configColors{i});
-    ylabel('Yaw (rad)')
+    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.position(traj_idx,1), 'Color', configColors{i}, 'LineWidth', lineWidth);
+    ylabel('X Position (m)')
     axis tight
     
     subplot(2,2,4); hold on
-    plot(stateGroundTruth{i}.time, stateGroundTruth{i}.angularVelocity(:,3), 'Color', configColors{i});
-    ylabel('Yaw rate (rad/s)')
+    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.velocity(traj_idx,1), 'Color', configColors{i}, 'LineWidth', lineWidth);
+    ylabel('X Velocity (m/s)')
     xlabel('Time (s)')
     axis tight
-    set(linearStateFig, 'Position', [100 100 1200 1200])
     
-    %     align_Ylabels(linearStateFig);
+%     % yaw state
+%     subplot(2,2,2); hold on
+%     plot(stateGroundTruth{i}.time, stateGroundTruth{i}.orientationRPY(:,3), 'Color', configColors{i}, 'LineWidth', lineWidth);
+%     ylabel('Yaw (rad)')
+%     axis tight
+%     
+%     subplot(2,2,4); hold on
+%     plot(stateGroundTruth{i}.time, stateGroundTruth{i}.angularVelocity(:,3), 'Color', configColors{i}, 'LineWidth', lineWidth);
+%     ylabel('Yaw rate (rad/s)')
+%     xlabel('Time (s)')
+%     axis tight
+%     set(linearStateFig, 'Position', [100 100 1200 1200])
     
+    %
+    % ~~~~~~~~~~~~~~~~~~~
+    %
+        
     % Plot the controls
+%     traj_idx = find(controlGRFs{i}.time>= tWindow(1) & controlGRFs{i}.time<= tWindow(2));
+    traj_idx = 1:length(controlGRFs{i}.time);
+
     totalGRF = zeros(length(controlGRFs{i}.vectors{1}), 3);
     for j = 1:length(controlGRFs{i}.vectors{1})
         for k = 1:length(controlGRFs{i}.vectors)
@@ -99,39 +122,54 @@ for i = 1:length(configNames)
     end
     bw = 13.0*9.81;
     grfNorm = vecnorm(totalGRF - [0,0,bw],2,2);
+    meanGRFNorm(i) = mean(grfNorm, 'omitnan');
     
     GRFVectorsFig = figure(GRFVectorsFig);
     GRFVectorsFig.Name = "grfs";
     
     hold on;
-    plot(controlGRFs{i}.time, grfNorm, 'Color', configColors{i});
+    plot(controlGRFs{i}.time(traj_idx), grfNorm(traj_idx), 'Color', configColors{i}, 'LineWidth', lineWidth);
     ylabel('Control error norm $||u - u_{nom}||_2$ (N)')
     xlabel('Time (s)')
     axis tight
     set(GRFVectorsFig, 'Position', [100 100 1200 600])
-    
-    align_Ylabels(GRFVectorsFig);
+        
+    %
+    % ~~~~~~~~~~~~~~~~~~~
+    %
     
     % Plot the solve times
     solveTimeFig = figure(solveTimeFig);
     solveTimeFig.Name = "solve_time";
     scale = 1; % s to ms
-    semilogy(localPlan{i}.time, scale*localPlan{i}.solveTime, 'Color', configColors{i});
+    semilogy(localPlan{i}.time, smooth(scale*localPlan{i}.solveTime,5), 'Color', configColors{i}, 'LineWidth', lineWidth);
     hold on;
     xlabel('Time (s)')
     ylabel('Solve Time (s)');
     axis tight
     set(solveTimeFig, 'Position', [100 100 1200 600])
     
+    meanSolveTimes(i) = mean(localPlan{i}.solveTime);
+    stdSolveTimes(i) = std(localPlan{i}.solveTime);
+    medianSolveTimes(i) = median(localPlan{i}.solveTime);
+    
+    %
+    % ~~~~~~~~~~~~~~~~~~~
+    %
+    
     % Plot the horizon lengths
     horizonLengthFig = figure(horizonLengthFig);
     horizonLengthFig.Name = "horizon_length";
-    plot(localPlan{i}.time, localPlan{i}.horizonLength, 'Color', configColors{i});
+    plot(localPlan{i}.time, localPlan{i}.horizonLength, 'Color', configColors{i}, 'LineWidth', lineWidth);
     hold on;
     xlabel('Time (s)')
     ylabel('Horizon Length');
     axis tight
     set(horizonLengthFig, 'Position', [100 100 1200 600])
+    
+    %
+    % ~~~~~~~~~~~~~~~~~~~
+    %
     
     % Plot the prediction horizons
     predictionHorizonFig = figure(predictionHorizonFig);
@@ -147,8 +185,9 @@ for i = 1:length(configNames)
     elementTimesVec = [];
     complexityScheduleVec = [];
     trajTimesVec = [];
-    tWindow = [0, 5];
-    traj_idx = find(localPlan{i}.time>= tWindow(1) & localPlan{i}.time<= tWindow(2));
+%     traj_idx = find(localPlan{i}.time>= tWindow(1) & localPlan{i}.time<= tWindow(2));
+    traj_idx = 1:length(localPlan{i}.time);
+    
     localPlan{i}.time = localPlan{i}.time(traj_idx);
     localPlan{i}.solveTime = localPlan{i}.solveTime(traj_idx,:);
     localPlan{i}.elementTimes = localPlan{i}.elementTimes(traj_idx,:);
@@ -200,6 +239,10 @@ legend(GRFVectorsFig.CurrentAxes, configNames);
 legend(solveTimeFig.CurrentAxes, configNames);
 legend(horizonLengthFig.CurrentAxes, configNames);
 
+1000*meanSolveTimes
+medianSolveTimes
+meanGRFNorm
+
 % Add figures to array
 figArray = [linearStateFig, GRFVectorsFig, solveTimeFig, horizonLengthFig, predictionHorizonFig];
 
@@ -207,4 +250,5 @@ figArray = [linearStateFig, GRFVectorsFig, solveTimeFig, horizonLengthFig, predi
 logDir = [];
 if bSave
     logDir = saveMultiLog(envName, configNames, figArray);
+end
 end
