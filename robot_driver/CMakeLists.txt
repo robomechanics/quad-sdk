@@ -59,11 +59,11 @@ include_directories(
 
 ## Declare a C++ library for control
 add_library(robot_driver
-	src/robot_driver.cpp
-	src/robot_driver_utils.cpp
+  src/robot_driver.cpp
+  src/robot_driver_utils.cpp
   src/controllers/leg_controller.cpp
-	src/controllers/inverse_dynamics_controller.cpp
-	src/controllers/grf_pid_controller.cpp
+  src/controllers/inverse_dynamics_controller.cpp
+  src/controllers/grf_pid_controller.cpp
 	src/controllers/joint_controller.cpp
   src/estimators/state_estimator.cpp
   src/estimators/comp_filter_estimator.cpp
