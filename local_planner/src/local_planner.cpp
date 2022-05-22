@@ -225,6 +225,11 @@ void LocalPlanner::getReference() {
     }
   }
 
+  // Make sure we use the most recent global plan timestamp for reference
+  if (!use_twist_input_) {
+    initial_timestamp_ = body_plan_msg_->global_plan_timestamp;
+  }
+
   // Tracking trajectory so enter run mode
   control_mode_ = STEP;
 
@@ -503,12 +508,7 @@ void LocalPlanner::publishLocalPlan() {
   // Update the headers of all messages
   local_plan_msg.header.stamp = current_state_timestamp_;
   local_plan_msg.header.frame_id = map_frame_;
-  if (!use_twist_input_) {
-    local_plan_msg.global_plan_timestamp =
-        body_plan_msg_->global_plan_timestamp;
-  } else {
-    local_plan_msg.global_plan_timestamp = initial_timestamp_;
-  }
+  local_plan_msg.global_plan_timestamp = initial_timestamp_;
   local_plan_msg.compute_time = compute_time_;
   future_footholds_msg.header = local_plan_msg.header;
   foot_plan_msg.header = local_plan_msg.header;
