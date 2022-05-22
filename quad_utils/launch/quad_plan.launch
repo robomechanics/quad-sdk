@@ -11,7 +11,6 @@
     <!-- Define namespaces for each robot -->
     <arg name="namespace_1" default="robot_1"/>
     <arg name="namespace_2" default="robot_2"/>
-    <arg name="namespace_3" default="robot_3"/>
 
     <group ns="$(arg namespace_1)">
         <include file="$(find quad_utils)/launch/planning.launch">
@@ -33,16 +32,6 @@
                 <arg name="ac" value="$(arg ac)" />
                 <arg name="robot_type" value="$(arg robot_type)" />
                 <arg name="namespace" value="$(arg namespace_2)" />
-            </include>
-        </group>
-        <group ns="$(arg namespace_3)">
-            <include file="$(find quad_utils)/launch/planning.launch">
-                <arg name="global_planner" value="$(arg global_planner)" />
-                <arg name="logging" value="$(arg logging)" />
-                <arg name="leaping" value="$(arg leaping)" />
-                <arg name="ac" value="$(arg ac)" />
-                <arg name="robot_type" value="$(arg robot_type)" />
-                <arg name="namespace" value="$(arg namespace_3)" />
             </include>
         </group>
     </group>

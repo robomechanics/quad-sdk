@@ -5,7 +5,7 @@
     <arg name="dash" default="false"/>
     <arg name="visualization" default="true"/>
 
-    <include file="$(find quad_utils)/launch/load_params.launch">
+    <include file="$(find quad_utils)/launch/load_robot_params.launch">
         <arg name="robot_type" value="$(arg robot_type)"/>
     </include>
 

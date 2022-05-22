@@ -5,14 +5,10 @@
     <param name="enable_statistics" type="bool" value="true" />
 
     <group if="$(eval arg('robot_type') == 'spirit')">
-        <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
-        <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
         <rosparam command="load" file="$(find quad_utils)/config/spirit.yaml" />
     </group>
 
     <group if="$(eval arg('robot_type') == 'a1')">
-        <param name="robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1.sdf" />
-        <param name="robot_description" command="cat $(find a1_description)/urdf/a1.urdf" />
         <rosparam command="load" file="$(find quad_utils)/config/a1.yaml" />
     </group>
 </launch>

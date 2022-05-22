@@ -1,13 +1,14 @@
 <launch>
     <arg name="namespace" default="robot_1"/>
     
-    <include file="$(find quad_utils)/launch/load_params.launch" />
+    <include file="$(find quad_utils)/launch/load_global_params.launch" />
+    <include file="$(find quad_utils)/launch/load_robot_params.launch" />
 
     <arg name="bag_name" default="quad_log"/>
 
     <!-- Record bag in bag dir, not timestamped -->
     <node pkg="rosbag" type="record" name="rosbag_record" args="record -O $(find quad_logger)/bags/$(arg namespace)_$(arg bag_name) --tcpnodelay
-        /$(arg namespace)/state/joints
+        /$(arg namespace)/state
         /$(arg namespace)/state/imu
         /$(arg namespace)/state/trajectory
         /$(arg namespace)/state/ground_truth 
