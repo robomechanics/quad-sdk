@@ -1,0 +1,8 @@
+<launch>
+    <rosparam command="load" file="$(find quad_utils)/config/terrain_map_publisher.yaml" />
+    <rosparam command="load" file="$(find quad_utils)/config/grid_map_visualization.yaml" />
+    <rosparam command="load" file="$(find quad_utils)/config/remote_heartbeat.yaml" />
+    <rosparam command="load" file="$(find quad_utils)/config/teleop_twist_keyboard.yaml" />
+    <rosparam command="load" file="$(find quad_utils)/config/rviz_interface.yaml" />
+    <rosparam command="load" file="$(find quad_utils)/config/trajectory_publisher.yaml" />
+</launch>
