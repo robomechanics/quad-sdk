@@ -20,13 +20,13 @@ namespace effort_controllers {
  * This class forwards the commanded efforts down to a set of joints.
  *
  */
-class SpiritController : public controller_interface::Controller<
-                             hardware_interface::EffortJointInterface> {
+class QuadController : public controller_interface::Controller<
+                           hardware_interface::EffortJointInterface> {
   typedef std::vector<quad_msgs::LegCommand> BufferType;
 
  public:
-  SpiritController();
-  ~SpiritController();
+  QuadController();
+  ~QuadController();
 
   bool init(hardware_interface::EffortJointInterface* hw, ros::NodeHandle& n);
   void update(const ros::Time& /*time*/, const ros::Duration& /*period*/);

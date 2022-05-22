@@ -18,20 +18,20 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
                            discrete_body_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/global_plan_tree",
                            body_plan_tree_topic);
-  quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/update_rate",
+  quad_utils::loadROSParam(nh_, "/map_frame", map_frame_);
+  quad_utils::loadROSParam(nh_, "/global_body_planner/update_rate",
                            update_rate_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/num_calls", num_calls_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/max_planning_time",
+  quad_utils::loadROSParam(nh_, "/global_body_planner/num_calls", num_calls_);
+  quad_utils::loadROSParam(nh_, "/global_body_planner/max_planning_time",
                            max_planning_time_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/pos_error_threshold",
+  quad_utils::loadROSParam(nh_, "/global_body_planner/pos_error_threshold",
                            pos_error_threshold_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/startup_delay",
+  quad_utils::loadROSParam(nh_, "/global_body_planner/startup_delay",
                            reset_publish_delay_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/replanning",
+  quad_utils::loadROSParam(nh_, "/global_body_planner/replanning",
                            replanning_allowed_);
-  quad_utils::loadROSParam(nh_, "local_planner/timestep", dt_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/goal_state",
+  quad_utils::loadROSParam(nh_, "/local_planner/timestep", dt_);
+  quad_utils::loadROSParam(nh_, "/global_body_planner/goal_state",
                            goal_state_vec);
 
   // Setup pubs and subs

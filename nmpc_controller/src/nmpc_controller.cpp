@@ -23,27 +23,28 @@ NMPCController::NMPCController(ros::NodeHandle &nh, int robot_id) {
   default_system = SIMPLE;
 
   // Load parameters set by local planner
-  quad_utils::loadROSParam(nh_, "local_planner/horizon_length", N_);
-  quad_utils::loadROSParam(nh_, "local_planner/timestep", dt_);
+  quad_utils::loadROSParam(nh_, "/local_planner/horizon_length", N_);
+  quad_utils::loadROSParam(nh_, "/local_planner/timestep", dt_);
 
   // Load system parameters
   double mu, panic_weights, constraint_panic_weights, Q_temporal_factor,
       R_temporal_factor;
-  quad_utils::loadROSParam(nh_, "nmpc_controller/friction_coefficient", mu);
-  quad_utils::loadROSParam(nh_, "nmpc_controller/panic_weights", panic_weights);
-  quad_utils::loadROSParam(nh_, "nmpc_controller/constraint_panic_weights",
+  quad_utils::loadROSParam(nh_, "/nmpc_controller/friction_coefficient", mu);
+  quad_utils::loadROSParam(nh_, "/nmpc_controller/panic_weights",
+                           panic_weights);
+  quad_utils::loadROSParam(nh_, "/nmpc_controller/constraint_panic_weights",
                            constraint_panic_weights);
-  quad_utils::loadROSParam(nh_, "nmpc_controller/Q_temporal_factor",
+  quad_utils::loadROSParam(nh_, "/nmpc_controller/Q_temporal_factor",
                            Q_temporal_factor);
-  quad_utils::loadROSParam(nh_, "nmpc_controller/R_temporal_factor",
+  quad_utils::loadROSParam(nh_, "/nmpc_controller/R_temporal_factor",
                            R_temporal_factor);
   Q_temporal_factor = std::pow(Q_temporal_factor, 1.0 / (N_ - 2));
   R_temporal_factor = std::pow(R_temporal_factor, 1.0 / (N_ - 2));
 
   // Determine whether to let horizon length vary or not
-  quad_utils::loadROSParam(nh_, "nmpc_controller/enable_variable_horizon",
+  quad_utils::loadROSParam(nh_, "/nmpc_controller/enable_variable_horizon",
                            enable_variable_horizon_);
-  quad_utils::loadROSParam(nh_, "nmpc_controller/min_horizon_length", N_min_);
+  quad_utils::loadROSParam(nh_, "/nmpc_controller/min_horizon_length", N_min_);
   N_max_ = N_;
 
   // Define the components, their order, and which are simple
@@ -167,13 +168,13 @@ NMPCController::NMPCController(ros::NodeHandle &nh, int robot_id) {
   int fixed_complex_head, fixed_complex_tail;
   bool enable_adaptive_complexity = false;
 
-  quad_utils::loadROSParam(nh_, "nmpc_controller/enable_adaptive_complexity",
+  quad_utils::loadROSParam(nh_, "/nmpc_controller/enable_adaptive_complexity",
                            enable_adaptive_complexity);
-  quad_utils::loadROSParam(nh_, "nmpc_controller/fixed_complex_idxs",
+  quad_utils::loadROSParam(nh_, "/nmpc_controller/fixed_complex_idxs",
                            fixed_complex_idxs);
-  quad_utils::loadROSParam(nh_, "nmpc_controller/fixed_complex_head",
+  quad_utils::loadROSParam(nh_, "/nmpc_controller/fixed_complex_head",
                            fixed_complex_head);
-  quad_utils::loadROSParam(nh_, "nmpc_controller/fixed_complex_tail",
+  quad_utils::loadROSParam(nh_, "/nmpc_controller/fixed_complex_tail",
                            fixed_complex_tail);
 
   // Adaptive complexity is only supported for Spirit

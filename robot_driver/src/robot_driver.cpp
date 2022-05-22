@@ -38,16 +38,16 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   quad_utils::loadROSParamDefault(nh_, "robot_driver/controller",
                                   controller_id_,
                                   std::string("inverse_dynamics"));
-  quad_utils::loadROSParam(nh_, "robot_driver/update_rate", update_rate_);
-  quad_utils::loadROSParam(nh_, "robot_driver/publish_rate", publish_rate_);
-  quad_utils::loadROSParam(nh_, "robot_driver/mocap_rate", mocap_rate_);
-  quad_utils::loadROSParam(nh_, "robot_driver/mocap_dropout_threshold",
+  quad_utils::loadROSParam(nh_, "/robot_driver/update_rate", update_rate_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/publish_rate", publish_rate_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/mocap_rate", mocap_rate_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/mocap_dropout_threshold",
                            mocap_dropout_threshold_);
-  quad_utils::loadROSParam(nh_, "robot_driver/filter_time_constant",
+  quad_utils::loadROSParam(nh_, "/robot_driver/filter_time_constant",
                            filter_time_constant_);
-  quad_utils::loadROSParam(nh_, "robot_driver/input_timeout", input_timeout_);
-  quad_utils::loadROSParam(nh_, "robot_driver/state_timeout", state_timeout_);
-  quad_utils::loadROSParam(nh_, "robot_driver/heartbeat_timeout",
+  quad_utils::loadROSParam(nh_, "/robot_driver/input_timeout", input_timeout_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/state_timeout", state_timeout_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/heartbeat_timeout",
                            heartbeat_timeout_);
   quad_utils::loadROSParam(nh_, "robot_driver/sit_kp", sit_kp_);
   quad_utils::loadROSParam(nh_, "robot_driver/sit_kd", sit_kd_);
