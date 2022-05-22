@@ -103,8 +103,7 @@ SOFTWARE.
       </include>
       <param name="robot_type" value="$(arg robot_type)"/>
     </group>
-  </group>
-
+    
   <!-- Readers can add more robots here -->
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find quad_utils)/rviz/example_with_terrain.rviz"/>

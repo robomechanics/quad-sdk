@@ -10,7 +10,6 @@
 using namespace planning_utils;
 
 GraphClass::GraphClass() {}
-GraphClass::~GraphClass() {}
 
 State GraphClass::getVertex(int idx) { return vertices[idx]; }
 
@@ -54,8 +53,7 @@ void GraphClass::removeEdge(int idx1, int idx2) {
 
 int GraphClass::getPredecessor(int idx) {
   if (edges[idx].size() > 1) {
-    std::cout << "More than one predecessor, fix this!" << std::endl;
-    throw("Error");
+    throw("Error, node has more than one predecessor");
   }
   return edges[idx].front();
 }

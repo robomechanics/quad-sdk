@@ -5,6 +5,8 @@
 
 using namespace planning_utils;
 
+typedef std::pair<double, int> Distance;
+
 //! A directed graph class with supplemental methods to aid in sample-based
 //! planning.
 /*!
@@ -17,14 +19,10 @@ class PlannerClass : public GraphClass {
   /**
    * @brief Constructor for PlannerClass
    * @param[in] direction Direction of tree expansion
+   * @param[in] planner_config Configuration structure used for sampling params
    * @return Constructed object of type PlannerClass
    */
-  PlannerClass(int direction);
-
-  /**
-   * @brief Destructor for PlannerClass
-   */
-  ~PlannerClass();
+  PlannerClass(int direction, const PlannerConfig &planner_config);
 
   /**
    * @brief Generate a random state by sampling from within the bounds of the
@@ -62,6 +60,9 @@ class PlannerClass : public GraphClass {
 
   /// Direction
   int direction_ = FORWARD;
+
+  /// Lognormal distribution for velocity sampling
+  std::shared_ptr<std::lognormal_distribution<double>> vel_distribution_;
 };
 
 #endif
