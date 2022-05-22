@@ -7,7 +7,6 @@
 #include <quad_msgs/MultiFootPlanDiscrete.h>
 #include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/RobotState.h>
-#include <quad_msgs/RobotStateTrajectory.h>
 #include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
@@ -35,8 +34,9 @@ class NMPCController {
    * output
    * @param[in] initial_state Vector with initial state
    * @param[in] ref_traj Matrix holding desired reference trajectory
-   * @param[in] foot_positions Matrix holding foot positions
    * @param[in] contact_schedule Matrix holding the contact schedule
+   * @param[in] foot_positions Matrix holding foot positions
+   * @param[in] foot_velocities Matrix holding foot velocities
    * @param[in] first_element_duration Time duration to the next plan index
    * @param[in] same_plan_index If the current solving is duplicated in the same
    * index
@@ -46,8 +46,9 @@ class NMPCController {
    */
   bool computePlan(const Eigen::VectorXd &initial_state,
                    const Eigen::MatrixXd &ref_traj,
-                   const Eigen::MatrixXd &foot_positions,
                    const std::vector<std::vector<bool>> &contact_schedule,
+                   Eigen::MatrixXd &foot_positions,
+                   Eigen::MatrixXd &foot_velocities,
                    Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj);
 
   bool computeLegPlan(
@@ -61,8 +62,17 @@ class NMPCController {
       Eigen::MatrixXd &control_traj);
 
   /** Method to return the constraint residual for requested data */
-  Eigen::VectorXi evalLiftedTrajectoryConstraints(
-      Eigen::MatrixXd &state_null_traj);
+  Eigen::VectorXi updateAdaptiveComplexitySchedule(
+      Eigen::MatrixXd &state_traj_lifted, Eigen::MatrixXd &control_traj_lifted);
+
+  /** Method to update the prediction horizon length */
+  void updateHorizonLength();
+
+  /**
+   * @brief Return the NLP diagnostics
+   * @return NLP diagnostics with most recent meta-data
+   */
+  inline NLPDiagnostics getNLPDiagnostics() const { return diagnostics_; }
 
  private:
   ros::NodeHandle nh_;
@@ -76,17 +86,13 @@ class NMPCController {
 
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
 
-  int N_;
+  bool enable_variable_horizon_;
 
-  int x_dim_simple_, x_dim_cost_simple_, u_dim_simple_, u_dim_cost_simple_,
-      g_dim_simple_, x_dim_complex_, x_dim_cost_complex_, u_dim_complex_,
-      u_dim_cost_complex_, g_dim_complex_;
+  int N_, N_max_, N_min_;
 
   // Number of states in different components
-  static const int n_body_ = 12, n_foot_ = 24, n_joints_ = 24, n_tail_ = 4,
-                   m_body_ = 12, m_foot_ = 12, m_tail_ = 2;
-
-  int x_dim_null_;
+  const int n_body_ = 12, n_foot_ = 24, n_joints_ = 24, n_tail_ = 4,
+            m_body_ = 12, m_foot_ = 24, m_tail_ = 2;
 
   double dt_;
 
@@ -94,6 +100,12 @@ class NMPCController {
 
   /// Adaptive complexity schedule
   Eigen::VectorXi adaptive_complexity_schedule_;
+
+  /// Diagnostics struct for gathering metadata
+  NLPDiagnostics diagnostics_;
+
+  /// Config struct for storing meta parameters
+  NLPConfig config_;
 };
 
 #endif  // MPC_CONTROLLER_H

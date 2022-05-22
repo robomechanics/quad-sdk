@@ -12,8 +12,6 @@
     <rosparam command="load" file="$(find global_body_planner)/global_body_planner.yaml" />
     <rosparam command="load" file="$(find local_planner)/local_planner.yaml" />
     <rosparam command="load" file="$(find robot_driver)/robot_driver.yaml" />
-    <rosparam command="load" file="$(find contact_detection)/contact_detection.yaml" />
-    <rosparam command="load" file="$(find body_force_estimator)/body_force_estimator.yaml" />
     <rosparam command="load" file="$(find nmpc_controller)/nmpc_controller.yaml" />
 
     <param name="enable_statistics" type="bool" value="true" />

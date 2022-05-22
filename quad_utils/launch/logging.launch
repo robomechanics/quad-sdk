@@ -2,7 +2,10 @@
 
     <include file="$(find quad_utils)/launch/load_params.launch" />
 
-    <node pkg="rosbag" type="record" name="rosbag_record" args="record -O $(find quad_logger)/bags/quad_log_current --tcpnodelay
+    <arg name="bag_name" default="quad_log"/>
+
+    <!-- Record bag in bag dir, not timestamped -->
+    <node pkg="rosbag" type="record" name="rosbag_record" args="record -O $(find quad_logger)/bags/$(arg bag_name) --tcpnodelay
         /state/joints
         /state/imu
         /state/trajectory
@@ -22,7 +25,8 @@
         /foot_plan_discrete 
         /foot_step_hist" />
 
-    <node pkg="rosbag" type="record" name="rosbag_record_archive" args="record -o $(find quad_logger)/bags/archive/quad_log --tcpnodelay
+    <!-- Record timestamped bag in bag dir -->
+    <node pkg="rosbag" type="record" name="rosbag_record_archive" args="record -o $(find quad_logger)/bags/archive/$(arg bag_name) --tcpnodelay
         /state/joints
         /state/imu
         /state/trajectory
