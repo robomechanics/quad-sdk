@@ -10,7 +10,7 @@ Quad-SDK is an open source, ROS-based full stack software framework for agile qu
 
 ### License
 
-The source code is released under a [MIT License](quad-sdk/LICENSE).
+The source code is released under a [MIT License](LICENSE).
 
 **Authors: Joe Norby, Yanhao Yang, Ardalan Tajbakhsh, Jiming Ren, Justin K. Yim, Alexandra Stutt, Qishun Yu, and Aaron M. Johnson<br />
 Affiliation: [The Robomechanics Lab at Carnegie Mellon University](https://www.cmu.edu/me/robomechanicslab/)<br />
