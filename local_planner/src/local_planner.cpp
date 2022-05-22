@@ -44,21 +44,21 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
       foot_plan_continuous_topic, 1);
 
   // Load system parameters from parameter server
-  quad_utils::loadROSParam(nh_, "local_planner/update_rate", update_rate_);
-  quad_utils::loadROSParam(nh_, "local_planner/timestep", dt_);
-  quad_utils::loadROSParam(nh_, "local_planner/horizon_length", N_);
-  quad_utils::loadROSParam(nh_, "local_planner/desired_height", z_des_);
-  quad_utils::loadROSParam(nh_, "local_planner/toe_radius", toe_radius_);
-  quad_utils::loadROSParam(nh_, "local_planner/cmd_vel_scale", cmd_vel_scale_);
-  quad_utils::loadROSParam(nh_, "local_planner/last_cmd_vel_msg_time_max",
+  quad_utils::loadROSParam(nh_, "/local_planner/update_rate", update_rate_);
+  quad_utils::loadROSParam(nh_, "/local_planner/timestep", dt_);
+  quad_utils::loadROSParam(nh_, "/local_planner/horizon_length", N_);
+  quad_utils::loadROSParam(nh_, "/local_planner/desired_height", z_des_);
+  quad_utils::loadROSParam(nh_, "/local_planner/toe_radius", toe_radius_);
+  quad_utils::loadROSParam(nh_, "/local_planner/cmd_vel_scale", cmd_vel_scale_);
+  quad_utils::loadROSParam(nh_, "/local_planner/last_cmd_vel_msg_time_max",
                            last_cmd_vel_msg_time_max_);
-  quad_utils::loadROSParam(nh_, "local_planner/cmd_vel_filter_const",
+  quad_utils::loadROSParam(nh_, "/local_planner/cmd_vel_filter_const",
                            cmd_vel_filter_const_);
-  quad_utils::loadROSParam(nh_, "local_planner/stand_vel_threshold",
+  quad_utils::loadROSParam(nh_, "/local_planner/stand_vel_threshold",
                            stand_vel_threshold_);
-  quad_utils::loadROSParam(nh_, "local_planner/stand_cmd_vel_threshold",
+  quad_utils::loadROSParam(nh_, "/local_planner/stand_cmd_vel_threshold",
                            stand_cmd_vel_threshold_);
-  quad_utils::loadROSParam(nh_, "local_planner/stand_pos_error_threshold",
+  quad_utils::loadROSParam(nh_, "/local_planner/stand_pos_error_threshold",
                            stand_pos_error_threshold_);
 
   // Load system parameters from launch file (not in config file)
@@ -128,25 +128,26 @@ void LocalPlanner::initLocalFootstepPlanner() {
   std::string obj_fun_layer;
   int period;
   std::vector<double> duty_cycles, phase_offsets;
-  quad_utils::loadROSParam(nh_, "local_footstep_planner/grf_weight",
+  quad_utils::loadROSParam(nh_, "/local_footstep_planner/grf_weight",
                            grf_weight);
-  quad_utils::loadROSParam(nh_, "local_footstep_planner/ground_clearance",
+  quad_utils::loadROSParam(nh_, "/local_footstep_planner/ground_clearance",
                            ground_clearance);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/hip_clearance",
                            hip_clearance);
   quad_utils::loadROSParam(nh_,
-                           "local_footstep_planner/standing_error_threshold",
+                           "/local_footstep_planner/standing_error_threshold",
                            standing_error_threshold);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/foothold_search_radius",
                            foothold_search_radius);
-  quad_utils::loadROSParam(nh_, "local_footstep_planner/foothold_obj_threshold",
+  quad_utils::loadROSParam(nh_,
+                           "/local_footstep_planner/foothold_obj_threshold",
                            foothold_obj_threshold);
-  quad_utils::loadROSParam(nh_, "local_footstep_planner/obj_fun_layer",
+  quad_utils::loadROSParam(nh_, "/local_footstep_planner/obj_fun_layer",
                            obj_fun_layer);
-  quad_utils::loadROSParam(nh_, "local_footstep_planner/period", period_d);
-  quad_utils::loadROSParam(nh_, "local_footstep_planner/duty_cycles",
+  quad_utils::loadROSParam(nh_, "/local_footstep_planner/period", period_d);
+  quad_utils::loadROSParam(nh_, "/local_footstep_planner/duty_cycles",
                            duty_cycles);
-  quad_utils::loadROSParam(nh_, "local_footstep_planner/phase_offsets",
+  quad_utils::loadROSParam(nh_, "/local_footstep_planner/phase_offsets",
                            phase_offsets);
 
   period = period_d / dt_;

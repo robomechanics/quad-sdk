@@ -32,6 +32,8 @@ class QuadEstimatorGroundTruth : public ModelPlugin {
   ros::Publisher ground_truth_state_body_frame_pub_;
   physics::ModelPtr model_;
   event::ConnectionPtr updateConnection_;
+
+  std::shared_ptr<quad_utils::QuadKD> quadKD_;
 };
 GZ_REGISTER_MODEL_PLUGIN(QuadEstimatorGroundTruth)
 }  // namespace gazebo

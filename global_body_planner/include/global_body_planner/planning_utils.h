@@ -71,14 +71,10 @@ struct PlannerConfig {
   double robot_w;  //  Width of robot body, m
   double robot_h;  //  Vertical distance between leg base and bottom of robot, m
 
-  double body_traversability_threshold;  //  Min traversability for body
-                                         //  (requires the body to not be over a
-                                         //  hole unless leaping)
-  double contact_traversability_threshold;  // Min traversability for
-                                            // contactlocation cannot step on
-                                            // roughsurfaces unless leaping
-  bool enable_leaping = true;               // Leaping mode switch
+  double traversability_threshold;  // Min traversability for contact location
+                                    // unless in flight
 
+  bool enable_leaping = true;  // Leaping mode switch
   static const int num_reachability_points =
       4;  // Number of points on body used to check reachability
   static const int num_collision_points =
@@ -113,6 +109,7 @@ struct PlannerConfig {
    * @brief Load the Global Body Planner parameters from ROS server
    */
   void loadParamsFromServer(ros::NodeHandle nh) {
+    // Load robot parameters
     quad_utils::loadROSParam(nh, "global_body_planner/h_max", h_max);
     quad_utils::loadROSParam(nh, "global_body_planner/h_min", h_min);
     quad_utils::loadROSParam(nh, "global_body_planner/h_nom", h_nom);
@@ -121,29 +118,29 @@ struct PlannerConfig {
     quad_utils::loadROSParam(nh, "global_body_planner/robot_l", robot_l);
     quad_utils::loadROSParam(nh, "global_body_planner/robot_w", robot_w);
     quad_utils::loadROSParam(nh, "global_body_planner/robot_h", robot_h);
-    quad_utils::loadROSParam(
-        nh, "global_body_planner/body_traversability_threshold",
-        body_traversability_threshold);
-    quad_utils::loadROSParam(
-        nh, "global_body_planner/contact_traversability_threshold",
-        contact_traversability_threshold);
+
     quad_utils::loadROSParam(nh, "global_body_planner/mass", mass);
-    quad_utils::loadROSParam(nh, "global_body_planner/g", g);
     quad_utils::loadROSParam(nh, "global_body_planner/grf_min", grf_min);
     quad_utils::loadROSParam(nh, "global_body_planner/grf_max", grf_max);
-    quad_utils::loadROSParam(nh, "global_body_planner/mu", mu);
-    quad_utils::loadROSParam(nh, "global_body_planner/t_s_min", t_s_min);
-    quad_utils::loadROSParam(nh, "global_body_planner/t_s_max", t_s_max);
-    quad_utils::loadROSParam(nh, "global_body_planner/dz0_min", dz0_min);
-    quad_utils::loadROSParam(nh, "global_body_planner/dz0_max", dz0_max);
-    quad_utils::loadROSParam(nh, "global_body_planner/dt", dt);
-    quad_utils::loadROSParam(nh, "global_body_planner/backup_ratio",
+    quad_utils::loadROSParam(nh,
+                             "/global_body_planner/traversability_threshold",
+                             traversability_threshold);
+
+    // Load global parameters
+    quad_utils::loadROSParam(nh, "/global_body_planner/g", g);
+    quad_utils::loadROSParam(nh, "/global_body_planner/mu", mu);
+    quad_utils::loadROSParam(nh, "/global_body_planner/t_s_min", t_s_min);
+    quad_utils::loadROSParam(nh, "/global_body_planner/t_s_max", t_s_max);
+    quad_utils::loadROSParam(nh, "/global_body_planner/dz0_min", dz0_min);
+    quad_utils::loadROSParam(nh, "/global_body_planner/dz0_max", dz0_max);
+    quad_utils::loadROSParam(nh, "/global_body_planner/dt", dt);
+    quad_utils::loadROSParam(nh, "/global_body_planner/backup_ratio",
                              backup_ratio);
-    quad_utils::loadROSParam(nh, "global_body_planner/trapped_buffer_factor",
+    quad_utils::loadROSParam(nh, "/global_body_planner/trapped_buffer_factor",
                              trapped_buffer_factor);
-    quad_utils::loadROSParam(nh, "global_body_planner/num_leap_samples",
+    quad_utils::loadROSParam(nh, "/global_body_planner/num_leap_samples",
                              num_leap_samples);
-    quad_utils::loadROSParam(nh, "global_body_planner/max_planning_time",
+    quad_utils::loadROSParam(nh, "/global_body_planner/max_planning_time",
                              max_planning_time);
 
     // Load the scalar parameters into Eigen vectors
@@ -556,31 +553,16 @@ inline double getTraversability(const Eigen::Vector3d &pos,
 }
 
 /**
- * @brief Inline function to check whether State position is traversable above a
+ * @brief Inline function to check whether position is traversable above a
  * threshold
- * @param[in] pos State position
+ * @param[in] pos Position for checking
  * @param[in] planner_config Configuration parameters
- * @return Whether State positon is traversable at State position on map
+ * @return Whether positon is traversable at position on map
  */
-inline bool isBodyTraversable(const Eigen::Vector3d &pos,
-                              const PlannerConfig &planner_config) {
+inline bool isTraversable(const Eigen::Vector3d &pos,
+                          const PlannerConfig &planner_config) {
   return (getTraversability(pos, planner_config) >=
-          planner_config.body_traversability_threshold);
-}
-
-/**
- * @brief Inline function to check whether contact position is traversable above
- * a threshold
- * @param[in] pos Contact position (Note the difference from State position:
- * contact position is at the four corners of rectangular body while State
- * position is at the center of the rectangular body)
- * @param[in] planner_config Configuration parameters
- * @return Whether contact position is traversable
- */
-inline bool isContactTraversable(const Eigen::Vector3d &pos,
-                                 const PlannerConfig &planner_config) {
-  return (getTraversability(pos, planner_config) >=
-          planner_config.contact_traversability_threshold);
+          planner_config.traversability_threshold);
 }
 
 /**

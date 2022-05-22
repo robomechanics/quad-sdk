@@ -103,6 +103,7 @@ SOFTWARE.
       </include>
       <param name="robot_type" value="$(arg robot_type)"/>
     </group>
+  </group>
     
   <!-- Readers can add more robots here -->
 

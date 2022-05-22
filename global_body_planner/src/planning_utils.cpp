@@ -822,7 +822,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
 
   // Ensure body is over traversable terrain unless in flight or leaping
   // disabled
-  if (!isBodyTraversable(s.pos, planner_config) && phase != FLIGHT &&
+  if (!isTraversable(s.pos, planner_config) && phase != FLIGHT &&
       planner_config.enable_leaping) {
 #ifdef DEBUG_INVALID_STATE
     printf("!isContactTraversable, phase = %d\n", phase);
@@ -906,8 +906,7 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
     }
 
     // Make sure legs are over a valid region of the terrain
-    if (!isContactTraversable(reachability_point, planner_config) &&
-        phase != FLIGHT) {
+    if (!isTraversable(reachability_point, planner_config) && phase != FLIGHT) {
       max_valid_z = s.pos[2] + planner_config.h_max -
                     getZRelToTerrain(reachability_point, planner_config);
       return false;

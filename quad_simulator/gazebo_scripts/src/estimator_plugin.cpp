@@ -24,7 +24,8 @@ void QuadEstimatorGroundTruth::Load(physics::ModelPtr _parent,
   }
 
   // Setup state estimate publisher
-  ros::NodeHandle nh;
+  auto robot_ns = model_->GetName();
+  ros::NodeHandle nh(robot_ns);
 
   // Load rosparams from parameter server
   std::string ground_truth_state_topic, ground_truth_state_body_frame_topic;
@@ -43,7 +44,11 @@ void QuadEstimatorGroundTruth::Load(physics::ModelPtr _parent,
   // simulation iteration.
   updateConnection_ = event::Events::ConnectWorldUpdateBegin(
       std::bind(&QuadEstimatorGroundTruth::OnUpdate, this));
+
+  // Convert kinematics
+  quadKD_ = std::make_shared<quad_utils::QuadKD>(robot_ns);
 }
+
 void QuadEstimatorGroundTruth::OnUpdate() {
   common::Time current_time = model_->GetWorld()->SimTime();
 
@@ -123,9 +128,10 @@ void QuadEstimatorGroundTruth::OnUpdate() {
     // std::cout << joint->Position() << std::endl;
     // std::cout << joint->GetVelocity(0) << std::endl;
 
-    physics::JointPtr joint = joint_vec[i];
+    physics::JointPtr joint = model_-> GetJoint(state.joints.name[i]);
     // physics::JointWrench wrench = joint->GetForceTorque(0);
-    double torque = 0;  // wrench.body1Torque.Z(); // Note that this doesn't
+    double torque = 0;  // wrench.body1Torque.Z();
+                        // Note that this doesn't
                         // seem to work but at least will populate with zeros
 
     state.joints.position.push_back(joint->Position());
@@ -136,8 +142,7 @@ void QuadEstimatorGroundTruth::OnUpdate() {
   int num_feet = 4;
   state.feet.feet.resize(num_feet);
 
-  quad_utils::QuadKD kinematics;
-  quad_utils::fkRobotState(kinematics, state);
+  quad_utils::fkRobotState(*quadKD_, state);
 
   for (int i = 0; i < num_feet; i++) {
     switch (i) {
