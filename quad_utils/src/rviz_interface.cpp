@@ -67,23 +67,23 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
 
   // Setup rviz_interface parameters
   quad_utils::loadROSParam(nh_, "/map_frame", map_frame_);
-  nh.param<double>("rviz_interface/update_rate", update_rate_, 10);
-  nh.param<std::vector<int>>("rviz_interface/colors/front_left",
-                             front_left_color_, {0, 255, 0});
-  nh.param<std::vector<int>>("rviz_interface/colors/back_left",
-                             back_left_color_, {0, 0, 255});
-  nh.param<std::vector<int>>("rviz_interface/colors/front_right",
-                             front_right_color_, {0, 255, 0});
-  nh.param<std::vector<int>>("rviz_interface/colors/back_right",
-                             back_right_color_, {0, 0, 255});
-  nh.param<std::vector<int>>("rviz_interface/colors/net_grf", net_grf_color_,
-                             {255, 0, 0});
-  nh.param<std::vector<int>>("rviz_interface/colors/individual_grf",
-                             individual_grf_color_, {255, 0, 0});
+  quad_utils::loadROSParam(nh_, "/rviz_interface/update_rate", update_rate_);
+  quad_utils::loadROSParam(nh_, "/rviz_interface/colors/front_left",
+                           front_left_color_);
+  quad_utils::loadROSParam(nh_, "/rviz_interface/colors/back_left",
+                           back_left_color_);
+  quad_utils::loadROSParam(nh_, "/rviz_interface/colors/front_right",
+                           front_right_color_);
+  quad_utils::loadROSParam(nh_, "/rviz_interface/colors/back_right",
+                           back_right_color_);
+  quad_utils::loadROSParam(nh_, "/rviz_interface/colors/net_grf",
+                           net_grf_color_);
+  quad_utils::loadROSParam(nh_, "/rviz_interface/colors/individual_grf",
+                           individual_grf_color_);
 
   double period, dt;
-  quad_utils::loadROSParam(nh_, "local_footstep_planner/period", period);
-  quad_utils::loadROSParam(nh_, "local_planner/timestep", dt);
+  quad_utils::loadROSParam(nh_, "/local_footstep_planner/period", period);
+  quad_utils::loadROSParam(nh_, "/local_planner/timestep", dt);
   orientation_subsample_interval_ = int(period / dt);
 
   // Setup plan subs

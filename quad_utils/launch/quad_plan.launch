@@ -11,7 +11,6 @@
     <!-- Define namespaces for each robot -->
     <arg name="namespace_1" default="robot_1"/>
     <arg name="namespace_2" default="robot_2"/>
-    <arg name="namespace_3" default="robot_3"/>
 
     <group ns="$(arg namespace_1)">
         <include file="$(find quad_utils)/launch/planning.launch">

@@ -1,7 +1,7 @@
 <launch>
     <arg name="robot_type"/>
 
-    <include file="$(find quad_utils)/launch/load_params.launch">
+    <include file="$(find quad_utils)/launch/load_robot_params.launch">
       <arg name="robot_type" value="$(arg robot_type)"/>
     </include>
     
