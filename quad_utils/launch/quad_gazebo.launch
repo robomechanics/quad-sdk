@@ -29,7 +29,6 @@ SOFTWARE.
   <arg name="multiple_robots" default="false"/>
   <arg name="gui" default="false"/>
   <arg name="paused" default="false"/>
-  <arg name="software" default="true"/>
   <arg name="controller" default="inverse_dynamics"/>
   <arg name="live_plot" default="false"/>
   <arg name="dash" default="false"/>
@@ -58,11 +57,9 @@ SOFTWARE.
       <arg name="robot_type" value="$(arg robot_type)"/>
     </include>
     <rosparam file="$(find gazebo_scripts)/config/quad_control.yaml" command="load"/>
-    <include file="$(find quad_utils)/launch/robot.launch">
+    <include file="$(find quad_utils)/launch/quad_spawn.launch">
       <arg name="robot_type" value="$(arg robot_type)"/>
-      <arg name="software" default="$(arg software)"/>
       <arg name="controller" default="$(arg controller)"/>
-      <arg name="logging" value="$(arg logging)"/>
       <arg name="init_pose" value="-x 0.0 -y 0.0 -z 0.5" />
       <arg name="namespace" value="robot_1" />
     </include>
@@ -76,10 +73,8 @@ SOFTWARE.
         <arg name="robot_type" value="$(arg robot_type)"/>
       </include>
       <rosparam file="$(find gazebo_scripts)/config/quad_control.yaml" command="load"/>
-      <include file="$(find quad_utils)/launch/robot.launch">
+      <include file="$(find quad_utils)/launch/quad_spawn.launch">
         <arg name="robot_type" value="$(arg robot_type)"/>
-        <arg name="software" default="$(arg software)"/>
-        <arg name="logging" value="$(arg logging)"/>
         <arg name="controller" default="$(arg controller)"/>
         <arg name="init_pose" value="-x 0.0 -y 1.0 -z 0.5" />
         <arg name="namespace" value="robot_2" />
@@ -87,34 +82,13 @@ SOFTWARE.
       <param name="robot_type" value="$(arg robot_type)"/>
     </group>
 
-    <group ns="robot_3">
-      <!-- Load the parameters and the sdf description -->
-      <include file="$(find quad_utils)/launch/load_params.launch">
-        <arg name="robot_type" value="$(arg robot_type)"/>
-      </include>
-      <rosparam file="$(find gazebo_scripts)/config/quad_control.yaml" command="load"/>
-      <include file="$(find quad_utils)/launch/robot.launch">
-        <arg name="robot_type" value="$(arg robot_type)"/>
-        <arg name="software" default="$(arg software)"/>
-        <arg name="logging" value="$(arg logging)"/>
-        <arg name="controller" default="$(arg controller)"/>
-        <arg name="init_pose" value="-x 0.0 -y -1.0 -z 0.5" />
-        <arg name="namespace" value="robot_3" />
-      </include>
-      <param name="robot_type" value="$(arg robot_type)"/>
-    </group>
+  <!-- Users can add more robots here -->
   </group>
+
+  <!-- Load the visualization tools -->
+  <include file="$(find quad_utils)/launch/quad_visualization.launch">
+    <arg name="live_plot" value="$(arg live_plot)"/>
+    <arg name="dash" value="$(arg dash)"/>
+  </include>
     
-  <!-- Readers can add more robots here -->
-
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find quad_utils)/rviz/example_with_terrain.rviz"/>
-
-  <group if="$(arg live_plot)">
-    <node name="plotjuggler" pkg="plotjuggler" type="plotjuggler" args="--layout $(find quad_utils)/config/plotjuggler_config.xml"/>
-  </group>
-
-  <group if="$(arg dash)">
-    <node name = "rqt_dashboard" pkg = "rqt_gui" type = "rqt_gui" respawn = 
-        "false" output = "screen" args = "--perspective-file $(find quad_utils)/config/dashboard.perspective"/>
-  </group>
 </launch>

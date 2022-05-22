@@ -35,15 +35,7 @@
                 <arg name="namespace" value="$(arg namespace_2)" />
             </include>
         </group>
-        <group ns="$(arg namespace_3)">
-            <include file="$(find quad_utils)/launch/planning.launch">
-                <arg name="global_planner" value="$(arg global_planner)" />
-                <arg name="logging" value="$(arg logging)" />
-                <arg name="leaping" value="$(arg leaping)" />
-                <arg name="ac" value="$(arg ac)" />
-                <arg name="robot_type" value="$(arg robot_type)" />
-                <arg name="namespace" value="$(arg namespace_3)" />
-            </include>
-        </group>
+
+        <!-- Add more robots here -->
     </group>
 </launch>
