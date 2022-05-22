@@ -1,4 +1,4 @@
-# This is a message of motor commands for each leg on quad
+# This is a message of leg commands for each leg on quad. The order is in FL, BL, FR, BR.
 #
 # Accurate timing information is stored in the header
 

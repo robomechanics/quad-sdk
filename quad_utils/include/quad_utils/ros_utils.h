@@ -196,15 +196,16 @@ void interpRobotPlan(quad_msgs::RobotPlan msg, double t,
 quad_msgs::MultiFootState interpMultiFootPlanContinuous(
     quad_msgs::MultiFootPlanContinuous msg, double t);
 
-/**
- * @brief Interpolate data from a robot state trajectory message.
- * @param[in] msg robot state trajectory message
- * @param[in] t Time since beginning of trajectory (will return last state if
- * too large)
- * @return Robot state message
- */
-quad_msgs::RobotState interpRobotStateTraj(quad_msgs::RobotStateTrajectory msg,
-                                           double t);
+// /**
+//  * @brief Interpolate data from a robot state trajectory message.
+//  * @param[in] msg robot state trajectory message
+//  * @param[in] t Time since beginning of trajectory (will return last state if
+//  * too large)
+//  * @return Robot state message
+//  */
+// quad_msgs::RobotState interpRobotStateTraj(quad_msgs::RobotStateTrajectory
+// msg,
+//                                            double t);
 
 /**
  * @brief Perform IK to compute a joint state message corresponding to body and

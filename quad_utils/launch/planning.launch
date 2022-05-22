@@ -14,6 +14,8 @@
     <!-- Launch the node to publish the global body plan -->
     <group if="$(eval arg('global_planner') == 'fgmp')">
         <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen">
+            <remap from="start_state" to="state/ground_truth" />
+            <remap from="goal_state" to="clicked_point" />
             <param name="enable_leaping" value="$(arg leaping)" />
         </node>
         <param name="local_planner/use_twist_input" value="false" />
