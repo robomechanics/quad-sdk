@@ -16,5 +16,6 @@ var searchData=
   ['publishlocalplan_13',['publishLocalPlan',['../classLocalPlanner.html#a87934ca6f6014de81a943b5d192abfcd',1,'LocalPlanner']]],
   ['publishmap_14',['publishMap',['../classTerrainMapPublisher.html#aa11b7631c0f0c3c33f9a118be181a102',1,'TerrainMapPublisher']]],
   ['publishplan_15',['publishPlan',['../classGlobalBodyPlanner.html#a7ef31af306895c311faee09a7023896b',1,'GlobalBodyPlanner']]],
-  ['publishstate_16',['publishState',['../classRobotDriver.html#a7a833e0c4348d0eb2c2a3efd1476c785',1,'RobotDriver']]]
+  ['publishstate_16',['publishState',['../classRobotDriver.html#a7a833e0c4348d0eb2c2a3efd1476c785',1,'RobotDriver']]],
+  ['publishtrajectorystate_17',['publishTrajectoryState',['../classTrajectoryPublisher.html#a28aa782df2b1a7ee0276609e052a3fd7',1,'TrajectoryPublisher']]]
 ];
