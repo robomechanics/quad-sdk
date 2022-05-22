@@ -61,6 +61,7 @@ add_library(quad_utils
   src/rviz_interface.cpp
   src/fast_terrain_map.cpp
   src/terrain_map_publisher.cpp
+  src/trajectory_publisher.cpp
   src/mesh_to_grid_map_converter.cpp
   src/math_utils.cpp
   src/ros_utils.cpp
@@ -82,6 +83,7 @@ TARGET_LINK_LIBRARIES ( quad_utils
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(rviz_interface_node src/rviz_interface_node.cpp)
 add_executable(terrain_map_publisher_node src/terrain_map_publisher_node.cpp)
+add_executable(trajectory_publisher_node src/trajectory_publisher_node.cpp)
 add_executable(mesh_to_grid_map_node src/mesh_to_grid_map_node.cpp)
 add_executable(remote_heartbeat_node src/remote_heartbeat_node.cpp)
 
@@ -92,6 +94,11 @@ target_link_libraries(rviz_interface_node
 )
 
 target_link_libraries(terrain_map_publisher_node
+  quad_utils
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(trajectory_publisher_node
   quad_utils
   ${catkin_LIBRARIES}
 )
