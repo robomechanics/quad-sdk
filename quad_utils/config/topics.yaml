@@ -5,7 +5,8 @@ topics:
   global_plan: global_plan
   global_plan_discrete: global_plan_discrete
   global_plan_tree: global_plan_tree
-  goal_state: clicked_point
+  start_state: start_state
+  goal_state: goal_state
   foot_plan_continuous: foot_plan_continuous
   foot_plan_discrete: foot_plan_discrete
   local_plan: local_plan

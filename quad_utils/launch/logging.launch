@@ -19,6 +19,8 @@
         /$(arg namespace)/control/grfs
         /$(arg namespace)/control/joint_command 
         /$(arg namespace)/control/mode 
+        /$(arg namespace)/foot_plan_continuous
+        /$(arg namespace)/foot_plan_discrete
         /terrain_map" />
 
     <!-- Record timestamped bag in bag dir -->
@@ -35,6 +37,8 @@
         /$(arg namespace)/control/grfs
         /$(arg namespace)/control/joint_command 
         /$(arg namespace)/control/mode 
+        /$(arg namespace)/foot_plan_continuous
+        /$(arg namespace)/foot_plan_discrete
         /terrain_map" />
 
 </launch>
