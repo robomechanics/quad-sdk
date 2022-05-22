@@ -30,11 +30,6 @@ class GraphClass {
   GraphClass();
 
   /**
-   * @brief Destructor for GraphClass
-   */
-  ~GraphClass();
-
-  /**
    * @brief Add a new vertex to the graph along with its state data
    * @param[in] index Index of the new vertex
    * @param[in] s State information corresponding to the specified index

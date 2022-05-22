@@ -28,6 +28,8 @@ if (OpenMP_FOUND)
   add_definitions(-DGRID_MAP_PCL_OPENMP_FOUND=${OpenMP_FOUND})
 endif()
 
+find_package(yaml-cpp REQUIRED)
+
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED 
   COMPONENTS

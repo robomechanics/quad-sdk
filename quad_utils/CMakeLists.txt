@@ -65,7 +65,6 @@ add_library(quad_utils
   src/math_utils.cpp
   src/ros_utils.cpp
   src/quad_kd.cpp
-  src/trajectory_publisher.cpp
   src/remote_heartbeat.cpp
 )
 add_dependencies(quad_utils ${quad_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
@@ -84,7 +83,6 @@ TARGET_LINK_LIBRARIES ( quad_utils
 add_executable(rviz_interface_node src/rviz_interface_node.cpp)
 add_executable(terrain_map_publisher_node src/terrain_map_publisher_node.cpp)
 add_executable(mesh_to_grid_map_node src/mesh_to_grid_map_node.cpp)
-add_executable(trajectory_publisher_node src/trajectory_publisher_node.cpp)
 add_executable(remote_heartbeat_node src/remote_heartbeat_node.cpp)
 
 ## Specify libraries to link a library or executable target against
@@ -99,11 +97,6 @@ target_link_libraries(terrain_map_publisher_node
 )
 
 target_link_libraries(mesh_to_grid_map_node
-  quad_utils
-  ${catkin_LIBRARIES}
-)
-
-target_link_libraries(trajectory_publisher_node
   quad_utils
   ${catkin_LIBRARIES}
 )

@@ -10,9 +10,9 @@
 #include <grid_map_ros/GridMapRosConverter.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
 
+#include "global_body_planner/fast_global_motion_planner.h"
 #include "global_body_planner/planner_class.h"
 #include "global_body_planner/planning_utils.h"
-#include "global_body_planner/rrt_connect.h"
 
 //! A test fixture for the global body planning class
 /*!
@@ -28,7 +28,7 @@ class GlobalBodyPlannerTestFixture : public ::testing::Test {
    * @brief Constructor for GlobalBodyPlannerTestFixture Class
    * @return Constructed object of type GlobalBodyPlannerTestFixture
    */
-  GlobalBodyPlannerTestFixture() : planner_(FORWARD) {
+  GlobalBodyPlannerTestFixture() {
     grid_map::GridMap map({"z_inpainted", "z_smooth", "normal_vectors_x",
                            "normal_vectors_y", "normal_vectors_z",
                            "smooth_normal_vectors_x", "smooth_normal_vectors_y",
@@ -42,6 +42,7 @@ class GlobalBodyPlannerTestFixture : public ::testing::Test {
     // Create planner and configuration
     ros::NodeHandle nh;
     planner_config_.loadParamsFromServer(nh);
+    planner_ = std::make_shared<PlannerClass>(FORWARD, planner_config_);
   }
 
   /**
@@ -104,7 +105,7 @@ class GlobalBodyPlannerTestFixture : public ::testing::Test {
   }
 
   /// Planner class
-  PlannerClass planner_;
+  std::shared_ptr<PlannerClass> planner_;
 
   /// Planner configuration
   PlannerConfig planner_config_;
