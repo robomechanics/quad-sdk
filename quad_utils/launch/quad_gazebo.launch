@@ -80,7 +80,7 @@ SOFTWARE.
     <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit_rotors.sdf" />
   </group>
   <group unless="$(arg rotors)">
-    <!-- use more accurate but slower rotor model -->
+    <!-- use faster but less accurate model ignoring rotors and their inertia -->
     <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
   </group>
 

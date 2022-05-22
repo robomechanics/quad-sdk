@@ -12,3 +12,4 @@ quad_msgs/GRFArray[] grfs
 uint32[] plan_indices
 uint32[] primitive_ids
 float64 compute_time
+quad_msgs/RobotPlanDiagnostics diagnostics

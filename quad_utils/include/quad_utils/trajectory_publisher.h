@@ -39,7 +39,7 @@ class TrajectoryPublisher {
 
  private:
   /**
-   * @brief Import trajectory from external source
+   * @brief Import trajectory from external source (user implemented)
    */
   void importTrajectory();
 
@@ -66,9 +66,6 @@ class TrajectoryPublisher {
 
   /// Vector of body states to store the body plan
   quad_msgs::RobotPlan body_plan_msg_;
-
-  /// Message for robot trajectory
-  quad_msgs::RobotStateTrajectory traj_msg_;
 
   /// Robot state message
   quad_msgs::RobotState::ConstPtr robot_state_msg_;

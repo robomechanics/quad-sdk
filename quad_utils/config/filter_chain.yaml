@@ -88,7 +88,7 @@ grid_map_filters:
     params:
       input_layer: traversability_hole_mask
       output_layer: traversability_hole_mask_filtered
-      radius: 0.175
+      radius: 0.075
 
     # Set lower threshold on traversability hole mask.
   - name: traversability_hole_mask_lower_threshold
@@ -104,8 +104,9 @@ grid_map_filters:
     type: gridMapFilters/MathExpressionFilter
     params:
       output_layer: traversability
-      expression: 0 * (1.0 - (slope / 0.3)) + 1.0 * (1.0 - (roughness / 0.4))
-
+      expression: ( 0.5 * (1.0 - (roughness / 0.1)) +
+                    0.5 * (1.0 - (slope / 0.4) ) )
+                    
   # Set lower threshold on traversability.
   - name: traversability_lower_threshold
     type: gridMapFilters/ThresholdFilter
@@ -150,5 +151,5 @@ grid_map_filters:
     params:
       condition_layer: traversability_mask
       output_layer: traversability_mask
-      lower_threshold: 0.6 # Note - for now must match /local_footstep_planner/foothold_obj_threshold
+      lower_threshold: 0.5 # Note - for now must match /local_footstep_planner/foothold_obj_threshold
       set_to: 0.0
