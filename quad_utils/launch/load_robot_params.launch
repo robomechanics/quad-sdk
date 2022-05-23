@@ -1,7 +1,7 @@
 <launch>
     <arg name="robot_type" default="spirit"/>
 
-    <rosparam command="load" file="$(find quad_utils)/config/topics.yaml" />
+    <rosparam command="load" file="$(find quad_utils)/config/topics_robot.yaml" />
     <param name="enable_statistics" type="bool" value="true" />
 
     <group if="$(eval arg('robot_type') == 'spirit')">

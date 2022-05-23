@@ -1,7 +1,4 @@
 topics:
-  mocap: /mocap_node/quad/pose
-  terrain_map: /terrain_map
-  terrain_map_raw: /terrain_map_raw
   global_plan: global_plan
   global_plan_discrete: global_plan_discrete
   global_plan_tree: global_plan_tree
@@ -32,7 +29,6 @@ topics:
     single_joint_command: control/single_joint_command
   cmd_vel: cmd_vel
   heartbeat:
-    remote: heartbeat/remote
     robot: heartbeat/robot
   visualization:
     global_plan: visualization/global_plan
