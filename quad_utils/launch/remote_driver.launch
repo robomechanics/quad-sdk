@@ -1,10 +1,8 @@
 <launch>
 
-    <include file="$(find quad_utils)/launch/load_params.launch" />
+    <include file="$(find quad_utils)/launch/load_global_params.launch" />
 
-    <arg name="controller" default="inverse_dynamics" />
     <arg name="logging" default="false" />
-    <arg name="plan" default="false" />
     <arg name="live_plot" default="false" />
     <arg name="dash" default="false" />
     <arg name="map_input_type" default="mesh" />
@@ -16,16 +14,10 @@
         <arg name="world" value="$(arg world)" />
     </include>
 
-    <include file="$(find quad_utils)/launch/visualization.launch">
+    <include file="$(find quad_utils)/launch/quad_visualization.launch">
         <arg name="live_plot" value="$(arg live_plot)" />
         <arg name="dash" value="$(arg dash)" />
     </include>
-
-    <group if="$(arg plan)">
-        <include file="$(find quad_utils)/launch/execute_plan.launch">
-            <arg name="logging" value="$(arg logging)" />
-        </include>
-    </group>
 
     <group if="$(arg logging)">
         <include file="$(find quad_utils)/launch/logging.launch" />

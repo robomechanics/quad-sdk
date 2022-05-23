@@ -34,6 +34,19 @@ class QuadKD {
   QuadKD();
 
   /**
+   * @brief Constructor for QuadKD Class
+   * @param[in] ns Namespace
+   * @return Constructed object of type QuadKD
+   */
+  QuadKD(std::string ns);
+
+  /**
+   * @brief Initialize model for the class
+   * @param[in] ns Namespace
+   */
+  void initModel(std::string ns);
+
+  /**
    * @brief Create an Eigen Eigen::Matrix4d containing a homogeneous transform
    * from a specified translation and a roll, pitch, and yaw vector
    * @param[in] trans Translation from input frame to output frame

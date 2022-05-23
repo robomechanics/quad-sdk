@@ -1,0 +1,77 @@
+global_body_planner:
+  h_max: 0.375                            # Maximum height of leg base, m
+  h_min: 0.075                            # Minimum ground clearance of body corners, m
+  h_nom: 0.25                             # Nominal ground clearance of body, m
+  v_max: 2.0                              # Maximum robot velocity, m/s
+  v_nom: 0.75                             # Nominal velocity, m/s (used during connect function)
+  robot_l: 0.3                            # Length of robot body, m
+  robot_w: 0.3                            # Width of robot body, m
+  robot_h: 0.05                           # Vertical distance between leg base and bottom of robot, m
+  mass: 13.7                              # Robot mass, kg
+  grf_min: 4.0                            # Minimum GRF in units of body weight (only used for sampling)
+  grf_max: 5.0                            # Maximum GRF in units of body weight
+
+local_footstep_planner:
+  hip_clearance: 0.1
+  foothold_search_radius: 0.25
+
+nmpc_controller:
+  body:
+    x_dim: 12
+    u_dim: 12
+    g_dim: 28
+    x_weights: [5.0, 5.0, 5.0, 0.5, 0.5, 0.5, 0.1, 0.1, 0.2, 0.05, 0.05, 0.01]
+    u_weights: [!!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5]
+    x_lb: [!!float -2e19, !!float -2e19, 0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    x_ub: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+    x_lb_soft: [!!float -2e19, !!float -2e19, 0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    x_ub_soft: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+    u_lb: [!!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10, !!float -2e19, !!float -2e19, 10]
+    u_ub: [!!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150, !!float 2e19, !!float 2e19, 150]
+    g_lb: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    g_ub: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  feet:
+    x_dim: 24
+    u_dim: 24
+    g_dim: 28
+    x_weights: [7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111]
+    u_weights: [!!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5]
+    x_lb: [!!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    x_ub: [!!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+    x_lb_soft: [!!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    x_ub_soft: [!!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+    u_lb: [-99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9, -99.9]
+    u_ub: [99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9, 99.9]
+    g_lb: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19]
+    g_ub: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+  joints:
+    x_dim: 24
+    u_dim: 0
+    g_dim: 52
+    x_weights: []
+    u_weights: []
+    x_lb: [-0.707, -1.57, 0.001, -0.707, -1.57, 0.001, -0.707, -1.57, 0.001, -0.707, -1.57, 0.001, -37.71, -37.71, -25.11,-37.71, -37.71, -25.11,-37.71, -37.71, -25.11,-37.71, -37.71, -25.11]
+    x_ub: [ 0.707,  3.14,  3.14,  0.707,  3.14,  3.14,  0.707,  3.14,  3.14,  0.707,  3.14,  3.14,  37.71,  37.71,  25.11, 37.71,  37.71,  25.11, 37.71,  37.71,  25.11, 37.71,  37.71,  25.11]
+    x_lb_soft: [  -0.5, -1.57,   0.2,   -0.5, -1.57,   0.2,   -0.5, -1.57,   0.2,   -0.5, -1.57,   0.2, -35.0, -35.0, -24.0,-35.0, -35.0, -24.0,-35.0, -35.0, -24.0,-35.0, -35.0, -24.0]
+    x_ub_soft: [   0.5,  3.14,   2.8,    0.5,  3.14,   2.8,    0.5,  3.14,   2.8,    0.5,  3.14,   2.8,  35.0,  35.0,  24.0, 35.0,  35.0,  24.0, 35.0,  35.0,  24.0, 35.0,  35.0,  24.0]
+    u_lb: []
+    u_ub: []
+    g_lb: [!!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+    g_ub: [!!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, !!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19, !!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19,  !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+    
+robot_driver:
+  sit_kp: [10, 10, 10]
+  sit_kd: [1, 1, 1]
+  stand_kp: [35, 35, 35]
+  stand_kd: [1, 1, 1]
+  stance_kp: [10, 10, 10]
+  stance_kd: [1, 1, 1]
+  swing_kp: [10, 10, 10]
+  swing_kd: [1, 1, 1]
+  swing_kp_cart: [0, 0, 0] # N/m
+  swing_kd_cart: [0, 0, 0] # N/m
+  safety_kp: [0, 0, 0]
+  safety_kd: [2, 2, 2]
+  stand_joint_angles: [0.0, 0.76, 1.52]
+  sit_joint_angles: [0.0, 0.2, 0.2]
+  torque_limit: [33.5, 33.5, 33.5]
