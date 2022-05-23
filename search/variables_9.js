@@ -9,5 +9,6 @@ var searchData=
   ['joint_5fnames_5f_6',['joint_names_',['../classSpiritInterface.html#a95a65eacf059977d430ca905a309a70a',1,'SpiritInterface']]],
   ['joint_5fstate_5fmsg_5ftime_5fdiff_5fmax_5f_7',['joint_state_msg_time_diff_max_',['../classEKFEstimator.html#aa78129153d7bcc537c5813693d35c4f7',1,'EKFEstimator']]],
   ['joint_5fstate_5fpub_5f_8',['joint_state_pub_',['../classRobotDriver.html#a1e0e334f25d0d2c171d370f9b50da985',1,'RobotDriver']]],
-  ['joint_5ftorque_5f_9',['joint_torque_',['../classJointController.html#a2174736c91bede614e9aaca242937000',1,'JointController']]]
+  ['joint_5ftorque_5f_9',['joint_torque_',['../classJointController.html#a2174736c91bede614e9aaca242937000',1,'JointController']]],
+  ['joint_5furdfs_5f_10',['joint_urdfs_',['../classeffort__controllers_1_1QuadController.html#a347e053197665e93c885e67947cda6da',1,'effort_controllers::QuadController']]]
 ];

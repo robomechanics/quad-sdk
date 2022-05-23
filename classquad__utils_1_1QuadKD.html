@@ -84,6 +84,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad5c66251f82944d751e8d3905f7c66ac"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#ad5c66251f82944d751e8d3905f7c66ac">QuadKD</a> ()</td></tr>
 <tr class="memdesc:ad5c66251f82944d751e8d3905f7c66ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classquad__utils_1_1QuadKD.html" title="A lightweight library for quad kinematic functions.">QuadKD</a> Class.  <a href="classquad__utils_1_1QuadKD.html#ad5c66251f82944d751e8d3905f7c66ac">More...</a><br /></td></tr>
 <tr class="separator:ad5c66251f82944d751e8d3905f7c66ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac20994088e9df02705833f89ff8063ad"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#ac20994088e9df02705833f89ff8063ad">QuadKD</a> (std::string ns)</td></tr>
+<tr class="memdesc:ac20994088e9df02705833f89ff8063ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classquad__utils_1_1QuadKD.html" title="A lightweight library for quad kinematic functions.">QuadKD</a> Class.  <a href="classquad__utils_1_1QuadKD.html#ac20994088e9df02705833f89ff8063ad">More...</a><br /></td></tr>
+<tr class="separator:ac20994088e9df02705833f89ff8063ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38e68008eefbf50ae88960c5611b9185"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a38e68008eefbf50ae88960c5611b9185">initModel</a> (std::string ns)</td></tr>
+<tr class="memdesc:a38e68008eefbf50ae88960c5611b9185"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize model for the class.  <a href="classquad__utils_1_1QuadKD.html#a38e68008eefbf50ae88960c5611b9185">More...</a><br /></td></tr>
+<tr class="separator:a38e68008eefbf50ae88960c5611b9185"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a947969ec117052e19a7c415447c0137d"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix4d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a947969ec117052e19a7c415447c0137d">createAffineMatrix</a> (Eigen::Vector3d trans, Eigen::Vector3d rpy) const</td></tr>
 <tr class="memdesc:a947969ec117052e19a7c415447c0137d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an Eigen Eigen::Matrix4d containing a homogeneous transform from a specified translation and a roll, pitch, and yaw vector.  <a href="classquad__utils_1_1QuadKD.html#a947969ec117052e19a7c415447c0137d">More...</a><br /></td></tr>
 <tr class="separator:a947969ec117052e19a7c415447c0137d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -273,7 +279,7 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 <p >This library includes several functions and classes to aid in quad kinematic calculations. It relies on Eigen, as well as some MATLAB codegen for more complicated computations that would be a pain to write out by hand. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ad5c66251f82944d751e8d3905f7c66ac" name="ad5c66251f82944d751e8d3905f7c66ac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad5c66251f82944d751e8d3905f7c66ac">&#9670;&nbsp;</a></span>QuadKD()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5c66251f82944d751e8d3905f7c66ac">&#9670;&nbsp;</a></span>QuadKD() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -288,6 +294,33 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 </div><div class="memdoc">
 
 <p>Constructor for <a class="el" href="classquad__utils_1_1QuadKD.html" title="A lightweight library for quad kinematic functions.">QuadKD</a> Class. </p>
+<dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classquad__utils_1_1QuadKD.html" title="A lightweight library for quad kinematic functions.">QuadKD</a> </dd></dl>
+
+</div>
+</div>
+<a id="ac20994088e9df02705833f89ff8063ad" name="ac20994088e9df02705833f89ff8063ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac20994088e9df02705833f89ff8063ad">&#9670;&nbsp;</a></span>QuadKD() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QuadKD::QuadKD </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>ns</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor for <a class="el" href="classquad__utils_1_1QuadKD.html" title="A lightweight library for quad kinematic functions.">QuadKD</a> Class. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">ns</td><td>Namespace </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classquad__utils_1_1QuadKD.html" title="A lightweight library for quad kinematic functions.">QuadKD</a> </dd></dl>
 
 </div>
@@ -934,6 +967,32 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">rpy</td><td>Roll pitch and yaw </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">rot</td><td>Rotation matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a38e68008eefbf50ae88960c5611b9185" name="a38e68008eefbf50ae88960c5611b9185"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38e68008eefbf50ae88960c5611b9185">&#9670;&nbsp;</a></span>initModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void QuadKD::initModel </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>ns</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initialize model for the class. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">ns</td><td>Namespace </td></tr>
   </table>
   </dd>
 </dl>
@@ -1707,9 +1766,9 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 <div class="line">       <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a34e534cbe16d008e3457b945873f7ad0">abad_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#ad302838c429a708497f5d25c47f9493e">hip_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3e16db7d17eef8f9786cea5d6025594f">knee_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a34e534cbe16d008e3457b945873f7ad0">abad_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#ad302838c429a708497f5d25c47f9493e">hip_tau_max_</a>,</div>
 <div class="line">       <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3e16db7d17eef8f9786cea5d6025594f">knee_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a34e534cbe16d008e3457b945873f7ad0">abad_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#ad302838c429a708497f5d25c47f9493e">hip_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3e16db7d17eef8f9786cea5d6025594f">knee_tau_max_</a>)</div>
 <div class="line">          .finished()</div>
-<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a34e534cbe16d008e3457b945873f7ad0"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a34e534cbe16d008e3457b945873f7ad0">quad_utils::QuadKD::abad_tau_max_</a></div><div class="ttdeci">const double abad_tau_max_</div><div class="ttdoc">Abad max joint torque.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:409</div></div>
-<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a3e16db7d17eef8f9786cea5d6025594f"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a3e16db7d17eef8f9786cea5d6025594f">quad_utils::QuadKD::knee_tau_max_</a></div><div class="ttdeci">const double knee_tau_max_</div><div class="ttdoc">Knee max joint torque.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:415</div></div>
-<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_ad302838c429a708497f5d25c47f9493e"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#ad302838c429a708497f5d25c47f9493e">quad_utils::QuadKD::hip_tau_max_</a></div><div class="ttdeci">const double hip_tau_max_</div><div class="ttdoc">Hip max joint torque.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:412</div></div>
+<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a34e534cbe16d008e3457b945873f7ad0"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a34e534cbe16d008e3457b945873f7ad0">quad_utils::QuadKD::abad_tau_max_</a></div><div class="ttdeci">const double abad_tau_max_</div><div class="ttdoc">Abad max joint torque.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:422</div></div>
+<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a3e16db7d17eef8f9786cea5d6025594f"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a3e16db7d17eef8f9786cea5d6025594f">quad_utils::QuadKD::knee_tau_max_</a></div><div class="ttdeci">const double knee_tau_max_</div><div class="ttdoc">Knee max joint torque.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:428</div></div>
+<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_ad302838c429a708497f5d25c47f9493e"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#ad302838c429a708497f5d25c47f9493e">quad_utils::QuadKD::hip_tau_max_</a></div><div class="ttdeci">const double hip_tau_max_</div><div class="ttdoc">Hip max joint torque.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:425</div></div>
 </div><!-- fragment -->
 <p>Vector of max torques. </p>
 
@@ -1739,9 +1798,9 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 <div class="line">       <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a06695c0f41d2e7b1f3e4f92160fd4025">abad_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3385b3dde1c8170a13aaebf9843cad38">hip_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a0eac88443f37caafd816d2c13cf6f694">knee_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a06695c0f41d2e7b1f3e4f92160fd4025">abad_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3385b3dde1c8170a13aaebf9843cad38">hip_vel_max_</a>,</div>
 <div class="line">       <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a0eac88443f37caafd816d2c13cf6f694">knee_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a06695c0f41d2e7b1f3e4f92160fd4025">abad_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3385b3dde1c8170a13aaebf9843cad38">hip_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a0eac88443f37caafd816d2c13cf6f694">knee_vel_max_</a>)</div>
 <div class="line">          .finished()</div>
-<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a06695c0f41d2e7b1f3e4f92160fd4025"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a06695c0f41d2e7b1f3e4f92160fd4025">quad_utils::QuadKD::abad_vel_max_</a></div><div class="ttdeci">const double abad_vel_max_</div><div class="ttdoc">Abad max joint velocity.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:425</div></div>
-<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a0eac88443f37caafd816d2c13cf6f694"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a0eac88443f37caafd816d2c13cf6f694">quad_utils::QuadKD::knee_vel_max_</a></div><div class="ttdeci">const double knee_vel_max_</div><div class="ttdoc">Knee max joint velocity.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:431</div></div>
-<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a3385b3dde1c8170a13aaebf9843cad38"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a3385b3dde1c8170a13aaebf9843cad38">quad_utils::QuadKD::hip_vel_max_</a></div><div class="ttdeci">const double hip_vel_max_</div><div class="ttdoc">Hip max joint velocity.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:428</div></div>
+<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a06695c0f41d2e7b1f3e4f92160fd4025"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a06695c0f41d2e7b1f3e4f92160fd4025">quad_utils::QuadKD::abad_vel_max_</a></div><div class="ttdeci">const double abad_vel_max_</div><div class="ttdoc">Abad max joint velocity.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:438</div></div>
+<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a0eac88443f37caafd816d2c13cf6f694"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a0eac88443f37caafd816d2c13cf6f694">quad_utils::QuadKD::knee_vel_max_</a></div><div class="ttdeci">const double knee_vel_max_</div><div class="ttdoc">Knee max joint velocity.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:444</div></div>
+<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a3385b3dde1c8170a13aaebf9843cad38"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a3385b3dde1c8170a13aaebf9843cad38">quad_utils::QuadKD::hip_vel_max_</a></div><div class="ttdeci">const double hip_vel_max_</div><div class="ttdoc">Hip max joint velocity.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:441</div></div>
 </div><!-- fragment -->
 <p>Vector of max velocities. </p>
 
