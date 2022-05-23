@@ -72,7 +72,7 @@ Visualization Manager:
       Class: rviz_imu_plugin/Imu
       Enabled: true
       Name: Imu
-      Topic: /spirit/imu
+      Topic: spirit/imu
       Unreliable: false
       Value: true
       fixed_frame_orientation: true
@@ -277,14 +277,14 @@ Visualization Manager:
     - Class: rviz/Measure
     - Class: rviz/SetInitialPose
       Theta std deviation: 0.2617993950843811
-      Topic: /initialpose
+      Topic: initialpose
       X std deviation: 0.5
       Y std deviation: 0.5
     - Class: rviz/SetGoal
-      Topic: /move_base_simple/goal
+      Topic: move_base_simple/goal
     - Class: rviz/PublishPoint
       Single click: true
-      Topic: /clicked_point
+      Topic: clicked_point
   Value: true
   Views:
     Current:
