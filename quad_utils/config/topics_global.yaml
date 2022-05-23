@@ -1,5 +1,4 @@
 topics:
-  mocap: /mocap_node/quad/pose
   terrain_map: /terrain_map
   terrain_map_raw: /terrain_map_raw
   heartbeat:
