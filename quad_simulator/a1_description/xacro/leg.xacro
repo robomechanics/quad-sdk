@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:include filename="$(find a1_description)/xacro/transmission.xacro"/>
+
+    <xacro:macro name="leg" params="suffix mirror mirror_dae front_hind front_hind_dae 
+                                hipJointName kneeJointName abductionJointName *origin">
+
+        <link name="hip${suffix}">
+            <visual name="hip${suffix}_visual">
+                <xacro:if value="${(mirror_dae == True) and (front_hind_dae == True)}">
+                    <origin rpy="0 0 0" xyz="0 0 0"/>
+                </xacro:if>
+                <xacro:if value="${(mirror_dae == False) and (front_hind_dae == True)}">
+                    <origin rpy="${PI} 0 0" xyz="0 0 0"/>
+                </xacro:if>
+                <xacro:if value="${(mirror_dae == True) and (front_hind_dae == False)}">
+                    <origin rpy="0 ${PI} 0" xyz="0 0 0"/>
+                </xacro:if>
+                <xacro:if value="${(mirror_dae == False) and (front_hind_dae == False)}">
+                    <origin rpy="${PI} ${PI} 0" xyz="0 0 0"/>
+                </xacro:if>
+                <geometry>
+                    <mesh filename="package://a1_description/meshes/hip.dae" scale="1 1 1"/>
+                </geometry>
+                <material name="orange"/>
+            </visual>
+            <collision name="hip${suffix}_collision">
+                <origin rpy="${PI/2.0} 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <cylinder length="${hip_length}" radius="${hip_radius}"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <origin rpy="0 0 0" xyz="${hip_com_x*front_hind} ${hip_com_y*mirror} ${hip_com_z}"/>
+                <mass value="${hip_mass}"/>
+                <inertia ixx="${hip_ixx}" ixy="${hip_ixy*mirror*front_hind}" ixz="${hip_ixz*front_hind}" iyy="${hip_iyy}" iyz="${hip_iyz*mirror}" izz="${hip_izz}"/>
+            </inertial>
+        </link>
+
+        <joint name="${abductionJointName}" type="revolute">
+            <xacro:insert_block name="origin"/>
+            <parent link="trunk"/>
+            <child link="hip${suffix}"/>
+            <axis xyz="1 0 0"/>
+            <dynamics damping="${damping}" friction="${friction}"/>
+            <xacro:if value="${(mirror_dae == True)}">
+                <limit effort="${hip_torque_max}" velocity="${hip_velocity_max}" lower="${hip_min*PI/180.0}" upper="${hip_max*PI/180.0}"/>
+            </xacro:if>
+            <xacro:if value="${(mirror_dae == False)}">
+                <limit effort="${hip_torque_max}" velocity="${hip_velocity_max}" lower="${-hip_max*PI/180.0}" upper="${-hip_min*PI/180.0}"/>
+            </xacro:if>
+        </joint>
+
+        <!-- this link is only for collision -->
+        <link name="thigh_shoulder${suffix}">
+            <collision>
+                <origin rpy="${PI/2.0} 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <cylinder length="${thigh_shoulder_length}" radius="${thigh_shoulder_radius}"/>
+                </geometry>
+            </collision>
+        </link>
+
+        <joint name="hip${suffix}_fixed" type="fixed">
+            <origin rpy="0 0 0" xyz="0 ${(thigh_shoulder_length/2.0+hip_offset)*mirror} 0"/>
+            <parent link="hip${suffix}"/>
+            <child link="thigh_shoulder${suffix}"/>
+        </joint>
+
+        <link name="upper${suffix}">
+            <visual name="upper${suffix}_visual">
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <xacro:if value="${mirror_dae == True}">
+                        <mesh filename="package://a1_description/meshes/thigh.dae" scale="1 1 1"/>
+                    </xacro:if>
+                    <xacro:if value="${mirror_dae == False}">
+                        <mesh filename="package://a1_description/meshes/thigh_mirror.dae" scale="1 1 1"/>
+                    </xacro:if>
+                </geometry>
+                <material name="orange"/>
+            </visual>
+            <collision name="upper${suffix}_collision">
+                <origin rpy="0 ${PI/2.0} 0" xyz="0 0 ${-thigh_length/2.0}"/>
+                <geometry>
+                    <box size="${thigh_length} ${thigh_width} ${thigh_height}"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <origin rpy="0 0 0" xyz="${thigh_com_x} ${thigh_com_y*mirror} ${thigh_com_z}"/>
+                <mass value="${thigh_mass}"/>
+                <inertia ixx="${thigh_ixx}" ixy="${thigh_ixy*mirror}" ixz="${thigh_ixz}" iyy="${thigh_iyy}" iyz="${thigh_iyz*mirror}" izz="${thigh_izz}"/>
+            </inertial>
+        </link>
+
+        <joint name="${hipJointName}" type="revolute">
+            <origin rpy="0 ${PI/2.0} 0" xyz="0 ${thigh_offset*mirror} 0"/>
+            <parent link="hip${suffix}"/>
+            <child link="upper${suffix}"/>
+            <axis xyz="0 -1 0"/>
+            <dynamics damping="${damping}" friction="${friction}"/>
+            <limit effort="${thigh_torque_max}" velocity="${thigh_velocity_max}" lower="${thigh_min*PI/180.0}" upper="${thigh_max*PI/180.0}"/>
+        </joint>
+
+        <link name="lower${suffix}">
+            <visual name="lower${suffix}_visual">
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://a1_description/meshes/calf.dae" scale="1 1 1"/>
+                </geometry>
+                <material name="orange"/>
+            </visual>
+            <collision name="lower${suffix}_collision">
+                <origin rpy="0 ${PI/2.0} 0" xyz="0 0 ${-calf_length/2.0}"/>
+                <geometry>
+                    <box size="${calf_length} ${calf_width} ${calf_height}"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <origin rpy="0 0 0" xyz="${calf_com_x} ${calf_com_y} ${calf_com_z}"/>
+                <mass value="${calf_mass}"/>
+                <inertia ixx="${calf_ixx}" ixy="${calf_ixy}" ixz="${calf_ixz}" iyy="${calf_iyy}" iyz="${calf_iyz}" izz="${calf_izz}"/>
+            </inertial>
+        </link>
+
+        <joint name="${kneeJointName}" type="revolute">
+            <origin rpy="0 ${-PI} 0" xyz="0 0 ${-thigh_length}"/>
+            <parent link="upper${suffix}"/>
+            <child link="lower${suffix}"/>
+            <axis xyz="0 1 0"/>
+            <dynamics damping="${damping}" friction="${friction}"/>
+            <limit effort="${calf_torque_max}" velocity="${calf_velocity_max}" lower="${calf_min*PI/180.0}" upper="${calf_max*PI/180.0}"/>
+        </joint>
+
+        <link name="toe${suffix}">
+            <visual name="toe${suffix}_visual">
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <sphere radius="${foot_radius-0.01}"/>
+                </geometry>
+                <material name="orange"/>
+            </visual>
+            <collision name="toe${suffix}_collision">
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <sphere radius="${foot_radius}"/>
+                </geometry>
+                <surface>
+                <bounce>
+                    <restitution_coefficient>0</restitution_coefficient>
+                    <threshold>1e+06</threshold>
+                </bounce>
+                <friction>
+                    <ode>
+                        <mu>${toe_friction}</mu>
+                        <mu2>${toe_lateral_friction}</mu2>
+                    </ode>
+                    <bullet>
+                        <rolling_friction>0.3</rolling_friction>
+                        <friction2>50</friction2>
+                    </bullet>
+                </friction>
+                <contact>
+                    <ode>
+                        <kp>${toe_stiffness}</kp>
+                        <kd>${toe_damping}</kd>
+                    </ode>
+                    <bullet>
+                        <kp>${toe_stiffness}</kp>
+                        <kd>${toe_damping}</kd>
+                        <split_impulse>1</split_impulse>
+                        <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+                    </bullet>
+                </contact>
+            </surface>
+            </collision>
+            <inertial>
+                <mass value="${foot_mass}"/>
+                <inertia ixx="${(2*foot_mass)/5.0*(foot_radius*foot_radius)}" ixy="0.0" ixz="0.0" iyy="${(2*foot_mass)/5.0*(foot_radius*foot_radius)}" iyz="0.0" izz="${(2*foot_mass)/5.0*(foot_radius*foot_radius)}"/>
+            </inertial>
+        </link>
+
+        <joint name="jtoe${suffix}" type="fixed">
+            <origin rpy="0 0 0" xyz="0 0 ${-(calf_length)}"/>
+            <parent link="lower${suffix}"/>
+            <child link="toe${suffix}"/>
+        </joint>
+
+        <xacro:leg_transmission  hipJointName="${hipJointName}" kneeJointName="${kneeJointName}" abductionJointName="${abductionJointName}"/>
+    </xacro:macro>
+</robot>

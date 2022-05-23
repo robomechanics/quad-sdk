@@ -21,6 +21,7 @@ set(CATKIN_PACKAGE_DEPENDENCIES
   roscpp
 )
 
+find_package(yaml-cpp REQUIRED)
 find_package(OpenMP QUIET)
 if (OpenMP_FOUND)
   add_compile_options("${OpenMP_CXX_FLAGS}")

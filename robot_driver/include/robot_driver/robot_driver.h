@@ -181,9 +181,6 @@ class RobotDriver {
   /// Boolean for whether robot layer is hardware (else sim)
   bool is_hardware_;
 
-  /// Robot name
-  std::string robot_name_;
-
   /// Controller type
   std::string controller_id_;
 
@@ -200,7 +197,7 @@ class RobotDriver {
   int control_mode_;
 
   /// Torque limits
-  Eigen::Vector3d torque_limits_;
+  std::vector<double> torque_limits_;
 
   /// Define ids for control modes: Sit
   const int SIT = 0;

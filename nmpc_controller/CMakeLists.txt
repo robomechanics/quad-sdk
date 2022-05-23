@@ -49,12 +49,12 @@ link_directories(/usr/local/lib)
 
 ## Declare a C++ library for control
 add_library(nmpc_controller
-  src/gen/eval_g_leg.cpp
-  src/gen/eval_jac_g_leg.cpp
-  src/gen/eval_hess_g_leg.cpp
-  src/gen/eval_g_tail.cpp
-  src/gen/eval_jac_g_tail.cpp
-  src/gen/eval_hess_g_tail.cpp
+  src/gen/eval_g_spirit.cpp
+  src/gen/eval_jac_g_spirit.cpp
+  src/gen/eval_hess_g_spirit.cpp
+  src/gen/eval_g_a1.cpp
+  src/gen/eval_jac_g_a1.cpp
+  src/gen/eval_hess_g_a1.cpp
   src/gen/eval_g_leg_simple.cpp
   src/gen/eval_jac_g_leg_simple.cpp
   src/gen/eval_hess_g_leg_simple.cpp
@@ -70,7 +70,7 @@ add_library(nmpc_controller
   src/quad_nlp_utils.cpp
   src/quad_nlp.cpp
   src/quad_nlp_utils.cpp
-  src/nmpc_controller.cpp
+  src/nmpc_controller.cpp 
 )
 target_link_libraries(nmpc_controller 
   Eigen3::Eigen 

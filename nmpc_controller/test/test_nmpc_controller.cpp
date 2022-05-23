@@ -6,13 +6,15 @@
 #include "nmpc_controller/nmpc_controller.h"
 
 TEST(NMPCTest, testNMPCController) {
+  ros::NodeHandle nh;
+  const int robot_id_ = 0;
   int N_;
   double dt_;
   ros::param::get("/local_planner/horizon_length", N_);
   ros::param::get("/local_planner/timestep", dt_);
 
   std::shared_ptr<NMPCController> leg_planner_ =
-      std::make_shared<NMPCController>();
+      std::make_shared<NMPCController>(nh, robot_id_);
 
   Eigen::MatrixXd ref_body_plan_(N_, 12);
   ref_body_plan_.fill(0);

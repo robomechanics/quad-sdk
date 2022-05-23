@@ -44,41 +44,41 @@ class RVizInterface {
    * @brief Callback function to handle new body plan data
    * @param[in] msg plan message contining interpolated output of body planner
    */
-  void robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg,
+  void robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg,
                          const int pub_id);
 
   /**
    * @brief Callback function to handle new grf data
    * @param[in] msg plan message contining interpolated output of body planner
    */
-  void grfCallback(const quad_msgs::GRFArray::ConstPtr& msg);
+  void grfCallback(const quad_msgs::GRFArray::ConstPtr &msg);
 
   /**
    * @brief Callback function to handle new body plan discrete state data
    * @param[in] msg plan message contining discrete output of body planner
    */
-  void discreteBodyPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg);
+  void discreteBodyPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg);
 
   /**
    * @brief Callback function to handle new discrete foot plan data
    * @param[in] Footstep plan message containing output of footstep planner
    */
   void footPlanDiscreteCallback(
-      const quad_msgs::MultiFootPlanDiscrete::ConstPtr& msg);
+      const quad_msgs::MultiFootPlanDiscrete::ConstPtr &msg);
 
   /**
    * @brief Callback function to handle new continous foot plan data
    * @param[in] SwingLegPlan message containing output of swing leg planner
    */
   void footPlanContinuousCallback(
-      const quad_msgs::MultiFootPlanContinuous::ConstPtr& msg);
+      const quad_msgs::MultiFootPlanContinuous::ConstPtr &msg);
 
   /**
    * @brief Callback function to handle new state estimate data
    * @param[in] msg RobotState message containing output of the state estimator
    * node
    */
-  void stateEstimateCallback(const quad_msgs::RobotState::ConstPtr& msg);
+  void stateEstimateCallback(const quad_msgs::RobotState::ConstPtr &msg);
 
   /**
    * @brief Callback function to handle new robot state data
@@ -86,7 +86,7 @@ class RVizInterface {
    * node
    * @param[in] pub_id Identifier of which publisher to use to handle this data
    */
-  void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg,
+  void robotStateCallback(const quad_msgs::RobotState::ConstPtr &msg,
                           const int pub_id);
 
   /// ROS subscriber for the global plan
@@ -206,6 +206,9 @@ class RVizInterface {
 
   /// Handle for the map frame
   std::string map_frame_;
+
+  /// Handle multiple robots
+  std::string tf_prefix_;
 
   /// Colors
   std::vector<int> front_left_color_;

@@ -1,22 +1,25 @@
 #include "robot_driver/robot_driver.h"
 
-RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
+RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   nh_ = nh;
   argc_ = argc;
   argv_ = argv;
 
   // Load rosparams from parameter server
-  std::string imu_topic, joint_state_topic, grf_topic, robot_state_topic,
-      trajectory_state_topic, local_plan_topic, leg_command_array_topic,
-      control_mode_topic, remote_heartbeat_topic, robot_heartbeat_topic,
-      single_joint_cmd_topic, mocap_topic, control_restart_flag_topic;
+  std::string robot_name, imu_topic, joint_state_topic, grf_topic,
+      robot_state_topic, trajectory_state_topic, local_plan_topic,
+      leg_command_array_topic, control_mode_topic, remote_heartbeat_topic,
+      robot_heartbeat_topic, single_joint_cmd_topic, mocap_topic,
+      control_restart_flag_topic;
+  quad_utils::loadROSParamDefault(nh_, "robot_type", robot_name,
+                                  std::string("spirit"));
   quad_utils::loadROSParam(nh_, "topics/state/imu", imu_topic);
   quad_utils::loadROSParam(nh_, "topics/state/joints", joint_state_topic);
   quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
   quad_utils::loadROSParam(nh_, "topics/state/trajectory",
                            trajectory_state_topic);
-  quad_utils::loadROSParam(nh_, "topics/heartbeat/remote",
+  quad_utils::loadROSParam(nh_, "/topics/heartbeat/remote",
                            remote_heartbeat_topic);
   quad_utils::loadROSParam(nh_, "topics/heartbeat/robot",
                            robot_heartbeat_topic);
@@ -30,20 +33,21 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
                            control_restart_flag_topic);
   quad_utils::loadROSParam(nh_, "topics/mocap", mocap_topic);
 
-  nh_.param<bool>("robot_driver/is_hardware", is_hardware_, true);
-  nh_.param<std::string>("robot_driver/robot_name", robot_name_, "spirit");
-  nh_.param<std::string>("robot_driver/controller", controller_id_,
-                         "inverse_dynamics");
-  quad_utils::loadROSParam(nh_, "robot_driver/update_rate", update_rate_);
-  quad_utils::loadROSParam(nh_, "robot_driver/publish_rate", publish_rate_);
-  quad_utils::loadROSParam(nh_, "robot_driver/mocap_rate", mocap_rate_);
-  quad_utils::loadROSParam(nh_, "robot_driver/mocap_dropout_threshold",
+  quad_utils::loadROSParamDefault(nh_, "robot_driver/is_hardware", is_hardware_,
+                                  true);
+  quad_utils::loadROSParamDefault(nh_, "robot_driver/controller",
+                                  controller_id_,
+                                  std::string("inverse_dynamics"));
+  quad_utils::loadROSParam(nh_, "/robot_driver/update_rate", update_rate_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/publish_rate", publish_rate_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/mocap_rate", mocap_rate_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/mocap_dropout_threshold",
                            mocap_dropout_threshold_);
-  quad_utils::loadROSParam(nh_, "robot_driver/filter_time_constant",
+  quad_utils::loadROSParam(nh_, "/robot_driver/filter_time_constant",
                            filter_time_constant_);
-  quad_utils::loadROSParam(nh_, "robot_driver/input_timeout", input_timeout_);
-  quad_utils::loadROSParam(nh_, "robot_driver/state_timeout", state_timeout_);
-  quad_utils::loadROSParam(nh_, "robot_driver/heartbeat_timeout",
+  quad_utils::loadROSParam(nh_, "/robot_driver/input_timeout", input_timeout_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/state_timeout", state_timeout_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/heartbeat_timeout",
                            heartbeat_timeout_);
   quad_utils::loadROSParam(nh_, "robot_driver/sit_kp", sit_kp_);
   quad_utils::loadROSParam(nh_, "robot_driver/sit_kd", sit_kd_);
@@ -61,6 +65,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
                            stand_joint_angles_);
   quad_utils::loadROSParam(nh_, "robot_driver/sit_joint_angles",
                            sit_joint_angles_);
+  quad_utils::loadROSParam(nh_, "robot_driver/torque_limit", torque_limits_);
 
   // Setup pubs and subs
   local_plan_sub_ =
@@ -106,10 +111,10 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
 
   // Initialize hardware interface
   if (is_hardware_) {
-    if (robot_name_ == "spirit") {
+    if (robot_name == "spirit") {
       hardware_interface_ = std::make_shared<SpiritInterface>();
     } else {
-      ROS_ERROR_STREAM("Invalid robot name " << robot_name_
+      ROS_ERROR_STREAM("Invalid robot name " << robot_name
                                              << ", returning nullptr");
       hardware_interface_ = nullptr;
     }
@@ -135,9 +140,6 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   remote_heartbeat_received_time_ = std::numeric_limits<double>::max();
   last_state_time_ = std::numeric_limits<double>::max();
 
-  // Set joint torque limits
-  torque_limits_ << 21, 21, 32;
-
   // Initialize timing
   last_robot_state_msg_.header.stamp = ros::Time::now();
   t_pub_ = ros::Time::now();
@@ -161,10 +163,10 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
 
   // Load complementary filter coefficients
   std::vector<double> high_pass_a, high_pass_b, high_pass_c, high_pass_d;
-  quad_utils::loadROSParam(nh_, "robot_driver/high_pass_a", high_pass_a);
-  quad_utils::loadROSParam(nh_, "robot_driver/high_pass_b", high_pass_b);
-  quad_utils::loadROSParam(nh_, "robot_driver/high_pass_c", high_pass_c);
-  quad_utils::loadROSParam(nh_, "robot_driver/high_pass_d", high_pass_d);
+  quad_utils::loadROSParam(nh_, "/robot_driver/high_pass_a", high_pass_a);
+  quad_utils::loadROSParam(nh_, "/robot_driver/high_pass_b", high_pass_b);
+  quad_utils::loadROSParam(nh_, "/robot_driver/high_pass_c", high_pass_c);
+  quad_utils::loadROSParam(nh_, "/robot_driver/high_pass_d", high_pass_d);
   complementary_filter_.high_pass_filter.A =
       Eigen::Map<Eigen::Matrix<double, 2, 2> >(high_pass_a.data()).transpose();
   complementary_filter_.high_pass_filter.B =
@@ -177,10 +179,10 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   complementary_filter_.high_pass_filter.init = false;
 
   std::vector<double> low_pass_a, low_pass_b, low_pass_c, low_pass_d;
-  quad_utils::loadROSParam(nh_, "robot_driver/low_pass_a", low_pass_a);
-  quad_utils::loadROSParam(nh_, "robot_driver/low_pass_b", low_pass_b);
-  quad_utils::loadROSParam(nh_, "robot_driver/low_pass_c", low_pass_c);
-  quad_utils::loadROSParam(nh_, "robot_driver/low_pass_d", low_pass_d);
+  quad_utils::loadROSParam(nh_, "/robot_driver/low_pass_a", low_pass_a);
+  quad_utils::loadROSParam(nh_, "/robot_driver/low_pass_b", low_pass_b);
+  quad_utils::loadROSParam(nh_, "/robot_driver/low_pass_c", low_pass_c);
+  quad_utils::loadROSParam(nh_, "/robot_driver/low_pass_d", low_pass_d);
   complementary_filter_.low_pass_filter.A =
       Eigen::Map<Eigen::Matrix<double, 2, 2> >(low_pass_a.data()).transpose();
   complementary_filter_.low_pass_filter.B =
@@ -193,7 +195,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   complementary_filter_.low_pass_filter.init = false;
 }
 
-void RobotDriver::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
+void RobotDriver::controlModeCallback(const std_msgs::UInt8::ConstPtr &msg) {
   // Wait if transitioning
   if ((control_mode_ == SIT_TO_READY) || (control_mode_ == READY_TO_SIT))
     return;
@@ -212,19 +214,19 @@ void RobotDriver::controlModeCallback(const std_msgs::UInt8::ConstPtr& msg) {
 }
 
 void RobotDriver::singleJointCommandCallback(
-    const geometry_msgs::Vector3::ConstPtr& msg) {
-  if (JointController* c =
-          dynamic_cast<JointController*>(leg_controller_.get())) {
+    const geometry_msgs::Vector3::ConstPtr &msg) {
+  if (JointController *c =
+          dynamic_cast<JointController *>(leg_controller_.get())) {
     c->updateSingleJointCommand(msg);
   }
 }
 
 void RobotDriver::controlRestartFlagCallback(
-    const std_msgs::Bool::ConstPtr& msg) {
+    const std_msgs::Bool::ConstPtr &msg) {
   user_tx_data_[0] = (msg->data) ? 1 : 0;
 }
 
-void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg) {
+void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg) {
   last_local_plan_msg_ = msg;
 
   ros::Time t_now = ros::Time::now();
@@ -235,7 +237,7 @@ void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg) {
 }
 
 void RobotDriver::mocapCallback(
-    const geometry_msgs::PoseStamped::ConstPtr& msg) {
+    const geometry_msgs::PoseStamped::ConstPtr &msg) {
   // Collect position readings
   Eigen::Vector3d pos;
   quad_utils::pointMsgToEigen(msg->pose.position, pos);
@@ -294,12 +296,12 @@ void RobotDriver::mocapCallback(
 }
 
 void RobotDriver::robotStateCallback(
-    const quad_msgs::RobotState::ConstPtr& msg) {
+    const quad_msgs::RobotState::ConstPtr &msg) {
   last_robot_state_msg_ = *msg;
 }
 
 void RobotDriver::remoteHeartbeatCallback(
-    const std_msgs::Header::ConstPtr& msg) {
+    const std_msgs::Header::ConstPtr &msg) {
   // Get the current time and compare to the message time
   double remote_heartbeat_sent_time = msg->stamp.toSec();
   remote_heartbeat_received_time_ = ros::Time::now().toSec();
@@ -499,8 +501,9 @@ bool RobotDriver::updateControl() {
         }
       }
     } else {
-      if (InverseDynamicsController* p =
-              dynamic_cast<InverseDynamicsController*>(leg_controller_.get())) {
+      if (InverseDynamicsController *p =
+              dynamic_cast<InverseDynamicsController *>(
+                  leg_controller_.get())) {
         // Uncomment to publish trajectory reference state
         // quad_msgs::RobotState ref_state_msg = p->getReferenceState();
         // trajectry_robot_state_pub_.publish(ref_state_msg);
