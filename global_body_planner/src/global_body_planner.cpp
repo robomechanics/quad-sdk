@@ -12,7 +12,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
 
   quad_utils::loadROSParam(nh_, "topics/start_state", robot_state_topic_);
   quad_utils::loadROSParam(nh_, "topics/goal_state", goal_state_topic);
-  quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic_);
+  quad_utils::loadROSParam(nh_, "/topics/terrain_map", terrain_map_topic_);
   quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/global_plan_discrete",
                            discrete_body_plan_topic);

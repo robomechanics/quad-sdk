@@ -56,3 +56,4 @@ topics:
     toe1_contact_state: gazebo/toe1_contact_state
     toe2_contact_state: gazebo/toe2_contact_state
     toe3_contact_state: gazebo/toe3_contact_state
+  mocap: mocap_node/quad/pose

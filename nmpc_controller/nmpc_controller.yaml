@@ -1,7 +1,7 @@
 nmpc_controller:
   panic_weights: 200.0
   constraint_panic_weights: 20.0
-  Q_temporal_factor: 10.0
+  Q_temporal_factor: 100.0
   R_temporal_factor: 1
   friction_coefficient: 0.3
   enable_variable_horizon: false

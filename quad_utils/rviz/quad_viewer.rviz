@@ -244,13 +244,13 @@ Visualization Manager:
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
-      Enabled: false
+      Enabled: true
       Marker Topic: /robot_2/visualization/current_grf
       Name: Robot 2 Desired GRFs
       Namespaces:
-        {}
+        "": true
       Queue Size: 100
-      Value: false
+      Value: true
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /robot_1/visualization/global_plan
@@ -272,39 +272,39 @@ Visualization Manager:
       Marker Topic: /robot_1/visualization/local_plan
       Name: Robot 1 Local Plan
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
-      Enabled: false
+      Enabled: true
       Marker Topic: /robot_2/visualization/local_plan
       Name: Robot 2 Local Plan
       Namespaces:
         {}
       Queue Size: 100
-      Value: false
+      Value: true
     - Class: rviz/MarkerArray
       Enabled: true
       Marker Topic: /robot_1/visualization/local_plan_grf
       Name: Robot 1 Local Plan GRF
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
-      Enabled: false
+      Enabled: true
       Marker Topic: /robot_2/visualization/local_plan_grf
       Name: Robot 2 Local Plan GRF
       Namespaces:
         {}
       Queue Size: 100
-      Value: false
+      Value: true
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /robot_1/visualization/foot_plan_discrete
       Name: Robot 1 Discrete Foot Plan
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -400,18 +400,18 @@ Visualization Manager:
       Unreliable: false
       Value: true
     - Class: rviz/Marker
-      Enabled: false
+      Enabled: true
       Marker Topic: /robot_2/visualization/foot_plan_discrete
       Name: Robot 2 Discrete Foot Plan
       Namespaces:
         {}
       Queue Size: 100
-      Value: false
+      Value: true
     - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
       Color: 166; 25; 46
-      Enabled: false
+      Enabled: true
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
       Length: 0.30000001192092896
@@ -429,12 +429,12 @@ Visualization Manager:
       Shaft Length: 0.10000000149011612
       Topic: /robot_2/visualization/foot_0_plan_continuous
       Unreliable: false
-      Value: false
+      Value: true
     - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
       Color: 0; 45; 114
-      Enabled: false
+      Enabled: true
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
       Length: 0.30000001192092896
@@ -452,12 +452,12 @@ Visualization Manager:
       Shaft Length: 0.10000000149011612
       Topic: /robot_2/visualization/foot_1_plan_continuous
       Unreliable: false
-      Value: false
+      Value: true
     - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
       Color: 0; 132; 61
-      Enabled: false
+      Enabled: true
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
       Length: 0.30000001192092896
@@ -475,12 +475,12 @@ Visualization Manager:
       Shaft Length: 0.10000000149011612
       Topic: /robot_2/visualization/foot_2_plan_continuous
       Unreliable: false
-      Value: false
+      Value: true
     - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
       Color: 242; 169; 0
-      Enabled: false
+      Enabled: true
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
       Length: 0.30000001192092896
@@ -498,7 +498,7 @@ Visualization Manager:
       Shaft Length: 0.10000000149011612
       Topic: /robot_2/visualization/foot_3_plan_continuous
       Unreliable: false
-      Value: false
+      Value: true
     - Class: rviz/Marker
       Enabled: false
       Marker Topic: /grid_map_visualization/surface_normals

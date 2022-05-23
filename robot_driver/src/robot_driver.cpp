@@ -19,7 +19,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
   quad_utils::loadROSParam(nh_, "topics/state/trajectory",
                            trajectory_state_topic);
-  quad_utils::loadROSParam(nh_, "topics/heartbeat/remote",
+  quad_utils::loadROSParam(nh_, "/topics/heartbeat/remote",
                            remote_heartbeat_topic);
   quad_utils::loadROSParam(nh_, "topics/heartbeat/robot",
                            robot_heartbeat_topic);
