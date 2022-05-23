@@ -9,19 +9,19 @@
        <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
         <range right="8.809000" left="3.809000" top="4.000000" bottom="-1.000000"/>
         <limitY max="4" min="-1"/>
-        <curve name="/state/ground_truth/body/pose/position/x" color="#a6192e"/>
-        <curve name="/state/ground_truth/body/pose/position/y" color="#002e72"/>
-        <curve name="/state/ground_truth/body/pose/position/z" color="#00843d"/>
+        <curve name="/robot_1/state/ground_truth/body/pose/position/x" color="#a6192e"/>
+        <curve name="/robot_1/state/ground_truth/body/pose/position/y" color="#002e72"/>
+        <curve name="/robot_1/state/ground_truth/body/pose/position/z" color="#00843d"/>
        </plot>
       </DockArea>
       <DockArea name="Angular Position">
        <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
         <range right="8.809000" left="3.809000" top="1.000000" bottom="-1.000000"/>
         <limitY max="1" min="-1"/>
-        <curve name="/state/ground_truth/body/pose/orientation/w" color="#f2a900"/>
-        <curve name="/state/ground_truth/body/pose/orientation/x" color="#a6192e"/>
-        <curve name="/state/ground_truth/body/pose/orientation/y" color="#002e72"/>
-        <curve name="/state/ground_truth/body/pose/orientation/z" color="#00843d"/>
+        <curve name="/robot_1/state/ground_truth/body/pose/orientation/w" color="#f2a900"/>
+        <curve name="/robot_1/state/ground_truth/body/pose/orientation/x" color="#a6192e"/>
+        <curve name="/robot_1/state/ground_truth/body/pose/orientation/y" color="#002e72"/>
+        <curve name="/robot_1/state/ground_truth/body/pose/orientation/z" color="#00843d"/>
        </plot>
       </DockArea>
      </DockSplitter>
@@ -30,18 +30,18 @@
        <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
         <range right="8.809000" left="3.809000" top="2.000000" bottom="-2.000000"/>
         <limitY max="2" min="-2"/>
-        <curve name="/state/ground_truth/body/twist/linear/x" color="#a6192e"/>
-        <curve name="/state/ground_truth/body/twist/linear/y" color="#002e72"/>
-        <curve name="/state/ground_truth/body/twist/linear/z" color="#00843d"/>
+        <curve name="/robot_1/state/ground_truth/body/twist/linear/x" color="#a6192e"/>
+        <curve name="/robot_1/state/ground_truth/body/twist/linear/y" color="#002e72"/>
+        <curve name="/robot_1/state/ground_truth/body/twist/linear/z" color="#00843d"/>
        </plot>
       </DockArea>
       <DockArea name="Angular Velocity">
        <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
         <range right="8.809000" left="3.809000" top="2.000000" bottom="-2.000000"/>
         <limitY max="2" min="-2"/>
-        <curve name="/state/ground_truth/body/twist/angular/x" color="#a6192e"/>
-        <curve name="/state/ground_truth/body/twist/angular/y" color="#002e72"/>
-        <curve name="/state/ground_truth/body/twist/angular/z" color="#00843d"/>
+        <curve name="/robot_1/state/ground_truth/body/twist/angular/x" color="#a6192e"/>
+        <curve name="/robot_1/state/ground_truth/body/twist/angular/y" color="#002e72"/>
+        <curve name="/robot_1/state/ground_truth/body/twist/angular/z" color="#00843d"/>
        </plot>
       </DockArea>
      </DockSplitter>
@@ -55,14 +55,14 @@
       <plot mode="XYPlot" flip_x="false" flip_y="false" style="Dots">
        <range right="0.000004" left="0.000004" top="2.000000" bottom="-2.000000"/>
        <limitY max="2" min="-2"/>
-       <curve curve_x="/state/ground_truth/body/pose/position/x" curve_y="/state/ground_truth/body/pose/position/y" name="/state/ground_truth/body/pose/position/[x;y]" color="#00843d"/>
+       <curve curve_x="/robot_1/state/ground_truth/body/pose/position/x" curve_y="/robot_1/state/ground_truth/body/pose/position/y" name="/robot_1/state/ground_truth/body/pose/position/[x;y]" color="#00843d"/>
       </plot>
      </DockArea>
      <DockArea name="Sagittal Plane (m)">
       <plot mode="XYPlot" flip_x="false" flip_y="false" style="Lines">
        <range right="0.000004" left="0.000004" top="1.000000" bottom="0.000000"/>
        <limitY max="1" min="0"/>
-       <curve curve_x="/state/ground_truth/body/pose/position/x" curve_y="/state/ground_truth/body/pose/position/z" name="/state/ground_truth/body/pose/position/[x;z]" color="#002e72"/>
+       <curve curve_x="/robot_1/state/ground_truth/body/pose/position/x" curve_y="/robot_1/state/ground_truth/body/pose/position/z" name="/robot_1/state/ground_truth/body/pose/position/[x;z]" color="#002e72"/>
       </plot>
      </DockArea>
     </DockSplitter>
@@ -77,18 +77,18 @@
         <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
          <range right="0.665000" left="0.000000" top="2.000000" bottom="-0.500000"/>
          <limitY max="2" min="-0.5"/>
-         <curve name="/state/ground_truth/feet/feet.0/position/x" color="#a6192e"/>
-         <curve name="/state/ground_truth/feet/feet.0/position/y" color="#002e72"/>
-         <curve name="/state/ground_truth/feet/feet.0/position/z" color="#00843d"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.0/position/x" color="#a6192e"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.0/position/y" color="#002e72"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.0/position/z" color="#00843d"/>
         </plot>
        </DockArea>
        <DockArea name="Leg 1">
         <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
          <range right="0.665000" left="0.000000" top="2.000000" bottom="-2.000000"/>
          <limitY max="2" min="-2"/>
-         <curve name="/state/ground_truth/feet/feet.0/velocity/x" color="#a6192e"/>
-         <curve name="/state/ground_truth/feet/feet.0/velocity/y" color="#002e72"/>
-         <curve name="/state/ground_truth/feet/feet.0/velocity/z" color="#00843d"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.0/velocity/x" color="#a6192e"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.0/velocity/y" color="#002e72"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.0/velocity/z" color="#00843d"/>
         </plot>
        </DockArea>
       </DockSplitter>
@@ -97,18 +97,18 @@
         <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
          <range right="0.665000" left="0.000000" top="2.000000" bottom="-0.500000"/>
          <limitY max="2" min="-0.5"/>
-         <curve name="/state/ground_truth/feet/feet.2/position/x" color="#a6192e"/>
-         <curve name="/state/ground_truth/feet/feet.2/position/y" color="#002e72"/>
-         <curve name="/state/ground_truth/feet/feet.2/position/z" color="#00843d"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.2/position/x" color="#a6192e"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.2/position/y" color="#002e72"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.2/position/z" color="#00843d"/>
         </plot>
        </DockArea>
        <DockArea name="Leg 3">
         <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
          <range right="0.665000" left="0.000000" top="2.000000" bottom="-2.000000"/>
          <limitY max="2" min="-2"/>
-         <curve name="/state/ground_truth/feet/feet.2/velocity/x" color="#a6192e"/>
-         <curve name="/state/ground_truth/feet/feet.2/velocity/y" color="#002e72"/>
-         <curve name="/state/ground_truth/feet/feet.2/velocity/z" color="#00843d"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.2/velocity/x" color="#a6192e"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.2/velocity/y" color="#002e72"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.2/velocity/z" color="#00843d"/>
         </plot>
        </DockArea>
       </DockSplitter>
@@ -123,27 +123,27 @@
       <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
        <range right="7.143000" left="2.143000" top="3.140000" bottom="-1.570000"/>
        <limitY max="3.14" min="-1.57"/>
-       <curve name="/state/ground_truth/joints/position.0" color="#a6192e"/>
-       <curve name="/state/ground_truth/joints/position.1" color="#002e72"/>
-       <curve name="/state/ground_truth/joints/position.2" color="#00843d"/>
+       <curve name="/robot_1/state/ground_truth/joints/position.0" color="#a6192e"/>
+       <curve name="/robot_1/state/ground_truth/joints/position.1" color="#002e72"/>
+       <curve name="/robot_1/state/ground_truth/joints/position.2" color="#00843d"/>
       </plot>
      </DockArea>
      <DockArea name="Joint Velocity (rad/s)">
       <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
        <range right="7.143000" left="2.143000" top="40.000000" bottom="-40.000000"/>
        <limitY max="40" min="-40"/>
-       <curve name="/state/ground_truth/joints/velocity.0" color="#a6192e"/>
-       <curve name="/state/ground_truth/joints/velocity.1" color="#002e72"/>
-       <curve name="/state/ground_truth/joints/velocity.2" color="#00843d"/>
+       <curve name="/robot_1/state/ground_truth/joints/velocity.0" color="#a6192e"/>
+       <curve name="/robot_1/state/ground_truth/joints/velocity.1" color="#002e72"/>
+       <curve name="/robot_1/state/ground_truth/joints/velocity.2" color="#00843d"/>
       </plot>
      </DockArea>
      <DockArea name="Joint Torque (N/m)">
       <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
        <range right="7.142000" left="2.143000" top="32.000000" bottom="-32.000000"/>
        <limitY max="32" min="-32"/>
-       <curve name="/control/joint_command/leg_commands.0/motor_commands.0/effort" color="#a6192e"/>
-       <curve name="/control/joint_command/leg_commands.0/motor_commands.1/effort" color="#002e72"/>
-       <curve name="/control/joint_command/leg_commands.0/motor_commands.2/effort" color="#00843d"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.0/effort" color="#a6192e"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.1/effort" color="#002e72"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.2/effort" color="#00843d"/>
       </plot>
      </DockArea>
     </DockSplitter>
@@ -156,27 +156,27 @@
       <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
        <range right="0.666000" left="0.001000" top="10.000000" bottom="-10.000000"/>
        <limitY max="10" min="-10"/>
-       <curve name="/control/joint_command/leg_commands.0/motor_commands.0/fb_component" color="#a6192e"/>
-       <curve name="/control/joint_command/leg_commands.0/motor_commands.1/fb_component" color="#002e72"/>
-       <curve name="/control/joint_command/leg_commands.0/motor_commands.2/fb_component" color="#00843d"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.0/fb_component" color="#a6192e"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.1/fb_component" color="#002e72"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.2/fb_component" color="#00843d"/>
       </plot>
      </DockArea>
      <DockArea name="Feedforward Torques (Nm)">
       <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
        <range right="0.666000" left="0.001000" top="10.000000" bottom="-10.000000"/>
        <limitY max="10" min="-10"/>
-       <curve name="/control/joint_command/leg_commands.0/motor_commands.0/torque_ff" color="#a6192e"/>
-       <curve name="/control/joint_command/leg_commands.0/motor_commands.1/torque_ff" color="#002e72"/>
-       <curve name="/control/joint_command/leg_commands.0/motor_commands.2/torque_ff" color="#00843d"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.0/torque_ff" color="#a6192e"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.1/torque_ff" color="#002e72"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.2/torque_ff" color="#00843d"/>
       </plot>
      </DockArea>
      <DockArea name="Feedback Ratio">
       <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
        <range right="0.666000" left="0.001000" top="1.000000" bottom="0.000000"/>
        <limitY max="1" min="0"/>
-       <curve name="/control/joint_command/leg_commands.0/motor_commands.0/fb_ratio" color="#a6192e"/>
-       <curve name="/control/joint_command/leg_commands.0/motor_commands.1/fb_ratio" color="#002e72"/>
-       <curve name="/control/joint_command/leg_commands.0/motor_commands.2/fb_ratio" color="#00843d"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.0/fb_ratio" color="#a6192e"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.1/fb_ratio" color="#002e72"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.2/fb_ratio" color="#00843d"/>
       </plot>
      </DockArea>
     </DockSplitter>
@@ -190,24 +190,24 @@
        <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
         <range right="0.666000" left="0.001000" top="250.000000" bottom="-250.000000"/>
         <limitY max="250" min="-250"/>
-        <curve name="/control/grfs/vectors.0/x" color="#d5929c"/>
-        <curve name="/control/grfs/vectors.0/y" color="#83a3d3"/>
-        <curve name="/control/grfs/vectors.0/z" color="#83b89b"/>
-        <curve name="/state/grfs/vectors.0/x" color="#a6192e"/>
-        <curve name="/state/grfs/vectors.0/y" color="#002e72"/>
-        <curve name="/state/grfs/vectors.0/z" color="#00843d"/>
+        <curve name="/robot_1/control/grfs/vectors.0/x" color="#d5929c"/>
+        <curve name="/robot_1/control/grfs/vectors.0/y" color="#83a3d3"/>
+        <curve name="/robot_1/control/grfs/vectors.0/z" color="#83b89b"/>
+        <curve name="/robot_1/state/grfs/vectors.0/x" color="#a6192e"/>
+        <curve name="/robot_1/state/grfs/vectors.0/y" color="#002e72"/>
+        <curve name="/robot_1/state/grfs/vectors.0/z" color="#00843d"/>
        </plot>
       </DockArea>
       <DockArea name="Leg 2">
        <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
         <range right="0.666000" left="0.001000" top="250.000000" bottom="-250.000000"/>
         <limitY max="250" min="-250"/>
-        <curve name="/control/grfs/vectors.2/x" color="#d5929c"/>
-        <curve name="/control/grfs/vectors.2/y" color="#83a3d3"/>
-        <curve name="/control/grfs/vectors.2/z" color="#83b89b"/>
-        <curve name="/state/grfs/vectors.2/x" color="#a6192e"/>
-        <curve name="/state/grfs/vectors.2/y" color="#002e72"/>
-        <curve name="/state/grfs/vectors.2/z" color="#00843d"/>
+        <curve name="/robot_1/control/grfs/vectors.2/x" color="#d5929c"/>
+        <curve name="/robot_1/control/grfs/vectors.2/y" color="#83a3d3"/>
+        <curve name="/robot_1/control/grfs/vectors.2/z" color="#83b89b"/>
+        <curve name="/robot_1/state/grfs/vectors.2/x" color="#a6192e"/>
+        <curve name="/robot_1/state/grfs/vectors.2/y" color="#002e72"/>
+        <curve name="/robot_1/state/grfs/vectors.2/z" color="#00843d"/>
        </plot>
       </DockArea>
      </DockSplitter>
@@ -216,24 +216,24 @@
        <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
         <range right="0.666000" left="0.001000" top="250.000000" bottom="-250.000000"/>
         <limitY max="250" min="-250"/>
-        <curve name="/control/grfs/vectors.1/x" color="#d5929c"/>
-        <curve name="/control/grfs/vectors.1/y" color="#83a3d3"/>
-        <curve name="/control/grfs/vectors.1/z" color="#83b89b"/>
-        <curve name="/state/grfs/vectors.1/x" color="#a6192e"/>
-        <curve name="/state/grfs/vectors.1/y" color="#002e72"/>
-        <curve name="/state/grfs/vectors.1/z" color="#00843d"/>
+        <curve name="/robot_1/control/grfs/vectors.1/x" color="#d5929c"/>
+        <curve name="/robot_1/control/grfs/vectors.1/y" color="#83a3d3"/>
+        <curve name="/robot_1/control/grfs/vectors.1/z" color="#83b89b"/>
+        <curve name="/robot_1/state/grfs/vectors.1/x" color="#a6192e"/>
+        <curve name="/robot_1/state/grfs/vectors.1/y" color="#002e72"/>
+        <curve name="/robot_1/state/grfs/vectors.1/z" color="#00843d"/>
        </plot>
       </DockArea>
       <DockArea name="Leg 3">
        <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
         <range right="0.666000" left="0.001000" top="250.000000" bottom="-250.000000"/>
         <limitY max="250" min="-250"/>
-        <curve name="/control/grfs/vectors.3/x" color="#d5929c"/>
-        <curve name="/control/grfs/vectors.3/y" color="#83a3d3"/>
-        <curve name="/control/grfs/vectors.3/z" color="#83b89b"/>
-        <curve name="/state/grfs/vectors.3/x" color="#a6192e"/>
-        <curve name="/state/grfs/vectors.3/y" color="#002e72"/>
-        <curve name="/state/grfs/vectors.3/z" color="#00843d"/>
+        <curve name="/robot_1/control/grfs/vectors.3/x" color="#d5929c"/>
+        <curve name="/robot_1/control/grfs/vectors.3/y" color="#83a3d3"/>
+        <curve name="/robot_1/control/grfs/vectors.3/z" color="#83b89b"/>
+        <curve name="/robot_1/state/grfs/vectors.3/x" color="#a6192e"/>
+        <curve name="/robot_1/state/grfs/vectors.3/y" color="#002e72"/>
+        <curve name="/robot_1/state/grfs/vectors.3/z" color="#00843d"/>
        </plot>
       </DockArea>
      </DockSplitter>

@@ -58,10 +58,13 @@ void ContactStatePublisher::contactStateCallback(
                                         "toe2_collision", "toe3_collision"};
   std::string toe_string = toe_collision_names[toe_idx];
 
+  std::string ns = nh_.getNamespace();
+  ns = ns.substr(1, ns.size());  // Remove leading slash
+
   // Toe frame names
   std::string toe_transform_names[4] = {
-      "ground_truth/toe0", "ground_truth/toe1", "ground_truth/toe2",
-      "ground_truth/toe3"};
+      ns + "_ground_truth/toe0", ns + "_ground_truth/toe1",
+      ns + "_ground_truth/toe2", ns + "_ground_truth/toe3"};
 
   // Init grf
   grf_array_msg_.vectors[toe_idx].x = 0.0;

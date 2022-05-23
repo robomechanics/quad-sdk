@@ -1,0 +1,50 @@
+<launch>
+    <!-- Load params -->
+    <arg name="robot_type" default="spirit"/>
+    <arg name="live_plot" default="false"/>
+    <arg name="dash" default="false"/>
+
+    <include file="$(find quad_utils)/launch/load_global_params.launch">
+        <arg name="robot_type" value="$(arg robot_type)"/>
+    </include>
+
+    <!-- Define the namespaces if not already set -->
+    <arg name="namespace_1" default="robot_1"/>
+    <arg name="namespace_2" default="robot_2"/>
+
+    <!-- Launch visualization plugins -->
+    <group ns = "$(arg namespace_1)">
+        <param name="tf_prefix" value="$(arg namespace_1)" />
+
+        <include file="$(find quad_utils)/launch/visualization_plugins.launch">
+            <arg name="namespace" value="$(arg namespace_1)"/>
+            <arg name="robot_type" default="$(arg robot_type)"/>
+        </include>
+    </group>
+
+    <group ns = "$(arg namespace_2)">
+        <param name="tf_prefix" value="$(arg namespace_2)" />
+
+        <include file="$(find quad_utils)/launch/visualization_plugins.launch">
+            <arg name="namespace" value="$(arg namespace_2)"/>
+            <arg name="robot_type" default="$(arg robot_type)"/>
+        </include>
+    </group>
+
+    <!-- Users can add more robots here -->
+
+    <!-- Launch RViz -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find quad_utils)/rviz/quad_viewer.rviz"/>
+
+    <!-- Launch live plotter -->
+    <group if="$(arg live_plot)">
+        <node name="plotjuggler" pkg="plotjuggler" type="plotjuggler" args="--layout $(find quad_utils)/config/plotjuggler_config.xml" />
+    </group>
+
+    <!-- Launch RQT dashboard -->
+    <group if="$(arg dash)">
+        <node name = "rqt_dashboard" pkg = "rqt_gui" type = "rqt_gui" respawn = 
+        "false" output = "screen" args = "--perspective-file $(find quad_utils)/config/dashboard.perspective"/>
+    </group>
+
+</launch>
