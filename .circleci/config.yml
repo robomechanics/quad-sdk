@@ -21,7 +21,7 @@ jobs:
           command: |
             source /opt/ros/melodic/setup.bash
             source /catkin_ws/devel/setup.bash
-            roslaunch quad_utils load_global_params.launch
+            roslaunch quad_utils load_global_params.launch load_robot_params:=true
           background: true
       - run:
           name: "Run tests"
