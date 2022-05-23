@@ -7,20 +7,6 @@ robot_driver:
   input_timeout: 0.2
   state_timeout: 0.1
   heartbeat_timeout: 0.2
-  sit_kp: [10, 10, 10]
-  sit_kd: [1, 1, 1]
-  stand_kp: [35, 35, 35]
-  stand_kd: [1, 1, 1]
-  stance_kp: [10, 10, 10]
-  stance_kd: [1, 1, 1]
-  swing_kp: [10, 10, 10]
-  swing_kd: [1, 1, 1]
-  swing_kp_cart: [0, 0, 0] # N/m
-  swing_kd_cart: [0, 0, 0]       # N/m
-  safety_kp: [0, 0, 0]
-  safety_kd: [2, 2, 2]
-  stand_joint_angles: [0.0, 0.76, 1.52]
-  sit_joint_angles: [0.0, 0.0, 0.0]
 
   # Complementary filter coefficients in state-space form, 
   # which can be computed by c2d(1/s*(1-G(s))) and c2d(s*G(s)), 

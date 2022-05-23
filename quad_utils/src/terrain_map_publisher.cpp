@@ -10,7 +10,7 @@ TerrainMapPublisher::TerrainMapPublisher(ros::NodeHandle nh)
 
   nh.param<std::string>("topics/terrain_map_raw", terrain_map_topic,
                         "/terrain_map_raw");
-  nh.param<std::string>("map_frame", map_frame_, "map");
+  nh.param<std::string>("/map_frame", map_frame_, "map");
   nh.param<double>("terrain_map_publisher/update_rate", update_rate_, 10);
   nh.param<double>("terrain_map_publisher/obstacle_x", obstacle_.x, 2.0);
   nh.param<double>("terrain_map_publisher/obstacle_y", obstacle_.y, 0.0);
@@ -108,9 +108,9 @@ void TerrainMapPublisher::updateMap() {
   }
 }
 
-std::vector<std::vector<double> > TerrainMapPublisher::loadCSV(
+std::vector<std::vector<double>> TerrainMapPublisher::loadCSV(
     std::string filename) {
-  std::vector<std::vector<double> > data;
+  std::vector<std::vector<double>> data;
   std::ifstream inputFile(filename);
   int l = 0;
 
@@ -149,25 +149,25 @@ std::vector<std::vector<double> > TerrainMapPublisher::loadCSV(
 void TerrainMapPublisher::loadMapFromCSV() {
   // Load in all terrain data
   std::string package_path = ros::package::getPath("quad_utils");
-  std::vector<std::vector<double> > x_data =
+  std::vector<std::vector<double>> x_data =
       loadCSV(package_path + "/data/" + terrain_type_ + "/x_data.csv");
-  std::vector<std::vector<double> > y_data =
+  std::vector<std::vector<double>> y_data =
       loadCSV(package_path + "/data/" + terrain_type_ + "/y_data.csv");
-  std::vector<std::vector<double> > z_data =
+  std::vector<std::vector<double>> z_data =
       loadCSV(package_path + "/data/" + terrain_type_ + "/z_data.csv");
-  std::vector<std::vector<double> > nx_data =
+  std::vector<std::vector<double>> nx_data =
       loadCSV(package_path + "/data/" + terrain_type_ + "/nx_data.csv");
-  std::vector<std::vector<double> > ny_data =
+  std::vector<std::vector<double>> ny_data =
       loadCSV(package_path + "/data/" + terrain_type_ + "/ny_data.csv");
-  std::vector<std::vector<double> > nz_data =
+  std::vector<std::vector<double>> nz_data =
       loadCSV(package_path + "/data/" + terrain_type_ + "/nz_data.csv");
-  std::vector<std::vector<double> > z_data_filt =
+  std::vector<std::vector<double>> z_data_filt =
       loadCSV(package_path + "/data/" + terrain_type_ + "/z_data_filt.csv");
-  std::vector<std::vector<double> > nx_data_filt =
+  std::vector<std::vector<double>> nx_data_filt =
       loadCSV(package_path + "/data/" + terrain_type_ + "/nx_data_filt.csv");
-  std::vector<std::vector<double> > ny_data_filt =
+  std::vector<std::vector<double>> ny_data_filt =
       loadCSV(package_path + "/data/" + terrain_type_ + "/ny_data_filt.csv");
-  std::vector<std::vector<double> > nz_data_filt =
+  std::vector<std::vector<double>> nz_data_filt =
       loadCSV(package_path + "/data/" + terrain_type_ + "/nz_data_filt.csv");
 
   // Grab map length and resolution parameters, make sure resolution is square
@@ -220,7 +220,7 @@ void TerrainMapPublisher::loadMapFromCSV() {
   }
 }
 
-void TerrainMapPublisher::loadMapFromImage(const sensor_msgs::Image& msg) {
+void TerrainMapPublisher::loadMapFromImage(const sensor_msgs::Image &msg) {
   // Initialize the map from the image message if not already done so
   if (!map_initialized_) {
     grid_map::GridMapRosConverter::initializeFromImage(msg, resolution_,
