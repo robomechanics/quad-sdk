@@ -1,4 +1,4 @@
-# Global Body Planner
+# Robot Driver
 
 ## Overview
 This package handles the hardware interfacing as well as state estimation. The class interfaces with LegController and StateEstimator abstract classes. These classes provide a template for various implementations of controllers and estimators. The current release supports an inverse dynamics leg controller and a complementary filter state estimator that fuses the IMU and Mocap measurements to estimate the body position and velocity. An EKF implementation will be available soon for on-board state estimation. 
