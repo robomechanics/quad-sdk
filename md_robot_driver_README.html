@@ -69,9 +69,9 @@ $(function() {
 <p >This package handles the hardware interfacing as well as state estimation. The class interfaces with <a class="el" href="classLegController.html" title="Implements an abstract class for leg controllers.">LegController</a> and StateEstimator abstract classes. These classes provide a template for various implementations of controllers and estimators. The current release supports an inverse dynamics leg controller and a complementary filter state estimator that fuses the IMU and Mocap measurements to estimate the body position and velocity. An EKF implementation will be available soon for on-board state estimation.</p>
 <h2>License</h2>
 <p >The source code is released under a <a href="quad-sdk/LICENSE">MIT License</a>.</p>
-<p >**Author: Joe Norby<br  />
+<p >**Author: Joe Norby, Yanhao Yang<br  />
  Affiliation: <a href="https://www.cmu.edu/me/robomechanicslab/">Robomechanics Lab</a><br  />
- Maintainers: Ardalan Tajbakhsh (<a href="#" onclick="location.href='mai'+'lto:'+'ata'+'jb'+'akh'+'@a'+'ndr'+'ew'+'.cm'+'u.'+'edu'; return false;">atajb<span style="display: none;">.nosp@m.</span>akh@<span style="display: none;">.nosp@m.</span>andre<span style="display: none;">.nosp@m.</span>w.cm<span style="display: none;">.nosp@m.</span>u.edu</a>) **</p>
+ Maintainers: Ardalan Tajbakhsh (<a href="#" onclick="location.href='mai'+'lto:'+'ata'+'jb'+'akh'+'@a'+'ndr'+'ew'+'.cm'+'u.'+'edu'; return false;">atajb<span style="display: none;">.nosp@m.</span>akh@<span style="display: none;">.nosp@m.</span>andre<span style="display: none;">.nosp@m.</span>w.cm<span style="display: none;">.nosp@m.</span>u.edu</a>)**</p>
 <p >The Robot Driver package has been tested under <a href="http://www.ros.org">ROS</a> Melodic 18.04. This is research code, expect that it changes often and any fitness for a particular purpose is disclaimed.</p>
 <h2>Unit Tests</h2>
 <p >Run the unit tests with </p><pre class="fragment">catkin run_tests robot_driver
@@ -84,8 +84,8 @@ $(function() {
 </ul>
 <h1>Nodes</h1>
 <h2>robot_driver</h2>
-<pre class="fragment">Robot driver's core functionality is interfacing with the hardware through control and state estimation template classes. In the main loop, the node recieves the most recent local plan, control mode, and computes the updated state using an online state estimator (Complementary filter) as well as the control actions (joint torques) that will be applied to the robot. The control actions are computed using inverse dyanamics from the desired ground reaction forces computed by MPC. Furthermore, robot driver handles the control state machine that decides when to transition between different behaviour modes (For example, safety, sit, stand, etc.).
-</pre> <h3>Subscribed Topics</h3>
+<p >Robot driver's core functionality is interfacing with the hardware through control and state estimation template classes. In the main loop, the node recieves the most recent local plan, control mode, and computes the updated state using an online state estimator (Complementary filter) as well as the control actions (joint torques) that will be applied to the robot. The control actions are computed using inverse dyanamics from the desired ground reaction forces computed by MPC. Furthermore, robot driver handles the control state machine that decides when to transition between different behaviour modes (For example, safety, sit, stand, etc.).</p>
+<h3>Subscribed Topics</h3>
 <ul>
 <li><p class="startli">**<code>/local_planner</code>** ([quad_msgs/LocalPlan])</p>
 <p class="startli">The current local plan computed by MPC.</p>
@@ -158,10 +158,8 @@ $(function() {
 <li>**<code>stand_joint_angles</code>** (vector, default: [0.0 0.76 1.52])</li>
 <li>**<code>sit_joint_angles</code>** (vector, default: [0.0 0.0 0.0])</li>
 </ul>
-<h1>Complementary filter coefficients in state-space form,</h1>
-<h1>which can be computed by c2d(1/s*(1-G(s))) and c2d(s*G(s)),</h1>
-<h1>where G(s) is a second-order low-pass filter</h1>
-<ul>
+<h3>Complementary filter coefficients</h3>
+<p >Coefficients are in state-space form, which can be computed by c2d(1/s*(1-G(s))) and c2d(sG(s)), where G(s) is a second-order low-pass filter.</p><ul>
 <li>**<code>low_pass_a</code>** (vector, default: [1.863081589528582 -0.871860350323577 1 0])</li>
 <li>**<code>low_pass_b</code>** (vector, default: [2 0])</li>
 <li>**<code>low_pass_c</code>** (vector, default: [1.469526956982712, -1.476621472298373])</li>
@@ -171,7 +169,7 @@ $(function() {
 <li>**<code>high_pass_c</code>** (vector, default: [0.031912805108981 -0.028979795079613])</li>
 <li>**<code>high_pass_d</code>** (vector, default: [0.0009996017974875904])</li>
 </ul>
-<h2>Bugs &amp; Feature Requests</h2>
+<h1>Bugs &amp; Feature Requests</h1>
 <p >Please report bugs and request features using the <a href="https://github.com/robomechanics/quad-sdk/issues">Issue Tracker</a>. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
