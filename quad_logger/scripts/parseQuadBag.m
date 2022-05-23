@@ -7,7 +7,16 @@ function [data, varargout] = parseQuadBag(varargin)
 %   DATA = parseQuadBag(FILENAME) uses the data in a bag with the specified
 %   file name, looking in '../bags/'.
 
+% Default empty namespace
+namespace = '';
+
 % Default to quad_log_current
+if nargin >= 2
+    if ~isempty(varargin{2})
+        namespace = [varargin{2}, '/'];
+    end
+end
+
 if nargin == 0
     trialName = 'quad_log_current';
 else
@@ -29,7 +38,7 @@ end
 bag = rosbag(filepath);
 
 % Read the state estimate data
-stateEstimateData = readMessages(select(bag,'Topic','/state/estimate'),'DataFormat','struct');
+stateEstimateData = readMessages(select(bag,'Topic',['/', namespace, 'state/estimate']),'DataFormat','struct');
 stateEstimate = struct;
 if isempty(stateEstimateData)
     warning('No data on state estimate topic');
@@ -54,7 +63,7 @@ else
 end
 
 % Read the ground truth data
-stateGroundTruthData = readMessages(select(bag,'Topic','/state/ground_truth'),'DataFormat','struct');
+stateGroundTruthData = readMessages(select(bag,'Topic',['/', namespace, 'state/ground_truth']),'DataFormat','struct');
 stateGroundTruth = struct;
 if isempty(stateGroundTruthData)
     warning('No data on ground truth state topic');
@@ -88,7 +97,7 @@ else
 end
 
 % Read the trajectory data
-stateTrajectoryData = readMessages(select(bag,'Topic','/state/trajectory'),'DataFormat','struct');
+stateTrajectoryData = readMessages(select(bag,'Topic',['/', namespace, 'state/trajectory']),'DataFormat','struct');
 stateTrajectory = struct;
 if isempty(stateTrajectoryData)
     warning('No data on trajectory topic');
@@ -130,7 +139,7 @@ else
 end
 
 % Read the control GRFs data
-controlGRFsData = readMessages(select(bag,'Topic','/control/grfs'),'DataFormat','struct');
+controlGRFsData = readMessages(select(bag,'Topic',['/', namespace, 'control/grfs']),'DataFormat','struct');
 controlGRFs = struct;
 if isempty(controlGRFsData)
     warning('No data on grf control topic');
@@ -158,7 +167,7 @@ else
 end
 
 % Read the state GRFs data
-stateGRFsData = readMessages(select(bag,'Topic','/state/grfs'),'DataFormat','struct');
+stateGRFsData = readMessages(select(bag,'Topic',['/', namespace, 'state/grfs']),'DataFormat','struct');
 stateGRFs = struct;
 if isempty(stateGRFsData)
     warning('No data on grf state topic');
@@ -186,7 +195,7 @@ else
 end
 
 % Read the local plan data
-localPlanData = readMessages(select(bag,'Topic','/local_plan'),'DataFormat','struct');
+localPlanData = readMessages(select(bag,'Topic',['/', namespace, 'local_plan']),'DataFormat','struct');
 localPlan = struct;
 if isempty(localPlanData)
     warning('No data on local plan topic');

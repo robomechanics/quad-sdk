@@ -5,7 +5,7 @@ RemoteHeartbeat::RemoteHeartbeat(ros::NodeHandle nh) {
 
   // Load rosparam from parameter server
   std::string remote_heartbeat_topic, robot_heartbeat_topic, leg_control_topic;
-  quad_utils::loadROSParam(nh_, "topics/heartbeat/remote",
+  quad_utils::loadROSParam(nh_, "/topics/heartbeat/remote",
                            remote_heartbeat_topic);
   quad_utils::loadROSParam(nh_, "topics/heartbeat/robot",
                            robot_heartbeat_topic);
