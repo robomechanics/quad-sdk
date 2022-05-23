@@ -23,7 +23,7 @@ if nargin>0
     namespace = varargin{2};
 else
     trialName = ''; % Set to '' to load via GUI
-    namespace = ''; % Namespace of the robot bag, set to '' if none
+    namespace = 'robot_1'; % Namespace of the robot bag, set to '' if none
 end
 
 %% Set parameters

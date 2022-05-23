@@ -12,7 +12,7 @@
     <rosparam command="load" file="$(find quad_utils)/config/teleop_twist_keyboard.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/rviz_interface.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/trajectory_publisher.yaml" />
-    <rosparam command="load" file="$(find quad_utils)/config/topics.yaml" />
+    <rosparam command="load" file="$(find quad_utils)/config/topics_global.yaml" />
 
     <group if="$(eval arg('robot_type') == 'spirit')">
         <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
