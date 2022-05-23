@@ -1274,7 +1274,6 @@ SOFTWARE.
     </joint>
     <!-- Setup ros control -->
     <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
-      <robotNamespace>/spirit</robotNamespace>
       <controlPeriod>0.002</controlPeriod>
     </plugin>
     <!-- Publish ground truth state data -->

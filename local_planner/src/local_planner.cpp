@@ -9,8 +9,12 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic,
       local_plan_topic, foot_plan_discrete_topic, foot_plan_continuous_topic,
-      cmd_vel_topic;
-  quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
+      cmd_vel_topic, control_mode_topic;
+
+  // Load system parameters from launch file (not in config file)
+  quad_utils::loadROSParamDefault(nh_, "robot_type", robot_name_,
+                                  std::string("spirit"));
+  quad_utils::loadROSParam(nh_, "/topics/terrain_map", terrain_map_topic);
   quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
   quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
@@ -19,7 +23,8 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   quad_utils::loadROSParam(nh_, "topics/foot_plan_continuous",
                            foot_plan_continuous_topic);
   quad_utils::loadROSParam(nh_, "topics/cmd_vel", cmd_vel_topic);
-  quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
+  quad_utils::loadROSParam(nh_, "/map_frame", map_frame_);
+  quad_utils::loadROSParam(nh_, "topics/control/mode", control_mode_topic);
 
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic, 1,
@@ -39,21 +44,21 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
       foot_plan_continuous_topic, 1);
 
   // Load system parameters from parameter server
-  quad_utils::loadROSParam(nh_, "local_planner/update_rate", update_rate_);
-  quad_utils::loadROSParam(nh_, "local_planner/timestep", dt_);
-  quad_utils::loadROSParam(nh_, "local_planner/horizon_length", N_);
-  quad_utils::loadROSParam(nh_, "local_planner/desired_height", z_des_);
-  quad_utils::loadROSParam(nh_, "local_planner/toe_radius", toe_radius_);
-  quad_utils::loadROSParam(nh_, "local_planner/cmd_vel_scale", cmd_vel_scale_);
-  quad_utils::loadROSParam(nh_, "local_planner/last_cmd_vel_msg_time_max",
+  quad_utils::loadROSParam(nh_, "/local_planner/update_rate", update_rate_);
+  quad_utils::loadROSParam(nh_, "/local_planner/timestep", dt_);
+  quad_utils::loadROSParam(nh_, "/local_planner/horizon_length", N_);
+  quad_utils::loadROSParam(nh_, "/local_planner/desired_height", z_des_);
+  quad_utils::loadROSParam(nh_, "/local_planner/toe_radius", toe_radius_);
+  quad_utils::loadROSParam(nh_, "/local_planner/cmd_vel_scale", cmd_vel_scale_);
+  quad_utils::loadROSParam(nh_, "/local_planner/last_cmd_vel_msg_time_max",
                            last_cmd_vel_msg_time_max_);
-  quad_utils::loadROSParam(nh_, "local_planner/cmd_vel_filter_const",
+  quad_utils::loadROSParam(nh_, "/local_planner/cmd_vel_filter_const",
                            cmd_vel_filter_const_);
-  quad_utils::loadROSParam(nh_, "local_planner/stand_vel_threshold",
+  quad_utils::loadROSParam(nh_, "/local_planner/stand_vel_threshold",
                            stand_vel_threshold_);
-  quad_utils::loadROSParam(nh_, "local_planner/stand_cmd_vel_threshold",
+  quad_utils::loadROSParam(nh_, "/local_planner/stand_cmd_vel_threshold",
                            stand_cmd_vel_threshold_);
-  quad_utils::loadROSParam(nh_, "local_planner/stand_pos_error_threshold",
+  quad_utils::loadROSParam(nh_, "/local_planner/stand_pos_error_threshold",
                            stand_pos_error_threshold_);
 
   // Load system parameters from launch file (not in config file)
@@ -105,7 +110,15 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 
 void LocalPlanner::initLocalBodyPlanner() {
   // Create nmpc wrapper class
-  local_body_planner_nonlinear_ = std::make_shared<NMPCController>();
+  SystemID type;
+  if (robot_name_ == "spirit") {
+    type = SPIRIT;
+  } else if (robot_name_ == "a1") {
+    type = A1;
+  } else {
+    ROS_WARN("WRONG ROBOT TYPE");
+  }
+  local_body_planner_nonlinear_ = std::make_shared<NMPCController>(nh_, type);
 }
 
 void LocalPlanner::initLocalFootstepPlanner() {
@@ -115,25 +128,26 @@ void LocalPlanner::initLocalFootstepPlanner() {
   std::string obj_fun_layer;
   int period;
   std::vector<double> duty_cycles, phase_offsets;
-  quad_utils::loadROSParam(nh_, "local_footstep_planner/grf_weight",
+  quad_utils::loadROSParam(nh_, "/local_footstep_planner/grf_weight",
                            grf_weight);
-  quad_utils::loadROSParam(nh_, "local_footstep_planner/ground_clearance",
+  quad_utils::loadROSParam(nh_, "/local_footstep_planner/ground_clearance",
                            ground_clearance);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/hip_clearance",
                            hip_clearance);
   quad_utils::loadROSParam(nh_,
-                           "local_footstep_planner/standing_error_threshold",
+                           "/local_footstep_planner/standing_error_threshold",
                            standing_error_threshold);
   quad_utils::loadROSParam(nh_, "local_footstep_planner/foothold_search_radius",
                            foothold_search_radius);
-  quad_utils::loadROSParam(nh_, "local_footstep_planner/foothold_obj_threshold",
+  quad_utils::loadROSParam(nh_,
+                           "/local_footstep_planner/foothold_obj_threshold",
                            foothold_obj_threshold);
-  quad_utils::loadROSParam(nh_, "local_footstep_planner/obj_fun_layer",
+  quad_utils::loadROSParam(nh_, "/local_footstep_planner/obj_fun_layer",
                            obj_fun_layer);
-  quad_utils::loadROSParam(nh_, "local_footstep_planner/period", period_d);
-  quad_utils::loadROSParam(nh_, "local_footstep_planner/duty_cycles",
+  quad_utils::loadROSParam(nh_, "/local_footstep_planner/period", period_d);
+  quad_utils::loadROSParam(nh_, "/local_footstep_planner/duty_cycles",
                            duty_cycles);
-  quad_utils::loadROSParam(nh_, "local_footstep_planner/phase_offsets",
+  quad_utils::loadROSParam(nh_, "/local_footstep_planner/phase_offsets",
                            phase_offsets);
 
   period = period_d / dt_;
@@ -209,6 +223,11 @@ void LocalPlanner::getReference() {
     if (use_twist_input_) {
       initial_timestamp_ = ros::Time::now() - ros::Duration(1e-6);
     }
+  }
+
+  // Make sure we use the most recent global plan timestamp for reference
+  if (!use_twist_input_) {
+    initial_timestamp_ = body_plan_msg_->global_plan_timestamp;
   }
 
   // Tracking trajectory so enter run mode
@@ -489,12 +508,7 @@ void LocalPlanner::publishLocalPlan() {
   // Update the headers of all messages
   local_plan_msg.header.stamp = current_state_timestamp_;
   local_plan_msg.header.frame_id = map_frame_;
-  if (!use_twist_input_) {
-    local_plan_msg.global_plan_timestamp =
-        body_plan_msg_->global_plan_timestamp;
-  } else {
-    local_plan_msg.global_plan_timestamp = initial_timestamp_;
-  }
+  local_plan_msg.global_plan_timestamp = initial_timestamp_;
   local_plan_msg.compute_time = compute_time_;
   future_footholds_msg.header = local_plan_msg.header;
   foot_plan_msg.header = local_plan_msg.header;

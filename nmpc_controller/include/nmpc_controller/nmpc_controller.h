@@ -27,7 +27,7 @@ class NMPCController {
    * @param[in] nh ROS NodeHandle to publish and subscribe from
    * @return Constructed object of type MPCController
    */
-  NMPCController();
+  NMPCController(ros::NodeHandle &nh, int type);
 
   /**
    * @brief Update the contact and dynamic matrices, solve, and return the
@@ -76,6 +76,11 @@ class NMPCController {
 
  private:
   ros::NodeHandle nh_;
+
+  int robot_id_;
+
+  /// Robot type: A1 or Spirit
+  std::string robot_ns_;
 
   /// Update rate for sending and receiving data;
   double update_rate_;
