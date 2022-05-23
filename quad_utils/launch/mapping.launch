@@ -1,17 +1,19 @@
 <launch>
-  
-    <include file="$(find quad_utils)/launch/load_params.launch" />
-
+    <arg name="robot_type" default="spirit"/>
     <!-- Specify the type of input (grid, mesh, cloud) -->
-    <arg name="input_type"                default="grid"/>
+    <arg name="input_type" default="grid"/>
+
+    <include file="$(find quad_utils)/launch/load_global_params.launch">
+        <arg name="robot_type" value="$(arg robot_type)"/>
+    </include>
 
     <!-- Args for mesh loader -->
-    <arg name="frame_id_mesh_loaded"      default="map"/>
-    <arg name="grid_map_layer_name"       default="z"/>
-    <arg name="grid_map_resolution"       default="0.05"/>
-    <arg name="latch_grid_map_pub"        default="true"/>
-    <arg name="verbose"                   default="true"/>
-    <arg name="world"                     default="step_20cm"/>
+    <arg name="frame_id_mesh_loaded" default="map"/>
+    <arg name="grid_map_layer_name" default="z"/>
+    <arg name="grid_map_resolution" default="0.05"/>
+    <arg name="latch_grid_map_pub" default="true"/>
+    <arg name="verbose" default="true"/>
+    <arg name="world" default="step_20cm"/>
 
     <group if="$(eval arg('input_type') == 'grid')">
         <!-- Launch the node to generate simple terrain from csv or compute in node -->
@@ -21,15 +23,15 @@
     <group if="$(eval arg('input_type') == 'mesh')">
         <!-- Launch the node to generate the mesh  -->
         <node name="mesh_to_grid_map_node" pkg="quad_utils" type="mesh_to_grid_map_node" output="screen">
-            <param name="frame_id_mesh_loaded"    value="$(arg frame_id_mesh_loaded)"/>
-            <param name="grid_map_resolution"     value="$(arg grid_map_resolution)"/>
-            <param name="layer_name"              value="$(arg grid_map_layer_name)"/>
-            <param name="latch_grid_map_pub"      value="$(arg latch_grid_map_pub)"/>
-            <param name="verbose"                 value="$(arg verbose)"/>
-            <param name="world"                   value="$(arg world)"/>
-        </node>        
+            <param name="frame_id_mesh_loaded" value="$(arg frame_id_mesh_loaded)"/>
+            <param name="grid_map_resolution" value="$(arg grid_map_resolution)"/>
+            <param name="layer_name" value="$(arg grid_map_layer_name)"/>
+            <param name="latch_grid_map_pub" value="$(arg latch_grid_map_pub)"/>
+            <param name="verbose" value="$(arg verbose)"/>
+            <param name="world" value="$(arg world)"/>
+        </node>
     </group>
-    
+
     <!-- Launch the grid map visualizer -->
     <node pkg="grid_map_visualization" type="grid_map_visualization" name="grid_map_visualization" output="screen"/>
 

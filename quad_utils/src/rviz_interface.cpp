@@ -24,6 +24,8 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
                            ground_truth_state_topic);
   quad_utils::loadROSParam(nh_, "topics/state/trajectory",
                            trajectory_state_topic);
+  quad_utils::loadROSParamDefault(nh_, "tf_prefix", tf_prefix_,
+                                  std::string(""));
 
   std::string global_plan_viz_topic, local_plan_viz_topic,
       local_plan_ori_viz_topic, global_plan_grf_viz_topic,
@@ -64,24 +66,24 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
                            trajectory_state_trace_viz_topic);
 
   // Setup rviz_interface parameters
-  quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
-  nh.param<double>("rviz_interface/update_rate", update_rate_, 10);
-  nh.param<std::vector<int> >("rviz_interface/colors/front_left",
-                              front_left_color_, {0, 255, 0});
-  nh.param<std::vector<int> >("rviz_interface/colors/back_left",
-                              back_left_color_, {0, 0, 255});
-  nh.param<std::vector<int> >("rviz_interface/colors/front_right",
-                              front_right_color_, {0, 255, 0});
-  nh.param<std::vector<int> >("rviz_interface/colors/back_right",
-                              back_right_color_, {0, 0, 255});
-  nh.param<std::vector<int> >("rviz_interface/colors/net_grf", net_grf_color_,
-                              {255, 0, 0});
-  nh.param<std::vector<int> >("rviz_interface/colors/individual_grf",
-                              individual_grf_color_, {255, 0, 0});
+  quad_utils::loadROSParam(nh_, "/map_frame", map_frame_);
+  quad_utils::loadROSParam(nh_, "/rviz_interface/update_rate", update_rate_);
+  quad_utils::loadROSParam(nh_, "/rviz_interface/colors/front_left",
+                           front_left_color_);
+  quad_utils::loadROSParam(nh_, "/rviz_interface/colors/back_left",
+                           back_left_color_);
+  quad_utils::loadROSParam(nh_, "/rviz_interface/colors/front_right",
+                           front_right_color_);
+  quad_utils::loadROSParam(nh_, "/rviz_interface/colors/back_right",
+                           back_right_color_);
+  quad_utils::loadROSParam(nh_, "/rviz_interface/colors/net_grf",
+                           net_grf_color_);
+  quad_utils::loadROSParam(nh_, "/rviz_interface/colors/individual_grf",
+                           individual_grf_color_);
 
   double period, dt;
-  quad_utils::loadROSParam(nh_, "local_footstep_planner/period", period);
-  quad_utils::loadROSParam(nh_, "local_planner/timestep", dt);
+  quad_utils::loadROSParam(nh_, "/local_footstep_planner/period", period);
+  quad_utils::loadROSParam(nh_, "/local_planner/timestep", dt);
   orientation_subsample_interval_ = int(period / dt);
 
   // Setup plan subs
@@ -197,7 +199,7 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   trajectory_state_trace_msg_.color.b = (float)front_right_color_[2] / 255.0;
 }
 
-void RVizInterface::robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg,
+void RVizInterface::robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg,
                                       const int pub_id) {
   // Initialize Path message to visualize body plan
   visualization_msgs::Marker body_plan_viz;
@@ -321,7 +323,7 @@ void RVizInterface::robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg,
   }
 }
 
-void RVizInterface::grfCallback(const quad_msgs::GRFArray::ConstPtr& msg) {
+void RVizInterface::grfCallback(const quad_msgs::GRFArray::ConstPtr &msg) {
   if (msg->vectors.empty()) {
     return;
   }
@@ -376,7 +378,7 @@ void RVizInterface::grfCallback(const quad_msgs::GRFArray::ConstPtr& msg) {
 }
 
 void RVizInterface::discreteBodyPlanCallback(
-    const quad_msgs::RobotPlan::ConstPtr& msg) {
+    const quad_msgs::RobotPlan::ConstPtr &msg) {
   // Construct Marker message
   visualization_msgs::Marker discrete_body_plan;
 
@@ -407,7 +409,7 @@ void RVizInterface::discreteBodyPlanCallback(
 }
 
 void RVizInterface::footPlanDiscreteCallback(
-    const quad_msgs::MultiFootPlanDiscrete::ConstPtr& msg) {
+    const quad_msgs::MultiFootPlanDiscrete::ConstPtr &msg) {
   // Initialize Marker message to visualize footstep plan as points
   visualization_msgs::Marker points;
   points.header = msg->header;
@@ -465,7 +467,7 @@ void RVizInterface::footPlanDiscreteCallback(
 }
 
 void RVizInterface::footPlanContinuousCallback(
-    const quad_msgs::MultiFootPlanContinuous::ConstPtr& msg) {
+    const quad_msgs::MultiFootPlanContinuous::ConstPtr &msg) {
   std::vector<nav_msgs::Path> foot_paths;
   foot_paths.resize(4);
 
@@ -489,7 +491,7 @@ void RVizInterface::footPlanContinuousCallback(
 }
 
 void RVizInterface::robotStateCallback(
-    const quad_msgs::RobotState::ConstPtr& msg, const int pub_id) {
+    const quad_msgs::RobotState::ConstPtr &msg, const int pub_id) {
   // Make a transform message for the body, populate with state estimate data
   geometry_msgs::TransformStamped transformStamped;
   transformStamped.header = msg->header;
@@ -512,7 +514,7 @@ void RVizInterface::robotStateCallback(
   quad_utils::pointMsgToEigen(msg->body.pose.position, current_pos);
 
   if (pub_id == ESTIMATE) {
-    transformStamped.child_frame_id = "/estimate/body";
+    transformStamped.child_frame_id = tf_prefix_ + "_estimate/body";
     estimate_base_tf_br_.sendTransform(transformStamped);
     estimate_joint_states_viz_pub_.publish(joint_msg);
 
@@ -532,7 +534,8 @@ void RVizInterface::robotStateCallback(
     state_estimate_trace_pub_.publish(state_estimate_trace_msg_);
 
   } else if (pub_id == GROUND_TRUTH) {
-    transformStamped.child_frame_id = "/ground_truth/body";
+    transformStamped.child_frame_id = tf_prefix_ + "_ground_truth/body";
+
     ground_truth_base_tf_br_.sendTransform(transformStamped);
     ground_truth_joint_states_viz_pub_.publish(joint_msg);
 
@@ -553,7 +556,7 @@ void RVizInterface::robotStateCallback(
     ground_truth_state_trace_pub_.publish(ground_truth_state_trace_msg_);
 
   } else if (pub_id == TRAJECTORY) {
-    transformStamped.child_frame_id = "/trajectory/body";
+    transformStamped.child_frame_id = tf_prefix_ + "_trajectory/body";
     trajectory_base_tf_br_.sendTransform(transformStamped);
     trajectory_joint_states_viz_pub_.publish(joint_msg);
 

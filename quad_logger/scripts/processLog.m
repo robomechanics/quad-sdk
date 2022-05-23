@@ -20,8 +20,10 @@ end
 % If a trial name is provided, use that to save everything
 if nargin>0
     trialName = varargin{1};
+    namespace = varargin{2};
 else
-    trialName = 'quad_log'; % Set to '' to load via GUI
+    trialName = ''; % Set to '' to load via GUI
+    namespace = 'robot_1'; % Namespace of the robot bag, set to '' if none
 end
 
 %% Set parameters
@@ -37,7 +39,7 @@ tWindowLocalPlan = [];              % Specify time window for local plan (use []
 %% Load the data
 
 % Load the data
-[data, trialName] = parseQuadBag(trialName);
+[data, trialName] = parseQuadBag(trialName, namespace);
 stateEstimate = data.stateEstimate;
 stateGroundTruth = data.stateGroundTruth;
 stateTrajectory = data.stateTrajectory;
