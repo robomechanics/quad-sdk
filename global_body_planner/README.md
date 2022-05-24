@@ -1,4 +1,4 @@
-![Example image](doc/global_body_planner.png)
+![header image](../doc/global_body_planner.png)
 
 # Global Body Planner
 
