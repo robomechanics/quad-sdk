@@ -67,16 +67,16 @@ roslaunch quad_utils quad_gazebo.launch
 
 Stand the robot with:
 ```
-rostopic pub /control/mode std_msgs/UInt8 "data: 1"
+rostopic pub /robot_1/control/mode std_msgs/UInt8 "data: 1"
 ```
 Run the stack with twist input:
 ```
-roslaunch quad_utils planning.launch global_planner:=twist logging:=true
-rosrun teleop_twist_keyboard teleop_twist_keyboard.py
+roslaunch quad_utils quad_plan.launch global_planner:=twist logging:=true
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=/robot_1/cmd_vel
 ```
 Run the stack with global planner:
 ```
-roslaunch quad_utils planning.launch global_planner:=fgmp logging:=true
+roslaunch quad_utils quad_plan.launch global_planner:=fgmp logging:=true
 ```
 Refer to the [Wiki](https://github.com/robomechanics/quad-sdk/wiki/2.-Launch,-Node,-and-Topic-Structure) for more information on alternate usage.
 
