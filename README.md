@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/robomechanics/quad-sdk/tree/main.svg?style=shield)](https://circleci.com/gh/robomechanics/quad-sdk/tree/main)
+![Example image](doc/quad_sdk_promo.png)
 
 # Quad-SDK
 
@@ -18,9 +19,6 @@ Maintainer: Ardalan Tajbakhsh, atajbakh@andrew.cmu.edu**
 
 The packages in Quad-SDK have been tested under [ROS] Melodic on Ubuntu 18.04.
 This is research code, expect that it changes often and any fitness for a particular purpose is disclaimed.
-
-![Example image](doc/quad_sdk_promo.png)
-
 
 ### Publications
 
