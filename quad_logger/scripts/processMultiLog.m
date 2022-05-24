@@ -17,12 +17,13 @@ end
 
 %% Select rosbag to parse
 
-% envName = 'leap_gap_40cm_01realtime';    tWindow = [3, 6];
-envName = 'step_20cm_05realtime';     tWindow = [2, 5];
+envName = 'leap_gap_40cm_01realtime';    tWindow = [3, 6]; tLocalPlanWindow = [3, 6];
+% envName = 'step_20cm_05realtime';     tWindow = [2, 5]; tLocalPlanWindow = [2, 4];
+% envName = 'rough_25cm_02realtime';    tWindow = [3, 6]; tLocalPlanWindow = [3, 6];
 configNames = {'Simple', 'Complex', 'Mixed', 'Adaptive'};
-configLinestyles = {'-', '--', ':', '-.'};
-configColors = {[0,45,114]/255, [166,25,46]/255, [242,169,0]/255,  [0,132,61]/255};
-lineWidth = 4;
+configLinestyles = {'--', ':', '-.', '-'};
+configColors = {[0,130,186]/255, [166,25,46]/255, [242,169,0]/255,  [0,132,61]/255};
+lineWidth = 3;
 
 %% Set parameters
 
@@ -40,6 +41,7 @@ GRFVectorsFig = 2;
 solveTimeFig = 3;
 horizonLengthFig = 4;
 predictionHorizonFig = 5;
+simplePercentageFig = 6;
 stateFigs = [];
 controlFigs = [];
 localPlanFigs = [];
@@ -59,45 +61,47 @@ for i = 1:length(configNames)
     maxTime = max(maxTime, max(localPlan{i}.time));
     
     %% Plot the data
+    
+    tWindow = [stateGroundTruth{i}.time(1), stateGroundTruth{i}.time(end)];
+    tLocalPlanWindow = [localPlan{i}.time(1), localPlan{i}.time(end)];
         
     % Plot the state
     linearStateFig = figure(linearStateFig);
     linearStateFig.Name = "linear_states";
-%     traj_idx = find(stateGroundTruth{i}.time>= tWindow(1) & stateGroundTruth{i}.time<= tWindow(2));
-    traj_idx = 1:length(stateGroundTruth{i}.time);
+    traj_idx = find(stateGroundTruth{i}.time>= tWindow(1) & stateGroundTruth{i}.time<= tWindow(2));
     
     % z state
     subplot(2,2,1); hold on
-    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.position(traj_idx,3), 'Color', configColors{i}, 'LineWidth', lineWidth);
+    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.position(traj_idx,3), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
     ylabel('Z Position (m)')
     axis tight
     
     subplot(2,2,3); hold on
-    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.velocity(traj_idx,3), 'Color', configColors{i}, 'LineWidth', lineWidth);
+    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.velocity(traj_idx,3), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
     ylabel('Z Velocity (m/s)')
     xlabel('Time (s)')
     axis tight
     
     % x state
     subplot(2,2,2); hold on
-    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.position(traj_idx,1), 'Color', configColors{i}, 'LineWidth', lineWidth);
+    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.position(traj_idx,1), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
     ylabel('X Position (m)')
     axis tight
     
     subplot(2,2,4); hold on
-    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.velocity(traj_idx,1), 'Color', configColors{i}, 'LineWidth', lineWidth);
+    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.velocity(traj_idx,1), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
     ylabel('X Velocity (m/s)')
     xlabel('Time (s)')
     axis tight
     
 %     % yaw state
 %     subplot(2,2,2); hold on
-%     plot(stateGroundTruth{i}.time, stateGroundTruth{i}.orientationRPY(:,3), 'Color', configColors{i}, 'LineWidth', lineWidth);
+%     plot(stateGroundTruth{i}.time, stateGroundTruth{i}.orientationRPY(:,3), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
 %     ylabel('Yaw (rad)')
 %     axis tight
 %     
 %     subplot(2,2,4); hold on
-%     plot(stateGroundTruth{i}.time, stateGroundTruth{i}.angularVelocity(:,3), 'Color', configColors{i}, 'LineWidth', lineWidth);
+%     plot(stateGroundTruth{i}.time, stateGroundTruth{i}.angularVelocity(:,3), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
 %     ylabel('Yaw rate (rad/s)')
 %     xlabel('Time (s)')
 %     axis tight
@@ -108,8 +112,7 @@ for i = 1:length(configNames)
     %
         
     % Plot the controls
-%     traj_idx = find(controlGRFs{i}.time>= tWindow(1) & controlGRFs{i}.time<= tWindow(2));
-    traj_idx = 1:length(controlGRFs{i}.time);
+    traj_idx = find(controlGRFs{i}.time>= tWindow(1) & controlGRFs{i}.time<= tWindow(2));
 
     totalGRF = zeros(length(controlGRFs{i}.vectors{1}), 3);
     for j = 1:length(controlGRFs{i}.vectors{1})
@@ -128,7 +131,7 @@ for i = 1:length(configNames)
     GRFVectorsFig.Name = "grfs";
     
     hold on;
-    plot(controlGRFs{i}.time(traj_idx), grfNorm(traj_idx), 'Color', configColors{i}, 'LineWidth', lineWidth);
+    plot(controlGRFs{i}.time(traj_idx), grfNorm(traj_idx), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
     ylabel('Control error norm $||u - u_{nom}||_2$ (N)')
     xlabel('Time (s)')
     axis tight
@@ -142,7 +145,7 @@ for i = 1:length(configNames)
     solveTimeFig = figure(solveTimeFig);
     solveTimeFig.Name = "solve_time";
     scale = 1; % s to ms
-    semilogy(localPlan{i}.time, smooth(scale*localPlan{i}.solveTime,5), 'Color', configColors{i}, 'LineWidth', lineWidth);
+    semilogy(localPlan{i}.time, smooth(scale*localPlan{i}.solveTime,5), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
     hold on;
     xlabel('Time (s)')
     ylabel('Solve Time (s)');
@@ -160,7 +163,7 @@ for i = 1:length(configNames)
     % Plot the horizon lengths
     horizonLengthFig = figure(horizonLengthFig);
     horizonLengthFig.Name = "horizon_length";
-    plot(localPlan{i}.time, localPlan{i}.horizonLength, 'Color', configColors{i}, 'LineWidth', lineWidth);
+    plot(localPlan{i}.time, localPlan{i}.horizonLength, 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
     hold on;
     xlabel('Time (s)')
     ylabel('Horizon Length');
@@ -171,22 +174,44 @@ for i = 1:length(configNames)
     % ~~~~~~~~~~~~~~~~~~~
     %
     
+    simplePercentageVec = zeros(size(localPlan{i}.elementTimes));
+    for j = 1:length(localPlan{i}.elementTimes)
+        simplePercentageVec(j) = 100*sum(1-localPlan{i}.complexitySchedule{j})/double(localPlan{i}.horizonLength(j));
+    end
+    
+    % Plot the simple percentage over time
+    simplePercentageFig = figure(simplePercentageFig);
+    simplePercentageFig.Name = "simple_percentage";
+    plot(localPlan{i}.time, simplePercentageVec, 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
+    hold on;
+    xlabel('Time (s)')
+    ylabel('\% of Horizon Simplified');
+%     ytickformat('percentage')
+    yticks([0 25 50 75 100]);
+    yticklabels({'0\%', '25\%', '50\%', '75\%', '100\%'});
+    axis tight
+    set(simplePercentageFig, 'Position', [100 100 1200 600])
+    
+    %
+    % ~~~~~~~~~~~~~~~~~~~
+    %
+    
+    
     % Plot the prediction horizons
     predictionHorizonFig = figure(predictionHorizonFig);
     predictionHorizonFig.Name = "prediction_horizon";
     subplot(2,2,i)
+%     subplot(4,1,i)
     
     % Declare sizes
-    markerSizeSimple = 3;
-    markerSizeComplex = 3;
-    localPlanColorVector = {[166,25,46]/255, [0,45,114]/255, [0,132,61]/255, [242,169,0]/255};
+    markerSizeSimple = 10;
+    markerSizeComplex = 10;
     
     % Extract times into vectors
     elementTimesVec = [];
     complexityScheduleVec = [];
     trajTimesVec = [];
-%     traj_idx = find(localPlan{i}.time>= tWindow(1) & localPlan{i}.time<= tWindow(2));
-    traj_idx = 1:length(localPlan{i}.time);
+    traj_idx = find(localPlan{i}.time>= tLocalPlanWindow(1) & localPlan{i}.time<= tLocalPlanWindow(2));
     
     localPlan{i}.time = localPlan{i}.time(traj_idx);
     localPlan{i}.solveTime = localPlan{i}.solveTime(traj_idx,:);
@@ -211,40 +236,64 @@ for i = 1:length(configNames)
     trajTimesVecComplex = trajTimesVec(complexIdx);
     elementTimesVecComplex = elementTimesVec(complexIdx);
     
-    scatter(trajTimesVecSimple, elementTimesVecSimple, markerSizeSimple, localPlanColorVector{2}, 'filled'); hold on;
+%     hold on;
+%     if ~isempty(trajTimesVecComplex)
+%         scatter(trajTimesVecComplex, elementTimesVecComplex, markerSizeComplex, configColors{2}, 'filled');
+%     end
+%     scatter(trajTimesVecSimple, elementTimesVecSimple, markerSizeSimple, configColors{1}, 'filled'); hold on;
+
+%     if i >= 3
+%         xlabel('Current Time, $k$ (s)');
+%     end
+%     if mod(i,2) == 1
+%         ylabel('Predicted Time, $k + i$ (s)');
+%     end
+%     if (i == 2)
+%         legend(predictionHorizonFig.CurrentAxes, 'Simple', 'Complex');
+%     end
+%     
+%     axis equal
+%     axis([tLocalPlanWindow(1), tLocalPlanWindow(2), tLocalPlanWindow(1), tLocalPlanWindow(2) + 0.72])
+%     title(configNames{i})
+%     set(predictionHorizonFig, 'Position', [100 100 1000 1200])
+%     hold on;
     
+    hold on;
     if ~isempty(trajTimesVecComplex)
-        scatter(trajTimesVecComplex, elementTimesVecComplex, markerSizeComplex, localPlanColorVector{1});
+        scatter(elementTimesVecComplex, trajTimesVecComplex, markerSizeComplex, configColors{2}, 'filled');
     end
+    scatter(elementTimesVecSimple, trajTimesVecSimple, markerSizeSimple, configColors{1}, 'filled'); hold on;
+    set(gca, 'YDir','reverse')
     
     if i >= 3
-        xlabel('Current Time, $k$ (s)');
+        xlabel('Predicted Time, $k + i$ (s)');
     end
     if mod(i,2) == 1
-        ylabel('Predicted Time, $k + i$ (s)');
+        ylabel('Current Time, $k$ (s)');
     end
     if (i == 2)
         legend(predictionHorizonFig.CurrentAxes, 'Simple', 'Complex');
     end
     
     axis equal
-    axis([tWindow(1), tWindow(2), tWindow(1), tWindow(2) + 0.72])
-    set(predictionHorizonFig, 'Position', [100 100 1000 1200])
+    axis([tLocalPlanWindow(1), tLocalPlanWindow(2) + 0.72, tLocalPlanWindow(1), tLocalPlanWindow(2)])
+    title(configNames{i})
+    set(predictionHorizonFig, 'Position', [100 100 1200 1000])
     hold on;
-    
     
 end
 legend(linearStateFig.CurrentAxes, configNames);
 legend(GRFVectorsFig.CurrentAxes, configNames);
 legend(solveTimeFig.CurrentAxes, configNames);
 legend(horizonLengthFig.CurrentAxes, configNames);
+legend(simplePercentageFig.CurrentAxes, configNames, 'location', 'southeast');
 
 1000*meanSolveTimes
 medianSolveTimes
 meanGRFNorm
 
 % Add figures to array
-figArray = [linearStateFig, GRFVectorsFig, solveTimeFig, horizonLengthFig, predictionHorizonFig];
+figArray = [linearStateFig, GRFVectorsFig, solveTimeFig, horizonLengthFig, predictionHorizonFig, simplePercentageFig];
 
 %% Save the logs and figures in one directory
 logDir = [];
