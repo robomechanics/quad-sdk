@@ -1,8 +1,6 @@
 [![CircleCI](https://circleci.com/gh/robomechanics/quad-sdk/tree/main.svg?style=shield)](https://circleci.com/gh/robomechanics/quad-sdk/tree/main)
 ![Example image](doc/quad_sdk_promo.png)
 
-# Quad-SDK
-
 ## Overview
 
 Quad-SDK is an open source, ROS-based full stack software framework for agile quadrupedal locomotion. The design of Quad-SDK is focused on the vertical integration of planning, control, estimation, communication, and development tools which enable agile quadrupedal locomotion in simulation and hardware with minimal user changes for multiple platforms. The modular software architecture allows researchers to experiment with their own implementations of different components while leveraging the existing framework. Quad-SDK also offers Gazebo simulation support and a suite of visualization and data-processing tools for rapid development. Refer to the [paper] for high-level details of the framework.
@@ -55,7 +53,7 @@ Legged Robots, May 2022. ([paper])
 
 ## Installation
 
-Refer to the [Quad-SDK Wiki](https://github.com/robomechanics/quad-sdk/wiki/1.-Home) for installation, dependency, and unit testing information. Currently Quad-SDK requires ROS Melodic on Ubuntu 18.04. All other dependencies are installed with the included setup script.
+Refer to the [Quad-SDK Wiki](https://github.com/robomechanics/quad-sdk/wiki/1.-Getting-Started-with-Quad-SDK) for installation, dependency, and unit testing information. Currently Quad-SDK requires ROS Melodic on Ubuntu 18.04. All other dependencies are installed with the included setup script.
 
 ## Usage
 
@@ -78,7 +76,7 @@ Run the stack with global planner:
 ```
 roslaunch quad_utils quad_plan.launch reference:=gbpl logging:=true
 ```
-Refer to the [Wiki](https://github.com/robomechanics/quad-sdk/wiki/2.-Launch,-Node,-and-Topic-Structure) for more information on alternate usage.
+Refer to the [Wiki](https://github.com/robomechanics/quad-sdk/wiki/2.-Using-the-Software) for more information on alternate usage.
 
 ## Bugs & Feature Requests
 
