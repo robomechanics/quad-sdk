@@ -43,7 +43,7 @@ Run the unit tests with
 
 Run the main node with
 
-	roslaunch quad_utils planning.launch global_planner:=fgmp
+	roslaunch quad_utils planning.launch reference:=gbpl
 	
 Leaping can be disabled with the optional argument `leaping:=false`, which internally skips the leap action sampling procedure and relaxes the kinematics bounds on collision checking.
 

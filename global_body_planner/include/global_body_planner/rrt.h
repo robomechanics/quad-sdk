@@ -16,18 +16,18 @@ using namespace planning_utils;
    This class builds an RRT using the PlannerClass as a data structure to
    maintain the tree as well as utility methods to process and debug.
 */
-class RRTClass {
+class RRT {
  public:
   /**
-   * @brief Constructor for RRTClass
-   * @return Constructed object of type RRTClass
+   * @brief Constructor for RRT
+   * @return Constructed object of type RRT
    */
-  RRTClass();
+  RRT();
 
   /**
-   * @brief Destructor for RRTClass
+   * @brief Destructor for RRT
    */
-  ~RRTClass();
+  ~RRT();
 
   /** Attempt to connect two states with specified stance time, and return a new
    * state if the full connection is not possible

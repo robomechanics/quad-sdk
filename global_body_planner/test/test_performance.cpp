@@ -2,7 +2,7 @@
 #include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
 
-#include "global_body_planner/fast_global_motion_planner.h"
+#include "global_body_planner/gbpl.h"
 #include "global_body_planner/global_body_planner_test_fixture.h"
 #include "global_body_planner/planner_class.h"
 #include "global_body_planner/planning_utils.h"
