@@ -71,11 +71,6 @@ class RobotDriver {
   void initStateEstimator();
 
   /**
-   * @brief Loads general ros parameters
-   */
-  void loadCompFilterParams();
-
-  /**
    * @brief Verifies and updates new control mode
    * @param[in] msg New control mode
    */
@@ -328,6 +323,18 @@ class RobotDriver {
   std::vector<double> swing_kp_cart_;
   std::vector<double> swing_kd_cart_;
 
+  /// CF high pass gain
+  std::vector<double> high_pass_a_;
+  std::vector<double> high_pass_b_;
+  std::vector<double> high_pass_c_;
+  std::vector<double> high_pass_d_;
+
+  /// CF low pass gain
+  std::vector<double> low_pass_a_;
+  std::vector<double> low_pass_b_;
+  std::vector<double> low_pass_c_;
+  std::vector<double> low_pass_d_;
+
   /// Define standing joint angles
   std::vector<double> stand_joint_angles_;
 
@@ -342,6 +349,12 @@ class RobotDriver {
 
   /// State Estimator template class
   std::shared_ptr<StateEstimator> state_estimator_;
+
+  /// Complementary Filter class
+  std::shared_ptr<CompFilterEstimator> comp_filter_estimator_;
+
+  /// EKF Estimator template class
+  std::shared_ptr<EKFFilterEstimator> ekf_estimatror_;
 
   /// Mblink converter object
   std::shared_ptr<HardwareInterface> hardware_interface_;
@@ -391,30 +404,6 @@ class RobotDriver {
 
   /// Required for some hardware interfaces
   char** argv_;
-
-  /// Struct of second-order low/high pass filter with derivative/intergral
-  struct Filter {
-    // State-space model
-    Eigen::Matrix<double, 2, 2> A;
-    Eigen::Matrix<double, 2, 1> B;
-    Eigen::Matrix<double, 1, 2> C;
-    Eigen::Matrix<double, 1, 1> D;
-
-    // Filter states
-    std::vector<Eigen::Matrix<double, 2, 1>> x;
-
-    // Filter initialization indicator
-    bool init;
-  };
-
-  /// Struct of complementray filter with low and high pass filters
-  struct ComplementaryFilter {
-    Filter low_pass_filter;
-    Filter high_pass_filter;
-  };
-
-  /// Complementray filter
-  ComplementaryFilter complementary_filter_;
 };
 
 #endif  // ROBOT_DRIVER_H
