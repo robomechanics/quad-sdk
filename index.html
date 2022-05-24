@@ -65,8 +65,7 @@ $(function() {
   <div class="headertitle"><div class="title">Quad-SDK </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p ><a class="anchor" id="md_README"></a> <a href="https://circleci.com/gh/robomechanics/quad-sdk/tree/main"><img src="https://circleci.com/gh/robomechanics/quad-sdk/tree/main.svg?style=shield" alt="CircleCI" style="pointer-events: none;" class="inline"/></a></p>
-<h1>Quad-SDK</h1>
+<div class="textblock"><p ><a class="anchor" id="md_README"></a> <a href="https://circleci.com/gh/robomechanics/quad-sdk/tree/main"><img src="https://circleci.com/gh/robomechanics/quad-sdk/tree/main.svg?style=shield" alt="CircleCI" style="pointer-events: none;" class="inline"/></a> <img src="doc/quad_sdk_promo.png" alt="Example image" class="inline"/></p>
 <h2>Overview</h2>
 <p >Quad-SDK is an open source, ROS-based full stack software framework for agile quadrupedal locomotion. The design of Quad-SDK is focused on the vertical integration of planning, control, estimation, communication, and development tools which enable agile quadrupedal locomotion in simulation and hardware with minimal user changes for multiple platforms. The modular software architecture allows researchers to experiment with their own implementations of different components while leveraging the existing framework. Quad-SDK also offers Gazebo simulation support and a suite of visualization and data-processing tools for rapid development. Refer to the <a href="https://www.andrew.cmu.edu/user/amj1/papers/Quad_SDK_ICRA_Abstract.pdf">paper</a> for high-level details of the framework.</p>
 <p ><b>Keywords:</b> Legged Robotics, Quadrupeds, Planning, Control, Leaping, ROS</p>
@@ -76,7 +75,6 @@ $(function() {
  Affiliation: <a href="https://www.cmu.edu/me/robomechanicslab/">The Robomechanics Lab at Carnegie Mellon University</a><br  />
  Maintainer: Ardalan Tajbakhsh, <a href="#" onclick="location.href='mai'+'lto:'+'ata'+'jb'+'akh'+'@a'+'ndr'+'ew'+'.cm'+'u.'+'edu'; return false;">atajb<span style="display: none;">.nosp@m.</span>akh@<span style="display: none;">.nosp@m.</span>andre<span style="display: none;">.nosp@m.</span>w.cm<span style="display: none;">.nosp@m.</span>u.edu</a>**</p>
 <p >The packages in Quad-SDK have been tested under <a href="http://www.ros.org">ROS</a> Melodic on Ubuntu 18.04. This is research code, expect that it changes often and any fitness for a particular purpose is disclaimed.</p>
-<p ><img src="doc/quad-sdk-demo.png" alt="Example image" class="inline"/></p>
 <h3>Publications</h3>
 <p >If you use this work in an academic context, please cite the following publications as relevant:</p>
 <ul>
@@ -103,15 +101,15 @@ $(function() {
 </pre></li>
 </ul>
 <h2>Installation</h2>
-<p >Refer to the <a href="https://github.com/robomechanics/quad-sdk/wiki/1.-Home">Quad-SDK Wiki</a> for installation, dependency, and unit testing information. Currently Quad-SDK requires ROS Melodic on Ubuntu 18.04. All other dependencies are installed with the included setup script.</p>
+<p >Refer to the <a href="https://github.com/robomechanics/quad-sdk/wiki/1.-Getting-Started-with-Quad-SDK">Quad-SDK Wiki</a> for installation, dependency, and unit testing information. Currently Quad-SDK requires ROS Melodic on Ubuntu 18.04. All other dependencies are installed with the included setup script.</p>
 <h2>Usage</h2>
 <p >Launch the simulation with:</p>
 <div class="fragment"><div class="line">roslaunch quad_utils quad_gazebo.launch</div>
-</div><!-- fragment --><p >Stand the robot with: </p><div class="fragment"><div class="line">rostopic pub /control/mode std_msgs/UInt8 &quot;data: 1&quot;</div>
-</div><!-- fragment --><p> Run the stack with twist input: </p><div class="fragment"><div class="line">roslaunch quad_utils planning.launch global_planner:=twist logging:=true</div>
-<div class="line">rosrun teleop_twist_keyboard teleop_twist_keyboard.py</div>
-</div><!-- fragment --><p> Run the stack with global planner: </p><div class="fragment"><div class="line">roslaunch quad_utils planning.launch global_planner:=fgmp logging:=true</div>
-</div><!-- fragment --><p> Refer to the <a href="https://github.com/robomechanics/quad-sdk/wiki/2.-Launch,-Node,-and-Topic-Structure">Wiki</a> for more information on alternate usage.</p>
+</div><!-- fragment --><p >Stand the robot with: </p><div class="fragment"><div class="line">rostopic pub /robot_1/control/mode std_msgs/UInt8 &quot;data: 1&quot;</div>
+</div><!-- fragment --><p> Run the stack with twist input: </p><div class="fragment"><div class="line">roslaunch quad_utils quad_plan.launch global_planner:=twist logging:=true</div>
+<div class="line">rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=/robot_1/cmd_vel</div>
+</div><!-- fragment --><p> Run the stack with global planner: </p><div class="fragment"><div class="line">roslaunch quad_utils quad_plan.launch global_planner:=fgmp logging:=true</div>
+</div><!-- fragment --><p> Refer to the <a href="https://github.com/robomechanics/quad-sdk/wiki/2.-Using-the-Software">Wiki</a> for more information on alternate usage.</p>
 <h2>Bugs &amp; Feature Requests</h2>
 <p >Please report bugs and request features using the <a href="https://github.com/robomechanics/quad-sdk/issues">Issue Tracker</a>. </p>
 </div></div><!-- PageDoc -->
