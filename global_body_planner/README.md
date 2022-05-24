@@ -4,7 +4,7 @@
 
 ## Overview
 
-This package implements global planning algorithms for agile quadrupedal navigation. The package produces point-to-point plans which guide the robot from its current state to the goal given a map of the terrain. The primary navigation algorithm is an RRT-Connect planner which uses motion primitives to produce long-horizon plans that include flight phases. See the [paper] for more details on the algorithm.
+This package implements global planning algorithms for agile quadrupedal navigation. The package produces point-to-point plans which guide the robot from its current state to the goal given a map of the terrain. The primary navigation algorithm is the Global Body Planner for Legged Robots (GBP-L), an RRT-Connect planner which uses motion primitives to produce long-horizon plans that include flight phases. See the [paper] for more details on the algorithm.
 
 ### License
 
