@@ -64,6 +64,5 @@ var searchData=
   ['goalstatecallback_61',['goalStateCallback',['../classGlobalBodyPlanner.html#a9bbaa65b67ce5e11537494288fcbcc9b',1,'GlobalBodyPlanner']]],
   ['graphclass_62',['GraphClass',['../classGraphClass.html#a39d78244b77de2351494de80b28e7dbe',1,'GraphClass']]],
   ['grfcallback_63',['grfCallback',['../classRVizInterface.html#a19b79f57edcace70c833fc2bd1052028',1,'RVizInterface']]],
-  ['grfpidcontroller_64',['GrfPidController',['../classGrfPidController.html#aae5186524b052a63d7c0fa877cfeb4e4',1,'GrfPidController']]],
-  ['groundtruthcallback_65',['groundtruthCallback',['../classEKFEstimator.html#a3ffe38e3ffd0395a4db381bd2c850e96',1,'EKFEstimator']]]
+  ['grfpidcontroller_64',['GrfPidController',['../classGrfPidController.html#aae5186524b052a63d7c0fa877cfeb4e4',1,'GrfPidController']]]
 ];
