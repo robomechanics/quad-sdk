@@ -55,7 +55,7 @@ Legged Robots, May 2022. ([paper])
 
 ## Installation
 
-Refer to the [Quad-SDK Wiki](https://github.com/robomechanics/quad-sdk/wiki/1.-Home) for installation, dependency, and unit testing information. Currently Quad-SDK requires ROS Melodic on Ubuntu 18.04. All other dependencies are installed with the included setup script.
+Refer to the [Quad-SDK Wiki](https://github.com/robomechanics/quad-sdk/wiki/1.-Getting-Started-with-Quad-SDK) for installation, dependency, and unit testing information. Currently Quad-SDK requires ROS Melodic on Ubuntu 18.04. All other dependencies are installed with the included setup script.
 
 ## Usage
 
@@ -78,7 +78,7 @@ Run the stack with global planner:
 ```
 roslaunch quad_utils quad_plan.launch global_planner:=fgmp logging:=true
 ```
-Refer to the [Wiki](https://github.com/robomechanics/quad-sdk/wiki/2.-Launch,-Node,-and-Topic-Structure) for more information on alternate usage.
+Refer to the [Wiki](https://github.com/robomechanics/quad-sdk/wiki/2.-Using-the-Software) for more information on alternate usage.
 
 ## Bugs & Feature Requests
 

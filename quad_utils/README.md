@@ -3,7 +3,7 @@
 ## Overview
 
 This package implements a collection of utility functions to aid quad kinematic calculations, interfacing between RViz and quad-sdk topics, remote heartbeat function, and various launch files.
-The detail functionalities of different classes can be found in [Classes and Functions](#classes-and-functions) section. Methods to use various launch files are explained in our [wiki].
+The detail functionalities of different classes can be found in [Classes and Functions](#classes-and-functions) section. Methods to use various launch files are explained in the [Wiki].
 
 ### License
 
@@ -59,4 +59,4 @@ Please report bugs and request features using the [Issue Tracker](https://github
 [eigen]: http://eigen.tuxfamily.org
 [std_srvs/trigger]: http://docs.ros.org/api/std_srvs/html/srv/Trigger.html
 [sensor_msgs/temperature]: http://docs.ros.org/api/sensor_msgs/html/msg/Temperature.html
-[wiki]: https://github.com/robomechanics/quad-sdk/wiki/
+[Wiki]: https://github.com/robomechanics/quad-sdk/wiki/2.-Using-the-Software
