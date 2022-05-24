@@ -3,7 +3,7 @@
 
 #include <robot_driver/estimators/state_estimator.h>
 
-//! Implements complementary filter as an estimator within the ROS framework.
+//! Implements Extended Kalman Filter as an estimator within the ROS framework.
 class EKFFilterEstimator : public StateEstimator {
  public:
   /**
@@ -14,7 +14,7 @@ class EKFFilterEstimator : public StateEstimator {
 
   void init();
 
-  quad_msgs::RobotState updateState();
+  bool updateState();
 };
 
 #endif  // EKF_FILTER_H

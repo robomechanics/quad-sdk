@@ -10,6 +10,9 @@
 #include <sensor_msgs/JointState.h>
 #include <std_msgs/String.h>
 
+#include "robot_driver/hardware_interfaces/hardware_interface.h"
+#include "robot_driver/hardware_interfaces/spirit_interface.h"
+
 //! Implements an abstract class for state estimator.
 //! This class provides an interface for different types of estimators
 /*!
@@ -32,7 +35,7 @@ class StateEstimator {
    * @brief Pure virtual function for performing state estimate update
    *
    */
-  virtual quad_msgs::RobotState updateState() = 0;
+  virtual bool updateState() = 0;
 
   /**
    * @brief read IMU data
@@ -63,4 +66,4 @@ class StateEstimator {
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
 };
 
-#endif  // LEG_CONTORLLER_H
+#endif  // STATE_ESTIMATOR_H

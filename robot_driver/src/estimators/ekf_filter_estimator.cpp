@@ -2,10 +2,12 @@
 
 EKFFilterEstimator::EKFFilterEstimator() {}
 
-void EKFFilterEstimator::init() {}
+void EKFFilterEstimator::init() {
+  std::cout << "EKF Estimator Initiated" << std::endl;
+}
 
-quad_msgs::RobotState EKFFilterEstimator::updateState() {
+bool EKFFilterEstimator::updateState() {
   quad_msgs::RobotState state_est;
-
-  return state_est;
+  std::cout << "EKF Estimator Updated Once" << std::endl;
+  return false;
 }
