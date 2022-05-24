@@ -1,3 +1,5 @@
+![Example image](doc/global_body_planner.png)
+
 # Global Body Planner
 
 ## Overview
