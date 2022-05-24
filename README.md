@@ -19,7 +19,7 @@ Maintainer: Ardalan Tajbakhsh, atajbakh@andrew.cmu.edu**
 The packages in Quad-SDK have been tested under [ROS] Melodic on Ubuntu 18.04.
 This is research code, expect that it changes often and any fitness for a particular purpose is disclaimed.
 
-![Example image](doc/quad-sdk-demo.png)
+![Example image](doc/quad_sdk_promo.png)
 
 
 ### Publications
