@@ -48,7 +48,7 @@
     </DockSplitter>
    </Container>
   </Tab>
-  <Tab tab_name="Body Position XY" containers="1">
+  <Tab containers="1" tab_name="Body Position XY">
    <Container>
     <DockSplitter sizes="0.5;0.5" count="2" orientation="-">
      <DockArea name="Transverse Plane (m)">
@@ -68,7 +68,7 @@
     </DockSplitter>
    </Container>
   </Tab>
-  <Tab tab_name="Feet" containers="1">
+  <Tab containers="1" tab_name="Feet">
    <Container>
     <DockSplitter sizes="1" count="1" orientation="-">
      <DockSplitter sizes="0.5;0.5" count="2" orientation="|">
@@ -182,7 +182,7 @@
     </DockSplitter>
    </Container>
   </Tab>
-  <Tab tab_name="GRFs" containers="1">
+  <Tab containers="1" tab_name="GRFs">
    <Container>
     <DockSplitter sizes="0.5;0.5" count="2" orientation="-">
      <DockSplitter sizes="0.5;0.5" count="2" orientation="|">
