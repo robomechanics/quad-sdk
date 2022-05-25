@@ -2,7 +2,7 @@
 #include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
 
-#include "global_body_planner/fast_global_motion_planner.h"
+#include "global_body_planner/gbpl.h"
 #include "global_body_planner/global_body_planner_test_fixture.h"
 #include "global_body_planner/planner_class.h"
 #include "global_body_planner/planning_utils.h"
@@ -98,9 +98,9 @@ TEST_F(GlobalBodyPlannerTestFixture, testUnitConnectAction) {
   s2.pos[0] = s1.pos[0] + dist;
   StateActionResult result;
 
-  FastGlobalMotionPlanner rrt;
+  GBPL gbpl;
   int connect_result =
-      rrt.attemptConnect(s1, s2, t_s, result, planner_config_, FORWARD);
+      gbpl.attemptConnect(s1, s2, t_s, result, planner_config_, FORWARD);
 
   // Make sure the connection is made and that the length and time match
   EXPECT_TRUE(connect_result == REACHED);
@@ -142,9 +142,9 @@ TEST_F(GlobalBodyPlannerTestFixture, testUnitConnectActionElevatedTerrain) {
   s2.pos[0] = s1.pos[0] + dist;
   StateActionResult result;
 
-  FastGlobalMotionPlanner rrt;
+  GBPL gbpl;
   int connect_result =
-      rrt.attemptConnect(s1, s2, t_s, result, planner_config_, FORWARD);
+      gbpl.attemptConnect(s1, s2, t_s, result, planner_config_, FORWARD);
 
   // Make sure the connection is made and that the length and time match
   EXPECT_TRUE(connect_result == REACHED);
@@ -201,9 +201,9 @@ TEST_F(GlobalBodyPlannerTestFixture, testUnitConnectActionSlope) {
   s2.vel[2] = 0;
   StateActionResult result;
 
-  FastGlobalMotionPlanner rrt;
+  GBPL gbpl;
   int connect_result =
-      rrt.attemptConnect(s1, s2, t_s, result, planner_config_, FORWARD);
+      gbpl.attemptConnect(s1, s2, t_s, result, planner_config_, FORWARD);
 
   // // Make sure the connection is made and that the length and time match
   EXPECT_TRUE(connect_result == REACHED);

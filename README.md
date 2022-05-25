@@ -1,6 +1,5 @@
 [![CircleCI](https://circleci.com/gh/robomechanics/quad-sdk/tree/main.svg?style=shield)](https://circleci.com/gh/robomechanics/quad-sdk/tree/main)
-
-# Quad-SDK
+![Example image](doc/quad_sdk_promo.png)
 
 ## Overview
 
@@ -18,9 +17,6 @@ Maintainer: Ardalan Tajbakhsh, atajbakh@andrew.cmu.edu**
 
 The packages in Quad-SDK have been tested under [ROS] Melodic on Ubuntu 18.04.
 This is research code, expect that it changes often and any fitness for a particular purpose is disclaimed.
-
-![Example image](doc/quad-sdk-demo.png)
-
 
 ### Publications
 
@@ -57,7 +53,7 @@ Legged Robots, May 2022. ([paper])
 
 ## Installation
 
-Refer to the [Quad-SDK Wiki](https://github.com/robomechanics/quad-sdk/wiki/1.-Home) for installation, dependency, and unit testing information. Currently Quad-SDK requires ROS Melodic on Ubuntu 18.04. All other dependencies are installed with the included setup script.
+Refer to the [Quad-SDK Wiki](https://github.com/robomechanics/quad-sdk/wiki/1.-Getting-Started-with-Quad-SDK) for installation, dependency, and unit testing information. Currently Quad-SDK requires ROS Melodic on Ubuntu 18.04. All other dependencies are installed with the included setup script.
 
 ## Usage
 
@@ -69,18 +65,18 @@ roslaunch quad_utils quad_gazebo.launch
 
 Stand the robot with:
 ```
-rostopic pub /control/mode std_msgs/UInt8 "data: 1"
+rostopic pub /robot_1/control/mode std_msgs/UInt8 "data: 1"
 ```
 Run the stack with twist input:
 ```
-roslaunch quad_utils planning.launch global_planner:=twist logging:=true
-rosrun teleop_twist_keyboard teleop_twist_keyboard.py
+roslaunch quad_utils quad_plan.launch reference:=twist logging:=true
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=/robot_1/cmd_vel
 ```
 Run the stack with global planner:
 ```
-roslaunch quad_utils planning.launch global_planner:=fgmp logging:=true
+roslaunch quad_utils quad_plan.launch reference:=gbpl logging:=true
 ```
-Refer to the [Wiki](https://github.com/robomechanics/quad-sdk/wiki/2.-Launch,-Node,-and-Topic-Structure) for more information on alternate usage.
+Refer to the [Wiki](https://github.com/robomechanics/quad-sdk/wiki/2.-Using-the-Software) for more information on alternate usage.
 
 ## Bugs & Feature Requests
 
