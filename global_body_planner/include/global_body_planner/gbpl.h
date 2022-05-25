@@ -1,5 +1,5 @@
-#ifndef FAST_GLOBAL_MOTION_PLANNER_H
-#define FAST_GLOBAL_MOTION_PLANNER_H
+#ifndef GBPL_H
+#define GBPL_H
 
 #include "global_body_planner/rrt.h"
 
@@ -9,18 +9,19 @@
 
 using namespace planning_utils;
 
-//! A class that implements RRT-Connect sampling-based planning.
+//! A class that implements the Global Body Planner for Legged Robots (GBP-L)
 /*!
-   This class inherits the RRTClass, and adds members to connect two states
-   exactly and post process the resulting solution.
+   This class implements the Global Body Planner for Legged Robots (GBP-L), an
+   RRT-Connect based planning algorithm that leverages mixed motion primitives
+   to rapidly plan global motions for legged platforms.
 */
-class FastGlobalMotionPlanner : public RRTClass {
+class GBPL : public RRT {
  public:
   /**
-   * @brief Constructor for FastGlobalMotionPlanner
-   * @return Constructed object of type FastGlobalMotionPlanner
+   * @brief Constructor for GBPL
+   * @return Constructed object of type GBPL
    */
-  FastGlobalMotionPlanner();
+  GBPL();
 
   /** Connect the tree to the desired state
    * @param[in] T The PlannerClass instance containing the tree
@@ -111,4 +112,4 @@ class FastGlobalMotionPlanner : public RRTClass {
   const double horizon_expansion_factor = 1.2;
 };
 
-#endif  // FAST_GLOBAL_MOTION_PLANNER_H
+#endif  // GBPL_H
