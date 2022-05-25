@@ -160,7 +160,7 @@ void RobotDriver::initStateEstimator() {
   if (estimator_id_ == "comp_filter") {
     comp_filter_estimator_ = std::make_shared<CompFilterEstimator>();
   } else if (estimator_id_ == "ekf_filter") {
-    state_estimator_ = std::make_shared<EKFFilterEstimator>();
+    ekf_estimatror_ = std::make_shared<EKFFilterEstimator>();
   } else {
     ROS_ERROR_STREAM("Invalid estimator id " << estimator_id_
                                              << ", returning nullptr");
@@ -299,9 +299,12 @@ void RobotDriver::checkMessagesForSafety() {
 bool RobotDriver::updateState() {
   if (is_hardware_) {
     if (estimator_id_ == "comp_filter") {
+      // Get the newest data from the robot (BLOCKING)
+      bool fully_populated = hardware_interface_->recv(
+          last_joint_state_msg_, last_imu_msg_, user_rx_data_);
       return comp_filter_estimator_->updateState(
-          hardware_interface_, last_imu_msg_, last_joint_state_msg_,
-          last_mocap_msg_, user_rx_data_, last_robot_state_msg_);
+          fully_populated, last_imu_msg_, last_joint_state_msg_,
+          last_mocap_msg_, last_robot_state_msg_);
     } else if (estimator_id_ == "ekf_filter") {
       return ekf_estimatror_->updateState();
     } else {

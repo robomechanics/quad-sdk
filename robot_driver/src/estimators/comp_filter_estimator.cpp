@@ -54,17 +54,11 @@ bool CompFilterEstimator::updateState() {
 }
 
 bool CompFilterEstimator::updateState(
-    std::shared_ptr<HardwareInterface> hardware_interface_,
-    sensor_msgs::Imu& last_imu_msg_,
+    const bool& fully_populated, sensor_msgs::Imu& last_imu_msg_,
     sensor_msgs::JointState& last_joint_state_msg_,
     geometry_msgs::PoseStamped::ConstPtr last_mocap_msg_,
-    Eigen::VectorXd& user_rx_data_,
     quad_msgs::RobotState& last_robot_state_msg_) {
   std::cout << "CF Estimator Updated Once" << std::endl;
-  // Get the newest data from the robot (BLOCKING)
-  bool fully_populated = hardware_interface_->recv(
-      last_joint_state_msg_, last_imu_msg_, user_rx_data_);
-
   ros::Time state_timestamp = ros::Time::now();
 
   // Check if robot data was recieved
@@ -147,7 +141,7 @@ bool CompFilterEstimator::updateState(
 void CompFilterEstimator::mocapCallBackHelper(
     const geometry_msgs::PoseStamped::ConstPtr& msg, const Eigen::Vector3d& pos,
     geometry_msgs::PoseStamped::ConstPtr last_mocap_msg_,
-    const double mocap_rate_, const double mocap_dropout_threshold_) {
+    const double& mocap_rate_, const double& mocap_dropout_threshold_) {
   if (low_pass_filter.init) {
     // Record time diff between messages
     ros::Time t_now = ros::Time::now();
@@ -191,4 +185,4 @@ void CompFilterEstimator::mocapCallBackHelper(
 
     low_pass_filter.init = true;
   }
-};
+}
