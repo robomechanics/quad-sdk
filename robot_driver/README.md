@@ -7,9 +7,9 @@ This package handles the hardware interfacing as well as state estimation. The c
 
 The source code is released under a [MIT License](quad-sdk/LICENSE).
 
-**Author: Joe Norby, Yanhao Yang<br />
+**Author: Joe Norby<br />
 Affiliation: [Robomechanics Lab](https://www.cmu.edu/me/robomechanicslab/)<br />
-Maintainers: Ardalan Tajbakhsh (atajbakh@andrew.cmu.edu)**
+Maintainers: Ardalan Tajbakhsh (atajbakh@andrew.cmu.edu) **
 
 The Robot Driver package has been tested under [ROS] Melodic 18.04.
 This is research code, expect that it changes often and any fitness for a particular purpose is disclaimed.
@@ -32,7 +32,7 @@ Robot driver is called by quad_gazebo.launch and is not meant to be used standal
 
 ### robot_driver
 
-Robot driver's core functionality is interfacing with the hardware through control and state estimation template classes. In the main loop, the node recieves the most recent local plan, control mode, and computes the updated state using an online state estimator (Complementary filter) as well as the control actions (joint torques) that will be applied to the robot. The control actions are computed using inverse dyanamics from the desired ground reaction forces computed by MPC. Furthermore, robot driver handles the control state machine that decides when to transition between different behaviour modes (For example, safety, sit, stand, etc.).
+    Robot driver's core functionality is interfacing with the hardware through control and state estimation template classes. In the main loop, the node recieves the most recent local plan, control mode, and computes the updated state using an online state estimator (Complementary filter) as well as the control actions (joint torques) that will be applied to the robot. The control actions are computed using inverse dyanamics from the desired ground reaction forces computed by MPC. Furthermore, robot driver handles the control state machine that decides when to transition between different behaviour modes (For example, safety, sit, stand, etc.).
 
 #### Subscribed Topics
 
@@ -139,8 +139,9 @@ Robot driver's core functionality is interfacing with the hardware through contr
 
 * **`sit_joint_angles`** (vector, default: [0.0 0.0 0.0])
 
-#### Complementary filter coefficients
-Coefficients are in state-space form, which can be computed by c2d(1/s*(1-G(s))) and c2d(sG(s)), where G(s) is a second-order low-pass filter.
+# Complementary filter coefficients in state-space form, 
+# which can be computed by c2d(1/s*(1-G(s))) and c2d(s*G(s)), 
+# where G(s) is a second-order low-pass filter
 * **`low_pass_a`** (vector, default: [1.863081589528582 -0.871860350323577 1 0])
 * **`low_pass_b`** (vector, default: [2 0])
 * **`low_pass_c`** (vector, default: [1.469526956982712, -1.476621472298373])

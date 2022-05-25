@@ -2,7 +2,7 @@
 
 ## Overview
 
-This package implements global planning algorithms for agile quadrupedal navigation. The package produces point-to-point plans which guide the robot from its current state to the goal given a map of the terrain. The primary navigation algorithm is an RRT-Connect planner which uses motion primitives to produce long-horizon plans that include flight phases. See the [paper] for more details on the algorithm.
+This package implements global planning algorithms for agile quadrupedal navigation. The package produces point-to-point plans which guide the robot from its current state to the goal given a map of the terrain. The primary navigation algorithm is the Global Body Planner for Legged Robots (GBP-L), an based RRT-Connect planner which uses mixed motion primitives to produce long-horizon plans that include flight phases. See the [paper] for more details on the algorithm.
 
 ### License
 
@@ -41,7 +41,7 @@ Run the unit tests with
 
 Run the main node with
 
-	roslaunch quad_utils planning.launch global_planner:=fgmp
+	roslaunch quad_utils planning.launch reference:=gbpl
 	
 Leaping can be disabled with the optional argument `leaping:=false`, which internally skips the leap action sampling procedure and relaxes the kinematics bounds on collision checking.
 
@@ -132,13 +132,9 @@ Internally the node alternates between two states to promote high-quality and fe
 
 	Number of leaps sampled per extend function call.
   
-* **`body_traversability_threshold`** (double, default: 0.4)
+* **`traversability_threshold`** (double, default: 0.3)
 
-	Traversability threshold for a feasible body state to avoid large regions of poor traversability. Making this smaller will make the robot more optimistic about regions it can traverse without leaping. Set to zero to disable.
-  
-* **`contact_traversability_threshold`** (double, default: 0.3)
-
-	Traversability threshold for a feasible estimated contact location to avoid small regions of poor traversability. Making this smaller will make the robot more optimistic about regions it can step without leaping. It is recommended that this be lower than `body_traversability_threshold` as the region may permit alternate contact locations than the one checked. Set to zero to disable.
+	Traversability threshold for a feasible contact location to avoid regions of poor traversability. Making this smaller will make the robot more optimistic about regions it can traverse without leaping. Set to zero to disable.
   
 * **`mu`** (double, default: 0.25)
 

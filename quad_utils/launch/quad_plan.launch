@@ -1,6 +1,6 @@
 <launch>
 
-    <arg name="global_planner" default="fgmp" />
+    <arg name="reference" default="gbpl" />
     <arg name="multiple_robots" default="false"/>
     <arg name="logging" default="false" />
     <arg name="twist_input" default="none" />
@@ -14,7 +14,7 @@
 
     <group ns="$(arg namespace_1)">
         <include file="$(find quad_utils)/launch/planning.launch">
-            <arg name="global_planner" value="$(arg global_planner)" />
+            <arg name="reference" value="$(arg reference)" />
             <arg name="logging" value="$(arg logging)" />
             <arg name="leaping" value="$(arg leaping)" />
             <arg name="ac" value="$(arg ac)" />
@@ -26,7 +26,7 @@
     <group if="$(arg multiple_robots)">
         <group ns="$(arg namespace_2)">
             <include file="$(find quad_utils)/launch/planning.launch">
-                <arg name="global_planner" value="$(arg global_planner)" />
+                <arg name="reference" value="$(arg reference)" />
                 <arg name="logging" value="$(arg logging)" />
                 <arg name="leaping" value="$(arg leaping)" />
                 <arg name="ac" value="$(arg ac)" />
