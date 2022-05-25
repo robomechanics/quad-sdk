@@ -44,8 +44,8 @@ class CompFilterEstimator : public StateEstimator {
   void mocapCallBackHelper(const geometry_msgs::PoseStamped::ConstPtr& msg,
                            const Eigen::Vector3d& pos,
                            geometry_msgs::PoseStamped::ConstPtr last_mocap_msg_,
-                           const double mocap_rate_,
-                           const double mocap_dropout_threshold_);
+                           const double& mocap_rate_,
+                           const double& mocap_dropout_threshold_);
 
   /**
    * @brief update CF state once
@@ -54,7 +54,7 @@ class CompFilterEstimator : public StateEstimator {
 
   /**
    * @brief update CF state once
-   * @param[in] hardware_interface_
+   * @param[in] fully_populated
    * @param[in] last_imu_msg_
    * @param[in] last_joint_state_msg_
    * @param[in] last_mocap_msg_
@@ -62,11 +62,9 @@ class CompFilterEstimator : public StateEstimator {
    * @param[out] last_robot_state_msg_
    */
 
-  bool updateState(std::shared_ptr<HardwareInterface> hardware_interface_,
-                   sensor_msgs::Imu& last_imu_msg_,
+  bool updateState(const bool& fully_populated, sensor_msgs::Imu& last_imu_msg_,
                    sensor_msgs::JointState& last_joint_state_msg_,
                    geometry_msgs::PoseStamped::ConstPtr last_mocap_msg_,
-                   Eigen::VectorXd& user_rx_data_,
                    quad_msgs::RobotState& last_robot_state_msg_);
 
   bool initiated;
