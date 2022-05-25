@@ -14,7 +14,7 @@
 #include <grid_map_ros/GridMapRosConverter.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
 
-#include "global_body_planner/fast_global_motion_planner.h"
+#include "global_body_planner/gbpl.h"
 #include "global_body_planner/global_body_plan.h"
 
 using namespace planning_utils;
