@@ -44,6 +44,6 @@ var searchData=
   ['robotheartbeatcallback_41',['robotHeartbeatCallback',['../classRemoteHeartbeat.html#a56e36ab21448b99f62113061b4735f43',1,'RemoteHeartbeat']]],
   ['robotplancallback_42',['robotPlanCallback',['../classLocalPlanner.html#a87b5cb3bcfa71d51ad3c5895f2e87f0a',1,'LocalPlanner::robotPlanCallback()'],['../classRVizInterface.html#ac39f41c6b26700bcc8acd14e5bc95ffd',1,'RVizInterface::robotPlanCallback()'],['../classTrajectoryPublisher.html#a41a7456c74fc72bdf974ebcbb07ad8e0',1,'TrajectoryPublisher::robotPlanCallback()']]],
   ['robotstatecallback_43',['robotStateCallback',['../classGlobalBodyPlanner.html#aaa7aece6fc8562e6d7c4a905bfa84cca',1,'GlobalBodyPlanner::robotStateCallback()'],['../classLocalPlanner.html#a10407bd080248a3f921b59f63dac2db2',1,'LocalPlanner::robotStateCallback()'],['../classRVizInterface.html#af4eac71d7ad6c3daaac7aab1a2ab7abd',1,'RVizInterface::robotStateCallback()'],['../classRobotDriver.html#a539056b99374dd28603332093903dfb2',1,'RobotDriver::robotStateCallback()']]],
-  ['rrtclass_44',['RRTClass',['../classRRTClass.html',1,'RRTClass'],['../classRRTClass.html#a9cac25f207d3e58646e560d829d51e25',1,'RRTClass::RRTClass()']]],
+  ['rrt_44',['RRT',['../classRRT.html',1,'RRT'],['../classRRT.html#a0a7bb3a3af2d70c656764fbe8f6ae671',1,'RRT::RRT()']]],
   ['rvizinterface_45',['RVizInterface',['../classRVizInterface.html#aa28dae09fa5285f8570181ca119717d2',1,'RVizInterface::RVizInterface()'],['../classRVizInterface.html',1,'RVizInterface']]]
 ];

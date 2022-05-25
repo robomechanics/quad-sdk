@@ -1,7 +1,7 @@
 var searchData=
 [
   ['edges_0',['edges',['../classGraphClass.html#ab931f0784548afda6c934ac3b097cebd',1,'GraphClass']]],
-  ['elapsed_5ftotal_5f_1',['elapsed_total_',['../classRRTClass.html#a99c35415e1d65f84e87a8580ed893c65',1,'RRTClass']]],
+  ['elapsed_5ftotal_5f_1',['elapsed_total_',['../classRRT.html#a8c6c748c3d1f9a48b62c8332c9c563c2',1,'RRT']]],
   ['eraseafterindex_2',['eraseAfterIndex',['../classGlobalBodyPlan.html#ad4afd45dcf69c1e9281e3d8814792207',1,'GlobalBodyPlan']]],
   ['estimate_3',['ESTIMATE',['../classRVizInterface.html#a516b8c7675b132c0a3eb867f88f0d3e8',1,'RVizInterface']]],
   ['estimate_5fbase_5ftf_5fbr_5f_4',['estimate_base_tf_br_',['../classRVizInterface.html#a4d63133ef60884854fc7ba7d4524f33f',1,'RVizInterface']]],
@@ -13,7 +13,7 @@ var searchData=
   ['eval_5fh_10',['eval_h',['../classquadNLP.html#a205f57c88151e57dff0116d536b3a865',1,'quadNLP']]],
   ['eval_5fjac_5fg_11',['eval_jac_g',['../classquadNLP.html#a6dc64d38088a2248d2dc9faa17a65ac4',1,'quadNLP']]],
   ['example_12',['Example',['../classread__bag_1_1Example.html',1,'read_bag']]],
-  ['extend_13',['extend',['../classRRTClass.html#ac79092cec187c959d438b571c1059231',1,'RRTClass']]],
-  ['extractclosestpath_14',['extractClosestPath',['../classFastGlobalMotionPlanner.html#a4058c5c52f6e5edbe25ca582de2e722c',1,'FastGlobalMotionPlanner']]],
-  ['extractpath_15',['extractPath',['../classFastGlobalMotionPlanner.html#a767f43b17e20c89b32b73961aed1d113',1,'FastGlobalMotionPlanner']]]
+  ['extend_13',['extend',['../classRRT.html#ad6f81a00ff9f760697ecb25b543d0e1e',1,'RRT']]],
+  ['extractclosestpath_14',['extractClosestPath',['../classGBPL.html#a323f349eca77174f5e88a841c26a59aa',1,'GBPL']]],
+  ['extractpath_15',['extractPath',['../classGBPL.html#ad122d219dd2988e0a0ec72c10291f485',1,'GBPL']]]
 ];

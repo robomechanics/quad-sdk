@@ -45,7 +45,7 @@ var searchData=
   ['step2_5f_42',['step2_',['../classTerrainMapPublisher.html#a47e7ef579a01dfb7381f1295b32ef983',1,'TerrainMapPublisher']]],
   ['stop_5ftime_5f_43',['stop_time_',['../classquad__utils_1_1FunctionTimer.html#a37e1b5679da09c6d35b51bf5995c100f',1,'quad_utils::FunctionTimer']]],
   ['sub_5fcommand_5f_44',['sub_command_',['../classeffort__controllers_1_1QuadController.html#a36eae34cd269a4a185105fca616b716c',1,'effort_controllers::QuadController']]],
-  ['success_5f_45',['success_',['../classRRTClass.html#a7cddb22b09f2be69b1d93eb337963d03',1,'RRTClass']]],
+  ['success_5f_45',['success_',['../classRRT.html#a7b14718259e98e018720dbef643222bf',1,'RRT']]],
   ['successors_46',['successors',['../classGraphClass.html#a2e6c5c4d16682dafe430d71b0f8678a5',1,'GraphClass']]],
   ['swing_5fkp_5f_47',['swing_kp_',['../classLegController.html#ac258def697db9798d10346700e5a02ae',1,'LegController::swing_kp_()'],['../classRobotDriver.html#a4130164497f840604b0b1bade17a6e67',1,'RobotDriver::swing_kp_()']]],
   ['swing_5fkp_5fcart_5f_48',['swing_kp_cart_',['../classLegController.html#a7025c3ab1296ae0ac9b4de24a2ee30f1',1,'LegController::swing_kp_cart_()'],['../classRobotDriver.html#ab318583e279218a94550207df50450c6',1,'RobotDriver::swing_kp_cart_()']]],

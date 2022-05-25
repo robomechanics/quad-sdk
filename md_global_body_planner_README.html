@@ -66,7 +66,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h1>Overview</h1>
-<p >This package implements global planning algorithms for agile quadrupedal navigation. The package produces point-to-point plans which guide the robot from its current state to the goal given a map of the terrain. The primary navigation algorithm is an RRT-Connect planner which uses motion primitives to produce long-horizon plans that include flight phases. See the <a href="https://www.andrew.cmu.edu/user/amj1/papers/IROS2020_Fast_Global_Motion_Planning.pdf">paper</a> for more details on the algorithm.</p>
+<p >This package implements global planning algorithms for agile quadrupedal navigation. The package produces point-to-point plans which guide the robot from its current state to the goal given a map of the terrain. The primary navigation algorithm is the Global Body Planner for Legged Robots (GBP-L), an based RRT-Connect planner which uses mixed motion primitives to produce long-horizon plans that include flight phases. See the <a href="https://www.andrew.cmu.edu/user/amj1/papers/IROS2020_Fast_Global_Motion_Planning.pdf">paper</a> for more details on the algorithm.</p>
 <h2>License</h2>
 <p >The source code is released under a <a href="quad-sdk/LICENSE">MIT License</a>.</p>
 <p >**Author: Joe Norby<br  />
@@ -89,7 +89,7 @@ $(function() {
 <h2>Unit Tests</h2>
 <p >Run the unit tests with </p><pre class="fragment">catkin run_tests global_body_planner
 </pre> <h1>Usage</h1>
-<p >Run the main node with </p><pre class="fragment">roslaunch quad_utils planning.launch global_planner:=fgmp
+<p >Run the main node with </p><pre class="fragment">roslaunch quad_utils planning.launch reference:=gbpl
 </pre><p> Leaping can be disabled with the optional argument <code>leaping:=false</code>, which internally skips the leap action sampling procedure and relaxes the kinematics bounds on collision checking.</p>
 <h1>Config files</h1>
 <ul>
@@ -160,11 +160,8 @@ $(function() {
 <li><p class="startli">**<code>num_leap_samples</code>** (int, default: 10)</p>
 <p class="startli">Number of leaps sampled per extend function call.</p>
 </li>
-<li><p class="startli">**<code>body_traversability_threshold</code>** (double, default: 0.4)</p>
-<p class="startli">Traversability threshold for a feasible body state to avoid large regions of poor traversability. Making this smaller will make the robot more optimistic about regions it can traverse without leaping. Set to zero to disable.</p>
-</li>
-<li><p class="startli">**<code>contact_traversability_threshold</code>** (double, default: 0.3)</p>
-<p class="startli">Traversability threshold for a feasible estimated contact location to avoid small regions of poor traversability. Making this smaller will make the robot more optimistic about regions it can step without leaping. It is recommended that this be lower than <code>body_traversability_threshold</code> as the region may permit alternate contact locations than the one checked. Set to zero to disable.</p>
+<li><p class="startli">**<code>traversability_threshold</code>** (double, default: 0.3)</p>
+<p class="startli">Traversability threshold for a feasible contact location to avoid regions of poor traversability. Making this smaller will make the robot more optimistic about regions it can traverse without leaping. Set to zero to disable.</p>
 </li>
 <li><p class="startli">**<code>mu</code>** (double, default: 0.25)</p>
 <p class="startli">Friction coefficient.</p>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.2"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Quad-SDK: RRTClass Class Reference</title>
+<title>Quad-SDK: RRT Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -65,113 +65,113 @@ $(function() {
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
-<a href="classRRTClass-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">RRTClass Class Reference</div></div>
+<a href="classRRT-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">RRT Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>A class that implements RRT sampling-based planning.  
- <a href="classRRTClass.html#details">More...</a></p>
+<p>A class that implements <a class="el" href="classRRT.html" title="A class that implements RRT sampling-based planning.">RRT</a> sampling-based planning.  
+ <a href="classRRT.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="rrt_8h_source.html">rrt.h</a>&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for RRTClass:</div>
+Inheritance diagram for RRT:</div>
 <div class="dyncontent">
-<div class="center"><img src="classRRTClass__inherit__graph.png" border="0" usemap="#aRRTClass_inherit__map" alt="Inheritance graph"/></div>
-<map name="aRRTClass_inherit__map" id="aRRTClass_inherit__map">
-<area shape="rect" title="A class that implements RRT sampling&#45;based planning." alt="" coords="49,5,130,32"/>
-<area shape="rect" href="classFastGlobalMotionPlanner.html" title="A class that implements RRT&#45;Connect sampling&#45;based planning." alt="" coords="5,80,173,107"/>
+<div class="center"><img src="classRRT__inherit__graph.png" border="0" usemap="#aRRT_inherit__map" alt="Inheritance graph"/></div>
+<map name="aRRT_inherit__map" id="aRRT_inherit__map">
+<area shape="rect" title="A class that implements RRT sampling&#45;based planning." alt="" coords="11,5,59,32"/>
+<area shape="rect" href="classGBPL.html" title="A class that implements the Global Body Planner for Legged Robots (GBP&#45;L)" alt="" coords="5,80,64,107"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9cac25f207d3e58646e560d829d51e25"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a9cac25f207d3e58646e560d829d51e25">RRTClass</a> ()</td></tr>
-<tr class="memdesc:a9cac25f207d3e58646e560d829d51e25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classRRTClass.html" title="A class that implements RRT sampling-based planning.">RRTClass</a>.  <a href="classRRTClass.html#a9cac25f207d3e58646e560d829d51e25">More...</a><br /></td></tr>
-<tr class="separator:a9cac25f207d3e58646e560d829d51e25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af71e054dccb03b92174cc9154f3f4eb7"><td class="memItemLeft" align="right" valign="top"><a id="af71e054dccb03b92174cc9154f3f4eb7" name="af71e054dccb03b92174cc9154f3f4eb7"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>~RRTClass</b> ()</td></tr>
-<tr class="memdesc:af71e054dccb03b92174cc9154f3f4eb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor for <a class="el" href="classRRTClass.html" title="A class that implements RRT sampling-based planning.">RRTClass</a>. <br /></td></tr>
-<tr class="separator:af71e054dccb03b92174cc9154f3f4eb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac79b15f82fea4a5435190ec0b8426a87"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#ac79b15f82fea4a5435190ec0b8426a87">attemptConnect</a> (const <a class="el" href="structplanning__utils_1_1State.html">State</a> &amp;s_existing, const <a class="el" href="structplanning__utils_1_1State.html">State</a> &amp;s, double t_s, <a class="el" href="structplanning__utils_1_1StateActionResult.html">StateActionResult</a> &amp;result, const <a class="el" href="structplanning__utils_1_1PlannerConfig.html">PlannerConfig</a> &amp;planner_config, int direction)</td></tr>
-<tr class="separator:ac79b15f82fea4a5435190ec0b8426a87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad335b2884ed9f9c2ec0f34ae0baf7b3a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#ad335b2884ed9f9c2ec0f34ae0baf7b3a">attemptConnect</a> (const <a class="el" href="structplanning__utils_1_1State.html">State</a> &amp;s_existing, const <a class="el" href="structplanning__utils_1_1State.html">State</a> &amp;s, <a class="el" href="structplanning__utils_1_1StateActionResult.html">StateActionResult</a> &amp;result, const <a class="el" href="structplanning__utils_1_1PlannerConfig.html">PlannerConfig</a> &amp;planner_config, int direction)</td></tr>
-<tr class="separator:ad335b2884ed9f9c2ec0f34ae0baf7b3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac79092cec187c959d438b571c1059231"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#ac79092cec187c959d438b571c1059231">extend</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, const <a class="el" href="structplanning__utils_1_1State.html">State</a> &amp;s, const <a class="el" href="structplanning__utils_1_1PlannerConfig.html">PlannerConfig</a> &amp;planner_config, int direction, ros::Publisher &amp;tree_pub)</td></tr>
-<tr class="separator:ac79092cec187c959d438b571c1059231"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4acffd50e173aaeb9074248ea29032e9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a4acffd50e173aaeb9074248ea29032e9">pathFromStart</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, int idx)</td></tr>
-<tr class="memdesc:a4acffd50e173aaeb9074248ea29032e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the path from the root vertex to the specified one.  <a href="classRRTClass.html#a4acffd50e173aaeb9074248ea29032e9">More...</a><br /></td></tr>
-<tr class="separator:a4acffd50e173aaeb9074248ea29032e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25d0142127211e5911b3a29e7dce5dfb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a25d0142127211e5911b3a29e7dce5dfb">printPath</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
-<tr class="memdesc:a25d0142127211e5911b3a29e7dce5dfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print the states in the specified path via stdout.  <a href="classRRTClass.html#a25d0142127211e5911b3a29e7dce5dfb">More...</a><br /></td></tr>
-<tr class="separator:a25d0142127211e5911b3a29e7dce5dfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a581884981473257991c590392ad49dbd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a581884981473257991c590392ad49dbd">getStatistics</a> (double &amp;plan_time, int &amp;vertices_generated, double &amp;plan_length, double &amp;path_duration, double &amp;dist_to_goal)</td></tr>
-<tr class="memdesc:a581884981473257991c590392ad49dbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the statistics for the planner solve.  <a href="classRRTClass.html#a581884981473257991c590392ad49dbd">More...</a><br /></td></tr>
-<tr class="separator:a581884981473257991c590392ad49dbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3a60c2a23e642ef6b995189765134ec5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a3a60c2a23e642ef6b995189765134ec5">newConfig</a> (<a class="el" href="structplanning__utils_1_1State.html">State</a> s, <a class="el" href="structplanning__utils_1_1State.html">State</a> s_near, <a class="el" href="structplanning__utils_1_1StateActionResult.html">StateActionResult</a> &amp;result, const <a class="el" href="structplanning__utils_1_1PlannerConfig.html">PlannerConfig</a> &amp;planner_config, int direction, ros::Publisher &amp;tree_pub)</td></tr>
-<tr class="memdesc:a3a60c2a23e642ef6b995189765134ec5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a new state that can be connected to the tree and is as close as possible to the specified state.  <a href="classRRTClass.html#a3a60c2a23e642ef6b995189765134ec5">More...</a><br /></td></tr>
-<tr class="separator:a3a60c2a23e642ef6b995189765134ec5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7da5d15380a10262f01fa1c66b5064f9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structplanning__utils_1_1State.html">State</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#a7da5d15380a10262f01fa1c66b5064f9">getStateSequence</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
-<tr class="memdesc:a7da5d15380a10262f01fa1c66b5064f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the states along the specified path of vertex indices.  <a href="classRRTClass.html#a7da5d15380a10262f01fa1c66b5064f9">More...</a><br /></td></tr>
-<tr class="separator:a7da5d15380a10262f01fa1c66b5064f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af9ffdb926909423196f8a8f5a48f08ed"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structplanning__utils_1_1Action.html">Action</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRTClass.html#af9ffdb926909423196f8a8f5a48f08ed">getActionSequence</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
-<tr class="memdesc:af9ffdb926909423196f8a8f5a48f08ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the actions along the specified path of vertex indices (assumes that actions are synched with the states to which they lead)  <a href="classRRTClass.html#af9ffdb926909423196f8a8f5a48f08ed">More...</a><br /></td></tr>
-<tr class="separator:af9ffdb926909423196f8a8f5a48f08ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a7bb3a3af2d70c656764fbe8f6ae671"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRT.html#a0a7bb3a3af2d70c656764fbe8f6ae671">RRT</a> ()</td></tr>
+<tr class="memdesc:a0a7bb3a3af2d70c656764fbe8f6ae671"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classRRT.html" title="A class that implements RRT sampling-based planning.">RRT</a>.  <a href="classRRT.html#a0a7bb3a3af2d70c656764fbe8f6ae671">More...</a><br /></td></tr>
+<tr class="separator:a0a7bb3a3af2d70c656764fbe8f6ae671"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab16d13c231d664dddaf41f904d5770f8"><td class="memItemLeft" align="right" valign="top"><a id="ab16d13c231d664dddaf41f904d5770f8" name="ab16d13c231d664dddaf41f904d5770f8"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>~RRT</b> ()</td></tr>
+<tr class="memdesc:ab16d13c231d664dddaf41f904d5770f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor for <a class="el" href="classRRT.html" title="A class that implements RRT sampling-based planning.">RRT</a>. <br /></td></tr>
+<tr class="separator:ab16d13c231d664dddaf41f904d5770f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19dd8b4d0832ec59ec13717cd12d26d0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRT.html#a19dd8b4d0832ec59ec13717cd12d26d0">attemptConnect</a> (const <a class="el" href="structplanning__utils_1_1State.html">State</a> &amp;s_existing, const <a class="el" href="structplanning__utils_1_1State.html">State</a> &amp;s, double t_s, <a class="el" href="structplanning__utils_1_1StateActionResult.html">StateActionResult</a> &amp;result, const <a class="el" href="structplanning__utils_1_1PlannerConfig.html">PlannerConfig</a> &amp;planner_config, int direction)</td></tr>
+<tr class="separator:a19dd8b4d0832ec59ec13717cd12d26d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17b676bfa76a3bf1716a2c0781d2b07d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRT.html#a17b676bfa76a3bf1716a2c0781d2b07d">attemptConnect</a> (const <a class="el" href="structplanning__utils_1_1State.html">State</a> &amp;s_existing, const <a class="el" href="structplanning__utils_1_1State.html">State</a> &amp;s, <a class="el" href="structplanning__utils_1_1StateActionResult.html">StateActionResult</a> &amp;result, const <a class="el" href="structplanning__utils_1_1PlannerConfig.html">PlannerConfig</a> &amp;planner_config, int direction)</td></tr>
+<tr class="separator:a17b676bfa76a3bf1716a2c0781d2b07d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6f81a00ff9f760697ecb25b543d0e1e"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRT.html#ad6f81a00ff9f760697ecb25b543d0e1e">extend</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, const <a class="el" href="structplanning__utils_1_1State.html">State</a> &amp;s, const <a class="el" href="structplanning__utils_1_1PlannerConfig.html">PlannerConfig</a> &amp;planner_config, int direction, ros::Publisher &amp;tree_pub)</td></tr>
+<tr class="separator:ad6f81a00ff9f760697ecb25b543d0e1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1beaa8bcf560e70e7e99cdf0fc19518c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRT.html#a1beaa8bcf560e70e7e99cdf0fc19518c">pathFromStart</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, int idx)</td></tr>
+<tr class="memdesc:a1beaa8bcf560e70e7e99cdf0fc19518c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the path from the root vertex to the specified one.  <a href="classRRT.html#a1beaa8bcf560e70e7e99cdf0fc19518c">More...</a><br /></td></tr>
+<tr class="separator:a1beaa8bcf560e70e7e99cdf0fc19518c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab033530def35b8464c5df050929d8f02"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRT.html#ab033530def35b8464c5df050929d8f02">printPath</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
+<tr class="memdesc:ab033530def35b8464c5df050929d8f02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print the states in the specified path via stdout.  <a href="classRRT.html#ab033530def35b8464c5df050929d8f02">More...</a><br /></td></tr>
+<tr class="separator:ab033530def35b8464c5df050929d8f02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acacd2b8a18e91cdb2a16130f75c24411"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRT.html#acacd2b8a18e91cdb2a16130f75c24411">getStatistics</a> (double &amp;plan_time, int &amp;vertices_generated, double &amp;plan_length, double &amp;path_duration, double &amp;dist_to_goal)</td></tr>
+<tr class="memdesc:acacd2b8a18e91cdb2a16130f75c24411"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the statistics for the planner solve.  <a href="classRRT.html#acacd2b8a18e91cdb2a16130f75c24411">More...</a><br /></td></tr>
+<tr class="separator:acacd2b8a18e91cdb2a16130f75c24411"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6e14517956e80f532471be46483e2e7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRT.html#aa6e14517956e80f532471be46483e2e7">newConfig</a> (<a class="el" href="structplanning__utils_1_1State.html">State</a> s, <a class="el" href="structplanning__utils_1_1State.html">State</a> s_near, <a class="el" href="structplanning__utils_1_1StateActionResult.html">StateActionResult</a> &amp;result, const <a class="el" href="structplanning__utils_1_1PlannerConfig.html">PlannerConfig</a> &amp;planner_config, int direction, ros::Publisher &amp;tree_pub)</td></tr>
+<tr class="memdesc:aa6e14517956e80f532471be46483e2e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a new state that can be connected to the tree and is as close as possible to the specified state.  <a href="classRRT.html#aa6e14517956e80f532471be46483e2e7">More...</a><br /></td></tr>
+<tr class="separator:aa6e14517956e80f532471be46483e2e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0cc6684e200af16cde0669dcf12af9f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structplanning__utils_1_1State.html">State</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRT.html#aa0cc6684e200af16cde0669dcf12af9f">getStateSequence</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
+<tr class="memdesc:aa0cc6684e200af16cde0669dcf12af9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the states along the specified path of vertex indices.  <a href="classRRT.html#aa0cc6684e200af16cde0669dcf12af9f">More...</a><br /></td></tr>
+<tr class="separator:aa0cc6684e200af16cde0669dcf12af9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8836216d887a27a6e2b9145a411a0127"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structplanning__utils_1_1Action.html">Action</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRRT.html#a8836216d887a27a6e2b9145a411a0127">getActionSequence</a> (<a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;T, std::vector&lt; int &gt; path)</td></tr>
+<tr class="memdesc:a8836216d887a27a6e2b9145a411a0127"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the actions along the specified path of vertex indices (assumes that actions are synched with the states to which they lead)  <a href="classRRT.html#a8836216d887a27a6e2b9145a411a0127">More...</a><br /></td></tr>
+<tr class="separator:a8836216d887a27a6e2b9145a411a0127"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a3bea12d5a94669ee0713d8447c575f4b"><td class="memItemLeft" align="right" valign="top"><a id="a3bea12d5a94669ee0713d8447c575f4b" name="a3bea12d5a94669ee0713d8447c575f4b"></a>
+<tr class="memitem:a460f045930da9845f5df11d9b5676005"><td class="memItemLeft" align="right" valign="top"><a id="a460f045930da9845f5df11d9b5676005" name="a460f045930da9845f5df11d9b5676005"></a>
 const double&#160;</td><td class="memItemRight" valign="bottom"><b>prob_goal_thresh</b> = 0.05</td></tr>
-<tr class="memdesc:a3bea12d5a94669ee0713d8447c575f4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Probability with which the goal is sampled (if running vanilla RRT) <br /></td></tr>
-<tr class="separator:a3bea12d5a94669ee0713d8447c575f4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd63c1f08cf738a4966010968e615e0a"><td class="memItemLeft" align="right" valign="top"><a id="abd63c1f08cf738a4966010968e615e0a" name="abd63c1f08cf738a4966010968e615e0a"></a>
+<tr class="memdesc:a460f045930da9845f5df11d9b5676005"><td class="mdescLeft">&#160;</td><td class="mdescRight">Probability with which the goal is sampled (if running vanilla <a class="el" href="classRRT.html" title="A class that implements RRT sampling-based planning.">RRT</a>) <br /></td></tr>
+<tr class="separator:a460f045930da9845f5df11d9b5676005"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a520e8426c186385057b0d8ee00e39f74"><td class="memItemLeft" align="right" valign="top"><a id="a520e8426c186385057b0d8ee00e39f74" name="a520e8426c186385057b0d8ee00e39f74"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>goal_found</b> = false</td></tr>
-<tr class="memdesc:abd63c1f08cf738a4966010968e615e0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean for if the goal has been reached. <br /></td></tr>
-<tr class="separator:abd63c1f08cf738a4966010968e615e0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a99c35415e1d65f84e87a8580ed893c65"><td class="memItemLeft" align="right" valign="top"><a id="a99c35415e1d65f84e87a8580ed893c65" name="a99c35415e1d65f84e87a8580ed893c65"></a>
+<tr class="memdesc:a520e8426c186385057b0d8ee00e39f74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean for if the goal has been reached. <br /></td></tr>
+<tr class="separator:a520e8426c186385057b0d8ee00e39f74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c6c748c3d1f9a48b62c8332c9c563c2"><td class="memItemLeft" align="right" valign="top"><a id="a8c6c748c3d1f9a48b62c8332c9c563c2" name="a8c6c748c3d1f9a48b62c8332c9c563c2"></a>
 std::chrono::duration&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>elapsed_total_</b></td></tr>
-<tr class="memdesc:a99c35415e1d65f84e87a8580ed893c65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total time elapsed in this planner call. <br /></td></tr>
-<tr class="separator:a99c35415e1d65f84e87a8580ed893c65"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac8af270f5950cc4e2057b28c3a187e50"><td class="memItemLeft" align="right" valign="top"><a id="ac8af270f5950cc4e2057b28c3a187e50" name="ac8af270f5950cc4e2057b28c3a187e50"></a>
+<tr class="memdesc:a8c6c748c3d1f9a48b62c8332c9c563c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total time elapsed in this planner call. <br /></td></tr>
+<tr class="separator:a8c6c748c3d1f9a48b62c8332c9c563c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af79cabdd85fac82b9afe1150981281ce"><td class="memItemLeft" align="right" valign="top"><a id="af79cabdd85fac82b9afe1150981281ce" name="af79cabdd85fac82b9afe1150981281ce"></a>
 std::chrono::duration&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>elapsed_to_first_</b></td></tr>
-<tr class="separator:ac8af270f5950cc4e2057b28c3a187e50"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7cddb22b09f2be69b1d93eb337963d03"><td class="memItemLeft" align="right" valign="top"><a id="a7cddb22b09f2be69b1d93eb337963d03" name="a7cddb22b09f2be69b1d93eb337963d03"></a>
+<tr class="separator:af79cabdd85fac82b9afe1150981281ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b14718259e98e018720dbef643222bf"><td class="memItemLeft" align="right" valign="top"><a id="a7b14718259e98e018720dbef643222bf" name="a7b14718259e98e018720dbef643222bf"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>success_</b> = 0</td></tr>
-<tr class="memdesc:a7cddb22b09f2be69b1d93eb337963d03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integer checking if a solution was computed in 5 seconds. <br /></td></tr>
-<tr class="separator:a7cddb22b09f2be69b1d93eb337963d03"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2561c1232d6af27fab25d3bea8a26d4d"><td class="memItemLeft" align="right" valign="top"><a id="a2561c1232d6af27fab25d3bea8a26d4d" name="a2561c1232d6af27fab25d3bea8a26d4d"></a>
+<tr class="memdesc:a7b14718259e98e018720dbef643222bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integer checking if a solution was computed in 5 seconds. <br /></td></tr>
+<tr class="separator:a7b14718259e98e018720dbef643222bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accae06578d6b0db28ae4da4a101d0a4c"><td class="memItemLeft" align="right" valign="top"><a id="accae06578d6b0db28ae4da4a101d0a4c" name="accae06578d6b0db28ae4da4a101d0a4c"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>num_vertices_</b></td></tr>
-<tr class="memdesc:a2561c1232d6af27fab25d3bea8a26d4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of vertices in the tree. <br /></td></tr>
-<tr class="separator:a2561c1232d6af27fab25d3bea8a26d4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a21902636c6b9dcff588802d391415242"><td class="memItemLeft" align="right" valign="top"><a id="a21902636c6b9dcff588802d391415242" name="a21902636c6b9dcff588802d391415242"></a>
+<tr class="memdesc:accae06578d6b0db28ae4da4a101d0a4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of vertices in the tree. <br /></td></tr>
+<tr class="separator:accae06578d6b0db28ae4da4a101d0a4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a181d4778b360455845f908ebadf2fd"><td class="memItemLeft" align="right" valign="top"><a id="a1a181d4778b360455845f908ebadf2fd" name="a1a181d4778b360455845f908ebadf2fd"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>path_length_</b></td></tr>
-<tr class="memdesc:a21902636c6b9dcff588802d391415242"><td class="mdescLeft">&#160;</td><td class="mdescRight">Path quality in meters. <br /></td></tr>
-<tr class="separator:a21902636c6b9dcff588802d391415242"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c8e83183a9d3383571eccbdde77d842"><td class="memItemLeft" align="right" valign="top"><a id="a3c8e83183a9d3383571eccbdde77d842" name="a3c8e83183a9d3383571eccbdde77d842"></a>
+<tr class="memdesc:a1a181d4778b360455845f908ebadf2fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Path quality in meters. <br /></td></tr>
+<tr class="separator:a1a181d4778b360455845f908ebadf2fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28de9762373e0e543db95053da017060"><td class="memItemLeft" align="right" valign="top"><a id="a28de9762373e0e543db95053da017060" name="a28de9762373e0e543db95053da017060"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>path_duration_</b></td></tr>
-<tr class="memdesc:a3c8e83183a9d3383571eccbdde77d842"><td class="mdescLeft">&#160;</td><td class="mdescRight">The duration of the path in seconds. <br /></td></tr>
-<tr class="separator:a3c8e83183a9d3383571eccbdde77d842"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad73a1b0cd9cccb4f193734d8de946701"><td class="memItemLeft" align="right" valign="top"><a id="ad73a1b0cd9cccb4f193734d8de946701" name="ad73a1b0cd9cccb4f193734d8de946701"></a>
+<tr class="memdesc:a28de9762373e0e543db95053da017060"><td class="mdescLeft">&#160;</td><td class="mdescRight">The duration of the path in seconds. <br /></td></tr>
+<tr class="separator:a28de9762373e0e543db95053da017060"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fedc232493753e944c3c19d5fd7b8b5"><td class="memItemLeft" align="right" valign="top"><a id="a3fedc232493753e944c3c19d5fd7b8b5" name="a3fedc232493753e944c3c19d5fd7b8b5"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>dist_to_goal_</b></td></tr>
-<tr class="memdesc:ad73a1b0cd9cccb4f193734d8de946701"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance from the final state to the goal (m) <br /></td></tr>
-<tr class="separator:ad73a1b0cd9cccb4f193734d8de946701"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0b6ac38469ffb8f3494efa116ebf22f"><td class="memItemLeft" align="right" valign="top"><a id="ad0b6ac38469ffb8f3494efa116ebf22f" name="ad0b6ac38469ffb8f3494efa116ebf22f"></a>
+<tr class="memdesc:a3fedc232493753e944c3c19d5fd7b8b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance from the final state to the goal (m) <br /></td></tr>
+<tr class="separator:a3fedc232493753e944c3c19d5fd7b8b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4159052b455534fe5dcefda13c583313"><td class="memItemLeft" align="right" valign="top"><a id="a4159052b455534fe5dcefda13c583313" name="a4159052b455534fe5dcefda13c583313"></a>
 visualization_msgs::MarkerArray&#160;</td><td class="memItemRight" valign="bottom"><b>tree_viz_msg_</b></td></tr>
-<tr class="memdesc:ad0b6ac38469ffb8f3494efa116ebf22f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message for tree visualization. <br /></td></tr>
-<tr class="separator:ad0b6ac38469ffb8f3494efa116ebf22f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memdesc:a4159052b455534fe5dcefda13c583313"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message for tree visualization. <br /></td></tr>
+<tr class="separator:a4159052b455534fe5dcefda13c583313"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >A class that implements RRT sampling-based planning. </p>
-<p >This class builds an RRT using the <a class="el" href="classPlannerClass.html">PlannerClass</a> as a data structure to maintain the tree as well as utility methods to process and debug. </p>
+<div class="textblock"><p >A class that implements <a class="el" href="classRRT.html" title="A class that implements RRT sampling-based planning.">RRT</a> sampling-based planning. </p>
+<p >This class builds an <a class="el" href="classRRT.html" title="A class that implements RRT sampling-based planning.">RRT</a> using the <a class="el" href="classPlannerClass.html">PlannerClass</a> as a data structure to maintain the tree as well as utility methods to process and debug. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a9cac25f207d3e58646e560d829d51e25" name="a9cac25f207d3e58646e560d829d51e25"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9cac25f207d3e58646e560d829d51e25">&#9670;&nbsp;</a></span>RRTClass()</h2>
+<a id="a0a7bb3a3af2d70c656764fbe8f6ae671" name="a0a7bb3a3af2d70c656764fbe8f6ae671"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a7bb3a3af2d70c656764fbe8f6ae671">&#9670;&nbsp;</a></span>RRT()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">RRTClass::RRTClass </td>
+          <td class="memname">RRT::RRT </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -179,20 +179,20 @@ visualization_msgs::MarkerArray&#160;</td><td class="memItemRight" valign="botto
       </table>
 </div><div class="memdoc">
 
-<p>Constructor for <a class="el" href="classRRTClass.html" title="A class that implements RRT sampling-based planning.">RRTClass</a>. </p>
-<dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classRRTClass.html" title="A class that implements RRT sampling-based planning.">RRTClass</a> </dd></dl>
+<p>Constructor for <a class="el" href="classRRT.html" title="A class that implements RRT sampling-based planning.">RRT</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>Constructed object of type <a class="el" href="classRRT.html" title="A class that implements RRT sampling-based planning.">RRT</a> </dd></dl>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ac79b15f82fea4a5435190ec0b8426a87" name="ac79b15f82fea4a5435190ec0b8426a87"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac79b15f82fea4a5435190ec0b8426a87">&#9670;&nbsp;</a></span>attemptConnect() <span class="overload">[1/2]</span></h2>
+<a id="a19dd8b4d0832ec59ec13717cd12d26d0" name="a19dd8b4d0832ec59ec13717cd12d26d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19dd8b4d0832ec59ec13717cd12d26d0">&#9670;&nbsp;</a></span>attemptConnect() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int RRTClass::attemptConnect </td>
+          <td class="memname">int RRT::attemptConnect </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structplanning__utils_1_1State.html">State</a> &amp;&#160;</td>
           <td class="paramname"><em>s_existing</em>, </td>
@@ -249,14 +249,14 @@ visualization_msgs::MarkerArray&#160;</td><td class="memItemRight" valign="botto
 
 </div>
 </div>
-<a id="ad335b2884ed9f9c2ec0f34ae0baf7b3a" name="ad335b2884ed9f9c2ec0f34ae0baf7b3a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad335b2884ed9f9c2ec0f34ae0baf7b3a">&#9670;&nbsp;</a></span>attemptConnect() <span class="overload">[2/2]</span></h2>
+<a id="a17b676bfa76a3bf1716a2c0781d2b07d" name="a17b676bfa76a3bf1716a2c0781d2b07d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17b676bfa76a3bf1716a2c0781d2b07d">&#9670;&nbsp;</a></span>attemptConnect() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int RRTClass::attemptConnect </td>
+          <td class="memname">int RRT::attemptConnect </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structplanning__utils_1_1State.html">State</a> &amp;&#160;</td>
           <td class="paramname"><em>s_existing</em>, </td>
@@ -305,8 +305,8 @@ visualization_msgs::MarkerArray&#160;</td><td class="memItemRight" valign="botto
 
 </div>
 </div>
-<a id="ac79092cec187c959d438b571c1059231" name="ac79092cec187c959d438b571c1059231"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac79092cec187c959d438b571c1059231">&#9670;&nbsp;</a></span>extend()</h2>
+<a id="ad6f81a00ff9f760697ecb25b543d0e1e" name="ad6f81a00ff9f760697ecb25b543d0e1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6f81a00ff9f760697ecb25b543d0e1e">&#9670;&nbsp;</a></span>extend()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -315,7 +315,7 @@ visualization_msgs::MarkerArray&#160;</td><td class="memItemRight" valign="botto
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int RRTClass::extend </td>
+          <td class="memname">int RRT::extend </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;&#160;</td>
           <td class="paramname"><em>T</em>, </td>
@@ -368,14 +368,14 @@ visualization_msgs::MarkerArray&#160;</td><td class="memItemRight" valign="botto
 
 </div>
 </div>
-<a id="af9ffdb926909423196f8a8f5a48f08ed" name="af9ffdb926909423196f8a8f5a48f08ed"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af9ffdb926909423196f8a8f5a48f08ed">&#9670;&nbsp;</a></span>getActionSequence()</h2>
+<a id="a8836216d887a27a6e2b9145a411a0127" name="a8836216d887a27a6e2b9145a411a0127"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8836216d887a27a6e2b9145a411a0127">&#9670;&nbsp;</a></span>getActionSequence()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; <a class="el" href="structplanning__utils_1_1Action.html">Action</a> &gt; RRTClass::getActionSequence </td>
+          <td class="memname">std::vector&lt; <a class="el" href="structplanning__utils_1_1Action.html">Action</a> &gt; RRT::getActionSequence </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;&#160;</td>
           <td class="paramname"><em>T</em>, </td>
@@ -406,14 +406,14 @@ visualization_msgs::MarkerArray&#160;</td><td class="memItemRight" valign="botto
 
 </div>
 </div>
-<a id="a7da5d15380a10262f01fa1c66b5064f9" name="a7da5d15380a10262f01fa1c66b5064f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7da5d15380a10262f01fa1c66b5064f9">&#9670;&nbsp;</a></span>getStateSequence()</h2>
+<a id="aa0cc6684e200af16cde0669dcf12af9f" name="aa0cc6684e200af16cde0669dcf12af9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0cc6684e200af16cde0669dcf12af9f">&#9670;&nbsp;</a></span>getStateSequence()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; <a class="el" href="structplanning__utils_1_1State.html">State</a> &gt; RRTClass::getStateSequence </td>
+          <td class="memname">std::vector&lt; <a class="el" href="structplanning__utils_1_1State.html">State</a> &gt; RRT::getStateSequence </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;&#160;</td>
           <td class="paramname"><em>T</em>, </td>
@@ -444,14 +444,14 @@ visualization_msgs::MarkerArray&#160;</td><td class="memItemRight" valign="botto
 
 </div>
 </div>
-<a id="a581884981473257991c590392ad49dbd" name="a581884981473257991c590392ad49dbd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a581884981473257991c590392ad49dbd">&#9670;&nbsp;</a></span>getStatistics()</h2>
+<a id="acacd2b8a18e91cdb2a16130f75c24411" name="acacd2b8a18e91cdb2a16130f75c24411"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acacd2b8a18e91cdb2a16130f75c24411">&#9670;&nbsp;</a></span>getStatistics()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void RRTClass::getStatistics </td>
+          <td class="memname">void RRT::getStatistics </td>
           <td>(</td>
           <td class="paramtype">double &amp;&#160;</td>
           <td class="paramname"><em>plan_time</em>, </td>
@@ -502,14 +502,14 @@ visualization_msgs::MarkerArray&#160;</td><td class="memItemRight" valign="botto
 
 </div>
 </div>
-<a id="a3a60c2a23e642ef6b995189765134ec5" name="a3a60c2a23e642ef6b995189765134ec5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3a60c2a23e642ef6b995189765134ec5">&#9670;&nbsp;</a></span>newConfig()</h2>
+<a id="aa6e14517956e80f532471be46483e2e7" name="aa6e14517956e80f532471be46483e2e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6e14517956e80f532471be46483e2e7">&#9670;&nbsp;</a></span>newConfig()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool RRTClass::newConfig </td>
+          <td class="memname">bool RRT::newConfig </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structplanning__utils_1_1State.html">State</a>&#160;</td>
           <td class="paramname"><em>s</em>, </td>
@@ -567,14 +567,14 @@ visualization_msgs::MarkerArray&#160;</td><td class="memItemRight" valign="botto
 
 </div>
 </div>
-<a id="a4acffd50e173aaeb9074248ea29032e9" name="a4acffd50e173aaeb9074248ea29032e9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4acffd50e173aaeb9074248ea29032e9">&#9670;&nbsp;</a></span>pathFromStart()</h2>
+<a id="a1beaa8bcf560e70e7e99cdf0fc19518c" name="a1beaa8bcf560e70e7e99cdf0fc19518c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1beaa8bcf560e70e7e99cdf0fc19518c">&#9670;&nbsp;</a></span>pathFromStart()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; int &gt; RRTClass::pathFromStart </td>
+          <td class="memname">std::vector&lt; int &gt; RRT::pathFromStart </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;&#160;</td>
           <td class="paramname"><em>T</em>, </td>
@@ -605,14 +605,14 @@ visualization_msgs::MarkerArray&#160;</td><td class="memItemRight" valign="botto
 
 </div>
 </div>
-<a id="a25d0142127211e5911b3a29e7dce5dfb" name="a25d0142127211e5911b3a29e7dce5dfb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a25d0142127211e5911b3a29e7dce5dfb">&#9670;&nbsp;</a></span>printPath()</h2>
+<a id="ab033530def35b8464c5df050929d8f02" name="ab033530def35b8464c5df050929d8f02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab033530def35b8464c5df050929d8f02">&#9670;&nbsp;</a></span>printPath()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void RRTClass::printPath </td>
+          <td class="memname">void RRT::printPath </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classPlannerClass.html">PlannerClass</a> &amp;&#160;</td>
           <td class="paramname"><em>T</em>, </td>

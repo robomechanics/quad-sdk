@@ -23,7 +23,7 @@ var searchData=
   ['computeplan_20',['computePlan',['../classNMPCController.html#af62bfa794c99178b3b71471b38933eab',1,'NMPCController']]],
   ['computeswingapex_21',['computeSwingApex',['../classLocalFootstepPlanner.html#a45ab0661f47d4149648e397fef14365b',1,'LocalFootstepPlanner']]],
   ['config_5f_22',['config_',['../classNMPCController.html#a03d826523fd48e67bc060e266718942b',1,'NMPCController::config_()'],['../classquadNLP.html#aa2ba39e63187ce0cc42753e3e483ab9f',1,'quadNLP::config_()']]],
-  ['connect_23',['connect',['../classFastGlobalMotionPlanner.html#acfd0441bcee0c2d5e7c91e46b7079ce3',1,'FastGlobalMotionPlanner']]],
+  ['connect_23',['connect',['../classGBPL.html#aedfd9bd45eff960c54e9c58f3a10baf3',1,'GBPL']]],
   ['connect_5fstance_24',['CONNECT_STANCE',['../classLocalFootstepPlanner.html#afa09d542cb363662eb771cc1a8942b97',1,'LocalFootstepPlanner']]],
   ['constr_5fnames_5f_25',['constr_names_',['../classquadNLP.html#ac5dcbaee806d1ecdc5ab9635f377e3b0',1,'quadNLP']]],
   ['contact_5fschedule_5f_26',['contact_schedule_',['../classLocalPlanner.html#aaaed9e387826f9dda4086f9df721831a',1,'LocalPlanner']]],

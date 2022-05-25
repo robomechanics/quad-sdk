@@ -17,7 +17,7 @@ var searchData=
   ['num_5ffunc_5fid_5f_14',['num_func_id_',['../classquadNLP.html#aff9de88d6269f28987262c6c9ecac03c',1,'quadNLP']]],
   ['num_5fjoints_5fper_5fleg_5f_15',['num_joints_per_leg_',['../classLocalPlanner.html#acfbb9b334b2bce170c6570deb2a50e07',1,'LocalPlanner']]],
   ['num_5fsys_5fid_5f_16',['num_sys_id_',['../classquadNLP.html#a201f523832569f0219333621b506aa49',1,'quadNLP']]],
-  ['num_5fvertices_5f_17',['num_vertices_',['../classRRTClass.html#a2561c1232d6af27fab25d3bea8a26d4d',1,'RRTClass']]],
+  ['num_5fvertices_5f_17',['num_vertices_',['../classRRT.html#accae06578d6b0db28ae4da4a101d0a4c',1,'RRT']]],
   ['nx_5f_18',['Nx_',['../classLocalPlanner.html#a84aadc4a9137167ee9ee783e02d60e16',1,'LocalPlanner']]],
   ['nx_5fdata_5f_19',['nx_data_',['../classFastTerrainMap.html#ac4a4a8f622be1c6f5c7b026e52de4f39',1,'FastTerrainMap']]],
   ['nx_5fdata_5ffilt_5f_20',['nx_data_filt_',['../classFastTerrainMap.html#a58841367566b553da745b93d3c0fa4f4',1,'FastTerrainMap']]],

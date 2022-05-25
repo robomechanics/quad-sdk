@@ -7,7 +7,7 @@ var searchData=
   ['global_5fplan_5ftimestamp_5f_4',['global_plan_timestamp_',['../classGlobalBodyPlanner.html#a9b899f0a4d1f7e0bcdccbe2ff55c8d92',1,'GlobalBodyPlanner']]],
   ['global_5fplan_5fviz_5fpub_5f_5',['global_plan_viz_pub_',['../classRVizInterface.html#a208c1bc32da232999a15e3f8768c0523',1,'RVizInterface']]],
   ['goal_5fdistance_5f_6',['goal_distance_',['../classGlobalBodyPlan.html#a1431e6b768bbd97f68c3661274218fe0',1,'GlobalBodyPlan']]],
-  ['goal_5ffound_7',['goal_found',['../classRRTClass.html#abd63c1f08cf738a4966010968e615e0a',1,'RRTClass']]],
+  ['goal_5ffound_7',['goal_found',['../classRRT.html#a520e8426c186385057b0d8ee00e39f74',1,'RRT']]],
   ['goal_5fstate_5f_8',['goal_state_',['../classGlobalBodyPlanner.html#a7d54c767aa5ca1c0ab98ebdfa93bc34f',1,'GlobalBodyPlanner']]],
   ['goal_5fstate_5fmsg_5f_9',['goal_state_msg_',['../classGlobalBodyPlanner.html#aa1c0845b59c7f16afaf13d27e4f48659',1,'GlobalBodyPlanner']]],
   ['goal_5fstate_5fsub_5f_10',['goal_state_sub_',['../classGlobalBodyPlanner.html#a47269cab56f643fb5db6ec48909a5bcc',1,'GlobalBodyPlanner']]],

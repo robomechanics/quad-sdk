@@ -9,8 +9,8 @@ var searchData=
   ['always_5fconstrain_5ffeet_5f_6',['always_constrain_feet_',['../classquadNLP.html#ac3d203c7c697b2fe6f054e4317f5cf89',1,'quadNLP']]],
   ['ang_5fdes_5f_7',['ang_des_',['../classGrfPidController.html#a4bc7ed0338463848122ea183f7ffeeb2',1,'GrfPidController']]],
   ['ang_5ferror_5fint_5f_8',['ang_error_int_',['../classGrfPidController.html#a6cd55647b6452fb0417eae73a0fb8147',1,'GrfPidController']]],
-  ['anytime_5fhorizon_9',['anytime_horizon',['../classFastGlobalMotionPlanner.html#a3742fc5b2c83b80ade172439a38e6bde',1,'FastGlobalMotionPlanner']]],
-  ['anytime_5fhorizon_5finit_10',['anytime_horizon_init',['../classFastGlobalMotionPlanner.html#a852bb45495f13d2b6815db8e4a4f80f5',1,'FastGlobalMotionPlanner']]],
+  ['anytime_5fhorizon_9',['anytime_horizon',['../classGBPL.html#a10b456a708042ebf64480ed74c4fba76',1,'GBPL']]],
+  ['anytime_5fhorizon_5finit_10',['anytime_horizon_init',['../classGBPL.html#adfe2855c194e9c0dbccc5933805b3504',1,'GBPL']]],
   ['apply_5fslack_5fto_5fcomplex_5fconstr_5f_11',['apply_slack_to_complex_constr_',['../classquadNLP.html#a4de5eff180b361a0039cad7264991364',1,'quadNLP']]],
   ['argc_5f_12',['argc_',['../classRobotDriver.html#af0b9d9429662092ff70f477eac31defe',1,'RobotDriver']]],
   ['argv_5f_13',['argv_',['../classRobotDriver.html#aed742be33c57b3accac92fe3a0078b86',1,'RobotDriver']]]

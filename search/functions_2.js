@@ -13,7 +13,7 @@ var searchData=
   ['computelocalplan_10',['computeLocalPlan',['../classLocalPlanner.html#a72ba8fe6eaf69bc3c452e0492d857779',1,'LocalPlanner']]],
   ['computeplan_11',['computePlan',['../classNMPCController.html#af62bfa794c99178b3b71471b38933eab',1,'NMPCController']]],
   ['computeswingapex_12',['computeSwingApex',['../classLocalFootstepPlanner.html#a45ab0661f47d4149648e397fef14365b',1,'LocalFootstepPlanner']]],
-  ['connect_13',['connect',['../classFastGlobalMotionPlanner.html#acfd0441bcee0c2d5e7c91e46b7079ce3',1,'FastGlobalMotionPlanner']]],
+  ['connect_13',['connect',['../classGBPL.html#aedfd9bd45eff960c54e9c58f3a10baf3',1,'GBPL']]],
   ['contactplugin_14',['ContactPlugin',['../classgazebo_1_1ContactPlugin.html#a8a1b0d6d62d0480db02e9dc523cb4ab2',1,'gazebo::ContactPlugin']]],
   ['contactstatecallback_15',['contactStateCallback',['../classContactStatePublisher.html#a0646cf322ee61a4fde140740acad7dba',1,'ContactStatePublisher']]],
   ['contactstatepublisher_16',['ContactStatePublisher',['../classContactStatePublisher.html#a0c3480b93a5b03c50a800b027afa4428',1,'ContactStatePublisher']]],

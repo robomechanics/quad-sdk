@@ -38,6 +38,6 @@ var searchData=
   ['transition_5fduration_5f_35',['transition_duration_',['../classRobotDriver.html#a679615fe4b3bd964e980b59bb9238604',1,'RobotDriver']]],
   ['transition_5ftimestamp_5f_36',['transition_timestamp_',['../classRobotDriver.html#a0765155e7e3a2f6497d674d9d09352f9',1,'RobotDriver']]],
   ['tree_5fpub_5f_37',['tree_pub_',['../classGlobalBodyPlanner.html#ae6744d38639e177f3b6943940b53b9ff',1,'GlobalBodyPlanner']]],
-  ['tree_5fviz_5fmsg_5f_38',['tree_viz_msg_',['../classRRTClass.html#ad0b6ac38469ffb8f3494efa116ebf22f',1,'RRTClass']]],
+  ['tree_5fviz_5fmsg_5f_38',['tree_viz_msg_',['../classRRT.html#a4159052b455534fe5dcefda13c583313',1,'RRT']]],
   ['triggerreset_39',['triggerReset',['../classGlobalBodyPlanner.html#a446400b34d2a3b38b7cb8ec1c3202cd3',1,'GlobalBodyPlanner']]]
 ];
