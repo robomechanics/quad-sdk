@@ -402,7 +402,7 @@ int FastGlobalMotionPlanner::getTestPlan(const PlannerConfig &planner_config,
   state_sequence.push_back(s_land);
 
   // Connect land to goal
-  t_s = 3.0;
+  t_s = 2.0;
   s_goal.vel.setZero();
   if (!attemptConnect(s_land, s_goal, t_s, result, planner_config, FORWARD)) {
     throw ::std::runtime_error("Failed to connect land to goal");

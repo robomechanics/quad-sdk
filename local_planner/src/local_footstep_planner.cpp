@@ -410,6 +410,10 @@ void LocalFootstepPlanner::computeFootPlan(
                     "z_inpainted", foot_position_next_grid_map,
                     grid_map::InterpolationMethods::INTER_NEAREST) +
                 toe_radius;
+
+            // Use heuristic in computing next foothold
+            foot_position_next =
+                getNearestValidFoothold(foot_position_next, foot_position_next);
           } else {
             foot_position_next = getFootData(foot_positions, i_touchdown, j);
             swing_duration = i_touchdown - i_liftoff;
@@ -720,7 +724,7 @@ double LocalFootstepPlanner::computeSwingApex(
   quadKD_->worldToLegbaseFKWorldFrame(leg_idx, body_plan.segment(0, 3),
                                       body_plan.segment(3, 3), g_world_legbase);
   double hip_height = g_world_legbase(2, 3);
-  double max_extension = 0.35;
+  double max_extension = 0.3;
 
   // Compute swing apex
   double swing_apex =
