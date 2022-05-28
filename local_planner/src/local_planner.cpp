@@ -192,6 +192,7 @@ void LocalPlanner::robotPlanCallback(
   }
 
   body_plan_msg_ = msg;
+  local_footstep_planner_->body_plan_msg_ = *body_plan_msg_;
 }
 
 void LocalPlanner::robotStateCallback(

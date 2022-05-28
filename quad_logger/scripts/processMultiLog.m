@@ -17,8 +17,8 @@ end
 
 %% Select rosbag to parse
 
-% envName = 'gap_40cm_01realtime';    tWindow = [3, 6]; tLocalPlanWindow = [3, 6];
-envName = 'step_20cm_05realtime';     tWindow = [2, 5]; tLocalPlanWindow = [2, 4];
+envName = 'gap_40cm_02realtime';    tWindow = [3, 6]; tLocalPlanWindow = [3, 6];
+% envName = 'step_20cm_05realtime';     tWindow = [2, 5]; tLocalPlanWindow = [2, 4];
 % envName = 'rough_25cm_02realtime';    tWindow = [3, 6]; tLocalPlanWindow = [3, 6];
 configNames = {'Simple', 'Complex', 'Mixed', 'Adaptive'};
 configLinestyles = {'--', ':', '-.', '-'};
@@ -70,54 +70,54 @@ for i = 1:length(configNames)
     linearStateFig.Name = "linear_states";
     traj_idx = find(stateGroundTruth{i}.time>= tWindow(1) & stateGroundTruth{i}.time<= tWindow(2));
     
-%     % z state
-%     subplot(2,2,1); hold on
-%     plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.position(traj_idx,3), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
-%     ylabel('Z Position (m)')
-%     axis tight
-%     
-%     subplot(2,2,3); hold on
-%     plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.velocity(traj_idx,3), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
-%     ylabel('Z Velocity (m/s)')
-%     xlabel('Time (s)')
-%     axis tight
-%     
-%     % x state
-%     subplot(2,2,2); hold on
-%     plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.position(traj_idx,1), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
-%     ylabel('X Position (m)')
-%     axis tight
-%     
-%     subplot(2,2,4); hold on
-%     plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.velocity(traj_idx,1), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
-%     ylabel('X Velocity (m/s)')
-%     xlabel('Time (s)')
-%     axis tight
-
-    % pitch
+    % z state
     subplot(2,2,1); hold on
-    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.orientationRPY(traj_idx,2), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
-    ylabel('Pitch (rad)')
+    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.position(traj_idx,3), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
+    ylabel('Z Position (m)')
     axis tight
     
     subplot(2,2,3); hold on
-    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.angularVelocity(traj_idx,2), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
-    ylabel('Pitch rate (rad/s)')
+    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.velocity(traj_idx,3), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
+    ylabel('Z Velocity (m/s)')
     xlabel('Time (s)')
     axis tight
     
-    % yaw state
+    % x state
     subplot(2,2,2); hold on
-    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.orientationRPY(traj_idx,3), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
-    ylabel('Yaw (rad)')
+    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.position(traj_idx,1), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
+    ylabel('X Position (m)')
     axis tight
     
     subplot(2,2,4); hold on
-    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.angularVelocity(traj_idx,3), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
-    ylabel('Yaw rate (rad/s)')
+    plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.velocity(traj_idx,1), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
+    ylabel('X Velocity (m/s)')
     xlabel('Time (s)')
     axis tight
-    set(linearStateFig, 'Position', [100 100 1200 1200])
+
+%     % pitch
+%     subplot(2,2,1); hold on
+%     plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.orientationRPY(traj_idx,2), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
+%     ylabel('Pitch (rad)')
+%     axis tight
+%     
+%     subplot(2,2,3); hold on
+%     plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.angularVelocity(traj_idx,2), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
+%     ylabel('Pitch rate (rad/s)')
+%     xlabel('Time (s)')
+%     axis tight
+%     
+%     % yaw state
+%     subplot(2,2,2); hold on
+%     plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.orientationRPY(traj_idx,3), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
+%     ylabel('Yaw (rad)')
+%     axis tight
+%     
+%     subplot(2,2,4); hold on
+%     plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.angularVelocity(traj_idx,3), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
+%     ylabel('Yaw rate (rad/s)')
+%     xlabel('Time (s)')
+%     axis tight
+%     set(linearStateFig, 'Position', [100 100 1200 1200])
     
     %
     % ~~~~~~~~~~~~~~~~~~~

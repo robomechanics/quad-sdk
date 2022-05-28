@@ -249,6 +249,9 @@ class LocalFootstepPlanner {
     return future_body_plan;
   }
 
+  /// Global plan message
+  quad_msgs::RobotPlan body_plan_msg_;
+
  private:
   /**
    * @brief Update the continuous foot plan to match the discrete

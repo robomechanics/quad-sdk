@@ -2,8 +2,8 @@
   <world name='default'>
     <physics type="ode">
     <max_step_size>0.001</max_step_size>
-    <real_time_factor>0.1</real_time_factor>
-    <real_time_update_rate>100</real_time_update_rate>
+    <real_time_factor>0.2</real_time_factor>
+    <real_time_update_rate>200</real_time_update_rate>
         <ode>
             <solver> 
               <iters>300</iters> 
