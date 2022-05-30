@@ -459,6 +459,8 @@ class LocalFootstepPlanner {
 
   /// Toe radius
   double toe_radius = 0.02;
+
+  int land_idx_;
 };
 
 #endif  // LOCAL_FOOTSTEP_PLANNER_H

@@ -4,7 +4,7 @@ global_body_planner:
   max_planning_time: 0.25                 # Maximum amount of time to run the planner
   goal_state: [5.5, 0.0]                  # Nominal goal state (x/y coordinates)
   pos_error_threshold: 25                 # Error from planned state to trigger reset
-  startup_delay: 0.05                      # Time to delay after starting node before planning
+  startup_delay: 1.5                      # Time to delay after starting node before planning
   replanning: false                        # Boolean to determine if replanning is allowed
   dt: 0.03                                # Resolution of kinematic feasibility checks, m
   trapped_buffer_factor: 7                # Number of feasibility that must pass to not consider a state trapped

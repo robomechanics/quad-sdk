@@ -4,7 +4,9 @@
 
 #include <chrono>
 
-LocalFootstepPlanner::LocalFootstepPlanner() {}
+LocalFootstepPlanner::LocalFootstepPlanner() {
+  land_idx_ = std::numeric_limits<int>::max();
+}
 
 void LocalFootstepPlanner::setTemporalParams(
     double dt, int period, int horizon_length,
@@ -105,6 +107,7 @@ void LocalFootstepPlanner::computeContactSchedule(
   }
   // Check the primitive plan to see if there's standing or flight phase
   int leap_idx = -1;
+  int max_stance_duration = 4;
   for (int i = 0; i < horizon_length_; i++) {
     // Leaping and landing
     if (ref_primitive_plan(i) == LEAP_STANCE) {
@@ -122,11 +125,18 @@ void LocalFootstepPlanner::computeContactSchedule(
       if (current_height < min_landing_height && body_plan(i, 8) < 0) {
         ROS_WARN("Contact schedule changed at i = %d!!!!!!!!!!!!!!!", i);
         contact_schedule.at(i) = {true, true, true, true};
+        if (land_idx_ == std::numeric_limits<int>::max()) {
+          land_idx_ = current_plan_index + i + max_stance_duration;
+        }
       } else {
         contact_schedule.at(i) = {false, false, false, false};
       }
-    } else if (ref_primitive_plan(i) == LAND_STANCE) {
+    } else if (ref_primitive_plan(i) == LAND_STANCE &&
+               (current_plan_index + i) < land_idx_) {
       contact_schedule.at(i) = {true, true, true, true};
+    } else if (ref_primitive_plan(i) == LAND_STANCE &&
+               (current_plan_index + i) >= land_idx_) {
+      ROS_WARN("Landing stance shortened at i = %d", i);
     }
   }
 
@@ -517,6 +527,15 @@ void LocalFootstepPlanner::computeFootPlan(
 
         foot_state_msg.contact = true;
       }
+
+      // Enforce maximum leg length
+      Eigen::Vector3d hip_pos, foot_pos, foot_pos_rel;
+      quadKD_->worldToLegbaseFKWorldFrame(j, body_plan.row(i).segment(0, 3),
+                                          body_plan.row(i).segment(3, 3),
+                                          hip_pos);
+      foot_pos_rel = foot_position - hip_pos;
+      double leg_length = std::min(foot_pos_rel.norm(), 0.4);
+      foot_position = hip_pos + leg_length * foot_pos_rel.normalized();
 
       // Load state data into the message
       quad_utils::eigenToFootStateMsg(foot_position, foot_velocity,

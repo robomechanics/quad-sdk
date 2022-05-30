@@ -36,8 +36,10 @@ SpiritController::SpiritController() {
   leg_map_[11] = std::make_pair(3, 0);  // abd3
 
   // Torque saturation (could change to linear model in future)
-  torque_lims_ = {21, 21, 32};
-  speed_lims_ = {37.7, 37.7, 25.1};
+  // torque_lims_ = {21, 21, 42};
+  // speed_lims_ = {40, 40, 20};
+  torque_lims_ = {21, 21, 21};
+  speed_lims_ = {40, 40, 40};
 }
 SpiritController::~SpiritController() { sub_command_.shutdown(); }
 
@@ -134,7 +136,7 @@ void SpiritController::update(const ros::Time& time,
     double motor_model_ub = torque_lims_[ind.second] *
                             (1.0 - current_vel / speed_lims_[ind.second]);
     double motor_model_lb = -torque_lims_[ind.second] *
-                            (1.0 - current_vel / speed_lims_[ind.second]);
+                            (1.0 + current_vel / speed_lims_[ind.second]);
     double torque_command = std::min(
         std::max(torque_feedback + torque_ff, -torque_lim), torque_lim);
     bool apply_motor_model = true;

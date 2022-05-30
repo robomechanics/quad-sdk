@@ -502,8 +502,8 @@ bool RobotDriver::updateControl() {
       if (InverseDynamicsController* p =
               dynamic_cast<InverseDynamicsController*>(leg_controller_.get())) {
         // Uncomment to publish trajectory reference state
-        // quad_msgs::RobotState ref_state_msg = p->getReferenceState();
-        // trajectry_robot_state_pub_.publish(ref_state_msg);
+        quad_msgs::RobotState ref_state_msg = p->getReferenceState();
+        trajectry_robot_state_pub_.publish(ref_state_msg);
       }
     }
   } else if (control_mode_ == SIT_TO_READY) {
