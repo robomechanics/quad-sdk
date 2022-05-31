@@ -51,6 +51,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   quad_utils::loadROSParam(nh_, "robot_driver/stance_kd", stance_kd_);
   quad_utils::loadROSParam(nh_, "robot_driver/retraction_kp", retraction_kp_);
   quad_utils::loadROSParam(nh_, "robot_driver/retraction_kd", retraction_kd_);
+  quad_utils::loadROSParam(nh_, "robot_driver/landing_kp", landing_kp_);
+  quad_utils::loadROSParam(nh_, "robot_driver/landing_kd", landing_kd_);
   quad_utils::loadROSParam(nh_, "robot_driver/extend_kp", extend_kp_);
   quad_utils::loadROSParam(nh_, "robot_driver/extend_kd", extend_kd_);
   quad_utils::loadROSParam(nh_, "robot_driver/swing_kp", swing_kp_);
@@ -87,7 +89,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
   robot_heartbeat_pub_ =
       nh_.advertise<std_msgs::Header>(robot_heartbeat_topic, 1);
   contact_sensing_pub_ =
-      nh_.advertise<std_msgs::ByteMultiArray>(contact_sensing_topic, 1);
+      nh_.advertise<quad_msgs::ContactSensing>(contact_sensing_topic, 1);
 
   // Set up pubs and subs dependent on robot layer
   if (is_hw_) {
@@ -125,8 +127,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char** argv) {
     leg_controller_ = nullptr;
   }
   leg_controller_->setGains(stance_kp_, stance_kd_, swing_kp_, swing_kd_,
-                            retraction_kp_, retraction_kd_, extend_kp_,
-                            extend_kd_);
+                            retraction_kp_, retraction_kd_, landing_kp_,
+                            landing_kd_, extend_kp_, extend_kd_);
 
   // Start sitting
   control_mode_ = SIT;

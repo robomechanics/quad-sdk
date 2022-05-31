@@ -182,15 +182,14 @@ contactSensingData = readMessages(select(bag,'Topic','/control/contact_sensing')
 contactSensingTime = select(bag, Topic='/control/contact_sensing');
 contactSensingTime = contactSensingTime.MessageList.Time;
 contactSensing = struct;
-if isempty(controlGRFsData)
+if isempty(contactSensingData)
     warning('Warning, no data on contact sensing topic');
     contactSensing.time = [];
     contactSensing.contactStates = [];
 else
-    
     contactSensing.time = contactSensingTime;
     contactSensing.contactStates=cell2mat(cellfun(@(m) ...
-        [m.Data(1), m.Data(2), m.Data(3), m.Data(4)], contactSensingData, 'UniformOutput', 0));
+        [m.ContactSensing(1)|(~m.GetNewPlanAfterRecovering(1)), m.ContactSensing(2)|(~m.GetNewPlanAfterRecovering(2)), m.ContactSensing(3)|(~m.GetNewPlanAfterRecovering(3)), m.ContactSensing(4)|(~m.GetNewPlanAfterRecovering(4))], contactSensingData, 'UniformOutput', 0));
 end
 
 % Localize time to the first message

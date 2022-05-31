@@ -4,7 +4,7 @@ import subprocess
 import time
 
 type_num = 2
-world_num = 8
+world_num = 12
 batch_num = 100
 worker_num = 4
 

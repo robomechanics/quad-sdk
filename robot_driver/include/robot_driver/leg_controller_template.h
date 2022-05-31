@@ -2,6 +2,7 @@
 #define LEG_CONTROLLER_TEMPLATE_H
 
 #include <eigen_conversions/eigen_msg.h>
+#include <quad_msgs/ContactSensing.h>
 #include <quad_msgs/GRFArray.h>
 #include <quad_msgs/LegCommand.h>
 #include <quad_msgs/LegCommandArray.h>
@@ -15,7 +16,6 @@
 #include <robot_driver/mblink_converter.h>
 #include <ros/ros.h>
 #include <std_msgs/ByteMultiArray.h>
-#include <std_msgs/UInt8.h>
 
 #include <cmath>
 #include <eigen3/Eigen/Eigen>
@@ -64,6 +64,7 @@ class LegControllerTemplate {
       std::vector<double> stance_kp, std::vector<double> stance_kd,
       std::vector<double> swing_kp, std::vector<double> swing_kd,
       std::vector<double> retraction_kp, std::vector<double> retraction_kd,
+      std::vector<double> landing_kp, std::vector<double> landing_kd,
       std::vector<double> extend_kp, std::vector<double> extend_kd);
 
   /**
@@ -84,7 +85,7 @@ class LegControllerTemplate {
    * @brief Get contact sensing message
    * @param[in] msg Message of the local referance plan
    */
-  std_msgs::ByteMultiArray getContactSensingMsg();
+  quad_msgs::ContactSensing getContactSensingMsg();
 
   /**
    * @brief Compute the leg command array message
@@ -115,6 +116,10 @@ class LegControllerTemplate {
   std::vector<double> retraction_kp_;
   std::vector<double> retraction_kd_;
 
+  /// PD gain when foot is in retraction
+  std::vector<double> landing_kp_;
+  std::vector<double> landing_kd_;
+
   /// PD gain when foot is in extend
   std::vector<double> extend_kp_;
   std::vector<double> extend_kd_;
@@ -132,10 +137,7 @@ class LegControllerTemplate {
   quad_msgs::GRFArray::ConstPtr last_grf_sensor_msg_;
 
   /// Most recent contact sensing data
-  std_msgs::ByteMultiArray last_contact_sensing_msg_;
-
-  /// If get new plan after recover from contact missing
-  std::vector<bool> get_new_plan_after_recovering_;
+  quad_msgs::ContactSensing last_contact_sensing_msg_;
 };
 
 #endif  // MPC_CONTROLLER_H

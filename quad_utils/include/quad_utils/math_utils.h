@@ -147,6 +147,8 @@ std::vector<double> unwrap(std::vector<double> data);
  * @return Pseudo-inverse of the input matrix
  */
 Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian);
+
+Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian, double ratio);
 }  // namespace math_utils
 
 #endif  // QUAD_MATH_UTILS_H

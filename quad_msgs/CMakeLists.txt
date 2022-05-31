@@ -35,6 +35,7 @@ add_message_files(
   LegCommand.msg
   LegCommandArray.msg
   LegOverride.msg
+  ContactSensing.msg
 )
 
 ## Generate added messages and services with any dependencies listed here

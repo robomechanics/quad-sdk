@@ -35,3 +35,4 @@ spirit:
 
 contact_state_publisher:
   update_rate: 500
+  filter_time_constant: 0.025

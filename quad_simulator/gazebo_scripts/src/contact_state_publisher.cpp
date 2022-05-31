@@ -19,6 +19,8 @@ ContactStatePublisher::ContactStatePublisher(ros::NodeHandle nh)
 
   quad_utils::loadROSParam(nh_, "contact_state_publisher/update_rate",
                            update_rate_);
+  quad_utils::loadROSParam(nh_, "contact_state_publisher/filter_time_constant",
+                           filter_time_constant_);
 
   // Setup subs
   toe0_contact_state_sub = nh_.subscribe<gazebo_msgs::ContactsState>(
@@ -48,6 +50,9 @@ ContactStatePublisher::ContactStatePublisher(ros::NodeHandle nh)
 
   // Init indicator
   ready_to_publish_ = false;
+
+  // Init filter
+  filter_state_.resize(3 * num_feet_);
 }
 
 void ContactStatePublisher::contactStateCallback(
@@ -141,6 +146,26 @@ void ContactStatePublisher::contactStateCallback(
 }
 
 void ContactStatePublisher::publishContactState() {
+  // Apply low pass filter
+  for (size_t i = 0; i < 4; i++) {
+    grf_array_msg_.vectors[i].x =
+        (1 - 1 / update_rate_ / filter_time_constant_) *
+            filter_state_.at(i * 3 + 0) +
+        1 / update_rate_ / filter_time_constant_ * grf_array_msg_.vectors[i].x;
+    grf_array_msg_.vectors[i].y =
+        (1 - 1 / update_rate_ / filter_time_constant_) *
+            filter_state_.at(i * 3 + 1) +
+        1 / update_rate_ / filter_time_constant_ * grf_array_msg_.vectors[i].y;
+    grf_array_msg_.vectors[i].z =
+        (1 - 1 / update_rate_ / filter_time_constant_) *
+            filter_state_.at(i * 3 + 2) +
+        1 / update_rate_ / filter_time_constant_ * grf_array_msg_.vectors[i].z;
+
+    filter_state_.at(i * 3 + 0) = grf_array_msg_.vectors[i].x;
+    filter_state_.at(i * 3 + 1) = grf_array_msg_.vectors[i].y;
+    filter_state_.at(i * 3 + 2) = grf_array_msg_.vectors[i].z;
+  }
+
   grf_array_msg_.header.stamp = ros::Time::now();
   grf_pub_.publish(grf_array_msg_);
 }

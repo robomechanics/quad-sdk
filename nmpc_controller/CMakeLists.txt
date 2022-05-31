@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(nmpc_controller)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11)
+add_compile_options(-std=c++11 -ffast-math)
   
 ## Set default cmake build type to release
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
@@ -65,6 +65,17 @@ target_link_libraries(nmpc_controller
 add_dependencies(nmpc_controller 
   ${nmpc_controller_EXPORTED_TARGETS} 
   ${catkin_EXPORTED_TARGETS})
+
+## Declare a C++ executable
+## With catkin_make all packages are built within a single CMake context
+## The recommended prefix ensures that target names across packages don't collide
+add_executable(nmpc_node src/nmpc_node.cpp)
+
+## Specify libraries to link a library or executable target against
+target_link_libraries(nmpc_node
+nmpc_controller
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Testing ##
