@@ -134,7 +134,7 @@ void SpiritController::update(const ros::Time& time,
     double motor_model_ub = torque_lims_[ind.second] *
                             (1.0 - current_vel / speed_lims_[ind.second]);
     double motor_model_lb = -torque_lims_[ind.second] *
-                            (1.0 - current_vel / speed_lims_[ind.second]);
+                            (1.0 + current_vel / speed_lims_[ind.second]);
     double torque_command = std::min(
         std::max(torque_feedback + torque_ff, -torque_lim), torque_lim);
     bool apply_motor_model = true;

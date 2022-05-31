@@ -171,7 +171,7 @@ NMPCController::NMPCController() {
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   app_->Options()->SetStringValue("fixed_variable_treatment",
                                   "make_parameter_nodual");
-  app_->Options()->SetNumericValue("tol", 5e-3);
+  app_->Options()->SetNumericValue("tol", 1e-2);
   app_->Options()->SetNumericValue("dual_inf_tol", 1e10);
   app_->Options()->SetNumericValue("constr_viol_tol", 1e-2);
   app_->Options()->SetNumericValue("compl_inf_tol", 1e-2);
@@ -179,8 +179,8 @@ NMPCController::NMPCController() {
   app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
   app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
 
-  app_->Options()->SetNumericValue("max_wall_time", 40.0 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 40.0 * dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 20.0 * dt_);
+  app_->Options()->SetNumericValue("max_cpu_time", 20.0 * dt_);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();

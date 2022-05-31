@@ -69,7 +69,7 @@ quadNLP::quadNLP(int N, double dt, double mu, double panic_weights,
   g_min_complex_soft_.head(num_feet_).fill(-2e19);
   g_max_complex_soft_.head(num_feet_).fill(0);
   g_min_complex_soft_.tail(num_feet_).fill(-2e19);
-  g_max_complex_soft_.tail(num_feet_).fill(-0.05);
+  g_max_complex_soft_.tail(num_feet_).fill(0);
 
   loadCasadiFuncs();
   loadConstraintNames();
@@ -695,11 +695,16 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
       pk.segment(2, 12) = foot_pos_body_.row(i + 1);
       pk.segment(14, 12) = foot_pos_world_.row(i + 1);
       pk.segment(26, 12) = foot_vel_world_.row(i + 1);
+      // std::cout << "i = " << i << std::endl;
+      // std::cout << "sys id = " << sys_id << std::endl;
       if (use_terrain_constraint_ &&
           sys_id_schedule_[i] == COMPLEX_TO_COMPLEX) {
         for (int j = 0; j < num_feet_; j++) {
           Eigen::Vector3d foot_pos =
               get_primal_foot_state_var(w, i + 1).segment(3 * j, 3);
+
+          // std::cout << "foot_pos " << j << " = " << foot_pos.transpose()
+          //           << std::endl;
 
           pk(38 + j) = terrain_.atPosition("z_inpainted", foot_pos.head<2>(),
                                            interp_type_);
@@ -709,11 +714,20 @@ bool quadNLP::eval_jac_g(Index n, const Number *x, bool new_x, Index m,
               "normal_vectors_y", foot_pos.head<2>(), interp_type_);
           pk(44 + 3 * j) = terrain_.atPosition(
               "normal_vectors_z", foot_pos.head<2>(), interp_type_);
+          // pk(42 + 3 * j) = 0;
+          // pk(43 + 3 * j) = 0;
+          // pk(44 + 3 * j) = 1;
         }
       } else {
         pk.segment(38, 4).fill(-10);
-        pk.segment(42, 12).fill(1);
+        pk.segment(42, 12).fill(10);
       }
+
+      // std::cout << "pk = \n" << pk << std::endl;
+      // std::cout << "row = " << iRow_mat_relaxed_[sys_id][JAC].array()
+      //           << std::endl;
+      // std::cout << "col = " << jCol_mat_relaxed_[sys_id][JAC].array()
+      //           << std::endl;
 
       // Set up the work function
       casadi_int sz_arg;

@@ -11,10 +11,12 @@ import sys
 time_init = 3.5
 
 # Standing time
-time_stand = 7.5
+time_stand = 12
+time_stand = 12*2/5
 
 # Actual walking and simulation time
 time_walk = 45
+time_walk = 45*2/5
 
 # World parameter list
 world_list = ['step_20cm', 'gap_40cm']
@@ -25,11 +27,7 @@ type_list = ['simple', 'complex', 'mixed', 'adaptive']
 # Batch size for random initialization
 batch_size = 10
 
-# Random sample radius
-random_radius = 0.1
-
 # Prefix in the bag name
-name_prefix = '05realtime'
 
 # ==========
 # Input
@@ -41,24 +39,34 @@ world_index = int(sys.argv[1])
 # Type index maps [0, 3] to [Simple, Complex, Mixed, Adaptive], you still need to manully change the nmpc parameter now though
 type_index = int(sys.argv[2])
 
-# ==========
-# Init
-# ==========
-
-# Guarentee deterministic
-np.random.seed(0)
-
-# Initial position list
-init_radius = random_radius * np.random.rand(batch_size)
-init_angle = 2 * np.pi * (np.random.rand(batch_size) - 0.5)
-init_pos = np.array([1.0 + init_radius * np.cos(init_angle), init_radius * np.sin(init_angle)])
-
 # Specify leap or not
 leap_arg = 'leaping:=false'
 if world_index == 0:
     leap_arg = 'leaping:=false'
+    time_stand = 12*2/5
+    time_walk = 45*2/5
+    name_prefix = '05realtime'
+    random_radius = 0.2
+    start_state_x = 1.0
 elif world_index == 1:
     leap_arg = 'leaping:=true'
+    time_stand = 8.5
+    time_walk = 35
+    name_prefix = '02realtime'
+    random_radius = 0.2
+    start_state_x = 0.9
+
+# ==========
+# Init
+# ==========
+
+# Guarantee deterministic
+np.random.seed(0)
+
+# Initial position list
+init_radius = 2*random_radius * (np.random.rand(batch_size) - 0.5)
+init_angle = 0; #2 * np.pi * (np.random.rand(batch_size) - 0.5)
+init_pos = np.array([start_state_x + init_radius * np.cos(init_angle), init_radius * np.sin(init_angle)])
 
 # ==========
 # Sim

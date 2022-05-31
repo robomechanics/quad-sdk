@@ -22,7 +22,7 @@ global_body_planner:
   h_min: 0.075                            # Minimum ground clearance of body corners, m
   h_nom: 0.3                              # Nominal ground clearance of body, m
   v_max: 2.0                              # Maximum robot velocity, m/s
-  v_nom: 1.0                              # Nominal velocity, m/s (used during connect function)
+  v_nom: 0.75                              # Nominal velocity, m/s (used during connect function)
   robot_l: 0.3                            # Length of robot body, m
   robot_w: 0.3                            # Width of robot body, m
   robot_h: 0.05                           # Vertical distance between leg base and bottom of robot, m
