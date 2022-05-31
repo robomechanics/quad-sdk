@@ -18,6 +18,7 @@ bagNameList = sortrows(bagNameList, 'date'); % sort the table by 'DOB'
 bagNameList = table2struct(bagNameList); % change it back to struct array if necessary
 
 maxError = zeros(size(bagNameList));
+maxRoll = zeros(size(bagNameList));
 sucList = zeros(size(bagNameList));
 stateEstimate = cell(size(bagNameList));
 stateGroundTruth = cell(size(bagNameList));
@@ -70,6 +71,7 @@ parfor i = 1:size(bagNameList, 1)
 
     % Analyse the orientation error
     maxError(i) = max(abs(wrapToPi(data.stateGroundTruth.axisAngleRP(:, 4))));
+    maxRoll(i) = max(abs(wrapToPi(data.stateGroundTruth.orientationRPY(:, 1))));
 
     if maxError(i) < pi/3
         sucList(i) = true;

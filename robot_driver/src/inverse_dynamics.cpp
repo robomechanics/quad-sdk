@@ -164,7 +164,7 @@ bool InverseDynamicsController::computeLegCommandArray(
         ref_state_msg.joints.position.at(3 * i + 0) = 0.707;
         ref_state_msg.joints.position.at(3 * i + 1) = 1.4137 + body_state(4);
         ref_state_msg.joints.position.at(3 * i + 2) =
-            2 * 1.4137 + body_state(4);
+            2 * 1.4137;
 
         for (size_t j = 0; j < 3; j++) {
           // Zero out velocity

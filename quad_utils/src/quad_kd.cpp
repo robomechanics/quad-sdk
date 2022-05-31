@@ -375,7 +375,7 @@ void QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
   // Rotate to ab-ad fixed frame, we want to keep the same z even if we are
   // hitting the abad limit
   double z_body_frame = z;
-  z = -sin(q0) * y + cos(q0) * z_body_frame;
+  z = -sqrt(std::max(z * z + y * y - l0 * l0, 0.));
 
   // Check reachibility for hip
   double acos_eps = 1.0;

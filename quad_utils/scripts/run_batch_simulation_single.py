@@ -14,8 +14,8 @@ time_init = 3.5/4*10
 time_stand = 7.5/4*10
 time_walk = 27.5/4*10*0.75/1
 world = ['world:=step_25cm', 'world:=step_30cm', 'world:=step_35cm', 'world:=step_40cm',
-         'world:=step_45cm', 'world:=step_50cm', 'world:=step_55cm', 'world:=step_60cm']
-# world = ['world:=step_60cm']
+         'world:=step_45cm', 'world:=step_50cm', 'world:=step_55cm', 'world:=step_60cm',
+         'world:=step_65cm', 'world:=step_70cm', 'world:=step_75cm', 'world:=step_80cm']
 
 np.random.seed(0)
 
