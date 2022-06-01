@@ -13,9 +13,9 @@ bSave = false;
 bSampleNum = 100;
 bTypeNum = 2;
 
-bagNameList = struct2table(bagNameList); % convert the struct array to a table
-bagNameList = sortrows(bagNameList, 'date'); % sort the table by 'DOB'
-bagNameList = table2struct(bagNameList); % change it back to struct array if necessary
+bagNameListCell = struct2cell(bagNameList)';
+[~, idx] = sort(datenum(bagNameListCell(:, 3), 'dd-mmm-yyyy HH:MM:SS'), 1, 'ascend');
+bagNameList = bagNameList(idx, :);
 
 maxError = zeros(size(bagNameList));
 maxRoll = zeros(size(bagNameList));
