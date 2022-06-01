@@ -249,11 +249,11 @@ bool InverseDynamicsController::computeLegCommandArray(
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
               swing_kd_.at(j);
         }
+        // }
       }
     }
-  }
 
-  last_grf_array_ = grf_array;
-  return true;
-}
+    last_grf_array_ = grf_array;
+    return true;
+  }
 }
