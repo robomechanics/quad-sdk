@@ -13,59 +13,22 @@ class CompFilterEstimator : public StateEstimator {
   CompFilterEstimator();
 
   /**
-   * @brief initiate Comp_filter
+   * @brief initialize Complementary Filter
+   * @param[in] nh ros::NodeHandle to load parameters from yaml file
    */
-  void init();
-
-  /**
-   * @brief initiate Comp_filter
-   * @param[in] high_pass_a
-   * @param[in] high_pass_b
-   * @param[in] high_pass_c
-   * @param[in] high_pass_d
-   * @param[in] low_pass_a
-   * @param[in] low_pass_b
-   * @param[in] low_pass_c
-   * @param[in] low_pass_d
-   */
-
-  void init(const std::vector<double>& high_pass_a,
-            const std::vector<double>& high_pass_b,
-            const std::vector<double>& high_pass_c,
-            const std::vector<double>& high_pass_d,
-            const std::vector<double>& low_pass_a,
-            const std::vector<double>& low_pass_b,
-            const std::vector<double>& low_pass_c,
-            const std::vector<double>& low_pass_d);
+  void init(ros::NodeHandle nh);
 
   /**
    * @brief helper function to filter mocap data
    */
   void mocapCallBackHelper(const geometry_msgs::PoseStamped::ConstPtr& msg,
-                           const Eigen::Vector3d& pos,
-                           geometry_msgs::PoseStamped::ConstPtr last_mocap_msg_,
-                           const double& mocap_rate_,
-                           const double& mocap_dropout_threshold_);
+                           const Eigen::Vector3d& pos);
 
   /**
-   * @brief update CF state once
-   */
-  bool updateState();
-
-  /**
-   * @brief update CF state once
-   * @param[in] fully_populated
-   * @param[in] last_imu_msg_
-   * @param[in] last_joint_state_msg_
-   * @param[in] last_mocap_msg_
-   * @param[in] user_rx_data_
+   * @brief perform CF update once
    * @param[out] last_robot_state_msg_
    */
-
-  bool updateState(const bool& fully_populated, sensor_msgs::Imu& last_imu_msg_,
-                   sensor_msgs::JointState& last_joint_state_msg_,
-                   geometry_msgs::PoseStamped::ConstPtr last_mocap_msg_,
-                   quad_msgs::RobotState& last_robot_state_msg_);
+  bool updateOnce(quad_msgs::RobotState& last_robot_state_msg_);
 
   bool initiated;
 
@@ -85,9 +48,23 @@ class CompFilterEstimator : public StateEstimator {
     bool init;
   };
 
+  /// Low pass filter
   Filter low_pass_filter;
 
+  /// High pass filter
   Filter high_pass_filter;
+
+  /// High Pass States
+  std::vector<double> high_pass_a_;
+  std::vector<double> high_pass_b_;
+  std::vector<double> high_pass_c_;
+  std::vector<double> high_pass_d_;
+
+  /// Low Pass States
+  std::vector<double> low_pass_a_;
+  std::vector<double> low_pass_b_;
+  std::vector<double> low_pass_c_;
+  std::vector<double> low_pass_d_;
 
   /// Best estimate of velocity
   Eigen::Vector3d vel_estimate_;

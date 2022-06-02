@@ -69,17 +69,6 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
                            sit_joint_angles_);
   quad_utils::loadROSParam(nh_, "robot_driver/torque_limit", torque_limits_);
 
-  // load Comp_filter params
-  quad_utils::loadROSParam(nh_, "robot_driver/high_pass_a", high_pass_a_);
-  quad_utils::loadROSParam(nh_, "robot_driver/high_pass_b", high_pass_b_);
-  quad_utils::loadROSParam(nh_, "robot_driver/high_pass_c", high_pass_c_);
-  quad_utils::loadROSParam(nh_, "robot_driver/high_pass_d", high_pass_d_);
-
-  quad_utils::loadROSParam(nh_, "robot_driver/low_pass_a", low_pass_a_);
-  quad_utils::loadROSParam(nh_, "robot_driver/low_pass_b", low_pass_b_);
-  quad_utils::loadROSParam(nh_, "robot_driver/low_pass_c", low_pass_c_);
-  quad_utils::loadROSParam(nh_, "robot_driver/low_pass_d", low_pass_d_);
-
   // Setup pubs and subs
   local_plan_sub_ =
       nh_.subscribe(local_plan_topic, 1, &RobotDriver::localPlanCallback, this,
@@ -158,15 +147,15 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
 
 void RobotDriver::initStateEstimator() {
   if (estimator_id_ == "comp_filter") {
-    comp_filter_estimator_ = std::make_shared<CompFilterEstimator>();
+    state_estimator_ = std::make_shared<CompFilterEstimator>();
   } else if (estimator_id_ == "ekf_filter") {
-    ekf_estimatror_ = std::make_shared<EKFFilterEstimator>();
+    state_estimator_ = std::make_shared<EKFEstimator>();
   } else {
     ROS_ERROR_STREAM("Invalid estimator id " << estimator_id_
                                              << ", returning nullptr");
-
     state_estimator_ = nullptr;
   }
+  state_estimator_->init(nh_);
 }
 
 void RobotDriver::initLegController() {
@@ -247,8 +236,25 @@ void RobotDriver::mocapCallback(
   Eigen::Vector3d pos;
   quad_utils::pointMsgToEigen(msg->pose.position, pos);
 
-  comp_filter_estimator_->mocapCallBackHelper(
-      msg, pos, last_mocap_msg_, mocap_rate_, mocap_dropout_threshold_);
+  // Record time diff between messages
+  ros::Time t_now = ros::Time::now();
+  double t_diff_mocap_msg =
+      (msg->header.stamp - last_mocap_msg_->header.stamp).toSec();
+  double t_mocap_ros_latency = (t_now - msg->header.stamp).toSec();
+  last_mocap_time_ = t_now;
+
+  // If time diff between messages < mocap dropout threshould then
+  // apply filter
+  if (abs(t_diff_mocap_msg - 1.0 / mocap_rate_) < mocap_dropout_threshold_) {
+    if (CompFilterEstimator *c =
+            dynamic_cast<CompFilterEstimator *>(state_estimator_.get())) {
+      c->mocapCallBackHelper(msg, pos);
+    }
+  } else {
+    ROS_WARN_THROTTLE(
+        0.1,
+        "Mocap time diff exceeds max dropout threshold, hold the last value");
+  }
 
   // Update our cached mocap position
   last_mocap_msg_ = msg;
@@ -298,22 +304,25 @@ void RobotDriver::checkMessagesForSafety() {
 
 bool RobotDriver::updateState() {
   if (is_hardware_) {
-    if (estimator_id_ == "comp_filter") {
-      // Get the newest data from the robot (BLOCKING)
-      bool fully_populated = hardware_interface_->recv(
-          last_joint_state_msg_, last_imu_msg_, user_rx_data_);
-      return comp_filter_estimator_->updateState(
-          fully_populated, last_imu_msg_, last_joint_state_msg_,
-          last_mocap_msg_, last_robot_state_msg_);
-    } else if (estimator_id_ == "ekf_filter") {
-      return ekf_estimatror_->updateState();
-    } else {
-      ROS_ERROR_STREAM("Invalid estimator id " << estimator_id_
-                                               << ", returning nullptr");
+    // grab data from hardware
+    bool fully_populated = hardware_interface_->recv(
+        last_joint_state_msg_, last_imu_msg_, user_rx_data_);
 
-      return false;
+    // load robot sensor message to state estimator
+    if (fully_populated) {
+      state_estimator_->loadSensorMsg(last_imu_msg_, last_joint_state_msg_);
+    } else {
+      ROS_WARN_THROTTLE(1, "No imu or joint state (robot) recieved");
     }
 
+    if (last_mocap_msg_ != NULL) {
+      state_estimator_->loadMocapMsg(last_mocap_msg_);
+    }
+
+    // update robot state using state estimator
+    if (state_estimator_ != nullptr) {
+      state_estimator_->updateOnce(last_robot_state_msg_);
+    }
   } else {
     // State information coming through sim subscribers, not hardware interface
     return true;
