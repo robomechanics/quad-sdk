@@ -1,13 +1,11 @@
 #include "robot_driver/estimators/ekf_filter_estimator.h"
 
-EKFFilterEstimator::EKFFilterEstimator() {}
+EKFEstimator::EKFEstimator() {}
 
-void EKFFilterEstimator::init() {
+void EKFEstimator::init(ros::NodeHandle nh) {
   std::cout << "EKF Estimator Initiated" << std::endl;
 }
 
-bool EKFFilterEstimator::updateState() {
-  quad_msgs::RobotState state_est;
+bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg) {
   std::cout << "EKF Estimator Updated Once" << std::endl;
-  return false;
 }

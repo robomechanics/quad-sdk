@@ -26,26 +26,18 @@ class StateEstimator {
    */
   StateEstimator();
 
-  /**
-   * @brief Pure virtual function for filter initialization
-   */
-  virtual void init() = 0;
+  virtual void init(ros::NodeHandle nh) = 0;
 
-  /**
-   * @brief Pure virtual function for performing state estimate update
-   *
-   */
-  virtual bool updateState() = 0;
-
+  virtual bool updateOnce(quad_msgs::RobotState& last_robot_state_msg) = 0;
   /**
    * @brief read IMU data
    * @param[in] last_imu_msg_ sensor_msgs::Imu::ConstPtr imu sensor message
-   * @param[out] fk Eigen::VectorXd linear acceleration (3 * 1)
-   * @param[out] wk Eigen::VectorXd angular acceleration (3 * 1)
+   * @param[out] fk Eigen::Vector3d linear acceleration (3 * 1)
+   * @param[out] wk Eigen::Vector3d angular acceleration (3 * 1)
    * @param[out] qk Eigen::Quaterniond orientation in quaternion
    */
   void readIMU(const sensor_msgs::Imu::ConstPtr& last_imu_msg_,
-               Eigen::VectorXd& fk, Eigen::VectorXd& wk,
+               Eigen::Vector3d& fk, Eigen::Vector3d& wk,
                Eigen::Quaterniond& qk);
 
   /**
@@ -58,12 +50,35 @@ class StateEstimator {
       const sensor_msgs::JointState::ConstPtr& last_joint_state_msg_,
       Eigen::VectorXd& jk);
 
+  /**
+   * @brief load Mocap data to protected variable
+   * @param[in] last_mocap_msg geometry_msgs::PoseStamped::ConstPtr
+   */
+  void loadMocapMsg(geometry_msgs::PoseStamped::ConstPtr last_mocap_msg);
+
+  /**
+   * @brief load imu and joint encoder data to protected variables
+   * @param[in] last_imu_msg sensor_msgs::Imu
+   * @param[in] last_joint_state_msg sensor_msgs::JointState
+   */
+  void loadSensorMsg(sensor_msgs::Imu last_imu_msg,
+                     sensor_msgs::JointState last_joint_state_msg);
+
  protected:
   /// Last state estimate
   quad_msgs::RobotState state_est_;
 
   /// QuadKD class
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
+
+  /// Last mocap data
+  geometry_msgs::PoseStamped::ConstPtr last_mocap_msg_;
+
+  /// Most recent IMU data
+  sensor_msgs::Imu last_imu_msg_;
+
+  /// Most recent joint data
+  sensor_msgs::JointState last_joint_state_msg_;
 };
 
 #endif  // STATE_ESTIMATOR_H

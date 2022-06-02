@@ -5,7 +5,7 @@ StateEstimator::StateEstimator() {
 }
 
 void StateEstimator::readIMU(const sensor_msgs::Imu::ConstPtr& last_imu_msg_,
-                             Eigen::VectorXd& fk, Eigen::VectorXd& wk,
+                             Eigen::Vector3d& fk, Eigen::Vector3d& wk,
                              Eigen::Quaterniond& qk) {
   if (last_imu_msg_ != NULL) {
     fk << (*last_imu_msg_).linear_acceleration.x,
@@ -32,4 +32,16 @@ void StateEstimator::readJointEncoder(
       jk[i] = (*last_joint_state_msg_).position[i];
     }
   }
+}
+
+void StateEstimator::loadMocapMsg(
+    geometry_msgs::PoseStamped::ConstPtr last_mocap_msg) {
+  last_mocap_msg_ = last_mocap_msg;
+}
+
+void StateEstimator::loadSensorMsg(
+    sensor_msgs::Imu last_imu_msg,
+    sensor_msgs::JointState last_joint_state_msg) {
+  last_imu_msg_ = last_imu_msg;
+  last_joint_state_msg_ = last_joint_state_msg;
 }
