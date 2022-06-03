@@ -24,7 +24,7 @@
 #include "robot_driver/controllers/joint_controller.h"
 #include "robot_driver/controllers/leg_controller.h"
 #include "robot_driver/estimators/comp_filter_estimator.h"
-#include "robot_driver/estimators/ekf_filter_estimator.h"
+#include "robot_driver/estimators/ekf_estimator.h"
 #include "robot_driver/estimators/state_estimator.h"
 #include "robot_driver/hardware_interfaces/hardware_interface.h"
 #include "robot_driver/hardware_interfaces/spirit_interface.h"

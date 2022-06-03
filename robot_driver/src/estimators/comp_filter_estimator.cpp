@@ -5,15 +5,15 @@ CompFilterEstimator::CompFilterEstimator() {}
 void CompFilterEstimator::init(ros::NodeHandle& nh) {
   nh_ = nh;
   // load Comp_filter params
-  quad_utils::loadROSParam(nh_, "robot_driver/high_pass_a", high_pass_a_);
-  quad_utils::loadROSParam(nh_, "robot_driver/high_pass_b", high_pass_b_);
-  quad_utils::loadROSParam(nh_, "robot_driver/high_pass_c", high_pass_c_);
-  quad_utils::loadROSParam(nh_, "robot_driver/high_pass_d", high_pass_d_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/high_pass_a", high_pass_a_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/high_pass_b", high_pass_b_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/high_pass_c", high_pass_c_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/high_pass_d", high_pass_d_);
 
-  quad_utils::loadROSParam(nh_, "robot_driver/low_pass_a", low_pass_a_);
-  quad_utils::loadROSParam(nh_, "robot_driver/low_pass_b", low_pass_b_);
-  quad_utils::loadROSParam(nh_, "robot_driver/low_pass_c", low_pass_c_);
-  quad_utils::loadROSParam(nh_, "robot_driver/low_pass_d", low_pass_d_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/low_pass_a", low_pass_a_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/low_pass_b", low_pass_b_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/low_pass_c", low_pass_c_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/low_pass_d", low_pass_d_);
   high_pass_filter.A =
       Eigen::Map<Eigen::Matrix<double, 2, 2> >(high_pass_a_.data()).transpose();
   high_pass_filter.B =

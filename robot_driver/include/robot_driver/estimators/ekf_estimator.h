@@ -1,5 +1,5 @@
-#ifndef EKF_FILTER_H
-#define EKF_FILTER_H
+#ifndef EKF_H
+#define EKF_H
 
 #include <robot_driver/estimators/state_estimator.h>
 
@@ -13,13 +13,13 @@ class EKFEstimator : public StateEstimator {
   EKFEstimator();
 
   /**
-   * @brief initialize EKF
-   * @param[in] nh ros::NodeHandle to load parameters from yaml file
+   * @brief Initialize EKF
+   * @param[in] nh Node Handler to load parameters from yaml file
    */
   void init(ros::NodeHandle& nh);
 
   /**
-   * @brief perform EKF update once
+   * @brief Perform EKF update once
    * @param[out] last_robot_state_msg_
    */
   bool updateOnce(quad_msgs::RobotState& last_robot_state_msg_);
@@ -29,4 +29,4 @@ class EKFEstimator : public StateEstimator {
   ros::NodeHandle nh_;
 };
 
-#endif  // EKF_FILTER_H
+#endif  // EKF_H

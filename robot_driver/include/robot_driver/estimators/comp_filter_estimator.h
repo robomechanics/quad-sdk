@@ -13,19 +13,19 @@ class CompFilterEstimator : public StateEstimator {
   CompFilterEstimator();
 
   /**
-   * @brief initialize Complementary Filter
-   * @param[in] nh ros::NodeHandle to load parameters from yaml file
+   * @brief Initialize Complementary Filter
+   * @param[in] nh ROS Node Handler used to load parameters from yaml file
    */
   void init(ros::NodeHandle& nh);
 
   /**
-   * @brief helper function to filter mocap data
+   * @brief Helper function to filter mocap data
    */
   void mocapCallBackHelper(const geometry_msgs::PoseStamped::ConstPtr& msg,
                            const Eigen::Vector3d& pos);
 
   /**
-   * @brief perform CF update once
+   * @brief Perform CF update once
    * @param[out] last_robot_state_msg
    */
   bool updateOnce(quad_msgs::RobotState& last_robot_state_msg);
