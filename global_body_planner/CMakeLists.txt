@@ -56,7 +56,7 @@ set(MY_LIB_SOURCES
   src/graph_class.cpp
   src/planner_class.cpp
   src/rrt.cpp
-  src/rrt_connect.cpp)
+  src/gbpl.cpp)
 
 # Declare a C++ library
 add_library(${PROJECT_NAME}

@@ -2,10 +2,10 @@
 #include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
 
+#include "global_body_planner/gbpl.h"
 #include "global_body_planner/global_body_planner_test_fixture.h"
 #include "global_body_planner/planner_class.h"
 #include "global_body_planner/planning_utils.h"
-#include "global_body_planner/rrt_connect.h"
 
 const int N = 1000;
 const double kinematics_tol = 1e-6;
@@ -98,9 +98,9 @@ TEST_F(GlobalBodyPlannerTestFixture, testUnitConnectAction) {
   s2.pos[0] = s1.pos[0] + dist;
   StateActionResult result;
 
-  RRTConnectClass rrt;
+  GBPL gbpl;
   int connect_result =
-      rrt.attemptConnect(s1, s2, t_s, result, planner_config_, FORWARD);
+      gbpl.attemptConnect(s1, s2, t_s, result, planner_config_, FORWARD);
 
   // Make sure the connection is made and that the length and time match
   EXPECT_TRUE(connect_result == REACHED);
@@ -142,9 +142,9 @@ TEST_F(GlobalBodyPlannerTestFixture, testUnitConnectActionElevatedTerrain) {
   s2.pos[0] = s1.pos[0] + dist;
   StateActionResult result;
 
-  RRTConnectClass rrt;
+  GBPL gbpl;
   int connect_result =
-      rrt.attemptConnect(s1, s2, t_s, result, planner_config_, FORWARD);
+      gbpl.attemptConnect(s1, s2, t_s, result, planner_config_, FORWARD);
 
   // Make sure the connection is made and that the length and time match
   EXPECT_TRUE(connect_result == REACHED);
@@ -201,9 +201,9 @@ TEST_F(GlobalBodyPlannerTestFixture, testUnitConnectActionSlope) {
   s2.vel[2] = 0;
   StateActionResult result;
 
-  RRTConnectClass rrt;
+  GBPL gbpl;
   int connect_result =
-      rrt.attemptConnect(s1, s2, t_s, result, planner_config_, FORWARD);
+      gbpl.attemptConnect(s1, s2, t_s, result, planner_config_, FORWARD);
 
   // // Make sure the connection is made and that the length and time match
   EXPECT_TRUE(connect_result == REACHED);
@@ -213,12 +213,12 @@ TEST_F(GlobalBodyPlannerTestFixture, testUnitConnectActionSlope) {
 }
 
 TEST_F(GlobalBodyPlannerTestFixture, testUnitLeapActionSlope) {
-  double grade = planner_config_.MU;
+  double grade = planner_config_.mu;
   double slope = atan(grade);
   updateTerrainSlope(grade);
 
   // Turn off friction
-  planner_config_.MU = 0;
+  planner_config_.mu = 0;
 
   State s;
   s.pos << 0, 0, 0.3;
@@ -247,6 +247,6 @@ TEST_F(GlobalBodyPlannerTestFixture, testUnitLeapActionSlope) {
   bool is_valid_forward = isValidStateActionPair(s, a, result, planner_config_);
   EXPECT_TRUE(is_valid_forward);
   EXPECT_TRUE(abs(result.s_new.pos[2] -
-                  (result.s_new.pos[0] * grade + planner_config_.H_NOM)) <
+                  (result.s_new.pos[0] * grade + planner_config_.h_nom)) <
               kinematics_tol);
 }

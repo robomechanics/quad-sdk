@@ -10,12 +10,13 @@ using namespace Ipopt;
 #endif
 
 // Class constructor
-quadNLP::quadNLP(int N, double dt, double mu, double panic_weights,
-                 double constraint_panic_weights, double Q_temporal_factor,
-                 double R_temporal_factor,
+quadNLP::quadNLP(SystemID default_system, int N, double dt, double mu,
+                 double panic_weights, double constraint_panic_weights,
+                 double Q_temporal_factor, double R_temporal_factor,
                  const Eigen::VectorXi &fixed_complexity_schedule,
                  const NLPConfig &config) {
   // Load constant parameters
+  default_system_ = default_system;
   dt_ = dt;
   mu_ = mu;
   N_ = N;
@@ -1596,6 +1597,9 @@ void quadNLP::update_structure() {
       adaptive_complexity_schedule_.head(N_).cwiseMax(
           fixed_complexity_schedule_.head(N_));
 
+  std::cout << "complexity_schedule = " << complexity_schedule.transpose()
+            << std::endl;
+
   // Resize vectors appropriately
   sys_id_schedule_.resize(N_ - 1);
   n_vec_.resize(N_);
@@ -1630,7 +1634,7 @@ void quadNLP::update_structure() {
     // Determine the system to assign to this finite element
     if (complexity_schedule[i] == 0) {
       sys_id_schedule_[i] = (complexity_schedule[i + 1] == 0)
-                                ? SIMPLE_TO_SIMPLE
+                                ? default_system_
                                 : SIMPLE_TO_COMPLEX;
     } else {
       sys_id_schedule_[i] = (complexity_schedule[i + 1] == 1)

@@ -1,49 +1,45 @@
 <launch>
-
-    <include file="$(find quad_utils)/launch/load_params.launch" />
+    <arg name="namespace" default="robot_1"/>
+    
+    <include file="$(find quad_utils)/launch/load_global_params.launch" />
+    <include file="$(find quad_utils)/launch/load_robot_params.launch" />
 
     <arg name="bag_name" default="quad_log"/>
 
     <!-- Record bag in bag dir, not timestamped -->
-    <node pkg="rosbag" type="record" name="rosbag_record" args="record -O $(find quad_logger)/bags/$(arg bag_name) --tcpnodelay
-        /state/joints
-        /state/imu
-        /state/trajectory
-        /state/ground_truth 
-        /state/estimate 
-        /state/grfs 
-        /mocap_node/quad/pose
-        /global_plan
-        /local_plan 
-        /control/grfs
-        /control/joint_command 
-        /control/mode 
-        /terrain_map 
-        /body_plan_continuous
-        /body_plan_discrete
-        /foot_plan_continuous 
-        /foot_plan_discrete 
-        /foot_step_hist" />
+    <node pkg="rosbag" type="record" name="rosbag_record" args="record -O $(find quad_logger)/bags/$(arg namespace)_$(arg bag_name) --tcpnodelay
+        /$(arg namespace)/state
+        /$(arg namespace)/state/imu
+        /$(arg namespace)/state/trajectory
+        /$(arg namespace)/state/ground_truth 
+        /$(arg namespace)/state/estimate 
+        /$(arg namespace)/state/grfs 
+        /$(arg namespace)/mocap_node/quad/pose
+        /$(arg namespace)/global_plan
+        /$(arg namespace)/local_plan 
+        /$(arg namespace)/control/grfs
+        /$(arg namespace)/control/joint_command 
+        /$(arg namespace)/control/mode 
+        /$(arg namespace)/foot_plan_continuous
+        /$(arg namespace)/foot_plan_discrete
+        /terrain_map" />
 
     <!-- Record timestamped bag in bag dir -->
-    <node pkg="rosbag" type="record" name="rosbag_record_archive" args="record -o $(find quad_logger)/bags/archive/$(arg bag_name) --tcpnodelay
-        /state/joints
-        /state/imu
-        /state/trajectory
-        /state/ground_truth 
-        /state/estimate 
-        /state/grfs 
-        /mocap_node/quad/pose
-        /global_plan
-        /local_plan 
-        /control/grfs
-        /control/joint_command 
-        /control/mode 
-        /terrain_map 
-        /body_plan_continuous
-        /body_plan_discrete
-        /foot_plan_continuous 
-        /foot_plan_discrete 
-        /foot_step_hist" />
+    <node pkg="rosbag" type="record" name="rosbag_record_archive" args="record -o $(find quad_logger)/bags/archive/$(arg namespace)_$(arg bag_name) --tcpnodelay
+        /$(arg namespace)/state/joints
+        /$(arg namespace)/state/imu
+        /$(arg namespace)/state/trajectory
+        /$(arg namespace)/state/ground_truth 
+        /$(arg namespace)/state/estimate 
+        /$(arg namespace)/state/grfs 
+        /$(arg namespace)/mocap_node/quad/pose
+        /$(arg namespace)/global_plan
+        /$(arg namespace)/local_plan 
+        /$(arg namespace)/control/grfs
+        /$(arg namespace)/control/joint_command 
+        /$(arg namespace)/control/mode 
+        /$(arg namespace)/foot_plan_continuous
+        /$(arg namespace)/foot_plan_discrete
+        /terrain_map" />
 
 </launch>

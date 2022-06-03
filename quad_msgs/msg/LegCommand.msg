@@ -1,4 +1,4 @@
-# This is a message of motor commands for each joint on a quad leg
+# This is a message of motor commands for each joint on a quad leg.
 #
 # Accurate timing information is stored in the header
 

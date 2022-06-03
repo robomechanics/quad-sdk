@@ -40,16 +40,16 @@ void LocalFootstepPlanner::setSpatialParams(
     double standing_error_threshold,
     std::shared_ptr<quad_utils::QuadKD> kinematics,
     double foothold_search_radius, double foothold_obj_threshold,
-    std::string obj_fun_layer) {
+    std::string obj_fun_layer, double toe_radius) {
   ground_clearance_ = ground_clearance;
   hip_clearance_ = hip_clearance;
   standing_error_threshold_ = standing_error_threshold;
   grf_weight_ = grf_weight;
   quadKD_ = kinematics;
-
   foothold_search_radius_ = foothold_search_radius;
   foothold_obj_threshold_ = foothold_obj_threshold;
   obj_fun_layer_ = obj_fun_layer;
+  toe_radius_ = toe_radius;
 }
 
 void LocalFootstepPlanner::updateMap(const FastTerrainMap &terrain) {
@@ -285,7 +285,7 @@ void LocalFootstepPlanner::computeFootPlan(
                 "z_inpainted",
                 terrain_grid_.getClosestPositionInMap(foot_position_grid_map),
                 grid_map::InterpolationMethods::INTER_NEAREST) +
-            toe_radius;
+            toe_radius_;
 
         // Optimize the foothold location to get the final position
         Eigen::Vector3d foot_position_previous =
@@ -409,7 +409,7 @@ void LocalFootstepPlanner::computeFootPlan(
                 terrain_grid_.atPosition(
                     "z_inpainted", foot_position_next_grid_map,
                     grid_map::InterpolationMethods::INTER_NEAREST) +
-                toe_radius;
+                toe_radius_;
           } else {
             foot_position_next = getFootData(foot_positions, i_touchdown, j);
             swing_duration = i_touchdown - i_liftoff;
@@ -617,7 +617,7 @@ Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
   foot_position_best.z() =
       terrain_grid_.atPosition("z_inpainted", foot_position_best.head<2>(),
                                grid_map::InterpolationMethods::INTER_LINEAR) +
-      toe_radius;
+      toe_radius_;
   return foot_position_best;
 }
 
@@ -724,7 +724,7 @@ double LocalFootstepPlanner::computeSwingApex(
 
   // Compute swing apex
   double swing_apex =
-      std::min(ground_clearance_ - toe_radius +
+      std::min(ground_clearance_ - toe_radius_ +
                    std::max(foot_position_prev.z(), foot_position_next.z()),
                hip_height - hip_clearance_);
   swing_apex = std::max(swing_apex, hip_height - max_extension);

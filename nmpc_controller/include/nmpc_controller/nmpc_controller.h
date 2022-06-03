@@ -7,7 +7,6 @@
 #include <quad_msgs/MultiFootPlanDiscrete.h>
 #include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/RobotState.h>
-#include <quad_msgs/RobotStateTrajectory.h>
 #include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
@@ -28,7 +27,7 @@ class NMPCController {
    * @param[in] nh ROS NodeHandle to publish and subscribe from
    * @return Constructed object of type MPCController
    */
-  NMPCController();
+  NMPCController(ros::NodeHandle &nh, int type);
 
   /**
    * @brief Update the contact and dynamic matrices, solve, and return the
@@ -101,6 +100,11 @@ class NMPCController {
  private:
   /// ROS node handler
   ros::NodeHandle nh_;
+
+  int robot_id_;
+
+  /// Robot type: A1 or Spirit
+  std::string robot_ns_;
 
   /// Update rate for sending and receiving data;
   double update_rate_;

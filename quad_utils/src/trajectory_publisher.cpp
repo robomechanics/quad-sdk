@@ -27,12 +27,7 @@ TrajectoryPublisher::TrajectoryPublisher(ros::NodeHandle nh) {
 }
 
 void TrajectoryPublisher::importTrajectory() {
-  // Clear current trajectory message
-  traj_msg_.states.clear();
-  traj_msg_.header.frame_id = map_frame_;
-  traj_msg_.header.stamp = ros::Time::now();
-
-  // Load the desired values into traj_msg here
+  // Load the desired values into body_plan_msg_ here
   return;
 }
 
