@@ -323,18 +323,6 @@ class RobotDriver {
   std::vector<double> swing_kp_cart_;
   std::vector<double> swing_kd_cart_;
 
-  /// CF high pass gain
-  std::vector<double> high_pass_a_;
-  std::vector<double> high_pass_b_;
-  std::vector<double> high_pass_c_;
-  std::vector<double> high_pass_d_;
-
-  /// CF low pass gain
-  std::vector<double> low_pass_a_;
-  std::vector<double> low_pass_b_;
-  std::vector<double> low_pass_c_;
-  std::vector<double> low_pass_d_;
-
   /// Define standing joint angles
   std::vector<double> stand_joint_angles_;
 

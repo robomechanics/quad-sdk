@@ -54,6 +54,8 @@ class LegController {
    * @param[in] stance_kd Stance phase derivative gains
    * @param[in] swing_kp Swing phase proportional gains
    * @param[in] swing_kd Swing phase derivative gains
+   * @param[in] swing_kp_cart Cartesian Swing phase proportional gains
+   * @param[in] swing_kd_cart Cartesian Swing phase derivative gains
    */
   virtual void init(const std::vector<double> &stance_kp,
                     const std::vector<double> &stance_kd,
