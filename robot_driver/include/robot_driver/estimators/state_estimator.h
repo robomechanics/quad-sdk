@@ -38,11 +38,11 @@ class StateEstimator {
   virtual bool updateOnce(quad_msgs::RobotState& last_robot_state_msg) = 0;
 
   /**
-   * @brief read IMU data
-   * @param[in] last_imu_msg sensor_msgs::Imu::ConstPtr imu sensor message
-   * @param[out] fk Eigen::Vector3d linear acceleration (3 * 1)
-   * @param[out] wk Eigen::Vector3d angular acceleration (3 * 1)
-   * @param[out] qk Eigen::Quaterniond orientation in quaternion
+   * @brief Read IMU data
+   * @param[in] last_imu_msg IMU sensor message
+   * @param[out] fk Linear acceleration
+   * @param[out] wk Angular acceleration
+   * @param[out] qk Orientation in quaternion
    */
   void readIMU(const sensor_msgs::Imu::ConstPtr& last_imu_msg,
                Eigen::Vector3d& fk, Eigen::Vector3d& wk,
