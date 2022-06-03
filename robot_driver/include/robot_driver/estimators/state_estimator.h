@@ -10,9 +10,6 @@
 #include <sensor_msgs/JointState.h>
 #include <std_msgs/String.h>
 
-#include "robot_driver/hardware_interfaces/hardware_interface.h"
-#include "robot_driver/hardware_interfaces/spirit_interface.h"
-
 //! Implements an abstract class for state estimator.
 //! This class provides an interface for different types of estimators
 /*!
@@ -27,16 +24,16 @@ class StateEstimator {
   StateEstimator();
 
   /**
-   * @brief virtual function for initialize filters, should be defined in
+   * @brief Virtual function for initialize filters, should be defined in
    * derived class
-   * @param[in] nh_ sensor_msgs::Imu::ConstPtr imu sensor message
+   * @param[in] nh_ ROS Node Ha
    */
   virtual void init(ros::NodeHandle& nh) = 0;
 
   /**
-   * @brief virtual update function for update robot state, should be defined in
+   * @brief Virtual update function for update robot state, should be defined in
    * derived class
-   * @param[out] last_robot_state_msg quad_msgs::RobotState robot state
+   * @param[out] last_robot_state_msg robot state
    */
   virtual bool updateOnce(quad_msgs::RobotState& last_robot_state_msg) = 0;
 
@@ -52,25 +49,24 @@ class StateEstimator {
                Eigen::Quaterniond& qk);
 
   /**
-   * @brief read joint encoder data
-   * @param[in] last_joint_state_msg sensor_msgs::JointState::ConstPtr joint
-   * state sensor message
-   * @param[out] jk Eigen::VectorXd jointstate (12 * 1)
+   * @brief Read joint encoder data
+   * @param[in] last_joint_state_msg Joint state sensor message
+   * @param[out] jk Jointstate in vector (12 * 1)
    */
   void readJointEncoder(
       const sensor_msgs::JointState::ConstPtr& last_joint_state_msg,
       Eigen::VectorXd& jk);
 
   /**
-   * @brief load Mocap data to protected variable
-   * @param[in] last_mocap_msg geometry_msgs::PoseStamped::ConstPtr
+   * @brief Load Mocap data to protected variable
+   * @param[in] last_mocap_msg Mocap message
    */
   void loadMocapMsg(geometry_msgs::PoseStamped::ConstPtr last_mocap_msg);
 
   /**
-   * @brief load imu and joint encoder data to protected variables
-   * @param[in] last_imu_msg sensor_msgs::Imu
-   * @param[in] last_joint_state_msg sensor_msgs::JointState
+   * @brief Load imu and joint encoder data to protected variables
+   * @param[in] last_imu_msg imu msgs
+   * @param[in] last_joint_state_msg joint state msgs
    */
   void loadSensorMsg(sensor_msgs::Imu last_imu_msg,
                      sensor_msgs::JointState last_joint_state_msg);
