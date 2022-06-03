@@ -158,9 +158,6 @@ Eigen::VectorXi NMPCController::updateAdaptiveComplexitySchedule(
       }
     }
 
-    // std::cout << "g_ub_viol = " << g_ub_viol.segment(84, 12).transpose()
-    //           << std::endl;
-
     x0 = x1;
   }
 
@@ -175,12 +172,6 @@ Eigen::VectorXi NMPCController::updateAdaptiveComplexitySchedule(
 }
 
 void NMPCController::updateHorizonLength() {
-  // if (N_ % 2 == 0) {
-  //   N_ += 3;
-  // } else {
-  //   N_ -= 3;
-  // }
-  // N_ = 20 + std::floor(5 * cos(M_PI * ros::Time::now().toSec()));
 
   if (diagnostics_.compute_time > dt_) {
     N_ =
