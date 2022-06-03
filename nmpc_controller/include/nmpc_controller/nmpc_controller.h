@@ -155,5 +155,3 @@ class NMPCController {
 };
 
 #endif  // MPC_CONTROLLER_H
-
-/// Whether enable mixed complexity

@@ -172,7 +172,6 @@ Eigen::VectorXi NMPCController::updateAdaptiveComplexitySchedule(
 }
 
 void NMPCController::updateHorizonLength() {
-
   if (diagnostics_.compute_time > dt_) {
     N_ =
         std::max(N_ - (int)std::floor(diagnostics_.compute_time / dt_), N_min_);
