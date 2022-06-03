@@ -30,8 +30,6 @@ class CompFilterEstimator : public StateEstimator {
    */
   bool updateOnce(quad_msgs::RobotState& last_robot_state_msg);
 
-  bool initiated;
-
  private:
   /// Struct of second-order low/high pass filter with derivative/intergral
   struct Filter {

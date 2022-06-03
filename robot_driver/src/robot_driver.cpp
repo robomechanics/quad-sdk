@@ -155,7 +155,10 @@ void RobotDriver::initStateEstimator() {
                                              << ", returning nullptr");
     state_estimator_ = nullptr;
   }
-  state_estimator_->init(nh_);
+
+  if (state_estimator_ != nullptr) {
+    state_estimator_->init(nh_);
+  }
 }
 
 void RobotDriver::initLegController() {
@@ -170,8 +173,10 @@ void RobotDriver::initLegController() {
                                               << ", returning nullptr");
     leg_controller_ = nullptr;
   }
-  leg_controller_->init(stance_kp_, stance_kd_, swing_kp_, swing_kd_,
-                        swing_kp_cart_, swing_kd_cart_);
+  if (leg_controller_ != nullptr) {
+    leg_controller_->init(stance_kp_, stance_kd_, swing_kp_, swing_kd_,
+                          swing_kp_cart_, swing_kd_cart_);
+  }
 }
 
 void RobotDriver::initStateControlStructs() {
@@ -308,7 +313,7 @@ bool RobotDriver::updateState() {
     bool fully_populated = hardware_interface_->recv(
         last_joint_state_msg_, last_imu_msg_, user_rx_data_);
 
-    // load robot sensor message to state estimator
+    // load robot sensor message to state estimator class
     if (fully_populated) {
       state_estimator_->loadSensorMsg(last_imu_msg_, last_joint_state_msg_);
     } else {
@@ -321,7 +326,10 @@ bool RobotDriver::updateState() {
 
     // update robot state using state estimator
     if (state_estimator_ != nullptr) {
-      state_estimator_->updateOnce(last_robot_state_msg_);
+      return state_estimator_->updateOnce(last_robot_state_msg_);
+    } else {
+      ROS_WARN_THROTTLE(1, "No state estimator is initialized");
+      return false;
     }
   } else {
     // State information coming through sim subscribers, not hardware interface
