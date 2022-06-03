@@ -16,13 +16,17 @@ class EKFEstimator : public StateEstimator {
    * @brief initialize EKF
    * @param[in] nh ros::NodeHandle to load parameters from yaml file
    */
-  void init(ros::NodeHandle nh);
+  void init(ros::NodeHandle& nh);
 
   /**
    * @brief perform EKF update once
    * @param[out] last_robot_state_msg_
    */
   bool updateOnce(quad_msgs::RobotState& last_robot_state_msg_);
+
+ private:
+  /// Nodehandle to get param
+  ros::NodeHandle nh_;
 };
 
 #endif  // EKF_FILTER_H

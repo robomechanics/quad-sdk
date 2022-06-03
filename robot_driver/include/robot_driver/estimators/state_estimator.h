@@ -26,28 +26,39 @@ class StateEstimator {
    */
   StateEstimator();
 
-  virtual void init(ros::NodeHandle nh) = 0;
+  /**
+   * @brief virtual function for initialize filters, should be defined in
+   * derived class
+   * @param[in] nh_ sensor_msgs::Imu::ConstPtr imu sensor message
+   */
+  virtual void init(ros::NodeHandle& nh) = 0;
 
+  /**
+   * @brief virtual update function for update robot state, should be defined in
+   * derived class
+   * @param[out] last_robot_state_msg quad_msgs::RobotState robot state
+   */
   virtual bool updateOnce(quad_msgs::RobotState& last_robot_state_msg) = 0;
+
   /**
    * @brief read IMU data
-   * @param[in] last_imu_msg_ sensor_msgs::Imu::ConstPtr imu sensor message
+   * @param[in] last_imu_msg sensor_msgs::Imu::ConstPtr imu sensor message
    * @param[out] fk Eigen::Vector3d linear acceleration (3 * 1)
    * @param[out] wk Eigen::Vector3d angular acceleration (3 * 1)
    * @param[out] qk Eigen::Quaterniond orientation in quaternion
    */
-  void readIMU(const sensor_msgs::Imu::ConstPtr& last_imu_msg_,
+  void readIMU(const sensor_msgs::Imu::ConstPtr& last_imu_msg,
                Eigen::Vector3d& fk, Eigen::Vector3d& wk,
                Eigen::Quaterniond& qk);
 
   /**
    * @brief read joint encoder data
-   * @param[in] last_joint_state_msg_ sensor_msgs::JointState::ConstPtr joint
+   * @param[in] last_joint_state_msg sensor_msgs::JointState::ConstPtr joint
    * state sensor message
    * @param[out] jk Eigen::VectorXd jointstate (12 * 1)
    */
   void readJointEncoder(
-      const sensor_msgs::JointState::ConstPtr& last_joint_state_msg_,
+      const sensor_msgs::JointState::ConstPtr& last_joint_state_msg,
       Eigen::VectorXd& jk);
 
   /**

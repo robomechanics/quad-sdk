@@ -16,7 +16,7 @@ class CompFilterEstimator : public StateEstimator {
    * @brief initialize Complementary Filter
    * @param[in] nh ros::NodeHandle to load parameters from yaml file
    */
-  void init(ros::NodeHandle nh);
+  void init(ros::NodeHandle& nh);
 
   /**
    * @brief helper function to filter mocap data
@@ -26,9 +26,9 @@ class CompFilterEstimator : public StateEstimator {
 
   /**
    * @brief perform CF update once
-   * @param[out] last_robot_state_msg_
+   * @param[out] last_robot_state_msg
    */
-  bool updateOnce(quad_msgs::RobotState& last_robot_state_msg_);
+  bool updateOnce(quad_msgs::RobotState& last_robot_state_msg);
 
   bool initiated;
 
@@ -77,5 +77,8 @@ class CompFilterEstimator : public StateEstimator {
 
   /// Last mocap time
   ros::Time last_mocap_time_;
+
+  /// Nodehandle to get param
+  ros::NodeHandle nh_;
 };
 #endif  // COMP_FILTER_H

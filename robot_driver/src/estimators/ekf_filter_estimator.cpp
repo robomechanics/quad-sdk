@@ -2,7 +2,8 @@
 
 EKFEstimator::EKFEstimator() {}
 
-void EKFEstimator::init(ros::NodeHandle nh) {
+void EKFEstimator::init(ros::NodeHandle& nh) {
+  nh_ = nh;
   std::cout << "EKF Estimator Initiated" << std::endl;
 }
 
