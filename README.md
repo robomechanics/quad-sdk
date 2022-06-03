@@ -11,7 +11,7 @@ Quad-SDK is an open source, ROS-based full stack software framework for agile qu
 
 The source code is released under a [MIT License](LICENSE).
 
-**Authors: Joe Norby, Yanhao Yang, Ardalan Tajbakhsh, Jiming Ren, Justin K. Yim, Alexandra Stutt, Qishun Yu, and Aaron M. Johnson<br />
+**Authors: Joe Norby, Yanhao Yang, Ardalan Tajbakhsh, Jiming Ren, Justin K. Yim, Alexandra Stutt, Qishun Yu, Nikolai Flowers, and Aaron M. Johnson<br />
 Affiliation: [The Robomechanics Lab at Carnegie Mellon University](https://www.cmu.edu/me/robomechanicslab/)<br />
 Maintainer: Ardalan Tajbakhsh, atajbakh@andrew.cmu.edu**
 
@@ -22,12 +22,12 @@ This is research code, expect that it changes often and any fitness for a partic
 
 If you use this work in an academic context, please cite the following publications as relevant:
 
-* Repository: J. Norby, Y. Yang, A. Tajbakhsh, J. Ren, J. K. Yim, A. Stutt, Q. Yu, and A. M. Johnson. Quad-
+* Repository: J. Norby, Y. Yang, A. Tajbakhsh, J. Ren, J. K. Yim, A. Stutt, Q. Yu, N. Flowers, and A. M. Johnson. Quad-
 SDK: Full stack software framework for agile quadrupedal locomotion. In ICRA Workshop on
 Legged Robots, May 2022. ([paper])
 
         @inproceedings{abs:norby-quad-sdk-2022,
-          author        = {Joseph Norby and Yanhao Yang and Ardalan Tajbakhsh and Jiming Ren and Justin K. Yim and Alexandra Stutt and Qishun Yu and Aaron M. Johnson},
+          author        = {Joseph Norby and Yanhao Yang and Ardalan Tajbakhsh and Jiming Ren and Justin K. Yim and Alexandra Stutt and Qishun Yu and Nikolai Flowers and Aaron M. Johnson},
           title         = {Quad-{SDK}: Full Stack Software Framework for Agile Quadrupedal Locomotion},
           booktitle     = {ICRA Workshop on Legged Robots},
           year          = {2022},
