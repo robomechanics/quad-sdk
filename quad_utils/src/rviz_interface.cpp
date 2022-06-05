@@ -148,10 +148,7 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
       nh_.advertise<visualization_msgs::Marker>(camera_trace_viz_topic, 1);
   init_body_pos = Eigen::Vector3d::Zero();
   init_body_orientation = Eigen::Vector4d::Zero();
-<<<<<<< HEAD
   init_body_orientation[0] = 1.0;
-=======
->>>>>>> 69f5dd1423017656e24d5a42e0c09a5fe6b1a30e
 
   // Setup state visual pubs
   estimate_joint_states_viz_pub_ = nh_.advertise<sensor_msgs::JointState>(
@@ -613,11 +610,7 @@ void RVizInterface::robotStateCallback(
 
 void RVizInterface::cameraPoseCallback(
     const nav_msgs::Odometry::ConstPtr& msg) {
-<<<<<<< HEAD
   std::cout << "here1" << std::endl;
-=======
-  std::cout << "here" << std::endl;
->>>>>>> 69f5dd1423017656e24d5a42e0c09a5fe6b1a30e
   geometry_msgs::TransformStamped transformStamped;
   transformStamped.header = msg->header;
   transformStamped.header.stamp = ros::Time::now();
@@ -630,12 +623,9 @@ void RVizInterface::cameraPoseCallback(
   transformStamped.transform.rotation.z = 0.0;
   transformStamped.transform.rotation.w = 1.0;
   transformStamped.child_frame_id = "camera_odom_frame";
-<<<<<<< HEAD
-=======
   std::cout << "transformStamped.header.frame_id = "
             << transformStamped.header.frame_id << std::endl;
   std::cout << "transformStamped = " << transformStamped << std::endl;
->>>>>>> 69f5dd1423017656e24d5a42e0c09a5fe6b1a30e
   camera_odom_tf_br_.sendTransform(transformStamped);
 
   camera_trace_msg_.action = visualization_msgs::Marker::ADD;
@@ -645,12 +635,8 @@ void RVizInterface::cameraPoseCallback(
   // camera_trace_msg_.points.back().y += init_body_pos[1];
   // camera_trace_msg_.points.back().z += init_body_pos[2];
   if (!ground_truth_state_trace_msg_.points.empty()) {
-<<<<<<< HEAD
-    std::cout << camera_trace_msg_.points.back().x -
-=======
     std::cout << "x_difference: "
               << camera_trace_msg_.points.back().x -
->>>>>>> 69f5dd1423017656e24d5a42e0c09a5fe6b1a30e
                      ground_truth_state_trace_msg_.points.back().x
               << " "
               << camera_trace_msg_.points.back().y -
@@ -660,11 +646,7 @@ void RVizInterface::cameraPoseCallback(
                      ground_truth_state_trace_msg_.points.back().z
               << std::endl;
   }
-<<<<<<< HEAD
-
-=======
   trajectory_state_trace_msg_.header = transformStamped.header;
->>>>>>> 69f5dd1423017656e24d5a42e0c09a5fe6b1a30e
   camera_trace_pub_.publish(camera_trace_msg_);
 }
 
