@@ -69,7 +69,7 @@ quadNLP::quadNLP(int N, double dt, double mu, double panic_weights,
   g_min_complex_soft_.head(num_feet_).fill(-2e19);
   g_max_complex_soft_.head(num_feet_).fill(0);
   g_min_complex_soft_.tail(num_feet_).fill(-2e19);
-  g_max_complex_soft_.tail(num_feet_).fill(0);
+  g_max_complex_soft_.tail(num_feet_).fill(-0.05);
 
   loadCasadiFuncs();
   loadConstraintNames();
@@ -1347,7 +1347,7 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
           foot_vel_world_.row(i + 1);
 
       if (n_vec_[i + 1] > nlp_prev.n_vec_[std::min(i + 1, nlp_prev.N_ - 1)]) {
-        ROS_DEBUG(
+        ROS_WARN(
             "No null data from prev solve, using nominal and disabling warm "
             "start");
         warm_start_ = false;
@@ -1356,13 +1356,50 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
         get_primal_state_var(w0_, i + 1)
             .segment(n_body_ + n_foot_ / 2, n_foot_ / 2) =
             foot_vel_world_.row(i + 1);
-        get_primal_state_var(w0_, i + 1).tail(n_joints_) = x_null_nom_;
-        get_primal_state_var(z_L0_, i + 1).tail(n_null_).fill(1);
-        get_primal_state_var(z_U0_, i + 1).tail(n_null_).fill(1);
 
-        get_primal_control_var(w0_, i).tail(m_null_).fill(0);
-        get_primal_control_var(z_L0_, i).tail(m_null_).fill(1);
-        get_primal_control_var(z_U0_, i).tail(m_null_).fill(1);
+        // Compute joint data via IK
+        Eigen::VectorXd joint_positions(12), joint_velocities(12),
+            joint_torques(12);
+        quadKD_->convertCentroidalToFullBody(
+            get_primal_state_var(w0_, i + 1).head(n_body_),
+            foot_pos_world_.row(i + 1), foot_vel_world_.row(i + 1),
+            get_primal_control_var(w0_, i).head(m_body_), joint_positions,
+            joint_velocities, joint_torques);
+
+        get_primal_state_var(w0_, i + 1).tail(n_joints_).head(n_joints_ / 2) =
+            joint_positions;
+        get_primal_state_var(w0_, i + 1).tail(n_joints_).tail(n_joints_ / 2) =
+            joint_velocities;
+        get_primal_state_var(z_L0_, i + 1).tail(config_.x_dim_null).fill(1);
+        get_primal_state_var(z_U0_, i + 1).tail(config_.x_dim_null).fill(1);
+
+        // Compute foot control via ID
+        Eigen::VectorXd u_null(config_.u_dim_null);
+        double dt = (i == 0) ? first_element_duration_ : dt_;
+        Eigen::VectorXd acc_0 =
+            (6 * (foot_pos_world_.row(i + 1) - foot_pos_world_.row(i)) -
+             dt * 2 *
+                 (foot_vel_world_.row(i + 1) + foot_vel_world_.row(i) * 2)) /
+            (dt * dt);
+
+        Eigen::VectorXd acc_1 =
+            (6 * (-foot_pos_world_.row(i + 1) + foot_pos_world_.row(i)) +
+             dt * 2 *
+                 (2 * foot_vel_world_.row(i + 1) + foot_vel_world_.row(i))) /
+            (dt * dt);
+
+        u_null.head(m_foot_ / 2) = foot_mass_ * acc_0;
+        u_null.tail(m_foot_ / 2) = foot_mass_ * acc_1;
+
+        get_primal_control_var(w0_, i).tail(config_.u_dim_null) = u_null;
+        get_primal_control_var(z_L0_, i).tail(config_.u_dim_null).fill(1);
+        get_primal_control_var(z_U0_, i).tail(config_.u_dim_null).fill(1);
+
+        std::cout << "i = " << i << std::endl;
+        std::cout << "x_null = "
+                  << get_primal_state_var(w0_, i + 1).tail(n_joints_)
+                  << std::endl;
+        std::cout << "u_null = " << u_null << std::endl;
 
         // Update panic variables if they also differ
         if (i < N_ - 1) {
@@ -1374,34 +1411,34 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
               n_slack_vec_[i] > nlp_prev.n_slack_vec_[i]) {
             get_slack_state_var(w0_, i)
                 .head(n_slack_vec_[i])
-                .tail(n_null_)
+                .tail(config_.x_dim_null)
                 .fill(0);
             get_slack_state_var(w0_, i)
                 .tail(n_slack_vec_[i])
-                .tail(n_null_)
+                .tail(config_.x_dim_null)
                 .fill(0);
             get_slack_constraint_var(w0_, i).fill(0);
             get_slack_state_var(z_L0_, i)
                 .head(n_slack_vec_[i])
-                .tail(n_null_)
+                .tail(config_.x_dim_null)
                 .fill(1);
             get_slack_state_var(z_L0_, i)
                 .tail(n_slack_vec_[i])
-                .tail(n_null_)
+                .tail(config_.x_dim_null)
                 .fill(1);
             get_slack_constraint_var(z_L0_, i).fill(1);
             get_slack_state_var(z_U0_, i)
                 .head(n_slack_vec_[i])
-                .tail(n_null_)
+                .tail(config_.x_dim_null)
                 .fill(1);
             get_slack_state_var(z_U0_, i)
                 .tail(n_slack_vec_[i])
-                .tail(n_null_)
+                .tail(config_.x_dim_null)
                 .fill(1);
             get_slack_constraint_var(z_U0_, i).fill(1);
             get_slack_constraint_vals(lambda0_, i)
                 .head(n_slack_vec_[i])
-                .tail(n_null_)
+                .tail(config_.x_dim_null)
                 .fill(1000);
             get_relaxed_primal_constraint_vals(lambda0_, i).fill(1000);
           }
@@ -1458,12 +1495,16 @@ void quadNLP::update_solver(
   Eigen::MatrixXi contact_sequence_prev = contact_sequence_;
   quadNLP nlp_prev = *this;
 
+  Eigen::VectorXi contact_phase(contact_sequence_.cols());
+  contact_phase.setZero();
+
   // Update contact sequence
   // Local planner has outer as N and inner as boolean contact
   for (size_t i = 0; i < contact_schedule.size(); i++) {
     for (size_t j = 0; j < contact_schedule.front().size(); j++) {
       if (contact_schedule.at(i).at(j)) {
         contact_sequence_(j, i) = 1;
+        contact_phase[i] = 1;
       } else {
         contact_sequence_(j, i) = 0;
       }
@@ -1499,6 +1540,14 @@ void quadNLP::update_solver(
     }
   }
 
+  std::cout << "plan_index_diff = " << plan_index_diff << std::endl;
+  std::cout << "contact_phase =                " << contact_phase.transpose()
+            << std::endl;
+  std::cout << "previous complexity_schedule = "
+            << adaptive_complexity_schedule_.transpose() << std::endl;
+  std::cout << "previous lifting checks      = "
+            << adaptive_complexity_schedule.transpose() << std::endl;
+
   // If the complexity schedule has changed, update the problem structure
   bool new_structure = adaptive_complexity_schedule.size() !=
                        this->adaptive_complexity_schedule_.size();
@@ -1527,6 +1576,9 @@ void quadNLP::update_solver(
 
     this->update_structure();
   }
+
+  std::cout << "current complexity_schedule  = "
+            << adaptive_complexity_schedule_.transpose() << std::endl;
 
   Eigen::VectorXi complexity_schedule =
       adaptive_complexity_schedule_.head(N_).cwiseMax(

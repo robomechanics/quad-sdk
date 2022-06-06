@@ -379,6 +379,7 @@ int FastGlobalMotionPlanner::getTestPlan(const PlannerConfig &planner_config,
 
   // Define leap starting state
   State s_leap_start = s_start;
+  // double t_s = (leap_start_x - s_start.pos.x()) / 0.4;
   double t_s = 4.0;
   s_leap_start.pos[0] = leap_start_x;
   s_leap_start.vel[0] = leap_start_dx;

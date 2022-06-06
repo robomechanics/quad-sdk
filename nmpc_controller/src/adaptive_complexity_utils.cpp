@@ -86,6 +86,12 @@ Eigen::VectorXi NMPCController::updateAdaptiveComplexitySchedule(
         }
         adaptive_complexity_schedule[i] = 1;
         adaptive_complexity_schedule[i + 1] = 1;
+        ROS_WARN(
+            "State bound %d violated in FE %d: %5.3f <= "
+            "%5.3f <= "
+            "%5.3f",
+            j, i, x_lb[j] - var_tol, x1[j], x_ub[j] + var_tol);
+        std::cout << "x1 = " << x1 << std::endl;
       } else if (std::abs(current_state_violation - var_tol) < eps) {
         ROS_WARN(
             "State bound %d is active in FE %d: %5.3f <= "
@@ -116,6 +122,11 @@ Eigen::VectorXi NMPCController::updateAdaptiveComplexitySchedule(
         }
         adaptive_complexity_schedule[i] = 1;
         adaptive_complexity_schedule[i + 1] = 1;
+        ROS_WARN(
+            "Control bound %d violated in FE %d: %5.3f <= "
+            "%5.3f <= "
+            "%5.3f",
+            j, i, u_lb[j] - var_tol, u[j], u_ub[j] + var_tol);
       } else if (std::abs(current_control_violation - var_tol) < eps) {
         ROS_WARN(
             "Control bound %d is active in FE %d: %5.3f <= "
@@ -148,6 +159,12 @@ Eigen::VectorXi NMPCController::updateAdaptiveComplexitySchedule(
         }
         adaptive_complexity_schedule[i] = 1;
         adaptive_complexity_schedule[i + 1] = 1;
+        ROS_WARN(
+            "Constraint %s violated in FE %d: %5.3f <= %5.3f "
+            "<= "
+            "%5.3f",
+            mynlp_->constr_names_[COMPLEX_TO_COMPLEX][j].c_str(), i,
+            g_lb[j] - constr_tol, g[j], g_ub[j] + constr_tol);
       } else if (std::abs(current_constraint_violation - var_tol) < eps) {
         ROS_WARN(
             "Constraint %s is active in FE %d: %5.3f <= %5.3f "

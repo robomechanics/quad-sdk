@@ -167,7 +167,7 @@ NMPCController::NMPCController() {
 
   app_->Options()->SetStringValue("print_timing_statistics", "no");
   app_->Options()->SetStringValue("linear_solver", "ma57");
-  app_->Options()->SetIntegerValue("print_level", 0);
+  app_->Options()->SetIntegerValue("print_level", 5);
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   app_->Options()->SetStringValue("fixed_variable_treatment",
                                   "make_parameter_nodual");
@@ -206,6 +206,7 @@ bool NMPCController::computeLegPlan(
     const double &first_element_duration, int plan_index_diff,
     const grid_map::GridMap &terrain, Eigen::MatrixXd &state_traj,
     Eigen::MatrixXd &control_traj) {
+  std::cout << "\n\nBeginning new solve" << std::endl;
   mynlp_->foot_pos_body_ = -foot_positions_body;
   mynlp_->foot_pos_world_ = foot_positions_world;
   mynlp_->foot_vel_world_ = foot_velocities_world;
@@ -236,6 +237,9 @@ bool NMPCController::computePlan(
   app_->Options()->SetNumericValue("mu_init", mynlp_->mu0_);
   app_->Options()->SetStringValue("warm_start_init_point",
                                   ((mynlp_->warm_start_) ? "yes" : "no"));
+
+  std::cout << "warm start " << (mynlp_->warm_start_ ? "on" : "off")
+            << std::endl;
 
   // Start timer for diagnostics and solve
   quad_utils::FunctionTimer timer("nlp_solver");

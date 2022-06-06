@@ -514,6 +514,15 @@ void LocalFootstepPlanner::computeFootPlan(
         foot_state_msg.contact = true;
       }
 
+      // Enforce maximum leg length
+      Eigen::Vector3d hip_pos, foot_pos, foot_pos_rel;
+      quadKD_->worldToLegbaseFKWorldFrame(j, body_plan.row(i).segment(0, 3),
+                                          body_plan.row(i).segment(3, 3),
+                                          hip_pos);
+      foot_pos_rel = foot_position - hip_pos;
+      double leg_length = std::min(foot_pos_rel.norm(), 0.35);
+      foot_position = hip_pos + leg_length * foot_pos_rel.normalized();
+
       // Load state data into the message
       quad_utils::eigenToFootStateMsg(foot_position, foot_velocity,
                                       foot_acceleration, foot_state_msg);
