@@ -23,9 +23,13 @@
 #include "robot_driver/controllers/inverse_dynamics_controller.h"
 #include "robot_driver/controllers/joint_controller.h"
 #include "robot_driver/controllers/leg_controller.h"
+#include "robot_driver/estimators/comp_filter_estimator.h"
+#include "robot_driver/estimators/ekf_estimator.h"
+#include "robot_driver/estimators/state_estimator.h"
 #include "robot_driver/hardware_interfaces/hardware_interface.h"
 #include "robot_driver/hardware_interfaces/spirit_interface.h"
 #include "robot_driver/robot_driver_utils.h"
+
 #define MATH_PI 3.141592
 
 //! ROS-based driver to handle computation and interfacing for state and
@@ -51,6 +55,21 @@ class RobotDriver {
   void spin();
 
  private:
+  /**
+   * @brief Initializes leg controller object
+   */
+  void initLegController();
+
+  /**
+   * @brief Initializes states and controls structures
+   */
+  void initStateControlStructs();
+
+  /**
+   * @brief Initializes state estimator object
+   */
+  void initStateEstimator();
+
   /**
    * @brief Verifies and updates new control mode
    * @param[in] msg New control mode
@@ -184,6 +203,9 @@ class RobotDriver {
   /// Controller type
   std::string controller_id_;
 
+  /// Estimator type
+  std::string estimator_id_;
+
   /// Update rate for computing new controls;
   double update_rate_;
 
@@ -313,6 +335,9 @@ class RobotDriver {
   /// Leg Controller template class
   std::shared_ptr<LegController> leg_controller_;
 
+  /// State Estimator template class
+  std::shared_ptr<StateEstimator> state_estimator_;
+
   /// Mblink converter object
   std::shared_ptr<HardwareInterface> hardware_interface_;
 
@@ -361,30 +386,6 @@ class RobotDriver {
 
   /// Required for some hardware interfaces
   char** argv_;
-
-  /// Struct of second-order low/high pass filter with derivative/intergral
-  struct Filter {
-    // State-space model
-    Eigen::Matrix<double, 2, 2> A;
-    Eigen::Matrix<double, 2, 1> B;
-    Eigen::Matrix<double, 1, 2> C;
-    Eigen::Matrix<double, 1, 1> D;
-
-    // Filter states
-    std::vector<Eigen::Matrix<double, 2, 1>> x;
-
-    // Filter initialization indicator
-    bool init;
-  };
-
-  /// Struct of complementray filter with low and high pass filters
-  struct ComplementaryFilter {
-    Filter low_pass_filter;
-    Filter high_pass_filter;
-  };
-
-  /// Complementray filter
-  ComplementaryFilter complementary_filter_;
 };
 
 #endif  // ROBOT_DRIVER_H

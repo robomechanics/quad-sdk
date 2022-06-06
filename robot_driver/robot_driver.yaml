@@ -8,8 +8,8 @@ robot_driver:
   state_timeout: 0.1
   heartbeat_timeout: 0.2
 
-  # Complementary filter coefficients in state-space form, 
-  # which can be computed by c2d(1/s*(1-G(s))) and c2d(s*G(s)), 
+  # Complementary filter coefficients in state-space form,
+  # which can be computed by c2d(1/s*(1-G(s))) and c2d(s*G(s)),
   # where G(s) is a second-order low-pass filter
   low_pass_a: [1.863081589528582, -0.871860350323577, 1, 0]
   low_pass_b: [2, 0]
