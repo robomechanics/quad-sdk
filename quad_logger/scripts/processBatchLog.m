@@ -6,6 +6,7 @@ if ~endsWith(pwd, 'quad-sdk/quad_logger/scripts')
     error('This script must be run from quad-sdk/quad_logger/scripts/');
 end
 
+% bagPath = '../../../../data/long_tail_batch_17.5/';
 bagPath = '../bags/archive/';
 bagNameList = dir(strcat(bagPath, '*.bag'));
 bAnimate = false;
@@ -14,7 +15,10 @@ bSampleNum = 100;
 bTypeNum = 2;
 
 bagNameListCell = struct2cell(bagNameList)';
-[~, idx] = sort(datenum(bagNameListCell(:, 3), 'dd-mmm-yyyy HH:MM:SS'), 1, 'ascend');
+bagNameListCell = bagNameListCell(:, 1);
+bagNameListCell = cellfun(@(m) ...
+    [m(end-22:end-4)], bagNameListCell, 'UniformOutput', 0);
+[~, idx] = sort(datenum(bagNameListCell, 'yyyy-mm-dd-HH-MM-SS'), 1, 'ascend');
 bagNameList = bagNameList(idx, :);
 
 maxError = zeros(size(bagNameList));
@@ -43,9 +47,9 @@ parfor i = 1:size(bagNameList, 1)
     data = parseQuadBag(trialName);
     data.stateGroundTruth.axisAngleRP = rotm2axang(eul2rotm([zeros(size(data.stateGroundTruth.orientationRPY, 1), 1), fliplr(data.stateGroundTruth.orientationRPY(:, 1:2))]));
 
-    data.contactSensing.missTime = find(sum(data.contactSensing.contactStates, 2), 1, 'first');
-    data.contactSensing.missTime = data.contactSensing.time(data.contactSensing.missTime);
-    data.stateGroundTruth.syncTime = data.stateGroundTruth.time - data.contactSensing.missTime;
+    %     data.contactSensing.missTime = find(sum(data.contactSensing.contactStates, 2), 1, 'first');
+    %     data.contactSensing.missTime = data.contactSensing.time(data.contactSensing.missTime);
+    %     data.stateGroundTruth.syncTime = data.stateGroundTruth.time - data.contactSensing.missTime;
 
     stateEstimate{i} = data.stateEstimate;
     stateGroundTruth{i} = data.stateGroundTruth;
@@ -73,15 +77,15 @@ parfor i = 1:size(bagNameList, 1)
     maxError(i) = max(abs(wrapToPi(data.stateGroundTruth.axisAngleRP(:, 4))));
     maxRoll(i) = max(abs(wrapToPi(data.stateGroundTruth.orientationRPY(:, 1))));
 
-    if maxError(i) < pi/3
+    if maxError(i) < pi/4
         sucList(i) = true;
     else
         sucList(i) = false;
     end
 
-%         fprintf('Success: %d, total: %d \n', ...
-%             sum(sucList((i - 1)*bSampleNum + 1:(i - 1)*bSampleNum + bSampleNum)), ...
-%             bSampleNum);
+    %         fprintf('Success: %d, total: %d \n', ...
+    %             sum(sucList((i - 1)*bSampleNum + 1:(i - 1)*bSampleNum + bSampleNum)), ...
+    %             bSampleNum);
 
     %     for k=1:bTypeNum
     %         figure()
@@ -109,3 +113,9 @@ FigName   = num2str(get(FigHandle, 'Number'));
 saveas(FigHandle, fullfile(FolderName, [FigName '.jpg']));
 end
 %}
+
+for i=1:12
+    fprintf('Success: %d, total: %d, roll: %d \n', ...
+        sum(maxError((i-1)*100+1:i*100)<pi/4), ...
+        bSampleNum, sum(maxRoll((i-1)*100+1:i*100)<pi/4));
+end

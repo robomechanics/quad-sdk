@@ -1063,6 +1063,10 @@ void quadNLP::update_solver(
 
   // Update initial states
   x_current_ = initial_state.transpose();
+  for (size_t i = 0; i < n_; i++) {
+    x_current_(i, 0) =
+        std::max(std::min(x_current_(i, 0), x_max_(i, 0)), x_min_(i, 0));
+  }
 
   // Update reference trajectory
   // Local planner has row as N+1 horizon and col as states
