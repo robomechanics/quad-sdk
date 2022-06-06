@@ -4,10 +4,10 @@ tail_controller:
   planner_update_rate: 500
   gear_ratio: 50
   distributed_tail:
-    roll_kp: 10
-    roll_kd: 1
-    pitch_kp: 10
-    pitch_kd: 1
+    roll_kp: 1
+    roll_kd: 0.1
+    pitch_kp: 1
+    pitch_kd: 0.1
   decentralized_tail:
     roll_kp: 10
     roll_kd: 1
