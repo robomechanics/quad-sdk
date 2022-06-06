@@ -63,7 +63,6 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
@@ -73,26 +72,7 @@ $(function() {
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="robot__driver_8h_source.html">robot_driver.h</a>&gt;</code></p>
-<div class="dynheader">
-Collaboration diagram for RobotDriver:</div>
-<div class="dyncontent">
-<div class="center"><img src="classRobotDriver__coll__graph.png" border="0" usemap="#aRobotDriver_coll__map" alt="Collaboration graph"/></div>
-<map name="aRobotDriver_coll__map" id="aRobotDriver_coll__map">
-<area shape="rect" title=" " alt="" coords="53,213,144,240"/>
-<area shape="rect" href="structRobotDriver_1_1ComplementaryFilter.html" title="Struct of complementray filter with low and high pass filters." alt="" coords="5,109,192,151"/>
-<area shape="rect" href="structRobotDriver_1_1Filter.html" title="Struct of second&#45;order low/high pass filter with derivative/intergral." alt="" coords="36,5,161,32"/>
-</map>
-<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRobotDriver_1_1ComplementaryFilter.html">ComplementaryFilter</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Struct of complementray filter with low and high pass filters.  <a href="structRobotDriver_1_1ComplementaryFilter.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRobotDriver_1_1Filter.html">Filter</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Struct of second-order low/high pass filter with derivative/intergral.  <a href="structRobotDriver_1_1Filter.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aeb68a7b2239f95650ba0ea5c36438767"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobotDriver.html#aeb68a7b2239f95650ba0ea5c36438767">RobotDriver</a> (ros::NodeHandle nh, int argc, char **argv)</td></tr>
@@ -105,6 +85,18 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>spin</b> ()</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
+<tr class="memitem:af04dee0835a825b8373896887eec6985"><td class="memItemLeft" align="right" valign="top"><a id="af04dee0835a825b8373896887eec6985" name="af04dee0835a825b8373896887eec6985"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>initLegController</b> ()</td></tr>
+<tr class="memdesc:af04dee0835a825b8373896887eec6985"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes leg controller object. <br /></td></tr>
+<tr class="separator:af04dee0835a825b8373896887eec6985"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d6b473411b969ac88a8b2ba764e5e76"><td class="memItemLeft" align="right" valign="top"><a id="a3d6b473411b969ac88a8b2ba764e5e76" name="a3d6b473411b969ac88a8b2ba764e5e76"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>initStateControlStructs</b> ()</td></tr>
+<tr class="memdesc:a3d6b473411b969ac88a8b2ba764e5e76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes states and controls structures. <br /></td></tr>
+<tr class="separator:a3d6b473411b969ac88a8b2ba764e5e76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a238452f192a61f5c56650ae2cb145a0a"><td class="memItemLeft" align="right" valign="top"><a id="a238452f192a61f5c56650ae2cb145a0a" name="a238452f192a61f5c56650ae2cb145a0a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>initStateEstimator</b> ()</td></tr>
+<tr class="memdesc:a238452f192a61f5c56650ae2cb145a0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes state estimator object. <br /></td></tr>
+<tr class="separator:a238452f192a61f5c56650ae2cb145a0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33d27f44735dbce283422f8850cca22f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobotDriver.html#a33d27f44735dbce283422f8850cca22f">controlModeCallback</a> (const std_msgs::UInt8::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a33d27f44735dbce283422f8850cca22f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verifies and updates new control mode.  <a href="classRobotDriver.html#a33d27f44735dbce283422f8850cca22f">More...</a><br /></td></tr>
 <tr class="separator:a33d27f44735dbce283422f8850cca22f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -227,6 +219,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_hardware_</b></td>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>controller_id_</b></td></tr>
 <tr class="memdesc:a85a1f3328cb8a75050a306ea7cf88fbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Controller type. <br /></td></tr>
 <tr class="separator:a85a1f3328cb8a75050a306ea7cf88fbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafc0b32d92d1d81e3943948bcd9695b0"><td class="memItemLeft" align="right" valign="top"><a id="aafc0b32d92d1d81e3943948bcd9695b0" name="aafc0b32d92d1d81e3943948bcd9695b0"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>estimator_id_</b></td></tr>
+<tr class="memdesc:aafc0b32d92d1d81e3943948bcd9695b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Estimator type. <br /></td></tr>
+<tr class="separator:aafc0b32d92d1d81e3943948bcd9695b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a389b2c34ccde1908e97afc88e35664c9"><td class="memItemLeft" align="right" valign="top"><a id="a389b2c34ccde1908e97afc88e35664c9" name="a389b2c34ccde1908e97afc88e35664c9"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>update_rate_</b></td></tr>
 <tr class="memdesc:a389b2c34ccde1908e97afc88e35664c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update rate for computing new controls;. <br /></td></tr>
@@ -407,6 +403,10 @@ std::shared_ptr&lt; <a class="el" href="classquad__utils_1_1QuadKD.html">quad_ut
 std::shared_ptr&lt; <a class="el" href="classLegController.html">LegController</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>leg_controller_</b></td></tr>
 <tr class="memdesc:aae3ce24c4166cd9e435e35403477c93e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Leg Controller template class. <br /></td></tr>
 <tr class="separator:aae3ce24c4166cd9e435e35403477c93e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43b9c016205ab09a37d3d322379ad773"><td class="memItemLeft" align="right" valign="top"><a id="a43b9c016205ab09a37d3d322379ad773" name="a43b9c016205ab09a37d3d322379ad773"></a>
+std::shared_ptr&lt; <a class="el" href="classStateEstimator.html">StateEstimator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>state_estimator_</b></td></tr>
+<tr class="memdesc:a43b9c016205ab09a37d3d322379ad773"><td class="mdescLeft">&#160;</td><td class="mdescRight">State Estimator template class. <br /></td></tr>
+<tr class="separator:a43b9c016205ab09a37d3d322379ad773"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0c594560946f57966d7f6d27059132b"><td class="memItemLeft" align="right" valign="top"><a id="aa0c594560946f57966d7f6d27059132b" name="aa0c594560946f57966d7f6d27059132b"></a>
 std::shared_ptr&lt; <a class="el" href="classHardwareInterface.html">HardwareInterface</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>hardware_interface_</b></td></tr>
 <tr class="memdesc:aa0c594560946f57966d7f6d27059132b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mblink converter object. <br /></td></tr>
@@ -469,10 +469,6 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>argc_</b></td></tr>
 char **&#160;</td><td class="memItemRight" valign="bottom"><b>argv_</b></td></tr>
 <tr class="memdesc:aed742be33c57b3accac92fe3a0078b86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Required for some hardware interfaces. <br /></td></tr>
 <tr class="separator:aed742be33c57b3accac92fe3a0078b86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a602214dc659005effb2d63e7f36fa863"><td class="memItemLeft" align="right" valign="top"><a id="a602214dc659005effb2d63e7f36fa863" name="a602214dc659005effb2d63e7f36fa863"></a>
-<a class="el" href="structRobotDriver_1_1ComplementaryFilter.html">ComplementaryFilter</a>&#160;</td><td class="memItemRight" valign="bottom"><b>complementary_filter_</b></td></tr>
-<tr class="memdesc:a602214dc659005effb2d63e7f36fa863"><td class="mdescLeft">&#160;</td><td class="mdescRight">Complementray filter. <br /></td></tr>
-<tr class="separator:a602214dc659005effb2d63e7f36fa863"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >ROS-based driver to handle computation and interfacing for state and control.</p>

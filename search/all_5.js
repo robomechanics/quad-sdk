@@ -2,7 +2,7 @@ var searchData=
 [
   ['fastterrainmap_0',['FastTerrainMap',['../classFastTerrainMap.html',1,'FastTerrainMap'],['../classFastTerrainMap.html#ab243ccba0680afb064c70bead54bf126',1,'FastTerrainMap::FastTerrainMap()']]],
   ['fe_5fidxs_5f_1',['fe_idxs_',['../classquadNLP.html#a6f1510355a278b410ab6acff10e618f9',1,'quadNLP']]],
-  ['filter_2',['Filter',['../structRobotDriver_1_1Filter.html',1,'RobotDriver']]],
+  ['filter_2',['Filter',['../structCompFilterEstimator_1_1Filter.html',1,'CompFilterEstimator']]],
   ['filter_5fsmoothing_5fconstant_5f_3',['filter_smoothing_constant_',['../classLocalPlanner.html#a87615696d79cd93456359cd0def78890',1,'LocalPlanner']]],
   ['filter_5ftime_5fconstant_5f_4',['filter_time_constant_',['../classRobotDriver.html#aeb438bcd18c496572a847525a2b53dce',1,'RobotDriver']]],
   ['filter_5fweight_5f_5',['filter_weight_',['../classRobotDriver.html#adb4d56e49b306b6a1c87cc8059e09117',1,'RobotDriver']]],

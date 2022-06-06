@@ -14,6 +14,7 @@ var searchData=
   ['mocap_5fdropout_5fthreshold_5f_11',['mocap_dropout_threshold_',['../classRobotDriver.html#a86ad7c48cda0f738120a47ea3258e1e2',1,'RobotDriver']]],
   ['mocap_5frate_5f_12',['mocap_rate_',['../classRobotDriver.html#a3643a0456b6a3040785740f47c9bd719',1,'RobotDriver']]],
   ['mocap_5fsub_5f_13',['mocap_sub_',['../classRobotDriver.html#afa14df4293dfc673b2b69b5993236dd9',1,'RobotDriver']]],
-  ['mocap_5fvel_5festimate_5f_14',['mocap_vel_estimate_',['../classRobotDriver.html#a7438d3eed4a4fe4960fb7b5d6b6fa119',1,'RobotDriver']]],
-  ['mocapcallback_15',['mocapCallback',['../classRobotDriver.html#ae6955e17fa1b1449e381084ebac8adb4',1,'RobotDriver']]]
+  ['mocap_5fvel_5festimate_5f_14',['mocap_vel_estimate_',['../classCompFilterEstimator.html#a97e373a63b4c86d6a8908815e5969962',1,'CompFilterEstimator::mocap_vel_estimate_()'],['../classRobotDriver.html#a7438d3eed4a4fe4960fb7b5d6b6fa119',1,'RobotDriver::mocap_vel_estimate_()']]],
+  ['mocapcallback_15',['mocapCallback',['../classRobotDriver.html#ae6955e17fa1b1449e381084ebac8adb4',1,'RobotDriver']]],
+  ['mocapcallbackhelper_16',['mocapCallBackHelper',['../classCompFilterEstimator.html#a5109b2f370e22fff2ca80f0f3632956a',1,'CompFilterEstimator']]]
 ];

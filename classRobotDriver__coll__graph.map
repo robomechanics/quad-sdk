@@ -1,5 +1,0 @@
-<map id="RobotDriver" name="RobotDriver">
-<area shape="rect" id="node1" title=" " alt="" coords="53,213,144,240"/>
-<area shape="rect" id="node2" href="$structRobotDriver_1_1ComplementaryFilter.html" title="Struct of complementray filter with low and high pass filters." alt="" coords="5,109,192,151"/>
-<area shape="rect" id="node3" href="$structRobotDriver_1_1Filter.html" title="Struct of second&#45;order low/high pass filter with derivative/intergral." alt="" coords="36,5,161,32"/>
-</map>

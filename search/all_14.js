@@ -10,12 +10,13 @@ var searchData=
   ['updatehorizonlength_7',['updateHorizonLength',['../classNMPCController.html#a174edff8e1e5a9e0be8df96de7590b2b',1,'NMPCController']]],
   ['updatelocalplanmsg_8',['updateLocalPlanMsg',['../classLegController.html#afe3a543a56691536aa58902ad8ca0008',1,'LegController']]],
   ['updatemap_9',['updateMap',['../classLocalFootstepPlanner.html#ac6e2f701d80dcf807582e84478a49b35',1,'LocalFootstepPlanner::updateMap(const FastTerrainMap &amp;terrain)'],['../classLocalFootstepPlanner.html#a01dd97f2dce74cc1461dc0192b08949f',1,'LocalFootstepPlanner::updateMap(const grid_map::GridMap &amp;terrain)'],['../classTerrainMapPublisher.html#a23ff09b7adb01ba0a256c4ae5eb5865f',1,'TerrainMapPublisher::updateMap()']]],
-  ['updateparams_10',['updateParams',['../classTerrainMapPublisher.html#ac0e9d8d230df9fe17208038f7edc3677',1,'TerrainMapPublisher']]],
-  ['updatestate_11',['updateState',['../classRobotDriver.html#a0b2a5da3c02a06beadf110c44f91fdeb',1,'RobotDriver']]],
-  ['updateterrainheight_12',['updateTerrainHeight',['../classGlobalBodyPlannerTestFixture.html#aaccca983bcfb29f916b835426217def1',1,'GlobalBodyPlannerTestFixture']]],
-  ['updateterrainslope_13',['updateTerrainSlope',['../classGlobalBodyPlannerTestFixture.html#a799d7684f11ecc501b8b2a369f197aaf',1,'GlobalBodyPlannerTestFixture']]],
-  ['use_5fterrain_5fconstraint_5f_14',['use_terrain_constraint_',['../classquadNLP.html#a142659275c86656af8053bae8bf887c2',1,'quadNLP']]],
-  ['use_5ftwist_5finput_5f_15',['use_twist_input_',['../classLocalPlanner.html#a17e6ea84fb44d2fb7d5a868637f2a717',1,'LocalPlanner']]],
-  ['user_5frx_5fdata_5f_16',['user_rx_data_',['../classRobotDriver.html#ac87a4addd85ffd59d5de59ca5ff9ccc0',1,'RobotDriver']]],
-  ['user_5ftx_5fdata_5f_17',['user_tx_data_',['../classRobotDriver.html#a839b00b6ef0b92af7e92f808353e8e5e',1,'RobotDriver']]]
+  ['updateonce_10',['updateOnce',['../classCompFilterEstimator.html#a9fe49ef8b982023da5a168f12dbdb1e3',1,'CompFilterEstimator::updateOnce()'],['../classEKFEstimator.html#a92983c15b159bd5e1fed3a7cf0df1e09',1,'EKFEstimator::updateOnce()'],['../classStateEstimator.html#a60c53e404013cf7f2fc434d08273971c',1,'StateEstimator::updateOnce()']]],
+  ['updateparams_11',['updateParams',['../classTerrainMapPublisher.html#ac0e9d8d230df9fe17208038f7edc3677',1,'TerrainMapPublisher']]],
+  ['updatestate_12',['updateState',['../classRobotDriver.html#a0b2a5da3c02a06beadf110c44f91fdeb',1,'RobotDriver']]],
+  ['updateterrainheight_13',['updateTerrainHeight',['../classGlobalBodyPlannerTestFixture.html#aaccca983bcfb29f916b835426217def1',1,'GlobalBodyPlannerTestFixture']]],
+  ['updateterrainslope_14',['updateTerrainSlope',['../classGlobalBodyPlannerTestFixture.html#a799d7684f11ecc501b8b2a369f197aaf',1,'GlobalBodyPlannerTestFixture']]],
+  ['use_5fterrain_5fconstraint_5f_15',['use_terrain_constraint_',['../classquadNLP.html#a142659275c86656af8053bae8bf887c2',1,'quadNLP']]],
+  ['use_5ftwist_5finput_5f_16',['use_twist_input_',['../classLocalPlanner.html#a17e6ea84fb44d2fb7d5a868637f2a717',1,'LocalPlanner']]],
+  ['user_5frx_5fdata_5f_17',['user_rx_data_',['../classRobotDriver.html#ac87a4addd85ffd59d5de59ca5ff9ccc0',1,'RobotDriver']]],
+  ['user_5ftx_5fdata_5f_18',['user_tx_data_',['../classRobotDriver.html#a839b00b6ef0b92af7e92f808353e8e5e',1,'RobotDriver']]]
 ];

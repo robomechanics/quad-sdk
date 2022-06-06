@@ -1,0 +1,5 @@
+<map id="StateEstimator" name="StateEstimator">
+<area shape="rect" id="node1" title=" " alt="" coords="93,5,201,32"/>
+<area shape="rect" id="node2" href="$classCompFilterEstimator.html" title="Implements complementary filter as an estimator within the ROS framework." alt="" coords="5,80,145,107"/>
+<area shape="rect" id="node3" href="$classEKFEstimator.html" title="Implements Extended Kalman Filter as an estimator within the ROS framework." alt="" coords="169,80,272,107"/>
+</map>

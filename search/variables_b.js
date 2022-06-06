@@ -8,13 +8,13 @@ var searchData=
   ['last_5fcmd_5fvel_5fmsg_5ftime_5fmax_5f_5',['last_cmd_vel_msg_time_max_',['../classLocalPlanner.html#aabb9b1a94cdfb1acbdcd103f21391bd7',1,'LocalPlanner']]],
   ['last_5fgrf_5farray_5f_6',['last_grf_array_',['../classInverseDynamicsController.html#a51e5b8672f338e761ed3e8a3c03f7d83',1,'InverseDynamicsController']]],
   ['last_5fgrf_5farray_5fmsg_5f_7',['last_grf_array_msg_',['../classRobotDriver.html#afd7dc27a29afdf03530fbeb5a782bcd2',1,'RobotDriver']]],
-  ['last_5fimu_5fmsg_5f_8',['last_imu_msg_',['../classRobotDriver.html#aa0a6f301c8c99a2c986004bb8b01dafe',1,'RobotDriver']]],
-  ['last_5fjoint_5fstate_5fmsg_5f_9',['last_joint_state_msg_',['../classRobotDriver.html#a84e0c15a5b7af75706397ce740a0ac4e',1,'RobotDriver']]],
+  ['last_5fimu_5fmsg_5f_8',['last_imu_msg_',['../classStateEstimator.html#a99bfaee557ecfc2854ef6842dad804fc',1,'StateEstimator::last_imu_msg_()'],['../classRobotDriver.html#aa0a6f301c8c99a2c986004bb8b01dafe',1,'RobotDriver::last_imu_msg_()']]],
+  ['last_5fjoint_5fstate_5fmsg_5f_9',['last_joint_state_msg_',['../classStateEstimator.html#a45231bf6a1f22856e60dbb5d3ac3e9ec',1,'StateEstimator::last_joint_state_msg_()'],['../classRobotDriver.html#a84e0c15a5b7af75706397ce740a0ac4e',1,'RobotDriver::last_joint_state_msg_()']]],
   ['last_5flocal_5fplan_5fmsg_5f_10',['last_local_plan_msg_',['../classLegController.html#a633ce0735ab8e0f89b0a12281fe14292',1,'LegController::last_local_plan_msg_()'],['../classRobotDriver.html#afc12422318d2bcc250f7d096c7e921a8',1,'RobotDriver::last_local_plan_msg_()']]],
   ['last_5flocal_5fplan_5ftime_5f_11',['last_local_plan_time_',['../classLegController.html#aa72eb6c1d08b8897a05f5d72ab6eac63',1,'LegController']]],
   ['last_5fmainboard_5ftime_5f_12',['last_mainboard_time_',['../classRobotDriver.html#afc18f3305d58e6abbadbb82a172af75d',1,'RobotDriver']]],
-  ['last_5fmocap_5fmsg_5f_13',['last_mocap_msg_',['../classRobotDriver.html#aeb4ba2d247fee3d402c165aec32915d5',1,'RobotDriver']]],
-  ['last_5fmocap_5ftime_5f_14',['last_mocap_time_',['../classRobotDriver.html#a15550ba93614555b0f1ee4c2db8d7b4d',1,'RobotDriver']]],
+  ['last_5fmocap_5fmsg_5f_13',['last_mocap_msg_',['../classStateEstimator.html#a0f213d095c3c5bd00133d6963a2bcff0',1,'StateEstimator::last_mocap_msg_()'],['../classRobotDriver.html#aeb4ba2d247fee3d402c165aec32915d5',1,'RobotDriver::last_mocap_msg_()']]],
+  ['last_5fmocap_5ftime_5f_14',['last_mocap_time_',['../classCompFilterEstimator.html#ac316d4f9c03491dd38b6ae9043655b5b',1,'CompFilterEstimator::last_mocap_time_()'],['../classRobotDriver.html#a15550ba93614555b0f1ee4c2db8d7b4d',1,'RobotDriver::last_mocap_time_()']]],
   ['last_5fremote_5fheartbeat_5fmsg_5f_15',['last_remote_heartbeat_msg_',['../classRobotDriver.html#a8e004fc24a9e0ec6de4e1bda5d76c539',1,'RobotDriver']]],
   ['last_5frobot_5fheartbeat_5fmsg_5f_16',['last_robot_heartbeat_msg_',['../classRobotDriver.html#a24075f9158e4cbabe7594aad48f56aee',1,'RobotDriver']]],
   ['last_5frobot_5fstate_5fmsg_5f_17',['last_robot_state_msg_',['../classRobotDriver.html#a356644a459301fc9b9920488195bbb12',1,'RobotDriver']]],
@@ -34,5 +34,7 @@ var searchData=
   ['local_5fplan_5fori_5fviz_5fpub_5f_31',['local_plan_ori_viz_pub_',['../classRVizInterface.html#a1b8e2adc2bdd14bfffdf88a06d9f30a9',1,'RVizInterface']]],
   ['local_5fplan_5fpub_5f_32',['local_plan_pub_',['../classLocalPlanner.html#ad5056b1eeccbffa9177ef72488b7c042',1,'LocalPlanner']]],
   ['local_5fplan_5fsub_5f_33',['local_plan_sub_',['../classRVizInterface.html#a3893b17125b2f679144331f245b3bde2',1,'RVizInterface::local_plan_sub_()'],['../classRobotDriver.html#abb00b6b51146b9d23096118ad2715187',1,'RobotDriver::local_plan_sub_()']]],
-  ['local_5fplan_5fviz_5fpub_5f_34',['local_plan_viz_pub_',['../classRVizInterface.html#a8a53f4bc4778fbe68e9e429ddb9408d8',1,'RVizInterface']]]
+  ['local_5fplan_5fviz_5fpub_5f_34',['local_plan_viz_pub_',['../classRVizInterface.html#a8a53f4bc4778fbe68e9e429ddb9408d8',1,'RVizInterface']]],
+  ['low_5fpass_5fa_5f_35',['low_pass_a_',['../classCompFilterEstimator.html#a1c5694d0301d8d9b1efea61416e53551',1,'CompFilterEstimator']]],
+  ['low_5fpass_5ffilter_36',['low_pass_filter',['../classCompFilterEstimator.html#aa0d0122b1d88cea920b2002b0c8bbb0a',1,'CompFilterEstimator']]]
 ];
