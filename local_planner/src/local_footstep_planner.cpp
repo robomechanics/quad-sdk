@@ -117,6 +117,8 @@ void LocalFootstepPlanner::computeContactSchedule(
                                 grid_map::InterpolationMethods::INTER_NEAREST);
       if (current_height < min_landing_height && body_plan(i, 8) < 0) {
         contact_schedule.at(i) = {true, true, true, true};
+        ROS_WARN("Contact schedule changed to react to early landing at i = %d",
+                 i);
       } else {
         contact_schedule.at(i) = {false, false, false, false};
       }

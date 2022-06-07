@@ -1,16 +1,16 @@
 nmpc_controller:
-  panic_weights: 100.0
+  panic_weights: 50.0
   constraint_panic_weights: 10.0
   Q_temporal_factor: 10.0
   R_temporal_factor: 1
   friction_coefficient: 0.3
   enable_variable_horizon: false
   min_horizon_length: 10
-  enable_mixed_complexity: false
-  enable_adaptive_complexity: false
+  enable_mixed_complexity: true
+  enable_adaptive_complexity: true
   fixed_complex_idxs: [] # set to [] for none
-  fixed_complex_head: 0 # set to 0 for none
-  fixed_complex_tail: 0 # set to 0 for none
+  fixed_complex_head: 2 # set to 0 for none
+  fixed_complex_tail: 2 # set to 0 for none
   body:
     x_dim: 12
     u_dim: 12
@@ -48,7 +48,7 @@ nmpc_controller:
     x_lb: [-0.8, -1.57, 0.001, -0.8, -3.14, 0.001, -0.8, -1.57, 0.001, -0.8, -3.14, 0.001, -37.71, -37.71, -27.11,-37.71, -37.71, -27.11,-37.71, -37.71, -27.11,-37.71, -37.71, -27.11]
     x_ub: [ 0.8,  3.14,  3.14,  0.8,  1.57,  3.14,  0.8,  3.14,  3.14,  0.8,  1.57,  3.14,  37.71,  37.71,  27.11, 37.71,  37.71,  27.11, 37.71,  37.71,  27.11, 37.71,  37.71,  27.11]
     x_lb_soft: [  -0.6, -1.57,   0.3,   -0.6, -3.0,   0.3,   -0.6, -1.57,   0.3,   -0.6, -3.0,   0.3, -35.0, -35.0, -24.0,-35.0, -35.0, -24.0,-35.0, -35.0, -24.0,-35.0, -35.0, -24.0]
-    x_ub_soft: [   0.6,  3.14,   2.8,    0.6,  2.1,   2.8,    0.6,  3.14,   2.8,    0.6,  2.1,   2.8,  35.0,  35.0,  24.0, 35.0,  35.0,  24.0, 35.0,  35.0,  24.0, 35.0,  35.0,  24.0]
+    x_ub_soft: [   0.6,  3.14,   2.8,    0.6,  1.57,   2.8,    0.6,  3.14,   2.8,    0.6,  1.57,   2.8,  35.0,  35.0,  24.0, 35.0,  35.0,  24.0, 35.0,  35.0,  24.0, 35.0,  35.0,  24.0]
     u_lb: []
     u_ub: []
     g_lb: [!!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]

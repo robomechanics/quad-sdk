@@ -91,7 +91,7 @@ Eigen::VectorXi NMPCController::updateAdaptiveComplexitySchedule(
             "%5.3f <= "
             "%5.3f",
             j, i, x_lb[j] - var_tol, x1[j], x_ub[j] + var_tol);
-        std::cout << "x1 = " << x1 << std::endl;
+        // std::cout << "x1 = " << x1 << std::endl;
       } else if (std::abs(current_state_violation - var_tol) < eps) {
         ROS_WARN(
             "State bound %d is active in FE %d: %5.3f <= "

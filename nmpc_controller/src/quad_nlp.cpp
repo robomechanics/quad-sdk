@@ -69,7 +69,7 @@ quadNLP::quadNLP(int N, double dt, double mu, double panic_weights,
   g_min_complex_soft_.head(num_feet_).fill(-2e19);
   g_max_complex_soft_.head(num_feet_).fill(0);
   g_min_complex_soft_.tail(num_feet_).fill(-2e19);
-  g_max_complex_soft_.tail(num_feet_).fill(-0.05);
+  g_max_complex_soft_.tail(num_feet_).fill(-0.0);
 
   loadCasadiFuncs();
   loadConstraintNames();
@@ -1347,9 +1347,7 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
           foot_vel_world_.row(i + 1);
 
       if (n_vec_[i + 1] > nlp_prev.n_vec_[std::min(i + 1, nlp_prev.N_ - 1)]) {
-        ROS_WARN(
-            "No null data from prev solve, using nominal and disabling warm "
-            "start");
+        ROS_WARN("No null data from prev solve, disabling warm start");
         warm_start_ = false;
         get_primal_state_var(w0_, i + 1).segment(n_body_, n_foot_ / 2) =
             foot_pos_world_.row(i + 1);
@@ -1366,10 +1364,15 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
             get_primal_control_var(w0_, i).head(m_body_), joint_positions,
             joint_velocities, joint_torques);
 
-        get_primal_state_var(w0_, i + 1).tail(n_joints_).head(n_joints_ / 2) =
-            joint_positions;
-        get_primal_state_var(w0_, i + 1).tail(n_joints_).tail(n_joints_ / 2) =
-            joint_velocities;
+        if (joint_velocities.cwiseAbs().maxCoeff() <= 1e2) {
+          get_primal_state_var(w0_, i + 1).tail(n_joints_).head(n_joints_ / 2) =
+              joint_positions;
+          get_primal_state_var(w0_, i + 1).tail(n_joints_).tail(n_joints_ / 2) =
+              joint_velocities;
+        } else {
+          ROS_WARN("Joint warm start is infeasible, using nominal");
+          get_primal_state_var(w0_, i + 1).tail(n_joints_) = x_null_nom_;
+        }
         get_primal_state_var(z_L0_, i + 1).tail(config_.x_dim_null).fill(1);
         get_primal_state_var(z_U0_, i + 1).tail(config_.x_dim_null).fill(1);
 
@@ -1537,7 +1540,14 @@ void quadNLP::update_solver(
 
       mu0_ = 1e-1;
       warm_start_ = false;
+      ROS_WARN(
+          "contact_sequence_ changed, disabling warm start and resetting mu0");
     }
+  }
+
+  if (plan_index_diff > 2) {
+    warm_start_ = false;
+    ROS_WARN("plan_index_diff > 2, disabling warm start");
   }
 
   std::cout << "plan_index_diff = " << plan_index_diff << std::endl;
