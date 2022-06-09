@@ -2,8 +2,8 @@
   <world name='default'>
     <physics type="ode">
     <max_step_size>0.001</max_step_size>
-    <real_time_factor>0.3</real_time_factor>
-    <real_time_update_rate>300</real_time_update_rate>
+    <real_time_factor>0.25</real_time_factor>
+    <real_time_update_rate>250</real_time_update_rate>
         <ode>
             <solver> 
               <iters>300</iters> 
@@ -18,17 +18,17 @@
       <uri>model://custom_sun</uri>
     </include>
     <model name="mesh_terrain">
-      <pose>-2 -2 -0.1  0 0 0</pose>
+      <pose>-1.975 -2 -0.1  0 0 0</pose>
       <static>true</static>
       <link name="body">
         <visual name="visual">
           <geometry>
-            <mesh><uri>model:///gap_40cm/gap_40cm.stl</uri></mesh>
+            <mesh><uri>model:///plinth/plinth.stl</uri></mesh>
           </geometry>
         </visual>
         <collision name="collision">
           <geometry>
-            <mesh><uri>model:///gap_40cm/gap_40cm.stl</uri></mesh>
+            <mesh><uri>model:///plinth/plinth.stl</uri></mesh>
           </geometry>
           <surface>
             <friction>

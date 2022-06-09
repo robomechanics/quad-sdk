@@ -21,20 +21,20 @@ time_walk = 45
 time_walk = 45*2/5
 
 # World parameter list
-world_list = ['step_20cm', 'gap_40cm']
+world_list = ['step_20cm', 'gap_40cm', 'flat']
 
 # Type name list
 type_list = ['simple', 'complex', 'mixed', 'adaptive']
 
 # Batch size for random initialization
-batch_size = 10
+batch_size = 1
 
 # Prefix in the bag name
 
 # Disturbance settings
-apply_wrench = [100., 0., 0., 0., 0., 0.] # fx, fy, fz, tx, ty, tz in body frame
+apply_wrench = [0., 10000., 0., 0., 0., 0.] # fx, fy, fz, tx, ty, tz in body frame
 apply_time = 5  # sec in gazebo
-apply_duration = 1  # sec in gazebo
+apply_duration = (0.001)*1e9  # sec in gazebo
 
 # ==========
 # Input
@@ -62,6 +62,13 @@ elif world_index == 1:
     name_prefix = '02realtime'
     random_radius = 0.2
     start_state_x = 0.9
+elif world_index == 2:
+    leap_arg = 'leaping:=false'
+    time_stand = 4
+    time_walk = 12
+    name_prefix = '10realtime'
+    random_radius = 0
+    start_state_x = 0
 
 # ==========
 # Init
@@ -150,8 +157,8 @@ for i in range(batch_size):
     reference_point = Point(x=0, y=0, z=0)
     wrench = Wrench(force=Vector3(x=apply_wrench[0], y=apply_wrench[1], z=apply_wrench[2]), torque=Vector3(
         x=apply_wrench[3], y=apply_wrench[4], z=apply_wrench[5]))
-    start_time = rospy.Time(secs=apply_time, nsecs=0)
-    duration = rospy.Duration(secs=apply_duration, nsecs=0)
+    start_time = rospy.Time(secs=(time_stand + apply_time), nsecs=0)
+    duration = rospy.Duration(secs=0, nsecs=apply_duration)
     apply_body_wrench_client(body_name, reference_frame,
                              reference_point, wrench, start_time, duration)
 

@@ -522,7 +522,7 @@ void LocalFootstepPlanner::computeFootPlan(
                                           body_plan.row(i).segment(3, 3),
                                           hip_pos);
       foot_pos_rel = foot_position - hip_pos;
-      double leg_length = std::min(foot_pos_rel.norm(), 0.35);
+      double leg_length = std::min(foot_pos_rel.norm(), 0.4);
       foot_position = hip_pos + leg_length * foot_pos_rel.normalized();
 
       // Load state data into the message

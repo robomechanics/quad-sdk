@@ -6,7 +6,7 @@ nmpc_controller:
   friction_coefficient: 0.3
   enable_variable_horizon: false
   min_horizon_length: 10
-  enable_mixed_complexity: true
+  enable_mixed_complexity: false
   enable_adaptive_complexity: true
   fixed_complex_idxs: [] # set to [] for none
   fixed_complex_head: 2 # set to 0 for none

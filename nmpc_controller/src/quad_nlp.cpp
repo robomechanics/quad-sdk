@@ -1364,7 +1364,7 @@ void quadNLP::update_initial_guess(const quadNLP &nlp_prev, int shift_idx) {
             get_primal_control_var(w0_, i).head(m_body_), joint_positions,
             joint_velocities, joint_torques);
 
-        if (joint_velocities.cwiseAbs().maxCoeff() <= 1e2) {
+        if (joint_velocities.cwiseAbs().maxCoeff() <= -1e2) {
           get_primal_state_var(w0_, i + 1).tail(n_joints_).head(n_joints_ / 2) =
               joint_positions;
           get_primal_state_var(w0_, i + 1).tail(n_joints_).tail(n_joints_ / 2) =
