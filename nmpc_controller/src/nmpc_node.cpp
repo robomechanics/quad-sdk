@@ -37,7 +37,6 @@ int main(int argc, char** argv) {
       Eigen::VectorXd current_state_(12);
       current_state_.fill(0);
       current_state_(2) = 0.27;
-      // current_state_(3) = -0.2;
       current_state_(5) = 1.57079632679;
       current_state_(6) = -1.;
       Eigen::VectorXd tail_current_state_(4);
@@ -98,6 +97,7 @@ int main(int argc, char** argv) {
       Eigen::MatrixXd tail_plan_(N_ + 1, 16);
       Eigen::MatrixXd tail_torque_plan_(N_, 14);
 
+      // Warmstart
       leg_planner_.computeLegPlan(
           current_state_, ref_body_plan_, foot_positions_body_,
           adpative_contact_schedule_, ref_ground_height, first_element_duration,
@@ -112,14 +112,14 @@ int main(int argc, char** argv) {
           adpative_contact_schedule_, tail_current_state_, ref_tail_plan_,
           body_plan_, grf_plan_, ref_ground_height, first_element_duration,
           same_plan_index, tail_plan_, tail_torque_plan_);
-      // current_state_(3) = -0.2;
       same_plan_index = true;
 
+      // Miss contact
       for (size_t i = 0; i < 6; i++) {
         if (adpative_contact_schedule_.at(i).at(0)) {
-          adpative_contact_schedule_.at(i) = {false, false, false, true};
+          adpative_contact_schedule_.at(i) = {true, false, false, false};
         } else {
-          adpative_contact_schedule_.at(i) = {false, false, true, false};
+          adpative_contact_schedule_.at(i) = {false, true, false, false};
         }
       }
 
@@ -136,13 +136,6 @@ int main(int argc, char** argv) {
       statistics((N_ - 12) * 12 + start_step, 2) =
           std::chrono::duration_cast<std::chrono::microseconds>(toc - tic)
               .count();
-      // std::cout << "Leg time difference = "
-      //           << std::chrono::duration_cast<std::chrono::microseconds>(toc
-      //           -
-      //                                                                    tic)
-      //                  .count()
-      //           << "[µs]" << std::endl;
-      // std::cout << grf_plan_ <<std::endl;
 
       tic = std::chrono::steady_clock::now();
 
@@ -156,13 +149,6 @@ int main(int argc, char** argv) {
       statistics((N_ - 12) * 12 + start_step, 3) =
           std::chrono::duration_cast<std::chrono::microseconds>(toc - tic)
               .count();
-      // std::cout << "Distributed tail time difference = "
-      //           << std::chrono::duration_cast<std::chrono::microseconds>(toc
-      //           -
-      //                                                                    tic)
-      //                  .count()
-      //           << "[µs]" << std::endl;
-      // std::cout << tail_torque_plan_ <<std::endl;
 
       tic = std::chrono::steady_clock::now();
 
@@ -176,13 +162,6 @@ int main(int argc, char** argv) {
       statistics((N_ - 12) * 12 + start_step, 4) =
           std::chrono::duration_cast<std::chrono::microseconds>(toc - tic)
               .count();
-      // std::cout << "Centralized tail time difference = "
-      //           << std::chrono::duration_cast<std::chrono::microseconds>(toc
-      //           -
-      //                                                                    tic)
-      //                  .count()
-      //           << "[µs]" << std::endl;
-      // std::cout << tail_torque_plan_ <<std::endl;
     }
   }
 
