@@ -93,11 +93,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af62bfa794c99178b3b71471b38933eab"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNMPCController.html#af62bfa794c99178b3b71471b38933eab">computePlan</a> (const Eigen::VectorXd &amp;initial_state, const Eigen::MatrixXd &amp;ref_traj, const std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule, Eigen::MatrixXd &amp;foot_positions, Eigen::MatrixXd &amp;foot_velocities, Eigen::MatrixXd &amp;state_traj, Eigen::MatrixXd &amp;control_traj)</td></tr>
 <tr class="memdesc:af62bfa794c99178b3b71471b38933eab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the contact and dynamic matrices, solve, and return the output.  <a href="classNMPCController.html#af62bfa794c99178b3b71471b38933eab">More...</a><br /></td></tr>
 <tr class="separator:af62bfa794c99178b3b71471b38933eab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae5776815bce1d851555ff87221472a81"><td class="memItemLeft" align="right" valign="top"><a id="ae5776815bce1d851555ff87221472a81" name="ae5776815bce1d851555ff87221472a81"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>computeLegPlan</b> (const Eigen::VectorXd &amp;initial_state, const Eigen::MatrixXd &amp;ref_traj, const Eigen::MatrixXd &amp;foot_positions_body, Eigen::MatrixXd &amp;foot_positions_world, Eigen::MatrixXd &amp;foot_velocities, const std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule, const Eigen::VectorXd &amp;ref_ground_height, const double &amp;first_element_duration, const bool &amp;same_plan_index, const grid_map::GridMap &amp;terrain, Eigen::MatrixXd &amp;state_traj, Eigen::MatrixXd &amp;control_traj)</td></tr>
-<tr class="separator:ae5776815bce1d851555ff87221472a81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a587c76fe260113b89424557d0eef95f0"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNMPCController.html#a587c76fe260113b89424557d0eef95f0">updateAdaptiveComplexitySchedule</a> (Eigen::MatrixXd &amp;state_traj_lifted, Eigen::MatrixXd &amp;control_traj_lifted)</td></tr>
-<tr class="separator:a587c76fe260113b89424557d0eef95f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d29cc98481ae5625f2041da32b72928"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNMPCController.html#a2d29cc98481ae5625f2041da32b72928">computeLegPlan</a> (const Eigen::VectorXd &amp;initial_state, const Eigen::MatrixXd &amp;ref_traj, const Eigen::MatrixXd &amp;foot_positions_body, Eigen::MatrixXd &amp;foot_positions_world, Eigen::MatrixXd &amp;foot_velocities, const std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule, const Eigen::VectorXd &amp;ref_ground_height, const double &amp;first_element_duration, int plan_index_diff, const grid_map::GridMap &amp;terrain, Eigen::MatrixXd &amp;state_traj, Eigen::MatrixXd &amp;control_traj)</td></tr>
+<tr class="memdesc:a2d29cc98481ae5625f2041da32b72928"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface to Local Planner to update the contact and dynamic matrices, solve, and return the output.  <a href="classNMPCController.html#a2d29cc98481ae5625f2041da32b72928">More...</a><br /></td></tr>
+<tr class="separator:a2d29cc98481ae5625f2041da32b72928"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9e6d32416ab5bf01bc4c1d68659312b"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNMPCController.html#aa9e6d32416ab5bf01bc4c1d68659312b">updateAdaptiveComplexitySchedule</a> (const Eigen::MatrixXd &amp;state_traj_heuristic, const Eigen::MatrixXd &amp;control_traj_heuristic, const Eigen::MatrixXd &amp;state_traj_lifted, const Eigen::MatrixXd &amp;control_traj_lifted)</td></tr>
+<tr class="separator:aa9e6d32416ab5bf01bc4c1d68659312b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a174edff8e1e5a9e0be8df96de7590b2b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNMPCController.html#a174edff8e1e5a9e0be8df96de7590b2b">updateHorizonLength</a> ()</td></tr>
 <tr class="separator:a174edff8e1e5a9e0be8df96de7590b2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6c22e9d56f08ccd58724abd4ef03a3e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNLPDiagnostics.html">NLPDiagnostics</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNMPCController.html#a6c22e9d56f08ccd58724abd4ef03a3e3">getNLPDiagnostics</a> () const</td></tr>
@@ -108,6 +108,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>computeLegPlan</b> (c
 Private Attributes</h2></td></tr>
 <tr class="memitem:aee8b6b66615f4dc3fd25d04615baa4ec"><td class="memItemLeft" align="right" valign="top"><a id="aee8b6b66615f4dc3fd25d04615baa4ec" name="aee8b6b66615f4dc3fd25d04615baa4ec"></a>
 ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><b>nh_</b></td></tr>
+<tr class="memdesc:aee8b6b66615f4dc3fd25d04615baa4ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS node handler. <br /></td></tr>
 <tr class="separator:aee8b6b66615f4dc3fd25d04615baa4ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a921794ae113f9b057b27078219fcbc69"><td class="memItemLeft" align="right" valign="top"><a id="a921794ae113f9b057b27078219fcbc69" name="a921794ae113f9b057b27078219fcbc69"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>robot_id_</b></td></tr>
@@ -122,18 +123,37 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>update_rate_</b></t
 <tr class="separator:a99aa9c3c7c4376cb1732b1c3caad4e31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12be41de0785bebf0c00be062dd75728"><td class="memItemLeft" align="right" valign="top"><a id="a12be41de0785bebf0c00be062dd75728" name="a12be41de0785bebf0c00be062dd75728"></a>
 SmartPtr&lt; <a class="el" href="classquadNLP.html">quadNLP</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>mynlp_</b></td></tr>
+<tr class="memdesc:a12be41de0785bebf0c00be062dd75728"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to nlp formulation. <br /></td></tr>
 <tr class="separator:a12be41de0785bebf0c00be062dd75728"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0206264d7fd2b7654f793f7cf92204d1"><td class="memItemLeft" align="right" valign="top"><a id="a0206264d7fd2b7654f793f7cf92204d1" name="a0206264d7fd2b7654f793f7cf92204d1"></a>
 SmartPtr&lt; IpoptApplication &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>app_</b></td></tr>
+<tr class="memdesc:a0206264d7fd2b7654f793f7cf92204d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to IPOPT solver. <br /></td></tr>
 <tr class="separator:a0206264d7fd2b7654f793f7cf92204d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a0caa68902b56f7d4f86c98a23913e6"><td class="memItemLeft" align="right" valign="top"><a id="a5a0caa68902b56f7d4f86c98a23913e6" name="a5a0caa68902b56f7d4f86c98a23913e6"></a>
 std::shared_ptr&lt; <a class="el" href="classquad__utils_1_1QuadKD.html">quad_utils::QuadKD</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>quadKD_</b></td></tr>
+<tr class="memdesc:a5a0caa68902b56f7d4f86c98a23913e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to robot kinematics. <br /></td></tr>
 <tr class="separator:a5a0caa68902b56f7d4f86c98a23913e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a293ec8b2ee5f2f194b96490402e4c192"><td class="memItemLeft" align="right" valign="top"><a id="a293ec8b2ee5f2f194b96490402e4c192" name="a293ec8b2ee5f2f194b96490402e4c192"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>enable_variable_horizon_</b></td></tr>
+<tr class="memdesc:a293ec8b2ee5f2f194b96490402e4c192"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether enable variable horizon. <br /></td></tr>
 <tr class="separator:a293ec8b2ee5f2f194b96490402e4c192"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a385ffe1206f62c2052a9b361d77b250f"><td class="memItemLeft" align="right" valign="top"><a id="a385ffe1206f62c2052a9b361d77b250f" name="a385ffe1206f62c2052a9b361d77b250f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>enable_mixed_complexity_</b> = false</td></tr>
+<tr class="memdesc:a385ffe1206f62c2052a9b361d77b250f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether enable mixed complexity. <br /></td></tr>
+<tr class="separator:a385ffe1206f62c2052a9b361d77b250f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8faf574d3ff89e259f65d1beb72d77fb"><td class="memItemLeft" align="right" valign="top"><a id="a8faf574d3ff89e259f65d1beb72d77fb" name="a8faf574d3ff89e259f65d1beb72d77fb"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>enable_adaptive_complexity_</b> = false</td></tr>
+<tr class="memdesc:a8faf574d3ff89e259f65d1beb72d77fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether enable adaptive complexity. <br /></td></tr>
+<tr class="separator:a8faf574d3ff89e259f65d1beb72d77fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc24555b874d1495ae7a3ace5c29348a"><td class="memItemLeft" align="right" valign="top"><a id="adc24555b874d1495ae7a3ace5c29348a" name="adc24555b874d1495ae7a3ace5c29348a"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>allow_new_interior_complexity_</b></td></tr>
+<tr class="separator:adc24555b874d1495ae7a3ace5c29348a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3562284ac1c2debda92831b77ad1124"><td class="memItemLeft" align="right" valign="top"><a id="af3562284ac1c2debda92831b77ad1124" name="af3562284ac1c2debda92831b77ad1124"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_adaptive_complexity_sparse_</b></td></tr>
+<tr class="separator:af3562284ac1c2debda92831b77ad1124"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a295260b4669bf5cb83b949599720cef0"><td class="memItemLeft" align="right" valign="top"><a id="a295260b4669bf5cb83b949599720cef0" name="a295260b4669bf5cb83b949599720cef0"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>N_</b></td></tr>
+<tr class="memdesc:a295260b4669bf5cb83b949599720cef0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Horizon length, maximal horizon length, minimal horizon length. <br /></td></tr>
 <tr class="separator:a295260b4669bf5cb83b949599720cef0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70d5c02e6d09557b2ad7f13cbe227ee7"><td class="memItemLeft" align="right" valign="top"><a id="a70d5c02e6d09557b2ad7f13cbe227ee7" name="a70d5c02e6d09557b2ad7f13cbe227ee7"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>N_max_</b></td></tr>
@@ -143,6 +163,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>N_min_</b></td></tr>
 <tr class="separator:a65aaab0772af672390aa2b2d04634513"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94fda9b6c492c008ec73c026219538c4"><td class="memItemLeft" align="right" valign="top"><a id="a94fda9b6c492c008ec73c026219538c4" name="a94fda9b6c492c008ec73c026219538c4"></a>
 const int&#160;</td><td class="memItemRight" valign="bottom"><b>n_body_</b> = 12</td></tr>
+<tr class="memdesc:a94fda9b6c492c008ec73c026219538c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of states in different components. <br /></td></tr>
 <tr class="separator:a94fda9b6c492c008ec73c026219538c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc74b3f5963ea80894102f89c69f24c8"><td class="memItemLeft" align="right" valign="top"><a id="acc74b3f5963ea80894102f89c69f24c8" name="acc74b3f5963ea80894102f89c69f24c8"></a>
 const int&#160;</td><td class="memItemRight" valign="bottom"><b>n_foot_</b> = 24</td></tr>
@@ -150,23 +171,19 @@ const int&#160;</td><td class="memItemRight" valign="bottom"><b>n_foot_</b> = 24
 <tr class="memitem:a6bcef0ebecdd5f83f0e0cec26be4c051"><td class="memItemLeft" align="right" valign="top"><a id="a6bcef0ebecdd5f83f0e0cec26be4c051" name="a6bcef0ebecdd5f83f0e0cec26be4c051"></a>
 const int&#160;</td><td class="memItemRight" valign="bottom"><b>n_joints_</b> = 24</td></tr>
 <tr class="separator:a6bcef0ebecdd5f83f0e0cec26be4c051"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aacd52c2e268f622e8e132584639885f5"><td class="memItemLeft" align="right" valign="top"><a id="aacd52c2e268f622e8e132584639885f5" name="aacd52c2e268f622e8e132584639885f5"></a>
-const int&#160;</td><td class="memItemRight" valign="bottom"><b>n_tail_</b> = 4</td></tr>
-<tr class="separator:aacd52c2e268f622e8e132584639885f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9b9077ad67c0acb4fa98995786428c5"><td class="memItemLeft" align="right" valign="top"><a id="ac9b9077ad67c0acb4fa98995786428c5" name="ac9b9077ad67c0acb4fa98995786428c5"></a>
 const int&#160;</td><td class="memItemRight" valign="bottom"><b>m_body_</b> = 12</td></tr>
 <tr class="separator:ac9b9077ad67c0acb4fa98995786428c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c8bca5066d216457463e48995b5ae87"><td class="memItemLeft" align="right" valign="top"><a id="a8c8bca5066d216457463e48995b5ae87" name="a8c8bca5066d216457463e48995b5ae87"></a>
 const int&#160;</td><td class="memItemRight" valign="bottom"><b>m_foot_</b> = 24</td></tr>
 <tr class="separator:a8c8bca5066d216457463e48995b5ae87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3505bb00586afcc3b07dacbd48ce6b1"><td class="memItemLeft" align="right" valign="top"><a id="ae3505bb00586afcc3b07dacbd48ce6b1" name="ae3505bb00586afcc3b07dacbd48ce6b1"></a>
-const int&#160;</td><td class="memItemRight" valign="bottom"><b>m_tail_</b> = 2</td></tr>
-<tr class="separator:ae3505bb00586afcc3b07dacbd48ce6b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc0a559a29bf71b6c9460234c75b99df"><td class="memItemLeft" align="right" valign="top"><a id="acc0a559a29bf71b6c9460234c75b99df" name="acc0a559a29bf71b6c9460234c75b99df"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>dt_</b></td></tr>
+<tr class="memdesc:acc0a559a29bf71b6c9460234c75b99df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time resolution. <br /></td></tr>
 <tr class="separator:acc0a559a29bf71b6c9460234c75b99df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b0fb966ee489290568740a19f4cbe49"><td class="memItemLeft" align="right" valign="top"><a id="a0b0fb966ee489290568740a19f4cbe49" name="a0b0fb966ee489290568740a19f4cbe49"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>require_init_</b></td></tr>
+<tr class="memdesc:a0b0fb966ee489290568740a19f4cbe49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether warm start is needed. <br /></td></tr>
 <tr class="separator:a0b0fb966ee489290568740a19f4cbe49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd94c9ab7e145e01bc4597c08fbd8218"><td class="memItemLeft" align="right" valign="top"><a id="acd94c9ab7e145e01bc4597c08fbd8218" name="acd94c9ab7e145e01bc4597c08fbd8218"></a>
 Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>adaptive_complexity_schedule_</b></td></tr>
@@ -223,6 +240,114 @@ Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>adaptive_c
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a2d29cc98481ae5625f2041da32b72928" name="a2d29cc98481ae5625f2041da32b72928"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d29cc98481ae5625f2041da32b72928">&#9670;&nbsp;</a></span>computeLegPlan()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool NMPCController::computeLegPlan </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>initial_state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>ref_traj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>foot_positions_body</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>foot_positions_world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>foot_velocities</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>contact_schedule</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>ref_ground_height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double &amp;&#160;</td>
+          <td class="paramname"><em>first_element_duration</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>plan_index_diff</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const grid_map::GridMap &amp;&#160;</td>
+          <td class="paramname"><em>terrain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>state_traj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>control_traj</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Interface to Local Planner to update the contact and dynamic matrices, solve, and return the output. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">initial_state</td><td>Vector with initial state </td></tr>
+    <tr><td class="paramname">ref_traj</td><td>Matrix holding desired reference trajectory </td></tr>
+    <tr><td class="paramname">foot_positions_body</td><td>Matrix holding foot positions in body frame </td></tr>
+    <tr><td class="paramname">foot_positions_world</td><td>Matrix holding foot positions in world frame </td></tr>
+    <tr><td class="paramname">foot_velocities</td><td>Matrix holding foot velocities </td></tr>
+    <tr><td class="paramname">contact_schedule</td><td>A vector of sequence of contact </td></tr>
+    <tr><td class="paramname">ref_ground_height</td><td>Matrix holding ground height at reference footholds </td></tr>
+    <tr><td class="paramname">first_element_duration</td><td>Time duration to the next plan index </td></tr>
+    <tr><td class="paramname">plan_index_diff</td><td>Plan index difference of the last solve and the current solve </td></tr>
+    <tr><td class="paramname">terrain</td><td>Gridmap holding terrain height </td></tr>
+    <tr><td class="paramname">state_traj</td><td>Matrix holding output state trajectory </td></tr>
+    <tr><td class="paramname">control_traj</td><td>Matrix holding output control trajectory </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>whether solve successfully </dd></dl>
+
+</div>
+</div>
 <a id="af62bfa794c99178b3b71471b38933eab" name="af62bfa794c99178b3b71471b38933eab"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af62bfa794c99178b3b71471b38933eab">&#9670;&nbsp;</a></span>computePlan()</h2>
 
@@ -288,7 +413,7 @@ Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>adaptive_c
     <tr><td class="paramdir">[in]</td><td class="paramname">foot_positions</td><td>Matrix holding foot positions </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">foot_velocities</td><td>Matrix holding foot velocities </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">first_element_duration</td><td>Time duration to the next plan index </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">same_plan_index</td><td>If the current solving is duplicated in the same index </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">plan_index_diff</td><td>If the current solving is duplicated in the same index </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">state_traj</td><td>Optimized state trajectory output </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">control_traj</td><td>Optimized control trajectory output </td></tr>
   </table>
@@ -326,8 +451,8 @@ Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>adaptive_c
 
 </div>
 </div>
-<a id="a587c76fe260113b89424557d0eef95f0" name="a587c76fe260113b89424557d0eef95f0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a587c76fe260113b89424557d0eef95f0">&#9670;&nbsp;</a></span>updateAdaptiveComplexitySchedule()</h2>
+<a id="aa9e6d32416ab5bf01bc4c1d68659312b" name="aa9e6d32416ab5bf01bc4c1d68659312b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9e6d32416ab5bf01bc4c1d68659312b">&#9670;&nbsp;</a></span>updateAdaptiveComplexitySchedule()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -335,13 +460,25 @@ Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>adaptive_c
         <tr>
           <td class="memname">Eigen::VectorXi NMPCController::updateAdaptiveComplexitySchedule </td>
           <td>(</td>
-          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>state_traj_heuristic</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>control_traj_heuristic</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
           <td class="paramname"><em>state_traj_lifted</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
           <td class="paramname"><em>control_traj_lifted</em>&#160;</td>
         </tr>
         <tr>
@@ -375,6 +512,7 @@ Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><b>adaptive_c
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>nmpc_controller/include/nmpc_controller/<a class="el" href="nmpc__controller_8h_source.html">nmpc_controller.h</a></li>
+<li>nmpc_controller/src/adaptive_complexity_utils.cpp</li>
 <li>nmpc_controller/src/nmpc_controller.cpp</li>
 </ul>
 </div><!-- contents -->

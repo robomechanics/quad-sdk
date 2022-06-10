@@ -108,9 +108,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a01dd97f2dce74cc1461dc0192b08949f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a01dd97f2dce74cc1461dc0192b08949f">updateMap</a> (const grid_map::GridMap &amp;terrain)</td></tr>
 <tr class="memdesc:a01dd97f2dce74cc1461dc0192b08949f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the map of this object.  <a href="classLocalFootstepPlanner.html#a01dd97f2dce74cc1461dc0192b08949f">More...</a><br /></td></tr>
 <tr class="separator:a01dd97f2dce74cc1461dc0192b08949f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acca7caa921a1ee783b18a856db1d680c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#acca7caa921a1ee783b18a856db1d680c">computeContactSchedule</a> (int current_plan_index, const Eigen::VectorXi &amp;ref_primitive_plan_, int control_mode, std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule)</td></tr>
-<tr class="memdesc:acca7caa921a1ee783b18a856db1d680c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the contact schedule based on the current phase.  <a href="classLocalFootstepPlanner.html#acca7caa921a1ee783b18a856db1d680c">More...</a><br /></td></tr>
-<tr class="separator:acca7caa921a1ee783b18a856db1d680c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1476989adcf55f6702f61f52c72041b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a1476989adcf55f6702f61f52c72041b7">computeContactSchedule</a> (int current_plan_index, const Eigen::MatrixXd &amp;body_plan, const Eigen::VectorXi &amp;ref_primitive_plan_, int control_mode, std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule)</td></tr>
+<tr class="memdesc:a1476989adcf55f6702f61f52c72041b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the contact schedule based on the current phase.  <a href="classLocalFootstepPlanner.html#a1476989adcf55f6702f61f52c72041b7">More...</a><br /></td></tr>
+<tr class="separator:a1476989adcf55f6702f61f52c72041b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a588dff96f74e2271d7b613cc826807a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLocalFootstepPlanner.html#a588dff96f74e2271d7b613cc826807a5">computeFootPlan</a> (int current_plan_index, const std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule, const Eigen::MatrixXd &amp;body_plan, const Eigen::MatrixXd &amp;grf_plan, const Eigen::MatrixXd &amp;ref_body_plan, const Eigen::VectorXd &amp;foot_positions_current, const Eigen::VectorXd &amp;foot_velocities_current, double first_element_duration, quad_msgs::MultiFootState &amp;past_footholds_msg, Eigen::MatrixXd &amp;foot_positions, Eigen::MatrixXd &amp;foot_velocities, Eigen::MatrixXd &amp;foot_accelerations)</td></tr>
 <tr class="memdesc:a588dff96f74e2271d7b613cc826807a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the discrete footstep plan with the current plan.  <a href="classLocalFootstepPlanner.html#a588dff96f74e2271d7b613cc826807a5">More...</a><br /></td></tr>
 <tr class="separator:a588dff96f74e2271d7b613cc826807a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -295,8 +295,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>toe_radius_</b></td
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="acca7caa921a1ee783b18a856db1d680c" name="acca7caa921a1ee783b18a856db1d680c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acca7caa921a1ee783b18a856db1d680c">&#9670;&nbsp;</a></span>computeContactSchedule()</h2>
+<a id="a1476989adcf55f6702f61f52c72041b7" name="a1476989adcf55f6702f61f52c72041b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1476989adcf55f6702f61f52c72041b7">&#9670;&nbsp;</a></span>computeContactSchedule()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -306,6 +306,12 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>toe_radius_</b></td
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>current_plan_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>body_plan</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -337,6 +343,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>toe_radius_</b></td
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">current_plan_index_</td><td>Current index in the plan </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">body_plan</td><td>Current body plan </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">ref_primitive_plan_</td><td>Reference primitive plan </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">control_mode</td><td>Control mode </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">contact_schedule</td><td>2D array of contact states </td></tr>

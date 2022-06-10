@@ -1,7 +1,7 @@
 var searchData=
 [
   ['unloadinterface_0',['unloadInterface',['../classSpiritInterface.html#acb8c0ec8321cd14a6cdc3371666d1092',1,'SpiritInterface::unloadInterface()'],['../classHardwareInterface.html#a5f807b2896484f6dc4c0bae53102c007',1,'HardwareInterface::unloadInterface()']]],
-  ['updateadaptivecomplexityschedule_1',['updateAdaptiveComplexitySchedule',['../classNMPCController.html#a587c76fe260113b89424557d0eef95f0',1,'NMPCController']]],
+  ['updateadaptivecomplexityschedule_1',['updateAdaptiveComplexitySchedule',['../classNMPCController.html#aa9e6d32416ab5bf01bc4c1d68659312b',1,'NMPCController']]],
   ['updatecontinuousplan_2',['updateContinuousPlan',['../classLocalFootstepPlanner.html#aba0d461220650f7f0ebbd484359df2e4',1,'LocalFootstepPlanner']]],
   ['updatecontrol_3',['updateControl',['../classRobotDriver.html#a449265aa28c4c3741fd5df6e6e485a29',1,'RobotDriver']]],
   ['updategvalue_4',['updateGValue',['../classGraphClass.html#ae87d58394dc58f56bd4f619193423046',1,'GraphClass']]],

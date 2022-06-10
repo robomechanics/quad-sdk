@@ -9,16 +9,17 @@ var searchData=
   ['adaptive_5fcomplexity_5fschedule_5f_6',['adaptive_complexity_schedule_',['../classNMPCController.html#acd94c9ab7e145e01bc4597c08fbd8218',1,'NMPCController::adaptive_complexity_schedule_()'],['../classquadNLP.html#a68b3f996f8aab932c66bdc0816325eb0',1,'quadNLP::adaptive_complexity_schedule_()']]],
   ['addaction_7',['addAction',['../classGraphClass.html#aafacca2abff7f17df66e5b2f6b441c98',1,'GraphClass']]],
   ['addedge_8',['addEdge',['../classGraphClass.html#ac9d39ec62febc8b866c596f6672f5423',1,'GraphClass::addEdge(int idx1, int idx2)'],['../classGraphClass.html#abf9dcf5cee3197141fe3695ce26a04b1',1,'GraphClass::addEdge(int idx1, int idx2, double edge_cost)']]],
-  ['addstateandgrftomsg_9',['addStateAndGRFToMsg',['../classGlobalBodyPlanner.html#ad557f47aee5a108585c7940c97f9dfea',1,'GlobalBodyPlanner::addStateAndGRFToMsg()'],['../classGlobalBodyPlan.html#a31555fa6c35d0302f5cab71bf1e5b9d8',1,'GlobalBodyPlan::addStateAndGRFToMsg()']]],
+  ['addstateandgrftomsg_9',['addStateAndGRFToMsg',['../classGlobalBodyPlan.html#a31555fa6c35d0302f5cab71bf1e5b9d8',1,'GlobalBodyPlan::addStateAndGRFToMsg()'],['../classGlobalBodyPlanner.html#ad557f47aee5a108585c7940c97f9dfea',1,'GlobalBodyPlanner::addStateAndGRFToMsg()']]],
   ['addvertex_10',['addVertex',['../classGraphClass.html#a14de7afdfc42f444e9dc60f860a3c8bf',1,'GraphClass']]],
   ['always_5fconstrain_5ffeet_5f_11',['always_constrain_feet_',['../classquadNLP.html#ac3d203c7c697b2fe6f054e4317f5cf89',1,'quadNLP']]],
   ['ang_5fdes_5f_12',['ang_des_',['../classGrfPidController.html#a4bc7ed0338463848122ea183f7ffeeb2',1,'GrfPidController']]],
   ['ang_5ferror_5fint_5f_13',['ang_error_int_',['../classGrfPidController.html#a6cd55647b6452fb0417eae73a0fb8147',1,'GrfPidController']]],
   ['anytime_5fhorizon_14',['anytime_horizon',['../classGBPL.html#a10b456a708042ebf64480ed74c4fba76',1,'GBPL']]],
   ['anytime_5fhorizon_5finit_15',['anytime_horizon_init',['../classGBPL.html#adfe2855c194e9c0dbccc5933805b3504',1,'GBPL']]],
-  ['apply_5fslack_5fto_5fcomplex_5fconstr_5f_16',['apply_slack_to_complex_constr_',['../classquadNLP.html#a4de5eff180b361a0039cad7264991364',1,'quadNLP']]],
-  ['applymotormodel_17',['applyMotorModel',['../classquad__utils_1_1QuadKD.html#a56dfa361473ba6c6338663c68381638a',1,'quad_utils::QuadKD::applyMotorModel(const Eigen::VectorXd &amp;torques, Eigen::VectorXd &amp;constrained_torques)'],['../classquad__utils_1_1QuadKD.html#a715be9ecf680479b864984703129389a',1,'quad_utils::QuadKD::applyMotorModel(const Eigen::VectorXd &amp;torques, const Eigen::VectorXd &amp;joint_velocities, Eigen::VectorXd &amp;constrained_torques)']]],
-  ['argc_5f_18',['argc_',['../classRobotDriver.html#af0b9d9429662092ff70f477eac31defe',1,'RobotDriver']]],
-  ['argv_5f_19',['argv_',['../classRobotDriver.html#aed742be33c57b3accac92fe3a0078b86',1,'RobotDriver']]],
-  ['attemptconnect_20',['attemptConnect',['../classRRT.html#a19dd8b4d0832ec59ec13717cd12d26d0',1,'RRT::attemptConnect(const State &amp;s_existing, const State &amp;s, double t_s, StateActionResult &amp;result, const PlannerConfig &amp;planner_config, int direction)'],['../classRRT.html#a17b676bfa76a3bf1716a2c0781d2b07d',1,'RRT::attemptConnect(const State &amp;s_existing, const State &amp;s, StateActionResult &amp;result, const PlannerConfig &amp;planner_config, int direction)']]]
+  ['app_5f_16',['app_',['../classNMPCController.html#a0206264d7fd2b7654f793f7cf92204d1',1,'NMPCController']]],
+  ['apply_5fslack_5fto_5fcomplex_5fconstr_5f_17',['apply_slack_to_complex_constr_',['../classquadNLP.html#a4de5eff180b361a0039cad7264991364',1,'quadNLP']]],
+  ['applymotormodel_18',['applyMotorModel',['../classquad__utils_1_1QuadKD.html#a56dfa361473ba6c6338663c68381638a',1,'quad_utils::QuadKD::applyMotorModel(const Eigen::VectorXd &amp;torques, Eigen::VectorXd &amp;constrained_torques)'],['../classquad__utils_1_1QuadKD.html#a715be9ecf680479b864984703129389a',1,'quad_utils::QuadKD::applyMotorModel(const Eigen::VectorXd &amp;torques, const Eigen::VectorXd &amp;joint_velocities, Eigen::VectorXd &amp;constrained_torques)']]],
+  ['argc_5f_19',['argc_',['../classRobotDriver.html#af0b9d9429662092ff70f477eac31defe',1,'RobotDriver']]],
+  ['argv_5f_20',['argv_',['../classRobotDriver.html#aed742be33c57b3accac92fe3a0078b86',1,'RobotDriver']]],
+  ['attemptconnect_21',['attemptConnect',['../classRRT.html#a19dd8b4d0832ec59ec13717cd12d26d0',1,'RRT::attemptConnect(const State &amp;s_existing, const State &amp;s, double t_s, StateActionResult &amp;result, const PlannerConfig &amp;planner_config, int direction)'],['../classRRT.html#a17b676bfa76a3bf1716a2c0781d2b07d',1,'RRT::attemptConnect(const State &amp;s_existing, const State &amp;s, StateActionResult &amp;result, const PlannerConfig &amp;planner_config, int direction)']]]
 ];

@@ -93,8 +93,8 @@ Collaboration diagram for quadNLP:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a605b292c1acb079e0e4f1362b2de24bc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a605b292c1acb079e0e4f1362b2de24bc">quadNLP</a> (int N, double dt, double mu, double panic_weights, double constraint_panic_weights, double Q_temporal_factor, double R_temporal_factor, const Eigen::VectorXi &amp;fixed_complexity_schedule, const <a class="el" href="structNLPConfig.html">NLPConfig</a> &amp;config)</td></tr>
-<tr class="separator:a605b292c1acb079e0e4f1362b2de24bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99a01d97c549dc677e61cd199191cddc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a99a01d97c549dc677e61cd199191cddc">quadNLP</a> (SystemID default_system, int N, double dt, double mu, double panic_weights, double constraint_panic_weights, double Q_temporal_factor, double R_temporal_factor, const Eigen::VectorXi &amp;fixed_complexity_schedule, const <a class="el" href="structNLPConfig.html">NLPConfig</a> &amp;config)</td></tr>
+<tr class="separator:a99a01d97c549dc677e61cd199191cddc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1ae3c78bb297d6a4318b56a1f8609d0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#ae1ae3c78bb297d6a4318b56a1f8609d0">quadNLP</a> (const <a class="el" href="classquadNLP.html">quadNLP</a> &amp;nlp)</td></tr>
 <tr class="memdesc:ae1ae3c78bb297d6a4318b56a1f8609d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom deep copy constructor.  <a href="classquadNLP.html#ae1ae3c78bb297d6a4318b56a1f8609d0">More...</a><br /></td></tr>
 <tr class="separator:ae1ae3c78bb297d6a4318b56a1f8609d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -103,6 +103,8 @@ Public Member Functions</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader">Overloaded from TNLP</div></td></tr>
 <tr class="memitem:aec19f74e54860478495457424fb904d5"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#aec19f74e54860478495457424fb904d5">get_nlp_info</a> (Index &amp;n, Index &amp;m, Index &amp;nnz_jac_g, Index &amp;nnz_h_lag, IndexStyleEnum &amp;index_style)</td></tr>
 <tr class="separator:aec19f74e54860478495457424fb904d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a750b2999ff2156afe873f977c8b3efa1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a750b2999ff2156afe873f977c8b3efa1">get_bounds_info_single_complex_fe</a> (int i, Eigen::VectorXd &amp;x_lb, Eigen::VectorXd &amp;x_ub, Eigen::VectorXd &amp;u_lb, Eigen::VectorXd &amp;u_ub, Eigen::VectorXd &amp;g_l, Eigen::VectorXd &amp;g_u)</td></tr>
+<tr class="separator:a750b2999ff2156afe873f977c8b3efa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3d619cf7541ea8d8b7dd64ea3c44c23"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#af3d619cf7541ea8d8b7dd64ea3c44c23">get_bounds_info</a> (Index n, Number *x_l, Number *x_u, Index m, Number *g_l, Number *g_u)</td></tr>
 <tr class="separator:af3d619cf7541ea8d8b7dd64ea3c44c23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a101a0b1ed715fa67afca973e20ecc861"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a101a0b1ed715fa67afca973e20ecc861">get_starting_point</a> (Index n, bool init_x, Number *x, bool init_z, Number *z_L, Number *z_U, Index m, bool init_lambda, Number *lambda)</td></tr>
@@ -130,15 +132,18 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>compute_nnz_h
 <tr class="memitem:a47cfee18652ce4653315769faf8d7f81"><td class="memItemLeft" align="right" valign="top"><a id="a47cfee18652ce4653315769faf8d7f81" name="a47cfee18652ce4653315769faf8d7f81"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>update_initial_guess</b> (const <a class="el" href="classquadNLP.html">quadNLP</a> &amp;nlp_prev, int shift_idx)</td></tr>
 <tr class="separator:a47cfee18652ce4653315769faf8d7f81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08016405c6cf65472d5036240370768a"><td class="memItemLeft" align="right" valign="top"><a id="a08016405c6cf65472d5036240370768a" name="a08016405c6cf65472d5036240370768a"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>update_solver</b> (const Eigen::VectorXd &amp;initial_state, const Eigen::MatrixXd &amp;ref_traj, const Eigen::MatrixXd &amp;foot_positions, const std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule, const Eigen::VectorXi &amp;adaptive_complexity_schedule, const Eigen::VectorXd &amp;ground_height, const double &amp;first_element_duration_, const bool &amp;same_plan_index, const bool &amp;init)</td></tr>
-<tr class="separator:a08016405c6cf65472d5036240370768a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae63922878bde53bac832323c3ce85bb9"><td class="memItemLeft" align="right" valign="top"><a id="ae63922878bde53bac832323c3ce85bb9" name="ae63922878bde53bac832323c3ce85bb9"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>update_solver</b> (const Eigen::VectorXd &amp;initial_state, const Eigen::MatrixXd &amp;ref_traj, const Eigen::MatrixXd &amp;foot_positions, const std::vector&lt; std::vector&lt; bool &gt; &gt; &amp;contact_schedule, const Eigen::VectorXi &amp;adaptive_complexity_schedule, const Eigen::VectorXd &amp;ground_height, const double &amp;first_element_duration_, int plan_index_diff, const bool &amp;init)</td></tr>
+<tr class="separator:ae63922878bde53bac832323c3ce85bb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9bfbd66e6562f67fa737718fd41506a8"><td class="memItemLeft" align="right" valign="top"><a id="a9bfbd66e6562f67fa737718fd41506a8" name="a9bfbd66e6562f67fa737718fd41506a8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>update_structure</b> ()</td></tr>
 <tr class="separator:a9bfbd66e6562f67fa737718fd41506a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b6844e66a66ae7b4c9b36abfd9a2363"><td class="memItemLeft" align="right" valign="top"><a id="a2b6844e66a66ae7b4c9b36abfd9a2363" name="a2b6844e66a66ae7b4c9b36abfd9a2363"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>get_lifted_trajectory</b> (Eigen::MatrixXd &amp;state_traj_lifted, Eigen::MatrixXd &amp;control_traj_lifted)</td></tr>
 <tr class="separator:a2b6844e66a66ae7b4c9b36abfd9a2363"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a082f0c76f0d2ac4ea55870fba8ca0ffa"><td class="memItemLeft" align="right" valign="top"><a id="a082f0c76f0d2ac4ea55870fba8ca0ffa" name="a082f0c76f0d2ac4ea55870fba8ca0ffa"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>get_heuristic_trajectory</b> (Eigen::MatrixXd &amp;state_traj_heuristic, Eigen::MatrixXd &amp;control_traj_heuristic)</td></tr>
+<tr class="separator:a082f0c76f0d2ac4ea55870fba8ca0ffa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0002205aaae0afa5a21a68b1daf5c26"><td class="memTemplParams" colspan="2"><a id="ac0002205aaae0afa5a21a68b1daf5c26" name="ac0002205aaae0afa5a21a68b1daf5c26"></a>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ac0002205aaae0afa5a21a68b1daf5c26"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Block&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_primal_state_var</b> (T &amp;decision_var, const int &amp;idx) const</td></tr>
@@ -258,6 +263,10 @@ Public Attributes</h2></td></tr>
 <a class="el" href="structNLPConfig.html">NLPConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><b>config_</b></td></tr>
 <tr class="memdesc:aa2ba39e63187ce0cc42753e3e483ab9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Config struct for storing meta parameters. <br /></td></tr>
 <tr class="separator:aa2ba39e63187ce0cc42753e3e483ab9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2db8fb83fd79aa22528a718d0a1991c3"><td class="memItemLeft" align="right" valign="top"><a id="a2db8fb83fd79aa22528a718d0a1991c3" name="a2db8fb83fd79aa22528a718d0a1991c3"></a>
+SystemID&#160;</td><td class="memItemRight" valign="bottom"><b>default_system_</b></td></tr>
+<tr class="memdesc:a2db8fb83fd79aa22528a718d0a1991c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default system used for NLP (if not mixed complexity) <br /></td></tr>
+<tr class="separator:a2db8fb83fd79aa22528a718d0a1991c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aecbd832d5548a8f5a6ec47eb509a75e6"><td class="memItemLeft" align="right" valign="top"><a id="aecbd832d5548a8f5a6ec47eb509a75e6" name="aecbd832d5548a8f5a6ec47eb509a75e6"></a>
 std::shared_ptr&lt; <a class="el" href="classquad__utils_1_1QuadKD.html">quad_utils::QuadKD</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>quadKD_</b></td></tr>
 <tr class="separator:aecbd832d5548a8f5a6ec47eb509a75e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -319,9 +328,13 @@ const bool&#160;</td><td class="memItemRight" valign="bottom"><b>always_constrai
 <tr class="memdesc:ac3d203c7c697b2fe6f054e4317f5cf89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean for whether to allow modifications of foot trajectory. <br /></td></tr>
 <tr class="separator:ac3d203c7c697b2fe6f054e4317f5cf89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a142659275c86656af8053bae8bf887c2"><td class="memItemLeft" align="right" valign="top"><a id="a142659275c86656af8053bae8bf887c2" name="a142659275c86656af8053bae8bf887c2"></a>
-const bool&#160;</td><td class="memItemRight" valign="bottom"><b>use_terrain_constraint_</b> = true</td></tr>
+const bool&#160;</td><td class="memItemRight" valign="bottom"><b>use_terrain_constraint_</b> = false</td></tr>
 <tr class="memdesc:a142659275c86656af8053bae8bf887c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean for whether to include the terrain in the foot height constraint. <br /></td></tr>
 <tr class="separator:a142659275c86656af8053bae8bf887c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5913ebc05fcbad2bdd0bf5d258d6c43"><td class="memItemLeft" align="right" valign="top"><a id="ae5913ebc05fcbad2bdd0bf5d258d6c43" name="ae5913ebc05fcbad2bdd0bf5d258d6c43"></a>
+const bool&#160;</td><td class="memItemRight" valign="bottom"><b>remember_complex_elements_</b> = true</td></tr>
+<tr class="memdesc:ae5913ebc05fcbad2bdd0bf5d258d6c43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean for whether to include the terrain in the foot height constraint. <br /></td></tr>
+<tr class="separator:ae5913ebc05fcbad2bdd0bf5d258d6c43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7aac32283c445e2a0220ac3b4fcb8461"><td class="memItemLeft" align="right" valign="top">const grid_map::InterpolationMethods&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquadNLP.html#a7aac32283c445e2a0220ac3b4fcb8461">interp_type_</a></td></tr>
 <tr class="separator:a7aac32283c445e2a0220ac3b4fcb8461"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5dcbaee806d1ecdc5ab9635f377e3b0"><td class="memItemLeft" align="right" valign="top"><a id="ac5dcbaee806d1ecdc5ab9635f377e3b0" name="ac5dcbaee806d1ecdc5ab9635f377e3b0"></a>
@@ -419,9 +432,11 @@ Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>g0_</b></t
 <tr class="separator:a10251383653c3d560d20bf8698f356af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ffaf7ca79e75357f3dbc7e1680a5044"><td class="memItemLeft" align="right" valign="top"><a id="a1ffaf7ca79e75357f3dbc7e1680a5044" name="a1ffaf7ca79e75357f3dbc7e1680a5044"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>mu0_</b></td></tr>
+<tr class="memdesc:a1ffaf7ca79e75357f3dbc7e1680a5044"><td class="mdescLeft">&#160;</td><td class="mdescRight">Friction coefficient. <br /></td></tr>
 <tr class="separator:a1ffaf7ca79e75357f3dbc7e1680a5044"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94ec8a6b23ff5e0a5e7979e011c23af9"><td class="memItemLeft" align="right" valign="top"><a id="a94ec8a6b23ff5e0a5e7979e011c23af9" name="a94ec8a6b23ff5e0a5e7979e011c23af9"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>warm_start_</b></td></tr>
+<tr class="memdesc:a94ec8a6b23ff5e0a5e7979e011c23af9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether warm start. <br /></td></tr>
 <tr class="separator:a94ec8a6b23ff5e0a5e7979e011c23af9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a083a2798148d16b8f0a8018600ec6fa3"><td class="memItemLeft" align="right" valign="top"><a id="a083a2798148d16b8f0a8018600ec6fa3" name="a083a2798148d16b8f0a8018600ec6fa3"></a>
 Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>x_reference_</b></td></tr>
@@ -617,8 +632,8 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:af52a9ca6db6bd12d8ac3d744b6cc4057"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a605b292c1acb079e0e4f1362b2de24bc" name="a605b292c1acb079e0e4f1362b2de24bc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a605b292c1acb079e0e4f1362b2de24bc">&#9670;&nbsp;</a></span>quadNLP() <span class="overload">[1/2]</span></h2>
+<a id="a99a01d97c549dc677e61cd199191cddc" name="a99a01d97c549dc677e61cd199191cddc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99a01d97c549dc677e61cd199191cddc">&#9670;&nbsp;</a></span>quadNLP() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -626,6 +641,12 @@ Private Member Functions</h2></td></tr>
         <tr>
           <td class="memname">quadNLP::quadNLP </td>
           <td>(</td>
+          <td class="paramtype">SystemID&#160;</td>
+          <td class="paramname"><em>default_system</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>N</em>, </td>
         </tr>
@@ -1246,6 +1267,65 @@ Private Member Functions</h2></td></tr>
 <span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
+</div><div class="memdoc">
+<p >Method to return the bounds for my problem </p>
+
+</div>
+</div>
+<a id="a750b2999ff2156afe873f977c8b3efa1" name="a750b2999ff2156afe873f977c8b3efa1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a750b2999ff2156afe873f977c8b3efa1">&#9670;&nbsp;</a></span>get_bounds_info_single_complex_fe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool quadNLP::get_bounds_info_single_complex_fe </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>x_lb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>x_ub</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>u_lb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>u_ub</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>g_l</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>g_u</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
 </div><div class="memdoc">
 <p >Method to return the bounds for my problem </p>
 

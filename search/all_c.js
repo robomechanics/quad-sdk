@@ -16,5 +16,7 @@ var searchData=
   ['mocap_5fsub_5f_13',['mocap_sub_',['../classRobotDriver.html#afa14df4293dfc673b2b69b5993236dd9',1,'RobotDriver']]],
   ['mocap_5fvel_5festimate_5f_14',['mocap_vel_estimate_',['../classCompFilterEstimator.html#a97e373a63b4c86d6a8908815e5969962',1,'CompFilterEstimator::mocap_vel_estimate_()'],['../classRobotDriver.html#a7438d3eed4a4fe4960fb7b5d6b6fa119',1,'RobotDriver::mocap_vel_estimate_()']]],
   ['mocapcallback_15',['mocapCallback',['../classRobotDriver.html#ae6955e17fa1b1449e381084ebac8adb4',1,'RobotDriver']]],
-  ['mocapcallbackhelper_16',['mocapCallBackHelper',['../classCompFilterEstimator.html#a5109b2f370e22fff2ca80f0f3632956a',1,'CompFilterEstimator']]]
+  ['mocapcallbackhelper_16',['mocapCallBackHelper',['../classCompFilterEstimator.html#a5109b2f370e22fff2ca80f0f3632956a',1,'CompFilterEstimator']]],
+  ['mu0_5f_17',['mu0_',['../classquadNLP.html#a1ffaf7ca79e75357f3dbc7e1680a5044',1,'quadNLP']]],
+  ['mynlp_5f_18',['mynlp_',['../classNMPCController.html#a12be41de0785bebf0c00be062dd75728',1,'NMPCController']]]
 ];

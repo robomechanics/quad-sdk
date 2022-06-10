@@ -11,7 +11,8 @@ var searchData=
   ['ang_5ferror_5fint_5f_8',['ang_error_int_',['../classGrfPidController.html#a6cd55647b6452fb0417eae73a0fb8147',1,'GrfPidController']]],
   ['anytime_5fhorizon_9',['anytime_horizon',['../classGBPL.html#a10b456a708042ebf64480ed74c4fba76',1,'GBPL']]],
   ['anytime_5fhorizon_5finit_10',['anytime_horizon_init',['../classGBPL.html#adfe2855c194e9c0dbccc5933805b3504',1,'GBPL']]],
-  ['apply_5fslack_5fto_5fcomplex_5fconstr_5f_11',['apply_slack_to_complex_constr_',['../classquadNLP.html#a4de5eff180b361a0039cad7264991364',1,'quadNLP']]],
-  ['argc_5f_12',['argc_',['../classRobotDriver.html#af0b9d9429662092ff70f477eac31defe',1,'RobotDriver']]],
-  ['argv_5f_13',['argv_',['../classRobotDriver.html#aed742be33c57b3accac92fe3a0078b86',1,'RobotDriver']]]
+  ['app_5f_11',['app_',['../classNMPCController.html#a0206264d7fd2b7654f793f7cf92204d1',1,'NMPCController']]],
+  ['apply_5fslack_5fto_5fcomplex_5fconstr_5f_12',['apply_slack_to_complex_constr_',['../classquadNLP.html#a4de5eff180b361a0039cad7264991364',1,'quadNLP']]],
+  ['argc_5f_13',['argc_',['../classRobotDriver.html#af0b9d9429662092ff70f477eac31defe',1,'RobotDriver']]],
+  ['argv_5f_14',['argv_',['../classRobotDriver.html#aed742be33c57b3accac92fe3a0078b86',1,'RobotDriver']]]
 ];
