@@ -45,9 +45,9 @@ using namespace Ipopt;
 enum SystemID {
   SPIRIT,
   A1,
-  SIMPLE,
+  SIMPLE_TO_SIMPLE,
   SIMPLE_TO_COMPLEX,
-  COMPLEX,
+  COMPLEX_TO_COMPLEX,
   COMPLEX_TO_SIMPLE
 };
 
@@ -110,6 +110,9 @@ class quadNLP : public TNLP {
   /// Config struct for storing meta parameters
   NLPConfig config_;
 
+  /// Default system used for NLP (if not mixed complexity)
+  SystemID default_system_;
+
   // QuadKD object for kinematics calculations
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
 
@@ -131,7 +134,10 @@ class quadNLP : public TNLP {
   const bool always_constrain_feet_ = false;
 
   /// Boolean for whether to include the terrain in the foot height constraint
-  const bool use_terrain_constraint_ = true;
+  const bool use_terrain_constraint_ = false;
+
+  /// Boolean for whether to include the terrain in the foot height constraint
+  const bool remember_complex_elements_ = true;
 
   const grid_map::InterpolationMethods interp_type_ =
       grid_map::InterpolationMethods::INTER_LINEAR;
@@ -197,8 +203,10 @@ class quadNLP : public TNLP {
   // Initial guess
   Eigen::VectorXd w0_, z_L0_, z_U0_, lambda0_, g0_;
 
+  /// Friction coefficient
   double mu0_;
 
+  /// Whether warm start
   bool warm_start_;
 
   // State reference for computing cost
@@ -281,9 +289,9 @@ class quadNLP : public TNLP {
       eval_sparsity_vec_;
 
   /** Default constructor */
-  quadNLP(int N, double dt, double mu, double panic_weights,
-          double constraint_panic_weights, double Q_temporal_factor,
-          double R_temporal_factor,
+  quadNLP(SystemID default_system, int N, double dt, double mu,
+          double panic_weights, double constraint_panic_weights,
+          double Q_temporal_factor, double R_temporal_factor,
           const Eigen::VectorXi &fixed_complexity_schedule,
           const NLPConfig &config);
 
@@ -301,6 +309,14 @@ class quadNLP : public TNLP {
   /** Method to return some info about the NLP */
   virtual bool get_nlp_info(Index &n, Index &m, Index &nnz_jac_g,
                             Index &nnz_h_lag, IndexStyleEnum &index_style);
+
+  /** Method to return the bounds for my problem */
+  bool get_bounds_info_single_complex_fe(int i, Eigen::VectorXd &x_lb,
+                                         Eigen::VectorXd &x_ub,
+                                         Eigen::VectorXd &u_lb,
+                                         Eigen::VectorXd &u_ub,
+                                         Eigen::VectorXd &g_l,
+                                         Eigen::VectorXd &g_u);
 
   /** Method to return the bounds for my problem */
   virtual bool get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
@@ -363,13 +379,16 @@ class quadNLP : public TNLP {
       const std::vector<std::vector<bool>> &contact_schedule,
       const Eigen::VectorXi &adaptive_complexity_schedule,
       const Eigen::VectorXd &ground_height,
-      const double &first_element_duration_, const bool &same_plan_index,
+      const double &first_element_duration_, int plan_index_diff,
       const bool &init);
 
   void update_structure();
 
   void get_lifted_trajectory(Eigen::MatrixXd &state_traj_lifted,
                              Eigen::MatrixXd &control_traj_lifted);
+
+  void get_heuristic_trajectory(Eigen::MatrixXd &state_traj_heuristic,
+                                Eigen::MatrixXd &control_traj_heuristic);
 
   // Get the idx-th state variable from decision variable
   template <typename T>
