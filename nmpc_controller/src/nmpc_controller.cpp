@@ -205,7 +205,7 @@ NMPCController::NMPCController(ros::NodeHandle &nh, int robot_id) {
   app_ = IpoptApplicationFactory();
 
   app_->Options()->SetStringValue("print_timing_statistics", "no");
-  app_->Options()->SetStringValue("linear_solver", "ma57");
+  app_->Options()->SetStringValue("linear_solver", "ma27");
   app_->Options()->SetIntegerValue("print_level", 0);
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   app_->Options()->SetStringValue("fixed_variable_treatment",
