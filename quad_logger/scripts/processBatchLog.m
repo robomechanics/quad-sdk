@@ -115,7 +115,8 @@ end
 %}
 
 for i=1:12
-    fprintf('Success: %d, total: %d, roll: %d \n', ...
+    tmp = maxRoll((i-1)*100+1:i*100);
+    fprintf('Success: %d, total: %d, roll: %d, mean_roll: %f, std_roll: %f \n', ...
         sum(maxError((i-1)*100+1:i*100)<pi/4), ...
-        bSampleNum, sum(maxRoll((i-1)*100+1:i*100)<pi/4));
+        bSampleNum, sum(tmp<pi/4), mean(tmp(tmp<pi/4)), std(tmp(tmp<pi/4)));
 end
