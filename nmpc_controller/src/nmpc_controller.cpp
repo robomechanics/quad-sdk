@@ -210,7 +210,7 @@ NMPCController::NMPCController(ros::NodeHandle &nh, int robot_id) {
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   app_->Options()->SetStringValue("fixed_variable_treatment",
                                   "make_parameter_nodual");
-  app_->Options()->SetNumericValue("tol", 5e-3);
+  app_->Options()->SetNumericValue("tol", 1e-3);
   app_->Options()->SetNumericValue("dual_inf_tol", 1e10);
   app_->Options()->SetNumericValue("constr_viol_tol", 1e-2);
   app_->Options()->SetNumericValue("compl_inf_tol", 1e-2);
