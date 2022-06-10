@@ -61,6 +61,7 @@
 
   <!-- Load the visualization tools -->
   <include file="$(find quad_utils)/launch/quad_visualization.launch">
+    <arg name="robot_type" value="$(arg robot_type)" />
     <arg name="live_plot" value="$(arg live_plot)" />
     <arg name="dash" value="$(arg dash)" />
   </include>
