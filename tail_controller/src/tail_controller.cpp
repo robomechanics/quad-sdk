@@ -28,7 +28,8 @@ TailController::TailController(ros::NodeHandle nh) {
   }
 
   // Get rosparams
-  std::string tail_plan_topic, tail_control_topic, robot_state_topic;
+  std::string tail_plan_topic, tail_control_topic, robot_state_topic,
+      contact_sensing_topic;
   quad_utils::loadROSParam(nh_, "/topics/control/tail_plan", tail_plan_topic);
   quad_utils::loadROSParam(nh_, "/topics/control/tail_command",
                            tail_control_topic);
@@ -44,6 +45,8 @@ TailController::TailController(ros::NodeHandle nh) {
                            pitch_kp_);
   quad_utils::loadROSParam(nh_, "tail_controller/" + param_ns_ + "/pitch_kd",
                            pitch_kd_);
+  quad_utils::loadROSParam(nh_, "topics/control/contact_sensing",
+                           contact_sensing_topic);
 
   // Setup pubs and subs
   tail_control_pub_ =
@@ -54,6 +57,11 @@ TailController::TailController(ros::NodeHandle nh) {
   robot_state_sub_ =
       nh_.subscribe(robot_state_topic, 1, &TailController::robotStateCallback,
                     this, ros::TransportHints().tcpNoDelay(true));
+  contact_sensing_sub_ = nh_.subscribe(
+      contact_sensing_topic, 1, &TailController::contactSensingCallback, this,
+      ros::TransportHints().tcpNoDelay(true));
+
+  falling_ = false;
 }
 
 void TailController::tailPlanCallback(
@@ -67,6 +75,12 @@ void TailController::robotStateCallback(
   if (msg->feet.feet.empty() || msg->joints.position.empty()) return;
 
   robot_state_msg_ = msg;
+}
+
+void TailController::contactSensingCallback(
+    const quad_msgs::ContactSensing::ConstPtr &msg) {
+  // Contact sensing callback
+  contact_sensing_msg_ = msg;
 }
 
 void TailController::publishTailCommand() {
@@ -83,12 +97,29 @@ void TailController::publishTailCommand() {
 
   if (param_ns_ == "decentralized_tail") {
     // Feedback tail
+    if (contact_sensing_msg_->contact_sensing.at(0) ||
+        contact_sensing_msg_->contact_sensing.at(1) ||
+        contact_sensing_msg_->contact_sensing.at(2) ||
+        contact_sensing_msg_->contact_sensing.at(3)) {
+      falling_ = true;
+    } else {
+      falling_ = false;
+    }
+
     msg.motor_commands.at(0).pos_setpoint = -current_state_(3);
-    msg.motor_commands.at(0).vel_setpoint = 5 * current_state_(9);
+    if (falling_) {
+      msg.motor_commands.at(0).vel_setpoint = 10 * current_state_(9);
+    } else {
+      msg.motor_commands.at(0).vel_setpoint = 0;
+    }
     msg.motor_commands.at(0).torque_ff = 0;
     msg.motor_commands.at(0).kp = roll_kp_;
     msg.motor_commands.at(0).kd = roll_kd_;
-
+    if (falling_) {
+      msg.motor_commands.at(1).vel_setpoint = 10 * current_state_(10);
+    } else {
+      msg.motor_commands.at(1).vel_setpoint = 0;
+    }
     msg.motor_commands.at(1).pos_setpoint = -current_state_(4);
     msg.motor_commands.at(1).vel_setpoint = 5 * current_state_(10);
     msg.motor_commands.at(1).torque_ff = 0;

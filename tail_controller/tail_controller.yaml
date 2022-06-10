@@ -10,6 +10,6 @@ tail_controller:
     pitch_kd: 0.1
   decentralized_tail:
     roll_kp: 10
-    roll_kd: 1
+    roll_kd: 5
     pitch_kp: 10
-    pitch_kd: 1
+    pitch_kd: 5

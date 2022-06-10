@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <quad_msgs/LegCommandArray.h>
+#include <quad_msgs/ContactSensing.h>
 #include <quad_utils/ros_utils.h>
 #include <quad_utils/tail_type.h>
 #include <ros/ros.h>
@@ -40,6 +41,8 @@ class TailController {
 
   void robotStateCallback(const quad_msgs::RobotState::ConstPtr &msg);
 
+  void contactSensingCallback(const quad_msgs::ContactSensing::ConstPtr &msg);
+
   /**
    * @brief Compute and send open loop joint positions
    * @param[in] elapsed_time Time since node began
@@ -64,9 +67,13 @@ class TailController {
 
   ros::Subscriber robot_state_sub_;
 
+  ros::Subscriber contact_sensing_sub_;
+
   quad_msgs::RobotState::ConstPtr robot_state_msg_;
 
   quad_msgs::LegCommandArray::ConstPtr last_tail_plan_msg_;
+
+  quad_msgs::ContactSensing::ConstPtr contact_sensing_msg_;
 
   double dt_;
 
@@ -77,6 +84,8 @@ class TailController {
   std::string param_ns_;
 
   Eigen::VectorXd current_state_;
+
+  bool falling_;
 };
 
 #endif  // TAIL_CONTROLLER_H
