@@ -382,13 +382,16 @@ void LocalFootstepPlanner::computeFootPlan(
             int stance_duration = period_ * (duty_cycles_[j]);
             swing_duration = period_ - stance_duration;
 
-            if (body_plan_msg_.primitive_ids[current_plan_index +
-                                             i_touchdown] == FLIGHT) {
-              for (int k = current_plan_index + i_touchdown;
-                   k < body_plan_msg_.primitive_ids.size(); k++) {
-                if (body_plan_msg_.primitive_ids[k] != FLIGHT) {
-                  swing_duration = k - (current_plan_index + i);
-                  break;
+            if (body_plan_msg_.primitive_ids.size() >=
+                current_plan_index + i_touchdown) {
+              if (body_plan_msg_.primitive_ids[current_plan_index +
+                                               i_touchdown] == FLIGHT) {
+                for (int k = current_plan_index + i_touchdown;
+                     k < body_plan_msg_.primitive_ids.size(); k++) {
+                  if (body_plan_msg_.primitive_ids[k] != FLIGHT) {
+                    swing_duration = k - (current_plan_index + i);
+                    break;
+                  }
                 }
               }
             }

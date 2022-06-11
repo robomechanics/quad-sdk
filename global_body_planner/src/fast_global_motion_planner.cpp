@@ -303,114 +303,157 @@ int FastGlobalMotionPlanner::getTestPlan(const PlannerConfig &planner_config,
                                          State s_start, State s_goal,
                                          std::vector<State> &state_sequence,
                                          std::vector<Action> &action_sequence) {
-  // Clear state and action sequences and initialize
-  state_sequence.clear();
-  action_sequence.clear();
-  s_start.vel.setZero();
-  s_start.vel.x() = 0.001;
-  state_sequence.push_back(s_start);
-  Action a_leap;
+  // // Clear state and action sequences and initialize
+  // state_sequence.clear();
+  // action_sequence.clear();
+  // s_start.vel.setZero();
+  // s_start.vel.x() = 0.001;
+  // state_sequence.push_back(s_start);
+  // Action a_leap;
 
-  // // Define desired leap parameters - standstill max vertical
-  // double leap_start_x = 3;
-  // double leap_start_dx = 0;
-  // a_leap.dz_0 = -3.5;
-  // a_leap.t_s_leap = 0.1895;
-  // a_leap.t_f = 0.9287;
-  // a_leap.t_s_land = 0.1895;
-  // a_leap.grf_0 << 0, 0, 8;
-  // a_leap.grf_f << 0, 0, 8;
-  // a_leap.dz_f = 3.5;
+  // // // Define desired leap parameters - standstill max vertical
+  // // double leap_start_x = 3;
+  // // double leap_start_dx = 0;
+  // // a_leap.dz_0 = -3.5;
+  // // a_leap.t_s_leap = 0.1895;
+  // // a_leap.t_f = 0.9287;
+  // // a_leap.t_s_land = 0.1895;
+  // // a_leap.grf_0 << 0, 0, 8;
+  // // a_leap.grf_f << 0, 0, 8;
+  // // a_leap.dz_f = 3.5;
 
-  // // Define desired leap parameters - 40cm gap, good
-  // double leap_start_x = 2.65;
-  // double leap_start_dx = 1.5;
-  // a_leap.dz_0 = -1.5;
-  // a_leap.t_s_leap = 0.1586;
-  // a_leap.t_f = 0.4344;
-  // a_leap.t_s_land = 0.1586;
-  // a_leap.grf_0 << 0, 0, 5;
-  // a_leap.grf_f << 0, 0, 5;
-  // a_leap.dz_f = 2.0;
+  // // // Define desired leap parameters - 40cm gap, good
+  // // double leap_start_x = 2.65;
+  // // double leap_start_dx = 1.5;
+  // // a_leap.dz_0 = -1.5;
+  // // a_leap.t_s_leap = 0.1586;
+  // // a_leap.t_f = 0.4344;
+  // // a_leap.t_s_land = 0.1586;
+  // // a_leap.grf_0 << 0, 0, 5;
+  // // a_leap.grf_f << 0, 0, 5;
+  // // a_leap.dz_f = 2.0;
 
-  // // Define desired leap parameters - 20cm gap, good
-  // double leap_start_x = 2.7;
-  // double leap_start_dx = 1.25;
-  // a_leap.dz_0 = -1.0;
-  // a_leap.t_s_leap = 0.1604;
-  // a_leap.t_f = 0.3309;
-  // a_leap.t_s_land = 0.1604;
-  // a_leap.grf_0 << 0, 0, 4;
-  // a_leap.grf_f << 0, 0, 4;
-  // a_leap.dz_f = 1.0;
+  // // // Define desired leap parameters - 20cm gap, good
+  // // double leap_start_x = 2.7;
+  // // double leap_start_dx = 1.25;
+  // // a_leap.dz_0 = -1.0;
+  // // a_leap.t_s_leap = 0.1604;
+  // // a_leap.t_f = 0.3309;
+  // // a_leap.t_s_land = 0.1604;
+  // // a_leap.grf_0 << 0, 0, 4;
+  // // a_leap.grf_f << 0, 0, 4;
+  // // a_leap.dz_f = 1.0;
 
-  // Define desired leap parameters - 40cm gap, okay
+  // // Define desired leap parameters - 40cm gap, okay
+  // // double leap_start_x = 2.65;
+  // // double leap_start_dx = 1.25;
+  // // a_leap.dz_0 = -0.25;
+  // // a_leap.t_s_leap = 0.1050;
+  // // a_leap.t_f = 0.4392;
+  // // a_leap.t_s_land = 0.1050;
+  // // a_leap.grf_0 << 0.75, 0, 5;
+  // // a_leap.grf_f << -0.75, 0, 5;
+  // // a_leap.dz_f = 0.25;
+
+  // // Define desired leap parameters - 40cm gap, hits motor model
   // double leap_start_x = 2.65;
   // double leap_start_dx = 1.25;
   // a_leap.dz_0 = -0.25;
   // a_leap.t_s_leap = 0.1050;
   // a_leap.t_f = 0.4392;
   // a_leap.t_s_land = 0.1050;
-  // a_leap.grf_0 << 0.75, 0, 5;
-  // a_leap.grf_f << -0.75, 0, 5;
+  // a_leap.grf_0 << 0.6, 0, 5;
+  // a_leap.grf_f << -0.6, 0, 5;
   // a_leap.dz_f = 0.25;
+
+  // // // Define desired leap parameters - 40cm gap, bad
+  // // double leap_start_x = 2.65;
+  // // double leap_start_dx = 1.25;
+  // // a_leap.dz_0 = -0.25;
+  // // a_leap.t_s_leap = 0.0914;
+  // // a_leap.t_f = 0.4972;
+  // // a_leap.t_s_land = 0.0914;
+  // // a_leap.grf_0 << 0.35, 0, 6;
+  // // a_leap.grf_f << -0.35, 0, 6;
+  // // a_leap.dz_f = 0.25;
+
+  // // Define leap starting state
+  // State s_leap_start = s_start;
+  // double t_s = 4.0;
+  // s_leap_start.pos[0] = leap_start_x;
+  // s_leap_start.vel[0] = leap_start_dx;
+
+  // // Connect start to leap
+  // StateActionResult result;
+  // if (!attemptConnect(s_start, s_leap_start, t_s, result, planner_config,
+  //                     FORWARD)) {
+  //   throw ::std::runtime_error("Failed to connect start to leap");
+  // }
+
+  // // Add state and action to sequence
+  // action_sequence.push_back(result.a_new);
+  // state_sequence.push_back(s_leap_start);
+
+  // // Apply leap to get goal
+  // State s_land = applyAction(s_leap_start, a_leap, planner_config);
+
+  // // Add state and action to sequence
+  // action_sequence.push_back(a_leap);
+  // state_sequence.push_back(s_land);
+
+  // // Connect land to goal
+  // t_s = 2.0;
+  // s_goal.vel.setZero();
+  // if (!attemptConnect(s_land, s_goal, t_s, result, planner_config, FORWARD))
+  // {
+  //   throw ::std::runtime_error("Failed to connect land to goal");
+  // }
+
+  // // Add state and action to sequence
+  // action_sequence.push_back(result.a_new);
+  // state_sequence.push_back(s_goal);
+
+  // return VALID;
+
+  // Clear state and action sequences and initialize
+  state_sequence.clear();
+  action_sequence.clear();
+  s_start.vel.setZero();
+  s_start.vel.x() = 0.0001;
+  state_sequence.push_back(s_start);
+  Action a_hold;
 
   // Define desired leap parameters - 40cm gap, hits motor model
-  double leap_start_x = 2.65;
-  double leap_start_dx = 1.25;
-  a_leap.dz_0 = -0.25;
-  a_leap.t_s_leap = 0.1050;
-  a_leap.t_f = 0.4392;
-  a_leap.t_s_land = 0.1050;
-  a_leap.grf_0 << 0.6, 0, 5;
-  a_leap.grf_f << -0.6, 0, 5;
-  a_leap.dz_f = 0.25;
-
-  // // Define desired leap parameters - 40cm gap, bad
-  // double leap_start_x = 2.65;
-  // double leap_start_dx = 1.25;
-  // a_leap.dz_0 = -0.25;
-  // a_leap.t_s_leap = 0.0914;
-  // a_leap.t_f = 0.4972;
-  // a_leap.t_s_land = 0.0914;
-  // a_leap.grf_0 << 0.35, 0, 6;
-  // a_leap.grf_f << -0.35, 0, 6;
-  // a_leap.dz_f = 0.25;
-
-  // Define leap starting state
-  State s_leap_start = s_start;
-  double t_s = 4.0;
-  s_leap_start.pos[0] = leap_start_x;
-  s_leap_start.vel[0] = leap_start_dx;
-
-  // Connect start to leap
-  StateActionResult result;
-  if (!attemptConnect(s_start, s_leap_start, t_s, result, planner_config,
-                      FORWARD)) {
-    throw ::std::runtime_error("Failed to connect start to leap");
-  }
-
-  // Add state and action to sequence
-  action_sequence.push_back(result.a_new);
-  state_sequence.push_back(s_leap_start);
+  a_hold.t_s_leap = 2.0;
+  a_hold.t_f = 0;
+  a_hold.t_s_land = 0;
+  a_hold.dz_0 = 0;
+  a_hold.grf_0 << 0, 0, 0.3;
+  a_hold.grf_f << 0, 0, 0.3;
+  a_hold.dz_f = 0;
 
   // Apply leap to get goal
-  State s_land = applyAction(s_leap_start, a_leap, planner_config);
+  State s_hold = applyAction(s_start, a_hold, planner_config);
+  printStateNewline(s_start);
+  printStateNewline(s_hold);
 
   // Add state and action to sequence
-  action_sequence.push_back(a_leap);
-  state_sequence.push_back(s_land);
+  action_sequence.push_back(a_hold);
+  state_sequence.push_back(s_hold);
 
   // Connect land to goal
-  t_s = 2.0;
   s_goal.vel.setZero();
-  if (!attemptConnect(s_land, s_goal, t_s, result, planner_config, FORWARD)) {
+  StateActionResult result;
+  if (!attemptConnect(s_hold, s_goal, result, planner_config, FORWARD)) {
     throw ::std::runtime_error("Failed to connect land to goal");
   }
 
   // Add state and action to sequence
   action_sequence.push_back(result.a_new);
   state_sequence.push_back(s_goal);
+
+  printActionNewline(result.a_new);
+  printStateNewline(s_goal);
 
   return VALID;
 }

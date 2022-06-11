@@ -2,7 +2,7 @@ global_body_planner:
   update_rate: 20                         # Update rate of the ROS node (in Hz)
   num_calls: 1                            # Number of times to call the planner
   max_planning_time: 0.25                 # Maximum amount of time to run the planner
-  goal_state: [5.0, 0.0]                  # Nominal goal state (x/y coordinates)
+  goal_state: [4.0, 0.0]                  # Nominal goal state (x/y coordinates)
   pos_error_threshold: 25                 # Error from planned state to trigger reset
   startup_delay: 0.05                      # Time to delay after starting node before planning
   replanning: false                        # Boolean to determine if replanning is allowed
@@ -12,7 +12,7 @@ global_body_planner:
   num_leap_samples: 10                    # Number of leap actions computed for each extend function
   body_traversability_threshold: 0.4      # Traversability threshold for valid body state
   contact_traversability_threshold: 0.3   # Traversability threshold for valid contact location
-  mu: 0.25                                # Friction coefficient
+  mu: 1.0                                # Friction coefficient
   g: 9.81                                 # Gravity constant, m/s^2
   t_s_min: 0.12                           # Minimum stance time, s
   t_s_max: 0.25                           # Maximum stance time, s
@@ -21,8 +21,8 @@ global_body_planner:
   h_max: 0.375                            # Maximum height of leg base, m
   h_min: 0.075                            # Minimum ground clearance of body corners, m
   h_nom: 0.3                              # Nominal ground clearance of body, m
-  v_max: 2.0                              # Maximum robot velocity, m/s
-  v_nom: 0.75                              # Nominal velocity, m/s (used during connect function)
+  v_max: 3.0                              # Maximum robot velocity, m/s
+  v_nom: 2.4                              # Nominal velocity, m/s (used during connect function)
   robot_l: 0.3                            # Length of robot body, m
   robot_w: 0.3                            # Width of robot body, m
   robot_h: 0.05                           # Vertical distance between leg base and bottom of robot, m

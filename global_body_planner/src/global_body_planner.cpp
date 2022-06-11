@@ -218,12 +218,12 @@ bool GlobalBodyPlanner::callPlanner() {
     std::vector<Action> action_sequence;
 
     // Call the planner method
-    int plan_status = fast_global_motion_planner.getTestPlan(
-        planner_config_, start_state, goal_state, state_sequence,
-        action_sequence);
-    // int plan_status = fast_global_motion_planner.findPlan(
+    // int plan_status = fast_global_motion_planner.getTestPlan(
     //     planner_config_, start_state, goal_state, state_sequence,
-    //     action_sequence, tree_pub_);
+    //     action_sequence);
+    int plan_status = fast_global_motion_planner.findPlan(
+        planner_config_, start_state, goal_state, state_sequence,
+        action_sequence, tree_pub_);
     newest_plan_.setComputedTimestamp(ros::Time::now());
 
     if (plan_status != VALID && plan_status != VALID_PARTIAL) {
@@ -292,6 +292,7 @@ bool GlobalBodyPlanner::callPlanner() {
       std::cout << "Vertices generated: " << vertices_generated << std::endl;
       std::cout << "Path length: " << path_length << " m" << std::endl;
       std::cout << "Path duration: " << path_duration << " s" << std::endl;
+      printActionSequence(action_sequence);
       std::cout << std::endl;
 
       current_plan_ = newest_plan_;
