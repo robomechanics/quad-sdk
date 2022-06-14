@@ -6,14 +6,13 @@ on:
       - main
       - devel
       - melodic_devel_gh_pages_doxygen_updates
-  pull_request:
-    branches:
-      - main
   page_build:
 
 jobs:
   doxygen:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v1
       - name: Build documentation
