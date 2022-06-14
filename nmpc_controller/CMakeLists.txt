@@ -70,7 +70,8 @@ add_library(nmpc_controller
   src/quad_nlp_utils.cpp
   src/quad_nlp.cpp
   src/quad_nlp_utils.cpp
-  src/nmpc_controller.cpp 
+  src/adaptive_complexity_utils.cpp
+  src/nmpc_controller.cpp
 )
 target_link_libraries(nmpc_controller 
   Eigen3::Eigen 

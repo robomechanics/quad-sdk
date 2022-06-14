@@ -38,15 +38,15 @@ class LegController {
    * @param[in] kp Proportional gains
    * @param[in] kd Derivative gains
    */
-  virtual void setGains(double kp, double kd);
+  virtual void init(double kp, double kd);
 
   /**
    * @brief Set the desired proportional and derivative gains for each leg
    * @param[in] kp Proportional gains
    * @param[in] kd Derivative gains
    */
-  virtual void setGains(const std::vector<double> &kp,
-                        const std::vector<double> &kd);
+  virtual void init(const std::vector<double> &kp,
+                    const std::vector<double> &kd);
 
   /**
    * @brief Set the desired stance and swing proportional and derivative gains
@@ -54,13 +54,15 @@ class LegController {
    * @param[in] stance_kd Stance phase derivative gains
    * @param[in] swing_kp Swing phase proportional gains
    * @param[in] swing_kd Swing phase derivative gains
+   * @param[in] swing_kp_cart Cartesian Swing phase proportional gains
+   * @param[in] swing_kd_cart Cartesian Swing phase derivative gains
    */
-  virtual void setGains(const std::vector<double> &stance_kp,
-                        const std::vector<double> &stance_kd,
-                        const std::vector<double> &swing_kp,
-                        const std::vector<double> &swing_kd,
-                        const std::vector<double> &swing_kp_cart,
-                        const std::vector<double> &swing_kd_cart);
+  virtual void init(const std::vector<double> &stance_kp,
+                    const std::vector<double> &stance_kd,
+                    const std::vector<double> &swing_kp,
+                    const std::vector<double> &swing_kd,
+                    const std::vector<double> &swing_kp_cart,
+                    const std::vector<double> &swing_kd_cart);
 
   /**
    * @brief Compute the leg command array message for a given current state and
