@@ -11,7 +11,7 @@ void LegController::updateLocalPlanMsg(quad_msgs::RobotPlan::ConstPtr msg,
   last_local_plan_time_ = t_msg;
 }
 
-void LegController::setGains(double kp, double kd) {
+void LegController::init(double kp, double kd) {
   std::vector<double> kp_vec = {kp, kp, kp};
   std::vector<double> kd_vec = {kd, kd, kd};
   stance_kp_ = kp_vec;
@@ -20,20 +20,20 @@ void LegController::setGains(double kp, double kd) {
   swing_kd_ = kd_vec;
 }
 
-void LegController::setGains(const std::vector<double> &kp,
-                             const std::vector<double> &kd) {
+void LegController::init(const std::vector<double> &kp,
+                         const std::vector<double> &kd) {
   stance_kp_ = kp;
   stance_kd_ = kd;
   swing_kp_ = kp;
   swing_kd_ = kd;
 }
 
-void LegController::setGains(const std::vector<double> &stance_kp,
-                             const std::vector<double> &stance_kd,
-                             const std::vector<double> &swing_kp,
-                             const std::vector<double> &swing_kd,
-                             const std::vector<double> &swing_kp_cart,
-                             const std::vector<double> &swing_kd_cart) {
+void LegController::init(const std::vector<double> &stance_kp,
+                         const std::vector<double> &stance_kd,
+                         const std::vector<double> &swing_kp,
+                         const std::vector<double> &swing_kd,
+                         const std::vector<double> &swing_kp_cart,
+                         const std::vector<double> &swing_kd_cart) {
   stance_kp_ = stance_kp;
   stance_kd_ = stance_kd;
   swing_kp_ = swing_kp;
