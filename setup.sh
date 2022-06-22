@@ -1,9 +1,14 @@
+# Complain loudly if something goes wrong
+set -eu
+
 # Install all common dependencies
 echo
 echo "#########################"
 echo "Install base dependencies"
 echo "#########################"
 echo
+
+sudo apt update
 sudo apt install -y doxygen libeigen3-dev python3-catkin-tools python-pip
 pip install cpplint
 
@@ -29,4 +34,4 @@ echo "#######################"
 echo "Install all rosdeps"
 echo "#######################"
 echo
-rosdep install --from-paths .. --ignore-src -r -y --rosdistro melodic
+rosdep update && rosdep install --from-paths .. --ignore-src -r -y --rosdistro melodic
