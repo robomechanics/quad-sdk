@@ -1,6 +1,9 @@
 <launch>
+    <arg name="robot_type" default="spirit"/>
 
-    <include file="$(find quad_utils)/launch/load_global_params.launch" />
+    <include file="$(find quad_utils)/launch/load_global_params.launch">
+        <arg name="robot_type" value="$(arg robot_type)"/>
+    </include>
 
     <arg name="logging" default="false" />
     <arg name="live_plot" default="false" />
