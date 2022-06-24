@@ -554,7 +554,7 @@ void RVizInterface::robotStateCallback(
 
   } else if (pub_id == GROUND_TRUTH) {
     transformStamped.child_frame_id = "/ground_truth/body";
-    ground_truth_base_tf_br_.sendTransform(transformStamped);
+    // ground_truth_base_tf_br_.sendTransform(transformStamped);
     ground_truth_joint_states_viz_pub_.publish(joint_msg);
 
     if (ground_truth_state_trace_msg_.points.empty()) {
@@ -626,7 +626,7 @@ void RVizInterface::cameraPoseCallback(
   std::cout << "transformStamped.header.frame_id = "
             << transformStamped.header.frame_id << std::endl;
   std::cout << "transformStamped = " << transformStamped << std::endl;
-  camera_odom_tf_br_.sendTransform(transformStamped);
+  // camera_odom_tf_br_.sendTransform(transformStamped);
 
   camera_trace_msg_.action = visualization_msgs::Marker::ADD;
   camera_trace_msg_.points.push_back(msg->pose.pose.position);
