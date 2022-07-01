@@ -240,17 +240,6 @@ void LocalPlanner::getReference() {
                            first_element_duration_);
   plan_index_diff_ = current_plan_index_ - previous_plan_index;
 
-  // Initializing foot positions if not data has arrived
-  if (first_plan_) {
-    first_plan_ = false;
-    past_footholds_msg_ = robot_state_msg_->feet;
-    past_footholds_msg_.traj_index = current_plan_index_;
-    for (int i = 0; i < num_feet_; i++) {
-      past_footholds_msg_.feet[i].header = past_footholds_msg_.header;
-      past_footholds_msg_.feet[i].traj_index = past_footholds_msg_.traj_index;
-    }
-  }
-
   // Get the current body and foot positions into Eigen
   current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
   current_state_timestamp_ = robot_state_msg_->header.stamp;
@@ -582,8 +571,6 @@ void LocalPlanner::publishLocalPlan() {
   local_plan_pub_.publish(local_plan_msg);
   foot_plan_discrete_pub_.publish(future_footholds_msg);
   foot_plan_continuous_pub_.publish(foot_plan_msg);
-
-  // std::cout << foot_plan_msg << std::endl;
 }
 
 void LocalPlanner::spin() {
