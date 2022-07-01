@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(quad_utils)
 
-## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11)
+## Compile as C++14, supported in ROS Melodic and newer
+add_compile_options(-std=c++14)
 
 ## Set default cmake build type to release
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
@@ -61,13 +61,11 @@ add_library(quad_utils
   src/rviz_interface.cpp
   src/fast_terrain_map.cpp
   src/terrain_map_publisher.cpp
+  src/trajectory_publisher.cpp
   src/mesh_to_grid_map_converter.cpp
-  src/ground_truth_publisher.cpp
-  src/robot_proxy.cpp
   src/math_utils.cpp
   src/ros_utils.cpp
   src/quad_kd.cpp
-  src/trajectory_publisher.cpp
   src/remote_heartbeat.cpp
 )
 add_dependencies(quad_utils ${quad_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
@@ -85,10 +83,8 @@ TARGET_LINK_LIBRARIES ( quad_utils
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(rviz_interface_node src/rviz_interface_node.cpp)
 add_executable(terrain_map_publisher_node src/terrain_map_publisher_node.cpp)
-add_executable(mesh_to_grid_map_node src/mesh_to_grid_map_node.cpp)
-add_executable(ground_truth_publisher_node src/ground_truth_publisher_node.cpp)
 add_executable(trajectory_publisher_node src/trajectory_publisher_node.cpp)
-add_executable(robot_proxy_node src/robot_proxy_node.cpp)
+add_executable(mesh_to_grid_map_node src/mesh_to_grid_map_node.cpp)
 add_executable(remote_heartbeat_node src/remote_heartbeat_node.cpp)
 
 ## Specify libraries to link a library or executable target against
@@ -102,22 +98,12 @@ target_link_libraries(terrain_map_publisher_node
   ${catkin_LIBRARIES}
 )
 
-target_link_libraries(mesh_to_grid_map_node
-  quad_utils
-  ${catkin_LIBRARIES}
-)
-
-target_link_libraries(ground_truth_publisher_node
-  quad_utils
-  ${catkin_LIBRARIES}
-)
-
 target_link_libraries(trajectory_publisher_node
   quad_utils
   ${catkin_LIBRARIES}
 )
 
-target_link_libraries(robot_proxy_node
+target_link_libraries(mesh_to_grid_map_node
   quad_utils
   ${catkin_LIBRARIES}
 )
@@ -135,8 +121,6 @@ target_link_libraries(remote_heartbeat_node
 catkin_add_gtest(quad_utils-test 
   test/test_rviz_interface.cpp
   test/test_terrain_map_publisher.cpp
-  test/test_ground_truth_publisher.cpp
-  test/test_robot_proxy.cpp
   test/test_fast_terrain_map.cpp
   test/test_quad_kd.cpp
   test/test_eigen.cpp

@@ -40,16 +40,16 @@ void LocalFootstepPlanner::setSpatialParams(
     double standing_error_threshold,
     std::shared_ptr<quad_utils::QuadKD> kinematics,
     double foothold_search_radius, double foothold_obj_threshold,
-    std::string obj_fun_layer) {
+    std::string obj_fun_layer, double toe_radius) {
   ground_clearance_ = ground_clearance;
   hip_clearance_ = hip_clearance;
   standing_error_threshold_ = standing_error_threshold;
   grf_weight_ = grf_weight;
   quadKD_ = kinematics;
-
   foothold_search_radius_ = foothold_search_radius;
   foothold_obj_threshold_ = foothold_obj_threshold;
   obj_fun_layer_ = obj_fun_layer;
+  toe_radius_ = toe_radius;
 }
 
 void LocalFootstepPlanner::updateMap(const FastTerrainMap &terrain) {
@@ -84,7 +84,8 @@ void LocalFootstepPlanner::getFootPositionsBodyFrame(
 }
 
 void LocalFootstepPlanner::computeContactSchedule(
-    int current_plan_index, int control_mode,
+    int current_plan_index, const Eigen::MatrixXd &body_plan,
+    const Eigen::VectorXi &ref_primitive_plan, int control_mode,
     std::vector<std::vector<bool>> &contact_schedule) {
   // Compute the current phase in the nominal contact schedule
   int phase = current_plan_index % period_;
@@ -100,6 +101,27 @@ void LocalFootstepPlanner::computeContactSchedule(
       }
     } else {
       contact_schedule[i] = nominal_contact_schedule_[(i + phase) % period_];
+    }
+  }
+  // Check the primitive plan to see if there's standing or flight phase
+  for (int i = 0; i < horizon_length_; i++) {
+    // Leaping and landing
+    if (ref_primitive_plan(i) == LEAP_STANCE) {
+      contact_schedule.at(i) = {true, true, true, true};
+    } else if (ref_primitive_plan(i) == FLIGHT) {
+      // Flight, check that min landing height is exceeded
+      double min_landing_height = 0.3;
+      double current_height =
+          body_plan(i, 2) - terrain_grid_.atPosition(
+                                "z_inpainted", body_plan.row(i).head<2>(),
+                                grid_map::InterpolationMethods::INTER_NEAREST);
+      if (current_height < min_landing_height && body_plan(i, 8) < 0) {
+        contact_schedule.at(i) = {true, true, true, true};
+      } else {
+        contact_schedule.at(i) = {false, false, false, false};
+      }
+    } else if (ref_primitive_plan(i) == LAND_STANCE) {
+      contact_schedule.at(i) = {true, true, true, true};
     }
   }
 }
@@ -176,9 +198,10 @@ void LocalFootstepPlanner::computeFootPlan(
         // Compute the body plan including the stance phase
         Eigen::MatrixXd body_plan_stance;
         if (isContact(contact_schedule, end_of_stance, j)) {
-          // Means we get to the end of horizon, so we should use the nominal
-          // period
-          end_of_stance = i + period_ * duty_cycles_[j];
+          // Compute the index of the end of the stance phase using the nominal
+          // stance duration (make sure not smaller than horizon)
+          end_of_stance =
+              std::max(i + int(period_ * duty_cycles_[j]), end_of_stance);
 
           // Integrate the plan if out of the horizon
           body_plan_stance = Eigen::MatrixXd(end_of_stance + 1, 12);
@@ -223,7 +246,11 @@ void LocalFootstepPlanner::computeFootPlan(
         ref_body_ang_vel_touchdown = ref_body_plan.block<1, 3>(i, 9);
 
         // Compute dynamic shift
-        double body_height_touchdown = body_plan(i, 2);
+        double body_height_touchdown =
+            std::max(body_plan(i, 2) -
+                         terrain_grid_.atPosition(
+                             "z_inpainted", body_plan.row(i).segment<2>(0)),
+                     0.0);
         // Ref: Highly Dynamic Quadruped Locomotion via Whole-Body Impulse
         // Control and Model Predictive Control (Centrifugal force and capture
         // point)
@@ -255,13 +282,16 @@ void LocalFootstepPlanner::computeFootPlan(
         // Toe has 20cm radius so we need to shift the foot height from terrain
         foot_position_nominal.z() =
             terrain_grid_.atPosition(
-                "z",
+                "z_inpainted",
                 terrain_grid_.getClosestPositionInMap(foot_position_grid_map),
                 grid_map::InterpolationMethods::INTER_NEAREST) +
-            toe_radius;
+            toe_radius_;
 
         // Optimize the foothold location to get the final position
-        foot_position = getNearestValidFoothold(foot_position_nominal);
+        Eigen::Vector3d foot_position_previous =
+            foot_positions.block<1, 3>(i, 3 * j);
+        foot_position = getNearestValidFoothold(foot_position_nominal,
+                                                foot_position_previous);
 
         // Store foot position in the Eigen matrix
         foot_positions.block<1, 3>(i, 3 * j) = foot_position;
@@ -377,9 +407,9 @@ void LocalFootstepPlanner::computeFootPlan(
             }
             foot_position_next.z() =
                 terrain_grid_.atPosition(
-                    "z", foot_position_next_grid_map,
+                    "z_inpainted", foot_position_next_grid_map,
                     grid_map::InterpolationMethods::INTER_NEAREST) +
-                toe_radius;
+                toe_radius_;
           } else {
             foot_position_next = getFootData(foot_positions, i_touchdown, j);
             swing_duration = i_touchdown - i_liftoff;
@@ -540,44 +570,55 @@ void LocalFootstepPlanner::loadFootPlanMsgs(
 }
 
 Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
-    const Eigen::Vector3d &foot_position) {
-  // Declare
-  Eigen::Vector3d foot_position_valid = foot_position;
+    const Eigen::Vector3d &foot_position,
+    const Eigen::Vector3d &foot_position_prev_solve) const {
+  Eigen::Vector3d foot_position_best = foot_position;
   grid_map::Position pos_center, pos_center_aligned, offset, pos_valid;
 
   // Compute the closest index to the nominal and find the offset
-  pos_center = {foot_position.x(), foot_position.y()};
-  grid_map::Index i;
-  terrain_grid_.getIndex(pos_center, i);
-  terrain_grid_.getPosition(i, pos_center_aligned);
+  pos_center = foot_position.head<2>();
+  grid_map::Index idx;
+  terrain_grid_.getIndex(pos_center, idx);
+  terrain_grid_.getPosition(idx, pos_center_aligned);
   offset = pos_center - pos_center_aligned;
+  double best_kin_cost = std::numeric_limits<double>::max();
 
   // Spiral outwards from the nominal until we find a valid foothold
   for (grid_map::SpiralIterator iterator(terrain_grid_, pos_center_aligned,
                                          foothold_search_radius_);
        !iterator.isPastEnd(); ++iterator) {
-    double obj = terrain_grid_.at(obj_fun_layer_, *iterator);
-    if (obj > foothold_obj_threshold_) {
-      // Add the offset back in and return this new foothold
-      terrain_grid_.getPosition(*iterator, pos_valid);
-      pos_valid += offset;
+    // Apply the offset to realign with the nominal foot position
+    terrain_grid_.getPosition(*iterator, pos_valid);
+    pos_valid += offset;
 
-      if (!terrain_grid_.isInside(pos_valid)) {
-        continue;
-      }
+    if (!terrain_grid_.isInside(pos_valid)) {
+      continue;
+    }
 
-      foot_position_valid << pos_valid.x(), pos_valid.y(),
-          terrain_grid_.atPosition(
-              "z", pos_valid, grid_map::InterpolationMethods::INTER_LINEAR) +
-              toe_radius;
-      return foot_position_valid;
+    // Get objective function and kinematic cost
+    double traversability = terrain_grid_.atPosition(obj_fun_layer_, pos_valid);
+    double kin_cost =
+        (pos_valid - foot_position.head<2>()).norm() +
+        0.5 * (pos_valid - foot_position_prev_solve.head<2>()).norm();
+
+    // Compare to threshold and best so far, accept if valid and better
+    if (traversability > foothold_obj_threshold_ &&
+        (kin_cost < best_kin_cost)) {
+      foot_position_best.head<2>() = pos_valid;
+      best_kin_cost = kin_cost;
     }
   }
 
   // If no foothold is found in the radius, keep the nominal and issue a warning
-  ROS_WARN_THROTTLE(
-      0.1, "No valid foothold found in radius of nominal, returning nominal");
-  return foot_position_valid;
+  if (best_kin_cost == std::numeric_limits<double>::max()) {
+    ROS_WARN_THROTTLE(
+        0.1, "No valid foothold found in radius of nominal, returning nominal");
+  }
+  foot_position_best.z() =
+      terrain_grid_.atPosition("z_inpainted", foot_position_best.head<2>(),
+                               grid_map::InterpolationMethods::INTER_LINEAR) +
+      toe_radius_;
+  return foot_position_best;
 }
 
 // Compute minimum covering circle problem using Welzl's algorithm
@@ -679,12 +720,14 @@ double LocalFootstepPlanner::computeSwingApex(
   quadKD_->worldToLegbaseFKWorldFrame(leg_idx, body_plan.segment(0, 3),
                                       body_plan.segment(3, 3), g_world_legbase);
   double hip_height = g_world_legbase(2, 3);
+  double max_extension = 0.35;
 
   // Compute swing apex
   double swing_apex =
-      std::min(ground_clearance_ - toe_radius +
+      std::min(ground_clearance_ - toe_radius_ +
                    std::max(foot_position_prev.z(), foot_position_next.z()),
                hip_height - hip_clearance_);
+  swing_apex = std::max(swing_apex, hip_height - max_extension);
 
   return swing_apex;
 }

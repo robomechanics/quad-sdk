@@ -1,23 +1,10 @@
 grid_map_filters:
-  - name: first
-    type: gridMapFilters/MockFilter
+    # Duplicate layer.
+  - name: duplicate_z
+    type: gridMapFilters/DuplicationFilter
     params:
-      processing_time: 100
-  - name: buffer_normalizer
-    type: gridMapFilters/BufferNormalizerFilter
-
-  # # Duplicate layer.
-  # - name: duplicate
-  #   type: gridMapFilters/DuplicationFilter
-  #   params:
-  #     input_layer: ...
-  #     output_layer: ...
-
-  # # Delete color layer.
-  # - name: delete_original_layers
-  #   type: gridMapFilters/DeletionFilter
-  #   params:
-  #     layers: [color] # List of layers.
+      input_layer: z
+      output_layer: z_finite
 
   # Fill holes in the map with inpainting.
   - name: inpaint
@@ -25,7 +12,7 @@ grid_map_filters:
     params:
       input_layer: z
       output_layer: z_inpainted
-      radius: 0.2
+      radius: 0.4
 
   # Reduce noise with a radial blurring filter.
   - name: mean_in_radius
@@ -35,24 +22,13 @@ grid_map_filters:
       output_layer: z_smooth
       radius: 0.2
 
-  # Boxblur as an alternative to the inpaint and radial blurring filter above.
-  # - name: boxblur
-  #   type: gridMapFilters/SlidingWindowMathExpressionFilter
-  #   params:
-  #     input_layer: z
-  #     output_layer: z_smooth
-  #     expression: meanOfFinites(z)
-  #     compute_empty_cells: true
-  #     edge_handling: crop # options: inside, crop, empty, mean
-  #     window_size: 5 # optional
-
   # Compute surface normals.
   - name: surface_normals
     type: gridMapFilters/NormalVectorsFilter
     params:
       input_layer: z_inpainted
       output_layers_prefix: normal_vectors_
-      radius: 0.4
+      radius: 0.15
       normal_vector_positive_axis: z
 
   # Compute smooth surface normals.
@@ -63,13 +39,6 @@ grid_map_filters:
       output_layers_prefix: smooth_normal_vectors_
       radius: 0.4
       normal_vector_positive_axis: z
-
-  # Add a color layer for visualization based on the surface normal.
-  - name: normal_color_map
-    type: gridMapFilters/NormalColorMapFilter
-    params:
-      input_layers_prefix: normal_vectors_
-      output_layer: normal_color
 
   # Compute slope from surface normal.
   - name: slope
@@ -85,36 +54,59 @@ grid_map_filters:
       output_layer: roughness
       expression: abs(z_inpainted - z_smooth)
 
-  # Edge detection by computing the standard deviation from slope.
-  - name: edge_detection
-    type: gridMapFilters/SlidingWindowMathExpressionFilter
-    params:
-      input_layer: slope
-      output_layer: edges
-      expression: sqrt(sumOfFinites(square(slope - meanOfFinites(slope))) ./ numberOfFinites(slope)) # Standard deviation
-      compute_empty_cells: false
-      edge_handling: crop # options: inside, crop, empty, mean
-      window_length: 0.2
-
-  # # Edge detection on z layer with convolution filter as alternative to filter above.
+  # # Uncomment to use edges
+  # # Edge detection by computing the standard deviation from slope.
   # - name: edge_detection
   #   type: gridMapFilters/SlidingWindowMathExpressionFilter
   #   params:
-  #     input_layer: z_inpainted
+  #     input_layer: slope
   #     output_layer: edges
-  #     expression: 'sumOfFinites([0,1,0;1,-4,1;0,1,0].*z_inpainted)' # Edge detection.
-  #     # expression: 'sumOfFinites([0,-1,0;-1,5,-1;0,-1,0].*z_inpainted)' # Sharpen.
+  #     expression: sqrt(sumOfFinites(square(slope - meanOfFinites(slope))) ./ numberOfFinites(slope)) # Standard deviation
   #     compute_empty_cells: false
-  #     edge_handling: mean # options: inside, crop, empty, mean
-  #     window_size: 3 # Make sure to make this compatible with the kernel matrix.
+  #     edge_handling: crop # options: inside, crop, empty, mean
+  #     window_length: 0.1
 
-  # Compute traversability as normalized weighted sum of slope and roughness.
+  # Set lower threshold on traversability.
+  - name: z_finite_threshold
+    type: gridMapFilters/ThresholdFilter
+    params:
+      condition_layer: z
+      output_layer: z_finite
+      lower_threshold: -1000.0
+      set_to: -1000.0
+
+  # Compute a hole mask as the difference between the raw and inpainted height
+  - name: traversability_hole_mask
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: traversability_hole_mask
+      expression: (1.0 - abs(z_finite - z_inpainted))
+
+  # Filter the hole mask to add a barrier radius
+  - name: traversability_filter
+    type: gridMapFilters/MeanInRadiusFilter
+    params:
+      input_layer: traversability_hole_mask
+      output_layer: traversability_hole_mask_filtered
+      radius: 0.075
+
+    # Set lower threshold on traversability hole mask.
+  - name: traversability_hole_mask_lower_threshold
+    type: gridMapFilters/ThresholdFilter
+    params:
+      condition_layer: traversability_hole_mask_filtered
+      output_layer: traversability_hole_mask_filtered
+      lower_threshold: 0
+      set_to: 0
+
+  # Compute traversability as normalized weighted sum of slope and roughness
   - name: traversability
     type: gridMapFilters/MathExpressionFilter
     params:
       output_layer: traversability
-      expression: 0.5 * (1.0 - (slope / 0.3)) + 0.5 * (1.0 - (roughness / 0.4))
-
+      expression: ( 0.5 * (1.0 - (roughness / 0.1)) +
+                    0.5 * (1.0 - (slope / 0.4) ) )
+                    
   # Set lower threshold on traversability.
   - name: traversability_lower_threshold
     type: gridMapFilters/ThresholdFilter
@@ -124,7 +116,14 @@ grid_map_filters:
       lower_threshold: 0.0
       set_to: 0.0
 
-  # Set upper threshold on traversability.
+  # Add hole mask to traversability, add epsilon to any non-hole features
+  - name: traversability_apply_hole_mask
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: traversability
+      expression: (traversability + 2e-2) .* traversability_hole_mask_filtered
+
+    # Set upper threshold on traversability.
   - name: traversability_upper_threshold
     type: gridMapFilters/ThresholdFilter
     params:
@@ -132,6 +131,12 @@ grid_map_filters:
       output_layer: traversability
       upper_threshold: 1.0
       set_to: 1.0 # Other uses: .nan, .inf
+
+  # Delete layers.
+  - name: delete
+    type: gridMapFilters/DeletionFilter
+    params:
+      layers: [z_finite, traversability_hole_mask, traversability_hole_mask_filtered]
 
   # Duplicate layer.
   - name: duplicate
@@ -146,5 +151,5 @@ grid_map_filters:
     params:
       condition_layer: traversability_mask
       output_layer: traversability_mask
-      lower_threshold: 0.6 # Note - for now must match /local_footstep_planner/foothold_obj_threshold
+      lower_threshold: 0.5 # Note - for now must match /local_footstep_planner/foothold_obj_threshold
       set_to: 0.0

@@ -61,13 +61,14 @@ class LocalFootstepPlanner {
    * @param[in] foothold_obj_threshold Minimum objective function value for
    * valid foothold
    * @param[in] obj_fun_layer Terrain layer for foothold search
+   * @param[in] toe_radius Toe radius
    */
   void setSpatialParams(double ground_clearance, double hip_clearance,
                         double grf_weight, double standing_error_threshold,
                         std::shared_ptr<quad_utils::QuadKD> kinematics,
                         double foothold_search_radius,
                         double foothold_obj_threshold,
-                        std::string obj_fun_layer);
+                        std::string obj_fun_layer, double toe_radius);
 
   /**
    * @brief Transform a vector of foot positions from the world to the body
@@ -105,10 +106,15 @@ class LocalFootstepPlanner {
   /**
    * @brief Compute the contact schedule based on the current phase
    * @param[in] current_plan_index_ Current index in the plan
+   * @param[in] body_plan Current body plan
+   * @param[in] ref_primitive_plan_ Reference primitive plan
    * @param[in] control_mode Control mode
    * @param[out] contact_schedule 2D array of contact states
    */
-  void computeContactSchedule(int current_plan_index, int control_mode,
+  void computeContactSchedule(int current_plan_index,
+                              const Eigen::MatrixXd &body_plan,
+                              const Eigen::VectorXi &ref_primitive_plan_,
+                              int control_mode,
                               std::vector<std::vector<bool>> &contact_schedule);
 
   /**
@@ -125,9 +131,8 @@ class LocalFootstepPlanner {
    * @param[in] past_footholds_msg Message of past footholds, used for
    * interpolation of swing state
    * @param[out] foot_positions Foot positions over the horizon
-   * @param[out] future_footholds_msg Message for future (planned) footholds
-   * @param[out] foot_plan_continuous_msg Message for continuous foot
-   * trajectories
+   * @param[out] foot_velocities Foot velocities over the horizon
+   * @param[out] foot_accelerations Foot accelerations over the horizon
    */
   void computeFootPlan(int current_plan_index,
                        const std::vector<std::vector<bool>> &contact_schedule,
@@ -175,8 +180,8 @@ class LocalFootstepPlanner {
           printf("0 ");
         }
       }
+      printf("\n");
     }
-    printf("\n");
   }
 
   inline double getTerrainHeight(double x, double y) {
@@ -269,10 +274,13 @@ class LocalFootstepPlanner {
 
   /**
    * @brief Search locally around foothold for optimal location
-   * @param[in] foot_position_prev Foothold to optimize around
+   * @param[in] foot_position Foothold to optimize around
+   * @param[in] foot_position_prev_solve Foothold in prior solve
    * @return Optimized foothold
    */
-  Eigen::Vector3d getNearestValidFoothold(const Eigen::Vector3d &foot_position);
+  Eigen::Vector3d getNearestValidFoothold(
+      const Eigen::Vector3d &foot_position,
+      const Eigen::Vector3d &foot_position_prev_solve) const;
 
   /**
    * @brief Compute minimum covering circle problem using Welzl's algorithm
@@ -375,26 +383,14 @@ class LocalFootstepPlanner {
     return (horizon_length_ - 1);
   }
 
-  /// Handle for the map frame
-  std::string map_frame_;
-
   /// Struct for terrain map data
   FastTerrainMap terrain_;
 
   /// GridMap for terrain map data
   grid_map::GridMap terrain_grid_;
 
-  /// Current continuous footstep plan
-  quad_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
-
-  /// Current footposition in the world frame
-  Eigen::MatrixXd current_foot_positions_world_;
-
   /// Number of feet
   const int num_feet_ = 4;
-
-  /// Number of cycles to plan
-  int num_cycles_;
 
   /// Timestep for one finite element
   double dt_;
@@ -423,14 +419,17 @@ class LocalFootstepPlanner {
   /// Weighting on the projection of the grf
   double grf_weight_;
 
+  /// Primitive ids - CONNECT_STANCE TODO(yanhaoy, astutt) make these enums
+  const int CONNECT_STANCE = 0;
+
+  /// Primitive ids - LEAP_STANCE
+  const int LEAP_STANCE = 1;
+
   /// Primitive ids - FLIGHT
-  const int FLIGHT = 0;
+  const int FLIGHT = 2;
 
-  /// Primitive ids - STANCE
-  const int STANCE = 1;
-
-  /// Primitive ids - CONNECT_STANCE
-  const int CONNECT_STANCE = 2;
+  /// Primitive ids - LAND_STANCE
+  const int LAND_STANCE = 3;
 
   /// QuadKD class
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
@@ -448,7 +447,7 @@ class LocalFootstepPlanner {
   std::string obj_fun_layer_;
 
   /// Toe radius
-  double toe_radius = 0.02;
+  double toe_radius_;
 };
 
 #endif  // LOCAL_FOOTSTEP_PLANNER_H

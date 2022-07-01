@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(robot_driver)
 
-## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11)
+## Compile as C++14, supported in ROS Melodic and newer
+add_compile_options(-std=c++14)
   
 ## Set default cmake build type to release
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
@@ -59,15 +59,17 @@ include_directories(
 
 ## Declare a C++ library for control
 add_library(robot_driver
-	src/robot_driver.cpp
-	src/robot_driver_utils.cpp
-  src/leg_controller_template.cpp
-	src/inverse_dynamics.cpp
-  src/underbrush_inverse_dynamics.cpp
-	src/grf_pid_controller.cpp
-	src/joint_controller.cpp
-  src/leg_overrider.cpp
-  src/mblink_converter.cpp
+  src/robot_driver.cpp
+  src/robot_driver_utils.cpp
+  src/controllers/leg_controller.cpp
+  src/controllers/inverse_dynamics_controller.cpp
+  src/controllers/grf_pid_controller.cpp
+  src/controllers/joint_controller.cpp
+  src/estimators/state_estimator.cpp
+  src/estimators/comp_filter_estimator.cpp
+  src/estimators/ekf_estimator.cpp
+  src/hardware_interfaces/hardware_interface.cpp
+  src/hardware_interfaces/spirit_interface.cpp
 )
 add_dependencies(robot_driver ${robot_driver_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
@@ -80,16 +82,11 @@ target_link_libraries(robot_driver
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(robot_driver_node src/robot_driver_node.cpp)
-add_executable(leg_overrider_node src/leg_overrider_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(robot_driver_node
   robot_driver
 	${catkin_LIBRARIES}
-)
-target_link_libraries(leg_overrider_node
-  robot_driver
-  ${catkin_LIBRARIES}
 )
 
 #############

@@ -31,8 +31,8 @@ set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS 1 CACHE INTERNAL "No dev warnings")
 cmake_policy(SET CMP0054 NEW)
 cmake_policy(SET CMP0045 NEW)
 
-## Compile as C++11, supported in ROS Kinetic and newer
-#add_compile_options(-std=c++17)
+## Compile as C++14, supported in ROS Melodic and newer
+add_compile_options(-std=c++14)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -108,7 +108,6 @@ add_dependencies(contact_state_publisher ${catkin_EXPORTED_TARGETS})
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(odom_publisher src/odom_publisher.cpp)
 add_executable(contact_state_publisher_node src/contact_state_publisher_node.cpp)
 
 ## Specify libraries to link a library or executable target against
@@ -116,4 +115,3 @@ target_link_libraries(contact ${GAZEBO_LIBRARIES})
 target_link_libraries(controller ${GAZEBO_LIBRARIES})
 target_link_libraries(ground_truth_estimator ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 target_link_libraries(contact_state_publisher_node contact_state_publisher ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
-target_link_libraries(odom_publisher ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})

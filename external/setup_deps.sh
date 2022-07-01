@@ -5,14 +5,6 @@ quiet_mkdir () {
 	fi
 }
 
-cd osqp-eigen
-quiet_mkdir build
-cd build
-cmake ..
-make -j8
-sudo make install
-cd ../..
-
 # Setup and build for IPOPT
 cd ipopt
 sudo apt-get install -y gcc g++ gfortran git patch wget pkg-config liblapack-dev libmetis-dev
@@ -20,8 +12,9 @@ if [ -d "./coinbrew" ]
 then
 	sudo rm -r ./coinbrew
 fi
-git clone https://www.github.com/coin-or/coinbrew
+mkdir coinbrew
 cd coinbrew
+wget https://raw.githubusercontent.com/coin-or/coinbrew/v1.0/coinbrew
 chmod u+x coinbrew
 ./coinbrew fetch Ipopt --latest-release --no-prompt
 cd ..
@@ -33,7 +26,7 @@ else
     echo "Warning: HSL not found."
 fi
 cd coinbrew
-sudo ./coinbrew build Ipopt --tests none --prefix=/usr/local --no-prompt --parallel-jobs=8
+./coinbrew build Ipopt --latest-release --tests none --prefix=/usr/local --no-prompt --parallel-jobs=8
 cd ../..
 
 # Setup and build for rbdl

@@ -5,17 +5,9 @@
     <real_time_factor>1</real_time_factor>
     <real_time_update_rate>1000</real_time_update_rate>
         <ode>
-            <solver>
-            <type>quick</type>  
-            <iters>50</iters> 
-            <sor>1.3</sor>
+            <solver> 
+              <iters>300</iters> 
             </solver>  
-            <constraints>
-            <cfm>0.0</cfm>
-            <erp>0.2</erp>
-            <contact_max_correcting_vel>10.0</contact_max_correcting_vel>
-            <contact_surface_layer>0.001</contact_surface_layer>
-            </constraints>  
         </ode>
     </physics>
     <scene>
@@ -26,7 +18,7 @@
       <uri>model://custom_sun</uri>
     </include>
     <model name="mesh_terrain">
-      <pose>-2 -4 -0.1  0 0 0</pose>
+      <pose>-1.975 -2 -0.1  0 0 0</pose>
       <static>true</static>
       <link name="body">
         <visual name="visual">

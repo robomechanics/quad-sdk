@@ -14,8 +14,8 @@
 #include <grid_map_ros/GridMapRosConverter.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
 
+#include "global_body_planner/gbpl.h"
 #include "global_body_planner/global_body_plan.h"
-#include "global_body_planner/rrt_connect.h"
 
 using namespace planning_utils;
 
@@ -191,7 +191,7 @@ class GlobalBodyPlanner {
   double committed_horizon_;
 
   /// Threshold of state error to trigger replanning
-  double state_error_threshold_;
+  double pos_error_threshold_;
 
   /// Flag to determine if the planner needs to restart planning from the robot
   /// state

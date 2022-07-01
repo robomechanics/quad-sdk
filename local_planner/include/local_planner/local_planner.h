@@ -10,13 +10,10 @@
 #include <quad_msgs/MultiFootPlanDiscrete.h>
 #include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/RobotState.h>
-#include <quad_msgs/RobotStateTrajectory.h>
 #include <quad_utils/quad_kd.h>
 #include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-
-#include "quad_utils/matplotlibcpp.h"
 
 //! Local Body Planner library
 /*!
@@ -77,16 +74,10 @@ class LocalPlanner {
   void cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg);
 
   /**
-   * @brief Function to pre-process the body plan and robot state messages into
-   * Eigen arrays
+   * @brief Function to compute reference trajectory from twist command or
+   * global plan
    */
-  void getStateAndReferencePlan();
-
-  /**
-   * @brief Function to read robot state and twist command messages into Eigen
-   * arrays
-   */
-  void getStateAndTwistInput();
+  void getReference();
 
   /**
    * @brief Function to compute the local plan
@@ -98,6 +89,9 @@ class LocalPlanner {
    * @brief Function to publish the local plan
    */
   void publishLocalPlan();
+
+  /// Robot type: A1 or Spirit
+  std::string robot_name_;
 
   /// ROS subscriber for incoming terrain_map
   ros::Subscriber terrain_map_sub_;
@@ -168,12 +162,6 @@ class LocalPlanner {
   /// Current index in the global plan
   int current_plan_index_;
 
-  /// Minimum normal force in contact phase
-  double normal_lo_;
-
-  /// Maximum normal force in contact phase
-  double normal_hi_;
-
   /// local planner timestep (seconds)
   double dt_;
 
@@ -186,8 +174,11 @@ class LocalPlanner {
   /// Exponential filter smoothing constant (higher updates slower)
   const double filter_smoothing_constant_ = 0.5;
 
-  /// MPC Horizon length
+  /// Standard MPC horizon length
   int N_;
+
+  /// Current MPC horizon length
+  int N_current_;
 
   /// Number of states
   const int Nx_ = 12;
@@ -210,7 +201,10 @@ class LocalPlanner {
   Eigen::MatrixXd ref_body_plan_;
 
   /// Vector of ground height along reference trajectory
-  Eigen::MatrixXd ref_ground_height_;
+  Eigen::VectorXd ref_ground_height_;
+
+  /// Vector of primitive along reference trajectory
+  Eigen::VectorXi ref_primitive_plan_;
 
   /// Matrix of grfs (N x Nu: rows correspond to individual arrays of GRFs in
   /// the horizon)
@@ -231,9 +225,6 @@ class LocalPlanner {
   /// Matrix of continuous foot positions in body frame
   Eigen::MatrixXd foot_positions_body_;
 
-  /// Matrix of continuous foot positions projected underneath the hips
-  Eigen::MatrixXd hip_projected_foot_positions_;
-
   /// Matrix of foot contact locations (number of contacts x num_legs_)
   Eigen::MatrixXd foot_plan_discrete_;
 
@@ -241,17 +232,16 @@ class LocalPlanner {
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
 
   /// Twist input
-  typedef Eigen::VectorXd Twist;
-  Twist cmd_vel_;
+  Eigen::VectorXd cmd_vel_;
 
   /// Commanded velocity filter constant
   double cmd_vel_filter_const_;
 
-  /// Scale for twist cmd_val
+  /// Scale for twist cmd_vel
   double cmd_vel_scale_;
 
   /// Nominal robot height
-  const double z_des_ = 0.27;
+  double z_des_;
 
   /// Time of the most recent cmd_vel data
   ros::Time last_cmd_vel_msg_time_;
@@ -274,11 +264,11 @@ class LocalPlanner {
   /// Time duration to the next plan index
   double first_element_duration_;
 
-  /// If the current solving is duplicated in the same index
-  bool same_plan_index_;
+  /// Difference in plan index from last solve
+  int plan_index_diff_;
 
   /// Toe radius
-  double toe_radius = 0.02;
+  double toe_radius_;
 
   /// Control mode
   int control_mode_;

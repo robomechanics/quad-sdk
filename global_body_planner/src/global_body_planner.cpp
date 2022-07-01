@@ -8,33 +8,30 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
   // Load rosparams from parameter server
   std::string body_plan_topic, discrete_body_plan_topic, body_plan_tree_topic,
       goal_state_topic;
-  std::vector<double> start_state_vec(12), goal_state_vec(12);
+  std::vector<double> goal_state_vec(2);
 
-  quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic_);
-  quad_utils::loadROSParam(nh_, "topics/state/ground_truth",
-                           robot_state_topic_);
+  quad_utils::loadROSParam(nh_, "topics/start_state", robot_state_topic_);
+  quad_utils::loadROSParam(nh_, "topics/goal_state", goal_state_topic);
+  quad_utils::loadROSParam(nh_, "/topics/terrain_map", terrain_map_topic_);
   quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/global_plan_discrete",
                            discrete_body_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/global_plan_tree",
                            body_plan_tree_topic);
-  quad_utils::loadROSParam(nh_, "topics/goal_state", goal_state_topic);
-  quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/update_rate",
+  quad_utils::loadROSParam(nh_, "/map_frame", map_frame_);
+  quad_utils::loadROSParam(nh_, "/global_body_planner/update_rate",
                            update_rate_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/num_calls", num_calls_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/max_planning_time",
+  quad_utils::loadROSParam(nh_, "/global_body_planner/num_calls", num_calls_);
+  quad_utils::loadROSParam(nh_, "/global_body_planner/max_planning_time",
                            max_planning_time_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/state_error_threshold",
-                           state_error_threshold_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/startup_delay",
+  quad_utils::loadROSParam(nh_, "/global_body_planner/pos_error_threshold",
+                           pos_error_threshold_);
+  quad_utils::loadROSParam(nh_, "/global_body_planner/startup_delay",
                            reset_publish_delay_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/replanning",
+  quad_utils::loadROSParam(nh_, "/global_body_planner/replanning",
                            replanning_allowed_);
-  quad_utils::loadROSParam(nh_, "local_planner/timestep", dt_);
-  quad_utils::loadROSParam(nh_, "global_body_planner/start_state",
-                           start_state_vec);
-  quad_utils::loadROSParam(nh_, "global_body_planner/goal_state",
+  quad_utils::loadROSParam(nh_, "/local_planner/timestep", dt_);
+  quad_utils::loadROSParam(nh_, "/global_body_planner/goal_state",
                            goal_state_vec);
 
   // Setup pubs and subs
@@ -51,65 +48,21 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
       nh_.advertise<visualization_msgs::MarkerArray>(body_plan_tree_topic, 1);
 
   // Load planner config
-  quad_utils::loadROSParam(nh, "global_body_planner/H_MAX",
-                           planner_config_.H_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/H_MIN",
-                           planner_config_.H_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/H_NOM",
-                           planner_config_.H_NOM);
-  quad_utils::loadROSParam(nh, "global_body_planner/V_MAX",
-                           planner_config_.V_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/V_NOM",
-                           planner_config_.V_NOM);
-  quad_utils::loadROSParam(nh, "global_body_planner/DY_MAX",
-                           planner_config_.DY_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_L",
-                           planner_config_.ROBOT_L);
-  quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_W",
-                           planner_config_.ROBOT_W);
-  quad_utils::loadROSParam(nh, "global_body_planner/ROBOT_W",
-                           planner_config_.ROBOT_W);
-  quad_utils::loadROSParam(nh, "global_body_planner/M_CONST",
-                           planner_config_.M_CONST);
-  quad_utils::loadROSParam(nh, "global_body_planner/J_CONST",
-                           planner_config_.J_CONST);
-  quad_utils::loadROSParam(nh, "global_body_planner/G_CONST",
-                           planner_config_.G_CONST);
-  quad_utils::loadROSParam(nh, "global_body_planner/F_MIN",
-                           planner_config_.F_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/F_MAX",
-                           planner_config_.F_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/PEAK_GRF_MIN",
-                           planner_config_.PEAK_GRF_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/PEAK_GRF_MAX",
-                           planner_config_.PEAK_GRF_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/MU", planner_config_.MU);
-  quad_utils::loadROSParam(nh, "global_body_planner/T_S_MIN",
-                           planner_config_.T_S_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/T_S_MAX",
-                           planner_config_.T_S_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/T_F_MIN",
-                           planner_config_.T_F_MIN);
-  quad_utils::loadROSParam(nh, "global_body_planner/T_F_MAX",
-                           planner_config_.T_F_MAX);
-  quad_utils::loadROSParam(nh, "global_body_planner/KINEMATICS_RES",
-                           planner_config_.KINEMATICS_RES);
-  quad_utils::loadROSParam(nh, "global_body_planner/BACKUP_TIME",
-                           planner_config_.BACKUP_TIME);
-  quad_utils::loadROSParam(nh, "global_body_planner/BACKUP_RATIO",
-                           planner_config_.BACKUP_RATIO);
-  quad_utils::loadROSParam(nh, "global_body_planner/NUM_GEN_STATES",
-                           planner_config_.NUM_GEN_STATES);
-  quad_utils::loadROSParam(nh, "global_body_planner/GOAL_BOUNDS",
-                           planner_config_.GOAL_BOUNDS);
-  quad_utils::loadROSParam(nh, "global_body_planner/max_planning_time",
-                           planner_config_.MAX_TIME);
-  planner_config_.G_VEC << 0, 0, -planner_config_.G_CONST;
+  bool enable_leaping;
+  planner_config_.loadParamsFromServer(nh);
+  nh_.param<bool>("global_body_planner/enable_leaping", enable_leaping, true);
+  if (!enable_leaping) {
+    planner_config_.enable_leaping = false;
+    planner_config_.num_leap_samples = 0;
+    planner_config_.h_min = 0;
+    planner_config_.h_max = 0.5;
+  }
+
+  // Fill in the goal state information
+  goal_state_vec.resize(12, 0);
+  vectorToFullState(goal_state_vec, goal_state_);
 
   // Zero planning data
-  vectorToFullState(start_state_vec, start_state_);
-  vectorToFullState(goal_state_vec, goal_state_);
-  robot_state_ = start_state_;
   start_index_ = 0;
   triggerReset();
 }
@@ -121,7 +74,13 @@ void GlobalBodyPlanner::terrainMapCallback(
   grid_map::GridMapRosConverter::fromMessage(*msg, map);
 
   // Convert to FastTerrainMap structure for faster querying
-  planner_config_.terrain.loadDataFromGridMap(map);
+  planner_config_.terrain.loadDataFromGridMap(map);  // Takes ~10ms
+  planner_config_.terrain_grid_map = map;            // Takes ~0.1ms
+
+  // Uodate the goal state of the planner
+  goal_state_.pos[2] =
+      planner_config_.h_nom + planner_config_.terrain.getGroundHeight(
+                                  goal_state_.pos[0], goal_state_.pos[1]);
 }
 
 void GlobalBodyPlanner::robotStateCallback(
@@ -151,7 +110,7 @@ void GlobalBodyPlanner::goalStateCallback(
   // overriden)
   goal_state_.pos[0] = goal_state_msg_->point.x;
   goal_state_.pos[1] = goal_state_msg_->point.y;
-  goal_state_.pos[2] = planner_config_.H_NOM +
+  goal_state_.pos[2] = planner_config_.h_nom +
                        planner_config_.terrain.getGroundHeight(
                            goal_state_msg_->point.x, goal_state_msg_->point.y);
 
@@ -168,7 +127,7 @@ void GlobalBodyPlanner::goalStateCallback(
 
 void GlobalBodyPlanner::setStartState() {
   // Reset if too far from plan
-  if (!current_plan_.isEmpty()) {
+  if (!current_plan_.isEmpty() && !publish_after_reset_delay_) {
     int current_index;
     double first_element_duration;
     quad_utils::getPlanIndex(current_plan_.getPublishedTimestamp(), dt_,
@@ -177,7 +136,7 @@ void GlobalBodyPlanner::setStartState() {
     FullState current_state_in_plan_ =
         current_plan_.getStateFromIndex(current_index);
     if (poseDistance(robot_state_, current_state_in_plan_) >
-        state_error_threshold_) {
+        pos_error_threshold_) {
       ROS_WARN_THROTTLE(0.5, "Too far from nominal plan, resetting");
       triggerReset();
     }
@@ -198,9 +157,17 @@ void GlobalBodyPlanner::setStartState() {
                     current_plan_.getPublishedTimestamp())
                        .toSec() /
                    dt_);
+
+    // Ensure start index is not too close to goal
     start_index_ = (start_index_ + 25 >= current_plan_.getSize() - 1)
                        ? current_plan_.getSize() - 1
                        : start_index_;
+
+    // Iterate until start_index is in a connect phase
+    while (current_plan_.getPrimitiveFromIndex(start_index_) != CONNECT &&
+           start_index_ < current_plan_.getSize() - 1) {
+      start_index_++;
+    }
 
     start_state_ = current_plan_.getStateFromIndex(start_index_);
     replan_start_time_ = current_plan_.getTime(start_index_);
@@ -237,7 +204,7 @@ bool GlobalBodyPlanner::callPlanner() {
   int vertices_generated;
 
   // Construct RRT object
-  RRTConnectClass rrt_connect_obj;
+  GBPL gbpl;
 
   // Loop through num_calls_ planner calls
   for (int i = 0; i < num_calls_; ++i) {
@@ -251,9 +218,8 @@ bool GlobalBodyPlanner::callPlanner() {
     std::vector<Action> action_sequence;
 
     // Call the planner method
-    int plan_status = rrt_connect_obj.runRRTConnect(
-        planner_config_, start_state, goal_state, state_sequence,
-        action_sequence, tree_pub_);
+    int plan_status = gbpl.findPlan(planner_config_, start_state, goal_state,
+                                    state_sequence, action_sequence, tree_pub_);
     newest_plan_.setComputedTimestamp(ros::Time::now());
 
     if (plan_status != VALID && plan_status != VALID_PARTIAL) {
@@ -270,8 +236,8 @@ bool GlobalBodyPlanner::callPlanner() {
       }
       return false;
     }
-    rrt_connect_obj.getStatistics(plan_time, vertices_generated, path_length,
-                                  path_duration, dist_to_goal);
+    gbpl.getStatistics(plan_time, vertices_generated, path_length,
+                       path_duration, dist_to_goal);
 
     // Add the existing path length to the new
     path_length += current_plan_.getLengthAtIndex(start_index_);

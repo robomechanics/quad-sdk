@@ -7,7 +7,16 @@ function [data, varargout] = parseQuadBag(varargin)
 %   DATA = parseQuadBag(FILENAME) uses the data in a bag with the specified
 %   file name, looking in '../bags/'.
 
+% Default empty namespace
+namespace = '';
+
 % Default to quad_log_current
+if nargin >= 2
+    if ~isempty(varargin{2})
+        namespace = [varargin{2}, '/'];
+    end
+end
+
 if nargin == 0
     trialName = 'quad_log_current';
 else
@@ -28,12 +37,11 @@ end
 % Load the bag
 bag = rosbag(filepath);
 
-
 % Read the state estimate data
-stateEstimateData = readMessages(select(bag,'Topic','/state/estimate'),'DataFormat','struct');
+stateEstimateData = readMessages(select(bag,'Topic',['/', namespace, 'state/estimate']),'DataFormat','struct');
 stateEstimate = struct;
 if isempty(stateEstimateData)
-    warning('Warning, no data on state estimate topic');
+    warning('No data on state estimate topic');
 else
     stateEstimate.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, stateEstimateData, 'UniformOutput', 0));
     
@@ -55,10 +63,10 @@ else
 end
 
 % Read the ground truth data
-stateGroundTruthData = readMessages(select(bag,'Topic','/state/ground_truth'),'DataFormat','struct');
+stateGroundTruthData = readMessages(select(bag,'Topic',['/', namespace, 'state/ground_truth']),'DataFormat','struct');
 stateGroundTruth = struct;
 if isempty(stateGroundTruthData)
-    warning('Warning, no data on ground truth state topic');
+    warning('No data on ground truth state topic');
 else
     
     stateGroundTruth.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, stateGroundTruthData, 'UniformOutput', 0));
@@ -89,21 +97,10 @@ else
 end
 
 % Read the trajectory data
-stateTrajectoryData = readMessages(select(bag,'Topic','/state/trajectory'),'DataFormat','struct');
+stateTrajectoryData = readMessages(select(bag,'Topic',['/', namespace, 'state/trajectory']),'DataFormat','struct');
 stateTrajectory = struct;
 if isempty(stateTrajectoryData)
-    warning('Warning, no data on trajectory topic');
-    stateTrajectory.time = [];
-    stateTrajectory.position = [];
-    stateTrajectory.velocity = [];
-    stateTrajectory.orientationRPY = [];
-    stateTrajectory.orientationQuat = [];
-    stateTrajectory.angularVelocity = [];
-    stateTrajectory.jointPosition = [];
-    stateTrajectory.jointVelocity = [];
-    stateTrajectory.jointEffort = [];
-    stateTrajectory.footPosition = [];
-    stateTrajectory.footVelocity = [];
+    warning('No data on trajectory topic');
 else
     
     stateTrajectory.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, stateTrajectoryData, 'UniformOutput', 0));
@@ -124,26 +121,28 @@ else
     stateTrajectory.jointVelocity = cell2mat(cellfun(@(m) m.Joints.Velocity.', stateTrajectoryData, 'UniformOutput', 0));
     stateTrajectory.jointEffort = cell2mat(cellfun(@(m) m.Joints.Effort.', stateTrajectoryData, 'UniformOutput', 0));
     
+    % Omit joint and foot data (not included in reference trajectory)
+    stateTrajectory.jointPosition = nan(size(stateTrajectory.jointPosition));
+    stateTrajectory.jointVelocity = nan(size(stateTrajectory.jointVelocity));
+    stateTrajectory.jointEffort = nan(size(stateTrajectory.jointEffort));
+    
     num_feet = size(stateTrajectoryData{1}.Feet.Feet, 2);
     for i = 1:num_feet
         stateTrajectory.footPosition{i} = cell2mat(cellfun(@(m) ...
             [m.Feet.Feet(i).Position.X, m.Feet.Feet(i).Position.Y, m.Feet.Feet(i).Position.Z], stateTrajectoryData, 'UniformOutput', 0));
         stateTrajectory.footVelocity{i} = cell2mat(cellfun(@(m) ...
             [m.Feet.Feet(i).Velocity.X, m.Feet.Feet(i).Velocity.Y, m.Feet.Feet(i).Velocity.Z], stateTrajectoryData, 'UniformOutput', 0));
+        
+        stateTrajectory.footPosition{i} = nan(size(stateTrajectory.footPosition{i}));
+        stateTrajectory.footVelocity{i} = nan(size(stateTrajectory.footVelocity{i}));
     end
-    
-    
 end
 
-% Read the trajectory data
-controlGRFsData = readMessages(select(bag,'Topic','/control/grfs'),'DataFormat','struct');
+% Read the control GRFs data
+controlGRFsData = readMessages(select(bag,'Topic',['/', namespace, 'control/grfs']),'DataFormat','struct');
 controlGRFs = struct;
 if isempty(controlGRFsData)
-    warning('Warning, no data on grf control topic');
-    controlGRFs.time = [];
-    controlGRFs.vectors = [];
-    controlGRFs.points = [];
-    controlGRFs.contactStates = [];
+    warning('No data on grf control topic');
 else
     
     controlGRFs.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, controlGRFsData, 'UniformOutput', 0));
@@ -167,20 +166,99 @@ else
     end
 end
 
-% Localize time to the first message
-% startTime = min([stateGroundTruth.time(1), stateEstimate.time(1), stateTrajectory.time(1)]);
-startTime = stateGroundTruth.time(1);
-% stateEstimate.time = stateEstimate.time - startTime;
-stateGroundTruth.time = stateGroundTruth.time - startTime;
-stateTrajectory.time = stateTrajectory.time - startTime;
-controlGRFs.time = controlGRFs.time - startTime;
+% Read the state GRFs data
+stateGRFsData = readMessages(select(bag,'Topic',['/', namespace, 'state/grfs']),'DataFormat','struct');
+stateGRFs = struct;
+if isempty(stateGRFsData)
+    warning('No data on grf state topic');
+else
+    
+    stateGRFs.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, stateGRFsData, 'UniformOutput', 0));
+    num_feet = 4;
+    for i = 1:num_feet
+        try
+            stateGRFs.vectors{i} = cell2mat(cellfun(@(m) ...
+                [m.Vectors(i).X, m.Vectors(i).Y, m.Vectors(i).Z], stateGRFsData, 'UniformOutput', 0));
+            stateGRFs.points{i} = cell2mat(cellfun(@(m) ...
+                [m.Points(i).X, m.Points(i).Y, m.Points(i).Z], stateGRFsData, 'UniformOutput', 0));
+            stateGRFs.contactStates{i} = cell2mat(cellfun(@(m) ...
+                [m.ContactStates(i), m.ContactStates(i), m.ContactStates(i)], stateGRFsData, 'UniformOutput', 0));
+        catch
+            stateGRFs.vectors{i} = cell2mat(cellfun(@(m) ...
+                [0,0,0], stateGRFsData, 'UniformOutput', 0));
+            stateGRFs.points{i} = cell2mat(cellfun(@(m) ...
+                [0,0,0], stateGRFsData, 'UniformOutput', 0));
+            stateGRFs.contactStates{i} = cell2mat(cellfun(@(m) ...
+                [0,0,0], stateGRFsData, 'UniformOutput', 0));
+        end
+    end
+end
 
-% Pack data into a struct for namespace purPoses
+% Read the local plan data
+localPlanData = readMessages(select(bag,'Topic',['/', namespace, 'local_plan']),'DataFormat','struct');
+localPlan = struct;
+if isempty(localPlanData)
+    warning('No data on local plan topic');
+else
+    localPlan.time = cell2mat(cellfun(@(m) double(m.StateTimestamp.Sec) + double(m.StateTimestamp.Nsec)*1E-9, localPlanData, 'UniformOutput', 0));
+    localPlan.elementTimes = cellfun(@(m) double(m.Diagnostics.ElementTimes'), localPlanData, 'UniformOutput', 0);
+    localPlan.solveTime = cell2mat(cellfun(@(m) m.Diagnostics.ComputeTime, localPlanData, 'UniformOutput', 0));
+    localPlan.cost = cell2mat(cellfun(@(m) m.Diagnostics.Cost, localPlanData, 'UniformOutput', 0));
+    localPlan.iterations = cell2mat(cellfun(@(m) m.Diagnostics.Iterations, localPlanData, 'UniformOutput', 0));
+    localPlan.horizonLength = cell2mat(cellfun(@(m) m.Diagnostics.HorizonLength, localPlanData, 'UniformOutput', 0));
+    localPlan.complexitySchedule = cellfun(@(m) double(m.Diagnostics.ComplexitySchedule'), localPlanData, 'UniformOutput', 0);
+end
+
+% Localize time to the first message
+startTime = stateGroundTruth.time(1);
 data = struct;
-data.stateEstimate = [];% stateEstimate;
-data.stateGroundTruth = stateGroundTruth;
-data.stateTrajectory = stateTrajectory;
-data.controlGRFs = controlGRFs;
+
+% Update time of existing messages and pack into struct
+if ~isempty(fieldnames(stateEstimate))
+    stateEstimate.time = stateEstimate.time - startTime;
+    data.stateEstimate = stateEstimate;
+else
+    data.stateEstimate = [];
+end
+
+if ~isempty(fieldnames(stateGroundTruth))
+    stateGroundTruth.time = stateGroundTruth.time - startTime;
+    data.stateGroundTruth = stateGroundTruth;
+else
+    data.stateGroundTruth = [];
+end
+
+if ~isempty(fieldnames(stateTrajectory))
+    stateTrajectory.time = stateTrajectory.time - startTime;
+    data.stateTrajectory = stateTrajectory;
+else
+    data.stateTrajectory = [];
+end
+
+if ~isempty(fieldnames(controlGRFs))
+    controlGRFs.time = controlGRFs.time - startTime;
+    data.controlGRFs = controlGRFs;
+else
+    data.controlGRFs = [];
+end
+
+if ~isempty(fieldnames(stateGRFs))
+    stateGRFs.time = stateGRFs.time - startTime;
+    data.stateGRFs = stateGRFs;
+else
+    data.stateGRFs = [];
+end
+
+if ~isempty(fieldnames(localPlan))
+    localPlan.time = localPlan.time - startTime;
+    for i = 1:length(localPlan.elementTimes)
+        shiftedElementTimes = localPlan.elementTimes{i} + localPlan.time(i);
+        localPlan.elementTimes{i} = shiftedElementTimes;
+    end
+    data.localPlan = localPlan;
+else
+    data.localPlan = [];
+end
 
 % If prompted, return the name of the filename
 if (nargout>1)

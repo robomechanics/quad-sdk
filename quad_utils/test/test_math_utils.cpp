@@ -2,10 +2,7 @@
 #include <ros/ros.h>
 
 #include "quad_utils/math_utils.h"
-#include "quad_utils/matplotlibcpp.h"
 #include "quad_utils/ros_utils.h"
-
-namespace plt = matplotlibcpp;
 
 TEST(MathTest, testWrap) {
   int N = 201;
@@ -27,14 +24,4 @@ TEST(MathTest, testWrap) {
 
   double tolerance = 1e-4;
   EXPECT_TRUE(error <= tolerance);
-
-  // plt::figure();
-  // plt::named_plot("original", t, data);
-  // plt::named_plot("wrapped", t, data_wrapped);
-  // plt::named_plot("unwrapped", t, data_unwrapped, "--");
-  // plt::xlabel("t");
-  // plt::ylabel("data");
-  // plt::legend();
-  // plt::show();
-  // plt::pause(0.001);
 }

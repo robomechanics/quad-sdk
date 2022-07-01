@@ -77,7 +77,8 @@ void GlobalBodyPlan::addStateAndGRFToMsg(double t, int plan_index,
                                          quad_msgs::RobotPlan &msg) {
   // Represent each state as an Odometry message
   quad_msgs::RobotState state;
-  quad_utils::updateStateHeaders(state, msg.header.stamp + ros::Duration(t),
+  quad_utils::updateStateHeaders(state,
+                                 msg.global_plan_timestamp + ros::Duration(t),
                                  msg.header.frame_id, plan_index);
 
   // Load the data into the message

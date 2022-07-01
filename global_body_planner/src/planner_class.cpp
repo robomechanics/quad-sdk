@@ -5,42 +5,37 @@
 
 using namespace planning_utils;
 
-typedef std::pair<double, int> Distance;
+PlannerClass::PlannerClass(int direction, const PlannerConfig &planner_config) {
+  direction_ = direction;
 
-// constructor
-PlannerClass::PlannerClass(int direction) { direction_ = direction; }
-
-// destructor
-PlannerClass::~PlannerClass() {}
+  double vel_mean = planner_config.v_nom;
+  double vel_sigma = (planner_config.v_max - planner_config.v_nom) / 3.0;
+  double vel_mean_log =
+      std::log(vel_mean * vel_mean /
+               std::sqrt(vel_mean * vel_mean + vel_sigma * vel_sigma));
+  double vel_sigma_log =
+      std::sqrt(std::log(1 + (vel_sigma * vel_sigma) / (vel_mean * vel_mean)));
+  vel_distribution_ = std::make_shared<std::lognormal_distribution<double>>(
+      vel_mean_log, vel_sigma_log);
+}
 
 State PlannerClass::randomState(const PlannerConfig &planner_config) {
-  double eps = 1;
-  double x_min = planner_config.terrain.getXData().front() + eps;
-  double x_max = planner_config.terrain.getXData().back() - eps;
-  double y_min = planner_config.terrain.getYData().front() + eps;
-  double y_max = planner_config.terrain.getYData().back() - eps;
-
-  double z_min_rel = planner_config.H_MIN + planner_config.ROBOT_H;
-  double z_max_rel = planner_config.H_MAX + planner_config.ROBOT_H;
+  double x_min, x_max, y_min, y_max;
+  getMapBounds(planner_config, x_min, x_max, y_min, y_max);
 
   State q;
 
-  // Normal distribution sampling
+  // Lognormal distribution sampling
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::default_random_engine generator(seed);
-  std::normal_distribution<double> height_distribution(
-      0.5 * (z_max_rel + z_min_rel),
-      (z_max_rel - z_min_rel) *
-          (1.0 / (2 * 3.0)));  // std is such that the max and min are 3 std
-                               // away from mean
 
   q.pos[0] = (x_max - x_min) * (double)rand() / RAND_MAX + x_min;
   q.pos[1] = (y_max - y_min) * (double)rand() / RAND_MAX + y_min;
-  q.pos[2] = planner_config.H_NOM +
-             planner_config.terrain.getGroundHeight(q.pos[0], q.pos[1]);
+  q.pos[2] = planner_config.h_nom + getTerrainZFromState(q, planner_config);
 
-  double phi = (2.0 * MY_PI) * (double)rand() / RAND_MAX;
-  double v = planner_config.V_NOM;
+  double phi = (2.0 * M_PI) * (double)rand() / RAND_MAX;
+  double v = (*vel_distribution_)(generator);
+  v = std::min(std::max(v, 0.0), planner_config.v_max);
   q.vel[0] = v * cos(phi);
   q.vel[1] = v * sin(phi);
   q.vel[2] = getDzFromState(q, planner_config);

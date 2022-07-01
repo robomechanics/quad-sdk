@@ -20,21 +20,19 @@ add_message_files(
   FILES
   RobotState.msg
   BodyState.msg
-  RobotStateTrajectory.msg
   GRFArray.msg
   RobotPlan.msg
+  RobotPlanDiagnostics.msg
   FootState.msg
   MultiFootState.msg
   MultiFootPlanContinuous.msg
   FootPlanDiscrete.msg
   MultiFootPlanDiscrete.msg
   LegContactMode.msg
-  BodyForceEstimate.msg
   ContactMode.msg
   MotorCommand.msg
   LegCommand.msg
   LegCommandArray.msg
-  LegOverride.msg
 )
 
 ## Generate added messages and services with any dependencies listed here

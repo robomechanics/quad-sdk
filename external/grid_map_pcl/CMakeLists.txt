@@ -21,11 +21,14 @@ set(CATKIN_PACKAGE_DEPENDENCIES
   roscpp
 )
 
+find_package(yaml-cpp REQUIRED)
 find_package(OpenMP QUIET)
 if (OpenMP_FOUND)
   add_compile_options("${OpenMP_CXX_FLAGS}")
   add_definitions(-DGRID_MAP_PCL_OPENMP_FOUND=${OpenMP_FOUND})
 endif()
+
+find_package(yaml-cpp REQUIRED)
 
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED 

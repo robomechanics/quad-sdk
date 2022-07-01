@@ -80,6 +80,14 @@ class GlobalBodyPlan {
   inline FullState getStateFromIndex(int i) const { return body_plan_.at(i); }
 
   /**
+   * @brief Get the motion primitive from the plan
+   * @return Primitive at index i
+   */
+  inline int getPrimitiveFromIndex(int i) const {
+    return primitive_id_plan_.at(i);
+  }
+
+  /**
    * @brief Get the distance of the plan end to the goal (retrieves member
    * variable, does not compute)
    * @return Distance from end of plan to goal

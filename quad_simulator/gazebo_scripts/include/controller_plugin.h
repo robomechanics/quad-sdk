@@ -20,13 +20,13 @@ namespace effort_controllers {
  * This class forwards the commanded efforts down to a set of joints.
  *
  */
-class SpiritController : public controller_interface::Controller<
-                             hardware_interface::EffortJointInterface> {
+class QuadController : public controller_interface::Controller<
+                           hardware_interface::EffortJointInterface> {
   typedef std::vector<quad_msgs::LegCommand> BufferType;
 
  public:
-  SpiritController();
-  ~SpiritController();
+  QuadController();
+  ~QuadController();
 
   bool init(hardware_interface::EffortJointInterface* hw, ros::NodeHandle& n);
   void update(const ros::Time& /*time*/, const ros::Duration& /*period*/);
@@ -48,6 +48,7 @@ class SpiritController : public controller_interface::Controller<
 
   /// Torque limits for each motor
   std::vector<double> torque_lims_;
+  std::vector<double> speed_lims_;
 
   void commandCB(const quad_msgs::LegCommandArrayConstPtr& msg);
   void enforceJointLimits(double& command, unsigned int index);

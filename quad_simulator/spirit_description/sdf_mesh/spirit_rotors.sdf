@@ -133,8 +133,8 @@ SOFTWARE.
         <limit>
           <lower>-0.707</lower>
           <upper>0.707</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <effort>21</effort>
+          <velocity>37.7</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -200,10 +200,10 @@ SOFTWARE.
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-3</lower>
-          <upper>3</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <lower>-1.57</lower>
+          <upper>3.14</upper>
+          <effort>21</effort>
+          <velocity>37.7</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -246,49 +246,6 @@ SOFTWARE.
           </friction>
         </surface>
       </collision>
-<!--       <collision name='toe0_collision'>
-        <pose frame=''>0.206 0 0 0 -0 0</pose>
-        <geometry>
-          <sphere>
-            <radius>0.02</radius>
-          </sphere>
-        </geometry>
-        <surface>
-          <bounce>
-            <restitution_coefficient>0</restitution_coefficient>
-            <threshold>1e+06</threshold>
-          </bounce>
-          <friction>
-            <ode>
-              <mu>0.5</mu>
-              <mu2>0.5</mu2>
-            </ode>
-            <bullet>
-              <rolling_friction>0.3</rolling_friction>
-              <friction2>50</friction2>
-            </bullet>
-          </friction>
-          <contact>
-            <bullet>
-              <kp>30000</kp>
-              <kd>1000</kd>
-              <split_impulse>1</split_impulse>
-              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-            </bullet>
-            <ode>
-              <kp>1000000</kp>
-              <kd>1</kd>
-            </ode>
-          </contact>
-        </surface>
-      </collision>
-      <sensor name="toe0_contact" type="contact">
-        <plugin name="toe0_plugin" filename="libcontact.so"/>
-        <contact>
-          <collision>toe0_collision</collision>
-        </contact>
-        <update_rate>200</update_rate>
-      </sensor> -->
       <visual name='lower0_visual'>
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
@@ -303,20 +260,6 @@ SOFTWARE.
           </script>
         </material>
       </visual>
-<!--       <visual name='lower0_fixed_joint_lump__toe0_visual_1'>
-        <pose frame=''>0.206 0 0 0 -0 0</pose>
-        <geometry>
-          <sphere>
-            <radius>0.02</radius>
-          </sphere>
-        </geometry>
-        <material>
-          <script>
-            <name>Gazebo/Black</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
-        </material>
-      </visual> -->
       <velocity_decay/>
       <gravity>1</gravity>
       <velocity_decay/>
@@ -328,10 +271,10 @@ SOFTWARE.
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-12</lower>
-          <upper>12</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <lower>-6.28</lower>
+          <upper>6.28</upper>
+          <effort>32</effort>
+          <velocity>25.1</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -400,8 +343,8 @@ SOFTWARE.
         <limit>
           <lower>-0.707</lower>
           <upper>0.707</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <effort>21</effort>
+          <velocity>37.7</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -467,10 +410,10 @@ SOFTWARE.
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-3</lower>
-          <upper>3</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <lower>-3.14</lower>
+          <upper>1.57</upper>
+          <effort>21</effort>
+          <velocity>37.7</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -513,49 +456,6 @@ SOFTWARE.
           </friction>
         </surface>
       </collision>
-<!--       <collision name='toe1_collision'>
-        <pose frame=''>0.206 0 0 0 -0 0</pose>
-        <geometry>
-          <sphere>
-            <radius>0.02</radius>
-          </sphere>
-        </geometry>
-        <surface>
-          <bounce>
-            <restitution_coefficient>0</restitution_coefficient>
-            <threshold>1e+06</threshold>
-          </bounce>
-          <friction>
-            <ode>
-              <mu>0.5</mu>
-              <mu2>0.5</mu2>
-            </ode>
-            <bullet>
-              <rolling_friction>0.3</rolling_friction>
-              <friction2>50</friction2>
-            </bullet>
-          </friction>
-          <contact>
-            <bullet>
-              <kp>30000</kp>
-              <kd>1000</kd>
-              <split_impulse>1</split_impulse>
-              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-            </bullet>
-            <ode>
-              <kp>1000000</kp>
-              <kd>1</kd>
-            </ode>
-          </contact>
-        </surface>
-      </collision>
-      <sensor name="toe1_contact" type="contact">
-        <plugin name="toe1_plugin" filename="libcontact.so"/>
-        <contact>
-          <collision>toe1_collision</collision>
-        </contact>
-        <update_rate>200</update_rate>
-      </sensor> -->
       <visual name='lower1_visual'>
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
@@ -570,20 +470,6 @@ SOFTWARE.
           </script>
         </material>
       </visual>
-<!--       <visual name='lower1_fixed_joint_lump__toe1_visual_1'>
-        <pose frame=''>0.206 0 0 0 -0 0</pose>
-        <geometry>
-          <sphere>
-            <radius>0.02</radius>
-          </sphere>
-        </geometry>
-        <material>
-          <script>
-            <name>Gazebo/Black</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
-        </material>
-      </visual> -->
       <velocity_decay/>
       <gravity>1</gravity>
       <velocity_decay/>
@@ -595,10 +481,10 @@ SOFTWARE.
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-12</lower>
-          <upper>12</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <lower>-6.28</lower>
+          <upper>6.28</upper>
+          <effort>32</effort>
+          <velocity>25.1</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -668,8 +554,8 @@ SOFTWARE.
         <limit>
           <lower>-0.707</lower>
           <upper>0.707</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <effort>21</effort>
+          <velocity>37.7</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -735,10 +621,10 @@ SOFTWARE.
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-3</lower>
-          <upper>3</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <lower>-1.57</lower>
+          <upper>3.14</upper>
+          <effort>21</effort>
+          <velocity>37.7</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -781,49 +667,6 @@ SOFTWARE.
           </friction>
         </surface>
       </collision>
-<!--       <collision name='toe2_collision'>
-        <pose frame=''>0.206 0 0 0 -0 0</pose>
-        <geometry>
-          <sphere>
-            <radius>0.02</radius>
-          </sphere>
-        </geometry>
-        <surface>
-          <bounce>
-            <restitution_coefficient>0</restitution_coefficient>
-            <threshold>1e+06</threshold>
-          </bounce>
-          <friction>
-            <ode>
-              <mu>0.5</mu>
-              <mu2>0.5</mu2>
-            </ode>
-            <bullet>
-              <rolling_friction>0.3</rolling_friction>
-              <friction2>50</friction2>
-            </bullet>
-          </friction>
-          <contact>
-            <bullet>
-              <kp>30000</kp>
-              <kd>1000</kd>
-              <split_impulse>1</split_impulse>
-              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-            </bullet>
-            <ode>
-              <kp>1000000</kp>
-              <kd>1</kd>
-            </ode>
-          </contact>
-        </surface>
-      </collision>
-      <sensor name="toe2_contact" type="contact">
-        <plugin name="toe2_plugin" filename="libcontact.so"/>
-        <contact>
-          <collision>toe2_collision</collision>
-        </contact>
-        <update_rate>200</update_rate>
-      </sensor> -->
       <visual name='lower2_visual'>
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
@@ -838,20 +681,6 @@ SOFTWARE.
           </script>
         </material>
       </visual>
-<!--       <visual name='lower2_fixed_joint_lump__toe2_visual_1'>
-        <pose frame=''>0.206 0 0 0 -0 0</pose>
-        <geometry>
-          <sphere>
-            <radius>0.02</radius>
-          </sphere>
-        </geometry>
-        <material>
-          <script>
-            <name>Gazebo/Black</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
-        </material>
-      </visual> -->
       <velocity_decay/>
       <gravity>1</gravity>
       <velocity_decay/>
@@ -863,10 +692,10 @@ SOFTWARE.
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-12</lower>
-          <upper>12</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <lower>-6.28</lower>
+          <upper>6.28</upper>
+          <effort>32</effort>
+          <velocity>25.1</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -935,8 +764,8 @@ SOFTWARE.
         <limit>
           <lower>-0.707</lower>
           <upper>0.707</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <effort>21</effort>
+          <velocity>37.7</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -1002,10 +831,10 @@ SOFTWARE.
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-3</lower>
-          <upper>3</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <lower>-3.14</lower>
+          <upper>1.57</upper>
+          <effort>21</effort>
+          <velocity>37.7</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -1048,49 +877,6 @@ SOFTWARE.
           </friction>
         </surface>
       </collision>
-<!--       <collision name='toe3_collision'>
-        <pose frame=''>0.206 0 0 0 -0 0</pose>
-        <geometry>
-          <sphere>
-            <radius>0.02</radius>
-          </sphere>
-        </geometry>
-        <surface>
-          <bounce>
-            <restitution_coefficient>0</restitution_coefficient>
-            <threshold>1e+06</threshold>
-          </bounce>
-          <friction>
-            <ode>
-              <mu>0.5</mu>
-              <mu2>0.5</mu2>
-            </ode>
-            <bullet>
-              <rolling_friction>0.3</rolling_friction>
-              <friction2>50</friction2>
-            </bullet>
-          </friction>
-          <contact>
-            <bullet>
-              <kp>30000</kp>
-              <kd>1000</kd>
-              <split_impulse>1</split_impulse>
-              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-            </bullet>
-            <ode>
-              <kp>1000000</kp>
-              <kd>1</kd>
-            </ode>
-          </contact>
-        </surface>
-      </collision>
-      <sensor name="toe3_contact" type="contact">
-        <plugin name="toe3_plugin" filename="libcontact.so"/>
-        <contact>
-          <collision>toe3_collision</collision>
-        </contact>
-        <update_rate>200</update_rate>
-      </sensor> -->
       <visual name='lower3_visual'>
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
@@ -1105,20 +891,6 @@ SOFTWARE.
           </script>
         </material>
       </visual>
-<!--       <visual name='lower3_fixed_joint_lump__toe3_visual_1'>
-        <pose frame=''>0.206 0 0 0 -0 0</pose>
-        <geometry>
-          <sphere>
-            <radius>0.02</radius>
-          </sphere>
-        </geometry>
-        <material>
-          <script>
-            <name>Gazebo/Black</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
-        </material>
-      </visual> -->
       <velocity_decay/>
       <gravity>1</gravity>
       <velocity_decay/>
@@ -1130,10 +902,10 @@ SOFTWARE.
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-12</lower>
-          <upper>12</upper>
-          <effort>40</effort>
-          <velocity>30</velocity>
+          <lower>-6.28</lower>
+          <upper>6.28</upper>
+          <effort>32</effort>
+          <velocity>25.1</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -1481,8 +1253,6 @@ SOFTWARE.
       <parent>lower3</parent>
     </joint>
 
-
-<!-- Adding rotors to the SDF ################################### -->
     <link name='abad0_rotor'>
       <pose frame=''>0.2263 0.07 0 0 0 0</pose>
       <inertial>
@@ -1975,8 +1745,6 @@ SOFTWARE.
       </axis>
     </joint>
 
-  <!-- End new rotors ############################################ -->
-
     <include>
       <uri>model://cmu_text</uri>
       <pose>0 0 0 0 0 0</pose>
@@ -1998,7 +1766,6 @@ SOFTWARE.
     </joint>
     <!-- Setup ros control -->
     <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
-      <robotNamespace>/spirit</robotNamespace>
       <controlPeriod>0.002</controlPeriod>
     </plugin>
     <!-- Publish ground truth state data -->

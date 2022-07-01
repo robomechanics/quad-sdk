@@ -30,6 +30,7 @@ TEST(LocalFootStepPlanner, baseCase) {
   double foothold_search_radius = 0.2;
   double foothold_obj_threshold = 0.6;
   double grf_weight = 0.0;
+  double toe_radius = 0.02;
   std::string obj_fun_layer = "traversability";
   std::shared_ptr<quad_utils::QuadKD> quadKD =
       std::make_shared<quad_utils::QuadKD>();
@@ -38,13 +39,14 @@ TEST(LocalFootStepPlanner, baseCase) {
   footstep_planner.setTemporalParams(dt, period, N, duty_cycles, phase_offsets);
   footstep_planner.setSpatialParams(
       ground_clearance, hip_clearance, standing_error_threshold, grf_weight,
-      quadKD, foothold_search_radius, foothold_obj_threshold, obj_fun_layer);
+      quadKD, foothold_search_radius, foothold_obj_threshold, obj_fun_layer,
+      toe_radius);
 
-  Eigen::MatrixXd body_plan(N + 1, 12);
+  Eigen::MatrixXd body_plan(N, 12);
   body_plan.fill(0);
   body_plan.col(2).fill(0.3);
 
-  Eigen::MatrixXd ref_body_plan(N + 1, 12);
+  Eigen::MatrixXd ref_body_plan(N, 12);
   ref_body_plan.fill(0);
   ref_body_plan.col(2).fill(0.3);
 
@@ -59,7 +61,7 @@ TEST(LocalFootStepPlanner, baseCase) {
     }
   }
 
-  Eigen::MatrixXd grf_plan(N, 12);
+  Eigen::MatrixXd grf_plan(N - 1, 12);
   grf_plan.fill(0);
 
   Eigen::MatrixXd foot_positions_world(N, 12);
@@ -90,13 +92,13 @@ TEST(LocalFootStepPlanner, baseCase) {
     past_footholds_msg.feet[i].traj_index = past_footholds_msg.traj_index;
   }
 
-  grid_map::GridMap map({"z", "traversability"});
+  grid_map::GridMap map({"z_inpainted", "traversability"});
   map.setGeometry(grid_map::Length(10, 10), 0.01);
 
   for (grid_map::GridMapIterator it(map); !it.isPastEnd(); ++it) {
     grid_map::Position position;
     map.getPosition(*it, position);
-    map.at("z", *it) = 0;
+    map.at("z_inpainted", *it) = 0;
     map.at("traversability", *it) = 1;
   }
 

@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(nmpc_controller)
 
-## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11)
+## Compile as C++14, supported in ROS Melodic and newer
+add_compile_options(-std=c++14 -ffast-math)
   
 ## Set default cmake build type to release
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
@@ -49,13 +49,28 @@ link_directories(/usr/local/lib)
 
 ## Declare a C++ library for control
 add_library(nmpc_controller
-  src/gen/eval_g_leg.cpp
-  src/gen/eval_jac_g_leg.cpp
-  src/gen/eval_hess_g_leg.cpp
-  src/gen/eval_g_tail.cpp
-  src/gen/eval_jac_g_tail.cpp
-  src/gen/eval_hess_g_tail.cpp
+  src/gen/eval_g_spirit.cpp
+  src/gen/eval_jac_g_spirit.cpp
+  src/gen/eval_hess_g_spirit.cpp
+  src/gen/eval_g_a1.cpp
+  src/gen/eval_jac_g_a1.cpp
+  src/gen/eval_hess_g_a1.cpp
+  src/gen/eval_g_leg_simple.cpp
+  src/gen/eval_jac_g_leg_simple.cpp
+  src/gen/eval_hess_g_leg_simple.cpp
+  src/gen/eval_g_leg_complex.cpp
+  src/gen/eval_jac_g_leg_complex.cpp
+  src/gen/eval_hess_g_leg_complex.cpp
+  src/gen/eval_g_leg_simple_to_complex.cpp
+  src/gen/eval_jac_g_leg_simple_to_complex.cpp
+  src/gen/eval_hess_g_leg_simple_to_complex.cpp
+  src/gen/eval_g_leg_complex_to_simple.cpp
+  src/gen/eval_jac_g_leg_complex_to_simple.cpp
+  src/gen/eval_hess_g_leg_complex_to_simple.cpp
+  src/quad_nlp_utils.cpp
   src/quad_nlp.cpp
+  src/quad_nlp_utils.cpp
+  src/adaptive_complexity_utils.cpp
   src/nmpc_controller.cpp
 )
 target_link_libraries(nmpc_controller 
@@ -72,5 +87,6 @@ add_dependencies(nmpc_controller
 
 ## Add gtest based cpp test target and link libraries
 catkin_add_gtest(nmpc_controller-test 
-  test/test_nmpc_controller.cpp)
+  test/test_nmpc_controller.cpp
+  test/test_adaptive_complexity.cpp)
 target_link_libraries(nmpc_controller-test nmpc_controller ${catkin_LIBRARIES})
