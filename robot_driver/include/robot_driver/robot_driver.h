@@ -21,6 +21,7 @@
 
 #include "robot_driver/controllers/grf_pid_controller.h"
 #include "robot_driver/controllers/inverse_dynamics_controller.h"
+#include "robot_driver/controllers/underbrush_inverse_dynamics.h"
 #include "robot_driver/controllers/joint_controller.h"
 #include "robot_driver/controllers/leg_controller.h"
 #include "robot_driver/estimators/comp_filter_estimator.h"
