@@ -1,8 +1,6 @@
 #include "robot_driver/controllers/underbrush_inverse_dynamics.h"
 
 UnderbrushInverseDynamicsController::UnderbrushInverseDynamicsController() {
-  quadKD_ = std::make_shared<quad_utils::QuadKD>();
-
   force_mode_ = {0, 0, 0, 0};
   last_mode_ = {0, 0, 0, 0};
 

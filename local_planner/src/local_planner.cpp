@@ -111,7 +111,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 void LocalPlanner::initLocalBodyPlanner() {
   // Create nmpc wrapper class
   SystemID type;
-  if (robot_name_ == "spirit") {
+  if (robot_name_ == "spirit" || robot_name_ == "spirit_rotors") {
     type = SPIRIT;
   } else if (robot_name_ == "a1") {
     type = A1;

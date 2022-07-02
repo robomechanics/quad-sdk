@@ -108,6 +108,12 @@ class RobotDriver {
   void singleJointCommandCallback(const geometry_msgs::Vector3::ConstPtr& msg);
 
   /**
+   * @brief Callback to handle new body force estimates
+   * @param[in] msg body force estimates
+   */
+  void bodyForceEstimateCallback(const quad_msgs::BodyForceEstimate::ConstPtr& msg);
+
+  /**
    * @brief Callback to handle control restart flag messages
    */
   void controlRestartFlagCallback(const std_msgs::Bool::ConstPtr& msg);
@@ -164,6 +170,9 @@ class RobotDriver {
 
   /// ROS subscriber for state estimate
   ros::Subscriber robot_state_sub_;
+
+  /// ROS subscriber for body force estimates
+  ros::Subscriber body_force_estimate_sub_;
 
   /// ROS subscriber for control restart flag
   ros::Subscriber control_restart_flag_sub_;
