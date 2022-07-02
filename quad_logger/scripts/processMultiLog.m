@@ -42,7 +42,7 @@ elseif contains(envName, 'gap')
     duration = 35.0;
 end
 
-bProcessAllBags = true;
+bProcessAllBags = false;
 
 %% Set parameters
 
@@ -145,6 +145,7 @@ for i = 1:length(configNames)
                 plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.orientationRPY(traj_idx,2), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
                 ylabel('Pitch (rad)')
                 xlabel('Time (s)')
+                annotation('arrow',[0.15 0.19],[0.6 0.74])
                 axis tight
                 
                 % yaw
@@ -154,18 +155,21 @@ for i = 1:length(configNames)
                 xlabel('Time (s)')
                 axis tight
                 set(linearStateFig, 'Position', [100 100 1200 600])
+                annotation('arrow',[0.58 0.63],[0.81 0.67])
             elseif contains(envName, 'gap')
                 % z state
                 subplot(1,2,1); hold on
                 plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.velocity(traj_idx,1), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
                 ylabel('X Velocity (m/s)')
                 xlabel('Time (s)')
+                annotation('arrow',[0.16 0.24],[0.86 0.84])
                 axis tight
                 
                 subplot(1,2,2); hold on
                 plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.position(traj_idx,3), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
                 ylabel('Z Position (m)')
                 xlabel('Time (s)')
+                annotation('arrow',[0.62 0.67],[0.56 0.7])
                 axis tight
                 set(linearStateFig, 'Position', [100 100 1200 600])
             end
@@ -186,6 +190,7 @@ for i = 1:length(configNames)
             xlabel('Time (s)')
             axis tight
             set(GRFVectorsFig, 'Position', [100 100 1200 600])
+            box off
             %
             % ~~~~~~~~~~~~~~~~~~~
             %
@@ -200,6 +205,7 @@ for i = 1:length(configNames)
             ylabel('Solve Time (s)');
             axis tight
             set(solveTimeFig, 'Position', [100 100 1200 600])
+            box off
             
             %
             % ~~~~~~~~~~~~~~~~~~~
@@ -214,6 +220,7 @@ for i = 1:length(configNames)
             ylabel('Horizon Length');
             axis tight
             set(horizonLengthFig, 'Position', [100 100 1200 600])
+            box off
             
             %
             % ~~~~~~~~~~~~~~~~~~~
@@ -236,6 +243,7 @@ for i = 1:length(configNames)
             yticklabels({'0\%', '25\%', '50\%', '75\%', '100\%'});
             axis([0, max(localPlan{i}.time), -5 105])
             set(simplePercentageFig, 'Position', [100 100 1200 600])
+            box off
             
             %
             % ~~~~~~~~~~~~~~~~~~~
@@ -311,19 +319,19 @@ for i = 1:length(configNames)
             set(gca, 'YDir','reverse')
             
             if i >= 3
-                xlabel('Predicted Time, $k + i$ (s)');
+                xlabel('Horizon Time, $k + i$ (s)');
             end
             if mod(i,2) == 1
-                ylabel('Current Time, $k$ (s)');
+                ylabel('Wall Time, $k$ (s)');
             end
             if (i == 2)
                 legend(predictionHorizonFig.CurrentAxes, 'Simple', 'Complex');
             end
             
-            axis equal
+%             axis equal
             axis([tLocalPlanWindow(1), tLocalPlanWindow(2) + 0.72, tLocalPlanWindow(1), tLocalPlanWindow(2)])
             title(configNames{i})
-            set(predictionHorizonFig, 'Position', [100 100 1200 1000])
+            set(predictionHorizonFig, 'Position', [100 100 1200 600])
             hold on;
         end
     end
