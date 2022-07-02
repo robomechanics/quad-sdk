@@ -38,7 +38,7 @@ BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
 // Setup pubs and subs
 #if USE_SIM == 1
   robot_state_sub_ = nh_.subscribe(
-      "/spirit/joint_states", 1, &BodyForceEstimator::robotStateCallback, this);
+      "joint_states", 1, &BodyForceEstimator::robotStateCallback, this);
 #elif USE_SIM == 2
   robot_state_sub_ = nh_.subscribe(
       robot_state_topic, 1, &BodyForceEstimator::robotStateCallback, this);
