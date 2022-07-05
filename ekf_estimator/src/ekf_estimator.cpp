@@ -4,11 +4,12 @@ EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string joint_encoder_topic, imu_topic, contact_topic,
+  std::string joint_encoder_topic, imu_topic, contact_topic, grf_topic,
       state_estimate_topic;
   nh.param<std::string>("topics/state/joints", joint_encoder_topic,
                         "/state/joints");
   nh.param<std::string>("topics/state/imu", imu_topic, "/state/imu");
+  nh.param<std::string>("topics/control/grfs",grf_topic, "/control/grfs");
   nh.param<std::string>("topics/state/estimate", state_estimate_topic,
                         "/state/estimate");
   nh.param<std::string>("topics/contact_mode", contact_topic, "/contact_mode");
@@ -44,6 +45,7 @@ EKFEstimator::EKFEstimator(ros::NodeHandle nh) {
   joint_encoder_sub_ = nh_.subscribe(joint_encoder_topic, 1,
                                      &EKFEstimator::jointEncoderCallback, this);
   imu_sub_ = nh_.subscribe(imu_topic, 1, &EKFEstimator::imuCallback, this);
+  grf_sub_ = nh_.subscribe(grf_topic, 1,  &EKFEstimator::grfCallback,this);
   contact_sub_ =
       nh_.subscribe(contact_topic, 1, &EKFEstimator::contactCallback, this);
   state_estimate_pub_ =
@@ -70,6 +72,10 @@ void EKFEstimator::imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
 void EKFEstimator::contactCallback(
     const quad_msgs::ContactMode::ConstPtr& msg) {
   last_contact_msg_ = msg;
+}
+
+void EKFEstimator::grfCallback(const quad_msgs::GRFArray::ConstPtr& msg){
+  last_grf_msg_ = msg;
 }
 
 void EKFEstimator::setX(Eigen::VectorXd Xin) { X = Xin; }
@@ -119,12 +125,12 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   // std::cout << "this is X predict" << X.transpose() << std::endl;
 
   // for testing prediction step
-  X = X_pre;
-  P = P_pre;
-  last_X = X;
+  // X = X_pre;
+  // P = P_pre;
+  // last_X = X;
 
   /// Update Step
-  // this->update(jk);
+  this->update(jk);
   // std::cout << "this is X update" << X.transpose() << std::endl;
 
   /// publish new message
@@ -163,7 +169,9 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
                            const Eigen::VectorXd& wk,
                            const Eigen::Quaterniond& qk) {
   // calculate rotational matrix from world frame to body frame
-  Eigen::Matrix3d C = (qk.toRotationMatrix()).transpose();
+  Eigen::Matrix3d C1 = (qk.toRotationMatrix()).transpose();
+
+
 
   // Collect states info from previous state vector
   Eigen::VectorXd r = last_X.segment(0, 3);
@@ -172,11 +180,25 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   Eigen::VectorXd p = last_X.segment(10, 12);
   Eigen::VectorXd bf = last_X.segment(22, 3);
   Eigen::VectorXd bw = last_X.segment(25, 3);
+
+  //get better C matrix:
+  double angle = q.norm();
+  Eigen::Vector3d axis;
+  if (angle == 0) {
+    axis = Eigen::VectorXd::Zero(3);
+  } else {
+    axis = q / angle;
+  }
+  Eigen::Vector3d q_xyz = sin(angle / 2) * axis;
+  double q_w = cos(angle / 2);
+  Eigen::Quaterniond q1(q_w, q_xyz[0], q_xyz[1], q_xyz[2]);
+
+  Eigen::Matrix3d C = q1.toRotationMatrix().transpose();
   // calculate linear acceleration set z acceleration to -9.8 for now
   // a is the corrected IMU linear acceleration (fk hat)
   Eigen::VectorXd a = Eigen::VectorXd::Zero(3);
   a = fk - bf;
-  a[2] = -9.8;
+  // a[2] = -9.8;
 
   g = Eigen::VectorXd::Zero(3);
   g[2] = 9.81;
@@ -187,8 +209,8 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
 
   // state prediction X_pre
   X_pre = Eigen::VectorXd::Zero(num_state);
-  X_pre.segment(0, 3) = r + dt * v + dt * dt * 0.5 * (C.transpose() * a + g);
-  X_pre.segment(3, 3) = v + dt * (C.transpose() * a + g);
+  X_pre.segment(0, 3) = r + dt * v + dt * dt * 0.5 * (C1.transpose() * a + g);
+  X_pre.segment(3, 3) = v + dt * (C1.transpose() * a + g);
   // quaternion updates
   Eigen::VectorXd wdt = dt * w;
   Eigen::VectorXd q_pre = this->quaternionDynamics(wdt, q);
@@ -229,17 +251,23 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   Q.block<3, 3>(3, 21) = -1 * (pow(dt, 2) / 2) * C.transpose() * bias_acc;
   Q.block<3, 3>(6, 6) = dt * noise_gyro + (r3 + r3.transpose()) * bias_gyro;
   Q.block<3, 3>(6, 24) = -r2.transpose() * bias_gyro;
+  int num_contacts = 0;
   for (int i = 0; i < num_feet; i++) {
     Q.block<3, 3>(9 + i * 3, 9 + i * 3) = dt * C.transpose() * noise_feet * C;
     // determine foot contact and set noise
-
-    if (p[i * 3 + 2] < 0.02) {
-      Q.block<3, 3>(9 + i * 3, 9 + i * 3) = dt * C.transpose() * noise_feet * C;
+    // std::cout << "foot " << i << " in contact mode " << 
+    // (*last_grf_msg_).contact_states[i] << std::endl;
+    // if (p[i * 3 + 2] < 0.01) {
+    if ((*last_grf_msg_).contact_states[i]) {
+      std::cout << "contact in mode: " << i << std::endl;
+      Q.block<3, 3>(9 + i * 3, 9 + i * 3) = 1* dt * C.transpose() * noise_feet * C;
+      num_contacts++;
     } else {
       Q.block<3, 3>(9 + i * 3, 9 + i * 3) =
-          1000 * dt * C.transpose() * noise_feet * C;
+          100000000 * dt * C.transpose() * noise_feet * C;
     }
   }
+  // std::cout << "num contacts: " << num_contacts << std::endl;
 
   Q.block<3, 3>(21, 0) = -1 * (pow(dt, 3) / 6) * bias_acc * C;
   Q.block<3, 3>(21, 3) = -1 * (pow(dt, 2) / 2) * bias_acc * C;
@@ -339,7 +367,7 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   }
 
   // Measurement Noise Matrix (12 * 12)
-  R = 0.0001 * Eigen::MatrixXd::Identity(num_measure, num_measure);
+  R = .0001 * Eigen::MatrixXd::Identity(num_measure, num_measure);
 
   // // Define vectors for state positions
   // Eigen::VectorXd state_positions(18);
@@ -371,6 +399,7 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   X.segment(3, 3) = v_pre + delta_X.segment(3, 3);
   Eigen::VectorXd delta_q = delta_X.segment(6, 3);
   Eigen::VectorXd q_upd = this->quaternionDynamics(delta_q, q_pre);
+  // Eigen::VectorXd q_upd = this->quaternionDynamics(q_pre, delta_q);
   X.segment(6, 4) = q_upd;
   X.segment(10, num_feet * 3) = p_pre + delta_X.segment(9, num_feet * 3);
   X.segment(22, 3) = bf_pre + delta_X.segment(21, 3);

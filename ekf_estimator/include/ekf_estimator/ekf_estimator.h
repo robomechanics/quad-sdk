@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 #include <quad_msgs/ContactMode.h>
 #include <quad_msgs/RobotState.h>
+#include <quad_msgs/GRFArray.h>
 #include <quad_utils/quad_kd.h>
 #include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
@@ -98,6 +99,12 @@ class EKFEstimator {
    * @param[in] msg quad_msgs::ContactMode containing new contact data
    */
   void contactCallback(const quad_msgs::ContactMode::ConstPtr& msg);
+
+  /**
+   * @brief Callback function to handle new grf controls
+   * @param[in] msg quad_msgs::GRFArray containing new grf control data
+   */
+  void grfCallback(const quad_msgs::GRFArray::ConstPtr& msg);
 
   /**
    * @brief execute EKF Update step, return state estimate
@@ -203,6 +210,9 @@ class EKFEstimator {
   /// Subscriber for imu messages
   ros::Subscriber imu_sub_;
 
+  /// Subscriber for grf messages
+  ros::Subscriber grf_sub_;
+
   /// Subscriber for contact detection messages
   ros::Subscriber contact_sub_;
 
@@ -217,6 +227,9 @@ class EKFEstimator {
 
   /// Last state estimate
   quad_msgs::RobotState last_state_est_;
+
+  /// Last grf control message
+  quad_msgs::GRFArray::ConstPtr last_grf_msg_;
 
   /// Last contact detection message (should be timestamped!)
   quad_msgs::ContactMode::ConstPtr last_contact_msg_;
