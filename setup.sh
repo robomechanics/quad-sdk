@@ -4,7 +4,7 @@ echo "#########################"
 echo "Install base dependencies"
 echo "#########################"
 echo
-sudo apt install -y doxygen libeigen3-dev python3-catkin-tools python-pip
+sudo apt install -y doxygen libeigen3-dev python3-catkin-tools python3-pip
 pip install cpplint
 
 # Install all dependencies from package setup files
