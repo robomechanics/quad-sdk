@@ -1,6 +1,6 @@
 <launch>
     <arg name="robot_type" default="spirit"/>
-    <arg name="namespace" default="robot_1"/>
+    <arg name="namespace" default=" "/>
 
     <include file="$(find quad_utils)/launch/load_global_params.launch">
         <arg name="robot_type" value="$(arg robot_type)"/>
@@ -12,7 +12,18 @@
     <arg name="is_hardware" default="true" />
 
     <!-- Launch the robot driver node -->
-    <group ns = "$(arg namespace)">
+    <group if="$(arg is_hardware)">
+        <group ns = "$(arg namespace)">
+            <include file="$(find quad_utils)/launch/load_robot_params.launch">
+                <arg name="robot_type" value="$(arg robot_type)"/>
+            </include>
+            <node name="robot_driver" pkg="robot_driver" type="robot_driver_node" output="screen">
+                <param name="controller" value="$(arg controller)" />
+                <param name="is_hardware" value="$(arg is_hardware)" />
+            </node>
+        </group>
+    </group>
+    <group unless="$(arg is_hardware)">
         <include file="$(find quad_utils)/launch/load_robot_params.launch">
             <arg name="robot_type" value="$(arg robot_type)"/>
         </include>

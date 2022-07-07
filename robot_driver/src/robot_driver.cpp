@@ -258,6 +258,10 @@ void RobotDriver::mocapCallback(
           0.1,
           "Mocap time diff exceeds max dropout threshold, hold the last value");
     }
+  } else {
+    ROS_WARN_THROTTLE(
+        0.1,
+        "Mocap time diff exceeds max dropout threshold, hold the last value");
   }
   // Update our cached mocap position
   last_mocap_msg_ = msg;
