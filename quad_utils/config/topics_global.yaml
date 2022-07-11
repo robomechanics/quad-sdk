@@ -5,3 +5,4 @@ topics:
     remote: heartbeat/remote
   control:
     joint_command: control/joint_command
+  mocap: /mocap_node/quad/pose
