@@ -1,4 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,99,32"/>
-<area shape="rect" id="node2" href="$classGlobalBodyPlannerTestFixture.html" title="A test fixture for the global body planning class." alt="" coords="147,5,344,32"/>
+<area shape="rect" id="node1" href="$classHardwareInterface.html" title="Implements an abstract class for robot hardware interfaces." alt="" coords="5,5,135,32"/>
+<area shape="rect" id="node2" href="$classSpiritInterface.html" title="Hardware interface for the Spirit40 quadruped from Ghost Robotics." alt="" coords="183,5,285,32"/>
 </map>

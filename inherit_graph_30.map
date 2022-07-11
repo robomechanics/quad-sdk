@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classRobotDriver.html" title=" " alt="" coords="5,5,96,32"/>
+<area shape="rect" id="node1" href="$classRRT.html" title="A class that implements RRT sampling&#45;based planning." alt="" coords="5,5,53,32"/>
+<area shape="rect" id="node2" href="$classGBPL.html" title="A class that implements the Global Body Planner for Legged Robots (GBP&#45;L)" alt="" coords="101,5,160,32"/>
 </map>
