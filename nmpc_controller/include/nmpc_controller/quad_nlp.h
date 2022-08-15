@@ -301,7 +301,7 @@ class quadNLP : public TNLP {
                             Index &nnz_h_lag, IndexStyleEnum &index_style);
 
   /** Method to return the bounds for my problem */
-  bool get_bounds_info_single_complex_fe(int i, Eigen::VectorXd &x_lb,
+  void get_bounds_info_single_complex_fe(int i, Eigen::VectorXd &x_lb,
                                          Eigen::VectorXd &x_ub,
                                          Eigen::VectorXd &u_lb,
                                          Eigen::VectorXd &u_ub,

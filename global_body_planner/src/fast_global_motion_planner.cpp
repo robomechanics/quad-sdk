@@ -457,3 +457,35 @@ int FastGlobalMotionPlanner::getTestPlan(const PlannerConfig &planner_config,
 
   return VALID;
 }
+
+int FastGlobalMotionPlanner::getTestAccelPlan(const PlannerConfig &planner_config,
+                                         State s_start, State s_goal_nom,
+                                         std::vector<State> &state_sequence,
+                                         std::vector<Action> &action_sequence) {
+  // Clear state and action sequences and initialize
+  state_sequence.clear();
+  action_sequence.clear();
+  s_start.vel.setZero();
+  s_start.vel.x() = 0.001;
+  State s_goal = s_start;
+  s_goal.pos.x() += 3.0;
+  state_sequence.push_back(s_start);
+
+  StateActionResult result;
+  if (!attemptConnect(s_start, s_goal, result, planner_config, FORWARD)) {
+    throw ::std::runtime_error("Failed to connect land to goal");
+  }
+
+  // Add state and action to sequence
+  action_sequence.push_back(result.a_new);
+  state_sequence.push_back(s_goal);
+
+  path_duration_ = 0.0;
+  for (Action a : action_sequence) {
+    path_duration_ += (a.t_s_leap + a.t_f + a.t_s_land);
+  }
+  dist_to_goal_ = poseDistance(s_goal, state_sequence.back());
+  path_length_ = poseDistance(state_sequence.front(), state_sequence.back());
+
+  return VALID;
+}

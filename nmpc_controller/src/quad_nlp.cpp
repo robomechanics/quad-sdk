@@ -161,7 +161,7 @@ bool quadNLP::get_nlp_info(Index &n, Index &m, Index &nnz_jac_g,
   return true;
 }
 
-bool quadNLP::get_bounds_info_single_complex_fe(
+void quadNLP::get_bounds_info_single_complex_fe(
     int i, Eigen::VectorXd &x_lb, Eigen::VectorXd &x_ub, Eigen::VectorXd &u_lb,
     Eigen::VectorXd &u_ub, Eigen::VectorXd &g_lb, Eigen::VectorXd &g_ub) {
   // Load default constraint bounds

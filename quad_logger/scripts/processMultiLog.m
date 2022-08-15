@@ -17,9 +17,11 @@ end
 
 %% Select rosbag to parse
 
-envName = 'gap_40cm';    tWindow = [3, 6]; tLocalPlanWindow = [3, 6];
+% envName = 'gap_40cm';    tWindow = [3, 6]; tLocalPlanWindow = [3, 6];
+% bStateBasedWindow = false;
 % envName = 'step_20cm';     tWindow = [3, 6]; tLocalPlanWindow = [2.5, 5];
-% envName = 'rough_25cm';    tWindow = [3, 6]; tLocalPlanWindow = [3, 6];
+% bStateBasedWindow = false;
+envName = 'flat';    tWindow = [0, 6]; tLocalPlanWindow = [0, 5]; bStateBasedWindow = true;
 configNames = {'Simple', 'Complex', 'Mixed', 'Adaptive'};
 configLinestyles = {'--', ':', '-.', '-'};
 configColors = {[0,130,186]/255, [166,25,46]/255, [242,169,0]/255,  [0,132,61]/255};
@@ -29,7 +31,6 @@ lineWidth = 3;
 plotIndex = [1, 1, 1, 1];
 
 % Planned goal position for success check
-goal_position = [5.0, 0.0];
 
 % Distance tolerance for success check
 success_tol = 0.5;
@@ -37,12 +38,19 @@ start_diff_tol = 0.5;
 if contains(envName, 'step')
     name_prefix = '05realtime';
     duration = 16.0;
+    goal_position = [5.0, 0.0];
+
 elseif contains(envName, 'gap')
     name_prefix = '02realtime';
     duration = 35.0;
+    goal_position = [5.0, 0.0];
+elseif contains(envName, 'flat')
+    name_prefix = '10realtime';
+    duration = 10.0;
+    goal_position = [3.0, 0.0];
 end
 
-bProcessAllBags = false;
+bProcessAllBags = true;
 
 %% Set parameters
 
@@ -76,6 +84,9 @@ for i = 1:length(configNames)
     solveTimesList = cell(size(bagNameList));
     grfNormList = cell(size(bagNameList));
     successList = cell(size(bagNameList));
+    maxVelList = cell(size(bagNameList));
+    settlingTimeList = cell(size(bagNameList));
+    fracSimplifiedList = cell(size(bagNameList));
     
     % Set flag for plotting
     bPlotting = true;
@@ -119,11 +130,24 @@ for i = 1:length(configNames)
         
         % Record grf norm
         grfNormList{l} = grfNorm;
-        
+
+        % Record max vel
+        maxVelList{l} = max(stateGroundTruth{i}.velocity(:,1));
+
         % Record solving time
         solveTimesList{l} = localPlan{i}.solveTime;
         highSolveTimesList{l} = sum(localPlan{i}.solveTime(localPlan{i}.solveTime > dt))/duration;
-        
+
+        % Identify the start and end indices
+        start_idx = find((vecnorm(stateGroundTruth{i}.velocity(:,1),2,2) > 1e-2),1);
+        end_idx = find((vecnorm(stateGroundTruth{i}.position(:,1:2) - goal_position, 2, 2) < success_tol) & ...
+            (vecnorm(stateGroundTruth{i}.velocity(:,1),2,2) < 1e-2),1);
+        if (isempty(end_idx))
+            end_idx = size(stateGroundTruth{i}.time,1);
+        end
+
+        settlingTimeList{l} = stateGroundTruth{i}.time(end_idx) - stateGroundTruth{i}.time(start_idx);
+
         % Only plot specified index
         if bPlotting && (successList{l} || (l == length(bagNameList) && sum(successList{l}) == 0))
             %% Plot the data
@@ -137,7 +161,19 @@ for i = 1:length(configNames)
             % Plot the state
             linearStateFig = figure(linearStateFig);
             linearStateFig.Name = "linear_states";
+
             traj_idx = find(stateGroundTruth{i}.time>= tWindow(1) & stateGroundTruth{i}.time<= tWindow(2));
+
+            if (bStateBasedWindow)
+                stateGroundTruth{i}.time = stateGroundTruth{i}.time - stateGroundTruth{i}.time(start_idx);
+                controlGRFs{i}.time = controlGRFs{i}.time - controlGRFs{i}.time(start_idx);
+                localPlan{i}.time = localPlan{i}.time - localPlan{i}.time(start_idx);
+                stateGroundTruth{i}.position(:,1) = stateGroundTruth{i}.position(:,1)  - stateGroundTruth{i}.position(start_idx,1) ;
+
+                traj_idx = traj_idx(traj_idx >= start_idx & traj_idx <= end_idx);
+            end
+
+%             traj_idx = find(stateGroundTruth{i}.time>= tWindow(1) & stateGroundTruth{i}.time<= tWindow(2));
             
             if contains(envName, 'step')
                 % pitch
@@ -171,6 +207,23 @@ for i = 1:length(configNames)
                 xlabel('Time (s)')
                 annotation('arrow',[0.62 0.67],[0.56 0.7])
                 axis tight
+                set(linearStateFig, 'Position', [100 100 1200 600])
+            elseif contains(envName, 'flat')
+                % z state
+                subplot(1,2,1); hold on
+                plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.position(traj_idx,1), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
+                ylabel('X Position (m)')
+                xlabel('Time (s)')
+                axis tight
+                
+                subplot(1,2,2);
+                hold on;
+                plot(stateGroundTruth{i}.time(traj_idx), stateGroundTruth{i}.velocity(traj_idx,1), 'Color', configColors{i}, 'LineWidth', lineWidth, 'LineStyle', configLinestyles{i});
+                ylabel('X Velocity (m/s)')
+                xlabel('Time (s)')
+                axis tight
+                xlim([0 inf])
+                ylim([0 inf])
                 set(linearStateFig, 'Position', [100 100 1200 600])
             end
             
@@ -274,11 +327,16 @@ for i = 1:length(configNames)
             localPlan{i}.horizonLength = localPlan{i}.horizonLength(traj_idx,:);
             localPlan{i}.complexitySchedule = localPlan{i}.complexitySchedule(traj_idx,:);
             
+            numSimpleElements = 0;
+            numTotalElements = 0;
             for j = 1:length(localPlan{i}.elementTimes)
                 horizonLength = localPlan{i}.horizonLength(j);
                 trajTimesVec = [trajTimesVec; localPlan{i}.time(j)*ones(horizonLength,1)];
                 elementTimesVec = [elementTimesVec; localPlan{i}.elementTimes{j}'];
                 complexityScheduleVec = [complexityScheduleVec; localPlan{i}.complexitySchedule{j}'];
+
+                numSimpleElements = numSimpleElements + sum(1 - localPlan{i}.complexitySchedule{j}(1:end-1));
+                numTotalElements = numTotalElements + double(horizonLength) - 1;
             end
             
             % Sort into simple and complex sets
@@ -288,6 +346,8 @@ for i = 1:length(configNames)
             elementTimesVecSimple = elementTimesVec(simpleIdx);
             trajTimesVecComplex = trajTimesVec(complexIdx);
             elementTimesVecComplex = elementTimesVec(complexIdx);
+
+            fracSimplifiedList{l} = numSimpleElements/numTotalElements;
             
             %     hold on;
             %     if ~isempty(trajTimesVecComplex)
@@ -339,24 +399,37 @@ for i = 1:length(configNames)
     % Compute statistics for the success runs
     if bProcessAllBags
         meanGRFNorm(i) = mean(cell2mat(grfNormList(cell2mat(successList))), 'omitnan')
+        maxVel(i) = mean(cell2mat(maxVelList(cell2mat(successList))), 'omitnan')
+        meanSettlingTime(i) = mean(cell2mat(settlingTimeList(cell2mat(successList))), 'omitnan')
         meanSolveTimes(i) = mean(cell2mat(solveTimesList(cell2mat(successList))))
+        meanFracSimplified(i) = mean(cell2mat(fracSimplifiedList(cell2mat(successList))))
         highSolveTimes(i) = mean(cell2mat(highSolveTimesList(cell2mat(successList))))
         stdSolveTimes(i) = std(cell2mat(solveTimesList(cell2mat(successList))))
         medianSolveTimes(i) = median(cell2mat(solveTimesList(cell2mat(successList))))
         successCount(i) = sum(cell2mat(successList))
     end
 end
-legend(linearStateFig.CurrentAxes, configNames, 'location', 'southwest');
+if contains(envName, 'flat')
+    legend(linearStateFig.CurrentAxes, configNames, 'location', 'northeast');
+else
+    legend(linearStateFig.CurrentAxes, configNames, 'location', 'southwest');
+end
 legend(GRFVectorsFig.CurrentAxes, configNames);
 legend(solveTimeFig.CurrentAxes, configNames);
 legend(horizonLengthFig.CurrentAxes, configNames);
 legend(simplePercentageFig.CurrentAxes, configNames, 'location', 'east');
 
+meanSolveTimesMs = 1000*meanSolveTimes;
+highSolveTimesPerc = 100*highSolveTimes;
+meanPercSimplified = 100*meanFracSimplified;
 if bProcessAllBags
     successCount
-    1000*meanSolveTimes
-    100*highSolveTimes
+    meanSolveTimesMs
+    highSolveTimesPerc
     meanGRFNorm
+    maxVel
+    meanSettlingTime
+    meanPercSimplified
 end
 
 % Add figures to array

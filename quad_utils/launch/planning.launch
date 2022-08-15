@@ -3,9 +3,10 @@
     <include file="$(find quad_utils)/launch/load_params.launch" />
 
     <arg name="global_planner" default="fgmp" />
-    <arg name="leaping" default="true" />
+    <arg name="leaping" default="false" />
     <arg name="logging" default="false" />
     <arg name="twist_input" default="none" />
+    <arg name="bag_name" default="quad_log" />
 
     <!-- Launch the node to publish the global body plan -->
     <group if="$(eval arg('global_planner') == 'fgmp')">
@@ -35,7 +36,9 @@
     <node name="local_planner" pkg="local_planner" type="local_planner_node" output="screen" />
 
     <group if="$(arg logging)">
-        <include file="$(find quad_utils)/launch/logging.launch" />
+        <include file="$(find quad_utils)/launch/logging.launch">
+            <arg name="bag_name" value="$(arg bag_name)" />
+        </include>
     </group>
 
     <node name="plan_publisher" pkg="quad_utils" type="trajectory_publisher_node" output="screen" />

@@ -41,7 +41,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(ros::NodeHandle nh) {
       robot_state_topic_, 1, &GlobalBodyPlanner::robotStateCallback, this);
   goal_state_sub_ = nh_.subscribe(goal_state_topic, 1,
                                   &GlobalBodyPlanner::goalStateCallback, this);
-  body_plan_pub_ = nh_.advertise<quad_msgs::RobotPlan>(body_plan_topic, 1);
+  body_plan_pub_ = nh_.advertise<quad_msgs::RobotPlan>(body_plan_topic, 1, true);
   discrete_body_plan_pub_ =
       nh_.advertise<quad_msgs::RobotPlan>(discrete_body_plan_topic, 1);
   tree_pub_ =
@@ -218,12 +218,15 @@ bool GlobalBodyPlanner::callPlanner() {
     std::vector<Action> action_sequence;
 
     // Call the planner method
+    int plan_status = fast_global_motion_planner.getTestAccelPlan(
+        planner_config_, start_state, goal_state, state_sequence,
+        action_sequence);
     // int plan_status = fast_global_motion_planner.getTestPlan(
     //     planner_config_, start_state, goal_state, state_sequence,
     //     action_sequence);
-    int plan_status = fast_global_motion_planner.findPlan(
-        planner_config_, start_state, goal_state, state_sequence,
-        action_sequence, tree_pub_);
+    // int plan_status = fast_global_motion_planner.findPlan(
+    //     planner_config_, start_state, goal_state, state_sequence,
+    //     action_sequence, tree_pub_);
     newest_plan_.setComputedTimestamp(ros::Time::now());
 
     if (plan_status != VALID && plan_status != VALID_PARTIAL) {

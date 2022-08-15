@@ -7,7 +7,7 @@ local_planner:
   last_cmd_vel_msg_time_max: 2.0
   stand_vel_threshold: 0.1
   stand_cmd_vel_threshold: 0.1
-  stand_pos_error_threshold: 0.05
+  stand_pos_error_threshold: 0.01
 
 local_footstep_planner:
   grf_weight: 0.5
