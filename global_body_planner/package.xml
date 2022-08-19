@@ -69,6 +69,13 @@
   <exec_depend>grid_map_ros</exec_depend>
 
 
+  <!-- switching from setup_deps.sh to rosdeps here-->
+  <depend>tf</depend>
+  <depend>tf2</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>grid_map</depend>
+
+
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->
