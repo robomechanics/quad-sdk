@@ -5,7 +5,7 @@
       <visual name="visual">
        <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_CMU_Text_transformed.stl</uri>
+            <uri>model://spirit_description/meshes/Spirit40_CMU_Text_transformed.stl</uri>
          </mesh>
         </geometry>
         <material>

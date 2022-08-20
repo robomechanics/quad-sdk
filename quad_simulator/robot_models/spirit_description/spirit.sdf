@@ -62,7 +62,7 @@ SOFTWARE.
         <pose frame=''>0.03 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Body_Mesh_transformed.stl</uri>
+            <uri>model://spirit_description/meshes/Spirit40_Body_Mesh_transformed.stl</uri>
           </mesh>
         </geometry>
         <material>
@@ -111,7 +111,7 @@ SOFTWARE.
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Hip_Module_transformed.stl</uri>
+            <uri>model://spirit_description/meshes/Spirit40_Hip_Module_transformed.stl</uri>
           </mesh>
         </geometry>
         <material>
@@ -180,7 +180,7 @@ SOFTWARE.
         <pose frame=''>0 -0.022 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Upper_leg_transformed.stl</uri>
+            <uri>model://spirit_description/meshes/Spirit40_Upper_leg_transformed.stl</uri>
           </mesh>
         </geometry>
         <material>
@@ -250,7 +250,7 @@ SOFTWARE.
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Lower_Leg_transformed.stl</uri>
+            <uri>model://spirit_description/meshes/Spirit40_Lower_Leg_transformed.stl</uri>
           </mesh>
         </geometry>
         <material>
@@ -321,7 +321,7 @@ SOFTWARE.
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Hip_Module_transformed.stl</uri>
+            <uri>model://spirit_description/meshes/Spirit40_Hip_Module_transformed.stl</uri>
           </mesh>
         </geometry>
         <material>
@@ -390,7 +390,7 @@ SOFTWARE.
         <pose frame=''>0 -0.022 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Upper_leg_transformed.stl</uri>
+            <uri>model://spirit_description/meshes/Spirit40_Upper_leg_transformed.stl</uri>
           </mesh>
         </geometry>
         <material>
@@ -460,7 +460,7 @@ SOFTWARE.
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Lower_Leg_transformed.stl</uri>
+            <uri>model://spirit_description/meshes/Spirit40_Lower_Leg_transformed.stl</uri>
           </mesh>
         </geometry>
         <material>
@@ -532,7 +532,7 @@ SOFTWARE.
         <pose frame=''>0 0 0 -3.142 0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Hip_Module_transformed.stl</uri>
+            <uri>model://spirit_description/meshes/Spirit40_Hip_Module_transformed.stl</uri>
           </mesh>
         </geometry>
         <material>
@@ -601,7 +601,7 @@ SOFTWARE.
         <pose frame=''>0 0.022 0 -3.142 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Upper_leg_transformed.stl</uri>
+            <uri>model://spirit_description/meshes/Spirit40_Upper_leg_transformed.stl</uri>
           </mesh>
         </geometry>
         <material>
@@ -671,7 +671,7 @@ SOFTWARE.
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Lower_Leg_transformed.stl</uri>
+            <uri>model://spirit_description/meshes/Spirit40_Lower_Leg_transformed.stl</uri>
           </mesh>
         </geometry>
         <material>
@@ -742,7 +742,7 @@ SOFTWARE.
         <pose frame=''>0 0 0 -3.142 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Hip_Module_transformed.stl</uri>
+            <uri>model://spirit_description/meshes/Spirit40_Hip_Module_transformed.stl</uri>
           </mesh>
         </geometry>
         <material>
@@ -811,7 +811,7 @@ SOFTWARE.
         <pose frame=''>0 0.022 0 -3.142 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Upper_leg_transformed.stl</uri>
+            <uri>model://spirit_description/meshes/Spirit40_Upper_leg_transformed.stl</uri>
           </mesh>
         </geometry>
         <material>
@@ -881,7 +881,7 @@ SOFTWARE.
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Lower_Leg_transformed.stl</uri>
+            <uri>model://spirit_description/meshes/Spirit40_Lower_Leg_transformed.stl</uri>
           </mesh>
         </geometry>
         <material>

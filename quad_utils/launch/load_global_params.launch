@@ -15,12 +15,12 @@
     <rosparam command="load" file="$(find quad_utils)/config/topics_global.yaml" />
 
     <group if="$(eval arg('robot_type') == 'spirit')">
-        <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
+        <param name="robot_description_sdf" textfile="$(find spirit_description)/spirit.sdf" />
         <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
     </group>
 
     <group if="$(eval arg('robot_type') == 'a1')">
-        <param name="robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1.sdf" />
+        <param name="robot_description_sdf" textfile="$(find a1_description)/a1.sdf" />
         <param name="robot_description" command="cat $(find a1_description)/urdf/a1.urdf" />
     </group>
 
