@@ -71,6 +71,17 @@
   <exec_depend>controller_manager</exec_depend>
   <exec_depend>joint_state_controller</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
+
+  <!-- from ../setup_deps.sh -->
+  <!--<depend>controller-manager</depend>-->
+  <!--<depend>joint-state-controller</depend>-->
+  <depend>gazebo-ros-pkgs</depend>
+  <depend>ros-control</depend>
+  <depend>gazebo-ros-control</depend>
+  <depend>effort-controllers</depend>
+  <!--<depend>robot-state-publisher</depend>-->
+  <depend>imu-tools</depend>
+  <depend>message-to-tf</depend>
   
   <!-- The export tag contains other, unspecified, tags -->
   <export>
