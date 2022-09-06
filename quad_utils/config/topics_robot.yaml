@@ -7,6 +7,7 @@ topics:
   foot_plan_continuous: foot_plan_continuous
   foot_plan_discrete: foot_plan_discrete
   local_plan: local_plan
+  camera_odom_sample: camera/odom/sample
   body_force:
     joint_torques: body_force/joint_torques
     toe_forces: body_force/toe_forces
@@ -47,6 +48,7 @@ topics:
       estimate_trace: visualization/state/estimate_trace
       ground_truth_trace: visualization/state/ground_truth_trace
       trajectory_trace: visualization/state/trajectory_trace
+    camera_trace: visualization/camera_trace
     foot_0_plan_continuous: visualization/foot_0_plan_continuous
     foot_1_plan_continuous: visualization/foot_1_plan_continuous
     foot_2_plan_continuous: visualization/foot_2_plan_continuous
