@@ -18,7 +18,8 @@ BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string robot_state_topic, body_force_topic, toe_force_topic;
+  std::string robot_state_topic, body_force_topic, toe_force_topic,
+      local_plan_topic;
 #if USE_SIM == 2
   nh.param<std::string>("topics/joint_encoder", robot_state_topic,
                         "/joint_encoder");
@@ -26,6 +27,7 @@ BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
   nh.param<std::string>("topics/state/ground_truth", robot_state_topic,
                         "/state/ground_truth");
 #endif
+  nh.param<std::string>("topics/local_plan", local_plan_topic, "/local_plan");
   nh.param<std::string>("topics/body_force/joint_torques", body_force_topic,
                         "/body_force/joint_torques");
   nh.param<std::string>("topics/body_force/toe_forces", toe_force_topic,
@@ -43,6 +45,8 @@ BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
   robot_state_sub_ = nh_.subscribe(
       robot_state_topic, 1, &BodyForceEstimator::robotStateCallback, this);
 #endif
+  local_plan_sub_ = nh_.subscribe(local_plan_topic, 1,
+                                  &BodyForceEstimator::localPlanCallback, this);
   body_force_pub_ =
       nh_.advertise<quad_msgs::BodyForceEstimate>(body_force_topic, 1);
   toe_force_pub_ = nh_.advertise<quad_msgs::GRFArray>(toe_force_topic, 1);
@@ -57,6 +61,11 @@ void BodyForceEstimator::robotStateCallback(
 #endif
   // ROS_INFO("In robotStateCallback");
   last_state_msg_ = msg;
+}
+
+void BodyForceEstimator::localPlanCallback(
+    const quad_msgs::RobotPlan::ConstPtr& msg) {
+  last_local_plan_msg_ = msg;
 }
 
 void BodyForceEstimator::update() {
@@ -78,16 +87,63 @@ void BodyForceEstimator::update() {
   // Joint directions (todo: make this a parameter or read the URDF)
   int joint_dirs[3] = {1, -1, 1};
 
-  if (last_state_msg_ == NULL) {
+  if (last_state_msg_ == NULL || last_local_plan_msg_ == NULL) {
     return;
   }
 
+  // Interpolate the local plan to get the reference state
+  quad_msgs::RobotState ref_state_msg;
+  ros::Time t_first_state = last_local_plan_msg_->states.front().header.stamp;
+  double t_now = (ros::Time::now() - last_local_plan_msg_->state_timestamp)
+                     .toSec();  // Use time of state - RECOMMENDED
+  if ((t_now <
+       (last_local_plan_msg_->states.front().header.stamp - t_first_state)
+           .toSec()) ||
+      (t_now >
+       (last_local_plan_msg_->states.back().header.stamp - t_first_state)
+           .toSec())) {
+    ROS_ERROR("ID node couldn't find the correct ref state!");
+  }
+  for (int i = 0; i < last_local_plan_msg_->states.size() - 1; i++) {
+    if ((t_now >= (last_local_plan_msg_->states[i].header.stamp - t_first_state)
+                      .toSec()) &&
+        (t_now <
+         (last_local_plan_msg_->states[i + 1].header.stamp - t_first_state)
+             .toSec())) {
+      double t_interp =
+          (t_now -
+           (last_local_plan_msg_->states[i].header.stamp - t_first_state)
+               .toSec()) /
+          (last_local_plan_msg_->states[i + 1].header.stamp.toSec() -
+           last_local_plan_msg_->states[i].header.stamp.toSec());
+
+      // Linearly interpolate between states
+      quad_utils::interpRobotState(last_local_plan_msg_->states[i],
+                                   last_local_plan_msg_->states[i + 1],
+                                   t_interp, ref_state_msg);
+      continue;
+    }
+  }
+
   if (past_feet_state_.feet.empty()) {
-    //past_feet_state_ = last_state_msg_->feet;
+    past_feet_state_ = ref_state_msg.feet;
   }
 
   for (int i = 0; i < 4; i++) {
     // Loop over four legs: FL, BL, FR, BR
+
+    if (ref_state_msg.feet.feet[i].contact) {
+      // Skip if the foot is in stance
+      if (!past_feet_state_.feet[i].contact) {
+        // on liftoff reset momentum observer state to 0s
+        for (int j = 0; j < 3; j++) {
+          p_hat[3 * i + j] = 0;
+          r_mom[3 * i + j] = 0;
+        }
+      }
+      continue;
+    }
+
     for (int j = 0; j < 3; j++) {
 // read joint data from message
 #if USE_SIM > 0
@@ -131,7 +187,7 @@ void BodyForceEstimator::update() {
     }
   }
 
-  //past_feet_state_ = last_state_msg_->feet;
+  past_feet_state_ = ref_state_msg.feet;
 }
 
 void BodyForceEstimator::publishBodyForce() {

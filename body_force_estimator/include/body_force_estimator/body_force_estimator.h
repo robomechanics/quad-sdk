@@ -2,8 +2,11 @@
 #define BODY_FORCE_ESTIMATOR_H
 
 #include <quad_msgs/BodyForceEstimate.h>
+#include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/GRFArray.h>
 #include <quad_msgs/RobotState.h>
+#include <quad_utils/math_utils.h>
+#include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
 
 // Temporary
@@ -29,16 +32,22 @@ class BodyForceEstimator {
    */
   void spin();
 
-/**
- * @brief Callback function to handle new state estimates
- * @param[in] Robot state message contining position and velocity for each joint
- * and robot body
- */
+  /**
+   * @brief Callback function to handle new state estimates
+   * @param[in] Robot state message contining position and velocity for each joint
+   * and robot body
+   */
 #if USE_SIM > 0
   void robotStateCallback(const sensor_msgs::JointState::ConstPtr& msg);
 #else
   void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
 #endif
+
+  /**
+   * @brief Callback function to handle new local plan (states and GRFs)
+   * @param[in] msg input message contining the local plan
+   */
+  void localPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg);
 
   /**
    * @brief Compute the momentum observer external force estimation update.
@@ -52,6 +61,9 @@ class BodyForceEstimator {
 
   /// ROS subscriber for the robot state
   ros::Subscriber robot_state_sub_;
+
+  /// ROS subscriber for local plan
+  ros::Subscriber local_plan_sub_;
 
   /// ROS publisher for body force force estimates
   ros::Publisher body_force_pub_;
@@ -74,6 +86,9 @@ class BodyForceEstimator {
 
   /// Momentum estimate
   double p_hat[12];
+
+  /// Most recent local plan
+  quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
   /// Previous foot state
   quad_msgs::MultiFootState past_feet_state_;
