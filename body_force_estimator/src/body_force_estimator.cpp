@@ -7,7 +7,7 @@ using namespace force_estimation_dynamics;
 // Temporary
 #if USE_SIM == 1
 int joint_inds[12] = {10, 0, 1, 11, 4, 5, 2, 6, 7, 3, 8, 9};
-#elif USE_SIM == 2
+#elif USE_SIM == 2 || USE_SIM == 0
 int joint_inds[12] = {8, 0, 1, 9, 2, 3, 10, 4, 5, 11, 6, 7};
 #endif
 
@@ -39,10 +39,7 @@ BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
 #if USE_SIM == 1
   robot_state_sub_ = nh_.subscribe(
       "joint_states", 1, &BodyForceEstimator::robotStateCallback, this);
-#elif USE_SIM == 2
-  robot_state_sub_ = nh_.subscribe(
-      robot_state_topic, 1, &BodyForceEstimator::robotStateCallback, this);
-#else
+#elif USE_SIM == 2 || USE_SIM == 0
   robot_state_sub_ = nh_.subscribe(
       robot_state_topic, 1, &BodyForceEstimator::robotStateCallback, this);
 #endif
@@ -83,6 +80,10 @@ void BodyForceEstimator::update() {
 
   if (last_state_msg_ == NULL) {
     return;
+  }
+
+  if (past_feet_state_.feet.empty()) {
+    //past_feet_state_ = last_state_msg_->feet;
   }
 
   for (int i = 0; i < 4; i++) {
@@ -129,6 +130,8 @@ void BodyForceEstimator::update() {
       f_toe_MO[3 * i + j] = fe_toe[j];
     }
   }
+
+  //past_feet_state_ = last_state_msg_->feet;
 }
 
 void BodyForceEstimator::publishBodyForce() {

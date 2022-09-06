@@ -7,7 +7,7 @@
 #include <ros/ros.h>
 
 // Temporary
-#define USE_SIM 1  // 0 = intended, 1 = Gazebo hack, 2 = old bagfile hack
+#define USE_SIM 0  // 0 = intended, 1 = Gazebo hack, 2 = old bagfile hack
 
 //! Estimates body contact forces
 /*!
@@ -69,10 +69,14 @@ class BodyForceEstimator {
   double K_O_;
 
  private:
-  // External torque estimate
+  /// External torque estimate
   double r_mom[12];
-  // Momentum estimate
+
+  /// Momentum estimate
   double p_hat[12];
+
+  /// Previous foot state
+  quad_msgs::MultiFootState past_feet_state_;
 
 // Robot state estimate
 #if USE_SIM > 0

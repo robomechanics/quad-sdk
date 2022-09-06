@@ -2,7 +2,7 @@
 <launch>
   <arg name="gui"             default="true"/>
   <arg name="paused"          default="false"/>
-  <arg name="controller"      default="inverse_dynamics"/>
+  <arg name="controller"      default="underbrush"/>
   <arg name="live_plot"       default="false"/>
   <arg name="world"           default="flat"/>
   <arg name="robot_type"      default="spirit_rotors"/>
