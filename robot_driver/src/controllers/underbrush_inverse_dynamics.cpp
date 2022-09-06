@@ -178,13 +178,13 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
             foot_horz_err = foot_x_err;//sqrt(foot_x_err * foot_x_err);
 
             // cartesian foot velocity commands
-            foot_vx = 10.0 * foot_x_err;
+            foot_vx = 15.0 * foot_x_err; //15
             foot_vx =
                 abs(foot_vx) > 4.0 ? (foot_vx > 0 ? 1 : -1) * 4.0 : foot_vx;
             foot_vy = 10.0 * foot_y_err;
             foot_vy =
                 abs(foot_vy) > 4.0 ? (foot_vy > 0 ? 1 : -1) * 4.0 : foot_vy;
-            foot_vz = 10.0 * foot_z_err;
+            foot_vz = 15.0 * foot_z_err; //15
             if (foot_horz_err > 0.02 && t_TD_.at(i) - t_now2 > t_down_) {
               // don't put the foot down unless it's close to the right x, y
               // position or there's no time left
