@@ -132,6 +132,7 @@ void BodyForceEstimator::update() {
   for (int i = 0; i < 4; i++) {
     // Loop over four legs: FL, BL, FR, BR
 
+    /*
     if (ref_state_msg.feet.feet[i].contact) {
       // Skip if the foot is in stance
       if (!past_feet_state_.feet[i].contact) {
@@ -143,6 +144,7 @@ void BodyForceEstimator::update() {
       }
       continue;
     }
+    */
 
     for (int j = 0; j < 3; j++) {
 // read joint data from message

@@ -75,6 +75,12 @@ SOFTWARE.
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
+    <!--
+    <joint name="world_fix" type="fixed">
+      <parent>world</parent>
+      <child>body</child>
+    </joint>
+    -->
 
     <link name='hip0'>
       <pose frame=''>0.2263 0.07 0 0 -0 0</pose>
