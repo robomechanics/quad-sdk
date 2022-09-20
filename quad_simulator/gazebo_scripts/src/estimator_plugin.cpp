@@ -153,16 +153,19 @@ void QuadEstimatorGroundTruth::OnUpdate() {
 
   state.joints.name = {"8",  "0", "1", "9",  "2", "3",
                        "10", "4", "5", "11", "6", "7"};
-
-  for (int i = 0; i < state.joints.name.size(); i++) {
+  // int iter_num = 0
+  for (int i = 0; i < state.joints.name.size()+4; i++) {
+  // for (iter_num = 0; iter_num < state.joints.name.size()+4; iter_num++) {
     // std::cout << joint->GetName() << std::endl;
     // std::cout << joint->Position() << std::endl;
     // std::cout << joint->GetVelocity(0) << std::endl;
-
+    // std::string joint_i_name;
+    // physics::JointPtr joint = joint_vec[iter_num];
     physics::JointPtr joint = joint_vec[i];
     // physics::JointWrench wrench = joint->GetForceTorque(0);
     double torque = 0;  // wrench.body1Torque.Z(); // Note that this doesn't
                         // seem to work but at least will populate with zeros
+    
 
     state.joints.position.push_back(joint->Position());
     state.joints.velocity.push_back(joint->GetVelocity(0));
