@@ -1,20 +1,16 @@
 <!-- 
 MIT License (modified)
-
 Copyright (c) 2020 The Trustees of the University of Pennsylvania
 Authors:
 Vasileios Vasilopoulos <vvasilo@seas.upenn.edu>
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this **file** (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -59,7 +55,6 @@ SOFTWARE.
     <!-- <include file="$(find quad_utils)/launch/planning.launch">
       <arg name="global_planner" value="$(arg global_planner)"/>
     </include>
-
     <group if="$(eval global_planner == 'twist')">
       <node name="twist_key_controller"
         pkg="quad_utils"
@@ -90,15 +85,15 @@ SOFTWARE.
   <group unless="$(arg rotors)">
     <group if="$(arg tail)">
       <!-- <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_tail.urdf" /> -->
-     <!-- <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_meshes_tail.urdf" /> -->
-      <!-- <param name="robot_description_sdf" textfile="$(find spirit_description)/urdf/spirit_tail.sdf" /> -->
-      <param name="robot_description_sdf" textfile="$(find spirit_description)/urdf/test.sdf" />
+      <!-- <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit_meshes_tail.urdf" /> -->
+      <param name="robot_description_sdf" textfile="$(find spirit_description)/urdf/spirit_tail.sdf" />
+      <!-- <param name="robot_description_sdf" textfile="$(find spirit_description)/urdf/test.sdf" /> -->
       <!-- <param name="robot_description" textfile="$(find spirit_description)/urdf/test.urdf" /> -->
       <!-- <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit_tail.sdf" /> -->
       <rosparam file="$(find gazebo_scripts)/config/spirit_control_tail.yaml" command="load"/>
     </group>
     <group unless="$(arg tail)">
-      <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit.urdf" />
+      <!-- <param name="robot_description" textfile="$(find spirit_description)/urdf/spirit.urdf" /> -->
       <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
       <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
     </group>
