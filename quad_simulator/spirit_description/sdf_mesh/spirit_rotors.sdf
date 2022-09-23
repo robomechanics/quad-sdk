@@ -1298,7 +1298,7 @@ SOFTWARE.
     <link name='abad0_rotor'>
       <pose frame=''>0.2263 0.07 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1339,7 +1339,7 @@ SOFTWARE.
     <link name='hip0_rotor'>
       <pose frame=''>0.2263 0.07 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1359,7 +1359,7 @@ SOFTWARE.
     </link>
     <joint name='hip0_gearing' type='gearbox'>
       <child>hip0_rotor</child>
-      <gearbox_reference_body>body</gearbox_reference_body>
+      <gearbox_reference_body>hip0</gearbox_reference_body>
       <parent>upper0</parent>
       <gearbox_ratio>-6</gearbox_ratio>
       <axis>
@@ -1371,7 +1371,7 @@ SOFTWARE.
     </joint>
     <joint name='hip0_gearbox' type='revolute'>
       <child>hip0_rotor</child>
-      <parent>body</parent>
+      <parent>hip0</parent>
       <axis>
         <xyz>0 1 0</xyz>
       </axis>
@@ -1380,7 +1380,7 @@ SOFTWARE.
     <link name='knee0_rotor'>
       <pose frame=''>0.2263 0.11 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1421,7 +1421,7 @@ SOFTWARE.
     <link name='abad1_rotor'>
       <pose frame=''>-0.2263 0.07 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1462,7 +1462,7 @@ SOFTWARE.
     <link name='hip1_rotor'>
       <pose frame=''>-0.2263 0.07 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1482,7 +1482,7 @@ SOFTWARE.
     </link>
     <joint name='hip1_gearing' type='gearbox'>
       <child>hip1_rotor</child>
-      <gearbox_reference_body>body</gearbox_reference_body>
+      <gearbox_reference_body>hip1</gearbox_reference_body>
       <parent>upper1</parent>
       <gearbox_ratio>-6</gearbox_ratio>
       <axis>
@@ -1494,7 +1494,7 @@ SOFTWARE.
     </joint>
     <joint name='hip1_gearbox' type='revolute'>
       <child>hip1_rotor</child>
-      <parent>body</parent>
+      <parent>hip1</parent>
       <axis>
         <xyz>0 1 0</xyz>
       </axis>
@@ -1503,7 +1503,7 @@ SOFTWARE.
     <link name='knee1_rotor'>
       <pose frame=''>-0.2263 0.11 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1544,7 +1544,7 @@ SOFTWARE.
     <link name='abad2_rotor'>
       <pose frame=''>0.2263 -0.07 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1585,7 +1585,7 @@ SOFTWARE.
     <link name='hip2_rotor'>
       <pose frame=''>0.2263 -0.07 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1605,7 +1605,7 @@ SOFTWARE.
     </link>
     <joint name='hip2_gearing' type='gearbox'>
       <child>hip2_rotor</child>
-      <gearbox_reference_body>body</gearbox_reference_body>
+      <gearbox_reference_body>hip2</gearbox_reference_body>
       <parent>upper2</parent>
       <gearbox_ratio>-6</gearbox_ratio>
       <axis>
@@ -1617,7 +1617,7 @@ SOFTWARE.
     </joint>
     <joint name='hip2_gearbox' type='revolute'>
       <child>hip2_rotor</child>
-      <parent>body</parent>
+      <parent>hip2</parent>
       <axis>
         <xyz>0 1 0</xyz>
       </axis>
@@ -1626,7 +1626,7 @@ SOFTWARE.
     <link name='knee2_rotor'>
       <pose frame=''>0.2263 -0.11 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1667,7 +1667,7 @@ SOFTWARE.
     <link name='abad3_rotor'>
       <pose frame=''>-0.2263 -0.07 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1708,7 +1708,7 @@ SOFTWARE.
     <link name='hip3_rotor'>
       <pose frame=''>-0.2263 -0.07 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
@@ -1728,7 +1728,7 @@ SOFTWARE.
     </link>
     <joint name='hip3_gearing' type='gearbox'>
       <child>hip3_rotor</child>
-      <gearbox_reference_body>body</gearbox_reference_body>
+      <gearbox_reference_body>hip3</gearbox_reference_body>
       <parent>upper3</parent>
       <gearbox_ratio>-6</gearbox_ratio>
       <axis>
@@ -1740,7 +1740,7 @@ SOFTWARE.
     </joint>
     <joint name='hip3_gearbox' type='revolute'>
       <child>hip3_rotor</child>
-      <parent>body</parent>
+      <parent>hip3</parent>
       <axis>
         <xyz>0 1 0</xyz>
       </axis>
@@ -1749,7 +1749,7 @@ SOFTWARE.
     <link name='knee3_rotor'>
       <pose frame=''>-0.2263 -0.11 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
           <ixx>1.231E-4</ixx>
           <ixy>0</ixy>
