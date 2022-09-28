@@ -77,6 +77,9 @@
   <exec_depend>grid_map_ros</exec_depend>
   <exec_depend>grid_map_pcl</exec_depend>
 
+  <!-- moved from setup_deps.sh-->
+  <depend>plotjuggler_ros</depend>
+
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->

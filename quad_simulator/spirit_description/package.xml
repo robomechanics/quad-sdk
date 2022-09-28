@@ -50,6 +50,17 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
 
+  <!-- from ../setup_deps.sh -->
+  <depend>controller-manager</depend>
+  <depend>joint-state-controller</depend>
+  <depend>gazebo-ros-pkgs</depend>
+  <depend>ros-control</depend>
+  <depend>gazebo-ros-control</depend>
+  <depend>effort-controllers</depend>
+  <depend>robot-state-publisher</depend>
+  <depend>imu-tools</depend>
+  <depend>message-to-tf</depend>
+
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
