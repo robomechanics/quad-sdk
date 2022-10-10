@@ -10,8 +10,6 @@
     <buildtool_depend>catkin</buildtool_depend>
     <depend>roscpp</depend>
     <depend>std_msgs</depend>
-
-    <!-- from ../setup_deps.sh -->
     <depend>controller-manager</depend>
     <depend>joint-state-controller</depend>
     <depend>gazebo-ros-pkgs</depend>

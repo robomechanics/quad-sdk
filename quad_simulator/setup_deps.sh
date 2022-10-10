@@ -13,15 +13,3 @@ cat /etc/apt/sources.list.d/gazebo-stable.list
 wget https://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
 sudo apt update
 sudo apt install -y gazebo9 -y
-
-
-# moving to package.xml in a1_description, spirit_description, gazebo_scripts
-#sudo apt install -y ros-melodic-controller-manager -y
-#sudo apt install -y ros-melodic-joint-state-controller -y
-#sudo apt install -y ros-melodic-gazebo-ros-pkgs -y
-#sudo apt install -y ros-melodic-ros-control -y
-#sudo apt install -y ros-melodic-gazebo-ros-control -y
-#sudo apt install -y ros-melodic-effort-controllers -y
-#sudo apt install -y ros-melodic-robot-state-publisher -y
-#sudo apt install -y ros-melodic-imu-tools -y
-#sudo apt install -y ros-melodic-message-to-tf -y

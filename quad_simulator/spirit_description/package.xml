@@ -50,7 +50,6 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
 
-  <!-- from ../setup_deps.sh -->
   <depend>controller-manager</depend>
   <depend>joint-state-controller</depend>
   <depend>gazebo-ros-pkgs</depend>
