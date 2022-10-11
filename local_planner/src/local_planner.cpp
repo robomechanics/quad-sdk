@@ -9,22 +9,39 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic,
       local_plan_topic, foot_plan_discrete_topic, foot_plan_continuous_topic,
-      cmd_vel_topic, control_mode_topic;
+      cmd_vel_topic, control_mode_topic,plan_robot_namespace;
+
+  std::string terrain_map_topic0, body_plan_topic0, robot_state_topic0,
+      local_plan_topic0, foot_plan_discrete_topic0, foot_plan_continuous_topic0,
+      cmd_vel_topic0, control_mode_topic0;
+
 
   // Load system parameters from launch file (not in config file)
   quad_utils::loadROSParamDefault(nh_, "robot_type", robot_name_,
                                   std::string("spirit"));
   quad_utils::loadROSParam(nh_, "/topics/terrain_map", terrain_map_topic);
-  quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
-  quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
-  quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
+  quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic0);
+  quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic0);
+  quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic0);
   quad_utils::loadROSParam(nh_, "topics/foot_plan_discrete",
-                           foot_plan_discrete_topic);
+                           foot_plan_discrete_topic0);
   quad_utils::loadROSParam(nh_, "topics/foot_plan_continuous",
-                           foot_plan_continuous_topic);
-  quad_utils::loadROSParam(nh_, "topics/cmd_vel", cmd_vel_topic);
+                           foot_plan_continuous_topic0);
+  quad_utils::loadROSParam(nh_, "topics/cmd_vel", cmd_vel_topic0);
   quad_utils::loadROSParam(nh_, "/map_frame", map_frame_);
-  quad_utils::loadROSParam(nh_, "topics/control/mode", control_mode_topic);
+  quad_utils::loadROSParam(nh_, "topics/control/mode", control_mode_topic0);
+  quad_utils::loadROSParam(nh_, "plan_robot_1_namespace", plan_robot_namespace);
+
+
+  body_plan_topic = plan_robot_namespace+"/"+body_plan_topic0;
+  robot_state_topic = plan_robot_namespace+"/"+robot_state_topic0;
+  local_plan_topic = plan_robot_namespace+"/"+local_plan_topic0;
+  foot_plan_discrete_topic = plan_robot_namespace+"/"+foot_plan_discrete_topic0;
+  foot_plan_continuous_topic = plan_robot_namespace+"/"+foot_plan_continuous_topic0;
+  cmd_vel_topic = plan_robot_namespace+"/"+cmd_vel_topic0;
+  control_mode_topic = plan_robot_namespace+"/"+control_mode_topic0;
+  //control_mode_topic = control_mode_topic0;
+  
 
   // Setup pubs and subs
   terrain_map_sub_ = nh_.subscribe(terrain_map_topic, 1,

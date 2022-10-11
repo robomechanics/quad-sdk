@@ -81,7 +81,8 @@ TeleopTwistJoy::TeleopTwistJoy(ros::NodeHandle* nh, ros::NodeHandle* nh_param) {
                                "/control/mode");
   pimpl_->control_mode_pub =
       nh->advertise<std_msgs::UInt8>(control_mode_topic, 1, false);
-  pimpl_->cmd_vel_pub = nh->advertise<geometry_msgs::Twist>("cmd_vel", 1, true);
+  //pimpl_->cmd_vel_pub = nh->advertise<geometry_msgs::Twist>("cmd_vel", 1, true);
+  pimpl_->cmd_vel_pub = nh->advertise<geometry_msgs::Twist>("robot_1/cmd_vel", 1, true); // hardcoded robot namespace
   pimpl_->joy_sub = nh->subscribe<sensor_msgs::Joy>(
       "joy", 1, &TeleopTwistJoy::Impl::joyCallback, pimpl_);
 

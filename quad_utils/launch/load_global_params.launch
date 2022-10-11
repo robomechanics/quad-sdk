@@ -23,6 +23,13 @@
         <param name="robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1.sdf" />
         <param name="robot_description" command="cat $(find a1_description)/urdf/a1.urdf" />
     </group>
+    
+    <group if="$(eval arg('robot_type') == 'test')">
+
+        <param name="robot_description_sdf" textfile="$(find testbot_description)/sdf_mesh/test.sdf" />
+        <param name="robot_description" command="cat $(find testbot_description)/urdf/test.urdf" />
+    </group>
+    
 
     <group if="$(arg load_robot_params)">
         <include file="$(find quad_utils)/launch/load_robot_params.launch"/>

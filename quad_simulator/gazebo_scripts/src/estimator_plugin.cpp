@@ -123,12 +123,14 @@ void QuadEstimatorGroundTruth::OnUpdate() {
   state.joints.name = {"8",  "0", "1", "9",  "2", "3",
                        "10", "4", "5", "11", "6", "7"};
 
-  for (int i = 0; i < num_joints; i++) {
-    // std::cout << joint->GetName() << std::endl;
-    // std::cout << joint->Position() << std::endl;
-    // std::cout << joint->GetVelocity(0) << std::endl;
+  for (int i = 0; i < state.joints.name.size()+4; i++) {
+  // for (int i = 0; i < state.joints.name.size(); i++) {
+    physics::JointPtr joint = joint_vec[i];
+    std::string joint_name = joint->GetName();
+    if(std::find(state.joints.name.begin(), state.joints.name.end(),joint_name) != state.joints.name.end())
+    {
 
-    physics::JointPtr joint = model_-> GetJoint(state.joints.name[i]);
+    // physics::JointPtr joint = model_-> GetJoint(state.joints.name[i]);
     // physics::JointWrench wrench = joint->GetForceTorque(0);
     double torque = 0;  // wrench.body1Torque.Z();
                         // Note that this doesn't
@@ -137,6 +139,7 @@ void QuadEstimatorGroundTruth::OnUpdate() {
     state.joints.position.push_back(joint->Position());
     state.joints.velocity.push_back(joint->GetVelocity(0));
     state.joints.effort.push_back(torque);
+    }
   }
 
   int num_feet = 4;

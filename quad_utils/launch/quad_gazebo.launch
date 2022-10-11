@@ -8,6 +8,7 @@
   <arg name="dash" default="false" />
   <arg name="world" default="flat" />
   <arg name="logging" default="false" />
+  <arg name="rviz_onoff" default="true"/>
   <param name="/use_sim_time" value="true" />
 
   <!-- Launch the Quad world with specific physics parameters -->
@@ -64,6 +65,7 @@
     <arg name="robot_type" value="$(arg robot_type)" />
     <arg name="live_plot" value="$(arg live_plot)" />
     <arg name="dash" value="$(arg dash)" />
+    <arg name="rviz_onoff" value="$(arg rviz_onoff)" />
   </include>
 
 </launch>

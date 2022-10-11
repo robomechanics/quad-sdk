@@ -1,6 +1,9 @@
 <launch>
-    <arg name="robot_type" default="spirit"/>
+    <arg name="robot_type"  default="spirit"/>
+    <arg name="namespace1"       default="robot_1" />
 
+    <!-- <rosparam command="load" file="$(find quad_utils)/config/topics_robot.yaml" /> -->
+    <rosparam param="plan_robot_1_namespace" subst_value="True">$(arg namespace1)</rosparam>
     <rosparam command="load" file="$(find quad_utils)/config/topics_robot.yaml" />
     <param name="enable_statistics" type="bool" value="true" />
 
@@ -15,4 +18,12 @@
         <param name="robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1.sdf" />
         <param name="robot_description" command="cat $(find a1_description)/urdf/a1.urdf" />
     </group>
+    
+    <group if="$(eval arg('robot_type') == 'test')">
+        <rosparam command="load" file="$(find quad_utils)/config/test.yaml" />
+        <param name="robot_description_sdf" textfile="$(find testbot_description)/sdf_mesh/test.sdf" />
+        <param name="robot_description" command="cat $(find testbot_description)/urdf/test.urdf" />
+    </group>
+    
+    
 </launch>

@@ -4,6 +4,7 @@
     <arg name="multiple_robots" default="false"/>
     <arg name="live_plot" default="false"/>
     <arg name="dash" default="false"/>
+    <arg name="rviz_onoff" default="true"/>
 
     <include file="$(find quad_utils)/launch/load_global_params.launch">
         <arg name="robot_type" value="$(arg robot_type)"/>
@@ -37,7 +38,9 @@
     <!-- Users can add more robots here -->
 
     <!-- Launch RViz -->
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find quad_utils)/rviz/quad_viewer.rviz"/>
+    <group if="$(eval arg('rviz_onoff') == 'true')">
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find quad_utils)/rviz/quad_viewer.rviz"/>
+    </group>
 
     <!-- Launch live plotter -->
     <group if="$(arg live_plot)">

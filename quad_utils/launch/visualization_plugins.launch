@@ -1,6 +1,7 @@
 <launch>
     <arg name="namespace" default="robot_1" />
     <arg name="robot_type" default="spirit"/>
+    <arg name="rviz_onoff" default="true"/>
 
     <include file="$(find quad_utils)/launch/load_robot_params.launch">
         <arg name="robot_type" value="$(arg robot_type)"/>
@@ -21,8 +22,11 @@
             <param name="tf_prefix" value="$(arg namespace)_ground_truth"/>
         </node>
     </group>
-
+    
+    <group if="$(eval arg('rviz_onoff') == 'true')">
     <!-- Launch the node to publish the visual topics for the plans -->
-    <node name="rviz_interface" pkg="quad_utils" type="rviz_interface_node" output="screen"/>
+        <node name="rviz_interface" pkg="quad_utils" type="rviz_interface_node" output="screen"/>
+    </group>
+
 
 </launch>
