@@ -62,10 +62,10 @@ nmpc_controller:
 robot_driver:
   sit_kp: [10, 10, 10]
   sit_kd: [1, 1, 1]
-  stand_kp: [35, 35, 35]
-  stand_kd: [1, 1, 1]
-  stance_kp: [15, 15, 35]
-  stance_kd: [1, 1, 1]
+  stand_kp: [30, 30, 30]
+  stand_kd: [1.0, 1.0, 1.0]
+  stance_kp: [30, 30, 30]
+  stance_kd: [1.2, 1.2, 1.2]
   swing_kp: [15, 15, 15]
   swing_kd: [1.1, 1.1, 1.1]
   swing_kp_cart: [0, 0, 0] # N/m
@@ -74,4 +74,4 @@ robot_driver:
   safety_kd: [2, 2, 2]
   stand_joint_angles: [0.0, 0.76, 1.52]
   sit_joint_angles: [0.0, 0.0, 0.0]
-  torque_limit: [1000, 1000, 1000]
+  torque_limit: [5000, 5000, 5000]
