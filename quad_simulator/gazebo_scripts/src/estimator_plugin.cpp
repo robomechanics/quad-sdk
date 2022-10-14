@@ -123,7 +123,7 @@ void QuadEstimatorGroundTruth::OnUpdate() {
   state.joints.name = {"8",  "0", "1", "9",  "2", "3",
                        "10", "4", "5", "11", "6", "7"};
 
-  for (int i = 0; i < state.joints.name.size()+4; i++) {
+  for (int i = 0; i < state.joints.name.size()+5; i++) {
   // for (int i = 0; i < state.joints.name.size(); i++) {
     physics::JointPtr joint = joint_vec[i];
     std::string joint_name = joint->GetName();
