@@ -76,6 +76,8 @@ localPlanFigs = [];
 maxTime = 0;
 dt = 0.030;
 
+dataMat = {};
+
 for i = 1:length(configNames)
     % Search bags for the config
     bagNameList = dir(['../bags/', envName, '_', name_prefix, '_', lower(configNames{i}), '*']);
@@ -101,6 +103,7 @@ for i = 1:length(configNames)
         
         % Load the data
         [data, trialName] = parseQuadBag(trialName);
+        dataMat{i,l} = data;
         stateGroundTruth{i} = data.stateGroundTruth;
         if norm(stateGroundTruth{i}.position(1,1:2) - stateGroundTruth{i}.position(end,1:2)) < start_diff_tol
             fprintf("No data for %s\n", bagNameList(l).name);
@@ -295,7 +298,7 @@ for i = 1:length(configNames)
             yticks([0 25 50 75 100]);
             yticklabels({'0\%', '25\%', '50\%', '75\%', '100\%'});
             axis([0, max(localPlan{i}.time), -5 105])
-            set(simplePercentageFig, 'Position', [100 100 1200 600])
+            set(simplePercentageFig, 'Position', [100 100 1200 830])
             box off
             
             %
@@ -388,10 +391,10 @@ for i = 1:length(configNames)
                 legend(predictionHorizonFig.CurrentAxes, 'Simple', 'Complex');
             end
             
-%             axis equal
+            axis equal
             axis([tLocalPlanWindow(1), tLocalPlanWindow(2) + 0.72, tLocalPlanWindow(1), tLocalPlanWindow(2)])
             title(configNames{i})
-            set(predictionHorizonFig, 'Position', [100 100 1200 600])
+            set(predictionHorizonFig, 'Position', [100 100 1200 830])
             hold on;
         end
     end
@@ -419,10 +422,11 @@ legend(solveTimeFig.CurrentAxes, configNames);
 legend(horizonLengthFig.CurrentAxes, configNames);
 legend(simplePercentageFig.CurrentAxes, configNames, 'location', 'east');
 
-meanSolveTimesMs = 1000*meanSolveTimes;
-highSolveTimesPerc = 100*highSolveTimes;
-meanPercSimplified = 100*meanFracSimplified;
 if bProcessAllBags
+    meanSolveTimesMs = 1000*meanSolveTimes;
+    highSolveTimesPerc = 100*highSolveTimes;
+    meanPercSimplified = 100*meanFracSimplified;
+
     successCount
     meanSolveTimesMs
     highSolveTimesPerc
@@ -431,6 +435,8 @@ if bProcessAllBags
     meanSettlingTime
     meanPercSimplified
 end
+
+save('~/dataMat.m', 'dataMat')
 
 % Add figures to array
 figArray = [linearStateFig, GRFVectorsFig, solveTimeFig, horizonLengthFig, predictionHorizonFig, simplePercentageFig];
