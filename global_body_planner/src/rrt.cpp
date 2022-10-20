@@ -13,6 +13,8 @@ bool RRT::newConfig(State s, State s_near, StateActionResult &result,
                     ros::Publisher &tree_pub) {
   double best_so_far = stateDistance(s_near, s);
 
+  // if (!isValidYaw(s, s_near)) return false;
+
   // Try connecting directly
   StateActionResult current_result;
   int connect_result =
@@ -97,7 +99,7 @@ int RRT::attemptConnect(const State &s_existing, const State &s, double t_s,
   // that the action is useful
   if (t_s <= planner_config.trapped_buffer_factor * planner_config.dt)
     return TRAPPED;
-
+  // std::cout << "t_s" << t_s << std::endl;
   // Initialize the start and goal states depending on the direction, as well as
   // the stance and flight times
   State s_start = (direction == FORWARD) ? s_existing : s;
@@ -109,6 +111,13 @@ int RRT::attemptConnect(const State &s_existing, const State &s, double t_s,
   setDz(s_goal, planner_config);
 
   // Compute accelerations at start and end of the behavior
+  // std::cout << std::endl;
+  // std::cout << "start state" << std::endl;
+  // printState(s_start);
+  // std::cout << "end state" << std::endl;
+  // printState(s_goal);
+  // s_start.vel[0] = 0.1;
+
   Eigen::Vector3d acc_0 =
       -(2.0 * (3.0 * s_start.pos - 3.0 * s_goal.pos + 2.0 * s_start.vel * t_s +
                s_goal.vel * t_s)) /

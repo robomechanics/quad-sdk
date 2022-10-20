@@ -404,6 +404,14 @@ void addFullStates(const FullState &start_state,
                    std::vector<FullState> &interp_full_path,
                    const PlannerConfig &planner_config);
 
+State interpStateActionPair(const FullState &s_in, const Action &a, double t0,
+                            double dt, std::vector<State> &interp_reduced_plan,
+                            std::vector<GRF> &interp_GRF,
+                            std::vector<double> &interp_t,
+                            std::vector<int> &interp_primitive_id,
+                            std::vector<double> &interp_length,
+                            const PlannerConfig &planner_config);
+
 /**
  * @brief Interpolating States based on Action
  * @param[in] s The initial State
@@ -815,6 +823,8 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
  */
 bool isValidState(const State &s, const PlannerConfig &planner_config,
                   int phase, double &max_height);
+
+bool isValidYaw(const State &s, const State &old_s);
 
 // Trajectory validity checking
 /**

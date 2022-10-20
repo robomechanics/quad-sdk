@@ -46,6 +46,9 @@ void GlobalBodyPlan::loadPlanData(int plan_status, FullState &start_state,
 
   // Loop through state action pairs, interp each and add to the path
   for (int i = 0; i < action_sequence.size(); i++) {
+    // interpStateActionPair(start_state, action_sequence[i], t0, dt,
+    //                       interp_reduced_plan, grf_plan_, t_plan_,
+    //                       primitive_id_plan_, length_plan_, planner_config);
     interpStateActionPair(state_sequence[i], action_sequence[i], t0, dt,
                           interp_reduced_plan, grf_plan_, t_plan_,
                           primitive_id_plan_, length_plan_, planner_config);
@@ -65,9 +68,56 @@ void GlobalBodyPlan::loadPlanData(int plan_status, FullState &start_state,
   primitive_id_plan_.push_back(LEAP_STANCE);
 
   // Lift from reduced into full body plan
-  addFullStates(start_state, interp_reduced_plan, dt, body_plan_,
-                planner_config);
+  // addFullStates(start_state, interp_reduced_plan, dt, body_plan_,
+  //               planner_config);
 
+  std::vector<double> wrapped_yaw(2);
+  std::vector<double> unwrapped_yaw(2);
+  wrapped_yaw[1] =
+      atan2(state_sequence_.back().pos[1] - state_sequence_.front().pos[1],
+            state_sequence_.back().pos[0] - state_sequence_.front().pos[0]);
+  wrapped_yaw[0] = start_state.ang[2];
+  unwrapped_yaw = math_utils::unwrap(wrapped_yaw);
+  std::cout << "unwrapped_yaw0" << unwrapped_yaw[0] << std::endl;
+  std::cout << "unwrapped_yaw1" << unwrapped_yaw[1] << std::endl <<
+  std::endl; double yaw_rate = (unwrapped_yaw[1] - unwrapped_yaw[0]) > 0 ?
+  0.005 : -0.005;
+
+  int tip_size = abs(unwrapped_yaw[1] - unwrapped_yaw[0]) / abs(yaw_rate);
+  std::cout << tip_size << std::endl;
+  std::vector<FullState> turn_in_place;
+  if (tip_size == 0)
+    turn_in_place.push_back(start_state);
+  else {
+    turn_in_place = std::vector<FullState>(tip_size, start_state);
+    // std::cout << "checkpoint -1" << std::endl;
+
+    for (int i = 0; i < tip_size; i++) {
+      turn_in_place[i].ang[2] =
+          math_utils::wrapToPi(unwrapped_yaw[0] + i * yaw_rate);
+      turn_in_place[i].ang_vel[2] = yaw_rate;
+    }
+  }
+
+  // std::cout << "checkpoint 0" << std::endl;
+  // interp_reduced_plan[0] = fullStateToState(turn_in_place.back());
+  // std::cout << "checkpoint 1" << std::endl;
+  // for (auto i : turn_in_place) {
+  //   printFullState(i);
+  // }
+  std::cout << " x, y" << turn_in_place.back().pos[0] << " " << turn_in_place.back().pos[1] << std::endl;
+  addFullStates(turn_in_place.back(), interp_reduced_plan, dt, body_plan_,
+                planner_config);
+  // std::cout << "checkpoint 2" << std::endl;
+  turn_in_place.insert(turn_in_place.end(), body_plan_.begin(),
+                       body_plan_.end());
+  // std::cout << "checkpoint 3" << std::endl;
+
+  body_plan_ = turn_in_place;
+  // for (auto i : body_plan_) {
+  //   printFullState(i);
+  // }
+  // std::cout << "here************" << std::endl;
   goal_distance_ = dist_to_goal;
 }
 

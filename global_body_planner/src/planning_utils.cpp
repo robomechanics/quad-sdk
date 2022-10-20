@@ -228,6 +228,9 @@ void addFullStates(const FullState &start_state,
   filtered_yaw = math_utils::movingAverageFilter(unwrapped_yaw, window_size);
   yaw_rate = math_utils::centralDiff(filtered_yaw, dt);
   filtered_yaw_rate = math_utils::movingAverageFilter(yaw_rate, window_size);
+  // for (double i : filtered_yaw_rate) {
+  //   std::cout << i << std::endl;
+  // }
   pitch_rate = math_utils::centralDiff(pitch, dt);
   filtered_pitch_rate =
       math_utils::movingAverageFilter(pitch_rate, window_size);
@@ -333,6 +336,24 @@ void setDz(State &s, const Eigen::Vector3d &surf_norm) {
                  : (s.vel.head<2>().dot(surf_norm.head<2>()) / surf_norm[2]);
 }
 
+State interpStateActionPair(const FullState &s_in, const Action &a, double t0,
+                            double dt, std::vector<State> &interp_reduced_plan,
+                            std::vector<GRF> &interp_GRF,
+                            std::vector<double> &interp_t,
+                            std::vector<int> &interp_primitive_id,
+                            std::vector<double> &interp_length,
+                            const PlannerConfig &planner_config) {
+  double yaw = s_in.ang[2];
+  double unit = 0.5;
+  FullState fs_copy = s_in;
+  fs_copy.vel[0] = unit * cos(yaw);
+  fs_copy.vel[1] = unit * sin(yaw);
+  State s_copy = fullStateToState(fs_copy);
+  return interpStateActionPair(s_copy, a, t0, dt, interp_reduced_plan,
+                               interp_GRF, interp_t, interp_primitive_id,
+                               interp_length, planner_config);
+}
+
 State interpStateActionPair(const State &s_in, const Action &a, double t0,
                             double dt, std::vector<State> &interp_reduced_plan,
                             std::vector<GRF> &interp_GRF,
@@ -355,6 +376,8 @@ State interpStateActionPair(const State &s_in, const Action &a, double t0,
   for (double t = 0; t < t_s; t += dt) {
     interp_t.push_back(t0 + t);
     State s_next = applyStance(s, a, t, phase, planner_config);
+    // printState(s_next);
+    // printAction(a);
     if (!interp_reduced_plan.empty()) {
       interp_length.push_back(interp_length.back() +
                               poseDistance(s_next, interp_reduced_plan.back()));
@@ -477,6 +500,7 @@ State applyStance(const State &s, const Action &a, double t, int phase,
 
   if (phase == CONNECT) {
     Eigen::Vector3d acc_0 = a.grf_0 * g + planner_config.g_vec;
+    std::cout << acc_0 <<std::endl;
     Eigen::Vector3d acc_f = a.grf_f * g + planner_config.g_vec;
 
     // Note: in connect phase, a.grf represents acceleration
@@ -954,6 +978,27 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
   }
 
   return true;
+}
+
+bool isValidYaw(const State &s, const State &old_s) {
+  double old_yaw = atan2(old_s.vel[1], old_s.vel[0]);
+  double directional_yaw =
+      atan2(s.pos[1] - old_s.pos[1], s.pos[0] - old_s.pos[0]);
+  double distance =
+      sqrt(pow(s.pos[1] - old_s.pos[1], 2) + pow(s.pos[0] - old_s.pos[0], 2));
+  double K = 0.1;
+  std::cout << "-----" << std::endl;
+  std::cout << "directional_yaw" << directional_yaw << std::endl;
+  std::cout << "old_yaw" << old_yaw << std::endl;
+  std::cout << "distance" << distance << std::endl;
+  std::cout << abs(directional_yaw - old_yaw) << std::endl;
+  double error = abs(directional_yaw - old_yaw) > M_PI
+                     ? abs(directional_yaw - old_yaw) - M_PI
+                     : abs(directional_yaw - old_yaw);
+  if (error > K * distance || error > M_PI / 2)
+    return false;
+  else
+    return true;
 }
 
 bool isValidStateActionPair(const State &s_in, const Action &a,
