@@ -33,17 +33,19 @@ BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
   nh.param<std::string>("topics/body_force/toe_forces", toe_force_topic,
                         "/body_force/toe_forces");
   nh.param<double>(
-      "body_force_estimator/update_rate", update_rate_,
-      100);  // add a param for your package instead of using the estimator one
-  nh.param<double>("body_force_estimator/K_O", K_O_, 20);
+      "/body_force_estimator/update_rate", update_rate_,
+      250);  // add a param for your package instead of using the estimator one
+  nh.param<double>("/body_force_estimator/K_O", K_O_, 50);
 
 // Setup pubs and subs
 #if USE_SIM == 1
   robot_state_sub_ = nh_.subscribe(
-      "joint_states", 1, &BodyForceEstimator::robotStateCallback, this);
+      "joint_states", 1, &BodyForceEstimator::robotStateCallback,
+                    this, ros::TransportHints().tcpNoDelay(true));
 #elif USE_SIM == 2 || USE_SIM == 0
   robot_state_sub_ = nh_.subscribe(
-      robot_state_topic, 1, &BodyForceEstimator::robotStateCallback, this);
+      robot_state_topic, 1, &BodyForceEstimator::robotStateCallback,
+                    this, ros::TransportHints().tcpNoDelay(true));
 #endif
   local_plan_sub_ = nh_.subscribe(local_plan_topic, 1,
                                   &BodyForceEstimator::localPlanCallback, this);

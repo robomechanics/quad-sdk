@@ -86,7 +86,7 @@ SOFTWARE.
       <pose frame=''>0.2263 0.07 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 0.03 0 0 -0 0</pose>
-        <mass>0.575</mass>
+        <mass>0.555</mass>
         <inertia>
           <ixx>0.000669635</ixx>
           <ixy>0</ixy>
@@ -158,15 +158,15 @@ SOFTWARE.
     <link name='upper0'>
       <pose frame=''>0.2263 0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.0676 -0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.049 -0.039 0.006 0 -0 0</pose>
         <mass>0.792</mass>
         <inertia>
-          <ixx>5e-03</ixx>
-          <ixy>0.0010</ixy>
+          <ixx>4e-04</ixx>
+          <ixy>-0.0012</ixy>
           <ixz>0</ixz>
-          <iyy>0.0049</iyy>
+          <iyy>0.0066</iyy>
           <iyz>0</iyz>
-          <izz>0.0049</izz>
+          <izz>0.0066</izz>
         </inertia>
       </inertial>
       <collision name='upper0_collision'>
@@ -305,7 +305,7 @@ SOFTWARE.
       <pose frame=''>-0.2263 0.07 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 0.03 0 0 -0 0</pose>
-        <mass>0.575</mass>
+        <mass>0.555</mass>
         <inertia>
           <ixx>0.000669635</ixx>
           <ixy>0</ixy>
@@ -377,15 +377,15 @@ SOFTWARE.
     <link name='upper1'>
       <pose frame=''>-0.2263 0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.0676 -0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.049 -0.039 0.006 0 -0 0</pose>
         <mass>0.792</mass>
         <inertia>
-          <ixx>5e-03</ixx>
-          <ixy>0.0010</ixy>
+          <ixx>4e-04</ixx>
+          <ixy>-0.0012</ixy>
           <ixz>0</ixz>
-          <iyy>0.0049</iyy>
+          <iyy>0.0066</iyy>
           <iyz>0</iyz>
-          <izz>0.0049</izz>
+          <izz>0.0066</izz>
         </inertia>
       </inertial>
       <collision name='upper1_collision'>
@@ -525,7 +525,7 @@ SOFTWARE.
       <pose frame=''>0.2263 -0.07 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 -0.03 0 0 -0 0</pose>
-        <mass>0.575</mass>
+        <mass>0.555</mass>
         <inertia>
           <ixx>0.000669635</ixx>
           <ixy>0</ixy>
@@ -597,15 +597,15 @@ SOFTWARE.
     <link name='upper2'>
       <pose frame=''>0.2263 -0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.0676 0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.049 0.039 0.006 0 -0 0</pose>
         <mass>0.792</mass>
         <inertia>
-          <ixx>5e-03</ixx>
-          <ixy>0.0010</ixy>
+          <ixx>4e-04</ixx>
+          <ixy>-0.0012</ixy>
           <ixz>0</ixz>
-          <iyy>0.0049</iyy>
+          <iyy>0.0066</iyy>
           <iyz>0</iyz>
-          <izz>0.0049</izz>
+          <izz>0.0066</izz>
         </inertia>
       </inertial>
       <collision name='upper2_collision'>
@@ -744,7 +744,7 @@ SOFTWARE.
       <pose frame=''>-0.2263 -0.07 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 -0.03 0 0 -0 0</pose>
-        <mass>0.575</mass>
+        <mass>0.555</mass>
         <inertia>
           <ixx>0.000669635</ixx>
           <ixy>0</ixy>
@@ -816,15 +816,15 @@ SOFTWARE.
     <link name='upper3'>
       <pose frame=''>-0.2263 -0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.0676 0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.049 0.039 0.006 0 -0 0</pose>
         <mass>0.792</mass>
         <inertia>
-          <ixx>5e-03</ixx>
-          <ixy>0.0010</ixy>
+          <ixx>4e-04</ixx>
+          <ixy>-0.0012</ixy>
           <ixz>0</ixz>
-          <iyy>0.0049</iyy>
+          <iyy>0.0066</iyy>
           <iyz>0</iyz>
-          <izz>0.0049</izz>
+          <izz>0.0066</izz>
         </inertia>
       </inertial>
       <collision name='upper3_collision'>
@@ -1300,21 +1300,21 @@ SOFTWARE.
       <inertial>
         <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <!--<visual name='abad0_rotor_visual'>
+      <visual name='abad0_rotor_visual'>
         <geometry>
           <box>
             <size>0.01 0.1 0.1</size>
           </box>
         </geometry>
-      </visual>-->
+      </visual>
     </link>
     <joint name='abad0_gearing' type='gearbox'>
       <child>abad0_rotor</child>
@@ -1341,21 +1341,21 @@ SOFTWARE.
       <inertial>
         <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <!--<visual name='hip0_rotor_visual'>
+      <visual name='hip0_rotor_visual'>
         <geometry>
           <box>
             <size>0.1 0.01 0.1</size>
           </box>
         </geometry>
-      </visual>-->
+      </visual>
     </link>
     <joint name='hip0_gearing' type='gearbox'>
       <child>hip0_rotor</child>
@@ -1382,21 +1382,21 @@ SOFTWARE.
       <inertial>
         <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <!--<visual name='knee0_rotor_visual'>
+      <visual name='knee0_rotor_visual'>
         <geometry>
           <box>
             <size>0.1 0.01 0.1</size>
           </box>
         </geometry>
-      </visual>-->
+      </visual>
     </link>
     <joint name='knee0_gearing' type='gearbox'>
       <child>knee0_rotor</child>
@@ -1423,21 +1423,21 @@ SOFTWARE.
       <inertial>
         <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <!--<visual name='abad1_rotor_visual'>
+      <visual name='abad1_rotor_visual'>
         <geometry>
           <box>
             <size>0.01 0.1 0.1</size>
           </box>
         </geometry>
-      </visual>-->
+      </visual>
     </link>
     <joint name='abad1_gearing' type='gearbox'>
       <child>abad1_rotor</child>
@@ -1464,21 +1464,21 @@ SOFTWARE.
       <inertial>
         <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <!--<visual name='hip1_rotor_visual'>
+      <visual name='hip1_rotor_visual'>
         <geometry>
           <box>
             <size>0.1 0.01 0.1</size>
           </box>
         </geometry>
-      </visual>-->
+      </visual>
     </link>
     <joint name='hip1_gearing' type='gearbox'>
       <child>hip1_rotor</child>
@@ -1505,21 +1505,21 @@ SOFTWARE.
       <inertial>
         <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <!--<visual name='knee1_rotor_visual'>
+      <visual name='knee1_rotor_visual'>
         <geometry>
           <box>
             <size>0.1 0.01 0.1</size>
           </box>
         </geometry>
-      </visual>-->
+      </visual>
     </link>
     <joint name='knee1_gearing' type='gearbox'>
       <child>knee1_rotor</child>
@@ -1546,21 +1546,21 @@ SOFTWARE.
       <inertial>
         <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <!--<visual name='abad2_rotor_visual'>
+      <visual name='abad2_rotor_visual'>
         <geometry>
           <box>
             <size>0.01 0.1 0.1</size>
           </box>
         </geometry>
-      </visual>-->
+      </visual>
     </link>
     <joint name='abad2_gearing' type='gearbox'>
       <child>abad2_rotor</child>
@@ -1587,21 +1587,21 @@ SOFTWARE.
       <inertial>
         <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <!--<visual name='hip2_rotor_visual'>
+      <visual name='hip2_rotor_visual'>
         <geometry>
           <box>
             <size>0.1 0.01 0.1</size>
           </box>
         </geometry>
-      </visual>-->
+      </visual>
     </link>
     <joint name='hip2_gearing' type='gearbox'>
       <child>hip2_rotor</child>
@@ -1628,21 +1628,21 @@ SOFTWARE.
       <inertial>
         <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <!--<visual name='knee2_rotor_visual'>
+      <visual name='knee2_rotor_visual'>
         <geometry>
           <box>
             <size>0.1 0.01 0.1</size>
           </box>
         </geometry>
-      </visual>-->
+      </visual>
     </link>
     <joint name='knee2_gearing' type='gearbox'>
       <child>knee2_rotor</child>
@@ -1669,21 +1669,21 @@ SOFTWARE.
       <inertial>
         <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <!--<visual name='abad0_rotor_visual'>
+      <visual name='abad0_rotor_visual'>
         <geometry>
           <box>
             <size>0.01 0.1 0.1</size>
           </box>
         </geometry>
-      </visual>-->
+      </visual>
     </link>
     <joint name='abad3_gearing' type='gearbox'>
       <child>abad3_rotor</child>
@@ -1710,21 +1710,21 @@ SOFTWARE.
       <inertial>
         <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <!--<visual name='hip3_rotor_visual'>
+      <visual name='hip3_rotor_visual'>
         <geometry>
           <box>
             <size>0.1 0.01 0.1</size>
           </box>
         </geometry>
-      </visual>-->
+      </visual>
     </link>
     <joint name='hip3_gearing' type='gearbox'>
       <child>hip3_rotor</child>
@@ -1751,21 +1751,21 @@ SOFTWARE.
       <inertial>
         <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <!--<visual name='knee3_rotor_visual'>
+      <visual name='knee3_rotor_visual'>
         <geometry>
           <box>
             <size>0.1 0.01 0.1</size>
           </box>
         </geometry>
-      </visual>-->
+      </visual>
     </link>
     <joint name='knee3_gearing' type='gearbox'>
       <child>knee3_rotor</child>

@@ -173,7 +173,7 @@ void RobotDriver::initLegController() {
     leg_controller_ = std::make_shared<GrfPidController>();
   } else if (controller_id_ == "joint") {
     leg_controller_ = std::make_shared<JointController>();
-    } else if (controller_id_ == "underbrush") {
+  } else if (controller_id_ == "underbrush") {
     leg_controller_ = std::make_shared<UnderbrushInverseDynamicsController>();
     double retract_vel, tau_push, tau_contact_start, tau_contact_end, min_switch,
         t_down, t_up;
@@ -191,6 +191,8 @@ void RobotDriver::initLegController() {
             leg_controller_.get());
     c->setUnderbrushParams(retract_vel, tau_push, tau_contact_start,
                            tau_contact_end, min_switch, t_down, t_up);
+  } else if (controller_id_ == "inertia_estimation") {
+    leg_controller_ = std::make_shared<InertiaEstimationController>();
   } else {
     ROS_ERROR_STREAM("Invalid controller id " << controller_id_
                                               << ", returning nullptr");
