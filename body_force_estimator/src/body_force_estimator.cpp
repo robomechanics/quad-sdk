@@ -36,6 +36,7 @@ BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
       "/body_force_estimator/update_rate", update_rate_,
       250);  // add a param for your package instead of using the estimator one
   nh.param<double>("/body_force_estimator/K_O", K_O_, 50);
+  nh.param<int>("/body_force_estimator/cancel_friction", cancel_friction_, 1);
 
 // Setup pubs and subs
 #if USE_SIM == 1
@@ -162,7 +163,9 @@ void BodyForceEstimator::update() {
       tau[j] = MO_ktau[j] * joint_dirs[j] * last_state_msg_->joints.effort[ind];
 #endif
 
-      tau[j] += (qd[j] > 0 ? 1 : -1) * MO_fric[j] + qd[j] * MO_damp[j];
+      if (cancel_friction_) {
+        tau[j] += (qd[j] > 0 ? 1 : -1) * MO_fric[j] + qd[j] * MO_damp[j];
+      }
 
       // read this leg's estimates
       re[j] = r_mom[3 * i + j];

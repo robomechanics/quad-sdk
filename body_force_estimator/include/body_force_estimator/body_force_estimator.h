@@ -80,6 +80,9 @@ class BodyForceEstimator {
   /// Momentum observer gain
   double K_O_;
 
+  /// Momentum observer cancel friction or not
+  int cancel_friction_;
+
  private:
   /// External torque estimate
   double r_mom[12];
