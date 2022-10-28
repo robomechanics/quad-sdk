@@ -33,8 +33,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
                            single_joint_cmd_topic);
   quad_utils::loadROSParam(nh_, "topics/control/restart_flag",
                            control_restart_flag_topic);
-  quad_utils::loadROSParam(nh_, "topics/mocap", mocap_topic);
-
+  quad_utils::loadROSParam(nh_, "/topics/mocap", mocap_topic);
   quad_utils::loadROSParamDefault(nh_, "robot_driver/is_hardware", is_hardware_,
                                   true);
   quad_utils::loadROSParamDefault(nh_, "robot_driver/controller",
@@ -266,26 +265,29 @@ void RobotDriver::mocapCallback(
   Eigen::Vector3d pos;
   quad_utils::pointMsgToEigen(msg->pose.position, pos);
 
-  // Record time diff between messages
-  ros::Time t_now = ros::Time::now();
-  double t_diff_mocap_msg =
-      (msg->header.stamp - last_mocap_msg_->header.stamp).toSec();
-  double t_mocap_ros_latency = (t_now - msg->header.stamp).toSec();
-  last_mocap_time_ = t_now;
+  if (last_mocap_msg_ != NULL) {
+    // Record time diff between messages
+    ros::Time t_now = ros::Time::now();
+    double t_diff_mocap_msg =
+        (msg->header.stamp - last_mocap_msg_->header.stamp).toSec();
 
-  // If time diff between messages < mocap dropout threshould then
-  // apply filter
-  if (abs(t_diff_mocap_msg - 1.0 / mocap_rate_) < mocap_dropout_threshold_) {
-    if (CompFilterEstimator *c =
-            dynamic_cast<CompFilterEstimator *>(state_estimator_.get())) {
-      c->mocapCallBackHelper(msg, pos);
+    // If time diff between messages < mocap dropout threshould then
+    // apply filter
+    if (abs(t_diff_mocap_msg - 1.0 / mocap_rate_) < mocap_dropout_threshold_) {
+      if (CompFilterEstimator *c =
+              dynamic_cast<CompFilterEstimator *>(state_estimator_.get())) {
+        c->mocapCallBackHelper(msg, pos);
+      }
+    } else {
+      ROS_WARN_THROTTLE(
+          0.1,
+          "Mocap time diff exceeds max dropout threshold, hold the last value");
     }
   } else {
     ROS_WARN_THROTTLE(
         0.1,
         "Mocap time diff exceeds max dropout threshold, hold the last value");
   }
-
   // Update our cached mocap position
   last_mocap_msg_ = msg;
 }

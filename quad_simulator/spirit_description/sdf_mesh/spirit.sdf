@@ -997,8 +997,8 @@ SOFTWARE.
               <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
             </bullet>
             <ode>
-              <kp>1000000</kp>
-              <kd>1</kd>
+              <kp>30000</kp>
+              <kd>1000</kd>
             </ode>
           </contact>
         </surface>
@@ -1081,8 +1081,8 @@ SOFTWARE.
               <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
             </bullet>
             <ode>
-              <kp>1000000</kp>
-              <kd>1</kd>
+              <kp>30000</kp>
+              <kd>1000</kd>
             </ode>
           </contact>
         </surface>
@@ -1165,8 +1165,8 @@ SOFTWARE.
               <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
             </bullet>
             <ode>
-              <kp>1000000</kp>
-              <kd>1</kd>
+              <kp>30000</kp>
+              <kd>1000</kd>
             </ode>
           </contact>
         </surface>
@@ -1249,8 +1249,8 @@ SOFTWARE.
               <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
             </bullet>
             <ode>
-              <kp>1000000</kp>
-              <kd>1</kd>
+              <kp>30000</kp>
+              <kd>1000</kd>
             </ode>
           </contact>
         </surface>
