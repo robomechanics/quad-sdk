@@ -24,14 +24,13 @@ BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
   nh.param<std::string>("topics/joint_encoder", robot_state_topic,
                         "/joint_encoder");
 #else
-  nh.param<std::string>("topics/state/ground_truth", robot_state_topic,
-                        "/state/ground_truth");
+  quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
 #endif
-  nh.param<std::string>("topics/local_plan", local_plan_topic, "/local_plan");
-  nh.param<std::string>("topics/body_force/joint_torques", body_force_topic,
-                        "/body_force/joint_torques");
-  nh.param<std::string>("topics/body_force/toe_forces", toe_force_topic,
-                        "/body_force/toe_forces");
+  quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
+  quad_utils::loadROSParam(nh_, "topics/body_force/joint_torques",
+                           body_force_topic);
+  quad_utils::loadROSParam(nh_, "topics/body_force/toe_forces",
+                           toe_force_topic);
   nh.param<double>(
       "/body_force_estimator/update_rate", update_rate_,
       250);  // add a param for your package instead of using the estimator one
@@ -40,13 +39,13 @@ BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
 
 // Setup pubs and subs
 #if USE_SIM == 1
-  robot_state_sub_ = nh_.subscribe(
-      "joint_states", 1, &BodyForceEstimator::robotStateCallback,
+  robot_state_sub_ =
+      nh_.subscribe("joint_states", 1, &BodyForceEstimator::robotStateCallback,
                     this, ros::TransportHints().tcpNoDelay(true));
 #elif USE_SIM == 2 || USE_SIM == 0
   robot_state_sub_ = nh_.subscribe(
-      robot_state_topic, 1, &BodyForceEstimator::robotStateCallback,
-                    this, ros::TransportHints().tcpNoDelay(true));
+      robot_state_topic, 1, &BodyForceEstimator::robotStateCallback, this,
+      ros::TransportHints().tcpNoDelay(true));
 #endif
   local_plan_sub_ = nh_.subscribe(local_plan_topic, 1,
                                   &BodyForceEstimator::localPlanCallback, this);
@@ -106,6 +105,15 @@ void BodyForceEstimator::update() {
        (last_local_plan_msg_->states.back().header.stamp - t_first_state)
            .toSec())) {
     ROS_ERROR("ID node couldn't find the correct ref state!");
+    std::cout << "t_now " << t_now << ", plan front "
+              << (last_local_plan_msg_->states.front().header.stamp -
+                  t_first_state)
+                     .toSec()
+              << ", plan back "
+              << (last_local_plan_msg_->states.back().header.stamp -
+                  t_first_state)
+                     .toSec()
+              << std::endl;
   }
   for (int i = 0; i < last_local_plan_msg_->states.size() - 1; i++) {
     if ((t_now >= (last_local_plan_msg_->states[i].header.stamp - t_first_state)
