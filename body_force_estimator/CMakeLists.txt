@@ -169,6 +169,7 @@ target_link_libraries(body_force_estimator_node
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
   scripts/leg_flail.py
+  scripts/path_following.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
