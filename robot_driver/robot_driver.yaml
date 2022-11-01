@@ -21,7 +21,7 @@ robot_driver:
   high_pass_d: [0.0009996017974875904]
 
 underbrush_swing:
-  retract_vel: 10 # 15 # rad/s retraction speed at proximal link
+  retract_vel: 15 # 15 # rad/s retraction speed at proximal link
   tau_push: 2.0 # N m forward torque at distal link
   tau_contact_start: 2.0 # N m contact initiation detection threshold
   tau_contact_end: 1.5 # N m contact break detection threshold

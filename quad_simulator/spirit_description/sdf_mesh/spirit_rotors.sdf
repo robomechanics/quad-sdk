@@ -1308,13 +1308,13 @@ SOFTWARE.
           <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <visual name='abad0_rotor_visual'>
+      <!--<visual name='abad0_rotor_visual'>
         <geometry>
           <box>
             <size>0.01 0.1 0.1</size>
           </box>
         </geometry>
-      </visual>
+      </visual>-->
     </link>
     <joint name='abad0_gearing' type='gearbox'>
       <child>abad0_rotor</child>
@@ -1349,13 +1349,13 @@ SOFTWARE.
           <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <visual name='hip0_rotor_visual'>
+      <!--<visual name='hip0_rotor_visual'>
         <geometry>
           <box>
             <size>0.1 0.01 0.1</size>
           </box>
         </geometry>
-      </visual>
+      </visual>-->
     </link>
     <joint name='hip0_gearing' type='gearbox'>
       <child>hip0_rotor</child>
@@ -1390,13 +1390,13 @@ SOFTWARE.
           <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <visual name='knee0_rotor_visual'>
+      <!--<visual name='knee0_rotor_visual'>
         <geometry>
           <box>
             <size>0.1 0.01 0.1</size>
           </box>
         </geometry>
-      </visual>
+      </visual>-->
     </link>
     <joint name='knee0_gearing' type='gearbox'>
       <child>knee0_rotor</child>
@@ -1431,13 +1431,13 @@ SOFTWARE.
           <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <visual name='abad1_rotor_visual'>
+      <!--<visual name='abad1_rotor_visual'>
         <geometry>
           <box>
             <size>0.01 0.1 0.1</size>
           </box>
         </geometry>
-      </visual>
+      </visual>-->
     </link>
     <joint name='abad1_gearing' type='gearbox'>
       <child>abad1_rotor</child>
@@ -1472,13 +1472,13 @@ SOFTWARE.
           <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <visual name='hip1_rotor_visual'>
+      <!--<visual name='hip1_rotor_visual'>
         <geometry>
           <box>
             <size>0.1 0.01 0.1</size>
           </box>
         </geometry>
-      </visual>
+      </visual>-->
     </link>
     <joint name='hip1_gearing' type='gearbox'>
       <child>hip1_rotor</child>
@@ -1513,13 +1513,13 @@ SOFTWARE.
           <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <visual name='knee1_rotor_visual'>
+      <!--<visual name='knee1_rotor_visual'>
         <geometry>
           <box>
             <size>0.1 0.01 0.1</size>
           </box>
         </geometry>
-      </visual>
+      </visual>-->
     </link>
     <joint name='knee1_gearing' type='gearbox'>
       <child>knee1_rotor</child>
@@ -1554,13 +1554,13 @@ SOFTWARE.
           <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <visual name='abad2_rotor_visual'>
+      <!--<visual name='abad2_rotor_visual'>
         <geometry>
           <box>
             <size>0.01 0.1 0.1</size>
           </box>
         </geometry>
-      </visual>
+      </visual>-->
     </link>
     <joint name='abad2_gearing' type='gearbox'>
       <child>abad2_rotor</child>
@@ -1595,13 +1595,13 @@ SOFTWARE.
           <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <visual name='hip2_rotor_visual'>
+      <!--<visual name='hip2_rotor_visual'>
         <geometry>
           <box>
             <size>0.1 0.01 0.1</size>
           </box>
         </geometry>
-      </visual>
+      </visual>-->
     </link>
     <joint name='hip2_gearing' type='gearbox'>
       <child>hip2_rotor</child>
@@ -1636,13 +1636,13 @@ SOFTWARE.
           <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <visual name='knee2_rotor_visual'>
+      <!--<visual name='knee2_rotor_visual'>
         <geometry>
           <box>
             <size>0.1 0.01 0.1</size>
           </box>
         </geometry>
-      </visual>
+      </visual>-->
     </link>
     <joint name='knee2_gearing' type='gearbox'>
       <child>knee2_rotor</child>
@@ -1677,13 +1677,13 @@ SOFTWARE.
           <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <visual name='abad0_rotor_visual'>
+      <!--<visual name='abad0_rotor_visual'>
         <geometry>
           <box>
             <size>0.01 0.1 0.1</size>
           </box>
         </geometry>
-      </visual>
+      </visual>-->
     </link>
     <joint name='abad3_gearing' type='gearbox'>
       <child>abad3_rotor</child>
@@ -1718,13 +1718,13 @@ SOFTWARE.
           <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <visual name='hip3_rotor_visual'>
+      <!--<visual name='hip3_rotor_visual'>
         <geometry>
           <box>
             <size>0.1 0.01 0.1</size>
           </box>
         </geometry>
-      </visual>
+      </visual>-->
     </link>
     <joint name='hip3_gearing' type='gearbox'>
       <child>hip3_rotor</child>
@@ -1759,13 +1759,13 @@ SOFTWARE.
           <izz>1.0E-4</izz>
         </inertia>
       </inertial>
-      <visual name='knee3_rotor_visual'>
+      <!--<visual name='knee3_rotor_visual'>
         <geometry>
           <box>
             <size>0.1 0.01 0.1</size>
           </box>
         </geometry>
-      </visual>
+      </visual>-->
     </link>
     <joint name='knee3_gearing' type='gearbox'>
       <child>knee3_rotor</child>

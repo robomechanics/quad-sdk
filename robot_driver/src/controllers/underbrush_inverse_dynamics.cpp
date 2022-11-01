@@ -256,6 +256,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
             (last_body_force_estimate_msg_->body_wrenches.at(i).torque.z <
              tau_contact_end_) &&
             t_TD_.at(i) - t_now2 >= t_down_) {
+          last_mode_.at(i) = 0;
           force_mode_.at(i) = 0;
           t_switch_.at(i) = t_now2;
         } else if (!force_mode_.at(i) &&
@@ -283,10 +284,9 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
         if (t_now2 - t_LO_.at(i) < t_up_) {
           if (last_mode_.at(i)) {
             force_mode_.at(i) = 1;  // retain previous mode
-            t_switch_.at(i) = t_now2;
+            t_switch_.at(i) = t_LO_.at(i);
             ROS_INFO("Leg %u was stuck at end", i);
           }
-          last_mode_.at(i) = 0;  // reset previous mode state
         }
 
         if (!force_mode_.at(i)) {
