@@ -344,7 +344,7 @@ State interpStateActionPair(const FullState &s_in, const Action &a, double t0,
                             std::vector<double> &interp_length,
                             const PlannerConfig &planner_config) {
   double yaw = s_in.ang[2];
-  double unit = 0.5;
+  double unit = 0.2;
   FullState fs_copy = s_in;
   fs_copy.vel[0] = unit * cos(yaw);
   fs_copy.vel[1] = unit * sin(yaw);
@@ -499,9 +499,9 @@ State applyStance(const State &s, const Action &a, double t, int phase,
   State s_new = s;
 
   if (phase == CONNECT) {
-    Eigen::Vector3d acc_0 = a.grf_0 * g + planner_config.g_vec;
-    std::cout << acc_0 <<std::endl;
-    Eigen::Vector3d acc_f = a.grf_f * g + planner_config.g_vec;
+    Eigen::Vector3d acc_0 = 1.2 * a.grf_0 * g + planner_config.g_vec;
+    std::cout << acc_0 << std::endl;
+    Eigen::Vector3d acc_f = 1 * a.grf_f * g + planner_config.g_vec;
 
     // Note: in connect phase, a.grf represents acceleration
     s_new.pos = s.pos + s.vel * t + 0.5 * (acc_0)*t * t +
