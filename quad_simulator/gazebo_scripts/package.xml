@@ -62,26 +62,26 @@
   <depend>forward_command_controller</depend>
   <depend>pluginlib</depend>
 
-  <build_depend>controller_manager</build_depend>
-  <build_depend>joint_state_controller</build_depend>
-  <build_depend>robot_state_publisher</build_depend>
-  <build_export_depend>controller_manager</build_export_depend>
-  <build_export_depend>joint_state_controller</build_export_depend>
-  <build_export_depend>robot_state_publisher</build_export_depend>
+  <!--<build_depend>controller_manager</build_depend>-->
+  <!--<build_depend>joint_state_controller</build_depend>-->
+  <!--<build_depend>robot_state_publisher</build_depend>-->
+  <!--<build_export_depend>controller_manager</build_export_depend>-->
+  <!--<build_export_depend>joint_state_controller</build_export_depend>-->
+  <!--<build_export_depend>robot_state_publisher</build_export_depend>
   <exec_depend>controller_manager</exec_depend>
   <exec_depend>joint_state_controller</exec_depend>
-  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>-->
 
   <!-- from ../setup_deps.sh -->
-  <!--<depend>controller-manager</depend>-->
-  <!--<depend>joint-state-controller</depend>-->
-  <depend>gazebo-ros-pkgs</depend>
-  <depend>ros-control</depend>
-  <depend>gazebo-ros-control</depend>
-  <depend>effort-controllers</depend>
-  <!--<depend>robot-state-publisher</depend>-->
-  <depend>imu-tools</depend>
-  <depend>message-to-tf</depend>
+  <depend>controller_manager</depend>
+  <depend>joint_state_controller</depend>
+  <depend>gazebo_ros_pkgs</depend>
+  <depend>ros_control</depend>
+  <depend>gazebo_ros_control</depend>
+  <depend>effort_controllers</depend>
+  <depend>robot_state_publisher</depend>
+  <depend>imu_tools</depend>
+  <depend>message_to_tf</depend>
   
   <!-- The export tag contains other, unspecified, tags -->
   <export>
