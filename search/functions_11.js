@@ -3,7 +3,7 @@ var searchData=
   ['send_0',['send',['../classSpiritInterface.html#a2fec6388d38268d0902e8d14b5ca2589',1,'SpiritInterface::send()'],['../classHardwareInterface.html#a9b89cbeeb00cadd1fb7df8e6da456696',1,'HardwareInterface::send()']]],
   ['setcomputedtimestamp_1',['setComputedTimestamp',['../classGlobalBodyPlan.html#ad05b79d9194e56f73048717b8b2f35cf',1,'GlobalBodyPlan']]],
   ['setgoalstate_2',['setGoalState',['../classGlobalBodyPlanner.html#a013c9e1ba7553f4f76f7f7ba0fdd4098',1,'GlobalBodyPlanner']]],
-  ['setpublishedtimestamp_3',['setPublishedTimestamp',['../classGlobalBodyPlan.html#a0049613cf98e77dd6b9f098c2a6e49ca',1,'GlobalBodyPlan']]],
+  ['setpublishedtimestamp_3',['setPublishedTimestamp',['../classGlobalBodyPlan.html#a26cd3b26bc8b9d3be809934d30320aee',1,'GlobalBodyPlan']]],
   ['setspatialparams_4',['setSpatialParams',['../classLocalFootstepPlanner.html#aa4a1875a7cb22e9c6b9d0b96c5ba0b36',1,'LocalFootstepPlanner']]],
   ['setstartstate_5',['setStartState',['../classGlobalBodyPlanner.html#a74868d93a1e89deb790634dff7dc2538',1,'GlobalBodyPlanner']]],
   ['setstatus_6',['setStatus',['../classGlobalBodyPlan.html#a098af074e7453468e4dc0b8a97c9ef6d',1,'GlobalBodyPlan']]],
