@@ -16,7 +16,7 @@ mkdir coinbrew
 cd coinbrew
 wget https://raw.githubusercontent.com/coin-or/coinbrew/v1.0/coinbrew
 chmod u+x coinbrew
-./coinbrew fetch Ipopt --latest-release --no-prompt
+./coinbrew fetch Ipopt@3.13 --no-prompt
 cd ..
 if [ -d "./coinhsl" ] 
 then

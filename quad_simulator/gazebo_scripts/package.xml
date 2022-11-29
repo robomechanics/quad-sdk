@@ -71,6 +71,13 @@
   <exec_depend>controller_manager</exec_depend>
   <exec_depend>joint_state_controller</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
+
+  <depend>gazebo_ros_pkgs</depend>
+  <depend>ros_control</depend>
+  <depend>gazebo_ros_control</depend>
+  <depend>effort_controllers</depend>
+  <depend>imu_tools</depend>
+  <depend>message_to_tf</depend>
   
   <!-- The export tag contains other, unspecified, tags -->
   <export>

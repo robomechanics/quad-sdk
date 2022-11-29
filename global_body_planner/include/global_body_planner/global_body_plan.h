@@ -112,7 +112,7 @@ class GlobalBodyPlan {
    * @brief Set the timestamp at which this plan was published
    * @param[in] timestamp Timestamp at which the plan was published
    */
-  inline double setPublishedTimestamp(ros::Time timestamp) {
+  inline void setPublishedTimestamp(ros::Time timestamp) {
     published_timestamp_ = timestamp;
   }
 
