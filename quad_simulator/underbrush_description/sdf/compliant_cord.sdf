@@ -12,6 +12,14 @@
             <radius>0.005</radius>
           </cylinder>
         </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.5</mu>
+              <mu2>0.5</mu2>
+            </ode>
+          </friction>
+        </surface>
       </collision>
 
       <visual name='visual'>
@@ -85,6 +93,14 @@
             <radius>0.005</radius>
           </cylinder>
         </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.5</mu>
+              <mu2>0.5</mu2>
+            </ode>
+          </friction>
+        </surface>
       </collision>
 
       <visual name='visual'>
@@ -146,6 +162,14 @@
             <radius>0.005</radius>
           </cylinder>
         </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.5</mu>
+              <mu2>0.5</mu2>
+            </ode>
+          </friction>
+        </surface>
       </collision>
 
       <visual name='visual'>
@@ -207,6 +231,14 @@
             <radius>0.005</radius>
           </cylinder>
         </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.5</mu>
+              <mu2>0.5</mu2>
+            </ode>
+          </friction>
+        </surface>
       </collision>
 
       <visual name='visual'>
@@ -268,6 +300,14 @@
             <radius>0.005</radius>
           </cylinder>
         </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.5</mu>
+              <mu2>0.5</mu2>
+            </ode>
+          </friction>
+        </surface>
       </collision>
 
       <visual name='visual'>
@@ -329,6 +369,14 @@
             <radius>0.005</radius>
           </cylinder>
         </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.5</mu>
+              <mu2>0.5</mu2>
+            </ode>
+          </friction>
+        </surface>
       </collision>
 
       <visual name='visual'>
