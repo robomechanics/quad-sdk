@@ -174,13 +174,13 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
                 robot_state_msg.feet.feet.at(i).position.z;
 
             // cartesian foot velocity commands
-            foot_vx = 20.0 * foot_x_err;
+            foot_vx = 10.0 * foot_x_err;
             foot_vx =
-                abs(foot_vx) > 4.0 ? (foot_vx > 0 ? 1 : -1) * 4.0 : foot_vx;
-            foot_vy = 20.0 * foot_y_err;
+                abs(foot_vx) > 3.0 ? (foot_vx > 0 ? 1 : -1) * 3.0 : foot_vx;
+            foot_vy = 10.0 * foot_y_err;
             foot_vy =
-                abs(foot_vy) > 4.0 ? (foot_vy > 0 ? 1 : -1) * 4.0 : foot_vy;
-            foot_vz = 30.0 * foot_z_err;
+                abs(foot_vy) > 3.0 ? (foot_vy > 0 ? 1 : -1) * 3.0 : foot_vy;
+            foot_vz = 10.0 * foot_z_err;
 
             foot_horz_err = sqrt(foot_x_err * foot_x_err);
             if (foot_horz_err > 0.02 && t_TD_.at(i) - t_now2 > t_down_) {
@@ -195,10 +195,10 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
               // foot is too high above hip; singularity problems
               foot_vx = 1 / (50 * (foot_z_hip + 0.05) + 1) * foot_vx;
               foot_vy = 0;
-              foot_vz += -30.0 * (foot_z_hip - 0.05);
+              foot_vz += -10.0 * (foot_z_hip - 0.05);
             }
             foot_vz =
-                abs(foot_vz) > 4.0 ? (foot_vz > 0 ? 1 : -1) * 4.0 : foot_vz;
+                abs(foot_vz) > 3.0 ? (foot_vz > 0 ? 1 : -1) * 3.0 : foot_vz;
 
             ref_underbrush_msg.feet.feet.at(i).velocity.x = foot_vx;
             ref_underbrush_msg.feet.feet.at(i).velocity.y = foot_vy;
@@ -231,11 +231,19 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
       // Push the joints out of bad configurations
       if (robot_state_msg.joints.position.at(3 * i + 2) < 0.3) {
         ref_underbrush_msg.joints.velocity.at(3 * i + 2) +=
-            -30 * (robot_state_msg.joints.position.at(3 * i + 2) - 0.3);
+            -20 * (robot_state_msg.joints.position.at(3 * i + 2) - 0.3);
       }
       if (robot_state_msg.joints.position.at(3 * i + 1) < -0.5) {
         ref_underbrush_msg.joints.velocity.at(3 * i + 1) +=
-            -30 * (robot_state_msg.joints.position.at(3 * i + 1) + 0.5);
+            -20 * (robot_state_msg.joints.position.at(3 * i + 1) + 0.5);
+      }
+      for (int j = 0; j < 3; ++j) {
+        if (ref_underbrush_msg.joints.velocity.at(3 * i + j) > retract_vel_) {
+          ref_underbrush_msg.joints.velocity.at(3 * i + j) = retract_vel_;
+        }
+        if (ref_underbrush_msg.joints.velocity.at(3 * i + j) < -retract_vel_) {
+          ref_underbrush_msg.joints.velocity.at(3 * i + j) = -retract_vel_;
+        }
       }
     }
 
