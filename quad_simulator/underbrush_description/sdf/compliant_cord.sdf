@@ -68,17 +68,17 @@
       <axis>
         <xyz>0 1 0</xyz>
         <dynamics>
-          <damping>0.05</damping>
+          <damping>0.005</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0.1</spring_stiffness>
+          <spring_stiffness>0.01</spring_stiffness>
         </dynamics>
       </axis>
       <axis2>
         <xyz>1 0 0</xyz>
         <dynamics>
-          <damping>0.05</damping>
+          <damping>0.005</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0.1</spring_stiffness>
+          <spring_stiffness>0.01</spring_stiffness>
         </dynamics>
       </axis2>
     </joint>
@@ -137,17 +137,17 @@
       <axis>
         <xyz>0 1 0</xyz>
         <dynamics>
-          <damping>0.05</damping>
+          <damping>0.005</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0.1</spring_stiffness>
+          <spring_stiffness>0.01</spring_stiffness>
         </dynamics>
       </axis>
       <axis2>
         <xyz>1 0 0</xyz>
         <dynamics>
-          <damping>0.05</damping>
+          <damping>0.005</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0.1</spring_stiffness>
+          <spring_stiffness>0.01</spring_stiffness>
         </dynamics>
       </axis2>
     </joint>
@@ -206,17 +206,17 @@
       <axis>
         <xyz>0 1 0</xyz>
         <dynamics>
-          <damping>0.05</damping>
+          <damping>0.005</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0.1</spring_stiffness>
+          <spring_stiffness>0.01</spring_stiffness>
         </dynamics>
       </axis>
       <axis2>
         <xyz>1 0 0</xyz>
         <dynamics>
-          <damping>0.05</damping>
+          <damping>0.005</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0.1</spring_stiffness>
+          <spring_stiffness>0.01</spring_stiffness>
         </dynamics>
       </axis2>
     </joint>
@@ -275,17 +275,17 @@
       <axis>
         <xyz>0 1 0</xyz>
         <dynamics>
-          <damping>0.05</damping>
+          <damping>0.005</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0.1</spring_stiffness>
+          <spring_stiffness>0.01</spring_stiffness>
         </dynamics>
       </axis>
       <axis2>
         <xyz>1 0 0</xyz>
         <dynamics>
-          <damping>0.05</damping>
+          <damping>0.005</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0.1</spring_stiffness>
+          <spring_stiffness>0.01</spring_stiffness>
         </dynamics>
       </axis2>
     </joint>
@@ -344,17 +344,17 @@
       <axis>
         <xyz>0 1 0</xyz>
         <dynamics>
-          <damping>0.05</damping>
+          <damping>0.005</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0.1</spring_stiffness>
+          <spring_stiffness>0.01</spring_stiffness>
         </dynamics>
       </axis>
       <axis2>
         <xyz>1 0 0</xyz>
         <dynamics>
-          <damping>0.05</damping>
+          <damping>0.005</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0.1</spring_stiffness>
+          <spring_stiffness>0.01</spring_stiffness>
         </dynamics>
       </axis2>
     </joint>
@@ -413,17 +413,17 @@
       <axis>
         <xyz>0 1 0</xyz>
         <dynamics>
-          <damping>0.05</damping>
+          <damping>0.005</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0.1</spring_stiffness>
+          <spring_stiffness>0.01</spring_stiffness>
         </dynamics>
       </axis>
       <axis2>
         <xyz>1 0 0</xyz>
         <dynamics>
-          <damping>0.05</damping>
+          <damping>0.005</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0.1</spring_stiffness>
+          <spring_stiffness>0.01</spring_stiffness>
         </dynamics>
       </axis2>
     </joint>
@@ -464,17 +464,17 @@
       <axis>
         <xyz>0 1 0</xyz>
         <dynamics>
-          <damping>0.05</damping>
+          <damping>0.005</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0.1</spring_stiffness>
+          <spring_stiffness>0.01</spring_stiffness>
         </dynamics>
       </axis>
       <axis2>
         <xyz>1 0 0</xyz>
         <dynamics>
-          <damping>0.05</damping>
+          <damping>0.005</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0.1</spring_stiffness>
+          <spring_stiffness>0.01</spring_stiffness>
         </dynamics>
       </axis2>
     </joint>
@@ -488,7 +488,7 @@
         <dynamics>
           <damping>5.0</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>920.0</spring_stiffness>
+          <spring_stiffness>200.0</spring_stiffness>
         </dynamics>
         <limit>
           <lower>-0.1</lower>

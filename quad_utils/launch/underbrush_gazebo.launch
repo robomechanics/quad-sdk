@@ -21,6 +21,7 @@
 
   <param name="cord_description_sdf" textfile="$(find underbrush_description)/sdf/compliant_cord.sdf" />
 
+  <!--
   <node name="spawn_underbrush1" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush1 -x 0.6 -y -0.5 -z 0.16" output="screen"/>
 
   <node name="spawn_underbrush2" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush2 -x 0.6 -y -0.5 -z 0.08" output="screen"/>
@@ -31,18 +32,13 @@
   <node name="spawn_underbrush6" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush6 -x 1.3 -y -0.5 -z 0.17" output="screen"/>
   <node name="spawn_underbrush7" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush7 -x 1.5 -y -0.5 -z 0.09" output="screen"/>
   <node name="spawn_underbrush8" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush8 -x 1.8 -y -0.5 -z 0.2" output="screen"/>
-
-  <!--
-  <node name="spawn_underbrush" pkg="gazebo_ros" type="spawn_model" args="-sdf -param underbrush_description_sdf -model underbrush -x 0.6 -y -0.2 -z 0.1" output="screen"/>
-
-  <node name="spawn_underbrush1" pkg="gazebo_ros" type="spawn_model" args="-sdf -param underbrush_description_sdf -model underbrush1 -x 0.6 -y -0.2 -z 0.2" output="screen"/>
-
-  <node name="spawn_underbrush2" pkg="gazebo_ros" type="spawn_model" args="-sdf -param underbrush_description_sdf -model underbrush2 -x 0.6 -y -0.2 -z 0.3" output="screen"/>
-
-  <node name="spawn_underbrush3" pkg="gazebo_ros" type="spawn_model" args="-sdf -param underbrush_description_sdf -model underbrush3 -x 0.8 -y -0.2 -z 0.1" output="screen"/>
-
-  <node name="spawn_underbrush4" pkg="gazebo_ros" type="spawn_model" args="-sdf -param underbrush_description_sdf -model underbrush4 -x 0.8 -y -0.2 -z 0.2" output="screen"/>
-
-  <node name="spawn_underbrush5" pkg="gazebo_ros" type="spawn_model" args="-sdf -param underbrush_description_sdf -model underbrush5 -x 0.8 -y -0.2 -z 0.3" output="screen"/>
   -->
+
+  <!-- Actual experimental setup -->
+  <!---->
+  <node name="spawn_underbrush" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush -x 0.6 -y -0.5 -z 0.2" output="screen"/>
+  <node name="spawn_underbrush1" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush1 -x 1.03 -y -0.5 -z 0.12" output="screen"/>
+  <node name="spawn_underbrush2" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush2 -x 1.03 -y -0.5 -z 0.23" output="screen"/>
+  <node name="spawn_underbrush3" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush3 -x 1.36 -y -0.5 -z 0.15" output="screen"/>
+  <!---->
 </launch>
