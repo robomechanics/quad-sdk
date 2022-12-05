@@ -13,6 +13,8 @@ int joint_inds[12] = {8, 0, 1, 9, 2, 3, 10, 4, 5, 11, 6, 7};
 
 // Effective toe force estimate
 double f_toe_MO[12];
+// Planned liftoff time
+double t_up[4];
 
 BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
   nh_ = nh;
@@ -146,14 +148,16 @@ void BodyForceEstimator::update() {
     /*
     if (ref_state_msg.feet.feet[i].contact) {
       // Skip if the foot is in stance
-      if (!past_feet_state_.feet[i].contact) {
-        // on liftoff reset momentum observer state to 0s
-        for (int j = 0; j < 3; j++) {
-          p_hat[3 * i + j] = 0;
-          r_mom[3 * i + j] = 0;
-        }
+      t_up[i] = (ros::Time::now() - last_local_plan_msg_->state_timestamp)
+                     .toSec();
+      //continue;
+    }
+    if (!ref_state_msg.feet.feet[i].contact && t_now - t_up[i] < 0.02) {
+      // on liftoff reset momentum observer state to 0s
+      for (int j = 0; j < 3; j++) {
+        p_hat[3 * i + j] = 0;
+        r_mom[3 * i + j] = 0;
       }
-      continue;
     }
     */
 
