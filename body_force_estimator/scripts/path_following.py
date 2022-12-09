@@ -29,10 +29,10 @@ def path_following():
     rate = 100
     ros_rate = rospy.Rate(rate) # Rate
     speed = 0.5 # Forward velocity
-    y_pt = 0.7 # Lateral shift
+    y_pt = 0.6 # Lateral shift
     yaw_pt = 0.0 #math.pi # Yaw angle
-    y_gain = 2.0 # Lateral P gain in m/s per m (or Hz)
-    yaw_gain = 2.0 # 1.0 # Yaw P gain in rad/s per rad (or Hz)
+    y_gain = 1.0 # Lateral P gain in m/s per m (or Hz)
+    yaw_gain = 3.0 # 1.0 # Yaw P gain in rad/s per rad (or Hz)
     speed_i = 0.0 # Integration rate
 
     speed_integral = 0.0 # Initialize integrator
