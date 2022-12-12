@@ -155,6 +155,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
         for (int j = 0; j < last_local_plan_msg_->states.size() - 1; j++) {
           if (t_now < last_local_plan_msg_->states[j].header.stamp.toSec() &&
               bool(last_local_plan_msg_->states[j].feet.feet.at(i).contact)) {
+            //*
             ref_underbrush_msg.feet.feet.at(i).position.x =
                 robot_state_msg.feet.feet.at(i).position.x;
             ref_underbrush_msg.feet.feet.at(i).position.y =
@@ -172,30 +173,28 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
             foot_z_err =
                 last_local_plan_msg_->states[j].feet.feet.at(i).position.z -
                 robot_state_msg.feet.feet.at(i).position.z;
+            foot_z_hip = robot_state_msg.feet.feet.at(i).position.z -
+                         robot_state_msg.body.pose.position.z;
+            foot_horz_err = sqrt(foot_x_err * foot_x_err);
 
             // cartesian foot velocity commands
-            foot_vx = 20.0 * foot_x_err;
+            foot_vx = 10.0 * foot_x_err;
             foot_vx =
                 abs(foot_vx) > 4.0 ? (foot_vx > 0 ? 1 : -1) * 4.0 : foot_vx;
-            foot_vy = 20.0 * foot_y_err;
+            foot_vy = 10.0 * foot_y_err;
             foot_vy =
                 abs(foot_vy) > 4.0 ? (foot_vy > 0 ? 1 : -1) * 4.0 : foot_vy;
-            foot_vz = 30.0 * foot_z_err;
-
-            foot_horz_err = sqrt(foot_x_err * foot_x_err);
+            foot_vz = 10.0 * foot_z_err;
             if (foot_horz_err > 0.02 && t_TD_.at(i) - t_now2 > t_down_) {
               // don't put the foot down unless it's close to the right x, y
               // position or there's no time left
               foot_vz = 1.0 / (100 * (foot_horz_err - 0.02) + 1) * foot_vz;
             }
-
-            foot_z_hip = robot_state_msg.feet.feet.at(i).position.z -
-                         robot_state_msg.body.pose.position.z;
             if (foot_z_hip > -0.05) {
               // foot is too high above hip; singularity problems
               foot_vx = 1 / (50 * (foot_z_hip + 0.05) + 1) * foot_vx;
               foot_vy = 0;
-              foot_vz += -30.0 * (foot_z_hip - 0.05);
+              foot_vz += -10.0 * (foot_z_hip + 0.05);
             }
             foot_vz =
                 abs(foot_vz) > 4.0 ? (foot_vz > 0 ? 1 : -1) * 4.0 : foot_vz;
@@ -207,6 +206,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
             ref_underbrush_msg.feet.feet.at(i).acceleration.x = 0;
             ref_underbrush_msg.feet.feet.at(i).acceleration.y = 0;
             ref_underbrush_msg.feet.feet.at(i).acceleration.z = 0;
+            //*/
             /*
             ref_underbrush_msg.feet.feet.at(i).position.x =
                 last_local_plan_msg_->states[j].feet.feet.at(i).position.x;
@@ -228,15 +228,51 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
     }
     quad_utils::ikRobotState(*quadKD_, ref_underbrush_msg);
     for (int i = 0; i < num_feet_; ++i) {
+      /*
+      int abad_idx = 3 * i + 0;
+      int hip_idx = 3 * i + 1;
+      int knee_idx = 3 * i + 2;
+      ref_underbrush_msg.joints.position.at(knee_idx) +=
+          -0.7 * std::abs(state_positions[hip_idx] -
+                          ref_underbrush_msg.joints.position.at(hip_idx)) -
+          0.5 * std::abs(state_positions[abad_idx] -
+                         ref_underbrush_msg.joints.position.at(abad_idx));
+      if (ref_underbrush_msg.joints.position.at(knee_idx) < 0.2) {
+        ref_underbrush_msg.joints.position.at(knee_idx) = 0.2;
+      }
+      */
+
+      // Limit the joint velocities computed by inverse kinematics
+      for (int j = 0; j < 3; ++j) {
+        if (ref_underbrush_msg.joints.velocity.at(3 * i + j) > retract_vel_) {
+          ref_underbrush_msg.joints.velocity.at(3 * i + j) = retract_vel_;
+        }
+        if (ref_underbrush_msg.joints.velocity.at(3 * i + j) < -retract_vel_) {
+          ref_underbrush_msg.joints.velocity.at(3 * i + j) = -retract_vel_;
+        }
+      }
+
+      //*
       // Push the joints out of bad configurations
       if (robot_state_msg.joints.position.at(3 * i + 2) < 0.3) {
         ref_underbrush_msg.joints.velocity.at(3 * i + 2) +=
-            -30 * (robot_state_msg.joints.position.at(3 * i + 2) - 0.3);
+            -20 * (robot_state_msg.joints.position.at(3 * i + 2) - 0.3);
       }
       if (robot_state_msg.joints.position.at(3 * i + 1) < -0.5) {
         ref_underbrush_msg.joints.velocity.at(3 * i + 1) +=
-            -30 * (robot_state_msg.joints.position.at(3 * i + 1) + 0.5);
+            -20 * (robot_state_msg.joints.position.at(3 * i + 1) + 0.5);
       }
+
+      // Limit the joint velocities again
+      for (int j = 0; j < 3; ++j) {
+        if (ref_underbrush_msg.joints.velocity.at(3 * i + j) > retract_vel_) {
+          ref_underbrush_msg.joints.velocity.at(3 * i + j) = retract_vel_;
+        }
+        if (ref_underbrush_msg.joints.velocity.at(3 * i + j) < -retract_vel_) {
+          ref_underbrush_msg.joints.velocity.at(3 * i + j) = -retract_vel_;
+        }
+      }
+      //*/
     }
 
     ref_state_msg_ = ref_underbrush_msg;
@@ -333,14 +369,14 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
           force_mode_.at(i) = 0;
           t_switch_.at(i) = t_now2;
           last_mode_.at(i) = 1;
-          ROS_INFO("Leg %u stuck at end", i);
+          // ROS_INFO("Leg %u stuck at end", i);
         }
 
         if (t_now2 - t_LO_.at(i) < t_up_) {
           if (last_mode_.at(i)) {
             force_mode_.at(i) = 1;  // retain previous mode
             t_switch_.at(i) = t_LO_.at(i);
-            ROS_INFO("Leg %u was stuck at end", i);
+            // ROS_INFO("Leg %u was stuck at end", i);
           }
         }
 
@@ -425,6 +461,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
           */
         }
 
+        /*
         // Soft joint limits
         if (robot_state_msg.joints.position.at(3 * i + 2) < 0.2) {
           leg_command_array_msg.leg_commands.at(i)
@@ -438,6 +475,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
               .torque_ff +=
               -5 * (robot_state_msg.joints.position.at(3 * i + 1) + 0.7);
         }
+        */
       }
     }
 
