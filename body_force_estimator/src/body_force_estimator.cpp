@@ -150,7 +150,7 @@ void BodyForceEstimator::update() {
       t_up[i] = (ros::Time::now()).toSec();
     }
     if (!ref_state_msg.feet.feet[i].contact &&
-        ((ros::Time::now()).toSec() - t_up[i] < 0.04)) {
+        ((ros::Time::now()).toSec() - t_up[i] < 0.03)) {
       // on liftoff reset momentum observer state to 0s
       for (int j = 0; j < 3; j++) {
         p_hat[3 * i + j] = 0;
