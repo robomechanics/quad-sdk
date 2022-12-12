@@ -174,8 +174,8 @@ void RobotDriver::initLegController() {
     leg_controller_ = std::make_shared<JointController>();
   } else if (controller_id_ == "underbrush") {
     leg_controller_ = std::make_shared<UnderbrushInverseDynamicsController>();
-    double retract_vel, tau_push, tau_contact_start, tau_contact_end, min_switch,
-        t_down, t_up;
+    double retract_vel, tau_push, tau_contact_start, tau_contact_end,
+        min_switch, t_down, t_up;
     quad_utils::loadROSParam(nh_, "/underbrush_swing/retract_vel", retract_vel);
     quad_utils::loadROSParam(nh_, "/underbrush_swing/tau_push", tau_push);
     quad_utils::loadROSParam(nh_, "/underbrush_swing/tau_contact_start",
@@ -185,13 +185,11 @@ void RobotDriver::initLegController() {
     quad_utils::loadROSParam(nh_, "/underbrush_swing/min_switch", min_switch);
     quad_utils::loadROSParam(nh_, "/underbrush_swing/t_down", t_down);
     quad_utils::loadROSParam(nh_, "/underbrush_swing/t_up", t_up);
-    UnderbrushInverseDynamicsController* c =
-        dynamic_cast<UnderbrushInverseDynamicsController*>(
+    UnderbrushInverseDynamicsController *c =
+        dynamic_cast<UnderbrushInverseDynamicsController *>(
             leg_controller_.get());
     c->setUnderbrushParams(retract_vel, tau_push, tau_contact_start,
                            tau_contact_end, min_switch, t_down, t_up);
-  } else if (controller_id_ == "inertia_estimation") {
-    leg_controller_ = std::make_shared<InertiaEstimationController>();
   } else {
     ROS_ERROR_STREAM("Invalid controller id " << controller_id_
                                               << ", returning nullptr");
@@ -298,9 +296,9 @@ void RobotDriver::robotStateCallback(
 }
 
 void RobotDriver::bodyForceEstimateCallback(
-    const quad_msgs::BodyForceEstimate::ConstPtr& msg) {
-  if (UnderbrushInverseDynamicsController* c =
-          dynamic_cast<UnderbrushInverseDynamicsController*>(
+    const quad_msgs::BodyForceEstimate::ConstPtr &msg) {
+  if (UnderbrushInverseDynamicsController *c =
+          dynamic_cast<UnderbrushInverseDynamicsController *>(
               leg_controller_.get())) {
     c->updateBodyForceEstimate(msg);
   }
