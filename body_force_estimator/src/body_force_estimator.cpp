@@ -145,64 +145,65 @@ void BodyForceEstimator::update() {
   for (int i = 0; i < 4; i++) {
     // Loop over four legs: FL, BL, FR, BR
 
-    /*
+    //*
     if (ref_state_msg.feet.feet[i].contact) {
-      // Skip if the foot is in stance
-      t_up[i] = (ros::Time::now() - last_local_plan_msg_->state_timestamp)
-                     .toSec();
-      //continue;
+      t_up[i] = (ros::Time::now()).toSec();
     }
-    if (!ref_state_msg.feet.feet[i].contact && t_now - t_up[i] < 0.02) {
+    if (!ref_state_msg.feet.feet[i].contact &&
+        ((ros::Time::now()).toSec() - t_up[i] < 0.03)) {
       // on liftoff reset momentum observer state to 0s
       for (int j = 0; j < 3; j++) {
         p_hat[3 * i + j] = 0;
         r_mom[3 * i + j] = 0;
       }
-    }
-    */
+    } else {
+      //*/
+      // Compute joint torque estimates with momentum observer
 
-    for (int j = 0; j < 3; j++) {
+      for (int j = 0; j < 3; j++) {
 // read joint data from message
 #if USE_SIM > 0
-      int ind = joint_inds[3 * i + j];
-      q[j] = joint_dirs[j] * last_state_msg_->position[ind];
-      qd[j] = joint_dirs[j] * last_state_msg_->velocity[ind];
-      tau[j] = MO_ktau[j] * joint_dirs[j] * last_state_msg_->effort[ind];
+        int ind = joint_inds[3 * i + j];
+        q[j] = joint_dirs[j] * last_state_msg_->position[ind];
+        qd[j] = joint_dirs[j] * last_state_msg_->velocity[ind];
+        tau[j] = MO_ktau[j] * joint_dirs[j] * last_state_msg_->effort[ind];
 #else
-      int ind = 3 * i + j;
-      q[j] = joint_dirs[j] * last_state_msg_->joints.position[ind];
-      qd[j] = joint_dirs[j] * last_state_msg_->joints.velocity[ind];
-      tau[j] = MO_ktau[j] * joint_dirs[j] * last_state_msg_->joints.effort[ind];
+        int ind = 3 * i + j;
+        q[j] = joint_dirs[j] * last_state_msg_->joints.position[ind];
+        qd[j] = joint_dirs[j] * last_state_msg_->joints.velocity[ind];
+        tau[j] =
+            MO_ktau[j] * joint_dirs[j] * last_state_msg_->joints.effort[ind];
 #endif
 
-      if (cancel_friction_) {
-        tau[j] += (qd[j] > 0 ? 1 : -1) * MO_fric[j] + qd[j] * MO_damp[j];
+        if (cancel_friction_) {
+          tau[j] += (qd[j] > 0 ? 1 : -1) * MO_fric[j] + qd[j] * MO_damp[j];
+        }
+
+        // read this leg's estimates
+        re[j] = r_mom[3 * i + j];
+        pe[j] = p_hat[3 * i + j];
       }
+      // Compute dynamics matrices and vectors
+      int RL = i < 2 ? -1 : 1;
+      f_M(q, RL, M);
+      f_beta(q, qd, RL, beta);
+      f_J_MO(q, RL, J_MO);
 
-      // read this leg's estimates
-      re[j] = r_mom[3 * i + j];
-      pe[j] = p_hat[3 * i + j];
-    }
-    // Compute dynamics matrices and vectors
-    int RL = i < 2 ? -1 : 1;
-    f_M(q, RL, M);
-    f_beta(q, qd, RL, beta);
-    f_J_MO(q, RL, J_MO);
+      // Momentum observer update
+      Eigen::Vector3d p = M * qd;
+      Eigen::Vector3d pd_hat = tau - beta + re;
+      p = p - pe;
+      re = K_O * p;
+      pe = pe + pd_hat / update_rate_;
 
-    // Momentum observer update
-    Eigen::Vector3d p = M * qd;
-    Eigen::Vector3d pd_hat = tau - beta + re;
-    p = p - pe;
-    re = K_O * p;
-    pe = pe + pd_hat / update_rate_;
+      // Effective toe forces
+      fe_toe = J_MO.transpose().colPivHouseholderQr().solve(re);
 
-    // Effective toe forces
-    fe_toe = J_MO.transpose().colPivHouseholderQr().solve(re);
-
-    for (int j = 0; j < 3; j++) {
-      r_mom[3 * i + j] = re[j];
-      p_hat[3 * i + j] = pe[j];
-      f_toe_MO[3 * i + j] = fe_toe[j];
+      for (int j = 0; j < 3; j++) {
+        r_mom[3 * i + j] = re[j];
+        p_hat[3 * i + j] = pe[j];
+        f_toe_MO[3 * i + j] = fe_toe[j];
+      }
     }
   }
 
