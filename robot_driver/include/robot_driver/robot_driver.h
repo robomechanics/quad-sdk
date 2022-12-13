@@ -21,9 +21,9 @@
 
 #include "robot_driver/controllers/grf_pid_controller.h"
 #include "robot_driver/controllers/inverse_dynamics_controller.h"
-#include "robot_driver/controllers/underbrush_inverse_dynamics.h"
 #include "robot_driver/controllers/joint_controller.h"
 #include "robot_driver/controllers/leg_controller.h"
+#include "robot_driver/controllers/underbrush_inverse_dynamics.h"
 #include "robot_driver/estimators/comp_filter_estimator.h"
 #include "robot_driver/estimators/ekf_estimator.h"
 #include "robot_driver/estimators/state_estimator.h"
@@ -111,7 +111,8 @@ class RobotDriver {
    * @brief Callback to handle new body force estimates
    * @param[in] msg body force estimates
    */
-  void bodyForceEstimateCallback(const quad_msgs::BodyForceEstimate::ConstPtr& msg);
+  void bodyForceEstimateCallback(
+      const quad_msgs::BodyForceEstimate::ConstPtr& msg);
 
   /**
    * @brief Callback to handle control restart flag messages
