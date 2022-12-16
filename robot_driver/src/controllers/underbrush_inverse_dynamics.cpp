@@ -331,20 +331,9 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
       } else {
         // Swing phase
 
-        /*
-        ROS_INFO("C %u, t %f, hip %2.3f, knee %2.3f", force_mode_.at(i),
-          t_now2 - t_switch_.at(i),
-          last_body_force_estimate_msg_->body_wrenches.at(i).torque.y,
-          last_body_force_estimate_msg_->body_wrenches.at(i).torque.z);
-        */
-
-        // ROS_INFO("%1.3f, %1.3f, %1.3f, %1.3f, %1.3f, %1.3f", retract_vel_,
-        // tau_push_, tau_contact_start_, tau_contact_end_, min_switch_,
-        // t_down_);
-
         // Switch swing modes
         if (force_mode_.at(i) && (t_now2 - t_switch_.at(i) > min_switch_) &&
-            (last_body_force_estimate_msg_->body_wrenches.at(i).torque.z <
+            (last_body_force_estimate_msg_->joint_torques.at(3 * i + 2) <
              tau_contact_end_) &&
             t_TD_.at(i) - t_now2 >= t_down_) {
           last_mode_.at(i) = 0;
@@ -352,14 +341,13 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
           t_switch_.at(i) = t_now2;
         } else if (!force_mode_.at(i) &&
                    (t_now2 - t_switch_.at(i) > min_switch_) &&
-                   (last_body_force_estimate_msg_->body_wrenches.at(i)
-                            .torque.z > tau_contact_start_ ||
-                    last_body_force_estimate_msg_->body_wrenches.at(i)
-                                .torque.y > tau_contact_start_ &&
+                   (last_body_force_estimate_msg_->joint_torques.at(3 * i + 2) >
+                        tau_contact_start_ ||
+                    last_body_force_estimate_msg_->joint_torques.at(3 * i + 1) >
+                            tau_contact_start_ &&
                         t_now2 - t_LO_.at(i) > t_up_)) {
           force_mode_.at(i) = 1;
           t_switch_.at(i) = t_now2;
-          // ROS_INFO_STREAM("OBSTRUCTION DETECTED");
         }
         // force_mode_.at(i) = 0;
 
@@ -369,14 +357,12 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
           force_mode_.at(i) = 0;
           t_switch_.at(i) = t_now2;
           last_mode_.at(i) = 1;
-          // ROS_INFO("Leg %u stuck at end", i);
         }
 
         if (t_now2 - t_LO_.at(i) < t_up_) {
           if (last_mode_.at(i)) {
             force_mode_.at(i) = 1;  // retain previous mode
             t_switch_.at(i) = t_LO_.at(i);
-            // ROS_INFO("Leg %u was stuck at end", i);
           }
         }
 
@@ -402,7 +388,6 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
           }
         } else {
           // Obstructed swing mode
-          // ROS_INFO_THROTTLE(0.01, "Attempting circumvention");
           for (int j = 0; j < 3; ++j) {
             leg_command_array_msg.leg_commands.at(i)
                 .motor_commands.at(j)

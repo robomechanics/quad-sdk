@@ -5,4 +5,4 @@
 
 Header header
 
-geometry_msgs/Wrench[] body_wrenches
+float64[] joint_torques
