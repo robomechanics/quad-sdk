@@ -3,7 +3,7 @@
 
 echo "set up Sims"
 
-cd ~/catkin_ws2
+cd ~/catkin_ws_opt
 source devel/setup.bash
 
 echo "done!"

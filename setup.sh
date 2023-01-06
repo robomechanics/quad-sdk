@@ -29,4 +29,4 @@ echo "#######################"
 echo "Install all rosdeps"
 echo "#######################"
 echo
-rosdep install --from-paths .. --ignore-src -r -y --rosdistro melodic
+rosdep install --from-paths .. --ignore-src -r -y --rosdistro noetic
