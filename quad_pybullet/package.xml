@@ -34,14 +34,14 @@
   <build_depend>std_msgs</build_depend>
   <build_depend>quad_msgs</build_depend>
   <build_depend>quad_utils</build_depend>
-  <build_depend>ros_pybullet_interface</build_depend>
+  <!-- <build_depend>ros_pybullet_interface</build_depend> -->
   <build_depend>message_runtime</build_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
   <build_export_depend>eigen</build_export_depend>
   <build_export_depend>quad_msgs</build_export_depend>
   <build_export_depend>quad_utils</build_export_depend>
-  <build_export_depend>ros_pybullet_interface</build_export_depend>
+  <!-- <build_export_depend>ros_pybullet_interface</build_export_depend> -->
   <build_export_depend>message_runtime</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
   <exec_depend>roscpp</exec_depend>
@@ -49,7 +49,7 @@
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>quad_msgs</exec_depend>
   <exec_depend>quad_utils</exec_depend>
-  <exec_depend>ros_pybullet_interface</exec_depend>
+  <!-- <exec_depend>ros_pybullet_interface</exec_depend> -->
   <exec_depend>message_runtime</exec_depend>
   <!-- The export tag contains other, unspecified, tags -->
   <export>

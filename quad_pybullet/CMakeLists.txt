@@ -13,7 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   message_generation
   message_runtime
-  ros_pybullet_interface
+  # ros_pybullet_interface
   quad_msgs
 )
 ## System dependencies are found with CMake's conventions
@@ -162,8 +162,8 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
  catkin_install_python(PROGRAMS
-##   scripts/pybullet0.py  
-   src/robot.py
+   scripts/test_pybullet_node.py  
+   src/robot_estimate.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

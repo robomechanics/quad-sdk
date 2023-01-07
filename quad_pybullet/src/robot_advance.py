@@ -16,6 +16,27 @@ import numpy as np
 # Could replace contact_state_publisher? Publish directly into state/grfs?
 
 
+
+
+
+# Node [/robot_1/robot_driver]
+# Publications: 
+#  * /robot_1/control/grfs [quad_msgs/GRFArray]
+#  * /robot_1/control/joint_command [quad_msgs/LegCommandArray]
+#  * /robot_1/heartbeat/robot [std_msgs/Header]
+#  * /robot_1/state/trajectory [quad_msgs/RobotState]
+#  * /rosout [rosgraph_msgs/Log]
+
+# Subscriptions: 
+#  * /clock [rosgraph_msgs/Clock]
+#  * /robot_1/control/mode [unknown type]
+#  * /robot_1/control/restart_flag [unknown type]
+#  * /robot_1/control/single_joint_command [unknown type]
+#  * /robot_1/heartbeat/remote [unknown type]
+#  * /robot_1/local_plan [quad_msgs/RobotPlan]
+#  * /robot_1/state/ground_truth [quad_msgs/RobotState]
+
+
 # Topics to use
 #  * /robot_1/gazebo/toe0_contact_state [gazebo_msgs/ContactsState]
 #  * /robot_1/gazebo/toe1_contact_state [gazebo_msgs/ContactsState]
@@ -46,10 +67,12 @@ def SE3_transform_pos(pos_vec,pos,quat):
 
 
 #--------------------------------------------------------------------------------
+# Only need to publish to /robot_1/state/ground_truth [quad_msgs/RobotState]?
+
 
 class Robot_sensors:
 
-    def __init__(self,pb,robot,node = None,joint_topic = None,ground_truth_topics = None,contact_topics= None):
+    def __init__(self,robot,node = None,joint_topic = None,ground_truth_topics = None,contact_topics= None):
 
 
         # self.jointPub = rospy.Publisher(joint_topic,JointState)
@@ -59,14 +82,12 @@ class Robot_sensors:
         # for i in range(len(contact_topics)):
         #     self.contactPubs[i] = rospy.Publisher(contact_topics[i],ContactsState)
 
-        self.pb = pb # Pybullet Instance
         self.robot = robot # Get bodyID from higher level node
 
-
-        nJoints = self.pb.getNumJoints(self.robot)
+        nJoints = p.getNumJoints(self.robot)
         jointNameToId ={}
         for i in range (nJoints):
-            jointInfo = self.pb.getJointInfo(self.robot, i)
+            jointInfo = p.getJointInfo(self.robot, i)
             jointNameToId[jointInfo[1].decode('UTF-8')] = jointInfo[0] 
         # spine=jointNameToId["spine"]
         abdfl=jointNameToId["8"]
@@ -93,12 +114,50 @@ class Robot_sensors:
         self.leg_joint_names = [legFL,legBL,legFR,legBR]
 
 
-    def read_basic_joints(self):
+    def get_basic_joints(self):
         return
 
-    def read_single_contact(self,idx):
 
-        #  Preferably use read_all_contacts for all toes instead of looping this function.
+    def get_single_toe(self,idx):
+
+        #  Preferably use get_all_contacts for all toes instead of looping this function.
+        toe = self.toeIdx[idx]
+        toe_state = p.getLinkState(self.robot,toe, computeLinkVelocity = 1)
+        location = toe_state[0] # Only need world frame pos
+        vel = toe_state[6] # world frame linear vel
+        contacting = self.get_single_contact_state(idx) # bool
+        acc = [0.0,0.0,0.0] # hardcode 0
+        return [location,vel,acc,contacting]
+
+    def get_single_contact_state(self,idx):
+        toe = self.toeIdx[idx]
+        contact = p.getContactPoints(bodyB = self.robot,linkIndexB = toe)
+        if len(contact) >0:
+            contact_state = True
+        else:
+            contact_state = False
+        return contact_state
+
+    def get_body_state(self):
+
+        body_state = p.getLinkState(self.robot,0, computeLinkVelocity = 1)
+        location = body_state[0] # Only need world frame pos
+        orientation = body_state[1]
+        linear_vel = body_state[6] # world frame linear vel
+        angular_vel = body_state[7] # world frame ang vel, cartesian, not twist!
+
+        return [location,orientation,linear_vel,angular_vel]
+
+
+
+
+
+
+# ------------------------- More advanced features, might use in the future? --------------------
+
+    def get_single_contact_pt(self,idx):
+
+        #  Preferably use get_all_contacts for all toes instead of looping this function.
         body_pos_ori = p.getBasePositionAndOrientation(self.robot)
         body_quat = body_pos_ori[1] # from calling getBasePositionAndOrientation externally
         body_pos = body_pos_ori[0]
@@ -114,8 +173,22 @@ class Robot_sensors:
             grf = np.zeros(3)
         return [location,grf]
 
+    def get_all_contacts_pts(self):
+        # Return contact point location info in world frame
+        ground_contact = p.getContactPoints(bodyA = -1)
+        locations = np.zeros([len(self.toeIdx),3]) # initialize location, grf arrays
+        # grfs = np.zeros([len(self.toeIdx),3])
+        if len(ground_contact) >0:
+            for i in ground_contact:
+                location_world = np.array(i[5]) # Assume first body id is ground plane
+                # grf_i = self.get_contact_grf(i)
+                locations += np.array([location_world*int(i[4]== m) for m in self.toeIdx])
+                # grfs += np.array([grf_i*int(i[4]== m) for m in self.toeIdx])
+            return locations
+        else:
+            return locations
 
-    def read_all_contacts_pts_body(self):
+    def get_all_contacts_pts_body(self):
         # Return contact points relative location to body in body frame
         
         body_pos_ori = p.getBasePositionAndOrientation(self.robot)
@@ -137,9 +210,7 @@ class Robot_sensors:
             return [locations_body.T,grfs]
         else:
             return [locations,grfs]
-        # print(locations)
 
-        return None
 
     def get_contact_grf(self,contact):
         # Calculate contact forces in xyz, 
@@ -154,7 +225,7 @@ class Robot_sensors:
         grf = f_norm*e0_fnorm+f_f1*e0_f1+f_f2*e0_f2
         return grf
 
-    def read_contact_state(self):
+    def get_all_contact_states(self):
         ground_contact = p.getContactPoints(bodyA = -1)
         contact_idx = []
         if len(ground_contact) >0:
@@ -165,21 +236,6 @@ class Robot_sensors:
         contact_state = [(j in contact_idx) for j in self.toeIdx]
         return contact_state
 
-    # def get_contact_location(self):
-    #     ground_contact = p.getContactPoints(bodyA = -1)
-    #     contact_idx = []
-    #     contact_loc = []
-    #     if len(ground_contact) >0:
-    #         for i in ground_contact:
-    #             contact_idx.append(i[4])
-    #             contact_loc.append(i[6])
-    #         contact_state = [(j in contact_idx) for j in self.toeIdx]
-
-    #     else:
-    #         contact_idx = None
-    #         contact_loc = None
-        
-    #     return contact_state
 
 
     def world_vec_to_body(self,world_vec):
