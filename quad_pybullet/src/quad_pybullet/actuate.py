@@ -151,7 +151,7 @@ class Robot_pydriver:
     # def drive_one_leg2(self,leg_idx,leg_cmd):
     #     # leg_cmd as flattened list: [motor1pos,motor1vel,kp1,kd1,torqueff1,motor2pos,motor2vel, etc...]]
     #     # sequence is (abduction, hip and knee) by default
-    #     # This implemetation iterate thru motos, slow. Replacing!
+    #     # This implemetation iterate thru motos, slow. Rcing!
     #     leg_motor_ids = self.leg_joint_ids[leg_idx]
     #     for i,j in zip(leg_motor_ids,leg_cmd): # iterate over abd, hip and knee joint motors
     #         target_pos, target_vel,kp,kd,torqueff = j

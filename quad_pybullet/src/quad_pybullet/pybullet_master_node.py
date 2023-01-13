@@ -84,8 +84,8 @@ class pybullet_sim_node:
         
         pb.setAdditionalSearchPath(pybullet_data.getDataPath()) #optionally
         pb.setGravity(0,0,-10)
-        # planeId = pb.loadURDF(self.world)
-        planeId = pb.loadSDF(self.world)
+        planeId = pb.loadURDF(self.world)
+        # planeId = pb.loadSDF(self.world)
         startPos = [1.3,0.8,0.4]
         startOrientation = pb.getQuaternionFromEuler([0,0,1.1])
         # If single robot:

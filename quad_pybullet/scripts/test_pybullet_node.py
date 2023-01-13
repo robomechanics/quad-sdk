@@ -8,7 +8,8 @@ node_name = "pybullet_sim"
 robot_urdf = "/home/haoluo/catkin_ws/src/quad-sdk/quad_simulator/spirit_description/urdf/spirit.urdf"
 step_rate = 1000
 pybullet_pub_name = "/robot_1/state/ground_truth_pybullet"
-world_urdf = "/home/haoluo/catkin_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds/flat/flat.world"
+# world_urdf = "/home/haoluo/catkin_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds/flat/flat.world"
+world_urdf = "plane.urdf"
 # pybullet_sub_name = "/robot_1/control/joint_commands_pybullet"
 pybullet_sub_name = "/robot_1/control/joint_command"
 
