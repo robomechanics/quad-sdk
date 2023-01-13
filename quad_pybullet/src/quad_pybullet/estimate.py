@@ -25,19 +25,19 @@ from sensor_msgs.msg import JointState
 
 # Some utility functions using pybullet
 
-def pos_quat_to_SE3(pos,quat):
-    SO3 = (np.array(pb.getMatrixFromQuaternion(quat))).reshape([3,3]) 
-    P = np.array(pos).reshape([3,1])
-    SE3 = np.r_[np.c_[SO3,P],np.array([[0,0,0,1]])] # Join cols and rows together
-    return SE3
+# def pos_quat_to_SE3(pos,quat):
+#     SO3 = (np.array(pb.getMatrixFromQuaternion(quat))).reshape([3,3]) 
+#     P = np.array(pos).reshape([3,1])
+#     SE3 = np.r_[np.c_[SO3,P],np.array([[0,0,0,1]])] # Join cols and rows together
+#     return SE3
 
-def SE3_transform_pos(pos_vec,pos,quat):
-    homo_pos_vec = np.append(np.array(pos_vec),1).reshape([4,1]) # turn vector into homogeneous coordinate form
-    SO3 = (np.array(pb.getMatrixFromQuaternion(quat))).reshape([3,3])
-    P = np.array(pos).reshape([3,1])
-    SE3 = np.r_[np.c_[SO3,P],np.array([[0,0,0,1]])] # construct SE3 matrix
-    transformed_vec = SE3@homo_pos_vec
-    return transformed_vec[:3] # Return 3x1, same dimension as 3x1 input pos_vec
+# def SE3_transform_pos(pos_vec,pos,quat):
+#     homo_pos_vec = np.append(np.array(pos_vec),1).reshape([4,1]) # turn vector into homogeneous coordinate form
+#     SO3 = (np.array(pb.getMatrixFromQuaternion(quat))).reshape([3,3])
+#     P = np.array(pos).reshape([3,1])
+#     SE3 = np.r_[np.c_[SO3,P],np.array([[0,0,0,1]])] # construct SE3 matrix
+#     transformed_vec = SE3@homo_pos_vec
+#     return transformed_vec[:3] # Return 3x1, same dimension as 3x1 input pos_vec
 
 
 #--------------------------------------------------------------------------------
@@ -46,22 +46,16 @@ def SE3_transform_pos(pos_vec,pos,quat):
 
 class Robot_sensors:
 
-    def __init__(self,robot,node = None,joint_topic = None,ground_truth_topics = None,contact_topics= None):
+    def __init__(self,robot,physicsClientId):
 
-
-        # self.jointPub = rospy.Publisher(joint_topic,JointState)
-        # self.ground_truth_Pub = rospy.Publisher(ground_truth_topics[0],RobotState) 
-        # self.ground_truth_body_Pub = rospy.Publisher(ground_truth_topics[1],RobotState) 
-        # self.contactPubs = [None for j in range(len(contact_topics))]
-        # for i in range(len(contact_topics)):
 
         self.robot = robot # Get bodyID from higher level node
+        self.pcid = physicsClientId
 
-
-        nJoints =pb.getNumJoints(self.robot)
+        nJoints =pb.getNumJoints(self.robot,physicsClientId = self.pcid)
         jointNameToId ={}
         for i in range (nJoints):
-            jointInfo =pb.getJointInfo(self.robot, i)
+            jointInfo =pb.getJointInfo(self.robot, i,physicsClientId = self.pcid)
             jointNameToId[jointInfo[1].decode('UTF-8')] = jointInfo[0] 
         # spine=jointNameToId["spine"]
 
@@ -102,22 +96,12 @@ class Robot_sensors:
         self.all_joint_names = list(jointNameToId.keys())
         self._nameToId = jointNameToId
 
-    def get_basic_joints2(self):
-        names = self.basic_joint_names
-        jointStates =pb.getJointStates(self.robot,self.basic_joint_ids)
-        # print(len(jointStates[0]))
-        positions, vels, jointRFs, effort_pb = jointStates
-        efforts = [0.0*len(self.basic_joint_ids)]  # Hardcode as 0.0, same as in gazebo estimator_plugin.cpp
-        # effort_pb = effort measured in Pybullet
-        return [names,positions,vels,efforts]
-        # return [names,positions,vels,efforts,jointStates]
-    
     def get_basic_joints(self):
         positions = []
         vels = []
         efforts = [0.0*len(self.basic_joint_ids)]
         for i in self.basic_joint_ids:
-            pos_i,vel_i,rf_i,eff_i =pb.getJointState(self.robot,i)
+            pos_i,vel_i,rf_i,eff_i =pb.getJointState(self.robot,i,physicsClientId = self.pcid)
             positions.append(pos_i)
             vels.append(vel_i)
         return [self.basic_joint_names,positions,vels,efforts]
@@ -125,7 +109,7 @@ class Robot_sensors:
 
     def get_single_toe(self,idx):
         toe = self.toeIdx[idx]
-        toe_state =pb.getLinkState(self.robot,toe, computeLinkVelocity = 1)
+        toe_state =pb.getLinkState(self.robot,toe, computeLinkVelocity = 1,physicsClientId = self.pcid)
         location = toe_state[0] # Only need world frame pos
         vel = toe_state[6] # world frame linear vel
         contacting = self.get_single_contact_state(idx) # bool
@@ -135,7 +119,7 @@ class Robot_sensors:
 
     def get_single_contact_state(self,idx):
         toe = self.toeIdx[idx]
-        contact =pb.getContactPoints(bodyB = self.robot,linkIndexB = toe)
+        contact =pb.getContactPoints(bodyB = self.robot,linkIndexB = toe,physicsClientId = self.pcid)
         if len(contact) >0:
             contact_state = True
         else:
@@ -151,7 +135,7 @@ class Robot_sensors:
         return toe_states
 
     def get_body_state(self):
-        body_state =pb.getLinkState(self.robot,0, computeLinkVelocity = 1)
+        body_state =pb.getLinkState(self.robot,0, computeLinkVelocity = 1,physicsClientId = self.pcid)
         location = body_state[0] # Only need world frame pos
         orientation = body_state[1]
         linear_vel = body_state[6] # world frame linear vel

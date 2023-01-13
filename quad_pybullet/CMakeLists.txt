@@ -164,6 +164,7 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
  catkin_install_python(PROGRAMS
    scripts/test_pybullet_node.py  
+  #  scripts/test_pybullet_sensor_node.py  
 #   src/robot_estimate/robot_estimate.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

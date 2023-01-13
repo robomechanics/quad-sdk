@@ -8,5 +8,5 @@ source devel/setup.bash
 
 echo "done!"
 
-roslaunch quad_utils quad_gazebo.launch robot_type:=spirit gui:=true rviz_gui:=true
+roslaunch quad_utils quad_pybullet.launch robot_type:=spirit gui:=true rviz_gui:=false
 
