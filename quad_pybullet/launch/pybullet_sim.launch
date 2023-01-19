@@ -1,0 +1,8 @@
+<launch>
+
+        <node pkg="quad_pybullet" name="pybullet_clock" type="pybullet_clock_node.py">
+        </node>       
+  	<node pkg="quad_pybullet" type="test_pybullet_node.py" name="test_pybullet_node">
+        </node>
+        
+</launch>

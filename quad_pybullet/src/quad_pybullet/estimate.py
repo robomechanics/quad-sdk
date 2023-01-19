@@ -99,12 +99,18 @@ class Robot_sensors:
     def get_basic_joints(self):
         positions = []
         vels = []
+        rfs = []
+        # efforts = []
         efforts = [0.0*len(self.basic_joint_ids)]
-        for i in self.basic_joint_ids:
-            pos_i,vel_i,rf_i,eff_i =pb.getJointState(self.robot,i,physicsClientId = self.pcid)
-            positions.append(pos_i)
-            vels.append(vel_i)
+        all_joint_states = pb.getJointStates(self.robot,self.basic_joint_ids,physicsClientId = self.pcid)
+        # positions,vels,rfs,effs =pb.getJointStates(self.robot,self.basic_joint_ids,physicsClientId = self.pcid)
+        for i in all_joint_states:
+            positions.append(i[0])    
+            vels.append(i[1])
+            # rfs.append(i[2])
+            # efforts.append(i[3])
         return [self.basic_joint_names,positions,vels,efforts]
+
 
 
     def get_single_toe(self,idx):

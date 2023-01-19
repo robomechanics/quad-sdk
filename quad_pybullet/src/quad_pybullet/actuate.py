@@ -20,33 +20,13 @@ from sensor_msgs.msg import JointState
 #  * /robot_1/state/ground_truth [quad_msgs/RobotState]
 #  * /robot_1/state/ground_truth_body_frame [quad_msgs/RobotState]
 
-
-# -----------------------------------------------------------------------------
-
-# Some utility functions using pybullet
-
-# def pos_quat_to_SE3(pos,quat):
-#     SO3 = (np.array(pb.getMatrixFromQuaternion(quat))).reshape([3,3]) 
-#     P = np.array(pos).reshape([3,1])
-#     SE3 = np.r_[np.c_[SO3,P],np.array([[0,0,0,1]])] # Join cols and rows together
-#     return SE3
-
-# def SE3_transform_pos(pos_vec,pos,quat):
-#     homo_pos_vec = np.append(np.array(pos_vec),1).reshape([4,1]) # turn vector into homogeneous coordinate form
-#     SO3 = (np.array(pb.getMatrixFromQuaternion(quat))).reshape([3,3])
-#     P = np.array(pos).reshape([3,1])
-#     SE3 = np.r_[np.c_[SO3,P],np.array([[0,0,0,1]])] # construct SE3 matrix
-#     transformed_vec = SE3@homo_pos_vec
-#     return transformed_vec[:3] # Return 3x1, same dimension as 3x1 input pos_vec
-
-
 #--------------------------------------------------------------------------------
 # Only need to publish to /robot_1/state/ground_truth [quad_msgs/RobotState]?
 
 
 class Robot_pydriver:
 
-    def __init__(self,robot,physicsClientId,drive_msg_class = None):
+    def __init__(self,robot,physicsClientId,drive_msg_class = None,torque_control = True):
 
 
         self.robot = robot # Get bodyID from higher level node
@@ -93,38 +73,168 @@ class Robot_pydriver:
             ["8","0","1","9","2","3",\
             "10","4","5","11","6","7"]
 
+        self.abds = [legFL[0],legBL[0],legFR[0],legBR[0]]
+        self.hips = [legFL[1],legBL[1],legFR[1],legBR[1]]
+        self.knees = [legFL[2],legBL[2],legFR[2],legBR[2]]
+
         self.all_joint_names = list(jointNameToId.keys())
         self._nameToId = jointNameToId
 
-    def unpack_quadrobot_cmds(self,ros_robotcmds):
+        self.forced_kp = 0.02
+        self.forced_kd = 0.05
+
+        if torque_control:
+            self.enable_torque_control()
+
+    def enable_torque_control(self):
+        for i in self.basic_joint_ids:
+            pb.setJointMotorControl2(bodyUniqueId=self.robot, jointIndex=i, controlMode=pb.VELOCITY_CONTROL,force = 0)
+
+    def unpack_quadrobot_cmds_list(self,ros_robotcmds):
         # Turn rosmsg into commands
         # Assume quad_msgs.LegCommandArray for now
-        # Assume leg and joint sequence as [FL,BL,FR,BR], and [abd,hip,knee] for one leg
-        blank_msg = [[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]] for i in range(4)]
-        robot_cmds = []
+        
+        # By default, the output is a nested list:
+        #  [[all motor pos], [all motor vels], [all motor kp], [all motor kd], [all motor torque_ff]]
+
+        robot_cmd_list = [[],[],[],[],[]]
+        blank_msg = [[0 for i in range(len(self.basic_joint_ids))] for j in range(5)]\
+        # Decompose cmds as lists of pos,vel,kp,kd,torque_ff
         if not len(ros_robotcmds.leg_commands) == 4:
+            robot_cmd_list = [[],[],[],[],[]]
             return blank_msg
         else:
+            robot_cmd_list = [[],[],[],[],[]]
             [FL_cmd,BL_cmd,FR_cmd,BR_cmd] = ros_robotcmds.leg_commands
-            for leg_i_cmd in [FL_cmd,BL_cmd,FR_cmd,BR_cmd]:
+            for leg_i_cmd,leg_i_ids in zip([FL_cmd,BL_cmd,FR_cmd,BR_cmd],self.leg_joint_ids):
                 abd_cmd,hip_cmd,knee_cmd = leg_i_cmd.motor_commands
-                legpos = []
-                legvels = []
-                legkps = []
-                legkds = []
-                torqueff = []
-                for motor_j_cmd in [abd_cmd,hip_cmd,knee_cmd]:
-                    legpos.append(motor_j_cmd.pos_setpoint)
-                    legvels.append(motor_j_cmd.vel_setpoint)
-                    legkps.append(motor_j_cmd.kp)
-                    legkds.append(motor_j_cmd.kd)
-                    # torqueff.append(motor_j_cmd.torque_ff)
-                    torqueff.append(10)
-                robot_cmds.append([legpos,legvels,legkps,legkds,torqueff])
-            # print(robot_cmds)
-            return robot_cmds
+                # abd_motor,hip_motor,knee_motor = leg_i_ids
+                for motor_j_cmd,motor_j_id in zip([abd_cmd,hip_cmd,knee_cmd],leg_i_ids):
+
+                    robot_cmd_list[0].append(motor_j_cmd.pos_setpoint) # list of pos, ordered as in self.basic_joint__names
+                    robot_cmd_list[1].append(motor_j_cmd.vel_setpoint) # list of vel, ordered as in self.basic_joint__names
+                    robot_cmd_list[2].append(self.forced_kp) # list of motor kp
+                    robot_cmd_list[3].append(self.forced_kd) # list of motor kd
+                    # robot_cmd_list[4].append(0.0)
+                    # robot_cmd_list[2].append(motor_j_cmd.kp*1)
+                    # robot_cmd_list[3].append(motor_j_cmd.kd*1)
+                    robot_cmd_list[4].append(motor_j_cmd.torque_ff)
+                    # robot_cmd_list[4].append(0.0)
+            return robot_cmd_list
 
 
+    def drive_all_pos(self,ros_robot_cmd):
+        # robot_cmd as nested list:
+        # [[all motor pos],[all motor vels],[all motor kp],[all motor kd],[all motor torque_ff]]]
+        #  change leg sequencing in class init() function
+        # robot_cmd = self.unpack_quadrobot_cmds(ros_robot_cmd)
+        # [pos_cmds,vel_cmds,kp_cmds,kd_cmds] = self.unpack_quadrobot_cmds_list(ros_robot_cmd)
+
+        # This function use pybullet built-in position control
+        [pos_cmds,vel_cmds,kp_cmds,kd_cmds,torque_ff_cmds] = self.unpack_quadrobot_cmds_list(ros_robot_cmd)
+        robot_id = self.robot
+        clientid = self.pcid
+        joint_ids = self.basic_joint_ids
+        mode = pb.POSITION_CONTROL
+        pb.setJointMotorControlArray(robot_id,joint_ids,mode,pos_cmds,vel_cmds,positionGains = kp_cmds,\
+            velocityGains = kd_cmds, physicsClientId = clientid) # Don't use torque yet
+
+
+    def joints_PD(self,joint_ids,all_target_pos,all_target_vel,kps,kds,all_tau_ff):
+        joint_kps = np.array(kps)
+        joint_kds = np.array(kds)
+        curr_pos = [] # Current positions
+        curr_vel = []
+        curr_rfs = []
+        # efforts = []
+        efforts = [0.0*len(self.basic_joint_ids)]
+        all_joint_states = pb.getJointStates(self.robot,joint_ids,physicsClientId = self.pcid)
+        for i in all_joint_states:
+            curr_pos.append(i[0])    
+            curr_vel.append(i[1])   
+        pos_err = np.array(curr_pos)-np.array(all_target_pos)
+        vel_err = np.array(curr_vel)-np.array(all_target_vel)
+        torque_out = pos_err*joint_kps-vel_err*joint_kds+np.array(all_tau_ff)
+        # torque_out = pos_err*joint_kps-curr_vel*joint_kds
+
+        return pos_err.tolist(),vel_err.tolist(),torque_out.tolist()
+
+    def drive_all_torque(self,ros_robot_cmd):
+        # robot_cmd as nested list:
+        # [[all motor pos],[all motor vels],[all motor kp],[all motor kd],[all motor torque_ff]]]
+        #  change leg sequencing in class init() function
+        # robot_cmd = self.unpack_quadrobot_cmds(ros_robot_cmd)
+        # [pos_cmds,vel_cmds,kp_cmds,kd_cmds] = self.unpack_quadrobot_cmds_list(ros_robot_cmd)
+        [pos_cmds,vel_cmds,kp_cmds,kd_cmds,torque_ff_cmds] = self.unpack_quadrobot_cmds_list(ros_robot_cmd)
+
+        robot_id = self.robot
+        clientid = self.pcid
+        # mode = pb.POSITION_CONTROL
+        mode = pb.TORQUE_CONTROL
+        pos_err,vel_err,PD_torque_cmds = self.joints_PD(self.basic_joint_ids,pos_cmds,vel_cmds,kp_cmds,kd_cmds,torque_ff_cmds)
+        # PD_torque_cmds = [20.0 for i in self.basic_joint_ids]
+        pb.setJointMotorControlArray(robot_id,self.basic_joint_ids,mode,forces = PD_torque_cmds, physicsClientId = clientid)    # Use torque cmd
+
+
+
+            
+# ############################################ Some extra utility functions or old functions #######################
+
+
+    def single_joint_err(self,joint_id,target_pos,target_vel):
+        curr_pos,curr_vel,curr_rf,curr_effort = \
+            pb.getJointState(self.robot,joint_id,physicsClientId = self.pcid)
+        pos_err = curr_pos-target_pos
+        vel_err = curr_vel-target_vel
+        return pos_err,vel_err,curr_vel
+
+    def joints_err(self,joint_ids,all_target_pos,all_target_vel):
+        curr_pos = [] # Current positions
+        curr_vel = []
+        curr_rfs = []
+        # efforts = []
+        efforts = [0.0*len(self.basic_joint_ids)]
+        all_joint_states = pb.getJointStates(self.robot,joint_ids,physicsClientId = self.pcid)
+        for i in all_joint_states:
+            curr_pos.append(i[0])    
+            curr_vel.append(i[1])   
+        pos_err = np.array(curr_pos)-np.array(all_target_pos)
+        vel_err = np.array(curr_vel)-np.array(all_target_vel)
+        return pos_err.tolist(),vel_err.tolist()
+
+
+
+    def drive_all_old(self,ros_robot_cmd):
+        # robot_cmd as nested list:
+        # [[all motor pos],[all motor vels],[all motor kp],[all motor kd],[all motor torque_ff]]]
+        #  change leg sequencing in class init() function
+        # robot_cmd = self.unpack_quadrobot_cmds(ros_robot_cmd)
+        # [pos_cmds,vel_cmds,kp_cmds,kd_cmds] = self.unpack_quadrobot_cmds_list(ros_robot_cmd)
+        [pos_cmds,vel_cmds,kp_cmds,kd_cmds,torque_cmds] = self.unpack_quadrobot_cmds_list(ros_robot_cmd)
+        if len(pos_cmds)>0:
+            robot_id = self.robot
+            clientid = self.pcid
+            mode = pb.POSITION_CONTROL
+            abds = [0,3,6,9]
+            hips = [1,4,7,10]
+            knees = [2,5,8,11]
+            # all_seq = [abds,hips,knees]
+            all_seq = [knees,hips,abds]
+            # for j,k in zip(all_seq,[self.abds,self.hips,self.knees]):
+            for j,k in zip(all_seq,[self.knees,self.hips,self.abds]):
+                pb.setJointMotorControlArray(robot_id,k,mode,[pos_cmds[i] for i in j],[vel_cmds[i] for i in j],\
+                positionGains = [kp_cmds[i] for i in j],\
+                    velocityGains = [kd_cmds[i] for i in j], physicsClientId = clientid)
+                # Don't use torque yet    
+
+                # pb.setJointMotorControlArray(robot_id,k,mode,[pos_cmds[i] for i in j],[vel_cmds[i] for i in j],\
+                # positionGains = [kp_cmds[i] for i in j],\
+                #     velocityGains = [kd_cmds[i] for i in j], 
+                #     forces = [torque_cmds[i] for i in j], physicsClientId = clientid)    # Use torque cmd
+            else:
+                pass
+
+    
     def drive_one_motor(self,motor_idx,target_pos,target_vel = None,kp = 0.0,kd = 0.0,torque_ff = 1e6):
         # torque_ff is the max actuator effort, set to large number by default
         if target_vel == None:
@@ -133,7 +243,8 @@ class Robot_pydriver:
                 physicsClientId = self.pcid) # client id optional
         else:
             pb.setJointMotorControl2(self.robot, jointIndex=motor_idx,controlMode=pb.POSITION_CONTROL,targetPosition=target_pos,\
-            targetVelocity=target_vel,force = torque_ff, positionGain=kp, velocityGain=kd,\
+            targetVelocity=target_vel, positionGain=kp, velocityGain=kd,\
+                # force = torque_ff,\
                 physicsClientId = self.pcid) # client id optional
 
     def drive_one_leg(self,leg_idx,leg_cmd):
@@ -145,24 +256,5 @@ class Robot_pydriver:
         mode = pb.POSITION_CONTROL # pos control by default
         leg_motor_ids = self.leg_joint_ids[leg_idx]
         pos,vel,kp,kd,toruqeff = leg_cmd
-        print(pos,vel,kp,kd,toruqeff)
-        pb.setJointMotorControlArray(robot_id,leg_motor_ids,mode,pos,vel,toruqeff,kp,kd,clientid)
-
-    # def drive_one_leg2(self,leg_idx,leg_cmd):
-    #     # leg_cmd as flattened list: [motor1pos,motor1vel,kp1,kd1,torqueff1,motor2pos,motor2vel, etc...]]
-    #     # sequence is (abduction, hip and knee) by default
-    #     # This implemetation iterate thru motos, slow. Rcing!
-    #     leg_motor_ids = self.leg_joint_ids[leg_idx]
-    #     for i,j in zip(leg_motor_ids,leg_cmd): # iterate over abd, hip and knee joint motors
-    #         target_pos, target_vel,kp,kd,torqueff = j
-    #         self.drive_one_motor(target_pos, target_vel,kp,kd,torqueff)
-
-    def drive_all_legs(self,ros_robot_cmd):
-        # robot_cmd as nested list:
-        # [[FLleg_cmds],[BLleg_cmds]] ,[[BLmotor1],[BLmotor2]], etc...]
-        #  change leg sequencing in class init() function
-        robot_cmd = self.unpack_quadrobot_cmds(ros_robot_cmd)
-        print(len(robot_cmd))
-        for leg_idx,leg_cmd in zip((0,1,2,3),robot_cmd):
-            self.drive_one_leg(leg_idx,leg_cmd)
-
+        pb.setJointMotorControlArray(robot_id,leg_motor_ids,mode,pos,vel,positionGains = kp,\
+            velocityGains = kd,physicsClientId = clientid)
