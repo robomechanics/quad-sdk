@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:macro name="leg" params="name mirror mirror_dae front_hind front_hind_dae *origin">
+
+        <joint name="${name}_haa_joint" type="revolute">
+            <xacro:insert_block name="origin"/>
+            <parent link="trunk"/>
+            <child link="${name}_hip"/>
+            <axis xyz="1 0 0"/>
+            <dynamics damping="${damping}" friction="${friction}"/>
+            <xacro:if value="${(mirror_dae == True)}">
+                <limit effort="${hip_torque_max}" velocity="${hip_velocity_max}" lower="${hip_position_min}" upper="${hip_position_max}"/>
+            </xacro:if>
+            <xacro:if value="${(mirror_dae == False)}">
+                <limit effort="${hip_torque_max}" velocity="${hip_velocity_max}" lower="${-hip_position_max}" upper="${-hip_position_min}"/>
+            </xacro:if>            
+        </joint>
+
+        <link name="${name}_hip"> <!-- AB AD -->
+            <visual>
+                <xacro:if value="${(mirror_dae == True) and (front_hind_dae == True)}">
+                    <origin rpy="0 0 0" xyz="-0.06 0 0"/>
+                </xacro:if>
+                <xacro:if value="${(mirror_dae == False) and (front_hind_dae == True)}">
+                    <origin rpy="${PI} 0 0" xyz="-0.06 0 0"/>
+                </xacro:if>
+                <xacro:if value="${(mirror_dae == True) and (front_hind_dae == False)}">
+                    <origin rpy="0 ${PI} 0" xyz="0.06 0 0"/>
+                </xacro:if>
+                <xacro:if value="${(mirror_dae == False) and (front_hind_dae == False)}">
+                    <origin rpy="${PI} ${PI} 0" xyz="0.06 0 0"/>
+                </xacro:if>
+                <geometry>
+                    <mesh filename="package://ylo2_description/meshes/leg/textured/ylo2texturedhip.dae" scale="1 1 1"/>
+                </geometry>
+                <material name="white"/>
+            </visual>
+            <inertial>
+                <origin rpy="0 0 0" xyz="${hip_com_x*front_hind} ${hip_com_y*mirror} ${hip_com_z}"/>
+                <mass value="${hip_mass}"/>
+                <inertia
+                    ixx="${hip_ixx}" ixy="${hip_ixy*mirror*front_hind}" ixz="${hip_ixz*front_hind}"
+                    iyy="${hip_iyy}" iyz="${hip_iyz*mirror}"
+                    izz="${hip_izz}"/>       
+            </inertial>
+        </link>
+        
+
+        <joint name="${name}_hfe_joint" type="continuous">
+            <origin rpy="0 0 0" xyz="0.0 ${upperleg_offset*mirror} 0"/>
+            <parent link="${name}_hip"/>
+            <child link="${name}_upperleg"/>
+            <axis xyz="0 1 0"/>
+            <dynamics damping="${damping}" friction="${friction}"/>
+            <limit effort="${upperleg_torque_max}" velocity="${upperleg_velocity_max}"/>
+        </joint>
+
+        <link name="${name}_upperleg">
+            <visual>
+                <origin rpy="0 0 0" xyz="0 ${-0.0732*mirror} 0"/> <!-- positionnement des 4 axes en meme temps -->
+                <geometry>
+                    <xacro:if value="${mirror_dae == True}">
+                        <mesh filename="package://ylo2_description/meshes/leg/textured/ylo2_textured_upper_leg.dae" scale="1 1 1"/>
+                    </xacro:if>
+                    <xacro:if value="${mirror_dae == False}">
+                        <mesh filename="package://ylo2_description/meshes/leg/textured/ylo2_textured_upper_leg.dae" scale="1 -1 1"/>
+                    </xacro:if>
+                </geometry>
+                <material name="grey"/>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0 ${-0.0732*mirror} 0"/> <!-- positionnement des 4 axes en meme temps -->
+                <geometry>
+                    <xacro:if value="${mirror_dae == True}">
+                        <mesh filename="package://ylo2_description/meshes/leg/fl_upper_leg_collision.stl" scale="1 1 1"/>
+                    </xacro:if>
+                    <xacro:if value="${mirror_dae == False}">
+                        <mesh filename="package://ylo2_description/meshes/leg/fl_upper_leg_collision.stl" scale="1 -1 1"/>
+                    </xacro:if>
+                </geometry>
+                <material name="red"/>      
+            </collision>
+            <inertial>
+                <origin rpy="0 0 0" xyz="${upperleg_com_x} ${upperleg_com_y*mirror} ${upperleg_com_z}"/>
+                <mass value="${upperleg_mass}"/>
+                <inertia
+                    ixx="${upperleg_ixx}" ixy="${upperleg_ixy*mirror}" ixz="${upperleg_ixz}"
+                    iyy="${upperleg_iyy}" iyz="${upperleg_iyz*mirror}"
+                    izz="${upperleg_izz}"/>
+            </inertial>
+        </link>
+
+        <joint name="${name}_kfe_joint" type="revolute">
+            <origin rpy="0 0 0" xyz="0 -0.001 ${-upperleg_length}"/>
+            <parent link="${name}_upperleg"/>
+            <child link="${name}_lowerleg"/>
+            <axis xyz="0 1 0"/>
+            <dynamics damping="${damping}" friction="${friction}"/>
+            <limit effort="${lowerleg_torque_max}" velocity="${lowerleg_velocity_max}" lower="${lowerleg_position_min}" upper="${lowerleg_position_max}"/>
+        </joint>
+
+        <link name="${name}_lowerleg">
+            <visual>
+                <origin rpy="0 0 0" xyz="0 ${0.001*mirror} 0"/>
+                <geometry>
+                    <mesh filename="package://ylo2_description/meshes/leg/textured/lower_leg.dae" scale="1 1 1"/>
+                </geometry>
+                <material name="white"/>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0 ${0.001*mirror} 0"/>
+                <geometry>
+                    <mesh filename="package://ylo2_description/meshes/leg/fl_lower_leg_collision.stl" scale="1 -1 1"/>
+                </geometry>
+                <material name="red"/>      
+            </collision>
+            <inertial>
+                <origin rpy="0 0 0" xyz="${lowerleg_com_x} ${lowerleg_com_y} ${lowerleg_com_z}"/>
+                <mass value="${lowerleg_mass}"/>
+                <inertia
+                    ixx="${lowerleg_ixx}" ixy="${lowerleg_ixy}" ixz="${lowerleg_ixz}"
+                    iyy="${lowerleg_iyy}" iyz="${lowerleg_iyz}"
+                    izz="${lowerleg_izz}"/>
+            </inertial>
+        </link>
+
+        <joint name="${name}_foot_fixed" type="fixed">
+            <origin rpy="0 0 0" xyz="0 0 ${-(lowerleg_length)}"/>
+            <parent link="${name}_lowerleg"/>
+            <child link="${name}_foot"/>
+        </joint>
+
+        <link name="${name}_foot">
+            <inertial>
+                <origin rpy="0 0 0" xyz="${foot_com_x} ${foot_com_y} ${foot_com_z}"/>
+                <mass value="${foot_mass}"/>
+                <inertia
+                    ixx="${foot_ixx}" ixy="${foot_ixy}" ixz="${foot_ixz}"
+                    iyy="${foot_iyy}" iyz="${foot_iyz}"
+                    izz="${foot_izz}"/>
+            </inertial>
+            <visual>
+                <origin rpy="0 0 0" xyz="0.009 ${(0.001*mirror)+0.001} 0.069"/>
+                <geometry>
+                    <mesh filename="package://ylo2_description/meshes/leg/fl_foot.dae" scale="1.0 1.0 1.0"/>
+                </geometry>
+                <material name="orange"/>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0.009 ${(0.001*mirror)+0.001} 0.069"/>
+                <geometry>
+                    <mesh filename="package://ylo2_description/meshes/leg/fl_foot_collision.stl" scale="1.0 1.0 1.0"/>
+                </geometry>
+                <material name="red"/>
+            </collision>
+        </link>
+
+    </xacro:macro>
+</robot>
