@@ -107,19 +107,17 @@ void LocalFootstepPlanner::computeContactSchedule(
   for (int i = 0; i < horizon_length_; i++) {
     // Leaping and landing
     if (ref_primitive_plan(i) == LEAP_STANCE) {
-      contact_schedule.at(i) = {true, true, true, true};
-    } else if (ref_primitive_plan(i) == FLIGHT) {
-      // Flight, check that min landing height is exceeded
-      double min_landing_height = 0.3;
-      double current_height =
-          body_plan(i, 2) - terrain_grid_.atPosition(
-                                "z_inpainted", body_plan.row(i).head<2>(),
-                                grid_map::InterpolationMethods::INTER_NEAREST);
-      if (current_height < min_landing_height && body_plan(i, 8) < 0) {
-        contact_schedule.at(i) = {true, true, true, true};
+      int leading_leg_liftoff_idx = std::min(i, horizon_length_ - 1);
+
+      if (ref_primitive_plan(leading_leg_liftoff_idx) == FLIGHT) {
+        contact_schedule.at(i) = {false, true, false, true};
       } else {
-        contact_schedule.at(i) = {false, false, false, false};
+        contact_schedule.at(i) = {true, true, true, true};
       }
+    } else if (ref_primitive_plan(i) == FLIGHT) {
+      // Flight
+      std::fill(contact_schedule.at(i).begin(), contact_schedule.at(i).end(),
+                false);
     } else if (ref_primitive_plan(i) == LAND_STANCE) {
       contact_schedule.at(i) = {true, true, true, true};
     }
