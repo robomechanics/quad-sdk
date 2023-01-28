@@ -4,6 +4,8 @@
     <rosparam command="load" file="$(find quad_utils)/config/topics_robot.yaml" />
     <param name="enable_statistics" type="bool" value="true" />
 
+    <param name="robot_type" type="string" value="$(arg robot_type)"/>
+
     <group if="$(eval arg('robot_type') == 'spirit')">
         <rosparam command="load" file="$(find quad_utils)/config/spirit.yaml" />
         <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
@@ -14,5 +16,11 @@
         <rosparam command="load" file="$(find quad_utils)/config/a1.yaml" />
         <param name="robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1.sdf" />
         <param name="robot_description" command="cat $(find a1_description)/urdf/a1.urdf" />
+    </group>
+
+    <group if="$(eval arg('robot_type') == 'new_platform')">
+        <rosparam command="load" file="$(find quad_utils)/config/new_platform.yaml" />
+        <!-- <param name="robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1.sdf" />
+        <param name="robot_description" command="cat $(find a1_description)/urdf/a1.urdf" /> -->
     </group>
 </launch>

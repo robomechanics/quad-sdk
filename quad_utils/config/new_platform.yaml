@@ -1,0 +1,29 @@
+global_body_planner:                      ####NEED TO EDIT THESE PARAMETERS###
+  h_max: 0.375                            # Maximum height of leg base, m
+  h_min: 0.075                            # Minimum ground clearance of body corners, m
+  h_nom: 0.3                              # Nominal ground clearance of body, m
+  v_max: 2.0                              # Maximum robot velocity, m/s
+  v_nom: 0.75                             # Nominal velocity, m/s (used during connect function)
+  robot_l: 0.3                            # Length of robot body, m
+  robot_w: 0.3                            # Width of robot body, m
+  robot_h: 0.05                           # Vertical distance between leg base and bottom of robot, m
+  mass: 13.0                              # Robot mass, kg
+  grf_min: 4.0                            # Minimum GRF in units of body weight (only used for sampling)
+  grf_max: 5.0                            # Maximum GRF in units of body weight
+
+robot_driver:
+  sit_kp: [10, 10, 10]
+  sit_kd: [1, 1, 1]
+  stand_kp: [35, 35, 35]
+  stand_kd: [1, 1, 1]
+  stance_kp: [10, 10, 10]
+  stance_kd: [1, 1, 1]
+  swing_kp: [10, 10, 10]
+  swing_kd: [1, 1, 1]
+  swing_kp_cart: [0, 0, 0] # N/m
+  swing_kd_cart: [0, 0, 0] # N/m
+  safety_kp: [0, 0, 0]
+  safety_kd: [2, 2, 2]
+  stand_joint_angles: [0.0, 0.76, 1.52]
+  sit_joint_angles: [0.0, 0.0, 0.0]
+  torque_limit: [21, 21, 32]

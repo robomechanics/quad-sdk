@@ -1,0 +1,21 @@
+motor_0:
+  id: 0x00
+  position: [1, 2, 3, 4, 5, 6]
+  velocity: [0, 0, 0, 0, 0, 0]
+  torque: [0, 0, 0, 0, 0, 0]
+  kp: 5
+  kd: 1
+motor_1:
+  id: 0x01
+  position: [1, 2, 3, 4, 5, 6]
+  velocity: [0, 0, 0, 0, 0, 0]
+  torque: [0, 0, 0, 0, 0, 0]
+  kp: 5
+  kd: 1
+motor_2:
+  id: 0x02
+  position: [1, 2, 3, 4, 5, 6]
+  velocity: [0, 0, 0, 0, 0, 0]
+  torque: [0, 0, 0, 0, 0, 0]
+  kp: 5
+  kd: 1

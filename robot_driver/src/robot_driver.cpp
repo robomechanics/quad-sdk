@@ -11,8 +11,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
       leg_command_array_topic, control_mode_topic, remote_heartbeat_topic,
       robot_heartbeat_topic, single_joint_cmd_topic, mocap_topic,
       control_restart_flag_topic;
-  quad_utils::loadROSParamDefault(nh_, "robot_type", robot_name,
-                                  std::string("spirit"));
+  quad_utils::loadROSParam(nh_, "robot_type", robot_name);
   quad_utils::loadROSParam(nh_, "topics/state/imu", imu_topic);
   quad_utils::loadROSParam(nh_, "topics/state/joints", joint_state_topic);
   quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
@@ -94,11 +93,11 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   // Set up pubs and subs dependent on robot layer
   if (is_hardware_) {
     ROS_INFO("Loading hardware robot driver");
-    mocap_sub_ = nh_.subscribe(mocap_topic, 1000, &RobotDriver::mocapCallback,
-                               this, ros::TransportHints().tcpNoDelay(true));
+    // mocap_sub_ = nh_.subscribe(mocap_topic, 1000, &RobotDriver::mocapCallback,
+    //                            this, ros::TransportHints().tcpNoDelay(true));
     robot_state_pub_ =
         nh_.advertise<quad_msgs::RobotState>(robot_state_topic, 1);
-    imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic, 1);
+    // imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic, 1);
     joint_state_pub_ =
         nh_.advertise<sensor_msgs::JointState>(joint_state_topic, 1);
   } else {
@@ -114,8 +113,14 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   // Initialize hardware interface
   if (is_hardware_) {
     if (robot_name == "spirit") {
+      ROS_INFO("Loading spirit interface");
       hardware_interface_ = std::make_shared<SpiritInterface>();
-    } else {
+    } 
+    else if (robot_name == "new_platform") {
+      ROS_INFO("Loading new platform interface");
+      hardware_interface_ = std::make_shared<NewPlatformInterface>();
+    } 
+    else {
       ROS_ERROR_STREAM("Invalid robot name " << robot_name
                                              << ", returning nullptr");
       hardware_interface_ = nullptr;

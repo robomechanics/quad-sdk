@@ -11,13 +11,6 @@
 
 #include <eigen3/Eigen/Eigen>
 
-struct LimbCmd_t {
-  Eigen::Vector3f pos, vel, tau;
-  short kp[3];
-  short kd[3];
-  bool restart_flag;
-};
-
 //! Hardware interface for the Spirit40 quadruped from Ghost Robotics.
 /*!
    SpiritInterface listens for joint control messages and outputs low level
