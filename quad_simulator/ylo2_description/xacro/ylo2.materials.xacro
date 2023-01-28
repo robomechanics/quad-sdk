@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<robot name="ylo2" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <material name="lower_leg_grey">
+    <color rgba="0.15 0.15 0.15 1.0"/>
+  </material>
+
+</robot>
