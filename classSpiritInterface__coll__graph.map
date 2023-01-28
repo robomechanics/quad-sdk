@@ -1,5 +1,5 @@
 <map id="SpiritInterface" name="SpiritInterface">
-<area shape="rect" id="node1" title="Hardware interface for the Spirit40 quadruped from Ghost Robotics." alt="" coords="80,95,183,121"/>
-<area shape="rect" id="node2" href="$classHardwareInterface.html" title="Implements an abstract class for robot hardware interfaces." alt="" coords="5,5,135,32"/>
-<area shape="rect" id="node3" title=" " alt="" coords="159,5,226,32"/>
+<area shape="rect" id="node1" title="Hardware interface for the Spirit40 quadruped from Ghost Robotics." alt="" coords="80,93,183,119"/>
+<area shape="rect" id="node2" href="$classHardwareInterface.html" title="Implements an abstract class for robot hardware interfaces." alt="" coords="5,5,135,31"/>
+<area shape="rect" id="node3" title=" " alt="" coords="159,5,226,31"/>
 </map>

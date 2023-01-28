@@ -1,6 +1,6 @@
 <map id="GlobalBodyPlannerTestFixture" name="GlobalBodyPlannerTestFixture">
-<area shape="rect" id="node1" title="A test fixture for the global body planning class." alt="" coords="48,184,245,211"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,95,99,121"/>
-<area shape="rect" id="node3" href="$structplanning__utils_1_1PlannerConfig.html" title="Planner Configuration." alt="" coords="217,95,404,121"/>
-<area shape="rect" id="node4" href="$classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling." alt="" coords="111,5,225,32"/>
+<area shape="rect" id="node1" title="A test fixture for the global body planning class." alt="" coords="48,181,245,207"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,93,99,119"/>
+<area shape="rect" id="node3" href="$structplanning__utils_1_1PlannerConfig.html" title="Planner Configuration." alt="" coords="217,93,404,119"/>
+<area shape="rect" id="node4" href="$classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling." alt="" coords="111,5,225,31"/>
 </map>

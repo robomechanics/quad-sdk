@@ -1,4 +1,4 @@
 <map id="InverseDynamicsController" name="InverseDynamicsController">
-<area shape="rect" id="node1" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="5,80,183,107"/>
-<area shape="rect" id="node2" href="$classLegController.html" title="Implements an abstract class for leg controllers." alt="" coords="45,5,143,32"/>
+<area shape="rect" id="node1" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="5,79,183,104"/>
+<area shape="rect" id="node2" href="$classLegController.html" title="Implements an abstract class for leg controllers." alt="" coords="45,5,143,31"/>
 </map>

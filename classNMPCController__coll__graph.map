@@ -1,5 +1,5 @@
 <map id="NMPCController" name="NMPCController">
-<area shape="rect" id="node1" title="NMPC controller ROS node." alt="" coords="69,95,185,121"/>
-<area shape="rect" id="node2" href="$structNLPDiagnostics.html" title=" " alt="" coords="5,5,123,32"/>
-<area shape="rect" id="node3" href="$structNLPConfig.html" title=" " alt="" coords="147,5,232,32"/>
+<area shape="rect" id="node1" title="NMPC controller ROS node." alt="" coords="69,93,185,119"/>
+<area shape="rect" id="node2" href="$structNLPDiagnostics.html" title=" " alt="" coords="5,5,123,31"/>
+<area shape="rect" id="node3" href="$structNLPConfig.html" title=" " alt="" coords="147,5,232,31"/>
 </map>

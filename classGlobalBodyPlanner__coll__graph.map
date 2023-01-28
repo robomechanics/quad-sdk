@@ -1,7 +1,7 @@
 <map id="GlobalBodyPlanner" name="GlobalBodyPlanner">
-<area shape="rect" id="node1" title="A global body planning class for legged robots." alt="" coords="158,213,290,240"/>
-<area shape="rect" id="node2" href="$classGlobalBodyPlan.html" title="A class to contain global plan data along with helper functions." alt="" coords="5,95,120,121"/>
-<area shape="rect" id="node3" href="$structplanning__utils_1_1FullState.html" title="Define full state with Eigen data." alt="" coords="145,95,303,121"/>
-<area shape="rect" id="node4" href="$structplanning__utils_1_1PlannerConfig.html" title="Planner Configuration." alt="" coords="328,95,515,121"/>
-<area shape="rect" id="node5" href="$classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling." alt="" coords="365,5,478,32"/>
+<area shape="rect" id="node1" title="A global body planning class for legged robots." alt="" coords="158,211,290,236"/>
+<area shape="rect" id="node2" href="$classGlobalBodyPlan.html" title="A class to contain global plan data along with helper functions." alt="" coords="5,93,120,119"/>
+<area shape="rect" id="node3" href="$structplanning__utils_1_1FullState.html" title="Define full state with Eigen data." alt="" coords="145,93,303,119"/>
+<area shape="rect" id="node4" href="$structplanning__utils_1_1PlannerConfig.html" title="Planner Configuration." alt="" coords="328,93,515,119"/>
+<area shape="rect" id="node5" href="$classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling." alt="" coords="365,5,478,31"/>
 </map>
