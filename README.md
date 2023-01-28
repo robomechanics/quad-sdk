@@ -5,7 +5,8 @@
 ![Alt text](doc/dock2.jpg?raw=true)
 ![Alt text](doc/dock4.jpg?raw=true)
 
-### Ylo2 robot github link : https://github.com/elpimous/ylo-2
+## Ylo2 robot github link : https://github.com/elpimous/ylo-2
+
 
 ## Overview
 
