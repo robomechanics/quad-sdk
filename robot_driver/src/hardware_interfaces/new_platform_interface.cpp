@@ -4,17 +4,17 @@ NewPlatformInterface::NewPlatformInterface() {}
 
 void NewPlatformInterface::loadInterface(int argc, char** argv) {
 
-  //Set zero positions and prepare motors for moving
-  motorStates_0 = motor_controller0.setZeroPosition(motor_ids_0);
-  motorStates_1 = motor_controller1.setZeroPosition(motor_ids_1);
+  // //Set zero positions and prepare motors for moving
+  // motorStates_0 = motor_controller0.setZeroPosition(motor_ids_0);
+  // motorStates_1 = motor_controller1.setZeroPosition(motor_ids_1);
 
-  //Enable motors
-  motorStates_0 = motor_controller0.enableMotor(motor_ids_0);
-  motorStates_1 = motor_controller1.enableMotor(motor_ids_1);
+  // //Enable motors
+  // motorStates_0 = motor_controller0.enableMotor(motor_ids_0);
+  // motorStates_1 = motor_controller1.enableMotor(motor_ids_1);
 
-  //Merge the front and rear leg mappings
-  motorStates.insert(motorStates_0.begin(), motorStates_0.end());
-  motorStates.insert(motorStates_1.begin(), motorStates_1.end());
+  // //Merge the front and rear leg mappings
+  // motorStates.insert(motorStates_0.begin(), motorStates_0.end());
+  // motorStates.insert(motorStates_1.begin(), motorStates_1.end());
 
 }
 
@@ -82,7 +82,7 @@ bool NewPlatformInterface::send(
 
   //For RL, RR
 
-  ROS_INFO("Sending leg command array\n");
+  // ROS_INFO("Sending leg command array\n");
 
   // motorStates_0 = motor_controller0.sendRadCommand(commandMap_0);
   // motorStates_1 = motor_controller1.sendRadCommand(commandMap_1);
@@ -98,7 +98,7 @@ bool NewPlatformInterface::recv(sensor_msgs::JointState& joint_state_msg,
                            sensor_msgs::Imu& imu_msg,
                            Eigen::VectorXd& user_rx_data) {
   
-  ROS_INFO("Recieving Command to robot\n");
+  // ROS_INFO("Recieving Command to robot\n");
   
   // Add the data corresponding to each joint
   for (int i = 0; i < joint_names_.size(); i++) {

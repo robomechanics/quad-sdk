@@ -578,7 +578,8 @@ void RobotDriver::spin() {
     updateState();
 
     // Compute the leg command and publish if valid
-    bool is_valid = updateControl();
+    // bool is_valid = updateControl();
+    bool is_valid = true;
     publishControl(is_valid);
 
     // // Publish state and heartbeat

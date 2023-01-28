@@ -1,11 +1,27 @@
+#include <sensor_msgs/Joy.h>
+
 #include "robot_driver/robot_driver.h"
 
 using namespace std::chrono;
 
 int numFeet = 1;
+int currAxis = 0;
+float joyPos = 0;
 
 uint64_t getCurrTime() {
     return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+}
+
+void sensorMsgCallback(const sensor_msgs::Joy::ConstPtr& joy) {
+    //Check for change in axis
+    for (int i=0; i < 4; i++) {
+        if (joy->buttons[i] == 1) {
+            currAxis = i;
+        }
+    }
+
+    //Check joystick position for motor command
+    joyPos = joy->axes[1];
 }
 
 int main(int argc, char** argv) {
@@ -14,7 +30,7 @@ int main(int argc, char** argv) {
 
     // Load rosparams from parameter server
     std::string robot_name, joint_state_topic, leg_command_array_topic,
-        robot_heartbeat_topic, single_joint_cmd_topic;
+        robot_heartbeat_topic, single_joint_cmd_topic, sensor_msg_topic;
     int motor_0_id, motor_1_id, motor_2_id;
     std::vector<double> motor_0_pos;
     std::vector<double> motor_1_pos;
@@ -63,6 +79,9 @@ int main(int argc, char** argv) {
     ros:: Publisher robot_heartbeat_pub_ =
         nh_.advertise<std_msgs::Header>(robot_heartbeat_topic, 1);
     
+    //Subscribe to teleop twist joy
+    ros::Subscriber sensor_msgs_sub = nh_.subscribe("/joy", 1, sensorMsgCallback);
+    
     /// Message for leg command array
     quad_msgs::LegCommandArray leg_command_array_msg_;
     leg_command_array_msg_.leg_commands.resize(4);
@@ -83,7 +102,6 @@ int main(int argc, char** argv) {
     while(ros::ok) {
         // Collect new messages on subscriber topics and publish heartbeat
         ros::spinOnce();
-        ROS_INFO("Sending command\n");
         currTime = getCurrTime();
         if (currTime - prevTime > waitTime) {
             // Publish new command
@@ -91,25 +109,31 @@ int main(int argc, char** argv) {
                 leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
 
                 for (int j = 0; j < 3; ++j) {
-                int joint_idx = 3 * i + j;
+                    int joint_idx = 3 * i + j;
 
-                robot_driver_utils::loadMotorCommandMsg(
-                                motor_pos[j][indx], 0, 0, kp, kd,
-                                leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j));
+                    float goalPos = 0;
+                    if (j == currAxis) {
+                        goalPos = joyPos;
+                        ROS_INFO("Sending command %f to axis %i\n", goalPos, currAxis);
+                    }
 
-                leg_command_array_msg_.leg_commands.at(i)
-                    .motor_commands.at(j)
-                    .pos_component = 0;
-                leg_command_array_msg_.leg_commands.at(i)
-                    .motor_commands.at(j)
-                    .vel_component = 0;
-                leg_command_array_msg_.leg_commands.at(i)
-                    .motor_commands.at(j)
-                    .fb_component = 0;
-                leg_command_array_msg_.leg_commands.at(i)
-                    .motor_commands.at(j).effort = 0;
-                leg_command_array_msg_.leg_commands.at(i)
-                    .motor_commands.at(j).fb_ratio = 0;
+                    robot_driver_utils::loadMotorCommandMsg(
+                                    goalPos, 0, 0, kp, kd,
+                                    leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j));
+                    
+                    leg_command_array_msg_.leg_commands.at(i)
+                        .motor_commands.at(j)
+                        .pos_component = 0;
+                    leg_command_array_msg_.leg_commands.at(i)
+                        .motor_commands.at(j)
+                        .vel_component = 0;
+                    leg_command_array_msg_.leg_commands.at(i)
+                        .motor_commands.at(j)
+                        .fb_component = 0;
+                    leg_command_array_msg_.leg_commands.at(i)
+                        .motor_commands.at(j).effort = 0;
+                    leg_command_array_msg_.leg_commands.at(i)
+                        .motor_commands.at(j).fb_ratio = 0;
                 }
             }
             leg_command_array_msg_.header.stamp = ros::Time::now();
