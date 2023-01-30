@@ -14,7 +14,7 @@ then
 fi
 mkdir coinbrew
 cd coinbrew
-wget https://raw.githubusercontent.com/coin-or/coinbrew/v1.0/coinbrew
+wget https://raw.githubusercontent.com/coin-or/coinbrew/v2.0/coinbrew
 chmod u+x coinbrew
 ./coinbrew fetch Ipopt --latest-release --no-prompt
 cd ..
@@ -26,7 +26,7 @@ else
     echo "Warning: HSL not found."
 fi
 cd coinbrew
-./coinbrew build Ipopt --latest-release --tests none --prefix=/usr/local --no-prompt --parallel-jobs=8
+./coinbrew build Ipopt --latest-release --tests none --prefix=/usr/local --no-prompt
 cd ../..
 
 # Setup and build for rbdl
