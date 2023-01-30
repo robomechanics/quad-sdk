@@ -1,8 +1,9 @@
 #! /usr/bin/env python
 
 
-from quad_pybullet.pybullet_master_node import pybullet_sim_node
+# from quad_pybullet.pybullet_master_node import pybullet_sim_node
 
+from quad_pybullet.pybullet_master_node import pybullet_sim_node
 
 node_name = "pybullet_sim"
 robot_file = "/home/haoluo/catkin_ws_opt/src/quad-sdk/quad_simulator/spirit_description/urdf/spirit.urdf"
