@@ -163,7 +163,7 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
  catkin_install_python(PROGRAMS
-   scripts/test_pybullet_node.py
+   scripts/pybullet_sim_node.py
    scripts/pybullet_clock_node.py   
   #  scripts/test_pybullet_sensor_node.py  
 #   src/robot_estimate/robot_estimate.py
