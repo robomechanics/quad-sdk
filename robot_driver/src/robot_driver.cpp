@@ -1,5 +1,6 @@
 #include "robot_driver/robot_driver.h"
 
+
 RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   nh_ = nh;
   argc_ = argc;
@@ -348,9 +349,11 @@ void RobotDriver::publishState() {
 bool RobotDriver::updateControl() {
   // Check if state machine should be skipped
   bool valid_cmd = true;
+
   if (leg_controller_->overrideStateMachine()) {
     valid_cmd = leg_controller_->computeLegCommandArray(
         last_robot_state_msg_, leg_command_array_msg_, grf_array_msg_);
+    valid_cmd = true;
     return valid_cmd;
   }
 
@@ -372,8 +375,11 @@ bool RobotDriver::updateControl() {
   // Initialize leg command message
   leg_command_array_msg_.leg_commands.resize(num_feet_);
 
+
+
   // Enter state machine for filling motor command message
   if (control_mode_ == SAFETY) {
+  // if (true) {
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
       for (int j = 0; j < 3; ++j) {
@@ -383,6 +389,7 @@ bool RobotDriver::updateControl() {
             0, 0, 0, safety_kp_.at(j), safety_kd_.at(j),
             leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j));
       }
+
     }
   } else if (control_mode_ == SIT) {
     for (int i = 0; i < num_feet_; ++i) {
@@ -523,7 +530,6 @@ bool RobotDriver::updateControl() {
           fb_ratio;
     }
   }
-
   return valid_cmd;
 }
 
@@ -532,6 +538,7 @@ void RobotDriver::publishControl(bool is_valid) {
   // if ((ros::Time::now() - leg_command_array_msg_.header.stamp).toSec()
   // >= 1.0/publish_rate_) {
   leg_command_array_msg_.header.stamp = ros::Time::now();
+
   leg_command_array_pub_.publish(leg_command_array_msg_);
   grf_array_msg_.header.stamp = leg_command_array_msg_.header.stamp;
   grf_pub_.publish(grf_array_msg_);

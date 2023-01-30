@@ -37,7 +37,7 @@ bool JointController::computeLegCommandArray(
 
       leg_command_array_msg.leg_commands.at(i)
           .motor_commands.at(j)
-          .pos_setpoint = 0.0;
+          .pos_setpoint = 1.0;
       leg_command_array_msg.leg_commands.at(i)
           .motor_commands.at(j)
           .vel_setpoint = 0.0;

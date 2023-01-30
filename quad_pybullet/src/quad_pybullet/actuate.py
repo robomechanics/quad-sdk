@@ -5,9 +5,8 @@ import numpy as np
 import rospy
 
 
-from quad_msgs.msg import RobotState, MultiFootState, FootState, BodyState
+from quad_msgs.msg import RobotState, MultiFootState, FootState, LegCommandArray
 from sensor_msgs.msg import JointState
-
 
 # ------------------------------------------------------------------------------------
 
@@ -80,15 +79,24 @@ class Robot_pydriver:
         self.all_joint_names = list(jointNameToId.keys())
         self._nameToId = jointNameToId
 
-        self.forced_kp = 0.02
-        self.forced_kd = 0.05
+        self.forced_kp = 0.5
+        self.forced_kd = 0.5
 
-        if torque_control:
-            self.enable_torque_control()
+        # if torque_control:
+        #     self.enable_torque_control()
 
     def enable_torque_control(self):
         for i in self.basic_joint_ids:
             pb.setJointMotorControl2(bodyUniqueId=self.robot, jointIndex=i, controlMode=pb.VELOCITY_CONTROL,force = 0)
+
+    def stand(self):
+        for i in self.abds:
+            pb.setJointMotorControl2(targetPosition = 0, bodyUniqueId=self.robot, jointIndex=i, controlMode=pb.POSITION_CONTROL)
+        for i in self.hips:
+            pb.setJointMotorControl2(targetPosition = 0.8, bodyUniqueId=self.robot, jointIndex=i, controlMode=pb.POSITION_CONTROL)
+        for i in self.knees:
+            pb.setJointMotorControl2(targetPosition = 1.6, bodyUniqueId=self.robot, jointIndex=i, controlMode=pb.POSITION_CONTROL)
+
 
     def unpack_quadrobot_cmds_list(self,ros_robotcmds):
         # Turn rosmsg into commands
@@ -118,8 +126,8 @@ class Robot_pydriver:
                     # robot_cmd_list[4].append(0.0)
                     # robot_cmd_list[2].append(motor_j_cmd.kp*1)
                     # robot_cmd_list[3].append(motor_j_cmd.kd*1)
-                    robot_cmd_list[4].append(motor_j_cmd.torque_ff)
-                    # robot_cmd_list[4].append(0.0)
+                    # robot_cmd_list[4].append(motor_j_cmd.torque_ff)
+                    robot_cmd_list[4].append(0.0)
             return robot_cmd_list
 
 
@@ -224,7 +232,7 @@ class Robot_pydriver:
             for j,k in zip(all_seq,[self.knees,self.hips,self.abds]):
                 pb.setJointMotorControlArray(robot_id,k,mode,[pos_cmds[i] for i in j],[vel_cmds[i] for i in j],\
                 positionGains = [kp_cmds[i] for i in j],\
-                    velocityGains = [kd_cmds[i] for i in j], physicsClientId = clientid)
+                    velocityGains = [kd_cmds[i] for i in j], physicsClientId = clientid,forces=[30.0 for i in j])
                 # Don't use torque yet    
 
                 # pb.setJointMotorControlArray(robot_id,k,mode,[pos_cmds[i] for i in j],[vel_cmds[i] for i in j],\

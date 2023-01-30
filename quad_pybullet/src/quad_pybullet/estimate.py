@@ -5,7 +5,8 @@ import numpy as np
 import rospy
 
 
-from quad_msgs.msg import RobotState, MultiFootState, FootState, BodyState
+from quad_msgs.msg import RobotState, MultiFootState, FootState, BodyState,GRFArray
+from geometry_msgs.msg import Vector3,Point
 from sensor_msgs.msg import JointState
 
 
@@ -148,6 +149,67 @@ class Robot_sensors:
         angular_vel = body_state[7] # world frame ang vel, cartesian, not twist!
         return [location,orientation,linear_vel,angular_vel]
         # return [location,orientation,linear_vel,angular_vel,body_state]
+
+
+    def get_all_contacts_pts(self):
+        # Return contact point location info in world frame
+        ground_contact = pb.getContactPoints(bodyA = -1)
+        locations = np.zeros([len(self.toeIdx),3]) # initialize location, grf arrays
+        grfs = np.zeros([len(self.toeIdx),3])
+        Bool_states = [False for i in self.toeIdx]
+        if len(ground_contact) >0:
+            for i in ground_contact:
+                location_world = np.array(i[5]) # Assume first body id is ground plane
+                grf = self.get_contact_grf(i)
+                locations += np.array([location_world*int(i[4]== m) for m in self.toeIdx])
+                grfs += np.array([grf*int(i[4]== m) for m in self.toeIdx])
+                Bool_states = [k or (i[4]== m) for m,k in zip(self.toeIdx,Bool_states)]
+
+            return locations.tolist(),grfs.tolist(),Bool_states
+        else:
+            return locations.tolist(),grfs.tolist(),Bool_states
+
+    def get_contact_grf(self,contact):
+        # Calculate contact forces in xyz, 
+        # from "contact" object returned by getContactPoints 
+        grf = np.zeros([1,3])
+        f_norm = contact[9]
+        e0_fnorm = np.array(contact[7]) # unit vector for normal force
+        f_f1 = contact[10]
+        e0_f1 = np.array(contact[11]) # unit vector for fricition direction
+        f_f2 = contact[12]
+        e0_f2 = np.array(contact[13]) # unit vector for fricition direction
+        grf = f_norm*e0_fnorm+f_f1*e0_f1+f_f2*e0_f2
+        return grf
+
+    def write_contact_msg(self):
+        
+        GRFmsg_out= GRFArray()
+        locations,grfs,contact_states = self.get_all_contacts_pts()
+
+        # GRF_msgs = [None for ]
+        grf_msgs = [Vector3() for k in grfs]
+        point_msgs = [Point() for k in locations]
+        for i,j in zip(point_msgs,locations):
+            i.x = j[0]
+            i.y = j[1]
+            i.z = j[2]
+
+        for i,j in zip(grf_msgs,grfs):
+            i.x = j[0]
+            i.y = j[1]
+            i.z = j[2]
+
+
+        GRFmsg_out.points = point_msgs
+        GRFmsg_out.vectors = grf_msgs
+    
+        GRFmsg_out.contact_states = contact_states
+    
+        GRFmsg_out.traj_index = 0
+        
+        # toe_msgs.feet = all_feet_msgs
+        return  GRFmsg_out
 
     def write_RobotState_msg(self):
         
