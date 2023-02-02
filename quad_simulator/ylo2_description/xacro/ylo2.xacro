@@ -1,37 +1,41 @@
 <?xml version="1.0"?>
 
+<!-- file for use with quadruped-sdk ylo2 -->
+
 <robot name="ylo2_description" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:arg name="floating_base_link" default="true"/>
-    <xacro:arg name="robot_name"  default="ylo2"/>
-    <xacro:arg name="base_name"   default="trunk"/>
+    <xacro:include filename="$(find ylo2_description)/xacro/const.xacro"/>
+    <xacro:include filename="$(find ylo2_description)/xacro/materials.xacro"/>
+    <xacro:include filename="$(find ylo2_description)/xacro/leg.xacro"/>
+    <xacro:include filename="$(find ylo2_description)/xacro/gazebo.xacro"/>
 
-    <xacro:include filename="$(find ylo2_description)/urdfs/const.xacro"/>
-    <xacro:include filename="$(find ylo2_description)/urdfs/leg.xacro"/>
-    <xacro:include filename="$(find a1_description)/xacro/gazebo.xacro"/>
+    <link name="body">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <box size="0.001 0.001 0.001"/>
+            </geometry>
+        </visual>
+    </link>
 
-    <!-- Floating-base Joint -->
-    <xacro:if value="$(arg floating_base_link)">
-            <link name="world"/>
-            <joint name="floating_base_joint" type="floating">
-              <origin rpy="0 0 0" xyz="0 0 0"/>
-              <parent link="world"/>
-              <child link="trunk"/>
-            </joint>
-    </xacro:if>
+    <joint name="floating_base" type="fixed">
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <parent link="body"/>
+        <child link="trunk"/>
+    </joint>
 
     <link name="trunk">
-        <visual>
-            <origin rpy="0 0 0" xyz="${trunk_offset_x} 0 ${abab_motors_offset_z}"/>
+        <visual name="body_visual">
+            <origin rpy="0 0 0" xyz="${body_center_x} ${body_center_y} ${body_center_z}"/>
             <geometry>
                 <mesh filename="package://ylo2_description/meshes/body/textured/ylo2_textured_body.dae" scale="1 1 1"/>
             </geometry>
-            <material name="grey"/>
+            <material name="orange"/>
         </visual>
-        <collision>
-            <origin rpy="0 0 0" xyz="${trunk_offset_x} 0 ${abab_motors_offset_z}"/>
+        <collision name="body_collision">
+            <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>
-                <mesh filename="package://ylo2_description/meshes/body/covers_collision.stl" scale="1 1 1"/>
+                <box size="${trunk_length} ${trunk_width} ${trunk_height}"/>
             </geometry>
         </collision>
         <inertial>
@@ -46,7 +50,7 @@
 
     <link name="abad_motors">
         <visual>
-            <origin rpy="0 0 0" xyz="${trunk_offset_x} ${trunk_offset_y} ${abab_motors_offset_z}"/>
+            <origin rpy="0 0 0" xyz="${body_center_x} ${body_center_y} ${body_center_z}"/>
             <geometry>
                 <mesh filename="package://ylo2_description/meshes/body/textured/ylo2_textured_abad_motors.dae" scale="1 1 1"/>
             </geometry>
@@ -62,7 +66,7 @@
 
     <link name="battery">
         <visual>
-            <origin rpy="0 0 0" xyz="${trunk_offset_x} ${trunk_offset_y} ${abab_motors_offset_z}"/>
+            <origin rpy="0 0 0" xyz="${body_center_x} ${body_center_y} ${body_center_z}"/>
             <geometry>
                 <mesh filename="package://ylo2_description/meshes/body/battery.stl" scale="1 1 1"/>
             </geometry>
@@ -78,7 +82,7 @@
 
     <link name="covers">
         <visual>
-            <origin rpy="0 0 0" xyz="${trunk_offset_x} ${trunk_offset_y} ${abab_motors_offset_z}"/>
+            <origin rpy="0 0 0" xyz="${body_center_x} ${body_center_y} ${body_center_z}"/>
             <geometry>
                 <mesh filename="package://ylo2_description/meshes/body/textured/ylo2_textured_cover.dae" scale="1 1 1"/>
             </geometry>
@@ -94,7 +98,7 @@
 
     <link name="accessories">
         <visual>
-            <origin rpy="0 0 0" xyz="${trunk_offset_x} ${trunk_offset_y} ${abab_motors_offset_z}"/>
+            <origin rpy="0 0 0" xyz="${body_center_x} ${body_center_y} ${body_center_z}"/>
             <geometry>
                 <mesh filename="package://ylo2_description/meshes/body/textured/accessories.dae" scale="1 1 1"/>
             </geometry>
@@ -108,9 +112,9 @@
         <origin rpy="0 0 0" xyz="0 0 0"/>
     </joint>
 
-    <link name="D435">
+    <link name="d435">
         <visual>
-            <origin rpy="0 0 0" xyz="${trunk_offset_x} ${trunk_offset_y+0.004} ${abab_motors_offset_z}"/>
+            <origin rpy="0 0 0" xyz="${body_center_x} ${body_center_y} ${body_center_z}"/>
             <geometry>
                 <mesh filename="package://ylo2_description/meshes/body/textured/ylo2_d435_textured.dae" scale="1 1 1"/>
             </geometry>
@@ -118,15 +122,15 @@
         </visual>
     </link>
 
-    <joint name="D435_joint" type="fixed">
+    <joint name="d435_joint" type="fixed">
         <parent link="trunk"/>
-        <child link="D435"/>
+        <child link="d435"/>
         <origin rpy="0 0 0" xyz="0 0 0"/>
     </joint>
 
-    <link name="T265">
+    <link name="t265">
         <visual>
-            <origin rpy="0 0 0" xyz="${trunk_offset_x+0.001} ${trunk_offset_y+0.0025} ${abab_motors_offset_z+0.00}"/>
+            <origin rpy="0 0 0" xyz="${body_center_x} ${body_center_y} ${body_center_z}"/>
             <geometry>
                 <mesh filename="package://ylo2_description/meshes/body/textured/ylo2_t265_textured.dae" scale="1 1.06 1.04"/>
             </geometry>
@@ -134,23 +138,24 @@
         </visual>
     </link>
 
-    <joint name="T265_joint" type="fixed">
+    <joint name="t265_joint" type="fixed">
         <parent link="trunk"/>
-        <child link="T265"/>
+        <child link="t265"/>
         <origin rpy="0 0 0" xyz="0 0 0"/>
     </joint>
+
 
     <joint name="imu_joint" type="fixed">
         <parent link="trunk"/>
-        <child link="trunk_imu"/>
+        <child link="imu_link"/>
         <origin rpy="0 0 0" xyz="0 0 0"/>
     </joint>
 
-    <link name="trunk_imu">
+    <link name="imu_link">
         <inertial>
             <mass value="0.001"/>
             <origin rpy="0 0 0" xyz="0 0 0"/>
-            <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.0001"/>
+            <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
         </inertial>
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -167,21 +172,28 @@
         </collision>
     </link>
 
-    <!-- ABAD POSITION OK pas touche-->
-    <xacro:leg name="0" mirror="1" mirror_dae="True" front_hind="1" front_hind_dae="True">
-        <origin rpy="0 0 0" xyz="${leg_offset_x-0.019} ${0+leg_offset_y+0.006} ${0-leg_offset_z}"/>
+    <!--FL-->
+    <xacro:leg suffix="0" mirror="1" mirror_dae="True" front_hind="1" front_hind_dae="True"
+               hipJointName="0" kneeJointName="1" abductionJointName="8">
+        <origin rpy="0 0 0" xyz="${leg_offset_x+0.0345} ${leg_offset_y+0.006} ${leg_offset_z}"/>
     </xacro:leg>
 
-    <xacro:leg name="1" mirror="1" mirror_dae="True" front_hind="-1" front_hind_dae="False">
-        <origin rpy="0 0 0" xyz="${-leg_offset_x-0.019} ${0+leg_offset_y+0.006} ${0-leg_offset_z}"/>
+    <!--RL-->
+    <xacro:leg suffix="1" mirror="1" mirror_dae="True" front_hind="-1" front_hind_dae="False"
+               hipJointName="2" kneeJointName="3" abductionJointName="9">
+        <origin rpy="0 0 0" xyz="${-leg_offset_x-0.0745} ${leg_offset_y+0.006} ${leg_offset_z}"/>
     </xacro:leg>
 
-    <xacro:leg name="2" mirror="-1" mirror_dae= "False" front_hind="1" front_hind_dae="True">
-        <origin rpy="0 0 0" xyz="${leg_offset_x-0.019} ${0-leg_offset_y+0.006} ${0-leg_offset_z}"/>
+    <!--FR-->
+    <xacro:leg suffix="2" mirror="-1" mirror_dae="False" front_hind="1" front_hind_dae="True"
+               hipJointName="4" kneeJointName="5" abductionJointName="10">
+        <origin rpy="0 0 0" xyz="${leg_offset_x+0.0345} ${-leg_offset_y+0.005} ${leg_offset_z}"/>
     </xacro:leg>
-    
-    <xacro:leg name="3" mirror="-1" mirror_dae="False" front_hind="-1" front_hind_dae="False">
-        <origin rpy="0 0 0" xyz="${-leg_offset_x-0.019} ${0-leg_offset_y+0.006} ${0-leg_offset_z}"/>
+
+    <!--RR-->
+    <xacro:leg suffix="3" mirror="-1" mirror_dae="False" front_hind="-1" front_hind_dae="False"
+               hipJointName="6" kneeJointName="7" abductionJointName="11">
+        <origin rpy="0 0 0" xyz="${-leg_offset_x-0.0745} ${-leg_offset_y+0.005} ${leg_offset_z}"/>
     </xacro:leg>
 
 </robot>

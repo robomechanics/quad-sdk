@@ -6,8 +6,9 @@ Panels:
       Expanded:
         - /Global Options1
         - /RobotModel1
-      Splitter Ratio: 0.5
-    Tree Height: 420
+        - /TF1
+      Splitter Ratio: 0.8470588326454163
+    Tree Height: 1147
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -23,10 +24,13 @@ Panels:
     Name: Views
     Splitter Ratio: 0.5
   - Class: rviz/Time
-    Experimental: false
     Name: Time
     SyncMode: 0
     SyncSource: ""
+Preferences:
+  PromptSaveOnExit: true
+Toolbars:
+  toolButtonStyle: 2
 Visualization Manager:
   Class: ""
   Displays:
@@ -54,106 +58,31 @@ Visualization Manager:
       Enabled: true
       Links:
         All Links Enabled: true
+        D435:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
-        FL_calf:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        FL_foot:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        FL_hip:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        FL_thigh:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        FL_thigh_shoulder:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        FR_calf:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        FR_foot:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        FR_hip:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        FR_thigh:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        FR_thigh_shoulder:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         Link Tree Style: Links in Alphabetic Order
-        RL_calf:
+        T265:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        RL_foot:
+        abad_motors:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        RL_hip:
+        accessories:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        RL_thigh:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        RL_thigh_shoulder:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        RR_calf:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        RR_foot:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        RR_hip:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        RR_thigh:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        RR_thigh_shoulder:
+        battery:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -163,12 +92,117 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        covers:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hip3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         imu_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        lower0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        thigh_shoulder0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        thigh_shoulder1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        thigh_shoulder2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        thigh_shoulder3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        toe3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         trunk:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        upper3:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -179,27 +213,131 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
-    - Class: rviz/Axes
+    - Alpha: 1
+      Class: rviz/Axes
       Enabled: false
       Length: 1
       Name: Axes
       Radius: 0.10000000149011612
       Reference Frame: <Fixed Frame>
+      Show Trail: false
       Value: false
     - Class: rviz/TF
-      Enabled: false
+      Enabled: true
       Frame Timeout: 15
       Frames:
         All Enabled: true
-      Marker Scale: 1
+        D435:
+          Value: true
+        T265:
+          Value: true
+        abad_motors:
+          Value: true
+        accessories:
+          Value: true
+        battery:
+          Value: true
+        body:
+          Value: true
+        covers:
+          Value: true
+        hip0:
+          Value: true
+        hip1:
+          Value: true
+        hip2:
+          Value: true
+        hip3:
+          Value: true
+        imu_link:
+          Value: true
+        lower0:
+          Value: true
+        lower1:
+          Value: true
+        lower2:
+          Value: true
+        lower3:
+          Value: true
+        thigh_shoulder0:
+          Value: true
+        thigh_shoulder1:
+          Value: true
+        thigh_shoulder2:
+          Value: true
+        thigh_shoulder3:
+          Value: true
+        toe0:
+          Value: true
+        toe1:
+          Value: true
+        toe2:
+          Value: true
+        toe3:
+          Value: true
+        trunk:
+          Value: true
+        upper0:
+          Value: true
+        upper1:
+          Value: true
+        upper2:
+          Value: true
+        upper3:
+          Value: true
+      Marker Alpha: 0.800000011920929
+      Marker Scale: 0.10000000149011612
       Name: TF
-      Show Arrows: true
+      Show Arrows: false
       Show Axes: true
       Show Names: true
       Tree:
-        {}
+        body:
+          trunk:
+            D435:
+              {}
+            T265:
+              {}
+            abad_motors:
+              {}
+            accessories:
+              {}
+            battery:
+              {}
+            covers:
+              {}
+            hip0:
+              thigh_shoulder0:
+                {}
+              upper0:
+                lower0:
+                  toe0:
+                    {}
+            hip1:
+              thigh_shoulder1:
+                {}
+              upper1:
+                lower1:
+                  toe1:
+                    {}
+            hip2:
+              thigh_shoulder2:
+                {}
+              upper2:
+                lower2:
+                  toe2:
+                    {}
+            hip3:
+              thigh_shoulder3:
+                {}
+              upper3:
+                lower3:
+                  toe3:
+                    {}
+            imu_link:
+              {}
       Update Interval: 0
-      Value: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 238; 238; 238
@@ -215,7 +353,10 @@ Visualization Manager:
     - Class: rviz/FocusCamera
     - Class: rviz/Measure
     - Class: rviz/SetInitialPose
+      Theta std deviation: 0.2617993950843811
       Topic: /initialpose
+      X std deviation: 0.5
+      Y std deviation: 0.5
     - Class: rviz/SetGoal
       Topic: /move_base_simple/goal
     - Class: rviz/PublishPoint
@@ -224,34 +365,34 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Class: rviz/Orbit
-      Distance: 1.0307118892669678
+      Class: rviz/XYOrbit
+      Distance: 0.5445125699043274
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
+      Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.0760490670800209
-        Y: 0.11421932280063629
-        Z: -0.1576911211013794
-      Focal Shape Fixed Size: false
+        X: 0.39971035718917847
+        Y: -0.3469495475292206
+        Z: -3.875678089571011e-08
+      Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.0047969818115234
+      Pitch: 0.429796040058136
       Target Frame: <Fixed Frame>
-      Value: Orbit (rviz)
-      Yaw: 4.558584690093994
+      Yaw: 5.675354957580566
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 627
+  Height: 1376
   Hide Left Dock: false
-  Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000016a0000022ffc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c00610079007301000000270000022f000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d00650072006101000001be000001900000000000000000000000010000010f000002e2fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a005600690065007700730000000028000002e2000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000006400000003efc0100000002fb0000000800540069006d0065000000000000000640000002eb00fffffffb0000000800540069006d00650100000000000004500000000000000000000002e40000022f00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Hide Right Dock: true
+  QMainWindow State: 000000ff00000000fd00000004000000000000015600000506fc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d00000506000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d00650072006101000001be000001900000000000000000000000010000010f00000506fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d00000506000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000006400000003efc0100000002fb0000000800540069006d00650000000000000006400000041800fffffffb0000000800540069006d00650100000000000004500000000000000000000008a40000050600000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -259,7 +400,7 @@ Window Geometry:
   Tool Properties:
     collapsed: false
   Views:
-    collapsed: false
-  Width: 1108
-  X: 812
-  Y: 241
+    collapsed: true
+  Width: 2560
+  X: 0
+  Y: 27

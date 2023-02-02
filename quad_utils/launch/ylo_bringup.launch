@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+
+<!-- Ylo2_bringup.launch
+	it launches all necessary parts to see and play with ylo2, on simulator, helped with keyboard controller -->
+
+<launch>
+
+    <!-- Launch the simulation with with Ylo2 robot -->
+    <include file="$(find quad_utils)/launch/quad_gazebo.launch">
+       <arg name="robot_type" value="ylo2" />
+       <arg name="world" value="slope_20_hole" />
+    </include>
+
+    <!-- Stand up the robot  -->
+    <node pkg="rostopic" type="rostopic" name="arbitrary_name" args="pub /robot_1/control/mode std_msgs/UInt8 'data: 1 '" output="screen"/>
+
+    <!-- Run the stack with twist input  -->
+    <include file="$(find quad_utils)/launch/quad_plan.launch">
+       <arg name="reference" value="twist" />
+       <arg name="logging"   value="true" />
+    </include>
+        
+</launch>
