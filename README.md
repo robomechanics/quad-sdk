@@ -1,6 +1,13 @@
 [![CircleCI](https://circleci.com/gh/robomechanics/quad-sdk/tree/main.svg?style=shield)](https://circleci.com/gh/robomechanics/quad-sdk/tree/main)
 ![Example image](doc/quad_sdk_promo.png)
 
+![Alt text](doc/dock1.jpg?raw=true)
+![Alt text](doc/dock2.jpg?raw=true)
+![Alt text](doc/dock4.jpg?raw=true)
+
+## Ylo2 robot github link : https://github.com/elpimous/ylo-2
+
+
 ## Overview
 
 Quad-SDK is an open source, ROS-based full stack software framework for agile quadrupedal locomotion. The design of Quad-SDK is focused on the vertical integration of planning, control, estimation, communication, and development tools which enable agile quadrupedal locomotion in simulation and hardware with minimal user changes for multiple platforms. The modular software architecture allows researchers to experiment with their own implementations of different components while leveraging the existing framework. Quad-SDK also offers Gazebo simulation support and a suite of visualization and data-processing tools for rapid development. Refer to the [paper] for high-level details of the framework.
