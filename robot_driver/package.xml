@@ -48,7 +48,6 @@
   <exec_depend>quad_msgs</exec_depend>
   <exec_depend>quad_utils</exec_depend>
   <depend>eigen_conversions</depend>
-  <depend>realtime_tools</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

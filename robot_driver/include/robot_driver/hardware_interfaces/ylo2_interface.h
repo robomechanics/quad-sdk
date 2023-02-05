@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2023 Vincent FOUCAULT
+ * Author: Vincent FOUCAULT
+ * email:  elpimous12@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+*/
+
 #ifndef YLO2_INTERFACE_H
 #define YLO2_INTERFACE_H
 
@@ -10,6 +29,7 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <iostream>
+#include <unistd.h>
 
 #include <eigen3/Eigen/Eigen>
 
@@ -21,6 +41,13 @@
    commands to moteus controllers, via a PEAK M2 4 canfd controller.
 */
 class Ylo2Interface : public HardwareInterface {
+
+ private:
+  /** @brief Sends a zero command to the robot */
+  bool send_zero_command();
+
+   /** @brief Executes the robot's startup routine */
+   bool startup_routine();
 
  public:
   /**

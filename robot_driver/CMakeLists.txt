@@ -36,7 +36,6 @@ find_package(catkin REQUIRED COMPONENTS
   quad_msgs
   quad_utils
   eigen_conversions
-  realtime_tools
 )
 
 ## System dependencies are found with CMake's conventions
@@ -44,7 +43,7 @@ find_package(Eigen3 REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS}
-  CATKIN_DEPENDS roscpp std_msgs quad_msgs quad_utils eigen_conversions realtime_tools
+  CATKIN_DEPENDS roscpp std_msgs quad_msgs quad_utils eigen_conversions
   DEPENDS EIGEN3
 )
 
@@ -79,8 +78,7 @@ add_library(robot_driver
 )
 add_dependencies(robot_driver ${robot_driver_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-target_link_libraries(robot_driver
-  moteus_driver
+target_link_libraries(robot_driver moteus_driver
   ${GRMBLINK}
   ${catkin_LIBRARIES}
 )
@@ -89,24 +87,16 @@ target_link_libraries(robot_driver
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(robot_driver_node src/robot_driver_node.cpp)
-add_executable(ylo2_imu_node src/ylo2_imu_node.cpp)
-target_link_libraries(ylo2_imu_node ${catkin_LIBRARIES})
-set_property(TARGET ylo2_imu_node PROPERTY CXX_STANDARD 11)
+
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(robot_driver_node
-  robot_driver
+target_link_libraries(robot_driver_node robot_driver
 	${catkin_LIBRARIES}
 )
 
 install(DIRECTORY include/${PROJECT_NAME}/
         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
 
-install(TARGETS ylo2_imu_node
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
 
 #############
 ## Testing ##
