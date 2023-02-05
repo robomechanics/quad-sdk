@@ -48,6 +48,7 @@ bool SpiritInterface::send(
   return true;
 }
 
+
 bool SpiritInterface::recv(sensor_msgs::JointState& joint_state_msg,
                            sensor_msgs::Imu& imu_msg,
                            Eigen::VectorXd& user_rx_data) {
