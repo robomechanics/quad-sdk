@@ -93,7 +93,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
 
   // Set up pubs and subs dependent on robot layer
   if (is_hardware_) {
-    ROS_INFO("Loading hardware robot driver");
+    ROS_INFO("**** Loading robot driver : HARDWARE ****");
     mocap_sub_ = nh_.subscribe(mocap_topic, 1000, &RobotDriver::mocapCallback,
                                this, ros::TransportHints().tcpNoDelay(true));
     robot_state_pub_ =
@@ -102,7 +102,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
     joint_state_pub_ =
         nh_.advertise<sensor_msgs::JointState>(joint_state_topic, 1);
   } else {
-    ROS_INFO("Loading sim robot driver");
+    ROS_INFO("**** Loading robot driver : SIMULATOR ****");
     robot_state_sub_ =
         nh_.subscribe(robot_state_topic, 1, &RobotDriver::robotStateCallback,
                       this, ros::TransportHints().tcpNoDelay(true));
@@ -115,6 +115,14 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   if (is_hardware_) {
     if (robot_name == "spirit") {
       hardware_interface_ = std::make_shared<SpiritInterface>();
+    } else {
+      ROS_ERROR_STREAM("Invalid robot name " << robot_name
+                                             << ", returning nullptr");
+      hardware_interface_ = nullptr;
+    }
+
+    if (robot_name == "ylo2") {
+      hardware_interface_ = std::make_shared<Ylo2Interface>();
     } else {
       ROS_ERROR_STREAM("Invalid robot name " << robot_name
                                              << ", returning nullptr");

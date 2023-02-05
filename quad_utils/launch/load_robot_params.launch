@@ -1,8 +1,15 @@
 <launch>
-    <arg name="robot_type" default="spirit"/>
+
+    <arg name="robot_type" default="ylo2"/>
 
     <rosparam command="load" file="$(find quad_utils)/config/topics_robot.yaml" />
     <param name="enable_statistics" type="bool" value="true" />
+
+    <group if="$(eval arg('robot_type') == 'ylo2')">
+        <rosparam command="load" file="$(find quad_utils)/config/ylo2.yaml" />
+        <param name="robot_description_sdf" textfile="$(find ylo2_description)/sdf_mesh/ylo2.sdf" />
+        <param name="robot_description" command="cat $(find ylo2_description)/urdf/ylo2.urdf" />
+    </group>
 
     <group if="$(eval arg('robot_type') == 'spirit')">
         <rosparam command="load" file="$(find quad_utils)/config/spirit.yaml" />

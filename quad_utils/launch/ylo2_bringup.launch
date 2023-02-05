@@ -5,6 +5,14 @@
 
 <launch>
 
+    <!-- Start Imu publisher -->
+    <node pkg="quad_imu" type="quad_imu" name="quad_imu">
+        <param name="port" value="/dev/ttyACM0" />
+        <param name="baud_rate" value="115200" />
+        <param name="frame_id" value="trunk" />
+        <param name="parent_frame_id" value="world" />
+    </node>
+    
     <!-- Launch the simulation with with Ylo2 robot -->
     <include file="$(find quad_utils)/launch/quad_gazebo.launch">
        <arg name="robot_type" value="ylo2" />
