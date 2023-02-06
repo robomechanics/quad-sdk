@@ -1,3 +1,6 @@
+# Update rosdep
+rosdep update
+
 # Install all common dependencies
 echo
 echo "#########################"
