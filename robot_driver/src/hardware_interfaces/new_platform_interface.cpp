@@ -31,13 +31,17 @@ void NewPlatformInterface::unloadInterface() {
 }
 
 bool NewPlatformInterface::send(
-    const quad_msgs::LegCommandArray& last_leg_command_array_msg,
-    const Eigen::VectorXd& user_tx_data) {
+    const quad_msgs::LegCommandArray& last_leg_command_array_msg
+    ,const Eigen::VectorXd& user_tx_data
+    ) {
 
   int leg_command_heartbeat = 1;
 
   std::map<int, motor_driver::motorCommand> commandMap_0; //Command map for font legs
   std::map<int, motor_driver::motorCommand> commandMap_1; //Command map for rear legs
+
+  int axis = 3;
+  float sendPos = 0;
 
   //For FL, FR
   LimbCmd_t limbcmd[4];
@@ -57,6 +61,11 @@ bool NewPlatformInterface::send(
           float kp = leg_command_heartbeat * leg_command.motor_commands.at(j).kp;
           float kd = leg_command_heartbeat * leg_command.motor_commands.at(j).kd;
 
+          if (leg_command.motor_commands.at(j).pos_setpoint > 0) {
+            axis = j;
+            sendPos = pos;
+          }
+
           // motor_driver::motorCommand commandStruct = {pos, vel, kp, kd, tau};
           // commandMap_0.insert(std::pair<int, motor_driver::motorCommand> (motor_ids_0[i*3 + j], commandStruct));
         }
@@ -71,6 +80,11 @@ bool NewPlatformInterface::send(
           float kp = leg_command_heartbeat * leg_command.motor_commands.at(j).kp;
           float kd = leg_command_heartbeat * leg_command.motor_commands.at(j).kd;
 
+          if (leg_command.motor_commands.at(j).pos_setpoint > 0) {
+            axis = j;
+            sendPos = pos;
+          }
+
           // motor_driver::motorCommand commandStruct = {pos, vel, kp, kd, tau};
           // commandMap_1.insert(std::pair<int, motor_driver::motorCommand> (motor_ids_1[i*3 + j], commandStruct));
         }
@@ -81,8 +95,9 @@ bool NewPlatformInterface::send(
   }
 
   //For RL, RR
-
-  // ROS_INFO("Sending leg command array\n");
+  if (axis < 3) {
+    ROS_INFO("Sending %f command to axis %i\n", sendPos, axis);
+  }
 
   // motorStates_0 = motor_controller0.sendRadCommand(commandMap_0);
   // motorStates_1 = motor_controller1.sendRadCommand(commandMap_1);
