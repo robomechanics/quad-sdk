@@ -51,9 +51,9 @@ YloTwoPcanToMoteus command; // instance of class YloTwoPcanToMoteus
 
 bool Ylo2Interface::startup_routine()
 {
-  //command.peak_fdcan_board_initialization();
+  command.peak_fdcan_board_initialization();
   usleep(200);
-  //command.check_initial_ground_pose();
+  command.check_initial_ground_pose();
   std::cout << "startup_routine Done." << std::endl;
   usleep(200);
   return true;
@@ -88,10 +88,9 @@ bool Ylo2Interface::send(const quad_msgs::LegCommandArray& last_leg_command_arra
       joint_fftorque = controllers_security_flag * last_leg_command_array_msg.leg_commands[leg_index].motor_commands[joint_index].torque_ff;
       joint_kp       = static_cast<short>( last_leg_command_array_msg.leg_commands[leg_index].motor_commands[joint_index].kp);
       joint_kd       = static_cast<short>( last_leg_command_array_msg.leg_commands[leg_index].motor_commands[joint_index].kd);
-/*
+
       command.send_moteus_TX_frame(ids, port, joint_position, joint_velocity, joint_fftorque, joint_kp, joint_kd); 
       usleep(120);
-*/
     }
     return true;
 }
@@ -119,7 +118,7 @@ bool Ylo2Interface::recv(sensor_msgs::JointState& joint_state_msg, sensor_msgs::
       auto ids  = command.motor_adapters_[jj].getIdx();
       int port  = command.motor_adapters_[jj].getPort();
       auto sign = command.motor_adapters_[jj].getSign();
-/*
+
       command.read_moteus_RX_queue(ids, port, RX_pos, RX_vel, RX_tor, RX_volt, RX_temp, RX_fault);  // query values;
       usleep(10);
 
@@ -128,7 +127,6 @@ bool Ylo2Interface::recv(sensor_msgs::JointState& joint_state_msg, sensor_msgs::
       joint_state_msg.velocity[jj] = static_cast<double>(RX_vel);   // measured in revolutions / s
       joint_state_msg.effort[jj]   = static_cast<double>(RX_tor);   // measured in N*m
       usleep(200);
-*/
     }
 
     /** RECEIVE IMU VALUES.
@@ -137,7 +135,19 @@ bool Ylo2Interface::recv(sensor_msgs::JointState& joint_state_msg, sensor_msgs::
     * @param[out] Linear acceleration
     * @param[out] Angular acceleration
     * @param[out] Orientation in quaternion */
-   
+/*  
+    @dOtslash
+    Thanks for helping me.
+
+    here, i should receive the imu/data topic content, in format sensor_msgs/Imu (as imuData, for example)
+    and i should feed with anything like : 
+    imu_msg.linear_acceleration.x = imuData.linear_acceleration.x;
+    real imu node is quad_imu.
+    imu_msg is needed for the robot controller.
+    thanks @dOtslash
+
+    for test
+    --------
     imu_msg.linear_acceleration.x = 0.000000001;
     imu_msg.linear_acceleration.y = 0.000000001;
     imu_msg.linear_acceleration.z = 0.000000001;
@@ -148,6 +158,6 @@ bool Ylo2Interface::recv(sensor_msgs::JointState& joint_state_msg, sensor_msgs::
     imu_msg.orientation.y = 0.004400924119108486;
     imu_msg.orientation.z = -0.3908544437993119;
     imu_msg.orientation.w = 0.9204353410898671;
-
+*/
     return true;
 }
