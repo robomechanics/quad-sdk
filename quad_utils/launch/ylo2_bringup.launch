@@ -17,6 +17,7 @@
     <include file="$(find quad_utils)/launch/quad_gazebo.launch">
        <arg name="robot_type" value="ylo2" />
        <arg name="world" value="slope_20_hole" />
+       <arg name="is_hardware" default="false"/>
     </include>
 
     <!-- Stand up the robot  -->

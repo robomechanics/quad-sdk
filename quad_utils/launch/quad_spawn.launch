@@ -3,6 +3,7 @@
   <arg name="init_pose"     default="-x 0.0 -y 0.0 -z 0.5"/>
   <arg name="namespace"     default="robot_1"/>
   <arg name="robot_type"    default="spirit"/>
+  <arg name="is_hardware"   default="false"/>
 
   <!-- Declare tf prefix for plugins -->
   <param name="tf_prefix"   value="$(arg namespace)" />
@@ -15,7 +16,7 @@
     <arg name="robot_type" value="$(arg robot_type)"/>
     <arg name="controller" value="$(arg controller)"/>
     <arg name="mocap" value="false"/>
-    <arg name="is_hardware" value="false"/>
+    <arg name="is_hardware" value="$(arg is_hardware)"/>
   </include>
 
   <!-- Start gazebo controller plugins -->
