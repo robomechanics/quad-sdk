@@ -37,24 +37,24 @@ YloTwoPcanToMoteus::YloTwoPcanToMoteus()
 
   //                   IDX                             SIGN                         PCAN BOARD PORTS
   // LF
-  /*HAA*/ motor_adapters_[0].setIdx(3);  motor_adapters_[0].setSign(-1); motor_adapters_[0].setPort(PCAN_DEV1);
-  /*HFE*/ motor_adapters_[1].setIdx(1);  motor_adapters_[1].setSign(-1); motor_adapters_[1].setPort(PCAN_DEV1);
-  /*KFE*/ motor_adapters_[2].setIdx(2);  motor_adapters_[2].setSign(-1); motor_adapters_[2].setPort(PCAN_DEV1);
+  /*HAA*/ motor_adapters_[0].setIdx(3);  motor_adapters_[0].setSign(-1); motor_adapters_[0].setPort(PCAN_DEV1);  motor_adapters_[0].setLeg_index(0);  motor_adapters_[0].setJoint_index(0);
+  /*HFE*/ motor_adapters_[1].setIdx(1);  motor_adapters_[1].setSign(-1); motor_adapters_[1].setPort(PCAN_DEV1);  motor_adapters_[1].setLeg_index(0);  motor_adapters_[1].setJoint_index(1);
+  /*KFE*/ motor_adapters_[2].setIdx(2);  motor_adapters_[2].setSign(-1); motor_adapters_[2].setPort(PCAN_DEV1);  motor_adapters_[2].setLeg_index(0);  motor_adapters_[2].setJoint_index(2);
 
   // RF
-  /*HAA*/ motor_adapters_[3].setIdx(9);  motor_adapters_[3].setSign(1); motor_adapters_[3].setPort(PCAN_DEV4);
-  /*HFE*/ motor_adapters_[4].setIdx(7);  motor_adapters_[4].setSign(-1);  motor_adapters_[4].setPort(PCAN_DEV4);
-  /*KFE*/ motor_adapters_[5].setIdx(8);  motor_adapters_[5].setSign(-1);  motor_adapters_[5].setPort(PCAN_DEV4);
+  /*HAA*/ motor_adapters_[3].setIdx(9);  motor_adapters_[3].setSign(1);  motor_adapters_[3].setPort(PCAN_DEV4);  motor_adapters_[3].setLeg_index(1);  motor_adapters_[3].setJoint_index(0);
+  /*HFE*/ motor_adapters_[4].setIdx(7);  motor_adapters_[4].setSign(-1); motor_adapters_[4].setPort(PCAN_DEV4);  motor_adapters_[4].setLeg_index(1);  motor_adapters_[4].setJoint_index(1);
+  /*KFE*/ motor_adapters_[5].setIdx(8);  motor_adapters_[5].setSign(-1); motor_adapters_[5].setPort(PCAN_DEV4);  motor_adapters_[5].setLeg_index(1);  motor_adapters_[5].setJoint_index(2);
 
   // LH
-  /*HAA*/ motor_adapters_[6].setIdx(6);  motor_adapters_[6].setSign(-1);  motor_adapters_[6].setPort(PCAN_DEV3);
-  /*HFE*/ motor_adapters_[7].setIdx(4);  motor_adapters_[7].setSign(1); motor_adapters_[7].setPort(PCAN_DEV3);
-  /*KFE*/ motor_adapters_[8].setIdx(5);  motor_adapters_[8].setSign(1); motor_adapters_[8].setPort(PCAN_DEV3);
+  /*HAA*/ motor_adapters_[6].setIdx(6);  motor_adapters_[6].setSign(-1); motor_adapters_[6].setPort(PCAN_DEV3);  motor_adapters_[6].setLeg_index(2);  motor_adapters_[6].setJoint_index(0);
+  /*HFE*/ motor_adapters_[7].setIdx(4);  motor_adapters_[7].setSign(1);  motor_adapters_[7].setPort(PCAN_DEV3);  motor_adapters_[7].setLeg_index(2);  motor_adapters_[7].setJoint_index(1);
+  /*KFE*/ motor_adapters_[8].setIdx(5);  motor_adapters_[8].setSign(1);  motor_adapters_[8].setPort(PCAN_DEV3);  motor_adapters_[8].setLeg_index(2);  motor_adapters_[8].setJoint_index(2);
 
   // RH
-  /*HAA*/ motor_adapters_[9].setIdx(12);  motor_adapters_[9].setSign(1);  motor_adapters_[9].setPort(PCAN_DEV2);
-  /*HFE*/ motor_adapters_[10].setIdx(10); motor_adapters_[10].setSign(1); motor_adapters_[10].setPort(PCAN_DEV2);
-  /*KFE*/ motor_adapters_[11].setIdx(11); motor_adapters_[11].setSign(1); motor_adapters_[11].setPort(PCAN_DEV2);
+  /*HAA*/ motor_adapters_[9].setIdx(12);  motor_adapters_[9].setSign(1);  motor_adapters_[9].setPort(PCAN_DEV2);   motor_adapters_[9].setLeg_index(3);  motor_adapters_[9].setJoint_index(0);
+  /*HFE*/ motor_adapters_[10].setIdx(10); motor_adapters_[10].setSign(1); motor_adapters_[10].setPort(PCAN_DEV2); motor_adapters_[10].setLeg_index(3);  motor_adapters_[10].setJoint_index(1);
+  /*KFE*/ motor_adapters_[11].setIdx(11); motor_adapters_[11].setSign(1); motor_adapters_[11].setPort(PCAN_DEV2); motor_adapters_[11].setLeg_index(3);  motor_adapters_[11].setJoint_index(2);
 
   // The default ID for the power_dist is '32'
   motor_adapters_[32].setIdx(32); motor_adapters_[32].setPort(PCAN_DEV3);

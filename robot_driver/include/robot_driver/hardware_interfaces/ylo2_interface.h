@@ -97,6 +97,12 @@ class Ylo2Interface : public HardwareInterface {
   /// Vector of kt values for each joint
   std::vector<double> kt_vec_ = {0.546, 0.546, 1.092, 0.546, 0.546, 1.092,
                                  0.546, 0.546, 1.092, 0.546, 0.546, 1.092};
+   
+   float joint_position = 0.0;
+   float joint_velocity = 0.0;
+   float joint_fftorque = 0.0;
+   float joint_kp       = 0.0;
+   float joint_kd       = 0.0;
 
 }; // end class
 

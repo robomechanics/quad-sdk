@@ -54,33 +54,39 @@
 struct MotorAdapter{
   public:
     MotorAdapter(){
-      idx_ = -1;
-      sign_ = 1;
-      port_ = 0;
-      stop_pos_low_ = 0.0;
-      stop_pos_high_ = 0.0;
+      idx_ =        -1;
+      sign_ =        1;
+      port_ =        0;
+      leg_index_ =   0;
+      joint_index_ = 0;
     }
-    MotorAdapter(int idx, int sign, int port, int stop_pos_low, int stop_pos_high){
-      idx_ = idx;
-      sign_ = sign;
-      port_ = port;
-      stop_pos_low_ = stop_pos_low;
-      stop_pos_high_ = stop_pos_high;
-    }
-    const int& getIdx() {return idx_;}
-    const int& getSign() {return sign_;}
-    const int& getPort() {return port_;}
 
-    void setIdx(int idx) {idx_ = idx;}
-    void setSign(int sign) {sign_ = sign;}
-    void setPort(int port) {port_ = port;}
+    MotorAdapter(int idx, int sign, int port, int leg_index, int joint_index){
+      idx_         = idx;
+      sign_        = sign;
+      port_        = port;
+      leg_index_   = leg_index;
+      joint_index_ = joint_index;
+    }
+
+    const int& getIdx()         {return idx_;}
+    const int& getSign()        {return sign_;}
+    const int& getPort()        {return port_;}
+    const int& getLeg_index()   {return leg_index_;}
+    const int& getJoint_index() {return joint_index_;}
+
+    void setIdx(int idx)                 {idx_ = idx;}
+    void setSign(int sign)               {sign_ = sign;}
+    void setPort(int port)               {port_ = port;}
+    void setLeg_index(int leg_index)     {leg_index_ = leg_index;}
+    void setJoint_index(int joint_index) {joint_index_ = joint_index;}
     
   private:
     int idx_;
     int sign_;
     int port_;
-    int stop_pos_low_;
-    int stop_pos_high_;
+    int leg_index_;
+    int joint_index_;
 };
 
 // the YloTwoPcanToMoteus class
