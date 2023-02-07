@@ -19,6 +19,9 @@
 
 #include "robot_driver/hardware_interfaces/ylo2_interface.h"
 
+ros::init(argc, argv, "imu_listener");
+ros::NodeHandle n;
+
 Ylo2Interface::Ylo2Interface() {
     std::cout<<("[ DEBUG ] Starting Ylo2Interface")<< std::endl;
 }
@@ -59,6 +62,11 @@ bool Ylo2Interface::startup_routine()
   return true;
 }
 
+void imuCallback(const sensor_msgs::Imu::ConstPtr& msg)
+{
+  ROS_INFO("Imu Seq: [%d]", msg->header.seq);
+  ROS_INFO("Imu Orientation x: [%f], y: [%f], z: [%f], w: [%f]", msg->orientation.x,msg->orientation.y,msg->orientation.z,msg->orientation.w);
+}
 
 bool Ylo2Interface::send(const quad_msgs::LegCommandArray& last_leg_command_array_msg, const Eigen::VectorXd& user_tx_data)
 {
@@ -135,6 +143,8 @@ bool Ylo2Interface::recv(sensor_msgs::JointState& joint_state_msg, sensor_msgs::
     * @param[out] Linear acceleration
     * @param[out] Angular acceleration
     * @param[out] Orientation in quaternion */
+
+   ros::Subscriber sub = n.subscribe("imu/data", 100, imuCallback);
 /*  
     @dOtslash
     Thanks for helping me.
