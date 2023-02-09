@@ -193,7 +193,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
             if (foot_z_hip > -0.05) {
               // foot is too high above hip; singularity problems
               foot_vx = 1 / (50 * (foot_z_hip + 0.05) + 1) * foot_vx;
-              foot_vy = 0;
+              foot_vy = 1 / (50 * (foot_z_hip + 0.05) + 1) * foot_vy;
               foot_vz += -10.0 * (foot_z_hip + 0.05);
             }
             foot_vz =
