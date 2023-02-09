@@ -66,8 +66,8 @@ robot_driver:
   stand_kd: [1, 1, 1]
   stance_kp: [10, 10, 10]
   stance_kd: [1, 1, 1]
-  swing_kp: [10, 15, 10]
-  swing_kd: [0.5, 0.5, 1]
+  swing_kp: [10, 10, 10]
+  swing_kd: [1, 1, 1]
   swing_kp_cart: [0, 0, 0] # N/m
   swing_kd_cart: [0, 0, 0] # N/m
   safety_kp: [0, 0, 0]
