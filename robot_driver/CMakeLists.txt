@@ -36,6 +36,7 @@ find_package(catkin REQUIRED COMPONENTS
   quad_msgs
   quad_utils
   eigen_conversions
+  realtime_tools
 )
 
 ## System dependencies are found with CMake's conventions
@@ -88,15 +89,26 @@ target_link_libraries(robot_driver moteus_driver
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(robot_driver_node src/robot_driver_node.cpp)
 
-
 ## Specify libraries to link a library or executable target against
 target_link_libraries(robot_driver_node robot_driver
 	${catkin_LIBRARIES}
 )
 
+## IMU for Ylo2
+add_executable(ylo2_imu_node src/ylo2_imu_node.cpp)
+target_link_libraries(ylo2_imu_node ${catkin_LIBRARIES})
+set_property(TARGET ylo2_imu_node PROPERTY CXX_STANDARD 11)
+
+#
+install(TARGETS ylo2_imu_node
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+
 install(DIRECTORY include/${PROJECT_NAME}/
         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
-
 
 #############
 ## Testing ##

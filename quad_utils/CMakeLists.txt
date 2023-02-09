@@ -78,18 +78,6 @@ TARGET_LINK_LIBRARIES ( quad_utils
 	${RBDL_URDFREADER_LIBRARY}
 	)
 
-## IMU for Ylo2
-add_executable(ylo2_imu_node src/ylo2_imu_node.cpp)
-target_link_libraries(ylo2_imu_node ${catkin_LIBRARIES})
-set_property(TARGET ylo2_imu_node PROPERTY CXX_STANDARD 11)
-
-#
-install(TARGETS ylo2_imu_node
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
-
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide

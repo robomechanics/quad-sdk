@@ -167,11 +167,12 @@ bool YloTwoPcanToMoteus::send_moteus_stop_order(int id, int port){
     return(true);
 }
 
-bool YloTwoPcanToMoteus::send_moteus_TX_frame(int id, int port, float fftorque){
-    _comm_position = NAN;
+bool YloTwoPcanToMoteus::send_moteus_TX_frame(int id, int port, float pos, float vel, float fftorque, float kp, float kd){
+    _comm_position = pos;
+    _comm_velocity = vel;
     _comm_fftorque = fftorque; // in radians
-    _comm_kp       = 0.0;
-    _comm_kd       = 0.0;
+    _comm_kp       = kp;
+    _comm_kd       = kd;
     moteus_tx_msg.ID = 0x8000 | id;
     memcpy(&moteus_tx_msg.DATA[06], &_comm_position, sizeof(float));
     memcpy(&moteus_tx_msg.DATA[14], &_comm_velocity, sizeof(float));

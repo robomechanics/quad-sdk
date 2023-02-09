@@ -19,9 +19,6 @@
 
 #include "robot_driver/hardware_interfaces/ylo2_interface.h"
 
-ros::init(argc, argv, "imu_listener");
-ros::NodeHandle n;
-
 Ylo2Interface::Ylo2Interface() {
     std::cout<<("[ DEBUG ] Starting Ylo2Interface")<< std::endl;
 }
@@ -60,12 +57,6 @@ bool Ylo2Interface::startup_routine()
   std::cout << "startup_routine Done." << std::endl;
   usleep(200);
   return true;
-}
-
-void imuCallback(const sensor_msgs::Imu::ConstPtr& msg)
-{
-  ROS_INFO("Imu Seq: [%d]", msg->header.seq);
-  ROS_INFO("Imu Orientation x: [%f], y: [%f], z: [%f], w: [%f]", msg->orientation.x,msg->orientation.y,msg->orientation.z,msg->orientation.w);
 }
 
 bool Ylo2Interface::send(const quad_msgs::LegCommandArray& last_leg_command_array_msg, const Eigen::VectorXd& user_tx_data)
@@ -143,31 +134,20 @@ bool Ylo2Interface::recv(sensor_msgs::JointState& joint_state_msg, sensor_msgs::
     * @param[out] Linear acceleration
     * @param[out] Angular acceleration
     * @param[out] Orientation in quaternion */
-
-   ros::Subscriber sub = n.subscribe("imu/data", 100, imuCallback);
 /*  
-    @dOtslash
-    Thanks for helping me.
-
-    here, i should receive the imu/data topic content, in format sensor_msgs/Imu (as imuData, for example)
-    and i should feed with anything like : 
-    imu_msg.linear_acceleration.x = imuData.linear_acceleration.x;
-    real imu node is quad_imu.
-    imu_msg is needed for the robot controller.
-    thanks @dOtslash
-
     for test
-    --------
-    imu_msg.linear_acceleration.x = 0.000000001;
-    imu_msg.linear_acceleration.y = 0.000000001;
-    imu_msg.linear_acceleration.z = 0.000000001;
-    imu_msg.angular_velocity.x = 0.000000001;
-    imu_msg.angular_velocity.y = 0.000000001;
-    imu_msg.angular_velocity.z = 0.000000001;
-    imu_msg.orientation.x = -0.0034954973907215144;
-    imu_msg.orientation.y = 0.004400924119108486;
-    imu_msg.orientation.z = -0.3908544437993119;
-    imu_msg.orientation.w = 0.9204353410898671;
+    -------- quad sdk message
+    imu_msg.linear_acceleration.x = imu_lin_acc_[0];
+    imu_msg.linear_acceleration.y = imu_lin_acc_[1];
+    imu_msg.linear_acceleration.z = imu_lin_acc_[2];
+    imu_msg.angular_velocity.x = imu_ang_vel_[0];
+    imu_msg.angular_velocity.y = imu_ang_vel_[1];
+    imu_msg.angular_velocity.z = imu_ang_vel_[2];
+    imu_msg.orientation.x = imu_orientation_[0];
+    imu_msg.orientation.y = imu_orientation_[1];
+    imu_msg.orientation.z = imu_orientation_[2];
+    imu_msg.orientation.w = imu_orientation_[3];
 */
+
     return true;
 }

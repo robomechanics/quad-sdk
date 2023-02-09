@@ -9,9 +9,7 @@
 #include <math.h>
 #include <string.h>
 #include <unistd.h>
-
 #include "ros/ros.h"
-
 #include <PCANBasic.h> // Peak m2canFd board lib
 
 //define pcan 4 ports to their respective physical adress
@@ -105,7 +103,7 @@ class YloTwoPcanToMoteus{
 
     /* send a canFD TORQUE frame
        and query informations about moteus controller*/
-    bool send_moteus_TX_frame(int id, int port, float fftorque);
+    bool send_moteus_TX_frame(int id, int port, float pos, float vel, float fftorque, float kp, float kd);
 
     /* query canFD RX Queue, 
        and read ID params*/
@@ -209,4 +207,5 @@ class YloTwoPcanToMoteus{
 
     float calibration_error = 0.018; // 9 degrees
 };
+
 #endif // PCANTOMOTEUS_HPP

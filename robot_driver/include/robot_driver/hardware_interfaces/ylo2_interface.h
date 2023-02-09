@@ -23,14 +23,11 @@
 #include <quad_msgs/LegCommandArray.h>
 #include <robot_driver/hardware_interfaces/hardware_interface.h>
 #include "moteus_driver/YloTwoPcanToMoteus.hpp" // ylo2 library
-#include <realtime_tools/realtime_publisher.h>
-#include <sensor_msgs/Imu.h>
 #include <sensor_msgs/JointState.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <iostream>
 #include <unistd.h>
-
 #include <eigen3/Eigen/Eigen>
 
 #define MATH_PI 3.141592
@@ -43,8 +40,9 @@
 class Ylo2Interface : public HardwareInterface {
 
  private:
-  /** @brief Sends a zero command to the robot */
-  bool send_zero_command();
+   
+   /** @brief Sends a zero command to the robot */
+   bool send_zero_command();
 
    /** @brief Executes the robot's startup routine */
    bool startup_routine();
