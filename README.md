@@ -61,36 +61,4 @@ Legged Robots, May 2022. ([paper])
 ## Installation
 
 Refer to the [Quad-SDK Wiki](https://github.com/robomechanics/quad-sdk/wiki/1.-Getting-Started-with-Quad-SDK) for installation, dependency, and unit testing information. Currently Quad-SDK requires ROS Melodic on Ubuntu 18.04. All other dependencies are installed with the included setup script.
-
-## Usage
-
-Launch the simulation with:
-
-```
-roslaunch quad_utils quad_gazebo.launch
-```
-
-Stand the robot with:
-```
-rostopic pub /robot_1/control/mode std_msgs/UInt8 "data: 1"
-```
-Run the stack with twist input:
-```
-roslaunch quad_utils quad_plan.launch reference:=twist logging:=true
-rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=/robot_1/cmd_vel
-```
-Run the stack with global planner:
-```
-roslaunch quad_utils quad_plan.launch reference:=gbpl logging:=true
-```
-Refer to the [Wiki](https://github.com/robomechanics/quad-sdk/wiki/2.-Using-the-Software) for more information on alternate usage.
-
-## Bugs & Feature Requests
-
-Please report bugs and request features using the [Issue Tracker](https://github.com/robomechanics/quad-sdk/issues).
-
-
 [paper]: https://www.andrew.cmu.edu/user/amj1/papers/Quad_SDK_ICRA_Abstract.pdf
-[ROS]: http://www.ros.org
-[rviz]: http://wiki.ros.org/rviz
-[Eigen]: http://eigen.tuxfamily.org
