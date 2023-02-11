@@ -24,6 +24,7 @@
 #include <robot_driver/hardware_interfaces/hardware_interface.h>
 #include "moteus_driver/YloTwoPcanToMoteus.hpp" // ylo2 library
 #include <sensor_msgs/JointState.h>
+#include <sensor_msgs/Imu.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <iostream>
@@ -40,7 +41,7 @@
 class Ylo2Interface : public HardwareInterface {
 
  private:
-   
+
    /** @brief Sends a zero command to the robot */
    bool send_zero_command();
 
@@ -95,12 +96,12 @@ class Ylo2Interface : public HardwareInterface {
   /// Vector of kt values for each joint
   std::vector<double> kt_vec_ = {0.546, 0.546, 1.092, 0.546, 0.546, 1.092,
                                  0.546, 0.546, 1.092, 0.546, 0.546, 1.092};
-   
-   float joint_position = 0.0;
-   float joint_velocity = 0.0;
-   float joint_fftorque = 0.0;
-   float joint_kp       = 0.0;
-   float joint_kd       = 0.0;
+
+  float joint_position = 0.0;
+  float joint_velocity = 0.0;
+  float joint_fftorque = 0.0;
+  float joint_kp       = 0.0;
+  float joint_kd       = 0.0;
 
 }; // end class
 

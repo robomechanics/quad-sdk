@@ -15,6 +15,7 @@
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/UInt8.h>
+#include <sensor_msgs/Imu.h>
 
 #include <cmath>
 #include <eigen3/Eigen/Eigen>
@@ -119,6 +120,12 @@ class RobotDriver {
   void remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg);
 
   /**
+   * @brief Callback to handle new IMU messages
+   * @param[in] msg Remote heartbeat message
+   */
+  void imuCallback(const sensor_msgs::Imu::ConstPtr& msg);
+
+  /**
    * @brief Check to make sure required messages are fresh
    */
   void checkMessagesForSafety();
@@ -179,6 +186,9 @@ class RobotDriver {
 
   /// ROS subscriber for single joint command
   ros::Subscriber single_joint_cmd_sub_;
+
+  /// Subscriber for the IMU data
+  ros::Subscriber imu_sub_;
 
   /// ROS publisher for robot heartbeat
   ros::Publisher robot_heartbeat_pub_;
