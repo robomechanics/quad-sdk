@@ -62,4 +62,15 @@ Legged Robots, May 2022. ([paper])
 ## Installation
 
 Refer to the [Quad-SDK Wiki](https://github.com/robomechanics/quad-sdk/wiki/1.-Getting-Started-with-Quad-SDK) for installation, dependency, and unit testing information. Currently Quad-SDK requires ROS Melodic on Ubuntu 18.04. All other dependencies are installed with the included setup script.
+
+
 [paper]: https://www.andrew.cmu.edu/user/amj1/papers/Quad_SDK_ICRA_Abstract.pdf
+
+## Run simulator :
+
+under quad_utils/launch/ylo2_bringup.launch,
+set <arg name="is_hardware" default="false"/> (true is for real controller)
+
+then :
+
+roslaunch quad_utils ylo2_bringup.launch
