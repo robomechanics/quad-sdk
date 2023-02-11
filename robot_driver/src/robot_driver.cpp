@@ -80,6 +80,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
                     &RobotDriver::singleJointCommandCallback, this);
   remote_heartbeat_sub_ = nh_.subscribe(
       remote_heartbeat_topic, 1, &RobotDriver::remoteHeartbeatCallback, this);
+  imu_sub_ = nh_.subscribe(
+      "/imu/data", 1, &RobotDriver::imuCallback, this);
   control_restart_flag_sub_ =
       nh_.subscribe(control_restart_flag_topic, 1,
                     &RobotDriver::controlRestartFlagCallback, this);
@@ -287,6 +289,14 @@ void RobotDriver::remoteHeartbeatCallback(
       remote_heartbeat_received_time_ - remote_heartbeat_sent_time;
 
   // ROS_INFO_THROTTLE(1.0,"Remote latency (+ clock skew) = %6.4fs", t_latency);
+}
+
+void RobotDriver::imuCallback(
+    const sensor_msgs::Imu::ConstPtr &msg) {
+  // Store the IMU data
+  hardware_interface_->last_imu_msg_ = msg;
+  std::cout << "Test de l'IMU :" << '\n';
+  std::cout << "  Orientation en x = " << hardware_interface_->last_imu_msg_->orientation.x << '\n';
 }
 
 void RobotDriver::checkMessagesForSafety() {
