@@ -65,10 +65,6 @@ class HardwareInterface {
                     sensor_msgs::Imu& imu_msg,
                     Eigen::VectorXd& user_rx_data) = 0;
 
-
-
-  sensor_msgs::Imu::ConstPtr last_imu_msg_;
-
  protected:
 };
 

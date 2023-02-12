@@ -294,9 +294,9 @@ void RobotDriver::remoteHeartbeatCallback(
 void RobotDriver::imuCallback(
     const sensor_msgs::Imu::ConstPtr &msg) {
   // Store the IMU data
-  hardware_interface_->last_imu_msg_ = msg;
+  last_imu_msg_ = *msg;
   std::cout << "Test de l'IMU :" << '\n';
-  std::cout << "  Orientation en x = " << hardware_interface_->last_imu_msg_->orientation.x << '\n';
+  std::cout << "  Orientation en x = " << last_imu_msg_.orientation.x << '\n';
 }
 
 void RobotDriver::checkMessagesForSafety() {

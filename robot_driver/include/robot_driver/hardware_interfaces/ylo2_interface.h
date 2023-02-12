@@ -24,7 +24,6 @@
 #include <robot_driver/hardware_interfaces/hardware_interface.h>
 #include "moteus_driver/YloTwoPcanToMoteus.hpp" // ylo2 library
 #include <sensor_msgs/JointState.h>
-#include <sensor_msgs/Imu.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <iostream>
