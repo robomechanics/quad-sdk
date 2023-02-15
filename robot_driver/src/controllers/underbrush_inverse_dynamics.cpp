@@ -56,7 +56,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
     state_velocities << joint_velocities, body_state.tail(6);
 
     // Initialize variables for ff and fb
-    quad_msgs::RobotState ref_underbrush_msg;
+    quad_msgs::RobotState ref_underbrush_msg, ref_abad_msg;
     Eigen::VectorXd tau_array(3 * num_feet_),
         tau_swing_leg_array(3 * num_feet_);
 
@@ -175,7 +175,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
                 robot_state_msg.feet.feet.at(i).position.z;
             foot_z_hip = robot_state_msg.feet.feet.at(i).position.z -
                          robot_state_msg.body.pose.position.z;
-            foot_horz_err = sqrt(foot_x_err * foot_x_err);
+            foot_horz_err = foot_x_err;//sqrt(foot_x_err * foot_x_err);
 
             // cartesian foot velocity commands
             foot_vx = 10.0 * foot_x_err;
@@ -227,6 +227,34 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
       }
     }
     quad_utils::ikRobotState(*quadKD_, ref_underbrush_msg);
+
+    // Compute abad joint IK
+    ref_abad_msg = ref_underbrush_msg;
+    for (int i = 0; i < 4; i++) {
+      if (!ref_state_msg_.feet.feet.at(i).contact) {
+        for (int j = 0; j < last_local_plan_msg_->states.size() - 1; j++) {
+          if (t_now < last_local_plan_msg_->states[j].header.stamp.toSec() &&
+              bool(last_local_plan_msg_->states[j].feet.feet.at(i).contact)) {
+            ref_abad_msg.feet.feet.at(i).position.x =
+                last_local_plan_msg_->states[j].feet.feet.at(i).position.x;
+            ref_abad_msg.feet.feet.at(i).position.y =
+                last_local_plan_msg_->states[j].feet.feet.at(i).position.y;
+            ref_abad_msg.feet.feet.at(i).position.z =
+                last_local_plan_msg_->states[j].feet.feet.at(i).position.z;
+            break;
+          }
+        }
+      }
+    }
+    quad_utils::ikRobotState(*quadKD_, ref_abad_msg);
+    for (int i = 0; i < num_feet_; ++i) {
+      if (!ref_state_msg_.feet.feet.at(i).contact) {
+        ref_underbrush_msg.joints.position.at(3 * i + 0) =
+            ref_abad_msg.joints.position.at(3 * i + 0);
+        ref_underbrush_msg.joints.velocity.at(3 * i + 0) = 0;
+      }
+    }
+
     for (int i = 0; i < num_feet_; ++i) {
       /*
       int abad_idx = 3 * i + 0;
