@@ -112,9 +112,12 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
   // Initialize hardware interface
-  if (is_hardware_) {
+  // if (is_hardware) {
+  if (true) {
     if (robot_name == "spirit") {
       hardware_interface_ = std::make_shared<SpiritInterface>();
+    } else if (robot_name == "new_platform") {
+      hardware_interface_ = std::make_shared<NewPlatformInterface>();
     } else {
       ROS_ERROR_STREAM("Invalid robot name " << robot_name
                                              << ", returning nullptr");
@@ -537,13 +540,18 @@ void RobotDriver::publishControl(bool is_valid) {
   grf_pub_.publish(grf_array_msg_);
   // }
 
+  ros::Time t_start = ros::Time::now();
+  hardware_interface_->send(leg_command_array_msg_, user_tx_data_);
+  ros::Time t_end = ros::Time::now();
+  ROS_INFO_THROTTLE(1.0, "t_diff_mb_send = %6.4f", (t_end - t_start).toSec());
+
   // Send command to the robot
   if (is_hardware_ && is_valid) {
-    ros::Time t_start = ros::Time::now();
-    hardware_interface_->send(leg_command_array_msg_, user_tx_data_);
-    ros::Time t_end = ros::Time::now();
+    // ros::Time t_start = ros::Time::now();
+    // hardware_interface_->send(leg_command_array_msg_, user_tx_data_);
+    // ros::Time t_end = ros::Time::now();
 
-    ROS_INFO_THROTTLE(1.0, "t_diff_mb_send = %6.4f", (t_end - t_start).toSec());
+    // ROS_INFO_THROTTLE(1.0, "t_diff_mb_send = %6.4f", (t_end - t_start).toSec());
   }
 }
 
@@ -561,7 +569,8 @@ void RobotDriver::spin() {
   ros::Rate r(update_rate_);
 
   // Start the mblink connection
-  if (is_hardware_) {
+  // if (is_hardware_) {
+  if (true) {
     hardware_interface_->loadInterface(argc_, argv_);
   }
 

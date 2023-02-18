@@ -8,15 +8,9 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include "robot_driver/hardware_interfaces/MotorDriver.hpp"
+#include "robot_driver/hardware_interfaces/spirit_interface.h"
 
 #include <eigen3/Eigen/Eigen>
-
-struct LimbCmd_t {
-  Eigen::Vector3f pos, vel, tau;
-  short kp[3];
-  short kd[3];
-  bool restart_flag;
-};
 
 //! Hardware interface for the Spirit40 quadruped from Ghost Robotics.
 /*!

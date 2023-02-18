@@ -28,7 +28,6 @@
 #include "robot_driver/estimators/state_estimator.h"
 #include "robot_driver/hardware_interfaces/hardware_interface.h"
 #include "robot_driver/hardware_interfaces/spirit_interface.h"
-#include "robot_driver/hardware_interfaces/new_platform_interface.h"
 #include "robot_driver/robot_driver_utils.h"
 
 #define MATH_PI 3.141592
@@ -288,96 +287,11 @@ class RobotDriver {
   /// Message for leg command array
   quad_msgs::LegCommandArray leg_command_array_msg_;
 
-  /// Message for leg command array
-  quad_msgs::GRFArray grf_array_msg_;
-
-  /// User transmission data
-  Eigen::VectorXd user_tx_data_;
-
-  /// User recieved data
-  Eigen::VectorXd user_rx_data_;
-
-  /// Time at which to start transition
-  ros::Time transition_timestamp_;
-
-  /// PD gain when in safety mode
-  std::vector<double> safety_kp_;
-  std::vector<double> safety_kd_;
-
-  /// PD gain when in sit mode
-  std::vector<double> sit_kp_;
-  std::vector<double> sit_kd_;
-
-  /// PD gain when in standing mode
-  std::vector<double> stand_kp_;
-  std::vector<double> stand_kd_;
-
-  /// PD gain when foot is in stance
-  std::vector<double> stance_kp_;
-  std::vector<double> stance_kd_;
-
-  /// PD gain when foot is in swing
-  std::vector<double> swing_kp_;
-  std::vector<double> swing_kd_;
-
-  /// PD gain when foot is in swing (Cartesian)
-  std::vector<double> swing_kp_cart_;
-  std::vector<double> swing_kd_cart_;
-
-  /// Define standing joint angles
-  std::vector<double> stand_joint_angles_;
-
-  /// Define sitting joint angles
-  std::vector<double> sit_joint_angles_;
-
   /// QuadKD class
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
 
-  /// Leg Controller template class
-  std::shared_ptr<LegController> leg_controller_;
-
-  /// State Estimator template class
-  std::shared_ptr<StateEstimator> state_estimator_;
-
   /// Mblink converter object
   std::shared_ptr<HardwareInterface> hardware_interface_;
-
-  /// Last mocap data
-  geometry_msgs::PoseStamped::ConstPtr last_mocap_msg_;
-
-  /// Most recent IMU data
-  sensor_msgs::Imu last_imu_msg_;
-
-  /// Most recent joint data
-  sensor_msgs::JointState last_joint_state_msg_;
-
-  /// Best estimate of velocity
-  Eigen::Vector3d vel_estimate_;
-
-  /// Best estimate of velocity from mocap diff
-  Eigen::Vector3d mocap_vel_estimate_;
-
-  /// Best estimate of imu velocity
-  Eigen::Vector3d imu_vel_estimate_;
-
-  /// Velocity filter time constant
-  double filter_time_constant_;
-
-  /// Velocity filter weight
-  double filter_weight_;
-
-  /// Maximum time elapsed between mocap messages before committing to new
-  /// message
-  double mocap_dropout_threshold_;
-
-  /// Update rate of the motion capture system
-  double mocap_rate_;
-
-  /// Last mainboard time
-  double last_mainboard_time_;
-
-  /// Last mocap time
-  ros::Time last_mocap_time_;
 
   /// Time of last publishing
   ros::Time t_pub_;
@@ -389,4 +303,4 @@ class RobotDriver {
   char** argv_;
 };
 
-#endif  // ROBOT_DRIVER_H
+#endif  // NEW_PLATFORM_TEST_H
