@@ -27,15 +27,6 @@ topics:
     restart_flag: control/restart_flag
     leg_override: control/leg_override
     single_joint_command: control/single_joint_command
-    
-  #Topics for testing new_platform_interface
-  joint_1_command: joint_1_command
-  joint_2_command: joint_2_command
-  joint_3_command: joint_3_command
-  joint_4_command: joint_4_command
-  joint_5_command: joint_5_command
-  joint_6_command: joint_6_command
-  #---------------------------------------
   cmd_vel: cmd_vel
   heartbeat:
     robot: heartbeat/robot
