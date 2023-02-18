@@ -119,8 +119,6 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
     else if (robot_name == "new_platform") {
       ROS_INFO("Loading new platform interface");
       hardware_interface_ = std::make_shared<NewPlatformInterface>();
-      
-      leg_command_sub_ = nh_.subscribe(leg_command_array_topic, 1, RobotDriver::hardware_interface_->send, this);
     } 
     else {
       ROS_ERROR_STREAM("Invalid robot name " << robot_name

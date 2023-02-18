@@ -94,7 +94,7 @@ target_link_libraries(robot_driver_node
 
 ## Add executable for new platform test node
 add_executable(new_platform_test_node src/new_platform_test_node.cpp)
-add_executable(new_platform_subscriber src/new_platform_subscriber.cpp)
+# add_executable(new_platform_subscriber src/new_platform_subscriber.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(new_platform_test_node
@@ -102,10 +102,10 @@ target_link_libraries(new_platform_test_node
 	${catkin_LIBRARIES}
 )
 
-target_link_libraries(new_platform_subscriber
-  robot_driver
-	${catkin_LIBRARIES}
-)
+# target_link_libraries(new_platform_subscriber
+#   robot_driver
+# 	${catkin_LIBRARIES}
+# )
 
 #############
 ## Testing ##
