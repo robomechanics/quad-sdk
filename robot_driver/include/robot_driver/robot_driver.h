@@ -186,6 +186,9 @@ class RobotDriver {
   /// ROS publisher for inverse dynamics
   ros::Publisher leg_command_array_pub_;
 
+  /// ROS publisher for inverse dynamics
+  ros::Subscriber leg_command_sub_;
+
   /// ROS publisher for desired GRF
   ros::Publisher grf_pub_;
 

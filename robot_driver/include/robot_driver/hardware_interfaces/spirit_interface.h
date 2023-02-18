@@ -13,13 +13,6 @@
 
 using gr::MBLink;
 
-struct LimbCmd_t {
-  Eigen::Vector3f pos, vel, tau;
-  short kp[3];
-  short kd[3];
-  bool restart_flag;
-};
-
 typedef std::unordered_map<std::string, Eigen::VectorXf> MBData_t;
 
 //! Hardware interface for the Spirit40 quadruped from Ghost Robotics.

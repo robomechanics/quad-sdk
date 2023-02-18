@@ -4,17 +4,17 @@ NewPlatformInterface::NewPlatformInterface() {}
 
 void NewPlatformInterface::loadInterface(int argc, char** argv) {
 
-  //Set zero positions and prepare motors for moving
-  motorStates_0 = motor_controller0.setZeroPosition(motor_ids_0);
-  motorStates_1 = motor_controller1.setZeroPosition(motor_ids_1);
+  // //Set zero positions and prepare motors for moving
+  // motorStates_0 = motor_controller0.setZeroPosition(motor_ids_0);
+  // motorStates_1 = motor_controller1.setZeroPosition(motor_ids_1);
 
-  //Enable motors
-  motorStates_0 = motor_controller0.enableMotor(motor_ids_0);
-  motorStates_1 = motor_controller1.enableMotor(motor_ids_1);
+  // //Enable motors
+  // motorStates_0 = motor_controller0.enableMotor(motor_ids_0);
+  // motorStates_1 = motor_controller1.enableMotor(motor_ids_1);
 
-  //Merge the front and rear leg mappings
-  motorStates.insert(motorStates_0.begin(), motorStates_0.end());
-  motorStates.insert(motorStates_1.begin(), motorStates_1.end());
+  // //Merge the front and rear leg mappings
+  // motorStates.insert(motorStates_0.begin(), motorStates_0.end());
+  // motorStates.insert(motorStates_1.begin(), motorStates_1.end());
 
 }
 
@@ -31,13 +31,17 @@ void NewPlatformInterface::unloadInterface() {
 }
 
 bool NewPlatformInterface::send(
-    const quad_msgs::LegCommandArray& last_leg_command_array_msg,
-    const Eigen::VectorXd& user_tx_data) {
+    const quad_msgs::LegCommandArray& last_leg_command_array_msg
+    ,const Eigen::VectorXd& user_tx_data
+    ) {
 
   int leg_command_heartbeat = 1;
 
   std::map<int, motor_driver::motorCommand> commandMap_0; //Command map for font legs
   std::map<int, motor_driver::motorCommand> commandMap_1; //Command map for rear legs
+
+  int axis = 3;
+  float sendPos = 0;
 
   //For FL, FR
   LimbCmd_t limbcmd[4];
@@ -57,8 +61,13 @@ bool NewPlatformInterface::send(
           float kp = leg_command_heartbeat * leg_command.motor_commands.at(j).kp;
           float kd = leg_command_heartbeat * leg_command.motor_commands.at(j).kd;
 
-          motor_driver::motorCommand commandStruct = {pos, vel, kp, kd, tau};
-          commandMap_0.insert(std::pair<int, motor_driver::motorCommand> (motor_ids_0[i*3 + j], commandStruct));
+          if (leg_command.motor_commands.at(j).pos_setpoint > 0) {
+            axis = j;
+            sendPos = pos;
+          }
+
+          // motor_driver::motorCommand commandStruct = {pos, vel, kp, kd, tau};
+          // commandMap_0.insert(std::pair<int, motor_driver::motorCommand> (motor_ids_0[i*3 + j], commandStruct));
         }
         break;
       case 1: //BL
@@ -71,8 +80,13 @@ bool NewPlatformInterface::send(
           float kp = leg_command_heartbeat * leg_command.motor_commands.at(j).kp;
           float kd = leg_command_heartbeat * leg_command.motor_commands.at(j).kd;
 
-          motor_driver::motorCommand commandStruct = {pos, vel, kp, kd, tau};
-          commandMap_1.insert(std::pair<int, motor_driver::motorCommand> (motor_ids_1[i*3 + j], commandStruct));
+          if (leg_command.motor_commands.at(j).pos_setpoint > 0) {
+            axis = j;
+            sendPos = pos;
+          }
+
+          // motor_driver::motorCommand commandStruct = {pos, vel, kp, kd, tau};
+          // commandMap_1.insert(std::pair<int, motor_driver::motorCommand> (motor_ids_1[i*3 + j], commandStruct));
         }
         break;
       default:
@@ -81,13 +95,16 @@ bool NewPlatformInterface::send(
   }
 
   //For RL, RR
+  if (axis < 3) {
+    ROS_INFO("Sending %f command to axis %i\n", sendPos, axis);
+  }
 
-  motorStates_0 = motor_controller0.sendRadCommand(commandMap_0);
-  motorStates_1 = motor_controller1.sendRadCommand(commandMap_1);
+  // motorStates_0 = motor_controller0.sendRadCommand(commandMap_0);
+  // motorStates_1 = motor_controller1.sendRadCommand(commandMap_1);
 
-  //Merge the front and rear leg mappings
-  motorStates.insert(motorStates_0.begin(), motorStates_0.end());
-  motorStates.insert(motorStates_1.begin(), motorStates_1.end());
+  // //Merge the front and rear leg mappings
+  // motorStates.insert(motorStates_0.begin(), motorStates_0.end());
+  // motorStates.insert(motorStates_1.begin(), motorStates_1.end());
 
   return true;
 }
@@ -95,6 +112,8 @@ bool NewPlatformInterface::send(
 bool NewPlatformInterface::recv(sensor_msgs::JointState& joint_state_msg,
                            sensor_msgs::Imu& imu_msg,
                            Eigen::VectorXd& user_rx_data) {
+  
+  // ROS_INFO("Recieving Command to robot\n");
   
   // Add the data corresponding to each joint
   for (int i = 0; i < joint_names_.size(); i++) {

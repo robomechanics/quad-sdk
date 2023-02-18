@@ -20,6 +20,13 @@
 #include <eigen3/Eigen/Eigen>
 #define MATH_PI 3.141592
 
+struct LimbCmd_t {
+  Eigen::Vector3f pos, vel, tau;
+  short kp[3];
+  short kd[3];
+  bool restart_flag;
+};
+
 //! Implements an abstract class for robot hardware interfaces.
 /*!
    HardwareInterface provides an abstract robot hardware interface class. The

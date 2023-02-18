@@ -1,0 +1,31 @@
+<launch>
+    <arg name="robot_type" default="new_platform"/>
+
+    <include file="$(find quad_utils)/launch/load_global_params.launch" />
+
+    <rosparam command="load" file="$(find quad_utils)/config/topics_robot.yaml" />
+    <param name="enable_statistics" type="bool" value="true" />
+
+    <rosparam command="load" file="$(find quad_utils)/config/new_platform_motor_test.yaml" />
+    <param name="enable_statistics" type="bool" value="true" />
+
+    <include file="$(find quad_utils)/launch/load_robot_params.launch">
+      <arg name="robot_type" value="$(arg robot_type)"/>
+    </include>
+    
+    <arg name="mocap" default="false" />
+    <arg name="logging" default="false" />
+    <arg name="controller" default="inverse_dynamics" />
+    <arg name="is_hardware" default="true" />
+
+    <!-- Launch the robot driver node -->
+    <node name="robot_driver" pkg="robot_driver" type="robot_driver_node" output="screen">
+        <param name="controller" value="$(arg controller)" />
+        <param name="is_hardware" value="$(arg is_hardware)" />
+    </node>
+
+    <!-- Launch the robot driver node -->
+    <node name="new_platform_test" pkg="robot_driver" type="new_platform_test_node" output="screen">
+    </node>
+
+</launch>
