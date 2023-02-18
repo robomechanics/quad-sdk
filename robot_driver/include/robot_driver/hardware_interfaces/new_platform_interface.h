@@ -7,6 +7,7 @@
 #include <sensor_msgs/JointState.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include "robot_driver/hardware_interfaces/CANInterface.hpp"
 #include "robot_driver/hardware_interfaces/MotorDriver.hpp"
 #include "robot_driver/hardware_interfaces/spirit_interface.h"
 
@@ -64,7 +65,7 @@ class NewPlatformInterface : public HardwareInterface {
   std::vector<int> joint_indices_ = {0x00, 0x04, 0x08, 0x01, 0x05, 0x09, 
                                       0x02, 0x06, 0x10, 0x03, 0x07, 0x11};
 
-  std::vector<int> motor_ids_0 = {0x00, 0x04, 0x08, 0x01, 0x05, 0x09,}; //Front legs (L_Ab, L_Hip, L_Knee, R_Ab, R_Hip, R_Knee)
+  std::vector<int> motor_ids_0 = {0x00, 0x04, 0x08, 0x01, 0x05, 0x09}; //Front legs (L_Ab, L_Hip, L_Knee, R_Ab, R_Hip, R_Knee)
   std::vector<int> motor_ids_1 = {0x02, 0x06, 0x10, 0x03, 0x07, 0x11}; //Rear legs (L_Ab, L_Hip, L_Knee, R_Ab, R_Hip, R_Knee)
 
   //Motor controller objects
