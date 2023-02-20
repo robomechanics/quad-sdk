@@ -146,6 +146,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
 
 void RobotDriver::initStateEstimator() {
   if (estimator_id_ == "comp_filter") {
+    ROS_INFO_STREAM("Comp Filter");
     state_estimator_ = std::make_shared<CompFilterEstimator>();
   } else if (estimator_id_ == "ekf_filter") {
     state_estimator_ = std::make_shared<EKFEstimator>();
