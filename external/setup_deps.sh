@@ -26,7 +26,7 @@ else
     echo "Warning: HSL not found."
 fi
 cd coinbrew
-./coinbrew build Ipopt --latest-release --tests none --prefix=/usr/local --no-prompt --parallel-jobs=8
+./coinbrew build Ipopt --latest-release --tests none --prefix=/usr/local
 cd ../..
 
 # Setup and build for rbdl
