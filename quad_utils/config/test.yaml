@@ -70,7 +70,7 @@ robot_driver:
   swing_kd: [1.1, 1.1, 1.1]
   swing_kp_cart: [0, 0, 0] # N/m
   swing_kd_cart: [0, 0, 0] # N/m
-  safety_kp: [0, 0, 0]
+  safety_kp: [30, 30, 30]
   safety_kd: [2, 2, 2]
   stand_joint_angles: [0.0, 0.76, 1.52]
   sit_joint_angles: [0.0, 0.0, 0.0]

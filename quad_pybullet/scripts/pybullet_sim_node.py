@@ -29,8 +29,8 @@ pybullet_cmd_sub_name = "/robot_1/control/joint_command"
 
 
 # world_urdf = "/home/haoluo/catkin_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds/flat/flat.world"
-world_urdf = "/home/haoluo/catkin_ws_opt/src/quad-sdk/quad_pybullet/plane.urdf"
-
+# world_urdf = "/home/haoluo/catkin_ws_opt/src/quad-sdk/quad_pybullet/plane.urdf"
+world_urdf = "plane.urdf"
 
 
 if __name__ == '__main__':

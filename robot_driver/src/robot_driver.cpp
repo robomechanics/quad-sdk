@@ -353,7 +353,6 @@ bool RobotDriver::updateControl() {
   if (leg_controller_->overrideStateMachine()) {
     valid_cmd = leg_controller_->computeLegCommandArray(
         last_robot_state_msg_, leg_command_array_msg_, grf_array_msg_);
-    valid_cmd = true;
     return valid_cmd;
   }
 
@@ -418,8 +417,10 @@ bool RobotDriver::updateControl() {
               dynamic_cast<InverseDynamicsController *>(
                   leg_controller_.get())) {
         // Uncomment to publish trajectory reference state
-        // quad_msgs::RobotState ref_state_msg = p->getReferenceState();
-        // trajectry_robot_state_pub_.publish(ref_state_msg);
+        //quad_msgs::RobotState ref_state_msg = p->getReferenceState();
+        //trajectry_robot_state_pub_.publish(ref_state_msg);
+
+        
       }
     }
   } else if (control_mode_ == SIT_TO_READY) {
