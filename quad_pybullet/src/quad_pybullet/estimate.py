@@ -3,7 +3,7 @@ import time
 import pybullet_data
 import numpy as np
 import rospy
-
+import std_msgs.msg
 
 from quad_msgs.msg import RobotState, MultiFootState, FootState, BodyState,GRFArray
 from geometry_msgs.msg import Vector3,Point
@@ -213,6 +213,9 @@ class Robot_sensors:
 
     def write_RobotState_msg(self):
         
+        curr_header = std_msgs.msg.Header()
+        curr_header.stamp = rospy.Time.now()
+
         RobotStatemsg_out= RobotState()
         body_msg = BodyState()
         toe_msgs = MultiFootState()
@@ -264,6 +267,7 @@ class Robot_sensors:
         RobotStatemsg_out.body = body_msg
         RobotStatemsg_out.joints = joint_msg
         RobotStatemsg_out.feet = toe_msgs
+        RobotStatemsg_out.header = curr_header
         return  RobotStatemsg_out
 
 

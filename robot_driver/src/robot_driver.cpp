@@ -374,11 +374,8 @@ bool RobotDriver::updateControl() {
   // Initialize leg command message
   leg_command_array_msg_.leg_commands.resize(num_feet_);
 
-
-
   // Enter state machine for filling motor command message
   if (control_mode_ == SAFETY) {
-  // if (true) {
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
       for (int j = 0; j < 3; ++j) {
@@ -390,7 +387,8 @@ bool RobotDriver::updateControl() {
       }
 
     }
-  } else if (control_mode_ == SIT) {
+  } 
+  else if (control_mode_ == SIT) {
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
       for (int j = 0; j < 3; ++j) {
@@ -577,11 +575,15 @@ void RobotDriver::spin() {
     // Collect new messages on subscriber topics and publish heartbeat
     ros::spinOnce();
 
+
+// 
     // Get the newest state information
     updateState();
 
     // Compute the leg command and publish if valid
     bool is_valid = updateControl();
+  
+
     publishControl(is_valid);
 
     // // Publish state and heartbeat

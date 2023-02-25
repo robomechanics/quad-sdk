@@ -14,14 +14,14 @@ load_sdf = False
 step_rate = 1000
 
 # To run it indepently, uncomment these lines
-# pybullet_state_pub_name = "/robot_1/state/ground_truth"  
-# pybullet_grf_pub_name = "/robot_1/state/grfs"
-# clock_pub_name = "/clock"
+pybullet_state_pub_name = "/robot_1/state/ground_truth"  
+pybullet_grf_pub_name = "/robot_1/state/grfs"
+clock_pub_name = "/clock"
 
 # To run it as a parasite to gazebo, uncomment these lines
-pybullet_state_pub_name = "/robot_1/state/ground_truth_py"
-pybullet_grf_pub_name = "/robot_1/state/grfs_py"
-clock_pub_name = "/double_clock"
+# pybullet_state_pub_name = "/robot_1/state/ground_truth_py"
+# pybullet_grf_pub_name = "/robot_1/state/grfs_py"
+# clock_pub_name = "/double_clock"
 
 # Use different topics for motor commands into pybullet
 pybullet_cmd_sub_name = "/robot_1/control/joint_command"

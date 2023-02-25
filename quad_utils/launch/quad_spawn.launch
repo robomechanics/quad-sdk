@@ -8,7 +8,7 @@
   <param name="tf_prefix"   value="$(arg namespace)" />
 
   <!-- Spawn SDF model -->
-  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model $(arg namespace) $(arg init_pose)" output="screen"/> -->
+  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model $(arg namespace) $(arg init_pose)" output="screen"/>
   
   <!-- Start Quad-SDK robot driver -->
   <include file="$(find quad_utils)/launch/robot_driver.launch">

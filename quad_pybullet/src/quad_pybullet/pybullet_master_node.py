@@ -58,8 +58,8 @@ class pybullet_sim_node:
         self.clock_sub = None
         # self.step_rate = step_rate
         self.ros_sleep_rate = None
-        rospy.set_param('use_sim_time',False)
-        # rospy.set_param('use_sim_time',True)
+        # rospy.set_param('use_sim_time',False)
+        rospy.set_param('use_sim_time',True)
 
     def sim_routine(self):
         while not rospy.is_shutdown():
