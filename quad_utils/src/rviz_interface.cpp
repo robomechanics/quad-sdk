@@ -557,7 +557,7 @@ void RVizInterface::robotStateCallback(
   } else if (pub_id == GROUND_TRUTH) {
     transformStamped.child_frame_id = tf_prefix_ + "_ground_truth/body";
 
-    ground_truth_base_tf_br_.sendTransform(transformStamped);
+    //ground_truth_base_tf_br_.sendTransform(transformStamped);
     ground_truth_joint_states_viz_pub_.publish(joint_msg);
 
     if (ground_truth_state_trace_msg_.points.empty()) {
