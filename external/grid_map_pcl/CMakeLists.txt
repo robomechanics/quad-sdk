@@ -31,6 +31,7 @@ endif()
 find_package(yaml-cpp REQUIRED)
 
 ## Find catkin macros and libraries
+find_package(yaml-cpp REQUIRED)
 find_package(catkin REQUIRED 
   COMPONENTS
     ${CATKIN_PACKAGE_DEPENDENCIES}

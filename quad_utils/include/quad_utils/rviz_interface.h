@@ -3,6 +3,7 @@
 
 #include <geometry_msgs/PoseArray.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
 #include <quad_msgs/FootPlanDiscrete.h>
 #include <quad_msgs/FootState.h>
@@ -88,6 +89,12 @@ class RVizInterface {
    */
   void robotStateCallback(const quad_msgs::RobotState::ConstPtr &msg,
                           const int pub_id);
+  /**
+   * @brief Callback function to handle tracking camera data
+   * @param[in] msg nav_msgs/Odometry message containing the pose of the camera
+   * node
+   */
+  void cameraPoseCallback(const nav_msgs::Odometry::ConstPtr& msg);
 
   /// ROS subscriber for the global plan
   ros::Subscriber global_plan_sub_;
@@ -161,6 +168,9 @@ class RVizInterface {
   /// ROS Publisher for the trajectory joint states visualization
   ros::Publisher trajectory_joint_states_viz_pub_;
 
+  /// ROS Publisher for the camera pose visualization
+  ros::Publisher camera_trace_pub_;
+
   /// ROS Subscriber for the state estimate
   ros::Subscriber state_estimate_sub_;
 
@@ -169,6 +179,9 @@ class RVizInterface {
 
   /// ROS Subscriber for the ground truth state
   ros::Subscriber trajectory_state_sub_;
+
+  /// ROS Publisher for the camera pose visualization
+  ros::Subscriber camera_pos_sub_;
 
   /// ROS Transform Broadcaster to publish the estimate transform for the base
   /// link
@@ -182,6 +195,9 @@ class RVizInterface {
   /// link
   tf2_ros::TransformBroadcaster trajectory_base_tf_br_;
 
+  /// ROS Transform Broadcaster to publish the camera odom transform
+  tf2_ros::TransformBroadcaster camera_odom_tf_br_;
+
   /// Message for state estimate trace
   visualization_msgs::Marker state_estimate_trace_msg_;
 
@@ -190,6 +206,15 @@ class RVizInterface {
 
   /// Message for trajectory state trace
   visualization_msgs::Marker trajectory_state_trace_msg_;
+
+  /// Message for camera trace
+  visualization_msgs::Marker camera_trace_msg_;
+
+  /// Init body position to align the camera with world frame
+  Eigen::Vector3d init_body_pos;
+
+  /// Init body orientation to align the camera with world frame
+  Eigen::Vector4d init_body_orientation;
 
   /// Distance threshold for resetting the state traces
   const double trace_reset_threshold_ = 0.2;

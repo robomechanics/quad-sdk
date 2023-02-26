@@ -138,6 +138,20 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
       trajectory_state_topic, 1,
       boost::bind(&RVizInterface::robotStateCallback, this, _1, TRAJECTORY));
 
+  /// Setup camera pos sub and pub
+  std::string camera_odom_sample_topic, camera_trace_viz_topic;
+  quad_utils::loadROSParam(nh_, "topics/camera_odom_sample",
+                           camera_odom_sample_topic);
+  quad_utils::loadROSParam(nh_, "topics/visualization/camera_trace",
+                           camera_trace_viz_topic);
+  camera_pos_sub_ = nh_.subscribe(camera_odom_sample_topic, 1,
+                                  &RVizInterface::cameraPoseCallback, this);
+  camera_trace_pub_ =
+      nh_.advertise<visualization_msgs::Marker>(camera_trace_viz_topic, 1);
+  init_body_pos = Eigen::Vector3d::Zero();
+  init_body_orientation = Eigen::Vector4d::Zero();
+  init_body_orientation[0] = 1.0;
+
   // Setup state visual pubs
   estimate_joint_states_viz_pub_ = nh_.advertise<sensor_msgs::JointState>(
       estimate_joint_states_viz_topic, 1);
@@ -178,6 +192,7 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   state_estimate_trace_msg_.points.push_back(dummy_point);
   ground_truth_state_trace_msg_ = state_estimate_trace_msg_;
   trajectory_state_trace_msg_ = state_estimate_trace_msg_;
+  camera_trace_msg_ = state_estimate_trace_msg_;
 
   // Define visual properties for traces
   state_estimate_trace_msg_.id = 5;
@@ -197,6 +212,12 @@ RVizInterface::RVizInterface(ros::NodeHandle nh) {
   trajectory_state_trace_msg_.color.r = (float)front_right_color_[0] / 255.0;
   trajectory_state_trace_msg_.color.g = (float)front_right_color_[1] / 255.0;
   trajectory_state_trace_msg_.color.b = (float)front_right_color_[2] / 255.0;
+
+  camera_trace_msg_.id = 8;
+  camera_trace_msg_.color.a = 1.0;
+  camera_trace_msg_.color.r = (float)front_right_color_[0] / 255.0;
+  camera_trace_msg_.color.g = (float)front_right_color_[1] / 255.0;
+  camera_trace_msg_.color.b = (float)front_right_color_[2] / 255.0;
 }
 
 void RVizInterface::robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg,
@@ -539,6 +560,15 @@ void RVizInterface::robotStateCallback(
     ground_truth_base_tf_br_.sendTransform(transformStamped);
     ground_truth_joint_states_viz_pub_.publish(joint_msg);
 
+    if (ground_truth_state_trace_msg_.points.empty()) {
+      init_body_pos[0] = msg->body.pose.position.x;
+      init_body_pos[1] = msg->body.pose.position.y;
+      init_body_pos[2] = msg->body.pose.position.z;
+      init_body_orientation[0] = msg->body.pose.orientation.x;
+      init_body_orientation[1] = msg->body.pose.orientation.y;
+      init_body_orientation[2] = msg->body.pose.orientation.z;
+      init_body_orientation[3] = msg->body.pose.orientation.w;
+    }
     quad_utils::pointMsgToEigen(ground_truth_state_trace_msg_.points.back(),
                                 last_pos);
 
@@ -581,6 +611,48 @@ void RVizInterface::robotStateCallback(
   }
 }
 
+void RVizInterface::cameraPoseCallback(
+    const nav_msgs::Odometry::ConstPtr& msg) {
+  std::cout << "here1" << std::endl;
+  geometry_msgs::TransformStamped transformStamped;
+  transformStamped.header = msg->header;
+  transformStamped.header.stamp = ros::Time::now();
+  transformStamped.header.frame_id = map_frame_;
+  transformStamped.transform.translation.x = init_body_pos[0];
+  transformStamped.transform.translation.y = init_body_pos[1];
+  transformStamped.transform.translation.z = init_body_pos[2];
+  transformStamped.transform.rotation.x = 0.0;
+  transformStamped.transform.rotation.y = 0.0;
+  transformStamped.transform.rotation.z = 0.0;
+  transformStamped.transform.rotation.w = 1.0;
+  transformStamped.child_frame_id = "camera_odom_frame";
+  std::cout << "transformStamped.header.frame_id = "
+            << transformStamped.header.frame_id << std::endl;
+  std::cout << "transformStamped = " << transformStamped << std::endl;
+  // camera_odom_tf_br_.sendTransform(transformStamped);
+
+  camera_trace_msg_.action = visualization_msgs::Marker::ADD;
+  camera_trace_msg_.points.push_back(msg->pose.pose.position);
+
+  // camera_trace_msg_.points.back().x += init_body_pos[0];
+  // camera_trace_msg_.points.back().y += init_body_pos[1];
+  // camera_trace_msg_.points.back().z += init_body_pos[2];
+  if (!ground_truth_state_trace_msg_.points.empty()) {
+    std::cout << "x_difference: "
+              << camera_trace_msg_.points.back().x -
+                     ground_truth_state_trace_msg_.points.back().x
+              << " "
+              << camera_trace_msg_.points.back().y -
+                     ground_truth_state_trace_msg_.points.back().y
+              << " "
+              << camera_trace_msg_.points.back().z -
+                     ground_truth_state_trace_msg_.points.back().z
+              << std::endl;
+  }
+  trajectory_state_trace_msg_.header = transformStamped.header;
+  camera_trace_pub_.publish(camera_trace_msg_);
+}
+
 void RVizInterface::spin() {
   ros::Rate r(update_rate_);
   while (ros::ok()) {
@@ -591,3 +663,32 @@ void RVizInterface::spin() {
     r.sleep();
   }
 }
+
+// tf2::Transform transform;
+// transform.setOrigin(
+//     tf2::Vector3(init_body_pos[0], init_body_pos[1], init_body_pos[2]));
+// transform.setRotation(
+//     tf2::Quaternion(init_body_orientation[0], init_body_orientation[1],
+//                     init_body_orientation[2], init_body_orientation[3]));
+// camera_odom_tf_br_.sendTransform(geometry_msgs::TransformStamped(
+//     transform, ros::Time::now(), "map", "camera_odom_frame"));
+
+// transform.setOrigin(
+//     tf2::Vector3(init_body_pos[0], init_body_pos[1], init_body_pos[2]));
+// transform.setRotation(
+//     tf2::Quaternion(init_body_orientation[0], init_body_orientation[1],
+//                     init_body_orientation[2], init_body_orientation[3]));
+
+// geometry_msgs::TransformStamped transformStamped;
+// transformStamped.header = msg->header;
+// transformStamped.header.stamp = ros::Time::now();
+// transformStamped.header.frame_id = map_frame_;
+// transformStamped.transform.translation.x = init_body_pos[0];
+// transformStamped.transform.translation.y = init_body_pos[1];
+// transformStamped.transform.translation.z = init_body_pos[2];
+// transformStamped.transform.rotation.x = init_body_orientation[0];
+// transformStamped.transform.rotation.x = init_body_orientation[0];
+// transformStamped.transform.rotation.x = init_body_orientation[0];
+// transformStamped.transform.rotation.x = init_body_orientation[0];
+// ransformStamped.child_frame_id = "/camera_odom_frame";
+// camera_odom_tf_br_.sendTransform(transformStamped);

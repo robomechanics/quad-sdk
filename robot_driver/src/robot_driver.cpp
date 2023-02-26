@@ -326,7 +326,7 @@ void RobotDriver::checkMessagesForSafety() {
   if (abs(ros::Time::now().toSec() - remote_heartbeat_received_time_) >=
           heartbeat_timeout_ &&
       remote_heartbeat_received_time_ != std::numeric_limits<double>::max()) {
-    control_mode_ = SAFETY;
+    // control_mode_ = SAFETY;
     ROS_WARN_THROTTLE(1,
                       "Remote heartbeat lost or late to robot driver node, "
                       "entering safety mode");
