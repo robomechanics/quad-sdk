@@ -40,4 +40,4 @@ sudo make install
 cd ../..
 
 # Setup for teleop_twist_joy to get dependencies installed
-sudo apt install -y ros-melodic-teleop-twist-joy
+sudo apt install -y ros-noetic-teleop-twist-joy
