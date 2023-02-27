@@ -65,8 +65,11 @@ class NewPlatformInterface : public HardwareInterface {
   std::vector<int> joint_indices_ = {0x00, 0x04, 0x08, 0x01, 0x05, 0x09, 
                                       0x02, 0x06, 0x10, 0x03, 0x07, 0x11};
 
+   //Change IDs for new motor command creation implementation
   std::vector<int> motor_ids_0 = {0x00, 0x04, 0x08, 0x01, 0x05, 0x09}; //Front legs (L_Ab, L_Hip, L_Knee, R_Ab, R_Hip, R_Knee)
   std::vector<int> motor_ids_1 = {0x02, 0x06, 0x10, 0x03, 0x07, 0x11}; //Rear legs (L_Ab, L_Hip, L_Knee, R_Ab, R_Hip, R_Knee)
+   // std::vector<int> motor_ids_0 = {0x04, 0x04, 0x04, 0x04, 0x04, 0x04}; //Front legs (L_Ab, L_Hip, L_Knee, R_Ab, R_Hip, R_Knee)
+   // std::vector<int> motor_ids_1 = {0x04, 0x04, 0x04, 0x04, 0x04, 0x04}; //Front legs (L_Ab, L_Hip, L_Knee, R_Ab, R_Hip, R_Knee)
 
   //Motor controller objects
   motor_driver::MotorDriver motor_controller0 = motor_driver::MotorDriver(motor_ids_0, "can0", motor_driver::MotorType::AK80_6_V2);

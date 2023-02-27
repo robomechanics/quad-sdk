@@ -40,37 +40,33 @@ bool NewPlatformInterface::send(
   std::map<int, motor_driver::motorCommand> commandMap_0; //Command map for font legs
   std::map<int, motor_driver::motorCommand> commandMap_1; //Command map for rear legs
 
-  int axis = 3;
-  float sendPos = 0;
-
-  //For FL, FR
-  LimbCmd_t limbcmd[4];
+  // // For FL, FR
   for (int i = 0; i < 4; ++i) {  // For each leg
     // std::cout << "leg = " << i << std::endl;
     quad_msgs::LegCommand leg_command =
-        last_leg_command_array_msg.leg_commands.at(i);
-
+        last_leg_command_array_msg.leg_commands.at(0);
+    
     switch (i){
       case 0: //FL
-      case 2: //FR
+      case 1: //FR
         for (int j = 0; j < 3; ++j) {  // For each joint
           // std::cout << "joint = " << j << std::endl;
-          float pos = leg_command_heartbeat * leg_command.motor_commands.at(j).pos_setpoint;
-          float vel = leg_command_heartbeat * leg_command.motor_commands.at(j).vel_setpoint;
-          float tau = leg_command_heartbeat * leg_command.motor_commands.at(j).torque_ff;
-          float kp = leg_command_heartbeat * leg_command.motor_commands.at(j).kp;
-          float kd = leg_command_heartbeat * leg_command.motor_commands.at(j).kd;
+          float pos = leg_command_heartbeat * leg_command.motor_commands.at(1).pos_setpoint;
+          float vel = leg_command_heartbeat * leg_command.motor_commands.at(1).vel_setpoint;
+          float tau = leg_command_heartbeat * leg_command.motor_commands.at(1).torque_ff;
+          float kp = leg_command_heartbeat * leg_command.motor_commands.at(1).kp;
+          float kd = leg_command_heartbeat * leg_command.motor_commands.at(1).kd;
 
           if (leg_command.motor_commands.at(j).pos_setpoint > 0) {
             axis = j;
             sendPos = pos;
           }
 
-          // motor_driver::motorCommand commandStruct = {pos, vel, kp, kd, tau};
-          // commandMap_0.insert(std::pair<int, motor_driver::motorCommand> (motor_ids_0[i*3 + j], commandStruct));
+          motor_driver::motorCommand commandStruct = {pos, vel, kp, kd, tau};
+          commandMap_0.insert(std::pair<int, motor_driver::motorCommand> (motor_ids_0[i*3 + j], commandStruct));
         }
         break;
-      case 1: //BL
+      case 2: //BL
       case 3: //BR
         for (int j = 0; j < 3; ++j) {  // For each joint
           // std::cout << "joint = " << j << std::endl;
@@ -85,8 +81,8 @@ bool NewPlatformInterface::send(
             sendPos = pos;
           }
 
-          // motor_driver::motorCommand commandStruct = {pos, vel, kp, kd, tau};
-          // commandMap_1.insert(std::pair<int, motor_driver::motorCommand> (motor_ids_1[i*3 + j], commandStruct));
+          motor_driver::motorCommand commandStruct = {pos, vel, kp, kd, tau};
+          commandMap_1.insert(std::pair<int, motor_driver::motorCommand> (motor_ids_1[(i-2)*3 + j], commandStruct));
         }
         break;
       default:
@@ -94,17 +90,12 @@ bool NewPlatformInterface::send(
     }
   }
 
-  //For RL, RR
-  if (axis < 3) {
-    ROS_INFO("Sending %f command to axis %i\n", sendPos, axis);
-  }
+  motorStates_0 = motor_controller0.sendRadCommand(commandMap_0);
+  motorStates_1 = motor_controller1.sendRadCommand(commandMap_1);
 
-  // motorStates_0 = motor_controller0.sendRadCommand(commandMap_0);
-  // motorStates_1 = motor_controller1.sendRadCommand(commandMap_1);
-
-  // //Merge the front and rear leg mappings
-  // motorStates.insert(motorStates_0.begin(), motorStates_0.end());
-  // motorStates.insert(motorStates_1.begin(), motorStates_1.end());
+  //Merge the front and rear leg mappings
+  motorStates.insert(motorStates_0.begin(), motorStates_0.end());
+  motorStates.insert(motorStates_1.begin(), motorStates_1.end());
 
   return true;
 }

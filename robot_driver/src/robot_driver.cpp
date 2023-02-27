@@ -111,13 +111,15 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
   // Initialize hardware interface
-  // if (is_hardware) {
+  // if (is_hardware_) {
   if (true) {
-    if (robot_name == "spirit") {
+    // if (robot_name == "spirit") {
+    if (false) {
       ROS_INFO("Loading spirit interface");
       hardware_interface_ = std::make_shared<SpiritInterface>();
     } 
-    else if (robot_name == "new_platform") {
+    // else if (robot_name == "new_platform") {
+    else if (true) {
       ROS_INFO("Loading new platform interface");
       hardware_interface_ = std::make_shared<NewPlatformInterface>();
     } 
@@ -314,7 +316,8 @@ void RobotDriver::checkMessagesForSafety() {
 }
 
 bool RobotDriver::updateState() {
-  if (is_hardware_) {
+  // if (is_hardware_) {
+  if (false) {
     // grab data from hardware
     bool fully_populated = hardware_interface_->recv(
         last_joint_state_msg_, last_imu_msg_, user_rx_data_);
@@ -543,18 +546,19 @@ void RobotDriver::publishControl(bool is_valid) {
   grf_pub_.publish(grf_array_msg_);
   // }
 
-  ros::Time t_start = ros::Time::now();
-  hardware_interface_->send(leg_command_array_msg_, user_tx_data_);
-  ros::Time t_end = ros::Time::now();
-  ROS_INFO_THROTTLE(1.0, "t_diff_mb_send = %6.4f", (t_end - t_start).toSec());
+  // ros::Time t_start = ros::Time::now();
+  // hardware_interface_->send(leg_command_array_msg_, user_tx_data_);
+  // ros::Time t_end = ros::Time::now();
+  // ROS_INFO_THROTTLE(1.0, "t_diff_mb_send = %6.4f", (t_end - t_start).toSec());
 
   // Send command to the robot
-  if (is_hardware_ && is_valid) {
-    // ros::Time t_start = ros::Time::now();
-    // hardware_interface_->send(leg_command_array_msg_, user_tx_data_);
-    // ros::Time t_end = ros::Time::now();
+  // if (is_hardware_ && is_valid) {
+  if (is_valid) {
+    ros::Time t_start = ros::Time::now();
+    hardware_interface_->send(leg_command_array_msg_, user_tx_data_);
+    ros::Time t_end = ros::Time::now();
 
-    // ROS_INFO_THROTTLE(1.0, "t_diff_mb_send = %6.4f", (t_end - t_start).toSec());
+    ROS_INFO_THROTTLE(1.0, "t_diff_mb_send = %6.4f", (t_end - t_start).toSec());
   }
 }
 
@@ -585,8 +589,8 @@ void RobotDriver::spin() {
     updateState();
 
     // Compute the leg command and publish if valid
-    // bool is_valid = updateControl();
-    bool is_valid = true;
+    bool is_valid = updateControl();
+    // bool is_valid = true;
     publishControl(is_valid);
 
     // // Publish state and heartbeat
