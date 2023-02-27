@@ -111,8 +111,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
   // Initialize hardware interface
-  if (is_hardware_) {
-  // if (true) {
+  // if (is_hardware_) {
+  if (true) {
     if (robot_name == "spirit") {
       ROS_INFO("Loading spirit interface");
       hardware_interface_ = std::make_shared<SpiritInterface>();
@@ -572,8 +572,8 @@ void RobotDriver::spin() {
   ros::Rate r(update_rate_);
 
   // Start the mblink connection
-  if (is_hardware_) {
-  // if (true) {
+  // if (is_hardware_) {
+  if (true) {
     hardware_interface_->loadInterface(argc_, argv_);
   }
 
