@@ -4,15 +4,12 @@
 
 using namespace force_estimation_dynamics;
 
-// Temporary
-#if USE_SIM == 1
-int joint_inds[12] = {10, 0, 1, 11, 4, 5, 2, 6, 7, 3, 8, 9};
-#elif USE_SIM == 2 || USE_SIM == 0
 int joint_inds[12] = {8, 0, 1, 9, 2, 3, 10, 4, 5, 11, 6, 7};
-#endif
 
 // Effective toe force estimate
 double f_toe_MO[12];
+// Planned liftoff time
+double t_up[4];
 
 BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
   nh_ = nh;
@@ -20,12 +17,7 @@ BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
   // Load rosparams from parameter server
   std::string robot_state_topic, body_force_topic, toe_force_topic,
       local_plan_topic;
-#if USE_SIM == 2
-  nh.param<std::string>("topics/joint_encoder", robot_state_topic,
-                        "/joint_encoder");
-#else
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
-#endif
   quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/body_force/joint_torques",
                            body_force_topic);
@@ -37,16 +29,10 @@ BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
   nh.param<double>("/body_force_estimator/K_O", K_O_, 50);
   nh.param<int>("/body_force_estimator/cancel_friction", cancel_friction_, 1);
 
-// Setup pubs and subs
-#if USE_SIM == 1
-  robot_state_sub_ =
-      nh_.subscribe("joint_states", 1, &BodyForceEstimator::robotStateCallback,
-                    this, ros::TransportHints().tcpNoDelay(true));
-#elif USE_SIM == 2 || USE_SIM == 0
+  // Setup pubs and subs
   robot_state_sub_ = nh_.subscribe(
       robot_state_topic, 1, &BodyForceEstimator::robotStateCallback, this,
       ros::TransportHints().tcpNoDelay(true));
-#endif
   local_plan_sub_ = nh_.subscribe(local_plan_topic, 1,
                                   &BodyForceEstimator::localPlanCallback, this);
   body_force_pub_ =
@@ -54,13 +40,8 @@ BodyForceEstimator::BodyForceEstimator(ros::NodeHandle nh) {
   toe_force_pub_ = nh_.advertise<quad_msgs::GRFArray>(toe_force_topic, 1);
 }
 
-#if USE_SIM > 0
-void BodyForceEstimator::robotStateCallback(
-    const sensor_msgs::JointState::ConstPtr& msg) {
-#else
 void BodyForceEstimator::robotStateCallback(
     const quad_msgs::RobotState::ConstPtr& msg) {
-#endif
   // ROS_INFO("In robotStateCallback");
   last_state_msg_ = msg;
 }
@@ -143,62 +124,58 @@ void BodyForceEstimator::update() {
   for (int i = 0; i < 4; i++) {
     // Loop over four legs: FL, BL, FR, BR
 
-    /*
+    //*
     if (ref_state_msg.feet.feet[i].contact) {
-      // Skip if the foot is in stance
-      if (!past_feet_state_.feet[i].contact) {
-        // on liftoff reset momentum observer state to 0s
-        for (int j = 0; j < 3; j++) {
-          p_hat[3 * i + j] = 0;
-          r_mom[3 * i + j] = 0;
+      t_up[i] = (ros::Time::now()).toSec();
+    }
+    if (!ref_state_msg.feet.feet[i].contact &&
+        ((ros::Time::now()).toSec() - t_up[i] < 0.03)) {
+      // on liftoff reset momentum observer state to 0s
+      for (int j = 0; j < 3; j++) {
+        p_hat[3 * i + j] = 0;
+        r_mom[3 * i + j] = 0;
+      }
+    } else {
+      //*/
+      // Compute joint torque estimates with momentum observer
+
+      for (int j = 0; j < 3; j++) {
+        // read joint data from message
+        int ind = 3 * i + j;
+        q[j] = joint_dirs[j] * last_state_msg_->joints.position[ind];
+        qd[j] = joint_dirs[j] * last_state_msg_->joints.velocity[ind];
+        tau[j] =
+            MO_ktau[j] * joint_dirs[j] * last_state_msg_->joints.effort[ind];
+
+        if (cancel_friction_) {
+          tau[j] += (qd[j] > 0 ? 1 : -1) * MO_fric[j] + qd[j] * MO_damp[j];
         }
+
+        // read this leg's estimates
+        re[j] = r_mom[3 * i + j];
+        pe[j] = p_hat[3 * i + j];
       }
-      continue;
-    }
-    */
+      // Compute dynamics matrices and vectors
+      int RL = i < 2 ? -1 : 1;
+      f_M(q, RL, M);
+      f_beta(q, qd, RL, beta);
+      f_J_MO(q, RL, J_MO);
 
-    for (int j = 0; j < 3; j++) {
-// read joint data from message
-#if USE_SIM > 0
-      int ind = joint_inds[3 * i + j];
-      q[j] = joint_dirs[j] * last_state_msg_->position[ind];
-      qd[j] = joint_dirs[j] * last_state_msg_->velocity[ind];
-      tau[j] = MO_ktau[j] * joint_dirs[j] * last_state_msg_->effort[ind];
-#else
-      int ind = 3 * i + j;
-      q[j] = joint_dirs[j] * last_state_msg_->joints.position[ind];
-      qd[j] = joint_dirs[j] * last_state_msg_->joints.velocity[ind];
-      tau[j] = MO_ktau[j] * joint_dirs[j] * last_state_msg_->joints.effort[ind];
-#endif
+      // Momentum observer update
+      Eigen::Vector3d p = M * qd;
+      Eigen::Vector3d pd_hat = tau - beta + re;
+      p = p - pe;
+      re = K_O * p;
+      pe = pe + pd_hat / update_rate_;
 
-      if (cancel_friction_) {
-        tau[j] += (qd[j] > 0 ? 1 : -1) * MO_fric[j] + qd[j] * MO_damp[j];
+      // Effective toe forces
+      fe_toe = J_MO.transpose().colPivHouseholderQr().solve(re);
+
+      for (int j = 0; j < 3; j++) {
+        r_mom[3 * i + j] = re[j];
+        p_hat[3 * i + j] = pe[j];
+        f_toe_MO[3 * i + j] = fe_toe[j];
       }
-
-      // read this leg's estimates
-      re[j] = r_mom[3 * i + j];
-      pe[j] = p_hat[3 * i + j];
-    }
-    // Compute dynamics matrices and vectors
-    int RL = i < 2 ? -1 : 1;
-    f_M(q, RL, M);
-    f_beta(q, qd, RL, beta);
-    f_J_MO(q, RL, J_MO);
-
-    // Momentum observer update
-    Eigen::Vector3d p = M * qd;
-    Eigen::Vector3d pd_hat = tau - beta + re;
-    p = p - pe;
-    re = K_O * p;
-    pe = pe + pd_hat / update_rate_;
-
-    // Effective toe forces
-    fe_toe = J_MO.transpose().colPivHouseholderQr().solve(re);
-
-    for (int j = 0; j < 3; j++) {
-      r_mom[3 * i + j] = re[j];
-      p_hat[3 * i + j] = pe[j];
-      f_toe_MO[3 * i + j] = fe_toe[j];
     }
   }
 
@@ -211,27 +188,16 @@ void BodyForceEstimator::publishBodyForce() {
   quad_msgs::GRFArray msg_toe;
 
   for (int i = 0; i < 4; i++) {
-    geometry_msgs::Wrench w;
     geometry_msgs::Vector3 ft;
-
-    w.torque.x = r_mom[3 * i + 0];
-    w.torque.y = r_mom[3 * i + 1];
-    w.torque.z = r_mom[3 * i + 2];
 
     ft.x = f_toe_MO[3 * i + 0];
     ft.y = f_toe_MO[3 * i + 1];
     ft.z = f_toe_MO[3 * i + 2];
-    /*
-    #if USE_SIM > 0
-    if (last_state_msg_ != NULL) {
-      w.force.x = last_state_msg_->position[joint_inds[3*i+0]];
-      w.force.y = last_state_msg_->position[joint_inds[3*i+1]];
-      w.force.z = last_state_msg_->position[joint_inds[3*i+2]];
-    }
-    #endif
-    */
-    msg.body_wrenches.push_back(w);
+
     msg_toe.vectors.push_back(ft);
+  }
+  for (int i = 0; i < 12; i++) {
+    msg.joint_torques.push_back(r_mom[i]);
   }
 
   msg.header.stamp = ros::Time::now();

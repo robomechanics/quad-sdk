@@ -39,8 +39,8 @@ robot_driver:
 underbrush_swing:
   retract_vel: 15 # 15 # rad/s retraction speed at proximal link
   tau_push: 2.0 # N m forward torque at distal link
-  tau_contact_start: 2.5 # N m contact initiation detection threshold
-  tau_contact_end: 2.5 # N m contact break detection threshold
+  tau_contact_start: 2.0 # N m contact initiation detection threshold
+  tau_contact_end: 2.0 # N m contact break detection threshold
   min_switch: 0.1 # s minimum time between switching
-  t_down: 0.12 # s time before requiring leg extension
-  t_up: 0.12 # s time before allowing contact initiation detection
+  t_down: 0.135 # s time before requiring leg extension
+  t_up: 0.04 # s time before allowing contact initiation detection

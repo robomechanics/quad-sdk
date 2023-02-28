@@ -2,15 +2,12 @@
 #define BODY_FORCE_ESTIMATOR_H
 
 #include <quad_msgs/BodyForceEstimate.h>
-#include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/GRFArray.h>
+#include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/RobotState.h>
 #include <quad_utils/math_utils.h>
 #include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
-
-// Temporary
-#define USE_SIM 0  // 0 = intended, 1 = Gazebo hack, 2 = old bagfile hack
 
 //! Estimates body contact forces
 /*!
@@ -34,20 +31,16 @@ class BodyForceEstimator {
 
   /**
    * @brief Callback function to handle new state estimates
-   * @param[in] Robot state message contining position and velocity for each joint
-   * and robot body
+   * @param[in] Robot state message contining position and velocity for each
+   * joint and robot body
    */
-#if USE_SIM > 0
-  void robotStateCallback(const sensor_msgs::JointState::ConstPtr& msg);
-#else
   void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
-#endif
 
   /**
    * @brief Callback function to handle new local plan (states and GRFs)
    * @param[in] msg input message contining the local plan
    */
-  void localPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg);
+  void localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg);
 
   /**
    * @brief Compute the momentum observer external force estimation update.
@@ -96,12 +89,8 @@ class BodyForceEstimator {
   /// Previous foot state
   quad_msgs::MultiFootState past_feet_state_;
 
-// Robot state estimate
-#if USE_SIM > 0
-  sensor_msgs::JointState::ConstPtr last_state_msg_;
-#else
+  // Robot state estimate
   quad_msgs::RobotState::ConstPtr last_state_msg_;
-#endif
 };
 
 #endif  // BODY_FORCE_ESTIMATOR_H
