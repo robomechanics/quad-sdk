@@ -11,11 +11,12 @@
   </include>
 
   <node pkg="tf2_ros" type="static_transform_publisher" name="tf_map_to_cam_odom_broadcaster" 
-        args="0.109 0 0.189 0 0 0 1 map camera_odom_frame" />
+        args="0.094 0 0.174 0 0 0 1 map camera_odom_frame" />
   <node pkg="tf2_ros" type="static_transform_publisher" name="tf_cam_pose_to_body_broadcaster" 
-        args="-0.109 0 -0.135 0 0 0 1 camera_pose_frame ground_truth/body" />
+        args="-0.094 0 -0.106 0 0 0 1 camera_pose_frame robot_1_ground_truth/body" />
+ 
+  <node name="camera_pose_frame_tf_listener" pkg="quad_utils" type="tf_to_pose_publisher.py" 	output="screen"/>
 
-  <node name="camera_pose_frame_tf_listener" pkg="quad_utils" type="tf_to_pose_publisher.py" output="screen"/>
 </launch>
 
 <!-- /camera/odom/sample

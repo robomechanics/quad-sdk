@@ -12,7 +12,7 @@ def main_program():
     pub_topic = rospy.get_param('topics/mocap')
     #sub_topic = rospy.get_param('topics/camera_odom_sample')
     from_frame = 'map'
-    to_frame = 'ground_truth/body'
+    to_frame = 'robot_1_ground_truth/body'
 
     tfBuffer = tf2_ros.Buffer()
     tf_listener = tf2_ros.TransformListener(tfBuffer)
