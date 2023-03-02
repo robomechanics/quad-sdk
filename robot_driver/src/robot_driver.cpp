@@ -111,15 +111,15 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
   // Initialize hardware interface
-  if (is_hardware_) {
-  // if (true) {
-    if (robot_name == "spirit") {
-    // if (false) {
+  // if (is_hardware_) {
+  if (true) {
+    // if (robot_name == "spirit") {
+    if (false) {
       ROS_INFO("Loading spirit interface");
       hardware_interface_ = std::make_shared<SpiritInterface>();
     } 
-    else if (robot_name == "new_platform") {
-    // else if (true) {
+    // else if (robot_name == "new_platform") {
+    else if (true) {
       ROS_INFO("Loading new platform interface");
       hardware_interface_ = std::make_shared<NewPlatformInterface>();
     } 
@@ -360,13 +360,16 @@ bool RobotDriver::updateControl() {
   if (leg_controller_->overrideStateMachine()) {
     valid_cmd = leg_controller_->computeLegCommandArray(
         last_robot_state_msg_, leg_command_array_msg_, grf_array_msg_);
+    ROS_INFO("Getting Here 1");
     return valid_cmd;
   }
+  ROS_INFO("Getting Here 12");
 
   // Check incoming messages to determine if we should enter safety mode
   checkMessagesForSafety();
 
   if (last_robot_state_msg_.header.stamp.toSec() == 0) {
+    ROS_INFO("Getting here 2");
     return false;
   }
 
@@ -383,6 +386,7 @@ bool RobotDriver::updateControl() {
 
   // Enter state machine for filling motor command message
   if (control_mode_ == SAFETY) {
+    ROS_INFO("Getting Here 13");
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
       for (int j = 0; j < 3; ++j) {
@@ -397,64 +401,7 @@ bool RobotDriver::updateControl() {
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
       for (int j = 0; j < 3; ++j) {
-        robot_driver_utils::loadMotorCommandMsg(
-            sit_joint_angles_.at(j), 0, 0, sit_kp_.at(j), sit_kd_.at(j),
-            leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j));
-      }
-    }
-  } else if (control_mode_ == READY) {
-    if (leg_controller_->computeLegCommandArray(last_robot_state_msg_,
-                                                leg_command_array_msg_,
-                                                grf_array_msg_) == false) {
-      for (int i = 0; i < num_feet_; ++i) {
-        leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
-        for (int j = 0; j < 3; ++j) {
-          int joint_idx = 3 * i + j;
-          robot_driver_utils::loadMotorCommandMsg(
-              stand_joint_angles_.at(j), 0, 0, stand_kp_.at(j), stand_kd_.at(j),
-              leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j));
-        }
-      }
-    } else {
-      if (InverseDynamicsController *p =
-              dynamic_cast<InverseDynamicsController *>(
-                  leg_controller_.get())) {
-        // Uncomment to publish trajectory reference state
-        // quad_msgs::RobotState ref_state_msg = p->getReferenceState();
-        // trajectry_robot_state_pub_.publish(ref_state_msg);
-      }
-    }
-  } else if (control_mode_ == SIT_TO_READY) {
-    ros::Duration duration = ros::Time::now() - transition_timestamp_;
-    double t_interp = duration.toSec() / transition_duration_;
-    if (t_interp >= 1) {
-      control_mode_ = READY;
-      return valid_cmd;
-    }
-    for (int i = 0; i < num_feet_; ++i) {
-      leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
-      for (int j = 0; j < 3; ++j) {
-        double ang =
-            (stand_joint_angles_.at(j) - sit_joint_angles_.at(j)) * t_interp +
-            sit_joint_angles_.at(j);
-
-        robot_driver_utils::loadMotorCommandMsg(
-            ang, 0, 0, stand_kp_.at(j), stand_kd_.at(j),
-            leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j));
-      }
-    }
-  } else if (control_mode_ == READY_TO_SIT) {
-    ros::Duration duration = ros::Time::now() - transition_timestamp_;
-    double t_interp = duration.toSec() / transition_duration_;
-
-    if (t_interp >= 1) {
-      control_mode_ = SIT;
-      return valid_cmd;
-    }
-
-    for (int i = 0; i < num_feet_; ++i) {
-      leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
-      for (int j = 0; j < 3; ++j) {
+        robot_driver_utils::loadMotorCommandMsg(mator_->loadSensorMsg(last_imu_msg_, last_joint_state_msg_);
         double ang =
             (sit_joint_angles_.at(j) - stand_joint_angles_.at(j)) * t_interp +
             stand_joint_angles_.at(j);
@@ -552,8 +499,8 @@ void RobotDriver::publishControl(bool is_valid) {
   // ROS_INFO_THROTTLE(1.0, "t_diff_mb_send = %6.4f", (t_end - t_start).toSec());
 
   // Send command to the robot
-  if (is_hardware_ && is_valid) {
-  // if (is_valid) {
+  // if (is_hardware_ && is_valid) {
+  if (is_valid) {
     ros::Time t_start = ros::Time::now();
     hardware_interface_->send(leg_command_array_msg_, user_tx_data_);
     ros::Time t_end = ros::Time::now();
@@ -576,10 +523,13 @@ void RobotDriver::spin() {
   ros::Rate r(update_rate_);
 
   // Start the mblink connection
-  if (is_hardware_) {
-  // if (true) {
+  // if (is_hardware_) {
+  if (true) {
+    ROS_INFO("Getting Here 31");
     hardware_interface_->loadInterface(argc_, argv_);
+    ROS_INFO("Getting Here 32");
   }
+  ROS_INFO("Getting Here 3");
 
   while (ros::ok()) {
     // Collect new messages on subscriber topics and publish heartbeat
@@ -587,11 +537,14 @@ void RobotDriver::spin() {
 
     // Get the newest state information
     updateState();
+    ROS_INFO("Getting Here 33");
 
     // Compute the leg command and publish if valid
     bool is_valid = updateControl();
+    ROS_INFO("Getting Here 34");
     // bool is_valid = true;
     publishControl(is_valid);
+    ROS_INFO("Getting Here 4");
 
     // // Publish state and heartbeat
     publishState();
