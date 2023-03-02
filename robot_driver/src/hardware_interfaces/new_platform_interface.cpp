@@ -51,16 +51,16 @@ bool NewPlatformInterface::send(
       case 1: //FR
         for (int j = 0; j < 3; ++j) {  // For each joint
           // std::cout << "joint = " << j << std::endl;
-          float pos = leg_command_heartbeat * leg_command.motor_commands.at(1).pos_setpoint;
-          float vel = leg_command_heartbeat * leg_command.motor_commands.at(1).vel_setpoint;
-          float tau = leg_command_heartbeat * leg_command.motor_commands.at(1).torque_ff;
-          float kp = leg_command_heartbeat * leg_command.motor_commands.at(1).kp;
-          float kd = leg_command_heartbeat * leg_command.motor_commands.at(1).kd;
+          float pos = leg_command_heartbeat * leg_command.motor_commands.at(j).pos_setpoint;
+          float vel = leg_command_heartbeat * leg_command.motor_commands.at(j).vel_setpoint;
+          float tau = leg_command_heartbeat * leg_command.motor_commands.at(j).torque_ff;
+          float kp = leg_command_heartbeat * leg_command.motor_commands.at(j).kp;
+          float kd = leg_command_heartbeat * leg_command.motor_commands.at(j).kd;
 
-          if (leg_command.motor_commands.at(j).pos_setpoint > 0) {
-            axis = j;
-            sendPos = pos;
-          }
+          // if (leg_command.motor_commands.at(j).pos_setpoint > 0) {
+          //   axis = j;
+          //   sendPos = pos;
+          // }
 
           motor_driver::motorCommand commandStruct = {pos, vel, kp, kd, tau};
           commandMap_0.insert(std::pair<int, motor_driver::motorCommand> (motor_ids_0[i*3 + j], commandStruct));
@@ -76,10 +76,10 @@ bool NewPlatformInterface::send(
           float kp = leg_command_heartbeat * leg_command.motor_commands.at(j).kp;
           float kd = leg_command_heartbeat * leg_command.motor_commands.at(j).kd;
 
-          if (leg_command.motor_commands.at(j).pos_setpoint > 0) {
-            axis = j;
-            sendPos = pos;
-          }
+          // if (leg_command.motor_commands.at(j).pos_setpoint > 0) {
+          //   axis = j;
+          //   sendPos = pos;
+          // }
 
           motor_driver::motorCommand commandStruct = {pos, vel, kp, kd, tau};
           commandMap_1.insert(std::pair<int, motor_driver::motorCommand> (motor_ids_1[(i-2)*3 + j], commandStruct));
