@@ -123,5 +123,10 @@ bool NewPlatformInterface::recv(sensor_msgs::JointState& joint_state_msg,
     joint_state_msg.effort[i] = motorStates[i].torque;
   }
 
+  //Also want to add temperature reading once we get that data
+
+  //Need to add IMU update code once we have an IMU
+
+
   return true;
 }
