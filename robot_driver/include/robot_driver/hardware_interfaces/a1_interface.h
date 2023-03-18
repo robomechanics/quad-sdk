@@ -20,10 +20,10 @@ typedef std::unordered_map<std::string, Eigen::VectorXf> MBData_t;
 
 //! Hardware interface for the Spirit40 quadruped from Ghost Robotics.
 /*!
-   SpiritInterface listens for joint control messages and outputs low level
+   A1Interface listens for joint control messages and outputs low level
    commands to the mainboard over mblink.
 */
-class SpiritInterface : public HardwareInterface {
+class A1Interface : public HardwareInterface {
 
  private:
    /** @brief Sends a zero command to the robot */
@@ -34,10 +34,10 @@ class SpiritInterface : public HardwareInterface {
 
  public:
   /**
-   * @brief Constructor for SpiritInterface
-   * @return Constructed object of type SpiritInterface
+   * @brief Constructor for A1Interface
+   * @return Constructed object of type A1Interface
    */
-  SpiritInterface();
+  A1Interface();
 
   /**
    * @brief Load the hardware interface

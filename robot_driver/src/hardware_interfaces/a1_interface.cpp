@@ -1,12 +1,12 @@
-#include "robot_driver/hardware_interfaces/spirit_interface.h"
+#include "robot_driver/hardware_interfaces/a1_interface.h"
 
-SpiritInterface::SpiritInterface() {}
+A1Interface::A1Interface() {}
 
-void SpiritInterface::loadInterface(int argc, char** argv) {
-    while(!SpiritInterface::startup_routine());
+void A1Interface::loadInterface(int argc, char** argv) {
+    while(!A1Interface::startup_routine());
 }
 
-void SpiritInterface::unloadInterface() {}
+void A1Interface::unloadInterface() {}
 
 /*
  Legs are numbered such that :
@@ -25,7 +25,7 @@ void SpiritInterface::unloadInterface() {}
 
 YloTwoPcanToMoteus command_; // instance of class YloTwoPcanToMoteus
 
-bool SpiritInterface::startup_routine()
+bool A1Interface::startup_routine()
 {
     /* initialize GPIO pin */
   command_.btnPin = mraa_gpio_init(BTN_PIN);
@@ -35,12 +35,12 @@ bool SpiritInterface::startup_routine()
   usleep(200);
   command_.check_initial_ground_pose();
   std::cout << "startup_routine Done." << std::endl;
-  usleep(10000000);
+  usleep(3000000);
   return true;
 }
 
 
-bool SpiritInterface::send(const quad_msgs::LegCommandArray& last_leg_command_array_msg, const Eigen::VectorXd& user_tx_data) 
+bool A1Interface::send(const quad_msgs::LegCommandArray& last_leg_command_array_msg, const Eigen::VectorXd& user_tx_data) 
 {
     //std::cout << "SEND FUNCTION" << std::endl;
 
@@ -67,7 +67,7 @@ bool SpiritInterface::send(const quad_msgs::LegCommandArray& last_leg_command_ar
       auto leg_index = command_.motor_adapters_[jj].getLeg_index(); // for vector position feed
       auto joint_index = command_.motor_adapters_[jj].getJoint_index(); // same
 
-      joint_position = (last_leg_command_array_msg.leg_commands[leg_index].motor_commands[joint_index].pos_setpoint)/(2*M_PI); // radians to turns (for moteus)
+      joint_position = (sign*(last_leg_command_array_msg.leg_commands[leg_index].motor_commands[joint_index].pos_setpoint)/(2*M_PI)); // radians to turns (for moteus)
       joint_velocity = last_leg_command_array_msg.leg_commands[leg_index].motor_commands[joint_index].vel_setpoint/(2*M_PI); // radians to turns (for moteus)
       joint_fftorque = last_leg_command_array_msg.leg_commands[leg_index].motor_commands[joint_index].torque_ff;
       joint_kp       = static_cast<short>( last_leg_command_array_msg.leg_commands[leg_index].motor_commands[joint_index].kp);
@@ -80,7 +80,7 @@ bool SpiritInterface::send(const quad_msgs::LegCommandArray& last_leg_command_ar
     return true;
 }
 
-bool SpiritInterface::recv(sensor_msgs::JointState& joint_state_msg, sensor_msgs::Imu& imu_msg, Eigen::VectorXd& user_rx_data) 
+bool A1Interface::recv(sensor_msgs::JointState& joint_state_msg, sensor_msgs::Imu& imu_msg, Eigen::VectorXd& user_rx_data) 
 {
     //std::cout << "RECEIVE FUNCTION" << std::endl;
 

@@ -15,7 +15,6 @@
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/UInt8.h>
-#include <sensor_msgs/Imu.h>
 
 #include <cmath>
 #include <eigen3/Eigen/Eigen>
@@ -28,8 +27,8 @@
 #include "robot_driver/estimators/ekf_estimator.h"
 #include "robot_driver/estimators/state_estimator.h"
 #include "robot_driver/hardware_interfaces/hardware_interface.h"
-#include "robot_driver/hardware_interfaces/spirit_interface.h"
-#include "robot_driver/hardware_interfaces/ylo2_interface.h"
+//#include "robot_driver/hardware_interfaces/spirit_interface.h"
+#include "robot_driver/hardware_interfaces/a1_interface.h"
 #include "robot_driver/robot_driver_utils.h"
 
 #define MATH_PI 3.141592
@@ -41,6 +40,11 @@
    commands to be sent to either the robot or a simulator. It may subscribe to
    any number of topics to determine the leg control, but will always publish a
    LegCommandArray message to control the robot's legs.
+
+   RobotDriver implémente une classe pour récupérer des informations d’état et 
+   générer des commandes LEGS à envoyer au robot ou à un simulateur. 
+   Il peut s’abonner à un certain nombre de sujets pour déterminer le contrôle des jambes, 
+   mais publiera toujours un message LegCommandArray pour contrôler les jambes du robot.
 */
 class RobotDriver {
  public:
@@ -124,7 +128,7 @@ class RobotDriver {
    * @param[in] msg Remote heartbeat message
    */
   void imuCallback(const sensor_msgs::Imu::ConstPtr& msg);
-
+  
   /**
    * @brief Check to make sure required messages are fresh
    */
@@ -277,8 +281,8 @@ class RobotDriver {
   // Remote heartbeat timeout threshold in seconds
   double remote_heartbeat_received_time_;
 
-  /// Duration for sit to stand behavior
-  const double transition_duration_ = 1.0;
+  /// Duration for sit to stand behavior -> 10 seconds
+  const double transition_duration_ = 3.0;
 
   /// Timeout (in s) for receiving new input reference messages
   double input_timeout_;
@@ -334,11 +338,11 @@ class RobotDriver {
   std::vector<double> swing_kp_cart_;
   std::vector<double> swing_kd_cart_;
 
-  /// Define standing joint angles
-  std::vector<double> stand_joint_angles_;
-
   /// Define sitting joint angles
   std::vector<double> sit_joint_angles_;
+  
+  /// Define standing joint angles
+  std::vector<double> stand_joint_angles_;
 
   /// QuadKD class
   std::shared_ptr<quad_utils::QuadKD> quadKD_;

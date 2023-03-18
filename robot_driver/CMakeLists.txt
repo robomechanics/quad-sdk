@@ -22,7 +22,6 @@ else()
 endif()
 
 include_directories(${MBLINK_DIR}/include)
-
 link_directories(${MBLINK_DIR}/lib)
 
 find_package(Eigen3 REQUIRED)
@@ -36,7 +35,6 @@ find_package(catkin REQUIRED COMPONENTS
   quad_msgs
   quad_utils
   eigen_conversions
-  realtime_tools
 )
 
 ## System dependencies are found with CMake's conventions
@@ -74,8 +72,8 @@ add_library(robot_driver
   src/estimators/comp_filter_estimator.cpp
   src/estimators/ekf_estimator.cpp
   src/hardware_interfaces/hardware_interface.cpp
-  src/hardware_interfaces/spirit_interface.cpp
-  src/hardware_interfaces/ylo2_interface.cpp
+  #src/hardware_interfaces/spirit_interface.cpp
+  src/hardware_interfaces/a1_interface.cpp
 )
 add_dependencies(robot_driver ${robot_driver_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
@@ -90,25 +88,10 @@ target_link_libraries(robot_driver moteus_driver
 add_executable(robot_driver_node src/robot_driver_node.cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(robot_driver_node robot_driver
+target_link_libraries(robot_driver_node
+  robot_driver
 	${catkin_LIBRARIES}
 )
-
-## IMU for Ylo2
-add_executable(ylo2_imu_node src/ylo2_imu_node.cpp)
-target_link_libraries(ylo2_imu_node ${catkin_LIBRARIES})
-set_property(TARGET ylo2_imu_node PROPERTY CXX_STANDARD 11)
-
-#
-install(TARGETS ylo2_imu_node
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
-
-
-install(DIRECTORY include/${PROJECT_NAME}/
-        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
 
 #############
 ## Testing ##

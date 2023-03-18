@@ -9,8 +9,13 @@
 #include <math.h>
 #include <string.h>
 #include <unistd.h>
-#include "ros/ros.h"
+#include <ros/ros.h>
 #include <PCANBasic.h> // Peak m2canFd board lib
+#include "mraa/common.hpp"
+#include "mraa/gpio.hpp" // for GPIO security switch
+
+// define GPIO switch port
+#define BTN_PIN      29
 
 //define pcan 4 ports to their respective physical adress
 #define PCAN_DEV1	PCAN_PCIBUS1
@@ -35,8 +40,8 @@
     37 - pwm cycle overrun - an internal firmware error
     38 - over temperature - the maximum configured temperature has been exceeded
     39 - outside limit - an attempt was made to start position control while outside the bounds configured by servopos.position_min and servopos.position_max.*/
-
 /* power board RX bytes adress */ // TODO check adresses
+
 #define MSGPBRX_ADDR_STATE          0x02 // 2 bytes per value (int16)   
 #define MSGPBRX_ADDR_FAULT_CODE     0x04  
 #define MSGPBRX_ADDR_SWITCH_STATUS  0x06
@@ -52,32 +57,32 @@
 struct MotorAdapter{
   public:
     MotorAdapter(){
-      idx_ =        -1;
-      sign_ =        1;
-      port_ =        0;
-      leg_index_ =   0;
-      joint_index_ = 0;
+      idx_          = -1;
+      sign_         =  1;
+      port_         = -1;
+      leg_index_    =  0;
+      joint_index_  =  0;
     }
 
     MotorAdapter(int idx, int sign, int port, int leg_index, int joint_index){
-      idx_         = idx;
-      sign_        = sign;
-      port_        = port;
-      leg_index_   = leg_index;
-      joint_index_ = joint_index;
+      idx_          = idx;
+      sign_         = sign;
+      port_         = port;
+      leg_index_    = leg_index;
+      joint_index_  = joint_index;
     }
 
-    const int& getIdx()         {return idx_;}
-    const int& getSign()        {return sign_;}
-    const int& getPort()        {return port_;}
-    const int& getLeg_index()   {return leg_index_;}
-    const int& getJoint_index() {return joint_index_;}
+    const int& getIdx()                   {return idx_;}
+    const int& getSign()                  {return sign_;}
+    const int& getPort()                  {return port_;}
+    const int& getLeg_index()             {return leg_index_;}
+    const int& getJoint_index()           {return joint_index_;}
 
-    void setIdx(int idx)                 {idx_ = idx;}
-    void setSign(int sign)               {sign_ = sign;}
-    void setPort(int port)               {port_ = port;}
-    void setLeg_index(int leg_index)     {leg_index_ = leg_index;}
-    void setJoint_index(int joint_index) {joint_index_ = joint_index;}
+    void setIdx(int idx)                  {idx_         = idx;}
+    void setSign(int sign)                {sign_        = sign;}
+    void setPort(int port)                {port_        = port;}
+    void setLeg_index(int leg_index)      {leg_index_   = leg_index;}
+    void setJoint_index(int joint_index)  {joint_index_ = joint_index;}
     
   private:
     int idx_;
@@ -90,6 +95,15 @@ struct MotorAdapter{
 // the YloTwoPcanToMoteus class
 class YloTwoPcanToMoteus{
   public:
+
+    /* SECURITY RED SWITCH
+      GPIO usage under Up extreme i7, with mraa lib
+      wires diagram : 
+        - black is ground (pin 1); 
+        - red is +3.3vcc with 10k resistor (pin 6); 
+        - white is gpio read (pin 29)*/
+    bool security_switch();
+
     /* PEAK BOARD M2 4 CANFD PORTS
        initialize and reset all 4 ports*/
     bool init_and_reset();
@@ -148,11 +162,21 @@ class YloTwoPcanToMoteus{
     float RX_temp  = 0.0;
     float RX_fault = 0;
 
+    float _comm_position      = 0.0; // NAN for torque mode
+    float _comm_fftorque      = 0.0; // variable Tau
+    float _comm_velocity      = 0;
+    float _comm_kp            = 0;
+    float _comm_kd            = 0;
+    float _comm_maxtorque     = NAN; // Max possible torque is NAN value
+
+    // for mraa library GPIO (security switch)
+    mraa_gpio_context btnPin; //  Will be used to represnt the button pin     //TODO create private class
 
   private:
-
+    
     // for pcanbasic library
     TPCANStatus Status; // the return of a command, to check success
+
     // Define the compatible Moteus FD Bitrate string
     TPCANBitrateFD BitrateFD = (char*) "f_clock_mhz = 80, nom_brp = 1, nom_tseg1 = 50, nom_tseg2 = 29, nom_sjw = 10, data_brp = 1, data_tseg1 = 8, data_tseg2 = 7, data_sjw = 12";
     TPCANTimestampFD timestamp;
@@ -170,15 +194,10 @@ class YloTwoPcanToMoteus{
     int idx_;
     int sign_;
     int port_;
+    int leg_index_;
+    int joint_index_;
     int stop_pos_low_;
     int stop_pos_high_;
-
-    float _comm_position      = NAN; // NAN for torque mode
-    float _comm_fftorque      = 0.0; // variable Tau
-    float _comm_velocity      = 0;
-    float _comm_kp            = 0;
-    float _comm_kd            = 0;
-    float _comm_maxtorque     = 0.1; // Max possible torque is NAN value
 
     /* query variables for moteus controllers */
     float _position     = 0.0;
@@ -200,12 +219,12 @@ class YloTwoPcanToMoteus{
     float _energy         = 0.0;
 
     //  zero position of controllers, to check
-    std::vector<float>initial_ground_joints_pose = {-0.051290, -0.186801, 0.401529,  //  3, 1, 2
-                                                     0.049744, -0.186188, 0.434385,  //  9, 7, 8
-                                                     0.056091, 0.180545, -0.428597,  //  6, 4, 5
-                                                    -0.056315, 0.184779, -0.423850}; // 12, 10, 11
+    std::vector<float>initial_ground_joints_pose = {-0.05, 0.06, 0.43,  //  3, 1, 2
+                                                     0.05, 0.06, 0.43,  //  9, 7, 8
+                                                     0.05, -0.06, -0.43,  //  6, 4, 5
+                                                    -0.05, -0.06, -0.43}; // 12, 10, 11
 
-    float calibration_error = 0.018; // 9 degrees
+    float calibration_error = 0.04;
 };
 
 #endif // PCANTOMOTEUS_HPP

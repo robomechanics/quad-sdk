@@ -12,7 +12,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
       robot_heartbeat_topic, single_joint_cmd_topic, mocap_topic,
       control_restart_flag_topic;
   quad_utils::loadROSParamDefault(nh_, "robot_type", robot_name,
-                                  std::string("spirit"));
+                                  std::string("a1"));
   quad_utils::loadROSParam(nh_, "topics/state/imu", imu_topic);
   quad_utils::loadROSParam(nh_, "topics/state/joints", joint_state_topic);
   quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
@@ -80,8 +80,10 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
                     &RobotDriver::singleJointCommandCallback, this);
   remote_heartbeat_sub_ = nh_.subscribe(
       remote_heartbeat_topic, 1, &RobotDriver::remoteHeartbeatCallback, this);
+
   imu_sub_ = nh_.subscribe(
       "/imu/data", 1, &RobotDriver::imuCallback, this);
+
   control_restart_flag_sub_ =
       nh_.subscribe(control_restart_flag_topic, 1,
                     &RobotDriver::controlRestartFlagCallback, this);
@@ -95,16 +97,18 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
 
   // Set up pubs and subs dependent on robot layer
   if (is_hardware_) {
-    ROS_INFO("**** Loading robot driver : HARDWARE ****");
+    ROS_INFO("*** LOADING YLO2 ROBOT HARDWARE DRIVER ***");
     mocap_sub_ = nh_.subscribe(mocap_topic, 1000, &RobotDriver::mocapCallback,
                                this, ros::TransportHints().tcpNoDelay(true));
     robot_state_pub_ =
         nh_.advertise<quad_msgs::RobotState>(robot_state_topic, 1);
+
     imu_pub_ = nh_.advertise<sensor_msgs::Imu>(imu_topic, 1);
+
     joint_state_pub_ =
         nh_.advertise<sensor_msgs::JointState>(joint_state_topic, 1);
   } else {
-    ROS_INFO("**** Loading robot driver : SIMULATOR ****");
+    ROS_INFO("Loading ylo2 simulator robot driver");
     robot_state_sub_ =
         nh_.subscribe(robot_state_topic, 1, &RobotDriver::robotStateCallback,
                       this, ros::TransportHints().tcpNoDelay(true));
@@ -115,17 +119,13 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
 
   // Initialize hardware interface
   if (is_hardware_) {
-    if (robot_name == "spirit") {
-      hardware_interface_ = std::make_shared<SpiritInterface>();
-    } else {
-      ROS_ERROR_STREAM("Invalid robot name " << robot_name
-                                             << ", returning nullptr");
-      hardware_interface_ = nullptr;
-    }
-
-    if (robot_name == "ylo2") {
-      hardware_interface_ = std::make_shared<Ylo2Interface>();
-    } else {
+    //if (robot_name == "spirit") {
+    //  hardware_interface_ = std::make_shared<SpiritInterface>();
+    //}
+    if (robot_name == "a1") { // TODO replace with my owne robot.
+      hardware_interface_ = std::make_shared<A1Interface>();
+    } 
+    else {
       ROS_ERROR_STREAM("Invalid robot name " << robot_name
                                              << ", returning nullptr");
       hardware_interface_ = nullptr;
@@ -205,6 +205,8 @@ void RobotDriver::initStateControlStructs() {
 }
 
 void RobotDriver::controlModeCallback(const std_msgs::UInt8::ConstPtr &msg) {
+  //std::cout << "!!! controlModeCallback.control_mode_ = " << control_mode_ << std::endl;
+  //std::cout << "!!! controlModeCallback.msg->data = " << msg->data << std::endl;
   // Wait if transitioning
   if ((control_mode_ == SIT_TO_READY) || (control_mode_ == READY_TO_SIT))
     return;
@@ -278,6 +280,7 @@ void RobotDriver::mocapCallback(
 void RobotDriver::robotStateCallback(
     const quad_msgs::RobotState::ConstPtr &msg) {
   last_robot_state_msg_ = *msg;
+  //std::cout << "!!! robotStateCallback.last_robot_state_msg_ = " << last_robot_state_msg_ << std::endl;
 }
 
 void RobotDriver::remoteHeartbeatCallback(
@@ -295,8 +298,7 @@ void RobotDriver::imuCallback(
     const sensor_msgs::Imu::ConstPtr &msg) {
   // Store the IMU data
   last_imu_msg_ = *msg;
-  std::cout << "Test de l'IMU :" << '\n';
-  std::cout << "  Orientation en x = " << last_imu_msg_.orientation.x << '\n';
+  //std::cout << "!!! imuCallback.last_imu_msg_ = " << last_imu_msg_ << std::endl;
 }
 
 void RobotDriver::checkMessagesForSafety() {
@@ -351,6 +353,7 @@ bool RobotDriver::updateState() {
     }
   } else {
     // State information coming through sim subscribers, not hardware interface
+    //ROS_WARN_THROTTLE(1, "RobotDriver::updateState() is OK");
     return true;
   }
 }
@@ -358,6 +361,7 @@ bool RobotDriver::updateState() {
 void RobotDriver::publishState() {
   if (is_hardware_) {
     imu_pub_.publish(last_imu_msg_);
+    //std::cout << "imu pub = " << last_imu_msg_ << std::endl;
     joint_state_pub_.publish(last_joint_state_msg_);
     robot_state_pub_.publish(last_robot_state_msg_);
   }
@@ -391,6 +395,9 @@ bool RobotDriver::updateControl() {
   leg_command_array_msg_.leg_commands.resize(num_feet_);
 
   // Enter state machine for filling motor command message
+
+  std::cout << "control_mode_ value is = " << control_mode_ << std::endl; 
+
   if (control_mode_ == SAFETY) {
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
@@ -402,15 +409,21 @@ bool RobotDriver::updateControl() {
             leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j));
       }
     }
+
   } else if (control_mode_ == SIT) {
-    for (int i = 0; i < num_feet_; ++i) {
+    for (int i = 0; i < num_feet_; ++i) 
+    {
       leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
-      for (int j = 0; j < 3; ++j) {
+      for (int j = 0; j < 3; ++j) 
+      {
         robot_driver_utils::loadMotorCommandMsg(
-            sit_joint_angles_.at(j), 0, 0, sit_kp_.at(j), sit_kd_.at(j),
+            sit_joint_angles_.at(j), 0, 0, sit_kp_.at(j), sit_kd_.at(j), // initial pos, vel, tor, kp, kd
             leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j));
+
+            //std::cout << "!!! updateControl.sit_joint_angles_.at(j) = " << sit_joint_angles_.at(j) << std::endl;
       }
     }
+
   } else if (control_mode_ == READY) {
     if (leg_controller_->computeLegCommandArray(last_robot_state_msg_,
                                                 leg_command_array_msg_,
@@ -558,11 +571,13 @@ void RobotDriver::publishControl(bool is_valid) {
   // Send command to the robot
   if (is_hardware_ && is_valid) {
     ros::Time t_start = ros::Time::now();
+
     hardware_interface_->send(leg_command_array_msg_, user_tx_data_);
     ros::Time t_end = ros::Time::now();
 
     ROS_INFO_THROTTLE(1.0, "t_diff_mb_send = %6.4f", (t_end - t_start).toSec());
   }
+  //else ROS_WARN("!!!!! HARDWARE NOT VALID !!!!!");
 }
 
 void RobotDriver::publishHeartbeat() {

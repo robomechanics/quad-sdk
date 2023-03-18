@@ -33,28 +33,56 @@ YloTwoPcanToMoteus::YloTwoPcanToMoteus()
   pcanPorts_.resize(4); // resize the pcanports_ vector to the number or real ports.
 
   // NOTE: we should load that from file
-  motor_adapters_.resize(12);  // exact motors order, on Ylo2
+  motor_adapters_.resize(12);  // exact motors order, on Ylo2, under Quad-Sdk controller
+
+/******************************************************************************************
+                           ABAD      ---        HIP       ---       KNEE
+                       pos vel tor kp kd ...
+   moteus_command = { {{0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}}, --- FL
+                    ...}
+*******************************************************************************************/
+
 
   //                   IDX                             SIGN                         PCAN BOARD PORTS
   // LF
-  /*HAA*/ motor_adapters_[0].setIdx(3);  motor_adapters_[0].setSign(-1); motor_adapters_[0].setPort(PCAN_DEV1);  motor_adapters_[0].setLeg_index(0);  motor_adapters_[0].setJoint_index(0);
-  /*HFE*/ motor_adapters_[1].setIdx(1);  motor_adapters_[1].setSign(-1); motor_adapters_[1].setPort(PCAN_DEV1);  motor_adapters_[1].setLeg_index(0);  motor_adapters_[1].setJoint_index(1);
-  /*KFE*/ motor_adapters_[2].setIdx(2);  motor_adapters_[2].setSign(-1); motor_adapters_[2].setPort(PCAN_DEV1);  motor_adapters_[2].setLeg_index(0);  motor_adapters_[2].setJoint_index(2);
+  /*HAA*/ motor_adapters_[0].setIdx(3);  motor_adapters_[0].setSign(-1); motor_adapters_[0].setLeg_index(0); 
+                                        motor_adapters_[0].setJoint_index(0); motor_adapters_[0].setPort(PCAN_DEV1);
 
-  // RF
-  /*HAA*/ motor_adapters_[3].setIdx(9);  motor_adapters_[3].setSign(1);  motor_adapters_[3].setPort(PCAN_DEV4);  motor_adapters_[3].setLeg_index(1);  motor_adapters_[3].setJoint_index(0);
-  /*HFE*/ motor_adapters_[4].setIdx(7);  motor_adapters_[4].setSign(-1); motor_adapters_[4].setPort(PCAN_DEV4);  motor_adapters_[4].setLeg_index(1);  motor_adapters_[4].setJoint_index(1);
-  /*KFE*/ motor_adapters_[5].setIdx(8);  motor_adapters_[5].setSign(-1); motor_adapters_[5].setPort(PCAN_DEV4);  motor_adapters_[5].setLeg_index(1);  motor_adapters_[5].setJoint_index(2);
+  /*HFE*/ motor_adapters_[1].setIdx(1);  motor_adapters_[1].setSign(1); motor_adapters_[1].setLeg_index(0); 
+                                        motor_adapters_[1].setJoint_index(1); motor_adapters_[1].setPort(PCAN_DEV1);
+
+  /*KFE*/ motor_adapters_[2].setIdx(2);  motor_adapters_[2].setSign(1); motor_adapters_[2].setLeg_index(0); 
+                                        motor_adapters_[2].setJoint_index(2); motor_adapters_[2].setPort(PCAN_DEV1);
 
   // LH
-  /*HAA*/ motor_adapters_[6].setIdx(6);  motor_adapters_[6].setSign(-1); motor_adapters_[6].setPort(PCAN_DEV3);  motor_adapters_[6].setLeg_index(2);  motor_adapters_[6].setJoint_index(0);
-  /*HFE*/ motor_adapters_[7].setIdx(4);  motor_adapters_[7].setSign(1);  motor_adapters_[7].setPort(PCAN_DEV3);  motor_adapters_[7].setLeg_index(2);  motor_adapters_[7].setJoint_index(1);
-  /*KFE*/ motor_adapters_[8].setIdx(5);  motor_adapters_[8].setSign(1);  motor_adapters_[8].setPort(PCAN_DEV3);  motor_adapters_[8].setLeg_index(2);  motor_adapters_[8].setJoint_index(2);
+  /*HAA*/ motor_adapters_[3].setIdx(9);  motor_adapters_[3].setSign(1);  motor_adapters_[3].setLeg_index(1); 
+                                        motor_adapters_[3].setJoint_index(0); motor_adapters_[3].setPort(PCAN_DEV4);
+
+  /*HFE*/ motor_adapters_[4].setIdx(7);  motor_adapters_[4].setSign(1); motor_adapters_[4].setLeg_index(1); 
+                                        motor_adapters_[4].setJoint_index(1); motor_adapters_[4].setPort(PCAN_DEV4);
+
+  /*KFE*/ motor_adapters_[5].setIdx(8);  motor_adapters_[5].setSign(1); motor_adapters_[5].setLeg_index(1); 
+                                        motor_adapters_[5].setJoint_index(2); motor_adapters_[5].setPort(PCAN_DEV4);
+
+  // RF
+  /*HAA*/ motor_adapters_[6].setIdx(6);  motor_adapters_[6].setSign(1); motor_adapters_[6].setLeg_index(2); 
+                                        motor_adapters_[6].setJoint_index(0); motor_adapters_[6].setPort(PCAN_DEV3);
+
+  /*HFE*/ motor_adapters_[7].setIdx(4);  motor_adapters_[7].setSign(-1);  motor_adapters_[7].setLeg_index(2); 
+                                        motor_adapters_[7].setJoint_index(1); motor_adapters_[7].setPort(PCAN_DEV3);
+
+  /*KFE*/ motor_adapters_[8].setIdx(5);  motor_adapters_[8].setSign(-1);  motor_adapters_[8].setLeg_index(2); 
+                                        motor_adapters_[8].setJoint_index(2); motor_adapters_[8].setPort(PCAN_DEV3);
 
   // RH
-  /*HAA*/ motor_adapters_[9].setIdx(12);  motor_adapters_[9].setSign(1);  motor_adapters_[9].setPort(PCAN_DEV2);   motor_adapters_[9].setLeg_index(3);  motor_adapters_[9].setJoint_index(0);
-  /*HFE*/ motor_adapters_[10].setIdx(10); motor_adapters_[10].setSign(1); motor_adapters_[10].setPort(PCAN_DEV2); motor_adapters_[10].setLeg_index(3);  motor_adapters_[10].setJoint_index(1);
-  /*KFE*/ motor_adapters_[11].setIdx(11); motor_adapters_[11].setSign(1); motor_adapters_[11].setPort(PCAN_DEV2); motor_adapters_[11].setLeg_index(3);  motor_adapters_[11].setJoint_index(2);
+  /*HAA*/ motor_adapters_[9].setIdx(12);  motor_adapters_[9].setSign(-1);  motor_adapters_[9].setLeg_index(3); 
+                                        motor_adapters_[9].setJoint_index(0); motor_adapters_[9].setPort(PCAN_DEV2);
+
+  /*HFE*/ motor_adapters_[10].setIdx(10); motor_adapters_[10].setSign(-1); motor_adapters_[10].setLeg_index(3); 
+                                        motor_adapters_[10].setJoint_index(1); motor_adapters_[10].setPort(PCAN_DEV2);
+
+  /*KFE*/ motor_adapters_[11].setIdx(11); motor_adapters_[11].setSign(-1); motor_adapters_[11].setLeg_index(3); 
+                                        motor_adapters_[11].setJoint_index(2); motor_adapters_[11].setPort(PCAN_DEV2);
 
   // The default ID for the power_dist is '32'
   motor_adapters_[32].setIdx(32); motor_adapters_[32].setPort(PCAN_DEV3);
@@ -139,6 +167,23 @@ YloTwoPcanToMoteus::~YloTwoPcanToMoteus()
 {
 }
 
+bool YloTwoPcanToMoteus::security_switch(){ // read Gpio port state.
+        if (mraa_gpio_read(YloTwoPcanToMoteus::btnPin) == -1){
+            ROS_INFO("ERROR IN MRAA LIB WITH GPIO !!! \n---> See YloTwoPcanToMoteus.cpp into security_switch function.");
+            return true; // GPIO board not ready or button pressed
+        }
+        if (mraa_gpio_read(YloTwoPcanToMoteus::btnPin) == 0){
+            ROS_INFO("SECUTITY SWITCH PRESSED !!! \n---> Motors are stopped now !!!.");
+            YloTwoPcanToMoteus::_comm_maxtorque = 0.0;  // cutting any motor power, Need to relaunch to reset - TODO reinitialize it in rosparam ?!
+            return false;
+        }
+        if (mraa_gpio_read(YloTwoPcanToMoteus::btnPin) == 1){
+            //ROS_INFO("Working OK.");
+            return false;
+        }
+}
+
+
 bool YloTwoPcanToMoteus::init_and_reset(){
   for (unsigned int p = 0; p < 4; ++p){
     // open ports
@@ -160,7 +205,7 @@ bool YloTwoPcanToMoteus::init_and_reset(){
 bool YloTwoPcanToMoteus::send_moteus_stop_order(int id, int port){
     _stop.ID = 0x8000 | id;
     Status = CAN_WriteFD(port, &_stop);
-    usleep(200);
+    usleep(100);
     CAN_GetErrorText(Status, 0, strMsg);
     if(Status != PCAN_ERROR_OK){std::cout << "Error: can't stop motor " << id << " Status = " << strMsg << std::endl;
       return(false);}
@@ -169,7 +214,7 @@ bool YloTwoPcanToMoteus::send_moteus_stop_order(int id, int port){
 
 bool YloTwoPcanToMoteus::send_moteus_TX_frame(int id, int port, float pos, float vel, float fftorque, float kp, float kd){
     _comm_position = pos;
-    _comm_velocity = vel;
+    _comm_velocity = vel ;
     _comm_fftorque = fftorque; // in radians
     _comm_kp       = kp;
     _comm_kd       = kd;
@@ -253,7 +298,7 @@ bool YloTwoPcanToMoteus::send_power_board_order(){
 }
 
 
-/* READ */
+/* READ   TODO */
 bool YloTwoPcanToMoteus::read_power_board_RX_queue(float& state, float& fault_code, float& switch_status, float& out_volt, float& out_curr, float& board_temp){
     int ids  = 32;
     int port  = PCAN_DEV3;
@@ -321,8 +366,8 @@ bool YloTwoPcanToMoteus::check_initial_ground_pose(){
     // startup.
     int count = 0; // check zero for all 12 motors
     std::cout << ("\n-------------------------------------------------------------") << std::endl;
-    std::cout << ("--  Zeroing joints. angle_joint tolerance is < 15 degrees  --") << std::endl;
-    std::cout << ("-------------------------------------------------------------\n") << std::endl;
+    std::cout << ("--  Zeroing joints. angle_joint tolerance is < 9 degrees  --") << std::endl;
+    std::cout << ("---------------------------------------------   Waiting :  --\n") << std::endl;
 
     while(count != 12){
         // --- LOOPING WITH THE 12 MOTORS UNTIL SUCCESS---
@@ -347,12 +392,11 @@ bool YloTwoPcanToMoteus::check_initial_ground_pose(){
             usleep(200);
 
             // --- CHECKING JOINT STARTUP ANGLE ---
-            float value = (std::abs(RX_pos) - std::abs(target_joint_position));
-            float angle_error = value*360; // turn * 360 to obtain degreed
-            //ROS_INFO("--Controleur ID : %d ; actual position : %f ; zero target position : %f ; difference : %f ; angle error in degrees : %f degrees", ids, RX_pos, target_joint_position, value, angle_error);
+            ROS_INFO("--Controleur ID : %d ; actual position : %f ; zero target position : %f ; diff : %f", 
+                        ids, RX_pos, target_joint_position, (std::abs(std::abs(RX_pos) - std::abs(target_joint_position))));
             if(std::abs(std::abs(RX_pos) - std::abs(target_joint_position)) > std::abs(calibration_error)){
                 is_calibrated = false;
-                ROS_INFO("-- Bad initial pose. Check motor %d.",ids);
+                // ROS_INFO("-- Bad initial pose. Check motor %d.",ids);
                 count -=1;
             }
             count +=1;
