@@ -16,7 +16,7 @@ This is research code, expect that it changes often and any fitness for a partic
 
 ## STANDUP TESTS
 
-https://youtu.be/VRGTjSVr3n8
+![Alt text](doc/petal_20230318_134117.mp4?raw=true)
 
 
 ### Unit Tests
