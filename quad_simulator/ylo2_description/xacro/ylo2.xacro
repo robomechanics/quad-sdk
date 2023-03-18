@@ -114,7 +114,7 @@
 
     <link name="d435">
         <visual>
-            <origin rpy="0 0 0" xyz="${body_center_x} ${body_center_y} ${body_center_z}"/>
+            <origin rpy="0 0 0" xyz="${body_center_x} ${body_center_y+0.003} ${body_center_z}"/>
             <geometry>
                 <mesh filename="package://ylo2_description/meshes/body/textured/ylo2_d435_textured.dae" scale="1 1 1"/>
             </geometry>
@@ -130,7 +130,7 @@
 
     <link name="t265">
         <visual>
-            <origin rpy="0 0 0" xyz="${body_center_x} ${body_center_y} ${body_center_z}"/>
+            <origin rpy="0 0 0" xyz="${body_center_x+0.002} ${body_center_y+0.0025} ${body_center_z}"/>
             <geometry>
                 <mesh filename="package://ylo2_description/meshes/body/textured/ylo2_t265_textured.dae" scale="1 1.06 1.04"/>
             </geometry>
@@ -178,7 +178,7 @@
         <origin rpy="0 0 0" xyz="${leg_offset_x+0.0345} ${leg_offset_y+0.006} ${leg_offset_z}"/>
     </xacro:leg>
 
-    <!--RL-->
+    <!--RearL-->
     <xacro:leg suffix="1" mirror="1" mirror_dae="True" front_hind="-1" front_hind_dae="False"
                hipJointName="2" kneeJointName="3" abductionJointName="9">
         <origin rpy="0 0 0" xyz="${-leg_offset_x-0.0745} ${leg_offset_y+0.006} ${leg_offset_z}"/>
@@ -190,7 +190,7 @@
         <origin rpy="0 0 0" xyz="${leg_offset_x+0.0345} ${-leg_offset_y+0.005} ${leg_offset_z}"/>
     </xacro:leg>
 
-    <!--RR-->
+    <!--RearR-->
     <xacro:leg suffix="3" mirror="-1" mirror_dae="False" front_hind="-1" front_hind_dae="False"
                hipJointName="6" kneeJointName="7" abductionJointName="11">
         <origin rpy="0 0 0" xyz="${-leg_offset_x-0.0745} ${-leg_offset_y+0.005} ${leg_offset_z}"/>

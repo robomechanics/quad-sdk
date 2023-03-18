@@ -58,20 +58,10 @@ Visualization Manager:
       Enabled: true
       Links:
         All Links Enabled: true
-        D435:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        T265:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         abad_motors:
           Alpha: 1
           Show Axes: false
@@ -93,6 +83,11 @@ Visualization Manager:
           Show Trail: false
           Value: true
         covers:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        d435:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -138,6 +133,11 @@ Visualization Manager:
           Show Trail: false
           Value: true
         lower3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        t265:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -227,10 +227,6 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        D435:
-          Value: true
-        T265:
-          Value: true
         abad_motors:
           Value: true
         accessories:
@@ -240,6 +236,8 @@ Visualization Manager:
         body:
           Value: true
         covers:
+          Value: true
+        d435:
           Value: true
         hip0:
           Value: true
@@ -258,6 +256,8 @@ Visualization Manager:
         lower2:
           Value: true
         lower3:
+          Value: true
+        t265:
           Value: true
         thigh_shoulder0:
           Value: true
@@ -294,10 +294,6 @@ Visualization Manager:
       Tree:
         body:
           trunk:
-            D435:
-              {}
-            T265:
-              {}
             abad_motors:
               {}
             accessories:
@@ -305,6 +301,8 @@ Visualization Manager:
             battery:
               {}
             covers:
+              {}
+            d435:
               {}
             hip0:
               thigh_shoulder0:
@@ -336,6 +334,8 @@ Visualization Manager:
                     {}
             imu_link:
               {}
+            t265:
+              {}
       Update Interval: 0
       Value: true
   Enabled: true
@@ -366,7 +366,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 0.5445125699043274
+      Distance: 0.4782175123691559
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -374,17 +374,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.39971035718917847
-        Y: -0.3469495475292206
-        Z: -3.875678089571011e-08
+        X: -0.3550622761249542
+        Y: 0.013171039521694183
+        Z: -8.717827881810081e-08
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.429796040058136
+      Pitch: 0.41479790210723877
       Target Frame: <Fixed Frame>
-      Yaw: 5.675354957580566
+      Yaw: 3.277148485183716
     Saved: ~
 Window Geometry:
   Displays:

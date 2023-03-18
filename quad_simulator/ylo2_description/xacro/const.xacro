@@ -15,10 +15,12 @@
     <xacro:property name="trunk_height" value="0.149"/>
     <xacro:property name="hip_radius" value="0.050"/>
     <xacro:property name="hip_length" value="0.06"/>
+
     <xacro:property name="thigh_shoulder_radius" value="0.044"/>
     <xacro:property name="thigh_shoulder_length" value="0.08"/>
     <xacro:property name="thigh_width" value="0.0374"/>
     <xacro:property name="thigh_height" value="0.043"/>
+    
     <xacro:property name="calf_width" value="0.0208"/>
     <xacro:property name="calf_height" value="0.016"/>
     <xacro:property name="foot_radius" value="0.0265"/>

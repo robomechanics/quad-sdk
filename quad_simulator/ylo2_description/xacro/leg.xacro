@@ -126,7 +126,7 @@
         </link>
 
         <joint name="${kneeJointName}" type="revolute">
-            <origin rpy="0 ${-PI} 0" xyz="-0.001 ${(0.075*mirror)} ${-thigh_length}"/>
+            <origin rpy="0 ${-PI} 0" xyz="-0.001 ${(0.075*mirror)} -0.215"/>
             <parent link="upper${suffix}"/>
             <child link="lower${suffix}"/>
             <axis xyz="0 1 0"/>
