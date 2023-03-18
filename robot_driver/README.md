@@ -14,6 +14,11 @@ Maintainers: Ardalan Tajbakhsh (atajbakh@andrew.cmu.edu) **
 The Robot Driver package has been tested under [ROS] Melodic 18.04.
 This is research code, expect that it changes often and any fitness for a particular purpose is disclaimed.
 
+## STANDUP TESTS
+
+https://youtu.be/VRGTjSVr3n8
+
+
 ### Unit Tests
 
 Run the unit tests with
