@@ -8,10 +8,10 @@ from rosgraph_msgs.msg import Clock
 
 node_name = "pybullet_clock"
 
-step_rate = 1000
+step_rate = 2000
 clock_pub_name = "/clock"
 # clock_pub_name = "/double_clock"
-time_ratio = 1.0
+time_ratio = 2.0 # larger number= faster time
 
 
 if __name__ == '__main__':

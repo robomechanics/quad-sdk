@@ -7,7 +7,13 @@ from quad_pybullet.pybullet_master_node import pybullet_sim_node
 
 node_name = "pybullet_sim"
 robot_file = "/home/haoluo/catkin_ws_opt/src/quad-sdk/quad_simulator/spirit_description/urdf/spirit.urdf"
+# robot_file = "/home/haoluo/catkin_ws_opt/src/quad-sdk/quad_simulator/testbot_description/sdf_mesh/testbot.urdf"
 load_sdf = False
+
+# robot_file = "/home/haoluo/catkin_ws_opt/src/quad-sdk/quad_simulator/testbot_description/sdf_mesh/testbot.sdf"
+# load_sdf = True
+
+
 # robot_file = "/home/haoluo/catkin_ws_opt/src/quad-sdk/quad_simulator/spirit_description/sdf_mesh/spirit.sdf"
 # load_sdf = True
 

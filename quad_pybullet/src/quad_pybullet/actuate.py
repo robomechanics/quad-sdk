@@ -79,11 +79,11 @@ class Robot_pydriver:
         self.all_joint_names = list(jointNameToId.keys())
         self._nameToId = jointNameToId
 
-        self.forced_kp = 0.5
-        self.forced_kd = 0.5
+        self.torque_ub = 40.0
+        self.torque_lb = -40.0
 
-        # if torque_control:
-        #     self.enable_torque_control()
+        if torque_control:
+            self.enable_torque_control()
 
     def enable_torque_control(self):
         for i in self.basic_joint_ids:
@@ -104,7 +104,6 @@ class Robot_pydriver:
         
         # By default, the output is a nested list:
         #  [[all motor pos], [all motor vels], [all motor kp], [all motor kd], [all motor torque_ff]]
-
         robot_cmd_list = [[],[],[],[],[]]
         blank_msg = [[0 for i in range(len(self.basic_joint_ids))] for j in range(5)]\
         # Decompose cmds as lists of pos,vel,kp,kd,torque_ff
@@ -121,13 +120,14 @@ class Robot_pydriver:
 
                     robot_cmd_list[0].append(motor_j_cmd.pos_setpoint) # list of pos, ordered as in self.basic_joint__names
                     robot_cmd_list[1].append(motor_j_cmd.vel_setpoint) # list of vel, ordered as in self.basic_joint__names
-                    robot_cmd_list[2].append(self.forced_kp) # list of motor kp
-                    robot_cmd_list[3].append(self.forced_kd) # list of motor kd
+                    # robot_cmd_list[2].append(self.forced_kp) # list of motor kp
+                    # robot_cmd_list[3].append(self.forced_kd) # list of motor kd
                     # robot_cmd_list[4].append(0.0)
-                    # robot_cmd_list[2].append(motor_j_cmd.kp*1)
-                    # robot_cmd_list[3].append(motor_j_cmd.kd*1)
+                    robot_cmd_list[2].append(motor_j_cmd.kp)
+                    robot_cmd_list[3].append(motor_j_cmd.kd)
                     # robot_cmd_list[4].append(motor_j_cmd.torque_ff)
-                    robot_cmd_list[4].append(0.0)
+                    robot_cmd_list[4].append(motor_j_cmd.effort)
+                    # robot_cmd_list[4].append(0.0)
             return robot_cmd_list
 
 
@@ -148,23 +148,44 @@ class Robot_pydriver:
             velocityGains = kd_cmds, physicsClientId = clientid) # Don't use torque yet
 
 
-    def joints_PD(self,joint_ids,all_target_pos,all_target_vel,kps,kds,all_tau_ff):
+    def joints_PD(self,joint_ids,all_target_pos,all_target_vel,kps,kds,efforts):
         joint_kps = np.array(kps)
         joint_kds = np.array(kds)
         curr_pos = [] # Current positions
         curr_vel = []
         curr_rfs = []
         # efforts = []
-        efforts = [0.0*len(self.basic_joint_ids)]
+        # efforts = [0.0*len(self.basic_joint_ids)]
         all_joint_states = pb.getJointStates(self.robot,joint_ids,physicsClientId = self.pcid)
         for i in all_joint_states:
             curr_pos.append(i[0])    
             curr_vel.append(i[1])   
-        pos_err = np.array(curr_pos)-np.array(all_target_pos)
-        vel_err = np.array(curr_vel)-np.array(all_target_vel)
-        torque_out = pos_err*joint_kps-vel_err*joint_kds+np.array(all_tau_ff)
-        # torque_out = pos_err*joint_kps-curr_vel*joint_kds
+        pos_err = np.array(all_target_pos)-np.array(curr_pos)
+        vel_err = np.array(all_target_vel)-np.array(curr_vel)
+        torque_out = 1.2*pos_err*joint_kps+1.0*vel_err*joint_kds
+        # torque_out = np.array(efforts)*1.0
+        for i in torque_out:
+            if i>self.torque_ub:
+                i = self.torque_ub
+            elif i < self.torque_lb:
+                i = self.torque_lb
+            else:
+                continue
+     
+        # torque_out = (pos_err*joint_kps*0.5-curr_vel*joint_kds*0.5)
 
+        # outstring_pos_err = "pos err: "
+        # outstring_vel_err = "vel err: "
+        # outstring_kp = "kps: "
+        # outstring_kd = "kds: "
+        outstring_torque = "torque: "
+        for i in torque_out:
+        #     outstring_pos_err +="%f,"%(pos_err[i])             
+        #     outstring_vel_err +="%f,"%(vel_err[i])
+        #     outstring_kp +="%f,"%(joint_kps[i])
+            # outstring_kd +="%f,"%i
+            outstring_torque +="%f,"%i
+        rospy.loginfo(outstring_torque)
         return pos_err.tolist(),vel_err.tolist(),torque_out.tolist()
 
     def drive_all_torque(self,ros_robot_cmd):
@@ -179,9 +200,17 @@ class Robot_pydriver:
         clientid = self.pcid
         # mode = pb.POSITION_CONTROL
         mode = pb.TORQUE_CONTROL
+        
         pos_err,vel_err,PD_torque_cmds = self.joints_PD(self.basic_joint_ids,pos_cmds,vel_cmds,kp_cmds,kd_cmds,torque_ff_cmds)
+        # pos_err,vel_err,PD_torque_cmds = self.joints_PD(self.basic_joint_ids,pos_cmds,vel_cmds,kp_cmds,kd_cmds,torque_ff_cmds)
+
+
+        # torque_cmd = torque_ff_cmds
+        torque_cmd = (np.array(PD_torque_cmds)).tolist()
+
         # PD_torque_cmds = [20.0 for i in self.basic_joint_ids]
-        pb.setJointMotorControlArray(robot_id,self.basic_joint_ids,mode,forces = PD_torque_cmds, physicsClientId = clientid)    # Use torque cmd
+        pb.setJointMotorControlArray(robot_id,self.basic_joint_ids,mode,forces = torque_cmd, physicsClientId = clientid)
+        # pb.setJointMotorControlArray(robot_id,dummy_id,mode,forces = dummy_cmd, physicsClientId = clientid)     # Use torque cmd
 
 
 
@@ -231,8 +260,8 @@ class Robot_pydriver:
             # for j,k in zip(all_seq,[self.abds,self.hips,self.knees]):
             for j,k in zip(all_seq,[self.knees,self.hips,self.abds]):
                 pb.setJointMotorControlArray(robot_id,k,mode,[pos_cmds[i] for i in j],[vel_cmds[i] for i in j],\
-                positionGains = [kp_cmds[i] for i in j],\
-                    velocityGains = [kd_cmds[i] for i in j], physicsClientId = clientid,forces=[30.0 for i in j])
+                positionGains = [kp_cmds[i]*0.5 for i in j],\
+                    velocityGains = [kd_cmds[i]*0.5 for i in j], physicsClientId = clientid,forces=[10.0 for i in j])
                 # Don't use torque yet    
 
                 # pb.setJointMotorControlArray(robot_id,k,mode,[pos_cmds[i] for i in j],[vel_cmds[i] for i in j],\

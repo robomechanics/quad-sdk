@@ -20,9 +20,10 @@
     </group>
     
     <group if="$(eval arg('robot_type') == 'test')">
-        <rosparam command="load" file="$(find quad_utils)/config/test.yaml" />
-        <param name="robot_description_sdf" textfile="$(find testbot_description)/sdf_mesh/test.sdf" />
-        <param name="robot_description" command="cat $(find testbot_description)/urdf/test.urdf" />
+    	<!-- <rosparam command="load" file="$(find quad_utils)/config/spirit.yaml" /> -->
+        <rosparam command="load" file="$(find quad_utils)/config/testbot.yaml" />
+        <param name="robot_description_sdf" textfile="$(find testbot_description)/sdf_mesh/testbot.sdf" />
+        <param name="robot_description" command="cat $(find testbot_description)/sdf_mesh/testbot.urdf" />
     </group>
     
     

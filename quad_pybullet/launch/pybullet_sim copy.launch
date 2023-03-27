@@ -1,0 +1,6 @@
+<launch>
+   
+  	<node pkg="quad_pybullet" type="pybullet_sim_node.py" name="pybullet_sim_node">
+        </node>
+        
+</launch>

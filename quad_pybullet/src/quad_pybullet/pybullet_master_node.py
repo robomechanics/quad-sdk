@@ -56,10 +56,15 @@ class pybullet_sim_node:
         self.clock_topic = clock_topic
         self.clock_pub = None
         self.clock_sub = None
-        # self.step_rate = step_rate
-        self.ros_sleep_rate = None
+        self.step_time = 1/step_rate
         # rospy.set_param('use_sim_time',False)
         rospy.set_param('use_sim_time',True)
+
+
+        # self.internal_actuate_steps = 2 # 500Hz for 1ms/1000Hz clock
+        # self.internal_estimate_steps = 5 # 200Hz for 1ms/1000Hz clock
+        # self.internal_count_reset_num = self.internal_estimate_steps*self.internal_actuate_steps
+        # self.internal_count = 0
 
     def sim_routine(self):
         while not rospy.is_shutdown():
@@ -72,6 +77,8 @@ class pybullet_sim_node:
     def sim_routine_step(self,clock_msg):
         # while True:
         pb.stepSimulation()
+        # self.driver_node.update_counter()
+        # self.sensor_node.update_counter()
         # time.sleep(1/self.step_rate)
 
     def sim_routine_init(self):
@@ -91,9 +98,6 @@ class pybullet_sim_node:
         self.robot_file.append(robot_file)
 
     def robot_stand(self):
-
-
-
         return
 
 
@@ -112,7 +116,7 @@ class pybullet_sim_node:
         state_topic_name = self.state_topic_name
 
         physicsClient = pb.connect(pb.GUI)#or pb.DIRECT for non-graphical version
-        pb.setTimeStep(0.001,physicsClientId=physicsClient)
+        pb.setTimeStep(self.step_time,physicsClientId=physicsClient)
 
         pb.setAdditionalSearchPath(pybullet_data.getDataPath()) #optionally
         planeId = pb.loadURDF(self.world)
@@ -123,14 +127,14 @@ class pybullet_sim_node:
         startOrientation = pb.getQuaternionFromEuler([0.0,0,0],physicsClientId = physicsClient)
         # If single robot:
         if self.use_sdf:
-            self.robot_id = pb.loadSDF(self.robot_file[0])  
+            self.robot_id = pb.loadSDF(self.robot_file[0]) 
         else:
             self.robot_id = pb.loadURDF(self.robot_file[0],startPos, startOrientation)
         
         self.sensor_node = pybullet_estimation_node(sensor_node_name,self.robot_id,physicsClient,self.step_rate,\
         state_topic_name= self.state_topic_name,grf_topic_name=self.grf_topic_name)
         self.driver_node = pybullet_actuation_node(driver_node_name,self.robot_id,physicsClient,cmd_topic_name)
-        self.driver_node.robot_stand()
+        # self.driver_node.robot_stand()
         # self.driver_node.robot_stand()
         simthread = threading.Thread(target=self.sim_routine_init)
         sensor_thread = threading.Thread(target=self.sensor_node.run)
