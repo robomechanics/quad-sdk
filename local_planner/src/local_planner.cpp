@@ -106,6 +106,9 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 
   // Initialize the plan index
   current_plan_index_ = 0;
+
+  // Initialized reference plan for yaw
+  first_ref_plan = false;
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -395,6 +398,54 @@ void LocalPlanner::getReference() {
         stand_pos_error_threshold_) {
       control_mode_ = STAND;
     }
+  }
+
+  // Unwrap yaw angle for NMPC
+  Eigen::VectorXd eig_unwrapped_yaw_ref = ref_body_plan_.col(5);
+
+  std::vector<double> wrapped_yaw_ref, unwrapped_yaw_ref;
+  quad_utils::eigenToVector(eig_unwrapped_yaw_ref, wrapped_yaw_ref);
+
+  // If first plan, keep nominal yaw, else align initial yaw state with previous
+  // horizon's last yaw state
+  if (!first_ref_plan) {
+    float diff = wrapped_yaw_ref[0] - prev_unwrapped_yaw;
+    float quotient = round(diff / (2 * M_PI));
+    if (diff > M_PI) {
+      wrapped_yaw_ref[0] = wrapped_yaw_ref[0] - quotient * 2 * M_PI;
+    } else if (diff < -M_PI) {
+      wrapped_yaw_ref[0] = wrapped_yaw_ref[0] + quotient * 2 * M_PI;
+    }
+  } else {
+    first_ref_plan = false;
+  }
+  unwrapped_yaw_ref =
+      math_utils::unwrap(wrapped_yaw_ref);  // Let math_utils handle unwrapping
+                                            // all yaw state in horizon
+  prev_unwrapped_yaw = unwrapped_yaw_ref[N_ - 1];
+
+  quad_utils::vectorToEigen(unwrapped_yaw_ref,
+                            eig_unwrapped_yaw_ref);  // Convert to eigen
+
+  // Insert unwrapped yaw into ref_body_plan_
+  ref_body_plan_.col(5) = eig_unwrapped_yaw_ref;
+
+  // Position filter for yaw ref = 0 | TODO: DELETE LATER
+  double world_pos_x = robot_state_msg_->body.pose.position.x;
+  double world_pos_y = robot_state_msg_->body.pose.position.y;
+  if (world_pos_x >= -1.5 && world_pos_x <= 1 && world_pos_y >= -2 &&
+      world_pos_y <= 0) {
+    ref_body_plan_.col(5).setZero();
+  }
+
+  // Update current state with unwrapped yaw
+  float diff_curr_state = current_state_(5) - prev_unwrapped_yaw;
+  float quotient_curr_state = round(diff_curr_state / (2 * M_PI));
+
+  if (diff_curr_state > M_PI) {
+    current_state_(5) = current_state_(5) - quotient_curr_state * 2 * M_PI;
+  } else {
+    current_state_(5) = current_state_(5) + quotient_curr_state * 2 * M_PI;
   }
 
   // Update the body plan to use for foot planning

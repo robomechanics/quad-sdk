@@ -34,6 +34,12 @@ class LocalPlanner {
    */
   void spin();
 
+  /// Previous reference state in MPC (for unwrapping)
+  double prev_unwrapped_yaw;
+
+  /// Boolean of first reference plan
+  bool first_ref_plan;
+
  private:
   FRIEND_TEST(LocalPlannerTest, noInputCase);
 

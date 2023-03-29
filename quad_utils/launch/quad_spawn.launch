@@ -1,6 +1,6 @@
 <launch>
   <arg name="controller"    default="inverse_dynamics"/>
-  <arg name="init_pose"     default="-x 0.0 -y 0.0 -z 0.5"/>
+  <arg name="init_pose"     default="-x 0.0 -y 0.0 -z 0.5 -Y 0.0"/>
   <arg name="namespace"     default="robot_1"/>
   <arg name="robot_type"    default="spirit"/>
 
