@@ -108,7 +108,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
   current_plan_index_ = 0;
 
   // Initialized reference plan for yaw
-  first_ref_plan = false;
+  first_ref_plan = true;
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
