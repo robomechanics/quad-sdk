@@ -1,0 +1,1019 @@
+<sdf version='1.7'>
+  <model name='cyberdog_description'>
+    <link name='body'>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>7.18</mass>
+        <inertia>
+          <ixx>0.032051</ixx>
+          <ixy>-0.00023217</ixy>
+          <ixz>0.002728</ixz>
+          <iyy>0.13707</iyy>
+          <iyz>5.6623e-05</iyz>
+          <izz>0.14946</izz>
+        </inertia>
+      </inertial>
+      <collision name='body_fixed_joint_lump__trunk_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/body.STL</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='body_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Green</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <visual name='body_fixed_joint_lump__trunk_visual_1'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/body.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <gravity>1</gravity>
+      <gravity>1</gravity>
+      <sensor name='imu_sensor' type='imu'>
+        <always_on>1</always_on>
+        <update_rate>1000</update_rate>
+        <visualize>1</visualize>
+        <topic>__default_topic__</topic>
+        <plugin name='imu_plugin' filename='libgazebo_ros_imu_sensor.so'>
+          <topicName>trunk_imu</topicName>
+          <bodyName>imu_link</bodyName>
+          <updateRateHZ>1000.0</updateRateHZ>
+          <gaussianNoise>0.0</gaussianNoise>
+          <xyzOffset>0 0 0</xyzOffset>
+          <rpyOffset>0 0 0</rpyOffset>
+          <frameName>imu_link</frameName>
+        </plugin>
+        <pose>0 0 0 0 -0 0</pose>
+      </sensor>
+    </link>
+    <joint name='10' type='revolute'>
+      <pose relative_to='body'>0.23536 -0.05 0 0 -0 0</pose>
+      <parent>body</parent>
+      <child>hip2</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.75</lower>
+          <upper>0.75</upper>
+          <effort>17</effort>
+          <velocity>12</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.01</damping>
+          <friction>0.2</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='hip2'>
+      <pose relative_to='10'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 -0.053575 0 0 -0 0</pose>
+        <mass>0.509</mass>
+        <inertia>
+          <ixx>0.00038097</ixx>
+          <ixy>1.2523e-05</ixy>
+          <ixz>-1.1653e-05</ixz>
+          <iyy>0.00069383</iyy>
+          <iyz>5.071e-06</iyz>
+          <izz>0.00047336</izz>
+        </inertia>
+      </inertial>
+      <collision name='hip2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_abad_fr.STL</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='hip2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_abad_fr.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+    </link>
+    <joint name='4' type='revolute'>
+      <pose relative_to='hip2'>0 -0.10715 0 0 -0 0</pose>
+      <parent>hip2</parent>
+      <child>upper2</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1.257</lower>
+          <upper>4.363</upper>
+          <effort>24</effort>
+          <velocity>12</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.01</damping>
+          <friction>0.2</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='upper2'>
+      <pose relative_to='4'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 -0.1 0 -0 0</pose>
+        <mass>0.664</mass>
+        <inertia>
+          <ixx>0.0033376</ixx>
+          <ixy>-7.1504e-07</ixy>
+          <ixz>-0.00019282</ixz>
+          <iyy>0.0026385</iyy>
+          <iyz>-9.3033e-06</iyz>
+          <izz>0.0013093</izz>
+        </inertia>
+      </inertial>
+      <collision name='upper2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_hip_fr.STL</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='upper2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_hip_fr.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='5' type='revolute'>
+      <pose relative_to='upper2'>0 0 -0.2 0 -0 0</pose>
+      <parent>upper2</parent>
+      <child>lower2</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-2.478</lower>
+          <upper>-0.506</upper>
+          <effort>24</effort>
+          <velocity>12</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.01</damping>
+          <friction>0.2</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='lower2'>
+      <pose relative_to='5'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 -0.11439 0 -0 0</pose>
+        <mass>0.114</mass>
+        <inertia>
+          <ixx>0.0014553</ixx>
+          <ixy>-3.2376e-08</ixy>
+          <ixz>8.3885e-05</ixz>
+          <iyy>0.0021522</iyy>
+          <iyz>5.1259e-07</iyz>
+          <izz>0.00070545</izz>
+        </inertia>
+      </inertial>
+      <collision name='lower2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_knee_fr.STL</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='lower2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_knee_fr.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='11' type='revolute'>
+      <pose relative_to='body'>-0.23536 -0.05 0 0 -0 0</pose>
+      <parent>body</parent>
+      <child>hip3</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.75</lower>
+          <upper>0.75</upper>
+          <effort>17</effort>
+          <velocity>12</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.01</damping>
+          <friction>0.2</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='hip3'>
+      <pose relative_to='11'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 -0.053575 0 0 -0 0</pose>
+        <mass>0.509</mass>
+        <inertia>
+          <ixx>0.00038097</ixx>
+          <ixy>1.2523e-05</ixy>
+          <ixz>-1.1653e-05</ixz>
+          <iyy>0.00069383</iyy>
+          <iyz>5.071e-06</iyz>
+          <izz>0.00047336</izz>
+        </inertia>
+      </inertial>
+      <collision name='hip3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_abad_br.STL</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='hip3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_abad_br.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+    </link>
+    <joint name='6' type='revolute'>
+      <pose relative_to='hip3'>0 -0.10715 0 0 -0 0</pose>
+      <parent>hip3</parent>
+      <child>upper3</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-2.01</lower>
+          <upper>3.49</upper>
+          <effort>24</effort>
+          <velocity>12</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.01</damping>
+          <friction>0.2</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='upper3'>
+      <pose relative_to='6'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 -0.1 0 -0 0</pose>
+        <mass>0.664</mass>
+        <inertia>
+          <ixx>0.0033376</ixx>
+          <ixy>-7.15038e-07</ixy>
+          <ixz>-0.00019282</ixz>
+          <iyy>0.0026385</iyy>
+          <iyz>-9.3033e-06</iyz>
+          <izz>0.0013093</izz>
+        </inertia>
+      </inertial>
+      <collision name='upper3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_hip_br.STL</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='upper3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_hip_br.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='7' type='revolute'>
+      <pose relative_to='upper3'>0 0 -0.2 0 -0 0</pose>
+      <parent>upper3</parent>
+      <child>lower3</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-2.478</lower>
+          <upper>-0.506</upper>
+          <effort>24</effort>
+          <velocity>12</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.01</damping>
+          <friction>0.2</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='lower3'>
+      <pose relative_to='7'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 -0.11439 0 -0 0</pose>
+        <mass>0.114</mass>
+        <inertia>
+          <ixx>0.0014553</ixx>
+          <ixy>-3.2376e-08</ixy>
+          <ixz>8.3885e-05</ixz>
+          <iyy>0.0021522</iyy>
+          <iyz>5.1259e-07</iyz>
+          <izz>0.00070545</izz>
+        </inertia>
+      </inertial>
+      <collision name='lower3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_knee_br.STL</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='lower3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_knee_br.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='8' type='revolute'>
+      <pose relative_to='body'>0.23536 0.05 0 0 -0 0</pose>
+      <parent>body</parent>
+      <child>hip0</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.75</lower>
+          <upper>0.75</upper>
+          <effort>17</effort>
+          <velocity>12</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.01</damping>
+          <friction>0.2</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='hip0'>
+      <pose relative_to='8'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0.053575 0 0 -0 0</pose>
+        <mass>0.509</mass>
+        <inertia>
+          <ixx>0.00038097</ixx>
+          <ixy>1.2523e-05</ixy>
+          <ixz>-1.1653e-05</ixz>
+          <iyy>0.00069383</iyy>
+          <iyz>5.071e-06</iyz>
+          <izz>0.00047336</izz>
+        </inertia>
+      </inertial>
+      <collision name='hip0_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_abad_fl.STL</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='hip0_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_abad_fl.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+    </link>
+    <joint name='0' type='revolute'>
+      <pose relative_to='hip0'>0 0.10715 0 0 -0 0</pose>
+      <parent>hip0</parent>
+      <child>upper0</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1.257</lower>
+          <upper>4.363</upper>
+          <effort>24</effort>
+          <velocity>12</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.01</damping>
+          <friction>0.2</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='upper0'>
+      <pose relative_to='0'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 -0.1 0 -0 0</pose>
+        <mass>0.664</mass>
+        <inertia>
+          <ixx>0.0033376</ixx>
+          <ixy>-7.15038e-07</ixy>
+          <ixz>-0.00019282</ixz>
+          <iyy>0.0026385</iyy>
+          <iyz>-9.3033e-06</iyz>
+          <izz>0.0013093</izz>
+        </inertia>
+      </inertial>
+      <collision name='upper0_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_hip_fl.STL</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='upper0_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_hip_fl.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='1' type='revolute'>
+      <pose relative_to='upper0'>0 0 -0.2 0 -0 0</pose>
+      <parent>upper0</parent>
+      <child>lower0</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-2.478</lower>
+          <upper>-0.506</upper>
+          <effort>24</effort>
+          <velocity>12</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.01</damping>
+          <friction>0.2</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='lower0'>
+      <pose relative_to='1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 -0.11439 0 -0 0</pose>
+        <mass>0.114</mass>
+        <inertia>
+          <ixx>0.0014553</ixx>
+          <ixy>-3.2376e-08</ixy>
+          <ixz>8.3885e-05</ixz>
+          <iyy>0.0021522</iyy>
+          <iyz>5.1259e-07</iyz>
+          <izz>0.00070545</izz>
+        </inertia>
+      </inertial>
+      <collision name='lower0_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_knee_fl.STL</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='lower0_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_knee_fl.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='9' type='revolute'>
+      <pose relative_to='body'>-0.23536 0.05 0 0 -0 0</pose>
+      <parent>body</parent>
+      <child>hip1</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.75</lower>
+          <upper>0.75</upper>
+          <effort>17</effort>
+          <velocity>12</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.01</damping>
+          <friction>0.2</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='hip1'>
+      <pose relative_to='9'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0.053575 0 0 -0 0</pose>
+        <mass>0.509</mass>
+        <inertia>
+          <ixx>0.00038097</ixx>
+          <ixy>1.2523e-05</ixy>
+          <ixz>-1.1653e-05</ixz>
+          <iyy>0.00069383</iyy>
+          <iyz>5.071e-06</iyz>
+          <izz>0.00047336</izz>
+        </inertia>
+      </inertial>
+      <collision name='hip1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_abad_bl.STL</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='hip1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_abad_bl.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+    </link>
+    <joint name='2' type='revolute'>
+      <pose relative_to='hip1'>0 0.10715 0 0 -0 0</pose>
+      <parent>hip1</parent>
+      <child>upper1</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-2.01</lower>
+          <upper>3.49</upper>
+          <effort>24</effort>
+          <velocity>12</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.01</damping>
+          <friction>0.2</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='upper1'>
+      <pose relative_to='2'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 -0.1 0 -0 0</pose>
+        <mass>0.664</mass>
+        <inertia>
+          <ixx>0.0033376</ixx>
+          <ixy>-7.1504e-07</ixy>
+          <ixz>-0.00019282</ixz>
+          <iyy>0.0026385</iyy>
+          <iyz>-9.3033e-06</iyz>
+          <izz>0.0013093</izz>
+        </inertia>
+      </inertial>
+      <collision name='upper1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_hip_bl.STL</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='upper1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_hip_bl.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='3' type='revolute'>
+      <pose relative_to='upper1'>0 0 -0.2 0 -0 0</pose>
+      <parent>upper1</parent>
+      <child>lower1</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-2.478</lower>
+          <upper>-0.506</upper>
+          <effort>24</effort>
+          <velocity>12</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.01</damping>
+          <friction>0.2</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='lower1'>
+      <pose relative_to='3'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 -0.11439 0 -0 0</pose>
+        <mass>0.114</mass>
+        <inertia>
+          <ixx>0.0014553</ixx>
+          <ixy>-3.2376e-08</ixy>
+          <ixz>8.3885e-05</ixz>
+          <iyy>0.0021522</iyy>
+          <iyz>5.1259e-07</iyz>
+          <izz>0.00070545</izz>
+        </inertia>
+      </inertial>
+      <collision name='lower1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_knee_bl.STL</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='lower1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyberdog_description/meshes/link_knee_bl.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='jtoe1' type='fixed'>
+      <pose relative_to='lower1'>0 0 -0.217 0 -0 0</pose>
+      <parent>lower1</parent>
+      <child>toe1</child>
+      <axis>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+      </axis>
+      <physics>
+        <ode>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </limit>
+        </ode>
+      </physics>
+    </joint>
+    <link name='toe1'>
+      <pose relative_to='jtoe1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.06</mass>
+        <inertia>
+          <ixx>0</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0</iyy>
+          <iyz>0</iyz>
+          <izz>0</izz>
+        </inertia>
+      </inertial>
+      <collision name='toe1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.6</mu>
+              <mu2>0.6</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='toe1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <sensor name='toe1_contact' type='contact'>
+        <plugin name='toe1_plugin' filename='libgazebo_ros_bumper.so'>
+          <alwaysOn>1</alwaysOn>
+          <updateRate>500</updateRate>
+          <bumperTopicName>gazebo/toe1_contact_state</bumperTopicName>
+          <frameName>world</frameName>
+        </plugin>
+        <contact>
+          <collision>toe1_collision</collision>
+          <topic>__default_topic__</topic>
+        </contact>
+        <update_rate>500</update_rate>
+      </sensor>
+      <self_collide>1</self_collide>
+    </link>
+    <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
+      <robotNamespace>/cyberdog_gazebo</robotNamespace>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+    </plugin>
+    <static>0</static>
+    <plugin name='gazebo_ros_force' filename='libgazebo_ros_force.so'>
+      <topicName>/apply_force/trunk</topicName>
+      <bodyName>body</bodyName>
+      <xyzOffset>0 0 0</xyzOffset>
+      <rpyOffset>0 -0 0</rpyOffset>
+      <ignition::corrected_offsets>1</ignition::corrected_offsets>
+    </plugin>
+  </model>
+</sdf>
