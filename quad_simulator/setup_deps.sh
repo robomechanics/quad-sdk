@@ -1,4 +1,4 @@
-GAZEBO_MODEL_PATH_UPDATE="export GAZEBO_MODEL_PATH=${GAZEBO_MODEL_PATH}:$(pwd)/spirit_description:$(pwd)/other/sensor_description:$(pwd)/other/objects_description:$(pwd)/gazebo_scripts/worlds"
+GAZEBO_MODEL_PATH_UPDATE="export GAZEBO_MODEL_PATH=${GAZEBO_MODEL_PATH}:$(pwd)/spirit_description:$(pwd)/other/sensor_description:$(pwd)/other/objects_description:$(pwd)/gazebo_scripts/worlds:$(pwd)/a1_description:$(pwd)/cyberdog_description"
 
 if grep "$GAZEBO_MODEL_PATH_UPDATE" ~/.bashrc > /dev/null
 then
