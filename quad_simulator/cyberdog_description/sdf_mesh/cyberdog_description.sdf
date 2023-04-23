@@ -1013,7 +1013,6 @@
       <bodyName>body</bodyName>
       <xyzOffset>0 0 0</xyzOffset>
       <rpyOffset>0 -0 0</rpyOffset>
-      <ignition::corrected_offsets>1</ignition::corrected_offsets>
     </plugin>
   </model>
 </sdf>
