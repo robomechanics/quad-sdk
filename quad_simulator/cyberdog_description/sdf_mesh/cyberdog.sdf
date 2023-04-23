@@ -1007,6 +1007,9 @@
       <robotNamespace>/cyberdog_gazebo</robotNamespace>
       <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
     </plugin>
+    <plugin name='ground_truth_estimator' filename='libground_truth_estimator.so'>
+      <updateRateHZ>500.0</updateRateHZ>
+    </plugin>
     <static>0</static>
     <plugin name='gazebo_ros_force' filename='libgazebo_ros_force.so'>
       <topicName>/apply_force/trunk</topicName>

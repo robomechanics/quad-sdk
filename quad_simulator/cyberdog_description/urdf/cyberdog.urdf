@@ -36,6 +36,9 @@
       <robotNamespace>/cyberdog_gazebo</robotNamespace>
       <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
     </plugin>
+    <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
+      <updateRateHZ>500.0</updateRateHZ>
+    </plugin>
   </gazebo>
   <!-- Show the trajectory of trunk center. -->
   <!-- <gazebo>
@@ -346,7 +349,7 @@
       </geometry>
     </visual>
   </link>
-  <joint name="floating_body" type="fixed">
+  <joint name="floating_base" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <parent link="body"/>
     <child link="trunk"/>
