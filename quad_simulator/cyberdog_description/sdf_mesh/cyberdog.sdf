@@ -287,6 +287,95 @@
       </visual>
       <self_collide>1</self_collide>
     </link>
+    <joint name='jtoe2' type='fixed'>
+      <pose relative_to='lower2'>0 0 -0.217 0 -0 0</pose>
+      <parent>lower2</parent>
+      <child>toe2</child>
+      <axis>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+      </axis>
+      <physics>
+        <ode>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </limit>
+        </ode>
+      </physics>
+    </joint>
+    <link name='toe2'>
+      <pose relative_to='jtoe2'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.06</mass>
+        <inertia>
+          <ixx>0</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0</iyy>
+          <iyz>0</iyz>
+          <izz>0</izz>
+        </inertia>
+      </inertial>
+      <collision name='toe2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.6</mu>
+              <mu2>0.6</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='toe2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <sensor name='toe2_contact' type='contact'>
+        <plugin name='toe2_plugin' filename='libgazebo_ros_bumper.so'>
+          <alwaysOn>1</alwaysOn>
+          <updateRate>500</updateRate>
+          <bumperTopicName>gazebo/toe2_contact_state</bumperTopicName>
+          <frameName>world</frameName>
+        </plugin>
+        <contact>
+          <collision>toe2_collision</collision>
+          <topic>__default_topic__</topic>
+        </contact>
+        <update_rate>500</update_rate>
+      </sensor>
+      <self_collide>1</self_collide>
+    </link>
     <joint name='11' type='revolute'>
       <pose relative_to='body'>-0.23536 -0.05 0 0 -0 0</pose>
       <parent>body</parent>
@@ -496,6 +585,95 @@
       </visual>
       <self_collide>1</self_collide>
     </link>
+    <joint name='jtoe3' type='fixed'>
+      <pose relative_to='lower3'>0 0 -0.217 0 -0 0</pose>
+      <parent>lower3</parent>
+      <child>toe3</child>
+      <axis>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+      </axis>
+      <physics>
+        <ode>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </limit>
+        </ode>
+      </physics>
+    </joint>
+    <link name='toe3'>
+      <pose relative_to='jtoe3'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.06</mass>
+        <inertia>
+          <ixx>0</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0</iyy>
+          <iyz>0</iyz>
+          <izz>0</izz>
+        </inertia>
+      </inertial>
+      <collision name='toe3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.6</mu>
+              <mu2>0.6</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='toe3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <sensor name='toe3_contact' type='contact'>
+        <plugin name='toe3_plugin' filename='libgazebo_ros_bumper.so'>
+          <alwaysOn>1</alwaysOn>
+          <updateRate>500</updateRate>
+          <bumperTopicName>gazebo/toe3_contact_state</bumperTopicName>
+          <frameName>world</frameName>
+        </plugin>
+        <contact>
+          <collision>toe3_collision</collision>
+          <topic>__default_topic__</topic>
+        </contact>
+        <update_rate>500</update_rate>
+      </sensor>
+      <self_collide>1</self_collide>
+    </link>
     <joint name='8' type='revolute'>
       <pose relative_to='body'>0.23536 0.05 0 0 -0 0</pose>
       <parent>body</parent>
@@ -703,6 +881,95 @@
           </mesh>
         </geometry>
       </visual>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='jtoe0' type='fixed'>
+      <pose relative_to='lower0'>0 0 -0.217 0 -0 0</pose>
+      <parent>lower0</parent>
+      <child>toe0</child>
+      <axis>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+      </axis>
+      <physics>
+        <ode>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </limit>
+        </ode>
+      </physics>
+    </joint>
+    <link name='toe0'>
+      <pose relative_to='jtoe0'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.06</mass>
+        <inertia>
+          <ixx>0</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0</iyy>
+          <iyz>0</iyz>
+          <izz>0</izz>
+        </inertia>
+      </inertial>
+      <collision name='toe0_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.6</mu>
+              <mu2>0.6</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='toe0_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <sensor name='toe0_contact' type='contact'>
+        <plugin name='toe0_plugin' filename='libgazebo_ros_bumper.so'>
+          <alwaysOn>1</alwaysOn>
+          <updateRate>500</updateRate>
+          <bumperTopicName>gazebo/toe0_contact_state</bumperTopicName>
+          <frameName>world</frameName>
+        </plugin>
+        <contact>
+          <collision>toe0_collision</collision>
+          <topic>__default_topic__</topic>
+        </contact>
+        <update_rate>500</update_rate>
+      </sensor>
       <self_collide>1</self_collide>
     </link>
     <joint name='9' type='revolute'>
@@ -1004,7 +1271,6 @@
       <self_collide>1</self_collide>
     </link>
     <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
-      <robotNamespace>/cyberdog_gazebo</robotNamespace>
       <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
     </plugin>
     <plugin name='ground_truth_estimator' filename='libground_truth_estimator.so'>

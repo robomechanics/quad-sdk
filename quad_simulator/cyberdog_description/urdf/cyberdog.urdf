@@ -33,7 +33,6 @@
   <!-- ros_control plugin -->
   <gazebo>
     <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
-      <robotNamespace>/cyberdog_gazebo</robotNamespace>
       <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
     </plugin>
     <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
@@ -591,7 +590,7 @@
       </geometry>
     </collision>
     <inertial>
-      <mass value="0.00"/>
+      <mass value="0.06"/>
       <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
     </inertial>
   </link>
@@ -1015,7 +1014,7 @@
       </geometry>
     </collision>
     <inertial>
-      <mass value="0.00"/>
+      <mass value="0.06"/>
       <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
     </inertial>
   </link>
@@ -1227,7 +1226,7 @@
       </geometry>
     </collision>
     <inertial>
-      <mass value="0.00"/>
+      <mass value="0.06"/>
       <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
     </inertial>
   </link>
