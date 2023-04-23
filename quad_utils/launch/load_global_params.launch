@@ -1,6 +1,8 @@
 <launch>
     <arg name="robot_type" default="spirit"/>
     <arg name="load_robot_params" default="false"/>
+    <arg name="dollar" value="$"/>
+    <arg name="robot_path" value="$(arg dollar)(find $(arg robot_type)_description)"/>
 
     <rosparam command="load" file="$(find global_body_planner)/global_body_planner.yaml" />
     <rosparam command="load" file="$(find local_planner)/local_planner.yaml" />
@@ -14,15 +16,8 @@
     <rosparam command="load" file="$(find quad_utils)/config/trajectory_publisher.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/topics_global.yaml" />
 
-    <group if="$(eval arg('robot_type') == 'spirit')">
-        <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
-        <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
-    </group>
-
-    <group if="$(eval arg('robot_type') == 'a1')">
-        <param name="robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1.sdf" />
-        <param name="robot_description" command="cat $(find a1_description)/urdf/a1.urdf" />
-    </group>
+    <param name="robot_description_sdf" textfile="$(arg robot_path)/sdf_mesh/$(arg robot_type).sdf" />
+    <param name="robot_description" command="cat $(arg robot_path)/urdf/$(arg robot_type).urdf" />
 
     <group if="$(arg load_robot_params)">
         <include file="$(find quad_utils)/launch/load_robot_params.launch"/>
