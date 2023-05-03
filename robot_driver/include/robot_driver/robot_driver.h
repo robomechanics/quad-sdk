@@ -195,6 +195,9 @@ class RobotDriver {
   /// ROS publisher for joint data
   ros::Publisher joint_state_pub_;
 
+  /// ROS publisher for joint data from hardware (FOR TESTING PURPOSES)
+  ros::Publisher joint_state_pub_test_;
+
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
 
@@ -330,6 +333,12 @@ class RobotDriver {
   /// Define sitting joint angles
   std::vector<double> sit_joint_angles_;
 
+  /// Define joint limits (min)
+  std::vector<double> pos_limit_min;
+
+  /// Define joint limits (max)
+  std::vector<double> pos_limit_max;
+
   /// QuadKD class
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
 
@@ -350,6 +359,9 @@ class RobotDriver {
 
   /// Most recent joint data
   sensor_msgs::JointState last_joint_state_msg_;
+
+  /// Dummy motor feedback message
+  sensor_msgs::JointState last_joint_state_msg_test_;
 
   /// Best estimate of velocity
   Eigen::Vector3d vel_estimate_;
