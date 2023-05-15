@@ -58,6 +58,25 @@ Legged Robots, May 2022. ([paper])
 		}
 
 
+## Install libs specific to ylo2 robot :
+
+###Mraa lib, to give access to security button via up xtreme i7 gui board :
+
+ sudo add-apt-repository ppa:up-division/mraa
+ sudo apt-get update
+ sudo apt-get install mraa-tools mraa-examples libmraa2 libmraa-dev libupm-dev libupm2 upm-examples
+ sudo apt-get install python3-mraa libmraa-java
+ 
+### PcanBasic lib for Peak can M2 board, to control moteus motors :
+
+ sudo apt-get install gcc
+ Download: https://www.peak-system.com/quick/BasicLinux
+ cd PCAN-Basic_Linux-4.3.4/libpcanbasic/pcanbasic
+ make clean
+ make
+ sudo make install
+
+### Quad sdk package
 
 ## Installation
 
