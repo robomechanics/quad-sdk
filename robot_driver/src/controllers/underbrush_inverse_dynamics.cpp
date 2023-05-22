@@ -65,9 +65,6 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
     double t_now = (ros::Time::now() - last_local_plan_msg_->state_timestamp)
                        .toSec();  // Use time of state - RECOMMENDED
     double t_now2 = ros::Time::now().toSec();
-    // double t_now = (ros::Time::now() - last_local_plan_time_).toSec(); // Use
-    // time of plan receipt double t_now = (ros::Time::now() -
-    // t_first_state).toSec(); // Use time of first state in plan
 
     if ((t_now <
          (last_local_plan_msg_->states.front().header.stamp - t_first_state)
@@ -100,9 +97,6 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
                                      last_local_plan_msg_->states[i + 1],
                                      t_interp, ref_state_msg_);
 
-        // quad_utils::interpGRFArray(last_local_plan_msg_->grfs[i],
-        //   last_local_plan_msg_->grfs[i+1], t_interp, grf_array_msg);
-
         // ref_state_msg = last_local_plan_msg_->states[i];
         grf_array_msg = last_local_plan_msg_->grfs[i];
 
@@ -128,7 +122,6 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
         for (int j = 0; j < num_feet_; j++) {
           if (!(all_TD & (1 << j)) &&
               i > 0) {  // touchdown not yet found for this foot
-            // ROS_INFO("%u, %u",i, j);
             if (ref_state_msg_.feet.feet.at(j).contact) {
               all_TD =
                   all_TD |
@@ -155,7 +148,6 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
         for (int j = 0; j < last_local_plan_msg_->states.size() - 1; j++) {
           if (t_now < last_local_plan_msg_->states[j].header.stamp.toSec() &&
               bool(last_local_plan_msg_->states[j].feet.feet.at(i).contact)) {
-            //*
             ref_underbrush_msg.feet.feet.at(i).position.x =
                 robot_state_msg.feet.feet.at(i).position.x;
             ref_underbrush_msg.feet.feet.at(i).position.y =
@@ -175,7 +167,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
                 robot_state_msg.feet.feet.at(i).position.z;
             foot_z_hip = robot_state_msg.feet.feet.at(i).position.z -
                          robot_state_msg.body.pose.position.z;
-            foot_horz_err = foot_x_err;//sqrt(foot_x_err * foot_x_err);
+            foot_horz_err = foot_x_err;
 
             // cartesian foot velocity commands
             foot_vx = 10.0 * foot_x_err;
@@ -206,21 +198,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
             ref_underbrush_msg.feet.feet.at(i).acceleration.x = 0;
             ref_underbrush_msg.feet.feet.at(i).acceleration.y = 0;
             ref_underbrush_msg.feet.feet.at(i).acceleration.z = 0;
-            //*/
-            /*
-            ref_underbrush_msg.feet.feet.at(i).position.x =
-                last_local_plan_msg_->states[j].feet.feet.at(i).position.x;
-            ref_underbrush_msg.feet.feet.at(i).position.y =
-                last_local_plan_msg_->states[j].feet.feet.at(i).position.y;
-            ref_underbrush_msg.feet.feet.at(i).position.z =
-                last_local_plan_msg_->states[j].feet.feet.at(i).position.z;
-            ref_underbrush_msg.feet.feet.at(i).velocity.x = 0;
-            ref_underbrush_msg.feet.feet.at(i).velocity.y = 0;
-            ref_underbrush_msg.feet.feet.at(i).velocity.z = 0;
-            ref_underbrush_msg.feet.feet.at(i).acceleration.x = 0;
-            ref_underbrush_msg.feet.feet.at(i).acceleration.y = 0;
-            ref_underbrush_msg.feet.feet.at(i).acceleration.z = 0;
-            */
+
             break;
           }
         }
@@ -256,20 +234,6 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
     }
 
     for (int i = 0; i < num_feet_; ++i) {
-      /*
-      int abad_idx = 3 * i + 0;
-      int hip_idx = 3 * i + 1;
-      int knee_idx = 3 * i + 2;
-      ref_underbrush_msg.joints.position.at(knee_idx) +=
-          -0.7 * std::abs(state_positions[hip_idx] -
-                          ref_underbrush_msg.joints.position.at(hip_idx)) -
-          0.5 * std::abs(state_positions[abad_idx] -
-                         ref_underbrush_msg.joints.position.at(abad_idx));
-      if (ref_underbrush_msg.joints.position.at(knee_idx) < 0.2) {
-        ref_underbrush_msg.joints.position.at(knee_idx) = 0.2;
-      }
-      */
-
       // Limit the joint velocities computed by inverse kinematics
       for (int j = 0; j < 3; ++j) {
         if (ref_underbrush_msg.joints.velocity.at(3 * i + j) > retract_vel_) {
@@ -280,7 +244,6 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
         }
       }
 
-      //*
       // Push the joints out of bad configurations
       if (robot_state_msg.joints.position.at(3 * i + 2) < 0.3) {
         ref_underbrush_msg.joints.velocity.at(3 * i + 2) +=
@@ -300,7 +263,6 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
           ref_underbrush_msg.joints.velocity.at(3 * i + j) = -retract_vel_;
         }
       }
-      //*/
     }
 
     ref_state_msg_ = ref_underbrush_msg;
@@ -364,6 +326,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
             (last_body_force_estimate_msg_->joint_torques.at(3 * i + 2) <
              tau_contact_end_) &&
             t_TD_.at(i) - t_now2 >= t_down_) {
+          // leg is not obstructed anymore: stop retracting and extend
           last_mode_.at(i) = 0;
           force_mode_.at(i) = 0;
           t_switch_.at(i) = t_now2;
@@ -374,10 +337,10 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
                     last_body_force_estimate_msg_->joint_torques.at(3 * i + 1) >
                             tau_contact_start_ &&
                         t_now2 - t_LO_.at(i) > t_up_)) {
+          // leg is now obstructed: retract it over the obstruction
           force_mode_.at(i) = 1;
           t_switch_.at(i) = t_now2;
         }
-        // force_mode_.at(i) = 0;
 
         if (force_mode_.at(i) &&
             t_TD_.at(i) - t_now2 < t_down_) {  // insufficient time left in
@@ -441,17 +404,6 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
           leg_command_array_msg.leg_commands.at(i)
               .motor_commands.at(1)
               .vel_setpoint = -retract_vel_;
-          /*
-          leg_command_array_msg.leg_commands.at(i)
-              .motor_commands.at(1)
-              .torque_ff =
-              robot_state_msg.joints.position.at(3 * i + 1) < -0.8
-                  ? -10 * retract_vel_ *
-                            (robot_state_msg.joints.position.at(3 * i + 1) -
-                             -0.8) -
-                        0 * robot_state_msg.joints.velocity.at(3 * i + 1)
-                  : 0;
-          */
 
           leg_command_array_msg.leg_commands.at(i)
               .motor_commands.at(2)
@@ -460,35 +412,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
           leg_command_array_msg.leg_commands.at(i)
               .motor_commands.at(2)
               .torque_ff = -tau_push_;
-          /*
-          leg_command_array_msg.leg_commands.at(i)
-              .motor_commands.at(2)
-              .torque_ff =
-              -tau_push_ +
-              (robot_state_msg.joints.position.at(3 * i + 2) < 0.1
-                   ? -2 * tau_push_ *
-                             (robot_state_msg.joints.position.at(3 * i + 2) -
-                              0.1) -
-                         0 * robot_state_msg.joints.velocity.at(3 * i + 2)
-                   : 0);
-          */
         }
-
-        /*
-        // Soft joint limits
-        if (robot_state_msg.joints.position.at(3 * i + 2) < 0.2) {
-          leg_command_array_msg.leg_commands.at(i)
-              .motor_commands.at(2)
-              .torque_ff +=
-              -5 * (robot_state_msg.joints.position.at(3 * i + 2) - 0.2);
-        }
-        if (robot_state_msg.joints.position.at(3 * i + 1) < -0.7) {
-          leg_command_array_msg.leg_commands.at(i)
-              .motor_commands.at(1)
-              .torque_ff +=
-              -5 * (robot_state_msg.joints.position.at(3 * i + 1) + 0.7);
-        }
-        */
       }
     }
 

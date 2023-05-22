@@ -124,8 +124,9 @@ void BodyForceEstimator::update() {
   for (int i = 0; i < 4; i++) {
     // Loop over four legs: FL, BL, FR, BR
 
-    //*
+    // Zero the torque estimates when the foot first lifts off the ground
     if (ref_state_msg.feet.feet[i].contact) {
+      // Record the time that the foot was last in stance
       t_up[i] = (ros::Time::now()).toSec();
     }
     if (!ref_state_msg.feet.feet[i].contact &&
@@ -135,8 +136,8 @@ void BodyForceEstimator::update() {
         p_hat[3 * i + j] = 0;
         r_mom[3 * i + j] = 0;
       }
+    
     } else {
-      //*/
       // Compute joint torque estimates with momentum observer
 
       for (int j = 0; j < 3; j++) {
@@ -148,6 +149,7 @@ void BodyForceEstimator::update() {
             MO_ktau[j] * joint_dirs[j] * last_state_msg_->joints.effort[ind];
 
         if (cancel_friction_) {
+          // Compensate for friction with estimated dry and viscous parameters
           tau[j] += (qd[j] > 0 ? 1 : -1) * MO_fric[j] + qd[j] * MO_damp[j];
         }
 

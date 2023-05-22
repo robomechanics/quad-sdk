@@ -29,7 +29,7 @@ def path_following():
     rate = 100
     ros_rate = rospy.Rate(rate) # Rate
     speed = 0.5 # Forward velocity
-    y_pt = 0.6 # Lateral shift
+    y_pt = 0.0 # Lateral shift
     yaw_pt = 0.0 #math.pi # Yaw angle
     y_gain = 1.0 # Lateral P gain in m/s per m (or Hz)
     yaw_gain = 3.0 # 1.0 # Yaw P gain in rad/s per rad (or Hz)
@@ -47,18 +47,21 @@ def path_following():
         q = last_state_msg_.body.pose.orientation
         euler = euler_from_quaternion([q.x, q.y, q.z, q.w])
 
+        # x velocity error integral
         speed_error = last_state_msg_.body.twist.linear.x - speed
         if speed_error*speed_sign < 0:
             speed_integral = speed_integral - speed_i/rate*speed_error
         else:
             speed_integral = speed_integral - speed_i/rate*speed_error*10
 
+        # Yaw angle
         yaw_error = euler[2] - yaw_pt
         if yaw_error > math.pi:
             yaw_error = yaw_error - 2*math.pi
         elif yaw_error < -math.pi:
             yaw_error = yaw_error + 2*math.pi
 
+        # Velocity commands: proportional feedback on y and yaw and integral in x
         cmd.linear.x = speed + speed_integral
         cmd.linear.y = -speed_sign*y_gain*(last_state_msg_.body.pose.position.y - y_pt)
         cmd.angular.z = -yaw_gain*yaw_error

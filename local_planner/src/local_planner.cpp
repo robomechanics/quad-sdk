@@ -238,7 +238,6 @@ void LocalPlanner::getReference() {
   int previous_plan_index = current_plan_index_;
   quad_utils::getPlanIndex(initial_timestamp_, dt_, current_plan_index_,
                            first_element_duration_);
-  // std::cout << "plan index" << current_plan_index_ << std::endl;
   plan_index_diff_ = current_plan_index_ - previous_plan_index;
 
   // Get the current body and foot positions into Eigen
