@@ -801,15 +801,15 @@
       <child>body2</child>
       <parent>body</parent>
       <axis>
-        <xyz>0 0 1</xyz>
+        <xyz>0 1 0</xyz>
         <limit>
-          <lower>-0</lower>
-          <upper>-0</upper>
+          <lower>-0.4</lower>
+          <upper>0.4</upper>
           <effort>35</effort>
           <velocity>1e+06</velocity>
         </limit>
         <dynamics>
-          <damping>0</damping>
+          <damping>5</damping>
           <friction>0</friction>
           <spring_reference>0</spring_reference>
           <spring_stiffness>0</spring_stiffness>

@@ -34,7 +34,7 @@ void QuadEstimatorGroundTruth::Load(physics::ModelPtr _parent,
                            ground_truth_state_topic);
   quad_utils::loadROSParam(nh, "topics/state/ground_truth_body_frame",
                            ground_truth_state_body_frame_topic);
-
+  
   ground_truth_state_pub_ =
       nh.advertise<quad_msgs::RobotState>(ground_truth_state_topic, 1);
   ground_truth_state_body_frame_pub_ = nh.advertise<quad_msgs::RobotState>(
@@ -123,7 +123,7 @@ void QuadEstimatorGroundTruth::OnUpdate() {
   state.joints.name = {"8",  "0", "1", "9",  "2", "3",
                        "10", "4", "5", "11", "6", "7"};
 
-  for (int i = 0; i < state.joints.name.size()+5; i++) {
+  for (int i = 0; i < state.joints.name.size()+6; i++) {
   // for (int i = 0; i < state.joints.name.size(); i++) {
     physics::JointPtr joint = joint_vec[i];
     std::string joint_name = joint->GetName();

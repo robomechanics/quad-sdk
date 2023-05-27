@@ -1,0 +1,71 @@
+<launch>
+  <arg name="robot_type" default="spirit" />
+  <arg name="multiple_robots" default="false" />
+  <arg name="gui" default="false" />
+  <arg name="paused" default="false" />
+  <arg name="controller" default="inverse_dynamics" />
+  <arg name="live_plot" default="false" />
+  <arg name="dash" default="false" />
+  <arg name="world" default="flat" />
+  <arg name="logging" default="false" />
+  <arg name="rviz_onoff" default="true"/>
+  <param name="/use_sim_time" value="true" />
+
+  <!-- Launch the Quad world with specific physics parameters -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="$(arg paused)" />
+    <arg name="world_name" value="$(find gazebo_scripts)/worlds/$(arg world)/$(arg world).world" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="physics" value="ode" />
+    <arg name="verbose" value="$(arg gui)" />
+  </include>
+
+  <include file="$(find quad_utils)/launch/mapping.launch">
+    <arg name="input_type" value="mesh" />
+    <arg name="world" value="$(arg world)" />
+    <arg name="robot_type" value="$(arg robot_type)" />
+  </include>
+
+  <group ns="robot_1">
+    <!-- Load the parameters and the sdf description -->
+    <include file="$(find quad_utils)/launch/load_robot_params.launch">
+      <arg name="robot_type" value="$(arg robot_type)" />
+    </include>
+    <rosparam file="$(find gazebo_scripts)/config/test_control.yaml" command="load" />
+    <include file="$(find quad_utils)/launch/quad_spawn.launch">
+      <arg name="robot_type" value="$(arg robot_type)" />
+      <arg name="controller" default="$(arg controller)" />
+      <arg name="init_pose" value="-x 0.0 -y 0.0 -z 0.8" />
+      <arg name="namespace" value="robot_1" />
+    </include>
+    <param name="robot_type" value="$(arg robot_type)" />
+  </group>
+
+  <group if="$(arg multiple_robots)">
+    <group ns="robot_2">
+      <!-- Load the parameters and the sdf description -->
+      <include file="$(find quad_utils)/launch/load_robot_params.launch">
+        <arg name="robot_type" value="$(arg robot_type)" />
+      </include>
+      <rosparam file="$(find gazebo_scripts)/config/quad_control.yaml" command="load" />
+      <include file="$(find quad_utils)/launch/quad_spawn.launch">
+        <arg name="robot_type" value="$(arg robot_type)" />
+        <arg name="controller" default="$(arg controller)" />
+        <arg name="init_pose" value="-x 0.0 -y 1.0 -z 0.5" />
+        <arg name="namespace" value="robot_2" />
+      </include>
+      <param name="robot_type" value="$(arg robot_type)" />
+    </group>
+
+    <!-- Users can add more robots here -->
+  </group>
+
+  <!-- Load the visualization tools -->
+  <include file="$(find quad_utils)/launch/quad_visualization.launch">
+    <arg name="robot_type" value="$(arg robot_type)" />
+    <arg name="live_plot" value="$(arg live_plot)" />
+    <arg name="dash" value="$(arg dash)" />
+    <arg name="rviz_onoff" value="$(arg rviz_onoff)" />
+  </include>
+
+</launch>

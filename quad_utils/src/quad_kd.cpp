@@ -11,19 +11,31 @@ QuadKD::QuadKD(std::string ns) { initModel("/" + ns + "/"); }
 void QuadKD::initModel(std::string ns) {
   std::string robot_description_string;
 
+ROS_INFO("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+
   if (!ros::param::get("robot_description", robot_description_string)) {
     std::cerr << "Error loading robot_description " << std::endl;
     abort();
   }
 
+ROS_INFO("BBBBBBBBBBBBBBBBBBBBBBBBB");
+
   model_ = new RigidBodyDynamics::Model();
+
+ROS_INFO("CCCCCCCCCCCCCC");
+
   if (!RigidBodyDynamics::Addons::URDFReadFromString(
           robot_description_string.c_str(), model_, true)) {
+    ROS_INFO("DDDDDDDDDDDDDDDDDDD");
     std::cerr << "Error loading model " << std::endl;
     abort();
   }
 
+  ROS_INFO("EEEEEEEEEEEEEEE");
+
   body_name_list_ = {"toe0", "toe1", "toe2", "toe3"};
+
+ 
 
   body_id_list_.resize(4);
   for (size_t i = 0; i < body_name_list_.size(); i++) {
@@ -47,6 +59,7 @@ void QuadKD::initModel(std::string ns) {
   std::vector<std::string> toe_name_list = {"toe0", "toe1", "toe2", "toe3"};
   RigidBodyDynamics::Math::SpatialTransform tform;
   for (size_t i = 0; i < 4; i++) {
+    ROS_INFO("FFFFFFFFFFFFFFFFFFFFFF");
     // From body COM to abad
     tform =
         model_->GetJointFrame(model_->GetBodyId(hip_name_list.at(i).c_str()));
