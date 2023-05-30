@@ -1,0 +1,10 @@
+spine_controller:
+  update_rate: 500
+  leg_phases: [0,0.5,0.5,0]
+  waypoint_ts: [0.2,0.2,0.2,0.2,0.2]
+  waypoint_angs: [0,0.2,0,-0.2,0]
+  interp_dt: 0.005
+  use_diff_for_velocity: true
+  set_angle: 0
+  open_kp: 10
+  open_kd: 0.1
