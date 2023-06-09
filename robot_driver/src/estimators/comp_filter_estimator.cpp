@@ -139,5 +139,6 @@ void CompFilterEstimator::mocapCallBackHelper(
     }
 
     low_pass_filter.init = true;
+    
   }
 }

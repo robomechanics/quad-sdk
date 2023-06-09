@@ -33,7 +33,15 @@ class LocalPlanner {
    * component
    */
   void spin();
+ // @AndrewZheng mods
+ 
+   /// Previous reference state in MPC (for unwrapping)
+  double prev_unwrapped_yaw;
 
+  /// Boolean of first reference plan
+  bool first_ref_plan;
+ 
+ // @End AndrewZheng mods
  private:
   FRIEND_TEST(LocalPlannerTest, noInputCase);
 

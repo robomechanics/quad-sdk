@@ -35,6 +35,7 @@ find_package(catkin REQUIRED COMPONENTS
   quad_msgs
   quad_utils
   eigen_conversions
+  ##local_planner
 )
 
 ## System dependencies are found with CMake's conventions
@@ -42,7 +43,7 @@ find_package(Eigen3 REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS}
-  CATKIN_DEPENDS roscpp std_msgs quad_msgs quad_utils eigen_conversions
+  CATKIN_DEPENDS roscpp std_msgs quad_msgs quad_utils eigen_conversions ##local_planner 
   DEPENDS EIGEN3
 )
 

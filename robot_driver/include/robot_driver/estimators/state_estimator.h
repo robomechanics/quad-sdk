@@ -10,6 +10,8 @@
 #include <sensor_msgs/JointState.h>
 #include <std_msgs/String.h>
 
+//#include <local_planner/local_planner.h>
+
 //! Implements an abstract class for state estimator.
 //! This class provides an interface for different types of estimators
 /*!

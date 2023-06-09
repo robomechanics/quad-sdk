@@ -37,16 +37,19 @@
   <build_depend>eigen</build_depend>
   <build_depend>quad_msgs</build_depend>
   <build_depend>quad_utils</build_depend>
+  <!--build_depend>local_planner</build_depend-->
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
   <build_export_depend>eigen</build_export_depend>
   <build_export_depend>quad_msgs</build_export_depend>
   <build_export_depend>quad_utils</build_export_depend>
+  <!-- build_export_depend>local_planner</build_export_depend-->
   <exec_depend>roscpp</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>eigen</exec_depend>
   <exec_depend>quad_msgs</exec_depend>
   <exec_depend>quad_utils</exec_depend>
+  <!-- exec_depend>local_planner</exec_depend-->
   <depend>eigen_conversions</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
