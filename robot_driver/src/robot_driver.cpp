@@ -375,7 +375,7 @@ void RobotDriver::publishState() {
     robot_state_pub_.publish(last_robot_state_msg_);
   }
   if (testing_hardware) {
-    ROS_INFO("Motor %i Position: %f", last_joint_state_msg_test_.name[1], last_joint_state_msg_test_.position[1]);
+    // ROS_INFO("Motor %i Position: %f", last_joint_state_msg_test_.name[1], last_joint_state_msg_test_.position[1]);
     joint_state_pub_test_.publish(last_joint_state_msg_test_);
   }
 }
@@ -628,7 +628,7 @@ void RobotDriver::spin() {
     ros::spinOnce();
 
     // Get the newest state information
-    // updateState();
+    updateState();
     // ROS_INFO("Getting Here 33");
 
     // Compute the leg command and publish if valid
@@ -639,7 +639,7 @@ void RobotDriver::spin() {
     // ROS_INFO("Getting Here 4");
 
     // // Publish state and heartbeat
-    // publishState();
+    publishState();
     publishHeartbeat();
 
     // Enforce update rate

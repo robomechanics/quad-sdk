@@ -17,12 +17,12 @@
     </group>
 
     <group if="$(eval arg('robot_type') == 'new_platform')">
-        <rosparam command="load" file="$(find quad_utils)/config/new_platform.yaml" />
+        <!-- <rosparam command="load" file="$(find quad_utils)/config/new_platform.yaml" />
         <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
-        <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
+        <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" /> -->
          
         <rosparam command="load" file="$(find quad_utils)/config/new_platform.yaml" />
-        <!-- <param name="robot_description_sdf" textfile="$(find new_platform_description)/sdf_mesh/new_platform.sdf" /> -->
-        <!-- <param name="robot_description" command="cat $(find new_platform_description)/urdf/new_platform.urdf" /> -->
+        <param name="robot_description_sdf" textfile="$(find new_platform_description)/sdf_mesh/new_platform.sdf" /> -->
+        <param name="robot_description" command="cat $(find new_platform_description)/urdf/new_platform.urdf" />
     </group>
 </launch>

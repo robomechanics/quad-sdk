@@ -244,6 +244,7 @@ namespace motor_driver
         int p_int = (CAN_reply_msg[1] << 8) | CAN_reply_msg[2];
         int v_int = (CAN_reply_msg[3] << 4) | (CAN_reply_msg[4] >> 4);
         int i_int = ((CAN_reply_msg[4] & 0xF) << 8) | CAN_reply_msg[5];
+        
         // convert unsigned ints to floats
         float p = uint_to_float(p_int, current_params_.P_MIN, current_params_.P_MAX, 16);
         float v = uint_to_float(v_int, current_params_.V_MIN, current_params_.V_MAX, 12);

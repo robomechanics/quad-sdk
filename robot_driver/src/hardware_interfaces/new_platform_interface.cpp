@@ -49,90 +49,93 @@ bool NewPlatformInterface::send(
     ) {
 
   int leg_command_heartbeat = 1;
-  ROS_INFO("Sending positions");
+  // ROS_INFO("Sending positions");
   std::map<int, motor_driver::motorCommand> commandMap_0; //Command map for font legs
   std::map<int, motor_driver::motorCommand> commandMap_1; //Command map for rear legs
 
   // // For FL, FR
   for (int i = 0; i < 4; ++i) {  // For each leg
     // std::cout << "leg = " << i << std::endl;
-    ROS_INFO("sending %d start",i);
+    // ROS_INFO("sending %d start",i);
     quad_msgs::LegCommand leg_command =
         last_leg_command_array_msg.leg_commands.at(i);
-    ROS_INFO("sending %d",i);
-    int f = 2;
+    // ROS_INFO("sending %d",i);
+    int idx_offset = 0;
     switch (i){
       case 0: //FL
-      case 1: //FR
+      case 2: //FR
         for (int j = 0; j < 3; ++j) {  // For each joint
           // std::cout << "joint = " << j << std::endl;
-          if (j == 0) {
-            f = j;
-          } else {
-            f = j;
+          if(i==0){
+            idx_offset = 0;  
+          }
+          if(i==2){
+            idx_offset = 3;  
           }
           // float pos = leg_command_heartbeat * leg_command.motor_commands.at(j).pos_setpoint;
           // float vel = leg_command_heartbeat * leg_command.motor_commands.at(j).vel_setpoint;
           // float tau = leg_command_heartbeat * leg_command.motor_commands.at(j).torque_ff;
           // float kp = leg_command_heartbeat * leg_command.motor_commands.at(j).kp;
           // float kd = leg_command_heartbeat * leg_command.motor_commands.at(j).kd;
-          float pos = leg_command_heartbeat * leg_command.motor_commands.at(f).pos_setpoint;
-          float vel = leg_command_heartbeat * leg_command.motor_commands.at(f).vel_setpoint;
-          float tau = leg_command_heartbeat * leg_command.motor_commands.at(f).torque_ff;
-          float kp = leg_command_heartbeat * leg_command.motor_commands.at(f).kp;
-          float kd = leg_command_heartbeat * leg_command.motor_commands.at(f).kd;
+
+          float pos = leg_command_heartbeat * motor_dirs_0[idx_offset+j] * leg_command.motor_commands.at(j).pos_setpoint;
+          float vel = leg_command_heartbeat * motor_dirs_0[idx_offset+j] *leg_command.motor_commands.at(j).vel_setpoint;
+          float tau = leg_command_heartbeat * motor_dirs_0[idx_offset+j] * leg_command.motor_commands.at(j).torque_ff;
+          float kp = leg_command_heartbeat * leg_command.motor_commands.at(j).kp;
+          float kd = leg_command_heartbeat * leg_command.motor_commands.at(j).kd;
 
           // if (leg_command.motor_commands.at(j).pos_setpoint > 0) {
           //   axis = j;
           //   sendPos = pos;
           // }
-          ROS_INFO("Pos_Set: %f   Indx: %i",pos,i*3 + j);
+          // ROS_INFO("Pos_Set: %f   Indx: %i",pos,idx_offset+j);
           // motor_driver::motorCommand commandStruct = {pos, vel, 0.2*kp, 0.2*kd, 0.5*tau};
-          motor_driver::motorCommand commandStruct = {pos, vel, 0.1*kp, 0.1*kd, 0.0};
+          motor_driver::motorCommand commandStruct = {pos, vel, 0.3*kp, 0.1*kd, 0.0};
           // motor_driver::motorCommand commandStruct = {pos, vel, 5.0, 1.0, tau};
           // motor_driver::motorCommand commandStruct = {pos, vel, kp, kd, tau};
           // motor_driver::motorCommand commandStruct = {0.0, 0.0, 5.0, 1.0, 0.0};
-          commandMap_1.insert(std::pair<int, motor_driver::motorCommand> (motor_ids_1[i*3 + j], commandStruct));
+          commandMap_0.insert(std::pair<int, motor_driver::motorCommand> (motor_ids_0[idx_offset+j], commandStruct));
         }
         break;
-      case 2: //BL
+      case 1: //BL
       case 3: //BR
         for (int j = 0; j < 3; ++j) {  // For each joint
           // std::cout << "joint = " << j << std::endl;
-          if (j == 0) {
-            f = j;
-          } else {
-            f = j;
+          if(i==1){
+            idx_offset = 0;  
+          }
+          if(i==3){
+            idx_offset = 3;  
           }
           // float pos = leg_command_heartbeat * leg_command.motor_commands.at(j).pos_setpoint;
           // float vel = leg_command_heartbeat * leg_command.motor_commands.at(j).vel_setpoint;
           // float tau = leg_command_heartbeat * leg_command.motor_commands.at(j).torque_ff;
           // float kp = leg_command_heartbeat * leg_command.motor_commands.at(j).kp;
           // float kd = leg_command_heartbeat * leg_command.motor_commands.at(j).kd;
-          float pos = leg_command_heartbeat * leg_command.motor_commands.at(f).pos_setpoint;
-          float vel = leg_command_heartbeat * leg_command.motor_commands.at(f).vel_setpoint;
-          float tau = leg_command_heartbeat * leg_command.motor_commands.at(f).torque_ff;
-          float kp = leg_command_heartbeat * leg_command.motor_commands.at(f).kp;
-          float kd = leg_command_heartbeat * leg_command.motor_commands.at(f).kd;
+          float pos = leg_command_heartbeat * motor_dirs_1[idx_offset+j] * leg_command.motor_commands.at(j).pos_setpoint;
+          float vel = leg_command_heartbeat * motor_dirs_1[idx_offset+j] * leg_command.motor_commands.at(j).vel_setpoint;
+          float tau = leg_command_heartbeat * motor_dirs_1[idx_offset+j] * leg_command.motor_commands.at(j).torque_ff;
+          float kp = leg_command_heartbeat * leg_command.motor_commands.at(j).kp;
+          float kd = leg_command_heartbeat * leg_command.motor_commands.at(j).kd;
 
           // if (leg_command.motor_commands.at(j).pos_setpoint > 0) {
           //   axis = j;
           //   sendPos = pos;
           // }
-          ROS_INFO("Pos_Set: %f   Indx: %i",pos,(i-2)*3 + j);
+          // ROS_INFO("Pos_Set: %f   Indx: %i",pos, idx_offset+j);
           // motor_driver::motorCommand commandStruct = {pos, vel, 0.2*kp, 0.2*kd, 0.5*tau};
-          motor_driver::motorCommand commandStruct = {pos, vel, 0.1*kp, 0.1*kd, 0.0};
+          motor_driver::motorCommand commandStruct = {pos, vel, 0.3*kp, 0.1*kd, 0.0};
           // motor_driver::motorCommand commandStruct = {pos, vel, kp, kd, tau};
           // motor_driver::motorCommand commandStruct = {pos, vel, 5.0, 1.0, tau};
           // motor_driver::motorCommand commandStruct = {0.0, 0.0, 5.0, 1.0, 0.0};
-          commandMap_0.insert(std::pair<int, motor_driver::motorCommand> (motor_ids_0[(i-2)*3 + j], commandStruct));
+          commandMap_1.insert(std::pair<int, motor_driver::motorCommand> (motor_ids_1[idx_offset+j], commandStruct));
         }
         break;
       default:
         break;
     }
   }
-  ROS_INFO("Command ready for sending");
+  // ROS_INFO("Command ready for sending");
 
   motorStates_0 = motor_controller0.sendRadCommand(commandMap_0);
   motorStates_1 = motor_controller1.sendRadCommand(commandMap_1);
@@ -151,23 +154,20 @@ bool NewPlatformInterface::recv(sensor_msgs::JointState& joint_state_msg,
   // float pos = motorStates[1].position;
   // ROS_INFO("%f", pos);
   
-  // Add CAN 2 data
+  // Cycle through both CAN busses
   for (int i = 0; i < joint_names_0_.size(); i++) {
     joint_state_msg.name[i] = joint_names_0_[i];
     joint_state_msg.position[i] = motorStates_0[motor_ids_0[i]].position;
     joint_state_msg.velocity[i] = motorStates_0[motor_ids_0[i]].velocity;
     joint_state_msg.effort[i] = motorStates_0[motor_ids_0[i]].torque;
+
+    joint_state_msg.name[i+joint_names_0_.size()] = joint_names_1_[i];
+    joint_state_msg.position[i+joint_names_0_.size()] = motorStates_1[motor_ids_1[i]].position;
+    joint_state_msg.velocity[i+joint_names_0_.size()] = motorStates_1[motor_ids_1[i]].velocity;
+    joint_state_msg.effort[i+joint_names_0_.size()] = motorStates_1[motor_ids_1[i]].torque;
   }
 
-  // Add CAN 1 data
-  for (int i = 0; i < joint_names_1_.size(); i++) {
-    joint_state_msg.name[2*i] = joint_names_1_[i];
-    joint_state_msg.position[2*i] = motorStates_1[motor_ids_1[i]].position;
-    joint_state_msg.velocity[2*i] = motorStates_1[motor_ids_1[i]].velocity;
-    joint_state_msg.effort[2*i] = motorStates_1[motor_ids_1[i]].torque;
-  }
-
-  ROS_INFO("Motor %s position: %f", joint_state_msg.name[1], joint_state_msg.position[1]);
+  // ROS_INFO("Motor %s position: %f", joint_state_msg.name[1], joint_state_msg.position[1]);
 
   return true;
 }
