@@ -1,0 +1,15 @@
+#
+# Definition of all trackable objects
+# Identifier corresponds to Trackable ID set in Tracking Tools
+#
+rigid_bodies:
+    '5':
+        pose: quad/pose
+        pose2d: quad/ground_pose
+        child_frame_id: body
+        parent_frame_id: map
+optitrack_config:
+        multicast_address: 224.0.0.1
+        command_port: 1510
+        data_port: 1511
+        version: [3,0,0,0]

@@ -1,0 +1,287 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<root>
+ <tabbed_widget name="Main Window" parent="main_window">
+  <Tab containers="1" tab_name="Body">
+   <Container>
+    <DockSplitter sizes="0.500564;0.499436" count="2" orientation="-">
+     <DockSplitter sizes="0.502635;0.497365" count="2" orientation="|">
+      <DockArea name="Linear Position">
+       <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
+        <range right="8.809000" left="3.809000" top="4.000000" bottom="-1.000000"/>
+        <limitY max="4" min="-1"/>
+        <curve name="/robot_1/state/ground_truth/body/pose/position/x" color="#a6192e"/>
+        <curve name="/robot_1/state/ground_truth/body/pose/position/y" color="#002e72"/>
+        <curve name="/robot_1/state/ground_truth/body/pose/position/z" color="#00843d"/>
+       </plot>
+      </DockArea>
+      <DockArea name="Angular Position">
+       <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
+        <range right="8.809000" left="3.809000" top="1.000000" bottom="-1.000000"/>
+        <limitY max="1" min="-1"/>
+        <curve name="/robot_1/state/ground_truth/body/pose/orientation/w" color="#f2a900"/>
+        <curve name="/robot_1/state/ground_truth/body/pose/orientation/x" color="#a6192e"/>
+        <curve name="/robot_1/state/ground_truth/body/pose/orientation/y" color="#002e72"/>
+        <curve name="/robot_1/state/ground_truth/body/pose/orientation/z" color="#00843d"/>
+       </plot>
+      </DockArea>
+     </DockSplitter>
+     <DockSplitter sizes="0.502635;0.497365" count="2" orientation="|">
+      <DockArea name="Linear Velocity">
+       <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
+        <range right="8.809000" left="3.809000" top="2.000000" bottom="-2.000000"/>
+        <limitY max="2" min="-2"/>
+        <curve name="/robot_1/state/ground_truth/body/twist/linear/x" color="#a6192e"/>
+        <curve name="/robot_1/state/ground_truth/body/twist/linear/y" color="#002e72"/>
+        <curve name="/robot_1/state/ground_truth/body/twist/linear/z" color="#00843d"/>
+       </plot>
+      </DockArea>
+      <DockArea name="Angular Velocity">
+       <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
+        <range right="8.809000" left="3.809000" top="2.000000" bottom="-2.000000"/>
+        <limitY max="2" min="-2"/>
+        <curve name="/robot_1/state/ground_truth/body/twist/angular/x" color="#a6192e"/>
+        <curve name="/robot_1/state/ground_truth/body/twist/angular/y" color="#002e72"/>
+        <curve name="/robot_1/state/ground_truth/body/twist/angular/z" color="#00843d"/>
+       </plot>
+      </DockArea>
+     </DockSplitter>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab containers="1" tab_name="Body Position XY">
+   <Container>
+    <DockSplitter sizes="0.5;0.5" count="2" orientation="-">
+     <DockArea name="Transverse Plane (m)">
+      <plot mode="XYPlot" flip_x="false" flip_y="false" style="Dots">
+       <range right="0.000004" left="0.000004" top="2.000000" bottom="-2.000000"/>
+       <limitY max="2" min="-2"/>
+       <curve curve_x="/robot_1/state/ground_truth/body/pose/position/x" curve_y="/robot_1/state/ground_truth/body/pose/position/y" name="/robot_1/state/ground_truth/body/pose/position/[x;y]" color="#00843d"/>
+      </plot>
+     </DockArea>
+     <DockArea name="Sagittal Plane (m)">
+      <plot mode="XYPlot" flip_x="false" flip_y="false" style="Lines">
+       <range right="0.000004" left="0.000004" top="1.000000" bottom="0.000000"/>
+       <limitY max="1" min="0"/>
+       <curve curve_x="/robot_1/state/ground_truth/body/pose/position/x" curve_y="/robot_1/state/ground_truth/body/pose/position/z" name="/robot_1/state/ground_truth/body/pose/position/[x;z]" color="#002e72"/>
+      </plot>
+     </DockArea>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab containers="1" tab_name="Feet">
+   <Container>
+    <DockSplitter sizes="1" count="1" orientation="-">
+     <DockSplitter sizes="0.5;0.5" count="2" orientation="|">
+      <DockSplitter sizes="0.5;0.5" count="2" orientation="-">
+       <DockArea name="Leg 0">
+        <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
+         <range right="0.665000" left="0.000000" top="2.000000" bottom="-0.500000"/>
+         <limitY max="2" min="-0.5"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.0/position/x" color="#a6192e"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.0/position/y" color="#002e72"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.0/position/z" color="#00843d"/>
+        </plot>
+       </DockArea>
+       <DockArea name="Leg 1">
+        <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
+         <range right="0.665000" left="0.000000" top="2.000000" bottom="-2.000000"/>
+         <limitY max="2" min="-2"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.0/velocity/x" color="#a6192e"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.0/velocity/y" color="#002e72"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.0/velocity/z" color="#00843d"/>
+        </plot>
+       </DockArea>
+      </DockSplitter>
+      <DockSplitter sizes="0.5;0.5" count="2" orientation="-">
+       <DockArea name="Leg 2">
+        <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
+         <range right="0.665000" left="0.000000" top="2.000000" bottom="-0.500000"/>
+         <limitY max="2" min="-0.5"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.2/position/x" color="#a6192e"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.2/position/y" color="#002e72"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.2/position/z" color="#00843d"/>
+        </plot>
+       </DockArea>
+       <DockArea name="Leg 3">
+        <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
+         <range right="0.665000" left="0.000000" top="2.000000" bottom="-2.000000"/>
+         <limitY max="2" min="-2"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.2/velocity/x" color="#a6192e"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.2/velocity/y" color="#002e72"/>
+         <curve name="/robot_1/state/ground_truth/feet/feet.2/velocity/z" color="#00843d"/>
+        </plot>
+       </DockArea>
+      </DockSplitter>
+     </DockSplitter>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab containers="1" tab_name="Joint Data Leg 0">
+   <Container>
+    <DockSplitter sizes="0.332957;0.334086;0.332957" count="3" orientation="-">
+     <DockArea name="Joint Position (rad)">
+      <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
+       <range right="7.143000" left="2.143000" top="3.140000" bottom="-1.570000"/>
+       <limitY max="3.14" min="-1.57"/>
+       <curve name="/robot_1/state/ground_truth/joints/position.0" color="#a6192e"/>
+       <curve name="/robot_1/state/ground_truth/joints/position.1" color="#002e72"/>
+       <curve name="/robot_1/state/ground_truth/joints/position.2" color="#00843d"/>
+      </plot>
+     </DockArea>
+     <DockArea name="Joint Velocity (rad/s)">
+      <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
+       <range right="7.143000" left="2.143000" top="40.000000" bottom="-40.000000"/>
+       <limitY max="40" min="-40"/>
+       <curve name="/robot_1/state/ground_truth/joints/velocity.0" color="#a6192e"/>
+       <curve name="/robot_1/state/ground_truth/joints/velocity.1" color="#002e72"/>
+       <curve name="/robot_1/state/ground_truth/joints/velocity.2" color="#00843d"/>
+      </plot>
+     </DockArea>
+     <DockArea name="Joint Torque (N/m)">
+      <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
+       <range right="7.142000" left="2.143000" top="32.000000" bottom="-32.000000"/>
+       <limitY max="32" min="-32"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.0/effort" color="#a6192e"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.1/effort" color="#002e72"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.2/effort" color="#00843d"/>
+      </plot>
+     </DockArea>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab containers="1" tab_name="Joint Commands Leg 0">
+   <Container>
+    <DockSplitter sizes="0.35;0.35;0.3" count="3" orientation="-">
+     <DockArea name="Feedback Torques (Nm)">
+      <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
+       <range right="0.666000" left="0.001000" top="10.000000" bottom="-10.000000"/>
+       <limitY max="10" min="-10"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.0/fb_component" color="#a6192e"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.1/fb_component" color="#002e72"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.2/fb_component" color="#00843d"/>
+      </plot>
+     </DockArea>
+     <DockArea name="Feedforward Torques (Nm)">
+      <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
+       <range right="0.666000" left="0.001000" top="10.000000" bottom="-10.000000"/>
+       <limitY max="10" min="-10"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.0/torque_ff" color="#a6192e"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.1/torque_ff" color="#002e72"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.2/torque_ff" color="#00843d"/>
+      </plot>
+     </DockArea>
+     <DockArea name="Feedback Ratio">
+      <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
+       <range right="0.666000" left="0.001000" top="1.000000" bottom="0.000000"/>
+       <limitY max="1" min="0"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.0/fb_ratio" color="#a6192e"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.1/fb_ratio" color="#002e72"/>
+       <curve name="/robot_1/control/joint_command/leg_commands.0/motor_commands.2/fb_ratio" color="#00843d"/>
+      </plot>
+     </DockArea>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab containers="1" tab_name="GRFs">
+   <Container>
+    <DockSplitter sizes="0.5;0.5" count="2" orientation="-">
+     <DockSplitter sizes="0.5;0.5" count="2" orientation="|">
+      <DockArea name="Leg 0">
+       <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
+        <range right="0.666000" left="0.001000" top="250.000000" bottom="-250.000000"/>
+        <limitY max="250" min="-250"/>
+        <curve name="/robot_1/control/grfs/vectors.0/x" color="#d5929c"/>
+        <curve name="/robot_1/control/grfs/vectors.0/y" color="#83a3d3"/>
+        <curve name="/robot_1/control/grfs/vectors.0/z" color="#83b89b"/>
+        <curve name="/robot_1/state/grfs/vectors.0/x" color="#a6192e"/>
+        <curve name="/robot_1/state/grfs/vectors.0/y" color="#002e72"/>
+        <curve name="/robot_1/state/grfs/vectors.0/z" color="#00843d"/>
+       </plot>
+      </DockArea>
+      <DockArea name="Leg 2">
+       <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
+        <range right="0.666000" left="0.001000" top="250.000000" bottom="-250.000000"/>
+        <limitY max="250" min="-250"/>
+        <curve name="/robot_1/control/grfs/vectors.2/x" color="#d5929c"/>
+        <curve name="/robot_1/control/grfs/vectors.2/y" color="#83a3d3"/>
+        <curve name="/robot_1/control/grfs/vectors.2/z" color="#83b89b"/>
+        <curve name="/robot_1/state/grfs/vectors.2/x" color="#a6192e"/>
+        <curve name="/robot_1/state/grfs/vectors.2/y" color="#002e72"/>
+        <curve name="/robot_1/state/grfs/vectors.2/z" color="#00843d"/>
+       </plot>
+      </DockArea>
+     </DockSplitter>
+     <DockSplitter sizes="0.5;0.5" count="2" orientation="|">
+      <DockArea name="Leg 1">
+       <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
+        <range right="0.666000" left="0.001000" top="250.000000" bottom="-250.000000"/>
+        <limitY max="250" min="-250"/>
+        <curve name="/robot_1/control/grfs/vectors.1/x" color="#d5929c"/>
+        <curve name="/robot_1/control/grfs/vectors.1/y" color="#83a3d3"/>
+        <curve name="/robot_1/control/grfs/vectors.1/z" color="#83b89b"/>
+        <curve name="/robot_1/state/grfs/vectors.1/x" color="#a6192e"/>
+        <curve name="/robot_1/state/grfs/vectors.1/y" color="#002e72"/>
+        <curve name="/robot_1/state/grfs/vectors.1/z" color="#00843d"/>
+       </plot>
+      </DockArea>
+      <DockArea name="Leg 3">
+       <plot mode="TimeSeries" flip_x="false" flip_y="false" style="Lines">
+        <range right="0.666000" left="0.001000" top="250.000000" bottom="-250.000000"/>
+        <limitY max="250" min="-250"/>
+        <curve name="/robot_1/control/grfs/vectors.3/x" color="#d5929c"/>
+        <curve name="/robot_1/control/grfs/vectors.3/y" color="#83a3d3"/>
+        <curve name="/robot_1/control/grfs/vectors.3/z" color="#83b89b"/>
+        <curve name="/robot_1/state/grfs/vectors.3/x" color="#a6192e"/>
+        <curve name="/robot_1/state/grfs/vectors.3/y" color="#002e72"/>
+        <curve name="/robot_1/state/grfs/vectors.3/z" color="#00843d"/>
+       </plot>
+      </DockArea>
+     </DockSplitter>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <currentTabIndex index="0"/>
+ </tabbed_widget>
+ <use_relative_time_offset enabled="1"/>
+ <!-- - - - - - - - - - - - - - - -->
+ <!-- - - - - - - - - - - - - - - -->
+ <Plugins>
+  <plugin ID="DataLoad CSV">
+   <default time_axis="" delimiter="0"/>
+  </plugin>
+  <plugin ID="DataLoad ROS bags">
+   <use_header_stamp value="false"/>
+   <discard_large_arrays value="true"/>
+   <max_array_size value="100"/>
+   <boolean_strings_to_number value="false"/>
+   <remove_suffix_from_strings value="false"/>
+  </plugin>
+  <plugin ID="DataLoad ULog"/>
+  <plugin ID="ROS Topic Subscriber">
+   <use_header_stamp value="false"/>
+   <discard_large_arrays value="true"/>
+   <max_array_size value="100"/>
+   <boolean_strings_to_number value="false"/>
+   <remove_suffix_from_strings value="false"/>
+  </plugin>
+  <plugin ID="UDP Server"/>
+  <plugin ID="WebSocket Server"/>
+  <plugin ID="Fast Fourier Transform"/>
+  <plugin ID="Quaternion to RPY"/>
+  <plugin ID="Reactive Script Editor">
+   <library code="--[[ Helper function to create a series from arrays&#xa;&#xa; new_series: a series previously created with ScatterXY.new(name)&#xa; prefix:     prefix of the timeseries, before the index of the array&#xa; suffix_X:   suffix to complete the name of the series containing the X value. If [nil], use the index of the array.&#xa; suffix_Y:   suffix to complete the name of the series containing the Y value&#xa; timestamp:   usually the tracker_time variable&#xa;              &#xa; Example:&#xa; &#xa; Assuming we have multiple series in the form:&#xa; &#xa;   /trajectory/node.{X}/position/x&#xa;   /trajectory/node.{X}/position/y&#xa;   &#xa; where {N} is the index of the array (integer). We can create a reactive series from the array with:&#xa; &#xa;   new_series = ScatterXY.new(&quot;my_trajectory&quot;) &#xa;   CreateSeriesFromArray( new_series, &quot;/trajectory/node&quot;, &quot;position/x&quot;, &quot;position/y&quot;, tracker_time );&#xa;]]--&#xa;&#xa;function CreateSeriesFromArray( new_series, prefix, suffix_X, suffix_Y, timestamp )&#xa;  &#xa;  --- clear previous values&#xa;  new_series:clear()&#xa;  &#xa;  --- Append points to new_series&#xa;  index = 0&#xa;  while(true) do&#xa;&#xa;    x = index;&#xa;    -- if not nil, get the X coordinate from a series&#xa;    if suffix_X ~= nil then &#xa;      series_x = TimeseriesView.find( string.format( &quot;%s.%d/%s&quot;, prefix, index, suffix_X) )&#xa;      if series_x == nil then break end&#xa;      x = series_x:atTime(timestamp)&#x9; &#xa;    end&#xa;    &#xa;    series_y = TimeseriesView.find( string.format( &quot;%s.%d/%s&quot;, prefix, index, suffix_Y) )&#xa;    if series_y == nil then break end &#xa;    y = series_y:atTime(timestamp)&#xa;    &#xa;    new_series:push_back(x,y)&#xa;    index = index+1&#xa;  end&#xa;end&#xa;&#xa;--[[ Similar to the built-in function GetSeriesNames(), but select only the names with a give prefix. ]]--&#xa;&#xa;function GetSeriesNamesByPrefix(prefix)&#xa;  -- GetSeriesNames(9 is a built-in function&#xa;  all_names = GetSeriesNames()&#xa;  filtered_names = {}&#xa;  for i, name in ipairs(all_names)  do&#xa;    -- check the prefix&#xa;    if name:find(prefix, 1, #prefix) then&#xa;      table.insert(filtered_names, name);&#xa;    end&#xa;  end&#xa;  return filtered_names&#xa;end&#xa;&#xa;--[[ Modify an existing series, applying offsets to all their X and Y values&#xa;&#xa; series: an existing timeseries, obtained with TimeseriesView.find(name)&#xa; delta_x: offset to apply to each x value&#xa; delta_y: offset to apply to each y value  &#xa;&#xa;]]--&#xa;&#xa;function ApplyOffsetInPlace(series, delta_x, delta_y)&#xa;  -- use C++ indeces, not Lua indeces&#xa;  for index=0, series:size()-1 do&#xa;    x,y = series:at(index)&#xa;    series:set(index, x + delta_x, y + delta_y)&#xa;  end&#xa;end&#xa;"/>
+   <scripts/>
+  </plugin>
+  <plugin ID="CSV Exporter"/>
+  <plugin ID="ROS /rosout Visualization"/>
+  <plugin ID="ROS Topic Re-Publisher"/>
+ </Plugins>
+ <!-- - - - - - - - - - - - - - - -->
+ <previouslyLoaded_Datafiles/>
+ <previouslyLoaded_Streamer name="ROS Topic Subscriber"/>
+ <!-- - - - - - - - - - - - - - - -->
+ <customMathEquations/>
+ <snippets/>
+ <!-- - - - - - - - - - - - - - - -->
+</root>
+

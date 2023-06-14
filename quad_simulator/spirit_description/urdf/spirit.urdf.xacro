@@ -1,0 +1,258 @@
+<?xml version="1.0"?>
+
+<!-- 
+MIT License (modified)
+
+Copyright (c) 2020 Ghost Robotics
+Authors:
+Avik De <avik@ghostrobotics.io>
+Tom Jacobs <tom.jacobs@ghostrobotics.io>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this **file** (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE. 
+-->
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="ngr">
+
+	<!-- Define parameters -->
+	<!-- bodyLength + hipdx should be equal to front to back hip distance -->
+	<!-- dy +  dPodAxisToEdge + upperLegWidth should be equal to the center to toe distance along y axis-->
+	<xacro:property name="pi" value="3.14159265359"/>
+	<xacro:property name="bodyLength" value="0.335"/>
+	<xacro:property name="bodyWidth" value="0.24"/>
+	<xacro:property name="bodyHeight" value="0.104"/>
+	<xacro:property name="bodyMass" value="5.75"/>
+	<xacro:property name="podMass" value="0.575"/>
+	<xacro:property name="upperLegMass" value="0.775"/>
+	<xacro:property name="upperLegIxx" value="0.00005"/> <!-- guess -->
+	<xacro:property name="upperLegIyy" value="0.001"/> <!-- guess -->
+	<xacro:property name="upperLegIzz" value="0.001"/> <!-- guess -->
+	<xacro:property name="lowerLegMass" value="0.075"/>
+	<xacro:property name="lowerLegIxx" value="0.000005"/> <!-- guess -->
+	<xacro:property name="lowerLegIyy" value="0.0001"/> <!-- guess -->
+	<xacro:property name="lowerLegIzz" value="0.0001"/> <!-- guess -->
+	<xacro:property name="toeMass" value="0.015"/>
+	<xacro:property name="upperLegLength" value="0.206"/>
+	<xacro:property name="upperLegWidth" value="0.022"/>
+	<xacro:property name="upperLegHeight" value="0.055"/>
+	<xacro:property name="lowerLegLength" value="0.206"/>
+	<xacro:property name="lowerLegRadius" value="0.013"/> <!--visual only-->
+	<xacro:property name="podLength" value="0.08"/>
+	<xacro:property name="podRadius" value="0.055"/>
+	<xacro:property name="dPodAxisToEdge" value="0.028"/> <!--center of pod cylinder to the ab axis-->
+	<xacro:property name="abOffs" value="0.10098"/> 
+	<xacro:property name="dx" value="0.2263"/>
+	<xacro:property name="dy" value="0.07"/>
+	<xacro:property name="toeRadius" value="0.02"/>
+	<xacro:property name="toeOffset" value="0.0"/>
+	<xacro:property name="toeStiffness" value="30000.0"/>
+	<xacro:property name="toeDamping" value="1000.0"/>
+	<xacro:property name="toeSpinningFriction" value="0.3"/>
+	<xacro:property name="toeLateralFriction" value="3.0"/>
+	<xacro:property name="abKinLimit" value="0.707"/>
+	<xacro:property name="abSpeedLimit" value="30"/>
+	<xacro:property name="abEffortLimit" value="40"/>
+	<xacro:property name="jointSpeedLimit" value="30"/>
+	<xacro:property name="jointEffortLimit" value="40"/>
+	
+	<!-- Define materials -->
+	<material name="darkgray">
+		<color rgba="0.1 0.1 0.1 1.0"/>
+	</material>
+	<material name="silver">
+		<color rgba="0.3 0.3 0.3 1.0"/>
+	</material>
+	<material name="red">
+		<color rgba="0.8 0.0 0.2 1.0"/>
+	</material>
+
+	<!-- Body -->
+	<link name="body">
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<box size="${bodyLength} ${bodyWidth} ${bodyHeight}"/>
+			</geometry>
+			<material name="darkgray"/>
+		</visual>
+
+		<inertial>
+			<mass value="${bodyMass}"/>
+			<!-- Uniform box -->
+			<!-- <inertia ixx="1/12*${bodyMass}*(${bodyWidth}*${bodyWidth} + ${bodyHeight}*${bodyHeight})"  ixy="0"  ixz="0" iyy="1/12*${bodyMass}*(${bodyLength}*${bodyLength} + ${bodyHeight}*${bodyHeight})" iyz="0" izz="1/12*${bodyMass}*(${bodyLength}*${bodyLength} + ${bodyWidth}*${bodyWidth})"/> -->
+			<inertia ixx="0.05"  ixy="0"  ixz="0" iyy="0.1" iyz="0" izz="0.1" />
+		</inertial>
+
+		<!-- Just copy geometry for collision -->
+		<collision>
+		<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<box size="${bodyLength} ${bodyWidth} ${bodyHeight}"/>
+			</geometry>
+		</collision>
+	</link>
+
+	<!-- Define our leg macro -->
+	<xacro:macro name="leg" params="suffix left front hipJointName kneeJointName abductionJointName hipJointLowerLimit hipJointUpperLimit color">
+
+		<!-- Hip motor -->
+		<link name="hip${suffix}">
+			<visual>
+				<origin rpy="${pi/2} 0 0" xyz="${front * 0} ${left * (dPodAxisToEdge)} 0"/>
+				<geometry>
+					<cylinder length="${podLength}" radius="${podRadius}"/>
+				</geometry>
+				<material name="${color}"/>
+			</visual>
+			
+			<collision>
+				<origin rpy="${pi/2} 0 0" xyz="0 ${left * (dPodAxisToEdge)} 0"/>
+				<geometry>
+					<cylinder length="${podLength}" radius="${podRadius}"/>
+				</geometry>
+			</collision>
+
+			<inertial>
+				<mass value="${podMass}"/>
+				<!-- <inertia ixx="1/12*${podMass}*${podLength}*${podLength} + 1/4*${podMass}*${podRadius}*${podRadius}"  ixy="0"  ixz="0" iyy="1/12*${podMass}*${podLength}*${podLength} + 1/4*${podMass}*${podRadius}*${podRadius}" iyz="0" izz="1/2*${podMass}*${podRadius}*$
+				{podRadius}" /> -->
+				<inertia ixx="0.00066963541"  ixy="0"  ixz="0" iyy="0.00066963541" iyz="0" izz="0.0008696875" />
+			</inertial>
+		</link>	
+
+		<!-- Abduction joint. Joint names are: 8 9 10 11 -->
+		<joint name="${abductionJointName}" type="revolute">
+			<parent link="body"/>
+			<child link="hip${suffix}"/>
+			<axis xyz="1 0 0"/>
+			<origin xyz="${front * dx} ${left * dy} 0"/>
+			<limit effort="${abEffortLimit}" velocity="${abSpeedLimit}" lower="${-abKinLimit}" upper="${abKinLimit}"/>
+			<dynamics damping="0.0" friction="0.0"/>
+		</joint>
+
+		<!-- Upper leg -->
+		<link name="upper${suffix}">
+			<visual>
+				<origin rpy="0 0 0" xyz="-${upperLegLength/2} ${-left*upperLegWidth} 0"/>
+				<geometry>
+					<box size="${upperLegLength} ${upperLegWidth} ${upperLegHeight}"/>
+				</geometry>
+				<material name="silver"/>
+			</visual>
+			
+			<collision>
+				<origin rpy="0 0 0" xyz="-${upperLegLength/2} ${-left*upperLegWidth} 0"/>
+				<geometry>
+					<box size="${upperLegLength} ${upperLegWidth} ${upperLegHeight}"/>
+				</geometry>
+			</collision>
+
+			<inertial>
+				<mass value="${upperLegMass}"/>
+				<inertia ixx="${upperLegIxx}"  ixy="0" ixz="0" iyy="${upperLegIyy}" iyz="0" izz="${upperLegIzz}"/>
+			</inertial>
+		</link>
+
+		<!-- Hip joint. (Motor to upper leg). Joint names are: 0 2 4 6 -->
+		<joint name="${hipJointName}" type="revolute">
+			<parent link="hip${suffix}"/>
+			<child link="upper${suffix}"/>
+			<axis xyz="0 -1 0"/>
+			<origin xyz="${front * 0} ${left * abOffs} 0"/> <!--  rpy="0 -0.3 0" -->
+			<limit effort="${jointEffortLimit}" velocity="${jointSpeedLimit}" lower="${hipJointLowerLimit}" upper="${hipJointUpperLimit}"/>
+			<dynamics damping="0.0" friction="0.0"/>
+		</joint>
+
+		<!-- Lower leg -->
+		<link name="lower${suffix}">
+			<visual>
+				<origin rpy="0 ${pi/2} 0" xyz="${lowerLegLength/2} 0 0"/>
+				<geometry>
+					<cylinder length="${lowerLegLength}" radius="${lowerLegRadius}"/>
+				</geometry>
+				<material name="darkgray"/>
+			</visual>
+			
+			<collision>
+				<origin rpy="0 ${pi/2} 0" xyz="${lowerLegLength/2} 0 0"/>
+				<geometry>
+					<cylinder length="${lowerLegLength}" radius="${lowerLegRadius}"/>
+				</geometry>
+			</collision>
+
+			<inertial>
+				<mass value="${lowerLegMass}"/>
+				<inertia ixx="${lowerLegIxx}"  ixy="0" ixz="0" iyy="${lowerLegIyy}" iyz="0" izz="${lowerLegIzz}"/>
+			</inertial>
+		</link>
+
+		<!-- Knee joint. Joint names are: 1 3 5 7 -->
+		<joint name="${kneeJointName}" type="revolute">
+			<parent link="upper${suffix}"/>
+			<child link="lower${suffix}"/>
+			<axis xyz="0 1 0"/>
+			<origin xyz="-${upperLegLength} 0 0"/> <!--rpy="0 0.5 0"-->
+			<limit effort="${jointEffortLimit}" velocity="${jointSpeedLimit}" lower="0" upper="${pi}"/>
+			<dynamics damping="0.0" friction="0.0"/>
+		</joint>
+
+		<!-- Toe -->
+		<link name="toe${suffix}">
+			<contact>
+				<friction_anchor/>
+				<stiffness value="${toeStiffness}"/>
+				<damping value="${toeDamping}"/>
+				<spinning_friction value="${toeSpinningFriction}"/>
+				<lateral_friction value="${toeLateralFriction}"/>
+			</contact>
+			<visual>
+				<origin rpy="0 0 0" xyz="0 0 0"/>
+				<geometry>
+					<sphere radius="${toeRadius}"/>
+				</geometry>
+				<material name="darkgray"/>
+			</visual>
+			
+			<collision>
+				<origin rpy="0 0 0" xyz="0 0 0"/>
+				<geometry>
+					<sphere radius="${toeRadius}"/>
+				</geometry>
+			</collision>
+
+			<inertial>
+				<mass value="${toeMass}"/>
+				<inertia ixx="0.000025"  ixy="0"  ixz="0" iyy="0.000025" iyz="0" izz="0.000025" />
+				<!-- <inertia ixx="2/5*${toeMass}*${toeRadius}*${toeRadius}"  ixy="0"  ixz="0" iyy="2/5*${toeMass}*${toeRadius}*${toeRadius}" iyz="0" izz="2/5*${toeMass}*${toeRadius}*${toeRadius}" /> -->
+			</inertial>
+		</link>
+		<joint name="jtoe${suffix}" type="fixed">
+			<parent link="lower${suffix}"/>
+			<child link="toe${suffix}"/>
+			<origin xyz="${lowerLegLength} 0 -${toeOffset}"/>
+			<dynamics damping="0.0" friction="0.0"/>
+		</joint>
+
+	</xacro:macro>
+
+	<!-- Our four legs -->
+	<xacro:leg suffix="0" hipJointName="0" kneeJointName="1" abductionJointName="8" front="1" left="1" hipJointLowerLimit="${-2*pi}" hipJointUpperLimit="${2*pi}" color="darkgray"/>
+ 	<xacro:leg suffix="1" hipJointName="2" kneeJointName="3" abductionJointName="9" front="-1" left="1" hipJointLowerLimit="${-2*pi}" hipJointUpperLimit="${2*pi}" color="darkgray"/>
+ 	<xacro:leg suffix="2" hipJointName="4" kneeJointName="5" abductionJointName="10" front="1" left="-1" hipJointLowerLimit="${-2*pi}" hipJointUpperLimit="${2*pi}" color="red"/>
+ 	<xacro:leg suffix="3" hipJointName="6" kneeJointName="7" abductionJointName="11" front="-1" left="-1" hipJointLowerLimit="${-2*pi}" hipJointUpperLimit="${2*pi}" color="darkgray"/> 
+</robot>

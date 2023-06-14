@@ -1,0 +1,40 @@
+jobs:
+  build-and-test:
+    working_directory: /catkin_ws/src
+    docker:
+      - image: osrf/ros:melodic-desktop-full
+    steps:
+      - checkout
+      - run:
+          name: "Update packages"
+          command: sudo apt update
+      - run:
+          name: "Call setup script and build"
+          command: |
+            source /opt/ros/melodic/setup.bash
+            chmod +x setup.sh
+            ./setup.sh
+            cd /catkin_ws
+            catkin build -j4 -l4
+      - run:
+          name: "Load ROS params in the background"
+          command: |
+            source /opt/ros/melodic/setup.bash
+            source /catkin_ws/devel/setup.bash
+            roslaunch quad_utils load_global_params.launch load_robot_params:=true
+          background: true
+      - run:
+          name: "Run tests"
+          command: |
+            cd /catkin_ws
+            source /opt/ros/melodic/setup.bash
+            source /catkin_ws/devel/setup.bash
+            catkin run_tests -j2 -l2 && catkin_test_results
+      - run:
+          name: "Run soft linting checks"
+          command: ./scripts/lint_soft.sh
+workflows:
+  version: 2
+  melodic-build-and-test:
+    jobs:
+      - build-and-test

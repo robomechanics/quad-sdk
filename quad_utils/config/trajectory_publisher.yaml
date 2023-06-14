@@ -1,0 +1,4 @@
+trajectory_publisher:
+  update_rate: 60
+  playback_speed: 1.0
+  traj_source: topic

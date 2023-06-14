@@ -1,0 +1,45 @@
+<sdf version='1.6'>
+  <world name='default'>
+    <physics type="ode">
+    <max_step_size>0.001</max_step_size>
+    <real_time_factor>1</real_time_factor>
+    <real_time_update_rate>1000</real_time_update_rate>
+        <ode>
+            <solver> 
+              <iters>300</iters> 
+            </solver>  
+        </ode>
+    </physics>
+    <scene>
+      <shadows>false</shadows>
+    </scene>
+    <gravity>0 0 -9.81</gravity>
+    <include>
+      <uri>model://custom_sun</uri>
+    </include>
+    <model name="mesh_terrain">
+      <pose>-2 -2 -0.1  0 0 0</pose>
+      <static>true</static>
+      <link name="body">
+        <visual name="visual">
+          <geometry>
+            <mesh><uri>model:///step_30cm/step_30cm.stl</uri></mesh>
+          </geometry>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <mesh><uri>model:///step_30cm/step_30cm.stl</uri></mesh>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>100</mu>
+                <mu2>100</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+    </model>
+  </world>
+</sdf>

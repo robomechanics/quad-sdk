@@ -1,0 +1,32 @@
+<launch>
+    <arg name="robot_type" default="spirit"/>
+
+    <include file="$(find quad_utils)/launch/load_global_params.launch">
+        <arg name="robot_type" value="$(arg robot_type)"/>
+    </include>
+
+    <arg name="logging" default="false" />
+    <arg name="live_plot" default="false" />
+    <arg name="dash" default="false" />
+    <arg name="map_input_type" default="mesh" />
+    <arg name="world" default="flat" />
+
+    <!-- Launch the mapping and visualization nodes -->
+    <include file="$(find quad_utils)/launch/mapping.launch">
+        <arg name="input_type" value="$(arg map_input_type)" />
+        <arg name="world" value="$(arg world)" />
+    </include>
+
+    <include file="$(find quad_utils)/launch/quad_visualization.launch">
+        <arg name="live_plot" value="$(arg live_plot)" />
+        <arg name="dash" value="$(arg dash)" />
+    </include>
+
+    <group if="$(arg logging)">
+        <include file="$(find quad_utils)/launch/logging.launch" />
+    </group>
+
+    <!-- Start the heartbeat node -->
+    <node name="remote_heartbeat" pkg="quad_utils" type="remote_heartbeat_node" output="screen" />
+
+</launch>

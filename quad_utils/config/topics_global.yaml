@@ -1,0 +1,8 @@
+topics:
+  terrain_map: /terrain_map
+  terrain_map_raw: /terrain_map_raw
+  heartbeat:
+    remote: heartbeat/remote
+  control:
+    joint_command: control/joint_command
+  mocap: /mocap_node/quad/pose

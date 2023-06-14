@@ -1,0 +1,5 @@
+debug
+build
+doc/html
+**/build
+CMakeLists.txt.user

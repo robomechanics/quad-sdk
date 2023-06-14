@@ -1,0 +1,13 @@
+nmpc_controller:
+  panic_weights: 200.0
+  constraint_panic_weights: 20.0
+  Q_temporal_factor: 100.0
+  R_temporal_factor: 1
+  friction_coefficient: 0.3
+  enable_variable_horizon: false
+  min_horizon_length: 10
+  enable_mixed_complexity: false
+  enable_adaptive_complexity: false
+  fixed_complex_idxs: [] # set to [] for none
+  fixed_complex_head: 0 # set to 0 for none
+  fixed_complex_tail: 0 # set to 0 for none
