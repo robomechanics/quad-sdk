@@ -202,6 +202,9 @@ class EKFEstimator: public StateEstimator {
 
   const int num_feet = 4;
 
+  /// Boolean for whether robot layer is hardware (else sim)
+  bool is_hardware_;
+
   /// Subscriber for ground_truth RobotState messages
   ros::Subscriber state_ground_truth_sub_;
 

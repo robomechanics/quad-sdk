@@ -38,6 +38,8 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
   quad_utils::loadROSParam(nh_, "/robot_driver/nf", nf_);
   quad_utils::loadROSParam(nh_, "/robot_driver/nfk", nfk_);
   quad_utils::loadROSParam(nh_, "/robot_driver/ne", ne_);
+  quad_utils::loadROSParamDefault(nh_, "robot_driver/is_hardware", is_hardware_,
+                                  true);
 
   // load ground_truth state rosparams and setup subs
   std::string state_ground_truth_topic;
@@ -78,7 +80,12 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_){
   g = Eigen::VectorXd::Zero(3);
   g[2] = 9.8;
 
-  last_time = ros::Time::now();
+  if (initialized){
+    // Set Start Time on Initialization
+    last_time = ros::Time::now();
+    initialized = true;
+  }
+
   X0 << estimated_state_.body.pose.position.x,
         estimated_state_.body.pose.position.y,
         estimated_state_.body.pose.position.z,
@@ -102,7 +109,6 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_){
         estimated_state_.feet.feet[3].position.y,
         estimated_state_.feet.feet[3].position.z, bias_x_, bias_y_, bias_z_,
         0, 0, 0;
-  // ROS_INFO_STREAM("Value of X0" << X0);
   X = X0;
   last_X = X0;
   P = P0;
@@ -110,148 +116,10 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_){
   if(last_grf_msg_ != nullptr){  
     // ROS_INFO_STREAM("Made it Here");
     auto new_state_est = this->StepOnce(); 
-    // ROS_INFO_STREAM("Previous ESTIMATE" << estimated_state_.body.pose.orientation);
-    // ROS_INFO_STREAM("New ESTIMATE" << new_state_est.body.pose.orientation);
     estimated_state_ = new_state_est;
   }
   return true;
 }
-
-
-  // if not initialized and have ground truth: initialize the state based on
-  // the ground truth data (mocap data)
-
-  // Assume a previous state message always exists
-  // if (initialized == false){
-  //   // initialize time
-  //   last_time = ros::Time::now();
-  //   ROS_INFO_STREAM("Initialized");
-  //   // initialize X0, hardcode positions at Initialization
-  //   X0 << 0, 0, 0.3,
-  //         0, 0, 0, 
-  //         1, 0, 0, 0,
-  //         -1, 1, 0,
-  //         -1,-1, 0,
-  //         1, 1, 0, 
-  //         1, -1, 0,
-  //       bias_x_, bias_y_, bias_z_,
-  //       0, 0, 0;
-  //       // last_robot_state_msg_.feet.feet[0].position.x,
-  //       // last_robot_state_msg_.feet.feet[0].position.y,
-  //       // last_robot_state_msg_.feet.feet[0].position.z,
-
-  //       // last_robot_state_msg_.feet.feet[1].position.x,
-  //       // last_robot_state_msg_.feet.feet[1].position.y,
-  //       // last_robot_state_msg_.feet.feet[1].position.z,
-
-  //       // last_robot_state_msg_.feet.feet[2].position.x,
-  //       // last_robot_state_msg_.feet.feet[2].position.y,
-  //       // last_robot_state_msg_.feet.feet[2].position.z,
-
-  //       // last_robot_state_msg_.feet.feet[3].position.x,
-  //       // last_robot_state_msg_.feet.feet[3].position.y,
-  //       // last_robot_state_msg_.feet.feet[3].position.z, 
-  //       // bias_x_, bias_y_, bias_z_,
-  //       // 0, 0, 0;
-  // X = X0;
-  // last_X = X0;
-  // P = P0;
-  // initialized = true;
-  // }
-  // else if (initialized == true){
-  //   if(last_grf_msg_ != nullptr){
-  //   ROS_INFO_STREAM("Initialized Value was Saved");
-  //   // initialize time
-  //   last_time = ros::Time::now();
-  //   ROS_INFO_STREAM("After Saved Initialized");
-  //   //ROS_INFO_STREAM("State Update" << X0);
-  //   //initial guess for imu linear bias: -0.18 -0.07, -0.0
-  //   //initial guess for imu angular bias: -0.00009, -0.00003, -0.00002
-  //   //Generate Initial State Vector X0
-    
-  //   X0 << last_robot_state_msg_.body.pose.position.x,
-  //       last_robot_state_msg_.body.pose.position.y,
-  //       last_robot_state_msg_.body.pose.position.z,
-  //       last_robot_state_msg_.body.twist.linear.x,
-  //       last_robot_state_msg_.body.twist.linear.y,
-  //       last_robot_state_msg_.body.twist.linear.z,
-  //       last_robot_state_msg_.body.pose.orientation.w,if (initialized == false){
-  //   // initialize time
-  //   last_time = ros::Time::now();
-  //   ROS_INFO_STREAM("Initialized");
-  //   // initialize X0, hardcode positions at Initialization
-  //   X0 << 0, 0, 0.3,
-  //         0, 0, 0, 
-  //         1, 0, 0, 0,
-  //         -1, 1, 0,
-  //         -1,-1, 0,
-  //         1, 1, 0, 
-  //         1, -1, 0,
-  //       bias_x_, bias_y_, bias_z_,
-  //       0, 0, 0;
-  //       // last_robot_state_msg_.feet.feet[0].position.x,
-  //       // last_robot_state_msg_.feet.feet[0].position.y,
-  //       // last_robot_state_msg_.feet.feet[0].position.z,
-
-  //       // last_robot_state_msg_.feet.feet[1].position.x,
-  //       // last_robot_state_msg_.feet.feet[1].position.y,
-  //       // last_robot_state_msg_.feet.feet[1].position.z,
-
-  //       // last_robot_state_msg_.feet.feet[2].position.x,
-  //       // last_robot_state_msg_.feet.feet[2].position.y,
-  //       // last_robot_state_msg_.feet.feet[2].position.z,
-
-  //       // last_robot_state_msg_.feet.feet[3].position.x,
-  //       // last_robot_state_msg_.feet.feet[3].position.y,
-  //       // last_robot_state_msg_.feet.feet[3].position.z, 
-  //       // bias_x_, bias_y_, bias_z_,
-  //       // 0, 0, 0;
-  // X = X0;
-  // last_X = X0;
-  // P = P0;
-  // initialized = true;
-  // }
-  // else if (initialized == true){
-  //   if(last_grf_msg_ != nullptr){
-  //   ROS_INFO_STREAM("Initialized Value was Saved");
-  //   // initialize time
-  //   last_time = ros::Time::now();
-  //   ROS_INFO_STREAM("After Saved Initialized");
-  //   //ROS_INFO_STREAM("State Update" << X0);
-  //   //initial guess for imu linear bias: -0.18 -0.07, -0.0
-  //   //initial guess for imu angular bias: -0.00009, -0.00003, -0.00002
-  //   //Generate Initial State Vector X0
-    
-  //   X0 << last_robot_state_msg_.body.pose.position.x,
-  //       last_robot_state_msg_.body.pose.position.y,
-  //       last_robot_state_msg_.body.pose.position.z,
-  //       last_robot_state_msg_.body.twist.linear.x,
-  //       last_robot_state_msg_.body.twist.linear.y,
-  //       last_robot_state_msg_.feet.feet[0].position.y,
-  //       last_robot_state_msg_.feet.feet[0].position.z,
-  //       last_robot_state_msg_.feet.feet[1].position.x,
-  //       last_robot_state_msg_.feet.feet[1].position.y,
-  //       last_robot_state_msg_.feet.feet[1].position.z,
-  //       last_robot_state_msg_.feet.feet[2].position.x,
-  //       last_robot_state_msg_.feet.feet[2].position.y,
-  //       last_robot_state_msg_.feet.feet[2].position.z,
-  //       last_robot_state_msg_.feet.feet[3].position.x,
-  //       last_robot_state_msg_.feet.feet[3].position.y,
-  //       last_robot_state_msg_.feet.feet[3].position.z, bias_x_, bias_y_, bias_z_,
-  //       0, 0, 0;
-  //   X = X0;
-  //   last_X = X0;
-  //   P = P0;
-  // }
-  // }
-
-//   if(last_grf_msg_ != nullptr){
-//     //Run Step Once to Calculate Change in State Once Local Planner Starts Running
-//     quad_msgs::RobotState new_state_est = this->StepOnce(); 
-//   }
-
-//   return true;
-// }
 
 void EKFEstimator::groundtruthCallback(
   const quad_msgs::RobotState::ConstPtr& msg) {
@@ -292,7 +160,7 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   // Record start time of function, used in verifying messages are not out of
   // date and in timing function
   ros::Time start_time = ros::Time::now();
-  // ROS_INFO_STREAM("StepOnce");
+
   // Create skeleton message to send out
   quad_msgs::RobotState new_state_est;
 
@@ -311,11 +179,11 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   Eigen::Quaterniond qk(1, 0, 0, 0);
   // if there is good imu data: read data from bag file
   this->readIMU(last_imu_msg_, fk, wk, qk);
-  ROS_INFO_STREAM("IMU" << last_imu_msg_);
   
   // Joint data reading 3 joints * 4 legs
   Eigen::VectorXd jk = Eigen::VectorXd::Zero(12);
   this->readJointEncoder(last_joint_state_msg_, jk);
+
   std::vector<double> jkVector(jk.data(), jk.data() + jk.rows() * jk.cols());
   
   /// Prediction Step
@@ -327,8 +195,7 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   X = X_pre;
   P = P_pre;
   last_X = X;
-  // ROS_INFO_STREAM(X);
-  // std::cout<<"midpoint" <<std::endl;
+
   /// Update Step
   this->update(jk); // Uncomment for Update Step
   // std::cout << "this is X update" << X.transpose() << std::endl;
@@ -371,8 +238,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
 
   // calculate rotational matrix from world frame to body frame
   Eigen::Matrix3d C1 = (qk.toRotationMatrix()).transpose();
-  // ROS_INFO_STREAM("predict");
-
+  ROS_INFO_STREAM("Transformation Matrix" << C1);
   // Collect states info from previous state vector
   Eigen::VectorXd r = last_X.segment(0, 3);
   Eigen::VectorXd v = last_X.segment(3, 3);
@@ -381,7 +247,10 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   Eigen::VectorXd bf = last_X.segment(22, 3);
   Eigen::VectorXd bw = last_X.segment(25, 3);
 
-  // ROS_INFO_STREAM("This is Last X" << r);
+  ROS_INFO_STREAM("r value" << r);
+  ROS_INFO_STREAM("v value" << v);
+  ROS_INFO_STREAM("q value" << q);
+
   //get better C matrix:
   double angle = q.norm();
   Eigen::Vector3d axis;
@@ -456,13 +325,11 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   int num_contacts = 0;
 
   for (int i = 0; i < num_feet; i++) {
-    // ROS_INFO_STREAM("here"<< num_feet);
     Q.block<3, 3>(9 + i * 3, 9 + i * 3) = dt * C.transpose() * noise_feet * C;
     // determine foot contact and set noise
     // std::cout << "foot " << i << " in contact mode " << 
     // (*last_grf_msg_).contact_states[i] << std::endl;
     // if (p[i * 3 + 2] < 0.01) {
-    // ROS_INFO_STREAM("here2");
     if ((*last_grf_msg_).contact_states[i]) {
       // std::cout << "contact in mode: " << i << std::endl;
       Q.block<3, 3>(9 + i * 3, 9 + i * 3) = 1* dt * C.transpose() * noise_feet * C;

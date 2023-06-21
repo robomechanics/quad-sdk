@@ -32,4 +32,7 @@
   <!-- Load the contact state publisher -->
   <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
   
+  <!-- Load the imu published in sim-->
+  <!-- <node name="imu_plugin" pkg="gazebo_scripts" type="imu_plugin" output="screen"/>
+   -->
 </launch>
