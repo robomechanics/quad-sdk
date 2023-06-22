@@ -192,10 +192,10 @@ class EKFEstimator: public StateEstimator {
 
   // number of states position (3 * 1) + velocity (3 * 1) + quaternion (4 * 1) +
   // feet position (12 * 1) + bias_acc (3 * 1) + bias_gyro (3 * 1)
-  static const int num_state = 28;
+  static const int num_state = 18;
 
   // number of covariances equals number of states
-  static const int num_cov = 27;
+  static const int num_cov = 18;
 
   // measurement number equals feet positions (12)
   static const int num_measure = 12;
