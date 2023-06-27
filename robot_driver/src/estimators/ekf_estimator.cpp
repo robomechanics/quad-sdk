@@ -65,13 +65,6 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_){
 
   // Define Initial State, Preallocated Space for State Vectors
   X0 = Eigen::VectorXd::Zero(num_state);
-  X = X0; // Estimated X
-  last_X = X0; // Previous X
-  X_pre = X0; // Predicted X
-
-  // initial state covariance matrix
-  P0 = 0.001 * Eigen::MatrixXd::Identity(num_cov, num_cov);
-  P = P0;
 
   // set noise
   this->setNoise();
@@ -114,7 +107,13 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_){
   P = P0;
     //Run Step Once to Calculate Change in State Once Local Planner Starts Running
   if(last_grf_msg_ != nullptr){  
-    // ROS_INFO_STREAM("Made it Here");
+    if (initialized){
+      last_time = ros::Time::now();
+      // initial state covariance matrix
+      P0 = 0.001 * Eigen::MatrixXd::Identity(num_cov, num_cov);
+      P = P0;
+      initialized = false;
+    }
     auto new_state_est = this->StepOnce(); 
     estimated_state_ = new_state_est;
   }
@@ -187,9 +186,9 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   std::vector<double> jkVector(jk.data(), jk.data() + jk.rows() * jk.cols());
   
   /// Prediction Step
-  // std::cout << "this is X before" << X.transpose() << std::endl;
+  std::cout << "this is X before" << X.transpose() << std::endl;
   this->predict(dt, fk, wk, qk);
-  // std::cout << "this is X predict" << X.transpose() << std::endl;
+  std::cout << "this is X predict" << X.transpose() << std::endl;
 
   // for testing prediction step
   X = X_pre;
@@ -197,7 +196,7 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   last_X = X;
 
   /// Update Step
-  this->update(jk); // Uncomment for Update Step
+  //this->update(jk); // Uncomment for Update Step
   // std::cout << "this is X update" << X.transpose() << std::endl;
 
   /// publish new message
@@ -205,10 +204,15 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
 
   // body
 
-  new_state_est.body.pose.orientation.w = X[6];
-  new_state_est.body.pose.orientation.x = X[7];
-  new_state_est.body.pose.orientation.y = X[8];
-  new_state_est.body.pose.orientation.z = X[9];
+  // new_state_est.body.pose.orientation.w = X[6];
+  // new_state_est.body.pose.orientation.x = X[7];
+  // new_state_est.body.pose.orientation.y = X[8];
+  // new_state_est.body.pose.orientation.z = X[9];
+  
+  new_state_est.body.pose.orientation.w = qk.w();
+  new_state_est.body.pose.orientation.x = qk.x();
+  new_state_est.body.pose.orientation.y = qk.y();
+  new_state_est.body.pose.orientation.z = qk.z();
 
   new_state_est.body.pose.position.x = X[0];
   new_state_est.body.pose.position.y = X[1];
@@ -238,7 +242,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
 
   // calculate rotational matrix from world frame to body frame
   Eigen::Matrix3d C1 = (qk.toRotationMatrix()).transpose();
-  ROS_INFO_STREAM("Transformation Matrix" << C1);
+  
   // Collect states info from previous state vector
   Eigen::VectorXd r = last_X.segment(0, 3);
   Eigen::VectorXd v = last_X.segment(3, 3);
@@ -246,10 +250,6 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   Eigen::VectorXd p = last_X.segment(10, 12);
   Eigen::VectorXd bf = last_X.segment(22, 3);
   Eigen::VectorXd bw = last_X.segment(25, 3);
-
-  ROS_INFO_STREAM("r value" << r);
-  ROS_INFO_STREAM("v value" << v);
-  ROS_INFO_STREAM("q value" << q);
 
   //get better C matrix:
   double angle = q.norm();
