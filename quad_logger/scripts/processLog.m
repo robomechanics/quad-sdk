@@ -47,21 +47,21 @@ stateGRFs = data.stateGRFs;
 controlGRFs = data.controlGRFs;
 localPlan = data.localPlan;
 
-disp(stateGroundTruth);
-disp(stateEstimate);
+% disp(stateGroundTruth);
+% disp(stateEstimate);
 %% Plot the data
 
 % Plot the state
-% stateFigs = [];
-% if ~isempty(stateGroundTruth)
-%     [stateFigs] = plotState(stateGroundTruth,tWindowStates,'-', bTitles, stateFigs);
-% end
+stateFigs = [];
+if ~isempty(stateGroundTruth)
+    [stateFigs] = plotState(stateGroundTruth,tWindowStates,'-', bTitles, stateFigs);
+end
 % if ~isempty(stateTrajectory)
 %     [stateFigs] = plotState(stateTrajectory,tWindowStates, ':', bTitles, stateFigs);
 % end
-% if ~isempty(stateEstimate)
-%     [stateFigs] = plotState(stateEstimate,tWindowStates, '--', bTitles, stateFigs);
-% end
+if ~isempty(stateEstimate)
+    [stateFigs] = plotState(stateEstimate,tWindowStates, '--', bTitles, stateFigs);
+end
 % 
 % % Plot the control
 % controlFigs = [];
@@ -79,7 +79,7 @@ disp(stateEstimate);
 % end
 % 
 % % Add figures to array
-% figArray = [stateFigs, controlFigs, localPlanFigs];
+%figArray = [stateFigs, controlFigs, localPlanFigs];
 % 
 % %% Save the logs and figures in one directory
 % logDir = [];

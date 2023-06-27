@@ -198,7 +198,7 @@ class EKFEstimator: public StateEstimator {
   static const int num_cov = 18;
 
   // measurement number equals feet positions (12)
-  static const int num_measure = 12;
+  static const int num_measure = 28;
 
   const int num_feet = 4;
 
@@ -261,11 +261,23 @@ class EKFEstimator: public StateEstimator {
   // state vector (28 * 1)
   Eigen::VectorXd X;
 
+  // state vector (28 * 1)
+  Eigen::VectorXd x;
+
   // last state vector (28 * 1)
   Eigen::VectorXd last_X;
 
   // prediction state vector (28 * 1)
   Eigen::VectorXd X_pre;
+
+  // prediction state vector (28 * 1)
+  Eigen::VectorXd SC;
+  
+  Eigen::VectorXd S;
+  Eigen::MatrixXd C;
+
+  // initial covariance matrix (27 * 27)
+  Eigen::MatrixXd Serror_y;
 
   // initial covariance matrix (27 * 27)
   Eigen::MatrixXd P0;
@@ -282,11 +294,22 @@ class EKFEstimator: public StateEstimator {
   // process covariance matrix (27 * 27)
   Eigen::MatrixXd Q;
 
+  // state vector (3 * 1)
+  Eigen::Vector3d u;
+
   // measurement matrix (12 * 27)
   Eigen::MatrixXd H;
 
   // measurement covariance matrix (12 * 12)
   Eigen::MatrixXd R;
+
+  // error measurement displacement vector (18 * 1)
+  Eigen::VectorXd error_y;
+
+  // measurement Generated from Leg Kinematics (18 * 1)
+  Eigen::VectorXd y;
+
+  Eigen::VectorXd q;
 
   // previous time variable
   ros::Time last_time;
@@ -325,6 +348,8 @@ class EKFEstimator: public StateEstimator {
 
   double bias_w_;
 
+  int counter = 0;
+
   // noise term
   // noise in accelerometer
   double na_;
@@ -340,9 +365,8 @@ class EKFEstimator: public StateEstimator {
   double nfk_;
   // noise in encoder
   double ne_;
-
   // initialized the estimator
-  bool initialized = false;
+  bool initialized = true;
 
   // Record whether we have good imu and joint state data
   bool good_imu = false;

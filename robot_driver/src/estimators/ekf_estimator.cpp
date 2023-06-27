@@ -65,13 +65,6 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_){
 
   // Define Initial State, Preallocated Space for State Vectors
   X0 = Eigen::VectorXd::Zero(num_state);
-  X = X0; // Estimated X
-  last_X = X0; // Previous X
-  X_pre = X0; // Predicted X
-
-  // initial state covariance matrix
-  P0 = 0.001 * Eigen::MatrixXd::Identity(num_cov, num_cov);
-  P = P0;
 
   // set noise
   this->setNoise();
@@ -80,22 +73,12 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_){
   g = Eigen::VectorXd::Zero(3);
   g[2] = 9.8;
 
-  if (initialized){
-    // Set Start Time on Initialization
-    last_time = ros::Time::now();
-    initialized = true;
-  }
-
   X0 << estimated_state_.body.pose.position.x,
         estimated_state_.body.pose.position.y,
         estimated_state_.body.pose.position.z,
         estimated_state_.body.twist.linear.x,
         estimated_state_.body.twist.linear.y,
         estimated_state_.body.twist.linear.z,
-        estimated_state_.body.pose.orientation.w,
-        estimated_state_.body.pose.orientation.x,
-        estimated_state_.body.pose.orientation.y,
-        estimated_state_.body.pose.orientation.z,
         estimated_state_.feet.feet[0].position.x,
         estimated_state_.feet.feet[0].position.y,
         estimated_state_.feet.feet[0].position.z,
@@ -107,15 +90,23 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_){
         estimated_state_.feet.feet[2].position.z,
         estimated_state_.feet.feet[3].position.x,
         estimated_state_.feet.feet[3].position.y,
-        estimated_state_.feet.feet[3].position.z, bias_x_, bias_y_, bias_z_,
-        0, 0, 0;
+        estimated_state_.feet.feet[3].position.z;
   X = X0;
   last_X = X0;
-  P = P0;
+  X_pre = X0;
+
     //Run Step Once to Calculate Change in State Once Local Planner Starts Running
   if(last_grf_msg_ != nullptr){  
-    // ROS_INFO_STREAM("Made it Here");
+    if (initialized){
+      // Set Start Time on Initialization
+      last_time = ros::Time::now();
+      P0 = 0.001* Eigen::MatrixXd::Identity(num_cov, num_cov); // 0.001 *, Shuo Starts his at 3
+      P = P0;
+      initialized = false;
+      }
     auto new_state_est = this->StepOnce(); 
+    // ROS_INFO_STREAM("Old State" << estimated_state_.body.pose.position);
+    ROS_INFO_STREAM("State Estimate" << new_state_est.body.pose.position);
     estimated_state_ = new_state_est;
   }
   return true;
@@ -167,7 +158,6 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   // calculate dt
   double dt = (start_time - last_time).toSec();
   last_time = start_time;
-
   // std::cout << "this is dt" << dt << std::endl;
 
   /// Collect and Process Data
@@ -190,14 +180,14 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   // std::cout << "this is X before" << X.transpose() << std::endl;
   this->predict(dt, fk, wk, qk);
   // std::cout << "this is X predict" << X.transpose() << std::endl;
-
+  
   // for testing prediction step
   X = X_pre;
   P = P_pre;
   last_X = X;
 
   /// Update Step
-  this->update(jk); // Uncomment for Update Step
+  // this->update(jk); // Uncomment for Update Step
   // std::cout << "this is X update" << X.transpose() << std::endl;
 
   /// publish new message
@@ -205,10 +195,11 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
 
   // body
 
-  new_state_est.body.pose.orientation.w = X[6];
-  new_state_est.body.pose.orientation.x = X[7];
-  new_state_est.body.pose.orientation.y = X[8];
-  new_state_est.body.pose.orientation.z = X[9];
+  // Grab this Directly from the IMU
+  new_state_est.body.pose.orientation.w = qk.w();
+  new_state_est.body.pose.orientation.x = qk.x();
+  new_state_est.body.pose.orientation.y = qk.y();
+  new_state_est.body.pose.orientation.z = qk.z();
 
   new_state_est.body.pose.position.x = X[0];
   new_state_est.body.pose.position.y = X[1];
@@ -237,21 +228,13 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
                            const Eigen::Quaterniond& qk) {
 
   // calculate rotational matrix from world frame to body frame
+  // Double Check if I need to worry about converting to body frame
+
+  //Convert IMU into the
   Eigen::Matrix3d C1 = (qk.toRotationMatrix()).transpose();
-  ROS_INFO_STREAM("Transformation Matrix" << C1);
-  // Collect states info from previous state vector
-  Eigen::VectorXd r = last_X.segment(0, 3);
-  Eigen::VectorXd v = last_X.segment(3, 3);
-  Eigen::VectorXd q = last_X.segment(6, 4);
-  Eigen::VectorXd p = last_X.segment(10, 12);
-  Eigen::VectorXd bf = last_X.segment(22, 3);
-  Eigen::VectorXd bw = last_X.segment(25, 3);
-
-  ROS_INFO_STREAM("r value" << r);
-  ROS_INFO_STREAM("v value" << v);
-  ROS_INFO_STREAM("q value" << q);
-
-  //get better C matrix:
+  q = Eigen::VectorXd::Zero(4);
+  q << qk.w(), qk.x(), qk.y(), qk.z();
+  //   //get better C matrix:
   double angle = q.norm();
   Eigen::Vector3d axis;
   
@@ -265,95 +248,153 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   Eigen::Quaterniond q1(q_w, q_xyz[0], q_xyz[1], q_xyz[2]);
 
   Eigen::Matrix3d C = q1.toRotationMatrix().transpose();
-  // calculate linear acceleration set z acceleration to -9.8 for now
-  // a is the corrected IMU linear acceleration (fk hat)
-  Eigen::VectorXd a = Eigen::VectorXd::Zero(3);
-  a = fk - bf;
-  // a[2] = -9.8;
 
-  g = Eigen::VectorXd::Zero(3);
-  g[2] = 9.81;
-  // calculate angular acceleration
-  // w is the corrected IMU angular acceleration (wk hat)
-  Eigen::VectorXd w = Eigen::VectorXd::Zero(3);
-  w = wk - bw;
-  
-  // state prediction X_pre
-  X_pre = Eigen::VectorXd::Zero(num_state);
-  X_pre.segment(0, 3) = r + dt * v + dt * dt * 0.5 * (C1.transpose() * a + g);
-  X_pre.segment(3, 3) = v + dt * (C1.transpose() * a + g);
-  // quaternion updates
-  Eigen::VectorXd wdt = dt * w;
-  Eigen::VectorXd q_pre = this->quaternionDynamics(wdt, q);
-  // Eigen::VectorXd q_pre = q;
 
-  X_pre.segment(6, 4) = q_pre;
-  X_pre.segment(10, 12) = p;
-  X_pre.segment(22, 3) = bf;
-  X_pre.segment(25, 3) = bw;
-  
-  // Linearized Dynamics Matrix
+  // Collect states info from previous state vector
+  // Segment Syntax .segment(start_index, number of values)
+  Eigen::VectorXd r = last_X.segment(0, 3);
+  Eigen::VectorXd v = last_X.segment(3, 3);
+  Eigen::VectorXd p = last_X.segment(10, 12);
+
+  // Generate Linearized Dynamics Matrix (18 x 18)
   F = Eigen::MatrixXd::Identity(num_cov, num_cov);
   F.block<3, 3>(0, 3) = dt * Eigen::MatrixXd::Identity(3, 3);
 
-  Eigen::MatrixXd fkskew = this->calcSkewsym(a);
-  Eigen::MatrixXd r0 = this->calcRodrigues(dt, w, 0);
-  Eigen::MatrixXd r1 = this->calcRodrigues(dt, w, 1);
-  Eigen::MatrixXd r2 = this->calcRodrigues(dt, w, 2);
-  Eigen::MatrixXd r3 = this->calcRodrigues(dt, w, 3);
-  
-  F.block<3, 3>(0, 6) = -(dt * dt / 2) * C.transpose() * fkskew;
-  F.block<3, 3>(0, 21) = -(dt * dt / 2) * C.transpose();
-  F.block<3, 3>(3, 6) = -dt * C.transpose() * fkskew;
-  F.block<3, 3>(3, 21) = -dt * C.transpose();
-  F.block<3, 3>(6, 6) = r0.transpose();
-  F.block<3, 3>(6, 24) = -1 * r1.transpose();
-  
-  // Discrete Process Noise Covariance Matrix
-  Q = Eigen::MatrixXd::Zero(num_cov, num_cov);
-  Q.block<3, 3>(0, 0) =
-      (pow(dt, 3) / 3) * noise_acc + (pow(dt, 5) / 20) * bias_acc;
-  Q.block<3, 3>(0, 3) =
-      (pow(dt, 2) / 2) * noise_acc + (pow(dt, 4) / 8) * bias_acc;
-  Q.block<3, 3>(0, 21) = -1 * (pow(dt, 3) / 6) * C.transpose() * bias_acc;
-  Q.block<3, 3>(3, 0) =
-      (pow(dt, 2) / 2) * noise_acc + (pow(dt, 4) / 8) * bias_acc;
-  Q.block<3, 3>(3, 3) = dt * noise_acc + (pow(dt, 3) / 3) * bias_acc;
-  Q.block<3, 3>(3, 21) = -1 * (pow(dt, 2) / 2) * C.transpose() * bias_acc;
-  Q.block<3, 3>(6, 6) = dt * noise_gyro + (r3 + r3.transpose()) * bias_gyro;
-  Q.block<3, 3>(6, 24) = -r2.transpose() * bias_gyro;
-  int num_contacts = 0;
+  // Generate a Process Prediction X (18 x 1)
+  X_pre = Eigen::VectorXd::Zero(num_state);
 
+  // Generate Estimation State Transition (18 x 3)
+  Eigen::MatrixXd B(num_state, 3);
+  B.setZero();
+  B.block<3, 3>(3,0) = dt * Eigen::MatrixXd::Identity(3, 3);
+
+  // Generate Estimation State Transition Noise (18 x 18)
+  Q = Eigen::MatrixXd::Identity(num_state, num_state);
+  Q.block<3,3>(0,0) = na_* dt/ 20 * Eigen::MatrixXd::Identity(3, 3);
+  Q.block<3,3>(3,3) = na_* dt * 9.81 / 20 * Eigen::MatrixXd::Identity(3, 3);
+  // for (int i = 0; i < num_feet; i++){
+  //   Q.block<3,3>(3*i + 6,3*i + 6) = nf_ * dt*  Eigen::MatrixXd::Identity(3, 3);
+  // }
+
+  // Resolve for Q depending on contact states
   for (int i = 0; i < num_feet; i++) {
-    Q.block<3, 3>(9 + i * 3, 9 + i * 3) = dt * C.transpose() * noise_feet * C;
-    // determine foot contact and set noise
-    // std::cout << "foot " << i << " in contact mode " << 
-    // (*last_grf_msg_).contact_states[i] << std::endl;
-    // if (p[i * 3 + 2] < 0.01) {
     if ((*last_grf_msg_).contact_states[i]) {
-      // std::cout << "contact in mode: " << i << std::endl;
-      Q.block<3, 3>(9 + i * 3, 9 + i * 3) = 1* dt * C.transpose() * noise_feet * C;
-      num_contacts++;
-    } else {
-      Q.block<3, 3>(9 + i * 3, 9 + i * 3) =
-          100000000 * dt * C.transpose() * noise_feet * C;
+      Q.block<3,3>(3*i + 6, 3*i + 6) = (1) * nf_ * dt*  Eigen::MatrixXd::Identity(3, 3);
+    }
+    else{
+      Q.block<3,3>(3*i + 6, 3*i + 6) = (1 + (1) * 1e3) * nf_ * dt*  Eigen::MatrixXd::Identity(3, 3);
     }
   }
-  // std::cout << "num contacts: " << num_contacts << std::endl;
 
-  Q.block<3, 3>(21, 0) = -1 * (pow(dt, 3) / 6) * bias_acc * C;
-  Q.block<3, 3>(21, 3) = -1 * (pow(dt, 2) / 2) * bias_acc * C;
-  Q.block<3, 3>(21, 21) = dt * bias_acc;
-  Q.block<3, 3>(24, 6) = -1 * bias_gyro * r2;
-  Q.block<3, 3>(24, 24) = dt * bias_gyro;
-  // Q = Eigen::MatrixXd::Zero(num_cov, num_cov);
+  // Generate Control Input U 
+  // May Need to add a Rotation Matrix to Compensate for Frames Here
+  g = Eigen::Vector3d(0, 0, -9.81);
+  u = fk + g; // C1.transpose()*
 
-  // Covariance update
-  P_pre = (F * P * F.transpose()) + Q;
-  // std::cout << "Prediction" << std::endl;
-  // std::cout << "this is Q " << Q << std::endl;
-  // std::cout << "this is P_pre " << P_pre << std::endl;
-}
+  if (counter==4){
+    ROS_INFO_STREAM("dt" << dt);
+    ROS_INFO_STREAM("X" << last_X);
+    ROS_INFO_STREAM("F"<< F);
+    ROS_INFO_STREAM("B"<< B);
+    ROS_INFO_STREAM("Q" << Q);
+    ROS_INFO_STREAM("u" << u);
+    // ROS_INFO_STREAM("Transformed acc" << C.transpose()*fk+g);
+  }
+  counter++;
+
+  // if (last_X(3) > 0.5){
+  //   last_X(3) = 0.264416;
+  // }
+
+  // Solve for Process Prediction State and Covariance
+  X_pre = (F * last_X) + B * u; // (18 x 1)
+  P_pre = (F * P * F.transpose()) + Q; // (18 x 18)
+  }
+
+//   // calculate linear acceleration set z acceleration to -9.8 for now
+//   // a is the corrected IMU linear acceleration (fk hat)
+//   Eigen::VectorXd a = Eigen::VectorXd::Zero(3);
+//   a = fk - bf;
+//   // a[2] = -9.8;
+
+//   g = Eigen::VectorXd::Zero(3);
+//   g[2] = 9.81;
+//   // calculate angular acceleration
+//   // w is the corrected IMU angular acceleration (wk hat)
+//   Eigen::VectorXd w = Eigen::VectorXd::Zero(3);
+//   w = wk - bw;
+  
+//   // state prediction X_pre
+//   X_pre = Eigen::VectorXd::Zero(num_state);
+//   X_pre.segment(0, 3) = r + dt * v + dt * dt * 0.5 * (C1.transpose() * a + g);
+//   X_pre.segment(3, 3) = v + dt * (C1.transpose() * a + g);
+//   // quaternion updates
+//   Eigen::VectorXd wdt = dt * w;
+//   Eigen::VectorXd q_pre = this->quaternionDynamics(wdt, q);
+//   // Eigen::VectorXd q_pre = q;
+
+//   X_pre.segment(6, 4) = q_pre;
+//   X_pre.segment(10, 12) = p;
+//   X_pre.segment(22, 3) = bf;
+//   X_pre.segment(25, 3) = bw;
+  
+//   // Linearized Dynamics Matrix
+//   F = Eigen::MatrixXd::Identity(num_cov, num_cov);
+//   F.block<3, 3>(0, 3) = dt * Eigen::MatrixXd::Identity(3, 3);
+
+//   Eigen::MatrixXd fkskew = this->calcSkewsym(a);
+//   Eigen::MatrixXd r0 = this->calcRodrigues(dt, w, 0);
+//   Eigen::MatrixXd r1 = this->calcRodrigues(dt, w, 1);
+//   Eigen::MatrixXd r2 = this->calcRodrigues(dt, w, 2);
+//   Eigen::MatrixXd r3 = this->calcRodrigues(dt, w, 3);
+  
+//   F.block<3, 3>(0, 6) = -(dt * dt / 2) * C.transpose() * fkskew;
+//   F.block<3, 3>(0, 21) = -(dt * dt / 2) * C.transpose();
+//   F.block<3, 3>(3, 6) = -dt * C.transpose() * fkskew;
+//   F.block<3, 3>(3, 21) = -dt * C.transpose();
+//   F.block<3, 3>(6, 6) = r0.transpose();
+//   F.block<3, 3>(6, 24) = -1 * r1.transpose();
+  
+//   // Discrete Process Noise Covariance Matrix
+//   Q = Eigen::MatrixXd::Zero(num_cov, num_cov);
+//   Q.block<3, 3>(0, 0) =
+//       (pow(dt, 3) / 3) * noise_acc + (pow(dt, 5) / 20) * bias_acc;
+//   Q.block<3, 3>(0, 3) =
+//       (pow(dt, 2) / 2) * noise_acc + (pow(dt, 4) / 8) * bias_acc;
+//   Q.block<3, 3>(0, 21) = -1 * (pow(dt, 3) / 6) * C.transpose() * bias_acc;
+//   Q.block<3, 3>(3, 0) =
+//       (pow(dt, 2) / 2) * noise_acc + (pow(dt, 4) / 8) * bias_acc;
+//   Q.block<3, 3>(3, 3) = dt * noise_acc + (pow(dt, 3) / 3) * bias_acc;
+//   Q.block<3, 3>(3, 21) = -1 * (pow(dt, 2) / 2) * C.transpose() * bias_acc;
+//   Q.block<3, 3>(6, 6) = dt * noise_gyro + (r3 + r3.transpose()) * bias_gyro;
+//   Q.block<3, 3>(6, 24) = -r2.transpose() * bias_gyro;
+//   int num_contacts = 0;
+
+//   for (int i = 0; i < num_feet; i++) {
+//     Q.block<3, 3>(9 + i * 3, 9 + i * 3) = dt * C.transpose() * noise_feet * C;
+
+//     if ((*last_grf_msg_).contact_states[i]) {
+//       // std::cout << "contact in mode: " << i << std::endl;
+//       Q.block<3, 3>(9 + i * 3, 9 + i * 3) = 1* dt * C.transpose() * noise_feet * C;
+//       num_contacts++;
+//     } else {
+//       Q.block<3, 3>(9 + i * 3, 9 + i * 3) =
+//           100000000 * dt * C.transpose() * noise_feet * C;
+//     }
+//   }
+//   // std::cout << "num contacts: " << num_contacts << std::endl;
+
+//   Q.block<3, 3>(21, 0) = -1 * (pow(dt, 3) / 6) * bias_acc * C;
+//   Q.block<3, 3>(21, 3) = -1 * (pow(dt, 2) / 2) * bias_acc * C;
+//   Q.block<3, 3>(21, 21) = dt * bias_acc;
+//   Q.block<3, 3>(24, 6) = -1 * bias_gyro * r2;
+//   Q.block<3, 3>(24, 24) = dt * bias_gyro;
+//   // Q = Eigen::MatrixXd::Zero(num_cov, num_cov);
+
+//   // Covariance update
+//   P_pre = (F * P * F.transpose()) + Q;
+
+// }
 
 void EKFEstimator::update(const Eigen::VectorXd& jk) {
   // debug for update step, set the predicted state to be ground truth:
@@ -383,32 +424,96 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   //       X_pre.segment(25, 3);
   // }
 
-  // Collect states info from predicted state vector
-  Eigen::VectorXd r_pre = X_pre.segment(0, 3);
-  Eigen::VectorXd v_pre = X_pre.segment(3, 3);
-  Eigen::VectorXd q_pre = X_pre.segment(6, 4);
-  Eigen::VectorXd p_pre = X_pre.segment(10, 12);
-  Eigen::VectorXd bf_pre = X_pre.segment(22, 3);
-  Eigen::VectorXd bw_pre = X_pre.segment(25, 3);
+  // Preallocate Space and Generate C
+  Eigen::MatrixXd C(num_measure, num_state);
+  C.setZero();
+  for (int i = 0; i < num_feet; i++){
+      C.block<3,3>(3*i, 6 + 3*i) = Eigen::MatrixXd::Identity(3, 3);
+      C.block<3,3>(3*i, 0) = - Eigen::MatrixXd::Identity(3,3);
+      C.block<3,3>(12 + 3*i, 3) = Eigen::MatrixXd::Identity(3, 3);
+      C(24+i, 8+3*i) = 1;
+  }
 
-  Eigen::Quaterniond quaternion_pre(q_pre[0], q_pre[1], q_pre[2], q_pre[3]);
-  quaternion_pre.normalize();
-  Eigen::Matrix3d C_pre = (quaternion_pre.toRotationMatrix()).transpose();
+  //Preallocate Space and Generate R
+  R = Eigen::MatrixXd::Identity(num_measure, num_measure);
+  for (int i = 0; i < num_feet; i++){
+    if((*last_grf_msg_).contact_states[i]){
+    R.block<3,3>(3*i,3*i) = na_ * Eigen::MatrixXd::Identity(3, 3);
+    R.block<3,3>(12 + 3*i, 12 + 3*i) = na_ * Eigen::MatrixXd::Identity(3, 3);
+    R(24 + i, 24 + i) = nf_ ;
+    }
+    else{
+    R.block<3,3>(3*i,3*i) = na_ * (1 + 1e3) * Eigen::MatrixXd::Identity(3, 3);
+    R.block<3,3>(12 + 3*i, 12 + 3*i) = na_ * (1 + 1e3) * Eigen::MatrixXd::Identity(3, 3);
+    R(24 + i, 24 + i) = nf_ *(1 + 1e3);
+    }
+  }
 
-  // Measured feet positions in the body frame
+  // Generate Measurement y from Kinematics
+  y = Eigen::VectorXd::Zero(num_measure);
+
+  // Update Measurement 
   Eigen::VectorXd s = Eigen::VectorXd::Zero(3 * num_feet);
-  // foot index i:(0 = FL, 1 = BL, 2 = FR, 3 = BR)
-  // std::cout << "this is jk value " << jk << std::endl;
-  // throw std::runtime_error(" runtime error STOP");
-  for (int i = 0; i < num_feet; i++) {
+  for (int i = 0; i < num_feet; i++){
     Eigen::Vector3d joint_state_i;
-    // FL: 0 1 2 , BL: 3 4 5, FR: 6 7 8, BR: 9 10 11
-    joint_state_i = jk.segment(3 * i, 3);
-
     Eigen::Vector3d toe_body_pos;
     quadKD_->bodyToFootFKBodyFrame(i, joint_state_i, toe_body_pos);
-    s.segment(i * 3, 3) = toe_body_pos;
+    // Foot Position Measurement, Note that these are in the body frame
+    y.segment(3*i,1) = toe_body_pos;
+
+    // Foot Velocity Measurement
+    // Eigen::VectorXd state;
+    // Eigen::MatrixXd jacobian;
+    // quadKD_->getJacobianBodyAngVel(state,jacobian);
+    // jacobian*
+    // y.segment(num_feet*3 + 3*i,1) = 1;
+    // // Foot Height Measurement
+    // y.segment(num_feet*6 + i, 1) = 1;
   }
+
+
+  // Solve for Error between Measured y residual and Process Residual
+  error_y = y - (C * X_pre);
+
+  S = C * P_pre *C.transpose() + R;
+  S = 0.5*(S+S.transpose());
+
+  Serror_y = S.fullPivHouseholderQr().solve(error_y);
+
+  // EKF Filter Equations, Solve for Kalman Gain
+
+  X = X_pre + P_pre * C.transpose() * Serror_y;
+  SC = S.fullPivHouseholderQr().solve(C);
+  P = P_pre - P_pre * C.transpose() * SC * P_pre;
+  P = 0.5 * (P + P.transpose());
+
+
+  // // Collect states info from predicted state vector
+  // Eigen::VectorXd r_pre = X_pre.segment(0, 3);
+  // Eigen::VectorXd v_pre = X_pre.segment(3, 3);
+  // // Eigen::VectorXd q_pre = X_pre.segment(6, 4);
+  // Eigen::VectorXd p_pre = X_pre.segment(10, 12);
+  // // Eigen::VectorXd bf_pre = X_pre.segment(22, 3);
+  // // Eigen::VectorXd bw_pre = X_pre.segment(25, 3);
+
+  // Eigen::Quaterniond quaternion_pre(q_pre[0], q_pre[1], q_pre[2], q_pre[3]);
+  // quaternion_pre.normalize();
+  // Eigen::Matrix3d C_pre = (quaternion_pre.toRotationMatrix()).transpose();
+
+  // // Measured feet positions in the body frame
+  // Eigen::VectorXd s = Eigen::VectorXd::Zero(3 * num_feet);
+  // // foot index i:(0 = FL, 1 = BL, 2 = FR, 3 = BR)
+  // // std::cout << "this is jk value " << jk << std::endl;
+  // // throw std::runtime_error(" runtime error STOP");
+  // for (int i = 0; i < num_feet; i++) {
+  //   Eigen::Vector3d joint_state_i;
+  //   // FL: 0 1 2 , BL: 3 4 5, FR: 6 7 8, BR: 9 10 11
+  //   joint_state_i = jk.segment(3 * i, 3);
+
+  //   Eigen::Vector3d toe_body_pos;
+  //   quadKD_->bodyToFootFKBodyFrame(i, joint_state_i, toe_body_pos);
+  //   s.segment(i * 3, 3) = toe_body_pos;
+  // }
 
   // std::cout << "measured foot positions" << s << std::endl;
 
@@ -416,30 +521,30 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   // std::cout << "p_pre" << p_pre << std::endl;
   // std::cout << "r_pre" << r_pre << std::endl;
   // measurement residual (12 * 1)
-  Eigen::VectorXd y = Eigen::VectorXd::Zero(num_measure);
-  for (int i = 0; i < num_feet; i++) {
-    // predicted value of the foot positions
-    Eigen::VectorXd foot_temp = C_pre * (p_pre.segment(i * 3, 3) - r_pre);
-    y.segment(i * 3, 3) = s.segment(i * 3, 3) - foot_temp;
-  }
-  // std::cout << "this is the residual " << y.transpose() << std::endl;
-  // std::cout << "maxium residual is " << y.maxCoeff() << std::endl;
+  // Eigen::VectorXd y = Eigen::VectorXd::Zero(num_measure);
+  // for (int i = 0; i < num_feet; i++) {
+  //   // predicted value of the foot positions
+  //   Eigen::VectorXd foot_temp = C_pre * (p_pre.segment(i * 3, 3) - r_pre);
+  //   y.segment(i * 3, 3) = s.segment(i * 3, 3) - foot_temp;
+  // }
+  // // std::cout << "this is the residual " << y.transpose() << std::endl;
+  // // std::cout << "maxium residual is " << y.maxCoeff() << std::endl;
 
-  // Measurement jacobian (12 * 27)
-  H = Eigen::MatrixXd::Zero(num_measure, num_cov);
-  H.block<3, 3>(0, 0) = -C_pre;
-  H.block<3, 3>(3, 0) = -C_pre;
-  H.block<3, 3>(6, 0) = -C_pre;
-  H.block<3, 3>(9, 0) = -C_pre;
+  // // Measurement jacobian (12 * 27)
+  // H = Eigen::MatrixXd::Zero(num_measure, num_cov);
+  // H.block<3, 3>(0, 0) = -C_pre;
+  // H.block<3, 3>(3, 0) = -C_pre;
+  // H.block<3, 3>(6, 0) = -C_pre;
+  // H.block<3, 3>(9, 0) = -C_pre;
 
-  for (int i = 0; i < num_feet; i++) {
-    Eigen::VectorXd vtemp = C_pre * (p_pre.segment(i * 3, 3) - r_pre);
-    H.block<3, 3>(i * 3, 6) = this->calcSkewsym(vtemp);
-    H.block<3, 3>(i * 3, 9 + i * 3) = C_pre;
-  }
+  // for (int i = 0; i < num_feet; i++) {
+  //   Eigen::VectorXd vtemp = C_pre * (p_pre.segment(i * 3, 3) - r_pre);
+  //   H.block<3, 3>(i * 3, 6) = this->calcSkewsym(vtemp);
+  //   H.block<3, 3>(i * 3, 9 + i * 3) = C_pre;
+  // }
 
-  // Measurement Noise Matrix (12 * 12)
-  R = .0001 * Eigen::MatrixXd::Identity(num_measure, num_measure);
+  // // Measurement Noise Matrix (12 * 12)
+  // R = .0001 * Eigen::MatrixXd::Identity(num_measure, num_measure);
 
   // // Define vectors for state positions
   // Eigen::VectorXd state_positions(18);
@@ -456,28 +561,28 @@ void EKFEstimator::update(const Eigen::VectorXd& jk) {
   // }
 
   // update Covariance (12 * 12)
-  Eigen::MatrixXd S = H * P_pre * H.transpose() + R;
-  // K (27 * 12)
-  Eigen::MatrixXd K = P_pre * H.transpose() * S.inverse();
-  Eigen::VectorXd delta_X = K * y;
+  // Eigen::MatrixXd S = H * P_pre * H.transpose() + R;
+  // // K (27 * 12)
+  // Eigen::MatrixXd K = P_pre * H.transpose() * S.inverse();
+  // Eigen::VectorXd delta_X = K * y;
 
-  // std::cout << "kalmin gain " << K << std::endl;
-  // std::cout << "delta x " << delta_X.transpose() << std::endl;
+  // // std::cout << "kalmin gain " << K << std::endl;
+  // // std::cout << "delta x " << delta_X.transpose() << std::endl;
 
-  P = P_pre - K * H * P_pre;
+  // P = P_pre - K * H * P_pre;
 
-  // update state
-  X.segment(0, 3) = r_pre + delta_X.segment(0, 3);
-  X.segment(3, 3) = v_pre + delta_X.segment(3, 3);
-  Eigen::VectorXd delta_q = delta_X.segment(6, 3);
-  Eigen::VectorXd q_upd = this->quaternionDynamics(delta_q, q_pre);
-  // Eigen::VectorXd q_upd = this->quaternionDynamics(q_pre, delta_q);
-  X.segment(6, 4) = q_upd;
-  X.segment(10, num_feet * 3) = p_pre + delta_X.segment(9, num_feet * 3);
-  X.segment(22, 3) = bf_pre + delta_X.segment(21, 3);
-  X.segment(25, 3) = bw_pre + delta_X.segment(24, 3);
-  // set current state value to previous statex
-  last_X = X;
+  // // update state
+  // X.segment(0, 3) = r_pre + delta_X.segment(0, 3);
+  // X.segment(3, 3) = v_pre + delta_X.segment(3, 3);
+  // Eigen::VectorXd delta_q = delta_X.segment(6, 3);
+  // Eigen::VectorXd q_upd = this->quaternionDynamics(delta_q, q_pre);
+  // // Eigen::VectorXd q_upd = this->quaternionDynamics(q_pre, delta_q);
+  // X.segment(6, 4) = q_upd;
+  // X.segment(10, num_feet * 3) = p_pre + delta_X.segment(9, num_feet * 3);
+  // X.segment(22, 3) = bf_pre + delta_X.segment(21, 3);
+  // X.segment(25, 3) = bw_pre + delta_X.segment(24, 3);
+  // // set current state value to previous statex
+  // last_X = X;
 }
 
 Eigen::VectorXd EKFEstimator::quaternionDynamics(const Eigen::VectorXd& wdt,
