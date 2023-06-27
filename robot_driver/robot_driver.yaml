@@ -29,10 +29,10 @@ robot_driver:
   bias_r: 0.00000 # actual measurement of bias_gyro r is 0.00009
   bias_p: 0.00000 # actual measurement of bias_gyro p is 0.00003
   bias_w: 0.00000 # actual measurement of bias_gyro y is 0.00002
-  na: 0.001 # noise in accelerometer
-  ng: 0.001 # noise in gyro
-  ba: 0.001 # bias in accelerometer
-  bg: 0.00001 # bias in gyro
+  na: 0.01 # noise in accelerometer
+  ng: 0.01 # noise in gyro
+  ba: 0.01 # bias in accelerometer
+  bg: 0.001 # bias in gyro
   nf: 0.001 # noise in feet
   nfk: 0.001 # noise in forward kinematics
   ne: 0.001 # noise in encoder
