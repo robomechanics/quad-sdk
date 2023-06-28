@@ -63,6 +63,25 @@ SOFTWARE.
       </geometry>
     </collision>
   </link>
+  <gazebo reference="body">
+    <gravity>true</gravity>
+    <sensor name="imu_sensor" type="imu">
+      <always_on>true</always_on>
+      <visualize>true</visualize>
+      <topic>__default_topic_</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>imu</topicName>
+        <bodyName>body</bodyName>
+        <updateRateHZ>500.0</updateRateHZ>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>0 0 0</xyzOffset>  <!-- modify once IMU is placed -->
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>body</frameName>
+        <initialOrientationAsReference>true</initialOrientationAsReference>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor>
+  </gazebo>
   <!-- Hip motor -->
   <link name="hip0">
     <visual>
@@ -85,6 +104,9 @@ SOFTWARE.
       <inertia ixx="0.00066963541" ixy="0" ixz="0" iyy="0.00066963541" iyz="0" izz="0.0008696875"/>
     </inertial>
   </link>
+  <gazebo reference="hip0">
+    <material>Gazebo/Gray</material>
+  </gazebo>
   <!-- Abduction joint. Joint names are: 8 9 10 11 -->
   <joint name="8" type="revolute">
     <parent link="body"/>
@@ -94,6 +116,17 @@ SOFTWARE.
     <limit effort="40" lower="-0.707" upper="0.707" velocity="30"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
+  <!-- Transmission elements required for Gazebo -->
+  <transmission name="transmission_8">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="8">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_8">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
   <!-- Upper leg -->
   <link name="upper0">
     <visual>
@@ -110,10 +143,14 @@ SOFTWARE.
       </geometry>
     </collision>
     <inertial>
+      <origin rpy="0 0 0" xyz="-0.040 -0.041 0"/> <!-- values from spirit -->
       <mass value="2.823"/>
       <inertia ixx="0.0026851" ixy="-6.2823E-05" ixz="-0.0022535" iyy="0.010059" iyz="-8.5258E-05" izz="0.0076466"/>
     </inertial>
   </link>
+  <gazebo reference="upper0">
+    <material>Gazebo/Gray</material>
+  </gazebo>
   <!-- Hip joint. (Motor to upper leg). Joint names are: 0 2 4 6 -->
   <joint name="0" type="revolute">
     <parent link="hip0"/>
@@ -124,6 +161,17 @@ SOFTWARE.
     <limit effort="40" lower="-6.28318530718" upper="6.28318530718" velocity="30"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
+  <!-- Transmission elements required for Gazebo -->
+  <transmission name="transmission_0">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="0">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_0">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
   <!-- Lower leg -->
   <link name="lower0">
     <visual>
@@ -140,10 +188,14 @@ SOFTWARE.
       </geometry>
     </collision>
     <inertial>
+      <origin rpy="0 0 0" xyz="0.092 0 0"/> <!-- values from spirit -->
       <mass value="1.0526"/>
       <inertia ixx="0.00093898" ixy="-3.788E-05" ixz="1.0791E-05" iyy="0.00042016" iyz="0.00017591" izz="0.00055413"/>
     </inertial>
   </link>
+  <gazebo reference="lower0">
+    <material>Gazebo/Black</material>
+  </gazebo>
   <!-- Knee joint. Joint names are: 1 3 5 7 -->
   <joint name="1" type="revolute">
     <parent link="upper0"/>
@@ -154,6 +206,16 @@ SOFTWARE.
     <limit effort="40" lower="0" upper="3.14159265359" velocity="30"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
+  <transmission name="transmission_1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="1">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_1">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
   <!-- Toe -->
   <link name="toe0">
     <contact>
@@ -175,6 +237,20 @@ SOFTWARE.
       <geometry>
         <sphere radius="0.02"/>
       </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+        </friction>
+        <contact>
+          <ode>
+            <kp>30000</kp>
+            <kd>1000</kd>
+          </ode>
+        </contact>
+      </surface>
     </collision>
     <inertial>
       <mass value="0.015"/>
@@ -182,6 +258,37 @@ SOFTWARE.
       <!-- <inertia ixx="2/5*${toeMass}*${toeRadius}*${toeRadius}"  ixy="0"  ixz="0" iyy="2/5*${toeMass}*${toeRadius}*${toeRadius}" iyz="0" izz="2/5*${toeMass}*${toeRadius}*${toeRadius}" /> -->
     </inertial>
   </link>
+  <gazebo reference="toe0">
+    <material>Gazebo/DarkGray</material>
+    <collision>
+      <surface>
+        <bounce>
+          <restitution_coefficient>0</restitution_coefficient>
+          <threshold>1e+06</threshold>
+        </bounce>
+        <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+          <bullet>
+            <rolling_friction>0.3</rolling_friction>
+            <friction2>50.0</friction2>
+          </bullet>
+        </friction>
+        <contact>
+          <bullet>
+            <kp>30000.0</kp>
+            <kd>1000.0</kd>
+          </bullet>
+          <ode>
+            <kp>30000</kp>
+            <kd>1000</kd>
+          </ode>
+        </contact>
+      </surface>
+    </collision>
+  </gazebo>
   <joint name="jtoe0" type="fixed">
     <parent link="lower0"/>
     <child link="toe0"/>
@@ -210,6 +317,9 @@ SOFTWARE.
       <inertia ixx="0.00066963541" ixy="0" ixz="0" iyy="0.00066963541" iyz="0" izz="0.0008696875"/>
     </inertial>
   </link>
+  <gazebo reference="hip1">
+    <material>Gazebo/Gray</material>
+  </gazebo>
   <!-- Abduction joint. Joint names are: 8 9 10 11 -->
   <joint name="9" type="revolute">
     <parent link="body"/>
@@ -219,6 +329,17 @@ SOFTWARE.
     <limit effort="40" lower="-0.707" upper="0.707" velocity="30"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
+  <!-- Transmission elements required for Gazebo -->
+  <transmission name="transmission_9">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="9">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_9">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
   <!-- Upper leg -->
   <link name="upper1">
     <visual>
@@ -235,10 +356,14 @@ SOFTWARE.
       </geometry>
     </collision>
     <inertial>
+      <origin rpy="0 0 0" xyz="-0.040 -0.041 0"/> <!-- values from spirit -->
       <mass value="2.823"/>
       <inertia ixx="0.0026851" ixy="-6.2823E-05" ixz="-0.0022535" iyy="0.010059" iyz="-8.5258E-05" izz="0.0076466"/>
     </inertial>
   </link>
+  <gazebo reference="upper1">
+    <material>Gazebo/Gray</material>
+  </gazebo>
   <!-- Hip joint. (Motor to upper leg). Joint names are: 0 2 4 6 -->
   <joint name="2" type="revolute">
     <parent link="hip1"/>
@@ -249,6 +374,17 @@ SOFTWARE.
     <limit effort="40" lower="-6.28318530718" upper="6.28318530718" velocity="30"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
+  <!-- Transmission elements required for Gazebo -->
+  <transmission name="transmission_2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="2">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_2">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
   <!-- Lower leg -->
   <link name="lower1">
     <visual>
@@ -265,10 +401,14 @@ SOFTWARE.
       </geometry>
     </collision>
     <inertial>
+      <origin rpy="0 0 0" xyz="0.092 0 0"/> <!-- values from spirit -->
       <mass value="1.0526"/>
       <inertia ixx="0.00093898" ixy="-3.788E-05" ixz="1.0791E-05" iyy="0.00042016" iyz="0.00017591" izz="0.00055413"/>
     </inertial>
   </link>
+  <gazebo reference="lower1">
+    <material>Gazebo/Black</material>
+  </gazebo>
   <!-- Knee joint. Joint names are: 1 3 5 7 -->
   <joint name="3" type="revolute">
     <parent link="upper1"/>
@@ -279,6 +419,17 @@ SOFTWARE.
     <limit effort="40" lower="0" upper="3.14159265359" velocity="30"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
+  <!-- Transmission elements required for Gazebo -->
+  <transmission name="transmission_3">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="3">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_3">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
   <!-- Toe -->
   <link name="toe1">
     <contact>
@@ -300,6 +451,20 @@ SOFTWARE.
       <geometry>
         <sphere radius="0.02"/>
       </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+        </friction>
+        <contact>
+          <ode>
+            <kp>30000</kp>
+            <kd>1000</kd>
+          </ode>
+        </contact>
+      </surface>
     </collision>
     <inertial>
       <mass value="0.015"/>
@@ -307,6 +472,37 @@ SOFTWARE.
       <!-- <inertia ixx="2/5*${toeMass}*${toeRadius}*${toeRadius}"  ixy="0"  ixz="0" iyy="2/5*${toeMass}*${toeRadius}*${toeRadius}" iyz="0" izz="2/5*${toeMass}*${toeRadius}*${toeRadius}" /> -->
     </inertial>
   </link>
+  <gazebo reference="toe1">
+    <material>Gazebo/DarkGray</material>
+    <collision>
+      <surface>
+        <bounce>
+          <restitution_coefficient>0</restitution_coefficient>
+          <threshold>1e+06</threshold>
+        </bounce>
+        <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+          <bullet>
+            <rolling_friction>0.3</rolling_friction>
+            <friction2>50.0</friction2>
+          </bullet>
+        </friction>
+        <contact>
+          <bullet>
+            <kp>30000.0</kp>
+            <kd>1000.0</kd>
+          </bullet>
+          <ode>
+            <kp>30000</kp>
+            <kd>1000</kd>
+          </ode>
+        </contact>
+      </surface>
+    </collision>
+  </gazebo>
   <joint name="jtoe1" type="fixed">
     <parent link="lower1"/>
     <child link="toe1"/>
@@ -335,6 +531,9 @@ SOFTWARE.
       <inertia ixx="0.00066963541" ixy="0" ixz="0" iyy="0.00066963541" iyz="0" izz="0.0008696875"/>
     </inertial>
   </link>
+  <gazebo reference="hip2">
+    <material>Gazebo/Gray</material>
+  </gazebo>
   <!-- Abduction joint. Joint names are: 8 9 10 11 -->
   <joint name="10" type="revolute">
     <parent link="body"/>
@@ -344,6 +543,17 @@ SOFTWARE.
     <limit effort="40" lower="-0.707" upper="0.707" velocity="30"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
+  <!-- Transmission elements required for Gazebo -->
+  <transmission name="transmission_10">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="10">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_10">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
   <!-- Upper leg -->
   <link name="upper2">
     <visual>
@@ -360,10 +570,14 @@ SOFTWARE.
       </geometry>
     </collision>
     <inertial>
+      <origin rpy="0 0 0" xyz="-0.040 0.041 0"/> <!-- values from spirit -->
       <mass value="2.823"/>
       <inertia ixx="0.0026851" ixy="-6.2823E-05" ixz="-0.0022535" iyy="0.010059" iyz="-8.5258E-05" izz="0.0076466"/>
     </inertial>
   </link>
+  <gazebo reference="upper2">
+    <material>Gazebo/Gray</material>
+  </gazebo>
   <!-- Hip joint. (Motor to upper leg). Joint names are: 0 2 4 6 -->
   <joint name="4" type="revolute">
     <parent link="hip2"/>
@@ -374,6 +588,17 @@ SOFTWARE.
     <limit effort="40" lower="-6.28318530718" upper="6.28318530718" velocity="30"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
+  <!-- Transmission elements required for Gazebo -->
+  <transmission name="transmission_4">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="4">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_4">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
   <!-- Lower leg -->
   <link name="lower2">
     <visual>
@@ -390,10 +615,14 @@ SOFTWARE.
       </geometry>
     </collision>
     <inertial>
+      <origin rpy="0 0 0" xyz="0.092 0 0"/> <!-- values from spirit -->
       <mass value="1.0526"/>
       <inertia ixx="0.00093898" ixy="-3.788E-05" ixz="1.0791E-05" iyy="0.00042016" iyz="0.00017591" izz="0.00055413"/>
     </inertial>
   </link>
+  <gazebo reference="lower2">
+    <material>Gazebo/Black</material>
+  </gazebo>
   <!-- Knee joint. Joint names are: 1 3 5 7 -->
   <joint name="5" type="revolute">
     <parent link="upper2"/>
@@ -404,6 +633,17 @@ SOFTWARE.
     <limit effort="40" lower="0" upper="3.14159265359" velocity="30"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
+  <!-- Transmission elements required for Gazebo -->
+  <transmission name="transmission_5">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="5">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_5">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
   <!-- Toe -->
   <link name="toe2">
     <contact>
@@ -425,6 +665,20 @@ SOFTWARE.
       <geometry>
         <sphere radius="0.02"/>
       </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+        </friction>
+        <contact>
+          <ode>
+            <kp>30000</kp>
+            <kd>1000</kd>
+          </ode>
+        </contact>
+      </surface>
     </collision>
     <inertial>
       <mass value="0.015"/>
@@ -432,6 +686,37 @@ SOFTWARE.
       <!-- <inertia ixx="2/5*${toeMass}*${toeRadius}*${toeRadius}"  ixy="0"  ixz="0" iyy="2/5*${toeMass}*${toeRadius}*${toeRadius}" iyz="0" izz="2/5*${toeMass}*${toeRadius}*${toeRadius}" /> -->
     </inertial>
   </link>
+  <gazebo reference="toe2">
+    <material>Gazebo/DarkGray</material>
+    <collision>
+      <surface>
+        <bounce>
+          <restitution_coefficient>0</restitution_coefficient>
+          <threshold>1e+06</threshold>
+        </bounce>
+        <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+          <bullet>
+            <rolling_friction>0.3</rolling_friction>
+            <friction2>50.0</friction2>
+          </bullet>
+        </friction>
+        <contact>
+          <bullet>
+            <kp>30000.0</kp>
+            <kd>1000.0</kd>
+          </bullet>
+          <ode>
+            <kp>30000</kp>
+            <kd>1000</kd>
+          </ode>
+        </contact>
+      </surface>
+    </collision>
+  </gazebo>
   <joint name="jtoe2" type="fixed">
     <parent link="lower2"/>
     <child link="toe2"/>
@@ -460,6 +745,9 @@ SOFTWARE.
       <inertia ixx="0.00066963541" ixy="0" ixz="0" iyy="0.00066963541" iyz="0" izz="0.0008696875"/>
     </inertial>
   </link>
+  <gazebo reference="hip3">
+    <material>Gazebo/Gray</material>
+  </gazebo>
   <!-- Abduction joint. Joint names are: 8 9 10 11 -->
   <joint name="11" type="revolute">
     <parent link="body"/>
@@ -469,6 +757,17 @@ SOFTWARE.
     <limit effort="40" lower="-0.707" upper="0.707" velocity="30"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
+  <!-- Transmission elements required for Gazebo -->
+  <transmission name="transmission_11">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="11">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_11">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
   <!-- Upper leg -->
   <link name="upper3">
     <visual>
@@ -485,10 +784,14 @@ SOFTWARE.
       </geometry>
     </collision>
     <inertial>
+      <origin rpy="0 0 0" xyz="-0.040 0.041 0"/> <!-- values from spirit -->
       <mass value="2.823"/>
       <inertia ixx="0.0026851" ixy="-6.2823E-05" ixz="-0.0022535" iyy="0.010059" iyz="-8.5258E-05" izz="0.0076466"/>
     </inertial>
   </link>
+  <gazebo reference="upper3">
+    <material>Gazebo/Gray</material>
+  </gazebo>
   <!-- Hip joint. (Motor to upper leg). Joint names are: 0 2 4 6 -->
   <joint name="6" type="revolute">
     <parent link="hip3"/>
@@ -499,6 +802,17 @@ SOFTWARE.
     <limit effort="40" lower="-6.28318530718" upper="6.28318530718" velocity="30"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
+  <!-- Transmission elements required for Gazebo -->
+  <transmission name="transmission_6">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="6">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_6">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
   <!-- Lower leg -->
   <link name="lower3">
     <visual>
@@ -515,10 +829,14 @@ SOFTWARE.
       </geometry>
     </collision>
     <inertial>
+      <origin rpy="0 0 0" xyz="0.092 0 0"/>  <!-- values from spirit -->
       <mass value="1.0526"/>
       <inertia ixx="0.00093898" ixy="-3.788E-05" ixz="1.0791E-05" iyy="0.00042016" iyz="0.00017591" izz="0.00055413"/>
     </inertial>
   </link>
+  <gazebo reference="lower3">
+    <material>Gazebo/Black</material>
+  </gazebo>
   <!-- Knee joint. Joint names are: 1 3 5 7 -->
   <joint name="7" type="revolute">
     <parent link="upper3"/>
@@ -529,6 +847,17 @@ SOFTWARE.
     <limit effort="40" lower="0" upper="3.14159265359" velocity="30"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
+  <!-- Transmission elements required for Gazebo -->
+  <transmission name="transmission_7">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="7">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_7">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
   <!-- Toe -->
   <link name="toe3">
     <contact>
@@ -550,6 +879,20 @@ SOFTWARE.
       <geometry>
         <sphere radius="0.02"/>
       </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+        </friction>
+        <contact>
+          <ode>
+            <kp>30000</kp>
+            <kd>1000</kd>
+          </ode>
+        </contact>
+      </surface>
     </collision>
     <inertial>
       <mass value="0.015"/>
@@ -557,6 +900,37 @@ SOFTWARE.
       <!-- <inertia ixx="2/5*${toeMass}*${toeRadius}*${toeRadius}"  ixy="0"  ixz="0" iyy="2/5*${toeMass}*${toeRadius}*${toeRadius}" iyz="0" izz="2/5*${toeMass}*${toeRadius}*${toeRadius}" /> -->
     </inertial>
   </link>
+  <gazebo reference="toe3">
+    <material>Gazebo/DarkGray</material>
+    <collision>
+      <surface>
+        <bounce>
+          <restitution_coefficient>0</restitution_coefficient>
+          <threshold>1e+06</threshold>
+        </bounce>
+        <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+          <bullet>
+            <rolling_friction>0.3</rolling_friction>
+            <friction2>50.0</friction2>
+          </bullet>
+        </friction>
+        <contact>
+          <bullet>
+            <kp>30000.0</kp>
+            <kd>1000.0</kd>
+          </bullet>
+          <ode>
+            <kp>30000</kp>
+            <kd>1000</kd>
+          </ode>
+        </contact>
+      </surface>
+    </collision>
+  </gazebo>
   <joint name="jtoe3" type="fixed">
     <parent link="lower3"/>
     <child link="toe3"/>
