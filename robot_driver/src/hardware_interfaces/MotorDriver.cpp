@@ -185,7 +185,9 @@ namespace motor_driver
     {
         motorState state;
         std::map<int, motorState> motor_state_map;
+        int cmd_motor_id;
 
+        std::vector<std::thread> v;
         for (const std::pair<int, motorCommand>& command_pair : motor_rad_commands)
         {
             int cmd_motor_id = command_pair.first;
@@ -198,16 +200,26 @@ namespace motor_driver
             //     std::cout << "MotorDriver::sendRadCommand() Motor in disabled state.\
             //                   Did you want to really do this?" << std::endl;
             // }
-            motor_CAN_interface_.sendCANFrame(cmd_motor_id, CAN_msg_);
-            usleep(motorReplyWaitTime);
-            if (motor_CAN_interface_.receiveCANFrame(CAN_reply_msg_))
+            
+            // v.emplace_back(&CAN_interface::CANInterface::sendCANFrame, cmd_motor_id, CAN_msg_);
+            v.emplace_back(&sendCANFrame, cmd_motor_id, CAN_msg_);
+            // motor_CAN_interface_.sendCANFrame(cmd_motor_id, CAN_msg_);
+            // usleep(motorReplyWaitTime);
+            for (auto& t : v) 
             {
-                state = decodeCANFrame(CAN_reply_msg_);
-                motor_state_map[cmd_motor_id] = state;
+                t.join();
             }
-            else
+            for (auto& t : v) 
             {
-                perror("MotorDriver::sendRadCommand() Unable to Receive CAN Reply.");
+                if (motor_CAN_interface_.receiveCANFrame(CAN_reply_msg_))
+                {
+                    state = decodeCANFrame(CAN_reply_msg_);
+                    motor_state_map[cmd_motor_id] = state;
+                }
+                else
+                {
+                    perror("MotorDriver::sendRadCommand() Unable to Receive CAN Reply.");
+                }
             }
         }
 
