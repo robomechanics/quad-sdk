@@ -378,6 +378,7 @@ void RobotDriver::publishState() {
   if (is_hardware_) {
     imu_pub_.publish(last_imu_msg_);
     joint_state_pub_.publish(last_joint_state_msg_);
+    std::cout<< last_robot_state_msg_.body.pose.position.z<<std::endl;
     robot_state_pub_.publish(last_robot_state_msg_);
   }
 }

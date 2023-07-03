@@ -55,6 +55,10 @@ bool CompFilterEstimator::updateOnce(
       last_mocap_msg_->pose.orientation;
   last_robot_state_msg_.body.pose.position = last_mocap_msg_->pose.position;
 
+  // Hardcode Z to be constant
+  last_robot_state_msg_.body.pose.position.z = 0.27;
+  std::cout << last_robot_state_msg_.body.pose.position.z << std::endl;
+
   // IMU is in body frame
   Eigen::Vector3d acc;
   acc << last_imu_msg_.linear_acceleration.x,
