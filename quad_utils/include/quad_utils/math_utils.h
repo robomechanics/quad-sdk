@@ -140,13 +140,15 @@ std::vector<double> centralDiff(std::vector<double> data, double dt);
  * @return Vector of unwrapped signal
  */
 std::vector<double> unwrap(std::vector<double> data);
+// template <typename VectorType>
+// VectorType unwrap(const VectorType& data);
 
 /**
  * @brief Selective damping least square matrix inverse
  * @param[in] jacobian Input matrix
  * @return Pseudo-inverse of the input matrix
  */
-Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian);
+Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd& jacobian);
 }  // namespace math_utils
 
 #endif  // QUAD_MATH_UTILS_H

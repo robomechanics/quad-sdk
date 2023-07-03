@@ -430,21 +430,27 @@ void LocalPlanner::getReference() {
   // Insert unwrapped yaw into ref_body_plan_
   ref_body_plan_.col(5) = eig_unwrapped_yaw_ref;
 
-  // Position filter for yaw ref = 0 | TODO: DELETE LATER
-  double world_pos_x = robot_state_msg_->body.pose.position.x;
-  double world_pos_y = robot_state_msg_->body.pose.position.y;
-  if (world_pos_x >= -1.5 && world_pos_x <= 1 && world_pos_y >= -2 &&
-      world_pos_y <= 0) {
-    ref_body_plan_.col(5).setZero();
-  }
-
   // Update current state with unwrapped yaw
-  float diff_curr_state = current_state_(5) - prev_unwrapped_yaw;
-  float quotient_curr_state = round(diff_curr_state / (2 * M_PI));
 
+  float diff_curr_state =
+      current_state_(5) -
+      unwrapped_yaw_ref[0];  // If current state and unwrapped yaw reference
+                             // large, then correct wrapped current state
+  // float diff_curr_state = current_state_(5) - unwrapped_yaw_ref[N_ - 1];
+
+  // ROS_INFO_THROTTLE(0.5, "Current state yaw %0.5f", current_state_(5));
+  float quotient_curr_state = round(diff_curr_state / (2 * M_PI));
   if (diff_curr_state > M_PI) {
+    // ROS_WARN("CURR STATE: DIFF > M_PI");
+    // ROS_INFO("Current state yaw %0.2f", current_state_(5));
+    // ROS_INFO("Unwrapped Yaw Reference %0.2f", unwrapped_yaw_ref[0]);
+    // ROS_INFO("diff curr state: %0.2f", diff_curr_state);
     current_state_(5) = current_state_(5) - quotient_curr_state * 2 * M_PI;
-  } else {
+  } else if (diff_curr_state < -M_PI) {
+    // ROS_WARN("CURR STATE: DIFF < M_PI");
+    // ROS_INFO("diff curr state: %0.2f", diff_curr_state);
+    // ROS_INFO("Current state yaw %0.2f", current_state_(5));
+    // ROS_INFO("Unwrapped Yaw Reference %0.2f", unwrapped_yaw_ref[0]);
     current_state_(5) = current_state_(5) + quotient_curr_state * 2 * M_PI;
   }
 

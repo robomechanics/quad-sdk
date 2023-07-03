@@ -199,8 +199,23 @@ std::vector<double> unwrap(std::vector<double> data) {
 
   return data_unwrapped;
 }
+// VectorType unwrap(const VectorType& data) {
+//   VectorType data_unwrapped = data;
+//   for (int i = 1; i < data.size(); i++) {
+//     if (diff > M_PI) {
+//       for (int j = i; j < data.size(); j++) {
+//         data_unwrapped[j] = data_unwrapped[j] - 2 * M_PI;
+//       }
+//     } else if (diff < -M_PI) {
+//       for (int j = i; j < data.size(); j++) {
+//         data_unwrapped[j] = data_unwrapped[j] + 2 * M_PI;
+//       }
+//     }
+//   }
+//   return data_unwrapped;
+// }
 
-Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian) {
+Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd& jacobian) {
   Eigen::JacobiSVD<Eigen::MatrixXd> svd(
       jacobian, Eigen::ComputeThinU | Eigen::ComputeThinV);
 
