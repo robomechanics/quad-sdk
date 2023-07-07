@@ -130,7 +130,7 @@ class EKFEstimator: public StateEstimator {
    * @brief EKF update step
    * @param[in] jk Eigen::VectorXd joint encoder data (12 * 1)
    */
-  void update(const Eigen::VectorXd& jk);
+  void update(const Eigen::VectorXd& jk, const Eigen::VectorXd& wk);
 
   /**
    * @brief read IMU data
@@ -261,9 +261,6 @@ class EKFEstimator: public StateEstimator {
   // state vector (28 * 1)
   Eigen::VectorXd X;
 
-  // state vector (28 * 1)
-  Eigen::VectorXd x;
-
   // last state vector (28 * 1)
   Eigen::VectorXd last_X;
 
@@ -271,13 +268,18 @@ class EKFEstimator: public StateEstimator {
   Eigen::VectorXd X_pre;
 
   // prediction state vector (28 * 1)
-  Eigen::VectorXd SC;
+  Eigen::Matrix<double, num_measure, num_state> SC;
   
-  Eigen::VectorXd S;
+  Eigen::Matrix<double, num_measure, num_measure> S;
+
+  // rotation matrix generated from imu quaternion (3 * 3)
+  Eigen::Matrix3d C1;
+
+  // measurement matrix
   Eigen::MatrixXd C;
 
   // initial covariance matrix (27 * 27)
-  Eigen::MatrixXd Serror_y;
+  Eigen::Matrix<double, num_measure, 1> Serror_y;
 
   // initial covariance matrix (27 * 27)
   Eigen::MatrixXd P0;
@@ -294,7 +296,7 @@ class EKFEstimator: public StateEstimator {
   // process covariance matrix (27 * 27)
   Eigen::MatrixXd Q;
 
-  // state vector (3 * 1)
+  // "control" compensated body acceletation vector (3 * 1)
   Eigen::Vector3d u;
 
   // measurement matrix (12 * 27)
@@ -303,8 +305,11 @@ class EKFEstimator: public StateEstimator {
   // measurement covariance matrix (12 * 12)
   Eigen::MatrixXd R;
 
+  // foot forward kinematics vector (24*1)
+  Eigen::VectorXd foot_state;
+
   // error measurement displacement vector (18 * 1)
-  Eigen::VectorXd error_y;
+  Eigen::Matrix<double, num_measure, 1>  error_y;
 
   // measurement Generated from Leg Kinematics (18 * 1)
   Eigen::VectorXd y;

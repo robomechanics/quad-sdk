@@ -417,7 +417,6 @@ bool RobotDriver::updateState(){
   else{
     if (state_estimator_ != nullptr)
     {
-      // state_estimator_->loadSensorMsg(last_imu_msg_, last_joint_state_msg_);
       // Initialize Estimated State on Standup, Start Update Step
       if (initialized ==false && control_mode_ == READY){
         ROS_INFO_STREAM("Initialized is False");
@@ -447,10 +446,12 @@ void RobotDriver::publishState() {
   }
   else{
     if (control_mode_ == READY ){
-    // if (control_mode_ == READY && grf_array_msg_ != nullptr){
       // Publishing before the Update Step Happens, Find a Way to Fix This
-      state_estimate_pub_.publish(estimated_state_);
+      // state_estimate_pub_.publish(estimated_state_);
       joint_state_pub_.publish(last_joint_state_msg_);
+      if (initialized){
+        state_estimate_pub_.publish(estimated_state_);
+      }
     }
   }
 }
