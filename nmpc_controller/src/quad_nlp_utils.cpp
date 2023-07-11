@@ -72,6 +72,29 @@ void quadNLP::loadCasadiFuncs() {
   eval_sparsity_vec_[A1][JAC] = eval_jac_g_a1_sparsity_out;
   eval_sparsity_vec_[A1][HESS] = eval_hess_g_a1_sparsity_out;
 
+    // Load basic leg controller functions for the new_platform platform
+  eval_vec_[NEW_PLATFORM][FUNC] = eval_g_new_platform;
+  eval_vec_[NEW_PLATFORM][JAC] = eval_jac_g_new_platform;
+  eval_vec_[NEW_PLATFORM][HESS] = eval_hess_g_new_platform;
+  eval_work_vec_[NEW_PLATFORM][FUNC] = eval_g_new_platform_work;
+  eval_work_vec_[NEW_PLATFORM][JAC] = eval_jac_g_new_platform_work;
+  eval_work_vec_[NEW_PLATFORM][HESS] = eval_hess_g_new_platform_work;
+  eval_incref_vec_[NEW_PLATFORM][FUNC] = eval_g_new_platform_incref;
+  eval_incref_vec_[NEW_PLATFORM][JAC] = eval_jac_g_new_platform_incref;
+  eval_incref_vec_[NEW_PLATFORM][HESS] = eval_hess_g_new_platform_incref;
+  eval_decref_vec_[NEW_PLATFORM][FUNC] = eval_g_new_platform_decref;
+  eval_decref_vec_[NEW_PLATFORM][JAC] = eval_jac_g_new_platform_decref;
+  eval_decref_vec_[NEW_PLATFORM][HESS] = eval_hess_g_new_platform_decref;
+  eval_checkout_vec_[NEW_PLATFORM][FUNC] = eval_g_new_platform_checkout;
+  eval_checkout_vec_[NEW_PLATFORM][JAC] = eval_jac_g_new_platform_checkout;
+  eval_checkout_vec_[NEW_PLATFORM][HESS] = eval_hess_g_new_platform_checkout;
+  eval_release_vec_[NEW_PLATFORM][FUNC] = eval_g_new_platform_release;
+  eval_release_vec_[NEW_PLATFORM][JAC] = eval_jac_g_new_platform_release;
+  eval_release_vec_[NEW_PLATFORM][HESS] = eval_hess_g_new_platform_release;
+  eval_sparsity_vec_[NEW_PLATFORM][FUNC] = eval_g_new_platform_sparsity_out;
+  eval_sparsity_vec_[NEW_PLATFORM][JAC] = eval_jac_g_new_platform_sparsity_out;
+  eval_sparsity_vec_[NEW_PLATFORM][HESS] = eval_hess_g_new_platform_sparsity_out;
+
   // Load simple to simple functions - for adaptive complexity
   eval_vec_[SIMPLE_TO_SIMPLE][FUNC] = eval_g_leg_simple;
   eval_vec_[SIMPLE_TO_SIMPLE][JAC] = eval_jac_g_leg_simple;

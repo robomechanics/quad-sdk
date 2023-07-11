@@ -55,6 +55,9 @@ add_library(nmpc_controller
   src/gen/eval_g_a1.cpp
   src/gen/eval_jac_g_a1.cpp
   src/gen/eval_hess_g_a1.cpp
+  src/gen/eval_g_new_platform.cpp
+  src/gen/eval_jac_g_new_platform.cpp
+  src/gen/eval_hess_g_new_platform.cpp
   src/gen/eval_g_leg_simple.cpp
   src/gen/eval_jac_g_leg_simple.cpp
   src/gen/eval_hess_g_leg_simple.cpp
