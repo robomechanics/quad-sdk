@@ -6,8 +6,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   argv_ = argv;
 
   // Load rosparams from parameter server
-  std::string robot_name, imu_topic, joint_state_topic, grf_topic,
-      robot_state_topic, trajectory_state_topic, local_plan_topic,
+  std::string robot_name, imu_topic, joint_state_topic, joint_state_hardware_topic_, 
+      grf_topic, robot_state_topic, trajectory_state_topic, local_plan_topic,
       leg_command_array_topic, control_mode_topic, remote_heartbeat_topic,
       robot_heartbeat_topic, single_joint_cmd_topic, mocap_topic,
       control_restart_flag_topic;
@@ -15,6 +15,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
                                   std::string("spirit"));
   quad_utils::loadROSParam(nh_, "topics/state/imu", imu_topic);
   quad_utils::loadROSParam(nh_, "topics/state/joints", joint_state_topic);
+  quad_utils::loadROSParam(nh_, "topics/state/joints_hardware", joint_state_hardware_topic_);
   quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
   quad_utils::loadROSParam(nh_, "topics/state/trajectory",
@@ -67,6 +68,9 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   quad_utils::loadROSParam(nh_, "robot_driver/sit_joint_angles",
                            sit_joint_angles_);
   quad_utils::loadROSParam(nh_, "robot_driver/torque_limit", torque_limits_);
+  //Get position limits for robot
+  // quad_utils::loadROSParam(nh_, "nmpc_controller/joints/x_lb", pos_limit_min);
+  // quad_utils::loadROSParam(nh_, "nmpc_controller/joints/x_ub", pos_limit_max);
 
   // Setup pubs and subs
   local_plan_sub_ =
@@ -113,7 +117,19 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   // Initialize hardware interface
   if (is_hardware_) {
     if (robot_name == "spirit") {
+      ROS_INFO("Loading spirit interface");
       hardware_interface_ = std::make_shared<SpiritInterface>();
+    }
+    if (robot_name == "new_platform") {
+          ROS_INFO("Loading new platform interface");
+      if (is_hardware_) {
+        ROS_INFO("HARDWARE");
+        hardware_interface_ = std::make_shared<NewPlatformInterface>();
+      }
+      else {
+        ROS_INFO("SIM");
+        hardware_interface_ = std::make_shared<NewPlatformInterfaceSim>();      
+        } 
     } else {
       ROS_ERROR_STREAM("Invalid robot name " << robot_name
                                              << ", returning nullptr");
