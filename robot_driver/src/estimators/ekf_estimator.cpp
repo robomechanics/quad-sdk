@@ -73,13 +73,13 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_){
   g = Eigen::VectorXd::Zero(3);
   g[2] = 9.8;
 
-  if (initialized){
+  if (last_grf_msg_ != nullptr){
+     if (initialized){
     // Set Start Time on Initialization
     last_time = ros::Time::now();
-    initialized = true;
-  }
-
-  X0 << estimated_state_.body.pose.position.x,
+    P0 = 0.001 * Eigen::MatrixXd::Identity(num_cov, num_cov);
+    P = P0;
+    X0 << estimated_state_.body.pose.position.x,
         estimated_state_.body.pose.position.y,
         estimated_state_.body.pose.position.z,
         estimated_state_.body.twist.linear.x,
@@ -102,20 +102,13 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_){
         estimated_state_.feet.feet[3].position.y,
         estimated_state_.feet.feet[3].position.z, bias_x_, bias_y_, bias_z_,
         0, 0, 0;
-  X = X0;
-  last_X = X0;
-  P = P0;
-    //Run Step Once to Calculate Change in State Once Local Planner Starts Running
-  if(last_grf_msg_ != nullptr){  
-    if (initialized){
-      last_time = ros::Time::now();
-      // initial state covariance matrix
-      P0 = 0.001 * Eigen::MatrixXd::Identity(num_cov, num_cov);
-      P = P0;
-      initialized = false;
-    }
-    auto new_state_est = this->StepOnce(); 
-    estimated_state_ = new_state_est;
+    X = X0;
+    X_pre = X0;
+    last_X = X0;
+    initialized = false;
+  }
+  auto new_state_est = this->StepOnce(); 
+  estimated_state_ = new_state_est;
   }
   return true;
 }
@@ -186,9 +179,9 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   std::vector<double> jkVector(jk.data(), jk.data() + jk.rows() * jk.cols());
   
   /// Prediction Step
-  std::cout << "this is X before" << X.transpose() << std::endl;
+  // std::cout << "this is X before" << X.transpose() << std::endl;
   this->predict(dt, fk, wk, qk);
-  std::cout << "this is X predict" << X.transpose() << std::endl;
+  // std::cout << "this is X predict" << X.transpose() << std::endl;
 
   // for testing prediction step
   X = X_pre;
@@ -196,7 +189,7 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   last_X = X;
 
   /// Update Step
-  //this->update(jk); // Uncomment for Update Step
+  this->update(jk); // Uncomment for Update Step
   // std::cout << "this is X update" << X.transpose() << std::endl;
 
   /// publish new message
@@ -204,15 +197,15 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
 
   // body
 
-  // new_state_est.body.pose.orientation.w = X[6];
-  // new_state_est.body.pose.orientation.x = X[7];
-  // new_state_est.body.pose.orientation.y = X[8];
-  // new_state_est.body.pose.orientation.z = X[9];
+  new_state_est.body.pose.orientation.w = X[6];
+  new_state_est.body.pose.orientation.x = X[7];
+  new_state_est.body.pose.orientation.y = X[8];
+  new_state_est.body.pose.orientation.z = X[9];
   
-  new_state_est.body.pose.orientation.w = qk.w();
-  new_state_est.body.pose.orientation.x = qk.x();
-  new_state_est.body.pose.orientation.y = qk.y();
-  new_state_est.body.pose.orientation.z = qk.z();
+  // new_state_est.body.pose.orientation.w = qk.w();
+  // new_state_est.body.pose.orientation.x = qk.x();
+  // new_state_est.body.pose.orientation.y = qk.y();
+  // new_state_est.body.pose.orientation.z = qk.z();
 
   new_state_est.body.pose.position.x = X[0];
   new_state_est.body.pose.position.y = X[1];

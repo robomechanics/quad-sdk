@@ -342,7 +342,7 @@ class EKFEstimator: public StateEstimator {
   double ne_;
 
   // initialized the estimator
-  bool initialized = false;
+  bool initialized = true;
 
   // Record whether we have good imu and joint state data
   bool good_imu = false;
