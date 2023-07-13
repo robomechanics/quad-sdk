@@ -51,11 +51,12 @@ class StateEstimator {
   /**
    * @brief Read joint encoder data
    * @param[in] last_joint_state_msg Joint state sensor message
-   * @param[out] jk Jointstate in vector (12 * 1)
+   * @param[out] jk Joint state in vector (12 * 1)
+   * @param[out] vk Joint velocity in vector (12 * 1)
    */
   void readJointEncoder(
       const sensor_msgs::JointState::ConstPtr& last_joint_state_msg,
-      Eigen::VectorXd& jk);
+      Eigen::VectorXd& jk, Eigen::VectorXd& vk);
 
   /**
    * @brief Load Mocap data to protected variable
