@@ -121,7 +121,7 @@ class EKFEstimator: public StateEstimator {
    * @param[in] dt double time interval
    * @param[in] fk Eigen::VectorXd linear acceleration data (3 * 1)
    * @param[in] wk Eigen::VectorXd angular acceleration data (3 * 1)
-   * @param[in] qk Eigen::Quaterniond orientation in quaternion
+   * @param[in] qk Eigen::Quaterniond orientation in quaternion (4 * 1)
    */
   void predict(const double& dt, const Eigen::VectorXd& fk,
                const Eigen::VectorXd& wk, const Eigen::Quaterniond& qk);
@@ -129,8 +129,10 @@ class EKFEstimator: public StateEstimator {
   /**
    * @brief EKF update step
    * @param[in] jk Eigen::VectorXd joint encoder data (12 * 1)
+   * @param[in] vk Eigen::VectorXd joint encoder velcoity data (12 * 1)
+   * @param[in] wk Eigen::VectorXd imu angular acceleration data (3 * 1)
    */
-  void update(const Eigen::VectorXd& jk, const Eigen::VectorXd& wk);
+  void update(const Eigen::VectorXd& jk, const Eigen::VectorXd& vk, const Eigen::VectorXd& wk);
 
   /**
    * @brief read IMU data
@@ -211,7 +213,7 @@ class EKFEstimator: public StateEstimator {
   /// Last state ground_truth
   quad_msgs::RobotState::ConstPtr last_robot_state_msg_;
 
-//   quad_msgs::RobotState last_estimated_state_;
+  // quad_msgs::RobotState last_estimated_state_;
 
   /// Subscriber for joint encoder messages
   ros::Subscriber joint_encoder_sub_;

@@ -423,6 +423,7 @@ bool RobotDriver::updateState(){
         ROS_INFO_STREAM("Initialized is False");
         estimated_state_ = last_robot_state_msg_;
         last_joint_state_msg_.position = last_robot_state_msg_.joints.position;
+        last_joint_state_msg_.velocity = last_robot_state_msg_.joints.velocity;
         initialized = true;
         
       }
@@ -430,6 +431,7 @@ bool RobotDriver::updateState(){
         // Update State Estimate once GRF's are being Published
         if (grf_array_msg_.vectors[0].x != 0 && control_mode_ == READY){ 
           last_joint_state_msg_.position = last_robot_state_msg_.joints.position;
+          last_joint_state_msg_.velocity = last_robot_state_msg_.joints.velocity;
           ekf_estimator_->updateOnce(estimated_state_);
         }
       }
@@ -447,8 +449,6 @@ void RobotDriver::publishState() {
   }
   else{
     if (control_mode_ == READY ){
-      // Publishing before the Update Step Happens, Find a Way to Fix This
-      // state_estimate_pub_.publish(estimated_state_);
       joint_state_pub_.publish(last_joint_state_msg_);
       if (initialized){
         state_estimate_pub_.publish(estimated_state_);
@@ -460,6 +460,7 @@ void RobotDriver::publishState() {
 bool RobotDriver::updateControl()
 {
   // Check if state machine should be skipped
+
   bool valid_cmd = true;
   if (leg_controller_->overrideStateMachine())
   {

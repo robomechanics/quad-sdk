@@ -99,35 +99,35 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_){
       }
 
     // Calculate Forward Kinematics, extract our foot positions and velocities
-    quad_utils::fkRobotState(*quadKD_, estimated_state_);
+    // quad_utils::fkRobotState(*quadKD_, estimated_state_);
     // ROS_INFO_STREAM(estimated_state_);
-    foot_state = Eigen::VectorXd::Zero(24);
-    foot_state << estimated_state_.feet.feet[0].position.x,
-                  estimated_state_.feet.feet[0].position.x,
-                  estimated_state_.feet.feet[0].position.y,
-                  estimated_state_.feet.feet[0].position.z,
-                  estimated_state_.feet.feet[1].position.x,
-                  estimated_state_.feet.feet[1].position.y,
-                  estimated_state_.feet.feet[1].position.z,
-                  estimated_state_.feet.feet[2].position.x,
-                  estimated_state_.feet.feet[2].position.y,
-                  estimated_state_.feet.feet[2].position.z,
-                  estimated_state_.feet.feet[3].position.x,
-                  estimated_state_.feet.feet[3].position.y,
-                  estimated_state_.feet.feet[3].position.z, 
-                  estimated_state_.feet.feet[0].velocity.x,
-                  estimated_state_.feet.feet[0].velocity.x,
-                  estimated_state_.feet.feet[0].velocity.y,
-                  estimated_state_.feet.feet[0].velocity.z,
-                  estimated_state_.feet.feet[1].velocity.x,
-                  estimated_state_.feet.feet[1].velocity.y,
-                  estimated_state_.feet.feet[1].velocity.z,
-                  estimated_state_.feet.feet[2].velocity.x,
-                  estimated_state_.feet.feet[2].velocity.y,
-                  estimated_state_.feet.feet[2].velocity.z,
-                  estimated_state_.feet.feet[3].velocity.x,
-                  estimated_state_.feet.feet[3].velocity.y,
-                  estimated_state_.feet.feet[3].velocity.z;
+    // foot_state = Eigen::VectorXd::Zero(24);
+    // foot_state << estimated_state_.feet.feet[0].position.x,
+    //               estimated_state_.feet.feet[0].position.x,
+    //               estimated_state_.feet.feet[0].position.y,
+    //               estimated_state_.feet.feet[0].position.z,
+    //               estimated_state_.feet.feet[1].position.x,
+    //               estimated_state_.feet.feet[1].position.y,
+    //               estimated_state_.feet.feet[1].position.z,
+    //               estimated_state_.feet.feet[2].position.x,
+    //               estimated_state_.feet.feet[2].position.y,
+    //               estimated_state_.feet.feet[2].position.z,
+    //               estimated_state_.feet.feet[3].position.x,
+    //               estimated_state_.feet.feet[3].position.y,
+    //               estimated_state_.feet.feet[3].position.z, 
+    //               estimated_state_.feet.feet[0].velocity.x,
+    //               estimated_state_.feet.feet[0].velocity.x,
+    //               estimated_state_.feet.feet[0].velocity.y,
+    //               estimated_state_.feet.feet[0].velocity.z,
+    //               estimated_state_.feet.feet[1].velocity.x,
+    //               estimated_state_.feet.feet[1].velocity.y,
+    //               estimated_state_.feet.feet[1].velocity.z,
+    //               estimated_state_.feet.feet[2].velocity.x,
+    //               estimated_state_.feet.feet[2].velocity.y,
+    //               estimated_state_.feet.feet[2].velocity.z,
+    //               estimated_state_.feet.feet[3].velocity.x,
+    //               estimated_state_.feet.feet[3].velocity.y,
+    //               estimated_state_.feet.feet[3].velocity.z;
     // ROS_INFO_STREAM("This is the FK" << foot_state);
 
     auto new_state_est = this->StepOnce(); 
@@ -197,11 +197,11 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   Eigen::Quaterniond qk(1, 0, 0, 0);
   // if there is good imu data: read data from bag file
   this->readIMU(last_imu_msg_, fk, wk, qk);
-  
+  // qk.normalize();
   // Joint data reading 3 joints * 4 legs
   Eigen::VectorXd jk = Eigen::VectorXd::Zero(12);
-  this->readJointEncoder(last_joint_state_msg_, jk);
-
+  Eigen::VectorXd vk = Eigen::VectorXd::Zero(12);
+  this->readJointEncoder(last_joint_state_msg_, jk, vk);
   std::vector<double> jkVector(jk.data(), jk.data() + jk.rows() * jk.cols());
   /// Prediction Step
   // std::cout << "this is X before" << X.transpose() << std::endl;
@@ -214,7 +214,7 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   // last_X = X;
 
   /// Update Step
-  this->update(jk, wk); // Uncomment for Update Step
+  this->update(jk, vk, wk); // Uncomment for Update Step
   // std::cout << "this is X update" << X.transpose() << std::endl;
 
   // last_X = X;
@@ -258,7 +258,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   // Generate Conversion Matrix to Rotate the Body Frame IMU into World Frame
   // Double Check if this needs a transpose or not
   // Eigen::Matrix3d C1 = (qk.toRotationMatrix()).transpose();
-  C1 = (qk.toRotationMatrix());
+  C1 = (qk.toRotationMatrix()).transpose();
 
   // q = Eigen::VectorXd::Zero(4);
   // q << qk.w(), qk.x(), qk.y(), qk.z();
@@ -283,7 +283,6 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   Eigen::VectorXd r = last_X.segment(0, 3);
   Eigen::VectorXd v = last_X.segment(3, 3);
   Eigen::VectorXd p = last_X.segment(10, 12);
-
   // Generate Linearized Dynamics Matrix (18 x 18)
   F = Eigen::MatrixXd::Identity(num_cov, num_cov);
   F.block<3, 3>(0, 3) = dt * Eigen::MatrixXd::Identity(3, 3);
@@ -291,7 +290,6 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   // Generate a Process Prediction X (18 x 1)
   X_pre = Eigen::VectorXd::Zero(num_state);
   P_pre = Eigen::MatrixXd::Zero(num_state, num_state);
-
   // Generate Estimation State Transition (18 x 3)
   Eigen::MatrixXd B(num_state, 3);
   B.setZero();
@@ -316,18 +314,6 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   // May Need to add a Rotation Matrix to Compensate for Frames Here
   g = Eigen::Vector3d(0, 0, -9.81);
   u = C1 * fk + g; 
-
-  // if (counter==4){
-  //   ROS_INFO_STREAM("dt" << dt);
-  //   ROS_INFO_STREAM("X" << last_X);
-  //   ROS_INFO_STREAM("F"<< F);
-  //   ROS_INFO_STREAM("B"<< B);
-  //   ROS_INFO_STREAM("Q" << Q);
-  //   ROS_INFO_STREAM("u" << u);
-  //   // ROS_INFO_STREAM("Transformed acc" << C.transpose()*fk+g);
-  // }
-  // counter++;
-
 
   // Solve for Process Prediction State and Covariance
   X_pre = (F * last_X) + B * u; // (18 x 1)
@@ -419,7 +405,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
 
 // }
 
-void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& wk) {
+void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& vk, const Eigen::VectorXd& wk) {
   // debug for update step, set the predicted state to be ground truth:
   // if (last_robot_state_msg_ != NULL) {
   //   X_pre << (*last_robot_state_msg_).body.pose.position.x,
@@ -480,14 +466,14 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& wk) 
 
   // Update Measurement Attempt #2
   // Rewritten to Account for Rotation Matrix of IMU Frame
-  Eigen::VectorXd joint_states(num_state);
+  Eigen::VectorXd joint_state(num_state);
   Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12,18);
-  joint_states << jk, r_pre, v_pre;
-
+  joint_state << jk, r_pre, v_pre;
+  
   // Solve for Linear Foot Velocities in the Body Frame
-  quadKD_->getJacobianBodyAngVel(joint_states, jacobian);
+  quadKD_->getJacobianBodyAngVel(joint_state, jacobian);
   Eigen::VectorXd lin_foot_vel;
-  lin_foot_vel = jacobian*joint_states;
+  lin_foot_vel = jacobian*vk;
 
   for (int i = 0; i < num_feet; ++i){
     // Solve for Foot Relative Positions
@@ -496,10 +482,10 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& wk) 
     toe_body_pos.setZero();
     joint_state_i = jk.segment(3*i, 3);
     quadKD_->bodyToFootFKBodyFrame(i, joint_state_i, toe_body_pos);
-    y.segment(3*i, 3) = C1 * (toe_body_pos) + last_X.segment(3*i,3);
+    y.segment(3*i, 3) = C1 * (toe_body_pos);
 
     // Solve for Foot Heights
-    y(24 + i) = (1.0 - (*last_grf_msg_).contact_states[i]) * (last_X(2) + toe_body_pos(2))
+    y(24 + i) = (1.0 - (*last_grf_msg_).contact_states[i]) * (r_pre(2) + toe_body_pos(2))
       + (*last_grf_msg_).contact_states[i] * 0; 
     
     // Solve for Foot Relative Velocties
@@ -507,7 +493,7 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& wk) 
     Eigen::MatrixXd acc;
     
     acc = calcSkewsym(wk);
-    leg_v = -(lin_foot_vel.segment(3*i, 3) + acc* toe_body_pos);
+    leg_v = -(lin_foot_vel.segment(3*i, 3)) - (acc* toe_body_pos);
     y.segment(12 + 3*i, 3) = (*last_grf_msg_).contact_states[i]*C1*leg_v
       + last_X.segment(3,3)*(1.0-(*last_grf_msg_).contact_states[i]);
   }
@@ -524,14 +510,15 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& wk) 
   // Solve for Error between Measured Y Residual and Process Residual
   error_y = y - (C * X_pre);
   S = C * P_pre * C.transpose() + R;
-  S = 0.5*(S+S.transpose());
+  S = 0.5*(S+S.transpose()); // Ensure that the Innovation Covariance is Symmetric
   Serror_y = S.fullPivHouseholderQr().solve(error_y);
 
   // EKF Filter Equations, Solve for Kalman Gain
+
   X = X_pre + P_pre * C.transpose() * Serror_y;
   SC = S.fullPivHouseholderQr().solve(C);
   P = P_pre - P_pre * C.transpose() * SC * P_pre;
-  P = 0.5 * (P + P.transpose());
+  P = 0.5 * (P + P.transpose()); // Ensure that the Covariance Matrix is Symmetric
 
   // Shuo Method to Reduce Positional Drift (Try)
   if (P.block<2, 2>(0, 0).determinant() > 1e-6) {
@@ -539,6 +526,7 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& wk) 
         P.block<16, 2>(2, 0).setZero();
         P.block<2, 2>(0, 0) /= 10.0;
   }
+  
   last_X = X;
 
   // // Collect states info from predicted state vector
