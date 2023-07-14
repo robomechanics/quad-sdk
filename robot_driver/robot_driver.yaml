@@ -37,3 +37,5 @@ robot_driver:
   nfk: 0.001 # noise in forward kinematics
   ne: 0.001 # noise in encoder
   P0: 3 # Initial Value of Covariance Matrix
+  contact_w: 500 # Contact weight
+
