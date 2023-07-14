@@ -7,6 +7,7 @@
 #include <quad_msgs/GRFArray.h>
 #include <quad_utils/quad_kd.h>
 #include <quad_utils/ros_utils.h>
+#include <quad_utils/math_utils.h>
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/JointState.h>
@@ -132,7 +133,7 @@ class EKFEstimator: public StateEstimator {
    * @param[in] vk Eigen::VectorXd joint encoder velcoity data (12 * 1)
    * @param[in] wk Eigen::VectorXd imu angular acceleration data (3 * 1)
    */
-  void update(const Eigen::VectorXd& jk, const Eigen::VectorXd& vk, const Eigen::VectorXd& wk);
+  void update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk, const Eigen::VectorXd& vk, const Eigen::VectorXd& wk);
 
   /**
    * @brief read IMU data
@@ -283,9 +284,6 @@ class EKFEstimator: public StateEstimator {
   // initial covariance matrix (27 * 27)
   Eigen::Matrix<double, num_measure, 1> Serror_y;
 
-  // initial covariance matrix (27 * 27)
-  Eigen::MatrixXd P0;
-
   // state covariance matrix (27 * 27)
   Eigen::MatrixXd P;
 
@@ -372,6 +370,8 @@ class EKFEstimator: public StateEstimator {
   double nfk_;
   // noise in encoder
   double ne_;
+  // initial covariance value
+  double P0_;
   // initialized the estimator
   bool initialized = true;
 
