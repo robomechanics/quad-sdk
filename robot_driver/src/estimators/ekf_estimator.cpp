@@ -42,6 +42,7 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
   quad_utils::loadROSParam(nh_, "/robot_driver/nfk", nfk_);
   quad_utils::loadROSParam(nh_, "/robot_driver/ne", ne_);
   quad_utils::loadROSParam(nh_, "/robot_driver/P0", P0_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/contact_w", contact_w_);
   quad_utils::loadROSParamDefault(nh_, "robot_driver/is_hardware", is_hardware_,
                                   true);
 
@@ -100,9 +101,9 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_){
       }
 
     // Calculate Forward Kinematics, extract our foot positions and velocities
-    quad_utils::fkRobotState(*quadKD_, estimated_state_);
+    // quad_utils::fkRobotState(*quadKD_, estimated_state_);
     // ROS_INFO_STREAM(estimated_state_);
-    foot_state = Eigen::VectorXd::Zero(24);
+    // foot_state = Eigen::VectorXd::Zero(24);
     // foot_state << estimated_state_.feet.feet[0].position.x,
     //               estimated_state_.feet.feet[0].position.x,
     //               estimated_state_.feet.feet[0].position.y,
@@ -133,9 +134,9 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_){
 
     auto new_state_est = this->StepOnce(); 
     // ROS_INFO_STREAM("P" << P(0));
-    // ROS_INFO_STREAM("Ground Truth" << (*last_robot_state_msg_).body.pose.position);
-    // ROS_INFO_STREAM("Predict Estimate" << X_pre.segment(0,3).transpose());
-    ROS_INFO_STREAM("Update Estimate" << X.segment(0,3).transpose());
+    ROS_INFO_STREAM("Ground Truth" << (*last_robot_state_msg_).body.twist.linear);
+    ROS_INFO_STREAM("Predict Estimate" << X_pre.segment(3,3).transpose());
+    ROS_INFO_STREAM("Update Estimate" << X.segment(3,3).transpose());
     estimated_state_ = new_state_est;
   }
   return true;
@@ -307,7 +308,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
       Q.block<3,3>(3*i + 6, 3*i + 6) = (1.0) * nf_ * dt*  Eigen::MatrixXd::Identity(3, 3);
     }
     else{
-      Q.block<3,3>(3*i + 6, 3*i + 6) = (1.0 + 1e3) * nf_ * dt*  Eigen::MatrixXd::Identity(3, 3);
+      Q.block<3,3>(3*i + 6, 3*i + 6) = (1.0 + contact_w_) * nf_ * dt*  Eigen::MatrixXd::Identity(3, 3);
     }
   }
 
@@ -452,9 +453,9 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk, 
       R(24 + i, 24 + i) = nf_ ;
     }
     else{
-      R.block<3,3>(3*i,3*i) = na_ * (1.0 + 1e3) * Eigen::MatrixXd::Identity(3, 3);
-      R.block<3,3>(12 + 3*i, 12 + 3*i) = na_ * (1.0 + 1e3) * Eigen::MatrixXd::Identity(3, 3);
-      R(24 + i, 24 + i) = nf_ *(1.0 + 1e3);
+      R.block<3,3>(3*i,3*i) = na_ * (1.0 + contact_w_) * Eigen::MatrixXd::Identity(3, 3);
+      R.block<3,3>(12 + 3*i, 12 + 3*i) = na_ * (1.0 + contact_w_) * Eigen::MatrixXd::Identity(3, 3);
+      R(24 + i, 24 + i) = nf_ *(1.0 + contact_w_);
     }
   }
 

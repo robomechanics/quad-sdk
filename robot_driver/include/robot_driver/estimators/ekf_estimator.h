@@ -372,6 +372,8 @@ class EKFEstimator: public StateEstimator {
   double ne_;
   // initial covariance value
   double P0_;
+  // weight on foot contact value
+  double contact_w_;
   // initialized the estimator
   bool initialized = true;
 
