@@ -259,7 +259,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   // Generate Conversion Matrix to Rotate the Body Frame IMU into World Frame
   // Double Check if this needs a transpose or not
   // Eigen::Matrix3d C1 = (qk.toRotationMatrix()).transpose();
-  C1 = (qk.toRotationMatrix()).transpose();
+  C1 = (qk.toRotationMatrix());
 
   // q = Eigen::VectorXd::Zero(4);
   // q << qk.w(), qk.x(), qk.y(), qk.z();
