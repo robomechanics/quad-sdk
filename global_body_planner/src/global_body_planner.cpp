@@ -386,6 +386,7 @@ void GlobalBodyPlanner::publishCurrentPlan() {
     body_plan_pub_.publish(robot_plan_msg);
     discrete_body_plan_pub_.publish(discrete_robot_plan_msg);
 
+    ROS_INFO_STREAM("This that gbpl" << robot_plan_msg);
     ROS_WARN("New plan published, stamp = %f",
              robot_plan_msg.global_plan_timestamp.toSec());
   }
