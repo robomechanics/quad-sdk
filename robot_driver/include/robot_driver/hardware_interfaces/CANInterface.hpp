@@ -30,7 +30,6 @@ namespace CAN_interface
         bool sendCANFrame(int can_id, const unsigned char* CANMsg);
         bool receiveCANFrame(unsigned char* CANMsg);
 
-    private:
         int socket_descrp_; // File descriptor for the socket as everything in Linux/Unix is a file.
 
     };

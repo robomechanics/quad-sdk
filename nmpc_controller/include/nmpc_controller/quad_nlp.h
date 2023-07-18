@@ -278,7 +278,7 @@ class quadNLP : public TNLP {
   std::vector<std::vector<Eigen::VectorXi>> iRow_mat_relaxed_,
       jCol_mat_relaxed_, relaxed_idx_in_full_sparse_;
 
-  /// Vector of nonzero entries for constraint Jacobian and Hessian/home/erika/Downloads/quad-sdk-noetic_devel_newPlatform/nmpc_controller/src/gen/eval_g_new_platform.cpp /home/erika/Downloads/quad-sdk-noetic_devel_newPlatform/nmpc_controller/src/gen/eval_hess_g_new_platform.cpp /home/erika/Downloads/quad-sdk-noetic_devel_newPlatform/nmpc_controller/src/gen/eval_jac_g_new_platform.cpp
+  /// Vector of nonzero entries for constraint Jacobian and Hessian
   std::vector<casadi_int> nnz_jac_g_vec_, nnz_h_vec_;
 
   // Maps for casadi functions

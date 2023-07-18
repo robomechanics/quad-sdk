@@ -9,9 +9,8 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include "robot_driver/hardware_interfaces/CANInterface.hpp"
 #include "robot_driver/hardware_interfaces/MotorDriver.hpp"
-#include "robot_driver/hardware_interfaces/spirit_interface.h"
-
 #include <eigen3/Eigen/Eigen>
+#include <thread>
 
 //! Hardware interface for the Spirit40 quadruped from Ghost Robotics.
 /*!

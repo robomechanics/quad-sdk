@@ -73,7 +73,6 @@ add_library(robot_driver
   src/hardware_interfaces/CANInterface.cpp
   src/hardware_interfaces/MotorDriver.cpp
   src/hardware_interfaces/new_platform_interface.cpp 
-  src/hardware_interfaces/new_platform_interface_sim.cpp 
 )
 add_dependencies(robot_driver ${robot_driver_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
