@@ -1,7 +1,25 @@
 #include "robot_driver/hardware_interfaces/MotorDriver.hpp"
+#include <thread>
 
 namespace motor_driver
 {
+    bool sendCANFrame(int can_id, unsigned char* CANMsg, int sd)
+    {
+        struct can_frame frame;
+        frame.can_id = can_id;
+        frame.can_dlc = 8;
+        memcpy(frame.data, CANMsg, 8);
+
+        if (write(sd, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame))
+        {
+            perror("CANInterface: Error writing to CAN Interface.");
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
 
     MotorDriver::MotorDriver(const std::vector<int>& motor_ids, const char* motor_can_socket, MotorType motor_type=MotorType::AK80_6_V1p1) 
         : motor_type_(motor_type), motor_ids_(motor_ids), motor_CAN_interface_(motor_can_socket)
@@ -185,10 +203,12 @@ namespace motor_driver
     {
         motorState state;
         std::map<int, motorState> motor_state_map;
+        int cmd_motor_id;
 
+        std::vector<std::thread> v;
         for (const std::pair<int, motorCommand>& command_pair : motor_rad_commands)
         {
-            int cmd_motor_id = command_pair.first;
+            cmd_motor_id = command_pair.first;
             const motorCommand& cmd_to_send = command_pair.second;
 
             bool return_val = encodeCANFrame(cmd_to_send, CAN_msg_);
@@ -198,8 +218,19 @@ namespace motor_driver
             //     std::cout << "MotorDriver::sendRadCommand() Motor in disabled state.\
             //                   Did you want to really do this?" << std::endl;
             // }
-            motor_CAN_interface_.sendCANFrame(cmd_motor_id, CAN_msg_);
-            usleep(motorReplyWaitTime);
+
+            int sd = motor_CAN_interface_.socket_descrp_;
+            v.emplace_back(&sendCANFrame, cmd_motor_id, CAN_msg_, sd);
+        }
+
+        for (auto& t : v) 
+        {
+            t.join();
+        }
+                
+        for (auto& t : v) 
+        {
+            
             if (motor_CAN_interface_.receiveCANFrame(CAN_reply_msg_))
             {
                 state = decodeCANFrame(CAN_reply_msg_);
@@ -244,7 +275,6 @@ namespace motor_driver
         int p_int = (CAN_reply_msg[1] << 8) | CAN_reply_msg[2];
         int v_int = (CAN_reply_msg[3] << 4) | (CAN_reply_msg[4] >> 4);
         int i_int = ((CAN_reply_msg[4] & 0xF) << 8) | CAN_reply_msg[5];
-        
         // convert unsigned ints to floats
         float p = uint_to_float(p_int, current_params_.P_MIN, current_params_.P_MAX, 16);
         float v = uint_to_float(v_int, current_params_.V_MIN, current_params_.V_MAX, 12);

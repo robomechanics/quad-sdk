@@ -29,8 +29,6 @@
 #include "robot_driver/hardware_interfaces/hardware_interface.h"
 #include "robot_driver/hardware_interfaces/spirit_interface.h"
 #include "robot_driver/hardware_interfaces/new_platform_interface.h"
-#include "robot_driver/hardware_interfaces/new_platform_interface_sim.h"
-#include "robot_driver/hardware_interfaces/new_platform_interface_multithread.h"
 #include "robot_driver/robot_driver_utils.h"
 
 #define MATH_PI 3.141592
