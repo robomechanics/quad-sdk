@@ -53,4 +53,6 @@ https://github.com/elpimous/quad-sdk-ylo2-real-robot/assets/8529940/bd33eb78-51f
 
 ## Run hardware :
 
-https://www.youtube.com/watch?v=VRGTjSVr3n8
+https://github.com/elpimous/quad-sdk-ylo2-real-robot/assets/8529940/74056ca0-ea51-4d98-a201-68586ad16de1
+
+
