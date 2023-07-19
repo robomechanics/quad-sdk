@@ -1,103 +1,52 @@
-[![CircleCI](https://circleci.com/gh/robomechanics/quad-sdk/tree/main.svg?style=shield)](https://circleci.com/gh/robomechanics/quad-sdk/tree/main)
-![Example image](doc/quad_sdk_promo.png)
+# QUAD SDK ON YLO2 ROBOT
+
+Ylo2 is a (13kg) homemade robot, working on a UP-Xtreme I7 board, a peak FDcan 4 can ports, 
+
+Mjbots power board and BLDC motors/controllers (QDD100),
+
+D435, T265, RPLidar A2, Myahrs+(imu), and a lifepo4 24V-10Ah.
+
+(a mix of black anodized cnc alu, carbon, and 3D printed pcabs parts. 
+
+System                  : ubuntu 20.04 - RT patched
+
+Ros                     : Noetic
+
+adapted from melodic_devel_go_outdoors (quad_sdk_branch)
+
+![Alt text](doc/dock2.jpg?raw=true)
 
 ![Alt text](doc/dock1.jpg?raw=true)
-![Alt text](doc/dock2.jpg?raw=true)
+
 ![Alt text](doc/dock4.jpg?raw=true)
-![Alt text](doc/ylo2_standup.gif?raw=true)
 
-## Ylo2 robot github link : https://github.com/elpimous/ylo-2
+## Installation :
 
+### Install libs specific to ylo2 robot :
 
-## Overview
+* Mraa lib, to give access to security button via up xtreme i7 gui board :
 
-Quad-SDK is an open source, ROS-based full stack software framework for agile quadrupedal locomotion. The design of Quad-SDK is focused on the vertical integration of planning, control, estimation, communication, and development tools which enable agile quadrupedal locomotion in simulation and hardware with minimal user changes for multiple platforms. The modular software architecture allows researchers to experiment with their own implementations of different components while leveraging the existing framework. Quad-SDK also offers Gazebo simulation support and a suite of visualization and data-processing tools for rapid development. Refer to the [paper] for high-level details of the framework.
-
-**Keywords:** Legged Robotics, Quadrupeds, Planning, Control, Leaping, ROS
-
-### License
-
-The source code is released under a [MIT License](LICENSE).
-
-**Authors: Joe Norby, Yanhao Yang, Ardalan Tajbakhsh, Jiming Ren, Justin K. Yim, Alexandra Stutt, Qishun Yu, Nikolai Flowers, and Aaron M. Johnson<br />
-Affiliation: [The Robomechanics Lab at Carnegie Mellon University](https://www.cmu.edu/me/robomechanicslab/)<br />
-Maintainer: Ardalan Tajbakhsh, atajbakh@andrew.cmu.edu**
-
-The packages in Quad-SDK have been tested under [ROS] Melodic on Ubuntu 18.04.
-This is research code, expect that it changes often and any fitness for a particular purpose is disclaimed.
-
-### Publications
-
-If you use this work in an academic context, please cite the following publications as relevant:
-
-* Repository: J. Norby, Y. Yang, A. Tajbakhsh, J. Ren, J. K. Yim, A. Stutt, Q. Yu, N. Flowers, and A. M. Johnson. Quad-
-SDK: Full stack software framework for agile quadrupedal locomotion. In ICRA Workshop on
-Legged Robots, May 2022. ([paper])
-
-        @inproceedings{abs:norby-quad-sdk-2022,
-          author        = {Joseph Norby and Yanhao Yang and Ardalan Tajbakhsh and Jiming Ren and Justin K. Yim and Alexandra Stutt and Qishun Yu and Nikolai Flowers and Aaron M. Johnson},
-          title         = {Quad-{SDK}: Full Stack Software Framework for Agile Quadrupedal Locomotion},
-          booktitle     = {ICRA Workshop on Legged Robots},
-          year          = {2022},
-          month         = {May},
-          type          = {workshop abstract},
-          url_Info      = {https://leggedrobots.org/index.html},
-          url_PDF       = {http://www.andrew.cmu.edu/user/amj1/papers/Quad_SDK_ICRA_Abstract.pdf},
-          keywords      = {Control,Planning,Leaping}
-        }
-        
-* Global Planner: J. Norby and A. M. Johnson, “Fast global motion planning for dynamic legged robots,” in 2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS). IEEE, 2020, pp. 3829–3836. ([paper](https://www.andrew.cmu.edu/user/amj1/papers/IROS2020_Fast_Global_Motion_Planning.pdf))
-
-        @inproceedings{Norby2020,
-	  	title={Fast global motion planning for dynamic legged robots},
-	  	author={Norby, Joseph and Johnson, Aaron M},
-	  	booktitle={2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
-	  	pages={3829--3836},
-	  	year={2020},
-	  	organization={IEEE}
-		}
-
-
-## Install libs specific to ylo2 robot :
-
-###Mraa lib, to give access to security button via up xtreme i7 gui board :
-
- sudo add-apt-repository ppa:up-division/mraa
+        sudo add-apt-repository ppa:up-division/mraa
+        sudo apt-get update
+        sudo apt-get install mraa-tools mraa-examples libmraa2 libmraa-dev libupm-dev libupm2 upm-examples
+        sudo apt-get install python3-mraa libmraa-java
  
- sudo apt-get update
- 
- sudo apt-get install mraa-tools mraa-examples libmraa2 libmraa-dev libupm-dev libupm2 upm-examples
- 
- sudo apt-get install python3-mraa libmraa-java
- 
-### PcanBasic lib for Peak can M2 board, to control moteus motors :
+* PcanBasic lib for Peak can M2 board, to control moteus motors :
 
- sudo apt-get install gcc
- 
- Download: https://www.peak-system.com/quick/BasicLinux
- 
- cd PCAN-Basic_Linux-4.3.4/libpcanbasic/pcanbasic
- 
- make clean
- 
- make
- 
- sudo make install
+        sudo apt-get install gcc
+        wget https://www.peak-system.com/quick/BasicLinux
+        cd PCAN-Basic_Linux-4.7.0.3/libpcanbasic/pcanbasic      # actual version 4.7.0.3 may change..check !
+        make clean & make & sudo make install
 
-### Quad sdk package
-
-## Installation
+## Quad sdk package
 
 Refer to the [Quad-SDK Wiki](https://github.com/robomechanics/quad-sdk/wiki/1.-Getting-Started-with-Quad-SDK) for installation, dependency, and unit testing information. Currently Quad-SDK requires ROS Melodic on Ubuntu 18.04. All other dependencies are installed with the included setup script.
-
 
 [paper]: https://www.andrew.cmu.edu/user/amj1/papers/Quad_SDK_ICRA_Abstract.pdf
 
 ## Run simulator :
 
-under quad_utils/launch/ylo2_bringup.launch,
-set <arg name="is_hardware" default="false"/> (true is for real controller)
+        roslaunch quad_utils ylo2_bringup_simulation.launch
+        rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=/robot_1/cmd_vel
 
-then :
-
-roslaunch quad_utils ylo2_bringup.launch
+![Alt text](ylo2_into_simu.mp4?raw=true)
