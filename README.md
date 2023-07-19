@@ -49,4 +49,8 @@ Refer to the [Quad-SDK Wiki](https://github.com/robomechanics/quad-sdk/wiki/1.-G
         roslaunch quad_utils ylo2_bringup_simulation.launch
         rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=/robot_1/cmd_vel
 
-![Alt text](ylo2_into_simu.mp4?raw=true)
+https://github.com/elpimous/quad-sdk-ylo2-real-robot/assets/8529940/bd33eb78-51fe-4f2b-ac3f-6e3813accc0a
+
+## Run hardware :
+
+https://www.youtube.com/watch?v=VRGTjSVr3n8
