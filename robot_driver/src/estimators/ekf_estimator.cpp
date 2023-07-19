@@ -134,9 +134,9 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_){
 
     auto new_state_est = this->StepOnce(); 
     // ROS_INFO_STREAM("P" << P(0));
-    ROS_INFO_STREAM("Ground Truth" << (*last_robot_state_msg_).body.twist.linear);
-    ROS_INFO_STREAM("Predict Estimate" << X_pre.segment(3,3).transpose());
-    ROS_INFO_STREAM("Update Estimate" << X.segment(3,3).transpose());
+    // ROS_INFO_STREAM("Ground Truth" << (*last_robot_state_msg_).body.twist.linear);
+    // ROS_INFO_STREAM("Predict Estimate" << X_pre.segment(3,3).transpose());
+    // ROS_INFO_STREAM("Update Estimate" << X.segment(3,3).transpose());
     estimated_state_ = new_state_est;
   }
   return true;
@@ -295,6 +295,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   // Generate Estimation State Transition (18 x 3)
   Eigen::MatrixXd B(num_state, 3);
   B.setZero();
+  B.block<3, 3>(0,0) = 0.5 * dt * dt * Eigen::MatrixXd::Identity(3, 3); //Add acceleration into the process
   B.block<3, 3>(3,0) = dt * Eigen::MatrixXd::Identity(3, 3);
 
   // Generate Estimation State Transition Noise (18 x 18)
@@ -474,7 +475,7 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk, 
   Eigen::VectorXd rbs(6);
   Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12,18);
   joint_state << jk, r_pre, v_pre;
-  joint_velocity << vk, v_pre, fk;
+  // joint_velocity << vk, -v_pre;
   rbs << r_pre, v_pre;
   
   // Solve for Linear Foot Velocities in the Body Frame
@@ -487,6 +488,7 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk, 
   //     (vk - jacobian.rightCols(6) * rbs.tail(6));
 
   lin_foot_vel = jacobian.leftCols(12)*vk;
+  // lin_foot_vel = jacobian.leftCols(15)*joint_velocity;
 
   for (int i = 0; i < num_feet; ++i){
     // Solve for Foot Relative Positions
