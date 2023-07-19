@@ -170,17 +170,15 @@ YloTwoPcanToMoteus::~YloTwoPcanToMoteus()
 bool YloTwoPcanToMoteus::security_switch(){ // read Gpio port state.
         if (mraa_gpio_read(YloTwoPcanToMoteus::btnPin) == -1){
             ROS_INFO("ERROR IN MRAA LIB WITH GPIO !!! \n---> See YloTwoPcanToMoteus.cpp into security_switch function.");
-            return true; // GPIO board not ready or button pressed
-        }
-        if (mraa_gpio_read(YloTwoPcanToMoteus::btnPin) == 0){
-            ROS_INFO("SECUTITY SWITCH PRESSED !!! \n---> Motors are stopped now !!!.");
-            YloTwoPcanToMoteus::_comm_maxtorque = 0.0;  // cutting any motor power, Need to relaunch to reset - TODO reinitialize it in rosparam ?!
-            return false;
+            return false; // GPIO board not ready or button pressed
         }
         if (mraa_gpio_read(YloTwoPcanToMoteus::btnPin) == 1){
             //ROS_INFO("Working OK.");
             return false;
         }
+        ROS_INFO("SECUTITY SWITCH PRESSED !!! \n---> Motors are stopped now !!!.");
+        YloTwoPcanToMoteus::_comm_maxtorque = 0.0;  // cutting any motor power, Need to relaunch to reset - TODO reinitialize it in rosparam ?!
+        return true;
 }
 
 

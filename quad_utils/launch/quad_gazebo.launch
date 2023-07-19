@@ -1,5 +1,5 @@
 <launch>
-  <arg name="robot_type" default="spirit" />
+  <arg name="robot_type" default="a1" />
   <arg name="multiple_robots" default="false" />
   <arg name="gui" default="false" />
   <arg name="paused" default="false" />

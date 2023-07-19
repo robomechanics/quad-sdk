@@ -3,7 +3,7 @@
     <arg name="logging"         default="false" />
     <arg name="twist_input"     default="none" />
     <arg name="namespace"       default="robot_1" />
-    <arg name="robot_type" default="spirit"/>
+    <arg name="robot_type" default="a1"/>
     <arg name="leaping" default="true" />
     <arg name="ac" default="false" />
 

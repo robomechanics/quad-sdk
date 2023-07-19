@@ -1,6 +1,6 @@
 <launch>
     <!-- Load params -->
-    <arg name="robot_type" default="spirit"/>
+    <arg name="robot_type" default="a1"/>
     <arg name="multiple_robots" default="false"/>
     <arg name="live_plot" default="false"/>
     <arg name="dash" default="false"/>

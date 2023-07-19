@@ -9,4 +9,5 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
 
 bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg) {
   std::cout << "EKF Estimator Updated Once" << std::endl;
+  return true;
 }

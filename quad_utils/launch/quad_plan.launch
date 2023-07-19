@@ -6,7 +6,7 @@
     <arg name="twist_input" default="none" />
     <arg name="leaping" default="true" />
     <arg name="ac" default="false" />
-    <arg name="robot_type" default="spirit"/>
+    <arg name="robot_type" default="a1"/>
 
     <!-- Define namespaces for each robot -->
     <arg name="namespace_1" default="robot_1"/>
