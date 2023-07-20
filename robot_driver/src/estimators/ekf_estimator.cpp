@@ -475,7 +475,7 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk, 
   Eigen::VectorXd rbs(6);
   Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12,18);
   joint_state << jk, r_pre, v_pre;
-  // joint_velocity << vk, -v_pre;
+  // joint_velocity << vk, v_pre, C1*fk;
   rbs << r_pre, v_pre;
   
   // Solve for Linear Foot Velocities in the Body Frame
@@ -488,7 +488,7 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk, 
   //     (vk - jacobian.rightCols(6) * rbs.tail(6));
 
   lin_foot_vel = jacobian.leftCols(12)*vk;
-  // lin_foot_vel = jacobian.leftCols(15)*joint_velocity;
+  // lin_foot_vel = jacobian*joint_velocity;
 
   for (int i = 0; i < num_feet; ++i){
     // Solve for Foot Relative Positions
