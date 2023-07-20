@@ -263,10 +263,13 @@ class RobotDriver {
   /// Most recent local plan
   quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
-  /// Most recent state estimate (Moved to StateEstiamtor.h)
+  /// Ground Truth Robot State from Simulation
   quad_msgs::RobotState last_robot_state_msg_;
 
-  ///EKF Estimate
+  /// Robot State Estimate Used in Control 
+  quad_msgs::RobotState state_estimate_;
+
+  /// EKF State Estimate Output
   quad_msgs::RobotState estimated_state_;
 
   /// Most recent local plan

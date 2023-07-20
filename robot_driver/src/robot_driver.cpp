@@ -154,6 +154,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv)
 
   // Initialize timing
   last_robot_state_msg_.header.stamp = ros::Time::now();
+  // state_estimate_.header.stamp = ros::Time::now();
   t_pub_ = ros::Time::now();
 
   // Initialize state and control data structures
@@ -179,7 +180,7 @@ void RobotDriver::initStateEstimator()
   else if (estimator_id_ == "ekf_filter")
   {
     ROS_INFO("EKF Filter");
-    ekf_estimator_ = std::make_shared<EKFEstimator>();
+    state_estimator_ = std::make_shared<EKFEstimator>();
   }
   else
   {
@@ -190,8 +191,12 @@ void RobotDriver::initStateEstimator()
 
   if (state_estimator_ != nullptr)
   {
+    // Always Initialize the Defualt State Estimator
     state_estimator_->init(nh_);
+    if (estimator_id_ == "comp_filter"){
+      // Conditional for EKF Filter
     ekf_estimator_ ->init(nh_);
+    }
   }
 }
 
@@ -336,11 +341,6 @@ void RobotDriver::robotStateCallback(
   last_robot_state_msg_ = *msg;
 }
 
-// void RobotDriver::grfCallback(const quad_msgs::GRFArray::ConstPtr& msg){
-//   last_grf_msg_ = msg;
-//   // ROS_INFO_STREAM("Updating GRF's" << last_grf_msg_);
-// }
-
 void RobotDriver::remoteHeartbeatCallback(
     const std_msgs::Header::ConstPtr &msg)
 {
@@ -418,25 +418,38 @@ bool RobotDriver::updateState(){
   else{
     if (state_estimator_ != nullptr)
     {
-      // Initialize Estimated State on Standup, Start Update Step
-      if (initialized ==false && control_mode_ == READY){
-        ROS_INFO_STREAM("Initialized is False");
+      if (initialized == false && control_mode_ == READY)
+      {
+        ROS_INFO_STREAM("Intialized");
         estimated_state_ = last_robot_state_msg_;
         last_joint_state_msg_.position = last_robot_state_msg_.joints.position;
         last_joint_state_msg_.velocity = last_robot_state_msg_.joints.velocity;
         initialized = true;
-        
       }
-      else{
+      if (estimator_id_ == "comp_filter")
+      {
+        state_estimate_ = last_robot_state_msg_;
         // Update State Estimate once GRF's are being Published
-        if (grf_array_msg_.vectors[0].x != 0 && control_mode_ == READY){ 
+        if (grf_array_msg_.vectors[0].x != 0 && control_mode_ == READY)
+        { 
           last_joint_state_msg_.position = last_robot_state_msg_.joints.position;
           last_joint_state_msg_.velocity = last_robot_state_msg_.joints.velocity;
           ekf_estimator_->updateOnce(estimated_state_);
+          
+        }
+      }
+      if (estimator_id_ == "ekf_filter")
+      {
+        if (grf_array_msg_.vectors[0].x != 0 && control_mode_ == READY)
+        { 
+          last_joint_state_msg_.position = last_robot_state_msg_.joints.position;
+          last_joint_state_msg_.velocity = last_robot_state_msg_.joints.velocity;
+          state_estimator_->updateOnce(estimated_state_);
+          state_estimate_ = estimated_state_;
         }
       }
     }
-      return true;
+    return true;
   }
 }
 
@@ -450,7 +463,8 @@ void RobotDriver::publishState() {
   else{
     if (control_mode_ == READY ){
       joint_state_pub_.publish(last_joint_state_msg_);
-      if (initialized){
+      if (initialized)
+      {
         state_estimate_pub_.publish(estimated_state_);
       }
     }
@@ -465,14 +479,14 @@ bool RobotDriver::updateControl()
   if (leg_controller_->overrideStateMachine())
   {
     valid_cmd = leg_controller_->computeLegCommandArray(
-        last_robot_state_msg_, leg_command_array_msg_, grf_array_msg_);
+        state_estimate_, leg_command_array_msg_, grf_array_msg_);
     return valid_cmd;
   }
 
   // Check incoming messages to determine if we should enter safety mode
   checkMessagesForSafety();
 
-  if (last_robot_state_msg_.header.stamp.toSec() == 0)
+  if (state_estimate_.header.stamp.toSec() == 0)
   {
     return false;
   }
@@ -480,9 +494,9 @@ bool RobotDriver::updateControl()
   // Define vectors for joint positions and velocities
   Eigen::VectorXd joint_positions(3 * num_feet_),
       joint_velocities(3 * num_feet_), body_state(12);
-  quad_utils::vectorToEigen(last_robot_state_msg_.joints.position,
+  quad_utils::vectorToEigen(state_estimate_.joints.position,
                             joint_positions);
-  quad_utils::vectorToEigen(last_robot_state_msg_.joints.velocity,
+  quad_utils::vectorToEigen(state_estimate_.joints.velocity,
                             joint_velocities);
 
   // Initialize leg command message
@@ -519,7 +533,7 @@ bool RobotDriver::updateControl()
   }
   else if (control_mode_ == READY)
   {
-    if (leg_controller_->computeLegCommandArray(last_robot_state_msg_,
+    if (leg_controller_->computeLegCommandArray(state_estimate_,
                                                 leg_command_array_msg_,
                                                 grf_array_msg_) == false)
     {

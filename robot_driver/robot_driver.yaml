@@ -22,7 +22,7 @@ robot_driver:
 
   # Extended Kalman filter estimator coefficients
   joint_state_max_time: 20 # Milliseconds until we disregard last joint state message
-  update_rate: 1000 # 200 in the original, reduced to 100 for testing
+  update_rate: 200 # 200 in the original, reduced to 100 for testing
   bias_x: 0.10 # actual measurement of bias_acc x is 0.083616044
   bias_y: -0.156 # actual measurement of bias_acc y is 0.060205998
   bias_z: 0.0 # actual measurement of bias_acc z is 0.00
