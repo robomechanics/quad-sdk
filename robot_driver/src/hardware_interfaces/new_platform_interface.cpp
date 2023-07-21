@@ -3,14 +3,6 @@
 
 NewPlatformInterface::NewPlatformInterface() {}
 
-void foo(int Z)
-{
-  for (int i = 0; i < Z; i++)
-  {
-    std::cout << "Thread using function pointer as callable" << std::endl;
-  }
-}
-
 struct threadCommandStruct {
     std::vector<int> motorIds;
     motor_driver::MotorDriver *motorController;
@@ -145,7 +137,6 @@ bool NewPlatformInterface::send(
             
             // Initialize thread for motor driver execution
             cmd_threads.emplace_back(&sendMotorCommand_0, commandStruct_0);
-            // motorDriverThread_0(sendMotorCommand_0, commandStruct_0);
             }
             break;
 
