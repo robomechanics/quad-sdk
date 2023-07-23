@@ -410,7 +410,7 @@ void LocalPlanner::getReference() {
   // horizon's last yaw state
   if (!first_ref_plan) {
     float diff = wrapped_yaw_ref[0] - prev_unwrapped_yaw;
-    float quotient = round(diff / (2 * M_PI));
+    float quotient = abs(round(diff / (2 * M_PI)));
     if (diff > M_PI) {
       wrapped_yaw_ref[0] = wrapped_yaw_ref[0] - quotient * 2 * M_PI;
     } else if (diff < -M_PI) {
@@ -431,21 +431,21 @@ void LocalPlanner::getReference() {
   ref_body_plan_.col(5) = eig_unwrapped_yaw_ref;
 
   // Update current state with unwrapped yaw
-
   float diff_curr_state =
       current_state_(5) -
       unwrapped_yaw_ref[0];  // If current state and unwrapped yaw reference
                              // large, then correct wrapped current state
-  // float diff_curr_state = current_state_(5) - unwrapped_yaw_ref[N_ - 1];
 
   // ROS_INFO_THROTTLE(0.5, "Current state yaw %0.5f", current_state_(5));
-  float quotient_curr_state = round(diff_curr_state / (2 * M_PI));
+  float quotient_curr_state = abs(round(diff_curr_state / (2 * M_PI)));
   if (diff_curr_state > M_PI) {
     // ROS_WARN("CURR STATE: DIFF > M_PI");
     // ROS_INFO("Current state yaw %0.2f", current_state_(5));
     // ROS_INFO("Unwrapped Yaw Reference %0.2f", unwrapped_yaw_ref[0]);
     // ROS_INFO("diff curr state: %0.2f", diff_curr_state);
+    // ROS_INFO("quotient: %0.2f", quotient_curr_state);
     current_state_(5) = current_state_(5) - quotient_curr_state * 2 * M_PI;
+    // ROS_INFO("Unwrapped current state yaw %0.2f", current_state_(5));
   } else if (diff_curr_state < -M_PI) {
     // ROS_WARN("CURR STATE: DIFF < M_PI");
     // ROS_INFO("diff curr state: %0.2f", diff_curr_state);
