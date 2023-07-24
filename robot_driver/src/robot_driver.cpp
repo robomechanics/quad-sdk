@@ -439,6 +439,10 @@ bool RobotDriver::updateState(){
       }
       if (estimator_id_ == "ekf_filter")
       {
+        // Addded to make sure the robot can stand
+        if (initialized == false){
+          state_estimate_ = last_robot_state_msg_;
+        }
         if (grf_array_msg_.vectors[0].x != 0 && control_mode_ == READY)
         { 
           last_joint_state_msg_.position = last_robot_state_msg_.joints.position;
