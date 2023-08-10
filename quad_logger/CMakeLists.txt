@@ -6,7 +6,7 @@ find_package(catkin REQUIRED COMPONENTS rospy tf)
 
 catkin_package(
   DEPENDS
-  CATKIN_DEPENDS rospy tf python-numpy python-matplotlib
+  CATKIN_DEPENDS tf
   INCLUDE_DIRS
   LIBRARIES
 )
