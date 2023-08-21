@@ -132,16 +132,19 @@ bool InertiaEstimationController::computeLegCommandArray(
 
       leg_command_array_msg.leg_commands.at(i)
           .motor_commands.at(0)
-          .pos_setpoint = (0.2*sin(4*t) + 0.4*cos(15*sin(2.6*t)))*(sin(5.4*t)<0.8)
-          +(sin(5.4*t)>=0.8)*(0.5*sin(0.7*t));
+          .pos_setpoint = (0.2*sin(4*t)
+          +0.4*cos(15*sin(2.6*t)))*(sin(5.4*t) < 0.8)
+          +(sin(5.4*t) >= 0.8)*(0.5*sin(0.7*t));
       leg_command_array_msg.leg_commands.at(i)
           .motor_commands.at(1)
-          .pos_setpoint = (-1.0*cos(6*t)+0.3 - 0.5*cos(20*sin(2.2*t)))*(sin(6.5*t)<0.8)
-          +(sin(6.5*t)>=0.8)*(sin(0.9*t)+0.5);
+          .pos_setpoint = (-1.0*cos(6*t)+0.3
+          -0.5*cos(20*sin(2.2*t)))*(sin(6.5*t) < 0.8)
+          +(sin(6.5*t) >= 0.8)*(sin(0.9*t)+0.5);
       leg_command_array_msg.leg_commands.at(i)
           .motor_commands.at(2)
-          .pos_setpoint = (-0.8*cos(10*t)+1.3 - 0.5*cos(25*sin(1.4*t)))*(sin(7*t)<0.8)
-          +(sin(7*t)>=0.8)*(0.7*sin(1.1*t)+0.7);
+          .pos_setpoint = (-0.8*cos(10*t)+1.3
+          -0.5*cos(25*sin(1.4*t)))*(sin(7*t) < 0.8)
+          +(sin(7*t) >= 0.8)*(0.7*sin(1.1*t)+0.7);
 
       for (int j = 0; j < 3; ++j) {
         leg_command_array_msg.leg_commands.at(i)

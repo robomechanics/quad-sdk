@@ -112,7 +112,8 @@ class RobotDriver {
    * @brief Callback to handle new body force estimates
    * @param[in] msg body force estimates
    */
-  void bodyForceEstimateCallback(const quad_msgs::BodyForceEstimate::ConstPtr& msg);
+  void bodyForceEstimateCallback(
+      const quad_msgs::BodyForceEstimate::ConstPtr& msg);
 
   /**
    * @brief Callback to handle control restart flag messages

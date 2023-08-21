@@ -136,7 +136,6 @@ void BodyForceEstimator::update() {
         p_hat[3 * i + j] = 0;
         r_mom[3 * i + j] = 0;
       }
-    
     } else {
       // Compute joint torque estimates with momentum observer
 
