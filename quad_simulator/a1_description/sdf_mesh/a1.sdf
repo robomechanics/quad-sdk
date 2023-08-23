@@ -68,7 +68,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/trunk.dae</uri>
+            <uri>model:///meshes/trunk.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -154,7 +154,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/hip.dae</uri>
+            <uri>model:///meshes/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -231,7 +231,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/thigh_mirror.dae</uri>
+            <uri>model:///meshes/thigh_mirror.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -254,8 +254,8 @@
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-6.28319</lower>
-          <upper>6.28319</upper>
+          <lower>-2.6179938779914944</lower>
+          <upper>2.6179938779914944</upper>
           <effort>33.5</effort>
           <velocity>21</velocity>
         </limit>
@@ -306,7 +306,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/calf.dae</uri>
+            <uri>model:///meshes/calf.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -329,8 +329,8 @@
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-6.28319</lower>
-          <upper>6.28319</upper>
+          <lower>0.445058959258554</lower>
+          <upper>2.2252947962927703</upper>
           <effort>33.5</effort>
           <velocity>21</velocity>
         </limit>
@@ -474,7 +474,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/hip.dae</uri>
+            <uri>model:///meshes/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -551,7 +551,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/thigh_mirror.dae</uri>
+            <uri>model:///meshes/thigh_mirror.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -574,8 +574,8 @@
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-6.28319</lower>
-          <upper>6.28319</upper>
+          <lower>-2.6179938779914944</lower>
+          <upper>2.6179938779914944</upper>
           <effort>33.5</effort>
           <velocity>21</velocity>
         </limit>
@@ -626,7 +626,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/calf.dae</uri>
+            <uri>model:///meshes/calf.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -649,8 +649,8 @@
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-6.28319</lower>
-          <upper>6.28319</upper>
+          <lower>0.445058959258554</lower>
+          <upper>2.2252947962927703</upper>
           <effort>33.5</effort>
           <velocity>21</velocity>
         </limit>
@@ -794,7 +794,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/hip.dae</uri>
+            <uri>model:///meshes/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -871,7 +871,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/thigh.dae</uri>
+            <uri>model:///meshes/thigh.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -894,8 +894,8 @@
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-6.28319</lower>
-          <upper>6.28319</upper>
+          <lower>-2.6179938779914944</lower>
+          <upper>2.6179938779914944</upper>
           <effort>33.5</effort>
           <velocity>21</velocity>
         </limit>
@@ -946,7 +946,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/calf.dae</uri>
+            <uri>model:///meshes/calf.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -969,8 +969,8 @@
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-6.28319</lower>
-          <upper>6.28319</upper>
+          <lower>0.445058959258554</lower>
+          <upper>2.2252947962927703</upper>
           <effort>33.5</effort>
           <velocity>21</velocity>
         </limit>
@@ -1114,7 +1114,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/hip.dae</uri>
+            <uri>model:///meshes/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -1191,7 +1191,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/thigh.dae</uri>
+            <uri>model:///meshes/thigh.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -1214,8 +1214,8 @@
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-6.28319</lower>
-          <upper>6.28319</upper>
+          <lower>-2.6179938779914944</lower>
+          <upper>2.6179938779914944</upper>
           <effort>33.5</effort>
           <velocity>21</velocity>
         </limit>
@@ -1266,7 +1266,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/calf.dae</uri>
+            <uri>model:///meshes/calf.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -1289,8 +1289,8 @@
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-6.28319</lower>
-          <upper>6.28319</upper>
+          <lower>0.445058959258554</lower>
+          <upper>2.2252947962927703</upper>
           <effort>33.5</effort>
           <velocity>21</velocity>
         </limit>
