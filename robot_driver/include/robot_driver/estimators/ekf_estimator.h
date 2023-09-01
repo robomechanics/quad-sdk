@@ -374,6 +374,8 @@ class EKFEstimator: public StateEstimator {
   double P0_;
   // weight on foot contact value
   double contact_w_;
+   // Innovation Norm Threshold, Reject Measurement Update if too large
+  double thresh_out;
   // initialized the estimator
   bool initialized = true;
 

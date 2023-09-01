@@ -43,6 +43,7 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
   quad_utils::loadROSParam(nh_, "/robot_driver/ne", ne_);
   quad_utils::loadROSParam(nh_, "/robot_driver/P0", P0_);
   quad_utils::loadROSParam(nh_, "/robot_driver/contact_w", contact_w_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/thresh_out", thresh_out);
   quad_utils::loadROSParamDefault(nh_, "robot_driver/is_hardware", is_hardware_,
                                   true);
 
@@ -75,7 +76,6 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_){
       // Set Start Time on Initialization
       last_time = ros::Time::now();
       P =  P0_* Eigen::MatrixXd::Identity(num_cov, num_cov); 
-
       X0 << estimated_state_.body.pose.position.x,
         estimated_state_.body.pose.position.y,
         estimated_state_.body.pose.position.z,
@@ -513,10 +513,12 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk, 
       + last_X.segment(3,3)*(1.0-(*last_grf_msg_).contact_states[i]);
   }
 
-
-  // ROS_INFO_STREAM("This is y" << y);
   // Solve for Error between Measured Y Residual and Process Residual
   error_y = y - (C * X_pre);
+
+  // Skip Update if the Innovation is too High
+  if (error_y.norm() < thresh_out)
+  {
   S = C * P_pre * C.transpose() + R;
   // ROS_INFO_STREAM("This is S" << S);
   S = 0.5*(S+S.transpose()); // Ensure that the Innovation Covariance is Symmetric
@@ -535,7 +537,13 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk, 
         P.block<16, 2>(2, 0).setZero();
         P.block<2, 2>(0, 0) /= 10.0;
   }
-  
+  }
+
+  else
+  {
+    X = X_pre; 
+    P = P_pre;
+  }
   last_X = X;
 
   // // Collect states info from predicted state vector
