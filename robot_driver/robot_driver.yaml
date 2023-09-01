@@ -38,4 +38,4 @@ robot_driver:
   ne: 0.001 # noise in encoder 0.001
   P0: 3 # Initial Value of Covariance Matrix 3
   contact_w: 1000 # Contact weight 1000
-
+  thresh_out: 1000  #Norm Measurement Rejection Threshold, (Check for Outliers)
