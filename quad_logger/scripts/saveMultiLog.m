@@ -1,4 +1,4 @@
-function logDir = saveMultiLog(envName,name_prefix,configNames,figArray)
+function logDir = saveMultiLog(bagDir,envName,nameSuffix,configNames,figArray)
 % saveLog Save the bag data and figures into a generated log file
 %   saveLog(trialName, figArray) generates a new directory named trialName
 %   located in ../logs/ if one does not already exist, copies the bag to
@@ -30,19 +30,12 @@ end
 % Copy the bag
 for i = 1:length(configNames)
     % Search bags for the config
-    bagNameList = dir(['../bags/', envName, '_', name_prefix, '_', lower(configNames{i}), '*']);
-    
-    % Create storage list
-    solveTimesList = cell(size(bagNameList));
-    grfNormList = cell(size(bagNameList));
-    successList = cell(size(bagNameList));
-    
-    % Set flag for plotting
-    bPlotting = true;
-    
+    filename = [envName, '_', nameSuffix, '_', lower(configNames{i}), '*'];
+    bagNameList = dir([bagDir, filename]);
+
     for l = 1:length(bagNameList)
         % Loop through each bag`
         trialName = bagNameList(l).name(1:end-4);
-        copyfile(['../bags/', trialName, '.bag'],logDir)
+        copyfile([bagDir, trialName, '.bag'],logDir)
     end
 end

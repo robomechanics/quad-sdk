@@ -10,12 +10,17 @@ function [data, varargout] = parseQuadBag(varargin)
 % Default to quad_log_current
 if nargin == 0
     trialName = 'quad_log_current';
-else
+    bagDir = '../bags/';
+elseif nargin == 1
     trialName = varargin{1};
+    bagDir = '../bags/';
+elseif nargin == 2
+    trialName = varargin{1};
+    bagDir = varargin{2};
 end
 
 % Specify the path
-filepath = ['../bags/', trialName,'.bag'];
+filepath = [bagDir, trialName,'.bag'];
 if ~(exist(filepath,'file'))
     disp([filepath, ' does not exist, using UI to specify path']);
     [fileName,pathname] = uigetfile('.bag', 'Select a Bag');

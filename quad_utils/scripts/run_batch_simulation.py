@@ -21,7 +21,7 @@ time_walk = 45
 time_walk = 45*2/5
 
 # World parameter list
-world_list = ['step_20cm', 'gap_40cm', 'flat']
+world_list = ['step_20cm', 'gap_40cm', 'flat', 'flat']
 
 # Type name list
 type_list = ['simple', 'complex', 'mixed', 'adaptive']
@@ -67,6 +67,13 @@ elif world_index == 2:
     time_stand = 6.0
     time_walk = 6.0
     name_prefix = '10realtime'
+    random_radius = 0
+    start_state_x = 0
+elif world_index == 3:
+    leap_arg = 'leaping:=false'
+    time_stand = 6.0 * 9
+    time_walk = 6.0 * 9
+    name_prefix = '005realtime'
     random_radius = 0
     start_state_x = 0
 

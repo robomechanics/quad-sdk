@@ -179,8 +179,10 @@ NMPCController::NMPCController() {
   app_->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-6);
   app_->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-6);
 
-  app_->Options()->SetNumericValue("max_wall_time", 20.0 * dt_);
-  app_->Options()->SetNumericValue("max_cpu_time", 20.0 * dt_);
+  // app_->Options()->SetNumericValue("max_wall_time", 20.0 * dt_);
+  // app_->Options()->SetNumericValue("max_cpu_time", 20.0 * dt_);
+  app_->Options()->SetNumericValue("max_wall_time", 30.0 * 0.01);
+  app_->Options()->SetNumericValue("max_cpu_time", 30.0 * 0.01);
 
   ApplicationReturnStatus status;
   status = app_->Initialize();
@@ -292,6 +294,7 @@ bool NMPCController::computePlan(
     mynlp_->warm_start_ = false;
     require_init_ = true;
     ROS_WARN_STREAM("NMPC solving fail");
+    throw std::runtime_error("Solver failed");
     return false;
   }
 }

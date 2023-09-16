@@ -1,30 +1,11 @@
-function processMultiLog(varargin)
-% processMultiLog Process multiple quad data log files to generate figures
-%   processLog uses the default 'quad_log_current' file name to
-%   yield a data structure containing select topic data. If this bag does
-%   not exist, the user can select the bag via a UI.
-%
-%   processMultiLog(FILENAME) uses the data in a bag with the specified
-%   file name, looking in '../bags/'.
-
-%% Prepare the environment
-close all;clc;
-
-% Check that this is the right current directory otherwise paths won't work
-if ~endsWith(pwd, '/scripts')
-    error('This script must be run from scripts/');
-end
-
-%% Select experiment to parse
-
-envName = 'flat';
-% envName = 'step_20cm';
-% envName = 'gap_40cm';
-
+function generateACData(varargin)
+% generateACData Generate data and figures for Adaptive Complexity Model Predictive Control
 % Assumes the following file structure:
 %   - scripts/
-%       - processMultiLog.m
+%       - generateACData.m
 %       - parseQuadBag.m
+%       - saveMultiLog.m
+%       - cmuColor.m
 %   - bags/
 %       - <misc bags located here>
 %       - flat_final/
@@ -38,10 +19,25 @@ envName = 'flat';
 %           - ...
 %   - logs/
 
+%% Prepare the environment
+close all;clc;
+
+% Check that this is the right current directory otherwise paths won't work
+if ~endsWith(pwd, '/scripts')
+    error('This script must be run from scripts/');
+end
+
+%% Select experiment to parse
+
+envName = 'flat';
+% envName = 'flat_offline';
+% envName = 'step_20cm';
+% envName = 'gap_40cm';
+
 %% Set options
 
 bLoadFinal = true;                  % Load the final data (if false loads whatever is in /bags/)
-bSave = true;                       % Save the figures
+bSave = false;                       % Save the figures
 bComputeStats = true;               % Compute statistical tests for significance (chi-squared)
 bProcessAllBags = true;             % Process all bags (needed for data collection, not plotting)
 
@@ -72,6 +68,14 @@ if strcmp(envName, 'flat')
     bZeroOrigin = true;
     nameSuffix = '10realtime';
     duration = 10.0;
+    goal_position = [3.0, 0.0];
+elseif strcmp(envName, 'flat_offline')
+    tWindow = [0, 6];
+    tLocalPlanWindow = [0, 5];
+    bStateBasedWindow = true;
+    bZeroOrigin = true;
+    nameSuffix = '005realtime';
+    duration = 10.0 * 20;
     goal_position = [3.0, 0.0];
 elseif contains(envName, 'step')
     tWindow = [3, 6];
