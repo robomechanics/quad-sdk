@@ -185,18 +185,7 @@ bool unwrapVector(VecType& vec) {
 template <typename VecType>
 VecType getUnwrappedVector(const VecType& vec) {
   VecType vec_unwrapped = vec;
-  for (int i = 1; i < vec_unwrapped.size(); i++) {
-    double diff = vec_unwrapped[i] - vec_unwrapped[i - 1];
-    if (diff > M_PI) {
-      for (int j = i; j < vec_unwrapped.size(); j++) {
-        vec_unwrapped[j] = vec_unwrapped[j] - 2 * M_PI;
-      }
-    } else if (diff < -M_PI) {
-      for (int j = i; j < vec_unwrapped.size(); j++) {
-        vec_unwrapped[j] = vec_unwrapped[j] + 2 * M_PI;
-      }
-    }
-  }
+  unwrapVector(vec_unwrapped);
   return vec_unwrapped;
 }
 
