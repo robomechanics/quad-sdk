@@ -2,8 +2,8 @@
 
 namespace math_utils {
 
-std::vector<double> interpMat(const std::vector<double> input_vec,
-                              const std::vector<std::vector<double>> input_mat,
+std::vector<double> interpMat(const std::vector<double> &input_vec,
+                              const std::vector<std::vector<double>> &input_mat,
                               const double query_point) {
   // Check bounds, throw an error if invalid since this shouldn't ever happen
   if ((query_point < input_vec.front()) || (query_point > input_vec.back())) {
@@ -34,8 +34,8 @@ std::vector<double> interpMat(const std::vector<double> input_vec,
   return interp_data;
 }
 
-Eigen::Vector3d interpVector3d(const std::vector<double> input_vec,
-                               const std::vector<Eigen::Vector3d> input_mat,
+Eigen::Vector3d interpVector3d(const std::vector<double> &input_vec,
+                               const std::vector<Eigen::Vector3d> &input_mat,
                                const double query_point) {
   // Check bounds, throw an error if invalid since this shouldn't ever happen
   if ((query_point < input_vec.front()) || (query_point > input_vec.back())) {
@@ -65,8 +65,8 @@ Eigen::Vector3d interpVector3d(const std::vector<double> input_vec,
 }
 
 std::vector<Eigen::Vector3d> interpMatVector3d(
-    const std::vector<double> input_vec,
-    const std::vector<std::vector<Eigen::Vector3d>> output_mat,
+    const std::vector<double> &input_vec,
+    const std::vector<std::vector<Eigen::Vector3d>> &output_mat,
     const double query_point) {
   // Check bounds, throw an error if invalid since this shouldn't ever happen
   if ((query_point < input_vec.front()) || (query_point > input_vec.back())) {
@@ -99,7 +99,7 @@ std::vector<Eigen::Vector3d> interpMatVector3d(
   return interp_data;
 }
 
-int interpInt(const std::vector<double> input_vec, std::vector<int> output_vec,
+int interpInt(const std::vector<double> &input_vec, std::vector<int> &output_vec,
               const double query_point) {
   // Check bounds, throw an error if invalid since this shouldn't ever happen
   if ((query_point < input_vec.front()) || (query_point > input_vec.back())) {
@@ -121,7 +121,7 @@ int interpInt(const std::vector<double> input_vec, std::vector<int> output_vec,
   throw std::runtime_error("Didn't find the query point, something happened");
 }
 
-std::vector<double> movingAverageFilter(std::vector<double> data,
+std::vector<double> movingAverageFilter(const std::vector<double> &data,
                                         int window_size) {
   std::vector<double> filtered_data;
   int N = data.size();
@@ -165,7 +165,7 @@ std::vector<double> movingAverageFilter(std::vector<double> data,
   return filtered_data;
 }
 
-std::vector<double> centralDiff(std::vector<double> data, double dt) {
+std::vector<double> centralDiff(const std::vector<double> &data, double dt) {
   std::vector<double> data_diff;
 
   for (int i = 0; i < data.size(); i++) {

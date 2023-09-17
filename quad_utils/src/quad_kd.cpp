@@ -6,9 +6,9 @@ Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
 QuadKD::QuadKD() { initModel(""); }
 
-QuadKD::QuadKD(std::string ns) { initModel("/" + ns + "/"); }
+QuadKD::QuadKD(const std::string &ns) { initModel("/" + ns + "/"); }
 
-void QuadKD::initModel(std::string ns) {
+void QuadKD::initModel(const std::string &ns) {
   std::string robot_description_string;
 
   if (!ros::param::get("robot_description", robot_description_string)) {
@@ -97,8 +97,8 @@ void QuadKD::initModel(std::string ns) {
                 joint_max_back};
 }
 
-Eigen::Matrix4d QuadKD::createAffineMatrix(Eigen::Vector3d trans,
-                                           Eigen::Vector3d rpy) const {
+Eigen::Matrix4d QuadKD::createAffineMatrix(const Eigen::Vector3d &trans,
+                                           const Eigen::Vector3d &rpy) const {
   Eigen::Transform<double, 3, Eigen::Affine> t;
   t = Eigen::Translation<double, 3>(trans);
   t.rotate(Eigen::AngleAxisd(rpy[2], Eigen::Vector3d::UnitZ()));
@@ -108,8 +108,8 @@ Eigen::Matrix4d QuadKD::createAffineMatrix(Eigen::Vector3d trans,
   return t.matrix();
 }
 
-Eigen::Matrix4d QuadKD::createAffineMatrix(Eigen::Vector3d trans,
-                                           Eigen::AngleAxisd rot) const {
+Eigen::Matrix4d QuadKD::createAffineMatrix(const Eigen::Vector3d &trans,
+                                           const Eigen::AngleAxisd &rot) const {
   Eigen::Transform<double, 3, Eigen::Affine> t;
   t = Eigen::Translation<double, 3>(trans);
   t.rotate(rot);
@@ -138,9 +138,9 @@ double QuadKD::getLinkLength(int leg_index, int link_index) const {
   }
 }
 
-void QuadKD::transformBodyToWorld(Eigen::Vector3d body_pos,
-                                  Eigen::Vector3d body_rpy,
-                                  Eigen::Matrix4d transform_body,
+void QuadKD::transformBodyToWorld(const Eigen::Vector3d &body_pos,
+                                  const Eigen::Vector3d &body_rpy,
+                                  const Eigen::Matrix4d &transform_body,
                                   Eigen::Matrix4d &transform_world) const {
   // Compute transform from world to body frame
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
@@ -149,9 +149,9 @@ void QuadKD::transformBodyToWorld(Eigen::Vector3d body_pos,
   transform_world = g_world_body * transform_body;
 }
 
-void QuadKD::transformWorldToBody(Eigen::Vector3d body_pos,
-                                  Eigen::Vector3d body_rpy,
-                                  Eigen::Matrix4d transform_world,
+void QuadKD::transformWorldToBody(const Eigen::Vector3d &body_pos,
+                                  const Eigen::Vector3d &body_rpy,
+                                  const Eigen::Matrix4d &transform_world,
                                   Eigen::Matrix4d &transform_body) const {
   // Compute transform from world to body frame
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
@@ -161,7 +161,9 @@ void QuadKD::transformWorldToBody(Eigen::Vector3d body_pos,
 }
 
 void QuadKD::worldToLegbaseFKWorldFrame(
-    int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
+    int leg_index,
+    const Eigen::Vector3d &body_pos,
+    const Eigen::Vector3d &body_rpy,
     Eigen::Matrix4d &g_world_legbase) const {
   // Compute transforms
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
@@ -171,7 +173,9 @@ void QuadKD::worldToLegbaseFKWorldFrame(
 }
 
 void QuadKD::worldToLegbaseFKWorldFrame(
-    int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
+    int leg_index,
+    const Eigen::Vector3d &body_pos,
+    const Eigen::Vector3d &body_rpy,
     Eigen::Vector3d &leg_base_pos_world) const {
   Eigen::Matrix4d g_world_legbase;
   worldToLegbaseFKWorldFrame(leg_index, body_pos, body_rpy, g_world_legbase);
@@ -180,7 +184,9 @@ void QuadKD::worldToLegbaseFKWorldFrame(
 }
 
 void QuadKD::worldToNominalHipFKWorldFrame(
-    int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
+    int leg_index,
+    const Eigen::Vector3d &body_pos,
+    const Eigen::Vector3d &body_rpy,
     Eigen::Vector3d &nominal_hip_pos_world) const {
   // Compute transforms
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
@@ -194,7 +200,8 @@ void QuadKD::worldToNominalHipFKWorldFrame(
   nominal_hip_pos_world = g_world_nominal_hip.block<3, 1>(0, 3);
 }
 
-void QuadKD::bodyToFootFKBodyFrame(int leg_index, Eigen::Vector3d joint_state,
+void QuadKD::bodyToFootFKBodyFrame(int leg_index,
+                                   const Eigen::Vector3d &joint_state,
                                    Eigen::Matrix4d &g_body_foot) const {
   if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0) {
     throw std::runtime_error("Leg index is outside valid range");
@@ -228,7 +235,8 @@ void QuadKD::bodyToFootFKBodyFrame(int leg_index, Eigen::Vector3d joint_state,
                 g_hip_knee * g_knee_foot;
 }
 
-void QuadKD::bodyToFootFKBodyFrame(int leg_index, Eigen::Vector3d joint_state,
+void QuadKD::bodyToFootFKBodyFrame(int leg_index,
+                                   const Eigen::Vector3d &joint_state,
                                    Eigen::Vector3d &foot_pos_body) const {
   Eigen::Matrix4d g_body_foot;
   QuadKD::bodyToFootFKBodyFrame(leg_index, joint_state, g_body_foot);
@@ -237,9 +245,10 @@ void QuadKD::bodyToFootFKBodyFrame(int leg_index, Eigen::Vector3d joint_state,
   foot_pos_body = g_body_foot.block<3, 1>(0, 3);
 }
 
-void QuadKD::worldToFootFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
-                                     Eigen::Vector3d body_rpy,
-                                     Eigen::Vector3d joint_state,
+void QuadKD::worldToFootFKWorldFrame(int leg_index,
+                                     const Eigen::Vector3d &body_pos,
+                                     const Eigen::Vector3d &body_rpy,
+                                     const Eigen::Vector3d &joint_state,
                                      Eigen::Matrix4d &g_world_foot) const {
   if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0) {
     throw std::runtime_error("Leg index is outside valid range");
@@ -278,9 +287,10 @@ void QuadKD::worldToFootFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
       g_world_legbase * g_legbase_abad * g_abad_hip * g_hip_knee * g_knee_foot;
 }
 
-void QuadKD::worldToFootFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
-                                     Eigen::Vector3d body_rpy,
-                                     Eigen::Vector3d joint_state,
+void QuadKD::worldToFootFKWorldFrame(int leg_index,
+                                     const Eigen::Vector3d &body_pos,
+                                     const Eigen::Vector3d &body_rpy,
+                                     const Eigen::Vector3d &joint_state,
                                      Eigen::Vector3d &foot_pos_world) const {
   Eigen::Matrix4d g_world_foot;
   worldToFootFKWorldFrame(leg_index, body_pos, body_rpy, joint_state,
@@ -290,9 +300,10 @@ void QuadKD::worldToFootFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
   foot_pos_world = g_world_foot.block<3, 1>(0, 3);
 }
 
-void QuadKD::worldToKneeFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
-                                     Eigen::Vector3d body_rpy,
-                                     Eigen::Vector3d joint_state,
+void QuadKD::worldToKneeFKWorldFrame(int leg_index,
+                                     const Eigen::Vector3d &body_pos,
+                                     const Eigen::Vector3d &body_rpy,
+                                     const Eigen::Vector3d &joint_state,
                                      Eigen::Matrix4d &g_world_knee) const {
   if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0) {
     throw std::runtime_error("Leg index is outside valid range");
@@ -326,9 +337,10 @@ void QuadKD::worldToKneeFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
   g_world_knee = g_world_legbase * g_legbase_abad * g_abad_hip * g_hip_knee;
 }
 
-void QuadKD::worldToKneeFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
-                                     Eigen::Vector3d body_rpy,
-                                     Eigen::Vector3d joint_state,
+void QuadKD::worldToKneeFKWorldFrame(int leg_index,
+                                     const Eigen::Vector3d &body_pos,
+                                     const Eigen::Vector3d &body_rpy,
+                                     const Eigen::Vector3d &joint_state,
                                      Eigen::Vector3d &knee_pos_world) const {
   Eigen::Matrix4d g_world_knee;
   worldToKneeFKWorldFrame(leg_index, body_pos, body_rpy, joint_state,
@@ -338,9 +350,10 @@ void QuadKD::worldToKneeFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
   knee_pos_world = g_world_knee.block<3, 1>(0, 3);
 }
 
-bool QuadKD::worldToFootIKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
-                                     Eigen::Vector3d body_rpy,
-                                     Eigen::Vector3d foot_pos_world,
+bool QuadKD::worldToFootIKWorldFrame(int leg_index,
+                                     const Eigen::Vector3d &body_pos,
+                                     const Eigen::Vector3d &body_rpy,
+                                     const Eigen::Vector3d &foot_pos_world,
                                      Eigen::Vector3d &joint_state) const {
   if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0) {
     throw std::runtime_error("Leg index is outside valid range");
@@ -370,7 +383,7 @@ bool QuadKD::worldToFootIKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
 }
 
 bool QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
-                                         Eigen::Vector3d foot_pos_legbase,
+                                         const Eigen::Vector3d &foot_pos_legbase,
                                          Eigen::Vector3d &joint_state) const {
   // Initialize exact bool
   bool is_exact = true;

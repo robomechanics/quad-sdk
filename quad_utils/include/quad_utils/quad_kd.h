@@ -38,13 +38,13 @@ class QuadKD {
    * @param[in] ns Namespace
    * @return Constructed object of type QuadKD
    */
-  QuadKD(std::string ns);
+  QuadKD(const std::string &ns);
 
   /**
    * @brief Initialize model for the class
    * @param[in] ns Namespace
    */
-  void initModel(std::string ns);
+  void initModel(const std::string &ns);
 
   /**
    * @brief Create an Eigen Eigen::Matrix4d containing a homogeneous transform
@@ -54,8 +54,8 @@ class QuadKD {
    * yaw
    * @return Homogenous transformation matrix
    */
-  Eigen::Matrix4d createAffineMatrix(Eigen::Vector3d trans,
-                                     Eigen::Vector3d rpy) const;
+  Eigen::Matrix4d createAffineMatrix(const Eigen::Vector3d &trans,
+                                     const Eigen::Vector3d &rpy) const;
 
   /**
    * @brief Create an Eigen Eigen::Matrix4d containing a homogeneous transform
@@ -64,8 +64,8 @@ class QuadKD {
    * @param[in] rot Rotation from input frame to output frame as AngleAxis
    * @return Homogenous transformation matrix
    */
-  Eigen::Matrix4d createAffineMatrix(Eigen::Vector3d trans,
-                                     Eigen::AngleAxisd rot) const;
+  Eigen::Matrix4d createAffineMatrix(const Eigen::Vector3d &trans,
+                                     const Eigen::AngleAxisd &rot) const;
 
   /**
    * @brief Transform a transformation matrix from the body frame to the world
@@ -75,8 +75,9 @@ class QuadKD {
    * @param[in] transform_body Specified transform in the body frame
    * @param[out] transform_world Specified transform in the world frame
    */
-  void transformBodyToWorld(Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
-                            Eigen::Matrix4d transform_body,
+  void transformBodyToWorld(const Eigen::Vector3d &body_pos,
+                            const Eigen::Vector3d &body_rpy,
+                            const Eigen::Matrix4d &transform_body,
                             Eigen::Matrix4d &transform_world) const;
 
   /**
@@ -87,8 +88,9 @@ class QuadKD {
    * @param[in] transform_world Specified transform in the world frame
    * @param[out] transform_body Specified transform in the body frame
    */
-  void transformWorldToBody(Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
-                            Eigen::Matrix4d transform_world,
+  void transformWorldToBody(const Eigen::Vector3d &body_pos,
+                            const Eigen::Vector3d &body_rpy,
+                            const Eigen::Matrix4d &transform_world,
                             Eigen::Matrix4d &transform_body) const;
 
   /**
@@ -97,7 +99,7 @@ class QuadKD {
    * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
    * @param[out] g_body_foot Transform of the specified foot in world frame
    */
-  void bodyToFootFKBodyFrame(int leg_index, Eigen::Vector3d joint_state,
+  void bodyToFootFKBodyFrame(int leg_index, const Eigen::Vector3d &joint_state,
                              Eigen::Matrix4d &g_body_foot) const;
 
   /**
@@ -106,7 +108,7 @@ class QuadKD {
    * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
    * @param[out] foot_pos_world Position of the specified foot in world frame
    */
-  void bodyToFootFKBodyFrame(int leg_index, Eigen::Vector3d joint_state,
+  void bodyToFootFKBodyFrame(int leg_index, const Eigen::Vector3d &joint_state,
                              Eigen::Vector3d &foot_pos_body) const;
 
   /**
@@ -117,9 +119,9 @@ class QuadKD {
    * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
    * @param[out] g_world_foot Transform of the specified foot in world frame
    */
-  void worldToFootFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
-                               Eigen::Vector3d body_rpy,
-                               Eigen::Vector3d joint_state,
+  void worldToFootFKWorldFrame(int leg_index, const Eigen::Vector3d &body_pos,
+                               const Eigen::Vector3d &body_rpy,
+                               const Eigen::Vector3d &joint_state,
                                Eigen::Matrix4d &g_world_foot) const;
 
   /**
@@ -130,9 +132,9 @@ class QuadKD {
    * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
    * @param[out] foot_pos_world Position of the specified foot in world frame
    */
-  void worldToFootFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
-                               Eigen::Vector3d body_rpy,
-                               Eigen::Vector3d joint_state,
+  void worldToFootFKWorldFrame(int leg_index, const Eigen::Vector3d &body_pos,
+                               const Eigen::Vector3d &body_rpy,
+                               const Eigen::Vector3d &joint_state,
                                Eigen::Vector3d &foot_pos_world) const;
 
   /**
@@ -143,9 +145,9 @@ class QuadKD {
    * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
    * @param[out] g_world_knee Transform of the specified knee in world frame
    */
-  void worldToKneeFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
-                               Eigen::Vector3d body_rpy,
-                               Eigen::Vector3d joint_state,
+  void worldToKneeFKWorldFrame(int leg_index, const Eigen::Vector3d &body_pos,
+                               const Eigen::Vector3d &body_rpy,
+                               const Eigen::Vector3d &joint_state,
                                Eigen::Matrix4d &g_world_knee) const;
 
   /**
@@ -156,9 +158,9 @@ class QuadKD {
    * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
    * @param[out] knee_pos_world Position of the specified knee in world frame
    */
-  void worldToKneeFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
-                               Eigen::Vector3d body_rpy,
-                               Eigen::Vector3d joint_state,
+  void worldToKneeFKWorldFrame(int leg_index, const Eigen::Vector3d &body_pos,
+                               const Eigen::Vector3d &body_rpy,
+                               const Eigen::Vector3d &joint_state,
                                Eigen::Vector3d &knee_pos_world) const;
 
   /**
@@ -170,9 +172,9 @@ class QuadKD {
    * @param[out] joint_state Joint states for the specified leg (abad, hip,
    * knee)
    */
-  bool worldToFootIKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
-                               Eigen::Vector3d body_rpy,
-                               Eigen::Vector3d foot_pos_world,
+  bool worldToFootIKWorldFrame(int leg_index, const Eigen::Vector3d &body_pos,
+                               const Eigen::Vector3d &body_rpy,
+                               const Eigen::Vector3d &foot_pos_world,
                                Eigen::Vector3d &joint_state) const;
 
   /**
@@ -184,7 +186,7 @@ class QuadKD {
    * knee)
    */
   bool legbaseToFootIKLegbaseFrame(int leg_index,
-                                   Eigen::Vector3d foot_pos_legbase,
+                                   const Eigen::Vector3d &foot_pos_legbase,
                                    Eigen::Vector3d &joint_state) const;
 
   /**
@@ -218,8 +220,9 @@ class QuadKD {
    * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
    * @param[out] g_world_legbase Transformation matrix of world to leg base
    */
-  void worldToLegbaseFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
-                                  Eigen::Vector3d body_rpy,
+  void worldToLegbaseFKWorldFrame(int leg_index,
+                                  const Eigen::Vector3d &body_pos,
+                                  const Eigen::Vector3d &body_rpy,
                                   Eigen::Matrix4d &g_world_legbase) const;
 
   /**
@@ -229,8 +232,9 @@ class QuadKD {
    * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
    * @param[out] leg_base_pos_world Origin of leg base frame in world frame
    */
-  void worldToLegbaseFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
-                                  Eigen::Vector3d body_rpy,
+  void worldToLegbaseFKWorldFrame(int leg_index,
+                                  const Eigen::Vector3d &body_pos,
+                                  const Eigen::Vector3d &body_rpy,
                                   Eigen::Vector3d &leg_base_pos_world) const;
 
   /**
@@ -240,9 +244,10 @@ class QuadKD {
    * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
    * @param[out] nominal_hip_pos_world Location of nominal hip in world frame
    */
-  void worldToNominalHipFKWorldFrame(
-      int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
-      Eigen::Vector3d &nominal_hip_pos_world) const;
+  void worldToNominalHipFKWorldFrame(int leg_index,
+                                     const Eigen::Vector3d &body_pos,
+                                     const Eigen::Vector3d &body_rpy,
+                                     Eigen::Vector3d &nominal_hip_pos_world) const;
 
   /**
    * @brief Compute Jacobian for generalized coordinates
