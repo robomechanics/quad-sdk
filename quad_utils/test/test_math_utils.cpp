@@ -15,7 +15,7 @@ TEST(MathTest, testWrap) {
   }
 
   std::vector<double> data_wrapped = math_utils::wrapToPi(data);
-  std::vector<double> data_unwrapped = math_utils::unwrap(data_wrapped);
+  std::vector<double> data_unwrapped = math_utils::getUnwrappedVector(data_wrapped);
 
   double error = 0;
   for (int i = 0; i < data.size(); i++) {

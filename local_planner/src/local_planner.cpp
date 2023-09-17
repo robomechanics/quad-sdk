@@ -422,10 +422,24 @@ void LocalPlanner::getReference() {
     }
   }
 
+  // Unwrap yaw to avoid discontinuity at -pi to pi (requires NLP constraint bounds beyond [-pi, pi])
+  unwrapYawReference();
+
   // Initialize with current foot and body positions
   body_plan_.row(0) = current_state_;
   foot_positions_body_.row(0) = current_foot_positions_body_;
   foot_positions_world_.row(0) = current_foot_positions_world_;
+}
+
+void LocalPlanner::unwrapYawReference() {
+  static const int yaw_idx = 5;
+  auto&& yaw_ref_traj = ref_body_plan_.col(yaw_idx);
+
+  // Update first element of yaw reference to be within PI of current state
+  math_utils::wrapToTarget(yaw_ref_traj(0), current_state_(yaw_idx));
+
+  // Unwrap remainder of yaw reference to remove discontinuities (filtering out differences > pi)
+  math_utils::unwrapVector(yaw_ref_traj);
 }
 
 bool LocalPlanner::computeLocalPlan() {

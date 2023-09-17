@@ -135,11 +135,70 @@ std::vector<double> movingAverageFilter(std::vector<double> data,
 std::vector<double> centralDiff(std::vector<double> data, double dt);
 
 /**
+ * @brief Wrap a given scalar to within PI of a given target by adding or subtracting 2*PI
+ *
+ * @tparam ScalarType
+ * @param[in] val Value to be wrapped to val_target
+ * @param[in] val_target Target to wrap towards
+ */
+template <typename ScalarType>
+void wrapToTarget(ScalarType& val, const ScalarType& val_target = 0.0)
+{
+  while (val_target - val > M_PI) {
+    val += 2.0 * M_PI;
+  }
+  while (val_target - val < -M_PI) {
+    val -= 2.0 * M_PI;
+  }
+}
+
+/**
  * @brief Unwrap a phase variable by filtering out differences > pi
- * @param[in] data Input vector containing a wrapped signal
+ * @param[in] vec Input vector containing a wrapped signal
+ * @return Flag for if the vector was modified by unwrapping
+ */
+template <typename VecType>
+bool unwrapVector(VecType& vec) {
+  bool modified = false;
+  for (int i = 1; i < vec.size(); i++) {
+    double diff = vec[i] - vec[i - 1];
+    if (diff > M_PI) {
+      modified = true;
+      for (int j = i; j < vec.size(); j++) {
+        vec[j] = vec[j] - 2 * M_PI;
+      }
+    } else if (diff < -M_PI) {
+      modified = true;
+      for (int j = i; j < vec.size(); j++) {
+        vec[j] = vec[j] + 2 * M_PI;
+      }
+    }
+  }
+  return modified;
+}
+
+/**
+ * @brief Unwrap a phase variable by filtering out differences > pi
+ * @param[in] vec Input vector containing a wrapped signal
  * @return Vector of unwrapped signal
  */
-std::vector<double> unwrap(std::vector<double> data);
+template <typename VecType>
+VecType getUnwrappedVector(const VecType& vec) {
+  VecType vec_unwrapped = vec;
+  for (int i = 1; i < vec_unwrapped.size(); i++) {
+    double diff = vec_unwrapped[i] - vec_unwrapped[i - 1];
+    if (diff > M_PI) {
+      for (int j = i; j < vec_unwrapped.size(); j++) {
+        vec_unwrapped[j] = vec_unwrapped[j] - 2 * M_PI;
+      }
+    } else if (diff < -M_PI) {
+      for (int j = i; j < vec_unwrapped.size(); j++) {
+        vec_unwrapped[j] = vec_unwrapped[j] + 2 * M_PI;
+      }
+    }
+  }
+  return vec_unwrapped;
+}
 
 /**
  * @brief Selective damping least square matrix inverse

@@ -182,24 +182,6 @@ std::vector<double> centralDiff(std::vector<double> data, double dt) {
   return data_diff;
 }
 
-std::vector<double> unwrap(std::vector<double> data) {
-  std::vector<double> data_unwrapped = data;
-  for (int i = 1; i < data.size(); i++) {
-    double diff = data[i] - data[i - 1];
-    if (diff > M_PI) {
-      for (int j = i; j < data.size(); j++) {
-        data_unwrapped[j] = data_unwrapped[j] - 2 * M_PI;
-      }
-    } else if (diff < -M_PI) {
-      for (int j = i; j < data.size(); j++) {
-        data_unwrapped[j] = data_unwrapped[j] + 2 * M_PI;
-      }
-    }
-  }
-
-  return data_unwrapped;
-}
-
 Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian) {
   Eigen::JacobiSVD<Eigen::MatrixXd> svd(
       jacobian, Eigen::ComputeThinU | Eigen::ComputeThinV);
