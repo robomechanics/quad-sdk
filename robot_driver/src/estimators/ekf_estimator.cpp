@@ -515,8 +515,8 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk, 
 
   // Solve for Error between Measured Y Residual and Process Residual
   error_y = y - (C * X_pre);
-  ROS_INFO_STREAM("Innovation Norm" << error_y.norm());
-  ROS_INFO("Worked");
+  // ROS_INFO_STREAM("Innovation Norm" << error_y.norm());
+  // ROS_INFO("Worked");
   // Skip Update if the Innovation is too High
   if (error_y.norm() < thresh_out)
   {

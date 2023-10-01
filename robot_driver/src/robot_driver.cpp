@@ -423,6 +423,7 @@ bool RobotDriver::updateState(){
         estimated_state_ = last_robot_state_msg_;
         last_joint_state_msg_.position = last_robot_state_msg_.joints.position;
         last_joint_state_msg_.velocity = last_robot_state_msg_.joints.velocity;
+        // ROS_INFO_STREAM(last_joint_state_msg_);
         initialized = true;
       }
       if (estimator_id_ == "comp_filter")
