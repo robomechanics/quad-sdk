@@ -16,7 +16,7 @@ namespace quad_utils {
  */
 inline double getROSMessageAgeInMs(const std_msgs::Header &header,
                                    const ros::Time &t_compare) {
-  return (t_compare - header.stamp).toSec() * 1000.0;
+    return (t_compare - header.stamp).toSec() * 1000.0;
 }
 
 /**
@@ -25,8 +25,8 @@ inline double getROSMessageAgeInMs(const std_msgs::Header &header,
  * @return Age in ms (compared to ros::Time::now())
  */
 inline double getROSMessageAgeInMs(const std_msgs::Header &header) {
-  ros::Time t_compare = ros::Time::now();
-  return quad_utils::getROSMessageAgeInMs(header, t_compare);
+    ros::Time t_compare = ros::Time::now();
+    return quad_utils::getROSMessageAgeInMs(header, t_compare);
 }
 
 /**
@@ -35,7 +35,7 @@ inline double getROSMessageAgeInMs(const std_msgs::Header &header) {
  * @return Time in plan (compared to ros::Time::now())
  */
 inline double getDurationSinceTime(const ros::Time &plan_start) {
-  return (ros::Time::now() - plan_start).toSec();
+    return (ros::Time::now() - plan_start).toSec();
 }
 
 /**
@@ -48,9 +48,9 @@ inline double getDurationSinceTime(const ros::Time &plan_start) {
  */
 inline void getPlanIndex(const ros::Time &plan_start, double dt, int &index,
                          double &first_element_duration) {
-  double duration = getDurationSinceTime(plan_start);
-  index = std::floor(duration / dt);
-  first_element_duration = (index + 1) * dt - duration;
+    double duration = getDurationSinceTime(plan_start);
+    index = std::floor(duration / dt);
+    first_element_duration = (index + 1) * dt - duration;
 }
 
 /**
@@ -63,11 +63,12 @@ inline void getPlanIndex(const ros::Time &plan_start, double dt, int &index,
 template <class ParamType>
 inline bool loadROSParam(ros::NodeHandle nh, const std::string &paramName,
                          ParamType &varName) {
-  if (!nh.getParam(paramName, varName)) {
-    ROS_ERROR("Can't find param %s from parameter server", paramName.c_str());
-    return false;
-  }
-  return true;
+    if (!nh.getParam(paramName, varName)) {
+        ROS_ERROR("Can't find param %s from parameter server",
+                  paramName.c_str());
+        return false;
+    }
+    return true;
 }
 
 /**
@@ -80,15 +81,18 @@ inline bool loadROSParam(ros::NodeHandle nh, const std::string &paramName,
  * @return boolean (true if found rosparam, false if loaded default)
  */
 template <class ParamType>
-inline bool loadROSParamDefault(ros::NodeHandle nh, const std::string &paramName,
-                                ParamType &varName, const ParamType &defaultVal) {
-  if (!nh.getParam(paramName, varName)) {
-    varName = defaultVal;
-    ROS_INFO("Can't find param %s on rosparam server, loading default value.",
-             paramName.c_str());
-    return false;
-  }
-  return true;
+inline bool loadROSParamDefault(ros::NodeHandle nh,
+                                const std::string &paramName,
+                                ParamType &varName,
+                                const ParamType &defaultVal) {
+    if (!nh.getParam(paramName, varName)) {
+        varName = defaultVal;
+        ROS_INFO(
+            "Can't find param %s on rosparam server, loading default value.",
+            paramName.c_str());
+        return false;
+    }
+    return true;
 }
 
 // /**
@@ -117,8 +121,9 @@ void updateStateHeaders(quad_msgs::RobotState &msg, const ros::Time &stamp,
  * @param[in] t_interp Fraction of time between the messages [0,1]
  * @param[out] interp_state Interpolated header
  */
-void interpHeader(const std_msgs::Header &header_1, const std_msgs::Header &header_2,
-                  double t_interp, std_msgs::Header &interp_header);
+void interpHeader(const std_msgs::Header &header_1,
+                  const std_msgs::Header &header_2, double t_interp,
+                  std_msgs::Header &interp_header);
 
 /**
  * @brief Interpolate data between two Odometry messages.
@@ -127,8 +132,9 @@ void interpHeader(const std_msgs::Header &header_1, const std_msgs::Header &head
  * @param[in] t_interp Fraction of time between the messages [0,1]
  * @param[out] interp_state Interpolated Odometry message
  */
-void interpOdometry(const quad_msgs::BodyState &state_1, const quad_msgs::BodyState &state_2,
-                    double t_interp, quad_msgs::BodyState &interp_state);
+void interpOdometry(const quad_msgs::BodyState &state_1,
+                    const quad_msgs::BodyState &state_2, double t_interp,
+                    quad_msgs::BodyState &interp_state);
 
 /**
  * @brief Interpolate data between two JointState messages.
@@ -149,7 +155,8 @@ void interpJointState(const sensor_msgs::JointState &state_1,
  * @param[out] interp_state Interpolated FootState message
  */
 void interpMultiFootState(const quad_msgs::MultiFootState &state_1,
-                          const quad_msgs::MultiFootState &state_2, double t_interp,
+                          const quad_msgs::MultiFootState &state_2,
+                          double t_interp,
                           quad_msgs::MultiFootState &interp_state);
 
 /**
@@ -159,8 +166,9 @@ void interpMultiFootState(const quad_msgs::MultiFootState &state_1,
  * @param[in] t_interp Fraction of time between the messages [0,1]
  * @param[out] interp_state Interpolated GRFArray message
  */
-void interpGRFArray(const quad_msgs::GRFArray &state_1, const quad_msgs::GRFArray &state_2,
-                    double t_interp, quad_msgs::GRFArray &interp_state);
+void interpGRFArray(const quad_msgs::GRFArray &state_1,
+                    const quad_msgs::GRFArray &state_2, double t_interp,
+                    quad_msgs::GRFArray &interp_state);
 
 /**
  * @brief Interpolate data between two RobotState messages.
