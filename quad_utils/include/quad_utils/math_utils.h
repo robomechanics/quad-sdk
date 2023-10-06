@@ -36,7 +36,7 @@ inline double lerp(double a, double b, double t) { return (a + t * (b - a)); }
  * @return Wrapped value
  */
 inline double wrapTo2Pi(double val) {
-  return fmod(2 * M_PI + fmod(val, 2 * M_PI), 2 * M_PI);
+    return fmod(2 * M_PI + fmod(val, 2 * M_PI), 2 * M_PI);
 }
 
 /**
@@ -45,12 +45,12 @@ inline double wrapTo2Pi(double val) {
  * @return Wrapped value
  */
 inline double wrapToPi(double val) {
-  return -M_PI + wrapTo2Pi(val + M_PI);
-  // double new_val = fmod(val + M_PI, 2*M_PI);
-  // while (new_val < 0) {
-  //   new_val += 2*M_PI;
-  // }
-  // return new_val-M_PI;
+    return -M_PI + wrapTo2Pi(val + M_PI);
+    // double new_val = fmod(val + M_PI, 2*M_PI);
+    // while (new_val < 0) {
+    //   new_val += 2*M_PI;
+    // }
+    // return new_val-M_PI;
 }
 
 /**
@@ -59,11 +59,11 @@ inline double wrapToPi(double val) {
  * @return Wrapped data
  */
 inline std::vector<double> wrapToPi(std::vector<double> data) {
-  std::vector<double> data_wrapped = data;
-  for (int i = 0; i < data.size(); i++) {
-    data_wrapped[i] = wrapToPi(data[i]);
-  }
-  return data_wrapped;
+    std::vector<double> data_wrapped = data;
+    for (int i = 0; i < data.size(); i++) {
+        data_wrapped[i] = wrapToPi(data[i]);
+    }
+    return data_wrapped;
 }
 
 /**
@@ -135,21 +135,21 @@ std::vector<double> movingAverageFilter(std::vector<double> data,
 std::vector<double> centralDiff(std::vector<double> data, double dt);
 
 /**
- * @brief Wrap a given scalar to within PI of a given target by adding or subtracting 2*PI
+ * @brief Wrap a given scalar to within PI of a given target by adding or
+ * subtracting 2*PI
  *
  * @tparam ScalarType
  * @param[in] val Value to be wrapped to val_target
  * @param[in] val_target Target to wrap towards
  */
 template <typename ScalarType>
-void wrapToTarget(ScalarType& val, const ScalarType& val_target = 0.0)
-{
-  while (val_target - val > M_PI) {
-    val += 2.0 * M_PI;
-  }
-  while (val_target - val < -M_PI) {
-    val -= 2.0 * M_PI;
-  }
+void wrapToTarget(ScalarType& val, const ScalarType& val_target = 0.0) {
+    while (val_target - val > M_PI) {
+        val += 2.0 * M_PI;
+    }
+    while (val_target - val < -M_PI) {
+        val -= 2.0 * M_PI;
+    }
 }
 
 /**
@@ -159,22 +159,22 @@ void wrapToTarget(ScalarType& val, const ScalarType& val_target = 0.0)
  */
 template <typename VecType>
 bool unwrapVector(VecType& vec) {
-  bool modified = false;
-  for (int i = 1; i < vec.size(); i++) {
-    double diff = vec[i] - vec[i - 1];
-    if (diff > M_PI) {
-      modified = true;
-      for (int j = i; j < vec.size(); j++) {
-        vec[j] = vec[j] - 2 * M_PI;
-      }
-    } else if (diff < -M_PI) {
-      modified = true;
-      for (int j = i; j < vec.size(); j++) {
-        vec[j] = vec[j] + 2 * M_PI;
-      }
+    bool modified = false;
+    for (int i = 1; i < vec.size(); i++) {
+        double diff = vec[i] - vec[i - 1];
+        if (diff > M_PI) {
+            modified = true;
+            for (int j = i; j < vec.size(); j++) {
+                vec[j] = vec[j] - 2 * M_PI;
+            }
+        } else if (diff < -M_PI) {
+            modified = true;
+            for (int j = i; j < vec.size(); j++) {
+                vec[j] = vec[j] + 2 * M_PI;
+            }
+        }
     }
-  }
-  return modified;
+    return modified;
 }
 
 /**
@@ -184,9 +184,9 @@ bool unwrapVector(VecType& vec) {
  */
 template <typename VecType>
 VecType getUnwrappedVector(const VecType& vec) {
-  VecType vec_unwrapped = vec;
-  unwrapVector(vec_unwrapped);
-  return vec_unwrapped;
+    VecType vec_unwrapped = vec;
+    unwrapVector(vec_unwrapped);
+    return vec_unwrapped;
 }
 
 /**
@@ -194,7 +194,7 @@ VecType getUnwrappedVector(const VecType& vec) {
  * @param[in] jacobian Input matrix
  * @return Pseudo-inverse of the input matrix
  */
-Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian);
+Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd& jacobian);
 }  // namespace math_utils
 
 #endif  // QUAD_MATH_UTILS_H
