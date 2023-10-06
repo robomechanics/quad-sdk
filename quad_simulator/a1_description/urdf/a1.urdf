@@ -464,7 +464,7 @@
     <child link="upper0"/>
     <axis xyz="0 -1 0"/>
     <dynamics damping="0" friction="0"/>
-    <limit effort="33.5" lower="-2.6179938779914944" upper="2.6179938779914944" velocity="21"/>
+    <limit effort="33.5" lower="-6.28318530718" upper="6.28318530718" velocity="21"/>
   </joint>
   <link name="lower0">
     <visual name="lower0_visual">
@@ -492,7 +492,7 @@
     <child link="lower0"/>
     <axis xyz="0 1 0"/>
     <dynamics damping="0" friction="0"/>
-    <limit effort="33.5" lower="0.445058959258554" upper="2.2252947962927703" velocity="21"/>
+    <limit effort="33.5" lower="-6.28318530718" upper="6.28318530718" velocity="21"/>
   </joint>
   <link name="toe0">
     <visual name="toe0_visual">
@@ -644,7 +644,7 @@
     <child link="upper1"/>
     <axis xyz="0 -1 0"/>
     <dynamics damping="0" friction="0"/>
-   <limit effort="33.5" lower="-2.6179938779914944" upper="2.6179938779914944" velocity="21"/>
+    <limit effort="33.5" lower="-6.28318530718" upper="6.28318530718" velocity="21"/>
   </joint>
   <link name="lower1">
     <visual name="lower1_visual">
@@ -672,7 +672,7 @@
     <child link="lower1"/>
     <axis xyz="0 1 0"/>
     <dynamics damping="0" friction="0"/>
-    <limit effort="33.5" lower="0.445058959258554" upper="2.2252947962927703" velocity="21"/>
+    <limit effort="33.5" lower="-6.28318530718" upper="6.28318530718" velocity="21"/>
   </joint>
   <link name="toe1">
     <visual name="toe1_visual">
@@ -824,7 +824,7 @@
     <child link="upper2"/>
     <axis xyz="0 -1 0"/>
     <dynamics damping="0" friction="0"/>
-    <limit effort="33.5" lower="-2.6179938779914944" upper="2.6179938779914944" velocity="21"/>
+    <limit effort="33.5" lower="-6.28318530718" upper="6.28318530718" velocity="21"/>
   </joint>
   <link name="lower2">
     <visual name="lower2_visual">
@@ -852,7 +852,7 @@
     <child link="lower2"/>
     <axis xyz="0 1 0"/>
     <dynamics damping="0" friction="0"/>
-    <limit effort="33.5" lower="0.445058959258554" upper="2.2252947962927703" velocity="21"/>
+    <limit effort="33.5" lower="-6.28318530718" upper="6.28318530718" velocity="21"/>
   </joint>
   <link name="toe2">
     <visual name="toe2_visual">
@@ -1004,7 +1004,7 @@
     <child link="upper3"/>
     <axis xyz="0 -1 0"/>
     <dynamics damping="0" friction="0"/>
-    <limit effort="33.5" lower="-2.6179938779914944" upper="2.6179938779914944" velocity="21"/>
+    <limit effort="33.5" lower="-6.28318530718" upper="6.28318530718" velocity="21"/>
   </joint>
   <link name="lower3">
     <visual name="lower3_visual">
@@ -1032,7 +1032,7 @@
     <child link="lower3"/>
     <axis xyz="0 1 0"/>
     <dynamics damping="0" friction="0"/>
-    <limit effort="33.5" lower="0.445058959258554" upper="2.2252947962927703" velocity="21"/>
+    <limit effort="33.5" lower="-6.28318530718" upper="6.28318530718" velocity="21"/>
   </joint>
   <link name="toe3">
     <visual name="toe3_visual">

@@ -248,8 +248,8 @@
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-2.6179938779914944</lower>
-          <upper>2.6179938779914944</upper>
+          <lower>-6.28319</lower>
+          <upper>6.28319</upper>
           <effort>33.5</effort>
           <velocity>21</velocity>
         </limit>
@@ -320,8 +320,8 @@
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>0.445058959258554</lower>
-          <upper>2.2252947962927703</upper>
+          <lower>-6.28319</lower>
+          <upper>6.28319</upper>
           <effort>33.5</effort>
           <velocity>21</velocity>
         </limit>
@@ -559,8 +559,8 @@
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-2.6179938779914944</lower>
-          <upper>2.6179938779914944</upper>
+          <lower>-6.28319</lower>
+          <upper>6.28319</upper>
           <effort>33.5</effort>
           <velocity>21</velocity>
         </limit>
@@ -631,8 +631,8 @@
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>0.445058959258554</lower>
-          <upper>2.2252947962927703</upper>
+          <lower>-6.28319</lower>
+          <upper>6.28319</upper>
           <effort>33.5</effort>
           <velocity>21</velocity>
         </limit>
@@ -870,8 +870,8 @@
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-2.6179938779914944</lower>
-          <upper>2.6179938779914944</upper>
+          <lower>-6.28319</lower>
+          <upper>6.28319</upper>
           <effort>33.5</effort>
           <velocity>21</velocity>
         </limit>
@@ -942,8 +942,8 @@
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>0.445058959258554</lower>
-          <upper>2.2252947962927703</upper>
+          <lower>-6.28319</lower>
+          <upper>6.28319</upper>
           <effort>33.5</effort>
           <velocity>21</velocity>
         </limit>
@@ -1181,8 +1181,8 @@
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-2.6179938779914944</lower>
-          <upper>2.6179938779914944</upper>
+          <lower>-6.28319</lower>
+          <upper>6.28319</upper>
           <effort>33.5</effort>
           <velocity>21</velocity>
         </limit>
@@ -1253,8 +1253,8 @@
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>0.445058959258554</lower>
-          <upper>2.2252947962927703</upper>
+          <lower>-6.28319</lower>
+          <upper>6.28319</upper>
           <effort>33.5</effort>
           <velocity>21</velocity>
         </limit>

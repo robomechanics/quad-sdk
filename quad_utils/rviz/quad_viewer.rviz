@@ -3,9 +3,19 @@ Panels:
     Help Height: 0
     Name: Displays
     Property Tree Widget:
+<<<<<<< HEAD
       Expanded: ~
       Splitter Ratio: 0.5008665323257446
     Tree Height: 799
+=======
+      Expanded:
+        - /Global Options1
+        - /Status1
+        - /GridMap1
+        - /Surface Normals1
+      Splitter Ratio: 0.5008665323257446
+    Tree Height: 1224
+>>>>>>> f17eaf21... EKF Changes
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -21,7 +31,10 @@ Panels:
     Name: Views
     Splitter Ratio: 0.5
   - Class: rviz/Time
+<<<<<<< HEAD
     Experimental: false
+=======
+>>>>>>> f17eaf21... EKF Changes
     Name: Time
     SyncMode: 0
     SyncSource: ""
@@ -32,13 +45,24 @@ Toolbars:
 Visualization Manager:
   Class: ""
   Displays:
+<<<<<<< HEAD
     - Class: rviz/Axes
       Enabled: false
+=======
+    - Alpha: 1
+      Class: rviz/Axes
+      Enabled: true
+>>>>>>> f17eaf21... EKF Changes
       Length: 0.20000000298023224
       Name: Axes
       Radius: 0.009999999776482582
       Reference Frame: <Fixed Frame>
+<<<<<<< HEAD
       Value: false
+=======
+      Show Trail: false
+      Value: true
+>>>>>>> f17eaf21... EKF Changes
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Class: grid_map_rviz_plugin/GridMap
@@ -56,7 +80,11 @@ Visualization Manager:
       Min Intensity: 0
       Name: GridMap
       Show Grid Lines: true
+<<<<<<< HEAD
       Topic: /terrain_map
+=======
+      Topic: /terrain_map_raw
+>>>>>>> f17eaf21... EKF Changes
       Unreliable: false
       Use Rainbow: false
       Value: true
@@ -171,6 +199,25 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
+<<<<<<< HEAD
+=======
+    - Alpha: 0.8
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: false
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+      Name: Robot 1 Estimated State
+      Robot Description: robot_description
+      TF Prefix: robot_1_estimate
+      Update Interval: 0
+      Value: false
+      Visual Enabled: true
+>>>>>>> f17eaf21... EKF Changes
     - Alpha: 1
       Class: rviz/RobotModel
       Collision Enabled: false
@@ -457,11 +504,11 @@ Visualization Manager:
       Buffer Length: 1
       Class: rviz/Path
       Color: 0; 132; 61
+<<<<<<< HEAD
       Enabled: true
+=======
+      Enabled: false
       Head Diameter: 0.30000001192092896
-      Head Length: 0.20000000298023224
-      Length: 0.30000001192092896
-      Line Style: Billboards
       Line Width: 0.019999999552965164
       Name: Robot 2 Foot 2
       Offset:
@@ -470,17 +517,29 @@ Visualization Manager:
         Z: 0
       Pose Color: 255; 85; 255
       Pose Style: None
+<<<<<<< HEAD
+=======
+      Queue Size: 10
+>>>>>>> f17eaf21... EKF Changes
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
       Topic: /robot_2/visualization/foot_2_plan_continuous
       Unreliable: false
+<<<<<<< HEAD
       Value: true
+=======
+      Value: false
+>>>>>>> f17eaf21... EKF Changes
     - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
       Color: 242; 169; 0
+<<<<<<< HEAD
       Enabled: true
+=======
+      Enabled: false
+>>>>>>> f17eaf21... EKF Changes
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
       Length: 0.30000001192092896
@@ -493,12 +552,20 @@ Visualization Manager:
         Z: 0
       Pose Color: 255; 85; 255
       Pose Style: None
+<<<<<<< HEAD
+=======
+      Queue Size: 10
+>>>>>>> f17eaf21... EKF Changes
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
       Topic: /robot_2/visualization/foot_3_plan_continuous
       Unreliable: false
+<<<<<<< HEAD
       Value: true
+=======
+      Value: false
+>>>>>>> f17eaf21... EKF Changes
     - Class: rviz/Marker
       Enabled: false
       Marker Topic: /grid_map_visualization/surface_normals
@@ -541,16 +608,28 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
+<<<<<<< HEAD
       Distance: 5.79868745803833
+=======
+      Distance: 5.029364109039307
+>>>>>>> f17eaf21... EKF Changes
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
+<<<<<<< HEAD
       Focal Point:
         X: 1.643458604812622
         Y: 0.952698826789856
         Z: -1.0429933071136475
+=======
+      Field of View: 0.7853981852531433
+      Focal Point:
+        X: 1.4393401145935059
+        Y: 0.6397107243537903
+        Z: -1.6316657066345215
+>>>>>>> f17eaf21... EKF Changes
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
@@ -558,6 +637,7 @@ Visualization Manager:
       Near Clip Distance: 0.009999999776482582
       Pitch: 0.5647967457771301
       Target Frame: <Fixed Frame>
+<<<<<<< HEAD
       Value: Orbit (rviz)
       Yaw: 4.203597068786621
     Saved: ~
@@ -568,6 +648,17 @@ Window Geometry:
   Hide Left Dock: true
   Hide Right Dock: true
   QMainWindow State: 000000ff00000000fd00000004000000000000025a0000035cfc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000b0fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073000000003d0000035c000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f0000040efc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a0056006900650077007300000000280000040e000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000078000000060fc0100000002fb0000000800540069006d0065010000000000000780000002eb00fffffffb0000000800540069006d00650100000000000004500000000000000000000007800000035c00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+=======
+      Yaw: 4.193596839904785
+    Saved: ~
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 1598
+  Hide Left Dock: false
+  Hide Right Dock: true
+  QMainWindow State: 000000ff00000000fd00000004000000000000025a00000536fc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b000000b000fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000b0fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000006e000005360000018200fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f0000040efc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a0056006900650077007300000000280000040e0000013200fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000009c400000060fc0100000002fb0000000800540069006d00650100000000000009c4000006dc00fffffffb0000000800540069006d006501000000000000045000000000000000000000075e0000053600000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+>>>>>>> f17eaf21... EKF Changes
   Selection:
     collapsed: false
   Time:
@@ -576,6 +667,12 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: true
+<<<<<<< HEAD
   Width: 1920
   X: 1920
   Y: 0
+=======
+  Width: 2500
+  X: 326
+  Y: 176
+>>>>>>> f17eaf21... EKF Changes

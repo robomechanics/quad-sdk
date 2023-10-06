@@ -45,7 +45,7 @@ class StateEstimator {
    * @param[out] qk Orientation in quaternion
    */
   void readIMU(const sensor_msgs::Imu::ConstPtr& last_imu_msg,
-               Eigen::Vector3d& fk, Eigen::Vector3d& wk,
+               Eigen::VectorXd& fk, Eigen::VectorXd& wk,
                Eigen::Quaterniond& qk);
 
   /**
@@ -74,6 +74,9 @@ class StateEstimator {
  protected:
   /// Last state estimate
   quad_msgs::RobotState state_est_;
+
+  /// Most recent state estimate (added 02/05)
+  quad_msgs::RobotState last_robot_state_msg_;
 
   /// QuadKD class
   std::shared_ptr<quad_utils::QuadKD> quadKD_;

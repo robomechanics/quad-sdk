@@ -47,49 +47,51 @@ stateGRFs = data.stateGRFs;
 controlGRFs = data.controlGRFs;
 localPlan = data.localPlan;
 
+disp(stateGroundTruth);
+disp(stateEstimate);
 %% Plot the data
 
 % Plot the state
-stateFigs = [];
-if ~isempty(stateGroundTruth)
-    [stateFigs] = plotState(stateGroundTruth,tWindowStates,'-', bTitles, stateFigs);
-end
-if ~isempty(stateTrajectory)
-    [stateFigs] = plotState(stateTrajectory,tWindowStates, ':', bTitles, stateFigs);
-end
-if ~isempty(stateEstimate)
-    [stateFigs] = plotState(stateEstimate,tWindowStates, '--', bTitles, stateFigs);
-end
-
-% Plot the control
-controlFigs = [];
-if ~isempty(stateGRFs)
-    controlFigs = plotControl(stateGRFs,tWindowControl,'-', bTitles, controlFigs);
-end
-if ~isempty(controlGRFs)
-    controlFigs = plotControl(controlGRFs,tWindowControl,':', bTitles,controlFigs);
-end
-
-% Plot local plan information if desired
-localPlanFigs = [];
-if bPlotLocalPlanInfo && ~isempty(localPlan)
-    localPlanFigs = plotLocalPlan(localPlan,tWindowLocalPlan,'-', bTitles,localPlanFigs);
-end
-
-% Add figures to array
-figArray = [stateFigs, controlFigs, localPlanFigs];
-
-%% Save the logs and figures in one directory
-logDir = [];
-if bSave
-    logDir = saveLog(trialName, figArray);
-end
-
-%% Animate and save
-
-if bAnimate
-    robot_path = '../../quad_simulator/spirit_description/urdf/spirit.urdf';
-    robot = importrobot(robot_path);
-    videosDir = fullfile(logDir,'videos/');
-    animateData(robot,stateGroundTruth, fullfile(videosDir, trialName), bSave);
-end
+% stateFigs = [];
+% if ~isempty(stateGroundTruth)
+%     [stateFigs] = plotState(stateGroundTruth,tWindowStates,'-', bTitles, stateFigs);
+% end
+% if ~isempty(stateTrajectory)
+%     [stateFigs] = plotState(stateTrajectory,tWindowStates, ':', bTitles, stateFigs);
+% end
+% if ~isempty(stateEstimate)
+%     [stateFigs] = plotState(stateEstimate,tWindowStates, '--', bTitles, stateFigs);
+% end
+% 
+% % Plot the control
+% controlFigs = [];
+% if ~isempty(stateGRFs)
+%     controlFigs = plotControl(stateGRFs,tWindowControl,'-', bTitles, controlFigs);
+% end
+% if ~isempty(controlGRFs)
+%     controlFigs = plotControl(controlGRFs,tWindowControl,':', bTitles,controlFigs);
+% end
+% 
+% % Plot local plan information if desired
+% localPlanFigs = [];
+% if bPlotLocalPlanInfo && ~isempty(localPlan)
+%     localPlanFigs = plotLocalPlan(localPlan,tWindowLocalPlan,'-', bTitles,localPlanFigs);
+% end
+% 
+% % Add figures to array
+% figArray = [stateFigs, controlFigs, localPlanFigs];
+% 
+% %% Save the logs and figures in one directory
+% logDir = [];
+% if bSave
+%     logDir = saveLog(trialName, figArray);
+% end
+% 
+% %% Animate and save
+% 
+% if bAnimate
+%     robot_path = '../../quad_simulator/spirit_description/urdf/spirit.urdf';
+%     robot = importrobot(robot_path);
+%     videosDir = fullfile(logDir,'videos/');
+%     animateData(robot,stateGroundTruth, fullfile(videosDir, trialName), bSave);
+% end

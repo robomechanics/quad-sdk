@@ -44,7 +44,6 @@ bool CompFilterEstimator::updateOnce(
   last_robot_state_msg_.joints = last_joint_state_msg_;
   last_joint_state_msg_.header.stamp = state_timestamp;
   last_imu_msg_.header.stamp = state_timestamp;
-
   // Check if mocap data was received
   if (last_mocap_msg_ == NULL) {
     ROS_WARN_THROTTLE(1, "No body pose (mocap) recieved");

@@ -22,6 +22,14 @@
         </node>
     </group>
 
+    <group ns="estimate">
+        <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+            <remap from="joint_states" to="visualization/joint_states"/>
+            <param name="tf_prefix" value="$(arg namespace)_estimate"/>
+        </node>
+    </group>
+
     <!-- Launch the node to publish the visual topics for the plans -->
     <node name="rviz_interface" pkg="quad_utils" type="rviz_interface_node" output="screen"/>
 

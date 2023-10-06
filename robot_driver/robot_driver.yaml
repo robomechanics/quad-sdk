@@ -19,3 +19,21 @@ robot_driver:
   high_pass_b: [0.062500000000000, 0]
   high_pass_c: [0.031912805108981, -0.028979795079613]
   high_pass_d: [0.0009996017974875904]
+
+  # Extended Kalman filter estimator coefficients
+  joint_state_max_time: 20 # Milliseconds until we disregard last joint state message
+  update_rate: 100 # 200 in the original, reduced to 100 for testing
+  bias_x: 0.10 # actual measurement of bias_acc x is 0.083616044
+  bias_y: -0.156 # actual measurement of bias_acc y is 0.060205998
+  bias_z: 0.0 # actual measurement of bias_acc z is 0.00
+  bias_r: 0.00000 # actual measurement of bias_gyro r is 0.00009
+  bias_p: 0.00000 # actual measurement of bias_gyro p is 0.00003
+  bias_w: 0.00000 # actual measurement of bias_gyro y is 0.00002
+  na: 0.001 # noise in accelerometer
+  ng: 0.001 # noise in gyro
+  ba: 0.001 # bias in accelerometer
+  bg: 0.00001 # bias in gyro
+  nf: 0.001 # noise in feet
+  nfk: 0.001 # noise in forward kinematics
+  ne: 0.001 # noise in encoder
+
