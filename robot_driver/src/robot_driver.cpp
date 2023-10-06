@@ -118,6 +118,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
     robot_state_sub_ =
         nh_.subscribe(robot_state_topic, 1, &RobotDriver::robotStateCallback,
                       this, ros::TransportHints().tcpNoDelay(true));
+    joint_state_pub_ =
+        nh_.advertise<sensor_msgs::JointState>(joint_state_topic, 1);
   }
 
 
@@ -415,23 +417,20 @@ bool RobotDriver::updateState(){
   else{
     if (state_estimator_ != nullptr)
     {
+      // state_estimator_->loadSensorMsg(last_imu_msg_, last_joint_state_msg_);
       // Initialize Estimated State on Standup, Start Update Step
       if (initialized ==false && control_mode_ == READY){
         ROS_INFO_STREAM("Initialized is False");
         estimated_state_ = last_robot_state_msg_;
-        // ROS_INFO_STREAM(estimated_state_);
+        last_joint_state_msg_.position = last_robot_state_msg_.joints.position;
         initialized = true;
         
       }
       else{
         // Update State Estimate once GRF's are being Published
-        // if (!grf_array_msg_.vectors.empty() && control_mode_ == READY){
         if (grf_array_msg_.vectors[0].x != 0 && control_mode_ == READY){ 
-          // Figure out How to Check the Assignment of Ground Reaction Forces
-          // ROS_INFO_STREAM("Solved GRFS" << grf_array_msg_);
-          // ROS_INFO_STREAM("Local Plan Output" << *last_local_plan_msg_ );
+          last_joint_state_msg_.position = last_robot_state_msg_.joints.position;
           ekf_estimator_->updateOnce(estimated_state_);
-          // state_estimator_->updateOnce(last_robot_state_msg_);
         }
       }
     }
@@ -447,12 +446,11 @@ void RobotDriver::publishState() {
     state_estimate_pub_.publish(estimated_state_);
   }
   else{
-    // if (control_mode_ == READY && !grf_array_msg_.vectors.empty()){ // Kinda Works
-  if (control_mode_ == READY ){
-  // if (control_mode_ == READY && grf_array_msg_ != nullptr){
-    // Publishing before the Update Step Happens, Find a Way to Fix This
-    // ROS_INFO_STREAM("Publishing State Estimate");
-    state_estimate_pub_.publish(estimated_state_);
+    if (control_mode_ == READY ){
+    // if (control_mode_ == READY && grf_array_msg_ != nullptr){
+      // Publishing before the Update Step Happens, Find a Way to Fix This
+      state_estimate_pub_.publish(estimated_state_);
+      joint_state_pub_.publish(last_joint_state_msg_);
     }
   }
 }
