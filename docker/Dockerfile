@@ -113,4 +113,19 @@ ARG WORKSPACE
 RUN echo "if [ -f ${WORKSPACE}/devel/setup.bash ]; then source ${WORKSPACE}/devel/setup.bash; fi" >> /home/ros/.bashrc
 
 
+ENV CATKIN_WS = /home/catkin_ws
+ENV SDK = /home/catkin_ws/src
+RUN mkdir -p $CATKIN_WS/src
+
+RUN /bin/bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash; catkin init;"
+WORKDIR $SDK
+RUN git clone https://github.com/robomechanics/quad-sdk.git
+
+# ENV QUAD_SDK = /root/catkin_ws/src/quad-sdk
+# WORKDIR $QUAD_SDK
+# RUN git checkout devel
+
+# ADD coinhsl /home/catkin_ws/src/quad-sdk/external/ipopt/coinhsl
+
+
 
