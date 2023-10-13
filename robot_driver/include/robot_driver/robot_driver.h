@@ -21,6 +21,8 @@
 
 #include "robot_driver/controllers/grf_pid_controller.h"
 #include "robot_driver/controllers/inverse_dynamics_controller.h"
+#include "robot_driver/controllers/underbrush_inverse_dynamics.h"
+#include "robot_driver/controllers/inertia_estimation_controller.h"
 #include "robot_driver/controllers/joint_controller.h"
 #include "robot_driver/controllers/leg_controller.h"
 #include "robot_driver/estimators/comp_filter_estimator.h"
@@ -107,6 +109,13 @@ class RobotDriver {
   void singleJointCommandCallback(const geometry_msgs::Vector3::ConstPtr& msg);
 
   /**
+   * @brief Callback to handle new body force estimates
+   * @param[in] msg body force estimates
+   */
+  void bodyForceEstimateCallback(
+      const quad_msgs::BodyForceEstimate::ConstPtr& msg);
+
+  /**
    * @brief Callback to handle control restart flag messages
    */
   void controlRestartFlagCallback(const std_msgs::Bool::ConstPtr& msg);
@@ -163,6 +172,9 @@ class RobotDriver {
 
   /// ROS subscriber for state estimate
   ros::Subscriber robot_state_sub_;
+
+  /// ROS subscriber for body force estimates
+  ros::Subscriber body_force_estimate_sub_;
 
   /// ROS subscriber for control restart flag
   ros::Subscriber control_restart_flag_sub_;
