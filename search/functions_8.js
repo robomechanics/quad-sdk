@@ -5,7 +5,7 @@ var searchData=
   ['initlegcontroller_2',['initLegController',['../classRobotDriver.html#af04dee0835a825b8373896887eec6985',1,'RobotDriver']]],
   ['initlocalbodyplanner_3',['initLocalBodyPlanner',['../classLocalPlanner.html#a34be4d4154efb662d6e4b0c507a7b414',1,'LocalPlanner']]],
   ['initlocalfootstepplanner_4',['initLocalFootstepPlanner',['../classLocalPlanner.html#a57c1a84d6256545cf39a96e9b567de7a',1,'LocalPlanner']]],
-  ['initmodel_5',['initModel',['../classquad__utils_1_1QuadKD.html#a38e68008eefbf50ae88960c5611b9185',1,'quad_utils::QuadKD']]],
+  ['initmodel_5',['initModel',['../classquad__utils_1_1QuadKD.html#ae48177b55d2a765b707ce656236e20ac',1,'quad_utils::QuadKD']]],
   ['initplanner_6',['initPlanner',['../classGlobalBodyPlanner.html#ab7eea2c9ab7b6e0cc56a02340ec105f7',1,'GlobalBodyPlanner']]],
   ['initstatecontrolstructs_7',['initStateControlStructs',['../classRobotDriver.html#a3d6b473411b969ac88a8b2ba764e5e76',1,'RobotDriver']]],
   ['initstateestimator_8',['initStateEstimator',['../classRobotDriver.html#a238452f192a61f5c56650ae2cb145a0a',1,'RobotDriver']]],

@@ -23,7 +23,7 @@ var searchData=
   ['controlrestartflagcallback_20',['controlRestartFlagCallback',['../classRobotDriver.html#a921074ae4355d197024a813a42c7e9d4',1,'RobotDriver']]],
   ['convertcentroidaltofullbody_21',['convertCentroidalToFullBody',['../classquad__utils_1_1QuadKD.html#ad29e8941bf5fa1c6233317c440f5c650',1,'quad_utils::QuadKD']]],
   ['converttomsg_22',['convertToMsg',['../classGlobalBodyPlan.html#a6bca62005cc6f230ce2bdbb2a21c10e8',1,'GlobalBodyPlan']]],
-  ['createaffinematrix_23',['createAffineMatrix',['../classquad__utils_1_1QuadKD.html#a947969ec117052e19a7c415447c0137d',1,'quad_utils::QuadKD::createAffineMatrix(Eigen::Vector3d trans, Eigen::Vector3d rpy) const'],['../classquad__utils_1_1QuadKD.html#a19ad95aedd20b180a6c23f4d0ecb43cd',1,'quad_utils::QuadKD::createAffineMatrix(Eigen::Vector3d trans, Eigen::AngleAxisd rot) const']]],
+  ['createaffinematrix_23',['createAffineMatrix',['../classquad__utils_1_1QuadKD.html#a772432ce53151caf75a1e44d1438db2a',1,'quad_utils::QuadKD::createAffineMatrix(const Eigen::Vector3d &amp;trans, const Eigen::Vector3d &amp;rpy) const'],['../classquad__utils_1_1QuadKD.html#a42e1d1196a4fcde0a8d2793554beeaed',1,'quad_utils::QuadKD::createAffineMatrix(const Eigen::Vector3d &amp;trans, const Eigen::AngleAxisd &amp;rot) const']]],
   ['createmap_24',['createMap',['../classTerrainMapPublisher.html#a295ac03389590d98c589d2d58990b64e',1,'TerrainMapPublisher']]],
   ['cubichermitespline_25',['cubicHermiteSpline',['../classLocalFootstepPlanner.html#ad52f51f3ac56f3d40eb2b4cd6c85154f',1,'LocalFootstepPlanner']]]
 ];

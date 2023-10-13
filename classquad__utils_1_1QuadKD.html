@@ -91,48 +91,48 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad5c66251f82944d751e8d3905f7c66ac"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#ad5c66251f82944d751e8d3905f7c66ac">QuadKD</a> ()</td></tr>
 <tr class="memdesc:ad5c66251f82944d751e8d3905f7c66ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classquad__utils_1_1QuadKD.html" title="A lightweight library for quad kinematic functions.">QuadKD</a> Class.  <a href="classquad__utils_1_1QuadKD.html#ad5c66251f82944d751e8d3905f7c66ac">More...</a><br /></td></tr>
 <tr class="separator:ad5c66251f82944d751e8d3905f7c66ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac20994088e9df02705833f89ff8063ad"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#ac20994088e9df02705833f89ff8063ad">QuadKD</a> (std::string ns)</td></tr>
-<tr class="memdesc:ac20994088e9df02705833f89ff8063ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classquad__utils_1_1QuadKD.html" title="A lightweight library for quad kinematic functions.">QuadKD</a> Class.  <a href="classquad__utils_1_1QuadKD.html#ac20994088e9df02705833f89ff8063ad">More...</a><br /></td></tr>
-<tr class="separator:ac20994088e9df02705833f89ff8063ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38e68008eefbf50ae88960c5611b9185"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a38e68008eefbf50ae88960c5611b9185">initModel</a> (std::string ns)</td></tr>
-<tr class="memdesc:a38e68008eefbf50ae88960c5611b9185"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize model for the class.  <a href="classquad__utils_1_1QuadKD.html#a38e68008eefbf50ae88960c5611b9185">More...</a><br /></td></tr>
-<tr class="separator:a38e68008eefbf50ae88960c5611b9185"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a947969ec117052e19a7c415447c0137d"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix4d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a947969ec117052e19a7c415447c0137d">createAffineMatrix</a> (Eigen::Vector3d trans, Eigen::Vector3d rpy) const</td></tr>
-<tr class="memdesc:a947969ec117052e19a7c415447c0137d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an Eigen Eigen::Matrix4d containing a homogeneous transform from a specified translation and a roll, pitch, and yaw vector.  <a href="classquad__utils_1_1QuadKD.html#a947969ec117052e19a7c415447c0137d">More...</a><br /></td></tr>
-<tr class="separator:a947969ec117052e19a7c415447c0137d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19ad95aedd20b180a6c23f4d0ecb43cd"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix4d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a19ad95aedd20b180a6c23f4d0ecb43cd">createAffineMatrix</a> (Eigen::Vector3d trans, Eigen::AngleAxisd rot) const</td></tr>
-<tr class="memdesc:a19ad95aedd20b180a6c23f4d0ecb43cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an Eigen Eigen::Matrix4d containing a homogeneous transform from a specified translation and an AngleAxis object.  <a href="classquad__utils_1_1QuadKD.html#a19ad95aedd20b180a6c23f4d0ecb43cd">More...</a><br /></td></tr>
-<tr class="separator:a19ad95aedd20b180a6c23f4d0ecb43cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abdb128d8a143edd82505fb7e0e569c4c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#abdb128d8a143edd82505fb7e0e569c4c">transformBodyToWorld</a> (Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Matrix4d transform_body, Eigen::Matrix4d &amp;transform_world) const</td></tr>
-<tr class="memdesc:abdb128d8a143edd82505fb7e0e569c4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transform a transformation matrix from the body frame to the world frame.  <a href="classquad__utils_1_1QuadKD.html#abdb128d8a143edd82505fb7e0e569c4c">More...</a><br /></td></tr>
-<tr class="separator:abdb128d8a143edd82505fb7e0e569c4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5d46354e89df48d40a31935071cd8ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#ad5d46354e89df48d40a31935071cd8ac">transformWorldToBody</a> (Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Matrix4d transform_world, Eigen::Matrix4d &amp;transform_body) const</td></tr>
-<tr class="memdesc:ad5d46354e89df48d40a31935071cd8ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transform a transformation matrix from the world frame to the body frame.  <a href="classquad__utils_1_1QuadKD.html#ad5d46354e89df48d40a31935071cd8ac">More...</a><br /></td></tr>
-<tr class="separator:ad5d46354e89df48d40a31935071cd8ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab769997e970c29f960d8ae27b91510e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#ab769997e970c29f960d8ae27b91510e1">bodyToFootFKBodyFrame</a> (int leg_index, Eigen::Vector3d joint_state, Eigen::Matrix4d &amp;g_body_foot) const</td></tr>
-<tr class="memdesc:ab769997e970c29f960d8ae27b91510e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forward kinematics for a specified leg from the body COM.  <a href="classquad__utils_1_1QuadKD.html#ab769997e970c29f960d8ae27b91510e1">More...</a><br /></td></tr>
-<tr class="separator:ab769997e970c29f960d8ae27b91510e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e6df26d03518362c7c5ec7485c5cf9c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a7e6df26d03518362c7c5ec7485c5cf9c">bodyToFootFKBodyFrame</a> (int leg_index, Eigen::Vector3d joint_state, Eigen::Vector3d &amp;foot_pos_body) const</td></tr>
-<tr class="memdesc:a7e6df26d03518362c7c5ec7485c5cf9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forward kinematics for a specified leg from the body COM.  <a href="classquad__utils_1_1QuadKD.html#a7e6df26d03518362c7c5ec7485c5cf9c">More...</a><br /></td></tr>
-<tr class="separator:a7e6df26d03518362c7c5ec7485c5cf9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad4a24a004296d5a5e77de53b24f40263"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#ad4a24a004296d5a5e77de53b24f40263">worldToFootFKWorldFrame</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state, Eigen::Matrix4d &amp;g_world_foot) const</td></tr>
-<tr class="memdesc:ad4a24a004296d5a5e77de53b24f40263"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forward kinematics for a specified leg.  <a href="classquad__utils_1_1QuadKD.html#ad4a24a004296d5a5e77de53b24f40263">More...</a><br /></td></tr>
-<tr class="separator:ad4a24a004296d5a5e77de53b24f40263"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af2330ca4d3b5a2bd034be8640a4fa366"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#af2330ca4d3b5a2bd034be8640a4fa366">worldToFootFKWorldFrame</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state, Eigen::Vector3d &amp;foot_pos_world) const</td></tr>
-<tr class="memdesc:af2330ca4d3b5a2bd034be8640a4fa366"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forward kinematics for a specified leg.  <a href="classquad__utils_1_1QuadKD.html#af2330ca4d3b5a2bd034be8640a4fa366">More...</a><br /></td></tr>
-<tr class="separator:af2330ca4d3b5a2bd034be8640a4fa366"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a676b92b8bfa09ab19edea7a03c7a25d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a676b92b8bfa09ab19edea7a03c7a25d6">worldToKneeFKWorldFrame</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state, Eigen::Matrix4d &amp;g_world_knee) const</td></tr>
-<tr class="memdesc:a676b92b8bfa09ab19edea7a03c7a25d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forward kinematics for a specified leg.  <a href="classquad__utils_1_1QuadKD.html#a676b92b8bfa09ab19edea7a03c7a25d6">More...</a><br /></td></tr>
-<tr class="separator:a676b92b8bfa09ab19edea7a03c7a25d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2a7f254c073c1dbe5196edfe80d89b5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#ac2a7f254c073c1dbe5196edfe80d89b5">worldToKneeFKWorldFrame</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Vector3d joint_state, Eigen::Vector3d &amp;knee_pos_world) const</td></tr>
-<tr class="memdesc:ac2a7f254c073c1dbe5196edfe80d89b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forward kinematics for a specified leg.  <a href="classquad__utils_1_1QuadKD.html#ac2a7f254c073c1dbe5196edfe80d89b5">More...</a><br /></td></tr>
-<tr class="separator:ac2a7f254c073c1dbe5196edfe80d89b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7a80cf7adb505ffc309ef2bbd685988"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#ab7a80cf7adb505ffc309ef2bbd685988">worldToFootIKWorldFrame</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Vector3d foot_pos_world, Eigen::Vector3d &amp;joint_state) const</td></tr>
-<tr class="memdesc:ab7a80cf7adb505ffc309ef2bbd685988"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute inverse kinematics for a specified leg.  <a href="classquad__utils_1_1QuadKD.html#ab7a80cf7adb505ffc309ef2bbd685988">More...</a><br /></td></tr>
-<tr class="separator:ab7a80cf7adb505ffc309ef2bbd685988"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf92afd5586ed1453ae76a4f8142b81e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#adf92afd5586ed1453ae76a4f8142b81e">legbaseToFootIKLegbaseFrame</a> (int leg_index, Eigen::Vector3d foot_pos_legbase, Eigen::Vector3d &amp;joint_state) const</td></tr>
-<tr class="memdesc:adf92afd5586ed1453ae76a4f8142b81e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute inverse kinematics for a specified leg in the leg base frame.  <a href="classquad__utils_1_1QuadKD.html#adf92afd5586ed1453ae76a4f8142b81e">More...</a><br /></td></tr>
-<tr class="separator:adf92afd5586ed1453ae76a4f8142b81e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f30009a650a12fb21c90d3f36770926"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a4f30009a650a12fb21c90d3f36770926">QuadKD</a> (const std::string &amp;ns)</td></tr>
+<tr class="memdesc:a4f30009a650a12fb21c90d3f36770926"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="classquad__utils_1_1QuadKD.html" title="A lightweight library for quad kinematic functions.">QuadKD</a> Class.  <a href="classquad__utils_1_1QuadKD.html#a4f30009a650a12fb21c90d3f36770926">More...</a><br /></td></tr>
+<tr class="separator:a4f30009a650a12fb21c90d3f36770926"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae48177b55d2a765b707ce656236e20ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#ae48177b55d2a765b707ce656236e20ac">initModel</a> (const std::string &amp;ns)</td></tr>
+<tr class="memdesc:ae48177b55d2a765b707ce656236e20ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize model for the class.  <a href="classquad__utils_1_1QuadKD.html#ae48177b55d2a765b707ce656236e20ac">More...</a><br /></td></tr>
+<tr class="separator:ae48177b55d2a765b707ce656236e20ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a772432ce53151caf75a1e44d1438db2a"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix4d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a772432ce53151caf75a1e44d1438db2a">createAffineMatrix</a> (const Eigen::Vector3d &amp;trans, const Eigen::Vector3d &amp;rpy) const</td></tr>
+<tr class="memdesc:a772432ce53151caf75a1e44d1438db2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an Eigen Eigen::Matrix4d containing a homogeneous transform from a specified translation and a roll, pitch, and yaw vector.  <a href="classquad__utils_1_1QuadKD.html#a772432ce53151caf75a1e44d1438db2a">More...</a><br /></td></tr>
+<tr class="separator:a772432ce53151caf75a1e44d1438db2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42e1d1196a4fcde0a8d2793554beeaed"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix4d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a42e1d1196a4fcde0a8d2793554beeaed">createAffineMatrix</a> (const Eigen::Vector3d &amp;trans, const Eigen::AngleAxisd &amp;rot) const</td></tr>
+<tr class="memdesc:a42e1d1196a4fcde0a8d2793554beeaed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an Eigen Eigen::Matrix4d containing a homogeneous transform from a specified translation and an AngleAxis object.  <a href="classquad__utils_1_1QuadKD.html#a42e1d1196a4fcde0a8d2793554beeaed">More...</a><br /></td></tr>
+<tr class="separator:a42e1d1196a4fcde0a8d2793554beeaed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a325bc43a846f9f23fc6aa57e55949e3c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a325bc43a846f9f23fc6aa57e55949e3c">transformBodyToWorld</a> (const Eigen::Vector3d &amp;body_pos, const Eigen::Vector3d &amp;body_rpy, const Eigen::Matrix4d &amp;transform_body, Eigen::Matrix4d &amp;transform_world) const</td></tr>
+<tr class="memdesc:a325bc43a846f9f23fc6aa57e55949e3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transform a transformation matrix from the body frame to the world frame.  <a href="classquad__utils_1_1QuadKD.html#a325bc43a846f9f23fc6aa57e55949e3c">More...</a><br /></td></tr>
+<tr class="separator:a325bc43a846f9f23fc6aa57e55949e3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad262ee332b770e835352b193c83c17f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#ad262ee332b770e835352b193c83c17f7">transformWorldToBody</a> (const Eigen::Vector3d &amp;body_pos, const Eigen::Vector3d &amp;body_rpy, const Eigen::Matrix4d &amp;transform_world, Eigen::Matrix4d &amp;transform_body) const</td></tr>
+<tr class="memdesc:ad262ee332b770e835352b193c83c17f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transform a transformation matrix from the world frame to the body frame.  <a href="classquad__utils_1_1QuadKD.html#ad262ee332b770e835352b193c83c17f7">More...</a><br /></td></tr>
+<tr class="separator:ad262ee332b770e835352b193c83c17f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0039e7521c8cdab98173cc972bca0cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#af0039e7521c8cdab98173cc972bca0cf">bodyToFootFKBodyFrame</a> (int leg_index, const Eigen::Vector3d &amp;joint_state, Eigen::Matrix4d &amp;g_body_foot) const</td></tr>
+<tr class="memdesc:af0039e7521c8cdab98173cc972bca0cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forward kinematics for a specified leg from the body COM.  <a href="classquad__utils_1_1QuadKD.html#af0039e7521c8cdab98173cc972bca0cf">More...</a><br /></td></tr>
+<tr class="separator:af0039e7521c8cdab98173cc972bca0cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fd5bdb82c44c1218584856dbe918c78"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a1fd5bdb82c44c1218584856dbe918c78">bodyToFootFKBodyFrame</a> (int leg_index, const Eigen::Vector3d &amp;joint_state, Eigen::Vector3d &amp;foot_pos_body) const</td></tr>
+<tr class="memdesc:a1fd5bdb82c44c1218584856dbe918c78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forward kinematics for a specified leg from the body COM.  <a href="classquad__utils_1_1QuadKD.html#a1fd5bdb82c44c1218584856dbe918c78">More...</a><br /></td></tr>
+<tr class="separator:a1fd5bdb82c44c1218584856dbe918c78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a130c5866b672b555d591d097e81e7095"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a130c5866b672b555d591d097e81e7095">worldToFootFKWorldFrame</a> (int leg_index, const Eigen::Vector3d &amp;body_pos, const Eigen::Vector3d &amp;body_rpy, const Eigen::Vector3d &amp;joint_state, Eigen::Matrix4d &amp;g_world_foot) const</td></tr>
+<tr class="memdesc:a130c5866b672b555d591d097e81e7095"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forward kinematics for a specified leg.  <a href="classquad__utils_1_1QuadKD.html#a130c5866b672b555d591d097e81e7095">More...</a><br /></td></tr>
+<tr class="separator:a130c5866b672b555d591d097e81e7095"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee1318f63e501175bd6f7e20133340ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#aee1318f63e501175bd6f7e20133340ef">worldToFootFKWorldFrame</a> (int leg_index, const Eigen::Vector3d &amp;body_pos, const Eigen::Vector3d &amp;body_rpy, const Eigen::Vector3d &amp;joint_state, Eigen::Vector3d &amp;foot_pos_world) const</td></tr>
+<tr class="memdesc:aee1318f63e501175bd6f7e20133340ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forward kinematics for a specified leg.  <a href="classquad__utils_1_1QuadKD.html#aee1318f63e501175bd6f7e20133340ef">More...</a><br /></td></tr>
+<tr class="separator:aee1318f63e501175bd6f7e20133340ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9c6efebb2e462428a66b005c82c2158"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#ab9c6efebb2e462428a66b005c82c2158">worldToKneeFKWorldFrame</a> (int leg_index, const Eigen::Vector3d &amp;body_pos, const Eigen::Vector3d &amp;body_rpy, const Eigen::Vector3d &amp;joint_state, Eigen::Matrix4d &amp;g_world_knee) const</td></tr>
+<tr class="memdesc:ab9c6efebb2e462428a66b005c82c2158"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forward kinematics for a specified leg.  <a href="classquad__utils_1_1QuadKD.html#ab9c6efebb2e462428a66b005c82c2158">More...</a><br /></td></tr>
+<tr class="separator:ab9c6efebb2e462428a66b005c82c2158"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1541a226604031d7f3fdc6ed627df329"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a1541a226604031d7f3fdc6ed627df329">worldToKneeFKWorldFrame</a> (int leg_index, const Eigen::Vector3d &amp;body_pos, const Eigen::Vector3d &amp;body_rpy, const Eigen::Vector3d &amp;joint_state, Eigen::Vector3d &amp;knee_pos_world) const</td></tr>
+<tr class="memdesc:a1541a226604031d7f3fdc6ed627df329"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forward kinematics for a specified leg.  <a href="classquad__utils_1_1QuadKD.html#a1541a226604031d7f3fdc6ed627df329">More...</a><br /></td></tr>
+<tr class="separator:a1541a226604031d7f3fdc6ed627df329"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a419b2f20107fd32caa51076d4f916c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a0a419b2f20107fd32caa51076d4f916c">worldToFootIKWorldFrame</a> (int leg_index, const Eigen::Vector3d &amp;body_pos, const Eigen::Vector3d &amp;body_rpy, const Eigen::Vector3d &amp;foot_pos_world, Eigen::Vector3d &amp;joint_state) const</td></tr>
+<tr class="memdesc:a0a419b2f20107fd32caa51076d4f916c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute inverse kinematics for a specified leg.  <a href="classquad__utils_1_1QuadKD.html#a0a419b2f20107fd32caa51076d4f916c">More...</a><br /></td></tr>
+<tr class="separator:a0a419b2f20107fd32caa51076d4f916c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8be68d7d6fdd91376e00672242d9ac0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#ab8be68d7d6fdd91376e00672242d9ac0">legbaseToFootIKLegbaseFrame</a> (int leg_index, const Eigen::Vector3d &amp;foot_pos_legbase, Eigen::Vector3d &amp;joint_state) const</td></tr>
+<tr class="memdesc:ab8be68d7d6fdd91376e00672242d9ac0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute inverse kinematics for a specified leg in the leg base frame.  <a href="classquad__utils_1_1QuadKD.html#ab8be68d7d6fdd91376e00672242d9ac0">More...</a><br /></td></tr>
+<tr class="separator:ab8be68d7d6fdd91376e00672242d9ac0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87dbd2eaafae33b6da47d13ae4edbdf0"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a87dbd2eaafae33b6da47d13ae4edbdf0">getJointLowerLimit</a> (int leg_index, int joint_index) const</td></tr>
 <tr class="memdesc:a87dbd2eaafae33b6da47d13ae4edbdf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the lower joint limit of a particular joint.  <a href="classquad__utils_1_1QuadKD.html#a87dbd2eaafae33b6da47d13ae4edbdf0">More...</a><br /></td></tr>
 <tr class="separator:a87dbd2eaafae33b6da47d13ae4edbdf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -142,15 +142,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a83d5e9e0b7cc1527905ab0b37b97912e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a83d5e9e0b7cc1527905ab0b37b97912e">getLinkLength</a> (int leg_index, int link_index) const</td></tr>
 <tr class="memdesc:a83d5e9e0b7cc1527905ab0b37b97912e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the upper joint limit of a particular joint.  <a href="classquad__utils_1_1QuadKD.html#a83d5e9e0b7cc1527905ab0b37b97912e">More...</a><br /></td></tr>
 <tr class="separator:a83d5e9e0b7cc1527905ab0b37b97912e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a79fce976d59788a2b1597df75e6d9fee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a79fce976d59788a2b1597df75e6d9fee">worldToLegbaseFKWorldFrame</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Matrix4d &amp;g_world_legbase) const</td></tr>
-<tr class="memdesc:a79fce976d59788a2b1597df75e6d9fee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the transform from the world frame to the leg base.  <a href="classquad__utils_1_1QuadKD.html#a79fce976d59788a2b1597df75e6d9fee">More...</a><br /></td></tr>
-<tr class="separator:a79fce976d59788a2b1597df75e6d9fee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc3b55431fd6449ad64703fb41ef16bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#adc3b55431fd6449ad64703fb41ef16bf">worldToLegbaseFKWorldFrame</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Vector3d &amp;leg_base_pos_world) const</td></tr>
-<tr class="memdesc:adc3b55431fd6449ad64703fb41ef16bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the position of the leg base frame origin in the world frame.  <a href="classquad__utils_1_1QuadKD.html#adc3b55431fd6449ad64703fb41ef16bf">More...</a><br /></td></tr>
-<tr class="separator:adc3b55431fd6449ad64703fb41ef16bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71820986defa779c4dbff6a3c2af6afe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a71820986defa779c4dbff6a3c2af6afe">worldToNominalHipFKWorldFrame</a> (int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, Eigen::Vector3d &amp;nominal_hip_pos_world) const</td></tr>
-<tr class="memdesc:a71820986defa779c4dbff6a3c2af6afe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the position of the nominal hip location in the world frame.  <a href="classquad__utils_1_1QuadKD.html#a71820986defa779c4dbff6a3c2af6afe">More...</a><br /></td></tr>
-<tr class="separator:a71820986defa779c4dbff6a3c2af6afe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac293841a87cf2fd386de642d0d4e6882"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#ac293841a87cf2fd386de642d0d4e6882">worldToLegbaseFKWorldFrame</a> (int leg_index, const Eigen::Vector3d &amp;body_pos, const Eigen::Vector3d &amp;body_rpy, Eigen::Matrix4d &amp;g_world_legbase) const</td></tr>
+<tr class="memdesc:ac293841a87cf2fd386de642d0d4e6882"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the transform from the world frame to the leg base.  <a href="classquad__utils_1_1QuadKD.html#ac293841a87cf2fd386de642d0d4e6882">More...</a><br /></td></tr>
+<tr class="separator:ac293841a87cf2fd386de642d0d4e6882"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a446cb669c1b9b7c379a4f3db02faae91"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a446cb669c1b9b7c379a4f3db02faae91">worldToLegbaseFKWorldFrame</a> (int leg_index, const Eigen::Vector3d &amp;body_pos, const Eigen::Vector3d &amp;body_rpy, Eigen::Vector3d &amp;leg_base_pos_world) const</td></tr>
+<tr class="memdesc:a446cb669c1b9b7c379a4f3db02faae91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the position of the leg base frame origin in the world frame.  <a href="classquad__utils_1_1QuadKD.html#a446cb669c1b9b7c379a4f3db02faae91">More...</a><br /></td></tr>
+<tr class="separator:a446cb669c1b9b7c379a4f3db02faae91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5209a469015c29abdbcc322abccab30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#ab5209a469015c29abdbcc322abccab30">worldToNominalHipFKWorldFrame</a> (int leg_index, const Eigen::Vector3d &amp;body_pos, const Eigen::Vector3d &amp;body_rpy, Eigen::Vector3d &amp;nominal_hip_pos_world) const</td></tr>
+<tr class="memdesc:ab5209a469015c29abdbcc322abccab30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the position of the nominal hip location in the world frame.  <a href="classquad__utils_1_1QuadKD.html#ab5209a469015c29abdbcc322abccab30">More...</a><br /></td></tr>
+<tr class="separator:ab5209a469015c29abdbcc322abccab30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a0c2a30ddeec77d025f78b13a62396b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquad__utils_1_1QuadKD.html#a1a0c2a30ddeec77d025f78b13a62396b">getJacobianGenCoord</a> (const Eigen::VectorXd &amp;state, Eigen::MatrixXd &amp;jacobian) const</td></tr>
 <tr class="memdesc:a1a0c2a30ddeec77d025f78b13a62396b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute Jacobian for generalized coordinates.  <a href="classquad__utils_1_1QuadKD.html#a1a0c2a30ddeec77d025f78b13a62396b">More...</a><br /></td></tr>
 <tr class="separator:a1a0c2a30ddeec77d025f78b13a62396b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -305,8 +305,8 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 
 </div>
 </div>
-<a id="ac20994088e9df02705833f89ff8063ad" name="ac20994088e9df02705833f89ff8063ad"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac20994088e9df02705833f89ff8063ad">&#9670;&#160;</a></span>QuadKD() <span class="overload">[2/2]</span></h2>
+<a id="a4f30009a650a12fb21c90d3f36770926" name="a4f30009a650a12fb21c90d3f36770926"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f30009a650a12fb21c90d3f36770926">&#9670;&#160;</a></span>QuadKD() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -314,7 +314,7 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
         <tr>
           <td class="memname">QuadKD::QuadKD </td>
           <td>(</td>
-          <td class="paramtype">std::string&#160;</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>ns</em></td><td>)</td>
           <td></td>
         </tr>
@@ -416,8 +416,8 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 
 </div>
 </div>
-<a id="ab769997e970c29f960d8ae27b91510e1" name="ab769997e970c29f960d8ae27b91510e1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab769997e970c29f960d8ae27b91510e1">&#9670;&#160;</a></span>bodyToFootFKBodyFrame() <span class="overload">[1/2]</span></h2>
+<a id="af0039e7521c8cdab98173cc972bca0cf" name="af0039e7521c8cdab98173cc972bca0cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0039e7521c8cdab98173cc972bca0cf">&#9670;&#160;</a></span>bodyToFootFKBodyFrame() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -431,7 +431,7 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>joint_state</em>, </td>
         </tr>
         <tr>
@@ -460,8 +460,8 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 
 </div>
 </div>
-<a id="a7e6df26d03518362c7c5ec7485c5cf9c" name="a7e6df26d03518362c7c5ec7485c5cf9c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7e6df26d03518362c7c5ec7485c5cf9c">&#9670;&#160;</a></span>bodyToFootFKBodyFrame() <span class="overload">[2/2]</span></h2>
+<a id="a1fd5bdb82c44c1218584856dbe918c78" name="a1fd5bdb82c44c1218584856dbe918c78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fd5bdb82c44c1218584856dbe918c78">&#9670;&#160;</a></span>bodyToFootFKBodyFrame() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -475,7 +475,7 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>joint_state</em>, </td>
         </tr>
         <tr>
@@ -642,8 +642,8 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 
 </div>
 </div>
-<a id="a19ad95aedd20b180a6c23f4d0ecb43cd" name="a19ad95aedd20b180a6c23f4d0ecb43cd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a19ad95aedd20b180a6c23f4d0ecb43cd">&#9670;&#160;</a></span>createAffineMatrix() <span class="overload">[1/2]</span></h2>
+<a id="a42e1d1196a4fcde0a8d2793554beeaed" name="a42e1d1196a4fcde0a8d2793554beeaed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42e1d1196a4fcde0a8d2793554beeaed">&#9670;&#160;</a></span>createAffineMatrix() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -651,13 +651,13 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
         <tr>
           <td class="memname">Eigen::Matrix4d QuadKD::createAffineMatrix </td>
           <td>(</td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>trans</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::AngleAxisd&#160;</td>
+          <td class="paramtype">const Eigen::AngleAxisd &amp;&#160;</td>
           <td class="paramname"><em>rot</em>&#160;</td>
         </tr>
         <tr>
@@ -680,8 +680,8 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 
 </div>
 </div>
-<a id="a947969ec117052e19a7c415447c0137d" name="a947969ec117052e19a7c415447c0137d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a947969ec117052e19a7c415447c0137d">&#9670;&#160;</a></span>createAffineMatrix() <span class="overload">[2/2]</span></h2>
+<a id="a772432ce53151caf75a1e44d1438db2a" name="a772432ce53151caf75a1e44d1438db2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a772432ce53151caf75a1e44d1438db2a">&#9670;&#160;</a></span>createAffineMatrix() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -689,13 +689,13 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
         <tr>
           <td class="memname">Eigen::Matrix4d QuadKD::createAffineMatrix </td>
           <td>(</td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>trans</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>rpy</em>&#160;</td>
         </tr>
         <tr>
@@ -980,8 +980,8 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 
 </div>
 </div>
-<a id="a38e68008eefbf50ae88960c5611b9185" name="a38e68008eefbf50ae88960c5611b9185"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a38e68008eefbf50ae88960c5611b9185">&#9670;&#160;</a></span>initModel()</h2>
+<a id="ae48177b55d2a765b707ce656236e20ac" name="ae48177b55d2a765b707ce656236e20ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae48177b55d2a765b707ce656236e20ac">&#9670;&#160;</a></span>initModel()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -989,7 +989,7 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
         <tr>
           <td class="memname">void QuadKD::initModel </td>
           <td>(</td>
-          <td class="paramtype">std::string&#160;</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>ns</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1159,8 +1159,8 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 
 </div>
 </div>
-<a id="adf92afd5586ed1453ae76a4f8142b81e" name="adf92afd5586ed1453ae76a4f8142b81e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adf92afd5586ed1453ae76a4f8142b81e">&#9670;&#160;</a></span>legbaseToFootIKLegbaseFrame()</h2>
+<a id="ab8be68d7d6fdd91376e00672242d9ac0" name="ab8be68d7d6fdd91376e00672242d9ac0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8be68d7d6fdd91376e00672242d9ac0">&#9670;&#160;</a></span>legbaseToFootIKLegbaseFrame()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1174,7 +1174,7 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>foot_pos_legbase</em>, </td>
         </tr>
         <tr>
@@ -1203,8 +1203,8 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 
 </div>
 </div>
-<a id="abdb128d8a143edd82505fb7e0e569c4c" name="abdb128d8a143edd82505fb7e0e569c4c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abdb128d8a143edd82505fb7e0e569c4c">&#9670;&#160;</a></span>transformBodyToWorld()</h2>
+<a id="a325bc43a846f9f23fc6aa57e55949e3c" name="a325bc43a846f9f23fc6aa57e55949e3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a325bc43a846f9f23fc6aa57e55949e3c">&#9670;&#160;</a></span>transformBodyToWorld()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1212,19 +1212,19 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
         <tr>
           <td class="memname">void QuadKD::transformBodyToWorld </td>
           <td>(</td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_pos</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_rpy</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Matrix4d&#160;</td>
+          <td class="paramtype">const Eigen::Matrix4d &amp;&#160;</td>
           <td class="paramname"><em>transform_body</em>, </td>
         </tr>
         <tr>
@@ -1254,8 +1254,8 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 
 </div>
 </div>
-<a id="ad5d46354e89df48d40a31935071cd8ac" name="ad5d46354e89df48d40a31935071cd8ac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad5d46354e89df48d40a31935071cd8ac">&#9670;&#160;</a></span>transformWorldToBody()</h2>
+<a id="ad262ee332b770e835352b193c83c17f7" name="ad262ee332b770e835352b193c83c17f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad262ee332b770e835352b193c83c17f7">&#9670;&#160;</a></span>transformWorldToBody()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1263,19 +1263,19 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
         <tr>
           <td class="memname">void QuadKD::transformWorldToBody </td>
           <td>(</td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_pos</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_rpy</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Matrix4d&#160;</td>
+          <td class="paramtype">const Eigen::Matrix4d &amp;&#160;</td>
           <td class="paramname"><em>transform_world</em>, </td>
         </tr>
         <tr>
@@ -1305,8 +1305,8 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 
 </div>
 </div>
-<a id="ad4a24a004296d5a5e77de53b24f40263" name="ad4a24a004296d5a5e77de53b24f40263"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad4a24a004296d5a5e77de53b24f40263">&#9670;&#160;</a></span>worldToFootFKWorldFrame() <span class="overload">[1/2]</span></h2>
+<a id="a130c5866b672b555d591d097e81e7095" name="a130c5866b672b555d591d097e81e7095"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a130c5866b672b555d591d097e81e7095">&#9670;&#160;</a></span>worldToFootFKWorldFrame() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1320,19 +1320,19 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_pos</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_rpy</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>joint_state</em>, </td>
         </tr>
         <tr>
@@ -1363,8 +1363,8 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 
 </div>
 </div>
-<a id="af2330ca4d3b5a2bd034be8640a4fa366" name="af2330ca4d3b5a2bd034be8640a4fa366"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af2330ca4d3b5a2bd034be8640a4fa366">&#9670;&#160;</a></span>worldToFootFKWorldFrame() <span class="overload">[2/2]</span></h2>
+<a id="aee1318f63e501175bd6f7e20133340ef" name="aee1318f63e501175bd6f7e20133340ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee1318f63e501175bd6f7e20133340ef">&#9670;&#160;</a></span>worldToFootFKWorldFrame() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1378,19 +1378,19 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_pos</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_rpy</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>joint_state</em>, </td>
         </tr>
         <tr>
@@ -1421,8 +1421,8 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 
 </div>
 </div>
-<a id="ab7a80cf7adb505ffc309ef2bbd685988" name="ab7a80cf7adb505ffc309ef2bbd685988"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab7a80cf7adb505ffc309ef2bbd685988">&#9670;&#160;</a></span>worldToFootIKWorldFrame()</h2>
+<a id="a0a419b2f20107fd32caa51076d4f916c" name="a0a419b2f20107fd32caa51076d4f916c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a419b2f20107fd32caa51076d4f916c">&#9670;&#160;</a></span>worldToFootIKWorldFrame()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1436,19 +1436,19 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_pos</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_rpy</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>foot_pos_world</em>, </td>
         </tr>
         <tr>
@@ -1479,8 +1479,8 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 
 </div>
 </div>
-<a id="a676b92b8bfa09ab19edea7a03c7a25d6" name="a676b92b8bfa09ab19edea7a03c7a25d6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a676b92b8bfa09ab19edea7a03c7a25d6">&#9670;&#160;</a></span>worldToKneeFKWorldFrame() <span class="overload">[1/2]</span></h2>
+<a id="ab9c6efebb2e462428a66b005c82c2158" name="ab9c6efebb2e462428a66b005c82c2158"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9c6efebb2e462428a66b005c82c2158">&#9670;&#160;</a></span>worldToKneeFKWorldFrame() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1494,19 +1494,19 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_pos</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_rpy</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>joint_state</em>, </td>
         </tr>
         <tr>
@@ -1537,8 +1537,8 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 
 </div>
 </div>
-<a id="ac2a7f254c073c1dbe5196edfe80d89b5" name="ac2a7f254c073c1dbe5196edfe80d89b5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac2a7f254c073c1dbe5196edfe80d89b5">&#9670;&#160;</a></span>worldToKneeFKWorldFrame() <span class="overload">[2/2]</span></h2>
+<a id="a1541a226604031d7f3fdc6ed627df329" name="a1541a226604031d7f3fdc6ed627df329"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1541a226604031d7f3fdc6ed627df329">&#9670;&#160;</a></span>worldToKneeFKWorldFrame() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1552,19 +1552,19 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_pos</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_rpy</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>joint_state</em>, </td>
         </tr>
         <tr>
@@ -1595,8 +1595,8 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 
 </div>
 </div>
-<a id="a79fce976d59788a2b1597df75e6d9fee" name="a79fce976d59788a2b1597df75e6d9fee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a79fce976d59788a2b1597df75e6d9fee">&#9670;&#160;</a></span>worldToLegbaseFKWorldFrame() <span class="overload">[1/2]</span></h2>
+<a id="ac293841a87cf2fd386de642d0d4e6882" name="ac293841a87cf2fd386de642d0d4e6882"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac293841a87cf2fd386de642d0d4e6882">&#9670;&#160;</a></span>worldToLegbaseFKWorldFrame() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1610,13 +1610,13 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_pos</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_rpy</em>, </td>
         </tr>
         <tr>
@@ -1646,8 +1646,8 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 
 </div>
 </div>
-<a id="adc3b55431fd6449ad64703fb41ef16bf" name="adc3b55431fd6449ad64703fb41ef16bf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adc3b55431fd6449ad64703fb41ef16bf">&#9670;&#160;</a></span>worldToLegbaseFKWorldFrame() <span class="overload">[2/2]</span></h2>
+<a id="a446cb669c1b9b7c379a4f3db02faae91" name="a446cb669c1b9b7c379a4f3db02faae91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a446cb669c1b9b7c379a4f3db02faae91">&#9670;&#160;</a></span>worldToLegbaseFKWorldFrame() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1661,13 +1661,13 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_pos</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_rpy</em>, </td>
         </tr>
         <tr>
@@ -1697,8 +1697,8 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 
 </div>
 </div>
-<a id="a71820986defa779c4dbff6a3c2af6afe" name="a71820986defa779c4dbff6a3c2af6afe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a71820986defa779c4dbff6a3c2af6afe">&#9670;&#160;</a></span>worldToNominalHipFKWorldFrame()</h2>
+<a id="ab5209a469015c29abdbcc322abccab30" name="ab5209a469015c29abdbcc322abccab30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5209a469015c29abdbcc322abccab30">&#9670;&#160;</a></span>worldToNominalHipFKWorldFrame()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1712,13 +1712,13 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_pos</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::Vector3d&#160;</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
           <td class="paramname"><em>body_rpy</em>, </td>
         </tr>
         <tr>
@@ -1769,13 +1769,14 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">      (Eigen::VectorXd(12) &lt;&lt; <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a34e534cbe16d008e3457b945873f7ad0">abad_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#ad302838c429a708497f5d25c47f9493e">hip_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3e16db7d17eef8f9786cea5d6025594f">knee_tau_max_</a>,</div>
-<div class="line">       <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a34e534cbe16d008e3457b945873f7ad0">abad_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#ad302838c429a708497f5d25c47f9493e">hip_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3e16db7d17eef8f9786cea5d6025594f">knee_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a34e534cbe16d008e3457b945873f7ad0">abad_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#ad302838c429a708497f5d25c47f9493e">hip_tau_max_</a>,</div>
-<div class="line">       <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3e16db7d17eef8f9786cea5d6025594f">knee_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a34e534cbe16d008e3457b945873f7ad0">abad_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#ad302838c429a708497f5d25c47f9493e">hip_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3e16db7d17eef8f9786cea5d6025594f">knee_tau_max_</a>)</div>
-<div class="line">          .finished()</div>
-<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a34e534cbe16d008e3457b945873f7ad0"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a34e534cbe16d008e3457b945873f7ad0">quad_utils::QuadKD::abad_tau_max_</a></div><div class="ttdeci">const double abad_tau_max_</div><div class="ttdoc">Abad max joint torque.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:422</div></div>
-<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a3e16db7d17eef8f9786cea5d6025594f"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a3e16db7d17eef8f9786cea5d6025594f">quad_utils::QuadKD::knee_tau_max_</a></div><div class="ttdeci">const double knee_tau_max_</div><div class="ttdoc">Knee max joint torque.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:428</div></div>
-<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_ad302838c429a708497f5d25c47f9493e"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#ad302838c429a708497f5d25c47f9493e">quad_utils::QuadKD::hip_tau_max_</a></div><div class="ttdeci">const double hip_tau_max_</div><div class="ttdoc">Hip max joint torque.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:425</div></div>
+<div class="line">        (Eigen::VectorXd(12) &lt;&lt; <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a34e534cbe16d008e3457b945873f7ad0">abad_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#ad302838c429a708497f5d25c47f9493e">hip_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3e16db7d17eef8f9786cea5d6025594f">knee_tau_max_</a>,</div>
+<div class="line">         <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a34e534cbe16d008e3457b945873f7ad0">abad_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#ad302838c429a708497f5d25c47f9493e">hip_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3e16db7d17eef8f9786cea5d6025594f">knee_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a34e534cbe16d008e3457b945873f7ad0">abad_tau_max_</a>,</div>
+<div class="line">         <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#ad302838c429a708497f5d25c47f9493e">hip_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3e16db7d17eef8f9786cea5d6025594f">knee_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a34e534cbe16d008e3457b945873f7ad0">abad_tau_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#ad302838c429a708497f5d25c47f9493e">hip_tau_max_</a>,</div>
+<div class="line">         <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3e16db7d17eef8f9786cea5d6025594f">knee_tau_max_</a>)</div>
+<div class="line">            .finished()</div>
+<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a34e534cbe16d008e3457b945873f7ad0"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a34e534cbe16d008e3457b945873f7ad0">quad_utils::QuadKD::abad_tau_max_</a></div><div class="ttdeci">const double abad_tau_max_</div><div class="ttdoc">Abad max joint torque.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:437</div></div>
+<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a3e16db7d17eef8f9786cea5d6025594f"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a3e16db7d17eef8f9786cea5d6025594f">quad_utils::QuadKD::knee_tau_max_</a></div><div class="ttdeci">const double knee_tau_max_</div><div class="ttdoc">Knee max joint torque.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:443</div></div>
+<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_ad302838c429a708497f5d25c47f9493e"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#ad302838c429a708497f5d25c47f9493e">quad_utils::QuadKD::hip_tau_max_</a></div><div class="ttdeci">const double hip_tau_max_</div><div class="ttdoc">Hip max joint torque.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:440</div></div>
 </div><!-- fragment -->
 <p>Vector of max torques. </p>
 
@@ -1801,13 +1802,14 @@ const Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>mm_s
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">      (Eigen::VectorXd(12) &lt;&lt; <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a06695c0f41d2e7b1f3e4f92160fd4025">abad_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3385b3dde1c8170a13aaebf9843cad38">hip_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a0eac88443f37caafd816d2c13cf6f694">knee_vel_max_</a>,</div>
-<div class="line">       <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a06695c0f41d2e7b1f3e4f92160fd4025">abad_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3385b3dde1c8170a13aaebf9843cad38">hip_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a0eac88443f37caafd816d2c13cf6f694">knee_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a06695c0f41d2e7b1f3e4f92160fd4025">abad_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3385b3dde1c8170a13aaebf9843cad38">hip_vel_max_</a>,</div>
-<div class="line">       <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a0eac88443f37caafd816d2c13cf6f694">knee_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a06695c0f41d2e7b1f3e4f92160fd4025">abad_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3385b3dde1c8170a13aaebf9843cad38">hip_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a0eac88443f37caafd816d2c13cf6f694">knee_vel_max_</a>)</div>
-<div class="line">          .finished()</div>
-<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a06695c0f41d2e7b1f3e4f92160fd4025"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a06695c0f41d2e7b1f3e4f92160fd4025">quad_utils::QuadKD::abad_vel_max_</a></div><div class="ttdeci">const double abad_vel_max_</div><div class="ttdoc">Abad max joint velocity.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:438</div></div>
-<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a0eac88443f37caafd816d2c13cf6f694"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a0eac88443f37caafd816d2c13cf6f694">quad_utils::QuadKD::knee_vel_max_</a></div><div class="ttdeci">const double knee_vel_max_</div><div class="ttdoc">Knee max joint velocity.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:444</div></div>
-<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a3385b3dde1c8170a13aaebf9843cad38"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a3385b3dde1c8170a13aaebf9843cad38">quad_utils::QuadKD::hip_vel_max_</a></div><div class="ttdeci">const double hip_vel_max_</div><div class="ttdoc">Hip max joint velocity.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:441</div></div>
+<div class="line">        (Eigen::VectorXd(12) &lt;&lt; <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a06695c0f41d2e7b1f3e4f92160fd4025">abad_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3385b3dde1c8170a13aaebf9843cad38">hip_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a0eac88443f37caafd816d2c13cf6f694">knee_vel_max_</a>,</div>
+<div class="line">         <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a06695c0f41d2e7b1f3e4f92160fd4025">abad_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3385b3dde1c8170a13aaebf9843cad38">hip_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a0eac88443f37caafd816d2c13cf6f694">knee_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a06695c0f41d2e7b1f3e4f92160fd4025">abad_vel_max_</a>,</div>
+<div class="line">         <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3385b3dde1c8170a13aaebf9843cad38">hip_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a0eac88443f37caafd816d2c13cf6f694">knee_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a06695c0f41d2e7b1f3e4f92160fd4025">abad_vel_max_</a>, <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a3385b3dde1c8170a13aaebf9843cad38">hip_vel_max_</a>,</div>
+<div class="line">         <a class="code hl_variable" href="classquad__utils_1_1QuadKD.html#a0eac88443f37caafd816d2c13cf6f694">knee_vel_max_</a>)</div>
+<div class="line">            .finished()</div>
+<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a06695c0f41d2e7b1f3e4f92160fd4025"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a06695c0f41d2e7b1f3e4f92160fd4025">quad_utils::QuadKD::abad_vel_max_</a></div><div class="ttdeci">const double abad_vel_max_</div><div class="ttdoc">Abad max joint velocity.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:454</div></div>
+<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a0eac88443f37caafd816d2c13cf6f694"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a0eac88443f37caafd816d2c13cf6f694">quad_utils::QuadKD::knee_vel_max_</a></div><div class="ttdeci">const double knee_vel_max_</div><div class="ttdoc">Knee max joint velocity.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:460</div></div>
+<div class="ttc" id="aclassquad__utils_1_1QuadKD_html_a3385b3dde1c8170a13aaebf9843cad38"><div class="ttname"><a href="classquad__utils_1_1QuadKD.html#a3385b3dde1c8170a13aaebf9843cad38">quad_utils::QuadKD::hip_vel_max_</a></div><div class="ttdeci">const double hip_vel_max_</div><div class="ttdoc">Hip max joint velocity.</div><div class="ttdef"><b>Definition:</b> quad_kd.h:457</div></div>
 </div><!-- fragment -->
 <p>Vector of max velocities. </p>
 

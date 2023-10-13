@@ -25,7 +25,7 @@ var searchData=
   ['leg_5fidx_5f_22',['leg_idx_',['../classJointController.html#a7277b505a0ccf783fc1c22adbfecba80',1,'JointController']]],
   ['leg_5fmap_5f_23',['leg_map_',['../classeffort__controllers_1_1QuadController.html#a7ba3d72c21ebf4c21b688e34812ab9ef',1,'effort_controllers::QuadController']]],
   ['legbase_5foffsets_5f_24',['legbase_offsets_',['../classquad__utils_1_1QuadKD.html#a66dca5500d626d0271f34678314596ee',1,'quad_utils::QuadKD']]],
-  ['legbasetofootiklegbaseframe_25',['legbaseToFootIKLegbaseFrame',['../classquad__utils_1_1QuadKD.html#adf92afd5586ed1453ae76a4f8142b81e',1,'quad_utils::QuadKD']]],
+  ['legbasetofootiklegbaseframe_25',['legbaseToFootIKLegbaseFrame',['../classquad__utils_1_1QuadKD.html#ab8be68d7d6fdd91376e00672242d9ac0',1,'quad_utils::QuadKD']]],
   ['legcontroller_26',['LegController',['../classLegController.html#a43d9c5ab90cb2ea4c2242ea7e1795c00',1,'LegController::LegController()'],['../classLegController.html',1,'LegController']]],
   ['length_5fplan_5f_27',['length_plan_',['../classGlobalBodyPlan.html#a9f8fc92d976e1ea70b8dbe246a48abc4',1,'GlobalBodyPlan']]],
   ['limbcmd_5ft_28',['LimbCmd_t',['../structLimbCmd__t.html',1,'']]],

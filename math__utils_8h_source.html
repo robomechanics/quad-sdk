@@ -101,53 +101,54 @@ $(function() {
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">inline</span> <span class="keywordtype">double</span> lerp(<span class="keywordtype">double</span> a, <span class="keywordtype">double</span> b, <span class="keywordtype">double</span> t) { <span class="keywordflow">return</span> (a + t * (b - a)); }</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">inline</span> <span class="keywordtype">double</span> wrapTo2Pi(<span class="keywordtype">double</span> val) {</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>  <span class="keywordflow">return</span> fmod(2 * M_PI + fmod(val, 2 * M_PI), 2 * M_PI);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">return</span> fmod(2 * M_PI + fmod(val, 2 * M_PI), 2 * M_PI);</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="keyword">inline</span> <span class="keywordtype">double</span> wrapToPi(<span class="keywordtype">double</span> val) {</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  <span class="keywordflow">return</span> -M_PI + wrapTo2Pi(val + M_PI);</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  <span class="comment">// double new_val = fmod(val + M_PI, 2*M_PI);</span></div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  <span class="comment">// while (new_val &lt; 0) {</span></div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  <span class="comment">//   new_val += 2*M_PI;</span></div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>  <span class="comment">// }</span></div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  <span class="comment">// return new_val-M_PI;</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">return</span> -M_PI + wrapTo2Pi(val + M_PI);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="comment">// double new_val = fmod(val + M_PI, 2*M_PI);</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="comment">// while (new_val &lt; 0) {</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="comment">//   new_val += 2*M_PI;</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="comment">// }</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="comment">// return new_val-M_PI;</span></div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>}</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">inline</span> std::vector&lt;double&gt; wrapToPi(std::vector&lt;double&gt; data) {</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>  std::vector&lt;double&gt; data_wrapped = data;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; data.size(); i++) {</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    data_wrapped[i] = wrapToPi(data[i]);</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>  }</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>  <span class="keywordflow">return</span> data_wrapped;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">inline</span> std::vector&lt;double&gt; wrapToPi(<span class="keyword">const</span> std::vector&lt;double&gt; &amp;data) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    std::vector&lt;double&gt; data_wrapped = data;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; data.size(); i++) {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        data_wrapped[i] = wrapToPi(data[i]);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">return</span> data_wrapped;</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>}</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>std::vector&lt;double&gt; interpMat(<span class="keyword">const</span> std::vector&lt;double&gt; input_vec,</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                              <span class="keyword">const</span> std::vector&lt;std::vector&lt;double&gt;&gt; output_mat,</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                              <span class="keyword">const</span> <span class="keywordtype">double</span> query_point);</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>Eigen::Vector3d interpVector3d(<span class="keyword">const</span> std::vector&lt;double&gt; input_vec,</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                               <span class="keyword">const</span> std::vector&lt;Eigen::Vector3d&gt; output_mat,</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                               <span class="keyword">const</span> <span class="keywordtype">double</span> query_point);</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>std::vector&lt;Eigen::Vector3d&gt; interpMatVector3d(</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keyword">const</span> std::vector&lt;double&gt; input_vec,</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keyword">const</span> std::vector&lt;std::vector&lt;Eigen::Vector3d&gt;&gt; output_mat,</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> query_point);</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span><span class="keywordtype">int</span> interpInt(<span class="keyword">const</span> std::vector&lt;double&gt; input_vec, std::vector&lt;int&gt; output_vec,</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>              <span class="keyword">const</span> <span class="keywordtype">double</span> query_point);</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>std::vector&lt;double&gt; movingAverageFilter(std::vector&lt;double&gt; data,</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                                        <span class="keywordtype">int</span> window_size);</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>std::vector&lt;double&gt; centralDiff(std::vector&lt;double&gt; data, <span class="keywordtype">double</span> dt);</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>std::vector&lt;double&gt; unwrap(std::vector&lt;double&gt; data);</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>Eigen::MatrixXd sdlsInv(<span class="keyword">const</span> Eigen::MatrixXd &amp;jacobian);</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>}  <span class="comment">// namespace math_utils</span></div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span><span class="preprocessor">#endif  </span><span class="comment">// QUAD_MATH_UTILS_H</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>std::vector&lt;double&gt; interpMat(</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">const</span> std::vector&lt;double&gt; &amp;input_vec,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keyword">const</span> std::vector&lt;std::vector&lt;double&gt;&gt; &amp;output_mat,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> query_point);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>Eigen::Vector3d interpVector3d(<span class="keyword">const</span> std::vector&lt;double&gt; &amp;input_vec,</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                               <span class="keyword">const</span> std::vector&lt;Eigen::Vector3d&gt; &amp;output_mat,</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                               <span class="keyword">const</span> <span class="keywordtype">double</span> query_point);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>std::vector&lt;Eigen::Vector3d&gt; interpMatVector3d(</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keyword">const</span> std::vector&lt;double&gt; &amp;input_vec,</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keyword">const</span> std::vector&lt;std::vector&lt;Eigen::Vector3d&gt;&gt; &amp;output_mat,</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> query_point);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="keywordtype">int</span> interpInt(<span class="keyword">const</span> std::vector&lt;double&gt; &amp;input_vec,</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>              std::vector&lt;int&gt; &amp;output_vec, <span class="keyword">const</span> <span class="keywordtype">double</span> query_point);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>std::vector&lt;double&gt; movingAverageFilter(<span class="keyword">const</span> std::vector&lt;double&gt; &amp;data,</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                                        <span class="keywordtype">int</span> window_size);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>std::vector&lt;double&gt; centralDiff(<span class="keyword">const</span> std::vector&lt;double&gt; &amp;data, <span class="keywordtype">double</span> dt);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>std::vector&lt;double&gt; unwrap(std::vector&lt;double&gt; data);</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>Eigen::MatrixXd sdlsInv(<span class="keyword">const</span> Eigen::MatrixXd &amp;jacobian);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>}  <span class="comment">// namespace math_utils</span></div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span><span class="preprocessor">#endif  </span><span class="comment">// QUAD_MATH_UTILS_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
