@@ -122,6 +122,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>initStateEstimator</b
 <tr class="memitem:ac5980c313fc2400cf6cfd7858965caea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobotDriver.html#ac5980c313fc2400cf6cfd7858965caea">singleJointCommandCallback</a> (const geometry_msgs::Vector3::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:ac5980c313fc2400cf6cfd7858965caea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback to handle new leg override commands.  <a href="classRobotDriver.html#ac5980c313fc2400cf6cfd7858965caea">More...</a><br /></td></tr>
 <tr class="separator:ac5980c313fc2400cf6cfd7858965caea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1559e27e5b687b14cd16a0cf2f1c08f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobotDriver.html#a1559e27e5b687b14cd16a0cf2f1c08f6">bodyForceEstimateCallback</a> (const quad_msgs::BodyForceEstimate::ConstPtr &amp;msg)</td></tr>
+<tr class="memdesc:a1559e27e5b687b14cd16a0cf2f1c08f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback to handle new body force estimates.  <a href="classRobotDriver.html#a1559e27e5b687b14cd16a0cf2f1c08f6">More...</a><br /></td></tr>
+<tr class="separator:a1559e27e5b687b14cd16a0cf2f1c08f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a921074ae4355d197024a813a42c7e9d4"><td class="memItemLeft" align="right" valign="top"><a id="a921074ae4355d197024a813a42c7e9d4" name="a921074ae4355d197024a813a42c7e9d4"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>controlRestartFlagCallback</b> (const std_msgs::Bool::ConstPtr &amp;msg)</td></tr>
 <tr class="memdesc:a921074ae4355d197024a813a42c7e9d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback to handle control restart flag messages. <br /></td></tr>
@@ -175,6 +178,10 @@ ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><b>mocap_sub_
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><b>robot_state_sub_</b></td></tr>
 <tr class="memdesc:a93a724650f5e4b9ba6950e44504a6092"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for state estimate. <br /></td></tr>
 <tr class="separator:a93a724650f5e4b9ba6950e44504a6092"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cd4e6e934619e7cff188b497903f6d6"><td class="memItemLeft" align="right" valign="top"><a id="a9cd4e6e934619e7cff188b497903f6d6" name="a9cd4e6e934619e7cff188b497903f6d6"></a>
+ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><b>body_force_estimate_sub_</b></td></tr>
+<tr class="memdesc:a9cd4e6e934619e7cff188b497903f6d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for body force estimates. <br /></td></tr>
+<tr class="separator:a9cd4e6e934619e7cff188b497903f6d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac92c0ffbfc9836efd6421811bc4003f3"><td class="memItemLeft" align="right" valign="top"><a id="ac92c0ffbfc9836efd6421811bc4003f3" name="ac92c0ffbfc9836efd6421811bc4003f3"></a>
 ros::Subscriber&#160;</td><td class="memItemRight" valign="bottom"><b>control_restart_flag_sub_</b></td></tr>
 <tr class="memdesc:ac92c0ffbfc9836efd6421811bc4003f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">ROS subscriber for control restart flag. <br /></td></tr>
@@ -525,6 +532,40 @@ char **&#160;</td><td class="memItemRight" valign="bottom"><b>argv_</b></td></tr
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a1559e27e5b687b14cd16a0cf2f1c08f6" name="a1559e27e5b687b14cd16a0cf2f1c08f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1559e27e5b687b14cd16a0cf2f1c08f6">&#9670;&#160;</a></span>bodyForceEstimateCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RobotDriver::bodyForceEstimateCallback </td>
+          <td>(</td>
+          <td class="paramtype">const quad_msgs::BodyForceEstimate::ConstPtr &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback to handle new body force estimates. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>body force estimates </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a33d27f44735dbce283422f8850cca22f" name="a33d27f44735dbce283422f8850cca22f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a33d27f44735dbce283422f8850cca22f">&#9670;&#160;</a></span>controlModeCallback()</h2>
 

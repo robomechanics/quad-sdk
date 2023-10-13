@@ -43,7 +43,7 @@ var searchData=
   ['getprimitivefromindex_40',['getPrimitiveFromIndex',['../classGlobalBodyPlan.html#ad0badfafde280c0106b3ecde1730f5bd',1,'GlobalBodyPlan']]],
   ['getpublishedtimestamp_41',['getPublishedTimestamp',['../classGlobalBodyPlan.html#a3ba5a91d5b6ea536f34cdd36ab6dd8d0',1,'GlobalBodyPlan']]],
   ['getreference_42',['getReference',['../classLocalPlanner.html#a431a0209d1e14704435e7785a8dd2eea',1,'LocalPlanner']]],
-  ['getreferencestate_43',['getReferenceState',['../classInverseDynamicsController.html#a0280ae514c88722dc2e0635f3117f564',1,'InverseDynamicsController']]],
+  ['getreferencestate_43',['getReferenceState',['../classInertiaEstimationController.html#aade52291615e311d3ba5ab3745ad33c8',1,'InertiaEstimationController::getReferenceState()'],['../classInverseDynamicsController.html#a0280ae514c88722dc2e0635f3117f564',1,'InverseDynamicsController::getReferenceState()'],['../classUnderbrushInverseDynamicsController.html#aeca57f055cc3680257e0dd8e89c236dc',1,'UnderbrushInverseDynamicsController::getReferenceState()']]],
   ['getrotationmatrix_44',['getRotationMatrix',['../classquad__utils_1_1QuadKD.html#a47ce889defe7662a09cec52168c6015d',1,'quad_utils::QuadKD']]],
   ['getsize_45',['getSize',['../classGlobalBodyPlan.html#ae1f2951d3717933eb12125a7dda5ab44',1,'GlobalBodyPlan']]],
   ['getstatefromindex_46',['getStateFromIndex',['../classGlobalBodyPlan.html#af556d83dddc308dc5ac1a06d9d5c7b48',1,'GlobalBodyPlan']]],

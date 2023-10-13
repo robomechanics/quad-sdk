@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['jointcontroller_0',['JointController',['../classJointController.html',1,'']]]
+  ['inertiaestimationcontroller_0',['InertiaEstimationController',['../classInertiaEstimationController.html',1,'']]],
+  ['inversedynamicscontroller_1',['InverseDynamicsController',['../classInverseDynamicsController.html',1,'']]]
 ];

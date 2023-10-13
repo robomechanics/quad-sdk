@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['xacroexception_0',['XacroException',['../classxacro_1_1XacroException.html',1,'xacro']]]
+  ['table_0',['Table',['../classxacro_1_1Table.html',1,'xacro']]],
+  ['terrainmappublisher_1',['TerrainMapPublisher',['../classTerrainMapPublisher.html',1,'']]],
+  ['trajectorypublisher_2',['TrajectoryPublisher',['../classTrajectoryPublisher.html',1,'']]]
 ];

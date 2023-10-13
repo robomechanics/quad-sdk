@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['ekfestimator_0',['EKFEstimator',['../classEKFEstimator.html',1,'']]],
-  ['example_1',['Example',['../classread__bag_1_1Example.html',1,'read_bag']]]
+  ['compfilterestimator_0',['CompFilterEstimator',['../classCompFilterEstimator.html',1,'']]],
+  ['contactplugin_1',['ContactPlugin',['../classgazebo_1_1ContactPlugin.html',1,'gazebo']]],
+  ['contactstatepublisher_2',['ContactStatePublisher',['../classContactStatePublisher.html',1,'']]]
 ];

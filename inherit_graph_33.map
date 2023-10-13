@@ -1,5 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classStateEstimator.html" title=" " alt="" coords="5,31,113,56"/>
-<area shape="rect" id="node2" href="$classCompFilterEstimator.html" title="Implements complementary filter as an estimator within the ROS framework." alt="" coords="161,5,301,31"/>
-<area shape="rect" id="node3" href="$classEKFEstimator.html" title="Implements Extended Kalman Filter as an estimator within the ROS framework." alt="" coords="180,55,283,80"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,5,104,31"/>
+<area shape="rect" id="node2" href="$classgazebo_1_1ContactPlugin.html" title="An example plugin for a contact sensor." alt="" coords="152,5,303,31"/>
 </map>

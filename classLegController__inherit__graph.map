@@ -1,6 +1,8 @@
 <map id="LegController" name="LegController">
-<area shape="rect" id="node1" title="Implements an abstract class for leg controllers." alt="" coords="184,5,283,31"/>
-<area shape="rect" id="node2" href="$classGrfPidController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="5,79,120,104"/>
-<area shape="rect" id="node3" href="$classInverseDynamicsController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="145,79,322,104"/>
-<area shape="rect" id="node4" href="$classJointController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="346,79,451,104"/>
+<area shape="rect" id="node1" title="Implements an abstract class for leg controllers." alt="" coords="5,104,104,129"/>
+<area shape="rect" id="node2" href="$classGrfPidController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="189,5,304,31"/>
+<area shape="rect" id="node3" href="$classInertiaEstimationController.html" title="Special&#45;purpose inertia parameter estimation leg controller." alt="" coords="159,55,334,80"/>
+<area shape="rect" id="node4" href="$classInverseDynamicsController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="158,104,335,129"/>
+<area shape="rect" id="node5" href="$classJointController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="194,153,299,179"/>
+<area shape="rect" id="node6" href="$classUnderbrushInverseDynamicsController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="152,203,341,243"/>
 </map>

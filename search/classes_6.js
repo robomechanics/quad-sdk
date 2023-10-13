@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['inversedynamicscontroller_0',['InverseDynamicsController',['../classInverseDynamicsController.html',1,'']]]
+  ['hardwareinterface_0',['HardwareInterface',['../classHardwareInterface.html',1,'']]]
 ];
