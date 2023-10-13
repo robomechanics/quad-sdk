@@ -63,6 +63,8 @@ add_library(robot_driver
   src/robot_driver_utils.cpp
   src/controllers/leg_controller.cpp
   src/controllers/inverse_dynamics_controller.cpp
+  src/controllers/underbrush_inverse_dynamics.cpp
+  src/controllers/inertia_estimation_controller.cpp
   src/controllers/grf_pid_controller.cpp
   src/controllers/joint_controller.cpp
   src/estimators/state_estimator.cpp

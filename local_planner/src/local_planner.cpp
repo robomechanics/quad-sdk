@@ -112,16 +112,16 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh)
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
-    // Create nmpc wrapper class
-    SystemID type;
-    if (robot_name_ == "spirit") {
-        type = SPIRIT;
-    } else if (robot_name_ == "a1") {
-        type = A1;
-    } else {
-        ROS_WARN("WRONG ROBOT TYPE");
-    }
-    local_body_planner_nonlinear_ = std::make_shared<NMPCController>(nh_, type);
+  // Create nmpc wrapper class
+  SystemID type;
+  if (robot_name_ == "spirit" || robot_name_ == "spirit_rotors") {
+    type = SPIRIT;
+  } else if (robot_name_ == "a1") {
+    type = A1;
+  } else {
+    ROS_WARN("WRONG ROBOT TYPE");
+  }
+  local_body_planner_nonlinear_ = std::make_shared<NMPCController>(nh_, type);
 }
 
 void LocalPlanner::initLocalFootstepPlanner() {

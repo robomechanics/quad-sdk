@@ -19,3 +19,12 @@ robot_driver:
   high_pass_b: [0.062500000000000, 0]
   high_pass_c: [0.031912805108981, -0.028979795079613]
   high_pass_d: [0.0009996017974875904]
+
+underbrush_swing:
+  retract_vel: 15 # 15 # rad/s retraction speed at proximal link
+  tau_push: 2.0 # N m forward torque at distal link
+  tau_contact_start: 2.0 # N m contact initiation detection threshold
+  tau_contact_end: 2.0 # N m contact break detection threshold
+  min_switch: 0.1 # s minimum time between switching
+  t_down: 0.135 # s time before requiring leg extension
+  t_up: 0.04 # s time before allowing contact initiation detection

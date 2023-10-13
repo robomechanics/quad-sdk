@@ -1,0 +1,64 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <model name="compliant_beam_horizontal.sdf">
+
+    <link name='branch'>
+
+      <pose frame=''>0 0 0.01 -1.570796 0 0</pose>
+      <collision name='collision'>
+        <pose frame=''>0 0 0.2 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.4</length>
+            <radius>0.01</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+
+      <visual name='visual'>
+        <pose frame=''>0 0 0.2 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.4</length>
+            <radius>0.01</radius>
+          </cylinder>
+        </geometry>
+      </visual>
+
+      <inertial>
+        <pose frame=''>0 0 0.2 0 0 0</pose>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>4e-3</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>4e-3</iyy>
+          <iyz>0</iyz>
+          <izz>2e-5</izz>
+        </inertia>
+      </inertial>
+    </link>
+
+    <joint name='base_to_branch' type='universal'>
+      <parent>world</parent>
+      <child>branch</child>
+      <pose>0 0 0 0 0 0</pose>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <dynamics>
+          <damping>1.0</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>10.0</spring_stiffness>
+        </dynamics>
+      </axis>
+      <axis2>
+        <xyz>1 0 0</xyz>
+        <dynamics>
+          <damping>1.0</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>10.0</spring_stiffness>
+        </dynamics>
+      </axis2>
+    </joint>
+  </model>
+</sdf>
