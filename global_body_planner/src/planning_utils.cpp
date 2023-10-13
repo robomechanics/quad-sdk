@@ -204,7 +204,7 @@ void addFullStates(const FullState &start_state,
   }
 
   // Unwrap yaw for filtering
-  unwrapped_yaw = math_utils::unwrap(wrapped_yaw);
+  unwrapped_yaw = math_utils::getUnwrappedVector(wrapped_yaw);
 
   // Compute pitch and height to align with the terrain, add first order filter
   // on init state
