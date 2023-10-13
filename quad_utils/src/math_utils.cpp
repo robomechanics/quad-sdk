@@ -148,45 +148,6 @@ std::vector<double> movingAverageFilter(const std::vector<double> &data,
     // Initialize sum and count of data samples
     double sum = 0;
     double count = 0;
-<<<<<<< HEAD
-
-    // Shrink the window size if it would result in out of bounds data
-    int current_window_size = std::min(window_size, 2 * i + 1);
-    // int current_window_size = window_size;
-
-    // Loop through the window, adding to the sum and averaging
-    for (int j = 0; j < current_window_size; j++) {
-      double index = i + (j - (current_window_size - 1) / 2);
-
-      // Make sure data is in bounds
-      if (index >= 0 && index < N) {
-        sum += data[index];
-        count += 1;
-      }
-    }
-
-    filtered_data.push_back((float)sum / count);
-  }
-
-  return filtered_data;
-}
-
-std::vector<double> centralDiff(std::vector<double> data, double dt) {
-  std::vector<double> data_diff;
-
-  for (int i = 0; i < data.size(); i++) {
-    // Compute lower and upper indices, with forward/backward difference at
-    // the ends
-    int lower_index = std::max(i - 1, 0);
-    int upper_index = std::min(i + 1, (int)data.size() - 1);
-
-    double estimate = (data[upper_index] - data[lower_index]) /
-                      (dt * (upper_index - lower_index));
-    data_diff.push_back(estimate);
-  }
-
-  return data_diff;
-=======
 
     // Shrink the window size if it would result in out of bounds data
     int current_window_size = std::min(window_size, 2 * i + 1);
@@ -242,7 +203,6 @@ std::vector<double> unwrap(std::vector<double> data) {
   }
 
   return data_unwrapped;
->>>>>>> devel
 }
 
 Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian) {
