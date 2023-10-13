@@ -36,7 +36,7 @@ inline double lerp(double a, double b, double t) { return (a + t * (b - a)); }
  * @return Wrapped value
  */
 inline double wrapTo2Pi(double val) {
-    return fmod(2 * M_PI + fmod(val, 2 * M_PI), 2 * M_PI);
+  return fmod(2 * M_PI + fmod(val, 2 * M_PI), 2 * M_PI);
 }
 
 /**
@@ -45,12 +45,12 @@ inline double wrapTo2Pi(double val) {
  * @return Wrapped value
  */
 inline double wrapToPi(double val) {
-    return -M_PI + wrapTo2Pi(val + M_PI);
-    // double new_val = fmod(val + M_PI, 2*M_PI);
-    // while (new_val < 0) {
-    //   new_val += 2*M_PI;
-    // }
-    // return new_val-M_PI;
+  return -M_PI + wrapTo2Pi(val + M_PI);
+  // double new_val = fmod(val + M_PI, 2*M_PI);
+  // while (new_val < 0) {
+  //   new_val += 2*M_PI;
+  // }
+  // return new_val-M_PI;
 }
 
 /**
@@ -58,12 +58,12 @@ inline double wrapToPi(double val) {
  * @param[in] data data to wrap
  * @return Wrapped data
  */
-inline std::vector<double> wrapToPi(std::vector<double> data) {
-    std::vector<double> data_wrapped = data;
-    for (int i = 0; i < data.size(); i++) {
-        data_wrapped[i] = wrapToPi(data[i]);
-    }
-    return data_wrapped;
+inline std::vector<double> wrapToPi(const std::vector<double> &data) {
+  std::vector<double> data_wrapped = data;
+  for (int i = 0; i < data.size(); i++) {
+    data_wrapped[i] = wrapToPi(data[i]);
+  }
+  return data_wrapped;
 }
 
 /**
@@ -75,9 +75,10 @@ inline std::vector<double> wrapToPi(std::vector<double> data) {
  * @param[in] input_val Query point
  * @return Vector of interpolated values
  */
-std::vector<double> interpMat(const std::vector<double> input_vec,
-                              const std::vector<std::vector<double>> output_mat,
-                              const double query_point);
+std::vector<double> interpMat(
+    const std::vector<double> &input_vec,
+    const std::vector<std::vector<double>> &output_mat,
+    const double query_point);
 
 /**
  * @brief Interpolate data from column vectors contained in a matrix (vector of
@@ -88,8 +89,8 @@ std::vector<double> interpMat(const std::vector<double> input_vec,
  * @param[in] input_val Query point
  * @return Vector of interpolated values
  */
-Eigen::Vector3d interpVector3d(const std::vector<double> input_vec,
-                               const std::vector<Eigen::Vector3d> output_mat,
+Eigen::Vector3d interpVector3d(const std::vector<double> &input_vec,
+                               const std::vector<Eigen::Vector3d> &output_mat,
                                const double query_point);
 
 /**
@@ -102,8 +103,8 @@ Eigen::Vector3d interpVector3d(const std::vector<double> input_vec,
  * @return Vector of interpolated values
  */
 std::vector<Eigen::Vector3d> interpMatVector3d(
-    const std::vector<double> input_vec,
-    const std::vector<std::vector<Eigen::Vector3d>> output_mat,
+    const std::vector<double> &input_vec,
+    const std::vector<std::vector<Eigen::Vector3d>> &output_mat,
     const double query_point);
 
 /**
@@ -113,8 +114,8 @@ std::vector<Eigen::Vector3d> interpMatVector3d(
  * @param[in] input_val Query point
  * @return Correct output int corresponsing to the query point
  */
-int interpInt(const std::vector<double> input_vec, std::vector<int> output_vec,
-              const double query_point);
+int interpInt(const std::vector<double> &input_vec,
+              std::vector<int> &output_vec, const double query_point);
 
 /**
  * @brief Filter a stl vector with a moving average window.
@@ -123,7 +124,7 @@ int interpInt(const std::vector<double> input_vec, std::vector<int> output_vec,
  * add one to maintain symmetry
  * @return Vector of filtered values
  */
-std::vector<double> movingAverageFilter(std::vector<double> data,
+std::vector<double> movingAverageFilter(const std::vector<double> &data,
                                         int window_size);
 
 /**
@@ -132,7 +133,7 @@ std::vector<double> movingAverageFilter(std::vector<double> data,
  * @param[in] dt The (constant) timestep between values in data.
  * @return Vector of differentiated signal
  */
-std::vector<double> centralDiff(std::vector<double> data, double dt);
+std::vector<double> centralDiff(const std::vector<double> &data, double dt);
 
 /**
  * @brief Wrap a given scalar to within PI of a given target by adding or
@@ -143,13 +144,13 @@ std::vector<double> centralDiff(std::vector<double> data, double dt);
  * @param[in] val_target Target to wrap towards
  */
 template <typename ScalarType>
-void wrapToTarget(ScalarType& val, const ScalarType& val_target = 0.0) {
-    while (val_target - val > M_PI) {
-        val += 2.0 * M_PI;
-    }
-    while (val_target - val < -M_PI) {
-        val -= 2.0 * M_PI;
-    }
+void wrapToTarget(ScalarType &val, const ScalarType &val_target = 0.0) {
+  while (val_target - val > M_PI) {
+    val += 2.0 * M_PI;
+  }
+  while (val_target - val < -M_PI) {
+    val -= 2.0 * M_PI;
+  }
 }
 
 /**
@@ -158,23 +159,23 @@ void wrapToTarget(ScalarType& val, const ScalarType& val_target = 0.0) {
  * @return Flag for if the vector was modified by unwrapping
  */
 template <typename VecType>
-bool unwrapVector(VecType& vec) {
-    bool modified = false;
-    for (int i = 1; i < vec.size(); i++) {
-        double diff = vec[i] - vec[i - 1];
-        if (diff > M_PI) {
-            modified = true;
-            for (int j = i; j < vec.size(); j++) {
-                vec[j] = vec[j] - 2 * M_PI;
-            }
-        } else if (diff < -M_PI) {
-            modified = true;
-            for (int j = i; j < vec.size(); j++) {
-                vec[j] = vec[j] + 2 * M_PI;
-            }
-        }
+bool unwrapVector(VecType &vec) {
+  bool modified = false;
+  for (int i = 1; i < vec.size(); i++) {
+    double diff = vec[i] - vec[i - 1];
+    if (diff > M_PI) {
+      modified = true;
+      for (int j = i; j < vec.size(); j++) {
+        vec[j] = vec[j] - 2 * M_PI;
+      }
+    } else if (diff < -M_PI) {
+      modified = true;
+      for (int j = i; j < vec.size(); j++) {
+        vec[j] = vec[j] + 2 * M_PI;
+      }
     }
-    return modified;
+  }
+  return modified;
 }
 
 /**
@@ -183,10 +184,10 @@ bool unwrapVector(VecType& vec) {
  * @return Vector of unwrapped signal
  */
 template <typename VecType>
-VecType getUnwrappedVector(const VecType& vec) {
-    VecType vec_unwrapped = vec;
-    unwrapVector(vec_unwrapped);
-    return vec_unwrapped;
+VecType getUnwrappedVector(const VecType &vec) {
+  VecType vec_unwrapped = vec;
+  unwrapVector(vec_unwrapped);
+  return vec_unwrapped;
 }
 
 /**
@@ -194,7 +195,7 @@ VecType getUnwrappedVector(const VecType& vec) {
  * @param[in] jacobian Input matrix
  * @return Pseudo-inverse of the input matrix
  */
-Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd& jacobian);
+Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian);
 }  // namespace math_utils
 
 #endif  // QUAD_MATH_UTILS_H
