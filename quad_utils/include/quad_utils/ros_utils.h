@@ -14,9 +14,9 @@ namespace quad_utils {
  * @param[in] t_compare ROS time we wish to compare to
  * @return Age in ms (compared to t_compare)
  */
-inline double getROSMessageAgeInMs(std_msgs::Header header,
-                                   ros::Time t_compare) {
-  return (t_compare - header.stamp).toSec() * 1000.0;
+inline double getROSMessageAgeInMs(const std_msgs::Header &header,
+                                   const ros::Time &t_compare) {
+    return (t_compare - header.stamp).toSec() * 1000.0;
 }
 
 /**
@@ -24,9 +24,9 @@ inline double getROSMessageAgeInMs(std_msgs::Header header,
  * @param[in] header ROS Header that we wish to compute the age of
  * @return Age in ms (compared to ros::Time::now())
  */
-inline double getROSMessageAgeInMs(std_msgs::Header header) {
-  ros::Time t_compare = ros::Time::now();
-  return quad_utils::getROSMessageAgeInMs(header, t_compare);
+inline double getROSMessageAgeInMs(const std_msgs::Header &header) {
+    ros::Time t_compare = ros::Time::now();
+    return quad_utils::getROSMessageAgeInMs(header, t_compare);
 }
 
 /**
@@ -34,8 +34,8 @@ inline double getROSMessageAgeInMs(std_msgs::Header header) {
  * @param[in] plan_start ROS Time to to compare to
  * @return Time in plan (compared to ros::Time::now())
  */
-inline double getDurationSinceTime(ros::Time plan_start) {
-  return (ros::Time::now() - plan_start).toSec();
+inline double getDurationSinceTime(const ros::Time &plan_start) {
+    return (ros::Time::now() - plan_start).toSec();
 }
 
 /**
@@ -46,11 +46,11 @@ inline double getDurationSinceTime(ros::Time plan_start) {
  * @param[in] plan_start ROS Time to to compare to
  * @param[in] dt Timestep used to discretize the plan
  */
-inline void getPlanIndex(ros::Time plan_start, double dt, int &index,
+inline void getPlanIndex(const ros::Time &plan_start, double dt, int &index,
                          double &first_element_duration) {
-  double duration = getDurationSinceTime(plan_start);
-  index = std::floor(duration / dt);
-  first_element_duration = (index + 1) * dt - duration;
+    double duration = getDurationSinceTime(plan_start);
+    index = std::floor(duration / dt);
+    first_element_duration = (index + 1) * dt - duration;
 }
 
 /**
@@ -61,13 +61,14 @@ inline void getPlanIndex(ros::Time plan_start, double dt, int &index,
  * @return boolean success
  */
 template <class ParamType>
-inline bool loadROSParam(ros::NodeHandle nh, std::string paramName,
+inline bool loadROSParam(ros::NodeHandle nh, const std::string &paramName,
                          ParamType &varName) {
-  if (!nh.getParam(paramName, varName)) {
-    ROS_ERROR("Can't find param %s from parameter server", paramName.c_str());
-    return false;
-  }
-  return true;
+    if (!nh.getParam(paramName, varName)) {
+        ROS_ERROR("Can't find param %s from parameter server",
+                  paramName.c_str());
+        return false;
+    }
+    return true;
 }
 
 /**
@@ -80,15 +81,18 @@ inline bool loadROSParam(ros::NodeHandle nh, std::string paramName,
  * @return boolean (true if found rosparam, false if loaded default)
  */
 template <class ParamType>
-inline bool loadROSParamDefault(ros::NodeHandle nh, std::string paramName,
-                                ParamType &varName, ParamType defaultVal) {
-  if (!nh.getParam(paramName, varName)) {
-    varName = defaultVal;
-    ROS_INFO("Can't find param %s on rosparam server, loading default value.",
-             paramName.c_str());
-    return false;
-  }
-  return true;
+inline bool loadROSParamDefault(ros::NodeHandle nh,
+                                const std::string &paramName,
+                                ParamType &varName,
+                                const ParamType &defaultVal) {
+    if (!nh.getParam(paramName, varName)) {
+        varName = defaultVal;
+        ROS_INFO(
+            "Can't find param %s on rosparam server, loading default value.",
+            paramName.c_str());
+        return false;
+    }
+    return true;
 }
 
 // /**
@@ -107,8 +111,8 @@ inline bool loadROSParamDefault(ros::NodeHandle nh, std::string paramName,
  * @param[in] frame Frame_id for the state message
  * @param[in] traj_index Trajectory index of this state message
  */
-void updateStateHeaders(quad_msgs::RobotState &msg, ros::Time stamp,
-                        std::string frame, int traj_index);
+void updateStateHeaders(quad_msgs::RobotState &msg, const ros::Time &stamp,
+                        const std::string &frame, int traj_index);
 
 /**
  * @brief Interpolate two headers
@@ -117,8 +121,9 @@ void updateStateHeaders(quad_msgs::RobotState &msg, ros::Time stamp,
  * @param[in] t_interp Fraction of time between the messages [0,1]
  * @param[out] interp_state Interpolated header
  */
-void interpHeader(std_msgs::Header header_1, std_msgs::Header header_2,
-                  double t_interp, std_msgs::Header &interp_header);
+void interpHeader(const std_msgs::Header &header_1,
+                  const std_msgs::Header &header_2, double t_interp,
+                  std_msgs::Header &interp_header);
 
 /**
  * @brief Interpolate data between two Odometry messages.
@@ -127,8 +132,9 @@ void interpHeader(std_msgs::Header header_1, std_msgs::Header header_2,
  * @param[in] t_interp Fraction of time between the messages [0,1]
  * @param[out] interp_state Interpolated Odometry message
  */
-void interpOdometry(quad_msgs::BodyState state_1, quad_msgs::BodyState state_2,
-                    double t_interp, quad_msgs::BodyState &interp_state);
+void interpOdometry(const quad_msgs::BodyState &state_1,
+                    const quad_msgs::BodyState &state_2, double t_interp,
+                    quad_msgs::BodyState &interp_state);
 
 /**
  * @brief Interpolate data between two JointState messages.
@@ -137,8 +143,8 @@ void interpOdometry(quad_msgs::BodyState state_1, quad_msgs::BodyState state_2,
  * @param[in] t_interp Fraction of time between the messages [0,1]
  * @param[out] interp_state Interpolated JointState message
  */
-void interpJointState(sensor_msgs::JointState state_1,
-                      sensor_msgs::JointState state_2, double t_interp,
+void interpJointState(const sensor_msgs::JointState &state_1,
+                      const sensor_msgs::JointState &state_2, double t_interp,
                       sensor_msgs::JointState &interp_state);
 
 /**
@@ -148,8 +154,9 @@ void interpJointState(sensor_msgs::JointState state_1,
  * @param[in] t_interp Fraction of time between the messages [0,1]
  * @param[out] interp_state Interpolated FootState message
  */
-void interpMultiFootState(quad_msgs::MultiFootState state_1,
-                          quad_msgs::MultiFootState state_2, double t_interp,
+void interpMultiFootState(const quad_msgs::MultiFootState &state_1,
+                          const quad_msgs::MultiFootState &state_2,
+                          double t_interp,
                           quad_msgs::MultiFootState &interp_state);
 
 /**
@@ -159,8 +166,9 @@ void interpMultiFootState(quad_msgs::MultiFootState state_1,
  * @param[in] t_interp Fraction of time between the messages [0,1]
  * @param[out] interp_state Interpolated GRFArray message
  */
-void interpGRFArray(quad_msgs::GRFArray state_1, quad_msgs::GRFArray state_2,
-                    double t_interp, quad_msgs::GRFArray &interp_state);
+void interpGRFArray(const quad_msgs::GRFArray &state_1,
+                    const quad_msgs::GRFArray &state_2, double t_interp,
+                    quad_msgs::GRFArray &interp_state);
 
 /**
  * @brief Interpolate data between two RobotState messages.
@@ -169,8 +177,8 @@ void interpGRFArray(quad_msgs::GRFArray state_1, quad_msgs::GRFArray state_2,
  * @param[in] t_interp Fraction of time between the messages [0,1]
  * @param[out] interp_state Interpolated RobotState message
  */
-void interpRobotState(quad_msgs::RobotState state_1,
-                      quad_msgs::RobotState state_2, double t_interp,
+void interpRobotState(const quad_msgs::RobotState &state_1,
+                      const quad_msgs::RobotState &state_2, double t_interp,
                       quad_msgs::RobotState &interp_state);
 
 /**
@@ -182,7 +190,7 @@ void interpRobotState(quad_msgs::RobotState state_1,
  * @param[out] interp_primitive_id Interpolated primitive id
  * @param[out] interp_grf Interpolated GRF array
  */
-void interpRobotPlan(quad_msgs::RobotPlan msg, double t,
+void interpRobotPlan(const quad_msgs::RobotPlan &msg, double t,
                      quad_msgs::RobotState &interp_state,
                      int &interp_primitive_id, quad_msgs::GRFArray &interp_grf);
 
@@ -194,7 +202,7 @@ void interpRobotPlan(quad_msgs::RobotPlan msg, double t,
  * @return MultiFootState message
  */
 quad_msgs::MultiFootState interpMultiFootPlanContinuous(
-    quad_msgs::MultiFootPlanContinuous msg, double t);
+    const quad_msgs::MultiFootPlanContinuous &msg, double t);
 
 // /**
 //  * @brief Interpolate data from a robot state trajectory message.
@@ -216,8 +224,8 @@ quad_msgs::MultiFootState interpMultiFootPlanContinuous(
  * @param[out] joint_state message of the corresponding joint state
  */
 void ikRobotState(const quad_utils::QuadKD &kinematics,
-                  quad_msgs::BodyState body_state,
-                  quad_msgs::MultiFootState multi_foot_state,
+                  const quad_msgs::BodyState &body_state,
+                  const quad_msgs::MultiFootState &multi_foot_state,
                   sensor_msgs::JointState &joint_state);
 
 /**
@@ -237,8 +245,8 @@ void ikRobotState(const quad_utils::QuadKD &kinematics,
  * @param[out] multi_foot_state message of state of each foot
  */
 void fkRobotState(const quad_utils::QuadKD &kinematics,
-                  quad_msgs::BodyState body_state,
-                  sensor_msgs::JointState joint_state,
+                  const quad_msgs::BodyState &body_state,
+                  const sensor_msgs::JointState &joint_state,
                   quad_msgs::MultiFootState &multi_foot_state);
 
 /**
@@ -270,8 +278,8 @@ Eigen::VectorXd bodyStateMsgToEigen(const quad_msgs::BodyState &body);
  * information
  * @param[out] grf_msg GRFArray msg containing GRF data
  */
-void eigenToGRFArrayMsg(Eigen::VectorXd grf_array,
-                        quad_msgs::MultiFootState multi_foot_state_msg,
+void eigenToGRFArrayMsg(const Eigen::VectorXd &grf_array,
+                        const quad_msgs::MultiFootState &multi_foot_state_msg,
                         quad_msgs::GRFArray &grf_msg);
 
 /**
@@ -331,8 +339,8 @@ void multiFootStateMsgToEigen(
  * @param[out] foot_state_msg FootState msg containing foot position and
  * velocity data
  */
-void eigenToFootStateMsg(Eigen::VectorXd foot_position,
-                         Eigen::VectorXd foot_velocity,
+void eigenToFootStateMsg(const Eigen::VectorXd &foot_position,
+                         const Eigen::VectorXd &foot_velocity,
                          quad_msgs::FootState &foot_state_msg);
 
 /**
@@ -343,9 +351,9 @@ void eigenToFootStateMsg(Eigen::VectorXd foot_position,
  * @param[out] foot_state_msg FootState msg containing foot position and
  * velocity data
  */
-void eigenToFootStateMsg(Eigen::VectorXd foot_position,
-                         Eigen::VectorXd foot_velocity,
-                         Eigen::VectorXd foot_acceleration,
+void eigenToFootStateMsg(const Eigen::VectorXd &foot_position,
+                         const Eigen::VectorXd &foot_velocity,
+                         const Eigen::VectorXd &foot_acceleration,
                          quad_msgs::FootState &foot_state_msg);
 
 /**
