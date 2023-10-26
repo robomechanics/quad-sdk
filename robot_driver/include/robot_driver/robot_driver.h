@@ -74,7 +74,7 @@ class RobotDriver {
    * @brief Verifies and updates new control mode
    * @param[in] msg New control mode
    */
-   void grfCallback(const quad_msgs::GRFArray::ConstPtr& msg);
+  void grfCallback(const quad_msgs::GRFArray::ConstPtr& msg);
 
   /**
    * @brief execute EKF Update step, return state estimate
@@ -185,8 +185,8 @@ class RobotDriver {
   /// ROS subscriber for single joint command
   ros::Subscriber single_joint_cmd_sub_;
 
-//   /// ROS subscriber for desired GRF
-//   ros::Subscriber grf_sub_;
+  //   /// ROS subscriber for desired GRF
+  //   ros::Subscriber grf_sub_;
 
   /// ROS publisher for robot heartbeat
   ros::Publisher robot_heartbeat_pub_;
@@ -266,7 +266,7 @@ class RobotDriver {
   /// Ground Truth Robot State from Simulation
   quad_msgs::RobotState last_robot_state_msg_;
 
-  /// Robot State Estimate Used in Control 
+  /// Robot State Estimate Used in Control
   quad_msgs::RobotState state_estimate_;
 
   /// EKF State Estimate Output

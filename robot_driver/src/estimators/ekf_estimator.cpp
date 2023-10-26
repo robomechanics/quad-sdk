@@ -10,20 +10,22 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
       state_estimate_topic, ground_truth_topic;
 
   nh_.param<std::string>("topics/state/joints", joint_encoder_topic,
-                        "/state/joints");
+                         "/state/joints");
   nh_.param<std::string>("topics/state/imu", imu_topic, "/state/imu");
   // nh_.param<std::string>("topics/control/grfs", grf_topic, "/control/grfs");
   nh_.param<std::string>("topics/state/estimate", state_estimate_topic,
-                        "/state/estimate");
-  
+                         "/state/estimate");
+
   nh_.param<std::string>("topics/contact_mode", contact_topic, "/contact_mode");
   // nh_.param<std::string>("topic/state/ground_truth", ground_truth_topic,
   //                       "/state/ground_truth");
-  quad_utils::loadROSParam(nh_, "topics/state/ground_truth", ground_truth_topic);
+  quad_utils::loadROSParam(nh_, "topics/state/ground_truth",
+                           ground_truth_topic);
   quad_utils::loadROSParam(nh_, "topics/control/grfs", grf_topic);
   // Load Update Rate, Joint State Time
   quad_utils::loadROSParam(nh_, "/robot_driver/update_rate", update_rate_);
-  quad_utils::loadROSParam(nh_, "/robot_driver/joint_state_max_time", joint_state_msg_time_diff_max_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/joint_state_max_time",
+                           joint_state_msg_time_diff_max_);
 
   // Load initial IMU bias from robot_driver yaml
   quad_utils::loadROSParam(nh_, "/robot_driver/bias_x", bias_x_);
@@ -49,11 +51,11 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
 
   // Setup subs
   state_ground_truth_sub_ = nh_.subscribe(
-    ground_truth_topic, 1, &EKFEstimator::groundtruthCallback, this);
+      ground_truth_topic, 1, &EKFEstimator::groundtruthCallback, this);
   joint_encoder_sub_ = nh_.subscribe(joint_encoder_topic, 1,
                                      &EKFEstimator::jointEncoderCallback, this);
   imu_sub_ = nh_.subscribe(imu_topic, 1, &EKFEstimator::imuCallback, this);
-  grf_sub_ = nh_.subscribe(grf_topic, 1,  &EKFEstimator::grfCallback,this);
+  grf_sub_ = nh_.subscribe(grf_topic, 1, &EKFEstimator::grfCallback, this);
   contact_sub_ =
       nh_.subscribe(contact_topic, 1, &EKFEstimator::contactCallback, this);
 
@@ -62,43 +64,43 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
   ROS_INFO_STREAM("Initialized EKF Estimator");
 }
 
-bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_){
-
+bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_) {
   // Define Initial State, Preallocated Space for State Vectors
   X0 = Eigen::VectorXd::Zero(num_state);
 
   // set noise
   this->setNoise();
 
-  // Run Step Once to Calculate Change in State Once Local Planner Starts Running
-  if(last_grf_msg_ != nullptr){  
-    if (initialized){
+  // Run Step Once to Calculate Change in State Once Local Planner Starts
+  // Running
+  if (last_grf_msg_ != nullptr) {
+    if (initialized) {
       // Set Start Time on Initialization
       last_time = ros::Time::now();
-      P =  P0_* Eigen::MatrixXd::Identity(num_cov, num_cov); 
+      P = P0_ * Eigen::MatrixXd::Identity(num_cov, num_cov);
       X0 << estimated_state_.body.pose.position.x,
-        estimated_state_.body.pose.position.y,
-        estimated_state_.body.pose.position.z,
-        estimated_state_.body.twist.linear.x,
-        estimated_state_.body.twist.linear.y,
-        estimated_state_.body.twist.linear.z,
-        estimated_state_.feet.feet[0].position.x,
-        estimated_state_.feet.feet[0].position.y,
-        estimated_state_.feet.feet[0].position.z,
-        estimated_state_.feet.feet[1].position.x,
-        estimated_state_.feet.feet[1].position.y,
-        estimated_state_.feet.feet[1].position.z,
-        estimated_state_.feet.feet[2].position.x,
-        estimated_state_.feet.feet[2].position.y,
-        estimated_state_.feet.feet[2].position.z,
-        estimated_state_.feet.feet[3].position.x,
-        estimated_state_.feet.feet[3].position.y,
-        estimated_state_.feet.feet[3].position.z;
+          estimated_state_.body.pose.position.y,
+          estimated_state_.body.pose.position.z,
+          estimated_state_.body.twist.linear.x,
+          estimated_state_.body.twist.linear.y,
+          estimated_state_.body.twist.linear.z,
+          estimated_state_.feet.feet[0].position.x,
+          estimated_state_.feet.feet[0].position.y,
+          estimated_state_.feet.feet[0].position.z,
+          estimated_state_.feet.feet[1].position.x,
+          estimated_state_.feet.feet[1].position.y,
+          estimated_state_.feet.feet[1].position.z,
+          estimated_state_.feet.feet[2].position.x,
+          estimated_state_.feet.feet[2].position.y,
+          estimated_state_.feet.feet[2].position.z,
+          estimated_state_.feet.feet[3].position.x,
+          estimated_state_.feet.feet[3].position.y,
+          estimated_state_.feet.feet[3].position.z;
       X = X0;
       X_pre = X0;
       last_X = X0;
       initialized = false;
-      }
+    }
 
     // Calculate Forward Kinematics, extract our foot positions and velocities
     // quad_utils::fkRobotState(*quadKD_, estimated_state_);
@@ -116,7 +118,7 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_){
     //               estimated_state_.feet.feet[2].position.z,
     //               estimated_state_.feet.feet[3].position.x,
     //               estimated_state_.feet.feet[3].position.y,
-    //               estimated_state_.feet.feet[3].position.z, 
+    //               estimated_state_.feet.feet[3].position.z,
     //               estimated_state_.feet.feet[0].velocity.x,
     //               estimated_state_.feet.feet[0].velocity.x,
     //               estimated_state_.feet.feet[0].velocity.y,
@@ -132,18 +134,19 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_){
     //               estimated_state_.feet.feet[3].velocity.z;
     // ROS_INFO_STREAM("This is the FK" << foot_state);
 
-    auto new_state_est = this->StepOnce(); 
+    auto new_state_est = this->StepOnce();
     // ROS_INFO_STREAM("P" << P(0));
-    // ROS_INFO_STREAM("Ground Truth" << (*last_robot_state_msg_).body.twist.linear);
-    // ROS_INFO_STREAM("Predict Estimate" << X_pre.segment(3,3).transpose());
-    // ROS_INFO_STREAM("Update Estimate" << X.segment(3,3).transpose());
+    // ROS_INFO_STREAM("Ground Truth" <<
+    // (*last_robot_state_msg_).body.twist.linear); ROS_INFO_STREAM("Predict
+    // Estimate" << X_pre.segment(3,3).transpose()); ROS_INFO_STREAM("Update
+    // Estimate" << X.segment(3,3).transpose());
     estimated_state_ = new_state_est;
   }
   return true;
 }
 
 void EKFEstimator::groundtruthCallback(
-  const quad_msgs::RobotState::ConstPtr& msg) {
+    const quad_msgs::RobotState::ConstPtr& msg) {
   last_robot_state_msg_ = msg;
 }
 
@@ -161,7 +164,7 @@ void EKFEstimator::contactCallback(
   last_contact_msg_ = msg;
 }
 
-void EKFEstimator::grfCallback(const quad_msgs::GRFArray::ConstPtr& msg){
+void EKFEstimator::grfCallback(const quad_msgs::GRFArray::ConstPtr& msg) {
   last_grf_msg_ = msg;
 }
 
@@ -209,14 +212,14 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   // std::cout << "this is X before" << X.transpose() << std::endl;
   this->predict(dt, fk, wk, qk);
   // std::cout << "this is X predict" << X_pre.transpose() << std::endl;
-  
+
   // for testing prediction step
   // X = X_pre;
   // P = P_pre;
   // last_X = X;
 
   /// Update Step
-  this->update(jk, fk, vk, wk); // Uncomment for Update Step
+  this->update(jk, fk, vk, wk);  // Uncomment for Update Step
   // std::cout << "this is X update" << X.transpose() << std::endl;
 
   // last_X = X;
@@ -248,7 +251,7 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   new_state_est.joints.velocity = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   new_state_est.joints.effort = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-  // feet 
+  // feet
 
   return new_state_est;
 }
@@ -256,7 +259,6 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
 void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
                            const Eigen::VectorXd& wk,
                            const Eigen::Quaterniond& qk) {
-
   // Generate Conversion Matrix to Rotate the Body Frame IMU into World Frame
   // Double Check if this needs a transpose or not
   // Eigen::Matrix3d C1 = (qk.toRotationMatrix()).transpose();
@@ -267,7 +269,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   // //   //get better C matrix:
   // double angle = q.norm();
   // Eigen::Vector3d axis;
-  
+
   // if (angle == 0) {
   //   axis = Eigen::VectorXd::Zero(3);
   // } else {
@@ -278,7 +280,6 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   // Eigen::Quaterniond q1(q_w, q_xyz[0], q_xyz[1], q_xyz[2]);
 
   // Eigen::Matrix3d C = q1.toRotationMatrix().transpose();
-
 
   // Collect states info from previous state vector
   // Segment Syntax .segment(start_index, number of values)
@@ -295,33 +296,37 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   // Generate Estimation State Transition (18 x 3)
   Eigen::MatrixXd B(num_state, 3);
   B.setZero();
-  B.block<3, 3>(0,0) = 0.5 * dt * dt * Eigen::MatrixXd::Identity(3, 3); //Add acceleration into the process
-  B.block<3, 3>(3,0) = dt * Eigen::MatrixXd::Identity(3, 3);
+  B.block<3, 3>(0, 0) =
+      0.5 * dt * dt *
+      Eigen::MatrixXd::Identity(3, 3);  // Add acceleration into the process
+  B.block<3, 3>(3, 0) = dt * Eigen::MatrixXd::Identity(3, 3);
 
   // Generate Estimation State Transition Noise (18 x 18)
   Q = Eigen::MatrixXd::Identity(num_state, num_state);
-  Q.block<3,3>(0,0) = na_* dt / 20.0 * Eigen::MatrixXd::Identity(3, 3);
-  Q.block<3,3>(3,3) = na_* dt * 9.81 / 20.0 * Eigen::MatrixXd::Identity(3, 3);
+  Q.block<3, 3>(0, 0) = na_ * dt / 20.0 * Eigen::MatrixXd::Identity(3, 3);
+  Q.block<3, 3>(3, 3) =
+      na_ * dt * 9.81 / 20.0 * Eigen::MatrixXd::Identity(3, 3);
 
   // Resolve for Q depending on contact states
   for (int i = 0; i < num_feet; ++i) {
     if ((*last_grf_msg_).contact_states[i]) {
-      Q.block<3,3>(3*i + 6, 3*i + 6) = (1.0) * nf_ * dt*  Eigen::MatrixXd::Identity(3, 3);
-    }
-    else{
-      Q.block<3,3>(3*i + 6, 3*i + 6) = (1.0 + contact_w_) * nf_ * dt*  Eigen::MatrixXd::Identity(3, 3);
+      Q.block<3, 3>(3 * i + 6, 3 * i + 6) =
+          (1.0) * nf_ * dt * Eigen::MatrixXd::Identity(3, 3);
+    } else {
+      Q.block<3, 3>(3 * i + 6, 3 * i + 6) =
+          (1.0 + contact_w_) * nf_ * dt * Eigen::MatrixXd::Identity(3, 3);
     }
   }
 
-  // Generate Control Input U 
+  // Generate Control Input U
   // May Need to add a Rotation Matrix to Compensate for Frames Here
   g = Eigen::Vector3d(0, 0, -9.81);
-  u = C1 * fk + g; 
+  u = C1 * fk + g;
 
   // Solve for Process Prediction State and Covariance
-  X_pre = (F * last_X) + B * u; // (18 x 1)
-  P_pre = (F * P * F.transpose()) + Q; // (18 x 18)
-  }
+  X_pre = (F * last_X) + B * u;         // (18 x 1)
+  P_pre = (F * P * F.transpose()) + Q;  // (18 x 18)
+}
 
 //   // calculate linear acceleration set z acceleration to -9.8 for now
 //   // a is the corrected IMU linear acceleration (fk hat)
@@ -335,11 +340,11 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
 //   // w is the corrected IMU angular acceleration (wk hat)
 //   Eigen::VectorXd w = Eigen::VectorXd::Zero(3);
 //   w = wk - bw;
-  
+
 //   // state prediction X_pre
 //   X_pre = Eigen::VectorXd::Zero(num_state);
-//   X_pre.segment(0, 3) = r + dt * v + dt * dt * 0.5 * (C1.transpose() * a + g);
-//   X_pre.segment(3, 3) = v + dt * (C1.transpose() * a + g);
+//   X_pre.segment(0, 3) = r + dt * v + dt * dt * 0.5 * (C1.transpose() * a +
+//   g); X_pre.segment(3, 3) = v + dt * (C1.transpose() * a + g);
 //   // quaternion updates
 //   Eigen::VectorXd wdt = dt * w;
 //   Eigen::VectorXd q_pre = this->quaternionDynamics(wdt, q);
@@ -349,7 +354,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
 //   X_pre.segment(10, 12) = p;
 //   X_pre.segment(22, 3) = bf;
 //   X_pre.segment(25, 3) = bw;
-  
+
 //   // Linearized Dynamics Matrix
 //   F = Eigen::MatrixXd::Identity(num_cov, num_cov);
 //   F.block<3, 3>(0, 3) = dt * Eigen::MatrixXd::Identity(3, 3);
@@ -359,14 +364,14 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
 //   Eigen::MatrixXd r1 = this->calcRodrigues(dt, w, 1);
 //   Eigen::MatrixXd r2 = this->calcRodrigues(dt, w, 2);
 //   Eigen::MatrixXd r3 = this->calcRodrigues(dt, w, 3);
-  
+
 //   F.block<3, 3>(0, 6) = -(dt * dt / 2) * C.transpose() * fkskew;
 //   F.block<3, 3>(0, 21) = -(dt * dt / 2) * C.transpose();
 //   F.block<3, 3>(3, 6) = -dt * C.transpose() * fkskew;
 //   F.block<3, 3>(3, 21) = -dt * C.transpose();
 //   F.block<3, 3>(6, 6) = r0.transpose();
 //   F.block<3, 3>(6, 24) = -1 * r1.transpose();
-  
+
 //   // Discrete Process Noise Covariance Matrix
 //   Q = Eigen::MatrixXd::Zero(num_cov, num_cov);
 //   Q.block<3, 3>(0, 0) =
@@ -383,12 +388,13 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
 //   int num_contacts = 0;
 
 //   for (int i = 0; i < num_feet; i++) {
-//     Q.block<3, 3>(9 + i * 3, 9 + i * 3) = dt * C.transpose() * noise_feet * C;
+//     Q.block<3, 3>(9 + i * 3, 9 + i * 3) = dt * C.transpose() * noise_feet *
+//     C;
 
 //     if ((*last_grf_msg_).contact_states[i]) {
 //       // std::cout << "contact in mode: " << i << std::endl;
-//       Q.block<3, 3>(9 + i * 3, 9 + i * 3) = 1* dt * C.transpose() * noise_feet * C;
-//       num_contacts++;
+//       Q.block<3, 3>(9 + i * 3, 9 + i * 3) = 1* dt * C.transpose() *
+//       noise_feet * C; num_contacts++;
 //     } else {
 //       Q.block<3, 3>(9 + i * 3, 9 + i * 3) =
 //           100000000 * dt * C.transpose() * noise_feet * C;
@@ -408,7 +414,9 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
 
 // }
 
-void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk, const Eigen::VectorXd& vk, const Eigen::VectorXd& wk) {
+void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
+                          const Eigen::VectorXd& vk,
+                          const Eigen::VectorXd& wk) {
   // debug for update step, set the predicted state to be ground truth:
   // if (last_robot_state_msg_ != NULL) {
   //   X_pre << (*last_robot_state_msg_).body.pose.position.x,
@@ -432,31 +440,33 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk, 
   //       (*last_robot_state_msg_).feet.feet[2].position.z,
   //       (*last_robot_state_msg_).feet.feet[3].position.x,
   //       (*last_robot_state_msg_).feet.feet[3].position.y,
-  //       (*last_robot_state_msg_).feet.feet[3].position.z, X_pre.segment(22, 3),
-  //       X_pre.segment(25, 3);
+  //       (*last_robot_state_msg_).feet.feet[3].position.z, X_pre.segment(22,
+  //       3), X_pre.segment(25, 3);
   // }
   // Preallocate Space and Generate C
   Eigen::MatrixXd C(num_measure, num_state);
   C.setZero();
-  for (int i = 0; i < num_feet; ++i){
-    C.block<3,3>(3*i, 0) = -Eigen::MatrixXd::Identity(3,3);
-    C.block<3,3>(3*i, 6 + 3*i) = Eigen::MatrixXd::Identity(3, 3);
-    C.block<3,3>(12 + 3*i, 3) = Eigen::MatrixXd::Identity(3, 3);
-    C(24+i, 8+3*i) = 1.0;
+  for (int i = 0; i < num_feet; ++i) {
+    C.block<3, 3>(3 * i, 0) = -Eigen::MatrixXd::Identity(3, 3);
+    C.block<3, 3>(3 * i, 6 + 3 * i) = Eigen::MatrixXd::Identity(3, 3);
+    C.block<3, 3>(12 + 3 * i, 3) = Eigen::MatrixXd::Identity(3, 3);
+    C(24 + i, 8 + 3 * i) = 1.0;
   }
 
-  //Preallocate Space and Generate R
+  // Preallocate Space and Generate R
   R = Eigen::MatrixXd::Identity(num_measure, num_measure);
-  for (int i = 0; i < num_feet; ++i){
-    if((*last_grf_msg_).contact_states[i]){
-      R.block<3,3>(3*i,3*i) = na_ * Eigen::MatrixXd::Identity(3, 3);
-      R.block<3,3>(12 + 3*i, 12 + 3*i) = na_ * Eigen::MatrixXd::Identity(3, 3);
-      R(24 + i, 24 + i) = nf_ ;
-    }
-    else{
-      R.block<3,3>(3*i,3*i) = na_ * (1.0 + contact_w_) * Eigen::MatrixXd::Identity(3, 3);
-      R.block<3,3>(12 + 3*i, 12 + 3*i) = na_ * (1.0 + contact_w_) * Eigen::MatrixXd::Identity(3, 3);
-      R(24 + i, 24 + i) = nf_ *(1.0 + contact_w_);
+  for (int i = 0; i < num_feet; ++i) {
+    if ((*last_grf_msg_).contact_states[i]) {
+      R.block<3, 3>(3 * i, 3 * i) = na_ * Eigen::MatrixXd::Identity(3, 3);
+      R.block<3, 3>(12 + 3 * i, 12 + 3 * i) =
+          na_ * Eigen::MatrixXd::Identity(3, 3);
+      R(24 + i, 24 + i) = nf_;
+    } else {
+      R.block<3, 3>(3 * i, 3 * i) =
+          na_ * (1.0 + contact_w_) * Eigen::MatrixXd::Identity(3, 3);
+      R.block<3, 3>(12 + 3 * i, 12 + 3 * i) =
+          na_ * (1.0 + contact_w_) * Eigen::MatrixXd::Identity(3, 3);
+      R(24 + i, 24 + i) = nf_ * (1.0 + contact_w_);
     }
   }
 
@@ -473,11 +483,11 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk, 
   Eigen::VectorXd joint_velocity(num_state);
   Eigen::VectorXd joint_velocities(num_state);
   Eigen::VectorXd rbs(6);
-  Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12,18);
+  Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
   joint_state << jk, r_pre, v_pre;
   // joint_velocity << vk, v_pre, C1*fk;
   rbs << r_pre, v_pre;
-  
+
   // Solve for Linear Foot Velocities in the Body Frame
   quadKD_->getJacobianBodyAngVel(joint_state, jacobian);
   Eigen::VectorXd lin_foot_vel;
@@ -487,30 +497,32 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk, 
   //     math_utils::sdlsInv(jacobian.leftCols(12)) *
   //     (vk - jacobian.rightCols(6) * rbs.tail(6));
 
-  lin_foot_vel = jacobian.leftCols(12)*vk;
+  lin_foot_vel = jacobian.leftCols(12) * vk;
   // lin_foot_vel = jacobian*joint_velocity;
 
-  for (int i = 0; i < num_feet; ++i){
+  for (int i = 0; i < num_feet; ++i) {
     // Solve for Foot Relative Positions
     Eigen::Vector3d joint_state_i;
     Eigen::Vector3d toe_body_pos;
     toe_body_pos.setZero();
-    joint_state_i = jk.segment(3*i, 3);
+    joint_state_i = jk.segment(3 * i, 3);
     quadKD_->bodyToFootFKBodyFrame(i, joint_state_i, toe_body_pos);
-    y.segment(3*i, 3) = C1 * (toe_body_pos);
+    y.segment(3 * i, 3) = C1 * (toe_body_pos);
 
     // Solve for Foot Heights
-    y(24 + i) = (1.0 - (*last_grf_msg_).contact_states[i]) * (r_pre(2) + toe_body_pos(2))
-      + (*last_grf_msg_).contact_states[i] * 0; 
-    
+    y(24 + i) = (1.0 - (*last_grf_msg_).contact_states[i]) *
+                    (r_pre(2) + toe_body_pos(2)) +
+                (*last_grf_msg_).contact_states[i] * 0;
+
     // Solve for Foot Relative Velocties
     Eigen::VectorXd leg_v(3);
     Eigen::MatrixXd acc;
-    
+
     acc = calcSkewsym(wk);
-    leg_v = -(lin_foot_vel.segment(3*i, 3)) - (acc* toe_body_pos);
-    y.segment(12 + 3*i, 3) = (*last_grf_msg_).contact_states[i]*C1*leg_v
-      + last_X.segment(3,3)*(1.0-(*last_grf_msg_).contact_states[i]);
+    leg_v = -(lin_foot_vel.segment(3 * i, 3)) - (acc * toe_body_pos);
+    y.segment(12 + 3 * i, 3) =
+        (*last_grf_msg_).contact_states[i] * C1 * leg_v +
+        last_X.segment(3, 3) * (1.0 - (*last_grf_msg_).contact_states[i]);
   }
 
   // Solve for Error between Measured Y Residual and Process Residual
@@ -518,31 +530,30 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk, 
   // ROS_INFO_STREAM("Innovation Norm" << error_y.norm());
   // ROS_INFO("Worked");
   // Skip Update if the Innovation is too High
-  if (error_y.norm() < thresh_out)
-  {
-  S = C * P_pre * C.transpose() + R;
-  // ROS_INFO_STREAM("This is S" << S);
-  S = 0.5*(S+S.transpose()); // Ensure that the Innovation Covariance is Symmetric
-  Serror_y = S.fullPivHouseholderQr().solve(error_y);
-  // ROS_INFO_STREAM("This is S Error" << Serror_y);
-  // EKF Filter Equations, Solve for Kalman Gain
+  if (error_y.norm() < thresh_out) {
+    S = C * P_pre * C.transpose() + R;
+    // ROS_INFO_STREAM("This is S" << S);
+    S = 0.5 *
+        (S +
+         S.transpose());  // Ensure that the Innovation Covariance is Symmetric
+    Serror_y = S.fullPivHouseholderQr().solve(error_y);
+    // ROS_INFO_STREAM("This is S Error" << Serror_y);
+    // EKF Filter Equations, Solve for Kalman Gain
 
-  X = X_pre + P_pre * C.transpose() * Serror_y;
-  SC = S.fullPivHouseholderQr().solve(C);
-  P = P_pre - P_pre * C.transpose() * SC * P_pre;
-  P = 0.5 * (P + P.transpose()); // Ensure that the Covariance Matrix is Symmetric
+    X = X_pre + P_pre * C.transpose() * Serror_y;
+    SC = S.fullPivHouseholderQr().solve(C);
+    P = P_pre - P_pre * C.transpose() * SC * P_pre;
+    P = 0.5 *
+        (P + P.transpose());  // Ensure that the Covariance Matrix is Symmetric
 
-  // Shuo Method to Reduce Positional Drift (Try)
-  if (P.block<2, 2>(0, 0).determinant() > 1e-6) {
-        P.block<2, 16>(0, 2).setZero();
-        P.block<16, 2>(2, 0).setZero();
-        P.block<2, 2>(0, 0) /= 10.0;
-  }
-  }
-
-  else
-  {
-    X = X_pre; 
+    // Shuo Method to Reduce Positional Drift (Try)
+    if (P.block<2, 2>(0, 0).determinant() > 1e-6) {
+      P.block<2, 16>(0, 2).setZero();
+      P.block<16, 2>(2, 0).setZero();
+      P.block<2, 2>(0, 0) /= 10.0;
+    }
+  } else {
+    X = X_pre;
     P = P_pre;
   }
   last_X = X;
