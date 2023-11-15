@@ -12,7 +12,7 @@ System                  : ubuntu 20.04 - RT patched
 
 Ros                     : Noetic
 
-adapted from melodic_devel_go_outdoors (quad_sdk_branch)
+adapted from noetic_devel_ekf_clean (quad_sdk_branch)
 
 ![Alt text](doc/dock2.jpg?raw=true)
 
@@ -46,15 +46,22 @@ Refer to the [Quad-SDK Wiki](https://github.com/robomechanics/quad-sdk/wiki/1.-G
 
 ## Run simulator :
 
-        roslaunch quad_utils ylo2_bringup_simulation.launch
-        rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=/robot_1/cmd_vel
-
 https://github.com/elpimous/quad-sdk-ylo2-real-robot/assets/8529940/bd33eb78-51fe-4f2b-ac3f-6e3813accc0a
 
 ## Run hardware :
 
 https://github.com/elpimous/quad-sdk-ylo2-real-robot/assets/8529940/74056ca0-ea51-4d98-a201-68586ad16de1
 
-https://github.com/elpimous/quad-sdk-ylo2-real-robot/assets/8529940/c81d377b-5d13-4447-aef4-58cecbe5e579
+# Steps to run on real : Evaluations to confirm !
 
+roslaunch quad_utils robot_driver.launch
 
+roslaunch quad_utils remote_driver.launch
+
+roslaunch quad_utils planning.launch
+
+rostopic pub -1 /control/mode std_msgs/UInt8 "data: 1" 
+
+No success for now !! 
+
+# in progress ...
