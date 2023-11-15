@@ -1,6 +1,6 @@
 <launch>
     <!-- Load params -->
-    <arg name="robot_type" default="a1"/>
+    <arg name="robot_type" default="ylo2"/>
     <arg name="multiple_robots" default="false"/>
     <arg name="live_plot" default="false"/>
     <arg name="dash" default="false"/>
@@ -11,7 +11,6 @@
 
     <!-- Define the namespaces if not already set -->
     <arg name="namespace_1" default="robot_1"/>
-    <arg name="namespace_2" default="robot_2"/>
 
     <!-- Launch visualization plugins -->
     <group ns = "$(arg namespace_1)">
@@ -22,19 +21,6 @@
             <arg name="robot_type" default="$(arg robot_type)"/>
         </include>
     </group>
-
-    <group if="$(arg multiple_robots)">
-        <group ns = "$(arg namespace_2)">
-            <param name="tf_prefix" value="$(arg namespace_2)" />
-
-            <include file="$(find quad_utils)/launch/visualization_plugins.launch">
-                <arg name="namespace" value="$(arg namespace_2)"/>
-                <arg name="robot_type" default="$(arg robot_type)"/>
-            </include>
-        </group>
-    </group>
-
-    <!-- Users can add more robots here -->
 
     <!-- Launch RViz -->
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find quad_utils)/rviz/quad_viewer.rviz"/>

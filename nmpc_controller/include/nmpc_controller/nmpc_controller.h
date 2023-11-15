@@ -103,7 +103,7 @@ class NMPCController {
 
   int robot_id_;
 
-  /// Robot type: A1 or Spirit
+  /// Robot type: Ylo2 or Ylo2
   std::string robot_ns_;
 
   /// Update rate for sending and receiving data;

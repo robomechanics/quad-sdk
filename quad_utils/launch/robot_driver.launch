@@ -1,20 +1,45 @@
 <launch>
-    <arg name="robot_type"/>
-
-    <include file="$(find quad_utils)/launch/load_robot_params.launch">
-      <arg name="robot_type" value="$(arg robot_type)"/>
-    </include>
+    <arg name="robot_type" default="ylo2"/>
+    <arg name="namespace" default="ylo2"/>
     
+    <include file="$(find quad_utils)/launch/load_global_params.launch">
+        <arg name="robot_type" value="$(arg robot_type)"/>
+    </include>
+
     <arg name="mocap" default="true" />
     <arg name="logging" default="false" />
     <arg name="controller" default="inverse_dynamics" />
     <arg name="is_hardware" default="true" />
+    <arg name="estimator" default="ekf_filter" />
+    <arg name="ground_truth" default="sim" />
 
     <!-- Launch the robot driver node -->
-    <node name="robot_driver" pkg="robot_driver" type="robot_driver_node" output="screen">
-        <param name="controller" value="$(arg controller)" />
-        <param name="is_hardware" value="$(arg is_hardware)" />
-    </node>
+    <group if="$(arg is_hardware)">
+        <group ns = "$(arg namespace)">
+            <include file="$(find quad_utils)/launch/load_robot_params.launch">
+                <arg name="robot_type" value="$(arg robot_type)"/>
+            </include>
+            <node name="robot_driver" pkg="robot_driver" type="robot_driver_node" output="screen">
+                <param name="robot_type" value="$(arg robot_type)"/>
+                <param name="controller" value="$(arg controller)" />
+                <param name ="estimator" value= "$(arg estimator)" />
+                <param name="is_hardware" value="$(arg is_hardware)" />
+            </node>
+        </group>
+    </group>
+    
+    <group unless="$(arg is_hardware)">
+        <include file="$(find quad_utils)/launch/load_robot_params.launch">
+            <arg name="robot_type" value="$(arg robot_type)"/>
+        </include>
+        
+        <node name="robot_driver" pkg="robot_driver" type="robot_driver_node" output="screen">
+            <param name="controller" value="$(arg controller)" />
+            <param name ="estimator" value= "$(arg estimator)" />
+            <param name="is_hardware" value= "$(arg is_hardware)" />
+            <param name="ground_truth" value="$(arg ground_truth)" />
+        </node>
+    </group>
 
     <!-- Launch the mocap node if specified-->
     <group if="$(arg mocap)">

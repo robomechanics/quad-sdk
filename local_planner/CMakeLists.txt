@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(local_planner)
 
 ## Compile as C++14, supported in ROS Melodic and newer
-add_compile_options(-std=c++14)
+add_compile_options(-std=c++17)
   
 ## Set default cmake build type to release
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
@@ -28,11 +28,6 @@ find_package(Eigen3 REQUIRED)
 # find_package(OsqpEigen REQUIRED)
 find_package(PythonLibs 2.7)
 
-set(QPOASES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/qpOASES")
-set(QPOASES_INCLUDE_DIRS "${QPOASES_DIR}/include")
-set(QPOASES_LIBRARIES "${QPOASES_DIR}/build/libs")
-find_library(QPOASES NAMES qpOASES PATHS ${QPOASES_LIBRARIES} REQUIRED)
-
 catkin_package(
   INCLUDE_DIRS include
   CATKIN_DEPENDS roscpp std_msgs quad_msgs quad_utils grid_map_core grid_map_ros eigen_conversions nmpc_controller
@@ -50,7 +45,6 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
-  ${QPOASES_INCLUDE_DIRS}
   ${PYTHON_INCLUDE_DIRS}
   /usr/local/include/coin-or
 )

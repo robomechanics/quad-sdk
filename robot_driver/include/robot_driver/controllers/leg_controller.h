@@ -11,8 +11,7 @@
 #include <quad_msgs/RobotState.h>
 #include <quad_utils/math_utils.h>
 #include <quad_utils/ros_utils.h>
-//#include <robot_driver/hardware_interfaces/spirit_interface.h>
-#include <robot_driver/hardware_interfaces/a1_interface.h>
+#include <robot_driver/hardware_interfaces/ylo2_interface.h>
 #include <ros/ros.h>
 #include <std_msgs/UInt8.h>
 

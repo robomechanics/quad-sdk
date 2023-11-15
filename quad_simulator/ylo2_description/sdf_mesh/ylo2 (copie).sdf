@@ -1,0 +1,1370 @@
+<sdf version='1.7'>
+  <model name='ylo2_description'>
+    <link name='body'>
+      <inertial>
+        <pose>0.0325 0.007369 0.033157 0 -0 0</pose>
+        <mass>4.077</mass>
+        <inertia>
+          <ixx>0.0199227</ixx>
+          <ixy>-3.01296e-05</ixy>
+          <ixz>-0.000376678</ixz>
+          <iyy>0.078297</iyy>
+          <iyz>-1.27744e-05</iyz>
+          <izz>0.0842236</izz>
+        </inertia>
+      </inertial>
+      <collision name='body_fixed_joint_lump__trunk_collision'>
+        <pose>-0.02 0.003 0.024 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.26 0.18 0.14</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='body_fixed_joint_lump__imu_link_collision_1'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='body_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Green</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <visual name='body_visual_visual_1'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/body/textured/ylo2_textured_body.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Green</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <visual name='body_fixed_joint_lump__abad_motors_visual_2'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/body/textured/ylo2_textured_abad_motors.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='body_fixed_joint_lump__accessories_visual_3'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/body/textured/accessories.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='body_fixed_joint_lump__battery_visual_4'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/body/battery.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='body_fixed_joint_lump__covers_visual_5'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/body/textured/ylo2_textured_cover.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='body_fixed_joint_lump__d435_visual_6'>
+        <pose>0 0.003 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/body/textured/ylo2_d435_textured.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='body_fixed_joint_lump__imu_link_visual_7'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Red</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <visual name='body_fixed_joint_lump__t265_visual_8'>
+        <pose>0.002 0.0025 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1.06 1.04</scale>
+            <uri>model://ylo2_description/meshes/body/textured/ylo2_t265_textured.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <gravity>1</gravity>
+      <gravity>1</gravity>
+      <sensor name='imu_sensor' type='imu'>
+        <always_on>1</always_on>
+        <update_rate>1000</update_rate>
+        <visualize>1</visualize>
+        <topic>__default_topic__</topic>
+        <plugin name='imu_plugin' filename='libgazebo_ros_imu_sensor.so'>
+          <topicName>trunk_imu</topicName>
+          <bodyName>imu_link</bodyName>
+          <updateRateHZ>1000.0</updateRateHZ>
+          <gaussianNoise>0.0</gaussianNoise>
+          <xyzOffset>0 0 0</xyzOffset>
+          <rpyOffset>0 0 0</rpyOffset>
+          <frameName>imu_link</frameName>
+        </plugin>
+        <pose>0 0 0 0 -0 0</pose>
+      </sensor>
+    </link>
+
+
+    <joint name='10' type='revolute'>
+      <pose relative_to='body'>0.1695 -0.052 0.024 0 -0 0</pose>
+      <parent>body</parent>
+      <child>hip2</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.0139626</lower>
+          <upper>0.0139626</upper>
+          <effort>15</effort>
+          <velocity>40</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+
+
+    <link name='hip2'>
+      <pose relative_to='10'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-0.018578 0.010308 0.006899 0 -0 0</pose>
+        <mass>0.552</mass>
+        <inertia>
+          <ixx>0.00043998</ixx>
+          <ixy>4.63e-06</ixy>
+          <ixz>-2.717e-05</ixz>
+          <iyy>0.0007018</iyy>
+          <iyz>4.63e-06</iyz>
+          <izz>0.00043986</izz>
+        </inertia>
+      </inertial>
+      <collision name='hip2_collision_collision'>
+        <pose>0 0 0 1.5708 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.0099</length>
+            <radius>0.05</radius>
+          </cylinder>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='hip2_fixed_joint_lump__thigh_shoulder2_collision_1'>
+        <pose>0 -0.096 0 1.5708 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.0553</length>
+            <radius>0.05</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='hip2_visual_visual'>
+        <pose>-0.055 0 0 3.14159 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/leg/textured/ylo2texturedhip.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+    <joint name='4' type='revolute'>
+      <pose relative_to='hip2'>0 -0.02 0 0 1.5708 0</pose>
+      <parent>hip2</parent>
+      <child>upper2</child>
+      <axis>
+        <xyz>0 -1 0</xyz>
+        <limit>
+          <lower>-6.28319</lower>
+          <upper>6.28319</upper>
+          <effort>15</effort>
+          <velocity>40</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+
+
+    <link name='upper2'>
+      <pose relative_to='4'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.014547 -0.066943 -0.04581 0 -0 0</pose>
+        <mass>1.009</mass>
+        <inertia>
+          <ixx>0.0057361</ixx>
+          <ixy>-1.51e-05</ixy>
+          <ixz>0.00039092</ixz>
+          <iyy>0.00562867</iyy>
+          <iyz>3.266e-05</iyz>
+          <izz>0.00096304</izz>
+        </inertia>
+      </inertial>
+      <collision name='upper2_collision'>
+        <pose>0 -0.074 -0.07 3.14159 1.5208 3.14159</pose>
+        <geometry>
+          <box>
+            <size>0.201 0.0374 0.03</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='upper2_visual_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 -1 1</scale>
+            <uri>model://ylo2_description/meshes/leg/textured/ylo2_textured_upper_leg.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <self_collide>0</self_collide>
+    </link>
+
+    <joint name='5' type='revolute'>
+      <pose relative_to='upper2'>-0.001 -0.075 -0.215 3.14159 -0 3.14159</pose>
+      <parent>upper2</parent>
+      <child>lower2</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-6.28319</lower>
+          <upper>6.28319</upper>
+          <effort>45</effort>
+          <velocity>13.33</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+
+
+    <link name='lower2'>
+      <pose relative_to='5'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.001729 0.000369 -0.080723 0 -0 0</pose>
+        <mass>0.27</mass>
+        <inertia>
+          <ixx>0.00156258</ixx>
+          <ixy>-2.56229e-08</ixy>
+          <ixz>2.51039e-05</ixz>
+          <iyy>0.00158049</iyy>
+          <iyz>-2.21281e-06</iyz>
+          <izz>5.72471e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='lower2_collision'>
+        <pose>0 0 -0.08 0 1.4708 0</pose>
+        <geometry>
+          <box>
+            <size>0.19 0.02 0.02</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='lower2_fixed_joint_lump__toe2_collision_collision_1'>
+        <pose>0 0 -0.21 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.6</mu>
+              <mu2>0.6</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='lower2_visual_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/leg/textured/lower_leg.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='lower2_fixed_joint_lump__toe2_visual_visual_1'>
+        <pose>0.009 0 -0.161 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/leg/fl_foot.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <self_collide>0</self_collide>
+      <sensor name='toe2_contact' type='contact'>
+        <plugin name='toe2_plugin' filename='libgazebo_ros_bumper.so'>
+          <alwaysOn>1</alwaysOn>
+          <updateRate>500</updateRate>
+          <bumperTopicName>gazebo/toe2_contact_state</bumperTopicName>
+          <frameName>world</frameName>
+        </plugin>
+        <contact>
+          <collision>lower2_collision_toe2</collision>
+          <topic>__default_topic__</topic>
+        </contact>
+        <update_rate>500</update_rate>
+        <pose>0 0 -0.23 0 -0 0</pose>
+      </sensor>
+      <self_collide>0</self_collide>
+    </link>
+
+
+    <joint name='11' type='revolute'>
+      <pose relative_to='body'>-0.2095 -0.052 0.024 0 -0 0</pose>
+      <parent>body</parent>
+      <child>hip3</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.0139626</lower>
+          <upper>0.0139626</upper>
+          <effort>15</effort>
+          <velocity>40</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+
+
+    <link name='hip3'>
+      <pose relative_to='11'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.018578 0.010308 0.006899 0 -0 0</pose>
+        <mass>0.552</mass>
+        <inertia>
+          <ixx>0.00043998</ixx>
+          <ixy>-4.63e-06</ixy>
+          <ixz>2.717e-05</ixz>
+          <iyy>0.0007018</iyy>
+          <iyz>4.63e-06</iyz>
+          <izz>0.00043986</izz>
+        </inertia>
+      </inertial>
+      <collision name='hip3_collision_collision'>
+        <pose>0 0 0 1.5708 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.0099</length>
+            <radius>0.05</radius>
+          </cylinder>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='hip3_fixed_joint_lump__thigh_shoulder3_collision_1'>
+        <pose>0 -0.096 0 1.5708 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.0553</length>
+            <radius>0.05</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='hip3_visual_visual'>
+        <pose>0.055 0 0 -0 0 3.14159</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/leg/textured/ylo2texturedhip.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+
+    <joint name='6' type='revolute'>
+      <pose relative_to='hip3'>0 -0.02 0 0 1.5708 0</pose>
+      <parent>hip3</parent>
+      <child>upper3</child>
+      <axis>
+        <xyz>0 -1 0</xyz>
+        <limit>
+          <lower>-6.28319</lower>
+          <upper>6.28319</upper>
+          <effort>15</effort>
+          <velocity>40</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+
+
+    <link name='upper3'>
+      <pose relative_to='6'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.014547 -0.066943 -0.04581 0 -0 0</pose>
+        <mass>1.009</mass>
+        <inertia>
+          <ixx>0.0057361</ixx>
+          <ixy>-1.51e-05</ixy>
+          <ixz>0.00039092</ixz>
+          <iyy>0.00562867</iyy>
+          <iyz>3.266e-05</iyz>
+          <izz>0.00096304</izz>
+        </inertia>
+      </inertial>
+      <collision name='upper3_collision'>
+        <pose>0 -0.074 -0.07 3.14159 1.5208 3.14159</pose>
+        <geometry>
+          <box>
+            <size>0.201 0.0374 0.03</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='upper3_visual_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 -1 1</scale>
+            <uri>model://ylo2_description/meshes/leg/textured/ylo2_textured_upper_leg.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <self_collide>0</self_collide>
+    </link>
+
+
+    <joint name='7' type='revolute'>
+      <pose relative_to='upper3'>-0.001 -0.075 -0.215 3.14159 -0 3.14159</pose>
+      <parent>upper3</parent>
+      <child>lower3</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-6.28319</lower>
+          <upper>6.28319</upper>
+          <effort>45</effort>
+          <velocity>13.33</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+
+
+    <link name='lower3'>
+      <pose relative_to='7'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.001729 0.000369 -0.080723 0 -0 0</pose>
+        <mass>0.27</mass>
+        <inertia>
+          <ixx>0.00156258</ixx>
+          <ixy>-2.56229e-08</ixy>
+          <ixz>2.51039e-05</ixz>
+          <iyy>0.00158049</iyy>
+          <iyz>-2.21281e-06</iyz>
+          <izz>5.72471e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='lower3_collision'>
+        <pose>0 0 -0.08 0 1.4708 0</pose>
+        <geometry>
+          <box>
+            <size>0.19 0.02 0.02</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='lower3_fixed_joint_lump__toe3_collision_collision_1'>
+        <pose>0 0 -0.21 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.6</mu>
+              <mu2>0.6</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='lower3_visual_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/leg/textured/lower_leg.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='lower3_fixed_joint_lump__toe3_visual_visual_1'>
+        <pose>0.009 0 -0.161 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/leg/fl_foot.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <self_collide>0</self_collide>
+      <sensor name='toe3_contact' type='contact'>
+        <plugin name='toe3_plugin' filename='libgazebo_ros_bumper.so'>
+          <alwaysOn>1</alwaysOn>
+          <updateRate>500</updateRate>
+          <bumperTopicName>gazebo/toe3_contact_state</bumperTopicName>
+          <frameName>world</frameName>
+        </plugin>
+        <contact>
+          <collision>lower3_collision_toe3</collision>
+          <topic>__default_topic__</topic>
+        </contact>
+        <update_rate>500</update_rate>
+        <pose>0 0 -0.23 0 -0 0</pose>
+      </sensor>
+      <self_collide>0</self_collide>
+    </link>
+
+    <joint name='8' type='revolute'>
+      <pose relative_to='body'>0.1695 0.063 0.024 0 -0 0</pose>
+      <parent>body</parent>
+      <child>hip0</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.0139626</lower>
+          <upper>0.0139626</upper>
+          <effort>15</effort>
+          <velocity>40</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+
+
+    <link name='hip0'>
+      <pose relative_to='8'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-0.018578 -0.010308 0.006899 0 -0 0</pose>
+        <mass>0.552</mass>
+        <inertia>
+          <ixx>0.00043998</ixx>
+          <ixy>-4.63e-06</ixy>
+          <ixz>-2.717e-05</ixz>
+          <iyy>0.0007018</iyy>
+          <iyz>-4.63e-06</iyz>
+          <izz>0.00043986</izz>
+        </inertia>
+      </inertial>
+      <collision name='hip0_collision_collision'>
+        <pose>0 0 0 1.5708 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.0099</length>
+            <radius>0.05</radius>
+          </cylinder>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='hip0_fixed_joint_lump__thigh_shoulder0_collision_1'>
+        <pose>0 0.096 0 1.5708 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.0553</length>
+            <radius>0.05</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='hip0_visual_visual'>
+        <pose>-0.055 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/leg/textured/ylo2texturedhip.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+
+    <joint name='0' type='revolute'>
+      <pose relative_to='hip0'>0 0.02 0 0 1.5708 0</pose>
+      <parent>hip0</parent>
+      <child>upper0</child>
+      <axis>
+        <xyz>0 -1 0</xyz>
+        <limit>
+          <lower>-6.28319</lower>
+          <upper>6.28319</upper>
+          <effort>15</effort>
+          <velocity>40</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+
+
+    <link name='upper0'>
+      <pose relative_to='0'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.014547 0.066943 -0.04581 0 -0 0</pose>
+        <mass>1.009</mass>
+        <inertia>
+          <ixx>0.0057361</ixx>
+          <ixy>1.51e-05</ixy>
+          <ixz>0.00039092</ixz>
+          <iyy>0.00562867</iyy>
+          <iyz>-3.266e-05</iyz>
+          <izz>0.00096304</izz>
+        </inertia>
+      </inertial>
+      <collision name='upper0_collision'>
+        <pose>0 0.074 -0.07 3.14159 1.5208 3.14159</pose>
+        <geometry>
+          <box>
+            <size>0.201 0.0374 0.03</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='upper0_visual_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/leg/textured/ylo2_textured_upper_leg.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <self_collide>0</self_collide>
+    </link>
+
+
+    <joint name='1' type='revolute'>
+      <pose relative_to='upper0'>-0.001 0.075 -0.215 3.14159 -0 3.14159</pose>
+      <parent>upper0</parent>
+      <child>lower0</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-6.28319</lower>
+          <upper>6.28319</upper>
+          <effort>45</effort>
+          <velocity>13.33</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+
+
+    <link name='lower0'>
+      <pose relative_to='1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.001729 0.000369 -0.080723 0 -0 0</pose>
+        <mass>0.27</mass>
+        <inertia>
+          <ixx>0.00156258</ixx>
+          <ixy>-2.56229e-08</ixy>
+          <ixz>2.51039e-05</ixz>
+          <iyy>0.00158049</iyy>
+          <iyz>-2.21281e-06</iyz>
+          <izz>5.72471e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='lower0_collision'>
+        <pose>0 0 -0.08 0 1.4708 0</pose>
+        <geometry>
+          <box>
+            <size>0.19 0.02 0.02</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='lower0_fixed_joint_lump__toe0_collision_collision_1'>
+        <pose>0 0 -0.21 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.6</mu>
+              <mu2>0.6</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='lower0_visual_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/leg/textured/lower_leg.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='lower0_fixed_joint_lump__toe0_visual_visual_1'>
+        <pose>0.009 0.002 -0.161 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/leg/fl_foot.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <self_collide>0</self_collide>
+      <sensor name='toe0_contact' type='contact'>
+        <plugin name='toe0_plugin' filename='libgazebo_ros_bumper.so'>
+          <alwaysOn>1</alwaysOn>
+          <updateRate>500</updateRate>
+          <bumperTopicName>gazebo/toe0_contact_state</bumperTopicName>
+          <frameName>world</frameName>
+        </plugin>
+        <contact>
+          <collision>lower0_collision_toe0</collision>
+          <topic>__default_topic__</topic>
+        </contact>
+        <update_rate>500</update_rate>
+        <pose>0 0 -0.23 0 -0 0</pose>
+      </sensor>
+      <self_collide>0</self_collide>
+    </link>
+
+
+    <joint name='9' type='revolute'>
+      <pose relative_to='body'>-0.2095 0.063 0.024 0 -0 0</pose>
+      <parent>body</parent>
+      <child>hip1</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.0139626</lower>
+          <upper>0.0139626</upper>
+          <effort>15</effort>
+          <velocity>40</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+
+
+    <link name='hip1'>
+      <pose relative_to='9'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.018578 -0.010308 0.006899 0 -0 0</pose>
+        <mass>0.552</mass>
+        <inertia>
+          <ixx>0.00043998</ixx>
+          <ixy>4.63e-06</ixy>
+          <ixz>2.717e-05</ixz>
+          <iyy>0.0007018</iyy>
+          <iyz>-4.63e-06</iyz>
+          <izz>0.00043986</izz>
+        </inertia>
+      </inertial>
+      <collision name='hip1_collision_collision'>
+        <pose>0 0 0 1.5708 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.0099</length>
+            <radius>0.05</radius>
+          </cylinder>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='hip1_fixed_joint_lump__thigh_shoulder1_collision_1'>
+        <pose>0 0.096 0 1.5708 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.0553</length>
+            <radius>0.05</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='hip1_visual_visual'>
+        <pose>0.055 0 0 3.14159 0 3.14159</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/leg/textured/ylo2texturedhip.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+
+    <joint name='2' type='revolute'>
+      <pose relative_to='hip1'>0 0.02 0 0 1.5708 0</pose>
+      <parent>hip1</parent>
+      <child>upper1</child>
+      <axis>
+        <xyz>0 -1 0</xyz>
+        <limit>
+          <lower>-6.28319</lower>
+          <upper>6.28319</upper>
+          <effort>15</effort>
+          <velocity>40</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+
+
+    <link name='upper1'>
+      <pose relative_to='2'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.014547 0.066943 -0.04581 0 -0 0</pose>
+        <mass>1.009</mass>
+        <inertia>
+          <ixx>0.0057361</ixx>
+          <ixy>1.51e-05</ixy>
+          <ixz>0.00039092</ixz>
+          <iyy>0.00562867</iyy>
+          <iyz>-3.266e-05</iyz>
+          <izz>0.00096304</izz>
+        </inertia>
+      </inertial>
+      <collision name='upper1_collision'>
+        <pose>0 0.074 -0.07 3.14159 1.5208 3.14159</pose>
+        <geometry>
+          <box>
+            <size>0.201 0.0374 0.03</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='upper1_visual_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/leg/textured/ylo2_textured_upper_leg.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <self_collide>0</self_collide>
+    </link>
+
+
+    <joint name='3' type='revolute'>
+      <pose relative_to='upper1'>-0.001 0.075 -0.215 3.14159 -0 3.14159</pose>
+      <parent>upper1</parent>
+      <child>lower1</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-6.28319</lower>
+          <upper>6.28319</upper>
+          <effort>45</effort>
+          <velocity>13.33</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+
+
+    <link name='lower1'>
+      <pose relative_to='3'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.001729 0.000369 -0.080723 0 -0 0</pose>
+        <mass>0.27</mass>
+        <inertia>
+          <ixx>0.00156258</ixx>
+          <ixy>-2.56229e-08</ixy>
+          <ixz>2.51039e-05</ixz>
+          <iyy>0.00158049</iyy>
+          <iyz>-2.21281e-06</iyz>
+          <izz>5.72471e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='lower1_collision'>
+        <pose>0 0 -0.08 0 1.4708 0</pose>
+        <geometry>
+          <box>
+            <size>0.19 0.02 0.02</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.2</mu>
+              <mu2>0.2</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='lower1_fixed_joint_lump__toe1_collision_collision_1'>
+        <pose>0 0 -0.21 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.6</mu>
+              <mu2>0.6</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='lower1_visual_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/leg/textured/lower_leg.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='lower1_fixed_joint_lump__toe1_visual_visual_1'>
+        <pose>0.009 0.002 -0.161 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://ylo2_description/meshes/leg/fl_foot.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <self_collide>0</self_collide>
+      <sensor name='toe1_contact' type='contact'>
+        <plugin name='toe1_plugin' filename='libgazebo_ros_bumper.so'>
+          <alwaysOn>1</alwaysOn>
+          <updateRate>500</updateRate>
+          <bumperTopicName>gazebo/toe1_contact_state</bumperTopicName>
+          <frameName>world</frameName>
+        </plugin>
+        <contact>
+          <collision>lower1_collision_toe1</collision>
+          <topic>__default_topic__</topic>
+        </contact>
+        <update_rate>500</update_rate>
+        <pose>0 0 -0.23 0 -0 0</pose>
+      </sensor>
+      <self_collide>0</self_collide>
+    </link>
+
+    
+    <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
+      <robotNamespace>/ylo2</robotNamespace>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+    </plugin>
+    <plugin name='ground_truth_estimator' filename='libground_truth_estimator.so'>
+      <updateRateHZ>500.0</updateRateHZ>
+    </plugin>
+    <plugin name='gazebo_ros_force' filename='libgazebo_ros_force.so'>
+      <topicName>/apply_force/trunk</topicName>
+      <bodyName>body</bodyName>
+      <xyzOffset>0 0 0</xyzOffset>
+      <rpyOffset>0 -0 0</rpyOffset>
+    </plugin>
+    <frame name='abad_motors_joint' attached_to='trunk'>
+      <pose>0 0 0 0 -0 0</pose>
+    </frame>
+    <frame name='abad_motors' attached_to='abad_motors_joint'/>
+    <frame name='accessories_joint' attached_to='trunk'>
+      <pose>0 0 0 0 -0 0</pose>
+    </frame>
+    <frame name='accessories' attached_to='accessories_joint'/>
+    <frame name='battery_joint' attached_to='trunk'>
+      <pose>0 0 0 0 -0 0</pose>
+    </frame>
+    <frame name='battery' attached_to='battery_joint'/>
+    <frame name='covers_joint' attached_to='trunk'>
+      <pose>0 0 0 0 -0 0</pose>
+    </frame>
+    <frame name='covers' attached_to='covers_joint'/>
+    <frame name='d435_joint' attached_to='trunk'>
+      <pose>0 0 0 0 -0 0</pose>
+    </frame>
+    <frame name='d435' attached_to='d435_joint'/>
+    <frame name='imu_joint' attached_to='trunk'>
+      <pose>0 0 0 0 -0 0</pose>
+    </frame>
+    <frame name='imu_link' attached_to='imu_joint'/>
+    <frame name='t265_joint' attached_to='trunk'>
+      <pose>0 0 0 0 -0 0</pose>
+    </frame>
+    <frame name='t265' attached_to='t265_joint'/>
+    <frame name='floating_base' attached_to='body'>
+      <pose>0 0 0 0 -0 0</pose>
+    </frame>
+    <frame name='trunk' attached_to='floating_base'/>
+    <frame name='hip2_fixed' attached_to='hip2'>
+      <pose>0 -0.096 0 0 -0 0</pose>
+    </frame>
+    <frame name='thigh_shoulder2' attached_to='hip2_fixed'/>
+    <frame name='jtoe2' attached_to='lower2'>
+      <pose>0 0 -0.23 0 -0 0</pose>
+    </frame>
+    <frame name='toe2' attached_to='jtoe2'/>
+    <frame name='hip3_fixed' attached_to='hip3'>
+      <pose>0 -0.096 0 0 -0 0</pose>
+    </frame>
+    <frame name='thigh_shoulder3' attached_to='hip3_fixed'/>
+    <frame name='jtoe3' attached_to='lower3'>
+      <pose>0 0 -0.23 0 -0 0</pose>
+    </frame>
+    <frame name='toe3' attached_to='jtoe3'/>
+    <frame name='hip0_fixed' attached_to='hip0'>
+      <pose>0 0.096 0 0 -0 0</pose>
+    </frame>
+    <frame name='thigh_shoulder0' attached_to='hip0_fixed'/>
+    <frame name='jtoe0' attached_to='lower0'>
+      <pose>0 0 -0.23 0 -0 0</pose>
+    </frame>
+    <frame name='toe0' attached_to='jtoe0'/>
+    <frame name='hip1_fixed' attached_to='hip1'>
+      <pose>0 0.096 0 0 -0 0</pose>
+    </frame>
+    <frame name='thigh_shoulder1' attached_to='hip1_fixed'/>
+    <frame name='jtoe1' attached_to='lower1'>
+      <pose>0 0 -0.23 0 -0 0</pose>
+    </frame>
+    <frame name='toe1' attached_to='jtoe1'/>
+  </model>
+</sdf>

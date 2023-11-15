@@ -90,7 +90,7 @@ class LocalPlanner {
    */
   void publishLocalPlan();
 
-  /// Robot type: A1 or Spirit
+  /// Robot type: A1 or Ylo2
   std::string robot_name_;
 
   /// ROS subscriber for incoming terrain_map

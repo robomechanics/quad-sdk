@@ -307,7 +307,6 @@ bool GlobalBodyPlanner::callPlanner() {
               << " s" << std::endl;
     std::cout << std::endl;
   }
-  return true;
 }
 
 void GlobalBodyPlanner::waitForData() {

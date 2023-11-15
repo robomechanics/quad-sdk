@@ -32,7 +32,7 @@ cmake_policy(SET CMP0054 NEW)
 cmake_policy(SET CMP0045 NEW)
 
 ## Compile as C++14, supported in ROS Melodic and newer
-add_compile_options(-std=c++14)
+add_compile_options(-std=c++17)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -105,6 +105,9 @@ add_dependencies(ground_truth_estimator ${catkin_EXPORTED_TARGETS})
 add_library(contact_state_publisher SHARED src/contact_state_publisher.cpp)
 add_dependencies(contact_state_publisher ${catkin_EXPORTED_TARGETS})
 
+# add_library(imu_plugin SHARED src/imu_plugin.cpp)
+# add_dependencies(imu_plugin ${catkin_EXPORTED_TARGETS})
+
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
@@ -115,3 +118,4 @@ target_link_libraries(contact ${GAZEBO_LIBRARIES})
 target_link_libraries(controller ${GAZEBO_LIBRARIES})
 target_link_libraries(ground_truth_estimator ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 target_link_libraries(contact_state_publisher_node contact_state_publisher ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+# target_link_libraries(imu_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})

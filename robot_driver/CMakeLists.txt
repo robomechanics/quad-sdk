@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(robot_driver)
 
 ## Compile as C++14, supported in ROS Melodic and newer
-add_compile_options(-std=c++14)
+add_compile_options(-std=c++17)
   
 ## Set default cmake build type to release
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
@@ -72,8 +72,7 @@ add_library(robot_driver
   src/estimators/comp_filter_estimator.cpp
   src/estimators/ekf_estimator.cpp
   src/hardware_interfaces/hardware_interface.cpp
-  #src/hardware_interfaces/spirit_interface.cpp
-  src/hardware_interfaces/a1_interface.cpp
+  src/hardware_interfaces/ylo2_interface.cpp
 )
 add_dependencies(robot_driver ${robot_driver_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 

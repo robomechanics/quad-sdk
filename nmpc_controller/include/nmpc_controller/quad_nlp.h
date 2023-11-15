@@ -19,19 +19,19 @@
 #include <vector>
 
 #include "IpTNLP.hpp"
-#include "nmpc_controller/gen/eval_g_a1.h"
+#include "nmpc_controller/gen/eval_g_ylo2.h"
 #include "nmpc_controller/gen/eval_g_leg_complex.h"
 #include "nmpc_controller/gen/eval_g_leg_complex_to_simple.h"
 #include "nmpc_controller/gen/eval_g_leg_simple.h"
 #include "nmpc_controller/gen/eval_g_leg_simple_to_complex.h"
 #include "nmpc_controller/gen/eval_g_spirit.h"
-#include "nmpc_controller/gen/eval_hess_g_a1.h"
+#include "nmpc_controller/gen/eval_hess_g_ylo2.h"
 #include "nmpc_controller/gen/eval_hess_g_leg_complex.h"
 #include "nmpc_controller/gen/eval_hess_g_leg_complex_to_simple.h"
 #include "nmpc_controller/gen/eval_hess_g_leg_simple.h"
 #include "nmpc_controller/gen/eval_hess_g_leg_simple_to_complex.h"
 #include "nmpc_controller/gen/eval_hess_g_spirit.h"
-#include "nmpc_controller/gen/eval_jac_g_a1.h"
+#include "nmpc_controller/gen/eval_jac_g_ylo2.h"
 #include "nmpc_controller/gen/eval_jac_g_leg_complex.h"
 #include "nmpc_controller/gen/eval_jac_g_leg_complex_to_simple.h"
 #include "nmpc_controller/gen/eval_jac_g_leg_simple.h"
@@ -44,7 +44,7 @@ using namespace Ipopt;
 
 enum SystemID {
   SPIRIT,
-  A1,
+  YLO2,
   SIMPLE_TO_SIMPLE,
   SIMPLE_TO_COMPLEX,
   COMPLEX_TO_COMPLEX,
@@ -278,6 +278,7 @@ class quadNLP : public TNLP {
   std::vector<casadi_int> nnz_jac_g_vec_, nnz_h_vec_;
 
   // Maps for casadi functions
+  /*
   std::vector<std::vector<decltype(eval_g_spirit) *>> eval_vec_;
   std::vector<std::vector<decltype(eval_g_spirit_work) *>> eval_work_vec_;
   std::vector<std::vector<decltype(eval_g_spirit_incref) *>> eval_incref_vec_;
@@ -286,6 +287,16 @@ class quadNLP : public TNLP {
       eval_checkout_vec_;
   std::vector<std::vector<decltype(eval_g_spirit_release) *>> eval_release_vec_;
   std::vector<std::vector<decltype(eval_g_spirit_sparsity_out) *>>
+      eval_sparsity_vec_;
+  */
+  std::vector<std::vector<decltype(eval_g_ylo2) *>> eval_vec_;
+  std::vector<std::vector<decltype(eval_g_ylo2_work) *>> eval_work_vec_;
+  std::vector<std::vector<decltype(eval_g_ylo2_incref) *>> eval_incref_vec_;
+  std::vector<std::vector<decltype(eval_g_ylo2_decref) *>> eval_decref_vec_;
+  std::vector<std::vector<decltype(eval_g_ylo2_checkout) *>>
+      eval_checkout_vec_;
+  std::vector<std::vector<decltype(eval_g_ylo2_release) *>> eval_release_vec_;
+  std::vector<std::vector<decltype(eval_g_ylo2_sparsity_out) *>>
       eval_sparsity_vec_;
 
   /** Default constructor */

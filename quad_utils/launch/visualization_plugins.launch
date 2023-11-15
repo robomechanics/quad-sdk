@@ -1,6 +1,6 @@
 <launch>
     <arg name="namespace" default="robot_1" />
-    <arg name="robot_type" default="a1"/>
+    <arg name="robot_type" default="ylo2"/>
 
     <include file="$(find quad_utils)/launch/load_robot_params.launch">
         <arg name="robot_type" value="$(arg robot_type)"/>
@@ -19,6 +19,14 @@
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
             <remap from="joint_states" to="visualization/joint_states"/>
             <param name="tf_prefix" value="$(arg namespace)_ground_truth"/>
+        </node>
+    </group>
+
+    <group ns="estimate">
+        <!-- Launch the nodes to publish all the robot tfs and visualize in rviz -->
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+            <remap from="joint_states" to="visualization/joint_states"/>
+            <param name="tf_prefix" value="$(arg namespace)_estimate"/>
         </node>
     </group>
 

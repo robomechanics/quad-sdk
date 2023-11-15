@@ -47,6 +47,9 @@ class Ylo2Interface : public HardwareInterface {
    /** @brief Executes the robot's startup routine */
    bool startup_routine();
 
+   // 2*PI
+   float TWO_M_PI = 6.28318531;
+
  public:
   /**
    * @brief Constructor for Ylo2Interface

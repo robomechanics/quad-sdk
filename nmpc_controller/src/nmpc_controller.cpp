@@ -11,12 +11,12 @@ NMPCController::NMPCController(ros::NodeHandle &nh, int robot_id) {
       default_system = SPIRIT;
       break;
     case 1:
-      robot_ns_ = "a1";
-      default_system = A1;
+      robot_ns_ = "ylo2";
+      default_system = YLO2;
       break;
     default:
-      robot_ns_ = "spirit";
-      default_system = SPIRIT;
+      robot_ns_ = "ylo2";
+      default_system = YLO2;
       break;
   }
 

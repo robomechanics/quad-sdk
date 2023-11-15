@@ -23,6 +23,14 @@
 #define PCAN_DEV3	PCAN_PCIBUS3
 #define PCAN_DEV4	PCAN_PCIBUS4
 
+/* moteus controllers TX bytes adress */
+#define MSGTX_ADDR_POSITION     0x06 
+#define MSGTX_ADDR_VELOCITY     0x0A
+#define MSGTX_ADDR_FFTORQUE     0x0E
+#define MSGTX_ADDR_KP           0x12
+#define MSGTX_ADDR_KD           0x16
+#define MSGTX_ADDR_MAXTORQUE    0x1A
+
 /* moteus controllers RX bytes adress */
 #define MSGRX_ADDR_POSITION     0x02
 #define MSGRX_ADDR_VELOCITY     0x06
@@ -30,6 +38,7 @@
 #define MSGRX_ADDR_VOLTAGE      0x16
 #define MSGRX_ADDR_TEMPERATURE  0x1A
 #define MSGRX_ADDR_FAULT        0x1E
+
 
 // about moteus controllers faults errors:
 /*  32 - calibration fault - the encoder was not able to sense a magnet during calibration
@@ -163,14 +172,17 @@ class YloTwoPcanToMoteus{
     float RX_fault = 0;
 
     float _comm_position      = 0.0; // NAN for torque mode
+    float _comm_velocity      = 0.0;
     float _comm_fftorque      = 0.0; // variable Tau
-    float _comm_velocity      = 0;
-    float _comm_kp            = 0;
-    float _comm_kd            = 0;
-    float _comm_maxtorque     = NAN; // Max possible torque is NAN value
+    float _comm_kp            = 0.0;
+    float _comm_kd            = 0.0;
+    float _comm_maxtorque     = 1.0; // Max possible torque is NAN value
 
     // for mraa library GPIO (security switch)
     mraa_gpio_context btnPin; //  Will be used to represnt the button pin     //TODO create private class
+
+    // for use with security button status
+    bool security_button_flag = 1;
 
   private:
     
@@ -218,13 +230,13 @@ class YloTwoPcanToMoteus{
     float _board_temp     = 0.0;
     float _energy         = 0.0;
 
-    //  zero position of controllers, to check
-    std::vector<float>initial_ground_joints_pose = {-0.05, 0.06, 0.43,  //  3, 1, 2
-                                                     0.05, 0.06, 0.43,  //  9, 7, 8
-                                                     0.05, -0.06, -0.43,  //  6, 4, 5
-                                                    -0.05, -0.06, -0.43}; // 12, 10, 11
+      //  zero position of controllers, to check
+    std::vector<float>initial_ground_joints_pose = {-0.058065, -0.1830422580242157, 0.3962658643722534,  //  3, 1, 2
+                                                     0.055634, -0.18712398409843445, 0.4280807077884674,  //  9, 7, 8
+                                                     0.058340, 0.1817300021648407, -0.4297744333744049,  //  6, 4, 5
+                                                    -0.062968, 0.18036942183971405, -0.4263542890548706}; // 12, 10, 11
 
-    float calibration_error = 0.04;
+    float calibration_error = 0.02;
 };
 
 #endif // PCANTOMOTEUS_HPP

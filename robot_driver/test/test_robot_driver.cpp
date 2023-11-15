@@ -30,6 +30,12 @@ TEST(GrfPidController, testConstructorGrfPidController) {
   EXPECT_EQ(1 + 1, 2);
 }
 
+TEST(EKFEstimator, testEKFEstimator){
+  ros::NodeHandle nh;
+  EKFEstimator EKFEstimator;
+  EXPECT_EQ(1 + 1, 2);
+}
+
 int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
   my_argc = argc;

@@ -1,9 +1,8 @@
 <launch>
   <arg name="controller"    default="inverse_dynamics"/>
-  <arg name="init_pose"     default="-x 0.0 -y 0.0 -z 0.5"/>
+  <arg name="init_pose"     default="-x 1.5 -y 3.0 -z 1.5"/>
   <arg name="namespace"     default="robot_1"/>
-  <arg name="robot_type"    default="a1"/>
-  <arg name="is_hardware"   default="false"/>
+  <arg name="robot_type"    default="ylo2"/>
 
   <!-- Declare tf prefix for plugins -->
   <param name="tf_prefix"   value="$(arg namespace)" />
@@ -16,7 +15,11 @@
     <arg name="robot_type" value="$(arg robot_type)"/>
     <arg name="controller" value="$(arg controller)"/>
     <arg name="mocap" value="false"/>
-    <arg name="is_hardware" value="$(arg is_hardware)"/>
+    <arg name="is_hardware" value="false"/>
+    <!-- Change Estimator Argument Here -->
+    <!-- <arg name="estimator" value="ekf_filter"/> -->
+    <arg name="estimator" value="ekf_filter"/>
+    <arg name="ground_truth" value="estimate"/>
   </include>
 
   <!-- Start gazebo controller plugins -->
@@ -29,5 +32,8 @@
 
   <!-- Load the contact state publisher -->
   <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
-
+  
+  <!-- Load the imu published in sim-->
+  <!-- <node name="imu_plugin" pkg="gazebo_scripts" type="imu_plugin" output="screen"/>
+   -->
 </launch>

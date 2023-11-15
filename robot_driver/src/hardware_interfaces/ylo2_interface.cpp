@@ -20,16 +20,19 @@
 #include "robot_driver/hardware_interfaces/ylo2_interface.h"
 
 Ylo2Interface::Ylo2Interface() {
-    std::cout<<("[ DEBUG ] Starting Ylo2Interface")<< std::endl;
+    //std::cout<<("[ DEBUG ] Starting Ylo2Interface")<< std::endl;
 }
 
+YloTwoPcanToMoteus command; // instance of class YloTwoPcanToMoteus
+
 void Ylo2Interface::loadInterface(int argc, char** argv) {
-    std::cout<<("[ DEBUG ] Loading Ylo2Interface")<< std::endl;
+    //std::cout<<("[ DEBUG ] Loading Ylo2Interface")<< std::endl;
     Ylo2Interface::startup_routine();
 }
 
 void Ylo2Interface::unloadInterface(){
     std::cout<<("[ DEBUG ] UnLoading Ylo2Interface")<< std::endl;
+    command.stop_motors();
 }
 
 /*
@@ -47,10 +50,12 @@ void Ylo2Interface::unloadInterface(){
                     }
 *******************************************************************************************/
 
-YloTwoPcanToMoteus command; // instance of class YloTwoPcanToMoteus
-
 bool Ylo2Interface::startup_routine()
 {
+  /* initialize GPIO pin, for security switch button */
+  command.btnPin = mraa_gpio_init(BTN_PIN);
+  mraa_gpio_dir(command.btnPin, MRAA_GPIO_IN);
+
   command.peak_fdcan_board_initialization();
   usleep(200);
   command.check_initial_ground_pose();
@@ -62,8 +67,13 @@ bool Ylo2Interface::startup_routine()
 bool Ylo2Interface::send(const quad_msgs::LegCommandArray& last_leg_command_array_msg, const Eigen::VectorXd& user_tx_data)
 {
     std::cout << "SEND FUNCTION" << std::endl;
-    bool controllers_security_flag = 1; // TODO in case of problem, the flag goes to 0, and so, all commands are 0 ! No torque...
-    bool restart_flag = (user_tx_data[0] == 1); //TODO remove user_tx_data
+
+    // ask security switch status
+    // if pressed, security_button_flag changes from 1 to 0
+    if (!command.security_switch()){
+      command.security_button_flag = 0;
+      ROS_INFO("SECUTITY SWITCH PRESSED !!!.");
+    }
 
     /** SEND COMMANDS TO MOTEUS CONTROLLERS JOINTS.
     * @brief Write moteus controllers datas :
@@ -82,9 +92,11 @@ bool Ylo2Interface::send(const quad_msgs::LegCommandArray& last_leg_command_arra
       auto leg_index = command.motor_adapters_[jj].getLeg_index(); // for vector position feed
       auto joint_index = command.motor_adapters_[jj].getJoint_index(); // for vector position feed
 
-      joint_position = controllers_security_flag * last_leg_command_array_msg.leg_commands[leg_index].motor_commands[joint_index].pos_setpoint;
-      joint_velocity = controllers_security_flag * last_leg_command_array_msg.leg_commands[leg_index].motor_commands[joint_index].vel_setpoint;
-      joint_fftorque = controllers_security_flag * last_leg_command_array_msg.leg_commands[leg_index].motor_commands[joint_index].torque_ff;
+      // using here security_button_flag, servo inversions, and radians to turn/s (moteus protocol)
+      joint_position = command.security_button_flag * ((sign*(last_leg_command_array_msg.leg_commands[leg_index].motor_commands[joint_index].pos_setpoint))/TWO_M_PI);
+      joint_velocity = command.security_button_flag * ((sign*(last_leg_command_array_msg.leg_commands[leg_index].motor_commands[joint_index].vel_setpoint))/TWO_M_PI);
+      joint_fftorque = command.security_button_flag * ( sign*last_leg_command_array_msg.leg_commands[leg_index].motor_commands[joint_index].torque_ff);
+
       joint_kp       = static_cast<short>( last_leg_command_array_msg.leg_commands[leg_index].motor_commands[joint_index].kp);
       joint_kd       = static_cast<short>( last_leg_command_array_msg.leg_commands[leg_index].motor_commands[joint_index].kd);
 
@@ -98,7 +110,6 @@ bool Ylo2Interface::send(const quad_msgs::LegCommandArray& last_leg_command_arra
 bool Ylo2Interface::recv(sensor_msgs::JointState& joint_state_msg, sensor_msgs::Imu& imu_msg, Eigen::VectorXd& user_rx_data) 
 {
     std::cout << "RECEIVE FUNCTION" << std::endl;
-
     /** RECEIVE JOINTS VALUES.
     * @brief Read moteus controllers datas :
     * @param[out] joint position
@@ -121,33 +132,14 @@ bool Ylo2Interface::recv(sensor_msgs::JointState& joint_state_msg, sensor_msgs::
       command.read_moteus_RX_queue(ids, port, RX_pos, RX_vel, RX_tor, RX_volt, RX_temp, RX_fault);  // query values;
       usleep(10);
 
+      /*
       joint_state_msg.name[jj]     = joint_names_[jj];
-      joint_state_msg.position[jj] = static_cast<double>(sign*(RX_pos*2*M_PI)); // joint turns to radians
-      joint_state_msg.velocity[jj] = static_cast<double>(RX_vel);   // measured in revolutions / s
-      joint_state_msg.effort[jj]   = static_cast<double>(RX_tor);   // measured in N*m
+      // servo inversions, and radians to turn/s (moteus protocol)
+      joint_state_msg.position[jj] = static_cast<double>(sign*(RX_pos*TWO_M_PI)); // joint turns to radians
+      joint_state_msg.velocity[jj] = static_cast<double>(sign*(RX_vel*TWO_M_PI));   // turns in radians / s
+      joint_state_msg.effort[jj]   = static_cast<double>(sign*RX_tor);   // measured in N*m
       usleep(200);
+      */
     }
-
-    /** RECEIVE IMU VALUES.
-    * @brief Read IMU data
-    * @param[in] last_imu_msg IMU sensor message
-    * @param[out] Linear acceleration
-    * @param[out] Angular acceleration
-    * @param[out] Orientation in quaternion */
-/*  
-    for test
-    -------- quad sdk message
-    imu_msg.linear_acceleration.x = imu_lin_acc_[0];
-    imu_msg.linear_acceleration.y = imu_lin_acc_[1];
-    imu_msg.linear_acceleration.z = imu_lin_acc_[2];
-    imu_msg.angular_velocity.x = imu_ang_vel_[0];
-    imu_msg.angular_velocity.y = imu_ang_vel_[1];
-    imu_msg.angular_velocity.z = imu_ang_vel_[2];
-    imu_msg.orientation.x = imu_orientation_[0];
-    imu_msg.orientation.y = imu_orientation_[1];
-    imu_msg.orientation.z = imu_orientation_[2];
-    imu_msg.orientation.w = imu_orientation_[3];
-*/
-
     return true;
 }

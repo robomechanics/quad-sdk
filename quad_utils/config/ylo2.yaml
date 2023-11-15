@@ -1,13 +1,13 @@
 global_body_planner:
-  h_max: 0.200                            # Maximum height of leg base, m
+  h_max: 0.220                            # Maximum height of leg base, m
   h_min: 0.075                            # Minimum ground clearance of body corners, m
-  h_nom: 0.3                              # Nominal ground clearance of body, m
+  h_nom: 0.200                            # Nominal ground clearance of body, m
   v_max: 1.0                              # Maximum robot velocity, m/s
-  v_nom: 0.50                             # Nominal velocity, m/s (used during connect function)
-  robot_l: 0.59                            # Length of robot body, m
-  robot_w: 0.28                            # Width of robot body, m
+  v_nom: 0.6                              # Nominal velocity, m/s (used during connect function)
+  robot_l: 0.2687                         # Length of robot body, m
+  robot_w: 0.247                          # Width of robot body, m
   robot_h: 0.06                           # Vertical distance between leg base and bottom of robot, m
-  mass: 13.0                              # Robot mass, kg
+  mass: 13                                # Robot mass, kg
   grf_min: 4.0                            # Minimum GRF in units of body weight (only used for sampling)
   grf_max: 5.0                            # Maximum GRF in units of body weight
 
@@ -60,8 +60,8 @@ nmpc_controller:
     g_ub: [!!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, !!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19, !!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19,  !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
     
 robot_driver:
-  sit_kp: [10, 10, 10]
-  sit_kd: [1, 1, 1]
+  sit_kp: [1, 1, 1]
+  sit_kd: [0.1, 0.1, 0.1]
   stand_kp: [35, 35, 35]
   stand_kd: [1, 1, 1]
   stance_kp: [10, 10, 10]
@@ -73,5 +73,6 @@ robot_driver:
   safety_kp: [0, 0, 0]
   safety_kd: [2, 2, 2]
   stand_joint_angles: [0.0, 0.76, 1.52]
-  sit_joint_angles: [0.0, 0.0, 0.0]
+  #sit_joint_angles: [0.3644, 1.13, 2.576]
+  sit_joint_angles: [0, 0, 0]
   torque_limit: [21, 21, 32]

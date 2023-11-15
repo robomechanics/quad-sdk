@@ -35,7 +35,12 @@
             <inertial>
                 <origin rpy="0 0 0" xyz="${hip_com_x*front_hind} ${hip_com_y*mirror} ${hip_com_z}"/>
                 <mass value="${hip_mass}"/>
-                <inertia ixx="${hip_ixx}" ixy="${hip_ixy*mirror*front_hind}" ixz="${hip_ixz*front_hind}" iyy="${hip_iyy}" iyz="${hip_iyz*mirror}" izz="${hip_izz}"/>
+                <inertia    ixx="${hip_ixx}" 
+                            ixy="${hip_ixy*mirror*front_hind}" 
+                            ixz="${hip_ixz*front_hind}" 
+                            iyy="${hip_iyy}" 
+                            iyz="${hip_iyz*mirror}" 
+                            izz="${hip_izz}"/>
             </inertial>
         </link>
 
@@ -82,16 +87,21 @@
                 </geometry>
                 <material name="orange"/>
             </visual>
-            <collision name="upper${suffix}_collision">
-                <origin rpy="0 ${PI/2.0} 0" xyz="0 0 ${-thigh_length/2.0}"/>
+            <collision>
+                <origin rpy="0 ${pi/2.0+0.05} 0" xyz="0 ${0.074*mirror} -0.07"/>
                 <geometry>
-                    <box size="${thigh_length} ${thigh_width} ${thigh_height}"/>
+                    <box size="0.201 0.0374 0.03"/>
                 </geometry>
             </collision>
             <inertial>
                 <origin rpy="0 0 0" xyz="${thigh_com_x} ${thigh_com_y*mirror} ${thigh_com_z}"/>
                 <mass value="${thigh_mass}"/>
-                <inertia ixx="${thigh_ixx}" ixy="${thigh_ixy*mirror}" ixz="${thigh_ixz}" iyy="${thigh_iyy}" iyz="${thigh_iyz*mirror}" izz="${thigh_izz}"/>
+                <inertia    ixx="${thigh_ixx}" 
+                            ixy="${thigh_ixy*mirror}" 
+                            ixz="${thigh_ixz}" 
+                            iyy="${thigh_iyy}" 
+                            iyz="${thigh_iyz*mirror}" 
+                            izz="${thigh_izz}"/>
             </inertial>
         </link>
 
@@ -112,16 +122,21 @@
                 </geometry>
                 <material name="orange"/>
             </visual>
-            <collision name="lower${suffix}_collision">
-                <origin rpy="0 ${PI/2.0} 0" xyz="0 0 ${-calf_length/2.0}"/>
+            <collision>
+                <origin rpy="0 ${(pi/2.0-0.1)} 0" xyz="0 0 -0.08"/>
                 <geometry>
-                    <mesh filename="package://ylo2_description/meshes/leg/fl_lower_leg_collision.stl" scale="1 -1 1"/>-->
+                    <box size="0.19 0.02 0.02"/>
                 </geometry>
             </collision>
             <inertial>
                 <origin rpy="0 0 0" xyz="${calf_com_x} ${calf_com_y} ${calf_com_z}"/>
                 <mass value="${calf_mass}"/>
-                <inertia ixx="${calf_ixx}" ixy="${calf_ixy}" ixz="${calf_ixz}" iyy="${calf_iyy}" iyz="${calf_iyz}" izz="${calf_izz}"/>
+                <inertia    ixx="${calf_ixx}" 
+                            ixy="${calf_ixy}" 
+                            ixz="${calf_ixz}" 
+                            iyy="${calf_iyy}" 
+                            iyz="${calf_iyz}" 
+                            izz="${calf_izz}"/>
             </inertial>
         </link>
 
@@ -143,9 +158,9 @@
                 <material name="orange"/>
             </visual>
             <collision name="toe${suffix}_collision">
-                <origin rpy="0 0 0" xyz="0.009 ${(0.001*mirror)+0.001} 0.069"/>
+                <origin rpy="0 0 0" xyz="0 0 0.02"/>
                 <geometry>
-                    <mesh filename="package://ylo2_description/meshes/leg/fl_foot.dae" scale="1.0 1.0 1.0"/>-->
+                    <sphere radius="0.022"/>
                 </geometry>
                 <surface>
                 <bounce>

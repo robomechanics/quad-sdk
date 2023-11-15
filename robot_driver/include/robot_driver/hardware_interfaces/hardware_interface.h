@@ -24,8 +24,6 @@
 /*!
    HardwareInterface provides an abstract robot hardware interface class. The
    virtual functions declared here must be implemented by the derived class.
-   HardwareInterface fournit une classe d’interface matérielle de robot abstraite. 
-   Les fonctions virtuelles déclarées ici doivent être implémentées par la classe dérivée.
 */
 class HardwareInterface {
  public:

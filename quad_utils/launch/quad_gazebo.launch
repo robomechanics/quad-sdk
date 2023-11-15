@@ -1,5 +1,5 @@
 <launch>
-  <arg name="robot_type" default="a1" />
+  <arg name="robot_type" default="ylo2" />
   <arg name="multiple_robots" default="false" />
   <arg name="gui" default="false" />
   <arg name="paused" default="false" />
@@ -9,7 +9,6 @@
   <arg name="world" default="flat" />
   <arg name="logging" default="false" />
   <param name="/use_sim_time" value="true" />
-  <arg name="is_hardware" default="false"/>
 
   <!-- Launch the Quad world with specific physics parameters -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -31,36 +30,14 @@
     <include file="$(find quad_utils)/launch/load_robot_params.launch">
       <arg name="robot_type" value="$(arg robot_type)" />
     </include>
-    
     <rosparam file="$(find gazebo_scripts)/config/quad_control.yaml" command="load" />
-
     <include file="$(find quad_utils)/launch/quad_spawn.launch">
       <arg name="robot_type" value="$(arg robot_type)" />
       <arg name="controller" default="$(arg controller)" />
       <arg name="init_pose" value="-x 0.0 -y 0.0 -z 0.5" />
       <arg name="namespace" value="robot_1" />
-      <arg name="is_hardware" value="$(arg is_hardware)"/>
     </include>
     <param name="robot_type" value="$(arg robot_type)" />
-  </group>
-
-  <group if="$(arg multiple_robots)">
-    <group ns="robot_2">
-      <!-- Load the parameters and the sdf description -->
-      <include file="$(find quad_utils)/launch/load_robot_params.launch">
-        <arg name="robot_type" value="$(arg robot_type)" />
-      </include>
-      <rosparam file="$(find gazebo_scripts)/config/quad_control.yaml" command="load" />
-      <include file="$(find quad_utils)/launch/quad_spawn.launch">
-        <arg name="robot_type" value="$(arg robot_type)" />
-        <arg name="controller" default="$(arg controller)" />
-        <arg name="init_pose" value="-x 0.0 -y 1.0 -z 0.5" />
-        <arg name="namespace" value="robot_2" />
-      </include>
-      <param name="robot_type" value="$(arg robot_type)" />
-    </group>
-
-    <!-- Users can add more robots here -->
   </group>
 
   <!-- Load the visualization tools -->

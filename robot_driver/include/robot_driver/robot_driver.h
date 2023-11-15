@@ -15,6 +15,7 @@
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/UInt8.h>
+#include <sensor_msgs/Imu.h>
 
 #include <cmath>
 #include <eigen3/Eigen/Eigen>
@@ -27,8 +28,7 @@
 #include "robot_driver/estimators/ekf_estimator.h"
 #include "robot_driver/estimators/state_estimator.h"
 #include "robot_driver/hardware_interfaces/hardware_interface.h"
-//#include "robot_driver/hardware_interfaces/spirit_interface.h"
-#include "robot_driver/hardware_interfaces/a1_interface.h"
+#include "robot_driver/hardware_interfaces/ylo2_interface.h"
 #include "robot_driver/robot_driver_utils.h"
 
 #define MATH_PI 3.141592
@@ -40,11 +40,6 @@
    commands to be sent to either the robot or a simulator. It may subscribe to
    any number of topics to determine the leg control, but will always publish a
    LegCommandArray message to control the robot's legs.
-
-   RobotDriver implémente une classe pour récupérer des informations d’état et 
-   générer des commandes LEGS à envoyer au robot ou à un simulateur. 
-   Il peut s’abonner à un certain nombre de sujets pour déterminer le contrôle des jambes, 
-   mais publiera toujours un message LegCommandArray pour contrôler les jambes du robot.
 */
 class RobotDriver {
  public:
@@ -79,6 +74,12 @@ class RobotDriver {
   /**
    * @brief Verifies and updates new control mode
    * @param[in] msg New control mode
+   */
+   void grfCallback(const quad_msgs::GRFArray::ConstPtr& msg);
+
+  /**
+   * @brief execute EKF Update step, return state estimate
+   * @return state estimate of custom type RobotState
    */
   void controlModeCallback(const std_msgs::UInt8::ConstPtr& msg);
 
@@ -128,7 +129,8 @@ class RobotDriver {
    * @param[in] msg Remote heartbeat message
    */
   void imuCallback(const sensor_msgs::Imu::ConstPtr& msg);
-  
+
+
   /**
    * @brief Check to make sure required messages are fresh
    */
@@ -188,11 +190,14 @@ class RobotDriver {
   /// ROS subscriber for remote heartbeat
   ros::Subscriber remote_heartbeat_sub_;
 
+  /// Subscriber for the IMU data
+  ros::Subscriber imu_sub_;
+  
   /// ROS subscriber for single joint command
   ros::Subscriber single_joint_cmd_sub_;
 
-  /// Subscriber for the IMU data
-  ros::Subscriber imu_sub_;
+//   /// ROS subscriber for desired GRF
+//   ros::Subscriber grf_sub_;
 
   /// ROS publisher for robot heartbeat
   ros::Publisher robot_heartbeat_pub_;
@@ -209,6 +214,9 @@ class RobotDriver {
   /// ROS publisher for joint data
   ros::Publisher joint_state_pub_;
 
+  /// Publisher for state estimate messages
+  ros::Publisher state_estimate_pub_;
+
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
 
@@ -220,6 +228,9 @@ class RobotDriver {
 
   /// Estimator type
   std::string estimator_id_;
+
+  /// Ground Truth Source
+  std::string ground_truth_;
 
   /// Update rate for computing new controls;
   double update_rate_;
@@ -263,8 +274,14 @@ class RobotDriver {
   /// Most recent local plan
   quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
-  /// Most recent state estimate
+  /// Ground Truth Robot State from Simulation
   quad_msgs::RobotState last_robot_state_msg_;
+
+  /// Robot State Estimate Used in Control 
+  quad_msgs::RobotState state_estimate_;
+
+  /// EKF State Estimate Output
+  quad_msgs::RobotState estimated_state_;
 
   /// Most recent local plan
   quad_msgs::GRFArray::ConstPtr last_grf_array_msg_;
@@ -281,8 +298,8 @@ class RobotDriver {
   // Remote heartbeat timeout threshold in seconds
   double remote_heartbeat_received_time_;
 
-  /// Duration for sit to stand behavior -> 10 seconds
-  const double transition_duration_ = 3.0;
+  /// Duration for sit to stand behavior
+  const double transition_duration_ = 1.0;
 
   /// Timeout (in s) for receiving new input reference messages
   double input_timeout_;
@@ -338,11 +355,11 @@ class RobotDriver {
   std::vector<double> swing_kp_cart_;
   std::vector<double> swing_kd_cart_;
 
-  /// Define sitting joint angles
-  std::vector<double> sit_joint_angles_;
-  
   /// Define standing joint angles
   std::vector<double> stand_joint_angles_;
+
+  /// Define sitting joint angles
+  std::vector<double> sit_joint_angles_;
 
   /// QuadKD class
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
@@ -352,6 +369,9 @@ class RobotDriver {
 
   /// State Estimator template class
   std::shared_ptr<StateEstimator> state_estimator_;
+
+  /// State Estimator template class
+  std::shared_ptr<StateEstimator> ekf_estimator_;
 
   /// Mblink converter object
   std::shared_ptr<HardwareInterface> hardware_interface_;
@@ -398,6 +418,8 @@ class RobotDriver {
 
   /// Required for some hardware interfaces
   int argc_;
+
+  bool initialized;
 
   /// Required for some hardware interfaces
   char** argv_;
