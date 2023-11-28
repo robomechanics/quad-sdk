@@ -51,10 +51,17 @@ SOFTWARE.
         </geometry>
         <surface>
           <contact>
+<<<<<<< HEAD
             <ode />
           </contact>
           <friction>
             <ode />
+=======
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
           </friction>
         </surface>
       </collision>
@@ -63,7 +70,11 @@ SOFTWARE.
         <geometry>
           <mesh>
             <uri>model:///meshes/Spirit40_Body_Mesh_transformed.stl</uri>
+<<<<<<< HEAD
           </mesh>
+=======
+         </mesh>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         </geometry>
         <material>
           <script>
@@ -73,13 +84,21 @@ SOFTWARE.
         </material>
       </visual>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay />
+=======
+      <velocity_decay/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     </link>
 
     <link name='hip0'>
       <pose frame=''>0.2263 0.07 0 0 -0 0</pose>
       <inertial>
+<<<<<<< HEAD
         <pose frame=''>0 0 0 0 -0 0</pose>
+=======
+        <pose frame=''>0 0.03 0 0 -0 0</pose>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         <mass>0.575</mass>
         <inertia>
           <ixx>0.000669635</ixx>
@@ -100,10 +119,17 @@ SOFTWARE.
         </geometry>
         <surface>
           <contact>
+<<<<<<< HEAD
             <ode />
           </contact>
           <friction>
             <ode />
+=======
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
           </friction>
         </surface>
       </collision>
@@ -112,7 +138,11 @@ SOFTWARE.
         <geometry>
           <mesh>
             <uri>model:///meshes/Spirit40_Hip_Module_transformed.stl</uri>
+<<<<<<< HEAD
           </mesh>
+=======
+         </mesh>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         </geometry>
         <material>
           <script>
@@ -122,7 +152,11 @@ SOFTWARE.
         </material>
       </visual>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay />
+=======
+      <velocity_decay/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     </link>
 
     <joint name='8' type='revolute'>
@@ -149,6 +183,7 @@ SOFTWARE.
     <link name='upper0'>
       <pose frame=''>0.2263 0.17098 0 0 -0 0</pose>
       <inertial>
+<<<<<<< HEAD
         <pose frame=''>-0.040 -0.041 0 0 -0 0</pose>
         <mass>0.775</mass>
         <inertia>
@@ -158,6 +193,17 @@ SOFTWARE.
           <iyy>0.0070</iyy>
           <iyz>0</iyz>
           <izz>0.0070</izz>
+=======
+        <pose frame=''>-0.0676 -0.041 0 0 -0 0</pose>
+        <mass>0.792</mass>
+        <inertia>
+          <ixx>5e-03</ixx>
+          <ixy>0.0010</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0049</iyy>
+          <iyz>0</iyz>
+          <izz>0.0049</izz>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         </inertia>
       </inertial>
       <collision name='upper0_collision'>
@@ -169,10 +215,17 @@ SOFTWARE.
         </geometry>
         <surface>
           <contact>
+<<<<<<< HEAD
             <ode />
           </contact>
           <friction>
             <ode />
+=======
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
           </friction>
         </surface>
       </collision>
@@ -181,7 +234,11 @@ SOFTWARE.
         <geometry>
           <mesh>
             <uri>model:///meshes/Spirit40_Upper_leg_transformed.stl</uri>
+<<<<<<< HEAD
           </mesh>
+=======
+         </mesh>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         </geometry>
         <material>
           <script>
@@ -191,7 +248,11 @@ SOFTWARE.
         </material>
       </visual>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay />
+=======
+      <velocity_decay/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     </link>
 
     <joint name='0' type='revolute'>
@@ -239,10 +300,17 @@ SOFTWARE.
         </geometry>
         <surface>
           <contact>
+<<<<<<< HEAD
             <ode />
           </contact>
           <friction>
             <ode />
+=======
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
           </friction>
         </surface>
       </collision>
@@ -251,7 +319,11 @@ SOFTWARE.
         <geometry>
           <mesh>
             <uri>model:///meshes/Spirit40_Lower_Leg_transformed.stl</uri>
+<<<<<<< HEAD
           </mesh>
+=======
+         </mesh>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         </geometry>
         <material>
           <script>
@@ -260,9 +332,15 @@ SOFTWARE.
           </script>
         </material>
       </visual>
+<<<<<<< HEAD
       <velocity_decay />
       <gravity>1</gravity>
       <velocity_decay />
+=======
+      <velocity_decay/>
+      <gravity>1</gravity>
+      <velocity_decay/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     </link>
 
     <joint name='1' type='revolute'>
@@ -289,7 +367,11 @@ SOFTWARE.
     <link name='hip1'>
       <pose frame=''>-0.2263 0.07 0 0 -0 0</pose>
       <inertial>
+<<<<<<< HEAD
         <pose frame=''>0 0 0 0 -0 0</pose>
+=======
+        <pose frame=''>0 0.03 0 0 -0 0</pose>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         <mass>0.575</mass>
         <inertia>
           <ixx>0.000669635</ixx>
@@ -310,10 +392,17 @@ SOFTWARE.
         </geometry>
         <surface>
           <contact>
+<<<<<<< HEAD
             <ode />
           </contact>
           <friction>
             <ode />
+=======
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
           </friction>
         </surface>
       </collision>
@@ -322,7 +411,11 @@ SOFTWARE.
         <geometry>
           <mesh>
             <uri>model:///meshes/Spirit40_Hip_Module_transformed.stl</uri>
+<<<<<<< HEAD
           </mesh>
+=======
+         </mesh>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         </geometry>
         <material>
           <script>
@@ -332,7 +425,11 @@ SOFTWARE.
         </material>
       </visual>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay />
+=======
+      <velocity_decay/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     </link>
 
     <joint name='9' type='revolute'>
@@ -359,6 +456,7 @@ SOFTWARE.
     <link name='upper1'>
       <pose frame=''>-0.2263 0.17098 0 0 -0 0</pose>
       <inertial>
+<<<<<<< HEAD
         <pose frame=''>-0.040 -0.041 0 0 -0 0</pose>
         <mass>0.775</mass>
         <inertia>
@@ -368,6 +466,17 @@ SOFTWARE.
           <iyy>0.0070</iyy>
           <iyz>0</iyz>
           <izz>0.0070</izz>
+=======
+        <pose frame=''>-0.0676 -0.041 0 0 -0 0</pose>
+        <mass>0.792</mass>
+        <inertia>
+          <ixx>5e-03</ixx>
+          <ixy>0.0010</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0049</iyy>
+          <iyz>0</iyz>
+          <izz>0.0049</izz>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         </inertia>
       </inertial>
       <collision name='upper1_collision'>
@@ -379,10 +488,17 @@ SOFTWARE.
         </geometry>
         <surface>
           <contact>
+<<<<<<< HEAD
             <ode />
           </contact>
           <friction>
             <ode />
+=======
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
           </friction>
         </surface>
       </collision>
@@ -391,7 +507,11 @@ SOFTWARE.
         <geometry>
           <mesh>
             <uri>model:///meshes/Spirit40_Upper_leg_transformed.stl</uri>
+<<<<<<< HEAD
           </mesh>
+=======
+         </mesh>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         </geometry>
         <material>
           <script>
@@ -401,7 +521,11 @@ SOFTWARE.
         </material>
       </visual>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay />
+=======
+      <velocity_decay/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     </link>
 
     <joint name='2' type='revolute'>
@@ -449,10 +573,17 @@ SOFTWARE.
         </geometry>
         <surface>
           <contact>
+<<<<<<< HEAD
             <ode />
           </contact>
           <friction>
             <ode />
+=======
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
           </friction>
         </surface>
       </collision>
@@ -461,7 +592,11 @@ SOFTWARE.
         <geometry>
           <mesh>
             <uri>model:///meshes/Spirit40_Lower_Leg_transformed.stl</uri>
+<<<<<<< HEAD
           </mesh>
+=======
+         </mesh>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         </geometry>
         <material>
           <script>
@@ -470,9 +605,15 @@ SOFTWARE.
           </script>
         </material>
       </visual>
+<<<<<<< HEAD
       <velocity_decay />
       <gravity>1</gravity>
       <velocity_decay />
+=======
+      <velocity_decay/>
+      <gravity>1</gravity>
+      <velocity_decay/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     </link>
 
     <joint name='3' type='revolute'>
@@ -496,11 +637,19 @@ SOFTWARE.
       </axis>
     </joint>
     <static>0</static>
+<<<<<<< HEAD
 
     <link name='hip2'>
       <pose frame=''>0.2263 -0.07 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 0 0 0 -0 0</pose>
+=======
+    
+    <link name='hip2'>
+      <pose frame=''>0.2263 -0.07 0 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>0 -0.03 0 0 -0 0</pose>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         <mass>0.575</mass>
         <inertia>
           <ixx>0.000669635</ixx>
@@ -521,10 +670,17 @@ SOFTWARE.
         </geometry>
         <surface>
           <contact>
+<<<<<<< HEAD
             <ode />
           </contact>
           <friction>
             <ode />
+=======
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
           </friction>
         </surface>
       </collision>
@@ -533,7 +689,11 @@ SOFTWARE.
         <geometry>
           <mesh>
             <uri>model:///meshes/Spirit40_Hip_Module_transformed.stl</uri>
+<<<<<<< HEAD
           </mesh>
+=======
+         </mesh>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         </geometry>
         <material>
           <script>
@@ -543,7 +703,11 @@ SOFTWARE.
         </material>
       </visual>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay />
+=======
+      <velocity_decay/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     </link>
 
     <joint name='10' type='revolute'>
@@ -570,6 +734,7 @@ SOFTWARE.
     <link name='upper2'>
       <pose frame=''>0.2263 -0.17098 0 0 -0 0</pose>
       <inertial>
+<<<<<<< HEAD
         <pose frame=''>-0.040 0.041 0 0 -0 0</pose>
         <mass>0.775</mass>
         <inertia>
@@ -579,6 +744,17 @@ SOFTWARE.
           <iyy>0.0070</iyy>
           <iyz>0</iyz>
           <izz>0.0070</izz>
+=======
+        <pose frame=''>-0.0676 0.041 0 0 -0 0</pose>
+        <mass>0.792</mass>
+        <inertia>
+          <ixx>5e-03</ixx>
+          <ixy>0.0010</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0049</iyy>
+          <iyz>0</iyz>
+          <izz>0.0049</izz>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         </inertia>
       </inertial>
       <collision name='upper2_collision'>
@@ -590,10 +766,17 @@ SOFTWARE.
         </geometry>
         <surface>
           <contact>
+<<<<<<< HEAD
             <ode />
           </contact>
           <friction>
             <ode />
+=======
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
           </friction>
         </surface>
       </collision>
@@ -602,7 +785,11 @@ SOFTWARE.
         <geometry>
           <mesh>
             <uri>model:///meshes/Spirit40_Upper_leg_transformed.stl</uri>
+<<<<<<< HEAD
           </mesh>
+=======
+         </mesh>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         </geometry>
         <material>
           <script>
@@ -612,7 +799,11 @@ SOFTWARE.
         </material>
       </visual>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay />
+=======
+      <velocity_decay/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     </link>
 
     <joint name='4' type='revolute'>
@@ -660,10 +851,17 @@ SOFTWARE.
         </geometry>
         <surface>
           <contact>
+<<<<<<< HEAD
             <ode />
           </contact>
           <friction>
             <ode />
+=======
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
           </friction>
         </surface>
       </collision>
@@ -672,7 +870,11 @@ SOFTWARE.
         <geometry>
           <mesh>
             <uri>model:///meshes/Spirit40_Lower_Leg_transformed.stl</uri>
+<<<<<<< HEAD
           </mesh>
+=======
+         </mesh>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         </geometry>
         <material>
           <script>
@@ -681,9 +883,15 @@ SOFTWARE.
           </script>
         </material>
       </visual>
+<<<<<<< HEAD
       <velocity_decay />
       <gravity>1</gravity>
       <velocity_decay />
+=======
+      <velocity_decay/>
+      <gravity>1</gravity>
+      <velocity_decay/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     </link>
 
     <joint name='5' type='revolute'>
@@ -710,7 +918,11 @@ SOFTWARE.
     <link name='hip3'>
       <pose frame=''>-0.2263 -0.07 0 0 -0 0</pose>
       <inertial>
+<<<<<<< HEAD
         <pose frame=''>0 0 0 0 -0 0</pose>
+=======
+        <pose frame=''>0 -0.03 0 0 -0 0</pose>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         <mass>0.575</mass>
         <inertia>
           <ixx>0.000669635</ixx>
@@ -731,10 +943,17 @@ SOFTWARE.
         </geometry>
         <surface>
           <contact>
+<<<<<<< HEAD
             <ode />
           </contact>
           <friction>
             <ode />
+=======
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
           </friction>
         </surface>
       </collision>
@@ -743,7 +962,11 @@ SOFTWARE.
         <geometry>
           <mesh>
             <uri>model:///meshes/Spirit40_Hip_Module_transformed.stl</uri>
+<<<<<<< HEAD
           </mesh>
+=======
+         </mesh>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         </geometry>
         <material>
           <script>
@@ -753,7 +976,11 @@ SOFTWARE.
         </material>
       </visual>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay />
+=======
+      <velocity_decay/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     </link>
 
     <joint name='11' type='revolute'>
@@ -780,6 +1007,7 @@ SOFTWARE.
     <link name='upper3'>
       <pose frame=''>-0.2263 -0.17098 0 0 -0 0</pose>
       <inertial>
+<<<<<<< HEAD
         <pose frame=''>-0.040 0.041 0 0 -0 0</pose>
         <mass>0.775</mass>
         <inertia>
@@ -789,6 +1017,17 @@ SOFTWARE.
           <iyy>0.0070</iyy>
           <iyz>0</iyz>
           <izz>0.0070</izz>
+=======
+        <pose frame=''>-0.0676 0.041 0 0 -0 0</pose>
+        <mass>0.792</mass>
+        <inertia>
+          <ixx>5e-03</ixx>
+          <ixy>0.0010</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0049</iyy>
+          <iyz>0</iyz>
+          <izz>0.0049</izz>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         </inertia>
       </inertial>
       <collision name='upper3_collision'>
@@ -800,10 +1039,17 @@ SOFTWARE.
         </geometry>
         <surface>
           <contact>
+<<<<<<< HEAD
             <ode />
           </contact>
           <friction>
             <ode />
+=======
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
           </friction>
         </surface>
       </collision>
@@ -812,7 +1058,11 @@ SOFTWARE.
         <geometry>
           <mesh>
             <uri>model:///meshes/Spirit40_Upper_leg_transformed.stl</uri>
+<<<<<<< HEAD
           </mesh>
+=======
+         </mesh>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         </geometry>
         <material>
           <script>
@@ -822,7 +1072,11 @@ SOFTWARE.
         </material>
       </visual>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay />
+=======
+      <velocity_decay/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     </link>
 
     <joint name='6' type='revolute'>
@@ -870,10 +1124,17 @@ SOFTWARE.
         </geometry>
         <surface>
           <contact>
+<<<<<<< HEAD
             <ode />
           </contact>
           <friction>
             <ode />
+=======
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
           </friction>
         </surface>
       </collision>
@@ -882,7 +1143,11 @@ SOFTWARE.
         <geometry>
           <mesh>
             <uri>model:///meshes/Spirit40_Lower_Leg_transformed.stl</uri>
+<<<<<<< HEAD
           </mesh>
+=======
+         </mesh>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         </geometry>
         <material>
           <script>
@@ -891,11 +1156,19 @@ SOFTWARE.
           </script>
         </material>
       </visual>
+<<<<<<< HEAD
       <velocity_decay />
       <gravity>1</gravity>
       <velocity_decay />
     </link>
 
+=======
+      <velocity_decay/>
+      <gravity>1</gravity>
+      <velocity_decay/>
+    </link>
+    
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     <joint name='7' type='revolute'>
       <child>lower3</child>
       <parent>upper3</parent>
@@ -994,7 +1267,11 @@ SOFTWARE.
         </material>
       </visual>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay />
+=======
+      <velocity_decay/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     </link>
     <joint name='jtoe0' type='fixed'>
       <child>toe0</child>
@@ -1078,7 +1355,11 @@ SOFTWARE.
         </material>
       </visual>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay />
+=======
+      <velocity_decay/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     </link>
     <joint name='jtoe1' type='fixed'>
       <child>toe1</child>
@@ -1162,7 +1443,11 @@ SOFTWARE.
         </material>
       </visual>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay />
+=======
+      <velocity_decay/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     </link>
     <joint name='jtoe2' type='fixed'>
       <child>toe2</child>
@@ -1246,13 +1531,512 @@ SOFTWARE.
         </material>
       </visual>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay />
+=======
+      <velocity_decay/>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     </link>
     <joint name='jtoe3' type='fixed'>
       <child>toe3</child>
       <parent>lower3</parent>
     </joint>
 
+<<<<<<< HEAD
+=======
+    <link name='abad0_rotor'>
+      <pose frame=''>0.2263 0.07 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='abad0_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.01 0.1 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='abad0_gearing' type='gearbox'>
+      <child>abad0_rotor</child>
+      <gearbox_reference_body>body</gearbox_reference_body>
+      <parent>hip0</parent>
+      <gearbox_ratio>-6</gearbox_ratio>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>1 0 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='abad0_gearbox' type='revolute'>
+      <child>abad0_rotor</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='hip0_rotor'>
+      <pose frame=''>0.2263 0.07 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='hip0_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.1 0.01 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='hip0_gearing' type='gearbox'>
+      <child>hip0_rotor</child>
+      <gearbox_reference_body>body</gearbox_reference_body>
+      <parent>upper0</parent>
+      <gearbox_ratio>-6</gearbox_ratio>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>0 1 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='hip0_gearbox' type='revolute'>
+      <child>hip0_rotor</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='knee0_rotor'>
+      <pose frame=''>0.2263 0.11 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='knee0_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.1 0.01 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='knee0_gearing' type='gearbox'>
+      <child>knee0_rotor</child>
+      <gearbox_reference_body>upper0</gearbox_reference_body>
+      <parent>lower0</parent>
+      <gearbox_ratio>-12</gearbox_ratio>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>0 1 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='knee0_gearbox' type='revolute'>
+      <child>knee0_rotor</child>
+      <parent>upper0</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='abad1_rotor'>
+      <pose frame=''>-0.2263 0.07 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='abad1_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.01 0.1 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='abad1_gearing' type='gearbox'>
+      <child>abad1_rotor</child>
+      <gearbox_reference_body>body</gearbox_reference_body>
+      <parent>hip1</parent>
+      <gearbox_ratio>-6</gearbox_ratio>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>1 0 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='abad1_gearbox' type='revolute'>
+      <child>abad1_rotor</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='hip1_rotor'>
+      <pose frame=''>-0.2263 0.07 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='hip1_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.1 0.01 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='hip1_gearing' type='gearbox'>
+      <child>hip1_rotor</child>
+      <gearbox_reference_body>body</gearbox_reference_body>
+      <parent>upper1</parent>
+      <gearbox_ratio>-6</gearbox_ratio>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>0 1 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='hip1_gearbox' type='revolute'>
+      <child>hip1_rotor</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='knee1_rotor'>
+      <pose frame=''>-0.2263 0.11 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='knee1_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.1 0.01 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='knee1_gearing' type='gearbox'>
+      <child>knee1_rotor</child>
+      <gearbox_reference_body>upper1</gearbox_reference_body>
+      <parent>lower1</parent>
+      <gearbox_ratio>-12</gearbox_ratio>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>0 1 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='knee1_gearbox' type='revolute'>
+      <child>knee1_rotor</child>
+      <parent>upper1</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='abad2_rotor'>
+      <pose frame=''>0.2263 -0.07 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='abad2_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.01 0.1 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='abad2_gearing' type='gearbox'>
+      <child>abad2_rotor</child>
+      <gearbox_reference_body>body</gearbox_reference_body>
+      <parent>hip2</parent>
+      <gearbox_ratio>-6</gearbox_ratio>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>1 0 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='abad2_gearbox' type='revolute'>
+      <child>abad2_rotor</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='hip2_rotor'>
+      <pose frame=''>0.2263 -0.07 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='hip2_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.1 0.01 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='hip2_gearing' type='gearbox'>
+      <child>hip2_rotor</child>
+      <gearbox_reference_body>body</gearbox_reference_body>
+      <parent>upper2</parent>
+      <gearbox_ratio>-6</gearbox_ratio>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>0 1 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='hip2_gearbox' type='revolute'>
+      <child>hip2_rotor</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='knee2_rotor'>
+      <pose frame=''>0.2263 -0.11 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='knee2_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.1 0.01 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='knee2_gearing' type='gearbox'>
+      <child>knee2_rotor</child>
+      <gearbox_reference_body>upper2</gearbox_reference_body>
+      <parent>lower2</parent>
+      <gearbox_ratio>-12</gearbox_ratio>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>0 1 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='knee2_gearbox' type='revolute'>
+      <child>knee2_rotor</child>
+      <parent>upper2</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='abad3_rotor'>
+      <pose frame=''>-0.2263 -0.07 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='abad0_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.01 0.1 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='abad3_gearing' type='gearbox'>
+      <child>abad3_rotor</child>
+      <gearbox_reference_body>body</gearbox_reference_body>
+      <parent>hip3</parent>
+      <gearbox_ratio>-6</gearbox_ratio>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>1 0 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='abad3_gearbox' type='revolute'>
+      <child>abad3_rotor</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='hip3_rotor'>
+      <pose frame=''>-0.2263 -0.07 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='hip3_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.1 0.01 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='hip3_gearing' type='gearbox'>
+      <child>hip3_rotor</child>
+      <gearbox_reference_body>body</gearbox_reference_body>
+      <parent>upper3</parent>
+      <gearbox_ratio>-6</gearbox_ratio>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>0 1 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='hip3_gearbox' type='revolute'>
+      <child>hip3_rotor</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+    <link name='knee3_rotor'>
+      <pose frame=''>-0.2263 -0.11 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1.231E-4</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.231E-4</iyy>
+          <iyz>0</iyz>
+          <izz>1.231E-4</izz>
+        </inertia>
+      </inertial>
+      <!--<visual name='knee3_rotor_visual'>
+        <geometry>
+          <box>
+            <size>0.1 0.01 0.1</size>
+          </box>
+        </geometry>
+      </visual>-->
+    </link>
+    <joint name='knee3_gearing' type='gearbox'>
+      <child>knee3_rotor</child>
+      <gearbox_reference_body>upper3</gearbox_reference_body>
+      <parent>lower3</parent>
+      <gearbox_ratio>-12</gearbox_ratio>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>0 1 0</xyz>
+      </axis2>
+    </joint>
+    <joint name='knee3_gearbox' type='revolute'>
+      <child>knee3_rotor</child>
+      <parent>upper3</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     <include>
       <uri>model://cmu_text</uri>
       <pose>0 0 0 0 0 0</pose>
@@ -1281,4 +2065,8 @@ SOFTWARE.
       <updateRateHZ>500.0</updateRateHZ>
     </plugin>
   </model>
+<<<<<<< HEAD
 </sdf>
+=======
+</sdf>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*

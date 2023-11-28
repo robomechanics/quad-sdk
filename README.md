@@ -1,5 +1,6 @@
-[![CircleCI](https://circleci.com/gh/robomechanics/spirit-software/tree/main.svg?style=shield)](https://circleci.com/gh/robomechanics/spirit-software/tree/main)
+[![CircleCI](https://circleci.com/gh/robomechanics/quad-software/tree/main.svg?style=shield)](https://circleci.com/gh/robomechanics/quad-software/tree/main)
 
+<<<<<<< HEAD
 ## Overview
 
 Quad-SDK is an open source, ROS-based full stack software framework for agile quadrupedal locomotion. The design of Quad-SDK is focused on the vertical integration of planning, control, estimation, communication, and development tools which enable agile quadrupedal locomotion in simulation and hardware with minimal user changes for multiple platforms. The modular software architecture allows researchers to experiment with their own implementations of different components while leveraging the existing framework. Quad-SDK also offers Gazebo simulation support and a suite of visualization and data-processing tools for rapid development. Refer to the [paper] for high-level details of the framework.
@@ -86,3 +87,6 @@ Please report bugs and request features using the [Issue Tracker](https://github
 [ROS]: http://www.ros.org
 [rviz]: http://wiki.ros.org/rviz
 [Eigen]: http://eigen.tuxfamily.org
+=======
+This repository contains all of the RML developed software designed for Quad, most of which is being done by the legged controls group.
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*

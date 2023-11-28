@@ -1,4 +1,9 @@
 #include "global_body_planner/planning_utils.h"
+<<<<<<< HEAD
+=======
+#include "quad_utils/matplotlibcpp.h"
+
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 namespace planning_utils {
 
 State fullStateToState(const FullState &full_state) {

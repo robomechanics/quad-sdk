@@ -1,0 +1,146 @@
+<?xml version='1.0'?>
+
+<!-- 
+MIT License (modified)
+
+Copyright (c) 2018 The Trustees of the University of Pennsylvania
+Authors:
+Vasileios Vasilopoulos <vvasilo@seas.upenn.edu>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this **file** (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE. 
+-->
+
+<sdf version='1.6'>
+  <model name='caster_cart'>
+    <link name='caster_top'>
+      <pose frame=''>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>-0.006133 0 -0.016533 0 -0 0</pose>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.000546</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000546</iyy>
+          <iyz>0</iyz>
+          <izz>0.00034</izz>
+        </inertia>
+      </inertial>
+      <collision name='caster_top_collision'>
+        <pose frame=''>0 0 -0.01333 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.024</length>
+            <radius>0.01866</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='caster_top_visual'>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.267 0.267 0.267</scale>
+            <uri>model://caster_cart/meshes/caster_top.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <link name='caster_wheel'>
+      <pose frame=''>-0.0213 -0.00373 -0.0453 0 -0 0.003</pose>
+      <inertial>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <mass>0.05</mass>
+        <inertia>
+          <ixx>0.000113</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0002</iyy>
+          <iyz>0</iyz>
+          <izz>0.000113</izz>
+        </inertia>
+      </inertial>
+      <collision name='caster_wheel_collision'>
+        <pose frame=''>0 0 0 -1.57 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02267</length>
+            <radius>0.0333</radius>
+          </cylinder>
+        </geometry>
+        <max_contacts>1000</max_contacts>
+        <surface>
+          <friction>
+            <torsional>
+              <coefficient>0.1</coefficient>
+              <patch_radius>0.001</patch_radius>
+              <use_patch_radius>1</use_patch_radius>
+              <ode>
+                <slip>0.1</slip>
+              </ode>
+            </torsional>
+            <ode>
+              <mu>10</mu>
+              <mu2>10</mu2>
+            </ode>
+          </friction>
+          <contact>
+            <ode>
+              <min_depth>0.005</min_depth>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='caster_wheel_visual'>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.267 0.267 0.267</scale>
+            <uri>model://caster_cart/meshes/caster_wheel.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay/>
+    </link>
+    <joint name='caster_wheel_joint' type='revolute'>
+      <child>caster_wheel</child>
+      <parent>caster_top</parent>
+      <axis>
+        <xyz>-0.003 0.999996 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <damping>0.004</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+  </model>
+</sdf>

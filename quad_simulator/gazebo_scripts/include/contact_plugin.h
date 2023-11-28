@@ -29,7 +29,10 @@ SOFTWARE.
 
 #include <geometry_msgs/Vector3.h>
 #include <quad_msgs/ContactMode.h>
+<<<<<<< HEAD:quad_simulator/gazebo_scripts/include/contact_plugin.h
 #include <ros/ros.h>
+=======
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*:spirit_simulator/gazebo_scripts/include/contact_plugin.h
 
 #include <gazebo/gazebo.hh>
 #include <gazebo/sensors/sensors.hh>

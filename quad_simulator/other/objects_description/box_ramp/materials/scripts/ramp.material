@@ -1,0 +1,15 @@
+material ramp
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture ramp.jpg
+	scale 1 1
+      }
+    }
+  }
+}
+

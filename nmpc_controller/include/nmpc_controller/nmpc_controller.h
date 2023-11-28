@@ -3,16 +3,23 @@
 
 #include <math.h>
 // #include <eigen3/Eigen/Eigen>
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/MultiFootPlanDiscrete.h>
-#include <spirit_msgs/GRFArray.h>
-#include <spirit_msgs/RobotState.h>
-#include <spirit_msgs/RobotStateTrajectory.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/MultiFootPlanDiscrete.h>
+#include <quad_msgs/GRFArray.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_msgs/RobotStateTrajectory.h>
 // #include <local_planner/quadruped_mpc.h>
-#include <spirit_utils/ros_utils.h>
-#include "spirit_utils/matplotlibcpp.h"
+#include <quad_utils/ros_utils.h>
+#include "quad_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+<<<<<<< HEAD
 
+=======
+#include <quad_msgs/LegCommand.h>
+
+#include "nmpc_controller/quad_nlp.h"
+#include "IpIpoptApplication.hpp"
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 #include <Eigen/Dense>
 
 #include "IpIpoptApplication.hpp"
@@ -111,6 +118,7 @@ class NMPCController {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   /// Pointer to nlp formulation
   SmartPtr<quadNLP> mynlp_;
 =======
@@ -121,6 +129,9 @@ class NMPCController {
 >>>>>>> update NMPC, adaptive body height and constraints using terrain information
   SmartPtr<spiritNLP> mynlp_;
 >>>>>>> Switch SpiritKinematics to QuadKD, switch inverse dynamics function to QuadKD
+=======
+  SmartPtr<quadNLP> mynlp_;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 
   /// Pointer to IPOPT solver
   SmartPtr<IpoptApplication> app_;

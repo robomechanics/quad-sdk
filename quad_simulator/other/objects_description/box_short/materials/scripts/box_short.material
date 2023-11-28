@@ -1,0 +1,15 @@
+material box_short
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture frame.jpg
+	scale 1 1
+      }
+    }
+  }
+}
+

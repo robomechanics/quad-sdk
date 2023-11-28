@@ -5,16 +5,26 @@
 #include <local_planner/local_footstep_planner.h>
 #include <local_planner/local_planner_modes.h>
 #include <math.h>
+<<<<<<< HEAD
 #include <nmpc_controller/nmpc_controller.h>
 #include <quad_msgs/GRFArray.h>
 #include <quad_msgs/MultiFootPlanDiscrete.h>
 #include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/RobotState.h>
 #include <quad_msgs/RobotStateTrajectory.h>
+=======
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/MultiFootPlanDiscrete.h>
+#include <quad_msgs/GRFArray.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_msgs/RobotStateTrajectory.h>
+#include <local_planner/quadruped_mpc.h>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 #include <local_planner/local_footstep_planner.h>
-#include <spirit_utils/ros_utils.h>
-#include <spirit_utils/quad_kd.h>
-#include "spirit_utils/matplotlibcpp.h"
+#include <quad_utils/ros_utils.h>
+#include <quad_utils/quad_kd.h>
+#include "quad_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 //! Local Body Planner library
@@ -59,14 +69,22 @@ class LocalPlanner {
    * @brief Callback function to handle new plans
    * @param[in] msg Robot state trajectory message
    */
+<<<<<<< HEAD
   void robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg);
+=======
+  void robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg);
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 
   /**
    * @brief Callback function to handle new state estimates
    * @param[in] State estimate message contining position and velocity for each
    * joint and robot body
    */
+<<<<<<< HEAD
   void robotStateCallback(const quad_msgs::RobotState::ConstPtr &msg);
+=======
+  void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 
   /**
    * @brief Callback function to handle new desired twist data when using twist
@@ -137,6 +155,7 @@ class LocalPlanner {
   /// Local Footstep Planner object
   std::shared_ptr<LocalFootstepPlanner> local_footstep_planner_;
 
+<<<<<<< HEAD
   /// Most recent robot plan
   quad_msgs::RobotPlan::ConstPtr body_plan_msg_;
 
@@ -145,6 +164,16 @@ class LocalPlanner {
 
   /// Past foothold locations
   quad_msgs::MultiFootState past_footholds_msg_;
+=======
+	/// Most recent robot plan
+	quad_msgs::RobotPlan::ConstPtr body_plan_msg_;
+
+  /// Most recent robot state
+	quad_msgs::RobotState::ConstPtr robot_state_msg_;
+
+  /// Past foothold locations
+	quad_msgs::MultiFootPlanDiscrete past_footholds_msg_;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 
   /// Timestamp of the state estimate
   ros::Time current_state_timestamp_;
@@ -227,7 +256,7 @@ class LocalPlanner {
   Eigen::MatrixXd foot_plan_discrete_;
 
   /// QuadKD class
-  std::shared_ptr<spirit_utils::QuadKD>quadKD_;
+  std::shared_ptr<quad_utils::QuadKD>quadKD_;
 
   /// Twist input
   Eigen::VectorXd cmd_vel_;

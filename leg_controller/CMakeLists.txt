@@ -19,15 +19,27 @@ endif()
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+<<<<<<< HEAD
   sensor_msgs
   spirit_msgs
   spirit_utils
+=======
+  quad_msgs
+  quad_utils
+  eigen_conversions
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 )
 
 catkin_package(
+<<<<<<< HEAD
   INCLUDE_DIRS include
   CATKIN_DEPENDS roscpp std_msgs sensor_msgs spirit_msgs spirit_utils
   DEPENDS 
+=======
+  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS}
+  CATKIN_DEPENDS roscpp std_msgs quad_msgs quad_utils eigen_conversions
+  DEPENDS EIGEN3
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 )
 
 ###########
