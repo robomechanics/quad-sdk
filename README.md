@@ -87,9 +87,5 @@ Please report bugs and request features using the [Issue Tracker](https://github
 [ROS]: http://www.ros.org
 [rviz]: http://wiki.ros.org/rviz
 [Eigen]: http://eigen.tuxfamily.org
-<<<<<<< HEAD
-=======
-=======
+
 This repository contains all of the RML developed software designed for Quad, most of which is being done by the legged controls group.
->>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18

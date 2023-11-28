@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 <launch>
   <arg name="robot_type" default="spirit" />
   <arg name="multiple_robots" default="false" />
@@ -97,7 +94,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. 
 -->
 
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 <launch>
   <arg name="robot_type" default="spirit" />
   <arg name="multiple_robots" default="false" />
@@ -110,16 +106,6 @@ SOFTWARE.
   <arg name="logging" default="false" />
   <param name="/use_sim_time" value="true" />
 
-<<<<<<< HEAD
-  <!-- Launch the Quad world with specific physics parameters -->
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="paused" value="$(arg paused)" />
-    <arg name="world_name" value="$(find gazebo_scripts)/worlds/$(arg world)/$(arg world).world" />
-    <arg name="gui" value="$(arg gui)" />
-    <arg name="physics" value="ode" />
-    <arg name="verbose" value="$(arg gui)" />
-  </include>
-=======
   <arg name="gui"             default="false"/>
   <arg name="paused"          default="false"/>
   <arg name="software"        default="true"/>
@@ -127,7 +113,6 @@ SOFTWARE.
   <arg name="live_plot"       default="false"/>
   <arg name="mblink"          default="false"/>
   <arg name="world"           default="flat"/>
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   <include file="$(find quad_utils)/launch/mapping.launch">
     <arg name="input_type" value="mesh" />
@@ -135,12 +120,10 @@ SOFTWARE.
     <arg name="robot_type" value="$(arg robot_type)" />
   </include>
 
-<<<<<<< HEAD
   <group ns="robot_1">
     <!-- Load the parameters and the sdf description -->
     <include file="$(find quad_utils)/launch/load_robot_params.launch">
       <arg name="robot_type" value="$(arg robot_type)" />
-=======
   <group if="$(arg software)">
     <include file="$(find quad_utils)/launch/visualization.launch">
       <arg name="live_plot" value="$(arg live_plot)"/>
@@ -148,7 +131,6 @@ SOFTWARE.
     <include file="$(find quad_utils)/launch/robot_driver.launch">
       <arg name="mblink" value="$(arg mblink)"/>
       <arg name="controller" value="$(arg controller)"/>
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
     </include>
     <rosparam file="$(find gazebo_scripts)/config/quad_control.yaml" command="load" />
     <include file="$(find quad_utils)/launch/quad_spawn.launch">
@@ -176,17 +158,12 @@ SOFTWARE.
       <param name="robot_type" value="$(arg robot_type)" />
     </group>
 
-<<<<<<< HEAD
-    <!-- Users can add more robots here -->
-  </group>
-=======
   <!-- Load the parameters and the sdf description -->
   <include file="$(find quad_utils)/launch/load_params.launch" />
   <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
 
   <!-- Spawn SDF model -->
   <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.5" output="screen"/>
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   <!-- Load the visualization tools -->
   <include file="$(find quad_utils)/launch/quad_visualization.launch">
@@ -195,12 +172,7 @@ SOFTWARE.
     <arg name="dash" value="$(arg dash)" />
   </include>
 
-<<<<<<< HEAD
-</launch>
-=======
   <!-- Load the contact state publisher -->
   <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
   
 </launch>
->>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
