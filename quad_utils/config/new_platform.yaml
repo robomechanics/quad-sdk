@@ -72,6 +72,6 @@ robot_driver:
   swing_kd_cart: [0, 0, 0] # N/m
   safety_kp: [0, 0, 0]
   safety_kd: [2, 2, 2]
-  stand_joint_angles: [0.0, 0.76, 1.52]
+  stand_joint_angles: [0.0, 1.5, 2.0]  # spirit: [0.0, 0.76, 1.52]
   sit_joint_angles: [0.0, 0.0, 0.0]
   torque_limit: [21, 21, 32]

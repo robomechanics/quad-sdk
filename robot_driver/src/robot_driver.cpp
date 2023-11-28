@@ -94,6 +94,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
       nh_.advertise<quad_msgs::RobotState>(trajectory_state_topic, 1);
 
   // Set up pubs and subs dependent on robot layer
+  
   if (is_hardware_) {
     ROS_INFO("Loading hardware robot driver");
     mocap_sub_ = nh_.subscribe(mocap_topic, 1000, &RobotDriver::mocapCallback,
@@ -108,13 +109,17 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
     robot_state_sub_ =
         nh_.subscribe(robot_state_topic, 1, &RobotDriver::robotStateCallback,
                       this, ros::TransportHints().tcpNoDelay(true));
+
+      // joint_state_pub_ =
+      //   nh_.advertise<sensor_msgs::JointState>(joint_state_topic, 1);
   }
 
   // Initialize kinematics object
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
   // Initialize hardware interface
-  if (is_hardware_) {
+  // if (is_hardware_) {
+  if (true) {
     if (robot_name == "spirit") {
       ROS_INFO("Loading spirit interface");
       hardware_interface_ = std::make_shared<SpiritInterface>();
@@ -569,7 +574,8 @@ void RobotDriver::spin() {
   ros::Rate r(update_rate_);
 
   // Start the mblink connection
-  if (is_hardware_) {
+  // if (is_hardware_) {
+  if (true) {
     hardware_interface_->loadInterface(argc_, argv_);
   }
 

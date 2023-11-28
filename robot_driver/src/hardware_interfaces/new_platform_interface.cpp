@@ -126,7 +126,7 @@ bool NewPlatformInterface::send(
             float kp = leg_command_heartbeat * leg_command.motor_commands.at(j).kp;
             float kd = leg_command_heartbeat * leg_command.motor_commands.at(j).kd;
 
-            ROS_INFO("Pos_Set: %f. Index: %d", pos, idx_offset+j);
+            // ROS_INFO("Pos_Set: %f. Index: %d", pos, idx_offset+j);
             
             motor_driver::motorCommand commandStruct = {pos, vel, 0.3*kp, 0.1*kd, 0.0};
 
@@ -156,7 +156,7 @@ bool NewPlatformInterface::send(
             float kp = leg_command_heartbeat * leg_command.motor_commands.at(j).kp;
             float kd = leg_command_heartbeat * leg_command.motor_commands.at(j).kd;
 
-            ROS_INFO("Pos_Set: %f. Index: %d", pos, idx_offset+j);
+            // ROS_INFO("Pos_Set: %f. Index: %d", pos, idx_offset+j);
 
             motor_driver::motorCommand commandStruct = {pos, vel, 0.3*kp, 0.1*kd, 0.0};
 
@@ -213,7 +213,7 @@ bool NewPlatformInterface::send(
         joint_state_msg.effort[j+joint_names_0_.size()] = motorStates_1[motor_ids_1[j]].torque;
     }
 
-    ROS_INFO("Motor %c Position Received: %f", joint_state_msg.name[1], joint_state_msg.position[1]);
+    // ROS_INFO("Motor %c Position Received: %f", joint_state_msg.name[1], joint_state_msg.position[1]);
 
     return true;
     }
